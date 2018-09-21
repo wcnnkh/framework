@@ -69,7 +69,7 @@ public abstract class FieldVisitor {
     if (api != Opcodes.ASM6
         && api != Opcodes.ASM5
         && api != Opcodes.ASM4
-        && api != Opcodes.ASM7_EXPERIMENTAL) {
+        /*&& api != Opcodes.ASM7_EXPERIMENTAL*/) {
       throw new IllegalArgumentException();
     }
     this.api = api;
