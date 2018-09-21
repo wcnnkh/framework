@@ -136,6 +136,7 @@ public abstract class DB implements ConnectionOrigin {
 		return select(sql).list(type);
 	}
 	
+	@Deprecated
 	public <T> T selectOne(Class<T> type, SQL sql){
 		return select(sql).first(type);
 	}

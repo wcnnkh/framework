@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import shuchaowen.core.db.annoation.Table;
+import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
 
@@ -117,6 +118,16 @@ public final class DBManager {
 			throw new NullPointerException(name + " not found db");
 		}
 		return db;
+	}
+	
+	@Deprecated
+	public static <T> List<T> select(Class<T> type, SQL sql){
+		return getDB(type).select(type, sql);
+	}
+	
+	@Deprecated
+	public static <T> T selectOne(Class<T> type, SQL sql){
+		return getDB(type).selectOne(type, sql);
 	}
 	
 	/**
