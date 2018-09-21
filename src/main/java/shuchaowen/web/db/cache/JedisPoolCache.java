@@ -1,6 +1,12 @@
 package shuchaowen.web.db.cache;
 
-import com.alibaba.fastjson.JSONObject;
+import java.io.UnsupportedEncodingException;
+
+import com.dyuproject.protostuff.LinkedBuffer;
+import com.dyuproject.protostuff.ProtobufIOUtil;
+import com.dyuproject.protostuff.ProtostuffIOUtil;
+import com.dyuproject.protostuff.Schema;
+import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -8,6 +14,7 @@ import shuchaowen.core.db.cache.Cache;
 import shuchaowen.core.db.cache.CacheUtils;
 import shuchaowen.core.db.proxy.BeanProxy;
 import shuchaowen.core.db.proxy.BeanProxyMethodInterceptor;
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 /**
  * 总是不推荐使用此类，因为redis的结构丰富，应该根据业务来实现缓存
@@ -29,34 +36,55 @@ public class JedisPoolCache implements Cache{
 		this.exp = exp;
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> T getById(Class<T> type, String tableName, Object... params) {
-		String key = prefix + CacheUtils.getObjectKey(type, params);
+		byte[] key;
+		try {
+			key = (prefix + CacheUtils.getObjectKey(type, params)).getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new ShuChaoWenRuntimeException(e);
+		}
+
 		Jedis jedis = jedisPool.getResource();
-		String content = jedis.get(key);
-		if(content == null){
+		byte[] data = jedis.get(key);
+		if(data != null){
+			if(exp > 0){
+				jedis.expire(key, exp);
+			}
+		}
+		jedis.close();
+		
+		if(data == null || data.length == 0){
 			return null;
 		}
 		
-		if(exp > 0){
-			jedis.expire(key, exp);
-		}
-		jedis.close();
-		T t = JSONObject.parseObject(content, BeanProxyMethodInterceptor.getCglibProxyBean(type));
+		T t = BeanProxyMethodInterceptor.newInstance(type);
+		Schema schema = RuntimeSchema.getSchema(type);
+		ProtostuffIOUtil.mergeFrom(data, t, schema);
 		((BeanProxy)t).startListen();
 		return t;
 	}
-
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void save(Object bean) {
-		String data = JSONObject.toJSONString(bean);
+		byte[] key;
+		try {
+			key = (prefix + CacheUtils.getObjectKey(bean)).getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new ShuChaoWenRuntimeException(e);
+		}
+		
+		Schema schema = RuntimeSchema.getSchema(bean.getClass());
+		byte[] data = ProtobufIOUtil.toByteArray(bean, schema, LinkedBuffer.allocate(512));
 		if(data == null){
 			return ;
 		}
 		
 		Jedis jedis = jedisPool.getResource();
 		if(exp > 0){
-			jedis.setex(prefix + CacheUtils.getObjectKey(bean), exp, data);
+			jedis.setex(key, exp, data);
 		}else{
-			jedis.set(prefix + CacheUtils.getObjectKey(bean), data);
+			jedis.set(key, data);
 		}
 		jedis.close();
 	}
@@ -66,8 +94,15 @@ public class JedisPoolCache implements Cache{
 	}
 
 	public void delete(Object bean) {
+		byte[] key;
+		try {
+			key = (prefix + CacheUtils.getObjectKey(bean)).getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new ShuChaoWenRuntimeException(e);
+		}
+		
 		Jedis jedis = jedisPool.getResource();
-		jedis.del(prefix + CacheUtils.getObjectKey(bean));
+		jedis.del(key);
 		jedis.close();
 	}
 

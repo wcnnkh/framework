@@ -24,6 +24,9 @@
 		<xmemcached.version>2.4.4</xmemcached.version>
 		<fastjson.version>1.2.49</fastjson.version>
 		<log4j.version>1.2.17</log4j.version>
+		<protostuff-core.version>1.1.3</protostuff-core.version>
+		<protostuff-runtime.version>1.1.3</protostuff-runtime.version>
+		<protostuff-api.version>1.1.3</protostuff-api.version>
 	</properties>
 
 	<dependencies>
@@ -153,6 +156,28 @@
 			<version>${fastjson.version}</version>
 			<scope>compile</scope>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.dyuproject.protostuff/protostuff-core -->
+		<dependency>
+			<groupId>com.dyuproject.protostuff</groupId>
+			<artifactId>protostuff-core</artifactId>
+			<version>${protostuff-core.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.dyuproject.protostuff/protostuff-runtime -->
+		<dependency>
+			<groupId>com.dyuproject.protostuff</groupId>
+			<artifactId>protostuff-runtime</artifactId>
+			<version>${protostuff-runtime.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.dyuproject.protostuff/protostuff-api -->
+		<dependency>
+			<groupId>com.dyuproject.protostuff</groupId>
+			<artifactId>protostuff-api</artifactId>
+			<version>${protostuff-api.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
