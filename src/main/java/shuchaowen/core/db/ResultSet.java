@@ -8,6 +8,7 @@ import java.util.List;
 
 public class ResultSet implements Serializable{
 	private static final long serialVersionUID = -3199839587290797839L;
+	private static final Result NULL_RESULT = new Result();
 	private TableMapping tableMapping;
 	private List<Result> dataList;
 	
@@ -26,21 +27,12 @@ public class ResultSet implements Serializable{
 	}
 	
 	public <T> T get(Class<T> type, int index){
-		if(type == null){
-			return null;
-		}
-		
-		Result result = get(index);
-		if(result == null){
-			return null;
-		}
-		
-		return result.get(type);
+		return get(index).get(type);
 	}
 	
 	public Result get(int index){
 		if(dataList == null || index < 0 || index >= dataList.size()){
-			return null;
+			return NULL_RESULT;
 		}
 		
 		return dataList.get(index);

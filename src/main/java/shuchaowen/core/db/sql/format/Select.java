@@ -271,6 +271,10 @@ public abstract class Select{
 
 	public abstract long count();
 	
+	public <T> T first(Class<T> type){
+		return first().first().get(type);
+	}
+	
 	public ResultSet first(){
 		return list(0, 1);
 	}

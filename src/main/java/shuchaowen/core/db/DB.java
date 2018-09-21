@@ -132,6 +132,14 @@ public abstract class DB implements ConnectionOrigin {
 		return TransactionContext.getInstance().select(this, sql);
 	}
 	
+	public <T> List<T> select(Class<T> type, SQL sql){
+		return select(sql).list(type);
+	}
+	
+	public <T> T selectOne(Class<T> type, SQL sql){
+		return select(sql).first(type);
+	}
+	
 	private Cache getCache(Class<?> tableClass, TableInfo tableInfo){
 		Cache cache = tableInfo.getCache();
 		if(cache == null && cacheFactory != null){
