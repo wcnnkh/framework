@@ -4,19 +4,21 @@ import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map.Entry;
 
 import shuchaowen.core.db.proxy.BeanProxy;
 import shuchaowen.core.db.proxy.BeanProxyMethodInterceptor;
 import shuchaowen.core.util.ClassUtils;
+import shuchaowen.core.util.XTime;
 
 public class Result implements Serializable{
 	private static final long serialVersionUID = -3443652927449459314L;
 	private TableMapping tableMapping;
 	private LinkedHashMap<String, Object> dataMap;
+	//缓存一下
+	private transient Object[] values;
 
 	public Result() {
 	};
@@ -57,12 +59,11 @@ public class Result implements Serializable{
 		}
 	}
 	
-	public List<Object> getValueList(){
-		return dataMap == null? null:new ArrayList<Object>(dataMap.values());
-	}
-	
 	public Object[] getValues(){
-		return dataMap == null? null:dataMap.values().toArray();
+		if(values == null && dataMap != null){
+			values = dataMap.values().toArray();
+		}
+		return values;
 	}
 
 	public LinkedHashMap<String, Object> getDataMap() {
@@ -134,5 +135,77 @@ public class Result implements Serializable{
 			}
 			return null;
 		}
+	}
+	
+	public Object getObject(int index){
+		Object[] values = getValues();
+		if(values == null){
+			return null;
+		}
+		return values[index];
+	}
+	
+	public String getString(int index){
+		Object value = getObject(index);
+		return value == null? null:value.toString();
+	}
+	
+	public Long getLong(int index){
+		Object value = getObject(index);
+		return value == null? null:(Long)value;
+	}
+	
+	public Integer getInteger(int index){
+		Object value = getObject(index);
+		return value == null? null:(Integer)value;
+	}
+	
+	public Short getShort(int index){
+		Object value = getObject(index);
+		return value == null? null:(Short)value;
+	}
+	
+	public String getFormatDate(int index, String formatter){
+		Object value = getObject(index);
+		if(value == null){
+			return null;
+		}
+		
+		if(value instanceof Date){
+			return XTime.format((Date)value, formatter);
+		}else if(value instanceof Long){
+			return XTime.format((Long)value, formatter);
+		}else{
+			return value.toString();
+		}
+	}
+	
+	public Long getTime(int index, String formatter){
+		Object value = getObject(index);
+		if(value == null){
+			return null;
+		}
+		
+		if(value instanceof Date){
+			return ((Date)value).getTime();
+		}else if(value instanceof Long){
+			return (Long)value;
+		}else{
+			return XTime.getTime(value.toString(), formatter);
+		}
+	}
+	
+	public Date getDate(int index){
+		Object value = getObject(index);
+		if(value == null){
+			return null;
+		}
+		
+		if(value instanceof Date){
+			return (Date) value;
+		}else if(value instanceof Long){
+			return new Date((Long)value);
+		}
+		throw new NullPointerException("to date error value:" + value);
 	}
 }
