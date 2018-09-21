@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import shuchaowen.core.db.proxy.BeanProxy;
@@ -54,6 +56,14 @@ public class Result implements Serializable{
 			dataMap.put(sb.toString(), resultSet.getObject(i));
 		}
 	}
+	
+	public List<Object> getValueList(){
+		return dataMap == null? null:new ArrayList<Object>(dataMap.values());
+	}
+	
+	public Object[] getValues(){
+		return dataMap == null? null:dataMap.values().toArray();
+	}
 
 	public LinkedHashMap<String, Object> getDataMap() {
 		return dataMap;
@@ -70,12 +80,7 @@ public class Result implements Serializable{
 		}
 		
 		if (type.isArray()) {
-			Object[] arr = new Object[dataMap.size()];
-			int i = 0;
-			for (Entry<String, Object> entry : dataMap.entrySet()) {
-				arr[i++] = entry.getValue();
-			}
-			return (T) arr;
+			return (T) getValues();
 		} else if (type.getName().startsWith("java") || ClassUtils.containsBasicValueType(type)) {
 			for (Entry<String, Object> entry : dataMap.entrySet()) {
 				return (T) entry.getValue();

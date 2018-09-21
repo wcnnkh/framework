@@ -44,7 +44,7 @@ public class ResultSetToExeclRowCall{
 		}
 		
 		for(int index=0; index<resultSet.getDataList().size(); index++){
-			String[] contents = exportRow.exportRow(resultSet, index);
+			String[] contents = exportRow.exportRow(resultSet.get(index));
 			if(contents == null || contents.length == 0){
 				return ;
 			}
