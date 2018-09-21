@@ -36,6 +36,7 @@ public final class TableInfo {
 	private ColumnInfo[] columns;
 	private ColumnInfo[] primaryKeyColumns;
 	private ColumnInfo[] notPrimaryKeyColumns;
+	private ColumnInfo[] tableColumns;
 	private Class<?>[] proxyInterface;
 	private Cache cache;
 	
@@ -83,7 +84,7 @@ public final class TableInfo {
 		List<ColumnInfo> allColumnList = new ArrayList<ColumnInfo>();
 		List<ColumnInfo> idNameList = new ArrayList<ColumnInfo>();
 		List<ColumnInfo> notIdNameList = new ArrayList<ColumnInfo>();
-		List<ColumnInfo> notDatabaseNameList = new ArrayList<ColumnInfo>();
+		List<ColumnInfo> tableColumnList = new ArrayList<ColumnInfo>();
 		//是否遍历父类
 		boolean isSuper = table == null? false:table.parent();
 		ClassInfo tempClassInfo = classInfo;
@@ -122,7 +123,10 @@ public final class TableInfo {
 						}
 					}
 				}else{
-					notDatabaseNameList.add(columnInfo);
+					boolean javaType = fieldInfo.getField().getType().getName().startsWith("java.") || fieldInfo.getField().getType().getName().startsWith("javax.");
+					if(!javaType){
+						tableColumnList.add(columnInfo);
+					}
 				}
 			}
 			
@@ -136,6 +140,7 @@ public final class TableInfo {
 		this.columns = allColumnList.toArray(new ColumnInfo[allColumnList.size()]);
 		this.primaryKeyColumns = idNameList.toArray(new ColumnInfo[0]);
 		this.notPrimaryKeyColumns = notIdNameList.toArray(new ColumnInfo[0]);
+		this.tableColumns = tableColumnList.toArray(new ColumnInfo[tableColumnList.size()]);
 	}
 	
 	public String getName() {
@@ -234,5 +239,13 @@ public final class TableInfo {
 	
 	public boolean isTable(){
 		return table != null;
+	}
+
+	/*
+	 * 这些字段都是实体类，并且对应着表
+	 * @return
+	 */
+	public ColumnInfo[] getTableColumns() {
+		return tableColumns;
 	}
 }
