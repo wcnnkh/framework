@@ -7,9 +7,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-
-public class JavaObjectSerializer implements Serializer{
+public class JavaObjectSerializer implements Serializer {
 
 	public void encode(OutputStream out, Object data) throws IOException {
 		ObjectOutputStream oos = new ObjectOutputStream(out);
@@ -17,13 +15,9 @@ public class JavaObjectSerializer implements Serializer{
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T decode(InputStream in, Type type) throws IOException {
+	public <T> T decode(InputStream in, Type type) throws IOException, ClassNotFoundException {
 		ObjectInputStream ois = new ObjectInputStream(in);
-		try {
-			return (T) ois.readObject();
-		} catch (ClassNotFoundException e) {
-			throw new ShuChaoWenRuntimeException(e);
-		}
+		return (T) ois.readObject();
 	}
 
 }

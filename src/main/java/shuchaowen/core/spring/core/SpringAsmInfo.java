@@ -16,7 +16,7 @@
 
 package shuchaowen.core.spring.core;
 
-import org.objectweb.asm.Opcodes;
+import shuchaowen.core.asm.Opcodes;
 
 /**
  * Utility class exposing constants related to Spring's internal repackaging of the ASM
@@ -35,6 +35,6 @@ public final class SpringAsmInfo {
 	 *
 	 * @see Opcodes#ASM4
 	 */
-	public static final int ASM_VERSION = Opcodes.ASM5;
+	public static final int ASM_VERSION = Opcodes.ASM4;
 
 }

@@ -78,8 +78,8 @@ public class BeanProxyMethodInterceptor implements MethodInterceptor, BeanProxy{
 	}
 
 	public static void registerCglibProxyBean(Class<?> type){
-		Logger.info("CGLIB", "register class[" + type.getName() + "]");
-		getCglibProxyBean(type);
+		Class<?> clz = getCglibProxyBean(type);
+		Logger.info("CGLIB", "register only class[" + clz.getName() + "]");
 	}
 	
 	public static void registerCglibProxyTableBean(String pageName){
