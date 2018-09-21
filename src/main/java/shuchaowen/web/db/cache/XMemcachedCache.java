@@ -7,6 +7,7 @@ import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 import shuchaowen.core.db.cache.Cache;
 import shuchaowen.core.db.cache.CacheUtils;
+import shuchaowen.core.util.XTime;
 
 /**
  * 推荐使用此方式实现简单缓存
@@ -18,6 +19,14 @@ public class XMemcachedCache implements Cache {
 	private MemcachedClient memcachedClient;
 	private String prefix;
 	private int exp;// 过期时间
+	
+	/**
+	 * 热点数据  过期时间7天
+	 * @param memcachedClient
+	 */
+	public XMemcachedCache(MemcachedClient memcachedClient) {
+		this((int)((7 * XTime.ONE_DAY)/1000), memcachedClient);
+	}
 
 	public XMemcachedCache(int exp, MemcachedClient memcachedClient) {
 		this("", exp, memcachedClient);

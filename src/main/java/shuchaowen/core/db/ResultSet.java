@@ -26,7 +26,16 @@ public class ResultSet implements Serializable{
 	}
 	
 	public <T> T get(Class<T> type, int index){
-		return type == null? null:get(index).get(type);
+		if(type == null){
+			return null;
+		}
+		
+		Result result = get(index);
+		if(result == null){
+			return null;
+		}
+		
+		return result.get(type);
 	}
 	
 	public Result get(int index){

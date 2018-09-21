@@ -10,7 +10,6 @@ import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import shuchaowen.core.db.cache.Cache;
 import shuchaowen.core.db.cache.CacheFactory;
-import shuchaowen.core.util.XTime;
 
 /**
  * 此类使用memcached    连接localhost和默认的端口号来实现
@@ -45,7 +44,7 @@ public class LocalXMemcachedFactory implements CacheFactory{
 		 */
 		builder.setConnectionPoolSize(10);
 		
-		xMemcachedCache = new XMemcachedCache((int)(15 * XTime.ONE_DAY/1000), builder.build());
+		xMemcachedCache = new XMemcachedCache(builder.build());
 	}
 	
 	public Cache getCache(Class<?> tableClass) {

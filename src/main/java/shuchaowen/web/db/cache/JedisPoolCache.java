@@ -15,6 +15,7 @@ import shuchaowen.core.db.cache.CacheUtils;
 import shuchaowen.core.db.proxy.BeanProxy;
 import shuchaowen.core.db.proxy.BeanProxyMethodInterceptor;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.core.util.XTime;
 
 /**
  * 总是不推荐使用此类，因为redis的结构丰富，应该根据业务来实现缓存
@@ -25,6 +26,10 @@ public class JedisPoolCache implements Cache{
 	private JedisPool jedisPool;
 	private String prefix;
 	private int exp;
+	
+	public JedisPoolCache(JedisPool jedisPool){
+		this(jedisPool, (int)((7 * XTime.ONE_DAY)/1000));
+	}
 	
 	public JedisPoolCache(JedisPool jedisPool, int exp){
 		this(jedisPool, "", exp);

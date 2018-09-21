@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.concurrent.Callable;
 
@@ -65,7 +64,7 @@ public class HttpConsumer implements Consumer{
 class HttpConsumerInvoker implements Invoker{
 	private Method method;
 	private String host;
-	private Type returnType;
+	private Class<?> returnType;
 	private Charset charset;
 	private String signStr;
 	private Serializer serializer;
@@ -73,7 +72,7 @@ class HttpConsumerInvoker implements Invoker{
 	public HttpConsumerInvoker(String host,Method method, String signStr, Serializer serializer, Charset charset){
 		this.method = method;
 		this.host = host;
-		this.returnType = method.getGenericReturnType();
+		this.returnType = method.getReturnType();
 		this.charset = charset;
 		this.serializer = serializer;
 		this.signStr = signStr;

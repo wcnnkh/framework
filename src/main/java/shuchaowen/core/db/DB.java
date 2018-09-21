@@ -145,7 +145,7 @@ public abstract class DB implements ConnectionOrigin {
 		return tableInfo == null? null:getCache(bean.getClass(), tableInfo);
 	}
 	
-	public <T> T getByIdByTableName(Class<T> type, String tableName, Object ...params){
+	public <T> T getByIdWithTableName(Class<T> type, String tableName, Object ...params){
 		if (type == null) {
 			throw new NullPointerException("type is null");
 		}
@@ -185,7 +185,7 @@ public abstract class DB implements ConnectionOrigin {
 	}
 	
 	public <T> T getById(Class<T> type, Object... params) {
-		return getByIdByTableName(type, null, params);
+		return getByIdWithTableName(type, null, params);
 	}
 
 	public <T> List<T> getByIdList(Class<T> type, String tableName, Object... params) {

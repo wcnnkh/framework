@@ -577,6 +577,19 @@ public final class ClassUtils {
 		return getCGLIBRealClassName(clz.getName());
 	}
 	
+	/**
+	 * 获取一个类的真实类，比如被CGLIB代理的类
+	 * @param type
+	 * @return
+	 */
+	public static Class<?> getRealClassType(Class<?> type){
+		if(type.getSuperclass() == Object.class){
+			return type;
+		}else{
+			return type.getSuperclass();
+		}
+	}
+	
 	public static String getCGLIBRealClassName(String cglibName){
 		int index = cglibName.indexOf(CGLIB_CLASS_SPLIT);
 		if(index == -1){
