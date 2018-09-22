@@ -133,12 +133,12 @@ public abstract class DB implements ConnectionOrigin {
 	}
 	
 	public <T> List<T> select(Class<T> type, SQL sql){
-		return select(sql).list(type);
+		return select(sql).getList(type);
 	}
 	
 	@Deprecated
 	public <T> T selectOne(Class<T> type, SQL sql){
-		return select(sql).first(type);
+		return select(sql).getFirst(type);
 	}
 	
 	private Cache getCache(Class<?> tableClass, TableInfo tableInfo){
@@ -184,7 +184,7 @@ public abstract class DB implements ConnectionOrigin {
 			SQL sql = getSqlFormat().toSelectByIdSql(tableInfo, tName, params);
 			ResultSet resultSet = select(sql);
 			resultSet.registerClassTable(type, tName);
-			t = resultSet.first(type);
+			t = resultSet.getFirst(type);
 		}
 		
 		if(t != null && cache != null){
@@ -215,7 +215,7 @@ public abstract class DB implements ConnectionOrigin {
 		String tName = (tableName == null || tableName.length() == 0)? tableInfo.getName():tableName;
 		ResultSet resultSet = select(getSqlFormat().toSelectByIdSql(tableInfo, tName, params));
 		resultSet.registerClassTable(type, tName);
-		return resultSet.list(type);
+		return resultSet.getList(type);
 	}
 	
 	public <T> List<T> getByIdList(Class<T> type, Object... params) {
@@ -230,7 +230,7 @@ public abstract class DB implements ConnectionOrigin {
 				columnName);
 		ResultSet resultSet = select(sql);
 		resultSet.registerClassTable(type, tName);
-		return resultSet.first(type);
+		return resultSet.getFirst(type);
 	}
 	
 	public <T> T getMaxValue(Class<T> type, Class<?> tableClass,

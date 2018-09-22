@@ -18,12 +18,24 @@ public class ResultSet implements Serializable{
 		render(resultSet);
 	}
 	
-	public <T> T first(Class<T> type){
+	public <T> T getFirst(Class<T> type){
 		return get(type, 0);
 	}
 	
-	public Result first(){
+	public Result getFirst(){
 		return get(0);
+	}
+	
+	public <T> T getLast(Class<T> type){
+		return getLast().get(type);
+	}
+	
+	public Result getLast(){
+		if(dataList == null || dataList.size() == 0){
+			return NULL_RESULT;
+		}
+		
+		return dataList.get(dataList.size() - 1);
 	}
 	
 	public <T> T get(Class<T> type, int index){
@@ -42,7 +54,7 @@ public class ResultSet implements Serializable{
 		return dataList == null? 0:dataList.size();
 	}
 	
-	public <T> List<T> list(Class<T> type){
+	public <T> List<T> getList(Class<T> type){
 		if(dataList == null || dataList.isEmpty() || type == null){
 			return null;
 		}

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import shuchaowen.core.db.DB;
+import shuchaowen.core.db.Result;
 import shuchaowen.core.db.ResultSet;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.TableMapping;
@@ -271,27 +272,27 @@ public abstract class Select{
 
 	public abstract long count();
 	
-	public <T> T first(Class<T> type){
-		return first().first().get(type);
+	public <T> T getFirst(Class<T> type){
+		return getFirstResult().get(type);
 	}
 	
-	public ResultSet first(){
-		return list(0, 1);
+	public Result getFirstResult(){
+		return getResultSet(0, 1).getFirst();
 	}
 	
-	public abstract ResultSet list();
+	public abstract ResultSet getResultSet();
 	
-	public <T> List<T> list(Class<T> type){
-		return list().list(type);
+	public <T> List<T> getList(Class<T> type){
+		return getResultSet().getList(type);
 	}
 	
-	public abstract ResultSet list(long begin, long limit);
+	public abstract ResultSet getResultSet(long begin, long limit);
 	
-	public <T> List<T> list(Class<T> type, long begin, long limit){
-		return list(begin, limit).list(type);
+	public <T> List<T> getList(Class<T> type, long begin, long limit){
+		return getResultSet(begin, limit).getList(type);
 	}
 	
-	public Pagination<ResultSet> pagination(long page, long limit){
+	public Pagination<ResultSet> getResultSetPagination(long page, long limit){
 		Pagination<ResultSet> pagination = new Pagination<ResultSet>();
 		pagination.setLimit(limit);
 		if(page <= 0 || limit <= 0){
@@ -304,11 +305,11 @@ public abstract class Select{
 		}
 		
 		pagination.setTotalCount(count);
-		pagination.setData(list((page - 1) * limit, limit));
+		pagination.setData(getResultSet((page - 1) * limit, limit));
 		return pagination;
 	}
 	
-	public <T> Pagination<List<T>> pagination(Class<T> type, long page, long limit){
+	public <T> Pagination<List<T>> getPagination(Class<T> type, long page, long limit){
 		Pagination<List<T>> pagination = new Pagination<List<T>>();
 		pagination.setLimit(limit);
 		if(page <= 0 || limit <= 0){
@@ -321,7 +322,7 @@ public abstract class Select{
 		}
 		
 		pagination.setTotalCount(count);
-		pagination.setData(list((page - 1) * limit, limit).list(type));
+		pagination.setData(getList(type, (page - 1) * limit, limit));
 		return pagination;
 	}
 }

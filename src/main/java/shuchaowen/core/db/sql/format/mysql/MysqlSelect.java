@@ -204,19 +204,19 @@ public class MysqlSelect extends Select{
 	public long count() {
 		SQL sql = toSQL("count(*)", false);
 		ResultSet resultSet = db.select(sql);
-		Long count = resultSet.first(Long.class);
+		Long count = resultSet.getFirst(Long.class);
 		return count == null? 0:count;
 	}
 
 	@Override
-	public ResultSet list() {
+	public ResultSet getResultSet() {
 		ResultSet resultSet = db.select(toSQL("*", true));
 		resultSet.setTableMapping(getTableMapping());
 		return resultSet;
 	}
 
 	@Override
-	public ResultSet list(long begin, long limit) {
+	public ResultSet getResultSet(long begin, long limit) {
 		SQL sql = toSQL("*", true);
 		Object[] args;
 		if(sql.getParams() == null){
