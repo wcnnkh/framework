@@ -106,8 +106,9 @@ public final class TransactionContext {
 	}
 
 	/**
+	 * 开始的事务必须要提交
+	 * begin与commit是一一对应的,开始了多少次就要提交多少次
 	 * 当事务的索引为1说明这是最后一个事务了，此时会提交事务
-	 * 
 	 * @throws Throwable
 	 *             如果出现异常说明事务执行失败
 	 */
@@ -117,17 +118,6 @@ public final class TransactionContext {
 			throw new NullPointerException("Please start the transaction first");
 		}
 		sqlTransaction.commitTransaction();
-	}
-
-	/**
-	 * 开始了多少次事务必须要结束多少次事务
-	 */
-	public void end() {
-		ThreadLocalDBTransaction sqlTransaction = threadLocalTransaction.get();
-		if (sqlTransaction == null) {
-			throw new NullPointerException("Please start the transaction first");
-		}
-		sqlTransaction.endTransaction();
 	}
 
 	/**
@@ -176,7 +166,11 @@ public final class TransactionContext {
 			for (SQL sql : sqls) {
 				sqlTransaction.addSql(sql);
 			}
-			sqlTransaction.execute();
+			try {
+				sqlTransaction.execute();
+			} catch (Exception e) {
+				throw new ShuChaoWenRuntimeException(e);
+			}
 		} else {
 			localDBTransaction.addSql(connectionOrigin, sqls);
 		}
@@ -273,7 +267,7 @@ class ThreadLocalDBTransaction extends Transaction {
 		transactionCount++;
 	}
 
-	void commitTransaction(){
+	void commitTransaction() throws Exception{
 		if (isAutoCommit) {
 			throw new ShuChaoWenRuntimeException("transaction status error autoCommit[" + isAutoCommit + "]");
 		}
@@ -282,24 +276,17 @@ class ThreadLocalDBTransaction extends Transaction {
 			throw new IndexOutOfBoundsException("transactionCount=" + transactionCount);
 		}
 
-		if (transactionCount == 1) {// 应该要提交了
-			execute();
-		}
-	}
-
-	void endTransaction() {
-		if (isAutoCommit) {
-			throw new ShuChaoWenRuntimeException("transaction status error autoCommit[" + isAutoCommit + "]");
-		}
-
-		if (transactionCount <= 0) {
-			throw new IndexOutOfBoundsException("transactionCount=" + transactionCount);
-		}
-
-		transactionCount--;
-		if (transactionCount <= 0) {
-			isAutoCommit = true;
-			reset();
+		transactionCount --;
+		if (transactionCount == 0) {
+			//应该要提交事务了了
+			try {
+				execute();
+			} catch (Exception e) {
+				throw e;
+			}finally{
+				isAutoCommit = true;
+				reset();
+			}
 		}
 	}
 

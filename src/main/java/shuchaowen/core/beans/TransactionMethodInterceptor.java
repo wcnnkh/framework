@@ -40,15 +40,12 @@ public class TransactionMethodInterceptor implements MethodInterceptor{
 		boolean isTransaction = isTransaction(obj.getClass(), method);
 		if (isTransaction) {
 			TransactionContext.getInstance().begin();
-			Object rtn;
 			try {
-				rtn = proxy.invokeSuper(obj, args);
-				TransactionContext.getInstance().commit();
-				return rtn;
+				return proxy.invokeSuper(obj, args);
 			} catch (Throwable e) {
 				throw e;
 			} finally {
-				TransactionContext.getInstance().end();
+				TransactionContext.getInstance().commit();
 			}
 		} else {
 			return proxy.invokeSuper(obj, args);
