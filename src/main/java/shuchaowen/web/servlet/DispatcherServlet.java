@@ -18,7 +18,6 @@ import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.web.servlet.request.FormRequest;
 import shuchaowen.web.servlet.request.JsonRequest;
-import shuchaowen.web.servlet.request.UploadRequest;
 
 public class DispatcherServlet extends HttpServlet {
 	private static final long serialVersionUID = -8268337109249457358L;
@@ -160,9 +159,9 @@ public class DispatcherServlet extends HttpServlet {
 			return new FormRequest(httpServletRequest, httpServletResponse, debug);
 		}else if(httpServletRequest.getContentType().startsWith(ContentType.JSON.getValue())){
 			return new JsonRequest(httpServletRequest, httpServletResponse, debug);
-		}else if(httpServletRequest.getContentType().startsWith(ContentType.FORM_DATA.getValue())){
+		}/*else if(httpServletRequest.getContentType().startsWith(ContentType.FORM_DATA.getValue())){
 			return new UploadRequest(httpServletRequest, httpServletResponse, debug);
-		}else{
+		}*/else{
 			return new FormRequest(httpServletRequest, httpServletResponse, debug);
 		}
 	}
