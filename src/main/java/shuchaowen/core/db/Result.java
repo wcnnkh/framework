@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import shuchaowen.core.db.proxy.BeanProxy;
 import shuchaowen.core.db.proxy.BeanProxyMethodInterceptor;
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.XTime;
 
@@ -31,15 +32,13 @@ public class Result implements Serializable {
 		this.tableMapping = tableMapping;
 	}
 
-	public Result(TableMapping tableMapping, ResultSet resultSet)
-			throws SQLException {
+	public Result(TableMapping tableMapping, ResultSet resultSet) throws SQLException {
 		this.tableMapping = tableMapping;
 		render(resultSet);
 	}
 
 	public String getTableName(Class<?> tableClass) {
-		return tableMapping == null ? DB.getTableInfo(tableClass).getName()
-				: tableMapping.getTableName(tableClass);
+		return tableMapping == null ? DB.getTableInfo(tableClass).getName() : tableMapping.getTableName(tableClass);
 	}
 
 	public void render(ResultSet resultSet) throws SQLException {
@@ -84,8 +83,7 @@ public class Result implements Serializable {
 
 		if (type.isArray()) {
 			return (T) getValues();
-		} else if (type.getName().startsWith("java")
-				|| ClassUtils.containsBasicValueType(type)) {
+		} else if (type.getName().startsWith("java") || ClassUtils.containsBasicValueType(type)) {
 			for (Entry<String, Object> entry : dataMap.entrySet()) {
 				return (T) entry.getValue();
 			}
@@ -93,7 +91,7 @@ public class Result implements Serializable {
 		} else {
 			TableInfo tableInfo = DB.getTableInfo(type);
 			String tableName = getTableName(type);
-			T t = BeanProxyMethodInterceptor.newInstance(type, tableInfo);
+			T t = newInstanceTable(type, tableInfo);
 			boolean b = wrapper(t, tableName + ".", tableInfo);
 			if (b) {
 				((BeanProxy) t).startListen();
@@ -102,7 +100,22 @@ public class Result implements Serializable {
 			return null;
 		}
 	}
-	
+
+	private <T> T newInstanceTable(Class<T> type, TableInfo tableInfo) {
+		if (tableInfo.isTable()) {
+			return BeanProxyMethodInterceptor.newInstance(type, tableInfo);
+		} else {
+			try {
+				return type.newInstance();
+			} catch (InstantiationException e) {
+				throw new ShuChaoWenRuntimeException(e);
+			} catch (IllegalAccessException e) {
+				throw new ShuChaoWenRuntimeException(e);
+			}
+
+		}
+	}
+
 	private boolean wrapper(Object root, String prefix, TableInfo tableInfo) {
 		boolean b = (tableInfo.getColumns().length == 0);
 		for (ColumnInfo columnInfo : tableInfo.getColumns()) {
@@ -112,7 +125,7 @@ public class Result implements Serializable {
 			} else {
 				name = prefix + columnInfo.getName();
 			}
-			
+
 			if (dataMap.containsKey(name)) {
 				columnInfo.setValue(root, dataMap.get(name));
 				if (!b) {
@@ -124,8 +137,7 @@ public class Result implements Serializable {
 		if (b) {
 			for (ColumnInfo columnInfo : tableInfo.getTableColumns()) {
 				TableInfo info = DB.getTableInfo(columnInfo.getType());
-				Object obj = BeanProxyMethodInterceptor.newInstance(
-						columnInfo.getType(), tableInfo);
+				Object obj = newInstanceTable(columnInfo.getType(), tableInfo);
 				String tName = getTableName(columnInfo.getType());
 				boolean b1 = wrapper(obj, tName + ".", info);
 				if (b1) {
