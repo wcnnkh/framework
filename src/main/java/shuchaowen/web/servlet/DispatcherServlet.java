@@ -159,9 +159,7 @@ public class DispatcherServlet extends HttpServlet {
 			return new FormRequest(httpServletRequest, httpServletResponse, debug);
 		}else if(httpServletRequest.getContentType().startsWith(ContentType.JSON.getValue())){
 			return new JsonRequest(httpServletRequest, httpServletResponse, debug);
-		}/*else if(httpServletRequest.getContentType().startsWith(ContentType.FORM_DATA.getValue())){
-			return new UploadRequest(httpServletRequest, httpServletResponse, debug);
-		}*/else{
+		}else{
 			return new FormRequest(httpServletRequest, httpServletResponse, debug);
 		} 
 	}

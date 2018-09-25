@@ -1,4 +1,4 @@
-package shuchaowen.web.servlet.request;
+package shuchaowen.web.servlet.parameter;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUpload;
@@ -20,16 +19,22 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
 import shuchaowen.core.util.Logger;
+import shuchaowen.web.servlet.WebParameter;
+import shuchaowen.web.servlet.WebRequest;
 
-public class UploadRequest extends FormRequest {
+public class Multipart extends WebParameter{
 	private Map<String, List<String>> paramMap = new HashMap<String, List<String>>();
 	private Map<String, List<FileItem>> fileItemMap = new HashMap<String, List<FileItem>>();
 	private List<String> keys = new ArrayList<String>();
 	private List<FileItem> fileItemList = new ArrayList<FileItem>();
-
-	public UploadRequest(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean debug)
-			throws IOException {
-		super(httpServletRequest, httpServletResponse, debug);
+	private HttpServletRequest httpServletRequest;
+	
+	public Multipart(WebRequest webRequest) throws IOException{
+		super(webRequest);
+		init(webRequest, webRequest.isDebug());
+	}
+	
+	private void init(HttpServletRequest httpServletRequest, boolean debug){
 		RequestContext requestContext;
 		DiskFileItemFactory factory;
 		ServletFileUpload upload;
@@ -38,7 +43,7 @@ public class UploadRequest extends FormRequest {
 		FileItem fileItem;
 		List<String> values;
 		try {
-			requestContext = new ServletRequestContext(this);
+			requestContext = new ServletRequestContext(httpServletRequest);
 			if (FileUpload.isMultipartContent(requestContext)) {
 				factory = new DiskFileItemFactory();
 				upload = new ServletFileUpload(factory);
@@ -100,12 +105,11 @@ public class UploadRequest extends FormRequest {
 			Logger.error("REQUEST", "获取上传文件请求内容异常！！", e);
 		}
 	}
-
-	@Override
+	
 	protected String getValue(String key) {
-		String value = super.getValue(key);
+		String value = httpServletRequest.getParameter(key);
 		if (value == null) {
-			return getTextValue(key, getCharacterEncoding());
+			return getTextValue(key, httpServletRequest.getCharacterEncoding());
 		}
 		return value;
 	}
@@ -122,28 +126,6 @@ public class UploadRequest extends FormRequest {
 			return getFileItemList();
 		}
 		return list;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getObject(Class<T> type, String key) throws Throwable{
-		if (FileItem.class.isAssignableFrom(type)) {
-			FileItem fileItem = getFileItem(key);
-			if (fileItem == null) {
-				fileItem = getFirstFileItem();
-			}
-			return (T) fileItem;
-		} else if (type.isArray() && FileItem.class.isAssignableFrom(type.getComponentType())) {
-			List<FileItem> fileItems = getMyFileItemList(key);
-			if (fileItems == null) {
-				return null;
-			}
-			return (T) fileItems.toArray(new FileItem[fileItems.size()]);
-		} else if (List.class.isAssignableFrom(type) && FileItem.class.isAssignableFrom(type.getComponentType())) {
-			return (T) getFileItemList(key);
-		} else {
-			return super.getObject(type, key);
-		}
 	}
 
 	public Map<String, List<String>> getParamMap() {
