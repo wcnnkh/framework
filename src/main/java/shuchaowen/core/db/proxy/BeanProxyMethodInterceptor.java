@@ -22,7 +22,6 @@ public class BeanProxyMethodInterceptor implements MethodInterceptor, BeanProxy{
 
 	public Object intercept(Object obj, Method method, Object[] args,
 			MethodProxy proxy) throws Throwable {
-		
 		if (args.length == 0) {
 			if (BeanProxy.START_LISTEN.equals(method.getName())) {
 				startListen();
@@ -42,7 +41,7 @@ public class BeanProxyMethodInterceptor implements MethodInterceptor, BeanProxy{
 					&& (changeColumnMap == null || !changeColumnMap
 							.containsKey(columnInfo.getName()))) {
 				Object oldValue = columnInfo.getValue(obj);
-				Object rtn = proxy.invokeSuper(obj, args);
+				Object rtn = invoker(obj, method, args, proxy);
 				if(changeColumnMap == null){
 					changeColumnMap = new HashMap<String, Object>();
 				}
@@ -50,6 +49,11 @@ public class BeanProxyMethodInterceptor implements MethodInterceptor, BeanProxy{
 				return rtn;
 			}
 		}
+		
+		return invoker(obj, method, args, proxy);
+	}
+	
+	protected Object invoker(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable{
 		return proxy.invokeSuper(obj, args);
 	}
 
@@ -76,7 +80,7 @@ public class BeanProxyMethodInterceptor implements MethodInterceptor, BeanProxy{
 		enhancer.setSuperclass(type);
 		return enhancer.createClass();
 	}
-
+	
 	public static void registerCglibProxyBean(Class<?> type){
 		Class<?> clz = getCglibProxyBean(type);
 		Logger.info("CGLIB", "register proxy class[" + clz.getName() + "]");
