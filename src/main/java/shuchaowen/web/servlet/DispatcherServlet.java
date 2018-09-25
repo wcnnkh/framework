@@ -172,11 +172,15 @@ public class DispatcherServlet extends HttpServlet {
 		WebRequest request = wrapperRequest(httpServletRequest, httpServletResponse);
 		try {
 			if(!httpServerApplication.service(request, new WebResponse(request, httpServletResponse))){
-				httpServletResponse.sendError(404, request.getServletPath());
+				if(!httpServletResponse.isCommitted()){
+					httpServletResponse.sendError(404, request.getServletPath());
+				}
 			}
 		} catch (Throwable e) {
-			httpServletResponse.sendError(500, request.getServletPath());
 			e.printStackTrace();
+			if(!httpServletResponse.isCommitted()){
+				httpServletResponse.sendError(500, request.getServletPath());
+			}
 		}
 	}
 }

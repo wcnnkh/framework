@@ -189,7 +189,7 @@ public class Page extends HashMap<String, Object> implements View{
 			try {
 				template.process(this, response.getWriter());
 			} catch (TemplateException e) {
-				throw new ShuChaoWenRuntimeException(e);
+				e.printStackTrace();
 			}
 			break;
 		default:
