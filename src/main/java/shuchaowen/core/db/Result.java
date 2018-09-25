@@ -102,9 +102,9 @@ public class Result implements Serializable {
 			return null;
 		}
 	}
-
+	
 	private boolean wrapper(Object root, String prefix, TableInfo tableInfo) {
-		boolean b = false;
+		boolean b = (tableInfo.getColumns().length == 0);
 		for (ColumnInfo columnInfo : tableInfo.getColumns()) {
 			String name;
 			if (prefix == null) {
@@ -112,7 +112,7 @@ public class Result implements Serializable {
 			} else {
 				name = prefix + columnInfo.getName();
 			}
-
+			
 			if (dataMap.containsKey(name)) {
 				columnInfo.setValue(root, dataMap.get(name));
 				if (!b) {
