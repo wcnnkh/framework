@@ -94,7 +94,9 @@ public class Result implements Serializable {
 			T t = newInstanceTable(type, tableInfo);
 			boolean b = wrapper(t, tableName + ".", tableInfo);
 			if (b) {
-				((BeanProxy) t).startListen();
+				if(tableInfo.isTable()){
+					((BeanProxy) t).startListen();
+				}
 				return t;
 			}
 			return null;
@@ -112,7 +114,6 @@ public class Result implements Serializable {
 			} catch (IllegalAccessException e) {
 				throw new ShuChaoWenRuntimeException(e);
 			}
-
 		}
 	}
 
@@ -137,12 +138,14 @@ public class Result implements Serializable {
 		if (b) {
 			for (ColumnInfo columnInfo : tableInfo.getTableColumns()) {
 				TableInfo info = DB.getTableInfo(columnInfo.getType());
-				Object obj = newInstanceTable(columnInfo.getType(), tableInfo);
+				Object obj = newInstanceTable(columnInfo.getType(), info);
 				String tName = getTableName(columnInfo.getType());
 				boolean b1 = wrapper(obj, tName + ".", info);
 				if (b1) {
 					columnInfo.setValue(root, obj);
-					((BeanProxy) obj).startListen();
+					if(info.isTable()){
+						((BeanProxy) obj).startListen();
+					}
 				}
 			}
 		}
