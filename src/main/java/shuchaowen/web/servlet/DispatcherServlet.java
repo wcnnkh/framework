@@ -163,7 +163,7 @@ public class DispatcherServlet extends HttpServlet {
 			return new UploadRequest(httpServletRequest, httpServletResponse, debug);
 		}*/else{
 			return new FormRequest(httpServletRequest, httpServletResponse, debug);
-		}
+		} 
 	}
 	
 	public void controller(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
