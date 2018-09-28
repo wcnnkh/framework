@@ -152,6 +152,12 @@ public abstract class DB implements ConnectionOrigin {
 	public void iterator(SQL sql, ResultIterator iterator){
 		DBUtils.iterator(this, sql, iterator);
 	}
+
+	public void iterator(Class<?> tableClass, ResultIterator iterator){
+		Select select = createSelect();
+		select.from(tableClass);
+		select.iterator(iterator);
+	}
 	
 	private Cache getCache(Object bean){
 		TableInfo tableInfo = getTableInfo(bean.getClass());
