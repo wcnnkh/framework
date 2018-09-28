@@ -60,8 +60,10 @@ public final class TableInfo {
 		
 		this.name = sb.toString();
 		
+		boolean parent = false;
 		this.table = classInfo.getClz().getAnnotation(Table.class);
 		if(table != null){
+			parent = table.parent();
 			if(!"".equals(table.name())){
 				this.name = table.name();
 			}
@@ -79,14 +81,14 @@ public final class TableInfo {
 			}
 			
 			this.cache = getCache(table.cacheFactory(), classInfo.getClz());
+			
 		}
 		
 		List<ColumnInfo> allColumnList = new ArrayList<ColumnInfo>();
 		List<ColumnInfo> idNameList = new ArrayList<ColumnInfo>();
 		List<ColumnInfo> notIdNameList = new ArrayList<ColumnInfo>();
 		List<ColumnInfo> tableColumnList = new ArrayList<ColumnInfo>();
-		//是否遍历父类
-		boolean isSuper = table == null? false:table.parent();
+		
 		ClassInfo tempClassInfo = classInfo;
 		while(tempClassInfo != null){
 			for (String fieldName : tempClassInfo.getFieldNames()) {
@@ -130,8 +132,14 @@ public final class TableInfo {
 				}
 			}
 			
-			if(isSuper){
+			if(parent){
 				tempClassInfo = tempClassInfo.getSuperInfo();
+				if(tempClassInfo != null){
+					Table table = tempClassInfo.getClz().getAnnotation(Table.class);
+					if(table != null && !table.parent()){
+						break;
+					}
+				}
 			}else{
 				break;
 			}
