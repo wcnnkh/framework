@@ -57,8 +57,8 @@ public class CommonApplication implements Application {
 	public void init() {
 		Collection<Class<?>> classList = getClasses();
 		try {
-			initDB(classList);
 			BeanUtils.initAutowriteStatic(getBeanFactory(), classList);
+			initDB(classList);
 			BeanUtils.invokerInitStaticMethod(classList);
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
