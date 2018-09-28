@@ -104,35 +104,11 @@ public class XMemcachedCache implements Cache {
 	}
 
 	public void save(Object bean) {
-		try {
-			memcachedClient.add(prefix + CacheUtils.getObjectKey(bean), exp, bean);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
-		}
+		//ignore
 	}
 
 	public void update(Object bean) {
-		String key = prefix + CacheUtils.getObjectKey(bean);
-		try {
-			if (bean instanceof MemcachedCAS) {
-				boolean b = memcachedClient.cas(key, exp, bean, ((MemcachedCAS) bean).getCas());
-				if (!b) {
-					throw new CASException(key, ((MemcachedCAS) bean).getCas());
-				}
-			} else {
-				memcachedClient.set(key, exp, bean);
-			}
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
-		}
+		delete(bean);
 	}
 
 	public void delete(Object bean) {
@@ -148,22 +124,6 @@ public class XMemcachedCache implements Cache {
 	}
 
 	public void saveOrUpdate(Object bean) {
-		String key = prefix + CacheUtils.getObjectKey(bean);
-		try {
-			if (bean instanceof MemcachedCAS && ((MemcachedCAS) bean).getCas() != 0) {
-				boolean b = memcachedClient.cas(key, exp, bean, ((MemcachedCAS) bean).getCas());
-				if (!b) {
-					throw new CASException(key, ((MemcachedCAS) bean).getCas());
-				}
-			} else {
-				memcachedClient.set(key, exp, bean);
-			}
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
-		}
+		delete(bean);
 	}
 }

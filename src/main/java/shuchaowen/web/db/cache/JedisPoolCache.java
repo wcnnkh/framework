@@ -2,8 +2,6 @@ package shuchaowen.web.db.cache;
 
 import java.io.UnsupportedEncodingException;
 
-import com.dyuproject.protostuff.LinkedBuffer;
-import com.dyuproject.protostuff.ProtobufIOUtil;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
@@ -70,32 +68,12 @@ public class JedisPoolCache implements Cache{
 		return t;
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void save(Object bean) {
-		byte[] key;
-		try {
-			key = (prefix + CacheUtils.getObjectKey(bean)).getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new ShuChaoWenRuntimeException(e);
-		}
-		
-		Schema schema = RuntimeSchema.getSchema(bean.getClass());
-		byte[] data = ProtobufIOUtil.toByteArray(bean, schema, LinkedBuffer.allocate(512));
-		if(data == null){
-			return ;
-		}
-		
-		Jedis jedis = jedisPool.getResource();
-		if(exp > 0){
-			jedis.setex(key, exp, data);
-		}else{
-			jedis.set(key, data);
-		}
-		jedis.close();
+		//ignore
 	}
 
 	public void update(Object bean) {
-		save(bean);
+		delete(bean);
 	}
 
 	public void delete(Object bean) {
@@ -112,6 +90,6 @@ public class JedisPoolCache implements Cache{
 	}
 
 	public void saveOrUpdate(Object bean) {
-		update(bean);
+		delete(bean);
 	}
 }
