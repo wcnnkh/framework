@@ -6,6 +6,7 @@ import java.util.Map;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.sql.SQL;
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 public class DecrSQL implements SQL{
 	private static Map<String, String> sqlCache = new HashMap<String, String>();
@@ -28,7 +29,12 @@ public class DecrSQL implements SQL{
 				}
 			}
 		}
-		this.params = getParams(tableInfo, obj, limit, minValue);
+		
+		try {
+			this.params = getParams(tableInfo, obj, limit, minValue);
+		} catch (Exception e) {
+			throw new ShuChaoWenRuntimeException(e);
+		}
 	}
 	
 	public String getSql() {
@@ -84,7 +90,7 @@ public class DecrSQL implements SQL{
 		return sb.toString();
 	}
 
-	private static Object[] getParams(TableInfo tableInfo, Object obj, double limit, Double minValue) {
+	private static Object[] getParams(TableInfo tableInfo, Object obj, double limit, Double minValue) throws IllegalArgumentException, IllegalAccessException {
 		Object[] params = new Object[tableInfo.getPrimaryKeyColumns().length + (minValue==null? 1:3)];
 		int index = 0;
 		
@@ -97,7 +103,7 @@ public class DecrSQL implements SQL{
 		}
 		
 		for (ColumnInfo columnInfo : tableInfo.getPrimaryKeyColumns()) {
-			params[index++] = columnInfo.getValue(obj);
+			params[index++] = columnInfo.getValueToDB(obj);
 		}
 		return params;
 	}

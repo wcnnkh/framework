@@ -6,6 +6,7 @@ import java.util.Map;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.sql.SQL;
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 /**
  * 自增
@@ -33,7 +34,11 @@ public class IncrSQL implements SQL{
 				}
 			}
 		}
-		this.params = getParams(tableInfo, obj, limit, maxValue);
+		try {
+			this.params = getParams(tableInfo, obj, limit, maxValue);
+		} catch (Exception e) {
+			throw new ShuChaoWenRuntimeException(e);
+		}
 	}
 	
 	public String getSql() {
@@ -89,7 +94,7 @@ public class IncrSQL implements SQL{
 		return sb.toString();
 	}
 
-	private static Object[] getParams(TableInfo tableInfo, Object obj, double limit, Double maxValue) {
+	private static Object[] getParams(TableInfo tableInfo, Object obj, double limit, Double maxValue) throws IllegalArgumentException, IllegalAccessException {
 		Object[] params = new Object[tableInfo.getPrimaryKeyColumns().length + (maxValue==null? 1:3)];
 		int index = 0;
 		
@@ -102,7 +107,7 @@ public class IncrSQL implements SQL{
 		}
 		
 		for (ColumnInfo columnInfo : tableInfo.getPrimaryKeyColumns()) {
-			params[index++] = columnInfo.getValue(obj);
+			params[index++] = columnInfo.getValueToDB(obj);
 		}
 		return params;
 	}

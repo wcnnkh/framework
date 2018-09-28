@@ -40,7 +40,7 @@ public class BeanProxyMethodInterceptor implements MethodInterceptor, BeanProxy{
 			if (columnInfo != null
 					&& (changeColumnMap == null || !changeColumnMap
 							.containsKey(columnInfo.getName()))) {
-				Object oldValue = columnInfo.getValue(obj);
+				Object oldValue = columnInfo.getFieldInfo().forceGet(obj);
 				Object rtn = invoker(obj, method, args, proxy);
 				if(changeColumnMap == null){
 					changeColumnMap = new HashMap<String, Object>();

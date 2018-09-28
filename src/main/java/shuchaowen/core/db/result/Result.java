@@ -96,7 +96,13 @@ public class Result implements Serializable {
 			TableInfo tableInfo = DB.getTableInfo(type);
 			String tableName = getTableName(type);
 			T t = newInstanceTable(type, tableInfo);
-			boolean b = wrapper(t, tableName + ".", tableInfo);
+			boolean b;
+			try {
+				b = wrapper(t, tableName + ".", tableInfo);
+			} catch (Exception e) {
+				throw new ShuChaoWenRuntimeException(e);
+			}
+			
 			if (b) {
 				if(tableInfo.isTable()){
 					((BeanProxy) t).startListen();
@@ -121,7 +127,7 @@ public class Result implements Serializable {
 		}
 	}
 
-	private boolean wrapper(Object root, String prefix, TableInfo tableInfo) {
+	private boolean wrapper(Object root, String prefix, TableInfo tableInfo) throws IllegalArgumentException, IllegalAccessException {
 		boolean b = (tableInfo.getColumns().length == 0);
 		for (ColumnInfo columnInfo : tableInfo.getColumns()) {
 			String name;
@@ -132,7 +138,7 @@ public class Result implements Serializable {
 			}
 
 			if (dataMap.containsKey(name)) {
-				columnInfo.setValue(root, dataMap.get(name));
+				columnInfo.setValueToField(root, dataMap.get(name));
 				if (!b) {
 					b = true;
 				}
@@ -146,7 +152,7 @@ public class Result implements Serializable {
 				String tName = getTableName(columnInfo.getType());
 				boolean b1 = wrapper(obj, tName + ".", info);
 				if (b1) {
-					columnInfo.setValue(root, obj);
+					columnInfo.setValueToField(root, obj);
 					if(info.isTable()){
 						((BeanProxy) obj).startListen();
 					}

@@ -2,7 +2,6 @@ package shuchaowen.core.db;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -12,18 +11,13 @@ import java.sql.Date;
 import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
 
 import shuchaowen.core.db.annoation.Column;
 import shuchaowen.core.db.annoation.PrimaryKey;
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.FieldInfo;
 
 public final class ColumnInfo {
-	private static final Map<String, ColumnFormat> COLUMN_FORMAT_MAP = new HashMap<String, ColumnFormat>();
-	
 	private String name;//数据库字段名
 	private PrimaryKey primaryKey;//索引
 	private String typeName;
@@ -36,7 +30,6 @@ public final class ColumnInfo {
 	private String sqlTableAndColumn;
 	//就是在name的两边加入了(``)
 	private String sqlColumnName;
-	private ColumnFormat columnFormat = getColumnFormat(DefaultColumnFormat.class);
 	
 	public ColumnInfo(String defaultTableName, FieldInfo field){
 		this.fieldInfo = field;
@@ -74,27 +67,44 @@ public final class ColumnInfo {
 			this.length = column.length();
 			
 			this.nullAble = column.nullAble();
-			this.columnFormat = getColumnFormat(column.format());
 		}
 		
 		this.sqlColumnName = "`" + name + "`";
 		this.sqlTableAndColumn = "`" + defaultTableName + "`." + sqlColumnName;
 	}
 	
-	public Object getValue(Object obj){
-		try {
-			return columnFormat.get(obj, this);
-		} catch (Throwable e) {
-			throw new ShuChaoWenRuntimeException(e);
+	public Object fieldValueToDBValue(Object value){
+		if (boolean.class == type) {
+			boolean b = value == null ? false : (Boolean) value;
+			return b ? 1 : 0;
 		}
+
+		if (Boolean.class == type) {
+			if (value == null) {
+				return null;
+			}
+			return (Boolean) value ? 1 : 0;
+		}
+		return value;
 	}
 	
-	public void setValue(Object obj, Object value){
-		try {
-			columnFormat.set(obj, this, value);
-		} catch (Throwable e) {
-			throw new ShuChaoWenRuntimeException(e);
+	public Object getValueToDB(Object bean) throws IllegalArgumentException, IllegalAccessException{
+		return fieldValueToDBValue(fieldInfo.forceGet(bean));
+	}
+	
+	public Object dbValueToFieldValue(Object value){
+		if (boolean.class == type || Boolean.class == type) {
+			if(value != null){
+				if(value instanceof Number){
+					return ((Number)value).doubleValue() == 1;
+				}
+			}
 		}
+		return value;
+	}
+	
+	public void setValueToField(Object bean, Object dbValue) throws IllegalArgumentException, IllegalAccessException{
+		fieldInfo.forceSet(bean, dbValueToFieldValue(dbValue));
 	}
 
 	public String getName() {
@@ -129,10 +139,6 @@ public final class ColumnInfo {
 		return sqlTableAndColumn;
 	}
 
-	public ColumnFormat getColumnFormat() {
-		return columnFormat;
-	}
-
 	/**
 	 * 就是在字段名的两边加上了(`)符号
 	 * @return
@@ -163,37 +169,5 @@ public final class ColumnInfo {
 
 	public FieldInfo getFieldInfo() {
 		return fieldInfo;
-	}
-	
-	private static ColumnFormat getColumnFormat(Class<? extends ColumnFormat> format){
-		ColumnFormat columnFormat = COLUMN_FORMAT_MAP.get(format.getName());
-		if(columnFormat == null){
-			synchronized (COLUMN_FORMAT_MAP) {
-				columnFormat = COLUMN_FORMAT_MAP.get(format.getName());
-				if(columnFormat == null){
-					try {
-						if(format.getName().equals(ColumnFormat.class.getName())){
-							columnFormat = new DefaultColumnFormat();
-						}else{
-							columnFormat = ClassUtils.newInstance(format);
-						}
-						COLUMN_FORMAT_MAP.put(format.getName(), columnFormat);
-					} catch (NoSuchMethodException e) {
-						e.printStackTrace();
-					} catch (SecurityException e) {
-						e.printStackTrace();
-					} catch (InstantiationException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		return columnFormat;
 	}
 }

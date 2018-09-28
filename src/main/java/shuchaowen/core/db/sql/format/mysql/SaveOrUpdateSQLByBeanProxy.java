@@ -12,7 +12,7 @@ public class SaveOrUpdateSQLByBeanProxy implements SQL{
 	private String sql;
 	private Object[] params;
 
-	public SaveOrUpdateSQLByBeanProxy(BeanProxy beanProxy, TableInfo tableInfo, String tableName) {
+	public SaveOrUpdateSQLByBeanProxy(BeanProxy beanProxy, TableInfo tableInfo, String tableName) throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -38,7 +38,7 @@ public class SaveOrUpdateSQLByBeanProxy implements SQL{
 
 			cols.append(columnInfo.getSqlColumnName());
 			values.append("?");
-			params[index++] = columnInfo.getValue(beanProxy);
+			params[index++] = columnInfo.getValueToDB(beanProxy);
 		}
 
 		sb.append("insert into `");
@@ -56,7 +56,7 @@ public class SaveOrUpdateSQLByBeanProxy implements SQL{
 			}
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
-			params[index++] = columnInfo.getValue(beanProxy);
+			params[index++] = columnInfo.getValueToDB(beanProxy);
 		}
 
 		for (Entry<String, Object> entry : beanProxy.getChange_ColumnMap().entrySet()) {
@@ -64,7 +64,7 @@ public class SaveOrUpdateSQLByBeanProxy implements SQL{
 			sb.append(",");
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
-			params[index++] = columnInfo.getValue(beanProxy);
+			params[index++] = columnInfo.getValueToDB(beanProxy);
 		}
 		beanProxy.startListen();// 重新开始监听
 		this.sql = sb.toString();

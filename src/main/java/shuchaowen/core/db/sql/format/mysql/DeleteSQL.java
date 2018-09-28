@@ -6,6 +6,7 @@ import java.util.Map;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.sql.SQL;
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 public class DeleteSQL implements SQL{
 	private static Map<String, String> sqlCache = new HashMap<String, String>();
@@ -28,7 +29,11 @@ public class DeleteSQL implements SQL{
 				}
 			}
 		}
-		this.params = getParams(tableInfo, obj);
+		try {
+			this.params = getParams(tableInfo, obj);
+		} catch (Exception e){
+			throw new ShuChaoWenRuntimeException(e);
+		}
 	}
 	
 	public String getSql() {
@@ -58,11 +63,11 @@ public class DeleteSQL implements SQL{
 		return sql.toString();
 	}
 	
-	private static Object[] getParams(TableInfo tableInfo, Object obj) {
+	private static Object[] getParams(TableInfo tableInfo, Object obj) throws IllegalArgumentException, IllegalAccessException {
 		Object[] params = new Object[tableInfo.getPrimaryKeyColumns().length];
 		int i;
 		for (i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
-			params[i] = tableInfo.getPrimaryKeyColumns()[i].getValue(obj);;
+			params[i] = tableInfo.getPrimaryKeyColumns()[i].getValueToDB(obj);;
 		}
 		return params;
 	}

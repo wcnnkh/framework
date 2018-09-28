@@ -12,7 +12,7 @@ public class UpdateSQLByBeanProxy implements SQL {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanProxy(BeanProxy beanProxy, TableInfo tableInfo, String tableName) {
+	public UpdateSQLByBeanProxy(BeanProxy beanProxy, TableInfo tableInfo, String tableName) throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -39,7 +39,7 @@ public class UpdateSQLByBeanProxy implements SQL {
 			columnInfo = tableInfo.getColumnInfo(entry.getKey());
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
-			params[index++] = columnInfo.getValue(beanProxy);
+			params[index++] = columnInfo.getValueToDB(beanProxy);
 		}
 		beanProxy.startListen();// 重新开始监听
 
@@ -51,7 +51,7 @@ public class UpdateSQLByBeanProxy implements SQL {
 			}
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
-			params[index++] = columnInfo.getValue(beanProxy);
+			params[index++] = columnInfo.getValueToDB(beanProxy);
 		}
 		this.sql = sb.toString();
 	}

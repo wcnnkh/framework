@@ -6,6 +6,7 @@ import java.util.Map;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.sql.SQL;
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 public class InsertSQL implements SQL{
 	private static Map<String, String> sqlCache = new HashMap<String, String>();
@@ -27,7 +28,11 @@ public class InsertSQL implements SQL{
 				}
 			}
 		}
-		this.params = getParams(tableInfo, obj);
+		try {
+			this.params = getParams(tableInfo, obj);
+		} catch (Exception e) {
+			throw new ShuChaoWenRuntimeException(e);
+		}
 	}
 	
 	public String getSql() {
@@ -64,11 +69,11 @@ public class InsertSQL implements SQL{
 		return sql.toString();
 	}
 	
-	private static Object[] getParams(TableInfo tableInfo, Object obj) {
+	private static Object[] getParams(TableInfo tableInfo, Object obj) throws IllegalArgumentException, IllegalAccessException {
 		Object[] params = new Object[tableInfo.getColumns().length];
 		int i=0;
 		for (; i < tableInfo.getColumns().length; i++) {
-			params[i] = tableInfo.getColumns()[i].getValue(obj);
+			params[i] = tableInfo.getColumns()[i].getValueToDB(obj);
 		}
 		return params;
 	}

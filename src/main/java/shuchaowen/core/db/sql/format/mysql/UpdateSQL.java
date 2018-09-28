@@ -8,7 +8,7 @@ public class UpdateSQL implements SQL {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQL(Object obj, TableInfo tableInfo, String tableName) {
+	public UpdateSQL(Object obj, TableInfo tableInfo, String tableName) throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -31,7 +31,7 @@ public class UpdateSQL implements SQL {
 
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
-			params[index++] = columnInfo.getValue(obj);
+			params[index++] = columnInfo.getValueToDB(obj);
 		}
 
 		sb.append(" where ");
@@ -42,7 +42,7 @@ public class UpdateSQL implements SQL {
 			}
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
-			params[index++] = columnInfo.getValue(obj);
+			params[index++] = columnInfo.getValueToDB(obj);
 		}
 		this.sql = sb.toString();
 	}

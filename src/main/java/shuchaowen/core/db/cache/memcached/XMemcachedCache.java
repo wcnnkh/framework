@@ -1,4 +1,4 @@
-package shuchaowen.web.db.cache;
+package shuchaowen.core.db.cache.memcached;
 
 import java.util.concurrent.TimeoutException;
 
@@ -80,11 +80,7 @@ public class XMemcachedCache implements Cache {
 	public void delete(Object bean) {
 		try {
 			memcachedClient.delete(prefix + CacheUtils.getObjectKey(bean));
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

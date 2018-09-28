@@ -8,7 +8,7 @@ public class SaveOrUpdateSQL implements SQL {
 	private String sql;
 	private Object[] params;
 
-	public SaveOrUpdateSQL(Object obj, TableInfo tableInfo, String tableName) {
+	public SaveOrUpdateSQL(Object obj, TableInfo tableInfo, String tableName) throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -30,7 +30,7 @@ public class SaveOrUpdateSQL implements SQL {
 
 			cols.append(columnInfo.getSqlColumnName());
 			values.append("?");
-			params[index++] = columnInfo.getValue(obj);
+			params[index++] = columnInfo.getValueToDB(obj);
 		}
 
 		sb.append("insert into `");
@@ -48,7 +48,7 @@ public class SaveOrUpdateSQL implements SQL {
 			}
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
-			params[index++] = columnInfo.getValue(obj);
+			params[index++] = columnInfo.getValueToDB(obj);
 		}
 		this.sql = sb.toString();
 	}

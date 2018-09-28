@@ -201,8 +201,8 @@ public abstract class Select{
 			}
 			
 			for(int i=0; i<table2Columns.length; i++){
-				String n1 = t1.getColumnInfo(table2Columns[i]).getSQLName(tName1);
-				String n2 = t2.getPrimaryKeyColumns()[i].getSQLName(tName2);
+				String n1 = t2.getColumnInfo(table2Columns[i]).getSQLName(tName2);
+				String n2 = t1.getPrimaryKeyColumns()[i].getSQLName(tName1);
 				if(checkWhere(associationWhereMap, n1, n2)){
 					continue;
 				}

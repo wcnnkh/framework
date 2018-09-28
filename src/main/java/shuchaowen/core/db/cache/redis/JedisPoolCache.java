@@ -1,4 +1,4 @@
-package shuchaowen.web.db.cache;
+package shuchaowen.core.db.cache.redis;
 
 import java.io.UnsupportedEncodingException;
 
@@ -80,7 +80,7 @@ public class JedisPoolCache implements Cache{
 		byte[] key;
 		try {
 			key = (prefix + CacheUtils.getObjectKey(bean)).getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
+		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}
 		
