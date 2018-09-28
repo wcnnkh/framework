@@ -10,8 +10,8 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import shuchaowen.core.db.ConnectionOrigin;
-import shuchaowen.core.db.ResultSet;
 import shuchaowen.core.db.TransactionContext;
+import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.web.support.jxl.export.service.impl.SqlExportRowImpl;
 

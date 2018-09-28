@@ -10,6 +10,7 @@ import java.util.Map;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.db.cache.Cache;
 import shuchaowen.core.db.cache.CacheFactory;
+import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.sql.format.SQLFormat;
 import shuchaowen.core.db.sql.format.Select;
@@ -21,7 +22,7 @@ import shuchaowen.core.util.Logger;
 public abstract class DB implements ConnectionOrigin {
 	private static Map<String, TableInfo> tableMap = new HashMap<String, TableInfo>();
 	private static Map<Class<? extends CacheFactory>, CacheFactory> cacheFactoryMap = new HashMap<Class<? extends CacheFactory>, CacheFactory>();
-
+	
 	public static final TableInfo getTableInfo(Class<?> clz) {
 		return getTableInfo(clz.getName());
 	}
@@ -74,6 +75,8 @@ public abstract class DB implements ConnectionOrigin {
 
 	private volatile static DB[] dbs = new DB[0];
 	private SQLFormat sqlFormat = new MysqlFormat();
+	@Deprecated
+	private boolean debug;
 	private CacheFactory cacheFactory;
 
 	{
@@ -116,20 +119,12 @@ public abstract class DB implements ConnectionOrigin {
 		TransactionContext.getInstance().execute(this, sqls);
 	}
 	
-	public void forceExecute(Collection<SQL> sqls){
-		TransactionContext.getInstance().forceExecute(this, sqls);
+	public ResultSet select(SQL sql) {
+		return TransactionContext.getInstance().select(this, sql);
 	}
 
 	public void execute(SQL... sqls) {
 		execute(Arrays.asList(sqls));
-	}
-	
-	public void forceExecute(SQL ...sqls){
-		forceExecute(Arrays.asList(sqls));
-	}
-	
-	public ResultSet select(SQL sql) {
-		return TransactionContext.getInstance().select(this, sql);
 	}
 	
 	public <T> List<T> select(Class<T> type, SQL sql){
@@ -355,15 +350,6 @@ public abstract class DB implements ConnectionOrigin {
 		execute(getSaveSqlList(beans));
 	}
 	
-	public void forceSave(Object... beans){
-		forceSave(Arrays.asList(beans));
-	}
-	
-	public void forceSave(Collection<Object> beans){
-		saveToCache(beans);
-		forceExecute(getSaveSqlList(beans));
-	}
-	
 	private void saveToCache(Collection<Object> beans){
 		if(beans == null || beans.isEmpty()){
 			return ;
@@ -386,15 +372,6 @@ public abstract class DB implements ConnectionOrigin {
 	public void delete(Collection<Object> beans){
 		deleteToCache(beans);
 		execute(getDeleteSqlList(beans));
-	}
-	
-	public void forceDelete(Object ...beans){
-		forceDelete(Arrays.asList(beans));
-	}
-	
-	public void forceDelete(Collection<Object> beans){
-		deleteToCache(beans);
-		forceExecute(getDeleteSqlList(beans));
 	}
 	
 	private void deleteToCache(Collection<Object> beans){
@@ -422,15 +399,6 @@ public abstract class DB implements ConnectionOrigin {
 		execute(getUpdateSqlList(beans));
 	}
 	
-	public void forceUpdate(Object ...beans){
-		forceUpdate(Arrays.asList(beans));
-	}
-	
-	public void forceUpdate(Collection<Object> beans){
-		updateToCache(beans);
-		forceExecute(getUpdateSqlList(beans));
-	}
-	
 	private void updateToCache(Collection<Object> beans){
 		if(beans == null || beans.isEmpty()){
 			return ;
@@ -454,15 +422,6 @@ public abstract class DB implements ConnectionOrigin {
 	public void saveOrUpdate(Collection<Object> beans){
 		saveOrUpdateToCache(beans);
 		execute(getSaveOrUpdateSqlList(beans));
-	}
-	
-	public void forceSaveOrUpdate(Object ...beans){
-		forceSaveOrUpdate(Arrays.asList(beans));
-	}
-	
-	public void forceSaveOrUpdate(Collection<Object> beans){
-		saveOrUpdateToCache(beans);
-		forceExecute(getSaveOrUpdateSqlList(beans));
 	}
 	
 	private void saveOrUpdateToCache(Collection<Object> beans){
@@ -494,19 +453,6 @@ public abstract class DB implements ConnectionOrigin {
 		execute(sql);
 	}
 	
-	public void forceIncr(Object obj, String field){
-		forceIncr(obj, field, 1, null);
-	}
-	
-	public void forceIncr(Object obj, String field, double limit){
-		forceIncr(obj, field, limit, null);
-	}
-	
-	public void forceIncr(Object obj, String field, double limit, Double maxValue){
-		SQL sql = sqlFormat.toIncrSql(obj, field, limit, maxValue);
-		TransactionContext.getInstance().forceExecute(this, Arrays.asList(sql));
-	}
-	
 	/**自减**/
 	public void decr(Object obj, String field){
 		decr(obj, field, 1, null);
@@ -520,17 +466,12 @@ public abstract class DB implements ConnectionOrigin {
 		SQL sql = sqlFormat.toDecrSql(obj, field, limit, minValue);
 		execute(sql);
 	}
-	
-	public void forceDecr(Object obj, String field){
-		forceDecr(obj, field, 1, null);
+
+	public boolean isDebug() {
+		return debug;
 	}
-	
-	public void forceDecr(Object obj, String field, double limit){
-		forceDecr(obj, field, limit, null);
-	}
-	
-	public void forceDecr(Object obj, String field, double limit, Double minValue){
-		SQL sql = sqlFormat.toDecrSql(obj, field, limit, minValue);
-		execute(sql);
+
+	protected void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 }

@@ -22,24 +22,12 @@ public abstract class BaseBean implements Cloneable,Serializable {
 		DBManager.getDB(this.getClass()).update(this);
 	}
 	
-	public final void forceUpdate(){
-		DBManager.getDB(this.getClass()).forceUpdate(this);
-	}
-	
 	public final void delete(){
 		DBManager.getDB(this.getClass()).delete(this);
 	}
 	
-	public final void forceDelete(){
-		DBManager.getDB(this.getClass()).forceDelete(this);
-	}
-	
 	public final void saveOrUpdate(){
 		DBManager.getDB(this.getClass()).saveOrUpdate(this);
-	}
-	
-	public final void forceSaveOrUpdate(){
-		DBManager.getDB(this.getClass()).forceSaveOrUpdate(this);
 	}
 	
 	public final void incr(String field, double limit){

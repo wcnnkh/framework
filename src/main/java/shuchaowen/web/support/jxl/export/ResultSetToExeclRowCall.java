@@ -3,7 +3,7 @@ package shuchaowen.web.support.jxl.export;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import shuchaowen.core.db.ResultSet;
+import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.web.support.jxl.export.service.impl.SqlExportRowImpl;
 
 public class ResultSetToExeclRowCall{

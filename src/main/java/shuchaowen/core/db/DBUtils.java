@@ -90,7 +90,7 @@ public final class DBUtils {
 		}
 	}
 	
-	public static shuchaowen.core.db.ResultSet select(ConnectionOrigin connectionOrigin, SQL sql){
+	public static shuchaowen.core.db.result.ResultSet select(ConnectionOrigin connectionOrigin, SQL sql){
 		Connection connection = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -99,7 +99,7 @@ public final class DBUtils {
 			stmt = connection.prepareStatement(sql.getSql());
 			setParams(stmt, sql.getParams());
 			rs = stmt.executeQuery();
-			return new shuchaowen.core.db.ResultSet(rs);
+			return new shuchaowen.core.db.result.ResultSet(rs);
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(sql.getSql(), e);
 		} finally {

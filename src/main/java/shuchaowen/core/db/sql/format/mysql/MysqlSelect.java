@@ -7,8 +7,8 @@ import java.util.List;
 
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.DB;
-import shuchaowen.core.db.ResultSet;
 import shuchaowen.core.db.TableInfo;
+import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.sql.SimpleSQL;
 import shuchaowen.core.db.sql.format.Select;

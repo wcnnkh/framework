@@ -1,6 +1,6 @@
 package shuchaowen.web.support.jxl.export.service;
 
-import shuchaowen.core.db.Result;
+import shuchaowen.core.db.result.Result;
 import shuchaowen.web.support.jxl.export.service.impl.SqlExportRowImpl;
 
 public class SimpleExportRow implements SqlExportRowImpl{

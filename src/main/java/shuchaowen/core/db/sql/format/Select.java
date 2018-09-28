@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import shuchaowen.core.db.DB;
-import shuchaowen.core.db.Result;
-import shuchaowen.core.db.ResultSet;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.TableMapping;
+import shuchaowen.core.db.result.Result;
+import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.Pagination;

@@ -1,10 +1,12 @@
-package shuchaowen.core.db;
+package shuchaowen.core.db.result;
 
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import shuchaowen.core.db.TableMapping;
 
 public class ResultSet implements Serializable{
 	private static final long serialVersionUID = -3199839587290797839L;

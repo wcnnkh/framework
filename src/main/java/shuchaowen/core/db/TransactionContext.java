@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.transaction.SQLTransaction;
 import shuchaowen.core.db.transaction.Transaction;

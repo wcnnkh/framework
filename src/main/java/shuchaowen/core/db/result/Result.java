@@ -1,4 +1,4 @@
-package shuchaowen.core.db;
+package shuchaowen.core.db.result;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
@@ -8,6 +8,10 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import shuchaowen.core.db.ColumnInfo;
+import shuchaowen.core.db.DB;
+import shuchaowen.core.db.TableInfo;
+import shuchaowen.core.db.TableMapping;
 import shuchaowen.core.db.proxy.BeanProxy;
 import shuchaowen.core.db.proxy.BeanProxyMethodInterceptor;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
@@ -24,17 +28,17 @@ public class Result implements Serializable {
 	public Result() {
 	};
 
+	public Result(TableMapping tableMapping, ResultSet resultSet) throws SQLException {
+		this.tableMapping = tableMapping;
+		render(resultSet);
+	}
+
 	public TableMapping getTableMapping() {
 		return tableMapping;
 	}
 
 	public void setTableMapping(TableMapping tableMapping) {
 		this.tableMapping = tableMapping;
-	}
-
-	public Result(TableMapping tableMapping, ResultSet resultSet) throws SQLException {
-		this.tableMapping = tableMapping;
-		render(resultSet);
 	}
 
 	public String getTableName(Class<?> tableClass) {

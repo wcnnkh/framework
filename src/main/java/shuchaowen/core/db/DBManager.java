@@ -177,12 +177,6 @@ public final class DBManager {
 			entry.getKey().save(entry.getValue());
 		}
 	}
-	
-	public static void forceSave(Object ...beans){
-		for(Entry<DB, List<Object>> entry : getMap(beans).entrySet()){
-			entry.getKey().forceSave(entry.getValue());
-		}
-	}
 
 	/**
 	 * 删除数据
@@ -194,33 +188,15 @@ public final class DBManager {
 		}
 	}
 	
-	public static void forceDelete(Object ...beans){
-		for(Entry<DB, List<Object>> entry : getMap(beans).entrySet()){
-			entry.getKey().forceDelete(entry.getValue());
-		}
-	}
-	
 	public static void update(Object ...beans){
 		for(Entry<DB, List<Object>> entry : getMap(beans).entrySet()){
 			entry.getKey().update(entry.getValue());
 		}
 	}
 	
-	public static void forceUpdate(Object ...beans){
-		for(Entry<DB, List<Object>> entry : getMap(beans).entrySet()){
-			entry.getKey().forceUpdate(entry.getValue());
-		}
-	}
-	
 	public static void saveOrUpdate(Object ...beans){
 		for(Entry<DB, List<Object>> entry : getMap(beans).entrySet()){
 			entry.getKey().saveOrUpdate(entry.getValue());
-		}
-	}
-	
-	public static void forceSaveOrUpdate(Object ...beans){
-		for(Entry<DB, List<Object>> entry : getMap(beans).entrySet()){
-			entry.getKey().forceSaveOrUpdate(entry.getValue());
 		}
 	}
 }
