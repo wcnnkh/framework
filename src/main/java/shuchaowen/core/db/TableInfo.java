@@ -8,15 +8,17 @@ import java.util.Map;
 
 import shuchaowen.core.db.annoation.NotColumn;
 import shuchaowen.core.db.annoation.Table;
-import shuchaowen.core.db.cache.Cache;
-import shuchaowen.core.db.cache.CacheFactory;
 import shuchaowen.core.db.proxy.BeanProxy;
+import shuchaowen.core.db.storage.Storage;
+import shuchaowen.core.db.storage.StorageFactory;
 import shuchaowen.core.exception.KeyAlreadyExistsException;
 import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.StringUtils;
 
 public final class TableInfo {
+	private volatile static Map<Class<? extends StorageFactory>, StorageFactory> storageFactoryMap = new HashMap<Class<? extends StorageFactory>, StorageFactory>();
+	
 	private String name;
 	private Table table;
 	private String engine = "InnoDB";
@@ -38,7 +40,7 @@ public final class TableInfo {
 	private ColumnInfo[] notPrimaryKeyColumns;
 	private ColumnInfo[] tableColumns;
 	private Class<?>[] proxyInterface;
-	private Cache cache;
+	private Storage storage;
 	
 	public TableInfo(ClassInfo classInfo) {
 		//动态代理实现的接口
@@ -78,8 +80,7 @@ public final class TableInfo {
 				this.row_format = table.row_format();
 			}
 			
-			this.cache = getCache(table.cacheFactory(), classInfo.getClz());
-			
+			this.storage = getStorage(table.storage(), classInfo.getClz());
 		}
 		
 		List<ColumnInfo> allColumnList = new ArrayList<ColumnInfo>();
@@ -230,18 +231,6 @@ public final class TableInfo {
 		return newArr;
 	}
 	
-	public Cache getCache() {
-		return cache;
-	}
-	
-	public static Cache getCache(Class<? extends CacheFactory> cacheFactoryClass, Class<?> tableClass){
-		CacheFactory cacheFactory = DB.getCacheFactory(cacheFactoryClass);
-		if(cacheFactory == null){
-			return null;
-		}
-		return cacheFactory.getCache(tableClass);
-	}
-	
 	public boolean isTable(){
 		return table != null;
 	}
@@ -252,5 +241,38 @@ public final class TableInfo {
 	 */
 	public ColumnInfo[] getTableColumns() {
 		return tableColumns;
+	}
+
+	public Storage getStorage() {
+		return storage;
+	}
+	
+	private static Storage getStorage(Class<? extends StorageFactory> storageFactoryClass, Class<?> tableClass){
+		StorageFactory storageFactory = getStorageFactory(storageFactoryClass);
+		return storageFactory == null? null:storageFactory.getStorage(tableClass);
+	}
+	
+	private static StorageFactory getStorageFactory(Class<? extends StorageFactory> storageFactoryClass){
+		if(storageFactoryClass == null || storageFactoryClass == StorageFactory.class){
+			return null;
+		}
+		
+		StorageFactory storageFactory = storageFactoryMap.get(storageFactoryClass);
+		if(storageFactory == null){
+			synchronized (storageFactoryMap) {
+				storageFactory = storageFactoryMap.get(storageFactoryClass);
+				if(storageFactory == null){
+					try {
+						storageFactory = storageFactoryClass.newInstance();
+						storageFactoryMap.put(storageFactoryClass, storageFactory);
+					} catch (InstantiationException e) {
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return storageFactory;
 	}
 }

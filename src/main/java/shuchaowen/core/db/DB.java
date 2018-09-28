@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import shuchaowen.core.db.annoation.Table;
-import shuchaowen.core.db.cache.Cache;
 import shuchaowen.core.db.cache.CacheFactory;
 import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.result.ResultSet;
@@ -17,10 +17,14 @@ import shuchaowen.core.db.sql.format.SQLFormat;
 import shuchaowen.core.db.sql.format.Select;
 import shuchaowen.core.db.sql.format.mysql.MysqlFormat;
 import shuchaowen.core.db.sql.format.mysql.MysqlSelect;
+import shuchaowen.core.db.storage.DefaultStorage;
+import shuchaowen.core.db.storage.Storage;
+import shuchaowen.core.db.storage.StorageFactory;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 
 public abstract class DB implements ConnectionOrigin {
+	private static final Storage DEFAULT_STORAGE = new DefaultStorage();
 	private static Map<String, TableInfo> tableMap = new HashMap<String, TableInfo>();
 	private static Map<Class<? extends CacheFactory>, CacheFactory> cacheFactoryMap = new HashMap<Class<? extends CacheFactory>, CacheFactory>();
 	
@@ -75,10 +79,11 @@ public abstract class DB implements ConnectionOrigin {
 	}
 
 	private volatile static DB[] dbs = new DB[0];
+	
 	private SQLFormat sqlFormat = new MysqlFormat();
 	@Deprecated
 	private boolean debug;
-	private CacheFactory cacheFactory;
+	private StorageFactory storageFactory;
 
 	{
 		Logger.info("Init DB for className:" + this.getClass().getName());
@@ -92,24 +97,25 @@ public abstract class DB implements ConnectionOrigin {
 			dbs = arr;
 		}
 	}
-
-	public CacheFactory getCacheFactory() {
-		return cacheFactory;
-	}
-
-	protected void setCacheFactory(CacheFactory cacheFactory) {
-		this.cacheFactory = cacheFactory;
-	}
-
+	
 	protected void setSqlFormat(SQLFormat sqlFormat) {
 		if (sqlFormat == null) {
 			throw new NullPointerException("sqlformat not is null");
 		}
 		this.sqlFormat = sqlFormat;
 	}
-
+	
 	public final static DB[] allDB() {
 		return dbs;
+	}
+	
+	private Storage getStorage(Class<?> tableClass){
+		TableInfo tableInfo = getTableInfo(tableClass);
+		Storage storage = tableInfo.getStorage();
+		if(storage == null && storageFactory != null){
+			storage = storageFactory.getStorage(tableClass);
+		}
+		return storage == null? DEFAULT_STORAGE:storage;
 	}
 
 	public Select createSelect(){
@@ -137,14 +143,6 @@ public abstract class DB implements ConnectionOrigin {
 		return select(sql).getFirst(type);
 	}
 	
-	private Cache getCache(Class<?> tableClass, TableInfo tableInfo){
-		Cache cache = tableInfo.getCache();
-		if(cache == null && cacheFactory != null){
-			cache = cacheFactory.getCache(tableClass);
-		}
-		return cache;
-	}
-	
 	public void iterator(SQL sql, TableMapping tableMapping, ResultIterator iterator){
 		DBUtils.iterator(this, sql, tableMapping, iterator);
 	}
@@ -157,79 +155,6 @@ public abstract class DB implements ConnectionOrigin {
 		Select select = createSelect();
 		select.from(tableClass);
 		select.iterator(iterator);
-	}
-	
-	private Cache getCache(Object bean){
-		TableInfo tableInfo = getTableInfo(bean.getClass());
-		return tableInfo == null? null:getCache(bean.getClass(), tableInfo);
-	}
-	
-	public <T> T getByIdWithTableName(Class<T> type, String tableName, Object ...params){
-		if (type == null) {
-			throw new NullPointerException("type is null");
-		}
-
-		TableInfo tableInfo = DB.getTableInfo(type);
-		if (tableInfo == null) {
-			throw new NullPointerException("tableInfo is null");
-		}
-
-		if (tableInfo.getPrimaryKeyColumns().length == 0) {
-			throw new NullPointerException("not found primary key");
-		}
-
-		if (tableInfo.getPrimaryKeyColumns().length != params.length) {
-			throw new NullPointerException(
-					"params length not equals primary key lenght");
-		}
-		
-		String tName = (tableName == null || tableName.length() == 0)? tableInfo.getName():tableName;
-		T t = null;
-		Cache cache = getCache(type, tableInfo);
-		if(cache != null){
-			t = cache.getById(type, tName, params);
-		}
-		
-		if(t == null){
-			SQL sql = getSqlFormat().toSelectByIdSql(tableInfo, tName, params);
-			ResultSet resultSet = select(sql);
-			resultSet.registerClassTable(type, tName);
-			t = resultSet.getFirst(type);
-		}
-		
-		if(t != null && cache != null){
-			cache.save(t);
-		}
-		return t;
-	}
-	
-	public <T> T getById(Class<T> type, Object... params) {
-		return getByIdWithTableName(type, null, params);
-	}
-
-	public <T> List<T> getByIdList(Class<T> type, String tableName, Object... params) {
-		if (type == null) {
-			throw new NullPointerException("type is null");
-		}
-
-		TableInfo tableInfo = DB.getTableInfo(type);
-		if (tableInfo == null) {
-			throw new NullPointerException("tableInfo is null");
-		}
-
-		if (params.length > tableInfo.getPrimaryKeyColumns().length) {
-			throw new NullPointerException(
-					"params length  greater than primary key lenght");
-		}
-		
-		String tName = (tableName == null || tableName.length() == 0)? tableInfo.getName():tableName;
-		ResultSet resultSet = select(getSqlFormat().toSelectByIdSql(tableInfo, tName, params));
-		resultSet.registerClassTable(type, tName);
-		return resultSet.getList(type);
-	}
-	
-	public <T> List<T> getByIdList(Class<T> type, Object... params) {
-		return getByIdList(type, null, params);
 	}
 	
 	public <T> T getMaxValue(Class<T> type, Class<?> tableClass, String tableName,
@@ -294,65 +219,29 @@ public abstract class DB implements ConnectionOrigin {
 		return sqlFormat;
 	}
 	
-	private List<SQL> getDeleteSqlList(Collection<Object> beans){
-		if (beans == null) {
-			return null;
-		}
-
-		List<SQL> sqls = new ArrayList<SQL>();
-		for (Object obj : beans) {
-			if (obj == null) {
-				continue;
-			}
-			sqls.add(getSqlFormat().toDeleteSql(obj));
-		}
-		return sqls;
+	//storage
+	public <T> T getById(Class<T> type, Object... params) {
+		return getStorage(type).getById(this, getSqlFormat(), type, params);
 	}
 	
-	private List<SQL> getSaveSqlList(Collection<Object> beans){
-		if (beans == null) {
-			return null;
-		}
-
-		List<SQL> sqls = new ArrayList<SQL>();
-		for (Object obj : beans) {
-			if (obj == null) {
-				continue;
-			}
-			
-			sqls.add(getSqlFormat().toInsertSql(obj));
-		}
-		return sqls;
+	public <T> List<T> getByIdList(Class<T> type, Object... params) {
+		return getStorage(type).getByIdList(this, getSqlFormat(), type, params);
 	}
 	
-	private List<SQL> getUpdateSqlList(Collection<Object> beans){
-		if (beans == null) {
-			return null;
-		}
-
-		List<SQL> sqls = new ArrayList<SQL>();
-		for (Object obj : beans) {
-			if (obj == null) {
-				continue;
+	private Map<Storage, List<Object>> getBeanStorageMap(Collection<Object> beans){
+		Map<Storage, List<Object>> map = new HashMap<Storage, List<Object>>();
+		for(Object bean : beans){
+			Storage storage = getStorage(bean.getClass());
+			List<Object> list = map.get(storage);
+			if(list == null){
+				list = new ArrayList<Object>();
+				list.add(bean);
+				map.put(storage, list);
+			}else{
+				list.add(bean);
 			}
-			sqls.add(getSqlFormat().toUpdateSql(obj));
 		}
-		return sqls;
-	}
-	
-	private List<SQL> getSaveOrUpdateSqlList(Collection<Object> beans){
-		if (beans == null) {
-			return null;
-		}
-
-		List<SQL> sqls = new ArrayList<SQL>();
-		for (Object obj : beans) {
-			if (obj == null) {
-				continue;
-			}
-			sqls.add(getSqlFormat().toSaveOrUpdateSql(obj));
-		}
-		return sqls;
+		return map;
 	}
 
 	/** 保存  **/
@@ -361,21 +250,13 @@ public abstract class DB implements ConnectionOrigin {
 	}
 	
 	public void save(Collection<Object> beans){
-		saveToCache(beans);
-		execute(getSaveSqlList(beans));
-	}
-	
-	private void saveToCache(Collection<Object> beans){
 		if(beans == null || beans.isEmpty()){
 			return ;
 		}
 		
-		for(Object obj : beans){
-			Cache cache = getCache(obj);
-			if(cache == null){
-				continue;
-			}
-			cache.save(obj);
+		Map<Storage, List<Object>> map = getBeanStorageMap(beans);
+		for(Entry<Storage, List<Object>> entry : map.entrySet()){
+			entry.getKey().save(entry.getValue(), this, getSqlFormat());
 		}
 	}
 
@@ -385,22 +266,13 @@ public abstract class DB implements ConnectionOrigin {
 	}
 	
 	public void delete(Collection<Object> beans){
-		deleteToCache(beans);
-		execute(getDeleteSqlList(beans));
-	}
-	
-	private void deleteToCache(Collection<Object> beans){
 		if(beans == null || beans.isEmpty()){
 			return ;
 		}
 		
-		for(Object obj : beans){
-			Cache cache = getCache(obj);
-			if(cache == null){
-				continue;
-			}
-			
-			cache.delete(obj);
+		Map<Storage, List<Object>> map = getBeanStorageMap(beans);
+		for(Entry<Storage, List<Object>> entry : map.entrySet()){
+			entry.getKey().delete(entry.getValue(), this, getSqlFormat());
 		}
 	}
 	
@@ -410,22 +282,13 @@ public abstract class DB implements ConnectionOrigin {
 	}
 	
 	public void update(Collection<Object> beans){
-		updateToCache(beans);
-		execute(getUpdateSqlList(beans));
-	}
-	
-	private void updateToCache(Collection<Object> beans){
 		if(beans == null || beans.isEmpty()){
 			return ;
 		}
 		
-		for(Object obj : beans){
-			Cache cache = getCache(obj);
-			if(cache == null){
-				continue;
-			}
-			
-			cache.update(obj);
+		Map<Storage, List<Object>> map = getBeanStorageMap(beans);
+		for(Entry<Storage, List<Object>> entry : map.entrySet()){
+			entry.getKey().update(entry.getValue(), this, getSqlFormat());
 		}
 	}
 	
@@ -435,22 +298,13 @@ public abstract class DB implements ConnectionOrigin {
 	}
 	
 	public void saveOrUpdate(Collection<Object> beans){
-		saveOrUpdateToCache(beans);
-		execute(getSaveOrUpdateSqlList(beans));
-	}
-	
-	private void saveOrUpdateToCache(Collection<Object> beans){
 		if(beans == null || beans.isEmpty()){
 			return ;
 		}
 		
-		for(Object obj : beans){
-			Cache cache = getCache(obj);
-			if(cache == null){
-				continue;
-			}
-			
-			cache.saveOrUpdate(obj);
+		Map<Storage, List<Object>> map = getBeanStorageMap(beans);
+		for(Entry<Storage, List<Object>> entry : map.entrySet()){
+			entry.getKey().saveOrUpdate(entry.getValue(), this, getSqlFormat());
 		}
 	}
 	
@@ -464,8 +318,8 @@ public abstract class DB implements ConnectionOrigin {
 	}
 	
 	public void incr(Object obj, String field, double limit, Double maxValue){
-		SQL sql = sqlFormat.toIncrSql(obj, field, limit, maxValue);
-		execute(sql);
+		Storage storage = getStorage(obj.getClass());
+		storage.incr(obj, field, limit, maxValue, this, getSqlFormat());
 	}
 	
 	/**自减**/
@@ -478,8 +332,8 @@ public abstract class DB implements ConnectionOrigin {
 	}
 	
 	public void decr(Object obj, String field, double limit, Double minValue){
-		SQL sql = sqlFormat.toDecrSql(obj, field, limit, minValue);
-		execute(sql);
+		Storage storage = getStorage(obj.getClass());
+		storage.decr(obj, field, limit, minValue, this, getSqlFormat());
 	}
 
 	public boolean isDebug() {

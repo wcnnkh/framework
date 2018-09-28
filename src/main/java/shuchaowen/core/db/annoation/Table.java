@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import shuchaowen.core.db.cache.CacheFactory;
+import shuchaowen.core.db.storage.StorageFactory;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -36,8 +36,8 @@ public @interface Table {
 	public boolean parent() default true;
 	
 	/**
-	 * 默认情况下不使用缓存
+	 * 存储方案
 	 * @return
 	 */
-	public Class<? extends CacheFactory> cacheFactory() default CacheFactory.class;
+	public Class<? extends StorageFactory> storage() default StorageFactory.class;
 }
