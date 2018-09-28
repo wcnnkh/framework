@@ -30,9 +30,10 @@ public @interface Table {
 	
 	/**
 	 * 是否遍历父级字段
+	 * 默认是true
 	 * @return
 	 */
-	public boolean parent() default false;
+	public boolean parent() default true;
 	
 	/**
 	 * 默认情况下不使用缓存

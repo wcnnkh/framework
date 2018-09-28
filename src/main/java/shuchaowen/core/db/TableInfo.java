@@ -60,10 +60,8 @@ public final class TableInfo {
 		
 		this.name = sb.toString();
 		
-		boolean parent = false;
 		this.table = classInfo.getClz().getAnnotation(Table.class);
 		if(table != null){
-			parent = table.parent();
 			if(!"".equals(table.name())){
 				this.name = table.name();
 			}
@@ -99,7 +97,7 @@ public final class TableInfo {
 				}
 				
 				if (Modifier.isStatic(fieldInfo.getField().getModifiers()) 
-						|| Modifier.isFinal(fieldInfo.getField().getModifiers())) {
+						|| Modifier.isFinal(fieldInfo.getField().getModifiers()) || Modifier.isTransient(fieldInfo.getField().getModifiers())) {
 					continue;
 				}
 				
@@ -132,17 +130,16 @@ public final class TableInfo {
 				}
 			}
 			
-			if(parent){
-				tempClassInfo = tempClassInfo.getSuperInfo();
-				if(tempClassInfo != null){
-					Table table = tempClassInfo.getClz().getAnnotation(Table.class);
-					if(table != null && !table.parent()){
-						break;
-					}
-				}
-			}else{
+			boolean parent = true;
+			Table table = tempClassInfo.getClz().getAnnotation(Table.class);
+			if(table != null){
+				parent = table.parent();
+			}
+
+			if(!parent){
 				break;
 			}
+			tempClassInfo = tempClassInfo.getSuperInfo();
 		}
 		
 		this.columns = allColumnList.toArray(new ColumnInfo[allColumnList.size()]);

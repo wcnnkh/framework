@@ -2,7 +2,6 @@ package shuchaowen.web.db.cache;
 
 import java.util.concurrent.TimeoutException;
 
-import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 import shuchaowen.core.db.cache.Cache;
@@ -19,13 +18,14 @@ public class XMemcachedCache implements Cache {
 	private MemcachedClient memcachedClient;
 	private String prefix;
 	private int exp;// 过期时间
-	
+
 	/**
-	 * 热点数据  过期时间7天
+	 * 热点数据 过期时间7天
+	 * 
 	 * @param memcachedClient
 	 */
 	public XMemcachedCache(MemcachedClient memcachedClient) {
-		this((int)((7 * XTime.ONE_DAY)/1000), memcachedClient);
+		this((int) ((7 * XTime.ONE_DAY) / 1000), memcachedClient);
 	}
 
 	public XMemcachedCache(int exp, MemcachedClient memcachedClient) {
@@ -40,38 +40,24 @@ public class XMemcachedCache implements Cache {
 
 	public <T> T getById(Class<T> type, String tableName, Object... params) {
 		String key = prefix + CacheUtils.getObjectKey(type, params);
-		if (MemcachedCAS.class.isAssignableFrom(type)) {
-			T t = null;
-			try {
-				t = memcachedClient.get(key);
-			} catch (TimeoutException e1) {
-				e1.printStackTrace();
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			} catch (MemcachedException e1) {
-				e1.printStackTrace();
-			}
+		T t = null;
+		try {
+			t = memcachedClient.get(key);
+		} catch (TimeoutException e1) {
+			e1.printStackTrace();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		} catch (MemcachedException e1) {
+			e1.printStackTrace();
+		}
 
-			if (t == null) {
-				return t;
-			}
-
-			if (exp > 0) {
-				try {
-					memcachedClient.set(key, exp, t);
-				} catch (TimeoutException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (MemcachedException e) {
-					e.printStackTrace();
-				}
-			}
+		if (t == null) {
 			return t;
-		} else {
-			GetsResponse<T> response = null;
+		}
+
+		if (exp > 0) {
 			try {
-				response = memcachedClient.gets(key);
+				memcachedClient.set(key, exp, t);
 			} catch (TimeoutException e) {
 				e.printStackTrace();
 			} catch (InterruptedException e) {
@@ -79,32 +65,12 @@ public class XMemcachedCache implements Cache {
 			} catch (MemcachedException e) {
 				e.printStackTrace();
 			}
-			if (response == null) {
-				return null;
-			}
-
-			if (exp > 0) {
-				try {
-					memcachedClient.set(key, exp, response.getValue());
-				} catch (TimeoutException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (MemcachedException e) {
-					e.printStackTrace();
-				}
-			}
-
-			T t = response.getValue();
-			if (t instanceof MemcachedCAS) {
-				((MemcachedCAS) t).setCas(exp > 0 ? response.getCas() + 1 : response.getCas());
-			}
-			return t;
 		}
+		return t;
 	}
 
 	public void save(Object bean) {
-		//ignore
+		// ignore
 	}
 
 	public void update(Object bean) {
