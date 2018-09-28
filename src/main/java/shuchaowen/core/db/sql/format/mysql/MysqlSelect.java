@@ -8,6 +8,7 @@ import java.util.List;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.db.TableInfo;
+import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.sql.SimpleSQL;
@@ -299,5 +300,30 @@ public class MysqlSelect extends Select{
 			paramList.addAll(values);
 		}
 		return this;
+	}
+
+	@Override
+	public void iterator(ResultIterator iterator) {
+		db.iterator(toSQL("*", true), getTableMapping(), iterator);
+	}
+
+	@Override
+	public void iterator(long begin, long limit, ResultIterator iterator) {
+		SQL sql = toSQL("*", true);
+		Object[] args;
+		if(sql.getParams() == null){
+			args = new Object[2];
+		}else{
+			args = new Object[sql.getParams().length + 2];
+		}
+		
+		if(sql.getParams() != null){
+			System.arraycopy(sql.getParams(), 0, args, 0, sql.getParams().length);
+		}
+		
+		args[args.length - 2] = begin;
+		args[args.length - 1] = limit;
+		
+		db.iterator(new SimpleSQL(sql.getSql() + " limit ?,?", args), getTableMapping(), iterator);
 	}
 }

@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import shuchaowen.core.db.result.Result;
+import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.transaction.SQLTransaction;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
@@ -19,6 +21,29 @@ public final class DBUtils {
 			for (int i = 0; i < args.length; i++) {
 				preparedStatement.setObject(i + 1, args[i]);
 			}
+		}
+	}
+	
+	public static void iterator(ConnectionOrigin connectionOrigin, SQL sql, ResultIterator iterator){
+		iterator(connectionOrigin, sql, null, iterator);
+	}
+	
+	public static void iterator(ConnectionOrigin connectionOrigin, SQL sql, TableMapping tableMapping, ResultIterator iterator){
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			connection = connectionOrigin.getConnection();
+			stmt = connection.prepareStatement(sql.getSql());
+			setParams(stmt, sql.getParams());
+			rs = stmt.executeQuery();
+			while(rs.next()){
+				iterator.next(new Result(tableMapping, rs));
+			}
+		} catch (Exception e) {
+			throw new ShuChaoWenRuntimeException(sql.getSql(), e);
+		} finally {
+			XUtils.close(true, rs, stmt, connection);
 		}
 	}
 

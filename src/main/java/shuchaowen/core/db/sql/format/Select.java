@@ -13,6 +13,7 @@ import shuchaowen.core.db.DB;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.TableMapping;
 import shuchaowen.core.db.result.Result;
+import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
@@ -325,4 +326,8 @@ public abstract class Select{
 		pagination.setData(getList(type, (page - 1) * limit, limit));
 		return pagination;
 	}
+	
+	public abstract void iterator(ResultIterator iterator);
+	
+	public abstract void iterator(long begin, long limit, ResultIterator iterator);
 }

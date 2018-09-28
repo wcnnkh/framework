@@ -10,6 +10,7 @@ import java.util.Map;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.db.cache.Cache;
 import shuchaowen.core.db.cache.CacheFactory;
+import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.sql.format.SQLFormat;
@@ -122,7 +123,7 @@ public abstract class DB implements ConnectionOrigin {
 	public ResultSet select(SQL sql) {
 		return TransactionContext.getInstance().select(this, sql);
 	}
-
+	
 	public void execute(SQL... sqls) {
 		execute(Arrays.asList(sqls));
 	}
@@ -142,6 +143,14 @@ public abstract class DB implements ConnectionOrigin {
 			cache = cacheFactory.getCache(tableClass);
 		}
 		return cache;
+	}
+	
+	public void iterator(SQL sql, TableMapping tableMapping, ResultIterator iterator){
+		DBUtils.iterator(this, sql, tableMapping, iterator);
+	}
+	
+	public void iterator(SQL sql, ResultIterator iterator){
+		DBUtils.iterator(this, sql, iterator);
 	}
 	
 	private Cache getCache(Object bean){
