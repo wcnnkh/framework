@@ -26,6 +26,7 @@ public final class TableInfo {
 	public static final String CAS_VERSION_COLUMN = "scw_cas_version";
 	public static final String SQL_CAS_VERSION_COLUMN = "`" + CAS_VERSION_COLUMN + "`";
 	private String tableAndCasColumn;
+	private ClassInfo classInfo;
 	
 	private Map<String, ColumnInfo> columnMap = new HashMap<String, ColumnInfo>();//所有的  数据库字段名到字段的映射
 	private Map<String, String> fieldToColumn = new HashMap<String, String>();//所有的  字段名数据库名的映射
@@ -39,8 +40,10 @@ public final class TableInfo {
 	private ColumnInfo[] tableColumns;
 	private Class<?>[] proxyInterface;
 	private Storage storage;
+	private boolean parent = true;
 	
 	public TableInfo(ClassInfo classInfo) {
+		this.classInfo = classInfo;
 		//动态代理实现的接口
 		this.proxyInterface = getBeanProxyInterface(classInfo.getClz());
 		
@@ -79,6 +82,7 @@ public final class TableInfo {
 			}
 			
 			this.storage = getStorage(table.storageFactory(), classInfo.getClz());
+			this.parent = table.parent();
 		}
 		
 		List<ColumnInfo> allColumnList = new ArrayList<ColumnInfo>();
@@ -245,6 +249,14 @@ public final class TableInfo {
 		return storage;
 	}
 	
+	public ClassInfo getClassInfo() {
+		return classInfo;
+	}
+
+	public boolean isParent() {
+		return parent;
+	}
+
 	private static Storage getStorage(Class<? extends StorageFactory> storageFactoryClass, Class<?> tableClass){
 		StorageFactory storageFactory = DB.getStorageFactory(storageFactoryClass);
 		return storageFactory == null? null:storageFactory.getStorage(tableClass);

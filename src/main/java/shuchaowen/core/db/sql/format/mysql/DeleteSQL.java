@@ -18,7 +18,11 @@ public class DeleteSQL implements SQL{
 			throw new NullPointerException("not found primary key");
 		}
 		
-		String id = tableName;
+		StringBuilder sb = new StringBuilder();
+		sb.append(tableInfo.getClassInfo().getName());
+		sb.append(":");
+		sb.append(tableName);
+		String id = sb.toString();
 		this.sql = sqlCache.get(id);
 		if(sql == null){
 			synchronized (sqlCache) {

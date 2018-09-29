@@ -97,6 +97,13 @@ public class MysqlFormat implements SQLFormat {
 
 	public SQL toDecrSql(Object obj, TableInfo tableInfo, String tableName, String fieldName, double limit,
 			Double minValue) {
-		return new DecrSQL(obj, tableInfo, tableName, fieldName, limit, minValue);
+		try {
+			return new DecrSQL(obj, tableInfo, tableName, fieldName, limit, minValue);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		throw new ShuChaoWenRuntimeException();
 	}
 }

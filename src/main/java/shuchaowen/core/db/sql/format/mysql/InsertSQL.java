@@ -18,13 +18,18 @@ public class InsertSQL implements SQL{
 			throw new NullPointerException("not found primary key");
 		}
 		
-		this.sql = sqlCache.get(tableName);
+		StringBuilder sb = new StringBuilder();
+		sb.append(tableInfo.getClassInfo().getName());
+		sb.append(":");
+		sb.append(tableName);
+		String id = sb.toString();
+		this.sql = sqlCache.get(id);
 		if(sql == null){
 			synchronized (sqlCache) {
-				sql = sqlCache.get(tableName);
+				sql = sqlCache.get(id);
 				if(sql == null){
 					sql = getSql(tableInfo, tableName, obj);
-					sqlCache.put(tableName, sql);
+					sqlCache.put(id, sql);
 				}
 			}
 		}

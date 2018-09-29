@@ -1,38 +1,13 @@
 package shuchaowen.core.db.sql.format.mysql;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.sql.SQL;
 
 public class CreateTableSQL implements SQL{
-	private static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;
 	
 	public CreateTableSQL(TableInfo tableInfo, String tableName){
-		this.sql = sqlCache.get(tableName);
-		if(sql == null){
-			synchronized (sqlCache) {
-				sql = sqlCache.get(tableName);
-				if(sql == null){
-					sql = getSql(tableInfo, tableName);
-					sqlCache.put(tableName, sql);
-				}
-			}
-		}
-	}
-	
-	public String getSql() {
-		return sql;
-	}
-
-	public Object[] getParams() {
-		return null;
-	}
-	
-	private static String getSql(TableInfo tableInfo, String tableName){
 		StringBuilder sb = new StringBuilder();
 		sb.append("CREATE TABLE IF NOT EXISTS `").append(tableName).append("`");
 		sb.append(" (");
@@ -133,6 +108,13 @@ public class CreateTableSQL implements SQL{
 		sb.append(" DEFAULT");
 		sb.append(" CHARSET=").append(tableInfo.getCharset());
 		sb.append(" ROW_FORMAT=").append(tableInfo.getRow_format());
-		return sb.toString();
+	}
+	
+	public String getSql() {
+		return sql;
+	}
+
+	public Object[] getParams() {
+		return null;
 	}
 }

@@ -12,7 +12,13 @@ public class SelectByIdSQL implements SQL{
 	private Object[] params;
 	
 	public SelectByIdSQL(TableInfo info, String tableName, Object[] ids){
-		String id = getCacheId(tableName, ids);
+		StringBuilder sb = new StringBuilder();
+		sb.append(info.getClassInfo().getName());
+		sb.append(tableName);
+		sb.append(" ");
+		sb.append(ids.length);
+		
+		String id = sb.toString();
 		this.sql = sqlCache.get(id);
 		if(sql == null){
 			synchronized (sqlCache) {
@@ -32,14 +38,6 @@ public class SelectByIdSQL implements SQL{
 
 	public Object[] getParams() {
 		return params;
-	}
-	
-	private static String getCacheId(String tableName, Object[] ids){
-		StringBuilder sb = new StringBuilder();
-		sb.append(tableName);
-		sb.append(" ");
-		sb.append(ids.length);
-		return sb.toString();
 	}
 	
 	private static String getSql(TableInfo info, String tableName, Object[] ids){

@@ -23,7 +23,7 @@ public class IncrSQL implements SQL{
 			throw new NullPointerException("not found primary key");
 		}
 
-		String id = getCacheId(tableName, fieldName, maxValue);
+		String id = getCacheId(tableInfo, tableName, fieldName, maxValue);
 		this.sql = sqlCache.get(id);
 		if (sql == null) {
 			synchronized (sqlCache) {
@@ -49,8 +49,10 @@ public class IncrSQL implements SQL{
 		return params;
 	}
 
-	private static String getCacheId(String tableName, String fieldName, Double minValue) {
+	private static String getCacheId(TableInfo tableInfo, String tableName, String fieldName, Double minValue) {
 		StringBuilder sb = new StringBuilder();
+		sb.append(tableInfo.getClassInfo().getName());
+		sb.append(":");
 		sb.append(tableName);
 		sb.append(":");
 		sb.append(fieldName);
