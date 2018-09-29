@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import shuchaowen.core.db.annoation.Table;
-import shuchaowen.core.db.cache.CacheFactory;
 import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
@@ -26,7 +25,6 @@ import shuchaowen.core.util.Logger;
 public abstract class DB implements ConnectionOrigin {
 	private static final Storage DEFAULT_STORAGE = new DefaultStorage();
 	private static Map<String, TableInfo> tableMap = new HashMap<String, TableInfo>();
-	private static Map<Class<? extends CacheFactory>, CacheFactory> cacheFactoryMap = new HashMap<Class<? extends CacheFactory>, CacheFactory>();
 	
 	public static final TableInfo getTableInfo(Class<?> clz) {
 		return getTableInfo(clz.getName());
@@ -45,37 +43,6 @@ public abstract class DB implements ConnectionOrigin {
 			}
 		}
 		return tableInfo;
-	}
-	
-	public static CacheFactory getCacheFactory(Class<? extends CacheFactory> cacheFactoryClass){
-		if(cacheFactoryClass == null){
-			return null;
-		}
-		
-		if(CacheFactory.class.getName().equals(cacheFactoryClass.getName())){
-			return null;
-		}
-		
-		if(cacheFactoryMap.containsKey(cacheFactoryClass)){
-			return cacheFactoryMap.get(cacheFactoryClass);
-		}else{
-			synchronized (cacheFactoryMap) {
-				if(cacheFactoryMap.containsKey(cacheFactoryClass)){
-					return cacheFactoryMap.get(cacheFactoryClass);
-				}else{
-					try {
-						CacheFactory cacheFactory = cacheFactoryClass.newInstance();
-						cacheFactoryMap.put(cacheFactoryClass, cacheFactory);
-						return cacheFactory;
-					} catch (InstantiationException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		return null;
 	}
 
 	private volatile static DB[] dbs = new DB[0];

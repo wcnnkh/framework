@@ -1,30 +1,23 @@
-package shuchaowen.core.db.cache.memcached;
+package shuchaowen.core.db.storage.memcached;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
-import shuchaowen.core.db.cache.Cache;
-import shuchaowen.core.db.cache.CacheFactory;
 
-/**
- * 此类使用memcached    连接localhost和默认的端口号来实现
- * 数据缓存时间为15天
- * @author shuchaowen
- *
- */
-public class LocalXMemcachedFactory implements CacheFactory{
-	private XMemcachedCache xMemcachedCache;
+public class LocalXMmecached {
+	private MemcachedClient memcachedClient;
 	
-	public LocalXMemcachedFactory() throws IOException{
+	public LocalXMmecached() throws IOException{
 		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
-			InetSocketAddress address = new InetSocketAddress("localhost", 11211);
-			addresses.add(address);
-		
+		InetSocketAddress address = new InetSocketAddress("localhost", 11211);
+		addresses.add(address);
+	
 		MemcachedClientBuilder builder = new XMemcachedClientBuilder(addresses);
 		// 宕机报警
 		builder.setFailureMode(true);
@@ -43,11 +36,10 @@ public class LocalXMemcachedFactory implements CacheFactory{
 		 * 因此你的应用需要自己保证数据更新的原子性（采用CAS或者数据之间毫无关联）。
 		 */
 		builder.setConnectionPoolSize(10);
-		
-		xMemcachedCache = new XMemcachedCache(builder.build());
+		this.memcachedClient = builder.build();
 	}
 	
-	public Cache getCache(Class<?> tableClass) {
-		return xMemcachedCache;
+	public MemcachedClient getMemcachedClient(){
+		return memcachedClient;
 	}
 }

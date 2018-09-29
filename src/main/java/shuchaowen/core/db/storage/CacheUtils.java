@@ -1,4 +1,4 @@
-package shuchaowen.core.db.cache;
+package shuchaowen.core.db.storage;
 
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.DB;
