@@ -133,17 +133,9 @@ public abstract class DB implements ConnectionOrigin {
 	public Select createSelect(){
 		return new MysqlSelect(this);
 	}
-
-	public void execute(Collection<SQL> sqls) {
-		TransactionContext.getInstance().execute(this, sqls);
-	}
 	
 	public ResultSet select(SQL sql) {
 		return TransactionContext.getInstance().select(this, sql);
-	}
-	
-	public void execute(SQL... sqls) {
-		execute(Arrays.asList(sqls));
 	}
 	
 	public <T> List<T> select(Class<T> type, SQL sql){
