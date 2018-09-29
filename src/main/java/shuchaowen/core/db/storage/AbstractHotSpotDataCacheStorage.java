@@ -57,10 +57,11 @@ public abstract class AbstractHotSpotDataCacheStorage extends DefaultStorage{
 	public <T> T getById(ConnectionOrigin connectionOrigin,
 			SQLFormat sqlFormat, Class<T> type, Object... params) {
 		Object t = getByIdToCache(type, params);
-		if(t == null){
-			t = super.getById(connectionOrigin, sqlFormat, type, params);
+		if(t != null){
+			return (T) t;
 		}
 		
+		t = super.getById(connectionOrigin, sqlFormat, type, params);
 		if(t != null){
 			saveToCache(Arrays.asList(t));
 		}

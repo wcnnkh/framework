@@ -25,7 +25,6 @@ public class CacheUtils {
 			sb.append(OBJECT_KEY_COCAT);
 			sb.append(columnInfo.getFieldInfo().forceGet(obj));
 		}
-		System.out.println("op:" + sb.toString());
 		return sb.toString();
 	}
 	
@@ -50,7 +49,6 @@ public class CacheUtils {
 			sb.append(OBJECT_KEY_COCAT);
 			sb.append(v);
 		}
-		System.out.println("get:" + sb.toString());
 		return sb.toString();
 	}
 }
