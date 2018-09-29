@@ -1,6 +1,7 @@
 package shuchaowen.web.support.jxl.export;
 
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -85,6 +86,19 @@ public class JxlExport {
 		wwb.write();
 		// 关闭文件
 		wwb.close();
+		response.flushBuffer();
+	}
+	
+	public static void sqlResultSetToExcel(String fileName, String title[], ConnectionOrigin db
+			, HttpServletResponse response, SqlExportRowImpl exportRow, SQL ...sqls)
+			throws Exception {
+		fileName = new String(fileName.getBytes(), "iso-8859-1");
+		response.setContentType("application/vnd.ms-excel");
+		response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xls");
+
+		// 创建Excel工作薄
+		OutputStream os = response.getOutputStream();
+		sqlResultSetToExcel(title, db, Arrays.asList(sqls), os, exportRow);
 		response.flushBuffer();
 	}
 	
