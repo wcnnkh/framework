@@ -108,6 +108,7 @@ public class CreateTableSQL implements SQL{
 		sb.append(" DEFAULT");
 		sb.append(" CHARSET=").append(tableInfo.getCharset());
 		sb.append(" ROW_FORMAT=").append(tableInfo.getRow_format());
+		this.sql = sb.toString();
 	}
 	
 	public String getSql() {
