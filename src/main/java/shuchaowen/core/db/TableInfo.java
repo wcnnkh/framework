@@ -17,8 +17,6 @@ import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.StringUtils;
 
 public final class TableInfo {
-	private volatile static Map<Class<? extends StorageFactory>, StorageFactory> storageFactoryMap = new HashMap<Class<? extends StorageFactory>, StorageFactory>();
-	
 	private String name;
 	private Table table;
 	private String engine = "InnoDB";
@@ -80,7 +78,7 @@ public final class TableInfo {
 				this.row_format = table.row_format();
 			}
 			
-			this.storage = getStorage(table.storage(), classInfo.getClz());
+			this.storage = getStorage(table.storageFactory(), classInfo.getClz());
 		}
 		
 		List<ColumnInfo> allColumnList = new ArrayList<ColumnInfo>();
@@ -248,31 +246,7 @@ public final class TableInfo {
 	}
 	
 	private static Storage getStorage(Class<? extends StorageFactory> storageFactoryClass, Class<?> tableClass){
-		StorageFactory storageFactory = getStorageFactory(storageFactoryClass);
+		StorageFactory storageFactory = DB.getStorageFactory(storageFactoryClass);
 		return storageFactory == null? null:storageFactory.getStorage(tableClass);
-	}
-	
-	private static StorageFactory getStorageFactory(Class<? extends StorageFactory> storageFactoryClass){
-		if(storageFactoryClass == null || storageFactoryClass == StorageFactory.class){
-			return null;
-		}
-		
-		StorageFactory storageFactory = storageFactoryMap.get(storageFactoryClass);
-		if(storageFactory == null){
-			synchronized (storageFactoryMap) {
-				storageFactory = storageFactoryMap.get(storageFactoryClass);
-				if(storageFactory == null){
-					try {
-						storageFactory = storageFactoryClass.newInstance();
-						storageFactoryMap.put(storageFactoryClass, storageFactory);
-					} catch (InstantiationException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		return storageFactory;
 	}
 }

@@ -39,5 +39,5 @@ public @interface Table {
 	 * 存储方案
 	 * @return
 	 */
-	public Class<? extends StorageFactory> storage() default StorageFactory.class;
+	public Class<? extends StorageFactory> storageFactory() default StorageFactory.class;
 }

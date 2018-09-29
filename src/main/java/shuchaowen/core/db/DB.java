@@ -24,7 +24,8 @@ import shuchaowen.core.util.Logger;
 
 public abstract class DB implements ConnectionOrigin {
 	private static final Storage DEFAULT_STORAGE = new DefaultStorage();
-	private static Map<String, TableInfo> tableMap = new HashMap<String, TableInfo>();
+	private volatile static Map<String, TableInfo> tableMap = new HashMap<String, TableInfo>();
+	private volatile static Map<Class<? extends StorageFactory>, StorageFactory> storageFactoryMap = new HashMap<Class<? extends StorageFactory>, StorageFactory>();
 	
 	public static final TableInfo getTableInfo(Class<?> clz) {
 		return getTableInfo(clz.getName());
@@ -43,6 +44,30 @@ public abstract class DB implements ConnectionOrigin {
 			}
 		}
 		return tableInfo;
+	}
+	
+	protected static StorageFactory getStorageFactory(Class<? extends StorageFactory> storageFactoryClass){
+		if(storageFactoryClass == null || storageFactoryClass == StorageFactory.class){
+			return null;
+		}
+		
+		StorageFactory storageFactory = storageFactoryMap.get(storageFactoryClass);
+		if(storageFactory == null){
+			synchronized (storageFactoryMap) {
+				storageFactory = storageFactoryMap.get(storageFactoryClass);
+				if(storageFactory == null){
+					try {
+						storageFactory = storageFactoryClass.newInstance();
+						storageFactoryMap.put(storageFactoryClass, storageFactory);
+					} catch (InstantiationException e) {
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return storageFactory;
 	}
 
 	private volatile static DB[] dbs = new DB[0];
@@ -65,6 +90,26 @@ public abstract class DB implements ConnectionOrigin {
 		}
 	}
 	
+	public final StorageFactory getStorageFactory() {
+		return storageFactory;
+	}
+
+	public void setStorageFactory(StorageFactory storageFactory) {
+		if (storageFactory == null) {
+			throw new NullPointerException("storageFactory not is null");
+		}
+		
+		this.storageFactory = storageFactory;
+	}
+	
+	public void setStorageFactory(Class<? extends StorageFactory> storageFactoryClass) {
+		if (storageFactoryClass == null) {
+			throw new NullPointerException("storageFactoryClass not is null");
+		}
+		
+		this.storageFactory = getStorageFactory(storageFactoryClass);
+	}
+
 	protected void setSqlFormat(SQLFormat sqlFormat) {
 		if (sqlFormat == null) {
 			throw new NullPointerException("sqlformat not is null");
