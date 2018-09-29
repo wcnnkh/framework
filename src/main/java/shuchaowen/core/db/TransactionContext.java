@@ -143,6 +143,10 @@ public final class TransactionContext {
 			localDBTransaction.addTransaction(transactions);
 		}
 	}
+	
+	public void execute(ConnectionOrigin connectionOrigin, SQL ...sqls){
+		execute(connectionOrigin, Arrays.asList(sqls));
+	}
 
 	/**
 	 * 提交一个SQL语句，如果已经开启了事务会使用事务的方式，如果未开启事务就会直接执行
