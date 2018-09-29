@@ -27,8 +27,7 @@ public class ConfigUtils {
 	private static final String WEB_CONTENT = "WebContent";
 	private static final String WEBAPP = "webapp";
 	private static final StringFormatSystemProperties format1 = new StringFormatSystemProperties("{", "}");
-	private static final StringFormatSystemProperties format2 = new StringFormatSystemProperties("${", "}");
-	private static final StringFormatSystemProperties format3 = new StringFormatSystemProperties("[", "]");
+	private static final StringFormatSystemProperties format2 = new StringFormatSystemProperties("[", "]");
 	public static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
 
 	public static String getSystemProperty(String key) {
@@ -54,7 +53,6 @@ public class ConfigUtils {
 
 		String newPath = format1.format(value);
 		newPath = format2.format(newPath);
-		newPath = format3.format(newPath);
 
 		if (newPath.length() < CLASSPATH_PREFIX.length()) {
 			return newPath;
