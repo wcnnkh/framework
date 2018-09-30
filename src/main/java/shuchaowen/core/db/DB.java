@@ -69,8 +69,6 @@ public abstract class DB implements ConnectionOrigin {
 		}
 		return storageFactory;
 	}
-
-	private volatile static DB[] dbs = new DB[0];
 	
 	private SQLFormat sqlFormat = new MysqlFormat();
 	@Deprecated
@@ -79,15 +77,6 @@ public abstract class DB implements ConnectionOrigin {
 
 	{
 		Logger.info("Init DB for className:" + this.getClass().getName());
-		synchronized (dbs) {
-			DB[] arr = new DB[dbs.length + 1];
-			int i = 0;
-			for (; i < dbs.length; i++) {
-				arr[i] = dbs[i];
-			}
-			arr[i] = this;
-			dbs = arr;
-		}
 	}
 	
 	public final StorageFactory getStorageFactory() {
@@ -115,10 +104,6 @@ public abstract class DB implements ConnectionOrigin {
 			throw new NullPointerException("sqlformat not is null");
 		}
 		this.sqlFormat = sqlFormat;
-	}
-	
-	public final static DB[] allDB() {
-		return dbs;
 	}
 	
 	private Storage getStorage(Class<?> tableClass){
