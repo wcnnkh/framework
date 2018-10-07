@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import shuchaowen.core.db.ConnectionOrigin;
+import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.DBUtils;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.util.XUtils;
@@ -15,12 +15,12 @@ import shuchaowen.core.util.XUtils;
 public class SQLTransaction extends Transaction {
 	private Map<String, SQL> sqlMap = new HashMap<String, SQL>();
 	private Connection connection;
-	private ConnectionOrigin db;
+	private AbstractDB db;
 	private PreparedStatement[] preparedStatements;
 	private int transactionLevel = -1;
 	private int oldTransactionLevel = -1;
 
-	public SQLTransaction(ConnectionOrigin db) {
+	public SQLTransaction(AbstractDB db) {
 		this(db, -1);
 	}
 
@@ -30,7 +30,7 @@ public class SQLTransaction extends Transaction {
 	 * @param updateStack
 	 *            如果为true 那么执行后的updateCount大于0就成功，不然就抛出异常.
 	 */
-	public SQLTransaction(ConnectionOrigin db, int transactionLevel) {
+	public SQLTransaction(AbstractDB db, int transactionLevel) {
 		this.db = db;
 		this.transactionLevel = transactionLevel;
 	}

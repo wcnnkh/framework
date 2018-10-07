@@ -1,9 +1,13 @@
 package shuchaowen.core.util;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -49,5 +53,38 @@ public final class IOUtils {
 		while((len = is.read(b)) != -1){
 			os.write(b, 0, len);
 		}
+	}
+	
+	public static byte[] javaObjectToByte(Object obj){
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = null;
+		try {
+			oos = new ObjectOutputStream(bos);
+			oos.writeObject(obj);
+			oos.flush();
+			return bos.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally{
+			XUtils.close(oos, bos);
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T byteToJavaObject(byte[] buf){
+		ByteArrayInputStream bis = new ByteArrayInputStream(buf);
+		ObjectInputStream ois = null;
+		try {
+			ois = new ObjectInputStream(bis);
+			return (T) ois.readObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}finally{
+			XUtils.close(ois, bis);
+		}
+		return null;
 	}
 }

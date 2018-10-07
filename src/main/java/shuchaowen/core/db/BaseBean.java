@@ -14,10 +14,6 @@ public abstract class BaseBean implements Cloneable,Serializable {
 		DBManager.getDB(this.getClass()).save(this);
 	}
 	
-	public final void forceSave(){
-		DBManager.getDB(this.getClass()).save(this);
-	}
-	
 	public final void update(){
 		DBManager.getDB(this.getClass()).update(this);
 	}
@@ -28,13 +24,5 @@ public abstract class BaseBean implements Cloneable,Serializable {
 	
 	public final void saveOrUpdate(){
 		DBManager.getDB(this.getClass()).saveOrUpdate(this);
-	}
-	
-	public final void incr(String field, double limit){
-		DBManager.getDB(this.getClass()).incr(this, field, limit);
-	}
-	
-	public final void decr(String field, double limit){
-		DBManager.getDB(this.getClass()).decr(this, field, limit);
 	}
 }

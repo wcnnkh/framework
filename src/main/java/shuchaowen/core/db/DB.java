@@ -22,29 +22,11 @@ import shuchaowen.core.db.storage.StorageFactory;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 
-public abstract class DB implements ConnectionOrigin {
-	private static final Storage DEFAULT_STORAGE = new DefaultStorage();
-	private volatile static Map<String, TableInfo> tableMap = new HashMap<String, TableInfo>();
-	private volatile static Map<Class<? extends StorageFactory>, StorageFactory> storageFactoryMap = new HashMap<Class<? extends StorageFactory>, StorageFactory>();
+public abstract class DB extends AbstractDB {
+	public static final Storage DEFAULT_STORAGE = new DefaultStorage();
+	public static final SQLFormat DEFAULT_SQL_FORMAT = new MysqlFormat();
 	
-	public static final TableInfo getTableInfo(Class<?> clz) {
-		return getTableInfo(clz.getName());
-	}
-
-	private static final TableInfo getTableInfo(String className) {
-		String name = ClassUtils.getCGLIBRealClassName(className);
-		TableInfo tableInfo = tableMap.get(name);
-		if (tableInfo == null) {
-			synchronized (tableMap) {
-				tableInfo = tableMap.get(name);
-				if (tableInfo == null) {
-					tableInfo = new TableInfo(ClassUtils.getClassInfo(name));
-					tableMap.put(name, tableInfo);
-				}
-			}
-		}
-		return tableInfo;
-	}
+	private volatile static Map<Class<? extends StorageFactory>, StorageFactory> storageFactoryMap = new HashMap<Class<? extends StorageFactory>, StorageFactory>();
 	
 	protected static StorageFactory getStorageFactory(Class<? extends StorageFactory> storageFactoryClass){
 		if(storageFactoryClass == null || storageFactoryClass == StorageFactory.class){
@@ -70,14 +52,10 @@ public abstract class DB implements ConnectionOrigin {
 		return storageFactory;
 	}
 	
-	private SQLFormat sqlFormat = new MysqlFormat();
+	private SQLFormat sqlFormat;
 	@Deprecated
 	private boolean debug;
 	private StorageFactory storageFactory;
-
-	{
-		Logger.info("Init DB for className:" + this.getClass().getName());
-	}
 	
 	public final StorageFactory getStorageFactory() {
 		return storageFactory;
@@ -118,27 +96,6 @@ public abstract class DB implements ConnectionOrigin {
 	public Select createSelect(){
 		return new MysqlSelect(this);
 	}
-	
-	public ResultSet select(SQL sql) {
-		return TransactionContext.getInstance().select(this, sql);
-	}
-	
-	public <T> List<T> select(Class<T> type, SQL sql){
-		return select(sql).getList(type);
-	}
-	
-	@Deprecated
-	public <T> T selectOne(Class<T> type, SQL sql){
-		return select(sql).getFirst(type);
-	}
-	
-	public void iterator(SQL sql, TableMapping tableMapping, ResultIterator iterator){
-		DBUtils.iterator(this, sql, tableMapping, iterator);
-	}
-	
-	public void iterator(SQL sql, ResultIterator iterator){
-		DBUtils.iterator(this, sql, iterator);
-	}
 
 	public void iterator(Class<?> tableClass, ResultIterator iterator){
 		Select select = createSelect();
@@ -150,7 +107,7 @@ public abstract class DB implements ConnectionOrigin {
 			String columnName) {
 		TableInfo tableInfo = DB.getTableInfo(tableClass);
 		String tName = (tableName == null || tableName.length() == 0)? tableInfo.getName():tableName;
-		SQL sql = sqlFormat.toMaxValueSQL(tableInfo, tName,
+		SQL sql = getSqlFormat().toMaxValueSQL(tableInfo, tName,
 				columnName);
 		ResultSet resultSet = select(sql);
 		resultSet.registerClassTable(type, tName);
@@ -185,7 +142,7 @@ public abstract class DB implements ConnectionOrigin {
 
 	public void createTable(Class<?> tableClass, String tableName) {
 		TableInfo tableInfo = DB.getTableInfo(tableClass);
-		SQL sql = sqlFormat.toCreateTableSql(tableInfo, tableName);
+		SQL sql = getSqlFormat().toCreateTableSql(tableInfo, tableName);
 		Logger.info(sql.getSql());
 		DBUtils.execute(this, sql);
 	}
@@ -205,7 +162,7 @@ public abstract class DB implements ConnectionOrigin {
 	}
 
 	public SQLFormat getSqlFormat() {
-		return sqlFormat;
+		return sqlFormat == null? DEFAULT_SQL_FORMAT:sqlFormat;
 	}
 	
 	//storage
@@ -295,34 +252,6 @@ public abstract class DB implements ConnectionOrigin {
 		for(Entry<Storage, List<Object>> entry : map.entrySet()){
 			entry.getKey().saveOrUpdate(entry.getValue(), this, getSqlFormat());
 		}
-	}
-	
-	/**自增**/
-	public void incr(Object obj, String field){
-		incr(obj, field, 1, null);
-	}
-
-	public void incr(Object obj, String field, double limit){
-		incr(obj, field, limit, null);
-	}
-	
-	public void incr(Object obj, String field, double limit, Double maxValue){
-		Storage storage = getStorage(obj.getClass());
-		storage.incr(obj, field, limit, maxValue, this, getSqlFormat());
-	}
-	
-	/**自减**/
-	public void decr(Object obj, String field){
-		decr(obj, field, 1, null);
-	}
-	
-	public void decr(Object obj, String field, double limit){
-		decr(obj, field, limit, null);
-	}
-	
-	public void decr(Object obj, String field, double limit, Double minValue){
-		Storage storage = getStorage(obj.getClass());
-		storage.decr(obj, field, limit, minValue, this, getSqlFormat());
 	}
 
 	public boolean isDebug() {

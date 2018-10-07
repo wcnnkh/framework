@@ -24,16 +24,16 @@ public final class DBUtils {
 		}
 	}
 	
-	public static void iterator(ConnectionOrigin connectionOrigin, SQL sql, ResultIterator iterator){
-		iterator(connectionOrigin, sql, null, iterator);
+	public static void iterator(AbstractDB db, SQL sql, ResultIterator iterator){
+		iterator(db, sql, null, iterator);
 	}
 	
-	public static void iterator(ConnectionOrigin connectionOrigin, SQL sql, TableMapping tableMapping, ResultIterator iterator){
+	public static void iterator(AbstractDB db, SQL sql, TableMapping tableMapping, ResultIterator iterator){
 		Connection connection = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
-			connection = connectionOrigin.getConnection();
+			connection = db.getConnection();
 			stmt = connection.prepareStatement(sql.getSql());
 			setParams(stmt, sql.getParams());
 			rs = stmt.executeQuery();
@@ -77,11 +77,11 @@ public final class DBUtils {
 		return getSQLId(sql.getSql(), sql.getParams());
 	}
 
-	public static void execute(ConnectionOrigin connectionOrigin, SQL sql) {
+	public static void execute(AbstractDB db, SQL sql) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
 		try {
-			connection = connectionOrigin.getConnection();
+			connection = db.getConnection();
 			stmt = connection.prepareStatement(sql.getSql());
 			setParams(stmt, sql.getParams());
 			stmt.execute();
@@ -92,18 +92,18 @@ public final class DBUtils {
 		}
 	}
 
-	public static void execute(ConnectionOrigin connectionOrigin,
+	public static void execute(AbstractDB db,
 			Collection<SQL> sqls) {
-		if (sqls == null || connectionOrigin == null) {
+		if (sqls == null || db == null) {
 			throw new NullPointerException();
 		}
 
 		Iterator<SQL> iterator = sqls.iterator();
 		if (sqls.size() == 1) {
 			SQL sql = iterator.next();
-			execute(connectionOrigin, sql);
+			execute(db, sql);
 		} else {
-			SQLTransaction sqlTransaction = new SQLTransaction(connectionOrigin);
+			SQLTransaction sqlTransaction = new SQLTransaction(db);
 			while (iterator.hasNext()) {
 				sqlTransaction.addSql(iterator.next());
 			}
@@ -115,12 +115,12 @@ public final class DBUtils {
 		}
 	}
 	
-	public static shuchaowen.core.db.result.ResultSet select(ConnectionOrigin connectionOrigin, SQL sql){
+	public static shuchaowen.core.db.result.ResultSet select(AbstractDB db, SQL sql){
 		Connection connection = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
-			connection = connectionOrigin.getConnection();
+			connection = db.getConnection();
 			stmt = connection.prepareStatement(sql.getSql());
 			setParams(stmt, sql.getParams());
 			rs = stmt.executeQuery();

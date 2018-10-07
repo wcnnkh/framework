@@ -3,7 +3,7 @@ package shuchaowen.core.db.storage;
 import java.util.Arrays;
 import java.util.Collection;
 
-import shuchaowen.core.db.ConnectionOrigin;
+import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.sql.format.SQLFormat;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
@@ -54,14 +54,14 @@ public abstract class AbstractHotSpotDataCacheStorage extends DefaultStorage{
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getById(ConnectionOrigin connectionOrigin,
+	public <T> T getById(AbstractDB db,
 			SQLFormat sqlFormat, Class<T> type, Object... params) {
 		Object t = getByIdToCache(type, params);
 		if(t != null){
 			return (T) t;
 		}
 		
-		t = super.getById(connectionOrigin, sqlFormat, type, params);
+		t = super.getById(db, sqlFormat, type, params);
 		if(t != null){
 			saveToCache(Arrays.asList(t));
 		}
@@ -69,44 +69,29 @@ public abstract class AbstractHotSpotDataCacheStorage extends DefaultStorage{
 	}
 	
 	@Override
-	public void save(Collection<Object> beans,
-			ConnectionOrigin connectionOrigin, SQLFormat sqlFormat) {
+	public void save(Collection<Object> beans, AbstractDB db, SQLFormat sqlFormat) {
 		deleteToCache(beans);
-		super.save(beans, connectionOrigin, sqlFormat);
+		super.save(beans, db, sqlFormat);
 	}
 	
 	@Override
 	public void delete(Collection<Object> beans,
-			ConnectionOrigin connectionOrigin, SQLFormat sqlFormat) {
+			AbstractDB db, SQLFormat sqlFormat) {
 		deleteToCache(beans);
-		super.delete(beans, connectionOrigin, sqlFormat);
+		super.delete(beans, db, sqlFormat);
 	}
 	
 	@Override
 	public void update(Collection<Object> beans,
-			ConnectionOrigin connectionOrigin, SQLFormat sqlFormat) {
+			AbstractDB db, SQLFormat sqlFormat) {
 		deleteToCache(beans);
-		super.update(beans, connectionOrigin, sqlFormat);
+		super.update(beans, db, sqlFormat);
 	}
 	
 	@Override
 	public void saveOrUpdate(Collection<Object> beans,
-			ConnectionOrigin connectionOrigin, SQLFormat sqlFormat) {
+			AbstractDB db, SQLFormat sqlFormat) {
 		deleteToCache(beans);
-		super.saveOrUpdate(beans, connectionOrigin, sqlFormat);
-	}
-	
-	@Override
-	public void incr(Object obj, String field, double limit, Double maxValue,
-			ConnectionOrigin connectionOrigin, SQLFormat sqlFormat) {
-		deleteToCache(Arrays.asList(obj));
-		super.incr(obj, field, limit, maxValue, connectionOrigin, sqlFormat);
-	}
-	
-	@Override
-	public void decr(Object obj, String field, double limit, Double minValue,
-			ConnectionOrigin connectionOrigin, SQLFormat sqlFormat) {
-		deleteToCache(Arrays.asList(obj));
-		super.decr(obj, field, limit, minValue, connectionOrigin, sqlFormat);
+		super.saveOrUpdate(beans, db, sqlFormat);
 	}
 }

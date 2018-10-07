@@ -73,11 +73,9 @@ public final class TransactionContext {
 	
 	/**
 	 * 不参与正在进行的事务，单独执行
-	 * @param connectionOrigin
-	 * @param sqls
 	 */
-	public void forceExecute(ConnectionOrigin connectionOrigin, Collection<SQL> sqls){
-		if (sqls == null || connectionOrigin == null) {
+	public void forceExecute(AbstractDB db, Collection<SQL> sqls){
+		if (sqls == null || db == null) {
 			throw new NullPointerException();
 		}
 		
@@ -87,7 +85,7 @@ public final class TransactionContext {
 			}
 		}
 		
-		DBUtils.execute(connectionOrigin, sqls);
+		DBUtils.execute(db, sqls);
 	}
 
 	/**
@@ -144,8 +142,8 @@ public final class TransactionContext {
 		}
 	}
 	
-	public void execute(ConnectionOrigin connectionOrigin, SQL ...sqls){
-		execute(connectionOrigin, Arrays.asList(sqls));
+	public void execute(AbstractDB db, SQL ...sqls){
+		execute(db, Arrays.asList(sqls));
 	}
 
 	/**
@@ -154,8 +152,8 @@ public final class TransactionContext {
 	 * @param connectionOrigin
 	 * @param sql
 	 */
-	public void execute(ConnectionOrigin connectionOrigin, Collection<SQL> sqls) {
-		if (connectionOrigin == null || sqls == null || sqls.isEmpty()) {
+	public void execute(AbstractDB db, Collection<SQL> sqls) {
+		if (db == null || sqls == null || sqls.isEmpty()) {
 			return;
 		}
 
@@ -167,7 +165,7 @@ public final class TransactionContext {
 
 		ThreadLocalDBTransaction localDBTransaction = threadLocalTransaction.get();
 		if (!transactionEnable || localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
-			SQLTransaction sqlTransaction = new SQLTransaction(connectionOrigin);
+			SQLTransaction sqlTransaction = new SQLTransaction(db);
 			for (SQL sql : sqls) {
 				sqlTransaction.addSql(sql);
 			}
@@ -177,7 +175,7 @@ public final class TransactionContext {
 				throw new ShuChaoWenRuntimeException(e);
 			}
 		} else {
-			localDBTransaction.addSql(connectionOrigin, sqls);
+			localDBTransaction.addSql(db, sqls);
 		}
 	}
 
@@ -194,7 +192,7 @@ public final class TransactionContext {
 		this.cacheEnable = cacheEnable;
 	}
 
-	public ResultSet select(ConnectionOrigin connectionOrigin, SQL sql){
+	public ResultSet select(AbstractDB db, SQL sql){
 		if(sqlDebug){
 			logger(sql);
 		}
@@ -202,12 +200,12 @@ public final class TransactionContext {
 		if (cacheEnable) {
 			ThreadLocalDBTransaction localDBTransaction = threadLocalTransaction.get();
 			if (localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
-				return DBUtils.select(connectionOrigin, sql);
+				return DBUtils.select(db, sql);
 			} else {
-				return localDBTransaction.select(connectionOrigin, sql);
+				return localDBTransaction.select(db, sql);
 			}
 		} else {
-			return DBUtils.select(connectionOrigin, sql);
+			return DBUtils.select(db, sql);
 		}
 	}
 	
@@ -241,8 +239,8 @@ public final class TransactionContext {
 }
 
 class ThreadLocalDBTransaction extends Transaction {
-	private HashMap<ConnectionOrigin, SQLTransaction> dbSqlMap = new HashMap<ConnectionOrigin, SQLTransaction>();
-	private Map<ConnectionOrigin, Map<String, ResultSet>> cacheMap = new HashMap<ConnectionOrigin, Map<String, ResultSet>>();
+	private HashMap<AbstractDB, SQLTransaction> dbSqlMap = new HashMap<AbstractDB, SQLTransaction>();
+	private Map<AbstractDB, Map<String, ResultSet>> cacheMap = new HashMap<AbstractDB, Map<String, ResultSet>>();
 	private TransactionCollection transactionCollection = new TransactionCollection();
 
 	/**
@@ -295,9 +293,9 @@ class ThreadLocalDBTransaction extends Transaction {
 		}
 	}
 
-	ResultSet select(ConnectionOrigin connectionOrigin, SQL sql) {
+	ResultSet select(AbstractDB db, SQL sql) {
 		if (isAutoCommit) {
-			return DBUtils.select(connectionOrigin, sql);
+			return DBUtils.select(db, sql);
 		} else {
 			ResultSet resultSet = null;
 			String id =  DBUtils.getSQLId(sql);
@@ -305,9 +303,9 @@ class ThreadLocalDBTransaction extends Transaction {
 			if(map.containsKey(id)){
 				return map.get(id);
 			}else{
-				resultSet = DBUtils.select(connectionOrigin, sql);
+				resultSet = DBUtils.select(db, sql);
 				map.put(id, resultSet);
-				cacheMap.put(connectionOrigin, map);
+				cacheMap.put(db, map);
 				return resultSet;
 			}
 		}
@@ -319,13 +317,13 @@ class ThreadLocalDBTransaction extends Transaction {
 	private void reset() {
 		cacheMap.clear();
 		transactionCollection.clear();
-		for (Entry<ConnectionOrigin, SQLTransaction> entry : dbSqlMap.entrySet()) {
+		for (Entry<AbstractDB, SQLTransaction> entry : dbSqlMap.entrySet()) {
 			entry.getValue().clear();
 		}
 		transactionCount = 0;
 	}
 
-	void addSql(ConnectionOrigin db, Collection<SQL> sqls) {
+	void addSql(AbstractDB db, Collection<SQL> sqls) {
 		if (sqls == null || db == null) {
 			return;
 		}
@@ -339,7 +337,7 @@ class ThreadLocalDBTransaction extends Transaction {
 
 	@Override
 	public void begin() throws Exception {
-		for (Entry<ConnectionOrigin, SQLTransaction> entry : dbSqlMap.entrySet()) {
+		for (Entry<AbstractDB, SQLTransaction> entry : dbSqlMap.entrySet()) {
 			transactionCollection.add(entry.getValue());
 		}
 		transactionCollection.begin();

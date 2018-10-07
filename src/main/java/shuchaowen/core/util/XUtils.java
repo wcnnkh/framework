@@ -17,7 +17,7 @@ public class XUtils {
 		close(false, closeables);
 	}
 
-	public static void close(final boolean throwException, final AutoCloseable... closeables) {
+	public static void close(final boolean throwException, final AutoCloseable... closeables){
 		if (closeables != null) {
 			for (AutoCloseable close : closeables) {
 				if (close != null) {

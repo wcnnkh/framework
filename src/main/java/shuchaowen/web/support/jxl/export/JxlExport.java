@@ -10,8 +10,7 @@ import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import shuchaowen.core.db.ConnectionOrigin;
-import shuchaowen.core.db.TransactionContext;
+import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.web.support.jxl.export.service.impl.SqlExportRowImpl;
@@ -89,7 +88,7 @@ public class JxlExport {
 		response.flushBuffer();
 	}
 	
-	public static void sqlResultSetToExcel(String fileName, String title[], ConnectionOrigin db
+	public static void sqlResultSetToExcel(String fileName, String title[], AbstractDB db
 			, HttpServletResponse response, SqlExportRowImpl exportRow, SQL ...sqls)
 			throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
@@ -102,7 +101,7 @@ public class JxlExport {
 		response.flushBuffer();
 	}
 	
-	public static void sqlResultSetToExcel(String fileName, String title[], ConnectionOrigin db,
+	public static void sqlResultSetToExcel(String fileName, String title[], AbstractDB db,
 			List<SQL> sqlList, HttpServletResponse response, SqlExportRowImpl exportRow)
 			throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
@@ -116,13 +115,13 @@ public class JxlExport {
 	}
 	
 	
-	public static void sqlResultSetToExcel(String title[], ConnectionOrigin db, List<SQL> sqlList, OutputStream os, SqlExportRowImpl exportRow)
+	public static void sqlResultSetToExcel(String title[], AbstractDB db, List<SQL> sqlList, OutputStream os, SqlExportRowImpl exportRow)
 			throws Exception {
 		// 创建Excel工作薄
 		WritableWorkbook wwb = Workbook.createWorkbook(os);
 		ResultSetToExeclRowCall rowCall = new ResultSetToExeclRowCall(wwb, title, exportRow);
 		for (SQL sql : sqlList) {
-			ResultSet resultSet = TransactionContext.getInstance().select(db, sql);
+			ResultSet resultSet = db.select(sql);
 			rowCall.format(resultSet);
 		}
 		// 写入数据
