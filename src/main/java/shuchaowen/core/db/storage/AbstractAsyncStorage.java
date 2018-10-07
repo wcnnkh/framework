@@ -36,6 +36,10 @@ public abstract class AbstractAsyncStorage extends DefaultStorage implements IAs
 			SQLFormat sqlFormat) {
 		producer(new ExecuteInfo(db.getClass(), sqlFormat.getClass(), EOperationType.SAVE_OR_UPDATE, beans));
 	}
+		
+	public void consumer(ExecuteInfo executeInfo) {
+		execute(executeInfo.getAbstractDB(), getSqlList(executeInfo));
+	}
 	
 	protected Collection<SQL> getSqlList(ExecuteInfo executeInfo){
 		switch (executeInfo.getOperationType()) {

@@ -18,65 +18,23 @@ import shuchaowen.core.db.sql.format.mysql.MysqlFormat;
 import shuchaowen.core.db.sql.format.mysql.MysqlSelect;
 import shuchaowen.core.db.storage.DefaultStorage;
 import shuchaowen.core.db.storage.Storage;
-import shuchaowen.core.db.storage.StorageFactory;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 
 public abstract class DB extends AbstractDB {
 	public static final Storage DEFAULT_STORAGE = new DefaultStorage();
 	public static final SQLFormat DEFAULT_SQL_FORMAT = new MysqlFormat();
-	
-	private volatile static Map<Class<? extends StorageFactory>, StorageFactory> storageFactoryMap = new HashMap<Class<? extends StorageFactory>, StorageFactory>();
-	
-	protected static StorageFactory getStorageFactory(Class<? extends StorageFactory> storageFactoryClass){
-		if(storageFactoryClass == null || storageFactoryClass == StorageFactory.class){
-			return null;
-		}
-		
-		StorageFactory storageFactory = storageFactoryMap.get(storageFactoryClass);
-		if(storageFactory == null){
-			synchronized (storageFactoryMap) {
-				storageFactory = storageFactoryMap.get(storageFactoryClass);
-				if(storageFactory == null){
-					try {
-						storageFactory = storageFactoryClass.newInstance();
-						storageFactoryMap.put(storageFactoryClass, storageFactory);
-					} catch (InstantiationException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		return storageFactory;
-	}
+	private Map<String, Storage> storageMap = new HashMap<String, Storage>();
 	
 	private SQLFormat sqlFormat;
-	@Deprecated
-	private boolean debug;
-	private StorageFactory storageFactory;
+	private Storage storage;
 	
-	public final StorageFactory getStorageFactory() {
-		return storageFactory;
-	}
-
-	public void setStorageFactory(StorageFactory storageFactory) {
-		if (storageFactory == null) {
-			throw new NullPointerException("storageFactory not is null");
+	protected void registerStorage(Class<?> tableClass, Storage storage){
+		synchronized (storageMap) {
+			storageMap.put(ClassUtils.getCGLIBRealClassName(tableClass), storage);
 		}
-		
-		this.storageFactory = storageFactory;
 	}
 	
-	public void setStorageFactory(Class<? extends StorageFactory> storageFactoryClass) {
-		if (storageFactoryClass == null) {
-			throw new NullPointerException("storageFactoryClass not is null");
-		}
-		
-		this.storageFactory = getStorageFactory(storageFactoryClass);
-	}
-
 	protected void setSqlFormat(SQLFormat sqlFormat) {
 		if (sqlFormat == null) {
 			throw new NullPointerException("sqlformat not is null");
@@ -84,13 +42,33 @@ public abstract class DB extends AbstractDB {
 		this.sqlFormat = sqlFormat;
 	}
 	
-	private Storage getStorage(Class<?> tableClass){
-		TableInfo tableInfo = getTableInfo(tableClass);
-		Storage storage = tableInfo.getStorage();
-		if(storage == null && storageFactory != null){
-			storage = storageFactory.getStorage(tableClass);
-		}
+	public Storage getStorage() {
 		return storage == null? DEFAULT_STORAGE:storage;
+	}
+
+	public void setStorage(Storage storage) {
+		this.storage = storage;
+	}
+	
+	public Storage getStorage(Class<?> tableClass){
+		Storage storage = storageMap.get(ClassUtils.getCGLIBRealClassName(tableClass));
+		return storage == null? getStorage():storage;
+	}
+	
+	private Map<Storage, List<Object>> getStorageBeanMap(Collection<Object> beanList){
+		Map<Storage, List<Object>> map = new HashMap<Storage, List<Object>>();
+		for(Object bean : beanList){
+			Storage storage = getStorage(bean.getClass());
+			List<Object> list = map.get(storage);
+			if(list == null){
+				list = new ArrayList<Object>();
+				list.add(bean);
+				map.put(storage, list);
+			}else{
+				list.add(bean);
+			}
+		}
+		return map;
 	}
 
 	public Select createSelect(){
@@ -173,22 +151,6 @@ public abstract class DB extends AbstractDB {
 	public <T> List<T> getByIdList(Class<T> type, Object... params) {
 		return getStorage(type).getByIdList(this, getSqlFormat(), type, params);
 	}
-	
-	private Map<Storage, List<Object>> getBeanStorageMap(Collection<Object> beans){
-		Map<Storage, List<Object>> map = new HashMap<Storage, List<Object>>();
-		for(Object bean : beans){
-			Storage storage = getStorage(bean.getClass());
-			List<Object> list = map.get(storage);
-			if(list == null){
-				list = new ArrayList<Object>();
-				list.add(bean);
-				map.put(storage, list);
-			}else{
-				list.add(bean);
-			}
-		}
-		return map;
-	}
 
 	/** 保存  **/
 	public void save(Object... beans) {
@@ -200,9 +162,18 @@ public abstract class DB extends AbstractDB {
 			return ;
 		}
 		
-		Map<Storage, List<Object>> map = getBeanStorageMap(beans);
-		for(Entry<Storage, List<Object>> entry : map.entrySet()){
-			entry.getKey().save(entry.getValue(), this, getSqlFormat());
+		if(storageMap.isEmpty()){
+			getStorage().save(beans, this, getSqlFormat());
+		}else if(beans.size() == 1){
+			for(Object bean : beans){
+				getStorage(bean.getClass()).save(beans, this, getSqlFormat());
+				break;
+			}
+		}else{
+			Map<Storage, List<Object>> map = getStorageBeanMap(beans);
+			for(Entry<Storage, List<Object>> entry : map.entrySet()){
+				entry.getKey().save(entry.getValue(), this, getSqlFormat());
+			}
 		}
 	}
 
@@ -216,9 +187,18 @@ public abstract class DB extends AbstractDB {
 			return ;
 		}
 		
-		Map<Storage, List<Object>> map = getBeanStorageMap(beans);
-		for(Entry<Storage, List<Object>> entry : map.entrySet()){
-			entry.getKey().delete(entry.getValue(), this, getSqlFormat());
+		if(storageMap.isEmpty()){
+			getStorage().delete(beans, this, getSqlFormat());
+		}else if(beans.size() == 1){
+			for(Object bean : beans){
+				getStorage(bean.getClass()).delete(beans, this, getSqlFormat());
+				break;
+			}
+		}else{
+			Map<Storage, List<Object>> map = getStorageBeanMap(beans);
+			for(Entry<Storage, List<Object>> entry : map.entrySet()){
+				entry.getKey().delete(entry.getValue(), this, getSqlFormat());
+			}
 		}
 	}
 	
@@ -232,9 +212,18 @@ public abstract class DB extends AbstractDB {
 			return ;
 		}
 		
-		Map<Storage, List<Object>> map = getBeanStorageMap(beans);
-		for(Entry<Storage, List<Object>> entry : map.entrySet()){
-			entry.getKey().update(entry.getValue(), this, getSqlFormat());
+		if(storageMap.isEmpty()){
+			getStorage().update(beans, this, getSqlFormat());
+		}else if(beans.size() == 1){
+			for(Object bean : beans){
+				getStorage(bean.getClass()).update(beans, this, getSqlFormat());
+				break;
+			}
+		}else{
+			Map<Storage, List<Object>> map = getStorageBeanMap(beans);
+			for(Entry<Storage, List<Object>> entry : map.entrySet()){
+				entry.getKey().update(entry.getValue(), this, getSqlFormat());
+			}
 		}
 	}
 	
@@ -248,17 +237,18 @@ public abstract class DB extends AbstractDB {
 			return ;
 		}
 		
-		Map<Storage, List<Object>> map = getBeanStorageMap(beans);
-		for(Entry<Storage, List<Object>> entry : map.entrySet()){
-			entry.getKey().saveOrUpdate(entry.getValue(), this, getSqlFormat());
+		if(storageMap.isEmpty()){
+			getStorage().saveOrUpdate(beans, this, getSqlFormat());
+		}else if(beans.size() == 1){
+			for(Object bean : beans){
+				getStorage(bean.getClass()).saveOrUpdate(beans, this, getSqlFormat());
+				break;
+			}
+		}else{
+			Map<Storage, List<Object>> map = getStorageBeanMap(beans);
+			for(Entry<Storage, List<Object>> entry : map.entrySet()){
+				entry.getKey().saveOrUpdate(entry.getValue(), this, getSqlFormat());
+			}
 		}
-	}
-
-	public boolean isDebug() {
-		return debug;
-	}
-
-	protected void setDebug(boolean debug) {
-		this.debug = debug;
 	}
 }

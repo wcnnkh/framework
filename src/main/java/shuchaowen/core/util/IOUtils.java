@@ -55,7 +55,7 @@ public final class IOUtils {
 		}
 	}
 	
-	public static byte[] javaObjectToByte(Object obj){
+	public static byte[] javaObjectToByte(Object obj) throws IOException{
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = null;
 		try {
@@ -64,27 +64,25 @@ public final class IOUtils {
 			oos.flush();
 			return bos.toByteArray();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw e;
 		}finally{
 			XUtils.close(oos, bos);
 		}
-		return null;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T byteToJavaObject(byte[] buf){
+	public static <T> T byteToJavaObject(byte[] buf) throws ClassNotFoundException, IOException{
 		ByteArrayInputStream bis = new ByteArrayInputStream(buf);
 		ObjectInputStream ois = null;
 		try {
 			ois = new ObjectInputStream(bis);
 			return (T) ois.readObject();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw e;
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			throw e;
 		}finally{
 			XUtils.close(ois, bis);
 		}
-		return null;
 	}
 }

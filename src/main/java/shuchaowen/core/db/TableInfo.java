@@ -9,8 +9,6 @@ import java.util.Map;
 import shuchaowen.core.db.annoation.NotColumn;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.db.proxy.BeanProxy;
-import shuchaowen.core.db.storage.Storage;
-import shuchaowen.core.db.storage.StorageFactory;
 import shuchaowen.core.exception.KeyAlreadyExistsException;
 import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.FieldInfo;
@@ -23,9 +21,6 @@ public final class TableInfo {
 	private String charset = "utf8";
 	private String row_format = "COMPACT";
 	
-	public static final String CAS_VERSION_COLUMN = "scw_cas_version";
-	public static final String SQL_CAS_VERSION_COLUMN = "`" + CAS_VERSION_COLUMN + "`";
-	private String tableAndCasColumn;
 	private ClassInfo classInfo;
 	
 	private Map<String, ColumnInfo> columnMap = new HashMap<String, ColumnInfo>();//所有的  数据库字段名到字段的映射
@@ -39,7 +34,6 @@ public final class TableInfo {
 	private ColumnInfo[] notPrimaryKeyColumns;
 	private ColumnInfo[] tableColumns;
 	private Class<?>[] proxyInterface;
-	private Storage storage;
 	private boolean parent = true;
 	
 	public TableInfo(ClassInfo classInfo) {
@@ -81,7 +75,6 @@ public final class TableInfo {
 				this.row_format = table.row_format();
 			}
 			
-			this.storage = getStorage(table.storageFactory(), classInfo.getClz());
 			this.parent = table.parent();
 		}
 		
@@ -109,7 +102,6 @@ public final class TableInfo {
 					throw new KeyAlreadyExistsException("[" + columnInfo.getName() + "]字段已存在");
 				}
 				
-				this.tableAndCasColumn = "`" + name + "`." + SQL_CAS_VERSION_COLUMN;
 				this.columnMap.put(columnInfo.getName(), columnInfo);
 				this.fieldToColumn.put(fieldInfo.getName(), columnInfo.getName());
 				
@@ -204,23 +196,6 @@ public final class TableInfo {
 		return notPrimaryKeySetterNameMap.get(setterMethodName);
 	}
 
-	public String getTableAndCasColumn() {
-		return tableAndCasColumn;
-	}
-	
-	public String getTableAndCasColumn(String tableName) {
-		if(tableName == null || tableName.length() == 0){
-			return SQL_CAS_VERSION_COLUMN;
-		}
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("`");
-		sb.append(tableName);
-		sb.append("`.");
-		sb.append(SQL_CAS_VERSION_COLUMN);
-		return sb.toString();
-	}
-
 	public Class<?>[] getProxyInterface() {
 		return proxyInterface;
 	}
@@ -244,10 +219,6 @@ public final class TableInfo {
 	public ColumnInfo[] getTableColumns() {
 		return tableColumns;
 	}
-
-	public Storage getStorage() {
-		return storage;
-	}
 	
 	public ClassInfo getClassInfo() {
 		return classInfo;
@@ -255,10 +226,5 @@ public final class TableInfo {
 
 	public boolean isParent() {
 		return parent;
-	}
-
-	private static Storage getStorage(Class<? extends StorageFactory> storageFactoryClass, Class<?> tableClass){
-		StorageFactory storageFactory = DB.getStorageFactory(storageFactoryClass);
-		return storageFactory == null? null:storageFactory.getStorage(tableClass);
 	}
 }

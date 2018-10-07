@@ -16,7 +16,7 @@ public class ExecuteInfo implements Serializable{
 	private volatile static Map<Class<? extends SQLFormat>, SQLFormat> sqlFormatMap = new HashMap<Class<? extends SQLFormat>, SQLFormat>();
 	
 	public static SQLFormat getSQLFormat(Class<? extends SQLFormat> sqlFormatClass){
-		if(sqlFormatClass.getName().equals(MysqlFormat.class)){
+		if(sqlFormatClass.getName().equals(MysqlFormat.class.getName())){
 			return DB.DEFAULT_SQL_FORMAT;
 		}
 		
