@@ -35,6 +35,14 @@ public abstract class DB extends AbstractDB {
 		}
 	}
 	
+	protected void registerDefaultStorage(Class<?> ...tableClass){
+		synchronized (storageMap) {
+			for(Class<?> clz : tableClass){
+				storageMap.put(ClassUtils.getCGLIBRealClassName(clz), DEFAULT_STORAGE);
+			}
+		}
+	}
+	
 	protected void setSqlFormat(SQLFormat sqlFormat) {
 		if (sqlFormat == null) {
 			throw new NullPointerException("sqlformat not is null");
