@@ -227,4 +227,12 @@ public final class TableInfo {
 	public boolean isParent() {
 		return parent;
 	}
+	
+	public PrimaryKeyParameter getPrimaryKeyParameter(Object data) throws IllegalArgumentException, IllegalAccessException{
+		Object[] params = new Object[getPrimaryKeyColumns().length];
+		for(int i=0; i<params.length; i++){
+			params[i] = getPrimaryKeyColumns()[i].getFieldInfo().forceGet(data);
+		}
+		return new PrimaryKeyParameter(params);
+	}
 }

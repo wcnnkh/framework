@@ -1,5 +1,7 @@
 package shuchaowen.core.db.storage;
 
+import java.util.Collection;
+
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.db.TableInfo;
@@ -28,6 +30,24 @@ public class CacheUtils {
 		return sb.toString();
 	}
 	
+	public static String getPrimaryKey(Collection<Object> params){
+		StringBuilder sb = new StringBuilder(64);
+		for(Object v : params){
+			sb.append(OBJECT_KEY_COCAT);
+			sb.append(v);
+		}
+		return sb.toString();
+	}
+	
+	public static String getPrimaryKey(Object ...params){
+		StringBuilder sb = new StringBuilder(64);
+		for(Object v : params){
+			sb.append(OBJECT_KEY_COCAT);
+			sb.append(v);
+		}
+		return sb.toString();
+	}
+	
 	public static String getObjectKey(Class<?> tableClass, Object ...params){
 		TableInfo tableInfo = DB.getTableInfo(tableClass);
 		if (tableInfo == null) {
@@ -43,12 +63,6 @@ public class CacheUtils {
 					"params length not equals primary key lenght");
 		}
 		
-		StringBuilder sb = new StringBuilder(64);
-		sb.append(ClassUtils.getCGLIBRealClassName(tableClass));
-		for(Object v : params){
-			sb.append(OBJECT_KEY_COCAT);
-			sb.append(v);
-		}
-		return sb.toString();
+		return ClassUtils.getCGLIBRealClassName(tableClass) + getPrimaryKey(params);
 	}
 }

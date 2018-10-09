@@ -1,6 +1,9 @@
 package shuchaowen.core.db.sql.format.mysql;
 
+import java.util.Collection;
+
 import shuchaowen.core.db.DB;
+import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.TableName;
 import shuchaowen.core.db.proxy.BeanProxy;
@@ -105,5 +108,9 @@ public class MysqlFormat implements SQLFormat {
 			e.printStackTrace();
 		}
 		throw new ShuChaoWenRuntimeException();
+	}
+
+	public SQL toSelectINId(TableInfo tableInfo, String tableName, Collection<PrimaryKeyParameter> primaryKeyParameters) {
+		return new SelectINId(tableInfo, tableName, primaryKeyParameters);
 	}
 }
