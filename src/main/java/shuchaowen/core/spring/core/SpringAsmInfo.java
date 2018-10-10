@@ -16,7 +16,7 @@
 
 package shuchaowen.core.spring.core;
 
-import shuchaowen.core.asm.Opcodes;
+import org.objectweb.asm.Opcodes;
 
 /**
  * Utility class exposing constants related to Spring's internal repackaging of the ASM

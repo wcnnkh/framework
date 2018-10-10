@@ -7,7 +7,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<asm.version>5.0.4</asm.version>
 		<cglib-nodep.version>3.2.8</cglib-nodep.version>
+		<cglib.version>3.2.8</cglib.version>
 		<junit.version>4.12</junit.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
 		<jsp-api.version>2.0</jsp-api.version>
@@ -29,6 +31,13 @@
 	</properties>
 
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.ow2.asm/asm -->
+		<dependency>
+		    <groupId>org.ow2.asm</groupId>
+		    <artifactId>asm</artifactId>
+		    <version>${asm.version}</version>
+		</dependency>
+	
 		<!-- https://mvnrepository.com/artifact/cglib/cglib-nodep -->
 		<dependency>
 			<groupId>cglib</groupId>

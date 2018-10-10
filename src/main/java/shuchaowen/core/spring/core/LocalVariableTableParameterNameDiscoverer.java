@@ -25,12 +25,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import shuchaowen.core.asm.ClassReader;
-import shuchaowen.core.asm.ClassVisitor;
-import shuchaowen.core.asm.Label;
-import shuchaowen.core.asm.MethodVisitor;
-import shuchaowen.core.asm.Opcodes;
-import shuchaowen.core.asm.Type;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+
 import shuchaowen.core.spring.util.ClassUtils;
 
 /**
