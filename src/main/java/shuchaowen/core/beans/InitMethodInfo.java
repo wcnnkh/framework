@@ -1,5 +1,6 @@
 package shuchaowen.core.beans;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 public final class InitMethodInfo {
@@ -17,5 +18,9 @@ public final class InitMethodInfo {
 
 	public List<BeanMethodParameter> getBeanMethodParameters() {
 		return beanMethodParameters;
+	}
+	
+	private Method getMethod(){
+		return null;
 	}
 }
