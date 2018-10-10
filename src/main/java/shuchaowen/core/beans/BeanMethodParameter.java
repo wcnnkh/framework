@@ -1,12 +1,12 @@
 package shuchaowen.core.beans;
 
-public final class BeanConstructorParameter {
+public class BeanMethodParameter {
 	private final TParameterType type;
 	private final Class<?> parameterType;
 	private final String name;//可能为空
 	private final String value;
 	
-	public BeanConstructorParameter(TParameterType type, Class<?> parameterType, String name, String value){
+	public BeanMethodParameter(TParameterType type, Class<?> parameterType, String name, String value){
 		this.type = type;
 		this.parameterType = parameterType;
 		this.name = name;
