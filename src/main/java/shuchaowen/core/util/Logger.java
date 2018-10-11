@@ -4,7 +4,6 @@ import shuchaowen.core.logger.AbstractLogger;
 import shuchaowen.core.logger.Level;
 import shuchaowen.core.logger.LogMsg;
 import shuchaowen.core.logger.LoggerProcess;
-import shuchaowen.core.util.XTime;
 
 public class Logger {
 	private static final AbstractLogger logger = new AsyncLogger();
@@ -62,6 +61,7 @@ class AsyncLogger extends LoggerProcess {
 			break;
 		case WARN:
 			System.err.println(msg.toString());
+			break;
 		default:
 			System.out.println(msg.toString());
 			break;
