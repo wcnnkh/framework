@@ -57,8 +57,6 @@ class AsyncLogger extends LoggerProcess {
 	public void console(LogMsg msg) throws Exception {
 		switch (msg.getLevel()) {
 		case ERROR:
-			System.err.println(msg.toString());
-			break;
 		case WARN:
 			System.err.println(msg.toString());
 			break;
