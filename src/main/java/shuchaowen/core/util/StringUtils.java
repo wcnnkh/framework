@@ -43,6 +43,42 @@ public class StringUtils {
 		return false;
 	}
 	
+	public static String[] commonSplit(String str){
+		return split(str, ' ', ',', ';');
+	}
+	
+	public static String[] split(String str, char ...regex){
+		if(str == null || str.length() == 0){
+			return new String[]{str};
+		}
+		
+		int lastFind = 0;
+		List<String> list = new ArrayList<String>();
+		char[] chars = str.toCharArray();
+		for(int i=0; i<chars.length; i++){
+			boolean b = false;
+			for(char r : regex){
+				if(r == chars[i]){
+					b = true;
+				}
+			}
+			
+			if(b){//找到了
+				if(i == lastFind){
+					continue;
+				}else{
+					list.add(new String(chars, lastFind, i));
+				}
+				lastFind = i;
+			}
+		}
+		
+		if(list.isEmpty()){
+			return new String[]{str};
+		}
+		return list.toArray(new String[list.size()]);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static <T> List<T> splitList(Class<T> type, String strs, String regex, boolean isTrim){
 		if(type == null || regex == null){

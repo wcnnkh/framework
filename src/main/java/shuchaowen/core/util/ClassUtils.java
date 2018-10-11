@@ -23,7 +23,7 @@ import shuchaowen.core.spring.core.LocalVariableTableParameterNameDiscoverer;
 
 public final class ClassUtils {
 	public static final String CGLIB_CLASS_SPLIT = "$$";
-	private static Map<String, ClassInfo> clzMap = new HashMap<String, ClassInfo>();
+	private volatile static Map<String, ClassInfo> clzMap = new HashMap<String, ClassInfo>();
 	private static Map<Class<?>, Class<?>> basicTypeMap = new HashMap<Class<?>, Class<?>>();
 	private static Map<Class<?>, Class<?>> basicValueTypeMap = new HashMap<Class<?>, Class<?>>();
 	private static Map<String, Class<?>> basicValueTypeNameMap = new HashMap<String, Class<?>>();
@@ -323,9 +323,8 @@ public final class ClassUtils {
 		}else if("*".equals(packageName)){
 			return getClassesForPackage("");
 		}else{
-			packageName = packageName.replaceAll(" ", "");
 			Map<String, Class<?>> classMap = new HashMap<String, Class<?>>();
-			String[] pArr = packageName.split(";");
+			String[] pArr = StringUtils.commonSplit(packageName);
 			Map<String, Boolean> tagMap = new HashMap<String, Boolean>();
 			for(String pg : pArr){
 				if(tagMap.containsKey(pg)){
@@ -575,19 +574,6 @@ public final class ClassUtils {
 	
 	public static String getCGLIBRealClassName(Class<?> clz){
 		return getCGLIBRealClassName(clz.getName());
-	}
-	
-	/**
-	 * 获取一个类的真实类，比如被CGLIB代理的类
-	 * @param type
-	 * @return
-	 */
-	public static Class<?> getRealClassType(Class<?> type){
-		if(type.getSuperclass() == Object.class){
-			return type;
-		}else{
-			return type.getSuperclass();
-		}
 	}
 	
 	public static String getCGLIBRealClassName(String cglibName){

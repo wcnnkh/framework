@@ -6,9 +6,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import shuchaowen.core.beans.BeanFilter;
+
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface Service {
-	public String value() default "";
+public @interface Bean {
+	public String id() default "";
+	public boolean singleton() default true;
+	public Class<? extends BeanFilter>[] beanFilters() default {};
 }
