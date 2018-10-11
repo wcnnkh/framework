@@ -1,4 +1,4 @@
-package shuchaowen.core.beans.excepation;
+package shuchaowen.core.beans.exception;
 
 public class BeansException extends RuntimeException{
 	private static final long serialVersionUID = 1L;

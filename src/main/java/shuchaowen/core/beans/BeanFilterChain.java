@@ -10,7 +10,9 @@ public final class BeanFilterChain {
 	private Iterator<BeanFilter> filterIterator;
 	
 	public BeanFilterChain(List<BeanFilter> filters){
-		this.filterIterator = filters.iterator();
+		if(filters != null){
+			this.filterIterator = filters.iterator();
+		}
 	}
 	
 	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable{

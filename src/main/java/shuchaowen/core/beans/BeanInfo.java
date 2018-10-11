@@ -21,7 +21,7 @@ import shuchaowen.core.beans.annotaion.InitMethod;
 import shuchaowen.core.beans.annotaion.Proxy;
 import shuchaowen.core.beans.annotaion.Service;
 import shuchaowen.core.beans.annotaion.Transaction;
-import shuchaowen.core.beans.excepation.BeansException;
+import shuchaowen.core.beans.exception.BeansException;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.db.TransactionContext;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
@@ -46,7 +46,12 @@ public final class BeanInfo {
 	private List<Method> destroyMethodList;
 	
 	public BeanInfo(Class<?> type){
+		if(type.isInterface() || Modifier.isAbstract(type.getModifiers())){
+			throw new BeansException(type.getName() + " modifiers error");
+		}
+		
 		this.type = type;
+		this.proxy = checkProxy();
 		this.beanFilters = getAnnotationBeanFilters();
 		this.singleton = isSingletonByAnnoation();
 		this.constructor = getConstructor();
@@ -61,10 +66,17 @@ public final class BeanInfo {
 		this.constructorList = constructorList;
 		this.propertiesList = propertiesList;
 		this.singleton = singleton;
-		this.proxy = (beanFilters != null && !beanFilters.isEmpty()) || isTransaction();
+		this.proxy = checkProxy();
 		this.constructor = getConstructor();
 		this.initMethodList = getInitMethodList(initMethodName);
 		this.destroyMethodList = getDestroyMethodList(destoryMethodName);
+	}
+	
+	private boolean checkProxy(){
+		if(Modifier.isFinal(type.getModifiers())){
+			return false;
+		}
+		return (beanFilters != null && !beanFilters.isEmpty()) || isTransaction();
 	}
 	
 	private boolean isSingletonByAnnoation(){
@@ -99,6 +111,7 @@ public final class BeanInfo {
 							+ method.getName() + "There must be no parameter.");
 				}
 				
+				method.setAccessible(true);
 				methods.add(method);
 			}
 			tempClz = tempClz.getSuperclass();
@@ -138,6 +151,7 @@ public final class BeanInfo {
 		for (String name : names) {
 			Method method = getMethodByParameterTypes(name);
 			if (method != null) {
+				method.setAccessible(true);
 				list.add(method);
 			}
 		}
@@ -272,14 +286,16 @@ public final class BeanInfo {
 
 	private Object createProxyInstance(BeanFactory beanFactory, ConfigFactory configFactory) {
 		Enhancer enhancer = new Enhancer();
+		List<BeanFilter> list = null;
 		if (beanFilters != null && !beanFilters.isEmpty()) {
-			List<BeanFilter> list = new ArrayList<BeanFilter>();
+			list = new ArrayList<BeanFilter>();
+			
 			for(Class<? extends BeanFilter> f : beanFilters){
 				list.add(beanFactory.get(f));
 			}
-			enhancer.setCallback(new BeanInfoMethodInterceptor(this, list));
 		}
-
+		
+		enhancer.setCallback(new BeanInfoMethodInterceptor(this, list));
 		enhancer.setSuperclass(type);
 		if (constructorList == null || constructorList.isEmpty()) {
 			return enhancer.create();
@@ -384,7 +400,7 @@ public final class BeanInfo {
 		if (proxy != null) {
 			FieldInfo fieldInfo = new FieldInfo(clz, field);
 			try {
-				fieldInfo.set(null, (beanFactory.get(proxy.value())).getProxy(beanFactory, field.getType()));
+				fieldInfo.set(obj, (beanFactory.get(proxy.value())).getProxy(beanFactory, field.getType()));
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -526,11 +542,10 @@ public final class BeanInfo {
 		Object bean;
 		try {
 			if (isProxy()) {
-				bean = createInstance(beanFactory, configFactory);
-			} else {
 				bean = createProxyInstance(beanFactory, configFactory);
+			} else {
+				bean = createInstance(beanFactory, configFactory);
 			}
-
 			setProperties(beanFactory, configFactory, bean);
 			return bean;
 		} catch (Exception e) {
@@ -552,6 +567,7 @@ public final class BeanInfo {
 			}
 			tempClz = tempClz.getSuperclass();
 		}
+		initMethod(obj);
 	}
 }
 
