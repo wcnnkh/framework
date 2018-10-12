@@ -8,28 +8,34 @@ import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.proxy.BeanProxy;
 import shuchaowen.core.db.proxy.BeanProxyMethodInterceptor;
+import shuchaowen.core.db.sql.format.SQLFormat;
+import shuchaowen.core.db.storage.AbstractExecuteStorage;
 import shuchaowen.core.db.storage.AbstractHotSpotDataCacheStorage;
 import shuchaowen.core.util.XTime;
 
 public class JedisPoolHotSpotDataCacheFactory extends AbstractHotSpotDataCacheStorage{
+	private static final int DEFAULT_EXP = (int) ((7 * XTime.ONE_DAY) / 1000);
+	
 	private JedisPool jedisPool;
 	
-	public JedisPoolHotSpotDataCacheFactory(){
-		this(new LocalJedisPool().getJedisPool());
+	public JedisPoolHotSpotDataCacheFactory(AbstractExecuteStorage abstractExecuteStorage, JedisPool jedisPool){
+		this(abstractExecuteStorage, "", DEFAULT_EXP, jedisPool);
 	}
 	
-	public JedisPoolHotSpotDataCacheFactory(JedisPool jedisPool){
-		this((int) ((7 * XTime.ONE_DAY) / 1000), jedisPool);
+	public JedisPoolHotSpotDataCacheFactory(AbstractExecuteStorage abstractExecuteStorage, String prefix, int exp, JedisPool jedisPool){
+		super(abstractExecuteStorage, prefix, exp);
+		this.jedisPool = jedisPool;
 	}
 	
-	public JedisPoolHotSpotDataCacheFactory(int exp, JedisPool jedisPool){
-		this("", exp, jedisPool);
+	public JedisPoolHotSpotDataCacheFactory(AbstractDB db, SQLFormat sqlFormat, JedisPool jedisPool) {
+		this(db, sqlFormat, "", DEFAULT_EXP, jedisPool);
 	}
 	
-	public JedisPoolHotSpotDataCacheFactory(String prefix, int exp, JedisPool jedisPool) {
-		super(prefix, exp);
+	public JedisPoolHotSpotDataCacheFactory(AbstractDB db, SQLFormat sqlFormat, String prefix, int exp, JedisPool jedisPool) {
+		super(db, sqlFormat, prefix, exp);
 		this.jedisPool = jedisPool;
 	}
 

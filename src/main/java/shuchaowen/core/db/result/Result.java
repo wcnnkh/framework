@@ -64,6 +64,17 @@ public class Result implements Serializable {
 			dataMap.put(sb.toString(), resultSet.getObject(i));
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T getValue(Class<?> tableClass, String name){
+		TableInfo tableInfo = DB.getTableInfo(tableClass);
+		String tableName = tableMapping == null ? tableInfo.getName() : tableMapping.getTableName(tableClass);
+		ColumnInfo columnInfo = tableInfo.getColumnInfo(name);
+		StringBuilder sb = new StringBuilder(tableName);
+		sb.append(".");
+		sb.append(columnInfo.getName());
+		return (T) dataMap.get(sb.toString());
+	}
 
 	public Object[] getValues() {
 		if (values == null && dataMap != null) {

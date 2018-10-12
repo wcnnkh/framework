@@ -7,17 +7,24 @@ import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.sql.format.SQLFormat;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
-public abstract class AbstractHotSpotDataCacheStorage extends DefaultStorage{
+public abstract class AbstractHotSpotDataCacheStorage extends AbstractStorage{
 	private String prefix;
 	private int exp;// 过期时间
-
-	public AbstractHotSpotDataCacheStorage(String prefix, int exp) {
+	private AbstractExecuteStorage abstractExecuteStorage;
+	
+	public AbstractHotSpotDataCacheStorage(AbstractExecuteStorage abstractExecuteStorage, String prefix, int exp){
+		this(abstractExecuteStorage.getDb(), abstractExecuteStorage.getSqlFormat(), prefix, exp);
+		this.abstractExecuteStorage = abstractExecuteStorage;
+	}
+	
+	public AbstractHotSpotDataCacheStorage(AbstractDB db, SQLFormat sqlFormat, String prefix, int exp) {
+		super(db, sqlFormat);
 		this.prefix = prefix;
 		this.exp = exp;
 	}
 
 	public abstract <T> T getAndTouch(Class<T> type, String key, int exp) throws Exception;
-
+	
 	public abstract void set(String key, int exp, Object data) throws Exception;
 
 	public abstract boolean add(String key, int exp, Object data) throws Exception;
@@ -31,11 +38,21 @@ public abstract class AbstractHotSpotDataCacheStorage extends DefaultStorage{
 			throw new ShuChaoWenRuntimeException(e);
 		}
 	}
-
+	
 	public void saveToCache(Collection<Object> beans) {
 		for (Object bean : beans) {
 			try {
 				add(prefix + CacheUtils.getObjectKey(bean), exp, bean);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void updateToCache(Collection<Object> beans){
+		for (Object bean : beans) {
+			try {
+				set(prefix + CacheUtils.getObjectKey(bean), exp, bean);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -54,14 +71,13 @@ public abstract class AbstractHotSpotDataCacheStorage extends DefaultStorage{
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getById(AbstractDB db,
-			SQLFormat sqlFormat, Class<T> type, Object... params) {
+	public <T> T getById(Class<T> type, Object... params) {
 		Object t = getByIdToCache(type, params);
 		if(t != null){
 			return (T) t;
 		}
 		
-		t = super.getById(db, sqlFormat, type, params);
+		t = super.getById(type, params);
 		if(t != null){
 			saveToCache(Arrays.asList(t));
 		}
@@ -69,29 +85,34 @@ public abstract class AbstractHotSpotDataCacheStorage extends DefaultStorage{
 	}
 	
 	@Override
-	public void save(Collection<Object> beans, AbstractDB db, SQLFormat sqlFormat) {
-		deleteToCache(beans);
-		super.save(beans, db, sqlFormat);
+	public void save(Collection<Object> beans) {
+		saveToCache(beans);
+		super.save(beans);
 	}
 	
 	@Override
-	public void delete(Collection<Object> beans,
-			AbstractDB db, SQLFormat sqlFormat) {
+	public void delete(Collection<Object> beans) {
 		deleteToCache(beans);
-		super.delete(beans, db, sqlFormat);
+		super.delete(beans);
 	}
 	
 	@Override
-	public void update(Collection<Object> beans,
-			AbstractDB db, SQLFormat sqlFormat) {
-		deleteToCache(beans);
-		super.update(beans, db, sqlFormat);
+	public void update(Collection<Object> beans) {
+		updateToCache(beans);
+		super.update(beans);
 	}
 	
 	@Override
-	public void saveOrUpdate(Collection<Object> beans,
-			AbstractDB db, SQLFormat sqlFormat) {
-		deleteToCache(beans);
-		super.saveOrUpdate(beans, db, sqlFormat);
+	public void saveOrUpdate(Collection<Object> beans) {
+		updateToCache(beans);
+		super.saveOrUpdate(beans);
+	}
+	
+	public void execute(ExecuteInfo executeInfo) {
+		if(abstractExecuteStorage == null){
+			getDb().execute(getSqlList(executeInfo));
+		}else{
+			abstractExecuteStorage.execute(executeInfo);
+		}
 	}
 }

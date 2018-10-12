@@ -1,9 +1,8 @@
 package shuchaowen.core.db.storage;
 
-import java.util.Collection;
-
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.DB;
+import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
@@ -30,7 +29,7 @@ public class CacheUtils {
 		return sb.toString();
 	}
 	
-	public static String getPrimaryKey(Collection<Object> params){
+	private static String getPrimaryKey(Object ...params){
 		StringBuilder sb = new StringBuilder(64);
 		for(Object v : params){
 			sb.append(OBJECT_KEY_COCAT);
@@ -39,13 +38,8 @@ public class CacheUtils {
 		return sb.toString();
 	}
 	
-	public static String getPrimaryKey(Object ...params){
-		StringBuilder sb = new StringBuilder(64);
-		for(Object v : params){
-			sb.append(OBJECT_KEY_COCAT);
-			sb.append(v);
-		}
-		return sb.toString();
+	public static String getObjectKey(Class<?> tableClass, PrimaryKeyParameter params){
+		return getObjectKey(tableClass, params.getParams());
 	}
 	
 	public static String getObjectKey(Class<?> tableClass, Object ...params){

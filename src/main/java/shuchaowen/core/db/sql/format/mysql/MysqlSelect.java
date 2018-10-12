@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.db.TableInfo;
@@ -23,7 +24,7 @@ public class MysqlSelect extends Select{
 	private List<Object> paramList;
 	private StringBuilder orderBySql;
 	
-	public MysqlSelect(DB db){
+	public MysqlSelect(AbstractDB db){
 		super(db);
 	}
 	

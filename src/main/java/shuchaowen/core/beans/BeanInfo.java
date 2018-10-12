@@ -76,7 +76,33 @@ public final class BeanInfo {
 		if(Modifier.isFinal(type.getModifiers())){
 			return false;
 		}
-		return (beanFilters != null && !beanFilters.isEmpty()) || isTransaction();
+		
+		if(beanFilters != null && !beanFilters.isEmpty()){
+			return true;
+		}
+		
+		Controller controller = type.getAnnotation(Controller.class);
+		if (controller != null) {
+			return true;
+		}
+
+		Service service = type.getAnnotation(Service.class);
+		if (service != null) {
+			return true;
+		}
+
+		Transaction transaction = type.getAnnotation(Transaction.class);
+		if (transaction != null) {
+			return true;
+		}
+
+		for (Method method : type.getDeclaredMethods()) {
+			Transaction t = method.getAnnotation(Transaction.class);
+			if (t != null) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private boolean isSingletonByAnnoation(){
@@ -168,31 +194,6 @@ public final class BeanInfo {
 			}
 		}
 		return list;
-	}
-
-	private boolean isTransaction() {
-		Controller controller = type.getAnnotation(Controller.class);
-		if (controller != null) {
-			return true;
-		}
-
-		Service service = type.getAnnotation(Service.class);
-		if (service != null) {
-			return true;
-		}
-
-		Transaction transaction = type.getAnnotation(Transaction.class);
-		if (transaction != null) {
-			return true;
-		}
-
-		for (Method method : type.getDeclaredMethods()) {
-			Transaction t = method.getAnnotation(Transaction.class);
-			if (t != null) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private Constructor<?> getConstructorByParameterTypes(Class<?>... parameterTypes) {
@@ -538,7 +539,7 @@ public final class BeanInfo {
 		}
 	}
 
-	public Object newInstance(BeanFactory beanFactory, ConfigFactory configFactory) throws BeansException {
+	public Object newInstance(BeanFactory beanFactory, ConfigFactory configFactory){
 		Object bean;
 		try {
 			if (isProxy()) {

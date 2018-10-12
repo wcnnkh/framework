@@ -1,37 +1,32 @@
 package shuchaowen.core.db.storage.memcached;
 
-import java.io.IOException;
-
 import net.rubyeye.xmemcached.MemcachedClient;
+import shuchaowen.core.db.AbstractDB;
+import shuchaowen.core.db.sql.format.SQLFormat;
+import shuchaowen.core.db.storage.AbstractExecuteStorage;
 import shuchaowen.core.db.storage.AbstractHotSpotDataCacheStorage;
 import shuchaowen.core.util.XTime;
 
 public class XMemcachedHotSpotDataCacheStorage extends AbstractHotSpotDataCacheStorage{
-	private MemcachedClient memcachedClient;
+	private static final int DEFAULT_EXP = (int) ((7 * XTime.ONE_DAY) / 1000);
+	private final MemcachedClient memcachedClient;
 	
-	/**
-	 * 连接localhost
-	 * @throws IOException
-	 */
-	public XMemcachedHotSpotDataCacheStorage() throws IOException{
-		this(new LocalXMmecached().getMemcachedClient());
-	}
 
-	/**
-	 * 热点数据 过期时间7天
-	 * 
-	 * @param memcachedClient
-	 */
-	public XMemcachedHotSpotDataCacheStorage(MemcachedClient memcachedClient) {
-		this((int) ((7 * XTime.ONE_DAY) / 1000), memcachedClient);
+	public XMemcachedHotSpotDataCacheStorage(AbstractDB db, SQLFormat sqlFormat, MemcachedClient memcachedClient) {
+		this(db, sqlFormat, "", DEFAULT_EXP, memcachedClient);
 	}
-
-	public XMemcachedHotSpotDataCacheStorage(int exp, MemcachedClient memcachedClient) {
-		this("", exp, memcachedClient);
+	
+	public XMemcachedHotSpotDataCacheStorage(AbstractDB db, SQLFormat sqlFormat, String prefix, int exp, MemcachedClient memcachedClient){
+		super(db, sqlFormat, prefix, exp);
+		this.memcachedClient = memcachedClient;
 	}
-
-	public XMemcachedHotSpotDataCacheStorage(String prefix, int exp, MemcachedClient memcachedClient) {
-		super(prefix, exp);
+	
+	public XMemcachedHotSpotDataCacheStorage(AbstractExecuteStorage abstractExecuteStorage, MemcachedClient memcachedClient){
+		this(abstractExecuteStorage, "", (int) ((7 * XTime.ONE_DAY) / 1000), memcachedClient);
+	}
+	
+	public XMemcachedHotSpotDataCacheStorage(AbstractExecuteStorage abstractExecuteStorage, String prefix, int exp, MemcachedClient memcachedClient){
+		super(abstractExecuteStorage, prefix, exp);
 		this.memcachedClient = memcachedClient;
 	}
 
@@ -62,5 +57,4 @@ public class XMemcachedHotSpotDataCacheStorage extends AbstractHotSpotDataCacheS
 	public boolean delete(String key) throws Exception{
 		return memcachedClient.delete(key);
 	}
-
 }

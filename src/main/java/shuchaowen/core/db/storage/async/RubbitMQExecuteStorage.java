@@ -1,28 +1,36 @@
-package shuchaowen.core.db.storage.rabbitmq;
+package shuchaowen.core.db.storage.async;
 
 import java.io.IOException;
-
-import shuchaowen.core.db.storage.AbstractAsyncStorage;
-import shuchaowen.core.db.storage.ExecuteInfo;
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.util.IOUtils;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
+import shuchaowen.core.db.AbstractDB;
+import shuchaowen.core.db.sql.format.SQLFormat;
+import shuchaowen.core.db.storage.AbstractExecuteStorage;
+import shuchaowen.core.db.storage.ExecuteInfo;
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.core.util.IOUtils;
+
 /**
  * 基于rabbitMQ实现的异步存盘
  * @author asus1
  *
  */
-public class RubbitMQAsyncStorage extends AbstractAsyncStorage {
+public class RubbitMQExecuteStorage extends AbstractExecuteStorage {
 	private Channel channel;
 	private String queueName;
-
-	public RubbitMQAsyncStorage(Channel channel, String queueName)
+	
+	public RubbitMQExecuteStorage(AbstractDB db, Channel channel, String queueName) throws IOException{
+		this(db, DEFAULT_SQL_FORMAT, channel, queueName);
+	}
+	
+	public RubbitMQExecuteStorage(AbstractDB db, SQLFormat sqlFormat, Channel channel, String queueName)
 			throws IOException {
+		super(db, sqlFormat);
+		
 		this.channel = channel;
 		this.queueName = queueName;
 		/**
@@ -38,7 +46,7 @@ public class RubbitMQAsyncStorage extends AbstractAsyncStorage {
 				try {
 					ExecuteInfo executeInfo = IOUtils.byteToJavaObject(body);
 					if(executeInfo != null){
-						consumer(executeInfo);
+						getDb().execute(getSqlList(executeInfo));
 					}
 					getChannel().basicAck(envelope.getDeliveryTag(), false);
 				} catch (Exception e) {
@@ -48,7 +56,8 @@ public class RubbitMQAsyncStorage extends AbstractAsyncStorage {
 		});
 	}
 
-	public void producer(ExecuteInfo executeInfo) {
+	@Override
+	public void execute(ExecuteInfo executeInfo) {
 		byte[] data = null;
 		try {
 			data = IOUtils.javaObjectToByte(executeInfo);

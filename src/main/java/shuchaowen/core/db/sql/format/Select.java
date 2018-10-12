@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.TableMapping;
@@ -23,9 +24,9 @@ public abstract class Select{
 	private Map<String, String> associationWhereMap;
 	private TableMapping tableMapping;
 	private HashSet<String> selectTableSet;
-	protected DB db;
+	protected AbstractDB db;
 	
-	public Select(DB db) {
+	public Select(AbstractDB db) {
 		this.db = db;
 	}
 	
@@ -157,7 +158,7 @@ public abstract class Select{
 		return false;
 	}
 
-	public DB getDb() {
+	public AbstractDB getDb() {
 		return db;
 	}
 	

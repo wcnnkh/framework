@@ -10,7 +10,9 @@ import shuchaowen.core.db.annoation.NotColumn;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.db.proxy.BeanProxy;
 import shuchaowen.core.exception.KeyAlreadyExistsException;
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassInfo;
+import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.StringUtils;
 
@@ -42,7 +44,13 @@ public final class TableInfo {
 		this.proxyInterface = getBeanProxyInterface(classInfo.getClz());
 		
 		StringBuilder sb = new StringBuilder();
-		char[] chars = classInfo.getSimpleName().toCharArray();
+		char[] chars;
+		try {
+			chars = Class.forName(ClassUtils.getCGLIBRealClassName(classInfo.getClz())).getSimpleName().toCharArray();
+		} catch (ClassNotFoundException e) {
+			throw new ShuChaoWenRuntimeException(classInfo.getClz().getName());
+		}
+		
 		for (int i = 0; i < chars.length; i++) {
 			char c = chars[i];
 			if (Character.isUpperCase(c)) {// 如果是大写的
