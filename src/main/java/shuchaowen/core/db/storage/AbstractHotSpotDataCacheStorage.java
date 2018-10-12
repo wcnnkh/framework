@@ -3,8 +3,6 @@ package shuchaowen.core.db.storage;
 import java.util.Arrays;
 import java.util.Collection;
 
-import shuchaowen.core.db.AbstractDB;
-import shuchaowen.core.db.sql.format.SQLFormat;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 public abstract class AbstractHotSpotDataCacheStorage extends AbstractStorage{
@@ -13,14 +11,14 @@ public abstract class AbstractHotSpotDataCacheStorage extends AbstractStorage{
 	private AbstractExecuteStorage abstractExecuteStorage;
 	
 	public AbstractHotSpotDataCacheStorage(AbstractExecuteStorage abstractExecuteStorage, String prefix, int exp){
-		this(abstractExecuteStorage.getDb(), abstractExecuteStorage.getSqlFormat(), prefix, exp);
-		this.abstractExecuteStorage = abstractExecuteStorage;
-	}
-	
-	public AbstractHotSpotDataCacheStorage(AbstractDB db, SQLFormat sqlFormat, String prefix, int exp) {
-		super(db, sqlFormat);
+		super(abstractExecuteStorage.getDb(), abstractExecuteStorage.getSqlFormat());
 		this.prefix = prefix;
 		this.exp = exp;
+		this.abstractExecuteStorage = abstractExecuteStorage;
+	}
+
+	public AbstractExecuteStorage getAbstractExecuteStorage() {
+		return abstractExecuteStorage;
 	}
 
 	public abstract <T> T getAndTouch(Class<T> type, String key, int exp) throws Exception;
