@@ -84,26 +84,26 @@ public abstract class AbstractHotSpotDataCacheStorage extends AbstractStorage{
 	
 	@Override
 	public void save(Collection<Object> beans) {
-		saveToCache(beans);
 		super.save(beans);
+		saveToCache(beans);
 	}
 	
 	@Override
 	public void delete(Collection<Object> beans) {
-		deleteToCache(beans);
 		super.delete(beans);
+		deleteToCache(beans);
 	}
 	
 	@Override
 	public void update(Collection<Object> beans) {
-		updateToCache(beans);
 		super.update(beans);
+		updateToCache(beans);
 	}
 	
 	@Override
 	public void saveOrUpdate(Collection<Object> beans) {
-		updateToCache(beans);
 		super.saveOrUpdate(beans);
+		updateToCache(beans);
 	}
 	
 	public void execute(ExecuteInfo executeInfo) {

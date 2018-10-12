@@ -6,18 +6,17 @@ import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.sql.format.SQLFormat;
 import shuchaowen.core.db.storage.AbstractExecuteStorage;
 import shuchaowen.core.db.storage.ExecuteInfo;
-import shuchaowen.core.util.Logger;
-import shuchaowen.core.util.XTime;
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 /**
  * 此方式只能在单机环境一使用，因为在集群下无法保证执行顺序
- * 
  * @author shuchaowen
  *
  */
 public class MemoryAsyncExecuteStorage extends AbstractExecuteStorage {
 	private LinkedBlockingQueue<ExecuteInfo> queue = new LinkedBlockingQueue<ExecuteInfo>();
-
+	private volatile boolean service = true;
+	
 	public MemoryAsyncExecuteStorage(AbstractDB db) {
 		super(db, DEFAULT_SQL_FORMAT);
 	}
@@ -30,7 +29,7 @@ public class MemoryAsyncExecuteStorage extends AbstractExecuteStorage {
 		new Thread(new Runnable() {
 			
 			public void run() {
-				while(true){
+				while(service){
 					ExecuteInfo executeInfo = queue.poll();
 					if(executeInfo == null){
 						continue;
@@ -44,29 +43,27 @@ public class MemoryAsyncExecuteStorage extends AbstractExecuteStorage {
 				}
 			}
 		}).start();
-		
-		new Thread(new Runnable() {
-			
-			public void run() {
-				while(true){
-					try {
-						Thread.sleep(10 * XTime.ONE_SECOND);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					
-					if(queue.size() == 0){
-						continue;
-					}
-					
-					Logger.info("MemoryAsyncExecuteStorage", "剩余等待异步存储数量：" + queue.size());
-				} 
+	}
+	
+	public void shutdown(){
+		service = false;
+		if(queue.size() > 0){
+			while(true){
+				ExecuteInfo executeInfo = queue.poll();
+				try {
+					getDb().execute(getSqlList(executeInfo));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-		}).start();
+		}
 	}
 
 	@Override
 	public void execute(ExecuteInfo executeInfo) {
+		if(!service){
+			throw new ShuChaoWenRuntimeException("service is " + service);//停止服务了
+		}
 		queue.offer(executeInfo);
 	}
 }
