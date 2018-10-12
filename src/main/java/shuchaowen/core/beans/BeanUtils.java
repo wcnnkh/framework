@@ -86,8 +86,8 @@ public class BeanUtils {
 
 	public static void initStatic(BeanFactory beanFactory, Collection<Class<?>> classList) throws Exception {
 		initAutowriteStatic(beanFactory, classList);
-		BeanInfo.initDB(beanFactory, classList);
 		BeanUtils.invokerInitStaticMethod(classList);
+		BeanInfo.initDB(beanFactory, classList);
 	}
 
 	/**

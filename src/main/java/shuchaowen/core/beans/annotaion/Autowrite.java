@@ -6,11 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * 注入一个单例
- * @author shuchaowen
- *
- */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
