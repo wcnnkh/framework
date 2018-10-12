@@ -273,7 +273,7 @@ public final class BeanInfo {
 		}
 		return null;
 	}
-
+	
 	private Object createInstance(BeanFactory beanFactory, ConfigFactory configFactory)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (constructorParameterTypes == null || constructorParameterTypes.length == 0) {
@@ -284,8 +284,8 @@ public final class BeanInfo {
 			return constructor.newInstance(args);
 		}
 	}
-
-	private Object createProxyInstance(BeanFactory beanFactory, ConfigFactory configFactory) {
+	
+	private Enhancer getProxyEnhancer(BeanFactory beanFactory){
 		Enhancer enhancer = new Enhancer();
 		List<BeanFilter> list = null;
 		if (beanFilters != null && !beanFilters.isEmpty()) {
@@ -298,6 +298,18 @@ public final class BeanInfo {
 		
 		enhancer.setCallback(new BeanInfoMethodInterceptor(this, list));
 		enhancer.setSuperclass(type);
+		return enhancer;
+	}
+	
+	public Class<?> getProxyClass(BeanFactory beanFactory){
+		if(isProxy()){
+			return getProxyEnhancer(beanFactory).createClass();
+		}
+		return null;
+	}
+
+	private Object createProxyInstance(BeanFactory beanFactory, ConfigFactory configFactory) {
+		Enhancer enhancer = getProxyEnhancer(beanFactory);
 		if (constructorList == null || constructorList.isEmpty()) {
 			return enhancer.create();
 		} else {
@@ -365,8 +377,9 @@ public final class BeanInfo {
 		Config config = field.getAnnotation(Config.class);
 		if (config != null) {
 			FieldInfo fieldInfo = new FieldInfo(clz, field);
+			Object value = null;
 			try {
-				Object value = beanFactory.get(config.parse()).parse(beanFactory, fieldInfo, config.value(),
+				value = beanFactory.get(config.parse()).parse(beanFactory, fieldInfo, config.value(),
 						config.charset());
 				fieldInfo.set(obj, value);
 			} catch (Exception e) {
@@ -400,8 +413,9 @@ public final class BeanInfo {
 		Proxy proxy = field.getAnnotation(Proxy.class);
 		if (proxy != null) {
 			FieldInfo fieldInfo = new FieldInfo(clz, field);
+			Object v = beanFactory.get(proxy.value()).getProxy(beanFactory, field.getType());
 			try {
-				fieldInfo.set(obj, (beanFactory.get(proxy.value())).getProxy(beanFactory, field.getType()));
+				fieldInfo.set(obj, v);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -538,7 +552,7 @@ public final class BeanInfo {
 			}
 		}
 	}
-
+	
 	public Object newInstance(BeanFactory beanFactory, ConfigFactory configFactory){
 		Object bean;
 		try {

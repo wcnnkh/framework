@@ -38,7 +38,7 @@ public class BeanUtils {
 					throw new ShuChaoWenRuntimeException("ClassName=" + clz.getName() + ",MethodName="
 							+ method.getName() + "There must be no parameter.");
 				}
-
+				
 				Invoker invoke = new ReflectInvoker(null, method);
 				list.add(invoke);
 			}

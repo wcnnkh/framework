@@ -44,17 +44,18 @@ public class ConfigurationBeanFactory implements BeanFactory {
 		}
 	}
 
-	private BeanInfo getBeanInfo(String name) {
-		BeanInfo beanInfo = beanInfoMap.get(name);
+	public BeanInfo getBeanInfo(String name) {
+		String realName = ClassUtils.getCGLIBRealClassName(name);
+		BeanInfo beanInfo = beanInfoMap.get(realName);
 		if (beanInfo == null) {// 这个在配置文件里面找不到
 			// 试试这个名字是不是一个类名
 			try {
 				synchronized (beanInfoMap) {
-					beanInfo = beanInfoMap.get(name);
+					beanInfo = beanInfoMap.get(realName);
 					if(beanInfo == null){
-						Class<?> clz = Class.forName(name);
+						Class<?> clz = Class.forName(realName);
 						beanInfo = new BeanInfo(clz);
-						beanInfoMap.put(name, beanInfo);
+						beanInfoMap.put(realName, beanInfo);
 					}
 				}
 			} catch (ClassNotFoundException e) {
@@ -92,7 +93,7 @@ public class ConfigurationBeanFactory implements BeanFactory {
 	}
 
 	public <T> T get(Class<T> type) {
-		return get(ClassUtils.getCGLIBRealClassName(type));
+		return get(type.getName());
 	}
 
 	public boolean contains(String name) {
@@ -122,5 +123,9 @@ public class ConfigurationBeanFactory implements BeanFactory {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public boolean isProxy(String name) {
+		return getBeanInfo(name).isProxy();
 	}
 }
