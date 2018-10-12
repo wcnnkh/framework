@@ -324,7 +324,7 @@ public class FileUtils {
 	}
 	
 	
-	public static StringBuilder readerFileContent(File file, String charsetName){
+	public static String readerFileContent(File file, String charsetName){
 		FileInputStream fileInputStream = null;
 		StringBuilder sb = null;
 		try {
@@ -333,6 +333,19 @@ public class FileUtils {
 		} catch (Exception e) {
 			XUtils.close(false, fileInputStream);
 		}
-		return sb;
+		return sb == null? null:sb.toString();
+	}
+	
+	public static void writeFileContent(File file, String content, String charsetName){
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(file);
+			fos.write(content.getBytes(charsetName));
+			fos.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			XUtils.close(fos);
+		}
 	}
 }
