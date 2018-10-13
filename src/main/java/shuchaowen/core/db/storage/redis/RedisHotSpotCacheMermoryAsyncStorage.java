@@ -19,4 +19,8 @@ public class RedisHotSpotCacheMermoryAsyncStorage extends RedisHotSpotCacheStora
 			int exp, Redis redis) {
 		super(db, prefix, exp, redis, new MemoryAsyncStorage(db));
 	}
+	
+	public MemoryAsyncStorage getMemoryAsyncStorage(){
+		return (MemoryAsyncStorage) getExecute();
+	}
 }
