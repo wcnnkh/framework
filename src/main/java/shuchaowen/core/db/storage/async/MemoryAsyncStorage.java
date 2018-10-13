@@ -19,6 +19,7 @@ public class MemoryAsyncStorage extends AbstractAsyncStorage {
 	
 	public MemoryAsyncStorage(AbstractDB db) {
 		super(db);
+		start();
 	}
 	
 	protected void start() {
