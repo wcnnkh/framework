@@ -31,7 +31,7 @@ public class CommonStorage implements Storage{
 	}
 
 	public void save(Collection<Object> beans) {
-		if(get == null){
+		if(execute == null){
 			db.saveToDB(beans);
 		}else{
 			execute.save(beans);
