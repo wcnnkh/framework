@@ -18,6 +18,7 @@ public final class ActionFilterChain implements FilterChain {
 		if (filterList != null) {
 			this.filterIterator = filterList.iterator();
 		}
+		this.beanFactory = beanFactory;
 	}
 
 	public void doFilter(Request request, Response response) throws Throwable {
