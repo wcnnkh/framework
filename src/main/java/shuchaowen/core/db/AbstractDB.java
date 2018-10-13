@@ -1,7 +1,6 @@
 package shuchaowen.core.db;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -12,17 +11,19 @@ import shuchaowen.core.db.result.Result;
 import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
+import shuchaowen.core.db.sql.format.SQLFormat;
 import shuchaowen.core.db.sql.format.Select;
-import shuchaowen.core.db.sql.format.mysql.CreateTableSQL;
+import shuchaowen.core.db.sql.format.mysql.MysqlFormat;
 import shuchaowen.core.db.sql.format.mysql.MysqlSelect;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 
-public abstract class AbstractDB implements AutoCloseable{
+public abstract class AbstractDB implements ConnectionPool{
+	public static final SQLFormat DEFAULT_SQL_FORMAT = new MysqlFormat();
 	private volatile static Map<String, TableInfo> tableMap = new HashMap<String, TableInfo>();
 	private volatile static Map<Class<?>, AbstractDB> dbMap = new HashMap<Class<?>, AbstractDB>();
-	
+
 	public static final TableInfo getTableInfo(Class<?> clz) {
 		return getTableInfo(clz.getName());
 	}
@@ -65,6 +66,20 @@ public abstract class AbstractDB implements AutoCloseable{
 		return abstractDB;
 	}
 	
+	private SQLFormat sqlFormat;
+	
+	public AbstractDB(SQLFormat sqlFormat){
+		this.sqlFormat = sqlFormat;
+	}
+	
+	public SQLFormat getSqlFormat() {
+		return sqlFormat == null? DEFAULT_SQL_FORMAT:sqlFormat;
+	}
+	
+	public void setSqlFormat(SQLFormat sqlFormat) {
+		this.sqlFormat = sqlFormat;
+	}
+
 	public void iterator(Class<?> tableClass, ResultIterator iterator){
 		Select select = createSelect();
 		select.from(tableClass);
@@ -138,14 +153,10 @@ public abstract class AbstractDB implements AutoCloseable{
 		TableInfo tableInfo = DB.getTableInfo(tableClass);
 		createTable(tableClass, tableInfo.getName());
 	}
-	
-	protected CreateTableSQL getCreateTable(TableInfo tableInfo, String tableName){
-		return new CreateTableSQL(tableInfo, tableName);
-	}
 
 	public void createTable(Class<?> tableClass, String tableName) {
 		TableInfo tableInfo = DB.getTableInfo(tableClass);
-		SQL sql = getCreateTable(tableInfo, tableName);
+		SQL sql = getSqlFormat().toCreateTableSql(tableInfo, tableName);
 		Logger.info(sql.getSql());
 		DBUtils.execute(this, sql);
 	}
@@ -164,5 +175,147 @@ public abstract class AbstractDB implements AutoCloseable{
 		}
 	}
 	
-	public abstract Connection getConnection() throws SQLException;
+	public List<SQL> getSaveSqlList(Collection<Object> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return null;
+		}
+
+		List<SQL> sqls = new ArrayList<SQL>();
+		for (Object obj : beans) {
+			if (obj == null) {
+				continue;
+			}
+
+			sqls.add(getSqlFormat().toInsertSql(obj));
+		}
+		return sqls;
+	}
+	
+	public List<SQL> getUpdateSqlList(Collection<Object> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return null;
+		}
+
+		List<SQL> sqls = new ArrayList<SQL>();
+		for (Object obj : beans) {
+			if (obj == null) {
+				continue;
+			}
+			sqls.add(getSqlFormat().toUpdateSql(obj));
+		}
+		return sqls;
+	}
+	
+	public List<SQL> getDeleteSqlList(Collection<Object> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return null;
+		}
+
+		List<SQL> sqls = new ArrayList<SQL>();
+		for (Object obj : beans) {
+			if (obj == null) {
+				continue;
+			}
+			sqls.add(getSqlFormat().toDeleteSql(obj));
+		}
+		return sqls;
+	}
+	
+	public List<SQL> getSaveOrUpdateSqlList(Collection<Object> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return null;
+		}
+
+		List<SQL> sqls = new ArrayList<SQL>();
+		for (Object obj : beans) {
+			if (obj == null) {
+				continue;
+			}
+			sqls.add(getSqlFormat().toSaveOrUpdateSql(obj));
+		}
+		return sqls;
+	}
+	
+	public <T> T getByIdFromDB(Class<T> type, String tableName, Object... params) {
+		if (type == null) {
+			throw new NullPointerException("type is null");
+		}
+
+		TableInfo tableInfo = DB.getTableInfo(type);
+		if (tableInfo == null) {
+			throw new NullPointerException("tableInfo is null");
+		}
+
+		if (tableInfo.getPrimaryKeyColumns().length == 0) {
+			throw new NullPointerException("not found primary key");
+		}
+
+		if (tableInfo.getPrimaryKeyColumns().length != params.length) {
+			throw new NullPointerException("params length not equals primary key lenght");
+		}
+
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		SQL sql = getSqlFormat().toSelectByIdSql(tableInfo, tName, params);
+		ResultSet resultSet = select(sql);
+		resultSet.registerClassTable(type, tName);
+		return resultSet.getFirst(type);
+	}
+	
+	public <T> List<T> getByIdListFromDB(Class<T> type, String tableName,
+			Object... params) {
+		if (type == null) {
+			throw new NullPointerException("type is null");
+		}
+
+		TableInfo tableInfo = DB.getTableInfo(type);
+		if (tableInfo == null) {
+			throw new NullPointerException("tableInfo is null");
+		}
+
+		if (params.length > tableInfo.getPrimaryKeyColumns().length) {
+			throw new NullPointerException("params length  greater than primary key lenght");
+		}
+
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		ResultSet resultSet = select(getSqlFormat().toSelectByIdSql(tableInfo, tName, params));
+		resultSet.registerClassTable(type, tName);
+		return resultSet.getList(type);
+	}
+	
+	public <T> Map<PrimaryKeyParameter, T> getByIdFromDB(Class<T> type,
+			String tableName, Collection<PrimaryKeyParameter> primaryKeyParameters) {
+		TableInfo tableInfo = DB.getTableInfo(type);
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		SQL sql = getSqlFormat().toSelectINId(tableInfo, tName, primaryKeyParameters);
+		ResultSet resultSet = select(sql);
+		resultSet.registerClassTable(type, tName);
+		List<T> list = resultSet.getList(type);
+		Map<PrimaryKeyParameter, T> map = new HashMap<PrimaryKeyParameter, T>();
+		for (T t : list) {
+			try {
+				map.put(tableInfo.getPrimaryKeyParameter(t), t);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		return map;
+	}
+	
+	public void saveToDB(Collection<Object> beans){
+		execute(getSaveSqlList(beans));
+	}
+	
+	public void updateToDB(Collection<Object> beans){
+		execute(getUpdateSqlList(beans));
+	}
+	
+	public void deleteToDB(Collection<Object> beans){
+		execute(getDeleteSqlList(beans));
+	}
+	
+	public void saveOrUpdateToDB(Collection<Object> beans){
+		execute(getSaveOrUpdateSqlList(beans));
+	}
 }

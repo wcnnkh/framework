@@ -77,11 +77,11 @@ public final class DBUtils {
 		return getSQLId(sql.getSql(), sql.getParams());
 	}
 
-	public static void execute(AbstractDB db, SQL sql) {
+	public static void execute(ConnectionPool connectionPool, SQL sql) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
 		try {
-			connection = db.getConnection();
+			connection = connectionPool.getConnection();
 			stmt = connection.prepareStatement(sql.getSql());
 			setParams(stmt, sql.getParams());
 			stmt.execute();
@@ -92,18 +92,18 @@ public final class DBUtils {
 		}
 	}
 
-	public static void execute(AbstractDB db,
+	public static void execute(ConnectionPool connectionPool,
 			Collection<SQL> sqls) {
-		if (sqls == null || db == null) {
+		if (sqls == null || connectionPool== null) {
 			throw new NullPointerException();
 		}
 
 		Iterator<SQL> iterator = sqls.iterator();
 		if (sqls.size() == 1) {
 			SQL sql = iterator.next();
-			execute(db, sql);
+			execute(connectionPool, sql);
 		} else {
-			SQLTransaction sqlTransaction = new SQLTransaction(db);
+			SQLTransaction sqlTransaction = new SQLTransaction(connectionPool);
 			while (iterator.hasNext()) {
 				sqlTransaction.addSql(iterator.next());
 			}

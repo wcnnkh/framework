@@ -23,8 +23,6 @@ public interface SQLFormat {
 
 	SQL toSelectByIdSql(TableInfo tableInfo, String tableName, Object... params);
 	
-	SQL toMaxValueSQL(TableInfo tableInfo, String tableName, String fieldName);
-	
 	SQL toIncrSql(Object obj, String fieldName, double limit, Double maxValue);
 	SQL toIncrSql(Object obj, TableInfo tableInfo, String tableName, String fieldName, double limit, Double maxValue);
 	

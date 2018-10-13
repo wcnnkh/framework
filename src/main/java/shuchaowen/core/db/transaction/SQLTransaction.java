@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import shuchaowen.core.db.AbstractDB;
+import shuchaowen.core.db.ConnectionPool;
 import shuchaowen.core.db.DBUtils;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.util.XUtils;
@@ -15,13 +15,13 @@ import shuchaowen.core.util.XUtils;
 public class SQLTransaction extends Transaction {
 	private Map<String, SQL> sqlMap = new HashMap<String, SQL>();
 	private Connection connection;
-	private AbstractDB db;
+	private ConnectionPool connectionPool;
 	private PreparedStatement[] preparedStatements;
 	private int transactionLevel = -1;
 	private int oldTransactionLevel = -1;
 
-	public SQLTransaction(AbstractDB db) {
-		this(db, -1);
+	public SQLTransaction(ConnectionPool connectionPool) {
+		this(connectionPool, -1);
 	}
 
 	/**
@@ -30,8 +30,8 @@ public class SQLTransaction extends Transaction {
 	 * @param updateStack
 	 *            如果为true 那么执行后的updateCount大于0就成功，不然就抛出异常.
 	 */
-	public SQLTransaction(AbstractDB db, int transactionLevel) {
-		this.db = db;
+	public SQLTransaction(ConnectionPool connectionPool, int transactionLevel) {
+		this.connectionPool = connectionPool;
 		this.transactionLevel = transactionLevel;
 	}
 
@@ -53,7 +53,7 @@ public class SQLTransaction extends Transaction {
 	@Override
 	public void begin() throws Exception {
 		if (!sqlMap.isEmpty()) {
-			connection = db.getConnection();
+			connection = connectionPool.getConnection();
 			connection.setAutoCommit(false);
 			this.oldTransactionLevel = connection.getTransactionIsolation();
 			if (transactionLevel >= 0) {

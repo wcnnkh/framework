@@ -3,8 +3,7 @@ package shuchaowen.core.db.storage.async;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import shuchaowen.core.db.AbstractDB;
-import shuchaowen.core.db.sql.format.SQLFormat;
-import shuchaowen.core.db.storage.AbstractExecuteStorage;
+import shuchaowen.core.db.storage.AbstractAsyncStorage;
 import shuchaowen.core.db.storage.ExecuteInfo;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
@@ -14,16 +13,12 @@ import shuchaowen.core.exception.ShuChaoWenRuntimeException;
  * @author shuchaowen
  *
  */
-public class MemoryAsyncExecuteStorage extends AbstractExecuteStorage {
+public class MemoryAsyncStorage extends AbstractAsyncStorage {
 	private LinkedBlockingQueue<ExecuteInfo> queue = new LinkedBlockingQueue<ExecuteInfo>();
 	private volatile boolean service = true;
 	
-	public MemoryAsyncExecuteStorage(AbstractDB db) {
-		super(db, DEFAULT_SQL_FORMAT);
-	}
-
-	public MemoryAsyncExecuteStorage(AbstractDB db, SQLFormat sqlFormat) {
-		super(db, sqlFormat);
+	public MemoryAsyncStorage(AbstractDB db) {
+		super(db);
 	}
 	
 	protected void start() {

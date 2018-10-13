@@ -28,10 +28,6 @@ public class MysqlFormat implements SQLFormat {
 		return new DeleteSQL(obj, tableInfo, tableName);
 	}
 
-	public SQL toMaxValueSQL(TableInfo tableInfo, String tableName, String fieldName) {
-		return new MaxValueSQL(tableInfo, tableName, fieldName);
-	}
-
 	public SQL toUpdateSql(Object obj, TableInfo tableInfo, String tableName) {
 		try {
 			if(obj instanceof BeanProxy){

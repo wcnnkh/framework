@@ -2,35 +2,29 @@ package shuchaowen.core.db.storage.async;
 
 import java.io.IOException;
 
+import shuchaowen.core.db.AbstractDB;
+import shuchaowen.core.db.storage.AbstractAsyncStorage;
+import shuchaowen.core.db.storage.ExecuteInfo;
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.core.util.IOUtils;
+
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-
-import shuchaowen.core.db.AbstractDB;
-import shuchaowen.core.db.sql.format.SQLFormat;
-import shuchaowen.core.db.storage.AbstractExecuteStorage;
-import shuchaowen.core.db.storage.ExecuteInfo;
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.util.IOUtils;
 
 /**
  * 基于rabbitMQ实现的异步存盘
  * @author asus1
  *
  */
-public class RubbitMQExecuteStorage extends AbstractExecuteStorage {
+public class RubbitMQAsyncStorage extends AbstractAsyncStorage {
 	private Channel channel;
 	private String queueName;
 	
-	public RubbitMQExecuteStorage(AbstractDB db, Channel channel, String queueName) throws IOException{
-		this(db, DEFAULT_SQL_FORMAT, channel, queueName);
-	}
-	
-	public RubbitMQExecuteStorage(AbstractDB db, SQLFormat sqlFormat, Channel channel, String queueName)
+	public RubbitMQAsyncStorage(AbstractDB db, Channel channel, String queueName)
 			throws IOException {
-		super(db, sqlFormat);
-		
+		super(db);
 		this.channel = channel;
 		this.queueName = queueName;
 		/**
