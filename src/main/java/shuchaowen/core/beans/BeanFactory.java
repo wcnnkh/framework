@@ -1,11 +1,11 @@
 package shuchaowen.core.beans;
 
 public interface BeanFactory {
-	<T> T get(final String name);
+	<T> T get(String name);
 
-	<T> T get(final Class<T> type);
+	<T> T get(Class<T> type);
 	
-	boolean contains(final String name);
+	boolean contains(String name);
 	
 	BeanInfo getBeanInfo(String name);
 }

@@ -11,12 +11,14 @@ import shuchaowen.core.util.ClassUtils;
 public class ConfigurationBeanFactory implements BeanFactory {
 	private volatile Map<String, BeanInfo> beanInfoMap = new HashMap<String, BeanInfo>();
 	private volatile Map<Class<?>, Object> singletonMap = new HashMap<Class<?>, Object>();
+	private volatile Map<String, BeanInfo> mappingMap = new HashMap<String, BeanInfo>();
 	private ConfigFactory configFactory;
 	private String packageNames;
 
 	public ConfigurationBeanFactory(String packageNames) {
 		// TODO 未配置configFactory
 		this.packageNames = packageNames;
+		singletonMap.put(ConfigurationBeanFactory.class, this);
 		scanningService();
 	}
 
@@ -34,11 +36,11 @@ public class ConfigurationBeanFactory implements BeanFactory {
 				BeanInfo beanInfo = getBeanInfo(clz.getName());
 				Class<?>[] interfaces = clz.getInterfaces();
 				for (Class<?> i : interfaces) {
-					beanInfoMap.put(i.getName(), beanInfo);
+					mappingMap.put(i.getName(), beanInfo);
 				}
 
 				if (!service.value().equals("")) {
-					beanInfoMap.put(service.value(), beanInfo);
+					mappingMap.put(service.value(), beanInfo);
 				}
 			}
 		}
@@ -46,7 +48,12 @@ public class ConfigurationBeanFactory implements BeanFactory {
 
 	public BeanInfo getBeanInfo(String name) {
 		String realName = ClassUtils.getCGLIBRealClassName(name);
-		BeanInfo beanInfo = beanInfoMap.get(realName);
+		BeanInfo beanInfo = mappingMap.get(realName);
+		if(beanInfo != null){
+			return beanInfo;
+		}
+		
+		beanInfo = beanInfoMap.get(realName);
 		if (beanInfo == null) {// 这个在配置文件里面找不到
 			// 试试这个名字是不是一个类名
 			try {
@@ -65,7 +72,14 @@ public class ConfigurationBeanFactory implements BeanFactory {
 		return beanInfo;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T get(String name) {
+		if(!contains(name)){
+			if(name.equals(BeanFactory.class.getName())){
+				return (T) this;
+			}
+		}
+		
 		BeanInfo beanInfo = getBeanInfo(name);
 		return get(beanInfo);
 	}
@@ -97,7 +111,7 @@ public class ConfigurationBeanFactory implements BeanFactory {
 	}
 
 	public boolean contains(String name) {
-		return beanInfoMap.containsKey(name);
+		return mappingMap.containsKey(name);
 	}
 
 	public void init() {
