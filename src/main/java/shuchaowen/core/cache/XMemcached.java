@@ -135,8 +135,14 @@ public class XMemcached implements Memcached{
 	}
 
 	public <T> T getAndTocuh(String key, int newExp) {
+		//因为可能不支持此协议
+		T t;
 		try {
-			return memcachedClient.getAndTouch(key, newExp);
+			t = memcachedClient.get(key);
+			if(t != null){
+				memcachedClient.set(key, newExp, t);
+			}
+			return t;
 		} catch (Exception e) {
 			if(abnormalInterruption){
 				throw new ShuChaoWenRuntimeException(e);

@@ -16,7 +16,6 @@ import shuchaowen.core.db.proxy.BeanProxy;
 import shuchaowen.core.db.proxy.BeanProxyMethodInterceptor;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.XTime;
 
 public class Result implements Serializable {
@@ -160,7 +159,7 @@ public class Result implements Serializable {
 				sb.append(" [");
 				sb.append(name);
 				sb.append("] not found for DataSource");
-				Logger.warn(sb.toString());
+				throw new ShuChaoWenRuntimeException(sb.toString());
 			}
 		}
 
