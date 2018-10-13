@@ -9,12 +9,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import shuchaowen.core.db.sql.format.SQLFormat;
+import shuchaowen.core.db.storage.CommonStorage;
 import shuchaowen.core.db.storage.Storage;
 import shuchaowen.core.util.ClassUtils;
 
 public abstract class DB extends AbstractDB {
 	private Map<String, Storage> storageMap = new HashMap<String, Storage>();
 	private Storage storage;
+	
+	public DB(){
+		super(null);
+		this.storage = new CommonStorage(this, null, null);
+	}
 	
 	public DB(Storage storage, SQLFormat sqlFormat){
 		super(sqlFormat);
