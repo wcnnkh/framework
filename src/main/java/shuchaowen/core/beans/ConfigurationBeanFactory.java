@@ -81,13 +81,13 @@ public class ConfigurationBeanFactory implements BeanFactory {
 					if (bean == null) {
 						bean = beanInfo.newInstance(this, configFactory);
 						singletonMap.put(beanInfo.getType(), bean);
-						beanInfo.wrapper(bean, this, configFactory);
+						beanInfo.wrapper(bean, this);
 					}
 				}
 			}
 		} else {
 			bean = beanInfo.newInstance(this, configFactory);
-			beanInfo.wrapper(bean, this, configFactory);
+			beanInfo.wrapper(bean, this);
 		}
 		return (T) bean;
 	}

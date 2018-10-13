@@ -2,6 +2,8 @@ package shuchaowen.core.http.server;
 
 import java.lang.reflect.Constructor;
 
+import shuchaowen.core.beans.BeanFactory;
+
 public final class MethodParameter {
 	private Class<?> type;
 	private String name;
@@ -14,9 +16,9 @@ public final class MethodParameter {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object getParameter(Request request, Response response) throws Throwable {
+	public Object getParameter(BeanFactory beanFactory, Request request, Response response) throws Throwable {
 		if(constructor != null){
-			return constructor.newInstance(request);
+			return beanFactory.getBeanInfo(type.getName()).newInstance(beanFactory, constructor, request);
 		}
 		
 		if (Request.class.isAssignableFrom(type)) {
@@ -29,7 +31,7 @@ public final class MethodParameter {
 				if(constructor.getParameterCount() == 1 && Request.class.isAssignableFrom(constructor.getParameterTypes()[0])){
 					this.constructor = constructor;
 					constructor.setAccessible(true);
-					return constructor.newInstance(request);
+					return beanFactory.getBeanInfo(type.getName()).newInstance(beanFactory, constructor, request);
 				}
 			}
 			return null;

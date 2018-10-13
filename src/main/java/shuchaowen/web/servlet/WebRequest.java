@@ -8,21 +8,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.http.enums.Header;
 import shuchaowen.core.http.server.Request;
 
 public abstract class WebRequest extends HttpServletRequestWrapper implements Request{
-	private boolean isDebug;
-	private long createTime;
-	private HttpServletResponse httpServletResponse;
+	private final boolean isDebug;
+	private final long createTime;
+	private final HttpServletResponse httpServletResponse;
+	private final BeanFactory beanFactory;
 
-	public WebRequest(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
+	public WebRequest(BeanFactory beanFactory, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
 		super(httpServletRequest);
 		this.createTime = System.currentTimeMillis();
+		this.beanFactory = beanFactory;
 		this.isDebug = isDebug;
 		this.httpServletResponse = httpServletResponse;
 	}
 	
+	public BeanFactory getBeanFactory() {
+		return beanFactory;
+	}
+
 	private Object get(Class<?> type, String name) throws Throwable{
 		if(String.class.isAssignableFrom(type)){
 			return getString(name);

@@ -26,6 +26,7 @@ public class MethodAction implements Action {
 	private List<Filter> filterList;
 	private Invoker invoke;
 	private MethodParameter[] paramsInfo;
+	private BeanFactory beanFactory;
 
 	public MethodAction(BeanFactory beanFactory, Class<?> clz, Method method) {
 		this.invoke = new ReflectInvoker(beanFactory, clz, method);
@@ -36,7 +37,7 @@ public class MethodAction implements Action {
 	}
 
 	public void doAction(Request request, Response response) throws Throwable {
-		FilterChain chain = new ActionFilterChain(invoke, paramsInfo, filterList);
+		FilterChain chain = new ActionFilterChain(beanFactory, invoke, paramsInfo, filterList);
 		chain.doFilter(request, response);
 	}
 

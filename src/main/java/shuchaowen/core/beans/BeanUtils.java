@@ -9,6 +9,7 @@ import java.util.concurrent.CountDownLatch;
 
 import shuchaowen.core.beans.annotaion.Destroy;
 import shuchaowen.core.beans.annotaion.InitMethod;
+import shuchaowen.core.db.DB;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.invoke.Invoker;
 import shuchaowen.core.invoke.ReflectInvoker;
@@ -86,8 +87,8 @@ public class BeanUtils {
 
 	public static void initStatic(BeanFactory beanFactory, Collection<Class<?>> classList) throws Exception {
 		initAutowriteStatic(beanFactory, classList);
-		BeanUtils.invokerInitStaticMethod(classList);
-		BeanInfo.initDB(beanFactory, classList);
+		invokerInitStaticMethod(classList);
+		initDB(beanFactory, classList);
 	}
 
 	/**
@@ -98,6 +99,29 @@ public class BeanUtils {
 	private static void initAutowriteStatic(BeanFactory beanFactory, Collection<Class<?>> classList) throws Exception {
 		for (Class<?> clz : classList) {
 			BeanInfo.autoWriteStatic(clz, beanFactory);
+		}
+	}
+	
+	public static void initDB(BeanFactory beanFactory, Collection<Class<?>> classList) {
+		for (Class<?> clz : classList) {
+			Deprecated deprecated = clz.getAnnotation(Deprecated.class);
+			if (deprecated != null) {
+				continue;
+			}
+			
+			if (!DB.class.isAssignableFrom(clz)) {
+				continue;
+			}
+
+			if (Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers())) {
+				continue;
+			}
+
+			if (!Modifier.isPublic(clz.getModifiers())) {
+				continue;
+			}
+			
+			beanFactory.get(clz);
 		}
 	}
 }

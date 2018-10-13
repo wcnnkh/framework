@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.http.server.search.PathSearchAction;
 import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.ClassUtils;
@@ -18,8 +19,8 @@ public class FormRequest extends WebRequest {
 	private Map<String, String> restUrlValueMap;
 
 	@SuppressWarnings("unchecked")
-	public FormRequest(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
-		super(httpServletRequest, httpServletResponse, isDebug);
+	public FormRequest(BeanFactory beanFactory, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
+		super(beanFactory, httpServletRequest, httpServletResponse, isDebug);
 		Object map = getAttribute(PathSearchAction.RESTURL_PATH_PARAMETER);
 		if (map != null) {
 			this.restUrlValueMap = (Map<String, String>) map;

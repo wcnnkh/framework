@@ -156,11 +156,11 @@ public class DispatcherServlet extends HttpServlet {
 	 */
 	public WebRequest wrapperRequest(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
 		if(httpServletRequest.getContentType() == null || httpServletRequest.getContentType().startsWith(ContentType.FORM.getValue())){
-			return new FormRequest(httpServletRequest, httpServletResponse, debug);
+			return new FormRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, debug);
 		}else if(httpServletRequest.getContentType().startsWith(ContentType.JSON.getValue())){
-			return new JsonRequest(httpServletRequest, httpServletResponse, debug);
+			return new JsonRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, debug);
 		}else{
-			return new FormRequest(httpServletRequest, httpServletResponse, debug);
+			return new FormRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, debug);
 		} 
 	}
 	
