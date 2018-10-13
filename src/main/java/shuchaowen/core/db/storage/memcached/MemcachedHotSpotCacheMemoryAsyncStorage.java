@@ -18,4 +18,8 @@ public class MemcachedHotSpotCacheMemoryAsyncStorage extends MemcachedHotSpotCac
 	public MemcachedHotSpotCacheMemoryAsyncStorage(AbstractDB db, String prefix, int exp, Memcached memcached){
 		super(db, prefix, exp, memcached, new MemoryAsyncStorage(db));
 	}
+	
+	public MemoryAsyncStorage getMemoryAsyncStorage(){
+		return (MemoryAsyncStorage) getExecute();
+	}
 }
