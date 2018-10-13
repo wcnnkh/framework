@@ -157,7 +157,7 @@ public class Result implements Serializable {
 				StringBuilder sb = new StringBuilder();
 				sb.append(tableInfo.getClassInfo().getName());
 				sb.append(" [");
-				sb.append(name);
+				sb.append(columnInfo.getName());
 				sb.append("] not found for DataSource");
 				throw new ShuChaoWenRuntimeException(sb.toString());
 			}
