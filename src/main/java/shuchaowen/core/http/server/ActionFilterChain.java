@@ -8,17 +8,15 @@ import shuchaowen.core.invoke.Invoker;
 
 public final class ActionFilterChain implements FilterChain {
 	private final BeanFactory beanFactory;
-	private Iterator<Filter> filterIterator;
-	private Invoker invoke;
-	private MethodParameter[] paramInfos;
+	private final Iterator<Filter> filterIterator;
+	private final Invoker invoke;
+	private final MethodParameter[] paramInfos;
 
 	public ActionFilterChain(BeanFactory beanFactory, Invoker invoke, MethodParameter[] paramInfos, List<Filter> filterList) {
 		this.beanFactory = beanFactory;
 		this.invoke = invoke;
 		this.paramInfos = paramInfos;
-		if (filterList != null) {
-			this.filterIterator = filterList.iterator();
-		}
+		this.filterIterator = filterList == null? null:filterList.iterator();
 	}
 
 	public void doFilter(Request request, Response response) throws Throwable {

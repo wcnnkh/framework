@@ -23,12 +23,13 @@ import shuchaowen.core.invoke.ReflectInvoker;
 import shuchaowen.core.util.ClassUtils;
 
 public class MethodAction implements Action {
-	private List<Filter> filterList;
-	private Invoker invoke;
-	private MethodParameter[] paramsInfo;
-	private BeanFactory beanFactory;
+	private final BeanFactory beanFactory;
+	private final List<Filter> filterList;
+	private final Invoker invoke;
+	private final MethodParameter[] paramsInfo;
 
 	public MethodAction(BeanFactory beanFactory, Class<?> clz, Method method) {
+		this.beanFactory = beanFactory;
 		this.invoke = new ReflectInvoker(beanFactory, clz, method);
 		Controller clzController = clz.getAnnotation(Controller.class);
 		Controller methodControler = method.getAnnotation(Controller.class);
