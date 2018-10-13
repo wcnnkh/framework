@@ -13,9 +13,15 @@ import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 public class XMemcached implements Memcached{
 	private final MemcachedClient memcachedClient;
+	private final boolean abnormalInterruption;
 	
-	public XMemcached(MemcachedClient memcachedClient){
+	/**
+	 * @param memcachedClient
+	 * @param abnormalInterruption 发生异常时是否中断
+	 */
+	public XMemcached(MemcachedClient memcachedClient, boolean abnormalInterruption){
 		this.memcachedClient = memcachedClient;
+		this.abnormalInterruption = abnormalInterruption;
 	}
 	
 	public MemcachedClient getMemcachedClient() {
@@ -25,12 +31,12 @@ public class XMemcached implements Memcached{
 	public <T> T get(String key) {
 		try {
 			return memcachedClient.get(key);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
@@ -40,12 +46,12 @@ public class XMemcached implements Memcached{
 		try {
 			cas = memcachedClient.gets(key);
 			return new CAS<T>(cas.getCas(), cas.getValue());
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
@@ -53,12 +59,12 @@ public class XMemcached implements Memcached{
 	public boolean set(String key, Object value) {
 		try {
 			return memcachedClient.set(key, 0, value);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}
@@ -66,12 +72,12 @@ public class XMemcached implements Memcached{
 	public boolean set(String key, int exp, Object data) {
 		try {
 			return memcachedClient.set(key, exp, data);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}
@@ -79,12 +85,12 @@ public class XMemcached implements Memcached{
 	public boolean add(String key, Object value) {
 		try {
 			return memcachedClient.add(key, 0, value);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}
@@ -92,12 +98,12 @@ public class XMemcached implements Memcached{
 	public boolean add(String key, int exp, Object data) {
 		try {
 			return memcachedClient.add(key, exp, data);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}
@@ -105,12 +111,12 @@ public class XMemcached implements Memcached{
 	public boolean cas(String key, Object data, long cas) {
 		try {
 			return memcachedClient.cas(key, 0, data, cas);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}
@@ -118,12 +124,12 @@ public class XMemcached implements Memcached{
 	public boolean cas(String key, int exp, Object data, long cas) {
 		try {
 			return memcachedClient.cas(key, exp, data, cas);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}
@@ -131,12 +137,12 @@ public class XMemcached implements Memcached{
 	public <T> T getAndTocuh(String key, int newExp) {
 		try {
 			return memcachedClient.getAndTouch(key, newExp);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
@@ -144,12 +150,12 @@ public class XMemcached implements Memcached{
 	public boolean touch(String key, int exp) {
 		try {
 			return memcachedClient.touch(key, exp);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}
@@ -157,12 +163,12 @@ public class XMemcached implements Memcached{
 	public <T> Map<String, T> get(Collection<String> keyCollections) {
 		try {
 			return memcachedClient.get(keyCollections);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
@@ -170,12 +176,12 @@ public class XMemcached implements Memcached{
 	public long incr(String key, long incr) {
 		try {
 			 return memcachedClient.incr(key, incr);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		throw new ShuChaoWenRuntimeException("incr error key[" + key + "] incr[" + incr + "]");
 	}
@@ -184,12 +190,12 @@ public class XMemcached implements Memcached{
 	public long decr(String key, long decr) {
 		try {
 			return memcachedClient.incr(key, decr);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		throw new ShuChaoWenRuntimeException("decr error key[" + key + "] decr[" + decr + "]");
 	}
@@ -197,12 +203,12 @@ public class XMemcached implements Memcached{
 	public long incr(String key, long incr, long initValue) {
 		try {
 			return memcachedClient.incr(key, incr, initValue);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		throw new ShuChaoWenRuntimeException("incr error key[" + key + "] incr[" + incr + "] initValue[" + initValue + "]");
 	}
@@ -210,12 +216,12 @@ public class XMemcached implements Memcached{
 	public long decr(String key, long decr, long initValue) {
 		try {
 			return memcachedClient.incr(key, decr, initValue);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		throw new ShuChaoWenRuntimeException("decr error key[" + key + "] decr[" + decr + "] initValue[" + initValue + "]");
 	}
@@ -224,12 +230,12 @@ public class XMemcached implements Memcached{
 		Map<String, GetsResponse<T>> map = null;
 		try {
 			map = memcachedClient.gets(keyCollections);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MemcachedException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
 		}
 		
 		if(map != null){

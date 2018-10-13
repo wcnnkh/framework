@@ -380,7 +380,6 @@ public final class BeanInfo {
 			try {
 				if(fieldInfo.forceGet(obj) != null){
 					Logger.warn("@Config", "class[" + clz.getName() + "] fieldName[" + field.getName() +"] existence default value");
-					return ;
 				}
 				
 				value = beanFactory.get(config.parse()).parse(beanFactory, fieldInfo, config.value(),
@@ -408,7 +407,6 @@ public final class BeanInfo {
 			try {
 				if(fieldInfo.forceGet(obj) != null){
 					Logger.warn("@AutoWrite", "class[" + clz.getName() + "] fieldName[" + field.getName() +"] existence default value");
-					return ;
 				}
 				
 				fieldInfo.set(obj, beanFactory.get(name));
@@ -434,7 +432,6 @@ public final class BeanInfo {
 			try {
 				if(fieldInfo.forceGet(obj) != null){
 					Logger.warn("@Proxy", "class[" + clz.getName() + "] fieldName[" + field.getName() +"] existence default value");
-					return ;
 				}
 				
 				fieldInfo.set(obj, v);

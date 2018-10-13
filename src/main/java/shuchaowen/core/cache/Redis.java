@@ -21,7 +21,11 @@ public interface Redis {
 	
 	Long expire(byte[] key, int seconds);
 	
-	boolean delete(String key);
+	Long delete(String key);
 	
-	boolean delete(byte[] key);
+	Long delete(byte[] key);
+	
+	Long delete(String ...key);
+	
+	Long delete(byte[] ...key);
 }
