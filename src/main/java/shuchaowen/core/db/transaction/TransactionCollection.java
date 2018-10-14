@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-public final class TransactionCollection extends Transaction{
+public final class TransactionCollection extends AbstractTransaction{
 	private Collection<Transaction> collection;
 	private int beginTag = 0;
 	private int processTag = 0;
@@ -41,7 +41,6 @@ public final class TransactionCollection extends Transaction{
 		return collection == null || collection.isEmpty();
 	}
 
-	@Override
 	public void begin() throws Exception {
 		if(collection != null){
 			Iterator<Transaction> iterator = collection.iterator();
@@ -54,7 +53,6 @@ public final class TransactionCollection extends Transaction{
 		}
 	}
 
-	@Override
 	public void process() throws Exception {
 		if(collection != null){
 			Iterator<Transaction> iterator = collection.iterator();
@@ -67,7 +65,6 @@ public final class TransactionCollection extends Transaction{
 		}
 	}
 
-	@Override
 	public void end() throws Exception {
 		if(collection != null){
 			Iterator<Transaction> iterator = collection.iterator();
@@ -84,7 +81,6 @@ public final class TransactionCollection extends Transaction{
 		}
 	}
 
-	@Override
 	public void rollback() throws Exception {
 		if(collection != null){
 			Iterator<Transaction> iterator = collection.iterator();

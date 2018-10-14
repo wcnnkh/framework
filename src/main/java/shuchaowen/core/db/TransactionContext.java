@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
+import shuchaowen.core.db.transaction.AbstractTransaction;
 import shuchaowen.core.db.transaction.SQLTransaction;
 import shuchaowen.core.db.transaction.Transaction;
 import shuchaowen.core.db.transaction.TransactionCollection;
@@ -169,6 +170,7 @@ public final class TransactionContext {
 			for (SQL sql : sqls) {
 				sqlTransaction.addSql(sql);
 			}
+			
 			try {
 				sqlTransaction.execute();
 			} catch (Exception e) {
@@ -238,7 +240,7 @@ public final class TransactionContext {
 	}
 }
 
-class ThreadLocalDBTransaction extends Transaction {
+class ThreadLocalDBTransaction extends AbstractTransaction {
 	private HashMap<AbstractDB, SQLTransaction> dbSqlMap = new HashMap<AbstractDB, SQLTransaction>();
 	private Map<AbstractDB, Map<String, ResultSet>> cacheMap = new HashMap<AbstractDB, Map<String, ResultSet>>();
 	private TransactionCollection transactionCollection = new TransactionCollection();
@@ -335,7 +337,6 @@ class ThreadLocalDBTransaction extends Transaction {
 		dbSqlMap.put(db, sqlTransaction);
 	}
 
-	@Override
 	public void begin() throws Exception {
 		for (Entry<AbstractDB, SQLTransaction> entry : dbSqlMap.entrySet()) {
 			transactionCollection.add(entry.getValue());
@@ -343,21 +344,18 @@ class ThreadLocalDBTransaction extends Transaction {
 		transactionCollection.begin();
 	}
 
-	@Override
 	public void process() throws Exception {
 		if (transactionCollection != null) {
 			transactionCollection.process();
 		}
 	}
 
-	@Override
 	public void end() throws Exception {
 		if (transactionCollection != null) {
 			transactionCollection.end();
 		}
 	}
 
-	@Override
 	public void rollback() throws Exception {
 		if (transactionCollection != null) {
 			transactionCollection.rollback();

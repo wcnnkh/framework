@@ -12,7 +12,7 @@ import shuchaowen.core.db.DBUtils;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.util.XUtils;
 
-public class SQLTransaction extends Transaction {
+public final class SQLTransaction extends AbstractTransaction {
 	private Map<String, SQL> sqlMap = new HashMap<String, SQL>();
 	private Connection connection;
 	private ConnectionPool connectionPool;
@@ -50,7 +50,6 @@ public class SQLTransaction extends Transaction {
 		sqlMap.put(id, sql);
 	}
 
-	@Override
 	public void begin() throws Exception {
 		if (!sqlMap.isEmpty()) {
 			connection = connectionPool.getConnection();
@@ -64,7 +63,6 @@ public class SQLTransaction extends Transaction {
 		}
 	}
 
-	@Override
 	public void process() throws Exception {
 		if (!sqlMap.isEmpty()) {
 			int i = 0;
@@ -81,7 +79,6 @@ public class SQLTransaction extends Transaction {
 		}
 	}
 
-	@Override
 	public void end() throws Exception {
 		if (!sqlMap.isEmpty()) {
 			if (preparedStatements != null) {
@@ -100,7 +97,6 @@ public class SQLTransaction extends Transaction {
 		}
 	}
 
-	@Override
 	public void rollback() throws Exception {
 		if (connection != null) {
 			connection.rollback();

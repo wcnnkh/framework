@@ -1,5 +1,6 @@
 package shuchaowen.core.db.storage.async;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -18,19 +19,13 @@ import shuchaowen.core.util.Logger;
  *
  */
 public class MemoryAsyncStorage extends AbstractAsyncStorage {
-	private final static long LOGGER_QUEUE_SIZE_TIMEOUT = 10000L;
 	private LinkedBlockingQueue<ExecuteInfo> queue = new LinkedBlockingQueue<ExecuteInfo>();
 	private volatile boolean service = true;
-	private volatile boolean logger = false;
-	private volatile boolean loggerQueueSize = true;
+	private volatile boolean logger = true;
 	
 	public MemoryAsyncStorage(AbstractDB db) {
 		super(db);
 		start();
-	}
-	
-	private void loggerSize(){
-		Logger.debug("MemoryAsyncStorage", "当前队列剩余数量：" + queue.size());
 	}
 	
 	protected void start() {
@@ -42,24 +37,16 @@ public class MemoryAsyncStorage extends AbstractAsyncStorage {
 				}
 			}
 		}).start();
-		
-		new Thread(new Runnable() {
-			
-			public void run() {
-				while(true){
-					try {
-						Thread.sleep(LOGGER_QUEUE_SIZE_TIMEOUT);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-						break;
-					}
-					
-					if(loggerQueueSize){
-						loggerSize();
-					}
-				}
-			}
-		}).start();
+	}
+	
+	private static void logger(SQL sql){
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		sb.append(sql.getSql());
+		sb.append("]");
+		sb.append(" - ");
+		sb.append(sql.getParams() == null? "[]":Arrays.toString(sql.getParams()));
+		Logger.debug("MemoryAsyncStorage", sb.toString());
 	}
 	
 	private void next(){
@@ -71,7 +58,7 @@ public class MemoryAsyncStorage extends AbstractAsyncStorage {
 		Collection<SQL> sqls = getSqlList(executeInfo);
 		if(logger){
 			for(SQL sql : sqls){
-				Logger.debug("MemoryAsyncStorage", sql.getSql());
+				logger(sql);
 			}
 		}
 		
@@ -88,14 +75,6 @@ public class MemoryAsyncStorage extends AbstractAsyncStorage {
 
 	public void setLogger(boolean logger) {
 		this.logger = logger;
-	}
-
-	public boolean isLoggerQueueSize() {
-		return loggerQueueSize;
-	}
-
-	public void setLoggerQueueSize(boolean loggerQueueSize) {
-		this.loggerQueueSize = loggerQueueSize;
 	}
 
 	public void shutdown(){

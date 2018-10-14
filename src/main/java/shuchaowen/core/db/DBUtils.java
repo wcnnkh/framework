@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -47,34 +48,14 @@ public final class DBUtils {
 		}
 	}
 
-	public static String getSQLId(String sql, Object[] args) {
-		StringBuilder sb = new StringBuilder(1024);
-		if (args != null) {
-			sb.append(args.length);
-			sb.append("#");
-
-			StringBuilder paramSb = new StringBuilder(128);
-			paramSb.append("[");
-			for (Object obj : args) {
-				String str = String.valueOf(obj);
-				paramSb.append(str);
-				paramSb.append(",");
-				if (obj == null) {
-					sb.append(-1);
-				} else {
-					sb.append(str.length());
-				}
-				sb.append("#");
-			}
-			paramSb.append("]");
-			sb.append(paramSb.toString());
-		}
-		sb.append(sql);
-		return sb.toString();
-	}
-
 	public static String getSQLId(SQL sql) {
-		return getSQLId(sql.getSql(), sql.getParams());
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		sb.append(sql.getSql());
+		sb.append("]");
+		sb.append(" - ");
+		sb.append(sql.getParams() == null? "[]":Arrays.toString(sql.getParams()));
+		return sb.toString();
 	}
 
 	public static void execute(ConnectionPool connectionPool, SQL sql) {
@@ -86,7 +67,7 @@ public final class DBUtils {
 			setParams(stmt, sql.getParams());
 			stmt.execute();
 		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(sql.getSql(), e);
+			throw new ShuChaoWenRuntimeException(DBUtils.getSQLId(sql), e);
 		} finally {
 			XUtils.close(true, stmt, connection);
 		}
@@ -110,7 +91,12 @@ public final class DBUtils {
 			try {
 				sqlTransaction.execute();
 			} catch (Throwable e) {
-				throw new ShuChaoWenRuntimeException(e);
+				String[] arr = new String[sqls.size()];
+				int i=0;
+				for(SQL sql : sqls){
+					arr[i++] = getSQLId(sql);
+				}
+				throw new ShuChaoWenRuntimeException(Arrays.toString(arr), e);
 			}
 		}
 	}
@@ -131,7 +117,7 @@ public final class DBUtils {
 			XUtils.close(true, rs, stmt, connection);
 		}
 	}
-
+	
 	public static String getTableAndColumn(String tableName, String columnName) {
 		StringBuilder sb = new StringBuilder(32);
 		sb.append("`");
