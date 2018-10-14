@@ -21,8 +21,9 @@ public class MemcachedCache implements Cache{
 		memcached.set(key, exp, data);
 	}
 
-	public void delete(String key) {
-		memcached.delete(key);
+	public void delete(String ...key) {
+		for(String k : key){
+			memcached.delete(k);
+		}
 	}
-
 }

@@ -175,7 +175,7 @@ public abstract class AbstractDB implements ConnectionPool{
 		}
 	}
 	
-	public List<SQL> getSaveSqlList(Collection<Object> beans) {
+	public List<SQL> getSaveSqlList(Collection<?> beans) {
 		if (beans == null || beans.isEmpty()) {
 			return null;
 		}
@@ -191,7 +191,7 @@ public abstract class AbstractDB implements ConnectionPool{
 		return sqls;
 	}
 	
-	public List<SQL> getUpdateSqlList(Collection<Object> beans) {
+	public List<SQL> getUpdateSqlList(Collection<?> beans) {
 		if (beans == null || beans.isEmpty()) {
 			return null;
 		}
@@ -206,7 +206,7 @@ public abstract class AbstractDB implements ConnectionPool{
 		return sqls;
 	}
 	
-	public List<SQL> getDeleteSqlList(Collection<Object> beans) {
+	public List<SQL> getDeleteSqlList(Collection<?> beans) {
 		if (beans == null || beans.isEmpty()) {
 			return null;
 		}
@@ -221,7 +221,7 @@ public abstract class AbstractDB implements ConnectionPool{
 		return sqls;
 	}
 	
-	public List<SQL> getSaveOrUpdateSqlList(Collection<Object> beans) {
+	public List<SQL> getSaveOrUpdateSqlList(Collection<?> beans) {
 		if (beans == null || beans.isEmpty()) {
 			return null;
 		}
@@ -303,19 +303,19 @@ public abstract class AbstractDB implements ConnectionPool{
 		return map;
 	}
 	
-	public void saveToDB(Collection<Object> beans){
+	public void saveToDB(Collection<?> beans){
 		execute(getSaveSqlList(beans));
 	}
 	
-	public void updateToDB(Collection<Object> beans){
+	public void updateToDB(Collection<?> beans){
 		execute(getUpdateSqlList(beans));
 	}
 	
-	public void deleteToDB(Collection<Object> beans){
+	public void deleteToDB(Collection<?> beans){
 		execute(getDeleteSqlList(beans));
 	}
 	
-	public void saveOrUpdateToDB(Collection<Object> beans){
+	public void saveOrUpdateToDB(Collection<?> beans){
 		execute(getSaveOrUpdateSqlList(beans));
 	}
 }

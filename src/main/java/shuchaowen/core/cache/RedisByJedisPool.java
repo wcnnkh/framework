@@ -274,4 +274,75 @@ public class RedisByJedisPool implements Redis{
 		return null;
 	}
 
+	public Long hset(String key, String field, String value) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.hset(key, field, value);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Long hset(byte[] key, byte[] field, byte[] value) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.hset(key, field, value);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Long hsetnx(String key, String field, String value) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.hsetnx(key, field, value);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Long hsetnx(byte[] key, byte[] field, byte[] value) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.hsetnx(key, field, value);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
 }

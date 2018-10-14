@@ -7,5 +7,5 @@ public interface Cache {
 	
 	void add(String key, int exp, Object data);
 
-	void delete(String key);
+	void delete(String ...key);
 }

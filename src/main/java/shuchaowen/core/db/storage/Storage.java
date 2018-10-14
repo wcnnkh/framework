@@ -14,11 +14,11 @@ public interface Storage {
 
 	<T> List<T> getByIdList(Class<T> type, Object... params);
 
-	void save(Collection<Object> beans);
+	void save(Collection<?> beans);
 
-	void update(Collection<Object> beans);
+	void update(Collection<?> beans);
 
-	void delete(Collection<Object> beans);
+	void delete(Collection<?> beans);
 
-	void saveOrUpdate(Collection<Object> beans);
+	void saveOrUpdate(Collection<?> beans);
 }

@@ -6,11 +6,11 @@ import java.util.Collection;
 public final class ExecuteInfo implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private EOperationType operationType;
-	private Collection<Object> beanList;
+	private Collection<?> beanList;
 	
 	public ExecuteInfo(){};
 	
-	public ExecuteInfo(EOperationType operationType, Collection<Object> beans){
+	public ExecuteInfo(EOperationType operationType, Collection<?> beans){
 		this.operationType = operationType;
 		this.beanList = beans;
 	}
@@ -22,11 +22,11 @@ public final class ExecuteInfo implements Serializable{
 		this.operationType = operationType;
 	}
 
-	public Collection<Object> getBeanList() {
+	public Collection<?> getBeanList() {
 		return beanList;
 	}
 
-	public void setBeanList(Collection<Object> beanList) {
+	public void setBeanList(Collection<?> beanList) {
 		this.beanList = beanList;
 	}
 }

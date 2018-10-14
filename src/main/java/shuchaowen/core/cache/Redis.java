@@ -28,4 +28,12 @@ public interface Redis {
 	Long delete(String ...key);
 	
 	Long delete(byte[] ...key);
+	
+	Long hset(String key, String field, String value);
+	
+	Long hset(byte[] key, byte[] field, byte[] value);
+	
+	Long hsetnx(String key, String field, String value);
+	
+	Long hsetnx(byte[] key, byte[] field, byte[] value);
 }

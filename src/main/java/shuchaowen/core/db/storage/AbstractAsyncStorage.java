@@ -19,19 +19,19 @@ public abstract class AbstractAsyncStorage implements Storage{
 		return db;
 	}
 
-	public void save(Collection<Object> beans) {
+	public void save(Collection<?> beans) {
 		execute(new ExecuteInfo(EOperationType.SAVE, beans));
 	}
 
-	public void update(Collection<Object> beans) {
+	public void update(Collection<?> beans) {
 		execute(new ExecuteInfo(EOperationType.UPDATE, beans));
 	}
 
-	public void delete(Collection<Object> beans) {
+	public void delete(Collection<?> beans) {
 		execute(new ExecuteInfo(EOperationType.DELETE, beans));
 	}
 
-	public void saveOrUpdate(Collection<Object> beans) {
+	public void saveOrUpdate(Collection<?> beans) {
 		execute(new ExecuteInfo(EOperationType.SAVE_OR_UPDATE, beans));
 	}
 	

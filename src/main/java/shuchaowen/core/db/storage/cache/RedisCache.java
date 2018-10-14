@@ -75,14 +75,16 @@ public class RedisCache implements Cache {
 		}
 	}
 
-	public void delete(String key) {
-		byte[] keyByte;
+	public void delete(String ...key) {
+		byte[][] keys = new byte[key.length][];
 		try {
-			keyByte = key.getBytes("UTF-8");
+			for(int i=0; i<key.length; i++){
+				keys[i] = key[i].getBytes("UTF-8");
+			}
 		} catch (UnsupportedEncodingException e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}
-
-		redis.delete(keyByte);
+		
+		redis.delete(keys);
 	}
 }

@@ -30,7 +30,7 @@ public class CommonStorage implements Storage{
 		return execute;
 	}
 
-	public void save(Collection<Object> beans) {
+	public void save(Collection<?> beans) {
 		if(execute == null){
 			db.saveToDB(beans);
 		}else{
@@ -38,7 +38,7 @@ public class CommonStorage implements Storage{
 		}
 	}
 
-	public void update(Collection<Object> beans) {
+	public void update(Collection<?> beans) {
 		if(execute == null){
 			db.updateToDB(beans);
 		}else{
@@ -46,7 +46,7 @@ public class CommonStorage implements Storage{
 		}
 	}
 
-	public void delete(Collection<Object> beans) {
+	public void delete(Collection<?> beans) {
 		if(execute == null){
 			db.deleteToDB(beans);
 		}else{
@@ -54,7 +54,7 @@ public class CommonStorage implements Storage{
 		}
 	}
 
-	public void saveOrUpdate(Collection<Object> beans) {
+	public void saveOrUpdate(Collection<?> beans) {
 		if(execute == null){
 			db.saveOrUpdateToDB(beans);
 		}else{
