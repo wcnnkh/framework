@@ -38,23 +38,7 @@ public class MemoryAsyncStorage extends AbstractAsyncStorage {
 			
 			public void run() {
 				while(service){
-					ExecuteInfo executeInfo = queue.poll();
-					if(executeInfo == null){
-						continue;
-					}
-
-					Collection<SQL> sqls = getSqlList(executeInfo);
-					if(logger){
-						for(SQL sql : sqls){
-							Logger.debug("MemoryAsyncStorage", sql.getSql());
-						}
-					}
-					
-					try {
-						DBUtils.execute(getDb(), sqls);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					next();
 				}
 			}
 		}).start();
@@ -78,6 +62,26 @@ public class MemoryAsyncStorage extends AbstractAsyncStorage {
 		}).start();
 	}
 	
+	private void next(){
+		ExecuteInfo executeInfo = queue.poll();
+		if(executeInfo == null){
+			return ;
+		}
+
+		Collection<SQL> sqls = getSqlList(executeInfo);
+		if(logger){
+			for(SQL sql : sqls){
+				Logger.debug("MemoryAsyncStorage", sql.getSql());
+			}
+		}
+		
+		try {
+			DBUtils.execute(getDb(), sqls);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public boolean isLogger() {
 		return logger;
 	}
@@ -98,12 +102,7 @@ public class MemoryAsyncStorage extends AbstractAsyncStorage {
 		service = false;
 		if(queue.size() > 0){
 			while(true){
-				ExecuteInfo executeInfo = queue.poll();
-				try {
-					getDb().execute(getSqlList(executeInfo));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				next();
 			}
 		}
 	}
