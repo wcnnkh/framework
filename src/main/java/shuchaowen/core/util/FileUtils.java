@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+
 public class FileUtils {
 	public static void toFile(String pathName, InputStream is){
 		OutputStream os = null;
@@ -334,6 +336,17 @@ public class FileUtils {
 			XUtils.close(false, fileInputStream);
 		}
 		return sb == null? null:sb.toString();
+	}
+	public static void writeFileContent(String filePath, String content, String charsetName){
+		File file = new File(filePath);
+		if(!file.exists()){
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				throw new ShuChaoWenRuntimeException(e);
+			}
+		}
+		writeFileContent(file, content, charsetName);
 	}
 	
 	public static void writeFileContent(File file, String content, String charsetName){
