@@ -71,6 +71,10 @@ public abstract class DB extends AbstractDB {
 		return getStorage(type).getById(type, params);
 	}
 	
+	public <T> Map<PrimaryKeyParameter, T> getById(Class<T> type, Collection<PrimaryKeyParameter> primaryKeyParameters){
+		return getStorage(type).getById(type, primaryKeyParameters);
+	}
+	
 	public <T> List<T> getByIdList(Class<T> type, Object... params) {
 		return getStorage(type).getByIdList(type, params);
 	}
