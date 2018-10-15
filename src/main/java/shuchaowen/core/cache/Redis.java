@@ -1,5 +1,6 @@
 package shuchaowen.core.cache;
 
+import java.util.List;
 import java.util.Map;
 
 public interface Redis {
@@ -58,4 +59,16 @@ public interface Redis {
 	Long ttl(String key);
 	
 	Long ttl(byte[] key);
+	
+	Long incr(String key);
+	
+	Long incr(byte[] key);
+	
+	Long decr(String key);
+	
+	Long decr(byte[] key);
+	
+	List<String> hvals(String key);
+	
+	List<byte[]> hvals(byte[] key);
 }
