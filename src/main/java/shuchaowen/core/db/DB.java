@@ -50,7 +50,7 @@ public abstract class DB extends AbstractDB {
 		return storage == null? this.storage:storage;
 	}
 	
-	private Map<Storage, List<Object>> getStorageBeanMap(Collection<Object> beanList){
+	private Map<Storage, List<Object>> getStorageBeanMap(Collection<?> beanList){
 		Map<Storage, List<Object>> map = new HashMap<Storage, List<Object>>();
 		for(Object bean : beanList){
 			Storage storage = getStorage(bean.getClass());
@@ -80,7 +80,7 @@ public abstract class DB extends AbstractDB {
 		save(Arrays.asList(beans));
 	}
 	
-	public void save(Collection<Object> beans){
+	public void save(Collection<?> beans){
 		if(beans == null || beans.isEmpty()){
 			return ;
 		}
@@ -105,7 +105,7 @@ public abstract class DB extends AbstractDB {
 		delete(Arrays.asList(beans));
 	}
 	
-	public void delete(Collection<Object> beans){
+	public void delete(Collection<?> beans){
 		if(beans == null || beans.isEmpty()){
 			return ;
 		}
@@ -130,7 +130,7 @@ public abstract class DB extends AbstractDB {
 		update(Arrays.asList(beans));
 	}
 	
-	public void update(Collection<Object> beans){
+	public void update(Collection<?> beans){
 		if(beans == null || beans.isEmpty()){
 			return ;
 		}
@@ -155,7 +155,7 @@ public abstract class DB extends AbstractDB {
 		saveOrUpdate(Arrays.asList(beans));
 	}
 	
-	public void saveOrUpdate(Collection<Object> beans){
+	public void saveOrUpdate(Collection<?> beans){
 		if(beans == null || beans.isEmpty()){
 			return ;
 		}
