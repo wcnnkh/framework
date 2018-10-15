@@ -77,6 +77,10 @@ public final class Result implements Serializable {
 	
 	@SuppressWarnings("unchecked")
 	public <T> T getValue(Class<?> tableClass, String name){
+		if(dataMap == null){
+			return null;
+		}
+		
 		TableInfo tableInfo = DB.getTableInfo(tableClass);
 		String tableName = tableMapping == null ? tableInfo.getName() : tableMapping.getTableName(tableClass);
 		ColumnInfo columnInfo = tableInfo.getColumnInfo(name);
