@@ -1,5 +1,7 @@
 package shuchaowen.core.cache;
 
+import java.util.Map;
+
 public interface Redis {
 	String get(String key);
 	
@@ -8,6 +10,10 @@ public interface Redis {
 	String set(String key, String value);
 	
 	String set(byte[] key, byte[] value);
+	
+	Long setnx(String key, String value);
+	
+	Long setnx(byte[] key, byte[] value);
 	
 	String setex(String key, int seconds, String value);
 	
@@ -36,4 +42,20 @@ public interface Redis {
 	Long hsetnx(String key, String field, String value);
 	
 	Long hsetnx(byte[] key, byte[] field, byte[] value);
+	
+	Map<String, String> get(String ...key);
+	
+	Map<byte[], byte[]> get(byte[] ...key);
+	
+	Long hdel(String key, String ...fields);
+	
+	Long hdel(byte[] key, byte[] ...fields);
+	
+	boolean hexists(String key, String field);
+	
+	boolean hexists(byte[] key, byte[] field);
+	
+	Long ttl(String key);
+	
+	Long ttl(byte[] key);
 }

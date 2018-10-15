@@ -1,5 +1,11 @@
 package shuchaowen.core.db.storage;
 
+import com.dyuproject.protostuff.LinkedBuffer;
+import com.dyuproject.protostuff.ProtobufIOUtil;
+import com.dyuproject.protostuff.ProtostuffIOUtil;
+import com.dyuproject.protostuff.Schema;
+import com.dyuproject.protostuff.runtime.RuntimeSchema;
+
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.db.PrimaryKeyParameter;
@@ -8,12 +14,6 @@ import shuchaowen.core.db.proxy.BeanProxy;
 import shuchaowen.core.db.proxy.BeanProxyMethodInterceptor;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
-
-import com.dyuproject.protostuff.LinkedBuffer;
-import com.dyuproject.protostuff.ProtobufIOUtil;
-import com.dyuproject.protostuff.ProtostuffIOUtil;
-import com.dyuproject.protostuff.Schema;
-import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
 public class CacheUtils {
 	private static final String OBJECT_KEY_COCAT = "#";
@@ -35,6 +35,50 @@ public class CacheUtils {
 			sb.append(columnInfo.getFieldInfo().forceGet(obj));
 		}
 		return sb.toString();
+	}
+	
+	public static String getObjectPrimaryKey(Object obj) throws IllegalArgumentException, IllegalAccessException{
+		TableInfo tableInfo = DB.getTableInfo(obj.getClass());
+		if (tableInfo == null) {
+			throw new NullPointerException("tableInfo is null");
+		}
+		
+		if(tableInfo.getPrimaryKeyColumns().length == 0){
+			throw new ShuChaoWenRuntimeException(ClassUtils.getCGLIBRealClassName(obj.getClass()) + " not found primary key");
+		}
+		
+		StringBuilder sb = new StringBuilder(64);
+		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
+			if(i > 0){
+				sb.append(OBJECT_KEY_COCAT);
+			}
+			sb.append(tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(obj));
+		}
+		return sb.toString();
+	}
+	
+	public static String getObjectPrimaryKey(Class<?> tableClass, Object ...params){
+		TableInfo tableInfo = DB.getTableInfo(tableClass);
+		if (tableInfo == null) {
+			throw new NullPointerException("tableInfo is null");
+		}
+		
+		if(tableInfo.getPrimaryKeyColumns().length == 0){
+			throw new ShuChaoWenRuntimeException(ClassUtils.getCGLIBRealClassName(tableClass) + " not found primary key");
+		}
+		
+		StringBuilder sb = new StringBuilder(64);
+		for(int i=0; i<params.length; i++){
+			if(i > 0){
+				sb.append(OBJECT_KEY_COCAT);
+			}
+			sb.append(params[i]);
+		}
+		return sb.toString();
+	}
+	
+	public static String getObjectPrimaryKey(Class<?> tableClass, PrimaryKeyParameter params){
+		return getObjectPrimaryKey(tableClass, params.getParams());
 	}
 	
 	private static String getPrimaryKey(Object ...params){

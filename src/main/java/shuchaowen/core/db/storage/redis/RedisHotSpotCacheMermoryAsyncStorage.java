@@ -15,9 +15,9 @@ public class RedisHotSpotCacheMermoryAsyncStorage extends RedisHotSpotCacheStora
 		super(db, redis, new MemoryAsyncStorage(db));
 	}
 	
-	public RedisHotSpotCacheMermoryAsyncStorage(AbstractDB db, String prefix,
+	public RedisHotSpotCacheMermoryAsyncStorage(AbstractDB db,
 			int exp, Redis redis) {
-		super(db, prefix, exp, redis, new MemoryAsyncStorage(db));
+		super(db, exp, redis, new MemoryAsyncStorage(db));
 	}
 	
 	public MemoryAsyncStorage getMemoryAsyncStorage(){

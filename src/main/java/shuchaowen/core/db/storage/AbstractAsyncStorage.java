@@ -8,6 +8,11 @@ import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.sql.SQL;
 
+/**
+ * 缓存热点数据
+ * @author shuchaowen
+ *
+ */
 public abstract class AbstractAsyncStorage implements Storage{
 	private final AbstractDB db;
 	

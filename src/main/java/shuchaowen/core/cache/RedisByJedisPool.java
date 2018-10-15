@@ -1,5 +1,8 @@
 package shuchaowen.core.cache;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
@@ -332,6 +335,194 @@ public class RedisByJedisPool implements Redis{
 		Jedis jedis = jedisPool.getResource();
 		try {
 			return jedis.hsetnx(key, field, value);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Map<String, String> get(String... key) {
+		Map<String, String> map = new HashMap<String, String>();
+		Jedis jedis = jedisPool.getResource();
+		try {
+			for(String k : key){
+				map.put(k, jedis.get(k));
+			}
+			return map;
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Map<byte[], byte[]> get(byte[]... key) {
+		Map<byte[], byte[]> map = new HashMap<byte[], byte[]>();
+		Jedis jedis = jedisPool.getResource();
+		try {
+			for(byte[] k : key){
+				map.put(k, jedis.get(k));
+			}
+			return map;
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Long hdel(String key, String... fields) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.hdel(key, fields);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Long hdel(byte[] key, byte[]... fields) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.hdel(key, fields);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public boolean hexists(String key, String field) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.hexists(key, field);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return false;
+	}
+
+	public boolean hexists(byte[] key, byte[] field) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.hexists(key, field);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return false;
+	}
+	
+	public Long ttl(byte[] key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.ttl(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Long ttl(String key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.ttl(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Long setnx(String key, String value) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.setnx(key, value);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Long setnx(byte[] key, byte[] value) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.setnx(key, value);
 		} catch (Exception e) {
 			if(abnormalInterruption){
 				throw new ShuChaoWenRuntimeException(e);
