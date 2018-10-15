@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import shuchaowen.core.application.HttpServerApplication;
-import shuchaowen.core.db.TransactionContext;
 import shuchaowen.core.http.enums.ContentType;
 import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.StringUtils;
@@ -30,7 +29,6 @@ public class DispatcherServlet extends HttpServlet {
 	}
 
 	public void setDebug(boolean debug) {
-		TransactionContext.getInstance().setSqlDebug(debug);
 		this.debug = debug;
 	}
 
