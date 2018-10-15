@@ -645,4 +645,40 @@ public class RedisByJedisPool implements Redis{
 		}
 		return null;
 	}
+
+	public String hget(String key, String field) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.hget(key, field);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public byte[] hget(byte[] key, byte[] field) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.hget(key, field);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
 }

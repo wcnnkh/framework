@@ -71,4 +71,8 @@ public interface Redis {
 	List<String> hvals(String key);
 	
 	List<byte[]> hvals(byte[] key);
+	
+	String hget(String key, String field);
+	
+	byte[] hget(byte[] key, byte[] field);
 }
