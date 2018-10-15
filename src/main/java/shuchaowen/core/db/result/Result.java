@@ -16,12 +16,15 @@ import shuchaowen.core.db.proxy.BeanProxy;
 import shuchaowen.core.db.proxy.BeanProxyMethodInterceptor;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
+import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.XTime;
 
-public class Result implements Serializable {
+public final class Result implements Serializable {
 	private static final long serialVersionUID = -3443652927449459314L;
 	private TableMapping tableMapping;
 	private LinkedHashMap<String, Object> dataMap;
+	private boolean fieldStrict = true;//是否要求字段是一定存在的
+	
 	// 缓存一下
 	private transient Object[] values;
 
@@ -31,6 +34,14 @@ public class Result implements Serializable {
 	public Result(TableMapping tableMapping, ResultSet resultSet) throws SQLException {
 		this.tableMapping = tableMapping;
 		render(resultSet);
+	}
+
+	public boolean isFieldStrict() {
+		return fieldStrict;
+	}
+
+	public void setFieldStrict(boolean fieldStrict) {
+		this.fieldStrict = fieldStrict;
 	}
 
 	public TableMapping getTableMapping() {
@@ -159,7 +170,11 @@ public class Result implements Serializable {
 				sb.append(" [");
 				sb.append(columnInfo.getName());
 				sb.append("] not found for DataSource");
-				throw new ShuChaoWenRuntimeException(sb.toString());
+				if(fieldStrict){
+					throw new ShuChaoWenRuntimeException(sb.toString());
+				}else{
+					Logger.warn("Result", sb.toString());
+				}
 			}
 		}
 

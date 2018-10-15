@@ -8,7 +8,7 @@ import java.util.List;
 
 import shuchaowen.core.db.TableMapping;
 
-public class ResultSet implements Serializable{
+public final class ResultSet implements Serializable{
 	private static final long serialVersionUID = -3199839587290797839L;
 	private static final Result NULL_RESULT = new Result();
 	private TableMapping tableMapping;
@@ -19,7 +19,7 @@ public class ResultSet implements Serializable{
 	public ResultSet(java.sql.ResultSet resultSet) throws SQLException{
 		render(resultSet);
 	}
-	
+
 	public <T> T getFirst(Class<T> type){
 		return get(type, 0);
 	}
