@@ -133,7 +133,7 @@ public class RedisByJedisPool implements Redis{
 		return null;
 	}
 
-	public boolean exists(String key) {
+	public Boolean exists(String key) {
 		Jedis jedis = jedisPool.getResource();
 		try {
 			return jedis.exists(key);
@@ -151,7 +151,7 @@ public class RedisByJedisPool implements Redis{
 		return false;
 	}
 
-	public boolean exists(byte[] key) {
+	public Boolean exists(byte[] key) {
 		Jedis jedis = jedisPool.getResource();
 		try {
 			return jedis.exists(key);
@@ -429,7 +429,7 @@ public class RedisByJedisPool implements Redis{
 		return null;
 	}
 
-	public boolean hexists(String key, String field) {
+	public Boolean hexists(String key, String field) {
 		Jedis jedis = jedisPool.getResource();
 		try {
 			return jedis.hexists(key, field);
@@ -447,7 +447,7 @@ public class RedisByJedisPool implements Redis{
 		return false;
 	}
 
-	public boolean hexists(byte[] key, byte[] field) {
+	public Boolean hexists(byte[] key, byte[] field) {
 		Jedis jedis = jedisPool.getResource();
 		try {
 			return jedis.hexists(key, field);

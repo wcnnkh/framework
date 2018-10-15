@@ -19,9 +19,9 @@ public interface Redis {
 	
 	String setex(byte[] key, int seconds, byte[] value);
 	
-	boolean exists(String key);
+	Boolean exists(String key);
 	
-	boolean exists(byte[] key);
+	Boolean exists(byte[] key);
 	
 	Long expire(String key, int seconds);
 	
@@ -51,9 +51,9 @@ public interface Redis {
 	
 	Long hdel(byte[] key, byte[] ...fields);
 	
-	boolean hexists(String key, String field);
+	Boolean hexists(String key, String field);
 	
-	boolean hexists(byte[] key, byte[] field);
+	Boolean hexists(byte[] key, byte[] field);
 	
 	Long ttl(String key);
 	
