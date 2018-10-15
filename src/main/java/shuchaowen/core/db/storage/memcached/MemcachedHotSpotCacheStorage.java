@@ -85,7 +85,12 @@ public class MemcachedHotSpotCacheStorage extends CommonStorage {
 	}
 
 	public <T> T getByIdFromCache(Class<T> type, Object... params) {
-		return memcached.getAndTocuh(CacheUtils.getObjectKey(type, params), exp);
+		byte[] data = memcached.getAndTocuh(CacheUtils.getObjectKey(type, params), exp);
+		if(data == null){
+			return null;
+		}
+		
+		return CacheUtils.decode(type, data);
 	}
 
 	public void saveToCache(Collection<?> beans) {

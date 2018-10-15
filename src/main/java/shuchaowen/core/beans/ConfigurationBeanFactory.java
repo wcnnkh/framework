@@ -138,8 +138,4 @@ public class ConfigurationBeanFactory implements BeanFactory {
 			e.printStackTrace();
 		}
 	}
-
-	public boolean isProxy(String name) {
-		return getBeanInfo(name).isProxy();
-	}
 }
