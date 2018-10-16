@@ -25,7 +25,7 @@ public class AnnotationBean implements Bean {
 	private final String id;
 	private final boolean singleton;
 	private final List<Class<? extends BeanFilter>> beanFilters;
-	private final Constructor<?> constructor;
+	private Constructor<?> constructor;
 	private final List<Method> initMethodList = new ArrayList<Method>();
 	private final List<Method> destroyMethodList = new ArrayList<Method>();
 	private final boolean proxy;
@@ -33,8 +33,7 @@ public class AnnotationBean implements Bean {
 	public AnnotationBean(BeanFactory beanFactory, Class<?> type) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
-		this.constructor = type.getDeclaredConstructor();
-
+		
 		shuchaowen.core.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.core.beans.annotaion.Bean.class);
 		if(bean != null){
 			this.id = StringUtils.isNull(bean.id()) ? ClassUtils.getCGLIBRealClassName(type) : bean.id();
@@ -135,6 +134,16 @@ public class AnnotationBean implements Bean {
 	
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance() {
+		if(constructor == null){
+			try {
+				this.constructor = type.getDeclaredConstructor();//不用考虑并发
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		Object bean;
 		try {
 			if (isProxy()) {
