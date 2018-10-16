@@ -45,6 +45,12 @@ public class ConfigurationBeanFactory implements BeanFactory {
 			}
 			
 			singletonMap.put(realName, bean);
+			Bean b = getBean(realName);
+			try {
+				b.wrapper(bean);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
