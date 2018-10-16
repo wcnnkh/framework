@@ -7,5 +7,7 @@ public interface BeanFactory {
 	
 	boolean contains(String name);
 	
-	BeanInfo getBeanInfo(String name);
+	Bean getBean(String name);
+	
+	Bean getBean(Class<?> type);
 }

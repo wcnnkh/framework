@@ -4,104 +4,104 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import shuchaowen.core.beans.annotaion.Service;
-import shuchaowen.core.beans.exception.BeansException;
+import shuchaowen.core.beans.xml.XmlBeanInfoConfiguration;
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
 
 public class ConfigurationBeanFactory implements BeanFactory {
-	private volatile Map<String, BeanInfo> beanInfoMap = new HashMap<String, BeanInfo>();
-	private volatile Map<Class<?>, Object> singletonMap = new HashMap<Class<?>, Object>();
-	private volatile Map<String, BeanInfo> mappingMap = new HashMap<String, BeanInfo>();
-	private ConfigFactory configFactory;
+	private final AnnotationBeanInfoConfiguration annotationBeanInfoConfiguration;
+	private final XmlBeanInfoConfiguration xmlBeanInfoConfiguration;
+	private volatile Map<String, Object> singletonMap = new HashMap<String, Object>();
 	private String packageNames;
 
-	public ConfigurationBeanFactory(String packageNames) {
-		// TODO 未配置configFactory
+	/**
+	 * @param config
+	 *            配置文件
+	 * @param packageNames
+	 *            注解扫描路径
+	 * @throws Exception 
+	 */
+	public ConfigurationBeanFactory(ConfigFactory configFactory, String config, String packageNames) throws Exception {
 		this.packageNames = packageNames;
-		singletonMap.put(ConfigurationBeanFactory.class, this);
-		scanningService();
+		this.annotationBeanInfoConfiguration = new AnnotationBeanInfoConfiguration(this, packageNames);
+		this.xmlBeanInfoConfiguration = new XmlBeanInfoConfiguration(this, configFactory, config);
+		registerSingleton(ConfigurationBeanFactory.class, this);
 	}
-
-	public ConfigurationBeanFactory(ConfigFactory configFactory, String packageNames) {
-		this.configFactory = configFactory;
-		this.packageNames = packageNames;
-
-		scanningService();
+	
+	//注册一个单例
+	public void registerSingleton(Class<?> type, Object bean){
+		registerSingleton(type.getName(), bean);
 	}
-
-	private void scanningService() {
-		for (Class<?> clz : ClassUtils.getClasses(packageNames)) {
-			Service service = clz.getAnnotation(Service.class);
-			if (service != null) {
-				BeanInfo beanInfo = getBeanInfo(clz.getName());
-				Class<?>[] interfaces = clz.getInterfaces();
-				for (Class<?> i : interfaces) {
-					mappingMap.put(i.getName(), beanInfo);
-				}
-
-				if (!service.value().equals("")) {
-					mappingMap.put(service.value(), beanInfo);
-				}
-			}
-		}
-	}
-
-	public BeanInfo getBeanInfo(String name) {
+	
+	private void registerSingleton(String name, Object bean){
 		String realName = ClassUtils.getCGLIBRealClassName(name);
-		BeanInfo beanInfo = mappingMap.get(realName);
-		if(beanInfo != null){
-			return beanInfo;
+		if(singletonMap.containsKey(realName)){
+			throw new ShuChaoWenRuntimeException("singleton Already exist");//单例已经存在
 		}
 		
-		beanInfo = beanInfoMap.get(realName);
-		if (beanInfo == null) {// 这个在配置文件里面找不到
-			// 试试这个名字是不是一个类名
-			try {
-				synchronized (beanInfoMap) {
-					beanInfo = beanInfoMap.get(realName);
-					if(beanInfo == null){
-						Class<?> clz = Class.forName(realName);
-						beanInfo = new BeanInfo(clz);
-						beanInfoMap.put(realName, beanInfo);
-					}
-				}
-			} catch (ClassNotFoundException e) {
-				throw new BeansException(e);
+		synchronized (singletonMap) {
+			if(singletonMap.containsKey(realName)){
+				throw new ShuChaoWenRuntimeException("singleton Already exist");//单例已经存在
 			}
+			
+			singletonMap.put(realName, bean);
+		}
+	}
+	
+	private Bean getBeanInfoByRealName(String realName){
+		Bean beanInfo = xmlBeanInfoConfiguration.getBean(realName);
+		if (beanInfo == null) {
+			beanInfo = annotationBeanInfoConfiguration.getBean(realName);
 		}
 		return beanInfo;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T get(String name) {
-		if(!contains(name)){
-			if(name.equals(BeanFactory.class.getName())){
-				return (T) this;
-			}
-		}
-		
-		BeanInfo beanInfo = getBeanInfo(name);
-		return get(beanInfo);
+	public Bean getBean(String name) {
+		return getBeanInfoByRealName(ClassUtils.getCGLIBRealClassName(name));
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T get(BeanInfo beanInfo) {
+	public <T> T get(String name) {
+		String realName = ClassUtils.getCGLIBRealClassName(name);
+		T t = (T) singletonMap.get(realName);
+		if(t != null){
+			return t;
+		}
+
+		if (!contains(realName)) {
+			if (name.equals(BeanFactory.class.getName())) {
+				return (T) this;
+			}
+		}
+
+		Bean beanInfo = getBeanInfoByRealName(realName);
+		try {
+			return get(beanInfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T get(Bean beanInfo) throws Exception {
 		Object bean;
+		String name = ClassUtils.getCGLIBRealClassName(beanInfo.getType().getName());
 		if (beanInfo.isSingleton()) {
-			bean = singletonMap.get(beanInfo.getType());
+			bean = singletonMap.get(name);
 			if (bean == null) {
 				synchronized (singletonMap) {
-					bean = singletonMap.get(beanInfo.getType());
+					bean = singletonMap.get(name);
 					if (bean == null) {
-						bean = beanInfo.newInstance(this, configFactory);
-						singletonMap.put(beanInfo.getType(), bean);
-						beanInfo.wrapper(bean, this);
+						bean = beanInfo.newInstance();
+						singletonMap.put(name, bean);
+						beanInfo.wrapper(bean);
 					}
 				}
 			}
 		} else {
-			bean = beanInfo.newInstance(this, configFactory);
-			beanInfo.wrapper(bean, this);
+			bean = beanInfo.newInstance();
+			beanInfo.wrapper(bean);
 		}
 		return (T) bean;
 	}
@@ -111,7 +111,7 @@ public class ConfigurationBeanFactory implements BeanFactory {
 	}
 
 	public boolean contains(String name) {
-		return mappingMap.containsKey(name);
+		return annotationBeanInfoConfiguration.contains(name) || xmlBeanInfoConfiguration.contains(name);
 	}
 
 	public void init() {
@@ -123,12 +123,14 @@ public class ConfigurationBeanFactory implements BeanFactory {
 	}
 
 	public void destroy() {
-		for (Entry<Class<?>, Object> entry : singletonMap.entrySet()) {
-			try {
-				BeanInfo beanInfo = getBeanInfo(entry.getKey().getName());
-				beanInfo.destoryMethod(entry.getValue());
-			} catch (Exception e) {
-				e.printStackTrace();
+		for (Entry<String, Object> entry : singletonMap.entrySet()) {
+			if(contains(entry.getKey())){
+				try {
+					Bean beanInfo = getBean(entry.getKey());
+					beanInfo.destroy(entry.getValue());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -137,5 +139,9 @@ public class ConfigurationBeanFactory implements BeanFactory {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Bean getBean(Class<?> type) {
+		return getBean(type.getName());
 	}
 }

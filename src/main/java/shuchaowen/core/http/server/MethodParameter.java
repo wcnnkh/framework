@@ -18,7 +18,7 @@ public final class MethodParameter {
 	@SuppressWarnings("unchecked")
 	public Object getParameter(BeanFactory beanFactory, Request request, Response response) throws Throwable {
 		if(constructor != null){
-			return beanFactory.getBeanInfo(type.getName()).newInstance(beanFactory, constructor, request);
+			return beanFactory.getBean(type).newInstance(constructor.getParameterTypes(), request);
 		}
 		
 		if (Request.class.isAssignableFrom(type)) {
@@ -31,7 +31,7 @@ public final class MethodParameter {
 				if(constructor.getParameterCount() == 1 && Request.class.isAssignableFrom(constructor.getParameterTypes()[0])){
 					this.constructor = constructor;
 					constructor.setAccessible(true);
-					return beanFactory.getBeanInfo(type.getName()).newInstance(beanFactory, constructor, request);
+					return beanFactory.getBean(type).newInstance(constructor.getParameterTypes(), request);
 				}
 			}
 			return null;

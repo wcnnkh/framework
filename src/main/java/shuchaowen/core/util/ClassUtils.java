@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.spring.core.LocalVariableTableParameterNameDiscoverer;
 
 public final class ClassUtils {
@@ -49,13 +48,14 @@ public final class ClassUtils {
 
 	/**
 	 * 是否是一个基本数据类型
+	 * 
 	 * @param type
 	 * @return
 	 */
-	public static boolean isBasicType(Class<?> type){
+	public static boolean isBasicType(Class<?> type) {
 		return containsBasicType(type) || containsBasicValueType(type);
 	}
-	
+
 	/**
 	 * 是否是基本数据类型(引用类型)
 	 * 
@@ -65,18 +65,20 @@ public final class ClassUtils {
 	public static boolean containsBasicType(Class<?> type) {
 		return basicTypeMap.containsKey(type);
 	}
-	
+
 	/**
 	 * 是否是一个基本数据类型(值类型)
+	 * 
 	 * @param type
 	 * @return
 	 */
-	public static boolean containsBasicValueType(Class<?> type){
+	public static boolean containsBasicValueType(Class<?> type) {
 		return basicValueTypeMap.containsKey(type);
 	}
 
 	/**
 	 * String
+	 * 
 	 * @param type
 	 * @return
 	 */
@@ -86,6 +88,7 @@ public final class ClassUtils {
 
 	/**
 	 * Character || char
+	 * 
 	 * @param type
 	 * @return
 	 */
@@ -95,6 +98,7 @@ public final class ClassUtils {
 
 	/**
 	 * Byte || byte
+	 * 
 	 * @param type
 	 * @return
 	 */
@@ -104,6 +108,7 @@ public final class ClassUtils {
 
 	/**
 	 * Short || short
+	 * 
 	 * @param type
 	 * @return
 	 */
@@ -113,6 +118,7 @@ public final class ClassUtils {
 
 	/**
 	 * Integer || int
+	 * 
 	 * @param type
 	 * @return
 	 */
@@ -122,6 +128,7 @@ public final class ClassUtils {
 
 	/**
 	 * Long || long
+	 * 
 	 * @param type
 	 * @return
 	 */
@@ -131,6 +138,7 @@ public final class ClassUtils {
 
 	/**
 	 * Float || float
+	 * 
 	 * @param type
 	 * @return
 	 */
@@ -140,6 +148,7 @@ public final class ClassUtils {
 
 	/**
 	 * Double || double
+	 * 
 	 * @param type
 	 * @return
 	 */
@@ -149,6 +158,7 @@ public final class ClassUtils {
 
 	/**
 	 * Boolean || boolean
+	 * 
 	 * @param type
 	 * @return
 	 */
@@ -158,15 +168,17 @@ public final class ClassUtils {
 
 	/**
 	 * 获取类信息，先会从缓存中查找
+	 * 
 	 * @param clz
 	 * @return
 	 */
 	public static ClassInfo getClassInfo(Class<?> clz) {
 		return getClassInfo(clz.getName());
 	}
-	
+
 	/**
 	 * 获取类信息，先会从缓存中查找
+	 * 
 	 * @param className
 	 * @return
 	 */
@@ -205,143 +217,83 @@ public final class ClassUtils {
 		return cl;
 	}
 
-	public static <T> Class<T> forName(String name){
+	public static <T> Class<T> forName(String name) throws ClassNotFoundException {
 		return forName(name, getDefaultClassLoader());
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Class<T> forName(final String name, final ClassLoader loader){
-		if(basicValueTypeNameMap.containsKey(name)){
+	public static <T> Class<T> forName(final String name, final ClassLoader loader) throws ClassNotFoundException {
+		if (basicValueTypeNameMap.containsKey(name)) {
 			return (Class<T>) basicValueTypeNameMap.get(name);
 		}
-		
-		if(classForNameMap.containsKey(name)){
+
+		if (classForNameMap.containsKey(name)) {
 			return (Class<T>) classForNameMap.get(name);
-		}else{
+		}
+
+		return (Class<T>) Class.forName(name, true, loader == null ? getDefaultClassLoader() : loader);
+	}
+	
+	public static <T> Class<T> forNameByCache(final String name) throws ClassNotFoundException{
+		return forNameByCache(name, getDefaultClassLoader());
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> Class<T> forNameByCache(final String name, final ClassLoader loader)
+			throws ClassNotFoundException {
+		if (basicValueTypeNameMap.containsKey(name)) {
+			return (Class<T>) basicValueTypeNameMap.get(name);
+		}
+
+		if (classForNameMap.containsKey(name)) {
+			return (Class<T>) classForNameMap.get(name);
+		} else {
 			synchronized (classForNameMap) {
-				try {
-					Class<T> type = (Class<T>) Class.forName(name, true, loader == null ? getDefaultClassLoader() : loader);
-					classForNameMap.put(name, type);
-					return type;
-				} catch (ClassNotFoundException e) {
-					throw new ShuChaoWenRuntimeException(e);
-				}
+				Class<T> type = (Class<T>) Class.forName(name, true, loader == null ? getDefaultClassLoader() : loader);
+				classForNameMap.put(name, type);
+				return type;
 			}
 		}
 	}
 
-	public static <T> T newInstance(Class<T> clz) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public static <T> T newInstance(Class<T> clz) throws NoSuchMethodException, SecurityException,
+			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Constructor<T> constructor = clz.getConstructor();
 		constructor.setAccessible(true);
 		return constructor.newInstance();
 	}
 
-	public static <T> T newInstance(String name) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Class<T> clz = forName(name);
-		return newInstance(clz);
-	}
-
-	public static <T> T newInstance(Class<T> clz, Class<?>[] parameterTypes, Object[] args)
-			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		Constructor<T> constructor = clz.getConstructor(parameterTypes);
-		constructor.setAccessible(true);
-		return constructor.newInstance(args);
-	}
-
-	public static <T> T newInstance(String name, Class<?>[] parameterTypes, Object[] args)
-			throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException,
-			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Class<T> clz = forName(name);
-		return newInstance(clz, parameterTypes, args);
-	}
-
-	public static <T> T newInstance(Class<T> type, Object... args) throws NoSuchMethodException, SecurityException,
-			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-
-		return newInstance(type, getTypes(args), args);
-	}
-
-	public static <T> T newInstance(String name, Object... args)
-			throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException,
-			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		return newInstance(name, getTypes(args), args);
-	}
-
-	/**
-	 * 获取数据类型
-	 * 
-	 * @param args
-	 *            not null
-	 * @return
-	 */
-	public static Class<?>[] getTypes(Object... args) {
-		Class<?>[] types = new Class<?>[args.length];
-		for (int i = 0; i < args.length; i++) {
-			types[i] = args[i].getClass();
-		}
-		return types;
-	}
-
-	/**
-	 * 判断两个方法是否是同一个方法
-	 * 
-	 * @param method1
-	 * @param method2
-	 * @return
-	 */
-	public static boolean equalsMethod(Method method1, Method method2) {
-		if (method1 == null || method2 == null) {
-			throw new NullPointerException();
-		}
-
-		if (method1.getName().equals(method2.getName())) {
-			Class<?>[] types1 = method1.getParameterTypes();
-			Class<?>[] types2 = method2.getParameterTypes();
-			if (types1.length == types2.length) {
-				for (int i = 0; i < types1.length; i++) {
-					Class<?> type1 = types1[i];
-					Class<?> type2 = types2[i];
-					if (type1 != type2) {
-						return false;
-					}
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * 获取指定包下的类型，如获取全部类则不包含jar包中的类
-	 * @param packageName 多个可以使用;(分号)隔开
+	 * 
+	 * @param packageName
+	 *            多个可以使用;(分号)隔开
 	 * @return
 	 */
-	public static Collection<Class<?>> getClasses(String packageName){
-		if(StringUtils.isNull(packageName)){
+	public static Collection<Class<?>> getClasses(String packageName) {
+		if (StringUtils.isNull(packageName)) {
 			return getClassListForPackageArray();
-		}else if("*".equals(packageName)){
+		} else if ("*".equals(packageName)) {
 			return getClassesForPackage("");
-		}else{
+		} else {
 			Map<String, Class<?>> classMap = new HashMap<String, Class<?>>();
 			String[] pArr = StringUtils.commonSplit(packageName);
 			Map<String, Boolean> tagMap = new HashMap<String, Boolean>();
-			for(String pg : pArr){
-				if(tagMap.containsKey(pg)){
+			for (String pg : pArr) {
+				if (tagMap.containsKey(pg)) {
 					continue;
 				}
 				tagMap.put(pg, true);
-				
-				
+
 				List<Class<?>> classes;
-				if("".equals(pg)){//all
+				if ("".equals(pg)) {// all
 					classes = getClassListForPackageArray();
-				}else{
+				} else {
 					classes = getClassesForPackage(pg);
 				}
-				
-				for(Class<?> clz : classes){
-					if(classMap.containsKey(clz.getName())){
+
+				for (Class<?> clz : classes) {
+					if (classMap.containsKey(clz.getName())) {
 						continue;
 					}
 					classMap.put(clz.getName(), clz);
@@ -350,8 +302,8 @@ public final class ClassUtils {
 			return classMap.values();
 		}
 	}
-	
-	private static List<Class<?>> getClassListForPackageArray(String ...pages) {
+
+	private static List<Class<?>> getClassListForPackageArray(String... pages) {
 		List<Class<?>> classList = new ArrayList<Class<?>>();
 		StringBuilder beanPath = new StringBuilder(ConfigUtils.getClassPath());
 		StringBuilder pagePath = new StringBuilder();
@@ -401,6 +353,7 @@ public final class ClassUtils {
 
 	/**
 	 * 从包package中获取所有的Class
+	 * 
 	 * @param pack
 	 * @return
 	 */
@@ -466,7 +419,7 @@ public final class ClassUtils {
 											clz = Class.forName(packageName + '.' + className);
 										} catch (Throwable e) {
 										}
-										
+
 										if (clz != null) {
 											classes.add(clz);
 										}
@@ -493,8 +446,8 @@ public final class ClassUtils {
 	 * @param recursive
 	 * @param classes
 	 */
-	private static void findAndAddClassesInPackageByFile(String packageName, String packagePath, final boolean recursive,
-			List<Class<?>> classes) {
+	private static void findAndAddClassesInPackageByFile(String packageName, String packagePath,
+			final boolean recursive, List<Class<?>> classes) {
 		// 获取此包的目录 建立一个File
 		File dir = new File(packagePath);
 		// 如果不存在或者 也不是目录就直接返回
@@ -534,53 +487,55 @@ public final class ClassUtils {
 			}
 		}
 	}
-	
-	public static String[] getParameterName(Method method){
+
+	public static String[] getParameterName(Method method) {
 		return lvtpnd.getParameterNames(method);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public static String[] getParameterName(Constructor constructor){
+	public static String[] getParameterName(Constructor constructor) {
 		return lvtpnd.getParameterNames(constructor);
 	}
-	
+
 	/**
-	 * 获取父类  不包含java.lang.Object
+	 * 获取父类 不包含java.lang.Object
+	 * 
 	 * @param clz
 	 * @return
 	 */
-	public static Class<?> getSuperClass(Class<?> clz){
+	public static Class<?> getSuperClass(Class<?> clz) {
 		Class<?> superClz = clz.getSuperclass();
-		if(superClz == null || Object.class.getName().equals(superClz.getName())){
+		if (superClz == null || Object.class.getName().equals(superClz.getName())) {
 			return null;
 		}
 		return superClz;
 	}
-	
+
 	/**
-	 * 获取所有父类  不包含java.lang.Object
+	 * 获取所有父类 不包含java.lang.Object
+	 * 
 	 * @param clz
 	 * @return
 	 */
-	public static List<Class<?>> getSuperClassList(Class<?> clz){
+	public static List<Class<?>> getSuperClassList(Class<?> clz) {
 		List<Class<?>> clzList = new ArrayList<Class<?>>();
 		Class<?> superClz = getSuperClass(clz);
-		while(superClz != null){
+		while (superClz != null) {
 			clzList.add(superClz);
 			superClz = getSuperClass(superClz);
 		}
 		return clzList;
 	}
-	
-	public static String getCGLIBRealClassName(Class<?> clz){
+
+	public static String getCGLIBRealClassName(Class<?> clz) {
 		return getCGLIBRealClassName(clz.getName());
 	}
-	
-	public static String getCGLIBRealClassName(String cglibName){
+
+	public static String getCGLIBRealClassName(String cglibName) {
 		int index = cglibName.indexOf(CGLIB_CLASS_SPLIT);
-		if(index == -1){
+		if (index == -1) {
 			return cglibName;
-		}else{
+		} else {
 			return cglibName.substring(0, index);
 		}
 	}

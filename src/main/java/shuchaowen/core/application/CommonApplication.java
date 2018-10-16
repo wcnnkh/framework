@@ -13,10 +13,18 @@ public class CommonApplication implements Application {
 	public CommonApplication() {
 		this("");
 	}
+	
+	public CommonApplication(String configPath) {
+		this(configPath, "");
+	}
 
-	public CommonApplication(String packageName) {
+	public CommonApplication(String configPath, String packageName) {
 		this.packageName = packageName;
-		this.beanFactory = new ConfigurationBeanFactory(packageName);
+		try {
+			this.beanFactory = new ConfigurationBeanFactory(null, configPath, packageName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public Collection<Class<?>> getClasses() {
