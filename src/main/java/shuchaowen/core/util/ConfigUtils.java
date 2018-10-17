@@ -134,18 +134,15 @@ public class ConfigUtils {
 	public static File getFile(String filePath, List<String> testSuffix) {
 		File file = new File(getFilePath(filePath));
 		if (testSuffix == null || testSuffix.isEmpty()) {
-			Logger.info("config", file.getPath());
 			return file;
 		}
 
 		for (String sf : testSuffix) {
 			File testFile = new File(file.getParent() + File.separator + getTestFileName(file.getName(), sf));
 			if (testFile.exists()) {
-				Logger.info("config", testFile.getPath());
 				return testFile;
 			}
 		}
-		Logger.info("config", file.getPath());
 		return file;
 	}
 

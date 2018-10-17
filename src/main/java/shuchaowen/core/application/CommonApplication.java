@@ -23,7 +23,7 @@ public class CommonApplication implements Application {
 	
 	public CommonApplication(String configPath) {
 		try {
-			this.beanFactory = new ConfigurationBeanFactory(null, configPath);
+			this.beanFactory = new ConfigurationBeanFactory(configPath);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

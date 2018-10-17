@@ -1,12 +1,12 @@
 package shuchaowen.core.beans;
 
 public class BeanMethodParameter implements Cloneable{
-	private final TParameterType type;
+	private final EParameterType type;
 	private Class<?> parameterType;
 	private final String name;//可能为空
 	private final String value;
 	
-	public BeanMethodParameter(TParameterType type, Class<?> parameterType, String name, String value){
+	public BeanMethodParameter(EParameterType type, Class<?> parameterType, String name, String value){
 		this.type = type;
 		this.parameterType = parameterType;
 		this.name = name;
@@ -23,7 +23,7 @@ public class BeanMethodParameter implements Cloneable{
 		return null;
 	}
 	
-	public TParameterType getType() {
+	public EParameterType getType() {
 		return type;
 	}
 	public String getName() {

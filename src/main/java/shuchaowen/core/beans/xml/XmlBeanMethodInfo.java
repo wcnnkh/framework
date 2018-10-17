@@ -1,6 +1,5 @@
 package shuchaowen.core.beans.xml;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.w3c.dom.Node;
@@ -8,7 +7,7 @@ import org.w3c.dom.Node;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.BeanMethodParameter;
 import shuchaowen.core.beans.BeanUtils;
-import shuchaowen.core.beans.ConfigFactory;
+import shuchaowen.core.beans.PropertiesFactory;
 import shuchaowen.core.beans.exception.BeansException;
 
 public class XmlBeanMethodInfo {
@@ -51,11 +50,11 @@ public class XmlBeanMethodInfo {
 		}
 	}
 	
-	public Object invoke(Object bean, BeanFactory beanFactory, ConfigFactory configFactory) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+	public Object invoke(Object bean, BeanFactory beanFactory, PropertiesFactory propertiesFactory) throws Exception{
 		if(method.getParameterCount() == 0){
 			return method.invoke(bean);
 		}else{
-			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, configFactory);
+			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertiesFactory);
 			return method.invoke(bean, args);
  		}
 	}

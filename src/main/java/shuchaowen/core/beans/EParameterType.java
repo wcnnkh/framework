@@ -1,7 +1,7 @@
 package shuchaowen.core.beans;
 
-public enum TParameterType {
+public enum EParameterType {
 	value,
 	ref,
-	config
+	property
 }

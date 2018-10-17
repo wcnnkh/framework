@@ -15,7 +15,9 @@ public interface Bean {
 	
 	<T> T newInstance(Class<?>[] parameterTypes, Object ...args);
 	
-	void wrapper(Object bean) throws Exception;
+	void autowrite(Object bean) throws Exception;
+	
+	void init(Object bean) throws Exception;
 	
 	void destroy(Object bean) throws Exception;
 }

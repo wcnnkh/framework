@@ -594,7 +594,7 @@ public class StringUtils {
 		}else if(Character.class.isAssignableFrom(basicType)){
 			return value==null? null:value.charAt(0);
 		}else{
-			throw new RuntimeException(basicType.getName() + " not is basic type");
+			return value;
 		}
 	}
 	

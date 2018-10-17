@@ -7,7 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import shuchaowen.core.beans.BeanMethodParameter;
-import shuchaowen.core.beans.TParameterType;
+import shuchaowen.core.beans.EParameterType;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 
@@ -15,8 +15,8 @@ public class XmlBeanParameters{
 	private static final String PARAMETER_TAG_NAME = "parameter";
 	private static final String NAME_KEY = "name";
 	private static final String REFERENCE_KEY ="ref";
-	private static final String CONFIG_KEY = "config";
 	private static final String VALUE_KEY = "value";
+	private static final String PROPERTY_KEY = "property";
 	private static final String TYPE_KEY = "type";
 	
 	private final List<BeanMethodParameter> list = new ArrayList<BeanMethodParameter>();
@@ -34,22 +34,25 @@ public class XmlBeanParameters{
 				Node refNode = nRoot.getAttributes().getNamedItem(REFERENCE_KEY);
 				Node valueNode = nRoot.getAttributes().getNamedItem(VALUE_KEY);
 				Node typeNode = nRoot.getAttributes().getNamedItem(TYPE_KEY);
-				Node configNode = nRoot.getAttributes().getNamedItem(CONFIG_KEY);
+				Node propertyNode = nRoot.getAttributes().getNamedItem(PROPERTY_KEY);
 				
 				String name = nameNode == null? null:nameNode.getNodeValue();
 				String ref = refNode == null? null:refNode.getNodeValue();
 				String value = valueNode == null? null:valueNode.getNodeValue();
 				String type = typeNode == null? null:typeNode.getNodeValue();
-				String config = configNode == null? null:configNode.getNodeValue();
+				String property = propertyNode == null? null:propertyNode.getNodeValue();
 				
 				Class<?> typeClass = StringUtils.isNull(type)? null:ClassUtils.forName(type);
 				BeanMethodParameter parameter;
 				if(!StringUtils.isNull(ref)){
-					parameter = new BeanMethodParameter(TParameterType.ref, typeClass, name, ref);
-				}else if(!StringUtils.isNull(config)){
-					parameter = new BeanMethodParameter(TParameterType.config, typeClass, name, config);
+					parameter = new BeanMethodParameter(EParameterType.ref, typeClass, name, ref);
+				}else if(!StringUtils.isNull(property)){
+					parameter = new BeanMethodParameter(EParameterType.property, typeClass, name, property);
 				}else{
-					parameter = new BeanMethodParameter(TParameterType.value, typeClass, name, value);
+					if(StringUtils.isNull(value)){
+						value = nRoot.getNodeValue();
+					}
+					parameter = new BeanMethodParameter(EParameterType.value, typeClass, name, value);
 				}
 				list.add(parameter);
 			}

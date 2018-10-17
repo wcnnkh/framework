@@ -8,6 +8,7 @@ import shuchaowen.core.util.ClassUtils;
 
 public class AnnotationBeanInfoConfiguration implements BeanInfoConfiguration {
 	private volatile Map<String, Bean> beanMap = new HashMap<String, Bean>();
+	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private final BeanFactory beanFactory;
 
 	public AnnotationBeanInfoConfiguration(BeanFactory beanFactory, String packageNames) {
@@ -15,14 +16,13 @@ public class AnnotationBeanInfoConfiguration implements BeanInfoConfiguration {
 		for (Class<?> clz : ClassUtils.getClasses(packageNames)) {
 			Service service = clz.getAnnotation(Service.class);
 			if (service != null) {
-				Bean bean = getBean(clz.getName());
 				Class<?>[] interfaces = clz.getInterfaces();
 				for (Class<?> i : interfaces) {
-					beanMap.put(i.getName(), bean);
+					nameMappingMap.put(i.getName(), clz.getName());
 				}
 
 				if (!service.value().equals("")) {
-					beanMap.put(service.value(), bean);
+					nameMappingMap.put(service.value(), clz.getName());
 				}
 			}
 		}
@@ -33,7 +33,10 @@ public class AnnotationBeanInfoConfiguration implements BeanInfoConfiguration {
 	}
 
 	public Bean getBean(String name) {
-		String realName = ClassUtils.getCGLIBRealClassName(name);
+		String n = ClassUtils.getCGLIBRealClassName(name);
+		String realName = nameMappingMap.get(n);
+		realName = realName == null? n:realName;
+		
 		Bean bean = beanMap.get(realName);
 		if (bean == null) {// 这个在配置文件里面找不到
 			// 试试这个名字是不是一个类名
@@ -57,6 +60,7 @@ public class AnnotationBeanInfoConfiguration implements BeanInfoConfiguration {
 	}
 
 	public boolean contains(String name) {
-		return beanMap.containsKey(ClassUtils.getCGLIBRealClassName(name));
+		String realName = ClassUtils.getCGLIBRealClassName(name);
+		return nameMappingMap.containsKey(realName) || beanMap.containsKey(realName);
 	}
 }

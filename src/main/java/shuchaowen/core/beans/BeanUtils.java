@@ -24,6 +24,7 @@ import shuchaowen.core.beans.annotaion.Autowrite;
 import shuchaowen.core.beans.annotaion.Config;
 import shuchaowen.core.beans.annotaion.Destroy;
 import shuchaowen.core.beans.annotaion.InitMethod;
+import shuchaowen.core.beans.annotaion.Properties;
 import shuchaowen.core.beans.annotaion.Proxy;
 import shuchaowen.core.beans.annotaion.Service;
 import shuchaowen.core.beans.annotaion.Transaction;
@@ -41,7 +42,7 @@ import shuchaowen.core.util.StringUtils;
 
 public class BeanUtils {
 	private static final String CONFIG_ROOT = "shuchaowen";
-	
+
 	/**
 	 * 调用init方法
 	 * 
@@ -163,14 +164,16 @@ public class BeanUtils {
 			beanFactory.get(clz);
 		}
 	}
-	
+
 	/**
 	 * 对参数重新排序
+	 * 
 	 * @param executable
 	 * @param beanMethodParameters
 	 * @return
 	 */
-	public static BeanMethodParameter[] sortParameters(Executable executable, List<BeanMethodParameter> beanMethodParameters){
+	public static BeanMethodParameter[] sortParameters(Executable executable,
+			List<BeanMethodParameter> beanMethodParameters) {
 		if (executable.getParameterCount() != beanMethodParameters.size()) {
 			return null;
 		}
@@ -181,7 +184,7 @@ public class BeanUtils {
 		} else {
 			paramNames = ClassUtils.getParameterName((Method) executable);
 		}
-		
+
 		BeanMethodParameter[] methodParameters = new BeanMethodParameter[beanMethodParameters.size()];
 		Class<?>[] oldTypes = executable.getParameterTypes();
 		Class<?>[] types = new Class<?>[beanMethodParameters.size()];
@@ -203,9 +206,9 @@ public class BeanUtils {
 				methodParameters[i] = beanMethodParameter;
 				methodParameters[i].setParameterType(types[i]);
 			}
-			
+
 		}
-		
+
 		boolean find = true;
 		for (int b = 0; b < types.length; b++) {
 			if (oldTypes[b] != types[b]) {
@@ -213,22 +216,24 @@ public class BeanUtils {
 				break;
 			}
 		}
-		return find? methodParameters:null;
+		return find ? methodParameters : null;
 	}
-	
-	public static Object[] getBeanMethodParameterArgs(BeanMethodParameter[] beanMethodParameters, BeanFactory beanFactory, ConfigFactory configFactory) {
+
+	public static Object[] getBeanMethodParameterArgs(BeanMethodParameter[] beanMethodParameters,
+			BeanFactory beanFactory, PropertiesFactory propertiesFactory) throws Exception {
 		Object[] args = new Object[beanMethodParameters.length];
 		for (int i = 0; i < args.length; i++) {
 			BeanMethodParameter beanConstructorParameter = beanMethodParameters[i];
 			switch (beanConstructorParameter.getType()) {
 			case value:
-				args[i] = StringUtils.conversion(beanConstructorParameter.getValue(), beanConstructorParameter.getParameterType());
+				args[i] = StringUtils.conversion(beanConstructorParameter.getValue(),
+						beanConstructorParameter.getParameterType());
 				break;
 			case ref:
 				args[i] = beanFactory.get(beanConstructorParameter.getValue());
 				break;
-			case config:
-				args[i] = StringUtils.conversion(configFactory.getPropertie(beanConstructorParameter.getValue()),
+			case property:
+				args[i] = propertiesFactory.getProperties(beanConstructorParameter.getValue(),
 						beanConstructorParameter.getParameterType());
 				break;
 			default:
@@ -287,6 +292,30 @@ public class BeanUtils {
 		}
 	}
 
+	public static void setProperties(PropertiesFactory propertiesFactory, Class<?> clz, Object obj, Field field) {
+		Properties properties = field.getAnnotation(Properties.class);
+		if (properties != null) {
+			if (Modifier.isStatic(field.getModifiers())) {
+				Logger.warn("@Config",
+						"class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
+			}
+
+			FieldInfo fieldInfo = new FieldInfo(clz, field);
+			Object value = null;
+			try {
+				if (fieldInfo.forceGet(obj) != null) {
+					Logger.warn("@Properties",
+							"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
+				}
+
+				value = propertiesFactory.getProperties(properties.value(), field.getType());
+				fieldInfo.set(obj, value);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, Field field) {
 		Autowrite s = field.getAnnotation(Autowrite.class);
 		if (s != null) {
@@ -295,7 +324,7 @@ public class BeanUtils {
 						"class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
 			}
 
-			String name = s.name();
+			String name = s.value();
 			if (name.equals("")) {
 				name = field.getType().getName();
 			}
@@ -317,8 +346,8 @@ public class BeanUtils {
 			}
 		}
 	}
-	
-	public static Node getShuChaoWenConfigNode(String xmlFile, String tagName) throws Exception{
+
+	public static Node getShuChaoWenConfigNode(String xmlFile, String tagName) throws Exception {
 		File xml = ConfigUtils.getFile(xmlFile);
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
@@ -327,11 +356,11 @@ public class BeanUtils {
 		if (!CONFIG_ROOT.equalsIgnoreCase(root.getTagName())) {
 			throw new BeansException("root tag name error [" + root.getTagName() + "]");
 		}
-		
+
 		NodeList nodeList = root.getChildNodes();
-		for(int i=0; i<nodeList.getLength(); i++){
+		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
-			if(tagName.equals(node.getNodeName())){
+			if (tagName.equals(node.getNodeName())) {
 				return node;
 			}
 		}

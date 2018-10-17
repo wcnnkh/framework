@@ -36,15 +36,15 @@ public class AnnotationBean implements Bean {
 	public AnnotationBean(BeanFactory beanFactory, Class<?> type) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
-		
+
 		shuchaowen.core.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.core.beans.annotaion.Bean.class);
-		if(bean != null){
-			this.id = StringUtils.isNull(bean.id())? ClassUtils.getCGLIBRealClassName(type):bean.id();
+		if (bean != null) {
+			this.id = StringUtils.isNull(bean.id()) ? ClassUtils.getCGLIBRealClassName(type) : bean.id();
 			this.singleton = bean.singleton();
 			this.beanFilters = Arrays.asList(bean.beanFilters());
 			this.names = bean.names();
 			this.factoryMethodName = bean.factoryMethod();
-		}else{
+		} else {
 			this.id = ClassUtils.getCGLIBRealClassName(type);
 			this.singleton = true;
 			this.beanFilters = null;
@@ -68,7 +68,7 @@ public class AnnotationBean implements Bean {
 				destroyMethodList.add(method);
 			}
 		}
-		
+
 		this.proxy = checkProxy();
 	}
 
@@ -120,31 +120,31 @@ public class AnnotationBean implements Bean {
 	public Class<?> getType() {
 		return this.type;
 	}
-	
-	private Enhancer getProxyEnhancer(){
+
+	private Enhancer getProxyEnhancer() {
 		Enhancer enhancer = new Enhancer();
 		List<BeanFilter> list = null;
 		if (beanFilters != null && !beanFilters.isEmpty()) {
 			list = new ArrayList<BeanFilter>();
-			
-			for(Class<? extends BeanFilter> f : beanFilters){
+
+			for (Class<? extends BeanFilter> f : beanFilters) {
 				list.add(beanFactory.get(f));
 			}
 		}
-		
+
 		enhancer.setCallback(new BeanMethodInterceptor(type, list));
 		enhancer.setSuperclass(type);
 		return enhancer;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance() {
-		if(constructor == null){
+		if (constructor == null) {
 			try {
-				this.constructor = type.getDeclaredConstructor();//不用考虑并发
-				
-				if(factoryMethod == null){
-					if(!StringUtils.isNull(factoryMethodName)){
+				this.constructor = type.getDeclaredConstructor();// 不用考虑并发
+
+				if (factoryMethod == null) {
+					if (!StringUtils.isNull(factoryMethodName)) {
 						factoryMethod = type.getMethod(factoryMethodName);
 					}
 				}
@@ -154,8 +154,7 @@ public class AnnotationBean implements Bean {
 				e.printStackTrace();
 			}
 		}
-		
-		
+
 		Object bean;
 		try {
 			if (isProxy()) {
@@ -164,8 +163,9 @@ public class AnnotationBean implements Bean {
 			} else {
 				bean = constructor.newInstance();
 			}
-			
-			return (T) (factoryMethod == null? bean:factoryMethod.invoke(Modifier.isStatic(factoryMethod.getModifiers())? null:bean));
+
+			return (T) (factoryMethod == null ? bean
+					: factoryMethod.invoke(Modifier.isStatic(factoryMethod.getModifiers()) ? null : bean));
 		} catch (Exception e) {
 			throw new BeansException(e);
 		}
@@ -182,42 +182,37 @@ public class AnnotationBean implements Bean {
 				bean = type.getDeclaredConstructor(parameterTypes).newInstance(args);
 			}
 
-			return (T) (factoryMethod == null? bean:factoryMethod.invoke(Modifier.isStatic(factoryMethod.getModifiers())? null:bean));
+			return (T) (factoryMethod == null ? bean
+					: factoryMethod.invoke(Modifier.isStatic(factoryMethod.getModifiers()) ? null : bean));
 		} catch (Exception e) {
 			throw new BeansException(e);
 		}
 	}
 
-	public void wrapper(Object bean) {
+	public void autowrite(Object bean) {
 		Class<?> tempClz = type;
 		while (tempClz != null) {
 			for (Field field : tempClz.getDeclaredFields()) {
 				if (Modifier.isStatic(field.getModifiers())) {
 					continue;
 				}
-				
+
 				BeanUtils.setBean(beanFactory, tempClz, bean, field);
 				BeanUtils.setProxy(beanFactory, tempClz, bean, field);
 				BeanUtils.setConfig(beanFactory, tempClz, bean, field);
 			}
 			tempClz = tempClz.getSuperclass();
 		}
-		
+	}
+
+	public void init(Object bean) throws Exception {
 		if (initMethodList != null && !initMethodList.isEmpty()) {
 			for (Method method : initMethodList) {
-				try {
-					method.invoke(bean);
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
+				method.invoke(bean);
 			}
 		}
 	}
-	
+
 	public void destroy(Object bean) {
 		if (destroyMethodList != null && !destroyMethodList.isEmpty()) {
 			for (Method method : destroyMethodList) {
