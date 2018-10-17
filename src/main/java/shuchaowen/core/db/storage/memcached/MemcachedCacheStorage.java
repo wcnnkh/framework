@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import shuchaowen.core.cache.Memcached;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.PrimaryKeyParameter;
+import shuchaowen.core.db.PrimaryKeyValue;
 import shuchaowen.core.db.result.Result;
 import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.storage.CacheUtils;
@@ -141,21 +142,21 @@ public class MemcachedCacheStorage extends CommonStorage{
 	}
 
 	@Override
-	public <T> Map<PrimaryKeyParameter, T> getById(Class<T> type,
+	public <T> PrimaryKeyValue<T> getById(Class<T> type,
 			Collection<PrimaryKeyParameter> primaryKeyParameters) {
 		Map<String, PrimaryKeyParameter> keyMap = new HashMap<String, PrimaryKeyParameter>();
 		for(PrimaryKeyParameter parameter : primaryKeyParameters){
 			keyMap.put(CacheUtils.getObjectKey(type, parameter), parameter);
 		}
 		
-		Map<PrimaryKeyParameter, T> map = new HashMap<PrimaryKeyParameter, T>();
+		PrimaryKeyValue<T> primaryKeyValue = new PrimaryKeyValue<T>();
 		Map<String, byte[]> cacheMap = memcached.get(keyMap.keySet());
 		if(cacheMap != null && !cacheMap.isEmpty()){
 			for(Entry<String, byte[]> entry : cacheMap.entrySet()){
-				map.put(keyMap.get(entry.getKey()), CacheUtils.decode(type, entry.getValue()));
+				primaryKeyValue.put(keyMap.get(entry.getKey()), CacheUtils.decode(type, entry.getValue()));
 			}
 		}
-		return map;
+		return primaryKeyValue;
 	}
 
 	@Override

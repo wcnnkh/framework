@@ -21,6 +21,7 @@ import shuchaowen.core.beans.PropertiesFactory;
 import shuchaowen.core.beans.exception.BeansException;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.ConfigUtils;
+import shuchaowen.core.util.StringUtils;
 
 public class XmlBeansConfiguration implements BeanInfoConfiguration {
 	private static final String BEANS_TAG_NAME = "beans";
@@ -34,48 +35,50 @@ public class XmlBeansConfiguration implements BeanInfoConfiguration {
 	private PropertiesFactory propertiesFactory;
 	
 	public XmlBeansConfiguration(BeanFactory beanFactory, String beanXml) throws Exception{
-		File xml = ConfigUtils.getFile(beanXml);
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-		Document document = builder.parse(xml);
-		Element root = document.getDocumentElement();
-		if (!BEANS_TAG_NAME.equals(root.getTagName())) {
-			throw new BeansException("root tag name error [" + root.getTagName() + "]");
-		}
-		
-		if(root.getAttributes() != null){
-			Node annotationNode = root.getAttributes().getNamedItem(BEANS_ANNOTATION);
-			if(annotationNode != null){
-				this.packageNames = annotationNode.getNodeValue();
+		if(!StringUtils.isNull(beanXml)){
+			File xml = ConfigUtils.getFile(beanXml);
+			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+			Document document = builder.parse(xml);
+			Element root = document.getDocumentElement();
+			if (!BEANS_TAG_NAME.equals(root.getTagName())) {
+				throw new BeansException("root tag name error [" + root.getTagName() + "]");
 			}
-		}
-		
-		NodeList nhosts = root.getChildNodes();
-		List<XmlProperties> xmlPropertiesList = new ArrayList<XmlProperties>();
-		for (int i = 0; i < nhosts.getLength(); i++) {
-			Node nRoot = nhosts.item(i);
-			if(BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())){
-				Bean bean = new XmlBean(beanFactory, propertiesFactory, nRoot);
-				if(beanMap.containsKey(bean.getId())){
-					throw new BeansException(bean.getId() + " Already exist");
+			
+			if(root.getAttributes() != null){
+				Node annotationNode = root.getAttributes().getNamedItem(BEANS_ANNOTATION);
+				if(annotationNode != null){
+					this.packageNames = annotationNode.getNodeValue();
 				}
-				beanMap.put(bean.getId(), bean);
-				
-				if(bean.getNames() != null){
-					for(String n : bean.getNames()){
-						if(nameMappingMap.containsKey(n)){
-							throw new BeansException(n + " Already exist");
-						}
-						nameMappingMap.put(n, bean.getId());
+			}
+			
+			NodeList nhosts = root.getChildNodes();
+			List<XmlProperties> xmlPropertiesList = new ArrayList<XmlProperties>();
+			for (int i = 0; i < nhosts.getLength(); i++) {
+				Node nRoot = nhosts.item(i);
+				if(BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())){
+					Bean bean = new XmlBean(beanFactory, propertiesFactory, nRoot);
+					if(beanMap.containsKey(bean.getId())){
+						throw new BeansException(bean.getId() + " Already exist");
 					}
+					beanMap.put(bean.getId(), bean);
+					
+					if(bean.getNames() != null){
+						for(String n : bean.getNames()){
+							if(nameMappingMap.containsKey(n)){
+								throw new BeansException(n + " Already exist");
+							}
+							nameMappingMap.put(n, bean.getId());
+						}
+					}
+				}else if(PROPERTIES_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())){
+					XmlProperties xmlProperties = new XmlProperties(nRoot);
+					xmlPropertiesList.add(xmlProperties);
 				}
-			}else if(PROPERTIES_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())){
-				XmlProperties xmlProperties = new XmlProperties(nRoot);
-				xmlPropertiesList.add(xmlProperties);
 			}
+			
+			this.propertiesFactory = new XmlPropertiesFactory(beanFactory, xmlPropertiesList);
 		}
-		
-		this.propertiesFactory = new XmlPropertiesFactory(beanFactory, xmlPropertiesList);
 	}
 
 	public Bean getBean(Class<?> type) {

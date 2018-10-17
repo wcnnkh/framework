@@ -282,7 +282,7 @@ public abstract class AbstractDB implements ConnectionPool{
 		return resultSet.getList(type);
 	}
 	
-	public <T> Map<PrimaryKeyParameter, T> getByIdFromDB(Class<T> type,
+	public <T> PrimaryKeyValue<T> getByIdFromDB(Class<T> type,
 			String tableName, Collection<PrimaryKeyParameter> primaryKeyParameters) {
 		TableInfo tableInfo = DB.getTableInfo(type);
 		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
@@ -290,17 +290,18 @@ public abstract class AbstractDB implements ConnectionPool{
 		ResultSet resultSet = select(sql);
 		resultSet.registerClassTable(type, tName);
 		List<T> list = resultSet.getList(type);
-		Map<PrimaryKeyParameter, T> map = new HashMap<PrimaryKeyParameter, T>();
+		
+		PrimaryKeyValue<T> primaryKeyValue = new PrimaryKeyValue<T>();
 		for (T t : list) {
 			try {
-				map.put(tableInfo.getPrimaryKeyParameter(t), t);
+				primaryKeyValue.put(tableInfo.getPrimaryKeyParameter(t), t);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
-		return map;
+		return primaryKeyValue;
 	}
 	
 	public void saveToDB(Collection<?> beans){

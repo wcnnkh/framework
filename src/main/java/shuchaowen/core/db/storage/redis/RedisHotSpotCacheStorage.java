@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import shuchaowen.core.cache.Redis;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.PrimaryKeyParameter;
+import shuchaowen.core.db.PrimaryKeyValue;
 import shuchaowen.core.db.result.Result;
 import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.storage.CacheUtils;
@@ -183,7 +184,7 @@ public class RedisHotSpotCacheStorage extends CommonStorage {
 		// 用于防止大量无效的请求而导致的数据库压力过大，要处理因缓存穿透导致的问题应该使用
 		String name = ClassUtils.getCGLIBRealClassName(type);
 		if (loadKeyTagMap.containsKey(name)) {
-			if (redis.hexists(name.getBytes(DEFAULT_CHARSET),
+			if (!redis.hexists(name.getBytes(DEFAULT_CHARSET),
 					CacheUtils.getObjectPrimaryKey(type, params).getBytes(DEFAULT_CHARSET))) {
 				return null;
 			}
@@ -197,18 +198,18 @@ public class RedisHotSpotCacheStorage extends CommonStorage {
 	}
 
 	@Override
-	public <T> Map<PrimaryKeyParameter, T> getById(Class<T> type,
+	public <T> PrimaryKeyValue<T> getById(Class<T> type,
 			Collection<PrimaryKeyParameter> primaryKeyParameters) {
 		Map<byte[], PrimaryKeyParameter> keyMap = new HashMap<byte[], PrimaryKeyParameter>();
 		for (PrimaryKeyParameter parameter : primaryKeyParameters) {
 			keyMap.put(CacheUtils.getObjectKey(type, parameter).getBytes(DEFAULT_CHARSET), parameter);
 		}
 
+		PrimaryKeyValue<T> primaryKeyValue = new PrimaryKeyValue<T>();
 		Map<byte[], byte[]> cacheMap = redis.get(keyMap.keySet().toArray(new byte[keyMap.size()][]));
-		Map<PrimaryKeyParameter, T> map = new HashMap<PrimaryKeyParameter, T>();
 		if (cacheMap != null && !cacheMap.isEmpty()) {
 			for (Entry<byte[], byte[]> entry : cacheMap.entrySet()) {
-				map.put(keyMap.get(entry.getKey()), CacheUtils.decode(type, entry.getValue()));
+				primaryKeyValue.put(keyMap.get(entry.getKey()), CacheUtils.decode(type, entry.getValue()));
 			}
 		}
 
@@ -228,7 +229,7 @@ public class RedisHotSpotCacheStorage extends CommonStorage {
 				Iterator<byte[]> iterator = notFindList.iterator();
 				while (iterator.hasNext()) {
 					byte[] key = iterator.next();
-					if (redis.hexists(k,
+					if (!redis.hexists(k,
 							CacheUtils.getObjectPrimaryKey(type, keyMap.get(key)).getBytes(DEFAULT_CHARSET))) {
 						iterator.remove();
 					}
@@ -240,13 +241,13 @@ public class RedisHotSpotCacheStorage extends CommonStorage {
 				list.add(keyMap.get(key));
 			}
 
-			Map<PrimaryKeyParameter, T> dbMap = super.getById(type, list);
-			if (dbMap != null && !dbMap.isEmpty()) {
-				map.putAll(dbMap);
+			PrimaryKeyValue<T> dbMap = super.getById(type, list);
+			if (dbMap != null) {
+				primaryKeyValue.putAll(dbMap);
 				saveToCache(dbMap.values());
 			}
 		}
-		return map;
+		return primaryKeyValue;
 	}
 
 	@Override
