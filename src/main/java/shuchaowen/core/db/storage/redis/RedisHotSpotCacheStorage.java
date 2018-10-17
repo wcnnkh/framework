@@ -14,6 +14,7 @@ import shuchaowen.core.cache.Redis;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
+import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.db.result.Result;
 import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.storage.CacheUtils;
@@ -72,6 +73,25 @@ public class RedisHotSpotCacheStorage extends CommonStorage {
 
 		// loader
 		loadTableKeysToCache(tableClass);
+	}
+	
+	public final void loadKeysToCache(String tablePackageNames){
+		Collection<Class<?>> list = ClassUtils.getClasses(tablePackageNames);
+		for(Class<?> clz : list){
+			Table table = clz.getAnnotation(Table.class);
+			if(table != null){
+				loadKeysToCache(clz);
+			}
+		}
+	}
+	
+	public final void loadKeysToCache(Class<?> ...tableClass){
+		for(Class<?> clz : tableClass){
+			Table table = clz.getAnnotation(Table.class);
+			if(table != null){
+				loadKeysToCache(clz);
+			}
+		}
 	}
 
 	private String getPrimaryKey(Object bean) {

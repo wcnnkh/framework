@@ -99,7 +99,7 @@ public class MemcachedHotSpotCacheStorage extends CommonStorage {
 		getDb().iterator(tableClass, new ResultIterator() {
 
 			public void next(Result result) {
-				memcached.set(INDEX_PREFIX + getObjectKey(result.get(tableClass)), NULL_BYTE);
+				memcached.add(INDEX_PREFIX + getObjectKey(result.get(tableClass)), NULL_BYTE);
 			}
 		});
 	}
