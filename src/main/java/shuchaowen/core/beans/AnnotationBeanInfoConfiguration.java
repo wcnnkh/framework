@@ -41,9 +41,12 @@ public class AnnotationBeanInfoConfiguration implements BeanInfoConfiguration {
 				synchronized (beanMap) {
 					bean = beanMap.get(realName);
 					if (bean == null) {
-						Class<?> clz = Class.forName(realName);
-						bean = new AnnotationBean(beanFactory, clz);
-						beanMap.put(realName, bean);
+						try {
+							Class<?> clz = Class.forName(realName);
+							bean = new AnnotationBean(beanFactory, clz);
+							beanMap.put(realName, bean);
+						} catch (ClassNotFoundException e) {
+						}
 					}
 				}
 			} catch (Exception e) {

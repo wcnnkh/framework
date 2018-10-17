@@ -81,10 +81,12 @@ public class ConfigurationBeanFactory implements BeanFactory {
 			
 			singletonMap.put(realName, bean);
 			Bean b = getBean(realName);
-			try {
-				b.wrapper(bean);
-			} catch (Exception e) {
-				e.printStackTrace();
+			if(b != null){
+				try {
+					b.wrapper(bean);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -171,10 +173,12 @@ public class ConfigurationBeanFactory implements BeanFactory {
 					continue;
 				}
 				
-				tagSet.add(entry.getValue().getClass());
 				try {
 					Bean beanInfo = getBean(entry.getKey());
-					beanInfo.destroy(entry.getValue());
+					if(beanInfo != null){
+						tagSet.add(entry.getValue().getClass());
+						beanInfo.destroy(entry.getValue());
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
