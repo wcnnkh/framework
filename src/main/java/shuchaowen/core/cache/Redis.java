@@ -75,4 +75,12 @@ public interface Redis {
 	String hget(String key, String field);
 	
 	byte[] hget(byte[] key, byte[] field);
+	
+	Long lpush(String key, String ...value);
+	
+	Long lpush(byte[] key, byte[] ...value);
+	
+	String rpop(String key);
+	
+	byte[] rpop(byte[] key);
 }

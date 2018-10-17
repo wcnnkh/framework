@@ -681,4 +681,76 @@ public class RedisByJedisPool implements Redis{
 		}
 		return null;
 	}
+
+	public Long lpush(String key, String ...value) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.lpush(key, value);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Long lpush(byte[] key, byte[] ...value) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.lpush(key, value);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public String rpop(String key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.rpop(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public byte[] rpop(byte[] key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.rpop(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
 }
