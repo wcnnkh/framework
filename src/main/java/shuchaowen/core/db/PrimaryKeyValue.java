@@ -36,6 +36,10 @@ public final class PrimaryKeyValue<T> implements Serializable{
 		return dataMap == null? null:dataMap.get(getKey(primaryKey));
 	}
 	
+	public T get(PrimaryKeyParameter primaryKey) {
+		return dataMap == null? null:dataMap.get(getKey(primaryKey.getParams()));
+	}
+	
 	public Collection<T> values(){
 		return dataMap == null? null:dataMap.values();
 	}
