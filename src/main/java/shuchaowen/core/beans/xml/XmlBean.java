@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.w3c.dom.Node;
@@ -61,21 +62,27 @@ public class XmlBean implements Bean {
 	public XmlBean(BeanFactory beanFactory, ConfigFactory configFactory, Node beanNode) throws Exception {
 		this.beanFactory = beanFactory;
 		this.configFactory = configFactory;
-
+		
 		Node classNode = beanNode.getAttributes().getNamedItem(CLASS_ATTRIBUTE_KEY);
 		String className = classNode == null ? null : classNode.getNodeValue();
 		if (StringUtils.isNull(className)) {
 			throw new BeansException("not found attribute [" + CLASS_ATTRIBUTE_KEY + "]");
 		}
 		this.type = Class.forName(className);
-
-		Node singletonNode = beanNode.getAttributes().getNamedItem(SINGLETON_ATTRIBUTE_KEY);
-		if (singletonNode != null) {
-			String v = singletonNode.getNodeValue();
-			this.singleton = StringUtils.isNull(v) ? true : Boolean.parseBoolean(v);
-		} else {
-			this.singleton = true;
+		
+		shuchaowen.core.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.core.beans.annotaion.Bean.class);
+		if(bean == null){
+			Node singletonNode = beanNode.getAttributes().getNamedItem(SINGLETON_ATTRIBUTE_KEY);
+			if (singletonNode != null) {
+				String v = singletonNode.getNodeValue();
+				this.singleton = StringUtils.isNull(v) ? true : Boolean.parseBoolean(v);
+			} else {
+				this.singleton = true;
+			}
+		}else{
+			this.singleton = bean.singleton();
 		}
+		
 
 		Node idNode = beanNode.getAttributes().getNamedItem(ID_ATTRIBUTE_KEY);
 		if (idNode == null) {
@@ -84,13 +91,17 @@ public class XmlBean implements Bean {
 			String v = idNode.getNodeValue();
 			this.id = StringUtils.isNull(v) ? ClassUtils.getCGLIBRealClassName(type) : v;
 		}
+		
+		if(bean != null){
+			beanFilters.addAll(Arrays.asList(bean.beanFilters()));
+		}
 
 		Node filtersNode = beanNode.getAttributes().getNamedItem(FILTERS_ATTRIBUTE_KEY);
 		String[] filters = null;
 		if (filtersNode != null) {
 			filters = StringUtils.commonSplit(filtersNode.getNodeValue());
 		}
-
+		
 		if (filters != null) {
 			for (String f : filters) {
 				beanFilters.add((Class<? extends BeanFilter>) Class.forName(f));

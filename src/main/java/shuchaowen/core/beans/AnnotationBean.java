@@ -17,7 +17,6 @@ import shuchaowen.core.beans.annotaion.Transaction;
 import shuchaowen.core.beans.exception.BeansException;
 import shuchaowen.core.http.server.annotation.Controller;
 import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.StringUtils;
 
 public class AnnotationBean implements Bean {
 	private final BeanFactory beanFactory;
@@ -33,14 +32,13 @@ public class AnnotationBean implements Bean {
 	public AnnotationBean(BeanFactory beanFactory, Class<?> type) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
+		this.id = ClassUtils.getCGLIBRealClassName(type);
 		
 		shuchaowen.core.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.core.beans.annotaion.Bean.class);
 		if(bean != null){
-			this.id = StringUtils.isNull(bean.id()) ? ClassUtils.getCGLIBRealClassName(type) : bean.id();
 			this.singleton = bean.singleton();
 			this.beanFilters = Arrays.asList(bean.beanFilters());
 		}else{
-			this.id = ClassUtils.getCGLIBRealClassName(type);
 			this.singleton = true;
 			this.beanFilters = null;
 		}
