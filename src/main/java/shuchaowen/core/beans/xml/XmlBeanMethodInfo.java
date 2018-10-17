@@ -51,12 +51,12 @@ public class XmlBeanMethodInfo {
 		}
 	}
 	
-	public void invoke(Object bean, BeanFactory beanFactory, ConfigFactory configFactory) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+	public Object invoke(Object bean, BeanFactory beanFactory, ConfigFactory configFactory) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 		if(method.getParameterCount() == 0){
-			method.invoke(bean);
+			return method.invoke(bean);
 		}else{
 			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, configFactory);
-			method.invoke(bean, args);
+			return method.invoke(bean, args);
  		}
 	}
 	

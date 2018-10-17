@@ -17,6 +17,7 @@ import shuchaowen.core.beans.annotaion.Transaction;
 import shuchaowen.core.beans.exception.BeansException;
 import shuchaowen.core.http.server.annotation.Controller;
 import shuchaowen.core.util.ClassUtils;
+import shuchaowen.core.util.StringUtils;
 
 public class AnnotationBean implements Bean {
 	private final BeanFactory beanFactory;
@@ -28,17 +29,23 @@ public class AnnotationBean implements Bean {
 	private final List<Method> initMethodList = new ArrayList<Method>();
 	private final List<Method> destroyMethodList = new ArrayList<Method>();
 	private final boolean proxy;
+	private String[] names;
+	private String factoryMethodName;
+	private Method factoryMethod;
 
 	public AnnotationBean(BeanFactory beanFactory, Class<?> type) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
-		this.id = ClassUtils.getCGLIBRealClassName(type);
 		
 		shuchaowen.core.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.core.beans.annotaion.Bean.class);
 		if(bean != null){
+			this.id = StringUtils.isNull(bean.id())? ClassUtils.getCGLIBRealClassName(type):bean.id();
 			this.singleton = bean.singleton();
 			this.beanFilters = Arrays.asList(bean.beanFilters());
+			this.names = bean.names();
+			this.factoryMethodName = bean.factoryMethod();
 		}else{
+			this.id = ClassUtils.getCGLIBRealClassName(type);
 			this.singleton = true;
 			this.beanFilters = null;
 		}
@@ -135,12 +142,19 @@ public class AnnotationBean implements Bean {
 		if(constructor == null){
 			try {
 				this.constructor = type.getDeclaredConstructor();//不用考虑并发
+				
+				if(factoryMethod == null){
+					if(!StringUtils.isNull(factoryMethodName)){
+						factoryMethod = type.getMethod(factoryMethodName);
+					}
+				}
 			} catch (NoSuchMethodException e) {
 				e.printStackTrace();
 			} catch (SecurityException e) {
 				e.printStackTrace();
 			}
 		}
+		
 		
 		Object bean;
 		try {
@@ -150,7 +164,8 @@ public class AnnotationBean implements Bean {
 			} else {
 				bean = constructor.newInstance();
 			}
-			return (T) bean;
+			
+			return (T) (factoryMethod == null? bean:factoryMethod.invoke(Modifier.isStatic(factoryMethod.getModifiers())? null:bean));
 		} catch (Exception e) {
 			throw new BeansException(e);
 		}
@@ -166,7 +181,8 @@ public class AnnotationBean implements Bean {
 			} else {
 				bean = type.getDeclaredConstructor(parameterTypes).newInstance(args);
 			}
-			return (T) bean;
+
+			return (T) (factoryMethod == null? bean:factoryMethod.invoke(Modifier.isStatic(factoryMethod.getModifiers())? null:bean));
 		} catch (Exception e) {
 			throw new BeansException(e);
 		}
@@ -216,5 +232,9 @@ public class AnnotationBean implements Bean {
 				}
 			}
 		}
+	}
+
+	public String[] getNames() {
+		return names;
 	}
 }

@@ -44,7 +44,7 @@ public class StringUtils {
 	}
 	
 	public static String[] commonSplit(String str){
-		return split(str, ' ', ',', ';');
+		return split(str, ' ', ',', ';', '、');
 	}
 	
 	public static String[] split(String str, char ...regex){

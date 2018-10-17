@@ -6,7 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.w3c.dom.Node;
@@ -35,15 +34,18 @@ public class XmlBean implements Bean {
 	private static final String ID_ATTRIBUTE_KEY = "id";
 	private static final String SINGLETON_ATTRIBUTE_KEY = "singleton";
 	private static final String FILTERS_ATTRIBUTE_KEY = "filters";
+	private static final String NAME_ATTRIBUTE_KEY = "name";//别名
 
 	private static final String CONSTRUCTOR_TAG_NAME = "constructor";
 	private static final String PROPERTIES_TAG_NAME = "properties";
 	private static final String INIT_METHOD_TAG_NAME = "init";
 	private static final String DESTROY_METHOD_TAG_NAME = "destroy";
+	private static final String FACTORY_METHOD_TAG_NAME = "factory-method";
 
 	private final BeanFactory beanFactory;
 	private final ConfigFactory configFactory;
 	private final Class<?> type;
+	private String[] names;
 	private final String id;
 	private final boolean singleton;
 	private final List<Class<? extends BeanFilter>> beanFilters = new ArrayList<Class<? extends BeanFilter>>();
@@ -52,6 +54,7 @@ public class XmlBean implements Bean {
 	private final List<BeanProperties> propertiesList = new ArrayList<BeanProperties>();
 	private final List<XmlBeanMethodInfo> initMethodList = new ArrayList<XmlBeanMethodInfo>();
 	private final List<XmlBeanMethodInfo> destroyMethodList = new ArrayList<XmlBeanMethodInfo>();
+	private XmlBeanMethodInfo factoryMethodInfo;
 	private final boolean proxy;
 
 	private final Constructor<?> constructor;
@@ -64,36 +67,32 @@ public class XmlBean implements Bean {
 		this.configFactory = configFactory;
 		
 		Node classNode = beanNode.getAttributes().getNamedItem(CLASS_ATTRIBUTE_KEY);
+		Node nameNode = beanNode.getAttributes().getNamedItem(NAME_ATTRIBUTE_KEY);
+		if(nameNode != null){
+			this.names = StringUtils.commonSplit(nameNode.getNodeValue());
+		}
+		
 		String className = classNode == null ? null : classNode.getNodeValue();
 		if (StringUtils.isNull(className)) {
 			throw new BeansException("not found attribute [" + CLASS_ATTRIBUTE_KEY + "]");
 		}
+		
 		this.type = Class.forName(className);
 		
-		shuchaowen.core.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.core.beans.annotaion.Bean.class);
-		if(bean == null){
-			Node singletonNode = beanNode.getAttributes().getNamedItem(SINGLETON_ATTRIBUTE_KEY);
-			if (singletonNode != null) {
-				String v = singletonNode.getNodeValue();
-				this.singleton = StringUtils.isNull(v) ? true : Boolean.parseBoolean(v);
-			} else {
-				this.singleton = true;
-			}
-		}else{
-			this.singleton = bean.singleton();
+		Node singletonNode = beanNode.getAttributes().getNamedItem(SINGLETON_ATTRIBUTE_KEY);
+		if (singletonNode != null) {
+			String v = singletonNode.getNodeValue();
+			this.singleton = StringUtils.isNull(v) ? true : Boolean.parseBoolean(v);
+		} else {
+			this.singleton = true;
 		}
 		
-
 		Node idNode = beanNode.getAttributes().getNamedItem(ID_ATTRIBUTE_KEY);
 		if (idNode == null) {
 			this.id = ClassUtils.getCGLIBRealClassName(type);
 		} else {
 			String v = idNode.getNodeValue();
 			this.id = StringUtils.isNull(v) ? ClassUtils.getCGLIBRealClassName(type) : v;
-		}
-		
-		if(bean != null){
-			beanFilters.addAll(Arrays.asList(bean.beanFilters()));
 		}
 
 		Node filtersNode = beanNode.getAttributes().getNamedItem(FILTERS_ATTRIBUTE_KEY);
@@ -130,6 +129,11 @@ public class XmlBean implements Bean {
 			} else if (DESTROY_METHOD_TAG_NAME.equals(n.getNodeName())) {// DestroyMethod
 				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(type, n);
 				destroyMethodList.add(xmlBeanMethodInfo);
+			} else if(FACTORY_METHOD_TAG_NAME.equals(n.getNodeName())){
+				if(factoryMethodInfo != null){
+					throw new BeansException("只能有一个factory-method");
+				}
+				this.factoryMethodInfo = new XmlBeanMethodInfo(type, n);
 			}
 		}
 
@@ -328,7 +332,12 @@ public class XmlBean implements Bean {
 			} else {
 				bean = createInstance();
 			}
-			return (T) bean;
+			
+			if(factoryMethodInfo == null){
+				return (T) bean;
+			}else{
+				return (T) factoryMethodInfo.invoke(bean, beanFactory, configFactory);
+			}
 		} catch (Exception e) {
 			throw new BeansException(e);
 		}
@@ -343,10 +352,19 @@ public class XmlBean implements Bean {
 			} else {
 				bean = type.getConstructor(parameterTypes).newInstance(args);
 			}
-			return (T) bean;
+			
+			if(factoryMethodInfo == null){
+				return (T) bean;
+			}else{
+				return (T) factoryMethodInfo.invoke(bean, beanFactory, configFactory);
+			}
 		} catch (Exception e) {
 			throw new BeansException(e);
 		}
+	}
+
+	public String[] getNames() {
+		return names;
 	}
 
 }

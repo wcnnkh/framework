@@ -12,6 +12,9 @@ import shuchaowen.core.beans.BeanFilter;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Bean {
+	public String id() default "";
+	public String[] names() default {};
 	public boolean singleton() default true;
 	public Class<? extends BeanFilter>[] beanFilters() default {};
+	public String factoryMethod() default "";
 }

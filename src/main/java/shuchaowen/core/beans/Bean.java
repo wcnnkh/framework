@@ -3,6 +3,8 @@ package shuchaowen.core.beans;
 public interface Bean {
 	String getId();
 	
+	String[] getNames();
+	
 	Class<?> getType();
 	
 	boolean isSingleton();

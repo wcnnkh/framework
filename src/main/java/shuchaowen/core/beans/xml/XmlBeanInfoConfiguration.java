@@ -10,12 +10,14 @@ import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.BeanInfoConfiguration;
 import shuchaowen.core.beans.ConfigFactory;
+import shuchaowen.core.beans.exception.BeansException;
 import shuchaowen.core.util.ClassUtils;
 
 public class XmlBeanInfoConfiguration implements BeanInfoConfiguration {
 	private static final String BEAN_TAG_NAME = "bean";
-	private volatile Map<String, Bean> beanMap = new HashMap<String, Bean>();
-
+	private final Map<String, Bean> beanMap = new HashMap<String, Bean>();
+	private final Map<String, String> nameMappingMap = new HashMap<String, String>();
+	
 	public XmlBeanInfoConfiguration(BeanFactory beanFactory, ConfigFactory configFactory, Node root) throws Exception{
 		NodeList nhosts = root.getChildNodes();
 		for (int i = 0; i < nhosts.getLength(); i++) {
@@ -25,9 +27,18 @@ public class XmlBeanInfoConfiguration implements BeanInfoConfiguration {
 			}
 
 			Bean bean = new XmlBean(beanFactory, configFactory, nRoot);
-			beanMap.put(bean.getType().getName(), bean);
-			if(!bean.getId().equals(bean.getType().getName())){
-				beanMap.put(bean.getId(), bean);
+			if(beanMap.containsKey(bean.getId())){
+				throw new BeansException(bean.getId() + " Already exist");
+			}
+			beanMap.put(bean.getId(), bean);
+			
+			if(bean.getNames() != null){
+				for(String n : bean.getNames()){
+					if(nameMappingMap.containsKey(n)){
+						throw new BeansException(n + " Already exist");
+					}
+					nameMappingMap.put(n, bean.getId());
+				}
 			}
 		}
 	}
@@ -37,7 +48,9 @@ public class XmlBeanInfoConfiguration implements BeanInfoConfiguration {
 	}
 
 	public Bean getBean(String name) {
-		return beanMap.get(ClassUtils.getCGLIBRealClassName(name));
+		String realName = ClassUtils.getCGLIBRealClassName(name);
+		String v = nameMappingMap.get(realName);
+		return v == null? beanMap.get(realName):beanMap.get(v);
 	}
 
 	public boolean contains(String name) {
