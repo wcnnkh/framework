@@ -1,6 +1,5 @@
 package shuchaowen.core.db.storage.async;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -10,7 +9,6 @@ import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.storage.AbstractAsyncStorage;
 import shuchaowen.core.db.storage.ExecuteInfo;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.util.Logger;
 
 /**
  * 此方式只能在单机环境一使用，因为在集群下无法保证执行顺序 此方案只能用于单服务器架构，集群架构请不要使用此构造方法
@@ -41,16 +39,6 @@ public class MemoryAsyncStorage extends AbstractAsyncStorage {
 			}
 		});
 		this.thread.start();
-	}
-
-	private static void logger(SQL sql) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("[");
-		sb.append(sql.getSql());
-		sb.append("]");
-		sb.append(" - ");
-		sb.append(sql.getParams() == null ? "[]" : Arrays.toString(sql.getParams()));
-		Logger.debug("MemoryAsyncStorage", sb.toString());
 	}
 
 	private void next() {

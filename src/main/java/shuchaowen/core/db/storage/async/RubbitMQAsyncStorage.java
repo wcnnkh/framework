@@ -15,7 +15,7 @@ import com.rabbitmq.client.Envelope;
 
 /**
  * 基于rabbitMQ实现的异步存盘
- * @author asus1
+ * @author shuchaowen
  *
  */
 public class RubbitMQAsyncStorage extends AbstractAsyncStorage {

@@ -115,6 +115,7 @@ public class RedisByJedisPool implements Redis{
 		}
 		return null;
 	}
+	
 
 	public String setex(byte[] key, int seconds, byte[] value) {
 		Jedis jedis = jedisPool.getResource();
@@ -740,6 +741,42 @@ public class RedisByJedisPool implements Redis{
 		Jedis jedis = jedisPool.getResource();
 		try {
 			return jedis.rpop(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+	
+	public List<String> brpop(String... key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.brpop(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public List<byte[]> brpop(byte[]... key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.brpop(key);
 		} catch (Exception e) {
 			if(abnormalInterruption){
 				throw new ShuChaoWenRuntimeException(e);

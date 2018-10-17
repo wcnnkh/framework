@@ -1,5 +1,6 @@
 package shuchaowen.core.db.storage;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
 import shuchaowen.core.db.sql.SQL;
+import shuchaowen.core.util.Logger;
 
 /**
  * 缓存热点数据
@@ -22,6 +24,16 @@ public abstract class AbstractAsyncStorage implements Storage{
 	
 	public AbstractDB getDb() {
 		return db;
+	}
+	
+	protected void logger(SQL sql) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		sb.append(sql.getSql());
+		sb.append("]");
+		sb.append(" - ");
+		sb.append(sql.getParams() == null ? "[]" : Arrays.toString(sql.getParams()));
+		Logger.debug(this.getClass().getSimpleName(), sb.toString());
 	}
 
 	public void save(Collection<?> beans) {

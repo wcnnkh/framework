@@ -83,4 +83,8 @@ public interface Redis {
 	String rpop(String key);
 	
 	byte[] rpop(byte[] key);
+	
+	List<String> brpop(String ...key);
+	
+	List<byte[]> brpop(byte[] ...key);
 }

@@ -10,6 +10,11 @@ import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 
+/**
+ * 使用xMemcached连接本地memcached
+ * @author shuchaowen
+ *
+ */
 public class LocalXMmecached {
 	private MemcachedClient memcachedClient;
 	
@@ -35,7 +40,6 @@ public class LocalXMmecached {
 		 * 设置连接池的一个不良后果就是，同一个memcached的连接之间的数据更新并非同步的
 		 * 因此你的应用需要自己保证数据更新的原子性（采用CAS或者数据之间毫无关联）。
 		 */
-		builder.setConnectionPoolSize(10);
 		this.memcachedClient = builder.build();
 	}
 	
