@@ -40,6 +40,7 @@ public class XmlBean implements Bean {
 	private static final String INIT_METHOD_TAG_NAME = "init";
 	private static final String DESTROY_METHOD_TAG_NAME = "destroy";
 	private static final String FACTORY_METHOD_TAG_NAME = "factory-method";
+	private static final String REF_ATTR_KEY = "ref";
 
 	private final BeanFactory beanFactory;
 	private final PropertiesFactory propertiesFactory;
@@ -111,12 +112,28 @@ public class XmlBean implements Bean {
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if (CONSTRUCTOR_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// Constructor
+				Node refNode = n.getAttributes().getNamedItem(REF_ATTR_KEY);
+				if(refNode != null){
+					String v = refNode.getNodeValue();
+					if(!StringUtils.isNull(v)){
+						constructorList.addAll(propertiesFactory.getBeanMethodParameterList(v));
+					}
+				}
+				
 				XmlBeanParameters xmlBeanParameters = new XmlBeanParameters(n);
 				List<BeanMethodParameter> list = xmlBeanParameters.getParameters();
 				if (list != null) {
 					constructorList.addAll(list);
 				}
 			} else if (PROPERTIES_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// Properties
+				Node refNode = n.getAttributes().getNamedItem(REF_ATTR_KEY);
+				if(refNode != null){
+					String v = refNode.getNodeValue();
+					if(!StringUtils.isNull(v)){
+						propertiesList.addAll(propertiesFactory.getBeanPropertiesList(v));
+					}
+				}
+				
 				XmlBeanProperties xmlBeanParameters = new XmlBeanProperties(n);
 				List<BeanProperties> list = xmlBeanParameters.getProperties();
 				if (list != null) {

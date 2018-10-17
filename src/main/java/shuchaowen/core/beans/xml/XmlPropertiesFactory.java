@@ -1,12 +1,15 @@
 package shuchaowen.core.beans.xml;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import shuchaowen.core.beans.BeanFactory;
+import shuchaowen.core.beans.BeanMethodParameter;
 import shuchaowen.core.beans.BeanProperties;
+import shuchaowen.core.beans.EParameterType;
 import shuchaowen.core.beans.PropertiesFactory;
 import shuchaowen.core.exception.KeyAlreadyExistsException;
 import shuchaowen.core.util.ClassInfo;
@@ -49,6 +52,42 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 				}
 			}
 		}
+	}
+	
+	public List<BeanProperties> getBeanPropertiesList(String name){
+		XmlProperties xmlProperties = propertiesMap.get(name);
+		if(xmlProperties == null){
+			return null;
+		}
+		
+		List<BeanProperties> list = new ArrayList<BeanProperties>();
+		if(xmlProperties.getProperties() != null){
+			for(Entry<Object, Object> entry : xmlProperties.getProperties().entrySet()){
+				list.add(new BeanProperties(EParameterType.value, entry.getKey().toString(), entry.getValue().toString()));
+			}
+		}
+		
+		list.addAll(xmlProperties.getOtherPropertiesMap().values());
+		return list;
+	}
+	
+	public List<BeanMethodParameter> getBeanMethodParameterList(String name){
+		XmlProperties xmlProperties = propertiesMap.get(name);
+		if(xmlProperties == null){
+			return null;
+		}
+		
+		List<BeanMethodParameter> list = new ArrayList<BeanMethodParameter>();
+		if(xmlProperties.getProperties() != null){
+			for(Entry<Object, Object> entry : xmlProperties.getProperties().entrySet()){
+				list.add(new BeanMethodParameter(EParameterType.value, null, entry.getKey().toString(), entry.getValue().toString()));
+			}
+		}
+		
+		for(Entry<String, BeanProperties> entry : xmlProperties.getOtherPropertiesMap().entrySet()){
+			list.add(new BeanMethodParameter(entry.getValue().getType(), null, entry.getKey(), entry.getValue().getValue()));
+		}
+		return list;
 	}
 
 	@SuppressWarnings("unchecked")
