@@ -28,13 +28,15 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 				propertiesMap.put(p.getId(), p);
 
 				String prefix = (p.getPrefix() == null ? "" : p.getPrefix());
-				for (Entry<Object, Object> entry : p.getProperties().entrySet()) {
-					String key = prefix + entry.getKey();
-					if (propertiesValueMap.containsKey(key)) {
-						throw new KeyAlreadyExistsException(key);
-					}
+				if(p.getProperties() != null){
+					for (Entry<Object, Object> entry : p.getProperties().entrySet()) {
+						String key = prefix + entry.getKey();
+						if (propertiesValueMap.containsKey(key)) {
+							throw new KeyAlreadyExistsException(key);
+						}
 
-					propertiesValueMap.put(prefix + entry.getKey(), entry.getValue());
+						propertiesValueMap.put(prefix + entry.getKey(), entry.getValue());
+					}
 				}
 
 				for (BeanProperties beanProperties : p.getOtherPropertiesMap().values()) {

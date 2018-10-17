@@ -190,10 +190,7 @@ public class BeanUtils {
 		Class<?>[] types = new Class<?>[beanMethodParameters.size()];
 		for (int i = 0; i < beanMethodParameters.size(); i++) {
 			BeanMethodParameter beanMethodParameter = beanMethodParameters.get(i).clone();
-			if (beanMethodParameter.getParameterType() != null) {
-				methodParameters[i] = beanMethodParameter;
-				types[i] = beanMethodParameter.getParameterType();
-			} else if (!StringUtils.isNull(beanMethodParameter.getName())) {
+			if (!StringUtils.isNull(beanMethodParameter.getName())) {
 				for (int a = 0; a < paramNames.length; a++) {
 					if (paramNames[a].equals(beanMethodParameter.getName())) {
 						types[a] = oldTypes[a];
@@ -201,6 +198,9 @@ public class BeanUtils {
 						methodParameters[a].setParameterType(oldTypes[a]);
 					}
 				}
+			} else if (beanMethodParameter.getParameterType() != null) {
+				methodParameters[i] = beanMethodParameter;
+				types[i] = beanMethodParameter.getParameterType();
 			} else {
 				types[i] = oldTypes[i];
 				methodParameters[i] = beanMethodParameter;
