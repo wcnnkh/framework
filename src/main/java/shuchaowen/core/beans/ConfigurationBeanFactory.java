@@ -1,31 +1,66 @@
 package shuchaowen.core.beans;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+import shuchaowen.core.beans.exception.BeansException;
 import shuchaowen.core.beans.xml.XmlBeanInfoConfiguration;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
+import shuchaowen.core.util.ConfigUtils;
+import shuchaowen.core.util.StringUtils;
 
 public class ConfigurationBeanFactory implements BeanFactory {
+	private static final String BEANS_TAG_NAME = "beans";
+	private static final String BEANS_ANNOTATION = "packages";
+	
 	private final AnnotationBeanInfoConfiguration annotationBeanInfoConfiguration;
-	private final XmlBeanInfoConfiguration xmlBeanInfoConfiguration;
+	private XmlBeanInfoConfiguration xmlBeanInfoConfiguration;
 	private volatile Map<String, Object> singletonMap = new HashMap<String, Object>();
 	private String packageNames;
 
-	/**
-	 * @param config
-	 *            配置文件
-	 * @param packageNames
-	 *            注解扫描路径
-	 * @throws Exception 
-	 */
-	public ConfigurationBeanFactory(ConfigFactory configFactory, String config, String packageNames) throws Exception {
-		this.packageNames = packageNames;
+	public ConfigurationBeanFactory(ConfigFactory configFactory, String config) throws Exception {
+		if(!StringUtils.isNull(config)){
+			Node root = getRootNode(config);
+			if(root.getAttributes() != null){
+				Node annotationNode = root.getAttributes().getNamedItem(BEANS_ANNOTATION);
+				if(annotationNode != null){
+					this.packageNames = annotationNode.getNodeValue();
+				}
+			}
+			
+			this.xmlBeanInfoConfiguration = new XmlBeanInfoConfiguration(this, configFactory, root);
+		}
 		this.annotationBeanInfoConfiguration = new AnnotationBeanInfoConfiguration(this, packageNames);
-		this.xmlBeanInfoConfiguration = new XmlBeanInfoConfiguration(this, configFactory, config);
-		registerSingleton(ConfigurationBeanFactory.class, this);
+		registerSingleton(this.getClass(), this);
+	}
+	
+	public String getPackageNames() {
+		return packageNames;
+	}
+
+
+
+	public static Node getRootNode(String beanXml) throws Exception{
+		File xml = ConfigUtils.getFile(beanXml);
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+		Document document = builder.parse(xml);
+		Element root = document.getDocumentElement();
+		if (!BEANS_TAG_NAME.equals(root.getTagName())) {
+			throw new BeansException("root tag name error [" + root.getTagName() + "]");
+		}
+		return root;
 	}
 	
 	//注册一个单例
@@ -33,7 +68,7 @@ public class ConfigurationBeanFactory implements BeanFactory {
 		registerSingleton(type.getName(), bean);
 	}
 	
-	private void registerSingleton(String name, Object bean){
+	public void registerSingleton(String name, Object bean){
 		String realName = ClassUtils.getCGLIBRealClassName(name);
 		if(singletonMap.containsKey(realName)){
 			throw new ShuChaoWenRuntimeException("singleton Already exist");//单例已经存在
@@ -55,7 +90,7 @@ public class ConfigurationBeanFactory implements BeanFactory {
 	}
 	
 	private Bean getBeanInfoByRealName(String realName){
-		Bean beanInfo = xmlBeanInfoConfiguration.getBean(realName);
+		Bean beanInfo = xmlBeanInfoConfiguration == null? null:xmlBeanInfoConfiguration.getBean(realName);
 		if (beanInfo == null) {
 			beanInfo = annotationBeanInfoConfiguration.getBean(realName);
 		}
@@ -117,7 +152,7 @@ public class ConfigurationBeanFactory implements BeanFactory {
 	}
 
 	public boolean contains(String name) {
-		return annotationBeanInfoConfiguration.contains(name) || xmlBeanInfoConfiguration.contains(name);
+		return annotationBeanInfoConfiguration.contains(name) || (xmlBeanInfoConfiguration != null && xmlBeanInfoConfiguration.contains(name));
 	}
 
 	public void init() {
@@ -129,8 +164,14 @@ public class ConfigurationBeanFactory implements BeanFactory {
 	}
 
 	public void destroy() {
+		HashSet<Class<?>> tagSet = new HashSet<Class<?>>();
 		for (Entry<String, Object> entry : singletonMap.entrySet()) {
 			if(contains(entry.getKey())){
+				if(tagSet.contains(entry.getValue().getClass())){
+					continue;
+				}
+				
+				tagSet.add(entry.getValue().getClass());
 				try {
 					Bean beanInfo = getBean(entry.getKey());
 					beanInfo.destroy(entry.getValue());

@@ -20,6 +20,7 @@ import shuchaowen.web.servlet.request.JsonRequest;
 
 public class DispatcherServlet extends HttpServlet {
 	private static final long serialVersionUID = -8268337109249457358L;
+	private static final String SHUCHAOWEN_CONFIG = "shuchaowen";
 	private boolean debug = false;
 	private String rpcServletPath;// 远程代理调用的servletpath，只使用post方法
 	private HttpServerApplication httpServerApplication;
@@ -93,7 +94,9 @@ public class DispatcherServlet extends HttpServlet {
 
 	@Override
 	public final void init(ServletConfig servletConfig) throws ServletException {
-		httpServerApplication = new HttpServerApplication(servletConfig.getInitParameter("package"));
+		httpServerApplication = new HttpServerApplication(servletConfig.getInitParameter(SHUCHAOWEN_CONFIG));
+		httpServerApplication.registerSingleton(servletConfig.getServletName(), this);
+		httpServerApplication.registerSingleton(this.getClass(), this);
 		
 		if(httpServerApplication.getCharset() == null){
 			String charsetName = servletConfig.getInitParameter("charsetName");

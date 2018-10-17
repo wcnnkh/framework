@@ -8,27 +8,29 @@ import shuchaowen.core.util.ClassUtils;
 
 public class CommonApplication implements Application {
 	private ConfigurationBeanFactory beanFactory;
-	private String packageName;
 
 	public CommonApplication() {
 		this("");
 	}
 	
-	public CommonApplication(String configPath) {
-		this(configPath, "");
+	public void registerSingleton(Class<?> type, Object bean){
+		beanFactory.registerSingleton(type, bean);
 	}
-
-	public CommonApplication(String configPath, String packageName) {
-		this.packageName = packageName;
+	
+	public void registerSingleton(String name, Object bean){
+		beanFactory.registerSingleton(name, bean);
+	}
+	
+	public CommonApplication(String configPath) {
 		try {
-			this.beanFactory = new ConfigurationBeanFactory(null, configPath, packageName);
+			this.beanFactory = new ConfigurationBeanFactory(null, configPath);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
+	
 	public Collection<Class<?>> getClasses() {
-		return ClassUtils.getClasses(packageName);
+		return ClassUtils.getClasses(beanFactory.getPackageNames());
 	}
 
 	public BeanFactory getBeanFactory() {

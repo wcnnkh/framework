@@ -26,13 +26,8 @@ public class HttpServerApplication extends CommonApplication {
 	private final LazyMap<String, Invoker> invokerRPCMap = new LazyMap<String, Invoker>();
 	private Serializer rpcSerializer = new JavaObjectSerializer();
 	
-	public HttpServerApplication() {
-		super();
-		this.searchAction = new DefaultSearchAction(getBeanFactory(), true, "action");
-	};
-	
-	public HttpServerApplication(String packageName){
-		super(packageName);
+	public HttpServerApplication(String config){
+		super(config);
 		this.searchAction = new DefaultSearchAction(getBeanFactory(), true, "action");
 	}
 
