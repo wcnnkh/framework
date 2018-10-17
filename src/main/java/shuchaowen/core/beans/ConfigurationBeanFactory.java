@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import shuchaowen.core.beans.exception.BeansException;
-import shuchaowen.core.beans.xml.XmlBeanInfoConfiguration;
+import shuchaowen.core.beans.xml.XmlBeanConfiguration;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.ConfigUtils;
@@ -25,7 +25,7 @@ public class ConfigurationBeanFactory implements BeanFactory {
 	private static final String BEANS_ANNOTATION = "packages";
 	
 	private final AnnotationBeanInfoConfiguration annotationBeanInfoConfiguration;
-	private XmlBeanInfoConfiguration xmlBeanInfoConfiguration;
+	private XmlBeanConfiguration xmlBeanConfiguration;
 	private volatile Map<String, Object> singletonMap = new HashMap<String, Object>();
 	private String packageNames;
 
@@ -39,7 +39,7 @@ public class ConfigurationBeanFactory implements BeanFactory {
 				}
 			}
 			
-			this.xmlBeanInfoConfiguration = new XmlBeanInfoConfiguration(this, configFactory, root);
+			this.xmlBeanConfiguration = new XmlBeanConfiguration(this, configFactory, root);
 		}
 		this.annotationBeanInfoConfiguration = new AnnotationBeanInfoConfiguration(this, packageNames);
 		registerSingleton(this.getClass(), this);
@@ -92,7 +92,7 @@ public class ConfigurationBeanFactory implements BeanFactory {
 	}
 	
 	private Bean getBeanInfoByRealName(String realName){
-		Bean beanInfo = xmlBeanInfoConfiguration == null? null:xmlBeanInfoConfiguration.getBean(realName);
+		Bean beanInfo = xmlBeanConfiguration == null? null:xmlBeanConfiguration.getBean(realName);
 		if (beanInfo == null) {
 			beanInfo = annotationBeanInfoConfiguration.getBean(realName);
 		}
@@ -154,7 +154,7 @@ public class ConfigurationBeanFactory implements BeanFactory {
 	}
 
 	public boolean contains(String name) {
-		return annotationBeanInfoConfiguration.contains(name) || (xmlBeanInfoConfiguration != null && xmlBeanInfoConfiguration.contains(name));
+		return annotationBeanInfoConfiguration.contains(name) || (xmlBeanConfiguration != null && xmlBeanConfiguration.contains(name));
 	}
 
 	public void init() {

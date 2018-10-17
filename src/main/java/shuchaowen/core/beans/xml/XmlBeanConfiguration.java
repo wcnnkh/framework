@@ -13,12 +13,12 @@ import shuchaowen.core.beans.ConfigFactory;
 import shuchaowen.core.beans.exception.BeansException;
 import shuchaowen.core.util.ClassUtils;
 
-public class XmlBeanInfoConfiguration implements BeanInfoConfiguration {
+public class XmlBeanConfiguration implements BeanInfoConfiguration {
 	private static final String BEAN_TAG_NAME = "bean";
 	private final Map<String, Bean> beanMap = new HashMap<String, Bean>();
 	private final Map<String, String> nameMappingMap = new HashMap<String, String>();
 	
-	public XmlBeanInfoConfiguration(BeanFactory beanFactory, ConfigFactory configFactory, Node root) throws Exception{
+	public XmlBeanConfiguration(BeanFactory beanFactory, ConfigFactory configFactory, Node root) throws Exception{
 		NodeList nhosts = root.getChildNodes();
 		for (int i = 0; i < nhosts.getLength(); i++) {
 			Node nRoot = nhosts.item(i);
@@ -54,7 +54,8 @@ public class XmlBeanInfoConfiguration implements BeanInfoConfiguration {
 	}
 
 	public boolean contains(String name) {
-		return beanMap.containsKey(ClassUtils.getCGLIBRealClassName(name));
+		String realName = ClassUtils.getCGLIBRealClassName(name);
+		return nameMappingMap.containsKey(realName) || beanMap.containsKey(realName);
 	}
 
 }
