@@ -358,7 +358,7 @@ public class XmlBean implements Bean {
 				return (T) factoryMethodInfo.invoke(bean, beanFactory, propertiesFactory);
 			}
 		} catch (Exception e) {
-			throw new BeansException(e);
+			throw new BeansException(type.getName(), e);
 		}
 	}
 
