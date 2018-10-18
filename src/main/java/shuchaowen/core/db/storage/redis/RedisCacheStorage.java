@@ -50,10 +50,10 @@ public class RedisCacheStorage extends CommonStorage{
 		}
 
 		// loader
-		loadTableKeysToCache(tableClass);
+		loadToCache(tableClass);
 	}
 
-	protected void loadTableKeysToCache(final Class<?> tableClass) {
+	protected void loadToCache(final Class<?> tableClass) {
 		final String name = ClassUtils.getCGLIBRealClassName(tableClass);
 		Logger.info("loading [" + name + "] keys to cache");
 		getDb().iterator(tableClass, new ResultIterator() {
