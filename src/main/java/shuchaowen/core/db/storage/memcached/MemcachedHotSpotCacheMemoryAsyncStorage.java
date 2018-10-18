@@ -20,6 +20,6 @@ public class MemcachedHotSpotCacheMemoryAsyncStorage extends MemcachedHotSpotCac
 	}
 	
 	public MemoryAsyncStorage getMemoryAsyncStorage(){
-		return (MemoryAsyncStorage) getExecute();
+		return (MemoryAsyncStorage) getExecuteStorage();
 	}
 }

@@ -22,11 +22,11 @@ public class CommonStorage implements Storage{
 		return db;
 	}
 
-	public Storage getGet() {
+	public Storage getGetStorage() {
 		return get;
 	}
 
-	public Storage getExecute() {
+	public Storage getExecuteStorage() {
 		return execute;
 	}
 

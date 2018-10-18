@@ -26,8 +26,8 @@ public class RedisAsyncStorage extends AbstractAsyncStorage {
 	private final String queueKey;
 	private final boolean sqlDebug;
 
-	public RedisAsyncStorage(AbstractDB db, Redis redis) {
-		this(db, redis, db.getClass().getName(), true);
+	public RedisAsyncStorage(AbstractDB db, Redis redis, String queueKey) {
+		this(db, redis, queueKey, true);
 	}
 
 	public RedisAsyncStorage(AbstractDB db, final Redis redis, final String queueKey, final boolean sqlDebug) {
@@ -97,5 +97,9 @@ public class RedisAsyncStorage extends AbstractAsyncStorage {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Redis getRedis() {
+		return redis;
 	}
 }

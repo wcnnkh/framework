@@ -21,6 +21,6 @@ public class RedisHotSpotCacheMermoryAsyncStorage extends RedisHotSpotCacheStora
 	}
 	
 	public MemoryAsyncStorage getMemoryAsyncStorage(){
-		return (MemoryAsyncStorage) getExecute();
+		return (MemoryAsyncStorage) getExecuteStorage();
 	}
 }
