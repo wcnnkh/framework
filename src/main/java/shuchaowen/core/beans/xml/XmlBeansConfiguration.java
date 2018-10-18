@@ -54,6 +54,15 @@ public class XmlBeansConfiguration implements BeanInfoConfiguration {
 			
 			NodeList nhosts = root.getChildNodes();
 			List<XmlProperties> xmlPropertiesList = new ArrayList<XmlProperties>();
+			for(int i=0; i<nhosts.getLength(); i++){
+				Node nRoot = nhosts.item(i);
+				if(PROPERTIES_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())){
+					XmlProperties xmlProperties = new XmlProperties(nRoot);
+					xmlPropertiesList.add(xmlProperties);
+				}
+			}
+			this.propertiesFactory = new XmlPropertiesFactory(beanFactory, xmlPropertiesList);
+
 			for (int i = 0; i < nhosts.getLength(); i++) {
 				Node nRoot = nhosts.item(i);
 				if(BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())){
@@ -71,13 +80,8 @@ public class XmlBeansConfiguration implements BeanInfoConfiguration {
 							nameMappingMap.put(n, bean.getId());
 						}
 					}
-				}else if(PROPERTIES_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())){
-					XmlProperties xmlProperties = new XmlProperties(nRoot);
-					xmlPropertiesList.add(xmlProperties);
 				}
 			}
-			
-			this.propertiesFactory = new XmlPropertiesFactory(beanFactory, xmlPropertiesList);
 		}
 	}
 
