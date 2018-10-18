@@ -12,6 +12,10 @@ public class RedisLock {
 	private final int timeout;
 	private final String id;
 	
+	public RedisLock(Redis redis, String key){
+		this(redis, key, XUtils.getUUID(), 30);
+	}
+	
 	public RedisLock(Redis redis, String key, String id,  int timeout){
 		this.redis = redis;
 		this.key = key;
