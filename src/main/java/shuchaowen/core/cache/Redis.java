@@ -103,4 +103,10 @@ public interface Redis {
 	List<byte[]> brpop(byte[]... key);
 	
 	Object eval(String script, List<String> keys, List<String> args);
+	
+	List<byte[]> blpop(byte[]... key);
+	
+	String lpop(String key);
+	
+	byte[] lpop(byte[] key);
 }

@@ -828,4 +828,58 @@ public class RedisByJedisPool implements Redis{
 		}
 		return null;
 	}
+	
+	public List<byte[]> blpop(byte[]... key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.blpop(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public String lpop(String key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.lpop(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public byte[] lpop(byte[] key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.lpop(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
 }

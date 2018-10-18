@@ -3,7 +3,6 @@ package shuchaowen.core.db.storage.async;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collection;
-import java.util.List;
 
 import shuchaowen.core.cache.Redis;
 import shuchaowen.core.db.AbstractDB;
@@ -24,6 +23,7 @@ public class RedisAsyncStorage extends AbstractAsyncStorage {
 	private final static Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 	private final Redis redis;
 	private final String queueKey;
+	private final byte[] queueByteKey;
 	private final boolean sqlDebug;
 
 	public RedisAsyncStorage(AbstractDB db, Redis redis, String queueKey) {
@@ -34,26 +34,29 @@ public class RedisAsyncStorage extends AbstractAsyncStorage {
 		super(db);
 		this.sqlDebug = sqlDebug;
 		this.redis = redis;
-		final byte[] key = queueKey.getBytes(DEFAULT_CHARSET);
 		this.queueKey = queueKey;
+		this.queueByteKey = queueKey.getBytes(DEFAULT_CHARSET);
 		new Thread(new Runnable() {
 
 			public void run() {
 				while (!Thread.interrupted()) {
 					try {
+						Thread.sleep(100L);
 						RedisLock redisLock = new RedisLock(redis, "lock_" + queueKey);
 						redisLock.lockWait();
 						try {
-							List<byte[]> dataList = redis.brpop(key);
-							for (byte[] data : dataList) {
-								try {
-									ExecuteInfo executeInfo = IOUtils.byteToJavaObject(data);
-									next(executeInfo);
-								} catch (ClassNotFoundException e) {
-									e.printStackTrace();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
+							byte[] data = redis.lpop(queueByteKey);
+							if (data == null) {
+								continue;
+							}
+							
+							try {
+								ExecuteInfo executeInfo = IOUtils.byteToJavaObject(data);
+								next(executeInfo);
+							} catch (ClassNotFoundException e) {
+								e.printStackTrace();
+							} catch (IOException e) {
+								e.printStackTrace();
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -93,10 +96,18 @@ public class RedisAsyncStorage extends AbstractAsyncStorage {
 		// 这里使用jdk的序列化方式 ，因为不会出现各种没有经历过的问题
 		try {
 			byte[] data = IOUtils.javaObjectToByte(executeInfo);
-			redis.lpush(queueKey.getBytes(DEFAULT_CHARSET), data);
+			redis.lpush(queueByteKey, data);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public String getQueueKey() {
+		return queueKey;
+	}
+
+	public byte[] getQueueByteKey() {
+		return queueByteKey;
 	}
 
 	public Redis getRedis() {
