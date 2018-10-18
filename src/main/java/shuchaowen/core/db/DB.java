@@ -29,7 +29,9 @@ public abstract class DB extends AbstractDB {
 	
 	protected void registerStorage(Class<?> tableClass, Storage storage){
 		synchronized (storageMap) {
-			storageMap.put(ClassUtils.getCGLIBRealClassName(tableClass), storage);
+			if(storageMap.containsKey(ClassUtils.getCGLIBRealClassName(tableClass))){
+				storageMap.put(ClassUtils.getCGLIBRealClassName(tableClass), storage);
+			}
 		}
 	}
 	

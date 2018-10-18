@@ -273,9 +273,9 @@ public class XmlBean implements Bean {
 		if (propertiesList == null || propertiesList.isEmpty()) {
 			return;
 		}
-
+		
 		for (BeanProperties beanProperties : propertiesList) {
-			ClassInfo classInfo = new ClassInfo(type);
+			ClassInfo classInfo = ClassUtils.getClassInfo(type);
 			FieldInfo fieldInfo = classInfo.getFieldInfo(beanProperties.getName());
 			if (fieldInfo != null) {
 				Object value = null;
@@ -292,6 +292,7 @@ public class XmlBean implements Bean {
 				default:
 					break;
 				}
+				
 				fieldInfo.set(bean, value);
 			}
 		}
@@ -308,7 +309,6 @@ public class XmlBean implements Bean {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		setProperties(bean);
 		Class<?> tempClz = type;
 		while (tempClz != null) {
 			for (Field field : tempClz.getDeclaredFields()) {
@@ -323,6 +323,7 @@ public class XmlBean implements Bean {
 			}
 			tempClz = tempClz.getSuperclass();
 		}
+		setProperties(bean);
 	}
 
 	public void init(Object bean) throws Exception {

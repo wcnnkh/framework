@@ -77,7 +77,17 @@ public final class ClassInfo {
 	}
 	
 	public FieldInfo getFieldInfo(String fieldName){
-		return fieldMap.get(fieldName);
+		ClassInfo classInfo = this;
+		FieldInfo fieldInfo = classInfo.getFieldMap().get(fieldName);
+		while(fieldInfo == null){
+			classInfo = classInfo.getSuperInfo();
+			if(classInfo == null){
+				break;
+			}
+			
+			fieldInfo = classInfo.getFieldMap().get(fieldName);
+		}
+		return fieldInfo;
 	}
 
 	public ClassInfo getSuperInfo() {

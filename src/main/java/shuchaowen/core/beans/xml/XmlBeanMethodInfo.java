@@ -28,21 +28,26 @@ public class XmlBeanMethodInfo {
 		
 		String name = nameNode.getNodeValue();
 		this.parameter = new XmlBeanParameters(node);
-		for(Method method : type.getDeclaredMethods()){
-			if(method.getParameterCount() != parameter.getParameters().size()){
-				continue;
+		
+		Class<?> tempClz = type;
+		while(tempClz != null){
+			for(Method method : tempClz.getDeclaredMethods()){
+				if(method.getParameterCount() != parameter.getParameters().size()){
+					continue;
+				}
+				
+				if(!method.getName().equals(name)){
+					continue;
+				}
+				
+				BeanMethodParameter[] beanMethodParameters = BeanUtils.sortParameters(method, parameter.getParameters());
+				if(beanMethodParameters != null){
+					this.beanMethodParameters = beanMethodParameters;
+					method.setAccessible(true);
+					this.method = method;
+				}
 			}
-			
-			if(!method.getName().equals(name)){
-				continue;
-			}
-			
-			BeanMethodParameter[] beanMethodParameters = BeanUtils.sortParameters(method, parameter.getParameters());
-			if(beanMethodParameters != null){
-				this.beanMethodParameters = beanMethodParameters;
-				method.setAccessible(true);
-				this.method = method;
-			}
+			tempClz = tempClz.getSuperclass();
 		}
 		
 		if(this.method == null){
