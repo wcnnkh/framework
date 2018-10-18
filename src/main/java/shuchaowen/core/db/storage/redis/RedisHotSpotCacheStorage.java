@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CountDownLatch;
 
 import shuchaowen.core.cache.Redis;
 import shuchaowen.core.db.AbstractDB;
@@ -26,10 +27,10 @@ import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.XTime;
 
 public class RedisHotSpotCacheStorage extends CommonStorage {
-	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+	public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 	private static final int DEFAULT_EXP = (int) ((7 * XTime.ONE_DAY) / 1000);
 	private final Map<String, Boolean> loadKeyTagMap = new HashMap<String, Boolean>();
-	private static final byte[] NULL_BYTE = new byte[0];
+	public static final byte[] NULL_BYTE = new byte[0];
 
 	private final int exp;// 过期时间
 	private final Redis redis;
@@ -57,7 +58,7 @@ public class RedisHotSpotCacheStorage extends CommonStorage {
 	 * 
 	 * @param tableClass
 	 */
-	public final void loadKeysToCache(Class<?> tableClass) {
+	private final void loadKeysToCache(Class<?> tableClass) {
 		String name = ClassUtils.getCGLIBRealClassName(tableClass);
 		if (loadKeyTagMap.containsKey(name)) {
 			throw new ShuChaoWenRuntimeException(name + " Already exist");
@@ -70,18 +71,27 @@ public class RedisHotSpotCacheStorage extends CommonStorage {
 
 			loadKeyTagMap.put(name, null);
 		}
-
-		// loader
-		loadTableKeysToCache(tableClass);
 	}
 	
 	public final void loadKeysToCache(String tablePackageNames){
 		Collection<Class<?>> list = ClassUtils.getClasses(tablePackageNames);
+		List<Class<?>> tableClassList = new ArrayList<Class<?>>();
 		for(Class<?> clz : list){
 			Table table = clz.getAnnotation(Table.class);
 			if(table != null){
 				loadKeysToCache(clz);
+				tableClassList.add(clz);
 			}
+		}
+		
+		CountDownLatch countDownLatch = new CountDownLatch(tableClassList.size());
+		for(Class<?> clz : tableClassList){
+			new LoadingThread(countDownLatch, getDb(), redis, clz).start();
+		}
+		try {
+			countDownLatch.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -91,6 +101,16 @@ public class RedisHotSpotCacheStorage extends CommonStorage {
 			if(table != null){
 				loadKeysToCache(clz);
 			}
+		}
+		
+		CountDownLatch countDownLatch = new CountDownLatch(tableClass.length);
+		for(Class<?> clz : tableClass){
+			new LoadingThread(countDownLatch, getDb(), redis, clz).start();
+		}
+		try {
+			countDownLatch.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -292,5 +312,49 @@ public class RedisHotSpotCacheStorage extends CommonStorage {
 	public void saveOrUpdate(Collection<?> beans) {
 		super.saveOrUpdate(beans);
 		saveOrUpdateToCache(beans);
+	}
+}
+
+class LoadingThread extends Thread{
+	private final CountDownLatch countDownLatch;
+	private final AbstractDB db;
+	private final Class<?> tableClass;
+	private final Redis redis;
+	
+	public LoadingThread(CountDownLatch countDownLatch, AbstractDB db, Redis redis, Class<?> tableClass){
+		this.countDownLatch = countDownLatch;
+		this.db = db;
+		this.redis = redis;
+		this.tableClass = tableClass;
+	}
+	
+	private String getPrimaryKey(Object bean) {
+		try {
+			return CacheUtils.getObjectPrimaryKey(bean);
+		} catch (Exception e) {
+			throw new ShuChaoWenRuntimeException(e);
+		}
+	}
+	
+	@Override
+	public void run() {
+		try {
+			final String name = ClassUtils.getCGLIBRealClassName(tableClass);
+			Logger.info("RedisHotSpotCacheStorage", "loading [" + name + "] keys to cache");
+			db.iterator(tableClass, new ResultIterator() {
+
+				public void next(Result result) {
+					Object bean = result.get(tableClass);
+					String name = ClassUtils.getCGLIBRealClassName(bean.getClass());
+					redis.hsetnx(name.getBytes(RedisHotSpotCacheStorage.DEFAULT_CHARSET), getPrimaryKey(bean).getBytes(RedisHotSpotCacheStorage.DEFAULT_CHARSET),
+							CacheUtils.encode(bean));
+				}
+			});
+			Logger.info("RedisHotSpotCacheStorage", "loading [" + name + "] keys to cache success");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			countDownLatch.countDown();
+		}
 	}
 }

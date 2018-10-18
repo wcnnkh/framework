@@ -55,24 +55,29 @@ public class StringUtils {
 		int lastFind = 0;
 		List<String> list = new ArrayList<String>();
 		char[] chars = str.toCharArray();
-		for(int i=0; i<chars.length; i++){
+		int i=0;
+		for(; i<chars.length; i++){
 			boolean b = false;
 			for(char r : regex){
 				if(r == chars[i]){
 					b = true;
+					break;
 				}
 			}
 			
 			if(b){//找到了
-				if(i == lastFind){
-					continue;
-				}else{
-					list.add(new String(chars, lastFind, i));
+				if(i != lastFind){
+					list.add(new String(chars, lastFind, i - lastFind));
 				}
+				i++;
 				lastFind = i;
 			}
 		}
 		
+		if(lastFind != i){
+			list.add(new String(chars, lastFind, i-lastFind));
+		}
+
 		if(list.isEmpty()){
 			return new String[]{str};
 		}
