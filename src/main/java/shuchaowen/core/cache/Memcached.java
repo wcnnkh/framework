@@ -37,4 +37,6 @@ public interface Memcached {
 	long decr(String key, long decr, long initValue);
 	
 	boolean delete(String key);
+	
+	boolean delete(String key, long cas, long opTimeout);
 }

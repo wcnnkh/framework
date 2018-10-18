@@ -9,6 +9,8 @@ import redis.clients.jedis.JedisPool;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 public class RedisByJedisPool implements Redis{
+	private static final String SUCCESS = "OK";
+	
 	private final JedisPool jedisPool;
 	//发生异常时是否中断
 	private final boolean abnormalInterruption;
@@ -777,6 +779,42 @@ public class RedisByJedisPool implements Redis{
 		Jedis jedis = jedisPool.getResource();
 		try {
 			return jedis.brpop(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public boolean set(String key, String value, String nxxx, String expx, long time) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return SUCCESS.equals(jedis.set(key, value, nxxx, expx, time));
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return false;
+	}
+	
+	public Object eval(String script, List<String> keys, List<String> args){
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.eval(script, keys, args);
 		} catch (Exception e) {
 			if(abnormalInterruption){
 				throw new ShuChaoWenRuntimeException(e);

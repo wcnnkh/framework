@@ -267,4 +267,16 @@ public class XMemcached implements Memcached{
 		return false;
 	}
 
+	public boolean delete(String key, long cas, long opTimeout) {
+		try {
+			return memcachedClient.delete(key, cas, opTimeout);
+		} catch (TimeoutException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (MemcachedException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 }
