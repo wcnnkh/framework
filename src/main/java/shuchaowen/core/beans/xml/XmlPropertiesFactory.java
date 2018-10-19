@@ -28,7 +28,9 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 		this.beanFactory = beanFactory;
 		if (properties != null) {
 			for (XmlProperties p : properties) {
-				propertiesMap.put(p.getId(), p);
+				if(!StringUtils.isNull(p.getId())){
+					propertiesMap.put(p.getId(), p);
+				}
 
 				String prefix = (p.getPrefix() == null ? "" : p.getPrefix());
 				if(p.getProperties() != null){
