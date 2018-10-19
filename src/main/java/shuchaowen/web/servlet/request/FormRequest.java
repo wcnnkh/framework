@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSONObject;
+
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.http.server.search.PathSearchAction;
 import shuchaowen.core.util.ClassInfo;
@@ -32,6 +34,8 @@ public class FormRequest extends WebRequest {
 			sb.append(httpServletRequest.getServletPath());
 			sb.append(",method=");
 			sb.append(httpServletRequest.getMethod());
+			sb.append(",");
+			sb.append(JSONObject.toJSONString(getParameterMap()));
 			Logger.debug("REQUEST", sb.toString());
 		}
 	}
