@@ -6,6 +6,7 @@ public enum ContentType {
 	JSON("application/json"),
 	FORM("application/x-www-form-urlencoded"),
 	FORM_DATA("multipart/form-data"),
+	TEXT_JAVASCRIPT("text/javascript"),
 	;
 	
 	private String value;

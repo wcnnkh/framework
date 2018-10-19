@@ -1,12 +1,9 @@
 package shuchaowen.web.servlet;
 
-import shuchaowen.core.http.server.Parameter;
-
-public abstract class WebParameter extends Parameter{
+public abstract class WebParameter{
 	private WebRequest request;
 	
 	public WebParameter(WebRequest request){
-		super(request);
 		this.request = request;
 	}
 

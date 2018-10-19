@@ -1,6 +1,7 @@
 package shuchaowen.web.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -65,7 +66,17 @@ public abstract class WebRequest extends HttpServletRequestWrapper implements Re
 			return this;
 		}else if(ServletResponse.class.isAssignableFrom(type)){
 			return httpServletResponse;
-		}else {
+		}else if(WebParameter.class.isAssignableFrom(type)){
+			@SuppressWarnings("unchecked")
+			Constructor<WebParameter>[] constructors = (Constructor<WebParameter>[]) type.getConstructors();
+			for(Constructor<WebParameter> constructor : constructors){
+				if(constructor.getParameterCount() == 1 && Request.class.isAssignableFrom(constructor.getParameterTypes()[0])){
+					constructor.setAccessible(true);
+					return beanFactory.getBean(type).newInstance(constructor.getParameterTypes(), this);
+				}
+			}
+			return null;
+		}else{
 			return getObject(type, name);
 		}
 	}

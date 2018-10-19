@@ -3,17 +3,14 @@ package shuchaowen.core.http.server;
 import java.util.Iterator;
 import java.util.List;
 
-import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.invoke.Invoker;
 
 public final class ActionFilterChain implements FilterChain {
-	private final BeanFactory beanFactory;
 	private final Iterator<Filter> filterIterator;
 	private final Invoker invoke;
 	private final MethodParameter[] paramInfos;
 
-	public ActionFilterChain(BeanFactory beanFactory, Invoker invoke, MethodParameter[] paramInfos, List<Filter> filterList) {
-		this.beanFactory = beanFactory;
+	public ActionFilterChain(Invoker invoke, MethodParameter[] paramInfos, List<Filter> filterList) {
 		this.invoke = invoke;
 		this.paramInfos = paramInfos;
 		this.filterIterator = filterList == null? null:filterList.iterator();
@@ -25,7 +22,7 @@ public final class ActionFilterChain implements FilterChain {
 		} else {
 			Object[] args = new Object[paramInfos.length];
 			for (int i = 0; i < paramInfos.length; i++) {
-				args[i] = paramInfos[i].getParameter(beanFactory, request, response);
+				args[i] = paramInfos[i].getParameter(request, response);
 			}
 			response.write(invoke.invoke(args));
 		}
