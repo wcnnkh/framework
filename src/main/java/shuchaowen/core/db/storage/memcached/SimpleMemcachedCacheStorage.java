@@ -141,7 +141,7 @@ public class SimpleMemcachedCacheStorage extends CommonStorage{
 			}
 			
 			try {
-				memcached.add(CacheUtils.getObjectKey(bean), DEFAULT_EXP, CacheUtils.encode(bean));
+				memcached.set(CacheUtils.getObjectKey(bean), DEFAULT_EXP, CacheUtils.encode(bean));
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
