@@ -45,6 +45,9 @@ public class XMemcached implements Memcached{
 		GetsResponse<T> cas;
 		try {
 			cas = memcachedClient.gets(key);
+			if(cas == null){
+				return null;
+			}
 			return new CAS<T>(cas.getCas(), cas.getValue());
 		} catch (Exception e) {
 			if(abnormalInterruption){

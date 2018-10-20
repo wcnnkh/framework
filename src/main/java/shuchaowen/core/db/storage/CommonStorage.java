@@ -9,13 +9,13 @@ import shuchaowen.core.db.PrimaryKeyValue;
 
 public class CommonStorage implements Storage{
 	private final AbstractDB db;
-	private final Storage get;
-	private final Storage execute;
+	private final Storage getStorage;
+	private final Storage executeStorage;
 	
-	public CommonStorage(AbstractDB db, Storage get, Storage execute){
+	public CommonStorage(AbstractDB db, Storage getStorage, Storage executeStorage){
 		this.db = db;
-		this.get = get;
-		this.execute = execute;
+		this.getStorage = getStorage;
+		this.executeStorage = executeStorage;
 	}
 	
 	public AbstractDB getDb() {
@@ -23,67 +23,67 @@ public class CommonStorage implements Storage{
 	}
 
 	public Storage getGetStorage() {
-		return get;
+		return getStorage;
 	}
 
 	public Storage getExecuteStorage() {
-		return execute;
+		return executeStorage;
 	}
 
 	public void save(Collection<?> beans) {
-		if(execute == null){
+		if(executeStorage == null){
 			db.saveToDB(beans);
 		}else{
-			execute.save(beans);
+			executeStorage.save(beans);
 		}
 	}
 
 	public void update(Collection<?> beans) {
-		if(execute == null){
+		if(executeStorage == null){
 			db.updateToDB(beans);
 		}else{
-			execute.update(beans);
+			executeStorage.update(beans);
 		}
 	}
 
 	public void delete(Collection<?> beans) {
-		if(execute == null){
+		if(executeStorage == null){
 			db.deleteToDB(beans);
 		}else{
-			execute.delete(beans);
+			executeStorage.delete(beans);
 		}
 	}
 
 	public void saveOrUpdate(Collection<?> beans) {
-		if(execute == null){
+		if(executeStorage == null){
 			db.saveOrUpdateToDB(beans);
 		}else{
-			execute.saveOrUpdate(beans);
+			executeStorage.saveOrUpdate(beans);
 		}
 	}
 
 	public <T> T getById(Class<T> type, Object... params) {
-		if(get == null){
+		if(getStorage == null){
 			return db.getByIdFromDB(type, null, params);
 		}else{
-			return get.getById(type, params);
+			return getStorage.getById(type, params);
 		}
 	}
 
 	public <T> PrimaryKeyValue<T> getById(Class<T> type,
 			Collection<PrimaryKeyParameter> primaryKeyParameters) {
-		if(get == null){
+		if(getStorage == null){
 			return db.getByIdFromDB(type, null, primaryKeyParameters);
 		}else{
-			return get.getById(type, primaryKeyParameters);
+			return getStorage.getById(type, primaryKeyParameters);
 		}
 	}
 
 	public <T> List<T> getByIdList(Class<T> type, Object... params) {
-		if(get == null){
+		if(getStorage == null){
 			return db.getByIdListFromDB(type, null, params);
 		}else{
-			return get.getByIdList(type, params);
+			return getStorage.getByIdList(type, params);
 		}
 	}
 }
