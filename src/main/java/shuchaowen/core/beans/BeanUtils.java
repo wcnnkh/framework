@@ -242,7 +242,7 @@ public class BeanUtils {
 		}
 		return args;
 	}
-
+	
 	public static boolean isTransaction(Class<?> type, Method method) {
 		boolean isTransaction = false;
 		Controller controller = type.getAnnotation(Controller.class);

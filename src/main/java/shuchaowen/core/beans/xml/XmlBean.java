@@ -7,10 +7,11 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.BeanFilter;
@@ -48,7 +49,7 @@ public class XmlBean implements Bean {
 	private String[] names;
 	private final String id;
 	private final boolean singleton;
-	private final List<Class<? extends BeanFilter>> beanFilters = new ArrayList<Class<? extends BeanFilter>>();
+	private final List<String> beanFilters = new ArrayList<String>();
 	// 构造函数的参数
 	private final List<BeanMethodParameter> constructorList = new ArrayList<BeanMethodParameter>();
 	private final List<BeanProperties> propertiesList = new ArrayList<BeanProperties>();
@@ -61,7 +62,6 @@ public class XmlBean implements Bean {
 	private final Class<?>[] constructorParameterTypes;
 	private BeanMethodParameter[] beanMethodParameters;
 
-	@SuppressWarnings("unchecked")
 	public XmlBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode) throws Exception {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
@@ -103,7 +103,7 @@ public class XmlBean implements Bean {
 
 		if (filters != null) {
 			for (String f : filters) {
-				beanFilters.add((Class<? extends BeanFilter>) Class.forName(f));
+				beanFilters.add(f);
 			}
 		}
 
@@ -248,8 +248,9 @@ public class XmlBean implements Bean {
 		if (beanFilters != null && !beanFilters.isEmpty()) {
 			list = new ArrayList<BeanFilter>();
 
-			for (Class<? extends BeanFilter> f : beanFilters) {
-				list.add(beanFactory.get(f));
+			for (String f : beanFilters) {
+				BeanFilter beanFilter = beanFactory.get(f);
+				list.add(beanFilter);
 			}
 		}
 

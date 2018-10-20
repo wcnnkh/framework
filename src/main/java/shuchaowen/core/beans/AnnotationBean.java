@@ -12,10 +12,7 @@ import java.util.List;
 import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.annotaion.Destroy;
 import shuchaowen.core.beans.annotaion.InitMethod;
-import shuchaowen.core.beans.annotaion.Service;
-import shuchaowen.core.beans.annotaion.Transaction;
 import shuchaowen.core.beans.exception.BeansException;
-import shuchaowen.core.http.server.annotation.Controller;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 
@@ -81,24 +78,8 @@ public class AnnotationBean implements Bean {
 			return true;
 		}
 
-		Controller controller = type.getAnnotation(Controller.class);
-		if (controller != null) {
-			return true;
-		}
-
-		Service service = type.getAnnotation(Service.class);
-		if (service != null) {
-			return true;
-		}
-
-		Transaction transaction = type.getAnnotation(Transaction.class);
-		if (transaction != null) {
-			return true;
-		}
-
 		for (Method method : type.getDeclaredMethods()) {
-			Transaction t = method.getAnnotation(Transaction.class);
-			if (t != null) {
+			if(BeanUtils.isTransaction(type, method)){
 				return true;
 			}
 		}
