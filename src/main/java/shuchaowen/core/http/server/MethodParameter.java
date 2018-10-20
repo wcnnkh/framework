@@ -1,8 +1,8 @@
 package shuchaowen.core.http.server;
 
 public final class MethodParameter {
-	private Class<?> type;
-	private String name;
+	private final Class<?> type;
+	private final String name;
 
 	public MethodParameter(Class<?> type, String name) {
 		this.type = type;
@@ -17,5 +17,13 @@ public final class MethodParameter {
 		} else {
 			return request.getParameter(type, name);
 		}
+	}
+
+	public Class<?> getType() {
+		return type;
+	}
+
+	public String getName() {
+		return name;
 	}
 }
