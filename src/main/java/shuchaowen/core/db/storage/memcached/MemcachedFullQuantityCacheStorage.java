@@ -50,7 +50,7 @@ public class MemcachedFullQuantityCacheStorage extends CommonStorage {
 				continue;
 			}
 			loadTagMap.add(ClassUtils.getCGLIBRealClassName(t));
-			new LoadingThread(countDownLatch, this, t).start();
+			new MemcachedLoadingThread(countDownLatch, this, t).start();
 		}
 		try {
 			countDownLatch.await();
@@ -73,7 +73,7 @@ public class MemcachedFullQuantityCacheStorage extends CommonStorage {
 		CountDownLatch countDownLatch = new CountDownLatch(list.size());
 		for (Class<?> t : list) {
 			loadTagMap.add(ClassUtils.getCGLIBRealClassName(t));
-			new LoadingThread(countDownLatch, this, t).start();
+			new MemcachedLoadingThread(countDownLatch, this, t).start();
 		}
 		try {
 			countDownLatch.await();
@@ -82,30 +82,29 @@ public class MemcachedFullQuantityCacheStorage extends CommonStorage {
 		}
 	}
 
-	private void casSaveIndex(String key, String valueKey, Object value) {
+	private void casSaveIndex(String key, Object value) {
 		boolean b = false;
 		while (!b) {
-			CAS<LinkedHashMap<String, Object>> map = memcached.gets(key);
+			CAS<LinkedHashMap<Object, Byte>> map = memcached.gets(key);
 			if (map == null || map.getValue() == null) {
-				LinkedHashMap<String, Object> valueMap = new LinkedHashMap<String, Object>();
-				valueMap.putIfAbsent(valueKey, value);
+				LinkedHashMap<Object, Byte> valueMap = new LinkedHashMap<Object, Byte>();
+				valueMap.putIfAbsent(value, (byte)0);
 				b = memcached.add(key, valueMap);
 			} else {
-				map.getValue().put(valueKey, value);
+				map.getValue().putIfAbsent(value, (byte)0);
 				b = memcached.cas(key, map.getValue(), map.getCas());
 			}
 		}
 	}
 
-	private void casDeleteIndex(String key, String valueKey) {
+	private void casDeleteIndex(String key, Object value) {
 		boolean b = false;
 		while (!b) {
 			CAS<LinkedHashMap<String, Object>> map = memcached.get(key);
-			LinkedHashMap<String, Object> valueMap = map.getValue();
-			if (valueMap != null) {
-				valueMap.remove(valueKey);
+			if(map != null && map.getValue() != null){
+				map.getValue().remove(value);
 			}
-			b = memcached.cas(key, valueMap, map.getCas());
+			b = memcached.cas(key, map.getValue(), map.getCas());
 		}
 	}
 
@@ -126,8 +125,8 @@ public class MemcachedFullQuantityCacheStorage extends CommonStorage {
 			if (i == tableInfo.getPrimaryKeyColumns().length - 1) {
 				continue;
 			}
-
-			casSaveIndex(indexKey, sb.toString(), v);
+			
+			casSaveIndex(indexKey, v);
 		}
 		memcached.add(sb.toString(), CacheUtils.encode(bean));
 	}
@@ -150,7 +149,7 @@ public class MemcachedFullQuantityCacheStorage extends CommonStorage {
 				continue;
 			}
 
-			casDeleteIndex(indexKey, sb.toString());
+			casDeleteIndex(indexKey, v);
 		}
 		memcached.delete(sb.toString());
 	}
@@ -186,7 +185,7 @@ public class MemcachedFullQuantityCacheStorage extends CommonStorage {
 				continue;
 			}
 
-			casSaveIndex(indexKey, sb.toString(), v);
+			casSaveIndex(indexKey, v);
 		}
 		memcached.set(sb.toString(), CacheUtils.encode(bean));
 	}
@@ -332,20 +331,26 @@ public class MemcachedFullQuantityCacheStorage extends CommonStorage {
 			sb.append(SPLIT);
 			sb.append(v);
 		}
-
-		LinkedHashMap<String, Object> map = memcached.get(sb.toString());
+		
+		LinkedHashMap<Object, Byte> map = memcached.get(sb.toString());
 		if (map == null || map.isEmpty()) {
 			return null;
 		}
 
-		Map<String, byte[]> cacheMap = memcached.get(map.keySet());
+		String prefix = sb.append(SPLIT).toString();
+		List<String> keyList = new ArrayList<String>();
+		for(Entry<Object, Byte> entry : map.entrySet()){
+			keyList.add(prefix + entry.getKey().toString());
+		}
+		
+		Map<String, byte[]> cacheMap = memcached.get(keyList);
 		if (cacheMap == null || cacheMap.isEmpty()) {
 			return null;
 		}
 
 		List<T> list = new ArrayList<T>();
-		for (Entry<String, Object> entry : map.entrySet()) {
-			byte[] data = cacheMap.get(entry.getKey());
+		for(String k : keyList){
+			byte[] data = cacheMap.get(k);
 			if (data == null) {
 				continue;
 			}
@@ -356,12 +361,12 @@ public class MemcachedFullQuantityCacheStorage extends CommonStorage {
 	}
 }
 
-class LoadingThread extends Thread {
+class MemcachedLoadingThread extends Thread {
 	private final CountDownLatch countDownLatch;
 	private final MemcachedFullQuantityCacheStorage fullQuantityCacheStorage;
 	private final Class<?> tableClass;
 
-	public LoadingThread(CountDownLatch countDownLatch,
+	public MemcachedLoadingThread(CountDownLatch countDownLatch,
 			MemcachedFullQuantityCacheStorage fullQuantityCacheStorage,
 			Class<?> tableClass) {
 		this.countDownLatch = countDownLatch;
