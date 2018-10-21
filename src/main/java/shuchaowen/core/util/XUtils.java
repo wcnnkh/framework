@@ -17,7 +17,8 @@ public class XUtils {
 		close(false, closeables);
 	}
 
-	public static void close(final boolean throwException, final AutoCloseable... closeables){
+	public static void close(final boolean throwException,
+			final AutoCloseable... closeables) {
 		if (closeables != null) {
 			for (AutoCloseable close : closeables) {
 				if (close != null) {
@@ -161,10 +162,13 @@ public class XUtils {
 		return p1 + p2;
 	}
 
-	private static final String INNER_IP_PATTERN = "((192\\.168|172\\.([1][6-9]|[2]\\d|3[01]))" + "(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|"
+	private static final String INNER_IP_PATTERN = "((192\\.168|172\\.([1][6-9]|[2]\\d|3[01]))"
+			+ "(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|"
 			+ "^(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})";
+
 	/**
 	 * 判断是否是内网IP
+	 * 
 	 * @param ip
 	 * @return
 	 */
@@ -173,8 +177,23 @@ public class XUtils {
 		Matcher matcher = p.matcher(ip);
 		return matcher.find();
 	}
-	
-	
+
+	/**
+	 * 求最大公约数
+	 * 更相减损法
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static int gcd(int a, int b) {
+		while (a != b) {
+			if (a > b)
+				a -= b;
+			else
+				b -= a;
+		}
+		return a;
+	}
 }
 
 class AutoCloseableException extends RuntimeException {
