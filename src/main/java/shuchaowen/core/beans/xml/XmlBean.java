@@ -7,17 +7,15 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.cglib.proxy.Enhancer;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.BeanFilter;
 import shuchaowen.core.beans.BeanMethodInterceptor;
-import shuchaowen.core.beans.BeanMethodParameter;
-import shuchaowen.core.beans.BeanProperties;
+import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.BeanUtils;
 import shuchaowen.core.beans.PropertiesFactory;
 import shuchaowen.core.beans.annotaion.Service;
@@ -51,8 +49,8 @@ public class XmlBean implements Bean {
 	private final boolean singleton;
 	private final List<String> beanFilters = new ArrayList<String>();
 	// 构造函数的参数
-	private final List<BeanMethodParameter> constructorList = new ArrayList<BeanMethodParameter>();
-	private final List<BeanProperties> propertiesList = new ArrayList<BeanProperties>();
+	private final List<BeanParameter> constructorList = new ArrayList<BeanParameter>();
+	private final List<BeanParameter> propertiesList = new ArrayList<BeanParameter>();
 	private final List<XmlBeanMethodInfo> initMethodList = new ArrayList<XmlBeanMethodInfo>();
 	private final List<XmlBeanMethodInfo> destroyMethodList = new ArrayList<XmlBeanMethodInfo>();
 	private XmlBeanMethodInfo factoryMethodInfo;
@@ -60,7 +58,7 @@ public class XmlBean implements Bean {
 
 	private final Constructor<?> constructor;
 	private final Class<?>[] constructorParameterTypes;
-	private BeanMethodParameter[] beanMethodParameters;
+	private BeanParameter[] beanMethodParameters;
 
 	public XmlBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode) throws Exception {
 		this.beanFactory = beanFactory;
@@ -116,12 +114,11 @@ public class XmlBean implements Bean {
 				if(refNode != null){
 					String v = refNode.getNodeValue();
 					if(!StringUtils.isNull(v)){
-						constructorList.addAll(propertiesFactory.getBeanMethodParameterList(v));
+						constructorList.addAll(propertiesFactory.getBeanParameterList(v));
 					}
 				}
 				
-				XmlBeanParameters xmlBeanParameters = new XmlBeanParameters(n);
-				List<BeanMethodParameter> list = xmlBeanParameters.getParameters();
+				List<BeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
 				if (list != null) {
 					constructorList.addAll(list);
 				}
@@ -130,12 +127,11 @@ public class XmlBean implements Bean {
 				if(refNode != null){
 					String v = refNode.getNodeValue();
 					if(!StringUtils.isNull(v)){
-						propertiesList.addAll(propertiesFactory.getBeanPropertiesList(v));
+						propertiesList.addAll(propertiesFactory.getBeanParameterList(v));
 					}
 				}
 				
-				XmlBeanProperties xmlBeanParameters = new XmlBeanProperties(n);
-				List<BeanProperties> list = xmlBeanParameters.getProperties();
+				List<BeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
 				if (list != null) {
 					propertiesList.addAll(list);
 				}
@@ -163,7 +159,7 @@ public class XmlBean implements Bean {
 			return getConstructorByParameterTypes();
 		} else {
 			for (Constructor<?> constructor : type.getDeclaredConstructors()) {
-				BeanMethodParameter[] beanMethodParameters = BeanUtils.sortParameters(constructor, constructorList);
+				BeanParameter[] beanMethodParameters = BeanUtils.sortParameters(constructor, constructorList);
 				if (beanMethodParameters != null) {
 					this.beanMethodParameters = beanMethodParameters;
 					constructor.setAccessible(true);
@@ -275,25 +271,11 @@ public class XmlBean implements Bean {
 			return;
 		}
 		
-		for (BeanProperties beanProperties : propertiesList) {
+		for (BeanParameter beanProperties : propertiesList) {
 			ClassInfo classInfo = ClassUtils.getClassInfo(type);
 			FieldInfo fieldInfo = classInfo.getFieldInfo(beanProperties.getName());
 			if (fieldInfo != null) {
-				Object value = null;
-				switch (beanProperties.getType()) {
-				case value:
-					value = StringUtils.conversion(beanProperties.getValue(), fieldInfo.getType());
-					break;
-				case ref:
-					value = beanFactory.get(beanProperties.getValue());
-					break;
-				case property:
-					value = propertiesFactory.getProperties(beanProperties.getValue(), fieldInfo.getType());
-					break;
-				default:
-					break;
-				}
-				
+				Object value = beanProperties.parseValue(beanFactory, propertiesFactory, fieldInfo.getType());
 				fieldInfo.set(bean, value);
 			}
 		}

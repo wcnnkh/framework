@@ -6,12 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import shuchaowen.core.beans.BeanFactory;
-import shuchaowen.core.beans.BeanProperties;
-import shuchaowen.core.beans.EParameterType;
+import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.PropertiesFactory;
 import shuchaowen.core.exception.KeyAlreadyExistsException;
 import shuchaowen.core.util.ConfigUtils;
@@ -25,19 +24,22 @@ public class XmlProperties {
 	private static final String PREFIX_ATTR_KEY = "prefix";
 	
 	public static final String PARAMETER_TAG_NAME = "parameter";
-	private static final String NAME_KEY = "name";
-	private static final String REFERENCE_KEY ="ref";
-	private static final String PROPERTY_KEY = "property";
-	private static final String VALUE_KEY = "value";
 	
 	private Properties properties;
 	private String id;
 	private String charsetName;
 	private String prefix;
-	private Map<String, BeanProperties> otherPropertiesMap = new HashMap<String, BeanProperties>();
+	private Map<String, BeanParameter> otherPropertiesMap = new HashMap<String, BeanParameter>();
+	private Map<String, String> attrMap = new HashMap<String, String>();
 	
-	public XmlProperties(Node node){
+	public XmlProperties(Node node) throws ClassNotFoundException{
 		if(node.getAttributes() != null){
+			NamedNodeMap namedNodeMap = node.getAttributes();
+			for(int i=0; i<namedNodeMap.getLength(); i++){
+				Node attrNode = namedNodeMap.item(i);
+				attrMap.put(attrNode.getNodeName(), attrNode.getNodeValue());
+			}
+			
 			Node fileNode = node.getAttributes().getNamedItem(FILE_ATTR_KEY);
 			Node idNode = node.getAttributes().getNamedItem(ID_ATTR_KEY);
 			Node charsetNode = node.getAttributes().getNamedItem(CHARSET_ATTR_KEY);
@@ -64,42 +66,12 @@ public class XmlProperties {
 			}
 		}
 		
-		NodeList nodeList = node.getChildNodes();
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Node nRoot = nodeList.item(i);
-			if (nRoot.getNodeName().equals(PARAMETER_TAG_NAME)) {
-				if(nRoot.getAttributes() == null){
-					continue;
-				}
-				
-				Node nameNode = nRoot.getAttributes().getNamedItem(NAME_KEY);
-				Node refNode = nRoot.getAttributes().getNamedItem(REFERENCE_KEY);
-				Node valueNode = nRoot.getAttributes().getNamedItem(VALUE_KEY);
-				Node propertyNode = nRoot.getAttributes().getNamedItem(PROPERTY_KEY);
-				
-				String name = nameNode == null? null:nameNode.getNodeValue();
-				String ref = refNode == null? null:refNode.getNodeValue();
-				String value = valueNode == null? null:valueNode.getNodeValue();
-				String property = propertyNode == null? null:propertyNode.getNodeValue();
-				
-				BeanProperties parameter;
-				if(!StringUtils.isNull(ref)){
-					parameter = new BeanProperties(EParameterType.ref, name, value);
-				}if(!StringUtils.isNull(property)){
-					parameter = new BeanProperties(EParameterType.property, name, property);
-				}else{
-					if(StringUtils.isNull(value)){
-						value = nRoot.getNodeValue();
-					}
-					parameter = new BeanProperties(EParameterType.value, name, value);
-				}
-				
-				if(otherPropertiesMap.containsKey(parameter.getName())){
-					throw new KeyAlreadyExistsException(parameter.getName());
-				}
-				
-				otherPropertiesMap.put(parameter.getName(), parameter);
+		for(BeanParameter beanParameter : XmlBeanUtils.parseBeanParameterList(node)){
+			if(otherPropertiesMap.containsKey(beanParameter.getName())){
+				throw new KeyAlreadyExistsException(beanParameter.getName());
 			}
+			
+			otherPropertiesMap.put(beanParameter.getName(), beanParameter);
 		}
 	}
 
@@ -115,7 +87,7 @@ public class XmlProperties {
 		return prefix;
 	}
 
-	public Map<String, BeanProperties> getOtherPropertiesMap() {
+	public Map<String, BeanParameter> getOtherPropertiesMap() {
 		return otherPropertiesMap;
 	}
 	
@@ -129,22 +101,15 @@ public class XmlProperties {
 		}
 		
 		if(v == null){
-			BeanProperties beanProperties = otherPropertiesMap.get(name);
-			if(beanProperties != null){
-				switch (beanProperties.getType()) {
-				case value:
-					v = StringUtils.conversion(beanProperties.getValue(), type);
-					break;
-				case ref:
-					v = beanFactory.get(beanProperties.getValue());
-				case property:
-					v = propertiesFactory.getProperties(name, type);
-				default:
-					break;
-				}
-			}
+			BeanParameter beanProperties = otherPropertiesMap.get(name).clone();
+			beanProperties.setParameterType(type);
+			v = beanProperties.parseValue(beanFactory, propertiesFactory);
 		}
 		return v;
+	}
+
+	public Map<String, String> getAttrMap() {
+		return attrMap;
 	}
 }
 	

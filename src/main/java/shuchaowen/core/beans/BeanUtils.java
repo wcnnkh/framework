@@ -172,8 +172,8 @@ public class BeanUtils {
 	 * @param beanMethodParameters
 	 * @return
 	 */
-	public static BeanMethodParameter[] sortParameters(Executable executable,
-			List<BeanMethodParameter> beanMethodParameters) {
+	public static BeanParameter[] sortParameters(Executable executable,
+			List<BeanParameter> beanMethodParameters) {
 		if (executable.getParameterCount() != beanMethodParameters.size()) {
 			return null;
 		}
@@ -185,11 +185,11 @@ public class BeanUtils {
 			paramNames = ClassUtils.getParameterName((Method) executable);
 		}
 
-		BeanMethodParameter[] methodParameters = new BeanMethodParameter[beanMethodParameters.size()];
+		BeanParameter[] methodParameters = new BeanParameter[beanMethodParameters.size()];
 		Class<?>[] oldTypes = executable.getParameterTypes();
 		Class<?>[] types = new Class<?>[beanMethodParameters.size()];
 		for (int i = 0; i < beanMethodParameters.size(); i++) {
-			BeanMethodParameter beanMethodParameter = beanMethodParameters.get(i).clone();
+			BeanParameter beanMethodParameter = beanMethodParameters.get(i).clone();
 			if (!StringUtils.isNull(beanMethodParameter.getName())) {
 				for (int a = 0; a < paramNames.length; a++) {
 					if (paramNames[a].equals(beanMethodParameter.getName())) {
@@ -219,26 +219,12 @@ public class BeanUtils {
 		return find ? methodParameters : null;
 	}
 
-	public static Object[] getBeanMethodParameterArgs(BeanMethodParameter[] beanMethodParameters,
+	public static Object[] getBeanMethodParameterArgs(BeanParameter[] beanParameters,
 			BeanFactory beanFactory, PropertiesFactory propertiesFactory) throws Exception {
-		Object[] args = new Object[beanMethodParameters.length];
+		Object[] args = new Object[beanParameters.length];
 		for (int i = 0; i < args.length; i++) {
-			BeanMethodParameter beanConstructorParameter = beanMethodParameters[i];
-			switch (beanConstructorParameter.getType()) {
-			case value:
-				args[i] = StringUtils.conversion(beanConstructorParameter.getValue(),
-						beanConstructorParameter.getParameterType());
-				break;
-			case ref:
-				args[i] = beanFactory.get(beanConstructorParameter.getValue());
-				break;
-			case property:
-				args[i] = propertiesFactory.getProperties(beanConstructorParameter.getValue(),
-						beanConstructorParameter.getParameterType());
-				break;
-			default:
-				break;
-			}
+			BeanParameter beanParameter = beanParameters[i];
+			args[i] = beanParameter.parseValue(beanFactory, propertiesFactory);
 		}
 		return args;
 	}

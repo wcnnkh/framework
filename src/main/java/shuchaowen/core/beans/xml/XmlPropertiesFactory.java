@@ -7,8 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import shuchaowen.core.beans.BeanFactory;
-import shuchaowen.core.beans.BeanMethodParameter;
-import shuchaowen.core.beans.BeanProperties;
+import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.EParameterType;
 import shuchaowen.core.beans.PropertiesFactory;
 import shuchaowen.core.exception.KeyAlreadyExistsException;
@@ -22,7 +21,7 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 	private final BeanFactory beanFactory;
 	private final Map<String, XmlProperties> propertiesMap = new HashMap<String, XmlProperties>();
 	private final Map<String, Object> propertiesValueMap = new HashMap<String, Object>();
-	private final Map<String, BeanProperties> xmlPropertiesMap = new HashMap<String, BeanProperties>();
+	private final Map<String, BeanParameter> xmlPropertiesMap = new HashMap<String, BeanParameter>();
 
 	public XmlPropertiesFactory(BeanFactory beanFactory, List<XmlProperties> properties) {
 		this.beanFactory = beanFactory;
@@ -44,7 +43,7 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 					}
 				}
 
-				for (BeanProperties beanProperties : p.getOtherPropertiesMap().values()) {
+				for (BeanParameter beanProperties : p.getOtherPropertiesMap().values()) {
 					String key = prefix + beanProperties.getName();
 					if (xmlPropertiesMap.containsKey(key)) {
 						throw new KeyAlreadyExistsException(key);
@@ -56,16 +55,16 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 		}
 	}
 	
-	public List<BeanProperties> getBeanPropertiesList(String name){
+	public List<BeanParameter> getBeanParameterList(String name){
 		XmlProperties xmlProperties = propertiesMap.get(name);
 		if(xmlProperties == null){
 			return null;
 		}
 		
-		List<BeanProperties> list = new ArrayList<BeanProperties>();
+		List<BeanParameter> list = new ArrayList<BeanParameter>();
 		if(xmlProperties.getProperties() != null){
 			for(Entry<Object, Object> entry : xmlProperties.getProperties().entrySet()){
-				list.add(new BeanProperties(EParameterType.value, entry.getKey().toString(), entry.getValue().toString()));
+				list.add(new BeanParameter(EParameterType.value, null, entry.getKey().toString(), entry.getValue().toString(), xmlProperties.getAttrMap()));
 			}
 		}
 		
@@ -73,22 +72,20 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 		return list;
 	}
 	
-	public List<BeanMethodParameter> getBeanMethodParameterList(String name){
+	public List<BeanParameter> getBeanMethodParameterList(String name){
 		XmlProperties xmlProperties = propertiesMap.get(name);
 		if(xmlProperties == null){
 			return null;
 		}
 		
-		List<BeanMethodParameter> list = new ArrayList<BeanMethodParameter>();
+		List<BeanParameter> list = new ArrayList<BeanParameter>();
 		if(xmlProperties.getProperties() != null){
 			for(Entry<Object, Object> entry : xmlProperties.getProperties().entrySet()){
-				list.add(new BeanMethodParameter(EParameterType.value, null, entry.getKey().toString(), entry.getValue().toString()));
+				list.add(new BeanParameter(EParameterType.value, null, entry.getKey().toString(), entry.getValue().toString(), xmlProperties.getAttrMap()));
 			}
 		}
 		
-		for(Entry<String, BeanProperties> entry : xmlProperties.getOtherPropertiesMap().entrySet()){
-			list.add(new BeanMethodParameter(entry.getValue().getType(), null, entry.getKey(), entry.getValue().getValue()));
-		}
+		list.addAll(xmlProperties.getOtherPropertiesMap().values());
 		return list;
 	}
 
@@ -108,20 +105,8 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 		} else if (propertiesValueMap.containsKey(name)) {
 			return StringUtils.conversion(propertiesValueMap.get(name).toString(), type);
 		}else if(xmlPropertiesMap.containsKey(name)){
-			BeanProperties beanProperties = xmlPropertiesMap.get(name);
-			Object v = null;
-			switch (beanProperties.getType()) {
-			case value:
-				v = StringUtils.conversion(beanProperties.getValue(), type);
-				break;
-			case ref:
-				v = beanFactory.get(type);
-			case property:
-				v = getProperties(name, type);
-			default:
-				break;
-			}
-			return (T) v;
+			BeanParameter beanProperties = xmlPropertiesMap.get(name);
+			return (T) beanProperties.parseValue(beanFactory, this, type);
 		}
 		
 		String v = ConfigUtils.getSystemProperty(name);
