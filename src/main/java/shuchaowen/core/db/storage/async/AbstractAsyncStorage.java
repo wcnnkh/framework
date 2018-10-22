@@ -1,4 +1,4 @@
-package shuchaowen.core.db.storage;
+package shuchaowen.core.db.storage.async;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,10 +8,12 @@ import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
 import shuchaowen.core.db.sql.SQL;
+import shuchaowen.core.db.storage.EOperationType;
+import shuchaowen.core.db.storage.ExecuteInfo;
+import shuchaowen.core.db.storage.Storage;
 import shuchaowen.core.util.Logger;
 
 /**
- * 缓存热点数据
  * @author shuchaowen
  *
  */

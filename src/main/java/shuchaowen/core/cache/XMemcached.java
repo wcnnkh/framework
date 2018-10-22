@@ -1,19 +1,65 @@
 package shuchaowen.core.cache;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeoutException;
 
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
+import net.rubyeye.xmemcached.MemcachedClientBuilder;
+import net.rubyeye.xmemcached.XMemcachedClientBuilder;
+import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.core.util.StringUtils;
 
 public class XMemcached implements Memcached{
 	private final MemcachedClient memcachedClient;
 	private final boolean abnormalInterruption;
+	
+	
+	public XMemcached() throws IOException{
+		this("localhost:11211", false);
+	}
+	
+	public XMemcached(boolean abnormalInterruption) throws IOException{
+		this("localhost:11211", abnormalInterruption);
+	}
+	
+	public XMemcached(String hosts, boolean abnormalInterruption) throws IOException{
+		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
+		String[] arr = StringUtils.commonSplit(hosts);
+		for(String a : arr){
+			InetSocketAddress address = new InetSocketAddress(a.split(":")[0], Integer.parseInt(a.split(":")[1]));
+			addresses.add(address);
+		}
+	
+		MemcachedClientBuilder builder = new XMemcachedClientBuilder(addresses);
+		// 宕机报警
+		builder.setFailureMode(true);
+		// 使用二进制文件
+		builder.setCommandFactory(new BinaryCommandFactory());
+		/*
+		 * * 设置连接池大小，即客户端个数 In a high concurrent enviroment,you may want to pool
+		 * memcached clients. But a xmemcached client has to start a reactor
+		 * thread and some thread pools, if you create too many clients,the cost
+		 * is very large. Xmemcached supports connection pool instreadof client
+		 * pool. you can create more connections to one or more memcached
+		 * servers, and these connections share the same reactor and thread
+		 * pools, it will reduce the cost of system. 默认的pool
+		 * size是1。设置这一数值不一定能提高性能，请依据你的项目的测试结果为准。初步的测试表明只有在大并发下才有提升。
+		 * 设置连接池的一个不良后果就是，同一个memcached的连接之间的数据更新并非同步的
+		 * 因此你的应用需要自己保证数据更新的原子性（采用CAS或者数据之间毫无关联）。
+		 */
+		this.memcachedClient = builder.build();
+		this.abnormalInterruption = abnormalInterruption;
+	}
 	
 	/**
 	 * @param memcachedClient

@@ -284,6 +284,10 @@ public abstract class AbstractDB implements ConnectionPool{
 	
 	public <T> PrimaryKeyValue<T> getByIdFromDB(Class<T> type,
 			String tableName, Collection<PrimaryKeyParameter> primaryKeyParameters) {
+		if(primaryKeyParameters == null || primaryKeyParameters.isEmpty()){
+			return new PrimaryKeyValue<T>();
+		}
+		
 		TableInfo tableInfo = DB.getTableInfo(type);
 		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
 		SQL sql = getSqlFormat().toSelectINId(tableInfo, tName, primaryKeyParameters);
@@ -320,19 +324,19 @@ public abstract class AbstractDB implements ConnectionPool{
 		execute(getSaveOrUpdateSqlList(beans));
 	}
 	
-	public void forceSaveToDB(Collection<?> beans){
+	public void forceSave(Collection<?> beans){
 		DBUtils.execute(this, getSaveSqlList(beans));
 	}
 	
-	public void forceUpdateToDB(Collection<?> beans){
+	public void forceUpdate(Collection<?> beans){
 		DBUtils.execute(this, getUpdateSqlList(beans));
 	}
 	
-	public void forceDeleteToDB(Collection<?> beans){
+	public void forceDelete(Collection<?> beans){
 		DBUtils.execute(this, getDeleteSqlList(beans));
 	}
 	
-	public void forceSaveOrUpdateToDB(Collection<?> beans){
+	public void forceSaveOrUpdate(Collection<?> beans){
 		DBUtils.execute(this, getSaveOrUpdateSqlList(beans));
 	}
 }

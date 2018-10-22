@@ -2,23 +2,22 @@ package shuchaowen.core.db.storage.async;
 
 import java.io.IOException;
 
-import shuchaowen.core.db.AbstractDB;
-import shuchaowen.core.db.storage.AbstractAsyncStorage;
-import shuchaowen.core.db.storage.ExecuteInfo;
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.util.IOUtils;
-
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+
+import shuchaowen.core.db.AbstractDB;
+import shuchaowen.core.db.storage.ExecuteInfo;
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.core.util.IOUtils;
 
 /**
  * 基于rabbitMQ实现的异步存盘
  * @author shuchaowen
  *
  */
-public class RubbitMQAsyncStorage extends AbstractAsyncStorage {
+public final class RubbitMQAsyncStorage extends AbstractAsyncStorage {
 	private Channel channel;
 	private String queueName;
 	

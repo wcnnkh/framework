@@ -6,6 +6,7 @@ import java.util.Map;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 public class RedisByJedisPool implements Redis{
@@ -14,6 +15,19 @@ public class RedisByJedisPool implements Redis{
 	private final JedisPool jedisPool;
 	//发生异常时是否中断
 	private final boolean abnormalInterruption;
+	
+	public RedisByJedisPool(){
+		this(false);
+	}
+	
+	public RedisByJedisPool(boolean abnormalInterruption){
+		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+		jedisPoolConfig.setMaxTotal(512);
+		jedisPoolConfig.setMaxIdle(200);
+		jedisPoolConfig.setTestOnBorrow(true);
+		this.jedisPool = new JedisPool(jedisPoolConfig , "localhost");
+		this.abnormalInterruption = abnormalInterruption;
+	}
 	
 	/**
 	 * @param jedisPool

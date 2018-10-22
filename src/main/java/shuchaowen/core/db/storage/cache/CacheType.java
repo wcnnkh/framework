@@ -1,4 +1,4 @@
-package shuchaowen.core.db.storage;
+package shuchaowen.core.db.storage.cache;
 
 public enum CacheType {
 	/**
@@ -8,7 +8,7 @@ public enum CacheType {
 	/**
 	 * 延迟加载到缓存，但先加载所有的主键再缓存
 	 */
-	lazy_and_keys,
+	keys,
 	/**
 	 * 保存所有数据到缓存
 	 */

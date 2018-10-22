@@ -7,7 +7,6 @@ import shuchaowen.core.cache.Redis;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.DBUtils;
 import shuchaowen.core.db.sql.SQL;
-import shuchaowen.core.db.storage.AbstractAsyncStorage;
 import shuchaowen.core.db.storage.ExecuteInfo;
 import shuchaowen.core.util.IOUtils;
 import shuchaowen.core.util.RedisQueue;
@@ -18,7 +17,7 @@ import shuchaowen.core.util.RedisQueue;
  * @author shuchaowen
  *
  */
-public class RedisAsyncStorage extends AbstractAsyncStorage {
+public final class RedisAsyncStorage extends AbstractAsyncStorage {
 	private RedisQueue redisQueue;
 	private final boolean sqlDebug;
 

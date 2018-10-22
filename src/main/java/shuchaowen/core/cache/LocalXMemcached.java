@@ -1,4 +1,4 @@
-package shuchaowen.core.db.storage.memcached;
+package shuchaowen.core.cache;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -10,15 +10,17 @@ import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 
-/**
- * 使用xMemcached连接本地memcached
- * @author shuchaowen
- *
- */
-public class LocalXMmecached {
-	private MemcachedClient memcachedClient;
-	
-	public LocalXMmecached() throws IOException{
+public class LocalXMemcached extends XMemcached{
+
+	public LocalXMemcached() throws IOException{
+		super(newLocalXMmecachedClient(), false);
+	}
+
+	public LocalXMemcached(MemcachedClient memcachedClient, boolean abnormalInterruption) {
+		super(memcachedClient, abnormalInterruption);
+	}
+
+	public static MemcachedClient newLocalXMmecachedClient() throws IOException{
 		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
 		InetSocketAddress address = new InetSocketAddress("localhost", 11211);
 		addresses.add(address);
@@ -40,10 +42,6 @@ public class LocalXMmecached {
 		 * 设置连接池的一个不良后果就是，同一个memcached的连接之间的数据更新并非同步的
 		 * 因此你的应用需要自己保证数据更新的原子性（采用CAS或者数据之间毫无关联）。
 		 */
-		this.memcachedClient = builder.build();
-	}
-	
-	public MemcachedClient getMemcachedClient(){
-		return memcachedClient;
+		return builder.build();
 	}
 }

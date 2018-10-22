@@ -6,7 +6,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.DBUtils;
 import shuchaowen.core.db.sql.SQL;
-import shuchaowen.core.db.storage.AbstractAsyncStorage;
 import shuchaowen.core.db.storage.ExecuteInfo;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
@@ -16,7 +15,7 @@ import shuchaowen.core.exception.ShuChaoWenRuntimeException;
  * @author shuchaowen
  *
  */
-public class MemoryAsyncStorage extends AbstractAsyncStorage {
+public final class MemoryAsyncStorage extends AbstractAsyncStorage {
 	private LinkedBlockingQueue<ExecuteInfo> queue = new LinkedBlockingQueue<ExecuteInfo>();
 	private boolean service = true;
 	private volatile boolean logger = true;
