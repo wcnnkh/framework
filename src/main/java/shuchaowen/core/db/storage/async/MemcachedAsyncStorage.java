@@ -3,40 +3,34 @@ package shuchaowen.core.db.storage.async;
 import java.io.IOException;
 import java.util.Collection;
 
-import shuchaowen.core.cache.Redis;
+import shuchaowen.core.cache.Memcached;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.DBUtils;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.storage.AbstractAsyncStorage;
 import shuchaowen.core.db.storage.ExecuteInfo;
 import shuchaowen.core.util.IOUtils;
-import shuchaowen.core.util.RedisQueue;
+import shuchaowen.core.util.MemcachedQueue;
 
-/**
- * 使用redis的队列实现异步存盘,该方案可用于集群
- * 
- * @author shuchaowen
- *
- */
-public class RedisAsyncStorage extends AbstractAsyncStorage {
-	private RedisQueue redisQueue;
+public class MemcachedAsyncStorage extends AbstractAsyncStorage{
+	private MemcachedQueue memcachedQueue;
 	private final boolean sqlDebug;
 
-	public RedisAsyncStorage(AbstractDB db, Redis redis, String queueKey) {
-		this(db, redis, queueKey, true);
+	public MemcachedAsyncStorage(AbstractDB db, Memcached memcached, String queueKey) {
+		this(db, memcached, queueKey, true);
 	}
 
-	public RedisAsyncStorage(AbstractDB db, final Redis redis, final String queueKey, final boolean sqlDebug) {
+	public MemcachedAsyncStorage(AbstractDB db, final Memcached memcached, final String queueKey, final boolean sqlDebug) {
 		super(db);
 		this.sqlDebug = sqlDebug;
-		redisQueue = new RedisQueue(queueKey, redis);
+		memcachedQueue = new MemcachedQueue(queueKey, memcached);
 		new Thread(new Runnable() {
 
 			public void run() {
 				while (!Thread.interrupted()) {
 					try {
 						Thread.sleep(100L);
-						byte[] data = redisQueue.lockRead();
+						byte[] data = memcachedQueue.lockRead();
 						if (data == null) {
 							continue;
 						}
@@ -82,13 +76,13 @@ public class RedisAsyncStorage extends AbstractAsyncStorage {
 		// 这里使用jdk的序列化方式 ，因为不会出现各种没有经历过的问题
 		try {
 			byte[] data = IOUtils.javaObjectToByte(executeInfo);
-			redisQueue.write(data);
+			memcachedQueue.write(data);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public Redis getRedis(){
-		return redisQueue.getRedis();
+	public Memcached getMemcached(){
+		return memcachedQueue.getMemcached();
 	}
 }

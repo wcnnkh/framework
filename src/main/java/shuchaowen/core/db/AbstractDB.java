@@ -319,4 +319,20 @@ public abstract class AbstractDB implements ConnectionPool{
 	public void saveOrUpdateToDB(Collection<?> beans){
 		execute(getSaveOrUpdateSqlList(beans));
 	}
+	
+	public void forceSaveToDB(Collection<?> beans){
+		DBUtils.execute(this, getSaveSqlList(beans));
+	}
+	
+	public void forceUpdateToDB(Collection<?> beans){
+		DBUtils.execute(this, getUpdateSqlList(beans));
+	}
+	
+	public void forceDeleteToDB(Collection<?> beans){
+		DBUtils.execute(this, getDeleteSqlList(beans));
+	}
+	
+	public void forceSaveOrUpdateToDB(Collection<?> beans){
+		DBUtils.execute(this, getSaveOrUpdateSqlList(beans));
+	}
 }
