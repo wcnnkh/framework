@@ -1,5 +1,6 @@
 package shuchaowen.core.db.storage.cache;
 
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.List;
 
@@ -8,20 +9,37 @@ import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
 
-//TODO
+//TODO 还未实现
 public class RedisCache implements Cache{
+	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+	
 	private final Redis redis;
+	private final Charset charset;
 	
 	public RedisCache(Redis redis){
+		this(redis, DEFAULT_CHARSET);
+	}
+	
+	public RedisCache(Redis redis, String charsetName){
+		this.charset = Charset.forName(charsetName);
 		this.redis = redis;
+	}
+	
+	public RedisCache(Redis redis, Charset charset){
+		this.redis = redis;
+		this.charset = charset;
 	}
 	
 	public Redis getRedis() {
 		return redis;
 	}
 
+	public Charset getCharset() {
+		return charset == null? DEFAULT_CHARSET:charset;
+	}
+
 	public void saveBeanAndIndex(Object bean) throws Exception {
-		
+		//TODO 
 	}
 
 	public void updateBeanAndIndex(Object bean) throws Exception {
