@@ -27,29 +27,29 @@ public class MemcachedCache implements Cache{
 		this.memcached = memcached;
 	}
 	
-	private void casSaveIndex(String key, Object value) {
+	private void casSaveIndex(String indexKey, String objectKey) {
 		boolean b = false;
 		while (!b) {
-			CAS<LinkedHashMap<Object, Byte>> map = memcached.gets(key);
+			CAS<LinkedHashMap<String, Byte>> map = memcached.gets(indexKey);
 			if (map == null || map.getValue() == null) {
-				LinkedHashMap<Object, Byte> valueMap = new LinkedHashMap<Object, Byte>();
-				valueMap.putIfAbsent(value, (byte) 0);
-				b = memcached.add(key, valueMap);
+				LinkedHashMap<String, Byte> valueMap = new LinkedHashMap<String, Byte>();
+				valueMap.putIfAbsent(objectKey, (byte) 0);
+				b = memcached.add(indexKey, valueMap);
 			} else {
-				map.getValue().putIfAbsent(value, (byte) 0);
-				b = memcached.cas(key, map.getValue(), map.getCas());
+				map.getValue().putIfAbsent(objectKey, (byte) 0);
+				b = memcached.cas(indexKey, map.getValue(), map.getCas());
 			}
 		}
 	}
 
-	private void casDeleteIndex(String key, Object value) {
+	private void casDeleteIndex(String indexKey, String objectKey) {
 		boolean b = false;
 		while (!b) {
-			CAS<LinkedHashMap<String, Object>> map = memcached.get(key);
+			CAS<LinkedHashMap<String, byte[]>> map = memcached.get(indexKey);
 			if (map != null && map.getValue() != null) {
-				map.getValue().remove(value);
+				map.getValue().remove(objectKey);
 			}
-			b = memcached.cas(key, map.getValue(), map.getCas());
+			b = memcached.cas(indexKey, map.getValue(), map.getCas());
 		}
 	}
 	
@@ -57,20 +57,31 @@ public class MemcachedCache implements Cache{
 		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
 		StringBuilder sb = new StringBuilder();
 		sb.append(tableInfo.getClassInfo().getName());
+		Object v = tableInfo.getPrimaryKeyColumns()[0].getFieldInfo().forceGet(bean);
 		sb.append(SPLIT);
-		sb.append(tableInfo.getPrimaryKeyColumns()[0].getFieldInfo().forceGet(bean));
-		for (int i = 1; i < tableInfo.getPrimaryKeyColumns().length; i++) {
-			String indexKey = sb.toString();
-			Object v = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean);
-			sb.append(SPLIT);
-			sb.append(v);
-			if (i == tableInfo.getPrimaryKeyColumns().length - 1) {
-				continue;
+		sb.append(v);
+		
+		String objectKey;
+		if(tableInfo.getPrimaryKeyColumns().length > 1){
+			String[] indexKeys = new String[tableInfo.getPrimaryKeyColumns().length - 1];
+			for(int i=1; i<tableInfo.getPrimaryKeyColumns().length; i++){
+				if(i <= indexKeys.length){
+					indexKeys[i - 1] = sb.toString();
+				}
+				
+				v = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean);
+				sb.append(SPLIT);
+				sb.append(v);
 			}
-
-			casSaveIndex(indexKey, v);
+			
+			objectKey = sb.toString();
+			for(String indexKey : indexKeys){
+				casSaveIndex(indexKey, objectKey);
+			}
+		}else{
+			objectKey = sb.toString();
 		}
-		memcached.add(sb.toString(), CacheUtils.encode(bean));
+		memcached.add(objectKey, CacheUtils.encode(bean));
 	}
 
 	public void updateBeanAndIndex(Object bean) throws IllegalArgumentException, IllegalAccessException {
@@ -88,18 +99,29 @@ public class MemcachedCache implements Cache{
 		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
 		StringBuilder sb = new StringBuilder();
 		sb.append(tableInfo.getClassInfo().getName());
+		Object v = tableInfo.getPrimaryKeyColumns()[0].getFieldInfo().forceGet(bean);
 		sb.append(SPLIT);
-		sb.append(tableInfo.getPrimaryKeyColumns()[0].getFieldInfo().forceGet(bean));
-		for (int i = 1; i < tableInfo.getPrimaryKeyColumns().length; i++) {
-			String indexKey = sb.toString();
-			Object v = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean);
-			sb.append(SPLIT);
-			sb.append(v);
-			if (i == tableInfo.getPrimaryKeyColumns().length - 1) {
-				continue;
+		sb.append(v);
+		
+		String objectKey;
+		if(tableInfo.getPrimaryKeyColumns().length > 1){
+			String[] indexKeys = new String[tableInfo.getPrimaryKeyColumns().length - 1];
+			for(int i=1; i<tableInfo.getPrimaryKeyColumns().length; i++){
+				if(i <= indexKeys.length){
+					indexKeys[i - 1] = sb.toString();
+				}
+				
+				v = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean);
+				sb.append(SPLIT);
+				sb.append(v);
 			}
-
-			casDeleteIndex(indexKey, v);
+			
+			objectKey = sb.toString();
+			for(String indexKey : indexKeys){
+				casDeleteIndex(indexKey, objectKey);
+			}
+		}else{
+			objectKey = sb.toString();
 		}
 		memcached.delete(sb.toString());
 	}
@@ -108,20 +130,31 @@ public class MemcachedCache implements Cache{
 		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
 		StringBuilder sb = new StringBuilder();
 		sb.append(tableInfo.getClassInfo().getName());
+		Object v = tableInfo.getPrimaryKeyColumns()[0].getFieldInfo().forceGet(bean);
 		sb.append(SPLIT);
-		sb.append(tableInfo.getPrimaryKeyColumns()[0].getFieldInfo().forceGet(bean));
-		for (int i = 1; i < tableInfo.getPrimaryKeyColumns().length; i++) {
-			String indexKey = sb.toString();
-			Object v = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean);
-			sb.append(SPLIT);
-			sb.append(v);
-			if (i == tableInfo.getPrimaryKeyColumns().length - 1) {
-				continue;
+		sb.append(v);
+		
+		String objectKey;
+		if(tableInfo.getPrimaryKeyColumns().length > 1){
+			String[] indexKeys = new String[tableInfo.getPrimaryKeyColumns().length - 1];
+			for(int i=1; i<tableInfo.getPrimaryKeyColumns().length; i++){
+				if(i <= indexKeys.length){
+					indexKeys[i - 1] = sb.toString();
+				}
+				
+				v = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean);
+				sb.append(SPLIT);
+				sb.append(v);
 			}
-
-			casSaveIndex(indexKey, v);
+			
+			objectKey = sb.toString();
+			for(String indexKey : indexKeys){
+				casSaveIndex(indexKey, objectKey);
+			}
+		}else{
+			objectKey = sb.toString();
 		}
-		memcached.set(sb.toString(), CacheUtils.encode(bean));
+		memcached.set(objectKey, CacheUtils.encode(bean));
 	}
 
 	public void saveBean(Object bean, int exp) throws IllegalArgumentException, IllegalAccessException {
@@ -296,25 +329,15 @@ public class MemcachedCache implements Cache{
 			sb.append(v);
 		}
 
-		LinkedHashMap<Object, Byte> map = memcached.get(sb.toString());
+		LinkedHashMap<String, Byte> map = memcached.get(sb.toString());
 		if (map == null || map.isEmpty()) {
 			return null;
 		}
 
-		String prefix = sb.append(SPLIT).toString();
-		List<String> keyList = new ArrayList<String>();
-		for (Entry<Object, Byte> entry : map.entrySet()) {
-			keyList.add(prefix + entry.getKey().toString());
-		}
-
-		Map<String, byte[]> cacheMap = memcached.get(keyList);
-		if (cacheMap == null || cacheMap.isEmpty()) {
-			return null;
-		}
-
+		Map<String, byte[]> cacheMap = memcached.get(map.keySet());
 		List<T> list = new ArrayList<T>();
-		for (String k : keyList) {
-			byte[] data = cacheMap.get(k);
+		for (Entry<String, Byte> entry : map.entrySet()) {
+			byte[] data = cacheMap.get(entry.getKey());
 			if (data == null) {
 				continue;
 			}

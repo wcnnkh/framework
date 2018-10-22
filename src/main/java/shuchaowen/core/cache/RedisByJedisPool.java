@@ -3,6 +3,7 @@ package shuchaowen.core.cache;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -825,6 +826,24 @@ public class RedisByJedisPool implements Redis{
 		return false;
 	}
 	
+	public boolean set(byte[] key, byte[] value, byte[] nxxx, byte[] expx, long time) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return SUCCESS.equals(jedis.set(key, value, nxxx, expx, time));
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return false;
+	}
+	
 	public Object eval(String script, List<String> keys, List<String> args){
 		Jedis jedis = jedisPool.getResource();
 		try {
@@ -883,6 +902,114 @@ public class RedisByJedisPool implements Redis{
 		Jedis jedis = jedisPool.getResource();
 		try {
 			return jedis.lpop(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+	
+	public Long zadd(byte[] key, double score, byte[] member) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.zadd(key, score, member);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+	
+	public Long sadd(byte[] key, byte[] ...members) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.sadd(key, members);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+	
+	public Long srem(byte[] key, byte[] ...member) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.srem(key, member);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+	
+	public Set<byte[]> smembers(byte[] key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.smembers(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Boolean sIsMember(byte[] key, byte[] member) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.sismember(key, member);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+	
+	public List<byte[]> hmget(byte[] key, byte[] ...fields) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.hmget(key, fields);
 		} catch (Exception e) {
 			if(abnormalInterruption){
 				throw new ShuChaoWenRuntimeException(e);
