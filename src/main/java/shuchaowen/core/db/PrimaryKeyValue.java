@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class PrimaryKeyValue<T> implements Serializable{
+public final class PrimaryKeyValue<T> implements Serializable {
 	private static final long serialVersionUID = 4587200583501849080L;
 	private Map<String, T> dataMap;
 
@@ -17,38 +17,40 @@ public final class PrimaryKeyValue<T> implements Serializable{
 		}
 		return sb.toString();
 	}
-	
+
 	public void put(Object[] primaryKey, T value) {
-		if(dataMap == null){
+		if (dataMap == null) {
 			dataMap = new HashMap<String, T>();
 		}
 		dataMap.put(getKey(primaryKey), value);
 	}
 
 	public void put(PrimaryKeyParameter primaryKey, T value) {
-		if(dataMap == null){
+		if (dataMap == null) {
 			dataMap = new HashMap<String, T>();
 		}
 		dataMap.put(getKey(primaryKey.getParams()), value);
 	}
 
 	public T get(Object... primaryKey) {
-		return dataMap == null? null:dataMap.get(getKey(primaryKey));
+		return dataMap == null ? null : dataMap.get(getKey(primaryKey));
 	}
-	
+
 	public T get(PrimaryKeyParameter primaryKey) {
-		return dataMap == null? null:dataMap.get(getKey(primaryKey.getParams()));
+		return dataMap == null ? null : dataMap.get(getKey(primaryKey.getParams()));
 	}
-	
-	public Collection<T> values(){
-		return dataMap == null? null:dataMap.values();
+
+	public Collection<T> values() {
+		return dataMap == null ? null : dataMap.values();
 	}
-	
-	public void putAll(PrimaryKeyValue<T> primaryKeyValue){
-		if(dataMap == null){
-			dataMap = new HashMap<String, T>();
+
+	public void putAll(PrimaryKeyValue<T> primaryKeyValue) {
+		if (primaryKeyValue.dataMap != null) {
+			if (dataMap == null) {
+				dataMap = new HashMap<String, T>();
+			}
+
+			dataMap.putAll(primaryKeyValue.dataMap);
 		}
-		
-		dataMap.putAll(primaryKeyValue.dataMap);
 	}
 }
