@@ -42,7 +42,7 @@ public class MemcachedLock {
 	 * @return 返回值是可以忽略的，如果返回fasle可能是key已经失效或已经解锁
 	 */
 	public boolean unLock() {
-		CAS<String> cas = memcached.get(key);
+		CAS<String> cas = memcached.gets(key);
 		if (id.equals(cas.getValue())) {
 			return memcached.delete(key, cas.getCas(), 1000L);
 		}
