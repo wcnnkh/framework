@@ -27,12 +27,12 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 		this.beanFactory = beanFactory;
 		if (properties != null) {
 			for (XmlProperties p : properties) {
-				if(!StringUtils.isNull(p.getId())){
+				if (!StringUtils.isNull(p.getId())) {
 					propertiesMap.put(p.getId(), p);
 				}
 
 				String prefix = (p.getPrefix() == null ? "" : p.getPrefix());
-				if(p.getProperties() != null){
+				if (p.getProperties() != null) {
 					for (Entry<Object, Object> entry : p.getProperties().entrySet()) {
 						String key = prefix + entry.getKey();
 						if (propertiesValueMap.containsKey(key)) {
@@ -54,37 +54,21 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 			}
 		}
 	}
-	
-	public List<BeanParameter> getBeanParameterList(String name){
+
+	public List<BeanParameter> getBeanParameterList(String name) {
 		XmlProperties xmlProperties = propertiesMap.get(name);
-		if(xmlProperties == null){
+		if (xmlProperties == null) {
 			return null;
 		}
-		
+
 		List<BeanParameter> list = new ArrayList<BeanParameter>();
-		if(xmlProperties.getProperties() != null){
-			for(Entry<Object, Object> entry : xmlProperties.getProperties().entrySet()){
-				list.add(new BeanParameter(EParameterType.value, null, entry.getKey().toString(), entry.getValue().toString(), xmlProperties.getAttrMap()));
+		if (xmlProperties.getProperties() != null) {
+			for (Entry<Object, Object> entry : xmlProperties.getProperties().entrySet()) {
+				list.add(new BeanParameter(EParameterType.value, null, entry.getKey().toString(),
+						entry.getValue().toString(), xmlProperties.getAttrMap()));
 			}
 		}
-		
-		list.addAll(xmlProperties.getOtherPropertiesMap().values());
-		return list;
-	}
-	
-	public List<BeanParameter> getBeanMethodParameterList(String name){
-		XmlProperties xmlProperties = propertiesMap.get(name);
-		if(xmlProperties == null){
-			return null;
-		}
-		
-		List<BeanParameter> list = new ArrayList<BeanParameter>();
-		if(xmlProperties.getProperties() != null){
-			for(Entry<Object, Object> entry : xmlProperties.getProperties().entrySet()){
-				list.add(new BeanParameter(EParameterType.value, null, entry.getKey().toString(), entry.getValue().toString(), xmlProperties.getAttrMap()));
-			}
-		}
-		
+
 		list.addAll(xmlProperties.getOtherPropertiesMap().values());
 		return list;
 	}
@@ -92,10 +76,10 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 	@SuppressWarnings("unchecked")
 	public <T> T getProperties(String name, Class<T> type) throws Exception {
 		if (propertiesMap.containsKey(name)) {
+			XmlProperties xmlProperties = propertiesMap.get(name);
 			ClassInfo fieldClassInfo = ClassUtils.getClassInfo(type);
 			Object obj = beanFactory.get(type);
 			for (FieldInfo fieldInfo : fieldClassInfo.getFieldMap().values()) {
-				XmlProperties xmlProperties = propertiesMap.get(name);
 				Object v = xmlProperties.getValue(beanFactory, this, fieldInfo.getName(), fieldInfo.getType());
 				if (v != null) {
 					fieldInfo.set(obj, v);
@@ -104,13 +88,13 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 			return (T) obj;
 		} else if (propertiesValueMap.containsKey(name)) {
 			return StringUtils.conversion(propertiesValueMap.get(name).toString(), type);
-		}else if(xmlPropertiesMap.containsKey(name)){
+		} else if (xmlPropertiesMap.containsKey(name)) {
 			BeanParameter beanProperties = xmlPropertiesMap.get(name);
 			return (T) beanProperties.parseValue(beanFactory, this, type);
 		}
-		
+
 		String v = ConfigUtils.getSystemProperty(name);
-		if(v != null){
+		if (v != null) {
 			return StringUtils.conversion(v, type);
 		}
 		return null;
