@@ -23,11 +23,21 @@ public class XMemcached implements Memcached{
 	private final MemcachedClient memcachedClient;
 	private final boolean abnormalInterruption;
 	
-	
+	/**
+	 * 获取一个本地的memcached对象
+	 * localhost:11211
+	 * @throws IOException
+	 */
 	public XMemcached() throws IOException{
 		this("localhost:11211", false);
 	}
 	
+	/**
+	 * 获取一个本地的memcached对象
+	 * localhost:11211
+	 * @param abnormalInterruption
+	 * @throws IOException
+	 */
 	public XMemcached(boolean abnormalInterruption) throws IOException{
 		this("localhost:11211", abnormalInterruption);
 	}

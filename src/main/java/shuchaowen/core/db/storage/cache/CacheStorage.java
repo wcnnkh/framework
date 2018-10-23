@@ -21,7 +21,7 @@ import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.XTime;
 
 public class CacheStorage implements Storage {
-	private static final int DATA_DEFAULT_EXP_TIME = (int) (7 * XTime.ONE_DAY);
+	private static final int DATA_DEFAULT_EXP_TIME = 7 * ((int)XTime.ONE_DAY/1000);
 	private static final CacheConfig DEFAULT_CACHE_CONFIG = new CacheConfig(CacheType.lazy, DATA_DEFAULT_EXP_TIME,
 			false);
 	private final Map<String, CacheConfig> cacheConfigMap = new HashMap<String, CacheConfig>();

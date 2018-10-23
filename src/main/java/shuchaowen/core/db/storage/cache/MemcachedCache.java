@@ -294,15 +294,13 @@ public class MemcachedCache implements Cache{
 			if (checkKey) {
 				if (memcached.get(INDEX_PREFIX + key) != null) {
 					t = (T) db.getByIdFromDB(type, null, params);
-					if (t != null) {
-						saveBeanAndKey(t, exp);
-					}
 				}
 			} else {
 				t = (T) db.getByIdFromDB(type, null, params);
-				if (t != null) {
-					saveBean(t, exp);
-				}
+			}
+			
+			if (t != null) {
+				System.out.println(memcached.add(key, exp, CacheUtils.encode(t)));;
 			}
 		} else {
 			t = CacheUtils.decode(type, data);
