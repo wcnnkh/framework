@@ -16,166 +16,168 @@ import shuchaowen.core.util.ClassUtils;
 public abstract class DB extends AbstractDB {
 	private Map<String, Storage> storageMap = new HashMap<String, Storage>();
 	private Storage storage;
-	
-	public DB(){
+
+	public DB() {
 		super(null);
 		this.storage = new CommonStorage(this, null, null);
 	}
-	
-	public DB(Storage storage, SQLFormat sqlFormat){
+
+	public DB(Storage storage, SQLFormat sqlFormat) {
 		super(sqlFormat);
 		this.storage = storage;
 	}
-	
-	protected void registerStorage(Class<?> tableClass, Storage storage){
-		synchronized (storageMap) {
-			if(storageMap.containsKey(ClassUtils.getCGLIBRealClassName(tableClass))){
-				storageMap.put(ClassUtils.getCGLIBRealClassName(tableClass), storage);
-			}
+
+	protected void registerStorage(Storage storage, Class<?>... tableClass) {
+		for (Class<?> clz : tableClass) {
+			storageMap.put(ClassUtils.getCGLIBRealClassName(clz), storage);
 		}
 	}
 	
-	protected void removeStorage(Class<?> ...tableClass){
-		synchronized (storageMap) {
-			for(Class<?> clz : tableClass){
-				storageMap.remove(ClassUtils.getCGLIBRealClassName(clz));
-			}
+	protected void registerDefaultStorage(Class<?>... tableClass) {
+		for (Class<?> clz : tableClass) {
+			storageMap.put(ClassUtils.getCGLIBRealClassName(clz), new CommonStorage(this, null, null));
 		}
 	}
-	
+
+	protected void removeStorage(Class<?>... tableClass) {
+		for (Class<?> clz : tableClass) {
+			storageMap.remove(ClassUtils.getCGLIBRealClassName(clz));
+		}
+	}
+
 	public void setStorage(Storage storage) {
 		this.storage = storage;
 	}
-	
-	public Storage getStorage(Class<?> tableClass){
+
+	public Storage getStorage(Class<?> tableClass) {
 		Storage storage = storageMap.get(ClassUtils.getCGLIBRealClassName(tableClass));
-		return storage == null? this.storage:storage;
+		return storage == null ? this.storage : storage;
 	}
-	
-	private Map<Storage, List<Object>> getStorageBeanMap(Collection<?> beanList){
+
+	private Map<Storage, List<Object>> getStorageBeanMap(Collection<?> beanList) {
 		Map<Storage, List<Object>> map = new HashMap<Storage, List<Object>>();
-		for(Object bean : beanList){
+		for (Object bean : beanList) {
 			Storage storage = getStorage(bean.getClass());
 			List<Object> list = map.get(storage);
-			if(list == null){
+			if (list == null) {
 				list = new ArrayList<Object>();
 				list.add(bean);
 				map.put(storage, list);
-			}else{
+			} else {
 				list.add(bean);
 			}
 		}
 		return map;
 	}
 
-	//storage
+	// storage
 	public <T> T getById(Class<T> type, Object... params) {
 		return getStorage(type).getById(type, params);
 	}
-	
-	public <T> PrimaryKeyValue<T> getById(Class<T> type, Collection<PrimaryKeyParameter> primaryKeyParameters){
+
+	public <T> PrimaryKeyValue<T> getById(Class<T> type, Collection<PrimaryKeyParameter> primaryKeyParameters) {
 		return getStorage(type).getById(type, primaryKeyParameters);
 	}
-	
+
 	public <T> List<T> getByIdList(Class<T> type, Object... params) {
 		return getStorage(type).getByIdList(type, params);
 	}
 
-	/** 保存  **/
+	/** 保存 **/
 	public void save(Object... beans) {
 		save(Arrays.asList(beans));
 	}
-	
-	public void save(Collection<?> beans){
-		if(beans == null || beans.isEmpty()){
-			return ;
+
+	public void save(Collection<?> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return;
 		}
-		
-		if(storageMap.isEmpty()){
+
+		if (storageMap.isEmpty()) {
 			storage.save(beans);
-		}else if(beans.size() == 1){
-			for(Object bean : beans){
+		} else if (beans.size() == 1) {
+			for (Object bean : beans) {
 				getStorage(bean.getClass()).save(beans);
 				break;
 			}
-		}else{
+		} else {
 			Map<Storage, List<Object>> map = getStorageBeanMap(beans);
-			for(Entry<Storage, List<Object>> entry : map.entrySet()){
+			for (Entry<Storage, List<Object>> entry : map.entrySet()) {
 				entry.getKey().save(entry.getValue());
 			}
 		}
 	}
 
-	/**删除**/
+	/** 删除 **/
 	public void delete(Object... beans) {
 		delete(Arrays.asList(beans));
 	}
-	
-	public void delete(Collection<?> beans){
-		if(beans == null || beans.isEmpty()){
-			return ;
+
+	public void delete(Collection<?> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return;
 		}
-		
-		if(storageMap.isEmpty()){
+
+		if (storageMap.isEmpty()) {
 			storage.delete(beans);
-		}else if(beans.size() == 1){
-			for(Object bean : beans){
+		} else if (beans.size() == 1) {
+			for (Object bean : beans) {
 				getStorage(bean.getClass()).delete(beans);
 				break;
 			}
-		}else{
+		} else {
 			Map<Storage, List<Object>> map = getStorageBeanMap(beans);
-			for(Entry<Storage, List<Object>> entry : map.entrySet()){
+			for (Entry<Storage, List<Object>> entry : map.entrySet()) {
 				entry.getKey().delete(entry.getValue());
 			}
 		}
 	}
-	
-	/**更新**/
+
+	/** 更新 **/
 	public void update(Object... beans) {
 		update(Arrays.asList(beans));
 	}
-	
-	public void update(Collection<?> beans){
-		if(beans == null || beans.isEmpty()){
-			return ;
+
+	public void update(Collection<?> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return;
 		}
-		
-		if(storageMap.isEmpty()){
+
+		if (storageMap.isEmpty()) {
 			storage.update(beans);
-		}else if(beans.size() == 1){
-			for(Object bean : beans){
+		} else if (beans.size() == 1) {
+			for (Object bean : beans) {
 				getStorage(bean.getClass()).update(beans);
 				break;
 			}
-		}else{
+		} else {
 			Map<Storage, List<Object>> map = getStorageBeanMap(beans);
-			for(Entry<Storage, List<Object>> entry : map.entrySet()){
+			for (Entry<Storage, List<Object>> entry : map.entrySet()) {
 				entry.getKey().update(entry.getValue());
 			}
 		}
 	}
-	
-	/**保存或更新**/
-	public void saveOrUpdate(Object ...beans){
+
+	/** 保存或更新 **/
+	public void saveOrUpdate(Object... beans) {
 		saveOrUpdate(Arrays.asList(beans));
 	}
-	
-	public void saveOrUpdate(Collection<?> beans){
-		if(beans == null || beans.isEmpty()){
-			return ;
+
+	public void saveOrUpdate(Collection<?> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return;
 		}
-		
-		if(storageMap.isEmpty()){
+
+		if (storageMap.isEmpty()) {
 			storage.saveOrUpdate(beans);
-		}else if(beans.size() == 1){
-			for(Object bean : beans){
+		} else if (beans.size() == 1) {
+			for (Object bean : beans) {
 				getStorage(bean.getClass()).saveOrUpdate(beans);
 				break;
 			}
-		}else{
+		} else {
 			Map<Storage, List<Object>> map = getStorageBeanMap(beans);
-			for(Entry<Storage, List<Object>> entry : map.entrySet()){
+			for (Entry<Storage, List<Object>> entry : map.entrySet()) {
 				entry.getKey().saveOrUpdate(entry.getValue());
 			}
 		}

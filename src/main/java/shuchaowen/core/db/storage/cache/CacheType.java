@@ -1,6 +1,7 @@
 package shuchaowen.core.db.storage.cache;
 
 public enum CacheType {
+	no,
 	/**
 	 * 延迟加载到缓存
 	 */
