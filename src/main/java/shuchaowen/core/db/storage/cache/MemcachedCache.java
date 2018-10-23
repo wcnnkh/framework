@@ -300,7 +300,7 @@ public class MemcachedCache implements Cache{
 			}
 			
 			if (t != null) {
-				System.out.println(memcached.add(key, exp, CacheUtils.encode(t)));;
+				memcached.add(key, exp, CacheUtils.encode(t));;
 			}
 		} else {
 			t = CacheUtils.decode(type, data);
