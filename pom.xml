@@ -27,6 +27,7 @@
 		<protostuff-core.version>1.1.3</protostuff-core.version>
 		<protostuff-runtime.version>1.1.3</protostuff-runtime.version>
 		<protostuff-api.version>1.1.3</protostuff-api.version>
+		<amqp-client.version>5.4.3</amqp-client.version>
 	</properties>
 
 	<dependencies>
@@ -187,7 +188,7 @@
 		<dependency>
 			<groupId>com.rabbitmq</groupId>
 			<artifactId>amqp-client</artifactId>
-			<version>5.2.0</version>
+			<version>${amqp-client.version}</version>
 		</dependency>
 	</dependencies>
 
