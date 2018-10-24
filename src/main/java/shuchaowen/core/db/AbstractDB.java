@@ -15,14 +15,12 @@ import shuchaowen.core.db.sql.format.SQLFormat;
 import shuchaowen.core.db.sql.format.Select;
 import shuchaowen.core.db.sql.format.mysql.MysqlFormat;
 import shuchaowen.core.db.sql.format.mysql.MysqlSelect;
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 
 public abstract class AbstractDB implements ConnectionPool{
 	public static final SQLFormat DEFAULT_SQL_FORMAT = new MysqlFormat();
 	private volatile static Map<String, TableInfo> tableMap = new HashMap<String, TableInfo>();
-	private volatile static Map<Class<?>, AbstractDB> dbMap = new HashMap<Class<?>, AbstractDB>();
 
 	public static final TableInfo getTableInfo(Class<?> clz) {
 		return getTableInfo(clz.getName());
@@ -45,25 +43,6 @@ public abstract class AbstractDB implements ConnectionPool{
 	
 	{
 		Logger.info("Init DB for className:" + this.getClass().getName());
-		if(dbMap.containsKey(this.getClass().getName())){
-			throw new ShuChaoWenRuntimeException("db is singleton for class[" + this.getClass().getName() + "]");
-		}
-		
-		synchronized (dbMap) {
-			if(dbMap.containsKey(this.getClass().getName())){
-				throw new ShuChaoWenRuntimeException("db is singleton for class[" + this.getClass().getName() + "]");
-			}
-			
-			dbMap.put(this.getClass(), this);
-		}
-	}
-	
-	public static AbstractDB getAbstractDB(Class<? extends AbstractDB> abstractDBClass){
-		AbstractDB abstractDB =  dbMap.get(abstractDBClass);
-		if(abstractDB == null){
-			throw new NullPointerException("not found [" + abstractDBClass + "]");
-		}
-		return abstractDB;
 	}
 	
 	private SQLFormat sqlFormat;

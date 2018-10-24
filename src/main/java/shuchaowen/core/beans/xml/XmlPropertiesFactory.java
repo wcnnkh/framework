@@ -38,8 +38,8 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 						if (propertiesValueMap.containsKey(key)) {
 							throw new KeyAlreadyExistsException(key);
 						}
-
-						propertiesValueMap.put(prefix + entry.getKey(), entry.getValue());
+						
+						propertiesValueMap.put(key, entry.getValue());
 					}
 				}
 
