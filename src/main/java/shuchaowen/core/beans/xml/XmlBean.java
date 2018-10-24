@@ -7,13 +7,16 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.sf.cglib.proxy.Enhancer;
+import shuchaowen.core.beans.AnnotationBean;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.BeanFilter;
+import shuchaowen.core.beans.BeanMethod;
 import shuchaowen.core.beans.BeanMethodInterceptor;
 import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.BeanUtils;
@@ -51,9 +54,9 @@ public class XmlBean implements Bean {
 	// 构造函数的参数
 	private final List<BeanParameter> constructorList = new ArrayList<BeanParameter>();
 	private final List<BeanParameter> propertiesList = new ArrayList<BeanParameter>();
-	private final List<XmlBeanMethodInfo> initMethodList = new ArrayList<XmlBeanMethodInfo>();
-	private final List<XmlBeanMethodInfo> destroyMethodList = new ArrayList<XmlBeanMethodInfo>();
-	private XmlBeanMethodInfo factoryMethodInfo;
+	private final List<BeanMethod> initMethodList = new ArrayList<BeanMethod>();
+	private final List<BeanMethod> destroyMethodList = new ArrayList<BeanMethod>();
+	private BeanMethod factoryMethodInfo;
 	private final boolean proxy;
 
 	private final Constructor<?> constructor;
@@ -148,12 +151,15 @@ public class XmlBean implements Bean {
 				this.factoryMethodInfo = new XmlBeanMethodInfo(type, n);
 			}
 		}
-
+		
+		this.initMethodList.addAll(AnnotationBean.getInitMethodList(type));
+		this.destroyMethodList.addAll(AnnotationBean.getDestroyMethdoList(type));
+		
 		this.proxy = checkProxy();
 		this.constructor = getConstructor();
 		this.constructorParameterTypes = constructor.getParameterTypes();
 	}
-
+	
 	private Constructor<?> getConstructor() {
 		if (constructorList == null) {
 			return getConstructorByParameterTypes();
@@ -311,7 +317,7 @@ public class XmlBean implements Bean {
 
 	public void init(Object bean) throws Exception {
 		if (initMethodList != null && !initMethodList.isEmpty()) {
-			for (XmlBeanMethodInfo method : initMethodList) {
+			for (BeanMethod method : initMethodList) {
 				method.invoke(bean, beanFactory, propertiesFactory);
 			}
 		}
@@ -319,7 +325,7 @@ public class XmlBean implements Bean {
 
 	public void destroy(Object bean) throws Exception {
 		if (destroyMethodList != null && !destroyMethodList.isEmpty()) {
-			for (XmlBeanMethodInfo method : destroyMethodList) {
+			for (BeanMethod method : destroyMethodList) {
 				method.invoke(bean, beanFactory, propertiesFactory);
 			}
 		}

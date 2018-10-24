@@ -6,12 +6,13 @@ import java.util.List;
 import org.w3c.dom.Node;
 
 import shuchaowen.core.beans.BeanFactory;
+import shuchaowen.core.beans.BeanMethod;
 import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.BeanUtils;
 import shuchaowen.core.beans.PropertiesFactory;
 import shuchaowen.core.beans.exception.BeansException;
 
-public class XmlBeanMethodInfo {
+public class XmlBeanMethodInfo implements BeanMethod{
 	private static final String NAME_KEY = "name";
 	private Method method;
 	private BeanParameter[] beanMethodParameters;

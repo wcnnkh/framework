@@ -68,6 +68,40 @@ public class AnnotationBean implements Bean {
 
 		this.proxy = checkProxy();
 	}
+	
+	public static List<BeanMethod> getInitMethodList(Class<?> type){
+		List<BeanMethod> list = new ArrayList<BeanMethod>();
+		Class<?> tempClz = type;
+		for (Method method : tempClz.getDeclaredMethods()) {
+			if (Modifier.isStatic(method.getModifiers())) {
+				continue;
+			}
+
+			InitMethod initMethod = method.getAnnotation(InitMethod.class);
+			if (initMethod != null) {
+				method.setAccessible(true);
+				list.add(new NoArgumentBeanMethod(method));
+			}
+		}
+		return list;
+	}
+	
+	public static List<BeanMethod> getDestroyMethdoList(Class<?> type){
+		List<BeanMethod> list = new ArrayList<BeanMethod>();
+		Class<?> tempClz = type;
+		for (Method method : tempClz.getDeclaredMethods()) {
+			if (Modifier.isStatic(method.getModifiers())) {
+				continue;
+			}
+
+			Destroy destroy = method.getAnnotation(Destroy.class);
+			if (destroy != null) {
+				method.setAccessible(true);
+				list.add(new NoArgumentBeanMethod(method));
+			}
+		}
+		return list;
+	}
 
 	private boolean checkProxy() {
 		if (Modifier.isFinal(type.getModifiers())) {
