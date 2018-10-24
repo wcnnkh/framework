@@ -21,7 +21,7 @@ import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.XTime;
 
 public class CacheStorage implements Storage {
-	private static final int DATA_DEFAULT_EXP_TIME = 7 * ((int)XTime.ONE_DAY/1000);
+	private static final int DATA_DEFAULT_EXP_TIME = 7 * ((int) XTime.ONE_DAY / 1000);
 	private static final CacheConfig DEFAULT_CACHE_CONFIG = new CacheConfig(CacheType.lazy, DATA_DEFAULT_EXP_TIME,
 			false);
 	private final Map<String, CacheConfig> cacheConfigMap = new HashMap<String, CacheConfig>();
@@ -52,8 +52,8 @@ public class CacheStorage implements Storage {
 	public void config(CacheType cacheType, boolean isAsync, Class<?>... tableClass) {
 		config(new CacheConfig(cacheType, DATA_DEFAULT_EXP_TIME, isAsync), tableClass);
 	}
-	
-	public void config(CacheConfig config, Class<?> ...tableClass){
+
+	public void config(CacheConfig config, Class<?>... tableClass) {
 		for (Class<?> t : tableClass) {
 			Table table = t.getAnnotation(Table.class);
 			if (table == null) {
@@ -101,7 +101,7 @@ public class CacheStorage implements Storage {
 			case full:
 				t = cache.getById(type, params);
 			default:
-				t= getDB().getByIdFromDB(type, null, params);
+				t = getDB().getByIdFromDB(type, null, params);
 				break;
 			}
 		} catch (Exception e) {
@@ -168,11 +168,7 @@ public class CacheStorage implements Storage {
 			if (cacheInfo.isAsync()) {
 				asyncStorage.save(Arrays.asList(bean));
 			} else {
-				if(cacheInfo.getCacheType() == CacheType.no){
-					getDB().saveToDB(Arrays.asList(bean));
-				}else{
-					getDB().forceSave(Arrays.asList(bean));
-				}
+				getDB().saveToDB(Arrays.asList(bean));
 			}
 		}
 	}
@@ -201,11 +197,7 @@ public class CacheStorage implements Storage {
 			if (cacheInfo.isAsync()) {
 				asyncStorage.update(Arrays.asList(bean));
 			} else {
-				if(cacheInfo.getCacheType() == CacheType.no){
-					getDB().updateToDB(Arrays.asList(bean));
-				}else{
-					getDB().forceUpdate(Arrays.asList(bean));
-				}
+				getDB().updateToDB(Arrays.asList(bean));
 			}
 		}
 	}
@@ -234,11 +226,7 @@ public class CacheStorage implements Storage {
 			if (cacheInfo.isAsync()) {
 				asyncStorage.delete(Arrays.asList(bean));
 			} else {
-				if(cacheInfo.getCacheType() == CacheType.no){
-					getDB().deleteToDB(Arrays.asList(bean));
-				}else{
-					getDB().forceDelete(Arrays.asList(bean));
-				}
+				getDB().deleteToDB(Arrays.asList(bean));
 			}
 		}
 	}
@@ -249,7 +237,7 @@ public class CacheStorage implements Storage {
 			try {
 				switch (cacheInfo.getCacheType()) {
 				case lazy:
-					cache.saveOrUpdateBean(bean, cacheInfo.getExp()); 
+					cache.saveOrUpdateBean(bean, cacheInfo.getExp());
 					break;
 				case keys:
 					cache.saveOrUpdateBeanAndKey(bean, cacheInfo.getExp());
@@ -267,11 +255,7 @@ public class CacheStorage implements Storage {
 			if (cacheInfo.isAsync()) {
 				asyncStorage.saveOrUpdate(Arrays.asList(bean));
 			} else {
-				if(cacheInfo.getCacheType() == CacheType.no){
-					getDB().saveOrUpdateToDB(Arrays.asList(bean));
-				}else{
-					getDB().forceSaveOrUpdate(Arrays.asList(bean));
-				}
+				getDB().saveOrUpdateToDB(Arrays.asList(bean));
 			}
 		}
 	}
