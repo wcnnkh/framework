@@ -7,15 +7,17 @@ import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
 import shuchaowen.core.beans.BeanListen;
-import shuchaowen.core.db.proxy.BeanProxyUtils;
+import shuchaowen.core.db.result.Result;
 
 public class CacheUtils {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <T> T decode(Class<T> type, byte[] data) {
-		T t = BeanProxyUtils.newInstance(type);
+		T t = Result.newInstance(type);
 		Schema schema = RuntimeSchema.getSchema(type);
 		ProtostuffIOUtil.mergeFrom(data, t, schema);
-		((BeanListen) t).start_field_listen();
+		if(t instanceof BeanListen){
+			((BeanListen) t).start_field_listen();
+		}
 		return t;
 	}
 

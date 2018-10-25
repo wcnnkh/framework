@@ -9,11 +9,12 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import shuchaowen.core.beans.BeanListen;
+import shuchaowen.core.beans.BeanUtils;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.TableMapping;
-import shuchaowen.core.db.proxy.BeanProxyUtils;
+import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
@@ -121,7 +122,7 @@ public final class Result implements Serializable {
 		} else {
 			TableInfo tableInfo = DB.getTableInfo(type);
 			String tableName = getTableName(type);
-			T t = newInstanceTable(type, tableInfo);
+			T t = newInstance(type);
 			boolean b;
 			try {
 				b = wrapper(t, tableName + ".", tableInfo);
@@ -136,20 +137,6 @@ public final class Result implements Serializable {
 				return t;
 			}
 			return null;
-		}
-	}
-
-	private <T> T newInstanceTable(Class<T> type, TableInfo tableInfo) {
-		if (tableInfo.isTable()) {
-			return BeanProxyUtils.newInstance(type, tableInfo);
-		} else {
-			try {
-				return type.newInstance();
-			} catch (InstantiationException e) {
-				throw new ShuChaoWenRuntimeException(e);
-			} catch (IllegalAccessException e) {
-				throw new ShuChaoWenRuntimeException(e);
-			}
 		}
 	}
 
@@ -185,7 +172,7 @@ public final class Result implements Serializable {
 		if (b) {
 			for (ColumnInfo columnInfo : tableInfo.getTableColumns()) {
 				TableInfo info = DB.getTableInfo(columnInfo.getType());
-				Object obj = newInstanceTable(columnInfo.getType(), info);
+				Object obj = newInstance(columnInfo.getType());
 				String tName = getTableName(columnInfo.getType());
 				boolean b1 = wrapper(obj, tName + ".", info);
 				if (b1) {
@@ -269,5 +256,21 @@ public final class Result implements Serializable {
 			return new Date((Long) value);
 		}
 		throw new NullPointerException("to date error value:" + value);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T newInstance(Class<T> type) {
+		Table table = type.getAnnotation(Table.class);
+		if(table == null){
+			try {
+				return type.newInstance();
+			} catch (InstantiationException e) {
+				throw new ShuChaoWenRuntimeException(e);
+			} catch (IllegalAccessException e) {
+				throw new ShuChaoWenRuntimeException(e);
+			}
+		}else{
+			return (T) BeanUtils.getEnhancer(type, null, null).create();
+		}
 	}
 }
