@@ -12,6 +12,7 @@ import java.util.List;
 import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.annotaion.Destroy;
 import shuchaowen.core.beans.annotaion.InitMethod;
+import shuchaowen.core.beans.annotaion.Retry;
 import shuchaowen.core.beans.exception.BeansException;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;
@@ -29,6 +30,7 @@ public class AnnotationBean implements Bean {
 	private String[] names;
 	private String factoryMethodName;
 	private Method factoryMethod;
+	private Enhancer enhancer;
 
 	public AnnotationBean(BeanFactory beanFactory, Class<?> type) throws Exception {
 		this.beanFactory = beanFactory;
@@ -102,6 +104,14 @@ public class AnnotationBean implements Bean {
 		}
 		return list;
 	}
+	
+	public static Retry getRetry(Class<?> type, Method method){
+		Retry retry = method.getAnnotation(Retry.class);
+		if(retry == null){
+			retry = type.getAnnotation(Retry.class);
+		}
+		return retry;
+	}
 
 	private boolean checkProxy() {
 		if (Modifier.isFinal(type.getModifiers())) {
@@ -111,9 +121,14 @@ public class AnnotationBean implements Bean {
 		if (beanFilters != null && !beanFilters.isEmpty()) {
 			return true;
 		}
-
+		
 		for (Method method : type.getDeclaredMethods()) {
 			if(BeanUtils.isTransaction(type, method)){
+				return true;
+			}
+			
+			Retry retry = getRetry(type, method);
+			if(retry != null && retry.errors().length != 0){
 				return true;
 			}
 		}
@@ -135,20 +150,20 @@ public class AnnotationBean implements Bean {
 	public Class<?> getType() {
 		return this.type;
 	}
+	
 
 	private Enhancer getProxyEnhancer() {
-		Enhancer enhancer = new Enhancer();
-		List<BeanFilter> list = null;
-		if (beanFilters != null && !beanFilters.isEmpty()) {
-			list = new ArrayList<BeanFilter>();
+		if(enhancer == null){
+			List<String> filters = new ArrayList<String>();
+			if (beanFilters != null && !beanFilters.isEmpty()) {
+				filters = new ArrayList<String>();
 
-			for (Class<? extends BeanFilter> f : beanFilters) {
-				list.add(beanFactory.get(f));
+				for (Class<? extends BeanFilter> f : beanFilters) {
+					filters.add(f.getName());
+				}
 			}
+			enhancer = BeanUtils.getEnhancer(type, filters, beanFactory);
 		}
-
-		enhancer.setCallback(new BeanMethodInterceptor(type, list));
-		enhancer.setSuperclass(type);
 		return enhancer;
 	}
 

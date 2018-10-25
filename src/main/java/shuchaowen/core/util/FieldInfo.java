@@ -17,39 +17,40 @@ public final class FieldInfo {
 		this.type = field.getType();
 		this.field.setAccessible(true);
 
-		// GET
-		if ((boolean.class.isAssignableFrom(type) || Boolean.class.isAssignableFrom(type)) && name.startsWith("is")) {
-			String methodName;
-			if(name.startsWith("is")){
-				methodName = name;
-			}else{
-				methodName = "is" + StringUtils.toUpperCase(name, 0, 1);
-			}
-			try {
-				this.getter = clz.getDeclaredMethod(methodName);
-			} catch (NoSuchMethodException e) {
-			} catch (SecurityException e) {
-			}
-		} else {
-			try {
-				this.getter = clz.getDeclaredMethod("get" + StringUtils.toUpperCase(name, 0, 1));
-			} catch (NoSuchMethodException e) {
-			} catch (SecurityException e) {
-			}
+		try {
+			this.getter = clz.getDeclaredMethod("is" + StringUtils.toUpperCase(name, 0, 1));
+		} catch (NoSuchMethodException e) {
+		} catch (SecurityException e) {
 		}
 
-		// SET
-		if ((boolean.class.isAssignableFrom(type) || Boolean.class.isAssignableFrom(type)) && name.startsWith("is")) {
-			try {
-				this.setter = clz.getDeclaredMethod("set" + name.substring(2), type);
-			} catch (NoSuchMethodException e) {
-			} catch (SecurityException e) {
+		try {
+			this.setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(name, 0, 1), type);
+		} catch (NoSuchMethodException e) {
+		} catch (SecurityException e) {
+		}
+
+		if (ClassUtils.isBooleanType(type)) {
+			String methodNameSuffix = name;
+			if (name.startsWith("is")) {
+				Logger.warn("FieldInfo", "Boolean类型的字段不应该以is开头,class:" + clz.getName() + ",field:" + name);
+				methodNameSuffix = name.substring(2);
 			}
-		} else {
-			try {
-				this.setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(name, 0, 1), type);
-			} catch (NoSuchMethodException e) {
-			} catch (SecurityException e) {
+			methodNameSuffix = StringUtils.toUpperCase(name, 0, 1);
+
+			if (this.getter == null) {
+				try {
+					this.getter = clz.getDeclaredMethod("is" + methodNameSuffix);
+				} catch (NoSuchMethodException e) {
+				} catch (SecurityException e) {
+				}
+			}
+
+			if (this.setter == null) {
+				try {
+					this.setter = clz.getDeclaredMethod("set" + methodNameSuffix, type);
+				} catch (NoSuchMethodException e) {
+				} catch (SecurityException e) {
+				}
 			}
 		}
 
@@ -98,26 +99,28 @@ public final class FieldInfo {
 			getSetter().invoke(obj, value);
 		}
 	}
-	
+
 	/**
 	 * 不调用get方法直接获取值
+	 * 
 	 * @param obj
 	 * @return
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-	public Object forceGet(Object obj) throws IllegalArgumentException, IllegalAccessException{
+	public Object forceGet(Object obj) throws IllegalArgumentException, IllegalAccessException {
 		return field.get(obj);
 	}
-	
+
 	/**
 	 * 不调用set方法直接设置值
+	 * 
 	 * @param obj
 	 * @param value
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-	public void forceSet(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException{
+	public void forceSet(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException {
 		field.set(obj, value);
 	}
 }

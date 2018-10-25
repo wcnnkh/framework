@@ -28,10 +28,6 @@ public class AnnotationBeanInfoConfiguration implements BeanInfoConfiguration {
 		}
 	}
 
-	public Bean getBean(Class<?> type) {
-		return getBean(type.getName());
-	}
-
 	public Bean getBean(String name) {
 		String n = ClassUtils.getCGLIBRealClassName(name);
 		String realName = nameMappingMap.get(n);

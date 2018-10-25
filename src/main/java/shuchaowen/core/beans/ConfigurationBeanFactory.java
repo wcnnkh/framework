@@ -62,7 +62,7 @@ public class ConfigurationBeanFactory implements BeanFactory {
 	}
 
 	public Bean getBean(String name) {
-		return getBeanInfoByRealName(ClassUtils.getCGLIBRealClassName(name));
+		return getBeanInfoByRealName(name);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -154,9 +154,5 @@ public class ConfigurationBeanFactory implements BeanFactory {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public Bean getBean(Class<?> type) {
-		return getBean(type.getName());
 	}
 }

@@ -7,17 +7,14 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.cglib.proxy.Enhancer;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.AnnotationBean;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
-import shuchaowen.core.beans.BeanFilter;
 import shuchaowen.core.beans.BeanMethod;
-import shuchaowen.core.beans.BeanMethodInterceptor;
 import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.BeanUtils;
 import shuchaowen.core.beans.PropertiesFactory;
@@ -62,6 +59,7 @@ public class XmlBean implements Bean {
 	private final Constructor<?> constructor;
 	private final Class<?>[] constructorParameterTypes;
 	private BeanParameter[] beanMethodParameters;
+	private Enhancer enhancer;
 
 	public XmlBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode) throws Exception {
 		this.beanFactory = beanFactory;
@@ -245,19 +243,9 @@ public class XmlBean implements Bean {
 	}
 
 	private Enhancer getProxyEnhancer() {
-		Enhancer enhancer = new Enhancer();
-		List<BeanFilter> list = null;
-		if (beanFilters != null && !beanFilters.isEmpty()) {
-			list = new ArrayList<BeanFilter>();
-
-			for (String f : beanFilters) {
-				BeanFilter beanFilter = beanFactory.get(f);
-				list.add(beanFilter);
-			}
+		if(enhancer == null){
+			enhancer = BeanUtils.getEnhancer(type, beanFilters, beanFactory);
 		}
-
-		enhancer.setCallback(new BeanMethodInterceptor(type, list));
-		enhancer.setSuperclass(type);
 		return enhancer;
 	}
 

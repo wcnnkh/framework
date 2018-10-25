@@ -29,6 +29,7 @@ public final class ClassInfo {
 	 */
 	private String[] fieldNames;
 	private Map<String, FieldInfo> fieldMap = new HashMap<String, FieldInfo>();
+	private Map<String, FieldInfo> fieldSetterMethodMap = new HashMap<String, FieldInfo>();
 
 	private ClassInfo superInfo;// 父类信息
 
@@ -47,6 +48,10 @@ public final class ClassInfo {
 			fieldNameList.add(field.getName());
 			FieldInfo fieldInfo = new FieldInfo(clz, field);
 			this.fieldMap.put(field.getName(), fieldInfo);
+			
+			if(fieldInfo.getSetter() != null){
+				fieldSetterMethodMap.put(fieldInfo.getSetter().getName(), fieldInfo);
+			}
 		}
 		
 		this.fieldNames = fieldNameList.toArray(new String[0]);
@@ -88,6 +93,24 @@ public final class ClassInfo {
 			fieldInfo = classInfo.getFieldMap().get(fieldName);
 		}
 		return fieldInfo;
+	}
+	
+	public FieldInfo getFieldInfoBySetterName(String setterName){
+		ClassInfo classInfo = this;
+		FieldInfo fieldInfo = classInfo.getFieldSetterMethodMap().get(setterName);
+		while(fieldInfo == null){
+			classInfo = classInfo.getSuperInfo();
+			if(classInfo == null){
+				break;
+			}
+			
+			fieldInfo = classInfo.getFieldSetterMethodMap().get(setterName);
+		}
+		return fieldInfo;
+	}
+	
+	protected Map<String, FieldInfo> getFieldSetterMethodMap() {
+		return fieldSetterMethodMap;
 	}
 
 	public ClassInfo getSuperInfo() {

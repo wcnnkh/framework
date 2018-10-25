@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -538,5 +540,19 @@ public final class ClassUtils {
 		} else {
 			return cglibName.substring(0, index);
 		}
+	}
+	
+	public static Long getSerialVersionUID(Class<?> clz){
+		try {
+			Field field = clz.getField("serialVersionUID");
+			if(field != null && Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()) && long.class.isAssignableFrom(field.getType())){
+				return (Long) field.get(null);
+			}
+		} catch (NoSuchFieldException e) {
+		} catch (SecurityException e) {
+		} catch (IllegalArgumentException e) {
+		} catch (IllegalAccessException e) {
+		}
+		return null;
 	}
 }

@@ -20,6 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.annotaion.Autowrite;
 import shuchaowen.core.beans.annotaion.Config;
 import shuchaowen.core.beans.annotaion.Destroy;
@@ -378,6 +379,53 @@ public class BeanUtils {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public static void registerEnhancerClass(String packageNames){
+		for(Class<?> clz : ClassUtils.getClasses(packageNames)){
+			getEnhancerClass(clz);
+		}
+	}
+	
+	public static Class<?> getEnhancerClass(Class<?> type){
+		Enhancer enhancer = new Enhancer();
+		if(!BeanListen.class.isAssignableFrom(type)){
+			Class<?>[] arr = type.getInterfaces();
+			Class<?>[] newArr = new Class<?>[arr==null? 1:arr.length + 1];
+			System.arraycopy(arr, 0, newArr, 0, arr.length);
+			newArr[newArr.length - 1] = BeanListen.class;
+			enhancer.setInterfaces(newArr);
+			enhancer.setSerialVersionUID(1L);
+		}
+		enhancer.setCallbackType(BeanMethodInterceptor.class);
+		enhancer.setSuperclass(type);
+		return enhancer.createClass();
+	}
+	
+	public static Enhancer getEnhancer(Class<?> type, List<String> beanFilterList, BeanFactory beanFactory){
+		Enhancer enhancer = new Enhancer();
+		List<BeanFilter> list = null;
+		if (beanFilterList != null && !beanFilterList.isEmpty()) {
+			list = new ArrayList<BeanFilter>();
+
+			for (String f : beanFilterList) {
+				BeanFilter beanFilter = beanFactory.get(f);
+				list.add(beanFilter);
+			}
+		}
+		
+		if(!BeanListen.class.isAssignableFrom(type)){
+			Class<?>[] arr = type.getInterfaces();
+			Class<?>[] newArr = new Class<?>[arr==null? 1:arr.length + 1];
+			System.arraycopy(arr, 0, newArr, 0, arr.length);
+			newArr[newArr.length - 1] = BeanListen.class;
+			enhancer.setInterfaces(newArr);
+			enhancer.setSerialVersionUID(1L);
+		}
+
+		enhancer.setCallback(new BeanMethodInterceptor(type, list));
+		enhancer.setSuperclass(type);
+		return enhancer;
 	}
 }
 
