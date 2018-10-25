@@ -42,26 +42,6 @@ public final class TableInfo {
 	private Class<?>[] proxyInterface;
 	private boolean parent = true;
 
-	static {
-		registerCglibProxyTableBean("*");
-	}
-
-	public static void registerCglibProxyTableBean(String pageName) {
-		for (Class<?> type : ClassUtils.getClasses(pageName)) {
-			Table table = type.getAnnotation(Table.class);
-			if (table == null) {
-				continue;
-			}
-			
-			if(BeanListen.class.isAssignableFrom(type)){
-				continue;
-			}
-			
-			Class<?> clz = BeanUtils.getEnhancerClass(type);
-			Logger.info("CGLIB", "register proxy class[" + clz.getName() + "]");
-		}
-	}
-
 	public TableInfo(ClassInfo classInfo) {
 		this.classInfo = classInfo;
 		StringBuilder sb = new StringBuilder();
@@ -256,5 +236,21 @@ public final class TableInfo {
 			params[i] = getPrimaryKeyColumns()[i].getFieldInfo().forceGet(data);
 		}
 		return params;
+	}
+	
+	public static void registerCglibProxyTableBean(String pageName) {
+		for (Class<?> type : ClassUtils.getClasses(pageName)) {
+			Table table = type.getAnnotation(Table.class);
+			if (table == null) {
+				continue;
+			}
+			
+			if(BeanListen.class.isAssignableFrom(type)){
+				continue;
+			}
+			
+			Class<?> clz = BeanUtils.getEnhancerClass(type);
+			Logger.info("CGLIB", "register proxy class[" + clz.getName() + "]");
+		}
 	}
 }
