@@ -28,8 +28,8 @@ public @interface Table {
 	
 	/**
 	 * 是否遍历父级字段
-	 * 默认是true
+	 * 默认是false
 	 * @return
 	 */
-	public boolean parent() default true;
+	public boolean parent() default false;
 }

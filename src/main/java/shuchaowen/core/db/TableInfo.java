@@ -40,7 +40,7 @@ public final class TableInfo {
 	private ColumnInfo[] notPrimaryKeyColumns;
 	private ColumnInfo[] tableColumns;
 	private Class<?>[] proxyInterface;
-	private boolean parent = true;
+	private boolean parent = false;
 
 	public TableInfo(ClassInfo classInfo) {
 		this.classInfo = classInfo;
