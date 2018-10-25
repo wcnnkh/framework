@@ -1,23 +1,25 @@
 package shuchaowen.core.db.sql.format.mysql;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 
+import shuchaowen.core.beans.BeanListen;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.TableInfo;
-import shuchaowen.core.db.proxy.BeanProxy;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
-public class UpdateSQLByBeanProxy implements SQL {
+public class UpdateSQLByBeanListen implements SQL {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanProxy(BeanProxy beanProxy, TableInfo tableInfo, String tableName) throws IllegalArgumentException, IllegalAccessException {
+	public UpdateSQLByBeanListen(BeanListen beanListen, TableInfo tableInfo, String tableName) throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
-		if (beanProxy.getChange_ColumnMap() == null || beanProxy.getChange_ColumnMap().size() == 0) {
+		if (beanListen.get_field_change_map() == null || beanListen.get_field_change_map().size() == 0) {
 			throw new ShuChaoWenRuntimeException("not change properties");
 		}
 
@@ -30,18 +32,21 @@ public class UpdateSQLByBeanProxy implements SQL {
 		int index = 0;
 		int i;
 		ColumnInfo columnInfo;
-		params = new Object[beanProxy.getChange_ColumnMap().size() + tableInfo.getPrimaryKeyColumns().length];
-		for (Entry<String, Object> entry : beanProxy.getChange_ColumnMap().entrySet()) {
+		List<Object> paramList = new ArrayList<Object>();
+		for (Entry<String, Object> entry : beanListen.get_field_change_map().entrySet()) {
+			columnInfo = tableInfo.getColumnInfo(entry.getKey());
+			if(columnInfo.getPrimaryKey() != null){
+				continue;
+			}
+			
 			if (index > 0) {
 				sb.append(",");
 			}
-
-			columnInfo = tableInfo.getColumnInfo(entry.getKey());
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
-			params[index++] = columnInfo.getValueToDB(beanProxy);
+			paramList.add(columnInfo.getValueToDB(beanListen));
 		}
-		beanProxy.startListen();// 重新开始监听
+		beanListen.start_field_listen();// 重新开始监听
 
 		sb.append(" where ");
 		for (i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
@@ -51,9 +56,11 @@ public class UpdateSQLByBeanProxy implements SQL {
 			}
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
-			params[index++] = columnInfo.getValueToDB(beanProxy);
+			
+			paramList.add(columnInfo.getValueToDB(beanListen));
 		}
 		this.sql = sb.toString();
+		this.params = paramList.toArray();
 	}
 
 	public String getSql() {

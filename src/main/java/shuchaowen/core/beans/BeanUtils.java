@@ -35,6 +35,7 @@ import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.http.server.annotation.Controller;
 import shuchaowen.core.invoke.Invoker;
 import shuchaowen.core.invoke.ReflectInvoker;
+import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.FieldInfo;
@@ -387,14 +388,12 @@ public class BeanUtils {
 		}
 	}
 	
-	public static Class<?> getEnhancerClass(Class<?> type){
+	@SuppressWarnings("unchecked")
+	public static <T> Class<T> getEnhancerClass(Class<T> type){
 		Enhancer enhancer = new Enhancer();
 		if(!BeanListen.class.isAssignableFrom(type)){
-			Class<?>[] arr = type.getInterfaces();
-			Class<?>[] newArr = new Class<?>[arr==null? 1:arr.length + 1];
-			System.arraycopy(arr, 0, newArr, 0, arr.length);
-			newArr[newArr.length - 1] = BeanListen.class;
-			enhancer.setInterfaces(newArr);
+			ClassInfo classInfo = ClassUtils.getClassInfo(type);
+			enhancer.setInterfaces(classInfo.getBeanListenInterfaces());
 			enhancer.setSerialVersionUID(1L);
 		}
 		enhancer.setCallbackType(BeanMethodInterceptor.class);
@@ -415,11 +414,8 @@ public class BeanUtils {
 		}
 		
 		if(!BeanListen.class.isAssignableFrom(type)){
-			Class<?>[] arr = type.getInterfaces();
-			Class<?>[] newArr = new Class<?>[arr==null? 1:arr.length + 1];
-			System.arraycopy(arr, 0, newArr, 0, arr.length);
-			newArr[newArr.length - 1] = BeanListen.class;
-			enhancer.setInterfaces(newArr);
+			ClassInfo classInfo = ClassUtils.getClassInfo(type);
+			enhancer.setInterfaces(classInfo.getBeanListenInterfaces());
 			enhancer.setSerialVersionUID(1L);
 		}
 

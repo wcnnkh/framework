@@ -6,8 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import shuchaowen.core.beans.BeanListen;
+
 /**
  * 封装一个类的信息
+ * 
  * @author shuchaowen
  *
  */
@@ -32,28 +35,35 @@ public final class ClassInfo {
 	private Map<String, FieldInfo> fieldSetterMethodMap = new HashMap<String, FieldInfo>();
 
 	private ClassInfo superInfo;// 父类信息
+	private Class<?>[] beanListenInterfaces;
 
 	public ClassInfo(Class<?> clz) {
 		this.clz = clz;
 		this.name = clz.getName();
 		this.simpleName = clz.getSimpleName();
+
+		Class<?>[] arr = clz.getInterfaces();
+		beanListenInterfaces = new Class<?>[arr == null ? 1 : arr.length + 1];
+		System.arraycopy(arr, 0, beanListenInterfaces, 0, arr.length);
+		beanListenInterfaces[beanListenInterfaces.length - 1] = BeanListen.class;
+
 		List<String> fieldNameList = new ArrayList<String>();
 		for (Field field : clz.getDeclaredFields()) {
 			Deprecated deprecated = field.getAnnotation(Deprecated.class);
-			if(deprecated != null){
+			if (deprecated != null) {
 				continue;
 			}
-			
+
 			field.setAccessible(true);
 			fieldNameList.add(field.getName());
 			FieldInfo fieldInfo = new FieldInfo(clz, field);
 			this.fieldMap.put(field.getName(), fieldInfo);
-			
-			if(fieldInfo.getSetter() != null){
+
+			if (fieldInfo.getSetter() != null) {
 				fieldSetterMethodMap.put(fieldInfo.getSetter().getName(), fieldInfo);
 			}
 		}
-		
+
 		this.fieldNames = fieldNameList.toArray(new String[0]);
 		Class<?> superClz = clz.getSuperclass();
 		if (superClz != null) {
@@ -80,40 +90,44 @@ public final class ClassInfo {
 	public Map<String, FieldInfo> getFieldMap() {
 		return fieldMap;
 	}
-	
-	public FieldInfo getFieldInfo(String fieldName){
+
+	public FieldInfo getFieldInfo(String fieldName) {
 		ClassInfo classInfo = this;
 		FieldInfo fieldInfo = classInfo.getFieldMap().get(fieldName);
-		while(fieldInfo == null){
+		while (fieldInfo == null) {
 			classInfo = classInfo.getSuperInfo();
-			if(classInfo == null){
+			if (classInfo == null) {
 				break;
 			}
-			
+
 			fieldInfo = classInfo.getFieldMap().get(fieldName);
 		}
 		return fieldInfo;
 	}
-	
-	public FieldInfo getFieldInfoBySetterName(String setterName){
+
+	public FieldInfo getFieldInfoBySetterName(String setterName) {
 		ClassInfo classInfo = this;
 		FieldInfo fieldInfo = classInfo.getFieldSetterMethodMap().get(setterName);
-		while(fieldInfo == null){
+		while (fieldInfo == null) {
 			classInfo = classInfo.getSuperInfo();
-			if(classInfo == null){
+			if (classInfo == null) {
 				break;
 			}
-			
+
 			fieldInfo = classInfo.getFieldSetterMethodMap().get(setterName);
 		}
 		return fieldInfo;
 	}
-	
+
 	protected Map<String, FieldInfo> getFieldSetterMethodMap() {
 		return fieldSetterMethodMap;
 	}
 
 	public ClassInfo getSuperInfo() {
 		return superInfo;
+	}
+
+	public Class<?>[] getBeanListenInterfaces() {
+		return beanListenInterfaces;
 	}
 }

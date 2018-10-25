@@ -72,7 +72,7 @@ public abstract class WebRequest extends HttpServletRequestWrapper implements Re
 			for(Constructor<WebParameter> constructor : constructors){
 				if(constructor.getParameterCount() == 1 && Request.class.isAssignableFrom(constructor.getParameterTypes()[0])){
 					constructor.setAccessible(true);
-					return beanFactory.getBean(type).newInstance(constructor.getParameterTypes(), this);
+					return beanFactory.getBean(type.getName()).newInstance(constructor.getParameterTypes(), this);
 				}
 			}
 			return null;

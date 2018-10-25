@@ -2,11 +2,11 @@ package shuchaowen.core.db.sql.format.mysql;
 
 import java.util.Collection;
 
+import shuchaowen.core.beans.BeanListen;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.TableName;
-import shuchaowen.core.db.proxy.BeanProxy;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.sql.format.SQLFormat;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
@@ -30,8 +30,8 @@ public class MysqlFormat implements SQLFormat {
 
 	public SQL toUpdateSql(Object obj, TableInfo tableInfo, String tableName) {
 		try {
-			if(obj instanceof BeanProxy){
-				return new UpdateSQLByBeanProxy((BeanProxy)obj, tableInfo, tableName);
+			if(obj instanceof BeanListen){
+				return new UpdateSQLByBeanListen((BeanListen)obj, tableInfo, tableName);
 			}else{
 				return new UpdateSQL(obj, tableInfo, tableName);
 			}
@@ -60,8 +60,8 @@ public class MysqlFormat implements SQLFormat {
 	
 	public SQL toSaveOrUpdateSql(Object obj, TableInfo tableInfo, String tableName){
 		try {
-			if(obj instanceof BeanProxy){
-				return new SaveOrUpdateSQLByBeanProxy((BeanProxy)obj, tableInfo, tableName);
+			if(obj instanceof BeanListen){
+				return new SaveOrUpdateSQLByBeanListen((BeanListen)obj, tableInfo, tableName);
 			}else{
 				return new SaveOrUpdateSQL(obj, tableInfo, tableName);
 			}

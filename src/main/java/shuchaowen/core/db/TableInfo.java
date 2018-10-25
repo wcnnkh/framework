@@ -8,7 +8,6 @@ import java.util.Map;
 
 import shuchaowen.core.db.annoation.NotColumn;
 import shuchaowen.core.db.annoation.Table;
-import shuchaowen.core.db.proxy.BeanProxy;
 import shuchaowen.core.exception.KeyAlreadyExistsException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassInfo;
@@ -40,9 +39,6 @@ public final class TableInfo {
 	
 	public TableInfo(ClassInfo classInfo) {
 		this.classInfo = classInfo;
-		//动态代理实现的接口
-		this.proxyInterface = getBeanProxyInterface(classInfo.getClz());
-		
 		StringBuilder sb = new StringBuilder();
 		char[] chars;
 		try {
@@ -206,14 +202,6 @@ public final class TableInfo {
 
 	public Class<?>[] getProxyInterface() {
 		return proxyInterface;
-	}
-	
-	public static Class<?>[] getBeanProxyInterface(Class<?> type){
-		Class<?>[] arr = type.getInterfaces();
-		Class<?>[] newArr = new Class<?>[arr==null? 1:arr.length + 1];
-		System.arraycopy(arr, 0, newArr, 0, arr.length);
-		newArr[newArr.length - 1] = BeanProxy.class;
-		return newArr;
 	}
 	
 	public boolean isTable(){

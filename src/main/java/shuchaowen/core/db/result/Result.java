@@ -8,12 +8,12 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import shuchaowen.core.beans.BeanListen;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.TableMapping;
-import shuchaowen.core.db.proxy.BeanProxy;
-import shuchaowen.core.db.proxy.BeanProxyMethodInterceptor;
+import shuchaowen.core.db.proxy.BeanProxyUtils;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
@@ -131,7 +131,7 @@ public final class Result implements Serializable {
 			
 			if (b) {
 				if(tableInfo.isTable()){
-					((BeanProxy) t).startListen();
+					((BeanListen) t).start_field_listen();
 				}
 				return t;
 			}
@@ -141,7 +141,7 @@ public final class Result implements Serializable {
 
 	private <T> T newInstanceTable(Class<T> type, TableInfo tableInfo) {
 		if (tableInfo.isTable()) {
-			return BeanProxyMethodInterceptor.newInstance(type, tableInfo);
+			return BeanProxyUtils.newInstance(type, tableInfo);
 		} else {
 			try {
 				return type.newInstance();
@@ -191,7 +191,7 @@ public final class Result implements Serializable {
 				if (b1) {
 					columnInfo.setValueToField(root, obj);
 					if(info.isTable()){
-						((BeanProxy) obj).startListen();
+						((BeanListen) obj).start_field_listen();
 					}
 				}
 			}
