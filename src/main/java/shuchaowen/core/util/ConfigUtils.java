@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,13 +83,13 @@ public class ConfigUtils {
 	public static <T> T parseObject(Map<String, String> map, Class<T> clz)
 			throws InstantiationException, IllegalAccessException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, InvocationTargetException {
+		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
 		T t = clz.newInstance();
 		for (Entry<String, String> entry : map.entrySet()) {
-			Field field = clz.getDeclaredField(entry.getKey());
-			if (field == null) {
+			FieldInfo fieldInfo = classInfo.getFieldInfo(entry.getKey());
+			if(fieldInfo == null){
 				continue;
 			}
-			FieldInfo fieldInfo = new FieldInfo(clz, field);
 			fieldInfo.set(t, StringUtils.conversion(entry.getValue(), fieldInfo.getType()));
 		}
 		return t;
@@ -216,7 +215,7 @@ public class ConfigUtils {
 	}
 
 	public static <T> T wrapperProerties(Class<T> type, Properties properties) {
-		ClassInfo classInfo = new ClassInfo(type);
+		ClassInfo classInfo = ClassUtils.getClassInfo(type);
 		try {
 			T obj = ClassUtils.newInstance(type);
 			for (Object key : properties.keySet()) {

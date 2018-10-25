@@ -1,7 +1,6 @@
 package shuchaowen.core.beans.xml;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -286,19 +285,19 @@ public class XmlBean implements Bean {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		Class<?> tempClz = type;
-		while (tempClz != null) {
-			for (Field field : tempClz.getDeclaredFields()) {
-				if (Modifier.isStatic(field.getModifiers())) {
+		ClassInfo classInfo = ClassUtils.getClassInfo(type);
+		while (classInfo != null) {
+			for (FieldInfo field : classInfo.getFieldMap().values()) {
+				if (Modifier.isStatic(field.getField().getModifiers())) {
 					continue;
 				}
 
-				BeanUtils.setBean(beanFactory, tempClz, bean, field);
-				BeanUtils.setProxy(beanFactory, tempClz, bean, field);
-				BeanUtils.setConfig(beanFactory, tempClz, bean, field);
-				BeanUtils.setProperties(propertiesFactory, tempClz, bean, field);
+				BeanUtils.setBean(beanFactory, classInfo.getClz(), bean, field);
+				BeanUtils.setProxy(beanFactory, classInfo.getClz(), bean, field);
+				BeanUtils.setConfig(beanFactory, classInfo.getClz(), bean, field);
+				BeanUtils.setProperties(propertiesFactory, classInfo.getClz(), bean, field);
 			}
-			tempClz = tempClz.getSuperclass();
+			classInfo = classInfo.getSuperInfo();
 		}
 		setProperties(bean);
 	}

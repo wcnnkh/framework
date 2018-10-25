@@ -1,7 +1,6 @@
 package shuchaowen.core.beans;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -14,7 +13,9 @@ import shuchaowen.core.beans.annotaion.Destroy;
 import shuchaowen.core.beans.annotaion.InitMethod;
 import shuchaowen.core.beans.annotaion.Retry;
 import shuchaowen.core.beans.exception.BeansException;
+import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.ClassUtils;
+import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.StringUtils;
 
 public class AnnotationBean implements Bean {
@@ -220,18 +221,19 @@ public class AnnotationBean implements Bean {
 	}
 
 	public void autowrite(Object bean) {
-		Class<?> tempClz = type;
-		while (tempClz != null) {
-			for (Field field : tempClz.getDeclaredFields()) {
-				if (Modifier.isStatic(field.getModifiers())) {
+		ClassInfo classInfo = ClassUtils.getClassInfo(type);
+		while (classInfo != null) {
+			for (FieldInfo field : classInfo.getFieldMap().values()) {
+				if (Modifier.isStatic(field.getField().getModifiers())) {
 					continue;
 				}
 
-				BeanUtils.setBean(beanFactory, tempClz, bean, field);
-				BeanUtils.setProxy(beanFactory, tempClz, bean, field);
-				BeanUtils.setConfig(beanFactory, tempClz, bean, field);
+				BeanUtils.setBean(beanFactory, classInfo.getClz(), bean, field);
+				BeanUtils.setProxy(beanFactory, classInfo.getClz(), bean, field);
+				BeanUtils.setConfig(beanFactory, classInfo.getClz(), bean, field);
 			}
-			tempClz = tempClz.getSuperclass();
+			
+			classInfo = classInfo.getSuperInfo();
 		}
 	}
 

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.config.ConfigParse;
+import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.FieldInfo;
 
@@ -20,7 +21,7 @@ public class XmlToBeanMapParse implements ConfigParse{
 		type = type.substring(type.indexOf("<") + 1, type.indexOf(">"));
 		String valueType = type.split(",")[1].trim();
 		try {
-			Class<?> toClz = Class.forName(valueType);
+			Class<?> toClz = ClassUtils.forName(valueType);
 			Field keyField = null;
 			for(Field f :toClz.getDeclaredFields()){
 				if(Modifier.isStatic(f.getModifiers())){
