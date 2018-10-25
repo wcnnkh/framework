@@ -1,0 +1,44 @@
+package shuchaowen.core.beans;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class BeanListenImpl implements BeanListen{
+	private static final long serialVersionUID = 1L;
+	private transient Map<String, Object> changeColumnMap;
+	private transient boolean startListen = false;
+	
+	public Map<String, Object> get_field_change_map() {
+		return changeColumnMap;
+	}
+
+	public void start_field_listen() {
+		if (changeColumnMap != null && !changeColumnMap.isEmpty()) {
+			changeColumnMap.clear();
+		}
+		startListen = true;
+	}
+
+	public Map<String, Object> getChangeColumnMap() {
+		return changeColumnMap;
+	}
+
+	public void setChangeColumnMap(Map<String, Object> changeColumnMap) {
+		this.changeColumnMap = changeColumnMap;
+	}
+
+	public boolean isStartListen() {
+		return startListen;
+	}
+
+	public void setStartListen(boolean startListen) {
+		this.startListen = startListen;
+	}
+
+	public void field_change(String field, Object oldValue) {
+		if (changeColumnMap == null) {
+			changeColumnMap = new HashMap<String, Object>();
+		}
+		changeColumnMap.put(field, oldValue);
+	}
+}
