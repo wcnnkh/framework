@@ -15,33 +15,32 @@ public abstract class LoadRowToMap<K, V> extends HashMap<K, V> implements LoadRo
 	}
 
 	public final void load(int sheetIndex, int rowIndex, String[] contents) {
-		if(rowIndex < beginRowIndex){
-			return ;
+		if (rowIndex < beginRowIndex) {
+			return;
 		}
 
 		try {
-			for(int i=0; i<contents.length; i++){
-				String keyContent = contents[keyColumnIndex];
-				if(StringUtils.isNull(keyContent)){
-					return ;
-				}
-				
-				K k = getKey(keyContent);
-				if(k == null){
-					return ;
-				}
-				
-				if(containsKey(k)){
-					throw new NullPointerException("role存在相同的ID, sheelIndex="+sheetIndex+", row="+rowIndex+" key=" + k);
-				}
-				
-				V v = getValue(contents);
-				if(v == null){
-					continue;
-				}
-				
-				put(k, v);
+			String keyContent = contents[keyColumnIndex];
+			if (StringUtils.isNull(keyContent)) {
+				return;
 			}
+
+			K k = getKey(keyContent);
+			if (k == null) {
+				return;
+			}
+
+			if (containsKey(k)) {
+				throw new NullPointerException(
+						"role存在相同的ID, sheelIndex=" + sheetIndex + ", row=" + rowIndex + " key=" + k);
+			}
+
+			V v = getValue(contents);
+			if (v == null) {
+				return;
+			}
+
+			put(k, v);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -36,8 +36,8 @@ public class JxlLoadExcel extends LoadExcel{
 							content = content.trim();
 						}
 						contents[columnIndex] = content;
-						loadRow.load(sheetIndex, rowIndex, contents);
 					}
+					loadRow.load(sheetIndex, rowIndex, contents);
 				}
 			}
 			Logger.info("加载" + excel.getName() + "完成, 用时：" + (System.currentTimeMillis() - t) + "ms");
