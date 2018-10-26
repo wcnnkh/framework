@@ -120,12 +120,10 @@ public final class DBManager {
 		return db;
 	}
 	
-	@Deprecated
 	public static <T> List<T> select(Class<T> type, SQL sql){
 		return getDB(type).select(type, sql);
 	}
 	
-	@Deprecated
 	public static <T> T selectOne(Class<T> type, SQL sql){
 		return getDB(type).selectOne(type, sql);
 	}
