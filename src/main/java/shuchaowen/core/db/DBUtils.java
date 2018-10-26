@@ -16,35 +16,40 @@ import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.XUtils;
 
 public final class DBUtils {
-	public static void setParams(PreparedStatement preparedStatement,
-			Object[] args) throws SQLException {
+	public static void setParams(PreparedStatement preparedStatement, Object[] args) throws SQLException {
 		if (args != null && args.length != 0) {
 			for (int i = 0; i < args.length; i++) {
 				preparedStatement.setObject(i + 1, args[i]);
 			}
 		}
 	}
-	
-	public static void iterator(AbstractDB db, SQL sql, ResultIterator iterator){
-		iterator(db, sql, null, iterator);
+
+	public static void iterator(ConnectionPool connectionPool, SQL sql, TableMapping tableMapping, ResultIterator iterator) {
+		try {
+			iterator(connectionPool.getConnection(), sql, tableMapping, iterator);
+		} catch (SQLException e) {
+			throw new ShuChaoWenRuntimeException(e);
+		}
 	}
 	
-	public static void iterator(AbstractDB db, SQL sql, TableMapping tableMapping, ResultIterator iterator){
-		Connection connection = null;
+	public static void iterator(Connection connection, SQL sql, TableMapping tableMapping, ResultIterator iterator) {
+		if(sql == null || connection == null || iterator == null){
+			return ;
+		}
+		
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
-			connection = db.getConnection();
 			stmt = connection.prepareStatement(sql.getSql());
 			setParams(stmt, sql.getParams());
 			rs = stmt.executeQuery();
-			while(rs.next()){
+			while (rs.next()) {
 				iterator.next(new Result(tableMapping, rs));
 			}
 		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(sql.getSql(), e);
+			throw new ShuChaoWenRuntimeException(getSQLId(sql), e);
 		} finally {
-			XUtils.close(true, rs, stmt, connection);
+			XUtils.close(rs, stmt, connection);
 		}
 	}
 
@@ -54,59 +59,53 @@ public final class DBUtils {
 		sb.append(sql.getSql());
 		sb.append("]");
 		sb.append(" - ");
-		sb.append(sql.getParams() == null? "[]":Arrays.toString(sql.getParams()));
+		sb.append(sql.getParams() == null ? "[]" : Arrays.toString(sql.getParams()));
 		return sb.toString();
 	}
 
-	public static void execute(ConnectionPool connectionPool, SQL sql) {
-		Connection connection = null;
-		PreparedStatement stmt = null;
-		try {
-			connection = connectionPool.getConnection();
-			stmt = connection.prepareStatement(sql.getSql());
-			setParams(stmt, sql.getParams());
-			stmt.execute();
-		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(DBUtils.getSQLId(sql), e);
-		} finally {
-			XUtils.close(true, stmt, connection);
-		}
-	}
-
-	public static void execute(ConnectionPool connectionPool,
-			Collection<SQL> sqls) {
-		if (sqls == null || connectionPool== null) {
+	public static void execute(Connection connection, Collection<SQL> sqls) {
+		if (sqls == null || connection == null) {
 			throw new NullPointerException();
 		}
 
 		Iterator<SQL> iterator = sqls.iterator();
 		if (sqls.size() == 1) {
 			SQL sql = iterator.next();
-			execute(connectionPool, sql);
+			PreparedStatement stmt = null;
+			try {
+				stmt = connection.prepareStatement(sql.getSql());
+				setParams(stmt, sql.getParams());
+				stmt.execute();
+			} catch (Exception e) {
+				throw new ShuChaoWenRuntimeException(DBUtils.getSQLId(sql), e);
+			} finally {
+				XUtils.close(stmt, connection);
+			}
 		} else {
-			SQLTransaction sqlTransaction = new SQLTransaction(connectionPool);
+			SQLTransaction sqlTransaction = new SQLTransaction(connection);
 			while (iterator.hasNext()) {
 				sqlTransaction.addSql(iterator.next());
 			}
 			try {
 				sqlTransaction.execute();
 			} catch (Throwable e) {
-				String[] arr = new String[sqls.size()];
-				int i=0;
-				for(SQL sql : sqls){
-					arr[i++] = getSQLId(sql);
-				}
-				throw new ShuChaoWenRuntimeException(Arrays.toString(arr), e);
+				throw new ShuChaoWenRuntimeException(e);
 			}
 		}
 	}
-	
-	public static shuchaowen.core.db.result.ResultSet select(AbstractDB db, SQL sql){
-		Connection connection = null;
+
+	public static void execute(ConnectionPool connectionPool, Collection<SQL> sqls) {
+		try {
+			execute(connectionPool.getConnection(), sqls);
+		} catch (SQLException e) {
+			throw new ShuChaoWenRuntimeException(e);
+		}
+	}
+
+	public static shuchaowen.core.db.result.ResultSet select(Connection connection, SQL sql) {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
-			connection = db.getConnection();
 			stmt = connection.prepareStatement(sql.getSql());
 			setParams(stmt, sql.getParams());
 			rs = stmt.executeQuery();
@@ -114,10 +113,18 @@ public final class DBUtils {
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(sql.getSql(), e);
 		} finally {
-			XUtils.close(true, rs, stmt, connection);
+			XUtils.close(rs, stmt, connection);
 		}
 	}
-	
+
+	public static shuchaowen.core.db.result.ResultSet select(ConnectionPool connectionPool, SQL sql) {
+		try {
+			return select(connectionPool.getConnection(), sql);
+		} catch (SQLException e) {
+			throw new ShuChaoWenRuntimeException(e);
+		}
+	}
+
 	public static String getTableAndColumn(String tableName, String columnName) {
 		StringBuilder sb = new StringBuilder(32);
 		sb.append("`");

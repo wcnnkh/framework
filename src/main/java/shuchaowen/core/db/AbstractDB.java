@@ -1,6 +1,7 @@
 package shuchaowen.core.db;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +71,7 @@ public abstract class AbstractDB implements ConnectionPool{
 	}
 	
 	public void iterator(SQL sql, ResultIterator iterator){
-		DBUtils.iterator(this, sql, iterator);
+		DBUtils.iterator(this, sql, null, iterator);
 	}
 	
 	public ResultSet select(SQL sql) {
@@ -137,7 +138,7 @@ public abstract class AbstractDB implements ConnectionPool{
 		TableInfo tableInfo = DB.getTableInfo(tableClass);
 		SQL sql = getSqlFormat().toCreateTableSql(tableInfo, tableName);
 		Logger.info(sql.getSql());
-		DBUtils.execute(this, sql);
+		DBUtils.execute(this, Arrays.asList(sql));
 	}
 
 	public void createTable(String packageName) {

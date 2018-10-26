@@ -23,7 +23,16 @@ public final class SQLTransaction extends AbstractTransaction {
 	public SQLTransaction(ConnectionPool connectionPool) {
 		this(connectionPool, -1);
 	}
-
+	
+	public SQLTransaction(Connection connection){
+		this(connection, -1);
+	}
+	
+	public SQLTransaction(Connection connection, int transactionLevel) {
+		this.connection = connection;
+		this.transactionLevel = transactionLevel;
+	}
+	
 	/**
 	 * @param db
 	 * @param transactionLevel
@@ -52,7 +61,10 @@ public final class SQLTransaction extends AbstractTransaction {
 
 	public void begin() throws Exception {
 		if (!sqlMap.isEmpty()) {
-			connection = connectionPool.getConnection();
+			if(connection == null){
+				connection = connectionPool.getConnection();
+			}
+			
 			connection.setAutoCommit(false);
 			this.oldTransactionLevel = connection.getTransactionIsolation();
 			if (transactionLevel >= 0) {
@@ -73,7 +85,7 @@ public final class SQLTransaction extends AbstractTransaction {
 				try {
 					stmt.execute();
 				} catch (SQLException e) {
-					throw new SQLException(entry.getValue().getSql(), e);
+					throw new SQLException(DBUtils.getSQLId(entry.getValue()), e);
 				}
 			}
 		}
