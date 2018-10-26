@@ -82,7 +82,6 @@ public abstract class AbstractDB implements ConnectionPool{
 		return select(sql).getList(type);
 	}
 	
-	@Deprecated
 	public <T> T selectOne(Class<T> type, SQL sql){
 		return select(sql).getFirst(type);
 	}
