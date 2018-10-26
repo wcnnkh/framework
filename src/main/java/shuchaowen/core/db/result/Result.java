@@ -24,8 +24,7 @@ public final class Result implements Serializable {
 	private static final long serialVersionUID = -3443652927449459314L;
 	private TableMapping tableMapping;
 	private LinkedHashMap<String, Object> dataMap;
-	private boolean fieldStrict = true;//是否要求字段是一定存在的
-	
+
 	// 缓存一下
 	private transient Object[] values;
 
@@ -35,14 +34,6 @@ public final class Result implements Serializable {
 	public Result(TableMapping tableMapping, ResultSet resultSet) throws SQLException {
 		this.tableMapping = tableMapping;
 		render(resultSet);
-	}
-
-	public boolean isFieldStrict() {
-		return fieldStrict;
-	}
-
-	public void setFieldStrict(boolean fieldStrict) {
-		this.fieldStrict = fieldStrict;
 	}
 
 	public TableMapping getTableMapping() {
@@ -75,13 +66,13 @@ public final class Result implements Serializable {
 			dataMap.put(sb.toString(), resultSet.getObject(i));
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public <T> T getValue(Class<?> tableClass, String name){
-		if(dataMap == null){
+	public <T> T getValue(Class<?> tableClass, String name) {
+		if (dataMap == null) {
 			return null;
 		}
-		
+
 		TableInfo tableInfo = DB.getTableInfo(tableClass);
 		String tableName = tableMapping == null ? tableInfo.getName() : tableMapping.getTableName(tableClass);
 		ColumnInfo columnInfo = tableInfo.getColumnInfo(name);
@@ -129,9 +120,9 @@ public final class Result implements Serializable {
 			} catch (Exception e) {
 				throw new ShuChaoWenRuntimeException(e);
 			}
-			
+
 			if (b) {
-				if(tableInfo.isTable()){
+				if (tableInfo.isTable()) {
 					((BeanListen) t).start_field_listen();
 				}
 				return t;
@@ -140,7 +131,8 @@ public final class Result implements Serializable {
 		}
 	}
 
-	private boolean wrapper(Object root, String prefix, TableInfo tableInfo) throws IllegalArgumentException, IllegalAccessException {
+	private boolean wrapper(Object root, String prefix, TableInfo tableInfo)
+			throws IllegalArgumentException, IllegalAccessException {
 		boolean b = (tableInfo.getColumns().length == 0);
 		for (ColumnInfo columnInfo : tableInfo.getColumns()) {
 			String name;
@@ -155,17 +147,13 @@ public final class Result implements Serializable {
 				if (!b) {
 					b = true;
 				}
-			}else{
+			} else {
 				StringBuilder sb = new StringBuilder();
 				sb.append(tableInfo.getClassInfo().getName());
 				sb.append(" [");
 				sb.append(columnInfo.getName());
 				sb.append("] not found for DataSource");
-				if(fieldStrict){
-					throw new ShuChaoWenRuntimeException(sb.toString());
-				}else{
-					Logger.warn("Result", sb.toString());
-				}
+				Logger.warn("Result", sb.toString());
 			}
 		}
 
@@ -177,7 +165,7 @@ public final class Result implements Serializable {
 				boolean b1 = wrapper(obj, tName + ".", info);
 				if (b1) {
 					columnInfo.setValueToField(root, obj);
-					if(info.isTable()){
+					if (info.isTable()) {
 						((BeanListen) obj).start_field_listen();
 					}
 				}
@@ -257,11 +245,11 @@ public final class Result implements Serializable {
 		}
 		throw new NullPointerException("to date error value:" + value);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T> T newInstance(Class<T> type) {
 		Table table = type.getAnnotation(Table.class);
-		if(table == null){
+		if (table == null) {
 			try {
 				return type.newInstance();
 			} catch (InstantiationException e) {
@@ -269,7 +257,7 @@ public final class Result implements Serializable {
 			} catch (IllegalAccessException e) {
 				throw new ShuChaoWenRuntimeException(e);
 			}
-		}else{
+		} else {
 			return (T) BeanUtils.getEnhancer(type, null, null).create();
 		}
 	}
