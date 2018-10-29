@@ -38,6 +38,12 @@ public abstract class DB extends AbstractDB {
 			storageMap.put(ClassUtils.getCGLIBRealClassName(clz), new CommonStorage(this, null, null));
 		}
 	}
+	
+	protected void removeAllStorage(){
+		if(storageMap != null){
+			storageMap.clear();
+		}
+	}
 
 	protected void removeStorage(Class<?>... tableClass) {
 		for (Class<?> clz : tableClass) {
