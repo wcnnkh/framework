@@ -67,7 +67,7 @@ public final class DBUtils {
 		if (sqls == null || connection == null) {
 			throw new NullPointerException();
 		}
-
+		
 		Iterator<SQL> iterator = sqls.iterator();
 		if (sqls.size() == 1) {
 			SQL sql = iterator.next();
