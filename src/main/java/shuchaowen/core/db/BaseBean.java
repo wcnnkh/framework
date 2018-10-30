@@ -7,9 +7,10 @@ import java.io.Serializable;
  * @author shuchaowen
  *
  */
+@Deprecated
 public abstract class BaseBean implements Cloneable,Serializable {
 	private static final long serialVersionUID = 1L;
-
+	
 	public final void save(){
 		DBManager.getDB(this.getClass()).save(this);
 	}
