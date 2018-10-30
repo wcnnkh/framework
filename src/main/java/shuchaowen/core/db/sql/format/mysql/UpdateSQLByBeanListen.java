@@ -39,7 +39,7 @@ public class UpdateSQLByBeanListen implements SQL {
 				continue;
 			}
 			
-			if (index > 0) {
+			if (index++ > 0) {
 				sb.append(",");
 			}
 			sb.append(columnInfo.getSqlColumnName());
