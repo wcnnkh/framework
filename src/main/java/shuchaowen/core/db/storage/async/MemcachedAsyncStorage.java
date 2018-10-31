@@ -11,7 +11,7 @@ import shuchaowen.core.db.storage.ExecuteInfo;
 import shuchaowen.core.util.IOUtils;
 import shuchaowen.core.util.MemcachedQueue;
 
-public final class MemcachedAsyncStorage extends AbstractAsyncStorage{
+public final class MemcachedAsyncStorage extends AbstractAsyncStorage {
 	private MemcachedQueue memcachedQueue;
 	private final boolean sqlDebug;
 
@@ -19,21 +19,17 @@ public final class MemcachedAsyncStorage extends AbstractAsyncStorage{
 		this(db, memcached, queueKey, true);
 	}
 
-	public MemcachedAsyncStorage(AbstractDB db, final Memcached memcached, final String queueKey, final boolean sqlDebug) {
+	public MemcachedAsyncStorage(AbstractDB db, final Memcached memcached, final String queueKey,
+			final boolean sqlDebug) {
 		super(db);
 		this.sqlDebug = sqlDebug;
 		memcachedQueue = new MemcachedQueue(queueKey, memcached);
 		new Thread(new Runnable() {
 
 			public void run() {
-				while (!Thread.interrupted()) {
-					try {
-						Thread.sleep(100L);
-						byte[] data = memcachedQueue.lockRead();
-						if (data == null) {
-							continue;
-						}
-
+				try {
+					while (!Thread.interrupted()) {
+						byte[] data = memcachedQueue.lockReadWait(100);
 						try {
 							ExecuteInfo executeInfo = IOUtils.byteToJavaObject(data);
 							next(executeInfo);
@@ -42,10 +38,10 @@ public final class MemcachedAsyncStorage extends AbstractAsyncStorage{
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						Thread.sleep(1L);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+						Thread.sleep(10L);//休眠一下，给其他服务出口竞争的机会
 					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
 		}).start();
@@ -80,8 +76,8 @@ public final class MemcachedAsyncStorage extends AbstractAsyncStorage{
 			e.printStackTrace();
 		}
 	}
-	
-	public Memcached getMemcached(){
+
+	public Memcached getMemcached() {
 		return memcachedQueue.getMemcached();
 	}
 }

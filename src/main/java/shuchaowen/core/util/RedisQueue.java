@@ -16,6 +16,10 @@ public class RedisQueue {
 	}
 	
 	public void write(byte[] data){
+		if(data == null){
+			throw new NullPointerException("RedisQueue not write null");
+		}
+		
 		redis.lpush(queueKey, data);
 	}
 	
@@ -43,5 +47,20 @@ public class RedisQueue {
 
 	public byte[] getQueueKey() {
 		return queueKey;
+	}
+	
+	/**
+	 * 此方法不可能返回空的元素
+	 * @param sleepTime
+	 * @return
+	 * @throws InterruptedException
+	 */
+	public byte[] lockReadWait(int sleepTime) throws InterruptedException {
+		byte[] data = null;
+		while (!Thread.interrupted() && data == null) {
+			Thread.sleep(sleepTime);
+			data = lockRead();
+		}
+		return data;
 	}
 }

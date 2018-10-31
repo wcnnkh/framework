@@ -32,14 +32,9 @@ public final class RedisAsyncStorage extends AbstractAsyncStorage {
 		new Thread(new Runnable() {
 
 			public void run() {
-				while (!Thread.interrupted()) {
-					try {
-						Thread.sleep(100L);
-						byte[] data = redisQueue.lockRead();
-						if (data == null) {
-							continue;
-						}
-
+				try {
+					while (!Thread.interrupted()) {
+						byte[] data = redisQueue.lockReadWait(100);
 						try {
 							ExecuteInfo executeInfo = IOUtils.byteToJavaObject(data);
 							next(executeInfo);
@@ -48,10 +43,10 @@ public final class RedisAsyncStorage extends AbstractAsyncStorage {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						Thread.sleep(1L);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+						Thread.sleep(10L);
 					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
 		}).start();
@@ -86,8 +81,8 @@ public final class RedisAsyncStorage extends AbstractAsyncStorage {
 			e.printStackTrace();
 		}
 	}
-	
-	public Redis getRedis(){
+
+	public Redis getRedis() {
 		return redisQueue.getRedis();
 	}
 }
