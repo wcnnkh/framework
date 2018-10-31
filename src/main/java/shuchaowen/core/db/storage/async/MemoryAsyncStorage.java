@@ -1,11 +1,8 @@
 package shuchaowen.core.db.storage.async;
 
-import java.util.Collection;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import shuchaowen.core.db.AbstractDB;
-import shuchaowen.core.db.DBUtils;
-import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.storage.ExecuteInfo;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
@@ -21,8 +18,8 @@ public final class MemoryAsyncStorage extends AbstractAsyncStorage {
 	private volatile boolean logger = true;
 	private Thread thread;
 
-	public MemoryAsyncStorage(AbstractDB db) {
-		super(db);
+	public MemoryAsyncStorage(AbstractDB db, AsyncConsumer asyncConsumer) {
+		super(db, asyncConsumer);
 		this.thread = new Thread(new Runnable() {
 
 			public void run() {
@@ -45,19 +42,8 @@ public final class MemoryAsyncStorage extends AbstractAsyncStorage {
 		if (executeInfo == null) {
 			return;
 		}
-
-		Collection<SQL> sqls = getSqlList(executeInfo);
-		if (logger) {
-			for (SQL sql : sqls) {
-				logger(sql);
-			}
-		}
-
-		try {
-			DBUtils.execute(getDb(), sqls);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
+		getAsyncConsumer().consumer(getDb(), executeInfo);
 	}
 
 	public boolean isLogger() {

@@ -15,13 +15,16 @@ public class MemcachedQueue {
 		this.keyPrefix = keyPrefix;
 		this.memcached = memcached;
 		memcached.add(keyPrefix + READ_KEY, 0 + "");
-		memcached.add(keyPrefix + WRITE_KEY, 0 + "");
 		memcached.add(keyPrefix + WRITE_INDEX_KEY, 0 + "");
 	}
 
 	private boolean checkCanRead() {
 		long readIndex = Integer.parseInt((String) memcached.get(keyPrefix + READ_KEY));
-		long writeIndex = Integer.parseInt((String) memcached.get(keyPrefix + WRITE_KEY));
+		Long writeIndex = memcached.get(keyPrefix + WRITE_KEY);
+		if(writeIndex == null){
+			return false;
+		}
+		
 		if (writeIndex < 0) {
 			if (readIndex >= 0) {
 				return true;
@@ -43,9 +46,10 @@ public class MemcachedQueue {
 			throw new NullPointerException("RedisQueue not write null");
 		}
 		
-		boolean b = memcached.add(keyPrefix + memcached.incr(keyPrefix + WRITE_INDEX_KEY, 1), data);
+		long writeIndex = memcached.incr(keyPrefix + WRITE_INDEX_KEY, 1);
+		boolean b = memcached.add(keyPrefix + writeIndex, data);
 		if(b){
-			memcached.incr(keyPrefix + WRITE_KEY, 1);
+			memcached.set(keyPrefix + WRITE_KEY, writeIndex);
 		}
 	}
 
@@ -79,12 +83,5 @@ public class MemcachedQueue {
 
 	public Memcached getMemcached() {
 		return memcached;
-	}
-	
-	/**
-	 * 如果此队列出现异常，可使用此方法修复队列
-	 */
-	public void repair(){
-		memcached.set(keyPrefix + WRITE_KEY, memcached.get(keyPrefix + WRITE_INDEX_KEY));
 	}
 }

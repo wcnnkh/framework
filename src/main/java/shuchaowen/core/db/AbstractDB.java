@@ -47,20 +47,11 @@ public abstract class AbstractDB implements ConnectionPool{
 	}
 	
 	private SQLFormat sqlFormat;
-	private boolean debug = false;
 	
 	public AbstractDB(SQLFormat sqlFormat){
 		this.sqlFormat = sqlFormat;
 	}
 	
-	public boolean isDebug() {
-		return debug;
-	}
-
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
-
 	public SQLFormat getSqlFormat() {
 		return sqlFormat == null? DEFAULT_SQL_FORMAT:sqlFormat;
 	}
@@ -93,14 +84,6 @@ public abstract class AbstractDB implements ConnectionPool{
 	
 	public <T> T selectOne(Class<T> type, SQL sql){
 		return select(sql).getFirst(type);
-	}
-	
-	public void execute(Collection<SQL> sqls){
-		TransactionContext.getInstance().execute(this, sqls);
-	}
-	
-	public void execute(SQL ...sqls){
-		TransactionContext.getInstance().execute(this, sqls);
 	}
 	
 	public Select createSelect(){
@@ -297,40 +280,34 @@ public abstract class AbstractDB implements ConnectionPool{
 	}
 	
 	public void saveToDB(Collection<?> beans){
-		execute(getSaveSqlList(beans));
+		TransactionContext.getInstance().execute(this, getSaveSqlList(beans));
 	}
 	
 	public void updateToDB(Collection<?> beans){
-		execute(getUpdateSqlList(beans));
+		TransactionContext.getInstance().execute(this, getUpdateSqlList(beans));
 	}
 	
 	public void deleteToDB(Collection<?> beans){
-		execute(getDeleteSqlList(beans));
+		TransactionContext.getInstance().execute(this, getDeleteSqlList(beans));
 	}
 	
 	public void saveOrUpdateToDB(Collection<?> beans){
-		execute(getSaveOrUpdateSqlList(beans));
+		TransactionContext.getInstance().execute(this, getSaveOrUpdateSqlList(beans));
 	}
 	
 	public void forceSave(Collection<?> beans){
-		DBUtils.execute(this, getSaveSqlList(beans));
+		TransactionContext.getInstance().forceExecute(this, getSaveSqlList(beans));
 	}
 	
 	public void forceUpdate(Collection<?> beans){
-		DBUtils.execute(this, getUpdateSqlList(beans));
+		TransactionContext.getInstance().forceExecute(this, getUpdateSqlList(beans));
 	}
 	
 	public void forceDelete(Collection<?> beans){
-		DBUtils.execute(this, getDeleteSqlList(beans));
+		TransactionContext.getInstance().forceExecute(this, getDeleteSqlList(beans));
 	}
 	
 	public void forceSaveOrUpdate(Collection<?> beans){
-		DBUtils.execute(this, getSaveOrUpdateSqlList(beans));
-	}
-	
-	public void log(SQL sql){
-		if(isDebug()){
-			Logger.debug("SQL", sql == null? null:DBUtils.getSQLId(sql));
-		}
+		TransactionContext.getInstance().forceExecute(this, getSaveOrUpdateSqlList(beans));
 	}
 }

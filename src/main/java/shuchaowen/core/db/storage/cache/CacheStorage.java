@@ -27,10 +27,12 @@ public class CacheStorage implements Storage {
 	private final Map<String, CacheConfig> cacheConfigMap = new HashMap<String, CacheConfig>();
 	private final AbstractAsyncStorage asyncStorage;
 	private final Cache cache;
+	private final CacheHelper cacheHelper;
 
 	public CacheStorage(Cache cache, AbstractAsyncStorage asyncStorage) {
 		this.cache = cache;
 		this.asyncStorage = asyncStorage;
+		this.cacheHelper = new CacheHelper(cache);
 	}
 
 	public AbstractAsyncStorage getAsyncStroage() {
@@ -143,27 +145,11 @@ public class CacheStorage implements Storage {
 			return getDB().getByIdListFromDB(type, null, params);
 		}
 	}
-
+	
 	public void save(Collection<?> beans) {
 		for (Object bean : beans) {
 			CacheConfig cacheInfo = getCacheConfig(bean.getClass());
-			try {
-				switch (cacheInfo.getCacheType()) {
-				case lazy:
-					cache.saveBean(bean, cacheInfo.getExp());
-					break;
-				case keys:
-					cache.saveBeanAndKey(bean, cacheInfo.getExp());
-					break;
-				case full:
-					cache.saveBeanAndIndex(bean);
-					break;
-				default:
-					break;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			cacheHelper.saveToCache(bean, cacheInfo);
 
 			if (cacheInfo.isAsync()) {
 				asyncStorage.save(Arrays.asList(bean));
@@ -176,23 +162,7 @@ public class CacheStorage implements Storage {
 	public void update(Collection<?> beans) {
 		for (Object bean : beans) {
 			CacheConfig cacheInfo = getCacheConfig(bean.getClass());
-			try {
-				switch (cacheInfo.getCacheType()) {
-				case lazy:
-					cache.updateBean(bean, cacheInfo.getExp());
-					break;
-				case keys:
-					cache.updateBeanAndKey(bean, cacheInfo.getExp());
-					break;
-				case full:
-					cache.updateBeanAndIndex(bean);
-					break;
-				default:
-					break;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			cacheHelper.updateToCache(bean, cacheInfo);
 
 			if (cacheInfo.isAsync()) {
 				asyncStorage.update(Arrays.asList(bean));
@@ -205,23 +175,7 @@ public class CacheStorage implements Storage {
 	public void delete(Collection<?> beans) {
 		for (Object bean : beans) {
 			CacheConfig cacheInfo = getCacheConfig(bean.getClass());
-			try {
-				switch (cacheInfo.getCacheType()) {
-				case lazy:
-					cache.deleteBean(bean);
-					break;
-				case keys:
-					cache.deleteBeanAndKey(bean);
-					break;
-				case full:
-					cache.deleteBeanAndIndex(bean);
-					break;
-				default:
-					break;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			cacheHelper.deleteToCache(bean, cacheInfo);
 
 			if (cacheInfo.isAsync()) {
 				asyncStorage.delete(Arrays.asList(bean));
@@ -234,23 +188,7 @@ public class CacheStorage implements Storage {
 	public void saveOrUpdate(Collection<?> beans) {
 		for (Object bean : beans) {
 			CacheConfig cacheInfo = getCacheConfig(bean.getClass());
-			try {
-				switch (cacheInfo.getCacheType()) {
-				case lazy:
-					cache.saveOrUpdateBean(bean, cacheInfo.getExp());
-					break;
-				case keys:
-					cache.saveOrUpdateBeanAndKey(bean, cacheInfo.getExp());
-					break;
-				case full:
-					cache.saveOrUpdateBeanAndIndex(bean);
-					break;
-				default:
-					break;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			cacheHelper.saveOrUpdateToCache(bean, cacheInfo);
 
 			if (cacheInfo.isAsync()) {
 				asyncStorage.saveOrUpdate(Arrays.asList(bean));

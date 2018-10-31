@@ -19,15 +19,21 @@ import shuchaowen.core.util.Logger;
  */
 public abstract class AbstractAsyncStorage implements Storage{
 	private final AbstractDB db;
+	private final AsyncConsumer asyncConsumer;
 	
-	public AbstractAsyncStorage(AbstractDB db){
+	public AbstractAsyncStorage(AbstractDB db, AsyncConsumer asyncConsumer){
 		this.db = db;
+		this.asyncConsumer = asyncConsumer;
 	}
 	
 	public AbstractDB getDb() {
 		return db;
 	}
-	
+
+	public AsyncConsumer getAsyncConsumer() {
+		return asyncConsumer;
+	}
+
 	protected void logger(SQL sql) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
@@ -54,22 +60,6 @@ public abstract class AbstractAsyncStorage implements Storage{
 		execute(new ExecuteInfo(EOperationType.SAVE_OR_UPDATE, beans));
 	}
 	
-	protected Collection<SQL> getSqlList(ExecuteInfo executeInfo){
-		switch (executeInfo.getOperationType()) {
-		case SAVE:
-			return getDb().getSaveSqlList(executeInfo.getBeanList());
-		case DELETE:
-			return getDb().getDeleteSqlList(executeInfo.getBeanList());
-		case UPDATE:
-			return getDb().getUpdateSqlList(executeInfo.getBeanList());
-		case SAVE_OR_UPDATE:
-			return getDb().getSaveOrUpdateSqlList(executeInfo.getBeanList());
-		default:
-			break;
-		}
-		return null;
-	}
-
 	public <T> T getById(Class<T> type, Object... params) {
 		return db.getByIdFromDB(type, null, params);
 	}

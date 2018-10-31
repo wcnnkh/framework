@@ -13,20 +13,16 @@ import shuchaowen.core.db.transaction.SQLTransaction;
 import shuchaowen.core.db.transaction.Transaction;
 import shuchaowen.core.db.transaction.TransactionCollection;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.core.util.Context;
 import shuchaowen.core.util.Logger;
 
 /**
  * 数据库封装核心类，用于处理数据库事务
- * 
  * @author shuchaowen
- *
  */
-public final class TransactionContext {
-	private ThreadLocal<ThreadLocalDBTransaction> threadLocalTransaction = new ThreadLocal<ThreadLocalDBTransaction>();
-	private volatile boolean cacheEnable;
-	// 默认应该是开启事务的，不然要这个类有何用，定义此字段是为了满足特殊需求
-	private volatile boolean transactionEnable = true;
-	private volatile boolean sqlDebug = false;
+public final class TransactionContext extends Context<ThreadLocalDBTransaction> {
+	private boolean cacheEnable;
+	private boolean debug = false;
 
 	/**
 	 * 理论上一个应用程序只要一个事务管理器
@@ -43,81 +39,29 @@ public final class TransactionContext {
 	}
 
 	public TransactionContext() {
-		this(true);
+		this(false, true);
 	}
 
-	/**
-	 * @param cacheEnable
-	 *            是否启用同一事务内的查询缓存
-	 */
-	public TransactionContext(boolean cacheEnable) {
+	public TransactionContext(boolean debug, boolean cacheEnable) {
+		this.debug = debug;
 		this.cacheEnable = cacheEnable;
 	}
 
-	public boolean isTransactionEnable() {
-		return transactionEnable;
-	}
-
-	public void setTransactionEnable(boolean transactionEnable) {
-		this.transactionEnable = transactionEnable;
-	}
-	
-	private static void logger(SQL sql){
-		StringBuilder sb = new StringBuilder();
-		sb.append("[");
-		sb.append(sql.getSql());
-		sb.append("]");
-		sb.append(" - ");
-		sb.append(sql.getParams() == null? "[]":Arrays.toString(sql.getParams()));
-		Logger.debug("SQL", sb.toString());
-	}
-	
 	/**
 	 * 不参与正在进行的事务，单独执行
 	 */
-	public void forceExecute(AbstractDB db, Collection<SQL> sqls){
+	public void forceExecute(ConnectionPool db, Collection<SQL> sqls) {
 		if (sqls == null || db == null) {
 			throw new NullPointerException();
 		}
-		
-		if (sqlDebug) {
+
+		if (debug) {
 			for (SQL s : sqls) {
-				logger(s);
+				Logger.debug("SQL", DBUtils.getSQLId(s));
 			}
 		}
-		
+
 		DBUtils.execute(db, sqls);
-	}
-
-	/**
-	 * 开始一个事务，如果已经开始了事务会将事务计数器加一
-	 */
-	public void begin() {
-		if (!transactionEnable) {
-			return;
-		}
-
-		ThreadLocalDBTransaction sqlTransaction = threadLocalTransaction.get();
-		if (sqlTransaction == null) {
-			sqlTransaction = new ThreadLocalDBTransaction();
-			threadLocalTransaction.set(sqlTransaction);
-		}
-		sqlTransaction.beginTransaction();
-	}
-
-	/**
-	 * 开始的事务必须要提交
-	 * begin与commit是一一对应的,开始了多少次就要提交多少次
-	 * 当事务的索引为1说明这是最后一个事务了，此时会提交事务
-	 * @throws Throwable
-	 *             如果出现异常说明事务执行失败
-	 */
-	public void commit() throws Exception {
-		ThreadLocalDBTransaction sqlTransaction = threadLocalTransaction.get();
-		if (sqlTransaction == null) {
-			throw new NullPointerException("Please start the transaction first");
-		}
-		sqlTransaction.commitTransaction();
 	}
 
 	/**
@@ -130,8 +74,8 @@ public final class TransactionContext {
 			return;
 		}
 
-		ThreadLocalDBTransaction localDBTransaction = threadLocalTransaction.get();
-		if (!transactionEnable || localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
+		ThreadLocalDBTransaction localDBTransaction = getValue();
+		if (localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
 			TransactionCollection transactionCollection = new TransactionCollection(transactions);
 			try {
 				transactionCollection.execute();
@@ -142,8 +86,8 @@ public final class TransactionContext {
 			localDBTransaction.addTransaction(transactions);
 		}
 	}
-	
-	public void execute(AbstractDB db, SQL ...sqls){
+
+	public void execute(ConnectionPool db, SQL... sqls) {
 		execute(db, Arrays.asList(sqls));
 	}
 
@@ -153,24 +97,24 @@ public final class TransactionContext {
 	 * @param connectionOrigin
 	 * @param sql
 	 */
-	public void execute(AbstractDB db, Collection<SQL> sqls) {
+	public void execute(ConnectionPool db, Collection<SQL> sqls) {
 		if (db == null || sqls == null || sqls.isEmpty()) {
 			return;
 		}
 
-		if (sqlDebug) {
+		if (debug) {
 			for (SQL s : sqls) {
-				logger(s);
+				Logger.debug("SQL", DBUtils.getSQLId(s));
 			}
 		}
 
-		ThreadLocalDBTransaction localDBTransaction = threadLocalTransaction.get();
-		if (!transactionEnable || localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
+		ThreadLocalDBTransaction localDBTransaction = getValue();
+		if (localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
 			SQLTransaction sqlTransaction = new SQLTransaction(db);
 			for (SQL sql : sqls) {
 				sqlTransaction.addSql(sql);
 			}
-			
+
 			try {
 				sqlTransaction.execute();
 			} catch (Exception e) {
@@ -194,13 +138,13 @@ public final class TransactionContext {
 		this.cacheEnable = cacheEnable;
 	}
 
-	public ResultSet select(AbstractDB db, SQL sql){
-		if(sqlDebug){
-			logger(sql);
+	public ResultSet select(ConnectionPool db, SQL sql) {
+		if (debug) {
+			Logger.debug("SQL", DBUtils.getSQLId(sql));
 		}
-		
+
 		if (cacheEnable) {
-			ThreadLocalDBTransaction localDBTransaction = threadLocalTransaction.get();
+			ThreadLocalDBTransaction localDBTransaction = getValue();
 			if (localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
 				return DBUtils.select(db, sql);
 			} else {
@@ -210,54 +154,42 @@ public final class TransactionContext {
 			return DBUtils.select(db, sql);
 		}
 	}
-	
- 	/**
-	 * 判断事务是否开启
-	 * 
-	 * @return
-	 */
-	public boolean isBegin() {
-		ThreadLocalDBTransaction localDBTransaction = threadLocalTransaction.get();
-		return localDBTransaction != null && !threadLocalTransaction.get().isAutoCommit();
+
+	public boolean isDebug() {
+		return debug;
 	}
 
-	/**
-	 * 事务开始了多少次
-	 * 
-	 * @return
-	 */
-	public int getBeginCount() {
-		ThreadLocalDBTransaction localDBTransaction = threadLocalTransaction.get();
-		return localDBTransaction == null ? 0 : localDBTransaction.getTransactionCount();
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
-	public boolean isSqlDebug() {
-		return sqlDebug;
+	@Override
+	protected void firstBegin() {
+		ThreadLocalDBTransaction sqlTransaction = getValue();
+		if (sqlTransaction == null) {
+			sqlTransaction = new ThreadLocalDBTransaction();
+			setValue(sqlTransaction);
+		}
+		sqlTransaction.beginTransaction();
 	}
 
-	public void setSqlDebug(boolean sqlDebug) {
-		this.sqlDebug = sqlDebug;
+	@Override
+	protected void lastCommit() throws Throwable {
+		ThreadLocalDBTransaction localDBTransaction = getValue();
+		if(localDBTransaction != null){
+			localDBTransaction.commitTransaction();
+		}
 	}
 }
 
 class ThreadLocalDBTransaction extends AbstractTransaction {
-	private HashMap<AbstractDB, SQLTransaction> dbSqlMap = new HashMap<AbstractDB, SQLTransaction>();
-	private Map<AbstractDB, Map<String, ResultSet>> cacheMap = new HashMap<AbstractDB, Map<String, ResultSet>>();
+	private HashMap<ConnectionPool, SQLTransaction> dbSqlMap = new HashMap<ConnectionPool, SQLTransaction>();
+	private Map<ConnectionPool, Map<String, ResultSet>> cacheMap = new HashMap<ConnectionPool, Map<String, ResultSet>>();
 	private TransactionCollection transactionCollection = new TransactionCollection();
-
-	/**
-	 * 事务开始次数 用来实现事务的合并 意思就是说事务开始了多少次就要提交多少次,只有最后一次提交才是真实提交
-	 */
-	private int transactionCount = 0;
-
 	private boolean isAutoCommit = true;// 是否是自动提交
 
 	public boolean isAutoCommit() {
 		return isAutoCommit;
-	}
-
-	public int getTransactionCount() {
-		return transactionCount;
 	}
 
 	void addTransaction(Collection<Transaction> collection) {
@@ -269,42 +201,34 @@ class ThreadLocalDBTransaction extends AbstractTransaction {
 			reset();
 			isAutoCommit = false;
 		}
-		transactionCount++;
 	}
 
-	void commitTransaction() throws Exception{
+	void commitTransaction() throws Exception {
 		if (isAutoCommit) {
 			throw new ShuChaoWenRuntimeException("transaction status error autoCommit[" + isAutoCommit + "]");
 		}
 
-		if (transactionCount <= 0) {
-			throw new IndexOutOfBoundsException("transactionCount=" + transactionCount);
-		}
-
-		transactionCount --;
-		if (transactionCount == 0) {
-			//应该要提交事务了了
-			try {
-				execute();
-			} catch (Exception e) {
-				throw e;
-			}finally{
-				isAutoCommit = true;
-				reset();
-			}
+		// 应该要提交事务了了
+		try {
+			execute();
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			isAutoCommit = true;
+			reset();
 		}
 	}
 
-	ResultSet select(AbstractDB db, SQL sql) {
+	ResultSet select(ConnectionPool db, SQL sql) {
 		if (isAutoCommit) {
 			return DBUtils.select(db, sql);
 		} else {
 			ResultSet resultSet = null;
-			String id =  DBUtils.getSQLId(sql);
+			String id = DBUtils.getSQLId(sql);
 			Map<String, ResultSet> map = cacheMap.getOrDefault(id, new HashMap<String, ResultSet>());
-			if(map.containsKey(id)){
+			if (map.containsKey(id)) {
 				return map.get(id);
-			}else{
+			} else {
 				resultSet = DBUtils.select(db, sql);
 				map.put(id, resultSet);
 				cacheMap.put(db, map);
@@ -319,13 +243,12 @@ class ThreadLocalDBTransaction extends AbstractTransaction {
 	private void reset() {
 		cacheMap.clear();
 		transactionCollection.clear();
-		for (Entry<AbstractDB, SQLTransaction> entry : dbSqlMap.entrySet()) {
+		for (Entry<ConnectionPool, SQLTransaction> entry : dbSqlMap.entrySet()) {
 			entry.getValue().clear();
 		}
-		transactionCount = 0;
 	}
 
-	void addSql(AbstractDB db, Collection<SQL> sqls) {
+	void addSql(ConnectionPool db, Collection<SQL> sqls) {
 		if (sqls == null || db == null) {
 			return;
 		}
@@ -338,7 +261,7 @@ class ThreadLocalDBTransaction extends AbstractTransaction {
 	}
 
 	public void begin() throws Exception {
-		for (Entry<AbstractDB, SQLTransaction> entry : dbSqlMap.entrySet()) {
+		for (Entry<ConnectionPool, SQLTransaction> entry : dbSqlMap.entrySet()) {
 			transactionCollection.add(entry.getValue());
 		}
 		transactionCollection.begin();

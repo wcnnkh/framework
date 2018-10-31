@@ -21,9 +21,9 @@ public final class RubbitMQAsyncStorage extends AbstractAsyncStorage {
 	private Channel channel;
 	private String queueName;
 	
-	public RubbitMQAsyncStorage(AbstractDB db, Channel channel, String queueName)
+	public RubbitMQAsyncStorage(AbstractDB db, Channel channel, String queueName, AsyncConsumer asyncConsumer)
 			throws IOException {
-		super(db);
+		super(db, asyncConsumer);
 		this.channel = channel;
 		this.queueName = queueName;
 		/**
@@ -39,7 +39,7 @@ public final class RubbitMQAsyncStorage extends AbstractAsyncStorage {
 				try {
 					ExecuteInfo executeInfo = IOUtils.byteToJavaObject(body);
 					if(executeInfo != null){
-						getDb().execute(getSqlList(executeInfo));
+						getAsyncConsumer().consumer(getDb(), executeInfo);
 					}
 					getChannel().basicAck(envelope.getDeliveryTag(), false);
 				} catch (Exception e) {
