@@ -1,6 +1,5 @@
-package shuchaowen.core.util;
+package shuchaowen.core.cache;
 
-import shuchaowen.core.cache.Memcached;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 public class MemcachedQueue {

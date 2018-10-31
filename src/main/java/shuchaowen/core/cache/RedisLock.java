@@ -1,8 +1,8 @@
-package shuchaowen.core.util;
+package shuchaowen.core.cache;
 
 import java.util.Collections;
 
-import shuchaowen.core.cache.Redis;
+import shuchaowen.core.util.XUtils;
 
 public class RedisLock {
 	private static final String UNLOCK_SCRIPT = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";

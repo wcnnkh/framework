@@ -1,8 +1,6 @@
-package shuchaowen.core.util;
+package shuchaowen.core.cache;
 
 import java.nio.charset.Charset;
-
-import shuchaowen.core.cache.Redis;
 
 public class RedisQueue {
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");

@@ -1,7 +1,6 @@
-package shuchaowen.core.util;
+package shuchaowen.core.cache;
 
-import shuchaowen.core.cache.CAS;
-import shuchaowen.core.cache.Memcached;
+import shuchaowen.core.util.XUtils;
 
 public class MemcachedLock {
 	private final Memcached memcached;

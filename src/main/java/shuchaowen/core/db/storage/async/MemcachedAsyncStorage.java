@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.Collection;
 
 import shuchaowen.core.cache.Memcached;
+import shuchaowen.core.cache.MemcachedQueue;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.DBUtils;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.storage.ExecuteInfo;
 import shuchaowen.core.util.IOUtils;
-import shuchaowen.core.util.MemcachedQueue;
 
 public final class MemcachedAsyncStorage extends AbstractAsyncStorage {
 	private MemcachedQueue memcachedQueue;
