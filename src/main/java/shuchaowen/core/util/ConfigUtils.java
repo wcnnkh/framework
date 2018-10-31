@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -126,11 +128,11 @@ public class ConfigUtils {
 		if (StringUtils.isNull(configSuffix)) {
 			return getFile(filePath, null);
 		} else {
-			return getFile(filePath, StringUtils.splitList(String.class, configSuffix, ";", false));
+			return getFile(filePath, Arrays.asList(StringUtils.commonSplit(configSuffix)));
 		}
 	}
 
-	public static File getFile(String filePath, List<String> testSuffix) {
+	public static File getFile(String filePath, Collection<String> testSuffix) {
 		File file = new File(getFilePath(filePath));
 		if (testSuffix == null || testSuffix.isEmpty()) {
 			return file;
