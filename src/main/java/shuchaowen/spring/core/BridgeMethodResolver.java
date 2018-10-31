@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package shuchaowen.core.spring.core;
+package shuchaowen.spring.core;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -25,8 +25,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import shuchaowen.core.spring.util.ClassUtils;
-import shuchaowen.core.spring.util.ReflectionUtils;
+import shuchaowen.spring.util.ClassUtils;
+import shuchaowen.spring.util.ReflectionUtils;
 
 /**
  * Helper for resolving synthetic {@link Method#isBridge bridge Methods} to the

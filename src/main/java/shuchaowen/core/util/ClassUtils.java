@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import shuchaowen.core.spring.core.LocalVariableTableParameterNameDiscoverer;
+import shuchaowen.spring.core.LocalVariableTableParameterNameDiscoverer;
 
 public final class ClassUtils {
 	public static final String CGLIB_CLASS_SPLIT = "$$";

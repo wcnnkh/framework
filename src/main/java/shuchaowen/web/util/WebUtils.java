@@ -33,10 +33,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import shuchaowen.core.spring.util.Assert;
-import shuchaowen.core.spring.util.LinkedMultiValueMap;
-import shuchaowen.core.spring.util.MultiValueMap;
-import shuchaowen.core.spring.util.StringUtils;
+import shuchaowen.spring.util.Assert;
+import shuchaowen.spring.util.LinkedMultiValueMap;
+import shuchaowen.spring.util.MultiValueMap;
+import shuchaowen.spring.util.StringUtils;
 
 /**
  * Miscellaneous utilities for web applications.

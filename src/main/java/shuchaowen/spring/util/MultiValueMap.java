@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package shuchaowen.core.spring.util;
+package shuchaowen.spring.util;
 
 import java.util.List;
 import java.util.Map;

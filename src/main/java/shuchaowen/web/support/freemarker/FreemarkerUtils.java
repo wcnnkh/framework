@@ -8,7 +8,7 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateNumberModel;
 import freemarker.template.TemplateScalarModel;
-import shuchaowen.core.spring.util.NumberUtils;
+import shuchaowen.spring.util.NumberUtils;
 
 /**
  * freemarker工具类

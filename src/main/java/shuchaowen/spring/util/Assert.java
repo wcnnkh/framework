@@ -14,7 +14,7 @@
  * the License.
  */
 
-package shuchaowen.core.spring.util;
+package shuchaowen.spring.util;
 
 import java.util.Collection;
 import java.util.Map;

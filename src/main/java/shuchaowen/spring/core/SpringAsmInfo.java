@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package shuchaowen.core.spring.core;
+package shuchaowen.spring.core;
 
 import org.objectweb.asm.Opcodes;
 

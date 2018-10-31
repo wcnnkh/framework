@@ -20,7 +20,7 @@ import java.io.FileNotFoundException;
 
 import javax.servlet.ServletContext;
 
-import shuchaowen.core.spring.util.ResourceUtils;
+import shuchaowen.spring.util.ResourceUtils;
 
 
 /**

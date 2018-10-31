@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package shuchaowen.core.spring.util;
+package shuchaowen.spring.util;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -34,7 +34,7 @@ import java.util.Arrays;
  * @author Rob Harrop
  * @author Chris Beams
  * @since 19.03.2004
- * @see shuchaowen.reference.spring.util.shuchaowen.util.reference.spring.lang.ObjectUtils
+ * @see shuchaowen.spring.util.reference.spring.util.shuchaowen.util.reference.spring.lang.ObjectUtils
  */
 public abstract class ObjectUtils {
 

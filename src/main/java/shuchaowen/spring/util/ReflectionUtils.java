@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package shuchaowen.core.spring.util;
+package shuchaowen.spring.util;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package shuchaowen.core.spring.core;
+package shuchaowen.spring.core;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
@@ -33,8 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-import shuchaowen.core.spring.util.Assert;
-import shuchaowen.core.spring.util.ObjectUtils;
+import shuchaowen.spring.util.Assert;
+import shuchaowen.spring.util.ObjectUtils;
 
 /**
  * A {@link ConcurrentHashMap} that uses {@link ReferenceType#SOFT soft} or

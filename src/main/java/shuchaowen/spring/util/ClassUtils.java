@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package shuchaowen.core.spring.util;
+package shuchaowen.spring.util;
 
 import java.beans.Introspector;
 
@@ -723,7 +723,7 @@ public abstract class ClassUtils {
 	 * {@code DefaultFoo.bar()}. This enables attributes on that method to be found.
 	 * <p><b>NOTE:</b> In contrast to {@link shuchaowen.spring.aop.support.AopUtils#getMostSpecificMethod},
 	 * this method does <i>not</i> resolve Java 5 bridge methods automatically.
-	 * Call {@link shuchaowen.reference.spring.core.spring.core.BridgeMethodResolver#findBridgedMethod}
+	 * Call {@link shuchaowen.spring.core.reference.spring.core.spring.core.BridgeMethodResolver#findBridgedMethod}
 	 * if bridge method resolution is desirable (e.g. for obtaining metadata from
 	 * the original method definition).
 	 * <p><b>NOTE:</b> Since Spring 3.1.1, if Java security settings disallow reflective

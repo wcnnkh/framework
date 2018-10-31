@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package shuchaowen.core.spring.core;
+package shuchaowen.spring.core;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -27,7 +27,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
 
-import shuchaowen.core.spring.util.Assert;
+import shuchaowen.spring.util.Assert;
 
 /**
  * Helper class that encapsulates the specification of a method parameter, i.e.

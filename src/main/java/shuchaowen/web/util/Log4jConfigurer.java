@@ -24,7 +24,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import shuchaowen.core.spring.util.ResourceUtils;
+import shuchaowen.spring.util.ResourceUtils;
 
 /**
  * Convenience class that features simple methods for custom log4j configuration.

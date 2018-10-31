@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package shuchaowen.core.spring.util;
+package shuchaowen.spring.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +50,7 @@ import java.util.TreeSet;
  * @author Rick Evans
  * @author Arjen Poutsma
  * @since 16 April 2001
- * @see shuchaowen.reference.spring.util.shuchaowen.util.reference.spring.lang.StringUtils
+ * @see shuchaowen.spring.util.reference.spring.util.shuchaowen.util.reference.spring.lang.StringUtils
  */
 public abstract class StringUtils {
 

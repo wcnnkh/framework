@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package shuchaowen.core.spring.core;
+package shuchaowen.spring.core;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
@@ -27,7 +27,7 @@ import java.lang.reflect.WildcardType;
 import java.util.HashMap;
 import java.util.Map;
 
-import shuchaowen.core.spring.util.Assert;
+import shuchaowen.spring.util.Assert;
 
 /**
  * Helper class for resolving generic types against type variables.
