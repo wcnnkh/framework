@@ -1,10 +1,12 @@
 package shuchaowen.core.util;
 
 import shuchaowen.core.cache.Memcached;
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 public class MemcachedQueue {
 	private static final String READ_KEY = "_read";
 	private static final String WRITE_KEY = "_write";
+	private static final String WRITE_INDEX_KEY = "_write_index";
 	private static final String READ_LOCK_KEY = "_read_lock";
 
 	private Memcached memcached;
@@ -15,6 +17,7 @@ public class MemcachedQueue {
 		this.memcached = memcached;
 		memcached.add(keyPrefix + READ_KEY, 0 + "");
 		memcached.add(keyPrefix + WRITE_KEY, 0 + "");
+		memcached.add(keyPrefix + WRITE_INDEX_KEY, 0 + "");
 	}
 
 	private boolean checkCanRead() {
@@ -27,6 +30,8 @@ public class MemcachedQueue {
 		}
 		return writeIndex > readIndex;
 	}
+	
+	
 
 	/**
 	 * 为了提高性能这里不对因一直没有取出数据导致队列满的的问题进行校验
@@ -34,12 +39,15 @@ public class MemcachedQueue {
 	 * @param data
 	 * @return
 	 */
-	public boolean write(byte[] data) {
+	public void write(byte[] data) {
 		if(data == null){
 			throw new NullPointerException("RedisQueue not write null");
 		}
-
-		return memcached.add(keyPrefix + memcached.incr(keyPrefix + WRITE_KEY, 1), data);
+		
+		boolean b = memcached.add(keyPrefix + memcached.incr(keyPrefix + WRITE_INDEX_KEY, 1), data);
+		if(b){
+			memcached.incr(keyPrefix + WRITE_KEY, 1);
+		}
 	}
 
 	public byte[] lockRead() {
@@ -53,7 +61,7 @@ public class MemcachedQueue {
 					return data;
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new ShuChaoWenRuntimeException(e);
 			} finally {
 				memcachedLock.unLock();
 			}
@@ -72,5 +80,12 @@ public class MemcachedQueue {
 
 	public Memcached getMemcached() {
 		return memcached;
+	}
+	
+	/**
+	 * 如果此队列出现异常，可使用此方法修复队列
+	 */
+	public void repair(){
+		memcached.set(keyPrefix + WRITE_KEY, memcached.get(keyPrefix + WRITE_INDEX_KEY));
 	}
 }
