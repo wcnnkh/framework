@@ -1,8 +1,8 @@
 package shuchaowen.core.db.storage.cache;
 
-import shuchaowen.core.cache.Memcached;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.storage.async.MemcachedAsyncStorage;
+import shuchaowen.memcached.Memcached;
 
 public class MemcachedCacheStorage extends CacheStorage {
 	public MemcachedCacheStorage(AbstractDB db, Memcached memcached) {

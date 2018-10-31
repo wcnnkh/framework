@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import shuchaowen.core.cache.CAS;
-import shuchaowen.core.cache.Memcached;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.storage.CacheUtils;
+import shuchaowen.memcached.CAS;
+import shuchaowen.memcached.Memcached;
 
 public class MemcachedCache implements Cache{
 	private static final String SPLIT = "#";

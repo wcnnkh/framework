@@ -3,13 +3,13 @@ package shuchaowen.core.db.storage.async;
 import java.io.IOException;
 import java.util.Collection;
 
-import shuchaowen.core.cache.Redis;
-import shuchaowen.core.cache.RedisQueue;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.DBUtils;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.storage.ExecuteInfo;
 import shuchaowen.core.util.IOUtils;
+import shuchaowen.redis.Redis;
+import shuchaowen.redis.RedisQueue;
 
 /**
  * 使用redis的队列实现异步存盘,该方案可用于集群

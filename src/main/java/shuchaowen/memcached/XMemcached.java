@@ -1,4 +1,4 @@
-package shuchaowen.core.cache;
+package shuchaowen.memcached;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

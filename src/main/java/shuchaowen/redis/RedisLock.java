@@ -1,4 +1,4 @@
-package shuchaowen.core.cache;
+package shuchaowen.redis;
 
 import java.util.Collections;
 

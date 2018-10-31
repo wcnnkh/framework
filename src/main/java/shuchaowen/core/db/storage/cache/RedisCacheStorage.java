@@ -1,8 +1,8 @@
 package shuchaowen.core.db.storage.cache;
 
-import shuchaowen.core.cache.Redis;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.storage.async.RedisAsyncStorage;
+import shuchaowen.redis.Redis;
 
 public class RedisCacheStorage extends CacheStorage{
 

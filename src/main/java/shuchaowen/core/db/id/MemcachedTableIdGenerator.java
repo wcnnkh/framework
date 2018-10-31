@@ -1,8 +1,8 @@
 package shuchaowen.core.db.id;
 
-import shuchaowen.core.cache.Memcached;
 import shuchaowen.core.db.DBManager;
 import shuchaowen.core.util.id.IdGenerator;
+import shuchaowen.memcached.Memcached;
 
 public class MemcachedTableIdGenerator implements IdGenerator<Long>{
 	private final Memcached memcached;

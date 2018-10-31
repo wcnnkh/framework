@@ -1,4 +1,4 @@
-package shuchaowen.core.cache;
+package shuchaowen.memcached;
 
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 

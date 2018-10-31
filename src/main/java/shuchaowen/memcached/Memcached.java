@@ -1,4 +1,4 @@
-package shuchaowen.core.cache;
+package shuchaowen.memcached;
 
 import java.util.Collection;
 import java.util.Map;

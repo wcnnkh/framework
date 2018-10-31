@@ -1,4 +1,4 @@
-package shuchaowen.core.cache;
+package shuchaowen.redis;
 
 import java.util.HashMap;
 import java.util.List;

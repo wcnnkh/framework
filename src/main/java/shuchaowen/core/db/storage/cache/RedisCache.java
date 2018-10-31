@@ -11,12 +11,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import shuchaowen.core.cache.Redis;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.storage.CacheUtils;
+import shuchaowen.redis.Redis;
 
 public class RedisCache implements Cache{
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
