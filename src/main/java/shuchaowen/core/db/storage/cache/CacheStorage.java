@@ -16,9 +16,14 @@ import shuchaowen.core.db.result.Result;
 import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.storage.Storage;
 import shuchaowen.core.db.storage.async.AbstractAsyncStorage;
+import shuchaowen.core.db.storage.async.AsyncConsumer;
+import shuchaowen.core.db.storage.async.MemcachedAsyncStorage;
+import shuchaowen.core.db.storage.async.RedisAsyncStorage;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.XTime;
+import shuchaowen.memcached.Memcached;
+import shuchaowen.redis.Redis;
 
 public class CacheStorage implements Storage {
 	private static final int DATA_DEFAULT_EXP_TIME = 7 * ((int) XTime.ONE_DAY / 1000);
@@ -28,10 +33,40 @@ public class CacheStorage implements Storage {
 	private final AbstractAsyncStorage asyncStorage;
 	private final Cache cache;
 	private final CacheHelper cacheHelper;
+	private final AbstractDB db;
 
 	public CacheStorage(Cache cache, AbstractAsyncStorage asyncStorage) {
+		this.db = asyncStorage.getDb();
 		this.cache = cache;
 		this.asyncStorage = asyncStorage;
+		this.cacheHelper = new CacheHelper(cache);
+	}
+	
+	public CacheStorage(AbstractDB db, Memcached memcached, String queueKey, AsyncConsumer asyncConsumer){
+		this.db = db;
+		this.cache = new MemcachedCache(memcached);
+		this.asyncStorage = new MemcachedAsyncStorage(db, memcached, queueKey, asyncConsumer);
+		this.cacheHelper = new CacheHelper(cache);
+	}
+	
+	public CacheStorage(AbstractDB db, Redis redis, String queueKey, AsyncConsumer asyncConsumer){
+		this.db = db;
+		this.cache = new RedisCache(redis);
+		this.asyncStorage = new RedisAsyncStorage(db, redis, queueKey, asyncConsumer);
+		this.cacheHelper = new CacheHelper(cache);
+	}
+	
+	public CacheStorage(AbstractDB db, Memcached memcached, String queueKey){
+		this.db = db;
+		this.cache = new MemcachedCache(memcached);
+		this.asyncStorage = new MemcachedAsyncStorage(db, memcached, queueKey, new CacheAsyncConsumer(this));
+		this.cacheHelper = new CacheHelper(cache);
+	}
+	
+	public CacheStorage(AbstractDB db, Redis redis, String queueKey){
+		this.db = db;
+		this.cache = new RedisCache(redis);
+		this.asyncStorage = new RedisAsyncStorage(db, redis, queueKey, new CacheAsyncConsumer(this));
 		this.cacheHelper = new CacheHelper(cache);
 	}
 
@@ -40,7 +75,7 @@ public class CacheStorage implements Storage {
 	}
 
 	public AbstractDB getDB() {
-		return asyncStorage.getDb();
+		return db;
 	}
 
 	public Cache getCache() {

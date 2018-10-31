@@ -47,20 +47,11 @@ public abstract class AbstractDB implements ConnectionPool{
 	}
 	
 	private SQLFormat sqlFormat;
-	private boolean debug;
 	
 	public AbstractDB(SQLFormat sqlFormat){
 		this.sqlFormat = sqlFormat;
 	}
 	
-	public boolean isDebug() {
-		return debug;
-	}
-
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
-
 	public SQLFormat getSqlFormat() {
 		return sqlFormat == null? DEFAULT_SQL_FORMAT:sqlFormat;
 	}
@@ -318,19 +309,5 @@ public abstract class AbstractDB implements ConnectionPool{
 	
 	public void forceSaveOrUpdate(Collection<?> beans){
 		TransactionContext.getInstance().forceExecute(this, getSaveOrUpdateSqlList(beans));
-	}
-	
-	public void log(Collection<SQL> sqls){
-		if(isDebug() && sqls != null){
-			for(SQL sql : sqls){
-				Logger.debug("SQL", DBUtils.getSQLId(sql));
-			}
-		}
-	}
-	
-	public void log(SQL sql){
-		if(isDebug() && sql != null){
-			Logger.debug("SQL", DBUtils.getSQLId(sql));
-		}
 	}
 }

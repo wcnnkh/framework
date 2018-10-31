@@ -31,9 +31,9 @@ public class MemcachedLock {
 	/**
 	 * 尝试获取锁，如果无法获取会一直阻塞直到获取到锁
 	 */
-	public void lockWait() throws InterruptedException {
+	public void lockWait(int sleep) throws InterruptedException {
 		while (!lock()) {
-			Thread.sleep(1);
+			Thread.sleep(sleep);
 		}
 	}
 

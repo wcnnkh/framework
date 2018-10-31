@@ -6,6 +6,7 @@ import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.storage.ExecuteInfo;
 import shuchaowen.core.util.IOUtils;
 import shuchaowen.redis.Redis;
+import shuchaowen.redis.RedisLock;
 import shuchaowen.redis.RedisQueue;
 
 /**
@@ -15,6 +16,7 @@ import shuchaowen.redis.RedisQueue;
  *
  */
 public final class RedisAsyncStorage extends AbstractAsyncStorage {
+	private static final String CONSUMER_LOCK_KEY = "_consumer_lock";
 	private RedisQueue redisQueue;
 
 	public RedisAsyncStorage(AbstractDB db, final Redis redis, final String queueKey, AsyncConsumer asyncConsumer) {
@@ -25,13 +27,19 @@ public final class RedisAsyncStorage extends AbstractAsyncStorage {
 			public void run() {
 				try {
 					while (!Thread.interrupted()) {
-						byte[] data = redisQueue.lockReadWait(100);
+						RedisLock redisLock = new RedisLock(redis, queueKey + CONSUMER_LOCK_KEY);
+						redisLock.lockWait(10);
 						try {
-							ExecuteInfo executeInfo = IOUtils.byteToJavaObject(data);
-							if(executeInfo == null){
+							byte[] data = redisQueue.lockRead();
+							if (data == null) {
 								continue;
 							}
-							
+
+							ExecuteInfo executeInfo = IOUtils.byteToJavaObject(data);
+							if (executeInfo == null) {
+								continue;
+							}
+
 							getAsyncConsumer().consumer(getDb(), executeInfo);
 						} catch (ClassNotFoundException e) {
 							e.printStackTrace();
