@@ -12,18 +12,18 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import shuchaowen.core.db.AbstractDB;
+import shuchaowen.core.db.OperationBean;
+import shuchaowen.core.db.OperationType;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
 import shuchaowen.core.db.TableInfo;
+import shuchaowen.core.db.TransactionContext;
 import shuchaowen.core.db.storage.CacheUtils;
+import shuchaowen.core.db.transaction.Transaction;
 import shuchaowen.redis.Redis;
 
 public class RedisCache implements Cache{
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
-	private static final String SPLIT = "#";
-	private static final String EX = "EX";
-	private static final String NX = "NX";
-	private static final String XX = "XX";
 	
 	private final Redis redis;
 	private final Charset charset;
@@ -50,191 +50,12 @@ public class RedisCache implements Cache{
 		return charset == null? DEFAULT_CHARSET:charset;
 	}
 
-	public void saveBeanAndIndex(Object bean) throws Exception {
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
-		StringBuilder sb = new StringBuilder();
-		Object[] values = new Object[tableInfo.getPrimaryKeyColumns().length];
-		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
-			values[i] = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean);
-			if(i != 0){
-				sb.append(SPLIT);
-			}
-			sb.append(values[i]);
-		}
-		
-		byte[] objectKey = sb.toString().getBytes(getCharset());
-		redis.hsetnx(tableInfo.getClassInfo().getName().getBytes(getCharset()), objectKey, CacheUtils.encode(bean));
-		if(values.length > 1){
-			sb = new StringBuilder();
-			sb.append(tableInfo.getClassInfo().getName());
-			sb.append(SPLIT);
-			sb.append(values[0]);
-			for(int i=1; i<values.length - 1; i++){
-				byte[] indexKey = sb.toString().getBytes(getCharset());
-				sb.append(SPLIT);
-				sb.append(values[i]);
-				redis.sadd(indexKey, objectKey);
-			}
-		}
+	public void loadFull(Object bean) throws Exception {
+		RedisFullCacheTransaction cacheTransaction = new RedisFullCacheTransaction(redis, new OperationBean(OperationType.SAVE, bean), getCharset());
+		cacheTransaction.execute();
 	}
 
-	public void updateBeanAndIndex(Object bean) throws Exception {
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
-		StringBuilder sb = new StringBuilder();
-		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
-			if(i != 0){
-				sb.append(SPLIT);
-			}
-			sb.append(tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean));
-		}
-		redis.hset(tableInfo.getClassInfo().getName().getBytes(getCharset()), sb.toString().getBytes(getCharset()), CacheUtils.encode(bean));
-	}
-
-	public void deleteBeanAndIndex(Object bean) throws Exception {
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
-		StringBuilder sb = new StringBuilder();
-		Object[] values = new Object[tableInfo.getPrimaryKeyColumns().length];
-		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
-			values[i] = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean);
-			if(i != 0){
-				sb.append(SPLIT);
-			}
-			sb.append(values[i]);
-		}
-		
-		byte[] objectKey = sb.toString().getBytes(getCharset());
-		redis.hdel(tableInfo.getClassInfo().getName().getBytes(getCharset()), objectKey);
-		if(values.length > 1){
-			sb = new StringBuilder();
-			sb.append(tableInfo.getClassInfo().getName());
-			sb.append(SPLIT);
-			sb.append(values[0]);
-			for(int i=1; i<values.length - 1; i++){
-				byte[] indexKey = sb.toString().getBytes(getCharset());
-				sb.append(SPLIT);
-				sb.append(values[i]);
-				redis.sadd(indexKey, objectKey);
-			}
-		}
-	}
-
-	public void saveOrUpdateBeanAndIndex(Object bean) throws Exception {
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
-		StringBuilder sb = new StringBuilder();
-		Object[] values = new Object[tableInfo.getPrimaryKeyColumns().length];
-		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
-			values[i] = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean);
-			if(i != 0){
-				sb.append(SPLIT);
-			}
-			sb.append(values[i]);
-		}
-		
-		byte[] objectKey = sb.toString().getBytes(getCharset());
-		redis.hset(tableInfo.getClassInfo().getName().getBytes(getCharset()), objectKey, CacheUtils.encode(bean));
-		if(values.length > 1){
-			sb = new StringBuilder();
-			sb.append(tableInfo.getClassInfo().getName());
-			sb.append(SPLIT);
-			sb.append(values[0]);
-			for(int i=1; i<values.length - 1; i++){
-				byte[] indexKey = sb.toString().getBytes(getCharset());
-				sb.append(SPLIT);
-				sb.append(values[i]);
-				redis.sadd(indexKey, objectKey);
-			}
-		}
-	}
-
-	public void saveBean(Object bean, int exp) throws Exception {
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
-		StringBuilder sb = new StringBuilder();
-		sb.append(tableInfo.getClassInfo().getName());
-		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
-			sb.append(SPLIT);
-			sb.append(tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean));
-		}
-		redis.set(sb.toString().getBytes(getCharset()), CacheUtils.encode(bean), NX.getBytes(getCharset()), EX.getBytes(getCharset()), exp);
-	}
-
-	public void updateBean(Object bean, int exp) throws Exception {
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
-		StringBuilder sb = new StringBuilder();
-		sb.append(tableInfo.getClassInfo().getName());
-		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
-			sb.append(SPLIT);
-			sb.append(tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean));
-		}
-		redis.set(sb.toString().getBytes(getCharset()), CacheUtils.encode(bean), XX.getBytes(getCharset()), EX.getBytes(getCharset()), exp);
-	}
-
-	public void deleteBean(Object bean) throws Exception {
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
-		StringBuilder sb = new StringBuilder();
-		sb.append(tableInfo.getClassInfo().getName());
-		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
-			sb.append(SPLIT);
-			sb.append(tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean));
-		}
-		redis.delete(sb.toString().getBytes(getCharset()));
-	}
-
-	public void saveOrUpdateBean(Object bean, int exp) throws Exception {
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
-		StringBuilder sb = new StringBuilder();
-		sb.append(tableInfo.getClassInfo().getName());
-		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
-			sb.append(SPLIT);
-			sb.append(tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean));
-		}
-		redis.setex(sb.toString().getBytes(getCharset()), exp, CacheUtils.encode(bean));
-	}
-
-	public void saveBeanAndKey(Object bean, int exp) throws Exception {
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
-		StringBuilder sb = new StringBuilder();
-		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
-			sb.append(SPLIT);
-			sb.append(tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean));
-		}
-		
-		redis.set((tableInfo.getClassInfo().getName() + sb.toString()).getBytes(getCharset()), CacheUtils.encode(bean), NX.getBytes(getCharset()), EX.getBytes(getCharset()), exp);
-		redis.sadd(tableInfo.getClassInfo().getName().getBytes(getCharset()), sb.toString().getBytes(getCharset()));
-	}
-
-	public void updateBeanAndKey(Object bean, int exp) throws Exception {
-		updateBean(bean, exp);
-	}
-
-	public void deleteBeanAndKey(Object bean) throws Exception {
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
-		StringBuilder sb = new StringBuilder();
-		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
-			sb.append(SPLIT);
-			sb.append(tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean));
-		}
-		
-		redis.delete((tableInfo.getClassInfo().getName() + sb.toString()).getBytes(getCharset()));
-		redis.srem(tableInfo.getClassInfo().getName().getBytes(getCharset()), sb.toString().getBytes(getCharset()));
-	}
-
-	public void saveOrUpdateBeanAndKey(Object bean, int exp) throws Exception {
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
-		StringBuilder sb = new StringBuilder();
-		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
-			sb.append(SPLIT);
-			sb.append(tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean));
-		}
-		
-		redis.setex((tableInfo.getClassInfo().getName() + sb.toString()).getBytes(getCharset()), exp, CacheUtils.encode(bean));
-		redis.sadd(tableInfo.getClassInfo().getName().getBytes(getCharset()), sb.toString().getBytes(getCharset()));
-	}
-
-	public void loadBeanAndIndex(Object bean) throws Exception {
-		saveBeanAndIndex(bean);
-	}
-
-	public void loadBeanAndKey(Object bean) throws Exception {
+	public void loadKey(Object bean) throws Exception {
 		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
 		StringBuilder sb = new StringBuilder();
 		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
@@ -263,27 +84,28 @@ public class RedisCache implements Cache{
 
 	public <T> T getById(AbstractDB db, boolean checkKey, int exp, Class<T> type, Object... params) throws Exception {
 		StringBuilder sb = new StringBuilder(128);
+		sb.append(type.getName());
 		for(Object v : params){
 			sb.append(SPLIT);
 			sb.append(v);
 		}
 		
-		String keySuffix = sb.toString();
-		byte[] key = (type.getName() + keySuffix).getBytes(getCharset());
+		String keyStr = sb.toString();
+		byte[] key = keyStr.getBytes(getCharset());
 		byte[] data = redis.get(key);
 		T t = null;
 		if (data == null) {
 			if (checkKey) {
-				if(redis.sIsMember(type.getName().getBytes(getCharset()), keySuffix.getBytes(getCharset()))){
+				if(redis.exists((Cache.INDEX_PREFIX + keyStr).getBytes(getCharset()))){
 					t = (T) db.getByIdFromDB(type, null, params);
 					if (t != null) {
-						saveBeanAndKey(t, exp);
+						opHotspot(new OperationBean(OperationType.SAVE, t), exp, true);
 					}
 				}
 			} else {
 				t = (T) db.getByIdFromDB(type, null, params);
 				if (t != null) {
-					saveBean(t, exp);
+					opHotspot(new OperationBean(OperationType.SAVE, t), exp, false);
 				}
 			}
 		} else {
@@ -357,14 +179,15 @@ public class RedisCache implements Cache{
 		Map<byte[], byte[]> objToExistKeyMap = new HashMap<byte[], byte[]>();
 		for (PrimaryKeyParameter parameter : primaryKeyParameters) {
 			StringBuilder sb = new StringBuilder(256);
+			sb.append(type.getName());
 			for(Object v :  parameter.getParams()){
 				sb.append(SPLIT);
 				sb.append(v);
 			}
 			
-			String keySuffix = sb.toString();
-			byte[] objectKey = (type.getName() + keySuffix).getBytes(getCharset());
-			objToExistKeyMap.put(objectKey, keySuffix.getBytes(getCharset()));
+			String keyStr = sb.toString();
+			byte[] objectKey = keyStr.getBytes(getCharset());
+			objToExistKeyMap.put(objectKey, (Cache.INDEX_PREFIX + keyStr).getBytes(getCharset()));
 			keyMap.put(objectKey, parameter);
 		}
 
@@ -407,5 +230,28 @@ public class RedisCache implements Cache{
 			}
 		}
 		return primaryKeyValue;
+	}
+
+	public void opByFull(OperationBean operationBean) throws Exception {
+		Transaction transaction = new RedisFullCacheTransaction(redis, operationBean, getCharset());
+		TransactionContext.getInstance().execute(Arrays.asList(transaction));
+	}
+
+	public void opHotspot(OperationBean operationBean, int exp, boolean keys) throws Exception {
+		Transaction transaction = new RedisHotspotCacheTransaction(redis, exp, keys, getCharset(), operationBean);
+		TransactionContext.getInstance().execute(Arrays.asList(transaction));
+	}
+
+	public void hostspotDataAsyncRollback(OperationBean operationBean, boolean keys, boolean exist) throws IllegalArgumentException, IllegalAccessException {
+		String key = CacheUtils.getObjectKey(operationBean.getBean());
+		redis.delete(key.getBytes(getCharset()));
+		if(keys){
+			byte[] indexKey = (Cache.INDEX_PREFIX + key).getBytes(getCharset());
+			if(exist){
+				redis.setnx(indexKey, "".getBytes(getCharset()));
+			}else{
+				redis.delete(indexKey);
+			}
+		}
 	}
 }

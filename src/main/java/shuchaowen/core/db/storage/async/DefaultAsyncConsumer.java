@@ -1,12 +1,13 @@
 package shuchaowen.core.db.storage.async;
 
+import java.util.Collection;
+
 import shuchaowen.core.db.AbstractDB;
-import shuchaowen.core.db.TransactionContext;
-import shuchaowen.core.db.storage.ExecuteInfo;
+import shuchaowen.core.db.OperationBean;
 
 public class DefaultAsyncConsumer implements AsyncConsumer{
 
-	public void consumer(AbstractDB db, ExecuteInfo executeInfo) {
-		TransactionContext.getInstance().execute(db, executeInfo.getSqlList(db));
+	public void consumer(AbstractDB db, Collection<OperationBean> operationBeans) {
+		db.opToDB(operationBeans);
 	}
 }

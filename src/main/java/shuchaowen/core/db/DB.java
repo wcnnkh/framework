@@ -32,15 +32,15 @@ public abstract class DB extends AbstractDB {
 			storageMap.put(ClassUtils.getCGLIBRealClassName(clz), storage);
 		}
 	}
-	
+
 	protected void registerDefaultStorage(Class<?>... tableClass) {
 		for (Class<?> clz : tableClass) {
 			storageMap.put(ClassUtils.getCGLIBRealClassName(clz), new CommonStorage(this, null, null));
 		}
 	}
-	
-	protected void removeAllStorage(){
-		if(storageMap != null){
+
+	protected void removeAllStorage() {
+		if (storageMap != null) {
 			storageMap.clear();
 		}
 	}
@@ -58,22 +58,6 @@ public abstract class DB extends AbstractDB {
 	public Storage getStorage(Class<?> tableClass) {
 		Storage storage = storageMap.get(ClassUtils.getCGLIBRealClassName(tableClass));
 		return storage == null ? this.storage : storage;
-	}
-
-	private Map<Storage, List<Object>> getStorageBeanMap(Collection<?> beanList) {
-		Map<Storage, List<Object>> map = new HashMap<Storage, List<Object>>();
-		for (Object bean : beanList) {
-			Storage storage = getStorage(bean.getClass());
-			List<Object> list = map.get(storage);
-			if (list == null) {
-				list = new ArrayList<Object>();
-				list.add(bean);
-				map.put(storage, list);
-			} else {
-				list.add(bean);
-			}
-		}
-		return map;
 	}
 
 	// storage
@@ -99,19 +83,16 @@ public abstract class DB extends AbstractDB {
 			return;
 		}
 
-		if (storageMap.isEmpty()) {
-			storage.save(beans);
-		} else if (beans.size() == 1) {
-			for (Object bean : beans) {
-				getStorage(bean.getClass()).save(beans);
-				break;
+		List<OperationBean> operationBeans = new ArrayList<OperationBean>(beans.size());
+		for (Object bean : beans) {
+			if (bean == null) {
+				continue;
 			}
-		} else {
-			Map<Storage, List<Object>> map = getStorageBeanMap(beans);
-			for (Entry<Storage, List<Object>> entry : map.entrySet()) {
-				entry.getKey().save(entry.getValue());
-			}
+
+			operationBeans.add(new OperationBean(OperationType.SAVE, bean));
 		}
+
+		op(operationBeans);
 	}
 
 	/** 删除 **/
@@ -124,19 +105,16 @@ public abstract class DB extends AbstractDB {
 			return;
 		}
 
-		if (storageMap.isEmpty()) {
-			storage.delete(beans);
-		} else if (beans.size() == 1) {
-			for (Object bean : beans) {
-				getStorage(bean.getClass()).delete(beans);
-				break;
+		List<OperationBean> operationBeans = new ArrayList<OperationBean>(beans.size());
+		for (Object bean : beans) {
+			if (bean == null) {
+				continue;
 			}
-		} else {
-			Map<Storage, List<Object>> map = getStorageBeanMap(beans);
-			for (Entry<Storage, List<Object>> entry : map.entrySet()) {
-				entry.getKey().delete(entry.getValue());
-			}
+
+			operationBeans.add(new OperationBean(OperationType.DELETE, bean));
 		}
+
+		op(operationBeans);
 	}
 
 	/** 更新 **/
@@ -149,19 +127,16 @@ public abstract class DB extends AbstractDB {
 			return;
 		}
 
-		if (storageMap.isEmpty()) {
-			storage.update(beans);
-		} else if (beans.size() == 1) {
-			for (Object bean : beans) {
-				getStorage(bean.getClass()).update(beans);
-				break;
+		List<OperationBean> operationBeans = new ArrayList<OperationBean>(beans.size());
+		for (Object bean : beans) {
+			if (bean == null) {
+				continue;
 			}
-		} else {
-			Map<Storage, List<Object>> map = getStorageBeanMap(beans);
-			for (Entry<Storage, List<Object>> entry : map.entrySet()) {
-				entry.getKey().update(entry.getValue());
-			}
+
+			operationBeans.add(new OperationBean(OperationType.UPDATE, bean));
 		}
+
+		op(operationBeans);
 	}
 
 	/** 保存或更新 **/
@@ -174,17 +149,50 @@ public abstract class DB extends AbstractDB {
 			return;
 		}
 
+		List<OperationBean> operationBeans = new ArrayList<OperationBean>(beans.size());
+		for (Object bean : beans) {
+			if (bean == null) {
+				continue;
+			}
+
+			operationBeans.add(new OperationBean(OperationType.SAVE_OR_UPDATE, bean));
+		}
+
+		op(operationBeans);
+	}
+
+	public void op(Collection<OperationBean> operationBeans) {
+		if (operationBeans == null || operationBeans.isEmpty()) {
+			return;
+		}
+
 		if (storageMap.isEmpty()) {
-			storage.saveOrUpdate(beans);
-		} else if (beans.size() == 1) {
-			for (Object bean : beans) {
-				getStorage(bean.getClass()).saveOrUpdate(beans);
+			storage.op(operationBeans);
+		} else if (operationBeans.size() == 1) {
+			for (OperationBean bean : operationBeans) {
+				getStorage(bean.getBean().getClass()).op(operationBeans);
 				break;
 			}
 		} else {
-			Map<Storage, List<Object>> map = getStorageBeanMap(beans);
-			for (Entry<Storage, List<Object>> entry : map.entrySet()) {
-				entry.getKey().saveOrUpdate(entry.getValue());
+			Map<Storage, Collection<OperationBean>> map = new HashMap<Storage, Collection<OperationBean>>();
+			for (OperationBean bean : operationBeans) {
+				if (bean == null || bean.getBean() == null) {
+					continue;
+				}
+
+				Storage storage = getStorage(bean.getBean().getClass());
+				Collection<OperationBean> collection = map.get(storage);
+				if (collection == null) {
+					collection = new ArrayList<OperationBean>();
+					collection.add(bean);
+					map.put(storage, collection);
+				} else {
+					collection.add(bean);
+				}
+			}
+
+			for (Entry<Storage, Collection<OperationBean>> entry : map.entrySet()) {
+				entry.getKey().op(entry.getValue());
 			}
 		}
 	}

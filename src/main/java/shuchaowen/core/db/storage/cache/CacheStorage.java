@@ -1,6 +1,6 @@
 package shuchaowen.core.db.storage.cache;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 
 import shuchaowen.core.db.AbstractDB;
+import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
 import shuchaowen.core.db.annoation.Table;
@@ -32,42 +33,36 @@ public class CacheStorage implements Storage {
 	private final Map<String, CacheConfig> cacheConfigMap = new HashMap<String, CacheConfig>();
 	private final AbstractAsyncStorage asyncStorage;
 	private final Cache cache;
-	private final CacheHelper cacheHelper;
 	private final AbstractDB db;
 
 	public CacheStorage(Cache cache, AbstractAsyncStorage asyncStorage) {
 		this.db = asyncStorage.getDb();
 		this.cache = cache;
 		this.asyncStorage = asyncStorage;
-		this.cacheHelper = new CacheHelper(cache);
 	}
-	
-	public CacheStorage(AbstractDB db, Memcached memcached, String queueKey, AsyncConsumer asyncConsumer){
+
+	public CacheStorage(AbstractDB db, Memcached memcached, String queueKey, AsyncConsumer asyncConsumer) {
 		this.db = db;
 		this.cache = new MemcachedCache(memcached);
 		this.asyncStorage = new MemcachedAsyncStorage(db, memcached, queueKey, asyncConsumer);
-		this.cacheHelper = new CacheHelper(cache);
 	}
-	
-	public CacheStorage(AbstractDB db, Redis redis, String queueKey, AsyncConsumer asyncConsumer){
+
+	public CacheStorage(AbstractDB db, Redis redis, String queueKey, AsyncConsumer asyncConsumer) {
 		this.db = db;
 		this.cache = new RedisCache(redis);
 		this.asyncStorage = new RedisAsyncStorage(db, redis, queueKey, asyncConsumer);
-		this.cacheHelper = new CacheHelper(cache);
 	}
-	
-	public CacheStorage(AbstractDB db, Memcached memcached, String queueKey){
+
+	public CacheStorage(AbstractDB db, Memcached memcached, String queueKey) {
 		this.db = db;
 		this.cache = new MemcachedCache(memcached);
 		this.asyncStorage = new MemcachedAsyncStorage(db, memcached, queueKey, new CacheAsyncConsumer(this));
-		this.cacheHelper = new CacheHelper(cache);
 	}
-	
-	public CacheStorage(AbstractDB db, Redis redis, String queueKey){
+
+	public CacheStorage(AbstractDB db, Redis redis, String queueKey) {
 		this.db = db;
 		this.cache = new RedisCache(redis);
 		this.asyncStorage = new RedisAsyncStorage(db, redis, queueKey, new CacheAsyncConsumer(this));
-		this.cacheHelper = new CacheHelper(cache);
 	}
 
 	public AbstractAsyncStorage getAsyncStroage() {
@@ -180,58 +175,6 @@ public class CacheStorage implements Storage {
 			return getDB().getByIdListFromDB(type, null, params);
 		}
 	}
-	
-	public void save(Collection<?> beans) {
-		for (Object bean : beans) {
-			CacheConfig cacheInfo = getCacheConfig(bean.getClass());
-			cacheHelper.saveToCache(bean, cacheInfo);
-
-			if (cacheInfo.isAsync()) {
-				asyncStorage.save(Arrays.asList(bean));
-			} else {
-				getDB().saveToDB(Arrays.asList(bean));
-			}
-		}
-	}
-
-	public void update(Collection<?> beans) {
-		for (Object bean : beans) {
-			CacheConfig cacheInfo = getCacheConfig(bean.getClass());
-			cacheHelper.updateToCache(bean, cacheInfo);
-
-			if (cacheInfo.isAsync()) {
-				asyncStorage.update(Arrays.asList(bean));
-			} else {
-				getDB().updateToDB(Arrays.asList(bean));
-			}
-		}
-	}
-
-	public void delete(Collection<?> beans) {
-		for (Object bean : beans) {
-			CacheConfig cacheInfo = getCacheConfig(bean.getClass());
-			cacheHelper.deleteToCache(bean, cacheInfo);
-
-			if (cacheInfo.isAsync()) {
-				asyncStorage.delete(Arrays.asList(bean));
-			} else {
-				getDB().deleteToDB(Arrays.asList(bean));
-			}
-		}
-	}
-
-	public void saveOrUpdate(Collection<?> beans) {
-		for (Object bean : beans) {
-			CacheConfig cacheInfo = getCacheConfig(bean.getClass());
-			cacheHelper.saveOrUpdateToCache(bean, cacheInfo);
-
-			if (cacheInfo.isAsync()) {
-				asyncStorage.saveOrUpdate(Arrays.asList(bean));
-			} else {
-				getDB().saveOrUpdateToDB(Arrays.asList(bean));
-			}
-		}
-	}
 
 	protected void loadCache(final Class<?> tableClass) {
 		final CacheConfig cacheInfo = getCacheConfig(tableClass);
@@ -242,10 +185,10 @@ public class CacheStorage implements Storage {
 				try {
 					switch (cacheInfo.getCacheType()) {
 					case full:
-						cache.loadBeanAndIndex(bean);
+						cache.loadFull(bean);
 						break;
 					case keys:
-						cache.loadBeanAndKey(bean);
+						cache.loadKey(bean);
 					default:
 						break;
 					}
@@ -254,6 +197,59 @@ public class CacheStorage implements Storage {
 				}
 			}
 		});
+	}
+
+	public void op(Collection<OperationBean> operationBeans) {
+		if (operationBeans == null) {
+			return;
+		}
+
+		List<OperationBean> asyncList = null;// 异步列表
+		List<OperationBean> synchronizationList = null;// 同步列表
+		for (OperationBean operationBean : operationBeans) {
+			if (operationBean == null || operationBean.getBean() == null) {
+				continue;
+			}
+
+			CacheConfig cacheConfig = getCacheConfig(operationBean.getBean().getClass());
+			try {
+				switch (cacheConfig.getCacheType()) {
+				case lazy:
+					cache.opHotspot(operationBean, cacheConfig.getExp(), false);
+					break;
+				case keys:
+					cache.opHotspot(operationBean, cacheConfig.getExp(), true);
+					break;
+				case full:
+					cache.opByFull(operationBean);
+					break;
+				default:
+					break;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			if (cacheConfig.isAsync()) {
+				if (asyncList == null) {
+					asyncList = new ArrayList<OperationBean>(operationBeans.size());
+				}
+				asyncList.add(operationBean);
+			} else {
+				if (synchronizationList == null) {
+					synchronizationList = new ArrayList<OperationBean>(operationBeans.size());
+				}
+				synchronizationList.add(operationBean);
+			}
+		}
+
+		if (asyncList != null) {
+			asyncStorage.op(asyncList);
+		}
+
+		if (synchronizationList != null) {
+			getDB().opToDB(synchronizationList);
+		}
 	}
 }
 

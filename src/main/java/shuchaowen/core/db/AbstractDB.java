@@ -1,6 +1,5 @@
 package shuchaowen.core.db;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -146,67 +145,6 @@ public abstract class AbstractDB implements ConnectionPool{
 		}
 	}
 	
-	public List<SQL> getSaveSqlList(Collection<?> beans) {
-		if (beans == null || beans.isEmpty()) {
-			return null;
-		}
-
-		List<SQL> sqls = new ArrayList<SQL>();
-		for (Object obj : beans) {
-			if (obj == null) {
-				continue;
-			}
-
-			sqls.add(getSqlFormat().toInsertSql(obj));
-		}
-		return sqls;
-	}
-	
-	public List<SQL> getUpdateSqlList(Collection<?> beans) {
-		if (beans == null || beans.isEmpty()) {
-			return null;
-		}
-
-		List<SQL> sqls = new ArrayList<SQL>();
-		for (Object obj : beans) {
-			if (obj == null) {
-				continue;
-			}
-			sqls.add(getSqlFormat().toUpdateSql(obj));
-		}
-		return sqls;
-	}
-	
-	public List<SQL> getDeleteSqlList(Collection<?> beans) {
-		if (beans == null || beans.isEmpty()) {
-			return null;
-		}
-
-		List<SQL> sqls = new ArrayList<SQL>();
-		for (Object obj : beans) {
-			if (obj == null) {
-				continue;
-			}
-			sqls.add(getSqlFormat().toDeleteSql(obj));
-		}
-		return sqls;
-	}
-	
-	public List<SQL> getSaveOrUpdateSqlList(Collection<?> beans) {
-		if (beans == null || beans.isEmpty()) {
-			return null;
-		}
-
-		List<SQL> sqls = new ArrayList<SQL>();
-		for (Object obj : beans) {
-			if (obj == null) {
-				continue;
-			}
-			sqls.add(getSqlFormat().toSaveOrUpdateSql(obj));
-		}
-		return sqls;
-	}
-	
 	public <T> T getByIdFromDB(Class<T> type, String tableName, Object... params) {
 		if (type == null) {
 			throw new NullPointerException("type is null");
@@ -279,35 +217,25 @@ public abstract class AbstractDB implements ConnectionPool{
 		return primaryKeyValue;
 	}
 	
-	public void saveToDB(Collection<?> beans){
-		TransactionContext.getInstance().execute(this, getSaveSqlList(beans));
+	public void opToDB(Collection<OperationBean> operationBeans){
+		Collection<SQL> sqls = DBUtils.getSqlList(getSqlFormat(), operationBeans);
+		if(sqls == null || sqls.isEmpty()){
+			return;
+		}
+		
+		TransactionContext.getInstance().execute(this, sqls);
 	}
 	
-	public void updateToDB(Collection<?> beans){
-		TransactionContext.getInstance().execute(this, getUpdateSqlList(beans));
-	}
-	
-	public void deleteToDB(Collection<?> beans){
-		TransactionContext.getInstance().execute(this, getDeleteSqlList(beans));
-	}
-	
-	public void saveOrUpdateToDB(Collection<?> beans){
-		TransactionContext.getInstance().execute(this, getSaveOrUpdateSqlList(beans));
-	}
-	
-	public void forceSave(Collection<?> beans){
-		TransactionContext.getInstance().forceExecute(this, getSaveSqlList(beans));
-	}
-	
-	public void forceUpdate(Collection<?> beans){
-		TransactionContext.getInstance().forceExecute(this, getUpdateSqlList(beans));
-	}
-	
-	public void forceDelete(Collection<?> beans){
-		TransactionContext.getInstance().forceExecute(this, getDeleteSqlList(beans));
-	}
-	
-	public void forceSaveOrUpdate(Collection<?> beans){
-		TransactionContext.getInstance().forceExecute(this, getSaveOrUpdateSqlList(beans));
+	/**
+	 * 不参与上下文事务直接提交
+	 * @param operationBeans
+	 */
+	public void forceOpToDB(Collection<OperationBean> operationBeans){
+		Collection<SQL> sqls = DBUtils.getSqlList(getSqlFormat(), operationBeans);
+		if(sqls == null || sqls.isEmpty()){
+			return;
+		}
+		
+		TransactionContext.getInstance().forceExecute(this, sqls);
 	}
 }

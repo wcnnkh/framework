@@ -1,9 +1,10 @@
 package shuchaowen.core.db.storage.async;
 
+import java.util.Collection;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import shuchaowen.core.db.AbstractDB;
-import shuchaowen.core.db.storage.ExecuteInfo;
+import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 /**
@@ -13,7 +14,7 @@ import shuchaowen.core.exception.ShuChaoWenRuntimeException;
  *
  */
 public final class MemoryAsyncStorage extends AbstractAsyncStorage {
-	private LinkedBlockingQueue<ExecuteInfo> queue = new LinkedBlockingQueue<ExecuteInfo>();
+	private LinkedBlockingQueue<Collection<OperationBean>> queue = new LinkedBlockingQueue<Collection<OperationBean>>();
 	private boolean service = true;
 	private volatile boolean logger = true;
 	private Thread thread;
@@ -38,12 +39,16 @@ public final class MemoryAsyncStorage extends AbstractAsyncStorage {
 	}
 
 	private void next() {
-		ExecuteInfo executeInfo = queue.poll();
-		if (executeInfo == null) {
+		Collection<OperationBean> operationBeans = queue.poll();
+		if (operationBeans == null) {
 			return;
 		}
 		
-		getAsyncConsumer().consumer(getDb(), executeInfo);
+		try {
+			getAsyncConsumer().consumer(getDb(), operationBeans);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public boolean isLogger() {
@@ -54,11 +59,10 @@ public final class MemoryAsyncStorage extends AbstractAsyncStorage {
 		this.logger = logger;
 	}
 
-	@Override
-	public void execute(ExecuteInfo executeInfo) {
+	public void op(Collection<OperationBean> operationBean) {
 		if (!service) {
 			throw new ShuChaoWenRuntimeException("service is " + service);// 停止服务了
 		}
-		queue.offer(executeInfo);
+		queue.offer(operationBean);
 	}
 }

@@ -8,8 +8,6 @@ import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
 import shuchaowen.core.db.sql.SQL;
-import shuchaowen.core.db.storage.EOperationType;
-import shuchaowen.core.db.storage.ExecuteInfo;
 import shuchaowen.core.db.storage.Storage;
 import shuchaowen.core.util.Logger;
 
@@ -44,22 +42,6 @@ public abstract class AbstractAsyncStorage implements Storage{
 		Logger.debug(this.getClass().getSimpleName(), sb.toString());
 	}
 
-	public void save(Collection<?> beans) {
-		execute(new ExecuteInfo(EOperationType.SAVE, beans));
-	}
-
-	public void update(Collection<?> beans) {
-		execute(new ExecuteInfo(EOperationType.UPDATE, beans));
-	}
-
-	public void delete(Collection<?> beans) {
-		execute(new ExecuteInfo(EOperationType.DELETE, beans));
-	}
-
-	public void saveOrUpdate(Collection<?> beans) {
-		execute(new ExecuteInfo(EOperationType.SAVE_OR_UPDATE, beans));
-	}
-	
 	public <T> T getById(Class<T> type, Object... params) {
 		return db.getByIdFromDB(type, null, params);
 	}
@@ -72,6 +54,4 @@ public abstract class AbstractAsyncStorage implements Storage{
 	public <T> List<T> getByIdList(Class<T> type, Object... params) {
 		return db.getByIdListFromDB(type, null, params);
 	}
-	
-	public abstract void execute(ExecuteInfo executeInfo);
 }

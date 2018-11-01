@@ -1,6 +1,7 @@
 package shuchaowen.core.db.storage.async;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
@@ -8,7 +9,7 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
 import shuchaowen.core.db.AbstractDB;
-import shuchaowen.core.db.storage.ExecuteInfo;
+import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.IOUtils;
 
@@ -37,9 +38,9 @@ public final class RubbitMQAsyncStorage extends AbstractAsyncStorage {
 			public void handleDelivery(String consumerTag, Envelope envelope,
 					BasicProperties properties, byte[] body) throws IOException {
 				try {
-					ExecuteInfo executeInfo = IOUtils.byteToJavaObject(body);
-					if(executeInfo != null){
-						getAsyncConsumer().consumer(getDb(), executeInfo);
+					Collection<OperationBean> operationBeans = IOUtils.byteToJavaObject(body);
+					if(operationBeans != null){
+						getAsyncConsumer().consumer(getDb(), operationBeans);
 					}
 					getChannel().basicAck(envelope.getDeliveryTag(), false);
 				} catch (Exception e) {
@@ -49,11 +50,10 @@ public final class RubbitMQAsyncStorage extends AbstractAsyncStorage {
 		});
 	}
 
-	@Override
-	public void execute(ExecuteInfo executeInfo) {
+	public void op(Collection<OperationBean> operationBean) {
 		byte[] data = null;
 		try {
-			data = IOUtils.javaObjectToByte(executeInfo);
+			data = IOUtils.javaObjectToByte(operationBean);
 			/**
 			 * 向server发布一条消息 
 			 * 参数1：exchange名字，若为空则使用默认的exchange 

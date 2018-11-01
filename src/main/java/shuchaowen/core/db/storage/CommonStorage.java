@@ -4,18 +4,19 @@ import java.util.Collection;
 import java.util.List;
 
 import shuchaowen.core.db.AbstractDB;
+import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
 
 public class CommonStorage implements Storage{
 	private final AbstractDB db;
 	private final Storage getStorage;
-	private final Storage executeStorage;
+	private final Storage opStorage;
 	
-	public CommonStorage(AbstractDB db, Storage getStorage, Storage executeStorage){
+	public CommonStorage(AbstractDB db, Storage getStorage, Storage opStorage){
 		this.db = db;
 		this.getStorage = getStorage;
-		this.executeStorage = executeStorage;
+		this.opStorage = opStorage;
 	}
 	
 	public AbstractDB getDb() {
@@ -26,40 +27,8 @@ public class CommonStorage implements Storage{
 		return getStorage;
 	}
 
-	public Storage getExecuteStorage() {
-		return executeStorage;
-	}
-
-	public void save(Collection<?> beans) {
-		if(executeStorage == null){
-			db.saveToDB(beans);
-		}else{
-			executeStorage.save(beans);
-		}
-	}
-
-	public void update(Collection<?> beans) {
-		if(executeStorage == null){
-			db.updateToDB(beans);
-		}else{
-			executeStorage.update(beans);
-		}
-	}
-
-	public void delete(Collection<?> beans) {
-		if(executeStorage == null){
-			db.deleteToDB(beans);
-		}else{
-			executeStorage.delete(beans);
-		}
-	}
-
-	public void saveOrUpdate(Collection<?> beans) {
-		if(executeStorage == null){
-			db.saveOrUpdateToDB(beans);
-		}else{
-			executeStorage.saveOrUpdate(beans);
-		}
+	public Storage getOpStorage() {
+		return opStorage;
 	}
 
 	public <T> T getById(Class<T> type, Object... params) {
@@ -84,6 +53,14 @@ public class CommonStorage implements Storage{
 			return db.getByIdListFromDB(type, null, params);
 		}else{
 			return getStorage.getByIdList(type, params);
+		}
+	}
+
+	public void op(Collection<OperationBean> operationBeans) {
+		if(opStorage == null){
+			db.opToDB(operationBeans);
+		}else{
+			opStorage.op(operationBeans); 
 		}
 	}
 }

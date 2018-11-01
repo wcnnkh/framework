@@ -4,18 +4,23 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import shuchaowen.core.db.result.Result;
 import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.sql.SQL;
+import shuchaowen.core.db.sql.format.SQLFormat;
 import shuchaowen.core.db.transaction.SQLTransaction;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.XUtils;
 
 public final class DBUtils {
+	private DBUtils(){};
+	
 	public static void setParams(PreparedStatement preparedStatement, Object[] args) throws SQLException {
 		if (args != null && args.length != 0) {
 			for (int i = 0; i < args.length; i++) {
@@ -144,5 +149,82 @@ public final class DBUtils {
 			tableName = tableInfo.getName();
 		}
 		return tableName;
+	}
+	
+	public static Collection<SQL> getSqlList(SQLFormat sqlFormat, Collection<OperationBean> operationBeans){
+		if(operationBeans == null || operationBeans.isEmpty()){
+			return null;
+		}
+		
+		List<SQL> list = new ArrayList<SQL>();
+		for(OperationBean operationBean : operationBeans){
+			if(operationBean == null){
+				continue;
+			}
+			
+			list.add(operationBean.getSql(sqlFormat));
+		}
+		return list;
+	}
+	
+	public static List<SQL> getSaveSqlList(SQLFormat sqlFormat, Collection<?> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return null;
+		}
+
+		List<SQL> sqls = new ArrayList<SQL>();
+		for (Object obj : beans) {
+			if (obj == null) {
+				continue;
+			}
+
+			sqls.add(sqlFormat.toInsertSql(obj));
+		}
+		return sqls;
+	}
+	
+	public static List<SQL> getUpdateSqlList(SQLFormat sqlFormat, Collection<?> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return null;
+		}
+
+		List<SQL> sqls = new ArrayList<SQL>();
+		for (Object obj : beans) {
+			if (obj == null) {
+				continue;
+			}
+			sqls.add(sqlFormat.toUpdateSql(obj));
+		}
+		return sqls;
+	}
+	
+	public static List<SQL> getDeleteSqlList(SQLFormat sqlFormat, Collection<?> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return null;
+		}
+
+		List<SQL> sqls = new ArrayList<SQL>();
+		for (Object obj : beans) {
+			if (obj == null) {
+				continue;
+			}
+			sqls.add(sqlFormat.toDeleteSql(obj));
+		}
+		return sqls;
+	}
+	
+	public static List<SQL> getSaveOrUpdateSqlList(SQLFormat sqlFormat, Collection<?> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return null;
+		}
+
+		List<SQL> sqls = new ArrayList<SQL>();
+		for (Object obj : beans) {
+			if (obj == null) {
+				continue;
+			}
+			sqls.add(sqlFormat.toSaveOrUpdateSql(obj));
+		}
+		return sqls;
 	}
 }
