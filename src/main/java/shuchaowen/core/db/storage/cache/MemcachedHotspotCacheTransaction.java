@@ -38,11 +38,9 @@ public class MemcachedHotspotCacheTransaction extends AbstractTransaction{
 	}
 
 	private void save() {
-		if(keys){
+		if(memcached.add(objectKey, exp, beanData)){
 			memcached.add(Cache.INDEX_PREFIX + objectKey, "");
 		}
-		
-		memcached.add(objectKey, exp, beanData);
 	}
 
 	private void update() {
@@ -62,8 +60,6 @@ public class MemcachedHotspotCacheTransaction extends AbstractTransaction{
 		}
 		memcached.set(objectKey, exp, beanData);
 	}
-	
-	
 
 	public void begin() throws Exception {
 		// TODO Auto-generated method stub
