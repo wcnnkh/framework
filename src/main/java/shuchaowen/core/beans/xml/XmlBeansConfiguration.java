@@ -28,13 +28,18 @@ public class XmlBeansConfiguration implements BeanInfoConfiguration {
 	private static final String BEANS_ANNOTATION = "packages";
 	private static final String BEAN_TAG_NAME = "bean";
 	private static final String PROPERTIES_TAG_NAME = "properties";
+	private static final String BEAN_FACTORY_TAG_NAME = "factory";
 	
 	private final Map<String, Bean> beanMap = new HashMap<String, Bean>();
 	private final Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private String packageNames;
 	private PropertiesFactory propertiesFactory;
+	private List<String> beanFactoryList;
+	//private final BeanFactory beanFactory;
 	
 	public XmlBeansConfiguration(BeanFactory beanFactory, String beanXml) throws Exception{
+		//this.beanFactory = beanFactory;
+		
 		if(!StringUtils.isNull(beanXml)){
 			File xml = ConfigUtils.getFile(beanXml);
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -79,6 +84,19 @@ public class XmlBeansConfiguration implements BeanInfoConfiguration {
 							}
 							nameMappingMap.put(n, bean.getId());
 						}
+					}
+				}else if(BEAN_FACTORY_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())){
+					Node node = nRoot.getAttributes().getNamedItem("value");
+					String name = node == null? null:node.getNodeValue();
+					if(name == null){
+						name = nRoot.getNodeValue();
+					}
+					
+					if(!StringUtils.isNull(name)){
+						if(beanFactoryList == null){
+							beanFactoryList = new ArrayList<String>();
+						}
+						beanFactoryList.add(name);
 					}
 				}
 			}
