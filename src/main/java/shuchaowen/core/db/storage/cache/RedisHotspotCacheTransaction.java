@@ -1,12 +1,16 @@
 package shuchaowen.core.db.storage.cache;
 
 import java.nio.charset.Charset;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.storage.CacheUtils;
 import shuchaowen.core.db.transaction.AbstractTransaction;
+import shuchaowen.core.util.Logger;
 import shuchaowen.redis.Redis;
 
 public class RedisHotspotCacheTransaction extends AbstractTransaction {
@@ -103,6 +107,26 @@ public class RedisHotspotCacheTransaction extends AbstractTransaction {
 	}
 
 	public void rollback() throws Exception {
+		Map<String, Object> map = CacheUtils.getObjectProperties(operationBean.getBean());
+		StringBuilder sb = new StringBuilder();
+		sb.append(operationBean.getBean().getClass().getName());
+		sb.append("{");
+		if (map != null) {
+			Iterator<Entry<String, Object>> iterator = map.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Entry<String, Object> entry = iterator.next();
+				sb.append(entry.getKey());
+				sb.append("=");
+				sb.append(entry.getValue());
+
+				if (iterator.hasNext()) {
+					sb.append(",");
+				}
+			}
+			sb.append("}");
+		}
+		Logger.debug("RedisHotspotCacheTransaction-rollback-" + operationBean.getOperationType().name(), sb.toString());
+		
 		redis.delete(objectKey);
 		if (keys) {
 			switch (operationBean.getOperationType()) {

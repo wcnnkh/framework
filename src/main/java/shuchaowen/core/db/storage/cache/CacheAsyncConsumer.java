@@ -29,25 +29,26 @@ public class CacheAsyncConsumer implements AsyncConsumer {
 		TransactionContext.getInstance().begin();
 		try {
 			Collection<SQL> sqls = DBUtils.getSqlList(db.getSqlFormat(), operationBeans);
-			if(sqls == null || sqls.isEmpty()){
+			if (sqls == null || sqls.isEmpty()) {
 				return;
 			}
-			
+
 			TransactionCollection collection = new TransactionCollection();
-			for(OperationBean operationBean : operationBeans){
+			for (OperationBean operationBean : operationBeans) {
 				CacheConfig cacheConfig = cacheStorage.getCacheConfig(operationBean.getBean().getClass());
 				switch (cacheConfig.getCacheType()) {
 				case keys:
 				case lazy:
 					boolean exist = dbExist(db, operationBean);
-					Transaction transaction = new HostspotDataAsyncRollbackTransaction(exist, cacheConfig.getCacheType() == CacheType.keys, cacheStorage.getCache(), operationBean);
+					Transaction transaction = new HostspotDataAsyncRollbackTransaction(exist,
+							cacheConfig.getCacheType() == CacheType.keys, cacheStorage.getCache(), operationBean);
 					collection.add(transaction);
 					break;
 				default:
 					break;
 				}
 			}
-			
+
 			TransactionContext.getInstance().execute(db, sqls, collection);
 		} catch (Exception e) {
 			throw e;
@@ -96,24 +97,24 @@ class HostspotDataAsyncRollbackTransaction extends AbstractTransaction {
 
 	public void rollback() throws Exception {
 		Map<String, Object> map = CacheUtils.getObjectProperties(operationBean.getBean());
-		if(map != null){
-			StringBuilder sb = new StringBuilder();
-			sb.append(operationBean.getBean().getClass().getName());
-			sb.append("{");
+		StringBuilder sb = new StringBuilder();
+		sb.append(operationBean.getBean().getClass().getName());
+		sb.append("{");
+		if (map != null) {
 			Iterator<Entry<String, Object>> iterator = map.entrySet().iterator();
-			while(iterator.hasNext()){
+			while (iterator.hasNext()) {
 				Entry<String, Object> entry = iterator.next();
 				sb.append(entry.getKey());
 				sb.append("=");
 				sb.append(entry.getValue());
-				
-				if(iterator.hasNext()){
+
+				if (iterator.hasNext()) {
 					sb.append(",");
 				}
 			}
 			sb.append("}");
-			Logger.debug("CacheAsyncConsumer-rollback-" + operationBean.getOperationType().name(), sb.toString());
 		}
+		Logger.debug("CacheAsyncConsumer-rollback-" + operationBean.getOperationType().name(), sb.toString());
 		cache.hostspotDataAsyncRollback(operationBean, key, exist);
 	}
 }
