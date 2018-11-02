@@ -112,7 +112,7 @@ class HostspotDataAsyncRollbackTransaction extends AbstractTransaction {
 				}
 			}
 			sb.append("}");
-			Logger.debug("CacheAsyncConsumer-rollback", sb.toString());
+			Logger.debug("CacheAsyncConsumer-rollback-" + operationBean.getOperationType().name(), sb.toString());
 		}
 		cache.hostspotDataAsyncRollback(operationBean, key, exist);
 	}
