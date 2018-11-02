@@ -78,7 +78,7 @@ public final class TransactionContext extends Context<ThreadLocalDBTransaction> 
 		if (localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
 			TransactionCollection transactionCollection = new TransactionCollection(transactions);
 			try {
-				transactionCollection.execute();
+				AbstractTransaction.transaction(transactionCollection);
 			} catch (Throwable e) {
 				throw new ShuChaoWenRuntimeException(e);
 			}

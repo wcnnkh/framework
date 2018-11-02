@@ -17,7 +17,6 @@ import shuchaowen.core.db.OperationType;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
 import shuchaowen.core.db.TableInfo;
-import shuchaowen.core.db.TransactionContext;
 import shuchaowen.core.db.storage.CacheUtils;
 import shuchaowen.core.db.transaction.Transaction;
 import shuchaowen.redis.Redis;
@@ -227,14 +226,12 @@ public class RedisCache implements Cache{
 		return primaryKeyValue;
 	}
 
-	public void opByFull(OperationBean operationBean) throws Exception {
-		Transaction transaction = new RedisFullCacheTransaction(redis, operationBean, getCharset());
-		TransactionContext.getInstance().execute(Arrays.asList(transaction));
+	public Transaction opByFull(OperationBean operationBean) throws Exception {
+		return new RedisFullCacheTransaction(redis, operationBean, getCharset());
 	}
 
-	public void opHotspot(OperationBean operationBean, int exp, boolean keys) throws Exception {
-		Transaction transaction = new RedisHotspotCacheTransaction(redis, exp, keys, getCharset(), operationBean);
-		TransactionContext.getInstance().execute(Arrays.asList(transaction));
+	public Transaction opHotspot(OperationBean operationBean, int exp, boolean keys) throws Exception {
+		return new RedisHotspotCacheTransaction(redis, exp, keys, getCharset(), operationBean);
 	}
 
 	public void hostspotDataAsyncRollback(OperationBean operationBean, boolean keys, boolean exist) throws IllegalArgumentException, IllegalAccessException {

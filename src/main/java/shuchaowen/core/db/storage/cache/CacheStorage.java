@@ -12,6 +12,7 @@ import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
+import shuchaowen.core.db.TransactionContext;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.db.result.Result;
 import shuchaowen.core.db.result.ResultIterator;
@@ -20,6 +21,9 @@ import shuchaowen.core.db.storage.async.AbstractAsyncStorage;
 import shuchaowen.core.db.storage.async.AsyncConsumer;
 import shuchaowen.core.db.storage.async.MemcachedAsyncStorage;
 import shuchaowen.core.db.storage.async.RedisAsyncStorage;
+import shuchaowen.core.db.transaction.AbstractTransaction;
+import shuchaowen.core.db.transaction.Transaction;
+import shuchaowen.core.db.transaction.TransactionCollection;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.XTime;
@@ -206,22 +210,25 @@ public class CacheStorage implements Storage {
 
 		List<OperationBean> asyncList = null;// 异步列表
 		List<OperationBean> synchronizationList = null;// 同步列表
+		TransactionCollection asyncTransactionList = null;
+		TransactionCollection synchronizationTransactionList = null;
 		for (OperationBean operationBean : operationBeans) {
 			if (operationBean == null || operationBean.getBean() == null) {
 				continue;
 			}
 
+			Transaction transaction = null;
 			CacheConfig cacheConfig = getCacheConfig(operationBean.getBean().getClass());
 			try {
 				switch (cacheConfig.getCacheType()) {
 				case lazy:
-					cache.opHotspot(operationBean, cacheConfig.getExp(), false);
+					transaction = cache.opHotspot(operationBean, cacheConfig.getExp(), false);
 					break;
 				case keys:
-					cache.opHotspot(operationBean, cacheConfig.getExp(), true);
+					transaction = cache.opHotspot(operationBean, cacheConfig.getExp(), true);
 					break;
 				case full:
-					cache.opByFull(operationBean);
+					transaction = cache.opByFull(operationBean);
 					break;
 				default:
 					break;
@@ -234,17 +241,44 @@ public class CacheStorage implements Storage {
 				if (asyncList == null) {
 					asyncList = new ArrayList<OperationBean>(operationBeans.size());
 				}
+
 				asyncList.add(operationBean);
+				if (transaction != null) {
+					if (asyncTransactionList == null) {
+						asyncTransactionList = new TransactionCollection(operationBeans.size());
+					}
+					asyncTransactionList.add(transaction);
+				}
+
 			} else {
 				if (synchronizationList == null) {
 					synchronizationList = new ArrayList<OperationBean>(operationBeans.size());
 				}
+
 				synchronizationList.add(operationBean);
+				if (transaction != null) {
+					if (synchronizationTransactionList == null) {
+						synchronizationTransactionList = new TransactionCollection(operationBeans.size());
+					}
+					synchronizationTransactionList.add(transaction);
+				}
+			}
+		}
+
+		if (asyncTransactionList != null) {
+			try {
+				AbstractTransaction.transaction(asyncTransactionList);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 
 		if (asyncList != null) {
 			asyncStorage.op(asyncList);
+		}
+
+		if (synchronizationTransactionList != null) {
+			TransactionContext.getInstance().execute(synchronizationTransactionList);
 		}
 
 		if (synchronizationList != null) {

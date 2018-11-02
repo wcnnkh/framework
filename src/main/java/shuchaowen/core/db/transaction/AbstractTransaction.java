@@ -3,11 +3,15 @@ package shuchaowen.core.db.transaction;
 public abstract class AbstractTransaction implements Transaction{
 	
 	public void execute() throws Exception{
+		transaction(this);
+	}
+	
+	public static void transaction(Transaction transaction) throws Exception{
 		try {
-			begin();
+			transaction.begin();
 		} catch (Exception e) {
 			try {
-				end();
+				transaction.end();
 			} catch (Exception e1) {
 				throw e1;
 			}
@@ -15,17 +19,17 @@ public abstract class AbstractTransaction implements Transaction{
 		}
 		
 		try {
-			process();
+			transaction.process();
 		} catch (Exception e) {
 			try {
-				rollback();
+				transaction.rollback();
 			} catch (Exception e1) {
 				throw e1;
 			}
 			throw e;
 		}finally{
 			try {
-				end();
+				transaction.end();
 			} catch (Exception e) {
 				throw e;
 			}
