@@ -20,11 +20,13 @@ import shuchaowen.redis.RedisQueue;
  */
 public final class RedisAsyncStorage extends AbstractAsyncStorage {
 	private static final String CONSUMER_LOCK_KEY = "_consumer_lock";
-	private RedisQueue redisQueue;
-	private boolean error = false;
+	private final RedisQueue redisQueue;
+	private volatile boolean error = false;
+	private final String queueKey;
 
 	public RedisAsyncStorage(AbstractDB db, final Redis redis, final String queueKey, AsyncConsumer asyncConsumer) {
 		super(db, asyncConsumer);
+		this.queueKey = queueKey;
 		redisQueue = new RedisQueue(queueKey, redis);
 		new Thread(new Runnable() {
 
@@ -75,6 +77,10 @@ public final class RedisAsyncStorage extends AbstractAsyncStorage {
 	}
 
 	public void op(Collection<OperationBean> operationBean) {
+		if(error){
+			Logger.error(queueKey, "异步 队列错误，请查看历史日志");
+		}
+		
 		// 这里使用jdk的序列化方式 ，因为不会出现各种没有经历过的问题
 		try {
 			byte[] data = IOUtils.javaObjectToByte(operationBean);

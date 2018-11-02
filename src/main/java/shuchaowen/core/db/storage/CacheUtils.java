@@ -1,5 +1,8 @@
 package shuchaowen.core.db.storage;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtobufIOUtil;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
@@ -39,5 +42,14 @@ public class CacheUtils {
 			sb.append(tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean));
 		}
 		return sb.toString();
+	}
+	
+	public static Map<String, Object> getObjectProperties(Object bean) throws IllegalArgumentException, IllegalAccessException{
+		Map<String, Object> map = new HashMap<String, Object>();
+		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
+		for (int i = 0; i < tableInfo.getColumns().length; i++) {
+			map.put(tableInfo.getColumns()[i].getFieldInfo().getName(), tableInfo.getColumns()[i].getFieldInfo().forceGet(bean));
+		}
+		return map;
 	}
 }

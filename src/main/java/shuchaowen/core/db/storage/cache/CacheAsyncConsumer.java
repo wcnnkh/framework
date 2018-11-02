@@ -1,6 +1,9 @@
 package shuchaowen.core.db.storage.cache;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.DBUtils;
@@ -8,10 +11,12 @@ import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.TransactionContext;
 import shuchaowen.core.db.sql.SQL;
+import shuchaowen.core.db.storage.CacheUtils;
 import shuchaowen.core.db.storage.async.AsyncConsumer;
 import shuchaowen.core.db.transaction.AbstractTransaction;
 import shuchaowen.core.db.transaction.Transaction;
 import shuchaowen.core.db.transaction.TransactionCollection;
+import shuchaowen.core.util.Logger;
 
 public class CacheAsyncConsumer implements AsyncConsumer {
 	private final CacheStorage cacheStorage;
@@ -50,7 +55,7 @@ public class CacheAsyncConsumer implements AsyncConsumer {
 			try {
 				TransactionContext.getInstance().commit();
 			} catch (Throwable e) {
-				e.printStackTrace();
+				throw new Exception(e);
 			}
 		}
 	}
@@ -90,6 +95,25 @@ class HostspotDataAsyncRollbackTransaction extends AbstractTransaction {
 	}
 
 	public void rollback() throws Exception {
+		Map<String, Object> map = CacheUtils.getObjectProperties(operationBean.getBean());
+		if(map != null){
+			StringBuilder sb = new StringBuilder();
+			sb.append(operationBean.getBean().getClass().getName());
+			sb.append("{");
+			Iterator<Entry<String, Object>> iterator = map.entrySet().iterator();
+			while(iterator.hasNext()){
+				Entry<String, Object> entry = iterator.next();
+				sb.append(entry.getKey());
+				sb.append("=");
+				sb.append(entry.getValue());
+				
+				if(iterator.hasNext()){
+					sb.append(",");
+				}
+			}
+			sb.append("}");
+			Logger.debug("CacheAsyncConsumer-rollback", sb.toString());
+		}
 		cache.hostspotDataAsyncRollback(operationBean, key, exist);
 	}
 }

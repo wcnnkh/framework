@@ -15,11 +15,13 @@ import shuchaowen.memcached.MemcachedQueue;
 public final class MemcachedAsyncStorage extends AbstractAsyncStorage {
 	private static final String CONSUMER_LOCK_KEY = "_consumer_lock";
 	private MemcachedQueue memcachedQueue;
-	private boolean error = false;
+	private volatile boolean error = false;
+	private final String queueKey;
 
 	public MemcachedAsyncStorage(AbstractDB db, final Memcached memcached, final String queueKey,
 			AsyncConsumer asyncConsumer) {
 		super(db, asyncConsumer);
+		this.queueKey = queueKey;
 		memcachedQueue = new MemcachedQueue(queueKey, memcached);
 		new Thread(new Runnable() {
 
@@ -73,6 +75,10 @@ public final class MemcachedAsyncStorage extends AbstractAsyncStorage {
 	}
 
 	public void op(Collection<OperationBean> operationBean) {
+		if(error){
+			Logger.error(queueKey, "异步 队列错误，请查看历史日志");
+		}
+		
 		// 这里使用jdk的序列化方式 ，因为不会出现各种没有经历过的问题
 		try {
 			byte[] data = IOUtils.javaObjectToByte(operationBean);
