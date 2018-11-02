@@ -35,7 +35,7 @@ public class OperationBean implements Serializable{
 	public SQL getSql(SQLFormat sqlFormat){
 		switch (operationType) {
 		case SAVE:
-			return sqlFormat.toSaveOrUpdateSql(bean);
+			return sqlFormat.toInsertSql(bean);
 		case UPDATE:
 			return sqlFormat.toUpdateSql(bean);
 		case DELETE:
