@@ -56,13 +56,8 @@ public class RedisCache implements Cache{
 	}
 
 	public void loadKey(Object bean) throws Exception {
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
-		StringBuilder sb = new StringBuilder();
-		for(int i=0; i<tableInfo.getPrimaryKeyColumns().length; i++){
-			sb.append(SPLIT);
-			sb.append(tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(bean));
-		}
-		redis.sadd(tableInfo.getClassInfo().getName().getBytes(getCharset()), sb.toString().getBytes(getCharset()));
+		String key = CacheUtils.getObjectKey(bean);
+		redis.setnx((Cache.INDEX_PREFIX + key).getBytes(getCharset()), "".getBytes(getCharset()));
 	}
 
 	public <T> T getById(Class<T> type, Object... params) throws Exception {
