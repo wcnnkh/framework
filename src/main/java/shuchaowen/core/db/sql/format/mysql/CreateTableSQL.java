@@ -5,6 +5,7 @@ import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.sql.SQL;
 
 public class CreateTableSQL implements SQL{
+	private static final long serialVersionUID = 1L;
 	private String sql;
 	
 	public CreateTableSQL(TableInfo tableInfo, String tableName){

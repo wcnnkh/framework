@@ -11,6 +11,7 @@ import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 public class UpdateSQLByBeanListen implements SQL {
+	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 

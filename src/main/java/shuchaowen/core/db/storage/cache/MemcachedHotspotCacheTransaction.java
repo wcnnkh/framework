@@ -14,6 +14,7 @@ public class MemcachedHotspotCacheTransaction extends AbstractTransaction{
 	private final OperationBean operationBean;
 	private final String objectKey;
 	private final byte[] beanData;
+	private boolean exist;//原来是否存在
 
 	public MemcachedHotspotCacheTransaction(Memcached memcached, int exp, boolean keys, OperationBean operationBean)
 			throws IllegalArgumentException, IllegalAccessException {
@@ -31,6 +32,10 @@ public class MemcachedHotspotCacheTransaction extends AbstractTransaction{
 			sb.append(v);
 		}
 		this.objectKey = sb.toString();
+		
+		if(keys){
+			this.exist = memcached.get(Cache.INDEX_PREFIX + objectKey) != null;
+		}
 	}
 	
 	public void loadKeys(){
@@ -89,16 +94,24 @@ public class MemcachedHotspotCacheTransaction extends AbstractTransaction{
 	}
 
 	public void rollback() throws Exception {
-		switch (operationBean.getOperationType()) {
-		case SAVE:
-			delete();
-			break;
-		case SAVE_OR_UPDATE:
-			memcached.delete(Cache.INDEX_PREFIX + objectKey, 1, 1000L);
-			break;
-		default:
-			memcached.delete(objectKey);
-			break;
+		memcached.delete(objectKey);
+		
+		if(keys){
+			switch (operationBean.getOperationType()) {
+			case SAVE:
+					memcached.delete(Cache.INDEX_PREFIX + objectKey);
+				break;
+			case DELETE:
+					memcached.add(Cache.INDEX_PREFIX + objectKey, "");
+				break;
+			case SAVE_OR_UPDATE:
+				if(!exist){
+					memcached.delete(Cache.INDEX_PREFIX + objectKey);
+				}
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }

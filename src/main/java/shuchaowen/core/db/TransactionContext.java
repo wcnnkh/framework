@@ -18,6 +18,7 @@ import shuchaowen.core.util.Logger;
 
 /**
  * 数据库封装核心类，用于处理数据库事务
+ * 
  * @author shuchaowen
  */
 public final class TransactionContext extends Context<ThreadLocalDBTransaction> {
@@ -69,21 +70,20 @@ public final class TransactionContext extends Context<ThreadLocalDBTransaction> 
 	 * 
 	 * @param transaction
 	 */
-	public void execute(Collection<Transaction> transactions) {
-		if (transactions == null || transactions.size() == 0) {
+	public void execute(Transaction transaction) {
+		if (transaction == null) {
 			return;
 		}
 
 		ThreadLocalDBTransaction localDBTransaction = getValue();
 		if (localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
-			TransactionCollection transactionCollection = new TransactionCollection(transactions);
 			try {
-				AbstractTransaction.transaction(transactionCollection);
+				AbstractTransaction.transaction(transaction);
 			} catch (Throwable e) {
 				throw new ShuChaoWenRuntimeException(e);
 			}
 		} else {
-			localDBTransaction.addTransaction(transactions);
+			localDBTransaction.addTransaction(transaction);
 		}
 	}
 
@@ -122,6 +122,44 @@ public final class TransactionContext extends Context<ThreadLocalDBTransaction> 
 			}
 		} else {
 			localDBTransaction.addSql(db, sqls);
+		}
+	}
+
+	public void execute(ConnectionPool db, Collection<SQL> sqls, Transaction transaction) {
+		if (debug) {
+			if (sqls != null) {
+				for (SQL s : sqls) {
+					Logger.debug("SQL", DBUtils.getSQLId(s));
+				}
+			}
+		}
+
+		ThreadLocalDBTransaction localDBTransaction = getValue();
+		if (localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
+			TransactionCollection transactionCollection = new TransactionCollection(2);
+			if (db != null && sqls != null && !sqls.isEmpty()) {
+				SQLTransaction sqlTransaction = new SQLTransaction(db);
+				for (SQL sql : sqls) {
+					sqlTransaction.addSql(sql);
+				}
+
+				transactionCollection.add(sqlTransaction);
+			}
+
+			if (transaction != null) {
+				transactionCollection.add(transaction);
+			}
+
+			try {
+				AbstractTransaction.transaction(transactionCollection);
+			} catch (Exception e) {
+				throw new ShuChaoWenRuntimeException(e);
+			}
+		} else {
+			localDBTransaction.addSql(db, sqls);
+			if (transaction != null) {
+				localDBTransaction.addTransaction(transaction);
+			}
 		}
 	}
 
@@ -176,7 +214,7 @@ public final class TransactionContext extends Context<ThreadLocalDBTransaction> 
 	@Override
 	protected void lastCommit() throws Throwable {
 		ThreadLocalDBTransaction localDBTransaction = getValue();
-		if(localDBTransaction != null){
+		if (localDBTransaction != null) {
 			localDBTransaction.commitTransaction();
 		}
 	}
@@ -192,8 +230,8 @@ class ThreadLocalDBTransaction extends AbstractTransaction {
 		return isAutoCommit;
 	}
 
-	void addTransaction(Collection<Transaction> collection) {
-		transactionCollection.add(new TransactionCollection(collection));
+	void addTransaction(Transaction collection) {
+		transactionCollection.add(collection);
 	}
 
 	void beginTransaction() {

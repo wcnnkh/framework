@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 
 import shuchaowen.core.db.AbstractDB;
+import shuchaowen.core.db.DBUtils;
 import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
@@ -16,6 +17,7 @@ import shuchaowen.core.db.TransactionContext;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.db.result.Result;
 import shuchaowen.core.db.result.ResultIterator;
+import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.storage.Storage;
 import shuchaowen.core.db.storage.async.AbstractAsyncStorage;
 import shuchaowen.core.db.storage.async.AsyncConsumer;
@@ -30,7 +32,7 @@ import shuchaowen.core.util.XTime;
 import shuchaowen.memcached.Memcached;
 import shuchaowen.redis.Redis;
 
-public class CacheStorage implements Storage {
+public final class CacheStorage implements Storage {
 	private static final int DATA_DEFAULT_EXP_TIME = 7 * ((int) XTime.ONE_DAY / 1000);
 	private static final CacheConfig DEFAULT_CACHE_CONFIG = new CacheConfig(CacheType.lazy, DATA_DEFAULT_EXP_TIME,
 			false);
@@ -38,6 +40,9 @@ public class CacheStorage implements Storage {
 	private final AbstractAsyncStorage asyncStorage;
 	private final Cache cache;
 	private final AbstractDB db;
+	// 缓存是否自动提交，如果为false就是要等transaction.commit()的时候再提交
+	//默认参与事务，应该以保证数据完整性为主
+	private boolean cacheAutoCommit = false;
 
 	public CacheStorage(Cache cache, AbstractAsyncStorage asyncStorage) {
 		this.db = asyncStorage.getDb();
@@ -79,6 +84,14 @@ public class CacheStorage implements Storage {
 
 	public Cache getCache() {
 		return cache;
+	}
+
+	public boolean isCacheAutoCommit() {
+		return cacheAutoCommit;
+	}
+
+	public void setCacheAutoCommit(boolean cacheAutoCommit) {
+		this.cacheAutoCommit = cacheAutoCommit;
 	}
 
 	public void config(CacheType cacheType, int exp, boolean isAsync, Class<?>... tableClass) {
@@ -210,8 +223,7 @@ public class CacheStorage implements Storage {
 
 		List<OperationBean> asyncList = null;// 异步列表
 		List<OperationBean> synchronizationList = null;// 同步列表
-		TransactionCollection asyncTransactionList = null;
-		TransactionCollection synchronizationTransactionList = null;
+		TransactionCollection cacheTransaction = null;
 		for (OperationBean operationBean : operationBeans) {
 			if (operationBean == null || operationBean.getBean() == null) {
 				continue;
@@ -237,52 +249,51 @@ public class CacheStorage implements Storage {
 				e.printStackTrace();
 			}
 
+			if (transaction != null) {
+				if (cacheTransaction == null) {
+					cacheTransaction = new TransactionCollection(operationBeans.size());
+				}
+				cacheTransaction.add(transaction);
+			}
+
 			if (cacheConfig.isAsync()) {
 				if (asyncList == null) {
 					asyncList = new ArrayList<OperationBean>(operationBeans.size());
 				}
 
 				asyncList.add(operationBean);
-				if (transaction != null) {
-					if (asyncTransactionList == null) {
-						asyncTransactionList = new TransactionCollection(operationBeans.size());
-					}
-					asyncTransactionList.add(transaction);
-				}
-
 			} else {
 				if (synchronizationList == null) {
 					synchronizationList = new ArrayList<OperationBean>(operationBeans.size());
 				}
 
 				synchronizationList.add(operationBean);
-				if (transaction != null) {
-					if (synchronizationTransactionList == null) {
-						synchronizationTransactionList = new TransactionCollection(operationBeans.size());
-					}
-					synchronizationTransactionList.add(transaction);
-				}
 			}
 		}
 
-		if (asyncTransactionList != null) {
-			try {
-				AbstractTransaction.transaction(asyncTransactionList);
-			} catch (Exception e) {
-				e.printStackTrace();
+		if (cacheAutoCommit) {
+			if (cacheTransaction != null) {
+				try {
+					AbstractTransaction.transaction(cacheTransaction);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
+
+			if (synchronizationList != null) {
+				getDB().opToDB(synchronizationList);
+			}
+		} else {
+			Collection<SQL> sqls = null;
+			if (synchronizationList != null) {
+				sqls = DBUtils.getSqlList(getDB().getSqlFormat(), operationBeans);
+			}
+			
+			TransactionContext.getInstance().execute(getDB(), sqls, cacheTransaction);
 		}
 
 		if (asyncList != null) {
 			asyncStorage.op(asyncList);
-		}
-
-		if (synchronizationTransactionList != null) {
-			TransactionContext.getInstance().execute(synchronizationTransactionList);
-		}
-
-		if (synchronizationList != null) {
-			getDB().opToDB(synchronizationList);
 		}
 	}
 }

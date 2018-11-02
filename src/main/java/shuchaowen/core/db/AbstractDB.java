@@ -230,7 +230,7 @@ public abstract class AbstractDB implements ConnectionPool{
 	 * 不参与上下文事务直接提交
 	 * @param operationBeans
 	 */
-	public void forceOpToDB(Collection<OperationBean> operationBeans){
+	public void forceOp(Collection<OperationBean> operationBeans){
 		Collection<SQL> sqls = DBUtils.getSqlList(getSqlFormat(), operationBeans);
 		if(sqls == null || sqls.isEmpty()){
 			return;

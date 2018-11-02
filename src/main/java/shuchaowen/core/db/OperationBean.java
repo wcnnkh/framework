@@ -6,7 +6,7 @@ import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.sql.format.SQLFormat;
 
 public class OperationBean implements Serializable{
-	private static final long serialVersionUID = 3110383969159251825L;
+	private static final long serialVersionUID = 1L;
 	private Object bean;
 	private OperationType operationType;
 	

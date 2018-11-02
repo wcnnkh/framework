@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class PrimaryKeyValue<T> implements Serializable {
-	private static final long serialVersionUID = 4587200583501849080L;
+	private static final long serialVersionUID = 1L;
 	private Map<String, T> dataMap;
 
 	private String getKey(Object... params) {

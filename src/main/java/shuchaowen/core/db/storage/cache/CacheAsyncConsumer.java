@@ -1,15 +1,17 @@
 package shuchaowen.core.db.storage.cache;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import shuchaowen.core.db.AbstractDB;
+import shuchaowen.core.db.DBUtils;
 import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.TransactionContext;
+import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.storage.async.AsyncConsumer;
 import shuchaowen.core.db.transaction.AbstractTransaction;
 import shuchaowen.core.db.transaction.Transaction;
+import shuchaowen.core.db.transaction.TransactionCollection;
 
 public class CacheAsyncConsumer implements AsyncConsumer {
 	private final CacheStorage cacheStorage;
@@ -21,7 +23,12 @@ public class CacheAsyncConsumer implements AsyncConsumer {
 	public void consumer(AbstractDB db, Collection<OperationBean> operationBeans) throws Exception {
 		TransactionContext.getInstance().begin();
 		try {
-			db.opToDB(operationBeans);
+			Collection<SQL> sqls = DBUtils.getSqlList(db.getSqlFormat(), operationBeans);
+			if(sqls == null || sqls.isEmpty()){
+				return;
+			}
+			
+			TransactionCollection collection = new TransactionCollection();
 			for(OperationBean operationBean : operationBeans){
 				CacheConfig cacheConfig = cacheStorage.getCacheConfig(operationBean.getBean().getClass());
 				switch (cacheConfig.getCacheType()) {
@@ -29,12 +36,14 @@ public class CacheAsyncConsumer implements AsyncConsumer {
 				case lazy:
 					boolean exist = dbExist(db, operationBean);
 					Transaction transaction = new HostspotDataAsyncRollbackTransaction(exist, cacheConfig.getCacheType() == CacheType.keys, cacheStorage.getCache(), operationBean);
-					TransactionContext.getInstance().execute(Arrays.asList(transaction));
+					collection.add(transaction);
 					break;
 				default:
 					break;
 				}
 			}
+			
+			TransactionContext.getInstance().execute(db, sqls, collection);
 		} catch (Exception e) {
 			throw e;
 		} finally {

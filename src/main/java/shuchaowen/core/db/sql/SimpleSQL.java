@@ -1,6 +1,7 @@
 package shuchaowen.core.db.sql;
 
 public class SimpleSQL implements SQL{
+	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 	

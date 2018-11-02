@@ -9,11 +9,11 @@ import shuchaowen.core.db.storage.CacheUtils;
 import shuchaowen.core.db.transaction.AbstractTransaction;
 import shuchaowen.redis.Redis;
 
-public class RedisHotspotCacheTransaction extends AbstractTransaction{
+public class RedisHotspotCacheTransaction extends AbstractTransaction {
 	private static final String EX = "EX";
 	private static final String NX = "NX";
 	private static final String XX = "XX";
-	
+
 	private final Redis redis;
 	private final int exp;
 	private final boolean keys;
@@ -24,9 +24,9 @@ public class RedisHotspotCacheTransaction extends AbstractTransaction{
 	private byte[] indexObjectKey;
 	private boolean keyExist;
 	private final byte[] null_data;
-	
-	public RedisHotspotCacheTransaction(Redis redis, int exp, boolean keys, Charset charset, OperationBean operationBean)
-			throws IllegalArgumentException, IllegalAccessException {
+
+	public RedisHotspotCacheTransaction(Redis redis, int exp, boolean keys, Charset charset,
+			OperationBean operationBean) throws IllegalArgumentException, IllegalAccessException {
 		this.null_data = "".getBytes(charset);
 		this.redis = redis;
 		this.exp = exp;
@@ -41,11 +41,11 @@ public class RedisHotspotCacheTransaction extends AbstractTransaction{
 			sb.append(Cache.SPLIT);
 			sb.append(tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(operationBean.getBean()));
 		}
-		
+
 		String k = sb.toString();
 		this.objectKey = k.getBytes(charset);
-		
-		if(keys){
+
+		if (keys) {
 			this.indexObjectKey = (Cache.INDEX_PREFIX + k).getBytes(charset);
 			this.keyExist = redis.exists(indexObjectKey);
 		}
@@ -53,7 +53,7 @@ public class RedisHotspotCacheTransaction extends AbstractTransaction{
 
 	private void save() {
 		redis.set(objectKey, beanData, NX.getBytes(charset), EX.getBytes(charset), exp);
-		if(keys){
+		if (keys) {
 			redis.setnx(indexObjectKey, null_data);
 		}
 	}
@@ -64,14 +64,14 @@ public class RedisHotspotCacheTransaction extends AbstractTransaction{
 
 	private void delete() {
 		redis.delete(objectKey);
-		if(keys){
+		if (keys) {
 			redis.delete(indexObjectKey);
 		}
 	}
 
 	private void saveOrUpdate() {
 		redis.setex(objectKey, exp, beanData);
-		if(keys){
+		if (keys) {
 			redis.setnx(indexObjectKey, null_data);
 		}
 	}
@@ -104,19 +104,22 @@ public class RedisHotspotCacheTransaction extends AbstractTransaction{
 
 	public void rollback() throws Exception {
 		redis.delete(objectKey);
-		switch (operationBean.getOperationType()) {
-		case SAVE:
-			if(keys){
+		if (keys) {
+			switch (operationBean.getOperationType()) {
+			case SAVE:
 				redis.delete(indexObjectKey);
+				break;
+			case DELETE:
+				redis.setnx(indexObjectKey, null_data);
+				break;
+			case SAVE_OR_UPDATE:
+				if (!keyExist) {
+					redis.delete(indexObjectKey);
+				}
+				break;
+			default:
+				break;
 			}
-			break;
-		case SAVE_OR_UPDATE:
-			if(keys && !keyExist){
-				redis.delete(indexObjectKey);
-			}
-			break;
-		default:
-			break;
 		}
 	}
 }

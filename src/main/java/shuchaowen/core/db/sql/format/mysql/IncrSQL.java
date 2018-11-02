@@ -14,6 +14,7 @@ import shuchaowen.core.exception.ShuChaoWenRuntimeException;
  *
  */
 public class IncrSQL implements SQL{
+	private static final long serialVersionUID = 1L;
 	private static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;
 	private Object[] params;

@@ -5,6 +5,7 @@ import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.sql.SQL;
 
 public class DecrSQL implements SQL{
+	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 	

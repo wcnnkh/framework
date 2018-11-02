@@ -1,7 +1,6 @@
 package shuchaowen.core.db.transaction;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 
 public final class TransactionCollection extends ArrayList<Transaction> implements Transaction {
@@ -15,10 +14,6 @@ public final class TransactionCollection extends ArrayList<Transaction> implemen
 
 	public TransactionCollection(int initialCapacity) {
 		super(initialCapacity);
-	}
-
-	public TransactionCollection(Collection<Transaction> collection) {
-		super(collection);
 	}
 
 	public void clear() {
