@@ -1,7 +1,5 @@
 package shuchaowen.core.db;
 
-import java.util.Collection;
-
 public interface MultipleOperations {
 	MultipleOperations save(Object ...beans);
 	
@@ -11,5 +9,5 @@ public interface MultipleOperations {
 	
 	MultipleOperations saveOrUpdate(Object ...beans);
 	
-	Collection<OperationBean> getOperationBeans();
+	void commit(DB db);
 }

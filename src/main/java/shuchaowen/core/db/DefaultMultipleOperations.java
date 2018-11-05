@@ -2,7 +2,6 @@ package shuchaowen.core.db;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class DefaultMultipleOperations implements MultipleOperations, Serializable{
 	private static final long serialVersionUID = 1L;
@@ -17,6 +16,10 @@ public class DefaultMultipleOperations implements MultipleOperations, Serializab
 	public MultipleOperations save(Object... beans) {
 		checkList();
 		for(Object bean : beans){
+			if(bean == null){
+				continue;
+			}
+			
 			list.add(new OperationBean(OperationType.SAVE, bean));
 		}
 		return this;
@@ -25,6 +28,10 @@ public class DefaultMultipleOperations implements MultipleOperations, Serializab
 	public MultipleOperations update(Object... beans) {
 		checkList();
 		for(Object bean : beans){
+			if(bean == null){
+				continue;
+			}
+			
 			list.add(new OperationBean(OperationType.UPDATE, bean));
 		}
 		return this;
@@ -33,6 +40,10 @@ public class DefaultMultipleOperations implements MultipleOperations, Serializab
 	public MultipleOperations delete(Object... beans) {
 		checkList();
 		for(Object bean : beans){
+			if(bean == null){
+				continue;
+			}
+			
 			list.add(new OperationBean(OperationType.DELETE, bean));
 		}
 		return this;
@@ -41,13 +52,19 @@ public class DefaultMultipleOperations implements MultipleOperations, Serializab
 	public MultipleOperations saveOrUpdate(Object... beans) {
 		checkList();
 		for(Object bean : beans){
+			if(bean == null){
+				continue;
+			}
+			
 			list.add(new OperationBean(OperationType.SAVE_OR_UPDATE, bean));
 		}
 		return this;
 	}
 
-	public Collection<OperationBean> getOperationBeans() {
-		return list;
+	public void commit(DB db) {
+		if(list == null){
+			return ;
+		}
+		db.op(list);
 	}
-
 }

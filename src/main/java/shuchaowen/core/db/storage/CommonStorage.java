@@ -58,7 +58,7 @@ public class CommonStorage implements Storage{
 
 	public void op(Collection<OperationBean> operationBeans) {
 		if(opStorage == null){
-			db.opToDB(operationBeans);
+			db.execute(operationBeans);
 		}else{
 			opStorage.op(operationBeans); 
 		}

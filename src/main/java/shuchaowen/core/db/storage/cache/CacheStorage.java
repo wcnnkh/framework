@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 
 import shuchaowen.core.db.AbstractDB;
-import shuchaowen.core.db.DBUtils;
 import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
@@ -222,7 +221,7 @@ public final class CacheStorage implements Storage {
 		}
 
 		List<OperationBean> asyncList = null;// 异步列表
-		List<OperationBean> synchronizationList = null;// 同步列表
+		List<SQL> synchronizationList = null;// 同步列表
 		TransactionCollection cacheTransaction = null;
 		for (OperationBean operationBean : operationBeans) {
 			if (operationBean == null || operationBean.getBean() == null) {
@@ -264,10 +263,10 @@ public final class CacheStorage implements Storage {
 				asyncList.add(operationBean);
 			} else {
 				if (synchronizationList == null) {
-					synchronizationList = new ArrayList<OperationBean>(operationBeans.size());
+					synchronizationList = new ArrayList<SQL>(operationBeans.size());
 				}
 
-				synchronizationList.add(operationBean);
+				synchronizationList.add(operationBean.getSql(getDB().getSqlFormat()));
 			}
 		}
 
@@ -281,15 +280,10 @@ public final class CacheStorage implements Storage {
 			}
 
 			if (synchronizationList != null) {
-				getDB().opToDB(synchronizationList);
+				TransactionContext.getInstance().execute(getDB(), synchronizationList);
 			}
 		} else {
-			Collection<SQL> sqls = null;
-			if (synchronizationList != null) {
-				sqls = DBUtils.getSqlList(getDB().getSqlFormat(), operationBeans);
-			}
-			
-			TransactionContext.getInstance().execute(getDB(), sqls, cacheTransaction);
+			TransactionContext.getInstance().execute(getDB(), synchronizationList, cacheTransaction);
 		}
 
 		if (asyncList != null) {

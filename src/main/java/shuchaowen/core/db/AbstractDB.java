@@ -217,25 +217,12 @@ public abstract class AbstractDB implements ConnectionPool{
 		return primaryKeyValue;
 	}
 	
-	public void opToDB(Collection<OperationBean> operationBeans){
+	public void execute(Collection<OperationBean> operationBeans){
 		Collection<SQL> sqls = DBUtils.getSqlList(getSqlFormat(), operationBeans);
 		if(sqls == null || sqls.isEmpty()){
 			return;
 		}
 		
 		TransactionContext.getInstance().execute(this, sqls);
-	}
-	
-	/**
-	 * 不参与上下文事务直接提交
-	 * @param operationBeans
-	 */
-	public void forceOp(Collection<OperationBean> operationBeans){
-		Collection<SQL> sqls = DBUtils.getSqlList(getSqlFormat(), operationBeans);
-		if(sqls == null || sqls.isEmpty()){
-			return;
-		}
-		
-		TransactionContext.getInstance().forceExecute(this, sqls);
 	}
 }

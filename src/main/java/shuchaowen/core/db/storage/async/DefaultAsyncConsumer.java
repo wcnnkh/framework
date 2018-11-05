@@ -8,6 +8,6 @@ import shuchaowen.core.db.OperationBean;
 public class DefaultAsyncConsumer implements AsyncConsumer{
 
 	public void consumer(AbstractDB db, Collection<OperationBean> operationBeans) {
-		db.opToDB(operationBeans);
+		db.execute(operationBeans);
 	}
 }
