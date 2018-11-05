@@ -18,7 +18,7 @@ public class CommonApplication implements Application {
 	public CommonApplication(String configPath) {
 		beanFactory = new MultipleBeanFactory();
 		try {
-			if (StringUtils.isNull(configPath)) {
+			if (!StringUtils.isNull(configPath)) {
 				XmlBeanFactory xmlBeanFactory = new XmlBeanFactory(beanFactory, configPath);
 				this.packageNames = xmlBeanFactory.getPackageNames();
 				beanFactory.addBeanFactory(xmlBeanFactory);

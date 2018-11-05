@@ -61,7 +61,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 					obj = singletonMap.get(name);
 					if (obj == null) {
 						obj = bean.newInstance();
-						singletonMap.put(name, bean);
+						singletonMap.put(name, obj);
 						try {
 							bean.autowrite(obj);
 							bean.init(obj);

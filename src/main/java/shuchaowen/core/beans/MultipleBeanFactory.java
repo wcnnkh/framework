@@ -9,8 +9,9 @@ public final class MultipleBeanFactory extends AbstractBeanFactory {
 	private List<BeanFactory> beanFactoryList;
 
 	public MultipleBeanFactory() {
-		registerSingleton(this.getClass(), this);
-		registerSingleton(BeanFactory.class, this);
+		singletonMap.put(this.getClass().getName(), this);
+		nameMappingMap.put(BeanFactory.class.getName(), this.getClass()
+				.getName());
 	}
 
 	public void addBeanFactory(BeanFactory beanFactory) {
@@ -88,7 +89,7 @@ public final class MultipleBeanFactory extends AbstractBeanFactory {
 		super.destroy();
 		if (beanFactoryList != null) {
 			for (BeanFactory beanFactory : beanFactoryList) {
-				if(beanFactory instanceof AbstractBeanFactory){
+				if (beanFactory instanceof AbstractBeanFactory) {
 					((AbstractBeanFactory) beanFactory).destroy();
 				}
 			}
