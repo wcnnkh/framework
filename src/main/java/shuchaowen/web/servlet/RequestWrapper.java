@@ -1,9 +1,9 @@
 package shuchaowen.web.servlet;
 
-public abstract class WebParameter{
+public abstract class RequestWrapper{
 	private WebRequest request;
 	
-	public WebParameter(WebRequest request){
+	public RequestWrapper(WebRequest request){
 		this.request = request;
 	}
 

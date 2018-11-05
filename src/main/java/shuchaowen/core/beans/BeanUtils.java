@@ -321,7 +321,7 @@ public class BeanUtils {
 							"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
 				}
 
-				field.set(obj, beanFactory.get(name));
+				field.set(obj, beanFactory.getBean(name));
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {

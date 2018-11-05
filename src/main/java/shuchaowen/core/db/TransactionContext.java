@@ -212,7 +212,7 @@ public final class TransactionContext extends Context<ThreadLocalDBTransaction> 
 	}
 
 	@Override
-	protected void lastCommit() throws Throwable {
+	protected void lastCommit(){
 		ThreadLocalDBTransaction localDBTransaction = getValue();
 		if (localDBTransaction != null) {
 			localDBTransaction.commitTransaction();
@@ -241,7 +241,7 @@ class ThreadLocalDBTransaction extends AbstractTransaction {
 		}
 	}
 
-	void commitTransaction() throws Exception {
+	void commitTransaction(){
 		if (isAutoCommit) {
 			throw new ShuChaoWenRuntimeException("transaction status error autoCommit[" + isAutoCommit + "]");
 		}
@@ -250,7 +250,7 @@ class ThreadLocalDBTransaction extends AbstractTransaction {
 		try {
 			execute();
 		} catch (Exception e) {
-			throw e;
+			throw new ShuChaoWenRuntimeException(e);
 		} finally {
 			isAutoCommit = true;
 			reset();

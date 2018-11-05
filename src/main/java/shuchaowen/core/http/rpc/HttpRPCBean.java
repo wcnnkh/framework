@@ -5,59 +5,54 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
-import java.util.concurrent.Callable;
 
+import shuchaowen.core.beans.AnnotationBean;
+import shuchaowen.core.beans.BeanFactory;
+import shuchaowen.core.beans.exception.BeansException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.http.client.Response;
 import shuchaowen.core.http.client.method.HttpPost;
-import shuchaowen.core.http.rpc.serialization.JavaObjectSerializer;
 import shuchaowen.core.http.rpc.serialization.Serializer;
 import shuchaowen.core.invoke.Invoker;
-import shuchaowen.core.util.LazyMap;
 import shuchaowen.core.util.SignHelp;
 
-public class HttpConsumer implements Consumer{
-	private LazyMap<String, Object> proxyMap = new LazyMap<String, Object>();
+public class HttpRPCBean extends AnnotationBean{
+	private final String host;
+	private final String signStr;
+	private final Serializer serializer;
+	private final Charset charset;
 	
-	/**
-	 * rpc服务的地址
-	 */
-	private String host;
-	private Charset charset;
-	private String signStr;
-	private Serializer serializer;
-	
-	public HttpConsumer(String host, String signStr) {
-		this(host, signStr, new JavaObjectSerializer(), Charset.forName("UTF-8"));
-	}
-	
-	public HttpConsumer(String host, String signStr, Charset charset) {
-		this(host, signStr, new JavaObjectSerializer(), charset);
-	}
-	
-	public HttpConsumer(String host, String signStr, Serializer serializer, Charset charset) {
+	public HttpRPCBean(BeanFactory beanFactory, Class<?> interfactClass, String host, String signStr, Serializer serializer, Charset charset) throws Exception{
+		super(beanFactory, interfactClass);
 		this.host = host;
-		this.charset = charset;
-		this.serializer = serializer;
 		this.signStr = signStr;
+		this.serializer = serializer;
+		this.charset = charset;
+	}
+	
+	public boolean isSingleton() {
+		return true;
+	}
+
+	public boolean isProxy() {
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getService(final Class<T> interfaceClass) {
-		return (T) proxyMap.get(interfaceClass.getName(), new Callable<Object>() {
+	public <T> T newInstance() {
+		Object newProxyInstance = Proxy.newProxyInstance(getType().getClassLoader(),
+				new Class[] { getType() }, new InvocationHandler() {
 
-			public Object call() throws Exception {
-				Object newProxyInstance = Proxy.newProxyInstance(interfaceClass.getClassLoader(),
-						new Class[] { interfaceClass }, new InvocationHandler() {
+					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+						HttpConsumerInvoker httpConsumerInvoker = new HttpConsumerInvoker(host, method, signStr, serializer, charset);
+						return httpConsumerInvoker.invoke(args);
+					}
+				});
+		return (T) newProxyInstance;
+	}
 
-							public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-								HttpConsumerInvoker httpConsumerInvoker = new HttpConsumerInvoker(host, method, signStr, serializer, charset);
-								return httpConsumerInvoker.invoke(args);
-							}
-						});
-				return newProxyInstance;
-			}
-		});
+	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {
+		throw new BeansException("不支持此方法");
 	}
 }
 
@@ -69,7 +64,7 @@ class HttpConsumerInvoker implements Invoker{
 	private String signStr;
 	private Serializer serializer;
 	
-	public HttpConsumerInvoker(String host,Method method, String signStr, Serializer serializer, Charset charset){
+	public HttpConsumerInvoker(String host, Method method, String signStr, Serializer serializer, Charset charset){
 		this.method = method;
 		this.host = host;
 		this.returnType = method.getReturnType();

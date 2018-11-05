@@ -54,7 +54,7 @@ public class CacheAsyncConsumer implements AsyncConsumer {
 			throw e;
 		} finally {
 			try {
-				TransactionContext.getInstance().commit();
+				TransactionContext.getInstance().end();
 			} catch (Throwable e) {
 				throw new Exception(e);
 			}

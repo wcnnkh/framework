@@ -90,7 +90,7 @@ public final class BeanParameter implements Cloneable, Serializable{
 		case value:
 			return StringUtils.conversion(value, parameterType);
 		case ref:
-			return beanFactory.get(value);
+			return beanFactory.getBean(value);
 		case property:
 			return propertiesFactory.getProperties(value, parameterType);
 		case url:

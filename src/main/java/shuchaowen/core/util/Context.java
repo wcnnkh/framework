@@ -43,11 +43,11 @@ public abstract class Context<T> {
 	}
 	
 	/**
-	 * 提交  
+	 * 结束 
 	 * 开始多少次就是提交多少次
 	 * @throws Throwable
 	 */
-	public void commit() throws Throwable{
+	public void end(){
 		ContextInfo<T> contextInfo = getContextInfo();
 		if(contextInfo.getCount() < 1){
 			throw new ShuChaoWenRuntimeException("这已经是最后一次了，无法提交[" + contextInfo.getCount() + "]");
@@ -68,7 +68,7 @@ public abstract class Context<T> {
 	 * 在最后一次提交的时候应该执行的内容
 	 * @throws Throwable
 	 */
-	protected abstract void lastCommit() throws Throwable;
+	protected abstract void lastCommit();
 }
 
 class ContextInfo<T>{

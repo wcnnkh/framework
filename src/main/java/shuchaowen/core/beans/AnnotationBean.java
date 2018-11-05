@@ -264,4 +264,8 @@ public class AnnotationBean implements Bean {
 	public String[] getNames() {
 		return names;
 	}
+
+	public BeanFactory getBeanFactory() {
+		return beanFactory;
+	}
 }

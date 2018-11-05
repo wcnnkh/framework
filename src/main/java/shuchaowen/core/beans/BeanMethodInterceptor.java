@@ -41,7 +41,7 @@ public class BeanMethodInterceptor implements MethodInterceptor, BeanListen {
 			} catch (Throwable e) {
 				throw e;
 			} finally {
-				TransactionContext.getInstance().commit();
+				TransactionContext.getInstance().end();
 			}
 		} else {
 			BeanFilterChain beanFilterChain = new BeanFilterChain(beanFilters);

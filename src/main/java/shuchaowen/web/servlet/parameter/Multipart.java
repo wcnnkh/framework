@@ -19,10 +19,10 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
 import shuchaowen.core.util.Logger;
-import shuchaowen.web.servlet.WebParameter;
+import shuchaowen.web.servlet.RequestWrapper;
 import shuchaowen.web.servlet.WebRequest;
 
-public class Multipart extends WebParameter{
+public class Multipart extends RequestWrapper{
 	private Map<String, List<String>> paramMap = new HashMap<String, List<String>>();
 	private Map<String, List<FileItem>> fileItemMap = new HashMap<String, List<FileItem>>();
 	private List<String> keys = new ArrayList<String>();

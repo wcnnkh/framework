@@ -1,7 +1,8 @@
 package shuchaowen.web.servlet;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.http.enums.Header;
 import shuchaowen.core.http.server.Request;
@@ -18,6 +20,7 @@ public abstract class WebRequest extends HttpServletRequestWrapper implements Re
 	private final long createTime;
 	private final HttpServletResponse httpServletResponse;
 	private final BeanFactory beanFactory;
+	private Map<Class<? extends RequestWrapper>, RequestWrapper> requestWrapperMap;
 
 	public WebRequest(BeanFactory beanFactory, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
 		super(httpServletRequest);
@@ -31,6 +34,7 @@ public abstract class WebRequest extends HttpServletRequestWrapper implements Re
 		return beanFactory;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Object get(Class<?> type, String name) throws Throwable{
 		if(String.class.isAssignableFrom(type)){
 			return getString(name);
@@ -66,16 +70,23 @@ public abstract class WebRequest extends HttpServletRequestWrapper implements Re
 			return this;
 		}else if(ServletResponse.class.isAssignableFrom(type)){
 			return httpServletResponse;
-		}else if(WebParameter.class.isAssignableFrom(type)){
-			@SuppressWarnings("unchecked")
-			Constructor<WebParameter>[] constructors = (Constructor<WebParameter>[]) type.getConstructors();
-			for(Constructor<WebParameter> constructor : constructors){
-				if(constructor.getParameterCount() == 1 && Request.class.isAssignableFrom(constructor.getParameterTypes()[0])){
-					constructor.setAccessible(true);
-					return beanFactory.getBean(type.getName()).newInstance(constructor.getParameterTypes(), this);
+		}else if(RequestWrapper.class.isAssignableFrom(type)){
+			Class<? extends RequestWrapper> parameterType = (Class<? extends RequestWrapper>) type;
+			RequestWrapper requestWrapper = null;
+			if(requestWrapperMap == null){
+				Bean bean = beanFactory.getBean(parameterType.getName());
+				requestWrapper = bean.newInstance(new Class<?>[]{WebRequest.class}, this);
+				if(requestWrapper != null){
+					bean.autowrite(bean);
+					bean.init(bean);
+					
+					requestWrapperMap = new HashMap<Class<? extends RequestWrapper>, RequestWrapper>(2, 1);
+					requestWrapperMap.put(parameterType, requestWrapper);
 				}
+			}else{
+				requestWrapper = requestWrapperMap.get(parameterType);
 			}
-			return null;
+			return requestWrapper;
 		}else{
 			return getObject(type, name);
 		}

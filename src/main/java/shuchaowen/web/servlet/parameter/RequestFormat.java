@@ -15,10 +15,10 @@ import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.core.util.IOUtils;
 import shuchaowen.core.util.XUtils;
-import shuchaowen.web.servlet.WebParameter;
+import shuchaowen.web.servlet.RequestWrapper;
 import shuchaowen.web.servlet.WebRequest;
 
-public class RequestFormat extends WebParameter {
+public class RequestFormat extends RequestWrapper {
 	public RequestFormat(WebRequest request) {
 		super(request);
 	}
