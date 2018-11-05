@@ -6,10 +6,11 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.AnnotationBean;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
@@ -63,7 +64,7 @@ public class XmlBean implements Bean {
 	public XmlBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode) throws Exception {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
-
+		
 		Node classNode = beanNode.getAttributes().getNamedItem(CLASS_ATTRIBUTE_KEY);
 		Node nameNode = beanNode.getAttributes().getNamedItem(NAME_ATTRIBUTE_KEY);
 		if (nameNode != null) {
@@ -274,7 +275,7 @@ public class XmlBean implements Bean {
 		}
 	}
 
-	private Object createInstance()
+	private Object createInstance(BeanFactory beanFactory)
 			throws Exception {
 		if (constructorParameterTypes == null || constructorParameterTypes.length == 0) {
 			return constructor.newInstance();
@@ -295,7 +296,7 @@ public class XmlBean implements Bean {
 				BeanUtils.setBean(beanFactory, classInfo.getClz(), bean, field);
 				BeanUtils.setProxy(beanFactory, classInfo.getClz(), bean, field);
 				BeanUtils.setConfig(beanFactory, classInfo.getClz(), bean, field);
-				BeanUtils.setProperties(propertiesFactory, classInfo.getClz(), bean, field);
+				BeanUtils.setProperties(beanFactory, propertiesFactory, classInfo.getClz(), bean, field);
 			}
 			classInfo = classInfo.getSuperInfo();
 		}
@@ -325,7 +326,7 @@ public class XmlBean implements Bean {
 			if (isProxy()) {
 				bean = createProxyInstance();
 			} else {
-				bean = createInstance();
+				bean = createInstance(beanFactory);
 			}
 
 			if (factoryMethodInfo == null) {

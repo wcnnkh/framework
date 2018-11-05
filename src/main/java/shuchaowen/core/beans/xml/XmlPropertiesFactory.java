@@ -18,11 +18,11 @@ import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.StringUtils;
 
 public class XmlPropertiesFactory implements PropertiesFactory {
-	private final BeanFactory beanFactory;
 	private final Map<String, XmlProperties> propertiesMap = new HashMap<String, XmlProperties>();
 	private final Map<String, Object> propertiesValueMap = new HashMap<String, Object>();
 	private final Map<String, BeanParameter> xmlPropertiesMap = new HashMap<String, BeanParameter>();
-
+	private final BeanFactory beanFactory;
+	
 	public XmlPropertiesFactory(BeanFactory beanFactory, List<XmlProperties> properties) {
 		this.beanFactory = beanFactory;
 		if (properties != null) {

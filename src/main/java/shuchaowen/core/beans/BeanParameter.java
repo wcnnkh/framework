@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Map;
 
-import shuchaowen.core.exception.NonSupportException;
+import shuchaowen.core.exception.NotSupportException;
 import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.FileUtils;
 import shuchaowen.core.util.StringUtils;
@@ -104,7 +104,7 @@ public final class BeanParameter implements Cloneable, Serializable{
 				File file = ConfigUtils.getFile(path);
 				return FileUtils.readerFileContent(file, charsetName);
 			}
-			throw new NonSupportException(value);
+			throw new NotSupportException(value);
 		default:
 			break;
 		}

@@ -1,4 +1,4 @@
-package shuchaowen.web.dubbo;
+package shuchaowen.dubbo;
 
 import java.util.ArrayList;
 import java.util.Collection;

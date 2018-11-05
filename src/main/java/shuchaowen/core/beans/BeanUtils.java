@@ -14,12 +14,13 @@ import java.util.concurrent.CountDownLatch;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.annotaion.Autowrite;
 import shuchaowen.core.beans.annotaion.Config;
 import shuchaowen.core.beans.annotaion.Destroy;
@@ -120,7 +121,7 @@ public class BeanUtils {
 		initDB(beanFactory, classList);
 	}
 
-	private static void autoWriteStatic(Class<?> clz, BeanFactory beanFactory) {
+	private static void autoWriteStatic(Class<?> clz, BeanFactory beanFactory) throws Exception {
 		ClassInfo classInfo= ClassUtils.getClassInfo(clz);
 		for(FieldInfo field : classInfo.getFieldMap().values()){
 			if (!Modifier.isStatic(field.getField().getModifiers())) {
@@ -256,7 +257,7 @@ public class BeanUtils {
 		return isTransaction;
 	}
 
-	public static void setConfig(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) {
+	public static void setConfig(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) throws Exception {
 		Config config = field.getField().getAnnotation(Config.class);
 		if (config != null) {
 			if (Modifier.isStatic(field.getField().getModifiers())) {
@@ -265,7 +266,6 @@ public class BeanUtils {
 			}
 
 			Object value = null;
-			try {
 				if (field.forceGet(obj) != null) {
 					Logger.warn("@Config",
 							"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
@@ -273,13 +273,10 @@ public class BeanUtils {
 
 				value = beanFactory.get(config.parse()).parse(beanFactory, field, config.value(), config.charset());
 				field.set(obj, value);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 	}
 
-	public static void setProperties(PropertiesFactory propertiesFactory, Class<?> clz, Object obj, FieldInfo field) {
+	public static void setProperties(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> clz, Object obj, FieldInfo field) {
 		Properties properties = field.getField().getAnnotation(Properties.class);
 		if (properties != null) {
 			if (Modifier.isStatic(field.getField().getModifiers())) {
@@ -302,7 +299,7 @@ public class BeanUtils {
 		}
 	}
 
-	public static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) {
+	public static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		Autowrite s = field.getField().getAnnotation(Autowrite.class);
 		if (s != null) {
 			if (Modifier.isStatic(field.getField().getModifiers())) {
@@ -315,20 +312,12 @@ public class BeanUtils {
 				name = field.getType().getName();
 			}
 
-			try {
 				if (field.forceGet(obj) != null) {
 					Logger.warn("@AutoWrite",
 							"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
 				}
 
 				field.set(obj, beanFactory.getBean(name));
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 
@@ -352,7 +341,7 @@ public class BeanUtils {
 		return null;
 	}
 
-	public static void setProxy(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) {
+	public static void setProxy(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) throws Exception {
 		Proxy proxy = field.getField().getAnnotation(Proxy.class);
 		if (proxy != null) {
 			if (Modifier.isStatic(field.getField().getModifiers())) {
@@ -361,20 +350,12 @@ public class BeanUtils {
 			}
 
 			Object v = beanFactory.get(proxy.value()).getProxy(beanFactory, field.getType());
-			try {
 				if (field.forceGet(obj) != null) {
 					Logger.warn("@Proxy",
 							"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
 				}
 
 				field.set(obj, v);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 	

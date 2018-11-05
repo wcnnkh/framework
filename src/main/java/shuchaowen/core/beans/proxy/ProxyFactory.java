@@ -9,5 +9,5 @@ public interface ProxyFactory {
 	 * @param type 要代理的类
 	 * @return
 	 */
-	Object getProxy(BeanFactory beanFactory, Class<?> type);
+	<T> T getProxy(BeanFactory beanFactory, Class<T> type) throws Exception;
 }

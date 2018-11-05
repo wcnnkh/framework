@@ -11,8 +11,8 @@ import shuchaowen.core.util.ClassUtils;
  *
  */
 public class AnnotationBeanFactory extends AbstractBeanFactory {
-	private final BeanFactory beanFactory;
-
+	private BeanFactory beanFactory;
+	
 	public AnnotationBeanFactory(BeanFactory beanFactory, String packageNames) {
 		this.beanFactory = beanFactory;
 		for (Class<?> clz : ClassUtils.getClasses(packageNames)) {

@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
 
 import shuchaowen.core.beans.AnnotationBean;
 import shuchaowen.core.beans.BeanFactory;
-import shuchaowen.core.beans.exception.BeansException;
+import shuchaowen.core.exception.NotSupportException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.http.client.Response;
 import shuchaowen.core.http.client.method.HttpPost;
@@ -22,16 +22,12 @@ public class HttpRPCBean extends AnnotationBean{
 	private final Serializer serializer;
 	private final Charset charset;
 	
-	public HttpRPCBean(BeanFactory beanFactory, Class<?> interfactClass, String host, String signStr, Serializer serializer, Charset charset) throws Exception{
-		super(beanFactory, interfactClass);
+	public HttpRPCBean(BeanFactory beanFactory, Class<?> interfaceClass, String host, String signStr, Serializer serializer, Charset charset) throws Exception{
+		super(beanFactory, interfaceClass);
 		this.host = host;
 		this.signStr = signStr;
 		this.serializer = serializer;
 		this.charset = charset;
-	}
-	
-	public boolean isSingleton() {
-		return true;
 	}
 
 	public boolean isProxy() {
@@ -52,7 +48,7 @@ public class HttpRPCBean extends AnnotationBean{
 	}
 
 	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {
-		throw new BeansException("不支持此方法");
+		throw new NotSupportException(getType().getName());
 	}
 }
 

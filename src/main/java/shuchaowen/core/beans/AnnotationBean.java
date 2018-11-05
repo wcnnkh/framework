@@ -36,7 +36,6 @@ public class AnnotationBean implements Bean {
 	public AnnotationBean(BeanFactory beanFactory, Class<?> type) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
-
 		shuchaowen.core.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.core.beans.annotaion.Bean.class);
 		if (bean != null) {
 			this.id = StringUtils.isNull(bean.id()) ? ClassUtils.getCGLIBRealClassName(type) : bean.id();
@@ -220,7 +219,7 @@ public class AnnotationBean implements Bean {
 		}
 	}
 
-	public void autowrite(Object bean) {
+	public void autowrite(Object bean) throws Exception {
 		ClassInfo classInfo = ClassUtils.getClassInfo(type);
 		while (classInfo != null) {
 			for (FieldInfo field : classInfo.getFieldMap().values()) {
@@ -263,9 +262,5 @@ public class AnnotationBean implements Bean {
 
 	public String[] getNames() {
 		return names;
-	}
-
-	public BeanFactory getBeanFactory() {
-		return beanFactory;
 	}
 }
