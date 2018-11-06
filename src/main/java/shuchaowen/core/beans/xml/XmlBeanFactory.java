@@ -16,6 +16,7 @@ import shuchaowen.core.beans.AbstractBeanFactory;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.PropertiesFactory;
+import shuchaowen.core.exception.AlreadyExistsException;
 import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.StringUtils;
@@ -67,7 +68,9 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 
 				if (bean.getNames() != null) {
 					for (String n : bean.getNames()) {
-						putNameMapping(n, bean.getId());
+						if(registerNameMapping(n, bean.getId())){
+							throw new AlreadyExistsException(n);
+						}
 					}
 				}
 			} else if (BEAN_FACTORY_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {

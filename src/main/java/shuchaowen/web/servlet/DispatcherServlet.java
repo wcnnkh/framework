@@ -74,6 +74,12 @@ public class DispatcherServlet extends HttpServlet {
 	@Override
 	public final void init(ServletConfig servletConfig) throws ServletException {
 		httpServerApplication = new HttpServerApplication(new ServletConfigFactory(servletConfig));
+		httpServerApplication.getBeanFactory().registerNameMapping(servletConfig.getServletName(), this.getClass().getName());
+		try {
+			httpServerApplication.getBeanFactory().registerSingleton(this.getClass(), this);
+		} catch (Exception e) {
+			throw new ServletException(e);
+		}
 		httpServerApplication.init();
 		super.init(servletConfig);
 	}

@@ -1,6 +1,7 @@
 package shuchaowen.core.beans;
 
 import shuchaowen.core.beans.annotaion.Service;
+import shuchaowen.core.exception.AlreadyExistsException;
 import shuchaowen.core.util.ClassUtils;
 
 /**
@@ -19,11 +20,15 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 			if (service != null) {
 				Class<?>[] interfaces = clz.getInterfaces();
 				for (Class<?> i : interfaces) {
-					putNameMapping(i.getName(), clz.getName());
+					if(!registerNameMapping(i.getName(), clz.getName())){
+						throw new AlreadyExistsException(i.getName());
+					}
 				}
 
 				if (!service.value().equals("")) {
-					putNameMapping(service.value(), clz.getName());
+					if(!registerNameMapping(service.value(), clz.getName())){
+						throw new AlreadyExistsException(service.value());
+					}
 				}
 			}
 		}

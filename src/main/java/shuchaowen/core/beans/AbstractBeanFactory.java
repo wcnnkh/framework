@@ -14,30 +14,38 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	protected Map<String, String> nameMappingMap = new HashMap<String, String>();
 
 	// 注册一个单例
-	public void registerSingleton(Class<?> type, Object bean) {
-		registerSingleton(type.getName(), bean);
+	public boolean registerSingleton(Class<?> type, Object bean) throws Exception {
+		return registerSingleton(type.getName(), bean);
 	}
 
-	public void registerSingleton(String name, Object bean) {
+	protected boolean registerSingleton(String name, Object bean) throws Exception {
 		if (singletonMap.containsKey(name)) {
-			throw new AlreadyExistsException(name);
+			return false;
 		}
 
 		singletonMap.put(name, bean);
+		Bean beanInfo = getBean(name);
+		if(beanInfo != null){
+			beanInfo.autowrite(bean);
+			beanInfo.init(bean);
+		}
+		return true;
 	}
 	
-	public void putBean(String name, Bean bean) {
+	protected void putBean(String name, Bean bean) {
 		if (contains(name)) {
 			throw new AlreadyExistsException(name);
 		}
 		beanMap.put(name, bean);
 	}
 
-	public void putNameMapping(String name, String mappingName) {
+	public boolean registerNameMapping(String name, String mappingName) {
 		if (nameMappingMap.containsKey(name)) {
-			throw new AlreadyExistsException(name);
+			return false;
 		}
+		
 		nameMappingMap.put(name, mappingName);
+		return true;
 	}
 
 	public boolean contains(String name) {
