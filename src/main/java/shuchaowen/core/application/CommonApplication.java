@@ -21,8 +21,11 @@ public class CommonApplication implements Application {
 			if (!StringUtils.isNull(configPath)) {
 				XmlBeanFactory xmlBeanFactory = new XmlBeanFactory(beanFactory, configPath);
 				this.packageNames = xmlBeanFactory.getPackageNames();
-				beanFactory.addBeanFactory(xmlBeanFactory);
+				beanFactory.addLastBeanFactory(xmlBeanFactory);
 			}
+			
+			AnnotationBeanFactory annotationBeanFactory = new AnnotationBeanFactory(beanFactory, packageNames);
+			beanFactory.addLastBeanFactory(annotationBeanFactory);
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}
@@ -50,9 +53,6 @@ public class CommonApplication implements Application {
 		}
 		
 		try {
-			AnnotationBeanFactory annotationBeanFactory = new AnnotationBeanFactory(beanFactory, packageNames);
-			beanFactory.addBeanFactory(annotationBeanFactory);
-			
 			BeanUtils.initStatic(beanFactory, getClasses());
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);

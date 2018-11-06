@@ -14,13 +14,20 @@ public final class MultipleBeanFactory extends AbstractBeanFactory {
 				.getName());
 	}
 
-	public void addBeanFactory(BeanFactory beanFactory) {
+	public void addLastBeanFactory(BeanFactory beanFactory) {
 		if (beanFactoryList == null) {
 			beanFactoryList = new ArrayList<BeanFactory>();
 		}
 		beanFactoryList.add(beanFactory);
 	}
-
+	
+	public void addFirst(BeanFactory beanFactory){
+		if (beanFactoryList == null) {
+			beanFactoryList = new ArrayList<BeanFactory>();
+		}
+		beanFactoryList.add(0, beanFactory);
+	}
+	
 	public <T> T get(String name) {
 		T t = super.get(name);
 		if (t == null && beanFactoryList != null) {

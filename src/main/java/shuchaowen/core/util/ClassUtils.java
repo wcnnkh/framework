@@ -555,4 +555,12 @@ public final class ClassUtils {
 		}
 		return null;
 	}
+	
+	/**
+	 * 是否可以实例化
+	 * @return
+	 */
+	public static boolean isInstance(Class<?> clz){
+		return !(Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers()));
+	}
 }

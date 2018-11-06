@@ -1,7 +1,6 @@
 package shuchaowen.core.beans;
 
 import shuchaowen.core.beans.annotaion.Service;
-import shuchaowen.core.beans.exception.BeansException;
 import shuchaowen.core.util.ClassUtils;
 
 /**
@@ -34,9 +33,28 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 	protected Bean newBean(String name) {
 		try {
 			Class<?> clz = Class.forName(name);
+			if(!ClassUtils.isInstance(clz)){
+				return  null;
+			}
+			
 			return new AnnotationBean(beanFactory, clz);
 		} catch (Exception e) {
-			throw new BeansException(e);
 		}
+		return null;
+	}
+	
+	@Override
+	public boolean contains(String name) {
+		boolean b = super.contains(name);
+		if(!b){
+			try {
+				Class<?> clz = ClassUtils.forName(name);
+				if(ClassUtils.isInstance(clz)){
+					b = true;
+				}
+			} catch (ClassNotFoundException e) {
+			}
+		}
+		return b;
 	}
 }
