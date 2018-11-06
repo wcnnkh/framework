@@ -68,7 +68,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 
 				if (bean.getNames() != null) {
 					for (String n : bean.getNames()) {
-						if(registerNameMapping(n, bean.getId())){
+						if(!registerNameMapping(n, bean.getId())){
 							throw new AlreadyExistsException(n);
 						}
 					}
