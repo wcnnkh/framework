@@ -12,7 +12,7 @@ import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.annotaion.Destroy;
 import shuchaowen.core.beans.annotaion.InitMethod;
 import shuchaowen.core.beans.annotaion.Retry;
-import shuchaowen.core.beans.exception.BeansException;
+import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.FieldInfo;

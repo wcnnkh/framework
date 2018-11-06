@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import shuchaowen.core.beans.BeanFactory;
-import shuchaowen.core.exception.KeyAlreadyExistsException;
+import shuchaowen.core.exception.AlreadyExistsException;
 import shuchaowen.core.http.server.Action;
 import shuchaowen.core.http.server.Request;
 import shuchaowen.core.http.server.SearchAction;
@@ -68,7 +68,7 @@ public class PathAndParamSearchAction implements SearchAction{
 					}
 
 					if(map.containsKey(actionName)){
-						throw new KeyAlreadyExistsException("存在相同 的action-clz="+ clz.getName() + ",method=" + method.getName() + ",actionName="+ actionName);
+						throw new AlreadyExistsException("存在相同 的action-clz="+ clz.getName() + ",method=" + method.getName() + ",actionName="+ actionName);
 					}
 					
 					map.put(actionName, action);

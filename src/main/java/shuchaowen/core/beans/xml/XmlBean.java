@@ -6,11 +6,10 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.cglib.proxy.Enhancer;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.AnnotationBean;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
@@ -20,7 +19,7 @@ import shuchaowen.core.beans.BeanUtils;
 import shuchaowen.core.beans.PropertiesFactory;
 import shuchaowen.core.beans.annotaion.Service;
 import shuchaowen.core.beans.annotaion.Transaction;
-import shuchaowen.core.beans.exception.BeansException;
+import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.http.server.annotation.Controller;
 import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.ClassUtils;
@@ -275,7 +274,7 @@ public class XmlBean implements Bean {
 		}
 	}
 
-	private Object createInstance(BeanFactory beanFactory)
+	private Object createInstance()
 			throws Exception {
 		if (constructorParameterTypes == null || constructorParameterTypes.length == 0) {
 			return constructor.newInstance();
@@ -326,7 +325,7 @@ public class XmlBean implements Bean {
 			if (isProxy()) {
 				bean = createProxyInstance();
 			} else {
-				bean = createInstance(beanFactory);
+				bean = createInstance();
 			}
 
 			if (factoryMethodInfo == null) {

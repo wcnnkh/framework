@@ -10,7 +10,7 @@ import shuchaowen.core.beans.BeanMethod;
 import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.BeanUtils;
 import shuchaowen.core.beans.PropertiesFactory;
-import shuchaowen.core.beans.exception.BeansException;
+import shuchaowen.core.exception.BeansException;
 
 public class XmlBeanMethodInfo implements BeanMethod{
 	private static final String NAME_KEY = "name";

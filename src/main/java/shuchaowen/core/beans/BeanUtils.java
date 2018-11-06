@@ -29,8 +29,8 @@ import shuchaowen.core.beans.annotaion.Properties;
 import shuchaowen.core.beans.annotaion.Proxy;
 import shuchaowen.core.beans.annotaion.Service;
 import shuchaowen.core.beans.annotaion.Transaction;
-import shuchaowen.core.beans.exception.BeansException;
 import shuchaowen.core.db.DB;
+import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.http.server.annotation.Controller;
 import shuchaowen.core.invoke.Invoker;
@@ -317,7 +317,7 @@ public class BeanUtils {
 							"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
 				}
 
-				field.set(obj, beanFactory.getBean(name));
+				field.set(obj, beanFactory.get(name));
 		}
 	}
 

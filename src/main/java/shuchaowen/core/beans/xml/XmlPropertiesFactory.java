@@ -10,7 +10,7 @@ import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.EParameterType;
 import shuchaowen.core.beans.PropertiesFactory;
-import shuchaowen.core.exception.KeyAlreadyExistsException;
+import shuchaowen.core.exception.AlreadyExistsException;
 import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.ConfigUtils;
@@ -36,7 +36,7 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 					for (Entry<Object, Object> entry : p.getProperties().entrySet()) {
 						String key = prefix + entry.getKey();
 						if (propertiesValueMap.containsKey(key)) {
-							throw new KeyAlreadyExistsException(key);
+							throw new AlreadyExistsException(key);
 						}
 						
 						propertiesValueMap.put(key, entry.getValue());
@@ -46,7 +46,7 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 				for (BeanParameter beanProperties : p.getOtherPropertiesMap().values()) {
 					String key = prefix + beanProperties.getName();
 					if (xmlPropertiesMap.containsKey(key)) {
-						throw new KeyAlreadyExistsException(key);
+						throw new AlreadyExistsException(key);
 					}
 
 					xmlPropertiesMap.put(key, beanProperties);

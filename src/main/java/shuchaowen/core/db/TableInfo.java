@@ -10,7 +10,7 @@ import shuchaowen.core.beans.BeanListen;
 import shuchaowen.core.beans.BeanUtils;
 import shuchaowen.core.db.annoation.NotColumn;
 import shuchaowen.core.db.annoation.Table;
-import shuchaowen.core.exception.KeyAlreadyExistsException;
+import shuchaowen.core.exception.AlreadyExistsException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.ClassUtils;
@@ -109,7 +109,7 @@ public final class TableInfo {
 
 				ColumnInfo columnInfo = new ColumnInfo(name, fieldInfo);
 				if (columnMap.containsKey(columnInfo.getName()) || fieldToColumn.containsKey(fieldInfo.getName())) {
-					throw new KeyAlreadyExistsException("[" + columnInfo.getName() + "]字段已存在");
+					throw new AlreadyExistsException("[" + columnInfo.getName() + "]字段已存在");
 				}
 
 				this.columnMap.put(columnInfo.getName(), columnInfo);

@@ -3,7 +3,7 @@ package shuchaowen.core.beans;
 import java.util.ArrayList;
 import java.util.List;
 
-import shuchaowen.core.beans.exception.BeansException;
+import shuchaowen.core.exception.BeansException;
 
 public final class MultipleBeanFactory extends AbstractBeanFactory {
 	private List<BeanFactory> beanFactoryList;

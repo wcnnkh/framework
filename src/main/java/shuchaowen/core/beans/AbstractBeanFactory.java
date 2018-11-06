@@ -5,14 +5,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import shuchaowen.core.beans.exception.BeansException;
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.util.ClassUtils;
+import shuchaowen.core.exception.AlreadyExistsException;
+import shuchaowen.core.exception.BeansException;
 
 public abstract class AbstractBeanFactory implements BeanFactory {
 	protected volatile Map<String, Object> singletonMap = new HashMap<String, Object>();
 	protected volatile Map<String, Bean> beanMap = new HashMap<String, Bean>();
-	protected volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
+	protected Map<String, String> nameMappingMap = new HashMap<String, String>();
 
 	// 注册一个单例
 	public void registerSingleton(Class<?> type, Object bean) {
@@ -20,27 +19,25 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	public void registerSingleton(String name, Object bean) {
-		String realName = ClassUtils.getCGLIBRealClassName(name);
-		if (singletonMap.containsKey(realName)) {
-			throw new ShuChaoWenRuntimeException("singleton Already exist");// 单例已经存在
+		if (singletonMap.containsKey(name)) {
+			throw new AlreadyExistsException(name);
 		}
 
-		synchronized (singletonMap) {
-			if (singletonMap.containsKey(realName)) {
-				throw new ShuChaoWenRuntimeException("singleton Already exist");// 单例已经存在
-			}
-
-			singletonMap.put(realName, bean);
-			Bean b = getBean(realName);
-			if (b != null) {
-				try {
-					b.autowrite(bean);
-					b.init(bean);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+		singletonMap.put(name, bean);
+	}
+	
+	public void putBean(String name, Bean bean) {
+		if (contains(name)) {
+			throw new AlreadyExistsException(name);
 		}
+		beanMap.put(name, bean);
+	}
+
+	public void putNameMapping(String name, String mappingName) {
+		if (nameMappingMap.containsKey(name)) {
+			throw new AlreadyExistsException(name);
+		}
+		nameMappingMap.put(name, mappingName);
 	}
 
 	public boolean contains(String name) {
@@ -111,20 +108,6 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	protected abstract Bean newBean(String name) throws Exception;
-
-	public void putBean(String name, Bean bean) {
-		if (contains(name)) {
-			throw new BeansException(name + " Already exist");
-		}
-		beanMap.put(name, bean);
-	}
-
-	public void putNameMapping(String name, String mappingName) {
-		if (nameMappingMap.containsKey(name)) {
-			throw new BeansException(name + " Already exist");
-		}
-		nameMappingMap.put(name, mappingName);
-	}
 
 	public void destroy() {
 		HashSet<Class<?>> tagSet = new HashSet<Class<?>>();

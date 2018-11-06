@@ -95,8 +95,6 @@ public class DispatcherServlet extends HttpServlet {
 	@Override
 	public final void init(ServletConfig servletConfig) throws ServletException {
 		httpServerApplication = new HttpServerApplication(servletConfig.getInitParameter(SHUCHAOWEN_CONFIG));
-		httpServerApplication.getBeanFactory().registerSingleton(servletConfig.getServletName(), this);
-		httpServerApplication.getBeanFactory().registerSingleton(this.getClass(), this);
 		
 		if(httpServerApplication.getCharset() == null){
 			String charsetName = servletConfig.getInitParameter("charsetName");

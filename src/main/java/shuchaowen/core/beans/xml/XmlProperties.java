@@ -12,7 +12,7 @@ import org.w3c.dom.Node;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.PropertiesFactory;
-import shuchaowen.core.exception.KeyAlreadyExistsException;
+import shuchaowen.core.exception.AlreadyExistsException;
 import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.StringUtils;
@@ -68,7 +68,7 @@ public class XmlProperties {
 		
 		for(BeanParameter beanParameter : XmlBeanUtils.parseBeanParameterList(node)){
 			if(otherPropertiesMap.containsKey(beanParameter.getName())){
-				throw new KeyAlreadyExistsException(beanParameter.getName());
+				throw new AlreadyExistsException(beanParameter.getName());
 			}
 			
 			otherPropertiesMap.put(beanParameter.getName(), beanParameter);

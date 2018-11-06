@@ -16,7 +16,7 @@ import shuchaowen.core.beans.AbstractBeanFactory;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.PropertiesFactory;
-import shuchaowen.core.beans.exception.BeansException;
+import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.StringUtils;
 
