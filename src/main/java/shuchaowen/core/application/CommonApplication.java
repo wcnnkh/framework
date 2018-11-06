@@ -11,12 +11,15 @@ import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 
 public class CommonApplication implements Application {
-	private MultipleBeanFactory beanFactory;
+	private final MultipleBeanFactory beanFactory;
+	private final boolean initStatic;
+	
 	private String packageNames;
 	private volatile boolean start = false;
 
-	public CommonApplication(String configPath) {
+	public CommonApplication(String configPath, boolean initStatic) {
 		beanFactory = new MultipleBeanFactory();
+		this.initStatic = initStatic;
 		try {
 			if (!StringUtils.isNull(configPath)) {
 				XmlBeanFactory xmlBeanFactory = new XmlBeanFactory(beanFactory, configPath);
@@ -52,10 +55,12 @@ public class CommonApplication implements Application {
 			start = true;
 		}
 		
-		try {
-			BeanUtils.initStatic(beanFactory, getClasses());
-		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
+		if(initStatic){
+			try {
+				BeanUtils.initStatic(beanFactory, getClasses());
+			} catch (Exception e) {
+				throw new ShuChaoWenRuntimeException(e);
+			}
 		}
 	}
 
@@ -73,10 +78,13 @@ public class CommonApplication implements Application {
 		}
 		
 		beanFactory.destroy();
-		try {
-			BeanUtils.destroyStaticMethod(getClasses());
-		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
+		
+		if(initStatic){
+			try {
+				BeanUtils.destroyStaticMethod(getClasses());
+			} catch (Exception e) {
+				throw new ShuChaoWenRuntimeException(e);
+			}
 		}
 	}
 }

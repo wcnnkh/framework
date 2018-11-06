@@ -33,6 +33,25 @@ public abstract class WebRequest extends HttpServletRequestWrapper implements Re
 	public BeanFactory getBeanFactory() {
 		return beanFactory;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T getRequestWrapper(Class<? extends RequestWrapper> requestWrapper) throws Exception{
+		RequestWrapper wrapper = null;
+		if(requestWrapperMap == null){
+			Bean bean = beanFactory.getBean(requestWrapper.getName());
+			wrapper = bean.newInstance(new Class<?>[]{WebRequest.class}, this);
+			if(requestWrapper != null){
+				bean.autowrite(bean);
+				bean.init(bean);
+				
+				requestWrapperMap = new HashMap<Class<? extends RequestWrapper>, RequestWrapper>(2, 1);
+				requestWrapperMap.put(requestWrapper, wrapper);
+			}
+		}else{
+			wrapper = requestWrapperMap.get(requestWrapper);
+		}
+		return (T) wrapper;
+	}
 
 	@SuppressWarnings("unchecked")
 	private Object get(Class<?> type, String name) throws Throwable{
@@ -71,22 +90,7 @@ public abstract class WebRequest extends HttpServletRequestWrapper implements Re
 		}else if(ServletResponse.class.isAssignableFrom(type)){
 			return httpServletResponse;
 		}else if(RequestWrapper.class.isAssignableFrom(type)){
-			Class<? extends RequestWrapper> parameterType = (Class<? extends RequestWrapper>) type;
-			RequestWrapper requestWrapper = null;
-			if(requestWrapperMap == null){
-				Bean bean = beanFactory.getBean(parameterType.getName());
-				requestWrapper = bean.newInstance(new Class<?>[]{WebRequest.class}, this);
-				if(requestWrapper != null){
-					bean.autowrite(bean);
-					bean.init(bean);
-					
-					requestWrapperMap = new HashMap<Class<? extends RequestWrapper>, RequestWrapper>(2, 1);
-					requestWrapperMap.put(parameterType, requestWrapper);
-				}
-			}else{
-				requestWrapper = requestWrapperMap.get(parameterType);
-			}
-			return requestWrapper;
+			return getRequestWrapper((Class<RequestWrapper>)type);
 		}else{
 			return getObject(type, name);
 		}

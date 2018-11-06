@@ -1,7 +1,6 @@
 package shuchaowen.web.servlet;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -14,32 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import shuchaowen.core.application.HttpServerApplication;
 import shuchaowen.core.http.enums.ContentType;
 import shuchaowen.core.util.ConfigUtils;
-import shuchaowen.core.util.StringUtils;
 import shuchaowen.web.servlet.request.FormRequest;
 import shuchaowen.web.servlet.request.JsonRequest;
 
 public class DispatcherServlet extends HttpServlet {
 	private static final long serialVersionUID = -8268337109249457358L;
-	private static final String SHUCHAOWEN_CONFIG = "shuchaowen";
-	private boolean debug = false;
-	private String rpcServletPath;// 远程代理调用的servletpath，只使用post方法
 	private HttpServerApplication httpServerApplication;
-	
-	public boolean isDebug() {
-		return debug;
-	}
-
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
-
-	public void setRpcServletPath(String rpcServletPath) {
-		this.rpcServletPath = rpcServletPath;
-	}
-
-	public String getRpcServletPath() {
-		return rpcServletPath;
-	}
 
 	public HttpServerApplication getHttpServerApplication() {
 		return httpServerApplication;
@@ -61,7 +40,7 @@ public class DispatcherServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (!StringUtils.isNull(httpServerApplication.getRpcSignStr()) && req.getServletPath().equals(rpcServletPath)) {
+		if (httpServerApplication.isRpcEnabled() && req.getServletPath().equals(httpServerApplication.getRpcServletPath())) {
 			rpc(req, resp);
 		} else {
 			controller(req, resp);
@@ -91,41 +70,10 @@ public class DispatcherServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-
+	
 	@Override
 	public final void init(ServletConfig servletConfig) throws ServletException {
-		httpServerApplication = new HttpServerApplication(servletConfig.getInitParameter(SHUCHAOWEN_CONFIG));
-		
-		if(httpServerApplication.getCharset() == null){
-			String charsetName = servletConfig.getInitParameter("charsetName");
-			if (StringUtils.isNull(charsetName)) {
-				charsetName = "UTF-8";
-			}
-			
-			httpServerApplication.setCharset(Charset.forName(charsetName));
-		}
-		
-		String rpcSignStr = servletConfig.getInitParameter("rpc-sign");
-		if(StringUtils.isNull(rpcSignStr)){
-			httpServerApplication.setRpcSignStr(rpcSignStr);
-		}
-		
-		if (!debug) {
-			String d = servletConfig.getInitParameter("debug");
-			if (StringUtils.isNull(d)) {
-				debug = false;
-			} else {
-				setDebug(StringUtils.conversion(d, boolean.class));
-			}
-		}
-
-		if (StringUtils.isNull(rpcServletPath)) {
-			rpcServletPath = servletConfig.getInitParameter("rpc-path");
-			if(StringUtils.isNull(rpcServletPath)){
-				rpcServletPath = "/rpc";
-			}
-		}
-		
+		httpServerApplication = new HttpServerApplication(new ServletConfigFactory(servletConfig));
 		httpServerApplication.init();
 		super.init(servletConfig);
 	}
@@ -155,11 +103,11 @@ public class DispatcherServlet extends HttpServlet {
 	 */
 	public WebRequest wrapperRequest(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
 		if(httpServletRequest.getContentType() == null || httpServletRequest.getContentType().startsWith(ContentType.FORM.getValue())){
-			return new FormRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, debug);
+			return new FormRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, httpServerApplication.isDebug());
 		}else if(httpServletRequest.getContentType().startsWith(ContentType.JSON.getValue())){
-			return new JsonRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, debug);
+			return new JsonRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, httpServerApplication.isDebug());
 		}else{
-			return new FormRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, debug);
+			return new FormRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, httpServerApplication.isDebug());
 		} 
 	}
 	
