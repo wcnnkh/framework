@@ -22,23 +22,12 @@ import shuchaowen.core.db.transaction.Transaction;
 import shuchaowen.redis.Redis;
 
 public class RedisCache implements Cache{
-	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
-	
 	private final Redis redis;
 	private final Charset charset;
 	
-	public RedisCache(Redis redis){
-		this(redis, DEFAULT_CHARSET);
-	}
-	
-	public RedisCache(Redis redis, String charsetName){
-		this.charset = Charset.forName(charsetName);
-		this.redis = redis;
-	}
-	
 	public RedisCache(Redis redis, Charset charset){
-		this.redis = redis;
 		this.charset = charset;
+		this.redis = redis;
 	}
 	
 	public Redis getRedis() {
@@ -46,7 +35,7 @@ public class RedisCache implements Cache{
 	}
 
 	public Charset getCharset() {
-		return charset == null? DEFAULT_CHARSET:charset;
+		return charset;
 	}
 
 	public void loadFull(Object bean) throws Exception {

@@ -12,53 +12,17 @@ import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.TransactionContext;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.storage.CacheUtils;
-import shuchaowen.core.db.storage.async.AsyncConsumer;
 import shuchaowen.core.db.transaction.AbstractTransaction;
 import shuchaowen.core.db.transaction.Transaction;
 import shuchaowen.core.db.transaction.TransactionCollection;
 import shuchaowen.core.util.Logger;
+import shuchaowen.mq.Consumer;
 
-public class CacheAsyncConsumer implements AsyncConsumer {
+public class CacheAsyncConsumer implements Consumer<Collection<OperationBean>> {
 	private final CacheStorage cacheStorage;
 
 	public CacheAsyncConsumer(CacheStorage cacheStorage) {
 		this.cacheStorage = cacheStorage;
-	}
-
-	public void consumer(AbstractDB db, Collection<OperationBean> operationBeans) throws Exception {
-		TransactionContext.getInstance().begin();
-		try {
-			Collection<SQL> sqls = DBUtils.getSqlList(db.getSqlFormat(), operationBeans);
-			if (sqls == null || sqls.isEmpty()) {
-				return;
-			}
-
-			TransactionCollection collection = new TransactionCollection();
-			for (OperationBean operationBean : operationBeans) {
-				CacheConfig cacheConfig = cacheStorage.getCacheConfig(operationBean.getBean().getClass());
-				switch (cacheConfig.getCacheType()) {
-				case keys:
-				case lazy:
-					boolean exist = dbExist(db, operationBean);
-					Transaction transaction = new HostspotDataAsyncRollbackTransaction(exist,
-							cacheConfig.getCacheType() == CacheType.keys, cacheStorage.getCache(), operationBean);
-					collection.add(transaction);
-					break;
-				default:
-					break;
-				}
-			}
-
-			TransactionContext.getInstance().execute(db, sqls, collection);
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			try {
-				TransactionContext.getInstance().end();
-			} catch (Throwable e) {
-				throw new Exception(e);
-			}
-		}
 	}
 
 	private boolean dbExist(AbstractDB abstractDB, OperationBean operationBean)
@@ -70,6 +34,42 @@ public class CacheAsyncConsumer implements AsyncConsumer {
 		}
 
 		return abstractDB.getByIdFromDB(tableInfo.getClassInfo().getClz(), null, params) != null;
+	}
+
+	public void handler(Collection<OperationBean> message) throws Exception {
+		TransactionContext.getInstance().begin();
+		try {
+			Collection<SQL> sqls = DBUtils.getSqlList(cacheStorage.getDB().getSqlFormat(), message);
+			if (sqls == null || sqls.isEmpty()) {
+				return;
+			}
+
+			TransactionCollection collection = new TransactionCollection();
+			for (OperationBean operationBean : message) {
+				CacheConfig cacheConfig = cacheStorage.getCacheConfig(operationBean.getBean().getClass());
+				switch (cacheConfig.getCacheType()) {
+				case keys:
+				case lazy:
+					boolean exist = dbExist(cacheStorage.getDB(), operationBean);
+					Transaction transaction = new HostspotDataAsyncRollbackTransaction(exist,
+							cacheConfig.getCacheType() == CacheType.keys, cacheStorage.getCache(), operationBean);
+					collection.add(transaction);
+					break;
+				default:
+					break;
+				}
+			}
+
+			TransactionContext.getInstance().execute(cacheStorage.getDB(), sqls, collection);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			try {
+				TransactionContext.getInstance().end();
+			} catch (Throwable e) {
+				throw new Exception(e);
+			}
+		}
 	}
 }
 

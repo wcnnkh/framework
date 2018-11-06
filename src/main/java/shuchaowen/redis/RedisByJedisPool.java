@@ -1023,4 +1023,202 @@ public class RedisByJedisPool implements Redis{
 		}
 		return null;
 	}
+
+	public Long rpush(String key, String... value) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.rpush(key, value);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Long rpush(byte[] key, byte[]... value) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.rpush(key, value);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public List<String> blpop(String... key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.blpop(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+	
+	public byte[] rpoplpush(byte[] srckey, byte[] dstkey) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.rpoplpush(srckey, dstkey);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public String rpoplpush(String srckey, String dstkey) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.rpoplpush(srckey, dstkey);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public String brpoplpush(String source, String destination, int timeout) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.brpoplpush(source, destination, timeout);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public byte[] brpoplpush(byte[] source, byte[] destination, int timeout) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.brpoplpush(source, destination, timeout);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public String lindex(String key, int index) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.lindex(key, index);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public byte[] lindex(byte[] key, int index) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.lindex(key, index);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Long llen(String key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.llen(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
+
+	public Long llen(byte[] key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.llen(key);
+		} catch (Exception e) {
+			if(abnormalInterruption){
+				throw new ShuChaoWenRuntimeException(e);
+			}else{
+				e.printStackTrace();
+			}
+		}finally{
+			if(jedis != null){
+				jedis.close();
+			}
+		}
+		return null;
+	}
 }

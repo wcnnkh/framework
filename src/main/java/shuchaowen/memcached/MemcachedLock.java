@@ -2,7 +2,7 @@ package shuchaowen.memcached;
 
 import shuchaowen.core.util.XUtils;
 
-public class MemcachedLock {
+public final class MemcachedLock {
 	private final Memcached memcached;
 	private final String key;
 	private final String id;

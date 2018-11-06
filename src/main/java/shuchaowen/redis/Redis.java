@@ -96,18 +96,24 @@ public interface Redis {
 	Long lpush(String key, String... value);
 
 	Long lpush(byte[] key, byte[]... value);
+	
+	Long rpush(String key, String ...value);
+	
+	Long rpush(byte[] key, byte[] ...value);
 
 	String rpop(String key);
 
 	byte[] rpop(byte[] key);
+	
+	List<String> blpop(String ...key);
+	
+	List<byte[]> blpop(byte[] ...key);
 
 	List<String> brpop(String... key);
 
 	List<byte[]> brpop(byte[]... key);
 	
 	Object eval(String script, List<String> keys, List<String> args);
-	
-	List<byte[]> blpop(byte[]... key);
 	
 	String lpop(String key);
 	
@@ -136,4 +142,20 @@ public interface Redis {
 	boolean set(byte[] key, byte[] value, byte[] nxxx, byte[] expx, long time);
 	
 	Boolean sIsMember(byte[] key, byte[] member);
+	
+	byte[] rpoplpush(byte[] srckey, byte[] dstkey);
+	
+	String rpoplpush(String srckey, String dstkey);
+	
+	String brpoplpush(String source, String destination, int timeout);
+	
+	byte[] brpoplpush(byte[] source, byte[] destination, int timeout);
+	
+	String lindex(String key, int index);
+	
+	byte[] lindex(byte[] key, int index);
+	
+	Long llen(String key);
+	
+	Long llen(byte[] key);
 }

@@ -1,5 +1,6 @@
 package shuchaowen.core.db.storage.cache;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,10 +19,6 @@ import shuchaowen.core.db.result.Result;
 import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.storage.Storage;
-import shuchaowen.core.db.storage.async.AbstractAsyncStorage;
-import shuchaowen.core.db.storage.async.AsyncConsumer;
-import shuchaowen.core.db.storage.async.MemcachedAsyncStorage;
-import shuchaowen.core.db.storage.async.RedisAsyncStorage;
 import shuchaowen.core.db.transaction.AbstractTransaction;
 import shuchaowen.core.db.transaction.Transaction;
 import shuchaowen.core.db.transaction.TransactionCollection;
@@ -29,52 +26,39 @@ import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.XTime;
 import shuchaowen.memcached.Memcached;
+import shuchaowen.memcached.MemcachedMQ;
+import shuchaowen.mq.MQ;
 import shuchaowen.redis.Redis;
+import shuchaowen.redis.RedisMQ;
 
 public final class CacheStorage implements Storage {
 	private static final int DATA_DEFAULT_EXP_TIME = 7 * ((int) XTime.ONE_DAY / 1000);
 	private static final CacheConfig DEFAULT_CACHE_CONFIG = new CacheConfig(CacheType.lazy, DATA_DEFAULT_EXP_TIME,
 			false);
 	private final Map<String, CacheConfig> cacheConfigMap = new HashMap<String, CacheConfig>();
-	private final AbstractAsyncStorage asyncStorage;
 	private final Cache cache;
 	private final AbstractDB db;
 	// 缓存是否自动提交，如果为false就是要等transaction.commit()的时候再提交
 	//默认参与事务，应该以保证数据完整性为主
 	private boolean cacheAutoCommit = false;
-
-	public CacheStorage(Cache cache, AbstractAsyncStorage asyncStorage) {
-		this.db = asyncStorage.getDb();
-		this.cache = cache;
-		this.asyncStorage = asyncStorage;
-	}
-
-	public CacheStorage(AbstractDB db, Memcached memcached, String queueKey, AsyncConsumer asyncConsumer) {
-		this.db = db;
-		this.cache = new MemcachedCache(memcached);
-		this.asyncStorage = new MemcachedAsyncStorage(db, memcached, queueKey, asyncConsumer);
-	}
-
-	public CacheStorage(AbstractDB db, Redis redis, String queueKey, AsyncConsumer asyncConsumer) {
-		this.db = db;
-		this.cache = new RedisCache(redis);
-		this.asyncStorage = new RedisAsyncStorage(db, redis, queueKey, asyncConsumer);
-	}
+	private final MQ<Collection<OperationBean>> mq;
 
 	public CacheStorage(AbstractDB db, Memcached memcached, String queueKey) {
 		this.db = db;
 		this.cache = new MemcachedCache(memcached);
-		this.asyncStorage = new MemcachedAsyncStorage(db, memcached, queueKey, new CacheAsyncConsumer(this));
+		this.mq = new MemcachedMQ<Collection<OperationBean>>(memcached, queueKey);
+		this.mq.consumer(new CacheAsyncConsumer(this));
 	}
-
-	public CacheStorage(AbstractDB db, Redis redis, String queueKey) {
+	
+	public CacheStorage(AbstractDB db, Redis redis, String queueKey){
+		this(db, redis, queueKey, Charset.forName("UTF-8"));
+	}
+	
+	public CacheStorage(AbstractDB db, Redis redis, String queueKey, Charset charset) {
 		this.db = db;
-		this.cache = new RedisCache(redis);
-		this.asyncStorage = new RedisAsyncStorage(db, redis, queueKey, new CacheAsyncConsumer(this));
-	}
-
-	public AbstractAsyncStorage getAsyncStroage() {
-		return asyncStorage;
+		this.cache = new RedisCache(redis, charset);
+		this.mq = new RedisMQ<Collection<OperationBean>>(redis, queueKey, charset);
+		this.mq.consumer(new CacheAsyncConsumer(this));
 	}
 
 	public AbstractDB getDB() {
@@ -91,6 +75,10 @@ public final class CacheStorage implements Storage {
 
 	public void setCacheAutoCommit(boolean cacheAutoCommit) {
 		this.cacheAutoCommit = cacheAutoCommit;
+	}
+
+	public MQ<Collection<OperationBean>> getMq() {
+		return mq;
 	}
 
 	public void config(CacheType cacheType, int exp, boolean isAsync, Class<?>... tableClass) {
@@ -287,7 +275,7 @@ public final class CacheStorage implements Storage {
 		}
 
 		if (asyncList != null) {
-			asyncStorage.op(asyncList);
+			mq.push(asyncList);
 		}
 	}
 }
