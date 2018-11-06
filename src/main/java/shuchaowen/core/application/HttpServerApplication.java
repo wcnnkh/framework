@@ -14,6 +14,7 @@ import shuchaowen.core.http.server.Action;
 import shuchaowen.core.http.server.Request;
 import shuchaowen.core.http.server.Response;
 import shuchaowen.core.http.server.SearchAction;
+import shuchaowen.core.http.server.search.DefaultSearchAction;
 import shuchaowen.core.invoke.Invoker;
 import shuchaowen.core.invoke.ReflectInvoker;
 import shuchaowen.core.util.Logger;
@@ -27,6 +28,8 @@ public class HttpServerApplication extends CommonApplication {
 	private static final String RPC_SIGN = "rpc-sign";
 	private static final String RPC_SERIALIZER = "rpc-serializer";
 	private static final String RPC_PATH = "rpc-path";
+	
+	private static final String DEFAULT_ACTION_KEY = "actionKey";
 
 	private SearchAction searchAction;
 	private String rpcSignStr;
@@ -197,6 +200,12 @@ public class HttpServerApplication extends CommonApplication {
 			if(StringUtils.isNull(rpcServletPath)){
 				rpcServletPath = "/rpc";
 			}
+		}
+		
+		if(searchAction == null){
+			String actionKey = httpServerConfigFactory.getConfig(DEFAULT_ACTION_KEY);
+			actionKey = StringUtils.isNull(actionKey)? "action":actionKey;
+			searchAction = new DefaultSearchAction(getBeanFactory(), true, actionKey);
 		}
 		
 		try {
