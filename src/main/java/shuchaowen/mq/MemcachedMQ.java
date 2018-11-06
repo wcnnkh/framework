@@ -1,12 +1,12 @@
-package shuchaowen.memcached;
+package shuchaowen.mq;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.XUtils;
-import shuchaowen.mq.Consumer;
-import shuchaowen.mq.MQ;
+import shuchaowen.memcached.Memcached;
+import shuchaowen.memcached.MemcachedLock;
 
 public final class MemcachedMQ<T> implements MQ<T> {
 	private static final String READ_KEY = "_read";

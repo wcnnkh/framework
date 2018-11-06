@@ -1,4 +1,4 @@
-package shuchaowen.redis;
+package shuchaowen.mq;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -8,8 +8,8 @@ import java.util.List;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.IOUtils;
 import shuchaowen.core.util.XUtils;
-import shuchaowen.mq.Consumer;
-import shuchaowen.mq.MQ;
+import shuchaowen.redis.Redis;
+import shuchaowen.redis.RedisLock;
 
 public final class RedisMQ<T> implements MQ<T> {
 	private static final String QUEUE_READ_LOCK = "_lock";

@@ -26,10 +26,10 @@ import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.XTime;
 import shuchaowen.memcached.Memcached;
-import shuchaowen.memcached.MemcachedMQ;
 import shuchaowen.mq.MQ;
+import shuchaowen.mq.MemcachedMQ;
+import shuchaowen.mq.RedisMQ;
 import shuchaowen.redis.Redis;
-import shuchaowen.redis.RedisMQ;
 
 public final class CacheStorage implements Storage {
 	private static final int DATA_DEFAULT_EXP_TIME = 7 * ((int) XTime.ONE_DAY / 1000);
