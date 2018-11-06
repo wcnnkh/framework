@@ -34,7 +34,7 @@ public final class RedisMQ<T> implements MQ<T> {
 							continue;
 						}
 
-						RedisLock redisLock = new RedisLock(redis, queueKey + QUEUE_READ_LOCK, XUtils.getUUID(), 600);
+						RedisLock redisLock = new RedisLock(redis, queueKey + QUEUE_READ_LOCK, XUtils.getUUID(), 600 * consumerList.size());
 						if (redisLock.lock()) {
 							try {
 								byte[] data = redis.lindex(queueKey.getBytes(charset), -1);// 找到尾部元素
@@ -57,8 +57,8 @@ public final class RedisMQ<T> implements MQ<T> {
 
 						if (!find) {
 							Thread.sleep(100L);
-							find = false;
 						}
+						find = false;
 					}
 				} catch (InterruptedException e) {
 				}

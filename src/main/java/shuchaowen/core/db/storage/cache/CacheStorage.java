@@ -104,11 +104,19 @@ public final class CacheStorage implements Storage {
 	public void init() {
 		CountDownLatch countDownLatch = new CountDownLatch(cacheConfigMap.size());
 		for (Entry<String, CacheConfig> entry : cacheConfigMap.entrySet()) {
-			try {
-				new LoadingThread(countDownLatch, this, ClassUtils.forName(entry.getKey())).start();
-				;
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+			switch (entry.getValue().getCacheType()) {
+			case no:
+			case lazy:
+				countDownLatch.countDown();
+				break;
+			default:
+				try {
+					new LoadingThread(countDownLatch, this, ClassUtils.forName(entry.getKey())).start();
+					;
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+				break;
 			}
 		}
 

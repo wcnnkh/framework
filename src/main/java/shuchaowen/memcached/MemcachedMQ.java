@@ -34,11 +34,11 @@ public final class MemcachedMQ<T> implements MQ<T> {
 						if (consumerList == null || consumerList.isEmpty()) {
 							continue;
 						}
-
+						
 						MemcachedLock memcachedLock = new MemcachedLock(memcached, queueKey + READ_LOCK_KEY,
-								XUtils.getUUID(), 600);
-						try {
-							if (memcachedLock.lock()) {
+								XUtils.getUUID(), 600 * consumerList.size());
+						if (memcachedLock.lock()) {
+							try {
 								if (checkCanRead()) {
 									long readIndex = memcached.incr(queueKey + READ_KEY, 1);
 									T message = memcached.get(queueKey + readIndex);
@@ -48,17 +48,18 @@ public final class MemcachedMQ<T> implements MQ<T> {
 									memcached.delete(queueKey + readIndex);
 									find = true;
 								}
+
+							} catch (Exception e) {
+								throw new ShuChaoWenRuntimeException(e);
+							} finally {
+								memcachedLock.unLock();
 							}
-						} catch (Exception e) {
-							throw new ShuChaoWenRuntimeException(e);
-						} finally {
-							memcachedLock.unLock();
 						}
 
 						if (!find) {
 							Thread.sleep(100L);
-							find = false;
 						}
+						find = false;
 					}
 				} catch (InterruptedException e) {
 				}
@@ -89,9 +90,10 @@ public final class MemcachedMQ<T> implements MQ<T> {
 
 		long writeIndex = memcached.incr(queueKey + WRITE_INDEX_KEY, 1);
 		boolean b = memcached.add(queueKey + writeIndex, message);
-		if (b) {
-			memcached.set(queueKey + WRITE_KEY, writeIndex);
+		if (!b) {
+			throw new ShuChaoWenRuntimeException("push error index" + writeIndex);
 		}
+		memcached.set(queueKey + WRITE_KEY, writeIndex);
 	}
 
 	public synchronized void consumer(Consumer<T> consumer) {
