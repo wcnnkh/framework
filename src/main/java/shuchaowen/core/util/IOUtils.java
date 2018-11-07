@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class IOUtils {
+	private IOUtils(){};
+	
 	public static StringBuilder readerContent(Reader in) throws IOException {
 		if(in.markSupported()){
 			in.mark(0);

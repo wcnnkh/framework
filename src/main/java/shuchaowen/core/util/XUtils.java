@@ -4,7 +4,9 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class XUtils {
+public final class XUtils {
+	private XUtils(){};
+	
 	public static boolean isWin() {
 		return System.getProperty("os.name").toLowerCase().startsWith("win");
 	}

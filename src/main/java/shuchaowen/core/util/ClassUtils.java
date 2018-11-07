@@ -41,6 +41,8 @@ public final class ClassUtils {
 		registerBasicType(Double.class, double.class);
 		registerBasicType(Boolean.class, boolean.class);
 	}
+	
+	private ClassUtils(){};
 
 	private static void registerBasicType(Class<?> type1, Class<?> type2) {
 		basicTypeMap.put(type1, type2);

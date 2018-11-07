@@ -3,7 +3,9 @@ package shuchaowen.core.util;
 import java.security.MessageDigest;
 import java.util.Formatter;
 
-public class SHA1 {
+public final class SHA1 {
+	private SHA1(){};
+	
 /*	public static String sha1(String decript) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-1");

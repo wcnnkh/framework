@@ -19,8 +19,9 @@ import javax.imageio.ImageIO;
 
 import shuchaowen.core.util.FileUtils;
 
-public class ImageUtils {
-
+public final class ImageUtils {
+	private ImageUtils(){};
+	
 	/**
 	 * 图片大小调整
 	 * 
@@ -215,7 +216,7 @@ public class ImageUtils {
 		}
 	}
 
-	public final static void pressImage(String pressImg, String srcImageFile, String destImageFile, int x, int y,
+	public static void pressImage(String pressImg, String srcImageFile, String destImageFile, int x, int y,
 			float alpha) {
 		try {
 			File img = new File(srcImageFile);
@@ -240,7 +241,7 @@ public class ImageUtils {
 		}
 	}
 
-	public final static int getLength(String text) {
+	public static int getLength(String text) {
 		int length = 0;
 		for (int i = 0; i < text.length(); i++) {
 			if (new String(text.charAt(i) + "").getBytes().length > 1) {

@@ -12,17 +12,11 @@ import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
 
-public class RSA{
+public final class RSA{
+	private RSA(){};
 	
 	public static final String  SIGN_ALGORITHMS = "SHA1WithRSA";
 	
-	/**
-	* RSAǩ��
-	* @param content ��ǩ������
-	* @param privateKey ˽Կ
-	* @param input_charset �����ʽ
-	* @return ǩ��ֵ
-	*/
 	public static String sign(String content, String privateKey, String input_charset)
 	{
         try 
@@ -49,14 +43,6 @@ public class RSA{
         return null;
     }
 	
-	/**
-	* RSA��ǩ�����
-	* @param content ��ǩ������
-	* @param sign ǩ��ֵ
-	* @param ali_public_key ��Կ
-	* @param input_charset �����ʽ
-	* @return ����ֵ
-	*/
 	public static boolean verify(String content, String sign, String public_key, String input_charset)
 	{
 		try 
@@ -84,13 +70,6 @@ public class RSA{
 		return false;
 	}
 	
-	/**
-	* ����
-	* @param content ����
-	* @param private_key ˽Կ
-	* @param input_charset �����ʽ
-	* @return ���ܺ���ַ���
-	*/
 	public static String decrypt(String content, String private_key, String input_charset) throws Exception {
         PrivateKey prikey = getPrivateKey(private_key);
 
@@ -120,13 +99,7 @@ public class RSA{
 
         return new String(writer.toByteArray(), input_charset);
     }
-
 	
-	/**
-	* �õ�˽Կ
-	* @param key ��Կ�ַ���������base64���룩
-	* @throws Exception
-	*/
 	public static PrivateKey getPrivateKey(String key) throws Exception {
 
 		byte[] keyBytes;

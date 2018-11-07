@@ -10,9 +10,11 @@ import java.util.regex.Pattern;
 
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
-public class StringUtils {
+public final class StringUtils {
 	private static final String randomStr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
+	private StringUtils(){};
+	
 	public static boolean isNull(boolean trim, String... str) {
 		for (String s : str) {
 			if (s == null || s.length() == 0 || (trim && s.trim().length() == 0)) {
@@ -231,7 +233,7 @@ public class StringUtils {
 		return str;
 	}
 
-	public static final int[] splitIntArr(String str, String regex) {
+	public static int[] splitIntArr(String str, String regex) {
 		String[] arr = splitStringArr(str, regex, false);
 		if (arr == null) {
 			return null;
@@ -244,7 +246,7 @@ public class StringUtils {
 		return dataArr;
 	}
 
-	public static final long[] splitLongArr(String str, String regex) {
+	public static long[] splitLongArr(String str, String regex) {
 		String[] arr = splitStringArr(str, regex, false);
 		if (arr == null) {
 			return null;
@@ -257,7 +259,7 @@ public class StringUtils {
 		return dataArr;
 	}
 
-	public static final String[] splitStringArr(String str, String regex, boolean isTrim) {
+	public static String[] splitStringArr(String str, String regex, boolean isTrim) {
 		if (isNull(str, regex)) {
 			return null;
 		}
@@ -321,7 +323,7 @@ public class StringUtils {
 		return new String(cArr);
 	}
 
-	public static final boolean isMobileNum(String telNum) {
+	public static boolean isMobileNum(String telNum) {
 		Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
 		Matcher m = p.matcher(telNum);
 		return m.matches();
@@ -333,7 +335,7 @@ public class StringUtils {
 	 * @param len
 	 * @param repStr
 	 */
-	public final static String sub(String str, int len, String repStr) {
+	public static String sub(String str, int len, String repStr) {
 		if (str.length() > len) {
 			return str.substring(0, len) + repStr;
 		}
@@ -624,7 +626,7 @@ public class StringUtils {
 	 * @param len
 	 * @return
 	 */
-	public static final String getNumCode(int len) {
+	public static String getNumCode(int len) {
 		StringBuilder sb = new StringBuilder(len);
 		Random random = new Random();
 		for (int i = 0; i < len; i++) {
@@ -643,7 +645,7 @@ public class StringUtils {
 	 *            是否反转
 	 * @return
 	 */
-	public static final String complemented(String str, char complemented, int length, boolean reversal) {
+	public static String complemented(String str, char complemented, int length, boolean reversal) {
 		if (length < str.length()) {
 			throw new ShuChaoWenRuntimeException("length error");
 		}

@@ -21,7 +21,7 @@ import org.w3c.dom.NodeList;
 
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
-public class ConfigUtils {
+public final class ConfigUtils {
 	private static final String WEB_ROOT = "web.root";
 	private static final String CLASSPATH = "classpath";
 	private static final String CLASSPATH_PREFIX = CLASSPATH + ":";
@@ -31,6 +31,8 @@ public class ConfigUtils {
 	private static final StringFormatSystemProperties format2 = new StringFormatSystemProperties("[", "]");
 	public static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
 
+	private ConfigUtils(){};
+	
 	public static String getSystemProperty(String key) {
 		String v = System.getProperty(key);
 		if (v == null) {
@@ -212,7 +214,7 @@ public class ConfigUtils {
 		return list;
 	}
 
-	public static final Properties getProperties(String filePath, String charsetName) {
+	public static Properties getProperties(String filePath, String charsetName) {
 		return getProperties(getFile(filePath), charsetName);
 	}
 

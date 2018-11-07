@@ -12,7 +12,9 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-public class SignHelp {
+public final class SignHelp {
+	private SignHelp(){};
+	
 	public static StringBuilder getShotParamsStr(Map<String, String> map) {
 		StringBuilder sb = new StringBuilder();
 		if (map != null) {

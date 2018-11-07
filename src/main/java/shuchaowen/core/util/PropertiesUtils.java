@@ -3,7 +3,9 @@ package shuchaowen.core.util;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-public class PropertiesUtils {
+public final class PropertiesUtils {
+	private PropertiesUtils(){};
+	
 	public static <T> T setProperties(Object obj, Properties properties, StringFormat stringFormat){
 		T t = null;
 		ClassInfo classInfo = ClassUtils.getClassInfo(obj.getClass());

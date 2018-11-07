@@ -22,7 +22,9 @@ import java.util.zip.ZipFile;
 
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
-public class FileUtils {
+public final class FileUtils {
+	private FileUtils(){};
+	
 	public static void toFile(String pathName, InputStream is){
 		OutputStream os = null;
 		try {

@@ -10,7 +10,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class XTime {
+public final class XTime {
+	private XTime(){};
+	
 	/**
 	 * 一天的毫秒数
 	 */
