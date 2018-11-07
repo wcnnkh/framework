@@ -22,7 +22,6 @@ public final class MemcachedMQ<T> implements MQ<T> {
 	public MemcachedMQ(final Memcached memcached, final String queueKey) {
 		this.memcached = memcached;
 		this.queueKey = queueKey;
-		memcached.add(queueKey + READ_KEY, 0 + "");
 		memcached.add(queueKey + WRITE_INDEX_KEY, 0 + "");
 
 		thread = new Thread(new Runnable() {
@@ -39,18 +38,28 @@ public final class MemcachedMQ<T> implements MQ<T> {
 								XUtils.getUUID(), 600 * consumerList.size());
 						if (memcachedLock.lock()) {
 							try {
-								if (checkCanRead()) {
-									long readIndex = memcached.incr(queueKey + READ_KEY, 1);
+								Long readIndex = memcached.get(queueKey + READ_KEY);
+								if(readIndex == null){
+									readIndex = 0L;
+								}
+								
+								if (checkCanRead(readIndex)) {
+									readIndex ++;
 									T message = memcached.get(queueKey + readIndex);
+									if(message == null){
+										memcached.set(queueKey + READ_KEY, readIndex);
+										continue;
+									}
+									
 									for (Consumer<T> consumer : consumerList) {
 										consumer.handler(message);// 如果出现异常则会出现重复执行的情况
 									}
 									memcached.delete(queueKey + readIndex);
+									memcached.set(queueKey + READ_KEY, readIndex);
 									find = true;
 								}
-
 							} catch (Exception e) {
-								throw new ShuChaoWenRuntimeException(e);
+								e.printStackTrace();
 							} finally {
 								memcachedLock.unLock();
 							}
@@ -67,13 +76,12 @@ public final class MemcachedMQ<T> implements MQ<T> {
 		}, queueKey);
 	}
 
-	private boolean checkCanRead() {
-		long readIndex = Integer.parseInt((String) memcached.get(queueKey + READ_KEY));
+	private boolean checkCanRead(long readIndex) {
 		Long writeIndex = memcached.get(queueKey + WRITE_KEY);
 		if (writeIndex == null) {
 			return false;
 		}
-
+		
 		if (writeIndex < 0) {
 			if (readIndex >= 0) {
 				return true;
