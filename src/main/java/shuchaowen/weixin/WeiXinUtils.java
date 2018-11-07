@@ -11,6 +11,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
+import com.alibaba.fastjson.JSONObject;
+
 import shuchaowen.core.util.SignHelp;
 import shuchaowen.web.util.http.HttpPost;
 import shuchaowen.web.util.http.core.Http;
@@ -226,5 +228,9 @@ public abstract class WeiXinUtils {
 			map.put(k, node.getText());
 		}
 		return map;
+	}
+	
+	public static boolean isError(JSONObject json){
+		return json.containsKey("errcode") && json.getIntValue("errcode") != 0;
 	}
 }

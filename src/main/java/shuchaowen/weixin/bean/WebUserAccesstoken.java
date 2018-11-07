@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.web.util.http.HttpPost;
+import shuchaowen.weixin.WeiXinUtils;
 
 /**
  * 用code换取的信息
@@ -63,7 +64,7 @@ public class WebUserAccesstoken implements Serializable{
 		}
 		
 		JSONObject jsonObject = JSONObject.parseObject(jsonData);
-		if(jsonObject.containsKey("errcode") && jsonObject.getIntValue("errcode") != 0){
+		if(WeiXinUtils.isError(jsonObject)){
 			throw new ShuChaoWenRuntimeException(jsonData);
 		}
 		

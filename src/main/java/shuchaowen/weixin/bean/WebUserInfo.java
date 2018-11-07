@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.web.util.http.HttpPost;
+import shuchaowen.weixin.WeiXinUtils;
 
 public class WebUserInfo implements Serializable {
 	private static final String weixin_get_web_userinfo = "https://api.weixin.qq.com/sns/userinfo";
@@ -57,7 +58,7 @@ public class WebUserInfo implements Serializable {
 		}
 		
 		JSONObject jsonObject = JSONObject.parseObject(content);
-		if(jsonObject.containsKey("errcode") && jsonObject.getIntValue("errcode") != 0){
+		if(WeiXinUtils.isError(jsonObject)){
 			throw new ShuChaoWenRuntimeException(content);
 		}
 		
