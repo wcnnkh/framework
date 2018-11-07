@@ -1,12 +1,12 @@
-package shuchaowen.web.support.jxl.export.service;
+package shuchaowen.jxl.export.service.impl;
 
 import shuchaowen.core.db.result.Result;
-import shuchaowen.web.support.jxl.export.service.impl.SqlExportRowImpl;
+import shuchaowen.jxl.export.service.SqlExportRow;
 
-public class SimpleExportRow implements SqlExportRowImpl{
+public class SimpleExportRowImpl implements SqlExportRow{
 	private int colCount;
 	
-	public SimpleExportRow(int colCount) {
+	public SimpleExportRowImpl(int colCount) {
 		this.colCount = colCount;
 	}
 	

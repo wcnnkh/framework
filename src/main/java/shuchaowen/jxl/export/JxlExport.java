@@ -1,4 +1,4 @@
-package shuchaowen.web.support.jxl.export;
+package shuchaowen.jxl.export;
 
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import jxl.write.WritableWorkbook;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
-import shuchaowen.web.support.jxl.export.service.impl.SqlExportRowImpl;
+import shuchaowen.jxl.export.service.SqlExportRow;
 
 public class JxlExport {
 	/**
@@ -89,7 +89,7 @@ public class JxlExport {
 	}
 	
 	public static void sqlResultSetToExcel(String fileName, String title[], AbstractDB db
-			, HttpServletResponse response, SqlExportRowImpl exportRow, SQL ...sqls)
+			, HttpServletResponse response, SqlExportRow exportRow, SQL ...sqls)
 			throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		response.setContentType("application/vnd.ms-excel");
@@ -102,7 +102,7 @@ public class JxlExport {
 	}
 	
 	public static void sqlResultSetToExcel(String fileName, String title[], AbstractDB db,
-			List<SQL> sqlList, HttpServletResponse response, SqlExportRowImpl exportRow)
+			List<SQL> sqlList, HttpServletResponse response, SqlExportRow exportRow)
 			throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		response.setContentType("application/vnd.ms-excel");
@@ -115,7 +115,7 @@ public class JxlExport {
 	}
 	
 	
-	public static void sqlResultSetToExcel(String title[], AbstractDB db, List<SQL> sqlList, OutputStream os, SqlExportRowImpl exportRow)
+	public static void sqlResultSetToExcel(String title[], AbstractDB db, List<SQL> sqlList, OutputStream os, SqlExportRow exportRow)
 			throws Exception {
 		// 创建Excel工作薄
 		WritableWorkbook wwb = Workbook.createWorkbook(os);

@@ -3,9 +3,9 @@ package shuchaowen.web.servlet.view;
 import java.io.IOException;
 import java.util.List;
 
+import shuchaowen.jxl.export.JxlExport;
 import shuchaowen.web.servlet.View;
 import shuchaowen.web.servlet.WebResponse;
-import shuchaowen.web.support.jxl.export.JxlExport;
 
 public class JxlListToExcelView implements View{
 	private String fileName;

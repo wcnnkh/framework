@@ -1,10 +1,10 @@
-package shuchaowen.web.support.jxl.export;
+package shuchaowen.jxl.export;
 
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import shuchaowen.core.db.result.ResultSet;
-import shuchaowen.web.support.jxl.export.service.impl.SqlExportRowImpl;
+import shuchaowen.jxl.export.service.SqlExportRow;
 
 public class ResultSetToExeclRowCall{
 	// 创建Excel工作薄
@@ -15,9 +15,9 @@ public class ResultSetToExeclRowCall{
 	private Label label;
 	private String[] title;
 	private WritableWorkbook wwb;
-	private SqlExportRowImpl exportRow;
+	private SqlExportRow exportRow;
 	
-	public ResultSetToExeclRowCall(WritableWorkbook wwb, String[] title, SqlExportRowImpl exportRow) {
+	public ResultSetToExeclRowCall(WritableWorkbook wwb, String[] title, SqlExportRow exportRow) {
 			this.wwb = wwb;
 			this.title = title;
 			this.exportRow = exportRow;

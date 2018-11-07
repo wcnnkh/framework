@@ -1,4 +1,4 @@
-package shuchaowen.web.support.freemarker;
+package shuchaowen.freemarker;
 
 import java.util.Map;
 

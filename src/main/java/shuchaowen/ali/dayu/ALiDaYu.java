@@ -1,4 +1,4 @@
-package shuchaowen.web.support.ali.dayu;
+package shuchaowen.ali.dayu;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;

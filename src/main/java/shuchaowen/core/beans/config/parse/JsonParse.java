@@ -1,4 +1,4 @@
-package shuchaowen.web.config.parse;
+package shuchaowen.core.beans.config.parse;
 
 import java.io.File;
 

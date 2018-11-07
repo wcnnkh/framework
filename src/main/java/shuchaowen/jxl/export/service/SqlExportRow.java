@@ -1,7 +1,7 @@
-package shuchaowen.web.support.jxl.export.service.impl;
+package shuchaowen.jxl.export.service;
 
 import shuchaowen.core.db.result.Result;
 
-public interface SqlExportRowImpl{
+public interface SqlExportRow{
 	public String[] exportRow(Result result);
 }

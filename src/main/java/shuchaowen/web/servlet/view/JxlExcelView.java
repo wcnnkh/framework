@@ -6,29 +6,29 @@ import java.util.Arrays;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.jxl.export.JxlExport;
+import shuchaowen.jxl.export.service.SqlExportRow;
+import shuchaowen.jxl.export.service.impl.SimpleExportRowImpl;
 import shuchaowen.web.servlet.View;
 import shuchaowen.web.servlet.WebResponse;
-import shuchaowen.web.support.jxl.export.JxlExport;
-import shuchaowen.web.support.jxl.export.service.SimpleExportRow;
-import shuchaowen.web.support.jxl.export.service.impl.SqlExportRowImpl;
 
 public class JxlExcelView implements View{
 	private SQL sql;
 	private AbstractDB db;
 	private String fileName;
 	private String[] titles;
-	private SqlExportRowImpl sqlExportRowImpl;
+	private SqlExportRow sqlExportRow;
 	
 	public JxlExcelView(AbstractDB db, SQL sql, String fileName, String[] titles){
-		this(db, sql, fileName, titles, new SimpleExportRow(titles.length));
+		this(db, sql, fileName, titles, new SimpleExportRowImpl(titles.length));
 	}
 	
-	public JxlExcelView(AbstractDB db, SQL sql, String fileName, String[] titles, SqlExportRowImpl sqlExportRowImpl){
+	public JxlExcelView(AbstractDB db, SQL sql, String fileName, String[] titles, SqlExportRow sqlExportRow){
 		this.db = db;
 		this.sql = sql;
 		this.fileName = fileName;
 		this.titles = titles;
-		this.sqlExportRowImpl = sqlExportRowImpl;
+		this.sqlExportRow = sqlExportRow;
 	}
 
 	public void render(WebResponse response) throws IOException {
@@ -37,7 +37,7 @@ public class JxlExcelView implements View{
 		}
 		
 		try {
-			JxlExport.sqlResultSetToExcel(fileName, titles, db, Arrays.asList(sql), response, sqlExportRowImpl);
+			JxlExport.sqlResultSetToExcel(fileName, titles, db, Arrays.asList(sql), response, sqlExportRow);
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}

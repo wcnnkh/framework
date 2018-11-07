@@ -1,4 +1,4 @@
-package shuchaowen.web.admin.bean;
+package shuchaowen.admin.bean;
 
 import java.io.Serializable;
 

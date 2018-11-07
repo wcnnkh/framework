@@ -1,4 +1,4 @@
-package shuchaowen.web.support.freemarker.modal;
+package shuchaowen.freemarker.model;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
