@@ -1,6 +1,6 @@
-package shuchaowen.weixin;
+package shuchaowen.tencent.weixin;
 
-import shuchaowen.weixin.bean.AccessToken;
+import shuchaowen.tencent.weixin.bean.AccessToken;
 
 public final class MemoryAccessTokenFactory extends AbstractAccessTokenFactory{
 	private volatile AccessToken accessToken;

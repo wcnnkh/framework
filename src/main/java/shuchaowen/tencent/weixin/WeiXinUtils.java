@@ -1,4 +1,4 @@
-package shuchaowen.weixin;
+package shuchaowen.tencent.weixin;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;

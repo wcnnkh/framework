@@ -1,4 +1,4 @@
-package shuchaowen.weixin.enums;
+package shuchaowen.tencent.weixin.enums;
 
 public enum Scope {
 	snsapi_base,

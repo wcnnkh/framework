@@ -1,4 +1,4 @@
-package shuchaowen.weixin.bean;
+package shuchaowen.tencent.weixin.bean;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -8,8 +8,8 @@ import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.StringUtils;
+import shuchaowen.tencent.weixin.WeiXinUtils;
 import shuchaowen.web.util.http.HttpPost;
-import shuchaowen.weixin.WeiXinUtils;
 
 /**
  * 用code换取的信息

@@ -1,4 +1,4 @@
-package shuchaowen.weixin;
+package shuchaowen.tencent.weixin;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -6,7 +6,7 @@ import java.nio.charset.Charset;
 import shuchaowen.core.util.IOUtils;
 import shuchaowen.redis.Redis;
 import shuchaowen.redis.RedisLock;
-import shuchaowen.weixin.bean.JsApiTicket;
+import shuchaowen.tencent.weixin.bean.JsApiTicket;
 
 public final class RedisJsApiTicketFactory extends AbstractJsApiTicketFactory{
 	private final Redis redis;

@@ -1,6 +1,6 @@
-package shuchaowen.weixin;
+package shuchaowen.tencent.weixin;
 
-import shuchaowen.weixin.bean.JsApiTicket;
+import shuchaowen.tencent.weixin.bean.JsApiTicket;
 
 public final class MemoryJsApiTicketFactory extends AbstractJsApiTicketFactory{
 	private volatile JsApiTicket jsApiTicket;

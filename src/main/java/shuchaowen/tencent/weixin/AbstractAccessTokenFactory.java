@@ -1,7 +1,7 @@
-package shuchaowen.weixin;
+package shuchaowen.tencent.weixin;
 
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.weixin.bean.AccessToken;
+import shuchaowen.tencent.weixin.bean.AccessToken;
 
 public abstract class AbstractAccessTokenFactory implements AccessTokenFactory{
 	private final String appid;

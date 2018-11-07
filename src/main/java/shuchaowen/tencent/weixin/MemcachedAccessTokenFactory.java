@@ -1,8 +1,8 @@
-package shuchaowen.weixin;
+package shuchaowen.tencent.weixin;
 
 import shuchaowen.memcached.Memcached;
 import shuchaowen.memcached.MemcachedLock;
-import shuchaowen.weixin.bean.AccessToken;
+import shuchaowen.tencent.weixin.bean.AccessToken;
 
 public final class MemcachedAccessTokenFactory extends AbstractAccessTokenFactory{
 	private final Memcached memcached;

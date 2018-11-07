@@ -1,4 +1,4 @@
-package shuchaowen.weixin.bean;
+package shuchaowen.tencent.weixin.bean;
 
 import java.io.Serializable;
 
@@ -6,8 +6,8 @@ import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.StringUtils;
+import shuchaowen.tencent.weixin.WeiXinUtils;
 import shuchaowen.web.util.http.HttpPost;
-import shuchaowen.weixin.WeiXinUtils;
 
 public class JsApiTicket implements Serializable {
 	private static final String weixin_get_web_ticket = "https://api.weixin.qq.com/cgi-bin/ticket/getticket";

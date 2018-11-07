@@ -1,4 +1,4 @@
-package shuchaowen.weixin.bean;
+package shuchaowen.tencent.weixin.bean;
 
 import java.io.Serializable;
 import java.util.Arrays;

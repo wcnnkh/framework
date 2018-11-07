@@ -1,7 +1,7 @@
-package shuchaowen.weixin;
+package shuchaowen.tencent.weixin;
 
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.weixin.bean.JsApiTicket;
+import shuchaowen.tencent.weixin.bean.JsApiTicket;
 
 public abstract class AbstractJsApiTicketFactory implements JsApiTicketFactory{
 	private final AccessTokenFactory accessTokenFactory;

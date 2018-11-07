@@ -1,8 +1,8 @@
-package shuchaowen.weixin;
+package shuchaowen.tencent.weixin;
 
 import shuchaowen.memcached.Memcached;
 import shuchaowen.memcached.MemcachedLock;
-import shuchaowen.weixin.bean.JsApiTicket;
+import shuchaowen.tencent.weixin.bean.JsApiTicket;
 
 public final class MemcachedJsApiTicketFactory extends AbstractJsApiTicketFactory{
 	private final Memcached memcached;
