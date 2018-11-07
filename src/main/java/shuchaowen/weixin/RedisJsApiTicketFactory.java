@@ -13,6 +13,10 @@ public final class RedisJsApiTicketFactory extends AbstractJsApiTicketFactory{
 	private final byte[] key;
 	private final String lockKey;
 	
+	public RedisJsApiTicketFactory(Redis redis, String charsetName, String key, AccessTokenFactory accessTokenFactory){
+		this(redis, Charset.forName(charsetName), key, accessTokenFactory);
+	}
+	
 	public RedisJsApiTicketFactory(Redis redis, Charset charset, String key, AccessTokenFactory accessTokenFactory) {
 		super(accessTokenFactory);
 		this.redis = redis;

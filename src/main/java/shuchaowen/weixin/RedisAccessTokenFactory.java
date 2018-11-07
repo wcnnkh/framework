@@ -13,6 +13,10 @@ public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory{
 	private final byte[] key;
 	private final String lockKey;
 	
+	public RedisAccessTokenFactory(Redis redis, String charsetName, String appid, String appsecret) {
+		this(redis, Charset.forName(charsetName), appid, appsecret);
+	}
+	
 	public RedisAccessTokenFactory(Redis redis, Charset charset, String appid, String appsecret) {
 		super(appid, appsecret);
 		this.redis = redis;
