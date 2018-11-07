@@ -42,12 +42,13 @@ public final class CacheStorage implements Storage {
 	//默认参与事务，应该以保证数据完整性为主
 	private boolean cacheAutoCommit = false;
 	private final MQ<Collection<OperationBean>> mq;
-
+	
 	public CacheStorage(AbstractDB db, Memcached memcached, String queueKey) {
 		this.db = db;
 		this.cache = new MemcachedCache(memcached);
 		this.mq = new MemcachedMQ<Collection<OperationBean>>(memcached, queueKey);
 		this.mq.consumer(new CacheAsyncConsumer(this));
+		this.mq.start();
 	}
 	
 	public CacheStorage(AbstractDB db, Redis redis, String queueKey){
@@ -59,6 +60,7 @@ public final class CacheStorage implements Storage {
 		this.cache = new RedisCache(redis, charset);
 		this.mq = new RedisMQ<Collection<OperationBean>>(redis, queueKey, charset);
 		this.mq.consumer(new CacheAsyncConsumer(this));
+		this.mq.start();
 	}
 
 	public AbstractDB getDB() {

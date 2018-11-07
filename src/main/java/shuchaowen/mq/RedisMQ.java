@@ -64,7 +64,6 @@ public final class RedisMQ<T> implements MQ<T> {
 				}
 			}
 		}, queueKey);
-		thread.start();
 	}
 
 	public void push(T message) {
@@ -86,5 +85,9 @@ public final class RedisMQ<T> implements MQ<T> {
 
 	public void destroy() {
 		thread.interrupt();
+	}
+
+	public void start() {
+		thread.start();
 	}
 }

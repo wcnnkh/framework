@@ -1,32 +1,29 @@
 package shuchaowen.web.servlet;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import shuchaowen.core.util.ProcessorQueueHash;
+import shuchaowen.core.util.ProcessorHashQueue;
 import shuchaowen.core.util.StringUtils;
 
 public abstract class AbstractHashDispatcherServlet extends DispatcherServlet{
-	private ProcessorQueueHash<Integer> queueHash;
 	private static final long serialVersionUID = 1L;
-	public ExecutorService threadPool;
+	private ProcessorHashQueue<Integer> queueHash;
 	
 	@Override
 	public void init() throws ServletException {
 		int poolSize = StringUtils.conversion(getConfig("poolSize", 50 + ""), int.class);
-		threadPool = Executors.newFixedThreadPool(poolSize);
-		queueHash = new ProcessorQueueHash<Integer>(threadPool, poolSize, 10000);
+		queueHash = new ProcessorHashQueue<Integer>(poolSize, 10000);
+		queueHash.start();
 		super.init();
 	}
 	
 	@Override
 	public void destroy() {
-		threadPool.shutdownNow();
+		queueHash.destroy();
 		super.destroy();
 	}
 	
@@ -38,7 +35,11 @@ public abstract class AbstractHashDispatcherServlet extends DispatcherServlet{
 			httpServletRequest.startAsync(httpServletRequest, httpServletResponse);
 		}
 		
-		queueHash.process(hashcode(request), new AsyncHashController(request, httpServletResponse, this));
+		try {
+			queueHash.process(hashcode(request), new AsyncHashController(request, httpServletResponse, this));
+		} catch (InterruptedException e) {
+			throw new ServletException(e);
+		}
 	}
 	
 	protected final int ipHashCode(WebRequest request){

@@ -65,7 +65,6 @@ public final class MemcachedMQ<T> implements MQ<T> {
 				}
 			}
 		}, queueKey);
-		thread.start();
 	}
 
 	private boolean checkCanRead() {
@@ -105,5 +104,9 @@ public final class MemcachedMQ<T> implements MQ<T> {
 
 	public void destroy() {
 		thread.interrupt();
+	}
+
+	public void start() {
+		thread.start();
 	}
 }

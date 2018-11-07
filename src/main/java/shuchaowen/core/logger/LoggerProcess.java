@@ -14,14 +14,16 @@ public abstract class LoggerProcess implements AbstractLogger,Runnable{
 	}
 	
 	public void run(){
-		while(true){
-			try {
-				console(handlerQueue.take());
-			} catch (InterruptedException e) {
-				break;
-			}catch (Exception e) {
-				e.printStackTrace();
+		try {
+			while(!Thread.interrupted()){
+				LogMsg msg = handlerQueue.take();
+				try {
+					console(msg);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
+		} catch (InterruptedException e) {
 		}
 	}
 	

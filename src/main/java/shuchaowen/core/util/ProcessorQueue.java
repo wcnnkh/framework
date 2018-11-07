@@ -3,37 +3,44 @@ package shuchaowen.core.util;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-
-public class ProcessorQueue implements Runnable{
-	private BlockingQueue<Runnable> queue;
+public class ProcessorQueue{
+	private final BlockingQueue<Runnable> queue;
+	private final Thread thread;
 	
-	public ProcessorQueue(){
-		this(Integer.MAX_VALUE);
-	}
-	
-	public ProcessorQueue(int maxProcessSize) {
-		queue = new LinkedBlockingQueue<Runnable>(Math.abs(maxProcessSize)); 
-	}
-	
-	public void run() {
-		Runnable runnable;
-		while(true){
-			try {
-				runnable = queue.take();
-				if(runnable == null){
-					continue;
+	public ProcessorQueue(int maxProcessSize, String threadName) {
+		queue = new LinkedBlockingQueue<Runnable>(Math.abs(maxProcessSize));
+		this.thread = new Thread(new Runnable() {
+			
+			public void run() {
+				Runnable runnable;
+				try {
+					while(!Thread.interrupted()){
+						runnable = queue.take();
+						if(runnable == null){
+							continue;
+						}
+						
+						try {
+							runnable.run();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				} catch (InterruptedException e) {
 				}
-				
-				runnable.run();
-			} catch (InterruptedException e) {
-				break;
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
-		}
+		}, threadName);
 	}
-
-	public boolean submit(Runnable runnable) {
-		return queue.offer(runnable);
+	
+	public void submit(Runnable runnable) throws InterruptedException {
+		queue.put(runnable);
+	}
+	
+	public void start(){
+		thread.start();
+	}
+	
+	public void destroy(){
+		thread.interrupt();
 	}
 }

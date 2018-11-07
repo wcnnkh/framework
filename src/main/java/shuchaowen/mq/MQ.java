@@ -13,6 +13,8 @@ public interface MQ<T>{
 	 */
 	void consumer(Consumer<T> consumer);
 	
+	void start();
+	
 	/**
 	 * 销毁此队列
 	 */
