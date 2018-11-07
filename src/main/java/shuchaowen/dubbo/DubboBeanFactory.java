@@ -1,6 +1,8 @@
 package shuchaowen.dubbo;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import com.alibaba.dubbo.config.ApplicationConfig;
@@ -18,17 +20,17 @@ public class DubboBeanFactory extends AbstractBeanFactory{
 	private ApplicationConfig application;
 	private List<RegistryConfig> registryConfigs;
 	private final String version;
-	private String[] packageNames;
+	private final HashSet<String> serviceSet = new HashSet<String>();
 	
 	public String getVersion() {
 		return version;
 	}
 	
-	public DubboBeanFactory(BeanFactory beanFactory, String packageName, String name, String registryAddressList){
-		this(beanFactory, packageName, name, registryAddressList, "1.0.0");
+	public DubboBeanFactory(BeanFactory beanFactory, String name, String registryAddressList){
+		this(beanFactory, name, registryAddressList, "1.0.0");
 	}
 
-	public DubboBeanFactory(BeanFactory beanFactory, String packageName, String name, String registryAddressList, String version) {
+	public DubboBeanFactory(BeanFactory beanFactory, String name, String registryAddressList, String version) {
 		this.beanFactory = beanFactory;
 		application = new ApplicationConfig(name);
 
@@ -40,15 +42,13 @@ public class DubboBeanFactory extends AbstractBeanFactory{
 			registryConfigs.add(registryConfig);
 		}
 		this.version = version;
-		this.packageNames = StringUtils.commonSplit(packageName);
 	}
 
-	public DubboBeanFactory(BeanFactory beanFactory, String packageName, ApplicationConfig application, List<RegistryConfig> registryConfigs, String version) {
+	public DubboBeanFactory(BeanFactory beanFactory, ApplicationConfig application, List<RegistryConfig> registryConfigs, String version) {
 		this.beanFactory = beanFactory;
 		this.application = application;
 		this.registryConfigs = registryConfigs;
 		this.version = version;
-		this.packageNames = StringUtils.commonSplit(packageName);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -71,16 +71,26 @@ public class DubboBeanFactory extends AbstractBeanFactory{
 	
 	@Override
 	public boolean contains(String name) {
-		boolean find = false;
-		if (packageNames != null) {
-			for (String packagePrefix : packageNames) {
-				if (name.startsWith(packagePrefix)) {
-					find = true;
-					break;
-				}
+		return serviceSet.contains(name) || super.contains(name);
+	}
+	
+	public void registerService(Class<?>... interfaceClass){
+		for(Class<?> clz : interfaceClass){
+			serviceSet.add(clz.getName());
+		}
+	}
+	
+	public void registerService(String packageName, boolean isInterface){
+		for(Class<?> clz : ClassUtils.getClasses(packageName)){
+			if(Modifier.isInterface(clz.getModifiers())){
+				serviceSet.add(clz.getName());
 			}
 		}
-		
-		return find || super.contains(name);
+	}
+	
+	public void removeService(Class<?>... type){
+		for(Class<?> clz : type){
+			serviceSet.remove(clz.getName());
+		}
 	}
 }

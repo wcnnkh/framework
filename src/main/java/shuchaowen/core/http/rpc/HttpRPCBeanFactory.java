@@ -1,7 +1,8 @@
 package shuchaowen.core.http.rpc;
 
+import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
-import java.util.List;
+import java.util.HashSet;
 
 import shuchaowen.core.beans.AbstractBeanFactory;
 import shuchaowen.core.beans.Bean;
@@ -15,7 +16,7 @@ public class HttpRPCBeanFactory extends AbstractBeanFactory {
 	private final String signStr;
 	private final Serializer serializer;
 	private final Charset charset;
-	private List<String> packageNameList;
+	private final HashSet<String> serviceSet = new HashSet<String>();
 
 	public HttpRPCBeanFactory(BeanFactory beanFactory, String host, String signStr, Serializer serializer,
 			Charset charset) {
@@ -38,15 +39,26 @@ public class HttpRPCBeanFactory extends AbstractBeanFactory {
 
 	@Override
 	public boolean contains(String name) {
-		boolean find = false;
-		if (packageNameList != null) {
-			for (String packagePrefix : packageNameList) {
-				if (name.startsWith(packagePrefix)) {
-					find = true;
-					break;
-				}
+		return serviceSet.contains(name) || super.contains(name);
+	}
+	
+	public void registerService(Class<?>... interfaceClass){
+		for(Class<?> clz : interfaceClass){
+			serviceSet.add(clz.getName());
+		}
+	}
+	
+	public void registerService(String packageName, boolean isInterface){
+		for(Class<?> clz : ClassUtils.getClasses(packageName)){
+			if(Modifier.isInterface(clz.getModifiers())){
+				serviceSet.add(clz.getName());
 			}
 		}
-		return find || super.contains(name);
+	}
+	
+	public void removeService(Class<?>... type){
+		for(Class<?> clz : type){
+			serviceSet.remove(clz.getName());
+		}
 	}
 }
