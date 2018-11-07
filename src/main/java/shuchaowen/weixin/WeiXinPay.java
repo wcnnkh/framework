@@ -1,8 +1,6 @@
-package shuchaowen.web.support.weixin;
+package shuchaowen.weixin;
 
 import java.util.Map;
-
-import shuchaowen.web.util.WeiXinUtils;
 
 public class WeiXinPay {
 	public static final String weixin_unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";

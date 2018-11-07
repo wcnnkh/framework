@@ -9,7 +9,7 @@ public final class MemcachedLock {
 	private final int timeout;
 
 	public MemcachedLock(Memcached memcached, String key) {
-		this(memcached, key, XUtils.getUUID(), 30);// 默认30秒过期
+		this(memcached, key, XUtils.getUUID(), 60);// 默认60秒过期
 	}
 
 	public MemcachedLock(Memcached memcached, String key, String id, int timeout) {

@@ -1,4 +1,4 @@
-package shuchaowen.web.util;
+package shuchaowen.weixin;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -11,7 +11,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
-import shuchaowen.core.util.SHA1;
 import shuchaowen.core.util.SignHelp;
 import shuchaowen.web.util.http.HttpPost;
 import shuchaowen.web.util.http.core.Http;
@@ -20,25 +19,10 @@ import shuchaowen.web.util.http.core.Http;
  * @author shuchaowen
  */
 public abstract class WeiXinUtils {
-	public static final String weixin_get_user_info_url = "https://api.weixin.qq.com/cgi-bin/user/info";
 	public static final String weixin_authorize_url = "https://open.weixin.qq.com/connect/oauth2/authorize";
 	public static final String weixin_qrconnect_url = "https://open.weixin.qq.com/connect/qrconnect";
-	public static final String weixin_get_web_access_token = "https://api.weixin.qq.com/sns/oauth2/access_token";
-	public static final String weixin_get_web_refresh_access_token = "https://api.weixin.qq.com/sns/oauth2/refresh_token";
-	public static final String weixin_get_web_userinfo = "https://api.weixin.qq.com/sns/userinfo";
-	public static final String weixin_get_web_token = "https://api.weixin.qq.com/cgi-bin/token";
-	public static final String weixin_get_web_ticket = "https://api.weixin.qq.com/cgi-bin/ticket/getticket";
-	
 	public static final String weixin_unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 
-	public static String getWebUserInfo(String openId, String web_access_token) {
-		Map<String, String> paramMap = new HashMap<String, String>();
-		paramMap.put("access_token", web_access_token);
-		paramMap.put("openid", openId);
-		paramMap.put("lang", "zh_CN ");
-		return HttpPost.invoke(weixin_get_web_userinfo, paramMap);
-	}
-	
 	/**
 	 * 授权登录
 	 * @param appid
@@ -77,18 +61,6 @@ public abstract class WeiXinUtils {
 		return sb.toString();
 	}
 
-	public static String getWebToken(String appId, String appsecret) {
-		String url = weixin_get_web_token
-				+ "?grant_type=client_credential&appid=" + appId + "&secret="
-				+ appsecret;
-		return HttpPost.invoke(url);
-	}
-	
-	public static String getWebTicket(String token) {
-		return HttpPost.invoke(weixin_get_web_ticket + "?access_token=" + token
-				+ "&type=jsapi");
-	}
-
 	public static int getRefreshExpires(int refreshCount) {
 		switch (refreshCount) {
 		case 0:
@@ -104,52 +76,6 @@ public abstract class WeiXinUtils {
 		}
 	}
 
-	public static String getWebRefreshAccessToken(String appId, String refreshToken) {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("appid", appId);
-		map.put("grant_type", "refresh_token");
-		map.put("refresh_token", refreshToken);
-		return HttpPost.invoke(weixin_get_web_refresh_access_token, map);
-	}
-
-	public static String getWebAccessToken(String appId, String appsecret, String code) {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("appid", appId);
-		map.put("secret", appsecret);
-		map.put("code", code);
-		map.put("grant_type", "authorization_code");
-		String jsonData = HttpPost.invoke(weixin_get_web_access_token, map);
-		return jsonData;
-	}
-
-	/**
-	 * 获取jssdk签名
-	 * @param url
-	 * @param noncestr
-	 * @param timestamp
-	 * @return
-	 */
-	public static String getJSSDKSignature(String ticket, String url, String noncestr,
-			String timestamp) {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("noncestr", noncestr);
-		map.put("timestamp", timestamp);
-		map.put("url", url);
-		map.put("jsapi_ticket", ticket);
-
-		String[] keys = map.keySet().toArray(new String[0]);
-		Arrays.sort(keys);
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < keys.length; i++) {
-			String key = keys[i];
-			sb.append(key).append("=").append(map.get(key));
-			if (i < keys.length - 1) {
-				sb.append("&");
-			}
-		}
-		return SHA1.sha1(sb.toString());
-	}
-	
 	/**
 	 *  统一下单 字段说明见：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
 	 * @param appid 微信支付分配的公众账号ID（企业号corpid即为此appId）
