@@ -7,7 +7,7 @@ import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
-import shuchaowen.core.db.transaction.Transaction;
+import shuchaowen.core.transaction.Transaction;
 
 public interface Cache {
 	public static final String SPLIT = "#";

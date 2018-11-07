@@ -1,4 +1,4 @@
-package shuchaowen.core.db.transaction.exception;
+package shuchaowen.core.transaction.exception;
 
 public class TransactionEndException extends RuntimeException{
 	private static final long serialVersionUID = 1L;

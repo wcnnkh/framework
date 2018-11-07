@@ -1,4 +1,4 @@
-package shuchaowen.core.db.transaction;
+package shuchaowen.core.transaction;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

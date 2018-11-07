@@ -8,7 +8,7 @@ import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.storage.CacheUtils;
-import shuchaowen.core.db.transaction.AbstractTransaction;
+import shuchaowen.core.transaction.AbstractTransaction;
 import shuchaowen.core.util.Logger;
 import shuchaowen.memcached.Memcached;
 

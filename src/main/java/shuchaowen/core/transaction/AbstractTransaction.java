@@ -1,4 +1,4 @@
-package shuchaowen.core.db.transaction;
+package shuchaowen.core.transaction;
 
 public abstract class AbstractTransaction implements Transaction{
 	

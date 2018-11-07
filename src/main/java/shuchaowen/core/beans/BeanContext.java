@@ -3,7 +3,7 @@ package shuchaowen.core.beans;
 import java.util.HashMap;
 import java.util.Map;
 
-import shuchaowen.core.util.Context;
+import shuchaowen.core.Context;
 
 public abstract class BeanContext extends Context<Map<String, Object>>{
 	public abstract <T> T getBean(String name);

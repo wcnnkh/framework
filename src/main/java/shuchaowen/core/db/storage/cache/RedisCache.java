@@ -18,7 +18,7 @@ import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.storage.CacheUtils;
-import shuchaowen.core.db.transaction.Transaction;
+import shuchaowen.core.transaction.Transaction;
 import shuchaowen.redis.Redis;
 
 public class RedisCache implements Cache{

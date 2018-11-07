@@ -1,4 +1,4 @@
-package shuchaowen.core.util;
+package shuchaowen.core;
 
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
