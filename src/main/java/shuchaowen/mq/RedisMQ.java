@@ -19,6 +19,10 @@ public final class RedisMQ<T> implements MQ<T> {
 	private final Charset charset;
 	private final Thread thread;
 	private List<Consumer<T>> consumerList;
+	
+	public RedisMQ(final Redis redis, final String queueKey, String charsetName){
+		this(redis, queueKey, Charset.forName(charsetName));
+	}
 
 	public RedisMQ(final Redis redis, final String queueKey, final Charset charset) {
 		this.charset = charset;
