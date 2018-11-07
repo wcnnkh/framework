@@ -20,11 +20,13 @@ import shuchaowen.web.util.http.core.Http;
 /**
  * @author shuchaowen
  */
-public abstract class WeiXinUtils {
+public final class WeiXinUtils {
 	public static final String weixin_authorize_url = "https://open.weixin.qq.com/connect/oauth2/authorize";
 	public static final String weixin_qrconnect_url = "https://open.weixin.qq.com/connect/qrconnect";
 	public static final String weixin_unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 
+	private WeiXinUtils(){};
+	
 	/**
 	 * 授权登录
 	 * @param appid

@@ -1,4 +1,4 @@
-package shuchaowen.jxl.export;
+package shuchaowen.excel.export;
 
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -13,7 +13,6 @@ import jxl.write.WritableWorkbook;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
-import shuchaowen.jxl.export.service.SqlExportRow;
 
 public class JxlExport {
 	/**

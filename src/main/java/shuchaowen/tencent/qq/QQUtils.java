@@ -1,4 +1,4 @@
-package shuchaowen.web.util;
+package shuchaowen.tencent.qq;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import shuchaowen.web.util.http.HttpGet;
 import shuchaowen.web.util.http.HttpPost;
 import shuchaowen.web.util.http.core.Http;
 
-public class QQUtils {
+public final class QQUtils {
 	private static final String callbackPrefix = "callback( ";
 	
 	public static final String qq_authorizeUrl = "https://graph.qq.com/oauth2.0/authorize";
@@ -18,6 +18,8 @@ public class QQUtils {
 	public static final String qq_get_pc_openid = "https://graph.qq.com/oauth2.0/me";
 	public static final String qq_get_wap_openid = "https://graph.z.qq.com/moc2/me";
 	public static final String qq_get_user_info = "https://graph.qq.com/user/get_user_info";
+	
+	private QQUtils(){};
 	
 	/**
 	 * 登录成功后 

@@ -1,4 +1,4 @@
-package shuchaowen.web.util.excel.load;
+package shuchaowen.excel.load;
 
 public interface LoadRow {
 	public void load(int sheetIndex, int rowIndex, String[] contents);

@@ -3,7 +3,7 @@ package shuchaowen.web.servlet.view;
 import java.io.IOException;
 import java.util.List;
 
-import shuchaowen.jxl.export.JxlExport;
+import shuchaowen.excel.export.JxlExport;
 import shuchaowen.web.servlet.View;
 import shuchaowen.web.servlet.WebResponse;
 

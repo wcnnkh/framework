@@ -1,4 +1,4 @@
-package shuchaowen.jxl;
+package shuchaowen.excel;
 
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;

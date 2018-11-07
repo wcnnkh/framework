@@ -1,4 +1,4 @@
-package shuchaowen.jxl.export.service;
+package shuchaowen.excel.export;
 
 import shuchaowen.core.db.result.Result;
 

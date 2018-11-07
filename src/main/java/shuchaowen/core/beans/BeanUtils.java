@@ -1,6 +1,5 @@
 package shuchaowen.core.beans;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
@@ -11,16 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import net.sf.cglib.proxy.Enhancer;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import shuchaowen.core.beans.annotaion.Autowrite;
 import shuchaowen.core.beans.annotaion.Config;
 import shuchaowen.core.beans.annotaion.Destroy;
@@ -30,21 +20,19 @@ import shuchaowen.core.beans.annotaion.Proxy;
 import shuchaowen.core.beans.annotaion.Service;
 import shuchaowen.core.beans.annotaion.Transaction;
 import shuchaowen.core.db.DB;
-import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.http.server.annotation.Controller;
 import shuchaowen.core.invoke.Invoker;
 import shuchaowen.core.invoke.ReflectInvoker;
 import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.StringUtils;
 
-public class BeanUtils {
-	private static final String CONFIG_ROOT = "shuchaowen";
-
+public final class BeanUtils {
+	private BeanUtils(){};
+	
 	/**
 	 * 调用init方法
 	 * 
@@ -319,26 +307,6 @@ public class BeanUtils {
 
 				field.set(obj, beanFactory.get(name));
 		}
-	}
-
-	public static Node getShuChaoWenConfigNode(String xmlFile, String tagName) throws Exception {
-		File xml = ConfigUtils.getFile(xmlFile);
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-		Document document = builder.parse(xml);
-		Element root = document.getDocumentElement();
-		if (!CONFIG_ROOT.equalsIgnoreCase(root.getTagName())) {
-			throw new BeansException("root tag name error [" + root.getTagName() + "]");
-		}
-
-		NodeList nodeList = root.getChildNodes();
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Node node = nodeList.item(i);
-			if (tagName.equals(node.getNodeName())) {
-				return node;
-			}
-		}
-		return null;
 	}
 
 	public static void setProxy(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) throws Exception {

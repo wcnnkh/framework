@@ -1,10 +1,9 @@
-package shuchaowen.jxl.export;
+package shuchaowen.excel.export;
 
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import shuchaowen.core.db.result.ResultSet;
-import shuchaowen.jxl.export.service.SqlExportRow;
 
 public class ResultSetToExeclRowCall{
 	// 创建Excel工作薄

@@ -6,9 +6,9 @@ import java.util.Arrays;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.jxl.export.JxlExport;
-import shuchaowen.jxl.export.service.SqlExportRow;
-import shuchaowen.jxl.export.service.impl.SimpleExportRowImpl;
+import shuchaowen.excel.export.JxlExport;
+import shuchaowen.excel.export.SimpleExportRowImpl;
+import shuchaowen.excel.export.SqlExportRow;
 import shuchaowen.web.servlet.View;
 import shuchaowen.web.servlet.WebResponse;
 
