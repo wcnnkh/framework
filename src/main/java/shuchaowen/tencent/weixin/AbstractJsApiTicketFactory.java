@@ -13,6 +13,10 @@ public abstract class AbstractJsApiTicketFactory implements JsApiTicketFactory{
 	public AccessTokenFactory getAccessTokenFactory() {
 		return accessTokenFactory;
 	}
+	
+	public String getAccessToken() {
+		return getAccessTokenFactory().getAccessToken();
+	}
 
 	public String getTicket() {
 		JsApiTicket jsApiTicket = getJsApiTicketByCache();

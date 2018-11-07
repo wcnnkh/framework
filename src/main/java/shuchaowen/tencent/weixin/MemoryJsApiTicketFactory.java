@@ -6,6 +6,10 @@ public final class MemoryJsApiTicketFactory extends AbstractJsApiTicketFactory{
 	private volatile JsApiTicket jsApiTicket;
 	private volatile Object lock = new Object();
 	
+	public MemoryJsApiTicketFactory(String appid, String appsecret){
+		this(new MemoryAccessTokenFactory(appid, appsecret));
+	}
+	
 	public MemoryJsApiTicketFactory(AccessTokenFactory accessTokenFactory) {
 		super(accessTokenFactory);
 	}

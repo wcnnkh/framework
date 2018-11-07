@@ -9,6 +9,10 @@ public final class MemcachedJsApiTicketFactory extends AbstractJsApiTicketFactor
 	private final String key;
 	private final String lockKey;
 	
+	public MemcachedJsApiTicketFactory(Memcached memcached, String appid, String appsecret){
+		this(memcached, appid, new MemcachedAccessTokenFactory(memcached, appid, appsecret));
+	}
+	
 	public MemcachedJsApiTicketFactory(Memcached memcached, String key, AccessTokenFactory accessTokenFactory) {
 		super(accessTokenFactory);
 		this.memcached = memcached;
@@ -31,7 +35,7 @@ public final class MemcachedJsApiTicketFactory extends AbstractJsApiTicketFactor
 		if(lock.lock()){
 			try {
 				if(isExpires()){
-					JsApiTicket jsApiTicket = new JsApiTicket(getAccessTokenFactory().getAccessToken());
+					JsApiTicket jsApiTicket = new JsApiTicket(getAccessToken());
 					if(jsApiTicket != null){
 						memcached.set(key, jsApiTicket.getExpires_in(), jsApiTicket);
 						return jsApiTicket;

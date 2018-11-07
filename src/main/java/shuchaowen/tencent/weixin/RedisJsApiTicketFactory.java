@@ -13,6 +13,14 @@ public final class RedisJsApiTicketFactory extends AbstractJsApiTicketFactory{
 	private final byte[] key;
 	private final String lockKey;
 	
+	public RedisJsApiTicketFactory(Redis redis, String appid, String appsecret, String charsetName){
+		this(redis, charsetName, appid, new RedisAccessTokenFactory(redis, charsetName, appid, appsecret));
+	}
+	
+	public RedisJsApiTicketFactory(Redis redis, String appid, String appsecret, Charset charset){
+		this(redis, charset, appid, new RedisAccessTokenFactory(redis, charset, appid, appsecret));
+	}
+	
 	public RedisJsApiTicketFactory(Redis redis, String charsetName, String key, AccessTokenFactory accessTokenFactory){
 		this(redis, Charset.forName(charsetName), key, accessTokenFactory);
 	}
@@ -51,7 +59,7 @@ public final class RedisJsApiTicketFactory extends AbstractJsApiTicketFactory{
 		if(lock.lock()){
 			try {
 				if(isExpires()){
-					JsApiTicket jsApiTicket = new JsApiTicket(getAccessTokenFactory().getAccessToken());
+					JsApiTicket jsApiTicket = new JsApiTicket(getAccessToken());
 					if(jsApiTicket != null){
 						redis.setex(key, jsApiTicket.getExpires_in(), IOUtils.javaObjectToByte(jsApiTicket));
 						return jsApiTicket;
