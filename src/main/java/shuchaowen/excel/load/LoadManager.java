@@ -10,7 +10,6 @@ public final class LoadManager {
 	
 	public LoadManager add(LoadExcel loadExcel){
 		loadExcel.setSuccess(new Runnable() {
-			
 			public void run() {
 				if(countDownLatch != null){
 					countDownLatch.countDown();

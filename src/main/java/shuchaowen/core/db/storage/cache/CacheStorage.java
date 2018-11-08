@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.CountDownLatch;
 
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.OperationBean;
@@ -24,6 +23,7 @@ import shuchaowen.core.transaction.Transaction;
 import shuchaowen.core.transaction.TransactionCollection;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
+import shuchaowen.core.util.Multitask;
 import shuchaowen.core.util.XTime;
 import shuchaowen.memcached.Memcached;
 import shuchaowen.mq.MQ;
@@ -39,10 +39,10 @@ public final class CacheStorage implements Storage {
 	private final Cache cache;
 	private final AbstractDB db;
 	// 缓存是否自动提交，如果为false就是要等transaction.commit()的时候再提交
-	//默认参与事务，应该以保证数据完整性为主
+	// 默认参与事务，应该以保证数据完整性为主
 	private boolean cacheAutoCommit = false;
 	private final MQ<Collection<OperationBean>> mq;
-	
+
 	public CacheStorage(AbstractDB db, Memcached memcached, String queueKey) {
 		this.db = db;
 		this.cache = new MemcachedCache(memcached);
@@ -50,11 +50,11 @@ public final class CacheStorage implements Storage {
 		this.mq.consumer(new CacheAsyncConsumer(this));
 		this.mq.start();
 	}
-	
-	public CacheStorage(AbstractDB db, Redis redis, String queueKey){
+
+	public CacheStorage(AbstractDB db, Redis redis, String queueKey) {
 		this(db, redis, queueKey, Charset.forName("UTF-8"));
 	}
-	
+
 	public CacheStorage(AbstractDB db, Redis redis, String queueKey, Charset charset) {
 		this.db = db;
 		this.cache = new RedisCache(redis, charset);
@@ -104,28 +104,28 @@ public final class CacheStorage implements Storage {
 	}
 
 	public void init() {
-		CountDownLatch countDownLatch = new CountDownLatch(cacheConfigMap.size());
-		for (Entry<String, CacheConfig> entry : cacheConfigMap.entrySet()) {
-			switch (entry.getValue().getCacheType()) {
-			case no:
-			case lazy:
-				countDownLatch.countDown();
-				break;
-			default:
-				try {
-					new LoadingThread(countDownLatch, this, ClassUtils.forName(entry.getKey())).start();
-					;
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+		if (!cacheConfigMap.isEmpty()) {
+			Multitask multitask = new Multitask();
+			for (Entry<String, CacheConfig> entry : cacheConfigMap.entrySet()) {
+				switch (entry.getValue().getCacheType()) {
+				case no:
+				case lazy:
+					break;
+				default:
+					try {
+						multitask.add(new LoadingThread(this, ClassUtils.forName(entry.getKey())));
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+					break;
 				}
-				break;
 			}
-		}
 
-		try {
-			countDownLatch.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			try {
+				multitask.executeAndAwait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -290,28 +290,19 @@ public final class CacheStorage implements Storage {
 	}
 }
 
-class LoadingThread extends Thread {
-	private final CountDownLatch countDownLatch;
+class LoadingThread implements Runnable {
 	private final CacheStorage cacheStorage;
 	private final Class<?> tableClass;
 
-	public LoadingThread(CountDownLatch countDownLatch, CacheStorage cacheStorage, Class<?> tableClass) {
-		this.countDownLatch = countDownLatch;
+	public LoadingThread(CacheStorage cacheStorage, Class<?> tableClass) {
 		this.tableClass = tableClass;
 		this.cacheStorage = cacheStorage;
 	}
 
-	@Override
 	public void run() {
-		try {
-			final String name = ClassUtils.getCGLIBRealClassName(tableClass);
-			Logger.info("RedisHotSpotCacheStorage", "loading [" + name + "] keys to cache");
-			cacheStorage.loadCache(tableClass);
-			Logger.info("RedisHotSpotCacheStorage", "loading [" + name + "] keys to cache success");
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			countDownLatch.countDown();
-		}
+		final String name = ClassUtils.getCGLIBRealClassName(tableClass);
+		Logger.info("RedisHotSpotCacheStorage", "loading [" + name + "] keys to cache");
+		cacheStorage.loadCache(tableClass);
+		Logger.info("RedisHotSpotCacheStorage", "loading [" + name + "] keys to cache success");
 	}
 }

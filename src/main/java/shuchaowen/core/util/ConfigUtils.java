@@ -27,8 +27,8 @@ public final class ConfigUtils {
 	private static final String CLASSPATH_PREFIX = CLASSPATH + ":";
 	private static final String WEB_CONTENT = "WebContent";
 	private static final String WEBAPP = "webapp";
-	private static final StringFormatSystemProperties format1 = new StringFormatSystemProperties("{", "}");
-	private static final StringFormatSystemProperties format2 = new StringFormatSystemProperties("[", "]");
+	public static final StringFormatSystemProperties format1 = new StringFormatSystemProperties("{", "}");
+	public static final StringFormatSystemProperties format2 = new StringFormatSystemProperties("[", "]");
 	public static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
 
 	private ConfigUtils(){};
