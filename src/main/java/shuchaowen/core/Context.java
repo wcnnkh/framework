@@ -50,7 +50,7 @@ public abstract class Context<T> {
 	public void end(){
 		ContextInfo<T> contextInfo = getContextInfo();
 		if(contextInfo.getCount() < 1){
-			throw new ShuChaoWenRuntimeException("这已经是最后一次了，无法提交[" + contextInfo.getCount() + "]");
+			throw new ShuChaoWenRuntimeException("这已经是最后一次了，无法结束[" + contextInfo.getCount() + "]");
 		}
 		
 		contextInfo.decrCount();
