@@ -3,6 +3,7 @@ package shuchaowen.core.beans;
 import shuchaowen.core.beans.annotaion.Service;
 import shuchaowen.core.exception.AlreadyExistsException;
 import shuchaowen.core.util.ClassUtils;
+import shuchaowen.core.util.StringUtils;
 
 /**
  * 此类只要类是存在的不可能出现获取不到的情况
@@ -28,6 +29,23 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 				if (!service.value().equals("")) {
 					if(!registerNameMapping(service.value(), clz.getName())){
 						throw new AlreadyExistsException(service.value());
+					}
+				}
+			}
+			
+			shuchaowen.core.beans.annotaion.Bean bean = clz.getAnnotation(shuchaowen.core.beans.annotaion.Bean.class);
+			if(bean != null){
+				if(!StringUtils.isNull(bean.id())){
+					if(!registerNameMapping(bean.id(), clz.getName())){
+						throw new AlreadyExistsException(bean.id());
+					}
+				}
+				
+				if(bean.names() != null){
+					for(String name : bean.names()){
+						if(!registerNameMapping(name, clz.getName())){
+							throw new AlreadyExistsException(name);
+						}
 					}
 				}
 			}

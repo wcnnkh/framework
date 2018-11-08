@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -23,7 +22,6 @@ public class AnnotationBean implements Bean {
 	private final Class<?> type;
 	private final String id;
 	private final boolean singleton;
-	private final List<Class<? extends BeanFilter>> beanFilters;
 	private Constructor<?> constructor;
 	private final List<Method> initMethodList = new ArrayList<Method>();
 	private final List<Method> destroyMethodList = new ArrayList<Method>();
@@ -40,13 +38,11 @@ public class AnnotationBean implements Bean {
 		if (bean != null) {
 			this.id = StringUtils.isNull(bean.id()) ? ClassUtils.getCGLIBRealClassName(type) : bean.id();
 			this.singleton = bean.singleton();
-			this.beanFilters = Arrays.asList(bean.beanFilters());
 			this.names = bean.names();
 			this.factoryMethodName = bean.factoryMethod();
 		} else {
 			this.id = ClassUtils.getCGLIBRealClassName(type);
 			this.singleton = true;
-			this.beanFilters = null;
 		}
 
 		Class<?> tempClz = type;
@@ -118,10 +114,6 @@ public class AnnotationBean implements Bean {
 			return false;
 		}
 
-		if (beanFilters != null && !beanFilters.isEmpty()) {
-			return true;
-		}
-		
 		for (Method method : type.getDeclaredMethods()) {
 			if(BeanUtils.isTransaction(type, method)){
 				return true;
@@ -154,15 +146,7 @@ public class AnnotationBean implements Bean {
 
 	private Enhancer getProxyEnhancer() {
 		if(enhancer == null){
-			List<String> filters = new ArrayList<String>();
-			if (beanFilters != null && !beanFilters.isEmpty()) {
-				filters = new ArrayList<String>();
-
-				for (Class<? extends BeanFilter> f : beanFilters) {
-					filters.add(f.getName());
-				}
-			}
-			enhancer = BeanUtils.getEnhancer(type, filters, beanFactory);
+			enhancer = BeanUtils.getEnhancer(type, null, beanFactory);
 		}
 		return enhancer;
 	}
