@@ -24,7 +24,7 @@ public final class MemoryJsApiTicketFactory extends AbstractJsApiTicketFactory{
 		if(isExpires()){
 			synchronized (lock) {
 				if(isExpires()){
-					jsApiTicket = new JsApiTicket(getAccessTokenFactory().getAccessToken());
+					jsApiTicket = new JsApiTicket(getAccessToken());
 				}
 			}
 		}
