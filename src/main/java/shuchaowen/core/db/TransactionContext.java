@@ -205,7 +205,7 @@ public final class TransactionContext extends Context<ThreadLocalDBTransaction> 
 	protected void firstBegin() {
 		ThreadLocalDBTransaction sqlTransaction = getValue();
 		if (sqlTransaction == null) {
-			sqlTransaction = new ThreadLocalDBTransaction();
+			sqlTransaction = new ThreadLocalDBTransaction(debug);
 			setValue(sqlTransaction);
 		}
 		sqlTransaction.beginTransaction();
@@ -225,7 +225,12 @@ class ThreadLocalDBTransaction extends AbstractTransaction {
 	private Map<ConnectionPool, Map<String, ResultSet>> cacheMap = new HashMap<ConnectionPool, Map<String, ResultSet>>();
 	private TransactionCollection transactionCollection = new TransactionCollection();
 	private boolean isAutoCommit = true;// 是否是自动提交
-
+	private final boolean debug;
+	
+	public ThreadLocalDBTransaction(boolean debug){
+		this.debug = debug;
+	}
+	
 	public boolean isAutoCommit() {
 		return isAutoCommit;
 	}
@@ -235,6 +240,10 @@ class ThreadLocalDBTransaction extends AbstractTransaction {
 	}
 
 	void beginTransaction() {
+		if(debug){
+			Logger.debug("transaction-context", "begin transaction");
+		}
+		
 		if (isAutoCommit) {// 如果原来是自动提交，现在改为手动提交，为了防止脏数据应该先清除一遍
 			reset();
 			isAutoCommit = false;
@@ -242,16 +251,16 @@ class ThreadLocalDBTransaction extends AbstractTransaction {
 	}
 
 	void commitTransaction(){
-		if (isAutoCommit) {
-			throw new ShuChaoWenRuntimeException("transaction status error autoCommit[" + isAutoCommit + "]");
-		}
-
 		// 应该要提交事务了了
 		try {
 			execute();
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		} finally {
+			if(debug){
+				Logger.debug("transaction-context", "end transaction");
+			}
+			
 			isAutoCommit = true;
 			reset();
 		}
