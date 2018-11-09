@@ -41,7 +41,11 @@ public class DispatcherServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		if (httpServerApplication.isRpcEnabled() && req.getServletPath().equals(httpServerApplication.getRpcServletPath())) {
-			rpc(req, resp);
+			try {
+				httpServerApplication.rpc(req.getInputStream(), resp.getOutputStream());
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
 		} else {
 			controller(req, resp);
 		}
@@ -60,15 +64,6 @@ public class DispatcherServlet extends HttpServlet {
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		controller(req, resp);
-	}
-
-	public void rpc(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-			throws IOException, ServletException {
-		try {
-			httpServerApplication.rpc(httpServletRequest.getInputStream(), httpServletResponse.getOutputStream());
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
 	}
 	
 	@Override
