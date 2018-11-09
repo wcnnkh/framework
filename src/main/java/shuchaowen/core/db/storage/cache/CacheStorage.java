@@ -270,11 +270,7 @@ public final class CacheStorage implements Storage {
 
 		if (cacheAutoCommit) {
 			if (cacheTransaction != null) {
-				try {
-					AbstractTransaction.transaction(cacheTransaction);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				AbstractTransaction.transaction(cacheTransaction);
 			}
 
 			if (synchronizationList != null) {

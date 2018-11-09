@@ -77,11 +77,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 
 		ThreadLocalTransaction threadLocalTransaction = getValue();
 		if (threadLocalTransaction == null || threadLocalTransaction.isAutoCommit()) {// 如果未使用事务
-			try {
-				AbstractTransaction.transaction(transaction);
-			} catch (Throwable e) {
-				throw new ShuChaoWenRuntimeException(e);
-			}
+			AbstractTransaction.transaction(transaction);
 		} else {
 			threadLocalTransaction.addTransaction(transaction);
 		}
@@ -115,11 +111,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 				sqlTransaction.addSql(sql);
 			}
 
-			try {
-				sqlTransaction.execute();
-			} catch (Exception e) {
-				throw new ShuChaoWenRuntimeException(e);
-			}
+			sqlTransaction.execute();
 		} else {
 			localDBTransaction.addSql(db, sqls);
 		}
@@ -150,11 +142,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 				transactionCollection.add(transaction);
 			}
 
-			try {
-				AbstractTransaction.transaction(transactionCollection);
-			} catch (Exception e) {
-				throw new ShuChaoWenRuntimeException(e);
-			}
+			AbstractTransaction.transaction(transactionCollection);
 		} else {
 			threadLocalTransaction.addSql(db, sqls);
 			if (transaction != null) {
@@ -200,8 +188,8 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 	public void setDebug(boolean debug) {
 		this.debug = debug;
 	}
-	
-	public void setAutoCommit(boolean autoCommit){
+
+	public void setAutoCommit(boolean autoCommit) {
 		ThreadLocalTransaction threadLocalTransaction = getValue();
 		if (threadLocalTransaction == null) {
 			throw new ShuChaoWenRuntimeException("请先开启当前线程的事务");
@@ -265,7 +253,7 @@ final class ThreadLocalTransaction extends AbstractTransaction {
 		}
 	}
 
-	void commitTransaction() throws Exception {
+	void commitTransaction(){
 		// 应该要提交事务了了
 		try {
 			execute();
