@@ -19,7 +19,7 @@ public abstract class DB extends AbstractDB {
 
 	public DB() {
 		super(null);
-		this.storage = new CommonStorage(this, null, null);
+		this.storage = new CommonStorage(this);
 	}
 
 	public DB(Storage storage, SQLFormat sqlFormat) {
@@ -30,12 +30,6 @@ public abstract class DB extends AbstractDB {
 	protected void registerStorage(Storage storage, Class<?>... tableClass) {
 		for (Class<?> clz : tableClass) {
 			storageMap.put(ClassUtils.getCGLIBRealClassName(clz), storage);
-		}
-	}
-
-	protected void registerDefaultStorage(Class<?>... tableClass) {
-		for (Class<?> clz : tableClass) {
-			storageMap.put(ClassUtils.getCGLIBRealClassName(clz), new CommonStorage(this, null, null));
 		}
 	}
 

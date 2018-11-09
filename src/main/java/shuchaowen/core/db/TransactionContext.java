@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import shuchaowen.core.Context;
 import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.transaction.AbstractTransaction;
+import shuchaowen.core.transaction.CombinationTransaction;
 import shuchaowen.core.transaction.SQLTransaction;
 import shuchaowen.core.transaction.Transaction;
 import shuchaowen.core.transaction.TransactionCollection;
@@ -21,7 +21,7 @@ import shuchaowen.core.util.Logger;
  * 
  * @author shuchaowen
  */
-public final class TransactionContext extends Context<ThreadLocalDBTransaction> {
+public final class TransactionContext extends Context<ThreadLocalTransaction> {
 	private boolean cacheEnable;
 	private boolean debug = false;
 
@@ -75,15 +75,15 @@ public final class TransactionContext extends Context<ThreadLocalDBTransaction> 
 			return;
 		}
 
-		ThreadLocalDBTransaction localDBTransaction = getValue();
-		if (localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
+		ThreadLocalTransaction threadLocalTransaction = getValue();
+		if (threadLocalTransaction == null || threadLocalTransaction.isAutoCommit()) {// 如果未使用事务
 			try {
 				AbstractTransaction.transaction(transaction);
 			} catch (Throwable e) {
 				throw new ShuChaoWenRuntimeException(e);
 			}
 		} else {
-			localDBTransaction.addTransaction(transaction);
+			threadLocalTransaction.addTransaction(transaction);
 		}
 	}
 
@@ -108,7 +108,7 @@ public final class TransactionContext extends Context<ThreadLocalDBTransaction> 
 			}
 		}
 
-		ThreadLocalDBTransaction localDBTransaction = getValue();
+		ThreadLocalTransaction localDBTransaction = getValue();
 		if (localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
 			SQLTransaction sqlTransaction = new SQLTransaction(db);
 			for (SQL sql : sqls) {
@@ -134,8 +134,8 @@ public final class TransactionContext extends Context<ThreadLocalDBTransaction> 
 			}
 		}
 
-		ThreadLocalDBTransaction localDBTransaction = getValue();
-		if (localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
+		ThreadLocalTransaction threadLocalTransaction = getValue();
+		if (threadLocalTransaction == null || threadLocalTransaction.isAutoCommit()) {// 如果未使用事务
 			TransactionCollection transactionCollection = new TransactionCollection(2);
 			if (db != null && sqls != null && !sqls.isEmpty()) {
 				SQLTransaction sqlTransaction = new SQLTransaction(db);
@@ -156,9 +156,9 @@ public final class TransactionContext extends Context<ThreadLocalDBTransaction> 
 				throw new ShuChaoWenRuntimeException(e);
 			}
 		} else {
-			localDBTransaction.addSql(db, sqls);
+			threadLocalTransaction.addSql(db, sqls);
 			if (transaction != null) {
-				localDBTransaction.addTransaction(transaction);
+				threadLocalTransaction.addTransaction(transaction);
 			}
 		}
 	}
@@ -182,11 +182,11 @@ public final class TransactionContext extends Context<ThreadLocalDBTransaction> 
 		}
 
 		if (cacheEnable) {
-			ThreadLocalDBTransaction localDBTransaction = getValue();
-			if (localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
+			ThreadLocalTransaction threadLocalTransaction = getValue();
+			if (threadLocalTransaction == null || threadLocalTransaction.isAutoCommit()) {// 如果未使用事务
 				return DBUtils.select(db, sql);
 			} else {
-				return localDBTransaction.select(db, sql);
+				return threadLocalTransaction.select(db, sql);
 			}
 		} else {
 			return DBUtils.select(db, sql);
@@ -200,74 +200,87 @@ public final class TransactionContext extends Context<ThreadLocalDBTransaction> 
 	public void setDebug(boolean debug) {
 		this.debug = debug;
 	}
-
-	@Override
-	protected void firstBegin() {
-		ThreadLocalDBTransaction sqlTransaction = getValue();
-		if (sqlTransaction == null) {
-			sqlTransaction = new ThreadLocalDBTransaction(debug);
-			setValue(sqlTransaction);
+	
+	public void setAutoCommit(boolean autoCommit){
+		ThreadLocalTransaction threadLocalTransaction = getValue();
+		if (threadLocalTransaction == null) {
+			throw new ShuChaoWenRuntimeException("请先开启当前线程的事务");
 		}
-		sqlTransaction.beginTransaction();
+		threadLocalTransaction.setAutoCommit(autoCommit);
 	}
 
 	@Override
-	protected void lastCommit(){
-		ThreadLocalDBTransaction localDBTransaction = getValue();
-		if (localDBTransaction != null) {
-			localDBTransaction.commitTransaction();
+	protected void firstBegin() {
+		ThreadLocalTransaction threadLocalTransaction = getValue();
+		if (threadLocalTransaction == null) {
+			threadLocalTransaction = new ThreadLocalTransaction(debug);
+			setValue(threadLocalTransaction);
+		}
+		threadLocalTransaction.beginTransaction();
+	}
+
+	@Override
+	protected void lastCommit() {
+		ThreadLocalTransaction threadLocalTransaction = getValue();
+		if (threadLocalTransaction != null) {
+			try {
+				threadLocalTransaction.commitTransaction();
+			} catch (Exception e) {
+				throw new ShuChaoWenRuntimeException(e);
+			}
 		}
 	}
 }
 
-class ThreadLocalDBTransaction extends AbstractTransaction {
-	private HashMap<ConnectionPool, SQLTransaction> dbSqlMap = new HashMap<ConnectionPool, SQLTransaction>();
+final class ThreadLocalTransaction extends AbstractTransaction {
+	private CombinationTransaction combinationTransaction = new CombinationTransaction();
 	private Map<ConnectionPool, Map<String, ResultSet>> cacheMap = new HashMap<ConnectionPool, Map<String, ResultSet>>();
-	private TransactionCollection transactionCollection = new TransactionCollection();
-	private boolean isAutoCommit = true;// 是否是自动提交
+	private boolean autoCommit = true;// 是否是自动提交
 	private final boolean debug;
-	
-	public ThreadLocalDBTransaction(boolean debug){
+
+	public ThreadLocalTransaction(boolean debug) {
 		this.debug = debug;
 	}
-	
+
 	public boolean isAutoCommit() {
-		return isAutoCommit;
+		return autoCommit;
+	}
+
+	public void setAutoCommit(boolean autoCommit) {
+		this.autoCommit = autoCommit;
 	}
 
 	void addTransaction(Transaction collection) {
-		transactionCollection.add(collection);
+		combinationTransaction.addTransaction(collection);
 	}
 
 	void beginTransaction() {
-		if(debug){
+		if (debug) {
 			Logger.debug("transaction-context", "begin transaction");
 		}
-		
-		if (isAutoCommit) {// 如果原来是自动提交，现在改为手动提交，为了防止脏数据应该先清除一遍
+
+		if (autoCommit) {// 如果原来是自动提交，现在改为手动提交，为了防止脏数据应该先清除一遍
 			reset();
-			isAutoCommit = false;
+			autoCommit = false;
 		}
 	}
 
-	void commitTransaction(){
+	void commitTransaction() throws Exception {
 		// 应该要提交事务了了
 		try {
 			execute();
-		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
 		} finally {
-			if(debug){
+			if (debug) {
 				Logger.debug("transaction-context", "end transaction");
 			}
-			
-			isAutoCommit = true;
+
+			autoCommit = true;
 			reset();
 		}
 	}
 
 	ResultSet select(ConnectionPool db, SQL sql) {
-		if (isAutoCommit) {
+		if (autoCommit) {
 			return DBUtils.select(db, sql);
 		} else {
 			ResultSet resultSet = null;
@@ -289,46 +302,26 @@ class ThreadLocalDBTransaction extends AbstractTransaction {
 	 */
 	private void reset() {
 		cacheMap.clear();
-		transactionCollection.clear();
-		for (Entry<ConnectionPool, SQLTransaction> entry : dbSqlMap.entrySet()) {
-			entry.getValue().clear();
-		}
+		combinationTransaction.clear();
 	}
 
 	void addSql(ConnectionPool db, Collection<SQL> sqls) {
-		if (sqls == null || db == null) {
-			return;
-		}
-
-		SQLTransaction sqlTransaction = dbSqlMap.getOrDefault(db, new SQLTransaction(db));
-		for (SQL s : sqls) {
-			sqlTransaction.addSql(s);
-		}
-		dbSqlMap.put(db, sqlTransaction);
+		combinationTransaction.addSql(db, sqls);
 	}
 
 	public void begin() throws Exception {
-		for (Entry<ConnectionPool, SQLTransaction> entry : dbSqlMap.entrySet()) {
-			transactionCollection.add(entry.getValue());
-		}
-		transactionCollection.begin();
+		combinationTransaction.begin();
 	}
 
 	public void process() throws Exception {
-		if (transactionCollection != null) {
-			transactionCollection.process();
-		}
+		combinationTransaction.process();
 	}
 
 	public void end() throws Exception {
-		if (transactionCollection != null) {
-			transactionCollection.end();
-		}
+		combinationTransaction.end();
 	}
 
 	public void rollback() throws Exception {
-		if (transactionCollection != null) {
-			transactionCollection.rollback();
-		}
+		combinationTransaction.rollback();
 	}
 }

@@ -8,59 +8,30 @@ import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.PrimaryKeyValue;
 
-public class CommonStorage implements Storage{
+public class CommonStorage implements Storage {
 	private final AbstractDB db;
-	private final Storage getStorage;
-	private final Storage opStorage;
-	
-	public CommonStorage(AbstractDB db, Storage getStorage, Storage opStorage){
+
+	public CommonStorage(AbstractDB db) {
 		this.db = db;
-		this.getStorage = getStorage;
-		this.opStorage = opStorage;
 	}
-	
+
 	public AbstractDB getDb() {
 		return db;
 	}
 
-	public Storage getGetStorage() {
-		return getStorage;
-	}
-
-	public Storage getOpStorage() {
-		return opStorage;
-	}
-
 	public <T> T getById(Class<T> type, Object... params) {
-		if(getStorage == null){
-			return db.getByIdFromDB(type, null, params);
-		}else{
-			return getStorage.getById(type, params);
-		}
+		return db.getByIdFromDB(type, null, params);
 	}
 
-	public <T> PrimaryKeyValue<T> getById(Class<T> type,
-			Collection<PrimaryKeyParameter> primaryKeyParameters) {
-		if(getStorage == null){
-			return db.getByIdFromDB(type, null, primaryKeyParameters);
-		}else{
-			return getStorage.getById(type, primaryKeyParameters);
-		}
+	public <T> PrimaryKeyValue<T> getById(Class<T> type, Collection<PrimaryKeyParameter> primaryKeyParameters) {
+		return db.getByIdFromDB(type, null, primaryKeyParameters);
 	}
 
 	public <T> List<T> getByIdList(Class<T> type, Object... params) {
-		if(getStorage == null){
-			return db.getByIdListFromDB(type, null, params);
-		}else{
-			return getStorage.getByIdList(type, params);
-		}
+		return db.getByIdListFromDB(type, null, params);
 	}
 
 	public void op(Collection<OperationBean> operationBeans) {
-		if(opStorage == null){
-			db.execute(operationBeans);
-		}else{
-			opStorage.op(operationBeans); 
-		}
+		db.execute(operationBeans);
 	}
 }

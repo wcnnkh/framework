@@ -1,0 +1,71 @@
+package shuchaowen.core.transaction;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map.Entry;
+
+import shuchaowen.core.db.ConnectionPool;
+import shuchaowen.core.db.sql.SQL;
+
+/**
+ * 组合事务
+ * @author shuchaowen
+ *
+ */
+public final class CombinationTransaction implements Transaction{
+	private HashMap<ConnectionPool, SQLTransaction> dbSqlMap = new HashMap<ConnectionPool, SQLTransaction>();
+	private TransactionCollection transactionCollection = new TransactionCollection();
+
+	public void addSql(ConnectionPool db, Collection<SQL> sqls) {
+		if (sqls == null || db == null) {
+			return;
+		}
+
+		SQLTransaction sqlTransaction = dbSqlMap.getOrDefault(db, new SQLTransaction(db));
+		for (SQL s : sqls) {
+			sqlTransaction.addSql(s);
+		}
+		dbSqlMap.put(db, sqlTransaction);
+	}
+	
+	public void addTransaction(Transaction collection) {
+		transactionCollection.add(collection);
+	}
+	
+	public void begin() throws Exception {
+		for (Entry<ConnectionPool, SQLTransaction> entry : dbSqlMap.entrySet()) {
+			transactionCollection.add(entry.getValue());
+		}
+		transactionCollection.begin();
+	}
+	
+	public void clear(){
+		if(dbSqlMap != null){
+			for (Entry<ConnectionPool, SQLTransaction> entry : dbSqlMap.entrySet()) {
+				entry.getValue().clear();
+			}
+		}
+		
+		if(transactionCollection != null){
+			transactionCollection.clear();
+		}
+	}
+
+	public void process() throws Exception {
+		if (transactionCollection != null) {
+			transactionCollection.process();
+		}
+	}
+
+	public void end() throws Exception {
+		if (transactionCollection != null) {
+			transactionCollection.end();
+		}
+	}
+
+	public void rollback() throws Exception {
+		if (transactionCollection != null) {
+			transactionCollection.rollback();
+		}
+	}
+}
