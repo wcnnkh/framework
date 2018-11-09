@@ -38,8 +38,6 @@ public class BeanMethodInterceptor implements MethodInterceptor, BeanListen {
 			try {
 				BeanFilterChain beanFilterChain = new BeanFilterChain(beanFilters);
 				return beanFilterChain.doFilter(obj, method, args, proxy);
-			} catch (Throwable e) {
-				throw e;
 			} finally {
 				TransactionContext.getInstance().end();
 			}
@@ -100,16 +98,16 @@ public class BeanMethodInterceptor implements MethodInterceptor, BeanListen {
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		if (args.length == 0) {
 			if (BeanListen.START_LISTEN.equals(method.getName())) {
-				if(isBeanListen){
-					((BeanListen)obj).start_field_listen();
-				}else{
+				if (isBeanListen) {
+					((BeanListen) obj).start_field_listen();
+				} else {
 					start_field_listen();
 				}
 				return null;
 			} else if (BeanListen.GET_CHANGE_MAP.equals(method.getName())) {
-				if(isBeanListen){
-					return ((BeanListen)obj).get_field_change_map();
-				}else{
+				if (isBeanListen) {
+					return ((BeanListen) obj).get_field_change_map();
+				} else {
 					return get_field_change_map();
 				}
 			}
@@ -120,16 +118,12 @@ public class BeanMethodInterceptor implements MethodInterceptor, BeanListen {
 			if (fieldInfo != null) {
 				Object rtn;
 				Object oldValue = null;
-				try {
-					oldValue = fieldInfo.forceGet(obj);
-					rtn = invoke(obj, method, args, proxy);
-					if(isBeanListen){
-						((BeanListen)obj).field_change(fieldInfo.getName(), oldValue);
-					}else{
-						field_change(fieldInfo.getName(), oldValue);
-					}
-				} catch (Throwable e) {
-					throw e;
+				oldValue = fieldInfo.forceGet(obj);
+				rtn = invoke(obj, method, args, proxy);
+				if (isBeanListen) {
+					((BeanListen) obj).field_change(fieldInfo.getName(), oldValue);
+				} else {
+					field_change(fieldInfo.getName(), oldValue);
 				}
 				return rtn;
 			}
