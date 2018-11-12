@@ -3,6 +3,9 @@ package shuchaowen.excel.load;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
 import shuchaowen.core.exception.AlreadyExistsException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassInfo;
@@ -63,7 +66,16 @@ public abstract class AbstractLoadRow<T> implements LoadRow{
 						continue;
 					}
 					
-					fieldInfo.set(obj, contents[entry.getValue()]);
+					Object value = format(entry.getKey(), contents[entry.getValue()], fieldInfo.getField().getType());
+					if(value == null){
+						continue;
+					}
+					
+					fieldInfo.set(obj, value);
+				}
+				
+				if(obj == null){
+					return ;
 				}
 				load(obj);
 			} catch (Exception e) {
@@ -75,6 +87,23 @@ public abstract class AbstractLoadRow<T> implements LoadRow{
 	@SuppressWarnings("unchecked")
 	public T newInstance() throws Exception{
 		return (T) classInfo.getClz().newInstance();
+	}
+	
+	public Object format(String name, String value, Class<?> type){
+		if(value == null){
+			return null;
+		}
+		
+		if(ClassUtils.isStringType(type)){
+			return value;
+		}else if(ClassUtils.isBasicType(type)){
+			return StringUtils.conversion(value, type);
+		}else if(JSONObject.class.isAssignableFrom(type)){
+			return JSONObject.parse(value);
+		}else if(JSONArray.class.isAssignableFrom(type)){
+			return JSONArray.parse(value);
+		}
+		return null;
 	}
 	
 	public abstract void load(T row);
