@@ -54,6 +54,7 @@ public abstract class AbstractLoadRow<T> implements LoadRow{
 				nameMapping.put(name, i);
 			}
 		}else if(rowIndex >= beginRowIndex && (endRowIndex == -1 || rowIndex <= endRowIndex)){
+			System.out.println("来了啊。。。。。。");
 			if(nameMapping.isEmpty()){
 				throw new ShuChaoWenRuntimeException("未加载name的映射关系, nameMappingIndex=" + nameMappingIndex);
 			}

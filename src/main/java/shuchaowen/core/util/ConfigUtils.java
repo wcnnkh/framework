@@ -5,10 +5,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -212,6 +215,57 @@ public final class ConfigUtils {
 			e.printStackTrace();
 		}
 		return list;
+	}
+	
+	public static <T> List<T> xmlToList(Class<T> type, File file){
+		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(file, "config");
+		List<T> objList = new ArrayList<T>();
+		try {
+			for(Map<String, String> map : list){
+				objList.add(ConfigUtils.parseObject(map, type));
+			}
+			return objList;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType, File file){
+		try {
+			Field keyField = null;
+			for(Field f : valueType.getDeclaredFields()){
+				if(Modifier.isStatic(f.getModifiers())){
+					continue;
+				}
+				
+				keyField = f;
+				break;
+			}
+			
+			if(keyField == null){
+				throw new NullPointerException("打不到主键字段");
+			}
+			
+			List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(file, "config");
+			Map<K, V> map = new HashMap<K, V>();
+			for(Map<String, String> tempMap : list){
+				Object obj = ConfigUtils.parseObject(tempMap, valueType);
+				keyField.setAccessible(true);
+				Object kV = keyField.get(obj);
+				keyField.setAccessible(false);
+				if(map.containsKey(kV)){
+					throw new NullPointerException("已经存在的key="+keyField.getName()+",value=" + kV + ", filePath=" + file.getPath());
+				}
+				map.put((K)kV, (V)obj);
+			}
+			
+			return map;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static Properties getProperties(String filePath, String charsetName) {
