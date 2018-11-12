@@ -5,12 +5,18 @@ import java.io.File;
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
+import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.Logger;
 
-public abstract class AbstractJxlLoadExcel implements Runnable, LoadRow {
+public abstract class AbstractJxlLoadExcel<T> extends AbstractLoadRow<T> implements Runnable, LoadRow {
 	private final File excel;
-
-	public AbstractJxlLoadExcel(File excel) {
+	
+	public AbstractJxlLoadExcel(String excel, Class<T> type, int nameMappingIndex, int beginRowIndex, int endRowIndex){
+		this(ConfigUtils.getFile(excel), type, nameMappingIndex, beginRowIndex, endRowIndex);
+	}
+	
+	public AbstractJxlLoadExcel(File excel, Class<T> type, int nameMappingIndex, int beginRowIndex, int endRowIndex){
+		super(type, nameMappingIndex, beginRowIndex, endRowIndex);
 		this.excel = excel;
 	}
 

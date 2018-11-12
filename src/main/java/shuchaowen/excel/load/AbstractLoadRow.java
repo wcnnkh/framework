@@ -90,7 +90,7 @@ public abstract class AbstractLoadRow<T> implements LoadRow{
 	}
 	
 	public Object format(String name, String value, Class<?> type){
-		if(value == null){
+		if(StringUtils.isNull(value)){
 			return null;
 		}
 		
