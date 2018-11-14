@@ -1,8 +1,6 @@
 package shuchaowen.web.servlet;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -20,7 +18,6 @@ public abstract class WebRequest extends HttpServletRequestWrapper implements Re
 	private final long createTime;
 	private final HttpServletResponse httpServletResponse;
 	private final BeanFactory beanFactory;
-	private Map<Class<? extends RequestWrapper>, RequestWrapper> requestWrapperMap;
 
 	public WebRequest(BeanFactory beanFactory, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
 		super(httpServletRequest);
@@ -36,19 +33,15 @@ public abstract class WebRequest extends HttpServletRequestWrapper implements Re
 	
 	@SuppressWarnings("unchecked")
 	public <T> T getRequestWrapper(Class<? extends RequestWrapper> requestWrapper) throws Exception{
-		RequestWrapper wrapper = null;
-		if(requestWrapperMap == null){
+		RequestWrapper wrapper = (RequestWrapper) getAttribute(requestWrapper.getName());
+		if(wrapper == null){
 			Bean bean = beanFactory.getBean(requestWrapper.getName());
 			wrapper = bean.newInstance(new Class<?>[]{WebRequest.class}, this);
 			if(requestWrapper != null){
 				bean.autowrite(bean);
 				bean.init(bean);
-				
-				requestWrapperMap = new HashMap<Class<? extends RequestWrapper>, RequestWrapper>(2, 1);
-				requestWrapperMap.put(requestWrapper, wrapper);
+				setAttribute(requestWrapper.getName(), wrapper);
 			}
-		}else{
-			wrapper = requestWrapperMap.get(requestWrapper);
 		}
 		return (T) wrapper;
 	}
