@@ -1,12 +1,17 @@
 package shuchaowen.core.util;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.cglib.proxy.Enhancer;
+import shuchaowen.core.beans.BeanFilter;
 import shuchaowen.core.beans.BeanListen;
+import shuchaowen.core.beans.BeanMethodInterceptor;
 
 /**
  * 封装一个类的信息
@@ -15,6 +20,8 @@ import shuchaowen.core.beans.BeanListen;
  *
  */
 public final class ClassInfo {
+	private static final String SerialVersionUID_FIELD_NAME = "serialVersionUID";
+	
 	/**
 	 * 类全名 xx.xx.xx
 	 */
@@ -26,7 +33,7 @@ public final class ClassInfo {
 	/**
 	 * 类
 	 */
-	private Class<?> clz;
+	private final Class<?> clz;
 	/**
 	 * 类的字段
 	 */
@@ -36,8 +43,9 @@ public final class ClassInfo {
 
 	private ClassInfo superInfo;// 父类信息
 	private Class<?>[] beanListenInterfaces;
+	private Long serialVersionUID;
 
-	public ClassInfo(Class<?> clz) {
+	public ClassInfo(Class<?> clz){
 		this.clz = clz;
 		this.name = clz.getName();
 		this.simpleName = clz.getSimpleName();
@@ -61,6 +69,17 @@ public final class ClassInfo {
 
 			if (fieldInfo.getSetter() != null) {
 				fieldSetterMethodMap.put(fieldInfo.getSetter().getName(), fieldInfo);
+			}
+		}
+		
+		if(Serializable.class.isAssignableFrom(clz)){
+			try {
+				Field field = clz.getDeclaredField(SerialVersionUID_FIELD_NAME);
+				if(Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())){
+					field.setAccessible(true);
+					serialVersionUID = (Long) field.get(null);
+				}
+			} catch (Exception e) {
 			}
 		}
 
@@ -129,5 +148,47 @@ public final class ClassInfo {
 
 	public Class<?>[] getBeanListenInterfaces() {
 		return beanListenInterfaces;
+	}
+
+	public Long getSerialVersionUID() {
+		return serialVersionUID;
+	}
+	
+	public Class<?> getProxyClass(){
+		Enhancer enhancer = new Enhancer();
+		if(!BeanListen.class.isAssignableFrom(clz)){
+			enhancer.setInterfaces(beanListenInterfaces);
+		}
+		
+		if(serialVersionUID != null){
+			enhancer.setSerialVersionUID(serialVersionUID);
+		}
+		
+		enhancer.setCallbackType(BeanMethodInterceptor.class);
+		enhancer.setSuperclass(clz);
+		return enhancer.createClass();
+	}
+	
+	public Enhancer createEnhancer(List<BeanFilter> beanFilterList){
+		Enhancer enhancer = new Enhancer();
+			if(beanListenInterfaces.length != 0){
+			enhancer.setInterfaces(beanListenInterfaces);
+		}
+		
+		if(serialVersionUID != null){
+			enhancer.setSerialVersionUID(serialVersionUID);
+		}
+		
+		enhancer.setCallback(new BeanMethodInterceptor(beanFilterList));
+		enhancer.setSuperclass(clz);
+		return enhancer;
+	}
+	
+	/**
+	 * 可以监听属性变化
+	 * @return
+	 */
+	public Object newInstance(){
+		return createEnhancer(null).create();
 	}
 }

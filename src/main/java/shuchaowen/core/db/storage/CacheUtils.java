@@ -14,11 +14,12 @@ import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.result.Result;
 import shuchaowen.core.db.storage.cache.Cache;
+import shuchaowen.core.util.ClassUtils;
 
 public class CacheUtils {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <T> T decode(Class<T> type, byte[] data) {
-		T t = Result.newInstance(type);
+		T t = Result.newInstance(ClassUtils.getClassInfo(type));
 		Schema schema = RuntimeSchema.getSchema(type);
 		ProtostuffIOUtil.mergeFrom(data, t, schema);
 		if(t instanceof BeanListen){

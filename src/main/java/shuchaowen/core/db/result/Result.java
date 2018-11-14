@@ -9,13 +9,13 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import shuchaowen.core.beans.BeanListen;
-import shuchaowen.core.beans.BeanUtils;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.TableMapping;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.XTime;
@@ -113,7 +113,7 @@ public final class Result implements Serializable {
 		} else {
 			TableInfo tableInfo = DB.getTableInfo(type);
 			String tableName = getTableName(type);
-			T t = newInstance(type);
+			T t = newInstance(tableInfo.getClassInfo());
 			boolean b;
 			try {
 				b = wrapper(t, tableName + ".", tableInfo);
@@ -160,7 +160,7 @@ public final class Result implements Serializable {
 		if (b) {
 			for (ColumnInfo columnInfo : tableInfo.getTableColumns()) {
 				TableInfo info = DB.getTableInfo(columnInfo.getType());
-				Object obj = newInstance(columnInfo.getType());
+				Object obj = newInstance(info.getClassInfo());
 				String tName = getTableName(columnInfo.getType());
 				boolean b1 = wrapper(obj, tName + ".", info);
 				if (b1) {
@@ -247,18 +247,18 @@ public final class Result implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(Class<T> type) {
-		Table table = type.getAnnotation(Table.class);
+	public static <T> T newInstance(ClassInfo classInfo) {
+		Table table = classInfo.getClz().getAnnotation(Table.class);
 		if (table == null) {
 			try {
-				return type.newInstance();
+				return (T) classInfo.getClz().newInstance();
 			} catch (InstantiationException e) {
 				throw new ShuChaoWenRuntimeException(e);
 			} catch (IllegalAccessException e) {
 				throw new ShuChaoWenRuntimeException(e);
 			}
 		} else {
-			return (T) BeanUtils.getEnhancer(type, null, null).create();
+			return (T) classInfo.newInstance();
 		}
 	}
 }

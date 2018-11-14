@@ -8,9 +8,9 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 
-import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.annotaion.Autowrite;
 import shuchaowen.core.beans.annotaion.Config;
 import shuchaowen.core.beans.annotaion.Destroy;
@@ -111,7 +111,8 @@ public final class BeanUtils {
 
 	private static void autoWriteStatic(Class<?> clz, BeanFactory beanFactory) throws Exception {
 		ClassInfo classInfo= ClassUtils.getClassInfo(clz);
-		for(FieldInfo field : classInfo.getFieldMap().values()){
+		for(Entry<String, FieldInfo> entry : classInfo.getFieldMap().entrySet()){
+			FieldInfo field = entry.getValue();
 			if (!Modifier.isStatic(field.getField().getModifiers())) {
 				continue;
 			}
@@ -325,48 +326,6 @@ public final class BeanUtils {
 
 				field.set(obj, v);
 		}
-	}
-	
-	public static void registerEnhancerClass(String packageNames){
-		for(Class<?> clz : ClassUtils.getClasses(packageNames)){
-			getEnhancerClass(clz);
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T> Class<T> getEnhancerClass(Class<T> type){
-		Enhancer enhancer = new Enhancer();
-		if(!BeanListen.class.isAssignableFrom(type)){
-			ClassInfo classInfo = ClassUtils.getClassInfo(type);
-			enhancer.setInterfaces(classInfo.getBeanListenInterfaces());
-			enhancer.setSerialVersionUID(1L);
-		}
-		enhancer.setCallbackType(BeanMethodInterceptor.class);
-		enhancer.setSuperclass(type);
-		return enhancer.createClass();
-	}
-	
-	public static Enhancer getEnhancer(Class<?> type, List<String> beanFilterList, BeanFactory beanFactory){
-		Enhancer enhancer = new Enhancer();
-		List<BeanFilter> list = null;
-		if (beanFilterList != null && !beanFilterList.isEmpty()) {
-			list = new ArrayList<BeanFilter>();
-
-			for (String f : beanFilterList) {
-				BeanFilter beanFilter = beanFactory.get(f);
-				list.add(beanFilter);
-			}
-		}
-		
-		if(!BeanListen.class.isAssignableFrom(type)){
-			ClassInfo classInfo = ClassUtils.getClassInfo(type);
-			enhancer.setInterfaces(classInfo.getBeanListenInterfaces());
-			enhancer.setSerialVersionUID(1L);
-		}
-
-		enhancer.setCallback(new BeanMethodInterceptor(type, list));
-		enhancer.setSuperclass(type);
-		return enhancer;
 	}
 }
 

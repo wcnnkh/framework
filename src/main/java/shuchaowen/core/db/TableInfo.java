@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import shuchaowen.core.beans.BeanListen;
-import shuchaowen.core.beans.BeanUtils;
 import shuchaowen.core.db.annoation.NotColumn;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.exception.AlreadyExistsException;
@@ -249,7 +248,8 @@ public final class TableInfo {
 				continue;
 			}
 			
-			Class<?> clz = BeanUtils.getEnhancerClass(type);
+			ClassInfo classInfo = ClassUtils.getClassInfo(type);
+			Class<?> clz = classInfo.getProxyClass();
 			Logger.info("CGLIB", "register proxy class[" + clz.getName() + "]");
 		}
 	}

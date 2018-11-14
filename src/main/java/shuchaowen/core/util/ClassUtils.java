@@ -177,17 +177,15 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static ClassInfo getClassInfo(Class<?> clz) {
-		return getClassInfo(clz.getName());
+		return getClassInfo(getCGLIBRealClassName(clz.getName()));
 	}
 
 	/**
 	 * 获取类信息，先会从缓存中查找
-	 * 
 	 * @param className
 	 * @return
 	 */
-	public static ClassInfo getClassInfo(String className) {
-		String name = getCGLIBRealClassName(className);
+	public static ClassInfo getClassInfo(String name) {
 		ClassInfo info = clzMap.get(name);
 		if (info == null) {
 			synchronized (clzMap) {
@@ -196,7 +194,7 @@ public final class ClassUtils {
 					try {
 						Class<?> clz = Class.forName(name);
 						info = new ClassInfo(clz);
-						clzMap.put(className, info);
+						clzMap.put(name, info);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

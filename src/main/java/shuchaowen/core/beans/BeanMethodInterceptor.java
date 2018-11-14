@@ -18,21 +18,30 @@ import shuchaowen.core.util.Logger;
 
 public class BeanMethodInterceptor implements MethodInterceptor, BeanListen {
 	private static final long serialVersionUID = 1L;
-	private final List<BeanFilter> beanFilters;
-	private final Class<?> type;
 	private transient Map<String, Object> changeColumnMap;
 	private transient boolean startListen = false;
 	private transient ClassInfo classInfo;
-	private final boolean isBeanListen;
+	private boolean isBeanListen;
+	private List<BeanFilter> beanFilters;
 
-	public BeanMethodInterceptor(Class<?> type, List<BeanFilter> beanFilters) {
-		this.type = type;
+	// 用于序列化
+	public BeanMethodInterceptor() {
+		this(null);
+	}
+
+	public BeanMethodInterceptor(List<BeanFilter> beanFilters) {
 		this.beanFilters = beanFilters;
-		this.isBeanListen = BeanListen.class.isAssignableFrom(type);
+	}
+
+	private void init(Class<?> type) {
+		if (classInfo == null) {
+			classInfo = ClassUtils.getClassInfo(type);
+		}
+		this.isBeanListen = BeanListen.class.isAssignableFrom(classInfo.getClz());
 	}
 
 	private Object run(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		boolean isTransaction = BeanUtils.isTransaction(type, method);
+		boolean isTransaction = BeanUtils.isTransaction(classInfo.getClz(), method);
 		if (isTransaction) {
 			TransactionContext.getInstance().begin();
 			try {
@@ -47,15 +56,8 @@ public class BeanMethodInterceptor implements MethodInterceptor, BeanListen {
 		}
 	}
 
-	private ClassInfo getClassInfo() {
-		if (classInfo == null) {
-			classInfo = ClassUtils.getClassInfo(type);
-		}
-		return classInfo;
-	}
-
 	private Object invoke(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		Retry retry = AnnotationBean.getRetry(type, method);
+		Retry retry = AnnotationBean.getRetry(classInfo.getClz(), method);
 		if (retry == null || retry.errors().length == 0) {
 			return run(obj, method, args, proxy);
 		} else {
@@ -63,7 +65,7 @@ public class BeanMethodInterceptor implements MethodInterceptor, BeanListen {
 				if (i != 0 && retry.log()) {
 					try {
 						StringBuilder sb = new StringBuilder();
-						sb.append("class:").append(type.getName()).append(",");
+						sb.append("class:").append(classInfo.getName()).append(",");
 						sb.append("method:").append(method.getName()).append(",");
 						sb.append("parameterTypes:").append(Arrays.toString(method.getParameterTypes())).append(",");
 						sb.append("args:").append(Arrays.toString(args));
@@ -96,25 +98,22 @@ public class BeanMethodInterceptor implements MethodInterceptor, BeanListen {
 	}
 
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+		init(obj.getClass());
 		if (args.length == 0) {
-			if (BeanListen.START_LISTEN.equals(method.getName())) {
-				if (isBeanListen) {
-					((BeanListen) obj).start_field_listen();
-				} else {
+			if (isBeanListen) {
+				return invoke(obj, method, args, proxy);
+			} else {
+				if (BeanListen.START_LISTEN.equals(method.getName())) {
 					start_field_listen();
-				}
-				return null;
-			} else if (BeanListen.GET_CHANGE_MAP.equals(method.getName())) {
-				if (isBeanListen) {
-					return ((BeanListen) obj).get_field_change_map();
-				} else {
+					return null;
+				} else if (BeanListen.GET_CHANGE_MAP.equals(method.getName())) {
 					return get_field_change_map();
 				}
 			}
 		}
 
 		if (startListen) {
-			FieldInfo fieldInfo = getClassInfo().getFieldInfoBySetterName(method.getName());
+			FieldInfo fieldInfo = classInfo.getFieldInfoBySetterName(method.getName());
 			if (fieldInfo != null) {
 				Object rtn;
 				Object oldValue = null;

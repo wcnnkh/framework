@@ -13,6 +13,7 @@ import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.AnnotationBean;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
+import shuchaowen.core.beans.BeanFilter;
 import shuchaowen.core.beans.BeanMethod;
 import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.BeanUtils;
@@ -243,7 +244,20 @@ public class XmlBean implements Bean {
 
 	private Enhancer getProxyEnhancer() {
 		if(enhancer == null){
-			enhancer = BeanUtils.getEnhancer(type, beanFilters, beanFactory);
+			ClassInfo classInfo = ClassUtils.getClassInfo(type);
+			List<BeanFilter> beanFilterList = null;
+			if(beanFilters != null && !beanFilters.isEmpty()){
+				for(String name : beanFilters){
+					BeanFilter beanFilter = beanFactory.get(name);
+					if(beanFilter != null){
+						if(beanFilterList == null){
+							beanFilterList = new ArrayList<BeanFilter>();
+						}
+						beanFilterList.add(beanFilter);
+					}
+				}
+			}
+			enhancer = classInfo.createEnhancer(beanFilterList);
 		}
 		return enhancer;
 	}
