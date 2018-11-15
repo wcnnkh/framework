@@ -85,7 +85,7 @@ public final class SQLTransaction extends AbstractTransaction {
 				try {
 					stmt.execute();
 				} catch (SQLException e) {
-					throw new SQLException(e);
+					throw new SQLException(DBUtils.getSQLId(entry.getValue()), e);
 				}
 			}
 		}
