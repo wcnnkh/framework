@@ -38,8 +38,8 @@ public abstract class WebRequest extends HttpServletRequestWrapper implements Re
 			Bean bean = beanFactory.getBean(requestWrapper.getName());
 			wrapper = bean.newInstance(new Class<?>[]{WebRequest.class}, this);
 			if(requestWrapper != null){
-				bean.autowrite(bean);
-				bean.init(bean);
+				bean.autowrite(wrapper);
+				bean.init(wrapper);
 				setAttribute(requestWrapper.getName(), wrapper);
 			}
 		}
