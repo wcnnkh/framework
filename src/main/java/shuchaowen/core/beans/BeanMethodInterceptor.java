@@ -16,7 +16,7 @@ import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.Logger;
 
-public class BeanMethodInterceptor implements MethodInterceptor, BeanListen {
+public class BeanMethodInterceptor implements MethodInterceptor, BeanFieldListen {
 	private static final long serialVersionUID = 1L;
 	private transient Map<String, Object> changeColumnMap;
 	private transient boolean startListen = false;
@@ -37,21 +37,20 @@ public class BeanMethodInterceptor implements MethodInterceptor, BeanListen {
 		if (classInfo == null) {
 			classInfo = ClassUtils.getClassInfo(type);
 		}
-		this.isBeanListen = BeanListen.class.isAssignableFrom(classInfo.getClz());
+		this.isBeanListen = BeanFieldListen.class.isAssignableFrom(classInfo.getClz());
 	}
 
 	private Object run(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+		BeanFilterChain beanFilterChain = new BeanFilterChain(beanFilters);
 		boolean isTransaction = BeanUtils.isTransaction(classInfo.getClz(), method);
 		if (isTransaction) {
 			TransactionContext.getInstance().begin();
 			try {
-				BeanFilterChain beanFilterChain = new BeanFilterChain(beanFilters);
 				return beanFilterChain.doFilter(obj, method, args, proxy);
 			} finally {
 				TransactionContext.getInstance().end();
 			}
 		} else {
-			BeanFilterChain beanFilterChain = new BeanFilterChain(beanFilters);
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		}
 	}
@@ -100,13 +99,18 @@ public class BeanMethodInterceptor implements MethodInterceptor, BeanListen {
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		init(obj.getClass());
 		if (args.length == 0) {
-			if (isBeanListen) {
-				return invoke(obj, method, args, proxy);
-			} else {
-				if (BeanListen.START_LISTEN.equals(method.getName())) {
+			if (BeanFieldListen.START_LISTEN.equals(method.getName())) {
+				if (isBeanListen) {
+					startListen = true;
+					return invoke(obj, method, args, proxy);
+				} else {
 					start_field_listen();
 					return null;
-				} else if (BeanListen.GET_CHANGE_MAP.equals(method.getName())) {
+				}
+			} else if (BeanFieldListen.GET_CHANGE_MAP.equals(method.getName())) {
+				if (isBeanListen) {
+					return invoke(obj, method, args, proxy);
+				} else {
 					return get_field_change_map();
 				}
 			}
@@ -120,9 +124,9 @@ public class BeanMethodInterceptor implements MethodInterceptor, BeanListen {
 				oldValue = fieldInfo.forceGet(obj);
 				rtn = invoke(obj, method, args, proxy);
 				if (isBeanListen) {
-					((BeanListen) obj).field_change(fieldInfo.getName(), oldValue);
+					((BeanFieldListen) obj).field_change(fieldInfo, oldValue);
 				} else {
-					field_change(fieldInfo.getName(), oldValue);
+					field_change(fieldInfo, oldValue);
 				}
 				return rtn;
 			}
@@ -141,10 +145,10 @@ public class BeanMethodInterceptor implements MethodInterceptor, BeanListen {
 		startListen = true;
 	}
 
-	public void field_change(String field, Object oldValue) {
+	public void field_change(FieldInfo fieldInfo, Object oldValue) {
 		if (changeColumnMap == null) {
 			changeColumnMap = new HashMap<String, Object>();
 		}
-		changeColumnMap.put(field, oldValue);
+		changeColumnMap.put(fieldInfo.getName(), oldValue);
 	}
 }

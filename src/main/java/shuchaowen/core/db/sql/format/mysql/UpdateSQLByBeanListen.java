@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import shuchaowen.core.beans.BeanListen;
+import shuchaowen.core.beans.BeanFieldListen;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.sql.SQL;
@@ -15,12 +15,12 @@ public class UpdateSQLByBeanListen implements SQL {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanListen(BeanListen beanListen, TableInfo tableInfo, String tableName) throws IllegalArgumentException, IllegalAccessException {
+	public UpdateSQLByBeanListen(BeanFieldListen beanFieldListen, TableInfo tableInfo, String tableName) throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
-		if (beanListen.get_field_change_map() == null || beanListen.get_field_change_map().size() == 0) {
+		if (beanFieldListen.get_field_change_map() == null || beanFieldListen.get_field_change_map().size() == 0) {
 			throw new ShuChaoWenRuntimeException("not change properties");
 		}
 
@@ -34,7 +34,7 @@ public class UpdateSQLByBeanListen implements SQL {
 		int i;
 		ColumnInfo columnInfo;
 		List<Object> paramList = new ArrayList<Object>();
-		for (Entry<String, Object> entry : beanListen.get_field_change_map().entrySet()) {
+		for (Entry<String, Object> entry : beanFieldListen.get_field_change_map().entrySet()) {
 			columnInfo = tableInfo.getColumnInfo(entry.getKey());
 			if(columnInfo.getPrimaryKey() != null){
 				continue;
@@ -45,9 +45,9 @@ public class UpdateSQLByBeanListen implements SQL {
 			}
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
-			paramList.add(columnInfo.getValueToDB(beanListen));
+			paramList.add(columnInfo.getValueToDB(beanFieldListen));
 		}
-		beanListen.start_field_listen();// 重新开始监听
+		beanFieldListen.start_field_listen();// 重新开始监听
 
 		sb.append(" where ");
 		for (i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
@@ -58,7 +58,7 @@ public class UpdateSQLByBeanListen implements SQL {
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
 			
-			paramList.add(columnInfo.getValueToDB(beanListen));
+			paramList.add(columnInfo.getValueToDB(beanFieldListen));
 		}
 		this.sql = sb.toString();
 		this.params = paramList.toArray();

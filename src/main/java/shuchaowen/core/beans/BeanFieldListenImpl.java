@@ -3,7 +3,9 @@ package shuchaowen.core.beans;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BeanListenImpl implements BeanListen{
+import shuchaowen.core.util.FieldInfo;
+
+public class BeanFieldListenImpl implements BeanFieldListen{
 	private static final long serialVersionUID = 1L;
 	private transient Map<String, Object> changeColumnMap;
 	private transient boolean startListen = false;
@@ -35,10 +37,10 @@ public class BeanListenImpl implements BeanListen{
 		this.startListen = startListen;
 	}
 
-	public void field_change(String field, Object oldValue) {
+	public void field_change(FieldInfo fieldInfo, Object oldValue) {
 		if (changeColumnMap == null) {
 			changeColumnMap = new HashMap<String, Object>();
 		}
-		changeColumnMap.put(field, oldValue);
+		changeColumnMap.put(fieldInfo.getName(), oldValue);
 	}
 }

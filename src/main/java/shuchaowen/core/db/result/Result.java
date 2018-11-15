@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import shuchaowen.core.beans.BeanListen;
+import shuchaowen.core.beans.BeanFieldListen;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.db.TableInfo;
@@ -123,7 +123,7 @@ public final class Result implements Serializable {
 
 			if (b) {
 				if (tableInfo.isTable()) {
-					((BeanListen) t).start_field_listen();
+					((BeanFieldListen) t).start_field_listen();
 				}
 				return t;
 			}
@@ -166,7 +166,7 @@ public final class Result implements Serializable {
 				if (b1) {
 					columnInfo.setValueToField(root, obj);
 					if (info.isTable()) {
-						((BeanListen) obj).start_field_listen();
+						((BeanFieldListen) obj).start_field_listen();
 					}
 				}
 			}
@@ -258,7 +258,7 @@ public final class Result implements Serializable {
 				throw new ShuChaoWenRuntimeException(e);
 			}
 		} else {
-			return (T) classInfo.newInstance();
+			return (T) classInfo.newFieldListenInstance();
 		}
 	}
 }

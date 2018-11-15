@@ -9,7 +9,7 @@ import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
-import shuchaowen.core.beans.BeanListen;
+import shuchaowen.core.beans.BeanFieldListen;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.result.Result;
@@ -22,8 +22,8 @@ public class CacheUtils {
 		T t = Result.newInstance(ClassUtils.getClassInfo(type));
 		Schema schema = RuntimeSchema.getSchema(type);
 		ProtostuffIOUtil.mergeFrom(data, t, schema);
-		if(t instanceof BeanListen){
-			((BeanListen) t).start_field_listen();
+		if(t instanceof BeanFieldListen){
+			((BeanFieldListen) t).start_field_listen();
 		}
 		return t;
 	}

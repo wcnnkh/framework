@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import shuchaowen.core.beans.BeanListen;
+import shuchaowen.core.beans.BeanFieldListen;
 import shuchaowen.core.db.annoation.NotColumn;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.exception.AlreadyExistsException;
@@ -244,12 +244,12 @@ public final class TableInfo {
 				continue;
 			}
 			
-			if(BeanListen.class.isAssignableFrom(type)){
+			if(BeanFieldListen.class.isAssignableFrom(type)){
 				continue;
 			}
 			
 			ClassInfo classInfo = ClassUtils.getClassInfo(type);
-			Class<?> clz = classInfo.getProxyClass();
+			Class<?> clz = classInfo.getFieldListenProxyClass();
 			Logger.info("CGLIB", "register proxy class[" + clz.getName() + "]");
 		}
 	}

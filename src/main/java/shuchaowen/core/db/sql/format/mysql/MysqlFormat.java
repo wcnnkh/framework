@@ -2,7 +2,7 @@ package shuchaowen.core.db.sql.format.mysql;
 
 import java.util.Collection;
 
-import shuchaowen.core.beans.BeanListen;
+import shuchaowen.core.beans.BeanFieldListen;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.db.PrimaryKeyParameter;
 import shuchaowen.core.db.TableInfo;
@@ -30,8 +30,8 @@ public class MysqlFormat implements SQLFormat {
 
 	public SQL toUpdateSql(Object obj, TableInfo tableInfo, String tableName) {
 		try {
-			if(obj instanceof BeanListen){
-				return new UpdateSQLByBeanListen((BeanListen)obj, tableInfo, tableName);
+			if(obj instanceof BeanFieldListen){
+				return new UpdateSQLByBeanListen((BeanFieldListen)obj, tableInfo, tableName);
 			}else{
 				return new UpdateSQL(obj, tableInfo, tableName);
 			}
@@ -60,8 +60,8 @@ public class MysqlFormat implements SQLFormat {
 	
 	public SQL toSaveOrUpdateSql(Object obj, TableInfo tableInfo, String tableName){
 		try {
-			if(obj instanceof BeanListen){
-				return new SaveOrUpdateSQLByBeanListen((BeanListen)obj, tableInfo, tableName);
+			if(obj instanceof BeanFieldListen){
+				return new SaveOrUpdateSQLByBeanListen((BeanFieldListen)obj, tableInfo, tableName);
 			}else{
 				return new SaveOrUpdateSQL(obj, tableInfo, tableName);
 			}

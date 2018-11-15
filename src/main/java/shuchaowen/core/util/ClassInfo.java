@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.cglib.proxy.Enhancer;
+import shuchaowen.core.beans.BeanFieldListen;
 import shuchaowen.core.beans.BeanFilter;
-import shuchaowen.core.beans.BeanListen;
 import shuchaowen.core.beans.BeanMethodInterceptor;
 
 /**
@@ -53,7 +53,7 @@ public final class ClassInfo {
 		Class<?>[] arr = clz.getInterfaces();
 		beanListenInterfaces = new Class<?>[arr == null ? 1 : arr.length + 1];
 		System.arraycopy(arr, 0, beanListenInterfaces, 0, arr.length);
-		beanListenInterfaces[beanListenInterfaces.length - 1] = BeanListen.class;
+		beanListenInterfaces[beanListenInterfaces.length - 1] = BeanFieldListen.class;
 
 		List<String> fieldNameList = new ArrayList<String>();
 		for (Field field : clz.getDeclaredFields()) {
@@ -154,25 +154,19 @@ public final class ClassInfo {
 		return serialVersionUID;
 	}
 	
-	public Class<?> getProxyClass(){
+	public Enhancer createEnhancer(Class<?>[] interfaces, List<BeanFilter> beanFilterList){
 		Enhancer enhancer = new Enhancer();
-		if(!BeanListen.class.isAssignableFrom(clz)){
-			enhancer.setInterfaces(beanListenInterfaces);
+		Class<?>[] newArr;
+		if(interfaces != null && interfaces.length != 0){
+			newArr = new Class<?>[beanListenInterfaces.length + interfaces.length];
+			System.arraycopy(beanListenInterfaces, 0, newArr, 0, beanListenInterfaces.length);
+			System.arraycopy(interfaces, 0, newArr, beanListenInterfaces.length, interfaces.length);
+		}else{
+			newArr = beanListenInterfaces;
 		}
 		
-		if(serialVersionUID != null){
-			enhancer.setSerialVersionUID(serialVersionUID);
-		}
-		
-		enhancer.setCallbackType(BeanMethodInterceptor.class);
-		enhancer.setSuperclass(clz);
-		return enhancer.createClass();
-	}
-	
-	public Enhancer createEnhancer(List<BeanFilter> beanFilterList){
-		Enhancer enhancer = new Enhancer();
-			if(beanListenInterfaces.length != 0){
-			enhancer.setInterfaces(beanListenInterfaces);
+		if(newArr.length != 0){
+			enhancer.setInterfaces(newArr);
 		}
 		
 		if(serialVersionUID != null){
@@ -188,7 +182,22 @@ public final class ClassInfo {
 	 * 可以监听属性变化
 	 * @return
 	 */
-	public Object newInstance(){
-		return createEnhancer(null).create();
+	public Object newFieldListenInstance(){
+		return createEnhancer(null, null).create();
+	}
+	
+	public Class<?> getFieldListenProxyClass(){
+		Enhancer enhancer = new Enhancer();
+		if(!BeanFieldListen.class.isAssignableFrom(clz)){
+			enhancer.setInterfaces(beanListenInterfaces);
+		}
+		
+		if(serialVersionUID != null){
+			enhancer.setSerialVersionUID(serialVersionUID);
+		}
+		
+		enhancer.setCallbackType(BeanMethodInterceptor.class);
+		enhancer.setSuperclass(clz);
+		return enhancer.createClass();
 	}
 }

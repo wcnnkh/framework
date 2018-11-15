@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import shuchaowen.core.beans.BeanListen;
+import shuchaowen.core.beans.BeanFieldListen;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.sql.SQL;
@@ -15,12 +15,12 @@ public class SaveOrUpdateSQLByBeanListen implements SQL{
 	private String sql;
 	private Object[] params;
 
-	public SaveOrUpdateSQLByBeanListen(BeanListen beanListen, TableInfo tableInfo, String tableName) throws IllegalArgumentException, IllegalAccessException {
+	public SaveOrUpdateSQLByBeanListen(BeanFieldListen beanFieldListen, TableInfo tableInfo, String tableName) throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
-		if (beanListen.get_field_change_map() == null || beanListen.get_field_change_map().isEmpty()) {
+		if (beanFieldListen.get_field_change_map() == null || beanFieldListen.get_field_change_map().isEmpty()) {
 			throw new ShuChaoWenRuntimeException("not change properties");
 		}
 
@@ -39,7 +39,7 @@ public class SaveOrUpdateSQLByBeanListen implements SQL{
 
 			cols.append(columnInfo.getSqlColumnName());
 			values.append("?");
-			paramList.add(columnInfo.getValueToDB(beanListen));
+			paramList.add(columnInfo.getValueToDB(beanFieldListen));
 		}
 
 		sb.append("insert into `");
@@ -57,10 +57,10 @@ public class SaveOrUpdateSQLByBeanListen implements SQL{
 			}
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
-			paramList.add(columnInfo.getValueToDB(beanListen));
+			paramList.add(columnInfo.getValueToDB(beanFieldListen));
 		}
 
-		for (Entry<String, Object> entry : beanListen.get_field_change_map().entrySet()) {
+		for (Entry<String, Object> entry : beanFieldListen.get_field_change_map().entrySet()) {
 			columnInfo = tableInfo.getColumnInfo(entry.getKey());
 			if(columnInfo.getPrimaryKey() != null){
 				continue;
@@ -69,9 +69,9 @@ public class SaveOrUpdateSQLByBeanListen implements SQL{
 			sb.append(",");
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
-			paramList.add(columnInfo.getValueToDB(beanListen));
+			paramList.add(columnInfo.getValueToDB(beanFieldListen));
 		}
-		beanListen.start_field_listen();// 重新开始监听
+		beanFieldListen.start_field_listen();// 重新开始监听
 		this.sql = sb.toString();
 		this.params = paramList.toArray();
 	}
