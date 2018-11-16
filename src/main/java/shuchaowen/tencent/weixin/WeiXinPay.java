@@ -8,7 +8,9 @@ import java.util.Map;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import shuchaowen.core.exception.NotSupportException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.SignHelp;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.tencent.weixin.bean.Unifiedorder;
@@ -16,22 +18,26 @@ import shuchaowen.web.util.http.HttpPost;
 
 public final class WeiXinPay {
 	private static final String weixin_unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+	private static final String DEFAULT_DEVICE_INFO = "WEB";
+	
 	private final String appId;
 	private final String mch_id;
 	private final String apiKey;
 	private final String sign_type;// 签名类型，默认为MD5，支持HMAC-SHA256和MD5。
 	private final Charset charset;
+	private final boolean debug;
 
-	public WeiXinPay(String appId, String mch_id, String apiKey) {
-		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"));
+	public WeiXinPay(String appId, String mch_id, String apiKey, boolean debug) {
+		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"), debug);
 	}
 
-	public WeiXinPay(String appId, String mch_id, String apiKey, String sign_type, Charset charset) {
+	public WeiXinPay(String appId, String mch_id, String apiKey, String sign_type, Charset charset, boolean debug) {
 		this.appId = appId;
 		this.mch_id = mch_id;
 		this.apiKey = apiKey;
-		this.sign_type = sign_type;
+		this.sign_type = sign_type.toUpperCase();
 		this.charset = charset;
+		this.debug = debug;
 	}
 
 	/**
@@ -78,6 +84,10 @@ public final class WeiXinPay {
 		String content = getUnifiedorder(device_info, nonce_str, body, detail, attach, out_trade_no, fee_type,
 				total_fee, spbill_create_ip, time_start, time_expire, goods_tag, notify_url, trade_type, product_id,
 				limit_pay, openid);
+		if(debug){
+			Logger.debug(this.getClass().getName(), "统一下单接口返回：" + content);
+		}
+		
 		Map<String, String> map = WeiXinUtils.xmlToMap(content);
 		if (map == null) {
 			throw new ShuChaoWenRuntimeException("服务器错误");
@@ -94,7 +104,7 @@ public final class WeiXinPay {
 		if (!checkSign(map)) {
 			throw new ShuChaoWenRuntimeException("签名校验错误");
 		}
-
+		
 		String prepay_id = map.get("prepay_id");
 		Unifiedorder unifiedorder = new Unifiedorder();
 		unifiedorder.setTimestamp(timestamp);
@@ -131,10 +141,10 @@ public final class WeiXinPay {
 	 *            回调url
 	 * @return
 	 */
-	public Unifiedorder getDefaultUnifiedorder(String device_info, String trade_type, String body, String out_trade_no,
+	public Unifiedorder getDefaultUnifiedorder(String trade_type, String body, String out_trade_no,
 			String fee_type, int total_fee, String spbill_create_ip, String time_start, String time_expire,
 			String limit_pay, String openid, String notify_url) {
-		return getUnifiedorder(device_info, StringUtils.getRandomStr(20), System.currentTimeMillis() / 1000, body, null,
+		return getUnifiedorder(DEFAULT_DEVICE_INFO, StringUtils.getRandomStr(16), System.currentTimeMillis() / 1000, body, null,
 				null, out_trade_no, fee_type, total_fee, spbill_create_ip, time_start, time_expire, null, notify_url,
 				trade_type, null, limit_pay, openid);
 	}
@@ -153,9 +163,9 @@ public final class WeiXinPay {
 	 * @param notify_url
 	 * @return
 	 */
-	public Unifiedorder getSimpleUnifiedorder(String device_info, String trade_type, String name, String orderId,
+	public Unifiedorder getSimpleUnifiedorder(String trade_type, String name, String orderId,
 			int amount, String ip, String notify_url) {
-		return getDefaultUnifiedorder(device_info, trade_type, name, orderId, "CNY", amount, ip, null, null, null, null,
+		return getDefaultUnifiedorder(trade_type, name, orderId, "CNY", amount, ip, null, null, null, null,
 				notify_url);
 	}
 
@@ -163,8 +173,7 @@ public final class WeiXinPay {
 		String sign = params.get("sign");
 		StringBuilder paramStr = SignHelp.getShotParamsStr(params);
 		paramStr.append("&key=").append(apiKey);
-		String checkSigh = SignHelp.md5UpperStr(paramStr.toString(), "UTF-8");
-		params.remove("sign");
+		String checkSigh = toSign(paramStr.toString());
 		return checkSigh.equals(sign);
 	}
 
@@ -286,9 +295,31 @@ public final class WeiXinPay {
 			sb.append(k).append("=").append(v);
 		}
 		sb.append("&key=").append(apiKey);
+		if(debug){
+			Logger.debug(this.getClass().getName(), "签名字符串：" + sb.toString());
+		}
 		element = DocumentHelper.createElement("sign");
-		element.setText(SignHelp.md5UpperStr(sb.toString(), charset.name()));
+		String sign = toSign(sb.toString());
+		if(debug){
+			Logger.debug(this.getClass().getName(), "签名：" + sign);
+		}
+		element.setText(sign);
 		root.add(element);
-		return HttpPost.invoke(weixin_unifiedorder_url, root.asXML().getBytes(charset), null, 5000, 5000);
+		String xmlContent = root.asXML();
+		if(debug){
+			Logger.debug(this.getClass().getName(), "签名XML：" + xmlContent);
+		}
+		return HttpPost.invoke(weixin_unifiedorder_url, xmlContent.getBytes(charset), null, 5000, 5000);
+	}
+	
+	private String toSign(String str){
+		if("MD5".equalsIgnoreCase(sign_type)){
+			return SignHelp.md5UpperStr(str, charset.name());
+		}else if("HMAC-SHA256".equalsIgnoreCase(sign_type)){
+			//TODO
+			throw new NotSupportException(sign_type);
+		}else{
+			throw new ShuChaoWenRuntimeException("不支持的签名方式:" + sign_type);
+		}
 	}
 }
