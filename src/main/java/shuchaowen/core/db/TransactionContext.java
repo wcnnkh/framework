@@ -201,7 +201,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 	protected void firstBegin() {
 		ThreadLocalTransaction threadLocalTransaction = getValue();
 		if (threadLocalTransaction == null) {
-			threadLocalTransaction = new ThreadLocalTransaction(debug);
+			threadLocalTransaction = new ThreadLocalTransaction();
 			setValue(threadLocalTransaction);
 		}
 		threadLocalTransaction.beginTransaction();
@@ -224,11 +224,6 @@ final class ThreadLocalTransaction extends AbstractTransaction {
 	private CombinationTransaction combinationTransaction = new CombinationTransaction();
 	private Map<ConnectionPool, Map<String, ResultSet>> cacheMap = new HashMap<ConnectionPool, Map<String, ResultSet>>();
 	private boolean autoCommit = true;// 是否是自动提交
-	private final boolean debug;
-
-	public ThreadLocalTransaction(boolean debug) {
-		this.debug = debug;
-	}
 
 	public boolean isAutoCommit() {
 		return autoCommit;
@@ -243,10 +238,6 @@ final class ThreadLocalTransaction extends AbstractTransaction {
 	}
 
 	void beginTransaction() {
-		if (debug) {
-			Logger.debug("transaction-context", "begin transaction");
-		}
-
 		if (autoCommit) {// 如果原来是自动提交，现在改为手动提交，为了防止脏数据应该先清除一遍
 			reset();
 			autoCommit = false;
@@ -258,10 +249,6 @@ final class ThreadLocalTransaction extends AbstractTransaction {
 		try {
 			execute();
 		} finally {
-			if (debug) {
-				Logger.debug("transaction-context", "end transaction");
-			}
-
 			autoCommit = true;
 			reset();
 		}
