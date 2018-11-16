@@ -11,6 +11,7 @@ import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.annotaion.Destroy;
 import shuchaowen.core.beans.annotaion.InitMethod;
 import shuchaowen.core.beans.annotaion.Retry;
+import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.ClassUtils;
@@ -34,15 +35,15 @@ public class AnnotationBean implements Bean {
 	public AnnotationBean(BeanFactory beanFactory, Class<?> type) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
+		this.singleton = isSignleton(type);
+		
 		shuchaowen.core.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.core.beans.annotaion.Bean.class);
 		if (bean != null) {
 			this.id = StringUtils.isNull(bean.id()) ? ClassUtils.getCGLIBRealClassName(type) : bean.id();
-			this.singleton = bean.singleton();
 			this.names = bean.names();
 			this.factoryMethodName = bean.factoryMethod();
 		} else {
 			this.id = ClassUtils.getCGLIBRealClassName(type);
-			this.singleton = true;
 		}
 
 		Class<?> tempClz = type;
@@ -64,7 +65,7 @@ public class AnnotationBean implements Bean {
 			}
 		}
 
-		this.proxy = checkProxy();
+		this.proxy = checkProxy(type);
 	}
 	
 	public static List<BeanMethod> getInitMethodList(Class<?> type){
@@ -109,7 +110,7 @@ public class AnnotationBean implements Bean {
 		return retry;
 	}
 
-	private boolean checkProxy() {
+	public static boolean checkProxy(Class<?> type) {
 		if (Modifier.isFinal(type.getModifiers())) {
 			return false;
 		}
@@ -125,6 +126,20 @@ public class AnnotationBean implements Bean {
 			}
 		}
 		return false;
+	}
+	
+	public static boolean isSignleton(Class<?> type){
+		shuchaowen.core.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.core.beans.annotaion.Bean.class);
+		boolean b = true;
+		if (bean != null) {
+			b = bean.singleton();
+		}
+		
+		if(b){
+			Table table = type.getAnnotation(Table.class);
+			b = table == null;
+		}
+		return b;
 	}
 
 	public boolean isSingleton() {
