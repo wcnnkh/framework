@@ -2,6 +2,11 @@ package shuchaowen.tencent.weixin;
 
 import java.util.Map;
 
+import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.core.util.SignHelp;
+import shuchaowen.core.util.StringUtils;
+import shuchaowen.tencent.weixin.bean.Unifiedorder;
+
 public class WeiXinPay {
 	public static final String weixin_unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 	
@@ -21,40 +26,65 @@ public class WeiXinPay {
 	 * @param mch_id 微信支付分配的商户号
 	 * @param device_info 自定义参数，可以为终端设备号(门店号或收银设备ID)，PC网页或公众号内支付可以传"WEB"
 	 * @param nonce_str 随机字符串，长度要求在32位以内。推荐随机数生成算法
+	 * @param timestamp 时间戳  单位:秒
 	 * @param sign  通过签名算法计算得出的签名值，详见签名生成算法
 	 * @param sign_type 签名类型，默认为MD5，支持HMAC-SHA256和MD5。
 	 * @param body 商品简单描述，该字段请按照规范传递，具体请见参数规定
 	 * @param detail
 	 * @param attach
 	 * @param out_trade_no
-	 * @param fee_type
+	 * @param fee_type 货币类型  人民币CNY
 	 * @param total_fee
 	 * @param spbill_create_ip
 	 * @param time_start
 	 * @param time_expire
 	 * @param goods_tag
 	 * @param notify_url
-	 * @param trade_type
+	 * @param trade_type 类型  APP JSAPI
 	 * @param product_id
 	 * @param limit_pay
 	 * @param openid
 	 * @return
 	 */
-	public String getUnifiedorder( 
-			String device_info, String nonce_str,
+	public Unifiedorder getUnifiedorder( 
+			String device_info, String nonce_str, long timestamp,
 			String body, String detail, String attach,
 			String out_trade_no, String fee_type, int total_fee, String spbill_create_ip,
 			String time_start, String time_expire, String goods_tag, String notify_url,
 			String trade_type, String product_id, String limit_pay, String openid){
-		return WeiXinUtils.getUnifiedorder(appId, mch_id, apiKey, device_info, nonce_str, body, detail, attach, out_trade_no, fee_type, total_fee, spbill_create_ip, time_start, time_expire, goods_tag, notify_url, trade_type, product_id, limit_pay, openid);
+		String content = WeiXinUtils.getUnifiedorder(appId, mch_id, apiKey, device_info, nonce_str, body, detail, attach, out_trade_no, fee_type, total_fee, spbill_create_ip, time_start, time_expire, goods_tag, notify_url, trade_type, product_id, limit_pay, openid);
+		Map<String, String> map = WeiXinUtils.xmlToMap(content);
+		if (map == null) {
+			throw new ShuChaoWenRuntimeException("服务器错误");
+		}
+		
+		if (!"SUCCESS".equals(map.get("return_code"))) {
+			throw new ShuChaoWenRuntimeException("服务器错误(" + map.get("return_msg") + ")");
+		}
+
+		if (!"SUCCESS".equals(map.get("result_code"))) {
+			throw new ShuChaoWenRuntimeException("服务器错误(" + map.get("err_code") + ":" + map.get("err_code_des") + ")");
+		}
+
+		if(!checkSign(map)){
+			throw new ShuChaoWenRuntimeException("签名错误");
+		}
+		
+		String prepay_id = map.get("prepay_id");
+		Unifiedorder unifiedorder = new Unifiedorder();
+		unifiedorder.setTimestamp(timestamp);
+		unifiedorder.setNonce_str(nonce_str);
+		unifiedorder.setPaySign(WeiXinUtils.getAppPayRequestSign(appId, mch_id, apiKey, unifiedorder.getTimestamp()	, nonce_str, prepay_id));
+		unifiedorder.setPrepay_id(prepay_id);
+		return unifiedorder;
 	}
 	
 	/**
 	 * 生成微信公众号支付临时订单
 	 * @param trade_type 类型  APP JSAPI
-	 * @param nonce_str 随机字符串
 	 * @param body  商品简单描述
 	 * @param out_trade_no  商户系统内部订单号，要求32个字符内、且在同一个商户号下唯一。 详见商户订单号
+	 * @param fee_type 货币类型  人民币CNY
 	 * @param total_fee 订单总金额，单位为分，详见支付金额
 	 * @param spbill_create_ip 	APP和网页支付提交用户端ip，Native支付填调用微信支付API的机器IP。
 	 * @param time_start 	订单生成时间，格式为yyyyMMddHHmmss
@@ -64,11 +94,37 @@ public class WeiXinPay {
 	 * @param notify_url 回调url
 	 * @return
 	 */
-	public String getUnifiedorder(String device_info, String trade_type, String nonce_str, String body,
-			String out_trade_no, int total_fee, String spbill_create_ip, 
+	public Unifiedorder getDefaultUnifiedorder(String device_info, String trade_type, String body,
+			String out_trade_no, String fee_type, int total_fee, String spbill_create_ip, 
 			String time_start, String time_expire, 
 			String limit_pay, String openid, String notify_url){
-		return getUnifiedorder(device_info, nonce_str, body, null, null, out_trade_no, "CNY", total_fee, spbill_create_ip, time_start, time_expire, null, notify_url, trade_type, null, limit_pay, openid);
+		return getUnifiedorder(device_info, StringUtils.getRandomStr(20), System.currentTimeMillis()/1000, body, null, null, out_trade_no, fee_type, total_fee, spbill_create_ip, time_start, time_expire, null, notify_url, trade_type, null, limit_pay, openid);
+	}
+	
+	/**
+	 * 生成一个简单的订单
+	 * @param device_info 自定义参数，可以为终端设备号(门店号或收银设备ID)，PC网页或公众号内支付可以传"WEB"
+	 * @param trade_type 类型  APP JSAPI
+	 * @param name
+	 * @param orderId
+	 * @param amount
+	 * @param ip
+	 * @param notify_url
+	 * @return
+	 */
+	public Unifiedorder getSimpleUnifiedorder(String device_info, String trade_type, String name, String orderId, int amount, String ip, String notify_url){
+		return getDefaultUnifiedorder(device_info, trade_type,
+				name, orderId, "CNY", amount, ip, 
+				null, null, null, null, notify_url);
+	}
+	
+	private boolean checkSign(Map<String, String> params){
+		String sign = params.get("sign");
+		StringBuilder paramStr = SignHelp.getShotParamsStr(params);
+		paramStr.append("&key=").append(apiKey);
+		String checkSigh = SignHelp.md5UpperStr(paramStr.toString(), "UTF-8");
+		params.remove("sign");
+		return checkSigh.equals(sign);
 	}
 	
 	public String getPaySign(Map<String, String> paramMap){
@@ -86,7 +142,7 @@ public class WeiXinPay {
 		return WeiXinUtils.getBrandWCPayRequestSign(appId, apiKey, timeStamp, nonceStr, prepay_id);
 	}
 	
-	public String getAppPayRequestSign(String timeStamp, String noceStr, String prepay_id){
+	public String getAppPayRequestSign(long timeStamp, String noceStr, String prepay_id){
 		return WeiXinUtils.getAppPayRequestSign(appId, mch_id, apiKey, timeStamp, noceStr, prepay_id);
 	}
 

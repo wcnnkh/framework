@@ -194,14 +194,14 @@ public final class WeiXinUtils {
 		return getPaySign(map, apiKey);
 	}
 	
-	public static String getAppPayRequestSign(String appId, String mch_id, String apiKey, String timeStamp, String noceStr, String prepay_id){
+	public static String getAppPayRequestSign(String appId, String mch_id, String apiKey, long timeStamp, String noceStr, String prepay_id){
 		Map<String, String> signMap = new HashMap<String, String>();
 		signMap.put("appid", appId);
 		signMap.put("partnerid", mch_id);
 		signMap.put("prepayid", prepay_id);
 		signMap.put("package", "Sign=WXPay");
 		signMap.put("noncestr", noceStr);
-		signMap.put("timestamp", timeStamp);
+		signMap.put("timestamp", timeStamp + "");
 		return getPaySign(signMap, apiKey);
 	}
 	
