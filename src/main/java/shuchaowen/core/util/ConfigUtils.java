@@ -28,14 +28,14 @@ public final class ConfigUtils {
 	private static final String WEB_ROOT = "web.root";
 	private static final String CLASSPATH = "classpath";
 	private static final String CLASSPATH_PREFIX = CLASSPATH + ":";
-	private static final String WEB_CONTENT = "WebContent";
-	private static final String WEBAPP = "webapp";
+	private static final String WEB_INF = "WEB-INF";
 	public static final StringFormatSystemProperties format1 = new StringFormatSystemProperties("{", "}");
 	public static final StringFormatSystemProperties format2 = new StringFormatSystemProperties("[", "]");
 	public static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
 
-	private ConfigUtils(){};
-	
+	private ConfigUtils() {
+	};
+
 	public static String getSystemProperty(String key) {
 		String v = System.getProperty(key);
 		if (v == null) {
@@ -76,9 +76,9 @@ public final class ConfigUtils {
 		String path = ConfigUtils.class.getResource("/").getPath();
 		File file = new File(path);
 		file = file.getParentFile().getParentFile();
-		File f = FileUtils.searchDirectory(file.getPath(), WEB_CONTENT);
-		if (f == null) {
-			f = FileUtils.searchDirectory(file.getPath(), WEBAPP);
+		File f = FileUtils.searchDirectory(file.getPath(), WEB_INF);
+		if (f != null && f.exists()) {
+			f = f.getParentFile();
 		}
 		return f == null ? file.getPath() : f.getPath();
 	}
@@ -94,7 +94,7 @@ public final class ConfigUtils {
 		T t = clz.newInstance();
 		for (Entry<String, String> entry : map.entrySet()) {
 			FieldInfo fieldInfo = classInfo.getFieldInfo(entry.getKey());
-			if(fieldInfo == null){
+			if (fieldInfo == null) {
 				continue;
 			}
 			fieldInfo.set(t, StringUtils.conversion(entry.getValue(), fieldInfo.getType()));
@@ -216,12 +216,12 @@ public final class ConfigUtils {
 		}
 		return list;
 	}
-	
-	public static <T> List<T> xmlToList(Class<T> type, File file){
+
+	public static <T> List<T> xmlToList(Class<T> type, File file) {
 		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(file, "config");
 		List<T> objList = new ArrayList<T>();
 		try {
-			for(Map<String, String> map : list){
+			for (Map<String, String> map : list) {
 				objList.add(ConfigUtils.parseObject(map, type));
 			}
 			return objList;
@@ -230,37 +230,38 @@ public final class ConfigUtils {
 		}
 		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType, File file){
+	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType, File file) {
 		try {
 			Field keyField = null;
-			for(Field f : valueType.getDeclaredFields()){
-				if(Modifier.isStatic(f.getModifiers())){
+			for (Field f : valueType.getDeclaredFields()) {
+				if (Modifier.isStatic(f.getModifiers())) {
 					continue;
 				}
-				
+
 				keyField = f;
 				break;
 			}
-			
-			if(keyField == null){
+
+			if (keyField == null) {
 				throw new NullPointerException("打不到主键字段");
 			}
-			
+
 			List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(file, "config");
 			Map<K, V> map = new HashMap<K, V>();
-			for(Map<String, String> tempMap : list){
+			for (Map<String, String> tempMap : list) {
 				Object obj = ConfigUtils.parseObject(tempMap, valueType);
 				keyField.setAccessible(true);
 				Object kV = keyField.get(obj);
 				keyField.setAccessible(false);
-				if(map.containsKey(kV)){
-					throw new NullPointerException("已经存在的key="+keyField.getName()+",value=" + kV + ", filePath=" + file.getPath());
+				if (map.containsKey(kV)) {
+					throw new NullPointerException(
+							"已经存在的key=" + keyField.getName() + ",value=" + kV + ", filePath=" + file.getPath());
 				}
-				map.put((K)kV, (V)obj);
+				map.put((K) kV, (V) obj);
 			}
-			
+
 			return map;
 		} catch (Exception e) {
 			e.printStackTrace();
