@@ -75,8 +75,8 @@ public class DispatcherServlet extends HttpServlet {
 		} catch (Exception e) {
 			throw new ServletException(e);
 		}
-		httpServerApplication.init();
 		super.init(servletConfig);
+		httpServerApplication.init();
 	}
 	
 	@Override
