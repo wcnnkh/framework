@@ -10,6 +10,7 @@ import org.dom4j.Element;
 
 import shuchaowen.core.exception.NotSupportException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.core.exception.SignatureException;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.SignHelp;
 import shuchaowen.core.util.StringUtils;
@@ -94,15 +95,15 @@ public final class WeiXinPay {
 		}
 
 		if (!"SUCCESS".equals(map.get("return_code"))) {
-			throw new ShuChaoWenRuntimeException("服务器错误(" + map.get("return_msg") + ")");
+			throw new ShuChaoWenRuntimeException(content);
 		}
 
 		if (!"SUCCESS".equals(map.get("result_code"))) {
-			throw new ShuChaoWenRuntimeException("服务器错误(" + map.get("err_code") + ":" + map.get("err_code_des") + ")");
+			throw new ShuChaoWenRuntimeException(content);
 		}
-
-		if (!checkSign(map)) {
-			throw new ShuChaoWenRuntimeException("签名校验错误");
+		
+		if(!checkSign(map)){
+			throw new SignatureException(content);
 		}
 		
 		String prepay_id = map.get("prepay_id");
@@ -167,14 +168,6 @@ public final class WeiXinPay {
 			int amount, String ip, String notify_url) {
 		return getDefaultUnifiedorder(trade_type, name, orderId, "CNY", amount, ip, null, null, null, null,
 				notify_url);
-	}
-
-	private boolean checkSign(Map<String, String> params) {
-		String sign = params.get("sign");
-		StringBuilder paramStr = SignHelp.getShotParamsStr(params);
-		paramStr.append("&key=").append(apiKey);
-		String checkSigh = toSign(paramStr.toString());
-		return checkSigh.equals(sign);
 	}
 
 	public String getPaySign(Map<String, String> paramMap) {
@@ -310,6 +303,19 @@ public final class WeiXinPay {
 			Logger.debug(this.getClass().getName(), "签名XML：" + xmlContent);
 		}
 		return HttpPost.invoke(weixin_unifiedorder_url, xmlContent.getBytes(charset), null, 5000, 5000);
+	}
+	
+	public boolean checkSign(Map<String, String> params){
+		Map<String, String> cloneParams = new HashMap<String, String>(params);
+		String sign = cloneParams.get("sign");
+		if(sign == null){
+			return false;
+		}
+		
+		cloneParams.remove("sign");
+		StringBuilder checkStr = SignHelp.getShotParamsStr(cloneParams);
+		checkStr.append("&key=").append(apiKey);
+		return sign.equals(toSign(checkStr.toString()));
 	}
 	
 	private String toSign(String str){
