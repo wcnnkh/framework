@@ -1,8 +1,6 @@
 package shuchaowen.core.db;
 
-import java.util.Collection;
-
-public interface MultipleOperations extends Collection<OperationBean>{
+public interface MultipleOperations{
 	MultipleOperations save(Object ...beans);
 	
 	MultipleOperations update(Object ...beans);
