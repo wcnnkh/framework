@@ -27,7 +27,7 @@ public final class MemcachedMQ<T> implements MQ<T> {
 		thread = new Thread(new Runnable() {
 
 			public void run() {
-				boolean find = false;
+				long sleepTime = 0L;
 				try {
 					while (!Thread.interrupted()) {
 						if (consumerList == null || consumerList.isEmpty()) {
@@ -56,7 +56,7 @@ public final class MemcachedMQ<T> implements MQ<T> {
 									}
 									memcached.delete(queueKey + readIndex);
 									memcached.set(queueKey + READ_KEY, readIndex);
-									find = true;
+									sleepTime = 0;
 								}
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -65,10 +65,10 @@ public final class MemcachedMQ<T> implements MQ<T> {
 							}
 						}
 
-						if (!find) {
-							Thread.sleep(100L);
+						if (sleepTime > 0) {
+							Thread.sleep(sleepTime);
 						}
-						find = false;
+						sleepTime = Math.min(5000L, sleepTime + 100);
 					}
 				} catch (InterruptedException e) {
 				}

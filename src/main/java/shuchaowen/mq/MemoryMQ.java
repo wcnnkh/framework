@@ -16,7 +16,7 @@ public final class MemoryMQ<T> implements MQ<T> {
 		this.thread = new Thread(new Runnable() {
 
 			public void run() {
-				boolean find = false;
+				long sleepTime = 0L;
 				T message;
 				try {
 					while (!Thread.interrupted()) {
@@ -30,19 +30,19 @@ public final class MemoryMQ<T> implements MQ<T> {
 						}
 
 						try {
-							find = true;
 							for (Consumer<T> consumer : consumerList) {
 								consumer.handler(message);
 							}
 							queue.poll();
+							sleepTime = 0;
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-
-						if (!find) {
-							Thread.sleep(100L);
+						
+						if(sleepTime > 0){
+							Thread.sleep(sleepTime);
 						}
-						find = false;
+						sleepTime = Math.min(5000L, sleepTime + 100);
 					}
 				} catch (InterruptedException e) {
 				}

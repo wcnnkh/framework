@@ -31,7 +31,7 @@ public final class RedisMQ<T> implements MQ<T> {
 		this.thread = new Thread(new Runnable() {
 
 			public void run() {
-				boolean find = false;
+				long sleepTime = 0L;
 				try {
 					while (!Thread.interrupted()) {
 						if (consumerList == null || consumerList.isEmpty()) {
@@ -49,7 +49,7 @@ public final class RedisMQ<T> implements MQ<T> {
 											consumer.handler(t);
 										}
 										redis.rpop(queueKey.getBytes(charset));
-										find = true;
+										sleepTime = 0;
 									}
 								}
 							} catch (Exception e) {
@@ -59,10 +59,10 @@ public final class RedisMQ<T> implements MQ<T> {
 							}
 						}
 
-						if (!find) {
-							Thread.sleep(100L);
+						if (sleepTime > 0) {
+							Thread.sleep(sleepTime);
 						}
-						find = false;
+						sleepTime = Math.min(5000L, sleepTime + 100);
 					}
 				} catch (InterruptedException e) {
 				}
