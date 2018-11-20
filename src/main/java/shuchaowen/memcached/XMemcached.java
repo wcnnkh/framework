@@ -306,4 +306,8 @@ public class XMemcached implements Memcached{
 			throw new shuchaowen.memcached.MemcachedException(e);
 		}
 	}
+	
+	public void destroy() throws IOException{
+		memcachedClient.shutdown();
+	}
 }

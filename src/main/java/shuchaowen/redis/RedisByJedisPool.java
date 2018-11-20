@@ -757,4 +757,8 @@ public class RedisByJedisPool implements Redis {
 			}
 		}
 	}
+	
+	public void destroy(){
+		jedisPool.close();
+	}
 }

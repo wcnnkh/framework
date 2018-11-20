@@ -129,6 +129,10 @@ public final class CacheStorage implements Storage {
 		}
 	}
 
+	public void destroy(){
+		mq.destroy();
+	}
+
 	protected CacheConfig getCacheConfig(Class<?> tableClass) {
 		CacheConfig cacheInfo = cacheConfigMap.get(ClassUtils.getCGLIBRealClassName(tableClass));
 		return cacheInfo == null ? DEFAULT_CACHE_CONFIG : cacheInfo;
