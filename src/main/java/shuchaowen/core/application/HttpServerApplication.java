@@ -185,7 +185,10 @@ public class HttpServerApplication extends CommonApplication {
 			charset = Charset.forName(StringUtils.isNull(charsetName)? "UTF-8":charsetName);
 		}
 		
-		this.rpcSignStr = httpServerConfigFactory.getConfig(RPC_SIGN);
+		if(StringUtils.isNull(rpcSignStr)){
+			this.rpcSignStr = httpServerConfigFactory.getConfig(RPC_SIGN);
+		}
+		
 		if(!StringUtils.isNull(rpcSignStr)){
 			rpcEnabled = true;
 		}
