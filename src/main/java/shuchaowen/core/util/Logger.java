@@ -1,12 +1,14 @@
 package shuchaowen.core.util;
 
-import shuchaowen.core.logger.AbstractLogger;
 import shuchaowen.core.logger.Level;
 import shuchaowen.core.logger.LogMsg;
 import shuchaowen.core.logger.LoggerProcess;
 
 public final class Logger {
-	private static final AbstractLogger logger = new AsyncLogger();
+	private static final AsyncLogger logger = new AsyncLogger();
+	static{
+		logger.start();
+	}
 	
 	private Logger(){};
 	
@@ -52,6 +54,10 @@ public final class Logger {
 
 	public static void debug(String tag, String msg, Throwable e) {
 		logger.log(new TagLogMsg(Level.DEBUG, tag, msg, e));
+	}
+	
+	public static void shutdown(){
+		logger.shutdown();
 	}
 }
 

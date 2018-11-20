@@ -5,12 +5,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class LoggerProcess implements AbstractLogger,Runnable{
 	private BlockingQueue<LogMsg> handlerQueue = new LinkedBlockingQueue<LogMsg>();
+	private Thread thread;
 	
 	public LoggerProcess() {
 		System.out.println("Init shuchaowen-logger [" + this.getClass().getName() + "]");
-		Thread thread = new Thread(this, "shuchaowen-logger");
-		thread.setDaemon(true);
-		thread.start();
+		thread = new Thread(this, "shuchaowen-logger");
 	}
 	
 	public void run(){
@@ -25,6 +24,14 @@ public abstract class LoggerProcess implements AbstractLogger,Runnable{
 			}
 		} catch (InterruptedException e) {
 		}
+	}
+	
+	public void start(){
+		thread.start();
+	}
+	
+	public void shutdown(){
+		thread.interrupt();
 	}
 	
 	public void log(LogMsg msg){

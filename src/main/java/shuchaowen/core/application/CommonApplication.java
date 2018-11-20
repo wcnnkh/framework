@@ -8,6 +8,7 @@ import shuchaowen.core.beans.MultipleBeanFactory;
 import shuchaowen.core.beans.xml.XmlBeanFactory;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
+import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.StringUtils;
 
 public class CommonApplication implements Application {
@@ -86,5 +87,6 @@ public class CommonApplication implements Application {
 				throw new ShuChaoWenRuntimeException(e);
 			}
 		}
+		Logger.shutdown();
 	}
 }
