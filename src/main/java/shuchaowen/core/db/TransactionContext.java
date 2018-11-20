@@ -8,7 +8,6 @@ import java.util.Map;
 import shuchaowen.core.Context;
 import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.transaction.AbstractTransaction;
 import shuchaowen.core.transaction.CombinationTransaction;
 import shuchaowen.core.transaction.SQLTransaction;
@@ -22,7 +21,6 @@ import shuchaowen.core.util.Logger;
  * @author shuchaowen
  */
 public final class TransactionContext extends Context<ThreadLocalTransaction> {
-	private boolean cacheEnable;
 	private boolean debug = false;
 
 	/**
@@ -40,12 +38,11 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 	}
 
 	public TransactionContext() {
-		this(false, true);
+		this(false);
 	}
 
-	public TransactionContext(boolean debug, boolean cacheEnable) {
+	public TransactionContext(boolean debug) {
 		this.debug = debug;
-		this.cacheEnable = cacheEnable;
 	}
 
 	/**
@@ -76,7 +73,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 		}
 
 		ThreadLocalTransaction threadLocalTransaction = getValue();
-		if (threadLocalTransaction == null || threadLocalTransaction.isAutoCommit()) {// 如果未使用事务
+		if (threadLocalTransaction == null) {// 如果未使用事务
 			AbstractTransaction.transaction(transaction);
 		} else {
 			threadLocalTransaction.addTransaction(transaction);
@@ -105,7 +102,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 		}
 
 		ThreadLocalTransaction localDBTransaction = getValue();
-		if (localDBTransaction == null || localDBTransaction.isAutoCommit()) {// 如果未使用事务
+		if (localDBTransaction == null) {// 如果未使用事务
 			SQLTransaction sqlTransaction = new SQLTransaction(db);
 			for (SQL sql : sqls) {
 				sqlTransaction.addSql(sql);
@@ -127,7 +124,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 		}
 
 		ThreadLocalTransaction threadLocalTransaction = getValue();
-		if (threadLocalTransaction == null || threadLocalTransaction.isAutoCommit()) {// 如果未使用事务
+		if (threadLocalTransaction == null) {// 如果未使用事务
 			TransactionCollection transactionCollection = new TransactionCollection(2);
 			if (db != null && sqls != null && !sqls.isEmpty()) {
 				SQLTransaction sqlTransaction = new SQLTransaction(db);
@@ -151,33 +148,15 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 		}
 	}
 
-	public boolean isCacheEnable() {
-		return cacheEnable;
-	}
-
-	/**
-	 * 是否在同一个事务内开启查询缓存
-	 * 
-	 * @param cacheEnable
-	 */
-	public void setCacheEnable(boolean cacheEnable) {
-		this.cacheEnable = cacheEnable;
-	}
-
 	public ResultSet select(ConnectionPool db, SQL sql) {
-		if (debug) {
-			Logger.debug("SQL", DBUtils.getSQLId(sql));
-		}
-
-		if (cacheEnable) {
-			ThreadLocalTransaction threadLocalTransaction = getValue();
-			if (threadLocalTransaction == null || threadLocalTransaction.isAutoCommit()) {// 如果未使用事务
-				return DBUtils.select(db, sql);
-			} else {
-				return threadLocalTransaction.select(db, sql);
+		ThreadLocalTransaction threadLocalTransaction = getValue();
+		if (threadLocalTransaction == null) {// 如果未使用事务
+			if (debug) {
+				Logger.debug("SQL", DBUtils.getSQLId(sql));
 			}
-		} else {
 			return DBUtils.select(db, sql);
+		} else {
+			return threadLocalTransaction.select(db, sql);
 		}
 	}
 
@@ -189,114 +168,102 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 		this.debug = debug;
 	}
 
-	public void setAutoCommit(boolean autoCommit) {
-		ThreadLocalTransaction threadLocalTransaction = getValue();
-		if (threadLocalTransaction == null) {
-			throw new ShuChaoWenRuntimeException("请先开启当前线程的事务");
-		}
-		threadLocalTransaction.setAutoCommit(autoCommit);
-	}
-
 	@Override
 	protected void firstBegin() {
 		ThreadLocalTransaction threadLocalTransaction = getValue();
 		if (threadLocalTransaction == null) {
-			threadLocalTransaction = new ThreadLocalTransaction();
+			threadLocalTransaction = new ThreadLocalTransaction(debug);
 			setValue(threadLocalTransaction);
 		}
-		threadLocalTransaction.beginTransaction();
 	}
 
 	@Override
 	protected void lastCommit() {
 		ThreadLocalTransaction threadLocalTransaction = getValue();
 		if (threadLocalTransaction != null) {
-			try {
-				threadLocalTransaction.commitTransaction();
-			} catch (Exception e) {
-				throw new ShuChaoWenRuntimeException(e);
-			}
+			threadLocalTransaction.execute();
 		}
 	}
 }
 
 final class ThreadLocalTransaction extends AbstractTransaction {
-	private CombinationTransaction combinationTransaction = new CombinationTransaction();
-	private Map<ConnectionPool, Map<String, ResultSet>> cacheMap = new HashMap<ConnectionPool, Map<String, ResultSet>>();
-	private boolean autoCommit = true;// 是否是自动提交
+	private CombinationTransaction combinationTransaction;
+	private Map<ConnectionPool, Map<String, ResultSet>> cacheMap;
+	private final boolean debug;
 
-	public boolean isAutoCommit() {
-		return autoCommit;
-	}
-
-	public void setAutoCommit(boolean autoCommit) {
-		this.autoCommit = autoCommit;
+	public ThreadLocalTransaction(boolean debug) {
+		this.debug = debug;
 	}
 
 	void addTransaction(Transaction collection) {
+		if(combinationTransaction == null){
+			combinationTransaction = new CombinationTransaction();
+		}
 		combinationTransaction.addTransaction(collection);
 	}
-
-	void beginTransaction() {
-		if (autoCommit) {// 如果原来是自动提交，现在改为手动提交，为了防止脏数据应该先清除一遍
-			reset();
-			autoCommit = false;
+	
+	private ResultSet realSelect(ConnectionPool db, SQL sql){
+		if (debug) {
+			Logger.debug("SQL", DBUtils.getSQLId(sql));
 		}
-	}
-
-	void commitTransaction(){
-		// 应该要提交事务了了
-		try {
-			execute();
-		} finally {
-			autoCommit = true;
-			reset();
-		}
+		return DBUtils.select(db, sql);
 	}
 
 	ResultSet select(ConnectionPool db, SQL sql) {
-		if (autoCommit) {
-			return DBUtils.select(db, sql);
-		} else {
-			ResultSet resultSet = null;
-			String id = DBUtils.getSQLId(sql);
+		ResultSet resultSet;
+		String id = DBUtils.getSQLId(sql);
+		if(cacheMap == null){
+			cacheMap = new HashMap<ConnectionPool, Map<String,ResultSet>>(2, 1);
+			resultSet = realSelect(db, sql);
+			Map<String, ResultSet> map = new HashMap<String, ResultSet>();
+			map.put(id, resultSet);
+			cacheMap.put(db, map);
+		}else{
 			Map<String, ResultSet> map = cacheMap.getOrDefault(id, new HashMap<String, ResultSet>());
-			if (map.containsKey(id)) {
-				return map.get(id);
-			} else {
-				resultSet = DBUtils.select(db, sql);
+			if(map == null){
+				resultSet = realSelect(db, sql);
+				map = new HashMap<String, ResultSet>();
 				map.put(id, resultSet);
 				cacheMap.put(db, map);
-				return resultSet;
+			} else if (map.containsKey(id)) {
+				resultSet = map.get(id);
+			} else {
+				resultSet = realSelect(db, sql);
+				map.put(id, resultSet);
+				cacheMap.put(db, map);
 			}
 		}
-	}
-
-	/**
-	 * 重置
-	 */
-	private void reset() {
-		cacheMap.clear();
-		combinationTransaction.clear();
+		return resultSet;
 	}
 
 	void addSql(ConnectionPool db, Collection<SQL> sqls) {
+		if(combinationTransaction == null){
+			combinationTransaction = new CombinationTransaction();
+		}
 		combinationTransaction.addSql(db, sqls);
 	}
 
 	public void begin() throws Exception {
-		combinationTransaction.begin();
+		if(combinationTransaction != null){
+			combinationTransaction.begin();
+		}
 	}
 
 	public void process() throws Exception {
-		combinationTransaction.process();
+		if(combinationTransaction != null){
+			combinationTransaction.process();
+		}
 	}
 
 	public void end() throws Exception {
-		combinationTransaction.end();
+		if(combinationTransaction != null){
+			combinationTransaction.end();
+		}
 	}
 
 	public void rollback() throws Exception {
-		combinationTransaction.rollback();
+		if(combinationTransaction != null){
+			combinationTransaction.rollback();
+		}
 	}
 }

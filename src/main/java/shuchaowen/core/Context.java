@@ -19,10 +19,6 @@ public abstract class Context<T> {
 		return contextInfo;
 	}
 	
-	public boolean isBegin(){
-		return getContextInfo().getCount() > 0;
-	}
-	
 	protected T getValue(){
 		return getContextInfo().getValue();
 	}
@@ -55,12 +51,12 @@ public abstract class Context<T> {
 		
 		contextInfo.decrCount();
 		if(contextInfo.getCount() == 0){//真实提交
-			lastCommit();
+			try {
+				lastCommit();
+			} finally{
+				context.remove();//结束后清理内存
+			}
 		}
-	}
-	
-	public void destroy(){
-		context.remove();
 	}
 	
 	/**

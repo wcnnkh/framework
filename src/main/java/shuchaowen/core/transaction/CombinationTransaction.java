@@ -13,8 +13,8 @@ import shuchaowen.core.db.sql.SQL;
  *
  */
 public final class CombinationTransaction implements Transaction{
-	private HashMap<ConnectionPool, SQLTransaction> dbSqlMap = new HashMap<ConnectionPool, SQLTransaction>();
-	private TransactionCollection transactionCollection = new TransactionCollection();
+	private HashMap<ConnectionPool, SQLTransaction> dbSqlMap = new HashMap<ConnectionPool, SQLTransaction>(2, 1);
+	private TransactionCollection transactionCollection = new TransactionCollection(4);
 
 	public void addSql(ConnectionPool db, Collection<SQL> sqls) {
 		if (sqls == null || db == null) {

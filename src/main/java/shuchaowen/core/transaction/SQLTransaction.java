@@ -13,7 +13,7 @@ import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.util.XUtils;
 
 public final class SQLTransaction extends AbstractTransaction {
-	private Map<String, SQL> sqlMap = new HashMap<String, SQL>();
+	private Map<String, SQL> sqlMap = new HashMap<String, SQL>(4, 1);
 	private Connection connection;
 	private ConnectionPool connectionPool;
 	private PreparedStatement[] preparedStatements;
