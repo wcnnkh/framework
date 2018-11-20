@@ -22,8 +22,7 @@ public final class MemcachedMQ<T> implements MQ<T> {
 	public MemcachedMQ(final Memcached memcached, final String queueKey) {
 		this.memcached = memcached;
 		this.queueKey = queueKey;
-		memcached.add(queueKey + WRITE_INDEX_KEY, 0 + "");
-
+		
 		thread = new Thread(new Runnable() {
 
 			public void run() {
@@ -39,12 +38,12 @@ public final class MemcachedMQ<T> implements MQ<T> {
 						if (memcachedLock.lock()) {
 							try {
 								Long readIndex = memcached.get(queueKey + READ_KEY);
-								if(readIndex == null){
-									readIndex = 0L;
-								}
-								
 								if (checkCanRead(readIndex)) {
-									readIndex ++;
+									if(readIndex == null){
+										readIndex = 0L;
+									}else{
+										readIndex ++;
+									}
 									T message = memcached.get(queueKey + readIndex);
 									if(message == null){
 										memcached.set(queueKey + READ_KEY, readIndex);
@@ -76,10 +75,14 @@ public final class MemcachedMQ<T> implements MQ<T> {
 		}, queueKey);
 	}
 
-	private boolean checkCanRead(long readIndex) {
+	private boolean checkCanRead(Long readIndex) {
 		Long writeIndex = memcached.get(queueKey + WRITE_KEY);
 		if (writeIndex == null) {
 			return false;
+		}
+		
+		if(readIndex == null){
+			return true;
 		}
 		
 		if (writeIndex < 0) {
