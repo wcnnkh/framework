@@ -6,7 +6,6 @@ import shuchaowen.core.transaction.exception.TransactionProcessException;
 import shuchaowen.core.transaction.exception.TransactionRollbackException;
 
 public abstract class AbstractTransaction implements Transaction{
-	
 	public void execute() {
 		transaction(this);
 	}

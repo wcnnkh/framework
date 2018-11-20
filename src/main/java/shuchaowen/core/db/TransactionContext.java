@@ -170,11 +170,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 
 	@Override
 	protected void firstBegin() {
-		ThreadLocalTransaction threadLocalTransaction = getValue();
-		if (threadLocalTransaction == null) {
-			threadLocalTransaction = new ThreadLocalTransaction(debug);
-			setValue(threadLocalTransaction);
-		}
+		setValue(new ThreadLocalTransaction(debug));
 	}
 
 	@Override

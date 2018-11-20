@@ -20,7 +20,8 @@ public abstract class Context<T> {
 	}
 	
 	protected T getValue(){
-		return getContextInfo().getValue();
+		ContextInfo<T> contextInfo = context.get();
+		return contextInfo == null? null:contextInfo.getValue();
 	}
 	
 	protected void setValue(T value){
