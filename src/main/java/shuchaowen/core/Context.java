@@ -30,6 +30,14 @@ public abstract class Context<T> {
 	
 	/**
 	 * 开始
+	 *使用方法
+	 *begin
+	 *try{
+	 *
+	 *}finally{
+	 *	end
+	 *}
+	 * 
 	 */
 	public void begin(){
 		ContextInfo<T> contextInfo = getContextInfo();
