@@ -59,6 +59,10 @@ public abstract class Context<T> {
 		}
 	}
 	
+	public void destroy(){
+		context.remove();
+	}
+	
 	/**
 	 * 在第一次开始的时候应该执行的内容
 	 */

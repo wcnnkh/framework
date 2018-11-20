@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
+import shuchaowen.core.db.TransactionContext;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.http.rpc.Message;
 import shuchaowen.core.http.rpc.serialization.JavaObjectSerializer;
@@ -226,5 +227,11 @@ public class HttpServerApplication extends CommonApplication {
 
 	public HttpServerConfigFactory getHttpServerConfigFactory() {
 		return httpServerConfigFactory;
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+		TransactionContext.getInstance().destroy();
 	}
 }

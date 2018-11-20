@@ -81,8 +81,8 @@ public class DispatcherServlet extends HttpServlet {
 	
 	@Override
 	public void destroy() {
-		httpServerApplication.destroy();
 		super.destroy();
+		httpServerApplication.destroy();
 	}
 	
 	public final String getConfig(String key) {
