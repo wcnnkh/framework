@@ -107,6 +107,10 @@ public class HttpServerApplication extends CommonApplication {
 	 * @param message
 	 */
 	public boolean rpcAuthorize(Message message) {
+		if(isRpcEnabled()){
+			throw new ShuChaoWenRuntimeException("RPC not opened");
+		}
+		
 		if(StringUtils.isNull(rpcSignStr)){//不校验签名
 			Logger.warn("RPC", "Signature verification not opened(未开启签名验证)");
 			return true;
