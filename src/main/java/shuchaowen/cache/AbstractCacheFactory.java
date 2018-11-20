@@ -14,7 +14,7 @@ public abstract class AbstractCacheFactory implements CacheFactory{
 		this.lock = lock;
 	}
 	
-	public <T> void register(String key, Class<T> type, Callable<T> callable) {
+	public synchronized <T> void register(String key, Class<T> type, Callable<T> callable) {
 		callableMap.put(key, new CallableInfo<T>(type, callable));
 	}
 	
