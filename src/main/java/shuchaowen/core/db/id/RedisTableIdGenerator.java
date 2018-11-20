@@ -9,20 +9,26 @@ public class RedisTableIdGenerator implements IdGenerator<Long>{
 	private final Class<?> tableClass;
 	private final String fieldName;
 	private volatile RedisIdGernerator idGenerator;
+	private final String key;
 	
 	public RedisTableIdGenerator(Redis redis, Class<?> tableClass, String fieldName){
 		this.redis = redis;
 		this.tableClass = tableClass;
 		this.fieldName = fieldName;
+		this.key = "IdGenerator_" + tableClass.getName() + "_" +fieldName;
+	}
+	
+	private boolean isInit(){
+		return idGenerator != null && redis.exists(key);
 	}
 	
 	public Long next() {
-		if(idGenerator == null){
+		if(!isInit()){
 			synchronized (this) {
-				if(idGenerator == null){
+				if(!isInit()){
 					Long maxId = DBManager.getDB(tableClass).getMaxLongValue(tableClass, fieldName);
 					maxId = maxId == null? 0:maxId;
-					idGenerator = new RedisIdGernerator(redis, "IdGenerator#" + tableClass.getName(), maxId);
+					idGenerator = new RedisIdGernerator(redis, key, maxId);
 				}
 			}
 		}

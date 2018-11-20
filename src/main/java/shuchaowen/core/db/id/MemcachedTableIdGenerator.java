@@ -9,21 +9,26 @@ public class MemcachedTableIdGenerator implements IdGenerator<Long>{
 	private final Class<?> tableClass;
 	private final String fieldName;
 	private volatile MemcachedIdGenerator idGenerator;
+	private final String key;
 	
 	public MemcachedTableIdGenerator(Class<?> tableClass, Memcached memcached, String fieldName){
 		this.memcached = memcached;
 		this.fieldName = fieldName;
 		this.tableClass = tableClass;
+		this.key = "IdGenerator_" + tableClass.getName() + "_" +fieldName;
 	}
 	
+	private boolean isInit(){
+		return idGenerator != null && memcached.get(key) != null;
+	}
 	
 	public Long next() {
-		if(idGenerator == null){
+		if(!isInit()){
 			synchronized (this) {
-				if(idGenerator == null){
+				if(!isInit()){
 					Long maxId = DBManager.getDB(tableClass).getMaxLongValue(tableClass, fieldName);
 					maxId = maxId == null? 0:maxId;
-					idGenerator = new MemcachedIdGenerator(memcached, "IdGenerator_" + tableClass.getName(), maxId);
+					idGenerator = new MemcachedIdGenerator(memcached, key, maxId);
 				}
 			}
 		}
