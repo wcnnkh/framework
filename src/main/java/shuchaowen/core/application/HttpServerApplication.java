@@ -107,7 +107,7 @@ public class HttpServerApplication extends CommonApplication {
 	 * @param message
 	 */
 	public boolean rpcAuthorize(Message message) {
-		if(isRpcEnabled()){
+		if(!isRpcEnabled()){
 			throw new ShuChaoWenRuntimeException("RPC not opened");
 		}
 		
