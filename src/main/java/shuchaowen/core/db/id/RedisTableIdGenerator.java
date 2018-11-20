@@ -10,16 +10,35 @@ public class RedisTableIdGenerator implements IdGenerator<Long>{
 	private final String fieldName;
 	private volatile RedisIdGernerator idGenerator;
 	private final String key;
+	private final boolean checkKey;
 	
 	public RedisTableIdGenerator(Redis redis, Class<?> tableClass, String fieldName){
+		this(redis, tableClass, fieldName, true);
+	}
+	
+	/**
+	 * @param redis
+	 * @param tableClass
+	 * @param fieldName
+	 * @param checkKey 是否每次都检查key是否存在
+	 */
+	public RedisTableIdGenerator(Redis redis, Class<?> tableClass, String fieldName, boolean checkKey){
 		this.redis = redis;
 		this.tableClass = tableClass;
 		this.fieldName = fieldName;
 		this.key = "IdGenerator_" + tableClass.getName() + "_" +fieldName;
+		this.checkKey = checkKey;
 	}
 	
 	private boolean isInit(){
-		return idGenerator != null && redis.exists(key);
+		if(idGenerator == null){
+			return false;
+		}
+		
+		if(checkKey){
+			return redis.exists(key);
+		}
+		return true;
 	}
 	
 	public Long next() {
