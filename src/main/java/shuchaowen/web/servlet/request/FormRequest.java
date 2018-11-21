@@ -2,7 +2,6 @@ package shuchaowen.web.servlet.request;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,9 +10,6 @@ import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.http.server.search.PathSearchAction;
-import shuchaowen.core.util.ClassInfo;
-import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.Logger;
 import shuchaowen.web.servlet.WebRequest;
 
@@ -160,53 +156,6 @@ public class FormRequest extends WebRequest {
 		}
 
 		return Double.parseDouble(formatNumberText(v));
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getObject(Class<T> type, String key) throws Throwable{
-		Object obj = type.newInstance();
-		if (obj == null) {
-			return null;
-		}
-		wrapperObject(obj, null, type);
-		return (T) obj;
-	}
-	
-	private void wrapperObject(Object superObj, String fieldName, Class<?> type) throws Throwable{
-		ClassInfo classInfo = ClassUtils.getClassInfo(type);
-		String prefixKey = fieldName == null? null: (fieldName + ".");
-		for (Entry<String, FieldInfo> entry : classInfo.getFieldMap().entrySet()) {
-			String key = prefixKey == null? entry.getKey(): (prefixKey + entry.getKey());
-			String v = getValue(key);
-			if (v != null) {
-				if(String.class.isAssignableFrom(entry.getValue().getType()) || ClassUtils.isBasicType(entry.getValue().getType())){
-					entry.getValue().set(superObj, getParameter(entry.getValue().getType(), key));
-				}else{
-					Object o = entry.getValue().getType().newInstance();
-					wrapperObject(o, key, entry.getValue().getType());
-					entry.getValue().set(superObj, o);
-				}
-			}
-		}
-	}
-
-	/**
-	 * 可以解决1,234这种问题
-	 * 
-	 * @param text
-	 * @return
-	 */
-	private String formatNumberText(final String text) {
-		if (text == null) {
-			return text;
-		}
-
-		if (text.indexOf(",") != -1) {
-			return text.replaceAll(",", "");
-		} else {
-			return text;
-		}
 	}
 
 	@Override
