@@ -7,21 +7,21 @@ import shuchaowen.core.db.annoation.PrimaryKey;
 import shuchaowen.core.db.annoation.Table;
 
 @Table
-public class ChannelAttr implements Serializable{
+public class ContentAttr implements Serializable{
 	private static final long serialVersionUID = 1L;
 	@PrimaryKey
-	private long channelId;
+	private long id;
 	@PrimaryKey
 	private String attr;
 	@Column(length=0, type="text", nullAble=true)
 	private String value;
 	private long modelId;
-
-	public long getChannelId() {
-		return channelId;
+	
+	public long getId() {
+		return id;
 	}
-	public void setChannelId(long channelId) {
-		this.channelId = channelId;
+	public void setId(long id) {
+		this.id = id;
 	}
 	public String getAttr() {
 		return attr;

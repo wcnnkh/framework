@@ -1,10 +1,13 @@
 package shuchaowen.cms.pojo;
 
+import java.io.Serializable;
+
 import shuchaowen.core.db.annoation.PrimaryKey;
 import shuchaowen.core.db.annoation.Table;
 
 @Table
-public class ChannelModelAttr{
+public class ContentModelAttr implements Serializable{
+	private static final long serialVersionUID = 1L;
 	@PrimaryKey
 	private long modelId;
 	@PrimaryKey
