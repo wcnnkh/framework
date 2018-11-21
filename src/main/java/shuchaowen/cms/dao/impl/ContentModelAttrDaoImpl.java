@@ -4,8 +4,10 @@ import java.util.List;
 
 import shuchaowen.cms.dao.ContentModelAttrDao;
 import shuchaowen.cms.pojo.ContentModelAttr;
+import shuchaowen.core.beans.annotaion.Service;
 import shuchaowen.core.db.DBManager;
 
+@Service
 public class ContentModelAttrDaoImpl implements ContentModelAttrDao{
 
 	public ContentModelAttr getContentModelAttr(long modelId, String attr) {
