@@ -18,8 +18,8 @@ import shuchaowen.core.util.Logger;
 
 public class BeanMethodInterceptor implements MethodInterceptor, BeanFieldListen {
 	private static final long serialVersionUID = 1L;
-	private transient Map<String, Object> changeColumnMap;
-	private transient boolean startListen = false;
+	private Map<String, Object> changeColumnMap;
+	private boolean startListen = false;
 	private transient ClassInfo classInfo;
 	private boolean isBeanListen;
 	private List<BeanFilter> beanFilters;

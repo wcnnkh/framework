@@ -7,8 +7,8 @@ import shuchaowen.core.util.FieldInfo;
 
 public class BeanFieldListenImpl implements BeanFieldListen{
 	private static final long serialVersionUID = 1L;
-	private transient Map<String, Object> changeColumnMap;
-	private transient boolean startListen = false;
+	private Map<String, Object> changeColumnMap;
+	private boolean startListen = false;
 	
 	public Map<String, Object> get_field_change_map() {
 		return changeColumnMap;
