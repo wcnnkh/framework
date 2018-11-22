@@ -18,12 +18,14 @@ public class ContentModelAttrDaoImpl implements ContentModelAttrDao{
 		return DBManager.getByIdList(ContentModelAttr.class, modelId);
 	}
 
-	public ContentModelAttr saveOrUpdate(long modelId, String attr, String attrName, int weight) {
+	public ContentModelAttr saveOrUpdate(long modelId, String attr, String attrName, String defaultValue, int attrType, int weight) {
 		ContentModelAttr contentModelAttr = new ContentModelAttr();
 		contentModelAttr.setModelId(modelId);
 		contentModelAttr.setAttr(attr);
 		contentModelAttr.setAttrName(attrName);
 		contentModelAttr.setWeight(weight);
+		contentModelAttr.setDefaultValue(defaultValue);
+		contentModelAttr.setAttrType(attrType);
 		DBManager.saveOrUpdate(contentModelAttr);
 		return contentModelAttr;
 	}

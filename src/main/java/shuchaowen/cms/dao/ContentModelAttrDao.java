@@ -9,5 +9,5 @@ public interface ContentModelAttrDao {
 	
 	List<ContentModelAttr> getContentModelAttrList(long modelId);
 	
-	ContentModelAttr saveOrUpdate(long modelId, String attr, String attrName, int weight);
+	ContentModelAttr saveOrUpdate(long modelId, String attr, String attrName, String defaultValue, int attType, int weight);
 }

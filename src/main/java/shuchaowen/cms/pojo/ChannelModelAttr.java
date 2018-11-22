@@ -1,15 +1,22 @@
 package shuchaowen.cms.pojo;
 
+import java.io.Serializable;
+
+import shuchaowen.core.db.annoation.Column;
 import shuchaowen.core.db.annoation.PrimaryKey;
 import shuchaowen.core.db.annoation.Table;
 
 @Table
-public class ChannelModelAttr{
+public class ChannelModelAttr implements Serializable{
+	private static final long serialVersionUID = 1L;
 	@PrimaryKey
 	private long modelId;
 	@PrimaryKey
 	private String attr;
 	private String attrName;
+	@Column(length=0, type="text", nullAble=true)
+	private String defaultValue;
+	private int attrType;//类型
 	private int weight;
 	
 	public long getModelId() {
@@ -35,5 +42,17 @@ public class ChannelModelAttr{
 	}
 	public void setWeight(int weight) {
 		this.weight = weight;
+	}
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+	public int getAttrType() {
+		return attrType;
+	}
+	public void setAttrType(int attrType) {
+		this.attrType = attrType;
 	}
 }

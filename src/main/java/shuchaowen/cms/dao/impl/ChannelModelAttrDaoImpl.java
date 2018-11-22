@@ -18,12 +18,14 @@ public class ChannelModelAttrDaoImpl implements ChannelModelAttrDao{
 		return DBManager.getByIdList(ChannelModelAttr.class, modelId);
 	}
 
-	public ChannelModelAttr saveOrUpdate(long modelId, String attr, String attrName, int weight) {
+	public ChannelModelAttr saveOrUpdate(long modelId, String attr, String attrName, String defaultValue, int attrType, int weight) {
 		ChannelModelAttr channelModelAttr = new ChannelModelAttr();
 		channelModelAttr.setModelId(modelId);
 		channelModelAttr.setAttr(attr);
 		channelModelAttr.setAttrName(attrName);
 		channelModelAttr.setWeight(weight);
+		channelModelAttr.setDefaultValue(defaultValue);
+		channelModelAttr.setAttrType(attrType);
 		DBManager.saveOrUpdate(channelModelAttr);
 		return channelModelAttr;
 	}

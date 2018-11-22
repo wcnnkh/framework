@@ -9,5 +9,5 @@ public interface ChannelModelAttrDao {
 	
 	List<ChannelModelAttr> getChannelModeAttrList(long modelId);
 	
-	ChannelModelAttr saveOrUpdate(long modelId, String attr, String attrName, int weight);
+	ChannelModelAttr saveOrUpdate(long modelId, String attr, String attrName, String defaultValue, int attrType, int weight);
 }
