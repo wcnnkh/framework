@@ -186,11 +186,6 @@ public final class ClassInfo {
 		return createEnhancer(null, null).create();
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(Class<T> type){
-		return (T) ClassUtils.getClassInfo(type).newFieldListenInstance();
-	}
-	
 	public Class<?> getFieldListenProxyClass(){
 		Enhancer enhancer = new Enhancer();
 		if(!BeanFieldListen.class.isAssignableFrom(clz)){

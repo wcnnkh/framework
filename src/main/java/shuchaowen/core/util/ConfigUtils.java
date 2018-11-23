@@ -22,8 +22,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-
 public final class ConfigUtils {
 	private static final String WEB_ROOT = "web.root";
 	private static final String CLASSPATH = "classpath";
@@ -271,25 +269,6 @@ public final class ConfigUtils {
 
 	public static Properties getProperties(String filePath, String charsetName) {
 		return getProperties(getFile(filePath), charsetName);
-	}
-
-	public static <T> T wrapperProerties(Class<T> type, Properties properties) {
-		ClassInfo classInfo = ClassUtils.getClassInfo(type);
-		try {
-			T obj = ClassUtils.newInstance(type);
-			for (Object key : properties.keySet()) {
-				FieldInfo fieldInfo = classInfo.getFieldMap().get(key.toString());
-				if (fieldInfo == null) {
-					continue;
-				}
-
-				String value = ConfigUtils.format(properties.getProperty(key.toString()));
-				fieldInfo.set(obj, StringUtils.conversion(value, fieldInfo.getType()));
-			}
-			return obj;
-		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
-		}
 	}
 
 	public static List<String> getFileContentLineList(String filePath, String charsetName) {
