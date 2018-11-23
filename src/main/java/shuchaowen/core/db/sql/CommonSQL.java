@@ -19,7 +19,7 @@ public class CommonSQL implements SQL{
 		}
 	}
 	
-	public CommonSQL before(String str){
+	public CommonSQL before(Object str){
 		if(sb == null){
 			sb = new StringBuilder();
 		}
@@ -30,11 +30,15 @@ public class CommonSQL implements SQL{
 		return this;
 	}
 	
-	public CommonSQL append(String str){
+	public int length(){
+		return sb == null? 0:sb.length();
+	}
+	
+	public CommonSQL append(Object str){
 		return after(str);
 	}
 	
-	public CommonSQL after(String str){
+	public CommonSQL after(Object str){
 		if(sb == null){
 			sb = new StringBuilder();
 		}

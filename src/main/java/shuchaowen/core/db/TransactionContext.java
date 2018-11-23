@@ -21,7 +21,7 @@ import shuchaowen.core.util.Logger;
  * @author shuchaowen
  */
 public final class TransactionContext extends Context<ThreadLocalTransaction> {
-	private boolean debug = false;
+	private volatile boolean debug = false;
 
 	/**
 	 * 理论上一个应用程序只要一个事务管理器
@@ -53,7 +53,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 			throw new NullPointerException();
 		}
 
-		if (debug) {
+		if (isDebug()) {
 			for (SQL s : sqls) {
 				Logger.debug("SQL", DBUtils.getSQLId(s));
 			}
@@ -95,14 +95,14 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 			return;
 		}
 
-		if (debug) {
-			for (SQL s : sqls) {
-				Logger.debug("SQL", DBUtils.getSQLId(s));
-			}
-		}
-
 		ThreadLocalTransaction localDBTransaction = getValue();
 		if (localDBTransaction == null) {// 如果未使用事务
+			if (debug) {
+				for (SQL s : sqls) {
+					Logger.debug("SQL", DBUtils.getSQLId(s));
+				}
+			}
+			
 			SQLTransaction sqlTransaction = new SQLTransaction(db);
 			for (SQL sql : sqls) {
 				sqlTransaction.addSql(sql);
@@ -110,21 +110,27 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 
 			sqlTransaction.execute();
 		} else {
-			localDBTransaction.addSql(db, sqls);
-		}
-	}
-
-	public void execute(ConnectionPool db, Collection<SQL> sqls, Transaction transaction) {
-		if (debug) {
-			if (sqls != null) {
+			if (localDBTransaction.isDebug()) {
 				for (SQL s : sqls) {
 					Logger.debug("SQL", DBUtils.getSQLId(s));
 				}
 			}
+			
+			localDBTransaction.addSql(db, sqls);
 		}
-
+	}
+	
+	public void execute(ConnectionPool db, Collection<SQL> sqls, Transaction transaction) {
 		ThreadLocalTransaction threadLocalTransaction = getValue();
 		if (threadLocalTransaction == null) {// 如果未使用事务
+			if (debug) {
+				if (sqls != null) {
+					for (SQL s : sqls) {
+						Logger.debug("SQL", DBUtils.getSQLId(s));
+					}
+				}
+			}
+			
 			TransactionCollection transactionCollection = new TransactionCollection(2);
 			if (db != null && sqls != null && !sqls.isEmpty()) {
 				SQLTransaction sqlTransaction = new SQLTransaction(db);
@@ -141,6 +147,14 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 
 			AbstractTransaction.transaction(transactionCollection);
 		} else {
+			if (threadLocalTransaction.isDebug()) {
+				if (sqls != null) {
+					for (SQL s : sqls) {
+						Logger.debug("SQL", DBUtils.getSQLId(s));
+					}
+				}
+			}
+			
 			threadLocalTransaction.addSql(db, sqls);
 			if (transaction != null) {
 				threadLocalTransaction.addTransaction(transaction);
@@ -159,18 +173,35 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 			return threadLocalTransaction.select(db, sql);
 		}
 	}
-
-	public boolean isDebug() {
-		return debug;
+	
+	public boolean isDebug(){
+		ThreadLocalTransaction threadLocalTransaction = getValue();
+		return threadLocalTransaction == null? debug:threadLocalTransaction.isDebug();
 	}
 
 	public void setDebug(boolean debug) {
+		ThreadLocalTransaction threadLocalTransaction = getValue();
+		if(threadLocalTransaction != null){
+			threadLocalTransaction.setDebug(debug);
+		}
+	}
+	
+	/**
+	 * 设置全局的DEBUG状态
+	 * @param debug
+	 */
+	public void setGlobalDebug(boolean debug){
 		this.debug = debug;
 	}
 
 	@Override
 	protected void firstBegin() {
 		setValue(new ThreadLocalTransaction(debug));
+	}
+	
+	@Override
+	public void end() {
+		super.end();
 	}
 
 	@Override
@@ -185,7 +216,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 final class ThreadLocalTransaction extends AbstractTransaction {
 	private CombinationTransaction combinationTransaction;
 	private Map<ConnectionPool, Map<String, ResultSet>> cacheMap;
-	private final boolean debug;
+	private boolean debug;
 
 	public ThreadLocalTransaction(boolean debug) {
 		this.debug = debug;
@@ -203,6 +234,14 @@ final class ThreadLocalTransaction extends AbstractTransaction {
 			Logger.debug("SQL", DBUtils.getSQLId(sql));
 		}
 		return DBUtils.select(db, sql);
+	}
+
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
 	ResultSet select(ConnectionPool db, SQL sql) {
