@@ -31,8 +31,9 @@ import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.StringUtils;
 
 public final class BeanUtils {
-	private BeanUtils(){};
-	
+	private BeanUtils() {
+	};
+
 	/**
 	 * 调用init方法
 	 * 
@@ -110,8 +111,8 @@ public final class BeanUtils {
 	}
 
 	private static void autoWriteStatic(Class<?> clz, BeanFactory beanFactory) throws Exception {
-		ClassInfo classInfo= ClassUtils.getClassInfo(clz);
-		for(Entry<String, FieldInfo> entry : classInfo.getFieldMap().entrySet()){
+		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
+		for (Entry<String, FieldInfo> entry : classInfo.getFieldMap().entrySet()) {
 			FieldInfo field = entry.getValue();
 			if (!Modifier.isStatic(field.getField().getModifiers())) {
 				continue;
@@ -164,8 +165,7 @@ public final class BeanUtils {
 	 * @param beanMethodParameters
 	 * @return
 	 */
-	public static BeanParameter[] sortParameters(Executable executable,
-			List<BeanParameter> beanMethodParameters) {
+	public static BeanParameter[] sortParameters(Executable executable, List<BeanParameter> beanMethodParameters) {
 		if (executable.getParameterCount() != beanMethodParameters.size()) {
 			return null;
 		}
@@ -211,8 +211,8 @@ public final class BeanUtils {
 		return find ? methodParameters : null;
 	}
 
-	public static Object[] getBeanMethodParameterArgs(BeanParameter[] beanParameters,
-			BeanFactory beanFactory, PropertiesFactory propertiesFactory) throws Exception {
+	public static Object[] getBeanMethodParameterArgs(BeanParameter[] beanParameters, BeanFactory beanFactory,
+			PropertiesFactory propertiesFactory) throws Exception {
 		Object[] args = new Object[beanParameters.length];
 		for (int i = 0; i < args.length; i++) {
 			BeanParameter beanParameter = beanParameters[i];
@@ -220,7 +220,7 @@ public final class BeanUtils {
 		}
 		return args;
 	}
-	
+
 	public static boolean isTransaction(Class<?> type, Method method) {
 		boolean isTransaction = false;
 		Controller controller = type.getAnnotation(Controller.class);
@@ -246,7 +246,7 @@ public final class BeanUtils {
 		return isTransaction;
 	}
 
-	public static void setConfig(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) throws Exception {
+	public static void setConfig(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		Config config = field.getField().getAnnotation(Config.class);
 		if (config != null) {
 			if (Modifier.isStatic(field.getField().getModifiers())) {
@@ -255,17 +255,24 @@ public final class BeanUtils {
 			}
 
 			Object value = null;
-				if (field.forceGet(obj) != null) {
-					Logger.warn("@Config",
-							"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
-				}
+			if (field.forceGet(obj) != null) {
+				Logger.warn("@Config",
+						"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
+			}
 
+			try {
 				value = beanFactory.get(config.parse()).parse(beanFactory, field, config.value(), config.charset());
-				field.set(obj, value);
+			} catch (Exception e) {
+				throw new ShuChaoWenRuntimeException(
+						"clz=" + clz.getName() + ",field=" + field.getName() + ",config=" + config.value(), e);
+			}
+
+			field.set(obj, value);
 		}
 	}
 
-	public static void setProperties(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> clz, Object obj, FieldInfo field) {
+	public static void setProperties(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> clz,
+			Object obj, FieldInfo field) {
 		Properties properties = field.getField().getAnnotation(Properties.class);
 		if (properties != null) {
 			if (Modifier.isStatic(field.getField().getModifiers())) {
@@ -288,7 +295,8 @@ public final class BeanUtils {
 		}
 	}
 
-	public static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+	public static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field)
+			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		Autowrite s = field.getField().getAnnotation(Autowrite.class);
 		if (s != null) {
 			if (Modifier.isStatic(field.getField().getModifiers())) {
@@ -301,12 +309,12 @@ public final class BeanUtils {
 				name = field.getType().getName();
 			}
 
-				if (field.forceGet(obj) != null) {
-					Logger.warn("@AutoWrite",
-							"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
-				}
+			if (field.forceGet(obj) != null) {
+				Logger.warn("@AutoWrite",
+						"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
+			}
 
-				field.set(obj, beanFactory.get(name));
+			field.set(obj, beanFactory.get(name));
 		}
 	}
 
@@ -319,12 +327,12 @@ public final class BeanUtils {
 			}
 
 			Object v = beanFactory.get(proxy.value()).getProxy(beanFactory, field.getType());
-				if (field.forceGet(obj) != null) {
-					Logger.warn("@Proxy",
-							"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
-				}
+			if (field.forceGet(obj) != null) {
+				Logger.warn("@Proxy",
+						"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
+			}
 
-				field.set(obj, v);
+			field.set(obj, v);
 		}
 	}
 }
