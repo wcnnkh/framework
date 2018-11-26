@@ -33,7 +33,7 @@ public class WebResponse extends HttpServletResponseWrapper implements Response{
 	public void write(Object obj) throws IOException{
 		if (obj != null) {
 			if (obj instanceof View) {
-				((View) obj).render(this);
+				((View) obj).render(request, this);
 			} else {
 				String content;
 				if((obj instanceof String) || (ClassUtils.isBasicType(obj.getClass()))){

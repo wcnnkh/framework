@@ -1,6 +1,7 @@
 package shuchaowen.web.servlet.request;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import shuchaowen.core.util.StringUtils;
 import shuchaowen.web.servlet.WebRequest;
 
 public class FormRequest extends WebRequest {
+	private static final String GET_DEFAULT_CHARSET_NAME = "ISO-8859-1";
 	private Map<String, String> restUrlValueMap;
 
 	@SuppressWarnings("unchecked")
@@ -38,15 +40,29 @@ public class FormRequest extends WebRequest {
 	}
 
 	protected String getValue(String key) {
+		String v;
 		if (restUrlValueMap == null) {
-			return getParameter(key);
+			v = getParameter(key);
 		} else {
-			String v = restUrlValueMap.get(key);
+			v = restUrlValueMap.get(key);
 			if (v == null) {
 				v = getParameter(key);
 			}
-			return v;
 		}
+		
+		if(!isNull(v) && "GET".equals(getMethod())){
+			v = convertValueCharset(v);
+		}
+		return v;
+	}
+	
+	protected String convertValueCharset(String value){
+		try {
+			return new String(value.getBytes(GET_DEFAULT_CHARSET_NAME), getCharacterEncoding());
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return value;
 	}
 
 	public String getString(String key) {

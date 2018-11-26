@@ -124,7 +124,7 @@ public class Page extends HashMap<String, Object> implements View{
 		this.page = page;
 	}
 
-	public void render(WebResponse response) throws IOException {
+	public void render(WebRequest request, WebResponse response) throws IOException {
 		String realPage = getPage();
 		if(realPage == null || page.length() == 0){
 			realPage = response.getRequest().getServletPath();

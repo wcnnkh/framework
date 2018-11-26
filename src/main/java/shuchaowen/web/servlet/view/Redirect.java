@@ -5,6 +5,7 @@ import java.io.IOException;
 import shuchaowen.core.util.Logger;
 import shuchaowen.web.servlet.WebResponse;
 import shuchaowen.web.servlet.View;
+import shuchaowen.web.servlet.WebRequest;
 
 public class Redirect implements View{
 	private String url;
@@ -13,7 +14,7 @@ public class Redirect implements View{
 		this.url = url;
 	}
 	
-	public void render(WebResponse response
+	public void render(WebRequest request, WebResponse response
 			) throws IOException{
 		if(response.getContentType() == null){
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());

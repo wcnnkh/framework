@@ -26,16 +26,11 @@ public class DispatcherServlet extends HttpServlet {
 	
 	@Override
 	public final void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
-		super.service(req, res);
-	}
-
-	@Override
-	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		if (httpServerApplication.getCharset() != null) {
 			req.setCharacterEncoding(httpServerApplication.getCharset().name());
-			resp.setCharacterEncoding(httpServerApplication.getCharset().name());
+			res.setCharacterEncoding(httpServerApplication.getCharset().name());
 		}
-		super.service(req, resp);
+		super.service(req, res);
 	}
 
 	@Override
@@ -75,6 +70,7 @@ public class DispatcherServlet extends HttpServlet {
 		} catch (Exception e) {
 			throw new ServletException(e);
 		}
+		
 		super.init(servletConfig);
 		httpServerApplication.init();
 	}
@@ -104,12 +100,20 @@ public class DispatcherServlet extends HttpServlet {
 	 */
 	public WebRequest wrapperRequest(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
 		if(httpServletRequest.getContentType() == null || httpServletRequest.getContentType().startsWith(ContentType.FORM.getValue())){
-			return new FormRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, httpServerApplication.isDebug());
+			return formRequestWrapper(httpServletRequest, httpServletResponse);
 		}else if(httpServletRequest.getContentType().startsWith(ContentType.JSON.getValue())){
-			return new JsonRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, httpServerApplication.isDebug());
+			return jsonRequestWrapper(httpServletRequest, httpServletResponse);
 		}else{
-			return new FormRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, httpServerApplication.isDebug());
+			return formRequestWrapper(httpServletRequest, httpServletResponse);
 		} 
+	}
+	
+	protected WebRequest formRequestWrapper(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException{
+		return new FormRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, httpServerApplication.isDebug());
+	}
+	
+	protected WebRequest jsonRequestWrapper(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException{
+		return new JsonRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, httpServerApplication.isDebug());
 	}
 	
 	public void controller(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)

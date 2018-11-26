@@ -28,7 +28,7 @@ public class Jsp extends HashMap<String, Object> implements View{
 		this.page = page;
 	}
 
-	public void render(WebResponse response) throws IOException{
+	public void render(WebRequest request, WebResponse response) throws IOException{
 		if(response.getContentType() == null){
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
 		}
