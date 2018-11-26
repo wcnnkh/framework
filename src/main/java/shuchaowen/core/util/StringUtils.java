@@ -1,7 +1,7 @@
 package shuchaowen.core.util;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -12,7 +12,9 @@ import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 public final class StringUtils {
 	private static final String randomStr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
+	private static final Charset DEFAULT_OLD_CHARSET = Charset.forName("ISO-8859-1");
+	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+	
 	private StringUtils(){};
 	
 	public static boolean isNull(boolean trim, String... str) {
@@ -350,16 +352,16 @@ public final class StringUtils {
 	 * @param charsetName
 	 * @return
 	 */
-	public static String toString(String str, String oldCharsetName, String charsetName) {
+	public static String charsetConvert(String str, Charset oldCharset, Charset charset) {
 		String v = null;
 		if (str != null) {
-			try {
-				v = new String(str.getBytes(oldCharsetName), charsetName);
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+			v = new String(str.getBytes(oldCharset), charset);
 		}
 		return v;
+	}
+	
+	public static String commonCharsetConvert(String str){
+		return charsetConvert(str, DEFAULT_OLD_CHARSET, DEFAULT_CHARSET);
 	}
 
 	/**
