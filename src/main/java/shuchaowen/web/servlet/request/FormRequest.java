@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.http.server.search.PathSearchAction;
 import shuchaowen.core.util.Logger;
+import shuchaowen.core.util.StringUtils;
 import shuchaowen.web.servlet.WebRequest;
 
 public class FormRequest extends WebRequest {
@@ -54,12 +55,12 @@ public class FormRequest extends WebRequest {
 
 	public Byte getByte(String key) {
 		String v = getValue(key);
-		return v == null ? null : Byte.valueOf(v);
+		return StringUtils.isNull(v) ? null : Byte.valueOf(v);
 	}
 
 	public byte getByteValue(String key) {
 		String v = getValue(key);
-		if (v == null) {
+		if (isNull(v)) {
 			throw new NullPointerException("require '" + key + "'");
 		}
 
@@ -68,7 +69,7 @@ public class FormRequest extends WebRequest {
 
 	public Short getShort(String key) {
 		String v = getValue(key);
-		if (v == null) {
+		if (isNull(v)) {
 			return null;
 		}
 
@@ -77,7 +78,7 @@ public class FormRequest extends WebRequest {
 
 	public short getShortValue(String key) {
 		String v = getValue(key);
-		if (v == null) {
+		if (isNull(v)) {
 			throw new NullPointerException("require '" + key + "'");
 		}
 
@@ -86,12 +87,12 @@ public class FormRequest extends WebRequest {
 
 	public Integer getInteger(String key) {
 		String str = getValue(key);
-		return str == null ? null : Integer.parseInt(formatNumberText(str));
+		return isNull(str) ? null : Integer.parseInt(formatNumberText(str));
 	}
 
 	public int getIntValue(String key) {
 		String v = getValue(key);
-		if (v == null) {
+		if (isNull(v)) {
 			throw new NullPointerException("require '" + key + "'");
 		}
 
@@ -100,12 +101,12 @@ public class FormRequest extends WebRequest {
 
 	public Long getLong(String key) {
 		String v = getValue(key);
-		return v == null ? null : Long.valueOf(formatNumberText(v));
+		return isNull(v) ? null : Long.valueOf(formatNumberText(v));
 	}
 
 	public long getLongValue(String key) {
 		String v = getValue(key);
-		if (v == null) {
+		if (isNull(v)) {
 			throw new NullPointerException("require '" + key + "'");
 		}
 
@@ -132,12 +133,12 @@ public class FormRequest extends WebRequest {
 
 	public Float getFloat(String key) {
 		String v = getValue(key);
-		return v == null ? null : Float.valueOf(formatNumberText(v));
+		return isNull(v) ? null : Float.valueOf(formatNumberText(v));
 	}
 
 	public float getFloatValue(String key) {
 		String v = getValue(key);
-		if (v == null) {
+		if (isNull(v)) {
 			throw new NullPointerException("require '" + key + "'");
 		}
 
@@ -146,12 +147,12 @@ public class FormRequest extends WebRequest {
 
 	public Double getDouble(String key) {
 		String v = getValue(key);
-		return v == null ? null : Double.valueOf(formatNumberText(v));
+		return isNull(v) ? null : Double.valueOf(formatNumberText(v));
 	}
 
 	public double getDoubleValue(String key) {
 		String v = getValue(key);
-		if (v == null) {
+		if (isNull(v)) {
 			throw new NullPointerException("require '" + key + "'");
 		}
 
@@ -161,7 +162,7 @@ public class FormRequest extends WebRequest {
 	@Override
 	public char getChar(String name) {
 		String v = getValue(name);
-		if (v == null) {
+		if (isNull(v)) {
 			throw new NullPointerException("require '" + name + "'");
 		}
 
@@ -171,6 +172,18 @@ public class FormRequest extends WebRequest {
 	@Override
 	public Character getCharacter(String name) {
 		String v = getValue(name);
-		return v == null ? null : v.charAt(0);
+		return isNull(v) ? null : v.charAt(0);
+	}
+	
+	protected boolean isNull(String value){
+		if(value == null){
+			return true;
+		}
+		
+		if(value.length() == 0){
+			return true;
+		}
+		
+		return false;
 	}
 }
