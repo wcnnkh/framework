@@ -69,7 +69,8 @@ public class WebResponse extends HttpServletResponseWrapper implements Response{
 				}
 				
 				if(request.isDebug()){
-					Logger.debug("RESPONSE", content);
+					long t = System.currentTimeMillis() - request.getCreateTime();
+					Logger.debug("RESPONSE[" + t + "ms]", content);
 				}
 				getWriter().write(content);
 			}
