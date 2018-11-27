@@ -55,7 +55,11 @@ public class HttpRPCBeanFactory extends AbstractBeanFactory {
 	
 	public void registerService(String packageName, boolean isInterface){
 		for(Class<?> clz : ClassUtils.getClasses(packageName)){
-			if(Modifier.isInterface(clz.getModifiers())){
+			if(isInterface){
+				if(Modifier.isInterface(clz.getModifiers())){
+					serviceSet.add(clz.getName());
+				}
+			}else{
 				serviceSet.add(clz.getName());
 			}
 		}
