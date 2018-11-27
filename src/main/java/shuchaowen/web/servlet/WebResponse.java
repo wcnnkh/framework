@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import shuchaowen.core.http.enums.ContentType;
 import shuchaowen.core.http.server.Response;
 import shuchaowen.core.util.ClassUtils;
+import shuchaowen.core.util.Logger;
 
 public class WebResponse extends HttpServletResponseWrapper implements Response{
 	private static final String JSONP_CALLBACK = "callback";
@@ -42,6 +43,10 @@ public class WebResponse extends HttpServletResponseWrapper implements Response{
 					content = toJsonString(obj);
 				}
 				
+				if(request.isDebug()){
+					Logger.debug("RESPONSE", content);
+				}
+				
 				String callback = null;
 				try {
 					callback = request.getParameter(String.class, JSONP_CALLBACK);
@@ -51,16 +56,22 @@ public class WebResponse extends HttpServletResponseWrapper implements Response{
 				
 				if(callback != null && callback.length() != 0){
 					setContentType(ContentType.TEXT_JAVASCRIPT.getValue());
-					getWriter().write(callback);
-					getWriter().write(JSONP_RESP_PREFIX);
-					getWriter().write(content);
-					getWriter().write(JSONP_RESP_SUFFIX);
+					StringBuilder sb = new StringBuilder();
+					sb.append(callback);
+					sb.append(JSONP_RESP_PREFIX);
+					sb.append(content);
+					sb.append(JSONP_RESP_SUFFIX);
+					content = sb.toString();
 				}else{
 					if(getContentType() == null){
 						setContentType(ContentType.TEXT_HTML.getValue());
 					}
-					getWriter().write(content);
 				}
+				
+				if(request.isDebug()){
+					Logger.debug("RESPONSE", content);
+				}
+				getWriter().write(content);
 			}
 		}
 	}
