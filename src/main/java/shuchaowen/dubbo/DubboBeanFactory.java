@@ -16,7 +16,6 @@ import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 
 public class DubboBeanFactory extends AbstractBeanFactory{
-	private final BeanFactory beanFactory;
 	private ApplicationConfig application;
 	private List<RegistryConfig> registryConfigs;
 	private final String version;
@@ -26,12 +25,11 @@ public class DubboBeanFactory extends AbstractBeanFactory{
 		return version;
 	}
 	
-	public DubboBeanFactory(BeanFactory beanFactory, String name, String registryAddressList){
-		this(beanFactory, name, registryAddressList, "1.0.0");
+	public DubboBeanFactory(String name, String registryAddressList){
+		this(name, registryAddressList, "1.0.0");
 	}
 
-	public DubboBeanFactory(BeanFactory beanFactory, String name, String registryAddressList, String version) {
-		this.beanFactory = beanFactory;
+	public DubboBeanFactory(String name, String registryAddressList, String version) {
 		application = new ApplicationConfig(name);
 
 		registryConfigs = new ArrayList<RegistryConfig>();
@@ -45,7 +43,6 @@ public class DubboBeanFactory extends AbstractBeanFactory{
 	}
 
 	public DubboBeanFactory(BeanFactory beanFactory, ApplicationConfig application, List<RegistryConfig> registryConfigs, String version) {
-		this.beanFactory = beanFactory;
 		this.application = application;
 		this.registryConfigs = registryConfigs;
 		this.version = version;
@@ -66,7 +63,7 @@ public class DubboBeanFactory extends AbstractBeanFactory{
 		referenceConfig.setVersion(version);
 		referenceConfig.setCheck(false);
 
-		return new DubboBean(beanFactory, type, referenceConfig);
+		return new DubboBean(type, referenceConfig);
 	}
 	
 	@Override

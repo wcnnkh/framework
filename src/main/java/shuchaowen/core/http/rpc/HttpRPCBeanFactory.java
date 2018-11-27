@@ -6,26 +6,23 @@ import java.util.HashSet;
 
 import shuchaowen.core.beans.AbstractBeanFactory;
 import shuchaowen.core.beans.Bean;
-import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.http.rpc.serialization.JavaObjectSerializer;
 import shuchaowen.core.http.rpc.serialization.Serializer;
 import shuchaowen.core.util.ClassUtils;
 
 public class HttpRPCBeanFactory extends AbstractBeanFactory {
-	private final BeanFactory beanFactory;
 	private final String host;
 	private final String signStr;
 	private final Serializer serializer;
 	private final Charset charset;
 	private final HashSet<String> serviceSet = new HashSet<String>();
 	
-	public HttpRPCBeanFactory(BeanFactory beanFactory, String host, String signStr) {
-		this(beanFactory, host, signStr, new JavaObjectSerializer(), Charset.forName("utf-8"));
+	public HttpRPCBeanFactory(String host, String signStr) {
+		this(host, signStr, new JavaObjectSerializer(), Charset.forName("utf-8"));
 	}
 
-	public HttpRPCBeanFactory(BeanFactory beanFactory, String host, String signStr, Serializer serializer,
+	public HttpRPCBeanFactory(String host, String signStr, Serializer serializer,
 			Charset charset) {
-		this.beanFactory = beanFactory;
 		this.host = host;
 		this.signStr = signStr;
 		this.serializer = serializer;
@@ -39,7 +36,7 @@ public class HttpRPCBeanFactory extends AbstractBeanFactory {
 		}
 
 		Class<?> interfactClass = ClassUtils.forName(name);
-		return new HttpRPCBean(beanFactory, interfactClass, host, signStr, serializer, charset);
+		return new HttpRPCBean(interfactClass, host, signStr, serializer, charset);
 	}
 
 	@Override

@@ -1,51 +1,32 @@
 package shuchaowen.core.beans;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.annotaion.Destroy;
 import shuchaowen.core.beans.annotaion.InitMethod;
 import shuchaowen.core.beans.annotaion.Retry;
 import shuchaowen.core.db.annoation.Table;
-import shuchaowen.core.exception.BeansException;
-import shuchaowen.core.util.ClassInfo;
+import shuchaowen.core.exception.NotSupportException;
 import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.StringUtils;
 
-public class AnnotationBean implements Bean {
-	private final BeanFactory beanFactory;
-	private final ClassInfo classInfo;
+public abstract class AbstractInterfaceProxyBean implements Bean {
 	private final Class<?> type;
 	private final String id;
-	private final boolean singleton;
-	private Constructor<?> constructor;
 	private final List<Method> initMethodList = new ArrayList<Method>();
 	private final List<Method> destroyMethodList = new ArrayList<Method>();
-	private final boolean proxy;
 	private String[] names;
-	private String factoryMethodName;
-	private Method factoryMethod;
-	private Enhancer enhancer;
-	private final PropertiesFactory propertiesFactory;
 
-	public AnnotationBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type) throws Exception {
-		this.beanFactory = beanFactory;
+	public AbstractInterfaceProxyBean(Class<?> type) throws Exception {
 		this.type = type;
-		this.classInfo = ClassUtils.getClassInfo(type);
-		this.singleton = isSignleton(type);
-		this.propertiesFactory = propertiesFactory;
-		
 		shuchaowen.core.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.core.beans.annotaion.Bean.class);
 		if (bean != null) {
 			this.id = StringUtils.isNull(bean.id()) ? ClassUtils.getCGLIBRealClassName(type) : bean.id();
 			this.names = bean.names();
-			this.factoryMethodName = bean.factoryMethod();
 		} else {
 			this.id = ClassUtils.getCGLIBRealClassName(type);
 		}
@@ -68,8 +49,6 @@ public class AnnotationBean implements Bean {
 				destroyMethodList.add(method);
 			}
 		}
-
-		this.proxy = checkProxy(type);
 	}
 
 	public static List<BeanMethod> getInitMethodList(Class<?> type) {
@@ -147,11 +126,11 @@ public class AnnotationBean implements Bean {
 	}
 
 	public boolean isSingleton() {
-		return this.singleton;
+		return true;
 	}
 
 	public boolean isProxy() {
-		return this.proxy;
+		return true;
 	}
 
 	public String getId() {
@@ -162,80 +141,12 @@ public class AnnotationBean implements Bean {
 		return this.type;
 	}
 
-	private Enhancer getProxyEnhancer() {
-		if (enhancer == null) {
-			enhancer = classInfo.createEnhancer(null, null);
-		}
-		return enhancer;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T newInstance() {
-		if (constructor == null) {
-			try {
-				this.constructor = type.getDeclaredConstructor();// 不用考虑并发
-
-				if (factoryMethod == null) {
-					if (!StringUtils.isNull(factoryMethodName)) {
-						factoryMethod = type.getMethod(factoryMethodName);
-					}
-				}
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			}
-		}
-
-		Object bean;
-		try {
-			if (isProxy()) {
-				Enhancer enhancer = getProxyEnhancer();
-				bean = enhancer.create();
-			} else {
-				bean = constructor.newInstance();
-			}
-
-			return (T) (factoryMethod == null ? bean
-					: factoryMethod.invoke(Modifier.isStatic(factoryMethod.getModifiers()) ? null : bean));
-		} catch (Exception e) {
-			throw new BeansException(e);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
 	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {
-		Object bean;
-		try {
-			if (isProxy()) {
-				Enhancer enhancer = getProxyEnhancer();
-				bean = enhancer.create(parameterTypes, args);
-			} else {
-				bean = type.getDeclaredConstructor(parameterTypes).newInstance(args);
-			}
-
-			return (T) (factoryMethod == null ? bean
-					: factoryMethod.invoke(Modifier.isStatic(factoryMethod.getModifiers()) ? null : bean));
-		} catch (Exception e) {
-			throw new BeansException(e);
-		}
+		throw new NotSupportException(getType().getName());
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		ClassInfo classInfo = ClassUtils.getClassInfo(type);
-		while (classInfo != null) {
-			for (FieldInfo field : classInfo.getFieldMap().values()) {
-				if (Modifier.isStatic(field.getField().getModifiers())) {
-					continue;
-				}
-
-				BeanUtils.setBean(beanFactory, classInfo.getClz(), bean, field);
-				BeanUtils.setProxy(beanFactory, classInfo.getClz(), bean, field);
-				BeanUtils.setConfig(beanFactory, classInfo.getClz(), bean, field);
-				BeanUtils.setProperties(beanFactory, propertiesFactory, type, bean, field);
-			}
-			classInfo = classInfo.getSuperInfo();
-		}
+		// ignore
 	}
 
 	public void init(Object bean) throws Exception {

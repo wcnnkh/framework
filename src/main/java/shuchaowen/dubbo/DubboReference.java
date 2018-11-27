@@ -62,7 +62,7 @@ public class DubboReference implements ProxyFactory{
 					referenceConfig.setVersion(version);
 					referenceConfig.setCheck(false);
 					
-					Bean bean = new DubboBean(beanFactory, type, referenceConfig);
+					Bean bean = new DubboBean(type, referenceConfig);
 					obj = bean.newInstance();
 					proxyMap.put(type, obj);
 				}

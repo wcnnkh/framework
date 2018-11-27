@@ -1,16 +1,30 @@
 package shuchaowen.core.beans.xml;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.EParameterType;
 import shuchaowen.core.beans.PropertiesFactory;
 import shuchaowen.core.exception.AlreadyExistsException;
+import shuchaowen.core.exception.BeansException;
+import shuchaowen.core.exception.NotFoundException;
 import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.ConfigUtils;
@@ -18,13 +32,42 @@ import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.StringUtils;
 
 public class XmlPropertiesFactory implements PropertiesFactory {
+	private static final String PROPERTIES_TAG_NAME = "properties";
+	private static final String BEANS_TAG_NAME = "beans";
+
 	private final Map<String, XmlProperties> propertiesMap = new HashMap<String, XmlProperties>();
 	private final Map<String, Object> propertiesValueMap = new HashMap<String, Object>();
 	private final Map<String, BeanParameter> xmlPropertiesMap = new HashMap<String, BeanParameter>();
 	private final BeanFactory beanFactory;
-	
-	public XmlPropertiesFactory(BeanFactory beanFactory, List<XmlProperties> properties) {
+
+	public XmlPropertiesFactory(BeanFactory beanFactory, String beanXml)
+			throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException {
 		this.beanFactory = beanFactory;
+		if (!StringUtils.isNull(beanXml)) {
+			File xml = ConfigUtils.getFile(beanXml);
+			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+			Document document = builder.parse(xml);
+			Element root = document.getDocumentElement();
+			if (!BEANS_TAG_NAME.equals(root.getTagName())) {
+				throw new BeansException("root tag name error [" + root.getTagName() + "]");
+			}
+
+			NodeList nhosts = root.getChildNodes();
+			List<XmlProperties> xmlPropertiesList = new ArrayList<XmlProperties>();
+			for (int i = 0; i < nhosts.getLength(); i++) {
+				Node nRoot = nhosts.item(i);
+				if (PROPERTIES_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
+					XmlProperties xmlProperties = new XmlProperties(nRoot);
+					xmlPropertiesList.add(xmlProperties);
+				}
+			}
+
+			init(xmlPropertiesList);
+		}
+	}
+
+	private void init(List<XmlProperties> properties) {
 		if (properties != null) {
 			for (XmlProperties p : properties) {
 				if (!StringUtils.isNull(p.getId())) {
@@ -38,7 +81,7 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 						if (propertiesValueMap.containsKey(key)) {
 							throw new AlreadyExistsException(key);
 						}
-						
+
 						propertiesValueMap.put(key, entry.getValue());
 					}
 				}
@@ -53,6 +96,11 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 				}
 			}
 		}
+	}
+
+	public XmlPropertiesFactory(BeanFactory beanFactory, List<XmlProperties> properties) {
+		this.beanFactory = beanFactory;
+		init(properties);
 	}
 
 	public List<BeanParameter> getBeanParameterList(String name) {
@@ -87,7 +135,11 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 			}
 			return (T) obj;
 		} else if (propertiesValueMap.containsKey(name)) {
-			return StringUtils.conversion(propertiesValueMap.get(name).toString(), type);
+			Object v = propertiesValueMap.get(name);
+			if (v == null) {
+				throw new NotFoundException("property[" + name + "] type[" + type.getName() + "]");
+			}
+			return StringUtils.conversion(v.toString(), type);
 		} else if (xmlPropertiesMap.containsKey(name)) {
 			BeanParameter beanProperties = xmlPropertiesMap.get(name);
 			return (T) beanProperties.parseValue(beanFactory, this, type);
@@ -97,6 +149,6 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 		if (v != null) {
 			return StringUtils.conversion(v, type);
 		}
-		return null;
+		throw new NotFoundException("property[" + name + "] type[" + type.getName() + "]");
 	}
 }

@@ -12,10 +12,12 @@ import shuchaowen.core.util.StringUtils;
  *
  */
 public class AnnotationBeanFactory extends AbstractBeanFactory {
-	private BeanFactory beanFactory;
+	private final BeanFactory beanFactory;
+	private final PropertiesFactory propertiesFactory;
 	
-	public AnnotationBeanFactory(BeanFactory beanFactory, String packageNames) {
+	public AnnotationBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String packageNames) {
 		this.beanFactory = beanFactory;
+		this.propertiesFactory = propertiesFactory;
 		for (Class<?> clz : ClassUtils.getClasses(packageNames)) {
 			Service service = clz.getAnnotation(Service.class);
 			if (service != null) {
@@ -60,7 +62,7 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 				return  null;
 			}
 			
-			return new AnnotationBean(beanFactory, clz);
+			return new AnnotationBean(beanFactory, propertiesFactory, clz);
 		} catch (Exception e) {
 		}
 		return null;

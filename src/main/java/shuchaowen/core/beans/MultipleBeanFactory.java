@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import shuchaowen.core.exception.BeansException;
+import shuchaowen.core.util.Logger;
 
 public final class MultipleBeanFactory extends AbstractBeanFactory {
 	private List<BeanFactory> beanFactoryList;
+	private volatile boolean firstGet = false;
 
 	public MultipleBeanFactory() {
 		singletonMap.put(this.getClass().getName(), this);
@@ -15,6 +17,10 @@ public final class MultipleBeanFactory extends AbstractBeanFactory {
 	}
 
 	public void addLastBeanFactory(BeanFactory beanFactory) {
+		if(firstGet){
+			Logger.warn(this.getClass().getName(), "你现在向其中添加一个新的实体工厂，但这个实例工厂已经被使用过了(已调用过get方法)！！！");
+		}
+		
 		if (beanFactoryList == null) {
 			beanFactoryList = new ArrayList<BeanFactory>();
 		}
@@ -22,6 +28,10 @@ public final class MultipleBeanFactory extends AbstractBeanFactory {
 	}
 	
 	public void addFirst(BeanFactory beanFactory){
+		if(firstGet){
+			Logger.warn(this.getClass().getName(), "你现在向其中添加一个新的实体工厂，但这个实例工厂已经被使用过了(已调用过get方法)！！！");
+		}
+		
 		if (beanFactoryList == null) {
 			beanFactoryList = new ArrayList<BeanFactory>();
 		}
@@ -29,6 +39,10 @@ public final class MultipleBeanFactory extends AbstractBeanFactory {
 	}
 	
 	public <T> T get(String name) {
+		if(!firstGet){
+			firstGet = true;
+		}
+		
 		T t = super.get(name);
 		if (t == null && beanFactoryList != null) {
 			for (BeanFactory beanFactory : beanFactoryList) {
@@ -46,6 +60,10 @@ public final class MultipleBeanFactory extends AbstractBeanFactory {
 	}
 
 	public <T> T get(Class<T> type) {
+		if(!firstGet){
+			firstGet = true;
+		}
+		
 		T t = super.get(type);
 		if (t == null && beanFactoryList != null) {
 			for (BeanFactory beanFactory : beanFactoryList) {

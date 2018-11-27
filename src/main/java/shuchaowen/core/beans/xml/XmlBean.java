@@ -1,6 +1,7 @@
 package shuchaowen.core.beans.xml;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class XmlBean implements Bean {
 
 	private final BeanFactory beanFactory;
 	private final PropertiesFactory propertiesFactory;
+	private final ClassInfo classInfo;
 	private final Class<?> type;
 	private String[] names;
 	private final String id;
@@ -64,7 +66,7 @@ public class XmlBean implements Bean {
 	public XmlBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode) throws Exception {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
-		
+
 		Node classNode = beanNode.getAttributes().getNamedItem(CLASS_ATTRIBUTE_KEY);
 		Node nameNode = beanNode.getAttributes().getNamedItem(NAME_ATTRIBUTE_KEY);
 		if (nameNode != null) {
@@ -76,7 +78,8 @@ public class XmlBean implements Bean {
 			throw new BeansException("not found attribute [" + CLASS_ATTRIBUTE_KEY + "]");
 		}
 
-		this.type = Class.forName(className);
+		this.classInfo = ClassUtils.getClassInfo(className);
+		this.type = classInfo.getClz();
 
 		Node singletonNode = beanNode.getAttributes().getNamedItem(SINGLETON_ATTRIBUTE_KEY);
 		if (singletonNode != null) {
@@ -88,10 +91,10 @@ public class XmlBean implements Bean {
 
 		Node idNode = beanNode.getAttributes().getNamedItem(ID_ATTRIBUTE_KEY);
 		if (idNode == null) {
-			this.id = ClassUtils.getCGLIBRealClassName(type);
+			this.id = classInfo.getName();
 		} else {
 			String v = idNode.getNodeValue();
-			this.id = StringUtils.isNull(v) ? ClassUtils.getCGLIBRealClassName(type) : v;
+			this.id = StringUtils.isNull(v) ? classInfo.getName() : v;
 		}
 
 		Node filtersNode = beanNode.getAttributes().getNamedItem(FILTERS_ATTRIBUTE_KEY);
@@ -112,26 +115,26 @@ public class XmlBean implements Bean {
 			Node n = nodeList.item(a);
 			if (CONSTRUCTOR_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// Constructor
 				Node refNode = n.getAttributes().getNamedItem(REF_ATTR_KEY);
-				if(refNode != null){
+				if (refNode != null) {
 					String v = refNode.getNodeValue();
-					if(!StringUtils.isNull(v)){
+					if (!StringUtils.isNull(v)) {
 						constructorList.addAll(propertiesFactory.getBeanParameterList(v));
 					}
 				}
-				
+
 				List<BeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
 				if (list != null) {
 					constructorList.addAll(list);
 				}
 			} else if (PROPERTIES_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// Properties
 				Node refNode = n.getAttributes().getNamedItem(REF_ATTR_KEY);
-				if(refNode != null){
+				if (refNode != null) {
 					String v = refNode.getNodeValue();
-					if(!StringUtils.isNull(v)){
+					if (!StringUtils.isNull(v)) {
 						propertiesList.addAll(propertiesFactory.getBeanParameterList(v));
 					}
 				}
-				
+
 				List<BeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
 				if (list != null) {
 					propertiesList.addAll(list);
@@ -149,15 +152,15 @@ public class XmlBean implements Bean {
 				this.factoryMethodInfo = new XmlBeanMethodInfo(type, n);
 			}
 		}
-		
+
 		this.initMethodList.addAll(AnnotationBean.getInitMethodList(type));
 		this.destroyMethodList.addAll(AnnotationBean.getDestroyMethdoList(type));
-		
+
 		this.proxy = checkProxy();
 		this.constructor = getConstructor();
 		this.constructorParameterTypes = constructor.getParameterTypes();
 	}
-	
+
 	private Constructor<?> getConstructor() {
 		if (constructorList == null) {
 			return getConstructorByParameterTypes();
@@ -243,14 +246,13 @@ public class XmlBean implements Bean {
 	}
 
 	private Enhancer getProxyEnhancer() {
-		if(enhancer == null){
-			ClassInfo classInfo = ClassUtils.getClassInfo(type);
+		if (enhancer == null) {
 			List<BeanFilter> beanFilterList = null;
-			if(beanFilters != null && !beanFilters.isEmpty()){
-				for(String name : beanFilters){
+			if (beanFilters != null && !beanFilters.isEmpty()) {
+				for (String name : beanFilters) {
 					BeanFilter beanFilter = beanFactory.get(name);
-					if(beanFilter != null){
-						if(beanFilterList == null){
+					if (beanFilter != null) {
+						if (beanFilterList == null) {
 							beanFilterList = new ArrayList<BeanFilter>();
 						}
 						beanFilterList.add(beanFilter);
@@ -272,14 +274,12 @@ public class XmlBean implements Bean {
 		}
 	}
 
-	private void setProperties(Object bean)
-			throws Exception {
+	private void setProperties(Object bean) throws Exception {
 		if (propertiesList == null || propertiesList.isEmpty()) {
 			return;
 		}
-		
+
 		for (BeanParameter beanProperties : propertiesList) {
-			ClassInfo classInfo = ClassUtils.getClassInfo(type);
 			FieldInfo fieldInfo = classInfo.getFieldInfo(beanProperties.getName());
 			if (fieldInfo != null) {
 				Object value = beanProperties.parseValue(beanFactory, propertiesFactory, fieldInfo.getType());
@@ -288,8 +288,7 @@ public class XmlBean implements Bean {
 		}
 	}
 
-	private Object createInstance()
-			throws Exception {
+	private Object createInstance() throws Exception {
 		if (constructorParameterTypes == null || constructorParameterTypes.length == 0) {
 			return constructor.newInstance();
 		} else {
@@ -299,19 +298,16 @@ public class XmlBean implements Bean {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		ClassInfo classInfo = ClassUtils.getClassInfo(type);
-		while (classInfo != null) {
-			for (FieldInfo field : classInfo.getFieldMap().values()) {
-				if (Modifier.isStatic(field.getField().getModifiers())) {
-					continue;
-				}
-
-				BeanUtils.setBean(beanFactory, classInfo.getClz(), bean, field);
-				BeanUtils.setProxy(beanFactory, classInfo.getClz(), bean, field);
-				BeanUtils.setConfig(beanFactory, classInfo.getClz(), bean, field);
-				BeanUtils.setProperties(beanFactory, propertiesFactory, classInfo.getClz(), bean, field);
+		for (Field field : type.getDeclaredFields()) {
+			if (Modifier.isStatic(field.getModifiers())) {
+				continue;
 			}
-			classInfo = classInfo.getSuperInfo();
+
+			FieldInfo fieldInfo = classInfo.getFieldInfo(field.getName());
+			BeanUtils.setBean(beanFactory, type, bean, fieldInfo);
+			BeanUtils.setProxy(beanFactory, type, bean, fieldInfo);
+			BeanUtils.setConfig(beanFactory, type, bean, fieldInfo);
+			BeanUtils.setProperties(beanFactory, propertiesFactory, type, bean, fieldInfo);
 		}
 		setProperties(bean);
 	}
@@ -375,5 +371,4 @@ public class XmlBean implements Bean {
 	public String[] getNames() {
 		return names;
 	}
-
 }

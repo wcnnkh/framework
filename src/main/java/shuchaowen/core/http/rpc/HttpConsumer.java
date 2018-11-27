@@ -40,7 +40,7 @@ public class HttpConsumer implements ProxyFactory{
 			synchronized (proxyMap) {
 				obj = proxyMap.get(interfaceClass);
 				if(obj == null){
-					Bean bean = new HttpRPCBean(beanFactory, interfaceClass, host, signStr, serializer, charset);
+					Bean bean = new HttpRPCBean(interfaceClass, host, signStr, serializer, charset);
 					obj = bean.newInstance();
 					proxyMap.put(interfaceClass, obj);
 				}

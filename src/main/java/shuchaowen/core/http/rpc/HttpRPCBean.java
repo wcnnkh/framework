@@ -6,9 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 
-import shuchaowen.core.beans.AnnotationBean;
-import shuchaowen.core.beans.BeanFactory;
-import shuchaowen.core.exception.NotSupportException;
+import shuchaowen.core.beans.AbstractInterfaceProxyBean;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.http.client.Response;
 import shuchaowen.core.http.client.method.HttpPost;
@@ -16,22 +14,18 @@ import shuchaowen.core.http.rpc.serialization.Serializer;
 import shuchaowen.core.invoke.Invoker;
 import shuchaowen.core.util.SignHelp;
 
-public class HttpRPCBean extends AnnotationBean{
+public class HttpRPCBean extends AbstractInterfaceProxyBean{
 	private final String host;
 	private final String signStr;
 	private final Serializer serializer;
 	private final Charset charset;
 	
-	public HttpRPCBean(BeanFactory beanFactory, Class<?> interfaceClass, String host, String signStr, Serializer serializer, Charset charset) throws Exception{
-		super(beanFactory, interfaceClass);
+	public HttpRPCBean(Class<?> interfaceClass, String host, String signStr, Serializer serializer, Charset charset) throws Exception{
+		super(interfaceClass);
 		this.host = host;
 		this.signStr = signStr;
 		this.serializer = serializer;
 		this.charset = charset;
-	}
-
-	public boolean isProxy() {
-		return true;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -45,10 +39,6 @@ public class HttpRPCBean extends AnnotationBean{
 					}
 				});
 		return (T) newProxyInstance;
-	}
-
-	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {
-		throw new NotSupportException(getType().getName());
 	}
 }
 

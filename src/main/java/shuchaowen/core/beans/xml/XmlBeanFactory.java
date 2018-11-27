@@ -25,14 +25,12 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	private static final String BEANS_TAG_NAME = "beans";
 	private static final String BEANS_ANNOTATION = "packages";
 	private static final String BEAN_TAG_NAME = "bean";
-	private static final String PROPERTIES_TAG_NAME = "properties";
 	private static final String BEAN_FACTORY_TAG_NAME = "factory";
 
 	private String packageNames;
-	private PropertiesFactory propertiesFactory;
 	private List<String> beanFactoryList;
 
-	public XmlBeanFactory(BeanFactory beanFactory, String beanXml) throws Exception {
+	public XmlBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String beanXml) throws Exception {
 		File xml = ConfigUtils.getFile(beanXml);
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
@@ -50,16 +48,6 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		}
 
 		NodeList nhosts = root.getChildNodes();
-		List<XmlProperties> xmlPropertiesList = new ArrayList<XmlProperties>();
-		for (int i = 0; i < nhosts.getLength(); i++) {
-			Node nRoot = nhosts.item(i);
-			if (PROPERTIES_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
-				XmlProperties xmlProperties = new XmlProperties(nRoot);
-				xmlPropertiesList.add(xmlProperties);
-			}
-		}
-		this.propertiesFactory = new XmlPropertiesFactory(beanFactory, xmlPropertiesList);
-
 		for (int i = 0; i < nhosts.getLength(); i++) {
 			Node nRoot = nhosts.item(i);
 			if (BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
