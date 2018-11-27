@@ -43,10 +43,6 @@ public class WebResponse extends HttpServletResponseWrapper implements Response{
 					content = toJsonString(obj);
 				}
 				
-				if(request.isDebug()){
-					Logger.debug("RESPONSE", content);
-				}
-				
 				String callback = null;
 				try {
 					callback = request.getParameter(String.class, JSONP_CALLBACK);
