@@ -1,6 +1,9 @@
 package shuchaowen.core.util;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -682,5 +685,29 @@ public final class StringUtils {
 			}
 			return new String(newChars);
 		}
+	}
+	
+	public static String urlDecode(String content, String charsetName, int count) throws UnsupportedEncodingException{
+		if(count <= 0){
+			return content;
+		}
+		
+		String newContent = content;
+		for(int i=0; i<count; i++){
+			newContent = URLDecoder.decode(newContent, charsetName);
+		}
+		return newContent;
+	}
+	
+	public static String urlEncode(String content, String charsetName, int count) throws UnsupportedEncodingException{
+		if(count <= 0){
+			return content;
+		}
+		
+		String newContent = content;
+		for(int i=0; i<count; i++){
+			newContent = URLEncoder.encode(newContent, charsetName);
+		}
+		return newContent;
 	}
 }
