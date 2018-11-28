@@ -1,5 +1,7 @@
 package shuchaowen.core.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -195,6 +197,18 @@ public final class XUtils {
 				b -= a;
 		}
 		return a;
+	}
+	
+	public static String urlDecode(String content, String charsetName, int count) throws UnsupportedEncodingException{
+		if(count <= 0){
+			return content;
+		}
+		
+		String newContent = content;
+		for(int i=0; i<count; i++){
+			newContent = URLDecoder.decode(newContent, charsetName);
+		}
+		return newContent;
 	}
 }
 
