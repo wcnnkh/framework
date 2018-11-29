@@ -200,11 +200,6 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 	}
 	
 	@Override
-	public void end() {
-		super.end();
-	}
-
-	@Override
 	protected void lastCommit() {
 		ThreadLocalTransaction threadLocalTransaction = getValue();
 		if (threadLocalTransaction != null) {
@@ -254,7 +249,7 @@ final class ThreadLocalTransaction extends AbstractTransaction {
 			map.put(id, resultSet);
 			cacheMap.put(db, map);
 		}else{
-			Map<String, ResultSet> map = cacheMap.getOrDefault(id, new HashMap<String, ResultSet>());
+			Map<String, ResultSet> map = cacheMap.getOrDefault(db, new HashMap<String, ResultSet>());
 			if(map == null){
 				resultSet = realSelect(db, sql);
 				map = new HashMap<String, ResultSet>();
