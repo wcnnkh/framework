@@ -761,4 +761,20 @@ public class RedisByJedisPool implements Redis {
 	public void destroy(){
 		jedisPool.close();
 	}
+
+	public String getAndTouch(String key, int exp) {
+		String v = get(key);
+		if(v != null){
+			expire(key, exp);
+		}
+		return v;
+	}
+
+	public byte[] getAndTouch(byte[] key, int exp) {
+		byte[] v = get(key);
+		if(v != null){
+			expire(key, exp);
+		}
+		return v;
+	}
 }

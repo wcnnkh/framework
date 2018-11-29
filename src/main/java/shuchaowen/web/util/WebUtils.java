@@ -45,7 +45,7 @@ import shuchaowen.spring.util.StringUtils;
  * @author Rod Johnson
  * @author Juergen Hoeller
  */
-public abstract class WebUtils {
+public final class WebUtils {
 
 	/**
 	 * Standard Servlet 2.3+ spec request attributes for include URI and paths.
@@ -122,6 +122,7 @@ public abstract class WebUtils {
 	/** Key for the mutex session attribute */
 	public static final String SESSION_MUTEX_ATTRIBUTE = WebUtils.class.getName() + ".MUTEX";
 
+	private WebUtils(){};
 
 	/**
 	 * Set a system property to the web application root directory.

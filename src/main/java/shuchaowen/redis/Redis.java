@@ -6,8 +6,12 @@ import java.util.Set;
 
 public interface Redis {
 	String get(String key);
+	
+	String getAndTouch(String key, int exp);
 
 	byte[] get(byte[] key);
+	
+	byte[] getAndTouch(byte[] key, int exp);
 
 	String set(String key, String value);
 

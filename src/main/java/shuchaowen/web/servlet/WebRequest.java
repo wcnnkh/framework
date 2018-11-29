@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
@@ -206,5 +207,33 @@ public abstract class WebRequest extends HttpServletRequestWrapper implements Re
 		} else {
 			return text;
 		}
+	}
+	
+	public Cookie getCookie(String name, boolean ignoreCase){
+		if(name == null){
+			return null;
+		}
+		
+		Cookie[] cookies = getCookies();
+		if(cookies == null || cookies.length == 0){
+			return null;
+		}
+		
+		for(Cookie cookie : cookies){
+			if(cookie == null){
+				continue;
+			}
+			
+			if(ignoreCase){
+				if(name.equalsIgnoreCase(cookie.getName())){
+					return cookie;
+				}
+			}else{
+				if(name.equals(cookie.getName())){
+					return cookie;
+				}
+			}
+		}
+		return null;
 	}
 }
