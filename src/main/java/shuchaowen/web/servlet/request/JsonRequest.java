@@ -6,13 +6,13 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.XUtils;
 import shuchaowen.web.servlet.WebRequest;
-
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 public class JsonRequest extends WebRequest{
 	private JSONObject json;
@@ -47,7 +47,7 @@ public class JsonRequest extends WebRequest{
 
 		String content = sb.toString();
 		if(isDebug){
-			Logger.debug("REQUEST", content);
+			Logger.debug(this.getClass().getName(), "servletPath=" + getServletPath() + ",method=" + getMethod() + "," + content);
 		}
 		
 		json = JSONObject.parseObject(sb.toString());

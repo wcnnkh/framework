@@ -52,7 +52,7 @@ public class Jsp extends HashMap<String, Object> implements View{
 			throw new ShuChaoWenRuntimeException(e);
 		}finally{
 			if(response.getRequest().isDebug()){
-				Logger.debug("RESPONSE[" + (System.currentTimeMillis() - response.getRequest().getCreateTime())+ "ms]", "jsp:" + page);
+				Logger.debug(this.getClass().getName(), page);
 			}
 		}
 	}

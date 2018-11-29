@@ -201,7 +201,7 @@ public class Page extends HashMap<String, Object> implements View{
 			sb.append(pageType);
 			sb.append(":");
 			sb.append(realPage);
-			Logger.debug("RESPONSE["+(System.currentTimeMillis() - response.getRequest().getCreateTime())+"ms]", sb.toString());
+			Logger.debug(this.getClass().getName(), sb.toString());
 		}
 	}
 	

@@ -35,7 +35,7 @@ public class FormRequest extends WebRequest {
 			sb.append(httpServletRequest.getMethod());
 			sb.append(",");
 			sb.append(JSONObject.toJSONString(getParameterMap()));
-			Logger.debug("REQUEST", sb.toString());
+			Logger.debug(this.getClass().getName(), sb.toString());
 		}
 	}
 

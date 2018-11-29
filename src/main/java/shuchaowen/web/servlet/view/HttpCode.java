@@ -27,7 +27,7 @@ public class HttpCode implements View {
 			sb.append(status);
 			sb.append(",msg=");
 			sb.append(msg);
-			Logger.debug("RESPONSE", sb.toString());
+			Logger.debug(this.getClass().getName(), sb.toString());
 		}
 		response.sendError(status, msg);
 	}
