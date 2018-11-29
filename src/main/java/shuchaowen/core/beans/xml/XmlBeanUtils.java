@@ -1,17 +1,27 @@
 package shuchaowen.core.beans.xml;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.EParameterType;
+import shuchaowen.core.beans.PropertiesFactory;
+import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.util.ClassUtils;
+import shuchaowen.core.util.ConfigUtils;
+import shuchaowen.core.util.StringFormat;
 import shuchaowen.core.util.StringUtils;
 
 public final class XmlBeanUtils {
@@ -25,6 +35,44 @@ public final class XmlBeanUtils {
 	public static final String PARAMETER_TAG_NAME = "parameter";
 	
 	private XmlBeanUtils(){};
+	
+	private static String formatNodeValue(final PropertiesFactory propertiesFactory, Node node, String value){
+		String replacePrefix = getNodeAttributeValue(node, "replace-prefix");
+		String replaceSuffix = getNodeAttributeValue(node, "replace-suffix");
+		replacePrefix = StringUtils.isNull(replacePrefix)? "{":replacePrefix;
+		replaceSuffix = StringUtils.isNull(replaceSuffix)? "}":replaceSuffix;
+		StringFormat stringFormat = new StringFormat(replacePrefix, replaceSuffix) {
+			
+			@Override
+			protected String getValue(String key) {
+				try {
+					return propertiesFactory.getProperties(key, String.class);
+				} catch (Exception e) {
+					throw new BeansException(e);
+				}
+			}
+		};
+		return stringFormat.format(value);
+	}
+	
+	public static String getNodeAttributeValue(final PropertiesFactory propertiesFactory, Node node, String name){
+		String value = getNodeAttributeValue(node, name);
+		if(value == null || value.length() == 0){
+			return value;
+		}
+	
+		return formatNodeValue(propertiesFactory, node, value);
+	}
+	
+	private static String getNodeAttributeValue(Node node, String name){
+		NamedNodeMap namedNodeMap = node.getAttributes();
+		if(namedNodeMap == null){
+			return null;
+		}
+		
+		Node n = namedNodeMap.getNamedItem(name);
+		return n == null? null:n.getNodeValue();
+	}
 	
 	public static BeanParameter parseBeanParameter(Node node) throws ClassNotFoundException{
 		Node nameNode = node.getAttributes().getNamedItem(NAME_KEY);
@@ -63,6 +111,48 @@ public final class XmlBeanUtils {
 		}
 	}
 	
+	public static boolean isSingleton(Node node){
+		return getBooleanValue(node, "singleton", true);
+	}
+	
+	public static String[] getNames(Node node){
+		String name = getNodeAttributeValue(node, "name");
+		return StringUtils.isNull(name)? null:StringUtils.commonSplit(name);
+	}
+	
+	public static String getNodeValue(PropertiesFactory propertiesFactory, Node node, String name){
+		String value = getNodeAttributeValue(node, name);
+		if(StringUtils.isNull(value)){
+			value = node.getNodeValue();
+		}
+		
+		formatNodeValue(propertiesFactory, node, value);
+		return value;
+	}
+	
+	public static boolean getBooleanValue(PropertiesFactory propertiesFactory, Node node, String name, boolean defaultValue){
+		String value = getNodeAttributeValue(propertiesFactory, node, name);
+		return StringUtils.isNull(value)? defaultValue:Boolean.parseBoolean(value);
+	}
+	
+	public static boolean getBooleanValue(Node node, String name, boolean defaultValue){
+		String value = getNodeAttributeValue(node, name);
+		return StringUtils.isNull(value)? defaultValue:Boolean.parseBoolean(value);
+	}
+	
+	public static void checkAttribute(Node node, String ...name){
+		for(String n : name){
+			if(StringUtils.isNull(getNodeAttributeValue(node, n))){
+				throw new BeansException("not found attribute " + n);
+			}
+		}
+	}
+	
+	public static int getIntegerValue(PropertiesFactory propertiesFactory, Node node, String name, int defaultValue){
+		String value = getNodeAttributeValue(propertiesFactory, node, name);
+		return StringUtils.isNull(value)? defaultValue:Integer.parseInt(value);
+	}
+	
 	public static List<BeanParameter> parseBeanParameterList(Node node) throws ClassNotFoundException{
 		List<BeanParameter> beanParameters = new ArrayList<BeanParameter>();
 		NodeList nodeList = node.getChildNodes();
@@ -73,9 +163,26 @@ public final class XmlBeanUtils {
 					continue;
 				}
 				
-				beanParameters.add(XmlBeanUtils.parseBeanParameter(nRoot));
+				beanParameters.add(parseBeanParameter(nRoot));
 			}
 		}
 		return beanParameters;
+	}
+	
+	public static NodeList getRootNode(String config){
+		try {
+			File xml = ConfigUtils.getFile(config);
+			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+			Document document = builder.parse(xml);
+			Element root = document.getDocumentElement();
+			if (!"beans".equals(root.getTagName())) {
+				throw new BeansException("root tag name error [" + root.getTagName() + "]");
+			}
+			
+			return root.getChildNodes();
+		} catch (Exception e) {
+			throw new BeansException(e);
+		}
 	}
 }

@@ -22,8 +22,7 @@ public class XmlProperties {
 	private static final String ID_ATTR_KEY = "id";
 	private static final String CHARSET_ATTR_KEY = "charset";
 	private static final String PREFIX_ATTR_KEY = "prefix";
-	
-	public static final String PARAMETER_TAG_NAME = "parameter";
+	private static final String PROPERTY_ATTR_KEY = "property";
 	
 	private Properties properties;
 	private String id;
