@@ -2,6 +2,7 @@ package shuchaowen.core.beans;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -249,17 +250,10 @@ public final class BeanUtils {
 	public static void setConfig(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		Config config = field.getField().getAnnotation(Config.class);
 		if (config != null) {
-			if (Modifier.isStatic(field.getField().getModifiers())) {
-				Logger.warn("@Config",
-						"class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
-			}
-
+			staticFieldWarnLog(clz, field.getField());
+				
+			existDefaultValueWarnLog("@Config", clz, field, obj);
 			Object value = null;
-			if (field.forceGet(obj) != null) {
-				Logger.warn("@Config",
-						"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
-			}
-
 			try {
 				value = beanFactory.get(config.parse()).parse(beanFactory, field, config.value(), config.charset());
 			} catch (Exception e) {
@@ -270,23 +264,38 @@ public final class BeanUtils {
 			field.set(obj, value);
 		}
 	}
+	
+	private static boolean checkExistDefaultValue(FieldInfo field, Object obj) throws IllegalArgumentException, IllegalAccessException{
+		if(ClassUtils.containsBasicValueType(field.getType())){//值类型一定是默认值 的,所以不用判断直接所回false
+			return false;
+		}
+		return field.forceGet(obj) != null;
+	}
+	
+	private static void existDefaultValueWarnLog(String tag, Class<?> clz, FieldInfo field, Object obj) throws IllegalArgumentException, IllegalAccessException{
+		if (checkExistDefaultValue(field, obj)) {
+			Logger.warn("@Properties",
+					"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
+		}
+	}
+	
+	private static void staticFieldWarnLog(Class<?> clz, Field field){
+		if (Modifier.isStatic(field.getModifiers())) {
+			Logger.warn("@Config",
+					"class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
+		}
+	}
 
 	public static void setProperties(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> clz,
 			Object obj, FieldInfo field) {
 		Properties properties = field.getField().getAnnotation(Properties.class);
 		if (properties != null) {
-			if (Modifier.isStatic(field.getField().getModifiers())) {
-				Logger.warn("@Config",
-						"class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
-			}
+			staticFieldWarnLog(clz, field.getField());
 
 			Object value = null;
 			try {
-				if (field.forceGet(obj) != null) {
-					Logger.warn("@Properties",
-							"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
-				}
-
+				existDefaultValueWarnLog("@Properties", clz, field, obj);
+				
 				value = propertiesFactory.getProperties(properties.value(), field.getType());
 				field.set(obj, value);
 			} catch (Exception e) {
@@ -299,21 +308,14 @@ public final class BeanUtils {
 			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		Autowrite s = field.getField().getAnnotation(Autowrite.class);
 		if (s != null) {
-			if (Modifier.isStatic(field.getField().getModifiers())) {
-				Logger.warn("@AutoWrite",
-						"class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
-			}
+			staticFieldWarnLog(clz, field.getField());
 
 			String name = s.value();
 			if (name.equals("")) {
 				name = field.getType().getName();
 			}
-
-			if (field.forceGet(obj) != null) {
-				Logger.warn("@AutoWrite",
-						"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
-			}
-
+			
+			existDefaultValueWarnLog("@AutoWrite", clz, field, obj);
 			field.set(obj, beanFactory.get(name));
 		}
 	}
@@ -321,17 +323,10 @@ public final class BeanUtils {
 	public static void setProxy(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) throws Exception {
 		Proxy proxy = field.getField().getAnnotation(Proxy.class);
 		if (proxy != null) {
-			if (Modifier.isStatic(field.getField().getModifiers())) {
-				Logger.warn("@Proxy",
-						"class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
-			}
+			staticFieldWarnLog(clz, field.getField());
 
 			Object v = beanFactory.get(proxy.value()).getProxy(beanFactory, field.getType());
-			if (field.forceGet(obj) != null) {
-				Logger.warn("@Proxy",
-						"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
-			}
-
+			existDefaultValueWarnLog("@Proxy", clz, field, obj);
 			field.set(obj, v);
 		}
 	}
