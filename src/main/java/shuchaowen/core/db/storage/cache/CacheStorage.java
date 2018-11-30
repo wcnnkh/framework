@@ -24,7 +24,6 @@ import shuchaowen.core.transaction.TransactionCollection;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.Multitask;
-import shuchaowen.core.util.XTime;
 import shuchaowen.memcached.Memcached;
 import shuchaowen.mq.MQ;
 import shuchaowen.mq.MemcachedMQ;
@@ -32,9 +31,6 @@ import shuchaowen.mq.RedisMQ;
 import shuchaowen.redis.Redis;
 
 public final class CacheStorage implements Storage {
-	private static final int DATA_DEFAULT_EXP_TIME = 7 * ((int) XTime.ONE_DAY / 1000);
-	private static final CacheConfig DEFAULT_CACHE_CONFIG = new CacheConfig(CacheType.lazy, DATA_DEFAULT_EXP_TIME,
-			false);
 	private final Map<String, CacheConfig> cacheConfigMap = new HashMap<String, CacheConfig>();
 	private final Cache cache;
 	private final AbstractDB db;
@@ -42,6 +38,7 @@ public final class CacheStorage implements Storage {
 	// 默认参与事务，应该以保证数据完整性为主
 	private boolean cacheAutoCommit = false;
 	private final MQ<Collection<OperationBean>> mq;
+	private CacheConfig defaultCacheConfig;
 
 	public CacheStorage(AbstractDB db, Memcached memcached, String queueKey) {
 		this.db = db;
@@ -49,6 +46,10 @@ public final class CacheStorage implements Storage {
 		this.mq = new MemcachedMQ<Collection<OperationBean>>(memcached, queueKey);
 		this.mq.consumer(new CacheAsyncConsumer(this));
 		this.mq.start();
+	}
+
+	public void setDefaultCacheConfig(CacheConfig defaultCacheConfig) {
+		this.defaultCacheConfig = defaultCacheConfig;
 	}
 
 	public CacheStorage(AbstractDB db, Redis redis, String queueKey) {
@@ -88,7 +89,7 @@ public final class CacheStorage implements Storage {
 	}
 
 	public void config(CacheType cacheType, boolean isAsync, Class<?>... tableClass) {
-		config(new CacheConfig(cacheType, DATA_DEFAULT_EXP_TIME, isAsync), tableClass);
+		config(new CacheConfig(cacheType, CacheConfig.DATA_DEFAULT_EXP_TIME, isAsync), tableClass);
 	}
 
 	public void config(CacheConfig config, Class<?>... tableClass) {
@@ -135,7 +136,10 @@ public final class CacheStorage implements Storage {
 
 	protected CacheConfig getCacheConfig(Class<?> tableClass) {
 		CacheConfig cacheInfo = cacheConfigMap.get(ClassUtils.getCGLIBRealClassName(tableClass));
-		return cacheInfo == null ? DEFAULT_CACHE_CONFIG : cacheInfo;
+		if(cacheInfo == null){
+			return defaultCacheConfig == null? CacheConfig.DEFAULT_CACHE_CONFIG:defaultCacheConfig;
+		}
+		return cacheInfo;
 	}
 
 	public <T> T getById(Class<T> type, Object... params) {
