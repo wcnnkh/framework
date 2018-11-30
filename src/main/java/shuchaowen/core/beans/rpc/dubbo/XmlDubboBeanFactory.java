@@ -7,7 +7,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.alibaba.dubbo.config.ApplicationConfig;
-import com.alibaba.dubbo.config.ReferenceConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 
 import shuchaowen.core.beans.AbstractBeanFactory;
@@ -20,7 +19,6 @@ import shuchaowen.core.util.StringUtils;
 public class XmlDubboBeanFactory extends AbstractBeanFactory{
 	private static final String TAG_NAME = "dubbo:reference";
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public XmlDubboBeanFactory(PropertiesFactory propertiesFactory, String config) throws ClassNotFoundException{
 		NodeList rootNodeList = XmlBeanUtils.getRootNode(config).getChildNodes();
 		if (rootNodeList != null) {
@@ -35,8 +33,8 @@ public class XmlDubboBeanFactory extends AbstractBeanFactory{
 				}
 				
 				String name = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "name");
-				String address = XmlBeanUtils.getRequireNodeAttributeValue(propertiesFactory, node, "address");
-				String version = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "version");
+				String address = XmlBeanUtils.getAddress(propertiesFactory, node);
+				String version = XmlBeanUtils.getVersion(propertiesFactory, node);
 				boolean singleton = XmlBeanUtils.isSingleton(node);
 				boolean check = XmlBeanUtils.getBooleanValue(propertiesFactory, node, "check", false);
 				
@@ -49,19 +47,12 @@ public class XmlDubboBeanFactory extends AbstractBeanFactory{
 					registryConfigs.add(registryConfig);
 				}
 				
-				String packageName = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "package");
+				String packageName = XmlBeanUtils.getPackageName(propertiesFactory, node);
 				if(!StringUtils.isNull(packageName)){
 					for(Class<?> clz : ClassUtils.getClasses(packageName)){
 						if(!clz.isInterface()){
 							continue;
 						}
-						
-						ReferenceConfig referenceConfig = new ReferenceConfig();
-						referenceConfig.setApplication(application);
-						referenceConfig.setRegistries(registryConfigs);
-						referenceConfig.setInterface(clz);
-						referenceConfig.setVersion(version);
-						referenceConfig.setCheck(false);
 						XmlDubboBean xmlDubboBean = new XmlDubboBean(application, registryConfigs, version, clz, singleton, check);
 						putBean(xmlDubboBean.getId(), xmlDubboBean);
 					}

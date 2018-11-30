@@ -76,8 +76,7 @@ public class XmlDubboUtils {
 
 					List<RegistryConfig> registryConfigs = new ArrayList<RegistryConfig>();
 					String[] addressArray = StringUtils
-							.commonSplit(XmlBeanUtils.getNodeAttributeValue(propertiesFactory,
-									node, "address"));
+							.commonSplit(XmlBeanUtils.getAddress(propertiesFactory, node));
 					for (String address : addressArray) {
 						RegistryConfig registryConfig = new RegistryConfig();
 						registryConfig.setAddress(address);
@@ -91,10 +90,8 @@ public class XmlDubboUtils {
 					protocolConfig.setThreads(threads);
 					protocolConfigs.add(protocolConfig);
 
-					String packageNames = XmlBeanUtils.getNodeAttributeValue(propertiesFactory,
-							node, "package");
-					String version = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node,
-							"version");
+					String packageNames = XmlBeanUtils.getPackageName(propertiesFactory, node);
+					String version = XmlBeanUtils.getVersion(propertiesFactory, node);
 					for (Class<?> clz : ClassUtils.getClasses(packageNames)) {
 						Service service = clz.getAnnotation(Service.class);
 						if (service != null) {
