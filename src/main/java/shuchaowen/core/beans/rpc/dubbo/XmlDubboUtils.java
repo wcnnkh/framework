@@ -1,4 +1,4 @@
-package shuchaowen.core.beans.dubbo;
+package shuchaowen.core.beans.rpc.dubbo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,18 +6,18 @@ import java.util.List;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import shuchaowen.core.beans.BeanFactory;
-import shuchaowen.core.beans.PropertiesFactory;
-import shuchaowen.core.beans.annotaion.Service;
-import shuchaowen.core.beans.xml.XmlBeanUtils;
-import shuchaowen.core.exception.BeansException;
-import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.StringUtils;
-
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ProtocolConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.config.ServiceConfig;
+
+import shuchaowen.core.beans.BeanFactory;
+import shuchaowen.core.beans.annotaion.Service;
+import shuchaowen.core.beans.property.PropertiesFactory;
+import shuchaowen.core.beans.xml.XmlBeanUtils;
+import shuchaowen.core.exception.BeansException;
+import shuchaowen.core.util.ClassUtils;
+import shuchaowen.core.util.StringUtils;
 
 public class XmlDubboUtils {
 	
@@ -57,7 +57,7 @@ public class XmlDubboUtils {
 	
 	public static void register(PropertiesFactory propertiesFactory, BeanFactory beanFactory, String config)
 			throws ClassNotFoundException {
-		NodeList rootNodeList = XmlBeanUtils.getRootNode(config);
+		NodeList rootNodeList = XmlBeanUtils.getRootNode(config).getChildNodes();
 		if (rootNodeList != null) {
 			for (int x = 0; x < rootNodeList.getLength(); x++) {
 				Node node = rootNodeList.item(x);
@@ -66,7 +66,7 @@ public class XmlDubboUtils {
 				}
 
 				if ("dubbo:service".equals(node.getNodeName())) {
-					XmlBeanUtils.checkAttribute(node, "port", "address");
+					XmlBeanUtils.requireAttribute(node, "port", "address");
 					ApplicationConfig application = new ApplicationConfig(
 							XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "name"));
 					int port = Integer.parseInt(XmlBeanUtils

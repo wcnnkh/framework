@@ -1,20 +1,20 @@
-package shuchaowen.core.beans.dubbo;
+package shuchaowen.core.beans.rpc.dubbo;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.w3c.dom.Node;
 
+import com.alibaba.dubbo.config.ApplicationConfig;
+import com.alibaba.dubbo.config.ReferenceConfig;
+import com.alibaba.dubbo.config.RegistryConfig;
+
 import shuchaowen.core.beans.Bean;
-import shuchaowen.core.beans.PropertiesFactory;
+import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.beans.xml.XmlBeanUtils;
 import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.exception.NotSupportException;
 import shuchaowen.core.util.StringUtils;
-
-import com.alibaba.dubbo.config.ApplicationConfig;
-import com.alibaba.dubbo.config.ReferenceConfig;
-import com.alibaba.dubbo.config.RegistryConfig;
 
 public class XmlDubboBean implements Bean{
 	private final String[] names;

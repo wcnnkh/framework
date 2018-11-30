@@ -4,5 +4,4 @@ public enum EParameterType {
 	value,
 	ref,
 	property,
-	url
 }

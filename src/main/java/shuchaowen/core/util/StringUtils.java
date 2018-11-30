@@ -17,6 +17,7 @@ public final class StringUtils {
 	private static final String randomStr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	private static final Charset DEFAULT_OLD_CHARSET = Charset.forName("ISO-8859-1");
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+	private static final String IOS_NULL = "(null)";
 	
 	private StringUtils(){};
 	
@@ -28,9 +29,24 @@ public final class StringUtils {
 		}
 		return false;
 	}
-
+	
 	public static boolean isNull(String... strs) {
 		return isNull(false, strs);
+	}
+	
+	/**
+	 * 在ios中由于前端未做判断导致的空
+	 * (null)
+	 * @param strs
+	 * @return
+	 */
+	public static boolean isNullByIOS(String ...strs){
+		for (String s : strs) {
+			if (s == null || s.length() == 0 || IOS_NULL.equals(s)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean trimIsNull(String... strs) {

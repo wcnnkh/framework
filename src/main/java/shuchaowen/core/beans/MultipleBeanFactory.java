@@ -18,7 +18,7 @@ public final class MultipleBeanFactory extends AbstractBeanFactory {
 
 	public void addLastBeanFactory(BeanFactory beanFactory) {
 		if(firstGet){
-			Logger.warn(this.getClass().getName(), "你现在向其中添加一个新的实体工厂，但这个实例工厂已经被使用过了(已调用过get方法)！！！");
+			Logger.warn(this.getClass().getName(), "你现在向其中添加一个新的实体工厂，但这个实例工厂已经被使用过了(已调用过get方法), factory=" + beanFactory.getClass().getName());
 		}
 		
 		if (beanFactoryList == null) {
@@ -29,7 +29,7 @@ public final class MultipleBeanFactory extends AbstractBeanFactory {
 	
 	public void addFirst(BeanFactory beanFactory){
 		if(firstGet){
-			Logger.warn(this.getClass().getName(), "你现在向其中添加一个新的实体工厂，但这个实例工厂已经被使用过了(已调用过get方法)！！！");
+			Logger.warn(this.getClass().getName(), "你现在向其中添加一个新的实体工厂，但这个实例工厂已经被使用过了(已调用过get方法), factory=" + beanFactory.getClass().getName());
 		}
 		
 		if (beanFactoryList == null) {

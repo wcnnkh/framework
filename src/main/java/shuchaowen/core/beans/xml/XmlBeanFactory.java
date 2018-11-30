@@ -1,28 +1,19 @@
 package shuchaowen.core.beans.xml;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import shuchaowen.core.beans.AbstractBeanFactory;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
-import shuchaowen.core.beans.PropertiesFactory;
+import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.exception.AlreadyExistsException;
-import shuchaowen.core.exception.BeansException;
-import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.StringUtils;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
-	private static final String BEANS_TAG_NAME = "beans";
 	private static final String BEANS_ANNOTATION = "packages";
 	private static final String BEAN_TAG_NAME = "bean";
 	private static final String BEAN_FACTORY_TAG_NAME = "factory";
@@ -31,15 +22,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	private List<String> beanFactoryList;
 
 	public XmlBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String beanXml) throws Exception {
-		File xml = ConfigUtils.getFile(beanXml);
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-		Document document = builder.parse(xml);
-		Element root = document.getDocumentElement();
-		if (!BEANS_TAG_NAME.equals(root.getTagName())) {
-			throw new BeansException("root tag name error [" + root.getTagName() + "]");
-		}
-
+		Node root = XmlBeanUtils.getRootNode(beanXml);
 		if (root.getAttributes() != null) {
 			Node annotationNode = root.getAttributes().getNamedItem(BEANS_ANNOTATION);
 			if (annotationNode != null) {

@@ -3,6 +3,8 @@ package shuchaowen.core.beans;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import shuchaowen.core.beans.property.PropertiesFactory;
+
 public class NoArgumentBeanMethod implements BeanMethod{
 	private final Method method;
 	private final boolean isStaticMethod;

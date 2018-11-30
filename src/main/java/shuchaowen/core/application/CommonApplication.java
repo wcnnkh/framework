@@ -3,11 +3,15 @@ package shuchaowen.core.application;
 import java.util.Collection;
 
 import shuchaowen.core.beans.AnnotationBeanFactory;
+import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.BeanUtils;
 import shuchaowen.core.beans.MultipleBeanFactory;
-import shuchaowen.core.beans.PropertiesFactory;
+import shuchaowen.core.beans.property.PropertiesFactory;
+import shuchaowen.core.beans.property.XmlPropertiesFactory;
+import shuchaowen.core.beans.rpc.dubbo.XmlDubboBeanFactory;
+import shuchaowen.core.beans.rpc.dubbo.XmlDubboUtils;
+import shuchaowen.core.beans.rpc.http.SCWRPCBeanFactory;
 import shuchaowen.core.beans.xml.XmlBeanFactory;
-import shuchaowen.core.beans.xml.XmlPropertiesFactory;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
@@ -19,13 +23,21 @@ public class CommonApplication implements Application {
 	private String packageNames;
 	private volatile boolean start = false;
 	private PropertiesFactory propertiesFactory;
+	private final String configPath;
 
 	public CommonApplication(String configPath, boolean initStatic) {
 		beanFactory = new MultipleBeanFactory();
+		this.configPath = configPath;
 		this.initStatic = initStatic;
 		try {
-			propertiesFactory = new XmlPropertiesFactory(beanFactory, configPath);
+			propertiesFactory = new XmlPropertiesFactory(configPath);
 			if (!StringUtils.isNull(configPath)) {
+				BeanFactory dubboBeanFactory = new XmlDubboBeanFactory(propertiesFactory, configPath);
+				beanFactory.addLastBeanFactory(dubboBeanFactory);
+				
+				SCWRPCBeanFactory scwrpcBeanFactory = new SCWRPCBeanFactory(propertiesFactory, configPath);
+				beanFactory.addLastBeanFactory(scwrpcBeanFactory);
+				
 				XmlBeanFactory xmlBeanFactory = new XmlBeanFactory(beanFactory, propertiesFactory, configPath);
 				this.packageNames = xmlBeanFactory.getPackageNames();
 				beanFactory.addLastBeanFactory(xmlBeanFactory);
@@ -66,6 +78,10 @@ public class CommonApplication implements Application {
 		if(initStatic){
 			try {
 				BeanUtils.initStatic(beanFactory, getClasses());
+				
+				if(!StringUtils.isNull(configPath)){
+					XmlDubboUtils.register(propertiesFactory, beanFactory, configPath);
+				}
 			} catch (Exception e) {
 				throw new ShuChaoWenRuntimeException(e);
 			}

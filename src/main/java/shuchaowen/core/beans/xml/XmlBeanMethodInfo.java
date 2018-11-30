@@ -7,15 +7,14 @@ import org.w3c.dom.Node;
 
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.BeanMethod;
-import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.BeanUtils;
-import shuchaowen.core.beans.PropertiesFactory;
+import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.exception.BeansException;
 
 public class XmlBeanMethodInfo implements BeanMethod{
 	private static final String NAME_KEY = "name";
 	private Method method;
-	private BeanParameter[] beanMethodParameters;
+	private XmlBeanParameter[] beanMethodParameters;
 	
 	public XmlBeanMethodInfo(Class<?> type, Node node) throws Exception{
 		if(node.getAttributes() == null){
@@ -28,11 +27,11 @@ public class XmlBeanMethodInfo implements BeanMethod{
 		}
 		
 		String name = nameNode.getNodeValue();
-		List<BeanParameter> beanParameters = XmlBeanUtils.parseBeanParameterList(node);
+		List<XmlBeanParameter> xmlBeanParameters = XmlBeanUtils.parseBeanParameterList(node);
 		Class<?> tempClz = type;
 		while(tempClz != null){
 			for(Method method : tempClz.getDeclaredMethods()){
-				if(method.getParameterCount() != beanParameters.size()){
+				if(method.getParameterCount() != xmlBeanParameters.size()){
 					continue;
 				}
 				
@@ -40,7 +39,7 @@ public class XmlBeanMethodInfo implements BeanMethod{
 					continue;
 				}
 				
-				BeanParameter[] beanMethodParameters = BeanUtils.sortParameters(method, beanParameters);
+				XmlBeanParameter[] beanMethodParameters = BeanUtils.sortParameters(method, xmlBeanParameters);
 				if(beanMethodParameters != null){
 					this.beanMethodParameters = beanMethodParameters;
 					method.setAccessible(true);

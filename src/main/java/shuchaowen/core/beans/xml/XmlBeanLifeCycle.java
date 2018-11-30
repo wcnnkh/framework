@@ -12,9 +12,8 @@ import shuchaowen.core.beans.AnnotationBean;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.BeanLifeCycle;
 import shuchaowen.core.beans.BeanMethod;
-import shuchaowen.core.beans.BeanParameter;
 import shuchaowen.core.beans.BeanUtils;
-import shuchaowen.core.beans.PropertiesFactory;
+import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.ClassUtils;
@@ -27,13 +26,12 @@ public class XmlBeanLifeCycle implements BeanLifeCycle{
 	private static final String PROPERTIES_TAG_NAME = "properties";
 	private static final String INIT_METHOD_TAG_NAME = "init";
 	private static final String DESTROY_METHOD_TAG_NAME = "destroy";
-	private static final String REF_ATTR_KEY = "ref";
 
 	private final BeanFactory beanFactory;
 	private final PropertiesFactory propertiesFactory;
 	private final ClassInfo classInfo;
 	private final Class<?> type;
-	private final List<BeanParameter> propertiesList = new ArrayList<BeanParameter>();
+	private final List<XmlBeanParameter> propertiesList = new ArrayList<XmlBeanParameter>();
 	private final List<BeanMethod> initMethodList = new ArrayList<BeanMethod>();
 	private final List<BeanMethod> destroyMethodList = new ArrayList<BeanMethod>();
 
@@ -54,15 +52,7 @@ public class XmlBeanLifeCycle implements BeanLifeCycle{
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if (PROPERTIES_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// Properties
-				Node refNode = n.getAttributes().getNamedItem(REF_ATTR_KEY);
-				if (refNode != null) {
-					String v = refNode.getNodeValue();
-					if (!StringUtils.isNull(v)) {
-						propertiesList.addAll(propertiesFactory.getBeanParameterList(v));
-					}
-				}
-
-				List<BeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
+				List<XmlBeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
 				if (list != null) {
 					propertiesList.addAll(list);
 				}
@@ -84,7 +74,7 @@ public class XmlBeanLifeCycle implements BeanLifeCycle{
 			return;
 		}
 
-		for (BeanParameter beanProperties : propertiesList) {
+		for (XmlBeanParameter beanProperties : propertiesList) {
 			FieldInfo fieldInfo = classInfo.getFieldInfo(beanProperties.getName());
 			if (fieldInfo != null) {
 				Object value = beanProperties.parseValue(beanFactory, propertiesFactory, fieldInfo.getType());

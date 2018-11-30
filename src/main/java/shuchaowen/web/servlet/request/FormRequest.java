@@ -38,7 +38,15 @@ public class FormRequest extends WebRequest {
 			Logger.debug(this.getClass().getName(), sb.toString());
 		}
 	}
-
+	
+	protected String getRequireValue(String key){
+		String v = getValue(key);
+		if(isNull(v)){
+			throw new NullPointerException("require '" + key + "'");
+		}
+		return v;
+	}
+	
 	protected String getValue(String key) {
 		String v;
 		if (restUrlValueMap == null) {
@@ -75,11 +83,7 @@ public class FormRequest extends WebRequest {
 	}
 
 	public byte getByteValue(String key) {
-		String v = getValue(key);
-		if (isNull(v)) {
-			throw new NullPointerException("require '" + key + "'");
-		}
-
+		String v = getRequireValue(key);
 		return Byte.parseByte(v);
 	}
 
@@ -93,10 +97,7 @@ public class FormRequest extends WebRequest {
 	}
 
 	public short getShortValue(String key) {
-		String v = getValue(key);
-		if (isNull(v)) {
-			throw new NullPointerException("require '" + key + "'");
-		}
+		String v = getRequireValue(key);
 
 		return Short.parseShort(formatNumberText(v));
 	}
@@ -107,10 +108,7 @@ public class FormRequest extends WebRequest {
 	}
 
 	public int getIntValue(String key) {
-		String v = getValue(key);
-		if (isNull(v)) {
-			throw new NullPointerException("require '" + key + "'");
-		}
+		String v = getRequireValue(key);
 
 		return Integer.parseInt(formatNumberText(v));
 	}
@@ -121,29 +119,18 @@ public class FormRequest extends WebRequest {
 	}
 
 	public long getLongValue(String key) {
-		String v = getValue(key);
-		if (isNull(v)) {
-			throw new NullPointerException("require '" + key + "'");
-		}
+		String v = getRequireValue(key);
 
 		return Long.parseLong(formatNumberText(v));
 	}
 
 	public Boolean getBoolean(String key) {
-		String v = getValue(key);
-		if (v == null || v.length() == 0) {
-			return null;
-		}
-
+		String v = getRequireValue(key);
 		return "1".equals(v) ? true : Boolean.valueOf(v);
 	}
 
 	public boolean getBooleanValue(String key) {
-		String v = getValue(key);
-		if (v == null || v.length() == 0) {
-			throw new NullPointerException("require '" + key + "'");
-		}
-
+		String v = getRequireValue(key);
 		return "1".equals(v) ? true : Boolean.parseBoolean(v);
 	}
 
@@ -153,11 +140,7 @@ public class FormRequest extends WebRequest {
 	}
 
 	public float getFloatValue(String key) {
-		String v = getValue(key);
-		if (isNull(v)) {
-			throw new NullPointerException("require '" + key + "'");
-		}
-
+		String v = getRequireValue(key);
 		return Float.parseFloat(formatNumberText(v));
 	}
 
@@ -167,27 +150,19 @@ public class FormRequest extends WebRequest {
 	}
 
 	public double getDoubleValue(String key) {
-		String v = getValue(key);
-		if (isNull(v)) {
-			throw new NullPointerException("require '" + key + "'");
-		}
-
+		String v = getRequireValue(key);
 		return Double.parseDouble(formatNumberText(v));
 	}
 
 	@Override
-	public char getChar(String name) {
-		String v = getValue(name);
-		if (isNull(v)) {
-			throw new NullPointerException("require '" + name + "'");
-		}
-
+	public char getChar(String key) {
+		String v = getRequireValue(key);
 		return v.charAt(0);
 	}
 
 	@Override
-	public Character getCharacter(String name) {
-		String v = getValue(name);
+	public Character getCharacter(String key) {
+		String v = getValue(key);
 		return isNull(v) ? null : v.charAt(0);
 	}
 	

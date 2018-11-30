@@ -20,6 +20,8 @@ import shuchaowen.core.beans.annotaion.Properties;
 import shuchaowen.core.beans.annotaion.Proxy;
 import shuchaowen.core.beans.annotaion.Service;
 import shuchaowen.core.beans.annotaion.Transaction;
+import shuchaowen.core.beans.property.PropertiesFactory;
+import shuchaowen.core.beans.xml.XmlBeanParameter;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.http.server.annotation.Controller;
@@ -166,7 +168,7 @@ public final class BeanUtils {
 	 * @param beanMethodParameters
 	 * @return
 	 */
-	public static BeanParameter[] sortParameters(Executable executable, List<BeanParameter> beanMethodParameters) {
+	public static XmlBeanParameter[] sortParameters(Executable executable, List<XmlBeanParameter> beanMethodParameters) {
 		if (executable.getParameterCount() != beanMethodParameters.size()) {
 			return null;
 		}
@@ -178,11 +180,11 @@ public final class BeanUtils {
 			paramNames = ClassUtils.getParameterName((Method) executable);
 		}
 
-		BeanParameter[] methodParameters = new BeanParameter[beanMethodParameters.size()];
+		XmlBeanParameter[] methodParameters = new XmlBeanParameter[beanMethodParameters.size()];
 		Class<?>[] oldTypes = executable.getParameterTypes();
 		Class<?>[] types = new Class<?>[beanMethodParameters.size()];
 		for (int i = 0; i < beanMethodParameters.size(); i++) {
-			BeanParameter beanMethodParameter = beanMethodParameters.get(i).clone();
+			XmlBeanParameter beanMethodParameter = beanMethodParameters.get(i).clone();
 			if (!StringUtils.isNull(beanMethodParameter.getName())) {
 				for (int a = 0; a < paramNames.length; a++) {
 					if (paramNames[a].equals(beanMethodParameter.getName())) {
@@ -212,12 +214,12 @@ public final class BeanUtils {
 		return find ? methodParameters : null;
 	}
 
-	public static Object[] getBeanMethodParameterArgs(BeanParameter[] beanParameters, BeanFactory beanFactory,
-			PropertiesFactory propertiesFactory) throws Exception {
+	public static Object[] getBeanMethodParameterArgs(XmlBeanParameter[] beanParameters, BeanFactory beanFactory,
+			shuchaowen.core.beans.property.PropertiesFactory propertiesFactory) throws Exception {
 		Object[] args = new Object[beanParameters.length];
 		for (int i = 0; i < args.length; i++) {
-			BeanParameter beanParameter = beanParameters[i];
-			args[i] = beanParameter.parseValue(beanFactory, propertiesFactory);
+			XmlBeanParameter xmlBeanParameter = beanParameters[i];
+			args[i] = xmlBeanParameter.parseValue(beanFactory, propertiesFactory);
 		}
 		return args;
 	}
@@ -296,7 +298,8 @@ public final class BeanUtils {
 			try {
 				existDefaultValueWarnLog("@Properties", clz, field, obj);
 				
-				value = propertiesFactory.getProperties(properties.value(), field.getType());
+				String v = propertiesFactory.getValue(properties.value());
+				value = StringUtils.conversion(v, field.getType());
 				field.set(obj, value);
 			} catch (Exception e) {
 				e.printStackTrace();

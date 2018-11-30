@@ -1,6 +1,7 @@
 package shuchaowen.core.beans;
 
 import shuchaowen.core.beans.annotaion.Service;
+import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.exception.AlreadyExistsException;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;

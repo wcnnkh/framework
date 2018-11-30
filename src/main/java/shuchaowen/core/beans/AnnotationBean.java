@@ -11,6 +11,7 @@ import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.core.beans.annotaion.Destroy;
 import shuchaowen.core.beans.annotaion.InitMethod;
 import shuchaowen.core.beans.annotaion.Retry;
+import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.util.ClassInfo;
