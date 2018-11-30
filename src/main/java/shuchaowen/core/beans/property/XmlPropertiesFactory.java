@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import shuchaowen.core.beans.xml.XmlBeanUtils;
+import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.StringUtils;
 
@@ -33,11 +34,17 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 	}
 
 	public String getValue(String key) {
+		String value;
 		Property property = propertiesMap.get(key);
 		if(property == null){
-			return ConfigUtils.getSystemProperty(key);
+			value = ConfigUtils.getSystemProperty(key);
 		}else{
-			return property.getXmlValue().formatValue(this);
+			value = property.getXmlValue().formatValue(this);
 		}
+		
+		if(value == null){
+			throw new BeansException("not found property:" + key);
+		}
+		return value;
 	}
 }

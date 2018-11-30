@@ -56,12 +56,10 @@ public final class XmlBeanParameter implements Cloneable, Serializable{
 	public Object parseValue(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> parameterType) throws Exception{
 		switch (type) {
 		case value:
+		case property:
 			return StringUtils.conversion(xmlValue.formatValue(propertiesFactory), parameterType);
 		case ref:
 			return beanFactory.get(xmlValue.formatValue(propertiesFactory));
-		case property:
-			String v = propertiesFactory.getValue(xmlValue.formatValue(propertiesFactory));
-			return StringUtils.conversion(v, parameterType);
 		default:
 			break;
 		}
