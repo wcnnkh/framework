@@ -75,16 +75,17 @@ public class CommonApplication implements Application {
 			start = true;
 		}
 		
-		if(initStatic){
-			try {
+		
+		try {
+			if(initStatic){
 				BeanUtils.initStatic(beanFactory, getClasses());
-				
-				if(!StringUtils.isNull(configPath)){
-					XmlDubboUtils.register(propertiesFactory, beanFactory, configPath);
-				}
-			} catch (Exception e) {
-				throw new ShuChaoWenRuntimeException(e);
 			}
+			
+			if(!StringUtils.isNull(configPath)){
+				XmlDubboUtils.register(propertiesFactory, beanFactory, configPath);
+			}	
+		} catch (Exception e) {
+			throw new ShuChaoWenRuntimeException(e);
 		}
 	}
 

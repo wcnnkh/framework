@@ -19,7 +19,8 @@ import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 
-public class XmlDubboUtils {
+public final class XmlDubboUtils {
+	private XmlDubboUtils(){};
 	
 	private static void register(PropertiesFactory propertiesFactory, BeanFactory beanFactory,
 			ApplicationConfig application,
@@ -35,9 +36,11 @@ public class XmlDubboUtils {
 		if (StringUtils.isNull(serviceClassName)) {
 			throw new BeansException("not found dubbo service");
 		}
-
-		String v = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, serviceNode, "version");
-		v = StringUtils.isNull(v) ? version : v;
+		
+		String v = XmlBeanUtils.getVersion(propertiesFactory, serviceNode);
+		if(StringUtils.isNull(v)){
+			v = version;
+		}
 
 		Class<?> clz = Class.forName(serviceClassName);
 		Object ref = beanFactory.get(serviceClassName);
