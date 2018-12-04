@@ -97,8 +97,4 @@ public final class XmlBeanParameter implements Cloneable, Serializable{
 		}
 		return StringUtils.conversion(v, parameterType);
 	}
-	
-	public static void main(String[] args) {
-		System.out.println(XmlBeanParameter.class instanceof Class);
-	}
 }
