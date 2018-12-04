@@ -1,12 +1,17 @@
 package shuchaowen.core.beans.xml;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.w3c.dom.Node;
 
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.EParameterType;
 import shuchaowen.core.beans.property.PropertiesFactory;
+import shuchaowen.core.exception.NotFoundException;
+import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 
 public final class XmlBeanParameter implements Cloneable, Serializable{
@@ -56,15 +61,40 @@ public final class XmlBeanParameter implements Cloneable, Serializable{
 	public Object parseValue(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> parameterType) throws Exception{
 		switch (type) {
 		case value:
-			return StringUtils.conversion(xmlValue.formatValue(propertiesFactory), parameterType);
+			return formatStringValue(xmlValue.formatValue(propertiesFactory), parameterType);
 		case ref:
 			return beanFactory.get(xmlValue.formatValue(propertiesFactory));
 		case property:
-			String v = propertiesFactory.getValue(xmlValue.getValue());
-			return StringUtils.conversion(v, parameterType);
+			return formatStringValue(propertiesFactory.getValue(xmlValue.getValue()), parameterType);
 		default:
 			break;
 		}
 		return null;
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Object formatStringValue(String v, Class<?> parameterType) throws ClassNotFoundException, ParseException{
+		if(v == null){
+			return null;
+		}
+		
+		if(parameterType instanceof Class){
+			return ClassUtils.forName(v);
+		}else if(Date.class.isAssignableFrom(parameterType)){
+			if(StringUtils.isNumeric(v)){
+				return new Date(Long.parseLong(v));
+			}else{
+				String dateFormat = xmlValue.getNodeAttributeValue("date-format");
+				if(StringUtils.isNull(dateFormat)){
+					throw new NotFoundException("data-format [" + v + "]");
+				}
+				
+				SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+				return sdf.parse(v);
+			}
+		}else if(parameterType.isEnum()){
+			return Enum.valueOf((Class<? extends Enum>) parameterType, v);
+		}
+		return StringUtils.conversion(v, parameterType);
 	}
 }

@@ -14,8 +14,10 @@ public class XmlValue {
 	private final boolean replace;
 	private final String replace_prefix;
 	private final String replace_suffix;
+	private final Node node;
 	
 	public XmlValue(Node node, String parentCharsetName){
+		this.node = node;
 		this.replace = XmlBeanUtils.getBooleanValue(node, "replace", true);
 		this.replace_prefix = XmlBeanUtils.getNodeAttributeValue(node, "replace-prefix");
 		this.replace_suffix = XmlBeanUtils.getNodeAttributeValue(node, "replace-suffix");
@@ -43,6 +45,7 @@ public class XmlValue {
 	}
 	
 	public XmlValue(String value, Node node){
+		this.node = node;
 		this.value = value;
 		this.replace = XmlBeanUtils.getBooleanValue(node, "replace", true);
 		this.replace_prefix = XmlBeanUtils.getNodeAttributeValue(node, "replace-prefix");
@@ -53,6 +56,18 @@ public class XmlValue {
 		return value;
 	}
 	
+	public Node getNode() {
+		return node;
+	}
+	
+	public String getNodeAttributeValue(String name){
+		return XmlBeanUtils.getNodeAttributeValue(node, name);
+	}
+	
+	public String getNodeAttributeValue(PropertiesFactory propertiesFactory, String name){
+		return XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, name);
+	}
+
 	public String formatValue(final PropertiesFactory propertiesFactory){
 		if(StringUtils.isNull(value)){
 			return value;

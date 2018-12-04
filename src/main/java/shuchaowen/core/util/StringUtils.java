@@ -726,4 +726,21 @@ public final class StringUtils {
 		}
 		return newContent;
 	}
+	
+	/**
+	 * 随机出一个32位的ID
+	 * @param supplementId 补充的数字
+	 * @param complemented 空白部分的填充字符
+	 * @return
+	 */
+	public static String random32ID(long supplementId, char complemented){
+		StringBuilder sb = new StringBuilder();
+		String str1 = Long.toString(supplementId, 32);
+		sb.append(complemented(str1, complemented, 13, false));
+		
+		String str2 = Long.toString(System.currentTimeMillis(), 32);
+		sb.append(complemented(str2, complemented, 13, false));
+		sb.append(getRandomStr(32-sb.length()));
+		return sb.toString();
+	}
 }
