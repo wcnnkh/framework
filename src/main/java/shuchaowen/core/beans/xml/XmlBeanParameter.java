@@ -78,7 +78,7 @@ public final class XmlBeanParameter implements Cloneable, Serializable{
 			return null;
 		}
 		
-		if(parameterType instanceof Class){
+		if(Class.class.isAssignableFrom(parameterType)){
 			return ClassUtils.forName(v);
 		}else if(Date.class.isAssignableFrom(parameterType)){
 			if(StringUtils.isNumeric(v)){
@@ -96,5 +96,9 @@ public final class XmlBeanParameter implements Cloneable, Serializable{
 			return Enum.valueOf((Class<? extends Enum>) parameterType, v);
 		}
 		return StringUtils.conversion(v, parameterType);
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(XmlBeanParameter.class instanceof Class);
 	}
 }
