@@ -48,8 +48,8 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 	/**
 	 * 不参与正在进行的事务，单独执行
 	 */
-	public void forceExecute(ConnectionPool db, Collection<SQL> sqls) {
-		if (sqls == null || db == null) {
+	public void forceExecute(ConnectionSource connectionSource, Collection<SQL> sqls) {
+		if (sqls == null || connectionSource == null) {
 			throw new NullPointerException();
 		}
 
@@ -59,7 +59,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 			}
 		}
 
-		DBUtils.execute(db, sqls);
+		DBUtils.execute(connectionSource, sqls);
 	}
 
 	/**
@@ -80,8 +80,8 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 		}
 	}
 
-	public void execute(ConnectionPool db, SQL... sqls) {
-		execute(db, Arrays.asList(sqls));
+	public void execute(ConnectionSource connectionSource, SQL... sqls) {
+		execute(connectionSource, Arrays.asList(sqls));
 	}
 
 	/**
@@ -90,8 +90,8 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 	 * @param connectionOrigin
 	 * @param sql
 	 */
-	public void execute(ConnectionPool db, Collection<SQL> sqls) {
-		if (db == null || sqls == null || sqls.isEmpty()) {
+	public void execute(ConnectionSource connectionSource, Collection<SQL> sqls) {
+		if (connectionSource == null || sqls == null || sqls.isEmpty()) {
 			return;
 		}
 
@@ -103,7 +103,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 				}
 			}
 			
-			SQLTransaction sqlTransaction = new SQLTransaction(db);
+			SQLTransaction sqlTransaction = new SQLTransaction(connectionSource);
 			for (SQL sql : sqls) {
 				sqlTransaction.addSql(sql);
 			}
@@ -116,11 +116,11 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 				}
 			}
 			
-			localDBTransaction.addSql(db, sqls);
+			localDBTransaction.addSql(connectionSource, sqls);
 		}
 	}
 	
-	public void execute(ConnectionPool db, Collection<SQL> sqls, Transaction transaction) {
+	public void execute(ConnectionSource connectionSource, Collection<SQL> sqls, Transaction transaction) {
 		ThreadLocalTransaction threadLocalTransaction = getValue();
 		if (threadLocalTransaction == null) {// 如果未使用事务
 			if (debug) {
@@ -132,8 +132,8 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 			}
 			
 			TransactionCollection transactionCollection = new TransactionCollection(2);
-			if (db != null && sqls != null && !sqls.isEmpty()) {
-				SQLTransaction sqlTransaction = new SQLTransaction(db);
+			if (connectionSource != null && sqls != null && !sqls.isEmpty()) {
+				SQLTransaction sqlTransaction = new SQLTransaction(connectionSource);
 				for (SQL sql : sqls) {
 					sqlTransaction.addSql(sql);
 				}
@@ -155,22 +155,22 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 				}
 			}
 			
-			threadLocalTransaction.addSql(db, sqls);
+			threadLocalTransaction.addSql(connectionSource, sqls);
 			if (transaction != null) {
 				threadLocalTransaction.addTransaction(transaction);
 			}
 		}
 	}
 
-	public ResultSet select(ConnectionPool db, SQL sql) {
+	public ResultSet select(ConnectionSource connectionSource, SQL sql) {
 		ThreadLocalTransaction threadLocalTransaction = getValue();
 		if (threadLocalTransaction == null) {// 如果未使用事务
 			if (debug) {
 				Logger.debug("SQL", DBUtils.getSQLId(sql));
 			}
-			return DBUtils.select(db, sql);
+			return DBUtils.select(connectionSource, sql);
 		} else {
-			return threadLocalTransaction.select(db, sql);
+			return threadLocalTransaction.select(connectionSource, sql);
 		}
 	}
 	
@@ -210,7 +210,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 
 final class ThreadLocalTransaction extends AbstractTransaction {
 	private CombinationTransaction combinationTransaction;
-	private Map<ConnectionPool, Map<String, ResultSet>> cacheMap;
+	private Map<ConnectionSource, Map<String, ResultSet>> cacheMap;
 	private boolean debug;
 
 	public ThreadLocalTransaction(boolean debug) {
@@ -224,11 +224,11 @@ final class ThreadLocalTransaction extends AbstractTransaction {
 		combinationTransaction.addTransaction(collection);
 	}
 	
-	private ResultSet realSelect(ConnectionPool db, SQL sql){
+	private ResultSet realSelect(ConnectionSource connectionSource, SQL sql){
 		if (debug) {
 			Logger.debug("SQL", DBUtils.getSQLId(sql));
 		}
-		return DBUtils.select(db, sql);
+		return DBUtils.select(connectionSource, sql);
 	}
 
 	public boolean isDebug() {
@@ -239,34 +239,34 @@ final class ThreadLocalTransaction extends AbstractTransaction {
 		this.debug = debug;
 	}
 
-	ResultSet select(ConnectionPool db, SQL sql) {
+	ResultSet select(ConnectionSource connectionSource, SQL sql) {
 		ResultSet resultSet;
 		String id = DBUtils.getSQLId(sql);
 		if(cacheMap == null){
-			cacheMap = new HashMap<ConnectionPool, Map<String,ResultSet>>(2, 1);
-			resultSet = realSelect(db, sql);
+			cacheMap = new HashMap<ConnectionSource, Map<String,ResultSet>>(2, 1);
+			resultSet = realSelect(connectionSource, sql);
 			Map<String, ResultSet> map = new HashMap<String, ResultSet>();
 			map.put(id, resultSet);
-			cacheMap.put(db, map);
+			cacheMap.put(connectionSource, map);
 		}else{
-			Map<String, ResultSet> map = cacheMap.getOrDefault(db, new HashMap<String, ResultSet>());
+			Map<String, ResultSet> map = cacheMap.getOrDefault(connectionSource, new HashMap<String, ResultSet>());
 			if(map == null){
-				resultSet = realSelect(db, sql);
+				resultSet = realSelect(connectionSource, sql);
 				map = new HashMap<String, ResultSet>();
 				map.put(id, resultSet);
-				cacheMap.put(db, map);
+				cacheMap.put(connectionSource, map);
 			} else if (map.containsKey(id)) {
 				resultSet = map.get(id);
 			} else {
-				resultSet = realSelect(db, sql);
+				resultSet = realSelect(connectionSource, sql);
 				map.put(id, resultSet);
-				cacheMap.put(db, map);
+				cacheMap.put(connectionSource, map);
 			}
 		}
 		return resultSet;
 	}
 
-	void addSql(ConnectionPool db, Collection<SQL> sqls) {
+	void addSql(ConnectionSource db, Collection<SQL> sqls) {
 		if(combinationTransaction == null){
 			combinationTransaction = new CombinationTransaction();
 		}

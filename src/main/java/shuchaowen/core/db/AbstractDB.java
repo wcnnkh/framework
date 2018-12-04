@@ -18,7 +18,7 @@ import shuchaowen.core.db.sql.format.mysql.MysqlSelect;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 
-public abstract class AbstractDB implements ConnectionPool{
+public abstract class AbstractDB implements ConnectionSource, AutoCloseable{
 	public static final SQLFormat DEFAULT_SQL_FORMAT = new MysqlFormat();
 	private volatile static Map<String, TableInfo> tableMap = new HashMap<String, TableInfo>();
 

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import shuchaowen.core.db.ConnectionPool;
+import shuchaowen.core.db.ConnectionSource;
 import shuchaowen.core.db.sql.SQL;
 
 /**
@@ -13,10 +13,10 @@ import shuchaowen.core.db.sql.SQL;
  *
  */
 public final class CombinationTransaction implements Transaction{
-	private HashMap<ConnectionPool, SQLTransaction> dbSqlMap = new HashMap<ConnectionPool, SQLTransaction>(2, 1);
+	private HashMap<ConnectionSource, SQLTransaction> dbSqlMap = new HashMap<ConnectionSource, SQLTransaction>(2, 1);
 	private TransactionCollection transactionCollection = new TransactionCollection(4);
 
-	public void addSql(ConnectionPool db, Collection<SQL> sqls) {
+	public void addSql(ConnectionSource db, Collection<SQL> sqls) {
 		if (sqls == null || db == null) {
 			return;
 		}
@@ -33,7 +33,7 @@ public final class CombinationTransaction implements Transaction{
 	}
 	
 	public void begin() throws Exception {
-		for (Entry<ConnectionPool, SQLTransaction> entry : dbSqlMap.entrySet()) {
+		for (Entry<ConnectionSource, SQLTransaction> entry : dbSqlMap.entrySet()) {
 			transactionCollection.add(entry.getValue());
 		}
 		transactionCollection.begin();
@@ -41,7 +41,7 @@ public final class CombinationTransaction implements Transaction{
 	
 	public void clear(){
 		if(dbSqlMap != null){
-			for (Entry<ConnectionPool, SQLTransaction> entry : dbSqlMap.entrySet()) {
+			for (Entry<ConnectionSource, SQLTransaction> entry : dbSqlMap.entrySet()) {
 				entry.getValue().clear();
 			}
 		}

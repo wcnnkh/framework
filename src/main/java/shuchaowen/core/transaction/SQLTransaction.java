@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import shuchaowen.core.db.ConnectionPool;
+import shuchaowen.core.db.ConnectionSource;
 import shuchaowen.core.db.DBUtils;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.util.XUtils;
@@ -15,22 +15,13 @@ import shuchaowen.core.util.XUtils;
 public final class SQLTransaction extends AbstractTransaction {
 	private Map<String, SQL> sqlMap = new HashMap<String, SQL>(4, 1);
 	private Connection connection;
-	private ConnectionPool connectionPool;
+	private ConnectionSource connectionSource;
 	private PreparedStatement[] preparedStatements;
 	private int transactionLevel = -1;
 	private int oldTransactionLevel = -1;
 
-	public SQLTransaction(ConnectionPool connectionPool) {
-		this(connectionPool, -1);
-	}
-	
-	public SQLTransaction(Connection connection){
-		this(connection, -1);
-	}
-	
-	public SQLTransaction(Connection connection, int transactionLevel) {
-		this.connection = connection;
-		this.transactionLevel = transactionLevel;
+	public SQLTransaction(ConnectionSource connectionSource) {
+		this(connectionSource, -1);
 	}
 	
 	/**
@@ -39,8 +30,8 @@ public final class SQLTransaction extends AbstractTransaction {
 	 * @param updateStack
 	 *            如果为true 那么执行后的updateCount大于0就成功，不然就抛出异常.
 	 */
-	public SQLTransaction(ConnectionPool connectionPool, int transactionLevel) {
-		this.connectionPool = connectionPool;
+	public SQLTransaction(ConnectionSource connectionSource, int transactionLevel) {
+		this.connectionSource = connectionSource;
 		this.transactionLevel = transactionLevel;
 	}
 
@@ -62,7 +53,7 @@ public final class SQLTransaction extends AbstractTransaction {
 	public void begin() throws Exception {
 		if (!sqlMap.isEmpty()) {
 			if(connection == null){
-				connection = connectionPool.getConnection();
+				connection = connectionSource.getConnection();
 			}
 			
 			connection.setAutoCommit(false);
