@@ -21,13 +21,21 @@ public class RedisByJedisPool implements Redis {
 		jedisPoolConfig.setTestOnBorrow(true);
 		this.jedisPool = new JedisPool(jedisPoolConfig, "localhost");
 	}
+	
+	public RedisByJedisPool(int maxTotal, int maxIdle, boolean testOnBorrow, String host) {
+		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+		jedisPoolConfig.setMaxTotal(maxTotal);
+		jedisPoolConfig.setMaxIdle(maxIdle);
+		jedisPoolConfig.setTestOnBorrow(testOnBorrow);
+		this.jedisPool = new JedisPool(jedisPoolConfig, host);
+	}
 
 	/**
 	 * @param jedisPool
 	 * @param abnormalInterruption
 	 *            发生异常时是否中断
 	 */
-	public RedisByJedisPool(JedisPool jedisPool, boolean abnormalInterruption) {
+	public RedisByJedisPool(JedisPool jedisPool) {
 		this.jedisPool = jedisPool;
 	}
 

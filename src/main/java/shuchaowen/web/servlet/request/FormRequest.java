@@ -125,7 +125,7 @@ public class FormRequest extends WebRequest {
 	}
 
 	public Boolean getBoolean(String key) {
-		String v = getRequireValue(key);
+		String v = getValue(key);
 		return "1".equals(v) ? true : Boolean.valueOf(v);
 	}
 
