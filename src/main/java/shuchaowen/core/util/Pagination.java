@@ -9,13 +9,13 @@ import java.io.Serializable;
  */
 public class Pagination<T> implements Serializable{
 	private static final long serialVersionUID = 1511962074546668955L;
-	private long limit;
+	private int limit;
 	private long totalCount;
 	private T data;
 	
 	public Pagination(){};
 	
-	public Pagination(long total, long limit, T data){
+	public Pagination(long total, int limit, T data){
 		this.totalCount = total;
 		this.limit = limit;
 		this.data = data;
@@ -28,11 +28,11 @@ public class Pagination<T> implements Serializable{
 		return (long) Math.ceil(((double)totalCount)/limit);
 	}
 
-	public long getLimit() {
+	public int getLimit() {
 		return limit;
 	}
 
-	public void setLimit(long limit) {
+	public void setLimit(int limit) {
 		this.limit = limit;
 	}
 

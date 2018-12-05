@@ -218,7 +218,7 @@ public class MysqlSelect extends Select{
 	}
 
 	@Override
-	public ResultSet getResultSet(long begin, long limit) {
+	public ResultSet getResultSet(long begin, int limit) {
 		SQL sql = toSQL("*", true);
 		Object[] args;
 		if(sql.getParams() == null){

@@ -9,19 +9,12 @@ public class CommonPagination<T> extends AbstractPagination<T>{
 	
 	public CommonPagination(){};//为了序列化
 	
-	public CommonPagination(long total, long limit, List<T> list){
+	public CommonPagination(long total, int limit, List<T> list){
 		super(limit);
 		this.totalCount = total;
 		this.list = list;
 	}
 	
-	public long getMaxPage(){
-		if(getTotalCount() <= getLimit()){
-			return 1;
-		}
-		return (long) Math.ceil(((double)getTotalCount())/getLimit());
-	}
-
 	public long getTotalCount() {
 		return totalCount;
 	}

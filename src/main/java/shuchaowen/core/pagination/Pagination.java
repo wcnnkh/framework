@@ -7,7 +7,7 @@ public interface Pagination<T>{
 	
 	long getTotalCount();
 	
-	long getLimit();
+	int getLimit();
 	
 	List<T> getList();
 }

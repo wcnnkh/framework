@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 public abstract class AbstractPagination<T> implements Pagination<T>, Serializable{
 	private static final long serialVersionUID = 1L;
-	private long limit;
+	private int limit;
 	
 	public AbstractPagination(){};//为了序列化
 	
-	public AbstractPagination(long limit){
+	public AbstractPagination(int limit){
 		this.limit = limit;
 	}
 	
@@ -19,11 +19,11 @@ public abstract class AbstractPagination<T> implements Pagination<T>, Serializab
 		return (long) Math.ceil(((double)getTotalCount())/getLimit());
 	}
 
-	public long getLimit() {
+	public int getLimit() {
 		return limit;
 	}
 
-	public void setLimit(long limit) {
+	public void setLimit(int limit) {
 		this.limit = limit;
 	}
 }

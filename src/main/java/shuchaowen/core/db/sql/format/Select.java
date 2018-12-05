@@ -288,13 +288,13 @@ public abstract class Select{
 		return getResultSet().getList(type);
 	}
 	
-	public abstract ResultSet getResultSet(long begin, long limit);
+	public abstract ResultSet getResultSet(long begin, int limit);
 	
-	public <T> List<T> getList(Class<T> type, long begin, long limit){
+	public <T> List<T> getList(Class<T> type, long begin, int limit){
 		return getResultSet(begin, limit).getList(type);
 	}
 	
-	public Pagination<ResultSet> getResultSetPagination(long page, long limit){
+	public Pagination<ResultSet> getResultSetPagination(long page, int limit){
 		Pagination<ResultSet> pagination = new Pagination<ResultSet>();
 		pagination.setLimit(limit);
 		if(page <= 0 || limit <= 0){
@@ -311,7 +311,7 @@ public abstract class Select{
 		return pagination;
 	}
 	
-	public <T> Pagination<List<T>> getPagination(Class<T> type, long page, long limit){
+	public <T> Pagination<List<T>> getPagination(Class<T> type, long page, int limit){
 		Pagination<List<T>> pagination = new Pagination<List<T>>();
 		pagination.setLimit(limit);
 		if(page <= 0 || limit <= 0){
