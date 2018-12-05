@@ -21,11 +21,12 @@ public class Result extends AbstractTextView implements Serializable{
 	public String getMsg() {
 		return msg;
 	}
-	public void setMsg(String msg) {
+	public Result setMsg(String msg) {
 		if(isSuccess()){
 			this.code = Code.error.getCode();
 		}
 		this.msg = msg;
+		return this;
 	}
 	
 	public boolean isSuccess(){
@@ -36,14 +37,24 @@ public class Result extends AbstractTextView implements Serializable{
 		return getCode() != Code.success.getCode();
 	}
 	
-	public void setCode(Code code){
+	public Result setCode(Code code){
 		this.code = code.getCode();
 		this.msg = code.getMsg();
+		return this;
 	}
 	
-	public void setCode(Code code, String msg){
+	public Result setCode(Code code, String msg){
 		this.code = code.getCode();
 		this.msg = msg;
+		return this;
+	}
+	
+	public static Result success(){
+		return new Result();
+	}
+	
+	public static Result error(String msg){
+		return new Result().setMsg(msg);
 	}
 	
 	@Override

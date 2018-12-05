@@ -9,8 +9,9 @@ public class DataResult<T> extends Result{
 	public T getData() {
 		return data;
 	}
-	public void setData(T data) {
+	public DataResult<T> setData(T data) {
 		this.data = data;
+		return this;
 	}
 	
 	@Override
