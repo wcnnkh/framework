@@ -11,8 +11,8 @@ import org.dom4j.Node;
 
 import com.alibaba.fastjson.JSONObject;
 
+import shuchaowen.connection.http.HttpUtils;
 import shuchaowen.core.util.SignHelp;
-import shuchaowen.web.util.http.core.Http;
 
 /**
  * @author shuchaowen
@@ -34,7 +34,7 @@ public final class WeiXinUtils {
 	public static String authorizeUlr(String appid, String redirect_uri, String scope, String state){
 		StringBuilder sb = new StringBuilder(weixin_authorize_url);
 		sb.append("?appid=").append(appid);
-		sb.append("&redirect_uri=").append(Http.encode(redirect_uri));
+		sb.append("&redirect_uri=").append(HttpUtils.encode(redirect_uri));
 		sb.append("&response_type=code");
 		sb.append("&scope=").append(scope);
 		sb.append("&state=").append(state);
@@ -53,7 +53,7 @@ public final class WeiXinUtils {
 	public static String qrcodeAuthorizeUrl(String appid, String redirect_uri, String scope, String state){
 		StringBuilder sb = new StringBuilder(weixin_qrconnect_url);
 		sb.append("?appid=").append(appid);
-		sb.append("&redirect_uri=").append(Http.encode(redirect_uri));
+		sb.append("&redirect_uri=").append(HttpUtils.encode(redirect_uri));
 		sb.append("&response_type=code");
 		sb.append("&scope=").append(scope);
 		sb.append("&state=").append(state);

@@ -4,10 +4,10 @@ import java.io.Serializable;
 
 import com.alibaba.fastjson.JSONObject;
 
+import shuchaowen.connection.http.HttpUtils;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.tencent.weixin.WeiXinUtils;
-import shuchaowen.web.util.http.HttpPost;
 
 public class AccessToken implements Serializable{
 	private static final String weixin_get_web_token = "https://api.weixin.qq.com/cgi-bin/token";
@@ -29,7 +29,7 @@ public class AccessToken implements Serializable{
 		String url = weixin_get_web_token
 				+ "?grant_type=client_credential&appid=" + appid + "&secret="
 				+ appsecret;
-		String content = HttpPost.invoke(url);
+		String content = HttpUtils.doPost(url, null);
 		if(StringUtils.isNull(content)){
 			throw new ShuChaoWenRuntimeException("无法从微信服务器获取token");
 		}

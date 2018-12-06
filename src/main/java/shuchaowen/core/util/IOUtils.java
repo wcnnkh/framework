@@ -49,6 +49,16 @@ public final class IOUtils {
 		return sb;
 	}
 	
+	public static ByteArrayOutputStream read(InputStream is) throws IOException{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		byte[] b = new byte[1024];
+		int len = 0;
+		while((len = is.read(b)) != -1){
+			baos.write(b, 0, len);
+		}
+		return baos;
+	}
+	
 	public static void write(OutputStream os, InputStream is, int buffSize) throws IOException{
 		byte[] b = new byte[buffSize];
 		int len = 0;

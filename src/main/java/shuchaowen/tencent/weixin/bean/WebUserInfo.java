@@ -6,10 +6,10 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 
+import shuchaowen.connection.http.HttpUtils;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.tencent.weixin.WeiXinUtils;
-import shuchaowen.web.util.http.HttpPost;
 
 public class WebUserInfo implements Serializable {
 	private static final String weixin_get_web_userinfo = "https://api.weixin.qq.com/sns/userinfo";
@@ -52,7 +52,7 @@ public class WebUserInfo implements Serializable {
 		paramMap.put("access_token", user_access_token);
 		paramMap.put("openid", openid);
 		paramMap.put("lang", "zh_CN");
-		String content = HttpPost.invoke(weixin_get_web_userinfo, paramMap);
+		String content = HttpUtils.doPost(weixin_get_web_userinfo, paramMap);
 		if(StringUtils.isNull(content)){
 			throw new ShuChaoWenRuntimeException("无法获取userinfo");
 		}

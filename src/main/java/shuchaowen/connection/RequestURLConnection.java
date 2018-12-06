@@ -1,5 +1,6 @@
 package shuchaowen.connection;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,6 +9,8 @@ import java.net.URLConnection;
 import java.security.Permission;
 import java.util.List;
 import java.util.Map;
+
+import shuchaowen.core.util.IOUtils;
 
 public class RequestURLConnection implements Request{
 	private final URLConnection urlConnection;
@@ -182,11 +185,19 @@ public class RequestURLConnection implements Request{
 	}
 
 	public Request write(Write write) throws IOException {
+		if(write == null){
+			return this;
+		}
+		
 		write.write(getOutputStream());
 		return this;
 	}
 
 	public <T> T reader(Reader<T> reader) throws IOException {
 		return reader.reader(getInputStream());
+	}
+
+	public ByteArrayOutputStream getResponse() throws IOException{
+		return IOUtils.read(getInputStream());
 	}
 }

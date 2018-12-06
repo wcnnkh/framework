@@ -5,9 +5,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 
-import shuchaowen.web.util.http.HttpGet;
-import shuchaowen.web.util.http.HttpPost;
-import shuchaowen.web.util.http.core.Http;
+import shuchaowen.connection.http.HttpUtils;
 
 public final class QQUtils {
 	private static final String callbackPrefix = "callback( ";
@@ -31,7 +29,7 @@ public final class QQUtils {
 		sb.append("?");
 		sb.append("response_type=code");
 		sb.append("&client_id=").append(appId);
-		sb.append("&redirect_uri=").append(Http.encode(redirect_uri));
+		sb.append("&redirect_uri=").append(HttpUtils.encode(redirect_uri));
 		sb.append("&state=" + state);
 		return sb.toString();
 	}
@@ -43,7 +41,7 @@ public final class QQUtils {
 		map.put("client_secret", appKey);
 		map.put("redirect_uri", redirect_uri);
 		map.put("code", code);
-		return HttpPost.invoke(qq_get_pc_token, map);
+		return HttpUtils.doPost(qq_get_pc_token, map);
 	}
 	
 	public static String formatCallBackPrefix(String data){
@@ -56,7 +54,7 @@ public final class QQUtils {
 	public static String getOpenId(String access_token){
 		StringBuilder sb = new StringBuilder(qq_get_pc_openid);
 		sb.append("?access_token=").append(access_token);
-		String data = HttpGet.invoke(sb.toString());
+		String data = HttpUtils.doGet(sb.toString());
 		data = formatCallBackPrefix(data);
 		JSONObject json;
 		try {
@@ -73,6 +71,6 @@ public final class QQUtils {
 		sb.append("?access_token=").append(access_token);
 		sb.append("&oauth_consumer_key=").append(appId);
 		sb.append("&openid=").append(openId);
-		return HttpGet.invoke(sb.toString());
+		return HttpUtils.doGet(sb.toString());
 	}
 }

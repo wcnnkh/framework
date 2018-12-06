@@ -9,6 +9,7 @@ import java.net.Proxy;
 import java.net.URL;
 
 import shuchaowen.connection.RequestURLConnection;
+import shuchaowen.core.util.IOUtils;
 
 public class HttpRequestURLConnection extends RequestURLConnection implements HttpRequest{
 	private final HttpURLConnection httpURLConnection;
@@ -76,5 +77,10 @@ public class HttpRequestURLConnection extends RequestURLConnection implements Ht
 
 	public InputStream getErrorStream() {
 		return httpURLConnection.getErrorStream();
+	}
+
+	public String getBody(String charsetName) throws IOException {
+		StringBuilder sb = IOUtils.readerContent(getInputStream(), charsetName);
+		return sb == null? null:sb.toString();
 	}
 }

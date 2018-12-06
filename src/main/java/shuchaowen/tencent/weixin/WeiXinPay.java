@@ -8,6 +8,7 @@ import java.util.Map;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import shuchaowen.connection.http.HttpUtils;
 import shuchaowen.core.exception.NotSupportException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.exception.SignatureException;
@@ -15,7 +16,6 @@ import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.SignHelp;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.tencent.weixin.bean.Unifiedorder;
-import shuchaowen.web.util.http.HttpPost;
 
 public final class WeiXinPay {
 	private static final String weixin_unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
@@ -302,7 +302,8 @@ public final class WeiXinPay {
 		if(debug){
 			Logger.debug(this.getClass().getName(), "签名XML：" + xmlContent);
 		}
-		return HttpPost.invoke(weixin_unifiedorder_url, xmlContent.getBytes(charset), null, 5000, 5000);
+		
+		return HttpUtils.doPost(weixin_unifiedorder_url, null, xmlContent);
 	}
 	
 	public boolean checkSign(Map<String, String> params){

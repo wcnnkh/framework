@@ -30,4 +30,6 @@ public interface HttpRequest extends Request {
 	boolean usingProxy();
 	
     InputStream getErrorStream();
+    
+    String getBody(String charsetName) throws IOException;
 }

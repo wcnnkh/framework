@@ -2,12 +2,12 @@ package shuchaowen.core.beans.xml;
 
 import org.w3c.dom.Node;
 
+import shuchaowen.connection.http.HttpUtils;
 import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.exception.BeansException;
 import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.StringFormat;
 import shuchaowen.core.util.StringUtils;
-import shuchaowen.web.util.http.HttpGet;
 
 public class XmlValue {
 	private final String value;
@@ -30,7 +30,7 @@ public class XmlValue {
 				String path = url.substring(7);
 				value = ConfigUtils.getFileContent(path, charset);
 			}else if(url.startsWith("http://") || url.startsWith("https://")){
-				value = HttpGet.invoke(url);
+				value = HttpUtils.doGet(url);
 			}else{
 				String path = url.substring(7);
 				value = ConfigUtils.getFileContent(path, charset);

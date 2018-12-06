@@ -6,10 +6,10 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 
+import shuchaowen.connection.http.HttpUtils;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.tencent.weixin.WeiXinUtils;
-import shuchaowen.web.util.http.HttpPost;
 
 /**
  * 用code换取的信息
@@ -57,7 +57,7 @@ public class WebUserAccesstoken implements Serializable{
 		map.put("secret", appsecret);
 		map.put("code", code);
 		map.put("grant_type", "authorization_code");
-		String jsonData = HttpPost.invoke(weixin_get_web_access_token, map);
+		String jsonData = HttpUtils.doPost(weixin_get_web_access_token, map);
 		
 		if(StringUtils.isNull(jsonData)){
 			throw new ShuChaoWenRuntimeException("无法获取web_user_access_token");
@@ -80,7 +80,7 @@ public class WebUserAccesstoken implements Serializable{
 		map.put("appid", appid);
 		map.put("grant_type", "refresh_token");
 		map.put("refresh_token", refresh_token);
-		String content = HttpPost.invoke(weixin_get_web_refresh_access_token, map);
+		String content = HttpUtils.doPost(weixin_get_web_refresh_access_token, map);
 		if(StringUtils.isNull(content)){
 			throw new ShuChaoWenRuntimeException("无法获取web_user_access_token");
 		}

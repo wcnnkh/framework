@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import shuchaowen.connection.http.HttpUtils;
 import shuchaowen.core.util.SignHelp;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.core.util.XTime;
-import shuchaowen.web.util.http.HttpPost;
 
 public class ALiDaYu {
 	private String host;
@@ -49,7 +49,7 @@ public class ALiDaYu {
 		map.put("sms_param", sms_param);
 		map.put("rec_num", toPhones);
 		map.put("sign", getSign(map, appSecret, sign_method));
-		return HttpPost.invoke(host, map);
+		return HttpUtils.doPost(host, map);
 	}
 	
 	

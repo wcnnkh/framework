@@ -1,5 +1,6 @@
 package shuchaowen.connection;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -95,4 +96,6 @@ public interface Request{
     Request write(Write write) throws IOException;
     
     <T> T reader(Reader<T> reader) throws IOException;
+    
+    ByteArrayOutputStream getResponse() throws IOException;
 }
