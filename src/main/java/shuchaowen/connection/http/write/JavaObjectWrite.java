@@ -1,10 +1,10 @@
-package shuchaowen.core.connection.http.write.object;
+package shuchaowen.connection.http.write;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
-import shuchaowen.core.connection.Write;
+import shuchaowen.connection.Write;
 
 public class JavaObjectWrite implements Write{
 	private final Object data;

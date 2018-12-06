@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import shuchaowen.core.connection.http.enums.ContentType;
+import shuchaowen.connection.http.enums.ContentType;
 import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.web.servlet.request.FormRequest;
 import shuchaowen.web.servlet.request.JsonRequest;

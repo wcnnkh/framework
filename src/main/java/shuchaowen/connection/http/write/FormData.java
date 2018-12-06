@@ -1,11 +1,11 @@
-package shuchaowen.core.connection.http.write;
+package shuchaowen.connection.http.write;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import shuchaowen.core.connection.Write;
+import shuchaowen.connection.Write;
 
 public class FormData implements Write{
 	private final String charsetName;

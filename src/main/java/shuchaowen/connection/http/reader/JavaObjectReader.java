@@ -1,10 +1,10 @@
-package shuchaowen.core.connection.http.write.object;
+package shuchaowen.connection.http.reader;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
-import shuchaowen.core.connection.Reader;
+import shuchaowen.connection.Reader;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 
 public class JavaObjectReader<T> implements Reader<T>{

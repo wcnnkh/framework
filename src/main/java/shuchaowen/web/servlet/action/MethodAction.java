@@ -93,7 +93,7 @@ public class MethodAction implements Action {
 		return list;
 	}
 
-	public static shuchaowen.core.connection.http.enums.Method[] mergeRequestType(Class<?> clz, Method method) {
+	public static shuchaowen.connection.http.enums.Method[] mergeRequestType(Class<?> clz, Method method) {
 		Controller clzController = clz.getAnnotation(Controller.class);
 		Controller methodController = method.getAnnotation(Controller.class);
 		if (clzController == null || methodController == null) {
@@ -102,29 +102,29 @@ public class MethodAction implements Action {
 
 		Methods methods = method.getAnnotation(Methods.class);
 
-		Map<String, shuchaowen.core.connection.http.enums.Method> requestTypeMap = new HashMap<String, shuchaowen.core.connection.http.enums.Method>();
+		Map<String, shuchaowen.connection.http.enums.Method> requestTypeMap = new HashMap<String, shuchaowen.connection.http.enums.Method>();
 		if (methods == null) {
 			if (clzController != null) {
-				for (shuchaowen.core.connection.http.enums.Method requestType : clzController.methods()) {
+				for (shuchaowen.connection.http.enums.Method requestType : clzController.methods()) {
 					requestTypeMap.put(requestType.name(), requestType);
 				}
 			}
 		} else {
-			for (shuchaowen.core.connection.http.enums.Method requestType : methods.value()) {
+			for (shuchaowen.connection.http.enums.Method requestType : methods.value()) {
 				requestTypeMap.put(requestType.name(), requestType);
 			}
 		}
 
 		if (methodController != null) {
-			for (shuchaowen.core.connection.http.enums.Method requestType : methodController.methods()) {
+			for (shuchaowen.connection.http.enums.Method requestType : methodController.methods()) {
 				requestTypeMap.put(requestType.name(), requestType);
 			}
 		}
 
 		if (requestTypeMap.size() == 0) {
-			requestTypeMap.put(shuchaowen.core.connection.http.enums.Method.GET.name(), shuchaowen.core.connection.http.enums.Method.GET);
+			requestTypeMap.put(shuchaowen.connection.http.enums.Method.GET.name(), shuchaowen.connection.http.enums.Method.GET);
 		}
 
-		return requestTypeMap.values().toArray(new shuchaowen.core.connection.http.enums.Method[0]);
+		return requestTypeMap.values().toArray(new shuchaowen.connection.http.enums.Method[0]);
 	}
 }

@@ -1,4 +1,4 @@
-package shuchaowen.core.connection.http;
+package shuchaowen.connection.http;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

@@ -1,4 +1,4 @@
-package shuchaowen.core.connection.http.write.file;
+package shuchaowen.connection.http.file;
 
 import java.io.IOException;
 import java.io.InputStream;

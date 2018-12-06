@@ -2,8 +2,8 @@ package shuchaowen.web.servlet.view;
 
 import java.io.IOException;
 
-import shuchaowen.core.connection.http.enums.ContentType;
 import shuchaowen.web.servlet.View;
+import shuchaowen.connection.http.enums.ContentType;
 import shuchaowen.web.servlet.Request;
 import shuchaowen.web.servlet.Response;
 

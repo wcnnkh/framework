@@ -1,4 +1,4 @@
-package shuchaowen.core.connection.http.write.file;
+package shuchaowen.connection.http.file;
 
 public class Param {
 	private String key;

@@ -15,7 +15,7 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
-import shuchaowen.core.connection.http.enums.ContentType;
+import shuchaowen.connection.http.enums.ContentType;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.Logger;

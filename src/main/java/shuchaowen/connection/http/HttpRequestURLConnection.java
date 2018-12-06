@@ -1,4 +1,4 @@
-package shuchaowen.core.connection.http;
+package shuchaowen.connection.http;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +8,7 @@ import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.URL;
 
-import shuchaowen.core.connection.RequestURLConnection;
+import shuchaowen.connection.RequestURLConnection;
 
 public class HttpRequestURLConnection extends RequestURLConnection implements HttpRequest{
 	private final HttpURLConnection httpURLConnection;

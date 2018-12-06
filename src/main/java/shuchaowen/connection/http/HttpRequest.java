@@ -1,10 +1,10 @@
-package shuchaowen.core.connection.http;
+package shuchaowen.connection.http;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ProtocolException;
 
-import shuchaowen.core.connection.Request;
+import shuchaowen.connection.Request;
 
 public interface HttpRequest extends Request {
 	void setFixedLengthStreamingMode (int contentLength);

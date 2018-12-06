@@ -1,4 +1,4 @@
-package shuchaowen.core.connection.http.enums;
+package shuchaowen.connection.http.enums;
 
 public enum Header {
 	Accept("Accept"),

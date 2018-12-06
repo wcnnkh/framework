@@ -130,8 +130,8 @@ public class PathSearchAction implements SearchAction {
 					map = new HashMap<String, Action>();
 				}
 
-				shuchaowen.core.connection.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
-				for (shuchaowen.core.connection.http.enums.Method type : types) {
+				shuchaowen.connection.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
+				for (shuchaowen.connection.http.enums.Method type : types) {
 					if (map.containsKey(type.name())) {
 						StringBuilder sb = new StringBuilder();
 						sb.append("存在同样的controller-");

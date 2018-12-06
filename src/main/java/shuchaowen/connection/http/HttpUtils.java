@@ -1,9 +1,9 @@
-package shuchaowen.core.connection.http;
+package shuchaowen.connection.http;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import shuchaowen.core.connection.reader.StringReader;
+import shuchaowen.connection.reader.StringReader;
 
 public final class HttpUtils {
 	private HttpUtils(){};

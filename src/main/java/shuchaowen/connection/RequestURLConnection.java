@@ -1,4 +1,4 @@
-package shuchaowen.core.connection;
+package shuchaowen.connection;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package shuchaowen.core.connection.http.write;
+package shuchaowen.connection.http.write;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import shuchaowen.core.connection.Write;
-import shuchaowen.core.connection.http.write.file.File;
-import shuchaowen.core.connection.http.write.file.Param;
+import shuchaowen.connection.Write;
+import shuchaowen.connection.http.file.File;
+import shuchaowen.connection.http.file.Param;
 
 public class MultipartFormData implements Write {
 	public static final String BOUNDARY = "----WebKitFormBoundaryKSD2ndz6G9RPNjx0";

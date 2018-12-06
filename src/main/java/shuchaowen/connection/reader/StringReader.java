@@ -1,9 +1,9 @@
-package shuchaowen.core.connection.reader;
+package shuchaowen.connection.reader;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import shuchaowen.core.connection.Reader;
+import shuchaowen.connection.Reader;
 import shuchaowen.core.util.IOUtils;
 
 public class StringReader implements Reader<String>{

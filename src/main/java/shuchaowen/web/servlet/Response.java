@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import com.alibaba.fastjson.JSONObject;
 
-import shuchaowen.core.connection.http.enums.ContentType;
+import shuchaowen.connection.http.enums.ContentType;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 
