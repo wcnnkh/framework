@@ -252,18 +252,16 @@ public final class BeanUtils {
 	public static void setConfig(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		Config config = field.getField().getAnnotation(Config.class);
 		if (config != null) {
-			staticFieldWarnLog(clz, field.getField());
+			staticFieldWarnLog(Config.class.getName(), clz, field.getField());
 				
-			existDefaultValueWarnLog("@Config", clz, field, obj);
+			existDefaultValueWarnLog(Config.class.getName(), clz, field, obj);
 			Object value = null;
 			try {
 				value = beanFactory.get(config.parse()).parse(beanFactory, field, config.value(), config.charset());
+				field.set(obj, value);
 			} catch (Exception e) {
-				throw new ShuChaoWenRuntimeException(
-						"clz=" + clz.getName() + ",field=" + field.getName() + ",config=" + config.value(), e);
+				Logger.error(Config.class.getName(), "clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
 			}
-
-			field.set(obj, value);
 		}
 	}
 	
@@ -276,14 +274,14 @@ public final class BeanUtils {
 	
 	private static void existDefaultValueWarnLog(String tag, Class<?> clz, FieldInfo field, Object obj) throws IllegalArgumentException, IllegalAccessException{
 		if (checkExistDefaultValue(field, obj)) {
-			Logger.warn("@Properties",
+			Logger.warn(tag,
 					"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
 		}
 	}
 	
-	private static void staticFieldWarnLog(Class<?> clz, Field field){
+	private static void staticFieldWarnLog(String tag, Class<?> clz, Field field){
 		if (Modifier.isStatic(field.getModifiers())) {
-			Logger.warn("@Config",
+			Logger.warn(tag,
 					"class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
 		}
 	}
@@ -292,45 +290,52 @@ public final class BeanUtils {
 			Object obj, FieldInfo field) {
 		Properties properties = field.getField().getAnnotation(Properties.class);
 		if (properties != null) {
-			staticFieldWarnLog(clz, field.getField());
+			staticFieldWarnLog(Properties.class.getName(), clz, field.getField());
+			
 
 			Object value = null;
 			try {
-				existDefaultValueWarnLog("@Properties", clz, field, obj);
+				existDefaultValueWarnLog(Properties.class.getName(), clz, field, obj);
 				
 				String v = propertiesFactory.getValue(properties.value());
 				value = StringUtils.conversion(v, field.getType());
 				field.set(obj, value);
 			} catch (Exception e) {
-				e.printStackTrace();
+				Logger.error(Properties.class.getName(), "clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
 			}
 		}
 	}
 
-	public static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field)
-			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+	public static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) {
 		Autowrite s = field.getField().getAnnotation(Autowrite.class);
 		if (s != null) {
-			staticFieldWarnLog(clz, field.getField());
-
+			staticFieldWarnLog(Autowrite.class.getName(), clz, field.getField());
+			
 			String name = s.value();
 			if (name.equals("")) {
 				name = field.getType().getName();
 			}
 			
-			existDefaultValueWarnLog("@AutoWrite", clz, field, obj);
-			field.set(obj, beanFactory.get(name));
+			try {
+				existDefaultValueWarnLog(Autowrite.class.getName(), clz, field, obj);
+				field.set(obj, beanFactory.get(name));
+			} catch (Exception e) {
+				Logger.error(Autowrite.class.getName(), "clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
+			}
 		}
 	}
 
-	public static void setProxy(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) throws Exception {
+	public static void setProxy(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field){
 		Proxy proxy = field.getField().getAnnotation(Proxy.class);
 		if (proxy != null) {
-			staticFieldWarnLog(clz, field.getField());
-
-			Object v = beanFactory.get(proxy.value()).getProxy(beanFactory, field.getType());
-			existDefaultValueWarnLog("@Proxy", clz, field, obj);
-			field.set(obj, v);
+			staticFieldWarnLog(Proxy.class.getName(), clz, field.getField());
+			
+			try {
+				existDefaultValueWarnLog(Proxy.class.getName(), clz, field, obj);
+				field.set(obj, beanFactory.get(proxy.value()).getProxy(beanFactory, field.getType()));
+			} catch (Exception e) {
+				Logger.error(Proxy.class.getName(), "clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
+			}
 		}
 	}
 }
