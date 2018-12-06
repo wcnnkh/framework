@@ -1,15 +1,15 @@
 package shuchaowen.core.application;
 
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
+import shuchaowen.core.beans.rpc.http.Message;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.http.rpc.Message;
-import shuchaowen.core.http.rpc.serialization.JavaObjectSerializer;
-import shuchaowen.core.http.rpc.serialization.Serializer;
 import shuchaowen.core.http.server.Action;
 import shuchaowen.core.http.server.Request;
 import shuchaowen.core.http.server.Response;
@@ -26,7 +26,6 @@ public class HttpServerApplication extends CommonApplication {
 	private static final String INIT_STATIC = "init-static";
 	private static final String CHARSET_NAME = "charsetName";
 	private static final String RPC_SIGN = "rpc-sign";
-	private static final String RPC_SERIALIZER = "rpc-serializer";
 	private static final String RPC_PATH = "rpc-path";
 	
 	private static final String DEFAULT_ACTION_KEY = "actionKey";
@@ -36,7 +35,6 @@ public class HttpServerApplication extends CommonApplication {
 	private String rpcServletPath;// 远程代理调用的servletpath，只使用post方法
 	private Charset charset;
 	private final Map<String, Invoker> invokerRPCMap = new HashMap<String, Invoker>();
-	private Serializer rpcSerializer;
 	private final HttpServerConfigFactory httpServerConfigFactory;
 	private boolean debug;
 	private boolean rpcEnabled;
@@ -58,10 +56,6 @@ public class HttpServerApplication extends CommonApplication {
 
 	public void setCharset(Charset charset) {
 		this.charset = charset;
-	}
-
-	public void setRpcSerializer(Serializer rpcSerializer) {
-		this.rpcSerializer = rpcSerializer;
 	}
 
 	public String getRpcSignStr() {
@@ -95,10 +89,6 @@ public class HttpServerApplication extends CommonApplication {
 
 	public void setRpcEnabled(boolean rpcEnabled) {
 		this.rpcEnabled = rpcEnabled;
-	}
-
-	public Serializer getRpcSerializer() {
-		return rpcSerializer;
 	}
 
 	/**
@@ -146,13 +136,8 @@ public class HttpServerApplication extends CommonApplication {
 	}
 
 	public void rpc(InputStream inputStream, OutputStream outputStream) throws Throwable {
-		Message message;
-		Object obj;
-		message = rpcSerializer.decode(inputStream, Message.class);
-		if (message == null) {
-			throw new ShuChaoWenRuntimeException("序列化失败");
-		}
-
+		ObjectInputStream ois = new ObjectInputStream(inputStream);
+		Message message = (Message) ois.readObject();
 		if (!rpcAuthorize(message)) {
 			throw new ShuChaoWenRuntimeException("RPC验证失败");
 		}
@@ -162,8 +147,9 @@ public class HttpServerApplication extends CommonApplication {
 			throw new ShuChaoWenRuntimeException("not found service:" + message.getMessageKey());
 		}
 
-		obj = invoker.invoke(message.getArgs());
-		rpcSerializer.encode(outputStream, obj);
+		Object obj = invoker.invoke(message.getArgs());
+		ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+		oos.writeObject(obj);
 	}
 
 	public boolean service(Request request, Response response) throws Throwable {
@@ -191,15 +177,6 @@ public class HttpServerApplication extends CommonApplication {
 		
 		if(!StringUtils.isNull(rpcSignStr)){
 			rpcEnabled = true;
-		}
-		
-		if(rpcSerializer == null){
-			String rpcSerializer = httpServerConfigFactory.getConfig(RPC_SERIALIZER);
-			if(StringUtils.isNull(rpcSerializer)){
-				this.rpcSerializer = new JavaObjectSerializer();
-			}else{
-				this.rpcSerializer = getBeanFactory().get(rpcSerializer);
-			}
 		}
 		
 		if (StringUtils.isNull(rpcServletPath)) {

@@ -9,8 +9,6 @@ import shuchaowen.core.beans.AbstractBeanFactory;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.beans.xml.XmlBeanUtils;
-import shuchaowen.core.http.rpc.HttpRPCBean;
-import shuchaowen.core.http.rpc.serialization.JavaObjectSerializer;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 
@@ -34,14 +32,13 @@ public class SCWRPCBeanFactory extends AbstractBeanFactory{
 			String packageName = XmlBeanUtils.getPackageName(propertiesFactory, node);
 			String charsetName = XmlBeanUtils.getCharsetName(propertiesFactory, node, "UTF-8");
 			String address = XmlBeanUtils.getAddress(propertiesFactory, node);
-			JavaObjectSerializer javaObjectSerializer = new JavaObjectSerializer();
 			if(!StringUtils.isNull(packageName)){
 				for(Class<?> clz : ClassUtils.getClasses(packageName)){
 					if(!clz.isInterface()){
 						continue;
 					}
 					
-					HttpRPCBean httpRPCBean = new HttpRPCBean(clz, address, sign, javaObjectSerializer, Charset.forName(charsetName));
+					HttpRPCBean httpRPCBean = new HttpRPCBean(clz, address, sign, Charset.forName(charsetName));
 					putBean(httpRPCBean.getId(), httpRPCBean);
 				}
 			}
@@ -69,7 +66,7 @@ public class SCWRPCBeanFactory extends AbstractBeanFactory{
 				if(StringUtils.isNull(myAddress)){
 					myAddress = address;
 				}
-				HttpRPCBean httpRPCBean = new HttpRPCBean(clz, myAddress, mySign, javaObjectSerializer, Charset.forName(myScharsetName));
+				HttpRPCBean httpRPCBean = new HttpRPCBean(clz, myAddress, mySign, Charset.forName(myScharsetName));
 				putBean(httpRPCBean.getId(), httpRPCBean);
 			}
 		}

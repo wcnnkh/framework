@@ -1,4 +1,4 @@
-package shuchaowen.core.http.rpc;
+package shuchaowen.core.beans.rpc.http;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;

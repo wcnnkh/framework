@@ -109,7 +109,7 @@ public class DispatcherServlet extends HttpServlet {
 	}
 	
 	protected WebRequest formRequestWrapper(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException{
-		return new FormRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, httpServerApplication.isDebug());
+		return new FormRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, httpServerApplication.isDebug(), false);
 	}
 	
 	protected WebRequest jsonRequestWrapper(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException{

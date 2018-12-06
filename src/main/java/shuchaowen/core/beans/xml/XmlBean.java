@@ -285,11 +285,7 @@ public class XmlBean implements Bean {
 				continue;
 			}
 
-			FieldInfo fieldInfo = classInfo.getFieldInfo(field.getName());
-			BeanUtils.setBean(beanFactory, type, bean, fieldInfo);
-			BeanUtils.setProxy(beanFactory, type, bean, fieldInfo);
-			BeanUtils.setConfig(beanFactory, type, bean, fieldInfo);
-			BeanUtils.setProperties(beanFactory, propertiesFactory, type, bean, fieldInfo);
+			BeanUtils.autoWrite(classInfo.getClz(), beanFactory, propertiesFactory, bean, classInfo.getFieldInfo(field.getName()));
 		}
 		setProperties(bean);
 	}

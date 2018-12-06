@@ -1,4 +1,4 @@
-package shuchaowen.core.http.rpc;
+package shuchaowen.core.beans.rpc.http;
 
 import java.io.InputStream;
 import java.io.OutputStream;

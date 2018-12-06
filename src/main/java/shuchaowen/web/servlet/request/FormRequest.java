@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,10 +19,14 @@ import shuchaowen.web.servlet.WebRequest;
 public class FormRequest extends WebRequest {
 	private static final String GET_DEFAULT_CHARSET_NAME = "ISO-8859-1";
 	private Map<String, String> restUrlValueMap;
+	private final boolean cookieValue;
 
 	@SuppressWarnings("unchecked")
-	public FormRequest(BeanFactory beanFactory, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
+	public FormRequest(BeanFactory beanFactory, HttpServletRequest 
+			httpServletRequest, HttpServletResponse httpServletResponse,
+			boolean isDebug, boolean cookieValue) throws IOException {
 		super(beanFactory, httpServletRequest, httpServletResponse, isDebug);
+		this.cookieValue = cookieValue;
 		Object map = getAttribute(PathSearchAction.RESTURL_PATH_PARAMETER);
 		if (map != null) {
 			this.restUrlValueMap = (Map<String, String>) map;
@@ -41,6 +46,13 @@ public class FormRequest extends WebRequest {
 	
 	protected String getRequireValue(String key){
 		String v = getValue(key);
+		if(v == null && cookieValue){
+			Cookie cookie = getCookie(key, false);
+			if(cookie != null){
+				v = cookie.getValue();
+			}
+		}
+		
 		if(isNull(v)){
 			throw new NullPointerException("require '" + key + "'");
 		}
@@ -95,7 +107,7 @@ public class FormRequest extends WebRequest {
 
 		return Short.valueOf(formatNumberText(v));
 	}
-
+	
 	public short getShortValue(String key) {
 		String v = getRequireValue(key);
 

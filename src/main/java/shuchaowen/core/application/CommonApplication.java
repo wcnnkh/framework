@@ -78,7 +78,7 @@ public class CommonApplication implements Application {
 		
 		try {
 			if(initStatic){
-				BeanUtils.initStatic(beanFactory, getClasses());
+				BeanUtils.initStatic(beanFactory, propertiesFactory, getClasses());
 			}
 			
 			if(!StringUtils.isNull(configPath)){

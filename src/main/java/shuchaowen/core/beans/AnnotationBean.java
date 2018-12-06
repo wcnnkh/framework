@@ -229,11 +229,8 @@ public class AnnotationBean implements Bean {
 				if (Modifier.isStatic(field.getField().getModifiers())) {
 					continue;
 				}
-
-				BeanUtils.setBean(beanFactory, classInfo.getClz(), bean, field);
-				BeanUtils.setProxy(beanFactory, classInfo.getClz(), bean, field);
-				BeanUtils.setConfig(beanFactory, classInfo.getClz(), bean, field);
-				BeanUtils.setProperties(beanFactory, propertiesFactory, type, bean, field);
+				
+				BeanUtils.autoWrite(classInfo.getClz(), beanFactory, propertiesFactory, bean, field);
 			}
 			classInfo = classInfo.getSuperInfo();
 		}
