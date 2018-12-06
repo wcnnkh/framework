@@ -3,8 +3,8 @@ package shuchaowen.mq;
 import java.util.ArrayList;
 import java.util.List;
 
+import shuchaowen.common.utils.XUtils;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.util.XUtils;
 import shuchaowen.memcached.Memcached;
 import shuchaowen.memcached.MemcachedLock;
 

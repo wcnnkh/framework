@@ -1,22 +1,22 @@
-package shuchaowen.core.util.id;
+package shuchaowen.common;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 生成一个Long类型的ID
+ * 生成一个int类型的ID
  * @author shuchaowen
  *
  */
-public class LongIdGenerator implements IdGenerator<Long>{
+public class IntegerIdGenerator implements IdGenerator<Integer>{
 	private int serverId;
 	private int serverCount;
-	private AtomicLong maxId;
-	
+	private AtomicInteger maxId;
+
 	/**
 	 * 初始化ID的值为0
 	 * @param initValue
 	 */
-	public LongIdGenerator(){
+	public IntegerIdGenerator(){
 		this(0, 1, 0);
 	}
 	
@@ -24,7 +24,7 @@ public class LongIdGenerator implements IdGenerator<Long>{
 	 * 初始化ID值
 	 * @param initValue
 	 */
-	public LongIdGenerator(long initValue){
+	public IntegerIdGenerator(int initValue){
 		this(0, 1, initValue);
 	}
 	
@@ -34,7 +34,7 @@ public class LongIdGenerator implements IdGenerator<Long>{
 	 * @param serverCount 服务器数量
 	 * @param initValue 初始值
 	 */
-	public LongIdGenerator(int serverId, int serverCount,  long initValue) {
+	public IntegerIdGenerator(int serverId, int serverCount,  int initValue) {
 		if(serverId < 0){
 			throw new RuntimeException("当前服务ID错误");
 		}
@@ -50,13 +50,13 @@ public class LongIdGenerator implements IdGenerator<Long>{
 		this.serverId = serverId;
 		this.serverCount = serverCount;
 		if(initValue < serverCount + serverId){
-			this.maxId = new AtomicLong(initValue);
+			this.maxId = new AtomicInteger(initValue);
 		}else{
-			this.maxId = new AtomicLong((initValue - serverId)/serverCount);
+			this.maxId = new AtomicInteger((initValue - serverId)/serverCount);
 		}
 	}
 	
-	public Long next() {
+	public Integer next() {
 		return maxId.incrementAndGet() * serverCount + serverId;
 	}
 }

@@ -1,8 +1,10 @@
-package shuchaowen.core.util;
+package shuchaowen.common.utils;
 
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import shuchaowen.core.util.StringUtils;
 
 public final class XUtils {
 	private XUtils(){};

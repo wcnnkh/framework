@@ -18,7 +18,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
-import shuchaowen.core.util.Logger;
+import shuchaowen.common.utils.Logger;
 import shuchaowen.web.servlet.RequestWrapper;
 import shuchaowen.web.servlet.Request;
 

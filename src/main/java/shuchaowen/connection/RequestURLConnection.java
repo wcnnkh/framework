@@ -10,7 +10,7 @@ import java.security.Permission;
 import java.util.List;
 import java.util.Map;
 
-import shuchaowen.core.util.IOUtils;
+import shuchaowen.common.utils.IOUtils;
 
 public class RequestURLConnection implements Request{
 	private final URLConnection urlConnection;

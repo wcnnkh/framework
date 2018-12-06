@@ -1,6 +1,5 @@
-package shuchaowen.core.util;
+package shuchaowen.common.utils;
 
-import shuchaowen.common.utils.ConfigUtils;
 
 public final class StringFormatSystemProperties extends StringFormat{
 	public StringFormatSystemProperties(String prefix, String suffix) {

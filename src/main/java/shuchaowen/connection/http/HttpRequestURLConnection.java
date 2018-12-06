@@ -8,8 +8,8 @@ import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.URL;
 
+import shuchaowen.common.utils.IOUtils;
 import shuchaowen.connection.RequestURLConnection;
-import shuchaowen.core.util.IOUtils;
 
 public class HttpRequestURLConnection extends RequestURLConnection implements HttpRequest{
 	private final HttpURLConnection httpURLConnection;

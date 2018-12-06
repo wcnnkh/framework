@@ -6,7 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import shuchaowen.core.util.ProcessorHashQueue;
+import shuchaowen.common.utils.ProcessorHashQueue;
 import shuchaowen.core.util.StringUtils;
 
 public abstract class AbstractHashDispatcherServlet extends DispatcherServlet{

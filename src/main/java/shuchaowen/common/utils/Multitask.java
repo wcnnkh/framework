@@ -1,4 +1,4 @@
-package shuchaowen.core.util;
+package shuchaowen.common.utils;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;

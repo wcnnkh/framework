@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.core.util.Logger;
+import shuchaowen.common.utils.Logger;
 import shuchaowen.core.util.StringUtils;
 
 public final class FieldInfo {

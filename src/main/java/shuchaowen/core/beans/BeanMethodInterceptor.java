@@ -11,10 +11,10 @@ import net.sf.cglib.proxy.MethodProxy;
 import shuchaowen.common.ClassInfo;
 import shuchaowen.common.FieldInfo;
 import shuchaowen.common.utils.ClassUtils;
+import shuchaowen.common.utils.Logger;
 import shuchaowen.core.beans.annotaion.Retry;
 import shuchaowen.core.db.TransactionContext;
 import shuchaowen.core.exception.BeansException;
-import shuchaowen.core.util.Logger;
 
 public class BeanMethodInterceptor implements MethodInterceptor, BeanFieldListen {
 	private static final long serialVersionUID = 1L;

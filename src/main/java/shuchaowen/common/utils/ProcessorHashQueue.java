@@ -1,4 +1,5 @@
-package shuchaowen.core.util;
+package shuchaowen.common.utils;
+
 
 public class ProcessorHashQueue<K>{
 	private final ProcessorQueue[] queueArr;

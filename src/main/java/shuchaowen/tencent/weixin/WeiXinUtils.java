@@ -11,8 +11,8 @@ import org.dom4j.Node;
 
 import com.alibaba.fastjson.JSONObject;
 
+import shuchaowen.common.utils.SignHelp;
 import shuchaowen.connection.http.HttpUtils;
-import shuchaowen.core.util.SignHelp;
 
 /**
  * @author shuchaowen

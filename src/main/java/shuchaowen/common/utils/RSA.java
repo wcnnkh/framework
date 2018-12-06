@@ -1,5 +1,5 @@
 
-package shuchaowen.core.util;
+package shuchaowen.common.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

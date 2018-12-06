@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import shuchaowen.common.utils.Logger;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.DBUtils;
 import shuchaowen.core.db.OperationBean;
@@ -15,7 +16,6 @@ import shuchaowen.core.db.storage.CacheUtils;
 import shuchaowen.core.transaction.AbstractTransaction;
 import shuchaowen.core.transaction.Transaction;
 import shuchaowen.core.transaction.TransactionCollection;
-import shuchaowen.core.util.Logger;
 import shuchaowen.mq.Consumer;
 
 public class CacheAsyncConsumer implements Consumer<Collection<OperationBean>> {

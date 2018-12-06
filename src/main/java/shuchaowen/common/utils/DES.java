@@ -1,4 +1,4 @@
-package shuchaowen.core.util;
+package shuchaowen.common.utils;
  
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;

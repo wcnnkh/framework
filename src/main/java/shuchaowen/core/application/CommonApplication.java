@@ -3,6 +3,7 @@ package shuchaowen.core.application;
 import java.util.Collection;
 
 import shuchaowen.common.utils.ClassUtils;
+import shuchaowen.common.utils.Logger;
 import shuchaowen.core.beans.AnnotationBeanFactory;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.BeanUtils;
@@ -14,7 +15,6 @@ import shuchaowen.core.beans.rpc.dubbo.XmlDubboUtils;
 import shuchaowen.core.beans.rpc.http.SCWRPCBeanFactory;
 import shuchaowen.core.beans.xml.XmlBeanFactory;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.StringUtils;
 
 public class CommonApplication implements Application {

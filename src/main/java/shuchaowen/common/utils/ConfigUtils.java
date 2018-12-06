@@ -24,11 +24,7 @@ import org.w3c.dom.NodeList;
 
 import shuchaowen.common.ClassInfo;
 import shuchaowen.common.FieldInfo;
-import shuchaowen.core.util.FileUtils;
-import shuchaowen.core.util.IOUtils;
-import shuchaowen.core.util.StringFormatSystemProperties;
 import shuchaowen.core.util.StringUtils;
-import shuchaowen.core.util.XUtils;
 
 public final class ConfigUtils {
 	private static final String WEB_ROOT = "web.root";

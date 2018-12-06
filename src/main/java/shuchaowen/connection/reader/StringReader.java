@@ -3,8 +3,8 @@ package shuchaowen.connection.reader;
 import java.io.IOException;
 import java.io.InputStream;
 
+import shuchaowen.common.utils.IOUtils;
 import shuchaowen.connection.Reader;
-import shuchaowen.core.util.IOUtils;
 
 public class StringReader implements Reader<String>{
 	private final String charsetName;

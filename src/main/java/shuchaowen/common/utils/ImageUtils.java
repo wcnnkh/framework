@@ -1,4 +1,4 @@
-package shuchaowen.core.util;
+package shuchaowen.common.utils;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -17,7 +17,7 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import shuchaowen.core.util.FileUtils;
+import shuchaowen.common.utils.FileUtils;
 
 public final class ImageUtils {
 	private ImageUtils(){};

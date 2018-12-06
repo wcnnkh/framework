@@ -1,7 +1,7 @@
 package shuchaowen.login;
 
+import shuchaowen.common.utils.XUtils;
 import shuchaowen.core.util.StringUtils;
-import shuchaowen.core.util.XUtils;
 import shuchaowen.memcached.Memcached;
 
 public class MemcachedSessionFactory implements SessionFactory{

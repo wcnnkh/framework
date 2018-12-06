@@ -1,6 +1,6 @@
 package shuchaowen.core.logger;
 
-import shuchaowen.core.util.XTime;
+import shuchaowen.common.utils.XTime;
 
 public class LogMsg {
 	private long cts;

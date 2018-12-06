@@ -3,10 +3,10 @@ package shuchaowen.core.beans.xml;
 import org.w3c.dom.Node;
 
 import shuchaowen.common.utils.ConfigUtils;
+import shuchaowen.common.utils.StringFormat;
 import shuchaowen.connection.http.HttpUtils;
 import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.exception.BeansException;
-import shuchaowen.core.util.StringFormat;
 import shuchaowen.core.util.StringUtils;
 
 public class XmlValue {

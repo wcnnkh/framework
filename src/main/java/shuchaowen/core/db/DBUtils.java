@@ -10,13 +10,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import shuchaowen.common.utils.XUtils;
 import shuchaowen.core.db.result.Result;
 import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.db.sql.format.SQLFormat;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.transaction.SQLTransaction;
-import shuchaowen.core.util.XUtils;
 
 public final class DBUtils {
 	private DBUtils() {

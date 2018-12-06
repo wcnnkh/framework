@@ -1,4 +1,4 @@
-package shuchaowen.core.util.id;
+package shuchaowen.common;
 
 /**
  * ID生成器

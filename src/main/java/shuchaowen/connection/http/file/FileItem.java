@@ -3,7 +3,7 @@ package shuchaowen.connection.http.file;
 import java.io.File;
 import java.io.IOException;
 
-import shuchaowen.core.util.FileUtils;
+import shuchaowen.common.utils.FileUtils;
 
 public class FileItem{
 	private File file;

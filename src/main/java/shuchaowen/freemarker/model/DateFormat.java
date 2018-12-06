@@ -6,7 +6,7 @@ import freemarker.template.SimpleDate;
 import freemarker.template.SimpleNumber;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
-import shuchaowen.core.util.XTime;
+import shuchaowen.common.utils.XTime;
 
 public class DateFormat implements TemplateMethodModelEx{
 

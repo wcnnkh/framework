@@ -1,4 +1,4 @@
-package shuchaowen.core.util;
+package shuchaowen.common.utils;
 
 import java.io.File;
 import java.io.FileInputStream;

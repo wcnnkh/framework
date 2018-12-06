@@ -26,8 +26,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import shuchaowen.core.util.XUtils;
-
 public class XMLUtils {
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();

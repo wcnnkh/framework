@@ -1,8 +1,8 @@
 package shuchaowen.core.db.id;
 
+import shuchaowen.common.IdGenerator;
+import shuchaowen.common.LongIdGenerator;
 import shuchaowen.core.db.DBManager;
-import shuchaowen.core.util.id.IdGenerator;
-import shuchaowen.core.util.id.LongIdGenerator;
 
 public class TableLongIdGenerator implements IdGenerator<Long>{
 	private Class<?> tableClass;

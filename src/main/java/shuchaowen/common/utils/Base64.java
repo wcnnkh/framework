@@ -4,7 +4,7 @@
  * author: shiqun.shi@alipay.com
  */
 
-package shuchaowen.core.util;
+package shuchaowen.common.utils;
 
 public final class Base64
 {

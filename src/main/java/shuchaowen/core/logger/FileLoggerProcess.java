@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import shuchaowen.core.util.XTime;
+import shuchaowen.common.utils.XTime;
 
 public class FileLoggerProcess extends LoggerProcess{
 	public FileLoggerProcess(){

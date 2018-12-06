@@ -14,6 +14,7 @@ import java.util.concurrent.CountDownLatch;
 import shuchaowen.common.ClassInfo;
 import shuchaowen.common.FieldInfo;
 import shuchaowen.common.utils.ClassUtils;
+import shuchaowen.common.utils.Logger;
 import shuchaowen.core.beans.annotaion.Autowrite;
 import shuchaowen.core.beans.annotaion.Config;
 import shuchaowen.core.beans.annotaion.Destroy;
@@ -27,7 +28,6 @@ import shuchaowen.core.db.DB;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.invoke.Invoker;
 import shuchaowen.core.invoke.ReflectInvoker;
-import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.web.servlet.action.annotation.Controller;
 

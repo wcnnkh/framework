@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import shuchaowen.common.utils.ClassUtils;
+import shuchaowen.common.utils.Logger;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.db.result.Result;
 import shuchaowen.core.db.result.ResultIterator;
@@ -16,7 +17,6 @@ import shuchaowen.core.db.sql.format.SQLFormat;
 import shuchaowen.core.db.sql.format.Select;
 import shuchaowen.core.db.sql.format.mysql.MysqlFormat;
 import shuchaowen.core.db.sql.format.mysql.MysqlSelect;
-import shuchaowen.core.util.Logger;
 
 public abstract class AbstractDB implements ConnectionSource, AutoCloseable{
 	public static final SQLFormat DEFAULT_SQL_FORMAT = new MysqlFormat();

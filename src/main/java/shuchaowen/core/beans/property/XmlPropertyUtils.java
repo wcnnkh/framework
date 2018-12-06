@@ -11,8 +11,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import shuchaowen.common.utils.ConfigUtils;
+import shuchaowen.common.utils.Logger;
 import shuchaowen.core.beans.xml.XmlBeanUtils;
-import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.StringUtils;
 
 public final class XmlPropertyUtils {

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import shuchaowen.core.util.SHA1;
+import shuchaowen.common.utils.SHA1;
 import shuchaowen.core.util.StringUtils;
 
 public class JsApiSignature implements Serializable{

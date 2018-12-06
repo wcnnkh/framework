@@ -5,7 +5,7 @@ import java.util.List;
 
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
-import shuchaowen.core.util.Base64;
+import shuchaowen.common.utils.Base64;
 
 public class Base64Encode implements TemplateMethodModelEx{
 

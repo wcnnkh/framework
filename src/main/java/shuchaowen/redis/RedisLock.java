@@ -2,7 +2,7 @@ package shuchaowen.redis;
 
 import java.util.Collections;
 
-import shuchaowen.core.util.XUtils;
+import shuchaowen.common.utils.XUtils;
 
 public final class RedisLock {
 	private static final String UNLOCK_SCRIPT = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";

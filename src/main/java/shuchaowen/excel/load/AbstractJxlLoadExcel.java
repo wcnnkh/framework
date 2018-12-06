@@ -6,7 +6,7 @@ import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 import shuchaowen.common.utils.ConfigUtils;
-import shuchaowen.core.util.Logger;
+import shuchaowen.common.utils.Logger;
 
 public abstract class AbstractJxlLoadExcel<T> extends AbstractLoadRow<T> implements Runnable, LoadRow {
 	private final File excel;

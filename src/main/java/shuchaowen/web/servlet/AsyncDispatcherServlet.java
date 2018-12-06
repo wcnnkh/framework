@@ -10,7 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import shuchaowen.core.util.XTime;
+import shuchaowen.common.utils.XTime;
 
 public class AsyncDispatcherServlet extends DispatcherServlet{
 	private static final long serialVersionUID = 1L;

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import shuchaowen.common.utils.Logger;
 import shuchaowen.core.Context;
 import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
@@ -13,7 +14,6 @@ import shuchaowen.core.transaction.CombinationTransaction;
 import shuchaowen.core.transaction.SQLTransaction;
 import shuchaowen.core.transaction.Transaction;
 import shuchaowen.core.transaction.TransactionCollection;
-import shuchaowen.core.util.Logger;
 
 /**
  * 数据库封装核心类，用于处理数据库事务

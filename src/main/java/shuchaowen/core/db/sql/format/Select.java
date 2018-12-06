@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import shuchaowen.common.utils.Pagination;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.db.TableInfo;
@@ -18,7 +19,6 @@ import shuchaowen.core.db.result.ResultIterator;
 import shuchaowen.core.db.result.ResultSet;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.util.Pagination;
 
 public abstract class Select{
 	private Map<String, String> associationWhereMap;

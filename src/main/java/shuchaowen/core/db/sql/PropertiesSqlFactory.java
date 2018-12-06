@@ -3,7 +3,7 @@ package shuchaowen.core.db.sql;
 import java.util.Properties;
 
 import shuchaowen.common.utils.ConfigUtils;
-import shuchaowen.core.util.Logger;
+import shuchaowen.common.utils.Logger;
 
 public class PropertiesSqlFactory implements SqlFactory{
 	private final Properties properties;

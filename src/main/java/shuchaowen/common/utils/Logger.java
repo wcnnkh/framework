@@ -1,4 +1,4 @@
-package shuchaowen.core.util;
+package shuchaowen.common.utils;
 
 import shuchaowen.core.logger.Level;
 import shuchaowen.core.logger.LogMsg;

@@ -1,6 +1,6 @@
 package shuchaowen.core.db.storage.cache;
 
-import shuchaowen.core.util.XTime;
+import shuchaowen.common.utils.XTime;
 
 public class CacheConfig {
 	public static final int DATA_DEFAULT_EXP_TIME = 7 * ((int) XTime.ONE_DAY / 1000);

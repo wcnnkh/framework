@@ -4,8 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import shuchaowen.common.utils.IOUtils;
 import shuchaowen.connection.Reader;
-import shuchaowen.core.util.IOUtils;
 
 public class ByteReader implements Reader<byte[]>{
 

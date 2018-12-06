@@ -5,12 +5,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import shuchaowen.common.utils.Logger;
 import shuchaowen.core.db.AbstractDB;
 import shuchaowen.core.db.OperationBean;
 import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.storage.CacheUtils;
 import shuchaowen.core.transaction.AbstractTransaction;
-import shuchaowen.core.util.Logger;
 import shuchaowen.redis.Redis;
 
 public class RedisFullCacheTransaction extends AbstractTransaction{
