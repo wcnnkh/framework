@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 
-import shuchaowen.core.util.ConfigUtils;
+import shuchaowen.common.utils.ConfigUtils;
 import shuchaowen.core.util.StringUtils;
 
 public class DefaultFileFactory implements FileFactory{

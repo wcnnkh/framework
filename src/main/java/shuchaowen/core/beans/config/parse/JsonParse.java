@@ -5,10 +5,10 @@ import java.io.File;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import shuchaowen.common.FieldInfo;
+import shuchaowen.common.utils.ConfigUtils;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.config.ConfigParse;
-import shuchaowen.core.util.ConfigUtils;
-import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.FileUtils;
 
 /**

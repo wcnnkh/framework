@@ -9,11 +9,11 @@ import org.w3c.dom.NodeList;
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.beans.AbstractBeanFactory;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.beans.xml.XmlBeanUtils;
-import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 
 public class XmlDubboBeanFactory extends AbstractBeanFactory{

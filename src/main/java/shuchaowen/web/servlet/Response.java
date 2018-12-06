@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import com.alibaba.fastjson.JSONObject;
 
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.connection.http.enums.ContentType;
-import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 
 public class Response extends HttpServletResponseWrapper{

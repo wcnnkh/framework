@@ -12,10 +12,10 @@ import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
 
+import shuchaowen.common.FieldInfo;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.db.annoation.Column;
 import shuchaowen.core.db.annoation.PrimaryKey;
-import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.FieldInfo;
 
 public final class ColumnInfo {
 	private String name;// 数据库字段名

@@ -6,9 +6,9 @@ import java.util.Map;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import shuchaowen.common.utils.ConfigUtils;
 import shuchaowen.core.beans.xml.XmlBeanUtils;
 import shuchaowen.core.exception.BeansException;
-import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.StringUtils;
 
 public class XmlPropertiesFactory implements PropertiesFactory {

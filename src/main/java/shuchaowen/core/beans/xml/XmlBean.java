@@ -11,6 +11,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import net.sf.cglib.proxy.Enhancer;
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.beans.AnnotationBean;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
@@ -21,9 +24,6 @@ import shuchaowen.core.beans.annotaion.Service;
 import shuchaowen.core.beans.annotaion.Transaction;
 import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.exception.BeansException;
-import shuchaowen.core.util.ClassInfo;
-import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.web.servlet.action.annotation.Controller;
 

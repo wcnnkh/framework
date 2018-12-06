@@ -1,4 +1,4 @@
-package shuchaowen.core.util;
+package shuchaowen.common.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,6 +21,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
+import shuchaowen.core.util.FileUtils;
+import shuchaowen.core.util.IOUtils;
+import shuchaowen.core.util.StringFormatSystemProperties;
+import shuchaowen.core.util.StringUtils;
+import shuchaowen.core.util.XUtils;
 
 public final class ConfigUtils {
 	private static final String WEB_ROOT = "web.root";
@@ -196,14 +204,13 @@ public final class ConfigUtils {
 		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 		try {
 			try {
-				Document doc = DOMHelper.parse(file);
+				Document doc = XMLUtils.parse(file);
 				Element root = doc.getDocumentElement();
-
 				NodeList nhosts = root.getChildNodes();
-				for (int i = 0; i < nhosts.getLength(); i++) {
-					Node nRoot = nhosts.item(i);
+				for (int x = 0; x < nhosts.getLength(); x++) {
+					Node nRoot = nhosts.item(x);
 					if (nRoot.getNodeName().equals(rootTag)) {
-						list.add(DOMHelper.xmlToMap(nRoot));
+						list.add(XMLUtils.xmlToMap(nRoot));
 					}
 				}
 			} catch (Exception e) {

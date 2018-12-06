@@ -2,7 +2,7 @@ package shuchaowen.web.servlet;
 
 import javax.servlet.ServletConfig;
 
-import shuchaowen.core.util.ConfigUtils;
+import shuchaowen.common.utils.ConfigUtils;
 
 public class ServletConfigFactory implements HttpServerConfigFactory{
 	private final ServletConfig servletConfig;

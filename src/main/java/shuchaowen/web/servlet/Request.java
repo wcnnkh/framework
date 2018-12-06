@@ -10,12 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.connection.http.enums.Header;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.BeanFactory;
-import shuchaowen.core.util.ClassInfo;
-import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.FieldInfo;
 
 public abstract class Request extends HttpServletRequestWrapper {
 	private final boolean isDebug;

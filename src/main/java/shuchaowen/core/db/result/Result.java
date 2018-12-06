@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.beans.BeanFieldListen;
 import shuchaowen.core.db.ColumnInfo;
 import shuchaowen.core.db.DB;
@@ -15,8 +17,6 @@ import shuchaowen.core.db.TableInfo;
 import shuchaowen.core.db.TableMapping;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.util.ClassInfo;
-import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.XTime;
 

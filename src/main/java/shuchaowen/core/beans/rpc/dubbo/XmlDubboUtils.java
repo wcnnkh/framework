@@ -11,12 +11,12 @@ import com.alibaba.dubbo.config.ProtocolConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.config.ServiceConfig;
 
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.annotaion.Service;
 import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.beans.xml.XmlBeanUtils;
 import shuchaowen.core.exception.BeansException;
-import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 
 public final class XmlDubboUtils {

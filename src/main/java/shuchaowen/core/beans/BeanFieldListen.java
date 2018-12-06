@@ -3,7 +3,7 @@ package shuchaowen.core.beans;
 import java.io.Serializable;
 import java.util.Map;
 
-import shuchaowen.core.util.FieldInfo;
+import shuchaowen.common.FieldInfo;
 
 public interface BeanFieldListen extends Serializable{
 	public static final String GET_CHANGE_MAP = "get_field_change_map";

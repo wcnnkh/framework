@@ -3,12 +3,12 @@ package shuchaowen.core.beans.config.parse;
 import java.io.File;
 import java.util.Properties;
 
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
+import shuchaowen.common.utils.ClassUtils;
+import shuchaowen.common.utils.ConfigUtils;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.config.ConfigParse;
-import shuchaowen.core.util.ClassInfo;
-import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.ConfigUtils;
-import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.StringUtils;
 
 public class PropertiesParse implements ConfigParse {

@@ -10,8 +10,8 @@ import javax.management.openmbean.KeyAlreadyExistsException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import shuchaowen.common.utils.ConfigUtils;
 import shuchaowen.core.beans.xml.XmlBeanUtils;
-import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.StringUtils;
 

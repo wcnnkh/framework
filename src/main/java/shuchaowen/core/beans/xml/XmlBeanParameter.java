@@ -7,11 +7,11 @@ import java.util.Date;
 
 import org.w3c.dom.Node;
 
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.core.beans.EParameterType;
 import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.exception.NotFoundException;
-import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 
 public final class XmlBeanParameter implements Cloneable, Serializable{

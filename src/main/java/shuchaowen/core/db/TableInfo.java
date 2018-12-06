@@ -6,14 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.beans.BeanFieldListen;
 import shuchaowen.core.db.annoation.NotColumn;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.exception.AlreadyExistsException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.util.ClassInfo;
-import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.StringUtils;
 

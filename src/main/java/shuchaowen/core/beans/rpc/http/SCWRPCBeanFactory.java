@@ -5,11 +5,11 @@ import java.nio.charset.Charset;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.beans.AbstractBeanFactory;
 import shuchaowen.core.beans.Bean;
 import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.beans.xml.XmlBeanUtils;
-import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 
 public class SCWRPCBeanFactory extends AbstractBeanFactory{

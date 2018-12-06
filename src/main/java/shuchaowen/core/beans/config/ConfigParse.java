@@ -1,7 +1,7 @@
 package shuchaowen.core.beans.config;
 
+import shuchaowen.common.FieldInfo;
 import shuchaowen.core.beans.BeanFactory;
-import shuchaowen.core.util.FieldInfo;
 
 
 /**

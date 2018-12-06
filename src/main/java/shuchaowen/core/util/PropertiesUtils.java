@@ -3,6 +3,10 @@ package shuchaowen.core.util;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
+import shuchaowen.common.utils.ClassUtils;
+
 public final class PropertiesUtils {
 	private PropertiesUtils(){};
 	

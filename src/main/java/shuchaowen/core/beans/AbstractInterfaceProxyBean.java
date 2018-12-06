@@ -6,12 +6,12 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.beans.annotaion.Destroy;
 import shuchaowen.core.beans.annotaion.InitMethod;
 import shuchaowen.core.beans.annotaion.Retry;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.exception.NotSupportException;
-import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 
 public abstract class AbstractInterfaceProxyBean implements Bean {

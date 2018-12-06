@@ -6,11 +6,11 @@ import java.util.Map.Entry;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.exception.AlreadyExistsException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.util.ClassInfo;
-import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.StringUtils;
 
 public abstract class AbstractLoadRow<T> implements LoadRow{

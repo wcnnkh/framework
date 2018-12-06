@@ -1,4 +1,4 @@
-package shuchaowen.core.util;
+package shuchaowen.common;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.cglib.proxy.Enhancer;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.beans.BeanFieldListen;
 import shuchaowen.core.beans.BeanFilter;
 import shuchaowen.core.beans.BeanMethodInterceptor;

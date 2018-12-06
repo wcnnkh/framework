@@ -2,7 +2,7 @@ package shuchaowen.core.db.sql;
 
 import java.util.Properties;
 
-import shuchaowen.core.util.ConfigUtils;
+import shuchaowen.common.utils.ConfigUtils;
 import shuchaowen.core.util.Logger;
 
 public class PropertiesSqlFactory implements SqlFactory{

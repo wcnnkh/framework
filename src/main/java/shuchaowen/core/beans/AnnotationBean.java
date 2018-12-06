@@ -8,15 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.cglib.proxy.Enhancer;
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.beans.annotaion.Destroy;
 import shuchaowen.core.beans.annotaion.InitMethod;
 import shuchaowen.core.beans.annotaion.Retry;
 import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.exception.BeansException;
-import shuchaowen.core.util.ClassInfo;
-import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.StringUtils;
 
 public class AnnotationBean implements Bean {

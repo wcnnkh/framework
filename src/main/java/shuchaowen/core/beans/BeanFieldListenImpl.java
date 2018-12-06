@@ -3,7 +3,7 @@ package shuchaowen.core.beans;
 import java.util.HashMap;
 import java.util.Map;
 
-import shuchaowen.core.util.FieldInfo;
+import shuchaowen.common.FieldInfo;
 
 public class BeanFieldListenImpl implements BeanFieldListen{
 	private static final long serialVersionUID = 1L;

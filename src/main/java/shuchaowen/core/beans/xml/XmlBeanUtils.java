@@ -13,11 +13,11 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import shuchaowen.common.utils.ClassUtils;
+import shuchaowen.common.utils.ConfigUtils;
 import shuchaowen.core.beans.EParameterType;
 import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.exception.BeansException;
-import shuchaowen.core.util.ClassUtils;
-import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.core.util.StringUtils;
 
 public final class XmlBeanUtils {

@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.db.annoation.Table;
 import shuchaowen.core.db.sql.SQL;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.util.ClassUtils;
 
 /**
  * 只用于处理默认的数据库
