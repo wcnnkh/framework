@@ -3,12 +3,11 @@ package shuchaowen.core.db;
 import java.io.Serializable;
 
 /**
- * 此类仅在单服务器下使用
+ * 做demo时可以使用，请不要在实际项目中使用
  * @author shuchaowen
  *
  */
-@Deprecated
-public abstract class BaseBean implements Cloneable,Serializable {
+public abstract class BaseBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	public final void save(){
