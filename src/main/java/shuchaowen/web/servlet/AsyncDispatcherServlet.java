@@ -81,10 +81,10 @@ class AsyncController implements Runnable{
 	}
 	
 	public void run() {
-		WebRequest request;
+		Request request;
 		try {
 			request = dispatcherServlet.wrapperRequest(httpServletRequest, httpServletResponse);
-			if(!dispatcherServlet.getHttpServerApplication().service(request, new WebResponse(request, httpServletResponse))){
+			if(!dispatcherServlet.getHttpServerApplication().service(request, new Response(request, httpServletResponse))){
 				httpServletResponse.sendError(404, request.getServletPath());
 			}
  		} catch (Throwable e) {

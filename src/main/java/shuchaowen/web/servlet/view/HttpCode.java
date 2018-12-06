@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import shuchaowen.core.util.Logger;
 import shuchaowen.web.servlet.View;
-import shuchaowen.web.servlet.WebRequest;
-import shuchaowen.web.servlet.WebResponse;
+import shuchaowen.web.servlet.Request;
+import shuchaowen.web.servlet.Response;
 
 public class HttpCode implements View {
 	private int status;
@@ -16,7 +16,7 @@ public class HttpCode implements View {
 		this.msg = msg;
 	}
 
-	public void render(WebRequest request, WebResponse response) throws IOException {
+	public void render(Request request, Response response) throws IOException {
 		if (response.getContentType() == null) {
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
 		}

@@ -9,8 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import shuchaowen.core.connection.Write;
-import shuchaowen.core.http.client.parameter.file.File;
-import shuchaowen.core.http.client.parameter.file.Param;
+import shuchaowen.core.connection.http.write.file.File;
+import shuchaowen.core.connection.http.write.file.Param;
 
 public class MultipartFormData implements Write {
 	public static final String BOUNDARY = "----WebKitFormBoundaryKSD2ndz6G9RPNjx0";

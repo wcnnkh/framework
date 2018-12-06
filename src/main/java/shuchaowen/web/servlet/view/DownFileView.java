@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import shuchaowen.web.servlet.View;
-import shuchaowen.web.servlet.WebRequest;
-import shuchaowen.web.servlet.WebResponse;
+import shuchaowen.web.servlet.Request;
+import shuchaowen.web.servlet.Response;
 
 public class DownFileView implements View{
 	private String encoding;
@@ -26,7 +26,7 @@ public class DownFileView implements View{
 		this.buffSize = buffSize;
 	}
 
-	public void render(WebRequest request, WebResponse response) throws IOException{
+	public void render(Request request, Response response) throws IOException{
 		if(encoding != null){
 			response.setCharacterEncoding(encoding);
 		}

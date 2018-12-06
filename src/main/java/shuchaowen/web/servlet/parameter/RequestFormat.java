@@ -16,10 +16,10 @@ import com.alibaba.fastjson.JSONObject;
 import shuchaowen.core.util.IOUtils;
 import shuchaowen.core.util.XUtils;
 import shuchaowen.web.servlet.RequestWrapper;
-import shuchaowen.web.servlet.WebRequest;
+import shuchaowen.web.servlet.Request;
 
 public class RequestFormat extends RequestWrapper {
-	public RequestFormat(WebRequest request) {
+	public RequestFormat(Request request) {
 		super(request);
 	}
 

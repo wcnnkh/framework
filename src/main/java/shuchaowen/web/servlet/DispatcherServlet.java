@@ -10,8 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import shuchaowen.core.application.HttpServerApplication;
-import shuchaowen.core.http.enums.ContentType;
+import shuchaowen.core.connection.http.enums.ContentType;
 import shuchaowen.core.util.ConfigUtils;
 import shuchaowen.web.servlet.request.FormRequest;
 import shuchaowen.web.servlet.request.JsonRequest;
@@ -98,7 +97,7 @@ public class DispatcherServlet extends HttpServlet {
 	 * @return
 	 * @throws IOException
 	 */
-	public WebRequest wrapperRequest(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
+	public Request wrapperRequest(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
 		if(httpServletRequest.getContentType() == null || httpServletRequest.getContentType().startsWith(ContentType.FORM.getValue())){
 			return formRequestWrapper(httpServletRequest, httpServletResponse);
 		}else if(httpServletRequest.getContentType().startsWith(ContentType.JSON.getValue())){
@@ -108,19 +107,19 @@ public class DispatcherServlet extends HttpServlet {
 		} 
 	}
 	
-	protected WebRequest formRequestWrapper(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException{
+	protected Request formRequestWrapper(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException{
 		return new FormRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, httpServerApplication.isDebug(), false);
 	}
 	
-	protected WebRequest jsonRequestWrapper(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException{
+	protected Request jsonRequestWrapper(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException{
 		return new JsonRequest(httpServerApplication.getBeanFactory(), httpServletRequest, httpServletResponse, httpServerApplication.isDebug());
 	}
 	
 	public void controller(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
 			throws IOException, ServletException {
-		WebRequest request = wrapperRequest(httpServletRequest, httpServletResponse);
+		Request request = wrapperRequest(httpServletRequest, httpServletResponse);
 		try {
-			if(!httpServerApplication.service(request, new WebResponse(request, httpServletResponse))){
+			if(!httpServerApplication.service(request, new Response(request, httpServletResponse))){
 				if(!httpServletResponse.isCommitted()){
 					httpServletResponse.sendError(404, request.getServletPath());
 				}

@@ -5,8 +5,8 @@ import java.util.List;
 
 import shuchaowen.excel.export.JxlExport;
 import shuchaowen.web.servlet.View;
-import shuchaowen.web.servlet.WebRequest;
-import shuchaowen.web.servlet.WebResponse;
+import shuchaowen.web.servlet.Request;
+import shuchaowen.web.servlet.Response;
 
 public class JxlListToExcelView implements View{
 	private String fileName;
@@ -19,7 +19,7 @@ public class JxlListToExcelView implements View{
 		this.list = list;
 	}
 	
-	public void render(WebRequest request, WebResponse response) throws IOException {
+	public void render(Request request, Response response) throws IOException {
 		if(response.getContentType() == null){
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
 		}

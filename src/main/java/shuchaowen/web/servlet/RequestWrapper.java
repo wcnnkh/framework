@@ -1,13 +1,13 @@
 package shuchaowen.web.servlet;
 
 public abstract class RequestWrapper{
-	private WebRequest request;
+	private Request request;
 	
-	public RequestWrapper(WebRequest request){
+	public RequestWrapper(Request request){
 		this.request = request;
 	}
 
-	public WebRequest getRequest() {
+	public Request getRequest() {
 		return request;
 	}
 }

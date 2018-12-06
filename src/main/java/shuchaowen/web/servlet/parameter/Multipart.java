@@ -20,7 +20,7 @@ import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
 import shuchaowen.core.util.Logger;
 import shuchaowen.web.servlet.RequestWrapper;
-import shuchaowen.web.servlet.WebRequest;
+import shuchaowen.web.servlet.Request;
 
 public class Multipart extends RequestWrapper{
 	private Map<String, List<String>> paramMap = new HashMap<String, List<String>>();
@@ -29,9 +29,9 @@ public class Multipart extends RequestWrapper{
 	private List<FileItem> fileItemList = new ArrayList<FileItem>();
 	private HttpServletRequest httpServletRequest;
 	
-	public Multipart(WebRequest webRequest) throws IOException{
-		super(webRequest);
-		init(webRequest, webRequest.isDebug());
+	public Multipart(Request request) throws IOException{
+		super(request);
+		init(request, request.isDebug());
 	}
 	
 	private void init(HttpServletRequest httpServletRequest, boolean debug){

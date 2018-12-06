@@ -10,8 +10,8 @@ import shuchaowen.excel.export.JxlExport;
 import shuchaowen.excel.export.SimpleExportRowImpl;
 import shuchaowen.excel.export.SqlExportRow;
 import shuchaowen.web.servlet.View;
-import shuchaowen.web.servlet.WebRequest;
-import shuchaowen.web.servlet.WebResponse;
+import shuchaowen.web.servlet.Request;
+import shuchaowen.web.servlet.Response;
 
 public class JxlExcelView implements View{
 	private SQL sql;
@@ -32,7 +32,7 @@ public class JxlExcelView implements View{
 		this.sqlExportRow = sqlExportRow;
 	}
 
-	public void render(WebRequest request, WebResponse response) throws IOException {
+	public void render(Request request, Response response) throws IOException {
 		if(response.getContentType() == null){
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
 		}

@@ -22,7 +22,6 @@ import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.beans.xml.XmlBeanParameter;
 import shuchaowen.core.db.DB;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.http.server.annotation.Controller;
 import shuchaowen.core.invoke.Invoker;
 import shuchaowen.core.invoke.ReflectInvoker;
 import shuchaowen.core.util.ClassInfo;
@@ -30,6 +29,7 @@ import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.StringUtils;
+import shuchaowen.web.servlet.action.annotation.Controller;
 
 public final class BeanUtils {
 	private BeanUtils() {

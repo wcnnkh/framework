@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.core.beans.BeanFactory;
-import shuchaowen.core.http.server.search.PathSearchAction;
 import shuchaowen.core.util.Logger;
 import shuchaowen.core.util.StringUtils;
-import shuchaowen.web.servlet.WebRequest;
+import shuchaowen.web.servlet.Request;
+import shuchaowen.web.servlet.action.PathSearchAction;
 
-public class FormRequest extends WebRequest {
+public class FormRequest extends Request {
 	private static final String GET_DEFAULT_CHARSET_NAME = "ISO-8859-1";
 	private Map<String, String> restUrlValueMap;
 	private final boolean cookieValue;

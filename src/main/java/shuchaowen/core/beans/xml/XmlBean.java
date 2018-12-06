@@ -21,11 +21,11 @@ import shuchaowen.core.beans.annotaion.Service;
 import shuchaowen.core.beans.annotaion.Transaction;
 import shuchaowen.core.beans.property.PropertiesFactory;
 import shuchaowen.core.exception.BeansException;
-import shuchaowen.core.http.server.annotation.Controller;
 import shuchaowen.core.util.ClassInfo;
 import shuchaowen.core.util.ClassUtils;
 import shuchaowen.core.util.FieldInfo;
 import shuchaowen.core.util.StringUtils;
+import shuchaowen.web.servlet.action.annotation.Controller;
 
 public class XmlBean implements Bean {
 	private static final String CLASS_ATTRIBUTE_KEY = "class";

@@ -30,7 +30,7 @@ public abstract class AbstractHashDispatcherServlet extends DispatcherServlet{
 	@Override
 	public void controller(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
 			throws IOException, ServletException {
-		WebRequest request = wrapperRequest(httpServletRequest, httpServletResponse);
+		Request request = wrapperRequest(httpServletRequest, httpServletResponse);
 		if(httpServletRequest.isAsyncSupported()){
 			httpServletRequest.startAsync(httpServletRequest, httpServletResponse);
 		}
@@ -42,12 +42,12 @@ public abstract class AbstractHashDispatcherServlet extends DispatcherServlet{
 		}
 	}
 	
-	protected final int ipHashCode(WebRequest request){
+	protected final int ipHashCode(Request request){
 		String ip = request.getIP();
 		return ip == null? 0:ip.hashCode();
 	}
 	
-	protected final int paramHashCode(WebRequest request, String name){
+	protected final int paramHashCode(Request request, String name){
 		String value = request.getString(name);
 		return value == null? 0:value.hashCode();
 	}
@@ -57,15 +57,15 @@ public abstract class AbstractHashDispatcherServlet extends DispatcherServlet{
 		return servletPath == null? 0:servletPath.hashCode();
 	}
 	
-	protected abstract int hashcode(WebRequest request);
+	protected abstract int hashcode(Request request);
 }
 
 class AsyncHashController implements Runnable{
-	private WebRequest request;
+	private Request request;
 	private HttpServletResponse httpServletResponse;
 	private DispatcherServlet dispatcherServlet;
 	
-	public AsyncHashController(WebRequest request, HttpServletResponse httpServletResponse, DispatcherServlet dispatcherServlet) {
+	public AsyncHashController(Request request, HttpServletResponse httpServletResponse, DispatcherServlet dispatcherServlet) {
 		this.request = request;
 		this.httpServletResponse = httpServletResponse;
 		this.dispatcherServlet = dispatcherServlet;
@@ -73,7 +73,7 @@ class AsyncHashController implements Runnable{
 	
 	public void run() {
 		try {
-			if(!dispatcherServlet.getHttpServerApplication().service(request, new WebResponse(request, httpServletResponse))){
+			if(!dispatcherServlet.getHttpServerApplication().service(request, new Response(request, httpServletResponse))){
 				httpServletResponse.sendError(404, request.getServletPath());
 			}
 		} catch (Throwable e) {

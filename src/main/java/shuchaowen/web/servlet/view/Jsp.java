@@ -9,8 +9,8 @@ import javax.servlet.ServletException;
 import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.Logger;
 import shuchaowen.web.servlet.View;
-import shuchaowen.web.servlet.WebRequest;
-import shuchaowen.web.servlet.WebResponse;
+import shuchaowen.web.servlet.Request;
+import shuchaowen.web.servlet.Response;
 
 public class Jsp extends HashMap<String, Object> implements View{
 	private static final long serialVersionUID = 1L;
@@ -28,7 +28,7 @@ public class Jsp extends HashMap<String, Object> implements View{
 		this.page = page;
 	}
 
-	public void render(WebRequest request, WebResponse response) throws IOException{
+	public void render(Request request, Response response) throws IOException{
 		if(response.getContentType() == null){
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
 		}
@@ -57,7 +57,7 @@ public class Jsp extends HashMap<String, Object> implements View{
 		}
 	}
 	
-	public static void jsp(WebRequest request, WebResponse response, String page) throws ServletException, IOException{
+	public static void jsp(Request request, Response response, String page) throws ServletException, IOException{
 		RequestDispatcher dispatcher = request.getRequestDispatcher(page);
 		dispatcher.forward(request, response);
 	}
