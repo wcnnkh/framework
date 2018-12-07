@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.web.servlet.view.AbstractTextView;
 
-public class PostPolicySignature extends AbstractTextView implements Serializable{
+public final class PostPolicySignature extends AbstractTextView implements Serializable{
 	private static final long serialVersionUID = -7835802870759182746L;
 	private String accessId;
 	private String policy;

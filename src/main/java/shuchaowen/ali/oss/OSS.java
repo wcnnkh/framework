@@ -186,6 +186,28 @@ public final class OSS {
 		return objectKey.startsWith(sb.toString());
 	}
 	
+	public String getUrlAndCheck(HttpProtocolType protocol, String bucketName, String root, long uid, String objectKey) {
+		if (protocol == null || StringUtils.isNull(bucketName, objectKey)) {
+			throw new NullPointerException();
+		}
+		
+		String url = bucketMap.get(bucketName);
+		if(url == null){
+			throw new NotFoundException("bucketName=" + bucketName);
+		}
+		
+		if(!checkObjectKey(objectKey, root, uid) || isBucketURL(objectKey)){
+			throw new ShuChaoWenRuntimeException("不合法的objectKey:" + objectKey);
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(protocol.getValue());
+		sb.append(url);
+		sb.append("/");
+		sb.append(objectKey);
+		return sb.toString();
+	}
+	
 	public ObjectListing listObject(String bucketName, String prefix, int limit, String nextMarker){
 		ListObjectsRequest listObjectsRequest = new ListObjectsRequest();
 		listObjectsRequest.setBucketName(bucketName);
@@ -197,6 +219,28 @@ public final class OSS {
 		
 		listObjectsRequest.setMaxKeys(limit);
 		return ossClient.listObjects(listObjectsRequest);
+	}
+	
+	/**
+	 * 此方法返回的可以序列化
+	 * @param bucketName
+	 * @param prefix
+	 * @param limit
+	 * @param nextMarker
+	 * @return
+	 */
+	public shuchaowen.ali.oss.ObjectListing myListObject(String bucketName, String prefix, int limit, String nextMarker){
+		ListObjectsRequest listObjectsRequest = new ListObjectsRequest();
+		listObjectsRequest.setBucketName(bucketName);
+		String newPrefix = debug? debugPrefix + prefix:prefix;
+		listObjectsRequest.setPrefix(newPrefix);
+		if(!StringUtils.isNull(nextMarker)){
+			listObjectsRequest.setMarker(nextMarker);
+		}
+		
+		listObjectsRequest.setMaxKeys(limit);
+		ObjectListing objectListing = ossClient.listObjects(listObjectsRequest);
+		return objectListing == null? null:new shuchaowen.ali.oss.ObjectListing(objectListing);
 	}
 	
 	public void shutdown(){
