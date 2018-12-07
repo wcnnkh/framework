@@ -13,6 +13,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+import shuchaowen.common.ByteArray;
+
 public final class IOUtils {
 	private IOUtils(){};
 	
@@ -49,14 +51,14 @@ public final class IOUtils {
 		return sb;
 	}
 	
-	public static ByteArrayOutputStream read(InputStream is) throws IOException{
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	public static ByteArray read(InputStream is) throws IOException{
+		ByteArray byteArray = new ByteArray();
 		byte[] b = new byte[1024];
 		int len = 0;
 		while((len = is.read(b)) != -1){
-			baos.write(b, 0, len);
+			byteArray.write(b, 0, len);
 		}
-		return baos;
+		return byteArray;
 	}
 	
 	public static void write(OutputStream os, InputStream is, int buffSize) throws IOException{
