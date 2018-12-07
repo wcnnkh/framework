@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import shuchaowen.beans.BeanFactory;
+import shuchaowen.common.exception.AlreadyExistsException;
 import shuchaowen.common.utils.XUtils;
 import shuchaowen.web.servlet.Request;
 import shuchaowen.web.servlet.action.annotation.Controller;
@@ -78,6 +79,16 @@ public class PathSearchAction implements SearchAction {
 		}
 		return action;
 	}
+	
+	private static String getExistActionErrMsg(Action action, Action oldAction){
+		StringBuilder sb = new StringBuilder();
+		sb.append("存在同样的controller[");
+		sb.append(action.toString());
+		sb.append("],原来的[");
+		sb.append(oldAction.toString());
+		sb.append("]");
+		return sb.toString();
+	}
 
 	public void init(Collection<Class<?>> classList) throws Throwable {
 		for (Class<?> clz : classList) {
@@ -133,13 +144,7 @@ public class PathSearchAction implements SearchAction {
 				shuchaowen.connection.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
 				for (shuchaowen.connection.http.enums.Method type : types) {
 					if (map.containsKey(type.name())) {
-						StringBuilder sb = new StringBuilder();
-						sb.append("存在同样的controller-");
-						sb.append(action.toString());
-						Action oldAction = map.get(type.name());
-						sb.append(",原来的controller:");
-						sb.append(oldAction.toString());
-						throw new RuntimeException(sb.toString());
+						throw new AlreadyExistsException(getExistActionErrMsg(action, map.get(type.name())));
 					}
 					map.put(type.name(), action);
 					actionMap.put(allPath, map);

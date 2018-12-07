@@ -20,6 +20,16 @@ public class PathAndParamSearchAction implements SearchAction{
 		this.key = action;
 		this.beanFactory = beanFactory;
 	}
+	
+	private static String getExistActionErrMsg(Action action, Action oldAction){
+		StringBuilder sb = new StringBuilder();
+		sb.append("存在同样的controller[");
+		sb.append(action.toString());
+		sb.append("],原来的[");
+		sb.append(oldAction.toString());
+		sb.append("]");
+		return sb.toString();
+	}
 
 	public void init(Collection<Class<?>> classList) throws Throwable {
 		for(Class<?> clz : classList){
@@ -65,7 +75,7 @@ public class PathAndParamSearchAction implements SearchAction{
 					}
 
 					if(map.containsKey(actionName)){
-						throw new AlreadyExistsException("存在相同 的action-clz="+ clz.getName() + ",method=" + method.getName() + ",actionName="+ actionName);
+						throw new AlreadyExistsException(getExistActionErrMsg(action, map.get(actionName)));
 					}
 					
 					map.put(actionName, action);
