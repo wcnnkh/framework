@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.db.annoation.Table;
 import shuchaowen.db.sql.SQL;
-import shuchaowen.reflect.ClassUtils;
 
 /**
  * 只用于处理默认的数据库

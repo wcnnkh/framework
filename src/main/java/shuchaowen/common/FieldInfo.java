@@ -1,10 +1,10 @@
-package shuchaowen.reflect;
+package shuchaowen.common;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import shuchaowen.common.Logger;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 
 public final class FieldInfo {

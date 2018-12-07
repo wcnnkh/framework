@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import shuchaowen.beans.BeanFieldListen;
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
 import shuchaowen.common.Logger;
 import shuchaowen.common.exception.AlreadyExistsException;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.db.annoation.NotColumn;
 import shuchaowen.db.annoation.Table;
-import shuchaowen.reflect.ClassInfo;
-import shuchaowen.reflect.ClassUtils;
-import shuchaowen.reflect.FieldInfo;
 
 public final class TableInfo {
 	private String name;

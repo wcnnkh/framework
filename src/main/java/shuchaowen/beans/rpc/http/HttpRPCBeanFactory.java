@@ -9,11 +9,11 @@ import shuchaowen.beans.AbstractBeanFactory;
 import shuchaowen.beans.Bean;
 import shuchaowen.beans.property.PropertiesFactory;
 import shuchaowen.beans.xml.XmlBeanUtils;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.util.StringUtils;
-import shuchaowen.reflect.ClassUtils;
 
 public class HttpRPCBeanFactory extends AbstractBeanFactory{
-	private static final String TAG_NAME = "scw:reference";
+	private static final String TAG_NAME = "http:reference";
 	
 	public HttpRPCBeanFactory(PropertiesFactory propertiesFactory, String config) throws Exception {
 		Node rootNode = XmlBeanUtils.getRootNode(config);

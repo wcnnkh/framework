@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.common.Logger;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.connection.http.enums.ContentType;
-import shuchaowen.reflect.ClassUtils;
 
 public class Response extends HttpServletResponseWrapper{
 	private static final String JSONP_CALLBACK = "callback";

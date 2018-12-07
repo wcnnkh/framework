@@ -2,10 +2,9 @@ package shuchaowen.common.utils;
 
 import java.util.Map.Entry;
 
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
 import shuchaowen.common.StringFormat;
-import shuchaowen.reflect.ClassInfo;
-import shuchaowen.reflect.ClassUtils;
-import shuchaowen.reflect.FieldInfo;
 
 import java.util.Properties;
 

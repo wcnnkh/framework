@@ -9,16 +9,16 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import shuchaowen.beans.BeanFieldListen;
+import shuchaowen.common.ClassInfo;
 import shuchaowen.common.Logger;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.common.utils.XTime;
 import shuchaowen.db.ColumnInfo;
 import shuchaowen.db.DB;
 import shuchaowen.db.TableInfo;
 import shuchaowen.db.TableMapping;
 import shuchaowen.db.annoation.Table;
-import shuchaowen.reflect.ClassInfo;
-import shuchaowen.reflect.ClassUtils;
 
 public final class Result implements Serializable {
 	private static final long serialVersionUID = -3443652927449459314L;

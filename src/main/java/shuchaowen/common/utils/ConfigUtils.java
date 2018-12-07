@@ -22,11 +22,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
 import shuchaowen.common.StringFormatSystemProperties;
 import shuchaowen.core.util.StringUtils;
-import shuchaowen.reflect.ClassInfo;
-import shuchaowen.reflect.ClassUtils;
-import shuchaowen.reflect.FieldInfo;
 
 public final class ConfigUtils {
 	private static final String WEB_ROOT = "web.root";

@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
-import shuchaowen.reflect.ClassUtils;
+import shuchaowen.common.utils.ClassUtils;
 
 public final class StringUtils {
 	private static final String randomStr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

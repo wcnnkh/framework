@@ -4,9 +4,9 @@ import java.io.File;
 
 import shuchaowen.beans.BeanFactory;
 import shuchaowen.beans.config.ConfigParse;
+import shuchaowen.common.FieldInfo;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.common.utils.ConfigUtils;
-import shuchaowen.reflect.ClassUtils;
-import shuchaowen.reflect.FieldInfo;
 
 public class XmlToBeanMapParse implements ConfigParse{
 	public Object parse(BeanFactory beanFactory, FieldInfo field, String filePath, String charset) throws Exception{

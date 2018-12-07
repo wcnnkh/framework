@@ -7,9 +7,9 @@ import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.beans.BeanFactory;
 import shuchaowen.beans.config.ConfigParse;
+import shuchaowen.common.FieldInfo;
 import shuchaowen.common.utils.ConfigUtils;
 import shuchaowen.common.utils.FileUtils;
-import shuchaowen.reflect.FieldInfo;
 
 /**
  * 将内容解析为json

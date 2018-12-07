@@ -4,8 +4,8 @@ import java.io.File;
 
 import shuchaowen.beans.BeanFactory;
 import shuchaowen.beans.config.ConfigParse;
+import shuchaowen.common.FieldInfo;
 import shuchaowen.common.utils.ConfigUtils;
-import shuchaowen.reflect.FieldInfo;
 
 /**
  * xml解析

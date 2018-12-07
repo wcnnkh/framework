@@ -4,9 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -16,9 +13,10 @@ import org.w3c.dom.NodeList;
 import shuchaowen.beans.EParameterType;
 import shuchaowen.beans.property.PropertiesFactory;
 import shuchaowen.common.exception.BeansException;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.common.utils.ConfigUtils;
+import shuchaowen.common.utils.XMLUtils;
 import shuchaowen.core.util.StringUtils;
-import shuchaowen.reflect.ClassUtils;
 
 public final class XmlBeanUtils {
 	public static final String PARAMETER_TAG_NAME = "parameter";
@@ -147,14 +145,11 @@ public final class XmlBeanUtils {
 	public static Node getRootNode(String config) {
 		try {
 			File xml = ConfigUtils.getFile(config);
-			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-			Document document = builder.parse(xml);
+			Document document = XMLUtils.parse(xml);
 			Element root = document.getDocumentElement();
 			if (!"beans".equals(root.getTagName())) {
 				throw new BeansException("root tag name error [" + root.getTagName() + "]");
 			}
-
 			return root;
 		} catch (Exception e) {
 			throw new BeansException(e);

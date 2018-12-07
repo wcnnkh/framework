@@ -5,8 +5,8 @@ import java.util.List;
 
 import shuchaowen.beans.BeanFactory;
 import shuchaowen.beans.config.ConfigParse;
+import shuchaowen.common.FieldInfo;
 import shuchaowen.common.utils.ConfigUtils;
-import shuchaowen.reflect.FieldInfo;
 
 public class ContentParse implements ConfigParse{
 	public Object parse(BeanFactory beanFactory, FieldInfo fieldInfo, String filePath, String charset) throws Exception{

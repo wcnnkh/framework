@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.db.sql.SQLFormat;
 import shuchaowen.db.storage.CommonStorage;
 import shuchaowen.db.storage.Storage;
-import shuchaowen.reflect.ClassUtils;
 
 public abstract class DB extends AbstractDB {
 	private Map<String, Storage> storageMap = new HashMap<String, Storage>();

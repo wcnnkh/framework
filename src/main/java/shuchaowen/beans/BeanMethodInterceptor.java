@@ -9,12 +9,12 @@ import java.util.Map;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import shuchaowen.beans.annotaion.Retry;
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
 import shuchaowen.common.Logger;
 import shuchaowen.common.exception.BeansException;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.db.TransactionContext;
-import shuchaowen.reflect.ClassInfo;
-import shuchaowen.reflect.ClassUtils;
-import shuchaowen.reflect.FieldInfo;
 
 public class BeanMethodInterceptor implements MethodInterceptor, BeanFieldListen {
 	private static final long serialVersionUID = 1L;

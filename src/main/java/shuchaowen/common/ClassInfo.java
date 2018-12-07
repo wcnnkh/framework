@@ -1,4 +1,4 @@
-package shuchaowen.reflect;
+package shuchaowen.common;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -12,6 +12,7 @@ import net.sf.cglib.proxy.Enhancer;
 import shuchaowen.beans.BeanFieldListen;
 import shuchaowen.beans.BeanFilter;
 import shuchaowen.beans.BeanMethodInterceptor;
+import shuchaowen.common.utils.ClassUtils;
 
 /**
  * 封装一个类的信息

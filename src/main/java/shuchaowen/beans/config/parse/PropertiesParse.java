@@ -5,11 +5,11 @@ import java.util.Properties;
 
 import shuchaowen.beans.BeanFactory;
 import shuchaowen.beans.config.ConfigParse;
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.common.utils.ConfigUtils;
 import shuchaowen.core.util.StringUtils;
-import shuchaowen.reflect.ClassInfo;
-import shuchaowen.reflect.ClassUtils;
-import shuchaowen.reflect.FieldInfo;
 
 public class PropertiesParse implements ConfigParse {
 	public Object parse(BeanFactory beanFactory, FieldInfo field, String filePath, String charset) throws Exception{

@@ -10,9 +10,9 @@ import shuchaowen.beans.annotaion.Destroy;
 import shuchaowen.beans.annotaion.InitMethod;
 import shuchaowen.beans.annotaion.Retry;
 import shuchaowen.common.exception.NotSupportException;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.db.annoation.Table;
-import shuchaowen.reflect.ClassUtils;
 
 public abstract class AbstractInterfaceProxyBean implements Bean {
 	private final Class<?> type;

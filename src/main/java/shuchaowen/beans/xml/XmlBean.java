@@ -20,11 +20,11 @@ import shuchaowen.beans.BeanUtils;
 import shuchaowen.beans.annotaion.Service;
 import shuchaowen.beans.annotaion.Transaction;
 import shuchaowen.beans.property.PropertiesFactory;
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
 import shuchaowen.common.exception.BeansException;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.util.StringUtils;
-import shuchaowen.reflect.ClassInfo;
-import shuchaowen.reflect.ClassUtils;
-import shuchaowen.reflect.FieldInfo;
 import shuchaowen.web.servlet.action.annotation.Controller;
 
 public class XmlBean implements Bean {

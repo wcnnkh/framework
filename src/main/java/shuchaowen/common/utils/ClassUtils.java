@@ -1,4 +1,4 @@
-package shuchaowen.reflect;
+package shuchaowen.common.utils;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import shuchaowen.common.utils.ConfigUtils;
+import shuchaowen.common.ClassInfo;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.spring.core.LocalVariableTableParameterNameDiscoverer;
 

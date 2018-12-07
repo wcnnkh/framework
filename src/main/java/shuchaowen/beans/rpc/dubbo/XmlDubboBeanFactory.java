@@ -13,8 +13,8 @@ import shuchaowen.beans.AbstractBeanFactory;
 import shuchaowen.beans.Bean;
 import shuchaowen.beans.property.PropertiesFactory;
 import shuchaowen.beans.xml.XmlBeanUtils;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.util.StringUtils;
-import shuchaowen.reflect.ClassUtils;
 
 public class XmlDubboBeanFactory extends AbstractBeanFactory{
 	private static final String TAG_NAME = "dubbo:reference";

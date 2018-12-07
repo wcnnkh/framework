@@ -12,12 +12,12 @@ import shuchaowen.beans.annotaion.Destroy;
 import shuchaowen.beans.annotaion.InitMethod;
 import shuchaowen.beans.annotaion.Retry;
 import shuchaowen.beans.property.PropertiesFactory;
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
 import shuchaowen.common.exception.BeansException;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.db.annoation.Table;
-import shuchaowen.reflect.ClassInfo;
-import shuchaowen.reflect.ClassUtils;
-import shuchaowen.reflect.FieldInfo;
 
 public class AnnotationBean implements Bean {
 	private final BeanFactory beanFactory;

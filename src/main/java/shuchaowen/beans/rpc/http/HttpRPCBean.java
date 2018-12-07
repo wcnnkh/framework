@@ -6,11 +6,11 @@ import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 
 import shuchaowen.beans.AbstractInterfaceProxyBean;
+import shuchaowen.common.reflect.Invoker;
 import shuchaowen.common.utils.SignUtils;
 import shuchaowen.connection.http.HttpPOST;
 import shuchaowen.connection.http.reader.JavaObjectReader;
 import shuchaowen.connection.http.write.JavaObjectWrite;
-import shuchaowen.core.invoke.Invoker;
 
 public class HttpRPCBean extends AbstractInterfaceProxyBean{
 	private final String host;

@@ -13,6 +13,7 @@ import shuchaowen.common.Multitask;
 import shuchaowen.common.transaction.AbstractTransaction;
 import shuchaowen.common.transaction.Transaction;
 import shuchaowen.common.transaction.TransactionCollection;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.db.AbstractDB;
 import shuchaowen.db.OperationBean;
 import shuchaowen.db.PrimaryKeyParameter;
@@ -28,7 +29,6 @@ import shuchaowen.mq.MQ;
 import shuchaowen.mq.MemcachedMQ;
 import shuchaowen.mq.RedisMQ;
 import shuchaowen.redis.Redis;
-import shuchaowen.reflect.ClassUtils;
 
 public final class CacheStorage implements Storage {
 	private final Map<String, CacheConfig> cacheConfigMap = new HashMap<String, CacheConfig>();

@@ -3,7 +3,7 @@ package shuchaowen.web.servlet.action;
 import java.util.Iterator;
 import java.util.List;
 
-import shuchaowen.core.invoke.Invoker;
+import shuchaowen.common.reflect.Invoker;
 import shuchaowen.web.servlet.Request;
 import shuchaowen.web.servlet.Response;
 

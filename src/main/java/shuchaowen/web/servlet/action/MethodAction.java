@@ -8,9 +8,9 @@ import java.util.Map;
 
 import shuchaowen.beans.BeanFactory;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.invoke.Invoker;
-import shuchaowen.core.invoke.ReflectInvoker;
-import shuchaowen.reflect.ClassUtils;
+import shuchaowen.common.reflect.Invoker;
+import shuchaowen.common.reflect.ReflectInvoker;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.web.servlet.Request;
 import shuchaowen.web.servlet.Response;
 import shuchaowen.web.servlet.action.annotation.Controller;

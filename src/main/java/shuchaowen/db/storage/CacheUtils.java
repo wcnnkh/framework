@@ -10,11 +10,11 @@ import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
 import shuchaowen.beans.BeanFieldListen;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.db.AbstractDB;
 import shuchaowen.db.TableInfo;
 import shuchaowen.db.result.Result;
 import shuchaowen.db.storage.cache.Cache;
-import shuchaowen.reflect.ClassUtils;
 
 public class CacheUtils {
 	@SuppressWarnings({ "unchecked", "rawtypes" })

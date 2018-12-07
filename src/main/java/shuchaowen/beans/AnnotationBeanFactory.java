@@ -3,8 +3,8 @@ package shuchaowen.beans;
 import shuchaowen.beans.annotaion.Service;
 import shuchaowen.beans.property.PropertiesFactory;
 import shuchaowen.common.exception.AlreadyExistsException;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.util.StringUtils;
-import shuchaowen.reflect.ClassUtils;
 
 /**
  * 此类只要类是存在的不可能出现获取不到的情况

@@ -1,4 +1,4 @@
-package shuchaowen.core.invoke;
+package shuchaowen.common.reflect;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

@@ -20,15 +20,15 @@ import shuchaowen.beans.annotaion.Service;
 import shuchaowen.beans.annotaion.Transaction;
 import shuchaowen.beans.property.PropertiesFactory;
 import shuchaowen.beans.xml.XmlBeanParameter;
+import shuchaowen.common.ClassInfo;
+import shuchaowen.common.FieldInfo;
 import shuchaowen.common.Logger;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.invoke.Invoker;
-import shuchaowen.core.invoke.ReflectInvoker;
+import shuchaowen.common.reflect.Invoker;
+import shuchaowen.common.reflect.ReflectInvoker;
+import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.db.DB;
-import shuchaowen.reflect.ClassInfo;
-import shuchaowen.reflect.ClassUtils;
-import shuchaowen.reflect.FieldInfo;
 import shuchaowen.web.servlet.action.annotation.Controller;
 
 public final class BeanUtils {
