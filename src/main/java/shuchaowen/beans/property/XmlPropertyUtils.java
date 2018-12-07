@@ -13,7 +13,7 @@ import org.w3c.dom.NodeList;
 import shuchaowen.beans.xml.XmlBeanUtils;
 import shuchaowen.common.Logger;
 import shuchaowen.common.utils.ConfigUtils;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 
 public final class XmlPropertyUtils {
 	private XmlPropertyUtils() {};

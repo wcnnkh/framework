@@ -7,8 +7,8 @@ import java.util.Map;
 import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.utils.StringUtils;
 import shuchaowen.connection.http.HttpUtils;
-import shuchaowen.core.util.StringUtils;
 import shuchaowen.tencent.weixin.WeiXinUtils;
 
 /**

@@ -1,6 +1,6 @@
 package shuchaowen.common;
 
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 
 public abstract class StringFormat{
 	private char[] prefix;

@@ -1,4 +1,4 @@
-package shuchaowen.core.util;
+package shuchaowen.common.utils;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -9,7 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
-import shuchaowen.common.utils.ClassUtils;
 
 public final class StringUtils {
 	private static final String randomStr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

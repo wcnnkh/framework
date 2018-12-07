@@ -15,8 +15,8 @@ import shuchaowen.beans.property.PropertiesFactory;
 import shuchaowen.common.exception.BeansException;
 import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.common.utils.ConfigUtils;
+import shuchaowen.common.utils.StringUtils;
 import shuchaowen.common.utils.XMLUtils;
-import shuchaowen.core.util.StringUtils;
 
 public final class XmlBeanUtils {
 	public static final String PARAMETER_TAG_NAME = "parameter";

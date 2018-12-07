@@ -12,7 +12,7 @@ import shuchaowen.beans.EParameterType;
 import shuchaowen.beans.property.PropertiesFactory;
 import shuchaowen.common.exception.NotFoundException;
 import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 
 public final class XmlBeanParameter implements Cloneable, Serializable{
 	private static final long serialVersionUID = 1L;

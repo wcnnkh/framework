@@ -11,7 +11,7 @@ import shuchaowen.common.FieldInfo;
 import shuchaowen.common.exception.AlreadyExistsException;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 
 public abstract class AbstractLoadRow<T> implements LoadRow{
 	private final int nameMappingIndex;

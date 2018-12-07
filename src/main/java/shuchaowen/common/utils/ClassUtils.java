@@ -20,10 +20,10 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import shuchaowen.common.ClassInfo;
-import shuchaowen.core.util.StringUtils;
 import shuchaowen.spring.core.LocalVariableTableParameterNameDiscoverer;
 
 public final class ClassUtils {
+	public static final String ALL_PACKAGE_NAME = "*";
 	public static final String CGLIB_CLASS_SPLIT = "$$";
 	private volatile static Map<String, ClassInfo> clzMap = new HashMap<String, ClassInfo>();
 	private static Map<Class<?>, Class<?>> basicTypeMap = new HashMap<Class<?>, Class<?>>();
@@ -284,7 +284,7 @@ public final class ClassUtils {
 	public static Collection<Class<?>> getClasses(String packageName) {
 		if (StringUtils.isNull(packageName)) {
 			return getClassListForPackageArray();
-		} else if ("*".equals(packageName)) {
+		} else if (ALL_PACKAGE_NAME.equals(packageName)) {
 			return getClassesForPackage("");
 		} else {
 			Map<String, Class<?>> classMap = new HashMap<String, Class<?>>();

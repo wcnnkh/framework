@@ -13,7 +13,7 @@ import shuchaowen.common.Logger;
 import shuchaowen.common.exception.AlreadyExistsException;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 import shuchaowen.db.annoation.NotColumn;
 import shuchaowen.db.annoation.Table;
 

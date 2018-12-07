@@ -50,7 +50,7 @@ import java.util.TreeSet;
  * @author Rick Evans
  * @author Arjen Poutsma
  * @since 16 April 2001
- * @see shuchaowen.spring.util.reference.spring.util.shuchaowen.util.reference.spring.lang.StringUtils
+ * @see shuchaowen.common.utils.reference.spring.util.shuchaowen.util.reference.spring.lang.StringUtils
  */
 public abstract class StringUtils {
 

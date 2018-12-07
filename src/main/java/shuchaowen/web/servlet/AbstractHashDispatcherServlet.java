@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import shuchaowen.common.ProcessorHashQueue;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 
 public abstract class AbstractHashDispatcherServlet extends DispatcherServlet{
 	private static final long serialVersionUID = 1L;

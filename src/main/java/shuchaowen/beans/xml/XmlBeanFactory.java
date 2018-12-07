@@ -11,7 +11,7 @@ import shuchaowen.beans.Bean;
 import shuchaowen.beans.BeanFactory;
 import shuchaowen.beans.property.PropertiesFactory;
 import shuchaowen.common.exception.AlreadyExistsException;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
 	private static final String BEANS_ANNOTATION = "packages";

@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.beans.BeanFactory;
 import shuchaowen.common.Logger;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 import shuchaowen.web.servlet.Request;
 import shuchaowen.web.servlet.action.PathSearchAction;
 

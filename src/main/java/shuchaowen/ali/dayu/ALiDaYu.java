@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import shuchaowen.common.utils.SignUtils;
+import shuchaowen.common.utils.StringUtils;
 import shuchaowen.common.utils.XTime;
 import shuchaowen.connection.http.HttpUtils;
-import shuchaowen.core.util.StringUtils;
 
 public class ALiDaYu {
 	private String host;

@@ -14,7 +14,7 @@ import shuchaowen.beans.property.PropertiesFactory;
 import shuchaowen.beans.xml.XmlBeanUtils;
 import shuchaowen.common.exception.BeansException;
 import shuchaowen.common.exception.NotSupportException;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 
 public class XmlDubboBean implements Bean{
 	private final String[] names;

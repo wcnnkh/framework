@@ -6,8 +6,8 @@ import shuchaowen.beans.property.PropertiesFactory;
 import shuchaowen.common.StringFormat;
 import shuchaowen.common.exception.BeansException;
 import shuchaowen.common.utils.ConfigUtils;
+import shuchaowen.common.utils.StringUtils;
 import shuchaowen.connection.http.HttpUtils;
-import shuchaowen.core.util.StringUtils;
 
 public class XmlValue {
 	private final String value;

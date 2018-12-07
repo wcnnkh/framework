@@ -1,7 +1,7 @@
 package shuchaowen.login;
 
+import shuchaowen.common.utils.StringUtils;
 import shuchaowen.common.utils.XUtils;
-import shuchaowen.core.util.StringUtils;
 import shuchaowen.redis.Redis;
 
 public class RedisSessionFactory implements SessionFactory{

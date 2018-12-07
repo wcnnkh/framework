@@ -15,7 +15,7 @@ import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.reflect.Invoker;
 import shuchaowen.common.reflect.ReflectInvoker;
 import shuchaowen.common.utils.SignUtils;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 import shuchaowen.web.servlet.action.Action;
 import shuchaowen.web.servlet.action.DefaultSearchAction;
 import shuchaowen.web.servlet.action.SearchAction;

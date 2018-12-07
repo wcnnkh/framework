@@ -11,7 +11,7 @@ import shuchaowen.beans.annotaion.InitMethod;
 import shuchaowen.beans.annotaion.Retry;
 import shuchaowen.common.exception.NotSupportException;
 import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 import shuchaowen.db.annoation.Table;
 
 public abstract class AbstractInterfaceProxyBean implements Bean {

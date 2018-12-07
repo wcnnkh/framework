@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import shuchaowen.common.utils.SignUtils;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 
 public class JsApiSignature implements Serializable{
 	private static final long serialVersionUID = 1L;

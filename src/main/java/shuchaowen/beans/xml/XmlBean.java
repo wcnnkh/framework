@@ -24,7 +24,7 @@ import shuchaowen.common.ClassInfo;
 import shuchaowen.common.FieldInfo;
 import shuchaowen.common.exception.BeansException;
 import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 import shuchaowen.web.servlet.action.annotation.Controller;
 
 public class XmlBean implements Bean {

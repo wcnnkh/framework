@@ -15,7 +15,7 @@ import shuchaowen.beans.xml.XmlBeanFactory;
 import shuchaowen.common.Logger;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 
 public class CommonApplication implements Application {
 	private final MultipleBeanFactory beanFactory;

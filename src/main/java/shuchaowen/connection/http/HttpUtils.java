@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.utils.StringUtils;
 import shuchaowen.connection.http.write.FormData;
-import shuchaowen.core.util.StringUtils;
 
 public final class HttpUtils {
 	private static final String DEFAULT_CHARSETNAME = "UTF-8";

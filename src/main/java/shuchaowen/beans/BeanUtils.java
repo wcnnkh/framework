@@ -27,7 +27,7 @@ import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.reflect.Invoker;
 import shuchaowen.common.reflect.ReflectInvoker;
 import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 import shuchaowen.db.DB;
 import shuchaowen.web.servlet.action.annotation.Controller;
 

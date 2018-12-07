@@ -9,7 +9,7 @@ import org.w3c.dom.NodeList;
 import shuchaowen.beans.xml.XmlBeanUtils;
 import shuchaowen.common.exception.BeansException;
 import shuchaowen.common.utils.ConfigUtils;
-import shuchaowen.core.util.StringUtils;
+import shuchaowen.common.utils.StringUtils;
 
 public class XmlPropertiesFactory implements PropertiesFactory {
 	private static final String PROPERTIES_TAG_NAME = "properties";
