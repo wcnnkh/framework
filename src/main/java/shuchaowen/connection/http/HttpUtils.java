@@ -10,8 +10,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.connection.http.write.FormData;
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
 import shuchaowen.core.util.StringUtils;
 
 public final class HttpUtils {

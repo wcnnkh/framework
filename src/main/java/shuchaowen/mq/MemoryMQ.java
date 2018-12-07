@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 
 public final class MemoryMQ<T> implements MQ<T> {
 	private final LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<T>();

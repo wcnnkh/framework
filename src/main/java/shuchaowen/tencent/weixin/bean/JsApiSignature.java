@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import shuchaowen.common.utils.SHA1;
+import shuchaowen.common.utils.SignUtils;
 import shuchaowen.core.util.StringUtils;
 
 public class JsApiSignature implements Serializable{
@@ -45,7 +45,7 @@ public class JsApiSignature implements Serializable{
 				sb.append("&");
 			}
 		}
-		this.signature = SHA1.sha1(sb.toString());
+		this.signature = SignUtils.sha1(sb.toString(), "UTF-8");
 	}
 	
 	public String getNonceStr() {

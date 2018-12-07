@@ -5,8 +5,8 @@ import java.io.File;
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
+import shuchaowen.common.Logger;
 import shuchaowen.common.utils.ConfigUtils;
-import shuchaowen.common.utils.Logger;
 
 public abstract class AbstractJxlLoadExcel<T> extends AbstractLoadRow<T> implements Runnable, LoadRow {
 	private final File excel;

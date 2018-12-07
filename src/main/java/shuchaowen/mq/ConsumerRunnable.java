@@ -1,6 +1,6 @@
 package shuchaowen.mq;
 
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 
 public final class ConsumerRunnable<T> implements Runnable{
 	private final Consumer<T> consumer;

@@ -10,9 +10,9 @@ import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import shuchaowen.core.db.AbstractDB;
-import shuchaowen.core.db.result.ResultSet;
-import shuchaowen.core.db.sql.SQL;
+import shuchaowen.db.AbstractDB;
+import shuchaowen.db.result.ResultSet;
+import shuchaowen.db.sql.SQL;
 
 public class JxlExport {
 	/**

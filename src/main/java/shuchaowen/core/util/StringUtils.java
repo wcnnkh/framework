@@ -8,8 +8,8 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.exception.ShuChaoWenRuntimeException;
+import shuchaowen.reflect.ClassUtils;
 
 public final class StringUtils {
 	private static final String randomStr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

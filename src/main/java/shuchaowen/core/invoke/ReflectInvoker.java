@@ -3,7 +3,7 @@ package shuchaowen.core.invoke;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import shuchaowen.core.beans.BeanFactory;
+import shuchaowen.beans.BeanFactory;
 
 public class ReflectInvoker implements Invoker {
 	private final Object bean;// 如果是静态方法这个就应该是空

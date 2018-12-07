@@ -11,7 +11,7 @@ import org.dom4j.Node;
 
 import com.alibaba.fastjson.JSONObject;
 
-import shuchaowen.common.utils.SignHelp;
+import shuchaowen.common.utils.SignUtils;
 import shuchaowen.connection.http.HttpUtils;
 
 /**
@@ -77,9 +77,9 @@ public final class WeiXinUtils {
 	}
 	
 	public static String getPaySign(Map<String, String> paramMap, String apiKey){
-		StringBuilder sb = SignHelp.getShotParamsStr(paramMap);
+		StringBuilder sb = SignUtils.getShotParamsStr(paramMap);
 		sb.append("&key=").append(apiKey);
-		return SignHelp.md5UpperStr(sb.toString(), "UTF-8");
+		return SignUtils.md5UpperStr(sb.toString(), "UTF-8");
 	}
 	
 	/**

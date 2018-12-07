@@ -1,6 +1,6 @@
 package shuchaowen.excel.export;
 
-import shuchaowen.core.db.result.Result;
+import shuchaowen.db.result.Result;
 
 public class SimpleExportRowImpl implements SqlExportRow{
 	private int colCount;

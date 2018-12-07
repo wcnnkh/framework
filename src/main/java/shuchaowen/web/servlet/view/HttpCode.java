@@ -2,8 +2,8 @@ package shuchaowen.web.servlet.view;
 
 import java.io.IOException;
 
-import shuchaowen.common.utils.Logger;
 import shuchaowen.web.servlet.View;
+import shuchaowen.common.Logger;
 import shuchaowen.web.servlet.Request;
 import shuchaowen.web.servlet.Response;
 

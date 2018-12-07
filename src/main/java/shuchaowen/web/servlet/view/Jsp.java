@@ -6,8 +6,8 @@ import java.util.HashMap;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 
-import shuchaowen.common.utils.Logger;
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.Logger;
+import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.web.servlet.View;
 import shuchaowen.web.servlet.Request;
 import shuchaowen.web.servlet.Response;

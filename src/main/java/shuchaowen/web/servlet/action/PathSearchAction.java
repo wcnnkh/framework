@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import shuchaowen.beans.BeanFactory;
 import shuchaowen.common.utils.XUtils;
-import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.web.servlet.Request;
 import shuchaowen.web.servlet.action.annotation.Controller;
 

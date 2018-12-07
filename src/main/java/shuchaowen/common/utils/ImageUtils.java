@@ -17,8 +17,6 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import shuchaowen.common.utils.FileUtils;
-
 public final class ImageUtils {
 	private ImageUtils(){};
 	

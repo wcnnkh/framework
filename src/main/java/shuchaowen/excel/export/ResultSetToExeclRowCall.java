@@ -3,7 +3,7 @@ package shuchaowen.excel.export;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import shuchaowen.core.db.result.ResultSet;
+import shuchaowen.db.result.ResultSet;
 
 public class ResultSetToExeclRowCall{
 	// 创建Excel工作薄

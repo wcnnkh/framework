@@ -8,12 +8,12 @@ import java.util.Map;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import shuchaowen.common.utils.Logger;
-import shuchaowen.common.utils.SignHelp;
+import shuchaowen.common.Logger;
+import shuchaowen.common.exception.NotSupportException;
+import shuchaowen.common.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.exception.SignatureException;
+import shuchaowen.common.utils.SignUtils;
 import shuchaowen.connection.http.HttpUtils;
-import shuchaowen.core.exception.NotSupportException;
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
-import shuchaowen.core.exception.SignatureException;
 import shuchaowen.core.util.StringUtils;
 import shuchaowen.tencent.weixin.bean.Unifiedorder;
 
@@ -314,14 +314,14 @@ public final class WeiXinPay {
 		}
 		
 		cloneParams.remove("sign");
-		StringBuilder checkStr = SignHelp.getShotParamsStr(cloneParams);
+		StringBuilder checkStr = SignUtils.getShotParamsStr(cloneParams);
 		checkStr.append("&key=").append(apiKey);
 		return sign.equals(toSign(checkStr.toString()));
 	}
 	
 	private String toSign(String str){
 		if("MD5".equalsIgnoreCase(sign_type)){
-			return SignHelp.md5UpperStr(str, charset.name());
+			return SignUtils.md5UpperStr(str, charset.name());
 		}else if("HMAC-SHA256".equalsIgnoreCase(sign_type)){
 			//TODO
 			throw new NotSupportException(sign_type);

@@ -2,7 +2,7 @@ package shuchaowen.cache;
 
 import java.nio.charset.Charset;
 
-import shuchaowen.core.db.storage.CacheUtils;
+import shuchaowen.db.storage.CacheUtils;
 import shuchaowen.redis.Redis;
 import shuchaowen.redis.RedisLock;
 

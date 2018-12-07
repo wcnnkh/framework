@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import shuchaowen.common.utils.SignHelp;
+import shuchaowen.common.utils.SignUtils;
 import shuchaowen.common.utils.XTime;
 import shuchaowen.connection.http.HttpUtils;
 import shuchaowen.core.util.StringUtils;
@@ -83,16 +83,16 @@ public class ALiDaYu {
 		if(isMd5){
 			sb.append(secret);
 			try {
-				bytes = SignHelp.md5(sb.toString().getBytes("utf-8"));
+				bytes = SignUtils.md5(sb.toString().getBytes("utf-8"));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			} catch (NoSuchAlgorithmException e) {
 				e.printStackTrace();
 			}
 		}else{
-			bytes = SignHelp.HmacMD5(sb.toString(), secret, "UTF-8");
+			bytes = SignUtils.HmacMD5(sb.toString(), secret, "UTF-8");
 		}
 		
-		return SignHelp.byte2hex(bytes).toUpperCase();
+		return SignUtils.byte2hex(bytes).toUpperCase();
 	}
 }

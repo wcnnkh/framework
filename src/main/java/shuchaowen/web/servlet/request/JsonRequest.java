@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import shuchaowen.common.utils.Logger;
+import shuchaowen.beans.BeanFactory;
+import shuchaowen.common.Logger;
 import shuchaowen.common.utils.XUtils;
-import shuchaowen.core.beans.BeanFactory;
 import shuchaowen.web.servlet.Request;
 
 public class JsonRequest extends Request{

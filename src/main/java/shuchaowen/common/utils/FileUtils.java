@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.Base64;
+import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 
 public final class FileUtils {
 	private FileUtils(){};

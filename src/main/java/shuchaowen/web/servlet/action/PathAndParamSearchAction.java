@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import shuchaowen.beans.BeanFactory;
+import shuchaowen.common.exception.AlreadyExistsException;
 import shuchaowen.common.utils.XUtils;
-import shuchaowen.core.beans.BeanFactory;
-import shuchaowen.core.exception.AlreadyExistsException;
 import shuchaowen.web.servlet.Request;
 import shuchaowen.web.servlet.action.annotation.Controller;
 

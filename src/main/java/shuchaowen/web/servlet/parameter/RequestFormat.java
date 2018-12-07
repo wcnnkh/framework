@@ -13,9 +13,9 @@ import org.dom4j.io.SAXReader;
 
 import com.alibaba.fastjson.JSONObject;
 
+import shuchaowen.web.servlet.RequestWrapper;
 import shuchaowen.common.utils.IOUtils;
 import shuchaowen.common.utils.XUtils;
-import shuchaowen.web.servlet.RequestWrapper;
 import shuchaowen.web.servlet.Request;
 
 public class RequestFormat extends RequestWrapper {

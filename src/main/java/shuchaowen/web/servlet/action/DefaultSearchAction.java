@@ -2,7 +2,7 @@ package shuchaowen.web.servlet.action;
 
 import java.util.Collection;
 
-import shuchaowen.core.beans.BeanFactory;
+import shuchaowen.beans.BeanFactory;
 import shuchaowen.web.servlet.Request;
 
 public class DefaultSearchAction implements SearchAction{

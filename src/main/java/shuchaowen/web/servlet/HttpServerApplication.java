@@ -8,11 +8,11 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-import shuchaowen.common.utils.Logger;
-import shuchaowen.common.utils.SignHelp;
-import shuchaowen.core.application.CommonApplication;
-import shuchaowen.core.beans.rpc.http.Message;
-import shuchaowen.core.exception.ShuChaoWenRuntimeException;
+import shuchaowen.application.CommonApplication;
+import shuchaowen.beans.rpc.http.Message;
+import shuchaowen.common.Logger;
+import shuchaowen.common.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.utils.SignUtils;
 import shuchaowen.core.invoke.Invoker;
 import shuchaowen.core.invoke.ReflectInvoker;
 import shuchaowen.core.util.StringUtils;
@@ -106,7 +106,7 @@ public class HttpServerApplication extends CommonApplication {
 		}
 		
 		long t = (Long) message.getAttribute("t");
-		String checkSign = SignHelp.md5Str(t + rpcSignStr, charset.name());
+		String checkSign = SignUtils.md5Str(t + rpcSignStr, charset.name());
 		if (t < System.currentTimeMillis() - 10000) {// 如果超过10秒失效
 			return false;
 		}

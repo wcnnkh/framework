@@ -18,8 +18,8 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
-import shuchaowen.common.utils.Logger;
 import shuchaowen.web.servlet.RequestWrapper;
+import shuchaowen.common.Logger;
 import shuchaowen.web.servlet.Request;
 
 public class Multipart extends RequestWrapper{
