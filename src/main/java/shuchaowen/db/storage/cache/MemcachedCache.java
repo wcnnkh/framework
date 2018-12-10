@@ -2,9 +2,6 @@ package shuchaowen.db.storage.cache;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +11,6 @@ import shuchaowen.common.transaction.Transaction;
 import shuchaowen.db.AbstractDB;
 import shuchaowen.db.OperationBean;
 import shuchaowen.db.OperationType;
-import shuchaowen.db.PrimaryKeyParameter;
-import shuchaowen.db.PrimaryKeyValue;
 import shuchaowen.db.TableInfo;
 import shuchaowen.db.storage.CacheUtils;
 import shuchaowen.memcached.Memcached;
@@ -121,91 +116,6 @@ public class MemcachedCache implements Cache {
 			list.add(CacheUtils.decode(type, data));
 		}
 		return list;
-	}
-
-	public <T> PrimaryKeyValue<T> getById(Class<T> type, Collection<PrimaryKeyParameter> primaryKeyParameters) {
-		Map<String, PrimaryKeyParameter> keyMap = new HashMap<String, PrimaryKeyParameter>();
-		for (PrimaryKeyParameter parameter : primaryKeyParameters) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(type.getName());
-			for (Object v : parameter.getParams()) {
-				sb.append(SPLIT);
-				sb.append(v);
-			}
-			keyMap.put(sb.toString(), parameter);
-		}
-
-		PrimaryKeyValue<T> value = new PrimaryKeyValue<T>();
-		Map<String, byte[]> cacheMap = memcached.get(keyMap.keySet());
-		if (cacheMap != null) {
-			for (Entry<String, byte[]> entry : cacheMap.entrySet()) {
-				value.put(keyMap.get(entry.getKey()), CacheUtils.decode(type, entry.getValue()));
-			}
-		}
-		return value;
-	}
-
-	private String getObjectKey(Class<?> type, Object... params) {
-		StringBuilder sb = new StringBuilder(256);
-		sb.append(type.getName());
-		for (Object v : params) {
-			sb.append(SPLIT);
-			sb.append(v);
-		}
-		return sb.toString();
-	}
-
-	public <T> PrimaryKeyValue<T> getById(AbstractDB db, boolean checkKey, Class<T> type,
-			Collection<PrimaryKeyParameter> primaryKeyParameters) {
-		Map<String, PrimaryKeyParameter> keyMap = new HashMap<String, PrimaryKeyParameter>();
-		for (PrimaryKeyParameter parameter : primaryKeyParameters) {
-			keyMap.put(getObjectKey(type, parameter.getParams()), parameter);
-		}
-
-		PrimaryKeyValue<T> primaryKeyValue = new PrimaryKeyValue<T>();
-		Map<String, byte[]> cacheMap = memcached.get(keyMap.keySet());
-		if (cacheMap != null && !cacheMap.isEmpty()) {
-			for (Entry<String, byte[]> entry : cacheMap.entrySet()) {
-				primaryKeyValue.put(keyMap.get(entry.getKey()), CacheUtils.decode(type, entry.getValue()));
-			}
-		}
-
-		if (cacheMap == null || cacheMap.size() != primaryKeyParameters.size()) {
-			Map<String, String> notFindMap = new HashMap<String, String>();
-			for (Entry<String, PrimaryKeyParameter> entry : keyMap.entrySet()) {
-				if (cacheMap == null || cacheMap.containsKey(entry.getKey())) {
-					continue;
-				}
-
-				notFindMap.put(entry.getKey(), INDEX_PREFIX + entry.getKey());
-			}
-
-			// key是有缓存的
-			if (checkKey) {
-				Map<String, byte[]> existMap = memcached.get(notFindMap.values());
-				if (existMap != null) {
-					Iterator<Entry<String, String>> iterator = notFindMap.entrySet().iterator();
-					while (iterator.hasNext()) {
-						Entry<String, String> entry = iterator.next();
-						if (!existMap.containsKey(entry.getValue())) {
-							iterator.remove();
-						}
-					}
-				}
-			}
-
-			List<PrimaryKeyParameter> list = new ArrayList<PrimaryKeyParameter>();
-			for (Entry<String, String> entry : notFindMap.entrySet()) {
-				list.add(keyMap.get(entry.getKey()));
-			}
-
-			PrimaryKeyValue<T> dbMap = db.getByIdFromDB(type, null, list);
-			if (dbMap != null) {
-				primaryKeyValue.putAll(dbMap);
-				// saveToCacheByKeys(bean, exp);
-			}
-		}
-		return primaryKeyValue;
 	}
 
 	public Transaction opByFull(OperationBean operationBean) throws Exception {

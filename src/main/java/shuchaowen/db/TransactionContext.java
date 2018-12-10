@@ -160,6 +160,11 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 		}
 	}
 
+	/**
+	 * @param connectionSource
+	 * @param sql
+	 * @return ResultSet不可能为空
+	 */
 	public ResultSet select(ConnectionSource connectionSource, SQL sql) {
 		ThreadLocalTransaction threadLocalTransaction = getValue();
 		if (threadLocalTransaction == null) {// 如果未使用事务

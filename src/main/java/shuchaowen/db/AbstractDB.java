@@ -191,32 +191,6 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable{
 		return resultSet.getList(type);
 	}
 	
-	public <T> PrimaryKeyValue<T> getByIdFromDB(Class<T> type,
-			String tableName, Collection<PrimaryKeyParameter> primaryKeyParameters) {
-		if(primaryKeyParameters == null || primaryKeyParameters.isEmpty()){
-			return new PrimaryKeyValue<T>();
-		}
-		
-		TableInfo tableInfo = DB.getTableInfo(type);
-		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
-		SQL sql = getSqlFormat().toSelectINId(tableInfo, tName, primaryKeyParameters);
-		ResultSet resultSet = select(sql);
-		resultSet.registerClassTable(type, tName);
-		List<T> list = resultSet.getList(type);
-		
-		PrimaryKeyValue<T> primaryKeyValue = new PrimaryKeyValue<T>();
-		for (T t : list) {
-			try {
-				primaryKeyValue.put(tableInfo.getPrimaryKeyParameter(t), t);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		}
-		return primaryKeyValue;
-	}
-	
 	public void execute(Collection<OperationBean> operationBeans){
 		Collection<SQL> sqls = DBUtils.getSqlList(getSqlFormat(), operationBeans);
 		if(sqls == null || sqls.isEmpty()){

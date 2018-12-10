@@ -1,13 +1,10 @@
 package shuchaowen.db.storage.cache;
 
-import java.util.Collection;
 import java.util.List;
 
 import shuchaowen.common.transaction.Transaction;
 import shuchaowen.db.AbstractDB;
 import shuchaowen.db.OperationBean;
-import shuchaowen.db.PrimaryKeyParameter;
-import shuchaowen.db.PrimaryKeyValue;
 
 public interface Cache {
 	public static final String SPLIT = "#";
@@ -27,10 +24,6 @@ public interface Cache {
 
 	<T> List<T> getByIdList(AbstractDB db, Class<T> type, Object ...params) throws Exception;
 	
-	<T> PrimaryKeyValue<T> getById(Class<T> type, Collection<PrimaryKeyParameter> primaryKeyParameters) throws Exception;
-	
-	<T> PrimaryKeyValue<T> getById(AbstractDB db, boolean checkKey, Class<T> type, Collection<PrimaryKeyParameter> primaryKeyParameters) throws Exception;
-
 	/**
 	 * 热点数据异步回滚
 	 * @param operationBean

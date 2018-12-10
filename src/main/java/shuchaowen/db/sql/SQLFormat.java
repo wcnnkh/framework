@@ -1,8 +1,5 @@
 package shuchaowen.db.sql;
 
-import java.util.Collection;
-
-import shuchaowen.db.PrimaryKeyParameter;
 import shuchaowen.db.TableInfo;
 
 public interface SQLFormat {
@@ -27,6 +24,4 @@ public interface SQLFormat {
 	
 	SQL toDecrSql(Object obj, String fieldName, double limit, Double minValue);
 	SQL toDecrSql(Object obj, TableInfo tableInfo, String tableName, String fieldName, double limit, Double minValue);
-	
-	SQL toSelectINId(TableInfo tableInfo, String tableName, Collection<PrimaryKeyParameter> primaryKeyParameters);
 }

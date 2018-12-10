@@ -16,8 +16,6 @@ import shuchaowen.common.transaction.TransactionCollection;
 import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.db.AbstractDB;
 import shuchaowen.db.OperationBean;
-import shuchaowen.db.PrimaryKeyParameter;
-import shuchaowen.db.PrimaryKeyValue;
 import shuchaowen.db.TransactionContext;
 import shuchaowen.db.annoation.Table;
 import shuchaowen.db.result.Result;
@@ -162,25 +160,6 @@ public final class CacheStorage implements Storage {
 			e.printStackTrace();
 		}
 		return t;
-	}
-
-	public <T> PrimaryKeyValue<T> getById(Class<T> type, Collection<PrimaryKeyParameter> primaryKeyParameters) {
-		CacheConfig cacheInfo = getCacheConfig(type);
-		try {
-			switch (cacheInfo.getCacheType()) {
-			case lazy:
-				return cache.getById(getDB(), false, type, primaryKeyParameters);
-			case keys:
-				return cache.getById(getDB(), true, type, primaryKeyParameters);
-			case full:
-				return cache.getById(type, primaryKeyParameters);
-			default:
-				return getDB().getByIdFromDB(type, null, primaryKeyParameters);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	public <T> List<T> getByIdList(Class<T> type, Object... params) {
