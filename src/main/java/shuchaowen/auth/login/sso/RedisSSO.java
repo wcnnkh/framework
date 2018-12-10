@@ -1,7 +1,7 @@
-package shuchaowen.login.sso;
+package shuchaowen.auth.login.sso;
 
-import shuchaowen.login.RedisSessionFactory;
-import shuchaowen.login.Session;
+import shuchaowen.auth.login.RedisSessionFactory;
+import shuchaowen.auth.login.Session;
 import shuchaowen.redis.Redis;
 
 public class RedisSSO extends RedisSessionFactory implements SSO{

@@ -1,7 +1,7 @@
-package shuchaowen.login.sso;
+package shuchaowen.auth.login.sso;
 
-import shuchaowen.login.MemcachedSessionFactory;
-import shuchaowen.login.Session;
+import shuchaowen.auth.login.MemcachedSessionFactory;
+import shuchaowen.auth.login.Session;
 import shuchaowen.memcached.Memcached;
 
 public class MemcachedSSO extends MemcachedSessionFactory implements SSO{

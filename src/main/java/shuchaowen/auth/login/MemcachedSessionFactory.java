@@ -1,16 +1,16 @@
-package shuchaowen.login;
+package shuchaowen.auth.login;
 
 import shuchaowen.common.utils.StringUtils;
 import shuchaowen.common.utils.XUtils;
-import shuchaowen.redis.Redis;
+import shuchaowen.memcached.Memcached;
 
-public class RedisSessionFactory implements SessionFactory{
-	private final Redis redis;
+public class MemcachedSessionFactory implements SessionFactory{
+	private final Memcached memcached;
 	private final String prefix;
 	private final int exp;
 	
-	public RedisSessionFactory(Redis redis, String prefix, int exp){
-		this.redis = redis;
+	public MemcachedSessionFactory(Memcached memcached, String prefix, int exp){
+		this.memcached = memcached;
 		this.prefix = prefix;
 		this.exp = exp;
 	}
@@ -20,17 +20,17 @@ public class RedisSessionFactory implements SessionFactory{
 			return null;
 		}
 		
-		String uidStr = redis.getAndTouch(prefix + sessionId, exp);
-		if(uidStr == null){
+		Long uid = memcached.getAndTocuh(prefix + sessionId, exp);
+		if(uid == null){
 			return null;
 		}
 		
-		return new Session(sessionId, Long.parseLong(uidStr));
+		return new Session(sessionId, uid);
 	}
 
 	public Session login(long uid) {
 		String newSid = uid + XUtils.getUUID();
-		redis.setex(prefix + newSid, exp, uid + "");
+		memcached.set(prefix + newSid, exp, uid);
 		return new Session(newSid, uid);
 	}
 
@@ -39,11 +39,11 @@ public class RedisSessionFactory implements SessionFactory{
 			return ;
 		}
 		
-		redis.delete(prefix + sessionId);
+		memcached.delete(prefix + sessionId);
 	}
 
-	public Redis getRedis() {
-		return redis;
+	public Memcached getMemcached() {
+		return memcached;
 	}
 
 	public String getPrefix() {

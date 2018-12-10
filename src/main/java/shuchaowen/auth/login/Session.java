@@ -1,4 +1,4 @@
-package shuchaowen.login;
+package shuchaowen.auth.login;
 
 import java.io.Serializable;
 
