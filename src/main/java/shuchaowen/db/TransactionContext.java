@@ -12,6 +12,8 @@ import shuchaowen.common.transaction.Transaction;
 import shuchaowen.common.transaction.TransactionCollection;
 import shuchaowen.db.result.ResultSet;
 import shuchaowen.db.sql.SQL;
+import shuchaowen.db.transaction.CombinationTransaction;
+import shuchaowen.db.transaction.SQLTransaction;
 
 /**
  * 数据库封装核心类，用于处理数据库事务

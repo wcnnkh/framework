@@ -1,4 +1,4 @@
-package shuchaowen.db;
+package shuchaowen.db.transaction;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import shuchaowen.common.transaction.Transaction;
 import shuchaowen.common.transaction.TransactionCollection;
+import shuchaowen.db.ConnectionSource;
 import shuchaowen.db.sql.SQL;
 
 /**

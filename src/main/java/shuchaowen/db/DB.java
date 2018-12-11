@@ -8,14 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import shuchaowen.common.collection.VariantSynchronizedMap;
 import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.db.sql.SQLFormat;
 import shuchaowen.db.storage.CommonStorage;
 import shuchaowen.db.storage.Storage;
 
 public abstract class DB extends AbstractDB {
-	private Map<String, Storage> storageMap = new HashMap<String, Storage>();
-	private Storage storage;
+	private Map<String, Storage> storageMap = new VariantSynchronizedMap<String, Storage>();
+	private volatile Storage storage;
 
 	public DB() {
 		super(null);
@@ -27,19 +28,17 @@ public abstract class DB extends AbstractDB {
 		this.storage = storage;
 	}
 
-	public synchronized void registerStorage(Storage storage, Class<?>... tableClass) {
+	public void registerStorage(Storage storage, Class<?>... tableClass) {
 		for (Class<?> clz : tableClass) {
 			storageMap.put(ClassUtils.getProxyRealClassName(clz), storage);
 		}
 	}
 
-	public synchronized void removeAllStorage() {
-		if (storageMap != null) {
-			storageMap.clear();
-		}
+	public void removeAllStorage() {
+		storageMap.clear();
 	}
 
-	public synchronized void removeStorage(Class<?>... tableClass) {
+	public void removeStorage(Class<?>... tableClass) {
 		for (Class<?> clz : tableClass) {
 			storageMap.remove(ClassUtils.getProxyRealClassName(clz));
 		}
@@ -49,7 +48,7 @@ public abstract class DB extends AbstractDB {
 		this.storage = storage;
 	}
 
-	public Storage getStorage(Class<?> tableClass) {
+	private Storage getStorage(Class<?> tableClass) {
 		Storage storage = storageMap.get(ClassUtils.getProxyRealClassName(tableClass));
 		return storage == null ? this.storage : storage;
 	}

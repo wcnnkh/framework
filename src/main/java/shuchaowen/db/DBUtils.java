@@ -16,6 +16,7 @@ import shuchaowen.db.result.Result;
 import shuchaowen.db.result.ResultIterator;
 import shuchaowen.db.sql.SQL;
 import shuchaowen.db.sql.SQLFormat;
+import shuchaowen.db.transaction.SQLTransaction;
 
 public final class DBUtils {
 	private DBUtils() {
