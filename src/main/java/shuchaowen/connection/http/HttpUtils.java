@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -13,6 +14,7 @@ import java.util.Map.Entry;
 
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.utils.StringUtils;
+import shuchaowen.connection.http.entity.BodyRequestEntity;
 import shuchaowen.connection.http.entity.FormRequestEntity;
 
 public final class HttpUtils {
@@ -52,6 +54,7 @@ public final class HttpUtils {
 					http.setRequestProperty(entry.getKey(), entry.getValue());
 				}
 			}
+			http.setRequestEntity(new BodyRequestEntity(ByteBuffer.wrap(data)));
 			return http.getResponse().toByteArray();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -65,7 +68,7 @@ public final class HttpUtils {
 		return null;
 	}
 	
-	public static String doPost(String url, Map<String, String> propertyMap, String body, String charsetName){
+	public static String doPost(String url, Map<String, String> propertyMap, String body, Charset charset){
 		HttpPost http = null;
 		try {
 			http = new HttpPost(url);
@@ -77,7 +80,7 @@ public final class HttpUtils {
 			}
 			
 			if(body != null){
-				http.getOutputStream().write(body.getBytes(charsetName));
+				http.setRequestEntity(new BodyRequestEntity(body, charset));
 			}
 			return http.getResponseBody(DEFAULT_CHARSET);
 		} catch (MalformedURLException e) {
@@ -93,7 +96,7 @@ public final class HttpUtils {
 	}
 	
 	public static String doPost(String url, Map<String, String> propertyMap, String body){
-		return doPost(url, propertyMap, body, DEFAULT_CHARSET.name());
+		return doPost(url, propertyMap, body, DEFAULT_CHARSET);
 	}
 	
 	public static String doPost(String url, Map<String, String> propertyMap, Map<String, ?> parameterMap, Charset charset){
