@@ -183,6 +183,11 @@ public class HttpServerApplication extends CommonApplication {
 			}
 		}
 		
+		String debugStr = httpServerConfigFactory.getConfig("debug");
+		if(!StringUtils.isNull(debugStr)){
+			debug = Boolean.parseBoolean(debugStr);
+		}
+		
 		if(searchAction == null){
 			String actionKey = httpServerConfigFactory.getConfig(DEFAULT_ACTION_KEY);
 			actionKey = StringUtils.isNull(actionKey)? "action":actionKey;
