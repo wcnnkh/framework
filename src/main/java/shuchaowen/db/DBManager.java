@@ -39,7 +39,7 @@ public final class DBManager {
 	public static void register(DB db, String packageName, boolean create) {
 		Collection<Class<?>> list = ClassUtils.getClasses(packageName);
 		for (Class<?> tableClass : list) {
-			String name = ClassUtils.getCGLIBRealClassName(tableClass.getName());
+			String name = ClassUtils.getProxyRealClassName(tableClass.getName());
 			if (CLASS_NAME_TO_DB.containsKey(name)) {
 				continue;
 			}
@@ -80,7 +80,7 @@ public final class DBManager {
 	 * @param create 是否自动创建表
 	 */
 	public static void register(DB db, Class<?> tableClass, boolean force, boolean create) {
-		String name = ClassUtils.getCGLIBRealClassName(tableClass.getName());
+		String name = ClassUtils.getProxyRealClassName(tableClass.getName());
 		if (force) {
 			synchronized (CLASS_NAME_TO_DB) {
 				CLASS_NAME_TO_DB.put(name, db);
@@ -112,7 +112,7 @@ public final class DBManager {
 	 * @return
 	 */
 	public static DB getDB(Class<?> tableClass) {
-		String name = ClassUtils.getCGLIBRealClassName(tableClass);
+		String name = ClassUtils.getProxyRealClassName(tableClass);
 		DB db = CLASS_NAME_TO_DB.get(name);
 		if(db == null){
 			throw new NullPointerException(name + " not found db");

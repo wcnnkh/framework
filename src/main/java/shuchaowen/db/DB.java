@@ -29,7 +29,7 @@ public abstract class DB extends AbstractDB {
 
 	protected void registerStorage(Storage storage, Class<?>... tableClass) {
 		for (Class<?> clz : tableClass) {
-			storageMap.put(ClassUtils.getCGLIBRealClassName(clz), storage);
+			storageMap.put(ClassUtils.getProxyRealClassName(clz), storage);
 		}
 	}
 
@@ -41,7 +41,7 @@ public abstract class DB extends AbstractDB {
 
 	protected void removeStorage(Class<?>... tableClass) {
 		for (Class<?> clz : tableClass) {
-			storageMap.remove(ClassUtils.getCGLIBRealClassName(clz));
+			storageMap.remove(ClassUtils.getProxyRealClassName(clz));
 		}
 	}
 
@@ -50,7 +50,7 @@ public abstract class DB extends AbstractDB {
 	}
 
 	public Storage getStorage(Class<?> tableClass) {
-		Storage storage = storageMap.get(ClassUtils.getCGLIBRealClassName(tableClass));
+		Storage storage = storageMap.get(ClassUtils.getProxyRealClassName(tableClass));
 		return storage == null ? this.storage : storage;
 	}
 

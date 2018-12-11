@@ -24,7 +24,7 @@ import shuchaowen.spring.core.LocalVariableTableParameterNameDiscoverer;
 
 public final class ClassUtils {
 	public static final String ALL_PACKAGE_NAME = "*";
-	public static final String CGLIB_CLASS_SPLIT = "$$";
+	public static final String PROXY_CLASS_SPLIT = "$";//代理类的分割符
 	private volatile static Map<String, ClassInfo> clzMap = new HashMap<String, ClassInfo>();
 	private static Map<Class<?>, Class<?>> basicTypeMap = new HashMap<Class<?>, Class<?>>();
 	private static Map<Class<?>, Class<?>> basicValueTypeMap = new HashMap<Class<?>, Class<?>>();
@@ -187,7 +187,7 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static ClassInfo getClassInfo(Class<?> clz) {
-		return getClassInfo(getCGLIBRealClassName(clz.getName()));
+		return getClassInfo(getProxyRealClassName(clz.getName()));
 	}
 
 	/**
@@ -551,12 +551,12 @@ public final class ClassUtils {
 		return clzList;
 	}
 
-	public static String getCGLIBRealClassName(Class<?> clz) {
-		return getCGLIBRealClassName(clz.getName());
+	public static String getProxyRealClassName(Class<?> clz) {
+		return getProxyRealClassName(clz.getName());
 	}
 
-	public static String getCGLIBRealClassName(String cglibName) {
-		int index = cglibName.indexOf(CGLIB_CLASS_SPLIT);
+	public static String getProxyRealClassName(String cglibName) {
+		int index = cglibName.indexOf(PROXY_CLASS_SPLIT);
 		if (index == -1) {
 			return cglibName;
 		} else {

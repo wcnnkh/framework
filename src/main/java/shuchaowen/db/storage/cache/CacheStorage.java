@@ -97,7 +97,7 @@ public final class CacheStorage implements Storage {
 				continue;
 			}
 
-			String name = ClassUtils.getCGLIBRealClassName(t);
+			String name = ClassUtils.getProxyRealClassName(t);
 			cacheConfigMap.put(name, config);
 		}
 	}
@@ -133,7 +133,7 @@ public final class CacheStorage implements Storage {
 	}
 
 	protected CacheConfig getCacheConfig(Class<?> tableClass) {
-		CacheConfig cacheInfo = cacheConfigMap.get(ClassUtils.getCGLIBRealClassName(tableClass));
+		CacheConfig cacheInfo = cacheConfigMap.get(ClassUtils.getProxyRealClassName(tableClass));
 		if(cacheInfo == null){
 			return defaultCacheConfig == null? CacheConfig.DEFAULT_CACHE_CONFIG:defaultCacheConfig;
 		}
@@ -283,7 +283,7 @@ class LoadingThread implements Runnable {
 	}
 
 	public void run() {
-		final String name = ClassUtils.getCGLIBRealClassName(tableClass);
+		final String name = ClassUtils.getProxyRealClassName(tableClass);
 		Logger.info("RedisHotSpotCacheStorage", "loading [" + name + "] keys to cache");
 		cacheStorage.loadCache(tableClass);
 		Logger.info("RedisHotSpotCacheStorage", "loading [" + name + "] keys to cache success");

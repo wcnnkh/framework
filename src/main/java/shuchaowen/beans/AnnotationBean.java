@@ -44,11 +44,11 @@ public class AnnotationBean implements Bean {
 		
 		shuchaowen.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.beans.annotaion.Bean.class);
 		if (bean != null) {
-			this.id = StringUtils.isNull(bean.id()) ? ClassUtils.getCGLIBRealClassName(type) : bean.id();
+			this.id = StringUtils.isNull(bean.id()) ? ClassUtils.getProxyRealClassName(type) : bean.id();
 			this.names = bean.names();
 			this.factoryMethodName = bean.factoryMethod();
 		} else {
-			this.id = ClassUtils.getCGLIBRealClassName(type);
+			this.id = ClassUtils.getProxyRealClassName(type);
 		}
 
 		Class<?> tempClz = type;

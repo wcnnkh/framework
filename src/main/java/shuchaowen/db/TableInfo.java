@@ -46,7 +46,7 @@ public final class TableInfo {
 		StringBuilder sb = new StringBuilder();
 		char[] chars;
 		try {
-			chars = Class.forName(ClassUtils.getCGLIBRealClassName(classInfo.getClz())).getSimpleName().toCharArray();
+			chars = Class.forName(ClassUtils.getProxyRealClassName(classInfo.getClz())).getSimpleName().toCharArray();
 		} catch (ClassNotFoundException e) {
 			throw new ShuChaoWenRuntimeException(classInfo.getClz().getName());
 		}

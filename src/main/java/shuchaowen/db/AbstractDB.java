@@ -27,7 +27,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable{
 	}
 
 	private static final TableInfo getTableInfo(String className) {
-		String name = ClassUtils.getCGLIBRealClassName(className);
+		String name = ClassUtils.getProxyRealClassName(className);
 		TableInfo tableInfo = tableMap.get(name);
 		if (tableInfo == null) {
 			synchronized (tableMap) {
