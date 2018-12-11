@@ -109,7 +109,9 @@ public final class HttpUtils {
 				}
 			}
 			
-			http.setRequestEntity(FormRequestEntity.wrapper(parameterMap, charset));
+			if(parameterMap != null){
+				http.setRequestEntity(FormRequestEntity.wrapper(parameterMap, charset));
+			}
 			return http.getResponseBody(charset);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
