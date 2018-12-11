@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import shuchaowen.common.ByteArray;
+import shuchaowen.common.io.Decoder;
 
 public interface Request{
 	void connect() throws IOException;
@@ -94,9 +95,9 @@ public interface Request{
     
     Map<String,List<String>> getRequestProperties();
     
-    Request write(Write write) throws IOException;
-    
-    <T> T reader(Reader<T> reader) throws IOException;
+    <T> T execute(Decoder<T> decoder) throws IOException;
     
     ByteArray getResponse() throws IOException;
+    
+    void setRequestEntity(RequestEntity entity) throws IOException;
 }

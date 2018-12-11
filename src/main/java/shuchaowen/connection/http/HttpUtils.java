@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -12,23 +13,23 @@ import java.util.Map.Entry;
 
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.utils.StringUtils;
-import shuchaowen.connection.http.write.FormData;
+import shuchaowen.connection.http.entity.FormRequestEntity;
 
 public final class HttpUtils {
-	private static final String DEFAULT_CHARSETNAME = "UTF-8";
+	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 	
 	private HttpUtils(){};
 	
 	public static String doGet(String url){
-		return doGet(url, DEFAULT_CHARSETNAME);
+		return doGet(url, DEFAULT_CHARSET);
 	}
 	
-	public static String doGet(String url, String charsetName){
+	public static String doGet(String url, Charset charset){
 		HttpGET http = null;
 		try {
 			http = new HttpGET(url);
-			http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + charsetName);
-			return http.getBody(charsetName);
+			http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + charset.name());
+			return http.getResponseBody(charset);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -78,7 +79,7 @@ public final class HttpUtils {
 			if(body != null){
 				http.getOutputStream().write(body.getBytes(charsetName));
 			}
-			return http.getBody(charsetName);
+			return http.getResponseBody(DEFAULT_CHARSET);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -92,21 +93,21 @@ public final class HttpUtils {
 	}
 	
 	public static String doPost(String url, Map<String, String> propertyMap, String body){
-		return doPost(url, propertyMap, body, DEFAULT_CHARSETNAME);
+		return doPost(url, propertyMap, body, DEFAULT_CHARSET.name());
 	}
 	
-	public static String doPost(String url, Map<String, String> propertyMap, Map<String, ?> parameterMap, String charsetName){
+	public static String doPost(String url, Map<String, String> propertyMap, Map<String, ?> parameterMap, Charset charset){
 		HttpPOST http = null;
 		try {
 			http = new HttpPOST(url);
-			http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + charsetName);
 			if(propertyMap != null && !propertyMap.isEmpty()){
 				for(Entry<String, String> entry : propertyMap.entrySet()){
 					http.setRequestProperty(entry.getKey(), entry.getValue());
 				}
 			}
-			http.write(FormData.wrapper(parameterMap, charsetName));
-			return http.getBody(charsetName);
+			
+			http.setRequestEntity(FormRequestEntity.wrapper(parameterMap, charset));
+			return http.getResponseBody(charset);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -120,7 +121,7 @@ public final class HttpUtils {
 	}
 	
 	public static String doPost(String url, Map<String, ?> parameterMap){
-		return doPost(url, null, parameterMap, DEFAULT_CHARSETNAME);
+		return doPost(url, null, parameterMap, DEFAULT_CHARSET);
 	}
 	
 	public static String appendParameters(String prefix, Map<String, Object> paramMap, boolean encode, String charsetName) throws UnsupportedEncodingException{
@@ -154,7 +155,7 @@ public final class HttpUtils {
 	
 	public static String appendParameters(String prefix, Map<String, Object> paramMap){
 		try {
-			return appendParameters(prefix, paramMap, true, DEFAULT_CHARSETNAME);
+			return appendParameters(prefix, paramMap, true, DEFAULT_CHARSET.name());
 		} catch (UnsupportedEncodingException e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}
@@ -170,7 +171,7 @@ public final class HttpUtils {
 	
 	public static String encode(Object value){
 		try {
-			return encode(value, DEFAULT_CHARSETNAME);
+			return encode(value, DEFAULT_CHARSET.name());
 		} catch (UnsupportedEncodingException e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}
@@ -186,7 +187,7 @@ public final class HttpUtils {
 	
 	public static String decode(String value){
 		try {
-			return decode(value, DEFAULT_CHARSETNAME);
+			return decode(value, DEFAULT_CHARSET.name());
 		} catch (UnsupportedEncodingException e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}

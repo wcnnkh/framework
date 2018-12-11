@@ -714,4 +714,19 @@ public final class StringUtils {
 		sb.append(getRandomStr(32-sb.length()));
 		return sb.toString();
 	}
+	
+	public static String join(String join, String ...str){
+		if(str == null || str.length == 0){
+			return null;
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		for(int i=0; i<str.length; i++){
+			if(i != 0){
+				sb.append(join);
+			}
+			sb.append(str);
+		}
+		return sb.toString();
+	}
 }

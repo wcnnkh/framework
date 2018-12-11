@@ -10,9 +10,12 @@ import java.util.List;
 import java.util.Map;
 
 import shuchaowen.common.ByteArray;
-import shuchaowen.common.utils.IOUtils;
+import shuchaowen.common.io.Decoder;
+import shuchaowen.common.io.decoder.ByteArrayDecoder;
 
 public class RequestURLConnection implements Request{
+	private static final ByteArrayDecoder BYTE_ARRAY_DECODER = new ByteArrayDecoder();
+	
 	private final URLConnection urlConnection;
 	
 	public RequestURLConnection(URLConnection urlConnection){
@@ -184,20 +187,17 @@ public class RequestURLConnection implements Request{
 		return urlConnection.getRequestProperties();
 	}
 
-	public Request write(Write write) throws IOException {
-		if(write == null){
-			return this;
-		}
-		
-		write.write(getOutputStream());
-		return this;
-	}
-
-	public <T> T reader(Reader<T> reader) throws IOException {
-		return reader.reader(getInputStream());
-	}
-
 	public ByteArray getResponse() throws IOException{
-		return IOUtils.read(getInputStream());
+		return BYTE_ARRAY_DECODER.decode(getInputStream());
+	}
+
+	public <T> T execute(Decoder<T> decoder) throws IOException {
+		return decoder.decode(getInputStream());
+	}
+
+	public void setRequestEntity(RequestEntity entity) throws IOException {
+		if(entity != null){
+			entity.write(this);
+		}
 	}
 }

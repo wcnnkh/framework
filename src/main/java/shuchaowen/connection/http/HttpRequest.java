@@ -3,6 +3,7 @@ package shuchaowen.connection.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ProtocolException;
+import java.nio.charset.Charset;
 
 import shuchaowen.connection.Request;
 
@@ -31,5 +32,5 @@ public interface HttpRequest extends Request {
 	
     InputStream getErrorStream();
     
-    String getBody(String charsetName) throws IOException;
+    String getResponseBody(Charset charset) throws IOException;
 }

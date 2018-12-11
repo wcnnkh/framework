@@ -7,8 +7,9 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.URL;
+import java.nio.charset.Charset;
 
-import shuchaowen.common.utils.IOUtils;
+import shuchaowen.common.io.decoder.StringDecoder;
 import shuchaowen.connection.RequestURLConnection;
 
 public class HttpRequestURLConnection extends RequestURLConnection implements HttpRequest{
@@ -79,8 +80,7 @@ public class HttpRequestURLConnection extends RequestURLConnection implements Ht
 		return httpURLConnection.getErrorStream();
 	}
 
-	public String getBody(String charsetName) throws IOException {
-		StringBuilder sb = IOUtils.readerContent(getInputStream(), charsetName);
-		return sb == null? null:sb.toString();
+	public String getResponseBody(Charset charset) throws IOException {
+		return new StringDecoder(charset).decode(getInputStream());
 	}
 }

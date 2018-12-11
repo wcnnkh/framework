@@ -1,8 +1,6 @@
 package shuchaowen.web.servlet;
 
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -12,6 +10,8 @@ import shuchaowen.application.CommonApplication;
 import shuchaowen.beans.rpc.http.Message;
 import shuchaowen.common.Logger;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.io.decoder.JavaObjectDecoder;
+import shuchaowen.common.io.encoder.JavaObjectEncoder;
 import shuchaowen.common.reflect.Invoker;
 import shuchaowen.common.reflect.ReflectInvoker;
 import shuchaowen.common.utils.SignUtils;
@@ -135,8 +135,7 @@ public class HttpServerApplication extends CommonApplication {
 	}
 
 	public void rpc(InputStream inputStream, OutputStream outputStream) throws Throwable {
-		ObjectInputStream ois = new ObjectInputStream(inputStream);
-		Message message = (Message) ois.readObject();
+		Message message = (Message) JavaObjectDecoder.DECODER.decode(inputStream);
 		if (!rpcAuthorize(message)) {
 			throw new ShuChaoWenRuntimeException("RPC验证失败");
 		}
@@ -147,8 +146,7 @@ public class HttpServerApplication extends CommonApplication {
 		}
 
 		Object obj = invoker.invoke(message.getArgs());
-		ObjectOutputStream oos = new ObjectOutputStream(outputStream);
-		oos.writeObject(obj);
+		JavaObjectEncoder.ENCODER.encode(outputStream, obj);
 	}
 
 	public boolean service(Request request, Response response) throws Throwable {

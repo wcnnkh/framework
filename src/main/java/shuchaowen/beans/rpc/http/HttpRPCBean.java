@@ -6,11 +6,11 @@ import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 
 import shuchaowen.beans.AbstractInterfaceProxyBean;
+import shuchaowen.common.io.decoder.JavaObjectDecoder;
 import shuchaowen.common.reflect.Invoker;
 import shuchaowen.common.utils.SignUtils;
 import shuchaowen.connection.http.HttpPOST;
-import shuchaowen.connection.http.reader.JavaObjectReader;
-import shuchaowen.connection.http.write.JavaObjectWrite;
+import shuchaowen.connection.http.entity.JavaObjectRequestEntity;
 
 public class HttpRPCBean extends AbstractInterfaceProxyBean{
 	private final String host;
@@ -57,11 +57,12 @@ class HttpConsumerInvoker implements Invoker{
 		message.setAttribute("t", cts);
 		message.setAttribute("sign", SignUtils.md5Str(cts + signStr, charset.name()));
 		HttpPOST http = null;
+		JavaObjectRequestEntity requestEntity = new JavaObjectRequestEntity();
+		requestEntity.add(message);
 		try {
 			http = new HttpPOST(host);
-			http.setRequestProperty("Content-Type","application/x-java-serialized-object");
-			http.write(new JavaObjectWrite(message));
-			return http.reader(new JavaObjectReader<Object>());
+			http.setRequestEntity(requestEntity);
+			return http.execute(JavaObjectDecoder.DECODER);
 		} finally {
 			if(http != null){
 				http.disconnect();
