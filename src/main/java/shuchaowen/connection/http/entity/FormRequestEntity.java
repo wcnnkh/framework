@@ -22,6 +22,10 @@ public class FormRequestEntity extends ArrayList<FormParameter> implements Reque
 		this.charset = charset;
 	}
 	
+	public Charset getCharset() {
+		return charset;
+	}
+
 	public FormRequestEntity addParameter(String key, Object value){
 		if(key == null || value == null || key.length() == 0){
 			return this;

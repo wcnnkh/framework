@@ -9,7 +9,7 @@ import shuchaowen.beans.AbstractInterfaceProxyBean;
 import shuchaowen.common.io.decoder.JavaObjectDecoder;
 import shuchaowen.common.reflect.Invoker;
 import shuchaowen.common.utils.SignUtils;
-import shuchaowen.connection.http.HttpPOST;
+import shuchaowen.connection.http.HttpPost;
 import shuchaowen.connection.http.entity.JavaObjectRequestEntity;
 
 public class HttpRPCBean extends AbstractInterfaceProxyBean{
@@ -56,11 +56,11 @@ class HttpConsumerInvoker implements Invoker{
 		Message message = new Message(method, args);
 		message.setAttribute("t", cts);
 		message.setAttribute("sign", SignUtils.md5Str(cts + signStr, charset.name()));
-		HttpPOST http = null;
+		HttpPost http = null;
 		JavaObjectRequestEntity requestEntity = new JavaObjectRequestEntity();
 		requestEntity.add(message);
 		try {
-			http = new HttpPOST(host);
+			http = new HttpPost(host);
 			http.setRequestEntity(requestEntity);
 			return http.execute(JavaObjectDecoder.DECODER);
 		} finally {

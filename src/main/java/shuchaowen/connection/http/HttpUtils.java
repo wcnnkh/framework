@@ -25,9 +25,9 @@ public final class HttpUtils {
 	}
 	
 	public static String doGet(String url, Charset charset){
-		HttpGET http = null;
+		HttpGet http = null;
 		try {
-			http = new HttpGET(url);
+			http = new HttpGet(url);
 			http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + charset.name());
 			return http.getResponseBody(charset);
 		} catch (MalformedURLException e) {
@@ -43,9 +43,9 @@ public final class HttpUtils {
 	}
 	
 	public static byte[] doPost(String url, Map<String, String> propertyMap, byte[] data){
-		HttpPOST http = null;
+		HttpPost http = null;
 		try {
-			http = new HttpPOST(url);
+			http = new HttpPost(url);
 			http.setRequestProperty("Content-Type", "application/octet-stream");
 			if(propertyMap != null && !propertyMap.isEmpty()){
 				for(Entry<String, String> entry : propertyMap.entrySet()){
@@ -66,9 +66,9 @@ public final class HttpUtils {
 	}
 	
 	public static String doPost(String url, Map<String, String> propertyMap, String body, String charsetName){
-		HttpPOST http = null;
+		HttpPost http = null;
 		try {
-			http = new HttpPOST(url);
+			http = new HttpPost(url);
 			http.setRequestProperty("Content-Type", "application/octet-stream");
 			if(propertyMap != null && !propertyMap.isEmpty()){
 				for(Entry<String, String> entry : propertyMap.entrySet()){
@@ -97,9 +97,9 @@ public final class HttpUtils {
 	}
 	
 	public static String doPost(String url, Map<String, String> propertyMap, Map<String, ?> parameterMap, Charset charset){
-		HttpPOST http = null;
+		HttpPost http = null;
 		try {
-			http = new HttpPOST(url);
+			http = new HttpPost(url);
 			if(propertyMap != null && !propertyMap.isEmpty()){
 				for(Entry<String, String> entry : propertyMap.entrySet()){
 					http.setRequestProperty(entry.getKey(), entry.getValue());

@@ -22,10 +22,18 @@ public class MultipartRequestEntity extends ArrayList<AbstractMultipartParameter
 	public MultipartRequestEntity(Charset charset){
 		this(charset, DEFAULT_BOUNDARY);
 	}
-	
+
 	public MultipartRequestEntity(Charset charset, String boundary){
 		this.charset = charset;
 		this.boundary = boundary;
+	}
+	
+	public Charset getCharset() {
+		return charset;
+	}
+
+	public String getBoundary() {
+		return boundary;
 	}
 	
 	public MultipartRequestEntity addFile(File file){
