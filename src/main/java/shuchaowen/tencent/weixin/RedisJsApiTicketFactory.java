@@ -3,7 +3,7 @@ package shuchaowen.tencent.weixin;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import shuchaowen.common.utils.IOUtils;
+import shuchaowen.common.io.IOUtils;
 import shuchaowen.redis.Redis;
 import shuchaowen.redis.RedisLock;
 import shuchaowen.tencent.weixin.bean.JsApiTicket;

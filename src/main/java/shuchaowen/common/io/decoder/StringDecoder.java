@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 import shuchaowen.common.io.Decoder;
-import shuchaowen.common.utils.IOUtils;
 
 public class StringDecoder implements Decoder<String>{
 	private final Charset charset;
@@ -20,9 +19,26 @@ public class StringDecoder implements Decoder<String>{
 	}
 	
 	public String decode(InputStream in) throws IOException {
+		char[] b = new char[1024];
+		int len;
+		StringBuilder sb = new StringBuilder();
 		InputStreamReader isr = new InputStreamReader(in, charset);
-		StringBuilder sb = IOUtils.readerContent(isr);
-		return sb == null? null:sb.toString();
+		try {
+			if(isr.markSupported()){
+				isr.mark(0);
+			}
+			
+			while ((len = isr.read(b)) != -1) {
+				sb.append(b, 0, len);
+			}
+			
+			if(isr.markSupported()){
+				isr.reset();
+			}
+		} finally {
+			isr.close();
+		}
+		return sb.toString();
 	}
 
 }

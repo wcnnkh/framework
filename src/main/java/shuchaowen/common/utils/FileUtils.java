@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,6 +23,8 @@ import java.util.zip.ZipFile;
 
 import shuchaowen.common.Base64;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.io.IOUtils;
+import shuchaowen.common.io.decoder.StringDecoder;
 
 public final class FileUtils {
 	private FileUtils(){};
@@ -334,9 +337,10 @@ public final class FileUtils {
 		StringBuilder sb = null;
 		try {
 			fileInputStream = new FileInputStream(file);
-			sb = IOUtils.readerContent(fileInputStream, charsetName);
+			return new StringDecoder(Charset.forName(charsetName)).decode(fileInputStream);
 		} catch (Exception e) {
 			XUtils.close(false, fileInputStream);
+			e.printStackTrace();
 		}
 		return sb == null? null:sb.toString();
 	}

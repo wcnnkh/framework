@@ -27,19 +27,19 @@ public abstract class DB extends AbstractDB {
 		this.storage = storage;
 	}
 
-	protected void registerStorage(Storage storage, Class<?>... tableClass) {
+	public synchronized void registerStorage(Storage storage, Class<?>... tableClass) {
 		for (Class<?> clz : tableClass) {
 			storageMap.put(ClassUtils.getProxyRealClassName(clz), storage);
 		}
 	}
 
-	protected void removeAllStorage() {
+	public synchronized void removeAllStorage() {
 		if (storageMap != null) {
 			storageMap.clear();
 		}
 	}
 
-	protected void removeStorage(Class<?>... tableClass) {
+	public synchronized void removeStorage(Class<?>... tableClass) {
 		for (Class<?> clz : tableClass) {
 			storageMap.remove(ClassUtils.getProxyRealClassName(clz));
 		}

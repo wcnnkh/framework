@@ -1,6 +1,5 @@
 package shuchaowen.common.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,6 +7,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,6 +25,7 @@ import org.w3c.dom.NodeList;
 import shuchaowen.common.ClassInfo;
 import shuchaowen.common.FieldInfo;
 import shuchaowen.common.StringFormatSystemProperties;
+import shuchaowen.common.io.decoder.StringLineDecoder;
 
 public final class ConfigUtils {
 	private static final String WEB_ROOT = "web.root";
@@ -179,15 +180,13 @@ public final class ConfigUtils {
 
 	public static List<String> getFileContentLineList(File file, String charsetName) {
 		FileInputStream fis = null;
-		BufferedReader br = null;
 		try {
 			fis = new FileInputStream(file);
-			br = new BufferedReader(new InputStreamReader(fis, charsetName));
-			return IOUtils.readerContent(br);
+			return new StringLineDecoder(Charset.forName(charsetName)).decode(fis);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			XUtils.close(br, fis);
+			XUtils.close(fis);
 		}
 		return null;
 	}

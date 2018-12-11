@@ -1,7 +1,7 @@
 package shuchaowen.web.servlet.parameter;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,10 +13,9 @@ import org.dom4j.io.SAXReader;
 
 import com.alibaba.fastjson.JSONObject;
 
-import shuchaowen.web.servlet.RequestWrapper;
-import shuchaowen.common.utils.IOUtils;
-import shuchaowen.common.utils.XUtils;
+import shuchaowen.common.io.decoder.StringDecoder;
 import shuchaowen.web.servlet.Request;
+import shuchaowen.web.servlet.RequestWrapper;
 
 public class RequestFormat extends RequestWrapper {
 	public RequestFormat(Request request) {
@@ -24,27 +23,11 @@ public class RequestFormat extends RequestWrapper {
 	}
 
 	public String getBody() {
-		BufferedReader br = null;
 		String content = null;
 		try {
-			br = getRequest().getReader();
-			if (br.markSupported()) {
-				br.mark(0);
-			}
-			content = IOUtils.readerContent(br).toString();
+			content = new StringDecoder(Charset.forName(getRequest().getCharacterEncoding())).decode(getRequest().getInputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			if (br.markSupported()) {
-				if (br != null) {
-					try {
-						br.reset();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-			XUtils.close(br);
 		}
 		return content;
 	}

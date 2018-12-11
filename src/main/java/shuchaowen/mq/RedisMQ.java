@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
-import shuchaowen.common.utils.IOUtils;
+import shuchaowen.common.io.IOUtils;
 import shuchaowen.common.utils.XUtils;
 import shuchaowen.redis.Redis;
 import shuchaowen.redis.RedisLock;
