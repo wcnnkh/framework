@@ -20,12 +20,11 @@ public abstract class DB extends AbstractDB {
 
 	public DB() {
 		super(null);
-		this.storage = new CommonStorage(this);
 	}
 
-	public DB(Storage storage, SQLFormat sqlFormat) {
+	public DB(SQLFormat sqlFormat) {
 		super(sqlFormat);
-		this.storage = storage;
+		this.storage = new CommonStorage(this);
 	}
 
 	public void registerStorage(Storage storage, Class<?>... tableClass) {
