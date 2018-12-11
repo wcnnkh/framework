@@ -82,7 +82,7 @@ public final class HttpUtils {
 			if(body != null){
 				http.setRequestEntity(new BodyRequestEntity(body, charset));
 			}
-			return http.getResponseBody(DEFAULT_CHARSET);
+			return http.getResponseBody(charset);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
