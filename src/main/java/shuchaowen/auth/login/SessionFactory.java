@@ -5,5 +5,9 @@ public interface SessionFactory {
 	
 	Session login(String uid);
 	
+	Session login(long uid);
+	
+	Session login(int uid);
+	
 	void cancelLogin(String sessionId);
 }

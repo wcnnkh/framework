@@ -53,4 +53,12 @@ public class MemcachedSessionFactory implements SessionFactory{
 	public int getExp() {
 		return exp;
 	}
+
+	public Session login(long uid) {
+		return login(uid + "");
+	}
+
+	public Session login(int uid) {
+		return login(uid + "");
+	}
 }

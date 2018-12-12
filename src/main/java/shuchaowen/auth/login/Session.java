@@ -30,7 +30,11 @@ public class Session implements Serializable{
 		this.uid = uid;
 	}
 	
-	public long getUidToLong(){
+	public long getLongUid(){
 		return Long.parseLong(uid);
+	}
+	
+	public int getIntegerUid(){
+		return Integer.parseInt(uid);
 	}
 }
