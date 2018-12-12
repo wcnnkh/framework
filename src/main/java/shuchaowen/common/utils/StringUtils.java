@@ -333,11 +333,10 @@ public final class StringUtils {
 	}
 
 	public static String getRandomStr(String randomStr, int length) {
-		Random random = new Random();
 		char[] cArr = new char[length];
 		int len = randomStr.length();
 		for (int i = 0; i < length; ++i) {
-			int number = random.nextInt(len);// [0,62)
+			int number = new Random().nextInt(len);// [0,62)
 			cArr[i] = randomStr.charAt(number);
 		}
 		return new String(cArr);
@@ -647,12 +646,11 @@ public final class StringUtils {
 	 * @return
 	 */
 	public static String getNumCode(int len) {
-		StringBuilder sb = new StringBuilder(len);
-		Random random = new Random();
+		CharBuffer charBuffer = CharBuffer.allocate(len);
 		for (int i = 0; i < len; i++) {
-			sb.append((random.nextInt(9)));
+			charBuffer.put(Character.forDigit(new Random().nextInt(9), 10));
 		}
-		return sb.toString();
+		return new String(charBuffer.array());
 	}
 
 	/**
@@ -665,7 +663,7 @@ public final class StringUtils {
 	 */
 	public static String complemented(String str, char complemented, int length) {
 		if (length < str.length()) {
-			throw new ShuChaoWenRuntimeException("length error");
+			throw new ShuChaoWenRuntimeException("length error [" + str + "]");
 		}
 
 		if (length == str.length()) {

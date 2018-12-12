@@ -1,7 +1,6 @@
-package shuchaowen.db.id;
+package shuchaowen.memcached;
 
 import shuchaowen.common.IdGenerator;
-import shuchaowen.memcached.Memcached;
 
 public class MemcachedIdGenerator implements IdGenerator<Long>{
 	private final Memcached memcached;

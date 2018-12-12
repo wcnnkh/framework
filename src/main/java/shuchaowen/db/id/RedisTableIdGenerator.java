@@ -3,6 +3,7 @@ package shuchaowen.db.id;
 import shuchaowen.common.IdGenerator;
 import shuchaowen.db.DBManager;
 import shuchaowen.redis.Redis;
+import shuchaowen.redis.RedisIdGernerator;
 
 public class RedisTableIdGenerator implements IdGenerator<Long>{
 	private final Redis redis;

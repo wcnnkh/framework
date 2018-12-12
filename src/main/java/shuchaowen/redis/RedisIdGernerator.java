@@ -1,7 +1,6 @@
-package shuchaowen.db.id;
+package shuchaowen.redis;
 
 import shuchaowen.common.IdGenerator;
-import shuchaowen.redis.Redis;
 
 public class RedisIdGernerator implements IdGenerator<Long>{
 	private final Redis redis;
