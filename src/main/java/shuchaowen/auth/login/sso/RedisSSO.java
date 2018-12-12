@@ -5,7 +5,6 @@ import shuchaowen.auth.login.Session;
 import shuchaowen.redis.Redis;
 
 public class RedisSSO extends RedisSessionFactory implements SSO{
-
 	public RedisSSO(Redis redis, String prefix, int exp) {
 		super(redis, prefix, exp);
 	}
@@ -22,7 +21,7 @@ public class RedisSSO extends RedisSessionFactory implements SSO{
 		return session;
 	}
 
-	public Session getSession(long uid) {
+	public Session getSessionByUid(String uid) {
 		String sid = getRedis().get(getPrefix() + uid);
 		if(sid == null){
 			return null;
@@ -40,11 +39,26 @@ public class RedisSSO extends RedisSessionFactory implements SSO{
 		super.cancelLogin(sessionId);
 	}
 
-	public void cancelLogin(long uid) {
+	public void cancelLoginByUid(String uid) {
 		String sid = getRedis().get(getPrefix() + uid);
 		if(sid != null){
 			cancelLogin(sid);
 		}
 	}
+	
+	public Session getSessionByUid(long uid) {
+		return getSessionByUid(uid + "");
+	}
 
+	public Session getSessionByUid(int uid) {
+		return getSessionByUid(uid + "");
+	}
+
+	public void cancelLoginByUid(long uid) {
+		cancelLoginByUid(uid + "");
+	}
+
+	public void cancelLoginByUid(int uid) {
+		cancelLoginByUid(uid + "");
+	}
 }
