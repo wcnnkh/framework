@@ -166,7 +166,7 @@ public final class OSS {
 		sb.append(XTime.format(System.currentTimeMillis(), "yyyy/MM/dd"));
 		sb.append("/");
 		sb.append(XUtils.getUUID());
-		sb.append(StringUtils.complemented(Long.toString(System.currentTimeMillis(), 32), '0', 13, false));
+		sb.append(StringUtils.complemented(Long.toString(System.currentTimeMillis(), 32), '0', 13));
 		if(!StringUtils.isNull(suffix)){
 			sb.append(".");
 			sb.append(suffix);

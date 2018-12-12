@@ -15,9 +15,10 @@ public final class StringUtils {
 	private static final Charset DEFAULT_OLD_CHARSET = Charset.forName("ISO-8859-1");
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 	private static final String IOS_NULL = "(null)";
-	
-	private StringUtils(){};
-	
+
+	private StringUtils() {
+	};
+
 	public static boolean isNull(boolean trim, String... str) {
 		for (String s : str) {
 			if (s == null || s.length() == 0 || (trim && s.trim().length() == 0)) {
@@ -26,18 +27,18 @@ public final class StringUtils {
 		}
 		return false;
 	}
-	
+
 	public static boolean isNull(String... strs) {
 		return isNull(false, strs);
 	}
-	
+
 	/**
-	 * 在ios中由于前端未做判断导致的空
-	 * (null)
+	 * 在ios中由于前端未做判断导致的空 (null)
+	 * 
 	 * @param strs
 	 * @return
 	 */
-	public static boolean isNullByIOS(String ...strs){
+	public static boolean isNullByIOS(String... strs) {
 		for (String s : strs) {
 			if (s == null || s.length() == 0 || IOS_NULL.equals(s)) {
 				return true;
@@ -375,8 +376,8 @@ public final class StringUtils {
 		}
 		return v;
 	}
-	
-	public static String commonCharsetConvert(String str){
+
+	public static String commonCharsetConvert(String str) {
 		return charsetConvert(str, DEFAULT_OLD_CHARSET, DEFAULT_CHARSET);
 	}
 
@@ -659,70 +660,34 @@ public final class StringUtils {
 	 * @param str
 	 * @param complemented
 	 * @param length
-	 * @param reversal
-	 *            是否反转
 	 * @return
 	 */
-	public static String complemented(String str, char complemented, int length, boolean reversal) {
+	public static String complemented(String str, char complemented, int length) {
 		if (length < str.length()) {
 			throw new ShuChaoWenRuntimeException("length error");
 		}
 
 		if (length == str.length()) {
-			if (reversal) {
-				char[] chars = str.toCharArray();
-				char[] newChars;
-				newChars = new char[length];
-				for (int i = chars.length - 1, index=0; i >= 0; i--, index++) {
-					newChars[index] = chars[i];
-				}
-				
-				return new String(newChars);
-			}else{
-				return str;
-			}
-		}else{
+			return str;
+		} else {
 			char[] chars = str.toCharArray();
 			char[] newChars = new char[length];
-			if(reversal){
-				int index = 0;
-				for (int i = chars.length - 1; i >= 0; i--, index++) {
-					newChars[index] = chars[i];
-				}
-			}else{
-				System.arraycopy(chars, 0, newChars, 0, chars.length);
-				int index = chars.length;
-				for(int i=0; i<length - chars.length; i++, index ++){
-					newChars[index] = complemented;
-				}
+			System.arraycopy(chars, 0, newChars, length - chars.length, chars.length);
+			for (int i = 0; i < length - chars.length; i++) {
+				newChars[i] = complemented;
 			}
 			return new String(newChars);
 		}
 	}
-	
-	/**
-	 * 随机出一个32位的ID
-	 * @param supplementId 补充的数字
-	 * @return
-	 */
-	public static String random32ID(long supplementId){
-		StringBuilder sb = new StringBuilder();
-		String str1 = Long.toString(supplementId, 32);
-		sb.append(complemented(str1, '0', 13, false));
-		String str2 = Long.toString(System.currentTimeMillis(), 32);
-		sb.append(complemented(str2, '0', 13, false));
-		sb.append(getRandomStr(32-sb.length()));
-		return sb.toString();
-	}
-	
-	public static String join(String join, String ...str){
-		if(str == null || str.length == 0){
+
+	public static String join(String join, String... str) {
+		if (str == null || str.length == 0) {
 			return null;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
-		for(int i=0; i<str.length; i++){
-			if(i != 0){
+		for (int i = 0; i < str.length; i++) {
+			if (i != 0) {
 				sb.append(join);
 			}
 			sb.append(str);
