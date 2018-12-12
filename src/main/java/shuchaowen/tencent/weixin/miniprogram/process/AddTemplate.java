@@ -8,6 +8,11 @@ import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.tencent.weixin.WeiXinProcess;
 
+/**
+ * 组合模板并添加至帐号下的个人模板库
+ * @author shuchaowen
+ *
+ */
 public final class AddTemplate extends WeiXinProcess{
 	private static final String API = "https://api.weixin.qq.com/cgi-bin/wxopen/template/add?access_token=";
 	

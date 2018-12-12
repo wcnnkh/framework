@@ -4,6 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.tencent.weixin.WeiXinProcess;
 
+/**
+ * 创建被分享动态消息的 activity_id
+ * @author shuchaowen
+ *
+ */
 public final class CreateActivityId extends WeiXinProcess{
 	private static final String API = "https://api.weixin.qq.com/cgi-bin/message/wxopen/activityid/create?access_token=";
 	private String activity_id;
