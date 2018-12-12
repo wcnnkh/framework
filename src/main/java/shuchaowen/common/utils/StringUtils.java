@@ -1,6 +1,7 @@
 package shuchaowen.common.utils;
 
 import java.io.File;
+import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -670,13 +671,12 @@ public final class StringUtils {
 		if (length == str.length()) {
 			return str;
 		} else {
-			char[] chars = str.toCharArray();
-			char[] newChars = new char[length];
-			System.arraycopy(chars, 0, newChars, length - chars.length, chars.length);
-			for (int i = 0; i < length - chars.length; i++) {
-				newChars[i] = complemented;
+			CharBuffer charBuffer = CharBuffer.allocate(length);
+			for (int i = 0; i < length - str.length(); i++) {
+				charBuffer.put(complemented);
 			}
-			return new String(newChars);
+			charBuffer.put(str);
+			return charBuffer.toString();
 		}
 	}
 
