@@ -19,7 +19,7 @@ public abstract class DB extends AbstractDB {
 	private volatile Storage storage;
 
 	public DB() {
-		super(null);
+		this(null);
 	}
 
 	public DB(SQLFormat sqlFormat) {
