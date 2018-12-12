@@ -1,24 +1,18 @@
 package shuchaowen.common;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.utils.StringUtils;
-import shuchaowen.common.utils.XTime;
 import shuchaowen.memcached.Memcached;
 import shuchaowen.memcached.MemcachedIdGenerator;
 import shuchaowen.redis.Redis;
 import shuchaowen.redis.RedisIdGernerator;
 
 /**
- * 这是一个定长的27位字符串
- * 
+ * 不确定长度的
+ * 最长为26个字符
  * @author shuchaowen
- *
  */
 public final class UniqueStringIdGenerator implements IdGenerator<String> {
-	private static final String TIME_FORMAT = "yyyyMMddHHmmssSSS";
 	private final IdGenerator<Long> idGenerator;
 
 	public UniqueStringIdGenerator(Memcached memcached) {
@@ -30,20 +24,21 @@ public final class UniqueStringIdGenerator implements IdGenerator<String> {
 	}
 
 	public String next() {
-		return new SimpleDateFormat(TIME_FORMAT).format(new Date())
-				+ StringUtils.complemented(Math.abs(idGenerator.next().intValue()) + "", '0', 10);
+		return StringUtils.reversed(StringUtils.complemented(Long.toString(System.currentTimeMillis(), 36), '0', 13))
+				+ Long.toString(Math.abs(idGenerator.next()), 36);
 	}
 
 	/**
 	 * 获取这个id的创建时间
+	 * 
 	 * @param id
 	 * @return
 	 */
 	public static long getCts(String id) {
-		if (id.length() < 17) {
+		if (id.length() <= 13) {
 			throw new ShuChaoWenRuntimeException(id);
 		}
-
-		return XTime.getTime(id.substring(0, 17), TIME_FORMAT);
+		
+		return Long.parseLong(StringUtils.reversed(id.substring(0, 13)), 36);
 	}
 }

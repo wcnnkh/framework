@@ -12,7 +12,15 @@ import java.util.regex.Pattern;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 
 public final class StringUtils {
-	private static final String randomStr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	public final static char[] CAPITAL_LETTERS = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+			'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', };
+
+	public final static char[] LOWERCASE_LETTERS = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+			'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+
+	public final static char[] NUMBERIC_CHARACTER = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+	public final static char[] ALL = CollectionUtils.mergeCharArray(NUMBERIC_CHARACTER, LOWERCASE_LETTERS, CAPITAL_LETTERS);
 	private static final Charset DEFAULT_OLD_CHARSET = Charset.forName("ISO-8859-1");
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 	private static final String IOS_NULL = "(null)";
@@ -329,17 +337,19 @@ public final class StringUtils {
 	}
 
 	public static String getRandomStr(int length) {
-		return getRandomStr(randomStr, length);
+		return new String(getRandomCharArray(ALL, length));
 	}
 
 	public static String getRandomStr(String randomStr, int length) {
+		return new String(getRandomCharArray(randomStr.toCharArray(), length));
+	}
+
+	public static char[] getRandomCharArray(char[] randomCharArray, int length) {
 		char[] cArr = new char[length];
-		int len = randomStr.length();
 		for (int i = 0; i < length; ++i) {
-			int number = new Random().nextInt(len);// [0,62)
-			cArr[i] = randomStr.charAt(number);
+			cArr[i] = randomCharArray[new Random().nextInt(randomCharArray.length)];
 		}
-		return new String(cArr);
+		return cArr;
 	}
 
 	public static boolean isMobileNum(String telNum) {
@@ -646,11 +656,7 @@ public final class StringUtils {
 	 * @return
 	 */
 	public static String getNumCode(int len) {
-		CharBuffer charBuffer = CharBuffer.allocate(len);
-		for (int i = 0; i < len; i++) {
-			charBuffer.put(Character.forDigit(new Random().nextInt(9), 10));
-		}
-		return new String(charBuffer.array());
+		return new String(getRandomCharArray(NUMBERIC_CHARACTER, len));
 	}
 
 	/**
@@ -674,8 +680,18 @@ public final class StringUtils {
 				charBuffer.put(complemented);
 			}
 			charBuffer.put(str);
-			return charBuffer.toString();
+			return new String(charBuffer.array());
 		}
+	}
+
+	/**
+	 * 颠倒字符串
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static String reversed(String str) {
+		return new String(CollectionUtils.reversedCharArray(str.toCharArray()));
 	}
 
 	public static String join(String join, String... str) {
