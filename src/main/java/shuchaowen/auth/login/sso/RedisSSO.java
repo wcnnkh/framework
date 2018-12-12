@@ -11,14 +11,14 @@ public class RedisSSO extends RedisSessionFactory implements SSO{
 	}
 	
 	@Override
-	public Session login(long uid) {
+	public Session login(String uid) {
 		String oldSid = getRedis().get(getPrefix() + uid);
 		if(oldSid != null){
 			getRedis().delete(getPrefix() + oldSid);
 		}
 		
 		Session session = super.login(uid);
-		getRedis().set(getPrefix() + session.getId(), uid + "");
+		getRedis().set(getPrefix() + session.getId(), uid);
 		return session;
 	}
 

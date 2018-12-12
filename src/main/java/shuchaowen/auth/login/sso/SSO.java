@@ -4,7 +4,7 @@ import shuchaowen.auth.login.Session;
 import shuchaowen.auth.login.SessionFactory;
 
 public interface SSO extends SessionFactory{
-	Session getSession(long uid);
+	Session getSession(String uid);
 	
-	void cancelLogin(long uid);
+	void cancelLogin(String uid);
 }

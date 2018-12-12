@@ -11,7 +11,7 @@ public class MemcachedSSO extends MemcachedSessionFactory implements SSO{
 	}
 	
 	@Override
-	public Session login(long uid) {
+	public Session login(String uid) {
 		String oldSid = getMemcached().get(getPrefix() + uid);
 		if(oldSid != null){
 			getMemcached().delete(getPrefix() + oldSid);

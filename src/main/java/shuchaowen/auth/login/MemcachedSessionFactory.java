@@ -20,7 +20,7 @@ public class MemcachedSessionFactory implements SessionFactory{
 			return null;
 		}
 		
-		Long uid = memcached.getAndTocuh(prefix + sessionId, exp);
+		String uid = memcached.getAndTocuh(prefix + sessionId, exp);
 		if(uid == null){
 			return null;
 		}
@@ -28,7 +28,7 @@ public class MemcachedSessionFactory implements SessionFactory{
 		return new Session(sessionId, uid);
 	}
 
-	public Session login(long uid) {
+	public Session login(String uid) {
 		String newSid = uid + XUtils.getUUID();
 		memcached.set(prefix + newSid, exp, uid);
 		return new Session(newSid, uid);

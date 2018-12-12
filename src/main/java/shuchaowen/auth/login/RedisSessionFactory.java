@@ -20,17 +20,17 @@ public class RedisSessionFactory implements SessionFactory{
 			return null;
 		}
 		
-		String uidStr = redis.getAndTouch(prefix + sessionId, exp);
-		if(uidStr == null){
+		String uid = redis.getAndTouch(prefix + sessionId, exp);
+		if(uid == null){
 			return null;
 		}
 		
-		return new Session(sessionId, Long.parseLong(uidStr));
+		return new Session(sessionId, uid);
 	}
 
-	public Session login(long uid) {
+	public Session login(String uid) {
 		String newSid = uid + XUtils.getUUID();
-		redis.setex(prefix + newSid, exp, uid + "");
+		redis.setex(prefix + newSid, exp, uid);
 		return new Session(newSid, uid);
 	}
 
