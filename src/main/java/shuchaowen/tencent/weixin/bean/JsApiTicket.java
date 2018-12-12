@@ -2,7 +2,7 @@ package shuchaowen.tencent.weixin.bean;
 
 import java.io.Serializable;
 
-public class JsApiTicket implements Serializable {
+public final class JsApiTicket implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String ticket;
 	private int expires_in;

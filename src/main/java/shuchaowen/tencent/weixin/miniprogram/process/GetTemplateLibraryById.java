@@ -9,7 +9,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.tencent.weixin.WeiXinProcess;
-import shuchaowen.tencent.weixin.miniprogram.process.bean.Keyword;
+import shuchaowen.tencent.weixin.miniprogram.bean.Keyword;
 
 /**
  * 获取模板库某个模板标题下关键词库

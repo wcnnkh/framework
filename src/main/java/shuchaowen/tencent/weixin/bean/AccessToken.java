@@ -2,7 +2,7 @@ package shuchaowen.tencent.weixin.bean;
 
 import java.io.Serializable;
 
-public class AccessToken implements Serializable{
+public final class AccessToken implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private String access_token;
 	private int expires_in;

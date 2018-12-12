@@ -1,6 +1,9 @@
-package shuchaowen.tencent.weixin.miniprogram.process.bean;
+package shuchaowen.tencent.weixin.miniprogram.bean;
 
-public class Keyword {
+import java.io.Serializable;
+
+public final class Keyword implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private String keyword_id;//keyword_id
 	private String name;//name
 	private String example;//example

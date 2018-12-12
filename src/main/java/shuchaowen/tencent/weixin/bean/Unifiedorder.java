@@ -2,7 +2,7 @@ package shuchaowen.tencent.weixin.bean;
 
 import java.io.Serializable;
 
-public class Unifiedorder implements Serializable{
+public final class Unifiedorder implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private long timestamp;//秒
 	private String nonce_str;

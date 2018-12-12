@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 
+import shuchaowen.common.Logger;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.utils.StringUtils;
 import shuchaowen.connection.http.HttpUtils;
@@ -41,6 +42,18 @@ public abstract class WeiXinProcess{
 			throw new ShuChaoWenRuntimeException("请求错误：url=" + url + ", body=" + body);
 		}
 		
+		JSONObject json = wrapper(content);
+		if(!isSuccess()){
+			StringBuilder sb = new StringBuilder();
+			sb.append("api:").append(url);
+			sb.append(",body：").append(body);
+			sb.append(",response:").append(content);
+			Logger.warn(this.getClass().getName(), sb.toString());
+		}
+		return json;
+	}
+	
+	private JSONObject wrapper(String content){
 		JSONObject json = JSONObject.parseObject(content);
 		this.errcode = json.getIntValue("errcode");
 		this.errmsg = json.getString("errmsg");
@@ -53,9 +66,15 @@ public abstract class WeiXinProcess{
 			throw new ShuChaoWenRuntimeException("请求错误:" + url);
 		}
 		
-		JSONObject json = JSONObject.parseObject(content);
-		this.errcode = json.getIntValue("errcode");
-		this.errmsg = json.getString("errmsg");
+		JSONObject json = wrapper(content);
+		if(!isSuccess()){
+			if(!isSuccess()){
+				StringBuilder sb = new StringBuilder();
+				sb.append("api:").append(url);
+				sb.append(",response:").append(content);
+				Logger.warn(this.getClass().getName(), sb.toString());
+			}
+		}
 		return json;
 	}
 }

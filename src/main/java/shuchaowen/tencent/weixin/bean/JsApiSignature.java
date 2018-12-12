@@ -8,7 +8,7 @@ import java.util.Map;
 import shuchaowen.common.utils.SignUtils;
 import shuchaowen.common.utils.StringUtils;
 
-public class JsApiSignature implements Serializable{
+public final class JsApiSignature implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private String nonceStr;//注意 这个随机字符串的S在前端是大写的，可是在签名的时候是小写的
 	private int timestamp;//单位：秒

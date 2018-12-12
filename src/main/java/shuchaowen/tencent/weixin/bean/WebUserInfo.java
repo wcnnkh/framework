@@ -2,7 +2,7 @@ package shuchaowen.tencent.weixin.bean;
 
 import java.io.Serializable;
 
-public class WebUserInfo implements Serializable {
+public final class WebUserInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String openid;//用户的唯一标识
 	private String nickname;//用户昵称

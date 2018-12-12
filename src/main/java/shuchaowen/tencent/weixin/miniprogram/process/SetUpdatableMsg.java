@@ -9,8 +9,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.tencent.weixin.WeiXinProcess;
-import shuchaowen.tencent.weixin.miniprogram.process.enums.TargetState;
-import shuchaowen.tencent.weixin.miniprogram.process.enums.TemplateParameterName;
+import shuchaowen.tencent.weixin.miniprogram.enums.TargetState;
+import shuchaowen.tencent.weixin.miniprogram.enums.TemplateParameterName;
 
 /**
  * 修改被分享的动态消息

@@ -1,6 +1,9 @@
-package shuchaowen.tencent.weixin.miniprogram.process.bean;
+package shuchaowen.tencent.weixin.miniprogram.bean;
 
-public class Template {
+import java.io.Serializable;
+
+public final class Template implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private String template_id;//	添加至帐号下的模板id，发送小程序模板消息时所需
 	private String title;//	模板标题
 	private String content;//模板内容

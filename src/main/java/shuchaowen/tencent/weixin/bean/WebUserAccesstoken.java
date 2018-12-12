@@ -7,7 +7,7 @@ import java.io.Serializable;
  * @author shuchaowen
  *
  */
-public class WebUserAccesstoken implements Serializable{
+public final class WebUserAccesstoken implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private String access_token;
 	private int expires_in;

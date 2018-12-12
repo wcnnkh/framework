@@ -1,4 +1,4 @@
-package shuchaowen.tencent.weixin.miniprogram.process.enums;
+package shuchaowen.tencent.weixin.miniprogram.enums;
 
 public enum TemplateParameterName {
 	/**
