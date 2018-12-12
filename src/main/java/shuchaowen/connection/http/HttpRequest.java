@@ -33,4 +33,8 @@ public interface HttpRequest extends Request {
     InputStream getErrorStream();
     
     String getResponseBody(Charset charset) throws IOException;
+    
+    String getRequestContentType();
+    
+    void setRequestContentType(String contentType);
 }

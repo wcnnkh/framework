@@ -30,7 +30,9 @@ public final class HttpUtils {
 		HttpGet http = null;
 		try {
 			http = new HttpGet(url);
-			http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + charset.name());
+			if(http.getRequestContentType() == null){
+				http.setRequestContentType("application/x-www-form-urlencoded; charset=" + charset.name());
+			}
 			return http.getResponseBody(charset);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -48,7 +50,6 @@ public final class HttpUtils {
 		HttpPost http = null;
 		try {
 			http = new HttpPost(url);
-			http.setRequestProperty("Content-Type", "application/octet-stream");
 			if(propertyMap != null && !propertyMap.isEmpty()){
 				for(Entry<String, String> entry : propertyMap.entrySet()){
 					http.setRequestProperty(entry.getKey(), entry.getValue());
@@ -72,7 +73,6 @@ public final class HttpUtils {
 		HttpPost http = null;
 		try {
 			http = new HttpPost(url);
-			http.setRequestProperty("Content-Type", "application/octet-stream");
 			if(propertyMap != null && !propertyMap.isEmpty()){
 				for(Entry<String, String> entry : propertyMap.entrySet()){
 					http.setRequestProperty(entry.getKey(), entry.getValue());

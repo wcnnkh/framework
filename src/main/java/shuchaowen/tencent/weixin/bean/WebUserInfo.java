@@ -1,19 +1,8 @@
 package shuchaowen.tencent.weixin.bean;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.alibaba.fastjson.JSONObject;
-
-import shuchaowen.common.exception.ShuChaoWenRuntimeException;
-import shuchaowen.common.utils.StringUtils;
-import shuchaowen.connection.http.HttpUtils;
-import shuchaowen.tencent.weixin.WeiXinUtils;
 
 public class WebUserInfo implements Serializable {
-	private static final String weixin_get_web_userinfo = "https://api.weixin.qq.com/sns/userinfo";
-	
 	private static final long serialVersionUID = 1L;
 	private String openid;//用户的唯一标识
 	private String nickname;//用户昵称
@@ -34,43 +23,18 @@ public class WebUserInfo implements Serializable {
 	 */
 	public WebUserInfo(){}
 	
-	public WebUserInfo(String appid, String appsecret, String code){
-		load(appid, appsecret, code);
-	}
-	
-	public WebUserInfo(String openid, String user_access_token){
-		load(openid, user_access_token);
-	}
-	
-	public void load(String appid, String appsecret, String code){
-		WebUserAccesstoken webUserAccesstoken = new WebUserAccesstoken(appid, appsecret, code);
-		load(webUserAccesstoken.getOpenid(), webUserAccesstoken.getAccess_token());
-	}
-	
-	public void load(String openid, String user_access_token){
-		Map<String, String> paramMap = new HashMap<String, String>();
-		paramMap.put("access_token", user_access_token);
-		paramMap.put("openid", openid);
-		paramMap.put("lang", "zh_CN");
-		String content = HttpUtils.doPost(weixin_get_web_userinfo, paramMap);
-		if(StringUtils.isNull(content)){
-			throw new ShuChaoWenRuntimeException("无法获取userinfo");
-		}
-		
-		JSONObject jsonObject = JSONObject.parseObject(content);
-		if(WeiXinUtils.isError(jsonObject)){
-			throw new ShuChaoWenRuntimeException(content);
-		}
-		
-		this.openid = jsonObject.getString("openid");
-		this.nickname = jsonObject.getString("nickname");
-		this.sex = jsonObject.getIntValue("sex");
-		this.province = jsonObject.getString("province");
-		this.city = jsonObject.getString("city");
-		this.country = jsonObject.getString("country");
-		this.headimgurl = jsonObject.getString("headimgurl");
-		this.privilege = jsonObject.getString("privilege");
-		this.unionid = jsonObject.getString("unionid");
+	public WebUserInfo(String openid, String nickname, int sex, 
+			String province, String city, String country, 
+			String headimgurl, String privilaege, String unionid){
+		this.openid = openid;
+		this.nickname = nickname;
+		this.sex = sex;
+		this.province = province;
+		this.city = city;
+		this.country = country;
+		this.headimgurl = headimgurl;
+		this.privilege = privilaege;
+		this.unionid = unionid;
 	}
 
 	public String getOpenid() {

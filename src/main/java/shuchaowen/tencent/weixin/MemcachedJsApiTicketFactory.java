@@ -3,6 +3,7 @@ package shuchaowen.tencent.weixin;
 import shuchaowen.memcached.Memcached;
 import shuchaowen.memcached.MemcachedLock;
 import shuchaowen.tencent.weixin.bean.JsApiTicket;
+import shuchaowen.tencent.weixin.process.GetJsApiTicket;
 
 public final class MemcachedJsApiTicketFactory extends AbstractJsApiTicketFactory{
 	private final Memcached memcached;
@@ -35,8 +36,9 @@ public final class MemcachedJsApiTicketFactory extends AbstractJsApiTicketFactor
 		if(lock.lock()){
 			try {
 				if(isExpires()){
-					JsApiTicket jsApiTicket = new JsApiTicket(getAccessToken());
-					if(jsApiTicket != null){
+					GetJsApiTicket getJsApiTicket = new GetJsApiTicket(getAccessToken());
+					if(getJsApiTicket.isSuccess()){
+						JsApiTicket jsApiTicket = getJsApiTicket.getTicket();
 						memcached.set(key, jsApiTicket.getExpires_in(), jsApiTicket);
 						return jsApiTicket;
 					}

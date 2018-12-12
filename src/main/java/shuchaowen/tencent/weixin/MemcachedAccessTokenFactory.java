@@ -3,6 +3,7 @@ package shuchaowen.tencent.weixin;
 import shuchaowen.memcached.Memcached;
 import shuchaowen.memcached.MemcachedLock;
 import shuchaowen.tencent.weixin.bean.AccessToken;
+import shuchaowen.tencent.weixin.process.GetAccessToken;
 
 public final class MemcachedAccessTokenFactory extends AbstractAccessTokenFactory{
 	private final Memcached memcached;
@@ -31,8 +32,9 @@ public final class MemcachedAccessTokenFactory extends AbstractAccessTokenFactor
 		if(memcachedLock.lock()){
 			try {
 				if(isExpires()){
-					AccessToken accessToken = new AccessToken(getAppid(), getAppsecret());
-					if(accessToken != null){
+					GetAccessToken getAccessToken = new GetAccessToken(getAppid(), getAppsecret());
+					if(getAccessToken.isSuccess()){
+						AccessToken accessToken = getAccessToken.getAccessToken();
 						memcached.set(key, accessToken.getExpires_in(), accessToken);
 						return accessToken;
 					}

@@ -83,4 +83,12 @@ public class HttpRequestURLConnection extends RequestURLConnection implements Ht
 	public String getResponseBody(Charset charset) throws IOException {
 		return new StringDecoder(charset).decode(getInputStream());
 	}
+
+	public String getRequestContentType() {
+		return getRequestProperty("Content-Type");
+	}
+
+	public void setRequestContentType(String contentType) {
+		setRequestProperty("Content-Type", contentType);
+	}
 }

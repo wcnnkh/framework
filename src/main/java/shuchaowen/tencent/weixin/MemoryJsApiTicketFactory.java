@@ -1,6 +1,7 @@
 package shuchaowen.tencent.weixin;
 
 import shuchaowen.tencent.weixin.bean.JsApiTicket;
+import shuchaowen.tencent.weixin.process.GetJsApiTicket;
 
 public final class MemoryJsApiTicketFactory extends AbstractJsApiTicketFactory{
 	private volatile JsApiTicket jsApiTicket;
@@ -24,7 +25,10 @@ public final class MemoryJsApiTicketFactory extends AbstractJsApiTicketFactory{
 		if(isExpires()){
 			synchronized (lock) {
 				if(isExpires()){
-					jsApiTicket = new JsApiTicket(getAccessToken());
+					GetJsApiTicket getJsApiTicket = new GetJsApiTicket(getAccessToken());
+					if(getJsApiTicket.isSuccess()){
+						jsApiTicket = getJsApiTicket.getTicket();
+					}
 				}
 			}
 		}

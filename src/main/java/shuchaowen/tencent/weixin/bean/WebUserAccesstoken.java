@@ -1,15 +1,6 @@
 package shuchaowen.tencent.weixin.bean;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.alibaba.fastjson.JSONObject;
-
-import shuchaowen.common.exception.ShuChaoWenRuntimeException;
-import shuchaowen.common.utils.StringUtils;
-import shuchaowen.connection.http.HttpUtils;
-import shuchaowen.tencent.weixin.WeiXinUtils;
 
 /**
  * 用code换取的信息
@@ -17,9 +8,6 @@ import shuchaowen.tencent.weixin.WeiXinUtils;
  *
  */
 public class WebUserAccesstoken implements Serializable{
-	private static final String weixin_get_web_access_token = "https://api.weixin.qq.com/sns/oauth2/access_token";
-	private static final String weixin_get_web_refresh_access_token = "https://api.weixin.qq.com/sns/oauth2/refresh_token";
-	
 	private static final long serialVersionUID = 1L;
 	private String access_token;
 	private int expires_in;
@@ -32,69 +20,12 @@ public class WebUserAccesstoken implements Serializable{
 	 */
 	public WebUserAccesstoken(){};
 	
-	/**
-	 * 第一次获取
-	 * @param appId
-	 * @param appsecret
-	 * @param code
-	 */
-	public WebUserAccesstoken(String appid, String appsecret, String code){
-		load(appid, appsecret, code);
-	}
-	
-	/**
-	 * 刷新
-	 * @param appid
-	 * @param refresh_token
-	 */
-	public WebUserAccesstoken(String appid, String refresh_token){
-		load(appid, refresh_token);
-	}
-	
-	public void load(String appid, String appsecret, String code){
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("appid", appid);
-		map.put("secret", appsecret);
-		map.put("code", code);
-		map.put("grant_type", "authorization_code");
-		String jsonData = HttpUtils.doPost(weixin_get_web_access_token, map);
-		
-		if(StringUtils.isNull(jsonData)){
-			throw new ShuChaoWenRuntimeException("无法获取web_user_access_token");
-		}
-		
-		JSONObject jsonObject = JSONObject.parseObject(jsonData);
-		if(WeiXinUtils.isError(jsonObject)){
-			throw new ShuChaoWenRuntimeException(jsonData);
-		}
-		
-		this.access_token = jsonObject.getString("access_token");
-		this.expires_in = jsonObject.getIntValue("expires_in");
-		this.refresh_token = jsonObject.getString("refresh_token");
-		this.openid = jsonObject.getString("openid");
-		this.scope = jsonObject.getString("scope");
-	}
-	
-	public void load(String appid, String refresh_token){
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("appid", appid);
-		map.put("grant_type", "refresh_token");
-		map.put("refresh_token", refresh_token);
-		String content = HttpUtils.doPost(weixin_get_web_refresh_access_token, map);
-		if(StringUtils.isNull(content)){
-			throw new ShuChaoWenRuntimeException("无法获取web_user_access_token");
-		}
-		
-		JSONObject jsonObject = JSONObject.parseObject(content);
-		if(jsonObject.containsKey("errcode") && jsonObject.getIntValue("errcode") != 0){
-			throw new ShuChaoWenRuntimeException(content);
-		}
-		
-		this.access_token = jsonObject.getString("access_token");
-		this.expires_in = jsonObject.getIntValue("expires_in");
-		this.refresh_token = jsonObject.getString("refresh_token");
-		this.openid = jsonObject.getString("openid");
-		this.scope = jsonObject.getString("scope");
+	public WebUserAccesstoken(String access_token, int expires_in, String refresh_token, String openid, String scope){
+		this.access_token = access_token;
+		this.expires_in = expires_in;
+		this.refresh_token = refresh_token;
+		this.openid = openid;
+		this.scope = scope;
 	}
 	
 	public String getAccess_token() {

@@ -7,30 +7,31 @@ import shuchaowen.common.io.IOUtils;
 import shuchaowen.redis.Redis;
 import shuchaowen.redis.RedisLock;
 import shuchaowen.tencent.weixin.bean.AccessToken;
+import shuchaowen.tencent.weixin.process.GetAccessToken;
 
-public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory{
+public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory {
 	private final Redis redis;
 	private final byte[] key;
 	private final String lockKey;
-	
+
 	public RedisAccessTokenFactory(Redis redis, String charsetName, String appid, String appsecret) {
 		this(redis, Charset.forName(charsetName), appid, appsecret);
 	}
-	
+
 	public RedisAccessTokenFactory(Redis redis, Charset charset, String appid, String appsecret) {
 		super(appid, appsecret);
 		this.redis = redis;
 		this.key = (this.getClass().getName() + "#" + getAppid()).getBytes(charset);
 		this.lockKey = this.getClass().getName() + "#lock#" + getAppid();
 	}
-	
+
 	@Override
 	protected AccessToken getAccessTokenByCache() {
 		byte[] data = redis.get(key);
-		if(data == null){
+		if (data == null) {
 			return null;
 		}
-		
+
 		try {
 			return IOUtils.byteToJavaObject(data);
 		} catch (ClassNotFoundException e) {
@@ -43,28 +44,29 @@ public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory{
 
 	@Override
 	protected AccessToken refreshToken() {
-		if(!isExpires()){
+		if (!isExpires()) {
 			return getAccessTokenByCache();
 		}
-		
+
 		RedisLock lock = new RedisLock(redis, lockKey);
-		if(lock.lock()){
+		if (lock.lock()) {
 			try {
-				if(isExpires()){
-					AccessToken accessToken = new AccessToken(getAppid(), getAppsecret());
-					if(accessToken != null){
+				if (isExpires()) {
+					GetAccessToken getAccessToken = new GetAccessToken(getAppid(), getAppsecret());
+					if (getAccessToken.isSuccess()) {
+						AccessToken accessToken = getAccessToken.getAccessToken();
 						redis.setex(key, accessToken.getExpires_in(), IOUtils.javaObjectToByte(accessToken));
 						return accessToken;
 					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			}finally{
+			} finally {
 				lock.unLock();
 			}
 		}
-		
-		//没有拿到锁
+
+		// 没有拿到锁
 		try {
 			Thread.sleep(50L);
 		} catch (InterruptedException e) {

@@ -9,8 +9,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
-import com.alibaba.fastjson.JSONObject;
-
 import shuchaowen.common.utils.SignUtils;
 import shuchaowen.connection.http.HttpUtils;
 
@@ -135,9 +133,5 @@ public final class WeiXinUtils {
 			map.put(k, node.getText());
 		}
 		return map;
-	}
-	
-	public static boolean isError(JSONObject json){
-		return json.containsKey("errcode") && json.getIntValue("errcode") != 0;
 	}
 }

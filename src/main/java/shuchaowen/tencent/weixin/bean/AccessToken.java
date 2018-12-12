@@ -2,46 +2,21 @@ package shuchaowen.tencent.weixin.bean;
 
 import java.io.Serializable;
 
-import com.alibaba.fastjson.JSONObject;
-
-import shuchaowen.common.exception.ShuChaoWenRuntimeException;
-import shuchaowen.common.utils.StringUtils;
-import shuchaowen.connection.http.HttpUtils;
-import shuchaowen.tencent.weixin.WeiXinUtils;
-
 public class AccessToken implements Serializable{
-	private static final String weixin_get_web_token = "https://api.weixin.qq.com/cgi-bin/token";
-	
 	private static final long serialVersionUID = 1L;
 	private String access_token;
 	private int expires_in;
 	private long cts;//创建时间
 	
-	public AccessToken(){
-		this.cts = System.currentTimeMillis();
-	}
+	/**
+	 * 用于序列化
+	 */
+	public AccessToken(){};
 	
-	public AccessToken(String appid, String appsecret){
-		load(appid, appsecret);
-	}
-	
-	public void load(String appid, String appsecret){
-		String url = weixin_get_web_token
-				+ "?grant_type=client_credential&appid=" + appid + "&secret="
-				+ appsecret;
-		String content = HttpUtils.doPost(url, null);
-		if(StringUtils.isNull(content)){
-			throw new ShuChaoWenRuntimeException("无法从微信服务器获取token");
-		}
-		
-		JSONObject jsonObject = JSONObject.parseObject(content);
-		if(WeiXinUtils.isError(jsonObject)){
-			throw new ShuChaoWenRuntimeException(content);
-		}
-		
+	public AccessToken(String access_token, int expires_in){
 		this.cts = System.currentTimeMillis();
-		this.access_token = jsonObject.getString("access_token");
-		this.expires_in = jsonObject.getIntValue("expires_in");
+		this.access_token = access_token;
+		this.expires_in = expires_in;
 	}
 	
 	public String getAccess_token() {
