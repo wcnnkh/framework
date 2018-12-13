@@ -9,10 +9,12 @@ import shuchaowen.redis.RedisIdGernerator;
 
 /**
  * 不确定长度的
- * 最长为26个字符
+ * 最长为22个字符
  * @author shuchaowen
  */
 public final class UniqueStringIdGenerator implements IdGenerator<String> {
+	private static final LongNumberConversion LONG_NUMBER_CONVERSION = new LongNumberConversion(StringUtils.ALL);
+	
 	private final IdGenerator<Long> idGenerator;
 
 	public UniqueStringIdGenerator(Memcached memcached) {
@@ -24,8 +26,8 @@ public final class UniqueStringIdGenerator implements IdGenerator<String> {
 	}
 
 	public String next() {
-		return StringUtils.reversed(StringUtils.complemented(Long.toString(System.currentTimeMillis(), 36), '0', 13))
-				+ Long.toString(Math.abs(idGenerator.next()), 36);
+		return StringUtils.reversed(StringUtils.complemented(LONG_NUMBER_CONVERSION.encode(System.currentTimeMillis(), 36), '0', 11))
+				+ LONG_NUMBER_CONVERSION.encode(Math.abs(idGenerator.next()));
 	}
 
 	/**
@@ -35,10 +37,10 @@ public final class UniqueStringIdGenerator implements IdGenerator<String> {
 	 * @return
 	 */
 	public static long getCts(String id) {
-		if (id.length() <= 13) {
+		if (id.length() <= 11 || id.length() > 22) {
 			throw new ShuChaoWenRuntimeException(id);
 		}
 		
-		return Long.parseLong(StringUtils.reversed(id.substring(0, 13)), 36);
+		return LONG_NUMBER_CONVERSION.decode(StringUtils.reversed(id.substring(0, 13)));
 	}
 }

@@ -12,15 +12,23 @@ import java.util.regex.Pattern;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 
 public final class StringUtils {
-	public final static char[] CAPITAL_LETTERS = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
-			'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', };
+	public final static char[] CAPITAL_LETTERS = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+			'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', };
 
-	public final static char[] LOWERCASE_LETTERS = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-			'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+	public final static char[] LOWERCASE_LETTERS = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+			'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
 	public final static char[] NUMBERIC_CHARACTER = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-	public final static char[] ALL = CollectionUtils.mergeCharArray(NUMBERIC_CHARACTER, LOWERCASE_LETTERS, CAPITAL_LETTERS);
+	/**
+	 * 放在一起容易分辨的字符
+	 */
+	public final static char[] EASY_TO_DISTINGUISH = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'c', 'd',
+			'e', 'f', 'h', 'k', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'y', 'A', 'B', 'C', 'E', 'F',
+			'G', 'H', 'K', 'M', 'N', 'R', 'S', 'T', 'V', 'W', 'Y'};
+
+	public final static char[] ALL = CollectionUtils.mergeCharArray(NUMBERIC_CHARACTER, LOWERCASE_LETTERS,
+			CAPITAL_LETTERS);
 	private static final Charset DEFAULT_OLD_CHARSET = Charset.forName("ISO-8859-1");
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 	private static final String IOS_NULL = "(null)";
