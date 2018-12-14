@@ -12,8 +12,6 @@ import java.util.List;
 
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.utils.XUtils;
-import shuchaowen.db.result.Result;
-import shuchaowen.db.result.ResultIterator;
 import shuchaowen.db.sql.SQL;
 import shuchaowen.db.sql.SQLFormat;
 import shuchaowen.db.transaction.SQLTransaction;
@@ -32,7 +30,7 @@ public final class DBUtils {
 	}
 
 	public static void iterator(ConnectionSource connectionSource, SQL sql,
-			TableMapping tableMapping, ResultIterator iterator) {
+			shuchaowen.common.Iterator<ResultSet> iterator) {
 		if (sql == null || connectionSource == null || iterator == null) {
 			return;
 		}
@@ -45,8 +43,9 @@ public final class DBUtils {
 			stmt = connection.prepareStatement(sql.getSql());
 			setParams(stmt, sql.getParams());
 			rs = stmt.executeQuery();
+
 			while (rs.next()) {
-				iterator.next(new Result(tableMapping, rs));
+				iterator.iterator(rs);
 			}
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(getSQLId(sql), e);
@@ -97,7 +96,7 @@ public final class DBUtils {
 	}
 
 	public static shuchaowen.db.result.ResultSet select(
-			ConnectionSource connectionSource, SQL sql){
+			ConnectionSource connectionSource, SQL sql) {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Connection connection = null;

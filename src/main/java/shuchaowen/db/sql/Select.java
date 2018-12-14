@@ -14,100 +14,92 @@ import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.db.AbstractDB;
 import shuchaowen.db.DB;
 import shuchaowen.db.TableInfo;
-import shuchaowen.db.TableMapping;
-import shuchaowen.db.result.Result;
-import shuchaowen.db.result.ResultIterator;
 import shuchaowen.db.result.ResultSet;
 
-public abstract class Select{
+/**
+ * 暂不支持分表
+ * @author shuchaowen
+ *
+ */
+public abstract class Select {
 	private Map<String, String> associationWhereMap;
 	private HashSet<String> selectTableSet;
 	protected AbstractDB db;
-	
+
 	public Select(AbstractDB db) {
 		this.db = db;
 	}
-	
-	public Select from(Class<?> tableClass){
-		if(selectTableSet == null){
+
+	public Select from(Class<?> tableClass) {
+		if (selectTableSet == null) {
 			selectTableSet = new HashSet<String>();
 		}
-		
+
 		selectTableSet.add(getTableName(tableClass));
 		return this;
 	}
-	
-	protected Map<String, String> getAssociationWhereMap(){
+
+	protected Map<String, String> getAssociationWhereMap() {
 		return associationWhereMap;
 	}
-	
-	public String getAssociationWhere(){
-		if(associationWhereMap == null || associationWhereMap.isEmpty()){
+
+	public String getAssociationWhere() {
+		if (associationWhereMap == null || associationWhereMap.isEmpty()) {
 			return null;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
-		Iterator<Entry<String, String>> iterator = associationWhereMap.entrySet().iterator();
-		while(iterator.hasNext()){
+		Iterator<Entry<String, String>> iterator = associationWhereMap
+				.entrySet().iterator();
+		while (iterator.hasNext()) {
 			Entry<String, String> entry = iterator.next();
 			sb.append(entry.getKey());
 			sb.append("=");
 			sb.append(entry.getValue());
-			
-			if(iterator.hasNext()){
+
+			if (iterator.hasNext()) {
 				sb.append(" and ");
 			}
 		}
 		return sb.toString();
 	}
-	
-	public String getSQLColumn(Class<?> tableClass, String name){
+
+	public String getSQLColumn(Class<?> tableClass, String name) {
 		TableInfo tableInfo = DB.getTableInfo(tableClass);
-		return tableInfo.getColumnInfo(name).getSQLName(getTableName(tableClass));
-	}
-	
-	public String getTableName(Class<?> tableClass){
-		String name = null;
-		if(tableMapping != null){
-			name = tableMapping.getTableName(tableClass);
-		}
-		if(name == null){
-			TableInfo tableInfo = DB.getTableInfo(tableClass);
-			if(!tableInfo.isTable()){
-				throw new ShuChaoWenRuntimeException(tableClass.getName() + " not found @Table");
-			}
-			
-			name = tableInfo.getName();
-		}
-		return name;
+		return tableInfo.getColumnInfo(name).getSQLName(
+				getTableName(tableClass));
 	}
 
-	protected void addSelectTable(String tableName){
-		if(selectTableSet == null){
+	public String getTableName(Class<?> tableClass) {
+		return DB.getTableInfo(tableClass).getName();
+	}
+
+	protected void addSelectTable(String tableName) {
+		if (selectTableSet == null) {
 			selectTableSet = new HashSet<String>();
 		}
 		selectTableSet.add(tableName);
 	}
-	
-	public String getSelectTables(){
-		if(selectTableSet == null || selectTableSet.isEmpty()){
+
+	public String getSelectTables() {
+		if (selectTableSet == null || selectTableSet.isEmpty()) {
 			throw new NullPointerException("select tables");
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		Iterator<String> iterator = selectTableSet.iterator();
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			sb.append("`");
 			sb.append(iterator.next());
 			sb.append("`");
-			
-			if(iterator.hasNext()){
+
+			if (iterator.hasNext()) {
 				sb.append(",");
 			}
 		}
 		return sb.toString();
 	}
-	
+
 	public HashSet<String> getSelectTableSet() {
 		return selectTableSet;
 	}
@@ -142,174 +134,179 @@ public abstract class Select{
 	public AbstractDB getDb() {
 		return db;
 	}
-	
+
 	public abstract SQL toSQL(String select, boolean order);
-	
+
 	/**
 	 * 把table2的指定字段和table1的主键关联
+	 * 
 	 * @param tableClass1
 	 * @param tableClass2
-	 * @param table2Columns 如果不填写就是两个表的主键关联
+	 * @param table2Columns
+	 *            如果不填写就是两个表的主键关联
 	 * @return
 	 */
-	public Select associationQuery(Class<?> tableClass1, Class<?> tableClass2, String ...table2Columns){
-		if(associationWhereMap == null){
+	public Select associationQuery(Class<?> tableClass1, Class<?> tableClass2,
+			String... table2Columns) {
+		if (associationWhereMap == null) {
 			associationWhereMap = new HashMap<String, String>();
 		}
-		
+
 		TableInfo t1 = DB.getTableInfo(tableClass1);
 		TableInfo t2 = DB.getTableInfo(tableClass2);
 		String tName1 = getTableName(tableClass1);
 		String tName2 = getTableName(tableClass2);
-		if(table2Columns == null || table2Columns.length == 0){
-			if(t1.getPrimaryKeyColumns().length != t2.getPrimaryKeyColumns().length){
-				//两张表的主键数量不一致
-				throw new ShuChaoWenRuntimeException("primary key count atypism");
+		if (table2Columns == null || table2Columns.length == 0) {
+			if (t1.getPrimaryKeyColumns().length != t2.getPrimaryKeyColumns().length) {
+				// 两张表的主键数量不一致
+				throw new ShuChaoWenRuntimeException(
+						"primary key count atypism");
 			}
-			
-			for(int i=0; i<t1.getPrimaryKeyColumns().length; i++){
+
+			for (int i = 0; i < t1.getPrimaryKeyColumns().length; i++) {
 				String n1 = t1.getPrimaryKeyColumns()[i].getSQLName(tName1);
 				String n2 = t2.getPrimaryKeyColumns()[i].getSQLName(tName2);
-				if(checkWhere(associationWhereMap, n1, n2)){
+				if (checkWhere(associationWhereMap, n1, n2)) {
 					continue;
 				}
-				
+
 				associationWhereMap.put(n1, n2);
 			}
-		}else{
-			if(table2Columns.length != t1.getPrimaryKeyColumns().length){
-				//指明的外键和主键数量不一致
-				throw new ShuChaoWenRuntimeException("primary key count atypism");
+		} else {
+			if (table2Columns.length != t1.getPrimaryKeyColumns().length) {
+				// 指明的外键和主键数量不一致
+				throw new ShuChaoWenRuntimeException(
+						"primary key count atypism");
 			}
-			
-			for(int i=0; i<table2Columns.length; i++){
-				String n1 = t2.getColumnInfo(table2Columns[i]).getSQLName(tName2);
+
+			for (int i = 0; i < table2Columns.length; i++) {
+				String n1 = t2.getColumnInfo(table2Columns[i]).getSQLName(
+						tName2);
 				String n2 = t1.getPrimaryKeyColumns()[i].getSQLName(tName1);
-				if(checkWhere(associationWhereMap, n1, n2)){
+				if (checkWhere(associationWhereMap, n1, n2)) {
 					continue;
 				}
 				associationWhereMap.put(n1, n2);
 			}
 		}
-		
-		if(selectTableSet == null){
+
+		if (selectTableSet == null) {
 			selectTableSet = new HashSet<String>();
 		}
-		
+
 		selectTableSet.add(tName1);
 		selectTableSet.add(tName2);
 		return this;
 	}
-	
+
 	public abstract Select whereAnd(String where, Collection<?> values);
-	
-	public Select whereAnd(String where, Object ...value){
+
+	public Select whereAnd(String where, Object... value) {
 		return whereAnd(where, Arrays.asList(value));
 	}
-	
+
 	public abstract Select whereOr(String where, Collection<?> values);
-	
-	public Select whereOr(String where, Object ...value){
+
+	public Select whereOr(String where, Object... value) {
 		return whereOr(where, Arrays.asList(value));
 	}
 
-	public abstract Select whereAndValue(Class<?> tableClass, String name, Object value);
-	
-	public abstract Select whereOrValue(Class<?> tableClass, String name, Object value);
-	
-	public Select whereAndIn(Class<?> tableClass, String name, Object ...value){
+	public abstract Select whereAndValue(Class<?> tableClass, String name,
+			Object value);
+
+	public abstract Select whereOrValue(Class<?> tableClass, String name,
+			Object value);
+
+	public Select whereAndIn(Class<?> tableClass, String name, Object... value) {
 		return whereAndIn(tableClass, name, Arrays.asList(value));
 	}
 
-	public abstract Select whereAndIn(Class<?> tableClass, String name, Collection<?> values);
+	public abstract Select whereAndIn(Class<?> tableClass, String name,
+			Collection<?> values);
 
-	public abstract Select whereOrIn(Class<?> tableClass, String name, Collection<?> values);
+	public abstract Select whereOrIn(Class<?> tableClass, String name,
+			Collection<?> values);
 
-	public Select whereOrIn(Class<?> tableClass, String name, Object ...value){
-		return whereOrIn(tableClass, name, Arrays.asList(value	));
+	public Select whereOrIn(Class<?> tableClass, String name, Object... value) {
+		return whereOrIn(tableClass, name, Arrays.asList(value));
 	}
-	
+
 	/**
 	 * 降序
+	 * 
 	 * @param tableClass
 	 * @param nameList
 	 * @return
 	 */
 	public abstract Select desc(Class<?> tableClass, Collection<String> nameList);
-	
-	public Select desc(Class<?> tableClass, String ...names){
+
+	public Select desc(Class<?> tableClass, String... names) {
 		return desc(tableClass, Arrays.asList(names));
 	}
 
 	/**
 	 * 升序
+	 * 
 	 * @param tableClass
 	 * @param nameList
 	 * @return
 	 */
 	public abstract Select asc(Class<?> tableClass, Collection<String> nameList);
-	
-	public Select asc(Class<?> tableClass, String ...names){
+
+	public Select asc(Class<?> tableClass, String... names) {
 		return asc(tableClass, Arrays.asList(names));
 	}
 
 	public abstract long count();
-	
-	public <T> T getFirst(Class<T> type){
+
+	public <T> T getFirst(Class<T> type) {
 		return getResultSet().getObject(0, type);
 	}
-	
-	public Result getFirstResult(){
-		return getResultSet(0, 1).getFirst();
-	}
-	
+
 	public abstract ResultSet getResultSet();
-	
-	public <T> List<T> getList(Class<T> type){
+
+	public <T> List<T> getList(Class<T> type) {
 		return getResultSet().getList(type);
 	}
-	
+
 	public abstract ResultSet getResultSet(long begin, int limit);
-	
-	public <T> List<T> getList(Class<T> type, long begin, int limit){
+
+	public <T> List<T> getList(Class<T> type, long begin, int limit) {
 		return getResultSet(begin, limit).getList(type);
 	}
-	
-	public Pagination<ResultSet> getResultSetPagination(long page, int limit){
+
+	public Pagination<ResultSet> getResultSetPagination(long page, int limit) {
 		Pagination<ResultSet> pagination = new Pagination<ResultSet>();
 		pagination.setLimit(limit);
-		if(page <= 0 || limit <= 0){
+		if (page <= 0 || limit <= 0) {
 			return pagination;
 		}
-		
+
 		long count = count();
-		if(count == 0){
+		if (count == 0) {
 			return pagination;
 		}
-		
+
 		pagination.setTotalCount(count);
 		pagination.setData(getResultSet((page - 1) * limit, limit));
 		return pagination;
 	}
-	
-	public <T> Pagination<List<T>> getPagination(Class<T> type, long page, int limit){
+
+	public <T> Pagination<List<T>> getPagination(Class<T> type, long page,
+			int limit) {
 		Pagination<List<T>> pagination = new Pagination<List<T>>();
 		pagination.setLimit(limit);
-		if(page <= 0 || limit <= 0){
+		if (page <= 0 || limit <= 0) {
 			return pagination;
 		}
-		
+
 		long count = count();
-		if(count == 0){
+		if (count == 0) {
 			return pagination;
 		}
-		
+
 		pagination.setTotalCount(count);
 		pagination.setData(getList(type, (page - 1) * limit, limit));
 		return pagination;
 	}
-	
-	public abstract void iterator(ResultIterator iterator);
-	
-	public abstract void iterator(long begin, long limit, ResultIterator iterator);
 }

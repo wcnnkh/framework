@@ -1,11 +1,13 @@
 package shuchaowen.excel.export;
 
+import java.sql.ResultSet;
+
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import shuchaowen.db.result.ResultSet;
+import shuchaowen.db.result.Result;
 
-public class ResultSetToExeclRowCall{
+public class ResultSetToExeclRowCall {
 	// 创建Excel工作薄
 	private int tempSize = 0;
 	private int maxCount = 60000;// 一个sheet最多放多少数据
@@ -15,18 +17,15 @@ public class ResultSetToExeclRowCall{
 	private String[] title;
 	private WritableWorkbook wwb;
 	private SqlExportRow exportRow;
-	
-	public ResultSetToExeclRowCall(WritableWorkbook wwb, String[] title, SqlExportRow exportRow) {
-			this.wwb = wwb;
-			this.title = title;
-			this.exportRow = exportRow;
+
+	public ResultSetToExeclRowCall(WritableWorkbook wwb, String[] title,
+			SqlExportRow exportRow) {
+		this.wwb = wwb;
+		this.title = title;
+		this.exportRow = exportRow;
 	}
 
 	public void format(ResultSet resultSet) throws Exception {
-		if(resultSet == null || resultSet.getDataList() == null || resultSet.getDataList().isEmpty()){
-			return ;
-		}
-		
 		if (sheet == null) {
 			sheet = wwb.createSheet("sheet" + sheetIndex, sheetIndex - 1);
 		}
@@ -41,18 +40,19 @@ public class ResultSetToExeclRowCall{
 			}
 			tempSize++;
 		}
-		
-		for(int index=0; index<resultSet.getDataList().size(); index++){
-			String[] contents = exportRow.exportRow(resultSet.get(index));
-			if(contents == null || contents.length == 0){
-				return ;
+
+		while (resultSet.next()) {
+			Result result = new Result(resultSet);
+			String[] contents = exportRow.exportRow(result);
+			if (contents == null || contents.length == 0) {
+				return;
 			}
-			
-			for(int i=0; i<contents.length; i++){
-				if(contents[i] == null){
+
+			for (int i = 0; i < contents.length; i++) {
+				if (contents[i] == null) {
 					continue;
 				}
-				
+
 				label = new Label(i, tempSize, contents[i]);
 				sheet.addCell(label);
 			}
@@ -64,6 +64,6 @@ public class ResultSetToExeclRowCall{
 				sheetIndex++;
 			}
 		}
-		return ;
+		return;
 	}
 }

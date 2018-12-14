@@ -1,16 +1,17 @@
 package shuchaowen.db;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import shuchaowen.common.Iterator;
 import shuchaowen.common.Logger;
 import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.db.annoation.Table;
 import shuchaowen.db.result.Result;
-import shuchaowen.db.result.ResultIterator;
 import shuchaowen.db.result.ResultSet;
 import shuchaowen.db.sql.SQL;
 import shuchaowen.db.sql.SQLFormat;
@@ -59,18 +60,21 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable{
 		this.sqlFormat = sqlFormat;
 	}
 
-	public void iterator(Class<?> tableClass, ResultIterator iterator){
-		Select select = createSelect();
-		select.from(tableClass);
-		select.iterator(iterator);
+	public void iterator(Class<?> tableClass, Iterator<Result> iterator){
+		iterator(sqlFormat.toSelectByIdSql(DB.getTableInfo(tableClass), null), iterator);
 	}
 	
-	public void iterator(SQL sql, TableMapping tableMapping, ResultIterator iterator){
-		DBUtils.iterator(this, sql, tableMapping, iterator);
-	}
-	
-	public void iterator(SQL sql, ResultIterator iterator){
-		DBUtils.iterator(this, sql, null, iterator);
+	public void iterator(SQL sql, final Iterator<Result> iterator){
+		DBUtils.iterator(this, sql, new Iterator<java.sql.ResultSet>() {
+
+			public void iterator(java.sql.ResultSet data) {
+				try {
+					iterator.iterator(new Result(data));
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	
 	public ResultSet select(SQL sql) {
@@ -82,7 +86,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable{
 	}
 	
 	public <T> T selectOne(Class<T> type, SQL sql){
-		return select(sql).getFirst(type);
+		return select(sql).getObject(0, type);
 	}
 	
 	public Select createSelect(){
@@ -92,10 +96,8 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable{
 	public <T> T getMaxValue(Class<T> type, Class<?> tableClass, String tableName,
 			String columnName) {
 		Select select = createSelect();
-		select.registerTableName(tableClass, tableName);
 		select.desc(tableClass, columnName);
-		Result result = select.getFirstResult();
-		return result.getValue(tableClass, columnName);
+		return select.getResultSet().getObject(0, type, tableName);
 	}
 	
 	public <T> T getMaxValue(Class<T> type, Class<?> tableClass,
@@ -166,8 +168,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable{
 		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
 		SQL sql = getSqlFormat().toSelectByIdSql(tableInfo, tName, params);
 		ResultSet resultSet = select(sql);
-		resultSet.registerClassTable(type, tName);
-		return resultSet.getFirst(type);
+		return resultSet.getObject(0, type, tName);
 	}
 	
 	public <T> List<T> getByIdListFromDB(Class<T> type, String tableName,
@@ -187,8 +188,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable{
 
 		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
 		ResultSet resultSet = select(getSqlFormat().toSelectByIdSql(tableInfo, tName, params));
-		resultSet.registerClassTable(type, tName);
-		return resultSet.getList(type);
+		return resultSet.getList(type, tName);
 	}
 	
 	public void execute(Collection<OperationBean> operationBeans){

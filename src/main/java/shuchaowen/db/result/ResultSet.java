@@ -4,9 +4,7 @@ import java.io.Serializable;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import shuchaowen.common.Logger;
 import shuchaowen.common.exception.NotFoundException;
@@ -17,10 +15,9 @@ import shuchaowen.db.TableInfo;
 
 public final class ResultSet implements Serializable {
 	private static final long serialVersionUID = -3199839587290797839L;
-	private Map<String, Map<String, Integer>> metaData;
-	private Column[] columns;
+	private MetaData metaData;
 	private List<Object[]> dataList;
-	
+
 	public ResultSet() {
 	};
 
@@ -34,59 +31,36 @@ public final class ResultSet implements Serializable {
 		append(resultSet, true);
 	}
 
-	private void append(java.sql.ResultSet resultSet, boolean checkColumn) throws SQLException {
+	private void append(java.sql.ResultSet resultSet, boolean checkColumn)
+			throws SQLException {
 		if (resultSet == null) {
 			return;
 		}
-		if (columns == null) {// 第一次
-			if (metaData == null) {
-				metaData = new HashMap<String, Map<String, Integer>>(4);
-			}
-
-			if (dataList == null) {
-				dataList = new ArrayList<Object[]>();
-			}
-
-			ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-			columns = new Column[resultSetMetaData.getColumnCount()];
-			Object[] values = new Object[columns.length];
-			for (int i = 0; i < columns.length; i++) {
-				Column column = new Column(resultSetMetaData.getColumnName(i), resultSetMetaData.getTableName(i));
-				values[i] = resultSet.getObject(i);
-				columns[i] = column;
-				Map<String, Integer> map = metaData.get(column.getTableName());
-				if (map == null) {
-					map = new HashMap<String, Integer>();
-					map.put(column.getName(), i);
-					metaData.put(column.getTableName(), map);
-				} else {
-					map.put(column.getName(), i);
-				}
-			}
-			dataList.add(values);
-		} else {
-			Object[] values = new Object[columns.length];
-			if (checkColumn) {
-				ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-				for (int i = 0; i < columns.length; i++) {
-					Map<String, Integer> map = metaData.get(resultSetMetaData.getTableName(i));
-					if (metaData == null) {
-						throw new NotFoundException(resultSetMetaData.getTableName(i) + "表在原ResultSet中找不到");
-					}
-
-					if (!map.containsKey(resultSetMetaData.getColumnName(i))) {
-						throw new NotFoundException(resultSetMetaData.getColumnName(i) + "字段在原ResultSet中找不到");
-					}
-
-					values[i] = resultSet.getObject(i);
-				}
-			} else {
-				for (int i = 0; i < columns.length; i++) {
-					values[i] = resultSet.getObject(i);
-				}
-			}
-			dataList.add(values);
+		if (metaData == null) {// 第一次
+			metaData = new MetaData(resultSet.getMetaData());
 		}
+
+		Object[] values = new Object[metaData.getColumns().length];
+		if (checkColumn) {
+			ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+			for (int i = 0; i < values.length; i++) {
+				int index = metaData.getColumnIndex(
+						resultSetMetaData.getColumnName(i),
+						resultSetMetaData.getTableName(i));
+				if (index == -1) {
+					throw new NotFoundException(
+							resultSetMetaData.getTableName(i) + "."
+									+ resultSetMetaData.getColumnName(i)
+									+ "在原ResultSet中找不到");
+				}
+				values[i] = resultSet.getObject(i);
+			}
+		} else {
+			for (int i = 0; i < metaData.getColumns().length; i++) {
+				values[i] = resultSet.getObject(i);
+			}
+		}
+		dataList.add(values);
 	}
 
 	public int size() {
@@ -97,46 +71,17 @@ public final class ResultSet implements Serializable {
 		return dataList;
 	}
 
-	/**
-	 * @param tableNameList
-	 * @param columnName
-	 * @return 不存在返回-1
-	 */
-	private int getColumnIndex(List<String> tableNameList, String columnName) {
-		for (String name : tableNameList) {
-			Map<String, Integer> map = metaData.get(name);
-			if (map == null) {
-				continue;
-			}
-
-			Integer index = map.get(columnName);
-			return index == null ? -1 : index;
-		}
-		return -1;
-	}
-
-	private int getColumnIndex(String columnName, String... tableNames) {
-		for (String name : tableNames) {
-			Map<String, Integer> map = metaData.get(name);
-			if (map == null) {
-				continue;
-			}
-
-			Integer index = map.get(columnName);
-			return index == null ? -1 : index;
-		}
-		return -1;
-	}
-
-	private Object wrapper(Object[] values, TableInfo tableInfo, String... tableName)
-			throws IllegalArgumentException, IllegalAccessException {
+	protected static Object wrapper(MetaData metaData, Object[] values, TableInfo tableInfo,
+			String... tableName) throws IllegalArgumentException,
+			IllegalAccessException {
 		Object o = tableInfo.getClassInfo().getBeanListenInterfaces();
 		for (ColumnInfo column : tableInfo.getColumns()) {
 			int index;
 			if (tableName == null || tableName.length == 0) {
-				index = getColumnIndex(column.getName(), tableInfo.getName());
+				index = metaData.getColumnIndex(column.getName(),
+						tableInfo.getName());
 			} else {
-				index = getColumnIndex(column.getName(), tableName);
+				index = metaData.getColumnIndex(column.getName(), tableName);
 			}
 
 			if (index == -1) {
@@ -155,7 +100,7 @@ public final class ResultSet implements Serializable {
 		}
 
 		for (ColumnInfo column : tableInfo.getTableColumns()) {
-			Object v = wrapper(values, DB.getTableInfo(column.getType()));
+			Object v = wrapper(metaData, values, DB.getTableInfo(column.getType()));
 			if (v != null) {
 				column.setValueToField(o, v);
 			}
@@ -163,19 +108,23 @@ public final class ResultSet implements Serializable {
 		return o;
 	}
 
-	private Object wrapper(Object[] values, TableInfo tableInfo, TableMapping tableMapping)
-			throws IllegalArgumentException, IllegalAccessException {
+	protected static Object wrapper(MetaData metaData, Object[] values, TableInfo tableInfo,
+			TableMapping tableMapping) throws IllegalArgumentException,
+			IllegalAccessException {
 		Object o = tableInfo.getClassInfo().getBeanListenInterfaces();
 		for (ColumnInfo column : tableInfo.getColumns()) {
 			int index;
 			if (tableMapping == null) {
-				index = getColumnIndex(column.getName(), tableInfo.getName());
+				index = metaData.getColumnIndex(column.getName(),
+						tableInfo.getName());
 			} else {
-				List<String> list = tableMapping.getTableNameList(tableInfo.getClassInfo().getClz());
+				List<String> list = tableMapping.getTableNameList(tableInfo
+						.getClassInfo().getClz());
 				if (list == null) {
-					index = getColumnIndex(column.getName(), tableInfo.getName());
+					index = metaData.getColumnIndex(column.getName(),
+							tableInfo.getName());
 				} else {
-					index = getColumnIndex(list, column.getName());
+					index = metaData.getColumnIndex(list, column.getName());
 				}
 			}
 
@@ -195,7 +144,8 @@ public final class ResultSet implements Serializable {
 		}
 
 		for (ColumnInfo column : tableInfo.getTableColumns()) {
-			Object v = wrapper(values, DB.getTableInfo(column.getType()), tableMapping);
+			Object v = wrapper(metaData, values, DB.getTableInfo(column.getType()),
+					tableMapping);
 			if (v != null) {
 				column.setValueToField(o, v);
 			}
@@ -204,8 +154,9 @@ public final class ResultSet implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> List<T> getTableBeanList(Class<T> type, TableMapping tableMapping)
-			throws IllegalArgumentException, IllegalAccessException {
+	private <T> List<T> getTableBeanList(Class<T> type,
+			TableMapping tableMapping) throws IllegalArgumentException,
+			IllegalAccessException {
 		if (metaData == null) {
 			return null;
 		}
@@ -217,7 +168,7 @@ public final class ResultSet implements Serializable {
 		TableInfo tableInfo = DB.getTableInfo(type);
 		List<T> list = new ArrayList<T>();
 		for (Object[] objs : dataList) {
-			list.add((T) wrapper(objs, tableInfo, tableMapping));
+			list.add((T) wrapper(metaData, objs, tableInfo, tableMapping));
 		}
 		return list;
 	}
@@ -236,7 +187,7 @@ public final class ResultSet implements Serializable {
 		TableInfo tableInfo = DB.getTableInfo(type);
 		List<T> list = new ArrayList<T>();
 		for (Object[] objs : dataList) {
-			list.add((T) wrapper(objs, tableInfo, tableName));
+			list.add((T) wrapper(metaData, objs, tableInfo, tableName));
 		}
 		return list;
 	}
@@ -276,14 +227,15 @@ public final class ResultSet implements Serializable {
 		if (index < 0 || index >= size()) {
 			return null;
 		}
-		
+
 		if (metaData == null) {
 			return null;
 		}
 
 		if (type.isArray()) {
 			return (T) dataList.get(index);
-		} else if (type.getName().startsWith("java") || ClassUtils.isBasicType(type)) {
+		} else if (type.getName().startsWith("java")
+				|| ClassUtils.isBasicType(type)) {
 			Object[] values = dataList.get(index);
 			if (values != null && values.length > 0) {
 				return (T) values[0];
@@ -291,7 +243,8 @@ public final class ResultSet implements Serializable {
 			return null;
 		} else {
 			try {
-				return (T) wrapper(dataList.get(index), DB.getTableInfo(type), tableMapping);
+				return (T) wrapper(metaData, dataList.get(index), DB.getTableInfo(type),
+						tableMapping);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -306,14 +259,15 @@ public final class ResultSet implements Serializable {
 		if (index < 0 || index >= size()) {
 			return null;
 		}
-		
+
 		if (metaData == null) {
 			return null;
 		}
 
 		if (type.isArray()) {
 			return (T) dataList.get(index);
-		} else if (type.getName().startsWith("java") || ClassUtils.isBasicType(type)) {
+		} else if (type.getName().startsWith("java")
+				|| ClassUtils.isBasicType(type)) {
 			Object[] values = dataList.get(index);
 			if (values != null && values.length > 0) {
 				return (T) values[0];
@@ -321,7 +275,8 @@ public final class ResultSet implements Serializable {
 			return null;
 		} else {
 			try {
-				return (T) wrapper(dataList.get(index), DB.getTableInfo(type), tableName);
+				return (T) wrapper(metaData, dataList.get(index), DB.getTableInfo(type),
+						tableName);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {

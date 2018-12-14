@@ -10,8 +10,10 @@ import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
+import shuchaowen.common.Iterator;
 import shuchaowen.db.AbstractDB;
-import shuchaowen.db.result.ResultSet;
+import shuchaowen.db.ConnectionSource;
+import shuchaowen.db.DBUtils;
 import shuchaowen.db.sql.SQL;
 
 public class JxlExport {
@@ -114,14 +116,22 @@ public class JxlExport {
 	}
 	
 	
-	public static void sqlResultSetToExcel(String title[], AbstractDB db, List<SQL> sqlList, OutputStream os, SqlExportRow exportRow)
+	public static void sqlResultSetToExcel(String title[], ConnectionSource connectionSource, List<SQL> sqlList, OutputStream os, SqlExportRow exportRow)
 			throws Exception {
 		// 创建Excel工作薄
 		WritableWorkbook wwb = Workbook.createWorkbook(os);
-		ResultSetToExeclRowCall rowCall = new ResultSetToExeclRowCall(wwb, title, exportRow);
+		final ResultSetToExeclRowCall rowCall = new ResultSetToExeclRowCall(wwb, title, exportRow);
 		for (SQL sql : sqlList) {
-			ResultSet resultSet = db.select(sql);
-			rowCall.format(resultSet);
+			DBUtils.iterator(connectionSource, sql, new Iterator<java.sql.ResultSet>() {
+				
+				public void iterator(java.sql.ResultSet data) {
+					try {
+						rowCall.format(data);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
 		}
 		// 写入数据
 		wwb.write();

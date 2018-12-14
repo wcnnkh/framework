@@ -3,23 +3,21 @@ package shuchaowen.db.storage;
 import java.util.HashMap;
 import java.util.Map;
 
+import shuchaowen.beans.BeanFieldListen;
+import shuchaowen.db.AbstractDB;
+import shuchaowen.db.TableInfo;
+import shuchaowen.db.storage.cache.Cache;
+
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtobufIOUtil;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
-import shuchaowen.beans.BeanFieldListen;
-import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.db.AbstractDB;
-import shuchaowen.db.TableInfo;
-import shuchaowen.db.result.Result;
-import shuchaowen.db.storage.cache.Cache;
-
 public class CacheUtils {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <T> T decode(Class<T> type, byte[] data) {
-		T t = Result.newInstance(ClassUtils.getClassInfo(type));
+		T t = TableInfo.newInstance(type);
 		Schema schema = RuntimeSchema.getSchema(type);
 		ProtostuffIOUtil.mergeFrom(data, t, schema);
 		if(t instanceof BeanFieldListen){

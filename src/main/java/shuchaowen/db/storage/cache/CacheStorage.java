@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import shuchaowen.common.Iterator;
 import shuchaowen.common.Logger;
 import shuchaowen.common.Multitask;
 import shuchaowen.common.transaction.AbstractTransaction;
@@ -19,7 +20,6 @@ import shuchaowen.db.OperationBean;
 import shuchaowen.db.TransactionContext;
 import shuchaowen.db.annoation.Table;
 import shuchaowen.db.result.Result;
-import shuchaowen.db.result.ResultIterator;
 import shuchaowen.db.sql.SQL;
 import shuchaowen.db.storage.Storage;
 import shuchaowen.memcached.Memcached;
@@ -41,7 +41,8 @@ public final class CacheStorage implements Storage {
 	public CacheStorage(AbstractDB db, Memcached memcached, String queueKey) {
 		this.db = db;
 		this.cache = new MemcachedCache(memcached);
-		this.mq = new MemcachedMQ<Collection<OperationBean>>(memcached, queueKey);
+		this.mq = new MemcachedMQ<Collection<OperationBean>>(memcached,
+				queueKey);
 		this.mq.consumer(new CacheAsyncConsumer(this));
 		this.mq.start();
 	}
@@ -54,10 +55,12 @@ public final class CacheStorage implements Storage {
 		this(db, redis, queueKey, Charset.forName("UTF-8"));
 	}
 
-	public CacheStorage(AbstractDB db, Redis redis, String queueKey, Charset charset) {
+	public CacheStorage(AbstractDB db, Redis redis, String queueKey,
+			Charset charset) {
 		this.db = db;
 		this.cache = new RedisCache(redis, charset);
-		this.mq = new RedisMQ<Collection<OperationBean>>(redis, queueKey, charset);
+		this.mq = new RedisMQ<Collection<OperationBean>>(redis, queueKey,
+				charset);
 		this.mq.consumer(new CacheAsyncConsumer(this));
 		this.mq.start();
 	}
@@ -82,12 +85,15 @@ public final class CacheStorage implements Storage {
 		return mq;
 	}
 
-	public void config(CacheType cacheType, int exp, boolean isAsync, Class<?>... tableClass) {
+	public void config(CacheType cacheType, int exp, boolean isAsync,
+			Class<?>... tableClass) {
 		config(new CacheConfig(cacheType, exp, isAsync), tableClass);
 	}
 
-	public void config(CacheType cacheType, boolean isAsync, Class<?>... tableClass) {
-		config(new CacheConfig(cacheType, CacheConfig.DATA_DEFAULT_EXP_TIME, isAsync), tableClass);
+	public void config(CacheType cacheType, boolean isAsync,
+			Class<?>... tableClass) {
+		config(new CacheConfig(cacheType, CacheConfig.DATA_DEFAULT_EXP_TIME,
+				isAsync), tableClass);
 	}
 
 	public void config(CacheConfig config, Class<?>... tableClass) {
@@ -112,7 +118,8 @@ public final class CacheStorage implements Storage {
 					break;
 				default:
 					try {
-						multitask.add(new LoadingThread(this, ClassUtils.forName(entry.getKey())));
+						multitask.add(new LoadingThread(this, ClassUtils
+								.forName(entry.getKey())));
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
@@ -128,14 +135,16 @@ public final class CacheStorage implements Storage {
 		}
 	}
 
-	public void destroy(){
+	public void destroy() {
 		mq.destroy();
 	}
 
 	protected CacheConfig getCacheConfig(Class<?> tableClass) {
-		CacheConfig cacheInfo = cacheConfigMap.get(ClassUtils.getProxyRealClassName(tableClass));
-		if(cacheInfo == null){
-			return defaultCacheConfig == null? CacheConfig.DEFAULT_CACHE_CONFIG:defaultCacheConfig;
+		CacheConfig cacheInfo = cacheConfigMap.get(ClassUtils
+				.getProxyRealClassName(tableClass));
+		if (cacheInfo == null) {
+			return defaultCacheConfig == null ? CacheConfig.DEFAULT_CACHE_CONFIG
+					: defaultCacheConfig;
 		}
 		return cacheInfo;
 	}
@@ -146,10 +155,12 @@ public final class CacheStorage implements Storage {
 		try {
 			switch (cacheInfo.getCacheType()) {
 			case lazy:
-				t = cache.getById(getDB(), false, cacheInfo.getExp(), type, params);
+				t = cache.getById(getDB(), false, cacheInfo.getExp(), type,
+						params);
 				break;
 			case keys:
-				t = cache.getById(getDB(), true, cacheInfo.getExp(), type, params);
+				t = cache.getById(getDB(), true, cacheInfo.getExp(), type,
+						params);
 			case full:
 				t = cache.getById(type, params);
 			default:
@@ -179,10 +190,10 @@ public final class CacheStorage implements Storage {
 
 	protected void loadCache(final Class<?> tableClass) {
 		final CacheConfig cacheInfo = getCacheConfig(tableClass);
-		getDB().iterator(tableClass, new ResultIterator() {
+		getDB().iterator(tableClass, new Iterator<Result>() {
 
-			public void next(Result result) {
-				Object bean = result.get(tableClass);
+			public void iterator(Result data) {
+				Object bean = data.getObject(tableClass);
 				try {
 					switch (cacheInfo.getCacheType()) {
 					case full:
@@ -214,14 +225,17 @@ public final class CacheStorage implements Storage {
 			}
 
 			Transaction transaction = null;
-			CacheConfig cacheConfig = getCacheConfig(operationBean.getBean().getClass());
+			CacheConfig cacheConfig = getCacheConfig(operationBean.getBean()
+					.getClass());
 			try {
 				switch (cacheConfig.getCacheType()) {
 				case lazy:
-					transaction = cache.opHotspot(operationBean, cacheConfig.getExp(), false);
+					transaction = cache.opHotspot(operationBean,
+							cacheConfig.getExp(), false);
 					break;
 				case keys:
-					transaction = cache.opHotspot(operationBean, cacheConfig.getExp(), true);
+					transaction = cache.opHotspot(operationBean,
+							cacheConfig.getExp(), true);
 					break;
 				case full:
 					transaction = cache.opByFull(operationBean);
@@ -235,23 +249,27 @@ public final class CacheStorage implements Storage {
 
 			if (transaction != null) {
 				if (cacheTransaction == null) {
-					cacheTransaction = new TransactionCollection(operationBeans.size());
+					cacheTransaction = new TransactionCollection(
+							operationBeans.size());
 				}
 				cacheTransaction.add(transaction);
 			}
 
 			if (cacheConfig.isAsync()) {
 				if (asyncList == null) {
-					asyncList = new ArrayList<OperationBean>(operationBeans.size());
+					asyncList = new ArrayList<OperationBean>(
+							operationBeans.size());
 				}
 
 				asyncList.add(operationBean);
 			} else {
 				if (synchronizationList == null) {
-					synchronizationList = new ArrayList<SQL>(operationBeans.size());
+					synchronizationList = new ArrayList<SQL>(
+							operationBeans.size());
 				}
 
-				synchronizationList.add(operationBean.getSql(getDB().getSqlFormat()));
+				synchronizationList.add(operationBean.getSql(getDB()
+						.getSqlFormat()));
 			}
 		}
 
@@ -261,10 +279,12 @@ public final class CacheStorage implements Storage {
 			}
 
 			if (synchronizationList != null) {
-				TransactionContext.getInstance().execute(getDB(), synchronizationList);
+				TransactionContext.getInstance().execute(getDB(),
+						synchronizationList);
 			}
 		} else {
-			TransactionContext.getInstance().execute(getDB(), synchronizationList, cacheTransaction);
+			TransactionContext.getInstance().execute(getDB(),
+					synchronizationList, cacheTransaction);
 		}
 
 		if (asyncList != null) {
@@ -284,8 +304,10 @@ class LoadingThread implements Runnable {
 
 	public void run() {
 		final String name = ClassUtils.getProxyRealClassName(tableClass);
-		Logger.info("RedisHotSpotCacheStorage", "loading [" + name + "] keys to cache");
+		Logger.info("RedisHotSpotCacheStorage", "loading [" + name
+				+ "] keys to cache");
 		cacheStorage.loadCache(tableClass);
-		Logger.info("RedisHotSpotCacheStorage", "loading [" + name + "] keys to cache success");
+		Logger.info("RedisHotSpotCacheStorage", "loading [" + name
+				+ "] keys to cache success");
 	}
 }

@@ -253,4 +253,21 @@ public final class TableInfo {
 			Logger.info("CGLIB", "register proxy class[" + clz.getName() + "]");
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T newInstance(Class<T> type){
+		Table table = type.getAnnotation(Table.class);
+		if(table == null){
+			try {
+				return type.newInstance();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}else{
+			return (T) ClassUtils.getClassInfo(type).newFieldListenInstance();
+		}
+	}
 }
