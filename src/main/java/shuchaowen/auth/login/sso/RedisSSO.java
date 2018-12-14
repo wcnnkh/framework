@@ -32,9 +32,9 @@ public class RedisSSO extends RedisSessionFactory implements SSO{
 	
 	@Override
 	public void cancelLogin(String sessionId) {
-		String uidStr = getRedis().get(getPrefix() + sessionId);
-		if(uidStr != null){
-			getRedis().delete(getPrefix() + uidStr);
+		String uid = getRedis().get(getPrefix() + sessionId);
+		if(uid != null){
+			getRedis().delete(getPrefix() + uid);
 		}
 		super.cancelLogin(sessionId);
 	}

@@ -1,11 +1,11 @@
 package shuchaowen.connection.http.entity;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.CharBuffer;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -13,10 +13,9 @@ import shuchaowen.connection.Request;
 import shuchaowen.connection.RequestEntity;
 import shuchaowen.connection.http.entity.parameter.FormParameter;
 
-public class FormRequestEntity extends ArrayList<FormParameter> implements RequestEntity{
-	private static final long serialVersionUID = 1L;
-	private static final CharBuffer JION = CharBuffer.allocate(1).put('&');
+public class FormRequestEntity implements RequestEntity{
 	private final Charset charset;
+	private List<FormParameter> list;
 
 	public FormRequestEntity(Charset charset) {
 		this.charset = charset;
@@ -31,10 +30,18 @@ public class FormRequestEntity extends ArrayList<FormParameter> implements Reque
 			return this;
 		}
 		
-		add(new FormParameter(key, value.toString(), charset));
+		if(list == null){
+			list = new ArrayList<FormParameter>();
+		}
+		
+		list.add(new FormParameter(key, value.toString(), charset));
 		return this;
 	}
-
+	
+	public Iterator<FormParameter> iterator(){
+		return list == null? (new ArrayList<FormParameter>()).iterator():list.iterator();
+	}
+	
 	public void write(Request request) throws IOException {
 		if(request.getRequestProperty("Charset") == null){
 			request.setRequestProperty("Charset", charset.name());
@@ -44,13 +51,19 @@ public class FormRequestEntity extends ArrayList<FormParameter> implements Reque
 			request.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + charset.name());
 		}
 		
-		OutputStream out = request.getOutputStream();
-		Iterator<FormParameter> iterator = iterator();
-		while(iterator.hasNext()){
-			iterator.next().write(out);
-			if(iterator.hasNext()){
-				out.write(charset.encode(JION).array());
+		if(list != null){
+			Iterator<FormParameter> iterator = list.iterator();
+			StringBuilder sb = new StringBuilder();
+			while(iterator.hasNext()){
+				FormParameter formParameter = iterator.next();
+				sb.append(formParameter.getKey());
+				sb.append("=");
+				sb.append(URLEncoder.encode(formParameter.getValue(), charset.name()));
+				if(iterator.hasNext()){
+					sb.append("&");
+				}
 			}
+			request.getOutputStream().write(sb.toString().getBytes(charset));
 		}
 	}
 	
