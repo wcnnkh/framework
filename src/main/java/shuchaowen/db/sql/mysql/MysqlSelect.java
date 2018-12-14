@@ -206,15 +206,13 @@ public class MysqlSelect extends Select{
 	public long count() {
 		SQL sql = toSQL("count(*)", false);
 		ResultSet resultSet = db.select(sql);
-		Long count = resultSet.getFirst(Long.class);
+		Long count = resultSet.getObject(0, Long.class);
 		return count == null? 0:count;
 	}
 
 	@Override
 	public ResultSet getResultSet() {
-		ResultSet resultSet = db.select(toSQL("*", true));
-		resultSet.setTableMapping(getTableMapping());
-		return resultSet;
+		return db.select(toSQL("*", true));
 	}
 
 	@Override
@@ -234,9 +232,7 @@ public class MysqlSelect extends Select{
 		args[args.length - 2] = begin;
 		args[args.length - 1] = limit;
 		
-		ResultSet resultSet = db.select(new SimpleSQL(sql.getSql() + " limit ?,?", args));
-		resultSet.setTableMapping(getTableMapping());
-		return resultSet;
+		return db.select(new SimpleSQL(sql.getSql() + " limit ?,?", args));
 	}
 
 	@Override

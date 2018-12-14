@@ -21,7 +21,6 @@ import shuchaowen.db.result.ResultSet;
 
 public abstract class Select{
 	private Map<String, String> associationWhereMap;
-	private TableMapping tableMapping;
 	private HashSet<String> selectTableSet;
 	protected AbstractDB db;
 	
@@ -62,15 +61,6 @@ public abstract class Select{
 		return sb.toString();
 	}
 	
-	public Select registerTableName(Class<?> tableClass, String tableName){
-		if(tableMapping == null){
-			tableMapping = new TableMapping();
-		}
-		
-		tableMapping.register(tableClass, tableName);
-		return this;
-	}
-	
 	public String getSQLColumn(Class<?> tableClass, String name){
 		TableInfo tableInfo = DB.getTableInfo(tableClass);
 		return tableInfo.getColumnInfo(name).getSQLName(getTableName(tableClass));
@@ -90,14 +80,6 @@ public abstract class Select{
 			name = tableInfo.getName();
 		}
 		return name;
-	}
-	
-	public TableMapping getTableMapping() {
-		return tableMapping;
-	}
-
-	public void setTableMapping(TableMapping tableMapping) {
-		this.tableMapping = tableMapping;
 	}
 
 	protected void addSelectTable(String tableName){
@@ -274,7 +256,7 @@ public abstract class Select{
 	public abstract long count();
 	
 	public <T> T getFirst(Class<T> type){
-		return getFirstResult().get(type);
+		return getResultSet().getObject(0, type);
 	}
 	
 	public Result getFirstResult(){

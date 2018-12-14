@@ -1,7 +1,7 @@
 package shuchaowen.excel.export;
 
-import shuchaowen.db.result.Result;
+import shuchaowen.db.result.ResultSet;
 
 public interface SqlExportRow{
-	public String[] exportRow(Result result);
+	public String[] exportRow(ResultSet resultSet, int index);
 }
