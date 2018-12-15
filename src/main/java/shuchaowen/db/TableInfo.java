@@ -255,11 +255,10 @@ public final class TableInfo {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(Class<T> type){
-		Table table = type.getAnnotation(Table.class);
+	public <T> T newInstance(){
 		if(table == null){
 			try {
-				return type.newInstance();
+				return (T) classInfo.getClz().newInstance();
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -267,7 +266,7 @@ public final class TableInfo {
 			}
 			return null;
 		}else{
-			return (T) ClassUtils.getClassInfo(type).newFieldListenInstance();
+			return (T) classInfo.newFieldListenInstance();
 		}
 	}
 }

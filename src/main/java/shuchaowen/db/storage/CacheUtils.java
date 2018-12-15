@@ -5,6 +5,7 @@ import java.util.Map;
 
 import shuchaowen.beans.BeanFieldListen;
 import shuchaowen.db.AbstractDB;
+import shuchaowen.db.DB;
 import shuchaowen.db.TableInfo;
 import shuchaowen.db.storage.cache.Cache;
 
@@ -17,7 +18,7 @@ import com.dyuproject.protostuff.runtime.RuntimeSchema;
 public class CacheUtils {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <T> T decode(Class<T> type, byte[] data) {
-		T t = TableInfo.newInstance(type);
+		T t = DB.getTableInfo(type).newInstance();
 		Schema schema = RuntimeSchema.getSchema(type);
 		ProtostuffIOUtil.mergeFrom(data, t, schema);
 		if(t instanceof BeanFieldListen){
