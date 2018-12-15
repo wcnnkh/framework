@@ -38,12 +38,13 @@ public final class ResultSet implements Serializable {
 		}
 		if (metaData == null) {// 第一次
 			metaData = new MetaData(resultSet.getMetaData());
+			dataList = new ArrayList<Object[]>();
 		}
-
+		
 		Object[] values = new Object[metaData.getColumns().length];
 		if (checkColumn) {
 			ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-			for (int i = 0; i < values.length; i++) {
+			for (int i = 1; i <= values.length; i++) {
 				int index = metaData.getColumnIndex(
 						resultSetMetaData.getColumnName(i),
 						resultSetMetaData.getTableName(i));
@@ -53,11 +54,11 @@ public final class ResultSet implements Serializable {
 									+ resultSetMetaData.getColumnName(i)
 									+ "在原ResultSet中找不到");
 				}
-				values[i] = resultSet.getObject(i);
+				values[i - 1] = resultSet.getObject(i);
 			}
 		} else {
-			for (int i = 0; i < metaData.getColumns().length; i++) {
-				values[i] = resultSet.getObject(i);
+			for (int i = 1; i <= values.length; i++) {
+				values[i - 1] = resultSet.getObject(i);
 			}
 		}
 		dataList.add(values);
@@ -71,9 +72,9 @@ public final class ResultSet implements Serializable {
 		return dataList;
 	}
 
-	protected static Object wrapper(MetaData metaData, Object[] values, TableInfo tableInfo,
-			String... tableName) throws IllegalArgumentException,
-			IllegalAccessException {
+	protected static Object wrapper(MetaData metaData, Object[] values,
+			TableInfo tableInfo, String... tableName)
+			throws IllegalArgumentException, IllegalAccessException {
 		Object o = tableInfo.getClassInfo().getBeanListenInterfaces();
 		for (ColumnInfo column : tableInfo.getColumns()) {
 			int index;
@@ -100,7 +101,8 @@ public final class ResultSet implements Serializable {
 		}
 
 		for (ColumnInfo column : tableInfo.getTableColumns()) {
-			Object v = wrapper(metaData, values, DB.getTableInfo(column.getType()));
+			Object v = wrapper(metaData, values,
+					DB.getTableInfo(column.getType()));
 			if (v != null) {
 				column.setValueToField(o, v);
 			}
@@ -108,9 +110,9 @@ public final class ResultSet implements Serializable {
 		return o;
 	}
 
-	protected static Object wrapper(MetaData metaData, Object[] values, TableInfo tableInfo,
-			TableMapping tableMapping) throws IllegalArgumentException,
-			IllegalAccessException {
+	protected static Object wrapper(MetaData metaData, Object[] values,
+			TableInfo tableInfo, TableMapping tableMapping)
+			throws IllegalArgumentException, IllegalAccessException {
 		Object o = tableInfo.getClassInfo().getBeanListenInterfaces();
 		for (ColumnInfo column : tableInfo.getColumns()) {
 			int index;
@@ -144,8 +146,8 @@ public final class ResultSet implements Serializable {
 		}
 
 		for (ColumnInfo column : tableInfo.getTableColumns()) {
-			Object v = wrapper(metaData, values, DB.getTableInfo(column.getType()),
-					tableMapping);
+			Object v = wrapper(metaData, values,
+					DB.getTableInfo(column.getType()), tableMapping);
 			if (v != null) {
 				column.setValueToField(o, v);
 			}
@@ -243,8 +245,8 @@ public final class ResultSet implements Serializable {
 			return null;
 		} else {
 			try {
-				return (T) wrapper(metaData, dataList.get(index), DB.getTableInfo(type),
-						tableMapping);
+				return (T) wrapper(metaData, dataList.get(index),
+						DB.getTableInfo(type), tableMapping);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -275,8 +277,8 @@ public final class ResultSet implements Serializable {
 			return null;
 		} else {
 			try {
-				return (T) wrapper(metaData, dataList.get(index), DB.getTableInfo(type),
-						tableName);
+				return (T) wrapper(metaData, dataList.get(index),
+						DB.getTableInfo(type), tableName);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {

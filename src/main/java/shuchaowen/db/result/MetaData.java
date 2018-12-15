@@ -7,17 +7,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class MetaData implements Serializable{
+public final class MetaData implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private Map<String, Map<String, Integer>> metaData = new HashMap<String, Map<String,Integer>>(4);
+	private HashMap<String, Map<String, Integer>> metaData = new HashMap<String, Map<String, Integer>>(
+			4);
 	private Column[] columns;
-	
-	protected MetaData(){};
-	
-	protected MetaData(ResultSetMetaData resultSetMetaData) throws SQLException{
+
+	protected MetaData() {
+	};
+
+	protected MetaData(ResultSetMetaData resultSetMetaData) throws SQLException {
 		columns = new Column[resultSetMetaData.getColumnCount()];
 		for (int i = 0; i < columns.length; i++) {
-			Column column = new Column(resultSetMetaData.getColumnName(i), resultSetMetaData.getTableName(i));
+			Column column = new Column(resultSetMetaData.getColumnName(i + 1),
+					resultSetMetaData.getTableName(i + 1));
 			columns[i] = column;
 			Map<String, Integer> map = metaData.get(column.getTableName());
 			if (map == null) {
@@ -37,17 +40,17 @@ public final class MetaData implements Serializable{
 	public Column[] getColumns() {
 		return columns;
 	}
-	
+
 	/**
 	 * @param tableNameList
 	 * @param columnName
 	 * @return 不存在返回-1
 	 */
 	public int getColumnIndex(List<String> tableNameList, String columnName) {
-		if(tableNameList == null){
+		if (tableNameList == null) {
 			return -1;
 		}
-		
+
 		for (String name : tableNameList) {
 			Map<String, Integer> map = metaData.get(name);
 			if (map == null) {
@@ -61,10 +64,10 @@ public final class MetaData implements Serializable{
 	}
 
 	public int getColumnIndex(String columnName, String... tableNames) {
-		if(tableNames == null){
+		if (tableNames == null) {
 			return -1;
 		}
-		
+
 		for (String name : tableNames) {
 			Map<String, Integer> map = metaData.get(name);
 			if (map == null) {
