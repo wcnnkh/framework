@@ -1,11 +1,11 @@
-package shuchaowen.web.servlet.view.result;
+package shuchaowen.web.servlet.view.common;
 
 import java.io.Serializable;
 
 import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.web.servlet.view.AbstractTextView;
-import shuchaowen.web.servlet.view.result.enums.Code;
+import shuchaowen.web.servlet.view.common.enums.Code;
 
 public class Result extends AbstractTextView implements Serializable{
 	private static final long serialVersionUID = 1L;

@@ -1,4 +1,4 @@
-package shuchaowen.web.servlet.view.result;
+package shuchaowen.web.servlet.view.common;
 
 import java.util.HashMap;
 import java.util.Map;

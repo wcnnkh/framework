@@ -1,4 +1,4 @@
-package shuchaowen.web.servlet.view.result.enums;
+package shuchaowen.web.servlet.view.common.enums;
 
 public enum Code {
 	login_status_expired(-1, "Your login status has expired or you have logged in elsewhere"),

@@ -1,4 +1,4 @@
-package shuchaowen.web.servlet.view.result;
+package shuchaowen.web.servlet.view.common;
 
 import com.alibaba.fastjson.JSONObject;
 
