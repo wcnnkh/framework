@@ -207,7 +207,7 @@ public class HttpServerApplication extends CommonApplication {
 		try {
 			Action action = searchAction.getAction(request);
 			if (action == null) {
-				sendError(request, request.getResponse(), 404, "not found page");
+				sendError(request, request.getResponse(), 404, "not found action");
 				return;
 			}
 
