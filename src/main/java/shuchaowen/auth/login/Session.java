@@ -31,10 +31,10 @@ public class Session implements Serializable{
 	}
 	
 	public long getLongUid(){
-		return Long.parseLong(uid);
+		return Long.parseLong(getUid());
 	}
 	
 	public int getIntegerUid(){
-		return Integer.parseInt(uid);
+		return Integer.parseInt(getUid());
 	}
 }

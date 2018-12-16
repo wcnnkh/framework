@@ -4,7 +4,6 @@ import shuchaowen.beans.annotaion.Service;
 import shuchaowen.beans.property.PropertiesFactory;
 import shuchaowen.common.exception.AlreadyExistsException;
 import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.common.utils.StringUtils;
 
 /**
  * 此类只要类是存在的不可能出现获取不到的情况
@@ -32,23 +31,6 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 				if (!service.value().equals("")) {
 					if(!registerNameMapping(service.value(), clz.getName())){
 						throw new AlreadyExistsException(service.value());
-					}
-				}
-			}
-			
-			shuchaowen.beans.annotaion.Bean bean = clz.getAnnotation(shuchaowen.beans.annotaion.Bean.class);
-			if(bean != null){
-				if(!StringUtils.isNull(bean.id())){
-					if(!registerNameMapping(bean.id(), clz.getName())){
-						throw new AlreadyExistsException(bean.id());
-					}
-				}
-				
-				if(bean.names() != null){
-					for(String name : bean.names()){
-						if(!registerNameMapping(name, clz.getName())){
-							throw new AlreadyExistsException(name);
-						}
 					}
 				}
 			}

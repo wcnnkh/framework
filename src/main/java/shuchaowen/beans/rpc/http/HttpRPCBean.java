@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 
-import shuchaowen.beans.AbstractInterfaceProxyBean;
 import shuchaowen.common.io.decoder.JavaObjectDecoder;
 import shuchaowen.common.reflect.Invoker;
 import shuchaowen.common.utils.SignUtils;

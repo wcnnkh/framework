@@ -15,9 +15,9 @@ import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.common.io.decoder.StringDecoder;
 import shuchaowen.web.servlet.Request;
-import shuchaowen.web.servlet.RequestWrapper;
+import shuchaowen.web.servlet.RequestParameter;
 
-public class RequestFormat extends RequestWrapper {
+public class RequestFormat extends RequestParameter {
 	public RequestFormat(Request request) {
 		super(request);
 	}

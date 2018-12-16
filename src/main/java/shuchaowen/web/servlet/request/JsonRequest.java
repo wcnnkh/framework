@@ -6,19 +6,19 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-
-import shuchaowen.beans.BeanFactory;
 import shuchaowen.common.Logger;
 import shuchaowen.common.utils.XUtils;
 import shuchaowen.web.servlet.Request;
+import shuchaowen.web.servlet.bean.RequestBeanFactory;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 public class JsonRequest extends Request{
 	private JSONObject json;
 
-	public JsonRequest(BeanFactory beanFactory, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
-		super(beanFactory, httpServletRequest, httpServletResponse, isDebug);
+	public JsonRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
+		super(requestBeanFactory, httpServletRequest, httpServletResponse, isDebug);
 		BufferedReader br = null;
 		StringBuilder sb = new StringBuilder();
 		String line;

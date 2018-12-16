@@ -303,7 +303,7 @@ public final class BeanUtils {
 			}
 		}
 	}
-
+	
 	private static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) {
 		Autowrite s = field.getField().getAnnotation(Autowrite.class);
 		if (s != null) {

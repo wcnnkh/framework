@@ -1,4 +1,4 @@
-package shuchaowen.beans;
+package shuchaowen.web.servlet.bean;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.cglib.proxy.Enhancer;
+import shuchaowen.beans.BeanFactory;
+import shuchaowen.beans.BeanMethod;
+import shuchaowen.beans.BeanUtils;
+import shuchaowen.beans.NoArgumentBeanMethod;
 import shuchaowen.beans.annotaion.Destroy;
 import shuchaowen.beans.annotaion.InitMethod;
 import shuchaowen.beans.annotaion.Retry;
@@ -16,37 +20,29 @@ import shuchaowen.common.ClassInfo;
 import shuchaowen.common.FieldInfo;
 import shuchaowen.common.exception.BeansException;
 import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.common.utils.StringUtils;
 import shuchaowen.db.annoation.Table;
+import shuchaowen.web.servlet.Request;
 
-public class AnnotationBean implements Bean {
+public final class AnnotationRequestBean implements RequestBean {
 	private final BeanFactory beanFactory;
 	private final ClassInfo classInfo;
 	private final Class<?> type;
 	private final String id;
-	private final boolean singleton;
 	private Constructor<?> constructor;
 	private final List<Method> initMethodList = new ArrayList<Method>();
 	private final List<Method> destroyMethodList = new ArrayList<Method>();
 	private final boolean proxy;
-	private String[] names;
-	private String factoryMethodName;
-	private Method factoryMethod;
 	private Enhancer enhancer;
 	private final PropertiesFactory propertiesFactory;
 
-	public AnnotationBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type) throws Exception {
+	public AnnotationRequestBean(BeanFactory beanFactory,
+			PropertiesFactory propertiesFactory, Class<?> type)
+			throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
 		this.classInfo = ClassUtils.getClassInfo(type);
-		this.singleton = isSignleton(type);
 		this.propertiesFactory = propertiesFactory;
-		
 		this.id = ClassUtils.getProxyRealClassName(type);
-		shuchaowen.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.beans.annotaion.Bean.class);
-		if (bean != null) {
-			this.factoryMethodName = bean.factoryMethod();
-		}
 
 		Class<?> tempClz = type;
 		for (Method method : tempClz.getDeclaredMethods()) {
@@ -68,6 +64,27 @@ public class AnnotationBean implements Bean {
 		}
 
 		this.proxy = checkProxy(type);
+
+		if (this.constructor == null) {
+			try {
+				this.constructor = type.getDeclaredConstructor();// 不用考虑并发
+			} catch (NoSuchMethodException e) {
+			} catch (SecurityException e) {
+			}
+		}
+
+		if (this.constructor == null) {
+			try {
+				this.constructor = type.getDeclaredConstructor(Request.class);
+			} catch (NoSuchMethodException e) {
+			} catch (SecurityException e) {
+			}
+		}
+
+		if (this.constructor == null) {
+			throw new BeansException("not found constructor");
+		}
+		enhancer = classInfo.createEnhancer(null, null);
 	}
 
 	public static List<BeanMethod> getInitMethodList(Class<?> type) {
@@ -131,7 +148,8 @@ public class AnnotationBean implements Bean {
 	}
 
 	public static boolean isSignleton(Class<?> type) {
-		shuchaowen.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.beans.annotaion.Bean.class);
+		shuchaowen.beans.annotaion.Bean bean = type
+				.getAnnotation(shuchaowen.beans.annotaion.Bean.class);
 		boolean b = true;
 		if (bean != null) {
 			b = bean.singleton();
@@ -142,10 +160,6 @@ public class AnnotationBean implements Bean {
 			b = table == null;
 		}
 		return b;
-	}
-
-	public boolean isSingleton() {
-		return this.singleton;
 	}
 
 	public boolean isProxy() {
@@ -160,60 +174,22 @@ public class AnnotationBean implements Bean {
 		return this.type;
 	}
 
-	private Enhancer getProxyEnhancer() {
-		if (enhancer == null) {
-			enhancer = classInfo.createEnhancer(null, null);
-		}
-		return enhancer;
-	}
-
 	@SuppressWarnings("unchecked")
-	public <T> T newInstance() {
-		if (constructor == null) {
-			try {
-				this.constructor = type.getDeclaredConstructor();// 不用考虑并发
-
-				if (factoryMethod == null) {
-					if (!StringUtils.isNull(factoryMethodName)) {
-						factoryMethod = type.getMethod(factoryMethodName);
-					}
+	public <T> T newInstance(Request request) {
+		Object bean;
+		try {
+			if (isProxy()) {
+				bean = constructor.getParameterCount() == 0 ? enhancer.create()
+						: enhancer.create(constructor.getParameterTypes(),
+								new Object[] { request });
+			} else {
+				if (constructor.getParameterCount() == 0) {
+					bean = constructor.newInstance();
+				} else {
+					bean = constructor.newInstance(request);
 				}
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
 			}
-		}
-
-		Object bean;
-		try {
-			if (isProxy()) {
-				Enhancer enhancer = getProxyEnhancer();
-				bean = enhancer.create();
-			} else {
-				bean = constructor.newInstance();
-			}
-
-			return (T) (factoryMethod == null ? bean
-					: factoryMethod.invoke(Modifier.isStatic(factoryMethod.getModifiers()) ? null : bean));
-		} catch (Exception e) {
-			throw new BeansException(e);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {
-		Object bean;
-		try {
-			if (isProxy()) {
-				Enhancer enhancer = getProxyEnhancer();
-				bean = enhancer.create(parameterTypes, args);
-			} else {
-				bean = type.getDeclaredConstructor(parameterTypes).newInstance(args);
-			}
-
-			return (T) (factoryMethod == null ? bean
-					: factoryMethod.invoke(Modifier.isStatic(factoryMethod.getModifiers()) ? null : bean));
+			return (T) bean;
 		} catch (Exception e) {
 			throw new BeansException(e);
 		}
@@ -226,8 +202,9 @@ public class AnnotationBean implements Bean {
 				if (Modifier.isStatic(field.getField().getModifiers())) {
 					continue;
 				}
-				
-				BeanUtils.autoWrite(classInfo.getClz(), beanFactory, propertiesFactory, bean, field);
+
+				BeanUtils.autoWrite(classInfo.getClz(), beanFactory,
+						propertiesFactory, bean, field);
 			}
 			classInfo = classInfo.getSuperInfo();
 		}
@@ -258,6 +235,6 @@ public class AnnotationBean implements Bean {
 	}
 
 	public String[] getNames() {
-		return names;
+		return null;
 	}
 }

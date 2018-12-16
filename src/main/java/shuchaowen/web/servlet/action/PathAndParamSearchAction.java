@@ -31,7 +31,7 @@ public class PathAndParamSearchAction implements SearchAction{
 		return sb.toString();
 	}
 
-	public void init(Collection<Class<?>> classList) throws Throwable {
+	public void init(Collection<Class<?>> classList) throws Exception {
 		for(Class<?> clz : classList){
 			Deprecated d = clz.getAnnotation(Deprecated.class);
 			if(d != null){
@@ -86,7 +86,7 @@ public class PathAndParamSearchAction implements SearchAction{
 		}
 	}
 
-	public Action getAction(Request request) throws Throwable {
+	public Action getAction(Request request) throws Exception {
 		if(key == null){
 			return null;
 		}

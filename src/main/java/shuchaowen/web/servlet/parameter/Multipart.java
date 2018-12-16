@@ -18,11 +18,11 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
-import shuchaowen.web.servlet.RequestWrapper;
+import shuchaowen.web.servlet.RequestParameter;
 import shuchaowen.common.Logger;
 import shuchaowen.web.servlet.Request;
 
-public class Multipart extends RequestWrapper{
+public class Multipart extends RequestParameter{
 	private Map<String, List<String>> paramMap = new HashMap<String, List<String>>();
 	private Map<String, List<FileItem>> fileItemMap = new HashMap<String, List<FileItem>>();
 	private List<String> keys = new ArrayList<String>();

@@ -26,7 +26,7 @@ public class PathSearchAction implements SearchAction {
 	}
 
 	private Action getServletPathAndMethodAction(Request request) {
-		Map<String, Action> map = actionMap.get(request.getPath());
+		Map<String, Action> map = actionMap.get(request.getServletPath());
 		if (map == null) {
 			return null;
 		}
@@ -34,10 +34,10 @@ public class PathSearchAction implements SearchAction {
 		return map.get(request.getMethod());
 	}
 
-	public Action getAction(Request request) throws Throwable {
+	public Action getAction(Request request) throws Exception {
 		Action action = getServletPathAndMethodAction(request);
 		if (action == null && enableResutl) {
-			String[] pathArr = request.getPath().split("/");
+			String[] pathArr = request.getServletPath().split("/");
 			boolean isExist = false;
 			Map<String, String> valueMap = null;
 			for (RestUrlInfo restUrl : restUrlList) {
@@ -79,8 +79,8 @@ public class PathSearchAction implements SearchAction {
 		}
 		return action;
 	}
-	
-	private static String getExistActionErrMsg(Action action, Action oldAction){
+
+	private static String getExistActionErrMsg(Action action, Action oldAction) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("存在同样的controller[");
 		sb.append(action.toString());
@@ -90,7 +90,7 @@ public class PathSearchAction implements SearchAction {
 		return sb.toString();
 	}
 
-	public void init(Collection<Class<?>> classList) throws Throwable {
+	public void init(Collection<Class<?>> classList) throws Exception {
 		for (Class<?> clz : classList) {
 			Controller clzController = clz.getAnnotation(Controller.class);
 			if (clzController == null) {
@@ -103,15 +103,18 @@ public class PathSearchAction implements SearchAction {
 					continue;
 				}
 
-				Controller methodController = method.getAnnotation(Controller.class);
+				Controller methodController = method
+						.getAnnotation(Controller.class);
 				if (methodController == null) {
 					continue;
 				}
 
-				String allPath = XUtils.mergePath("/", clzController.value(), methodController.value());
+				String allPath = XUtils.mergePath("/", clzController.value(),
+						methodController.value());
 				String[] requestPathArr = allPath.split("/");
 				Map<Integer, String> resultKeyMap = new HashMap<Integer, String>();
-				StringBuilder newRequestPath = new StringBuilder(allPath.length());
+				StringBuilder newRequestPath = new StringBuilder(
+						allPath.length());
 				for (int i = 0; i < requestPathArr.length; i++) {
 					String str = requestPathArr[i];
 					if (str.startsWith("{") && str.endsWith("}")) {
@@ -141,10 +144,12 @@ public class PathSearchAction implements SearchAction {
 					map = new HashMap<String, Action>();
 				}
 
-				shuchaowen.connection.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
+				shuchaowen.connection.http.enums.Method[] types = MethodAction
+						.mergeRequestType(clz, method);
 				for (shuchaowen.connection.http.enums.Method type : types) {
 					if (map.containsKey(type.name())) {
-						throw new AlreadyExistsException(getExistActionErrMsg(action, map.get(type.name())));
+						throw new AlreadyExistsException(getExistActionErrMsg(
+								action, map.get(type.name())));
 					}
 					map.put(type.name(), action);
 					actionMap.put(allPath, map);

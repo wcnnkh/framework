@@ -1,4 +1,4 @@
-package shuchaowen.beans;
+package shuchaowen.beans.rpc.http;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -6,15 +6,18 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import shuchaowen.beans.Bean;
+import shuchaowen.beans.BeanMethod;
+import shuchaowen.beans.BeanUtils;
+import shuchaowen.beans.NoArgumentBeanMethod;
 import shuchaowen.beans.annotaion.Destroy;
 import shuchaowen.beans.annotaion.InitMethod;
 import shuchaowen.beans.annotaion.Retry;
 import shuchaowen.common.exception.NotSupportException;
 import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.common.utils.StringUtils;
 import shuchaowen.db.annoation.Table;
 
-public abstract class AbstractInterfaceProxyBean implements Bean {
+abstract class AbstractInterfaceProxyBean implements Bean {
 	private final Class<?> type;
 	private final String id;
 	private final List<Method> initMethodList = new ArrayList<Method>();
@@ -23,13 +26,7 @@ public abstract class AbstractInterfaceProxyBean implements Bean {
 
 	public AbstractInterfaceProxyBean(Class<?> type) throws Exception {
 		this.type = type;
-		shuchaowen.beans.annotaion.Bean bean = type.getAnnotation(shuchaowen.beans.annotaion.Bean.class);
-		if (bean != null) {
-			this.id = StringUtils.isNull(bean.id()) ? ClassUtils.getProxyRealClassName(type) : bean.id();
-			this.names = bean.names();
-		} else {
-			this.id = ClassUtils.getProxyRealClassName(type);
-		}
+		this.id = ClassUtils.getProxyRealClassName(type);
 
 		Class<?> tempClz = type;
 		for (Method method : tempClz.getDeclaredMethods()) {

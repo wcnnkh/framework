@@ -3,6 +3,7 @@ package shuchaowen.common;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.common.utils.StringUtils;
@@ -125,5 +126,13 @@ public final class FieldInfo {
 	 */
 	public void forceSet(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException {
 		field.set(obj, value);
+	}
+	
+	public boolean isStatic(){
+		return Modifier.isStatic(field.getModifiers());
+	}
+	
+	public boolean isFinal(){
+		return Modifier.isFinal(field.getModifiers());
 	}
 }

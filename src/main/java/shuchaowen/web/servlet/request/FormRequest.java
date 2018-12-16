@@ -8,13 +8,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSONObject;
-
-import shuchaowen.beans.BeanFactory;
 import shuchaowen.common.Logger;
 import shuchaowen.common.utils.StringUtils;
 import shuchaowen.web.servlet.Request;
 import shuchaowen.web.servlet.action.PathSearchAction;
+import shuchaowen.web.servlet.bean.RequestBeanFactory;
+
+import com.alibaba.fastjson.JSONObject;
 
 public class FormRequest extends Request {
 	private static final String GET_DEFAULT_CHARSET_NAME = "ISO-8859-1";
@@ -22,10 +22,10 @@ public class FormRequest extends Request {
 	private final boolean cookieValue;
 
 	@SuppressWarnings("unchecked")
-	public FormRequest(BeanFactory beanFactory, HttpServletRequest 
+	public FormRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest 
 			httpServletRequest, HttpServletResponse httpServletResponse,
 			boolean isDebug, boolean cookieValue) throws IOException {
-		super(beanFactory, httpServletRequest, httpServletResponse, isDebug);
+		super(requestBeanFactory, httpServletRequest, httpServletResponse, isDebug);
 		this.cookieValue = cookieValue;
 		Object map = getAttribute(PathSearchAction.RESTURL_PATH_PARAMETER);
 		if (map != null) {

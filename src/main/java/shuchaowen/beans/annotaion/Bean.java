@@ -10,8 +10,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Bean {
-	public String id() default "";
-	public String[] names() default {};
 	public boolean singleton() default true;
 	public String factoryMethod() default "";
 }

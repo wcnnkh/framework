@@ -14,12 +14,12 @@ public class DefaultSearchAction implements SearchAction{
 		this.pathAndParamSearchAction = new PathAndParamSearchAction(beanFactory, actionKey);
 	}
 	
-	public void init(Collection<Class<?>> classList) throws Throwable {
+	public void init(Collection<Class<?>> classList) throws Exception {
 		pathSearchAction.init(classList);
 		pathAndParamSearchAction.init(classList);
 	}
 
-	public Action getAction(Request request) throws Throwable {
+	public Action getAction(Request request) throws Exception {
 		Action action = pathAndParamSearchAction.getAction(request);
 		if(action == null){
 			action = pathSearchAction.getAction(request);

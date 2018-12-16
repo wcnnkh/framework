@@ -1,7 +1,6 @@
 package shuchaowen.web.servlet;
 
 import java.io.IOException;
-import java.util.Map.Entry;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -10,112 +9,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import shuchaowen.beans.Bean;
-import shuchaowen.beans.BeanFactory;
-import shuchaowen.common.ClassInfo;
-import shuchaowen.common.FieldInfo;
-import shuchaowen.common.utils.ClassUtils;
 import shuchaowen.connection.http.enums.Header;
+import shuchaowen.web.servlet.bean.RequestBeanFactory;
+import shuchaowen.web.servlet.context.DefaultRequestBeanContext;
+import shuchaowen.web.servlet.context.RequestBeanContext;
 
 public abstract class Request extends HttpServletRequestWrapper {
-	private final boolean isDebug;
-	private final long createTime;
-	private final HttpServletResponse httpServletResponse;
-	private final BeanFactory beanFactory;
+	private boolean isDebug;
+	private long createTime;
+	private Response response;
+	private RequestBeanContext requestBeanContext;
+	private RequestBeanContext wrapperBeanContext;
 
-	public Request(BeanFactory beanFactory, HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
+	public Request(RequestBeanFactory requestBeanFactory,
+			HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse, boolean isDebug)
+			throws IOException {
 		super(httpServletRequest);
 		this.createTime = System.currentTimeMillis();
-		this.beanFactory = beanFactory;
 		this.isDebug = isDebug;
-		this.httpServletResponse = httpServletResponse;
-	}
-
-	public BeanFactory getBeanFactory() {
-		return beanFactory;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T getRequestWrapper(Class<? extends RequestWrapper> requestWrapper) throws Exception {
-		RequestWrapper wrapper = (RequestWrapper) getAttribute(requestWrapper.getName());
-		if (wrapper == null) {
-			Bean bean = beanFactory.getBean(requestWrapper.getName());
-			wrapper = bean.newInstance(new Class<?>[] { Request.class }, this);
-			if (requestWrapper != null) {
-				bean.autowrite(wrapper);
-				bean.init(wrapper);
-				setAttribute(requestWrapper.getName(), wrapper);
-			}
-		}
-		return (T) wrapper;
-	}
-	
-	@SuppressWarnings("unchecked")
-	private Object get(Class<?> type, String name) throws Exception{
-		if (String.class.isAssignableFrom(type)) {
-			return getString(name);
-		} else if (int.class.isAssignableFrom(type)) {
-			return getIntValue(name);
-		} else if (Integer.class.isAssignableFrom(type)) {
-			return getInteger(name);
-		} else if (long.class.isAssignableFrom(type)) {
-			return getLongValue(name);
-		} else if (Long.class.isAssignableFrom(type)) {
-			return getLong(name);
-		} else if (float.class.isAssignableFrom(type)) {
-			return getFloatValue(name);
-		} else if (Float.class.isAssignableFrom(type)) {
-			return getFloat(name);
-		} else if (short.class.isAssignableFrom(type)) {
-			return getShortValue(name);
-		} else if (Short.class.isAssignableFrom(type)) {
-			return getShort(name);
-		} else if (boolean.class.isAssignableFrom(type)) {
-			return getBooleanValue(name);
-		} else if (Boolean.class.isAssignableFrom(type)) {
-			return getBoolean(name);
-		} else if (byte.class.isAssignableFrom(type)) {
-			return getByteValue(name);
-		} else if (Byte.class.isAssignableFrom(type)) {
-			return getByte(name);
-		} else if (char.class.isAssignableFrom(type)) {
-			return getChar(name);
-		} else if (Character.class.isAssignableFrom(type)) {
-			return getCharacter(name);
-		} else if (ServletRequest.class.isAssignableFrom(type)) {
-			return this;
-		} else if (ServletResponse.class.isAssignableFrom(type)) {
-			return httpServletResponse;
-		} else if (RequestWrapper.class.isAssignableFrom(type)) {
-			return getRequestWrapper((Class<RequestWrapper>) type);
-		} else {
-			return getObject(type, name);
-		}
-	}
-	
-	public long getCreateTime() {
-		return createTime;
-	}
-
-	@SuppressWarnings("unchecked")
-	public final <T> T getParameter(Class<T> type, String name) throws Exception {
-		T v = (T) getAttribute(name);
-		if(v == null){
-			v = (T) get(type, name);
-			if(v != null){
-				setAttribute(name, v);
-			}
-		}
-		return v;
-	}
-
-	public String getPath() {
-		return getServletPath();
-	}
-
-	public boolean isDebug() {
-		return isDebug;
+		this.response = new Response(this, httpServletResponse);
+		this.requestBeanContext = new DefaultRequestBeanContext(this,
+				requestBeanFactory);
 	}
 
 	public abstract String getString(String name);
@@ -153,36 +68,88 @@ public abstract class Request extends HttpServletRequestWrapper {
 	public abstract Character getCharacter(String name);
 
 	public <T> T getObject(Class<T> type, String name) throws Exception {
-		return wrapperObject(type, name + ".");
+		return wrapperBeanContext.getBean(type, name);
 	}
-	
-	public <T> T wrapperObject(Class<T> type, String prefix) throws Exception{
-		Bean bean = beanFactory.getBean(type.getName());
-		T t = bean.newInstance();
-		if(t != null){
-			bean.autowrite(t);
-			ClassInfo classInfo = ClassUtils.getClassInfo(type);
-			for (Entry<String, FieldInfo> entry : classInfo.getFieldMap().entrySet()) {
-				FieldInfo fieldInfo = entry.getValue();
-				String key = prefix == null? fieldInfo.getName(): prefix + fieldInfo.getName();
-				if(String.class.isAssignableFrom(fieldInfo.getType()) || ClassUtils.isBasicType(fieldInfo.getType())){
-					//如果是基本数据类型
-					Object v = getParameter(fieldInfo.getType(), key);
-					if(v != null){
-						fieldInfo.set(t, v);
-					}
-				}else{
-					Object v = wrapperObject(type, key + ".");
-					fieldInfo.set(t, v);
-				}
-			}
-			bean.init(bean);
+
+	public final Response getResponse() {
+		return response;
+	}
+
+	private Object get(Class<?> type, String name) throws Exception {
+		Object bean = requestBeanContext.getBean(type, name);
+		if (bean != null) {
+			return bean;
+		} else if (String.class.isAssignableFrom(type)) {
+			return getString(name);
+		} else if (int.class.isAssignableFrom(type)) {
+			return getIntValue(name);
+		} else if (Integer.class.isAssignableFrom(type)) {
+			return getInteger(name);
+		} else if (long.class.isAssignableFrom(type)) {
+			return getLongValue(name);
+		} else if (Long.class.isAssignableFrom(type)) {
+			return getLong(name);
+		} else if (float.class.isAssignableFrom(type)) {
+			return getFloatValue(name);
+		} else if (Float.class.isAssignableFrom(type)) {
+			return getFloat(name);
+		} else if (short.class.isAssignableFrom(type)) {
+			return getShortValue(name);
+		} else if (Short.class.isAssignableFrom(type)) {
+			return getShort(name);
+		} else if (boolean.class.isAssignableFrom(type)) {
+			return getBooleanValue(name);
+		} else if (Boolean.class.isAssignableFrom(type)) {
+			return getBoolean(name);
+		} else if (byte.class.isAssignableFrom(type)) {
+			return getByteValue(name);
+		} else if (Byte.class.isAssignableFrom(type)) {
+			return getByte(name);
+		} else if (char.class.isAssignableFrom(type)) {
+			return getChar(name);
+		} else if (Character.class.isAssignableFrom(type)) {
+			return getCharacter(name);
+		} else if (ServletRequest.class.isAssignableFrom(type)) {
+			return this;
+		} else if (ServletResponse.class.isAssignableFrom(type)) {
+			return response;
+		} else {
+			return getObject(type, name);
 		}
-		return t;
+	}
+
+	public final <T> T getBean(Class<T> type) {
+		return requestBeanContext.getBean(type);
+	}
+
+	protected void destroy() {
+		requestBeanContext.destroy();
+	}
+
+	public long getCreateTime() {
+		return createTime;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final <T> T getParameter(Class<T> type, String name)
+			throws Exception {
+		T v = (T) getAttribute(name);
+		if (v == null) {
+			v = (T) get(type, name);
+			if (v != null) {
+				setAttribute(name, v);
+			}
+		}
+		return v;
+	}
+
+	public boolean isDebug() {
+		return isDebug;
 	}
 
 	public boolean isAJAX() {
-		return "XMLHttpRequest".equals(getHeader(Header.X_Requested_With.getValue()));
+		return "XMLHttpRequest".equals(getHeader(Header.X_Requested_With
+				.getValue()));
 	}
 
 	public String getIP() {
@@ -196,7 +163,7 @@ public abstract class Request extends HttpServletRequestWrapper {
 	 * @param text
 	 * @return
 	 */
-	public String formatNumberText(final String text) {
+	protected String formatNumberText(final String text) {
 		if (text == null) {
 			return text;
 		}
@@ -207,28 +174,37 @@ public abstract class Request extends HttpServletRequestWrapper {
 			return text;
 		}
 	}
-	
-	public Cookie getCookie(String name, boolean ignoreCase){
-		if(name == null){
+
+	/**
+	 * 从cookie中获取数据
+	 * 
+	 * @param name
+	 *            cookie中的名字
+	 * @param ignoreCase
+	 *            查找时是否忽略大小写
+	 * @return
+	 */
+	public Cookie getCookie(String name, boolean ignoreCase) {
+		if (name == null) {
 			return null;
 		}
-		
+
 		Cookie[] cookies = getCookies();
-		if(cookies == null || cookies.length == 0){
+		if (cookies == null || cookies.length == 0) {
 			return null;
 		}
-		
-		for(Cookie cookie : cookies){
-			if(cookie == null){
+
+		for (Cookie cookie : cookies) {
+			if (cookie == null) {
 				continue;
 			}
-			
-			if(ignoreCase){
-				if(name.equalsIgnoreCase(cookie.getName())){
+
+			if (ignoreCase) {
+				if (name.equalsIgnoreCase(cookie.getName())) {
 					return cookie;
 				}
-			}else{
-				if(name.equals(cookie.getName())){
+			} else {
+				if (name.equals(cookie.getName())) {
 					return cookie;
 				}
 			}

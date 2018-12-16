@@ -1,9 +1,9 @@
 package shuchaowen.web.servlet.parameter;
 
-import shuchaowen.web.servlet.RequestWrapper;
+import shuchaowen.web.servlet.RequestParameter;
 import shuchaowen.web.servlet.Request;
 
-public class IP extends RequestWrapper{
+public class IP extends RequestParameter{
 	public IP(Request request) {
 		super(request);
 	}
