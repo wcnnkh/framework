@@ -25,10 +25,12 @@ public class DefaultRequestBeanContext implements RequestBeanContext{
 
 	@SuppressWarnings("unchecked")
 	public final <T> T getBean(Class<T> type, String name) {
-		RequestBean requestBean;
+		RequestBean requestBean = null;
 		if (name != null && name.length() != 0) {
 			requestBean = requestBeanFactory.get(name);
-		} else {
+		}
+		
+		if(requestBean == null){
 			requestBean = requestBeanFactory.get(type.getName());
 		}
 
