@@ -95,8 +95,7 @@ public class DispatcherServlet extends HttpServlet {
 		} catch (Throwable e) {
 			e.printStackTrace();
 			httpServerApplication.sendError(httpServletRequest,
-					httpServletResponse, 500,
-					httpServletRequest.getServletPath());
+					httpServletResponse, 500, "system error");
 		}
 	}
 }

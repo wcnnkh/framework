@@ -8,19 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.cglib.proxy.Enhancer;
+import shuchaowen.beans.AnnotationBean;
 import shuchaowen.beans.BeanFactory;
-import shuchaowen.beans.BeanMethod;
 import shuchaowen.beans.BeanUtils;
-import shuchaowen.beans.NoArgumentBeanMethod;
 import shuchaowen.beans.annotaion.Destroy;
 import shuchaowen.beans.annotaion.InitMethod;
-import shuchaowen.beans.annotaion.Retry;
 import shuchaowen.beans.property.PropertiesFactory;
 import shuchaowen.common.ClassInfo;
 import shuchaowen.common.FieldInfo;
 import shuchaowen.common.exception.BeansException;
 import shuchaowen.common.utils.ClassUtils;
-import shuchaowen.db.annoation.Table;
 import shuchaowen.web.servlet.Request;
 
 public final class AnnotationRequestBean implements RequestBean {
@@ -63,103 +60,22 @@ public final class AnnotationRequestBean implements RequestBean {
 			}
 		}
 
-		this.proxy = checkProxy(type);
+		this.proxy = AnnotationBean.checkProxy(type);
 
-		if (this.constructor == null) {
-			try {
-				this.constructor = type.getDeclaredConstructor();// 不用考虑并发
-			} catch (NoSuchMethodException e) {
-			} catch (SecurityException e) {
-			}
-		}
-
-		if (this.constructor == null) {
-			try {
-				this.constructor = type.getDeclaredConstructor(Request.class);
-			} catch (NoSuchMethodException e) {
-			} catch (SecurityException e) {
-			}
-		}
-
+		this.constructor = getAnnotationRequestBeanConstructor(type);
 		if (this.constructor == null) {
 			throw new BeansException("not found constructor");
 		}
 		enhancer = classInfo.createEnhancer(null, null);
 	}
-
-	public static List<BeanMethod> getInitMethodList(Class<?> type) {
-		List<BeanMethod> list = new ArrayList<BeanMethod>();
-		Class<?> tempClz = type;
-		for (Method method : tempClz.getDeclaredMethods()) {
-			if (Modifier.isStatic(method.getModifiers())) {
-				continue;
-			}
-
-			InitMethod initMethod = method.getAnnotation(InitMethod.class);
-			if (initMethod != null) {
-				method.setAccessible(true);
-				list.add(new NoArgumentBeanMethod(method));
-			}
+	
+	public static Constructor<?> getAnnotationRequestBeanConstructor(Class<?> type){
+		try {
+			return type.getDeclaredConstructor(Request.class);
+		} catch (NoSuchMethodException e) {
+		} catch (SecurityException e) {
 		}
-		return list;
-	}
-
-	public static List<BeanMethod> getDestroyMethdoList(Class<?> type) {
-		List<BeanMethod> list = new ArrayList<BeanMethod>();
-		Class<?> tempClz = type;
-		for (Method method : tempClz.getDeclaredMethods()) {
-			if (Modifier.isStatic(method.getModifiers())) {
-				continue;
-			}
-
-			Destroy destroy = method.getAnnotation(Destroy.class);
-			if (destroy != null) {
-				method.setAccessible(true);
-				list.add(new NoArgumentBeanMethod(method));
-			}
-		}
-		return list;
-	}
-
-	public static Retry getRetry(Class<?> type, Method method) {
-		Retry retry = method.getAnnotation(Retry.class);
-		if (retry == null) {
-			retry = type.getAnnotation(Retry.class);
-		}
-		return retry;
-	}
-
-	public static boolean checkProxy(Class<?> type) {
-		if (Modifier.isFinal(type.getModifiers())) {
-			return false;
-		}
-
-		for (Method method : type.getDeclaredMethods()) {
-			if (BeanUtils.isTransaction(type, method)) {
-				return true;
-			}
-
-			Retry retry = getRetry(type, method);
-			if (retry != null && retry.errors().length != 0) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static boolean isSignleton(Class<?> type) {
-		shuchaowen.beans.annotaion.Bean bean = type
-				.getAnnotation(shuchaowen.beans.annotaion.Bean.class);
-		boolean b = true;
-		if (bean != null) {
-			b = bean.singleton();
-		}
-
-		if (b) {
-			Table table = type.getAnnotation(Table.class);
-			b = table == null;
-		}
-		return b;
+		return null;
 	}
 
 	public boolean isProxy() {
