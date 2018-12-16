@@ -13,6 +13,7 @@ import shuchaowen.connection.http.enums.Header;
 import shuchaowen.web.servlet.bean.RequestBeanFactory;
 import shuchaowen.web.servlet.context.DefaultRequestBeanContext;
 import shuchaowen.web.servlet.context.RequestBeanContext;
+import shuchaowen.web.servlet.context.WrapperRequestBeanContext;
 
 public abstract class Request extends HttpServletRequestWrapper {
 	private boolean isDebug;
@@ -31,6 +32,7 @@ public abstract class Request extends HttpServletRequestWrapper {
 		this.response = new Response(this, httpServletResponse);
 		this.requestBeanContext = new DefaultRequestBeanContext(this,
 				requestBeanFactory);
+		this.wrapperBeanContext = new WrapperRequestBeanContext(this);
 	}
 
 	public abstract String getString(String name);

@@ -12,6 +12,10 @@ import shuchaowen.web.servlet.Request;
 public class WrapperRequestBeanContext implements RequestBeanContext {
 	private volatile Map<String, Object> wrapperMap;
 	private Request request;
+	
+	public WrapperRequestBeanContext(Request request){
+		this.request = request;
+	}
 
 	public <T> T getBean(Class<T> type) {
 		return getBean(type, null);
