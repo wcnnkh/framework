@@ -16,7 +16,7 @@ import shuchaowen.db.TableInfo;
 public final class ResultSet implements Serializable {
 	private static final long serialVersionUID = -3199839587290797839L;
 	private MetaData metaData;
-	private List<Object[]> dataList;
+	private ArrayList<Object[]> dataList;
 
 	public ResultSet() {
 	};
@@ -68,8 +68,9 @@ public final class ResultSet implements Serializable {
 		return dataList == null ? 0 : dataList.size();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Object[]> getObjectList() {
-		return dataList;
+		return (List<Object[]>) (dataList == null? null:dataList.clone());
 	}
 
 	protected static Object wrapper(MetaData metaData, Object[] values,
