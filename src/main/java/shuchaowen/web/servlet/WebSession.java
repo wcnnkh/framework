@@ -7,14 +7,19 @@ import shuchaowen.auth.login.SessionFactory;
 import shuchaowen.common.utils.StringUtils;
 
 public final class WebSession {
+	private SessionFactory sessionFactory;
 	private Request request;
 	private boolean cookie;
 	private Session session;
+	private String uidKey;
+	private String sidKey;
 
-	public WebSession(Request request, SessionFactory sessionFactory,
-			String uidKey, String sidKey, boolean cookie) {
+	public WebSession(Request request, SessionFactory sessionFactory, String uidKey, String sidKey, boolean cookie) {
 		this.request = request;
 		this.cookie = cookie;
+		this.sessionFactory = sessionFactory;
+		this.uidKey = uidKey;
+		this.sidKey = sidKey;
 
 		if (StringUtils.isNull(sidKey)) {
 			throw new NullPointerException("sidKey");
@@ -49,5 +54,28 @@ public final class WebSession {
 
 	public boolean isLogin() {
 		return session != null;
+	}
+
+	public Session login(String uid) {
+		return sessionFactory.login(uid);
+	}
+
+	public Session login(long uid) {
+		return sessionFactory.login(uid);
+	}
+
+	public Session login(int uid) {
+		return sessionFactory.login(uid);
+	}
+
+	public void addCookie(Session session) {
+		if(session == null){
+			return ;
+		}
+		
+		request.getResponse().addCookie(new Cookie(sidKey, session.getId()));
+		if (!StringUtils.isNull(uidKey)) {
+			request.getResponse().addCookie(new Cookie(uidKey, session.getUid()));
+		}
 	}
 }
