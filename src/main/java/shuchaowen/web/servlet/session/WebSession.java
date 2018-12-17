@@ -1,11 +1,18 @@
-package shuchaowen.web.servlet;
+package shuchaowen.web.servlet.session;
 
 import javax.servlet.http.Cookie;
 
 import shuchaowen.auth.login.Session;
 import shuchaowen.auth.login.SessionFactory;
 import shuchaowen.common.utils.StringUtils;
+import shuchaowen.web.servlet.Request;
 
+/**
+ * 此类和AppSession和一样 是为应对小项目中admin和app用同一个项目而写的
+ * 
+ * @author asus1
+ *
+ */
 public final class WebSession {
 	private SessionFactory sessionFactory;
 	private Request request;
@@ -15,7 +22,7 @@ public final class WebSession {
 	private String sidKey;
 
 	public WebSession(Request request, SessionFactory sessionFactory) {
-		this(request, sessionFactory, null, "sid", false);
+		this(request, sessionFactory, null, "sid", true);
 	}
 
 	public WebSession(Request request, SessionFactory sessionFactory,
@@ -62,15 +69,17 @@ public final class WebSession {
 	}
 
 	public Session login(String uid) {
-		return sessionFactory.login(uid);
+		Session session = sessionFactory.login(uid);
+		addCookie(session);
+		return session;
 	}
 
 	public Session login(long uid) {
-		return sessionFactory.login(uid);
+		return login(uid + "");
 	}
 
 	public Session login(int uid) {
-		return sessionFactory.login(uid);
+		return login(uid + "");
 	}
 
 	public void addCookie(Session session) {
