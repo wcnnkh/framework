@@ -15,17 +15,26 @@ import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.common.io.decoder.StringDecoder;
 import shuchaowen.web.servlet.Request;
-import shuchaowen.web.servlet.RequestParameter;
 
-public class RequestFormat extends RequestParameter {
+public final class RequestFormat {
+	private Request request;
+
 	public RequestFormat(Request request) {
-		super(request);
+		this.request = request;
+	}
+
+	/**
+	 * @return the request
+	 */
+	public Request getRequest() {
+		return request;
 	}
 
 	public String getBody() {
 		String content = null;
 		try {
-			content = new StringDecoder(Charset.forName(getRequest().getCharacterEncoding())).decode(getRequest().getInputStream());
+			content = new StringDecoder(Charset.forName(getRequest().getCharacterEncoding()))
+					.decode(getRequest().getInputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

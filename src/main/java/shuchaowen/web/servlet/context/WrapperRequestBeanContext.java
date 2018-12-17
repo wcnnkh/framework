@@ -18,18 +18,22 @@ public class WrapperRequestBeanContext implements RequestBeanContext {
 	}
 
 	public <T> T getBean(Class<T> type) {
-		return getBean(type, null);
+		return getBean(type, type.getName(), null);
+	}
+	
+	public <T> T getBean(Class<T> type, String name){
+		return getBean(type, name, name + ".");
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getBean(Class<T> type, String name) {
+	public <T> T getBean(Class<T> type, String name, String prefix) {
 		Object obj = null;
 		if (wrapperMap == null) {
 			synchronized (this) {
 				if (wrapperMap == null) {
 					wrapperMap = new HashMap<String, Object>(4);
 					try {
-						obj = wrapperObject(type, name == null ? null : name
+						obj = wrapperObject(type, prefix == null ? null : prefix
 								+ ".");
 						wrapperMap.put(name, obj);
 					} catch (Exception e) {
@@ -44,8 +48,8 @@ public class WrapperRequestBeanContext implements RequestBeanContext {
 					obj = wrapperMap.get(name);
 					if (obj == null) {
 						try {
-							obj = wrapperObject(type, name == null ? null
-									: name + ".");
+							obj = wrapperObject(type, prefix == null ? null
+									: prefix + ".");
 							wrapperMap.put(name, obj);
 						} catch (Exception e) {
 							e.printStackTrace();

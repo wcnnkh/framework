@@ -18,11 +18,11 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
-import shuchaowen.web.servlet.RequestParameter;
 import shuchaowen.common.Logger;
 import shuchaowen.web.servlet.Request;
 
-public class Multipart extends RequestParameter{
+public final class Multipart{
+	private Request request;
 	private Map<String, List<String>> paramMap = new HashMap<String, List<String>>();
 	private Map<String, List<FileItem>> fileItemMap = new HashMap<String, List<FileItem>>();
 	private List<String> keys = new ArrayList<String>();
@@ -30,10 +30,17 @@ public class Multipart extends RequestParameter{
 	private HttpServletRequest httpServletRequest;
 	
 	public Multipart(Request request) throws IOException{
-		super(request);
+		this.request = request;
 		init(request, request.isDebug());
 	}
 	
+	/**
+	 * @return the request
+	 */
+	public Request getRequest() {
+		return request;
+	}
+
 	private void init(HttpServletRequest httpServletRequest, boolean debug){
 		RequestContext requestContext;
 		DiskFileItemFactory factory;

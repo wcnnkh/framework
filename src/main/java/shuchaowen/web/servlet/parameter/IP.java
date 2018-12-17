@@ -1,14 +1,22 @@
 package shuchaowen.web.servlet.parameter;
 
-import shuchaowen.web.servlet.RequestParameter;
 import shuchaowen.web.servlet.Request;
 
-public class IP extends RequestParameter{
+public final class IP {
+	private Request request;
+
 	public IP(Request request) {
-		super(request);
+		this.request = request;
 	}
-	
+
 	public String getIp() {
-		return getRequest().getIP();
+		return request.getIP();
+	}
+
+	/**
+	 * @return the request
+	 */
+	public Request getRequest() {
+		return request;
 	}
 }
