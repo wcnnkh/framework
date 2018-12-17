@@ -159,14 +159,6 @@ public final class ResultSet implements Serializable {
 	private <T> List<T> getTableBeanList(Class<T> type,
 			TableMapping tableMapping) throws IllegalArgumentException,
 			IllegalAccessException {
-		if (metaData == null) {
-			return null;
-		}
-
-		if (size() == 0) {
-			return null;
-		}
-
 		TableInfo tableInfo = DB.getTableInfo(type);
 		List<T> list = new ArrayList<T>();
 		for (Object[] objs : dataList) {
@@ -178,14 +170,6 @@ public final class ResultSet implements Serializable {
 	@SuppressWarnings("unchecked")
 	private <T> List<T> getTableBeanList(Class<T> type, String... tableName)
 			throws IllegalArgumentException, IllegalAccessException {
-		if (metaData == null) {
-			return null;
-		}
-
-		if (size() == 0) {
-			return null;
-		}
-
 		TableInfo tableInfo = DB.getTableInfo(type);
 		List<T> list = new ArrayList<T>();
 		for (Object[] objs : dataList) {
@@ -194,26 +178,66 @@ public final class ResultSet implements Serializable {
 		return list;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> List<T> getList(Class<T> type, TableMapping tableMapping) {
-		try {
-			return getTableBeanList(type, tableMapping);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+		if (metaData == null) {
+			return null;
 		}
-		return null;
+
+		if (size() == 0) {
+			return null;
+		}
+		
+		if(type.isArray()){
+			return (List<T>) dataList;
+		}else if (type.getName().startsWith("java")
+					|| ClassUtils.isBasicType(type)) {
+			List<Object> list = new ArrayList<Object>();
+			for(Object[] objects : dataList){
+				list.add(objects[0]);
+			}
+			return (List<T>) list;
+		}else{
+			try {
+				return getTableBeanList(type, tableMapping);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> List<T> getList(Class<T> type, String... tableName) {
-		try {
-			return getTableBeanList(type, tableName);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+		if (metaData == null) {
+			return null;
 		}
-		return null;
+
+		if (size() == 0) {
+			return null;
+		}
+		
+		if(type.isArray()){
+			return (List<T>) dataList;
+		}else if (type.getName().startsWith("java")
+					|| ClassUtils.isBasicType(type)) {
+			List<Object> list = new ArrayList<Object>();
+			for(Object[] objects : dataList){
+				list.add(objects[0]);
+			}
+			return (List<T>) list;
+		}else{
+			try {
+				return getTableBeanList(type, tableName);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
 	}
 
 	public Object[] getObjects(int index) {
