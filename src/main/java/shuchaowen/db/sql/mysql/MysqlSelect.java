@@ -205,7 +205,7 @@ public class MysqlSelect extends Select{
 	public long count() {
 		SQL sql = toSQL("count(*)", false);
 		ResultSet resultSet = db.select(sql);
-		Long count = resultSet.getObject(0, Long.class);
+		Long count = resultSet.getObject(Long.class, 0);
 		return count == null? 0:count;
 	}
 

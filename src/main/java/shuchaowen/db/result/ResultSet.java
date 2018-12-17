@@ -225,7 +225,7 @@ public final class ResultSet implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getObject(int index, Class<T> type, TableMapping tableMapping) {
+	public <T> T getObject(Class<T> type, int index, TableMapping tableMapping) {
 		if (index < 0 || index >= size()) {
 			return null;
 		}
@@ -257,7 +257,7 @@ public final class ResultSet implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getObject(int index, Class<T> type, String... tableName) {
+	public <T> T getObject(Class<T> type, int index, String... tableName) {
 		if (index < 0 || index >= size()) {
 			return null;
 		}

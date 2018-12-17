@@ -260,7 +260,7 @@ public abstract class Select {
 	public abstract long count();
 
 	public <T> T getFirst(Class<T> type) {
-		return getResultSet().getObject(0, type);
+		return getResultSet().getObject(type, 0);
 	}
 
 	public abstract ResultSet getResultSet();

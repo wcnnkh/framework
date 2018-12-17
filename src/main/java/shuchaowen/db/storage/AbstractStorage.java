@@ -26,7 +26,7 @@ public class AbstractStorage implements Storage{
 		TableInfo tableInfo = DB.getTableInfo(type);
 		SQL sql = sqlFormat.toSelectByIdSql(tableInfo, tableInfo.getName(), params);
 		ResultSet resultSet = TransactionContext.getInstance().select(connectionSource, sql);
-		return resultSet.getObject(0, type);
+		return resultSet.getObject(type, 0);
 	}
 
 	public <T> List<T> getByIdList(Class<T> type, Object... params) {

@@ -86,7 +86,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable{
 	}
 	
 	public <T> T selectOne(Class<T> type, SQL sql){
-		return select(sql).getObject(0, type);
+		return select(sql).getObject(type, 0);
 	}
 	
 	public Select createSelect(){
@@ -97,7 +97,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable{
 			String columnName) {
 		Select select = createSelect();
 		select.desc(tableClass, columnName);
-		return select.getResultSet().getObject(0, type, tableName);
+		return select.getResultSet().getObject(type, 0, tableName);
 	}
 	
 	public <T> T getMaxValue(Class<T> type, Class<?> tableClass,
@@ -168,7 +168,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable{
 		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
 		SQL sql = getSqlFormat().toSelectByIdSql(tableInfo, tName, params);
 		ResultSet resultSet = select(sql);
-		return resultSet.getObject(0, type, tName);
+		return resultSet.getObject(type, 0, tName);
 	}
 	
 	public <T> List<T> getByIdListFromDB(Class<T> type, String tableName,
