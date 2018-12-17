@@ -32,8 +32,9 @@ import shuchaowen.db.DB;
 import shuchaowen.web.servlet.action.annotation.Controller;
 
 public final class BeanUtils {
-	private static volatile boolean initStatus = false;
-	
+	private static volatile boolean initStatic = false;
+	private static volatile boolean destroyStatic = false;
+
 	private BeanUtils() {
 	};
 
@@ -76,7 +77,12 @@ public final class BeanUtils {
 		countDownLatch.await();
 	}
 
-	public static void destroyStaticMethod(Collection<Class<?>> classList) throws Exception {
+	public synchronized static void destroyStaticMethod(Collection<Class<?>> classList) throws Exception {
+		if (!initStatic && destroyStatic) {
+			return;
+		}
+
+		destroyStatic = true;
 		List<Invoker> list = new ArrayList<Invoker>();
 		for (Class<?> clz : classList) {
 			for (Method method : clz.getDeclaredMethods()) {
@@ -107,18 +113,20 @@ public final class BeanUtils {
 		countDownLatch.await();
 	}
 
-	public synchronized static void initStatic(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Collection<Class<?>> classList) throws Exception {
-		if(initStatus){
-			return ;
+	public synchronized static void initStatic(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+			Collection<Class<?>> classList) throws Exception {
+		if (initStatic) {
+			return;
 		}
-		
-		initStatus = true;
+
+		initStatic = true;
 		initAutowriteStatic(beanFactory, propertiesFactory, classList);
 		invokerInitStaticMethod(classList);
 		initDB(beanFactory, classList);
 	}
-	
-	public static void autoWrite(Class<?> clz, BeanFactory beanFactory, PropertiesFactory propertiesFactory, Object obj, FieldInfo field){
+
+	public static void autoWrite(Class<?> clz, BeanFactory beanFactory, PropertiesFactory propertiesFactory, Object obj,
+			FieldInfo field) {
 		setBean(beanFactory, clz, obj, field);
 		setConfig(beanFactory, clz, obj, field);
 		setProperties(beanFactory, propertiesFactory, clz, obj, field);
@@ -129,7 +137,8 @@ public final class BeanUtils {
 	 * 
 	 * @param classList
 	 */
-	private static void initAutowriteStatic(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Collection<Class<?>> classList) throws Exception {
+	private static void initAutowriteStatic(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+			Collection<Class<?>> classList) throws Exception {
 		for (Class<?> clz : classList) {
 			ClassInfo classInfo = ClassUtils.getClassInfo(clz);
 			for (Entry<String, FieldInfo> entry : classInfo.getFieldMap().entrySet()) {
@@ -137,7 +146,7 @@ public final class BeanUtils {
 				if (!Modifier.isStatic(field.getField().getModifiers())) {
 					continue;
 				}
-				
+
 				autoWrite(clz, beanFactory, propertiesFactory, null, field);
 			}
 		}
@@ -173,7 +182,8 @@ public final class BeanUtils {
 	 * @param beanMethodParameters
 	 * @return
 	 */
-	public static XmlBeanParameter[] sortParameters(Executable executable, List<XmlBeanParameter> beanMethodParameters) {
+	public static XmlBeanParameter[] sortParameters(Executable executable,
+			List<XmlBeanParameter> beanMethodParameters) {
 		if (executable.getParameterCount() != beanMethodParameters.size()) {
 			return null;
 		}
@@ -261,7 +271,7 @@ public final class BeanUtils {
 			Object value = null;
 			try {
 				existDefaultValueWarnLog(Config.class.getName(), clz, field, obj);
-				
+
 				value = beanFactory.get(config.parse()).parse(beanFactory, field, config.value(), config.charset());
 				field.set(obj, value);
 			} catch (Exception e) {
@@ -269,25 +279,26 @@ public final class BeanUtils {
 			}
 		}
 	}
-	
-	private static boolean checkExistDefaultValue(FieldInfo field, Object obj) throws IllegalArgumentException, IllegalAccessException{
-		if(ClassUtils.containsBasicValueType(field.getType())){//值类型一定是默认值 的,所以不用判断直接所回false
+
+	private static boolean checkExistDefaultValue(FieldInfo field, Object obj)
+			throws IllegalArgumentException, IllegalAccessException {
+		if (ClassUtils.containsBasicValueType(field.getType())) {// 值类型一定是默认值
+																	// 的,所以不用判断直接所回false
 			return false;
 		}
 		return field.forceGet(obj) != null;
 	}
-	
-	private static void existDefaultValueWarnLog(String tag, Class<?> clz, FieldInfo field, Object obj) throws IllegalArgumentException, IllegalAccessException{
+
+	private static void existDefaultValueWarnLog(String tag, Class<?> clz, FieldInfo field, Object obj)
+			throws IllegalArgumentException, IllegalAccessException {
 		if (checkExistDefaultValue(field, obj)) {
-			Logger.warn(tag,
-					"class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
+			Logger.warn(tag, "class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
 		}
 	}
-	
-	private static void staticFieldWarnLog(String tag, Class<?> clz, Field field){
+
+	private static void staticFieldWarnLog(String tag, Class<?> clz, Field field) {
 		if (Modifier.isStatic(field.getModifiers())) {
-			Logger.warn(tag,
-					"class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
+			Logger.warn(tag, "class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
 		}
 	}
 
@@ -296,12 +307,11 @@ public final class BeanUtils {
 		Properties properties = field.getField().getAnnotation(Properties.class);
 		if (properties != null) {
 			staticFieldWarnLog(Properties.class.getName(), clz, field.getField());
-			
 
 			Object value = null;
 			try {
 				existDefaultValueWarnLog(Properties.class.getName(), clz, field, obj);
-				
+
 				String v = propertiesFactory.getValue(properties.value());
 				value = StringUtils.conversion(v, field.getType());
 				field.set(obj, value);
@@ -310,17 +320,17 @@ public final class BeanUtils {
 			}
 		}
 	}
-	
+
 	private static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) {
 		Autowrite s = field.getField().getAnnotation(Autowrite.class);
 		if (s != null) {
 			staticFieldWarnLog(Autowrite.class.getName(), clz, field.getField());
-			
+
 			String name = s.value();
 			if (name.equals("")) {
 				name = field.getType().getName();
 			}
-			
+
 			try {
 				existDefaultValueWarnLog(Autowrite.class.getName(), clz, field, obj);
 				field.set(obj, beanFactory.get(name));
