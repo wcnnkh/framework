@@ -14,7 +14,12 @@ public final class WebSession {
 	private String uidKey;
 	private String sidKey;
 
-	public WebSession(Request request, SessionFactory sessionFactory, String uidKey, String sidKey, boolean cookie) {
+	public WebSession(Request request, SessionFactory sessionFactory) {
+		this(request, sessionFactory, null, "sid", false);
+	}
+
+	public WebSession(Request request, SessionFactory sessionFactory,
+			String uidKey, String sidKey, boolean cookie) {
 		this.request = request;
 		this.cookie = cookie;
 		this.sessionFactory = sessionFactory;
@@ -69,13 +74,14 @@ public final class WebSession {
 	}
 
 	public void addCookie(Session session) {
-		if(session == null){
-			return ;
+		if (session == null) {
+			return;
 		}
-		
+
 		request.getResponse().addCookie(new Cookie(sidKey, session.getId()));
 		if (!StringUtils.isNull(uidKey)) {
-			request.getResponse().addCookie(new Cookie(uidKey, session.getUid()));
+			request.getResponse().addCookie(
+					new Cookie(uidKey, session.getUid()));
 		}
 	}
 }
