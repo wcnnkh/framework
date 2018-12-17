@@ -31,8 +31,7 @@ public final class ResultSet implements Serializable {
 		append(resultSet, true);
 	}
 
-	private void append(java.sql.ResultSet resultSet, boolean checkColumn)
-			throws SQLException {
+	private void append(java.sql.ResultSet resultSet, boolean checkColumn) throws SQLException {
 		if (resultSet == null) {
 			return;
 		}
@@ -40,19 +39,16 @@ public final class ResultSet implements Serializable {
 			metaData = new MetaData(resultSet.getMetaData());
 			dataList = new ArrayList<Object[]>();
 		}
-		
+
 		Object[] values = new Object[metaData.getColumns().length];
 		if (checkColumn) {
 			ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 			for (int i = 1; i <= values.length; i++) {
-				int index = metaData.getColumnIndex(
-						resultSetMetaData.getColumnName(i),
+				int index = metaData.getColumnIndex(resultSetMetaData.getColumnName(i),
 						resultSetMetaData.getTableName(i));
 				if (index == -1) {
-					throw new NotFoundException(
-							resultSetMetaData.getTableName(i) + "."
-									+ resultSetMetaData.getColumnName(i)
-									+ "在原ResultSet中找不到");
+					throw new NotFoundException(resultSetMetaData.getTableName(i) + "."
+							+ resultSetMetaData.getColumnName(i) + "在原ResultSet中找不到");
 				}
 				values[i - 1] = resultSet.getObject(i);
 			}
@@ -70,18 +66,16 @@ public final class ResultSet implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public List<Object[]> getObjectList() {
-		return (List<Object[]>) (dataList == null? null:dataList.clone());
+		return (List<Object[]>) (dataList == null ? null : dataList.clone());
 	}
 
-	protected static Object wrapper(MetaData metaData, Object[] values,
-			TableInfo tableInfo, String... tableName)
+	protected static Object wrapper(MetaData metaData, Object[] values, TableInfo tableInfo, String... tableName)
 			throws IllegalArgumentException, IllegalAccessException {
 		Object o = tableInfo.newInstance();
 		for (ColumnInfo column : tableInfo.getColumns()) {
 			int index;
 			if (tableName == null || tableName.length == 0) {
-				index = metaData.getColumnIndex(column.getName(),
-						tableInfo.getName());
+				index = metaData.getColumnIndex(column.getName(), tableInfo.getName());
 			} else {
 				index = metaData.getColumnIndex(column.getName(), tableName);
 			}
@@ -102,8 +96,7 @@ public final class ResultSet implements Serializable {
 		}
 
 		for (ColumnInfo column : tableInfo.getTableColumns()) {
-			Object v = wrapper(metaData, values,
-					DB.getTableInfo(column.getType()));
+			Object v = wrapper(metaData, values, DB.getTableInfo(column.getType()));
 			if (v != null) {
 				column.setValueToField(o, v);
 			}
@@ -111,21 +104,17 @@ public final class ResultSet implements Serializable {
 		return o;
 	}
 
-	protected static Object wrapper(MetaData metaData, Object[] values,
-			TableInfo tableInfo, TableMapping tableMapping)
+	protected static Object wrapper(MetaData metaData, Object[] values, TableInfo tableInfo, TableMapping tableMapping)
 			throws IllegalArgumentException, IllegalAccessException {
 		Object o = tableInfo.newInstance();
 		for (ColumnInfo column : tableInfo.getColumns()) {
 			int index;
 			if (tableMapping == null) {
-				index = metaData.getColumnIndex(column.getName(),
-						tableInfo.getName());
+				index = metaData.getColumnIndex(column.getName(), tableInfo.getName());
 			} else {
-				List<String> list = tableMapping.getTableNameList(tableInfo
-						.getClassInfo().getClz());
+				List<String> list = tableMapping.getTableNameList(tableInfo.getClassInfo().getClz());
 				if (list == null) {
-					index = metaData.getColumnIndex(column.getName(),
-							tableInfo.getName());
+					index = metaData.getColumnIndex(column.getName(), tableInfo.getName());
 				} else {
 					index = metaData.getColumnIndex(list, column.getName());
 				}
@@ -147,8 +136,7 @@ public final class ResultSet implements Serializable {
 		}
 
 		for (ColumnInfo column : tableInfo.getTableColumns()) {
-			Object v = wrapper(metaData, values,
-					DB.getTableInfo(column.getType()), tableMapping);
+			Object v = wrapper(metaData, values, DB.getTableInfo(column.getType()), tableMapping);
 			if (v != null) {
 				column.setValueToField(o, v);
 			}
@@ -157,9 +145,8 @@ public final class ResultSet implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> List<T> getTableBeanList(Class<T> type,
-			TableMapping tableMapping) throws IllegalArgumentException,
-			IllegalAccessException {
+	private <T> List<T> getTableBeanList(Class<T> type, TableMapping tableMapping)
+			throws IllegalArgumentException, IllegalAccessException {
 		TableInfo tableInfo = DB.getTableInfo(type);
 		List<T> list = new ArrayList<T>();
 		for (Object[] objs : dataList) {
@@ -188,17 +175,16 @@ public final class ResultSet implements Serializable {
 		if (size() == 0) {
 			return null;
 		}
-		
-		if(type.isArray()){
-			return (List<T>) dataList;
-		}else if (type.getName().startsWith("java")
-					|| ClassUtils.isBasicType(type)) {
+
+		if (type.isArray()) {
+			return (List<T>) getObjectList();
+		} else if (type.getName().startsWith("java") || ClassUtils.isBasicType(type)) {
 			List<Object> list = new ArrayList<Object>();
-			for(Object[] objects : dataList){
+			for (Object[] objects : dataList) {
 				list.add(objects[0]);
 			}
 			return (List<T>) list;
-		}else{
+		} else {
 			try {
 				return getTableBeanList(type, tableMapping);
 			} catch (IllegalArgumentException e) {
@@ -219,17 +205,16 @@ public final class ResultSet implements Serializable {
 		if (size() == 0) {
 			return null;
 		}
-		
-		if(type.isArray()){
-			return (List<T>) dataList;
-		}else if (type.getName().startsWith("java")
-					|| ClassUtils.isBasicType(type)) {
+
+		if (type.isArray()) {
+			return (List<T>) getObjectList();
+		} else if (type.getName().startsWith("java") || ClassUtils.isBasicType(type)) {
 			List<Object> list = new ArrayList<Object>();
-			for(Object[] objects : dataList){
+			for (Object[] objects : dataList) {
 				list.add(objects[0]);
 			}
 			return (List<T>) list;
-		}else{
+		} else {
 			try {
 				return getTableBeanList(type, tableName);
 			} catch (IllegalArgumentException e) {
@@ -260,9 +245,11 @@ public final class ResultSet implements Serializable {
 		}
 
 		if (type.isArray()) {
-			return (T) dataList.get(index);
-		} else if (type.getName().startsWith("java")
-				|| ClassUtils.isBasicType(type)) {
+			Object[] src = dataList.get(index);
+			Object[] dest = new Object[src.length];
+			System.arraycopy(src, 0, dest, 0, dest.length);
+			return (T) dest;
+		} else if (type.getName().startsWith("java") || ClassUtils.isBasicType(type)) {
 			Object[] values = dataList.get(index);
 			if (values != null && values.length > 0) {
 				return (T) values[0];
@@ -270,8 +257,7 @@ public final class ResultSet implements Serializable {
 			return null;
 		} else {
 			try {
-				return (T) wrapper(metaData, dataList.get(index),
-						DB.getTableInfo(type), tableMapping);
+				return (T) wrapper(metaData, dataList.get(index), DB.getTableInfo(type), tableMapping);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -292,9 +278,11 @@ public final class ResultSet implements Serializable {
 		}
 
 		if (type.isArray()) {
-			return (T) dataList.get(index);
-		} else if (type.getName().startsWith("java")
-				|| ClassUtils.isBasicType(type)) {
+			Object[] src = dataList.get(index);
+			Object[] dest = new Object[src.length];
+			System.arraycopy(src, 0, dest, 0, dest.length);
+			return (T) dest;
+		} else if (type.getName().startsWith("java") || ClassUtils.isBasicType(type)) {
 			Object[] values = dataList.get(index);
 			if (values != null && values.length > 0) {
 				return (T) values[0];
@@ -302,8 +290,7 @@ public final class ResultSet implements Serializable {
 			return null;
 		} else {
 			try {
-				return (T) wrapper(metaData, dataList.get(index),
-						DB.getTableInfo(type), tableName);
+				return (T) wrapper(metaData, dataList.get(index), DB.getTableInfo(type), tableName);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {

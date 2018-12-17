@@ -27,7 +27,7 @@ public final class Result implements Serializable{
 		}
 		
 		if (type.isArray()) {
-			return (T) values;
+			return (T) getValues();
 		} else if (type.getName().startsWith("java")
 				|| ClassUtils.isBasicType(type)) {
 			if (values.length > 0) {
@@ -54,7 +54,7 @@ public final class Result implements Serializable{
 		}
 
 		if (type.isArray()) {
-			return (T) values;
+			return (T) getValues();
 		} else if (type.getName().startsWith("java")
 				|| ClassUtils.isBasicType(type)) {
 			if (values != null && values.length > 0) {
@@ -75,6 +75,12 @@ public final class Result implements Serializable{
 	}
 
 	public Object[] getValues() {
-		return values;
+		if(values == null){
+			return null;
+		}
+		
+		Object[] dest = new Object[values.length];
+		System.arraycopy(values, 0, dest, 0, dest.length);
+		return dest;
 	}
 }
