@@ -32,6 +32,8 @@ import shuchaowen.db.DB;
 import shuchaowen.web.servlet.action.annotation.Controller;
 
 public final class BeanUtils {
+	private static volatile boolean initStatus = false;
+	
 	private BeanUtils() {
 	};
 
@@ -105,7 +107,12 @@ public final class BeanUtils {
 		countDownLatch.await();
 	}
 
-	public static void initStatic(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Collection<Class<?>> classList) throws Exception {
+	public synchronized static void initStatic(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Collection<Class<?>> classList) throws Exception {
+		if(initStatus){
+			return ;
+		}
+		
+		initStatus = true;
 		initAutowriteStatic(beanFactory, propertiesFactory, classList);
 		invokerInitStaticMethod(classList);
 		initDB(beanFactory, classList);

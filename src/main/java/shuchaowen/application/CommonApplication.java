@@ -34,16 +34,17 @@ public class CommonApplication implements Application {
 			if (!StringUtils.isNull(configPath)) {
 				BeanFactory dubboBeanFactory = new XmlDubboBeanFactory(propertiesFactory, configPath);
 				beanFactory.addLastBeanFactory(dubboBeanFactory);
-				
+
 				HttpRPCBeanFactory scwrpcBeanFactory = new HttpRPCBeanFactory(propertiesFactory, configPath);
 				beanFactory.addLastBeanFactory(scwrpcBeanFactory);
-				
+
 				XmlBeanFactory xmlBeanFactory = new XmlBeanFactory(beanFactory, propertiesFactory, configPath);
 				this.packageNames = xmlBeanFactory.getPackageNames();
 				beanFactory.addLastBeanFactory(xmlBeanFactory);
 			}
-			
-			AnnotationBeanFactory annotationBeanFactory = new AnnotationBeanFactory(beanFactory, propertiesFactory, packageNames);
+
+			AnnotationBeanFactory annotationBeanFactory = new AnnotationBeanFactory(beanFactory, propertiesFactory,
+					packageNames);
 			beanFactory.addLastBeanFactory(annotationBeanFactory);
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
@@ -57,7 +58,7 @@ public class CommonApplication implements Application {
 	public MultipleBeanFactory getBeanFactory() {
 		return beanFactory;
 	}
-	
+
 	public PropertiesFactory getPropertiesFactory() {
 		return propertiesFactory;
 	}
@@ -74,37 +75,35 @@ public class CommonApplication implements Application {
 
 			start = true;
 		}
-		
-		
+
 		try {
-			if(initStatic){
+			if (initStatic) {
 				BeanUtils.initStatic(beanFactory, propertiesFactory, getClasses());
 			}
-			
-			if(!StringUtils.isNull(configPath)){
+			if (!StringUtils.isNull(configPath)) {
 				XmlDubboUtils.register(propertiesFactory, beanFactory, configPath);
-			}	
+			}
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}
 	}
 
 	public void destroy() {
-		if(!start){
+		if (!start) {
 			throw new ShuChaoWenRuntimeException("还未启动，无法销毁");
 		}
-		
+
 		synchronized (this) {
 			if (!start) {
 				throw new ShuChaoWenRuntimeException("还未启动，无法销毁");
 			}
-			
+
 			start = false;
 		}
-		
+
 		beanFactory.destroy();
-		
-		if(initStatic){
+
+		if (initStatic) {
 			try {
 				BeanUtils.destroyStaticMethod(getClasses());
 			} catch (Exception e) {
