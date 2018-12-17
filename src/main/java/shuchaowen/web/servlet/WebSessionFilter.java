@@ -3,7 +3,6 @@ package shuchaowen.web.servlet;
 import shuchaowen.web.servlet.action.Filter;
 import shuchaowen.web.servlet.action.FilterChain;
 import shuchaowen.web.servlet.view.common.Result;
-import shuchaowen.web.servlet.view.common.enums.Code;
 
 public class WebSessionFilter implements Filter {
 
@@ -11,7 +10,7 @@ public class WebSessionFilter implements Filter {
 			FilterChain filterChain) throws Throwable {
 		WebSession webSession = request.getBean(WebSession.class);
 		if (!webSession.isLogin()) {
-			response.write(new Result().setCode(Code.login_status_expired));
+			response.write(Result.loginExpired());
 			return;
 		}
 		filterChain.doFilter(request, response);
