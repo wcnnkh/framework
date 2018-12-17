@@ -16,7 +16,7 @@ public final class Result implements Serializable{
 		metaData = new MetaData(resultSet.getMetaData());
 		values = new Object[metaData.getColumns().length];
 		for (int i = 0; i < values.length; i++) {
-			values[i] = resultSet.getObject(i);
+			values[i] = resultSet.getObject(i + 1);
 		}
 	}
 	

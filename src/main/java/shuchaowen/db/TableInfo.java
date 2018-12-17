@@ -266,7 +266,9 @@ public final class TableInfo {
 			}
 			return null;
 		}else{
-			return (T) classInfo.newFieldListenInstance();
+			BeanFieldListen beanFieldListen = (BeanFieldListen) classInfo.newFieldListenInstance();
+			beanFieldListen.start_field_listen();
+			return (T) beanFieldListen;
 		}
 	}
 }

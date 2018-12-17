@@ -52,16 +52,13 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable{
 		this.sqlFormat = sqlFormat;
 	}
 	
-	public SQLFormat getSqlFormat() {
+	public final SQLFormat getSqlFormat() {
 		return sqlFormat == null? DEFAULT_SQL_FORMAT:sqlFormat;
 	}
 	
-	public void setSqlFormat(SQLFormat sqlFormat) {
-		this.sqlFormat = sqlFormat;
-	}
-
 	public void iterator(Class<?> tableClass, Iterator<Result> iterator){
-		iterator(sqlFormat.toSelectByIdSql(DB.getTableInfo(tableClass), null), iterator);
+		TableInfo tableInfo = DB.getTableInfo(tableClass);
+		iterator(getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getName()), iterator);
 	}
 	
 	public void iterator(SQL sql, final Iterator<Result> iterator){

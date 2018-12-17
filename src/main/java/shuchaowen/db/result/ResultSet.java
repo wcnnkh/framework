@@ -113,7 +113,7 @@ public final class ResultSet implements Serializable {
 	protected static Object wrapper(MetaData metaData, Object[] values,
 			TableInfo tableInfo, TableMapping tableMapping)
 			throws IllegalArgumentException, IllegalAccessException {
-		Object o = tableInfo.getClassInfo().getBeanListenInterfaces();
+		Object o = tableInfo.newInstance();
 		for (ColumnInfo column : tableInfo.getColumns()) {
 			int index;
 			if (tableMapping == null) {
