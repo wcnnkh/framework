@@ -1,11 +1,8 @@
 package shuchaowen.common;
 
-public final class ContextInfo<T> {
+final class ContextInfo<T> {
 	private T value;
 	private int count;
-
-	protected ContextInfo() {
-	};
 
 	public T getValue() {
 		return value;
@@ -19,11 +16,11 @@ public final class ContextInfo<T> {
 		return count;
 	}
 
-	protected void incrCount() {
+	public void incrCount() {
 		count++;
 	}
 
-	protected void decrCount() {
+	public void decrCount() {
 		count--;
 	}
 }
