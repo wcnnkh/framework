@@ -1,6 +1,6 @@
 package shuchaowen.common.enums;
 
-public enum Method {
+public enum HttpMethod {
 	CONNECT,
 	DELETE,
 	GET,
@@ -12,7 +12,7 @@ public enum Method {
 	TRACE
 	;
 	
-	public static StringBuilder merge(String connectionCharacter, Method ...types){
+	public static StringBuilder merge(String connectionCharacter, HttpMethod ...types){
 		StringBuilder sb = new StringBuilder();
 		if(types != null){
 			for(int i=0; i<types.length; i++){

@@ -1,6 +1,6 @@
 package shuchaowen.common.enums;
 
-public enum Header {
+public enum HttpHeader {
 	Accept("Accept"),
 	Accept_Charset("Accept-Charset"),
 	Accept_Encoding("Accept-Encoding"),
@@ -85,7 +85,7 @@ public enum Header {
 	;
 	
 	private String value;
-	Header(String value) {
+	HttpHeader(String value) {
 		this.value = value;
 	}
 	
@@ -93,7 +93,7 @@ public enum Header {
 		return value;
 	}
 	
-	public static StringBuilder merge(String connectionCharacter, Header ...types){
+	public static StringBuilder merge(String connectionCharacter, HttpHeader ...types){
 		StringBuilder sb = new StringBuilder();
 		if(types != null){
 			for(int i=0; i<types.length; i++){

@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import com.alibaba.fastjson.JSONObject;
 
 import shuchaowen.common.Logger;
-import shuchaowen.common.enums.ContentType;
+import shuchaowen.common.enums.HttpContentType;
 import shuchaowen.common.utils.ClassUtils;
 
 public class Response extends HttpServletResponseWrapper{
@@ -50,7 +50,7 @@ public class Response extends HttpServletResponseWrapper{
 				}
 				
 				if(callback != null && callback.length() != 0){
-					setContentType(ContentType.TEXT_JAVASCRIPT.getValue());
+					setContentType(HttpContentType.TEXT_JAVASCRIPT.getValue());
 					StringBuilder sb = new StringBuilder();
 					sb.append(callback);
 					sb.append(JSONP_RESP_PREFIX);
@@ -59,7 +59,7 @@ public class Response extends HttpServletResponseWrapper{
 					content = sb.toString();
 				}else{
 					if(getContentType() == null){
-						setContentType(ContentType.TEXT_HTML.getValue());
+						setContentType(HttpContentType.TEXT_HTML.getValue());
 					}
 				}
 				

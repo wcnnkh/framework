@@ -1,6 +1,6 @@
 package shuchaowen.common.enums;
 
-public enum ContentType {
+public enum HttpContentType {
 	TEXT_HTML("text/html"),
 	TEXT_PLAIN("text/plain"),
 	JSON("application/json"),
@@ -10,7 +10,7 @@ public enum ContentType {
 	;
 	
 	private String value;
-	ContentType(String value){
+	HttpContentType(String value){
 		this.value = value;
 	}
 	

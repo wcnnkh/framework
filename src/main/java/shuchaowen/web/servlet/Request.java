@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import shuchaowen.common.enums.Header;
+import shuchaowen.common.enums.HttpHeader;
 import shuchaowen.web.servlet.bean.RequestBeanFactory;
 import shuchaowen.web.servlet.context.DefaultRequestBeanContext;
 import shuchaowen.web.servlet.context.RequestBeanContext;
@@ -150,7 +150,7 @@ public abstract class Request extends HttpServletRequestWrapper {
 	}
 
 	public boolean isAJAX() {
-		return "XMLHttpRequest".equals(getHeader(Header.X_Requested_With
+		return "XMLHttpRequest".equals(getHeader(HttpHeader.X_Requested_With
 				.getValue()));
 	}
 

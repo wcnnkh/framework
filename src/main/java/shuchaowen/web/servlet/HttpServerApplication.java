@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import shuchaowen.application.CommonApplication;
 import shuchaowen.beans.rpc.http.Message;
 import shuchaowen.common.Logger;
-import shuchaowen.common.enums.Method;
+import shuchaowen.common.enums.HttpMethod;
 import shuchaowen.common.exception.BeansException;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.io.decoder.JavaObjectDecoder;
@@ -191,7 +191,7 @@ public class HttpServerApplication extends CommonApplication {
 	}
 
 	public boolean checkRPCRequest(HttpServletRequest httpServletRequest) {
-		return Method.POST.name().equals(httpServletRequest.getMethod())
+		return HttpMethod.POST.name().equals(httpServletRequest.getMethod())
 				&& isRpcEnabled()
 				&& httpServletRequest.getServletPath().equals(
 						getRpcServletPath());

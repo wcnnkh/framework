@@ -93,7 +93,7 @@ public class MethodAction implements Action {
 		return list;
 	}
 
-	public static shuchaowen.common.enums.Method[] mergeRequestType(Class<?> clz, Method method) {
+	public static shuchaowen.common.enums.HttpMethod[] mergeRequestType(Class<?> clz, Method method) {
 		Controller clzController = clz.getAnnotation(Controller.class);
 		Controller methodController = method.getAnnotation(Controller.class);
 		if (clzController == null || methodController == null) {
@@ -102,29 +102,29 @@ public class MethodAction implements Action {
 
 		Methods methods = method.getAnnotation(Methods.class);
 
-		Map<String, shuchaowen.common.enums.Method> requestTypeMap = new HashMap<String, shuchaowen.common.enums.Method>();
+		Map<String, shuchaowen.common.enums.HttpMethod> requestTypeMap = new HashMap<String, shuchaowen.common.enums.HttpMethod>();
 		if (methods == null) {
 			if (clzController != null) {
-				for (shuchaowen.common.enums.Method requestType : clzController.methods()) {
+				for (shuchaowen.common.enums.HttpMethod requestType : clzController.httpMethods()) {
 					requestTypeMap.put(requestType.name(), requestType);
 				}
 			}
 		} else {
-			for (shuchaowen.common.enums.Method requestType : methods.value()) {
+			for (shuchaowen.common.enums.HttpMethod requestType : methods.value()) {
 				requestTypeMap.put(requestType.name(), requestType);
 			}
 		}
 
 		if (methodController != null) {
-			for (shuchaowen.common.enums.Method requestType : methodController.methods()) {
+			for (shuchaowen.common.enums.HttpMethod requestType : methodController.httpMethods()) {
 				requestTypeMap.put(requestType.name(), requestType);
 			}
 		}
 
 		if (requestTypeMap.size() == 0) {
-			requestTypeMap.put(shuchaowen.common.enums.Method.GET.name(), shuchaowen.common.enums.Method.GET);
+			requestTypeMap.put(shuchaowen.common.enums.HttpMethod.GET.name(), shuchaowen.common.enums.HttpMethod.GET);
 		}
 
-		return requestTypeMap.values().toArray(new shuchaowen.common.enums.Method[0]);
+		return requestTypeMap.values().toArray(new shuchaowen.common.enums.HttpMethod[0]);
 	}
 }

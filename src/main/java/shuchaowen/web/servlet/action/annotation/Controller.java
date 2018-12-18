@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import shuchaowen.common.enums.Method;
+import shuchaowen.common.enums.HttpMethod;
 import shuchaowen.web.servlet.action.Filter;
 
 @Target({ElementType.TYPE, ElementType.METHOD})
@@ -23,7 +23,7 @@ public @interface Controller {
 	 * 请求方法类型
 	 * @return
 	 */
-	public Method[] methods() default {};
+	public HttpMethod[] httpMethods() default {};
 	
 	/**
 	 * filters

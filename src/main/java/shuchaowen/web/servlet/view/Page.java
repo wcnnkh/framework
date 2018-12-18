@@ -16,7 +16,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
 import shuchaowen.common.Logger;
-import shuchaowen.common.enums.ContentType;
+import shuchaowen.common.enums.HttpContentType;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.utils.ConfigUtils;
 import shuchaowen.common.utils.StringUtils;
@@ -148,7 +148,7 @@ public class Page extends HashMap<String, Object> implements View{
 		switch (pageType) {
 		case JSP:
 			if(response.getContentType() == null){
-				response.setContentType(ContentType.TEXT_HTML.getValue());
+				response.setContentType(HttpContentType.TEXT_HTML.getValue());
 			}
 			
 			for(Entry<String, Object> entry : entrySet()){
@@ -167,7 +167,7 @@ public class Page extends HashMap<String, Object> implements View{
 			
 			response.setCharacterEncoding(freemarker_default_encoding);
 			if(response.getContentType() == null){
-				response.setContentType(ContentType.TEXT_HTML.getValue());
+				response.setContentType(HttpContentType.TEXT_HTML.getValue());
 			}
 			
 			if(freemarkerAppendAttrs){

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import shuchaowen.common.enums.ContentType;
+import shuchaowen.common.enums.HttpContentType;
 import shuchaowen.web.servlet.Request;
 import shuchaowen.web.servlet.Response;
 import shuchaowen.web.servlet.View;
@@ -30,7 +30,7 @@ public abstract class AbstractTextView implements View{
 		}
 		
 		if(response.getContentType() == null){
-			response.setContentType(ContentType.TEXT_HTML.getValue());
+			response.setContentType(HttpContentType.TEXT_HTML.getValue());
 		}
 		response.write(getResponseText());
 	}
