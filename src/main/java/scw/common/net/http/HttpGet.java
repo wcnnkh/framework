@@ -3,13 +3,13 @@ package scw.common.net.http;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import scw.common.enums.HttpMethod;
+import scw.common.net.http.enums.Method;
 
 public class HttpGet extends HttpRequestURLConnection{
 	
 	public HttpGet(String url) throws MalformedURLException, IOException {
 		super(url);
-		setRequestMethod(HttpMethod.GET.name());
+		setRequestMethod(Method.GET.name());
 		setDoInput(true);
 	}
 }

@@ -1,4 +1,4 @@
-package scw.beans.xml;
+package scw.servlet.bean.xml;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -7,12 +7,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import net.sf.cglib.proxy.Enhancer;
 import scw.beans.AnnotationBean;
-import scw.beans.Bean;
 import scw.beans.BeanFactory;
 import scw.beans.BeanFilter;
 import scw.beans.BeanMethod;
@@ -20,17 +16,25 @@ import scw.beans.BeanUtils;
 import scw.beans.annotaion.Service;
 import scw.beans.annotaion.Transaction;
 import scw.beans.property.PropertiesFactory;
+import scw.beans.xml.XmlBeanMethodInfo;
+import scw.beans.xml.XmlBeanParameter;
+import scw.beans.xml.XmlBeanUtils;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
+import scw.servlet.Request;
 import scw.servlet.action.annotation.Controller;
+import scw.servlet.bean.RequestBean;
+import scw.servlet.bean.RequestBeanUtils;
 
-public class XmlBean implements Bean {
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+public final class XmlRequestBean implements RequestBean {
 	private static final String CLASS_ATTRIBUTE_KEY = "class";
 	private static final String ID_ATTRIBUTE_KEY = "id";
-	private static final String SINGLETON_ATTRIBUTE_KEY = "singleton";
 	private static final String FILTERS_ATTRIBUTE_KEY = "filters";
 	private static final String NAME_ATTRIBUTE_KEY = "name";// 别名
 
@@ -46,7 +50,6 @@ public class XmlBean implements Bean {
 	private final Class<?> type;
 	private String[] names;
 	private final String id;
-	private final boolean singleton;
 	private final List<String> beanFilters = new ArrayList<String>();
 	// 构造函数的参数
 	private final List<XmlBeanParameter> constructorList = new ArrayList<XmlBeanParameter>();
@@ -61,31 +64,28 @@ public class XmlBean implements Bean {
 	private XmlBeanParameter[] beanMethodParameters;
 	private Enhancer enhancer;
 
-	public XmlBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode) throws Exception {
+	public XmlRequestBean(BeanFactory beanFactory,
+			PropertiesFactory propertiesFactory, Node beanNode)
+			throws Exception {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
 
-		Node classNode = beanNode.getAttributes().getNamedItem(CLASS_ATTRIBUTE_KEY);
-		Node nameNode = beanNode.getAttributes().getNamedItem(NAME_ATTRIBUTE_KEY);
+		Node classNode = beanNode.getAttributes().getNamedItem(
+				CLASS_ATTRIBUTE_KEY);
+		Node nameNode = beanNode.getAttributes().getNamedItem(
+				NAME_ATTRIBUTE_KEY);
 		if (nameNode != null) {
 			this.names = StringUtils.commonSplit(nameNode.getNodeValue());
 		}
 
 		String className = classNode == null ? null : classNode.getNodeValue();
 		if (StringUtils.isNull(className)) {
-			throw new BeansException("not found attribute [" + CLASS_ATTRIBUTE_KEY + "]");
+			throw new BeansException("not found attribute ["
+					+ CLASS_ATTRIBUTE_KEY + "]");
 		}
 
 		this.classInfo = ClassUtils.getClassInfo(className);
 		this.type = classInfo.getClz();
-
-		Node singletonNode = beanNode.getAttributes().getNamedItem(SINGLETON_ATTRIBUTE_KEY);
-		if (singletonNode != null) {
-			String v = singletonNode.getNodeValue();
-			this.singleton = StringUtils.isNull(v) ? true : Boolean.parseBoolean(v);
-		} else {
-			this.singleton = true;
-		}
 
 		Node idNode = beanNode.getAttributes().getNamedItem(ID_ATTRIBUTE_KEY);
 		if (idNode == null) {
@@ -95,7 +95,8 @@ public class XmlBean implements Bean {
 			this.id = StringUtils.isNull(v) ? classInfo.getName() : v;
 		}
 
-		Node filtersNode = beanNode.getAttributes().getNamedItem(FILTERS_ATTRIBUTE_KEY);
+		Node filtersNode = beanNode.getAttributes().getNamedItem(
+				FILTERS_ATTRIBUTE_KEY);
 		String[] filters = null;
 		if (filtersNode != null) {
 			filters = StringUtils.commonSplit(filtersNode.getNodeValue());
@@ -112,22 +113,28 @@ public class XmlBean implements Bean {
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if (CONSTRUCTOR_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// Constructor
-				List<XmlBeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
+				List<XmlBeanParameter> list = XmlBeanUtils
+						.parseBeanParameterList(n);
 				if (list != null) {
 					constructorList.addAll(list);
 				}
 			} else if (PROPERTIES_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// Properties
-				List<XmlBeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
+				List<XmlBeanParameter> list = XmlBeanUtils
+						.parseBeanParameterList(n);
 				if (list != null) {
 					propertiesList.addAll(list);
 				}
 			} else if (INIT_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// InitMethod
-				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(type, n);
+				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(
+						type, n);
 				initMethodList.add(xmlBeanMethodInfo);
-			} else if (DESTROY_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// DestroyMethod
-				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(type, n);
+			} else if (DESTROY_METHOD_TAG_NAME
+					.equalsIgnoreCase(n.getNodeName())) {// DestroyMethod
+				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(
+						type, n);
 				destroyMethodList.add(xmlBeanMethodInfo);
-			} else if (FACTORY_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {
+			} else if (FACTORY_METHOD_TAG_NAME
+					.equalsIgnoreCase(n.getNodeName())) {
 				if (factoryMethodInfo != null) {
 					throw new BeansException("只能有一个factory-method");
 				}
@@ -136,7 +143,8 @@ public class XmlBean implements Bean {
 		}
 
 		this.initMethodList.addAll(AnnotationBean.getInitMethodList(type));
-		this.destroyMethodList.addAll(AnnotationBean.getDestroyMethdoList(type));
+		this.destroyMethodList
+				.addAll(AnnotationBean.getDestroyMethdoList(type));
 
 		this.proxy = checkProxy();
 		this.constructor = getConstructor();
@@ -144,11 +152,12 @@ public class XmlBean implements Bean {
 	}
 
 	private Constructor<?> getConstructor() {
-		if (constructorList == null) {
+		if (constructorList == null || constructorList.isEmpty()) {
 			return getConstructorByParameterTypes();
 		} else {
 			for (Constructor<?> constructor : type.getDeclaredConstructors()) {
-				XmlBeanParameter[] beanMethodParameters = BeanUtils.sortParameters(constructor, constructorList);
+				XmlBeanParameter[] beanMethodParameters = BeanUtils
+						.sortParameters(constructor, constructorList);
 				if (beanMethodParameters != null) {
 					this.beanMethodParameters = beanMethodParameters;
 					constructor.setAccessible(true);
@@ -159,7 +168,8 @@ public class XmlBean implements Bean {
 		return null;
 	}
 
-	private Constructor<?> getConstructorByParameterTypes(Class<?>... parameterTypes) {
+	private Constructor<?> getConstructorByParameterTypes(
+			Class<?>... parameterTypes) {
 		try {
 			return type.getConstructor(parameterTypes);
 		} catch (NoSuchMethodException e) {
@@ -219,14 +229,6 @@ public class XmlBean implements Bean {
 		return this.type;
 	}
 
-	public boolean isSingleton() {
-		return this.singleton;
-	}
-
-	public boolean isProxy() {
-		return this.proxy;
-	}
-
 	private Enhancer getProxyEnhancer() {
 		if (enhancer == null) {
 			List<BeanFilter> beanFilterList = null;
@@ -246,12 +248,14 @@ public class XmlBean implements Bean {
 		return enhancer;
 	}
 
-	private Object createProxyInstance() throws Exception {
+	private Object createProxyInstance(Request request) throws Exception {
 		Enhancer enhancer = getProxyEnhancer();
 		if (constructorList == null || constructorList.isEmpty()) {
 			return enhancer.create();
 		} else {
-			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertiesFactory);
+			Object[] args = RequestBeanUtils.getBeanMethodParameterArgs(
+					request, constructorParameterTypes, beanMethodParameters,
+					beanFactory, propertiesFactory);
 			return enhancer.create(constructorParameterTypes, args);
 		}
 	}
@@ -262,19 +266,26 @@ public class XmlBean implements Bean {
 		}
 
 		for (XmlBeanParameter beanProperties : propertiesList) {
-			FieldInfo fieldInfo = classInfo.getFieldInfo(beanProperties.getName());
+			FieldInfo fieldInfo = classInfo.getFieldInfo(beanProperties
+					.getName());
 			if (fieldInfo != null) {
-				Object value = beanProperties.parseValue(beanFactory, propertiesFactory, fieldInfo.getType());
-				fieldInfo.set(bean, value);
+				Object value = beanProperties.parseValue(beanFactory,
+						propertiesFactory, fieldInfo.getType());
+				if (value != null) {
+					fieldInfo.set(bean, value);
+				}
 			}
 		}
 	}
 
-	private Object createInstance() throws Exception {
-		if (constructorParameterTypes == null || constructorParameterTypes.length == 0) {
+	private Object createInstance(Request request) throws Exception {
+		if (constructorParameterTypes == null
+				|| constructorParameterTypes.length == 0) {
 			return constructor.newInstance();
 		} else {
-			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertiesFactory);
+			Object[] args = RequestBeanUtils.getBeanMethodParameterArgs(
+					request, constructorParameterTypes, beanMethodParameters,
+					beanFactory, propertiesFactory);
 			return constructor.newInstance(args);
 		}
 	}
@@ -285,7 +296,9 @@ public class XmlBean implements Bean {
 				continue;
 			}
 
-			BeanUtils.autoWrite(classInfo.getClz(), beanFactory, propertiesFactory, bean, classInfo.getFieldInfo(field.getName()));
+			BeanUtils.autoWrite(classInfo.getClz(), beanFactory,
+					propertiesFactory, bean,
+					classInfo.getFieldInfo(field.getName()));
 		}
 		setProperties(bean);
 	}
@@ -307,42 +320,23 @@ public class XmlBean implements Bean {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T newInstance() {
+	public <T> T newInstance(Request request) {
 		Object bean;
 		try {
-			if (isProxy()) {
-				bean = createProxyInstance();
+			if (proxy) {
+				bean = createProxyInstance(request);
 			} else {
-				bean = createInstance();
+				bean = createInstance(request);
 			}
 
 			if (factoryMethodInfo == null) {
 				return (T) bean;
 			} else {
-				return (T) factoryMethodInfo.invoke(bean, beanFactory, propertiesFactory);
+				return (T) factoryMethodInfo.invoke(bean, beanFactory,
+						propertiesFactory);
 			}
 		} catch (Exception e) {
 			throw new BeansException(type.getName(), e);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {
-		Object bean;
-		try {
-			if (isProxy()) {
-				bean = getProxyEnhancer().create(parameterTypes, args);
-			} else {
-				bean = type.getConstructor(parameterTypes).newInstance(args);
-			}
-
-			if (factoryMethodInfo == null) {
-				return (T) bean;
-			} else {
-				return (T) factoryMethodInfo.invoke(bean, beanFactory, propertiesFactory);
-			}
-		} catch (Exception e) {
-			throw new BeansException(e);
 		}
 	}
 

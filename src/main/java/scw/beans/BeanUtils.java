@@ -29,7 +29,7 @@ import scw.common.reflect.ReflectInvoker;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.db.DB;
-import scw.web.servlet.action.annotation.Controller;
+import scw.servlet.action.annotation.Controller;
 
 public final class BeanUtils {
 	private static volatile boolean initStatic = false;

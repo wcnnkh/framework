@@ -17,10 +17,10 @@ import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.ObjectListing;
 import com.aliyun.oss.model.PolicyConditions;
 
-import scw.common.enums.HttpProtocolType;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.exception.NotFoundException;
 import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.net.http.enums.ProtocolType;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
 import scw.common.utils.XUtils;
@@ -59,7 +59,7 @@ public final class OSS {
 	 * @return
 	 */
 	public boolean isBucketURL(String bucketUrl) {
-		HttpProtocolType protocolType = HttpProtocolType.getHttpProtocolType(bucketUrl);
+		ProtocolType protocolType = ProtocolType.getHttpProtocolType(bucketUrl);
 		if(protocolType == null){
 			return false;
 		}
@@ -74,7 +74,7 @@ public final class OSS {
 	}
 	
 	public String getObjectKey(String bucketUrl){
-		HttpProtocolType protocolType = HttpProtocolType.getHttpProtocolType(bucketUrl);
+		ProtocolType protocolType = ProtocolType.getHttpProtocolType(bucketUrl);
 		if(protocolType == null){
 			return null;
 		}
@@ -88,7 +88,7 @@ public final class OSS {
 		return null;
 	}
 	
-	public String getUrl(HttpProtocolType protocol, String bucketName, String objectKey) {
+	public String getUrl(ProtocolType protocol, String bucketName, String objectKey) {
 		if (protocol == null || StringUtils.isNull(bucketName, objectKey)) {
 			throw new NullPointerException();
 		}
@@ -133,7 +133,7 @@ public final class OSS {
 			return ;
 		}
 		
-		HttpProtocolType protocolType = HttpProtocolType.getHttpProtocolType(bucketUrl);
+		ProtocolType protocolType = ProtocolType.getHttpProtocolType(bucketUrl);
 		if(protocolType == null){
 			return ;
 		}
@@ -186,7 +186,7 @@ public final class OSS {
 		return objectKey.startsWith(sb.toString());
 	}
 	
-	public String getUrlAndCheck(HttpProtocolType protocol, String bucketName, String root, long uid, String objectKey) {
+	public String getUrlAndCheck(ProtocolType protocol, String bucketName, String root, long uid, String objectKey) {
 		if (protocol == null || StringUtils.isNull(bucketName, objectKey)) {
 			throw new NullPointerException();
 		}

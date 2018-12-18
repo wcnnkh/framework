@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 
-import scw.common.enums.HttpMethod;
+import scw.common.net.http.enums.Method;
 
 public class HttpPut extends HttpRequestURLConnection{
 	public HttpPut(String url) throws MalformedURLException, IOException {
 		super(url);
-		setRequestMethod(HttpMethod.PUT.name());
+		setRequestMethod(Method.PUT.name());
 		setDoOutput(true);
 		setDoInput(true);
 	}
