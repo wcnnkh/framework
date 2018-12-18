@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import shuchaowen.common.net.http.HttpUtils;
 import shuchaowen.common.utils.SignUtils;
 import shuchaowen.common.utils.StringUtils;
 import shuchaowen.common.utils.XTime;
-import shuchaowen.connection.http.HttpUtils;
 
 public class ALiDaYu {
 	private String host;

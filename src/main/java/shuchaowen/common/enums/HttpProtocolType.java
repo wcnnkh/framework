@@ -1,4 +1,4 @@
-package shuchaowen.connection.http.enums;
+package shuchaowen.common.enums;
 
 import shuchaowen.common.utils.StringUtils;
 

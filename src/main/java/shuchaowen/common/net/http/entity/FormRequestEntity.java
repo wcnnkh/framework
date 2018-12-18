@@ -1,4 +1,4 @@
-package shuchaowen.connection.http.entity;
+package shuchaowen.common.net.http.entity;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import shuchaowen.connection.Request;
-import shuchaowen.connection.RequestEntity;
-import shuchaowen.connection.http.entity.parameter.FormParameter;
+import shuchaowen.common.net.Request;
+import shuchaowen.common.net.RequestEntity;
+import shuchaowen.common.net.http.entity.parameter.FormParameter;
 
 public class FormRequestEntity implements RequestEntity{
 	private final Charset charset;

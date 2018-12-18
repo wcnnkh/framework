@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import shuchaowen.connection.http.enums.Method;
+import shuchaowen.common.enums.Method;
 import shuchaowen.web.servlet.action.Filter;
 
 @Target({ElementType.TYPE, ElementType.METHOD})

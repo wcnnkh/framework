@@ -5,9 +5,9 @@ import org.w3c.dom.Node;
 import shuchaowen.beans.property.PropertiesFactory;
 import shuchaowen.common.StringFormat;
 import shuchaowen.common.exception.BeansException;
+import shuchaowen.common.net.http.HttpUtils;
 import shuchaowen.common.utils.ConfigUtils;
 import shuchaowen.common.utils.StringUtils;
-import shuchaowen.connection.http.HttpUtils;
 
 public class XmlValue {
 	private final String value;

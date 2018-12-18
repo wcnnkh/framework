@@ -1,11 +1,11 @@
-package shuchaowen.connection.http;
+package shuchaowen.common.net.http;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ProtocolException;
 import java.nio.charset.Charset;
 
-import shuchaowen.connection.Request;
+import shuchaowen.common.net.Request;
 
 public interface HttpRequest extends Request {
 	void setFixedLengthStreamingMode (int contentLength);

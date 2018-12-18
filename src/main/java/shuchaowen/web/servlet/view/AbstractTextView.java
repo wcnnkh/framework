@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import shuchaowen.connection.http.enums.ContentType;
+import shuchaowen.common.enums.ContentType;
 import shuchaowen.web.servlet.Request;
 import shuchaowen.web.servlet.Response;
 import shuchaowen.web.servlet.View;

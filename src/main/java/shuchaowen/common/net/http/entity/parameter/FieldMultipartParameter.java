@@ -1,4 +1,4 @@
-package shuchaowen.connection.http.entity.parameter;
+package shuchaowen.common.net.http.entity.parameter;
 
 import java.io.IOException;
 import java.io.OutputStream;

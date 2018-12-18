@@ -1,4 +1,4 @@
-package shuchaowen.connection.http.entity.parameter;
+package shuchaowen.common.net.http.entity.parameter;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-import shuchaowen.connection.http.entity.file.File;
+import shuchaowen.common.net.http.entity.file.File;
 
 public class FileMultipartParameter extends AbstractMultipartParameter{
 	private final File file;

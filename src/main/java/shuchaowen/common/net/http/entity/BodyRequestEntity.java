@@ -1,11 +1,11 @@
-package shuchaowen.connection.http.entity;
+package shuchaowen.common.net.http.entity;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-import shuchaowen.connection.Request;
-import shuchaowen.connection.RequestEntity;
+import shuchaowen.common.net.Request;
+import shuchaowen.common.net.RequestEntity;
 
 public class BodyRequestEntity implements RequestEntity{
 	private final ByteBuffer byteBuffer;

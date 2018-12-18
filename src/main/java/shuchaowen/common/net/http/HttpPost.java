@@ -1,9 +1,9 @@
-package shuchaowen.connection.http;
+package shuchaowen.common.net.http;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import shuchaowen.connection.http.enums.Method;
+import shuchaowen.common.enums.Method;
 
 public class HttpPost extends HttpRequestURLConnection{
 	

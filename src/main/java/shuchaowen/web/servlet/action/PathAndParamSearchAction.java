@@ -67,8 +67,8 @@ public class PathAndParamSearchAction implements SearchAction{
 				}
 				
 				Action action = new MethodAction(beanFactory, clz, method);
-				shuchaowen.connection.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
-				for(shuchaowen.connection.http.enums.Method type : types){
+				shuchaowen.common.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
+				for(shuchaowen.common.enums.Method type : types){
 					Map<String, Action> map = clzMap.get(type.name());
 					if(map == null){
 						map = new HashMap<String, Action>();

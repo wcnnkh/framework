@@ -1,4 +1,4 @@
-package shuchaowen.connection.http;
+package shuchaowen.common.net.http;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
+import shuchaowen.common.net.http.entity.BodyRequestEntity;
+import shuchaowen.common.net.http.entity.FormRequestEntity;
 import shuchaowen.common.utils.StringUtils;
-import shuchaowen.connection.http.entity.BodyRequestEntity;
-import shuchaowen.connection.http.entity.FormRequestEntity;
 
 public final class HttpUtils {
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");

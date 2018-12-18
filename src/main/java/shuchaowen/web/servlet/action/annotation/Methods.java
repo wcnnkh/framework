@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import shuchaowen.connection.http.enums.Method;
+import shuchaowen.common.enums.Method;
 
 /**
  * 此值会覆盖controller中的内容,如果要追加内容请在action中添加

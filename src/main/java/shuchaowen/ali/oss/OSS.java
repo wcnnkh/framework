@@ -17,13 +17,13 @@ import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.ObjectListing;
 import com.aliyun.oss.model.PolicyConditions;
 
+import shuchaowen.common.enums.HttpProtocolType;
 import shuchaowen.common.exception.AlreadyExistsException;
 import shuchaowen.common.exception.NotFoundException;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.utils.StringUtils;
 import shuchaowen.common.utils.XTime;
 import shuchaowen.common.utils.XUtils;
-import shuchaowen.connection.http.enums.HttpProtocolType;
 
 public final class OSS {
 	private static final int DEFAULT_EXPIRE = 120;

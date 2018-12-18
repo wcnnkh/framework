@@ -1,4 +1,4 @@
-package shuchaowen.connection.http;
+package shuchaowen.common.net.http;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +10,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 
 import shuchaowen.common.io.decoder.StringDecoder;
-import shuchaowen.connection.RequestURLConnection;
+import shuchaowen.common.net.RequestURLConnection;
 
 public class HttpRequestURLConnection extends RequestURLConnection implements HttpRequest{
 	private final HttpURLConnection httpURLConnection;

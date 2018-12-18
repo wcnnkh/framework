@@ -12,9 +12,9 @@ import shuchaowen.common.Logger;
 import shuchaowen.common.exception.NotSupportException;
 import shuchaowen.common.exception.ShuChaoWenRuntimeException;
 import shuchaowen.common.exception.SignatureException;
+import shuchaowen.common.net.http.HttpUtils;
 import shuchaowen.common.utils.SignUtils;
 import shuchaowen.common.utils.StringUtils;
-import shuchaowen.connection.http.HttpUtils;
 import shuchaowen.tencent.weixin.bean.Unifiedorder;
 
 public final class WeiXinPay {

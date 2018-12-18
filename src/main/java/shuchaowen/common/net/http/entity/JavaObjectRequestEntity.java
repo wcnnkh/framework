@@ -1,12 +1,12 @@
-package shuchaowen.connection.http.entity;
+package shuchaowen.common.net.http.entity;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import shuchaowen.connection.Request;
-import shuchaowen.connection.RequestEntity;
+import shuchaowen.common.net.Request;
+import shuchaowen.common.net.RequestEntity;
 
 public class JavaObjectRequestEntity extends ArrayList<Object> implements RequestEntity{
 	private static final long serialVersionUID = 1L;

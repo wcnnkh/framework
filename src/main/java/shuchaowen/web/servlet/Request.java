@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import shuchaowen.connection.http.enums.Header;
+import shuchaowen.common.enums.Header;
 import shuchaowen.web.servlet.bean.RequestBeanFactory;
 import shuchaowen.web.servlet.context.DefaultRequestBeanContext;
 import shuchaowen.web.servlet.context.RequestBeanContext;

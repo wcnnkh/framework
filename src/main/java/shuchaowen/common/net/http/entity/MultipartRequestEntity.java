@@ -1,4 +1,4 @@
-package shuchaowen.connection.http.entity;
+package shuchaowen.common.net.http.entity;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -6,12 +6,12 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import shuchaowen.connection.Request;
-import shuchaowen.connection.RequestEntity;
-import shuchaowen.connection.http.entity.file.File;
-import shuchaowen.connection.http.entity.parameter.AbstractMultipartParameter;
-import shuchaowen.connection.http.entity.parameter.FieldMultipartParameter;
-import shuchaowen.connection.http.entity.parameter.FileMultipartParameter;
+import shuchaowen.common.net.Request;
+import shuchaowen.common.net.RequestEntity;
+import shuchaowen.common.net.http.entity.file.File;
+import shuchaowen.common.net.http.entity.parameter.AbstractMultipartParameter;
+import shuchaowen.common.net.http.entity.parameter.FieldMultipartParameter;
+import shuchaowen.common.net.http.entity.parameter.FileMultipartParameter;
 
 public class MultipartRequestEntity extends ArrayList<AbstractMultipartParameter> implements RequestEntity {
 	public static final String DEFAULT_BOUNDARY = "----WebKitFormBoundaryKSD2ndz6G9RPNjx0";
