@@ -41,13 +41,9 @@ public final class UeditorUpload implements Upload {
 		FileUtils.copyFileUsingFileChannels(myConfigPath, configFile);
 	}
 
-	public void execute(Request request) {
+	public void execute(Request request) throws IOException {
 		ActionEnter actionEnter = new ActionEnter(request, rootPath);
-		try {
-			request.getResponse().write(actionEnter.exec());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		request.getResponse().write(actionEnter.exec());
 	}
 
 }
