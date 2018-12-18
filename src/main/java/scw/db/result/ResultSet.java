@@ -166,6 +166,10 @@ public final class ResultSet implements Serializable {
 		return list;
 	}
 
+	protected static boolean isOriginalType(Class<?> type) {
+		return type.getName().startsWith("java.") || ClassUtils.containsBasicValueType(type);
+	}
+
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getList(Class<T> type, TableMapping tableMapping) {
 		if (metaData == null) {
@@ -178,7 +182,7 @@ public final class ResultSet implements Serializable {
 
 		if (type.isArray()) {
 			return (List<T>) getObjectList();
-		} else if (type.getName().startsWith("java") || ClassUtils.isBasicType(type)) {
+		} else if (isOriginalType(type)) {
 			List<Object> list = new ArrayList<Object>();
 			for (Object[] objects : dataList) {
 				list.add(objects[0]);
@@ -208,7 +212,7 @@ public final class ResultSet implements Serializable {
 
 		if (type.isArray()) {
 			return (List<T>) getObjectList();
-		} else if (type.getName().startsWith("java") || ClassUtils.isBasicType(type)) {
+		} else if (isOriginalType(type)) {
 			List<Object> list = new ArrayList<Object>();
 			for (Object[] objects : dataList) {
 				list.add(objects[0]);
@@ -249,7 +253,7 @@ public final class ResultSet implements Serializable {
 			Object[] dest = new Object[src.length];
 			System.arraycopy(src, 0, dest, 0, dest.length);
 			return (T) dest;
-		} else if (type.getName().startsWith("java") || ClassUtils.isBasicType(type)) {
+		} else if (isOriginalType(type)) {
 			Object[] values = dataList.get(index);
 			if (values != null && values.length > 0) {
 				return (T) values[0];
@@ -282,7 +286,7 @@ public final class ResultSet implements Serializable {
 			Object[] dest = new Object[src.length];
 			System.arraycopy(src, 0, dest, 0, dest.length);
 			return (T) dest;
-		} else if (type.getName().startsWith("java") || ClassUtils.isBasicType(type)) {
+		} else if (isOriginalType(type)) {
 			Object[] values = dataList.get(index);
 			if (values != null && values.length > 0) {
 				return (T) values[0];
