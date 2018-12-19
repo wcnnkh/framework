@@ -11,7 +11,7 @@ public class CommonSQL implements SQL{
 	public CommonSQL(){};
 	
 	public CommonSQL(String sql, Object ...params){
-		append(sql);
+		sb = new StringBuilder(sql);
 		if(params != null){
 			for(Object obj : params){
 				addParam(obj);
@@ -71,13 +71,16 @@ public class CommonSQL implements SQL{
 	}
 	
 	public void clear(){
-		sb.delete(0, sb.length());
+		if(sb != null){
+			sb.delete(0, sb.length());
+		}
+
 		if(paramList != null){
 			paramList.clear();
 		}
 	}
 
 	public String getSql() {
-		return sb.toString();
+		return sb == null? null:sb.toString();
 	}
 }
