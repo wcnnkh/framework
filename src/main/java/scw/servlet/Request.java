@@ -22,16 +22,13 @@ public abstract class Request extends HttpServletRequestWrapper {
 	private RequestBeanContext requestBeanContext;
 	private RequestBeanContext wrapperBeanContext;
 
-	public Request(RequestBeanFactory requestBeanFactory,
-			HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse, boolean isDebug)
-			throws IOException {
+	public Request(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
 		super(httpServletRequest);
 		this.createTime = System.currentTimeMillis();
 		this.isDebug = isDebug;
 		this.response = new Response(this, httpServletResponse);
-		this.requestBeanContext = new DefaultRequestBeanContext(this,
-				requestBeanFactory);
+		this.requestBeanContext = new DefaultRequestBeanContext(this, requestBeanFactory);
 		this.wrapperBeanContext = new WrapperRequestBeanContext(this);
 	}
 
@@ -133,8 +130,7 @@ public abstract class Request extends HttpServletRequestWrapper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <T> T getParameter(Class<T> type, String name)
-			throws Exception {
+	public final <T> T getParameter(Class<T> type, String name) throws Exception {
 		T v = (T) getAttribute(name);
 		if (v == null) {
 			v = (T) get(type, name);
@@ -150,8 +146,7 @@ public abstract class Request extends HttpServletRequestWrapper {
 	}
 
 	public boolean isAJAX() {
-		return "XMLHttpRequest".equals(getHeader(Header.X_Requested_With
-				.getValue()));
+		return "XMLHttpRequest".equals(getHeader(Header.X_Requested_With.getValue()));
 	}
 
 	public String getIP() {
@@ -166,15 +161,20 @@ public abstract class Request extends HttpServletRequestWrapper {
 	 * @return
 	 */
 	protected String formatNumberText(final String text) {
-		if (text == null) {
+		if (text == null || text.length() == 0) {
 			return text;
 		}
 
-		if (text.indexOf(",") != -1) {
-			return text.replaceAll(",", "");
-		} else {
-			return text;
+		char[] chars = new char[text.length()];
+		int pos = 0;
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if(c == ' ' || c == ','){
+				continue;
+			}
+			chars[pos++] = c;
 		}
+		return pos == 0 ? null : new String(chars, 0, pos);
 	}
 
 	/**
