@@ -51,4 +51,8 @@ public class Pagination<T> implements Serializable{
 	public void setData(T data) {
 		this.data = data;
 	}
+	
+	public static long getBegin(long page, int limit){
+		return (page - 1) * limit;
+	}
 }
