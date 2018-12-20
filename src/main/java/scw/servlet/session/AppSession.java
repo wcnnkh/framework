@@ -13,7 +13,7 @@ import scw.servlet.Request;
  * @author asus1
  *
  */
-public final class AppSession {
+public class AppSession {
 	private SessionFactory sessionFactory;
 	private Request request;
 	private boolean cookie;
@@ -21,10 +21,6 @@ public final class AppSession {
 	private String uidKey;
 	private String sidKey;
 	
-	public AppSession(Request request, SessionFactory sessionFactory) {
-		this(request, sessionFactory, null, "sid", false);
-	}
-
 	public AppSession(Request request, SessionFactory sessionFactory,
 			String uidKey, String sidKey, boolean cookie) {
 		this.request = request;
@@ -69,18 +65,19 @@ public final class AppSession {
 	}
 
 	public Session login(String uid) {
-		return sessionFactory.login(uid);
+		session = sessionFactory.login(uid);
+		return session;
 	}
 
 	public Session login(long uid) {
-		return sessionFactory.login(uid);
+		return login(uid + "");
 	}
 
 	public Session login(int uid) {
-		return sessionFactory.login(uid);
+		return login(uid + "");
 	}
 
-	public void addCookie(Session session) {
+	public void addCookie() {
 		if (session == null) {
 			return;
 		}
