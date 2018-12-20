@@ -1,10 +1,11 @@
-package scw.redis;
+package scw.locks;
 
 import java.util.Collections;
 
 import scw.common.utils.XUtils;
+import scw.redis.Redis;
 
-public final class RedisLock {
+public final class RedisLock extends AbstractLock {
 	private static final String UNLOCK_SCRIPT = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
 	private static final Long UNLOCK_SUCCESS_RESULT = 1L;
 	private final Redis redis;
@@ -23,29 +24,12 @@ public final class RedisLock {
 		this.id = id;
 	}
 
-	/**
-	 * 尝试获取锁，会立刻得到结果
-	 * 
-	 * @return
-	 */
 	public boolean lock() {
 		return redis.set(key, id, "NX", "EX", timeout);
 	}
 
-	/**
-	 * 尝试获取锁，如果无法获取会一直阻塞直到获取到锁
-	 */
-	public void lockWait(int sleep) throws InterruptedException {
-		while (!lock()) {
-			Thread.sleep(sleep);
-		}
-	}
-
-	/**
-	 * @return 返回值是可以忽略的，如果返回fasle可能是key已经失效或已经解锁
-	 */
-	public boolean unLock() {
+	public void unlock() {
 		Object result = redis.eval(UNLOCK_SCRIPT, Collections.singletonList(key), Collections.singletonList(id));
-		return UNLOCK_SUCCESS_RESULT.equals(result);
+		UNLOCK_SUCCESS_RESULT.equals(result);
 	}
 }

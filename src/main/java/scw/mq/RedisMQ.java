@@ -8,8 +8,8 @@ import java.util.List;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.io.IOUtils;
 import scw.common.utils.XUtils;
+import scw.locks.RedisLock;
 import scw.redis.Redis;
-import scw.redis.RedisLock;
 
 public final class RedisMQ<T> implements MQ<T> {
 	private static final String QUEUE_READ_LOCK = "_lock";
@@ -55,7 +55,7 @@ public final class RedisMQ<T> implements MQ<T> {
 							} catch (Exception e) {
 								e.printStackTrace();
 							} finally {
-								redisLock.unLock();
+								redisLock.unlock();
 							}
 						}
 

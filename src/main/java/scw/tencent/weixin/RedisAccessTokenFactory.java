@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import scw.common.io.IOUtils;
+import scw.locks.RedisLock;
 import scw.redis.Redis;
-import scw.redis.RedisLock;
 import scw.tencent.weixin.bean.AccessToken;
 import scw.tencent.weixin.process.GetAccessToken;
 
@@ -62,7 +62,7 @@ public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory {
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-				lock.unLock();
+				lock.unlock();
 			}
 		}
 

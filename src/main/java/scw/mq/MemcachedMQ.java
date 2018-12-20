@@ -5,8 +5,8 @@ import java.util.List;
 
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.XUtils;
+import scw.locks.MemcachedLock;
 import scw.memcached.Memcached;
-import scw.memcached.MemcachedLock;
 
 public final class MemcachedMQ<T> implements MQ<T> {
 	private static final String READ_KEY = "_read";
@@ -60,7 +60,7 @@ public final class MemcachedMQ<T> implements MQ<T> {
 							} catch (Exception e) {
 								e.printStackTrace();
 							} finally {
-								memcachedLock.unLock();
+								memcachedLock.unlock();
 							}
 						}
 

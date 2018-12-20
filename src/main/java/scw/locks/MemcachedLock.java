@@ -1,8 +1,10 @@
-package scw.memcached;
+package scw.locks;
 
 import scw.common.utils.XUtils;
+import scw.memcached.CAS;
+import scw.memcached.Memcached;
 
-public final class MemcachedLock {
+public final class MemcachedLock extends AbstractLock {
 	private final Memcached memcached;
 	private final String key;
 	private final String id;
@@ -19,32 +21,14 @@ public final class MemcachedLock {
 		this.timeout = timeout;
 	}
 
-	/**
-	 * 尝试获取锁，会立刻得到结果
-	 * 
-	 * @return
-	 */
 	public boolean lock() {
 		return memcached.add(key, timeout, id);
 	}
 
-	/**
-	 * 尝试获取锁，如果无法获取会一直阻塞直到获取到锁
-	 */
-	public void lockWait(int sleep) throws InterruptedException {
-		while (!lock()) {
-			Thread.sleep(sleep);
-		}
-	}
-
-	/**
-	 * @return 返回值是可以忽略的，如果返回fasle可能是key已经失效或已经解锁
-	 */
-	public boolean unLock() {
+	public void unlock() {
 		CAS<String> cas = memcached.gets(key);
 		if (id.equals(cas.getValue())) {
-			return memcached.delete(key, cas.getCas(), 1000L);
+			memcached.delete(key, cas.getCas(), 1000L);
 		}
-		return false;
 	}
 }

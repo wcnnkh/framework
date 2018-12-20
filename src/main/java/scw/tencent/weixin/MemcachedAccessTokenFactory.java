@@ -1,7 +1,7 @@
 package scw.tencent.weixin;
 
+import scw.locks.MemcachedLock;
 import scw.memcached.Memcached;
-import scw.memcached.MemcachedLock;
 import scw.tencent.weixin.bean.AccessToken;
 import scw.tencent.weixin.process.GetAccessToken;
 
@@ -42,7 +42,7 @@ public final class MemcachedAccessTokenFactory extends AbstractAccessTokenFactor
 			} catch (Exception e) {
 				e.printStackTrace();
 			}finally{
-				memcachedLock.unLock();
+				memcachedLock.unlock();
 			}
 		}
 		

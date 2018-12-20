@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import scw.common.io.IOUtils;
+import scw.locks.RedisLock;
 import scw.redis.Redis;
-import scw.redis.RedisLock;
 import scw.tencent.weixin.bean.JsApiTicket;
 import scw.tencent.weixin.process.GetJsApiTicket;
 
@@ -70,7 +70,7 @@ public final class RedisJsApiTicketFactory extends AbstractJsApiTicketFactory {
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-				lock.unLock();
+				lock.unlock();
 			}
 		}
 

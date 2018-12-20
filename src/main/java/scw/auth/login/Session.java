@@ -2,14 +2,15 @@ package scw.auth.login;
 
 import java.io.Serializable;
 
-public class Session implements Serializable{
+public final class Session implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String id;
 	private String uid;
-	
-	public Session(){}
-	
-	public Session(String id, String uid){
+
+	protected Session() {
+	}
+
+	protected Session(String id, String uid) {
 		this.id = id;
 		this.uid = uid;
 	}
@@ -18,23 +19,15 @@ public class Session implements Serializable{
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getUid() {
 		return uid;
 	}
 
-	public void setUid(String uid) {
-		this.uid = uid;
-	}
-	
-	public long getLongUid(){
+	public long getLongUid() {
 		return Long.parseLong(getUid());
 	}
-	
-	public int getIntegerUid(){
+
+	public int getIntegerUid() {
 		return Integer.parseInt(getUid());
 	}
 }

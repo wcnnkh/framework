@@ -2,30 +2,24 @@ package scw.auth.login.sso;
 
 import scw.auth.login.MemcachedSessionFactory;
 import scw.auth.login.Session;
+import scw.common.utils.XUtils;
 import scw.memcached.Memcached;
 
-public class MemcachedSSO extends MemcachedSessionFactory implements SSO{
-	
-	public MemcachedSSO(Memcached memcached, String prefix, int exp){
+public class MemcachedSSO extends MemcachedSessionFactory implements SSO {
+
+	public MemcachedSSO(Memcached memcached, String prefix, int exp) {
 		super(memcached, prefix, exp);
 	}
-	
+
 	@Override
 	public Session login(String uid) {
-		String oldSid = getMemcached().get(getPrefix() + uid);
-		if(oldSid != null){
-			getMemcached().delete(getPrefix() + oldSid);
-		}
-		
-		Session session = super.login(uid);
-		getMemcached().set(getPrefix() + uid, session.getId());
-		return session;
+		return login(uid + XUtils.getUUID(), uid);
 	}
-	
+
 	@Override
 	public void cancelLogin(String sessionId) {
 		String uid = getMemcached().get(getPrefix() + sessionId);
-		if(uid != null){
+		if (uid != null) {
 			getMemcached().delete(getPrefix() + uid);
 		}
 		super.cancelLogin(sessionId);
@@ -33,7 +27,7 @@ public class MemcachedSSO extends MemcachedSessionFactory implements SSO{
 
 	public Session getSessionByUid(String uid) {
 		String sid = getMemcached().get(getPrefix() + uid);
-		if(sid == null){
+		if (sid == null) {
 			return null;
 		}
 		return getSession(sid);
@@ -41,7 +35,7 @@ public class MemcachedSSO extends MemcachedSessionFactory implements SSO{
 
 	public void cancelLoginByUid(String uid) {
 		String sid = getMemcached().get(getPrefix() + uid);
-		if(sid != null){
+		if (sid != null) {
 			cancelLogin(sid);
 		}
 	}
@@ -62,4 +56,13 @@ public class MemcachedSSO extends MemcachedSessionFactory implements SSO{
 		cancelLoginByUid(uid + "");
 	}
 
+	@Override
+	public Session login(String sessionId, String uid) {
+		String oldSid = getMemcached().get(getPrefix() + uid);
+		if (oldSid != null) {
+			getMemcached().delete(getPrefix() + oldSid);
+		}
+		getMemcached().set(getPrefix() + uid, sessionId);
+		return super.login(sessionId, uid);
+	}
 }
