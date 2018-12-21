@@ -7,11 +7,11 @@ public class DistributedLockFactory implements LockFactory {
 	private LockFactory lockFactory;
 
 	public DistributedLockFactory(Memcached memcached) {
-		this(memcached, 5);
+		this(memcached, 60);
 	}
 
 	public DistributedLockFactory(Redis redis) {
-		this(redis, 5);
+		this(redis, 60);
 	}
 
 	public DistributedLockFactory(Memcached memcached, int default_timeout) {
