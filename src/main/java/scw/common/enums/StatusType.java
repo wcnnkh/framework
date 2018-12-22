@@ -13,7 +13,11 @@ public enum StatusType {
 		return value;
 	}
 
-	public static StatusType forValue(int value) {
+	public static StatusType forValue(Integer value) {
+		if(value == null){
+			return null;
+		}
+		
 		if (value == available.getValue()) {
 			return StatusType.available;
 		} else if (value == unavailable.getValue()) {
