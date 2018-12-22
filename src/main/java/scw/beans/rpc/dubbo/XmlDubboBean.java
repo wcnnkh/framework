@@ -101,14 +101,11 @@ public class XmlDubboBean implements Bean{
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		// TODO Auto-generated method stub
 	}
 
 	public void init(Object bean) throws Exception {
-		// TODO Auto-generated method stub
 	}
 
 	public void destroy(Object bean) throws Exception {
-		// TODO Auto-generated method stub
 	}
 }

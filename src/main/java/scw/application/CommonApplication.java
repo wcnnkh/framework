@@ -2,6 +2,8 @@ package scw.application;
 
 import java.util.Collection;
 
+import com.alibaba.dubbo.config.ProtocolConfig;
+
 import scw.beans.AnnotationBeanFactory;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
@@ -110,6 +112,8 @@ public class CommonApplication implements Application {
 				throw new ShuChaoWenRuntimeException(e);
 			}
 		}
+
+		ProtocolConfig.destroyAll();
 		Logger.shutdown();
 	}
 }
