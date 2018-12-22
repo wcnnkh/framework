@@ -1,7 +1,6 @@
 package scw.beans;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -25,13 +24,13 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
 		singletonMap.put(name, bean);
 		Bean beanInfo = getBean(name);
-		if(beanInfo != null){
+		if (beanInfo != null) {
 			beanInfo.autowrite(bean);
 			beanInfo.init(bean);
 		}
 		return true;
 	}
-	
+
 	protected void putBean(String name, Bean bean) {
 		if (contains(name)) {
 			throw new AlreadyExistsException(name);
@@ -43,7 +42,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		if (nameMappingMap.containsKey(name)) {
 			return false;
 		}
-		
+
 		nameMappingMap.put(name, mappingName);
 		return true;
 	}
@@ -60,13 +59,13 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		}
 
 		if (bean.isSingleton()) {
-			Object obj = singletonMap.get(name);
+			Object obj = singletonMap.get(bean.getId());
 			if (obj == null) {
 				synchronized (singletonMap) {
-					obj = singletonMap.get(name);
+					obj = singletonMap.get(bean.getId());
 					if (obj == null) {
 						obj = bean.newInstance();
-						singletonMap.put(name, obj);
+						singletonMap.put(bean.getId(), obj);
 						try {
 							bean.autowrite(obj);
 							bean.init(obj);
@@ -93,18 +92,32 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		return get(type.getName());
 	}
 
-	public Bean getBean(String name) {
-		String v = nameMappingMap.get(name);
-		v = v == null ? name : v;
-		Bean bean = beanMap.get(v);
+	private Bean getBeanCache(String name) {
+		Bean bean = beanMap.get(name);
 		if (bean == null) {
-			synchronized (beanMap) {
+			String v = nameMappingMap.get(name);
+			if (v != null) {
 				bean = beanMap.get(v);
+			}
+		}
+		return bean;
+	}
+
+	public Bean getBean(String name) {
+		Bean bean = getBeanCache(name);
+		if (bean == null) {
+			synchronized (this) {
+				bean = getBeanCache(name);
 				if (bean == null) {
 					try {
-						bean = newBean(v);
+						bean = newBean(name);
 						if (bean != null) {
-							beanMap.put(v, bean);
+							beanMap.put(bean.getId(), bean);
+							if (bean.getNames() != null) {
+								for (String n : bean.getNames()) {
+									nameMappingMap.put(n, bean.getId());
+								}
+							}
 						}
 					} catch (Exception e) {
 						throw new BeansException(e);
@@ -118,19 +131,11 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	protected abstract Bean newBean(String name) throws Exception;
 
 	public void destroy() {
-		HashSet<Class<?>> tagSet = new HashSet<Class<?>>();
 		for (Entry<String, Object> entry : singletonMap.entrySet()) {
-			if (contains(entry.getKey())) {
-				if (tagSet.contains(entry.getValue().getClass())) {
-					continue;
-				}
-
+			Bean bean = getBean(entry.getKey());
+			if (bean != null) {
 				try {
-					Bean bean = getBean(entry.getKey());
-					if (bean != null) {
-						tagSet.add(entry.getValue().getClass());
-						bean.destroy(entry.getValue());
-					}
+					bean.destroy(entry.getValue());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
