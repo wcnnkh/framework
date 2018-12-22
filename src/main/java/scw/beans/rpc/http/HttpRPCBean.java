@@ -6,10 +6,10 @@ import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 
 import scw.common.io.decoder.JavaObjectDecoder;
-import scw.common.net.http.HttpPost;
-import scw.common.net.http.entity.JavaObjectRequestEntity;
 import scw.common.reflect.Invoker;
 import scw.common.utils.SignUtils;
+import scw.net.http.HttpPost;
+import scw.net.http.entity.JavaObjectRequestEntity;
 
 public class HttpRPCBean extends AbstractInterfaceProxyBean{
 	private final String host;

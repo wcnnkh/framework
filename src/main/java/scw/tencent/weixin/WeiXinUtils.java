@@ -9,8 +9,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
-import scw.common.net.http.HttpUtils;
 import scw.common.utils.SignUtils;
+import scw.net.http.HttpUtils;
 
 /**
  * @author shuchaowen

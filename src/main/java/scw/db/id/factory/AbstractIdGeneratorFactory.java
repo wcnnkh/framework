@@ -3,10 +3,10 @@ package scw.db.id.factory;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.db.ColumnInfo;
-import scw.db.DB;
+import scw.database.ColumnInfo;
+import scw.database.DataBaseUtils;
+import scw.database.TableInfo;
 import scw.db.DBManager;
-import scw.db.TableInfo;
 
 public abstract class AbstractIdGeneratorFactory implements IdGeneratorFactory{
 	private Map<Class<?>, MaxId> map = new HashMap<Class<?>, MaxId>();
@@ -16,7 +16,7 @@ public abstract class AbstractIdGeneratorFactory implements IdGeneratorFactory{
 	}
 	
 	public long getMaxId(Class<?> tableClass){
-		TableInfo tableInfo = DB.getTableInfo(tableClass);
+		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
 		MaxId maxId = map.get(tableClass);
 		if(maxId == null){
 			ColumnInfo firstColumn = tableInfo.getColumns()[0];

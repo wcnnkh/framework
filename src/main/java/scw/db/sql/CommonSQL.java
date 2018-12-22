@@ -3,6 +3,8 @@ package scw.db.sql;
 import java.util.ArrayList;
 import java.util.List;
 
+import scw.database.SQL;
+
 public class CommonSQL implements SQL{
 	private static final long serialVersionUID = 1L;
 	private StringBuilder sb;

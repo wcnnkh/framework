@@ -12,9 +12,9 @@ import scw.common.Logger;
 import scw.common.exception.NotSupportException;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.exception.SignatureException;
-import scw.common.net.http.HttpUtils;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
+import scw.net.http.HttpUtils;
 import scw.tencent.weixin.bean.Unifiedorder;
 
 public final class WeiXinPay {

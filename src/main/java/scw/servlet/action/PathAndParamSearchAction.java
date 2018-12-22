@@ -67,8 +67,8 @@ public class PathAndParamSearchAction implements SearchAction{
 				}
 				
 				Action action = new MethodAction(beanFactory, clz, method);
-				scw.common.net.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
-				for(scw.common.net.http.enums.Method type : types){
+				scw.net.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
+				for(scw.net.http.enums.Method type : types){
 					Map<String, Action> map = clzMap.get(type.name());
 					if(map == null){
 						map = new HashMap<String, Action>();

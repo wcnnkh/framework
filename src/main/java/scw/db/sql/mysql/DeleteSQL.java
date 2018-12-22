@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.common.exception.ShuChaoWenRuntimeException;
-import scw.db.ColumnInfo;
-import scw.db.TableInfo;
-import scw.db.sql.SQL;
+import scw.database.ColumnInfo;
+import scw.database.SQL;
+import scw.database.TableInfo;
 
 public class DeleteSQL implements SQL{
 	private static final long serialVersionUID = 1L;

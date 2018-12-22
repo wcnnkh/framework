@@ -5,9 +5,9 @@ import org.w3c.dom.Node;
 import scw.beans.property.PropertiesFactory;
 import scw.common.StringFormat;
 import scw.common.exception.BeansException;
-import scw.common.net.http.HttpUtils;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.StringUtils;
+import scw.net.http.HttpUtils;
 
 public class XmlValue {
 	private final String value;

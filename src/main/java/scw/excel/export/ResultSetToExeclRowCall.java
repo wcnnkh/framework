@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import scw.db.result.Result;
+import scw.database.result.Result;
 
 public class ResultSetToExeclRowCall {
 	// 创建Excel工作薄

@@ -17,7 +17,7 @@ import scw.common.FieldInfo;
 import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
-import scw.db.annoation.Table;
+import scw.database.annoation.Table;
 
 public class AnnotationBean implements Bean {
 	private final BeanFactory beanFactory;

@@ -1,6 +1,7 @@
 package scw.db.sql;
 
-import scw.db.TableInfo;
+import scw.database.SQL;
+import scw.database.TableInfo;
 
 public interface SQLFormat {
 	SQL toCreateTableSql(TableInfo tableInfo, String tableName);

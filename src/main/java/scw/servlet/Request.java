@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.common.net.http.enums.Header;
+import scw.net.http.enums.Header;
 import scw.servlet.bean.RequestBeanFactory;
 import scw.servlet.context.DefaultRequestBeanContext;
 import scw.servlet.context.RequestBeanContext;

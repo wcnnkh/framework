@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.common.net.http.enums.Method;
+import scw.net.http.enums.Method;
 import scw.servlet.action.Filter;
 
 @Target({ElementType.TYPE, ElementType.METHOD})

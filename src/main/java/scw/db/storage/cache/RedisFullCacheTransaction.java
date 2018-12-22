@@ -7,9 +7,9 @@ import java.util.Map.Entry;
 
 import scw.common.Logger;
 import scw.common.transaction.AbstractTransaction;
-import scw.db.AbstractDB;
+import scw.database.DataBaseUtils;
+import scw.database.TableInfo;
 import scw.db.OperationBean;
-import scw.db.TableInfo;
 import scw.db.storage.CacheUtils;
 import scw.redis.Redis;
 
@@ -26,7 +26,7 @@ public class RedisFullCacheTransaction extends AbstractTransaction{
 			throws IllegalArgumentException, IllegalAccessException {
 		this.operationBean = operationBean;
 		this.redis = redis;
-		TableInfo tableInfo = AbstractDB.getTableInfo(operationBean.getBean().getClass());
+		TableInfo tableInfo = DataBaseUtils.getTableInfo(operationBean.getBean().getClass());
 		this.indexKeys = new byte[tableInfo.getPrimaryKeyColumns().length - 1][];
 		this.classNameKey = tableInfo.getClassInfo().getName().getBytes(keyCharset);
 		this.beanData = CacheUtils.encode(operationBean.getBean());

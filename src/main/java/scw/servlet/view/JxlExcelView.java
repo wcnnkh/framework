@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.database.SQL;
 import scw.db.AbstractDB;
-import scw.db.sql.SQL;
 import scw.excel.export.JxlExport;
 import scw.excel.export.SimpleExportRowImpl;
 import scw.excel.export.SqlExportRow;

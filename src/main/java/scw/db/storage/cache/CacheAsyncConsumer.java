@@ -9,12 +9,13 @@ import scw.common.Logger;
 import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.Transaction;
 import scw.common.transaction.TransactionCollection;
+import scw.database.DataBaseUtils;
+import scw.database.SQL;
+import scw.database.TableInfo;
+import scw.database.TransactionContext;
 import scw.db.AbstractDB;
 import scw.db.DBUtils;
 import scw.db.OperationBean;
-import scw.db.TableInfo;
-import scw.db.TransactionContext;
-import scw.db.sql.SQL;
 import scw.db.storage.CacheUtils;
 import scw.mq.Consumer;
 
@@ -27,13 +28,13 @@ public class CacheAsyncConsumer implements Consumer<Collection<OperationBean>> {
 
 	private boolean dbExist(AbstractDB abstractDB, OperationBean operationBean)
 			throws IllegalArgumentException, IllegalAccessException {
-		TableInfo tableInfo = AbstractDB.getTableInfo(operationBean.getBean().getClass());
+		TableInfo tableInfo = DataBaseUtils.getTableInfo(operationBean.getBean().getClass());
 		Object[] params = new Object[tableInfo.getPrimaryKeyColumns().length];
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
 			params[i] = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(operationBean.getBean());
 		}
 
-		return abstractDB.getByIdFromDB(tableInfo.getClassInfo().getClz(), null, params) != null;
+		return abstractDB.getById(tableInfo.getClassInfo().getClz(), params) != null;
 	}
 
 	public void handler(Collection<OperationBean> message) throws Exception {

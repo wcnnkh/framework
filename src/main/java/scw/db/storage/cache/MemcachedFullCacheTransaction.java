@@ -7,9 +7,9 @@ import java.util.Map.Entry;
 
 import scw.common.Logger;
 import scw.common.transaction.AbstractTransaction;
-import scw.db.AbstractDB;
+import scw.database.DataBaseUtils;
+import scw.database.TableInfo;
 import scw.db.OperationBean;
-import scw.db.TableInfo;
 import scw.db.storage.CacheUtils;
 import scw.memcached.CAS;
 import scw.memcached.Memcached;
@@ -24,7 +24,7 @@ public class MemcachedFullCacheTransaction extends AbstractTransaction {
 
 	public MemcachedFullCacheTransaction(Memcached memcached, OperationBean operationBean)
 			throws IllegalArgumentException, IllegalAccessException {
-		TableInfo tableInfo = AbstractDB.getTableInfo(operationBean.getBean().getClass());
+		TableInfo tableInfo = DataBaseUtils.getTableInfo(operationBean.getBean().getClass());
 		StringBuilder sb = new StringBuilder();
 		this.indexKeys = new String[tableInfo.getPrimaryKeyColumns().length - 1];
 		sb.append(tableInfo.getClassInfo().getName());

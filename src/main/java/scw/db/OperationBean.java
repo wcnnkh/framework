@@ -2,7 +2,7 @@ package scw.db;
 
 import java.io.Serializable;
 
-import scw.db.sql.SQL;
+import scw.database.SQL;
 import scw.db.sql.SQLFormat;
 
 public class OperationBean implements Serializable{

@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.database.SQL;
+import scw.database.TableInfo;
 import scw.db.PrimaryKeyParameter;
-import scw.db.TableInfo;
-import scw.db.sql.SQL;
 
 public class SelectINId implements SQL{
 	private static final long serialVersionUID = 1L;

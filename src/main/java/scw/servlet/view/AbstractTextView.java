@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.common.net.http.enums.ContentType;
+import scw.net.http.enums.ContentType;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.View;

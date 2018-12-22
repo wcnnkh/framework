@@ -11,10 +11,11 @@ import java.util.Map.Entry;
 
 import scw.common.Pagination;
 import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.database.DataBaseUtils;
+import scw.database.SQL;
+import scw.database.TableInfo;
+import scw.database.result.ResultSet;
 import scw.db.AbstractDB;
-import scw.db.DB;
-import scw.db.TableInfo;
-import scw.db.result.ResultSet;
 
 /**
  * 暂不支持分表
@@ -65,13 +66,13 @@ public abstract class Select {
 	}
 
 	public String getSQLColumn(Class<?> tableClass, String name) {
-		TableInfo tableInfo = DB.getTableInfo(tableClass);
+		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
 		return tableInfo.getColumnInfo(name).getSQLName(
 				getTableName(tableClass));
 	}
 
 	public String getTableName(Class<?> tableClass) {
-		return DB.getTableInfo(tableClass).getName();
+		return DataBaseUtils.getTableInfo(tableClass).getName();
 	}
 
 	protected void addSelectTable(String tableName) {
@@ -152,8 +153,8 @@ public abstract class Select {
 			associationWhereMap = new HashMap<String, String>();
 		}
 
-		TableInfo t1 = DB.getTableInfo(tableClass1);
-		TableInfo t2 = DB.getTableInfo(tableClass2);
+		TableInfo t1 = DataBaseUtils.getTableInfo(tableClass1);
+		TableInfo t2 = DataBaseUtils.getTableInfo(tableClass2);
 		String tName1 = getTableName(tableClass1);
 		String tName2 = getTableName(tableClass2);
 		if (table2Columns == null || table2Columns.length == 0) {

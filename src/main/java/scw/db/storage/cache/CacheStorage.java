@@ -15,12 +15,12 @@ import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.Transaction;
 import scw.common.transaction.TransactionCollection;
 import scw.common.utils.ClassUtils;
+import scw.database.SQL;
+import scw.database.TransactionContext;
+import scw.database.annoation.Table;
+import scw.database.result.Result;
 import scw.db.AbstractDB;
 import scw.db.OperationBean;
-import scw.db.TransactionContext;
-import scw.db.annoation.Table;
-import scw.db.result.Result;
-import scw.db.sql.SQL;
 import scw.db.storage.Storage;
 import scw.memcached.Memcached;
 import scw.mq.MQ;
@@ -164,7 +164,7 @@ public final class CacheStorage implements Storage {
 			case full:
 				t = cache.getById(type, params);
 			default:
-				t = getDB().getByIdFromDB(type, null, params);
+				t = getDB().getById(type, null, params);
 				break;
 			}
 		} catch (Exception e) {
@@ -184,7 +184,7 @@ public final class CacheStorage implements Storage {
 			}
 			return null;
 		default:
-			return getDB().getByIdListFromDB(type, null, params);
+			return getDB().getByIdList(type, params);
 		}
 	}
 

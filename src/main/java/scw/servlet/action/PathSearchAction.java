@@ -144,9 +144,9 @@ public class PathSearchAction implements SearchAction {
 					map = new HashMap<String, Action>();
 				}
 
-				scw.common.net.http.enums.Method[] types = MethodAction
+				scw.net.http.enums.Method[] types = MethodAction
 						.mergeRequestType(clz, method);
-				for (scw.common.net.http.enums.Method type : types) {
+				for (scw.net.http.enums.Method type : types) {
 					if (map.containsKey(type.name())) {
 						throw new AlreadyExistsException(getExistActionErrMsg(
 								action, map.get(type.name())));

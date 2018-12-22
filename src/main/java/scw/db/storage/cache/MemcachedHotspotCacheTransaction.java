@@ -6,9 +6,9 @@ import java.util.Map.Entry;
 
 import scw.common.Logger;
 import scw.common.transaction.AbstractTransaction;
-import scw.db.AbstractDB;
+import scw.database.DataBaseUtils;
+import scw.database.TableInfo;
 import scw.db.OperationBean;
-import scw.db.TableInfo;
 import scw.db.storage.CacheUtils;
 import scw.memcached.Memcached;
 
@@ -28,7 +28,7 @@ public class MemcachedHotspotCacheTransaction extends AbstractTransaction{
 		this.keys = keys;
 		this.operationBean = operationBean;
 		this.beanData = CacheUtils.encode(operationBean.getBean());
-		TableInfo tableInfo = AbstractDB.getTableInfo(operationBean.getBean().getClass());
+		TableInfo tableInfo = DataBaseUtils.getTableInfo(operationBean.getBean().getClass());
 		StringBuilder sb = new StringBuilder();
 		sb.append(tableInfo.getClassInfo().getName());
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {

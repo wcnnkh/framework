@@ -8,10 +8,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.common.transaction.Transaction;
+import scw.database.DataBaseUtils;
+import scw.database.TableInfo;
 import scw.db.AbstractDB;
 import scw.db.OperationBean;
 import scw.db.OperationType;
-import scw.db.TableInfo;
 import scw.db.storage.CacheUtils;
 import scw.memcached.Memcached;
 
@@ -66,10 +67,10 @@ public class MemcachedCache implements Cache {
 		if (data == null) {
 			if (checkKey) {
 				if (memcached.get(INDEX_PREFIX + key) != null) {
-					t = (T) db.getByIdFromDB(type, null, params);
+					t = (T) db.getById(type, params);
 				}
 			} else {
-				t = (T) db.getByIdFromDB(type, null, params);
+				t = (T) db.getById(type, params);
 			}
 
 			if (t != null) {
@@ -83,14 +84,14 @@ public class MemcachedCache implements Cache {
 
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getByIdList(AbstractDB db, Class<T> type, Object... params) {
-		TableInfo tableInfo = AbstractDB.getTableInfo(type);
+		TableInfo tableInfo = DataBaseUtils.getTableInfo(type);
 		if (tableInfo.getPrimaryKeyColumns().length == params.length) {
 			T t = getById(type, params);
 			return t == null ? null : Arrays.asList(t);
 		}
 
 		if (tableInfo.getPrimaryKeyColumns().length == 1) {// 只有一个主键的表不缓存索引
-			return db.getByIdListFromDB(type, null, params);
+			return db.getByIdList(type, params);
 		}
 
 		StringBuilder sb = new StringBuilder();

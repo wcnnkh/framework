@@ -10,15 +10,14 @@ import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
 import scw.beans.BeanFieldListen;
-import scw.db.AbstractDB;
-import scw.db.DB;
-import scw.db.TableInfo;
+import scw.database.DataBaseUtils;
+import scw.database.TableInfo;
 import scw.db.storage.cache.Cache;
 
 public class CacheUtils {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <T> T decode(Class<T> type, byte[] data) {
-		T t = DB.getTableInfo(type).newInstance();
+		T t = DataBaseUtils.getTableInfo(type).newInstance();
 		Schema schema = RuntimeSchema.getSchema(type);
 		ProtostuffIOUtil.mergeFrom(data, t, schema);
 		if(t instanceof BeanFieldListen){
@@ -34,7 +33,7 @@ public class CacheUtils {
 	}
 	
 	public static String getObjectKey(Object bean) throws IllegalArgumentException, IllegalAccessException{
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
+		TableInfo tableInfo = DataBaseUtils.getTableInfo(bean.getClass());
 		StringBuilder sb = new StringBuilder();
 		sb.append(tableInfo.getClassInfo().getName());
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
@@ -46,7 +45,7 @@ public class CacheUtils {
 	
 	public static Map<String, Object> getObjectProperties(Object bean) throws IllegalArgumentException, IllegalAccessException{
 		Map<String, Object> map = new HashMap<String, Object>();
-		TableInfo tableInfo = AbstractDB.getTableInfo(bean.getClass());
+		TableInfo tableInfo = DataBaseUtils.getTableInfo(bean.getClass());
 		for (int i = 0; i < tableInfo.getColumns().length; i++) {
 			map.put(tableInfo.getColumns()[i].getFieldInfo().getName(), tableInfo.getColumns()[i].getFieldInfo().forceGet(bean));
 		}

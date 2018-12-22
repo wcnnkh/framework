@@ -11,10 +11,10 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import scw.common.Iterator;
+import scw.database.ConnectionSource;
+import scw.database.DataBaseUtils;
+import scw.database.SQL;
 import scw.db.AbstractDB;
-import scw.db.ConnectionSource;
-import scw.db.DBUtils;
-import scw.db.sql.SQL;
 
 public class JxlExport {
 	/**
@@ -122,7 +122,7 @@ public class JxlExport {
 		WritableWorkbook wwb = Workbook.createWorkbook(os);
 		final ResultSetToExeclRowCall rowCall = new ResultSetToExeclRowCall(wwb, title, exportRow);
 		for (SQL sql : sqlList) {
-			DBUtils.iterator(connectionSource, sql, new Iterator<java.sql.ResultSet>() {
+			DataBaseUtils.iterator(connectionSource, sql, new Iterator<java.sql.ResultSet>() {
 				
 				public void iterator(java.sql.ResultSet data) {
 					try {

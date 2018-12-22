@@ -20,10 +20,10 @@ import com.aliyun.oss.model.PolicyConditions;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.exception.NotFoundException;
 import scw.common.exception.ShuChaoWenRuntimeException;
-import scw.common.net.http.enums.ProtocolType;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
 import scw.common.utils.XUtils;
+import scw.net.http.enums.ProtocolType;
 
 public final class OSS {
 	private static final int DEFAULT_EXPIRE = 120;

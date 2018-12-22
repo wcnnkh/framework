@@ -15,7 +15,7 @@ import scw.beans.annotaion.InitMethod;
 import scw.beans.annotaion.Retry;
 import scw.common.exception.NotSupportException;
 import scw.common.utils.ClassUtils;
-import scw.db.annoation.Table;
+import scw.database.annoation.Table;
 
 abstract class AbstractInterfaceProxyBean implements Bean {
 	private final Class<?> type;

@@ -7,8 +7,8 @@ import com.alibaba.fastjson.JSONObject;
 
 import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
-import scw.common.net.http.HttpUtils;
 import scw.common.utils.StringUtils;
+import scw.net.http.HttpUtils;
 
 public abstract class WeiXinProcess{
 	private static final Map<String, String> postRequestProperties = new HashMap<String, String>(2);

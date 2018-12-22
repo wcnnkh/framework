@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.common.net.http.HttpUtils;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
+import scw.net.http.HttpUtils;
 
 public class ALiDaYu {
 	private String host;

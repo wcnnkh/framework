@@ -14,7 +14,7 @@ import scw.common.FieldInfo;
 import scw.common.Logger;
 import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
-import scw.db.TransactionContext;
+import scw.database.TransactionContext;
 
 public class BeanMethodInterceptor implements MethodInterceptor, BeanFieldListen {
 	private static final long serialVersionUID = 1L;
