@@ -28,7 +28,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	}
 
 	private final SQLFormat sqlFormat;
-
+	
 	public AbstractDB(SQLFormat sqlFormat) {
 		this.sqlFormat = sqlFormat == null ? new MysqlFormat() : sqlFormat;
 	}
