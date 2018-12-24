@@ -16,6 +16,11 @@ public interface Lock {
 	void lockWait(long millis, int nanos) throws InterruptedException;
 	
 	/**
+	 * 尝试获取锁，如果失败就一直重试
+	 */
+	void lockWait();
+	
+	/**
 	 * 取消锁
 	 */
 	void unlock();

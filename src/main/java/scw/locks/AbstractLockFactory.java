@@ -10,4 +10,5 @@ public abstract class AbstractLockFactory implements LockFactory {
 	public Lock getLock(String name) {
 		return getLock(name, default_timeout);
 	}
+	
 }
