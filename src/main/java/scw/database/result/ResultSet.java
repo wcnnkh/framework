@@ -8,6 +8,7 @@ import java.util.List;
 
 import scw.common.Logger;
 import scw.common.exception.NotFoundException;
+import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.database.ColumnInfo;
 import scw.database.DataBaseUtils;
@@ -86,7 +87,7 @@ public final class ResultSet implements Serializable {
 				sb.append(" [");
 				sb.append(column.getName());
 				sb.append("] not found for DataSource");
-				Logger.warn("Result", sb.toString());
+				throw new ShuChaoWenRuntimeException(sb.toString());
 			}
 
 			Object v = values[index];
