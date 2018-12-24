@@ -28,7 +28,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	}
 
 	private final SQLFormat sqlFormat;
-	
+
 	public AbstractDB(SQLFormat sqlFormat) {
 		this.sqlFormat = sqlFormat == null ? new MysqlFormat() : sqlFormat;
 	}
@@ -56,7 +56,11 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	}
 
 	public ResultSet select(SQL sql) {
-		return TransactionContext.getInstance().select(this, sql);
+		return select(sql, true);
+	}
+
+	public ResultSet select(SQL sql, boolean isTransactionCache) {
+		return TransactionContext.getInstance().select(this, sql, isTransactionCache);
 	}
 
 	public <T> List<T> select(Class<T> type, SQL sql) {

@@ -19,6 +19,7 @@ import scw.database.result.ResultSet;
  */
 public final class TransactionContext extends Context<ThreadLocalTransaction> {
 	private volatile boolean debug = false;
+	private volatile boolean selectCache = true;// 是否开启查询缓存 默认开启
 
 	/**
 	 * 理论上一个应用程序只要一个事务管理器
@@ -99,7 +100,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 					Logger.debug("SQL", DataBaseUtils.getSQLId(s));
 				}
 			}
-			
+
 			SQLTransaction sqlTransaction = new SQLTransaction(connectionSource);
 			for (SQL sql : sqls) {
 				sqlTransaction.addSql(sql);
@@ -112,11 +113,11 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 					Logger.debug("SQL", DataBaseUtils.getSQLId(s));
 				}
 			}
-			
+
 			localDBTransaction.addSql(connectionSource, sqls);
 		}
 	}
-	
+
 	public void execute(ConnectionSource connectionSource, Collection<SQL> sqls, Transaction transaction) {
 		ThreadLocalTransaction threadLocalTransaction = getValue();
 		if (threadLocalTransaction == null) {// 如果未使用事务
@@ -127,7 +128,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 					}
 				}
 			}
-			
+
 			TransactionCollection transactionCollection = new TransactionCollection(2);
 			if (connectionSource != null && sqls != null && !sqls.isEmpty()) {
 				SQLTransaction sqlTransaction = new SQLTransaction(connectionSource);
@@ -151,7 +152,7 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 					}
 				}
 			}
-			
+
 			threadLocalTransaction.addSql(connectionSource, sqls);
 			if (transaction != null) {
 				threadLocalTransaction.addTransaction(transaction);
@@ -164,43 +165,83 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 	 * @param sql
 	 * @return ResultSet不可能为空
 	 */
-	public ResultSet select(ConnectionSource connectionSource, SQL sql) {
-		ThreadLocalTransaction threadLocalTransaction = getValue();
-		if (threadLocalTransaction == null) {// 如果未使用事务
-			if (debug) {
-				Logger.debug("SQL", DataBaseUtils.getSQLId(sql));
+	public ResultSet select(ConnectionSource connectionSource, SQL sql, boolean isTransaction) {
+		if (isTransaction) {
+			ThreadLocalTransaction threadLocalTransaction = getValue();
+			if (threadLocalTransaction != null) {// 如果使用事务
+				return threadLocalTransaction.select(connectionSource, sql);
 			}
-			return DataBaseUtils.select(connectionSource, sql);
+		}
+
+		if (debug) {
+			Logger.debug("SQL", DataBaseUtils.getSQLId(sql));
+		}
+		return DataBaseUtils.select(connectionSource, sql);
+	}
+
+	/**
+	 * 消除当前上下文的查询缓存
+	 */
+	public void clearSelectCache() {
+		ThreadLocalTransaction threadLocalTransaction = getValue();
+		boolean debug;
+		if (threadLocalTransaction == null) {
+			debug = true;
 		} else {
-			return threadLocalTransaction.select(connectionSource, sql);
+			debug = threadLocalTransaction.isDebug();
+		}
+
+		if (debug) {
+			Logger.debug(this.getClass().getName(), "clear select cache");
+		}
+
+		if (threadLocalTransaction != null) {
+			threadLocalTransaction.clearSelectCache();
 		}
 	}
-	
-	public boolean isDebug(){
+
+	public void setSelectCache(boolean selectCache) {
 		ThreadLocalTransaction threadLocalTransaction = getValue();
-		return threadLocalTransaction == null? debug:threadLocalTransaction.isDebug();
+		if (threadLocalTransaction != null) {
+			threadLocalTransaction.setSelectCache(selectCache);
+		}
+	}
+
+	public boolean isDebug() {
+		ThreadLocalTransaction threadLocalTransaction = getValue();
+		return threadLocalTransaction == null ? debug : threadLocalTransaction.isDebug();
 	}
 
 	public void setDebug(boolean debug) {
 		ThreadLocalTransaction threadLocalTransaction = getValue();
-		if(threadLocalTransaction != null){
+		if (threadLocalTransaction != null) {
 			threadLocalTransaction.setDebug(debug);
 		}
 	}
-	
+
 	/**
 	 * 设置全局的DEBUG状态
+	 * 
 	 * @param debug
 	 */
-	public void setGlobalDebug(boolean debug){
+	public void setGlobalDebug(boolean debug) {
 		this.debug = debug;
+	}
+
+	/**
+	 * 设置全局的查询缓存是否开启
+	 * 
+	 * @param selectCache
+	 */
+	public void setGlobalSelectCache(boolean selectCache) {
+		this.selectCache = selectCache;
 	}
 
 	@Override
 	protected void firstBegin() {
-		setValue(new ThreadLocalTransaction(debug));
+		setValue(new ThreadLocalTransaction(debug, selectCache));
 	}
-	
+
 	@Override
 	protected void lastCommit() {
 		ThreadLocalTransaction threadLocalTransaction = getValue();
@@ -214,23 +255,33 @@ final class ThreadLocalTransaction extends AbstractTransaction {
 	private CombinationTransaction combinationTransaction;
 	private Map<ConnectionSource, Map<String, ResultSet>> cacheMap;
 	private boolean debug;
+	private boolean selectCache;
 
-	public ThreadLocalTransaction(boolean debug) {
+	public ThreadLocalTransaction(boolean debug, boolean selectCache) {
 		this.debug = debug;
+		this.selectCache = selectCache;
 	}
 
 	void addTransaction(Transaction collection) {
-		if(combinationTransaction == null){
+		if (combinationTransaction == null) {
 			combinationTransaction = new CombinationTransaction();
 		}
 		combinationTransaction.addTransaction(collection);
 	}
-	
-	private ResultSet realSelect(ConnectionSource connectionSource, SQL sql){
+
+	private ResultSet realSelect(ConnectionSource connectionSource, SQL sql) {
 		if (debug) {
 			Logger.debug("SQL", DataBaseUtils.getSQLId(sql));
 		}
 		return DataBaseUtils.select(connectionSource, sql);
+	}
+
+	public boolean isSelectCache() {
+		return selectCache;
+	}
+
+	public void setSelectCache(boolean selectCache) {
+		this.selectCache = selectCache;
 	}
 
 	public boolean isDebug() {
@@ -242,59 +293,69 @@ final class ThreadLocalTransaction extends AbstractTransaction {
 	}
 
 	ResultSet select(ConnectionSource connectionSource, SQL sql) {
-		ResultSet resultSet;
-		String id = DataBaseUtils.getSQLId(sql);
-		if(cacheMap == null){
-			cacheMap = new HashMap<ConnectionSource, Map<String,ResultSet>>(2, 1);
-			resultSet = realSelect(connectionSource, sql);
-			Map<String, ResultSet> map = new HashMap<String, ResultSet>();
-			map.put(id, resultSet);
-			cacheMap.put(connectionSource, map);
-		}else{
-			Map<String, ResultSet> map = cacheMap.getOrDefault(connectionSource, new HashMap<String, ResultSet>());
-			if(map == null){
+		if (selectCache) {
+			ResultSet resultSet;
+			String id = DataBaseUtils.getSQLId(sql);
+			if (cacheMap == null) {
+				cacheMap = new HashMap<ConnectionSource, Map<String, ResultSet>>(2, 1);
 				resultSet = realSelect(connectionSource, sql);
-				map = new HashMap<String, ResultSet>();
+				Map<String, ResultSet> map = new HashMap<String, ResultSet>();
 				map.put(id, resultSet);
 				cacheMap.put(connectionSource, map);
-			} else if (map.containsKey(id)) {
-				resultSet = map.get(id);
 			} else {
-				resultSet = realSelect(connectionSource, sql);
-				map.put(id, resultSet);
-				cacheMap.put(connectionSource, map);
+				Map<String, ResultSet> map = cacheMap.getOrDefault(connectionSource, new HashMap<String, ResultSet>());
+				if (map == null) {
+					resultSet = realSelect(connectionSource, sql);
+					map = new HashMap<String, ResultSet>();
+					map.put(id, resultSet);
+					cacheMap.put(connectionSource, map);
+				} else if (map.containsKey(id)) {
+					resultSet = map.get(id);
+				} else {
+					resultSet = realSelect(connectionSource, sql);
+					map.put(id, resultSet);
+					cacheMap.put(connectionSource, map);
+				}
 			}
+			return resultSet;
+		} else {
+			return realSelect(connectionSource, sql);
 		}
-		return resultSet;
+	}
+
+	void clearSelectCache() {
+		if (cacheMap != null) {
+			cacheMap.clear();
+		}
 	}
 
 	void addSql(ConnectionSource db, Collection<SQL> sqls) {
-		if(combinationTransaction == null){
+		if (combinationTransaction == null) {
 			combinationTransaction = new CombinationTransaction();
 		}
 		combinationTransaction.addSql(db, sqls);
 	}
 
 	public void begin() throws Exception {
-		if(combinationTransaction != null){
+		if (combinationTransaction != null) {
 			combinationTransaction.begin();
 		}
 	}
 
 	public void process() throws Exception {
-		if(combinationTransaction != null){
+		if (combinationTransaction != null) {
 			combinationTransaction.process();
 		}
 	}
 
 	public void end() throws Exception {
-		if(combinationTransaction != null){
+		if (combinationTransaction != null) {
 			combinationTransaction.end();
 		}
 	}
 
 	public void rollback() throws Exception {
-		if(combinationTransaction != null){
+		if (combinationTransaction != null) {
 			combinationTransaction.rollback();
 		}
 	}
