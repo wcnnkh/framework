@@ -2,7 +2,6 @@ package scw.beans.xml;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,15 +16,12 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanFilter;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
-import scw.beans.annotaion.Service;
-import scw.beans.annotaion.Transaction;
 import scw.beans.property.PropertiesFactory;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
-import scw.servlet.action.annotation.Controller;
 
 public class XmlBean implements Bean {
 	private static final String CLASS_ATTRIBUTE_KEY = "class";
@@ -187,28 +183,7 @@ public class XmlBean implements Bean {
 			return true;
 		}
 
-		Controller controller = type.getAnnotation(Controller.class);
-		if (controller != null) {
-			return true;
-		}
-
-		Service service = type.getAnnotation(Service.class);
-		if (service != null) {
-			return true;
-		}
-
-		Transaction transaction = type.getAnnotation(Transaction.class);
-		if (transaction != null) {
-			return true;
-		}
-
-		for (Method method : type.getDeclaredMethods()) {
-			Transaction t = method.getAnnotation(Transaction.class);
-			if (t != null) {
-				return true;
-			}
-		}
-		return false;
+		return AnnotationBean.checkProxy(type);
 	}
 
 	public String getId() {
@@ -285,7 +260,8 @@ public class XmlBean implements Bean {
 				continue;
 			}
 
-			BeanUtils.autoWrite(classInfo.getClz(), beanFactory, propertiesFactory, bean, classInfo.getFieldInfo(field.getName()));
+			BeanUtils.autoWrite(classInfo.getClz(), beanFactory, propertiesFactory, bean,
+					classInfo.getFieldInfo(field.getName()));
 		}
 		setProperties(bean);
 	}

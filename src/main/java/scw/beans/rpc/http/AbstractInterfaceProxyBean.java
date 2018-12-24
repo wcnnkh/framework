@@ -8,7 +8,6 @@ import java.util.List;
 
 import scw.beans.Bean;
 import scw.beans.BeanMethod;
-import scw.beans.BeanUtils;
 import scw.beans.NoArgumentBeanMethod;
 import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
@@ -88,24 +87,6 @@ abstract class AbstractInterfaceProxyBean implements Bean {
 			retry = type.getAnnotation(Retry.class);
 		}
 		return retry;
-	}
-
-	public static boolean checkProxy(Class<?> type) {
-		if (Modifier.isFinal(type.getModifiers())) {
-			return false;
-		}
-
-		for (Method method : type.getDeclaredMethods()) {
-			if (BeanUtils.isTransaction(type, method)) {
-				return true;
-			}
-
-			Retry retry = getRetry(type, method);
-			if (retry != null && retry.errors().length != 0) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public static boolean isSignleton(Class<?> type) {

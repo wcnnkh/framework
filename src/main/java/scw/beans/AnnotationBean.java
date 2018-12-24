@@ -11,6 +11,7 @@ import net.sf.cglib.proxy.Enhancer;
 import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
 import scw.beans.annotaion.Retry;
+import scw.beans.annotaion.SelectCache;
 import scw.beans.property.PropertiesFactory;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
@@ -116,6 +117,11 @@ public class AnnotationBean implements Bean {
 		if (Modifier.isFinal(type.getModifiers())) {
 			return false;
 		}
+		
+		SelectCache selectCache = type.getAnnotation(SelectCache.class);
+		if(selectCache != null){
+			return true;
+		}
 
 		for (Method method : type.getDeclaredMethods()) {
 			if (BeanUtils.isTransaction(type, method)) {
@@ -124,6 +130,11 @@ public class AnnotationBean implements Bean {
 
 			Retry retry = getRetry(type, method);
 			if (retry != null && retry.errors().length != 0) {
+				return true;
+			}
+			
+			selectCache = method.getAnnotation(SelectCache.class);
+			if(selectCache != null){
 				return true;
 			}
 		}
