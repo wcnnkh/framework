@@ -236,6 +236,11 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 	public void setGlobalSelectCache(boolean selectCache) {
 		this.selectCache = selectCache;
 	}
+	
+	public boolean isSelectCache(){
+		ThreadLocalTransaction threadLocalTransaction = getValue();
+		return threadLocalTransaction == null? selectCache:threadLocalTransaction.isSelectCache();
+	}
 
 	@Override
 	protected void firstBegin() {

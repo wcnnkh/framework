@@ -16,6 +16,7 @@ import scw.beans.annotaion.Config;
 import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
 import scw.beans.annotaion.Properties;
+import scw.beans.annotaion.SelectCache;
 import scw.beans.annotaion.Service;
 import scw.beans.annotaion.Transaction;
 import scw.beans.property.PropertiesFactory;
@@ -262,6 +263,20 @@ public final class BeanUtils {
 		}
 
 		return isTransaction;
+	}
+
+	public static boolean isSelectCache(Class<?> type, Method method) {
+		boolean isSelectCache = true;
+		SelectCache selectCache = type.getAnnotation(SelectCache.class);
+		if (selectCache != null) {
+			isSelectCache = selectCache.value();
+		}
+
+		SelectCache selectCache2 = method.getAnnotation(SelectCache.class);
+		if (selectCache2 != null) {
+			isSelectCache  = selectCache2.value();
+		}
+		return isSelectCache;
 	}
 
 	private static void setConfig(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) {
