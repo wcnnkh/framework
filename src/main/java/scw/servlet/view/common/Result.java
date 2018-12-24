@@ -63,9 +63,16 @@ public class Result extends AbstractTextView implements Serializable {
 	public static Result loginExpired() {
 		return new Result().setCode(Code.login_status_expired);
 	}
-	
+
 	public static Result parameterError() {
 		return new Result().setCode(Code.parameter_error);
+	}
+
+	public static Result result(Result result) {
+		Result r = new Result();
+		r.setCode(result.getCode());
+		r.setMsg(result.getMsg());
+		return r;
 	}
 
 	@Override
