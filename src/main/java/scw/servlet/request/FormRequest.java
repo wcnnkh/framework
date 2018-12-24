@@ -1,7 +1,7 @@
 package scw.servlet.request;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -17,14 +17,13 @@ import scw.servlet.action.PathSearchAction;
 import scw.servlet.bean.RequestBeanFactory;
 
 public class FormRequest extends Request {
-	private static final String GET_DEFAULT_CHARSET_NAME = "ISO-8859-1";
+	private static final Charset GET_DEFAULT_CHARSET = Charset.forName("ISO-8859-1");
 	private Map<String, String> restUrlValueMap;
 	private final boolean cookieValue;
 
 	@SuppressWarnings("unchecked")
-	public FormRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest 
-			httpServletRequest, HttpServletResponse httpServletResponse,
-			boolean isDebug, boolean cookieValue) throws IOException {
+	public FormRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse, boolean isDebug, boolean cookieValue) throws IOException {
 		super(requestBeanFactory, httpServletRequest, httpServletResponse, isDebug);
 		this.cookieValue = cookieValue;
 		Object map = getAttribute(PathSearchAction.RESTURL_PATH_PARAMETER);
@@ -43,22 +42,22 @@ public class FormRequest extends Request {
 			Logger.debug(this.getClass().getName(), sb.toString());
 		}
 	}
-	
-	protected String getRequireValue(String key){
+
+	protected String getRequireValue(String key) {
 		String v = getValue(key);
-		if(v == null && cookieValue){
+		if (v == null && cookieValue) {
 			Cookie cookie = getCookie(key, false);
-			if(cookie != null){
+			if (cookie != null) {
 				v = cookie.getValue();
 			}
 		}
-		
-		if(isNull(v)){
+
+		if (isNull(v)) {
 			throw new NullPointerException("require '" + key + "'");
 		}
 		return v;
 	}
-	
+
 	protected String getValue(String key) {
 		String v;
 		if (restUrlValueMap == null) {
@@ -69,20 +68,15 @@ public class FormRequest extends Request {
 				v = getParameter(key);
 			}
 		}
-		
-		if(!isNull(v) && "GET".equals(getMethod())){
-			v = convertValueCharset(v);
+
+		if (!isNull(v) && "GET".equals(getMethod())) {
+			v = decodeGETParameter(v);
 		}
 		return v;
 	}
-	
-	protected String convertValueCharset(String value){
-		try {
-			return new String(value.getBytes(GET_DEFAULT_CHARSET_NAME), getCharacterEncoding());
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		return value;
+
+	protected String decodeGETParameter(String value) {
+		return new String(value.getBytes(GET_DEFAULT_CHARSET), Charset.forName(getCharacterEncoding()));
 	}
 
 	public String getString(String key) {
@@ -107,7 +101,7 @@ public class FormRequest extends Request {
 
 		return Short.valueOf(formatNumberText(v));
 	}
-	
+
 	public short getShortValue(String key) {
 		String v = getRequireValue(key);
 
@@ -177,16 +171,16 @@ public class FormRequest extends Request {
 		String v = getValue(key);
 		return isNull(v) ? null : v.charAt(0);
 	}
-	
-	protected boolean isNull(String value){
-		if(value == null){
+
+	protected boolean isNull(String value) {
+		if (value == null) {
 			return true;
 		}
-		
-		if(value.length() == 0){
+
+		if (value.length() == 0) {
 			return true;
 		}
-		
+
 		return false;
 	}
 }
