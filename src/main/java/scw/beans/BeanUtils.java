@@ -368,7 +368,7 @@ public final class BeanUtils {
 			}
 
 			if (beanFilter.namePriority()) {
-				for (String name : beanFilter.names()) {
+				for (String name : beanFilter.name()) {
 					beanFilters.add((BeanFilter) beanFactory.get(name));
 				}
 
@@ -380,7 +380,7 @@ public final class BeanUtils {
 					beanFilters.add(beanFactory.get(c));
 				}
 
-				for (String name : beanFilter.names()) {
+				for (String name : beanFilter.name()) {
 					beanFilters.add((BeanFilter) beanFactory.get(name));
 				}
 			}
@@ -393,7 +393,7 @@ public final class BeanUtils {
 			}
 
 			if (beanFilter.namePriority()) {
-				for (String name : beanFilter.names()) {
+				for (String name : beanFilter.name()) {
 					beanFilters.add((BeanFilter) beanFactory.get(name));
 				}
 
@@ -405,7 +405,7 @@ public final class BeanUtils {
 					beanFilters.add(beanFactory.get(c));
 				}
 
-				for (String name : beanFilter.names()) {
+				for (String name : beanFilter.name()) {
 					beanFilters.add((BeanFilter) beanFactory.get(name));
 				}
 			}
