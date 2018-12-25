@@ -3,25 +3,25 @@ package scw.servlet.service;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.servlet.HttpServerApplication;
+import scw.servlet.ServletApplication;
 
 public final class AsyncRPCService implements Runnable{
 	private HttpServletRequest httpServletRequest;
 	private HttpServletResponse httpServletResponse;
-	private HttpServerApplication httpServerApplication;
+	private ServletApplication servletApplication;
 	
-	public AsyncRPCService(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, HttpServerApplication httpServerApplication){
+	public AsyncRPCService(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, ServletApplication servletApplication){
 		this.httpServletRequest = httpServletRequest;
 		this.httpServletResponse = httpServletResponse;
-		this.httpServerApplication = httpServerApplication;
+		this.servletApplication = servletApplication;
 	}
 	
 	public void run() {
 		try {
-			httpServerApplication.rpc(httpServletRequest.getInputStream(), httpServletResponse.getOutputStream());
+			servletApplication.rpc(httpServletRequest.getInputStream(), httpServletResponse.getOutputStream());
 		} catch (Throwable e) {
 			e.printStackTrace();
-			httpServerApplication.sendError(httpServletRequest, httpServletResponse, 500, "system error");
+			servletApplication.sendError(httpServletRequest, httpServletResponse, 500, "system error");
 		}finally{
 			if (httpServletRequest.isAsyncStarted()) {
 				httpServletRequest.getAsyncContext().complete();

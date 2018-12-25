@@ -15,8 +15,7 @@ public abstract class AbstractHashDispatcherServlet extends DispatcherServlet {
 
 	@Override
 	public void init() throws ServletException {
-		int poolSize = StringUtils.conversion(getConfig("poolSize", 50 + ""),
-				int.class);
+		int poolSize = StringUtils.conversion(getConfig("poolSize", 50 + ""), int.class);
 		queueHash = new ProcessorHashQueue<Integer>(poolSize, 10000);
 		queueHash.start();
 		super.init();
@@ -29,21 +28,15 @@ public abstract class AbstractHashDispatcherServlet extends DispatcherServlet {
 	}
 
 	@Override
-	protected void myService(HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse) {
+	protected void myService(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 		try {
-			if (getHttpServerApplication().checkRPCRequest(httpServletRequest)) {
-				queueHash
-						.process(httpServletRequest.hashCode(),
-								new AsyncRPCService(httpServletRequest,
-										httpServletResponse,
-										getHttpServerApplication()));
+			if (getServletApplication().checkRPCRequest(httpServletRequest)) {
+				queueHash.process(httpServletRequest.hashCode(),
+						new AsyncRPCService(httpServletRequest, httpServletResponse, getServletApplication()));
 			} else {
-				AsyncRequestService asyncRequestService = new AsyncRequestService(
-						httpServletRequest, httpServletResponse,
-						getHttpServerApplication());
-				queueHash.process(hashcode(asyncRequestService.getRequest()),
-						asyncRequestService);
+				AsyncRequestService asyncRequestService = new AsyncRequestService(httpServletRequest,
+						httpServletResponse, getServletApplication());
+				queueHash.process(hashcode(asyncRequestService.getRequest()), asyncRequestService);
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -60,8 +53,7 @@ public abstract class AbstractHashDispatcherServlet extends DispatcherServlet {
 		return value == null ? 0 : value.hashCode();
 	}
 
-	protected final int servletPathHashCode(
-			HttpServletRequest httpServletRequest) {
+	protected final int servletPathHashCode(HttpServletRequest httpServletRequest) {
 		String servletPath = httpServletRequest.getServletPath();
 		return servletPath == null ? 0 : servletPath.hashCode();
 	}

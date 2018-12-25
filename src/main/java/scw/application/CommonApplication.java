@@ -21,7 +21,7 @@ import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 
 public class CommonApplication implements Application {
-	private static final String INIT_STATIC = "init-static";
+	private static final String INIT_STATIC = "shuchaowen.init-static";
 	private final MultipleBeanFactory beanFactory;
 	private final boolean initStatic;
 	private String packageNames;
@@ -64,7 +64,7 @@ public class CommonApplication implements Application {
 		this(configPath, StringUtils.isNull(propertiesFactory.getValue(INIT_STATIC)) ? false
 				: Boolean.parseBoolean(propertiesFactory.getValue(INIT_STATIC)), propertiesFactory);
 	}
-
+	
 	public Collection<Class<?>> getClasses() {
 		return ClassUtils.getClasses(packageNames);
 	}

@@ -21,10 +21,10 @@ public class AsyncDispatcherServlet extends DispatcherServlet {
 	protected void myService(HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse) {
 		Runnable runnable;
-		if(getHttpServerApplication().checkRPCRequest(httpServletRequest)){
-			runnable = new AsyncRPCService(httpServletRequest, httpServletResponse, getHttpServerApplication());
+		if(getServletApplication().checkRPCRequest(httpServletRequest)){
+			runnable = new AsyncRPCService(httpServletRequest, httpServletResponse, getServletApplication());
 		}else{
-			runnable = new AsyncRequestService(httpServletRequest, httpServletResponse,  getHttpServerApplication());
+			runnable = new AsyncRequestService(httpServletRequest, httpServletResponse,  getServletApplication());
 		}
 		service.submit(runnable);
 	}

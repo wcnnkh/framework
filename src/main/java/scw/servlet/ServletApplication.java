@@ -33,13 +33,18 @@ import scw.servlet.bean.RequestBeanFactory;
 import scw.servlet.request.DefaultRequestFactory;
 import scw.servlet.request.RequestFactory;
 
-public class HttpServerApplication implements Application {
-	private static final String CHARSET_NAME = "charsetName";
-	private static final String RPC_SIGN = "rpc-sign";
-	private static final String RPC_PATH = "rpc-path";
-	private static final String REQUEST_FACTORY = "request-factory";
-	private static final String SEARCH_ACTION = "search-action";
-	private static final String DEFAULT_ACTION_KEY = "actionKey";
+/**
+ * 所有以shuchaowen开头的属性都是系统属性
+ * @author shuchaowen
+ *
+ */
+public class ServletApplication implements Application {
+	private static final String CHARSET_NAME = "shuchaowen.charsetName";
+	private static final String RPC_SIGN = "shuchaowen.rpc-sign";
+	private static final String RPC_PATH = "shuchaowen.rpc-path";
+	private static final String REQUEST_FACTORY = "shuchaowen.request-factory";
+	private static final String SEARCH_ACTION = "shuchaowen.search-action";
+	private static final String DEFAULT_ACTION_KEY = "shuchaowen.actionKey";
 
 	private final CommonApplication commonApplication;
 	private SearchAction searchAction;
@@ -52,11 +57,18 @@ public class HttpServerApplication implements Application {
 	private final RequestBeanFactory requestBeanFactory;
 	private RequestFactory requestFactory;
 
-	public HttpServerApplication(ServletConfig servletConfig) throws Exception {
-		ServletConfigFactory servletConfigFactory = new ServletConfigFactory(servletConfig);
-		this.commonApplication = new CommonApplication(servletConfigFactory.getConfigXml(), servletConfigFactory);
-		this.requestBeanFactory = new CommonRequestBeanFactory(commonApplication.getBeanFactory(), servletConfigFactory,
-				servletConfigFactory.getConfigXml());
+	public ServletApplication(ServletConfig servletConfig) throws Exception {
+		ServletConfigPropertiesFactory propertiesFactory = new ServletConfigPropertiesFactory(servletConfig);
+		// 为了兼容老版本
+		String initStaticStr = propertiesFactory.getServletConfig("init-static");
+		if (StringUtils.isNull(initStaticStr)) {
+			this.commonApplication = new CommonApplication(propertiesFactory.getConfigXml(), propertiesFactory);
+		} else {
+			this.commonApplication = new CommonApplication(propertiesFactory.getConfigXml(),
+					Boolean.parseBoolean(initStaticStr), propertiesFactory);
+		}
+		this.requestBeanFactory = new CommonRequestBeanFactory(commonApplication.getBeanFactory(), propertiesFactory,
+				propertiesFactory.getConfigXml());
 	}
 
 	public void setSearchAction(SearchAction searchAction) {

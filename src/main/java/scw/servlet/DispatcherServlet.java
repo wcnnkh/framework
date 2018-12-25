@@ -14,17 +14,17 @@ import scw.common.utils.ConfigUtils;
 
 public class DispatcherServlet extends HttpServlet {
 	private static final long serialVersionUID = -8268337109249457358L;
-	private HttpServerApplication httpServerApplication;
+	private ServletApplication servletApplication;
 
-	public HttpServerApplication getHttpServerApplication() {
-		return httpServerApplication;
+	public ServletApplication getServletApplication() {
+		return servletApplication;
 	}
 
 	@Override
 	public final void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
-		if (httpServerApplication.getCharset() != null) {
-			req.setCharacterEncoding(httpServerApplication.getCharset().name());
-			res.setCharacterEncoding(httpServerApplication.getCharset().name());
+		if (servletApplication.getCharset() != null) {
+			req.setCharacterEncoding(servletApplication.getCharset().name());
+			res.setCharacterEncoding(servletApplication.getCharset().name());
 		}
 		super.service(req, res);
 	}
@@ -52,27 +52,27 @@ public class DispatcherServlet extends HttpServlet {
 	@Override
 	public final void init(ServletConfig servletConfig) throws ServletException {
 		try {
-			httpServerApplication = new HttpServerApplication(servletConfig);
+			servletApplication = new ServletApplication(servletConfig);
 		} catch (Exception e) {
 			throw new ServletException(e);
 		}
 
-		httpServerApplication.getCommonApplication().getBeanFactory()
-				.registerNameMapping(servletConfig.getServletName(), this.getClass().getName());
+		servletApplication.getCommonApplication().getBeanFactory().registerNameMapping(servletConfig.getServletName(),
+				this.getClass().getName());
 		try {
-			httpServerApplication.getCommonApplication().getBeanFactory().registerSingleton(this.getClass(), this);
+			servletApplication.getCommonApplication().getBeanFactory().registerSingleton(this.getClass(), this);
 		} catch (Exception e) {
 			throw new ServletException(e);
 		}
 
 		super.init(servletConfig);
-		httpServerApplication.init();
+		servletApplication.init();
 	}
 
 	@Override
 	public void destroy() {
 		super.destroy();
-		httpServerApplication.destroy();
+		servletApplication.destroy();
 	}
 
 	public final String getConfig(String key) {
@@ -87,10 +87,10 @@ public class DispatcherServlet extends HttpServlet {
 
 	protected void myService(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 		try {
-			getHttpServerApplication().service(httpServletRequest, httpServletResponse);
+			servletApplication.service(httpServletRequest, httpServletResponse);
 		} catch (Throwable e) {
 			e.printStackTrace();
-			httpServerApplication.sendError(httpServletRequest, httpServletResponse, 500, "system error");
+			servletApplication.sendError(httpServletRequest, httpServletResponse, 500, "system error");
 		}
 	}
 }

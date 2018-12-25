@@ -6,7 +6,7 @@ import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.common.utils.ConfigUtils;
 
-public class ServletConfigFactory implements PropertiesFactory {
+public class ServletConfigPropertiesFactory implements PropertiesFactory {
 	/**
 	 * 配置文件目录key
 	 */
@@ -16,7 +16,7 @@ public class ServletConfigFactory implements PropertiesFactory {
 	private final PropertiesFactory propertiesFactory;
 	private final String configXml;
 
-	public ServletConfigFactory(ServletConfig servletConfig) {
+	public ServletConfigPropertiesFactory(ServletConfig servletConfig) {
 		this.servletConfig = servletConfig;
 		this.configXml = getServletConfig(SHUCHAOWEN);
 		this.propertiesFactory = new XmlPropertiesFactory(configXml);
@@ -30,12 +30,8 @@ public class ServletConfigFactory implements PropertiesFactory {
 		return value;
 	}
 
-	private String getServletConfig(String key) {
-		String value = servletConfig.getInitParameter(key);
-		if (value == null) {
-			value = ConfigUtils.getSystemProperty(key);
-		}
-		return value;
+	public String getServletConfig(String key) {
+		return servletConfig.getInitParameter(key);
 	}
 
 	public String getValue(String key) {
