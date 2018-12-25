@@ -1,5 +1,6 @@
-package scw.common;
+package scw.id;
 
+import scw.common.LongNumberConversion;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.StringUtils;
 import scw.memcached.Memcached;

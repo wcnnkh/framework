@@ -1,28 +1,28 @@
-package scw.db.id;
+package scw.id.db;
 
-import scw.common.IdGenerator;
 import scw.db.DB;
 import scw.db.DBManager;
+import scw.id.IdGenerator;
 import scw.memcached.Memcached;
-import scw.memcached.MemcachedIdGenerator;
+import scw.memcached.MemcachedIntegerIdGenerator;
 
-public class MemcachedTableIdGenerator implements IdGenerator<Long> {
+public class MemcachedIntegerTableIdGenerator implements IdGenerator<Integer> {
 	private final Memcached memcached;
 	private final Class<?> tableClass;
 	private final String fieldName;
-	private volatile MemcachedIdGenerator idGenerator;
+	private volatile IdGenerator<Integer> idGenerator;
 	private final String key;
 	private final boolean checkKey;
 	private DB db;
 
-	public MemcachedTableIdGenerator(Class<?> tableClass, Memcached memcached,
-			String fieldName) {
+	public MemcachedIntegerTableIdGenerator(Class<?> tableClass,
+			Memcached memcached, String fieldName) {
 		this(tableClass, memcached, fieldName, true);
 	}
 
-	public MemcachedTableIdGenerator(DB db, Class<?> tableClass,
+	public MemcachedIntegerTableIdGenerator(DB db, Class<?> tableClass,
 			Memcached memcached, String fieldName) {
-		this(tableClass, db, memcached, fieldName, true);
+		this(db, tableClass, memcached, fieldName, true);
 	}
 
 	/**
@@ -32,8 +32,8 @@ public class MemcachedTableIdGenerator implements IdGenerator<Long> {
 	 * @param checkKey
 	 *            是否每次都检查key是否存在
 	 */
-	public MemcachedTableIdGenerator(Class<?> tableClass, Memcached memcached,
-			String fieldName, boolean checkKey) {
+	public MemcachedIntegerTableIdGenerator(Class<?> tableClass,
+			Memcached memcached, String fieldName, boolean checkKey) {
 		this.memcached = memcached;
 		this.fieldName = fieldName;
 		this.tableClass = tableClass;
@@ -41,7 +41,7 @@ public class MemcachedTableIdGenerator implements IdGenerator<Long> {
 		this.checkKey = checkKey;
 	}
 
-	public MemcachedTableIdGenerator(Class<?> tableClass, DB db,
+	public MemcachedIntegerTableIdGenerator(DB db, Class<?> tableClass,
 			Memcached memcached, String fieldName, boolean checkKey) {
 		this.memcached = memcached;
 		this.fieldName = fieldName;
@@ -62,17 +62,18 @@ public class MemcachedTableIdGenerator implements IdGenerator<Long> {
 		return true;
 	}
 
-	public Long next() {
+	public Integer next() {
 		if (!isInit()) {
 			synchronized (this) {
 				if (!isInit()) {
 					if (db == null) {
 						db = DBManager.getDB(tableClass);
 					}
-					Long maxId = db.getMaxLongValue(tableClass, fieldName);
+
+					Integer maxId = db.getMaxIntValue(tableClass, fieldName);
 					maxId = maxId == null ? 0 : maxId;
-					idGenerator = new MemcachedIdGenerator(memcached, key,
-							maxId);
+					idGenerator = new MemcachedIntegerIdGenerator(memcached,
+							key, maxId);
 				}
 			}
 		}

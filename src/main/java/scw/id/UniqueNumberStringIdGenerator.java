@@ -1,4 +1,4 @@
-package scw.common;
+package scw.id;
 
 import java.nio.CharBuffer;
 import java.text.SimpleDateFormat;

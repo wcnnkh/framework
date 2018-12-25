@@ -1,4 +1,4 @@
-package scw.common;
+package scw.id;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

@@ -1,8 +1,8 @@
-package scw.db.id;
+package scw.id.db;
 
-import scw.common.IdGenerator;
 import scw.db.DB;
 import scw.db.DBManager;
+import scw.id.IdGenerator;
 import scw.redis.Redis;
 import scw.redis.RedisIdGernerator;
 
