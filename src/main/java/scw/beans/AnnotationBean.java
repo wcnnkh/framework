@@ -22,7 +22,6 @@ import scw.database.annoation.Table;
 
 public class AnnotationBean implements Bean {
 	private final BeanFactory beanFactory;
-	private final ClassInfo classInfo;
 	private final Class<?> type;
 	private final String id;
 	private final boolean singleton;
@@ -41,7 +40,6 @@ public class AnnotationBean implements Bean {
 			List<String> fileNameList) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
-		this.classInfo = ClassUtils.getClassInfo(type);
 		this.singleton = isSignleton(type);
 		this.propertiesFactory = propertiesFactory;
 
@@ -181,7 +179,7 @@ public class AnnotationBean implements Bean {
 
 	private Enhancer getProxyEnhancer() {
 		if (enhancer == null) {
-			enhancer = classInfo.createEnhancer(beanFactory, null, filterList);
+			enhancer = BeanUtils.createEnhancer(type, beanFactory, null, filterList);
 		}
 		return enhancer;
 	}

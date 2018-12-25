@@ -22,7 +22,6 @@ import scw.servlet.Request;
 
 public final class AnnotationRequestBean implements RequestBean {
 	private final BeanFactory beanFactory;
-	private final ClassInfo classInfo;
 	private final Class<?> type;
 	private final String id;
 	private Constructor<?> constructor;
@@ -37,7 +36,6 @@ public final class AnnotationRequestBean implements RequestBean {
 			throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
-		this.classInfo = ClassUtils.getClassInfo(type);
 		this.propertiesFactory = propertiesFactory;
 		this.id = ClassUtils.getProxyRealClassName(type);
 
@@ -66,7 +64,7 @@ public final class AnnotationRequestBean implements RequestBean {
 		if (this.constructor == null) {
 			throw new BeansException("not found constructor");
 		}
-		enhancer = classInfo.createEnhancer(beanFactory, null, null);
+		enhancer = BeanUtils.createEnhancer(type, beanFactory, null, null);
 	}
 	
 	public static Constructor<?> getAnnotationRequestBeanConstructor(Class<?> type){

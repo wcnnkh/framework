@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import scw.beans.BeanFieldListen;
+import scw.beans.BeanUtils;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.Logger;
@@ -248,8 +249,7 @@ public final class TableInfo {
 				continue;
 			}
 			
-			ClassInfo classInfo = ClassUtils.getClassInfo(type);
-			Class<?> clz = classInfo.getFieldListenProxyClass();
+			Class<?> clz = BeanUtils.getFieldListenProxyClass(type);
 			Logger.info("CGLIB", "register proxy class[" + clz.getName() + "]");
 		}
 	}
@@ -266,7 +266,7 @@ public final class TableInfo {
 			}
 			return null;
 		}else{
-			BeanFieldListen beanFieldListen = (BeanFieldListen) classInfo.newFieldListenInstance();
+			BeanFieldListen beanFieldListen = (BeanFieldListen) BeanUtils.newFieldListenInstance(classInfo.getClz());
 			beanFieldListen.start_field_listen();
 			return (T) beanFieldListen;
 		}

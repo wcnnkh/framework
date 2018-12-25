@@ -6,10 +6,11 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.sf.cglib.proxy.Enhancer;
 import scw.beans.AnnotationBean;
 import scw.beans.Bean;
 import scw.beans.BeanFactory;
@@ -38,8 +39,8 @@ public class XmlBean implements Bean {
 
 	private final BeanFactory beanFactory;
 	private final PropertiesFactory propertiesFactory;
-	private final ClassInfo classInfo;
 	private final Class<?> type;
+	private final ClassInfo classInfo;
 	private String[] names;
 	private final String id;
 	private final boolean singleton;
@@ -73,9 +74,8 @@ public class XmlBean implements Bean {
 			throw new BeansException("not found attribute [" + CLASS_ATTRIBUTE_KEY + "]");
 		}
 
-		this.classInfo = ClassUtils.getClassInfo(className);
-		this.type = classInfo.getClz();
-
+		this.type = ClassUtils.forName(className);
+		this.classInfo = ClassUtils.getClassInfo(type);
 		Node singletonNode = beanNode.getAttributes().getNamedItem(SINGLETON_ATTRIBUTE_KEY);
 		if (singletonNode != null) {
 			String v = singletonNode.getNodeValue();
@@ -86,7 +86,7 @@ public class XmlBean implements Bean {
 
 		Node idNode = beanNode.getAttributes().getNamedItem(ID_ATTRIBUTE_KEY);
 		if (idNode == null) {
-			this.id = classInfo.getName();
+			this.id = type.getName();
 		} else {
 			String v = idNode.getNodeValue();
 			this.id = StringUtils.isNull(v) ? classInfo.getName() : v;
@@ -218,7 +218,7 @@ public class XmlBean implements Bean {
 					}
 				}
 			}
-			enhancer = classInfo.createEnhancer(beanFactory, null, beanFilterList);
+			enhancer = BeanUtils.createEnhancer(type, beanFactory, null, beanFilterList);
 		}
 		return enhancer;
 	}
@@ -262,7 +262,7 @@ public class XmlBean implements Bean {
 				continue;
 			}
 
-			BeanUtils.autoWrite(classInfo.getClz(), beanFactory, propertiesFactory, bean,
+			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean,
 					classInfo.getFieldInfo(field.getName()));
 		}
 		setProperties(bean);

@@ -7,10 +7,11 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.sf.cglib.proxy.Enhancer;
 import scw.beans.AnnotationBean;
 import scw.beans.BeanFactory;
 import scw.beans.BeanFilter;
@@ -229,7 +230,7 @@ public final class XmlRequestBean implements RequestBean {
 					}
 				}
 			}
-			enhancer = classInfo.createEnhancer(beanFactory, null, beanFilterList);
+			enhancer = BeanUtils.createEnhancer(type, beanFactory, null, beanFilterList);
 		}
 		return enhancer;
 	}
