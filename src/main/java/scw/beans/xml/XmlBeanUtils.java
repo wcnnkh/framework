@@ -10,6 +10,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import scw.beans.BeanMethod;
 import scw.beans.EParameterType;
 import scw.beans.property.PropertiesFactory;
 import scw.common.exception.BeansException;
@@ -55,7 +56,7 @@ public final class XmlBeanUtils {
 		}
 		return value;
 	}
-	
+
 	public static String getRequireNodeAttributeValue(PropertiesFactory propertiesFactory, Node node, String name) {
 		String value = getNodeAttributeValue(propertiesFactory, node, name);
 		if (StringUtils.isNull(value)) {
@@ -155,26 +156,47 @@ public final class XmlBeanUtils {
 			throw new BeansException(e);
 		}
 	}
-	
-	public static String getPackageName(PropertiesFactory propertiesFactory, Node node){
+
+	public static String getPackageName(PropertiesFactory propertiesFactory, Node node) {
 		return getNodeAttributeValue(propertiesFactory, node, "package");
 	}
-	
-	public static String getVersion(PropertiesFactory propertiesFactory, Node node){
+
+	public static String getVersion(PropertiesFactory propertiesFactory, Node node) {
 		return getNodeAttributeValue(propertiesFactory, node, "version");
 	}
-	
-	public static String getAddress(PropertiesFactory propertiesFactory, Node node){
+
+	public static String getAddress(PropertiesFactory propertiesFactory, Node node) {
 		return getRequireNodeAttributeValue(propertiesFactory, node, "address");
 	}
-	
-	public static String getCharsetName(PropertiesFactory propertiesFactory, Node node, String defaultValue){
+
+	public static String getCharsetName(PropertiesFactory propertiesFactory, Node node, String defaultValue) {
 		String charsetName = getNodeAttributeValue(propertiesFactory, node, "charset");
-		return StringUtils.isNull(charsetName)? defaultValue:charsetName;
+		return StringUtils.isNull(charsetName) ? defaultValue : charsetName;
 	}
-	
-	public static String getCharsetName(Node node, String defaultValue){
+
+	public static String getCharsetName(Node node, String defaultValue) {
 		String charsetName = getNodeAttributeValue(node, "charset");
-		return StringUtils.isNull(charsetName)? defaultValue:charsetName;
+		return StringUtils.isNull(charsetName) ? defaultValue : charsetName;
+	}
+
+	/**
+	 * 获取指定的方法
+	 * 
+	 * @param clz
+	 * @param nodeList
+	 * @param tagName
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<BeanMethod> getBeanMethodList(Class<?> clz, NodeList nodeList, String tagName) throws Exception {
+		List<BeanMethod> list = new ArrayList<BeanMethod>();
+		for (int a = 0; a < nodeList.getLength(); a++) {
+			Node n = nodeList.item(a);
+			if (tagName.equalsIgnoreCase(n.getNodeName())) {
+				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(clz, n);
+				list.add(xmlBeanMethodInfo);
+			}
+		}
+		return list;
 	}
 }

@@ -47,8 +47,8 @@ public class XmlBean implements Bean {
 	// 构造函数的参数
 	private final List<XmlBeanParameter> constructorList = new ArrayList<XmlBeanParameter>();
 	private final List<XmlBeanParameter> propertiesList = new ArrayList<XmlBeanParameter>();
-	private final List<BeanMethod> initMethodList = new ArrayList<BeanMethod>();
-	private final List<BeanMethod> destroyMethodList = new ArrayList<BeanMethod>();
+	private final List<BeanMethod> initMethodList;
+	private final List<BeanMethod> destroyMethodList;
 	private BeanMethod factoryMethodInfo;
 	private final boolean proxy;
 
@@ -110,6 +110,9 @@ public class XmlBean implements Bean {
 
 		// constructor
 		NodeList nodeList = beanNode.getChildNodes();
+		this.initMethodList = XmlBeanUtils.getBeanMethodList(type, nodeList, INIT_METHOD_TAG_NAME);
+		this.destroyMethodList = XmlBeanUtils.getBeanMethodList(type, nodeList, DESTROY_METHOD_TAG_NAME);
+
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if (CONSTRUCTOR_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// Constructor
@@ -122,12 +125,6 @@ public class XmlBean implements Bean {
 				if (list != null) {
 					propertiesList.addAll(list);
 				}
-			} else if (INIT_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// InitMethod
-				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(type, n);
-				initMethodList.add(xmlBeanMethodInfo);
-			} else if (DESTROY_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// DestroyMethod
-				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(type, n);
-				destroyMethodList.add(xmlBeanMethodInfo);
 			} else if (FACTORY_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {
 				if (factoryMethodInfo != null) {
 					throw new BeansException("只能有一个factory-method");
