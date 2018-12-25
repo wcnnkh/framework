@@ -24,13 +24,11 @@ public final class StringUtils {
 	 * 放在一起容易分辨的字符
 	 */
 	public final static char[] EASY_TO_DISTINGUISH = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'c', 'd',
-			'e', 'f', 'h', 'k', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'y', 'A', 'B', 'C', 'E', 'F',
-			'G', 'H', 'K', 'M', 'N', 'R', 'S', 'T', 'V', 'W', 'Y'};
+			'e', 'f', 'h', 'k', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'y', 'A', 'B', 'C', 'E', 'F', 'G', 'H', 'K',
+			'M', 'N', 'R', 'S', 'T', 'V', 'W', 'Y' };
 
 	public final static char[] ALL = CollectionUtils.mergeCharArray(NUMBERIC_CHARACTER, LOWERCASE_LETTERS,
 			CAPITAL_LETTERS);
-	private static final Charset DEFAULT_OLD_CHARSET = Charset.forName("ISO-8859-1");
-	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 	private static final String IOS_NULL = "(null)";
 
 	private StringUtils() {
@@ -393,10 +391,6 @@ public final class StringUtils {
 			v = new String(str.getBytes(oldCharset), charset);
 		}
 		return v;
-	}
-
-	public static String commonCharsetConvert(String str) {
-		return charsetConvert(str, DEFAULT_OLD_CHARSET, DEFAULT_CHARSET);
 	}
 
 	/**
