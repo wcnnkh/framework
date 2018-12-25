@@ -43,7 +43,7 @@ public class ServletConfigPropertiesFactory implements PropertiesFactory {
 		if (value == null) {
 			value = getServletConfig(key);
 		}
-		return null;
+		return value;
 	}
 
 	public String getConfigXml() {

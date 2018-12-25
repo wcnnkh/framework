@@ -15,36 +15,36 @@ public class XmlValue {
 	private final String replace_prefix;
 	private final String replace_suffix;
 	private final Node node;
-	
-	public XmlValue(Node node, String parentCharsetName){
+
+	public XmlValue(Node node, String parentCharsetName) {
 		this.node = node;
 		this.replace = XmlBeanUtils.getBooleanValue(node, "replace", true);
 		this.replace_prefix = XmlBeanUtils.getNodeAttributeValue(node, "replace-prefix");
 		this.replace_suffix = XmlBeanUtils.getNodeAttributeValue(node, "replace-suffix");
 		String charset = XmlBeanUtils.getCharsetName(node, parentCharsetName);
-		
+
 		String value;
 		String url = XmlBeanUtils.getNodeAttributeValue(node, "url");
-		if(!StringUtils.isNull(url)){
-			if(url.startsWith("file://")){
+		if (!StringUtils.isNull(url)) {
+			if (url.startsWith("file://")) {
 				String path = url.substring(7);
 				value = ConfigUtils.getFileContent(path, charset);
-			}else if(url.startsWith("http://") || url.startsWith("https://")){
+			} else if (url.startsWith("http://") || url.startsWith("https://")) {
 				value = HttpUtils.doGet(url);
-			}else{
+			} else {
 				String path = url.substring(7);
 				value = ConfigUtils.getFileContent(path, charset);
 			}
-		}else{
+		} else {
 			value = XmlBeanUtils.getNodeAttributeValue(node, "value");
-			if(value == null){
+			if (value == null) {
 				value = node.getNodeValue();
 			}
 		}
 		this.value = value;
 	}
-	
-	public XmlValue(String value, Node node){
+
+	public XmlValue(String value, Node node) {
 		this.node = node;
 		this.value = value;
 		this.replace = XmlBeanUtils.getBooleanValue(node, "replace", true);
@@ -55,39 +55,39 @@ public class XmlValue {
 	public String getValue() {
 		return value;
 	}
-	
+
 	public Node getNode() {
 		return node;
 	}
-	
-	public String getNodeAttributeValue(String name){
+
+	public String getNodeAttributeValue(String name) {
 		return XmlBeanUtils.getNodeAttributeValue(node, name);
 	}
-	
-	public String getNodeAttributeValue(PropertiesFactory propertiesFactory, String name){
+
+	public String getNodeAttributeValue(PropertiesFactory propertiesFactory, String name) {
 		return XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, name);
 	}
 
-	public String formatValue(final PropertiesFactory propertiesFactory){
-		if(StringUtils.isNull(value)){
+	public String formatValue(final PropertiesFactory propertiesFactory) {
+		if (StringUtils.isNull(value)) {
 			return value;
 		}
-		
-		if(!replace){
+
+		if (!replace) {
 			return value;
 		}
-		
+
 		String replacePrefix = StringUtils.isNull(replace_prefix) ? "{" : replace_prefix;
 		String replaceSuffix = StringUtils.isNull(replace_suffix) ? "}" : replace_suffix;
 		StringFormat stringFormat = new StringFormat(replacePrefix, replaceSuffix) {
 
 			@Override
 			protected String getValue(String key) {
-				String value = propertiesFactory.getValue(key);
-				if(value == null){
+				String v = propertiesFactory.getValue(key);
+				if (v == null) {
 					throw new NotFoundException(value + " replace not found properties:" + key);
 				}
-				return value;
+				return v;
 			}
 		};
 		return stringFormat.format(value);
