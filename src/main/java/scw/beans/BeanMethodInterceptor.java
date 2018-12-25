@@ -101,16 +101,22 @@ public final class BeanMethodInterceptor implements MethodInterceptor, BeanField
 			return run(obj, method, args, proxy);
 		} else {
 			for (int i = 0; i < Math.max(retry.maxCount() + 1, 1); i++) {
-				if (i != 0 && retry.log()) {
-					try {
-						StringBuilder sb = new StringBuilder();
-						sb.append("class:").append(classInfo.getName()).append(",");
-						sb.append("method:").append(method.getName()).append(",");
-						sb.append("parameterTypes:").append(Arrays.toString(method.getParameterTypes())).append(",");
-						sb.append("args:").append(Arrays.toString(args));
-						Logger.info("@Retry", sb.toString());
-					} catch (Exception e) {
-						e.printStackTrace();
+				if(i != 0){
+					if(retry.log()){
+						try {
+							StringBuilder sb = new StringBuilder();
+							sb.append("class:").append(classInfo.getName()).append(",");
+							sb.append("method:").append(method.getName()).append(",");
+							sb.append("parameterTypes:").append(Arrays.toString(method.getParameterTypes())).append(",");
+							sb.append("args:").append(Arrays.toString(args));
+							Logger.info("@Retry", sb.toString());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					
+					if(retry.delayMillis() > 0 || retry.delayNanos() > 0){
+						Thread.sleep(Math.abs(retry.delayMillis()), Math.abs(retry.delayNanos()));
 					}
 				}
 
