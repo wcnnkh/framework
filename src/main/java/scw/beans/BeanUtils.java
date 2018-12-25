@@ -274,7 +274,7 @@ public final class BeanUtils {
 
 		SelectCache selectCache2 = method.getAnnotation(SelectCache.class);
 		if (selectCache2 != null) {
-			isSelectCache  = selectCache2.value();
+			isSelectCache = selectCache2.value();
 		}
 		return isSelectCache;
 	}
@@ -354,7 +354,7 @@ public final class BeanUtils {
 			}
 		}
 	}
-	
+
 	public static List<BeanFilter> getBeanFilterList(BeanFactory beanFactory, Class<?> clz, Method method) {
 		if (beanFactory == null) {
 			return null;
@@ -367,8 +367,22 @@ public final class BeanUtils {
 				beanFilters = new ArrayList<BeanFilter>(8);
 			}
 
-			for (Class<? extends BeanFilter> c : beanFilter.value()) {
-				beanFilters.add(beanFactory.get(c));
+			if (beanFilter.namePriority()) {
+				for (String name : beanFilter.names()) {
+					beanFilters.add((BeanFilter) beanFactory.get(name));
+				}
+
+				for (Class<? extends BeanFilter> c : beanFilter.value()) {
+					beanFilters.add(beanFactory.get(c));
+				}
+			} else {
+				for (Class<? extends BeanFilter> c : beanFilter.value()) {
+					beanFilters.add(beanFactory.get(c));
+				}
+
+				for (String name : beanFilter.names()) {
+					beanFilters.add((BeanFilter) beanFactory.get(name));
+				}
 			}
 		}
 
@@ -378,8 +392,22 @@ public final class BeanUtils {
 				beanFilters = new ArrayList<BeanFilter>(8);
 			}
 
-			for (Class<? extends BeanFilter> c : beanFilter.value()) {
-				beanFilters.add(beanFactory.get(c));
+			if (beanFilter.namePriority()) {
+				for (String name : beanFilter.names()) {
+					beanFilters.add((BeanFilter) beanFactory.get(name));
+				}
+
+				for (Class<? extends BeanFilter> c : beanFilter.value()) {
+					beanFilters.add(beanFactory.get(c));
+				}
+			} else {
+				for (Class<? extends BeanFilter> c : beanFilter.value()) {
+					beanFilters.add(beanFactory.get(c));
+				}
+
+				for (String name : beanFilter.names()) {
+					beanFilters.add((BeanFilter) beanFactory.get(name));
+				}
 			}
 		}
 		return beanFilters;
