@@ -66,7 +66,7 @@ public final class AnnotationRequestBean implements RequestBean {
 		if (this.constructor == null) {
 			throw new BeansException("not found constructor");
 		}
-		enhancer = classInfo.createEnhancer(null, null);
+		enhancer = classInfo.createEnhancer(beanFactory, null, null);
 	}
 	
 	public static Constructor<?> getAnnotationRequestBeanConstructor(Class<?> type){

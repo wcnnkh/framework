@@ -216,7 +216,7 @@ public class XmlBean implements Bean {
 					}
 				}
 			}
-			enhancer = classInfo.createEnhancer(null, beanFilterList);
+			enhancer = classInfo.createEnhancer(beanFactory, null, beanFilterList);
 		}
 		return enhancer;
 	}

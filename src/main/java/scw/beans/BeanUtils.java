@@ -354,6 +354,36 @@ public final class BeanUtils {
 			}
 		}
 	}
+	
+	public static List<BeanFilter> getBeanFilterList(BeanFactory beanFactory, Class<?> clz, Method method) {
+		if (beanFactory == null) {
+			return null;
+		}
+
+		List<BeanFilter> beanFilters = null;
+		scw.beans.annotaion.BeanFilter beanFilter = clz.getAnnotation(scw.beans.annotaion.BeanFilter.class);
+		if (beanFilter != null) {
+			if (beanFilters == null) {
+				beanFilters = new ArrayList<BeanFilter>(8);
+			}
+
+			for (Class<? extends BeanFilter> c : beanFilter.value()) {
+				beanFilters.add(beanFactory.get(c));
+			}
+		}
+
+		beanFilter = method.getAnnotation(scw.beans.annotaion.BeanFilter.class);
+		if (beanFilter != null) {
+			if (beanFilters == null) {
+				beanFilters = new ArrayList<BeanFilter>(8);
+			}
+
+			for (Class<? extends BeanFilter> c : beanFilter.value()) {
+				beanFilters.add(beanFactory.get(c));
+			}
+		}
+		return beanFilters;
+	}
 }
 
 class InitProcess implements Runnable {

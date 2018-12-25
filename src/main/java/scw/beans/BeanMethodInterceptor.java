@@ -1,6 +1,7 @@
 package scw.beans;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -17,20 +18,21 @@ import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
 import scw.database.TransactionContext;
 
-public class BeanMethodInterceptor implements MethodInterceptor, BeanFieldListen {
+public final class BeanMethodInterceptor implements MethodInterceptor, BeanFieldListen {
 	private static final long serialVersionUID = 1L;
 	private Map<String, Object> changeColumnMap;
 	private boolean startListen = false;
 	private transient ClassInfo classInfo;
 	private boolean isBeanListen;
-	private List<BeanFilter> beanFilters;
+	private transient List<BeanFilter> beanFilters;
+	private transient BeanFactory beanFactory;
 
 	// 用于序列化
-	public BeanMethodInterceptor() {
-		this(null);
+	protected BeanMethodInterceptor() {
+		this(null, null);
 	}
 
-	public BeanMethodInterceptor(List<BeanFilter> beanFilters) {
+	public BeanMethodInterceptor(BeanFactory beanFactory, List<BeanFilter> beanFilters) {
 		this.beanFilters = beanFilters;
 	}
 
@@ -56,23 +58,40 @@ public class BeanMethodInterceptor implements MethodInterceptor, BeanFieldListen
 	}
 
 	private Object selectCache(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		BeanFilterChain beanFilterChain = new BeanFilterChain(beanFilters);
 		SelectCache selectCache = classInfo.getClz().getAnnotation(SelectCache.class);
 		if (selectCache == null) {
-			return beanFilterChain.doFilter(obj, method, args, proxy);
+			return filter(obj, method, args, proxy);
 		} else {
 			boolean isSelectCache = BeanUtils.isSelectCache(classInfo.getClz(), method);
 			boolean oldIsSelectCache = TransactionContext.getInstance().isSelectCache();
 			if (isSelectCache == oldIsSelectCache) {
-				return beanFilterChain.doFilter(obj, method, args, proxy);
+				return filter(obj, method, args, proxy);
 			} else {
 				TransactionContext.getInstance().setSelectCache(isSelectCache);
 				try {
-					return beanFilterChain.doFilter(obj, method, args, proxy);
+					return filter(obj, method, args, proxy);
 				} finally {
 					TransactionContext.getInstance().setSelectCache(oldIsSelectCache);
 				}
 			}
+		}
+	}
+
+	private Object filter(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+		if (beanFilters == null) {
+			return proxy.invokeSuper(obj, args);
+		} else {
+			BeanFilterChain beanFilterChain;
+			List<BeanFilter> annotationFilterList = BeanUtils.getBeanFilterList(beanFactory, obj.getClass(), method);
+			if (annotationFilterList == null) {
+				beanFilterChain = new BeanFilterChain(beanFilters);
+			} else {
+				List<BeanFilter> list = new ArrayList<BeanFilter>(beanFilters.size() + annotationFilterList.size());
+				list.addAll(beanFilters);
+				list.addAll(annotationFilterList);
+				beanFilterChain = new BeanFilterChain(list);
+			}
+			return beanFilterChain.doFilter(obj, method, args, proxy);
 		}
 	}
 

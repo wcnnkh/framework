@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.cglib.proxy.Enhancer;
+import scw.beans.BeanFactory;
 import scw.beans.BeanFieldListen;
 import scw.beans.BeanFilter;
 import scw.beans.BeanMethodInterceptor;
@@ -155,7 +156,7 @@ public final class ClassInfo {
 		return serialVersionUID;
 	}
 	
-	public Enhancer createEnhancer(Class<?>[] interfaces, List<BeanFilter> beanFilterList){
+	public Enhancer createEnhancer(BeanFactory beanFactory, Class<?>[] interfaces, List<BeanFilter> beanFilterList){
 		Enhancer enhancer = new Enhancer();
 		Class<?>[] newArr;
 		if(interfaces != null && interfaces.length != 0){
@@ -173,7 +174,7 @@ public final class ClassInfo {
 		if(serialVersionUID != null){
 			enhancer.setSerialVersionUID(serialVersionUID);
 		}
-		enhancer.setCallback(new BeanMethodInterceptor(beanFilterList));
+		enhancer.setCallback(new BeanMethodInterceptor(beanFactory, beanFilterList));
 		enhancer.setSuperclass(clz);
 		return enhancer;
 	}
@@ -183,7 +184,7 @@ public final class ClassInfo {
 	 * @return
 	 */
 	public Object newFieldListenInstance(){
-		return createEnhancer(null, null).create();
+		return createEnhancer(null, null, null).create();
 	}
 	
 	public Class<?> getFieldListenProxyClass(){
