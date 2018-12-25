@@ -57,7 +57,8 @@ public class XmlBean implements Bean {
 	private XmlBeanParameter[] beanMethodParameters;
 	private Enhancer enhancer;
 
-	public XmlBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode) throws Exception {
+	public XmlBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode,
+			List<String> filterNameList) throws Exception {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
 
@@ -95,6 +96,10 @@ public class XmlBean implements Bean {
 		String[] filters = null;
 		if (filtersNode != null) {
 			filters = StringUtils.commonSplit(filtersNode.getNodeValue());
+		}
+
+		if (filterNameList != null) {
+			beanFilters.addAll(filterNameList);
 		}
 
 		if (filters != null) {

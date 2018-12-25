@@ -7,7 +7,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.xml.XmlBeanUtils;
-import scw.common.exception.BeansException;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.StringUtils;
 
@@ -19,13 +18,13 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 		if (StringUtils.isNull(beanXml)) {
 			return;
 		}
-		
+
 		NodeList nhosts = XmlBeanUtils.getRootNode(beanXml).getChildNodes();
 		for (int i = 0; i < nhosts.getLength(); i++) {
 			Node nRoot = nhosts.item(i);
 			if (PROPERTIES_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
 				Map<String, Property> map = XmlPropertyUtils.parse(nRoot);
-				if(map != null){
+				if (map != null) {
 					propertiesMap.putAll(map);
 				}
 			}
@@ -36,14 +35,10 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 	public String getValue(String key) {
 		String value;
 		Property property = propertiesMap.get(key);
-		if(property == null){
+		if (property == null) {
 			value = ConfigUtils.getSystemProperty(key);
-		}else{
+		} else {
 			value = property.getXmlValue().formatValue(this);
-		}
-		
-		if(value == null){
-			throw new BeansException("not found property:" + key);
 		}
 		return value;
 	}

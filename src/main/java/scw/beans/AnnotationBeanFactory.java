@@ -1,5 +1,7 @@
 package scw.beans;
 
+import java.util.List;
+
 import scw.beans.annotaion.Service;
 import scw.beans.property.PropertiesFactory;
 import scw.common.exception.AlreadyExistsException;
@@ -14,8 +16,10 @@ import scw.common.utils.ClassUtils;
 public class AnnotationBeanFactory extends AbstractBeanFactory {
 	private final BeanFactory beanFactory;
 	private final PropertiesFactory propertiesFactory;
+	private final List<String> rootFilterNameList;
 
-	public AnnotationBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String packageNames) {
+	public AnnotationBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String packageNames,
+			List<String> rootFilterNameList) {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
 		for (Class<?> clz : ClassUtils.getClasses(packageNames)) {
@@ -35,6 +39,7 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 				}
 			}
 		}
+		this.rootFilterNameList = rootFilterNameList;
 	}
 
 	@Override
@@ -49,7 +54,7 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 				return null;
 			}
 
-			return new AnnotationBean(beanFactory, propertiesFactory, clz);
+			return new AnnotationBean(beanFactory, propertiesFactory, clz, rootFilterNameList);
 		} catch (Exception e) {
 		}
 		return null;

@@ -35,14 +35,16 @@ public class AnnotationBean implements Bean {
 	private Method factoryMethod;
 	private Enhancer enhancer;
 	private final PropertiesFactory propertiesFactory;
+	private List<BeanFilter> filterList;
 
-	public AnnotationBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type) throws Exception {
+	public AnnotationBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type,
+			List<String> fileNameList) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
 		this.classInfo = ClassUtils.getClassInfo(type);
 		this.singleton = isSignleton(type);
 		this.propertiesFactory = propertiesFactory;
-		
+
 		this.id = ClassUtils.getProxyRealClassName(type);
 		scw.beans.annotaion.Bean bean = type.getAnnotation(scw.beans.annotaion.Bean.class);
 		if (bean != null) {
@@ -68,7 +70,13 @@ public class AnnotationBean implements Bean {
 			}
 		}
 
-		this.proxy = checkProxy(type);
+		if (fileNameList != null && fileNameList.isEmpty()) {
+			this.filterList = new ArrayList<BeanFilter>();
+			for (String name : fileNameList) {
+				filterList.add((BeanFilter) beanFactory.get(name));
+			}
+		}
+		this.proxy = (filterList != null && !filterList.isEmpty()) || checkProxy(type);
 	}
 
 	public static List<BeanMethod> getInitMethodList(Class<?> type) {
@@ -117,9 +125,9 @@ public class AnnotationBean implements Bean {
 		if (Modifier.isFinal(type.getModifiers())) {
 			return false;
 		}
-		
+
 		SelectCache selectCache = type.getAnnotation(SelectCache.class);
-		if(selectCache != null){
+		if (selectCache != null) {
 			return true;
 		}
 
@@ -132,9 +140,9 @@ public class AnnotationBean implements Bean {
 			if (retry != null && retry.errors().length != 0) {
 				return true;
 			}
-			
+
 			selectCache = method.getAnnotation(SelectCache.class);
-			if(selectCache != null){
+			if (selectCache != null) {
 				return true;
 			}
 		}
@@ -173,7 +181,7 @@ public class AnnotationBean implements Bean {
 
 	private Enhancer getProxyEnhancer() {
 		if (enhancer == null) {
-			enhancer = classInfo.createEnhancer(beanFactory, null, null);
+			enhancer = classInfo.createEnhancer(beanFactory, null, filterList);
 		}
 		return enhancer;
 	}
@@ -237,7 +245,7 @@ public class AnnotationBean implements Bean {
 				if (Modifier.isStatic(field.getField().getModifiers())) {
 					continue;
 				}
-				
+
 				BeanUtils.autoWrite(classInfo.getClz(), beanFactory, propertiesFactory, bean, field);
 			}
 			classInfo = classInfo.getSuperInfo();

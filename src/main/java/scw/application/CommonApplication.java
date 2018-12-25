@@ -1,6 +1,7 @@
 package scw.application;
 
 import java.util.Collection;
+import java.util.List;
 
 import com.alibaba.dubbo.config.ProtocolConfig;
 
@@ -20,6 +21,7 @@ import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 
 public class CommonApplication implements Application {
+	private static final String INIT_STATIC = "init-static";
 	private final MultipleBeanFactory beanFactory;
 	private final boolean initStatic;
 	private String packageNames;
@@ -28,11 +30,15 @@ public class CommonApplication implements Application {
 	private final String configPath;
 
 	public CommonApplication(String configPath, boolean initStatic) {
+		this(configPath, initStatic, new XmlPropertiesFactory(configPath));
+	}
+
+	public CommonApplication(String configPath, boolean initStatic, PropertiesFactory propertiesFactory) {
 		beanFactory = new MultipleBeanFactory();
 		this.configPath = configPath;
 		this.initStatic = initStatic;
 		try {
-			propertiesFactory = new XmlPropertiesFactory(configPath);
+			List<String> rootFilterNameList = null;
 			if (!StringUtils.isNull(configPath)) {
 				BeanFactory dubboBeanFactory = new XmlDubboBeanFactory(propertiesFactory, configPath);
 				beanFactory.addLastBeanFactory(dubboBeanFactory);
@@ -42,15 +48,21 @@ public class CommonApplication implements Application {
 
 				XmlBeanFactory xmlBeanFactory = new XmlBeanFactory(beanFactory, propertiesFactory, configPath);
 				this.packageNames = xmlBeanFactory.getPackageNames();
+				rootFilterNameList = xmlBeanFactory.getFilterNameList();
 				beanFactory.addLastBeanFactory(xmlBeanFactory);
 			}
 
 			AnnotationBeanFactory annotationBeanFactory = new AnnotationBeanFactory(beanFactory, propertiesFactory,
-					packageNames);
+					packageNames, rootFilterNameList);
 			beanFactory.addLastBeanFactory(annotationBeanFactory);
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}
+	}
+
+	public CommonApplication(String configPath, PropertiesFactory propertiesFactory) {
+		this(configPath, StringUtils.isNull(propertiesFactory.getValue(INIT_STATIC)) ? false
+				: Boolean.parseBoolean(propertiesFactory.getValue(INIT_STATIC)), propertiesFactory);
 	}
 
 	public Collection<Class<?>> getClasses() {

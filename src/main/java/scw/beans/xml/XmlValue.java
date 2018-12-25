@@ -4,7 +4,7 @@ import org.w3c.dom.Node;
 
 import scw.beans.property.PropertiesFactory;
 import scw.common.StringFormat;
-import scw.common.exception.BeansException;
+import scw.common.exception.NotFoundException;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.StringUtils;
 import scw.net.http.HttpUtils;
@@ -85,7 +85,7 @@ public class XmlValue {
 			protected String getValue(String key) {
 				String value = propertiesFactory.getValue(key);
 				if(value == null){
-					throw new BeansException(value + " replace not found properties:" + key);
+					throw new NotFoundException(value + " replace not found properties:" + key);
 				}
 				return value;
 			}

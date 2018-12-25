@@ -328,8 +328,10 @@ public final class BeanUtils {
 				existDefaultValueWarnLog(Properties.class.getName(), clz, field, obj);
 
 				String v = propertiesFactory.getValue(properties.value());
-				value = StringUtils.conversion(v, field.getType());
-				field.set(obj, value);
+				if (v != null) {
+					value = StringUtils.conversion(v, field.getType());
+					field.set(obj, value);
+				}
 			} catch (Exception e) {
 				Logger.error(Properties.class.getName(), "clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
 			}

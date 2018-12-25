@@ -21,8 +21,7 @@ public class DispatcherServlet extends HttpServlet {
 	}
 
 	@Override
-	public final void service(ServletRequest req, ServletResponse res)
-			throws ServletException, IOException {
+	public final void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 		if (httpServerApplication.getCharset() != null) {
 			req.setCharacterEncoding(httpServerApplication.getCharset().name());
 			res.setCharacterEncoding(httpServerApplication.getCharset().name());
@@ -31,38 +30,37 @@ public class DispatcherServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		myService(req, resp);
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		myService(req, resp);
 	}
 
 	@Override
-	protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		myService(req, resp);
 	}
 
 	@Override
-	protected void doPut(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		myService(req, resp);
 	}
 
 	@Override
 	public final void init(ServletConfig servletConfig) throws ServletException {
-		httpServerApplication = new HttpServerApplication(
-				new ServletConfigFactory(servletConfig));
-		httpServerApplication.getBeanFactory().registerNameMapping(
-				servletConfig.getServletName(), this.getClass().getName());
 		try {
-			httpServerApplication.getBeanFactory().registerSingleton(
-					this.getClass(), this);
+			httpServerApplication = new HttpServerApplication(servletConfig);
+		} catch (Exception e) {
+			throw new ServletException(e);
+		}
+
+		httpServerApplication.getCommonApplication().getBeanFactory()
+				.registerNameMapping(servletConfig.getServletName(), this.getClass().getName());
+		try {
+			httpServerApplication.getCommonApplication().getBeanFactory().registerSingleton(this.getClass(), this);
 		} catch (Exception e) {
 			throw new ServletException(e);
 		}
@@ -87,15 +85,12 @@ public class DispatcherServlet extends HttpServlet {
 		return value == null ? value : ConfigUtils.format(value);
 	}
 
-	protected void myService(HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse) {
+	protected void myService(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 		try {
-			getHttpServerApplication().service(httpServletRequest,
-					httpServletResponse);
+			getHttpServerApplication().service(httpServletRequest, httpServletResponse);
 		} catch (Throwable e) {
 			e.printStackTrace();
-			httpServerApplication.sendError(httpServletRequest,
-					httpServletResponse, 500, "system error");
+			httpServerApplication.sendError(httpServletRequest, httpServletResponse, 500, "system error");
 		}
 	}
 }

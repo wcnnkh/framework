@@ -1,6 +1,7 @@
 package scw.beans.xml;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.w3c.dom.Node;
@@ -20,13 +21,20 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 
 	private String packageNames;
 	private List<String> beanFactoryList;
+	private List<String> filterNameList;
 
-	public XmlBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String beanXml) throws Exception {
+	public XmlBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String beanXml)
+			throws Exception {
 		Node root = XmlBeanUtils.getRootNode(beanXml);
 		if (root.getAttributes() != null) {
 			Node annotationNode = root.getAttributes().getNamedItem(BEANS_ANNOTATION);
 			if (annotationNode != null) {
 				this.packageNames = annotationNode.getNodeValue();
+			}
+
+			String filterNames = XmlBeanUtils.getNodeAttributeValue(root, "filters");
+			if (!StringUtils.isNull(filterNames)) {
+				filterNameList = Arrays.asList(StringUtils.commonSplit(filterNames));
 			}
 		}
 
@@ -34,12 +42,12 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		for (int i = 0; i < nhosts.getLength(); i++) {
 			Node nRoot = nhosts.item(i);
 			if (BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
-				Bean bean = new XmlBean(beanFactory, propertiesFactory, nRoot);
+				Bean bean = new XmlBean(beanFactory, propertiesFactory, nRoot, filterNameList);
 				putBean(bean.getId(), bean);
 
 				if (bean.getNames() != null) {
 					for (String n : bean.getNames()) {
-						if(!registerNameMapping(n, bean.getId())){
+						if (!registerNameMapping(n, bean.getId())) {
 							throw new AlreadyExistsException(n);
 						}
 					}
@@ -68,5 +76,9 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	@Override
 	protected Bean newBean(String name) {
 		return null;
+	}
+
+	public List<String> getFilterNameList() {
+		return filterNameList;
 	}
 }

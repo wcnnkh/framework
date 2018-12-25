@@ -1,6 +1,7 @@
 package scw.application;
 
 import scw.beans.BeanFactory;
+import scw.beans.property.PropertiesFactory;
 
 public interface Application {
 	/**
@@ -8,6 +9,8 @@ public interface Application {
 	 * @return
 	 */
 	BeanFactory getBeanFactory();
+	
+	PropertiesFactory getPropertiesFactory();
 	
 	/**
 	 * 初始化

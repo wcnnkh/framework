@@ -8,13 +8,9 @@ public final class CommonRequestBeanFactory implements RequestBeanFactory {
 	private final XmlRequestBeanFactory xmlRequestBeanFactory;
 	private final AnnotationRequestBeanFactory annotationRequestBeanFactory;
 
-	public CommonRequestBeanFactory(BeanFactory beanFactory,
-			PropertiesFactory propertiesFactory, String configXml)
-			throws Exception {
-		this.xmlRequestBeanFactory = new XmlRequestBeanFactory(beanFactory,
-				propertiesFactory, configXml);
-		this.annotationRequestBeanFactory = new AnnotationRequestBeanFactory(
-				beanFactory, propertiesFactory);
+	public CommonRequestBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configXml) throws Exception {
+		this.xmlRequestBeanFactory = new XmlRequestBeanFactory(beanFactory, propertiesFactory, configXml);
+		this.annotationRequestBeanFactory = new AnnotationRequestBeanFactory(beanFactory, propertiesFactory);
 	}
 
 	public RequestBean get(String name) {
@@ -26,7 +22,6 @@ public final class CommonRequestBeanFactory implements RequestBeanFactory {
 	}
 
 	public boolean contains(String name) {
-		return xmlRequestBeanFactory.contains(name)
-				|| annotationRequestBeanFactory.contains(name);
+		return xmlRequestBeanFactory.contains(name) || annotationRequestBeanFactory.contains(name);
 	}
 }
