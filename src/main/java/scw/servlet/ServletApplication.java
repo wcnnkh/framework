@@ -150,7 +150,7 @@ public class ServletApplication implements Application {
 		return true;
 	}
 
-	public Invoker getRPCInvoker(final Message message) throws NoSuchMethodException, SecurityException {
+	protected Invoker getRPCInvoker(final Message message) throws NoSuchMethodException, SecurityException {
 		Invoker invoker = invokerRPCMap.get(message.getMessageKey());
 		if (invoker == null) {
 			synchronized (invokerRPCMap) {
@@ -190,7 +190,7 @@ public class ServletApplication implements Application {
 		}
 	}
 
-	public boolean checkRPCRequest(HttpServletRequest httpServletRequest) {
+	protected boolean checkRPCRequest(HttpServletRequest httpServletRequest) {
 		return Method.POST.name().equals(httpServletRequest.getMethod()) && isRpcEnabled()
 				&& httpServletRequest.getServletPath().equals(getRpcServletPath());
 	}
@@ -296,7 +296,7 @@ public class ServletApplication implements Application {
 		return commonApplication.getPropertiesFactory();
 	}
 
-	public CommonApplication getCommonApplication() {
+	protected CommonApplication getCommonApplication() {
 		return commonApplication;
 	}
 }
