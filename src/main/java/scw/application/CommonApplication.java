@@ -26,7 +26,7 @@ public class CommonApplication implements Application {
 	private final boolean initStatic;
 	private String packageNames;
 	private volatile boolean start = false;
-	private PropertiesFactory propertiesFactory;
+	private final PropertiesFactory propertiesFactory;
 	private final String configPath;
 
 	public CommonApplication(String configPath, boolean initStatic) {
@@ -37,6 +37,7 @@ public class CommonApplication implements Application {
 		beanFactory = new MultipleBeanFactory();
 		this.configPath = configPath;
 		this.initStatic = initStatic;
+		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(null) : propertiesFactory;
 		try {
 			List<String> rootFilterNameList = null;
 			if (!StringUtils.isNull(configPath)) {
@@ -64,7 +65,7 @@ public class CommonApplication implements Application {
 		this(configPath, StringUtils.isNull(propertiesFactory.getValue(INIT_STATIC)) ? false
 				: Boolean.parseBoolean(propertiesFactory.getValue(INIT_STATIC)), propertiesFactory);
 	}
-	
+
 	public Collection<Class<?>> getClasses() {
 		return ClassUtils.getClasses(packageNames);
 	}
