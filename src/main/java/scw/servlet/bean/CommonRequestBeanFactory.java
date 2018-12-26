@@ -8,8 +8,9 @@ public final class CommonRequestBeanFactory implements RequestBeanFactory {
 	private final XmlRequestBeanFactory xmlRequestBeanFactory;
 	private final AnnotationRequestBeanFactory annotationRequestBeanFactory;
 
-	public CommonRequestBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configXml) throws Exception {
-		this.xmlRequestBeanFactory = new XmlRequestBeanFactory(beanFactory, propertiesFactory, configXml);
+	public CommonRequestBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+			String configXml, String[] filterNames) throws Exception {
+		this.xmlRequestBeanFactory = new XmlRequestBeanFactory(beanFactory, propertiesFactory, configXml, filterNames);
 		this.annotationRequestBeanFactory = new AnnotationRequestBeanFactory(beanFactory, propertiesFactory);
 	}
 

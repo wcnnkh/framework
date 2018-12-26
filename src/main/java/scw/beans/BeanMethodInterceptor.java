@@ -24,7 +24,7 @@ public final class BeanMethodInterceptor implements MethodInterceptor, BeanField
 	private boolean startListen = false;
 	private transient ClassInfo classInfo;
 	private boolean isBeanListen;
-	private transient List<BeanFilter> beanFilters;
+	private transient String[] filterNames;
 	private transient BeanFactory beanFactory;
 
 	// 用于序列化
@@ -32,8 +32,8 @@ public final class BeanMethodInterceptor implements MethodInterceptor, BeanField
 		this(null, null);
 	}
 
-	public BeanMethodInterceptor(BeanFactory beanFactory, List<BeanFilter> beanFilters) {
-		this.beanFilters = beanFilters;
+	public BeanMethodInterceptor(BeanFactory beanFactory, String[] filterNames) {
+		this.filterNames = filterNames;
 	}
 
 	private void init(Class<?> type) {
@@ -78,19 +78,11 @@ public final class BeanMethodInterceptor implements MethodInterceptor, BeanField
 	}
 
 	private Object filter(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		if (beanFilters == null) {
+		if (filterNames == null || filterNames.length == 0) {
 			return proxy.invokeSuper(obj, args);
 		} else {
-			BeanFilterChain beanFilterChain;
-			List<BeanFilter> annotationFilterList = BeanUtils.getBeanFilterList(beanFactory, obj.getClass(), method);
-			if (annotationFilterList == null) {
-				beanFilterChain = new BeanFilterChain(beanFilters);
-			} else {
-				List<BeanFilter> list = new ArrayList<BeanFilter>(beanFilters.size() + annotationFilterList.size());
-				list.addAll(beanFilters);
-				list.addAll(annotationFilterList);
-				beanFilterChain = new BeanFilterChain(list);
-			}
+			List<BeanFilter> beanFilterList = getBeanFilters(obj.getClass(), method);
+			BeanFilterChain beanFilterChain = new BeanFilterChain(beanFilterList);
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		}
 	}
@@ -101,21 +93,22 @@ public final class BeanMethodInterceptor implements MethodInterceptor, BeanField
 			return run(obj, method, args, proxy);
 		} else {
 			for (int i = 0; i < Math.max(retry.maxCount() + 1, 1); i++) {
-				if(i != 0){
-					if(retry.log()){
+				if (i != 0) {
+					if (retry.log()) {
 						try {
 							StringBuilder sb = new StringBuilder();
 							sb.append("class:").append(classInfo.getName()).append(",");
 							sb.append("method:").append(method.getName()).append(",");
-							sb.append("parameterTypes:").append(Arrays.toString(method.getParameterTypes())).append(",");
+							sb.append("parameterTypes:").append(Arrays.toString(method.getParameterTypes()))
+									.append(",");
 							sb.append("args:").append(Arrays.toString(args));
 							Logger.info("@Retry", sb.toString());
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
-					
-					if(retry.delayMillis() > 0 || retry.delayNanos() > 0){
+
+					if (retry.delayMillis() > 0 || retry.delayNanos() > 0) {
 						Thread.sleep(Math.abs(retry.delayMillis()), Math.abs(retry.delayNanos()));
 					}
 				}
@@ -196,5 +189,61 @@ public final class BeanMethodInterceptor implements MethodInterceptor, BeanField
 			changeColumnMap = new HashMap<String, Object>();
 		}
 		changeColumnMap.put(fieldInfo.getName(), oldValue);
+	}
+
+	private List<BeanFilter> getBeanFilters(Class<?> clz, Method method) {
+		if (beanFactory == null) {
+			return null;
+		}
+
+		List<BeanFilter> beanFilters = new ArrayList<BeanFilter>();
+		if (filterNames != null) {
+			for (String name : filterNames) {
+				beanFilters.add((BeanFilter) beanFactory.get(name));
+			}
+		}
+
+		scw.beans.annotaion.BeanFilter beanFilter = clz.getAnnotation(scw.beans.annotaion.BeanFilter.class);
+		if (beanFilter != null) {
+			if (beanFilter.namePriority()) {
+				for (String name : beanFilter.name()) {
+					beanFilters.add((BeanFilter) beanFactory.get(name));
+				}
+
+				for (Class<? extends BeanFilter> c : beanFilter.value()) {
+					beanFilters.add(beanFactory.get(c));
+				}
+			} else {
+				for (Class<? extends BeanFilter> c : beanFilter.value()) {
+					beanFilters.add(beanFactory.get(c));
+				}
+
+				for (String name : beanFilter.name()) {
+					beanFilters.add((BeanFilter) beanFactory.get(name));
+				}
+			}
+		}
+
+		beanFilter = method.getAnnotation(scw.beans.annotaion.BeanFilter.class);
+		if (beanFilter != null) {
+			if (beanFilter.namePriority()) {
+				for (String name : beanFilter.name()) {
+					beanFilters.add((BeanFilter) beanFactory.get(name));
+				}
+
+				for (Class<? extends BeanFilter> c : beanFilter.value()) {
+					beanFilters.add(beanFactory.get(c));
+				}
+			} else {
+				for (Class<? extends BeanFilter> c : beanFilter.value()) {
+					beanFilters.add(beanFactory.get(c));
+				}
+
+				for (String name : beanFilter.name()) {
+					beanFilters.add((BeanFilter) beanFactory.get(name));
+				}
+			}
+		}
+		return beanFilters;
 	}
 }

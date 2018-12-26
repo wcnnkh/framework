@@ -6,15 +6,13 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.cglib.proxy.Enhancer;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import net.sf.cglib.proxy.Enhancer;
 import scw.beans.AnnotationBean;
 import scw.beans.Bean;
 import scw.beans.BeanFactory;
-import scw.beans.BeanFilter;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
 import scw.beans.property.PropertiesFactory;
@@ -44,7 +42,7 @@ public class XmlBean implements Bean {
 	private String[] names;
 	private final String id;
 	private final boolean singleton;
-	private final List<String> beanFilters = new ArrayList<String>();
+	private final String[] filterNames;
 	// 构造函数的参数
 	private final List<XmlBeanParameter> constructorList = new ArrayList<XmlBeanParameter>();
 	private final List<XmlBeanParameter> propertiesList = new ArrayList<XmlBeanParameter>();
@@ -58,8 +56,8 @@ public class XmlBean implements Bean {
 	private XmlBeanParameter[] beanMethodParameters;
 	private Enhancer enhancer;
 
-	public XmlBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode,
-			List<String> filterNameList) throws Exception {
+	public XmlBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode, String[] filterNames)
+			throws Exception {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
 
@@ -98,8 +96,11 @@ public class XmlBean implements Bean {
 			filters = StringUtils.commonSplit(filtersNode.getNodeValue());
 		}
 
-		if (filterNameList != null) {
-			beanFilters.addAll(filterNameList);
+		List<String> beanFilters = new ArrayList<String>();
+		if (filterNames != null) {
+			for (String name : filterNames) {
+				beanFilters.add(name);
+			}
 		}
 
 		if (filters != null) {
@@ -107,6 +108,7 @@ public class XmlBean implements Bean {
 				beanFilters.add(f);
 			}
 		}
+		this.filterNames = beanFilters.toArray(new String[beanFilters.size()]);
 
 		// constructor
 		NodeList nodeList = beanNode.getChildNodes();
@@ -181,7 +183,7 @@ public class XmlBean implements Bean {
 			return false;
 		}
 
-		if (beanFilters != null && !beanFilters.isEmpty()) {
+		if (filterNames != null && filterNames.length != 0) {
 			return true;
 		}
 
@@ -206,19 +208,7 @@ public class XmlBean implements Bean {
 
 	private Enhancer getProxyEnhancer() {
 		if (enhancer == null) {
-			List<BeanFilter> beanFilterList = null;
-			if (beanFilters != null && !beanFilters.isEmpty()) {
-				for (String name : beanFilters) {
-					BeanFilter beanFilter = beanFactory.get(name);
-					if (beanFilter != null) {
-						if (beanFilterList == null) {
-							beanFilterList = new ArrayList<BeanFilter>();
-						}
-						beanFilterList.add(beanFilter);
-					}
-				}
-			}
-			enhancer = BeanUtils.createEnhancer(type, beanFactory, null, beanFilterList);
+			enhancer = BeanUtils.createEnhancer(type, beanFactory, null, filterNames);
 		}
 		return enhancer;
 	}
@@ -262,8 +252,7 @@ public class XmlBean implements Bean {
 				continue;
 			}
 
-			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean,
-					classInfo.getFieldInfo(field.getName()));
+			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, classInfo.getFieldInfo(field.getName()));
 		}
 		setProperties(bean);
 	}

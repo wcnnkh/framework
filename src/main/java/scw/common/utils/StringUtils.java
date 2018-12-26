@@ -87,7 +87,7 @@ public final class StringUtils {
 
 	public static String[] split(String str, char... regex) {
 		if (str == null || str.length() == 0) {
-			return new String[] { str };
+			return null;
 		}
 
 		int lastFind = 0;

@@ -1,7 +1,5 @@
 package scw.beans;
 
-import java.util.List;
-
 import scw.beans.annotaion.Service;
 import scw.beans.property.PropertiesFactory;
 import scw.common.exception.AlreadyExistsException;
@@ -14,17 +12,14 @@ import scw.common.utils.ClassUtils;
  *
  */
 public class AnnotationBeanFactory extends AbstractBeanFactory {
-	private final BeanFactory beanFactory;
-	private final PropertiesFactory propertiesFactory;
-	private final List<String> rootFilterNameList;
-
 	public AnnotationBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String packageNames,
-			List<String> rootFilterNameList) {
-		this.beanFactory = beanFactory;
-		this.propertiesFactory = propertiesFactory;
+			String[] filterNames) throws Exception {
 		for (Class<?> clz : ClassUtils.getClasses(packageNames)) {
 			Service service = clz.getAnnotation(Service.class);
 			if (service != null) {
+				AnnotationBean bean = new AnnotationBean(beanFactory, propertiesFactory, clz, filterNames);
+				putBean(clz.getName(), bean);
+
 				Class<?>[] interfaces = clz.getInterfaces();
 				for (Class<?> i : interfaces) {
 					if (!registerNameMapping(i.getName(), clz.getName())) {
@@ -39,39 +34,6 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 				}
 			}
 		}
-		this.rootFilterNameList = rootFilterNameList;
 	}
 
-	@Override
-	protected Bean newBean(String name) {
-		try {
-			String n = nameMappingMap.get(name);
-			if (n == null) {
-				n = name;
-			}
-			Class<?> clz = Class.forName(n);
-			if (!ClassUtils.isInstance(clz)) {
-				return null;
-			}
-
-			return new AnnotationBean(beanFactory, propertiesFactory, clz, rootFilterNameList);
-		} catch (Exception e) {
-		}
-		return null;
-	}
-
-	@Override
-	public boolean contains(String name) {
-		boolean b = super.contains(name);
-		if (!b) {
-			try {
-				Class<?> clz = ClassUtils.forName(name);
-				if (ClassUtils.isInstance(clz)) {
-					b = true;
-				}
-			} catch (ClassNotFoundException e) {
-			}
-		}
-		return b;
-	}
 }

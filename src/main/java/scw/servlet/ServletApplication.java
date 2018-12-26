@@ -70,7 +70,7 @@ public class ServletApplication implements Application {
 					Boolean.parseBoolean(initStaticStr), propertiesFactory);
 		}
 		this.requestBeanFactory = new CommonRequestBeanFactory(commonApplication.getBeanFactory(), propertiesFactory,
-				propertiesFactory.getConfigXml());
+				propertiesFactory.getConfigXml(), commonApplication.getBeanFactory().getFilterNames());
 	}
 
 	public void setSearchAction(SearchAction searchAction) {

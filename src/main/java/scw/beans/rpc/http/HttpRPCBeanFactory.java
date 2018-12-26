@@ -6,7 +6,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.AbstractBeanFactory;
-import scw.beans.Bean;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.common.utils.ClassUtils;
@@ -71,10 +70,4 @@ public class HttpRPCBeanFactory extends AbstractBeanFactory{
 			}
 		}
 	}
-	
-	@Override
-	protected Bean newBean(String name) throws Exception {
-		return null;
-	}
-	
 }

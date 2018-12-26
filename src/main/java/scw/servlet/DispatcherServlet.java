@@ -60,7 +60,7 @@ public class DispatcherServlet extends HttpServlet {
 		servletApplication.getCommonApplication().getBeanFactory().registerNameMapping(servletConfig.getServletName(),
 				this.getClass().getName());
 		try {
-			servletApplication.getCommonApplication().getBeanFactory().registerSingleton(this.getClass(), this);
+			servletApplication.getCommonApplication().getBeanFactory().addSingleton(this.getClass().getName(), this);
 		} catch (Exception e) {
 			throw new ServletException(e);
 		}

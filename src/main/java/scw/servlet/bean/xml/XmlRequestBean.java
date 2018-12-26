@@ -2,23 +2,18 @@ package scw.servlet.bean.xml;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.cglib.proxy.Enhancer;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import net.sf.cglib.proxy.Enhancer;
 import scw.beans.AnnotationBean;
 import scw.beans.BeanFactory;
-import scw.beans.BeanFilter;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
-import scw.beans.annotaion.Service;
-import scw.beans.annotaion.Transaction;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanParameter;
@@ -29,7 +24,6 @@ import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.servlet.Request;
-import scw.servlet.action.annotation.Controller;
 import scw.servlet.bean.RequestBean;
 import scw.servlet.bean.RequestBeanUtils;
 
@@ -51,7 +45,7 @@ public final class XmlRequestBean implements RequestBean {
 	private final Class<?> type;
 	private String[] names;
 	private final String id;
-	private final List<String> beanFilters = new ArrayList<String>();
+	private final String[] filterNames;
 	// 构造函数的参数
 	private final List<XmlBeanParameter> constructorList = new ArrayList<XmlBeanParameter>();
 	private final List<XmlBeanParameter> propertiesList = new ArrayList<XmlBeanParameter>();
@@ -65,8 +59,8 @@ public final class XmlRequestBean implements RequestBean {
 	private XmlBeanParameter[] beanMethodParameters;
 	private Enhancer enhancer;
 
-	public XmlRequestBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode)
-			throws Exception {
+	public XmlRequestBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode,
+			String[] filterNames) throws Exception {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
 
@@ -98,11 +92,19 @@ public final class XmlRequestBean implements RequestBean {
 			filters = StringUtils.commonSplit(filtersNode.getNodeValue());
 		}
 
+		List<String> beanFilters = new ArrayList<String>();
+		if (filterNames != null) {
+			for (String n : filterNames) {
+				beanFilters.add(n);
+			}
+		}
+
 		if (filters != null) {
 			for (String f : filters) {
 				beanFilters.add(f);
 			}
 		}
+		this.filterNames = beanFilters.toArray(new String[beanFilters.size()]);
 
 		// constructor
 		NodeList nodeList = beanNode.getChildNodes();
@@ -180,32 +182,11 @@ public final class XmlRequestBean implements RequestBean {
 			return false;
 		}
 
-		if (beanFilters != null && !beanFilters.isEmpty()) {
+		if (filterNames != null && filterNames.length != 0) {
 			return true;
 		}
 
-		Controller controller = type.getAnnotation(Controller.class);
-		if (controller != null) {
-			return true;
-		}
-
-		Service service = type.getAnnotation(Service.class);
-		if (service != null) {
-			return true;
-		}
-
-		Transaction transaction = type.getAnnotation(Transaction.class);
-		if (transaction != null) {
-			return true;
-		}
-
-		for (Method method : type.getDeclaredMethods()) {
-			Transaction t = method.getAnnotation(Transaction.class);
-			if (t != null) {
-				return true;
-			}
-		}
-		return false;
+		return AnnotationBean.checkProxy(type);
 	}
 
 	public String getId() {
@@ -218,19 +199,7 @@ public final class XmlRequestBean implements RequestBean {
 
 	private Enhancer getProxyEnhancer() {
 		if (enhancer == null) {
-			List<BeanFilter> beanFilterList = null;
-			if (beanFilters != null && !beanFilters.isEmpty()) {
-				for (String name : beanFilters) {
-					BeanFilter beanFilter = beanFactory.get(name);
-					if (beanFilter != null) {
-						if (beanFilterList == null) {
-							beanFilterList = new ArrayList<BeanFilter>();
-						}
-						beanFilterList.add(beanFilter);
-					}
-				}
-			}
-			enhancer = BeanUtils.createEnhancer(type, beanFactory, null, beanFilterList);
+			enhancer = BeanUtils.createEnhancer(type, beanFactory, null, filterNames);
 		}
 		return enhancer;
 	}

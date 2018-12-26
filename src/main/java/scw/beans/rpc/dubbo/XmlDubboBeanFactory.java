@@ -10,7 +10,6 @@ import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 
 import scw.beans.AbstractBeanFactory;
-import scw.beans.Bean;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.common.utils.ClassUtils;
@@ -70,10 +69,5 @@ public class XmlDubboBeanFactory extends AbstractBeanFactory{
 				}
 			}
 		}
-	}
-	
-	@Override
-	protected Bean newBean(String name) throws Exception {
-		return null;
 	}
 }

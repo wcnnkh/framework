@@ -453,7 +453,7 @@ public final class BeanUtils {
 
 	public static Enhancer createEnhancer(Class<?> clz,
 			BeanFactory beanFactory, Class<?>[] interfaces,
-			List<BeanFilter> beanFilterList) {
+			String[] filterNames) {
 		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
 		Enhancer enhancer = new Enhancer();
 		Class<?>[] beanListenInterfaces;
@@ -479,7 +479,7 @@ public final class BeanUtils {
 			enhancer.setSerialVersionUID(classInfo.getSerialVersionUID());
 		}
 		enhancer.setCallback(new BeanMethodInterceptor(beanFactory,
-				beanFilterList));
+				filterNames));
 		enhancer.setSuperclass(clz);
 		return enhancer;
 	}

@@ -14,7 +14,6 @@ import scw.beans.annotaion.InitMethod;
 import scw.beans.annotaion.Retry;
 import scw.common.exception.NotSupportException;
 import scw.common.utils.ClassUtils;
-import scw.database.annoation.Table;
 
 abstract class AbstractInterfaceProxyBean implements Bean {
 	private final Class<?> type;
@@ -87,20 +86,6 @@ abstract class AbstractInterfaceProxyBean implements Bean {
 			retry = type.getAnnotation(Retry.class);
 		}
 		return retry;
-	}
-
-	public static boolean isSignleton(Class<?> type) {
-		scw.beans.annotaion.Bean bean = type.getAnnotation(scw.beans.annotaion.Bean.class);
-		boolean b = true;
-		if (bean != null) {
-			b = bean.singleton();
-		}
-
-		if (b) {
-			Table table = type.getAnnotation(Table.class);
-			b = table == null;
-		}
-		return b;
 	}
 
 	public boolean isSingleton() {

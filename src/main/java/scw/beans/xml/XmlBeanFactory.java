@@ -1,7 +1,6 @@
 package scw.beans.xml;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.w3c.dom.Node;
@@ -15,34 +14,19 @@ import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.StringUtils;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
-	private static final String BEANS_ANNOTATION = "packages";
 	private static final String BEAN_TAG_NAME = "bean";
 	private static final String BEAN_FACTORY_TAG_NAME = "factory";
 
-	private String packageNames;
 	private List<String> beanFactoryList;
-	private List<String> filterNameList;
 
-	public XmlBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String beanXml)
-			throws Exception {
+	public XmlBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String beanXml,
+			String[] filterNames) throws Exception {
 		Node root = XmlBeanUtils.getRootNode(beanXml);
-		if (root.getAttributes() != null) {
-			Node annotationNode = root.getAttributes().getNamedItem(BEANS_ANNOTATION);
-			if (annotationNode != null) {
-				this.packageNames = annotationNode.getNodeValue();
-			}
-
-			String filterNames = XmlBeanUtils.getNodeAttributeValue(root, "filters");
-			if (!StringUtils.isNull(filterNames)) {
-				filterNameList = Arrays.asList(StringUtils.commonSplit(filterNames));
-			}
-		}
-
 		NodeList nhosts = root.getChildNodes();
 		for (int i = 0; i < nhosts.getLength(); i++) {
 			Node nRoot = nhosts.item(i);
 			if (BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
-				Bean bean = new XmlBean(beanFactory, propertiesFactory, nRoot, filterNameList);
+				Bean bean = new XmlBean(beanFactory, propertiesFactory, nRoot, filterNames);
 				putBean(bean.getId(), bean);
 
 				if (bean.getNames() != null) {
@@ -67,18 +51,5 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 				}
 			}
 		}
-	}
-
-	public String getPackageNames() {
-		return packageNames;
-	}
-
-	@Override
-	protected Bean newBean(String name) {
-		return null;
-	}
-
-	public List<String> getFilterNameList() {
-		return filterNameList;
 	}
 }
