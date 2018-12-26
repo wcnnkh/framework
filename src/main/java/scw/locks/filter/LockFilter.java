@@ -10,7 +10,8 @@ import scw.locks.Lock;
 import scw.locks.LockFactory;
 
 /**
- * 实现方法级别的分布试锁
+ * 实现方法级别的分布式锁
+ * 
  * @author shuchaowen
  *
  */
@@ -27,6 +28,11 @@ public class LockFilter implements BeanFilter {
 
 	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
 			throws Throwable {
+		LockConfig lockConfig = method.getAnnotation(LockConfig.class);
+		if (lockConfig == null) {
+			return beanFilterChain.doFilter(obj, method, args, proxy);
+		}
+
 		StringBuilder sb = new StringBuilder(512);
 		sb.append(this.getClass().getName());
 		sb.append("#");
@@ -40,22 +46,16 @@ public class LockFilter implements BeanFilter {
 			}
 		}
 
-		boolean wait = true;
-		LockConfig lockConfig = method.getAnnotation(LockConfig.class);
-		if (lockConfig != null) {
-			if (lockConfig.keyIndex() != null) {
-				for (int index : lockConfig.keyIndex()) {
-					sb.append(args[index]).append(lockConfig.joinChars());
-				}
+		if (lockConfig.keyIndex() != null) {
+			for (int index : lockConfig.keyIndex()) {
+				sb.append(args[index]).append(lockConfig.joinChars());
 			}
-
-			wait = lockConfig.isWait();
 		}
 
 		String lockKey = sb.toString();
 		Lock lock = lockFactory.getLock(lockKey);
 		try {
-			if (wait) {
+			if (lockConfig.isWait()) {
 				lock.lockWait();
 			} else if (!lock.lock()) {
 				throw new HasBeenLockedException(lockKey);
@@ -65,5 +65,4 @@ public class LockFilter implements BeanFilter {
 			lock.unlock();
 		}
 	}
-
 }
