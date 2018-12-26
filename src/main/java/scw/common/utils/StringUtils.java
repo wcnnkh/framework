@@ -710,4 +710,38 @@ public final class StringUtils {
 		}
 		return sb.toString();
 	}
+
+	// 根据Unicode编码判断中文汉字和符号
+	public static boolean isChinese(char c) {
+		Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+		if (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+				|| ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+				|| ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+				|| ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B
+				|| ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+				|| ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS
+				|| ub == Character.UnicodeBlock.GENERAL_PUNCTUATION) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 判断字符串中是否存在中文
+	 * 
+	 * @param charSequence
+	 * @return
+	 */
+	public static boolean isChinese(CharSequence charSequence) {
+		if (charSequence == null || charSequence.length() == 0) {
+			return false;
+		}
+
+		for (int i = 0; i < charSequence.length(); i++) {
+			if (isChinese(charSequence.charAt(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

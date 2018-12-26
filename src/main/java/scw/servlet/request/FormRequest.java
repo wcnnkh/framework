@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.alibaba.fastjson.JSONObject;
 
 import scw.common.Logger;
-import scw.common.utils.RegexUtils;
 import scw.common.utils.StringUtils;
 import scw.servlet.Request;
 import scw.servlet.action.PathSearchAction;
@@ -77,7 +76,7 @@ public class FormRequest extends Request {
 	}
 
 	protected String decodeGETParameter(String value) {
-		if (RegexUtils.isZh(value)) {
+		if (StringUtils.isChinese(value)) {
 			return value;
 		}
 		return new String(value.getBytes(GET_DEFAULT_CHARSET), Charset.forName(getCharacterEncoding()));
