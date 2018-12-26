@@ -732,7 +732,7 @@ public final class StringUtils {
 	 * @param charSequence
 	 * @return
 	 */
-	public static boolean isChinese(CharSequence charSequence) {
+	public static boolean containsChinese(CharSequence charSequence) {
 		if (charSequence == null || charSequence.length() == 0) {
 			return false;
 		}

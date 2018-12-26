@@ -76,7 +76,7 @@ public class FormRequest extends Request {
 	}
 
 	protected String decodeGETParameter(String value) {
-		if (StringUtils.isChinese(value)) {
+		if (StringUtils.containsChinese(value)) {
 			return value;
 		}
 		return new String(value.getBytes(GET_DEFAULT_CHARSET), Charset.forName(getCharacterEncoding()));
