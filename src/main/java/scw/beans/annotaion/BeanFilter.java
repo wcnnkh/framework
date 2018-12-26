@@ -22,7 +22,7 @@ public @interface BeanFilter {
 	 * filter的名称引用
 	 * @return
 	 */
-	public String[] name();
+	public String[] name() default {};
 	
 	/**
 	 * 是否将名称引用的filter排在前面
