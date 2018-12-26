@@ -5,7 +5,7 @@ import java.util.Map;
 
 import scw.common.exception.AlreadyExistsException;
 
-public abstract class AbstractBeanFactory implements BeanConfigFactory {
+public abstract class AbstractBeanConfigFactory implements BeanConfigFactory {
 	protected Map<String, Bean> beanMap = new HashMap<String, Bean>();
 	protected Map<String, String> nameMappingMap = new HashMap<String, String>();
 

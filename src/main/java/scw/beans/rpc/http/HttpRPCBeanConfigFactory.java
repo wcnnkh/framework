@@ -5,16 +5,16 @@ import java.nio.charset.Charset;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.AbstractBeanFactory;
+import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 
-public class HttpRPCBeanFactory extends AbstractBeanFactory{
+public class HttpRPCBeanConfigFactory extends AbstractBeanConfigFactory{
 	private static final String TAG_NAME = "http:reference";
 	
-	public HttpRPCBeanFactory(PropertiesFactory propertiesFactory, String config) throws Exception {
+	public HttpRPCBeanConfigFactory(PropertiesFactory propertiesFactory, String config) throws Exception {
 		Node rootNode = XmlBeanUtils.getRootNode(config);
 		NodeList rootNodeList = rootNode.getChildNodes();
 		for(int i=0; i<rootNodeList.getLength(); i++){

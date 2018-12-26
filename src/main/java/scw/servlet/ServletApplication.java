@@ -61,10 +61,9 @@ public class ServletApplication implements Application {
 
 	public ServletApplication(ServletConfig servletConfig) throws Exception {
 		ServletConfigPropertiesFactory propertiesFactory = new ServletConfigPropertiesFactory(servletConfig);
-		// 为了兼容老版本
 		String initStaticStr = propertiesFactory.getServletConfig("init-static");
 		if (StringUtils.isNull(initStaticStr)) {
-			this.commonApplication = new CommonApplication(propertiesFactory.getConfigXml(), propertiesFactory);
+			this.commonApplication = new CommonApplication(propertiesFactory.getConfigXml(), false, propertiesFactory);
 		} else {
 			this.commonApplication = new CommonApplication(propertiesFactory.getConfigXml(),
 					Boolean.parseBoolean(initStaticStr), propertiesFactory);

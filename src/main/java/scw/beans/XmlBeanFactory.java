@@ -1,16 +1,20 @@
 package scw.beans;
 
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import scw.beans.property.PropertiesFactory;
-import scw.beans.rpc.dubbo.XmlDubboBeanFactory;
-import scw.beans.rpc.http.HttpRPCBeanFactory;
-import scw.beans.xml.XmlBeanFactory;
+import scw.beans.property.XmlPropertiesFactory;
+import scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory;
+import scw.beans.rpc.http.HttpRPCBeanConfigFactory;
+import scw.beans.xml.XmlBeanConfigFactory;
+import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.exception.BeansException;
@@ -18,7 +22,10 @@ import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 
-public final class CommonBeanFactory implements BeanFactory {
+public final class XmlBeanFactory implements BeanFactory {
+	private static final String INIT_METHOD_TAG_NAME = "init";
+	private static final String DESTROY_METHOD_TAG_NAME = "destroy";
+
 	private volatile Map<String, Object> singletonMap = new HashMap<String, Object>();
 	private volatile Map<String, Bean> beanMap = new HashMap<String, Bean>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
@@ -26,26 +33,32 @@ public final class CommonBeanFactory implements BeanFactory {
 	private String[] filterNames;
 	private String packages;
 	private final boolean initStatic;// 是否初始化静态方法
+	private final String xmlPath;
 
-	public CommonBeanFactory(PropertiesFactory propertiesFactory, String[] filterNames, boolean initStatic) {
-		this.propertiesFactory = propertiesFactory;
-		this.filterNames = filterNames;
+	public XmlBeanFactory(String xmlPath, boolean initStatic) throws Exception {
+		this.xmlPath = xmlPath;
+		this.propertiesFactory = new XmlPropertiesFactory(xmlPath);
 		this.initStatic = initStatic;
+		initXmlDefaultBeanFactory(xmlPath);
 	}
 
-	public CommonBeanFactory(PropertiesFactory propertiesFactory, String xmlPath, boolean initStatic) throws Exception {
+	public XmlBeanFactory(PropertiesFactory propertiesFactory, String xmlPath, boolean initStatic) throws Exception {
+		this.xmlPath = xmlPath;
 		this.initStatic = initStatic;
 		this.propertiesFactory = propertiesFactory;
+		initXmlDefaultBeanFactory(xmlPath);
+	}
+
+	private void initXmlDefaultBeanFactory(String xmlPath) throws Exception {
 		if (!StringUtils.isNull(xmlPath)) {
 			Node root = XmlBeanUtils.getRootNode(xmlPath);
 			this.packages = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, root, "packages");
 			this.filterNames = StringUtils
 					.commonSplit(XmlBeanUtils.getNodeAttributeValue(propertiesFactory, root, "filters"));
-
-			addBeanConfigFactory(new XmlDubboBeanFactory(propertiesFactory, xmlPath));
-			addBeanConfigFactory(new HttpRPCBeanFactory(propertiesFactory, xmlPath));
-			addBeanConfigFactory(new XmlBeanFactory(this, propertiesFactory, xmlPath, filterNames));
-			addBeanConfigFactory(new AnnotationBeanFactory(this, propertiesFactory, packages, filterNames));
+			addBeanConfigFactory(new XmlDubboBeanConfigFactory(propertiesFactory, xmlPath));
+			addBeanConfigFactory(new HttpRPCBeanConfigFactory(propertiesFactory, xmlPath));
+			addBeanConfigFactory(new XmlBeanConfigFactory(this, propertiesFactory, xmlPath, filterNames));
+			addBeanConfigFactory(new ServiceBeanConfigFactory(this, propertiesFactory, packages, filterNames));
 		}
 	}
 
@@ -239,6 +252,10 @@ public final class CommonBeanFactory implements BeanFactory {
 		return packages;
 	}
 
+	public String getXmlPath() {
+		return xmlPath;
+	}
+
 	public Collection<Class<?>> getClassList() {
 		return ClassUtils.getClasses(packages);
 	}
@@ -252,8 +269,48 @@ public final class CommonBeanFactory implements BeanFactory {
 			if (initStatic) {
 				BeanUtils.initStatic(this, propertiesFactory, getClassList());
 			}
+
+			initMethod();
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
+		}
+	}
+
+	private void initMethod() throws Exception {
+		Node root = XmlBeanUtils.getRootNode(xmlPath);
+		NodeList nodeList = root.getChildNodes();
+		for (int a = 0; a < nodeList.getLength(); a++) {
+			Node n = nodeList.item(a);
+			if (INIT_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {
+				String className = XmlBeanUtils.getRequireNodeAttributeValue(propertiesFactory, n, "class");
+				Bean bean = getBean(className);
+				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(bean.getType(), n);
+				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod().getModifiers())) {
+					// 静态方法
+					xmlBeanMethodInfo.invoke(null, this, propertiesFactory);
+				} else {
+					xmlBeanMethodInfo.invoke(get(className), this, propertiesFactory);
+				}
+			}
+		}
+	}
+
+	private void destroyMethod() throws Exception {
+		Node root = XmlBeanUtils.getRootNode(xmlPath);
+		NodeList nodeList = root.getChildNodes();
+		for (int a = 0; a < nodeList.getLength(); a++) {
+			Node n = nodeList.item(a);
+			if (DESTROY_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {
+				String className = XmlBeanUtils.getRequireNodeAttributeValue(propertiesFactory, n, "class");
+				Bean bean = getBean(className);
+				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(bean.getType(), n);
+				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod().getModifiers())) {
+					// 静态方法
+					xmlBeanMethodInfo.invoke(null, this, propertiesFactory);
+				} else {
+					xmlBeanMethodInfo.invoke(get(className), this, propertiesFactory);
+				}
+			}
 		}
 	}
 
@@ -267,12 +324,14 @@ public final class CommonBeanFactory implements BeanFactory {
 			}
 		}
 
-		if (initStatic) {
-			try {
+		try {
+			if (initStatic) {
 				BeanUtils.destroyStaticMethod(getClassList());
-			} catch (Exception e) {
-				throw new ShuChaoWenRuntimeException(e);
 			}
+
+			destroyMethod();
+		} catch (Exception e) {
+			throw new ShuChaoWenRuntimeException(e);
 		}
 	}
 }

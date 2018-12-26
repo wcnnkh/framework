@@ -6,20 +6,20 @@ import java.util.List;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.AbstractBeanFactory;
+import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.Bean;
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.StringUtils;
 
-public class XmlBeanFactory extends AbstractBeanFactory {
+public class XmlBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String BEAN_TAG_NAME = "bean";
 	private static final String BEAN_FACTORY_TAG_NAME = "factory";
 
 	private List<String> beanFactoryList;
 
-	public XmlBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String beanXml,
+	public XmlBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String beanXml,
 			String[] filterNames) throws Exception {
 		Node root = XmlBeanUtils.getRootNode(beanXml);
 		NodeList nhosts = root.getChildNodes();

@@ -9,16 +9,16 @@ import org.w3c.dom.NodeList;
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 
-import scw.beans.AbstractBeanFactory;
+import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 
-public class XmlDubboBeanFactory extends AbstractBeanFactory{
+public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory{
 	private static final String TAG_NAME = "dubbo:reference";
 	
-	public XmlDubboBeanFactory(PropertiesFactory propertiesFactory, String config) throws ClassNotFoundException{
+	public XmlDubboBeanConfigFactory(PropertiesFactory propertiesFactory, String config) throws ClassNotFoundException{
 		NodeList rootNodeList = XmlBeanUtils.getRootNode(config).getChildNodes();
 		if (rootNodeList != null) {
 			for (int x = 0; x < rootNodeList.getLength(); x++) {
