@@ -200,7 +200,7 @@ public final class BeanUtils {
 		Class<?>[] oldTypes = executable.getParameterTypes();
 		Class<?>[] types = new Class<?>[methodParameters.length];
 		for (int i = 0; i < methodParameters.length; i++) {
-			XmlBeanParameter beanMethodParameter = methodParameters[i].clone();
+			XmlBeanParameter beanMethodParameter = beanMethodParameters[i].clone();
 			if (!StringUtils.isNull(beanMethodParameter.getName())) {
 				for (int a = 0; a < paramNames.length; a++) {
 					if (paramNames[a].equals(beanMethodParameter.getName())) {
