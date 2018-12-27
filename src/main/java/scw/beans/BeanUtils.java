@@ -455,6 +455,33 @@ public final class BeanUtils {
 		return (T) createEnhancer(clz, null, null, null).create();
 	}
 
+	/**
+	 * 把一个普通对象转成可以监听字段变化的对象
+	 * @param bean
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T transformationFieldListen(T bean) {
+		ClassInfo classInfo = ClassUtils.getClassInfo(bean.getClass());
+		BeanFieldListen proxy = (BeanFieldListen) newFieldListenInstance(classInfo.getClz());
+		for (Entry<String, FieldInfo> entry : classInfo.getFieldMap().entrySet()) {
+			FieldInfo fieldInfo = entry.getValue();
+			Object v;
+			try {
+				v = fieldInfo.forceGet(bean);
+				if (v != null) {
+					fieldInfo.forceSet(proxy, v);
+				}
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		proxy.start_field_listen();
+		return (T) proxy;
+	}
+
 	public static Class<?> getFieldListenProxyClass(Class<?> clz) {
 		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
 		Class<?>[] arr = clz.getInterfaces();
