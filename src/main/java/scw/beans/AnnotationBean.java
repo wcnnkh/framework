@@ -225,8 +225,8 @@ public class AnnotationBean implements Bean {
 				if (Modifier.isStatic(field.getField().getModifiers())) {
 					continue;
 				}
-
-				BeanUtils.autoWrite(classInfo.getClz(), beanFactory, propertiesFactory, bean, field);
+				
+				BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, field);
 			}
 			classInfo = classInfo.getSuperInfo();
 		}

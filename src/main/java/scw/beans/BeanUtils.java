@@ -344,7 +344,7 @@ public final class BeanUtils {
 			staticFieldWarnLog(Autowrite.class.getName(), clz, field.getField());
 
 			String name = s.value();
-			if (name.equals("")) {
+			if (name.length() == 0) {
 				name = field.getType().getName();
 			}
 

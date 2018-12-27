@@ -1,5 +1,7 @@
 package scw.beans;
 
+import com.alibaba.fastjson.JSONObject;
+
 import scw.beans.annotaion.Service;
 import scw.beans.property.PropertiesFactory;
 import scw.common.utils.ClassUtils;
@@ -17,6 +19,7 @@ public class ServiceBeanConfigFactory extends AbstractBeanConfigFactory {
 			Service service = clz.getAnnotation(Service.class);
 			if (service != null) {
 				AnnotationBean bean = new AnnotationBean(beanFactory, propertiesFactory, clz, filterNames);
+				System.out.println(JSONObject.toJSONString(bean));
 				putBean(clz.getName(), bean);
 			}
 		}

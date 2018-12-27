@@ -10,7 +10,6 @@ import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.Bean;
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
-import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.StringUtils;
 
 public class XmlBeanConfigFactory extends AbstractBeanConfigFactory {
@@ -28,14 +27,6 @@ public class XmlBeanConfigFactory extends AbstractBeanConfigFactory {
 			if (BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
 				Bean bean = new XmlBean(beanFactory, propertiesFactory, nRoot, filterNames);
 				putBean(bean.getId(), bean);
-
-				if (bean.getNames() != null) {
-					for (String n : bean.getNames()) {
-						if (!registerNameMapping(n, bean.getId())) {
-							throw new AlreadyExistsException(n);
-						}
-					}
-				}
 			} else if (BEAN_FACTORY_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
 				Node node = nRoot.getAttributes().getNamedItem("value");
 				String name = node == null ? null : node.getNodeValue();

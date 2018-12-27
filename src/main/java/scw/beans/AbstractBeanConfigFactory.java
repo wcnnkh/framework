@@ -9,20 +9,20 @@ public abstract class AbstractBeanConfigFactory implements BeanConfigFactory {
 	protected Map<String, Bean> beanMap = new HashMap<String, Bean>();
 	protected Map<String, String> nameMappingMap = new HashMap<String, String>();
 
-	protected void putBean(String name, Bean bean) {
+	public void putBean(String name, Bean bean) {
 		if (beanMap.containsKey(name)) {
 			throw new AlreadyExistsException(name);
 		}
+
 		beanMap.put(name, bean);
-	}
-
-	public boolean registerNameMapping(String name, String mappingName) {
-		if (nameMappingMap.containsKey(name)) {
-			throw new AlreadyExistsException(name);
+		if (bean.getNames() != null) {
+			for (String n : bean.getNames()) {
+				if (nameMappingMap.containsKey(n)) {
+					throw new AlreadyExistsException(n);
+				}
+				nameMappingMap.put(n, bean.getId());
+			}
 		}
-
-		nameMappingMap.put(name, mappingName);
-		return true;
 	}
 
 	public Map<String, Bean> getBeanMap() {
