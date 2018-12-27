@@ -25,20 +25,21 @@ public final class AnnotationRequestBean implements RequestBean {
 	private final Class<?> type;
 	private final String id;
 	private Constructor<?> constructor;
-	private final List<Method> initMethodList = new ArrayList<Method>();
-	private final List<Method> destroyMethodList = new ArrayList<Method>();
+	private final Method[] initMethods;
+	private final Method[] destroyMethods;
 	private final boolean proxy;
 	private Enhancer enhancer;
 	private final PropertiesFactory propertiesFactory;
 
-	public AnnotationRequestBean(BeanFactory beanFactory,
-			PropertiesFactory propertiesFactory, Class<?> type)
+	public AnnotationRequestBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type)
 			throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
 		this.propertiesFactory = propertiesFactory;
 		this.id = ClassUtils.getProxyRealClassName(type);
 
+		List<Method> initMethodList = new ArrayList<Method>();
+		List<Method> destroyMethodList = new ArrayList<Method>();
 		Class<?> tempClz = type;
 		for (Method method : tempClz.getDeclaredMethods()) {
 			if (Modifier.isStatic(method.getModifiers())) {
@@ -57,17 +58,18 @@ public final class AnnotationRequestBean implements RequestBean {
 				destroyMethodList.add(method);
 			}
 		}
+		this.initMethods = initMethodList.toArray(new Method[initMethodList.size()]);
+		this.destroyMethods = destroyMethodList.toArray(new Method[destroyMethodList.size()]);
 
 		this.proxy = AnnotationBean.checkProxy(type);
-
 		this.constructor = getAnnotationRequestBeanConstructor(type);
 		if (this.constructor == null) {
 			throw new BeansException("not found constructor");
 		}
 		enhancer = BeanUtils.createEnhancer(type, beanFactory, null, null);
 	}
-	
-	public static Constructor<?> getAnnotationRequestBeanConstructor(Class<?> type){
+
+	public static Constructor<?> getAnnotationRequestBeanConstructor(Class<?> type) {
 		try {
 			return type.getDeclaredConstructor(Request.class);
 		} catch (NoSuchMethodException e) {
@@ -94,8 +96,7 @@ public final class AnnotationRequestBean implements RequestBean {
 		try {
 			if (isProxy()) {
 				bean = constructor.getParameterCount() == 0 ? enhancer.create()
-						: enhancer.create(constructor.getParameterTypes(),
-								new Object[] { request });
+						: enhancer.create(constructor.getParameterTypes(), new Object[] { request });
 			} else {
 				if (constructor.getParameterCount() == 0) {
 					bean = constructor.newInstance();
@@ -117,24 +118,23 @@ public final class AnnotationRequestBean implements RequestBean {
 					continue;
 				}
 
-				BeanUtils.autoWrite(classInfo.getClz(), beanFactory,
-						propertiesFactory, bean, field);
+				BeanUtils.autoWrite(classInfo.getClz(), beanFactory, propertiesFactory, bean, field);
 			}
 			classInfo = classInfo.getSuperInfo();
 		}
 	}
 
 	public void init(Object bean) throws Exception {
-		if (initMethodList != null && !initMethodList.isEmpty()) {
-			for (Method method : initMethodList) {
+		if (initMethods.length != 0) {
+			for (Method method : initMethods) {
 				method.invoke(bean);
 			}
 		}
 	}
 
 	public void destroy(Object bean) {
-		if (destroyMethodList != null && !destroyMethodList.isEmpty()) {
-			for (Method method : destroyMethodList) {
+		if (destroyMethods.length != 0) {
+			for (Method method : destroyMethods) {
 				try {
 					method.invoke(bean);
 				} catch (IllegalAccessException e) {

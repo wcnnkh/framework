@@ -44,10 +44,10 @@ public class XmlBean implements Bean {
 	private final boolean singleton;
 	private final String[] filterNames;
 	// 构造函数的参数
-	private final List<XmlBeanParameter> constructorList = new ArrayList<XmlBeanParameter>();
-	private final List<XmlBeanParameter> propertiesList = new ArrayList<XmlBeanParameter>();
-	private final List<BeanMethod> initMethodList;
-	private final List<BeanMethod> destroyMethodList;
+	private final XmlBeanParameter[] constructorParameters;
+	private final XmlBeanParameter[] properties;
+	private final BeanMethod[] initMethods;
+	private final BeanMethod[] destroyMethods;
 	private BeanMethod factoryMethodInfo;
 	private final boolean proxy;
 
@@ -110,17 +110,18 @@ public class XmlBean implements Bean {
 		}
 		this.filterNames = beanFilters.toArray(new String[beanFilters.size()]);
 
+		List<XmlBeanParameter> propertiesList = new ArrayList<XmlBeanParameter>();
+		List<XmlBeanParameter> constructorParameterList = new ArrayList<XmlBeanParameter>();
 		// constructor
 		NodeList nodeList = beanNode.getChildNodes();
-		this.initMethodList = XmlBeanUtils.getBeanMethodList(type, nodeList, INIT_METHOD_TAG_NAME);
-		this.destroyMethodList = XmlBeanUtils.getBeanMethodList(type, nodeList, DESTROY_METHOD_TAG_NAME);
-
+		List<BeanMethod> initMethodList = XmlBeanUtils.getBeanMethodList(type, nodeList, INIT_METHOD_TAG_NAME);
+		List<BeanMethod> destroyMethodList = XmlBeanUtils.getBeanMethodList(type, nodeList, DESTROY_METHOD_TAG_NAME);
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if (CONSTRUCTOR_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// Constructor
 				List<XmlBeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
 				if (list != null) {
-					constructorList.addAll(list);
+					constructorParameterList.addAll(list);
 				}
 			} else if (PROPERTIES_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// Properties
 				List<XmlBeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
@@ -134,21 +135,26 @@ public class XmlBean implements Bean {
 				this.factoryMethodInfo = new XmlBeanMethodInfo(type, n);
 			}
 		}
+		this.properties = propertiesList.toArray(new XmlBeanParameter[propertiesList.size()]);
+		this.constructorParameters = constructorParameterList
+				.toArray(new XmlBeanParameter[constructorParameterList.size()]);
 
-		this.initMethodList.addAll(AnnotationBean.getInitMethodList(type));
-		this.destroyMethodList.addAll(AnnotationBean.getDestroyMethdoList(type));
-
+		initMethodList.addAll(AnnotationBean.getInitMethodList(type));
+		destroyMethodList.addAll(AnnotationBean.getDestroyMethdoList(type));
+		this.initMethods = initMethodList.toArray(new BeanMethod[initMethodList.size()]);
+		this.destroyMethods = destroyMethodList.toArray(new BeanMethod[destroyMethodList.size()]);
 		this.proxy = checkProxy();
 		this.constructor = getConstructor();
 		this.constructorParameterTypes = constructor.getParameterTypes();
+
 	}
 
 	private Constructor<?> getConstructor() {
-		if (constructorList == null) {
+		if (constructorParameters == null || constructorParameters.length == 0) {
 			return getConstructorByParameterTypes();
 		} else {
 			for (Constructor<?> constructor : type.getDeclaredConstructors()) {
-				XmlBeanParameter[] beanMethodParameters = BeanUtils.sortParameters(constructor, constructorList);
+				XmlBeanParameter[] beanMethodParameters = BeanUtils.sortParameters(constructor, constructorParameters);
 				if (beanMethodParameters != null) {
 					this.beanMethodParameters = beanMethodParameters;
 					constructor.setAccessible(true);
@@ -215,7 +221,7 @@ public class XmlBean implements Bean {
 
 	private Object createProxyInstance() throws Exception {
 		Enhancer enhancer = getProxyEnhancer();
-		if (constructorList == null || constructorList.isEmpty()) {
+		if (constructorParameters.length == 0) {
 			return enhancer.create();
 		} else {
 			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertiesFactory);
@@ -224,11 +230,11 @@ public class XmlBean implements Bean {
 	}
 
 	private void setProperties(Object bean) throws Exception {
-		if (propertiesList == null || propertiesList.isEmpty()) {
+		if (properties.length == 0) {
 			return;
 		}
 
-		for (XmlBeanParameter beanProperties : propertiesList) {
+		for (XmlBeanParameter beanProperties : properties) {
 			FieldInfo fieldInfo = classInfo.getFieldInfo(beanProperties.getName());
 			if (fieldInfo != null) {
 				Object value = beanProperties.parseValue(beanFactory, propertiesFactory, fieldInfo.getType());
@@ -258,16 +264,16 @@ public class XmlBean implements Bean {
 	}
 
 	public void init(Object bean) throws Exception {
-		if (initMethodList != null && !initMethodList.isEmpty()) {
-			for (BeanMethod method : initMethodList) {
+		if (initMethods != null && initMethods.length != 0) {
+			for (BeanMethod method : initMethods) {
 				method.invoke(bean, beanFactory, propertiesFactory);
 			}
 		}
 	}
 
 	public void destroy(Object bean) throws Exception {
-		if (destroyMethodList != null && !destroyMethodList.isEmpty()) {
-			for (BeanMethod method : destroyMethodList) {
+		if (destroyMethods != null && destroyMethods.length != 0) {
+			for (BeanMethod method : destroyMethods) {
 				method.invoke(bean, beanFactory, propertiesFactory);
 			}
 		}

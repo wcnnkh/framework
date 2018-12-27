@@ -28,10 +28,11 @@ public class XmlBeanMethodInfo implements BeanMethod {
 
 		String name = nameNode.getNodeValue();
 		List<XmlBeanParameter> xmlBeanParameters = XmlBeanUtils.parseBeanParameterList(node);
+		XmlBeanParameter[] parametetrs = xmlBeanParameters.toArray(new XmlBeanParameter[xmlBeanParameters.size()]);
 		Class<?> tempClz = type;
 		while (tempClz != null) {
 			for (Method method : tempClz.getDeclaredMethods()) {
-				if (method.getParameterCount() != xmlBeanParameters.size()) {
+				if (method.getParameterCount() != parametetrs.length) {
 					continue;
 				}
 
@@ -39,7 +40,7 @@ public class XmlBeanMethodInfo implements BeanMethod {
 					continue;
 				}
 
-				XmlBeanParameter[] beanMethodParameters = BeanUtils.sortParameters(method, xmlBeanParameters);
+				XmlBeanParameter[] beanMethodParameters = BeanUtils.sortParameters(method, parametetrs);
 				if (beanMethodParameters != null) {
 					this.beanMethodParameters = beanMethodParameters;
 					method.setAccessible(true);

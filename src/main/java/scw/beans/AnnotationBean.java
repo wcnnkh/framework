@@ -25,8 +25,8 @@ public class AnnotationBean implements Bean {
 	private final Class<?> type;
 	private final String id;
 	private volatile Constructor<?> constructor;
-	private final List<Method> initMethodList = new ArrayList<Method>();
-	private final List<Method> destroyMethodList = new ArrayList<Method>();
+	private final Method[] initMethods;
+	private final Method[] destroyMethods;
 	private final boolean proxy;
 	private Enhancer enhancer;
 	private final PropertiesFactory propertiesFactory;
@@ -45,13 +45,15 @@ public class AnnotationBean implements Bean {
 			if (interfaces.length != 0) {
 				id = interfaces[0].getName();
 			}
-			
+
 			if (!StringUtils.isNull(service.value())) {
 				id = service.value();
 			}
 		}
 		this.id = id;
 
+		List<Method> initMethodList = new ArrayList<Method>();
+		List<Method> destroyMethodList = new ArrayList<Method>();
 		Class<?> tempClz = type;
 		for (Method method : tempClz.getDeclaredMethods()) {
 			if (Modifier.isStatic(method.getModifiers())) {
@@ -71,6 +73,8 @@ public class AnnotationBean implements Bean {
 			}
 		}
 
+		this.initMethods = initMethodList.toArray(new Method[initMethodList.size()]);
+		this.destroyMethods = destroyMethodList.toArray(new Method[destroyMethodList.size()]);
 		this.filterNames = filterNames;
 		this.proxy = (filterNames != null && filterNames.length != 0) || checkProxy(type);
 	}
@@ -229,16 +233,16 @@ public class AnnotationBean implements Bean {
 	}
 
 	public void init(Object bean) throws Exception {
-		if (initMethodList != null && !initMethodList.isEmpty()) {
-			for (Method method : initMethodList) {
+		if (initMethods != null && initMethods.length != 0) {
+			for (Method method : initMethods) {
 				method.invoke(bean);
 			}
 		}
 	}
 
 	public void destroy(Object bean) {
-		if (destroyMethodList != null && !destroyMethodList.isEmpty()) {
-			for (Method method : destroyMethodList) {
+		if (destroyMethods != null && destroyMethods.length != 0) {
+			for (Method method : destroyMethods) {
 				try {
 					method.invoke(bean);
 				} catch (IllegalAccessException e) {
