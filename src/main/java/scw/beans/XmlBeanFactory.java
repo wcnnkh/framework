@@ -85,7 +85,6 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	public void init() {
 		super.init();
 		try {
-
 			initMethod();
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
@@ -132,7 +131,6 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 
 	public void destroy() {
 		super.destroy();
-
 		try {
 			destroyMethod();
 		} catch (Exception e) {
