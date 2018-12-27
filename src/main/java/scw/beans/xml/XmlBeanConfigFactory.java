@@ -26,7 +26,7 @@ public class XmlBeanConfigFactory extends AbstractBeanConfigFactory {
 			Node nRoot = nhosts.item(i);
 			if (BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
 				Bean bean = new XmlBean(beanFactory, propertiesFactory, nRoot, filterNames);
-				putBean(bean.getId(), bean);
+				addBean(bean);
 			} else if (BEAN_FACTORY_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
 				Node node = nRoot.getAttributes().getNamedItem("value");
 				String name = node == null ? null : node.getNodeValue();

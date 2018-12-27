@@ -20,7 +20,7 @@ public class ServiceBeanConfigFactory extends AbstractBeanConfigFactory {
 			if (service != null) {
 				AnnotationBean bean = new AnnotationBean(beanFactory, propertiesFactory, clz, filterNames);
 				System.out.println(JSONObject.toJSONString(bean));
-				putBean(clz.getName(), bean);
+				addBean(bean);
 			}
 		}
 	}
