@@ -457,6 +457,7 @@ public final class BeanUtils {
 
 	/**
 	 * 把一个普通对象转成可以监听字段变化的对象
+	 * 
 	 * @param bean
 	 * @return
 	 */
@@ -466,6 +467,10 @@ public final class BeanUtils {
 		BeanFieldListen proxy = (BeanFieldListen) newFieldListenInstance(classInfo.getClz());
 		for (Entry<String, FieldInfo> entry : classInfo.getFieldMap().entrySet()) {
 			FieldInfo fieldInfo = entry.getValue();
+			if (fieldInfo.isStatic()) {
+				continue;
+			}
+
 			Object v;
 			try {
 				v = fieldInfo.forceGet(bean);
