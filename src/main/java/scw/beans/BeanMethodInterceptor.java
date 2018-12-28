@@ -18,13 +18,14 @@ import scw.database.TransactionContext;
 public final class BeanMethodInterceptor implements MethodInterceptor {
 	private String[] filterNames;
 	private BeanFactory beanFactory;
+	private ClassInfo classInfo;
 
 	public BeanMethodInterceptor(BeanFactory beanFactory, String[] filterNames) {
 		this.filterNames = filterNames;
 	}
 
 	private Object run(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		boolean isTransaction = BeanUtils.isTransaction(obj.getClass(), method);
+		boolean isTransaction = BeanUtils.isTransaction(classInfo.getClz(), method);
 		if (isTransaction) {
 			TransactionContext.getInstance().begin();
 			try {
@@ -38,11 +39,11 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 	}
 
 	private Object selectCache(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		SelectCache selectCache = obj.getClass().getAnnotation(SelectCache.class);
+		SelectCache selectCache = classInfo.getClz().getAnnotation(SelectCache.class);
 		if (selectCache == null) {
 			return filter(obj, method, args, proxy);
 		} else {
-			boolean isSelectCache = BeanUtils.isSelectCache(obj.getClass(), method);
+			boolean isSelectCache = BeanUtils.isSelectCache(classInfo.getClz(), method);
 			boolean oldIsSelectCache = TransactionContext.getInstance().isSelectCache();
 			if (isSelectCache == oldIsSelectCache) {
 				return filter(obj, method, args, proxy);
@@ -61,14 +62,13 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 		if (filterNames == null || filterNames.length == 0) {
 			return proxy.invokeSuper(obj, args);
 		} else {
-			List<BeanFilter> beanFilterList = getBeanFilters(obj.getClass(), method);
+			List<BeanFilter> beanFilterList = getBeanFilters(method);
 			BeanFilterChain beanFilterChain = new BeanFilterChain(beanFilterList);
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		}
 	}
 
 	private Object retry(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		ClassInfo classInfo = ClassUtils.getClassInfo(obj.getClass());
 		Retry retry = AnnotationBean.getRetry(classInfo.getClz(), method);
 		if (retry == null || retry.errors().length == 0) {
 			return run(obj, method, args, proxy);
@@ -117,10 +117,14 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 	}
 
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+		if (classInfo == null) {
+			classInfo = ClassUtils.getClassInfo(obj.getClass());
+		}
+
 		return retry(obj, method, args, proxy);
 	}
 
-	private List<BeanFilter> getBeanFilters(Class<?> clz, Method method) {
+	private List<BeanFilter> getBeanFilters(Method method) {
 		List<BeanFilter> beanFilters = new ArrayList<BeanFilter>(8);
 		if (filterNames != null) {
 			for (String name : filterNames) {
@@ -128,7 +132,8 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 			}
 		}
 
-		scw.beans.annotaion.BeanFilter beanFilter = clz.getAnnotation(scw.beans.annotaion.BeanFilter.class);
+		scw.beans.annotaion.BeanFilter beanFilter = classInfo.getClz()
+				.getAnnotation(scw.beans.annotaion.BeanFilter.class);
 		if (beanFilter != null) {
 			if (beanFilter.namePriority()) {
 				for (String name : beanFilter.name()) {

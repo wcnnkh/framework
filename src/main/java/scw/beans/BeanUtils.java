@@ -418,7 +418,7 @@ public final class BeanUtils {
 	public static Enhancer createEnhancer(Class<?> clz, BeanFactory beanFactory, String[] filterNames) {
 		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
 		Enhancer enhancer = new Enhancer();
-		
+
 		enhancer.setInterfaces(clz.getInterfaces());
 		if (classInfo.getSerialVersionUID() != null) {
 			enhancer.setSerialVersionUID(classInfo.getSerialVersionUID());
