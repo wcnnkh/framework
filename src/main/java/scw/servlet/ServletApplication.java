@@ -264,7 +264,7 @@ public class ServletApplication implements Application {
 		if (searchAction == null) {
 			String actionKey = getPropertiesFactory().getValue(DEFAULT_ACTION_KEY);
 			actionKey = StringUtils.isNull(actionKey) ? "action" : actionKey;
-			searchAction = new DefaultSearchAction(getBeanFactory(), true, actionKey);
+			searchAction = new DefaultSearchAction(getBeanFactory(), actionKey);
 		}
 
 		try {

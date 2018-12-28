@@ -13,24 +13,17 @@ import com.alibaba.fastjson.JSONObject;
 import scw.common.Logger;
 import scw.common.utils.StringUtils;
 import scw.servlet.Request;
-import scw.servlet.action.PathSearchAction;
+import scw.servlet.action.RestSearchAction;
 import scw.servlet.beans.RequestBeanFactory;
 
 public class FormRequest extends Request {
 	private static final Charset GET_DEFAULT_CHARSET = Charset.forName("ISO-8859-1");
-	private Map<String, String> restUrlValueMap;
 	private final boolean cookieValue;
 
-	@SuppressWarnings("unchecked")
 	public FormRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, boolean isDebug, boolean cookieValue) throws IOException {
 		super(requestBeanFactory, httpServletRequest, httpServletResponse, isDebug);
 		this.cookieValue = cookieValue;
-		Object map = getAttribute(PathSearchAction.RESTURL_PATH_PARAMETER);
-		if (map != null) {
-			this.restUrlValueMap = (Map<String, String>) map;
-		}
-
 		if (isDebug) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("servletPath=");
@@ -58,15 +51,19 @@ public class FormRequest extends Request {
 		return v;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected String getValue(String key) {
-		String v;
-		if (restUrlValueMap == null) {
-			v = getParameter(key);
-		} else {
-			v = restUrlValueMap.get(key);
-			if (v == null) {
-				v = getParameter(key);
+		String v = getParameter(key);
+		if (v == null) {
+			Map<String, String> restParameterMap = (Map<String, String>) getAttribute(
+					RestSearchAction.RESTURL_PATH_PARAMETER);
+			if (restParameterMap != null) {
+				v = restParameterMap.get(key);
 			}
+		}
+
+		if (v == null) {
+			return null;
 		}
 
 		if (!isNull(v) && "GET".equals(getMethod())) {
