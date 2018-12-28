@@ -6,6 +6,7 @@ import java.lang.reflect.Parameter;
 import net.sf.cglib.proxy.MethodProxy;
 import scw.beans.BeanFilter;
 import scw.beans.BeanFilterChain;
+import scw.database.TransactionContext;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
 
@@ -56,12 +57,14 @@ public class LockFilter implements BeanFilter {
 		Lock lock = lockFactory.getLock(lockKey);
 		try {
 			if (lockConfig.isWait()) {
+				TransactionContext.getInstance().setSelectCache(false);
 				lock.lockWait();
 			} else if (!lock.lock()) {
 				throw new HasBeenLockedException(lockKey);
 			}
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		} finally {
+			TransactionContext.getInstance().setSelectCache(false);
 			lock.unlock();
 		}
 	}
