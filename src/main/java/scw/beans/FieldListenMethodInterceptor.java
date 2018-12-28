@@ -46,7 +46,7 @@ public final class FieldListenMethodInterceptor implements MethodInterceptor, Be
 				Object oldValue = null;
 				oldValue = fieldInfo.forceGet(obj);
 				rtn = proxy.invokeSuper(obj, args);
-				if (BeanFieldListen.class.isAssignableFrom(obj.getClass())) {
+				if (BeanFieldListen.class.isAssignableFrom(classInfo.getClz())) {
 					((BeanFieldListen) obj).field_change(fieldInfo, oldValue);
 				} else {
 					field_change(fieldInfo, oldValue);
