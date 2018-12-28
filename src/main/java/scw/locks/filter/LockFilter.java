@@ -64,7 +64,7 @@ public class LockFilter implements BeanFilter {
 			}
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		} finally {
-			TransactionContext.getInstance().setSelectCache(false);
+			TransactionContext.getInstance().setSelectCache(true);
 			lock.unlock();
 		}
 	}
