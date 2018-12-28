@@ -214,7 +214,7 @@ public class XmlBean implements Bean {
 
 	private Enhancer getProxyEnhancer() {
 		if (enhancer == null) {
-			enhancer = BeanUtils.createEnhancer(type, beanFactory, null, filterNames);
+			enhancer = BeanUtils.createEnhancer(type, beanFactory, filterNames);
 		}
 		return enhancer;
 	}
@@ -281,19 +281,20 @@ public class XmlBean implements Bean {
 
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance() {
-		Object bean;
+		Object bean = null;
 		try {
-			if (isProxy()) {
-				bean = createProxyInstance();
-			} else {
-				bean = createInstance();
+			if (factoryMethodInfo == null || !Modifier.isStatic(factoryMethodInfo.getMethod().getModifiers())) {
+				if (isProxy()) {
+					bean = createProxyInstance();
+				} else {
+					bean = createInstance();
+				}
 			}
 
-			if (factoryMethodInfo == null) {
-				return (T) bean;
-			} else {
-				return (T) factoryMethodInfo.invoke(bean, beanFactory, propertiesFactory);
+			if (factoryMethodInfo != null) {
+				bean = factoryMethodInfo.invoke(bean, beanFactory, propertiesFactory);
 			}
+			return (T) bean;
 		} catch (Exception e) {
 			throw new BeansException(type.getName(), e);
 		}
@@ -301,19 +302,20 @@ public class XmlBean implements Bean {
 
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {
-		Object bean;
+		Object bean = null;
 		try {
-			if (isProxy()) {
-				bean = getProxyEnhancer().create(parameterTypes, args);
-			} else {
-				bean = type.getConstructor(parameterTypes).newInstance(args);
+			if (factoryMethodInfo == null || !Modifier.isStatic(factoryMethodInfo.getMethod().getModifiers())) {
+				if (isProxy()) {
+					bean = getProxyEnhancer().create(parameterTypes, args);
+				} else {
+					bean = type.getConstructor(parameterTypes).newInstance(args);
+				}
 			}
 
-			if (factoryMethodInfo == null) {
-				return (T) bean;
-			} else {
-				return (T) factoryMethodInfo.invoke(bean, beanFactory, propertiesFactory);
+			if (factoryMethodInfo != null) {
+				bean = factoryMethodInfo.invoke(bean, beanFactory, propertiesFactory);
 			}
+			return (T) bean;
 		} catch (Exception e) {
 			throw new BeansException(e);
 		}

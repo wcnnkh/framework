@@ -6,8 +6,8 @@ import java.util.Map.Entry;
 
 import scw.common.exception.BeansException;
 import scw.servlet.Request;
-import scw.servlet.bean.RequestBean;
-import scw.servlet.bean.RequestBeanFactory;
+import scw.servlet.beans.RequestBean;
+import scw.servlet.beans.RequestBeanFactory;
 
 public class DefaultRequestBeanContext implements RequestBeanContext{
 	private volatile Map<String, Object> beanMap;

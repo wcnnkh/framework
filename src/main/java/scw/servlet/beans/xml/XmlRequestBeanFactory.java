@@ -1,4 +1,4 @@
-package scw.servlet.bean.xml;
+package scw.servlet.beans.xml;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,8 +11,8 @@ import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.StringUtils;
-import scw.servlet.bean.RequestBean;
-import scw.servlet.bean.RequestBeanFactory;
+import scw.servlet.beans.RequestBean;
+import scw.servlet.beans.RequestBeanFactory;
 
 public final class XmlRequestBeanFactory implements RequestBeanFactory {
 	private final Map<String, XmlRequestBean> beanMap = new HashMap<String, XmlRequestBean>();

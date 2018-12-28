@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.servlet.Request;
-import scw.servlet.bean.RequestBeanFactory;
+import scw.servlet.beans.RequestBeanFactory;
 
 public class DefaultRequestFactory implements RequestFactory {
 	private static final String FORM_CONTENT_TYPE_PREFIX = "application/x-www-form-urlencoded";

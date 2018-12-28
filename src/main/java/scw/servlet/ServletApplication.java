@@ -28,8 +28,8 @@ import scw.net.http.enums.Method;
 import scw.servlet.action.Action;
 import scw.servlet.action.DefaultSearchAction;
 import scw.servlet.action.SearchAction;
-import scw.servlet.bean.CommonRequestBeanFactory;
-import scw.servlet.bean.RequestBeanFactory;
+import scw.servlet.beans.CommonRequestBeanFactory;
+import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.request.DefaultRequestFactory;
 import scw.servlet.request.RequestFactory;
 

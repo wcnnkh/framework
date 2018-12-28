@@ -3,48 +3,28 @@ package scw.beans;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import scw.beans.annotaion.Retry;
 import scw.beans.annotaion.SelectCache;
 import scw.common.ClassInfo;
-import scw.common.FieldInfo;
 import scw.common.Logger;
 import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
 import scw.database.TransactionContext;
 
-public final class BeanMethodInterceptor implements MethodInterceptor, BeanFieldListen {
-	private static final long serialVersionUID = 1L;
-	private Map<String, Object> changeColumnMap;
-	private boolean startListen = false;
-	private transient ClassInfo classInfo;
-	private boolean isBeanListen;
-	private transient String[] filterNames;
-	private transient BeanFactory beanFactory;
-
-	// 用于序列化
-	protected BeanMethodInterceptor() {
-		this(null, null);
-	}
+public final class BeanMethodInterceptor implements MethodInterceptor {
+	private String[] filterNames;
+	private BeanFactory beanFactory;
 
 	public BeanMethodInterceptor(BeanFactory beanFactory, String[] filterNames) {
 		this.filterNames = filterNames;
 	}
 
-	private void init(Class<?> type) {
-		if (classInfo == null) {
-			classInfo = ClassUtils.getClassInfo(type);
-		}
-		this.isBeanListen = BeanFieldListen.class.isAssignableFrom(classInfo.getClz());
-	}
-
 	private Object run(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		boolean isTransaction = BeanUtils.isTransaction(classInfo.getClz(), method);
+		boolean isTransaction = BeanUtils.isTransaction(obj.getClass(), method);
 		if (isTransaction) {
 			TransactionContext.getInstance().begin();
 			try {
@@ -58,11 +38,11 @@ public final class BeanMethodInterceptor implements MethodInterceptor, BeanField
 	}
 
 	private Object selectCache(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		SelectCache selectCache = classInfo.getClz().getAnnotation(SelectCache.class);
+		SelectCache selectCache = obj.getClass().getAnnotation(SelectCache.class);
 		if (selectCache == null) {
 			return filter(obj, method, args, proxy);
 		} else {
-			boolean isSelectCache = BeanUtils.isSelectCache(classInfo.getClz(), method);
+			boolean isSelectCache = BeanUtils.isSelectCache(obj.getClass(), method);
 			boolean oldIsSelectCache = TransactionContext.getInstance().isSelectCache();
 			if (isSelectCache == oldIsSelectCache) {
 				return filter(obj, method, args, proxy);
@@ -88,6 +68,7 @@ public final class BeanMethodInterceptor implements MethodInterceptor, BeanField
 	}
 
 	private Object retry(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+		ClassInfo classInfo = ClassUtils.getClassInfo(obj.getClass());
 		Retry retry = AnnotationBean.getRetry(classInfo.getClz(), method);
 		if (retry == null || retry.errors().length == 0) {
 			return run(obj, method, args, proxy);
@@ -136,67 +117,11 @@ public final class BeanMethodInterceptor implements MethodInterceptor, BeanField
 	}
 
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		init(obj.getClass());
-		if (args.length == 0) {
-			if (BeanFieldListen.START_LISTEN.equals(method.getName())) {
-				if (isBeanListen) {
-					startListen = true;
-					return retry(obj, method, args, proxy);
-				} else {
-					start_field_listen();
-					return null;
-				}
-			} else if (BeanFieldListen.GET_CHANGE_MAP.equals(method.getName())) {
-				if (isBeanListen) {
-					return retry(obj, method, args, proxy);
-				} else {
-					return get_field_change_map();
-				}
-			}
-		}
-
-		if (startListen) {
-			FieldInfo fieldInfo = classInfo.getFieldInfoBySetterName(method.getName());
-			if (fieldInfo != null) {
-				Object rtn;
-				Object oldValue = null;
-				oldValue = fieldInfo.forceGet(obj);
-				rtn = retry(obj, method, args, proxy);
-				if (isBeanListen) {
-					((BeanFieldListen) obj).field_change(fieldInfo, oldValue);
-				} else {
-					field_change(fieldInfo, oldValue);
-				}
-				return rtn;
-			}
-		}
 		return retry(obj, method, args, proxy);
 	}
 
-	public Map<String, Object> get_field_change_map() {
-		return changeColumnMap;
-	}
-
-	public void start_field_listen() {
-		if (changeColumnMap != null && !changeColumnMap.isEmpty()) {
-			changeColumnMap.clear();
-		}
-		startListen = true;
-	}
-
-	public void field_change(FieldInfo fieldInfo, Object oldValue) {
-		if (changeColumnMap == null) {
-			changeColumnMap = new HashMap<String, Object>();
-		}
-		changeColumnMap.put(fieldInfo.getName(), oldValue);
-	}
-
 	private List<BeanFilter> getBeanFilters(Class<?> clz, Method method) {
-		if (beanFactory == null) {
-			return null;
-		}
-
-		List<BeanFilter> beanFilters = new ArrayList<BeanFilter>();
+		List<BeanFilter> beanFilters = new ArrayList<BeanFilter>(8);
 		if (filterNames != null) {
 			for (String name : filterNames) {
 				beanFilters.add((BeanFilter) beanFactory.get(name));

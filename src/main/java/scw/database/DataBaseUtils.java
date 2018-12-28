@@ -10,9 +10,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import scw.beans.BeanFieldListen;
+import scw.beans.BeanUtils;
+import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.XUtils;
+import scw.database.annoation.Table;
 
 public final class DataBaseUtils {
 	private DataBaseUtils() {
@@ -154,5 +158,21 @@ public final class DataBaseUtils {
 		}
 
 		return "%" + likeValue + "%";
+	}
+
+	public static void registerCglibProxyTableBean(String pageName) {
+		for (Class<?> type : ClassUtils.getClasses(pageName)) {
+			Table table = type.getAnnotation(Table.class);
+			if (table == null) {
+				continue;
+			}
+
+			if (BeanFieldListen.class.isAssignableFrom(type)) {
+				continue;
+			}
+
+			Class<?> clz = BeanUtils.getFieldListenProxyClass(type);
+			Logger.info("CGLIB", "register proxy class[" + clz.getName() + "]");
+		}
 	}
 }

@@ -10,7 +10,6 @@ import scw.beans.BeanFieldListen;
 import scw.beans.BeanUtils;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
-import scw.common.Logger;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
@@ -236,22 +235,6 @@ public final class TableInfo {
 			params[i] = getPrimaryKeyColumns()[i].getFieldInfo().forceGet(data);
 		}
 		return params;
-	}
-	
-	public static void registerCglibProxyTableBean(String pageName) {
-		for (Class<?> type : ClassUtils.getClasses(pageName)) {
-			Table table = type.getAnnotation(Table.class);
-			if (table == null) {
-				continue;
-			}
-			
-			if(BeanFieldListen.class.isAssignableFrom(type)){
-				continue;
-			}
-			
-			Class<?> clz = BeanUtils.getFieldListenProxyClass(type);
-			Logger.info("CGLIB", "register proxy class[" + clz.getName() + "]");
-		}
 	}
 	
 	@SuppressWarnings("unchecked")

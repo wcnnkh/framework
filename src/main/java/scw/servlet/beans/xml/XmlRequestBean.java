@@ -1,4 +1,4 @@
-package scw.servlet.bean.xml;
+package scw.servlet.beans.xml;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -24,8 +24,8 @@ import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.servlet.Request;
-import scw.servlet.bean.RequestBean;
-import scw.servlet.bean.RequestBeanUtils;
+import scw.servlet.beans.RequestBean;
+import scw.servlet.beans.RequestBeanUtils;
 
 public final class XmlRequestBean implements RequestBean {
 	private static final String CLASS_ATTRIBUTE_KEY = "class";
@@ -210,7 +210,7 @@ public final class XmlRequestBean implements RequestBean {
 
 	private Enhancer getProxyEnhancer() {
 		if (enhancer == null) {
-			enhancer = BeanUtils.createEnhancer(type, beanFactory, null, filterNames);
+			enhancer = BeanUtils.createEnhancer(type, beanFactory, filterNames);
 		}
 		return enhancer;
 	}

@@ -1,4 +1,4 @@
-package scw.servlet.bean;
+package scw.servlet.beans;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,11 +12,13 @@ public final class AnnotationRequestBeanFactory implements RequestBeanFactory {
 	private volatile Map<String, AnnotationRequestBean> beanMap = new HashMap<String, AnnotationRequestBean>();
 	private final BeanFactory beanFactory;
 	private final PropertiesFactory propertiesFactory;
+	private final String[] filterNames;
 
 	public AnnotationRequestBeanFactory(BeanFactory beanFactory,
-			PropertiesFactory propertiesFactory) {
+			PropertiesFactory propertiesFactory, String[] filterNames) {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
+		this.filterNames = filterNames;
 	}
 
 	public RequestBean get(String name) {
@@ -27,7 +29,7 @@ public final class AnnotationRequestBeanFactory implements RequestBeanFactory {
 				if (bean == null && contains(name)) {
 					try {
 						bean = new AnnotationRequestBean(beanFactory,
-								propertiesFactory, ClassUtils.forName(name));
+								propertiesFactory, ClassUtils.forName(name), filterNames);
 						if (beanMap.containsKey(bean.getId())) {
 							throw new AlreadyExistsException(bean.getId());
 						}

@@ -167,7 +167,7 @@ public class AnnotationBean implements Bean {
 
 	private Enhancer getProxyEnhancer() {
 		if (enhancer == null) {
-			enhancer = BeanUtils.createEnhancer(type, beanFactory, null, filterNames);
+			enhancer = BeanUtils.createEnhancer(type, beanFactory, filterNames);
 		}
 		return enhancer;
 	}

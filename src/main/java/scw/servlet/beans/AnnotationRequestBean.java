@@ -1,4 +1,4 @@
-package scw.servlet.bean;
+package scw.servlet.beans;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -31,8 +31,8 @@ public final class AnnotationRequestBean implements RequestBean {
 	private Enhancer enhancer;
 	private final PropertiesFactory propertiesFactory;
 
-	public AnnotationRequestBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type)
-			throws Exception {
+	public AnnotationRequestBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type,
+			String[] filterNames) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
 		this.propertiesFactory = propertiesFactory;
@@ -66,7 +66,7 @@ public final class AnnotationRequestBean implements RequestBean {
 		if (this.constructor == null) {
 			throw new BeansException("not found constructor");
 		}
-		enhancer = BeanUtils.createEnhancer(type, beanFactory, null, null);
+		enhancer = BeanUtils.createEnhancer(type, beanFactory, filterNames);
 	}
 
 	public static Constructor<?> getAnnotationRequestBeanConstructor(Class<?> type) {

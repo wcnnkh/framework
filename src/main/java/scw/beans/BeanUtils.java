@@ -415,28 +415,11 @@ public final class BeanUtils {
 		return beanFilters;
 	}
 
-	public static Enhancer createEnhancer(Class<?> clz, BeanFactory beanFactory, Class<?>[] interfaces,
-			String[] filterNames) {
+	public static Enhancer createEnhancer(Class<?> clz, BeanFactory beanFactory, String[] filterNames) {
 		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
 		Enhancer enhancer = new Enhancer();
-		Class<?>[] beanListenInterfaces;
-		Class<?>[] arr = clz.getInterfaces();
-		int oldSize = arr == null ? 1 : arr.length + 1;
-		if (interfaces == null || interfaces.length == 0) {
-			beanListenInterfaces = new Class<?>[oldSize];
-			System.arraycopy(arr, 0, beanListenInterfaces, 0, arr.length);
-			beanListenInterfaces[beanListenInterfaces.length - 1] = BeanFieldListen.class;
-		} else {
-			beanListenInterfaces = new Class<?>[oldSize + interfaces.length];
-			System.arraycopy(arr, 0, beanListenInterfaces, 0, arr.length);
-			beanListenInterfaces[beanListenInterfaces.length - 1] = BeanFieldListen.class;
-			System.arraycopy(interfaces, 0, beanListenInterfaces, oldSize, interfaces.length);
-		}
-
-		if (beanListenInterfaces.length != 0) {
-			enhancer.setInterfaces(beanListenInterfaces);
-		}
-
+		
+		enhancer.setInterfaces(clz.getInterfaces());
 		if (classInfo.getSerialVersionUID() != null) {
 			enhancer.setSerialVersionUID(classInfo.getSerialVersionUID());
 		}
@@ -445,14 +428,68 @@ public final class BeanUtils {
 		return enhancer;
 	}
 
+	public static Enhancer createFieldListenEnhancer(Class<?> clz) {
+		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
+		Class<?>[] beanListenInterfaces;
+		if (BeanFieldListen.class.isAssignableFrom(clz)) {
+			beanListenInterfaces = clz.getInterfaces();
+		} else {// 没有自己实现此接口，增加此接口
+			Class<?>[] arr = clz.getInterfaces();
+			if (arr.length == 0) {
+				beanListenInterfaces = new Class[] { BeanFieldListen.class };
+			} else {
+				beanListenInterfaces = new Class[arr.length + 1];
+				System.arraycopy(arr, 0, beanListenInterfaces, 0, arr.length);
+				beanListenInterfaces[arr.length] = BeanFieldListen.class;
+			}
+		}
+
+		Enhancer enhancer = new Enhancer();
+		enhancer.setInterfaces(beanListenInterfaces);
+		if (classInfo.getSerialVersionUID() != null) {
+			enhancer.setSerialVersionUID(classInfo.getSerialVersionUID());
+		}
+
+		enhancer.setCallback(new FieldListenMethodInterceptor());
+		enhancer.setSuperclass(clz);
+		return enhancer;
+	}
+
+	public static Class<?> getFieldListenProxyClass(Class<?> clz) {
+		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
+		Class<?>[] beanListenInterfaces;
+		if (BeanFieldListen.class.isAssignableFrom(clz)) {
+			beanListenInterfaces = clz.getInterfaces();
+		} else {// 没有自己实现此接口，增加此接口
+			Class<?>[] arr = clz.getInterfaces();
+			if (arr.length == 0) {
+				beanListenInterfaces = new Class[] { BeanFieldListen.class };
+			} else {
+				beanListenInterfaces = new Class[arr.length + 1];
+				System.arraycopy(arr, 0, beanListenInterfaces, 0, arr.length);
+				beanListenInterfaces[arr.length] = BeanFieldListen.class;
+			}
+		}
+
+		Enhancer enhancer = new Enhancer();
+		enhancer.setInterfaces(beanListenInterfaces);
+		if (classInfo.getSerialVersionUID() != null) {
+			enhancer.setSerialVersionUID(classInfo.getSerialVersionUID());
+		}
+
+		enhancer.setCallbackType(FieldListenMethodInterceptor.class);
+		enhancer.setSuperclass(clz);
+		return enhancer.createClass();
+	}
+
 	/**
-	 * 可以监听属性变化,但是无法使用filter
+	 * 可以监听属性变化
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T newFieldListenInstance(Class<T> clz) {
-		return (T) createEnhancer(clz, null, null, null).create();
+		return (T) createFieldListenEnhancer(clz).create();
 	}
 
 	/**
@@ -485,27 +522,6 @@ public final class BeanUtils {
 		}
 		proxy.start_field_listen();
 		return (T) proxy;
-	}
-
-	public static Class<?> getFieldListenProxyClass(Class<?> clz) {
-		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
-		Class<?>[] arr = clz.getInterfaces();
-		Class<?>[] beanListenInterfaces = new Class<?>[arr == null ? 1 : arr.length + 1];
-		System.arraycopy(arr, 0, beanListenInterfaces, 0, arr.length);
-		beanListenInterfaces[beanListenInterfaces.length - 1] = BeanFieldListen.class;
-
-		Enhancer enhancer = new Enhancer();
-		if (!BeanFieldListen.class.isAssignableFrom(clz)) {
-			enhancer.setInterfaces(beanListenInterfaces);
-		}
-
-		if (classInfo.getSerialVersionUID() != null) {
-			enhancer.setSerialVersionUID(classInfo.getSerialVersionUID());
-		}
-
-		enhancer.setCallbackType(BeanMethodInterceptor.class);
-		enhancer.setSuperclass(clz);
-		return enhancer.createClass();
 	}
 }
 

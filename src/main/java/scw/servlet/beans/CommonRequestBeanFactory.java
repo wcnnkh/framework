@@ -1,17 +1,18 @@
-package scw.servlet.bean;
+package scw.servlet.beans;
 
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
-import scw.servlet.bean.xml.XmlRequestBeanFactory;
+import scw.servlet.beans.xml.XmlRequestBeanFactory;
 
 public final class CommonRequestBeanFactory implements RequestBeanFactory {
 	private final XmlRequestBeanFactory xmlRequestBeanFactory;
 	private final AnnotationRequestBeanFactory annotationRequestBeanFactory;
 
-	public CommonRequestBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
-			String configXml, String[] filterNames) throws Exception {
+	public CommonRequestBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configXml,
+			String[] filterNames) throws Exception {
 		this.xmlRequestBeanFactory = new XmlRequestBeanFactory(beanFactory, propertiesFactory, configXml, filterNames);
-		this.annotationRequestBeanFactory = new AnnotationRequestBeanFactory(beanFactory, propertiesFactory);
+		this.annotationRequestBeanFactory = new AnnotationRequestBeanFactory(beanFactory, propertiesFactory,
+				filterNames);
 	}
 
 	public RequestBean get(String name) {

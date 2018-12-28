@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import scw.common.Logger;
 import scw.common.utils.XUtils;
 import scw.servlet.Request;
-import scw.servlet.bean.RequestBeanFactory;
+import scw.servlet.beans.RequestBeanFactory;
 
 public class JsonRequest extends Request{
 	private JSONObject json;

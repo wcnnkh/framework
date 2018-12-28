@@ -1,4 +1,4 @@
-package scw.servlet.bean;
+package scw.servlet.beans;
 
 import javax.servlet.ServletRequest;
 

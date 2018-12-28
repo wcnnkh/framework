@@ -14,7 +14,7 @@ import scw.common.Logger;
 import scw.common.utils.StringUtils;
 import scw.servlet.Request;
 import scw.servlet.action.PathSearchAction;
-import scw.servlet.bean.RequestBeanFactory;
+import scw.servlet.beans.RequestBeanFactory;
 
 public class FormRequest extends Request {
 	private static final Charset GET_DEFAULT_CHARSET = Charset.forName("ISO-8859-1");
