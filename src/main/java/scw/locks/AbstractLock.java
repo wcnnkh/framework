@@ -11,7 +11,7 @@ public abstract class AbstractLock implements Lock {
 
 	public void lockWait() {
 		try {
-			lockWait(5, 0);
+			lockWait(2, 0);
 		} catch (InterruptedException e) {
 			throw new ShuChaoWenRuntimeException();
 		} // 5毫秒试一次
