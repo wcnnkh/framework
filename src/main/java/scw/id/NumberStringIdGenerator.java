@@ -2,35 +2,44 @@ package scw.id;
 
 import java.nio.CharBuffer;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
 import scw.memcached.Memcached;
+import scw.memcached.MemcachedIdGenerator;
 import scw.redis.Redis;
+import scw.redis.RedisIdGernerator;
 
-public class NumberStringIdGenerator extends AbstractStringIdIdGenerator<TimeStampId> {
+/**
+ * 这是一个定长的27位字符串
+ * 字符串由数字组成
+ * 一般用于生成订单号
+ * @author shuchaowen
+ *
+ */
+public final class NumberStringIdGenerator implements IdGenerator<String> {
 	private static final String TIME_FORMAT = "yyyyMMddHHmmssSSS";
+	private final IdGenerator<Long> idGenerator;
 
 	public NumberStringIdGenerator(Memcached memcached) {
-		super(memcached);
+		this.idGenerator = new MemcachedIdGenerator(memcached, this.getClass().getName(), 0);
 	}
 
 	public NumberStringIdGenerator(Redis redis) {
-		super(redis);
+		this.idGenerator = new RedisIdGernerator(redis, this.getClass().getName(), 0);
 	}
 
-	public TimeStampId next() {
-		long t = System.currentTimeMillis();
+	public String next() {
 		CharBuffer charBuffer = CharBuffer.allocate(27);
-		charBuffer.put(new SimpleDateFormat(TIME_FORMAT).format(t));
+		charBuffer.put(new SimpleDateFormat(TIME_FORMAT).format(new Date()));
 		charBuffer.put(StringUtils.complemented(Math.abs(idGenerator.next().intValue()) + "", '0', 10));
-		return new TimeStampId(t, new String(charBuffer.array()));
+		return new String(charBuffer.array());
 	}
-
+	
 	/**
 	 * 获取这个id的创建时间
-	 * 
 	 * @param id
 	 * @return
 	 */
