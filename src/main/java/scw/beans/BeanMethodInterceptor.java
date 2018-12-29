@@ -8,15 +8,12 @@ import java.util.List;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import scw.beans.annotaion.Retry;
-import scw.common.ClassInfo;
 import scw.common.Logger;
 import scw.common.exception.BeansException;
-import scw.common.utils.ClassUtils;
 
 public final class BeanMethodInterceptor implements MethodInterceptor {
 	private String[] filterNames;
 	private BeanFactory beanFactory;
-	private ClassInfo classInfo;
 
 	public BeanMethodInterceptor(BeanFactory beanFactory, String[] filterNames) {
 		this.filterNames = filterNames;
@@ -31,7 +28,7 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 			}
 		}
 
-		scw.beans.annotaion.BeanFilter beanFilter = classInfo.getClz()
+		scw.beans.annotaion.BeanFilter beanFilter = method.getDeclaringClass()
 				.getAnnotation(scw.beans.annotaion.BeanFilter.class);
 		if (beanFilter != null) {
 			if (beanFilter.namePriority()) {
@@ -79,7 +76,7 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 	}
 
 	private Object retry(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		Retry retry = BeanUtils.getRetry(classInfo.getClz(), method);
+		Retry retry = BeanUtils.getRetry(method.getDeclaringClass(), method);
 		if (retry == null || retry.errors().length == 0) {
 			return filter(obj, method, args, proxy);
 		} else {
@@ -88,7 +85,7 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 					if (retry.log()) {
 						try {
 							StringBuilder sb = new StringBuilder();
-							sb.append("class:").append(classInfo.getName()).append(",");
+							sb.append("class:").append(method.getDeclaringClass().getName()).append(",");
 							sb.append("method:").append(method.getName()).append(",");
 							sb.append("parameterTypes:").append(Arrays.toString(method.getParameterTypes()))
 									.append(",");
@@ -129,10 +126,6 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		if (obj instanceof BeanFilter) {
 			return proxy.invokeSuper(obj, args);
-		}
-
-		if (classInfo == null) {
-			classInfo = ClassUtils.getClassInfo(obj.getClass());
 		}
 
 		return retry(obj, method, args, proxy);
