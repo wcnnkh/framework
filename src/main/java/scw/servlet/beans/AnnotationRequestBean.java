@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.cglib.proxy.Enhancer;
-import scw.beans.AnnotationBean;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.annotaion.Destroy;
@@ -61,7 +60,7 @@ public final class AnnotationRequestBean implements RequestBean {
 		this.initMethods = initMethodList.toArray(new Method[initMethodList.size()]);
 		this.destroyMethods = destroyMethodList.toArray(new Method[destroyMethodList.size()]);
 
-		this.proxy = AnnotationBean.checkProxy(type);
+		this.proxy = BeanUtils.checkProxy(type, filterNames);
 		this.constructor = getAnnotationRequestBeanConstructor(type);
 		if (this.constructor == null) {
 			throw new BeansException("not found constructor");

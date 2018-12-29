@@ -27,8 +27,7 @@ public final class StringUtils {
 			'e', 'f', 'h', 'k', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'y', 'A', 'B', 'C', 'E', 'F', 'G', 'H', 'K',
 			'M', 'N', 'R', 'S', 'T', 'V', 'W', 'Y' };
 
-	public final static char[] ALL = CollectionUtils.mergeCharArray(NUMBERIC_CHARACTER, LOWERCASE_LETTERS,
-			CAPITAL_LETTERS);
+	public final static char[] ALL = mergeCharArray(NUMBERIC_CHARACTER, LOWERCASE_LETTERS, CAPITAL_LETTERS);
 	private static final String IOS_NULL = "(null)";
 
 	private StringUtils() {
@@ -693,7 +692,7 @@ public final class StringUtils {
 	 * @return
 	 */
 	public static String reversed(String str) {
-		return new String(CollectionUtils.reversedCharArray(str.toCharArray()));
+		return new String(reversedCharArray(str.toCharArray()));
 	}
 
 	public static String join(String join, String... str) {
@@ -743,5 +742,26 @@ public final class StringUtils {
 			}
 		}
 		return false;
+	}
+
+	public static char[] mergeCharArray(char[]... chars) {
+		StringBuilder sb = new StringBuilder();
+		for (char[] cs : chars) {
+			sb.append(cs);
+		}
+		return sb.toString().toCharArray();
+	}
+	
+	public static char[] reversedCharArray(char[] array) {
+		if (array == null) {
+			return array;
+		}
+
+		char[] newArray = new char[array.length];
+		int index = 0;
+		for (int i = newArray.length - 1; i >= 0; i--, index++) {
+			newArray[index] = array[i];
+		}
+		return newArray;
 	}
 }

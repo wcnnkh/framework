@@ -12,10 +12,10 @@ import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
+import scw.database.TransactionBeanFilter;
 
 public class CommonApplication implements Application {
 	private final XmlBeanFactory beanFactory;
-	private String packageNames;
 	private volatile boolean start = false;
 	private final PropertiesFactory propertiesFactory;
 	private final String configPath;
@@ -25,6 +25,8 @@ public class CommonApplication implements Application {
 		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(configPath) : propertiesFactory;
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
+			//支持事务
+			beanFactory.addFilters(TransactionBeanFilter.class.getName());
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}
@@ -35,7 +37,7 @@ public class CommonApplication implements Application {
 	}
 
 	public Collection<Class<?>> getClasses() {
-		return ClassUtils.getClasses(packageNames);
+		return ClassUtils.getClasses(beanFactory.getPackages());
 	}
 
 	public XmlBeanFactory getBeanFactory() {

@@ -143,7 +143,7 @@ public class XmlBean implements Bean {
 		destroyMethodList.addAll(AnnotationBean.getDestroyMethdoList(type));
 		this.initMethods = initMethodList.toArray(new BeanMethod[initMethodList.size()]);
 		this.destroyMethods = destroyMethodList.toArray(new BeanMethod[destroyMethodList.size()]);
-		this.proxy = checkProxy();
+		this.proxy = BeanUtils.checkProxy(type, this.filterNames);
 		this.constructor = getConstructor();
 		this.constructorParameterTypes = constructor.getParameterTypes();
 
@@ -182,18 +182,6 @@ public class XmlBean implements Bean {
 			}
 		}
 		return null;
-	}
-
-	private boolean checkProxy() {
-		if (Modifier.isFinal(type.getModifiers())) {
-			return false;
-		}
-
-		if (filterNames != null && filterNames.length != 0) {
-			return true;
-		}
-
-		return AnnotationBean.checkProxy(type);
 	}
 
 	public String getId() {

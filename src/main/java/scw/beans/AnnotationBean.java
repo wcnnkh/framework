@@ -10,8 +10,6 @@ import java.util.List;
 import net.sf.cglib.proxy.Enhancer;
 import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
-import scw.beans.annotaion.Retry;
-import scw.beans.annotaion.SelectCache;
 import scw.beans.annotaion.Service;
 import scw.beans.property.PropertiesFactory;
 import scw.common.ClassInfo;
@@ -76,7 +74,7 @@ public class AnnotationBean implements Bean {
 		this.initMethods = initMethodList.toArray(new Method[initMethodList.size()]);
 		this.destroyMethods = destroyMethodList.toArray(new Method[destroyMethodList.size()]);
 		this.filterNames = filterNames;
-		this.proxy = (filterNames != null && filterNames.length != 0) || checkProxy(type);
+		this.proxy = BeanUtils.checkProxy(type, filterNames);
 	}
 
 	public static List<BeanMethod> getInitMethodList(Class<?> type) {
@@ -111,42 +109,6 @@ public class AnnotationBean implements Bean {
 			}
 		}
 		return list;
-	}
-
-	public static Retry getRetry(Class<?> type, Method method) {
-		Retry retry = method.getAnnotation(Retry.class);
-		if (retry == null) {
-			retry = type.getAnnotation(Retry.class);
-		}
-		return retry;
-	}
-
-	public static boolean checkProxy(Class<?> type) {
-		if (Modifier.isFinal(type.getModifiers())) {
-			return false;
-		}
-
-		SelectCache selectCache = type.getAnnotation(SelectCache.class);
-		if (selectCache != null) {
-			return true;
-		}
-
-		for (Method method : type.getDeclaredMethods()) {
-			if (BeanUtils.isTransaction(type, method)) {
-				return true;
-			}
-
-			Retry retry = getRetry(type, method);
-			if (retry != null && retry.errors().length != 0) {
-				return true;
-			}
-
-			selectCache = method.getAnnotation(SelectCache.class);
-			if (selectCache != null) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public boolean isSingleton() {
@@ -225,7 +187,7 @@ public class AnnotationBean implements Bean {
 				if (Modifier.isStatic(field.getField().getModifiers())) {
 					continue;
 				}
-				
+
 				BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, field);
 			}
 			classInfo = classInfo.getSuperInfo();

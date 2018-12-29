@@ -17,9 +17,7 @@ import scw.beans.annotaion.Config;
 import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
 import scw.beans.annotaion.Properties;
-import scw.beans.annotaion.SelectCache;
-import scw.beans.annotaion.Service;
-import scw.beans.annotaion.Transaction;
+import scw.beans.annotaion.Retry;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanParameter;
 import scw.common.ClassInfo;
@@ -31,7 +29,6 @@ import scw.common.reflect.ReflectInvoker;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.db.DB;
-import scw.servlet.action.annotation.Controller;
 
 public final class BeanUtils {
 	private static volatile boolean initStatic = false;
@@ -238,45 +235,6 @@ public final class BeanUtils {
 			args[i] = xmlBeanParameter.parseValue(beanFactory, propertiesFactory);
 		}
 		return args;
-	}
-
-	public static boolean isTransaction(Class<?> type, Method method) {
-		boolean isTransaction = false;
-		Controller controller = type.getAnnotation(Controller.class);
-		if (controller != null) {
-			isTransaction = true;
-		}
-
-		Service service = type.getAnnotation(Service.class);
-		if (service != null) {
-			isTransaction = true;
-		}
-
-		Transaction transaction = type.getAnnotation(Transaction.class);
-		if (transaction != null) {
-			isTransaction = transaction.value();
-		}
-
-		Transaction transaction2 = method.getAnnotation(Transaction.class);
-		if (transaction2 != null) {
-			isTransaction = transaction2.value();
-		}
-
-		return isTransaction;
-	}
-
-	public static boolean isSelectCache(Class<?> type, Method method) {
-		boolean isSelectCache = true;
-		SelectCache selectCache = type.getAnnotation(SelectCache.class);
-		if (selectCache != null) {
-			isSelectCache = selectCache.value();
-		}
-
-		SelectCache selectCache2 = method.getAnnotation(SelectCache.class);
-		if (selectCache2 != null) {
-			isSelectCache = selectCache2.value();
-		}
-		return isSelectCache;
 	}
 
 	private static void setConfig(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) {
@@ -522,6 +480,36 @@ public final class BeanUtils {
 		}
 		proxy.start_field_listen();
 		return (T) proxy;
+	}
+
+	public static boolean checkProxy(Class<?> type, String[] filterNames) {
+		if (Modifier.isFinal(type.getModifiers())) {// final修饰的类无法代理
+			return false;
+		}
+
+		if (BeanFilter.class.isAssignableFrom(type)) {
+			return false;
+		}
+
+		if (filterNames != null && filterNames.length != 0) {
+			return true;
+		}
+
+		for (Method method : type.getDeclaredMethods()) {
+			Retry retry = getRetry(type, method);
+			if (retry != null && retry.errors().length != 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static Retry getRetry(Class<?> type, Method method) {
+		Retry retry = method.getAnnotation(Retry.class);
+		if (retry == null) {
+			retry = type.getAnnotation(Retry.class);
+		}
+		return retry;
 	}
 }
 

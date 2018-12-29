@@ -30,26 +30,22 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 		this.xmlPath = xmlPath;
 		this.propertiesFactory = new XmlPropertiesFactory(xmlPath);
 		this.initStatic = initStatic;
-		initXmlDefaultBeanFactory(xmlPath);
+		initParameter(xmlPath);
 	}
 
 	public XmlBeanFactory(PropertiesFactory propertiesFactory, String xmlPath, boolean initStatic) throws Exception {
 		this.xmlPath = xmlPath;
 		this.initStatic = initStatic;
 		this.propertiesFactory = propertiesFactory;
-		initXmlDefaultBeanFactory(xmlPath);
+		initParameter(xmlPath);
 	}
 
-	private void initXmlDefaultBeanFactory(String xmlPath) throws Exception {
-		if (!StringUtils.isNull(xmlPath)) {
+	private void initParameter(String xmlPath) {
+		if (StringUtils.isNull(xmlPath)) {
 			Node root = XmlBeanUtils.getRootNode(xmlPath);
 			this.packages = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, root, "packages");
 			this.filterNames = StringUtils
 					.commonSplit(XmlBeanUtils.getNodeAttributeValue(propertiesFactory, root, "filters"));
-			addBeanConfigFactory(new XmlDubboBeanConfigFactory(propertiesFactory, xmlPath));
-			addBeanConfigFactory(new HttpRPCBeanConfigFactory(propertiesFactory, xmlPath));
-			addBeanConfigFactory(new XmlBeanConfigFactory(this, propertiesFactory, xmlPath, filterNames));
-			addBeanConfigFactory(new ServiceBeanConfigFactory(this, propertiesFactory, packages, filterNames));
 		}
 	}
 
@@ -70,8 +66,27 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 		return filterNames;
 	}
 
+	public void addFilters(String filterName) {
+		if (filterName == null || filterName.length() == 0) {
+			return;
+		}
+
+		if (filterNames == null || filterNames.length == 0) {
+			this.filterNames = new String[] { filterName };
+		} else {
+			String[] arr = new String[filterNames.length + 1];
+			System.arraycopy(filterNames, 0, arr, 0, arr.length);
+			arr[arr.length] = filterName;
+			this.filterNames = arr;
+		}
+	}
+
 	public String getPackages() {
 		return packages;
+	}
+
+	public void setPackages(String packages) {
+		this.packages = packages;
 	}
 
 	public String getXmlPath() {
@@ -83,11 +98,19 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	public void init() {
-		super.init();
 		try {
+			if (!StringUtils.isNull(xmlPath)) {
+
+				addBeanConfigFactory(new XmlDubboBeanConfigFactory(propertiesFactory, xmlPath));
+				addBeanConfigFactory(new HttpRPCBeanConfigFactory(propertiesFactory, xmlPath));
+				addBeanConfigFactory(new XmlBeanConfigFactory(this, propertiesFactory, xmlPath, filterNames));
+				addBeanConfigFactory(new ServiceBeanConfigFactory(this, propertiesFactory, packages, filterNames));
+			}
+
+			super.init();
 			initMethod();
 		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new BeansException(e);
 		}
 	}
 

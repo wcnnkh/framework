@@ -1,5 +1,6 @@
 package scw.database;
 
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,11 +13,15 @@ import java.util.Map;
 
 import scw.beans.BeanFieldListen;
 import scw.beans.BeanUtils;
+import scw.beans.annotaion.Service;
 import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.XUtils;
+import scw.database.annoation.SelectCache;
 import scw.database.annoation.Table;
+import scw.database.annoation.Transaction;
+import scw.servlet.action.annotation.Controller;
 
 public final class DataBaseUtils {
 	private DataBaseUtils() {
@@ -174,5 +179,44 @@ public final class DataBaseUtils {
 			Class<?> clz = BeanUtils.getFieldListenProxyClass(type);
 			Logger.info("CGLIB", "register proxy class[" + clz.getName() + "]");
 		}
+	}
+	
+	public static boolean isTransaction(Class<?> type, Method method) {
+		boolean isTransaction = false;
+		Controller controller = type.getAnnotation(Controller.class);
+		if (controller != null) {
+			isTransaction = true;
+		}
+
+		Service service = type.getAnnotation(Service.class);
+		if (service != null) {
+			isTransaction = true;
+		}
+
+		Transaction transaction = type.getAnnotation(Transaction.class);
+		if (transaction != null) {
+			isTransaction = transaction.value();
+		}
+
+		Transaction transaction2 = method.getAnnotation(Transaction.class);
+		if (transaction2 != null) {
+			isTransaction = transaction2.value();
+		}
+
+		return isTransaction;
+	}
+	
+	public static boolean isSelectCache(Class<?> type, Method method) {
+		boolean isSelectCache = true;
+		SelectCache selectCache = type.getAnnotation(SelectCache.class);
+		if (selectCache != null) {
+			isSelectCache = selectCache.value();
+		}
+
+		SelectCache selectCache2 = method.getAnnotation(SelectCache.class);
+		if (selectCache2 != null) {
+			isSelectCache = selectCache2.value();
+		}
+		return isSelectCache;
 	}
 }
