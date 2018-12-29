@@ -24,7 +24,7 @@ import scw.spring.core.LocalVariableTableParameterNameDiscoverer;
 
 public final class ClassUtils {
 	public static final String ALL_PACKAGE_NAME = "*";
-	public static final String PROXY_CLASS_SPLIT = "$";//代理类的分割符
+	public static final String PROXY_CLASS_SPLIT = "$$";//代理类的分割符
 	private volatile static Map<String, ClassInfo> clzMap = new HashMap<String, ClassInfo>();
 	private static Map<Class<?>, Class<?>> basicTypeMap = new HashMap<Class<?>, Class<?>>();
 	private static Map<Class<?>, Class<?>> basicValueTypeMap = new HashMap<Class<?>, Class<?>>();
