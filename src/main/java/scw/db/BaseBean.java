@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * 做demo时可以使用，请不要在实际项目中使用
+ * 不再推荐使用
  * @author shuchaowen
  *
  */

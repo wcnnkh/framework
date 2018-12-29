@@ -15,6 +15,7 @@ import scw.database.annoation.Table;
 
 /**
  * 只用于处理默认的数据库
+ * 不再推荐使用
  * 
  * @author shuchaowen
  *
