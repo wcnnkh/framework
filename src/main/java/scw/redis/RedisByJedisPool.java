@@ -9,7 +9,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-public class RedisByJedisPool implements Redis {
+public final class RedisByJedisPool implements Redis {
 	private static final String SUCCESS = "OK";
 
 	private final JedisPool jedisPool;

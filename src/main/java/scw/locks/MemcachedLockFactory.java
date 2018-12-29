@@ -3,7 +3,7 @@ package scw.locks;
 import scw.common.utils.XUtils;
 import scw.memcached.Memcached;
 
-public class MemcachedLockFactory extends AbstractLockFactory {
+public final class MemcachedLockFactory extends AbstractLockFactory {
 	private final Memcached memcached;
 
 	public MemcachedLockFactory(Memcached memcached, int default_timeout) {

@@ -3,7 +3,7 @@ package scw.locks;
 import scw.memcached.Memcached;
 import scw.redis.Redis;
 
-public class DistributedLockFactory implements LockFactory {
+public final class DistributedLockFactory implements LockFactory {
 	private LockFactory lockFactory;
 
 	public DistributedLockFactory(Memcached memcached) {

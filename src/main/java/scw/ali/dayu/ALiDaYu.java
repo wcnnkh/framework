@@ -11,7 +11,7 @@ import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
 import scw.net.http.HttpUtils;
 
-public class ALiDaYu {
+public final class ALiDaYu {
 	private String host;
 	private String appKey;
 	private String version;

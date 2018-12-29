@@ -2,7 +2,7 @@ package scw.memcached;
 
 import scw.id.IdGenerator;
 
-public class MemcachedIntegerIdGenerator implements IdGenerator<Integer>{
+public final class MemcachedIntegerIdGenerator implements IdGenerator<Integer>{
 	private final Memcached memcached;
 	private final String key;
 	

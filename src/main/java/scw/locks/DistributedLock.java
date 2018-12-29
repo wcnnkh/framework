@@ -4,7 +4,7 @@ import scw.common.utils.XUtils;
 import scw.memcached.Memcached;
 import scw.redis.Redis;
 
-public class DistributedLock extends AbstractLock {
+public final class DistributedLock extends AbstractLock {
 	private Lock lock;
 
 	public DistributedLock(Memcached memcached, String key) {

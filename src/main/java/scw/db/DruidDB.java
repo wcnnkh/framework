@@ -7,7 +7,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 
 import scw.db.sql.SQLFormat;
 
-public class DruidDB extends DB{
+public final class DruidDB extends DB{
 	private DruidDataSource datasource;
 	
 	public DruidDB(String url,

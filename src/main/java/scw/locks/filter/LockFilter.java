@@ -16,7 +16,7 @@ import scw.locks.LockFactory;
  * @author shuchaowen
  *
  */
-public class LockFilter implements BeanFilter {
+public final class LockFilter implements BeanFilter {
 	private LockFactory lockFactory;
 
 	public LockFilter(LockFactory lockFactory) {

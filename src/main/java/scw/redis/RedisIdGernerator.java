@@ -2,7 +2,7 @@ package scw.redis;
 
 import scw.id.IdGenerator;
 
-public class RedisIdGernerator implements IdGenerator<Long>{
+public final class RedisIdGernerator implements IdGenerator<Long>{
 	private final Redis redis;
 	private final String key;
 	

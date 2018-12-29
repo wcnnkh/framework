@@ -5,7 +5,7 @@ import scw.auth.login.Session;
 import scw.common.utils.XUtils;
 import scw.memcached.Memcached;
 
-public class MemcachedSSO extends MemcachedSessionFactory implements SSO {
+public final class MemcachedSSO extends MemcachedSessionFactory implements SSO {
 
 	public MemcachedSSO(Memcached memcached, String prefix, int exp) {
 		super(memcached, prefix, exp);

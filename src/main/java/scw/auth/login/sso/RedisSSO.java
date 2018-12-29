@@ -5,7 +5,7 @@ import scw.auth.login.Session;
 import scw.common.utils.XUtils;
 import scw.redis.Redis;
 
-public class RedisSSO extends RedisSessionFactory implements SSO {
+public final class RedisSSO extends RedisSessionFactory implements SSO {
 	public RedisSSO(Redis redis, String prefix, int exp) {
 		super(redis, prefix, exp);
 	}

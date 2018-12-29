@@ -3,7 +3,7 @@ package scw.locks;
 import scw.common.utils.XUtils;
 import scw.redis.Redis;
 
-public class RedisLockFactory extends AbstractLockFactory {
+public final class RedisLockFactory extends AbstractLockFactory {
 	private final Redis redis;
 
 	public RedisLockFactory(Redis redis, int default_timeout) {
