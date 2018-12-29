@@ -496,7 +496,7 @@ public final class BeanUtils {
 		}
 
 		for (Method method : type.getDeclaredMethods()) {
-			Retry retry = getRetry(type, method);
+			Retry retry = getRetry(method);
 			if (retry != null && retry.errors().length != 0) {
 				return true;
 			}
@@ -504,10 +504,10 @@ public final class BeanUtils {
 		return false;
 	}
 
-	public static Retry getRetry(Class<?> type, Method method) {
+	public static Retry getRetry(Method method) {
 		Retry retry = method.getAnnotation(Retry.class);
 		if (retry == null) {
-			retry = type.getAnnotation(Retry.class);
+			retry = method.getDeclaringClass().getAnnotation(Retry.class);
 		}
 		return retry;
 	}

@@ -180,20 +180,20 @@ public final class DataBaseUtils {
 			Logger.info("CGLIB", "register proxy class[" + clz.getName() + "]");
 		}
 	}
-	
-	public static boolean isTransaction(Class<?> type, Method method) {
+
+	public static boolean isTransaction(Method method) {
 		boolean isTransaction = false;
-		Controller controller = type.getAnnotation(Controller.class);
+		Controller controller = method.getDeclaringClass().getAnnotation(Controller.class);
 		if (controller != null) {
 			isTransaction = true;
 		}
 
-		Service service = type.getAnnotation(Service.class);
+		Service service = method.getDeclaringClass().getAnnotation(Service.class);
 		if (service != null) {
 			isTransaction = true;
 		}
 
-		Transaction transaction = type.getAnnotation(Transaction.class);
+		Transaction transaction = method.getDeclaringClass().getAnnotation(Transaction.class);
 		if (transaction != null) {
 			isTransaction = transaction.value();
 		}
@@ -205,10 +205,10 @@ public final class DataBaseUtils {
 
 		return isTransaction;
 	}
-	
-	public static boolean isSelectCache(Class<?> type, Method method) {
+
+	public static boolean isSelectCache(Method method) {
 		boolean isSelectCache = true;
-		SelectCache selectCache = type.getAnnotation(SelectCache.class);
+		SelectCache selectCache = method.getDeclaringClass().getAnnotation(SelectCache.class);
 		if (selectCache != null) {
 			isSelectCache = selectCache.value();
 		}

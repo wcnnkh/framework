@@ -29,6 +29,7 @@ public final class AnnotationRequestBean implements RequestBean {
 	private final boolean proxy;
 	private Enhancer enhancer;
 	private final PropertiesFactory propertiesFactory;
+	private ClassInfo classInfo;
 
 	public AnnotationRequestBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type,
 			String[] filterNames) throws Exception {
@@ -66,6 +67,7 @@ public final class AnnotationRequestBean implements RequestBean {
 			throw new BeansException("not found constructor");
 		}
 		enhancer = BeanUtils.createEnhancer(type, beanFactory, filterNames);
+		this.classInfo = ClassUtils.getClassInfo(type);
 	}
 
 	public static Constructor<?> getAnnotationRequestBeanConstructor(Class<?> type) {
@@ -110,16 +112,16 @@ public final class AnnotationRequestBean implements RequestBean {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		ClassInfo classInfo = ClassUtils.getClassInfo(type);
-		while (classInfo != null) {
-			for (FieldInfo field : classInfo.getFieldMap().values()) {
+		ClassInfo tempClzInfo = classInfo;
+		while (tempClzInfo != null) {
+			for (FieldInfo field : tempClzInfo.getFieldMap().values()) {
 				if (Modifier.isStatic(field.getField().getModifiers())) {
 					continue;
 				}
 
-				BeanUtils.autoWrite(classInfo.getClz(), beanFactory, propertiesFactory, bean, field);
+				BeanUtils.autoWrite(tempClzInfo.getClz(), beanFactory, propertiesFactory, bean, field);
 			}
-			classInfo = classInfo.getSuperInfo();
+			tempClzInfo = tempClzInfo.getSuperInfo();
 		}
 	}
 

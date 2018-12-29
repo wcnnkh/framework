@@ -76,7 +76,7 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 	}
 
 	private Object retry(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		Retry retry = BeanUtils.getRetry(method.getDeclaringClass(), method);
+		Retry retry = BeanUtils.getRetry(method);
 		if (retry == null || retry.errors().length == 0) {
 			return filter(obj, method, args, proxy);
 		} else {

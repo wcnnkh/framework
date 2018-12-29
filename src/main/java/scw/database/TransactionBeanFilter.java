@@ -5,8 +5,6 @@ import java.lang.reflect.Method;
 import net.sf.cglib.proxy.MethodProxy;
 import scw.beans.BeanFilter;
 import scw.beans.BeanFilterChain;
-import scw.common.ClassInfo;
-import scw.common.utils.ClassUtils;
 import scw.database.annoation.SelectCache;
 
 /**
@@ -16,19 +14,14 @@ import scw.database.annoation.SelectCache;
  *
  */
 public class TransactionBeanFilter implements BeanFilter {
-	private ClassInfo classInfo;
 
 	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
 			throws Throwable {
-		if (obj instanceof ConnectionSource) {//数据库连接获取类，不用加上事务
+		if (obj instanceof ConnectionSource) {// 数据库连接获取类，不用加上事务
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		}
 
-		if (classInfo == null) {
-			classInfo = ClassUtils.getClassInfo(obj.getClass());
-		}
-
-		boolean isTransaction = DataBaseUtils.isTransaction(classInfo.getClz(), method);
+		boolean isTransaction = DataBaseUtils.isTransaction(method);
 		if (isTransaction) {
 			TransactionContext.getInstance().begin();
 			try {
@@ -43,11 +36,11 @@ public class TransactionBeanFilter implements BeanFilter {
 
 	private Object selectCache(Object obj, Method method, Object[] args, MethodProxy proxy,
 			BeanFilterChain beanFilterChain) throws Throwable {
-		SelectCache selectCache = classInfo.getClz().getAnnotation(SelectCache.class);
+		SelectCache selectCache = method.getDeclaringClass().getAnnotation(SelectCache.class);
 		if (selectCache == null) {
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		} else {
-			boolean isSelectCache = DataBaseUtils.isSelectCache(classInfo.getClz(), method);
+			boolean isSelectCache = DataBaseUtils.isSelectCache(method);
 			boolean oldIsSelectCache = TransactionContext.getInstance().isSelectCache();
 			if (isSelectCache == oldIsSelectCache) {
 				return beanFilterChain.doFilter(obj, method, args, proxy);
