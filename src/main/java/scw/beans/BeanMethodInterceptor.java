@@ -11,6 +11,12 @@ import scw.beans.annotaion.Retry;
 import scw.common.Logger;
 import scw.common.exception.BeansException;
 
+/**
+ * 顶层的filter
+ * 
+ * @author shuchaowen
+ *
+ */
 public final class BeanMethodInterceptor implements MethodInterceptor {
 	private String[] filterNames;
 	private BeanFactory beanFactory;
