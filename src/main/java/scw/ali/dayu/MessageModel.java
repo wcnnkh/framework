@@ -10,7 +10,6 @@ import java.io.Serializable;
  */
 public class MessageModel implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private int modelId;
 	private String sms_free_sign_name;
 	private String sms_template_code;
 
@@ -20,14 +19,9 @@ public class MessageModel implements Serializable {
 	protected MessageModel() {
 	}
 
-	public MessageModel(int modelId, String sms_free_sign_name, String sms_template_code) {
-		this.modelId = modelId;
+	public MessageModel(String sms_free_sign_name, String sms_template_code) {
 		this.sms_free_sign_name = sms_free_sign_name;
 		this.sms_template_code = sms_template_code;
-	}
-
-	public final int getModelId() {
-		return modelId;
 	}
 
 	public final String getSms_free_sign_name() {

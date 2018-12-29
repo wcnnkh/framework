@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -27,11 +30,15 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import scw.common.ClassInfo;
+import scw.common.FieldInfo;
 import scw.common.exception.NotFoundException;
 
 public final class XMLUtils {
-	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
-	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
+	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory
+			.newInstance();
+	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory
+			.newInstance();
 
 	private XMLUtils() {
 	}
@@ -163,7 +170,8 @@ public final class XMLUtils {
 
 			String nodeKey = n.getNodeName().intern();
 			String value = n.getTextContent();
-			if (nodeKey == null || nodeKey.length() == 0 || "#text".equals(nodeKey)) {
+			if (nodeKey == null || nodeKey.length() == 0
+					|| "#text".equals(nodeKey)) {
 				continue;
 			}
 			map.put(nodeKey, value);
@@ -197,7 +205,8 @@ public final class XMLUtils {
 		return getNodeAttributeValue(node, name, null);
 	}
 
-	public static String getNodeAttributeValue(Node node, String name, String defaultValue) {
+	public static String getNodeAttributeValue(Node node, String name,
+			String defaultValue) {
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		if (namedNodeMap == null) {
 			return null;
@@ -207,7 +216,8 @@ public final class XMLUtils {
 		return n == null ? defaultValue : n.getNodeValue();
 	}
 
-	public static String getNodeAttributeValueOrNodeContent(Node node, String name) {
+	public static String getNodeAttributeValueOrNodeContent(Node node,
+			String name) {
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		if (namedNodeMap == null) {
 			return null;
@@ -233,8 +243,53 @@ public final class XMLUtils {
 		}
 	}
 
-	public static boolean getBooleanValue(Node node, String name, boolean defaultValue) {
+	public static boolean getBooleanValue(Node node, String name,
+			boolean defaultValue) {
 		String value = getNodeAttributeValue(node, name);
-		return StringUtils.isNull(value) ? defaultValue : Boolean.parseBoolean(value);
+		return StringUtils.isNull(value) ? defaultValue : Boolean
+				.parseBoolean(value);
+	}
+
+	public static <T> T getBean(Node node, Class<T> type)
+			throws InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
+		T t = type.newInstance();
+		ClassInfo classInfo = ClassUtils.getClassInfo(type.getName());
+		NodeList nodeList = node.getChildNodes();
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Node n = nodeList.item(i);
+			FieldInfo fieldInfo = classInfo.getFieldInfo(n.getNodeName());
+			if (fieldInfo == null) {
+				continue;
+			}
+
+			String value = n.getTextContent();
+			if (value != null) {
+				continue;
+			}
+
+			fieldInfo
+					.set(t, StringUtils.conversion(value, fieldInfo.getType()));
+		}
+		return t;
+	}
+
+	public static <T> List<T> getBeanList(NodeList nodeList, Class<T> type)
+			throws InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
+		if (nodeList == null) {
+			return null;
+		}
+
+		List<T> list = new ArrayList<T>(nodeList.getLength());
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Node node = nodeList.item(i);
+			T t = getBean(node, type);
+			if (t == null) {
+				continue;
+			}
+			list.add(t);
+		}
+		return list;
 	}
 }
