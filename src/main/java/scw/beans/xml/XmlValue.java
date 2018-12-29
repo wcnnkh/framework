@@ -7,6 +7,7 @@ import scw.common.StringFormat;
 import scw.common.exception.NotFoundException;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.StringUtils;
+import scw.common.utils.XMLUtils;
 import scw.net.http.HttpUtils;
 
 public class XmlValue {
@@ -18,13 +19,13 @@ public class XmlValue {
 
 	public XmlValue(Node node, String parentCharsetName) {
 		this.node = node;
-		this.replace = XmlBeanUtils.getBooleanValue(node, "replace", true);
-		this.replace_prefix = XmlBeanUtils.getNodeAttributeValue(node, "replace-prefix");
-		this.replace_suffix = XmlBeanUtils.getNodeAttributeValue(node, "replace-suffix");
+		this.replace = XMLUtils.getBooleanValue(node, "replace", true);
+		this.replace_prefix = XMLUtils.getNodeAttributeValue(node, "replace-prefix");
+		this.replace_suffix = XMLUtils.getNodeAttributeValue(node, "replace-suffix");
 		String charset = XmlBeanUtils.getCharsetName(node, parentCharsetName);
 
 		String value;
-		String url = XmlBeanUtils.getNodeAttributeValue(node, "url");
+		String url = XMLUtils.getNodeAttributeValue(node, "url");
 		if (!StringUtils.isNull(url)) {
 			if (url.startsWith("file://")) {
 				String path = url.substring(7);
@@ -36,7 +37,7 @@ public class XmlValue {
 				value = ConfigUtils.getFileContent(path, charset);
 			}
 		} else {
-			value = XmlBeanUtils.getNodeAttributeValue(node, "value");
+			value = XMLUtils.getNodeAttributeValue(node, "value");
 			if (value == null) {
 				value = node.getNodeValue();
 			}
@@ -47,9 +48,9 @@ public class XmlValue {
 	public XmlValue(String value, Node node) {
 		this.node = node;
 		this.value = value;
-		this.replace = XmlBeanUtils.getBooleanValue(node, "replace", true);
-		this.replace_prefix = XmlBeanUtils.getNodeAttributeValue(node, "replace-prefix");
-		this.replace_suffix = XmlBeanUtils.getNodeAttributeValue(node, "replace-suffix");
+		this.replace = XMLUtils.getBooleanValue(node, "replace", true);
+		this.replace_prefix = XMLUtils.getNodeAttributeValue(node, "replace-prefix");
+		this.replace_suffix = XMLUtils.getNodeAttributeValue(node, "replace-suffix");
 	}
 
 	public String getValue() {
@@ -61,7 +62,7 @@ public class XmlValue {
 	}
 
 	public String getNodeAttributeValue(String name) {
-		return XmlBeanUtils.getNodeAttributeValue(node, name);
+		return XMLUtils.getNodeAttributeValue(node, name);
 	}
 
 	public String getNodeAttributeValue(PropertiesFactory propertiesFactory, String name) {

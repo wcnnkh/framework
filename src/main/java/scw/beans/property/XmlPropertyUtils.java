@@ -10,23 +10,23 @@ import javax.management.openmbean.KeyAlreadyExistsException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.xml.XmlBeanUtils;
 import scw.common.Logger;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.StringUtils;
+import scw.common.utils.XMLUtils;
 
 public final class XmlPropertyUtils {
 	private XmlPropertyUtils() {};
 	
 	public static Map<String, Property> parse(Node rootNode){
 		Map<String, Property> map = new HashMap<String, Property>();
-		String charset = XmlBeanUtils.getNodeAttributeValue(rootNode, "charset");
+		String charset = XMLUtils.getNodeAttributeValue(rootNode, "charset");
 		if(StringUtils.isNull(charset)){
 			charset = "UTF-8";
 		}
-		String prefix = XmlBeanUtils.getNodeAttributeValue(rootNode, "prefix");
+		String prefix = XMLUtils.getNodeAttributeValue(rootNode, "prefix");
 		
-		String file = XmlBeanUtils.getNodeAttributeValue(rootNode, "file");
+		String file = XMLUtils.getNodeAttributeValue(rootNode, "file");
 		if(!StringUtils.isNull(file)){
 			Logger.debug("Properties", "file=" + file + ", charset=" + charset);
 			Properties properties = ConfigUtils.getProperties(file, charset);

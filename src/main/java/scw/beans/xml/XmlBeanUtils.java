@@ -1,12 +1,8 @@
 package scw.beans.xml;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -15,7 +11,6 @@ import scw.beans.EParameterType;
 import scw.beans.property.PropertiesFactory;
 import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
-import scw.common.utils.ConfigUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XMLUtils;
 
@@ -31,30 +26,12 @@ public final class XmlBeanUtils {
 	}
 
 	public static String getNodeAttributeValue(final PropertiesFactory propertiesFactory, Node node, String name) {
-		String value = getNodeAttributeValue(node, name);
+		String value = XMLUtils.getNodeAttributeValue(node, name);
 		if (value == null || value.length() == 0) {
 			return value;
 		}
 
 		return formatNodeValue(propertiesFactory, node, value);
-	}
-
-	public static String getNodeAttributeValue(Node node, String name) {
-		NamedNodeMap namedNodeMap = node.getAttributes();
-		if (namedNodeMap == null) {
-			return null;
-		}
-
-		Node n = namedNodeMap.getNamedItem(name);
-		return n == null ? null : n.getNodeValue();
-	}
-
-	public static String getRequireNodeAttributeValue(Node node, String name) {
-		String value = getNodeAttributeValue(node, name);
-		if (StringUtils.isNull(value)) {
-			throw new BeansException("not found attribute " + name);
-		}
-		return value;
 	}
 
 	public static String getRequireNodeAttributeValue(PropertiesFactory propertiesFactory, Node node, String name) {
@@ -66,11 +43,11 @@ public final class XmlBeanUtils {
 	}
 
 	public static XmlBeanParameter parseBeanParameter(Node node) throws ClassNotFoundException {
-		String name = XmlBeanUtils.getNodeAttributeValue(node, "name");
-		String ref = XmlBeanUtils.getNodeAttributeValue(node, "ref");
-		String value = XmlBeanUtils.getNodeAttributeValue(node, "value");
-		String type = XmlBeanUtils.getNodeAttributeValue(node, "type");
-		String property = XmlBeanUtils.getNodeAttributeValue(node, "property");
+		String name = XMLUtils.getNodeAttributeValue(node, "name");
+		String ref = XMLUtils.getNodeAttributeValue(node, "ref");
+		String value = XMLUtils.getNodeAttributeValue(node, "value");
+		String type = XMLUtils.getNodeAttributeValue(node, "type");
+		String property = XMLUtils.getNodeAttributeValue(node, "property");
 
 		Class<?> typeClass = StringUtils.isNull(type) ? null : ClassUtils.forName(type);
 		if (!StringUtils.isNull(ref)) {
@@ -86,16 +63,16 @@ public final class XmlBeanUtils {
 	}
 
 	public static boolean isSingleton(Node node) {
-		return getBooleanValue(node, "singleton", true);
+		return XMLUtils.getBooleanValue(node, "singleton", true);
 	}
 
 	public static String[] getNames(Node node) {
-		String name = getNodeAttributeValue(node, "name");
+		String name = XMLUtils.getNodeAttributeValue(node, "name");
 		return StringUtils.isNull(name) ? null : StringUtils.commonSplit(name);
 	}
 
 	public static String getNodeValue(PropertiesFactory propertiesFactory, Node node, String name) {
-		String value = getNodeAttributeValue(node, name);
+		String value = XMLUtils.getNodeAttributeValue(node, name);
 		if (StringUtils.isNull(value)) {
 			value = node.getNodeValue();
 		}
@@ -107,19 +84,6 @@ public final class XmlBeanUtils {
 			boolean defaultValue) {
 		String value = getNodeAttributeValue(propertiesFactory, node, name);
 		return StringUtils.isNull(value) ? defaultValue : Boolean.parseBoolean(value);
-	}
-
-	public static boolean getBooleanValue(Node node, String name, boolean defaultValue) {
-		String value = getNodeAttributeValue(node, name);
-		return StringUtils.isNull(value) ? defaultValue : Boolean.parseBoolean(value);
-	}
-
-	public static void requireAttribute(Node node, String... name) {
-		for (String n : name) {
-			if (StringUtils.isNull(getNodeAttributeValue(node, n))) {
-				throw new BeansException("not found attribute " + n);
-			}
-		}
 	}
 
 	public static int getIntegerValue(PropertiesFactory propertiesFactory, Node node, String name, int defaultValue) {
@@ -145,11 +109,9 @@ public final class XmlBeanUtils {
 
 	public static Node getRootNode(String config) {
 		try {
-			File xml = ConfigUtils.getFile(config);
-			Document document = XMLUtils.parse(xml);
-			Element root = document.getDocumentElement();
-			if (!"beans".equals(root.getTagName())) {
-				throw new BeansException("root tag name error [" + root.getTagName() + "]");
+			Node root = XMLUtils.getRootNode(config);
+			if (!"beans".equals(root.getNodeName())) {
+				throw new BeansException("root tag name error [" + root.getNodeName() + "]");
 			}
 			return root;
 		} catch (Exception e) {
@@ -175,7 +137,7 @@ public final class XmlBeanUtils {
 	}
 
 	public static String getCharsetName(Node node, String defaultValue) {
-		String charsetName = getNodeAttributeValue(node, "charset");
+		String charsetName = XMLUtils.getNodeAttributeValue(node, "charset");
 		return StringUtils.isNull(charsetName) ? defaultValue : charsetName;
 	}
 

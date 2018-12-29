@@ -5,24 +5,29 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
+import scw.common.Logger;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
 import scw.net.http.HttpUtils;
 
 public final class ALiDaYu {
+	private volatile ThreadPoolExecutor threadPoolExecutor;
 	private String host;
 	private String appKey;
 	private String version;
 	private String format;
 	private String sign_method;
 	private String appSecret;
-	
+
 	public ALiDaYu(String appKey, String appSecret) {
 		this("http://gw.api.taobao.com/router/rest", appKey, "2.0", "json", "md5", appSecret);
 	}
-	
+
 	public ALiDaYu(String host, String appKey, String version, String format, String sign_method, String appSecret) {
 		this.host = host;
 		this.appKey = appKey;
@@ -31,57 +36,80 @@ public final class ALiDaYu {
 		this.sign_method = sign_method;
 		this.appSecret = appSecret;
 	}
-	
-	public String sendMessage(String sms_param, String sms_free_sign_name, String sms_template_code, String toPhones){
+
+	public String sendMessage(MessageModel messageModel, String sms_param, String toPhones) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("app_key", appKey);
 		map.put("v", version);
 		map.put("format", format);
 		map.put("sign_method", sign_method);
-		
+
 		map.put("timestamp", XTime.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
-		map.put("sms_free_sign_name", sms_free_sign_name);
+		map.put("sms_free_sign_name", messageModel.getSms_free_sign_name());
 		map.put("sms_param", sms_param);
-		map.put("sms_template_code", sms_template_code);
+		map.put("sms_template_code", messageModel.getSms_template_code());
 		map.put("method", "alibaba.aliqin.fc.sms.num.send");
 		map.put("sms_type", "normal");
-		
+
 		map.put("sms_param", sms_param);
 		map.put("rec_num", toPhones);
-		map.put("sign", getSign(map, appSecret, sign_method));
+		map.put("sign", getSign(map));
 		return HttpUtils.doPost(host, map);
 	}
-	
-	
+
+	public void asyncSendMessage(final MessageModel messageModel, final String sms_param, final String toPhones) {
+		if (threadPoolExecutor == null) {
+			synchronized (this) {
+				threadPoolExecutor = new ThreadPoolExecutor(5, 20, 0L, TimeUnit.MILLISECONDS,
+						new LinkedBlockingQueue<Runnable>(512));
+			}
+		}
+
+		threadPoolExecutor.submit(new Runnable() {
+
+			public void run() {
+				String content = sendMessage(messageModel, sms_param, toPhones);
+				Logger.info(content);
+			}
+		});
+	}
+
+	public void destroy() {
+		if (threadPoolExecutor != null) {
+			threadPoolExecutor.shutdown();
+		}
+	}
+
 	/**
 	 * 签名
+	 * 
 	 * @param map
 	 * @param secret
 	 * @param sign_method
 	 * @return
 	 */
-	public static String getSign(Map<String, String> map, String secret, String sign_method){
+	protected String getSign(Map<String, String> map) {
 		String[] keys = map.keySet().toArray(new String[0]);
 		Arrays.sort(keys);
 		StringBuilder sb = new StringBuilder();
 		boolean isMd5 = false;
-		if("md5".equals(sign_method)){
-			sb.append(secret);
+		if ("md5".equals(sign_method)) {
+			sb.append(appSecret);
 			isMd5 = true;
 		}
-		
-		for(String key : keys){
+
+		for (String key : keys) {
 			String value = map.get(key);
-			if(StringUtils.isNull(key, value)){
+			if (StringUtils.isNull(key, value)) {
 				continue;
 			}
-			//sb.append(key).append(Http.encode(value, "utf-8"));
+			// sb.append(key).append(Http.encode(value, "utf-8"));
 			sb.append(key).append(value);
 		}
-				
+
 		byte[] bytes = null;
-		if(isMd5){
-			sb.append(secret);
+		if (isMd5) {
+			sb.append(appSecret);
 			try {
 				bytes = SignUtils.md5(sb.toString().getBytes("utf-8"));
 			} catch (UnsupportedEncodingException e) {
@@ -89,10 +117,10 @@ public final class ALiDaYu {
 			} catch (NoSuchAlgorithmException e) {
 				e.printStackTrace();
 			}
-		}else{
-			bytes = SignUtils.HmacMD5(sb.toString(), secret, "UTF-8");
+		} else {
+			bytes = SignUtils.HmacMD5(sb.toString(), appSecret, "UTF-8");
 		}
-		
+
 		return SignUtils.byte2hex(bytes).toUpperCase();
 	}
 }

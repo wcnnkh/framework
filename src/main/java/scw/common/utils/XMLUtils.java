@@ -21,16 +21,22 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class XMLUtils {
+import scw.common.exception.NotFoundException;
+
+public final class XMLUtils {
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
-	
-	public static DocumentBuilder getDocumentBuilder(){
+
+	private XMLUtils() {
+	}
+
+	public static DocumentBuilder getDocumentBuilder() {
 		try {
 			return DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
@@ -38,12 +44,12 @@ public class XMLUtils {
 		}
 		return null;
 	}
-	
-	public static Document newDocument(){
+
+	public static Document newDocument() {
 		return getDocumentBuilder().newDocument();
 	}
-	
-	public static Transformer getTransformer(){
+
+	public static Transformer getTransformer() {
 		try {
 			return TRANSFORMER_FACTORY.newTransformer();
 		} catch (TransformerConfigurationException e) {
@@ -51,8 +57,8 @@ public class XMLUtils {
 		}
 		return null;
 	}
-	
-	public static Document parse(InputStream is){
+
+	public static Document parse(InputStream is) {
 		DocumentBuilder documentBuilder = getDocumentBuilder();
 		try {
 			return documentBuilder.parse(is);
@@ -63,8 +69,8 @@ public class XMLUtils {
 		}
 		return null;
 	}
-	
-	public static Document parse(File file){
+
+	public static Document parse(File file) {
 		DocumentBuilder documentBuilder = getDocumentBuilder();
 		try {
 			return documentBuilder.parse(file);
@@ -75,8 +81,8 @@ public class XMLUtils {
 		}
 		return null;
 	}
-	
-	public static Document parse(InputSource is){
+
+	public static Document parse(InputSource is) {
 		DocumentBuilder documentBuilder = getDocumentBuilder();
 		try {
 			return documentBuilder.parse(is);
@@ -87,8 +93,8 @@ public class XMLUtils {
 		}
 		return null;
 	}
-	
-	public static Document parseForURI(String uri){
+
+	public static Document parseForURI(String uri) {
 		DocumentBuilder documentBuilder = getDocumentBuilder();
 		try {
 			return documentBuilder.parse(uri);
@@ -99,8 +105,8 @@ public class XMLUtils {
 		}
 		return null;
 	}
-	
-	public static Document parse(InputStream is, String systemId){
+
+	public static Document parse(InputStream is, String systemId) {
 		DocumentBuilder documentBuilder = getDocumentBuilder();
 		try {
 			return documentBuilder.parse(is, systemId);
@@ -111,13 +117,18 @@ public class XMLUtils {
 		}
 		return null;
 	}
-	
-	public static Document parse(String text){
+
+	public static Document parse(String text) {
 		return parse(new InputSource(new StringReader(text)));
 	}
-	
-	
-	public static String getXmlContent(Node node){
+
+	public static Node getRootNode(String xmlPath) {
+		File xml = ConfigUtils.getFile(xmlPath);
+		Document document = XMLUtils.parse(xml);
+		return document.getDocumentElement();
+	}
+
+	public static String getXmlContent(Node node) {
 		Transformer transformer;
 		try {
 			transformer = TRANSFORMER_FACTORY.newTransformer();
@@ -125,7 +136,7 @@ public class XMLUtils {
 			e1.printStackTrace();
 			return null;
 		}
-		
+
 		StringWriter sw = new StringWriter();
 		StreamResult result = new StreamResult(sw);
 		DOMSource domSource = new DOMSource(node);
@@ -135,32 +146,32 @@ public class XMLUtils {
 			content = sw.toString();
 		} catch (TransformerException e) {
 			e.printStackTrace();
-		}finally {
+		} finally {
 			XUtils.close(sw);
 		}
 		return content;
 	}
-	
-	public static Map<String, String> xmlToMap(Node node){
+
+	public static Map<String, String> xmlToMap(Node node) {
 		NodeList nodeList = node.getChildNodes();
 		Map<String, String> map = new HashMap<String, String>();
-		for(int i=0; i<nodeList.getLength(); i++){
+		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node n = nodeList.item(i);
-			if(n == null){
+			if (n == null) {
 				continue;
 			}
-			
+
 			String nodeKey = n.getNodeName().intern();
 			String value = n.getTextContent();
-			if(nodeKey == null || nodeKey.length() == 0 || "#text".equals(nodeKey)){
+			if (nodeKey == null || nodeKey.length() == 0 || "#text".equals(nodeKey)) {
 				continue;
 			}
 			map.put(nodeKey, value);
 		}
 		return map;
 	}
-	
-	public static String mapToXml(Map<String, String> map){
+
+	public static String mapToXml(Map<String, String> map) {
 		DocumentBuilder documentBuilder = null;
 		try {
 			documentBuilder = DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
@@ -170,15 +181,60 @@ public class XMLUtils {
 		}
 		Document document = documentBuilder.newDocument();
 		Element root = document.createElement("xml");
-		for(Entry<String, String> entry : map.entrySet()){
-			if(entry.getKey() == null || entry.getValue() == null){
+		for (Entry<String, String> entry : map.entrySet()) {
+			if (entry.getKey() == null || entry.getValue() == null) {
 				continue;
 			}
-			
+
 			Element element = document.createElement(entry.getKey());
 			element.setTextContent(entry.getValue());
 			root.appendChild(element);
 		}
 		return getXmlContent(root);
+	}
+
+	public static String getNodeAttributeValue(Node node, String name) {
+		return getNodeAttributeValue(node, name, null);
+	}
+
+	public static String getNodeAttributeValue(Node node, String name, String defaultValue) {
+		NamedNodeMap namedNodeMap = node.getAttributes();
+		if (namedNodeMap == null) {
+			return null;
+		}
+
+		Node n = namedNodeMap.getNamedItem(name);
+		return n == null ? defaultValue : n.getNodeValue();
+	}
+
+	public static String getNodeAttributeValueOrNodeContent(Node node, String name) {
+		NamedNodeMap namedNodeMap = node.getAttributes();
+		if (namedNodeMap == null) {
+			return null;
+		}
+
+		Node n = namedNodeMap.getNamedItem(name);
+		return n == null ? node.getTextContent() : n.getNodeValue();
+	}
+
+	public static String getRequireNodeAttributeValue(Node node, String name) {
+		String value = getNodeAttributeValue(node, name);
+		if (StringUtils.isNull(value)) {
+			throw new NotFoundException("not found attribute " + name);
+		}
+		return value;
+	}
+
+	public static void requireAttribute(Node node, String... name) {
+		for (String n : name) {
+			if (StringUtils.isNull(XMLUtils.getNodeAttributeValue(node, n))) {
+				throw new NotFoundException("not found attribute " + n);
+			}
+		}
+	}
+
+	public static boolean getBooleanValue(Node node, String name, boolean defaultValue) {
+		String value = getNodeAttributeValue(node, name);
+		return StringUtils.isNull(value) ? defaultValue : Boolean.parseBoolean(value);
 	}
 }

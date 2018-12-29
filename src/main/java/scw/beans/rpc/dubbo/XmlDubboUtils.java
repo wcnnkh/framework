@@ -19,6 +19,7 @@ import scw.common.Logger;
 import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
+import scw.common.utils.XMLUtils;
 
 public final class XmlDubboUtils {
 	private XmlDubboUtils() {
@@ -68,7 +69,7 @@ public final class XmlDubboUtils {
 				}
 
 				if ("dubbo:service".equals(node.getNodeName())) {
-					XmlBeanUtils.requireAttribute(node, "port", "address");
+					XMLUtils.requireAttribute(node, "port", "address");
 					String name = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "name");
 					int port = Integer.parseInt(XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "port"));
 					Logger.info("dubbo:service", "开始注册dubbo服务,name=" + name + ",port=" + port);
