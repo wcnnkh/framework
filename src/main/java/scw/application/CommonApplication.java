@@ -25,7 +25,7 @@ public class CommonApplication implements Application {
 		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(configPath) : propertiesFactory;
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
-			//支持事务
+			// 支持事务
 			beanFactory.addFilters(TransactionBeanFilter.class.getName());
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
@@ -62,12 +62,17 @@ public class CommonApplication implements Application {
 		}
 
 		beanFactory.init();
-		try {
-			if (!StringUtils.isNull(configPath)) {
-				XmlDubboUtils.register(propertiesFactory, beanFactory, configPath);
-			}
-		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
+		if (!StringUtils.isNull(configPath)) {
+			new Thread(new Runnable() {
+
+				public void run() {
+					try {
+						XmlDubboUtils.register(propertiesFactory, beanFactory, configPath);
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
 		}
 	}
 

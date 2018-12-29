@@ -15,20 +15,19 @@ import scw.beans.BeanFactory;
 import scw.beans.annotaion.Service;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
+import scw.common.Logger;
 import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 
 public final class XmlDubboUtils {
-	private XmlDubboUtils(){};
-	
+	private XmlDubboUtils() {
+	};
+
 	private static void register(PropertiesFactory propertiesFactory, BeanFactory beanFactory,
-			ApplicationConfig application,
-			List<RegistryConfig> registryConfigs,
-			List<ProtocolConfig> protocolConfigs, String version,
-			Node serviceNode) throws ClassNotFoundException {
-		String serviceClassName = XmlBeanUtils.getNodeAttributeValue(propertiesFactory,
-				serviceNode, "service");
+			ApplicationConfig application, List<RegistryConfig> registryConfigs, List<ProtocolConfig> protocolConfigs,
+			String version, Node serviceNode) throws ClassNotFoundException {
+		String serviceClassName = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, serviceNode, "service");
 		if (StringUtils.isNull(serviceClassName)) {
 			serviceClassName = serviceNode.getNodeValue();
 		}
@@ -36,9 +35,9 @@ public final class XmlDubboUtils {
 		if (StringUtils.isNull(serviceClassName)) {
 			throw new BeansException("not found dubbo service");
 		}
-		
+
 		String v = XmlBeanUtils.getVersion(propertiesFactory, serviceNode);
-		if(StringUtils.isNull(v)){
+		if (StringUtils.isNull(v)) {
 			v = version;
 		}
 
@@ -57,7 +56,7 @@ public final class XmlDubboUtils {
 			serviceConfig.export();
 		}
 	}
-	
+
 	public static void register(PropertiesFactory propertiesFactory, BeanFactory beanFactory, String config)
 			throws ClassNotFoundException {
 		NodeList rootNodeList = XmlBeanUtils.getRootNode(config).getChildNodes();
@@ -70,16 +69,14 @@ public final class XmlDubboUtils {
 
 				if ("dubbo:service".equals(node.getNodeName())) {
 					XmlBeanUtils.requireAttribute(node, "port", "address");
-					ApplicationConfig application = new ApplicationConfig(
-							XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "name"));
-					int port = Integer.parseInt(XmlBeanUtils
-							.getNodeAttributeValue(propertiesFactory, node, "port"));
-					int threads = XmlBeanUtils.getIntegerValue(propertiesFactory, node, "treads",
-							200);
+					String name = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "name");
+					int port = Integer.parseInt(XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "port"));
+					Logger.info("dubbo:service", "开始注册dubbo服务,name=" + name + ",port=" + port);
+					int threads = XmlBeanUtils.getIntegerValue(propertiesFactory, node, "treads", 200);
 
+					ApplicationConfig application = new ApplicationConfig(name);
 					List<RegistryConfig> registryConfigs = new ArrayList<RegistryConfig>();
-					String[] addressArray = StringUtils
-							.commonSplit(XmlBeanUtils.getAddress(propertiesFactory, node));
+					String[] addressArray = StringUtils.commonSplit(XmlBeanUtils.getAddress(propertiesFactory, node));
 					for (String address : addressArray) {
 						RegistryConfig registryConfig = new RegistryConfig();
 						registryConfig.setAddress(address);
@@ -121,10 +118,11 @@ public final class XmlDubboUtils {
 							if (n == null) {
 								continue;
 							}
-							register(propertiesFactory, beanFactory, application, registryConfigs,
-									protocolConfigs, version, n);
+							register(propertiesFactory, beanFactory, application, registryConfigs, protocolConfigs,
+									version, n);
 						}
 					}
+					Logger.info("dubbo:service", "dubbo服务注册完成,name=" + name + ",port=" + port);
 				}
 			}
 		}
