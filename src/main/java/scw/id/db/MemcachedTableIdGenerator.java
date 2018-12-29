@@ -3,8 +3,8 @@ package scw.id.db;
 import scw.db.DB;
 import scw.db.DBManager;
 import scw.id.IdGenerator;
+import scw.id.MemcachedIdGenerator;
 import scw.memcached.Memcached;
-import scw.memcached.MemcachedIdGenerator;
 
 public class MemcachedTableIdGenerator implements IdGenerator<Long> {
 	private final Memcached memcached;

@@ -8,9 +8,7 @@ import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
 import scw.memcached.Memcached;
-import scw.memcached.MemcachedIdGenerator;
 import scw.redis.Redis;
-import scw.redis.RedisIdGernerator;
 
 /**
  * 这是一个定长的27位字符串

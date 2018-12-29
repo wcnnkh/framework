@@ -3,8 +3,8 @@ package scw.id.db;
 import scw.db.DB;
 import scw.db.DBManager;
 import scw.id.IdGenerator;
+import scw.id.RedisIdGernerator;
 import scw.redis.Redis;
-import scw.redis.RedisIdGernerator;
 
 public class RedisTableIdGenerator implements IdGenerator<Long> {
 	private final Redis redis;

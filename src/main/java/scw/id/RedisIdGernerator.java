@@ -1,6 +1,6 @@
-package scw.redis;
+package scw.id;
 
-import scw.id.IdGenerator;
+import scw.redis.Redis;
 
 public final class RedisIdGernerator implements IdGenerator<Long>{
 	private final Redis redis;
