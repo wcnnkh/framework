@@ -5,6 +5,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.JarURLConnection;
@@ -24,7 +25,7 @@ import scw.spring.core.LocalVariableTableParameterNameDiscoverer;
 
 public final class ClassUtils {
 	public static final String ALL_PACKAGE_NAME = "*";
-	public static final String PROXY_CLASS_SPLIT = "$$";//代理类的分割符
+	public static final String PROXY_CLASS_SPLIT = "$$";// 代理类的分割符
 	private volatile static Map<String, ClassInfo> clzMap = new HashMap<String, ClassInfo>();
 	private static Map<Class<?>, Class<?>> basicTypeMap = new HashMap<Class<?>, Class<?>>();
 	private static Map<Class<?>, Class<?>> basicValueTypeMap = new HashMap<Class<?>, Class<?>>();
@@ -99,8 +100,7 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isCharType(Class<?> type) {
-		return Character.class.isAssignableFrom(type)
-				|| char.class.isAssignableFrom(type);
+		return Character.class.isAssignableFrom(type) || char.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -110,8 +110,7 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isByteType(Class<?> type) {
-		return byte.class.isAssignableFrom(type)
-				|| Byte.class.isAssignableFrom(type);
+		return byte.class.isAssignableFrom(type) || Byte.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -121,8 +120,7 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isShortType(Class<?> type) {
-		return short.class.isAssignableFrom(type)
-				|| Short.class.isAssignableFrom(type);
+		return short.class.isAssignableFrom(type) || Short.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -132,8 +130,7 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isIntType(Class<?> type) {
-		return int.class.isAssignableFrom(type)
-				|| Integer.class.isAssignableFrom(type);
+		return int.class.isAssignableFrom(type) || Integer.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -143,8 +140,7 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isLongType(Class<?> type) {
-		return long.class.isAssignableFrom(type)
-				|| Long.class.isAssignableFrom(type);
+		return long.class.isAssignableFrom(type) || Long.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -154,8 +150,7 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isFloatType(Class<?> type) {
-		return float.class.isAssignableFrom(type)
-				|| Float.class.isAssignableFrom(type);
+		return float.class.isAssignableFrom(type) || Float.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -165,8 +160,7 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isDoubleType(Class<?> type) {
-		return double.class.isAssignableFrom(type)
-				|| Double.class.isAssignableFrom(type);
+		return double.class.isAssignableFrom(type) || Double.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -176,8 +170,7 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isBooleanType(Class<?> type) {
-		return boolean.class.isAssignableFrom(type)
-				|| Boolean.class.isAssignableFrom(type);
+		return boolean.class.isAssignableFrom(type) || Boolean.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -230,14 +223,12 @@ public final class ClassUtils {
 		return cl;
 	}
 
-	public static <T> Class<T> forName(String name)
-			throws ClassNotFoundException {
+	public static <T> Class<T> forName(String name) throws ClassNotFoundException {
 		return forName(name, getDefaultClassLoader());
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Class<T> forName(final String name,
-			final ClassLoader loader) throws ClassNotFoundException {
+	public static <T> Class<T> forName(final String name, final ClassLoader loader) throws ClassNotFoundException {
 		if (basicValueTypeNameMap.containsKey(name)) {
 			return (Class<T>) basicValueTypeNameMap.get(name);
 		}
@@ -246,18 +237,16 @@ public final class ClassUtils {
 			return (Class<T>) classForNameMap.get(name);
 		}
 
-		return (Class<T>) Class.forName(name, true,
-				loader == null ? getDefaultClassLoader() : loader);
+		return (Class<T>) Class.forName(name, true, loader == null ? getDefaultClassLoader() : loader);
 	}
 
-	public static <T> Class<T> forNameByCache(final String name)
-			throws ClassNotFoundException {
+	public static <T> Class<T> forNameByCache(final String name) throws ClassNotFoundException {
 		return forNameByCache(name, getDefaultClassLoader());
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Class<T> forNameByCache(final String name,
-			final ClassLoader loader) throws ClassNotFoundException {
+	public static <T> Class<T> forNameByCache(final String name, final ClassLoader loader)
+			throws ClassNotFoundException {
 		if (basicValueTypeNameMap.containsKey(name)) {
 			return (Class<T>) basicValueTypeNameMap.get(name);
 		}
@@ -266,8 +255,7 @@ public final class ClassUtils {
 			return (Class<T>) classForNameMap.get(name);
 		} else {
 			synchronized (classForNameMap) {
-				Class<T> type = (Class<T>) Class.forName(name, true,
-						loader == null ? getDefaultClassLoader() : loader);
+				Class<T> type = (Class<T>) Class.forName(name, true, loader == null ? getDefaultClassLoader() : loader);
 				classForNameMap.put(name, type);
 				return type;
 			}
@@ -337,8 +325,7 @@ public final class ClassUtils {
 				if (file.isFile()) {
 					String fileName = file.getName();
 					if (fileName.endsWith(".class")) {
-						String beanName = fileName.substring(0,
-								fileName.lastIndexOf("."));
+						String beanName = fileName.substring(0, fileName.lastIndexOf("."));
 						Class<?> clz = null;
 						try {
 							clz = Class.forName(rootPage + beanName);
@@ -379,8 +366,7 @@ public final class ClassUtils {
 		// 定义一个枚举的集合 并进行循环来处理这个目录下的things
 		Enumeration<URL> dirs;
 		try {
-			dirs = Thread.currentThread().getContextClassLoader()
-					.getResources(packageDirName);
+			dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
 			// 循环迭代下去
 			while (dirs.hasMoreElements()) {
 				// 获取下一个元素
@@ -392,16 +378,14 @@ public final class ClassUtils {
 					// 获取包的物理路径
 					String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
 					// 以文件的方式扫描整个包下的文件 并添加到集合中
-					findAndAddClassesInPackageByFile(packageName, filePath,
-							recursive, classes);
+					findAndAddClassesInPackageByFile(packageName, filePath, recursive, classes);
 				} else if ("jar".equals(protocol)) {
 					// 如果是jar包文件
 					// 定义一个JarFile
 					JarFile jar;
 					try {
 						// 获取jar
-						jar = ((JarURLConnection) url.openConnection())
-								.getJarFile();
+						jar = ((JarURLConnection) url.openConnection()).getJarFile();
 						// 从此jar包 得到一个枚举类
 						Enumeration<JarEntry> entries = jar.entries();
 						// 同样的进行循环迭代
@@ -420,23 +404,18 @@ public final class ClassUtils {
 								// 如果以"/"结尾 是一个包
 								if (idx != -1) {
 									// 获取包名 把"/"替换成"."
-									packageName = name.substring(0, idx)
-											.replace('/', '.');
+									packageName = name.substring(0, idx).replace('/', '.');
 								}
 								// 如果可以迭代下去 并且是一个包
 								if ((idx != -1) || recursive) {
 									// 如果是一个.class文件 而且不是目录
-									if (name.endsWith(".class")
-											&& !entry.isDirectory()) {
+									if (name.endsWith(".class") && !entry.isDirectory()) {
 										// 去掉后面的".class" 获取真正的类名
-										String className = name.substring(
-												packageName.length() + 1,
-												name.length() - 6);
+										String className = name.substring(packageName.length() + 1, name.length() - 6);
 										// 添加到classes
 										Class<?> clz = null;
 										try {
-											clz = Class.forName(packageName
-													+ '.' + className);
+											clz = Class.forName(packageName + '.' + className);
 										} catch (Throwable e) {
 										}
 
@@ -466,8 +445,8 @@ public final class ClassUtils {
 	 * @param recursive
 	 * @param classes
 	 */
-	private static void findAndAddClassesInPackageByFile(String packageName,
-			String packagePath, final boolean recursive, List<Class<?>> classes) {
+	private static void findAndAddClassesInPackageByFile(String packageName, String packagePath,
+			final boolean recursive, List<Class<?>> classes) {
 		// 获取此包的目录 建立一个File
 		File dir = new File(packagePath);
 		// 如果不存在或者 也不是目录就直接返回
@@ -478,21 +457,18 @@ public final class ClassUtils {
 		File[] dirfiles = dir.listFiles(new FileFilter() {
 			// 自定义过滤规则 如果可以循环(包含子目录) 或则是以.class结尾的文件(编译好的java类文件)
 			public boolean accept(File file) {
-				return (recursive && file.isDirectory())
-						|| (file.getName().endsWith(".class"));
+				return (recursive && file.isDirectory()) || (file.getName().endsWith(".class"));
 			}
 		});
 		// 循环所有文件
 		for (File file : dirfiles) {
 			// 如果是目录 则继续扫描
 			if (file.isDirectory()) {
-				findAndAddClassesInPackageByFile(
-						packageName + "." + file.getName(),
-						file.getAbsolutePath(), recursive, classes);
+				findAndAddClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), recursive,
+						classes);
 			} else {
 				// 如果是java类文件 去掉后面的.class 只留下类名
-				String className = file.getName().substring(0,
-						file.getName().length() - 6);
+				String className = file.getName().substring(0, file.getName().length() - 6);
 				// 添加到集合中去
 				if (packageName.startsWith(".")) {
 					packageName = packageName.substring(1);
@@ -521,6 +497,28 @@ public final class ClassUtils {
 	}
 
 	/**
+	 * 实例化一个对象，会尝试寻找未公开的构造方法
+	 * @param type
+	 * @return
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 */
+	public static <T> T newInstance(Class<T> type) throws InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		Constructor<T> constructor = type.getDeclaredConstructor();
+		if (Modifier.isPublic(constructor.getModifiers())) {
+			return constructor.newInstance();
+		} else {
+			constructor.setAccessible(true);
+			return constructor.newInstance();
+		}
+	}
+
+	/**
 	 * 获取父类 不包含java.lang.Object
 	 * 
 	 * @param clz
@@ -528,8 +526,7 @@ public final class ClassUtils {
 	 */
 	public static Class<?> getSuperClass(Class<?> clz) {
 		Class<?> superClz = clz.getSuperclass();
-		if (superClz == null
-				|| Object.class.getName().equals(superClz.getName())) {
+		if (superClz == null || Object.class.getName().equals(superClz.getName())) {
 			return null;
 		}
 		return superClz;
@@ -567,8 +564,7 @@ public final class ClassUtils {
 	public static Long getSerialVersionUID(Class<?> clz) {
 		try {
 			Field field = clz.getField("serialVersionUID");
-			if (field != null && Modifier.isStatic(field.getModifiers())
-					&& Modifier.isFinal(field.getModifiers())
+			if (field != null && Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())
 					&& long.class.isAssignableFrom(field.getType())) {
 				return (Long) field.get(null);
 			}
@@ -586,7 +582,6 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isInstance(Class<?> clz) {
-		return !(Modifier.isAbstract(clz.getModifiers()) || Modifier
-				.isInterface(clz.getModifiers()));
+		return !(Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers()));
 	}
 }

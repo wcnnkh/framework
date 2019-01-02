@@ -203,7 +203,8 @@ public final class XMLUtils {
 	}
 
 	/**
-	 * @param basicType 只能是基本数据类型，非基本数据类型只能是String
+	 * @param basicType
+	 *            只能是基本数据类型，非基本数据类型只能是String
 	 * @param node
 	 * @param name
 	 * @param defaultValue
@@ -259,12 +260,12 @@ public final class XMLUtils {
 		return StringUtils.isNull(value) ? defaultValue : Boolean.parseBoolean(value);
 	}
 
-	public static <T> T getBean(Node node, Class<T> type)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		T t = type.newInstance();
+	public static <T> T getBean(Node node, Class<T> type) throws InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		T t = ClassUtils.newInstance(type);
 		ClassInfo classInfo = ClassUtils.getClassInfo(type.getName());
 		NodeList nodeList = node.getChildNodes();
-		
+
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node n = nodeList.item(i);
 			FieldInfo fieldInfo = classInfo.getFieldInfo(n.getNodeName());
@@ -291,11 +292,18 @@ public final class XMLUtils {
 		List<T> list = new ArrayList<T>(nodeList.getLength());
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
-			T t = getBean(node, type);
-			if (t == null) {
-				continue;
+			T t;
+			try {
+				t = getBean(node, type);
+				if (t == null) {
+					continue;
+				}
+				list.add(t);
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
 			}
-			list.add(t);
 		}
 		return list;
 	}
