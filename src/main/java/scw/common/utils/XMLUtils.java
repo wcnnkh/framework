@@ -35,10 +35,8 @@ import scw.common.FieldInfo;
 import scw.common.exception.NotFoundException;
 
 public final class XMLUtils {
-	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory
-			.newInstance();
-	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory
-			.newInstance();
+	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
+	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
 
 	private XMLUtils() {
 	}
@@ -170,8 +168,7 @@ public final class XMLUtils {
 
 			String nodeKey = n.getNodeName().intern();
 			String value = n.getTextContent();
-			if (nodeKey == null || nodeKey.length() == 0
-					|| "#text".equals(nodeKey)) {
+			if (nodeKey == null || nodeKey.length() == 0 || "#text".equals(nodeKey)) {
 				continue;
 			}
 			map.put(nodeKey, value);
@@ -205,8 +202,23 @@ public final class XMLUtils {
 		return getNodeAttributeValue(node, name, null);
 	}
 
-	public static String getNodeAttributeValue(Node node, String name,
-			String defaultValue) {
+	/**
+	 * @param basicType 只能是基本数据类型，非基本数据类型只能是String
+	 * @param node
+	 * @param name
+	 * @param defaultValue
+	 * @return
+	 */
+	public static <T> T getNodeAttributeValue(Class<T> basicType, Node node, String name, T defaultValue) {
+		String value = getNodeAttributeValue(node, name);
+		if (value == null) {
+			return defaultValue;
+		} else {
+			return StringUtils.conversion(value, basicType);
+		}
+	}
+
+	public static String getNodeAttributeValue(Node node, String name, String defaultValue) {
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		if (namedNodeMap == null) {
 			return null;
@@ -216,8 +228,7 @@ public final class XMLUtils {
 		return n == null ? defaultValue : n.getNodeValue();
 	}
 
-	public static String getNodeAttributeValueOrNodeContent(Node node,
-			String name) {
+	public static String getNodeAttributeValueOrNodeContent(Node node, String name) {
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		if (namedNodeMap == null) {
 			return null;
@@ -243,19 +254,17 @@ public final class XMLUtils {
 		}
 	}
 
-	public static boolean getBooleanValue(Node node, String name,
-			boolean defaultValue) {
+	public static boolean getBooleanValue(Node node, String name, boolean defaultValue) {
 		String value = getNodeAttributeValue(node, name);
-		return StringUtils.isNull(value) ? defaultValue : Boolean
-				.parseBoolean(value);
+		return StringUtils.isNull(value) ? defaultValue : Boolean.parseBoolean(value);
 	}
 
 	public static <T> T getBean(Node node, Class<T> type)
-			throws InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		T t = type.newInstance();
 		ClassInfo classInfo = ClassUtils.getClassInfo(type.getName());
 		NodeList nodeList = node.getChildNodes();
+		
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node n = nodeList.item(i);
 			FieldInfo fieldInfo = classInfo.getFieldInfo(n.getNodeName());
@@ -268,15 +277,13 @@ public final class XMLUtils {
 				continue;
 			}
 
-			fieldInfo
-					.set(t, StringUtils.conversion(value, fieldInfo.getType()));
+			fieldInfo.set(t, StringUtils.conversion(value, fieldInfo.getType()));
 		}
 		return t;
 	}
 
 	public static <T> List<T> getBeanList(NodeList nodeList, Class<T> type)
-			throws InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (nodeList == null) {
 			return null;
 		}

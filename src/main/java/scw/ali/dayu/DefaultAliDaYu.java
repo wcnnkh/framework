@@ -5,18 +5,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
-import scw.common.Logger;
+import scw.common.ProcessResult;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
 import scw.net.http.HttpUtils;
 
-public final class ALiDaYu {
-	private volatile ThreadPoolExecutor threadPoolExecutor;
+public final class DefaultAliDaYu implements AliDaYu {
 	private String host;
 	private String appKey;
 	private String version;
@@ -24,11 +20,12 @@ public final class ALiDaYu {
 	private String sign_method;
 	private String appSecret;
 
-	public ALiDaYu(String appKey, String appSecret) {
+	public DefaultAliDaYu(String appKey, String appSecret) {
 		this("http://gw.api.taobao.com/router/rest", appKey, "2.0", "json", "md5", appSecret);
 	}
 
-	public ALiDaYu(String host, String appKey, String version, String format, String sign_method, String appSecret) {
+	public DefaultAliDaYu(String host, String appKey, String version, String format, String sign_method,
+			String appSecret) {
 		this.host = host;
 		this.appKey = appKey;
 		this.version = version;
@@ -37,7 +34,7 @@ public final class ALiDaYu {
 		this.appSecret = appSecret;
 	}
 
-	public String sendMessage(MessageModel messageModel, String sms_param, String toPhones) {
+	public ProcessResult<String> sendMessage(MessageModel messageModel, String sms_param, String toPhones) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("app_key", appKey);
 		map.put("v", version);
@@ -54,30 +51,8 @@ public final class ALiDaYu {
 		map.put("sms_param", sms_param);
 		map.put("rec_num", toPhones);
 		map.put("sign", getSign(map));
-		return HttpUtils.doPost(host, map);
-	}
-
-	public void asyncSendMessage(final MessageModel messageModel, final String sms_param, final String toPhones) {
-		if (threadPoolExecutor == null) {
-			synchronized (this) {
-				threadPoolExecutor = new ThreadPoolExecutor(5, 20, 0L, TimeUnit.MILLISECONDS,
-						new LinkedBlockingQueue<Runnable>(512));
-			}
-		}
-
-		threadPoolExecutor.submit(new Runnable() {
-
-			public void run() {
-				String content = sendMessage(messageModel, sms_param, toPhones);
-				Logger.info(content);
-			}
-		});
-	}
-
-	public void destroy() {
-		if (threadPoolExecutor != null) {
-			threadPoolExecutor.shutdown();
-		}
+		String content = HttpUtils.doPost(host, map);
+		return ProcessResult.success(content);
 	}
 
 	/**
