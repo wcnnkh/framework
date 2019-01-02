@@ -498,7 +498,10 @@ public final class ClassUtils {
 
 	/**
 	 * 实例化一个对象，会尝试寻找未公开的构造方法
+	 * 
 	 * @param type
+	 * @param parameterTypes
+	 * @param params
 	 * @return
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
@@ -507,14 +510,15 @@ public final class ClassUtils {
 	 * @throws NoSuchMethodException
 	 * @throws SecurityException
 	 */
-	public static <T> T newInstance(Class<T> type) throws InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		Constructor<T> constructor = type.getDeclaredConstructor();
+	public static <T> T newInstance(Class<T> type, Class<?>[] parameterTypes, Object... params)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException {
+		Constructor<T> constructor = type.getDeclaredConstructor(parameterTypes);
 		if (Modifier.isPublic(constructor.getModifiers())) {
-			return constructor.newInstance();
+			return constructor.newInstance(params);
 		} else {
 			constructor.setAccessible(true);
-			return constructor.newInstance();
+			return constructor.newInstance(params);
 		}
 	}
 

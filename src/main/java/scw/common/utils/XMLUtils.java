@@ -262,10 +262,9 @@ public final class XMLUtils {
 
 	public static <T> T getBean(Node node, Class<T> type) throws InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		T t = ClassUtils.newInstance(type);
+		T t = null;
 		ClassInfo classInfo = ClassUtils.getClassInfo(type.getName());
 		NodeList nodeList = node.getChildNodes();
-
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node n = nodeList.item(i);
 			FieldInfo fieldInfo = classInfo.getFieldInfo(n.getNodeName());
@@ -273,11 +272,18 @@ public final class XMLUtils {
 				continue;
 			}
 
-			String value = n.getTextContent();
-			if (value != null) {
+			if (fieldInfo.isStatic() || fieldInfo.isFinal()) {
 				continue;
 			}
 
+			String value = n.getTextContent();
+			if (value == null) {
+				continue;
+			}
+
+			if (t == null) {
+				t = ClassUtils.newInstance(type, null);
+			}
 			fieldInfo.set(t, StringUtils.conversion(value, fieldInfo.getType()));
 		}
 		return t;

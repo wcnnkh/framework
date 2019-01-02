@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import scw.common.Logger;
 import scw.common.ProcessResult;
+import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XMLUtils;
 import scw.common.utils.XTime;
@@ -46,7 +47,6 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 			this.aLiDaYu = new DefaultAliDaYu(host, appKey, version, format, signMethod, appSecret);
 		}
 		this.modelList = XMLUtils.getBeanList(root.getChildNodes(), MessageModel.class);
-
 		this.codeParameterKey = XMLUtils.getNodeAttributeValue(String.class, root, "code-key", "code");
 		this.codeLength = XMLUtils.getNodeAttributeValue(Integer.class, root, "code-length", 6);
 		this.debug = XMLUtils.getNodeAttributeValue(boolean.class, root, "debug", false);
@@ -104,7 +104,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		String code = getNewCode();
 		parameterMap.put(codeParameterKey, code);
 		if (debug) {
-			Logger.debug(this.getClass().getName(), "向[" + phone + "]发送验证码:" + code);
+			Logger.debug(ClassUtils.getProxyRealClassName(this.getClass()), "向[" + phone + "]发送验证码:" + code);
 		}
 
 		processResult = sendMessage(configIndex, JSONObject.toJSONString(parameterMap), phone);
@@ -113,7 +113,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		}
 
 		if (debug) {
-			Logger.debug(this.getClass().getName(), "返回：" + processResult.getData());
+			Logger.debug(ClassUtils.getProxyRealClassName(this.getClass()), "返回：" + processResult.getData());
 		}
 
 		successCall(configIndex, phone, code);
