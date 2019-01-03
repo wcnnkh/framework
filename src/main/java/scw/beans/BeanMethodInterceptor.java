@@ -37,43 +37,15 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 		scw.beans.annotaion.BeanFilter beanFilter = method.getDeclaringClass()
 				.getAnnotation(scw.beans.annotaion.BeanFilter.class);
 		if (beanFilter != null) {
-			if (beanFilter.namePriority()) {
-				for (String name : beanFilter.name()) {
-					beanFilters.add((BeanFilter) beanFactory.get(name));
-				}
-
-				for (Class<? extends BeanFilter> c : beanFilter.value()) {
-					beanFilters.add(beanFactory.get(c));
-				}
-			} else {
-				for (Class<? extends BeanFilter> c : beanFilter.value()) {
-					beanFilters.add(beanFactory.get(c));
-				}
-
-				for (String name : beanFilter.name()) {
-					beanFilters.add((BeanFilter) beanFactory.get(name));
-				}
+			for (Class<? extends BeanFilter> c : beanFilter.value()) {
+				beanFilters.add(beanFactory.get(c));
 			}
 		}
 
 		beanFilter = method.getAnnotation(scw.beans.annotaion.BeanFilter.class);
 		if (beanFilter != null) {
-			if (beanFilter.namePriority()) {
-				for (String name : beanFilter.name()) {
-					beanFilters.add((BeanFilter) beanFactory.get(name));
-				}
-
-				for (Class<? extends BeanFilter> c : beanFilter.value()) {
-					beanFilters.add(beanFactory.get(c));
-				}
-			} else {
-				for (Class<? extends BeanFilter> c : beanFilter.value()) {
-					beanFilters.add(beanFactory.get(c));
-				}
-
-				for (String name : beanFilter.name()) {
-					beanFilters.add((BeanFilter) beanFactory.get(name));
-				}
+			for (Class<? extends BeanFilter> c : beanFilter.value()) {
+				beanFilters.add(beanFactory.get(c));
 			}
 		}
 

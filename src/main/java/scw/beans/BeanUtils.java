@@ -315,64 +315,6 @@ public final class BeanUtils {
 		}
 	}
 
-	public static List<BeanFilter> getBeanFilterList(BeanFactory beanFactory, Class<?> clz, Method method) {
-		if (beanFactory == null) {
-			return null;
-		}
-
-		List<BeanFilter> beanFilters = null;
-		scw.beans.annotaion.BeanFilter beanFilter = clz.getAnnotation(scw.beans.annotaion.BeanFilter.class);
-		if (beanFilter != null) {
-			if (beanFilters == null) {
-				beanFilters = new ArrayList<BeanFilter>(8);
-			}
-
-			if (beanFilter.namePriority()) {
-				for (String name : beanFilter.name()) {
-					beanFilters.add((BeanFilter) beanFactory.get(name));
-				}
-
-				for (Class<? extends BeanFilter> c : beanFilter.value()) {
-					beanFilters.add(beanFactory.get(c));
-				}
-			} else {
-				for (Class<? extends BeanFilter> c : beanFilter.value()) {
-					beanFilters.add(beanFactory.get(c));
-				}
-
-				for (String name : beanFilter.name()) {
-					beanFilters.add((BeanFilter) beanFactory.get(name));
-				}
-			}
-		}
-
-		beanFilter = method.getAnnotation(scw.beans.annotaion.BeanFilter.class);
-		if (beanFilter != null) {
-			if (beanFilters == null) {
-				beanFilters = new ArrayList<BeanFilter>(8);
-			}
-
-			if (beanFilter.namePriority()) {
-				for (String name : beanFilter.name()) {
-					beanFilters.add((BeanFilter) beanFactory.get(name));
-				}
-
-				for (Class<? extends BeanFilter> c : beanFilter.value()) {
-					beanFilters.add(beanFactory.get(c));
-				}
-			} else {
-				for (Class<? extends BeanFilter> c : beanFilter.value()) {
-					beanFilters.add(beanFactory.get(c));
-				}
-
-				for (String name : beanFilter.name()) {
-					beanFilters.add((BeanFilter) beanFactory.get(name));
-				}
-			}
-		}
-		return beanFilters;
-	}
-
 	public static Enhancer createEnhancer(Class<?> clz, BeanFactory beanFactory, String[] filterNames) {
 		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
 		Enhancer enhancer = new Enhancer();

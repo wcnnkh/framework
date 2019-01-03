@@ -17,16 +17,4 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface BeanFilter {
 	public Class<? extends scw.beans.BeanFilter>[] value();
-	
-	/**
-	 * filter的名称引用
-	 * @return
-	 */
-	public String[] name() default {};
-	
-	/**
-	 * 是否将名称引用的filter排在前面
-	 * @return
-	 */
-	public boolean namePriority() default false;
 }
