@@ -6,7 +6,7 @@ import scw.memcached.Memcached;
 import scw.redis.Redis;
 
 /**
- * 把时间按指定方式格式化后接上一个自增的10位int
+ * 把时间按指定方式格式化后接上一个10位int
  * 
  * @author shuchaowen
  *
@@ -26,12 +26,12 @@ public class TimeStampIdGenerator implements IdGenerator<TimeStampId> {
 	}
 
 	public TimeStampIdGenerator(Redis redis, String incrKey, String timeFormat) {
-		this.idGenerator = new RedisIdGenerator(redis, incrKey, 0);
+		this.idGenerator = new RedisIdGenerator(redis, incrKey + "#" + timeFormat, 0);
 		this.timeFormat = timeFormat;
 	}
 
 	public TimeStampIdGenerator(Memcached memcached, String incrKey, String timeFormat) {
-		this.idGenerator = new MemcachedIdGenerator(memcached, incrKey, 0);
+		this.idGenerator = new MemcachedIdGenerator(memcached, incrKey + "#" + timeFormat, 0);
 		this.timeFormat = timeFormat;
 	}
 
