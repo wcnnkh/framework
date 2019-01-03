@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.common.Logger;
 import scw.common.ProcessResult;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
@@ -52,6 +53,7 @@ public final class DefaultAliDaYu implements AliDaYu {
 		map.put("rec_num", toPhones);
 		map.put("sign", getSign(map));
 		String content = HttpUtils.doPost(host, map);
+		Logger.debug(this.getClass().getName(), content);
 		return ProcessResult.success(content);
 	}
 

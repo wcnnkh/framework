@@ -53,7 +53,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		this.everyDayMaxSize = XMLUtils.getNodeAttributeValue(Integer.class, root, "everyDayMaxSize", 10);
 		this.maxTimeInterval = XMLUtils.getNodeAttributeValue(Integer.class, root, "maxTimeInterval", 30);
 		this.maxActiveTime = XMLUtils.getNodeAttributeValue(Integer.class, root, "maxActiveTime", 120);
-		
+
 	}
 
 	public MessageModel getMessageModel(int index) {
@@ -110,10 +110,6 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		processResult = sendMessage(configIndex, JSONObject.toJSONString(parameterMap), phone);
 		if (processResult.isError()) {
 			return processResult;
-		}
-
-		if (debug) {
-			Logger.debug(ClassUtils.getProxyRealClassName(this.getClass()), "返回：" + processResult.getData());
 		}
 
 		successCall(configIndex, phone, code);
