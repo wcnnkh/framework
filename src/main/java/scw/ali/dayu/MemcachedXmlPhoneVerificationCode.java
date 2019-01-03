@@ -8,7 +8,7 @@ import scw.common.utils.XTime;
 import scw.common.utils.XUtils;
 import scw.memcached.Memcached;
 
-public class MemcachedXmlPhoneVerificationCode extends AbstractXmlPhoneVerificationCode {
+public final class MemcachedXmlPhoneVerificationCode extends AbstractXmlPhoneVerificationCode {
 	private final Memcached memcached;
 	private final String tempPrefix;
 

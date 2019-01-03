@@ -8,7 +8,7 @@ import scw.common.utils.XTime;
 import scw.common.utils.XUtils;
 import scw.redis.Redis;
 
-public class RedisXmlPhoneVerificationCode extends AbstractXmlPhoneVerificationCode {
+public final class RedisXmlPhoneVerificationCode extends AbstractXmlPhoneVerificationCode {
 	private final Redis redis;
 	private final String tempPrefix;
 
