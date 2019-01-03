@@ -52,7 +52,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		this.debug = XMLUtils.getNodeAttributeValue(boolean.class, root, "debug", false);
 		this.everyDayMaxSize = XMLUtils.getNodeAttributeValue(Integer.class, root, "everyDayMaxSize", 10);
 		this.maxTimeInterval = XMLUtils.getNodeAttributeValue(Integer.class, root, "maxTimeInterval", 30);
-		this.maxActiveTime = XMLUtils.getNodeAttributeValue(Integer.class, root, "maxActiveTime", 120);
+		this.maxActiveTime = XMLUtils.getNodeAttributeValue(Integer.class, root, "maxActiveTime", 300);
 
 	}
 
