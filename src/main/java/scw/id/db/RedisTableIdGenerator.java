@@ -3,14 +3,14 @@ package scw.id.db;
 import scw.db.DB;
 import scw.db.DBManager;
 import scw.id.IdGenerator;
-import scw.id.RedisIdGernerator;
+import scw.id.RedisIdGenerator;
 import scw.redis.Redis;
 
 public class RedisTableIdGenerator implements IdGenerator<Long> {
 	private final Redis redis;
 	private final Class<?> tableClass;
 	private final String fieldName;
-	private volatile RedisIdGernerator idGenerator;
+	private volatile RedisIdGenerator idGenerator;
 	private final String key;
 	private final boolean checkKey;
 	private DB db;
@@ -71,7 +71,7 @@ public class RedisTableIdGenerator implements IdGenerator<Long> {
 					}
 					Long maxId = db.getMaxLongValue(tableClass, fieldName);
 					maxId = maxId == null ? 0 : maxId;
-					idGenerator = new RedisIdGernerator(redis, key, maxId);
+					idGenerator = new RedisIdGenerator(redis, key, maxId);
 				}
 			}
 		}
