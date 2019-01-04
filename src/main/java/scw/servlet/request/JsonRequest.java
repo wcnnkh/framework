@@ -1,6 +1,5 @@
 package scw.servlet.request;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,47 +9,22 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import scw.common.Logger;
-import scw.common.utils.XUtils;
 import scw.servlet.Request;
 import scw.servlet.beans.RequestBeanFactory;
+import scw.servlet.parameter.Body;
 
-public class JsonRequest extends Request{
+public class JsonRequest extends Request {
 	private JSONObject json;
 
-	public JsonRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
+	public JsonRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
 		super(requestBeanFactory, httpServletRequest, httpServletResponse, isDebug);
-		BufferedReader br = null;
-		StringBuilder sb = new StringBuilder();
-		String line;
-		try {
-			br = getReader();
-			if (br.markSupported()) {
-				br.mark(0);
-			}
-			while ((line = br.readLine()) != null) {
-				sb.append(line);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (br.markSupported()) {
-				if (br != null) {
-					try {
-						br.reset();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-			XUtils.close(br);
+		Body body = getBean(Body.class);
+		if (isDebug) {
+			Logger.debug(this.getClass().getName(),
+					"servletPath=" + getServletPath() + ",method=" + getMethod() + "," + body.getBody());
 		}
-
-		String content = sb.toString();
-		if(isDebug){
-			Logger.debug(this.getClass().getName(), "servletPath=" + getServletPath() + ",method=" + getMethod() + "," + content);
-		}
-		
-		json = JSONObject.parseObject(sb.toString());
+		json = JSONObject.parseObject(body.getBody());
 	}
 
 	public JSONObject getJson() {
@@ -161,20 +135,20 @@ public class JsonRequest extends Request{
 	@Override
 	public char getChar(String name) {
 		String v = json.getString(name);
-		if(v == null || v.length() == 0){
+		if (v == null || v.length() == 0) {
 			throw new NullPointerException("require '" + name + "'");
 		}
-		
+
 		return v.charAt(0);
 	}
 
 	@Override
 	public Character getCharacter(String name) {
 		String v = json.getString(name);
-		if(v == null || v.length() == 0){
+		if (v == null || v.length() == 0) {
 			return null;
 		}
-		
+
 		return v.charAt(0);
 	}
 }

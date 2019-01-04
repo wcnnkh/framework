@@ -32,7 +32,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 
 	public AbstractXmlPhoneVerificationCode(String xmlPath)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Node root = XMLUtils.getRootNode(xmlPath);
+		Node root = XMLUtils.getRootElement(xmlPath);
 		String host = XMLUtils.getNodeAttributeValue(root, "host", "http://gw.api.taobao.com/router/rest");
 		String appKey = XMLUtils.getRequireNodeAttributeValue(root, "appKey");
 		String version = XMLUtils.getNodeAttributeValue(root, "version", "2.0");
@@ -46,7 +46,8 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		} else {
 			this.aLiDaYu = new DefaultAliDaYu(host, appKey, version, format, signMethod, appSecret);
 		}
-		this.modelList = XMLUtils.getBeanList(root.getChildNodes(), MessageModel.class);
+
+		this.modelList = XMLUtils.getBeanList(root, MessageModel.class);
 		this.codeParameterKey = XMLUtils.getNodeAttributeValue(String.class, root, "code-key", "code");
 		this.codeLength = XMLUtils.getNodeAttributeValue(Integer.class, root, "code-length", 6);
 		this.debug = XMLUtils.getNodeAttributeValue(boolean.class, root, "debug", false);

@@ -6,39 +6,21 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 import scw.common.io.Decoder;
+import scw.common.io.IOUtils;
 
-public class StringDecoder implements Decoder<String>{
+public class StringDecoder implements Decoder<String> {
 	private final Charset charset;
-	
-	public StringDecoder(Charset charset){
+
+	public StringDecoder(Charset charset) {
 		this.charset = charset;
 	}
-	
-	public StringDecoder(String charsetName){
+
+	public StringDecoder(String charsetName) {
 		this(Charset.forName(charsetName));
 	}
-	
-	public String decode(InputStream in) throws IOException {
-		char[] b = new char[1024];
-		int len;
-		StringBuilder sb = new StringBuilder();
-		InputStreamReader isr = new InputStreamReader(in, charset);
-		try {
-			if(isr.markSupported()){
-				isr.mark(0);
-			}
-			
-			while ((len = isr.read(b)) != -1) {
-				sb.append(b, 0, len);
-			}
-			
-			if(isr.markSupported()){
-				isr.reset();
-			}
-		} finally {
-			isr.close();
-		}
-		return sb.toString();
-	}
 
+	public String decode(InputStream in) throws IOException {
+		InputStreamReader isr = new InputStreamReader(in, charset);
+		return IOUtils.read(isr, 256, 0);
+	}
 }

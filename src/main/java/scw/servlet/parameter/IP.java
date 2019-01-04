@@ -1,22 +1,21 @@
 package scw.servlet.parameter;
 
+import java.io.Serializable;
+
 import scw.servlet.Request;
 
-public final class IP {
-	private Request request;
+public final class IP implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private String ip;
+
+	protected IP() {
+	};
 
 	public IP(Request request) {
-		this.request = request;
+		this.ip = request.getIP();
 	}
 
 	public String getIp() {
-		return request.getIP();
-	}
-
-	/**
-	 * @return the request
-	 */
-	public Request getRequest() {
-		return request;
+		return ip;
 	}
 }

@@ -7,7 +7,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,38 +33,39 @@ import org.xml.sax.SAXException;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.exception.NotFoundException;
+import scw.common.exception.ShuChaoWenRuntimeException;
 
 public final class XMLUtils {
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
 
+	static {
+		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(true);
+		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(true);
+		DOCUMENT_BUILDER_FACTORY.setCoalescing(true);
+	}
+
 	private XMLUtils() {
 	}
 
-	public static DocumentBuilder getDocumentBuilder() {
+	public static DocumentBuilder newDocumentBuilder() {
 		try {
 			return DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			throw new ShuChaoWenRuntimeException(e);
 		}
-		return null;
 	}
 
-	public static Document newDocument() {
-		return getDocumentBuilder().newDocument();
-	}
-
-	public static Transformer getTransformer() {
+	public static Transformer newTransformer() {
 		try {
 			return TRANSFORMER_FACTORY.newTransformer();
 		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
+			throw new ShuChaoWenRuntimeException(e);
 		}
-		return null;
 	}
 
 	public static Document parse(InputStream is) {
-		DocumentBuilder documentBuilder = getDocumentBuilder();
+		DocumentBuilder documentBuilder = newDocumentBuilder();
 		try {
 			return documentBuilder.parse(is);
 		} catch (SAXException e) {
@@ -76,7 +77,7 @@ public final class XMLUtils {
 	}
 
 	public static Document parse(File file) {
-		DocumentBuilder documentBuilder = getDocumentBuilder();
+		DocumentBuilder documentBuilder = newDocumentBuilder();
 		try {
 			return documentBuilder.parse(file);
 		} catch (SAXException e) {
@@ -88,7 +89,7 @@ public final class XMLUtils {
 	}
 
 	public static Document parse(InputSource is) {
-		DocumentBuilder documentBuilder = getDocumentBuilder();
+		DocumentBuilder documentBuilder = newDocumentBuilder();
 		try {
 			return documentBuilder.parse(is);
 		} catch (SAXException e) {
@@ -100,7 +101,7 @@ public final class XMLUtils {
 	}
 
 	public static Document parseForURI(String uri) {
-		DocumentBuilder documentBuilder = getDocumentBuilder();
+		DocumentBuilder documentBuilder = newDocumentBuilder();
 		try {
 			return documentBuilder.parse(uri);
 		} catch (SAXException e) {
@@ -112,7 +113,7 @@ public final class XMLUtils {
 	}
 
 	public static Document parse(InputStream is, String systemId) {
-		DocumentBuilder documentBuilder = getDocumentBuilder();
+		DocumentBuilder documentBuilder = newDocumentBuilder();
 		try {
 			return documentBuilder.parse(is, systemId);
 		} catch (SAXException e) {
@@ -127,13 +128,13 @@ public final class XMLUtils {
 		return parse(new InputSource(new StringReader(text)));
 	}
 
-	public static Node getRootNode(String xmlPath) {
+	public static Element getRootElement(String xmlPath) {
 		File xml = ConfigUtils.getFile(xmlPath);
 		Document document = XMLUtils.parse(xml);
 		return document.getDocumentElement();
 	}
 
-	public static String getXmlContent(Node node) {
+	public static String asXml(Element element) {
 		Transformer transformer;
 		try {
 			transformer = TRANSFORMER_FACTORY.newTransformer();
@@ -144,7 +145,7 @@ public final class XMLUtils {
 
 		StringWriter sw = new StringWriter();
 		StreamResult result = new StreamResult(sw);
-		DOMSource domSource = new DOMSource(node);
+		DOMSource domSource = new DOMSource(element);
 		String content = null;
 		try {
 			transformer.transform(domSource, result);
@@ -157,35 +158,34 @@ public final class XMLUtils {
 		return content;
 	}
 
-	public static Map<String, String> xmlToMap(Node node) {
+	public static LinkedHashMap<String, String> xmlToMap(Node node) {
 		NodeList nodeList = node.getChildNodes();
-		Map<String, String> map = new HashMap<String, String>();
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node n = nodeList.item(i);
 			if (n == null) {
 				continue;
 			}
 
-			String nodeKey = n.getNodeName().intern();
-			String value = n.getTextContent();
-			if (nodeKey == null || nodeKey.length() == 0 || "#text".equals(nodeKey)) {
+			String nodeName = n.getNodeName();
+			if (!checkNodeName(nodeName)) {
 				continue;
 			}
-			map.put(nodeKey, value);
+
+			String value = n.getTextContent();
+			map.put(nodeName, value);
 		}
 		return map;
 	}
 
-	public static String mapToXml(Map<String, String> map) {
-		DocumentBuilder documentBuilder = null;
-		try {
-			documentBuilder = DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-			return null;
-		}
-		Document document = documentBuilder.newDocument();
-		Element root = document.createElement("xml");
+	public static LinkedHashMap<String, String> xmlToMap(String text) {
+		Document document = parse(text);
+		return xmlToMap(document.getDocumentElement());
+	}
+
+	public static Element createElement(Map<String, String> map, String rootName) {
+		Document document = newDocumentBuilder().newDocument();
+		Element root = document.createElement(rootName);
 		for (Entry<String, String> entry : map.entrySet()) {
 			if (entry.getKey() == null || entry.getValue() == null) {
 				continue;
@@ -195,7 +195,7 @@ public final class XMLUtils {
 			element.setTextContent(entry.getValue());
 			root.appendChild(element);
 		}
-		return getXmlContent(root);
+		return root;
 	}
 
 	public static String getNodeAttributeValue(Node node, String name) {
@@ -267,7 +267,12 @@ public final class XMLUtils {
 		NodeList nodeList = node.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node n = nodeList.item(i);
-			FieldInfo fieldInfo = classInfo.getFieldInfo(n.getNodeName());
+			String nodeName = n.getNodeName();
+			if (!checkNodeName(nodeName)) {
+				continue;
+			}
+
+			FieldInfo fieldInfo = classInfo.getFieldInfo(nodeName);
 			if (fieldInfo == null) {
 				continue;
 			}
@@ -289,8 +294,13 @@ public final class XMLUtils {
 		return t;
 	}
 
-	public static <T> List<T> getBeanList(NodeList nodeList, Class<T> type)
+	public static <T> List<T> getBeanList(Node rootNode, Class<T> type)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		if (rootNode == null) {
+			return null;
+		}
+
+		NodeList nodeList = rootNode.getChildNodes();
 		if (nodeList == null) {
 			return null;
 		}
@@ -298,6 +308,11 @@ public final class XMLUtils {
 		List<T> list = new ArrayList<T>(nodeList.getLength());
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
+			String nodeName = node.getNodeName();
+			if (!checkNodeName(nodeName)) {
+				continue;
+			}
+
 			T t;
 			try {
 				t = getBean(node, type);
@@ -312,5 +327,9 @@ public final class XMLUtils {
 			}
 		}
 		return list;
+	}
+
+	public static boolean checkNodeName(String name) {
+		return !(name == null || name.length() == 0 || "#text".equals(name));
 	}
 }

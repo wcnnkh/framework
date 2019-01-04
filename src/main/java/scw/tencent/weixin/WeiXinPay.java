@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import scw.common.Logger;
 import scw.common.exception.NotSupportException;
@@ -14,13 +14,14 @@ import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.exception.SignatureException;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
+import scw.common.utils.XMLUtils;
 import scw.net.http.HttpUtils;
 import scw.tencent.weixin.bean.Unifiedorder;
 
 public final class WeiXinPay {
 	private static final String weixin_unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 	private static final String DEFAULT_DEVICE_INFO = "WEB";
-	
+
 	private final String appId;
 	private final String mch_id;
 	private final String apiKey;
@@ -85,11 +86,11 @@ public final class WeiXinPay {
 		String content = getUnifiedorder(device_info, nonce_str, body, detail, attach, out_trade_no, fee_type,
 				total_fee, spbill_create_ip, time_start, time_expire, goods_tag, notify_url, trade_type, product_id,
 				limit_pay, openid);
-		if(debug){
+		if (debug) {
 			Logger.debug(this.getClass().getName(), "统一下单接口返回：" + content);
 		}
-		
-		Map<String, String> map = WeiXinUtils.xmlToMap(content);
+
+		Map<String, String> map = XMLUtils.xmlToMap(content);
 		if (map == null) {
 			throw new ShuChaoWenRuntimeException("服务器错误");
 		}
@@ -101,11 +102,11 @@ public final class WeiXinPay {
 		if (!"SUCCESS".equals(map.get("result_code"))) {
 			throw new ShuChaoWenRuntimeException(content);
 		}
-		
-		if(!checkSign(map)){
+
+		if (!checkSign(map)) {
 			throw new SignatureException(content);
 		}
-		
+
 		String prepay_id = map.get("prepay_id");
 		Unifiedorder unifiedorder = new Unifiedorder();
 		unifiedorder.setTimestamp(timestamp);
@@ -142,12 +143,12 @@ public final class WeiXinPay {
 	 *            回调url
 	 * @return
 	 */
-	public Unifiedorder getDefaultUnifiedorder(String trade_type, String body, String out_trade_no,
-			String fee_type, int total_fee, String spbill_create_ip, String time_start, String time_expire,
-			String limit_pay, String openid, String notify_url) {
-		return getUnifiedorder(DEFAULT_DEVICE_INFO, StringUtils.getRandomStr(16), System.currentTimeMillis() / 1000, body, null,
-				null, out_trade_no, fee_type, total_fee, spbill_create_ip, time_start, time_expire, null, notify_url,
-				trade_type, null, limit_pay, openid);
+	public Unifiedorder getDefaultUnifiedorder(String trade_type, String body, String out_trade_no, String fee_type,
+			int total_fee, String spbill_create_ip, String time_start, String time_expire, String limit_pay,
+			String openid, String notify_url) {
+		return getUnifiedorder(DEFAULT_DEVICE_INFO, StringUtils.getRandomStr(16), System.currentTimeMillis() / 1000,
+				body, null, null, out_trade_no, fee_type, total_fee, spbill_create_ip, time_start, time_expire, null,
+				notify_url, trade_type, null, limit_pay, openid);
 	}
 
 	/**
@@ -164,10 +165,9 @@ public final class WeiXinPay {
 	 * @param notify_url
 	 * @return
 	 */
-	public Unifiedorder getSimpleUnifiedorder(String trade_type, String name, String orderId,
-			int amount, String ip, String notify_url) {
-		return getDefaultUnifiedorder(trade_type, name, orderId, "CNY", amount, ip, null, null, null, null,
-				notify_url);
+	public Unifiedorder getSimpleUnifiedorder(String trade_type, String name, String orderId, int amount, String ip,
+			String notify_url) {
+		return getDefaultUnifiedorder(trade_type, name, orderId, "CNY", amount, ip, null, null, null, null, notify_url);
 	}
 
 	public String getPaySign(Map<String, String> paramMap) {
@@ -265,8 +265,9 @@ public final class WeiXinPay {
 		String v;
 		String k;
 		StringBuilder sb = new StringBuilder();
-		Element root = DocumentHelper.createElement("xml");
-		Element element;
+
+		Document document = XMLUtils.newDocumentBuilder().newDocument();
+		Element element = document.createElement("xml");
 		for (int i = 0; i < keys.length; i++) {
 			k = keys[i];
 			if (k == null) {
@@ -278,9 +279,9 @@ public final class WeiXinPay {
 				continue;
 			}
 
-			element = DocumentHelper.createElement(k);
-			element.setText(v);
-			root.add(element);
+			Element c = document.createElement(k);
+			c.setTextContent(v);
+			element.appendChild(c);
 			if (sb.length() > 0) {
 				sb.append("&");
 			}
@@ -288,44 +289,45 @@ public final class WeiXinPay {
 			sb.append(k).append("=").append(v);
 		}
 		sb.append("&key=").append(apiKey);
-		if(debug){
+		if (debug) {
 			Logger.debug(this.getClass().getName(), "签名字符串：" + sb.toString());
 		}
-		element = DocumentHelper.createElement("sign");
+
 		String sign = toSign(sb.toString());
-		if(debug){
+		if (debug) {
 			Logger.debug(this.getClass().getName(), "签名：" + sign);
 		}
-		element.setText(sign);
-		root.add(element);
-		String xmlContent = root.asXML();
-		if(debug){
+		Element c = document.createElement("sign");
+		c.setTextContent(sign);
+		element.appendChild(element);
+		String xmlContent = XMLUtils.asXml(element);
+		if (debug) {
 			Logger.debug(this.getClass().getName(), "签名XML：" + xmlContent);
 		}
-		
+
 		return HttpUtils.doPost(weixin_unifiedorder_url, null, xmlContent);
 	}
-	
-	public boolean checkSign(Map<String, String> params){
+
+	public boolean checkSign(Map<String, String> params) {
 		Map<String, String> cloneParams = new HashMap<String, String>(params);
 		String sign = cloneParams.get("sign");
-		if(sign == null){
+		if (sign == null) {
 			return false;
 		}
-		
+
 		cloneParams.remove("sign");
 		StringBuilder checkStr = SignUtils.getShotParamsStr(cloneParams);
 		checkStr.append("&key=").append(apiKey);
 		return sign.equals(toSign(checkStr.toString()));
 	}
-	
-	private String toSign(String str){
-		if("MD5".equalsIgnoreCase(sign_type)){
+
+	private String toSign(String str) {
+		if ("MD5".equalsIgnoreCase(sign_type)) {
 			return SignUtils.md5UpperStr(str, charset.name());
-		}else if("HMAC-SHA256".equalsIgnoreCase(sign_type)){
-			//TODO
+		} else if ("HMAC-SHA256".equalsIgnoreCase(sign_type)) {
+			// TODO
 			throw new NotSupportException(sign_type);
-		}else{
+		} else {
 			throw new ShuChaoWenRuntimeException("不支持的签名方式:" + sign_type);
 		}
 	}

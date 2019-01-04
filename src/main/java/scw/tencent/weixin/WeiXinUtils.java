@@ -3,12 +3,6 @@ package scw.tencent.weixin;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.dom4j.Node;
-
 import scw.common.utils.SignUtils;
 import scw.net.http.HttpUtils;
 
@@ -106,32 +100,5 @@ public final class WeiXinUtils {
 		signMap.put("noncestr", noceStr);
 		signMap.put("timestamp", timeStamp + "");
 		return getPaySign(signMap, apiKey);
-	}
-	
-	public static Map<String, String> xmlToMap(String xml){
-		Document document = null;
-		try {
-			document = DocumentHelper.parseText(xml);
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		
-		if(document == null){
-			return null;
-		}
-		
-		Element root = document.getRootElement();
-		int size = root.nodeCount();
-		Map<String, String> map = new HashMap<String, String>();
-		for(int i=0; i<size; i++){
-			Node node = root.node(i);
-			String k = node.getName();
-			if(k == null){
-				continue;
-			}
-			
-			map.put(k, node.getText());
-		}
-		return map;
 	}
 }

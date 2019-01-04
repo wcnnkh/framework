@@ -109,7 +109,7 @@ public final class XmlBeanUtils {
 
 	public static Node getRootNode(String config) {
 		try {
-			Node root = XMLUtils.getRootNode(config);
+			Node root = XMLUtils.getRootElement(config);
 			if (!"beans".equals(root.getNodeName())) {
 				throw new BeansException("root tag name error [" + root.getNodeName() + "]");
 			}
