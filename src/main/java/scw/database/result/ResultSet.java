@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import scw.common.Logger;
 import scw.common.exception.NotFoundException;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
@@ -82,17 +81,19 @@ public final class ResultSet implements Serializable {
 			}
 
 			if (index == -1) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(tableInfo.getClassInfo().getName());
-				sb.append(" [");
-				sb.append(column.getName());
-				sb.append("] not found for DataSource");
-				throw new ShuChaoWenRuntimeException(sb.toString());
-			}
-
-			Object v = values[index];
-			if (v != null) {
-				column.setValueToField(o, v);
+				if (!column.isNullAble()) {
+					StringBuilder sb = new StringBuilder();
+					sb.append(tableInfo.getClassInfo().getName());
+					sb.append(" [");
+					sb.append(column.getName());
+					sb.append("] not found for DataSource");
+					throw new ShuChaoWenRuntimeException(sb.toString());
+				}
+			} else {
+				Object v = values[index];
+				if (v != null) {
+					column.setValueToField(o, v);
+				}
 			}
 		}
 
@@ -120,19 +121,21 @@ public final class ResultSet implements Serializable {
 					index = metaData.getColumnIndex(list, column.getName());
 				}
 			}
-
+			
 			if (index == -1) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(tableInfo.getClassInfo().getName());
-				sb.append(" [");
-				sb.append(column.getName());
-				sb.append("] not found for DataSource");
-				Logger.warn("Result", sb.toString());
-			}
-
-			Object v = values[index];
-			if (v != null) {
-				column.setValueToField(o, v);
+				if (!column.isNullAble()) {
+					StringBuilder sb = new StringBuilder();
+					sb.append(tableInfo.getClassInfo().getName());
+					sb.append(" [");
+					sb.append(column.getName());
+					sb.append("] not found for DataSource");
+					throw new ShuChaoWenRuntimeException(sb.toString());
+				}
+			} else {
+				Object v = values[index];
+				if (v != null) {
+					column.setValueToField(o, v);
+				}
 			}
 		}
 
