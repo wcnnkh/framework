@@ -299,7 +299,7 @@ public final class WeiXinPay {
 		}
 		Element c = document.createElement("sign");
 		c.setTextContent(sign);
-		element.appendChild(element);
+		element.appendChild(c);
 		String xmlContent = XMLUtils.asXml(element);
 		if (debug) {
 			Logger.debug(this.getClass().getName(), "签名XML：" + xmlContent);
