@@ -5,14 +5,14 @@ import java.util.Collection;
 import java.util.List;
 
 import scw.database.SQL;
+import scw.database.TableInfo;
 import scw.db.sql.SQLFormat;
 
 public final class DBUtils {
 	private DBUtils() {
 	};
 
-	public static Collection<SQL> getSqlList(SQLFormat sqlFormat,
-			Collection<OperationBean> operationBeans) {
+	public static Collection<SQL> getSqlList(SQLFormat sqlFormat, Collection<OperationBean> operationBeans) {
 		if (operationBeans == null || operationBeans.isEmpty()) {
 			return null;
 		}
@@ -28,68 +28,15 @@ public final class DBUtils {
 		return list;
 	}
 
-	public static List<SQL> getSaveSqlList(SQLFormat sqlFormat,
-			Collection<?> beans) {
-		if (beans == null || beans.isEmpty()) {
-			return null;
-		}
-
-		List<SQL> sqls = new ArrayList<SQL>();
-		for (Object obj : beans) {
-			if (obj == null) {
-				continue;
+	public static String getTableName(String tableName, TableInfo tableInfo, Object obj) {
+		if (tableName == null || tableName.length() == 0) {
+			if (obj instanceof TableName) {
+				return ((TableName) obj).tableName();
+			} else {
+				return tableInfo.getName();
 			}
-
-			sqls.add(sqlFormat.toInsertSql(obj));
+		} else {
+			return tableName;
 		}
-		return sqls;
-	}
-
-	public static List<SQL> getUpdateSqlList(SQLFormat sqlFormat,
-			Collection<?> beans) {
-		if (beans == null || beans.isEmpty()) {
-			return null;
-		}
-
-		List<SQL> sqls = new ArrayList<SQL>();
-		for (Object obj : beans) {
-			if (obj == null) {
-				continue;
-			}
-			sqls.add(sqlFormat.toUpdateSql(obj));
-		}
-		return sqls;
-	}
-
-	public static List<SQL> getDeleteSqlList(SQLFormat sqlFormat,
-			Collection<?> beans) {
-		if (beans == null || beans.isEmpty()) {
-			return null;
-		}
-
-		List<SQL> sqls = new ArrayList<SQL>();
-		for (Object obj : beans) {
-			if (obj == null) {
-				continue;
-			}
-			sqls.add(sqlFormat.toDeleteSql(obj));
-		}
-		return sqls;
-	}
-
-	public static List<SQL> getSaveOrUpdateSqlList(SQLFormat sqlFormat,
-			Collection<?> beans) {
-		if (beans == null || beans.isEmpty()) {
-			return null;
-		}
-
-		List<SQL> sqls = new ArrayList<SQL>();
-		for (Object obj : beans) {
-			if (obj == null) {
-				continue;
-			}
-			sqls.add(sqlFormat.toSaveOrUpdateSql(obj));
-		}
-		return sqls;
 	}
 }

@@ -48,27 +48,6 @@ public final class DataBaseUtils {
 		return tableInfo;
 	}
 
-	public static String getTableName(Object obj) {
-		String tableName;
-		if (obj instanceof TableName) {
-			tableName = ((TableName) obj).tableName();
-		} else {
-			TableInfo tableInfo = DataBaseUtils.getTableInfo(obj.getClass());
-			tableName = tableInfo.getName();
-		}
-		return tableName;
-	}
-
-	public static String getTableName(TableInfo tableInfo, Object obj) {
-		String tableName;
-		if (obj instanceof TableName) {
-			tableName = ((TableName) obj).tableName();
-		} else {
-			tableName = tableInfo.getName();
-		}
-		return tableName;
-	}
-
 	public static void setParams(PreparedStatement preparedStatement, Object[] args) throws SQLException {
 		if (args != null && args.length != 0) {
 			for (int i = 0; i < args.length; i++) {

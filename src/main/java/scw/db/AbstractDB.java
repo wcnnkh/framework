@@ -187,12 +187,16 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		TransactionContext.getInstance().execute(this, sqls);
 	}
 
-	/** 保存 **/
 	public void save(Object... beans) {
-		save(Arrays.asList(beans));
+		save(null, Arrays.asList(beans));
 	}
 
-	public void save(Collection<?> beans) {
+	/** 保存 **/
+	public void save(String tableName, Object... beans) {
+		save(tableName, Arrays.asList(beans));
+	}
+
+	public void save(String tableName, Collection<?> beans) {
 		if (beans == null || beans.isEmpty()) {
 			return;
 		}
@@ -203,18 +207,22 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 				continue;
 			}
 
-			operationBeans.add(new OperationBean(OperationType.SAVE, bean));
+			operationBeans.add(new OperationBean(OperationType.SAVE, bean, tableName));
 		}
 
 		execute(operationBeans);
+	}
+
+	public void delete(Object... beans) {
+		delete(null, Arrays.asList(beans));
 	}
 
 	/** 删除 **/
-	public void delete(Object... beans) {
-		delete(Arrays.asList(beans));
+	public void delete(String tableName, Object... beans) {
+		delete(tableName, Arrays.asList(beans));
 	}
 
-	public void delete(Collection<?> beans) {
+	public void delete(String tableName, Collection<?> beans) {
 		if (beans == null || beans.isEmpty()) {
 			return;
 		}
@@ -225,18 +233,22 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 				continue;
 			}
 
-			operationBeans.add(new OperationBean(OperationType.DELETE, bean));
+			operationBeans.add(new OperationBean(OperationType.DELETE, bean, tableName));
 		}
 
 		execute(operationBeans);
+	}
+
+	public void update(Object... beans) {
+		update(null, Arrays.asList(beans));
 	}
 
 	/** 更新 **/
-	public void update(Object... beans) {
-		update(Arrays.asList(beans));
+	public void update(String tableName, Object... beans) {
+		update(tableName, Arrays.asList(beans));
 	}
 
-	public void update(Collection<?> beans) {
+	public void update(String tableName, Collection<?> beans) {
 		if (beans == null || beans.isEmpty()) {
 			return;
 		}
@@ -247,18 +259,22 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 				continue;
 			}
 
-			operationBeans.add(new OperationBean(OperationType.UPDATE, bean));
+			operationBeans.add(new OperationBean(OperationType.UPDATE, bean, tableName));
 		}
 
 		execute(operationBeans);
 	}
 
-	/** 保存或更新 **/
 	public void saveOrUpdate(Object... beans) {
-		saveOrUpdate(Arrays.asList(beans));
+		saveOrUpdate(null, Arrays.asList(beans));
 	}
 
-	public void saveOrUpdate(Collection<?> beans) {
+	/** 保存或更新 **/
+	public void saveOrUpdate(String tableName, Object... beans) {
+		saveOrUpdate(tableName, Arrays.asList(beans));
+	}
+
+	public void saveOrUpdate(String tableName, Collection<?> beans) {
 		if (beans == null || beans.isEmpty()) {
 			return;
 		}
@@ -269,7 +285,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 				continue;
 			}
 
-			operationBeans.add(new OperationBean(OperationType.SAVE_OR_UPDATE, bean));
+			operationBeans.add(new OperationBean(OperationType.SAVE_OR_UPDATE, bean, tableName));
 		}
 
 		execute(operationBeans);

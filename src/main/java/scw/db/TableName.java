@@ -1,4 +1,4 @@
-package scw.database;
+package scw.db;
 
 public interface TableName {
 	String tableName();

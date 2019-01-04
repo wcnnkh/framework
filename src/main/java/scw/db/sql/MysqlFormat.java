@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import scw.beans.BeanFieldListen;
 import scw.common.exception.ShuChaoWenRuntimeException;
-import scw.database.DataBaseUtils;
 import scw.database.SQL;
 import scw.database.TableInfo;
 import scw.db.PrimaryKeyParameter;
@@ -49,21 +48,6 @@ public class MysqlFormat implements SQLFormat {
 		}
 	}
 
-	public SQL toInsertSql(Object obj) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(obj.getClass());
-		return toInsertSql(obj, tableInfo, DataBaseUtils.getTableName(tableInfo, obj));
-	}
-
-	public SQL toUpdateSql(Object obj) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(obj.getClass());
-		return toUpdateSql(obj, tableInfo, DataBaseUtils.getTableName(tableInfo, obj));
-	}
-
-	public SQL toSaveOrUpdateSql(Object obj) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(obj.getClass());
-		return toSaveOrUpdateSql(obj, tableInfo, DataBaseUtils.getTableName(tableInfo, obj));
-	}
-
 	public SQL toSaveOrUpdateSql(Object obj, TableInfo tableInfo, String tableName) {
 		try {
 			if (obj instanceof BeanFieldListen) {
@@ -77,24 +61,9 @@ public class MysqlFormat implements SQLFormat {
 
 	}
 
-	public SQL toDeleteSql(Object obj) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(obj.getClass());
-		return toDeleteSql(obj, tableInfo, DataBaseUtils.getTableName(tableInfo, obj));
-	}
-
-	public SQL toIncrSql(Object obj, String fieldName, double limit, Double maxValue) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(obj.getClass());
-		return toIncrSql(obj, tableInfo, DataBaseUtils.getTableName(tableInfo, obj), fieldName, limit, maxValue);
-	}
-
 	public SQL toIncrSql(Object obj, TableInfo tableInfo, String tableName, String fieldName, double limit,
 			Double maxValue) {
 		return new IncrSQL(obj, tableInfo, tableName, fieldName, limit, maxValue);
-	}
-
-	public SQL toDecrSql(Object obj, String fieldName, double limit, Double minValue) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(obj.getClass());
-		return toDecrSql(obj, tableInfo, DataBaseUtils.getTableName(tableInfo, obj), fieldName, limit, minValue);
 	}
 
 	public SQL toDecrSql(Object obj, TableInfo tableInfo, String tableName, String fieldName, double limit,
