@@ -12,22 +12,27 @@ import java.util.regex.Pattern;
 import scw.common.exception.ShuChaoWenRuntimeException;
 
 public final class StringUtils {
-	public final static char[] CAPITAL_LETTERS = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-			'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', };
+	public final static char[] CAPITAL_LETTERS = { 'A', 'B', 'C', 'D', 'E',
+			'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+			'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', };
 
-	public final static char[] LOWERCASE_LETTERS = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-			'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+	public final static char[] LOWERCASE_LETTERS = { 'a', 'b', 'c', 'd', 'e',
+			'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
+			's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
-	public final static char[] NUMBERIC_CHARACTER = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+	public final static char[] NUMBERIC_CHARACTER = { '0', '1', '2', '3', '4',
+			'5', '6', '7', '8', '9' };
 
 	/**
 	 * 放在一起容易分辨的字符
 	 */
-	public final static char[] EASY_TO_DISTINGUISH = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'c', 'd',
-			'e', 'f', 'h', 'k', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'y', 'A', 'B', 'C', 'E', 'F', 'G', 'H', 'K',
-			'M', 'N', 'R', 'S', 'T', 'V', 'W', 'Y' };
+	public final static char[] EASY_TO_DISTINGUISH = { '0', '1', '2', '3', '4',
+			'5', '6', '7', '8', '9', 'a', 'c', 'd', 'e', 'f', 'h', 'k', 'm',
+			'n', 'p', 'r', 's', 't', 'v', 'w', 'y', 'A', 'B', 'C', 'E', 'F',
+			'G', 'H', 'K', 'M', 'N', 'R', 'S', 'T', 'V', 'W', 'Y' };
 
-	public final static char[] ALL = mergeCharArray(NUMBERIC_CHARACTER, LOWERCASE_LETTERS, CAPITAL_LETTERS);
+	public final static char[] ALL = mergeCharArray(NUMBERIC_CHARACTER,
+			LOWERCASE_LETTERS, CAPITAL_LETTERS);
 	private static final String IOS_NULL = "(null)";
 
 	private StringUtils() {
@@ -35,7 +40,8 @@ public final class StringUtils {
 
 	public static boolean isNull(boolean trim, String... str) {
 		for (String s : str) {
-			if (s == null || s.length() == 0 || (trim && s.trim().length() == 0)) {
+			if (s == null || s.length() == 0
+					|| (trim && s.trim().length() == 0)) {
 				return true;
 			}
 		}
@@ -44,6 +50,10 @@ public final class StringUtils {
 
 	public static boolean isNull(String... strs) {
 		return isNull(false, strs);
+	}
+
+	public static boolean isNull(String str) {
+		return str == null || str.length() == 0;
 	}
 
 	/**
@@ -122,7 +132,8 @@ public final class StringUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> List<T> splitList(Class<T> type, String strs, String regex, boolean isTrim) {
+	public static <T> List<T> splitList(Class<T> type, String strs,
+			String regex, boolean isTrim) {
 		if (type == null || regex == null) {
 			throw new NullPointerException();
 		}
@@ -292,7 +303,8 @@ public final class StringUtils {
 		return dataArr;
 	}
 
-	public static String[] splitStringArr(String str, String regex, boolean isTrim) {
+	public static String[] splitStringArr(String str, String regex,
+			boolean isTrim) {
 		if (isNull(str, regex)) {
 			return null;
 		}
@@ -352,13 +364,15 @@ public final class StringUtils {
 	public static char[] getRandomCharArray(char[] randomCharArray, int length) {
 		char[] cArr = new char[length];
 		for (int i = 0; i < length; ++i) {
-			cArr[i] = randomCharArray[new Random().nextInt(randomCharArray.length)];
+			cArr[i] = randomCharArray[new Random()
+					.nextInt(randomCharArray.length)];
 		}
 		return cArr;
 	}
 
 	public static boolean isMobileNum(String telNum) {
-		Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
+		Pattern p = Pattern
+				.compile("^((13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
 		Matcher m = p.matcher(telNum);
 		return m.matches();
 	}
@@ -384,7 +398,8 @@ public final class StringUtils {
 	 * @param charsetName
 	 * @return
 	 */
-	public static String charsetConvert(String str, Charset oldCharset, Charset charset) {
+	public static String charsetConvert(String str, Charset oldCharset,
+			Charset charset) {
 		String v = null;
 		if (str != null) {
 			v = new String(str.getBytes(oldCharset), charset);
@@ -440,7 +455,8 @@ public final class StringUtils {
 							value = (value << 4) + 10 + aChar - 'A';
 							break;
 						default:
-							throw new IllegalArgumentException("Malformed   \\uxxxx   encoding.");
+							throw new IllegalArgumentException(
+									"Malformed   \\uxxxx   encoding.");
 						}
 					}
 					outBuffer.append((char) value);
@@ -472,8 +488,8 @@ public final class StringUtils {
 	public static String getStrNo(int strLength) {
 		String strNo = "";
 		Random rand = new Random();
-		char option[] = { 'a', 'c', 'd', 'e', 'f', 'h', 'i', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 't', 'u', 'v', 'w', 'x',
-				'y' };// 可以出现的字符
+		char option[] = { 'a', 'c', 'd', 'e', 'f', 'h', 'i', 'j', 'k', 'm',
+				'n', 'p', 'q', 'r', 't', 'u', 'v', 'w', 'x', 'y' };// 可以出现的字符
 		for (int i = 0; i < strLength; i++) {
 			int randNum = rand.nextInt(2);
 			int strTemp = rand.nextInt(option.length);
@@ -751,7 +767,7 @@ public final class StringUtils {
 		}
 		return sb.toString().toCharArray();
 	}
-	
+
 	public static char[] reversedCharArray(char[] array) {
 		if (array == null) {
 			return array;

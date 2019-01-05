@@ -1,5 +1,10 @@
 package scw.db.sql.mysql;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
+import scw.common.Logger;
+import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.ColumnInfo;
 import scw.database.SQL;
 import scw.database.TableInfo;
@@ -9,7 +14,52 @@ public class UpdateSQL implements SQL {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQL(Object obj, TableInfo tableInfo, String tableName) throws IllegalArgumentException, IllegalAccessException {
+	public UpdateSQL(TableInfo tableInfo, String tableName,
+			Map<String, Object> valueMap, Object... params) {
+		if (tableInfo.getPrimaryKeyColumns().length == 0) {
+			throw new NullPointerException("not found primary key");
+		}
+
+		if (valueMap == null || valueMap.isEmpty()) {
+			throw new ShuChaoWenRuntimeException("valueMap isEmpty");
+		}
+
+		if (params.length == 0) {
+			Logger.warn(this.getClass().getName(), "你正在试图更新一个表的所有数据："
+					+ tableName);
+		}
+
+		StringBuilder sb = new StringBuilder(512);
+		sb.append("update ");
+		sb.append("`");
+		sb.append(tableName);
+		sb.append("`");
+		sb.append(" set ");
+		int index = 0;
+		ColumnInfo columnInfo;
+		this.params = new Object[valueMap.size() + params.length];
+		for (Entry<String, Object> entry : valueMap.entrySet()) {
+			columnInfo = tableInfo.getColumnInfo(entry.getKey());
+			sb.append(columnInfo.getSqlColumnName());
+			sb.append("=?");
+			this.params[index++] = entry.getValue();
+		}
+
+		sb.append(" where ");
+		for (int i = 0; i < params.length; i++) {
+			columnInfo = tableInfo.getPrimaryKeyColumns()[i];
+			if (i > 0) {
+				sb.append(" and ");
+			}
+			sb.append(columnInfo.getSqlColumnName());
+			sb.append("=?");
+			this.params[index++] = params[i];
+		}
+		this.sql = sb.toString();
+	}
+
+	public UpdateSQL(Object obj, TableInfo tableInfo, String tableName)
+			throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -23,7 +73,8 @@ public class UpdateSQL implements SQL {
 		int index = 0;
 		int i;
 		ColumnInfo columnInfo;
-		this.params = new Object[tableInfo.getNotPrimaryKeyColumns().length + tableInfo.getPrimaryKeyColumns().length];
+		this.params = new Object[tableInfo.getNotPrimaryKeyColumns().length
+				+ tableInfo.getPrimaryKeyColumns().length];
 		for (i = 0; i < tableInfo.getNotPrimaryKeyColumns().length; i++) {
 			columnInfo = tableInfo.getNotPrimaryKeyColumns()[i];
 			if (i > 0) {
