@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import scw.beans.BeanFieldListen;
+import scw.common.Pagination;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.SQL;
 import scw.database.TableInfo;
@@ -95,7 +96,7 @@ public class MysqlFormat implements SQLFormat {
 	/**
 	 * 暂时只支持非嵌套的sql语句
 	 */
-	public PaginationSql toPaginationSql(SQL sql, long begin, int limit) {
+	public PaginationSql toPaginationSql(SQL sql, long page, int limit) {
 		String str = sql.getSql();
 		int fromIndex = str.indexOf("from", 6);// ignore select
 		if (fromIndex == -1) {
@@ -112,7 +113,7 @@ public class MysqlFormat implements SQLFormat {
 
 		SQL countSql = new SimpleSQL("select count(*) " + whereSql, sql.getParams());
 		StringBuilder sb = new StringBuilder(str);
-		sb.append(" limit ").append(begin).append(",").append(limit);
+		sb.append(" limit ").append(Pagination.getBegin(page, limit)).append(",").append(limit);
 		return new PaginationSql(countSql, new SimpleSQL(sb.toString(), sql.getParams()));
 	}
 }
