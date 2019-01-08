@@ -11,6 +11,7 @@ import net.sf.cglib.proxy.Enhancer;
 import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
 import scw.beans.annotaion.Service;
+import scw.beans.annotaion.Singleton;
 import scw.beans.property.PropertiesFactory;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
@@ -29,6 +30,7 @@ public class AnnotationBean implements Bean {
 	private Enhancer enhancer;
 	private final PropertiesFactory propertiesFactory;
 	private String[] filterNames;
+	private final boolean singleton;
 
 	public AnnotationBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type,
 			String[] filterNames) throws Exception {
@@ -75,6 +77,9 @@ public class AnnotationBean implements Bean {
 		this.destroyMethods = destroyMethodList.toArray(new Method[destroyMethodList.size()]);
 		this.filterNames = filterNames;
 		this.proxy = BeanUtils.checkProxy(type, filterNames);
+
+		Singleton singleton = type.getAnnotation(Singleton.class);
+		this.singleton = singleton == null ? true : singleton.value();
 	}
 
 	public static List<BeanMethod> getInitMethodList(Class<?> type) {
@@ -112,7 +117,7 @@ public class AnnotationBean implements Bean {
 	}
 
 	public boolean isSingleton() {
-		return true;
+		return singleton;
 	}
 
 	public boolean isProxy() {
