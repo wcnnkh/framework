@@ -40,8 +40,7 @@ public class MysqlFormat implements SQLFormat {
 	public SQL toUpdateSql(Object obj, TableInfo tableInfo, String tableName) {
 		try {
 			if (obj instanceof BeanFieldListen) {
-				return new UpdateSQLByBeanListen((BeanFieldListen) obj,
-						tableInfo, tableName);
+				return new UpdateSQLByBeanListen((BeanFieldListen) obj, tableInfo, tableName);
 			} else {
 				return new UpdateSQL(obj, tableInfo, tableName);
 			}
@@ -50,12 +49,10 @@ public class MysqlFormat implements SQLFormat {
 		}
 	}
 
-	public SQL toSaveOrUpdateSql(Object obj, TableInfo tableInfo,
-			String tableName) {
+	public SQL toSaveOrUpdateSql(Object obj, TableInfo tableInfo, String tableName) {
 		try {
 			if (obj instanceof BeanFieldListen) {
-				return new SaveOrUpdateSQLByBeanListen((BeanFieldListen) obj,
-						tableInfo, tableName);
+				return new SaveOrUpdateSQLByBeanListen((BeanFieldListen) obj, tableInfo, tableName);
 			} else {
 				return new SaveOrUpdateSQL(obj, tableInfo, tableName);
 			}
@@ -65,17 +62,15 @@ public class MysqlFormat implements SQLFormat {
 
 	}
 
-	public SQL toIncrSql(Object obj, TableInfo tableInfo, String tableName,
-			String fieldName, double limit, Double maxValue) {
-		return new IncrSQL(obj, tableInfo, tableName, fieldName, limit,
-				maxValue);
+	public SQL toIncrSql(Object obj, TableInfo tableInfo, String tableName, String fieldName, double limit,
+			Double maxValue) {
+		return new IncrSQL(obj, tableInfo, tableName, fieldName, limit, maxValue);
 	}
 
-	public SQL toDecrSql(Object obj, TableInfo tableInfo, String tableName,
-			String fieldName, double limit, Double minValue) {
+	public SQL toDecrSql(Object obj, TableInfo tableInfo, String tableName, String fieldName, double limit,
+			Double minValue) {
 		try {
-			return new DecrSQL(obj, tableInfo, tableName, fieldName, limit,
-					minValue);
+			return new DecrSQL(obj, tableInfo, tableName, fieldName, limit, minValue);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -89,13 +84,35 @@ public class MysqlFormat implements SQLFormat {
 		return new SelectINId(tableInfo, tableName, primaryKeyParameters);
 	}
 
-	public SQL toDeleteSql(TableInfo tableInfo, String tableName,
-			Object... params) {
+	public SQL toDeleteSql(TableInfo tableInfo, String tableName, Object... params) {
 		return new DeleteSQL(tableInfo, tableName, params);
 	}
 
-	public SQL toUpdateSql(TableInfo tableInfo, String tableName,
-			Map<String, Object> valueMap, Object... params) {
+	public SQL toUpdateSql(TableInfo tableInfo, String tableName, Map<String, Object> valueMap, Object... params) {
 		return new UpdateSQL(tableInfo, tableName, valueMap, params);
+	}
+
+	/**
+	 * 暂时只支持非嵌套的sql语句
+	 */
+	public PaginationSql toPaginationSql(SQL sql, long begin, int limit) {
+		String str = sql.getSql();
+		int fromIndex = str.indexOf("from", 6);// ignore select
+		if (fromIndex == -1) {
+			throw new IndexOutOfBoundsException(str);
+		}
+
+		String whereSql;
+		int orderIndex = str.indexOf(" order by");
+		if (orderIndex == -1) {// 不存在 order by 子语句
+			whereSql = str.substring(fromIndex);
+		} else {
+			whereSql = str.substring(fromIndex, orderIndex);
+		}
+
+		SQL countSql = new SimpleSQL("select count(*) " + whereSql, sql.getParams());
+		StringBuilder sb = new StringBuilder(str);
+		sb.append(" limit ").append(begin).append(",").append(limit);
+		return new PaginationSql(countSql, new SimpleSQL(sb.toString(), sql.getParams()));
 	}
 }
