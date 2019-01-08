@@ -24,7 +24,7 @@ public class MemcachedTableIdFactory extends AbstractTableIdFactory {
 		return sb.toString();
 	}
 
-	public Long generator(Class<?> tableClass, String fieldName) {
+	public long generator(Class<?> tableClass, String fieldName) {
 		String key = getCacheKey(tableClass, fieldName);
 		if (memcached.get(key) == null) {
 			// 不存在
@@ -33,11 +33,8 @@ public class MemcachedTableIdFactory extends AbstractTableIdFactory {
 				lock.lockWait();
 
 				if (memcached.get(key) == null) {
-					Long maxId = getMaxId(tableClass, fieldName);
-					if (maxId == null) {
-						maxId = 0L;
-					}
-					return memcached.incr(key, 1, maxId);
+					long maxId = getMaxId(tableClass, fieldName);
+					return memcached.incr(key, 1, maxId + 1);
 				}
 			} finally {
 				lock.unlock();

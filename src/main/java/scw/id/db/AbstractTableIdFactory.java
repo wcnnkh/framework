@@ -13,14 +13,14 @@ public abstract class AbstractTableIdFactory implements TableIdFactory {
 		this.db = db;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected <T> T getMaxId(Class<?> tableClass, String fieldName) {
+	protected long getMaxId(Class<?> tableClass, String fieldName) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
 		ColumnInfo columnInfo = tableInfo.getColumnInfo(fieldName);
 		if (columnInfo == null) {
 			throw new NotFoundException(fieldName);
 		}
 
-		return (T) db.getMaxValue(columnInfo.getType(), tableClass, tableInfo.getName(), fieldName);
+		Number maxNumber = (Number) db.getMaxValue(columnInfo.getType(), tableClass, tableInfo.getName(), fieldName);
+		return maxNumber == null ? 0 : maxNumber.longValue();
 	}
 }

@@ -27,7 +27,7 @@ public class RedisTableIdFactory extends AbstractTableIdFactory {
 		return sb.toString();
 	}
 
-	public Long generator(Class<?> tableClass, String fieldName) {
+	public long generator(Class<?> tableClass, String fieldName) {
 		String key = getCacheKey(tableClass, fieldName);
 		if (!redis.exists(key)) {
 			// 不存在
@@ -36,11 +36,7 @@ public class RedisTableIdFactory extends AbstractTableIdFactory {
 				lock.lockWait();
 
 				if (!redis.exists(key)) {
-					Long maxId = getMaxId(tableClass, fieldName);
-					if (maxId == null) {
-						maxId = 0L;
-					}
-
+					long maxId = getMaxId(tableClass, fieldName);
 					return (Long) redis.eval(INCR_SCRIPT, Arrays.asList(key), Arrays.asList(maxId + ""));
 				}
 			} finally {

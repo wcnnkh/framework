@@ -15,6 +15,7 @@ import scw.database.TableInfo;
 
 public final class ResultSet implements Serializable {
 	private static final long serialVersionUID = -3199839587290797839L;
+	private TableMapping tableMapping;
 	private MetaData metaData;
 	private ArrayList<Object[]> dataList;
 
@@ -25,6 +26,14 @@ public final class ResultSet implements Serializable {
 		while (resultSet.next()) {
 			append(resultSet, false);
 		}
+	}
+
+	public TableMapping getTableMapping() {
+		return tableMapping;
+	}
+
+	public void setTableMapping(TableMapping tableMapping) {
+		this.tableMapping = tableMapping;
 	}
 
 	public void append(java.sql.ResultSet resultSet) throws SQLException {
@@ -121,7 +130,7 @@ public final class ResultSet implements Serializable {
 					index = metaData.getColumnIndex(list, column.getName());
 				}
 			}
-			
+
 			if (index == -1) {
 				if (!column.isNullAble()) {
 					StringBuilder sb = new StringBuilder();
@@ -194,7 +203,11 @@ public final class ResultSet implements Serializable {
 			return (List<T>) list;
 		} else {
 			try {
-				return getTableBeanList(type, tableMapping);
+				if (tableMapping == null) {
+					return getTableBeanList(type, this.tableMapping);
+				} else {
+					return getTableBeanList(type, tableMapping);
+				}
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -224,7 +237,11 @@ public final class ResultSet implements Serializable {
 			return (List<T>) list;
 		} else {
 			try {
-				return getTableBeanList(type, tableName);
+				if (tableName == null || tableName.length == 0) {
+					return getTableBeanList(type, tableMapping);
+				} else {
+					return getTableBeanList(type, tableName);
+				}
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -265,7 +282,8 @@ public final class ResultSet implements Serializable {
 			return null;
 		} else {
 			try {
-				return (T) wrapper(metaData, dataList.get(index), DataBaseUtils.getTableInfo(type), tableMapping);
+				return (T) wrapper(metaData, dataList.get(index), DataBaseUtils.getTableInfo(type),
+						tableMapping == null ? this.tableMapping : tableMapping);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -298,7 +316,11 @@ public final class ResultSet implements Serializable {
 			return null;
 		} else {
 			try {
-				return (T) wrapper(metaData, dataList.get(index), DataBaseUtils.getTableInfo(type), tableName);
+				if (tableName == null || tableName.length == 0) {
+					return (T) wrapper(metaData, dataList.get(index), DataBaseUtils.getTableInfo(type), tableMapping);
+				} else {
+					return (T) wrapper(metaData, dataList.get(index), DataBaseUtils.getTableInfo(type), tableName);
+				}
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
