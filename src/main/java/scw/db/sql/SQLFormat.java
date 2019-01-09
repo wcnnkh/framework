@@ -1,5 +1,6 @@
 package scw.db.sql;
 
+import java.util.Collection;
 import java.util.Map;
 
 import scw.database.SQL;
@@ -12,15 +13,17 @@ public interface SQLFormat {
 
 	SQL toUpdateSql(Object obj, TableInfo tableInfo, String tableName);
 
-	SQL toUpdateSql(TableInfo tableInfo, String tableName, Map<String, Object> valueMap, Object... params);
+	SQL toUpdateSql(TableInfo tableInfo, String tableName, Map<String, Object> valueMap, Object[] params);
 
 	SQL toSaveOrUpdateSql(Object obj, TableInfo tableInfo, String tableName);
 
 	SQL toDeleteSql(Object bean, TableInfo tableInfo, String tableName);
 
-	SQL toDeleteSql(TableInfo tableInfo, String tableName, Object... params);
+	SQL toDeleteSql(TableInfo tableInfo, String tableName, Object[] params);
 
-	SQL toSelectByIdSql(TableInfo tableInfo, String tableName, Object... params);
+	SQL toSelectByIdSql(TableInfo tableInfo, String tableName, Object[] params);
+
+	SQL toSelectInIdSql(TableInfo tableInfo, String tableName, Object[] params, Collection<?> inIdList);
 
 	SQL toIncrSql(Object obj, TableInfo tableInfo, String tableName, String fieldName, double limit, Double maxValue);
 

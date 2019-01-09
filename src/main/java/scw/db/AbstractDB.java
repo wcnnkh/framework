@@ -4,14 +4,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import scw.common.Iterator;
 import scw.common.Logger;
 import scw.common.Pagination;
+import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
+import scw.database.ColumnInfo;
 import scw.database.ConnectionSource;
 import scw.database.DataBaseUtils;
 import scw.database.SQL;
@@ -43,7 +46,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 
 	public void iterator(Class<?> tableClass, Iterator<Result> iterator) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
-		iterator(getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getName()), iterator);
+		iterator(getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getName(), null), iterator);
 	}
 
 	public void iterator(SQL sql, final Iterator<Result> iterator) {
@@ -189,6 +192,48 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 
 	public <T> List<T> getByIdList(Class<T> type, Object... params) {
 		return getByIdList(null, type, params);
+	}
+
+	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList, Object... params) {
+		return getInIdList(type, null, inIdList, params);
+	}
+
+	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params) {
+		if (inIds == null || inIds.isEmpty()) {
+			return null;
+		}
+
+		if (type == null) {
+			throw new NullPointerException("type is null");
+		}
+
+		TableInfo tableInfo = DataBaseUtils.getTableInfo(type);
+		if (tableInfo == null) {
+			throw new NullPointerException("tableInfo is null");
+		}
+
+		ColumnInfo columnInfo = tableInfo.getPrimaryKeyColumns()[params.length];
+		if (params.length > tableInfo.getPrimaryKeyColumns().length - 1) {
+			throw new NullPointerException("params length  greater than primary key lenght");
+		}
+
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		ResultSet resultSet = select(getSqlFormat().toSelectInIdSql(tableInfo, tableName, params, inIds));
+		List<V> list = resultSet.getList(type, tName);
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+
+		Map<K, V> map = new HashMap<K, V>();
+		for (V v : list) {
+			@SuppressWarnings("unchecked")
+			K k = (K) columnInfo.dbValueToFieldValue(v);
+			if (map.containsKey(k)) {
+				throw new AlreadyExistsException(k + "");
+			}
+			map.put(k, v);
+		}
+		return map;
 	}
 
 	public <T> List<T> getByIdList(String tableName, Class<T> type, Object... params) {

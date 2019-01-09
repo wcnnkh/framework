@@ -15,7 +15,7 @@ public class DeleteSQL implements SQL {
 	private String sql;
 	private Object[] params;
 
-	public DeleteSQL(TableInfo tableInfo, String tableName, Object... params) {
+	public DeleteSQL(TableInfo tableInfo, String tableName, Object[] params) {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}

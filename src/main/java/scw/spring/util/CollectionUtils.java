@@ -54,6 +54,16 @@ public abstract class CollectionUtils {
 		return (collection == null || collection.isEmpty());
 	}
 
+	@SuppressWarnings("rawtypes")
+	public static boolean isEmpty(Collection... collections) {
+		for (Collection collection : collections) {
+			if (collection == null || collection.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Return {@code true} if the supplied Map is {@code null} or empty.
 	 * Otherwise, return {@code false}.
@@ -65,6 +75,16 @@ public abstract class CollectionUtils {
 	@SuppressWarnings("rawtypes")
 	public static boolean isEmpty(Map map) {
 		return (map == null || map.isEmpty());
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static boolean isEmpty(Map... map) {
+		for (Map m : map) {
+			if (m == null || m.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

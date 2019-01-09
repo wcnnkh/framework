@@ -15,7 +15,7 @@ public class UpdateSQL implements SQL {
 	private Object[] params;
 
 	public UpdateSQL(TableInfo tableInfo, String tableName,
-			Map<String, Object> valueMap, Object... params) {
+			Map<String, Object> valueMap, Object[] params) {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}

@@ -8,7 +8,6 @@ import scw.common.Pagination;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.SQL;
 import scw.database.TableInfo;
-import scw.db.PrimaryKeyParameter;
 import scw.db.sql.mysql.CreateTableSQL;
 import scw.db.sql.mysql.DecrSQL;
 import scw.db.sql.mysql.DeleteSQL;
@@ -17,7 +16,7 @@ import scw.db.sql.mysql.InsertSQL;
 import scw.db.sql.mysql.SaveOrUpdateSQL;
 import scw.db.sql.mysql.SaveOrUpdateSQLByBeanListen;
 import scw.db.sql.mysql.SelectByIdSQL;
-import scw.db.sql.mysql.SelectINId;
+import scw.db.sql.mysql.SelectInIdSQL;
 import scw.db.sql.mysql.UpdateSQL;
 import scw.db.sql.mysql.UpdateSQLByBeanListen;
 
@@ -26,7 +25,7 @@ public class MysqlFormat implements SQLFormat {
 		return new CreateTableSQL(tableInfo, tableName);
 	}
 
-	public SQL toSelectByIdSql(TableInfo info, String tableName, Object... ids) {
+	public SQL toSelectByIdSql(TableInfo info, String tableName, Object[] ids) {
 		return new SelectByIdSQL(info, tableName, ids);
 	}
 
@@ -80,16 +79,11 @@ public class MysqlFormat implements SQLFormat {
 		throw new ShuChaoWenRuntimeException();
 	}
 
-	public SQL toSelectINId(TableInfo tableInfo, String tableName,
-			Collection<PrimaryKeyParameter> primaryKeyParameters) {
-		return new SelectINId(tableInfo, tableName, primaryKeyParameters);
-	}
-
-	public SQL toDeleteSql(TableInfo tableInfo, String tableName, Object... params) {
+	public SQL toDeleteSql(TableInfo tableInfo, String tableName, Object[] params) {
 		return new DeleteSQL(tableInfo, tableName, params);
 	}
 
-	public SQL toUpdateSql(TableInfo tableInfo, String tableName, Map<String, Object> valueMap, Object... params) {
+	public SQL toUpdateSql(TableInfo tableInfo, String tableName, Map<String, Object> valueMap, Object[] params) {
 		return new UpdateSQL(tableInfo, tableName, valueMap, params);
 	}
 
@@ -115,5 +109,9 @@ public class MysqlFormat implements SQLFormat {
 		StringBuilder sb = new StringBuilder(str);
 		sb.append(" limit ").append(Pagination.getBegin(page, limit)).append(",").append(limit);
 		return new PaginationSql(countSql, new SimpleSQL(sb.toString(), sql.getParams()));
+	}
+
+	public SQL toSelectInIdSql(TableInfo tableInfo, String tableName, Object[] params, Collection<?> inIdList) {
+		return new SelectInIdSQL(tableInfo, tableName, params, inIdList);
 	}
 }
