@@ -46,7 +46,7 @@ public class SelectByIdSQL implements SQL {
 		sb.append("select * from `").append(tableName).append("`");
 		if (ids != null && ids.length > 0) {
 			for (int i = 0; i < ids.length; i++) {
-				if (sb.length() != 0) {
+				if (i != 0) {
 					sb.append(" and ");
 				}
 				sb.append(info.getPrimaryKeyColumns()[i].getSQLName(tableName));
