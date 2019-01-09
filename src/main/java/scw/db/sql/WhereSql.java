@@ -15,7 +15,7 @@ public class WhereSql implements SQL {
 			sb = new StringBuilder();
 		}
 
-		if (sb.length() == 0) {
+		if (sb.length() != 0) {
 			sb.append(" and ");
 		}
 		sb.append(whereSql);
