@@ -85,6 +85,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		return new Pagination<ResultSet>(count, limit, select(paginationSql.getResultSql()));
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> Pagination<List<T>> select(Class<T> type, long page, int limit, SQL sql) {
 		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
@@ -93,7 +94,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		}
 
 		if (count == 0) {
-			return new Pagination<List<T>>(0, limit, null);
+			return new Pagination<List<T>>(0, limit, Collections.EMPTY_LIST);
 		}
 
 		return new Pagination<List<T>>(count, limit, select(type, paginationSql.getResultSql()));
