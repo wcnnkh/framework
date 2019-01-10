@@ -126,10 +126,10 @@ public final class StringUtils {
 		}
 		return list.toArray(new String[list.size()]);
 	}
-	
+
 	public static String join(Collection<?> collection, String join) {
 		StringBuilder sb = new StringBuilder();
-		if (collection != null && collection.isEmpty()) {
+		if (collection != null && !collection.isEmpty()) {
 			Iterator<?> iterator = collection.iterator();
 			while (iterator.hasNext()) {
 				Object o = iterator.next();
@@ -137,7 +137,7 @@ public final class StringUtils {
 					continue;
 				}
 
-				if (join != null && join.length() != 0 && sb.length() != 0) {
+				if (!isNull(join) && sb.length() != 0) {
 					sb.append(join);
 				}
 				sb.append(o);
