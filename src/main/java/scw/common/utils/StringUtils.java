@@ -128,22 +128,35 @@ public final class StringUtils {
 	}
 
 	public static String join(Collection<?> collection, String join) {
+		if (collection == null || collection.isEmpty()) {
+			return "";
+		}
 		StringBuilder sb = new StringBuilder();
-		if (collection != null && !collection.isEmpty()) {
-			Iterator<?> iterator = collection.iterator();
+		Iterator<?> iterator = collection.iterator();
+		if (isNull(join)) {
 			while (iterator.hasNext()) {
 				Object o = iterator.next();
 				if (o == null) {
 					continue;
 				}
 
-				if (!isNull(join) && sb.length() != 0) {
+				sb.append(o);
+			}
+			return sb.toString();
+		} else {
+			while (iterator.hasNext()) {
+				Object o = iterator.next();
+				if (o == null) {
+					continue;
+				}
+
+				if (sb.length() != 0) {
 					sb.append(join);
 				}
 				sb.append(o);
 			}
+			return sb.toString();
 		}
-		return sb.toString();
 	}
 
 	@SuppressWarnings("unchecked")
