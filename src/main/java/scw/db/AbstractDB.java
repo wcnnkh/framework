@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -201,7 +202,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	@SuppressWarnings("unchecked")
 	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params) {
 		if (inIds == null || inIds.isEmpty()) {
-			return new HashMap<K, V>(0);
+			return Collections.EMPTY_MAP;
 		}
 
 		if (type == null) {
@@ -222,7 +223,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		ResultSet resultSet = select(getSqlFormat().toSelectInIdSql(tableInfo, tName, params, inIds));
 		List<V> list = resultSet.getList(type, tName);
 		if (list == null || list.isEmpty()) {
-			return new HashMap<K, V>(0);
+			return Collections.EMPTY_MAP;
 		}
 
 		Map<K, V> map = new HashMap<K, V>();
