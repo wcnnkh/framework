@@ -36,9 +36,9 @@ public class SelectInIdSQL implements SQL {
 		if (inIds == null || inIds.size() == 0) {
 			this.params = ids;
 		} else {
-			this.params = new Object[id.length() + inIds.size()];
+			this.params = new Object[ids.length + inIds.size()];
 			System.arraycopy(ids, 0, params, 0, ids.length);
-			Object[] arr = inIds.toArray();
+			Object[] arr = inIds.toArray(new Object[inIds.size()]);
 			System.arraycopy(arr, 0, params, ids.length, arr.length);
 		}
 	}

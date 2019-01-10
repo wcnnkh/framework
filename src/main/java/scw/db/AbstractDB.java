@@ -218,7 +218,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		}
 
 		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
-		ResultSet resultSet = select(getSqlFormat().toSelectInIdSql(tableInfo, tableName, params, inIds));
+		ResultSet resultSet = select(getSqlFormat().toSelectInIdSql(tableInfo, tName, params, inIds));
 		List<V> list = resultSet.getList(type, tName);
 		if (list == null || list.isEmpty()) {
 			return null;
