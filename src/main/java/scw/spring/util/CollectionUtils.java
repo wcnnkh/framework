@@ -30,16 +30,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-/**
- * Miscellaneous collection utility methods. Mainly for internal use within the
- * framework.
- *
- * @author Juergen Hoeller
- * @author Rob Harrop
- * @author Arjen Poutsma
- * @since 1.1.3
- */
 public abstract class CollectionUtils {
+	public static final Object[] EMPTY_ARRAY = new Object[0];
 
 	/**
 	 * Return {@code true} if the supplied Collection is {@code null} or empty.

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import scw.common.exception.NotFoundException;
@@ -12,6 +13,7 @@ import scw.common.utils.ClassUtils;
 import scw.database.ColumnInfo;
 import scw.database.DataBaseUtils;
 import scw.database.TableInfo;
+import scw.spring.util.CollectionUtils;
 
 public final class ResultSet implements Serializable {
 	private static final long serialVersionUID = -3199839587290797839L;
@@ -186,11 +188,11 @@ public final class ResultSet implements Serializable {
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getList(Class<T> type, TableMapping tableMapping) {
 		if (metaData == null) {
-			return null;
+			return Collections.EMPTY_LIST;
 		}
 
 		if (size() == 0) {
-			return null;
+			return Collections.EMPTY_LIST;
 		}
 
 		if (type.isArray()) {
@@ -213,18 +215,18 @@ public final class ResultSet implements Serializable {
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
-			return null;
+			return Collections.EMPTY_LIST;
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getList(Class<T> type, String... tableName) {
 		if (metaData == null) {
-			return null;
+			return Collections.EMPTY_LIST;
 		}
 
 		if (size() == 0) {
-			return null;
+			return Collections.EMPTY_LIST;
 		}
 
 		if (type.isArray()) {
@@ -247,13 +249,13 @@ public final class ResultSet implements Serializable {
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
-			return null;
+			return Collections.EMPTY_LIST;
 		}
 	}
 
 	public Object[] getObjects(int index) {
 		if (index < 0 || index >= size()) {
-			return null;
+			return CollectionUtils.EMPTY_ARRAY;
 		}
 
 		return dataList.get(index);
