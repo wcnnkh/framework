@@ -86,10 +86,7 @@ public class MysqlFormat implements SQLFormat {
 	public SQL toUpdateSql(TableInfo tableInfo, String tableName, Map<String, Object> valueMap, Object[] params) {
 		return new UpdateSQL(tableInfo, tableName, valueMap, params);
 	}
-
-	/**
-	 * 暂时只支持非嵌套的sql语句
-	 */
+	
 	public PaginationSql toPaginationSql(SQL sql, long page, int limit) {
 		String str = sql.getSql();
 		int fromIndex = str.indexOf("from", 6);// ignore select
@@ -98,7 +95,7 @@ public class MysqlFormat implements SQLFormat {
 		}
 
 		String whereSql;
-		int orderIndex = str.indexOf(" order by");
+		int orderIndex = str.lastIndexOf(" order by");
 		if (orderIndex == -1) {// 不存在 order by 子语句
 			whereSql = str.substring(fromIndex);
 		} else {
