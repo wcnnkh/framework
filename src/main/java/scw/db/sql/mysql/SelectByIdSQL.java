@@ -44,8 +44,8 @@ public class SelectByIdSQL implements SQL {
 	private static String getSql(TableInfo info, String tableName, Object[] ids) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select * from `").append(tableName).append("`");
-		sb.append(" where ");
 		if (ids != null && ids.length > 0) {
+			sb.append(" where ");
 			for (int i = 0; i < ids.length; i++) {
 				if (i != 0) {
 					sb.append(" and ");
