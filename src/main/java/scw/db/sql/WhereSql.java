@@ -1,6 +1,8 @@
 package scw.db.sql;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import scw.database.SQL;
@@ -11,6 +13,20 @@ public class WhereSql implements SQL {
 	private StringBuilder sb;
 
 	public void where(String whereSql, Object... params) {
+		checkAnd();
+
+		sb.append(whereSql);
+
+		if (params != null && params.length != 0) {
+			checkParams();
+
+			for (Object o : params) {
+				paramList.add(o);
+			}
+		}
+	}
+
+	private void checkAnd() {
 		if (sb == null) {
 			sb = new StringBuilder();
 		}
@@ -18,17 +34,34 @@ public class WhereSql implements SQL {
 		if (sb.length() != 0) {
 			sb.append(" and ");
 		}
-		sb.append(whereSql);
+	}
 
-		if (params != null && params.length != 0) {
-			if (paramList == null) {
-				paramList = new ArrayList<Object>();
-			}
-
-			for (Object o : params) {
-				paramList.add(o);
-			}
+	private void checkParams() {
+		if (paramList == null) {
+			paramList = new ArrayList<Object>();
 		}
+	}
+
+	public void in(String name, Collection<?> collection) {
+		if (collection == null || collection.isEmpty()) {
+			return;
+		}
+
+		checkAnd();
+		checkParams();
+
+		sb.append(name);
+		sb.append(" in (");
+		Iterator<?> iterator = collection.iterator();
+		while (iterator.hasNext()) {
+			Object param = iterator.next();
+			sb.append("?");
+			if (iterator.hasNext()) {
+				sb.append(",");
+			}
+			paramList.add(param);
+		}
+		sb.append(")");
 	}
 
 	public String getSql() {
