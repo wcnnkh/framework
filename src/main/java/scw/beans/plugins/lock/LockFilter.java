@@ -1,4 +1,4 @@
-package scw.locks.filter;
+package scw.beans.plugins.lock;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
