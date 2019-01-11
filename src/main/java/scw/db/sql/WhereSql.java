@@ -73,17 +73,23 @@ public class WhereSql implements SQL {
 		return paramList == null ? new Object[0] : paramList.toArray();
 	}
 
-	public void addParam(Object value) {
-		checkParams();
-		paramList.add(value);
-	}
-
-	public SQL assembleSql(String beforeSql, String afterSql) {
+	public SQL assembleSql(String beforeSql, String afterSql, Object... params) {
+		Object[] arr;
+		if (paramList == null || paramList.isEmpty()) {
+			arr = params;
+		} else {
+			List<Object> list = new ArrayList<Object>(paramList);
+			for (Object o : params) {
+				list.add(o);
+			}
+			arr = list.toArray(new Object[list.size()]);
+		}
+		
 		if (sb == null || sb.length() == 0) {
 			if (StringUtils.isNull(afterSql)) {
-				return new SimpleSQL(beforeSql, getParams());
+				return new SimpleSQL(beforeSql, arr);
 			} else {
-				return new SimpleSQL(beforeSql + " " + afterSql, getParams());
+				return new SimpleSQL(beforeSql + " " + afterSql, arr);
 			}
 		} else {
 			StringBuilder sql = new StringBuilder();
@@ -94,7 +100,7 @@ public class WhereSql implements SQL {
 				sql.append(" ");
 				sql.append(afterSql);
 			}
-			return new SimpleSQL(sql.toString(), getParams());
+			return new SimpleSQL(sql.toString(), arr);
 		}
 	}
 }
