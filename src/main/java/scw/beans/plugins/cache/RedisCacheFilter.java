@@ -29,7 +29,7 @@ public class RedisCacheFilter extends AbstractCacheFilter {
 
 		byte[] bk = key.getBytes("iso-8859-1");
 		byte[] buff = IOUtils.javaObjectToByte(data);
-		redis.setex(bk, exp, buff);
+		redis.setex(bk, exp * 2, buff);
 	}
 
 }

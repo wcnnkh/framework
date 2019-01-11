@@ -20,7 +20,7 @@ public class MemcachedCacheFilter extends AbstractCacheFilter {
 			return;
 		}
 
-		memcached.set(key, exp, data);
+		memcached.set(key, exp * 2, data);
 	}
 
 }

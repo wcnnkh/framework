@@ -1,11 +1,12 @@
 package scw.beans.plugins.cache;
 
 import java.lang.reflect.Method;
+import java.util.TimerTask;
 
 import net.sf.cglib.proxy.MethodProxy;
 import scw.beans.BeanFilterChain;
 
-final class CacheRunnable implements Runnable {
+final class CacheTimerTask extends TimerTask {
 	private String key;
 	private Object obj;
 	private Method method;
@@ -14,8 +15,9 @@ final class CacheRunnable implements Runnable {
 	private BeanFilterChain beanFilterChain;
 	private AbstractCacheFilter abstractCacheFilter;
 
-	public CacheRunnable(String key, Object obj, Method method, Object[] args, MethodProxy proxy,
-			BeanFilterChain beanFilterChain, AbstractCacheFilter abstractCacheFilter) {
+	public CacheTimerTask(String key, Object obj, Method method, Object[] args,
+			MethodProxy proxy, BeanFilterChain beanFilterChain,
+			AbstractCacheFilter abstractCacheFilter) {
 		this.key = key;
 		this.obj = obj;
 		this.method = method;
@@ -25,12 +27,14 @@ final class CacheRunnable implements Runnable {
 		this.abstractCacheFilter = abstractCacheFilter;
 	}
 
+	@Override
 	public void run() {
 		try {
 			Object rtn = beanFilterChain.doFilter(obj, method, args, proxy);
 			if (rtn == null) {
 				Cache cache = method.getAnnotation(Cache.class);
-				abstractCacheFilter.setCache(key, cache.exp(), method.getReturnType(), rtn);
+				abstractCacheFilter.setCache(key, cache.exp(),
+						method.getReturnType(), rtn);
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();
