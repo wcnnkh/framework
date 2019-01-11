@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import scw.common.utils.StringUtils;
 import scw.database.SQL;
 
 public class WhereSql implements SQL {
@@ -72,16 +73,27 @@ public class WhereSql implements SQL {
 		return paramList == null ? new Object[0] : paramList.toArray();
 	}
 
+	public void addParam(Object value) {
+		checkParams();
+		paramList.add(value);
+	}
+
 	public SQL assembleSql(String beforeSql, String afterSql) {
 		if (sb == null || sb.length() == 0) {
-			return new SimpleSQL(beforeSql + " " + afterSql, getParams());
+			if (StringUtils.isNull(afterSql)) {
+				return new SimpleSQL(beforeSql, getParams());
+			} else {
+				return new SimpleSQL(beforeSql + " " + afterSql, getParams());
+			}
 		} else {
 			StringBuilder sql = new StringBuilder();
 			sql.append(beforeSql);
 			sql.append(" where ");
 			sql.append(sb);
-			sql.append(" ");
-			sql.append(afterSql);
+			if (!StringUtils.isNull(afterSql)) {
+				sql.append(" ");
+				sql.append(afterSql);
+			}
 			return new SimpleSQL(sql.toString(), getParams());
 		}
 	}
