@@ -14,17 +14,7 @@ public abstract class AbstractCacheFilter implements BeanFilter {
 
 	protected abstract void setCache(String key, int exp, Class<?> type, Object data) throws Exception;
 
-	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
-			throws Throwable {
-		Cache cache = method.getAnnotation(Cache.class);
-		if (cache == null) {
-			return beanFilterChain.doFilter(obj, method, args, proxy);
-		}
-
-		if (method.getReturnType().isAssignableFrom(Void.class)) {
-			return beanFilterChain.doFilter(obj, method, args, proxy);
-		}
-
+	protected String getKey(Cache cache, Object obj, Method method, Object[] args){
 		StringBuilder sb = new StringBuilder(512);
 		sb.append(this.getClass().getName());
 		sb.append("#");
@@ -50,7 +40,23 @@ public abstract class AbstractCacheFilter implements BeanFilter {
 		}
 
 		sb.append(jarr.toJSONString());
-		String cacheKey = sb.toString();
+		return sb.toString();
+	}
+	
+	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
+			throws Throwable {
+		Cache cache = method.getAnnotation(Cache.class);
+		if (cache == null) {
+			return beanFilterChain.doFilter(obj, method, args, proxy);
+		}
+
+		if (method.getReturnType().isAssignableFrom(Void.class)) {
+			return beanFilterChain.doFilter(obj, method, args, proxy);
+		}
+		
+		String cacheKey = getKey(cache, obj, method, args);
+		
+		
 		Object rtn = getCache(cacheKey, method.getReturnType());
 		if (rtn == null) {
 			rtn = beanFilterChain.doFilter(obj, method, args, proxy);
