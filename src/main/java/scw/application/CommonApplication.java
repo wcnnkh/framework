@@ -2,17 +2,18 @@ package scw.application;
 
 import java.util.Collection;
 
-import com.alibaba.dubbo.config.ProtocolConfig;
-
 import scw.beans.XmlBeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboUtils;
 import scw.common.Logger;
+import scw.common.exception.BeansException;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.database.TransactionBeanFilter;
+
+import com.alibaba.dubbo.config.ProtocolConfig;
 
 public class CommonApplication implements Application {
 	private final XmlBeanFactory beanFactory;
@@ -41,6 +42,10 @@ public class CommonApplication implements Application {
 	}
 
 	public XmlBeanFactory getBeanFactory() {
+		if(!start){
+			throw new BeansException("需要先调用init方法");
+		}
+		
 		return beanFactory;
 	}
 
