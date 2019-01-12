@@ -5,7 +5,8 @@ import scw.memcached.Memcached;
 public class MemcachedCacheFilter extends AbstractCacheFilter {
 	private final Memcached memcached;
 
-	public MemcachedCacheFilter(Memcached memcached) {
+	public MemcachedCacheFilter(Memcached memcached, boolean debug) {
+		super(debug);
 		this.memcached = memcached;
 	}
 

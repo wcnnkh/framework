@@ -6,7 +6,8 @@ import scw.redis.Redis;
 public class RedisCacheFilter extends AbstractCacheFilter {
 	private final Redis redis;
 
-	public RedisCacheFilter(Redis redis) {
+	public RedisCacheFilter(Redis redis, boolean debug) {
+		super(debug);
 		this.redis = redis;
 	}
 
@@ -22,7 +23,8 @@ public class RedisCacheFilter extends AbstractCacheFilter {
 	}
 
 	@Override
-	protected void setCache(String key, int exp, Class<?> type, Object data) throws Exception {
+	protected void setCache(String key, int exp, Class<?> type, Object data)
+			throws Exception {
 		if (data == null) {
 			return;
 		}

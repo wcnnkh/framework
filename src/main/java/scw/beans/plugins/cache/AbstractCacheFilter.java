@@ -17,6 +17,11 @@ public abstract class AbstractCacheFilter implements BeanFilter {
 	 * 使用timer是原因是允许任务存在延迟，因为这是可以接受的,并且也可以节约服务器资源
 	 */
 	private final Timer timer = new Timer(this.getClass().getName(), true);// 守护进程，服务器关闭也就停止了
+	private final boolean debug;
+
+	public AbstractCacheFilter(boolean debug) {
+		this.debug = debug;
+	}
 
 	protected abstract <T> T getCache(String key, Class<T> type)
 			throws Exception;
@@ -62,7 +67,8 @@ public abstract class AbstractCacheFilter implements BeanFilter {
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		}
 
-		if (cache.exp() == 0 || method.getReturnType().isAssignableFrom(Void.class)) {
+		if (cache.exp() == 0
+				|| method.getReturnType().isAssignableFrom(Void.class)) {
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		}
 
@@ -71,8 +77,8 @@ public abstract class AbstractCacheFilter implements BeanFilter {
 		if (rtn == null) {
 			rtn = beanFilterChain.doFilter(obj, method, args, proxy);
 			if (!invokeMap.contains(key)) {// 如果本地找不到这个任务
-				CacheTimerTask task = new CacheTimerTask(key, obj, method, args,
-						proxy, beanFilterChain, this);
+				CacheTimerTask task = new CacheTimerTask(key, obj, method,
+						args, proxy, beanFilterChain, this, debug);
 				if (invokeMap.put(key, task) == null) {
 					// 以前没的过
 					timer.schedule(task, cache.exp(), cache.exp());

@@ -11,15 +11,16 @@ import scw.redis.Redis;
 public class CacheFilter implements BeanFilter {
 	private final BeanFilter beanFilter;
 
-	public CacheFilter(Memcached memcached) {
-		this.beanFilter = new MemcachedCacheFilter(memcached);
+	public CacheFilter(Memcached memcached, boolean debug) {
+		this.beanFilter = new MemcachedCacheFilter(memcached, debug);
 	}
 
-	public CacheFilter(Redis redis) {
-		this.beanFilter = new RedisCacheFilter(redis);
+	public CacheFilter(Redis redis, boolean debug) {
+		this.beanFilter = new RedisCacheFilter(redis, debug);
 	}
 
-	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
+	public Object doFilter(Object obj, Method method, Object[] args,
+			MethodProxy proxy, BeanFilterChain beanFilterChain)
 			throws Throwable {
 		return beanFilter.doFilter(obj, method, args, proxy, beanFilterChain);
 	}
