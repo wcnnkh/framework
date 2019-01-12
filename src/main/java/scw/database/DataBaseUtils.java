@@ -138,7 +138,7 @@ public final class DataBaseUtils {
 
 	public static String getLikeValue(String likeValue) {
 		if (likeValue == null || likeValue.length() == 0) {
-			return "%";
+			return "%";//注意：这会忽略空
 		}
 
 		return "%" + likeValue + "%";
