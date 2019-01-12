@@ -17,10 +17,6 @@ public class MemcachedCacheFilter extends AbstractCacheFilter {
 
 	@Override
 	protected void setCache(String key, int exp, Class<?> type, Object data) {
-		if (data == null) {
-			return;
-		}
-
 		memcached.set(key, exp * 2, data);
 	}
 

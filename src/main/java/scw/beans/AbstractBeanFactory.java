@@ -59,7 +59,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 				}
 			}
 
-			Map<String, String> nameMapping = beanConfigFactory.getNameMappingMap();
+			Map<String, String> nameMapping = beanConfigFactory
+					.getNameMappingMap();
 			if (nameMapping != null) {
 				synchronized (nameMappingMap) {
 					for (Entry<String, String> entry : nameMapping.entrySet()) {
@@ -152,7 +153,9 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	public boolean contains(String name) {
-		boolean b = singletonMap.containsKey(name) || nameMappingMap.containsKey(name) || beanMap.containsKey(name);
+		boolean b = singletonMap.containsKey(name)
+				|| nameMappingMap.containsKey(name)
+				|| beanMap.containsKey(name);
 		if (b) {
 			return b;
 		}
@@ -188,7 +191,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			if (!ClassUtils.isInstance(clz)) {
 				return null;
 			}
-			return new AnnotationBean(this, getPropertiesFactory(), clz, getFilterNames());
+			return new AnnotationBean(this, getPropertiesFactory(), clz,
+					getFilterNames());
 		} catch (Exception e) {
 		}
 		return null;
@@ -206,6 +210,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
 	/**
 	 * 是否初始化静态方法,兼容老版本
+	 * 
 	 * @return
 	 */
 	public abstract boolean isInitStatic();
@@ -213,7 +218,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	public void init() {
 		try {
 			if (isInitStatic()) {
-				BeanUtils.initStatic(this, getPropertiesFactory(), getClassList());
+				BeanUtils.initStatic(this, getPropertiesFactory(),
+						getClassList());
 			}
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
