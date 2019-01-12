@@ -67,18 +67,17 @@ public abstract class AbstractCacheFilter implements BeanFilter {
 		}
 
 		String key = getKey(cache, obj, method, args);
-		if (!invokeMap.contains(key)) {// 如果本地找不到这个任务
-			CacheTimerTask task = new CacheTimerTask(key, obj, method, args,
-					proxy, beanFilterChain, this);
-			if (invokeMap.put(key, task) == null) {
-				// 以前没的过
-				timer.schedule(task, cache.exp(), cache.exp());
-			}
-		}
-
 		Object rtn = getCache(key, method.getReturnType());
 		if (rtn == null) {
 			rtn = beanFilterChain.doFilter(obj, method, args, proxy);
+			if (!invokeMap.contains(key)) {// 如果本地找不到这个任务
+				CacheTimerTask task = new CacheTimerTask(key, obj, method, args,
+						proxy, beanFilterChain, this);
+				if (invokeMap.put(key, task) == null) {
+					// 以前没的过
+					timer.schedule(task, cache.exp(), cache.exp());
+				}
+			}
 			setCache(key, cache.exp(), method.getReturnType(), rtn);
 		}
 		return rtn;
