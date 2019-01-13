@@ -21,9 +21,11 @@ public class HttpCode implements View {
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
 		}
 
-		if(response.getRequest().isDebug()){
+		if (response.getRequest().isDebug()) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("status=");
+			sb.append("servletPath=").append(request.getServletPath());
+			sb.append(",method=").append(request.getMethod());
+			sb.append(",status=");
 			sb.append(status);
 			sb.append(",msg=");
 			sb.append(msg);

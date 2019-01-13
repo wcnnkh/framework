@@ -217,6 +217,15 @@ public class ServletApplication implements Application {
 
 	public void sendError(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, int code,
 			String msg) {
+		if (debug) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("servletPath=").append(httpServletRequest.getServletPath());
+			sb.append(",method=").append(httpServletRequest.getMethod());
+			sb.append(",status=").append(code);
+			sb.append(",msg=").append(msg);
+			Logger.debug(this.getClass().getName(), sb.toString());
+		}
+
 		if (!httpServletResponse.isCommitted()) {
 			try {
 				httpServletResponse.sendError(code, msg);
