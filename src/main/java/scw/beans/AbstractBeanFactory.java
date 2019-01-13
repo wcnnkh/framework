@@ -15,6 +15,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	private volatile Map<String, Object> singletonMap = new HashMap<String, Object>();
 	private volatile Map<String, Bean> beanMap = new HashMap<String, Bean>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
+	private boolean init = false;
 
 	public void registerNameMapping(String key, String value) {
 		if (nameMappingMap.containsKey(key)) {
@@ -59,8 +60,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 				}
 			}
 
-			Map<String, String> nameMapping = beanConfigFactory
-					.getNameMappingMap();
+			Map<String, String> nameMapping = beanConfigFactory.getNameMappingMap();
 			if (nameMapping != null) {
 				synchronized (nameMappingMap) {
 					for (Entry<String, String> entry : nameMapping.entrySet()) {
@@ -77,6 +77,10 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
 	@SuppressWarnings("unchecked")
 	public <T> T get(String name) {
+		if(!init){
+			throw new BeansException("还未初始化");
+		}
+		
 		Object obj = singletonMap.get(name);
 		if (obj != null) {
 			return (T) obj;
@@ -153,9 +157,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	public boolean contains(String name) {
-		boolean b = singletonMap.containsKey(name)
-				|| nameMappingMap.containsKey(name)
-				|| beanMap.containsKey(name);
+		boolean b = singletonMap.containsKey(name) || nameMappingMap.containsKey(name) || beanMap.containsKey(name);
 		if (b) {
 			return b;
 		}
@@ -191,8 +193,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			if (!ClassUtils.isInstance(clz)) {
 				return null;
 			}
-			return new AnnotationBean(this, getPropertiesFactory(), clz,
-					getFilterNames());
+			return new AnnotationBean(this, getPropertiesFactory(), clz, getFilterNames());
 		} catch (Exception e) {
 		}
 		return null;
@@ -215,18 +216,27 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	 */
 	public abstract boolean isInitStatic();
 
-	public void init() {
+	public synchronized void init() {
+		if (init) {
+			throw new BeansException("已经初始化了");
+		}
+		init = true;
+
 		try {
 			if (isInitStatic()) {
-				BeanUtils.initStatic(this, getPropertiesFactory(),
-						getClassList());
+				BeanUtils.initStatic(this, getPropertiesFactory(), getClassList());
 			}
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}
 	}
 
-	public void destroy() {
+	public synchronized void destroy() {
+		if (!init) {
+			throw new BeansException("还未初始化");
+		}
+		init = false;
+
 		for (Entry<String, Object> entry : singletonMap.entrySet()) {
 			Bean bean = getBean(entry.getKey());
 			try {
