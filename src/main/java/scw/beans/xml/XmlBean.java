@@ -19,6 +19,7 @@ import scw.beans.property.PropertiesFactory;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.exception.BeansException;
+import scw.common.exception.NotFoundException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 
@@ -52,7 +53,7 @@ public class XmlBean implements Bean {
 	private final boolean proxy;
 
 	private final Constructor<?> constructor;
-	private final Class<?>[] constructorParameterTypes;
+	private Class<?>[] constructorParameterTypes;
 	private XmlBeanParameter[] beanMethodParameters;
 	private Enhancer enhancer;
 
@@ -145,8 +146,10 @@ public class XmlBean implements Bean {
 		this.destroyMethods = destroyMethodList.toArray(new BeanMethod[destroyMethodList.size()]);
 		this.proxy = BeanUtils.checkProxy(type, this.filterNames);
 		this.constructor = getConstructor();
+		if (constructor == null) {
+			throw new NotFoundException(type.getName() + "找不到对应的构造函数");
+		}
 		this.constructorParameterTypes = constructor.getParameterTypes();
-
 	}
 
 	private Constructor<?> getConstructor() {
