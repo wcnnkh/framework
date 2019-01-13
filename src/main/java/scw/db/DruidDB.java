@@ -35,7 +35,7 @@ public final class DruidDB extends DB{
 	}
 
 	public void close() throws Exception {
-		datasource.clone();
+		datasource.close();
 	}
 
 }
