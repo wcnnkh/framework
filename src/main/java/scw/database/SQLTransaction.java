@@ -3,14 +3,15 @@ package scw.database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.common.transaction.AbstractTransaction;
 import scw.common.utils.XUtils;
 
 public final class SQLTransaction extends AbstractTransaction {
-	private LinkedHashMap<String, SQL> sqlMap = new LinkedHashMap<String, SQL>(4, 1);
+	private Map<String, SQL> sqlMap = new HashMap<String, SQL>(4, 1);
 	private Connection connection;
 	private ConnectionSource connectionSource;
 	private PreparedStatement[] preparedStatements;
@@ -20,7 +21,7 @@ public final class SQLTransaction extends AbstractTransaction {
 	public SQLTransaction(ConnectionSource connectionSource) {
 		this(connectionSource, -1);
 	}
-	
+
 	/**
 	 * @param db
 	 * @param transactionLevel
@@ -42,17 +43,17 @@ public final class SQLTransaction extends AbstractTransaction {
 		if (sql == null) {
 			return;
 		}
-		
+
 		String id = DataBaseUtils.getSQLId(sql);
 		sqlMap.put(id, sql);
 	}
 
 	public void begin() throws Exception {
 		if (!sqlMap.isEmpty()) {
-			if(connection == null){
+			if (connection == null) {
 				connection = connectionSource.getConnection();
 			}
-			
+
 			connection.setAutoCommit(false);
 			this.oldTransactionLevel = connection.getTransactionIsolation();
 			if (transactionLevel >= 0) {
