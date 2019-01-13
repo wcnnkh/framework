@@ -3,15 +3,14 @@ package scw.database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import scw.common.transaction.AbstractTransaction;
 import scw.common.utils.XUtils;
 
 public final class SQLTransaction extends AbstractTransaction {
-	private Map<String, SQL> sqlMap = new HashMap<String, SQL>(4, 1);
+	private LinkedHashMap<String, SQL> sqlMap = new LinkedHashMap<String, SQL>(4, 1);
 	private Connection connection;
 	private ConnectionSource connectionSource;
 	private PreparedStatement[] preparedStatements;
