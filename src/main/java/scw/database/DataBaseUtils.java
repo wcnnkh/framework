@@ -145,7 +145,7 @@ public final class DataBaseUtils {
 	}
 
 	public static void registerCglibProxyTableBean(String pageName) {
-		Logger.debug(DataBaseUtils.class.getName(), "register proxy package:" + pageName);
+		Logger.info(DataBaseUtils.class.getName(), "register proxy package:" + pageName);
 		for (Class<?> type : ClassUtils.getClasses(pageName)) {
 			Table table = type.getAnnotation(Table.class);
 			if (table == null) {
