@@ -28,7 +28,7 @@ public final class XmlPropertyUtils {
 		
 		String file = XMLUtils.getNodeAttributeValue(rootNode, "file");
 		if(!StringUtils.isNull(file)){
-			Logger.debug("Properties", "file=" + file + ", charset=" + charset);
+			Logger.info("Properties", "file=" + file + ", charset=" + charset);
 			Properties properties = ConfigUtils.getProperties(file, charset);
 			for(Entry<Object, Object> entry : properties.entrySet()){
 				String name = prefix == null? entry.getKey().toString():prefix + entry.getKey().toString();

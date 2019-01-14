@@ -53,7 +53,7 @@ public final class DefaultAliDaYu implements AliDaYu {
 		map.put("rec_num", toPhones);
 		map.put("sign", getSign(map));
 		String content = HttpUtils.doPost(host, map);
-		Logger.debug(this.getClass().getName(), content);
+		Logger.info(this.getClass().getName(), content);
 		return ProcessResult.success(content);
 	}
 
