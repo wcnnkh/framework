@@ -138,13 +138,14 @@ public final class DataBaseUtils {
 
 	public static String getLikeValue(String likeValue) {
 		if (likeValue == null || likeValue.length() == 0) {
-			return "%";//注意：这会忽略空
+			return "%";// 注意：这会忽略空
 		}
 
 		return "%" + likeValue + "%";
 	}
 
 	public static void registerCglibProxyTableBean(String pageName) {
+		Logger.debug(DataBaseUtils.class.getName(), "register proxy package:" + pageName);
 		for (Class<?> type : ClassUtils.getClasses(pageName)) {
 			Table table = type.getAnnotation(Table.class);
 			if (table == null) {
@@ -155,8 +156,7 @@ public final class DataBaseUtils {
 				continue;
 			}
 
-			Class<?> clz = BeanUtils.getFieldListenProxyClass(type);
-			Logger.info("CGLIB", "register proxy class[" + clz.getName() + "]");
+			BeanUtils.getFieldListenProxyClass(type);
 		}
 	}
 

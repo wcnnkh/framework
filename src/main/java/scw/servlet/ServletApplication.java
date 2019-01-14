@@ -41,7 +41,6 @@ import scw.servlet.request.RequestFactory;
  */
 public class ServletApplication implements Application {
 	private static final String CHARSET_NAME = "shuchaowen.charsetName";
-	private static final String DEBUG_NAME = "shuchaowen.debug";
 	private static final String RPC_SIGN = "shuchaowen.rpc-sign";
 	private static final String RPC_PATH = "shuchaowen.rpc-path";
 	private static final String REQUEST_FACTORY = "shuchaowen.request-factory";
@@ -256,11 +255,6 @@ public class ServletApplication implements Application {
 			if (StringUtils.isNull(rpcServletPath)) {
 				rpcServletPath = "/rpc";
 			}
-		}
-
-		String debugStr = getPropertiesFactory().getValue(DEBUG_NAME);
-		if (!StringUtils.isNull(debugStr)) {
-			debug = Boolean.parseBoolean(debugStr);
 		}
 
 		if (searchAction == null) {

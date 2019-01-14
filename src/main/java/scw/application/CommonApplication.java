@@ -12,9 +12,15 @@ import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
+import scw.database.DataBaseUtils;
 import scw.database.TransactionBeanFilter;
+import scw.database.TransactionContext;
 
 public class CommonApplication implements Application {
+	private static final String TRANSACTION_DEBUG_NAME = "shuchaowen.transaction.debug";
+	private static final String TRANSACTION_CACHE_NAME = "shuchaowen.transaction.cache";
+	private static final String PROXY_REGISTE_TABLE = "shuchaowen.proxy.register.table";
+
 	private final XmlBeanFactory beanFactory;
 	private volatile boolean start = false;
 	private final PropertiesFactory propertiesFactory;
@@ -62,6 +68,22 @@ public class CommonApplication implements Application {
 		}
 
 		beanFactory.init();
+
+		String transactionDebug = getPropertiesFactory().getValue(TRANSACTION_DEBUG_NAME);
+		if (!StringUtils.isNull(transactionDebug)) {
+			TransactionContext.getInstance().setGlobalDebug(Boolean.parseBoolean(transactionDebug));
+		}
+
+		String transactionCache = getPropertiesFactory().getValue(TRANSACTION_CACHE_NAME);
+		if (!StringUtils.isNull(transactionCache)) {
+			TransactionContext.getInstance().setGlobalSelectCache(Boolean.parseBoolean(transactionCache));
+		}
+
+		String registerTableBean = getPropertiesFactory().getValue(PROXY_REGISTE_TABLE);
+		if (!StringUtils.isNull(registerTableBean)) {
+			DataBaseUtils.registerCglibProxyTableBean(registerTableBean);
+		}
+
 		if (!StringUtils.isNull(configPath)) {
 			new Thread(new Runnable() {
 
