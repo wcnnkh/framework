@@ -1,6 +1,5 @@
 package scw.tencent.weixin;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 
 import scw.common.io.IOUtils;
@@ -40,14 +39,7 @@ public final class RedisJsApiTicketFactory extends AbstractJsApiTicketFactory {
 			return null;
 		}
 
-		try {
-			return IOUtils.byteToJavaObject(data);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return IOUtils.byteToJavaObject(data);
 	}
 
 	@Override

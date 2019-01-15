@@ -12,6 +12,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.XUtils;
 
 public final class IOUtils {
@@ -40,7 +41,11 @@ public final class IOUtils {
 		}
 	}
 
-	public static byte[] javaObjectToByte(Object obj) throws IOException {
+	public static byte[] javaObjectToByte(Object obj) {
+		if (obj == null) {
+			return null;
+		}
+
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = null;
 		try {
@@ -49,23 +54,21 @@ public final class IOUtils {
 			oos.flush();
 			return bos.toByteArray();
 		} catch (IOException e) {
-			throw e;
+			throw new ShuChaoWenRuntimeException(e);
 		} finally {
 			XUtils.close(oos, bos);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T byteToJavaObject(byte[] buf) throws ClassNotFoundException, IOException {
+	public static <T> T byteToJavaObject(byte[] buf) {
 		ByteArrayInputStream bis = new ByteArrayInputStream(buf);
 		ObjectInputStream ois = null;
 		try {
 			ois = new ObjectInputStream(bis);
 			return (T) ois.readObject();
-		} catch (IOException e) {
-			throw e;
-		} catch (ClassNotFoundException e) {
-			throw e;
+		} catch (Throwable e) {
+			throw new ShuChaoWenRuntimeException(e);
 		} finally {
 			XUtils.close(ois, bis);
 		}

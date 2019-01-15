@@ -1,11 +1,9 @@
 package scw.mq;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.io.IOUtils;
 import scw.common.utils.XUtils;
 import scw.locks.RedisLock;
@@ -19,8 +17,8 @@ public final class RedisMQ<T> implements MQ<T> {
 	private final Charset charset;
 	private final Thread thread;
 	private List<Consumer<T>> consumerList;
-	
-	public RedisMQ(final Redis redis, final String queueKey, String charsetName){
+
+	public RedisMQ(final Redis redis, final String queueKey, String charsetName) {
 		this(redis, queueKey, Charset.forName(charsetName));
 	}
 
@@ -38,7 +36,8 @@ public final class RedisMQ<T> implements MQ<T> {
 							continue;
 						}
 
-						RedisLock redisLock = new RedisLock(redis, queueKey + QUEUE_READ_LOCK, XUtils.getUUID(), 600 * consumerList.size());
+						RedisLock redisLock = new RedisLock(redis, queueKey + QUEUE_READ_LOCK, XUtils.getUUID(),
+								600 * consumerList.size());
 						if (redisLock.lock()) {
 							try {
 								byte[] data = redis.lindex(queueKey.getBytes(charset), -1);// 找到尾部元素
@@ -71,13 +70,8 @@ public final class RedisMQ<T> implements MQ<T> {
 	}
 
 	public void push(T message) {
-		byte[] data;
-		try {
-			data = IOUtils.javaObjectToByte(message);
-			redis.lpush(queueKey.getBytes(charset), data);
-		} catch (IOException e) {
-			throw new ShuChaoWenRuntimeException(e);
-		}
+		byte[] data = IOUtils.javaObjectToByte(message);
+		redis.lpush(queueKey.getBytes(charset), data);
 	}
 
 	public synchronized void consumer(Consumer<T> consumer) {
