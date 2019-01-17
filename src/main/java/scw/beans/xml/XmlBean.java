@@ -34,7 +34,6 @@ public class XmlBean implements Bean {
 	private static final String PROPERTIES_TAG_NAME = "properties";
 	private static final String INIT_METHOD_TAG_NAME = "init";
 	private static final String DESTROY_METHOD_TAG_NAME = "destroy";
-	private static final String FACTORY_METHOD_TAG_NAME = "factory-method";
 
 	private final BeanFactory beanFactory;
 	private final PropertiesFactory propertiesFactory;
@@ -129,11 +128,6 @@ public class XmlBean implements Bean {
 				if (list != null) {
 					propertiesList.addAll(list);
 				}
-			} else if (FACTORY_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {
-				if (factoryMethodInfo != null) {
-					throw new BeansException("只能有一个factory-method");
-				}
-				this.factoryMethodInfo = new XmlBeanMethodInfo(type, n);
 			}
 		}
 		this.properties = propertiesList.toArray(new XmlBeanParameter[propertiesList.size()]);
@@ -281,10 +275,6 @@ public class XmlBean implements Bean {
 					bean = createInstance();
 				}
 			}
-
-			if (factoryMethodInfo != null) {
-				bean = factoryMethodInfo.invoke(bean, beanFactory, propertiesFactory);
-			}
 			return (T) bean;
 		} catch (Exception e) {
 			throw new BeansException(type.getName(), e);
@@ -314,5 +304,9 @@ public class XmlBean implements Bean {
 
 	public String[] getNames() {
 		return names;
+	}
+
+	public boolean isFactory() {
+		return factoryMethodInfo != null;
 	}
 }

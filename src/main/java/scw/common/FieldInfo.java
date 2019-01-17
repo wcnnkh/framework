@@ -88,19 +88,19 @@ public final class FieldInfo {
 	}
 
 	public Object get(Object obj) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		if (getGetter() == null) {
+		if (getter == null) {
 			return forceGet(obj);
 		} else {
-			return getGetter().invoke(obj);
+			return getter.invoke(obj);
 		}
 	}
 
 	public void set(Object obj, Object value)
 			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		if (getSetter() == null) {
+		if (setter == null) {
 			forceSet(obj, value);
 		} else {
-			getSetter().invoke(obj, value);
+			setter.invoke(obj, value);
 		}
 	}
 
@@ -127,12 +127,12 @@ public final class FieldInfo {
 	public void forceSet(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException {
 		field.set(obj, value);
 	}
-	
-	public boolean isStatic(){
+
+	public boolean isStatic() {
 		return Modifier.isStatic(field.getModifiers());
 	}
-	
-	public boolean isFinal(){
+
+	public boolean isFinal() {
 		return Modifier.isFinal(field.getModifiers());
 	}
 }

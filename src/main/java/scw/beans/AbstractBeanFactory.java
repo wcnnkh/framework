@@ -77,10 +77,10 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
 	@SuppressWarnings("unchecked")
 	public <T> T get(String name) {
-		if(!init){
+		if (!init) {
 			throw new BeansException("还未初始化");
 		}
-		
+
 		Object obj = singletonMap.get(name);
 		if (obj != null) {
 			return (T) obj;
@@ -103,7 +103,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 							bean.autowrite(obj);
 							bean.init(obj);
 						} catch (Exception e) {
-							throw new BeansException(e);
+							throw new BeansException(bean.getId(), e);
 						}
 					}
 				}
