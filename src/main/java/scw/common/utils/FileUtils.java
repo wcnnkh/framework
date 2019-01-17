@@ -356,7 +356,7 @@ public final class FileUtils {
 			fis = new FileInputStream(file);
 			isr = new InputStreamReader(fis, charsetName);
 			br = new BufferedReader(isr);
-			return IOUtils.readLineList(br, 0);
+			return IOUtils.readLineList(br, -1);
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		} finally {
