@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,7 +24,6 @@ import org.w3c.dom.NodeList;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.StringFormatSystemProperties;
-import scw.common.io.decoder.StringLineDecoder;
 
 public final class ConfigUtils {
 	private static final String WEB_ROOT = "web.root";
@@ -178,19 +176,6 @@ public final class ConfigUtils {
 		return properties;
 	}
 
-	public static List<String> getFileContentLineList(File file, String charsetName) {
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(file);
-			return new StringLineDecoder(Charset.forName(charsetName)).decode(fis);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			XUtils.close(fis);
-		}
-		return null;
-	}
-
 	public static List<Map<String, String>> getDefaultXmlContent(File file, String rootTag) {
 		if (rootTag == null) {
 			throw new NullPointerException("rootTag is null");
@@ -274,7 +259,7 @@ public final class ConfigUtils {
 	}
 
 	public static List<String> getFileContentLineList(String filePath, String charsetName) {
-		return getFileContentLineList(getFile(filePath), charsetName);
+		return FileUtils.getFileContentLineList(getFile(filePath), charsetName);
 	}
 
 	public static String getFileContent(String filePath, String charsetName) {

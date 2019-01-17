@@ -11,8 +11,8 @@ import scw.database.DataBaseUtils;
 import scw.database.TableInfo;
 import scw.db.OperationBean;
 import scw.db.storage.CacheUtils;
-import scw.memcached.CAS;
-import scw.memcached.Memcached;
+import scw.utils.memcached.CAS;
+import scw.utils.memcached.Memcached;
 
 public class MemcachedFullCacheTransaction extends AbstractTransaction {
 	private final OperationBean operationBean;

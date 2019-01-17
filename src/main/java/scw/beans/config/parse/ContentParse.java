@@ -7,11 +7,12 @@ import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.common.FieldInfo;
 import scw.common.utils.ConfigUtils;
+import scw.common.utils.FileUtils;
 
 public class ContentParse implements ConfigParse{
 	public Object parse(BeanFactory beanFactory, FieldInfo fieldInfo, String filePath, String charset) throws Exception{
 		File file = ConfigUtils.getFile(filePath);
-		List<String> list = ConfigUtils.getFileContentLineList(file, charset);
+		List<String> list = FileUtils.getFileContentLineList(file, charset);
 		if(String.class.isAssignableFrom(fieldInfo.getType())){
 			StringBuilder sb = new StringBuilder();
 			if(list != null){

@@ -83,7 +83,7 @@ public final class SQLTransaction extends AbstractTransaction {
 	public void end() throws Exception {
 		if (!sqlMap.isEmpty()) {
 			if (preparedStatements != null) {
-				XUtils.close(true, preparedStatements);
+				XUtils.close(preparedStatements);
 			}
 
 			if (connection != null) {

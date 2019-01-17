@@ -4,9 +4,12 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import scw.common.exception.ShuChaoWenRuntimeException;
+
 public final class XUtils {
-	private XUtils(){};
-	
+	private XUtils() {
+	};
+
 	public static boolean isWin() {
 		return System.getProperty("os.name").toLowerCase().startsWith("win");
 	}
@@ -15,26 +18,20 @@ public final class XUtils {
 		return System.getProperty("os.name").toLowerCase().startsWith("mac");
 	}
 
-	public static void close(final AutoCloseable... closeables) {
-		close(false, closeables);
-	}
-	
-	public static void close(final boolean throwException,
-			final AutoCloseable... closeables) {
-		if (closeables != null) {
-			for (AutoCloseable close : closeables) {
-				if (close != null) {
-					try {
-						close.close();
-					} catch (Exception e) {
-						if (throwException) {
-							throw new AutoCloseableException(e);
-						} else {
-							e.printStackTrace();
-						}
-					}
+	/*
+	 * public static void close(final AutoCloseable... closeables) {
+	 * close(false, closeables); }
+	 */
+
+	public static void close(AutoCloseable... closeables) {
+		try {
+			for (AutoCloseable closeable : closeables) {
+				if (closeable != null) {
+					closeable.close();
 				}
 			}
+		} catch (Exception e) {
+			throw new ShuChaoWenRuntimeException(e);
 		}
 	}
 
@@ -181,8 +178,8 @@ public final class XUtils {
 	}
 
 	/**
-	 * 求最大公约数
-	 * 更相减损法
+	 * 求最大公约数 更相减损法
+	 * 
 	 * @param a
 	 * @param b
 	 * @return

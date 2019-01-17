@@ -3,10 +3,10 @@ package scw.servlet.view;
 import java.io.IOException;
 import java.util.List;
 
-import scw.excel.export.JxlExport;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.View;
+import scw.utils.excel.export.JxlExport;
 
 public class JxlListToExcelView implements View{
 	private String fileName;

@@ -2,22 +2,22 @@ package scw.servlet.view.common;
 
 import javax.servlet.http.Cookie;
 
-import scw.auth.login.Session;
-import scw.auth.login.SessionFactory;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.action.Filter;
 import scw.servlet.action.FilterChain;
 import scw.servlet.view.common.enums.Code;
+import scw.utils.login.Session;
+import scw.utils.login.LoginFactory;
 
 public class SSOWebFilter implements Filter{
-	private final SessionFactory sessionFactory;
+	private final LoginFactory loginFactory;
 	private final String sidKey;
 	private final String uidKey;
 	private final boolean cookie;
 	
-	public SSOWebFilter(SessionFactory sessionFactory, String uidKey, String sidKey, boolean cookie){
-		this.sessionFactory = sessionFactory;
+	public SSOWebFilter(LoginFactory loginFactory, String uidKey, String sidKey, boolean cookie){
+		this.loginFactory = loginFactory;
 		this.uidKey = uidKey;
 		this.sidKey = sidKey;
 		this.cookie = cookie;
@@ -49,7 +49,7 @@ public class SSOWebFilter implements Filter{
 			return false;
 		}
 		
-		Session session = sessionFactory.getSession(sid);
+		Session session = loginFactory.getSession(sid);
 		if(session == null){
 			return false;
 		}

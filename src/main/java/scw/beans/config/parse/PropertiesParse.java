@@ -15,7 +15,7 @@ public class PropertiesParse implements ConfigParse {
 	public Object parse(BeanFactory beanFactory, FieldInfo field, String filePath, String charset) throws Exception{
 		File file = ConfigUtils.getFile(filePath);
 		Properties properties = ConfigUtils.getProperties(file, charset);
-		if(ClassUtils.isBasicType(field.getType()) || ClassUtils.isStringType(field.getType())){
+		if(ClassUtils.isPrimitiveOrWrapper(field.getType()) || ClassUtils.isStringType(field.getType())){
 			String v = ConfigUtils.format(properties.getProperty(field.getName()));
 			return StringUtils.conversion(v, field.getType());
 		}else if(Properties.class.isAssignableFrom(field.getType())){

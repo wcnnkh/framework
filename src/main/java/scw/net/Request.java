@@ -9,95 +9,92 @@ import java.util.List;
 import java.util.Map;
 
 import scw.common.ByteArray;
-import scw.common.io.Decoder;
 
-public interface Request{
+public interface Request {
 	void connect() throws IOException;
 
-    void setConnectTimeout(int timeout);
+	void setConnectTimeout(int timeout);
 
-    int getConnectTimeout();
+	int getConnectTimeout();
 
-    void setReadTimeout(int timeout);
+	void setReadTimeout(int timeout);
 
-    int getReadTimeout();
+	int getReadTimeout();
 
-    URL getURL();
+	URL getURL();
 
-    int getContentLength();
-    
-    long getContentLengthLong();
+	int getContentLength();
 
-    String getContentType();
+	long getContentLengthLong();
 
-    String getContentEncoding();
+	String getContentType();
 
-    long getExpiration();
-    
-    long getDate();
+	String getContentEncoding();
 
-    long getLastModified();
+	long getExpiration();
 
-    String getHeaderField(String name);
+	long getDate();
 
-    Map<String,List<String>> getHeaderFields();
+	long getLastModified();
 
-    int getHeaderFieldInt(String name, int Default);
+	String getHeaderField(String name);
 
-    long getHeaderFieldLong(String name, long Default);
+	Map<String, List<String>> getHeaderFields();
 
-    long getHeaderFieldDate(String name, long Default);
+	int getHeaderFieldInt(String name, int Default);
 
-    String getHeaderFieldKey(int n);
+	long getHeaderFieldLong(String name, long Default);
 
-    String getHeaderField(int n);
+	long getHeaderFieldDate(String name, long Default);
 
-    Object getContent() throws IOException;
+	String getHeaderFieldKey(int n);
 
-    @SuppressWarnings("rawtypes")
+	String getHeaderField(int n);
+
+	Object getContent() throws IOException;
+
+	@SuppressWarnings("rawtypes")
 	Object getContent(Class[] classes) throws IOException;
 
-    Permission getPermission() throws IOException;
-    
-    InputStream getInputStream() throws IOException;
-    
-    OutputStream getOutputStream() throws IOException;
+	Permission getPermission() throws IOException;
 
-    void setDoInput(boolean doinput);
+	InputStream getInputStream() throws IOException;
 
-    boolean getDoInput();
+	OutputStream getOutputStream() throws IOException;
 
-    void setDoOutput(boolean dooutput);
+	void setDoInput(boolean doinput);
 
-    boolean getDoOutput();
+	boolean getDoInput();
 
-    void setAllowUserInteraction(boolean allowuserinteraction);
+	void setDoOutput(boolean dooutput);
 
-    boolean getAllowUserInteraction();
+	boolean getDoOutput();
 
-    void setUseCaches(boolean usecaches);
+	void setAllowUserInteraction(boolean allowuserinteraction);
 
-    boolean getUseCaches();
+	boolean getAllowUserInteraction();
 
-    void setIfModifiedSince(long ifmodifiedsince);
+	void setUseCaches(boolean usecaches);
 
-    long getIfModifiedSince();
-    
-    boolean getDefaultUseCaches();
+	boolean getUseCaches();
 
-    void setDefaultUseCaches(boolean defaultusecaches);
-    
-    void setRequestProperty(String key, String value);
+	void setIfModifiedSince(long ifmodifiedsince);
 
-    void addRequestProperty(String key, String value);
+	long getIfModifiedSince();
 
-    String getRequestProperty(String key);
-    
-    Map<String,List<String>> getRequestProperties();
-    
-    <T> T execute(Decoder<T> decoder) throws IOException;
-    
-    ByteArray getResponse() throws IOException;
-    
-    void setRequestEntity(RequestEntity entity) throws IOException;
+	boolean getDefaultUseCaches();
+
+	void setDefaultUseCaches(boolean defaultusecaches);
+
+	void setRequestProperty(String key, String value);
+
+	void addRequestProperty(String key, String value);
+
+	String getRequestProperty(String key);
+
+	Map<String, List<String>> getRequestProperties();
+
+	ByteArray getResponseByteArray() throws IOException;
+
+	void setRequestEntity(RequestEntity entity) throws IOException;
 }

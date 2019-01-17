@@ -10,7 +10,7 @@ import scw.database.DataBaseUtils;
 import scw.database.TableInfo;
 import scw.db.OperationBean;
 import scw.db.storage.CacheUtils;
-import scw.memcached.Memcached;
+import scw.utils.memcached.Memcached;
 
 public class MemcachedHotspotCacheTransaction extends AbstractTransaction{
 	private final Memcached memcached;

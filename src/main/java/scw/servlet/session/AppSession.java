@@ -2,10 +2,10 @@ package scw.servlet.session;
 
 import javax.servlet.http.Cookie;
 
-import scw.auth.login.Session;
-import scw.auth.login.SessionFactory;
 import scw.common.utils.StringUtils;
 import scw.servlet.Request;
+import scw.utils.login.Session;
+import scw.utils.login.LoginFactory;
 
 /**
  * 此类和WebSession和一样
@@ -14,18 +14,18 @@ import scw.servlet.Request;
  *
  */
 public class AppSession {
-	private SessionFactory sessionFactory;
+	private LoginFactory loginFactory;
 	private Request request;
 	private boolean cookie;
 	private Session session;
 	private String uidKey;
 	private String sidKey;
 	
-	public AppSession(Request request, SessionFactory sessionFactory,
+	public AppSession(Request request, LoginFactory loginFactory,
 			String uidKey, String sidKey, boolean cookie) {
 		this.request = request;
 		this.cookie = cookie;
-		this.sessionFactory = sessionFactory;
+		this.loginFactory = loginFactory;
 		this.uidKey = uidKey;
 		this.sidKey = sidKey;
 
@@ -35,7 +35,7 @@ public class AppSession {
 
 		String sid = getString(sidKey);
 		if (!StringUtils.isNull(sid)) {
-			session = sessionFactory.getSession(sid);
+			session = loginFactory.getSession(sid);
 		}
 
 		if (session != null && !StringUtils.isNull(uidKey)) {
@@ -65,7 +65,7 @@ public class AppSession {
 	}
 
 	public Session login(String uid) {
-		session = sessionFactory.login(uid);
+		session = loginFactory.login(uid);
 		return session;
 	}
 

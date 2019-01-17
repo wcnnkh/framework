@@ -3,7 +3,7 @@ package scw.servlet.parameter;
 import java.io.IOException;
 import java.io.Serializable;
 
-import scw.common.io.IOUtils;
+import scw.common.utils.IOUtils;
 import scw.servlet.Request;
 
 public final class Body implements Serializable {

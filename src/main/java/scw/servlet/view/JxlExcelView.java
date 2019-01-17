@@ -6,12 +6,12 @@ import java.util.Arrays;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.SQL;
 import scw.db.AbstractDB;
-import scw.excel.export.JxlExport;
-import scw.excel.export.SimpleExportRowImpl;
-import scw.excel.export.SqlExportRow;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.View;
+import scw.utils.excel.export.JxlExport;
+import scw.utils.excel.export.SimpleExportRowImpl;
+import scw.utils.excel.export.SqlExportRow;
 
 public class JxlExcelView implements View{
 	private SQL sql;

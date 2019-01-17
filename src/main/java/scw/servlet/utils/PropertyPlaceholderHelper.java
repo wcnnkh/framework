@@ -25,8 +25,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import scw.spring.util.Assert;
-import scw.spring.util.StringUtils;
+import scw.common.utils.Assert;
+import scw.common.utils.StringUtils;
 
 /**
  * Utility class for working with Strings that have placeholder values in them. A placeholder takes the form

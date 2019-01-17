@@ -255,8 +255,7 @@ public final class BeanUtils {
 
 	private static boolean checkExistDefaultValue(FieldInfo field, Object obj)
 			throws IllegalArgumentException, IllegalAccessException {
-		if (ClassUtils.containsBasicValueType(field.getType())) {// 值类型一定是默认值
-																	// 的,所以不用判断直接所回false
+		if (field.getType().isPrimitive()) {// 值类型一定是有默认值的,所以不用判断直接所回false
 			return false;
 		}
 		return field.forceGet(obj) != null;

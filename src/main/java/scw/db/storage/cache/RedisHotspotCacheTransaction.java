@@ -11,7 +11,7 @@ import scw.database.DataBaseUtils;
 import scw.database.TableInfo;
 import scw.db.OperationBean;
 import scw.db.storage.CacheUtils;
-import scw.redis.Redis;
+import scw.utils.redis.Redis;
 
 public class RedisHotspotCacheTransaction extends AbstractTransaction {
 	private static final String EX = "EX";

@@ -10,11 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 import scw.common.ByteArray;
-import scw.common.io.Decoder;
-import scw.common.io.decoder.ByteArrayDecoder;
+import scw.common.utils.IOUtils;
 
 public class RequestURLConnection implements Request{
-	private static final ByteArrayDecoder BYTE_ARRAY_DECODER = new ByteArrayDecoder();
 	
 	private final URLConnection urlConnection;
 	
@@ -187,12 +185,8 @@ public class RequestURLConnection implements Request{
 		return urlConnection.getRequestProperties();
 	}
 
-	public ByteArray getResponse() throws IOException{
-		return BYTE_ARRAY_DECODER.decode(getInputStream());
-	}
-
-	public <T> T execute(Decoder<T> decoder) throws IOException {
-		return decoder.decode(getInputStream());
+	public ByteArray getResponseByteArray() throws IOException{
+		return IOUtils.read(getInputStream(), 1024, 0);
 	}
 
 	public void setRequestEntity(RequestEntity entity) throws IOException {

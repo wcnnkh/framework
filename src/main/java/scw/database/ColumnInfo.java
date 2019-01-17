@@ -39,7 +39,7 @@ public final class ColumnInfo {
 		this.typeName = this.type.getName();
 		this.length = -1;
 		this.nullAble = false;
-		this.isDataBaseType = ClassUtils.isBasicType(type) || String.class.isAssignableFrom(type)
+		this.isDataBaseType = ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
 				|| Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
 				|| Timestamp.class.isAssignableFrom(type) || InputStream.class.isAssignableFrom(type)
 				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)

@@ -1,10 +1,12 @@
 package scw.common.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -23,8 +25,6 @@ import java.util.zip.ZipFile;
 
 import scw.common.Base64;
 import scw.common.exception.ShuChaoWenRuntimeException;
-import scw.common.io.IOUtils;
-import scw.common.io.decoder.StringDecoder;
 
 public final class FileUtils {
 	private FileUtils() {
@@ -337,15 +337,31 @@ public final class FileUtils {
 
 	public static String readerFileContent(File file, String charsetName) {
 		FileInputStream fileInputStream = null;
-		StringBuilder sb = null;
 		try {
 			fileInputStream = new FileInputStream(file);
-			return new StringDecoder(Charset.forName(charsetName)).decode(fileInputStream);
+			InputStreamReader isr = new InputStreamReader(fileInputStream, Charset.forName(charsetName));
+			return IOUtils.read(isr, 256, 0);
 		} catch (Exception e) {
-			XUtils.close(false, fileInputStream);
-			e.printStackTrace();
+			throw new ShuChaoWenRuntimeException(e);
+		} finally {
+			XUtils.close(fileInputStream);
 		}
-		return sb == null ? null : sb.toString();
+	}
+
+	public static List<String> getFileContentLineList(File file, String charsetName) {
+		FileInputStream fis = null;
+		InputStreamReader isr = null;
+		BufferedReader br = null;
+		try {
+			fis = new FileInputStream(file);
+			isr = new InputStreamReader(fis, charsetName);
+			br = new BufferedReader(isr);
+			return IOUtils.readLineList(br, 0);
+		} catch (Exception e) {
+			throw new ShuChaoWenRuntimeException(e);
+		} finally {
+			XUtils.close(br, isr, fis);
+		}
 	}
 
 	public static void writeFileContent(String filePath, String content, String charsetName) {

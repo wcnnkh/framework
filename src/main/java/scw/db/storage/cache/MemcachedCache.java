@@ -14,7 +14,7 @@ import scw.db.AbstractDB;
 import scw.db.OperationBean;
 import scw.db.OperationType;
 import scw.db.storage.CacheUtils;
-import scw.memcached.Memcached;
+import scw.utils.memcached.Memcached;
 
 public class MemcachedCache implements Cache {
 	private final Memcached memcached;

@@ -18,10 +18,9 @@ import scw.beans.property.PropertiesFactory;
 import scw.beans.rpc.http.Message;
 import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
-import scw.common.io.decoder.JavaObjectDecoder;
-import scw.common.io.encoder.JavaObjectEncoder;
 import scw.common.reflect.Invoker;
 import scw.common.reflect.ReflectInvoker;
+import scw.common.utils.IOUtils;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
 import scw.net.http.enums.Method;
@@ -165,7 +164,7 @@ public class ServletApplication implements Application {
 	}
 
 	public void rpc(InputStream inputStream, OutputStream outputStream) throws Throwable {
-		Message message = (Message) JavaObjectDecoder.DECODER.decode(inputStream);
+		Message message = IOUtils.readJavaObject(inputStream);
 		if (!rpcAuthorize(message)) {
 			throw new ShuChaoWenRuntimeException("RPC验证失败");
 		}
@@ -176,7 +175,8 @@ public class ServletApplication implements Application {
 		}
 
 		Object obj = invoker.invoke(message.getArgs());
-		JavaObjectEncoder.ENCODER.encode(outputStream, obj);
+		byte[] data = IOUtils.javaObjectToByte(obj);
+		outputStream.write(data);
 	}
 
 	public void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)

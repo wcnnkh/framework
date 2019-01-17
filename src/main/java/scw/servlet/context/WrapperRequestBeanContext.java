@@ -77,7 +77,7 @@ public class WrapperRequestBeanContext implements RequestBeanContext {
 			String key = prefix == null ? fieldInfo.getName() : prefix
 					+ fieldInfo.getName();
 			if (String.class.isAssignableFrom(fieldInfo.getType())
-					|| ClassUtils.isBasicType(fieldInfo.getType())) {
+					|| ClassUtils.isPrimitiveOrWrapper(fieldInfo.getType())) {
 				// 如果是基本数据类型
 				Object v = request.getParameter(fieldInfo.getType(), key);
 				if (v != null) {

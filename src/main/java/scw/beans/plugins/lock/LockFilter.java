@@ -7,8 +7,8 @@ import net.sf.cglib.proxy.MethodProxy;
 import scw.beans.BeanFilter;
 import scw.beans.BeanFilterChain;
 import scw.database.TransactionContext;
-import scw.locks.Lock;
-import scw.locks.LockFactory;
+import scw.utils.locks.Lock;
+import scw.utils.locks.LockFactory;
 
 /**
  * 实现方法级别的分布式锁

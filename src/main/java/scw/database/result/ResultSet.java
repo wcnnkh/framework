@@ -10,10 +10,10 @@ import java.util.List;
 import scw.common.exception.NotFoundException;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
+import scw.common.utils.CollectionUtils;
 import scw.database.ColumnInfo;
 import scw.database.DataBaseUtils;
 import scw.database.TableInfo;
-import scw.spring.util.CollectionUtils;
 
 public final class ResultSet implements Serializable {
 	private static final long serialVersionUID = -3199839587290797839L;
@@ -47,8 +47,7 @@ public final class ResultSet implements Serializable {
 		append(resultSet, true);
 	}
 
-	private void append(java.sql.ResultSet resultSet, boolean checkColumn)
-			throws SQLException {
+	private void append(java.sql.ResultSet resultSet, boolean checkColumn) throws SQLException {
 		if (resultSet == null) {
 			return;
 		}
@@ -61,14 +60,11 @@ public final class ResultSet implements Serializable {
 		if (checkColumn) {
 			ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 			for (int i = 1; i <= values.length; i++) {
-				int index = metaData.getColumnIndex(
-						resultSetMetaData.getColumnName(i),
+				int index = metaData.getColumnIndex(resultSetMetaData.getColumnName(i),
 						resultSetMetaData.getTableName(i));
 				if (index == -1) {
-					throw new NotFoundException(
-							resultSetMetaData.getTableName(i) + "."
-									+ resultSetMetaData.getColumnName(i)
-									+ "在原ResultSet中找不到");
+					throw new NotFoundException(resultSetMetaData.getTableName(i) + "."
+							+ resultSetMetaData.getColumnName(i) + "在原ResultSet中找不到");
 				}
 				values[i - 1] = resultSet.getObject(i);
 			}
@@ -89,15 +85,13 @@ public final class ResultSet implements Serializable {
 		return (List<Object[]>) (dataList == null ? null : dataList.clone());
 	}
 
-	protected static Object wrapper(MetaData metaData, Object[] values,
-			TableInfo tableInfo, String... tableName)
+	protected static Object wrapper(MetaData metaData, Object[] values, TableInfo tableInfo, String... tableName)
 			throws IllegalArgumentException, IllegalAccessException {
 		Object o = tableInfo.newInstance();
 		for (ColumnInfo column : tableInfo.getColumns()) {
 			int index;
 			if (tableName == null || tableName.length == 0) {
-				index = metaData.getColumnIndex(column.getName(),
-						tableInfo.getName());
+				index = metaData.getColumnIndex(column.getName(), tableInfo.getName());
 			} else {
 				index = metaData.getColumnIndex(column.getName(), tableName);
 			}
@@ -120,8 +114,7 @@ public final class ResultSet implements Serializable {
 		}
 
 		for (ColumnInfo column : tableInfo.getTableColumns()) {
-			Object v = wrapper(metaData, values,
-					DataBaseUtils.getTableInfo(column.getType()));
+			Object v = wrapper(metaData, values, DataBaseUtils.getTableInfo(column.getType()));
 			if (v != null) {
 				column.setValueToField(o, v);
 			}
@@ -129,21 +122,17 @@ public final class ResultSet implements Serializable {
 		return o;
 	}
 
-	protected static Object wrapper(MetaData metaData, Object[] values,
-			TableInfo tableInfo, TableMapping tableMapping)
+	protected static Object wrapper(MetaData metaData, Object[] values, TableInfo tableInfo, TableMapping tableMapping)
 			throws IllegalArgumentException, IllegalAccessException {
 		Object o = tableInfo.newInstance();
 		for (ColumnInfo column : tableInfo.getColumns()) {
 			int index;
 			if (tableMapping == null) {
-				index = metaData.getColumnIndex(column.getName(),
-						tableInfo.getName());
+				index = metaData.getColumnIndex(column.getName(), tableInfo.getName());
 			} else {
-				List<String> list = tableMapping.getTableNameList(tableInfo
-						.getClassInfo().getClz());
+				List<String> list = tableMapping.getTableNameList(tableInfo.getClassInfo().getClz());
 				if (list == null) {
-					index = metaData.getColumnIndex(column.getName(),
-							tableInfo.getName());
+					index = metaData.getColumnIndex(column.getName(), tableInfo.getName());
 				} else {
 					index = metaData.getColumnIndex(list, column.getName());
 				}
@@ -167,8 +156,7 @@ public final class ResultSet implements Serializable {
 		}
 
 		for (ColumnInfo column : tableInfo.getTableColumns()) {
-			Object v = wrapper(metaData, values,
-					DataBaseUtils.getTableInfo(column.getType()), tableMapping);
+			Object v = wrapper(metaData, values, DataBaseUtils.getTableInfo(column.getType()), tableMapping);
 			if (v != null) {
 				column.setValueToField(o, v);
 			}
@@ -177,9 +165,8 @@ public final class ResultSet implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> List<T> getTableBeanList(Class<T> type,
-			TableMapping tableMapping) throws IllegalArgumentException,
-			IllegalAccessException {
+	private <T> List<T> getTableBeanList(Class<T> type, TableMapping tableMapping)
+			throws IllegalArgumentException, IllegalAccessException {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(type);
 		List<T> list = new ArrayList<T>();
 		for (Object[] objs : dataList) {
@@ -200,8 +187,7 @@ public final class ResultSet implements Serializable {
 	}
 
 	protected static boolean isOriginalType(Class<?> type) {
-		return type.getName().startsWith("java.")
-				|| ClassUtils.containsBasicValueType(type);
+		return type.getName().startsWith("java.") || ClassUtils.isPrimitiveOrWrapper(type);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -303,8 +289,7 @@ public final class ResultSet implements Serializable {
 			return null;
 		} else {
 			try {
-				return (T) wrapper(metaData, dataList.get(index),
-						DataBaseUtils.getTableInfo(type),
+				return (T) wrapper(metaData, dataList.get(index), DataBaseUtils.getTableInfo(type),
 						tableMapping == null ? this.tableMapping : tableMapping);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
@@ -339,11 +324,9 @@ public final class ResultSet implements Serializable {
 		} else {
 			try {
 				if (tableName == null || tableName.length == 0) {
-					return (T) wrapper(metaData, dataList.get(index),
-							DataBaseUtils.getTableInfo(type), tableMapping);
+					return (T) wrapper(metaData, dataList.get(index), DataBaseUtils.getTableInfo(type), tableMapping);
 				} else {
-					return (T) wrapper(metaData, dataList.get(index),
-							DataBaseUtils.getTableInfo(type), tableName);
+					return (T) wrapper(metaData, dataList.get(index), DataBaseUtils.getTableInfo(type), tableName);
 				}
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();

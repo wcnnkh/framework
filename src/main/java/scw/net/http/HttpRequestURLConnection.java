@@ -2,6 +2,7 @@ package scw.net.http;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -9,24 +10,24 @@ import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import scw.common.io.decoder.StringDecoder;
+import scw.common.utils.IOUtils;
 import scw.net.RequestURLConnection;
 
-public class HttpRequestURLConnection extends RequestURLConnection implements HttpRequest{
+public class HttpRequestURLConnection extends RequestURLConnection implements HttpRequest {
 	private final HttpURLConnection httpURLConnection;
-	
-	public HttpRequestURLConnection(String url) throws MalformedURLException, IOException{
-		this((HttpURLConnection)new URL(url).openConnection());
+
+	public HttpRequestURLConnection(String url) throws MalformedURLException, IOException {
+		this((HttpURLConnection) new URL(url).openConnection());
 		setConnectTimeout(10000);
 		setReadTimeout(10000);
 	}
-	
-	public HttpRequestURLConnection(String url, Proxy proxy) throws MalformedURLException, IOException{
-		this((HttpURLConnection)new URL(url).openConnection(proxy));
+
+	public HttpRequestURLConnection(String url, Proxy proxy) throws MalformedURLException, IOException {
+		this((HttpURLConnection) new URL(url).openConnection(proxy));
 		setConnectTimeout(10000);
 		setReadTimeout(10000);
 	}
-	
+
 	public HttpRequestURLConnection(HttpURLConnection httpURLConnection) {
 		super(httpURLConnection);
 		this.httpURLConnection = httpURLConnection;
@@ -81,7 +82,8 @@ public class HttpRequestURLConnection extends RequestURLConnection implements Ht
 	}
 
 	public String getResponseBody(Charset charset) throws IOException {
-		return new StringDecoder(charset).decode(getInputStream());
+		InputStreamReader isr = new InputStreamReader(getInputStream(), charset);
+		return IOUtils.read(isr, 256, 0);
 	}
 
 	public String getRequestContentType() {

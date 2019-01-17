@@ -36,7 +36,7 @@ public class Response extends HttpServletResponseWrapper{
 				((View) obj).render(request, this);
 			} else {
 				String content;
-				if((obj instanceof String) || (ClassUtils.isBasicType(obj.getClass()))){
+				if((obj instanceof String) || (ClassUtils.isPrimitiveOrWrapper(obj.getClass()))){
 					content = obj.toString();
 				}else{
 					content = toJsonString(obj);

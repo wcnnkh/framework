@@ -17,9 +17,8 @@ import scw.db.AbstractDB;
 import scw.db.DBUtils;
 import scw.db.OperationBean;
 import scw.db.storage.CacheUtils;
-import scw.mq.Consumer;
 
-public class CacheAsyncConsumer implements Consumer<Collection<OperationBean>> {
+public class CacheAsyncConsumer {
 	private final CacheStorage cacheStorage;
 
 	public CacheAsyncConsumer(CacheStorage cacheStorage) {

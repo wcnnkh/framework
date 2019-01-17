@@ -1,7 +1,7 @@
 package scw.beans.plugins.cache;
 
-import scw.common.io.IOUtils;
-import scw.redis.Redis;
+import scw.common.utils.IOUtils;
+import scw.utils.redis.Redis;
 
 public class RedisCacheFilter extends AbstractCacheFilter {
 	private final Redis redis;
