@@ -2,6 +2,7 @@ package scw.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -175,8 +176,9 @@ public class ServletApplication implements Application {
 		}
 
 		Object obj = invoker.invoke(message.getArgs());
-		byte[] data = IOUtils.javaObjectToByte(obj);
-		outputStream.write(data);
+		ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+		oos.writeObject(obj);
+		oos.flush();
 	}
 
 	public void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
