@@ -143,11 +143,7 @@ public final class CacheStorage implements Storage {
 						} catch (Exception e) {
 							e.printStackTrace();
 						} finally {
-							try {
-								TransactionContext.getInstance().end();
-							} catch (Throwable e) {
-								e.printStackTrace();
-							}
+							TransactionContext.getInstance().end();
 						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();

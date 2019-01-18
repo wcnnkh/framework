@@ -64,11 +64,7 @@ public class CacheAsyncConsumer {
 		} catch (Exception e) {
 			throw e;
 		} finally {
-			try {
-				TransactionContext.getInstance().end();
-			} catch (Throwable e) {
-				throw new Exception(e);
-			}
+			TransactionContext.getInstance().end();
 		}
 	}
 }
