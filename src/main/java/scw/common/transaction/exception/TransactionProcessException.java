@@ -1,6 +1,6 @@
 package scw.common.transaction.exception;
 
-public class TransactionProcessException extends RuntimeException {
+public class TransactionProcessException extends TransactionException {
 	private static final long serialVersionUID = 1L;
 
 	public TransactionProcessException(Throwable e) {

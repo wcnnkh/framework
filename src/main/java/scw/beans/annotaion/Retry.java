@@ -5,6 +5,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 提供异常重试
@@ -24,11 +25,7 @@ public @interface Retry {
 	 */
 	public long delayMillis() default 0;
 	
-	/**
-	 * 重试间隔时间
-	 * @return
-	 */
-	public int delayNanos() default 0;
+	public TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
 	
 	public boolean log() default false;
 }

@@ -1,6 +1,7 @@
 package scw.common.transaction;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 public final class TransactionCollection extends ArrayList<Transaction> implements Transaction {
@@ -10,6 +11,10 @@ public final class TransactionCollection extends ArrayList<Transaction> implemen
 
 	public TransactionCollection() {
 		super();
+	}
+
+	public TransactionCollection(Collection<? extends Transaction> transactions) {
+		super(transactions);
 	}
 
 	public TransactionCollection(int initialCapacity) {

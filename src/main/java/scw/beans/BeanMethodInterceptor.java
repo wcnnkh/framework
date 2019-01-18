@@ -74,8 +74,8 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 						}
 					}
 
-					if (retry.delayMillis() > 0 || retry.delayNanos() > 0) {
-						Thread.sleep(Math.abs(retry.delayMillis()), Math.abs(retry.delayNanos()));
+					if (retry.delayMillis() > 0) {
+						retry.timeUnit().sleep(retry.delayMillis());
 					}
 				}
 
