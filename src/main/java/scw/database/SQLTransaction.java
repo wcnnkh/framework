@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.common.transaction.AbstractTransaction;
+import scw.common.transaction.exception.TransactionProcessException;
 import scw.common.utils.XUtils;
 
 public final class SQLTransaction extends AbstractTransaction {
@@ -74,7 +75,7 @@ public final class SQLTransaction extends AbstractTransaction {
 				try {
 					stmt.execute();
 				} catch (SQLException e) {
-					throw new Error(DataBaseUtils.getSQLId(entry.getValue()), e);
+					throw new TransactionProcessException(DataBaseUtils.getSQLId(entry.getValue()), e);
 				}
 			}
 		}
