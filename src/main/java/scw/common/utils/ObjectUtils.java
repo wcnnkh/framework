@@ -25,9 +25,9 @@ import java.util.Map;
  * Miscellaneous object utility methods.
  *
  * <p>
- * Mainly for internal use within the framework; consider <a
- * href="http://jakarta.apache.org/commons/lang/">Jakarta's Commons Lang</a> for
- * a more comprehensive suite of object utilities.
+ * Mainly for internal use within the framework; consider
+ * <a href="http://jakarta.apache.org/commons/lang/">Jakarta's Commons Lang</a>
+ * for a more comprehensive suite of object utilities.
  *
  * <p>
  * Thanks to Alex Ruiz for contributing several enhancements to this class!
@@ -78,8 +78,7 @@ public abstract class ObjectUtils {
 	 * @return whether the given exception is compatible
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static boolean isCompatibleWithThrowsClause(Throwable ex,
-			Class[] declaredExceptions) {
+	public static boolean isCompatibleWithThrowsClause(Throwable ex, Class[] declaredExceptions) {
 		if (!isCheckedException(ex)) {
 			return true;
 		}
@@ -148,15 +147,6 @@ public abstract class ObjectUtils {
 		return false;
 	}
 
-	public static boolean isEmpty(Object... objs) {
-		for (Object obj : objs) {
-			if (isEmpty(obj)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * Check whether the given array contains the given element.
 	 * 
@@ -207,8 +197,7 @@ public abstract class ObjectUtils {
 	 *            whether case is significant in determining a match
 	 * @return whether the constant has been found in the given array
 	 */
-	public static boolean containsConstant(Enum<?>[] enumValues,
-			String constant, boolean caseSensitive) {
+	public static boolean containsConstant(Enum<?>[] enumValues, String constant, boolean caseSensitive) {
 		for (Enum<?> candidate : enumValues) {
 			if (caseSensitive ? candidate.toString().equals(constant)
 					: candidate.toString().equalsIgnoreCase(constant)) {
@@ -233,15 +222,13 @@ public abstract class ObjectUtils {
 	 *             values. Use {@link #containsConstant(Enum[], String)} as a
 	 *             guard to avoid this exception.
 	 */
-	public static <E extends Enum<?>> E caseInsensitiveValueOf(E[] enumValues,
-			String constant) {
+	public static <E extends Enum<?>> E caseInsensitiveValueOf(E[] enumValues, String constant) {
 		for (E candidate : enumValues) {
 			if (candidate.toString().equalsIgnoreCase(constant)) {
 				return candidate;
 			}
 		}
-		throw new IllegalArgumentException(String.format(
-				"constant [%s] does not exist in enum type %s", constant,
+		throw new IllegalArgumentException(String.format("constant [%s] does not exist in enum type %s", constant,
 				enumValues.getClass().getComponentType().getName()));
 	}
 
@@ -293,8 +280,7 @@ public abstract class ObjectUtils {
 			return new Object[0];
 		}
 		if (!source.getClass().isArray()) {
-			throw new IllegalArgumentException("Source is not an array: "
-					+ source);
+			throw new IllegalArgumentException("Source is not an array: " + source);
 		}
 		int length = Array.getLength(source);
 		if (length == 0) {
@@ -369,10 +355,10 @@ public abstract class ObjectUtils {
 	}
 
 	/**
-	 * Return as hash code for the given object; typically the value of {@code
-	 * {@link Object#hashCode()} . If the object is an array, this method will
-	 * delegate to any of the {@code nullSafeHashCode} methods for arrays in
-	 * this class. If the object is {@code null}, this method returns 0.
+	 * Return as hash code for the given object; typically the value of
+	 * {@code {@link Object#hashCode()} . If the object is an array, this method
+	 * will delegate to any of the {@code nullSafeHashCode} methods for arrays
+	 * in this class. If the object is {@code null}, this method returns 0.
 	 * 
 	 * @see #nullSafeHashCode(Object[])
 	 * @see #nullSafeHashCode(boolean[])
