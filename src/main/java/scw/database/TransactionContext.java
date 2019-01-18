@@ -239,6 +239,16 @@ public final class TransactionContext extends Context<ThreadLocalTransaction> {
 		return threadLocalTransactionInfo == null ? selectCache : threadLocalTransactionInfo.isSelectCache();
 	}
 
+	/**
+	 * 如果出现异常应该清除事务
+	 */
+	public void clearTransaction() {
+		ThreadLocalTransaction threadLocalTransactionInfo = getValue();
+		if (threadLocalTransactionInfo != null) {
+			threadLocalTransactionInfo.clear();
+		}
+	}
+
 	@Override
 	public void begin() {
 		super.begin();

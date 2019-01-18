@@ -9,10 +9,11 @@ import scw.common.transaction.TransactionCollection;
 
 /**
  * 组合事务
+ * 
  * @author shuchaowen
  *
  */
-public final class CombinationTransaction implements Transaction{
+public final class CombinationTransaction implements Transaction {
 	private HashMap<ConnectionSource, SQLTransaction> dbSqlMap = new HashMap<ConnectionSource, SQLTransaction>(2, 1);
 	private TransactionCollection transactionCollection = new TransactionCollection(4);
 
@@ -27,26 +28,26 @@ public final class CombinationTransaction implements Transaction{
 		}
 		dbSqlMap.put(db, sqlTransaction);
 	}
-	
+
 	public void addTransaction(Transaction collection) {
 		transactionCollection.add(collection);
 	}
-	
+
 	public void begin() throws Exception {
 		for (Entry<ConnectionSource, SQLTransaction> entry : dbSqlMap.entrySet()) {
 			transactionCollection.add(entry.getValue());
 		}
 		transactionCollection.begin();
 	}
-	
-	public void clear(){
-		if(dbSqlMap != null){
+
+	public void clear() {
+		if (dbSqlMap != null) {
 			for (Entry<ConnectionSource, SQLTransaction> entry : dbSqlMap.entrySet()) {
 				entry.getValue().clear();
 			}
 		}
-		
-		if(transactionCollection != null){
+
+		if (transactionCollection != null) {
 			transactionCollection.clear();
 		}
 	}

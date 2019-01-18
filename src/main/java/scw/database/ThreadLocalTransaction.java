@@ -94,6 +94,12 @@ final class ThreadLocalTransaction extends AbstractTransaction {
 		combinationTransaction.addSql(db, sqls);
 	}
 
+	void clear() {
+		if (combinationTransaction != null) {
+			combinationTransaction.clear();
+		}
+	}
+
 	public void begin() throws Exception {
 		if (combinationTransaction != null) {
 			combinationTransaction.begin();
