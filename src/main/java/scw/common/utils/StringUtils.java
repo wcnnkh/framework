@@ -831,8 +831,17 @@ public final class StringUtils {
 	 *            the candidate String
 	 * @since 3.2.1
 	 */
-	public static boolean isEmpty(Object str) {
-		return (str == null || "".equals(str));
+	public static boolean isEmpty(String str) {
+		return str == null || str.length() == 0;
+	}
+
+	public static boolean isEmpty(String... str) {
+		for (String s : str) {
+			if (s == null || s.length() == 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
