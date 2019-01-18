@@ -157,7 +157,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	public void createTable(Class<?> tableClass, String tableName) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
 		SQL sql = getSqlFormat().toCreateTableSql(tableInfo, tableName);
-		Logger.info(sql.getSql());
+		Logger.info(this.getClass().getName(), sql.getSql());
 		DataBaseUtils.execute(this, Arrays.asList(sql));
 	}
 
