@@ -5,6 +5,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.concurrent.TimeUnit;
 
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -22,5 +23,7 @@ public @interface Cache {
 	 * 
 	 * @return
 	 */
-	public int exp() default 600;
+	public int exp() default 10;
+	
+	public TimeUnit timeUnit() default TimeUnit.MINUTES;
 }

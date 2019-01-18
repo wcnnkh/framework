@@ -40,7 +40,7 @@ final class CacheTimerTask extends TimerTask {
 			Object rtn = beanFilterChain.doFilter(obj, method, args, proxy);
 			if (rtn != null) {
 				Cache cache = method.getAnnotation(Cache.class);
-				abstractCacheFilter.setCache(key, cache.exp(),
+				abstractCacheFilter.setCache(key, (int)cache.timeUnit().toSeconds(cache.exp()),
 						method.getReturnType(), rtn);
 			}
 		} catch (Throwable e) {

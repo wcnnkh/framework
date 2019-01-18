@@ -22,14 +22,11 @@ public abstract class AbstractCacheFilter implements BeanFilter {
 		this.debug = debug;
 	}
 
-	protected abstract <T> T getCache(String key, Class<T> type)
-			throws Exception;
+	protected abstract <T> T getCache(String key, Class<T> type) throws Exception;
 
-	protected abstract void setCache(String key, int exp, Class<?> type,
-			Object data) throws Exception;
+	protected abstract void setCache(String key, int exp, Class<?> type, Object data) throws Exception;
 
-	protected String getKey(Cache cache, Object obj, Method method,
-			Object[] args) {
+	protected String getKey(Cache cache, Object obj, Method method, Object[] args) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(method.toString());
 		sb.append("#");
@@ -49,8 +46,7 @@ public abstract class AbstractCacheFilter implements BeanFilter {
 		return sb.toString();
 	}
 
-	public Object doFilter(Object obj, Method method, Object[] args,
-			MethodProxy proxy, BeanFilterChain beanFilterChain)
+	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
 			throws Throwable {
 		Cache cache = method.getAnnotation(Cache.class);
 		if (cache == null) {
@@ -67,15 +63,15 @@ public abstract class AbstractCacheFilter implements BeanFilter {
 			rtn = beanFilterChain.doFilter(obj, method, args, proxy);
 			if (rtn != null) {
 				if (!timerTagMap.contains(key)) {// 如果本地找不到这个任务
-					CacheTimerTask task = new CacheTimerTask(key, obj, method,
-							args, proxy, beanFilterChain, this, debug);
+					CacheTimerTask task = new CacheTimerTask(key, obj, method, args, proxy, beanFilterChain, this,
+							debug);
 					if (timerTagMap.put(key, true) == null) {
 						// 以前没的过
-						timer.schedule(task, cache.exp() * 1000L,
-								cache.exp() * 1000L);
+						timer.schedule(task, cache.timeUnit().toMillis(cache.exp()),
+								cache.timeUnit().toMillis(cache.exp()));
 					}
 				}
-				setCache(key, cache.exp(), method.getReturnType(), rtn);
+				setCache(key, (int) cache.timeUnit().toSeconds(cache.exp()), method.getReturnType(), rtn);
 			}
 		}
 		return rtn;
