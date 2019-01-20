@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import scw.beans.annotaion.Destroy;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.PropertiesUtils;
 import scw.common.utils.StringUtils;
@@ -92,6 +93,7 @@ public final class DruidDB extends DB {
 		return datasource.getConnection();
 	}
 
+	@Destroy
 	public void close() throws Exception {
 		datasource.close();
 	}

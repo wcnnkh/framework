@@ -83,7 +83,7 @@ public final class TransactionContext {
 	}
 
 	private static void debug(Collection<SQL> sqls) {
-		Assert.isNull(sqls);
+		Assert.notNull(sqls);
 
 		Iterator<SQL> iterator = sqls.iterator();
 		while (iterator.hasNext()) {
@@ -114,8 +114,8 @@ public final class TransactionContext {
 
 	public static void execute(ConnectionSource connectionSource,
 			Collection<SQL> sqls) {
-		Assert.isNull(connectionSource);
-		Assert.isNull(sqls);
+		Assert.notNull(connectionSource);
+		Assert.notNull(sqls);
 
 		TransactionContextInfo contextInfo = CONTEXT.get();
 		if (contextInfo == null) {
@@ -141,8 +141,8 @@ public final class TransactionContext {
 	 * @return ResultSet不可能为空
 	 */
 	public static ResultSet select(ConnectionSource connectionSource, SQL sql) {
-		Assert.isNull(connectionSource);
-		Assert.isNull(sql);
+		Assert.notNull(connectionSource);
+		Assert.notNull(sql);
 
 		TransactionContextInfo contextInfo = CONTEXT.get();
 		if (contextInfo == null) {
