@@ -27,7 +27,8 @@ public final class LockFilter implements BeanFilter {
 		this.lockFactory = lockFactory;
 	}
 
-	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
+	public Object doFilter(Object obj, Method method, Object[] args,
+			MethodProxy proxy, BeanFilterChain beanFilterChain)
 			throws Throwable {
 		LockConfig lockConfig = method.getAnnotation(LockConfig.class);
 		if (lockConfig == null) {
@@ -57,14 +58,13 @@ public final class LockFilter implements BeanFilter {
 		Lock lock = lockFactory.getLock(lockKey);
 		try {
 			if (lockConfig.isWait()) {
-				TransactionContext.getInstance().setSelectCache(false);
 				lock.lockWait();
 			} else if (!lock.lock()) {
 				throw new HasBeenLockedException(lockKey);
 			}
+			TransactionContext.getConfig().setSelectCache(false);
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		} finally {
-			TransactionContext.getInstance().setSelectCache(true);
 			lock.unlock();
 		}
 	}

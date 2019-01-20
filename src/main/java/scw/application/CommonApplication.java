@@ -2,8 +2,6 @@ package scw.application;
 
 import java.util.Collection;
 
-import com.alibaba.dubbo.config.ProtocolConfig;
-
 import scw.beans.XmlBeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
@@ -15,6 +13,8 @@ import scw.common.utils.StringUtils;
 import scw.database.DataBaseUtils;
 import scw.database.TransactionBeanFilter;
 import scw.database.TransactionContext;
+
+import com.alibaba.dubbo.config.ProtocolConfig;
 
 public class CommonApplication implements Application {
 	private static final String TRANSACTION_DEBUG_NAME = "shuchaowen.transaction.debug";
@@ -71,12 +71,12 @@ public class CommonApplication implements Application {
 
 		String transactionDebug = getPropertiesFactory().getValue(TRANSACTION_DEBUG_NAME);
 		if (!StringUtils.isNull(transactionDebug)) {
-			TransactionContext.getInstance().setGlobalDebug(Boolean.parseBoolean(transactionDebug));
+			TransactionContext.getGlobaConfig().setDebug(Boolean.parseBoolean(transactionDebug));
 		}
 
 		String transactionCache = getPropertiesFactory().getValue(TRANSACTION_CACHE_NAME);
 		if (!StringUtils.isNull(transactionCache)) {
-			TransactionContext.getInstance().setGlobalSelectCache(Boolean.parseBoolean(transactionCache));
+			TransactionContext.getGlobaConfig().setSelectCache(Boolean.parseBoolean(transactionCache));
 		}
 
 		String registerTableBean = getPropertiesFactory().getValue(PROXY_REGISTE_TABLE);

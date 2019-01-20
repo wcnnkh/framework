@@ -29,7 +29,8 @@ public final class SQLTransaction extends AbstractTransaction {
 	 * @param updateStack
 	 *            如果为true 那么执行后的updateCount大于0就成功，不然就抛出异常.
 	 */
-	public SQLTransaction(ConnectionSource connectionSource, int transactionLevel) {
+	public SQLTransaction(ConnectionSource connectionSource,
+			int transactionLevel) {
 		this.connectionSource = connectionSource;
 		this.transactionLevel = transactionLevel;
 	}
@@ -69,13 +70,15 @@ public final class SQLTransaction extends AbstractTransaction {
 		if (!sqlMap.isEmpty()) {
 			int i = 0;
 			for (Entry<String, SQL> entry : sqlMap.entrySet()) {
-				PreparedStatement stmt = connection.prepareStatement(entry.getValue().getSql());
+				PreparedStatement stmt = connection.prepareStatement(entry
+						.getValue().getSql());
 				preparedStatements[i++] = stmt;
 				DataBaseUtils.setParams(stmt, entry.getValue().getParams());
 				try {
 					stmt.execute();
 				} catch (SQLException e) {
-					throw new TransactionProcessException(DataBaseUtils.getSQLId(entry.getValue()), e);
+					throw new TransactionProcessException(
+							DataBaseUtils.getSQLId(entry.getValue()), e);
 				}
 			}
 		}

@@ -66,12 +66,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	}
 
 	public ResultSet select(SQL sql) {
-		return select(sql, true);
-	}
-
-	public ResultSet select(SQL sql, boolean isTransactionCache) {
-		return TransactionContext.getInstance().select(this, sql,
-				isTransactionCache);
+		return TransactionContext.select(this, sql);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -293,7 +288,11 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 			return;
 		}
 
-		TransactionContext.getInstance().execute(this, sqls);
+		TransactionContext.execute(this, sqls);
+	}
+
+	public void execute(SQL... sql) {
+		TransactionContext.execute(this, sql);
 	}
 
 	public void save(Object... beans) {
@@ -342,7 +341,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		String tName = StringUtils.isNull(tableName) ? tableInfo.getName()
 				: tableName;
 		SQL sql = getSqlFormat().toDeleteSql(tableInfo, tName, params);
-		TransactionContext.getInstance().execute(this, sql);
+		TransactionContext.execute(this, sql);
 	}
 
 	public void delete(String tableName, Collection<?> beans) {
@@ -385,7 +384,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 				: tableName;
 		SQL sql = getSqlFormat()
 				.toUpdateSql(tableInfo, tName, valueMap, params);
-		TransactionContext.getInstance().execute(this, sql);
+		TransactionContext.execute(this, sql);
 	}
 
 	public void update(String tableName, Collection<?> beans) {

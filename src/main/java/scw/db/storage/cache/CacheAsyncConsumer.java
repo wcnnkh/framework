@@ -27,32 +27,38 @@ public class CacheAsyncConsumer {
 
 	private boolean dbExist(AbstractDB abstractDB, OperationBean operationBean)
 			throws IllegalArgumentException, IllegalAccessException {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(operationBean.getBean().getClass());
+		TableInfo tableInfo = DataBaseUtils.getTableInfo(operationBean
+				.getBean().getClass());
 		Object[] params = new Object[tableInfo.getPrimaryKeyColumns().length];
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
-			params[i] = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(operationBean.getBean());
+			params[i] = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo()
+					.forceGet(operationBean.getBean());
 		}
 
 		return abstractDB.getById(tableInfo.getClassInfo().getClz(), params) != null;
 	}
 
 	public void handler(Collection<OperationBean> message) throws Exception {
-		TransactionContext.getInstance().begin();
+		TransactionContext.begin();
 		try {
-			Collection<SQL> sqls = DBUtils.getSqlList(cacheStorage.getDB().getSqlFormat(), message);
+			Collection<SQL> sqls = DBUtils.getSqlList(cacheStorage.getDB()
+					.getSqlFormat(), message);
 			if (sqls == null || sqls.isEmpty()) {
 				return;
 			}
 
 			TransactionCollection collection = new TransactionCollection();
 			for (OperationBean operationBean : message) {
-				CacheConfig cacheConfig = cacheStorage.getCacheConfig(operationBean.getBean().getClass());
+				CacheConfig cacheConfig = cacheStorage
+						.getCacheConfig(operationBean.getBean().getClass());
 				switch (cacheConfig.getCacheType()) {
 				case keys:
 				case lazy:
 					boolean exist = dbExist(cacheStorage.getDB(), operationBean);
-					Transaction transaction = new HostspotDataAsyncRollbackTransaction(exist,
-							cacheConfig.getCacheType() == CacheType.keys, cacheStorage.getCache(), operationBean);
+					Transaction transaction = new HostspotDataAsyncRollbackTransaction(
+							exist,
+							cacheConfig.getCacheType() == CacheType.keys,
+							cacheStorage.getCache(), operationBean);
 					collection.add(transaction);
 					break;
 				default:
@@ -60,11 +66,13 @@ public class CacheAsyncConsumer {
 				}
 			}
 
-			TransactionContext.getInstance().execute(cacheStorage.getDB(), sqls, collection);
+			TransactionContext.execute(cacheStorage.getDB(), sqls);
+			TransactionContext.execute(collection);
+			TransactionContext.commit();
 		} catch (Exception e) {
 			throw e;
 		} finally {
-			TransactionContext.getInstance().end();
+			TransactionContext.end();
 		}
 	}
 }
@@ -75,7 +83,8 @@ class HostspotDataAsyncRollbackTransaction extends AbstractTransaction {
 	private final boolean key;
 	private final boolean exist;
 
-	public HostspotDataAsyncRollbackTransaction(boolean exist, boolean key, Cache cache, OperationBean operationBean) {
+	public HostspotDataAsyncRollbackTransaction(boolean exist, boolean key,
+			Cache cache, OperationBean operationBean) {
 		this.cache = cache;
 		this.operationBean = operationBean;
 		this.exist = exist;
@@ -92,12 +101,14 @@ class HostspotDataAsyncRollbackTransaction extends AbstractTransaction {
 	}
 
 	public void rollback() throws Exception {
-		Map<String, Object> map = CacheUtils.getObjectProperties(operationBean.getBean());
+		Map<String, Object> map = CacheUtils.getObjectProperties(operationBean
+				.getBean());
 		StringBuilder sb = new StringBuilder();
 		sb.append(operationBean.getBean().getClass().getName());
 		sb.append("{");
 		if (map != null) {
-			Iterator<Entry<String, Object>> iterator = map.entrySet().iterator();
+			Iterator<Entry<String, Object>> iterator = map.entrySet()
+					.iterator();
 			while (iterator.hasNext()) {
 				Entry<String, Object> entry = iterator.next();
 				sb.append(entry.getKey());
@@ -110,7 +121,8 @@ class HostspotDataAsyncRollbackTransaction extends AbstractTransaction {
 			}
 			sb.append("}");
 		}
-		Logger.debug("CacheAsyncConsumer-rollback-" + operationBean.getOperationType().name(), sb.toString());
+		Logger.debug("CacheAsyncConsumer-rollback-"
+				+ operationBean.getOperationType().name(), sb.toString());
 		cache.hostspotDataAsyncRollback(operationBean, key, exist);
 	}
 }
