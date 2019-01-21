@@ -4,8 +4,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
-
 public final class XUtils {
 	private XUtils() {
 	};
@@ -18,20 +16,15 @@ public final class XUtils {
 		return System.getProperty("os.name").toLowerCase().startsWith("mac");
 	}
 
-	/*
-	 * public static void close(final AutoCloseable... closeables) {
-	 * close(false, closeables); }
-	 */
-
 	public static void close(AutoCloseable... closeables) {
-		try {
-			for (AutoCloseable closeable : closeables) {
-				if (closeable != null) {
+		for (AutoCloseable closeable : closeables) {
+			if (closeable != null) {
+				try {
 					closeable.close();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
-		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
 		}
 	}
 

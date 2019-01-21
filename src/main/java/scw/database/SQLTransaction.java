@@ -21,10 +21,8 @@ public final class SQLTransaction extends AbstractTransaction {
 		this.connectionSource = connectionSource;
 	}
 
-	public void clear() {
-		connection = null;
-		preparedStatements = null;
-		sqlMap.clear();
+	public SQLTransaction(Connection connection) {
+		this.connection = connection;
 	}
 
 	public void addSql(SQL sql) {
@@ -48,33 +46,42 @@ public final class SQLTransaction extends AbstractTransaction {
 	}
 
 	public void process() throws Exception {
-		if (!sqlMap.isEmpty()) {
-			int i = 0;
-			for (Entry<String, SQL> entry : sqlMap.entrySet()) {
-				PreparedStatement stmt = connection.prepareStatement(entry.getValue().getSql());
-				preparedStatements[i++] = stmt;
-				DataBaseUtils.setParams(stmt, entry.getValue().getParams());
-				try {
-					stmt.execute();
-				} catch (SQLException e) {
-					throw new TransactionProcessException(DataBaseUtils.getSQLId(entry.getValue()), e);
-				}
+		int i = 0;
+		for (Entry<String, SQL> entry : sqlMap.entrySet()) {
+			PreparedStatement stmt = connection.prepareStatement(entry.getValue().getSql());
+			preparedStatements[i++] = stmt;
+			DataBaseUtils.setParams(stmt, entry.getValue().getParams());
+			try {
+				stmt.execute();
+			} catch (SQLException e) {
+				throw new TransactionProcessException(DataBaseUtils.getSQLId(entry.getValue()), e);
 			}
 		}
 	}
 
 	public void end() throws Exception {
-		if (!sqlMap.isEmpty()) {
-			if (preparedStatements != null) {
-				XUtils.close(preparedStatements);
+		if (preparedStatements != null) {
+			XUtils.close(preparedStatements);
+		}
+
+		if (connection != null) {
+			try {
+				connection.commit();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 
-			if (connection != null) {
-				connection.commit();
+			try {
 				connection.setAutoCommit(true);
-				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-			connection = null;
+
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
