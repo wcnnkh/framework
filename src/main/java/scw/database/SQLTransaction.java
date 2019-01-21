@@ -16,23 +16,9 @@ public final class SQLTransaction extends AbstractTransaction {
 	private Connection connection;
 	private ConnectionSource connectionSource;
 	private PreparedStatement[] preparedStatements;
-	private int transactionLevel = -1;
-	private int oldTransactionLevel = -1;
 
 	public SQLTransaction(ConnectionSource connectionSource) {
-		this(connectionSource, -1);
-	}
-
-	/**
-	 * @param db
-	 * @param transactionLevel
-	 * @param updateStack
-	 *            如果为true 那么执行后的updateCount大于0就成功，不然就抛出异常.
-	 */
-	public SQLTransaction(ConnectionSource connectionSource,
-			int transactionLevel) {
 		this.connectionSource = connectionSource;
-		this.transactionLevel = transactionLevel;
 	}
 
 	public void clear() {
@@ -57,11 +43,6 @@ public final class SQLTransaction extends AbstractTransaction {
 			}
 
 			connection.setAutoCommit(false);
-			this.oldTransactionLevel = connection.getTransactionIsolation();
-			if (transactionLevel >= 0) {
-				connection.setTransactionIsolation(transactionLevel);
-			}
-
 			preparedStatements = new PreparedStatement[sqlMap.size()];
 		}
 	}
@@ -70,15 +51,13 @@ public final class SQLTransaction extends AbstractTransaction {
 		if (!sqlMap.isEmpty()) {
 			int i = 0;
 			for (Entry<String, SQL> entry : sqlMap.entrySet()) {
-				PreparedStatement stmt = connection.prepareStatement(entry
-						.getValue().getSql());
+				PreparedStatement stmt = connection.prepareStatement(entry.getValue().getSql());
 				preparedStatements[i++] = stmt;
 				DataBaseUtils.setParams(stmt, entry.getValue().getParams());
 				try {
 					stmt.execute();
 				} catch (SQLException e) {
-					throw new TransactionProcessException(
-							DataBaseUtils.getSQLId(entry.getValue()), e);
+					throw new TransactionProcessException(DataBaseUtils.getSQLId(entry.getValue()), e);
 				}
 			}
 		}
@@ -92,9 +71,6 @@ public final class SQLTransaction extends AbstractTransaction {
 
 			if (connection != null) {
 				connection.commit();
-				if (transactionLevel >= 0) {
-					connection.setTransactionIsolation(oldTransactionLevel);
-				}
 				connection.setAutoCommit(true);
 				connection.close();
 			}
