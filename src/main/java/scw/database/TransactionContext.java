@@ -17,8 +17,7 @@ import scw.database.result.ResultSet;
  */
 public final class TransactionContext {
 	private static final ThreadLocal<TransactionContextInfo> CONTEXT = new ThreadLocal<TransactionContextInfo>();
-	private static volatile ContextConfig GLOBA_CONFIG = new ContextConfig(
-			false, true, false);
+	private static volatile ContextConfig GLOBA_CONFIG = new ContextConfig(false, true, false);
 
 	/**
 	 * 获取全局配置
@@ -65,7 +64,14 @@ public final class TransactionContext {
 	 * @return
 	 */
 	public static void end() {
-		CONTEXT.get().end();
+		TransactionContextInfo info = CONTEXT.get();
+		if (info.getIndex() == 1) {
+			try {
+				info.end();
+			} finally {
+				CONTEXT.remove();
+			}
+		}
 	}
 
 	public static void execute(Transaction transaction) {
@@ -76,8 +82,7 @@ public final class TransactionContext {
 			if (contextInfo.getTransactionContextConfig().isAutoCommit()) {
 				AbstractTransaction.transaction(transaction);
 			} else {
-				contextInfo.getTransactionContextQuarantine().addTransaction(
-						transaction);
+				contextInfo.getTransactionContextQuarantine().addTransaction(transaction);
 			}
 		}
 	}
@@ -92,13 +97,11 @@ public final class TransactionContext {
 				continue;
 			}
 
-			Logger.debug(TransactionContext.class.getName(),
-					DataBaseUtils.getSQLId(sql));
+			Logger.debug(TransactionContext.class.getName(), DataBaseUtils.getSQLId(sql));
 		}
 	}
 
-	private static void forceExecute(ConnectionSource connectionSource,
-			Collection<SQL> sqls, boolean debug) {
+	private static void forceExecute(ConnectionSource connectionSource, Collection<SQL> sqls, boolean debug) {
 		SQLTransaction sqlTransaction = new SQLTransaction(connectionSource);
 		Iterator<SQL> iterator = sqls.iterator();
 		while (iterator.hasNext()) {
@@ -112,8 +115,7 @@ public final class TransactionContext {
 		AbstractTransaction.transaction(sqlTransaction);
 	}
 
-	public static void execute(ConnectionSource connectionSource,
-			Collection<SQL> sqls) {
+	public static void execute(ConnectionSource connectionSource, Collection<SQL> sqls) {
 		Assert.notNull(connectionSource);
 		Assert.notNull(sqls);
 
@@ -122,11 +124,9 @@ public final class TransactionContext {
 			forceExecute(connectionSource, sqls, GLOBA_CONFIG.isDebug());
 		} else {
 			if (contextInfo.getTransactionContextConfig().isAutoCommit()) {
-				forceExecute(connectionSource, sqls, contextInfo
-						.getTransactionContextConfig().isDebug());
+				forceExecute(connectionSource, sqls, contextInfo.getTransactionContextConfig().isDebug());
 			} else {
-				contextInfo.getTransactionContextQuarantine().addSql(
-						connectionSource, sqls);
+				contextInfo.getTransactionContextQuarantine().addSql(connectionSource, sqls);
 			}
 		}
 	}

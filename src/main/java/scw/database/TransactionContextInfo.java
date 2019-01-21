@@ -38,15 +38,13 @@ public class TransactionContextInfo {
 		ResultSet resultSet;
 		String id = DataBaseUtils.getSQLId(sql);
 		if (cacheMap == null) {
-			cacheMap = new HashMap<ConnectionSource, Map<String, ResultSet>>(2,
-					1);
+			cacheMap = new HashMap<ConnectionSource, Map<String, ResultSet>>(2, 1);
 			resultSet = realSelect(connectionSource, sql);
 			Map<String, ResultSet> map = new HashMap<String, ResultSet>();
 			map.put(id, resultSet);
 			cacheMap.put(connectionSource, map);
 		} else {
-			Map<String, ResultSet> map = cacheMap.getOrDefault(
-					connectionSource, new HashMap<String, ResultSet>());
+			Map<String, ResultSet> map = cacheMap.getOrDefault(connectionSource, new HashMap<String, ResultSet>());
 			if (map == null) {
 				resultSet = realSelect(connectionSource, sql);
 				map = new HashMap<String, ResultSet>();
@@ -75,8 +73,7 @@ public class TransactionContextInfo {
 			configList.add(new TransactionContextQuarantine(config));
 		} else {
 			TransactionContextQuarantine lastConfig = configList.getLast();
-			configList.add(new TransactionContextQuarantine(lastConfig
-					.getConfig()));
+			configList.add(new TransactionContextQuarantine(lastConfig.getConfig()));
 		}
 		index++;
 	}
@@ -116,49 +113,51 @@ public class TransactionContextInfo {
 		}
 	}
 
+	private void execute() {
+		if (sqlList != null) {
+			Iterator<TransactionSql> iterator = sqlList.iterator();
+			HashMap<ConnectionSource, SQLTransaction> dbSqlMap = new HashMap<ConnectionSource, SQLTransaction>(2, 1);
+			while (iterator.hasNext()) {
+				TransactionSql transactionSql = iterator.next();
+				SQLTransaction sqlTransaction = dbSqlMap.get(transactionSql.getConnectionSource());
+				if (sqlTransaction == null) {
+					sqlTransaction = new SQLTransaction(transactionSql.getConnectionSource());
+					dbSqlMap.put(transactionSql.getConnectionSource(), sqlTransaction);
+				}
+
+				Iterator<SQL> sqlIterator = transactionSql.getSqls().iterator();
+				while (sqlIterator.hasNext()) {
+					SQL sql = sqlIterator.next();
+					if (sql == null) {
+						continue;
+					}
+					sqlTransaction.addSql(sql);
+				}
+			}
+
+			if (transactionCollection == null) {
+				transactionCollection = new TransactionCollection();
+			}
+			
+			for (Entry<ConnectionSource, SQLTransaction> entry : dbSqlMap.entrySet()) {
+				transactionCollection.add(entry.getValue());
+			}
+		}
+
+		if (transactionCollection != null) {
+			AbstractTransaction.transaction(transactionCollection);
+		}
+	}
+
 	public void end() {
 		index--;
 		configList.removeLast();
 		if (index == 0) {// 最后一次了,执行吧
-			if (sqlList != null) {
-				HashMap<ConnectionSource, SQLTransaction> dbSqlMap = new HashMap<ConnectionSource, SQLTransaction>(
-						2, 1);
-				Iterator<TransactionSql> iterator = sqlList.iterator();
-				while (iterator.hasNext()) {
-					TransactionSql transactionSql = iterator.next();
-					SQLTransaction sqlTransaction = dbSqlMap.get(transactionSql
-							.getConnectionSource());
-					if (sqlTransaction == null) {
-						sqlTransaction = new SQLTransaction(
-								transactionSql.getConnectionSource());
-						dbSqlMap.put(transactionSql.getConnectionSource(),
-								sqlTransaction);
-					}
-
-					Iterator<SQL> sqlIterator = transactionSql.getSqls()
-							.iterator();
-					while (sqlIterator.hasNext()) {
-						SQL sql = sqlIterator.next();
-						if (sql == null) {
-							continue;
-						}
-						sqlTransaction.addSql(sql);
-					}
-				}
-
-				if (transactionCollection == null) {
-					transactionCollection = new TransactionCollection();
-				}
-
-				for (Entry<ConnectionSource, SQLTransaction> entry : dbSqlMap
-						.entrySet()) {
-					transactionCollection.add(entry.getValue());
-				}
-			}
-
-			if (transactionCollection != null) {
-				AbstractTransaction.transaction(transactionCollection);
-			}
+			execute();
 		}
+	}
+
+	public int getIndex() {
+		return index;
 	}
 }

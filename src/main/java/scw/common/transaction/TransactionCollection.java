@@ -18,12 +18,6 @@ public final class TransactionCollection extends LinkedList<Transaction>
 		super(transactions);
 	}
 
-	public void clear() {
-		super.clear();
-		beginTag = 0;
-		processTag = 0;
-	}
-
 	public void begin() throws Exception {
 		Iterator<Transaction> iterator = iterator();
 		for (; iterator.hasNext(); beginTag++) {
