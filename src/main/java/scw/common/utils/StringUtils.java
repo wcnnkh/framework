@@ -750,6 +750,10 @@ public final class StringUtils {
 	 * @return
 	 */
 	public static String reversed(String str) {
+		if (isEmpty(str)) {
+			return str;
+		}
+
 		return new String(reversedCharArray(str.toCharArray()));
 	}
 

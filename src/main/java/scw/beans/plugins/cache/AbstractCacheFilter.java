@@ -63,12 +63,12 @@ public abstract class AbstractCacheFilter implements BeanFilter {
 			if (timerTagMap.put(key, true) == null) {
 				// 以前没的过
 				long exp = cache.timeUnit().toMillis(cache.exp());
-				timer.schedule(task, cache.async() ? 0 : exp, exp);
+				timer.schedule(task, exp, exp);
 			}
 		}
 
 		Object rtn = getCache(key, method.getReturnType());
-		if (rtn == null && !cache.async()) {
+		if (rtn == null) {
 			rtn = beanFilterChain.doFilter(obj, method, args, proxy);
 			if (rtn != null) {
 				setCache(key, (int) cache.timeUnit().toSeconds(cache.exp()), method.getReturnType(), rtn);

@@ -19,12 +19,6 @@ public @interface Cache {
 	public int[] keyIndex() default {};
 	
 	/**
-	 * 是否异步
-	 * @return
-	 */
-	public boolean async() default true;
-
-	/**
 	 * 缓存失效时间 默认10分钟
 	 * 
 	 * @return
