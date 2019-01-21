@@ -71,6 +71,8 @@ public final class TransactionContext {
 			} finally {
 				CONTEXT.remove();
 			}
+		} else {
+			info.end();
 		}
 	}
 
