@@ -1,23 +1,25 @@
 package scw.beans;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import net.sf.cglib.proxy.MethodProxy;
 
 public final class BeanFilterChain {
-	private Iterator<BeanFilter> filterIterator;
-	
-	public BeanFilterChain(List<BeanFilter> filters){
-		if(filters != null){
+	private Iterator<String> filterIterator;
+	private BeanFactory beanFactory;
+
+	public BeanFilterChain(BeanFactory beanFactory, Collection<String> filters) {
+		if (filters != null) {
 			this.filterIterator = filters.iterator();
 		}
 	}
-	
-	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable{
+
+	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		if (filterIterator != null && filterIterator.hasNext()) {
-			return filterIterator.next().doFilter(obj, method, args, proxy, this);
+			BeanFilter beanFilter = beanFactory.get(filterIterator.next());
+			return beanFilter.doFilter(obj, method, args, proxy, this);
 		} else {
 			return proxy.invokeSuper(obj, args);
 		}

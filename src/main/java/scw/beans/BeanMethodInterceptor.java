@@ -1,9 +1,8 @@
 package scw.beans;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -27,10 +26,11 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 	}
 
 	private Object filter(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		List<BeanFilter> beanFilters = new ArrayList<BeanFilter>(4);
+		// 把重复的filter过渡
+		LinkedHashSet<String> filterSet = new LinkedHashSet<String>();
 		if (filterNames != null) {
 			for (String name : filterNames) {
-				beanFilters.add((BeanFilter) beanFactory.get(name));
+				filterSet.add(name);
 			}
 		}
 
@@ -38,18 +38,18 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 				.getAnnotation(scw.beans.annotaion.BeanFilter.class);
 		if (beanFilter != null) {
 			for (Class<? extends BeanFilter> c : beanFilter.value()) {
-				beanFilters.add(beanFactory.get(c));
+				filterSet.add(c.getName());
 			}
 		}
 
 		beanFilter = method.getAnnotation(scw.beans.annotaion.BeanFilter.class);
 		if (beanFilter != null) {
 			for (Class<? extends BeanFilter> c : beanFilter.value()) {
-				beanFilters.add(beanFactory.get(c));
+				filterSet.add(c.getName());
 			}
 		}
 
-		BeanFilterChain beanFilterChain = new BeanFilterChain(beanFilters);
+		BeanFilterChain beanFilterChain = new BeanFilterChain(beanFactory, filterSet);
 		return beanFilterChain.doFilter(obj, method, args, proxy);
 	}
 
