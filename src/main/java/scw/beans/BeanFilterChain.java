@@ -11,6 +11,7 @@ public final class BeanFilterChain {
 	private BeanFactory beanFactory;
 
 	public BeanFilterChain(BeanFactory beanFactory, Collection<String> filters) {
+		this.beanFactory = beanFactory;
 		if (filters != null) {
 			this.filterIterator = filters.iterator();
 		}
