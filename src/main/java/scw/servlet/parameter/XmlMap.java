@@ -24,32 +24,22 @@ public final class XmlMap extends LinkedHashMap<String, String> {
 
 	public XmlMap(Request request) throws IOException {
 		BufferedReader reader = request.getReader();
-		try {
-			if (reader.markSupported()) {
-				reader.mark(0);
+		Document document = XMLUtils.parse(new InputSource(reader));
+		Element element = document.getDocumentElement();
+		NodeList nodeList = element.getChildNodes();
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Node n = nodeList.item(i);
+			if (n == null) {
+				continue;
 			}
 
-			Document document = XMLUtils.parse(new InputSource(reader));
-			Element element = document.getDocumentElement();
-			NodeList nodeList = element.getChildNodes();
-			for (int i = 0; i < nodeList.getLength(); i++) {
-				Node n = nodeList.item(i);
-				if (n == null) {
-					continue;
-				}
-
-				String nodeName = n.getNodeName();
-				if (!XMLUtils.checkNodeName(nodeName)) {
-					continue;
-				}
-
-				String value = n.getTextContent();
-				put(nodeName, value);
+			String nodeName = n.getNodeName();
+			if (!XMLUtils.checkNodeName(nodeName)) {
+				continue;
 			}
-		} finally {
-			if (reader.markSupported()) {
-				reader.reset();
-			}
+
+			String value = n.getTextContent();
+			put(nodeName, value);
 		}
 	}
 }
