@@ -7,6 +7,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
+import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
 
 public final class Rabbit extends ConnectionFactory {
@@ -27,5 +28,10 @@ public final class Rabbit extends ConnectionFactory {
 
 	public Connection getConnection() {
 		return connection;
+	}
+
+	@Destroy
+	public void close() throws IOException {
+		connection.close();
 	}
 }
