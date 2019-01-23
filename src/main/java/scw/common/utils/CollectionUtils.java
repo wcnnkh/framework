@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import scw.common.ClassInfo;
+import scw.common.FieldInfo;
 import scw.common.MultiValueMap;
 
 public abstract class CollectionUtils {
@@ -441,6 +443,54 @@ public abstract class CollectionUtils {
 			collection.add(values[i]);
 		}
 		return collection;
+	}
+
+	/**
+	 * 提取多个对象的字段
+	 * 
+	 * @param objList
+	 * @param fieldName
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Collection<T> getFieldCollection(Collection<?> objList, String fieldName) {
+		if (isEmpty(objList) || StringUtils.isEmpty(fieldName)) {
+			return Collections.EMPTY_LIST;
+		}
+
+		LinkedList<T> list = new LinkedList<T>();
+		Iterator<?> iterator = objList.iterator();
+		ClassInfo classInfo = null;
+		while (iterator.hasNext()) {
+			Object obj = iterator.next();
+			if (obj == null) {
+				continue;
+			}
+
+			if (classInfo == null) {
+				classInfo = ClassUtils.getClassInfo(obj.getClass());
+			}
+
+			FieldInfo fieldInfo = classInfo.getFieldInfo(fieldName);
+			if (fieldInfo == null) {
+				continue;
+			}
+
+			Object v;
+			try {
+				v = fieldInfo.forceGet(obj);
+				if (v == null) {
+					continue;
+				}
+
+				list.add((T) v);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		return list;
 	}
 
 	/**
