@@ -1,37 +1,24 @@
 package scw.database;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import scw.common.Logger;
-import scw.common.transaction.AbstractTransaction;
-import scw.common.transaction.Transaction;
-import scw.common.transaction.TransactionCollection;
 import scw.database.result.ResultSet;
 
 public class TransactionContextInfo {
-	private Map<ConnectionSource, Map<String, ResultSet>> cacheMap;// 查询缓存
-	private LinkedList<TransactionSql> sqlList;// sql事务缓存
-	private TransactionCollection transactionCollection;// tcc缓存
-	private ContextConfig config;
+	private TransactionContextQuarantine quarantine;
+	private LinkedList<TransactionContextQuarantine> quarantineList = new LinkedList<TransactionContextQuarantine>();// 事务隔离
 	private int index = 0;// 开始标记
-
-	private LinkedList<TransactionContextQuarantine> configList = new LinkedList<TransactionContextQuarantine>();// 事务隔离
+	private Map<ConnectionSource, Map<String, ResultSet>> cacheMap;// 查询缓存
 
 	public TransactionContextInfo(ContextConfig config) {
-		this.config = config;
-	}
-
-	public ContextConfig getTransactionContextConfig() {
-		return config;
+		quarantine = new TransactionContextQuarantine(config);
 	}
 
 	public TransactionContextQuarantine getTransactionContextQuarantine() {
-		return configList.getLast();
+		return quarantineList.getLast();
 	}
 
 	public ResultSet select(ConnectionSource connectionSource, SQL sql) {
@@ -62,7 +49,7 @@ public class TransactionContextInfo {
 	}
 
 	private ResultSet realSelect(ConnectionSource connectionSource, SQL sql) {
-		if (getTransactionContextConfig().isDebug()) {
+		if (getTransactionContextQuarantine().getConfig().isDebug()) {
 			Logger.debug(this.getClass().getName(), DataBaseUtils.getSQLId(sql));
 		}
 		return DataBaseUtils.select(connectionSource, sql);
@@ -70,90 +57,24 @@ public class TransactionContextInfo {
 
 	public void begin() {
 		if (index == 0) {
-			configList.add(new TransactionContextQuarantine(config));
+			quarantineList.add(new TransactionContextQuarantine(quarantine.getConfig()));
 		} else {
-			TransactionContextQuarantine lastConfig = configList.getLast();
-			configList.add(new TransactionContextQuarantine(lastConfig.getConfig()));
+			TransactionContextQuarantine lastConfig = quarantineList.getLast();
+			quarantineList.add(new TransactionContextQuarantine(lastConfig.getConfig()));
 		}
 		index++;
 	}
 
 	public void commit() {// 把当前级别的事务汇总到事务缓存中
-		TransactionContextQuarantine lastConfig = configList.getLast();
-		List<Transaction> tList = lastConfig.getTransactionList();
-		if (tList != null) {
-			if (transactionCollection == null) {
-				transactionCollection = new TransactionCollection();
-			}
-
-			Iterator<Transaction> iterator = tList.iterator();
-			while (iterator.hasNext()) {
-				Transaction transaction = iterator.next();
-				if (transaction != null) {
-					transactionCollection.add(transaction);
-				}
-				iterator.remove();
-			}
-		}
-
-		LinkedList<TransactionSql> commitSqlList = lastConfig.getSqlList();
-		if (commitSqlList != null) {
-			if (sqlList == null) {
-				sqlList = new LinkedList<TransactionSql>();
-			}
-
-			Iterator<TransactionSql> iterator = commitSqlList.iterator();
-			while (iterator.hasNext()) {
-				TransactionSql sql = iterator.next();
-				if (sql != null) {
-					sqlList.add(sql);
-				}
-				iterator.remove();
-			}
-		}
-	}
-
-	private void execute() {
-		if (sqlList != null) {
-			Iterator<TransactionSql> iterator = sqlList.iterator();
-			HashMap<ConnectionSource, SQLTransaction> dbSqlMap = new HashMap<ConnectionSource, SQLTransaction>(2, 1);
-			while (iterator.hasNext()) {
-				TransactionSql transactionSql = iterator.next();
-				SQLTransaction sqlTransaction = dbSqlMap.get(transactionSql.getConnectionSource());
-				if (sqlTransaction == null) {
-					sqlTransaction = new SQLTransaction(transactionSql.getConnectionSource());
-					dbSqlMap.put(transactionSql.getConnectionSource(), sqlTransaction);
-				}
-
-				Iterator<SQL> sqlIterator = transactionSql.getSqls().iterator();
-				while (sqlIterator.hasNext()) {
-					SQL sql = sqlIterator.next();
-					if (sql == null) {
-						continue;
-					}
-					sqlTransaction.addSql(sql);
-				}
-			}
-
-			if (transactionCollection == null) {
-				transactionCollection = new TransactionCollection();
-			}
-			
-			for (Entry<ConnectionSource, SQLTransaction> entry : dbSqlMap.entrySet()) {
-				transactionCollection.add(entry.getValue());
-			}
-		}
-
-		if (transactionCollection != null) {
-			AbstractTransaction.transaction(transactionCollection);
-		}
+		TransactionContextQuarantine lastConfig = quarantineList.getLast();
+		quarantine.commit(lastConfig);
 	}
 
 	public void end() {
 		index--;
-		configList.removeLast();
+		quarantineList.removeLast();
 		if (index == 0) {// 最后一次了,执行吧
-			execute();
+			quarantine.execute();
 		}
 	}
 

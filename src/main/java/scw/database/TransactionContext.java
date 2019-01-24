@@ -34,7 +34,7 @@ public final class TransactionContext {
 	 * @return
 	 */
 	public static ContextConfig getConfig() {
-		return CONTEXT.get().getTransactionContextConfig();
+		return CONTEXT.get().getTransactionContextQuarantine().getConfig();
 	}
 
 	/**
@@ -81,26 +81,31 @@ public final class TransactionContext {
 		if (contextInfo == null) {
 			AbstractTransaction.transaction(transaction);
 		} else {
-			if (contextInfo.getTransactionContextConfig().isAutoCommit()) {
+			TransactionContextQuarantine quarantine = contextInfo.getTransactionContextQuarantine();
+			if (quarantine.getConfig().isAutoCommit()) {
 				AbstractTransaction.transaction(transaction);
 			} else {
-				contextInfo.getTransactionContextQuarantine().addTransaction(transaction);
+				quarantine.addTransaction(transaction);
 			}
 		}
 	}
 
 	private static void debug(Collection<SQL> sqls) {
-		Assert.notNull(sqls);
-
-		Iterator<SQL> iterator = sqls.iterator();
-		while (iterator.hasNext()) {
-			SQL sql = iterator.next();
-			if (sql == null) {
-				continue;
+		if (sqls != null) {
+			Iterator<SQL> iterator = sqls.iterator();
+			while (iterator.hasNext()) {
+				SQL sql = iterator.next();
+				debug(sql);
 			}
-
-			Logger.debug(TransactionContext.class.getName(), DataBaseUtils.getSQLId(sql));
 		}
+	}
+
+	private static void debug(SQL sql) {
+		if (sql == null) {
+			return;
+		}
+
+		Logger.debug(TransactionContext.class.getName(), DataBaseUtils.getSQLId(sql));
 	}
 
 	private static void forceExecute(ConnectionSource connectionSource, Collection<SQL> sqls, boolean debug) {
@@ -125,10 +130,15 @@ public final class TransactionContext {
 		if (contextInfo == null) {
 			forceExecute(connectionSource, sqls, GLOBA_CONFIG.isDebug());
 		} else {
-			if (contextInfo.getTransactionContextConfig().isAutoCommit()) {
-				forceExecute(connectionSource, sqls, contextInfo.getTransactionContextConfig().isDebug());
+			TransactionContextQuarantine quarantine = contextInfo.getTransactionContextQuarantine();
+			if (quarantine.getConfig().isDebug()) {
+				debug(sqls);
+			}
+
+			if (quarantine.getConfig().isAutoCommit()) {
+				forceExecute(connectionSource, sqls, false);
 			} else {
-				contextInfo.getTransactionContextQuarantine().addSql(connectionSource, sqls);
+				quarantine.addSql(connectionSource, sqls);
 			}
 		}
 	}
@@ -149,15 +159,16 @@ public final class TransactionContext {
 		TransactionContextInfo contextInfo = CONTEXT.get();
 		if (contextInfo == null) {
 			if (GLOBA_CONFIG.isDebug()) {
-				debug(Arrays.asList(sql));
+				debug(sql);
 			}
 			return DataBaseUtils.select(connectionSource, sql);
 		} else {
-			if (contextInfo.getTransactionContextConfig().isSelectCache()) {
+			TransactionContextQuarantine quarantine = contextInfo.getTransactionContextQuarantine();
+			if (quarantine.getConfig().isSelectCache()) {
 				return contextInfo.select(connectionSource, sql);
 			} else {
-				if (contextInfo.getTransactionContextConfig().isDebug()) {
-					debug(Arrays.asList(sql));
+				if (quarantine.getConfig().isDebug()) {
+					debug(sql);
 				}
 				return DataBaseUtils.select(connectionSource, sql);
 			}

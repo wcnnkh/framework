@@ -4,8 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public final class TransactionCollection extends LinkedList<Transaction>
-		implements Transaction {
+public final class TransactionCollection extends LinkedList<Transaction> implements Transaction {
 	private static final long serialVersionUID = 1L;
 	private int beginTag = 0;
 	private int processTag = 0;
