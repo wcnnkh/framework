@@ -86,9 +86,9 @@ public class MysqlFormat implements SQLFormat {
 	public SQL toUpdateSql(TableInfo tableInfo, String tableName, Map<String, Object> valueMap, Object[] params) {
 		return new UpdateSQL(tableInfo, tableName, valueMap, params);
 	}
-	
+
 	public PaginationSql toPaginationSql(SQL sql, long page, int limit) {
-		String str = sql.getSql();
+		String str = sql.getSql().toLowerCase();
 		int fromIndex = str.indexOf("from", 6);// ignore select
 		if (fromIndex == -1) {
 			throw new IndexOutOfBoundsException(str);
