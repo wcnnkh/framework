@@ -701,9 +701,9 @@ public final class StringUtils {
 		} else if (Short.class.isAssignableFrom(basicType)) {
 			return Short.valueOf(value);
 		} else if (boolean.class.isAssignableFrom(basicType)) {
-			return "1".equals(value) ? true : Boolean.parseBoolean(value);
+			return parseBoolean(value);
 		} else if (Boolean.class.isAssignableFrom(basicType)) {
-			return "1".equals(value) ? true : Boolean.valueOf(value);
+			return isEmpty(value) ? null : parseBoolean(value);
 		} else if (byte.class.isAssignableFrom(basicType)) {
 			return Byte.parseByte(value);
 		} else if (Byte.class.isAssignableFrom(basicType)) {
