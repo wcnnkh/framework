@@ -89,20 +89,28 @@ public class MysqlFormat implements SQLFormat {
 
 	public PaginationSql toPaginationSql(SQL sql, long page, int limit) {
 		String str = sql.getSql().toLowerCase();
-		int fromIndex = str.indexOf("from", 6);// ignore select
+		int fromIndex = str.indexOf(" from ");// ignore select
+		if (fromIndex == -1) {
+			fromIndex = str.indexOf(" FORM ");
+		}
+
 		if (fromIndex == -1) {
 			throw new IndexOutOfBoundsException(str);
 		}
 
 		String whereSql;
-		int orderIndex = str.lastIndexOf(" order by");
+		int orderIndex = str.lastIndexOf(" order by ");
+		if (orderIndex == -1) {
+			orderIndex = str.lastIndexOf(" ORDER BY ");
+		}
+
 		if (orderIndex == -1) {// 不存在 order by 子语句
 			whereSql = str.substring(fromIndex);
 		} else {
 			whereSql = str.substring(fromIndex, orderIndex);
 		}
 
-		SQL countSql = new SimpleSQL("select count(*) " + whereSql, sql.getParams());
+		SQL countSql = new SimpleSQL("select count(*)" + whereSql, sql.getParams());
 		StringBuilder sb = new StringBuilder(str);
 		sb.append(" limit ").append(Pagination.getBegin(page, limit)).append(",").append(limit);
 		return new PaginationSql(countSql, new SimpleSQL(sb.toString(), sql.getParams()));
