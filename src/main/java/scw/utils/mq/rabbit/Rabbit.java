@@ -10,6 +10,7 @@ import java.util.concurrent.TimeoutException;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Envelope;
 
 import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
@@ -24,6 +25,20 @@ public final class Rabbit extends ConnectionFactory {
 
 	public void submit(Runnable runnable) {
 		executorService.submit(runnable);
+	}
+
+	/**
+	 * ack确认
+	 * @param channel
+	 * @param envelope
+	 * @param multiple
+	 */
+	public void basicAck(Channel channel, Envelope envelope, boolean multiple) {
+		try {
+			channel.basicAck(envelope.getDeliveryTag(), multiple);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@InitMethod
