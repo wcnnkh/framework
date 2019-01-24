@@ -16,7 +16,7 @@ import scw.common.exception.BeansException;
 import scw.common.exception.NotSupportException;
 import scw.common.utils.StringUtils;
 
-public class XmlDubboBean implements Bean{
+public class XmlDubboBean implements Bean {
 	private final String[] names;
 	private final String id;
 	private final String version;
@@ -25,9 +25,10 @@ public class XmlDubboBean implements Bean{
 	private final Class<?> type;
 	private final ApplicationConfig application;
 	private final List<RegistryConfig> registryConfigs;
-	
-	public XmlDubboBean(ApplicationConfig applicationConfig, List<RegistryConfig> registryConfigs, 
-			String version, Class<?> interfaceClass, boolean singleton, boolean check){
+	private final int timeout;
+
+	public XmlDubboBean(ApplicationConfig applicationConfig, List<RegistryConfig> registryConfigs, String version,
+			Class<?> interfaceClass, boolean singleton, boolean check) {
 		this.application = applicationConfig;
 		this.registryConfigs = registryConfigs;
 		this.id = interfaceClass.getName();
@@ -35,37 +36,40 @@ public class XmlDubboBean implements Bean{
 		this.check = check;
 		this.singleton = singleton;
 		this.type = interfaceClass;
+		this.timeout = -1;
 		this.names = null;
 	}
-	
-	public XmlDubboBean(PropertiesFactory propertiesFactory, ApplicationConfig applicationConfig, List<RegistryConfig> registryConfigs, Node node) throws ClassNotFoundException{
+
+	public XmlDubboBean(PropertiesFactory propertiesFactory, ApplicationConfig applicationConfig,
+			List<RegistryConfig> registryConfigs, Node node) throws ClassNotFoundException {
 		this.application = applicationConfig;
 		this.registryConfigs = registryConfigs;
 		this.names = XmlBeanUtils.getNames(node);
 		this.check = XmlBeanUtils.getBooleanValue(propertiesFactory, node, "check", false);
 		this.singleton = XmlBeanUtils.isSingleton(node);
-		
+
 		String id = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "id");
 		String interfaceName = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "interface");
-		if(StringUtils.isNull(interfaceName)){
+		if (StringUtils.isNull(interfaceName)) {
 			interfaceName = node.getNodeValue();
 		}
-		
-		if(StringUtils.isNull(interfaceName)){
+
+		if (StringUtils.isNull(interfaceName)) {
 			throw new BeansException("not found interface");
 		}
-		
+
 		this.type = Class.forName(interfaceName);
-		
-		if(StringUtils.isNull(id)){
+
+		if (StringUtils.isNull(id)) {
 			this.id = interfaceName;
-		}else{
+		} else {
 			this.id = id;
 		}
-		
+
 		this.version = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "version");
+		this.timeout = XmlBeanUtils.getIntegerValue(propertiesFactory, node, "timeout", -1);
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -93,6 +97,11 @@ public class XmlDubboBean implements Bean{
 		referenceConfig.setInterface(type);
 		referenceConfig.setVersion(version);
 		referenceConfig.setCheck(check);
+
+		if (timeout != -1) {
+			referenceConfig.setTimeout(timeout);
+		}
+
 		return referenceConfig.get();
 	}
 

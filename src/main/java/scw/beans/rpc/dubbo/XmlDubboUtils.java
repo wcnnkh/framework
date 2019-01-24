@@ -33,6 +33,8 @@ public final class XmlDubboUtils {
 			serviceClassName = serviceNode.getNodeValue();
 		}
 
+		int timeout = XmlBeanUtils.getIntegerValue(propertiesFactory, serviceNode, "timeout", -1);
+
 		if (StringUtils.isNull(serviceClassName)) {
 			throw new BeansException("not found dubbo service");
 		}
@@ -53,6 +55,10 @@ public final class XmlDubboUtils {
 			serviceConfig.setInterface(i);
 			serviceConfig.setRef(ref);
 			serviceConfig.setVersion(v);
+
+			if (timeout > 0) {
+				serviceConfig.setTimeout(timeout);
+			}
 			// 暴露及注册服务
 			serviceConfig.export();
 		}
@@ -74,6 +80,7 @@ public final class XmlDubboUtils {
 					int port = Integer.parseInt(XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "port"));
 					Logger.info("dubbo:service", "开始注册dubbo服务,name=" + name + ",port=" + port);
 					int threads = XmlBeanUtils.getIntegerValue(propertiesFactory, node, "treads", 200);
+					int timeout = XmlBeanUtils.getIntegerValue(propertiesFactory, node, "timeout", -1);
 
 					ApplicationConfig application = new ApplicationConfig(name);
 					List<RegistryConfig> registryConfigs = new ArrayList<RegistryConfig>();
@@ -82,6 +89,9 @@ public final class XmlDubboUtils {
 						RegistryConfig registryConfig = new RegistryConfig();
 						registryConfig.setAddress(address);
 						registryConfigs.add(registryConfig);
+						if (timeout > 0) {
+							registryConfig.setTimeout(timeout);
+						}
 					}
 
 					List<ProtocolConfig> protocolConfigs = new ArrayList<ProtocolConfig>();

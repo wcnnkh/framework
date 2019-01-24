@@ -36,6 +36,7 @@ public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 				String version = XmlBeanUtils.getVersion(propertiesFactory, node);
 				boolean singleton = XmlBeanUtils.isSingleton(node);
 				boolean check = XmlBeanUtils.getBooleanValue(propertiesFactory, node, "check", false);
+				int timeout = XmlBeanUtils.getIntegerValue(propertiesFactory, node, "timeout", -1);
 
 				ApplicationConfig application = new ApplicationConfig(name);
 				List<RegistryConfig> registryConfigs = new ArrayList<RegistryConfig>();
@@ -44,6 +45,10 @@ public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 					RegistryConfig registryConfig = new RegistryConfig();
 					registryConfig.setAddress(add);
 					registryConfigs.add(registryConfig);
+
+					if (timeout > 0) {
+						registryConfig.setTimeout(timeout);
+					}
 				}
 
 				String packageName = XmlBeanUtils.getPackageName(propertiesFactory, node);
