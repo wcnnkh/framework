@@ -132,12 +132,16 @@ public class FormRequest extends Request {
 
 	public Boolean getBoolean(String key) {
 		String v = getValue(key);
-		return "1".equals(v) ? true : Boolean.valueOf(v);
+		if (StringUtils.isEmpty(v)) {
+			return null;
+		}
+
+		return StringUtils.parseBoolean(v);
 	}
 
 	public boolean getBooleanValue(String key) {
 		String v = getRequireValue(key);
-		return "1".equals(v) ? true : Boolean.parseBoolean(v);
+		return StringUtils.parseBoolean(v);
 	}
 
 	public Float getFloat(String key) {

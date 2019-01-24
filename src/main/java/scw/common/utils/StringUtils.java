@@ -364,6 +364,15 @@ public final class StringUtils {
 		return dataArr;
 	}
 
+	public static boolean parseBoolean(String text) {
+		if (StringUtils.isEmpty(text)) {
+			return false;
+		}
+
+		return "1".equals(text) || "true".equalsIgnoreCase(text) || "yes".equalsIgnoreCase(text)
+				|| "T".equalsIgnoreCase(text);
+	}
+
 	/**
 	 * 1M = 1024K
 	 * 

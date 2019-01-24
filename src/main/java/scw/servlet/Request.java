@@ -169,7 +169,7 @@ public abstract class Request extends HttpServletRequestWrapper {
 		int pos = 0;
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
-			if(c == ' ' || c == ','){
+			if (c == ' ' || c == ',') {
 				continue;
 			}
 			chars[pos++] = c;

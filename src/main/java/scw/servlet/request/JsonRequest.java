@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import scw.common.Logger;
+import scw.common.utils.StringUtils;
 import scw.servlet.Request;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.parameter.Body;
@@ -79,25 +80,21 @@ public class JsonRequest extends Request {
 	@Override
 	public Boolean getBoolean(String key) {
 		String v = getString(key);
-		if (v == null || v.length() == 0) {
+		if (StringUtils.isEmpty(v)) {
 			return null;
 		}
 
-		return "1".equals(v) || "true".equals(v);
+		return StringUtils.parseBoolean(v);
 	}
 
 	@Override
 	public boolean getBooleanValue(String key) {
-		if (!json.containsKey(key)) {
-			throw new NullPointerException("require '" + key + "'");
-		}
-
 		String v = getString(key);
-		if (v == null || v.length() == 0) {
+		if (StringUtils.isEmpty(v)) {
 			throw new NullPointerException("require '" + key + "'");
 		}
 
-		return "1".equals(v) || "true".equals(v.toLowerCase());
+		return StringUtils.parseBoolean(v);
 	}
 
 	@Override
