@@ -174,4 +174,23 @@ public final class TransactionContext {
 			}
 		}
 	}
+
+	/**
+	 * 添加对事务生命周期的监听
+	 * 
+	 * @param lifeCycle
+	 */
+	public static void addTransactionLifeCycleListenin(TransactionLifeCycle lifeCycle) {
+		if (lifeCycle == null) {
+			return;
+		}
+
+		TransactionContextInfo contextInfo = CONTEXT.get();
+		if (contextInfo == null) {
+			return;
+		}
+
+		TransactionContextQuarantine quarantine = contextInfo.getTransactionContextQuarantine();
+		quarantine.addTransactionLifeCycleListenin(lifeCycle);
+	}
 }
