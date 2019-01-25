@@ -8,55 +8,55 @@ import java.util.List;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.ColumnInfo;
 import scw.database.DataBaseUtils;
+import scw.database.ResultSet;
 import scw.database.SQL;
 import scw.database.TableInfo;
-import scw.database.result.ResultSet;
 import scw.db.AbstractDB;
 
-public class MysqlSelect extends Select{
+public class MysqlSelect extends Select {
 	/**
 	 * 表和表的别名
 	 */
 	private StringBuilder whereSql;
 	private List<Object> paramList;
 	private StringBuilder orderBySql;
-	
-	public MysqlSelect(AbstractDB db){
+
+	public MysqlSelect(AbstractDB db) {
 		super(db);
 	}
-	
-	private void checkWhereInit(){
-		if(whereSql == null){
+
+	private void checkWhereInit() {
+		if (whereSql == null) {
 			whereSql = new StringBuilder();
 		}
-		
-		if(paramList == null){
+
+		if (paramList == null) {
 			paramList = new ArrayList<Object>();
 		}
 	}
-	
-	private void checkOrderInit(){
-		if(orderBySql == null){
+
+	private void checkOrderInit() {
+		if (orderBySql == null) {
 			orderBySql = new StringBuilder();
 		}
 	}
-	
+
 	@Override
 	public Select whereAndValue(Class<?> tableClass, String name, Object value) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
-		if(!tableInfo.isTable()){
+		if (!tableInfo.isTable()) {
 			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
 		}
-		
+
 		String tableName = getTableName(tableClass);
 		checkWhereInit();
-		if(whereSql.length() != 0){
+		if (whereSql.length() != 0) {
 			whereSql.append(" and ");
 		}
 		whereSql.append(tableInfo.getColumnInfo(name).getSQLName(tableName));
 		whereSql.append("=?");
 		paramList.add(value);
-		
+
 		addSelectTable(tableName);
 		return this;
 	}
@@ -64,13 +64,13 @@ public class MysqlSelect extends Select{
 	@Override
 	public Select whereOrValue(Class<?> tableClass, String name, Object value) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
-		if(!tableInfo.isTable()){
+		if (!tableInfo.isTable()) {
 			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
 		}
-		
+
 		String tableName = getTableName(tableClass);
 		checkWhereInit();
-		if(whereSql.length() != 0){
+		if (whereSql.length() != 0) {
 			whereSql.append(" or ");
 		}
 		whereSql.append(tableInfo.getColumnInfo(name).getSQLName(tableName));
@@ -82,27 +82,27 @@ public class MysqlSelect extends Select{
 
 	@Override
 	public Select whereAndIn(Class<?> tableClass, String name, Collection<?> values) {
-		if(values == null || values.isEmpty() || name == null || tableClass == null){
+		if (values == null || values.isEmpty() || name == null || tableClass == null) {
 			throw new NullPointerException();
 		}
-		
+
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
-		if(!tableInfo.isTable()){
+		if (!tableInfo.isTable()) {
 			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
 		}
-		
+
 		String tableName = getTableName(tableClass);
 		checkWhereInit();
-		if(whereSql.length() != 0){
+		if (whereSql.length() != 0) {
 			whereSql.append(" and ");
 		}
 		whereSql.append(tableInfo.getColumnInfo(name).getSQLName(tableName));
 		whereSql.append(" in(");
 		Iterator<?> iterator = values.iterator();
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			paramList.add(iterator.next());
 			whereSql.append("?");
-			if(iterator.hasNext()){
+			if (iterator.hasNext()) {
 				whereSql.append(",");
 			}
 		}
@@ -113,27 +113,27 @@ public class MysqlSelect extends Select{
 
 	@Override
 	public Select whereOrIn(Class<?> tableClass, String name, Collection<?> values) {
-		if(values == null || values.isEmpty() || name == null || tableClass == null){
+		if (values == null || values.isEmpty() || name == null || tableClass == null) {
 			throw new NullPointerException();
 		}
-		
+
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
-		if(!tableInfo.isTable()){
+		if (!tableInfo.isTable()) {
 			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
 		}
-		
+
 		String tableName = getTableName(tableClass);
 		checkWhereInit();
-		if(whereSql.length() != 0){
+		if (whereSql.length() != 0) {
 			whereSql.append(" or ");
 		}
 		whereSql.append(tableInfo.getColumnInfo(name).getSQLName(tableName));
 		whereSql.append(" in(");
 		Iterator<?> iterator = values.iterator();
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			paramList.add(iterator.next());
 			whereSql.append("?");
-			if(iterator.hasNext()){
+			if (iterator.hasNext()) {
 				whereSql.append(",");
 			}
 		}
@@ -144,27 +144,27 @@ public class MysqlSelect extends Select{
 
 	@Override
 	public Select desc(Class<?> tableClass, Collection<String> nameList) {
-		if(nameList == null || tableClass == null || nameList.isEmpty()){
+		if (nameList == null || tableClass == null || nameList.isEmpty()) {
 			throw new NullPointerException();
 		}
-		
+
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
-		if(!tableInfo.isTable()){
+		if (!tableInfo.isTable()) {
 			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
 		}
-		
+
 		String tableName = getTableName(tableClass);
-		
+
 		checkOrderInit();
 		Iterator<String> iterator = nameList.iterator();
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			ColumnInfo columnInfo = tableInfo.getColumnInfo(iterator.next());
 			orderBySql.append(columnInfo.getSQLName(tableName));
-			if(iterator.hasNext()){
+			if (iterator.hasNext()) {
 				orderBySql.append(",");
 			}
 		}
-		
+
 		orderBySql.append(" desc");
 		addSelectTable(tableName);
 		return this;
@@ -172,39 +172,39 @@ public class MysqlSelect extends Select{
 
 	@Override
 	public Select asc(Class<?> tableClass, Collection<String> nameList) {
-		if(nameList == null || tableClass == null || nameList.isEmpty()){
+		if (nameList == null || tableClass == null || nameList.isEmpty()) {
 			throw new NullPointerException();
 		}
-		
+
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
-		if(!tableInfo.isTable()){
+		if (!tableInfo.isTable()) {
 			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
 		}
-		
+
 		String tableName = getTableName(tableClass);
-		
+
 		checkOrderInit();
 		Iterator<String> iterator = nameList.iterator();
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			ColumnInfo columnInfo = tableInfo.getColumnInfo(iterator.next());
 			orderBySql.append(columnInfo.getSQLName(tableName));
-			
-			if(iterator.hasNext()){
+
+			if (iterator.hasNext()) {
 				orderBySql.append(",");
 			}
 		}
-		
+
 		orderBySql.append(" asc");
 		addSelectTable(tableName);
 		return this;
 	}
-	
+
 	@Override
 	public long count() {
 		SQL sql = toSQL("count(*)", false);
-		ResultSet resultSet = db.select(sql);
-		Long count = resultSet.getObject(Long.class, 0);
-		return count == null? 0:count;
+		scw.database.ResultSet resultSet = db.select(sql);
+		Long count = resultSet.getFirst().get(Long.class);
+		return count == null ? 0 : count;
 	}
 
 	@Override
@@ -216,19 +216,19 @@ public class MysqlSelect extends Select{
 	public ResultSet getResultSet(long begin, int limit) {
 		SQL sql = toSQL("*", true);
 		Object[] args;
-		if(sql.getParams() == null){
+		if (sql.getParams() == null) {
 			args = new Object[2];
-		}else{
+		} else {
 			args = new Object[sql.getParams().length + 2];
 		}
-		
-		if(sql.getParams() != null){
+
+		if (sql.getParams() != null) {
 			System.arraycopy(sql.getParams(), 0, args, 0, sql.getParams().length);
 		}
-		
+
 		args[args.length - 2] = begin;
 		args[args.length - 1] = limit;
-		
+
 		return db.select(new SimpleSQL(sql.getSql() + " limit ?,?", args));
 	}
 
@@ -237,33 +237,33 @@ public class MysqlSelect extends Select{
 		StringBuilder sb = new StringBuilder();
 		sb.append("select ").append(select).append(" from ");
 		sb.append(getSelectTables());
-		
+
 		String where = getAssociationWhere();
-		if(whereSql != null && whereSql.length() != 0){
+		if (whereSql != null && whereSql.length() != 0) {
 			sb.append(" where ");
 			sb.append(whereSql);
-			if(where != null && where.length() != 0){
+			if (where != null && where.length() != 0) {
 				sb.append(" and ");
 				sb.append(where);
 			}
-			
-		}else{
-			if(where != null && where.length() != 0){
+
+		} else {
+			if (where != null && where.length() != 0) {
 				sb.append(" where ");
 				sb.append(where);
 			}
 		}
-		
-		if(order){
-			if(orderBySql != null && orderBySql.length() != 0){
+
+		if (order) {
+			if (orderBySql != null && orderBySql.length() != 0) {
 				sb.append(" order by ");
 				sb.append(orderBySql);
 			}
 		}
-		
-		if(paramList == null){
+
+		if (paramList == null) {
 			return new SimpleSQL(sb.toString());
-		}else{
+		} else {
 			return new SimpleSQL(sb.toString(), paramList.toArray());
 		}
 	}
@@ -271,12 +271,12 @@ public class MysqlSelect extends Select{
 	@Override
 	public Select whereAnd(String where, Collection<?> values) {
 		checkWhereInit();
-		if(whereSql.length() != 0){
+		if (whereSql.length() != 0) {
 			whereSql.append(" and ");
 		}
 		whereSql.append(where);
-		
-		if(values != null){
+
+		if (values != null) {
 			paramList.addAll(values);
 		}
 		return this;
@@ -285,12 +285,12 @@ public class MysqlSelect extends Select{
 	@Override
 	public Select whereOr(String where, Collection<?> values) {
 		checkWhereInit();
-		if(whereSql.length() != 0){
+		if (whereSql.length() != 0) {
 			whereSql.append(" or ");
 		}
 		whereSql.append(where);
-		
-		if(values != null){
+
+		if (values != null) {
 			paramList.addAll(values);
 		}
 		return this;

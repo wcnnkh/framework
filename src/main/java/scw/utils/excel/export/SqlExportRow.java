@@ -1,7 +1,7 @@
 package scw.utils.excel.export;
 
-import scw.database.result.Result;
+import scw.database.Result;
 
-public interface SqlExportRow{
+public interface SqlExportRow {
 	public String[] exportRow(Result result);
 }

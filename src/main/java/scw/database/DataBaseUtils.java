@@ -43,8 +43,7 @@ public final class DataBaseUtils {
 		return tableInfo;
 	}
 
-	public static void setParams(PreparedStatement preparedStatement,
-			Object[] args) throws SQLException {
+	public static void setParams(PreparedStatement preparedStatement, Object[] args) throws SQLException {
 		if (args != null && args.length != 0) {
 			for (int i = 0; i < args.length; i++) {
 				preparedStatement.setObject(i + 1, args[i]);
@@ -52,8 +51,7 @@ public final class DataBaseUtils {
 		}
 	}
 
-	public static void iterator(ConnectionSource connectionSource, SQL sql,
-			scw.common.Iterator<ResultSet> iterator) {
+	public static void iterator(ConnectionSource connectionSource, SQL sql, scw.common.Iterator<ResultSet> iterator) {
 		if (sql == null || connectionSource == null || iterator == null) {
 			return;
 		}
@@ -77,8 +75,7 @@ public final class DataBaseUtils {
 		}
 	}
 
-	public static scw.database.result.ResultSet select(
-			ConnectionSource connectionSource, SQL sql) {
+	public static scw.database.ResultSet select(ConnectionSource connectionSource, SQL sql) {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Connection connection = null;
@@ -87,7 +84,7 @@ public final class DataBaseUtils {
 			stmt = connection.prepareStatement(sql.getSql());
 			setParams(stmt, sql.getParams());
 			rs = stmt.executeQuery();
-			return new scw.database.result.ResultSet(rs);
+			return new DefaultResultSet(rs);
 		} catch (SQLException e) {
 			throw new ShuChaoWenRuntimeException(getSQLId(sql), e);
 		} finally {
@@ -101,13 +98,11 @@ public final class DataBaseUtils {
 		sb.append(sql.getSql());
 		sb.append("]");
 		sb.append(" - ");
-		sb.append(sql.getParams() == null ? "[]" : Arrays.toString(sql
-				.getParams()));
+		sb.append(sql.getParams() == null ? "[]" : Arrays.toString(sql.getParams()));
 		return sb.toString();
 	}
 
-	public static void execute(ConnectionSource connectionPool,
-			Collection<SQL> sqls) {
+	public static void execute(ConnectionSource connectionPool, Collection<SQL> sqls) {
 		if (sqls == null || connectionPool == null) {
 			throw new NullPointerException();
 		}
@@ -145,8 +140,7 @@ public final class DataBaseUtils {
 	}
 
 	public static void registerCglibProxyTableBean(String pageName) {
-		Logger.info(DataBaseUtils.class.getName(), "register proxy package:"
-				+ pageName);
+		Logger.info(DataBaseUtils.class.getName(), "register proxy package:" + pageName);
 		for (Class<?> type : ClassUtils.getClasses(pageName)) {
 			Table table = type.getAnnotation(Table.class);
 			if (table == null) {

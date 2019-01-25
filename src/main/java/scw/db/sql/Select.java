@@ -12,13 +12,14 @@ import java.util.Map.Entry;
 import scw.common.Pagination;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.DataBaseUtils;
+import scw.database.ResultSet;
 import scw.database.SQL;
 import scw.database.TableInfo;
-import scw.database.result.ResultSet;
 import scw.db.AbstractDB;
 
 /**
  * 暂不支持分表
+ * 
  * @author shuchaowen
  *
  */
@@ -50,8 +51,7 @@ public abstract class Select {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		Iterator<Entry<String, String>> iterator = associationWhereMap
-				.entrySet().iterator();
+		Iterator<Entry<String, String>> iterator = associationWhereMap.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, String> entry = iterator.next();
 			sb.append(entry.getKey());
@@ -67,8 +67,7 @@ public abstract class Select {
 
 	public String getSQLColumn(Class<?> tableClass, String name) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
-		return tableInfo.getColumnInfo(name).getSQLName(
-				getTableName(tableClass));
+		return tableInfo.getColumnInfo(name).getSQLName(getTableName(tableClass));
 	}
 
 	public String getTableName(Class<?> tableClass) {
@@ -112,8 +111,7 @@ public abstract class Select {
 	 * @param name1
 	 * @param name2
 	 */
-	private static boolean checkWhere(Map<String, String> whereMap,
-			String name1, String name2) {
+	private static boolean checkWhere(Map<String, String> whereMap, String name1, String name2) {
 		if (whereMap.containsKey(name1)) {
 			String v = whereMap.get(name1);
 			if (name2.equals(v)) {
@@ -147,8 +145,7 @@ public abstract class Select {
 	 *            如果不填写就是两个表的主键关联
 	 * @return
 	 */
-	public Select associationQuery(Class<?> tableClass1, Class<?> tableClass2,
-			String... table2Columns) {
+	public Select associationQuery(Class<?> tableClass1, Class<?> tableClass2, String... table2Columns) {
 		if (associationWhereMap == null) {
 			associationWhereMap = new HashMap<String, String>();
 		}
@@ -160,8 +157,7 @@ public abstract class Select {
 		if (table2Columns == null || table2Columns.length == 0) {
 			if (t1.getPrimaryKeyColumns().length != t2.getPrimaryKeyColumns().length) {
 				// 两张表的主键数量不一致
-				throw new ShuChaoWenRuntimeException(
-						"primary key count atypism");
+				throw new ShuChaoWenRuntimeException("primary key count atypism");
 			}
 
 			for (int i = 0; i < t1.getPrimaryKeyColumns().length; i++) {
@@ -176,13 +172,11 @@ public abstract class Select {
 		} else {
 			if (table2Columns.length != t1.getPrimaryKeyColumns().length) {
 				// 指明的外键和主键数量不一致
-				throw new ShuChaoWenRuntimeException(
-						"primary key count atypism");
+				throw new ShuChaoWenRuntimeException("primary key count atypism");
 			}
 
 			for (int i = 0; i < table2Columns.length; i++) {
-				String n1 = t2.getColumnInfo(table2Columns[i]).getSQLName(
-						tName2);
+				String n1 = t2.getColumnInfo(table2Columns[i]).getSQLName(tName2);
 				String n2 = t1.getPrimaryKeyColumns()[i].getSQLName(tName1);
 				if (checkWhere(associationWhereMap, n1, n2)) {
 					continue;
@@ -212,21 +206,17 @@ public abstract class Select {
 		return whereOr(where, Arrays.asList(value));
 	}
 
-	public abstract Select whereAndValue(Class<?> tableClass, String name,
-			Object value);
+	public abstract Select whereAndValue(Class<?> tableClass, String name, Object value);
 
-	public abstract Select whereOrValue(Class<?> tableClass, String name,
-			Object value);
+	public abstract Select whereOrValue(Class<?> tableClass, String name, Object value);
 
 	public Select whereAndIn(Class<?> tableClass, String name, Object... value) {
 		return whereAndIn(tableClass, name, Arrays.asList(value));
 	}
 
-	public abstract Select whereAndIn(Class<?> tableClass, String name,
-			Collection<?> values);
+	public abstract Select whereAndIn(Class<?> tableClass, String name, Collection<?> values);
 
-	public abstract Select whereOrIn(Class<?> tableClass, String name,
-			Collection<?> values);
+	public abstract Select whereOrIn(Class<?> tableClass, String name, Collection<?> values);
 
 	public Select whereOrIn(Class<?> tableClass, String name, Object... value) {
 		return whereOrIn(tableClass, name, Arrays.asList(value));
@@ -261,7 +251,7 @@ public abstract class Select {
 	public abstract long count();
 
 	public <T> T getFirst(Class<T> type) {
-		return getResultSet().getObject(type, 0);
+		return getResultSet().getFirst().get(type);
 	}
 
 	public abstract ResultSet getResultSet();
@@ -293,8 +283,7 @@ public abstract class Select {
 		return pagination;
 	}
 
-	public <T> Pagination<List<T>> getPagination(Class<T> type, long page,
-			int limit) {
+	public <T> Pagination<List<T>> getPagination(Class<T> type, long page, int limit) {
 		Pagination<List<T>> pagination = new Pagination<List<T>>();
 		pagination.setLimit(limit);
 		if (page <= 0 || limit <= 0) {

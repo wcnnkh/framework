@@ -18,12 +18,13 @@ import scw.common.utils.StringUtils;
 import scw.database.ColumnInfo;
 import scw.database.ConnectionSource;
 import scw.database.DataBaseUtils;
+import scw.database.DefaultResult;
+import scw.database.Result;
+import scw.database.ResultSet;
 import scw.database.SQL;
 import scw.database.TableInfo;
 import scw.database.TransactionContext;
 import scw.database.annoation.Table;
-import scw.database.result.Result;
-import scw.database.result.ResultSet;
 import scw.db.sql.MysqlFormat;
 import scw.db.sql.MysqlSelect;
 import scw.db.sql.PaginationSql;
@@ -47,9 +48,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 
 	public void iterator(Class<?> tableClass, Iterator<Result> iterator) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
-		iterator(
-				getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getName(),
-						null), iterator);
+		iterator(getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getName(), null), iterator);
 	}
 
 	public void iterator(SQL sql, final Iterator<Result> iterator) {
@@ -57,7 +56,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 
 			public void iterator(java.sql.ResultSet data) {
 				try {
-					iterator.iterator(new Result(data));
+					iterator.iterator(new DefaultResult(data));
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -70,10 +69,8 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> Pagination<List<T>> select(Class<T> type, long page, int limit,
-			SQL sql) {
-		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page,
-				limit);
+	public <T> Pagination<List<T>> select(Class<T> type, long page, int limit, SQL sql) {
+		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
 		if (count == null) {
 			count = 0L;
@@ -83,25 +80,21 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 			return new Pagination<List<T>>(0, limit, Collections.EMPTY_LIST);
 		}
 
-		return new Pagination<List<T>>(count, limit, select(type,
-				paginationSql.getResultSql()));
+		return new Pagination<List<T>>(count, limit, select(type, paginationSql.getResultSql()));
 	}
 
 	public Pagination<ResultSet> select(long page, int limit, SQL sql) {
-		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page,
-				limit);
+		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
 		if (count == null) {
 			count = 0L;
 		}
 
 		if (count == 0) {
-			return new Pagination<ResultSet>(0, limit,
-					ResultSet.EMPTY_RESULTSET);
+			return new Pagination<ResultSet>(0, limit, ResultSet.EMPTY_RESULTSET);
 		}
 
-		return new Pagination<ResultSet>(count, limit,
-				select(paginationSql.getResultSql()));
+		return new Pagination<ResultSet>(count, limit, select(paginationSql.getResultSql()));
 	}
 
 	public <T> List<T> select(Class<T> type, SQL sql) {
@@ -109,22 +102,20 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	}
 
 	public <T> T selectOne(Class<T> type, SQL sql) {
-		return select(sql).getObject(type, 0);
+		return select(sql).getFirst().get(type);
 	}
 
 	public Select createSelect() {
 		return new MysqlSelect(this);
 	}
 
-	public <T> T getMaxValue(Class<T> type, Class<?> tableClass,
-			String tableName, String columnName) {
+	public <T> T getMaxValue(Class<T> type, Class<?> tableClass, String tableName, String columnName) {
 		Select select = createSelect();
 		select.desc(tableClass, columnName);
-		return select.getResultSet().getObject(type, 0, tableName);
+		return select.getResultSet().getFirst().get(type, tableName);
 	}
 
-	public <T> T getMaxValue(Class<T> type, Class<?> tableClass,
-			String columnName) {
+	public <T> T getMaxValue(Class<T> type, Class<?> tableClass, String columnName) {
 		return getMaxValue(type, tableClass, null, columnName);
 	}
 
@@ -189,29 +180,25 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		}
 
 		if (tableInfo.getPrimaryKeyColumns().length != params.length) {
-			throw new NullPointerException(
-					"params length not equals primary key lenght");
+			throw new NullPointerException("params length not equals primary key lenght");
 		}
 
-		String tName = (tableName == null || tableName.length() == 0) ? tableInfo
-				.getName() : tableName;
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
 		SQL sql = getSqlFormat().toSelectByIdSql(tableInfo, tName, params);
 		ResultSet resultSet = select(sql);
-		return resultSet.getObject(type, 0, tName);
+		return resultSet.getFirst().get(type, tName);
 	}
 
 	public <T> List<T> getByIdList(Class<T> type, Object... params) {
 		return getByIdList(null, type, params);
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList,
-			Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList, Object... params) {
 		return getInIdList(type, null, inIdList, params);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName,
-			Collection<K> inIds, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params) {
 		if (inIds == null || inIds.isEmpty()) {
 			return Collections.EMPTY_MAP;
 		}
@@ -227,14 +214,11 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 
 		ColumnInfo columnInfo = tableInfo.getPrimaryKeyColumns()[params.length];
 		if (params.length > tableInfo.getPrimaryKeyColumns().length - 1) {
-			throw new NullPointerException(
-					"params length  greater than primary key lenght");
+			throw new NullPointerException("params length  greater than primary key lenght");
 		}
 
-		String tName = (tableName == null || tableName.length() == 0) ? tableInfo
-				.getName() : tableName;
-		ResultSet resultSet = select(getSqlFormat().toSelectInIdSql(tableInfo,
-				tName, params, inIds));
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		ResultSet resultSet = select(getSqlFormat().toSelectInIdSql(tableInfo, tName, params, inIds));
 		List<V> list = resultSet.getList(type, tName);
 		if (list == null || list.isEmpty()) {
 			return Collections.EMPTY_MAP;
@@ -258,8 +242,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		return map;
 	}
 
-	public <T> List<T> getByIdList(String tableName, Class<T> type,
-			Object... params) {
+	public <T> List<T> getByIdList(String tableName, Class<T> type, Object... params) {
 		if (type == null) {
 			throw new NullPointerException("type is null");
 		}
@@ -270,20 +253,16 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		}
 
 		if (params.length > tableInfo.getPrimaryKeyColumns().length) {
-			throw new NullPointerException(
-					"params length  greater than primary key lenght");
+			throw new NullPointerException("params length  greater than primary key lenght");
 		}
 
-		String tName = (tableName == null || tableName.length() == 0) ? tableInfo
-				.getName() : tableName;
-		ResultSet resultSet = select(getSqlFormat().toSelectByIdSql(tableInfo,
-				tName, params));
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		ResultSet resultSet = select(getSqlFormat().toSelectByIdSql(tableInfo, tName, params));
 		return resultSet.getList(type, tName);
 	}
 
 	public void execute(Collection<OperationBean> operationBeans) {
-		Collection<SQL> sqls = DBUtils.getSqlList(getSqlFormat(),
-				operationBeans);
+		Collection<SQL> sqls = DBUtils.getSqlList(getSqlFormat(), operationBeans);
 		if (sqls == null || sqls.isEmpty()) {
 			return;
 		}
@@ -309,15 +288,13 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 			return;
 		}
 
-		List<OperationBean> operationBeans = new ArrayList<OperationBean>(
-				beans.size());
+		List<OperationBean> operationBeans = new ArrayList<OperationBean>(beans.size());
 		for (Object bean : beans) {
 			if (bean == null) {
 				continue;
 			}
 
-			operationBeans.add(new OperationBean(OperationType.SAVE, bean,
-					tableName));
+			operationBeans.add(new OperationBean(OperationType.SAVE, bean, tableName));
 		}
 
 		execute(operationBeans);
@@ -338,8 +315,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 
 	public void delete(Class<?> tableClass, String tableName, Object... params) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
-		String tName = StringUtils.isNull(tableName) ? tableInfo.getName()
-				: tableName;
+		String tName = StringUtils.isNull(tableName) ? tableInfo.getName() : tableName;
 		SQL sql = getSqlFormat().toDeleteSql(tableInfo, tName, params);
 		TransactionContext.execute(this, sql);
 	}
@@ -349,15 +325,13 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 			return;
 		}
 
-		List<OperationBean> operationBeans = new ArrayList<OperationBean>(
-				beans.size());
+		List<OperationBean> operationBeans = new ArrayList<OperationBean>(beans.size());
 		for (Object bean : beans) {
 			if (bean == null) {
 				continue;
 			}
 
-			operationBeans.add(new OperationBean(OperationType.DELETE, bean,
-					tableName));
+			operationBeans.add(new OperationBean(OperationType.DELETE, bean, tableName));
 		}
 
 		execute(operationBeans);
@@ -372,18 +346,14 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		update(tableName, Arrays.asList(beans));
 	}
 
-	public void update(Class<?> tableClass, Map<String, Object> valueMap,
-			Object... params) {
+	public void update(Class<?> tableClass, Map<String, Object> valueMap, Object... params) {
 		update(tableClass, null, valueMap, params);
 	}
 
-	public void update(Class<?> tableClass, String tableName,
-			Map<String, Object> valueMap, Object... params) {
+	public void update(Class<?> tableClass, String tableName, Map<String, Object> valueMap, Object... params) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
-		String tName = StringUtils.isNull(tableName) ? tableInfo.getName()
-				: tableName;
-		SQL sql = getSqlFormat()
-				.toUpdateSql(tableInfo, tName, valueMap, params);
+		String tName = StringUtils.isNull(tableName) ? tableInfo.getName() : tableName;
+		SQL sql = getSqlFormat().toUpdateSql(tableInfo, tName, valueMap, params);
 		TransactionContext.execute(this, sql);
 	}
 
@@ -392,15 +362,13 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 			return;
 		}
 
-		List<OperationBean> operationBeans = new ArrayList<OperationBean>(
-				beans.size());
+		List<OperationBean> operationBeans = new ArrayList<OperationBean>(beans.size());
 		for (Object bean : beans) {
 			if (bean == null) {
 				continue;
 			}
 
-			operationBeans.add(new OperationBean(OperationType.UPDATE, bean,
-					tableName));
+			operationBeans.add(new OperationBean(OperationType.UPDATE, bean, tableName));
 		}
 
 		execute(operationBeans);
@@ -420,15 +388,13 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 			return;
 		}
 
-		List<OperationBean> operationBeans = new ArrayList<OperationBean>(
-				beans.size());
+		List<OperationBean> operationBeans = new ArrayList<OperationBean>(beans.size());
 		for (Object bean : beans) {
 			if (bean == null) {
 				continue;
 			}
 
-			operationBeans.add(new OperationBean(OperationType.SAVE_OR_UPDATE,
-					bean, tableName));
+			operationBeans.add(new OperationBean(OperationType.SAVE_OR_UPDATE, bean, tableName));
 		}
 
 		execute(operationBeans);

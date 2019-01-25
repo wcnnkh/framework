@@ -5,7 +5,8 @@ import java.sql.ResultSet;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import scw.database.result.Result;
+import scw.database.DefaultResult;
+import scw.database.Result;
 
 public class ResultSetToExeclRowCall {
 	// 创建Excel工作薄
@@ -18,8 +19,7 @@ public class ResultSetToExeclRowCall {
 	private WritableWorkbook wwb;
 	private SqlExportRow exportRow;
 
-	public ResultSetToExeclRowCall(WritableWorkbook wwb, String[] title,
-			SqlExportRow exportRow) {
+	public ResultSetToExeclRowCall(WritableWorkbook wwb, String[] title, SqlExportRow exportRow) {
 		this.wwb = wwb;
 		this.title = title;
 		this.exportRow = exportRow;
@@ -42,7 +42,7 @@ public class ResultSetToExeclRowCall {
 		}
 
 		while (resultSet.next()) {
-			Result result = new Result(resultSet);
+			Result result = new DefaultResult(resultSet);
 			String[] contents = exportRow.exportRow(result);
 			if (contents == null || contents.length == 0) {
 				return;

@@ -17,11 +17,11 @@ import scw.common.transaction.Transaction;
 import scw.common.transaction.TransactionCollection;
 import scw.common.utils.ClassUtils;
 import scw.database.DataBaseUtils;
+import scw.database.Result;
 import scw.database.SQL;
 import scw.database.TableInfo;
 import scw.database.TransactionContext;
 import scw.database.annoation.Table;
-import scw.database.result.Result;
 import scw.db.AbstractDB;
 import scw.db.DBUtils;
 import scw.db.OperationBean;
@@ -46,8 +46,7 @@ public final class CacheStorage implements Storage {
 	public CacheStorage(AbstractDB db, Memcached memcached, String queueKey) {
 		this.db = db;
 		this.cache = new MemcachedCache(memcached);
-		this.queue = new MemcachedQueue<Collection<OperationBean>>(memcached,
-				queueKey);
+		this.queue = new MemcachedQueue<Collection<OperationBean>>(memcached, queueKey);
 	}
 
 	public void setDefaultCacheConfig(CacheConfig defaultCacheConfig) {
@@ -58,12 +57,10 @@ public final class CacheStorage implements Storage {
 		this(db, redis, queueKey, Charset.forName("UTF-8"));
 	}
 
-	public CacheStorage(AbstractDB db, Redis redis, String queueKey,
-			Charset charset) {
+	public CacheStorage(AbstractDB db, Redis redis, String queueKey, Charset charset) {
 		this.db = db;
 		this.cache = new RedisCache(redis, charset);
-		this.queue = new RedisQueue<Collection<OperationBean>>(redis, charset,
-				queueKey);
+		this.queue = new RedisQueue<Collection<OperationBean>>(redis, charset, queueKey);
 	}
 
 	public AbstractDB getDB() {
@@ -82,15 +79,12 @@ public final class CacheStorage implements Storage {
 		this.cacheAutoCommit = cacheAutoCommit;
 	}
 
-	public void config(CacheType cacheType, int exp, boolean isAsync,
-			Class<?>... tableClass) {
+	public void config(CacheType cacheType, int exp, boolean isAsync, Class<?>... tableClass) {
 		config(new CacheConfig(cacheType, exp, isAsync), tableClass);
 	}
 
-	public void config(CacheType cacheType, boolean isAsync,
-			Class<?>... tableClass) {
-		config(new CacheConfig(cacheType, CacheConfig.DATA_DEFAULT_EXP_TIME,
-				isAsync), tableClass);
+	public void config(CacheType cacheType, boolean isAsync, Class<?>... tableClass) {
+		config(new CacheConfig(cacheType, CacheConfig.DATA_DEFAULT_EXP_TIME, isAsync), tableClass);
 	}
 
 	public void config(CacheConfig config, Class<?>... tableClass) {
@@ -105,14 +99,11 @@ public final class CacheStorage implements Storage {
 		}
 	}
 
-	private boolean dbExist(OperationBean operationBean)
-			throws IllegalArgumentException, IllegalAccessException {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(operationBean
-				.getBean().getClass());
+	private boolean dbExist(OperationBean operationBean) throws IllegalArgumentException, IllegalAccessException {
+		TableInfo tableInfo = DataBaseUtils.getTableInfo(operationBean.getBean().getClass());
 		Object[] params = new Object[tableInfo.getPrimaryKeyColumns().length];
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
-			params[i] = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo()
-					.forceGet(operationBean.getBean());
+			params[i] = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(operationBean.getBean());
 		}
 
 		return db.getById(tableInfo.getClassInfo().getClz(), params) != null;
@@ -127,24 +118,20 @@ public final class CacheStorage implements Storage {
 						Collection<OperationBean> beans = queue.take();
 						TransactionContext.begin();
 						try {
-							Collection<SQL> sqls = DBUtils.getSqlList(
-									db.getSqlFormat(), beans);
+							Collection<SQL> sqls = DBUtils.getSqlList(db.getSqlFormat(), beans);
 							if (sqls == null || sqls.isEmpty()) {
 								return;
 							}
 
 							TransactionCollection collection = new TransactionCollection();
 							for (OperationBean operationBean : beans) {
-								CacheConfig cacheConfig = getCacheConfig(operationBean
-										.getBean().getClass());
+								CacheConfig cacheConfig = getCacheConfig(operationBean.getBean().getClass());
 								switch (cacheConfig.getCacheType()) {
 								case keys:
 								case lazy:
 									boolean exist = dbExist(operationBean);
-									Transaction transaction = new HostspotDataAsyncRollbackTransaction(
-											exist,
-											cacheConfig.getCacheType() == CacheType.keys,
-											cache, operationBean);
+									Transaction transaction = new HostspotDataAsyncRollbackTransaction(exist,
+											cacheConfig.getCacheType() == CacheType.keys, cache, operationBean);
 									collection.add(transaction);
 									break;
 								default:
@@ -177,8 +164,7 @@ public final class CacheStorage implements Storage {
 					break;
 				default:
 					try {
-						multitask.add(new LoadingThread(this, ClassUtils
-								.forName(entry.getKey())));
+						multitask.add(new LoadingThread(this, ClassUtils.forName(entry.getKey())));
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
@@ -199,11 +185,9 @@ public final class CacheStorage implements Storage {
 	}
 
 	protected CacheConfig getCacheConfig(Class<?> tableClass) {
-		CacheConfig cacheInfo = cacheConfigMap.get(ClassUtils
-				.getProxyRealClassName(tableClass));
+		CacheConfig cacheInfo = cacheConfigMap.get(ClassUtils.getProxyRealClassName(tableClass));
 		if (cacheInfo == null) {
-			return defaultCacheConfig == null ? CacheConfig.DEFAULT_CACHE_CONFIG
-					: defaultCacheConfig;
+			return defaultCacheConfig == null ? CacheConfig.DEFAULT_CACHE_CONFIG : defaultCacheConfig;
 		}
 		return cacheInfo;
 	}
@@ -214,12 +198,10 @@ public final class CacheStorage implements Storage {
 		try {
 			switch (cacheInfo.getCacheType()) {
 			case lazy:
-				t = cache.getById(getDB(), false, cacheInfo.getExp(), type,
-						params);
+				t = cache.getById(getDB(), false, cacheInfo.getExp(), type, params);
 				break;
 			case keys:
-				t = cache.getById(getDB(), true, cacheInfo.getExp(), type,
-						params);
+				t = cache.getById(getDB(), true, cacheInfo.getExp(), type, params);
 			case full:
 				t = cache.getById(type, params);
 			default:
@@ -252,7 +234,7 @@ public final class CacheStorage implements Storage {
 		getDB().iterator(tableClass, new Iterator<Result>() {
 
 			public void iterator(Result data) {
-				Object bean = data.getObject(tableClass);
+				Object bean = data.get(tableClass);
 				try {
 					switch (cacheInfo.getCacheType()) {
 					case full:
@@ -284,17 +266,14 @@ public final class CacheStorage implements Storage {
 			}
 
 			Transaction transaction = null;
-			CacheConfig cacheConfig = getCacheConfig(operationBean.getBean()
-					.getClass());
+			CacheConfig cacheConfig = getCacheConfig(operationBean.getBean().getClass());
 			try {
 				switch (cacheConfig.getCacheType()) {
 				case lazy:
-					transaction = cache.opHotspot(operationBean,
-							cacheConfig.getExp(), false);
+					transaction = cache.opHotspot(operationBean, cacheConfig.getExp(), false);
 					break;
 				case keys:
-					transaction = cache.opHotspot(operationBean,
-							cacheConfig.getExp(), true);
+					transaction = cache.opHotspot(operationBean, cacheConfig.getExp(), true);
 					break;
 				case full:
 					transaction = cache.opByFull(operationBean);
@@ -315,19 +294,16 @@ public final class CacheStorage implements Storage {
 
 			if (cacheConfig.isAsync()) {
 				if (asyncList == null) {
-					asyncList = new ArrayList<OperationBean>(
-							operationBeans.size());
+					asyncList = new ArrayList<OperationBean>(operationBeans.size());
 				}
 
 				asyncList.add(operationBean);
 			} else {
 				if (synchronizationList == null) {
-					synchronizationList = new ArrayList<SQL>(
-							operationBeans.size());
+					synchronizationList = new ArrayList<SQL>(operationBeans.size());
 				}
 
-				synchronizationList.add(operationBean.getSql(getDB()
-						.getSqlFormat()));
+				synchronizationList.add(operationBean.getSql(getDB().getSqlFormat()));
 			}
 		}
 
@@ -363,10 +339,8 @@ class LoadingThread implements Runnable {
 
 	public void run() {
 		final String name = ClassUtils.getProxyRealClassName(tableClass);
-		Logger.info("RedisHotSpotCacheStorage", "loading [" + name
-				+ "] keys to cache");
+		Logger.info("RedisHotSpotCacheStorage", "loading [" + name + "] keys to cache");
 		cacheStorage.loadCache(tableClass);
-		Logger.info("RedisHotSpotCacheStorage", "loading [" + name
-				+ "] keys to cache success");
+		Logger.info("RedisHotSpotCacheStorage", "loading [" + name + "] keys to cache success");
 	}
 }
