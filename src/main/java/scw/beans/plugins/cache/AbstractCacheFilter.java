@@ -4,11 +4,12 @@ import java.lang.reflect.Method;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alibaba.fastjson.JSONArray;
-
 import net.sf.cglib.proxy.MethodProxy;
 import scw.beans.BeanFilter;
 import scw.beans.BeanFilterChain;
+import scw.common.utils.StringUtils;
+
+import com.alibaba.fastjson.JSONArray;
 
 public abstract class AbstractCacheFilter implements BeanFilter {
 	private final ConcurrentHashMap<String, Boolean> timerTagMap = new ConcurrentHashMap<String, Boolean>();
@@ -22,31 +23,36 @@ public abstract class AbstractCacheFilter implements BeanFilter {
 		this.debug = debug;
 	}
 
-	protected abstract <T> T getCache(String key, Class<T> type) throws Exception;
+	protected abstract <T> T getCache(String key, Class<T> type)
+			throws Exception;
 
-	protected abstract void setCache(String key, int exp, Class<?> type, Object data) throws Exception;
+	protected abstract void setCache(String key, int exp, Class<?> type,
+			Object data) throws Exception;
 
-	protected String getKey(Cache cache, Object obj, Method method, Object[] args) {
+	protected String getKey(Cache cache, Object obj, Method method,
+			Object[] args) {
 		StringBuilder sb = new StringBuilder(128);
-		sb.append(method.toString());
+		if (StringUtils.isEmpty(cache.prefix())) {
+			sb.append(method.toString());
+		} else {
+			sb.append(cache.prefix());
+		}
 		sb.append("#");
 
-		JSONArray jarr = new JSONArray();
-		if (cache.keyIndex() != null && cache.keyIndex().length == 0) {// 全部
-			for (Object o : args) {
-				jarr.add(o);
-			}
+		if (cache.keyIndex().length == 0) {// 全部
+			sb.append(JSONArray.toJSONString(args));
 		} else {
+			JSONArray jarr = new JSONArray();
 			for (int index : cache.keyIndex()) {
 				jarr.add(args[index]);
 			}
+			sb.append(jarr.toJSONString());
 		}
-
-		sb.append(jarr.toJSONString());
 		return sb.toString();
 	}
 
-	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
+	public Object doFilter(Object obj, Method method, Object[] args,
+			MethodProxy proxy, BeanFilterChain beanFilterChain)
 			throws Throwable {
 		Cache cache = method.getAnnotation(Cache.class);
 		if (cache == null) {
@@ -59,7 +65,8 @@ public abstract class AbstractCacheFilter implements BeanFilter {
 
 		String key = getKey(cache, obj, method, args);
 		if (!timerTagMap.contains(key)) {// 如果本地找不到这个任务
-			CacheTimerTask task = new CacheTimerTask(key, obj, method, args, proxy, beanFilterChain, this, debug);
+			CacheTimerTask task = new CacheTimerTask(key, obj, method, args,
+					proxy, beanFilterChain, this, debug);
 			if (timerTagMap.put(key, true) == null) {
 				// 以前没的过
 				long exp = cache.timeUnit().toMillis(cache.exp());
@@ -71,7 +78,8 @@ public abstract class AbstractCacheFilter implements BeanFilter {
 		if (rtn == null) {
 			rtn = beanFilterChain.doFilter(obj, method, args, proxy);
 			if (rtn != null) {
-				setCache(key, (int) cache.timeUnit().toSeconds(cache.exp()), method.getReturnType(), rtn);
+				setCache(key, (int) cache.timeUnit().toSeconds(cache.exp()),
+						method.getReturnType(), rtn);
 			}
 		}
 		return rtn;

@@ -1,5 +1,7 @@
 package scw.utils.locks;
 
+import java.util.concurrent.TimeUnit;
+
 public interface Lock {
 	/**
 	 * 尝试获取锁 获取到就返回true
@@ -8,17 +10,17 @@ public interface Lock {
 	boolean lock();
 	
 	/**
-	 * 获取锁，如果没获取到就会一直等待
-	 * @param millis 多久重试(毫秒)
-	 * @param nanos 多久重试(纳秒)
+	 * 尝试获取锁，如果失败就一直重试
+	 * @param period 重试周期
+	 * @param timeUnit 重试周期计算方式
 	 * @throws InterruptedException
 	 */
-	void lockWait(long millis, int nanos) throws InterruptedException;
+	void lockWait(long period, TimeUnit timeUnit) throws InterruptedException;
 	
 	/**
 	 * 尝试获取锁，如果失败就一直重试
 	 */
-	void lockWait();
+	void lockWait() throws InterruptedException;
 	
 	/**
 	 * 取消锁

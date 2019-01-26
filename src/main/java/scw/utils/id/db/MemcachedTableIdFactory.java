@@ -1,5 +1,6 @@
 package scw.utils.id.db;
 
+import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.db.DB;
 import scw.utils.locks.Lock;
@@ -36,6 +37,8 @@ public class MemcachedTableIdFactory extends AbstractTableIdFactory {
 					long maxId = getMaxId(tableClass, fieldName);
 					return memcached.incr(key, 1, maxId + 1);
 				}
+			} catch (InterruptedException e) {
+				throw new ShuChaoWenRuntimeException(e);
 			} finally {
 				lock.unlock();
 			}

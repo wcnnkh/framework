@@ -2,6 +2,7 @@ package scw.utils.id.db;
 
 import java.util.Arrays;
 
+import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.db.DB;
 import scw.utils.locks.Lock;
@@ -37,8 +38,11 @@ public class RedisTableIdFactory extends AbstractTableIdFactory {
 
 				if (!redis.exists(key)) {
 					long maxId = getMaxId(tableClass, fieldName);
-					return (Long) redis.eval(INCR_SCRIPT, Arrays.asList(key), Arrays.asList(maxId + ""));
+					return (Long) redis.eval(INCR_SCRIPT, Arrays.asList(key),
+							Arrays.asList(maxId + ""));
 				}
+			} catch (InterruptedException e) {
+				throw new ShuChaoWenRuntimeException(e);
 			} finally {
 				lock.unlock();
 			}

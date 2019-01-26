@@ -12,6 +12,12 @@ import java.util.concurrent.TimeUnit;
 @Inherited
 public @interface Cache {
 	/**
+	 * 字符串标识的前缀
+	 * @return
+	 */
+	public String prefix() default "";
+	
+	/**
 	 * 指定方法参数所在的位置并使用该值参与索引的拼接 默认是把所有的参数组装起来
 	 * 
 	 * @return

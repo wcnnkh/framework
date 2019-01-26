@@ -1,19 +1,19 @@
 package scw.utils.locks;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
+import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractLock implements Lock {
-	public void lockWait(long millis, int nanos) throws InterruptedException {
+	public void lockWait(long period, TimeUnit timeUnit)
+			throws InterruptedException {
 		while (!lock()) {
-			Thread.sleep(millis, nanos);
+			timeUnit.sleep(period);
 		}
 	}
 
-	public void lockWait() {
-		try {
-			lockWait(2, 0);
-		} catch (InterruptedException e) {
-			throw new ShuChaoWenRuntimeException();
-		} // 5毫秒试一次
+	/**
+	 * 默认为5ms试一次
+	 */
+	public void lockWait() throws InterruptedException {
+		lockWait(5, TimeUnit.MILLISECONDS);
 	}
 }

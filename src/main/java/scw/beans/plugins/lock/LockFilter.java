@@ -1,11 +1,13 @@
 package scw.beans.plugins.lock;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
+
+import com.alibaba.fastjson.JSONArray;
 
 import net.sf.cglib.proxy.MethodProxy;
 import scw.beans.BeanFilter;
 import scw.beans.BeanFilterChain;
+import scw.common.utils.StringUtils;
 import scw.database.TransactionContext;
 import scw.utils.locks.Lock;
 import scw.utils.locks.LockFactory;
@@ -35,23 +37,20 @@ public final class LockFilter implements BeanFilter {
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		}
 
-		StringBuilder sb = new StringBuilder(512);
-		sb.append(this.getClass().getName());
-		sb.append("#");
-
-		Parameter[] parameters = method.getParameters();
-		if (parameters != null) {
-			for (int i = 0; i < parameters.length; i++) {
-				Parameter parameter = parameters[i];
-				sb.append(parameter.getType().getName());
-				sb.append("#");
-			}
+		StringBuilder sb = new StringBuilder(128);
+		if (StringUtils.isEmpty(lockConfig.prefix())) {
+			sb.append(method.toString());
+		} else {
+			sb.append(lockConfig.prefix());
 		}
 
-		if (lockConfig.keyIndex() != null) {
+		if (lockConfig.keyIndex().length != 0) {
+			sb.append("#");
+			JSONArray jarr = new JSONArray();
 			for (int index : lockConfig.keyIndex()) {
-				sb.append(args[index]).append(lockConfig.joinChars());
+				jarr.add(args[index]);
 			}
+			sb.append(jarr.toJSONString());
 		}
 
 		String lockKey = sb.toString();
