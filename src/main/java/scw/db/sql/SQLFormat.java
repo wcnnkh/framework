@@ -30,4 +30,12 @@ public interface SQLFormat {
 	SQL toDecrSql(Object obj, TableInfo tableInfo, String tableName, String fieldName, double limit, Double minValue);
 
 	PaginationSql toPaginationSql(SQL sql, long page, int limit);
+	
+	/**
+	 * 复制表结构
+	 * @param newTableName
+	 * @param oldTableName
+	 * @return
+	 */
+	SQL toCopyTableStructure(String newTableName, String oldTableName);
 }

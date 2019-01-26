@@ -3,8 +3,10 @@ package scw.db.sql;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
+import scw.common.utils.CollectionUtils;
 import scw.common.utils.StringUtils;
 import scw.database.SQL;
 
@@ -13,9 +15,17 @@ public class WhereSql implements SQL {
 	private List<Object> paramList;
 	private StringBuilder sb;
 
-	public void where(String whereSql, Object... params) {
+	public void and(String whereSql, Object... params) {
 		checkAnd();
+		where(whereSql, params);
+	}
 
+	public void or(String whereSql, Object... params) {
+		checkOr();
+		where(whereSql, params);
+	}
+
+	private void where(String whereSql, Object... params) {
 		sb.append(whereSql);
 
 		if (params != null && params.length != 0) {
@@ -37,20 +47,42 @@ public class WhereSql implements SQL {
 		}
 	}
 
-	private void checkParams() {
-		if (paramList == null) {
-			paramList = new ArrayList<Object>();
+	private void checkOr() {
+		if (sb == null) {
+			sb = new StringBuilder();
+		}
+
+		if (sb.length() != 0) {
+			sb.append(" or ");
 		}
 	}
 
-	public void in(String name, Collection<?> collection) {
+	private void checkParams() {
+		if (paramList == null) {
+			paramList = new LinkedList<Object>();
+		}
+	}
+
+	public void andIn(String name, Collection<?> collection) {
 		if (collection == null || collection.isEmpty()) {
 			return;
 		}
 
 		checkAnd();
-		checkParams();
+		in(name, collection);
+	}
 
+	public void orIn(String name, Collection<?> collection) {
+		if (collection == null || collection.isEmpty()) {
+			return;
+		}
+
+		checkOr();
+		in(name, collection);
+	}
+
+	private void in(String name, Collection<?> collection) {
+		checkParams();
 		sb.append(name);
 		sb.append(" in (");
 		Iterator<?> iterator = collection.iterator();
@@ -70,7 +102,8 @@ public class WhereSql implements SQL {
 	}
 
 	public Object[] getParams() {
-		return paramList == null ? new Object[0] : paramList.toArray();
+		return paramList == null ? CollectionUtils.EMPTY_ARRAY : paramList
+				.toArray();
 	}
 
 	public SQL assembleSql(String beforeSql, String afterSql, Object... params) {
@@ -84,7 +117,7 @@ public class WhereSql implements SQL {
 			}
 			arr = list.toArray(new Object[list.size()]);
 		}
-		
+
 		if (sb == null || sb.length() == 0) {
 			if (StringUtils.isNull(afterSql)) {
 				return new SimpleSQL(beforeSql, arr);
