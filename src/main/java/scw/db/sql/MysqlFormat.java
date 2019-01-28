@@ -98,7 +98,7 @@ public class MysqlFormat implements SQLFormat {
 		String str = sql.getSql();
 		int fromIndex = str.indexOf(" from ");// ignore select
 		if (fromIndex == -1) {
-			fromIndex = str.indexOf(" FORM ");
+			fromIndex = str.indexOf(" FROM ");
 		}
 
 		if (fromIndex == -1) {
