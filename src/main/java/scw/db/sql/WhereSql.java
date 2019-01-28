@@ -15,17 +15,27 @@ public class WhereSql implements SQL {
 	private List<Object> paramList;
 	private StringBuilder sb;
 
+	/**
+	 * 默认是and
+	 * 
+	 * @param whereSql
+	 * @param params
+	 */
+	public void where(String whereSql, Object... params) {
+		and(whereSql, params);
+	}
+
 	public void and(String whereSql, Object... params) {
 		checkAnd();
-		where(whereSql, params);
+		privateWhere(whereSql, params);
 	}
 
 	public void or(String whereSql, Object... params) {
 		checkOr();
-		where(whereSql, params);
+		privateWhere(whereSql, params);
 	}
 
-	private void where(String whereSql, Object... params) {
+	private void privateWhere(String whereSql, Object... params) {
 		sb.append(whereSql);
 
 		if (params != null && params.length != 0) {
@@ -63,13 +73,23 @@ public class WhereSql implements SQL {
 		}
 	}
 
+	/**
+	 * 默认是and
+	 * 
+	 * @param name
+	 * @param collection
+	 */
+	public void in(String name, Collection<?> collection) {
+		andIn(name, collection);
+	}
+
 	public void andIn(String name, Collection<?> collection) {
 		if (collection == null || collection.isEmpty()) {
 			return;
 		}
 
 		checkAnd();
-		in(name, collection);
+		privateIn(name, collection);
 	}
 
 	public void orIn(String name, Collection<?> collection) {
@@ -78,10 +98,10 @@ public class WhereSql implements SQL {
 		}
 
 		checkOr();
-		in(name, collection);
+		privateIn(name, collection);
 	}
 
-	private void in(String name, Collection<?> collection) {
+	private void privateIn(String name, Collection<?> collection) {
 		checkParams();
 		sb.append(name);
 		sb.append(" in (");
@@ -102,8 +122,7 @@ public class WhereSql implements SQL {
 	}
 
 	public Object[] getParams() {
-		return paramList == null ? CollectionUtils.EMPTY_ARRAY : paramList
-				.toArray();
+		return paramList == null ? CollectionUtils.EMPTY_ARRAY : paramList.toArray();
 	}
 
 	public SQL assembleSql(String beforeSql, String afterSql, Object... params) {
