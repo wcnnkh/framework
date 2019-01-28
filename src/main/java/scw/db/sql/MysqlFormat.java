@@ -95,7 +95,7 @@ public class MysqlFormat implements SQLFormat {
 	}
 
 	public PaginationSql toPaginationSql(SQL sql, long page, int limit) {
-		String str = sql.getSql().toLowerCase();
+		String str = sql.getSql();
 		int fromIndex = str.indexOf(" from ");// ignore select
 		if (fromIndex == -1) {
 			fromIndex = str.indexOf(" FORM ");
