@@ -25,12 +25,12 @@ public final class DefaultResultSet extends AbstractResultSet {
 	private <T> List<T> wrapper(Class<T> type, TableInfo tableInfo, String tableName,
 			Map<Class<?>, String> tableMapping) throws IllegalArgumentException, IllegalAccessException {
 		String tName;
-		if (metaData.isAsSingle()) {
+		if (!metaData.isAsSingle()) {
 			tName = tableName;
 		} else {
 			tName = DefaultResult.getTableName(tableInfo, tableName, type, tableMapping);
 		}
-		
+
 		List<T> list = new ArrayList<T>(dataList.size());
 		for (Object[] values : dataList) {
 			DefaultResult defaultResult = new DefaultResult(metaData, values);

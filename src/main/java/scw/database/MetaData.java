@@ -35,9 +35,9 @@ public final class MetaData implements Serializable {
 				if (asSingleIndexMap.containsKey(metaDataColumn.getLabelName())) {
 					asSingleIndexMap = null;
 					asSingle = true;
+				}else{
+					asSingleIndexMap.put(metaDataColumn.getLabelName(), i);
 				}
-
-				asSingleIndexMap.put(metaDataColumn.getLabelName(), i);
 			}
 
 			Map<String, Integer> map = metaData.get(metaDataColumn.getTableName());

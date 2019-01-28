@@ -95,7 +95,7 @@ public abstract class AbstractResult implements Result {
 
 	private Object wrapper(TableInfo tableInfo, String tableName)
 			throws IllegalArgumentException, IllegalAccessException {
-		if (metaData.isAsSingle()) {
+		if (!metaData.isAsSingle()) {
 			return wrapperSingle(tableInfo);
 		} else {
 			return wrapperTable(tableInfo, tableName);
