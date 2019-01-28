@@ -95,6 +95,14 @@ public final class ColumnInfo {
 					return StringUtils.parseBoolean((String) value);
 				}
 			}
+		} else if (ClassUtils.isIntType(type)) {
+			if (value instanceof Number) {
+				return ((Number) value).intValue();
+			}
+		} else if (ClassUtils.isLongType(type)) {
+			if (value instanceof Number) {
+				return ((Number) value).longValue();
+			}
 		}
 		return value;
 	}
