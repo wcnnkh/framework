@@ -5,14 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public final class DefaultResultSet implements ResultSet {
+public final class DefaultResultSet extends AbstractResultSet {
 	private static final long serialVersionUID = 1L;
-	private MetaData metaData;
-	private LinkedList<Object[]> dataList;
 
 	/**
 	 * 序列化用的
@@ -21,24 +18,19 @@ public final class DefaultResultSet implements ResultSet {
 	};
 
 	public DefaultResultSet(java.sql.ResultSet resultSet) throws SQLException {
-		while (resultSet.next()) {
-			if (metaData == null) {// 第一次
-				metaData = new MetaData(resultSet.getMetaData());
-				dataList = new LinkedList<Object[]>();
-			}
-
-			Object[] values = new Object[metaData.getColumns().length];
-			for (int i = 1; i <= values.length; i++) {
-				values[i - 1] = resultSet.getObject(i);
-			}
-			dataList.add(values);
-		}
+		super(resultSet);
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T> List<T> wrapper(Class<T> type, TableInfo tableInfo, String tableName,
 			Map<Class<?>, String> tableMapping) throws IllegalArgumentException, IllegalAccessException {
-		String tName = DefaultResult.getTableName(tableInfo, tableName, type, tableMapping);
+		String tName;
+		if (metaData.isAsSingle()) {
+			tName = tableName;
+		} else {
+			tName = DefaultResult.getTableName(tableInfo, tableName, type, tableMapping);
+		}
+		
 		List<T> list = new ArrayList<T>(dataList.size());
 		for (Object[] values : dataList) {
 			DefaultResult defaultResult = new DefaultResult(metaData, values);
@@ -130,10 +122,6 @@ public final class DefaultResultSet implements ResultSet {
 		return Collections.EMPTY_LIST;
 	}
 
-	public int size() {
-		return dataList == null ? 0 : dataList.size();
-	}
-
 	public Result getFirst() {
 		if (isEmpty()) {
 			return Result.EMPTY_RESULT;
@@ -148,10 +136,6 @@ public final class DefaultResultSet implements ResultSet {
 		}
 
 		return new DefaultResult(metaData, dataList.getLast());
-	}
-
-	public boolean isEmpty() {
-		return dataList == null || metaData == null || metaData.isEmpty();
 	}
 
 	public Iterator<Result> iterator() {
@@ -176,9 +160,5 @@ public final class DefaultResultSet implements ResultSet {
 		public Result next() {
 			return new DefaultResult(metaData, iterator.next());
 		}
-	}
-
-	public List<Object[]> getList() {
-		return new ArrayList<Object[]>(dataList);
 	}
 }

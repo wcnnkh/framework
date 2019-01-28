@@ -26,6 +26,11 @@ public interface Result extends Serializable {
 
 	<T> T get(Class<T> type, String tableName);
 
+	/**
+	 * 在查询结果没有重复列名的情况下，此方法可以满足所有需求
+	 * @param type
+	 * @return
+	 */
 	<T> T get(Class<T> type);
 
 	Object[] getValues();

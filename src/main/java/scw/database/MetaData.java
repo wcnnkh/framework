@@ -11,28 +11,46 @@ import scw.common.exception.AlreadyExistsException;
 
 public final class MetaData implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private HashMap<String, Map<String, Integer>> metaData = new HashMap<String, Map<String, Integer>>(4);
+	/**
+	 * 如果查询结果中未出现重名
+	 */
+	private HashMap<String, Integer> asSingleIndexMap;
+	private boolean asSingle;// 查询结果中是否存在重复的名字
+
+	private HashMap<String, Map<String, Integer>> metaData;;
 	private MetaDataColumn[] metaDataColumns;
 
 	protected MetaData() {
 	};
 
 	public MetaData(ResultSetMetaData resultSetMetaData) throws SQLException {
+		metaData = new HashMap<String, Map<String, Integer>>(4);
 		metaDataColumns = new MetaDataColumn[resultSetMetaData.getColumnCount()];
+		asSingleIndexMap = new HashMap<String, Integer>();
 		for (int i = 0; i < metaDataColumns.length; i++) {
 			MetaDataColumn metaDataColumn = new MetaDataColumn(resultSetMetaData, i + 1);
 			metaDataColumns[i] = metaDataColumn;
+
+			if (!asSingle) {
+				if (asSingleIndexMap.containsKey(metaDataColumn.getLabelName())) {
+					asSingleIndexMap = null;
+					asSingle = true;
+				}
+
+				asSingleIndexMap.put(metaDataColumn.getLabelName(), i);
+			}
+
 			Map<String, Integer> map = metaData.get(metaDataColumn.getTableName());
 			if (map == null) {
 				map = new HashMap<String, Integer>();
 				metaData.put(metaDataColumn.getTableName(), map);
 			}
 
-			if (map.containsKey(metaDataColumn.getName())) {
+			if (map.containsKey(metaDataColumn.getLabelName())) {
 				throw new AlreadyExistsException(
-						metaDataColumn.getTableName() + " field name [" + metaDataColumn.getName() + "]");
+						metaDataColumn.getTableName() + " field name [" + metaDataColumn.getLabelName() + "]");
 			}
-			map.put(metaDataColumn.getName(), i);
+			map.put(metaDataColumn.getLabelName(), i);
 		}
 	}
 
@@ -77,8 +95,16 @@ public final class MetaData implements Serializable {
 		return index == null ? -1 : index;
 	}
 
-	public int getDefaultColumnIndex(String column) {
-		return getColumnIndex(column, "");
+	public int getSingleIndex(String column) {
+		return asSingleIndexMap.get(column);
+	}
+
+	public boolean isAsSingle() {
+		return asSingle;
+	}
+
+	public void setAsSingle(boolean asSingle) {
+		this.asSingle = asSingle;
 	}
 
 	public boolean isEmpty() {

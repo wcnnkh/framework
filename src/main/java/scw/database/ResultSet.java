@@ -26,7 +26,7 @@ public interface ResultSet extends Serializable, Iterable<Result> {
 	<T> List<T> getList(Class<T> type, String tableName);
 
 	/**
-	 * 默认的实现
+	 * 在查询结果没有重复列名的情况下，此方法可以满足所有需求
 	 * 
 	 * @param type
 	 * @return
