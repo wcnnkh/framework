@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 
 import scw.common.FieldInfo;
 import scw.common.utils.ClassUtils;
+import scw.common.utils.StringUtils;
 import scw.database.annoation.Column;
 import scw.database.annoation.PrimaryKey;
 
@@ -86,10 +87,12 @@ public final class ColumnInfo {
 	}
 
 	public Object dbValueToFieldValue(Object value) {
-		if (boolean.class == type || Boolean.class == type) {
+		if (ClassUtils.isBooleanType(type)) {
 			if (value != null) {
 				if (value instanceof Number) {
 					return ((Number) value).doubleValue() == 1;
+				} else if (value instanceof String) {
+					return StringUtils.parseBoolean((String) value);
 				}
 			}
 		}
