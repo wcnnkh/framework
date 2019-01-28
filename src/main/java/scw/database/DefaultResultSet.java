@@ -135,15 +135,23 @@ public final class DefaultResultSet implements ResultSet {
 	}
 
 	public Result getFirst() {
+		if (isEmpty()) {
+			return Result.EMPTY_RESULT;
+		}
+
 		return new DefaultResult(metaData, dataList.getFirst());
 	}
 
 	public Result getLast() {
+		if (isEmpty()) {
+			return Result.EMPTY_RESULT;
+		}
+
 		return new DefaultResult(metaData, dataList.getLast());
 	}
 
 	public boolean isEmpty() {
-		return metaData == null || metaData.isEmpty() || dataList == null;
+		return dataList == null || metaData == null || metaData.isEmpty();
 	}
 
 	public Iterator<Result> iterator() {

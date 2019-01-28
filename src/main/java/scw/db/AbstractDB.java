@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -283,6 +284,10 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		save(tableName, Arrays.asList(beans));
 	}
 
+	public void save(Collection<?> beans) {
+		save(null, beans);
+	}
+
 	public void save(String tableName, Collection<?> beans) {
 		if (beans == null || beans.isEmpty()) {
 			return;
@@ -318,6 +323,10 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		String tName = StringUtils.isNull(tableName) ? tableInfo.getName() : tableName;
 		SQL sql = getSqlFormat().toDeleteSql(tableInfo, tName, params);
 		TransactionContext.execute(this, sql);
+	}
+
+	public void delete(Collection<?> beans) {
+		delete(null, beans);
 	}
 
 	public void delete(String tableName, Collection<?> beans) {
@@ -357,6 +366,10 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		TransactionContext.execute(this, sql);
 	}
 
+	public void update(Collection<?> beans) {
+		update(null, beans);
+	}
+
 	public void update(String tableName, Collection<?> beans) {
 		if (beans == null || beans.isEmpty()) {
 			return;
@@ -383,12 +396,16 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		saveOrUpdate(tableName, Arrays.asList(beans));
 	}
 
+	public void saveOrUpdate(Collection<?> beans) {
+		saveOrUpdate(null, beans);
+	}
+
 	public void saveOrUpdate(String tableName, Collection<?> beans) {
 		if (beans == null || beans.isEmpty()) {
 			return;
 		}
 
-		List<OperationBean> operationBeans = new ArrayList<OperationBean>(beans.size());
+		List<OperationBean> operationBeans = new LinkedList<OperationBean>();
 		for (Object bean : beans) {
 			if (bean == null) {
 				continue;

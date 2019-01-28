@@ -1,7 +1,7 @@
 package scw.db;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import scw.database.SQL;
@@ -17,7 +17,7 @@ public final class DBUtils {
 			return null;
 		}
 
-		List<SQL> list = new ArrayList<SQL>();
+		List<SQL> list = new LinkedList<SQL>();
 		for (OperationBean operationBean : operationBeans) {
 			if (operationBean == null) {
 				continue;
