@@ -1,17 +1,15 @@
 package scw.database;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public interface ResultSet extends Serializable {
+public interface ResultSet extends Serializable, Iterable<Result> {
 	public static final ResultSet EMPTY_RESULTSET = new EmptyResultSet();
 
-	Iterator<Result> iterator();
-	
 	/**
 	 * 返回全部数据
+	 * 
 	 * @return
 	 */
 	List<Object[]> getList();

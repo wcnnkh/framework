@@ -39,12 +39,12 @@ public final class EmptyResultSet implements ResultSet {
 		return true;
 	}
 
-	public Iterator<Result> iterator() {
-		return Collections.emptyIterator();
-	}
-
 	@SuppressWarnings("unchecked")
 	public List<Object[]> getList() {
 		return Collections.EMPTY_LIST;
+	}
+
+	public Iterator<Result> iterator() {
+		return Collections.emptyIterator();
 	}
 }
