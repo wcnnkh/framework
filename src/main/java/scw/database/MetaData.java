@@ -35,7 +35,7 @@ public final class MetaData implements Serializable {
 				if (asSingleIndexMap.containsKey(metaDataColumn.getLabelName())) {
 					asSingleIndexMap = null;
 					asSingle = true;
-				}else{
+				} else {
 					asSingleIndexMap.put(metaDataColumn.getLabelName(), i);
 				}
 			}
@@ -96,7 +96,8 @@ public final class MetaData implements Serializable {
 	}
 
 	public int getSingleIndex(String column) {
-		return asSingleIndexMap.get(column);
+		Integer index = asSingleIndexMap.get(column);
+		return index == null ? -1 : index;
 	}
 
 	public boolean isAsSingle() {
