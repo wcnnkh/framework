@@ -83,4 +83,8 @@ public class InsertSQL implements SQL{
 		}
 		return params;
 	}
+
+	public boolean isStoredProcedure() {
+		return false;
+	}
 }

@@ -44,12 +44,52 @@ public final class DataBaseUtils {
 		return tableInfo;
 	}
 
-	public static void setParams(PreparedStatement preparedStatement, Object[] args) throws SQLException {
+	private static void setParams(PreparedStatement preparedStatement, Object[] args) throws SQLException {
 		if (args != null && args.length != 0) {
 			for (int i = 0; i < args.length; i++) {
 				preparedStatement.setObject(i + 1, args[i]);
 			}
 		}
+	}
+
+	public static PreparedStatement createPreparedStatement(Connection connection, SQL sql) throws SQLException {
+		PreparedStatement preparedStatement;
+		if (sql.isStoredProcedure()) {
+			preparedStatement = connection.prepareCall(sql.getSql());
+		} else {
+			preparedStatement = connection.prepareStatement(sql.getSql());
+		}
+
+		setParams(preparedStatement, sql.getParams());
+		return preparedStatement;
+	}
+
+	public static PreparedStatement createPreparedStatement(Connection connection, SQL sql, int resultSetType,
+			int resultSetConcurrency) throws SQLException {
+		PreparedStatement preparedStatement;
+		if (sql.isStoredProcedure()) {
+			preparedStatement = connection.prepareCall(sql.getSql(), resultSetType, resultSetConcurrency);
+		} else {
+			preparedStatement = connection.prepareStatement(sql.getSql(), resultSetType, resultSetConcurrency);
+		}
+
+		setParams(preparedStatement, sql.getParams());
+		return preparedStatement;
+	}
+
+	public static PreparedStatement createPreparedStatement(Connection connection, SQL sql, int resultSetType,
+			int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+		PreparedStatement preparedStatement;
+		if (sql.isStoredProcedure()) {
+			preparedStatement = connection.prepareCall(sql.getSql(), resultSetType, resultSetConcurrency,
+					resultSetHoldability);
+		} else {
+			preparedStatement = connection.prepareStatement(sql.getSql(), resultSetType, resultSetConcurrency,
+					resultSetHoldability);
+		}
+
+		setParams(preparedStatement, sql.getParams());
+		return preparedStatement;
 	}
 
 	public static void iterator(ConnectionSource connectionSource, SQL sql, scw.common.Iterator<ResultSet> iterator) {
@@ -62,10 +102,8 @@ public final class DataBaseUtils {
 		Connection connection = null;
 		try {
 			connection = connectionSource.getConnection();
-			stmt = connection.prepareStatement(sql.getSql());
-			setParams(stmt, sql.getParams());
+			stmt = createPreparedStatement(connection, sql);
 			rs = stmt.executeQuery();
-
 			while (rs.next()) {
 				iterator.iterator(rs);
 			}
@@ -82,8 +120,7 @@ public final class DataBaseUtils {
 		Connection connection = null;
 		try {
 			connection = connectionSource.getConnection();
-			stmt = connection.prepareStatement(sql.getSql());
-			setParams(stmt, sql.getParams());
+			stmt = createPreparedStatement(connection, sql);
 			rs = stmt.executeQuery();
 			return new DefaultResultSet(rs);
 		} catch (SQLException e) {
@@ -115,7 +152,7 @@ public final class DataBaseUtils {
 			Connection connection = null;
 			try {
 				connection = connectionPool.getConnection();
-				stmt = connection.prepareStatement(sql.getSql());
+				stmt = createPreparedStatement(connection, sql);
 				setParams(stmt, sql.getParams());
 				stmt.execute();
 			} catch (SQLException e) {
@@ -158,6 +195,7 @@ public final class DataBaseUtils {
 
 	/**
 	 * 将数据库值转化java类型
+	 * 
 	 * @param type
 	 * @param value
 	 * @return
@@ -166,7 +204,7 @@ public final class DataBaseUtils {
 		if (value == null) {
 			return value;
 		}
-		
+
 		if (ClassUtils.isBooleanType(type)) {
 			if (value != null) {
 				if (value instanceof Number) {

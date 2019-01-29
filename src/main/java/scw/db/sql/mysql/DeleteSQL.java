@@ -133,4 +133,8 @@ public class DeleteSQL implements SQL {
 		}
 		return params;
 	}
+
+	public boolean isStoredProcedure() {
+		return false;
+	}
 }

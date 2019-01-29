@@ -103,4 +103,8 @@ public class UpdateSQL implements SQL {
 	public Object[] getParams() {
 		return params;
 	}
+
+	public boolean isStoredProcedure() {
+		return false;
+	}
 }

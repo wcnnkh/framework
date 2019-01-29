@@ -83,4 +83,8 @@ public class SaveOrUpdateSQLByBeanListen implements SQL{
 	public Object[] getParams() {
 		return params;
 	}
+
+	public boolean isStoredProcedure() {
+		return false;
+	}
 }

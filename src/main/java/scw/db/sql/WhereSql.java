@@ -155,4 +155,8 @@ public class WhereSql implements SQL {
 			return new SimpleSQL(sql.toString(), arr);
 		}
 	}
+
+	public boolean isStoredProcedure() {
+		return false;
+	}
 }

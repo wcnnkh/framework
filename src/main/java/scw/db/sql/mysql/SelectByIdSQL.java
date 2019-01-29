@@ -60,4 +60,8 @@ public class SelectByIdSQL implements SQL {
 		}
 		return sb.toString();
 	}
+
+	public boolean isStoredProcedure() {
+		return false;
+	}
 }

@@ -198,6 +198,10 @@ public class CreateTableSQL implements SQL {
 	public Object[] getParams() {
 		return null;
 	}
+
+	public boolean isStoredProcedure() {
+		return false;
+	}
 }
 
 class IndexInfo {

@@ -87,4 +87,8 @@ public class CommonSQL implements SQL {
 	public String getSql() {
 		return sb == null ? null : sb.toString();
 	}
+
+	public boolean isStoredProcedure() {
+		return false;
+	}
 }

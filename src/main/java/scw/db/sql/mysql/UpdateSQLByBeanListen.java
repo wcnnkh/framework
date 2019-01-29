@@ -15,7 +15,8 @@ public class UpdateSQLByBeanListen implements SQL {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanListen(BeanFieldListen beanFieldListen, TableInfo tableInfo, String tableName) throws IllegalArgumentException, IllegalAccessException {
+	public UpdateSQLByBeanListen(BeanFieldListen beanFieldListen, TableInfo tableInfo, String tableName)
+			throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -36,10 +37,10 @@ public class UpdateSQLByBeanListen implements SQL {
 		List<Object> paramList = new ArrayList<Object>();
 		for (Entry<String, Object> entry : beanFieldListen.get_field_change_map().entrySet()) {
 			columnInfo = tableInfo.getColumnInfo(entry.getKey());
-			if(columnInfo.getPrimaryKey() != null){
+			if (columnInfo.getPrimaryKey() != null) {
 				continue;
 			}
-			
+
 			if (index++ > 0) {
 				sb.append(",");
 			}
@@ -57,7 +58,7 @@ public class UpdateSQLByBeanListen implements SQL {
 			}
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
-			
+
 			paramList.add(columnInfo.getValueToDB(beanFieldListen));
 		}
 		this.sql = sb.toString();
@@ -70,5 +71,9 @@ public class UpdateSQLByBeanListen implements SQL {
 
 	public Object[] getParams() {
 		return params;
+	}
+
+	public boolean isStoredProcedure() {
+		return false;
 	}
 }

@@ -48,9 +48,8 @@ public final class SQLTransaction extends AbstractTransaction {
 	public void process() throws Exception {
 		int i = 0;
 		for (Entry<String, SQL> entry : sqlMap.entrySet()) {
-			PreparedStatement stmt = connection.prepareStatement(entry.getValue().getSql());
+			PreparedStatement stmt = DataBaseUtils.createPreparedStatement(connection, entry.getValue());
 			preparedStatements[i++] = stmt;
-			DataBaseUtils.setParams(stmt, entry.getValue().getParams());
 			try {
 				stmt.execute();
 			} catch (SQLException e) {

@@ -114,4 +114,8 @@ public class IncrSQL implements SQL{
 		}
 		return params;
 	}
+
+	public boolean isStoredProcedure() {
+		return false;
+	}
 }

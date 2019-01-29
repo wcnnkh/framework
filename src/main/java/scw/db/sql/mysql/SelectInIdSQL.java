@@ -85,4 +85,8 @@ public class SelectInIdSQL implements SQL {
 		sb.append(" where ").append(where);
 		return sb.toString();
 	}
+
+	public boolean isStoredProcedure() {
+		return false;
+	}
 }
