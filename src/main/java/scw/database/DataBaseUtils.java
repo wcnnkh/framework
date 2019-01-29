@@ -157,12 +157,12 @@ public final class DataBaseUtils {
 	}
 
 	/**
-	 * 处理基本数据类型，其他类型原样返回
+	 * 将数据库值转化java类型
 	 * @param type
 	 * @param value
 	 * @return
 	 */
-	public static Object parsePrimitive(Class<?> type, Object value) {
+	public static Object parse(Class<?> type, Object value) {
 		if (value == null) {
 			return value;
 		}

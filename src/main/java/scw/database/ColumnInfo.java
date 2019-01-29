@@ -86,7 +86,7 @@ public final class ColumnInfo {
 	}
 
 	public void setValueToField(Object bean, Object dbValue) throws IllegalArgumentException, IllegalAccessException {
-		fieldInfo.forceSet(bean, DataBaseUtils.parsePrimitive(type, dbValue));
+		fieldInfo.forceSet(bean, DataBaseUtils.parse(type, dbValue));
 	}
 
 	public String getName() {

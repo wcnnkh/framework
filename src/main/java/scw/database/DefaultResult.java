@@ -86,7 +86,7 @@ public final class DefaultResult extends AbstractResult {
 			return (T) getValues();
 		} else if (isOriginalType(type)) {
 			if (values.length > 0) {
-				return (T) DataBaseUtils.parsePrimitive(type, values[0]);
+				return (T) DataBaseUtils.parse(type, values[0]);
 			}
 			return null;
 		}
