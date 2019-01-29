@@ -4,6 +4,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import scw.beans.annotaion.Destroy;
 import scw.common.ProcessResult;
 
 public final class AsyncAliDaYu implements AliDaYu {
@@ -31,6 +32,7 @@ public final class AsyncAliDaYu implements AliDaYu {
 		return ProcessResult.success();
 	};
 
+	@Destroy
 	public void destory() {
 		threadPoolExecutor.shutdownNow();
 	}

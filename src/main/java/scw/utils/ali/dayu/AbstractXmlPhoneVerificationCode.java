@@ -9,6 +9,7 @@ import org.w3c.dom.Node;
 
 import com.alibaba.fastjson.JSONObject;
 
+import scw.beans.annotaion.Destroy;
 import scw.common.Logger;
 import scw.common.ProcessResult;
 import scw.common.utils.ClassUtils;
@@ -78,6 +79,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		return sendMessage(messageModel, sms_param, toPhones);
 	}
 
+	@Destroy
 	public void destroy() {
 		if (aLiDaYu instanceof AsyncAliDaYu) {
 			((AsyncAliDaYu) aLiDaYu).destory();
