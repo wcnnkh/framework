@@ -15,6 +15,7 @@ import scw.beans.BeanUtils;
 import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
+import scw.common.utils.StringUtils;
 import scw.common.utils.XUtils;
 import scw.database.annoation.Table;
 
@@ -153,5 +154,52 @@ public final class DataBaseUtils {
 
 			BeanUtils.getFieldListenProxyClass(type);
 		}
+	}
+
+	/**
+	 * 处理基本数据类型，其他类型原样返回
+	 * @param type
+	 * @param value
+	 * @return
+	 */
+	public static Object parsePrimitive(Class<?> type, Object value) {
+		if (value == null) {
+			return value;
+		}
+		
+		if (ClassUtils.isBooleanType(type)) {
+			if (value != null) {
+				if (value instanceof Number) {
+					return ((Number) value).doubleValue() == 1;
+				} else if (value instanceof String) {
+					return StringUtils.parseBoolean((String) value);
+				}
+			}
+		} else if (ClassUtils.isIntType(type)) {
+			if (value instanceof Number) {
+				return ((Number) value).intValue();
+			}
+		} else if (ClassUtils.isLongType(type)) {
+			if (value instanceof Number) {
+				return ((Number) value).longValue();
+			}
+		} else if (ClassUtils.isByteType(type)) {
+			if (value instanceof Number) {
+				return ((Number) value).byteValue();
+			}
+		} else if (ClassUtils.isFloatType(type)) {
+			if (value instanceof Number) {
+				return ((Number) value).floatValue();
+			}
+		} else if (ClassUtils.isDoubleType(type)) {
+			if (value instanceof Number) {
+				return ((Number) value).doubleValue();
+			}
+		} else if (ClassUtils.isShortType(type)) {
+			if (value instanceof Number) {
+				return ((Number) value).shortValue();
+			}
+		}
+		return value;
 	}
 }

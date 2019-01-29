@@ -14,7 +14,6 @@ import java.sql.Timestamp;
 
 import scw.common.FieldInfo;
 import scw.common.utils.ClassUtils;
-import scw.common.utils.StringUtils;
 import scw.database.annoation.Column;
 import scw.database.annoation.PrimaryKey;
 
@@ -67,7 +66,7 @@ public final class ColumnInfo {
 		this.sqlTableAndColumn = "`" + defaultTableName + "`." + sqlColumnName;
 	}
 
-	public Object fieldValueToDBValue(Object value) {
+	private Object fieldValueToDBValue(Object value) {
 		if (boolean.class == type) {
 			boolean b = value == null ? false : (Boolean) value;
 			return b ? 1 : 0;
@@ -86,29 +85,8 @@ public final class ColumnInfo {
 		return fieldValueToDBValue(fieldInfo.forceGet(bean));
 	}
 
-	public Object dbValueToFieldValue(Object value) {
-		if (ClassUtils.isBooleanType(type)) {
-			if (value != null) {
-				if (value instanceof Number) {
-					return ((Number) value).doubleValue() == 1;
-				} else if (value instanceof String) {
-					return StringUtils.parseBoolean((String) value);
-				}
-			}
-		} else if (ClassUtils.isIntType(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).intValue();
-			}
-		} else if (ClassUtils.isLongType(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).longValue();
-			}
-		}
-		return value;
-	}
-
 	public void setValueToField(Object bean, Object dbValue) throws IllegalArgumentException, IllegalAccessException {
-		fieldInfo.forceSet(bean, dbValueToFieldValue(dbValue));
+		fieldInfo.forceSet(bean, DataBaseUtils.parsePrimitive(type, dbValue));
 	}
 
 	public String getName() {

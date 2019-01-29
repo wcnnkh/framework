@@ -43,7 +43,7 @@ public final class DefaultResultSet extends AbstractResultSet {
 	private <T> List<T> getListByFirst(Class<T> type) {
 		List<Object> list = new ArrayList<Object>(dataList.size());
 		for (Object[] objects : dataList) {
-			list.add(objects[0]);
+			list.add((T) DataBaseUtils.parsePrimitive(type, objects[0]));
 		}
 		return (List<T>) list;
 	}
