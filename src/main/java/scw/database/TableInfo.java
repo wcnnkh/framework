@@ -16,6 +16,7 @@ import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.database.annoation.NotColumn;
 import scw.database.annoation.Table;
+import scw.database.annoation.Transient;
 
 public final class TableInfo {
 	private String name;
@@ -97,6 +98,11 @@ public final class TableInfo {
 				FieldInfo fieldInfo = tempClassInfo.getFieldMap().get(fieldName);
 				NotColumn exclude = fieldInfo.getField().getAnnotation(NotColumn.class);
 				if (exclude != null) {
+					continue;
+				}
+
+				Transient tr = fieldInfo.getField().getAnnotation(Transient.class);
+				if (tr != null) {
 					continue;
 				}
 
@@ -236,10 +242,10 @@ public final class TableInfo {
 		}
 		return params;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public <T> T newInstance(){
-		if(table == null){
+	public <T> T newInstance() {
+		if (table == null) {
 			try {
 				return (T) classInfo.getClz().newInstance();
 			} catch (InstantiationException e) {
@@ -248,7 +254,7 @@ public final class TableInfo {
 				e.printStackTrace();
 			}
 			return null;
-		}else{
+		} else {
 			BeanFieldListen beanFieldListen = (BeanFieldListen) BeanUtils.newFieldListenInstance(classInfo.getClz());
 			beanFieldListen.start_field_listen();
 			return (T) beanFieldListen;

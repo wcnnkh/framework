@@ -24,9 +24,9 @@ public final class ColumnInfo {
 	private Class<?> type;
 	private int length;
 	private boolean nullAble;// 是否可以为空
+	private boolean unique;//是否建立唯一索引
 	private boolean isDataBaseType;
 	private FieldInfo fieldInfo;
-	private Column column;
 	private String sqlTableAndColumn;
 	// 就是在name的两边加入了(``)
 	private String sqlColumnName;
@@ -46,8 +46,7 @@ public final class ColumnInfo {
 				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
 				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type)
 				|| URL.class.isAssignableFrom(type) || byte[].class.isAssignableFrom(type);
-
-		this.column = field.getField().getAnnotation(Column.class);
+		Column column = field.getField().getAnnotation(Column.class);
 		if (column != null) {
 			if (column.name().trim().length() != 0) {
 				this.name = column.name().trim();
@@ -113,10 +112,6 @@ public final class ColumnInfo {
 		return nullAble;
 	}
 
-	public Column getColumn() {
-		return column;
-	}
-
 	public String getSqlTableAndColumn() {
 		return sqlTableAndColumn;
 	}
@@ -153,5 +148,13 @@ public final class ColumnInfo {
 
 	public FieldInfo getFieldInfo() {
 		return fieldInfo;
+	}
+
+	public boolean isUnique() {
+		return unique;
+	}
+
+	public void setUnique(boolean unique) {
+		this.unique = unique;
 	}
 }
