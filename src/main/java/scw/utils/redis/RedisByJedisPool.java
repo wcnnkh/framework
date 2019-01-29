@@ -8,6 +8,7 @@ import java.util.Set;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import scw.beans.annotaion.Destroy;
 
 public final class RedisByJedisPool implements Redis {
 	private static final String SUCCESS = "OK";
@@ -21,7 +22,7 @@ public final class RedisByJedisPool implements Redis {
 		jedisPoolConfig.setTestOnBorrow(true);
 		this.jedisPool = new JedisPool(jedisPoolConfig, "localhost");
 	}
-	
+
 	public RedisByJedisPool(int maxTotal, int maxIdle, boolean testOnBorrow, String host) {
 		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 		jedisPoolConfig.setMaxTotal(maxTotal);
@@ -765,14 +766,15 @@ public final class RedisByJedisPool implements Redis {
 			}
 		}
 	}
-	
-	public void destroy(){
+
+	@Destroy
+	public void destroy() {
 		jedisPool.close();
 	}
 
 	public String getAndTouch(String key, int exp) {
 		String v = get(key);
-		if(v != null){
+		if (v != null) {
 			expire(key, exp);
 		}
 		return v;
@@ -780,7 +782,7 @@ public final class RedisByJedisPool implements Redis {
 
 	public byte[] getAndTouch(byte[] key, int exp) {
 		byte[] v = get(key);
-		if(v != null){
+		if (v != null) {
 			expire(key, exp);
 		}
 		return v;

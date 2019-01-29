@@ -16,6 +16,7 @@ import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.exception.MemcachedException;
+import scw.beans.annotaion.Destroy;
 import scw.common.utils.StringUtils;
 
 public final class XMemcached implements Memcached{
@@ -307,6 +308,7 @@ public final class XMemcached implements Memcached{
 		}
 	}
 	
+	@Destroy
 	public void destroy() throws IOException{
 		memcachedClient.shutdown();
 	}
