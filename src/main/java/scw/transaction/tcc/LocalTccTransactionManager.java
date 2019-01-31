@@ -7,7 +7,6 @@ import scw.transaction.TransactionManager;
 
 public class LocalTccTransactionManager implements TransactionManager{
 	
-	
 	public Transaction getTransaction(TransactionDefinition transactionDefinition) throws TransactionException {
 		// TODO Auto-generated method stub
 		return null;
