@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import scw.jdbc.ConnectionFactory;
-import scw.jdbc.ConnectionProxy;
-import scw.jdbc.ConnectionProxyHandler;
+import scw.transaction.datasource.ConnectionFactory;
+import scw.transaction.datasource.ConnectionProxy;
+import scw.transaction.datasource.ConnectionProxyHandler;
 
 public class TransactionContext {
 	/**

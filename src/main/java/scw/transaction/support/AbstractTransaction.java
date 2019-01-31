@@ -1,5 +1,6 @@
 package scw.transaction.support;
 
+import scw.common.transaction.exception.TransactionException;
 import scw.transaction.Transaction;
 
 public abstract class AbstractTransaction implements Transaction {
@@ -13,10 +14,7 @@ public abstract class AbstractTransaction implements Transaction {
 		return newTransaction;
 	}
 
-	/**
-	 * 是否已经开始
-	 * 
-	 * @return
-	 */
-	abstract boolean isBegin();
+	public abstract boolean hasTransaction();
+
+	public abstract Object createSavepoint() throws TransactionException;
 }

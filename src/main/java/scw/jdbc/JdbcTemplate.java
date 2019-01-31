@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import scw.transaction.datasource.ConnectionFactory;
+
 public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
 
 	protected void close(Connection connection) throws SqlException {

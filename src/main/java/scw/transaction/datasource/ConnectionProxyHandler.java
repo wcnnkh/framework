@@ -1,4 +1,4 @@
-package scw.jdbc;
+package scw.transaction.datasource;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;

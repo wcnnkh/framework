@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.jdbc.ConnectionFactory;
-import scw.jdbc.ConnectionProxy;
-import scw.jdbc.ConnectionProxyHandler;
 import scw.jdbc.transaction.ConnectionHolder;
+import scw.transaction.datasource.ConnectionFactory;
+import scw.transaction.datasource.ConnectionProxy;
+import scw.transaction.datasource.ConnectionProxyHandler;
 
 public class TransactionDefinitionContext {
 	private Map<ConnectionFactory, ConnectionHolder> connectionMap;

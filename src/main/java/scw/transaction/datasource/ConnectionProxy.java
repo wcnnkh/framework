@@ -1,4 +1,4 @@
-package scw.jdbc;
+package scw.transaction.datasource;
 
 import java.sql.Connection;
 

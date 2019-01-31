@@ -10,8 +10,9 @@ public abstract class AbstractTransactionManager implements TransactionManager {
 	private AbstractTransaction transaction;
 	private AbstractTransactionManager parent;
 
-	public AbstractTransactionManager(TransactionDefinition transactionDefinition, AbstractTransaction transaction,
-			AbstractTransactionManager parent) {
+	public AbstractTransactionManager(
+			TransactionDefinition transactionDefinition,
+			AbstractTransaction transaction, AbstractTransactionManager parent) {
 		this.transactionDefinition = transactionDefinition;
 		this.transaction = transaction;
 		this.parent = parent;
@@ -21,18 +22,21 @@ public abstract class AbstractTransactionManager implements TransactionManager {
 		return transactionDefinition;
 	}
 
-	protected Transaction getTransaction() {
+	protected AbstractTransaction getTransaction() {
 		return transaction;
 	}
 
-	protected abstract Transaction newTransaction(TransactionDefinition transactionDefinition)
+	protected abstract AbstractTransaction newTransaction(
+			TransactionDefinition transactionDefinition)
 			throws TransactionException;
 
-	public Transaction getTransaction(TransactionDefinition transactionDefinition) throws TransactionException {
-		Transaction transaction = parent.getTransaction();
+	public Transaction getTransaction(
+			TransactionDefinition transactionDefinition)
+			throws TransactionException {
+		AbstractTransaction transaction = parent.getTransaction();
 		switch (transactionDefinition.getPropagation()) {
 		case REQUIRED:
-			if (transaction == null) {
+			if (transaction == null || !transaction.hasTransaction()) {
 				transaction = newTransaction(transactionDefinition);
 			}
 			break;
@@ -43,7 +47,8 @@ public abstract class AbstractTransactionManager implements TransactionManager {
 			break;
 		case MANDATORY:
 			if (transaction == null) {
-				throw new TransactionException(transactionDefinition.getPropagation().name());
+				throw new TransactionException(transactionDefinition
+						.getPropagation().name());
 			}
 			break;
 		case REQUIRES_NEW:
@@ -54,12 +59,13 @@ public abstract class AbstractTransactionManager implements TransactionManager {
 			break;
 		case NEVER:
 			if (transaction != null) {
-				throw new TransactionException(transactionDefinition.getPropagation().name());
+				throw new TransactionException(transactionDefinition
+						.getPropagation().name());
 			}
 			break;
 		case NESTED:
 			if (transaction != null) {
-				// transaction.createSavepoint();
+				transaction.createSavepoint();
 			} else {
 				transaction = newTransaction(transactionDefinition);
 			}

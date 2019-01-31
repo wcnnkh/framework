@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.jdbc.ConnectionFactory;
+import scw.transaction.datasource.ConnectionFactory;
 
 public class TransactionResource {
 	private Map<Object, Object> attributeMap;

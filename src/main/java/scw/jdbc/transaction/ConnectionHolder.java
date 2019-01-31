@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
-import scw.jdbc.ConnectionProxy;
+import scw.transaction.datasource.ConnectionProxy;
 
 public class ConnectionHolder {
 	/**
