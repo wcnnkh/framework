@@ -10,13 +10,13 @@ import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.Transaction;
 import scw.common.transaction.TransactionCollection;
 import scw.database.DataBaseUtils;
-import scw.database.SQL;
 import scw.database.TableInfo;
 import scw.database.TransactionContext;
 import scw.db.AbstractDB;
 import scw.db.DBUtils;
 import scw.db.OperationBean;
 import scw.db.storage.CacheUtils;
+import scw.jdbc.Sql;
 
 public class CacheAsyncConsumer {
 	private final CacheStorage cacheStorage;
@@ -41,7 +41,7 @@ public class CacheAsyncConsumer {
 	public void handler(Collection<OperationBean> message) throws Exception {
 		TransactionContext.begin();
 		try {
-			Collection<SQL> sqls = DBUtils.getSqlList(cacheStorage.getDB()
+			Collection<Sql> sqls = DBUtils.getSqlList(cacheStorage.getDB()
 					.getSqlFormat(), message);
 			if (sqls == null || sqls.isEmpty()) {
 				return;

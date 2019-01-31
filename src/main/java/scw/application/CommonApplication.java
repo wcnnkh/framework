@@ -2,6 +2,8 @@ package scw.application;
 
 import java.util.Collection;
 
+import com.alibaba.dubbo.config.ProtocolConfig;
+
 import scw.beans.XmlBeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
@@ -11,10 +13,7 @@ import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.database.DataBaseUtils;
-import scw.database.TransactionBeanFilter;
 import scw.database.TransactionContext;
-
-import com.alibaba.dubbo.config.ProtocolConfig;
 
 public class CommonApplication implements Application {
 	private static final String TRANSACTION_DEBUG_NAME = "shuchaowen.transaction.debug";
@@ -31,8 +30,6 @@ public class CommonApplication implements Application {
 		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(configPath) : propertiesFactory;
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
-			// 支持事务
-			beanFactory.addFilters(TransactionBeanFilter.class.getName());
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}

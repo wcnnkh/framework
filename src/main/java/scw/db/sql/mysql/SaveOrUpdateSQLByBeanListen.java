@@ -7,10 +7,10 @@ import java.util.Map.Entry;
 import scw.beans.BeanFieldListen;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.ColumnInfo;
-import scw.database.SQL;
 import scw.database.TableInfo;
+import scw.jdbc.Sql;
 
-public class SaveOrUpdateSQLByBeanListen implements SQL{
+public class SaveOrUpdateSQLByBeanListen implements Sql{
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;

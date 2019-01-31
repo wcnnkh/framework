@@ -1,8 +1,8 @@
 package scw.db.sql;
 
-import scw.database.SQL;
+import scw.jdbc.Sql;
 
-public class SimpleSQL implements SQL {
+public class SimpleSQL implements Sql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;

@@ -4,20 +4,20 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.database.SQL;
 import scw.database.TableInfo;
 import scw.db.sql.SQLFormat;
+import scw.jdbc.Sql;
 
 public final class DBUtils {
 	private DBUtils() {
 	};
 
-	public static Collection<SQL> getSqlList(SQLFormat sqlFormat, Collection<OperationBean> operationBeans) {
+	public static Collection<Sql> getSqlList(SQLFormat sqlFormat, Collection<OperationBean> operationBeans) {
 		if (operationBeans == null || operationBeans.isEmpty()) {
 			return null;
 		}
 
-		List<SQL> list = new LinkedList<SQL>();
+		List<Sql> list = new LinkedList<Sql>();
 		for (OperationBean operationBean : operationBeans) {
 			if (operationBean == null) {
 				continue;

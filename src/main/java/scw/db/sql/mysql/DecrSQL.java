@@ -1,10 +1,10 @@
 package scw.db.sql.mysql;
 
 import scw.database.ColumnInfo;
-import scw.database.SQL;
 import scw.database.TableInfo;
+import scw.jdbc.Sql;
 
-public class DecrSQL implements SQL{
+public class DecrSQL implements Sql{
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;

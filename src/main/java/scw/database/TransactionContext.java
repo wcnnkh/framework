@@ -8,6 +8,7 @@ import scw.common.Logger;
 import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.Transaction;
 import scw.common.utils.Assert;
+import scw.jdbc.Sql;
 
 /**
  * 数据库封装核心类，用于处理数据库事务
@@ -89,17 +90,17 @@ public final class TransactionContext {
 		}
 	}
 
-	private static void debug(Collection<SQL> sqls) {
+	private static void debug(Collection<Sql> sqls) {
 		if (sqls != null) {
-			Iterator<SQL> iterator = sqls.iterator();
+			Iterator<Sql> iterator = sqls.iterator();
 			while (iterator.hasNext()) {
-				SQL sql = iterator.next();
+				Sql sql = iterator.next();
 				debug(sql);
 			}
 		}
 	}
 
-	private static void debug(SQL sql) {
+	private static void debug(Sql sql) {
 		if (sql == null) {
 			return;
 		}
@@ -107,9 +108,9 @@ public final class TransactionContext {
 		Logger.debug(TransactionContext.class.getName(), DataBaseUtils.getSQLId(sql));
 	}
 
-	private static void forceExecute(ConnectionSource connectionSource, Collection<SQL> sqls, boolean debug) {
+	private static void forceExecute(ConnectionSource connectionSource, Collection<Sql> sqls, boolean debug) {
 		SQLTransaction sqlTransaction = new SQLTransaction(connectionSource);
-		Iterator<SQL> iterator = sqls.iterator();
+		Iterator<Sql> iterator = sqls.iterator();
 		while (iterator.hasNext()) {
 			sqlTransaction.addSql(iterator.next());
 		}
@@ -121,7 +122,7 @@ public final class TransactionContext {
 		AbstractTransaction.transaction(sqlTransaction);
 	}
 
-	public static void execute(ConnectionSource connectionSource, Collection<SQL> sqls) {
+	public static void execute(ConnectionSource connectionSource, Collection<Sql> sqls) {
 		Assert.notNull(connectionSource);
 		Assert.notNull(sqls);
 
@@ -142,7 +143,7 @@ public final class TransactionContext {
 		}
 	}
 
-	public static void execute(ConnectionSource connectionSource, SQL... sqls) {
+	public static void execute(ConnectionSource connectionSource, Sql... sqls) {
 		execute(connectionSource, Arrays.asList(sqls));
 	}
 
@@ -151,7 +152,7 @@ public final class TransactionContext {
 	 * @param sql
 	 * @return ResultSet不可能为空
 	 */
-	public static ResultSet select(ConnectionSource connectionSource, SQL sql) {
+	public static ResultSet select(ConnectionSource connectionSource, Sql sql) {
 		Assert.notNull(connectionSource);
 		Assert.notNull(sql);
 

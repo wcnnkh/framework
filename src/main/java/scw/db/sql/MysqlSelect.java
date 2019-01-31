@@ -9,9 +9,9 @@ import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.ColumnInfo;
 import scw.database.DataBaseUtils;
 import scw.database.ResultSet;
-import scw.database.SQL;
 import scw.database.TableInfo;
 import scw.db.AbstractDB;
+import scw.jdbc.Sql;
 
 public class MysqlSelect extends Select {
 	/**
@@ -201,7 +201,7 @@ public class MysqlSelect extends Select {
 
 	@Override
 	public long count() {
-		SQL sql = toSQL("count(*)", false);
+		Sql sql = toSQL("count(*)", false);
 		scw.database.ResultSet resultSet = db.select(sql);
 		Long count = resultSet.getFirst().get(Long.class);
 		return count == null ? 0 : count;
@@ -214,7 +214,7 @@ public class MysqlSelect extends Select {
 
 	@Override
 	public ResultSet getResultSet(long begin, int limit) {
-		SQL sql = toSQL("*", true);
+		Sql sql = toSQL("*", true);
 		Object[] args;
 		if (sql.getParams() == null) {
 			args = new Object[2];
@@ -233,7 +233,7 @@ public class MysqlSelect extends Select {
 	}
 
 	@Override
-	public SQL toSQL(String select, boolean order) {
+	public Sql toSQL(String select, boolean order) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select ").append(select).append(" from ");
 		sb.append(getSelectTables());

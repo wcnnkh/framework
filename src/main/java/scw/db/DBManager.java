@@ -10,8 +10,8 @@ import java.util.Map.Entry;
 
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
-import scw.database.SQL;
 import scw.database.annoation.Table;
+import scw.jdbc.Sql;
 
 /**
  * 只用于处理默认的数据库 不再推荐使用
@@ -136,11 +136,11 @@ public final class DBManager {
 		return db;
 	}
 
-	public static <T> List<T> select(Class<T> type, SQL sql) {
+	public static <T> List<T> select(Class<T> type, Sql sql) {
 		return getDB(type).select(type, sql);
 	}
 
-	public static <T> T selectOne(Class<T> type, SQL sql) {
+	public static <T> T selectOne(Class<T> type, Sql sql) {
 		return getDB(type).selectOne(type, sql);
 	}
 

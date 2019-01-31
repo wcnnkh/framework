@@ -102,10 +102,33 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 	}
 
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+		return transaction(obj, method, args, proxy);
+	}
+
+	private Object transaction(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+		/*
+		 * TransactionManager.before(); Transactional clzTransaction =
+		 * method.getDeclaringClass().getAnnotation(Transactional.class);
+		 * Transactional methodTransaction =
+		 * method.getAnnotation(Transactional.class); if (clzTransaction != null
+		 * || methodTransaction != null) { boolean b = true; if (clzTransaction
+		 * != null) { b = clzTransaction.value(); }
+		 * 
+		 * if (methodTransaction != null) { b = clzTransaction.value(); }
+		 * TransactionManager.getResource().getTransactionConfig().setActive(!b)
+		 * ; }
+		 * 
+		 * try { Object rtn = invoke(obj, method, args, proxy);
+		 * TransactionManager.after(); return rtn; } finally {
+		 * TransactionManager.complete(); }
+		 */
+		return invoke(obj, method, args, proxy);
+	}
+
+	private Object invoke(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		if (obj instanceof BeanFilter) {
 			return proxy.invokeSuper(obj, args);
 		}
-
 		return retry(obj, method, args, proxy);
 	}
 }

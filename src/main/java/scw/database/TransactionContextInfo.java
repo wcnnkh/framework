@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import scw.common.Logger;
+import scw.jdbc.Sql;
 
 public class TransactionContextInfo {
 	private TransactionContextQuarantine quarantine;
@@ -20,7 +21,7 @@ public class TransactionContextInfo {
 		return quarantineList.getLast();
 	}
 
-	public ResultSet select(ConnectionSource connectionSource, SQL sql) {
+	public ResultSet select(ConnectionSource connectionSource, Sql sql) {
 		ResultSet resultSet;
 		String id = DataBaseUtils.getSQLId(sql);
 		if (cacheMap == null) {
@@ -47,7 +48,7 @@ public class TransactionContextInfo {
 		return resultSet;
 	}
 
-	private ResultSet realSelect(ConnectionSource connectionSource, SQL sql) {
+	private ResultSet realSelect(ConnectionSource connectionSource, Sql sql) {
 		if (getTransactionContextQuarantine().getConfig().isDebug()) {
 			Logger.debug(this.getClass().getName(), DataBaseUtils.getSQLId(sql));
 		}

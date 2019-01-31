@@ -18,7 +18,6 @@ import scw.common.transaction.TransactionCollection;
 import scw.common.utils.ClassUtils;
 import scw.database.DataBaseUtils;
 import scw.database.Result;
-import scw.database.SQL;
 import scw.database.TableInfo;
 import scw.database.TransactionContext;
 import scw.database.annoation.Table;
@@ -26,6 +25,7 @@ import scw.db.AbstractDB;
 import scw.db.DBUtils;
 import scw.db.OperationBean;
 import scw.db.storage.Storage;
+import scw.jdbc.Sql;
 import scw.utils.memcached.Memcached;
 import scw.utils.queue.MemcachedQueue;
 import scw.utils.queue.Queue;
@@ -118,7 +118,7 @@ public final class CacheStorage implements Storage {
 						Collection<OperationBean> beans = queue.take();
 						TransactionContext.begin();
 						try {
-							Collection<SQL> sqls = DBUtils.getSqlList(db.getSqlFormat(), beans);
+							Collection<Sql> sqls = DBUtils.getSqlList(db.getSqlFormat(), beans);
 							if (sqls == null || sqls.isEmpty()) {
 								return;
 							}
@@ -258,7 +258,7 @@ public final class CacheStorage implements Storage {
 		}
 
 		List<OperationBean> asyncList = null;// 异步列表
-		List<SQL> synchronizationList = null;// 同步列表
+		List<Sql> synchronizationList = null;// 同步列表
 		TransactionCollection cacheTransaction = null;
 		for (OperationBean operationBean : operationBeans) {
 			if (operationBean == null || operationBean.getBean() == null) {
@@ -300,7 +300,7 @@ public final class CacheStorage implements Storage {
 				asyncList.add(operationBean);
 			} else {
 				if (synchronizationList == null) {
-					synchronizationList = new ArrayList<SQL>(operationBeans.size());
+					synchronizationList = new ArrayList<Sql>(operationBeans.size());
 				}
 
 				synchronizationList.add(operationBean.getSql(getDB().getSqlFormat()));

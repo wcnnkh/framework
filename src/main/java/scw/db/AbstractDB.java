@@ -22,7 +22,6 @@ import scw.database.DataBaseUtils;
 import scw.database.DefaultResult;
 import scw.database.Result;
 import scw.database.ResultSet;
-import scw.database.SQL;
 import scw.database.TableInfo;
 import scw.database.TransactionContext;
 import scw.database.annoation.Table;
@@ -31,6 +30,7 @@ import scw.db.sql.MysqlSelect;
 import scw.db.sql.PaginationSql;
 import scw.db.sql.SQLFormat;
 import scw.db.sql.Select;
+import scw.jdbc.Sql;
 
 public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	{
@@ -52,7 +52,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		iterator(getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getName(), null), iterator);
 	}
 
-	public void iterator(SQL sql, final Iterator<Result> iterator) {
+	public void iterator(Sql sql, final Iterator<Result> iterator) {
 		DataBaseUtils.iterator(this, sql, new Iterator<java.sql.ResultSet>() {
 
 			public void iterator(java.sql.ResultSet data) {
@@ -65,12 +65,12 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		});
 	}
 
-	public ResultSet select(SQL sql) {
+	public ResultSet select(Sql sql) {
 		return TransactionContext.select(this, sql);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> Pagination<List<T>> select(Class<T> type, long page, int limit, SQL sql) {
+	public <T> Pagination<List<T>> select(Class<T> type, long page, int limit, Sql sql) {
 		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
 		if (count == null) {
@@ -84,7 +84,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		return new Pagination<List<T>>(count, limit, select(type, paginationSql.getResultSql()));
 	}
 
-	public Pagination<ResultSet> select(long page, int limit, SQL sql) {
+	public Pagination<ResultSet> select(long page, int limit, Sql sql) {
 		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
 		if (count == null) {
@@ -98,11 +98,11 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		return new Pagination<ResultSet>(count, limit, select(paginationSql.getResultSql()));
 	}
 
-	public <T> List<T> select(Class<T> type, SQL sql) {
+	public <T> List<T> select(Class<T> type, Sql sql) {
 		return select(sql).getList(type);
 	}
 
-	public <T> T selectOne(Class<T> type, SQL sql) {
+	public <T> T selectOne(Class<T> type, Sql sql) {
 		return select(sql).getFirst().get(type);
 	}
 
@@ -143,7 +143,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 
 	public void createTable(Class<?> tableClass, String tableName) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
-		SQL sql = getSqlFormat().toCreateTableSql(tableInfo, tableName);
+		Sql sql = getSqlFormat().toCreateTableSql(tableInfo, tableName);
 		Logger.info(this.getClass().getName(), sql.getSql());
 		DataBaseUtils.execute(this, Arrays.asList(sql));
 	}
@@ -185,7 +185,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		}
 
 		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
-		SQL sql = getSqlFormat().toSelectByIdSql(tableInfo, tName, params);
+		Sql sql = getSqlFormat().toSelectByIdSql(tableInfo, tName, params);
 		ResultSet resultSet = select(sql);
 		return resultSet.getFirst().get(type, tName);
 	}
@@ -263,7 +263,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	}
 
 	public void execute(Collection<OperationBean> operationBeans) {
-		Collection<SQL> sqls = DBUtils.getSqlList(getSqlFormat(), operationBeans);
+		Collection<Sql> sqls = DBUtils.getSqlList(getSqlFormat(), operationBeans);
 		if (sqls == null || sqls.isEmpty()) {
 			return;
 		}
@@ -271,7 +271,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		TransactionContext.execute(this, sqls);
 	}
 
-	public void execute(SQL... sql) {
+	public void execute(Sql... sql) {
 		TransactionContext.execute(this, sql);
 	}
 
@@ -321,7 +321,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	public void delete(Class<?> tableClass, String tableName, Object... params) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
 		String tName = StringUtils.isNull(tableName) ? tableInfo.getName() : tableName;
-		SQL sql = getSqlFormat().toDeleteSql(tableInfo, tName, params);
+		Sql sql = getSqlFormat().toDeleteSql(tableInfo, tName, params);
 		TransactionContext.execute(this, sql);
 	}
 
@@ -362,7 +362,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	public void update(Class<?> tableClass, String tableName, Map<String, Object> valueMap, Object... params) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
 		String tName = StringUtils.isNull(tableName) ? tableInfo.getName() : tableName;
-		SQL sql = getSqlFormat().toUpdateSql(tableInfo, tName, valueMap, params);
+		Sql sql = getSqlFormat().toUpdateSql(tableInfo, tName, valueMap, params);
 		TransactionContext.execute(this, sql);
 	}
 

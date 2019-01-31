@@ -18,6 +18,7 @@ import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XUtils;
 import scw.database.annoation.Table;
+import scw.jdbc.Sql;
 
 public final class DataBaseUtils {
 	private DataBaseUtils() {
@@ -52,7 +53,7 @@ public final class DataBaseUtils {
 		}
 	}
 
-	public static PreparedStatement createPreparedStatement(Connection connection, SQL sql) throws SQLException {
+	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql) throws SQLException {
 		PreparedStatement preparedStatement;
 		if (sql.isStoredProcedure()) {
 			preparedStatement = connection.prepareCall(sql.getSql());
@@ -64,7 +65,7 @@ public final class DataBaseUtils {
 		return preparedStatement;
 	}
 
-	public static PreparedStatement createPreparedStatement(Connection connection, SQL sql, int resultSetType,
+	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql, int resultSetType,
 			int resultSetConcurrency) throws SQLException {
 		PreparedStatement preparedStatement;
 		if (sql.isStoredProcedure()) {
@@ -77,7 +78,7 @@ public final class DataBaseUtils {
 		return preparedStatement;
 	}
 
-	public static PreparedStatement createPreparedStatement(Connection connection, SQL sql, int resultSetType,
+	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql, int resultSetType,
 			int resultSetConcurrency, int resultSetHoldability) throws SQLException {
 		PreparedStatement preparedStatement;
 		if (sql.isStoredProcedure()) {
@@ -92,7 +93,7 @@ public final class DataBaseUtils {
 		return preparedStatement;
 	}
 
-	public static void iterator(ConnectionSource connectionSource, SQL sql, scw.common.Iterator<ResultSet> iterator) {
+	public static void iterator(ConnectionSource connectionSource, Sql sql, scw.common.Iterator<ResultSet> iterator) {
 		if (sql == null || connectionSource == null || iterator == null) {
 			return;
 		}
@@ -114,7 +115,7 @@ public final class DataBaseUtils {
 		}
 	}
 
-	public static scw.database.ResultSet select(ConnectionSource connectionSource, SQL sql) {
+	public static scw.database.ResultSet select(ConnectionSource connectionSource, Sql sql) {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Connection connection = null;
@@ -130,7 +131,7 @@ public final class DataBaseUtils {
 		}
 	}
 
-	public static String getSQLId(SQL sql) {
+	public static String getSQLId(Sql sql) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		sb.append(sql.getSql());
@@ -140,14 +141,14 @@ public final class DataBaseUtils {
 		return sb.toString();
 	}
 
-	public static void execute(ConnectionSource connectionPool, Collection<SQL> sqls) {
+	public static void execute(ConnectionSource connectionPool, Collection<Sql> sqls) {
 		if (sqls == null || connectionPool == null) {
 			throw new NullPointerException();
 		}
 
-		Iterator<SQL> iterator = sqls.iterator();
+		Iterator<Sql> iterator = sqls.iterator();
 		if (sqls.size() == 1) {
-			SQL sql = iterator.next();
+			Sql sql = iterator.next();
 			PreparedStatement stmt = null;
 			Connection connection = null;
 			try {

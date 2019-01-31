@@ -3,9 +3,9 @@ package scw.db;
 import java.io.Serializable;
 
 import scw.database.DataBaseUtils;
-import scw.database.SQL;
 import scw.database.TableInfo;
 import scw.db.sql.SQLFormat;
+import scw.jdbc.Sql;
 
 public final class OperationBean implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -38,7 +38,7 @@ public final class OperationBean implements Serializable {
 		return tableName;
 	}
 
-	public SQL getSql(SQLFormat sqlFormat) {
+	public Sql getSql(SQLFormat sqlFormat) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(bean.getClass());
 		String tName;
 		if (tableName == null || tableName.length() == 0) {

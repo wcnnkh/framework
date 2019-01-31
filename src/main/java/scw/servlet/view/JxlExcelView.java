@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import scw.common.exception.ShuChaoWenRuntimeException;
-import scw.database.SQL;
 import scw.db.AbstractDB;
+import scw.jdbc.Sql;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.View;
@@ -14,17 +14,17 @@ import scw.utils.excel.export.SimpleExportRowImpl;
 import scw.utils.excel.export.SqlExportRow;
 
 public class JxlExcelView implements View{
-	private SQL sql;
+	private Sql sql;
 	private AbstractDB db;
 	private String fileName;
 	private String[] titles;
 	private SqlExportRow sqlExportRow;
 	
-	public JxlExcelView(AbstractDB db, SQL sql, String fileName, String[] titles){
+	public JxlExcelView(AbstractDB db, Sql sql, String fileName, String[] titles){
 		this(db, sql, fileName, titles, new SimpleExportRowImpl(titles.length));
 	}
 	
-	public JxlExcelView(AbstractDB db, SQL sql, String fileName, String[] titles, SqlExportRow sqlExportRow){
+	public JxlExcelView(AbstractDB db, Sql sql, String fileName, String[] titles, SqlExportRow sqlExportRow){
 		this.db = db;
 		this.sql = sql;
 		this.fileName = fileName;

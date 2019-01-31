@@ -9,13 +9,13 @@ import java.util.Map.Entry;
 
 import scw.common.utils.StringUtils;
 import scw.database.ColumnInfo;
-import scw.database.SQL;
 import scw.database.TableInfo;
 import scw.database.annoation.Index;
 import scw.database.enums.IndexMethod;
 import scw.database.enums.IndexOrder;
+import scw.jdbc.Sql;
 
-public class CreateTableSQL implements SQL {
+public class CreateTableSQL implements Sql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 

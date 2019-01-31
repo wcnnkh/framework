@@ -8,9 +8,9 @@ import java.util.List;
 
 import scw.common.utils.CollectionUtils;
 import scw.common.utils.StringUtils;
-import scw.database.SQL;
+import scw.jdbc.Sql;
 
-public class WhereSql implements SQL {
+public class WhereSql implements Sql {
 	private static final long serialVersionUID = 1L;
 	private List<Object> paramList;
 	private StringBuilder sb;
@@ -125,7 +125,7 @@ public class WhereSql implements SQL {
 		return paramList == null ? CollectionUtils.EMPTY_ARRAY : paramList.toArray();
 	}
 
-	public SQL assembleSql(String beforeSql, String afterSql, Object... params) {
+	public Sql assembleSql(String beforeSql, String afterSql, Object... params) {
 		Object[] arr;
 		if (paramList == null || paramList.isEmpty()) {
 			arr = params;

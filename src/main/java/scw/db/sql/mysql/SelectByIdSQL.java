@@ -3,10 +3,10 @@ package scw.db.sql.mysql;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.database.SQL;
 import scw.database.TableInfo;
+import scw.jdbc.Sql;
 
-public class SelectByIdSQL implements SQL {
+public class SelectByIdSQL implements Sql {
 	private static final long serialVersionUID = 1L;
 	private static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;

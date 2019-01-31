@@ -5,10 +5,10 @@ import java.util.Map;
 
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.ColumnInfo;
-import scw.database.SQL;
 import scw.database.TableInfo;
+import scw.jdbc.Sql;
 
-public class InsertSQL implements SQL{
+public class InsertSQL implements Sql{
 	private static final long serialVersionUID = 1L;
 	private static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;

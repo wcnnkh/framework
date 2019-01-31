@@ -13,8 +13,8 @@ import jxl.write.WritableWorkbook;
 import scw.common.Iterator;
 import scw.database.ConnectionSource;
 import scw.database.DataBaseUtils;
-import scw.database.SQL;
 import scw.db.AbstractDB;
+import scw.jdbc.Sql;
 
 public class JxlExport {
 	/**
@@ -90,7 +90,7 @@ public class JxlExport {
 	}
 	
 	public static void sqlResultSetToExcel(String fileName, String title[], AbstractDB db
-			, HttpServletResponse response, SqlExportRow exportRow, SQL ...sqls)
+			, HttpServletResponse response, SqlExportRow exportRow, Sql ...sqls)
 			throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		response.setContentType("application/vnd.ms-excel");
@@ -103,7 +103,7 @@ public class JxlExport {
 	}
 	
 	public static void sqlResultSetToExcel(String fileName, String title[], AbstractDB db,
-			List<SQL> sqlList, HttpServletResponse response, SqlExportRow exportRow)
+			List<Sql> sqlList, HttpServletResponse response, SqlExportRow exportRow)
 			throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		response.setContentType("application/vnd.ms-excel");
@@ -116,12 +116,12 @@ public class JxlExport {
 	}
 	
 	
-	public static void sqlResultSetToExcel(String title[], ConnectionSource connectionSource, List<SQL> sqlList, OutputStream os, SqlExportRow exportRow)
+	public static void sqlResultSetToExcel(String title[], ConnectionSource connectionSource, List<Sql> sqlList, OutputStream os, SqlExportRow exportRow)
 			throws Exception {
 		// 创建Excel工作薄
 		WritableWorkbook wwb = Workbook.createWorkbook(os);
 		final ResultSetToExeclRowCall rowCall = new ResultSetToExeclRowCall(wwb, title, exportRow);
-		for (SQL sql : sqlList) {
+		for (Sql sql : sqlList) {
 			DataBaseUtils.iterator(connectionSource, sql, new Iterator<java.sql.ResultSet>() {
 				
 				public void iterator(java.sql.ResultSet data) {

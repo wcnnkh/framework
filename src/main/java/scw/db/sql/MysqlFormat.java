@@ -6,7 +6,6 @@ import java.util.Map;
 import scw.beans.BeanFieldListen;
 import scw.common.Pagination;
 import scw.common.exception.ShuChaoWenRuntimeException;
-import scw.database.SQL;
 import scw.database.TableInfo;
 import scw.db.sql.mysql.CreateTableSQL;
 import scw.db.sql.mysql.DecrSQL;
@@ -19,25 +18,26 @@ import scw.db.sql.mysql.SelectByIdSQL;
 import scw.db.sql.mysql.SelectInIdSQL;
 import scw.db.sql.mysql.UpdateSQL;
 import scw.db.sql.mysql.UpdateSQLByBeanListen;
+import scw.jdbc.Sql;
 
 public class MysqlFormat implements SQLFormat {
-	public SQL toCreateTableSql(TableInfo tableInfo, String tableName) {
+	public Sql toCreateTableSql(TableInfo tableInfo, String tableName) {
 		return new CreateTableSQL(tableInfo, tableName);
 	}
 
-	public SQL toSelectByIdSql(TableInfo info, String tableName, Object[] ids) {
+	public Sql toSelectByIdSql(TableInfo info, String tableName, Object[] ids) {
 		return new SelectByIdSQL(info, tableName, ids);
 	}
 
-	public SQL toInsertSql(Object obj, TableInfo tableInfo, String tableName) {
+	public Sql toInsertSql(Object obj, TableInfo tableInfo, String tableName) {
 		return new InsertSQL(tableInfo, tableName, obj);
 	}
 
-	public SQL toDeleteSql(Object obj, TableInfo tableInfo, String tableName) {
+	public Sql toDeleteSql(Object obj, TableInfo tableInfo, String tableName) {
 		return new DeleteSQL(obj, tableInfo, tableName);
 	}
 
-	public SQL toUpdateSql(Object obj, TableInfo tableInfo, String tableName) {
+	public Sql toUpdateSql(Object obj, TableInfo tableInfo, String tableName) {
 		try {
 			if (obj instanceof BeanFieldListen) {
 				return new UpdateSQLByBeanListen((BeanFieldListen) obj,
@@ -50,7 +50,7 @@ public class MysqlFormat implements SQLFormat {
 		}
 	}
 
-	public SQL toSaveOrUpdateSql(Object obj, TableInfo tableInfo,
+	public Sql toSaveOrUpdateSql(Object obj, TableInfo tableInfo,
 			String tableName) {
 		try {
 			if (obj instanceof BeanFieldListen) {
@@ -65,13 +65,13 @@ public class MysqlFormat implements SQLFormat {
 
 	}
 
-	public SQL toIncrSql(Object obj, TableInfo tableInfo, String tableName,
+	public Sql toIncrSql(Object obj, TableInfo tableInfo, String tableName,
 			String fieldName, double limit, Double maxValue) {
 		return new IncrSQL(obj, tableInfo, tableName, fieldName, limit,
 				maxValue);
 	}
 
-	public SQL toDecrSql(Object obj, TableInfo tableInfo, String tableName,
+	public Sql toDecrSql(Object obj, TableInfo tableInfo, String tableName,
 			String fieldName, double limit, Double minValue) {
 		try {
 			return new DecrSQL(obj, tableInfo, tableName, fieldName, limit,
@@ -84,17 +84,17 @@ public class MysqlFormat implements SQLFormat {
 		throw new ShuChaoWenRuntimeException();
 	}
 
-	public SQL toDeleteSql(TableInfo tableInfo, String tableName,
+	public Sql toDeleteSql(TableInfo tableInfo, String tableName,
 			Object[] params) {
 		return new DeleteSQL(tableInfo, tableName, params);
 	}
 
-	public SQL toUpdateSql(TableInfo tableInfo, String tableName,
+	public Sql toUpdateSql(TableInfo tableInfo, String tableName,
 			Map<String, Object> valueMap, Object[] params) {
 		return new UpdateSQL(tableInfo, tableName, valueMap, params);
 	}
 
-	public PaginationSql toPaginationSql(SQL sql, long page, int limit) {
+	public PaginationSql toPaginationSql(Sql sql, long page, int limit) {
 		String str = sql.getSql();
 		int fromIndex = str.indexOf(" from ");// ignore select
 		if (fromIndex == -1) {
@@ -117,7 +117,7 @@ public class MysqlFormat implements SQLFormat {
 			whereSql = str.substring(fromIndex, orderIndex);
 		}
 
-		SQL countSql = new SimpleSQL("select count(*)" + whereSql,
+		Sql countSql = new SimpleSQL("select count(*)" + whereSql,
 				sql.getParams());
 		StringBuilder sb = new StringBuilder(str);
 		sb.append(" limit ").append(Pagination.getBegin(page, limit))
@@ -126,12 +126,12 @@ public class MysqlFormat implements SQLFormat {
 				sql.getParams()));
 	}
 
-	public SQL toSelectInIdSql(TableInfo tableInfo, String tableName,
+	public Sql toSelectInIdSql(TableInfo tableInfo, String tableName,
 			Object[] params, Collection<?> inIdList) {
 		return new SelectInIdSQL(tableInfo, tableName, params, inIdList);
 	}
 
-	public SQL toCopyTableStructure(String newTableName, String oldTableName) {
+	public Sql toCopyTableStructure(String newTableName, String oldTableName) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("CREATE TABLE IF NOT EXISTS `").append(newTableName)
 				.append("`");

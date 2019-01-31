@@ -11,6 +11,7 @@ import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.Transaction;
 import scw.common.transaction.TransactionCollection;
 import scw.common.utils.CollectionUtils;
+import scw.jdbc.Sql;
 
 /**
  * 事务上下文隔离
@@ -72,7 +73,7 @@ public class TransactionContextQuarantine {
 		}
 	}
 
-	public void addSql(ConnectionSource connectionSource, SQL sql) {
+	public void addSql(ConnectionSource connectionSource, Sql sql) {
 		if (sql == null) {
 			return;
 		}
@@ -84,7 +85,7 @@ public class TransactionContextQuarantine {
 		sqlList.add(new TransactionSql(connectionSource, sql));
 	}
 
-	public void addSql(ConnectionSource connectionSource, Collection<SQL> sqls) {
+	public void addSql(ConnectionSource connectionSource, Collection<Sql> sqls) {
 		if (CollectionUtils.isEmpty(sqls)) {
 			return;
 		}
@@ -152,9 +153,9 @@ public class TransactionContextQuarantine {
 					dbSqlMap.put(transactionSql.getConnectionSource(), sqlTransaction);
 				}
 
-				Iterator<SQL> sqlIterator = transactionSql.getSqls().iterator();
+				Iterator<Sql> sqlIterator = transactionSql.getSqls().iterator();
 				while (sqlIterator.hasNext()) {
-					SQL sql = sqlIterator.next();
+					Sql sql = sqlIterator.next();
 					if (sql == null) {
 						continue;
 					}

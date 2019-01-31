@@ -13,9 +13,9 @@ import scw.common.Pagination;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.DataBaseUtils;
 import scw.database.ResultSet;
-import scw.database.SQL;
 import scw.database.TableInfo;
 import scw.db.AbstractDB;
+import scw.jdbc.Sql;
 
 /**
  * 暂不支持分表
@@ -134,7 +134,7 @@ public abstract class Select {
 		return db;
 	}
 
-	public abstract SQL toSQL(String select, boolean order);
+	public abstract Sql toSQL(String select, boolean order);
 
 	/**
 	 * 把table2的指定字段和table1的主键关联

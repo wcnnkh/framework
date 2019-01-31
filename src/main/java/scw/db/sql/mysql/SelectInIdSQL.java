@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.database.SQL;
 import scw.database.TableInfo;
+import scw.jdbc.Sql;
 
-public class SelectInIdSQL implements SQL {
+public class SelectInIdSQL implements Sql {
 	private static final long serialVersionUID = 1L;
 	private static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;

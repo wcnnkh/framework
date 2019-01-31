@@ -5,15 +5,15 @@ import java.util.Map;
 
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.ColumnInfo;
-import scw.database.SQL;
 import scw.database.TableInfo;
+import scw.jdbc.Sql;
 
 /**
  * 自增
  * @author shuchaowen
  *
  */
-public class IncrSQL implements SQL{
+public class IncrSQL implements Sql{
 	private static final long serialVersionUID = 1L;
 	private static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;

@@ -2,23 +2,23 @@ package scw.db.sql;
 
 import java.io.Serializable;
 
-import scw.database.SQL;
+import scw.jdbc.Sql;
 
 public class PaginationSql implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private SQL countSql;
-	private SQL resultSql;
+	private Sql countSql;
+	private Sql resultSql;
 
-	public PaginationSql(SQL countSql, SQL resultSql) {
+	public PaginationSql(Sql countSql, Sql resultSql) {
 		this.countSql = countSql;
 		this.resultSql = resultSql;
 	}
 
-	public SQL getCountSql() {
+	public Sql getCountSql() {
 		return countSql;
 	}
 
-	public SQL getResultSql() {
+	public Sql getResultSql() {
 		return resultSql;
 	}
 }

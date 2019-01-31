@@ -1,8 +1,13 @@
-package scw.database;
+package scw.jdbc;
 
 import java.io.Serializable;
 
-public interface SQL extends Serializable {
+/**
+ * sql语句
+ * @author shuchaowen
+ *
+ */
+public interface Sql extends Serializable {
 	/**
 	 * sql语句
 	 * @return
