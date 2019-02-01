@@ -139,9 +139,9 @@ public class WhereSql implements Sql {
 
 		if (sb == null || sb.length() == 0) {
 			if (StringUtils.isNull(afterSql)) {
-				return new SimpleSQL(beforeSql, arr);
+				return new SimpleSql(beforeSql, arr);
 			} else {
-				return new SimpleSQL(beforeSql + " " + afterSql, arr);
+				return new SimpleSql(beforeSql + " " + afterSql, arr);
 			}
 		} else {
 			StringBuilder sql = new StringBuilder();
@@ -152,7 +152,7 @@ public class WhereSql implements Sql {
 				sql.append(" ");
 				sql.append(afterSql);
 			}
-			return new SimpleSQL(sql.toString(), arr);
+			return new SimpleSql(sql.toString(), arr);
 		}
 	}
 

@@ -6,7 +6,7 @@ import java.util.Map;
 import scw.database.TableInfo;
 import scw.jdbc.Sql;
 
-public interface SQLFormat {
+public interface SqlFormat {
 	Sql toCreateTableSql(TableInfo tableInfo, String tableName);
 
 	Sql toInsertSql(Object obj, TableInfo tableInfo, String tableName);

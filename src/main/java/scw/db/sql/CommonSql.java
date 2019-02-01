@@ -6,15 +6,15 @@ import java.util.List;
 import scw.common.utils.CollectionUtils;
 import scw.jdbc.Sql;
 
-public class CommonSQL implements Sql {
+public class CommonSql implements Sql {
 	private static final long serialVersionUID = 1L;
 	private StringBuilder sb;
 	private List<Object> paramList;
 
-	public CommonSQL() {
+	public CommonSql() {
 	};
 
-	public CommonSQL(String sql, Object... params) {
+	public CommonSql(String sql, Object... params) {
 		sb = new StringBuilder(sql);
 		if (params != null) {
 			for (Object obj : params) {
@@ -23,7 +23,7 @@ public class CommonSQL implements Sql {
 		}
 	}
 
-	public CommonSQL before(Object str) {
+	public CommonSql before(Object str) {
 		if (sb == null) {
 			sb = new StringBuilder();
 		}
@@ -38,11 +38,11 @@ public class CommonSQL implements Sql {
 		return sb == null ? 0 : sb.length();
 	}
 
-	public CommonSQL append(Object str) {
+	public CommonSql append(Object str) {
 		return after(str);
 	}
 
-	public CommonSQL after(Object str) {
+	public CommonSql after(Object str) {
 		if (sb == null) {
 			sb = new StringBuilder();
 		}
@@ -53,7 +53,7 @@ public class CommonSQL implements Sql {
 		return this;
 	}
 
-	public CommonSQL addParam(Object param) {
+	public CommonSql addParam(Object param) {
 		if (paramList == null) {
 			paramList = new LinkedList<Object>();
 		}
@@ -61,7 +61,7 @@ public class CommonSQL implements Sql {
 		return this;
 	}
 
-	public CommonSQL setParam(int index, Object param) {
+	public CommonSql setParam(int index, Object param) {
 		if (paramList == null) {
 			paramList = new LinkedList<Object>();
 		}

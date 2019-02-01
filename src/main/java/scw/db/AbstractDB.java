@@ -28,7 +28,7 @@ import scw.database.annoation.Table;
 import scw.db.sql.MysqlFormat;
 import scw.db.sql.MysqlSelect;
 import scw.db.sql.PaginationSql;
-import scw.db.sql.SQLFormat;
+import scw.db.sql.SqlFormat;
 import scw.db.sql.Select;
 import scw.jdbc.Sql;
 
@@ -37,13 +37,13 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 		Logger.info("Init DB for className:" + this.getClass().getName());
 	}
 
-	private final SQLFormat sqlFormat;
+	private final SqlFormat sqlFormat;
 
-	public AbstractDB(SQLFormat sqlFormat) {
+	public AbstractDB(SqlFormat sqlFormat) {
 		this.sqlFormat = sqlFormat == null ? new MysqlFormat() : sqlFormat;
 	}
 
-	public final SQLFormat getSqlFormat() {
+	public final SqlFormat getSqlFormat() {
 		return sqlFormat;
 	}
 

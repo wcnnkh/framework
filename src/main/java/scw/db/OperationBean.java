@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import scw.database.DataBaseUtils;
 import scw.database.TableInfo;
-import scw.db.sql.SQLFormat;
+import scw.db.sql.SqlFormat;
 import scw.jdbc.Sql;
 
 public final class OperationBean implements Serializable {
@@ -38,7 +38,7 @@ public final class OperationBean implements Serializable {
 		return tableName;
 	}
 
-	public Sql getSql(SQLFormat sqlFormat) {
+	public Sql getSql(SqlFormat sqlFormat) {
 		TableInfo tableInfo = DataBaseUtils.getTableInfo(bean.getClass());
 		String tName;
 		if (tableName == null || tableName.length() == 0) {

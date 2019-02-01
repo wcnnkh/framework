@@ -1,13 +1,13 @@
 package scw.db;
 
-import scw.db.sql.SQLFormat;
+import scw.db.sql.SqlFormat;
 
 public abstract class DB extends AbstractDB {
 	public DB() {
 		this(null);
 	}
 
-	public DB(SQLFormat sqlFormat) {
+	public DB(SqlFormat sqlFormat) {
 		super(sqlFormat);
 	}
 }

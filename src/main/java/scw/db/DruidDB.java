@@ -9,7 +9,7 @@ import scw.common.utils.ConfigUtils;
 import scw.common.utils.PropertiesUtils;
 import scw.common.utils.StringUtils;
 import scw.db.sql.MysqlFormat;
-import scw.db.sql.SQLFormat;
+import scw.db.sql.SqlFormat;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
@@ -25,13 +25,13 @@ public final class DruidDB extends DB {
 		this(new MysqlFormat(), propertiesFilePath, "utf-8");
 	}
 
-	public DruidDB(SQLFormat sqlFormat, String propertiesFilePath,
+	public DruidDB(SqlFormat sqlFormat, String propertiesFilePath,
 			String charsetName) {
 		this(sqlFormat, ConfigUtils.getProperties(propertiesFilePath,
 				charsetName));
 	}
 
-	public DruidDB(SQLFormat sqlFormat, Properties properties) {
+	public DruidDB(SqlFormat sqlFormat, Properties properties) {
 		super(sqlFormat);
 		String url = PropertiesUtils.getProperty(properties, "jdbcUrl", "url",
 				"host");
@@ -73,7 +73,7 @@ public final class DruidDB extends DB {
 				minSize, maxSize, 20);
 	}
 
-	public DruidDB(SQLFormat sqlFormat, String url, String driverClass,
+	public DruidDB(SqlFormat sqlFormat, String url, String driverClass,
 			String username, String password, int initSize, int minSize,
 			int maxSize, int maxPoolPreparedStatementPerConnectionSize) {
 		super(sqlFormat);

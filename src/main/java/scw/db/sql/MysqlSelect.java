@@ -229,7 +229,7 @@ public class MysqlSelect extends Select {
 		args[args.length - 2] = begin;
 		args[args.length - 1] = limit;
 
-		return db.select(new SimpleSQL(sql.getSql() + " limit ?,?", args));
+		return db.select(new SimpleSql(sql.getSql() + " limit ?,?", args));
 	}
 
 	@Override
@@ -262,9 +262,9 @@ public class MysqlSelect extends Select {
 		}
 
 		if (paramList == null) {
-			return new SimpleSQL(sb.toString());
+			return new SimpleSql(sb.toString());
 		} else {
-			return new SimpleSQL(sb.toString(), paramList.toArray());
+			return new SimpleSql(sb.toString(), paramList.toArray());
 		}
 	}
 

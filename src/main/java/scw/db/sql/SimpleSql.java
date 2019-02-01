@@ -2,21 +2,21 @@ package scw.db.sql;
 
 import scw.jdbc.Sql;
 
-public class SimpleSQL implements Sql {
+public class SimpleSql implements Sql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 	private boolean storedProcedure;
 
-	protected SimpleSQL() {
+	protected SimpleSql() {
 	};
 
-	public SimpleSQL(String sql, Object... params) {
+	public SimpleSql(String sql, Object... params) {
 		this.sql = sql;
 		this.params = params;
 	}
 
-	public SimpleSQL(boolean storedProcedure, String sql, Object... params) {
+	public SimpleSql(boolean storedProcedure, String sql, Object... params) {
 		this.storedProcedure = storedProcedure;
 		this.sql = sql;
 		this.params = params;

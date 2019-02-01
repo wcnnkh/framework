@@ -5,14 +5,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import scw.database.TableInfo;
-import scw.db.sql.SQLFormat;
+import scw.db.sql.SqlFormat;
 import scw.jdbc.Sql;
 
 public final class DBUtils {
 	private DBUtils() {
 	};
 
-	public static Collection<Sql> getSqlList(SQLFormat sqlFormat, Collection<OperationBean> operationBeans) {
+	public static Collection<Sql> getSqlList(SqlFormat sqlFormat, Collection<OperationBean> operationBeans) {
 		if (operationBeans == null || operationBeans.isEmpty()) {
 			return null;
 		}

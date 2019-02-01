@@ -20,7 +20,7 @@ import scw.db.sql.mysql.UpdateSQL;
 import scw.db.sql.mysql.UpdateSQLByBeanListen;
 import scw.jdbc.Sql;
 
-public class MysqlFormat implements SQLFormat {
+public class MysqlFormat implements SqlFormat {
 	public Sql toCreateTableSql(TableInfo tableInfo, String tableName) {
 		return new CreateTableSQL(tableInfo, tableName);
 	}
@@ -117,12 +117,12 @@ public class MysqlFormat implements SQLFormat {
 			whereSql = str.substring(fromIndex, orderIndex);
 		}
 
-		Sql countSql = new SimpleSQL("select count(*)" + whereSql,
+		Sql countSql = new SimpleSql("select count(*)" + whereSql,
 				sql.getParams());
 		StringBuilder sb = new StringBuilder(str);
 		sb.append(" limit ").append(Pagination.getBegin(page, limit))
 				.append(",").append(limit);
-		return new PaginationSql(countSql, new SimpleSQL(sb.toString(),
+		return new PaginationSql(countSql, new SimpleSql(sb.toString(),
 				sql.getParams()));
 	}
 
@@ -136,6 +136,6 @@ public class MysqlFormat implements SQLFormat {
 		sb.append("CREATE TABLE IF NOT EXISTS `").append(newTableName)
 				.append("`");
 		sb.append(" like `").append(oldTableName).append("`");
-		return new SimpleSQL(sb.toString());
+		return new SimpleSql(sb.toString());
 	}
 }

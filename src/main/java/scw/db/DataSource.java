@@ -4,7 +4,7 @@ import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import scw.db.sql.SQLFormat;
+import scw.db.sql.SqlFormat;
 
 public class DataSource extends DB{
 	private final javax.sql.DataSource dataSource;
@@ -13,7 +13,7 @@ public class DataSource extends DB{
 		this(dataSource, null);
 	}
 	
-	public DataSource(javax.sql.DataSource dataSource, SQLFormat sqlFormat){
+	public DataSource(javax.sql.DataSource dataSource, SqlFormat sqlFormat){
 		super(sqlFormat);
 		this.dataSource = dataSource;
 	}
