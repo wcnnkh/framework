@@ -13,6 +13,7 @@ import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.database.DataBaseUtils;
+import scw.database.TransactionBeanFilter;
 import scw.database.TransactionContext;
 
 public class CommonApplication implements Application {
@@ -30,6 +31,7 @@ public class CommonApplication implements Application {
 		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(configPath) : propertiesFactory;
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
+			this.beanFactory.addFirstFilters(TransactionBeanFilter.class.getName());
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}

@@ -1,5 +1,8 @@
 package scw.transaction.synchronization;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import scw.transaction.Transaction;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
@@ -9,6 +12,7 @@ class TransactionInfo {
 	private AbstractTransaction transaction;
 	private Object savepoint;
 	private final AbstractTransactionManager manager;
+	private LinkedList<TransactionSynchronization> transactionSynchronizations;
 
 	public TransactionInfo(TransactionInfo parent, AbstractTransactionManager manager) {
 		this.parent = parent;
@@ -17,6 +21,14 @@ class TransactionInfo {
 
 	public AbstractTransaction getConcurrentTransaction() {
 		return transaction;
+	}
+
+	public void addTransactionSynchronization(TransactionSynchronization transactionSynchronization) {
+		if (transactionSynchronizations == null) {
+			transactionSynchronizations = new LinkedList<TransactionSynchronization>();
+		}
+
+		transactionSynchronizations.add(transactionSynchronization);
 	}
 
 	public Transaction getTransaction(TransactionDefinition transactionDefinition) throws TransactionException {
@@ -64,8 +76,60 @@ class TransactionInfo {
 		return savepoint;
 	}
 
+	public LinkedList<TransactionSynchronization> getTransactionSynchronizations() {
+		return transactionSynchronizations;
+	}
+
 	public boolean hasSavepoint() {
 		return transaction != null;
+	}
+
+	public void triggerBeforeCommit() throws TransactionException {
+		if (transactionSynchronizations != null) {
+			Iterator<TransactionSynchronization> iterator = transactionSynchronizations.iterator();
+			while (iterator.hasNext()) {
+				iterator.next().beforeCommit();
+			}
+		}
+	}
+
+	public void triggerAfterCommit() {
+		if (transactionSynchronizations != null) {
+			Iterator<TransactionSynchronization> iterator = transactionSynchronizations.iterator();
+			while (iterator.hasNext()) {
+				try {
+					iterator.next().afterCommit();
+				} catch (TransactionException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void triggerRollback() {
+		if (transactionSynchronizations != null) {
+			Iterator<TransactionSynchronization> iterator = transactionSynchronizations.iterator();
+			while (iterator.hasNext()) {
+				try {
+					iterator.next().rollback();
+				} catch (TransactionException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void triggerComplete() {
+		if (transactionSynchronizations != null) {
+			Iterator<TransactionSynchronization> iterator = transactionSynchronizations.iterator();
+			while (iterator.hasNext()) {
+				try {
+					iterator.next().complete();
+				} catch (TransactionException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }
 

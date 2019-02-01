@@ -1,10 +1,13 @@
-package scw.transaction;
+package scw.transaction.synchronization;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import scw.transaction.TransactionException;
+
 /**
  * 多个事务组合
+ * 
  * @author shuchaowen
  *
  */
@@ -12,35 +15,28 @@ public final class TransactionSynchronizationCollection extends LinkedList<Trans
 		implements TransactionSynchronization {
 	private static final long serialVersionUID = 1L;
 
-	public void beforeCommit() throws Throwable {
+	public void beforeCommit() throws TransactionException {
 		Iterator<TransactionSynchronization> iterator = iterator();
 		while (iterator.hasNext()) {
 			iterator.next().beforeCommit();
 		}
 	}
 
-	public void commit() throws Throwable {
-		Iterator<TransactionSynchronization> iterator = iterator();
-		while (iterator.hasNext()) {
-			iterator.next().commit();
-		}
-	}
-
-	public void afterCommit() throws Throwable {
+	public void afterCommit() throws TransactionException {
 		Iterator<TransactionSynchronization> iterator = iterator();
 		while (iterator.hasNext()) {
 			iterator.next().afterCommit();
 		}
 	}
 
-	public void rollback() {
+	public void rollback() throws TransactionException {
 		Iterator<TransactionSynchronization> iterator = iterator();
 		while (iterator.hasNext()) {
 			iterator.next().rollback();
 		}
 	}
 
-	public void complete() {
+	public void complete() throws TransactionException {
 		Iterator<TransactionSynchronization> iterator = iterator();
 		while (iterator.hasNext()) {
 			iterator.next().complete();

@@ -16,16 +16,14 @@ import scw.database.annoation.Transaction;
  */
 public class TransactionBeanFilter implements BeanFilter {
 
-	public Object doFilter(Object obj, Method method, Object[] args,
-			MethodProxy proxy, BeanFilterChain beanFilterChain)
+	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
 			throws Throwable {
 		if (obj instanceof ConnectionSource) {// 数据库连接获取类，不用加上事务
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		}
 
 		TransactionContext.begin();
-		Transaction clzTransaction = method.getDeclaringClass().getAnnotation(
-				Transaction.class);
+		Transaction clzTransaction = method.getDeclaringClass().getAnnotation(Transaction.class);
 		Transaction methodTransaction = method.getAnnotation(Transaction.class);
 		if (clzTransaction != null || methodTransaction != null) {
 			boolean b = true;
@@ -39,8 +37,7 @@ public class TransactionBeanFilter implements BeanFilter {
 			TransactionContext.getConfig().setAutoCommit(!b);
 		}
 		try {
-			Object value = selectCache(obj, method, args, proxy,
-					beanFilterChain);
+			Object value = selectCache(obj, method, args, proxy, beanFilterChain);
 			TransactionContext.commit();
 			return value;
 		} finally {
@@ -48,11 +45,9 @@ public class TransactionBeanFilter implements BeanFilter {
 		}
 	}
 
-	private Object selectCache(Object obj, Method method, Object[] args,
-			MethodProxy proxy, BeanFilterChain beanFilterChain)
-			throws Throwable {
-		SelectCache selectCache = method.getDeclaringClass().getAnnotation(
-				SelectCache.class);
+	private Object selectCache(Object obj, Method method, Object[] args, MethodProxy proxy,
+			BeanFilterChain beanFilterChain) throws Throwable {
+		SelectCache selectCache = method.getDeclaringClass().getAnnotation(SelectCache.class);
 		SelectCache selectCache2 = method.getAnnotation(SelectCache.class);
 		if (selectCache != null || selectCache2 != null) {
 			boolean isSelectCache = true;

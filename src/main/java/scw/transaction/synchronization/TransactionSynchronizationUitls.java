@@ -1,11 +1,12 @@
-package scw.transaction;
+package scw.transaction.synchronization;
+
+import scw.transaction.TransactionException;
 
 public class TransactionSynchronizationUitls {
 
 	public static void execute(TransactionSynchronization synchronization) {
 		try {
-			synchronization.afterCommit();
-			synchronization.commit();
+			synchronization.beforeCommit();
 			synchronization.afterCommit();
 		} catch (Throwable e) {
 			synchronization.rollback();
