@@ -1,6 +1,10 @@
 package scw.transaction;
 
-public interface Transaction {
+public interface Transaction extends SavepointManager {
 
-	boolean isCompleted();
+	boolean isNewTransaction();
+
+	boolean isActive();
+
+	boolean hasSavepoint();
 }

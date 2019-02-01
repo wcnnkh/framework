@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 import scw.transaction.TransactionException;
 
-public final class TccTransactionCollection extends LinkedList<TccTransactionItem> implements TccTransactionItem {
+public final class TccTransactionItemCollection extends LinkedList<TccTransactionItem> implements TccTransactionItem {
 	private static final long serialVersionUID = 1L;
 	private int beginTag = 0;
 	private int processTag = 0;
