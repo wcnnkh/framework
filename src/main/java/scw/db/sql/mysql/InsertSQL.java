@@ -6,7 +6,7 @@ import java.util.Map;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.ColumnInfo;
 import scw.database.TableInfo;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public class InsertSQL implements Sql{
 	private static final long serialVersionUID = 1L;

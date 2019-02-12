@@ -1,4 +1,4 @@
-package scw.jdbc;
+package scw.sql;
 
 import java.util.Arrays;
 

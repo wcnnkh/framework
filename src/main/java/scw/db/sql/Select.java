@@ -15,7 +15,7 @@ import scw.database.DataBaseUtils;
 import scw.database.ResultSet;
 import scw.database.TableInfo;
 import scw.db.AbstractDB;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 /**
  * 暂不支持分表

@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import scw.common.Logger;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public class TransactionContextInfo {
 	private TransactionContextQuarantine quarantine;

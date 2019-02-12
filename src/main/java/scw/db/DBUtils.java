@@ -6,7 +6,7 @@ import java.util.List;
 
 import scw.database.TableInfo;
 import scw.db.sql.SqlFormat;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public final class DBUtils {
 	private DBUtils() {

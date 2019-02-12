@@ -13,7 +13,7 @@ import scw.database.TableInfo;
 import scw.database.annoation.Index;
 import scw.database.enums.IndexMethod;
 import scw.database.enums.IndexOrder;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public class CreateTableSQL implements Sql {
 	private static final long serialVersionUID = 1L;

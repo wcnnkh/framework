@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.database.TableInfo;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public class SelectInIdSQL implements Sql {
 	private static final long serialVersionUID = 1L;

@@ -3,7 +3,7 @@ package scw.database;
 import java.util.Arrays;
 import java.util.Collection;
 
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public class TransactionSql {
 	private final ConnectionSource connectionSource;

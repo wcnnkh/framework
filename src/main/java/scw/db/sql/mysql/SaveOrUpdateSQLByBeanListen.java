@@ -8,7 +8,7 @@ import scw.beans.BeanFieldListen;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.ColumnInfo;
 import scw.database.TableInfo;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public class SaveOrUpdateSQLByBeanListen implements Sql{
 	private static final long serialVersionUID = 1L;

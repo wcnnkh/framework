@@ -7,7 +7,7 @@ import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.database.ColumnInfo;
 import scw.database.TableInfo;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public class UpdateSQL implements Sql {
 	private static final long serialVersionUID = 1L;

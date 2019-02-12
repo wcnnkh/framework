@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import scw.database.TableInfo;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public interface SqlFormat {
 	Sql toCreateTableSql(TableInfo tableInfo, String tableName);

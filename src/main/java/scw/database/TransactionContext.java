@@ -8,7 +8,7 @@ import scw.common.Logger;
 import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.Transaction;
 import scw.common.utils.Assert;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 /**
  * 数据库封装核心类，用于处理数据库事务

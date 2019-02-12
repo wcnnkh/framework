@@ -1,4 +1,4 @@
-package scw.transaction.datasource;
+package scw.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;

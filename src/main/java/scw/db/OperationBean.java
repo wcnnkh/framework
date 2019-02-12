@@ -5,7 +5,7 @@ import java.io.Serializable;
 import scw.database.DataBaseUtils;
 import scw.database.TableInfo;
 import scw.db.sql.SqlFormat;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public final class OperationBean implements Serializable {
 	private static final long serialVersionUID = 1L;

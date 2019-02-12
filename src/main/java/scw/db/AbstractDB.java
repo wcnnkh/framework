@@ -29,8 +29,8 @@ import scw.db.sql.MysqlFormat;
 import scw.db.sql.MysqlSelect;
 import scw.db.sql.PaginationSql;
 import scw.db.sql.SqlFormat;
+import scw.sql.Sql;
 import scw.db.sql.Select;
-import scw.jdbc.Sql;
 
 public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	{

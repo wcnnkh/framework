@@ -18,7 +18,7 @@ import scw.db.sql.mysql.SelectByIdSQL;
 import scw.db.sql.mysql.SelectInIdSQL;
 import scw.db.sql.mysql.UpdateSQL;
 import scw.db.sql.mysql.UpdateSQLByBeanListen;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public class MysqlFormat implements SqlFormat {
 	public Sql toCreateTableSql(TableInfo tableInfo, String tableName) {

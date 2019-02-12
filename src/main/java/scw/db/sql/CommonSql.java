@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import scw.common.utils.CollectionUtils;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public class CommonSql implements Sql {
 	private static final long serialVersionUID = 1L;

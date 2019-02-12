@@ -25,7 +25,7 @@ import scw.db.AbstractDB;
 import scw.db.DBUtils;
 import scw.db.OperationBean;
 import scw.db.storage.Storage;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 import scw.utils.memcached.Memcached;
 import scw.utils.queue.MemcachedQueue;
 import scw.utils.queue.Queue;

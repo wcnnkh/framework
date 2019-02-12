@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.database.annoation.Table;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 /**
  * 只用于处理默认的数据库 不再推荐使用

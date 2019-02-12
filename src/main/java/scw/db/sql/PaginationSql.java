@@ -2,7 +2,7 @@ package scw.db.sql;
 
 import java.io.Serializable;
 
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public class PaginationSql implements Serializable {
 	private static final long serialVersionUID = 1L;

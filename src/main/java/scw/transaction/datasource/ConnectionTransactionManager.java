@@ -1,5 +1,6 @@
 package scw.transaction.datasource;
 
+import scw.sql.ConnectionFactory;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
 import scw.transaction.synchronization.AbstractTransaction;

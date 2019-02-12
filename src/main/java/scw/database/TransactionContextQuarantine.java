@@ -11,7 +11,7 @@ import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.Transaction;
 import scw.common.transaction.TransactionCollection;
 import scw.common.utils.CollectionUtils;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 /**
  * 事务上下文隔离

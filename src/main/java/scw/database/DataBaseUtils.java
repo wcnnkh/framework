@@ -18,7 +18,7 @@ import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XUtils;
 import scw.database.annoation.Table;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public final class DataBaseUtils {
 	private DataBaseUtils() {

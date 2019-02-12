@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
+import scw.sql.ConnectionFactory;
 import scw.transaction.Isolation;
 import scw.transaction.NotSupportTransactionException;
 import scw.transaction.TransactionDefinition;

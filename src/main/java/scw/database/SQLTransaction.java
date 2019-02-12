@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.exception.TransactionProcessException;
 import scw.common.utils.XUtils;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public final class SQLTransaction extends AbstractTransaction {
 	private Map<String, Sql> sqlMap = new HashMap<String, Sql>(4, 1);

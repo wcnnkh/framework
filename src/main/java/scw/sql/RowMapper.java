@@ -1,4 +1,4 @@
-package scw.jdbc;
+package scw.sql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -8,7 +8,7 @@ import java.util.List;
 
 import scw.common.utils.CollectionUtils;
 import scw.common.utils.StringUtils;
-import scw.jdbc.Sql;
+import scw.sql.Sql;
 
 public class WhereSql implements Sql {
 	private static final long serialVersionUID = 1L;
