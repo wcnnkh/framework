@@ -15,7 +15,7 @@ import scw.transaction.TransactionManager;
  */
 public abstract class AbstractTransactionManager implements TransactionManager {
 	private static final ThreadLocal<LinkedList<TransactionInfo>> LOCAL = new ThreadLocal<LinkedList<TransactionInfo>>();
-
+	
 	public abstract AbstractTransaction newTransaction(AbstractTransaction parent,
 			TransactionDefinition transactionDefinition, boolean active) throws TransactionException;
 
@@ -44,9 +44,10 @@ public abstract class AbstractTransactionManager implements TransactionManager {
 		if (linkedList == null) {
 			linkedList = new LinkedList<TransactionInfo>();
 			LOCAL.set(linkedList);
-			transactionInfo = new TransactionInfo(null, this);
+			transactionInfo = new TransactionInfo(null, transactionDefinition, this);
 		} else {
-			transactionInfo = new TransactionInfo(linkedList.getLast(), this);
+			transactionInfo = linkedList.getLast();
+			transactionInfo = new TransactionInfo(transactionInfo, transactionInfo.getTransactionDefinition(), this);
 		}
 		linkedList.add(transactionInfo);
 		return transactionInfo.getTransaction(transactionDefinition);

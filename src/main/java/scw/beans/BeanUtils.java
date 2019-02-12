@@ -322,6 +322,7 @@ public final class BeanUtils {
 		if (classInfo.getSerialVersionUID() != null) {
 			enhancer.setSerialVersionUID(classInfo.getSerialVersionUID());
 		}
+
 		enhancer.setCallback(new BeanMethodInterceptor(beanFactory, filterNames));
 		enhancer.setSuperclass(clz);
 		return enhancer;

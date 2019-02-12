@@ -21,7 +21,7 @@ public class TransactionBeanFilter implements BeanFilter {
 		if (obj instanceof ConnectionSource) {// 数据库连接获取类，不用加上事务
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		}
-
+		
 		TransactionContext.begin();
 		Transaction clzTransaction = method.getDeclaringClass().getAnnotation(Transaction.class);
 		Transaction methodTransaction = method.getAnnotation(Transaction.class);

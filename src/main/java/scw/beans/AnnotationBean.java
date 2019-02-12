@@ -77,7 +77,6 @@ public class AnnotationBean implements Bean {
 		this.destroyMethods = destroyMethodList.toArray(new Method[destroyMethodList.size()]);
 		this.filterNames = filterNames;
 		this.proxy = BeanUtils.checkProxy(type, filterNames);
-
 		Singleton singleton = type.getAnnotation(Singleton.class);
 		this.singleton = singleton == null ? true : singleton.value();
 	}

@@ -5,10 +5,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 
-public class ConnectionProxyHandler implements InvocationHandler {
+/**
+ * 一个无法关闭的连接
+ * 
+ * @author shuchaowen
+ *
+ */
+public class UnableToCloseConnectionProxyHandler implements InvocationHandler {
 	private final Connection target;
 
-	public ConnectionProxyHandler(Connection target) {
+	public UnableToCloseConnectionProxyHandler(Connection target) {
 		this.target = target;
 	}
 
@@ -29,7 +35,6 @@ public class ConnectionProxyHandler implements InvocationHandler {
 				return true;
 			}
 		} else if (method.getName().equals("close")) {
-			// Handle close method: suppress, not valid.
 			return null;
 		} else if (method.getName().equals("isClosed")) {
 			return false;

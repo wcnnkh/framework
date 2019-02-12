@@ -10,13 +10,15 @@ import scw.transaction.TransactionException;
 class TransactionInfo {
 	private final TransactionInfo parent;
 	private AbstractTransaction transaction;
+	private final TransactionDefinition transactionDefinition;
 	private Object savepoint;
 	private final AbstractTransactionManager manager;
 	private LinkedList<TransactionSynchronization> transactionSynchronizations;
 
-	public TransactionInfo(TransactionInfo parent, AbstractTransactionManager manager) {
+	public TransactionInfo(TransactionInfo parent, TransactionDefinition transactionDefinition, AbstractTransactionManager manager) {
 		this.parent = parent;
 		this.manager = manager;
+		this.transactionDefinition = transactionDefinition;
 	}
 
 	public AbstractTransaction getConcurrentTransaction() {
@@ -29,6 +31,10 @@ class TransactionInfo {
 		}
 
 		transactionSynchronizations.add(transactionSynchronization);
+	}
+
+	public TransactionDefinition getTransactionDefinition() {
+		return transactionDefinition;
 	}
 
 	public Transaction getTransaction(TransactionDefinition transactionDefinition) throws TransactionException {

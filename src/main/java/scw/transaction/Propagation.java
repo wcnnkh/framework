@@ -8,6 +8,7 @@ package scw.transaction;
  */
 public enum Propagation {
 	/**
+	 * 默认的
 	 * 如果存在一个事务，则支持当前事务。如果没有事务则开启一个新的事务
 	 */
 	REQUIRED,
