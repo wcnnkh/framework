@@ -1,45 +1,66 @@
 package scw.transaction.synchronization;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import scw.transaction.TransactionException;
 
-/**
- * 多个事务组合
- * 
- * @author shuchaowen
- *
- */
 public final class TransactionSynchronizationCollection extends LinkedList<TransactionSynchronization>
 		implements TransactionSynchronization {
 	private static final long serialVersionUID = 1L;
+	private int beginTag = 0;
+	private int processTag = 0;
 
-	public void beforeCommit() throws TransactionException {
+	public TransactionSynchronizationCollection() {
+		super();
+	}
+
+	public TransactionSynchronizationCollection(Collection<? extends TransactionSynchronization> transactions) {
+		super(transactions);
+	}
+
+	public void begin() throws TransactionException {
 		Iterator<TransactionSynchronization> iterator = iterator();
-		while (iterator.hasNext()) {
-			iterator.next().beforeCommit();
+		for (; iterator.hasNext(); beginTag++) {
+			TransactionSynchronization transaction = iterator.next();
+			if (transaction != null) {
+				transaction.begin();
+			}
 		}
 	}
 
-	public void afterCommit() throws TransactionException {
+	public void commit() throws TransactionException {
 		Iterator<TransactionSynchronization> iterator = iterator();
-		while (iterator.hasNext()) {
-			iterator.next().afterCommit();
+		for (; iterator.hasNext(); processTag++) {
+			TransactionSynchronization transaction = iterator.next();
+			if (transaction != null) {
+				transaction.commit();
+			}
+		}
+	}
+
+	public void end() throws TransactionException {
+		Iterator<TransactionSynchronization> iterator = iterator();
+		for (; beginTag >= 0 && iterator.hasNext(); beginTag--) {
+			TransactionSynchronization transaction = iterator.next();
+			if (transaction != null) {
+				transaction.end();
+			}
 		}
 	}
 
 	public void rollback() throws TransactionException {
 		Iterator<TransactionSynchronization> iterator = iterator();
-		while (iterator.hasNext()) {
-			iterator.next().rollback();
-		}
-	}
-
-	public void complete() throws TransactionException {
-		Iterator<TransactionSynchronization> iterator = iterator();
-		while (iterator.hasNext()) {
-			iterator.next().complete();
+		for (; processTag >= 0 && iterator.hasNext(); processTag--) {
+			TransactionSynchronization transaction = iterator.next();
+			if (transaction != null) {
+				try {
+					transaction.rollback();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 }

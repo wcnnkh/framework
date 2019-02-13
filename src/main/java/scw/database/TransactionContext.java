@@ -9,6 +9,7 @@ import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.Transaction;
 import scw.common.utils.Assert;
 import scw.sql.Sql;
+import scw.sql.SqlUtils;
 
 /**
  * 数据库封装核心类，用于处理数据库事务
@@ -105,7 +106,7 @@ public final class TransactionContext {
 			return;
 		}
 
-		Logger.debug(TransactionContext.class.getName(), DataBaseUtils.getSQLId(sql));
+		Logger.debug(TransactionContext.class.getName(), SqlUtils.getSqlId(sql));
 	}
 
 	private static void forceExecute(ConnectionSource connectionSource, Collection<Sql> sqls, boolean debug) {

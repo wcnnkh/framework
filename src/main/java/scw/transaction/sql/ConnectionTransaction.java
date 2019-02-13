@@ -1,34 +1,39 @@
-package scw.transaction.datasource;
+package scw.transaction.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
 import scw.sql.ConnectionFactory;
+import scw.sql.SqlUtils;
 import scw.transaction.Isolation;
 import scw.transaction.NotSupportTransactionException;
+import scw.transaction.Transaction;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
-import scw.transaction.synchronization.AbstractTransaction;
+import scw.transaction.synchronization.TransactionSynchronization;
 
-public class ConnectionTransaction extends AbstractTransaction {
+public class ConnectionTransaction implements Transaction, TransactionSynchronization {
 	private static final String SAVEPOINT_NAME_PREFIX = "SAVEPOINT_";
 
 	private final ConnectionFactory connectionFactory;
 	private final TransactionDefinition transactionDefinition;
+	private final boolean newTransaction;
+	private final boolean active;
 	private Connection connection;
 	private int savepointCounter;
 
 	public ConnectionTransaction(ConnectionFactory connectionFactory, TransactionDefinition transactionDefinition,
 			boolean active) {
-		super(active);
+		this.active = active;
+		this.newTransaction = true;
 		this.connectionFactory = connectionFactory;
 		this.transactionDefinition = transactionDefinition;
 	}
 
 	public Connection getConnection() throws SQLException {
 		if (connection == null) {
-			Connection connection = connectionFactory.getConnection();
+			Connection connection = SqlUtils.newProxyConnection(connectionFactory);
 			connection.setAutoCommit(isActive());
 
 			if (transactionDefinition.isReadOnly()) {
@@ -79,33 +84,45 @@ public class ConnectionTransaction extends AbstractTransaction {
 	}
 
 	public boolean hasSavepoint() {
-		return savepointCounter > 0;
+		return savepointCounter != 0;
 	}
 
 	public ConnectionFactory getConnectionFactory() {
 		return connectionFactory;
 	}
 
-	public void commit() throws TransactionException {
-		if (connection != null) {
+	public boolean isNewTransaction() {
+		return newTransaction;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void begin() throws TransactionException {
+		if (connection == null) {
 			try {
-				connection.commit();
+				connection = getConnection();
 			} catch (SQLException e) {
-				close();
+				throw new TransactionException(e);
 			}
 		}
 	}
 
-	private void close() throws TransactionException {
-		try {
-			connection.setAutoCommit(false);
-		} catch (SQLException e) {
-			throw new TransactionException(e);
-		} finally {
+	public void end() throws TransactionException {
+		if (connection != null) {
+			if (active) {
+				try {
+					connection.setAutoCommit(true);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+
 			try {
-				connection.close();
+				SqlUtils.closeProxyConnection(connection);
 			} catch (SQLException e) {
-				throw new TransactionException(e);
+				e.printStackTrace();
 			}
 		}
 	}
@@ -115,7 +132,17 @@ public class ConnectionTransaction extends AbstractTransaction {
 			try {
 				connection.rollback();
 			} catch (SQLException e) {
-				close();
+				throw new TransactionException(e);
+			}
+		}
+	}
+
+	public void commit() throws TransactionException {
+		if (connection != null) {
+			try {
+				connection.commit();
+			} catch (SQLException e) {
+				throw new TransactionException(e);
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import scw.common.Logger;
 import scw.sql.Sql;
+import scw.sql.SqlUtils;
 
 public class TransactionContextInfo {
 	private TransactionContextQuarantine quarantine;
@@ -23,7 +24,7 @@ public class TransactionContextInfo {
 
 	public ResultSet select(ConnectionSource connectionSource, Sql sql) {
 		ResultSet resultSet;
-		String id = DataBaseUtils.getSQLId(sql);
+		String id = SqlUtils.getSqlId(sql);
 		if (cacheMap == null) {
 			cacheMap = new HashMap<ConnectionSource, Map<String, ResultSet>>(2, 1);
 			resultSet = realSelect(connectionSource, sql);
@@ -50,7 +51,7 @@ public class TransactionContextInfo {
 
 	private ResultSet realSelect(ConnectionSource connectionSource, Sql sql) {
 		if (getTransactionContextQuarantine().getConfig().isDebug()) {
-			Logger.debug(this.getClass().getName(), DataBaseUtils.getSQLId(sql));
+			Logger.debug(this.getClass().getName(), SqlUtils.getSqlId(sql));
 		}
 		return DataBaseUtils.select(connectionSource, sql);
 	}

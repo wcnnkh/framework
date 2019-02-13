@@ -1,9 +1,8 @@
 package scw.transaction.synchronization;
 
 import scw.transaction.Transaction;
-import scw.transaction.TransactionException;
 
-public abstract class AbstractTransaction implements Transaction {
+public abstract class AbstractTransaction implements Transaction, TransactionSynchronization {
 
 	private final boolean active;
 	private boolean newTransaction = true;
@@ -23,8 +22,4 @@ public abstract class AbstractTransaction implements Transaction {
 	public void setNewTransaction(boolean newTransaction) {
 		this.newTransaction = newTransaction;
 	}
-
-	protected abstract void rollback() throws TransactionException;
-
-	protected abstract void commit() throws TransactionException;
 }

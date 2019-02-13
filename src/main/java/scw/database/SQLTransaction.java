@@ -11,6 +11,7 @@ import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.exception.TransactionProcessException;
 import scw.common.utils.XUtils;
 import scw.sql.Sql;
+import scw.sql.SqlUtils;
 
 public final class SQLTransaction extends AbstractTransaction {
 	private Map<String, Sql> sqlMap = new HashMap<String, Sql>(4, 1);
@@ -31,7 +32,7 @@ public final class SQLTransaction extends AbstractTransaction {
 			return;
 		}
 
-		String id = DataBaseUtils.getSQLId(sql);
+		String id = SqlUtils.getSqlId(sql);
 		sqlMap.put(id, sql);
 	}
 
@@ -49,12 +50,12 @@ public final class SQLTransaction extends AbstractTransaction {
 	public void process() throws Exception {
 		int i = 0;
 		for (Entry<String, Sql> entry : sqlMap.entrySet()) {
-			PreparedStatement stmt = DataBaseUtils.createPreparedStatement(connection, entry.getValue());
+			PreparedStatement stmt =  SqlUtils.createPreparedStatement(connection, entry.getValue());
 			preparedStatements[i++] = stmt;
 			try {
 				stmt.execute();
 			} catch (SQLException e) {
-				throw new TransactionProcessException(DataBaseUtils.getSQLId(entry.getValue()), e);
+				throw new TransactionProcessException(SqlUtils.getSqlId(entry.getValue()), e);
 			}
 		}
 	}

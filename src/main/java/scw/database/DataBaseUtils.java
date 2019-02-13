@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,6 +18,7 @@ import scw.common.utils.StringUtils;
 import scw.common.utils.XUtils;
 import scw.database.annoation.Table;
 import scw.sql.Sql;
+import scw.sql.SqlUtils;
 
 public final class DataBaseUtils {
 	private DataBaseUtils() {
@@ -45,54 +45,6 @@ public final class DataBaseUtils {
 		return tableInfo;
 	}
 
-	private static void setParams(PreparedStatement preparedStatement, Object[] args) throws SQLException {
-		if (args != null && args.length != 0) {
-			for (int i = 0; i < args.length; i++) {
-				preparedStatement.setObject(i + 1, args[i]);
-			}
-		}
-	}
-
-	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql) throws SQLException {
-		PreparedStatement preparedStatement;
-		if (sql.isStoredProcedure()) {
-			preparedStatement = connection.prepareCall(sql.getSql());
-		} else {
-			preparedStatement = connection.prepareStatement(sql.getSql());
-		}
-
-		setParams(preparedStatement, sql.getParams());
-		return preparedStatement;
-	}
-
-	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql, int resultSetType,
-			int resultSetConcurrency) throws SQLException {
-		PreparedStatement preparedStatement;
-		if (sql.isStoredProcedure()) {
-			preparedStatement = connection.prepareCall(sql.getSql(), resultSetType, resultSetConcurrency);
-		} else {
-			preparedStatement = connection.prepareStatement(sql.getSql(), resultSetType, resultSetConcurrency);
-		}
-
-		setParams(preparedStatement, sql.getParams());
-		return preparedStatement;
-	}
-
-	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql, int resultSetType,
-			int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		PreparedStatement preparedStatement;
-		if (sql.isStoredProcedure()) {
-			preparedStatement = connection.prepareCall(sql.getSql(), resultSetType, resultSetConcurrency,
-					resultSetHoldability);
-		} else {
-			preparedStatement = connection.prepareStatement(sql.getSql(), resultSetType, resultSetConcurrency,
-					resultSetHoldability);
-		}
-
-		setParams(preparedStatement, sql.getParams());
-		return preparedStatement;
-	}
-
 	public static void iterator(ConnectionSource connectionSource, Sql sql, scw.common.Iterator<ResultSet> iterator) {
 		if (sql == null || connectionSource == null || iterator == null) {
 			return;
@@ -103,13 +55,13 @@ public final class DataBaseUtils {
 		Connection connection = null;
 		try {
 			connection = connectionSource.getConnection();
-			stmt = createPreparedStatement(connection, sql);
+			stmt = SqlUtils.createPreparedStatement(connection, sql);
 			rs = stmt.executeQuery();
 			while (rs.next()) {
 				iterator.iterator(rs);
 			}
 		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(getSQLId(sql), e);
+			throw new ShuChaoWenRuntimeException(SqlUtils.getSqlId(sql), e);
 		} finally {
 			XUtils.close(rs, stmt, connection);
 		}
@@ -121,24 +73,14 @@ public final class DataBaseUtils {
 		Connection connection = null;
 		try {
 			connection = connectionSource.getConnection();
-			stmt = createPreparedStatement(connection, sql);
+			stmt = SqlUtils.createPreparedStatement(connection, sql);
 			rs = stmt.executeQuery();
 			return new DefaultResultSet(rs);
 		} catch (SQLException e) {
-			throw new ShuChaoWenRuntimeException(getSQLId(sql), e);
+			throw new ShuChaoWenRuntimeException(SqlUtils.getSqlId(sql), e);
 		} finally {
 			XUtils.close(rs, stmt, connection);
 		}
-	}
-
-	public static String getSQLId(Sql sql) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("[");
-		sb.append(sql.getSql());
-		sb.append("]");
-		sb.append(" - ");
-		sb.append(sql.getParams() == null ? "[]" : Arrays.toString(sql.getParams()));
-		return sb.toString();
 	}
 
 	public static void execute(ConnectionSource connectionPool, Collection<Sql> sqls) {
@@ -153,11 +95,10 @@ public final class DataBaseUtils {
 			Connection connection = null;
 			try {
 				connection = connectionPool.getConnection();
-				stmt = createPreparedStatement(connection, sql);
-				setParams(stmt, sql.getParams());
+				stmt = SqlUtils.createPreparedStatement(connection, sql);
 				stmt.execute();
 			} catch (SQLException e) {
-				throw new ShuChaoWenRuntimeException(getSQLId(sql), e);
+				throw new ShuChaoWenRuntimeException(SqlUtils.getSqlId(sql), e);
 			} finally {
 				XUtils.close(stmt, connection);
 			}

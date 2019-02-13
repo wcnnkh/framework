@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -2096,5 +2097,26 @@ public final class StringUtils {
 		} catch (UnsupportedEncodingException e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}
+	}
+
+	/**
+	 * 保留小数点精度
+	 * @param number
+	 * @param len 保留多少位
+	 * @return
+	 */
+	public static String formatNumberPrecision(double number, int len) {
+		DecimalFormat decimalFormat;
+		if (len <= 0) {
+			decimalFormat = new DecimalFormat("#0");
+		} else {
+			CharBuffer charBuffer = CharBuffer.allocate(len + 2);
+			charBuffer.put("#.");
+			for (int i = 0; i < len; i++) {
+				charBuffer.put("0");
+			}
+			decimalFormat = new DecimalFormat(new String(charBuffer.array()));
+		}
+		return decimalFormat.format(number);
 	}
 }

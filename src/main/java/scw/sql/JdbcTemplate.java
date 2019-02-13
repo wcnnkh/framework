@@ -19,30 +19,10 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
 		}
 	}
 
-	protected PreparedStatement createStatement(Sql sql, Connection connection) throws SQLException {
-		PreparedStatement statement;
-		if (sql.isStoredProcedure()) {
-			statement = connection.prepareCall(sql.getSql());
-		} else {
-			statement = connection.prepareStatement(sql.getSql());
-		}
-
-		setParams(statement, sql.getParams());
-		return statement;
-	}
-
-	protected void setParams(PreparedStatement preparedStatement, Object[] args) throws SQLException {
-		if (args != null && args.length != 0) {
-			for (int i = 0; i < args.length; i++) {
-				preparedStatement.setObject(i + 1, args[i]);
-			}
-		}
-	}
-
 	private boolean execute(Sql sql, Connection connection) throws SQLException {
 		PreparedStatement statement = null;
 		try {
-			statement = createStatement(sql, connection);
+			statement = SqlUtils.createPreparedStatement(connection, sql);
 			return statement.execute();
 		} finally {
 			if (statement != null) {
@@ -57,7 +37,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
 			connection = getConnection();
 			return execute(sql, connection);
 		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSQLId(sql), e);
+			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
 			close(connection);
 		}
@@ -78,7 +58,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
 	private void query(Sql sql, Connection connection, ResultSetCallback resultSetCallback) throws SQLException {
 		PreparedStatement statement = null;
 		try {
-			statement = createStatement(sql, connection);
+			statement = SqlUtils.createPreparedStatement(connection, sql);
 			query(statement, resultSetCallback);
 		} finally {
 			if (statement != null) {
@@ -93,7 +73,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
 			connection = getConnection();
 			query(sql, connection, resultSetCallback);
 		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSQLId(sql), e);
+			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
 			close(connection);
 		}
@@ -116,7 +96,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
 	private void query(Sql sql, Connection connection, RowCallback rowCallback) throws SQLException {
 		PreparedStatement statement = null;
 		try {
-			statement = createStatement(sql, connection);
+			statement = SqlUtils.createPreparedStatement(connection, sql);
 			query(statement, rowCallback);
 		} finally {
 			if (statement != null) {
@@ -131,7 +111,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
 			connection = getConnection();
 			query(sql, connection, rowCallback);
 		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSQLId(sql), e);
+			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
 			close(connection);
 		}
@@ -152,7 +132,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
 	private <T> T query(Sql sql, Connection connection, ResultSetMapper<T> resultSetMapper) throws SQLException {
 		PreparedStatement statement = null;
 		try {
-			statement = createStatement(sql, connection);
+			statement = SqlUtils.createPreparedStatement(connection, sql);
 			return query(statement, resultSetMapper);
 		} finally {
 			if (statement != null) {
@@ -167,7 +147,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
 			connection = getConnection();
 			return query(sql, connection, resultSetMapper);
 		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSQLId(sql), e);
+			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
 			close(connection);
 		}
@@ -199,7 +179,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
 	private <T> List<T> query(Sql sql, Connection connection, RowMapper<T> rowMapper) throws SQLException {
 		PreparedStatement statement = null;
 		try {
-			statement = createStatement(sql, connection);
+			statement = SqlUtils.createPreparedStatement(connection, sql);
 			return query(statement, rowMapper);
 		} finally {
 			if (statement != null) {
@@ -214,7 +194,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
 			connection = getConnection();
 			return query(sql, connection, rowMapper);
 		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSQLId(sql), e);
+			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
 			close(connection);
 		}
@@ -223,7 +203,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
 	private int update(Sql sql, Connection connection) throws SQLException {
 		PreparedStatement statement = null;
 		try {
-			statement = createStatement(sql, connection);
+			statement = SqlUtils.createPreparedStatement(connection, sql);
 			return statement.executeUpdate();
 		} finally {
 			if (statement != null) {
@@ -238,7 +218,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
 			connection = getConnection();
 			return update(sql, connection);
 		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSQLId(sql), e);
+			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
 			close(connection);
 		}
