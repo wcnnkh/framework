@@ -8,25 +8,22 @@ import scw.sql.ConnectionFactory;
 import scw.sql.SqlUtils;
 import scw.transaction.Isolation;
 import scw.transaction.NotSupportTransactionException;
-import scw.transaction.Transaction;
+import scw.transaction.SavepointManager;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
 import scw.transaction.synchronization.TransactionSynchronization;
 
-public class ConnectionTransaction implements Transaction, TransactionSynchronization {
+public class ConnectionTransaction implements SavepointManager, TransactionSynchronization {
 	private static final String SAVEPOINT_NAME_PREFIX = "SAVEPOINT_";
-
 	private final ConnectionFactory connectionFactory;
 	private final TransactionDefinition transactionDefinition;
-	private final boolean newTransaction;
-	private final boolean active;
 	private Connection connection;
 	private int savepointCounter;
+	private boolean active;
 
 	public ConnectionTransaction(ConnectionFactory connectionFactory, TransactionDefinition transactionDefinition,
 			boolean active) {
 		this.active = active;
-		this.newTransaction = true;
 		this.connectionFactory = connectionFactory;
 		this.transactionDefinition = transactionDefinition;
 	}
@@ -34,7 +31,7 @@ public class ConnectionTransaction implements Transaction, TransactionSynchroniz
 	public Connection getConnection() throws SQLException {
 		if (connection == null) {
 			Connection connection = SqlUtils.newProxyConnection(connectionFactory);
-			connection.setAutoCommit(isActive());
+			connection.setAutoCommit(!active);
 
 			if (transactionDefinition.isReadOnly()) {
 				connection.setReadOnly(transactionDefinition.isReadOnly());
@@ -48,6 +45,17 @@ public class ConnectionTransaction implements Transaction, TransactionSynchroniz
 		return connection;
 	}
 
+	public void setActive(boolean active) {
+		if (connection != null) {
+			try {
+				connection.setAutoCommit(!active);
+			} catch (SQLException e) {
+				throw new TransactionException(e);
+			}
+		}
+		setActive(active);
+	}
+	
 	public Object createSavepoint() throws TransactionException {
 		savepointCounter++;
 		try {
@@ -79,24 +87,8 @@ public class ConnectionTransaction implements Transaction, TransactionSynchroniz
 		}
 	}
 
-	public int getSavepointCounter() {
-		return savepointCounter;
-	}
-
-	public boolean hasSavepoint() {
-		return savepointCounter != 0;
-	}
-
 	public ConnectionFactory getConnectionFactory() {
 		return connectionFactory;
-	}
-
-	public boolean isNewTransaction() {
-		return newTransaction;
-	}
-
-	public boolean isActive() {
-		return active;
 	}
 
 	public void begin() throws TransactionException {

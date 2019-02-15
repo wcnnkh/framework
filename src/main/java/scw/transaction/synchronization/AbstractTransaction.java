@@ -4,7 +4,7 @@ import scw.transaction.Transaction;
 
 public abstract class AbstractTransaction implements Transaction, TransactionSynchronization {
 
-	private final boolean active;
+	private boolean active;
 	private boolean newTransaction = true;
 
 	public AbstractTransaction(boolean active) {
@@ -13,6 +13,10 @@ public abstract class AbstractTransaction implements Transaction, TransactionSyn
 
 	public boolean isActive() {
 		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public boolean isNewTransaction() {
