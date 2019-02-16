@@ -12,29 +12,21 @@ import scw.common.utils.CollectionUtils;
 import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
+import scw.transaction.SavepointManager;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
-import scw.transaction.synchronization.AbstractTransaction;
 import scw.transaction.synchronization.TransactionSynchronization;
 
-public class ConnectionSavepointTransactionSynchronization extends AbstractTransaction
-		implements TransactionSynchronization {
+public class ConnectionSavepointTransactionSynchronization implements
+		SavepointManager, TransactionSynchronization {
 	private ConnectionTransaction connectionTransaction;
 	private LinkedHashMap<String, Sql> sqlMap;
-	private Object savepoint;
 
-	public ConnectionSavepointTransactionSynchronization(ConnectionFactory connectionFactory,
+	public ConnectionSavepointTransactionSynchronization(
+			ConnectionFactory connectionFactory,
 			TransactionDefinition transactionDefinition, boolean active) {
-		super(active);
-		setNewTransaction(true);
-		this.connectionTransaction = new ConnectionTransaction(connectionFactory, transactionDefinition, active);
-	}
-
-	public void createTempSavepoint() {
-		if (savepoint == null) {
-			throw new TransactionException("不能重复创建savepoint");
-		}
-		this.savepoint = createSavepoint();
+		this.connectionTransaction = new ConnectionTransaction(
+				connectionFactory, transactionDefinition, active);
 	}
 
 	public void addSql(Sql... sqls) {
@@ -87,7 +79,8 @@ public class ConnectionSavepointTransactionSynchronization extends AbstractTrans
 			for (Entry<String, Sql> entry : sqlMap.entrySet()) {
 				PreparedStatement preparedStatement = null;
 				try {
-					preparedStatement = SqlUtils.createPreparedStatement(connection, entry.getValue());
+					preparedStatement = SqlUtils.createPreparedStatement(
+							connection, entry.getValue());
 				} catch (SQLException e) {
 					throw new TransactionException(e);
 				} finally {
@@ -104,37 +97,27 @@ public class ConnectionSavepointTransactionSynchronization extends AbstractTrans
 	}
 
 	public void commit() throws TransactionException {
-		if (isNewTransaction()) {
-			connectionTransaction.commit();
-		}
+		connectionTransaction.commit();
 	}
 
 	public void rollback() throws TransactionException {
-		if (isNewTransaction()) {
-			connectionTransaction.rollback();
-		} else if (savepoint != null) {
-			rollbackToSavepoint(savepoint);
-		}
+		connectionTransaction.rollback();
 	}
 
 	public void end() {
-		if (isNewTransaction()) {
-			connectionTransaction.end();
-		} else if (savepoint != null) {
-			releaseSavepoint(savepoint);
-		}
+		connectionTransaction.end();
 	}
 
 	public Object createSavepoint() throws TransactionException {
 		return connectionTransaction.createSavepoint();
 	}
 
-	public void rollbackToSavepoint(Object savepoint) throws TransactionException {
+	public void rollbackToSavepoint(Object savepoint)
+			throws TransactionException {
 		connectionTransaction.rollbackToSavepoint(savepoint);
 	}
 
 	public void releaseSavepoint(Object savepoint) throws TransactionException {
-		releaseSavepoint(savepoint);
+		connectionTransaction.releaseSavepoint(savepoint);
 	}
-
 }

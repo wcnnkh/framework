@@ -15,8 +15,8 @@ import scw.transaction.synchronization.TransactionSynchronization;
 import scw.transaction.synchronization.TransactionSynchronizationCollection;
 import scw.transaction.synchronization.TransactionSynchronizationLifeCycle;
 
-public class MultipleConnectionTransactionSynchronization extends AbstractTransaction
-		implements TransactionSynchronization {
+public class MultipleConnectionTransactionSynchronization extends
+		AbstractTransaction implements TransactionSynchronization {
 	private Map<ConnectionFactory, ConnectionSavepointTransactionSynchronization> cstsMap;
 	private TransactionDefinition transactionDefinition;
 	private TransactionSynchronizationCollection tsc;
@@ -24,7 +24,8 @@ public class MultipleConnectionTransactionSynchronization extends AbstractTransa
 	private MultipleConnectionTransactionSynchronization parent;
 	private Object savepoint;
 
-	public MultipleConnectionTransactionSynchronization(TransactionDefinition transactionDefinition, boolean active) {
+	public MultipleConnectionTransactionSynchronization(
+			TransactionDefinition transactionDefinition, boolean active) {
 		super(active);
 		setNewTransaction(true);
 		this.transactionDefinition = transactionDefinition;
@@ -35,27 +36,29 @@ public class MultipleConnectionTransactionSynchronization extends AbstractTransa
 	 * 
 	 * @param mcts
 	 */
-	public MultipleConnectionTransactionSynchronization(MultipleConnectionTransactionSynchronization mcts) {
+	public MultipleConnectionTransactionSynchronization(
+			MultipleConnectionTransactionSynchronization mcts) {
 		super(mcts.isActive());
 		setNewTransaction(false);
 		this.parent = mcts;
 	}
 
-	public Connection getConnection(ConnectionFactory connectionFactory) throws SQLException {
+	public Connection getConnection(ConnectionFactory connectionFactory)
+			throws SQLException {
 		if (parent != null) {
 			return parent.getConnection(connectionFactory);
 		}
 
 		ConnectionSavepointTransactionSynchronization csts;
 		if (cstsMap == null) {
-			csts = new ConnectionSavepointTransactionSynchronization(connectionFactory, transactionDefinition,
-					isActive());
+			csts = new ConnectionSavepointTransactionSynchronization(
+					connectionFactory, transactionDefinition, isActive());
 			cstsMap.put(connectionFactory, csts);
 		} else {
 			csts = cstsMap.get(connectionFactory);
 			if (csts == null) {
-				csts = new ConnectionSavepointTransactionSynchronization(connectionFactory, transactionDefinition,
-						isActive());
+				csts = new ConnectionSavepointTransactionSynchronization(
+						connectionFactory, transactionDefinition, isActive());
 				cstsMap.put(connectionFactory, csts);
 			}
 		}
@@ -65,7 +68,8 @@ public class MultipleConnectionTransactionSynchronization extends AbstractTransa
 	public ConnectionSavepointTransactionSynchronization getConnectionSavepointTransactionSynchronization(
 			ConnectionFactory connectionFactory) {
 		if (parent != null) {
-			return parent.getConnectionSavepointTransactionSynchronization(connectionFactory);
+			return parent
+					.getConnectionSavepointTransactionSynchronization(connectionFactory);
 		}
 
 		if (cstsMap == null) {
@@ -82,22 +86,25 @@ public class MultipleConnectionTransactionSynchronization extends AbstractTransa
 	private TransactionSynchronizationLifeCycle tslc;
 
 	public void begin() throws TransactionException {
-		if (tslc != null) {
-			return;
-		}
-
-		TransactionSynchronizationCollection stsc = new TransactionSynchronizationCollection();
-		if (tsc != null) {
-			stsc.add(tsc);
-		}
-
-		if (cstsMap != null) {
-			for (Entry<ConnectionFactory, ConnectionSavepointTransactionSynchronization> entry : cstsMap.entrySet()) {
-				stsc.add(entry.getValue());
+		if (isNewTransaction()) {
+			if (tslc != null) {
+				return;
 			}
-		}
 
-		tslc = new TransactionSynchronizationLifeCycle(stsc, tlcc);
+			TransactionSynchronizationCollection stsc = new TransactionSynchronizationCollection();
+			if (tsc != null) {
+				stsc.add(tsc);
+			}
+
+			if (cstsMap != null) {
+				for (Entry<ConnectionFactory, ConnectionSavepointTransactionSynchronization> entry : cstsMap
+						.entrySet()) {
+					stsc.add(entry.getValue());
+				}
+			}
+
+			tslc = new TransactionSynchronizationLifeCycle(stsc, tlcc);
+		}
 	}
 
 	public void commit() throws TransactionException {
@@ -107,7 +114,7 @@ public class MultipleConnectionTransactionSynchronization extends AbstractTransa
 	}
 
 	public void rollback() throws TransactionException {
-		if (savepoint != null) {
+		if (hasSavepoint()) {
 			rollbackToSavepoint(savepoint);
 		}
 
@@ -117,7 +124,7 @@ public class MultipleConnectionTransactionSynchronization extends AbstractTransa
 	}
 
 	public void end() {
-		if (savepoint != null) {
+		if (hasSavepoint()) {
 			releaseSavepoint(savepoint);
 		}
 
@@ -126,7 +133,8 @@ public class MultipleConnectionTransactionSynchronization extends AbstractTransa
 		}
 	}
 
-	public void rollbackToSavepoint(Object savepoint) throws TransactionException {
+	public void rollbackToSavepoint(Object savepoint)
+			throws TransactionException {
 		if (savepoint == null) {
 			return;
 		}
@@ -138,7 +146,8 @@ public class MultipleConnectionTransactionSynchronization extends AbstractTransa
 		@SuppressWarnings("unchecked")
 		HashMap<ConnectionFactory, Object> savepointMap = (HashMap<ConnectionFactory, Object>) savepoint;
 		for (Entry<ConnectionFactory, Object> entry : savepointMap.entrySet()) {
-			ConnectionSavepointTransactionSynchronization csts = cstsMap.get(entry.getKey());
+			ConnectionSavepointTransactionSynchronization csts = cstsMap
+					.get(entry.getKey());
 			csts.releaseSavepoint(savepointMap);
 		}
 	}
@@ -149,13 +158,15 @@ public class MultipleConnectionTransactionSynchronization extends AbstractTransa
 		}
 
 		if (savepoint instanceof HashMap) {
-			throw new TransactionException("savepoint类型错误, 无法releaseSavepoint到此结点");
+			throw new TransactionException(
+					"savepoint类型错误, 无法releaseSavepoint到此结点");
 		}
 
 		@SuppressWarnings("unchecked")
 		HashMap<ConnectionFactory, Object> savepointMap = (HashMap<ConnectionFactory, Object>) savepoint;
 		for (Entry<ConnectionFactory, Object> entry : savepointMap.entrySet()) {
-			ConnectionSavepointTransactionSynchronization csts = cstsMap.get(entry.getKey());
+			ConnectionSavepointTransactionSynchronization csts = cstsMap
+					.get(entry.getKey());
 			csts.releaseSavepoint(savepointMap);
 		}
 	}
@@ -166,9 +177,19 @@ public class MultipleConnectionTransactionSynchronization extends AbstractTransa
 		}
 
 		HashMap<ConnectionFactory, Object> savepointMap = new HashMap<ConnectionFactory, Object>();
-		for (Entry<ConnectionFactory, ConnectionSavepointTransactionSynchronization> entry : cstsMap.entrySet()) {
-			savepointMap.put(entry.getKey(), entry.getValue().createSavepoint());
+		for (Entry<ConnectionFactory, ConnectionSavepointTransactionSynchronization> entry : cstsMap
+				.entrySet()) {
+			savepointMap
+					.put(entry.getKey(), entry.getValue().createSavepoint());
 		}
 		return savepointMap;
+	}
+
+	public boolean hasSavepoint() {
+		return savepoint != null;
+	}
+
+	public Object getSavepoint() {
+		return savepoint;
 	}
 }
