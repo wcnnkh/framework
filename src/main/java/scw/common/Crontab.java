@@ -2,11 +2,13 @@ package scw.common;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import scw.beans.annotaion.Destroy;
 import scw.common.utils.StringUtils;
@@ -20,12 +22,13 @@ import scw.common.utils.XTime;
  */
 public class Crontab {
 	private Timer timer = new Timer();
-	private ExecutorService executorService = Executors
-			.newSingleThreadExecutor();
-	private LinkedList<CrontabInfo> crontabInfos = new LinkedList<CrontabInfo>();
+	private ExecutorService executorService = new ThreadPoolExecutor(2, 100,
+			60L, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
+	private CopyOnWriteArrayList<CrontabInfo> crontabInfos = new CopyOnWriteArrayList<CrontabInfo>();
 
 	public Crontab() {
 		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.MINUTE, 1);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
 		timer.schedule(new CrontabTimerTask(),
@@ -40,14 +43,12 @@ public class Crontab {
 	 * @param dayOfMonth
 	 * @param hour
 	 * @param minute
-	 * @param name
 	 * @param task
 	 */
-	public synchronized void crontab(String dayOfWeek, String month,
-			String dayOfMonth, String hour, String minute, String name,
-			Runnable task) {
+	public void crontab(String dayOfWeek, String month,
+			String dayOfMonth, String hour, String minute, Runnable task) {
 		crontabInfos.add(new CrontabInfo(dayOfWeek, month, dayOfMonth, hour,
-				minute, task, name));
+				minute, task));
 	}
 
 	/**
@@ -57,12 +58,11 @@ public class Crontab {
 	 *            星期几
 	 * @param hour
 	 * @param minute
-	 * @param name
 	 * @param task
 	 */
 	public void crontabDayOfWeek(String dayOfWeek, String hour, String minute,
-			String name, Runnable task) {
-		crontab(dayOfWeek, "*", "*", hour, minute, name, task);
+			Runnable task) {
+		crontab(dayOfWeek, "*", "*", hour, minute, task);
 	}
 
 	/**
@@ -71,21 +71,21 @@ public class Crontab {
 	 * @param dayOfMonth
 	 * @param hour
 	 * @param minute
-	 * @param name
 	 * @param task
 	 */
 	public void crontabDayOfMonth(String dayOfMonth, String hour,
-			String minute, String name, Runnable task) {
-		crontab("*", "*", dayOfMonth, hour, minute, name, task);
+			String minute, Runnable task) {
+		crontab("*", "*", dayOfMonth, hour, minute, task);
 	}
 
 	/**
 	 * 每天凌晨一点执行
+	 * 
 	 * @param name
 	 * @param task
 	 */
-	public void crontabDailyAtOneAM(String name, Runnable task) {
-		crontabDayOfMonth("*", "1", "0", name, task);
+	public void crontabDailyAtOneAM(Runnable task) {
+		crontabDayOfMonth("*", "1", "0", task);
 	}
 
 	@Destroy
@@ -98,7 +98,7 @@ public class Crontab {
 
 		@Override
 		public void run() {
-			executorService.submit(new CrontabRun(scheduledExecutionTime()));
+			executorService.execute(new CrontabRun(scheduledExecutionTime()));
 		}
 	}
 
@@ -115,12 +115,7 @@ public class Crontab {
 
 			for (CrontabInfo crontab : crontabInfos) {
 				if (crontab.checkTime(calendar)) {
-					Logger.info("正在执行任务[" + crontab.getName() + "]");
-					try {
-						crontab.getRunnable().run();
-					} catch (Exception e) {
-						Logger.error("执行任务[" + crontab.getName() + "]异常", e);
-					}
+					executorService.execute(crontab.getRunnable());
 				}
 			}
 		}
@@ -134,17 +129,15 @@ class CrontabInfo {
 	private final String hour;
 	private final String minute;
 	private final Runnable runnable;
-	private final String name;
 
 	public CrontabInfo(String dayOfWeek, String month, String dayOfMonth,
-			String hour, String minute, Runnable runnable, String name) {
+			String hour, String minute, Runnable runnable) {
 		this.dayOfWeek = dayOfWeek;
 		this.month = month;
 		this.dayOfMonth = dayOfMonth;
 		this.hour = hour;
 		this.minute = minute;
 		this.runnable = runnable;
-		this.name = name;
 	}
 
 	public String getDayOfWeek() {
@@ -169,10 +162,6 @@ class CrontabInfo {
 
 	public Runnable getRunnable() {
 		return runnable;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	private boolean check(int value, String checkValue) {
