@@ -2,8 +2,6 @@ package scw.application;
 
 import java.util.Collection;
 
-import com.alibaba.dubbo.config.ProtocolConfig;
-
 import scw.beans.XmlBeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
@@ -16,6 +14,8 @@ import scw.database.DataBaseUtils;
 import scw.database.TransactionBeanFilter;
 import scw.database.TransactionContext;
 
+import com.alibaba.dubbo.config.ProtocolConfig;
+
 public class CommonApplication implements Application {
 	private static final String TRANSACTION_DEBUG_NAME = "shuchaowen.transaction.debug";
 	private static final String TRANSACTION_CACHE_NAME = "shuchaowen.transaction.cache";
@@ -26,12 +26,16 @@ public class CommonApplication implements Application {
 	private final PropertiesFactory propertiesFactory;
 	private final String configPath;
 
-	public CommonApplication(String configPath, boolean initStatic, PropertiesFactory propertiesFactory) {
+	public CommonApplication(String configPath, boolean initStatic,
+			PropertiesFactory propertiesFactory) {
 		this.configPath = configPath;
-		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(configPath) : propertiesFactory;
+		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(
+				configPath) : propertiesFactory;
 		try {
-			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
-			this.beanFactory.addFirstFilters(TransactionBeanFilter.class.getName());
+			this.beanFactory = new XmlBeanFactory(this.propertiesFactory,
+					configPath, initStatic);
+			this.beanFactory.addFirstFilters(TransactionBeanFilter.class
+					.getName());
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}
@@ -68,27 +72,33 @@ public class CommonApplication implements Application {
 
 		beanFactory.init();
 
-		String transactionDebug = getPropertiesFactory().getValue(TRANSACTION_DEBUG_NAME);
+		String transactionDebug = getPropertiesFactory().getValue(
+				TRANSACTION_DEBUG_NAME);
 		if (!StringUtils.isNull(transactionDebug)) {
-			TransactionContext.getGlobaConfig().setDebug(Boolean.parseBoolean(transactionDebug));
+			TransactionContext.getGlobaConfig().setDebug(
+					Boolean.parseBoolean(transactionDebug));
 		}
 
-		String transactionCache = getPropertiesFactory().getValue(TRANSACTION_CACHE_NAME);
+		String transactionCache = getPropertiesFactory().getValue(
+				TRANSACTION_CACHE_NAME);
 		if (!StringUtils.isNull(transactionCache)) {
-			TransactionContext.getGlobaConfig().setSelectCache(Boolean.parseBoolean(transactionCache));
+			TransactionContext.getGlobaConfig().setSelectCache(
+					Boolean.parseBoolean(transactionCache));
 		}
 
-		String registerTableBean = getPropertiesFactory().getValue(PROXY_REGISTE_TABLE);
+		String registerTableBean = getPropertiesFactory().getValue(
+				PROXY_REGISTE_TABLE);
 		if (!StringUtils.isNull(registerTableBean)) {
 			DataBaseUtils.registerCglibProxyTableBean(registerTableBean);
 		}
-
+		
 		if (!StringUtils.isNull(configPath)) {
 			new Thread(new Runnable() {
 
 				public void run() {
 					try {
-						XmlDubboUtils.register(propertiesFactory, beanFactory, configPath);
+						XmlDubboUtils.register(propertiesFactory, beanFactory,
+								configPath);
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
@@ -96,7 +106,7 @@ public class CommonApplication implements Application {
 			}).start();
 		}
 	}
-
+	
 	public void destroy() {
 		if (!start) {
 			throw new ShuChaoWenRuntimeException("还未启动，无法销毁");
