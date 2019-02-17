@@ -31,7 +31,7 @@ public class Crontab {
 		calendar.add(Calendar.MINUTE, 1);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
-		timer.schedule(new CrontabTimerTask(),
+		timer.scheduleAtFixedRate(new CrontabTimerTask(),
 				new Date(calendar.getTimeInMillis()), XTime.ONE_MINUTE);
 	}
 
@@ -45,8 +45,8 @@ public class Crontab {
 	 * @param minute
 	 * @param task
 	 */
-	public void crontab(String dayOfWeek, String month,
-			String dayOfMonth, String hour, String minute, Runnable task) {
+	public void crontab(String dayOfWeek, String month, String dayOfMonth,
+			String hour, String minute, Runnable task) {
 		crontabInfos.add(new CrontabInfo(dayOfWeek, month, dayOfMonth, hour,
 				minute, task));
 	}
