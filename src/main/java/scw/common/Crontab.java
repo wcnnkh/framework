@@ -204,10 +204,10 @@ class CrontabInfo {
 
 	public boolean checkTime(Calendar calendar) {
 		return checkBySplit(calendar.get(Calendar.DAY_OF_WEEK), dayOfWeek)
-				|| checkBySplit(calendar.get(Calendar.MONTH), month)
-				|| checkBySplit(calendar.get(Calendar.DAY_OF_MONTH), dayOfMonth)
-				|| checkBySplit(Calendar.HOUR_OF_DAY, hour)
-				|| checkBySplit(calendar.get(Calendar.MINUTE), minute);
+				&& checkBySplit(calendar.get(Calendar.MONTH), month)
+				&& checkBySplit(calendar.get(Calendar.DAY_OF_MONTH), dayOfMonth)
+				&& checkBySplit(Calendar.HOUR_OF_DAY, hour)
+				&& checkBySplit(calendar.get(Calendar.MINUTE), minute);
 	}
 
 }
