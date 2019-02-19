@@ -28,7 +28,7 @@ public class TransactionBeanFilter implements BeanFilter {
 
 	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
 			throws Throwable {
-		Transactional clzTx = method.getDeclaringClass().getDeclaringClass().getAnnotation(Transactional.class);
+		Transactional clzTx = method.getDeclaringClass().getAnnotation(Transactional.class);
 		Transactional methodTx = method.getAnnotation(Transactional.class);
 		if (clzTx == null && methodTx == null) {
 			if (TransactionManager.hasTransaction()) {
