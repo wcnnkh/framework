@@ -1,7 +1,7 @@
-package scw.sql.orm;
+package scw.sql.orm.cache;
 
-import scw.sql.orm.cache.Cache;
-import scw.sql.orm.cache.CacheUtils;
+import scw.sql.orm.JdbcORMTemplate;
+import scw.sql.orm.SqlFormat;
 
 public abstract class JdbcORMCacheTemplate extends JdbcORMTemplate {
 	private final Cache cache;
