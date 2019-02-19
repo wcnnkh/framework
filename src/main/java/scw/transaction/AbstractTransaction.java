@@ -1,6 +1,6 @@
-package scw.transaction.synchronization;
+package scw.transaction;
 
-import scw.transaction.Transaction;
+import scw.transaction.synchronization.TransactionSynchronization;
 
 public abstract class AbstractTransaction implements Transaction, TransactionSynchronization {
 

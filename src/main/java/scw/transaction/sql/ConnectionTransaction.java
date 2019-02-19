@@ -28,6 +28,10 @@ public class ConnectionTransaction implements SavepointManager, TransactionSynch
 		this.transactionDefinition = transactionDefinition;
 	}
 
+	public boolean hasConnection() {
+		return connection != null;
+	}
+
 	public Connection getConnection() throws SQLException {
 		if (connection == null) {
 			Connection connection = SqlUtils.newProxyConnection(connectionFactory);
@@ -46,7 +50,7 @@ public class ConnectionTransaction implements SavepointManager, TransactionSynch
 	}
 
 	public void setActive(boolean active) {
-		if (connection != null) {
+		if (hasConnection()) {
 			try {
 				connection.setAutoCommit(!active);
 			} catch (SQLException e) {
@@ -55,7 +59,7 @@ public class ConnectionTransaction implements SavepointManager, TransactionSynch
 		}
 		setActive(active);
 	}
-	
+
 	public Object createSavepoint() throws TransactionException {
 		savepointCounter++;
 		try {
@@ -91,18 +95,8 @@ public class ConnectionTransaction implements SavepointManager, TransactionSynch
 		return connectionFactory;
 	}
 
-	public void begin() throws TransactionException {
-		if (connection == null) {
-			try {
-				connection = getConnection();
-			} catch (SQLException e) {
-				throw new TransactionException(e);
-			}
-		}
-	}
-
 	public void end() throws TransactionException {
-		if (connection != null) {
+		if (hasConnection()) {
 			if (active) {
 				try {
 					connection.setAutoCommit(true);
@@ -120,7 +114,7 @@ public class ConnectionTransaction implements SavepointManager, TransactionSynch
 	}
 
 	public void rollback() throws TransactionException {
-		if (connection != null) {
+		if (hasConnection()) {
 			try {
 				connection.rollback();
 			} catch (SQLException e) {
@@ -129,8 +123,8 @@ public class ConnectionTransaction implements SavepointManager, TransactionSynch
 		}
 	}
 
-	public void commit() throws TransactionException {
-		if (connection != null) {
+	public void process() throws TransactionException {
+		if (hasConnection()) {
 			try {
 				connection.commit();
 			} catch (SQLException e) {

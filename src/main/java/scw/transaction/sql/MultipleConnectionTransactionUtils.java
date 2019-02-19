@@ -12,10 +12,8 @@ import scw.transaction.TransactionException;
 public class MultipleConnectionTransactionUtils {
 	private static final ThreadLocal<LinkedList<MultipleConnectionTransactionSynchronization>> LOCAL = new ThreadLocal<LinkedList<MultipleConnectionTransactionSynchronization>>();
 
-	private static MultipleConnectionTransactionSynchronization getCurrentTransaction(
-			boolean remove) {
-		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL
-				.get();
+	private static MultipleConnectionTransactionSynchronization getCurrentTransaction(boolean remove) {
+		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
 		if (list == null) {
 			return null;
 		}
@@ -23,8 +21,7 @@ public class MultipleConnectionTransactionUtils {
 		return remove ? list.removeLast() : list.getLast();
 	}
 
-	public static Connection getCurrentConnection(
-			ConnectionFactory connectionFactory) throws SQLException {
+	public static Connection getCurrentConnection(ConnectionFactory connectionFactory) throws SQLException {
 		MultipleConnectionTransactionSynchronization mcts = getCurrentTransaction(false);
 		if (mcts == null) {
 			mcts = getTransaction(new DefaultTransactionDefinition());
@@ -35,8 +32,7 @@ public class MultipleConnectionTransactionUtils {
 
 	public static MultipleConnectionTransactionSynchronization getTransaction(
 			TransactionDefinition transactionDefinition) {
-		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL
-				.get();
+		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
 		MultipleConnectionTransactionSynchronization mcts = null;
 		if (list == null) {
 			list = new LinkedList<MultipleConnectionTransactionSynchronization>();
@@ -51,42 +47,35 @@ public class MultipleConnectionTransactionUtils {
 		switch (transactionDefinition.getPropagation()) {
 		case REQUIRED:
 			if (mcts == null) {
-				mcts = new MultipleConnectionTransactionSynchronization(
-						transactionDefinition, true);
+				mcts = new MultipleConnectionTransactionSynchronization(transactionDefinition, true);
 			}
 			break;
 		case SUPPORTS:
 			if (mcts == null) {
-				mcts = new MultipleConnectionTransactionSynchronization(
-						transactionDefinition, false);
+				mcts = new MultipleConnectionTransactionSynchronization(transactionDefinition, false);
 			}
 			break;
 		case MANDATORY:
 			if (mcts == null || !mcts.isActive()) {
-				throw new TransactionException(transactionDefinition
-						.getPropagation().name());
+				throw new TransactionException(transactionDefinition.getPropagation().name());
 			}
 			break;
 		case REQUIRES_NEW:
-			mcts = new MultipleConnectionTransactionSynchronization(
-					transactionDefinition, true);
+			mcts = new MultipleConnectionTransactionSynchronization(transactionDefinition, true);
 			break;
 		case NOT_SUPPORTED:
-			mcts = new MultipleConnectionTransactionSynchronization(
-					transactionDefinition, false);
+			mcts = new MultipleConnectionTransactionSynchronization(transactionDefinition, false);
 			break;
 		case NEVER:
 			if (mcts != null && mcts.isActive()) {
-				throw new TransactionException(transactionDefinition
-						.getPropagation().name());
+				throw new TransactionException(transactionDefinition.getPropagation().name());
 			}
 			break;
 		case NESTED:
 			if (mcts != null && mcts.isActive()) {
 				mcts.createTempSavePoint();
 			} else if (mcts == null) {
-				mcts = new MultipleConnectionTransactionSynchronization(
-						transactionDefinition, true);
+				mcts = new MultipleConnectionTransactionSynchronization(transactionDefinition, true);
 			}
 			break;
 		}
@@ -94,30 +83,26 @@ public class MultipleConnectionTransactionUtils {
 		return mcts;
 	}
 
-	public void commit(MultipleConnectionTransactionSynchronization mcts)
-			throws TransactionException {
+	public void process(MultipleConnectionTransactionSynchronization mcts) throws TransactionException {
 		MultipleConnectionTransactionSynchronization currentMcts = getCurrentTransaction(true);
 		if (mcts != currentMcts) {
 			throw new TransactionException("事务需要顺序关闭，请先关闭子事务");
 		}
 
 		try {
-			mcts.begin();
-			mcts.commit();
+			mcts.process();
 		} finally {
 			mcts.end();
 		}
 	}
 
-	public void rollback(MultipleConnectionTransactionSynchronization mcts)
-			throws TransactionException {
+	public void rollback(MultipleConnectionTransactionSynchronization mcts) throws TransactionException {
 		MultipleConnectionTransactionSynchronization currentMcts = getCurrentTransaction(true);
 		if (mcts != currentMcts) {
 			throw new TransactionException("事务需要顺序关闭，请先关闭子事务");
 		}
 
 		try {
-			mcts.begin();
 			mcts.rollback();
 		} finally {
 			mcts.end();

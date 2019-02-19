@@ -10,9 +10,7 @@ import scw.transaction.TransactionException;
  */
 public interface TransactionSynchronization {
 
-	void begin() throws TransactionException;
-
-	void commit() throws TransactionException;
+	void process() throws TransactionException;
 
 	void rollback() throws TransactionException;
 

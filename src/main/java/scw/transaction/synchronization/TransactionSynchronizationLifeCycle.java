@@ -12,13 +12,7 @@ public class TransactionSynchronizationLifeCycle implements TransactionSynchroni
 		this.transactionSynchronization = transactionSynchronization;
 	}
 
-	public void begin() throws TransactionException {
-		if (transactionSynchronization != null) {
-			transactionSynchronization.begin();
-		}
-	}
-
-	public void commit() throws TransactionException {
+	public void process() throws TransactionException {
 		if (transactionLifeCycle != null) {
 			try {
 				transactionLifeCycle.beforeCommit();
@@ -28,7 +22,7 @@ public class TransactionSynchronizationLifeCycle implements TransactionSynchroni
 		}
 
 		if (transactionSynchronization != null) {
-			transactionSynchronization.commit();
+			transactionSynchronization.process();
 		}
 
 		if (transactionLifeCycle != null) {

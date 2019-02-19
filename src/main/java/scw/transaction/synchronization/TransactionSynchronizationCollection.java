@@ -20,22 +20,12 @@ public final class TransactionSynchronizationCollection extends LinkedList<Trans
 		super(transactions);
 	}
 
-	public void begin() throws TransactionException {
-		Iterator<TransactionSynchronization> iterator = iterator();
-		for (; iterator.hasNext(); beginTag++) {
-			TransactionSynchronization transaction = iterator.next();
-			if (transaction != null) {
-				transaction.begin();
-			}
-		}
-	}
-
-	public void commit() throws TransactionException {
+	public void process() throws TransactionException {
 		Iterator<TransactionSynchronization> iterator = iterator();
 		for (; iterator.hasNext(); processTag++) {
 			TransactionSynchronization transaction = iterator.next();
 			if (transaction != null) {
-				transaction.commit();
+				transaction.process();
 			}
 		}
 	}

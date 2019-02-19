@@ -3,11 +3,10 @@ package scw.transaction.synchronization;
 import scw.transaction.TransactionException;
 
 public abstract class TransactionSynchronizationUitls {
-	
+
 	public static void execute(TransactionSynchronization synchronization) {
 		try {
-			synchronization.begin();
-			synchronization.commit();
+			synchronization.process();
 		} catch (Throwable e) {
 			try {
 				synchronization.rollback();
