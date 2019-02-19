@@ -5,26 +5,42 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 
 import scw.sql.ConnectionFactory;
-import scw.transaction.DefaultTransactionDefinition;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
 
 public class MultipleConnectionTransactionUtils {
 	private static final ThreadLocal<LinkedList<MultipleConnectionTransactionSynchronization>> LOCAL = new ThreadLocal<LinkedList<MultipleConnectionTransactionSynchronization>>();
 
-	private static MultipleConnectionTransactionSynchronization getCurrentTransaction(boolean remove) {
+	/**
+	 * 当前上下文是否存在事务
+	 * 
+	 * @return
+	 */
+	public static boolean hasTransaction() {
+		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
+		if (list == null) {
+			return false;
+		}
+
+		return !list.isEmpty();
+	}
+
+	/**
+	 * 如果当前没有事务就是空的
+	 * 
+	 * @param connectionFactory
+	 * @return
+	 * @throws SQLException
+	 */
+	public static Connection getCurrentConnection(ConnectionFactory connectionFactory) throws SQLException {
 		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
 		if (list == null) {
 			return null;
 		}
 
-		return remove ? list.removeLast() : list.getLast();
-	}
-
-	public static Connection getCurrentConnection(ConnectionFactory connectionFactory) throws SQLException {
-		MultipleConnectionTransactionSynchronization mcts = getCurrentTransaction(false);
+		MultipleConnectionTransactionSynchronization mcts = list.getLast();
 		if (mcts == null) {
-			mcts = getTransaction(new DefaultTransactionDefinition());
+			return null;
 		}
 
 		return mcts.getConnection(connectionFactory);
@@ -83,8 +99,13 @@ public class MultipleConnectionTransactionUtils {
 		return mcts;
 	}
 
-	public void process(MultipleConnectionTransactionSynchronization mcts) throws TransactionException {
-		MultipleConnectionTransactionSynchronization currentMcts = getCurrentTransaction(true);
+	public static void process(MultipleConnectionTransactionSynchronization mcts) throws TransactionException {
+		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
+		if (list == null) {
+			throw new TransactionException("不存在事务");
+		}
+
+		MultipleConnectionTransactionSynchronization currentMcts = list.getLast();
 		if (mcts != currentMcts) {
 			throw new TransactionException("事务需要顺序关闭，请先关闭子事务");
 		}
@@ -92,12 +113,24 @@ public class MultipleConnectionTransactionUtils {
 		try {
 			mcts.process();
 		} finally {
-			mcts.end();
+			try {
+				mcts.end();
+			} finally {
+				list.removeLast();
+				if (list.isEmpty()) {
+					LOCAL.remove();
+				}
+			}
 		}
 	}
 
-	public void rollback(MultipleConnectionTransactionSynchronization mcts) throws TransactionException {
-		MultipleConnectionTransactionSynchronization currentMcts = getCurrentTransaction(true);
+	public static void rollback(MultipleConnectionTransactionSynchronization mcts) throws TransactionException {
+		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
+		if (list == null) {
+			throw new TransactionException("不存在事务");
+		}
+
+		MultipleConnectionTransactionSynchronization currentMcts = list.getLast();
 		if (mcts != currentMcts) {
 			throw new TransactionException("事务需要顺序关闭，请先关闭子事务");
 		}
@@ -105,7 +138,14 @@ public class MultipleConnectionTransactionUtils {
 		try {
 			mcts.rollback();
 		} finally {
-			mcts.end();
+			try {
+				mcts.end();
+			} finally {
+				list.removeLast();
+				if (list.isEmpty()) {
+					LOCAL.remove();
+				}
+			}
 		}
 	}
 }

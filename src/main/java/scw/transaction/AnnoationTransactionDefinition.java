@@ -11,7 +11,7 @@ public final class AnnoationTransactionDefinition implements TransactionDefiniti
 
 	public Propagation getPropagation() {
 		if (clzTx == null) {
-			return methodTx == null ? null : methodTx.propagation();
+			return methodTx == null ? Propagation.REQUIRED : methodTx.propagation();
 		} else {
 			return methodTx == null ? clzTx.propagation() : methodTx.propagation();
 		}
@@ -19,7 +19,7 @@ public final class AnnoationTransactionDefinition implements TransactionDefiniti
 
 	public Isolation getIsolation() {
 		if (clzTx == null) {
-			return methodTx == null ? null : methodTx.isolation();
+			return methodTx == null ? Isolation.DEFAULT : methodTx.isolation();
 		} else {
 			return methodTx == null ? clzTx.isolation() : methodTx.isolation();
 		}

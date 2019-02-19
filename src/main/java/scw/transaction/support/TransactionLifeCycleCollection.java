@@ -1,24 +1,24 @@
-package scw.transaction.synchronization;
+package scw.transaction.support;
 
 import java.util.LinkedList;
 
 public class TransactionLifeCycleCollection extends LinkedList<TransactionLifeCycle> implements TransactionLifeCycle {
 	private static final long serialVersionUID = 1L;
 
-	public void beforeCommit() throws Throwable {
+	public void beforeProcess() throws Throwable {
 		for (TransactionLifeCycle lifeCycle : this) {
 			try {
-				lifeCycle.beforeCommit();
+				lifeCycle.beforeProcess();
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void afterCommit() throws Throwable {
+	public void afterProcess() throws Throwable {
 		for (TransactionLifeCycle lifeCycle : this) {
 			try {
-				lifeCycle.afterCommit();
+				lifeCycle.afterProcess();
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}

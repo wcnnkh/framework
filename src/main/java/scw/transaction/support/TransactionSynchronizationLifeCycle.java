@@ -1,4 +1,4 @@
-package scw.transaction.synchronization;
+package scw.transaction.support;
 
 import scw.transaction.TransactionException;
 
@@ -15,7 +15,7 @@ public class TransactionSynchronizationLifeCycle implements TransactionSynchroni
 	public void process() throws TransactionException {
 		if (transactionLifeCycle != null) {
 			try {
-				transactionLifeCycle.beforeCommit();
+				transactionLifeCycle.beforeProcess();
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
@@ -27,7 +27,7 @@ public class TransactionSynchronizationLifeCycle implements TransactionSynchroni
 
 		if (transactionLifeCycle != null) {
 			try {
-				transactionLifeCycle.afterCommit();
+				transactionLifeCycle.afterProcess();
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}

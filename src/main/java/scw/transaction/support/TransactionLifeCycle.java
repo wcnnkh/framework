@@ -1,4 +1,4 @@
-package scw.transaction.synchronization;
+package scw.transaction.support;
 
 /**
  * 事务的生命周期
@@ -8,23 +8,25 @@ package scw.transaction.synchronization;
  */
 public interface TransactionLifeCycle {
 	/**
-	 * 在事务提交之前调用
+	 * 在执行之前调用
 	 */
-	void beforeCommit() throws Throwable;
+	void beforeProcess() throws Throwable;
 
 	/**
-	 * 事务提交之后调用
+	 * 在执行之后调用
 	 */
-	void afterCommit() throws Throwable;
-	
+	void afterProcess() throws Throwable;
+
 	/**
 	 * 在事务回滚前调用
+	 * 
 	 * @throws Throwable
 	 */
 	void beforeRollback() throws Throwable;
-	
+
 	/**
 	 * 在事务回滚后调用
+	 * 
 	 * @throws Throwable
 	 */
 	void afterRollback() throws Throwable;

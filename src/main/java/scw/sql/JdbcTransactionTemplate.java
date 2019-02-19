@@ -5,10 +5,10 @@ import java.sql.SQLException;
 
 import scw.transaction.sql.MultipleConnectionTransactionUtils;
 
-public class JdbcConnectionFactoryTemplate extends JdbcTemplate {
+public class JdbcTransactionTemplate extends JdbcTemplate {
 	private ConnectionFactory connectionFactory;
 
-	public JdbcConnectionFactoryTemplate(ConnectionFactory connectionFactory) {
+	public JdbcTransactionTemplate(ConnectionFactory connectionFactory) {
 		this.connectionFactory = connectionFactory;
 	}
 

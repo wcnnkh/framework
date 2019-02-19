@@ -1,4 +1,4 @@
-package scw.transaction.synchronization;
+package scw.transaction.support;
 
 import java.util.Collection;
 import java.util.Iterator;
