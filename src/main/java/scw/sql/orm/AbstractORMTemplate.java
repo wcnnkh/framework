@@ -18,7 +18,7 @@ public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements
 		this.sqlFormat = sqlFormat;
 	}
 
-	public SqlFormat getSqlFormat() {
+	public final SqlFormat getSqlFormat() {
 		return sqlFormat;
 	}
 
