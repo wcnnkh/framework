@@ -16,16 +16,16 @@ import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.Transaction;
 import scw.common.transaction.TransactionCollection;
 import scw.common.utils.ClassUtils;
-import scw.database.DataBaseUtils;
-import scw.database.Result;
-import scw.database.TableInfo;
 import scw.database.TransactionContext;
-import scw.database.annoation.Table;
 import scw.db.AbstractDB;
 import scw.db.DBUtils;
 import scw.db.OperationBean;
 import scw.db.storage.Storage;
 import scw.sql.Sql;
+import scw.sql.orm.ORMUtils;
+import scw.sql.orm.TableInfo;
+import scw.sql.orm.annoation.Table;
+import scw.sql.orm.result.Result;
 import scw.utils.memcached.Memcached;
 import scw.utils.queue.MemcachedQueue;
 import scw.utils.queue.Queue;
@@ -100,7 +100,7 @@ public final class CacheStorage implements Storage {
 	}
 
 	private boolean dbExist(OperationBean operationBean) throws IllegalArgumentException, IllegalAccessException {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(operationBean.getBean().getClass());
+		TableInfo tableInfo = ORMUtils.getTableInfo(operationBean.getBean().getClass());
 		Object[] params = new Object[tableInfo.getPrimaryKeyColumns().length];
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
 			params[i] = tableInfo.getPrimaryKeyColumns()[i].getFieldInfo().forceGet(operationBean.getBean());

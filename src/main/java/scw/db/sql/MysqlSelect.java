@@ -6,12 +6,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import scw.common.exception.ShuChaoWenRuntimeException;
-import scw.database.ColumnInfo;
-import scw.database.DataBaseUtils;
-import scw.database.ResultSet;
-import scw.database.TableInfo;
 import scw.db.AbstractDB;
 import scw.sql.Sql;
+import scw.sql.orm.ColumnInfo;
+import scw.sql.orm.ORMUtils;
+import scw.sql.orm.TableInfo;
+import scw.sql.orm.result.ResultSet;
 
 public class MysqlSelect extends Select {
 	/**
@@ -43,7 +43,7 @@ public class MysqlSelect extends Select {
 
 	@Override
 	public Select whereAndValue(Class<?> tableClass, String name, Object value) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		if (!tableInfo.isTable()) {
 			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
 		}
@@ -63,7 +63,7 @@ public class MysqlSelect extends Select {
 
 	@Override
 	public Select whereOrValue(Class<?> tableClass, String name, Object value) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		if (!tableInfo.isTable()) {
 			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
 		}
@@ -86,7 +86,7 @@ public class MysqlSelect extends Select {
 			throw new NullPointerException();
 		}
 
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		if (!tableInfo.isTable()) {
 			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
 		}
@@ -117,7 +117,7 @@ public class MysqlSelect extends Select {
 			throw new NullPointerException();
 		}
 
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		if (!tableInfo.isTable()) {
 			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
 		}
@@ -148,7 +148,7 @@ public class MysqlSelect extends Select {
 			throw new NullPointerException();
 		}
 
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		if (!tableInfo.isTable()) {
 			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
 		}
@@ -176,7 +176,7 @@ public class MysqlSelect extends Select {
 			throw new NullPointerException();
 		}
 
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		if (!tableInfo.isTable()) {
 			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
 		}
@@ -202,7 +202,7 @@ public class MysqlSelect extends Select {
 	@Override
 	public long count() {
 		Sql sql = toSQL("count(*)", false);
-		scw.database.ResultSet resultSet = db.select(sql);
+		scw.sql.orm.result.ResultSet resultSet = db.select(sql);
 		Long count = resultSet.getFirst().get(Long.class);
 		return count == null ? 0 : count;
 	}

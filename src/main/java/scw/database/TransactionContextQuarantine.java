@@ -11,6 +11,7 @@ import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.Transaction;
 import scw.common.transaction.TransactionCollection;
 import scw.common.utils.CollectionUtils;
+import scw.db.TransactionSql;
 import scw.sql.Sql;
 
 /**

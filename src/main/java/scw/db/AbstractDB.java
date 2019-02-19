@@ -16,21 +16,22 @@ import scw.common.Pagination;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
-import scw.database.ColumnInfo;
 import scw.database.ConnectionSource;
 import scw.database.DataBaseUtils;
-import scw.database.DefaultResult;
-import scw.database.Result;
-import scw.database.ResultSet;
-import scw.database.TableInfo;
 import scw.database.TransactionContext;
-import scw.database.annoation.Table;
-import scw.db.sql.MysqlFormat;
 import scw.db.sql.MysqlSelect;
-import scw.db.sql.PaginationSql;
-import scw.db.sql.SqlFormat;
-import scw.sql.Sql;
 import scw.db.sql.Select;
+import scw.sql.Sql;
+import scw.sql.orm.ColumnInfo;
+import scw.sql.orm.ORMUtils;
+import scw.sql.orm.PaginationSql;
+import scw.sql.orm.SqlFormat;
+import scw.sql.orm.TableInfo;
+import scw.sql.orm.annoation.Table;
+import scw.sql.orm.mysql.MysqlFormat;
+import scw.sql.orm.result.DefaultResult;
+import scw.sql.orm.result.Result;
+import scw.sql.orm.result.ResultSet;
 
 public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	{
@@ -48,7 +49,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	}
 
 	public void iterator(Class<?> tableClass, Iterator<Result> iterator) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		iterator(getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getName(), null), iterator);
 	}
 
@@ -137,12 +138,12 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	}
 
 	public void createTable(Class<?> tableClass) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		createTable(tableClass, tableInfo.getName());
 	}
 
 	public void createTable(Class<?> tableClass, String tableName) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		Sql sql = getSqlFormat().toCreateTableSql(tableInfo, tableName);
 		Logger.info(this.getClass().getName(), sql.getSql());
 		DataBaseUtils.execute(this, Arrays.asList(sql));
@@ -171,7 +172,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 			throw new NullPointerException("type is null");
 		}
 
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(type);
+		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		if (tableInfo == null) {
 			throw new NullPointerException("tableInfo is null");
 		}
@@ -208,7 +209,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 			throw new NullPointerException("type is null");
 		}
 
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(type);
+		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		if (tableInfo == null) {
 			throw new NullPointerException("tableInfo is null");
 		}
@@ -248,7 +249,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 			throw new NullPointerException("type is null");
 		}
 
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(type);
+		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		if (tableInfo == null) {
 			throw new NullPointerException("tableInfo is null");
 		}
@@ -319,7 +320,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	}
 
 	public void delete(Class<?> tableClass, String tableName, Object... params) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		String tName = StringUtils.isNull(tableName) ? tableInfo.getName() : tableName;
 		Sql sql = getSqlFormat().toDeleteSql(tableInfo, tName, params);
 		TransactionContext.execute(this, sql);
@@ -360,7 +361,7 @@ public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	}
 
 	public void update(Class<?> tableClass, String tableName, Map<String, Object> valueMap, Object... params) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		String tName = StringUtils.isNull(tableName) ? tableInfo.getName() : tableName;
 		Sql sql = getSqlFormat().toUpdateSql(tableInfo, tName, valueMap, params);
 		TransactionContext.execute(this, sql);

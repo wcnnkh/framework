@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Set;
 
 import scw.common.transaction.Transaction;
-import scw.database.DataBaseUtils;
-import scw.database.TableInfo;
 import scw.db.AbstractDB;
 import scw.db.OperationBean;
 import scw.db.OperationType;
 import scw.db.storage.CacheUtils;
+import scw.sql.orm.ORMUtils;
+import scw.sql.orm.TableInfo;
 import scw.utils.redis.Redis;
 
 public class RedisCache implements Cache {
@@ -94,7 +94,7 @@ public class RedisCache implements Cache {
 
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getByIdList(AbstractDB db, Class<T> type, Object... params) throws Exception {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(type);
+		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		if (tableInfo.getPrimaryKeyColumns().length == params.length) {
 			T t = getById(type, params);
 			return t == null ? null : Arrays.asList(t);

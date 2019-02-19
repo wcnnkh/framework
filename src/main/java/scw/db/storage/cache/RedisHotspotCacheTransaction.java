@@ -7,10 +7,10 @@ import java.util.Map.Entry;
 
 import scw.common.Logger;
 import scw.common.transaction.AbstractTransaction;
-import scw.database.DataBaseUtils;
-import scw.database.TableInfo;
 import scw.db.OperationBean;
 import scw.db.storage.CacheUtils;
+import scw.sql.orm.ORMUtils;
+import scw.sql.orm.TableInfo;
 import scw.utils.redis.Redis;
 
 public class RedisHotspotCacheTransaction extends AbstractTransaction {
@@ -38,7 +38,7 @@ public class RedisHotspotCacheTransaction extends AbstractTransaction {
 		this.operationBean = operationBean;
 		this.charset = charset;
 		this.beanData = CacheUtils.encode(operationBean.getBean());
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(operationBean.getBean().getClass());
+		TableInfo tableInfo = ORMUtils.getTableInfo(operationBean.getBean().getClass());
 		StringBuilder sb = new StringBuilder();
 		sb.append(tableInfo.getClassInfo().getName());
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {

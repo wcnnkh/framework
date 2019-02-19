@@ -2,10 +2,11 @@ package scw.db;
 
 import java.io.Serializable;
 
-import scw.database.DataBaseUtils;
-import scw.database.TableInfo;
-import scw.db.sql.SqlFormat;
 import scw.sql.Sql;
+import scw.sql.orm.ORMUtils;
+import scw.sql.orm.SqlFormat;
+import scw.sql.orm.TableInfo;
+import scw.sql.orm.TableName;
 
 public final class OperationBean implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -39,7 +40,7 @@ public final class OperationBean implements Serializable {
 	}
 
 	public Sql getSql(SqlFormat sqlFormat) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(bean.getClass());
+		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		String tName;
 		if (tableName == null || tableName.length() == 0) {
 			if (bean instanceof TableName) {

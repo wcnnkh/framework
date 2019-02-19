@@ -1,6 +1,6 @@
 package scw.utils.excel.export;
 
-import scw.database.Result;
+import scw.sql.orm.result.Result;
 
 public class SimpleExportRowImpl implements SqlExportRow {
 	private int colCount;

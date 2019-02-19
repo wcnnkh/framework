@@ -9,14 +9,14 @@ import scw.common.Logger;
 import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.Transaction;
 import scw.common.transaction.TransactionCollection;
-import scw.database.DataBaseUtils;
-import scw.database.TableInfo;
 import scw.database.TransactionContext;
 import scw.db.AbstractDB;
 import scw.db.DBUtils;
 import scw.db.OperationBean;
 import scw.db.storage.CacheUtils;
 import scw.sql.Sql;
+import scw.sql.orm.ORMUtils;
+import scw.sql.orm.TableInfo;
 
 public class CacheAsyncConsumer {
 	private final CacheStorage cacheStorage;
@@ -27,7 +27,7 @@ public class CacheAsyncConsumer {
 
 	private boolean dbExist(AbstractDB abstractDB, OperationBean operationBean)
 			throws IllegalArgumentException, IllegalAccessException {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(operationBean
+		TableInfo tableInfo = ORMUtils.getTableInfo(operationBean
 				.getBean().getClass());
 		Object[] params = new Object[tableInfo.getPrimaryKeyColumns().length];
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {

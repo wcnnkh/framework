@@ -4,7 +4,7 @@ import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import scw.db.sql.SqlFormat;
+import scw.sql.orm.SqlFormat;
 
 public class DataSource extends DB{
 	private final javax.sql.DataSource dataSource;

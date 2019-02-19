@@ -1,10 +1,10 @@
 package scw.utils.id.db;
 
 import scw.common.exception.NotFoundException;
-import scw.database.ColumnInfo;
-import scw.database.DataBaseUtils;
-import scw.database.TableInfo;
 import scw.db.DB;
+import scw.sql.orm.ColumnInfo;
+import scw.sql.orm.ORMUtils;
+import scw.sql.orm.TableInfo;
 
 public abstract class AbstractTableIdFactory implements TableIdFactory {
 	private final DB db;
@@ -14,7 +14,7 @@ public abstract class AbstractTableIdFactory implements TableIdFactory {
 	}
 
 	protected long getMaxId(Class<?> tableClass, String fieldName) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(tableClass);
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		ColumnInfo columnInfo = tableInfo.getColumnInfo(fieldName);
 		if (columnInfo == null) {
 			throw new NotFoundException(fieldName);

@@ -7,10 +7,10 @@ import java.util.Map.Entry;
 
 import scw.common.Logger;
 import scw.common.transaction.AbstractTransaction;
-import scw.database.DataBaseUtils;
-import scw.database.TableInfo;
 import scw.db.OperationBean;
 import scw.db.storage.CacheUtils;
+import scw.sql.orm.ORMUtils;
+import scw.sql.orm.TableInfo;
 import scw.utils.redis.Redis;
 
 public class RedisFullCacheTransaction extends AbstractTransaction{
@@ -26,7 +26,7 @@ public class RedisFullCacheTransaction extends AbstractTransaction{
 			throws IllegalArgumentException, IllegalAccessException {
 		this.operationBean = operationBean;
 		this.redis = redis;
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(operationBean.getBean().getClass());
+		TableInfo tableInfo = ORMUtils.getTableInfo(operationBean.getBean().getClass());
 		this.indexKeys = new byte[tableInfo.getPrimaryKeyColumns().length - 1][];
 		this.classNameKey = tableInfo.getClassInfo().getName().getBytes(keyCharset);
 		this.beanData = CacheUtils.encode(operationBean.getBean());

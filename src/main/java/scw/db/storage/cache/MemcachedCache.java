@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.common.transaction.Transaction;
-import scw.database.DataBaseUtils;
-import scw.database.TableInfo;
 import scw.db.AbstractDB;
 import scw.db.OperationBean;
 import scw.db.OperationType;
 import scw.db.storage.CacheUtils;
+import scw.sql.orm.ORMUtils;
+import scw.sql.orm.TableInfo;
 import scw.utils.memcached.Memcached;
 
 public class MemcachedCache implements Cache {
@@ -84,7 +84,7 @@ public class MemcachedCache implements Cache {
 
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getByIdList(AbstractDB db, Class<T> type, Object... params) {
-		TableInfo tableInfo = DataBaseUtils.getTableInfo(type);
+		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		if (tableInfo.getPrimaryKeyColumns().length == params.length) {
 			T t = getById(type, params);
 			return t == null ? null : Arrays.asList(t);

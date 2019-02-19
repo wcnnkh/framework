@@ -7,6 +7,7 @@ import java.util.Map;
 import scw.common.Logger;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
+import scw.sql.orm.result.ResultSet;
 
 public class TransactionContextInfo {
 	private TransactionContextQuarantine quarantine;

@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import scw.sql.ConnectionFactory;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
+import scw.transaction.support.TransactionSynchronization;
+import scw.transaction.support.TransactionSynchronizationUitls;
 
 public class MultipleConnectionTransactionUtils {
 	private static final ThreadLocal<LinkedList<MultipleConnectionTransactionSynchronization>> LOCAL = new ThreadLocal<LinkedList<MultipleConnectionTransactionSynchronization>>();
@@ -44,6 +46,22 @@ public class MultipleConnectionTransactionUtils {
 		}
 
 		return mcts.getConnection(connectionFactory);
+	}
+	
+	public static void transactionSynchronization(TransactionSynchronization ts) throws TransactionException{
+		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
+		if (list == null) {
+			TransactionSynchronizationUitls.execute(ts);
+			return ;
+		}
+		
+		MultipleConnectionTransactionSynchronization mcts = list.getLast();
+		if(mcts == null){
+			TransactionSynchronizationUitls.execute(ts);
+			return ;
+		}
+		
+		mcts.transactionSynchronization(ts);
 	}
 
 	public static MultipleConnectionTransactionSynchronization getTransaction(

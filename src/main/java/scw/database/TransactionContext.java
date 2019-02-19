@@ -10,6 +10,7 @@ import scw.common.transaction.Transaction;
 import scw.common.utils.Assert;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
+import scw.sql.orm.result.ResultSet;
 
 /**
  * 数据库封装核心类，用于处理数据库事务

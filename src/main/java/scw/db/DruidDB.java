@@ -8,8 +8,8 @@ import scw.beans.annotaion.Destroy;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.PropertiesUtils;
 import scw.common.utils.StringUtils;
-import scw.db.sql.MysqlFormat;
-import scw.db.sql.SqlFormat;
+import scw.sql.orm.SqlFormat;
+import scw.sql.orm.mysql.MysqlFormat;
 
 import com.alibaba.druid.pool.DruidDataSource;
 

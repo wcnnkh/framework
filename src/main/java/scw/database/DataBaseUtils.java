@@ -5,44 +5,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
-import scw.beans.BeanFieldListen;
-import scw.beans.BeanUtils;
-import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
-import scw.common.utils.ClassUtils;
-import scw.common.utils.StringUtils;
 import scw.common.utils.XUtils;
-import scw.database.annoation.Table;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
+import scw.sql.orm.ORMUtils;
+import scw.sql.orm.result.DefaultResultSet;
 
 public final class DataBaseUtils {
 	private DataBaseUtils() {
 	};
 
-	private volatile static Map<String, TableInfo> tableMap = new HashMap<String, TableInfo>();
-
-	public static TableInfo getTableInfo(Class<?> clz) {
-		return getTableInfo(clz.getName());
-	}
-
-	private static TableInfo getTableInfo(String className) {
-		String name = ClassUtils.getProxyRealClassName(className);
-		TableInfo tableInfo = tableMap.get(name);
-		if (tableInfo == null) {
-			synchronized (tableMap) {
-				tableInfo = tableMap.get(name);
-				if (tableInfo == null) {
-					tableInfo = new TableInfo(ClassUtils.getClassInfo(name));
-					tableMap.put(name, tableInfo);
-				}
-			}
-		}
-		return tableInfo;
+	public static void registerCglibProxyTableBean(String pageName) {
+		ORMUtils.registerCglibProxyTableBean(pageName);
 	}
 
 	public static void iterator(ConnectionSource connectionSource, Sql sql, scw.common.Iterator<ResultSet> iterator) {
@@ -67,7 +44,7 @@ public final class DataBaseUtils {
 		}
 	}
 
-	public static scw.database.ResultSet select(ConnectionSource connectionSource, Sql sql) {
+	public static scw.sql.orm.result.ResultSet select(ConnectionSource connectionSource, Sql sql) {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Connection connection = null;
@@ -117,69 +94,5 @@ public final class DataBaseUtils {
 		}
 
 		return "%" + likeValue + "%";
-	}
-
-	public static void registerCglibProxyTableBean(String pageName) {
-		Logger.info(DataBaseUtils.class.getName(), "register proxy package:" + pageName);
-		for (Class<?> type : ClassUtils.getClasses(pageName)) {
-			Table table = type.getAnnotation(Table.class);
-			if (table == null) {
-				continue;
-			}
-
-			if (BeanFieldListen.class.isAssignableFrom(type)) {
-				continue;
-			}
-
-			BeanUtils.getFieldListenProxyClass(type);
-		}
-	}
-
-	/**
-	 * 将数据库值转化java类型
-	 * 
-	 * @param type
-	 * @param value
-	 * @return
-	 */
-	public static Object parse(Class<?> type, Object value) {
-		if (value == null) {
-			return value;
-		}
-
-		if (ClassUtils.isBooleanType(type)) {
-			if (value != null) {
-				if (value instanceof Number) {
-					return ((Number) value).doubleValue() == 1;
-				} else if (value instanceof String) {
-					return StringUtils.parseBoolean((String) value);
-				}
-			}
-		} else if (ClassUtils.isIntType(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).intValue();
-			}
-		} else if (ClassUtils.isLongType(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).longValue();
-			}
-		} else if (ClassUtils.isByteType(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).byteValue();
-			}
-		} else if (ClassUtils.isFloatType(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).floatValue();
-			}
-		} else if (ClassUtils.isDoubleType(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).doubleValue();
-			}
-		} else if (ClassUtils.isShortType(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).shortValue();
-			}
-		}
-		return value;
 	}
 }
