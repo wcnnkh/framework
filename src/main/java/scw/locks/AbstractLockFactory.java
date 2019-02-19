@@ -1,4 +1,4 @@
-package scw.utils.locks;
+package scw.locks;
 
 public abstract class AbstractLockFactory implements LockFactory {
 	private final int default_timeout;

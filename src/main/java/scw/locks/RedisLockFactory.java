@@ -1,4 +1,4 @@
-package scw.utils.locks;
+package scw.locks;
 
 import scw.common.utils.XUtils;
 import scw.redis.Redis;

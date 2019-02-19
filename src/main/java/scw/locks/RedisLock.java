@@ -1,4 +1,4 @@
-package scw.utils.locks;
+package scw.locks;
 
 import java.util.Collections;
 

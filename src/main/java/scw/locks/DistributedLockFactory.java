@@ -1,4 +1,4 @@
-package scw.utils.locks;
+package scw.locks;
 
 import scw.memcached.Memcached;
 import scw.redis.Redis;

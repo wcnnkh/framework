@@ -1,4 +1,4 @@
-package scw.utils.locks;
+package scw.locks;
 
 public interface LockFactory {
 	Lock getLock(String name);

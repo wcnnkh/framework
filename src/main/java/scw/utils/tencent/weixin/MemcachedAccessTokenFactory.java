@@ -1,7 +1,7 @@
 package scw.utils.tencent.weixin;
 
+import scw.locks.MemcachedLock;
 import scw.memcached.Memcached;
-import scw.utils.locks.MemcachedLock;
 import scw.utils.tencent.weixin.bean.AccessToken;
 import scw.utils.tencent.weixin.process.GetAccessToken;
 

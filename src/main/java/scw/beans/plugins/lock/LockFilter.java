@@ -9,8 +9,8 @@ import scw.beans.BeanFilter;
 import scw.beans.BeanFilterChain;
 import scw.common.utils.StringUtils;
 import scw.database.TransactionContext;
-import scw.utils.locks.Lock;
-import scw.utils.locks.LockFactory;
+import scw.locks.Lock;
+import scw.locks.LockFactory;
 
 /**
  * 实现方法级别的分布式锁
