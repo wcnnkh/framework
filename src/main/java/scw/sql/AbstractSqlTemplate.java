@@ -9,7 +9,7 @@ import java.util.List;
 
 import scw.sql.transaction.TransactionManager;
 
-public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
+public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFactory {
 
 	private Connection getProxyConnection() throws SQLException {
 		Connection connection = TransactionManager.getCurrentConnection(this);

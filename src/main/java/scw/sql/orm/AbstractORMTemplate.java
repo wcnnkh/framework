@@ -4,17 +4,17 @@ import java.sql.SQLException;
 import java.util.List;
 
 import scw.common.utils.StringUtils;
-import scw.sql.JdbcTemplate;
+import scw.sql.AbstractSqlTemplate;
 import scw.sql.ResultSetMapper;
 import scw.sql.Sql;
 import scw.sql.orm.result.DefaultResultSet;
 import scw.sql.orm.result.ResultSet;
 
-public abstract class JdbcORMTemplate extends JdbcTemplate implements ORMOperations {
+public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements ORMOperations {
 
 	private final SqlFormat sqlFormat;
 
-	public JdbcORMTemplate(SqlFormat sqlFormat) {
+	public AbstractORMTemplate(SqlFormat sqlFormat) {
 		this.sqlFormat = sqlFormat;
 	}
 
