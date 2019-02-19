@@ -9,9 +9,10 @@ import java.util.List;
 
 import scw.transaction.TransactionManager;
 
-public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFactory {
+public abstract class AbstractSqlTemplate implements SqlOperations,
+		ConnectionFactory {
 
-	private Connection getProxyConnection() throws SQLException {
+	protected Connection getProxyConnection() throws SQLException {
 		Connection connection = TransactionManager.getCurrentConnection(this);
 		if (connection == null) {
 			connection = getConnection();
@@ -53,7 +54,8 @@ public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFa
 		}
 	}
 
-	private void query(PreparedStatement statement, ResultSetCallback resultSetCallback) throws SQLException {
+	private void query(PreparedStatement statement,
+			ResultSetCallback resultSetCallback) throws SQLException {
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery();
@@ -65,7 +67,8 @@ public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFa
 		}
 	}
 
-	private void query(Sql sql, Connection connection, ResultSetCallback resultSetCallback) throws SQLException {
+	private void query(Sql sql, Connection connection,
+			ResultSetCallback resultSetCallback) throws SQLException {
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -77,7 +80,8 @@ public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFa
 		}
 	}
 
-	public void query(Sql sql, ResultSetCallback resultSetCallback) throws SqlException {
+	public void query(Sql sql, ResultSetCallback resultSetCallback)
+			throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getProxyConnection();
@@ -89,7 +93,8 @@ public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFa
 		}
 	}
 
-	private void query(PreparedStatement statement, RowCallback rowCallback) throws SQLException {
+	private void query(PreparedStatement statement, RowCallback rowCallback)
+			throws SQLException {
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery();
@@ -103,7 +108,8 @@ public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFa
 		}
 	}
 
-	private void query(Sql sql, Connection connection, RowCallback rowCallback) throws SQLException {
+	private void query(Sql sql, Connection connection, RowCallback rowCallback)
+			throws SQLException {
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -127,7 +133,8 @@ public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFa
 		}
 	}
 
-	private <T> T query(PreparedStatement statement, ResultSetMapper<T> resultSetMapper) throws SQLException {
+	private <T> T query(PreparedStatement statement,
+			ResultSetMapper<T> resultSetMapper) throws SQLException {
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery();
@@ -139,7 +146,8 @@ public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFa
 		}
 	}
 
-	private <T> T query(Sql sql, Connection connection, ResultSetMapper<T> resultSetMapper) throws SQLException {
+	private <T> T query(Sql sql, Connection connection,
+			ResultSetMapper<T> resultSetMapper) throws SQLException {
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -151,7 +159,8 @@ public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFa
 		}
 	}
 
-	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper) throws SqlException {
+	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper)
+			throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getProxyConnection();
@@ -163,7 +172,8 @@ public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFa
 		}
 	}
 
-	private <T> List<T> query(PreparedStatement statement, RowMapper<T> rowMapper) throws SQLException {
+	private <T> List<T> query(PreparedStatement statement,
+			RowMapper<T> rowMapper) throws SQLException {
 		ResultSet resultSet = null;
 		List<T> list;
 		T t;
@@ -186,7 +196,8 @@ public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFa
 		}
 	}
 
-	private <T> List<T> query(Sql sql, Connection connection, RowMapper<T> rowMapper) throws SQLException {
+	private <T> List<T> query(Sql sql, Connection connection,
+			RowMapper<T> rowMapper) throws SQLException {
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -198,7 +209,8 @@ public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFa
 		}
 	}
 
-	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper) throws SqlException {
+	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper)
+			throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getProxyConnection();
