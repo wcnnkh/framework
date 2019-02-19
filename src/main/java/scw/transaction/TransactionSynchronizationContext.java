@@ -65,6 +65,7 @@ public class TransactionSynchronizationContext extends AbstractTransaction
 
 		ConnectionTransaction csts;
 		if (cstsMap == null) {
+			cstsMap = new HashMap<ConnectionFactory, ConnectionTransaction>(4, 1);
 			csts = new ConnectionTransaction(connectionFactory, transactionDefinition, isActive());
 			cstsMap.put(connectionFactory, csts);
 		} else {

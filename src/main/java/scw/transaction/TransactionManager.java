@@ -35,7 +35,7 @@ public abstract class TransactionManager {
 		if (list == null) {
 			return null;
 		}
-
+		
 		TransactionSynchronizationContext mcts = list.getLast();
 		if (mcts == null) {
 			return null;

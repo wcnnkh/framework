@@ -28,7 +28,7 @@ public class ConnectionTransaction implements SavepointManager, TransactionSynch
 
 	public Connection getConnection() throws SQLException {
 		if (connection == null) {
-			Connection connection = SqlUtils.newProxyConnection(connectionFactory);
+			connection = SqlUtils.newProxyConnection(connectionFactory);
 			connection.setAutoCommit(!active);
 
 			if (transactionDefinition.isReadOnly()) {
