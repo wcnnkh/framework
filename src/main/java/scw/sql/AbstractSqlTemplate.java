@@ -7,13 +7,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import scw.transaction.TransactionManager;
+import scw.transaction.def.DefaultTransactionUtils;
 
 public abstract class AbstractSqlTemplate implements SqlOperations,
 		ConnectionFactory {
 
 	protected Connection getProxyConnection() throws SQLException {
-		Connection connection = TransactionManager.getCurrentConnection(this);
+		Connection connection = DefaultTransactionUtils.getCurrentConnection(this);
 		if (connection == null) {
 			connection = getConnection();
 		}

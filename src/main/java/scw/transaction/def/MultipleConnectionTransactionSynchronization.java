@@ -1,4 +1,4 @@
-package scw.transaction;
+package scw.transaction.def;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -7,17 +7,25 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.sql.ConnectionFactory;
+import scw.transaction.AbstractTransaction;
+import scw.transaction.TransactionDefinition;
+import scw.transaction.TransactionException;
+import scw.transaction.TransactionLifeCycle;
+import scw.transaction.TransactionLifeCycleCollection;
+import scw.transaction.TransactionSynchronization;
+import scw.transaction.TransactionSynchronizationCollection;
+import scw.transaction.TransactionSynchronizationLifeCycle;
 
-public class TransactionSynchronizationContext extends AbstractTransaction
+public class MultipleConnectionTransactionSynchronization extends AbstractTransaction
 		implements TransactionSynchronization {
 	private Map<ConnectionFactory, ConnectionTransaction> cstsMap;
 	private TransactionDefinition transactionDefinition;
 	private TransactionSynchronizationCollection tsc;
 	private TransactionLifeCycleCollection tlcc;
-	private TransactionSynchronizationContext parent;
+	private MultipleConnectionTransactionSynchronization parent;
 	private Object savepoint;
 
-	public TransactionSynchronizationContext(TransactionDefinition transactionDefinition, boolean active) {
+	public MultipleConnectionTransactionSynchronization(TransactionDefinition transactionDefinition, boolean active) {
 		super(active);
 		setNewTransaction(true);
 		this.transactionDefinition = transactionDefinition;
@@ -28,7 +36,7 @@ public class TransactionSynchronizationContext extends AbstractTransaction
 	 * 
 	 * @param mcts
 	 */
-	public TransactionSynchronizationContext(TransactionSynchronizationContext mcts) {
+	public MultipleConnectionTransactionSynchronization(MultipleConnectionTransactionSynchronization mcts) {
 		super(mcts.isActive());
 		setNewTransaction(false);
 		this.parent = mcts;

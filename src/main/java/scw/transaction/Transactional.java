@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Transactional {
+	public String transactionManager() default "";
 
 	public Propagation propagation() default Propagation.REQUIRED;
 
