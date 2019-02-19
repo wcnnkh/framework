@@ -1,4 +1,4 @@
-package scw.sql.transaction;
+package scw.transaction;
 
 import java.lang.reflect.Method;
 
@@ -38,7 +38,7 @@ public class TransactionBeanFilter implements BeanFilter {
 			}
 		}
 
-		MultipleConnectionTransactionSynchronization transaction = TransactionManager
+		TransactionSynchronizationContext transaction = TransactionManager
 				.getTransaction(new AnnoationTransactionDefinition(clzTx, methodTx));
 		Object rtn;
 		try {
@@ -53,7 +53,7 @@ public class TransactionBeanFilter implements BeanFilter {
 
 	private Object first(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
 			throws Throwable {
-		MultipleConnectionTransactionSynchronization mcts = TransactionManager
+		TransactionSynchronizationContext mcts = TransactionManager
 				.getTransaction(transactionDefinition);
 		Object v;
 		try {

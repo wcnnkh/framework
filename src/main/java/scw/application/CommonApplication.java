@@ -32,7 +32,7 @@ public class CommonApplication implements Application {
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
 			this.beanFactory.addFirstFilters(TransactionBeanFilter.class.getName());
-			this.beanFactory.addFirstFilters(scw.sql.transaction.TransactionBeanFilter.class.getName());
+			this.beanFactory.addFirstFilters(scw.transaction.TransactionBeanFilter.class.getName());
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}

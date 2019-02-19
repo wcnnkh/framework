@@ -1,4 +1,4 @@
-package scw.sql.transaction;
+package scw.transaction;
 
 public interface SavepointManager {
 

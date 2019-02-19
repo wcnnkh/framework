@@ -1,4 +1,4 @@
-package scw.sql.transaction;
+package scw.transaction;
 
 public class NotSupportTransactionException extends TransactionException {
 	private static final long serialVersionUID = 1L;

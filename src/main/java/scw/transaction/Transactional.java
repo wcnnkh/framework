@@ -1,4 +1,4 @@
-package scw.sql.transaction;
+package scw.transaction;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

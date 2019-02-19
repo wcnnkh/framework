@@ -1,4 +1,4 @@
-package scw.sql.transaction;
+package scw.transaction;
 
 public abstract class AbstractTransaction implements Transaction, TransactionSynchronization {
 

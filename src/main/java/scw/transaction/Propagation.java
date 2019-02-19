@@ -1,4 +1,4 @@
-package scw.sql.transaction;
+package scw.transaction;
 
 /**
  * 事务的传播方式

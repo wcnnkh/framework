@@ -1,4 +1,4 @@
-package scw.sql.transaction;
+package scw.transaction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import scw.sql.ConnectionFactory;
 
 public abstract class TransactionManager {
-	private static final ThreadLocal<LinkedList<MultipleConnectionTransactionSynchronization>> LOCAL = new ThreadLocal<LinkedList<MultipleConnectionTransactionSynchronization>>();
+	private static final ThreadLocal<LinkedList<TransactionSynchronizationContext>> LOCAL = new ThreadLocal<LinkedList<TransactionSynchronizationContext>>();
 
 	/**
 	 * 当前上下文是否存在事务
@@ -15,7 +15,7 @@ public abstract class TransactionManager {
 	 * @return
 	 */
 	public static boolean hasTransaction() {
-		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
+		LinkedList<TransactionSynchronizationContext> list = LOCAL.get();
 		if (list == null) {
 			return false;
 		}
@@ -31,12 +31,12 @@ public abstract class TransactionManager {
 	 * @throws SQLException
 	 */
 	public static Connection getCurrentConnection(ConnectionFactory connectionFactory) throws SQLException {
-		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
+		LinkedList<TransactionSynchronizationContext> list = LOCAL.get();
 		if (list == null) {
 			return null;
 		}
 
-		MultipleConnectionTransactionSynchronization mcts = list.getLast();
+		TransactionSynchronizationContext mcts = list.getLast();
 		if (mcts == null) {
 			return null;
 		}
@@ -45,13 +45,13 @@ public abstract class TransactionManager {
 	}
 
 	public static void transactionSynchronization(TransactionSynchronization ts) throws TransactionException {
-		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
+		LinkedList<TransactionSynchronizationContext> list = LOCAL.get();
 		if (list == null) {
 			execute(ts);
 			return;
 		}
 
-		MultipleConnectionTransactionSynchronization mcts = list.getLast();
+		TransactionSynchronizationContext mcts = list.getLast();
 		if (mcts == null) {
 			execute(ts);
 			return;
@@ -64,42 +64,42 @@ public abstract class TransactionManager {
 	 * 监听当前事务的生命周期，如果不存在事务则无效
 	 */
 	public static void transactionLifeCycle(TransactionLifeCycle tlc) {
-		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
+		LinkedList<TransactionSynchronizationContext> list = LOCAL.get();
 		if (list == null) {
 			return;
 		}
 
-		MultipleConnectionTransactionSynchronization mcts = list.getLast();
+		TransactionSynchronizationContext mcts = list.getLast();
 		if (mcts == null) {
 			return;
 		}
 
 		mcts.transactionLifeCycle(tlc);
 	}
-
-	public static MultipleConnectionTransactionSynchronization getTransaction(
+	
+	public static TransactionSynchronizationContext getTransaction(
 			TransactionDefinition transactionDefinition) {
-		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
-		MultipleConnectionTransactionSynchronization mcts = null;
+		LinkedList<TransactionSynchronizationContext> list = LOCAL.get();
+		TransactionSynchronizationContext mcts = null;
 		if (list == null) {
-			list = new LinkedList<MultipleConnectionTransactionSynchronization>();
+			list = new LinkedList<TransactionSynchronizationContext>();
 			LOCAL.set(list);
 		} else {
 			mcts = list.getLast();
 			if (mcts != null) {
-				mcts = new MultipleConnectionTransactionSynchronization(mcts);
+				mcts = new TransactionSynchronizationContext(mcts);
 			}
 		}
 
 		switch (transactionDefinition.getPropagation()) {
 		case REQUIRED:
 			if (mcts == null) {
-				mcts = new MultipleConnectionTransactionSynchronization(transactionDefinition, true);
+				mcts = new TransactionSynchronizationContext(transactionDefinition, true);
 			}
 			break;
 		case SUPPORTS:
 			if (mcts == null) {
-				mcts = new MultipleConnectionTransactionSynchronization(transactionDefinition, false);
+				mcts = new TransactionSynchronizationContext(transactionDefinition, false);
 			}
 			break;
 		case MANDATORY:
@@ -108,10 +108,10 @@ public abstract class TransactionManager {
 			}
 			break;
 		case REQUIRES_NEW:
-			mcts = new MultipleConnectionTransactionSynchronization(transactionDefinition, true);
+			mcts = new TransactionSynchronizationContext(transactionDefinition, true);
 			break;
 		case NOT_SUPPORTED:
-			mcts = new MultipleConnectionTransactionSynchronization(transactionDefinition, false);
+			mcts = new TransactionSynchronizationContext(transactionDefinition, false);
 			break;
 		case NEVER:
 			if (mcts != null && mcts.isActive()) {
@@ -122,7 +122,7 @@ public abstract class TransactionManager {
 			if (mcts != null && mcts.isActive()) {
 				mcts.createTempSavePoint();
 			} else if (mcts == null) {
-				mcts = new MultipleConnectionTransactionSynchronization(transactionDefinition, true);
+				mcts = new TransactionSynchronizationContext(transactionDefinition, true);
 			}
 			break;
 		}
@@ -130,13 +130,13 @@ public abstract class TransactionManager {
 		return mcts;
 	}
 
-	public static void process(MultipleConnectionTransactionSynchronization mcts) throws TransactionException {
-		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
+	public static void process(TransactionSynchronizationContext mcts) throws TransactionException {
+		LinkedList<TransactionSynchronizationContext> list = LOCAL.get();
 		if (list == null) {
 			throw new TransactionException("不存在事务");
 		}
 
-		MultipleConnectionTransactionSynchronization currentMcts = list.getLast();
+		TransactionSynchronizationContext currentMcts = list.getLast();
 		if (mcts != currentMcts) {
 			throw new TransactionException("事务需要顺序关闭，请先关闭子事务");
 		}
@@ -155,13 +155,13 @@ public abstract class TransactionManager {
 		}
 	}
 
-	public static void rollback(MultipleConnectionTransactionSynchronization mcts) throws TransactionException {
-		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
+	public static void rollback(TransactionSynchronizationContext mcts) throws TransactionException {
+		LinkedList<TransactionSynchronizationContext> list = LOCAL.get();
 		if (list == null) {
 			throw new TransactionException("不存在事务");
 		}
 
-		MultipleConnectionTransactionSynchronization currentMcts = list.getLast();
+		TransactionSynchronizationContext currentMcts = list.getLast();
 		if (mcts != currentMcts) {
 			throw new TransactionException("事务需要顺序关闭，请先关闭子事务");
 		}

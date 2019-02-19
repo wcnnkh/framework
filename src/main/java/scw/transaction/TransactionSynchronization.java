@@ -1,4 +1,4 @@
-package scw.sql.transaction;
+package scw.transaction;
 
 /**
  * 同步事务
