@@ -2,9 +2,9 @@ package scw.utils.id.db;
 
 import scw.db.DB;
 import scw.db.DBManager;
+import scw.redis.Redis;
 import scw.utils.id.IdGenerator;
 import scw.utils.id.RedisIdGenerator;
-import scw.utils.redis.Redis;
 
 public class RedisTableIdGenerator implements IdGenerator<Long> {
 	private final Redis redis;

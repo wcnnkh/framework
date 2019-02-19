@@ -7,7 +7,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory{
+import scw.sql.transaction.TransactionManager;
+
+public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory {
+
+	private Connection getProxyConnection() throws SQLException {
+		Connection connection = TransactionManager.getCurrentConnection(this);
+		if (connection == null) {
+			connection = getConnection();
+		}
+		return connection;
+	}
 
 	protected void close(Connection connection) throws SqlException {
 		if (connection != null) {
@@ -34,7 +44,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory{
 	public boolean execute(Sql sql) throws SqlException {
 		Connection connection = null;
 		try {
-			connection = getConnection();
+			connection = getProxyConnection();
 			return execute(sql, connection);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
@@ -70,7 +80,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory{
 	public void query(Sql sql, ResultSetCallback resultSetCallback) throws SqlException {
 		Connection connection = null;
 		try {
-			connection = getConnection();
+			connection = getProxyConnection();
 			query(sql, connection, resultSetCallback);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
@@ -108,7 +118,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory{
 	public void query(Sql sql, RowCallback rowCallback) throws SqlException {
 		Connection connection = null;
 		try {
-			connection = getConnection();
+			connection = getProxyConnection();
 			query(sql, connection, rowCallback);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
@@ -144,7 +154,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory{
 	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper) throws SqlException {
 		Connection connection = null;
 		try {
-			connection = getConnection();
+			connection = getProxyConnection();
 			return query(sql, connection, resultSetMapper);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
@@ -191,7 +201,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory{
 	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper) throws SqlException {
 		Connection connection = null;
 		try {
-			connection = getConnection();
+			connection = getProxyConnection();
 			return query(sql, connection, rowMapper);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
@@ -215,7 +225,7 @@ public abstract class JdbcTemplate implements SqlOperations, ConnectionFactory{
 	public int update(Sql sql) throws SqlException {
 		Connection connection = null;
 		try {
-			connection = getConnection();
+			connection = getProxyConnection();
 			return update(sql, connection);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);

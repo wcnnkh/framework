@@ -1,7 +1,7 @@
 package scw.utils.locks;
 
 import scw.common.utils.XUtils;
-import scw.utils.redis.Redis;
+import scw.redis.Redis;
 
 public final class RedisLockFactory extends AbstractLockFactory {
 	private final Redis redis;

@@ -1,6 +1,6 @@
 package scw.utils.id;
 
-import scw.utils.memcached.Memcached;
+import scw.memcached.Memcached;
 
 public final class MemcachedIdFactory implements IdFactory<Long> {
 	private final Memcached memcached;

@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import scw.common.utils.XTime;
 import scw.common.utils.XUtils;
-import scw.utils.memcached.Memcached;
+import scw.memcached.Memcached;
 
 public final class MemcachedXmlPhoneVerificationCode extends AbstractXmlPhoneVerificationCode {
 	private final Memcached memcached;

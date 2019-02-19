@@ -21,16 +21,16 @@ import scw.db.AbstractDB;
 import scw.db.DBUtils;
 import scw.db.OperationBean;
 import scw.db.storage.Storage;
+import scw.memcached.Memcached;
+import scw.redis.Redis;
 import scw.sql.Sql;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annoation.Table;
 import scw.sql.orm.result.Result;
-import scw.utils.memcached.Memcached;
 import scw.utils.queue.MemcachedQueue;
 import scw.utils.queue.Queue;
 import scw.utils.queue.RedisQueue;
-import scw.utils.redis.Redis;
 
 public final class CacheStorage implements Storage {
 	private final Map<String, CacheConfig> cacheConfigMap = new HashMap<String, CacheConfig>();

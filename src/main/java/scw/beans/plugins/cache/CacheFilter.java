@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import net.sf.cglib.proxy.MethodProxy;
 import scw.beans.BeanFilter;
 import scw.beans.BeanFilterChain;
-import scw.utils.memcached.Memcached;
-import scw.utils.redis.Redis;
+import scw.memcached.Memcached;
+import scw.redis.Redis;
 
 public class CacheFilter implements BeanFilter {
 	private final BeanFilter beanFilter;

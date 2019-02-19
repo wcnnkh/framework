@@ -3,9 +3,9 @@ package scw.utils.id.db;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.db.DB;
+import scw.memcached.Memcached;
 import scw.utils.locks.Lock;
 import scw.utils.locks.MemcachedLock;
-import scw.utils.memcached.Memcached;
 
 public class MemcachedTableIdFactory extends AbstractTableIdFactory {
 	private final Memcached memcached;

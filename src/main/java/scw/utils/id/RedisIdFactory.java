@@ -1,6 +1,6 @@
 package scw.utils.id;
 
-import scw.utils.redis.Redis;
+import scw.redis.Redis;
 
 public final class RedisIdFactory implements IdFactory<Long> {
 	private final Redis redis;

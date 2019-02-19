@@ -3,8 +3,8 @@ package scw.utils.id;
 import scw.common.utils.Assert;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
-import scw.utils.memcached.Memcached;
-import scw.utils.redis.Redis;
+import scw.memcached.Memcached;
+import scw.redis.Redis;
 
 /**
  * 一个纯数字的流水号生成器,最后10位是一个定长的流水号，除去最后10位，前面剩下的是时间格式化后的结果

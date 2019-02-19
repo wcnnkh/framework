@@ -9,10 +9,10 @@ import scw.common.Logger;
 import scw.common.transaction.AbstractTransaction;
 import scw.db.OperationBean;
 import scw.db.storage.CacheUtils;
+import scw.memcached.CAS;
+import scw.memcached.Memcached;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
-import scw.utils.memcached.CAS;
-import scw.utils.memcached.Memcached;
 
 public class MemcachedFullCacheTransaction extends AbstractTransaction {
 	private final OperationBean operationBean;

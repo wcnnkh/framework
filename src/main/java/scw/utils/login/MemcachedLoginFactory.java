@@ -2,7 +2,7 @@ package scw.utils.login;
 
 import scw.common.utils.StringUtils;
 import scw.common.utils.XUtils;
-import scw.utils.memcached.Memcached;
+import scw.memcached.Memcached;
 
 public class MemcachedLoginFactory implements LoginFactory {
 	private final Memcached memcached;

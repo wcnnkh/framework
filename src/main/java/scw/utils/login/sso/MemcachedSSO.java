@@ -1,9 +1,9 @@
 package scw.utils.login.sso;
 
 import scw.common.utils.XUtils;
+import scw.memcached.Memcached;
 import scw.utils.login.MemcachedLoginFactory;
 import scw.utils.login.Session;
-import scw.utils.memcached.Memcached;
 
 public final class MemcachedSSO extends MemcachedLoginFactory implements SSO {
 

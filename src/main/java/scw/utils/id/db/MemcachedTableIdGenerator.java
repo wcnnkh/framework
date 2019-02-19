@@ -2,9 +2,9 @@ package scw.utils.id.db;
 
 import scw.db.DB;
 import scw.db.DBManager;
+import scw.memcached.Memcached;
 import scw.utils.id.IdGenerator;
 import scw.utils.id.MemcachedIdGenerator;
-import scw.utils.memcached.Memcached;
 
 public class MemcachedTableIdGenerator implements IdGenerator<Long> {
 	private final Memcached memcached;

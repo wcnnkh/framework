@@ -8,9 +8,9 @@ import scw.common.Logger;
 import scw.common.transaction.AbstractTransaction;
 import scw.db.OperationBean;
 import scw.db.storage.CacheUtils;
+import scw.memcached.Memcached;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
-import scw.utils.memcached.Memcached;
 
 public class MemcachedHotspotCacheTransaction extends AbstractTransaction{
 	private final Memcached memcached;

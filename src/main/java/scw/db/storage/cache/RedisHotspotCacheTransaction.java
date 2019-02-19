@@ -9,9 +9,9 @@ import scw.common.Logger;
 import scw.common.transaction.AbstractTransaction;
 import scw.db.OperationBean;
 import scw.db.storage.CacheUtils;
+import scw.redis.Redis;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
-import scw.utils.redis.Redis;
 
 public class RedisHotspotCacheTransaction extends AbstractTransaction {
 	private static final String EX = "EX";

@@ -1,8 +1,8 @@
 package scw.utils.locks;
 
 import scw.common.utils.XUtils;
-import scw.utils.memcached.Memcached;
-import scw.utils.redis.Redis;
+import scw.memcached.Memcached;
+import scw.redis.Redis;
 
 public final class DistributedLock extends AbstractLock {
 	private Lock lock;

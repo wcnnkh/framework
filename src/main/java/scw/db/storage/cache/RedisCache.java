@@ -11,9 +11,9 @@ import scw.db.AbstractDB;
 import scw.db.OperationBean;
 import scw.db.OperationType;
 import scw.db.storage.CacheUtils;
+import scw.redis.Redis;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
-import scw.utils.redis.Redis;
 
 public class RedisCache implements Cache {
 	private final Redis redis;

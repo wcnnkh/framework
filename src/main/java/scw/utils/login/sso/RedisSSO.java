@@ -1,9 +1,9 @@
 package scw.utils.login.sso;
 
 import scw.common.utils.XUtils;
+import scw.redis.Redis;
 import scw.utils.login.RedisLoginFactory;
 import scw.utils.login.Session;
-import scw.utils.redis.Redis;
 
 public final class RedisSSO extends RedisLoginFactory implements SSO {
 	public RedisSSO(Redis redis, String prefix, int exp) {

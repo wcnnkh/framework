@@ -30,5 +30,4 @@ public interface ORMOperations {
 	boolean saveOrUpdate(Object bean);
 
 	boolean saveOrUpdate(Object bean, String tableName);
-
 }

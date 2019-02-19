@@ -1,6 +1,5 @@
 package scw.sql.orm;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -11,7 +10,7 @@ import scw.sql.Sql;
 import scw.sql.orm.result.DefaultResultSet;
 import scw.sql.orm.result.ResultSet;
 
-public class JdbcORMTemplate extends JdbcTemplate implements ORMOperations {
+public abstract class JdbcORMTemplate extends JdbcTemplate implements ORMOperations {
 
 	private final SqlFormat sqlFormat;
 
@@ -21,11 +20,6 @@ public class JdbcORMTemplate extends JdbcTemplate implements ORMOperations {
 
 	public SqlFormat getSqlFormat() {
 		return sqlFormat;
-	}
-
-	public Connection getConnection() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public <T> T getById(Class<T> type, Object... params) {
@@ -162,5 +156,4 @@ public class JdbcORMTemplate extends JdbcTemplate implements ORMOperations {
 	public boolean saveOrUpdate(Object bean) {
 		return saveOrUpdate(bean, null);
 	}
-
 }
