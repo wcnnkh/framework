@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -33,6 +34,8 @@ import java.util.Set;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.MultiValueMap;
+import scw.common.exception.AlreadyExistsException;
+import scw.common.exception.NotFoundException;
 
 public abstract class CollectionUtils {
 	public static final Object[] EMPTY_ARRAY = new Object[0];
@@ -81,6 +84,58 @@ public abstract class CollectionUtils {
 			}
 		}
 		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <K, V> Map<K, V> listToMap(String keyFieldName, Iterable<V> list) {
+		if (list == null) {
+			return Collections.EMPTY_MAP;
+		}
+
+		ClassInfo classInfo = null;
+		Map<K, V> map = null;
+		for (V v : list) {
+			if (v == null) {
+				continue;
+			}
+
+			if (map == null) {
+				map = new HashMap<K, V>();
+			}
+
+			if (classInfo == null) {
+				classInfo = ClassUtils.getClassInfo(v.getClass());
+			}
+
+			FieldInfo fieldInfo = classInfo.getFieldInfo(keyFieldName);
+			if (fieldInfo == null) {
+				throw new NotFoundException("list转map时无法在实体中找到此字段：" + keyFieldName);
+			}
+
+			K fv = null;
+			try {
+				fv = (K) fieldInfo.forceGet(v);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+
+			if (fv == null) {
+				throw new NullPointerException("key不能为空[" + keyFieldName + "]");
+			}
+
+			if (map.containsKey(fv)) {
+				throw new AlreadyExistsException("list转map时发现已经存在相同的key[" + fv + "], fieldName=" + keyFieldName);
+			}
+
+			map.put(fv, v);
+		}
+
+		if (map == null) {
+			return Collections.EMPTY_MAP;
+		}
+		return map;
 	}
 
 	/**

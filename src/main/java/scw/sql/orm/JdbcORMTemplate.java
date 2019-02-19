@@ -6,7 +6,10 @@ import java.util.List;
 
 import scw.common.utils.StringUtils;
 import scw.sql.JdbcTemplate;
+import scw.sql.ResultSetMapper;
 import scw.sql.Sql;
+import scw.sql.orm.result.DefaultResultSet;
+import scw.sql.orm.result.ResultSet;
 
 public class JdbcORMTemplate extends JdbcTemplate implements ORMOperations {
 
@@ -34,13 +37,55 @@ public class JdbcORMTemplate extends JdbcTemplate implements ORMOperations {
 	}
 
 	public <T> T getById(String tableName, Class<T> type, Object... params) {
-		// TODO Auto-generated method stub
-		return null;
+		if (type == null) {
+			throw new NullPointerException("type is null");
+		}
+
+		TableInfo tableInfo = ORMUtils.getTableInfo(type);
+		if (tableInfo == null) {
+			throw new NullPointerException("tableInfo is null");
+		}
+
+		if (tableInfo.getPrimaryKeyColumns().length == 0) {
+			throw new NullPointerException("not found primary key");
+		}
+
+		if (tableInfo.getPrimaryKeyColumns().length != params.length) {
+			throw new NullPointerException("params length not equals primary key lenght");
+		}
+
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		Sql sql = getSqlFormat().toSelectByIdSql(tableInfo, tName, params);
+		ResultSet resultSet = select(sql);
+		return resultSet.getFirst().get(type, tName);
 	}
 
 	public <T> List<T> getByIdList(String tableName, Class<T> type, Object... params) {
-		// TODO Auto-generated method stub
-		return null;
+		if (type == null) {
+			throw new NullPointerException("type is null");
+		}
+
+		TableInfo tableInfo = ORMUtils.getTableInfo(type);
+		if (tableInfo == null) {
+			throw new NullPointerException("tableInfo is null");
+		}
+
+		if (params.length > tableInfo.getPrimaryKeyColumns().length) {
+			throw new NullPointerException("params length  greater than primary key lenght");
+		}
+
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		ResultSet resultSet = select(getSqlFormat().toSelectByIdSql(tableInfo, tName, params));
+		return resultSet.getList(type, tName);
+	}
+
+	public ResultSet select(Sql sql) {
+		return query(sql, new ResultSetMapper<ResultSet>() {
+
+			public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
+				return new DefaultResultSet(resultSet);
+			}
+		});
 	}
 
 	public boolean save(Object bean, String tableName) {

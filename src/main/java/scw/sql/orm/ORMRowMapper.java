@@ -1,24 +1,21 @@
 package scw.sql.orm;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
 import scw.sql.ResultSetMapper;
+import scw.sql.orm.result.DefaultResultSet;
 
 public class ORMRowMapper<T> implements ResultSetMapper<List<T>> {
-	private TableInfo tableInfo;
+	private final Class<T> type;
 
-	public ORMRowMapper(Class<T> type, String tableName) {
-		this.tableInfo = ORMUtils.getTableInfo(type);
+	public ORMRowMapper(Class<T> type) {
+		this.type = type;
 	}
 
 	public List<T> mapper(ResultSet resultSet) throws SQLException {
-		ResultSetMetaData metaData = resultSet.getMetaData();
-		for (int i = 1; i < metaData.getColumnCount(); i++) {
-			
-		}
-		return null;
+		DefaultResultSet rs = new DefaultResultSet(resultSet);
+		return rs.getList(type);
 	}
 }
