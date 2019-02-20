@@ -12,6 +12,7 @@ import scw.common.transaction.Transaction;
 import scw.common.transaction.TransactionCollection;
 import scw.common.utils.CollectionUtils;
 import scw.db.TransactionSql;
+import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 
 /**
@@ -74,7 +75,7 @@ public class TransactionContextQuarantine {
 		}
 	}
 
-	public void addSql(ConnectionSource connectionSource, Sql sql) {
+	public void addSql(ConnectionFactory connectionSource, Sql sql) {
 		if (sql == null) {
 			return;
 		}
@@ -86,7 +87,7 @@ public class TransactionContextQuarantine {
 		sqlList.add(new TransactionSql(connectionSource, sql));
 	}
 
-	public void addSql(ConnectionSource connectionSource, Collection<Sql> sqls) {
+	public void addSql(ConnectionFactory connectionSource, Collection<Sql> sqls) {
 		if (CollectionUtils.isEmpty(sqls)) {
 			return;
 		}
@@ -145,7 +146,7 @@ public class TransactionContextQuarantine {
 
 		if (sqlList != null) {
 			Iterator<TransactionSql> iterator = sqlList.iterator();
-			HashMap<ConnectionSource, SQLTransaction> dbSqlMap = new HashMap<ConnectionSource, SQLTransaction>(2, 1);
+			HashMap<ConnectionFactory, SQLTransaction> dbSqlMap = new HashMap<ConnectionFactory, SQLTransaction>(2, 1);
 			while (iterator.hasNext()) {
 				TransactionSql transactionSql = iterator.next();
 				SQLTransaction sqlTransaction = dbSqlMap.get(transactionSql.getConnectionSource());
@@ -168,7 +169,7 @@ public class TransactionContextQuarantine {
 				transactionCollection = new TransactionCollection();
 			}
 
-			for (Entry<ConnectionSource, SQLTransaction> entry : dbSqlMap.entrySet()) {
+			for (Entry<ConnectionFactory, SQLTransaction> entry : dbSqlMap.entrySet()) {
 				transactionCollection.add(entry.getValue());
 			}
 		}

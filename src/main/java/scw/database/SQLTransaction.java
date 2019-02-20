@@ -10,16 +10,17 @@ import java.util.Map.Entry;
 import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.exception.TransactionProcessException;
 import scw.common.utils.XUtils;
+import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
 
 public final class SQLTransaction extends AbstractTransaction {
 	private Map<String, Sql> sqlMap = new HashMap<String, Sql>(4, 1);
 	private Connection connection;
-	private ConnectionSource connectionSource;
+	private ConnectionFactory connectionSource;
 	private PreparedStatement[] preparedStatements;
 
-	public SQLTransaction(ConnectionSource connectionSource) {
+	public SQLTransaction(ConnectionFactory connectionSource) {
 		this.connectionSource = connectionSource;
 	}
 

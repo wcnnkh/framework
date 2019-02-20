@@ -16,11 +16,11 @@ import scw.common.Pagination;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
-import scw.database.ConnectionSource;
 import scw.database.DataBaseUtils;
 import scw.database.TransactionContext;
 import scw.db.sql.MysqlSelect;
 import scw.db.sql.Select;
+import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
@@ -33,7 +33,7 @@ import scw.sql.orm.result.DefaultResult;
 import scw.sql.orm.result.Result;
 import scw.sql.orm.result.ResultSet;
 
-public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
+public abstract class AbstractDB implements ConnectionFactory, AutoCloseable {
 	{
 		Logger.info("Init DB for className:" + this.getClass().getName());
 	}

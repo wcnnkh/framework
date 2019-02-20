@@ -8,6 +8,7 @@ import scw.common.Logger;
 import scw.common.transaction.AbstractTransaction;
 import scw.common.transaction.Transaction;
 import scw.common.utils.Assert;
+import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
 import scw.sql.orm.result.ResultSet;
@@ -110,7 +111,7 @@ public final class TransactionContext {
 		Logger.debug(TransactionContext.class.getName(), SqlUtils.getSqlId(sql));
 	}
 
-	private static void forceExecute(ConnectionSource connectionSource, Collection<Sql> sqls, boolean debug) {
+	private static void forceExecute(ConnectionFactory connectionSource, Collection<Sql> sqls, boolean debug) {
 		SQLTransaction sqlTransaction = new SQLTransaction(connectionSource);
 		Iterator<Sql> iterator = sqls.iterator();
 		while (iterator.hasNext()) {
@@ -124,7 +125,7 @@ public final class TransactionContext {
 		AbstractTransaction.transaction(sqlTransaction);
 	}
 
-	public static void execute(ConnectionSource connectionSource, Collection<Sql> sqls) {
+	public static void execute(ConnectionFactory connectionSource, Collection<Sql> sqls) {
 		Assert.notNull(connectionSource);
 		Assert.notNull(sqls);
 
@@ -145,7 +146,7 @@ public final class TransactionContext {
 		}
 	}
 
-	public static void execute(ConnectionSource connectionSource, Sql... sqls) {
+	public static void execute(ConnectionFactory connectionSource, Sql... sqls) {
 		execute(connectionSource, Arrays.asList(sqls));
 	}
 
@@ -154,7 +155,7 @@ public final class TransactionContext {
 	 * @param sql
 	 * @return ResultSet不可能为空
 	 */
-	public static ResultSet select(ConnectionSource connectionSource, Sql sql) {
+	public static ResultSet select(ConnectionFactory connectionSource, Sql sql) {
 		Assert.notNull(connectionSource);
 		Assert.notNull(sql);
 

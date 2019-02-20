@@ -11,9 +11,9 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import scw.common.Iterator;
-import scw.database.ConnectionSource;
 import scw.database.DataBaseUtils;
 import scw.db.AbstractDB;
+import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 
 public class JxlExport {
@@ -116,7 +116,7 @@ public class JxlExport {
 	}
 	
 	
-	public static void sqlResultSetToExcel(String title[], ConnectionSource connectionSource, List<Sql> sqlList, OutputStream os, SqlExportRow exportRow)
+	public static void sqlResultSetToExcel(String title[], ConnectionFactory connectionSource, List<Sql> sqlList, OutputStream os, SqlExportRow exportRow)
 			throws Exception {
 		// 创建Excel工作薄
 		WritableWorkbook wwb = Workbook.createWorkbook(os);

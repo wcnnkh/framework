@@ -9,6 +9,7 @@ import java.util.Iterator;
 
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.XUtils;
+import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
 import scw.sql.orm.ORMUtils;
@@ -22,7 +23,7 @@ public final class DataBaseUtils {
 		ORMUtils.registerCglibProxyTableBean(pageName);
 	}
 
-	public static void iterator(ConnectionSource connectionSource, Sql sql, scw.common.Iterator<ResultSet> iterator) {
+	public static void iterator(ConnectionFactory connectionSource, Sql sql, scw.common.Iterator<ResultSet> iterator) {
 		if (sql == null || connectionSource == null || iterator == null) {
 			return;
 		}
@@ -44,7 +45,7 @@ public final class DataBaseUtils {
 		}
 	}
 
-	public static scw.sql.orm.result.ResultSet select(ConnectionSource connectionSource, Sql sql) {
+	public static scw.sql.orm.result.ResultSet select(ConnectionFactory connectionSource, Sql sql) {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Connection connection = null;
@@ -60,7 +61,7 @@ public final class DataBaseUtils {
 		}
 	}
 
-	public static void execute(ConnectionSource connectionPool, Collection<Sql> sqls) {
+	public static void execute(ConnectionFactory connectionPool, Collection<Sql> sqls) {
 		if (sqls == null || connectionPool == null) {
 			throw new NullPointerException();
 		}

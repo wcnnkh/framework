@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import net.sf.cglib.proxy.MethodProxy;
 import scw.beans.BeanFilter;
 import scw.beans.BeanFilterChain;
-import scw.database.ConnectionSource;
 import scw.database.TransactionContext;
 import scw.database.annoation.SelectCache;
 import scw.database.annoation.Transaction;
@@ -20,10 +19,6 @@ public class TransactionBeanFilter implements BeanFilter {
 
 	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
 			throws Throwable {
-		if (obj instanceof ConnectionSource) {// 数据库连接获取类，不用加上事务
-			return beanFilterChain.doFilter(obj, method, args, proxy);
-		}
-		
 		TransactionContext.begin();
 		Transaction clzTransaction = method.getDeclaringClass().getAnnotation(Transaction.class);
 		Transaction methodTransaction = method.getAnnotation(Transaction.class);

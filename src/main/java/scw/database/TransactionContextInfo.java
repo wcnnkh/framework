@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import scw.common.Logger;
+import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
 import scw.sql.orm.result.ResultSet;
@@ -13,7 +14,7 @@ public class TransactionContextInfo {
 	private TransactionContextQuarantine quarantine;
 	private LinkedList<TransactionContextQuarantine> quarantineList = new LinkedList<TransactionContextQuarantine>();// 事务隔离
 	private int index = 0;// 开始标记
-	private Map<ConnectionSource, Map<String, ResultSet>> cacheMap;// 查询缓存
+	private Map<ConnectionFactory, Map<String, ResultSet>> cacheMap;// 查询缓存
 
 	public TransactionContextInfo(ContextConfig config) {
 		quarantine = new TransactionContextQuarantine(config);
@@ -23,11 +24,11 @@ public class TransactionContextInfo {
 		return quarantineList.getLast();
 	}
 
-	public ResultSet select(ConnectionSource connectionSource, Sql sql) {
+	public ResultSet select(ConnectionFactory connectionSource, Sql sql) {
 		ResultSet resultSet;
 		String id = SqlUtils.getSqlId(sql);
 		if (cacheMap == null) {
-			cacheMap = new HashMap<ConnectionSource, Map<String, ResultSet>>(2, 1);
+			cacheMap = new HashMap<ConnectionFactory, Map<String, ResultSet>>(2, 1);
 			resultSet = realSelect(connectionSource, sql);
 			Map<String, ResultSet> map = new HashMap<String, ResultSet>();
 			map.put(id, resultSet);
@@ -50,7 +51,7 @@ public class TransactionContextInfo {
 		return resultSet;
 	}
 
-	private ResultSet realSelect(ConnectionSource connectionSource, Sql sql) {
+	private ResultSet realSelect(ConnectionFactory connectionSource, Sql sql) {
 		if (getTransactionContextQuarantine().getConfig().isDebug()) {
 			Logger.debug(this.getClass().getName(), SqlUtils.getSqlId(sql));
 		}
