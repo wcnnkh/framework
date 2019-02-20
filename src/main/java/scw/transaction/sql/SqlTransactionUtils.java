@@ -11,6 +11,11 @@ import scw.transaction.TransactionException;
 import scw.transaction.support.TransactionLifeCycle;
 import scw.transaction.support.TransactionSynchronization;
 
+/**
+ * 这是默认的事务管理器
+ * @author shuchaowen
+ *
+ */
 public abstract class SqlTransactionUtils {
 	private static final ThreadLocal<LinkedList<MultipleConnectionTransactionSynchronization>> LOCAL = new ThreadLocal<LinkedList<MultipleConnectionTransactionSynchronization>>();
 

@@ -5,8 +5,7 @@ import scw.redis.Redis;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.cache.AbstractORMCacheTemplate;
 import scw.sql.orm.cache.Cache;
-import scw.sql.orm.cache.MemcachedCache;
-import scw.sql.orm.cache.RedisCache;
+import scw.sql.orm.cache.TransactionCache;
 
 public abstract class JdbcTemplate extends AbstractORMCacheTemplate {
  
@@ -21,7 +20,7 @@ public abstract class JdbcTemplate extends AbstractORMCacheTemplate {
 	 *            缓存过期时间(秒)
 	 */
 	public JdbcTemplate(SqlFormat sqlFormat, Memcached memcached, int exp) {
-		this(sqlFormat, new MemcachedCache(memcached, exp));
+		this(sqlFormat, new TransactionCache(memcached, exp));
 	}
 
 	/**
@@ -31,7 +30,7 @@ public abstract class JdbcTemplate extends AbstractORMCacheTemplate {
 	 *            缓存过期时间(秒)
 	 */
 	public JdbcTemplate(SqlFormat sqlFormat, Redis redis, int exp) {
-		this(sqlFormat, new RedisCache(redis, exp));
+		this(sqlFormat, new TransactionCache(redis, exp));
 	}
 
 	public JdbcTemplate(SqlFormat sqlFormat, Cache cache) {
