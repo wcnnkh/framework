@@ -33,7 +33,7 @@ import scw.sql.orm.result.DefaultResult;
 import scw.sql.orm.result.Result;
 import scw.sql.orm.result.ResultSet;
 
-public abstract class AbstractDB implements ConnectionFactory, AutoCloseable {
+public abstract class AbstractDB implements ConnectionFactory, AutoCloseable{
 	{
 		Logger.info("Init DB for className:" + this.getClass().getName());
 	}
