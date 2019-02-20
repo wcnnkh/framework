@@ -10,11 +10,11 @@ import scw.sql.ConnectionFactory;
 import scw.transaction.AbstractTransaction;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
-import scw.transaction.TransactionLifeCycle;
-import scw.transaction.TransactionLifeCycleCollection;
-import scw.transaction.TransactionSynchronization;
-import scw.transaction.TransactionSynchronizationCollection;
-import scw.transaction.TransactionSynchronizationLifeCycle;
+import scw.transaction.support.TransactionLifeCycle;
+import scw.transaction.support.TransactionLifeCycleCollection;
+import scw.transaction.support.TransactionSynchronization;
+import scw.transaction.support.TransactionSynchronizationCollection;
+import scw.transaction.support.TransactionSynchronizationLifeCycle;
 
 public class MultipleConnectionTransactionSynchronization extends AbstractTransaction
 		implements TransactionSynchronization {

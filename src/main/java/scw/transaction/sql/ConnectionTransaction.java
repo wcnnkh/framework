@@ -11,7 +11,7 @@ import scw.transaction.NotSupportTransactionException;
 import scw.transaction.SavepointManager;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
-import scw.transaction.TransactionSynchronization;
+import scw.transaction.support.TransactionSynchronization;
 
 public class ConnectionTransaction implements SavepointManager,
 		TransactionSynchronization {

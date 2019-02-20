@@ -1,4 +1,6 @@
-package scw.transaction;
+package scw.transaction.support;
+
+import scw.transaction.TransactionException;
 
 /**
  * 同步事务

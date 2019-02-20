@@ -1,4 +1,4 @@
-package scw.transaction;
+package scw.transaction.support;
 
 public class DefaultTransactionLifeCycle implements TransactionLifeCycle {
 

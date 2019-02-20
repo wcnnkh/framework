@@ -7,8 +7,8 @@ import java.util.LinkedList;
 import scw.sql.ConnectionFactory;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
-import scw.transaction.TransactionLifeCycle;
-import scw.transaction.TransactionSynchronization;
+import scw.transaction.support.TransactionLifeCycle;
+import scw.transaction.support.TransactionSynchronization;
 
 public abstract class SqlTransactionUtils {
 	private static final ThreadLocal<LinkedList<MultipleConnectionTransactionSynchronization>> LOCAL = new ThreadLocal<LinkedList<MultipleConnectionTransactionSynchronization>>();

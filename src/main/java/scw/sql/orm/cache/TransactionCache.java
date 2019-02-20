@@ -2,8 +2,8 @@ package scw.sql.orm.cache;
 
 import scw.memcached.Memcached;
 import scw.redis.Redis;
-import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.sql.SqlTransactionUtils;
+import scw.transaction.support.DefaultTransactionLifeCycle;
 
 public class TransactionCache implements Cache {
 	private final Cache cache;

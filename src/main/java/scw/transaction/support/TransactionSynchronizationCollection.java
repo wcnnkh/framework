@@ -1,8 +1,10 @@
-package scw.transaction;
+package scw.transaction.support;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import scw.transaction.TransactionException;
 
 public final class TransactionSynchronizationCollection extends LinkedList<TransactionSynchronization>
 		implements TransactionSynchronization {

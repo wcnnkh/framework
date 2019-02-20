@@ -1,5 +1,7 @@
 package scw.transaction;
 
+import scw.transaction.support.TransactionSynchronization;
+
 public abstract class AbstractTransaction implements Transaction, TransactionSynchronization {
 
 	private boolean active;

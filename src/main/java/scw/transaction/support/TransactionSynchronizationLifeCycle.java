@@ -1,4 +1,6 @@
-package scw.transaction;
+package scw.transaction.support;
+
+import scw.transaction.TransactionException;
 
 public class TransactionSynchronizationLifeCycle implements TransactionSynchronization {
 	private final TransactionLifeCycle transactionLifeCycle;
