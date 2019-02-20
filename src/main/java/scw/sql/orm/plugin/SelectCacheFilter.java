@@ -10,7 +10,7 @@ public class SelectCacheFilter implements BeanFilter {
 	private final boolean enable;
 
 	public SelectCacheFilter() {
-		this(false);
+		this(true);
 	}
 
 	public SelectCacheFilter(boolean enable) {
@@ -34,12 +34,13 @@ public class SelectCacheFilter implements BeanFilter {
 			b = m.value();
 		}
 
-		SelectCacheUtils.setEnable(b);
+		SelectCacheUtils.begin(b);
 		try {
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		} finally {
-			SelectCacheUtils.clear();
+			SelectCacheUtils.end();
 		}
+
 	}
 
 	public Object def(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
@@ -48,12 +49,11 @@ public class SelectCacheFilter implements BeanFilter {
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		}
 
-		SelectCacheUtils.setEnable(enable);
+		SelectCacheUtils.begin(enable);
 		try {
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		} finally {
-			SelectCacheUtils.clear();
+			SelectCacheUtils.end();
 		}
-
 	}
 }

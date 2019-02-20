@@ -2,6 +2,7 @@ package scw.sql.orm.plugin;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import scw.sql.ResultSetMapper;
@@ -12,15 +13,45 @@ import scw.sql.orm.result.ResultSet;
 
 public abstract class SelectCacheUtils {
 	private static final ThreadLocal<Map<SqlOperations, SelectCacheManager>> LOCAL = new ThreadLocal<Map<SqlOperations, SelectCacheManager>>();
-	private static final ThreadLocal<Boolean> TAG_LOCAL = new ThreadLocal<Boolean>();
+	private static final ThreadLocal<LinkedList<Boolean>> TAG_LOCAL = new ThreadLocal<LinkedList<Boolean>>();
 
 	public static boolean isEnable() {
-		Boolean b = TAG_LOCAL.get();
+		LinkedList<Boolean> list = TAG_LOCAL.get();
+		if (list == null) {
+			return false;
+		}
+
+		Boolean b = list.getLast();
 		return b == null ? false : b;
 	}
 
+	protected static void begin(boolean enable) {
+		LinkedList<Boolean> list = TAG_LOCAL.get();
+		if (list == null) {
+			list = new LinkedList<Boolean>();
+			TAG_LOCAL.set(list);
+		}
+
+		list.add(enable);
+	}
+
+	protected static void end() {
+		LinkedList<Boolean> list = TAG_LOCAL.get();
+		if (list != null) {
+			if (list.size() == 1) {
+				TAG_LOCAL.remove();
+				LOCAL.remove();
+			}
+		}
+	}
+
 	public static void setEnable(boolean enable) {
-		TAG_LOCAL.set(enable);
+		LinkedList<Boolean> list = TAG_LOCAL.get();
+		if (list == null || list.isEmpty()) {
+			return;
+		}
+
+		list.set(list.size() - 1, enable);
 	}
 
 	public static ResultSet select(SqlOperations sqlOperations, Sql sql) {
@@ -48,10 +79,5 @@ public abstract class SelectCacheUtils {
 				}
 			});
 		}
-	}
-
-	public static void clear() {
-		LOCAL.remove();
-
 	}
 }
