@@ -6,8 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import scw.transaction.def.ConnectionProxy;
-import scw.transaction.def.UnableToCloseConnectionProxyHandler;
+import scw.transaction.sql.ConnectionProxy;
+import scw.transaction.sql.UnableToCloseConnectionProxyHandler;
 
 public abstract class SqlUtils {
 	public static String getSqlId(Sql sql) {

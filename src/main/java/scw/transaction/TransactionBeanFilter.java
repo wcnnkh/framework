@@ -8,9 +8,7 @@ import scw.beans.BeanFilter;
 import scw.beans.BeanFilterChain;
 import scw.beans.annotaion.Autowrite;
 import scw.common.utils.StringUtils;
-import scw.transaction.def.DefaultTransactionManager;
-import scw.transaction.def.DefaultTransactionUtils;
-import scw.transaction.def.MultipleConnectionTransactionSynchronization;
+import scw.transaction.sql.SqlTransactionManager;
 
 /**
  * 必须要在BeanFactory中管理
@@ -21,6 +19,11 @@ import scw.transaction.def.MultipleConnectionTransactionSynchronization;
 public class TransactionBeanFilter implements BeanFilter {
 	@Autowrite
 	private BeanFactory beanFactory;
+
+	/**
+	 * 默认的事务管理器
+	 */
+	private final String transactionManagerName;
 	/**
 	 * 默认的事务定义
 	 */
@@ -31,21 +34,20 @@ public class TransactionBeanFilter implements BeanFilter {
 	}
 
 	public TransactionBeanFilter(TransactionDefinition transactionDefinition) {
-		this.transactionDefinition = transactionDefinition;
+		this(transactionDefinition, SqlTransactionManager.class.getName());
 	}
 
-	public Object doFilter(Object obj, Method method, Object[] args,
-			MethodProxy proxy, BeanFilterChain beanFilterChain)
+	public TransactionBeanFilter(TransactionDefinition transactionDefinition, String transactionManagerName) {
+		this.transactionDefinition = transactionDefinition;
+		this.transactionManagerName = transactionManagerName;
+	}
+
+	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
 			throws Throwable {
-		Transactional clzTx = method.getDeclaringClass().getAnnotation(
-				Transactional.class);
+		Transactional clzTx = method.getDeclaringClass().getAnnotation(Transactional.class);
 		Transactional methodTx = method.getAnnotation(Transactional.class);
 		if (clzTx == null && methodTx == null) {
-			if (DefaultTransactionUtils.hasTransaction()) {
-				return beanFilterChain.doFilter(obj, method, args, proxy);
-			} else {
-				return first(obj, method, args, proxy, beanFilterChain);
-			}
+			return defaultTransaction(obj, method, args, proxy, beanFilterChain);
 		}
 
 		String tmName = null;
@@ -60,13 +62,12 @@ public class TransactionBeanFilter implements BeanFilter {
 		}
 
 		if (StringUtils.isEmpty(tmName)) {
-			tmName = DefaultTransactionManager.class.getName();
+			tmName = transactionManagerName;
 		}
 
 		TransactionManager transactionManager = beanFactory.get(tmName);
 		Transaction transaction = transactionManager
-				.getTransaction(new AnnoationTransactionDefinition(clzTx,
-						methodTx));
+				.getTransaction(new AnnoationTransactionDefinition(clzTx, methodTx));
 		Object rtn;
 		try {
 			rtn = beanFilterChain.doFilter(obj, method, args, proxy);
@@ -78,20 +79,22 @@ public class TransactionBeanFilter implements BeanFilter {
 		return rtn;
 	}
 
-	private Object first(Object obj, Method method, Object[] args,
-			MethodProxy proxy, BeanFilterChain beanFilterChain)
-			throws Throwable {
-		MultipleConnectionTransactionSynchronization mcts = DefaultTransactionUtils
-				.getTransaction(transactionDefinition);
+	private Object defaultTransaction(Object obj, Method method, Object[] args, MethodProxy proxy,
+			BeanFilterChain beanFilterChain) throws Throwable {
+		TransactionManager manager = beanFactory.get(transactionManagerName);
+		if (manager.hasTransaction()) {
+			return beanFilterChain.doFilter(obj, method, args, proxy);
+		}
+
+		Transaction transaction = manager.getTransaction(transactionDefinition);
 		Object v;
 		try {
 			v = beanFilterChain.doFilter(obj, method, args, proxy);
-			DefaultTransactionUtils.commit(mcts);
+			manager.commit(transaction);
 			return v;
 		} catch (Throwable e) {
-			DefaultTransactionUtils.rollback(mcts);
+			manager.rollback(transaction);
 			throw e;
 		}
 	}
-
 }

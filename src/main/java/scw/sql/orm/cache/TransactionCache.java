@@ -3,7 +3,7 @@ package scw.sql.orm.cache;
 import scw.memcached.Memcached;
 import scw.redis.Redis;
 import scw.transaction.DefaultTransactionLifeCycle;
-import scw.transaction.def.DefaultTransactionUtils;
+import scw.transaction.sql.SqlTransactionUtils;
 
 public class TransactionCache implements Cache {
 	private final Cache cache;
@@ -26,7 +26,7 @@ public class TransactionCache implements Cache {
 
 	public void add(final String key, Object bean) {
 		cache.add(key, bean);
-		DefaultTransactionUtils.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+		SqlTransactionUtils.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
 			public void beforeRollback() throws Throwable {
 				cache.delete(key);
@@ -36,7 +36,7 @@ public class TransactionCache implements Cache {
 
 	public void set(final String key, Object bean) {
 		cache.set(key, bean);
-		DefaultTransactionUtils.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+		SqlTransactionUtils.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
 			public void beforeRollback() throws Throwable {
 				cache.delete(key);
