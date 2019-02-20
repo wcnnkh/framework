@@ -15,6 +15,7 @@ import net.sf.cglib.proxy.Enhancer;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.Config;
 import scw.beans.annotaion.Destroy;
+import scw.beans.annotaion.DisableProxy;
 import scw.beans.annotaion.InitMethod;
 import scw.beans.annotaion.Properties;
 import scw.beans.annotaion.Retry;
@@ -430,6 +431,11 @@ public final class BeanUtils {
 		}
 
 		if (BeanFilter.class.isAssignableFrom(type)) {
+			return false;
+		}
+
+		DisableProxy disableProxy = type.getAnnotation(DisableProxy.class);
+		if (disableProxy != null) {
 			return false;
 		}
 
