@@ -17,7 +17,7 @@ import scw.sql.orm.annoation.Table;
 import scw.sql.orm.plugin.SelectCacheUtils;
 import scw.sql.orm.result.ResultSet;
 
-public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements ORMOperations {
+public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements SqlSelect, ORMOperations {
 
 	private final SqlFormat sqlFormat;
 
@@ -203,7 +203,19 @@ public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements
 	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList, Object... params) {
 		return getInIdList(type, null, inIdList, params);
 	}
+	
+	public ResultSet select(Sql sql) {
+		return SelectCacheUtils.select(this, sql);
+	}
 
+	public <T> List<T> select(Class<T> type, Sql sql) {
+		return select(sql).getList(type);
+	}
+
+	public <T> T selectOne(Class<T> type, Sql sql) {
+		return select(sql).getFirst().get(type);
+	}
+	
 	public void createTable(Class<?> tableClass) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		createTable(tableClass, tableInfo.getName());
@@ -228,18 +240,6 @@ public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements
 				createTable(tableClass);
 			}
 		}
-	}
-
-	public ResultSet select(Sql sql) {
-		return SelectCacheUtils.select(this, sql);
-	}
-
-	public <T> List<T> select(Class<T> type, Sql sql) {
-		return select(sql).getList(type);
-	}
-
-	public <T> T selectOne(Class<T> type, Sql sql) {
-		return select(sql).getFirst().get(type);
 	}
 
 	@SuppressWarnings("unchecked")

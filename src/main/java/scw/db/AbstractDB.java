@@ -26,6 +26,7 @@ import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.PaginationSql;
 import scw.sql.orm.SqlFormat;
+import scw.sql.orm.SqlSelect;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annoation.Table;
 import scw.sql.orm.mysql.MysqlFormat;
@@ -33,7 +34,7 @@ import scw.sql.orm.result.DefaultResult;
 import scw.sql.orm.result.Result;
 import scw.sql.orm.result.ResultSet;
 
-public abstract class AbstractDB implements ConnectionFactory, AutoCloseable{
+public abstract class AbstractDB implements ConnectionFactory, AutoCloseable, SqlSelect, MaxIdByDB{
 	{
 		Logger.info("Init DB for className:" + this.getClass().getName());
 	}

@@ -13,7 +13,7 @@ import scw.common.utils.StringUtils;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.mysql.MysqlFormat;
 
-public final class DruidDB extends JdbcTemplate {
+public final class DruidDB extends AbstractDB {
 	private DruidDataSource datasource;
 
 	/**

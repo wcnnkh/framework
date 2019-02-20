@@ -11,9 +11,9 @@ import java.util.Map.Entry;
 
 import scw.common.Pagination;
 import scw.common.exception.ShuChaoWenRuntimeException;
-import scw.db.AbstractDB;
 import scw.sql.Sql;
 import scw.sql.orm.ORMUtils;
+import scw.sql.orm.SqlSelect;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.result.ResultSet;
 
@@ -26,9 +26,9 @@ import scw.sql.orm.result.ResultSet;
 public abstract class Select {
 	private Map<String, String> associationWhereMap;
 	private HashSet<String> selectTableSet;
-	protected AbstractDB db;
+	protected SqlSelect db;
 
-	public Select(AbstractDB db) {
+	public Select(SqlSelect db) {
 		this.db = db;
 	}
 
@@ -130,7 +130,7 @@ public abstract class Select {
 		return false;
 	}
 
-	public AbstractDB getDb() {
+	public SqlSelect getDb() {
 		return db;
 	}
 
