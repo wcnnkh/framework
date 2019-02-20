@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import com.alibaba.druid.pool.DruidDataSource;
+
 import scw.beans.annotaion.Destroy;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.PropertiesUtils;
@@ -11,9 +13,7 @@ import scw.common.utils.StringUtils;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.mysql.MysqlFormat;
 
-import com.alibaba.druid.pool.DruidDataSource;
-
-public final class DruidDB extends DB {
+public final class DruidDB extends JdbcTemplate {
 	private DruidDataSource datasource;
 
 	/**
