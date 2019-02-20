@@ -11,13 +11,13 @@ import scw.common.Pagination;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
-import scw.sql.AbstractSqlTemplate;
+import scw.sql.SqlTemplate;
 import scw.sql.Sql;
 import scw.sql.orm.annoation.Table;
 import scw.sql.orm.plugin.SelectCacheUtils;
 import scw.sql.orm.result.ResultSet;
 
-public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements SqlSelect, ORMOperations {
+public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSelect, ORMOperations {
 
 	private final SqlFormat sqlFormat;
 

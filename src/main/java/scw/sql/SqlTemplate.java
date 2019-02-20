@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractSqlTemplate implements SqlOperations, ConnectionFactory {
+public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 
 	protected void close(Connection connection) throws SqlException {
 		if (connection != null) {
