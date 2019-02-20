@@ -31,6 +31,7 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 		this.propertiesFactory = new XmlPropertiesFactory(xmlPath);
 		this.initStatic = initStatic;
 		initParameter(xmlPath);
+		register();
 	}
 
 	public XmlBeanFactory(PropertiesFactory propertiesFactory, String xmlPath, boolean initStatic) throws Exception {
@@ -38,6 +39,12 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 		this.initStatic = initStatic;
 		this.propertiesFactory = propertiesFactory;
 		initParameter(xmlPath);
+		register();
+	}
+
+	private void register() {
+		addSingleton(XmlBeanFactory.class.getName(), this);
+		registerNameMapping(BeanFactory.class.getName(), XmlBeanFactory.class.getName());
 	}
 
 	private void initParameter(String xmlPath) {

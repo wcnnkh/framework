@@ -101,7 +101,7 @@ public abstract class SqlTransactionUtils {
 		mcts.getConnectionTransaction(connectionFactory).addSql(sql);
 	}
 
-	public static MultipleConnectionTransactionSynchronization getTransaction(
+	protected static MultipleConnectionTransactionSynchronization getTransaction(
 			TransactionDefinition transactionDefinition) {
 		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
 		MultipleConnectionTransactionSynchronization mcts = null;
@@ -154,7 +154,7 @@ public abstract class SqlTransactionUtils {
 		return mcts;
 	}
 
-	public static void commit(MultipleConnectionTransactionSynchronization mcts) throws TransactionException {
+	protected static void commit(MultipleConnectionTransactionSynchronization mcts) throws TransactionException {
 		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
 		if (list == null) {
 			throw new TransactionException("不存在事务");
@@ -179,7 +179,7 @@ public abstract class SqlTransactionUtils {
 		}
 	}
 
-	public static void rollback(MultipleConnectionTransactionSynchronization mcts) throws TransactionException {
+	protected static void rollback(MultipleConnectionTransactionSynchronization mcts) throws TransactionException {
 		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
 		if (list == null) {
 			throw new TransactionException("不存在事务");

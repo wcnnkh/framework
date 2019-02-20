@@ -5,7 +5,7 @@ import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
 import scw.transaction.TransactionManager;
 
-public class SqlTransactionManager implements TransactionManager {
+public final class SqlTransactionManager implements TransactionManager {
 
 	public Transaction getTransaction(TransactionDefinition transactionDefinition) throws TransactionException {
 		return SqlTransactionUtils.getTransaction(transactionDefinition);
