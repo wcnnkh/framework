@@ -1,5 +1,8 @@
 package scw.sql.orm.cache;
 
+import java.util.Collection;
+import java.util.Map;
+
 import scw.memcached.Memcached;
 import scw.redis.Redis;
 import scw.transaction.sql.SqlTransactionUtils;
@@ -42,5 +45,9 @@ public class TransactionCache implements Cache {
 				cache.delete(key);
 			}
 		});
+	}
+
+	public <T> Map<String, T> getMap(Class<T> type, Collection<String> keys) {
+		return cache.getMap(type, keys);
 	}
 }

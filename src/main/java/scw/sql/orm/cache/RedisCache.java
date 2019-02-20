@@ -1,6 +1,11 @@
 package scw.sql.orm.cache;
 
 import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import scw.redis.Redis;
 
@@ -31,6 +36,31 @@ public class RedisCache implements Cache {
 	public void set(String key, Object bean) {
 		redis.set(key.getBytes(CHARSET), CacheUtils.encode(bean), Redis.XX.getBytes(CHARSET),
 				Redis.EX.getBytes(CHARSET), exp);
+	}
+
+	public <T> Map<String, T> getMap(Class<T> type, Collection<String> keys) {
+		if (keys.isEmpty()) {
+			return null;
+		}
+
+		byte[][] bKeys = new byte[keys.size()][];
+		Iterator<String> iterator = keys.iterator();
+		for (int i = 0; iterator.hasNext(); i++) {
+			bKeys[i] = iterator.next().getBytes(CHARSET);
+		}
+
+		Map<byte[], byte[]> map = redis.get(bKeys);
+		if (map == null || map.isEmpty()) {
+			return null;
+		}
+
+		Map<String, T> valueMap = new HashMap<String, T>(map.size(), 1);
+		for (Entry<byte[], byte[]> entry : map.entrySet()) {
+			String key = new String(entry.getKey(), CHARSET);
+			T v = CacheUtils.decode(type, entry.getValue());
+			valueMap.put(key, v);
+		}
+		return valueMap;
 	}
 
 }

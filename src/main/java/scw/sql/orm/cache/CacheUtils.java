@@ -19,8 +19,6 @@ public abstract class CacheUtils {
 		sb.append(tableInfo.getClassInfo().getClz().getName());
 		try {
 			for (ColumnInfo columnInfo : tableInfo.getPrimaryKeyColumns()) {
-				sb.append("#");
-				sb.append(columnInfo.getName());
 				sb.append("\\").append(columnInfo.getFieldInfo().forceGet(bean)).append("\\");
 			}
 		} catch (Exception e) {
@@ -30,13 +28,13 @@ public abstract class CacheUtils {
 	}
 
 	public static String getByIdCacheKey(Class<?> type, Object... params) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(type.getClass());
+		return appendKey(type.getName(), params);
+	}
+
+	public static String appendKey(String key, Object... params) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(type.getName());
+		sb.append(key);
 		for (int i = 0; i < params.length; i++) {
-			ColumnInfo columnInfo = tableInfo.getPrimaryKeyColumns()[i];
-			sb.append("#");
-			sb.append(columnInfo.getName());
 			sb.append("\\").append(params[i]).append("\\");
 		}
 		return sb.toString();
