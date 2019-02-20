@@ -15,6 +15,7 @@ import scw.common.utils.StringUtils;
 import scw.database.TransactionContext;
 import scw.db.sql.TransactionBeanFilter;
 import scw.sql.orm.ORMUtils;
+import scw.sql.orm.plugin.SelectCacheFilter;
 
 public class CommonApplication implements Application {
 	private static final String TRANSACTION_DEBUG_NAME = "shuchaowen.transaction.debug";
@@ -33,6 +34,7 @@ public class CommonApplication implements Application {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
 			this.beanFactory.addFirstFilters(TransactionBeanFilter.class.getName());
 			this.beanFactory.addFirstFilters(scw.transaction.TransactionBeanFilter.class.getName());
+			this.beanFactory.addFirstFilters(SelectCacheFilter.class.getName());
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}

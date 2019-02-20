@@ -6,8 +6,8 @@ import net.sf.cglib.proxy.MethodProxy;
 import scw.beans.BeanFilter;
 import scw.beans.BeanFilterChain;
 import scw.database.TransactionContext;
-import scw.database.annoation.SelectCache;
 import scw.database.annoation.Transaction;
+import scw.sql.orm.plugin.SelectCache;
 
 /**
  * 事务处理的filter

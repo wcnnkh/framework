@@ -1,6 +1,5 @@
 package scw.sql.orm;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,14 +12,12 @@ import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.sql.AbstractSqlTemplate;
-import scw.sql.ResultSetMapper;
 import scw.sql.Sql;
 import scw.sql.orm.annoation.Table;
-import scw.sql.orm.result.DefaultResultSet;
+import scw.sql.orm.plugin.SelectCacheUtils;
 import scw.sql.orm.result.ResultSet;
 
-public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements
-		ORMOperations {
+public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements ORMOperations {
 
 	private final SqlFormat sqlFormat;
 
@@ -55,19 +52,16 @@ public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements
 		}
 
 		if (tableInfo.getPrimaryKeyColumns().length != params.length) {
-			throw new NullPointerException(
-					"params length not equals primary key lenght");
+			throw new NullPointerException("params length not equals primary key lenght");
 		}
 
-		String tName = (tableName == null || tableName.length() == 0) ? tableInfo
-				.getName() : tableName;
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
 		Sql sql = getSqlFormat().toSelectByIdSql(tableInfo, tName, params);
 		ResultSet resultSet = select(sql);
 		return resultSet.getFirst().get(type, tName);
 	}
 
-	public <T> List<T> getByIdList(String tableName, Class<T> type,
-			Object... params) {
+	public <T> List<T> getByIdList(String tableName, Class<T> type, Object... params) {
 		if (type == null) {
 			throw new NullPointerException("type is null");
 		}
@@ -78,14 +72,11 @@ public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements
 		}
 
 		if (params.length > tableInfo.getPrimaryKeyColumns().length) {
-			throw new NullPointerException(
-					"params length  greater than primary key lenght");
+			throw new NullPointerException("params length  greater than primary key lenght");
 		}
 
-		String tName = (tableName == null || tableName.length() == 0) ? tableInfo
-				.getName() : tableName;
-		ResultSet resultSet = select(getSqlFormat().toSelectByIdSql(tableInfo,
-				tName, params));
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		ResultSet resultSet = select(getSqlFormat().toSelectByIdSql(tableInfo, tName, params));
 		return resultSet.getList(type, tName);
 	}
 
@@ -136,8 +127,7 @@ public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements
 		}
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName()
-				: tableName;
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName() : tableName;
 		Sql sql = sqlFormat.toDeleteSql(tableInfo, tName, params);
 		return execute(sql);
 	}
@@ -192,13 +182,7 @@ public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements
 	}
 
 	public ResultSet select(Sql sql) {
-		return query(sql, new ResultSetMapper<ResultSet>() {
-
-			public ResultSet mapper(java.sql.ResultSet resultSet)
-					throws SQLException {
-				return new DefaultResultSet(resultSet);
-			}
-		});
+		return SelectCacheUtils.select(this, sql);
 	}
 
 	public <T> List<T> select(Class<T> type, Sql sql) {
@@ -210,10 +194,8 @@ public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> Pagination<List<T>> select(Class<T> type, long page, int limit,
-			Sql sql) {
-		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page,
-				limit);
+	public <T> Pagination<List<T>> select(Class<T> type, long page, int limit, Sql sql) {
+		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
 		if (count == null) {
 			count = 0L;
@@ -223,30 +205,25 @@ public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements
 			return new Pagination<List<T>>(0, limit, Collections.EMPTY_LIST);
 		}
 
-		return new Pagination<List<T>>(count, limit, select(type,
-				paginationSql.getResultSql()));
+		return new Pagination<List<T>>(count, limit, select(type, paginationSql.getResultSql()));
 	}
 
 	public Pagination<ResultSet> select(long page, int limit, Sql sql) {
-		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page,
-				limit);
+		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
 		if (count == null) {
 			count = 0L;
 		}
 
 		if (count == 0) {
-			return new Pagination<ResultSet>(0, limit,
-					ResultSet.EMPTY_RESULTSET);
+			return new Pagination<ResultSet>(0, limit, ResultSet.EMPTY_RESULTSET);
 		}
 
-		return new Pagination<ResultSet>(count, limit,
-				select(paginationSql.getResultSql()));
+		return new Pagination<ResultSet>(count, limit, select(paginationSql.getResultSql()));
 	}
 
 	@SuppressWarnings("unchecked")
-	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName,
-			Collection<K> inIds, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params) {
 		if (inIds == null || inIds.isEmpty()) {
 			return Collections.EMPTY_MAP;
 		}
@@ -262,14 +239,11 @@ public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements
 
 		ColumnInfo columnInfo = tableInfo.getPrimaryKeyColumns()[params.length];
 		if (params.length > tableInfo.getPrimaryKeyColumns().length - 1) {
-			throw new NullPointerException(
-					"params length  greater than primary key lenght");
+			throw new NullPointerException("params length  greater than primary key lenght");
 		}
 
-		String tName = (tableName == null || tableName.length() == 0) ? tableInfo
-				.getName() : tableName;
-		ResultSet resultSet = select(getSqlFormat().toSelectInIdSql(tableInfo,
-				tName, params, inIds));
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		ResultSet resultSet = select(getSqlFormat().toSelectInIdSql(tableInfo, tName, params, inIds));
 		List<V> list = resultSet.getList(type, tName);
 		if (list == null || list.isEmpty()) {
 			return Collections.EMPTY_MAP;
@@ -293,8 +267,7 @@ public abstract class AbstractORMTemplate extends AbstractSqlTemplate implements
 		return map;
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList,
-			Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList, Object... params) {
 		return getInIdList(type, null, inIdList, params);
 	}
 }
