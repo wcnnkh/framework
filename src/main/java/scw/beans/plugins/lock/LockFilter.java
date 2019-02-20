@@ -11,6 +11,7 @@ import scw.common.utils.StringUtils;
 import scw.database.TransactionContext;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
+import scw.sql.orm.plugin.SelectCacheUtils;
 
 /**
  * 实现方法级别的分布式锁
@@ -29,8 +30,7 @@ public final class LockFilter implements BeanFilter {
 		this.lockFactory = lockFactory;
 	}
 
-	public Object doFilter(Object obj, Method method, Object[] args,
-			MethodProxy proxy, BeanFilterChain beanFilterChain)
+	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
 			throws Throwable {
 		LockConfig lockConfig = method.getAnnotation(LockConfig.class);
 		if (lockConfig == null) {
@@ -61,6 +61,8 @@ public final class LockFilter implements BeanFilter {
 			} else if (!lock.lock()) {
 				throw new HasBeenLockedException(lockKey);
 			}
+
+			SelectCacheUtils.setEnable(false);
 			TransactionContext.getConfig().setSelectCache(false);
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		} finally {
