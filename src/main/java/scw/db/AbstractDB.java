@@ -1,29 +1,51 @@
 package scw.db;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import scw.common.Iterator;
 import scw.common.Logger;
+import scw.common.Pagination;
+import scw.common.exception.AlreadyExistsException;
+import scw.common.utils.ClassUtils;
+import scw.common.utils.StringUtils;
 import scw.database.ConnectionSource;
 import scw.database.DataBaseUtils;
+import scw.database.TransactionContext;
 import scw.db.sql.MysqlSelect;
 import scw.db.sql.Select;
 import scw.sql.Sql;
+import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
+import scw.sql.orm.PaginationSql;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.TableInfo;
+import scw.sql.orm.annoation.Table;
 import scw.sql.orm.mysql.MysqlFormat;
 import scw.sql.orm.result.DefaultResult;
 import scw.sql.orm.result.Result;
+import scw.sql.orm.result.ResultSet;
 
-public abstract class AbstractDB extends JdbcTemplate implements ConnectionSource, AutoCloseable {
+public abstract class AbstractDB implements ConnectionSource, AutoCloseable {
 	{
 		Logger.info("Init DB for className:" + this.getClass().getName());
 	}
 
+	private final SqlFormat sqlFormat;
+
 	public AbstractDB(SqlFormat sqlFormat) {
-		super(sqlFormat == null ? new MysqlFormat() : sqlFormat);
+		this.sqlFormat = sqlFormat == null ? new MysqlFormat() : sqlFormat;
+	}
+
+	public final SqlFormat getSqlFormat() {
+		return sqlFormat;
 	}
 
 	public void iterator(Class<?> tableClass, Iterator<Result> iterator) {
@@ -42,6 +64,47 @@ public abstract class AbstractDB extends JdbcTemplate implements ConnectionSourc
 				}
 			}
 		});
+	}
+
+	public ResultSet select(Sql sql) {
+		return TransactionContext.select(this, sql);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> Pagination<List<T>> select(Class<T> type, long page, int limit, Sql sql) {
+		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page, limit);
+		Long count = selectOne(Long.class, paginationSql.getCountSql());
+		if (count == null) {
+			count = 0L;
+		}
+
+		if (count == 0) {
+			return new Pagination<List<T>>(0, limit, Collections.EMPTY_LIST);
+		}
+
+		return new Pagination<List<T>>(count, limit, select(type, paginationSql.getResultSql()));
+	}
+
+	public Pagination<ResultSet> select(long page, int limit, Sql sql) {
+		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page, limit);
+		Long count = selectOne(Long.class, paginationSql.getCountSql());
+		if (count == null) {
+			count = 0L;
+		}
+
+		if (count == 0) {
+			return new Pagination<ResultSet>(0, limit, ResultSet.EMPTY_RESULTSET);
+		}
+
+		return new Pagination<ResultSet>(count, limit, select(paginationSql.getResultSql()));
+	}
+
+	public <T> List<T> select(Class<T> type, Sql sql) {
+		return select(sql).getList(type);
+	}
+
+	public <T> T selectOne(Class<T> type, Sql sql) {
+		return select(sql).getFirst().get(type);
 	}
 
 	public Select createSelect() {
@@ -74,10 +137,282 @@ public abstract class AbstractDB extends JdbcTemplate implements ConnectionSourc
 		return maxId;
 	}
 
+	public void createTable(Class<?> tableClass) {
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
+		createTable(tableClass, tableInfo.getName());
+	}
+
+	public void createTable(Class<?> tableClass, String tableName) {
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
+		Sql sql = getSqlFormat().toCreateTableSql(tableInfo, tableName);
+		Logger.info(this.getClass().getName(), sql.getSql());
+		DataBaseUtils.execute(this, Arrays.asList(sql));
+	}
+
+	public void createTable(String packageName) {
+		Collection<Class<?>> list = ClassUtils.getClasses(packageName);
+		for (Class<?> tableClass : list) {
+			Table table = tableClass.getAnnotation(Table.class);
+			if (table == null) {
+				continue;
+			}
+
+			if (table.create()) {
+				createTable(tableClass);
+			}
+		}
+	}
+
+	public <T> T getById(Class<T> type, Object... params) {
+		return getById(null, type, params);
+	}
+
+	public <T> T getById(String tableName, Class<T> type, Object... params) {
+		if (type == null) {
+			throw new NullPointerException("type is null");
+		}
+
+		TableInfo tableInfo = ORMUtils.getTableInfo(type);
+		if (tableInfo == null) {
+			throw new NullPointerException("tableInfo is null");
+		}
+
+		if (tableInfo.getPrimaryKeyColumns().length == 0) {
+			throw new NullPointerException("not found primary key");
+		}
+
+		if (tableInfo.getPrimaryKeyColumns().length != params.length) {
+			throw new NullPointerException("params length not equals primary key lenght");
+		}
+
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		Sql sql = getSqlFormat().toSelectByIdSql(tableInfo, tName, params);
+		ResultSet resultSet = select(sql);
+		return resultSet.getFirst().get(type, tName);
+	}
+
+	public <T> List<T> getByIdList(Class<T> type, Object... params) {
+		return getByIdList(null, type, params);
+	}
+
+	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList, Object... params) {
+		return getInIdList(type, null, inIdList, params);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params) {
+		if (inIds == null || inIds.isEmpty()) {
+			return Collections.EMPTY_MAP;
+		}
+
+		if (type == null) {
+			throw new NullPointerException("type is null");
+		}
+
+		TableInfo tableInfo = ORMUtils.getTableInfo(type);
+		if (tableInfo == null) {
+			throw new NullPointerException("tableInfo is null");
+		}
+
+		ColumnInfo columnInfo = tableInfo.getPrimaryKeyColumns()[params.length];
+		if (params.length > tableInfo.getPrimaryKeyColumns().length - 1) {
+			throw new NullPointerException("params length  greater than primary key lenght");
+		}
+
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		ResultSet resultSet = select(getSqlFormat().toSelectInIdSql(tableInfo, tName, params, inIds));
+		List<V> list = resultSet.getList(type, tName);
+		if (list == null || list.isEmpty()) {
+			return Collections.EMPTY_MAP;
+		}
+
+		Map<K, V> map = new HashMap<K, V>();
+		for (V v : list) {
+			K k;
+			try {
+				k = (K) columnInfo.getFieldInfo().forceGet(v);
+				if (map.containsKey(k)) {
+					throw new AlreadyExistsException(k + "");
+				}
+				map.put(k, v);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		return map;
+	}
+
+	public <T> List<T> getByIdList(String tableName, Class<T> type, Object... params) {
+		if (type == null) {
+			throw new NullPointerException("type is null");
+		}
+
+		TableInfo tableInfo = ORMUtils.getTableInfo(type);
+		if (tableInfo == null) {
+			throw new NullPointerException("tableInfo is null");
+		}
+
+		if (params.length > tableInfo.getPrimaryKeyColumns().length) {
+			throw new NullPointerException("params length  greater than primary key lenght");
+		}
+
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		ResultSet resultSet = select(getSqlFormat().toSelectByIdSql(tableInfo, tName, params));
+		return resultSet.getList(type, tName);
+	}
+
 	public void execute(Collection<OperationBean> operationBeans) {
 		Collection<Sql> sqls = DBUtils.getSqlList(getSqlFormat(), operationBeans);
 		if (sqls == null || sqls.isEmpty()) {
 			return;
+		}
+
+		TransactionContext.execute(this, sqls);
+	}
+
+	public void execute(Sql... sql) {
+		TransactionContext.execute(this, sql);
+	}
+
+	public void save(Object... beans) {
+		save(null, Arrays.asList(beans));
+	}
+
+	/** 保存 **/
+	public void save(String tableName, Object... beans) {
+		save(tableName, Arrays.asList(beans));
+	}
+
+	public void save(Collection<?> beans) {
+		save(null, beans);
+	}
+
+	public void save(String tableName, Collection<?> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return;
+		}
+
+		List<OperationBean> operationBeans = new ArrayList<OperationBean>(beans.size());
+		for (Object bean : beans) {
+			if (bean == null) {
+				continue;
+			}
+
+			operationBeans.add(new OperationBean(OperationType.SAVE, bean, tableName));
+		}
+
+		execute(operationBeans);
+	}
+
+	public void delete(Object... beans) {
+		delete(null, Arrays.asList(beans));
+	}
+
+	/** 删除 **/
+	public void delete(String tableName, Object... beans) {
+		delete(tableName, Arrays.asList(beans));
+	}
+
+	public void delete(Class<?> tableClass, Object... params) {
+		delete(tableClass, null, params);
+	}
+
+	public void delete(Class<?> tableClass, String tableName, Object... params) {
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
+		String tName = StringUtils.isNull(tableName) ? tableInfo.getName() : tableName;
+		Sql sql = getSqlFormat().toDeleteSql(tableInfo, tName, params);
+		TransactionContext.execute(this, sql);
+	}
+
+	public void delete(Collection<?> beans) {
+		delete(null, beans);
+	}
+
+	public void delete(String tableName, Collection<?> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return;
+		}
+
+		List<OperationBean> operationBeans = new ArrayList<OperationBean>(beans.size());
+		for (Object bean : beans) {
+			if (bean == null) {
+				continue;
+			}
+
+			operationBeans.add(new OperationBean(OperationType.DELETE, bean, tableName));
+		}
+
+		execute(operationBeans);
+	}
+
+	public void update(Object... beans) {
+		update(null, Arrays.asList(beans));
+	}
+
+	/** 更新 **/
+	public void update(String tableName, Object... beans) {
+		update(tableName, Arrays.asList(beans));
+	}
+
+	public void update(Class<?> tableClass, Map<String, Object> valueMap, Object... params) {
+		update(tableClass, null, valueMap, params);
+	}
+
+	public void update(Class<?> tableClass, String tableName, Map<String, Object> valueMap, Object... params) {
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
+		String tName = StringUtils.isNull(tableName) ? tableInfo.getName() : tableName;
+		Sql sql = getSqlFormat().toUpdateSql(tableInfo, tName, valueMap, params);
+		TransactionContext.execute(this, sql);
+	}
+
+	public void update(Collection<?> beans) {
+		update(null, beans);
+	}
+
+	public void update(String tableName, Collection<?> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return;
+		}
+
+		List<OperationBean> operationBeans = new ArrayList<OperationBean>(beans.size());
+		for (Object bean : beans) {
+			if (bean == null) {
+				continue;
+			}
+
+			operationBeans.add(new OperationBean(OperationType.UPDATE, bean, tableName));
+		}
+
+		execute(operationBeans);
+	}
+
+	public void saveOrUpdate(Object... beans) {
+		saveOrUpdate(null, Arrays.asList(beans));
+	}
+
+	/** 保存或更新 **/
+	public void saveOrUpdate(String tableName, Object... beans) {
+		saveOrUpdate(tableName, Arrays.asList(beans));
+	}
+
+	public void saveOrUpdate(Collection<?> beans) {
+		saveOrUpdate(null, beans);
+	}
+
+	public void saveOrUpdate(String tableName, Collection<?> beans) {
+		if (beans == null || beans.isEmpty()) {
+			return;
+		}
+
+		List<OperationBean> operationBeans = new LinkedList<OperationBean>();
+		for (Object bean : beans) {
+			if (bean == null) {
+				continue;
+			}
+
+			operationBeans.add(new OperationBean(OperationType.SAVE_OR_UPDATE, bean, tableName));
 		}
 
 		execute(operationBeans);
