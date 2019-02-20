@@ -1,8 +1,5 @@
 package scw.transaction;
 
-import scw.beans.annotaion.DisableProxy;
-
-@DisableProxy
 public interface TransactionManager {
 	
 	Transaction getTransaction(TransactionDefinition transactionDefinition)
