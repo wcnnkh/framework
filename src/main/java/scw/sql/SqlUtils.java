@@ -55,7 +55,12 @@ public abstract class SqlUtils {
 			statement = connection.prepareStatement(sql.getSql());
 		}
 
-		setSqlParams(statement, sql.getParams());
+		try {
+			setSqlParams(statement, sql.getParams());
+		} catch (SQLException e) {
+			statement.close();
+			throw e;
+		}
 		return statement;
 	}
 

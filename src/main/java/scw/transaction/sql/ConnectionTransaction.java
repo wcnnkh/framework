@@ -1,10 +1,14 @@
 package scw.transaction.sql;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Savepoint;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 import scw.sql.ConnectionFactory;
+import scw.sql.Sql;
 import scw.sql.SqlUtils;
 import scw.transaction.Isolation;
 import scw.transaction.NotSupportTransactionException;
@@ -13,17 +17,17 @@ import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
 import scw.transaction.support.TransactionSynchronization;
 
-public class ConnectionTransaction implements SavepointManager,
-		TransactionSynchronization {
+class ConnectionTransaction implements SavepointManager, TransactionSynchronization {
 	private static final String SAVEPOINT_NAME_PREFIX = "SAVEPOINT_";
 	private final ConnectionFactory connectionFactory;
 	private final TransactionDefinition transactionDefinition;
 	private Connection connection;
 	private int savepointCounter;
 	private boolean active;
+	private LinkedHashMap<String, Sql> sqlMap;
 
-	public ConnectionTransaction(ConnectionFactory connectionFactory,
-			TransactionDefinition transactionDefinition, boolean active) {
+	public ConnectionTransaction(ConnectionFactory connectionFactory, TransactionDefinition transactionDefinition,
+			boolean active) {
 		this.active = active;
 		this.connectionFactory = connectionFactory;
 		this.transactionDefinition = transactionDefinition;
@@ -50,6 +54,18 @@ public class ConnectionTransaction implements SavepointManager,
 		return connection;
 	}
 
+	public void addSql(Sql sql) {
+		if (sql == null) {
+			return;
+		}
+
+		if (sqlMap == null) {
+			sqlMap = new LinkedHashMap<String, Sql>(8);
+		}
+
+		sqlMap.put(SqlUtils.getSqlId(sql), sql);
+	}
+
 	public void setActive(boolean active) {
 		if (hasConnection()) {
 			try {
@@ -64,15 +80,13 @@ public class ConnectionTransaction implements SavepointManager,
 	public Object createSavepoint() throws TransactionException {
 		savepointCounter++;
 		try {
-			return getConnection().setSavepoint(
-					SAVEPOINT_NAME_PREFIX + savepointCounter);
+			return getConnection().setSavepoint(SAVEPOINT_NAME_PREFIX + savepointCounter);
 		} catch (SQLException e) {
 			throw new TransactionException(e);
 		}
 	}
 
-	public void rollbackToSavepoint(Object savepoint)
-			throws TransactionException {
+	public void rollbackToSavepoint(Object savepoint) throws TransactionException {
 		if (!(savepoint instanceof Savepoint)) {
 			throw new NotSupportTransactionException("not suppert savepoint");
 		}
@@ -133,5 +147,21 @@ public class ConnectionTransaction implements SavepointManager,
 	}
 
 	public void process() throws TransactionException {
+		if (sqlMap != null && !sqlMap.isEmpty()) {
+			try {
+				connection = getConnection();
+				for (Entry<String, Sql> entry : sqlMap.entrySet()) {
+					PreparedStatement preparedStatement = SqlUtils.createPreparedStatement(connection,
+							entry.getValue());
+					try {
+						preparedStatement.execute();
+					} finally {
+						preparedStatement.close();
+					}
+				}
+			} catch (SQLException e) {
+				throw new TransactionException(e);
+			}
+		}
 	}
 }

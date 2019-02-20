@@ -1,7 +1,5 @@
 package scw.transaction.sql;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,8 +14,7 @@ import scw.transaction.support.TransactionSynchronization;
 import scw.transaction.support.TransactionSynchronizationCollection;
 import scw.transaction.support.TransactionSynchronizationLifeCycle;
 
-public class MultipleConnectionTransactionSynchronization extends AbstractTransaction
-		implements TransactionSynchronization {
+class MultipleConnectionTransactionSynchronization extends AbstractTransaction implements TransactionSynchronization {
 	private Map<ConnectionFactory, ConnectionTransaction> cstsMap;
 	private TransactionDefinition transactionDefinition;
 	private TransactionSynchronizationCollection tsc;
@@ -66,9 +63,14 @@ public class MultipleConnectionTransactionSynchronization extends AbstractTransa
 		tlcc.add(tlc);
 	}
 
-	public Connection getConnection(ConnectionFactory connectionFactory) throws SQLException {
+	/**
+	 * 不可能返回空
+	 * @param connectionFactory
+	 * @return
+	 */
+	public ConnectionTransaction getConnectionTransaction(ConnectionFactory connectionFactory) {
 		if (parent != null) {
-			return parent.getConnection(connectionFactory);
+			return parent.getConnectionTransaction(connectionFactory);
 		}
 
 		ConnectionTransaction csts;
@@ -83,7 +85,7 @@ public class MultipleConnectionTransactionSynchronization extends AbstractTransa
 				cstsMap.put(connectionFactory, csts);
 			}
 		}
-		return csts.getConnection();
+		return csts;
 	}
 
 	public ConnectionTransaction getConnectionSavepointTransactionSynchronization(ConnectionFactory connectionFactory) {

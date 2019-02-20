@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 
 import scw.sql.ConnectionFactory;
+import scw.sql.Sql;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
 import scw.transaction.support.TransactionLifeCycle;
@@ -45,7 +46,7 @@ public abstract class SqlTransactionUtils {
 			return connectionFactory.getConnection();
 		}
 
-		return mcts.getConnection(connectionFactory);
+		return mcts.getConnectionTransaction(connectionFactory).getConnection();
 	}
 
 	public static void transactionSynchronization(TransactionSynchronization ts) throws TransactionException {
@@ -79,6 +80,20 @@ public abstract class SqlTransactionUtils {
 		}
 
 		mcts.transactionLifeCycle(tlc);
+	}
+
+	public static void executeSql(ConnectionFactory connectionFactory, Sql sql) {
+		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
+		if (list == null) {
+			return;
+		}
+
+		MultipleConnectionTransactionSynchronization mcts = list.getLast();
+		if (mcts == null) {
+			return;
+		}
+
+		mcts.getConnectionTransaction(connectionFactory).addSql(sql);
 	}
 
 	public static MultipleConnectionTransactionSynchronization getTransaction(
