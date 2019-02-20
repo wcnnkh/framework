@@ -9,6 +9,10 @@ import scw.beans.BeanFilterChain;
 public class SelectCacheFilter implements BeanFilter {
 	private final boolean enable;
 
+	public SelectCacheFilter() {
+		this(false);
+	}
+
 	public SelectCacheFilter(boolean enable) {
 		this.enable = enable;
 	}
