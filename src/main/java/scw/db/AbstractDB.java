@@ -7,6 +7,7 @@ import scw.common.Logger;
 import scw.database.DataBaseUtils;
 import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
+import scw.sql.SqlException;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.SqlSelect;
@@ -15,6 +16,7 @@ import scw.sql.orm.cache.AbstractORMCacheTemplate;
 import scw.sql.orm.mysql.MysqlFormat;
 import scw.sql.orm.result.DefaultResult;
 import scw.sql.orm.result.Result;
+import scw.transaction.sql.SqlTransactionUtils;
 
 public abstract class AbstractDB extends AbstractORMCacheTemplate
 		implements ConnectionFactory, AutoCloseable, SqlSelect, MaxIdByDB {
@@ -42,5 +44,19 @@ public abstract class AbstractDB extends AbstractORMCacheTemplate
 				}
 			}
 		});
+	}
+
+	@Override
+	public boolean execute(Sql sql) throws SqlException {
+		log(sql);
+		SqlTransactionUtils.executeSql(this, sql);
+		return true;
+	}
+
+	@Override
+	public int update(Sql sql) throws SqlException {
+		log(sql);
+		SqlTransactionUtils.executeSql(this, sql);
+		return 0;
 	}
 }

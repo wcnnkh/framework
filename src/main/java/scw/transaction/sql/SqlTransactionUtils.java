@@ -13,6 +13,7 @@ import scw.transaction.support.TransactionSynchronization;
 
 /**
  * 这是默认的事务管理器
+ * 
  * @author shuchaowen
  *
  */
@@ -165,16 +166,13 @@ public abstract class SqlTransactionUtils {
 			throw new TransactionException("事务需要顺序关闭，请先关闭子事务");
 		}
 
+		mcts.process();
 		try {
-			mcts.process();
+			mcts.end();
 		} finally {
-			try {
-				mcts.end();
-			} finally {
-				list.removeLast();
-				if (list.isEmpty()) {
-					LOCAL.remove();
-				}
+			list.removeLast();
+			if (list.isEmpty()) {
+				LOCAL.remove();
 			}
 		}
 	}
@@ -182,12 +180,12 @@ public abstract class SqlTransactionUtils {
 	protected static void rollback(MultipleConnectionTransactionSynchronization mcts) throws TransactionException {
 		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
 		if (list == null) {
-			throw new TransactionException("不存在事务");
+			return;
 		}
 
 		MultipleConnectionTransactionSynchronization currentMcts = list.getLast();
 		if (mcts != currentMcts) {
-			throw new TransactionException("事务需要顺序关闭，请先关闭子事务");
+			return;
 		}
 
 		try {

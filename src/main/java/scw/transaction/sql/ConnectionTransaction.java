@@ -155,8 +155,14 @@ class ConnectionTransaction implements SavepointManager, TransactionSynchronizat
 							entry.getValue());
 					try {
 						preparedStatement.execute();
+					} catch (SQLException e) {
+						throw new TransactionException(SqlUtils.getSqlId(entry.getValue()), e);
 					} finally {
-						preparedStatement.close();
+						try {
+							preparedStatement.close();
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			} catch (SQLException e) {

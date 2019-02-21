@@ -7,7 +7,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import scw.common.Logger;
+
 public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
+	private boolean debug;
+
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
 
 	protected void close(Connection connection) throws SqlException {
 		if (connection != null) {
@@ -33,6 +44,7 @@ public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 
 	public boolean execute(Sql sql) throws SqlException {
 		Connection connection = null;
+		log(sql);
 		try {
 			connection = getConnection();
 			return execute(sql, connection);
@@ -69,6 +81,7 @@ public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 
 	public void query(Sql sql, ResultSetCallback resultSetCallback) throws SqlException {
 		Connection connection = null;
+		log(sql);
 		try {
 			connection = getConnection();
 			query(sql, connection, resultSetCallback);
@@ -107,6 +120,7 @@ public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 
 	public void query(Sql sql, RowCallback rowCallback) throws SqlException {
 		Connection connection = null;
+		log(sql);
 		try {
 			connection = getConnection();
 			query(sql, connection, rowCallback);
@@ -143,6 +157,7 @@ public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 
 	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper) throws SqlException {
 		Connection connection = null;
+		log(sql);
 		try {
 			connection = getConnection();
 			return query(sql, connection, resultSetMapper);
@@ -190,6 +205,7 @@ public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 
 	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper) throws SqlException {
 		Connection connection = null;
+		log(sql);
 		try {
 			connection = getConnection();
 			return query(sql, connection, rowMapper);
@@ -214,6 +230,7 @@ public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 
 	public int update(Sql sql) throws SqlException {
 		Connection connection = null;
+		log(sql);
 		try {
 			connection = getConnection();
 			return update(sql, connection);
@@ -221,6 +238,12 @@ public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
 			close(connection);
+		}
+	}
+
+	protected void log(Sql sql) {
+		if (isDebug()) {
+			Logger.debug(this.getClass().getName(), SqlUtils.getSqlId(sql));
 		}
 	}
 }
