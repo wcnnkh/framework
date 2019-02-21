@@ -1,4 +1,4 @@
-package scw.db.sql;
+package scw.sql.orm;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,9 +12,6 @@ import java.util.Map.Entry;
 import scw.common.Pagination;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.sql.Sql;
-import scw.sql.orm.ORMUtils;
-import scw.sql.orm.SqlSelect;
-import scw.sql.orm.TableInfo;
 import scw.sql.orm.result.ResultSet;
 
 /**

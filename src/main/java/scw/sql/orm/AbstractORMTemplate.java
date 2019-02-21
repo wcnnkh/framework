@@ -11,9 +11,10 @@ import scw.common.Pagination;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
-import scw.sql.SqlTemplate;
 import scw.sql.Sql;
+import scw.sql.SqlTemplate;
 import scw.sql.orm.annoation.Table;
+import scw.sql.orm.mysql.MysqlSelect;
 import scw.sql.orm.plugin.SelectCacheUtils;
 import scw.sql.orm.result.ResultSet;
 
@@ -269,5 +270,37 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		}
 
 		return new Pagination<ResultSet>(count, limit, select(paginationSql.getResultSql()));
+	}
+	
+	public Select createSelect() {
+		return new MysqlSelect(this);
+	}
+	
+	public <T> T getMaxValue(Class<T> type, Class<?> tableClass,
+			String tableName, String columnName) {
+		Select select = createSelect();
+		select.desc(tableClass, columnName);
+		return select.getResultSet().getFirst().get(type, tableName);
+	}
+
+	public <T> T getMaxValue(Class<T> type, Class<?> tableClass,
+			String columnName) {
+		return getMaxValue(type, tableClass, null, columnName);
+	}
+
+	public int getMaxIntValue(Class<?> tableClass, String fieldName) {
+		Integer maxId = getMaxValue(Integer.class, tableClass, fieldName);
+		if (maxId == null) {
+			maxId = 0;
+		}
+		return maxId;
+	}
+
+	public long getMaxLongValue(Class<?> tableClass, String fieldName) {
+		Long maxId = getMaxValue(Long.class, tableClass, fieldName);
+		if (maxId == null) {
+			maxId = 0L;
+		}
+		return maxId;
 	}
 }

@@ -2,7 +2,6 @@ package scw.sql.orm;
 
 import java.util.List;
 
-import scw.db.sql.Select;
 import scw.sql.Sql;
 import scw.sql.orm.result.ResultSet;
 
