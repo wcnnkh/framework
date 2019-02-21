@@ -18,7 +18,7 @@ import scw.sql.orm.mysql.MysqlSelect;
 import scw.sql.orm.plugin.SelectCacheUtils;
 import scw.sql.orm.result.ResultSet;
 
-public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSelect, ORMOperations {
+public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSelect, ORMOperations, SelectMaxId {
 
 	private final SqlFormat sqlFormat;
 
@@ -204,7 +204,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList, Object... params) {
 		return getInIdList(type, null, inIdList, params);
 	}
-	
+
 	public ResultSet select(Sql sql) {
 		return SelectCacheUtils.select(this, sql);
 	}
@@ -216,7 +216,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 	public <T> T selectOne(Class<T> type, Sql sql) {
 		return select(sql).getFirst().get(type);
 	}
-	
+
 	public void createTable(Class<?> tableClass) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		createTable(tableClass, tableInfo.getName());
@@ -271,20 +271,18 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 
 		return new Pagination<ResultSet>(count, limit, select(paginationSql.getResultSql()));
 	}
-	
+
 	public Select createSelect() {
 		return new MysqlSelect(this);
 	}
-	
-	public <T> T getMaxValue(Class<T> type, Class<?> tableClass,
-			String tableName, String columnName) {
+
+	public <T> T getMaxValue(Class<T> type, Class<?> tableClass, String tableName, String columnName) {
 		Select select = createSelect();
 		select.desc(tableClass, columnName);
 		return select.getResultSet().getFirst().get(type, tableName);
 	}
 
-	public <T> T getMaxValue(Class<T> type, Class<?> tableClass,
-			String columnName) {
+	public <T> T getMaxValue(Class<T> type, Class<?> tableClass, String columnName) {
 		return getMaxValue(type, tableClass, null, columnName);
 	}
 

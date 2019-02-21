@@ -16,7 +16,7 @@ import scw.sql.orm.cache.Cache;
 import scw.sql.orm.cache.TransactionCache;
 import scw.transaction.sql.SqlTransactionUtils;
 
-public class JdbcTemplate extends AbstractORMCacheTemplate implements MaxIdByDB {
+public class JdbcTemplate extends AbstractORMCacheTemplate {
 	private final ConnectionFactory connectionFactory;
 	private final boolean lazy;// 延迟执行
 

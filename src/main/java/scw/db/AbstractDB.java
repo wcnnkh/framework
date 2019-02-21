@@ -10,7 +10,6 @@ import scw.sql.Sql;
 import scw.sql.SqlException;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.SqlFormat;
-import scw.sql.orm.SqlSelect;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.cache.AbstractORMCacheTemplate;
 import scw.sql.orm.mysql.MysqlFormat;
@@ -19,7 +18,7 @@ import scw.sql.orm.result.Result;
 import scw.transaction.sql.SqlTransactionUtils;
 
 public abstract class AbstractDB extends AbstractORMCacheTemplate
-		implements ConnectionFactory, AutoCloseable, SqlSelect, MaxIdByDB {
+		implements ConnectionFactory, AutoCloseable {
 	{
 		Logger.info("Init DB for className:" + this.getClass().getName());
 	}

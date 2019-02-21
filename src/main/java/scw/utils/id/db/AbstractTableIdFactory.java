@@ -1,15 +1,15 @@
 package scw.utils.id.db;
 
 import scw.common.exception.NotFoundException;
-import scw.db.DB;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
+import scw.sql.orm.SelectMaxId;
 import scw.sql.orm.TableInfo;
 
 public abstract class AbstractTableIdFactory implements TableIdFactory {
-	private final DB db;
+	private final SelectMaxId db;
 
-	public AbstractTableIdFactory(DB db) {
+	public AbstractTableIdFactory(SelectMaxId db) {
 		this.db = db;
 	}
 
