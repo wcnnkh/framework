@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import scw.common.Logger;
 import scw.common.Pagination;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.ClassUtils;
@@ -225,7 +224,6 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 	public void createTable(Class<?> tableClass, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		Sql sql = getSqlFormat().toCreateTableSql(tableInfo, tableName);
-		Logger.info(this.getClass().getName(), sql.getSql());
 		execute(sql);
 	}
 
