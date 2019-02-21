@@ -17,8 +17,7 @@ import scw.sql.orm.result.DefaultResult;
 import scw.sql.orm.result.Result;
 import scw.transaction.sql.SqlTransactionUtils;
 
-public abstract class AbstractDB extends AbstractORMCacheTemplate
-		implements ConnectionFactory, AutoCloseable {
+public abstract class AbstractDB extends AbstractORMCacheTemplate implements ConnectionFactory, AutoCloseable {
 	{
 		Logger.info("Init DB for className:" + this.getClass().getName());
 	}
@@ -47,15 +46,23 @@ public abstract class AbstractDB extends AbstractORMCacheTemplate
 
 	@Override
 	public boolean execute(Sql sql) throws SqlException {
-		log(sql);
-		SqlTransactionUtils.executeSql(this, sql);
+		boolean b = SqlTransactionUtils.executeSql(this, sql);
+		if (b) {
+			log(sql);
+		} else {
+			return super.execute(sql);
+		}
 		return true;
 	}
 
 	@Override
 	public int update(Sql sql) throws SqlException {
-		log(sql);
-		SqlTransactionUtils.executeSql(this, sql);
+		boolean b = SqlTransactionUtils.executeSql(this, sql);
+		if (b) {
+			log(sql);
+		} else {
+			return super.update(sql);
+		}
 		return 0;
 	}
 }

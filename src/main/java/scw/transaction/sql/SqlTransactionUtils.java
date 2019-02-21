@@ -88,18 +88,19 @@ public abstract class SqlTransactionUtils {
 		mcts.transactionLifeCycle(tlc);
 	}
 
-	public static void executeSql(ConnectionFactory connectionFactory, Sql sql) {
+	public static boolean executeSql(ConnectionFactory connectionFactory, Sql sql) {
 		LinkedList<MultipleConnectionTransactionSynchronization> list = LOCAL.get();
 		if (list == null) {
-			return;
+			return false;
 		}
 
 		MultipleConnectionTransactionSynchronization mcts = list.getLast();
 		if (mcts == null) {
-			return;
+			return false;
 		}
 
 		mcts.getConnectionTransaction(connectionFactory).addSql(sql);
+		return true;
 	}
 
 	protected static MultipleConnectionTransactionSynchronization getTransaction(
