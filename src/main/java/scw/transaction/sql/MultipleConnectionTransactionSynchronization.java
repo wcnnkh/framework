@@ -65,6 +65,7 @@ class MultipleConnectionTransactionSynchronization extends AbstractTransaction i
 
 	/**
 	 * 不可能返回空
+	 * 
 	 * @param connectionFactory
 	 * @return
 	 */
@@ -106,29 +107,24 @@ class MultipleConnectionTransactionSynchronization extends AbstractTransaction i
 
 	private TransactionSynchronizationLifeCycle tslc;
 
-	public void begin() throws TransactionException {
+	public void process() throws TransactionException {
 		if (isNewTransaction()) {
 			if (tslc != null) {
 				return;
 			}
 
 			TransactionSynchronizationCollection stsc = new TransactionSynchronizationCollection();
-			if (tsc != null) {
-				stsc.add(tsc);
-			}
-
 			if (cstsMap != null) {
 				for (Entry<ConnectionFactory, ConnectionTransaction> entry : cstsMap.entrySet()) {
 					stsc.add(entry.getValue());
 				}
 			}
 
-			tslc = new TransactionSynchronizationLifeCycle(stsc, tlcc);
-		}
-	}
+			if (tsc != null) {
+				stsc.add(tsc);
+			}
 
-	public void process() throws TransactionException {
-		if (tslc != null) {
+			tslc = new TransactionSynchronizationLifeCycle(stsc, tlcc);
 			tslc.process();
 		}
 	}

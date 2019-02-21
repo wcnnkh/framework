@@ -8,7 +8,6 @@ import net.sf.cglib.proxy.MethodProxy;
 import scw.beans.BeanFilter;
 import scw.beans.BeanFilterChain;
 import scw.common.utils.StringUtils;
-import scw.database.TransactionContext;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
 import scw.sql.orm.plugin.SelectCacheUtils;
@@ -63,7 +62,6 @@ public final class LockFilter implements BeanFilter {
 			}
 
 			SelectCacheUtils.setEnable(false);
-			TransactionContext.getConfig().setSelectCache(false);
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		} finally {
 			lock.unlock();

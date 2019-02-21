@@ -12,16 +12,9 @@ import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
-import scw.database.TransactionContext;
-import scw.db.sql.TransactionBeanFilter;
-import scw.sql.orm.ORMUtils;
 import scw.sql.orm.plugin.SelectCacheFilter;
 
 public class CommonApplication implements Application {
-	private static final String TRANSACTION_DEBUG_NAME = "shuchaowen.transaction.debug";
-	private static final String TRANSACTION_CACHE_NAME = "shuchaowen.transaction.cache";
-	private static final String PROXY_REGISTE_TABLE = "shuchaowen.proxy.register.table";
-
 	private final XmlBeanFactory beanFactory;
 	private volatile boolean start = false;
 	private final PropertiesFactory propertiesFactory;
@@ -32,7 +25,6 @@ public class CommonApplication implements Application {
 		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(configPath) : propertiesFactory;
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
-			this.beanFactory.addFirstFilters(TransactionBeanFilter.class.getName());
 			this.beanFactory.addFirstFilters(scw.transaction.TransactionBeanFilter.class.getName());
 			this.beanFactory.addFirstFilters(SelectCacheFilter.class.getName());
 		} catch (Exception e) {
@@ -70,21 +62,6 @@ public class CommonApplication implements Application {
 		}
 
 		beanFactory.init();
-
-		String transactionDebug = getPropertiesFactory().getValue(TRANSACTION_DEBUG_NAME);
-		if (!StringUtils.isNull(transactionDebug)) {
-			TransactionContext.getGlobaConfig().setDebug(Boolean.parseBoolean(transactionDebug));
-		}
-
-		String transactionCache = getPropertiesFactory().getValue(TRANSACTION_CACHE_NAME);
-		if (!StringUtils.isNull(transactionCache)) {
-			TransactionContext.getGlobaConfig().setSelectCache(Boolean.parseBoolean(transactionCache));
-		}
-
-		String registerTableBean = getPropertiesFactory().getValue(PROXY_REGISTE_TABLE);
-		if (!StringUtils.isNull(registerTableBean)) {
-			ORMUtils.registerCglibProxyTableBean(registerTableBean);
-		}
 
 		if (!StringUtils.isNull(configPath)) {
 			new Thread(new Runnable() {
