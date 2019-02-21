@@ -18,7 +18,10 @@ public @interface Column {
 
 	/**
 	 * 是否建立唯一索引
+	 * 
 	 * @return
 	 */
 	public boolean unique() default false;
+
+	public String comment() default "";
 }

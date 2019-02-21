@@ -32,4 +32,6 @@ public @interface Table {
 	 * @return
 	 */
 	public boolean parent() default false;
+	
+	public String comment() default "";
 }
