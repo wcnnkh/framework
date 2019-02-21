@@ -3,7 +3,6 @@ package scw.db;
 import java.sql.SQLException;
 
 import scw.common.Iterator;
-import scw.common.Logger;
 import scw.database.DataBaseUtils;
 import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
@@ -18,9 +17,6 @@ import scw.sql.orm.result.Result;
 import scw.transaction.sql.SqlTransactionUtils;
 
 public abstract class AbstractDB extends AbstractORMCacheTemplate implements ConnectionFactory, AutoCloseable {
-	{
-		Logger.info("Init DB for className:" + this.getClass().getName());
-	}
 
 	public AbstractDB(SqlFormat sqlFormat) {
 		super(sqlFormat == null ? new MysqlFormat() : sqlFormat, null);
