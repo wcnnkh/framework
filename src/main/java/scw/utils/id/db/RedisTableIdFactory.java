@@ -4,16 +4,16 @@ import java.util.Arrays;
 
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
-import scw.db.DB;
 import scw.locks.Lock;
 import scw.locks.RedisLock;
 import scw.redis.Redis;
+import scw.sql.orm.SelectMaxId;
 
 public class RedisTableIdFactory extends AbstractTableIdFactory {
 	private static final String INCR_SCRIPT = "if redis.call('exists', KEYS[1]) == 1 then return redis.call('incr', KEYV[1]) else local newValue = ARGS[1] + 1; redis.call('set', KEYS[1], newValue) return newValue end";
 	private final Redis redis;
 
-	public RedisTableIdFactory(DB db, Redis redis) {
+	public RedisTableIdFactory(SelectMaxId db, Redis redis) {
 		super(db);
 		this.redis = redis;
 	}
