@@ -11,6 +11,7 @@ import scw.sql.orm.ORMUtils;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.cache.AbstractORMCacheTemplate;
+import scw.sql.orm.cache.Cache;
 import scw.sql.orm.mysql.MysqlFormat;
 import scw.sql.orm.result.DefaultResult;
 import scw.sql.orm.result.Result;
@@ -18,8 +19,8 @@ import scw.transaction.sql.SqlTransactionUtils;
 
 public abstract class AbstractDB extends AbstractORMCacheTemplate implements ConnectionFactory, AutoCloseable {
 
-	public AbstractDB(SqlFormat sqlFormat) {
-		super(sqlFormat == null ? new MysqlFormat() : sqlFormat, null);
+	public AbstractDB(SqlFormat sqlFormat, Cache cache) {
+		super(sqlFormat == null ? new MysqlFormat() : sqlFormat, cache);
 	}
 
 	public void iterator(Class<?> tableClass, Iterator<Result> iterator) {
