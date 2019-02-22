@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import scw.beans.BeanFieldListen;
 import scw.common.Pagination;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.ClassUtils;
@@ -95,6 +96,12 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 	public boolean update(Object bean, String tableName) {
 		if (bean == null) {
 			return false;
+		}
+
+		if (bean instanceof BeanFieldListen) {
+			if (((BeanFieldListen) bean).get_field_change_map() == null) {
+				return true;
+			}
 		}
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
