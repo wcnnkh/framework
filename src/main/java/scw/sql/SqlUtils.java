@@ -81,7 +81,12 @@ public abstract class SqlUtils {
 			preparedStatement = connection.prepareStatement(sql.getSql(), resultSetType, resultSetConcurrency);
 		}
 
-		setSqlParams(preparedStatement, sql.getParams());
+		try {
+			setSqlParams(preparedStatement, sql.getParams());
+		} catch (SQLException e) {
+			preparedStatement.close();
+			throw e;
+		}
 		return preparedStatement;
 	}
 
@@ -96,7 +101,12 @@ public abstract class SqlUtils {
 					resultSetHoldability);
 		}
 
-		setSqlParams(preparedStatement, sql.getParams());
+		try {
+			setSqlParams(preparedStatement, sql.getParams());
+		} catch (SQLException e) {
+			preparedStatement.close();
+			throw e;
+		}
 		return preparedStatement;
 	}
 
