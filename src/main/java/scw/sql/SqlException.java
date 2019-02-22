@@ -9,6 +9,10 @@ public class SqlException extends NestedRuntimeException {
 		super(msg, cause);
 	}
 
+	public SqlException(String msg) {
+		super(msg);
+	}
+
 	public SqlException(Throwable cause) {
 		super(cause);
 	}

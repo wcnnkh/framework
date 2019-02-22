@@ -11,6 +11,7 @@ import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.sql.Sql;
+import scw.sql.SqlException;
 import scw.sql.SqlTemplate;
 import scw.sql.orm.annoation.Table;
 import scw.sql.orm.mysql.MysqlSelect;
@@ -127,6 +128,10 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		}
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
+		if (tableInfo.getPrimaryKeyColumns().length != params.length) {
+			throw new SqlException("主键数量和参数不一致:" + type.getName());
+		}
+
 		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName() : tableName;
 		Sql sql = sqlFormat.toDeleteSql(tableInfo, tName, params);
 		return execute(sql);
