@@ -13,7 +13,6 @@ import scw.beans.xml.XmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
 import scw.common.exception.BeansException;
-import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.StringUtils;
 
 public final class XmlBeanFactory extends AbstractBeanFactory {
@@ -179,7 +178,7 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 		try {
 			destroyMethod();
 		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
+			e.printStackTrace();
 		}
 	}
 }

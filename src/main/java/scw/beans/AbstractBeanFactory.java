@@ -251,7 +251,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 				BeanUtils.destroyStaticMethod(getClassList());
 			}
 		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
+			e.printStackTrace();
 		}
 	}
 }
