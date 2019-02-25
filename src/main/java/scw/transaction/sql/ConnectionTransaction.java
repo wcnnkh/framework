@@ -1,5 +1,6 @@
 package scw.transaction.sql;
 
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -39,7 +40,7 @@ class ConnectionTransaction implements SavepointManager, TransactionSynchronizat
 
 	public Connection getConnection() throws SQLException {
 		if (connection == null) {
-			connection = SqlUtils.newProxyConnection(connectionFactory);
+			connection = connectionFactory.getConnection();
 			connection.setAutoCommit(!active);
 
 			if (transactionDefinition.isReadOnly()) {
@@ -50,6 +51,9 @@ class ConnectionTransaction implements SavepointManager, TransactionSynchronizat
 			if (isolation != Isolation.DEFAULT) {
 				connection.setTransactionIsolation(isolation.getLevel());
 			}
+
+			connection = (ConnectionProxy) Proxy.newProxyInstance(ConnectionProxy.class.getClassLoader(),
+					new Class<?>[] { ConnectionProxy.class }, new UnableToCloseConnectionProxyHandler(connection));
 		}
 		return connection;
 	}
@@ -129,7 +133,11 @@ class ConnectionTransaction implements SavepointManager, TransactionSynchronizat
 			}
 
 			try {
-				SqlUtils.closeProxyConnection(connection);
+				if (connection instanceof ConnectionProxy) {
+					((ConnectionProxy) connection).getTargetConnection().close();
+				} else {
+					connection.close();
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
