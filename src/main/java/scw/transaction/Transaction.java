@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.common.exception.AlreadyExistsException;
 import scw.transaction.savepoint.MultipleSavepoint;
 import scw.transaction.savepoint.Savepoint;
 
@@ -23,7 +24,8 @@ public final class Transaction {
 	 * @param transactionDefinition
 	 * @param active
 	 */
-	protected Transaction(TransactionDefinition transactionDefinition, boolean active) {
+	protected Transaction(TransactionDefinition transactionDefinition,
+			boolean active) {
 		this.active = active;
 		this.newTransaction = true;
 		this.transactionDefinition = transactionDefinition;
@@ -68,6 +70,10 @@ public final class Transaction {
 
 		if (resourceMap == null) {
 			resourceMap = new HashMap<Object, TransactionResource>(4, 1);
+		} else {
+			if (resourceMap.containsKey(name)) {
+				throw new AlreadyExistsException("已经存在此事务资源了，不可以重复绑定：" + name);
+			}
 		}
 
 		resourceMap.put(name, resource);
@@ -87,8 +93,10 @@ public final class Transaction {
 
 			TransactionSynchronizationCollection stsc = new TransactionSynchronizationCollection();
 			if (resourceMap != null) {
-				for (Entry<Object, TransactionResource> entry : resourceMap.entrySet()) {
-					stsc.add(new TransactionResourceSynchronization(entry.getValue()));
+				for (Entry<Object, TransactionResource> entry : resourceMap
+						.entrySet()) {
+					stsc.add(new TransactionResourceSynchronization(entry
+							.getValue()));
 				}
 			}
 
