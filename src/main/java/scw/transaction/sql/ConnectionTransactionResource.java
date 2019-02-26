@@ -17,7 +17,7 @@ import scw.transaction.TransactionException;
 import scw.transaction.TransactionResource;
 import scw.transaction.savepoint.ConnectionSavepoint;
 
-public class ConnectionTransactionResource extends TransactionResource {
+public final class ConnectionTransactionResource implements TransactionResource {
 	private static final String SAVEPOINT_NAME_PREFIX = "SAVEPOINT_";
 	private final ConnectionFactory connectionFactory;
 	private final TransactionDefinition transactionDefinition;
@@ -33,7 +33,8 @@ public class ConnectionTransactionResource extends TransactionResource {
 		this.transactionDefinition = transactionDefinition;
 	}
 
-	public ConnectionTransactionResource(ConnectionFactory connectionFactory, Transaction transaction) {
+	public ConnectionTransactionResource(ConnectionFactory connectionFactory,
+			Transaction transaction) {
 		this.active = transaction.isActive();
 		this.connectionFactory = connectionFactory;
 		this.transactionDefinition = transaction.getTransactionDefinition();
@@ -57,8 +58,10 @@ public class ConnectionTransactionResource extends TransactionResource {
 				connection.setTransactionIsolation(isolation.getLevel());
 			}
 
-			connection = (ConnectionProxy) Proxy.newProxyInstance(ConnectionProxy.class.getClassLoader(),
-					new Class<?>[] { ConnectionProxy.class }, new UnableToCloseConnectionProxyHandler(connection));
+			connection = (ConnectionProxy) Proxy.newProxyInstance(
+					ConnectionProxy.class.getClassLoader(),
+					new Class<?>[] { ConnectionProxy.class },
+					new UnableToCloseConnectionProxyHandler(connection));
 		}
 		return connection;
 	}
@@ -86,16 +89,18 @@ public class ConnectionTransactionResource extends TransactionResource {
 		setActive(active);
 	}
 
-	public scw.transaction.savepoint.Savepoint createSavepoint() throws TransactionException {
+	public scw.transaction.savepoint.Savepoint createSavepoint()
+			throws TransactionException {
 		savepointCounter++;
-		return new ConnectionSavepoint(connection, SAVEPOINT_NAME_PREFIX + savepointCounter);
+		return new ConnectionSavepoint(connection, SAVEPOINT_NAME_PREFIX
+				+ savepointCounter);
 	}
 
 	public ConnectionFactory getConnectionFactory() {
 		return connectionFactory;
 	}
 
-	protected void end() throws TransactionException {
+	public void end() {
 		if (hasConnection()) {
 			try {
 				connection.commit();
@@ -113,7 +118,8 @@ public class ConnectionTransactionResource extends TransactionResource {
 
 			try {
 				if (connection instanceof ConnectionProxy) {
-					((ConnectionProxy) connection).getTargetConnection().close();
+					((ConnectionProxy) connection).getTargetConnection()
+							.close();
 				} else {
 					connection.close();
 				}
@@ -123,7 +129,7 @@ public class ConnectionTransactionResource extends TransactionResource {
 		}
 	}
 
-	protected void rollback() throws TransactionException {
+	public void rollback() {
 		if (hasConnection()) {
 			try {
 				connection.rollback();
@@ -133,17 +139,19 @@ public class ConnectionTransactionResource extends TransactionResource {
 		}
 	}
 
-	protected void process() throws TransactionException {
+	public void process() {
 		if (sqlMap != null && !sqlMap.isEmpty()) {
 			try {
 				connection = getConnection();
 				for (Entry<String, Sql> entry : sqlMap.entrySet()) {
-					PreparedStatement preparedStatement = SqlUtils.createPreparedStatement(connection,
-							entry.getValue());
+					PreparedStatement preparedStatement = SqlUtils
+							.createPreparedStatement(connection,
+									entry.getValue());
 					try {
 						preparedStatement.execute();
 					} catch (SQLException e) {
-						throw new TransactionException(SqlUtils.getSqlId(entry.getValue()), e);
+						throw new TransactionException(SqlUtils.getSqlId(entry
+								.getValue()), e);
 					} finally {
 						try {
 							preparedStatement.close();
