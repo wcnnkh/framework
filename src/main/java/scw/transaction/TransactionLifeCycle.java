@@ -1,4 +1,4 @@
-package scw.transaction.support;
+package scw.transaction;
 
 /**
  * 事务的生命周期
@@ -10,29 +10,29 @@ public interface TransactionLifeCycle {
 	/**
 	 * 在执行之前调用
 	 */
-	void beforeProcess() throws Throwable;
+	void beforeProcess();
 
 	/**
 	 * 在执行之后调用
 	 */
-	void afterProcess() throws Throwable;
+	void afterProcess();
 
 	/**
 	 * 在事务回滚前调用
 	 * 
 	 * @throws Throwable
 	 */
-	void beforeRollback() throws Throwable;
+	void beforeRollback();
 
 	/**
 	 * 在事务回滚后调用
 	 * 
 	 * @throws Throwable
 	 */
-	void afterRollback() throws Throwable;
+	void afterRollback();
 
 	/**
 	 * 事务结束后调用
 	 */
-	void complete() throws Throwable;
+	void complete();
 }

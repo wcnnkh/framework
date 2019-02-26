@@ -1,8 +1,6 @@
-package scw.transaction.support;
+package scw.transaction;
 
-import scw.transaction.TransactionException;
-
-public class TransactionSynchronizationLifeCycle implements TransactionSynchronization {
+class TransactionSynchronizationLifeCycle implements TransactionSynchronization {
 	private final TransactionLifeCycle transactionLifeCycle;
 	private final TransactionSynchronization transactionSynchronization;
 
@@ -12,13 +10,9 @@ public class TransactionSynchronizationLifeCycle implements TransactionSynchroni
 		this.transactionSynchronization = transactionSynchronization;
 	}
 
-	public void process() throws TransactionException {
+	public void process() {
 		if (transactionLifeCycle != null) {
-			try {
-				transactionLifeCycle.beforeProcess();
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
+			transactionLifeCycle.beforeProcess();
 		}
 
 		if (transactionSynchronization != null) {
@@ -26,21 +20,13 @@ public class TransactionSynchronizationLifeCycle implements TransactionSynchroni
 		}
 
 		if (transactionLifeCycle != null) {
-			try {
-				transactionLifeCycle.afterProcess();
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
+			transactionLifeCycle.afterProcess();
 		}
 	}
 
-	public void rollback() throws TransactionException {
+	public void rollback() {
 		if (transactionLifeCycle != null) {
-			try {
-				transactionLifeCycle.beforeRollback();
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
+			transactionLifeCycle.beforeRollback();
 		}
 
 		if (transactionSynchronization != null) {
@@ -48,33 +34,21 @@ public class TransactionSynchronizationLifeCycle implements TransactionSynchroni
 		}
 
 		if (transactionLifeCycle != null) {
-			try {
-				transactionLifeCycle.afterRollback();
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
+			transactionLifeCycle.afterRollback();
 		}
 	}
 
 	public void end() {
 		if (transactionSynchronization == null) {
 			if (transactionLifeCycle != null) {
-				try {
-					transactionLifeCycle.complete();
-				} catch (Throwable e) {
-					e.printStackTrace();
-				}
+				transactionLifeCycle.complete();
 			}
 		} else {
 			try {
 				transactionSynchronization.end();
 			} finally {
 				if (transactionLifeCycle != null) {
-					try {
-						transactionLifeCycle.complete();
-					} catch (Throwable e) {
-						e.printStackTrace();
-					}
+					transactionLifeCycle.complete();
 				}
 			}
 		}

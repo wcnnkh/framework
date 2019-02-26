@@ -5,9 +5,8 @@ import java.util.Map;
 
 import scw.memcached.Memcached;
 import scw.redis.Redis;
-import scw.transaction.TransactionException;
-import scw.transaction.sql.SqlTransactionUtils;
-import scw.transaction.support.TransactionSynchronization;
+import scw.transaction.DefaultTransactionLifeCycle;
+import scw.transaction.TransactionManager;
 
 public class TransactionCache implements Cache {
 	private final Cache cache;
@@ -29,33 +28,29 @@ public class TransactionCache implements Cache {
 	}
 
 	public void add(final String key, final Object bean) {
-		SqlTransactionUtils.transactionSynchronization(new TransactionSynchronization() {
-
-			public void rollback() throws TransactionException {
-				cache.delete(key);
-			}
-
-			public void process() throws TransactionException {
+		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+			@Override
+			public void afterProcess() {
 				cache.add(key, bean);
 			}
 
-			public void end() {
+			@Override
+			public void afterRollback() {
+				cache.delete(key);
 			}
 		});
 	}
 
 	public void set(final String key, final Object bean) {
-		SqlTransactionUtils.transactionSynchronization(new TransactionSynchronization() {
-
-			public void rollback() throws TransactionException {
-				cache.delete(key);
-			}
-
-			public void process() throws TransactionException {
+		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+			@Override
+			public void afterProcess() {
 				cache.set(key, bean);
 			}
 
-			public void end() {
+			@Override
+			public void afterRollback() {
+				cache.delete(key);
 			}
 		});
 	}

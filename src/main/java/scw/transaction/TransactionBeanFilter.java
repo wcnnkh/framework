@@ -3,12 +3,8 @@ package scw.transaction;
 import java.lang.reflect.Method;
 
 import net.sf.cglib.proxy.MethodProxy;
-import scw.beans.BeanFactory;
 import scw.beans.BeanFilter;
 import scw.beans.BeanFilterChain;
-import scw.beans.annotaion.Autowrite;
-import scw.common.utils.StringUtils;
-import scw.transaction.sql.SqlTransactionManager;
 
 /**
  * 必须要在BeanFactory中管理
@@ -17,13 +13,6 @@ import scw.transaction.sql.SqlTransactionManager;
  *
  */
 public class TransactionBeanFilter implements BeanFilter {
-	@Autowrite
-	private BeanFactory beanFactory;
-
-	/**
-	 * 默认的事务管理器
-	 */
-	private final String transactionManagerName;
 	/**
 	 * 默认的事务定义
 	 */
@@ -34,12 +23,7 @@ public class TransactionBeanFilter implements BeanFilter {
 	}
 
 	public TransactionBeanFilter(TransactionDefinition transactionDefinition) {
-		this(transactionDefinition, SqlTransactionManager.class.getName());
-	}
-
-	public TransactionBeanFilter(TransactionDefinition transactionDefinition, String transactionManagerName) {
 		this.transactionDefinition = transactionDefinition;
-		this.transactionManagerName = transactionManagerName;
 	}
 
 	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
@@ -50,30 +34,14 @@ public class TransactionBeanFilter implements BeanFilter {
 			return defaultTransaction(obj, method, args, proxy, beanFilterChain);
 		}
 
-		String tmName = null;
-		if (clzTx != null) {
-			tmName = clzTx.transactionManager();
-		}
-
-		if (methodTx != null) {
-			if (!StringUtils.isEmpty(methodTx.transactionManager())) {
-				tmName = methodTx.transactionManager();
-			}
-		}
-
-		if (StringUtils.isEmpty(tmName)) {
-			tmName = transactionManagerName;
-		}
-
-		TransactionManager transactionManager = beanFactory.get(tmName);
-		Transaction transaction = transactionManager
+		Transaction transaction = TransactionManager
 				.getTransaction(new AnnoationTransactionDefinition(clzTx, methodTx));
 		Object rtn;
 		try {
 			rtn = beanFilterChain.doFilter(obj, method, args, proxy);
-			transactionManager.commit(transaction);
+			TransactionManager.commit(transaction);
 		} catch (Throwable e) {
-			transactionManager.rollback(transaction);
+			TransactionManager.rollback(transaction);
 			throw e;
 		}
 		return rtn;
@@ -81,19 +49,18 @@ public class TransactionBeanFilter implements BeanFilter {
 
 	private Object defaultTransaction(Object obj, Method method, Object[] args, MethodProxy proxy,
 			BeanFilterChain beanFilterChain) throws Throwable {
-		TransactionManager manager = beanFactory.get(transactionManagerName);
-		if (manager.hasTransaction()) {
+		if (TransactionManager.hasTransaction()) {
 			return beanFilterChain.doFilter(obj, method, args, proxy);
 		}
 
-		Transaction transaction = manager.getTransaction(transactionDefinition);
+		Transaction transaction = TransactionManager.getTransaction(transactionDefinition);
 		Object v;
 		try {
 			v = beanFilterChain.doFilter(obj, method, args, proxy);
-			manager.commit(transaction);
+			TransactionManager.commit(transaction);
 			return v;
 		} catch (Throwable e) {
-			manager.rollback(transaction);
+			TransactionManager.rollback(transaction);
 			throw e;
 		}
 	}

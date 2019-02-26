@@ -4,7 +4,6 @@ import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Savepoint;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
@@ -12,13 +11,13 @@ import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
 import scw.transaction.Isolation;
-import scw.transaction.NotSupportTransactionException;
-import scw.transaction.SavepointManager;
+import scw.transaction.Transaction;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
-import scw.transaction.support.TransactionSynchronization;
+import scw.transaction.TransactionResource;
+import scw.transaction.savepoint.ConnectionSavepoint;
 
-class ConnectionTransaction implements SavepointManager, TransactionSynchronization {
+public class ConnectionTransactionResource extends TransactionResource {
 	private static final String SAVEPOINT_NAME_PREFIX = "SAVEPOINT_";
 	private final ConnectionFactory connectionFactory;
 	private final TransactionDefinition transactionDefinition;
@@ -27,11 +26,17 @@ class ConnectionTransaction implements SavepointManager, TransactionSynchronizat
 	private boolean active;
 	private LinkedHashMap<String, Sql> sqlMap;
 
-	public ConnectionTransaction(ConnectionFactory connectionFactory, TransactionDefinition transactionDefinition,
-			boolean active) {
+	public ConnectionTransactionResource(ConnectionFactory connectionFactory,
+			TransactionDefinition transactionDefinition, boolean active) {
 		this.active = active;
 		this.connectionFactory = connectionFactory;
 		this.transactionDefinition = transactionDefinition;
+	}
+
+	public ConnectionTransactionResource(ConnectionFactory connectionFactory, Transaction transaction) {
+		this.active = transaction.isActive();
+		this.connectionFactory = connectionFactory;
+		this.transactionDefinition = transaction.getTransactionDefinition();
 	}
 
 	public boolean hasConnection() {
@@ -81,42 +86,16 @@ class ConnectionTransaction implements SavepointManager, TransactionSynchronizat
 		setActive(active);
 	}
 
-	public Object createSavepoint() throws TransactionException {
+	public scw.transaction.savepoint.Savepoint createSavepoint() throws TransactionException {
 		savepointCounter++;
-		try {
-			return getConnection().setSavepoint(SAVEPOINT_NAME_PREFIX + savepointCounter);
-		} catch (SQLException e) {
-			throw new TransactionException(e);
-		}
-	}
-
-	public void rollbackToSavepoint(Object savepoint) throws TransactionException {
-		if (!(savepoint instanceof Savepoint)) {
-			throw new NotSupportTransactionException("not suppert savepoint");
-		}
-		try {
-			getConnection().rollback((Savepoint) savepoint);
-		} catch (SQLException e) {
-			throw new TransactionException(e);
-		}
-	}
-
-	public void releaseSavepoint(Object savepoint) throws TransactionException {
-		if (!(savepoint instanceof Savepoint)) {
-			throw new NotSupportTransactionException("not suppert savepoint");
-		}
-		try {
-			getConnection().releaseSavepoint((Savepoint) savepoint);
-		} catch (SQLException e) {
-			throw new TransactionException(e);
-		}
+		return new ConnectionSavepoint(connection, SAVEPOINT_NAME_PREFIX + savepointCounter);
 	}
 
 	public ConnectionFactory getConnectionFactory() {
 		return connectionFactory;
 	}
 
-	public void end() throws TransactionException {
+	protected void end() throws TransactionException {
 		if (hasConnection()) {
 			try {
 				connection.commit();
@@ -144,7 +123,7 @@ class ConnectionTransaction implements SavepointManager, TransactionSynchronizat
 		}
 	}
 
-	public void rollback() throws TransactionException {
+	protected void rollback() throws TransactionException {
 		if (hasConnection()) {
 			try {
 				connection.rollback();
@@ -154,7 +133,7 @@ class ConnectionTransaction implements SavepointManager, TransactionSynchronizat
 		}
 	}
 
-	public void process() throws TransactionException {
+	protected void process() throws TransactionException {
 		if (sqlMap != null && !sqlMap.isEmpty()) {
 			try {
 				connection = getConnection();

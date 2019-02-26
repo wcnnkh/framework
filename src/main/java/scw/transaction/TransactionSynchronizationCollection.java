@@ -1,26 +1,15 @@
-package scw.transaction.support;
+package scw.transaction;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import scw.transaction.TransactionException;
-
-public final class TransactionSynchronizationCollection extends LinkedList<TransactionSynchronization>
+final class TransactionSynchronizationCollection extends LinkedList<TransactionSynchronization>
 		implements TransactionSynchronization {
 	private static final long serialVersionUID = 1L;
 	private int beginTag = 0;
 	private int processTag = 0;
 
-	public TransactionSynchronizationCollection() {
-		super();
-	}
-
-	public TransactionSynchronizationCollection(Collection<? extends TransactionSynchronization> transactions) {
-		super(transactions);
-	}
-
-	public void process() throws TransactionException {
+	public void process() {
 		Iterator<TransactionSynchronization> iterator = iterator();
 		for (; iterator.hasNext(); processTag++) {
 			TransactionSynchronization transaction = iterator.next();
@@ -30,7 +19,7 @@ public final class TransactionSynchronizationCollection extends LinkedList<Trans
 		}
 	}
 
-	public void end() throws TransactionException {
+	public void end() {
 		Iterator<TransactionSynchronization> iterator = iterator();
 		for (; beginTag >= 0 && iterator.hasNext(); beginTag--) {
 			TransactionSynchronization transaction = iterator.next();
@@ -40,16 +29,12 @@ public final class TransactionSynchronizationCollection extends LinkedList<Trans
 		}
 	}
 
-	public void rollback() throws TransactionException {
+	public void rollback() {
 		Iterator<TransactionSynchronization> iterator = iterator();
 		for (; processTag >= 0 && iterator.hasNext(); processTag--) {
 			TransactionSynchronization transaction = iterator.next();
 			if (transaction != null) {
-				try {
-					transaction.rollback();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				transaction.rollback();
 			}
 		}
 	}

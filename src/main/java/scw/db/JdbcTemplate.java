@@ -61,14 +61,17 @@ public class JdbcTemplate extends AbstractORMCacheTemplate {
 		if (lazy) {
 			return connectionFactory.getConnection();
 		}
-		return SqlTransactionUtils.getCurrentConnection(connectionFactory);
+
+		return SqlTransactionUtils.getTransactionConnection(connectionFactory);
 	}
 
 	@Override
 	public boolean execute(Sql sql) throws SqlException {
 		if (lazy) {
-			SqlTransactionUtils.executeSql(connectionFactory, sql);
-			return true;
+			boolean b = SqlTransactionUtils.executeSql(connectionFactory, sql);
+			if (b) {
+				return true;
+			}
 		}
 		return super.execute(sql);
 	}
@@ -76,8 +79,10 @@ public class JdbcTemplate extends AbstractORMCacheTemplate {
 	@Override
 	public int update(Sql sql) throws SqlException {
 		if (lazy) {
-			SqlTransactionUtils.executeSql(connectionFactory, sql);
-			return 0;
+			boolean b = SqlTransactionUtils.executeSql(connectionFactory, sql);
+			if (b) {
+				return 0;
+			}
 		}
 		return super.update(sql);
 	}

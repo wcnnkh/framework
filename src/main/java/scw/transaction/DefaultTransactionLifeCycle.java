@@ -1,28 +1,28 @@
-package scw.transaction.support;
+package scw.transaction;
 
 public class DefaultTransactionLifeCycle implements TransactionLifeCycle {
 
-	public void beforeProcess() throws Throwable {
+	public void beforeProcess() {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void afterProcess() throws Throwable {
+	public void afterProcess() {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void beforeRollback() throws Throwable {
+	public void beforeRollback() {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void afterRollback() throws Throwable {
+	public void afterRollback() {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void complete() throws Throwable {
+	public void complete() {
 		// TODO Auto-generated method stub
 
 	}
