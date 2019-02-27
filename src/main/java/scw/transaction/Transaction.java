@@ -24,8 +24,7 @@ public final class Transaction {
 	 * @param transactionDefinition
 	 * @param active
 	 */
-	protected Transaction(TransactionDefinition transactionDefinition,
-			boolean active) {
+	protected Transaction(TransactionDefinition transactionDefinition, boolean active) {
 		this.active = active;
 		this.newTransaction = true;
 		this.transactionDefinition = transactionDefinition;
@@ -93,10 +92,8 @@ public final class Transaction {
 
 			TransactionSynchronizationCollection stsc = new TransactionSynchronizationCollection();
 			if (resourceMap != null) {
-				for (Entry<Object, TransactionResource> entry : resourceMap
-						.entrySet()) {
-					stsc.add(new TransactionResourceSynchronization(entry
-							.getValue()));
+				for (Entry<Object, TransactionResource> entry : resourceMap.entrySet()) {
+					stsc.add(new TransactionResourceSynchronization(entry.getValue()));
 				}
 			}
 
@@ -134,15 +131,7 @@ public final class Transaction {
 			return null;
 		}
 
-		MultipleSavepoint multipleSavepoint = new MultipleSavepoint();
-		for (Entry<Object, TransactionResource> entry : resourceMap.entrySet()) {
-			Savepoint savepoint = entry.getValue().createSavepoint();
-			if (savepoint == null) {
-				continue;
-			}
-			multipleSavepoint.add(savepoint);
-		}
-		return multipleSavepoint;
+		return new MultipleSavepoint(resourceMap.values());
 	}
 
 	public boolean hasSavepoint() {

@@ -59,4 +59,26 @@ public abstract class SqlTransactionUtils {
 		resource.addSql(sql);
 		return true;
 	}
+
+	/**
+	 * 获取一个多连接的事务管理器，但这几个连接的事务是非同步的
+	 * 
+	 * @param connectionFactory
+	 * @return
+	 * @throws SQLException
+	 */
+	public static Connection getMultipleTransactionConnection(ConnectionFactory connectionFactory) throws SQLException {
+		Transaction transaction = TransactionManager.getCurrentTransaction();
+		if (transaction == null) {
+			return connectionFactory.getConnection();
+		}
+
+		MultipleConnectionResource resource = (MultipleConnectionResource) transaction
+				.getResource(MultipleConnectionResource.class);
+		if (resource == null) {
+			resource = new MultipleConnectionResource(transaction);
+			transaction.bindResource(MultipleConnectionResource.class, resource);
+		}
+		return resource.getConnection(connectionFactory);
+	}
 }
