@@ -134,15 +134,7 @@ public final class Transaction {
 			return null;
 		}
 
-		MultipleSavepoint multipleSavepoint = new MultipleSavepoint();
-		for (Entry<Object, TransactionResource> entry : resourceMap.entrySet()) {
-			Savepoint savepoint = entry.getValue().createSavepoint();
-			if (savepoint == null) {
-				continue;
-			}
-			multipleSavepoint.add(savepoint);
-		}
-		return multipleSavepoint;
+		return new MultipleSavepoint(resourceMap.values());
 	}
 
 	public boolean hasSavepoint() {

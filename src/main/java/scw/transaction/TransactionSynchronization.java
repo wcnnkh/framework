@@ -1,6 +1,6 @@
 package scw.transaction;
 
-interface TransactionSynchronization {
+public interface TransactionSynchronization {
 
 	void process();
 
