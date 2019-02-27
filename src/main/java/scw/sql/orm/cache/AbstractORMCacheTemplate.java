@@ -191,7 +191,7 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 					if (bean == null) {
 						continue;
 					}
-					cache.add(CacheUtils.getObjectCacheKey(bean), bean);
+					cache.set(CacheUtils.getObjectCacheKey(bean), bean);
 					valueMap.put(entry.getKey(), bean);
 				}
 			}
