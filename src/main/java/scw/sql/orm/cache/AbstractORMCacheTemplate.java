@@ -186,7 +186,14 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 
 			Map<K, V> dbMap = super.getInIdList(type, tableName, inIds, params);
 			if (dbMap != null) {
-				valueMap.putAll(dbMap);
+				for (Entry<K, V> entry : dbMap.entrySet()) {
+					V bean = entry.getValue();
+					if (bean == null) {
+						continue;
+					}
+					cache.add(CacheUtils.getObjectCacheKey(bean), bean);
+					valueMap.put(entry.getKey(), bean);
+				}
 			}
 			return valueMap;
 		} else {
