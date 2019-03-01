@@ -91,7 +91,7 @@ public class PathAndParamSearchAction implements SearchAction{
 			return null;
 		}
 
-		String action = request.getParameter(String.class, key);
+		String action = request.getString(key);
 		if(action == null){
 			return null;
 		}

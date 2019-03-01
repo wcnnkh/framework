@@ -1,6 +1,7 @@
 package scw.servlet.action;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,9 +44,10 @@ public class MethodAction implements Action {
 	public static MethodParameter[] getMethodParameter(Method method) {
 		String[] tempKeys = ClassUtils.getParameterName(method);
 		Class<?>[] types = method.getParameterTypes();
+		Parameter[] parameters = method.getParameters();
 		MethodParameter[] paramInfos = new MethodParameter[types.length];
 		for (int l = 0; l < types.length; l++) {
-			paramInfos[l] = new MethodParameter(types[l], tempKeys[l]);
+			paramInfos[l] = new MethodParameter(types[l], parameters[l], tempKeys[l]);
 		}
 		return paramInfos;
 	}

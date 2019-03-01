@@ -1,15 +1,19 @@
 package scw.servlet.action;
 
+import java.lang.reflect.Parameter;
+
 import scw.servlet.Request;
 import scw.servlet.Response;
 
 public final class MethodParameter {
 	private final Class<?> type;
 	private final String name;
+	private final Parameter parameter;
 
-	public MethodParameter(Class<?> type, String name) {
+	public MethodParameter(Class<?> type, Parameter parameter, String name) {
 		this.type = type;
 		this.name = name;
+		this.parameter = parameter;
 	}
 
 	public Object getParameter(Request request, Response response) throws Throwable {
@@ -18,8 +22,12 @@ public final class MethodParameter {
 		} else if (Response.class.isAssignableFrom(type)) {
 			return response;
 		} else {
-			return request.getParameter(type, name);
+			return request.getParameter(type, parameter, name);
 		}
+	}
+
+	public Parameter getParameter() {
+		return parameter;
 	}
 
 	public Class<?> getType() {

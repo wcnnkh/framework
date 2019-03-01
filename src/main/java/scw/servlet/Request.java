@@ -1,6 +1,7 @@
 package scw.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.Parameter;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -74,6 +75,18 @@ public abstract class Request extends HttpServletRequestWrapper {
 		return response;
 	}
 
+	public final <T> T getBean(Class<T> type) {
+		return requestBeanContext.getBean(type);
+	}
+
+	protected void destroy() {
+		requestBeanContext.destroy();
+	}
+
+	public long getCreateTime() {
+		return createTime;
+	}
+
 	private Object get(Class<?> type, String name) throws Exception {
 		Object bean = requestBeanContext.getBean(type, name);
 		if (bean != null) {
@@ -117,18 +130,6 @@ public abstract class Request extends HttpServletRequestWrapper {
 		}
 	}
 
-	public final <T> T getBean(Class<T> type) {
-		return requestBeanContext.getBean(type);
-	}
-
-	protected void destroy() {
-		requestBeanContext.destroy();
-	}
-
-	public long getCreateTime() {
-		return createTime;
-	}
-
 	@SuppressWarnings("unchecked")
 	public final <T> T getParameter(Class<T> type, String name) throws Exception {
 		T v = (T) getAttribute(name);
@@ -139,6 +140,10 @@ public abstract class Request extends HttpServletRequestWrapper {
 			}
 		}
 		return v;
+	}
+
+	public final <T> T getParameter(Class<T> type, Parameter parameter, String name) throws Exception {
+		return getParameter(type, name);
 	}
 
 	public boolean isDebug() {
