@@ -228,9 +228,16 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		return select(sql).getFirst().get(type);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T selectOne(Class<T> type, Sql sql, T defaultValue) {
-		T v = selectOne(type, sql);
-		return v == null ? defaultValue : v;
+		if (type.isPrimitive()) {
+			// 如果是基本数据类型
+			Object v = selectOne(ClassUtils.resolvePrimitiveIfNecessary(type), sql);
+			return (T) (v == null ? defaultValue : v);
+		} else {
+			T v = selectOne(type, sql);
+			return v == null ? defaultValue : v;
+		}
 	}
 
 	public void createTable(Class<?> tableClass) {
