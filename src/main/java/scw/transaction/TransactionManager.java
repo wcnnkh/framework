@@ -87,9 +87,12 @@ public abstract class TransactionManager {
 
 		try {
 			transaction.rollback();
-			transaction.end();
 		} finally {
-			changeLocal(transaction);
+			try {
+				transaction.end();
+			} finally {
+				changeLocal(transaction);
+			}
 		}
 	}
 
