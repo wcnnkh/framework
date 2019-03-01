@@ -1,9 +1,11 @@
 package scw.transaction.tcc;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
+import scw.transaction.DefaultTransactionLifeCycle;
+import scw.transaction.TransactionManager;
 
 public class TCCManager {
 	private static volatile Map<Class<?>, ClassTCC> cacheMap = new HashMap<Class<?>, ClassTCC>();
@@ -23,23 +25,34 @@ public class TCCManager {
 	}
 
 	/**
-	 * 调用TCC方法	
+	 * 把当前TCC加入到事务，如果没有事务就无视
 	 * @param clz
 	 * @param name
-	 * @param stageType
-	 * @param bean
+	 * @param obj
 	 * @param args
-	 * @return
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws InvocationTargetException
 	 */
-	public static Object invokeTCC(Class<?> clz, String name, StageType stageType, Object bean, Object[] args)
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Method method = getClassTCC(clz).getMethod(name, stageType);
-		if (method == null) {
-			return null;
-		}
-		return method.invoke(bean, args);
+	public static void transactionRollback(final Class<?> clz, final String name, final Object obj,
+			final Object[] args) {
+		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+			@Override
+			public void beforeProcess() {
+				Method method = getClassTCC(clz).getMethod(name, StageType.Confirm);
+				if (method == null) {
+					return;
+				}
+
+				new RetryInvoker(obj, method, args);
+			}
+
+			@Override
+			public void beforeRollback() {
+				Method method = getClassTCC(clz).getMethod(name, StageType.Cancel);
+				if (method == null) {
+					return;
+				}
+
+				new RetryInvoker(obj, method, args);
+			}
+		});
 	}
 }

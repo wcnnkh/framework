@@ -11,6 +11,9 @@ import scw.common.utils.IOUtils;
 import scw.common.utils.SignUtils;
 import scw.net.http.HttpPost;
 import scw.net.http.entity.JavaObjectRequestEntity;
+import scw.transaction.tcc.StageType;
+import scw.transaction.tcc.TCC;
+import scw.transaction.tcc.TCCManager;
 
 public class HttpRPCBean extends AbstractInterfaceProxyBean {
 	private final String host;
@@ -32,7 +35,12 @@ public class HttpRPCBean extends AbstractInterfaceProxyBean {
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 						HttpConsumerInvoker httpConsumerInvoker = new HttpConsumerInvoker(host, method, signStr,
 								charset);
-						return httpConsumerInvoker.invoke(args);
+						Object rtn = httpConsumerInvoker.invoke(args);
+						TCC tcc = method.getAnnotation(TCC.class);
+						if (tcc != null && tcc.stage() == StageType.Try) {
+							TCCManager.transactionRollback(getType(), tcc.name(), proxy, args);
+						}
+						return rtn;
 					}
 				});
 		return (T) newProxyInstance;

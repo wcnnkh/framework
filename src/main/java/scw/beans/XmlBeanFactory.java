@@ -122,7 +122,7 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 		try {
 			if (!StringUtils.isNull(xmlPath)) {
 
-				addBeanConfigFactory(new XmlDubboBeanConfigFactory(propertiesFactory, xmlPath));
+				addBeanConfigFactory(new XmlDubboBeanConfigFactory(this, propertiesFactory, xmlPath));
 				addBeanConfigFactory(new HttpRPCBeanConfigFactory(propertiesFactory, xmlPath));
 				addBeanConfigFactory(new XmlBeanConfigFactory(this, propertiesFactory, xmlPath, filterNames));
 				addBeanConfigFactory(new ServiceBeanConfigFactory(this, propertiesFactory, packages, filterNames));

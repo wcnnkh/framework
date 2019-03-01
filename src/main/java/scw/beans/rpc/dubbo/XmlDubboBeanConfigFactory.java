@@ -10,6 +10,7 @@ import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 
 import scw.beans.AbstractBeanConfigFactory;
+import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.common.utils.ClassUtils;
@@ -18,7 +19,7 @@ import scw.common.utils.StringUtils;
 public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "dubbo:reference";
 
-	public XmlDubboBeanConfigFactory(PropertiesFactory propertiesFactory, String config) throws ClassNotFoundException {
+	public XmlDubboBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String config) throws ClassNotFoundException {
 		NodeList rootNodeList = XmlBeanUtils.getRootNode(config).getChildNodes();
 		if (rootNodeList != null) {
 			for (int x = 0; x < rootNodeList.getLength(); x++) {
@@ -57,7 +58,7 @@ public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 						if (!clz.isInterface()) {
 							continue;
 						}
-						XmlDubboBean xmlDubboBean = new XmlDubboBean(application, registryConfigs, version, clz,
+						XmlDubboBean xmlDubboBean = new XmlDubboBean(beanFactory, application, registryConfigs, version, clz,
 								singleton, check);
 						addBean(xmlDubboBean);
 					}
@@ -70,7 +71,7 @@ public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 						continue;
 					}
 
-					XmlDubboBean xmlDubboBean = new XmlDubboBean(propertiesFactory, application, registryConfigs,
+					XmlDubboBean xmlDubboBean = new XmlDubboBean(beanFactory, propertiesFactory, application, registryConfigs,
 							referenceNode);
 					addBean(xmlDubboBean);
 				}

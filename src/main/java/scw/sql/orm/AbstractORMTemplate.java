@@ -228,6 +228,11 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		return select(sql).getFirst().get(type);
 	}
 
+	public <T> T selectOne(Class<T> type, Sql sql, T defaultValue) {
+		T v = selectOne(type, sql);
+		return v == null ? defaultValue : v;
+	}
+
 	public void createTable(Class<?> tableClass) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		createTable(tableClass, tableInfo.getName());

@@ -1,5 +1,6 @@
 package scw.beans.rpc.dubbo;
 
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import com.alibaba.dubbo.config.ReferenceConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 
 import scw.beans.Bean;
+import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.common.exception.BeansException;
@@ -27,8 +29,9 @@ public class XmlDubboBean implements Bean {
 	private final List<RegistryConfig> registryConfigs;
 	private final int timeout;
 
-	public XmlDubboBean(ApplicationConfig applicationConfig, List<RegistryConfig> registryConfigs, String version,
-			Class<?> interfaceClass, boolean singleton, boolean check) {
+	public XmlDubboBean(BeanFactory beanFactory, ApplicationConfig applicationConfig,
+			List<RegistryConfig> registryConfigs, String version, Class<?> interfaceClass, boolean singleton,
+			boolean check) {
 		this.application = applicationConfig;
 		this.registryConfigs = registryConfigs;
 		this.id = interfaceClass.getName();
@@ -40,8 +43,9 @@ public class XmlDubboBean implements Bean {
 		this.names = null;
 	}
 
-	public XmlDubboBean(PropertiesFactory propertiesFactory, ApplicationConfig applicationConfig,
-			List<RegistryConfig> registryConfigs, Node node) throws ClassNotFoundException {
+	public XmlDubboBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+			ApplicationConfig applicationConfig, List<RegistryConfig> registryConfigs, Node node)
+			throws ClassNotFoundException {
 		this.application = applicationConfig;
 		this.registryConfigs = registryConfigs;
 		this.names = XmlBeanUtils.getNames(node);
@@ -90,6 +94,7 @@ public class XmlDubboBean implements Bean {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T newInstance() {
 		ReferenceConfig<T> referenceConfig = new ReferenceConfig<T>();
 		referenceConfig.setApplication(application);
@@ -102,7 +107,8 @@ public class XmlDubboBean implements Bean {
 			referenceConfig.setTimeout(timeout);
 		}
 
-		return referenceConfig.get();
+		return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] { type },
+				new TransactionProxy(type, referenceConfig.get()));
 	}
 
 	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {
