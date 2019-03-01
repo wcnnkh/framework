@@ -2126,8 +2126,8 @@ public final class StringUtils {
 			return new String(charBuffer.array());
 		}
 
-		CharBuffer charBuffer = CharBuffer.allocate(len + 2);
-		charBuffer.put("#.");
+		CharBuffer charBuffer = CharBuffer.allocate(len + 3);
+		charBuffer.put("#0.");
 		for (int i = 0; i < len; i++) {
 			charBuffer.put("0");
 		}
