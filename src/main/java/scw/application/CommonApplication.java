@@ -90,8 +90,8 @@ public class CommonApplication implements Application {
 			start = false;
 		}
 
-		beanFactory.destroy();
 		ProtocolConfig.destroyAll();
 		Logger.shutdown();
+		beanFactory.destroy();
 	}
 }

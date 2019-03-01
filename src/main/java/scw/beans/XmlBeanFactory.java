@@ -174,11 +174,11 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	public void destroy() {
-		super.destroy();
 		try {
 			destroyMethod();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		super.destroy();
 	}
 }

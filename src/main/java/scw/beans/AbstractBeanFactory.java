@@ -236,6 +236,14 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			throw new BeansException("还未初始化");
 		}
 		init = false;
+		
+		try {
+			if (isInitStatic()) {
+				BeanUtils.destroyStaticMethod(getClassList());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		for (Entry<String, Object> entry : singletonMap.entrySet()) {
 			Bean bean = getBean(entry.getKey());
@@ -244,14 +252,6 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-
-		try {
-			if (isInitStatic()) {
-				BeanUtils.destroyStaticMethod(getClassList());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 }
