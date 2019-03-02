@@ -1,6 +1,6 @@
 package scw.utils.id.db;
 
-import scw.db.DB;
+import scw.db.AbstractDB;
 import scw.db.DBManager;
 import scw.utils.id.IdGenerator;
 import scw.utils.id.LongIdGenerator;
@@ -10,14 +10,14 @@ public class TableLongIdGenerator implements IdGenerator<Long> {
 	private String fieldName;
 	private int serverId = 0;
 	private int maxServerId = 1;
-	private DB db;
+	private AbstractDB db;
 	private volatile LongIdGenerator idGenerator;
 
 	public TableLongIdGenerator(Class<?> tableClass, String fieldName) {
 		this(tableClass, fieldName, 0, 1);
 	}
 
-	public TableLongIdGenerator(Class<?> tableClass, DB db, String fieldName) {
+	public TableLongIdGenerator(Class<?> tableClass, AbstractDB db, String fieldName) {
 		this(tableClass, db, fieldName, 0, 1);
 	}
 
@@ -29,7 +29,7 @@ public class TableLongIdGenerator implements IdGenerator<Long> {
 		this.maxServerId = maxServerId;
 	}
 
-	public TableLongIdGenerator(Class<?> tableClass, DB db, String fieldName,
+	public TableLongIdGenerator(Class<?> tableClass, AbstractDB db, String fieldName,
 			int serverId, int maxServerId) {
 		this.tableClass = tableClass;
 		this.fieldName = fieldName;
