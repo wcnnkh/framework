@@ -28,6 +28,7 @@ public final class ColumnInfo {
 	private boolean isDataBaseType;
 	private FieldInfo fieldInfo;
 	private String sqlTableAndColumn;
+	private Column column;
 	// 就是在name的两边加入了(``)
 	private String sqlColumnName;
 
@@ -46,7 +47,7 @@ public final class ColumnInfo {
 				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
 				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type)
 				|| URL.class.isAssignableFrom(type) || byte[].class.isAssignableFrom(type);
-		Column column = field.getField().getAnnotation(Column.class);
+		this.column = field.getField().getAnnotation(Column.class);
 		if (column != null) {
 			if (column.name().trim().length() != 0) {
 				this.name = column.name().trim();
@@ -156,5 +157,9 @@ public final class ColumnInfo {
 
 	public void setUnique(boolean unique) {
 		this.unique = unique;
+	}
+
+	public Column getColumn() {
+		return column;
 	}
 }
