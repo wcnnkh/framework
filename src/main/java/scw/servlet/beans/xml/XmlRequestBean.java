@@ -6,10 +6,11 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.sf.cglib.proxy.Enhancer;
 import scw.beans.AnnotationBean;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
@@ -21,6 +22,7 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.exception.BeansException;
+import scw.common.exception.NotFoundException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.servlet.Request;
@@ -150,6 +152,9 @@ public final class XmlRequestBean implements RequestBean {
 
 		this.proxy = BeanUtils.checkProxy(type, this.filterNames);
 		this.constructor = getConstructor();
+		if(constructor == null){
+			throw new NotFoundException(type.getName());
+		}
 		this.constructorParameterTypes = constructor.getParameterTypes();
 	}
 
