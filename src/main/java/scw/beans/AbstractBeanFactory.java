@@ -235,7 +235,6 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		if (!init) {
 			throw new BeansException("还未初始化");
 		}
-		init = false;
 		
 		try {
 			if (isInitStatic()) {
@@ -253,5 +252,6 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 				e.printStackTrace();
 			}
 		}
+		init = false;
 	}
 }
