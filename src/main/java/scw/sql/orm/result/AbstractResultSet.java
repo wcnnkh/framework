@@ -2,6 +2,7 @@ package scw.sql.orm.result;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,7 +40,12 @@ public abstract class AbstractResultSet implements ResultSet {
 		return dataList == null || metaData == null || metaData.isEmpty();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Object[]> getList() {
+		if(isEmpty()){
+			return Collections.EMPTY_LIST;
+		}
+		
 		return new ArrayList<Object[]>(dataList);
 	}
 }
