@@ -1,6 +1,5 @@
 package scw.transaction.sql;
 
-import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -43,8 +42,7 @@ public final class ConnectionTransactionResource extends AbstractConnectionTrans
 				connection.setTransactionIsolation(isolation.getLevel());
 			}
 
-			connection = (ConnectionProxy) Proxy.newProxyInstance(ConnectionProxy.class.getClassLoader(),
-					new Class<?>[] { ConnectionProxy.class }, new UnableToCloseConnectionProxyHandler(connection));
+			connection = SqlTransactionUtils.conversionProxyConnection(connection);
 		}
 		return connection;
 	}
@@ -70,11 +68,7 @@ public final class ConnectionTransactionResource extends AbstractConnectionTrans
 			}
 
 			try {
-				if (connection instanceof ConnectionProxy) {
-					((ConnectionProxy) connection).getTargetConnection().close();
-				} else {
-					connection.close();
-				}
+				SqlTransactionUtils.closeProxyConnection(connection);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

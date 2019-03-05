@@ -1,5 +1,6 @@
 package scw.transaction.sql;
 
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -80,5 +81,36 @@ public abstract class SqlTransactionUtils {
 			transaction.bindResource(MultipleConnectionResource.class, resource);
 		}
 		return resource.getConnection(connectionFactory);
+	}
+
+	public static Connection conversionProxyConnection(Connection connection) {
+		if (connection == null) {
+			return connection;
+		}
+
+		if (connection instanceof ConnectionProxy) {
+			return connection;
+		}
+
+		return connection = (ConnectionProxy) Proxy.newProxyInstance(ConnectionProxy.class.getClassLoader(),
+				new Class<?>[] { ConnectionProxy.class }, new UnableToCloseConnectionProxyHandler(connection));
+	}
+
+	/**
+	 * 真实的关闭代理连接
+	 * 
+	 * @param connection
+	 * @throws SQLException
+	 */
+	public static void closeProxyConnection(Connection connection) throws SQLException {
+		if (connection == null) {
+			return;
+		}
+
+		if (connection instanceof ConnectionProxy) {
+			((ConnectionProxy) connection).getTargetConnection().close();
+		} else {
+			connection.close();
+		}
 	}
 }

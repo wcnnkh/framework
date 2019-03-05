@@ -12,6 +12,7 @@ import scw.transaction.Isolation;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionException;
 import scw.transaction.sql.AbstractConnectionTransactionResource;
+import scw.transaction.sql.SqlTransactionUtils;
 
 public class XAConnectionTransaction extends AbstractConnectionTransactionResource {
 	private final XADataSource xaDataSource;
@@ -56,6 +57,8 @@ public class XAConnectionTransaction extends AbstractConnectionTransactionResour
 			} catch (XAException e) {
 				throw new TransactionException(e);
 			}
+
+			connection = SqlTransactionUtils.conversionProxyConnection(connection);
 		}
 		return connection;
 	}
