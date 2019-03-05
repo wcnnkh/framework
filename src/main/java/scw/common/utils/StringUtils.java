@@ -2105,7 +2105,7 @@ public final class StringUtils {
 	 * @return
 	 */
 	public static String formatNothingToYuan(double price) {
-		return formatNumberPrecision(price / 2, 2);
+		return formatNumberPrecision(price / 100, 2);
 	}
 
 	/**
