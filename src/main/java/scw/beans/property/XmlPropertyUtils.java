@@ -1,5 +1,6 @@
 package scw.beans.property;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,8 +29,9 @@ public final class XmlPropertyUtils {
 		
 		String file = XMLUtils.getNodeAttributeValue(rootNode, "file");
 		if(!StringUtils.isNull(file)){
-			Logger.info("Properties", "file=" + file + ", charset=" + charset);
-			Properties properties = ConfigUtils.getProperties(file, charset);
+			File f = ConfigUtils.getFile(file);
+			Logger.info(Properties.class.getName(), "file=" + f.getPath() + ", charset=" + charset);
+			Properties properties = ConfigUtils.getProperties(f, charset);
 			for(Entry<Object, Object> entry : properties.entrySet()){
 				String name = prefix == null? entry.getKey().toString():prefix + entry.getKey().toString();
 				Property property = new Property(name, entry.getValue().toString(), rootNode);
