@@ -1,13 +1,21 @@
- package scw.transaction.tcc;
+package scw.transaction.tcc;
 
- /**
-  * 步骤类型
-  * @author shuchaowen
-  *
-  */
+/**
+ * 步骤类型
+ * 
+ * @author shuchaowen
+ *
+ */
 public enum StageType {
-	Try,
-	Confirm,
-	Cancel,
-	;
+	Try(0), Confirm(1), Cancel(2),;
+
+	private final int status;
+
+	StageType(int status) {
+		this.status = status;
+	}
+
+	public int getStatus() {
+		return status;
+	}
 }
