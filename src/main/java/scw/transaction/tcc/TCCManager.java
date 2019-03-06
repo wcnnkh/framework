@@ -26,12 +26,13 @@ public class TCCManager {
 
 	/**
 	 * 把当前TCC加入到事务，如果没有事务就无视
+	 * @param tryRtnValue try执行完后返回的值
 	 * @param clz
 	 * @param name
 	 * @param obj
 	 * @param args
 	 */
-	public static void transactionRollback(final Class<?> clz, final String name, final Object obj,
+	public static void transactionRollback(final Object tryRtnValue, final Method tryMethod, final Class<?> clz, final String name, final Object obj,
 			final Object[] args) {
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
@@ -41,7 +42,7 @@ public class TCCManager {
 					return;
 				}
 
-				new RetryInvoker(obj, method, args);
+				new RetryInvoker(tryRtnValue, tryMethod, obj, method, args);
 			}
 
 			@Override
@@ -51,7 +52,7 @@ public class TCCManager {
 					return;
 				}
 
-				new RetryInvoker(obj, method, args);
+				new RetryInvoker(tryRtnValue, tryMethod, obj, method, args);
 			}
 		});
 	}

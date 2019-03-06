@@ -20,7 +20,7 @@ class TransactionProxy implements InvocationHandler {
 		Object rtn = method.invoke(obj, args);
 		TCC tcc = method.getAnnotation(TCC.class);
 		if (tcc != null && tcc.stage() == StageType.Try) {
-			TCCManager.transactionRollback(interfaceClass, tcc.name(), obj, args);
+			TCCManager.transactionRollback(rtn, method, interfaceClass, tcc.name(), obj, args);
 		}
 		return rtn;
 	}
