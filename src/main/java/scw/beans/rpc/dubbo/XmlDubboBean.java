@@ -28,10 +28,12 @@ public class XmlDubboBean implements Bean {
 	private final ApplicationConfig application;
 	private final List<RegistryConfig> registryConfigs;
 	private final int timeout;
+	private final BeanFactory beanFactory;
 
 	public XmlDubboBean(BeanFactory beanFactory, ApplicationConfig applicationConfig,
 			List<RegistryConfig> registryConfigs, String version, Class<?> interfaceClass, boolean singleton,
 			boolean check) {
+		this.beanFactory = beanFactory;
 		this.application = applicationConfig;
 		this.registryConfigs = registryConfigs;
 		this.id = interfaceClass.getName();
@@ -46,6 +48,7 @@ public class XmlDubboBean implements Bean {
 	public XmlDubboBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
 			ApplicationConfig applicationConfig, List<RegistryConfig> registryConfigs, Node node)
 			throws ClassNotFoundException {
+		this.beanFactory = beanFactory;
 		this.application = applicationConfig;
 		this.registryConfigs = registryConfigs;
 		this.names = XmlBeanUtils.getNames(node);
@@ -105,10 +108,10 @@ public class XmlDubboBean implements Bean {
 
 		if (timeout != -1) {
 			referenceConfig.setTimeout(timeout);
-		}
+		} 
 
 		return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] { type },
-				new TransactionProxy(type, referenceConfig.get()));
+				new TransactionProxy(beanFactory, type, referenceConfig.get()));
 	}
 
 	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {

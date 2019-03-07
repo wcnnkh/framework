@@ -4,13 +4,15 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.transaction.DefaultTransactionLifeCycle;
-import scw.transaction.TransactionManager;
+import scw.beans.BeanFactory;
+import scw.common.MethodConfig;
 
-public class TCCManager {
+public abstract class TCCManager {
+	private TCCManager(){};
+	
 	private static volatile Map<Class<?>, ClassTCC> cacheMap = new HashMap<Class<?>, ClassTCC>();
-
-	public static ClassTCC getClassTCC(Class<?> clz) {
+	
+	private static ClassTCC getClassTCC(Class<?> clz) {
 		ClassTCC classTCC = cacheMap.get(clz);
 		if (classTCC == null) {
 			synchronized (cacheMap) {
@@ -24,36 +26,30 @@ public class TCCManager {
 		return classTCC;
 	}
 
-	/**
-	 * 把当前TCC加入到事务，如果没有事务就无视
-	 * @param tryRtnValue try执行完后返回的值
-	 * @param clz
-	 * @param name
-	 * @param obj
-	 * @param args
-	 */
-	public static void transactionRollback(final Object tryRtnValue, final Method tryMethod, final Class<?> clz, final String name, final Object obj,
-			final Object[] args) {
-		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
-			@Override
-			public void beforeProcess() {
-				Method method = getClassTCC(clz).getMethod(name, StageType.Confirm);
-				if (method == null) {
-					return;
-				}
+	public static void transaction(BeanFactory beanFactory, Class<?> interfaceClz, Object rtnValue, Object obj, Method method,
+			Object[] args) {
+		Try t = method.getAnnotation(Try.class);
+		if (t == null) {
+			return;
+		}
 
-				new RetryInvoker(tryRtnValue, tryMethod, obj, method, args);
-			}
+		MethodConfig confirmMethod = getClassTCC(interfaceClz).getMethodConfig(t.name(), StageType.Confirm);
+		MethodConfig cancelMethod = getClassTCC(interfaceClz).getMethodConfig(t.name(), StageType.Cancel);
+		if (confirmMethod == null && cancelMethod == null) {
+			return;
+		}
 
-			@Override
-			public void beforeRollback() {
-				Method method = getClassTCC(clz).getMethod(name, StageType.Cancel);
-				if (method == null) {
-					return;
-				}
+		MethodConfig tryMethod = getClassTCC(interfaceClz).getMethodConfig(t.name(), StageType.Try);
+		if (tryMethod == null) {
+			return;
+		}
 
-				new RetryInvoker(tryRtnValue, tryMethod, obj, method, args);
-			}
-		});
+		TCCService tccService = beanFactory.get(t.service());
+		if (tccService == null) {
+			return;
+		}
+
+		tccService.service(obj, new InvokeInfo(rtnValue, tryMethod, confirmMethod, cancelMethod, args),
+				t.name());
 	}
 }

@@ -5,23 +5,25 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 
+import scw.beans.BeanFactory;
 import scw.common.ByteArray;
 import scw.common.reflect.Invoker;
 import scw.common.utils.IOUtils;
 import scw.common.utils.SignUtils;
 import scw.net.http.HttpPost;
 import scw.net.http.entity.JavaObjectRequestEntity;
-import scw.transaction.tcc.StageType;
-import scw.transaction.tcc.TCC;
 import scw.transaction.tcc.TCCManager;
 
 public class HttpRPCBean extends AbstractInterfaceProxyBean {
 	private final String host;
 	private final String signStr;
 	private final Charset charset;
+	private final BeanFactory beanFactory;
 
-	public HttpRPCBean(Class<?> interfaceClass, String host, String signStr, Charset charset) throws Exception {
+	public HttpRPCBean(BeanFactory beanFactory, Class<?> interfaceClass, String host, String signStr, Charset charset)
+			throws Exception {
 		super(interfaceClass);
+		this.beanFactory = beanFactory;
 		this.host = host;
 		this.signStr = signStr;
 		this.charset = charset;
@@ -36,10 +38,7 @@ public class HttpRPCBean extends AbstractInterfaceProxyBean {
 						HttpConsumerInvoker httpConsumerInvoker = new HttpConsumerInvoker(host, method, signStr,
 								charset);
 						Object rtn = httpConsumerInvoker.invoke(args);
-						TCC tcc = method.getAnnotation(TCC.class);
-						if (tcc != null && tcc.stage() == StageType.Try) {
-							TCCManager.transactionRollback(rtn, method, getType(), tcc.name(), proxy, args);
-						}
+						TCCManager.transaction(beanFactory, getType(), rtn, this, method, args);
 						return rtn;
 					}
 				});

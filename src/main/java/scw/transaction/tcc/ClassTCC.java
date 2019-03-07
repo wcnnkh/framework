@@ -5,34 +5,46 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.common.MethodConfig;
 import scw.common.exception.AlreadyExistsException;
 
-public class ClassTCC {
-	private Map<String, EnumMap<StageType, Method>> tccMethodMap = new HashMap<String, EnumMap<StageType, Method>>(4,
-			1);
+class ClassTCC {
+	private Map<String, EnumMap<StageType, MethodConfig>> tccMethodMap = new HashMap<String, EnumMap<StageType, MethodConfig>>(
+			4, 1);
 	private final Class<?> clz;
 
 	public ClassTCC(Class<?> clz) {
 		this.clz = clz;
 		for (Method method : clz.getMethods()) {
-			TCC tcc = method.getAnnotation(TCC.class);
-			if (tcc == null) {
-				continue;
+			Try t = method.getAnnotation(Try.class);
+			if (t != null) {
+				add(t.name(), StageType.Try, method);
 			}
 
-			EnumMap<StageType, Method> map = tccMethodMap.get(tcc.name());
-			if (map == null) {
-				map = new EnumMap<StageType, Method>(StageType.class);
-				map.put(tcc.stage(), method);
-				tccMethodMap.put(tcc.name(), map);
-			} else {
-				if (map.containsKey(tcc.stage())) {
-					throw new AlreadyExistsException(
-							clz.getName() + "存在相同的TCC配置,name=" + tcc.name() + ",stageType=" + tcc.stage());
-				}
-
-				map.put(tcc.stage(), method);
+			Confirm confirm = method.getAnnotation(Confirm.class);
+			if (confirm != null) {
+				add(confirm.name(), StageType.Confirm, method);
 			}
+
+			Cancel cancel = method.getAnnotation(Cancel.class);
+			if (cancel != null) {
+				add(confirm.name(), StageType.Cancel, method);
+			}
+		}
+	}
+
+	private void add(String name, StageType stageType, Method method) {
+		EnumMap<StageType, MethodConfig> map = tccMethodMap.get(name);
+		if (map == null) {
+			map = new EnumMap<StageType, MethodConfig>(StageType.class);
+			map.put(stageType, new MethodConfig(clz, method));
+			tccMethodMap.put(name, map);
+		} else {
+			if (map.containsKey(name)) {
+				throw new AlreadyExistsException(clz.getName() + "存在相同的TCC配置,name=" + name + ",stageType=" + stageType);
+			}
+
+			map.put(stageType, new MethodConfig(clz, method));
 		}
 	}
 
@@ -40,12 +52,12 @@ public class ClassTCC {
 		return clz;
 	}
 
-	public EnumMap<StageType, Method> getTCCMethodMap(String name) {
+	public EnumMap<StageType, MethodConfig> getTCCMethodMap(String name) {
 		return tccMethodMap.get(name);
 	}
 
-	public Method getMethod(String name, StageType stageType) {
-		EnumMap<StageType, Method> map = tccMethodMap.get(name);
+	public MethodConfig getMethodConfig(String name, StageType stageType) {
+		EnumMap<StageType, MethodConfig> map = tccMethodMap.get(name);
 		return map == null ? null : map.get(stageType);
 	}
 

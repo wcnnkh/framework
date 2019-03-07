@@ -7,8 +7,16 @@ import java.lang.annotation.Target;
 
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TCC {
+public @interface Try {
+	/**
+	 * 事务的名称
+	 * @return
+	 */
 	public String name() default "";
 
-	public StageType stage();
+	/**
+	 * TCC事务的服务方式， 默认是以定时器的方式重试
+	 * @return
+	 */
+	public Class<? extends TCCService> service() default TCCService.class;
 }
