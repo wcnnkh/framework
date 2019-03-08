@@ -133,7 +133,7 @@ public abstract class TransactionManager {
 	public static void setRollbackOnly() {
 		Transaction transaction = getCurrentTransaction();
 		if (transaction == null) {
-			throw new TransactionException("当前不存在事务");
+			return ;
 		}
 
 		transaction.setRollbackOnly(true);
