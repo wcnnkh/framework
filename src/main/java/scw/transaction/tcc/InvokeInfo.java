@@ -126,8 +126,8 @@ public class InvokeInfo implements Serializable {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("clz=").append(cancelMethod.getClz().getName());
-		sb.append("name").append(StringUtils.isEmpty(stage.name()) ? method.getName() : stage.name());
+		sb.append("clz=").append(methodConfig.getClz().getName());
+		sb.append(",name=").append(StringUtils.isEmpty(stage.name()) ? method.getName() : stage.name());
 		Logger.debug(TCC.class.getName(), sb.toString());
 
 		Object obj = beanFactory.get(methodConfig.getClz());

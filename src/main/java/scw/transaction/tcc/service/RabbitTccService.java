@@ -26,7 +26,7 @@ import scw.transaction.tcc.StageType;
 import scw.transaction.tcc.TCCService;
 import scw.utils.mq.rabbit.RabbitUtils;
 
-public class RabbitTccService implements TCCService {
+public final class RabbitTccService implements TCCService {
 	private Connection connection;
 	private ExecutorService executorService = new ThreadPoolExecutor(1, 20, 0, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>());
@@ -34,6 +34,7 @@ public class RabbitTccService implements TCCService {
 	private final String routingKey;
 	@Autowrite
 	private BeanFactory beanFactory;
+	private final String exchangeName;
 
 	public RabbitTccService(ConnectionFactory connectionFactory, String routingKey)
 			throws IOException, TimeoutException {
@@ -43,6 +44,7 @@ public class RabbitTccService implements TCCService {
 	public RabbitTccService(ConnectionFactory connectionFactory, String exchangeName, String routingKey,
 			String queueName) throws IOException, TimeoutException {
 		this.routingKey = routingKey;
+		this.exchangeName = exchangeName;
 		this.connection = connectionFactory.newConnection();
 		channel = connection.createChannel();
 		channel.exchangeDeclare(exchangeName, BuiltinExchangeType.DIRECT);
@@ -57,33 +59,30 @@ public class RabbitTccService implements TCCService {
 		connection.close();
 	}
 
+	private void invoke(InvokeInfo invokeInfo, StageType stageType) {
+		if (!invokeInfo.hasCanInvoke(stageType)) {
+			return;
+		}
+
+		TransactionInfo info = new TransactionInfo(invokeInfo, stageType);
+		RabbitUtils.basicPublish(channel, exchangeName, routingKey, IOUtils.javaObjectToByte(info));
+	}
+
 	public void service(Object obj, final InvokeInfo invokeInfo) {
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
 			public void afterProcess() {
-				TransactionInfo info = new TransactionInfo();
-				info.setInvokeInfo(invokeInfo);
-				info.setStageType(StageType.Confirm);
-				RabbitUtils.basicPublish(channel, this.getClass().getName(), routingKey,
-						IOUtils.javaObjectToByte(info));
+				invoke(invokeInfo, StageType.Confirm);
 			}
 
 			@Override
 			public void afterRollback() {
-				TransactionInfo info = new TransactionInfo();
-				info.setInvokeInfo(invokeInfo);
-				info.setStageType(StageType.Cancel);
-				RabbitUtils.basicPublish(channel, this.getClass().getName(), routingKey,
-						IOUtils.javaObjectToByte(info));
+				invoke(invokeInfo, StageType.Cancel);
 			}
 
 			@Override
 			public void complete() {
-				TransactionInfo info = new TransactionInfo();
-				info.setInvokeInfo(invokeInfo);
-				info.setStageType(StageType.Complate);
-				RabbitUtils.basicPublish(channel, this.getClass().getName(), routingKey,
-						IOUtils.javaObjectToByte(info));
+				invoke(invokeInfo, StageType.Complate);
 			}
 		});
 	}
