@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
 import scw.beans.BeanFactory;
+import scw.common.Logger;
+import scw.transaction.tcc.Cancel;
+import scw.transaction.tcc.Confirm;
 import scw.transaction.tcc.InvokeInfo;
 
 public class TransactionInfo implements Serializable {
@@ -38,6 +41,13 @@ public class TransactionInfo implements Serializable {
 
 	public void invoke(BeanFactory beanFactory) throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
+		if (confirm) {
+			Logger.debug(Confirm.class.getName(),
+					"clz=" + getInvokeInfo().getTryMethod().getClz().getName() + ",name=" + name);
+		} else {
+			Logger.debug(Cancel.class.getName(),
+					"clz=" + getInvokeInfo().getTryMethod().getClz().getName() + ",name=" + name);
+		}
 		getInvokeInfo().invoke(confirm, beanFactory);
 	}
 

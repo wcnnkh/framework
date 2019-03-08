@@ -15,7 +15,6 @@ import scw.beans.BeanFactory;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.InitMethod;
 import scw.common.Base64;
-import scw.common.Logger;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
@@ -23,8 +22,6 @@ import scw.common.utils.XUtils;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionException;
 import scw.transaction.TransactionManager;
-import scw.transaction.tcc.Cancel;
-import scw.transaction.tcc.Confirm;
 import scw.transaction.tcc.InvokeInfo;
 import scw.transaction.tcc.TCCService;
 
@@ -33,21 +30,19 @@ public class RetryTCCService implements TCCService {
 	private BeanFactory beanFactory;
 
 	private final long retryTime;
-	private final boolean debug;
 	private String logPath;
 	private final AtomicLong atomicLong = new AtomicLong();
 
 	public RetryTCCService() {
-		this(30000L, false);
+		this(30000L);
 	}
 
-	public RetryTCCService(long retryTime, boolean debug) {
-		this(retryTime, debug, null);
+	public RetryTCCService(long retryTime) {
+		this(retryTime, null);
 	}
 
-	public RetryTCCService(long retryTime, boolean debug, String logPath) {
+	public RetryTCCService(long retryTime, String logPath) {
 		this.retryTime = retryTime;
-		this.debug = debug;
 		this.logPath = logPath;
 	}
 
@@ -72,7 +67,7 @@ public class RetryTCCService implements TCCService {
 				for (File f : files) {
 					try {
 						TransactionInfo info = readTransactionInfoByFile(f);
-						new RetryInvoker(beanFactory, info, retryTime, debug, f.getName());
+						new RetryInvoker(beanFactory, info, retryTime, f.getName());
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
@@ -145,7 +140,7 @@ public class RetryTCCService implements TCCService {
 
 				try {
 					String fileId = writeLog(info);
-					new RetryInvoker(beanFactory, info, retryTime, debug, fileId).start();
+					new RetryInvoker(beanFactory, info, retryTime, fileId).start();
 				} catch (IOException e) {
 					throw new TransactionException(e);
 				}
@@ -160,7 +155,7 @@ public class RetryTCCService implements TCCService {
 
 				try {
 					String fileId = writeLog(info);
-					new RetryInvoker(beanFactory, info, retryTime, debug, fileId).start();
+					new RetryInvoker(beanFactory, info, retryTime, fileId).start();
 				} catch (IOException e) {
 					throw new TransactionException(e);
 				}
@@ -173,7 +168,6 @@ public class RetryTCCService implements TCCService {
 		private final TransactionInfo transactionInfo;
 		private Timer timer;
 		private final long retryTime;
-		private final boolean debug;
 		private final String fileId;
 
 		/**
@@ -184,30 +178,16 @@ public class RetryTCCService implements TCCService {
 		 * @param method
 		 * @param args
 		 */
-		public RetryInvoker(BeanFactory beanFactory, TransactionInfo transactionInfo, long retryTime, boolean debug,
-				String fileId) {
+		public RetryInvoker(BeanFactory beanFactory, TransactionInfo transactionInfo, long retryTime, String fileId) {
 			this.beanFactory = beanFactory;
 			this.transactionInfo = transactionInfo;
 			this.retryTime = retryTime;
-			this.debug = debug;
 			this.fileId = fileId;
 		}
 
 		@Override
 		public void run() {
 			try {
-				if (debug) {
-					if (transactionInfo.isConfirm()) {
-						Logger.debug(Confirm.class.getName(),
-								"clz=" + transactionInfo.getInvokeInfo().getTryMethod().getClz().getName() + ",name="
-										+ transactionInfo.getName());
-					} else {
-						Logger.debug(Cancel.class.getName(),
-								"clz=" + transactionInfo.getInvokeInfo().getTryMethod().getClz().getName() + ",name="
-										+ transactionInfo.getName());
-					}
-				}
-
 				transactionInfo.invoke(beanFactory);
 				deleteLog(fileId);
 				timer.cancel();
