@@ -60,12 +60,12 @@ public abstract class TransactionManager {
 	}
 
 	public static void commit(Transaction transaction) throws TransactionException {
-		if (transaction != LOCAL.get()) {
-			throw new TransactionException("事务需要顺序执行-commit");
-		}
-
 		if (transaction.isComplete()) {
 			return;
+		}
+		
+		if (transaction != LOCAL.get()) {
+			throw new TransactionException("事务需要顺序执行-commit");
 		}
 
 		if (transaction.isRollbackOnly()) {// 直接回滚
@@ -81,12 +81,12 @@ public abstract class TransactionManager {
 	}
 
 	public static void rollback(Transaction transaction) throws TransactionException {
-		if (transaction != LOCAL.get()) {
-			throw new TransactionException("事务需要顺序执行-rollback");
-		}
-
 		if (transaction.isComplete()) {
 			return;
+		}
+		
+		if (transaction != LOCAL.get()) {
+			throw new TransactionException("事务需要顺序执行-rollback");
 		}
 
 		try {
