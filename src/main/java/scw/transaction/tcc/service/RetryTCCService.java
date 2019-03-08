@@ -15,6 +15,7 @@ import scw.beans.BeanFactory;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.InitMethod;
 import scw.common.Base64;
+import scw.common.Logger;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
@@ -53,12 +54,13 @@ public class RetryTCCService implements TCCService {
 			this.logPath = System.getProperty("java.io.tmpdir");
 			String classPath = ConfigUtils.getClassPath();
 			try {
-				logPath += File.separator + Base64.encode(classPath.getBytes("UTF-8"));
+				logPath += File.separator + "TCC_" + Base64.encode(classPath.getBytes("UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
 		}
 
+		Logger.info(this.getClass().getName(), "logPath=" + logPath);
 		File file = new File(logPath);
 		if (!file.exists()) {
 			file.mkdirs();
