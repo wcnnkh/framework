@@ -18,6 +18,7 @@ public class InvokeInfo implements Serializable {
 	private MethodConfig tryMethod;
 	private MethodConfig confirmMethod;
 	private MethodConfig cancelMethod;
+	private MethodConfig complateMethod;
 	private Object[] args;
 
 	/**
@@ -27,11 +28,12 @@ public class InvokeInfo implements Serializable {
 	}
 
 	protected InvokeInfo(Object tryRtnValue, MethodConfig tryMethod, MethodConfig confirmMethod,
-			MethodConfig cancelMethod, Object[] args) {
+			MethodConfig cancelMethod, MethodConfig complateMethod, Object[] args) {
 		this.tryRtnValue = tryRtnValue;
 		this.tryMethod = tryMethod;
 		this.confirmMethod = confirmMethod;
 		this.cancelMethod = cancelMethod;
+		this.complateMethod = complateMethod;
 		this.args = args;
 	}
 
@@ -101,29 +103,7 @@ public class InvokeInfo implements Serializable {
 		}
 		return params.toArray();
 	}
-	
-	public void invokeConfirm(Object obj) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
-		if (confirmMethod == null) {
-			return;
-		}
 
-		Method method = confirmMethod.getMethod();
-		Confirm confirm = method.getAnnotation(Confirm.class);
-		if (confirm == null) {
-			return;
-		}
-
-		Object[] params;
-		if (confirm.parameterNameMapping()) {
-			params = getNameMappingArgs(tryMethod, confirmMethod, tryRtnValue, confirm.tryResultSetParameterIndex(),
-					args);
-		} else {
-			params = getIndexMapppingArgs(confirmMethod, tryRtnValue, confirm.tryResultSetParameterIndex(), args);
-		}
-
-		method.invoke(obj, params);
-	}
-	
 	public void invokeConfirm(BeanFactory beanFactory) throws NoSuchMethodException, SecurityException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (confirmMethod == null) {
@@ -147,28 +127,6 @@ public class InvokeInfo implements Serializable {
 		Object obj = beanFactory.get(confirmMethod.getClz());
 		method.invoke(obj, params);
 	}
-	
-	public void invokeCacnel(Object obj) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
-		if (cancelMethod == null) {
-			return;
-		}
-
-		Method method = cancelMethod.getMethod();
-		Cancel cancel = method.getAnnotation(Cancel.class);
-		if (cancel == null) {
-			return;
-		}
-
-		Object[] params;
-		if (cancel.parameterNameMapping()) {
-			params = getNameMappingArgs(tryMethod, confirmMethod, tryRtnValue, cancel.tryResultSetParameterIndex(),
-					args);
-		} else {
-			params = getIndexMapppingArgs(confirmMethod, tryRtnValue, cancel.tryResultSetParameterIndex(), args);
-		}
-
-		method.invoke(obj, params);
-	}
 
 	public void invokeCacnel(BeanFactory beanFactory) throws NoSuchMethodException, SecurityException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -184,30 +142,54 @@ public class InvokeInfo implements Serializable {
 
 		Object[] params;
 		if (cancel.parameterNameMapping()) {
-			params = getNameMappingArgs(tryMethod, confirmMethod, tryRtnValue, cancel.tryResultSetParameterIndex(),
+			params = getNameMappingArgs(tryMethod, cancelMethod, tryRtnValue, cancel.tryResultSetParameterIndex(),
 					args);
 		} else {
-			params = getIndexMapppingArgs(confirmMethod, tryRtnValue, cancel.tryResultSetParameterIndex(), args);
+			params = getIndexMapppingArgs(cancelMethod, tryRtnValue, cancel.tryResultSetParameterIndex(), args);
 		}
 
 		Object obj = beanFactory.get(cancelMethod.getClz());
 		method.invoke(obj, params);
 	}
 
-	public void invoke(boolean confirm, BeanFactory beanFactory) throws NoSuchMethodException, SecurityException,
+	public void invokeComplate(BeanFactory beanFactory) throws NoSuchMethodException, SecurityException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		if (confirm) {
-			invokeConfirm(beanFactory);
-		} else {
-			invokeCacnel(beanFactory);
+		if (complateMethod == null) {
+			return;
 		}
-	}
-	
-	public void invoke(boolean confirm, Object obj) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
-		if (confirm) {
-			invokeConfirm(obj);
+
+		Method method = complateMethod.getMethod();
+		Complate complate = method.getAnnotation(Complate.class);
+		if (complate == null) {
+			return;
+		}
+
+		Object[] params;
+		if (complate.parameterNameMapping()) {
+			params = getNameMappingArgs(tryMethod, complateMethod, tryRtnValue, complate.tryResultSetParameterIndex(),
+					args);
 		} else {
-			invokeCacnel(obj);
+			params = getIndexMapppingArgs(complateMethod, tryRtnValue, complate.tryResultSetParameterIndex(), args);
+		}
+
+		Object obj = beanFactory.get(complateMethod.getClz());
+		method.invoke(obj, params);
+	}
+
+	public void invoke(StageType stageType, BeanFactory beanFactory) throws NoSuchMethodException, SecurityException,
+			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		switch (stageType) {
+		case Confirm:
+			invokeConfirm(beanFactory);
+			break;
+		case Cancel:
+			invokeCacnel(beanFactory);
+			break;
+		case Complate:
+			invokeComplate(beanFactory);
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -217,11 +199,16 @@ public class InvokeInfo implements Serializable {
 	 * @param confirm
 	 * @return
 	 */
-	public boolean hasCanInvoke(boolean confirm) {
-		if (confirm) {
+	public boolean hasCanInvoke(StageType stageType) {
+		switch (stageType) {
+		case Confirm:
 			return confirmMethod != null;
-		} else {
+		case Cancel:
 			return cancelMethod != null;
+		case Complate:
+			return complateMethod != null;
+		default:
+			return false;
 		}
 	}
 
@@ -239,6 +226,10 @@ public class InvokeInfo implements Serializable {
 
 	public MethodConfig getCancelMethod() {
 		return cancelMethod;
+	}
+
+	public MethodConfig getComplateMethod() {
+		return complateMethod;
 	}
 
 	public Object[] getArgs() {

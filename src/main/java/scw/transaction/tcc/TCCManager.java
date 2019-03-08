@@ -8,10 +8,11 @@ import scw.beans.BeanFactory;
 import scw.common.MethodConfig;
 
 public abstract class TCCManager {
-	private TCCManager(){};
-	
+	private TCCManager() {
+	};
+
 	private static volatile Map<Class<?>, ClassTCC> cacheMap = new HashMap<Class<?>, ClassTCC>();
-	
+
 	private static ClassTCC getClassTCC(Class<?> clz) {
 		ClassTCC classTCC = cacheMap.get(clz);
 		if (classTCC == null) {
@@ -26,20 +27,26 @@ public abstract class TCCManager {
 		return classTCC;
 	}
 
-	public static void transaction(BeanFactory beanFactory, Class<?> interfaceClz, Object rtnValue, Object obj, Method method,
-			Object[] args) {
+	public static void transaction(BeanFactory beanFactory, Class<?> interfaceClz, Object rtnValue, Object obj,
+			Method method, Object[] args) {
 		Try t = method.getAnnotation(Try.class);
 		if (t == null) {
 			return;
 		}
 
-		MethodConfig confirmMethod = getClassTCC(interfaceClz).getMethodConfig(t.name(), StageType.Confirm);
-		MethodConfig cancelMethod = getClassTCC(interfaceClz).getMethodConfig(t.name(), StageType.Cancel);
-		if (confirmMethod == null && cancelMethod == null) {
+		ClassTCC tcc = getClassTCC(interfaceClz);
+		if (tcc == null) {
 			return;
 		}
 
-		MethodConfig tryMethod = getClassTCC(interfaceClz).getMethodConfig(t.name(), StageType.Try);
+		MethodConfig confirmMethod = tcc.getMethodConfig(t.name(), StageType.Confirm);
+		MethodConfig cancelMethod = tcc.getMethodConfig(t.name(), StageType.Cancel);
+		MethodConfig complateMethod = tcc.getMethodConfig(t.name(), StageType.Complate);
+		if (confirmMethod == null && cancelMethod == null && complateMethod == null) {
+			return;
+		}
+
+		MethodConfig tryMethod = tcc.getMethodConfig(t.name(), StageType.Try);
 		if (tryMethod == null) {
 			return;
 		}
@@ -49,7 +56,7 @@ public abstract class TCCManager {
 			return;
 		}
 
-		tccService.service(obj, new InvokeInfo(rtnValue, tryMethod, confirmMethod, cancelMethod, args),
+		tccService.service(obj, new InvokeInfo(rtnValue, tryMethod, confirmMethod, cancelMethod, complateMethod, args),
 				t.name());
 	}
 }

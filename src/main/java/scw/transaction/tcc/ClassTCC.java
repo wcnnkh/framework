@@ -30,6 +30,11 @@ class ClassTCC {
 			if (cancel != null) {
 				add(confirm.name(), StageType.Cancel, method);
 			}
+			
+			Complate complate = method.getAnnotation(Complate.class);
+			if(complate != null){
+				add(complate.name(), StageType.Complate, method);
+			}
 		}
 	}
 

@@ -23,6 +23,7 @@ import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionException;
 import scw.transaction.TransactionManager;
 import scw.transaction.tcc.InvokeInfo;
+import scw.transaction.tcc.StageType;
 import scw.transaction.tcc.TCCService;
 
 public class RetryTCCService implements TCCService {
@@ -90,7 +91,7 @@ public class RetryTCCService implements TCCService {
 		}
 	}
 
-	private String getNextFileId(boolean confirm) {
+	private String getNextFileId(StageType stageType) {
 		long number = atomicLong.incrementAndGet();
 		if (number < 0) {
 			number = Long.MAX_VALUE + number;
@@ -100,18 +101,18 @@ public class RetryTCCService implements TCCService {
 		sb.append(XTime.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
 		sb.append(number);
 		sb.append(".");
-		sb.append(confirm ? "confirm" : "cancel");
+		sb.append(stageType.name());
 		return sb.toString();
 	}
 
 	private void deleteLog(String logId) {
-		File file = new File(logPath + File.separator + getNextFileId(true));
+		File file = new File(logPath + File.separator + logId);
 		file.deleteOnExit();
 		return;
 	}
 
 	private String writeLog(TransactionInfo transactionInfo) throws IOException {
-		String fileId = getNextFileId(transactionInfo.isConfirm());
+		String fileId = getNextFileId(transactionInfo.getStageType());
 		File file = new File(logPath + File.separator + fileId);
 		if (!file.exists()) {
 			file.createNewFile();
@@ -136,7 +137,7 @@ public class RetryTCCService implements TCCService {
 				TransactionInfo info = new TransactionInfo();
 				info.setInvokeInfo(invokeInfo);
 				info.setName(name);
-				info.setConfirm(true);
+				info.setStageType(StageType.Confirm);
 
 				try {
 					String fileId = writeLog(info);
@@ -151,7 +152,22 @@ public class RetryTCCService implements TCCService {
 				TransactionInfo info = new TransactionInfo();
 				info.setInvokeInfo(invokeInfo);
 				info.setName(name);
-				info.setConfirm(true);
+				info.setStageType(StageType.Cancel);
+
+				try {
+					String fileId = writeLog(info);
+					new RetryInvoker(beanFactory, info, retryTime, fileId).start();
+				} catch (IOException e) {
+					throw new TransactionException(e);
+				}
+			}
+
+			@Override
+			public void complete() {
+				TransactionInfo info = new TransactionInfo();
+				info.setInvokeInfo(invokeInfo);
+				info.setName(name);
+				info.setStageType(StageType.Complate);
 
 				try {
 					String fileId = writeLog(info);

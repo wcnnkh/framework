@@ -21,6 +21,7 @@ import scw.common.utils.IOUtils;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 import scw.transaction.tcc.InvokeInfo;
+import scw.transaction.tcc.StageType;
 import scw.transaction.tcc.TCCService;
 import scw.utils.mq.rabbit.RabbitUtils;
 
@@ -63,7 +64,7 @@ public class RabbitTccService implements TCCService {
 				TransactionInfo info = new TransactionInfo();
 				info.setInvokeInfo(invokeInfo);
 				info.setName(name);
-				info.setConfirm(true);
+				info.setStageType(StageType.Confirm);
 				RabbitUtils.basicPublish(channel, this.getClass().getName(), routingKey,
 						IOUtils.javaObjectToByte(info));
 			}
@@ -73,7 +74,17 @@ public class RabbitTccService implements TCCService {
 				TransactionInfo info = new TransactionInfo();
 				info.setInvokeInfo(invokeInfo);
 				info.setName(name);
-				info.setConfirm(false);
+				info.setStageType(StageType.Cancel);
+				RabbitUtils.basicPublish(channel, this.getClass().getName(), routingKey,
+						IOUtils.javaObjectToByte(info));
+			}
+
+			@Override
+			public void complete() {
+				TransactionInfo info = new TransactionInfo();
+				info.setInvokeInfo(invokeInfo);
+				info.setName(name);
+				info.setStageType(StageType.Complate);
 				RabbitUtils.basicPublish(channel, this.getClass().getName(), routingKey,
 						IOUtils.javaObjectToByte(info));
 			}
@@ -94,7 +105,7 @@ public class RabbitTccService implements TCCService {
 
 				public void run() {
 					try {
-						info.getInvokeInfo().invoke(info.isConfirm(), beanFactory);
+						info.invoke(beanFactory);
 						getChannel().basicAck(envelope.getDeliveryTag(), false);
 					} catch (Exception e) {
 						e.printStackTrace();

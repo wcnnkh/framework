@@ -7,7 +7,7 @@ package scw.transaction.tcc;
  *
  */
 public enum StageType {
-	Try(0), Confirm(1), Cancel(2),;
+	Try(0), Confirm(1), Cancel(2), Complate(3);
 
 	private final int status;
 
