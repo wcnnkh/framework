@@ -68,11 +68,15 @@ public abstract class TransactionManager {
 			return;
 		}
 
-		transaction.process();
-		try {
-			transaction.end();
-		} finally {
-			changeLocal(transaction);
+		if (transaction.isRollbackOnly()) {// 直接回滚
+			rollback(transaction);
+		} else {
+			transaction.process();
+			try {
+				transaction.end();
+			} finally {
+				changeLocal(transaction);
+			}
 		}
 	}
 
@@ -121,5 +125,17 @@ public abstract class TransactionManager {
 	 */
 	public static Transaction getCurrentTransaction() {
 		return LOCAL.get();
+	}
+
+	/**
+	 * 设置当前事务直接回滚
+	 */
+	public static void setRollbackOnly() {
+		Transaction transaction = getCurrentTransaction();
+		if (transaction == null) {
+			throw new TransactionException("当前不存在事务");
+		}
+
+		transaction.setRollbackOnly(true);
 	}
 }
