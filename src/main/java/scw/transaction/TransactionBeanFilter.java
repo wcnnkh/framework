@@ -38,7 +38,7 @@ public class TransactionBeanFilter implements BeanFilter {
 				.getTransaction(new AnnoationTransactionDefinition(clzTx, methodTx));
 		Object rtn;
 		try {
-			rtn = beanFilterChain.doFilter(obj, method, args, proxy);
+			rtn = result(obj, method, args, proxy, beanFilterChain);
 			TransactionManager.commit(transaction);
 		} catch (Throwable e) {
 			TransactionManager.rollback(transaction);
@@ -56,12 +56,24 @@ public class TransactionBeanFilter implements BeanFilter {
 		Transaction transaction = TransactionManager.getTransaction(transactionDefinition);
 		Object v;
 		try {
-			v = beanFilterChain.doFilter(obj, method, args, proxy);
+			v = result(obj, method, args, proxy, beanFilterChain);
 			TransactionManager.commit(transaction);
 			return v;
 		} catch (Throwable e) {
 			TransactionManager.rollback(transaction);
 			throw e;
 		}
+	}
+
+	private Object result(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
+			throws Throwable {
+		Object rtn = beanFilterChain.doFilter(obj, method, args, proxy);
+		if (rtn != null && (rtn instanceof RollbackOnlyResult)) {
+			RollbackOnlyResult result = (RollbackOnlyResult) rtn;
+			if (result.isRollbackOnly()) {
+				TransactionManager.setRollbackOnly();
+			}
+		}
+		return rtn;
 	}
 }
