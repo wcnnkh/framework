@@ -93,20 +93,6 @@ public class RetryTCCService implements TCCService {
 		}
 	}
 
-	private String getNextFileId(StageType stageType) {
-		long number = atomicLong.incrementAndGet();
-		if (number < 0) {
-			number = Long.MAX_VALUE + number;
-		}
-
-		StringBuilder sb = new StringBuilder();
-		sb.append(XTime.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
-		sb.append(number);
-		sb.append(".");
-		sb.append(stageType.name());
-		return sb.toString();
-	}
-
 	private void deleteLog(String logId) {
 		File file = new File(logPath + File.separator + logId);
 		file.deleteOnExit();
@@ -114,8 +100,19 @@ public class RetryTCCService implements TCCService {
 	}
 
 	private String writeLog(TransactionInfo transactionInfo) throws IOException {
-		String fileId = getNextFileId(transactionInfo.getStageType());
-		File file = new File(logPath + File.separator + fileId);
+		long number = atomicLong.incrementAndGet();
+		if (number < 0) {
+			number = Long.MAX_VALUE + number;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(logPath);
+		sb.append(File.separator);
+		sb.append(XTime.format(System.currentTimeMillis(), "yyyyMMddHHmmss"));
+		sb.append(number);
+		sb.append(".");
+		sb.append(transactionInfo.getStageType().name());
+		File file = new File(sb.toString());
 		if (!file.exists()) {
 			file.createNewFile();
 		}
@@ -129,7 +126,7 @@ public class RetryTCCService implements TCCService {
 		} finally {
 			XUtils.close(oos, fos);
 		}
-		return fileId;
+		return file.getName();
 	}
 
 	public void service(final Object obj, final InvokeInfo invokeInfo) {
