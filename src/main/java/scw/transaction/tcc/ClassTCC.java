@@ -6,6 +6,7 @@ import java.util.Map;
 
 import scw.common.MethodConfig;
 import scw.common.exception.AlreadyExistsException;
+import scw.common.utils.StringUtils;
 
 class ClassTCC {
 	private Map<String, MethodConfig> tccMethodMap;
@@ -20,12 +21,13 @@ class ClassTCC {
 					tccMethodMap = new HashMap<String, MethodConfig>();
 				}
 
-				if (tccMethodMap.containsKey(stage.name())) {
-					throw new AlreadyExistsException(
-							clz.getName() + "存在相同的TCC配置,name=" + stage.name() + ",stageType=" + stage.name());
+				String name = StringUtils.isEmpty(stage.name()) ? method.getName() : stage.name();
+
+				if (tccMethodMap.containsKey(name)) {
+					throw new AlreadyExistsException(clz.getName() + "存在相同的TCC配置,name=" + name);
 				}
 
-				tccMethodMap.put(stage.name(), new MethodConfig(clz, method));
+				tccMethodMap.put(name, new MethodConfig(clz, method));
 			}
 		}
 	}

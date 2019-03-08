@@ -12,6 +12,7 @@ import scw.common.Logger;
 import scw.common.MethodConfig;
 import scw.common.exception.NotFoundException;
 import scw.common.utils.CollectionUtils;
+import scw.common.utils.StringUtils;
 
 public class InvokeInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -126,7 +127,7 @@ public class InvokeInfo implements Serializable {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("clz=").append(cancelMethod.getClz().getName());
-		sb.append("name").append(stage.name());
+		sb.append("name").append(StringUtils.isEmpty(stage.name()) ? method.getName() : stage.name());
 		Logger.debug(TCC.class.getName(), sb.toString());
 
 		Object obj = beanFactory.get(methodConfig.getClz());
