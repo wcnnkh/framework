@@ -29,34 +29,29 @@ public abstract class TCCManager {
 
 	public static void transaction(BeanFactory beanFactory, Class<?> interfaceClz, Object rtnValue, Object obj,
 			Method method, Object[] args) {
-		Try t = method.getAnnotation(Try.class);
-		if (t == null) {
-			return;
-		}
-
-		ClassTCC tcc = getClassTCC(interfaceClz);
+		TCC tcc = method.getAnnotation(TCC.class);
 		if (tcc == null) {
 			return;
 		}
 
-		MethodConfig confirmMethod = tcc.getMethodConfig(t.name(), StageType.Confirm);
-		MethodConfig cancelMethod = tcc.getMethodConfig(t.name(), StageType.Cancel);
-		MethodConfig complateMethod = tcc.getMethodConfig(t.name(), StageType.Complate);
+		ClassTCC info = getClassTCC(interfaceClz);
+		if (info == null) {
+			return;
+		}
+
+		MethodConfig confirmMethod = info.getMethodConfig(tcc.confirm());
+		MethodConfig cancelMethod = info.getMethodConfig(tcc.cancel());
+		MethodConfig complateMethod = info.getMethodConfig(tcc.complate());
 		if (confirmMethod == null && cancelMethod == null && complateMethod == null) {
 			return;
 		}
 
-		MethodConfig tryMethod = tcc.getMethodConfig(t.name(), StageType.Try);
-		if (tryMethod == null) {
-			return;
-		}
-
-		TCCService tccService = beanFactory.get(t.service());
+		MethodConfig tryMethod = new MethodConfig(interfaceClz, method);
+		TCCService tccService = beanFactory.get(tcc.service());
 		if (tccService == null) {
 			return;
 		}
 
-		tccService.service(obj, new InvokeInfo(rtnValue, tryMethod, confirmMethod, cancelMethod, complateMethod, args),
-				t.name());
+		tccService.service(obj, new InvokeInfo(rtnValue, tryMethod, confirmMethod, cancelMethod, complateMethod, args));
 	}
 }

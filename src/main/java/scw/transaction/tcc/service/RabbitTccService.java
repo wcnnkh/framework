@@ -16,6 +16,7 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
 import scw.beans.BeanFactory;
+import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.Destroy;
 import scw.common.utils.IOUtils;
 import scw.transaction.DefaultTransactionLifeCycle;
@@ -31,18 +32,17 @@ public class RabbitTccService implements TCCService {
 			new LinkedBlockingQueue<Runnable>());
 	private Channel channel;
 	private final String routingKey;
-	private final BeanFactory beanFactory;
+	@Autowrite
+	private BeanFactory beanFactory;
 
-	public RabbitTccService(BeanFactory beanFactory, ConnectionFactory connectionFactory, String routingKey)
+	public RabbitTccService(ConnectionFactory connectionFactory, String routingKey)
 			throws IOException, TimeoutException {
-		this(beanFactory, connectionFactory, "rabbit_tcc_service", routingKey, "queue." + routingKey);
+		this(connectionFactory, "rabbit_tcc_service", routingKey, "queue." + routingKey);
 	}
 
-	public RabbitTccService(BeanFactory beanFactory, ConnectionFactory connectionFactory, String exchangeName,
-			String routingKey, String queueName) throws IOException, TimeoutException {
+	public RabbitTccService(ConnectionFactory connectionFactory, String exchangeName, String routingKey,
+			String queueName) throws IOException, TimeoutException {
 		this.routingKey = routingKey;
-		this.beanFactory = beanFactory;
-
 		this.connection = connectionFactory.newConnection();
 		channel = connection.createChannel();
 		channel.exchangeDeclare(exchangeName, BuiltinExchangeType.DIRECT);
@@ -57,13 +57,12 @@ public class RabbitTccService implements TCCService {
 		connection.close();
 	}
 
-	public void service(Object obj, final InvokeInfo invokeInfo, final String name) {
+	public void service(Object obj, final InvokeInfo invokeInfo) {
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
 			public void afterProcess() {
 				TransactionInfo info = new TransactionInfo();
 				info.setInvokeInfo(invokeInfo);
-				info.setName(name);
 				info.setStageType(StageType.Confirm);
 				RabbitUtils.basicPublish(channel, this.getClass().getName(), routingKey,
 						IOUtils.javaObjectToByte(info));
@@ -73,7 +72,6 @@ public class RabbitTccService implements TCCService {
 			public void afterRollback() {
 				TransactionInfo info = new TransactionInfo();
 				info.setInvokeInfo(invokeInfo);
-				info.setName(name);
 				info.setStageType(StageType.Cancel);
 				RabbitUtils.basicPublish(channel, this.getClass().getName(), routingKey,
 						IOUtils.javaObjectToByte(info));
@@ -83,7 +81,6 @@ public class RabbitTccService implements TCCService {
 			public void complete() {
 				TransactionInfo info = new TransactionInfo();
 				info.setInvokeInfo(invokeInfo);
-				info.setName(name);
 				info.setStageType(StageType.Complate);
 				RabbitUtils.basicPublish(channel, this.getClass().getName(), routingKey,
 						IOUtils.javaObjectToByte(info));

@@ -5,10 +5,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * TCC步骤的定义
+ * @author shuchaowen
+ *
+ */
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Complate {
-	public String name() default "";
+public @interface Stage {
+	public String name();
 
 	/**
 	 * 参数的插入是否以名称的方式调用，默认为索引的方式

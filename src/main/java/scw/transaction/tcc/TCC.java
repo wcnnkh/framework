@@ -9,15 +9,16 @@ import scw.transaction.tcc.service.RetryTCCService;
 
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Try {
-	/**
-	 * 事务的名称
-	 * @return
-	 */
-	public String name() default "";
+public @interface TCC {
+	public String confirm() default "";
+
+	public String cancel() default "";
+
+	public String complate() default "";
 
 	/**
 	 * TCC事务的服务方式， 默认是以定时器的方式重试
+	 * 
 	 * @return
 	 */
 	public Class<? extends TCCService> service() default RetryTCCService.class;

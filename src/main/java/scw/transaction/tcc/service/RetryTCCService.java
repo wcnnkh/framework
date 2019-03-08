@@ -130,13 +130,12 @@ public class RetryTCCService implements TCCService {
 		return fileId;
 	}
 
-	public void service(final Object obj, final InvokeInfo invokeInfo, final String name) {
+	public void service(final Object obj, final InvokeInfo invokeInfo) {
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
 			public void beforeProcess() {
 				TransactionInfo info = new TransactionInfo();
 				info.setInvokeInfo(invokeInfo);
-				info.setName(name);
 				info.setStageType(StageType.Confirm);
 
 				try {
@@ -151,7 +150,6 @@ public class RetryTCCService implements TCCService {
 			public void beforeRollback() {
 				TransactionInfo info = new TransactionInfo();
 				info.setInvokeInfo(invokeInfo);
-				info.setName(name);
 				info.setStageType(StageType.Cancel);
 
 				try {
@@ -166,7 +164,6 @@ public class RetryTCCService implements TCCService {
 			public void complete() {
 				TransactionInfo info = new TransactionInfo();
 				info.setInvokeInfo(invokeInfo);
-				info.setName(name);
 				info.setStageType(StageType.Complate);
 
 				try {
