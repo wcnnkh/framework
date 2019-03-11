@@ -33,7 +33,8 @@ public final class AsyncCompleteFilter implements Filter {
 	}
 
 	private FileManager fileManager;
-	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
+	private final ScheduledExecutorService executorService = Executors
+			.newScheduledThreadPool(4);
 
 	@Autowrite
 	private BeanFactory beanFactory;
@@ -42,7 +43,8 @@ public final class AsyncCompleteFilter implements Filter {
 	private void init() throws UnsupportedEncodingException {
 		String logPath = System.getProperty("java.io.tmpdir");
 		String classPath = ConfigUtils.getClassPath();
-		logPath += File.separator + "AsyncComplate_" + Base64.encode(classPath.getBytes("UTF-8"));
+		logPath += File.separator + "AsyncComplate_"
+				+ Base64.encode(classPath.getBytes("UTF-8"));
 		fileManager = new FileManager(logPath);
 
 		File file = new File(fileManager.getRootPath());
@@ -85,41 +87,42 @@ public final class AsyncCompleteFilter implements Filter {
 			try {
 				info.invoke(beanFactory);
 				File file = new File(logPath);
-				if(file.exists()){
+				if (file.exists()) {
 					file.delete();
 				}
 			} catch (Exception e) {
-				executorService.schedule(this, info.getDelayMillis(), info.getTimeUnit());
+				executorService.schedule(this, info.getDelayMillis(),
+						info.getTimeUnit());
 				e.printStackTrace();
 			}
 		}
 	}
 
-	private void realFilter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
-			throws Throwable {
+	private Object realFilter(Invoker invoker, Object proxy, Method method,
+			Object[] args, FilterChain filterChain) throws Throwable {
 		AsyncComplete asyncComplete = method.getAnnotation(AsyncComplete.class);
 		if (asyncComplete == null) {
-			filterChain.doFilter(invoker, proxy, method, args);
-			return;
+			return filterChain.doFilter(invoker, proxy, method, args);
 		}
 
-		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete, method.getDeclaringClass(), method, args);
+		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete,
+				method.getDeclaringClass(), method, args);
 		File file = fileManager.createRandomFileWriteObject(info);
 		InvokeRunnable runnable = new InvokeRunnable(info, file.getPath());
 		runnable.run();
+		return null;
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
-			throws Throwable {
+	public Object filter(Invoker invoker, Object proxy, Method method,
+			Object[] args, FilterChain filterChain) throws Throwable {
 		if (!isEnable()) {
 			return filterChain.doFilter(invoker, proxy, method, args);
 		}
 
 		try {
-			realFilter(invoker, proxy, method, args, filterChain);
+			return realFilter(invoker, proxy, method, args, filterChain);
 		} finally {
 			ENABLE_TAG.remove();
 		}
-		return null;
 	}
 }
