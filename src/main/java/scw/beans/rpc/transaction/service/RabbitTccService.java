@@ -1,4 +1,4 @@
-package scw.transaction.tcc.service;
+package scw.beans.rpc.transaction.service;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -18,12 +18,12 @@ import com.rabbitmq.client.Envelope;
 import scw.beans.BeanFactory;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.Destroy;
+import scw.beans.rpc.transaction.InvokeInfo;
+import scw.beans.rpc.transaction.StageType;
+import scw.beans.rpc.transaction.TCCService;
 import scw.common.utils.IOUtils;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
-import scw.transaction.tcc.InvokeInfo;
-import scw.transaction.tcc.StageType;
-import scw.transaction.tcc.TCCService;
 import scw.utils.mq.rabbit.RabbitUtils;
 
 public final class RabbitTccService implements TCCService {
@@ -82,7 +82,7 @@ public final class RabbitTccService implements TCCService {
 
 			@Override
 			public void complete() {
-				invoke(invokeInfo, StageType.Complate);
+				invoke(invokeInfo, StageType.Complete);
 			}
 		});
 	}

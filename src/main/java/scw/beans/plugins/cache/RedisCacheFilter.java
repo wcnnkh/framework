@@ -3,7 +3,7 @@ package scw.beans.plugins.cache;
 import scw.common.utils.IOUtils;
 import scw.redis.Redis;
 
-public class RedisCacheFilter extends AbstractCacheFilter {
+public final class RedisCacheFilter extends AbstractCacheFilter {
 	private final Redis redis;
 
 	public RedisCacheFilter(Redis redis, boolean debug) {

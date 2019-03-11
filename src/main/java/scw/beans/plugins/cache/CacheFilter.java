@@ -8,7 +8,7 @@ import scw.beans.BeanFilterChain;
 import scw.memcached.Memcached;
 import scw.redis.Redis;
 
-public class CacheFilter implements BeanFilter {
+public final class CacheFilter implements BeanFilter {
 	private final BeanFilter beanFilter;
 
 	public CacheFilter(Memcached memcached, boolean debug) {

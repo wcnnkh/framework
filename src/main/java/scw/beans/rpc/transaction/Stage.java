@@ -1,4 +1,4 @@
-package scw.transaction.tcc;
+package scw.beans.rpc.transaction;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

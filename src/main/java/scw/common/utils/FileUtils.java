@@ -348,6 +348,18 @@ public final class FileUtils {
 		}
 	}
 
+	public static <T> T readObject(File file) throws ClassNotFoundException, IOException {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(file);
+			return IOUtils.readJavaObject(fis);
+		} finally {
+			if (fis != null) {
+				fis.close();
+			}
+		}
+	}
+
 	public static List<String> getFileContentLineList(File file, String charsetName) {
 		FileInputStream fis = null;
 		InputStreamReader isr = null;

@@ -6,13 +6,13 @@ import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 
 import scw.beans.BeanFactory;
+import scw.beans.rpc.transaction.TCCManager;
 import scw.common.ByteArray;
 import scw.common.reflect.Invoker;
 import scw.common.utils.IOUtils;
 import scw.common.utils.SignUtils;
 import scw.net.http.HttpPost;
 import scw.net.http.entity.JavaObjectRequestEntity;
-import scw.transaction.tcc.TCCManager;
 
 public class HttpRPCBean extends AbstractInterfaceProxyBean {
 	private final String host;
@@ -37,12 +37,10 @@ public class HttpRPCBean extends AbstractInterfaceProxyBean {
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 						HttpConsumerInvoker httpConsumerInvoker = new HttpConsumerInvoker(host, method, signStr,
 								charset);
-						Object rtn = httpConsumerInvoker.invoke(args);
-						TCCManager.transaction(beanFactory, getType(), rtn, this, method, args);
-						return rtn;
+						return httpConsumerInvoker.invoke(args);
 					}
 				});
-		return (T) newProxyInstance;
+		return (T) TCCManager.convertTransactionProxy(beanFactory, getType(), newProxyInstance);
 	}
 }
 

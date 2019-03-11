@@ -1,4 +1,4 @@
-package scw.transaction.tcc;
+package scw.beans.rpc.transaction;
 
 /**
  * 步骤类型
@@ -7,7 +7,7 @@ package scw.transaction.tcc;
  *
  */
 public enum StageType {
-	Try(0), Confirm(1), Cancel(2), Complate(3);
+	Try(0), Confirm(1), Cancel(2), Complete(3);
 
 	private final int status;
 

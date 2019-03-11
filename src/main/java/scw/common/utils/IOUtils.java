@@ -110,7 +110,11 @@ public final class IOUtils {
 
 	public static <T> T readJavaObject(InputStream is) throws IOException, ClassNotFoundException {
 		ObjectInputStream ois = new ObjectInputStream(is);
-		return readJavaObject(ois);
+		try {
+			return readJavaObject(ois);
+		} finally {
+			ois.close();
+		}
 	}
 
 	@SuppressWarnings("unchecked")

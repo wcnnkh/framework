@@ -1,6 +1,7 @@
-package scw.transaction.tcc;
+package scw.beans.rpc.transaction;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public abstract class TCCManager {
 		return classTCC;
 	}
 
-	public static void transaction(BeanFactory beanFactory, Class<?> interfaceClz, Object rtnValue, Object obj,
+	protected static void transaction(BeanFactory beanFactory, Class<?> interfaceClz, Object rtnValue, Object obj,
 			Method method, Object[] args) {
 		TCC tcc = method.getAnnotation(TCC.class);
 		if (tcc == null) {
@@ -41,7 +42,7 @@ public abstract class TCCManager {
 
 		MethodConfig confirmMethod = info.getMethodConfig(tcc.confirm());
 		MethodConfig cancelMethod = info.getMethodConfig(tcc.cancel());
-		MethodConfig complateMethod = info.getMethodConfig(tcc.complate());
+		MethodConfig complateMethod = info.getMethodConfig(tcc.complete());
 		if (confirmMethod == null && cancelMethod == null && complateMethod == null) {
 			return;
 		}
@@ -53,5 +54,11 @@ public abstract class TCCManager {
 		}
 
 		tccService.service(obj, new InvokeInfo(rtnValue, tryMethod, confirmMethod, cancelMethod, complateMethod, args));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T convertTransactionProxy(BeanFactory beanFactory, Class<T> interfaceClass, Object obj) {
+		return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] { interfaceClass },
+				new TransactionProxy(beanFactory, interfaceClass, obj));
 	}
 }

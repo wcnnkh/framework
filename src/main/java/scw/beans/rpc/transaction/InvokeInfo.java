@@ -1,4 +1,4 @@
-package scw.transaction.tcc;
+package scw.beans.rpc.transaction;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -20,7 +20,7 @@ public class InvokeInfo implements Serializable {
 	private MethodConfig tryMethod;
 	private MethodConfig confirmMethod;
 	private MethodConfig cancelMethod;
-	private MethodConfig complateMethod;
+	private MethodConfig completeMethod;
 	private Object[] args;
 
 	/**
@@ -30,12 +30,12 @@ public class InvokeInfo implements Serializable {
 	}
 
 	protected InvokeInfo(Object tryRtnValue, MethodConfig tryMethod, MethodConfig confirmMethod,
-			MethodConfig cancelMethod, MethodConfig complateMethod, Object[] args) {
+			MethodConfig cancelMethod, MethodConfig completeMethod, Object[] args) {
 		this.tryRtnValue = tryRtnValue;
 		this.tryMethod = tryMethod;
 		this.confirmMethod = confirmMethod;
 		this.cancelMethod = cancelMethod;
-		this.complateMethod = complateMethod;
+		this.completeMethod = completeMethod;
 		this.args = args;
 	}
 
@@ -143,8 +143,8 @@ public class InvokeInfo implements Serializable {
 		case Cancel:
 			invoke(beanFactory, cancelMethod);
 			break;
-		case Complate:
-			invoke(beanFactory, complateMethod);
+		case Complete:
+			invoke(beanFactory, completeMethod);
 			break;
 		default:
 			break;
@@ -163,8 +163,8 @@ public class InvokeInfo implements Serializable {
 			return confirmMethod != null;
 		case Cancel:
 			return cancelMethod != null;
-		case Complate:
-			return complateMethod != null;
+		case Complete:
+			return completeMethod != null;
 		default:
 			return false;
 		}
@@ -187,7 +187,7 @@ public class InvokeInfo implements Serializable {
 	}
 
 	public MethodConfig getComplateMethod() {
-		return complateMethod;
+		return completeMethod;
 	}
 
 	public Object[] getArgs() {

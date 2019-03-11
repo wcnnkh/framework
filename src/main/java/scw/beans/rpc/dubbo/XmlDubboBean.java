@@ -1,6 +1,5 @@
 package scw.beans.rpc.dubbo;
 
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,6 +12,7 @@ import com.alibaba.dubbo.config.RegistryConfig;
 import scw.beans.Bean;
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
+import scw.beans.rpc.transaction.TCCManager;
 import scw.beans.xml.XmlBeanUtils;
 import scw.common.exception.BeansException;
 import scw.common.exception.NotSupportException;
@@ -108,10 +108,9 @@ public class XmlDubboBean implements Bean {
 
 		if (timeout != -1) {
 			referenceConfig.setTimeout(timeout);
-		} 
+		}
 
-		return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] { type },
-				new TransactionProxy(beanFactory, type, referenceConfig.get()));
+		return (T) TCCManager.convertTransactionProxy(beanFactory, type, referenceConfig.get());
 	}
 
 	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {

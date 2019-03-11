@@ -2,7 +2,7 @@ package scw.beans.plugins.cache;
 
 import scw.memcached.Memcached;
 
-public class MemcachedCacheFilter extends AbstractCacheFilter {
+public final class MemcachedCacheFilter extends AbstractCacheFilter {
 	private final Memcached memcached;
 
 	public MemcachedCacheFilter(Memcached memcached, boolean debug) {

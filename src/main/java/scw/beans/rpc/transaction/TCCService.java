@@ -1,4 +1,4 @@
-package scw.transaction.tcc;
+package scw.beans.rpc.transaction;
 
 public interface TCCService {
 	
