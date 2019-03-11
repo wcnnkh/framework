@@ -100,6 +100,10 @@ public final class AsyncCompleteFilter implements Filter {
 
 	private Object realFilter(Invoker invoker, Object proxy, Method method,
 			Object[] args, FilterChain filterChain) throws Throwable {
+		if (!isEnable()) {
+			return filterChain.doFilter(invoker, proxy, method, args);
+		}
+
 		AsyncComplete asyncComplete = method.getAnnotation(AsyncComplete.class);
 		if (asyncComplete == null) {
 			return filterChain.doFilter(invoker, proxy, method, args);
@@ -115,10 +119,6 @@ public final class AsyncCompleteFilter implements Filter {
 
 	public Object filter(Invoker invoker, Object proxy, Method method,
 			Object[] args, FilterChain filterChain) throws Throwable {
-		if (!isEnable()) {
-			return filterChain.doFilter(invoker, proxy, method, args);
-		}
-
 		try {
 			return realFilter(invoker, proxy, method, args, filterChain);
 		} finally {
