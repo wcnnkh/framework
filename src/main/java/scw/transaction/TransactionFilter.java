@@ -29,7 +29,7 @@ public class TransactionFilter implements Filter {
 	private Object defaultTransaction(Invoker invoker, Object proxy, Method method, Object[] args,
 			FilterChain filterChain) throws Throwable {
 		if (TransactionManager.hasTransaction()) {
-			return filterChain.doFilter(invoker, proxy, method, args);
+			return result(invoker, proxy, method, args, filterChain);
 		}
 
 		Transaction transaction = TransactionManager.getTransaction(transactionDefinition);

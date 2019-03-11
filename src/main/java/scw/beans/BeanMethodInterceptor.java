@@ -2,14 +2,15 @@ package scw.beans;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import scw.beans.annotaion.BeanFilter;
 import scw.beans.annotaion.Retry;
 import scw.beans.proxy.Filter;
-import scw.beans.proxy.cglib.CglibMethodInterceptor;
+import scw.beans.proxy.Invoker;
+import scw.beans.proxy.cglib.CglibInvoker;
 import scw.common.Logger;
 import scw.common.exception.BeansException;
 
@@ -30,11 +31,10 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 
 	private Object filter(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		// 把重复的filter过渡
-		LinkedHashSet<Filter> filterSet = new LinkedHashSet<Filter>();
+		LinkedList<String> filterList = new LinkedList<String>();
 		if (filterNames != null) {
 			for (String name : filterNames) {
-				Filter filter = beanFactory.get(name);
-				filterSet.add(filter);
+				filterList.add(name);
 			}
 		}
 
@@ -42,19 +42,20 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 				.getAnnotation(scw.beans.annotaion.BeanFilter.class);
 		if (beanFilter != null) {
 			for (Class<? extends Filter> c : beanFilter.value()) {
-				filterSet.add(beanFactory.get(c));
+				filterList.add(c.getName());
 			}
 		}
 
 		beanFilter = method.getAnnotation(scw.beans.annotaion.BeanFilter.class);
 		if (beanFilter != null) {
 			for (Class<? extends Filter> c : beanFilter.value()) {
-				filterSet.add(beanFactory.get(c));
+				filterList.add(c.getName());
 			}
 		}
 
-		CglibMethodInterceptor cglibMethodInterceptor = new CglibMethodInterceptor(filterSet);
-		return cglibMethodInterceptor.intercept(obj, method, args, proxy);
+		BeanFactoryFilterChain chain = new BeanFactoryFilterChain(beanFactory, filterList);
+		Invoker invoker = new CglibInvoker(proxy, obj, args);
+		return chain.doFilter(invoker, obj, method, args);
 	}
 
 	private Object retry(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {

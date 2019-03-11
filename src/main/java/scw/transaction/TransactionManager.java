@@ -67,7 +67,7 @@ public abstract class TransactionManager {
 		if (transaction != LOCAL.get()) {
 			throw new TransactionException("事务需要顺序执行-commit");
 		}
-
+		
 		if (transaction.isRollbackOnly()) {// 直接回滚
 			rollback(transaction);
 		} else {

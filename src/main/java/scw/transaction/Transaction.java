@@ -102,24 +102,25 @@ public final class Transaction {
 	private TransactionSynchronizationLifeCycle tslc;
 
 	private void init() {
-		if (isNewTransaction()) {
-			if (tslc != null) {
-				return;
-			}
-
-			TransactionSynchronizationCollection stsc = new TransactionSynchronizationCollection();
-			if (resourceMap != null) {
-				for (Entry<Object, TransactionResource> entry : resourceMap.entrySet()) {
-					stsc.add(new TransactionResourceSynchronization(entry.getValue()));
-				}
-			}
-
-			tslc = new TransactionSynchronizationLifeCycle(stsc, tlcc);
+		if (tslc != null) {
+			return;
 		}
+		
+		TransactionSynchronizationCollection stsc = new TransactionSynchronizationCollection();
+		if (resourceMap != null) {
+			for (Entry<Object, TransactionResource> entry : resourceMap.entrySet()) {
+				stsc.add(new TransactionResourceSynchronization(entry.getValue()));
+			}
+		}	
+		tslc = new TransactionSynchronizationLifeCycle(stsc, tlcc);
 	}
 
 	protected void process() throws TransactionException {
-		if (rollbackOnly) {
+		if(isComplete()){
+			return ;
+		}
+		
+		if (isRollbackOnly()) {
 			return;
 		}
 
@@ -142,31 +143,43 @@ public final class Transaction {
 	}
 
 	protected void rollback() throws TransactionException {
-		if (!isNewTransaction()) {
+		if(complete){
+			return ;
+		}
+		
+		if (savepoint != null) {
+			savepoint.rollback();
+		}
+		
+		if (!newTransaction) {
 			return;
 		}
 
 		init();
-		if (hasSavepoint()) {
-			savepoint.rollback();
-		}
-
 		if (tslc != null) {
 			tslc.rollback();
 		}
 	}
 
 	protected void end() {
-		if (!isNewTransaction()) {
+		if(complete){
+			return ;
+		}
+		
+		if (savepoint != null) {
+			try {
+				savepoint.release();
+			} finally {
+				savepoint = null;
+			}
+		}
+		
+		if (!newTransaction) {
 			return;
 		}
 
 		init();
 		try {
-			if (hasSavepoint()) {
-				savepoint.release();
-			}
-
 			if (tslc != null) {
 				tslc.end();
 			}
