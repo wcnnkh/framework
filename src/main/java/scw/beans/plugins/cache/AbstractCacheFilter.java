@@ -52,7 +52,7 @@ public abstract class AbstractCacheFilter implements Filter {
 			throws Throwable {
 		Cache cache = method.getAnnotation(Cache.class);
 		if (cache == null) {
-			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
+			return filterChain.doFilter(invoker, proxy, method, args);
 		}
 
 		String key = getKey(cache, method, args);
@@ -67,7 +67,7 @@ public abstract class AbstractCacheFilter implements Filter {
 
 		Object rtn = getCache(key, method.getReturnType());
 		if (rtn == null) {
-			rtn = filterChain.doFilter(invoker, proxy, method, args, filterChain);
+			rtn = filterChain.doFilter(invoker, proxy, method, args);
 			if (rtn != null) {
 				setCache(key, (int) cache.timeUnit().toSeconds(cache.exp()), method.getReturnType(), rtn);
 			}

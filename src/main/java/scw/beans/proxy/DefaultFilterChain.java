@@ -13,10 +13,10 @@ public final class DefaultFilterChain implements FilterChain {
 		}
 	}
 
-	public Object doFilter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain chain)
+	public Object doFilter(Invoker invoker, Object proxy, Method method, Object[] args)
 			throws Throwable {
 		if (iterator != null && iterator.hasNext()) {
-			return iterator.next().filter(invoker, proxy, method, args, chain);
+			return iterator.next().filter(invoker, proxy, method, args, this);
 		} else {
 			return invoker.invoke();
 		}

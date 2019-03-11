@@ -29,7 +29,7 @@ public class TransactionBeanFilter implements Filter {
 	private Object defaultTransaction(Invoker invoker, Object proxy, Method method, Object[] args,
 			FilterChain filterChain) throws Throwable {
 		if (TransactionManager.hasTransaction()) {
-			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
+			return filterChain.doFilter(invoker, proxy, method, args);
 		}
 
 		Transaction transaction = TransactionManager.getTransaction(transactionDefinition);
@@ -46,7 +46,7 @@ public class TransactionBeanFilter implements Filter {
 
 	private Object result(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
-		Object rtn = filterChain.doFilter(invoker, proxy, method, args, filterChain);
+		Object rtn = filterChain.doFilter(invoker, proxy, method, args);
 		if (rtn != null && (rtn instanceof RollbackOnlyResult)) {
 			RollbackOnlyResult result = (RollbackOnlyResult) rtn;
 			if (result.isRollbackOnly()) {

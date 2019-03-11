@@ -20,12 +20,12 @@ public class SelectCacheFilter implements Filter {
 	private Object def(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
 		if (SelectCacheUtils.isEnable()) {
-			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
+			return filterChain.doFilter(invoker, proxy, method, args);
 		}
 
 		SelectCacheUtils.begin(enable);
 		try {
-			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
+			return filterChain.doFilter(invoker, proxy, method, args);
 		} finally {
 			SelectCacheUtils.end();
 		}
@@ -50,7 +50,7 @@ public class SelectCacheFilter implements Filter {
 
 		SelectCacheUtils.begin(b);
 		try {
-			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
+			return filterChain.doFilter(invoker, proxy, method, args);
 		} finally {
 			SelectCacheUtils.end();
 		}

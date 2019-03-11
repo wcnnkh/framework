@@ -36,7 +36,7 @@ final class CacheTimerTask extends TimerTask {
 		}
 
 		try {
-			Object rtn = filterChain.doFilter(invoker, proxy, method, args, filterChain);
+			Object rtn = filterChain.doFilter(invoker, proxy, method, args);
 			if (rtn != null) {
 				Cache cache = method.getAnnotation(Cache.class);
 				abstractCacheFilter.setCache(key, (int) cache.timeUnit().toSeconds(cache.exp()), method.getReturnType(),

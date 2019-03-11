@@ -33,7 +33,7 @@ public final class LockFilter implements Filter {
 			throws Throwable {
 		LockConfig lockConfig = method.getAnnotation(LockConfig.class);
 		if (lockConfig == null) {
-			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
+			return filterChain.doFilter(invoker, proxy, method, args);
 		}
 
 		StringBuilder sb = new StringBuilder(128);
@@ -62,7 +62,7 @@ public final class LockFilter implements Filter {
 			}
 
 			SelectCacheUtils.setEnable(false);
-			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
+			return filterChain.doFilter(invoker, proxy, method, args);
 		} finally {
 			lock.unlock();
 		}

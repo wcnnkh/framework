@@ -99,7 +99,7 @@ public final class AsyncCompleteFilter implements Filter {
 			throws Throwable {
 		AsyncComplete asyncComplete = method.getAnnotation(AsyncComplete.class);
 		if (asyncComplete == null) {
-			filterChain.doFilter(invoker, proxy, method, args, filterChain);
+			filterChain.doFilter(invoker, proxy, method, args);
 			return;
 		}
 
@@ -112,7 +112,7 @@ public final class AsyncCompleteFilter implements Filter {
 	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
 		if (!isEnable()) {
-			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
+			return filterChain.doFilter(invoker, proxy, method, args);
 		}
 
 		try {

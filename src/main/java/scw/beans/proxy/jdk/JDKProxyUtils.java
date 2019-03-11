@@ -20,8 +20,7 @@ public final class JDKProxyUtils {
 
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 						FilterChain filterChain = new DefaultFilterChain(filters);
-						return filterChain.doFilter(new JDKInvoker(obj, method, args), proxy, method, args,
-								filterChain);
+						return filterChain.doFilter(new JDKInvoker(obj, method, args), proxy, method, args);
 					}
 				});
 	}
@@ -33,7 +32,7 @@ public final class JDKProxyUtils {
 
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 						FilterChain filterChain = new DefaultFilterChain(filters);
-						return filterChain.doFilter(invoker, proxy, method, args, filterChain);
+						return filterChain.doFilter(invoker, proxy, method, args);
 					}
 				});
 	}
