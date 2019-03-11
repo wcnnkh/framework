@@ -1,16 +1,13 @@
-package scw.beans;
+package scw.beans.async;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
+import scw.beans.BeanFactory;
 import scw.beans.annotaion.AsyncComplete;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.Destroy;
@@ -20,11 +17,21 @@ import scw.beans.proxy.FilterChain;
 import scw.beans.proxy.Invoker;
 import scw.common.Base64;
 import scw.common.FileManager;
-import scw.common.MethodConfig;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.FileUtils;
 
 public final class AsyncCompleteFilter implements Filter {
+	private static ThreadLocal<Boolean> ENABLE_TAG = new ThreadLocal<Boolean>();
+
+	public static boolean isEnable() {
+		Boolean b = ENABLE_TAG.get();
+		return b == null ? true : b;
+	}
+
+	public static void setEnable(boolean enable) {
+		ENABLE_TAG.set(enable);
+	}
+
 	private FileManager fileManager;
 	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
 
@@ -47,7 +54,8 @@ public final class AsyncCompleteFilter implements Filter {
 				for (File f : files) {
 					try {
 						AsyncInvokeInfo info = FileUtils.readObject(f);
-						new InvokeRunnable(info, f.getPath()).start();
+						new InvokeRunnable(info, f.getPath()).run();
+						f.deleteOnExit();
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
@@ -66,7 +74,6 @@ public final class AsyncCompleteFilter implements Filter {
 	final class InvokeRunnable implements Runnable {
 		private final AsyncInvokeInfo info;
 		private final String logPath;
-		private ScheduledFuture<?> scheduledFuture;
 
 		public InvokeRunnable(AsyncInvokeInfo info, String logPath) {
 			this.info = info;
@@ -74,64 +81,45 @@ public final class AsyncCompleteFilter implements Filter {
 		}
 
 		public void run() {
+			ENABLE_TAG.set(false);
 			try {
-				info.invoke();
+				info.invoke(beanFactory);
 				File file = new File(logPath);
-				file.deleteOnExit();
-				scheduledFuture.cancel(false);
+				if(file.exists()){
+					file.delete();
+				}
 			} catch (Exception e) {
+				executorService.schedule(this, info.getDelayMillis(), info.getTimeUnit());
 				e.printStackTrace();
 			}
 		}
-
-		public void start() {
-			scheduledFuture = executorService.scheduleAtFixedRate(this, 0, info.getDelayMillis(), TimeUnit.SECONDS);
-		}
 	}
 
-	final class AsyncInvokeInfo implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private MethodConfig methodConfig;
-		private long delayMillis;
-		private TimeUnit timeUnit;
-		private Object[] args;
-
-		public AsyncInvokeInfo() {
-		};
-
-		public AsyncInvokeInfo(AsyncComplete asyncComplete, Class<?> clz, Method method, Object[] args) {
-			this.delayMillis = asyncComplete.delayMillis();
-			this.methodConfig = new MethodConfig(clz, method);
-			this.timeUnit = asyncComplete.timeUnit();
-			this.args = args;
-		}
-
-		public long getDelayMillis() {
-			return delayMillis;
-		}
-
-		public TimeUnit getTimeUnit() {
-			return timeUnit;
-		}
-
-		public Object invoke() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-				NoSuchMethodException, SecurityException {
-			Object bean = beanFactory.get(methodConfig.getClz());
-			return methodConfig.getMethod().invoke(bean, args);
-		}
-	}
-
-	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain chain)
+	private void realFilter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
 		AsyncComplete asyncComplete = method.getAnnotation(AsyncComplete.class);
 		if (asyncComplete == null) {
-			return chain.doFilter(invoker, proxy, method, args, chain);
+			filterChain.doFilter(invoker, proxy, method, args, filterChain);
+			return;
 		}
 
 		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete, method.getDeclaringClass(), method, args);
 		File file = fileManager.createRandomFileWriteObject(info);
 		InvokeRunnable runnable = new InvokeRunnable(info, file.getPath());
-		runnable.start();
+		runnable.run();
+	}
+
+	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
+			throws Throwable {
+		if (!isEnable()) {
+			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
+		}
+
+		try {
+			realFilter(invoker, proxy, method, args, filterChain);
+		} finally {
+			ENABLE_TAG.remove();
+		}
 		return null;
 	}
 }

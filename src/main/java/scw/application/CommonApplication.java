@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import com.alibaba.dubbo.config.ProtocolConfig;
 
-import scw.beans.AsyncCompleteFilter;
 import scw.beans.XmlBeanFactory;
+import scw.beans.async.AsyncCompleteFilter;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboUtils;

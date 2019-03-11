@@ -22,5 +22,5 @@ public @interface AsyncComplete {
 	 */
 	public long delayMillis() default 60;
 	
-	public TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
+	public TimeUnit timeUnit() default TimeUnit.SECONDS;
 }

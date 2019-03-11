@@ -6,7 +6,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import scw.beans.BeanFactory;
@@ -110,7 +109,6 @@ public final class RetryTCCService implements TCCService {
 		private final TransactionInfo transactionInfo;
 		private final int retryTime;
 		private final String fileId;
-		private ScheduledFuture<?> scheduledFuture;
 
 		/**
 		 * 
@@ -131,9 +129,11 @@ public final class RetryTCCService implements TCCService {
 			try {
 				transactionInfo.invoke(beanFactory);
 				File file = new File(fileId);
-				file.deleteOnExit();
-				scheduledFuture.cancel(false);
+				if (file.exists()) {
+					file.delete();
+				}
 			} catch (Exception e) {
+				executorService.schedule(this, retryTime, TimeUnit.SECONDS);
 				e.printStackTrace();
 			}
 		}
@@ -142,8 +142,7 @@ public final class RetryTCCService implements TCCService {
 			if (!transactionInfo.hasCanInvoke()) {
 				return;
 			}
-
-			scheduledFuture = executorService.scheduleAtFixedRate(this, 0, retryTime, TimeUnit.SECONDS);
+			run();
 		}
 	}
 }
