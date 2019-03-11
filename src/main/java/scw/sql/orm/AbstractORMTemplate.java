@@ -279,6 +279,10 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 
 		return new Pagination<List<T>>(count, limit, select(type, paginationSql.getResultSql()));
 	}
+	
+	public <T> Pagination<List<T>> select(Class<T> type, int page, int limit, Sql sql) {
+		return select(type, (long)page, limit, sql);
+	}
 
 	public Pagination<ResultSet> select(long page, int limit, Sql sql) {
 		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page, limit);
@@ -292,6 +296,10 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		}
 
 		return new Pagination<ResultSet>(count, limit, select(paginationSql.getResultSql()));
+	}
+	
+	public Pagination<ResultSet> select(int page, int limit, Sql sql) {
+		return select((long)page, limit, sql);
 	}
 
 	public Select createSelect() {
