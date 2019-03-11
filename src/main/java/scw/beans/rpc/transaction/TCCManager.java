@@ -10,7 +10,7 @@ import scw.beans.BeanFactory;
 import scw.beans.proxy.jdk.JDKProxyUtils;
 import scw.common.MethodConfig;
 
-public abstract class TCCManager {
+public final class TCCManager {
 	private TCCManager() {
 	};
 
@@ -60,7 +60,7 @@ public abstract class TCCManager {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T convertTransactionProxy(BeanFactory beanFactory, Class<T> interfaceClass, Object obj) {
-		TCCTransactionFilter tccTransactionFilter = beanFactory.get(TCCTransactionFilter.class);
+		TCCTransactionFilter tccTransactionFilter = new TCCTransactionFilter(beanFactory, interfaceClass, obj);
 		AsyncCompleteFilter asyncCompleteFilter = beanFactory.get(AsyncCompleteFilter.class);
 		return (T) JDKProxyUtils.newProxyInstance(obj, interfaceClass,
 				Arrays.asList(tccTransactionFilter, asyncCompleteFilter));

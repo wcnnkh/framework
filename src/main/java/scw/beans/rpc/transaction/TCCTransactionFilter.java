@@ -12,7 +12,7 @@ class TCCTransactionFilter implements Filter {
 	private final Object obj;
 	private final Class<?> interfaceClass;
 	private final BeanFactory beanFactory;
-
+	
 	public TCCTransactionFilter(BeanFactory beanFactory, Class<?> interfaceClass, Object obj) {
 		this.beanFactory = beanFactory;
 		this.obj = obj;
