@@ -19,6 +19,7 @@ import scw.beans.annotaion.InitMethod;
 import scw.beans.annotaion.Properties;
 import scw.beans.annotaion.Retry;
 import scw.beans.property.PropertiesFactory;
+import scw.beans.proxy.Filter;
 import scw.beans.xml.XmlBeanParameter;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
@@ -429,7 +430,7 @@ public final class BeanUtils {
 			return false;
 		}
 
-		if (BeanFilter.class.isAssignableFrom(type)) {
+		if (Filter.class.isAssignableFrom(type)) {
 			return false;
 		}
 

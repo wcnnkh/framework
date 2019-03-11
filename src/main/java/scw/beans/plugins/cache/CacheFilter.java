@@ -2,27 +2,26 @@ package scw.beans.plugins.cache;
 
 import java.lang.reflect.Method;
 
-import net.sf.cglib.proxy.MethodProxy;
-import scw.beans.BeanFilter;
-import scw.beans.BeanFilterChain;
+import scw.beans.proxy.Filter;
+import scw.beans.proxy.FilterChain;
+import scw.beans.proxy.Invoker;
 import scw.memcached.Memcached;
 import scw.redis.Redis;
 
-public final class CacheFilter implements BeanFilter {
-	private final BeanFilter beanFilter;
+public final class CacheFilter implements Filter {
+	private final Filter filter;
 
 	public CacheFilter(Memcached memcached, boolean debug) {
-		this.beanFilter = new MemcachedCacheFilter(memcached, debug);
+		this.filter = new MemcachedCacheFilter(memcached, debug);
 	}
 
 	public CacheFilter(Redis redis, boolean debug) {
-		this.beanFilter = new RedisCacheFilter(redis, debug);
+		this.filter = new RedisCacheFilter(redis, debug);
 	}
 
-	public Object doFilter(Object obj, Method method, Object[] args,
-			MethodProxy proxy, BeanFilterChain beanFilterChain)
+	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
-		return beanFilter.doFilter(obj, method, args, proxy, beanFilterChain);
+		return filter.filter(invoker, proxy, method, args, filterChain);
 	}
 
 }

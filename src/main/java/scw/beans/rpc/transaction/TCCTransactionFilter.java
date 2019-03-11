@@ -1,22 +1,26 @@
 package scw.beans.rpc.transaction;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 import scw.beans.BeanFactory;
+import scw.beans.proxy.Filter;
+import scw.beans.proxy.FilterChain;
+import scw.beans.proxy.Invoker;
 
-class TransactionProxy implements InvocationHandler {
+class TCCTransactionFilter implements Filter {
+	
 	private final Object obj;
 	private final Class<?> interfaceClass;
 	private final BeanFactory beanFactory;
 
-	public TransactionProxy(BeanFactory beanFactory, Class<?> interfaceClass, Object obj) {
+	public TCCTransactionFilter(BeanFactory beanFactory, Class<?> interfaceClass, Object obj) {
 		this.beanFactory = beanFactory;
 		this.obj = obj;
 		this.interfaceClass = interfaceClass;
 	}
 
-	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain chain)
+			throws Throwable {
 		Object rtn = method.invoke(obj, args);
 		TCCManager.transaction(beanFactory, interfaceClass, rtn, obj, method, args);
 		return rtn;

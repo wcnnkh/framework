@@ -4,9 +4,9 @@ import java.lang.reflect.Method;
 
 import com.alibaba.fastjson.JSONArray;
 
-import net.sf.cglib.proxy.MethodProxy;
-import scw.beans.BeanFilter;
-import scw.beans.BeanFilterChain;
+import scw.beans.proxy.Filter;
+import scw.beans.proxy.FilterChain;
+import scw.beans.proxy.Invoker;
 import scw.common.utils.StringUtils;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
@@ -18,7 +18,7 @@ import scw.sql.orm.plugin.SelectCacheUtils;
  * @author shuchaowen
  *
  */
-public final class LockFilter implements BeanFilter {
+public final class LockFilter implements Filter {
 	private LockFactory lockFactory;
 
 	public LockFilter(LockFactory lockFactory) {
@@ -29,11 +29,11 @@ public final class LockFilter implements BeanFilter {
 		this.lockFactory = lockFactory;
 	}
 
-	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
+	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
 		LockConfig lockConfig = method.getAnnotation(LockConfig.class);
 		if (lockConfig == null) {
-			return beanFilterChain.doFilter(obj, method, args, proxy);
+			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
 		}
 
 		StringBuilder sb = new StringBuilder(128);
@@ -62,7 +62,7 @@ public final class LockFilter implements BeanFilter {
 			}
 
 			SelectCacheUtils.setEnable(false);
-			return beanFilterChain.doFilter(obj, method, args, proxy);
+			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
 		} finally {
 			lock.unlock();
 		}

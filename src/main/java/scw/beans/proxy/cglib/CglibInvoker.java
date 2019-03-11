@@ -1,0 +1,20 @@
+package scw.beans.proxy.cglib;
+
+import net.sf.cglib.proxy.MethodProxy;
+import scw.beans.proxy.Invoker;
+
+public final class CglibInvoker implements Invoker {
+	private final MethodProxy proxy;
+	private final Object obj;
+	private final Object[] args;
+
+	public CglibInvoker(MethodProxy proxy, Object obj, Object[] args) {
+		this.proxy = proxy;
+		this.obj = obj;
+		this.args = args;
+	}
+
+	public Object invoke() throws Throwable {
+		return proxy.invokeSuper(obj, args);
+	}
+}

@@ -1,4 +1,4 @@
-package scw.beans.plugins.async;
+package scw.beans.annotaion;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

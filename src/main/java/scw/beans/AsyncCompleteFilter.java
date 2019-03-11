@@ -1,4 +1,4 @@
-package scw.beans.plugins.async;
+package scw.beans;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,20 +11,20 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import net.sf.cglib.proxy.MethodProxy;
-import scw.beans.BeanFactory;
-import scw.beans.BeanFilter;
-import scw.beans.BeanFilterChain;
+import scw.beans.annotaion.AsyncComplete;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
+import scw.beans.proxy.Filter;
+import scw.beans.proxy.FilterChain;
+import scw.beans.proxy.Invoker;
 import scw.common.Base64;
 import scw.common.FileManager;
 import scw.common.MethodConfig;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.FileUtils;
 
-public final class AsyncCompleteBeanFilter implements BeanFilter {
+public final class AsyncCompleteFilter implements Filter {
 	private FileManager fileManager;
 	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
 
@@ -61,20 +61,6 @@ public final class AsyncCompleteBeanFilter implements BeanFilter {
 	@Destroy
 	private void destory() {
 		executorService.shutdownNow();
-	}
-
-	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
-			throws Throwable {
-		AsyncComplete asyncComplete = method.getAnnotation(AsyncComplete.class);
-		if (asyncComplete == null) {
-			return beanFilterChain.doFilter(obj, method, args, proxy);
-		}
-
-		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete, method.getDeclaringClass(), method, args);
-		File file = fileManager.createRandomFileWriteObject(info);
-		InvokeRunnable runnable = new InvokeRunnable(info, file.getPath());
-		runnable.start();
-		return null;
 	}
 
 	final class InvokeRunnable implements Runnable {
@@ -133,5 +119,19 @@ public final class AsyncCompleteBeanFilter implements BeanFilter {
 			Object bean = beanFactory.get(methodConfig.getClz());
 			return methodConfig.getMethod().invoke(bean, args);
 		}
+	}
+
+	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain chain)
+			throws Throwable {
+		AsyncComplete asyncComplete = method.getAnnotation(AsyncComplete.class);
+		if (asyncComplete == null) {
+			return chain.doFilter(invoker, proxy, method, args, chain);
+		}
+
+		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete, method.getDeclaringClass(), method, args);
+		File file = fileManager.createRandomFileWriteObject(info);
+		InvokeRunnable runnable = new InvokeRunnable(info, file.getPath());
+		runnable.start();
+		return null;
 	}
 }

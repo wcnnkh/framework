@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import com.alibaba.dubbo.config.ProtocolConfig;
 
+import scw.beans.AsyncCompleteFilter;
 import scw.beans.XmlBeanFactory;
-import scw.beans.plugins.async.AsyncCompleteBeanFilter;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboUtils;
@@ -26,7 +26,7 @@ public class CommonApplication implements Application {
 		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(configPath) : propertiesFactory;
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
-			this.beanFactory.addFirstFilters(AsyncCompleteBeanFilter.class.getName());
+			this.beanFactory.addFirstFilters(AsyncCompleteFilter.class.getName());
 			this.beanFactory.addFirstFilters(scw.transaction.TransactionBeanFilter.class.getName());
 			this.beanFactory.addFirstFilters(SelectCacheFilter.class.getName());
 		} catch (Exception e) {

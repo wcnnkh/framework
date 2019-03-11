@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import scw.beans.proxy.Filter;
+
 /**
  * 
  * 定义方法或类上的拦截器
@@ -16,5 +18,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface BeanFilter {
-	public Class<? extends scw.beans.BeanFilter>[] value();
+	public Class<? extends Filter>[] value();
 }

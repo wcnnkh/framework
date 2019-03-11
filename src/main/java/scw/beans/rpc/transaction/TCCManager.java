@@ -1,11 +1,13 @@
 package scw.beans.rpc.transaction;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.beans.AsyncCompleteFilter;
 import scw.beans.BeanFactory;
+import scw.beans.proxy.jdk.JDKProxyUtils;
 import scw.common.MethodConfig;
 
 public abstract class TCCManager {
@@ -58,7 +60,9 @@ public abstract class TCCManager {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T convertTransactionProxy(BeanFactory beanFactory, Class<T> interfaceClass, Object obj) {
-		return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] { interfaceClass },
-				new TransactionProxy(beanFactory, interfaceClass, obj));
+		TCCTransactionFilter tccTransactionFilter = beanFactory.get(TCCTransactionFilter.class);
+		AsyncCompleteFilter asyncCompleteFilter = beanFactory.get(AsyncCompleteFilter.class);
+		return (T) JDKProxyUtils.newProxyInstance(obj, interfaceClass,
+				Arrays.asList(tccTransactionFilter, asyncCompleteFilter));
 	}
 }

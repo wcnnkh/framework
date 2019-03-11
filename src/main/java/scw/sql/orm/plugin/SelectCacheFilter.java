@@ -2,11 +2,11 @@ package scw.sql.orm.plugin;
 
 import java.lang.reflect.Method;
 
-import net.sf.cglib.proxy.MethodProxy;
-import scw.beans.BeanFilter;
-import scw.beans.BeanFilterChain;
+import scw.beans.proxy.Filter;
+import scw.beans.proxy.FilterChain;
+import scw.beans.proxy.Invoker;
 
-public class SelectCacheFilter implements BeanFilter {
+public class SelectCacheFilter implements Filter {
 	private final boolean enable;
 
 	public SelectCacheFilter() {
@@ -17,12 +17,26 @@ public class SelectCacheFilter implements BeanFilter {
 		this.enable = enable;
 	}
 
-	public Object doFilter(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
+	private Object def(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
+			throws Throwable {
+		if (SelectCacheUtils.isEnable()) {
+			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
+		}
+
+		SelectCacheUtils.begin(enable);
+		try {
+			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
+		} finally {
+			SelectCacheUtils.end();
+		}
+	}
+
+	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
 		SelectCache selectCache = method.getDeclaringClass().getAnnotation(SelectCache.class);
 		SelectCache m = method.getAnnotation(SelectCache.class);
 		if (selectCache == null && m == null) {
-			return def(obj, method, args, proxy, beanFilterChain);
+			return def(invoker, proxy, method, args, filterChain);
 		}
 
 		boolean b = enable;
@@ -36,22 +50,7 @@ public class SelectCacheFilter implements BeanFilter {
 
 		SelectCacheUtils.begin(b);
 		try {
-			return beanFilterChain.doFilter(obj, method, args, proxy);
-		} finally {
-			SelectCacheUtils.end();
-		}
-
-	}
-
-	public Object def(Object obj, Method method, Object[] args, MethodProxy proxy, BeanFilterChain beanFilterChain)
-			throws Throwable {
-		if (SelectCacheUtils.isEnable()) {
-			return beanFilterChain.doFilter(obj, method, args, proxy);
-		}
-
-		SelectCacheUtils.begin(enable);
-		try {
-			return beanFilterChain.doFilter(obj, method, args, proxy);
+			return filterChain.doFilter(invoker, proxy, method, args, filterChain);
 		} finally {
 			SelectCacheUtils.end();
 		}
