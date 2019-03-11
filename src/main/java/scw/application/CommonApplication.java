@@ -14,6 +14,7 @@ import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.sql.orm.plugin.SelectCacheFilter;
+import scw.transaction.TransactionFilter;
 
 public class CommonApplication implements Application {
 	private final XmlBeanFactory beanFactory;
@@ -27,7 +28,7 @@ public class CommonApplication implements Application {
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
 			this.beanFactory.addFirstFilters(AsyncCompleteFilter.class.getName());
-			this.beanFactory.addFirstFilters(scw.transaction.TransactionBeanFilter.class.getName());
+			this.beanFactory.addFirstFilters(TransactionFilter.class.getName());
 			this.beanFactory.addFirstFilters(SelectCacheFilter.class.getName());
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);

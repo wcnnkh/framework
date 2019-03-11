@@ -12,17 +12,17 @@ import scw.beans.proxy.Invoker;
  * @author shuchaowen
  *
  */
-public class TransactionBeanFilter implements Filter {
+public class TransactionFilter implements Filter {
 	/**
 	 * 默认的事务定义
 	 */
 	private final TransactionDefinition transactionDefinition;
 
-	public TransactionBeanFilter() {
+	public TransactionFilter() {
 		this(new DefaultTransactionDefinition());
 	}
 
-	public TransactionBeanFilter(TransactionDefinition transactionDefinition) {
+	public TransactionFilter(TransactionDefinition transactionDefinition) {
 		this.transactionDefinition = transactionDefinition;
 	}
 
