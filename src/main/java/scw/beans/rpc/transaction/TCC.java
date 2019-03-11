@@ -7,6 +7,11 @@ import java.lang.annotation.Target;
 
 import scw.beans.rpc.transaction.service.RetryTCCService;
 
+/**
+ * 只有在接口中定义并使用RPC调用时才有效
+ * @author asus1
+ *
+ */
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TCC {

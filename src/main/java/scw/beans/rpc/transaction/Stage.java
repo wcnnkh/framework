@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * TCC步骤的定义
+ * 只有在接口中定义并使用RPC调用时才有效
  * 
  * @author shuchaowen
  *
