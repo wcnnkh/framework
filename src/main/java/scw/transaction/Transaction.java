@@ -152,7 +152,7 @@ public final class Transaction {
 		}
 
 		if (tslc != null) {
-			tslc.process();
+			tslc.rollback();
 		}
 	}
 
