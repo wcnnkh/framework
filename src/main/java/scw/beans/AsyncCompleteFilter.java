@@ -20,6 +20,7 @@ import scw.beans.proxy.Invoker;
 import scw.common.Base64;
 import scw.common.FileManager;
 import scw.common.MethodConfig;
+import scw.common.utils.ClassUtils;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.FileUtils;
 
@@ -87,17 +88,31 @@ public final class AsyncCompleteFilter implements Filter {
 
 		public void run() {
 			ENABLE_TAG.set(false);
+			Object rtn;
 			try {
-				info.invoke(beanFactory);
-				File file = new File(logPath);
-				if (file.exists()) {
-					file.delete();
+				rtn = info.invoke(beanFactory);
+				if(ClassUtils.isBooleanType(info.getMethodConfig().getReturnType())){
+					if(rtn != null && (Boolean)rtn == false){
+						retry();
+					}
 				}
+				deleteLog();
 			} catch (Exception e) {
-				executorService.schedule(this, info.getDelayMillis(),
-						info.getTimeUnit());
+				retry();
 				e.printStackTrace();
 			}
+		}
+		
+		private void deleteLog(){
+			File file = new File(logPath);
+			if (file.exists()) {
+				file.delete();
+			}
+		}
+		
+		private void retry(){
+			executorService.schedule(this, info.getDelayMillis(),
+					info.getTimeUnit());
 		}
 	}
 
@@ -145,6 +160,10 @@ class AsyncInvokeInfo implements Serializable{
 		this.methodConfig = new MethodConfig(clz, method);
 		this.timeUnit = asyncComplete.timeUnit();
 		this.args = args;
+	}
+
+	public MethodConfig getMethodConfig() {
+		return methodConfig;
 	}
 
 	public long getDelayMillis() {

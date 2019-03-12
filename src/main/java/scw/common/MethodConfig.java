@@ -10,6 +10,7 @@ public final class MethodConfig implements Serializable {
 	private Class<?> clz;
 	private String name;
 	private Class<?>[] parameterTypes;
+	private Class<?> returnType;
 
 	/**
 	 * 用户序列化
@@ -21,12 +22,14 @@ public final class MethodConfig implements Serializable {
 		this.clz = method.getDeclaringClass();
 		this.name = method.getName();
 		this.parameterTypes = method.getParameterTypes();
+		this.returnType = method.getReturnType();
 	}
 
 	public MethodConfig(Class<?> clz, Method method) {
 		this.clz = clz;
 		this.name = method.getName();
 		this.parameterTypes = method.getParameterTypes();
+		this.returnType = method.getReturnType();
 	}
 
 	private transient Method method;
@@ -60,5 +63,9 @@ public final class MethodConfig implements Serializable {
 
 	public String getName() {
 		return name;
+	}
+
+	public Class<?> getReturnType() {
+		return returnType;
 	}
 }
