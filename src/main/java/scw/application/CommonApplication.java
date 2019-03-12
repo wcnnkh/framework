@@ -27,9 +27,9 @@ public class CommonApplication implements Application {
 		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(configPath) : propertiesFactory;
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
-			this.beanFactory.addFirstFilters(AsyncCompleteFilter.class.getName());
 			this.beanFactory.addFirstFilters(TransactionFilter.class.getName());
 			this.beanFactory.addFirstFilters(SelectCacheFilter.class.getName());
+			this.beanFactory.addFirstFilters(AsyncCompleteFilter.class.getName());
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);
 		}
