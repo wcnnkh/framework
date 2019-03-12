@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.beans.AsyncCompleteFilter;
 import scw.beans.BeanFactory;
-import scw.beans.async.AsyncCompleteFilter;
 import scw.beans.proxy.jdk.JDKProxyUtils;
 import scw.common.MethodConfig;
 

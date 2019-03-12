@@ -1,13 +1,15 @@
-package scw.beans.async;
+package scw.beans;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-import scw.beans.BeanFactory;
 import scw.beans.annotaion.AsyncComplete;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.Destroy;
@@ -17,6 +19,7 @@ import scw.beans.proxy.FilterChain;
 import scw.beans.proxy.Invoker;
 import scw.common.Base64;
 import scw.common.FileManager;
+import scw.common.MethodConfig;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.FileUtils;
 
@@ -124,5 +127,37 @@ public final class AsyncCompleteFilter implements Filter {
 		} finally {
 			ENABLE_TAG.remove();
 		}
+	}
+}
+
+class AsyncInvokeInfo implements Serializable{
+	private static final long serialVersionUID = 1L;
+	private MethodConfig methodConfig;
+	private long delayMillis;
+	private TimeUnit timeUnit;
+	private Object[] args;
+
+	public AsyncInvokeInfo() {
+	};
+
+	public AsyncInvokeInfo(AsyncComplete asyncComplete, Class<?> clz, Method method, Object[] args) {
+		this.delayMillis = asyncComplete.delayMillis();
+		this.methodConfig = new MethodConfig(clz, method);
+		this.timeUnit = asyncComplete.timeUnit();
+		this.args = args;
+	}
+
+	public long getDelayMillis() {
+		return delayMillis;
+	}
+
+	public TimeUnit getTimeUnit() {
+		return timeUnit;
+	}
+
+	public Object invoke(BeanFactory beanFactory) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException {
+		Object bean = beanFactory.get(methodConfig.getClz());
+		return methodConfig.getMethod().invoke(bean, args);
 	}
 }
