@@ -17,17 +17,25 @@ public final class SequenceIdGenerator implements IdGenerator<SequenceId> {
 	private final IdGenerator<Long> idGenerator;
 	private final String time_format;
 
+	public SequenceIdGenerator() {
+		this.idGenerator = new LongIdGenerator();
+		this.time_format = DEFAULT_TIME_FORMAT;
+	}
+
 	public SequenceIdGenerator(Memcached memcached) {
-		this.idGenerator = new MemcachedIdGenerator(memcached, this.getClass().getName(), 0);
+		this.idGenerator = new MemcachedIdGenerator(memcached, this.getClass()
+				.getName(), 0);
 		this.time_format = DEFAULT_TIME_FORMAT;
 	}
 
 	public SequenceIdGenerator(Redis redis) {
-		this.idGenerator = new RedisIdGenerator(redis, this.getClass().getName(), 0);
+		this.idGenerator = new RedisIdGenerator(redis, this.getClass()
+				.getName(), 0);
 		this.time_format = DEFAULT_TIME_FORMAT;
 	}
 
-	public SequenceIdGenerator(Memcached memcached, String key, String timeformat) {
+	public SequenceIdGenerator(Memcached memcached, String key,
+			String timeformat) {
 		Assert.notNull(timeformat);
 		Assert.notNull(key);
 		this.idGenerator = new MemcachedIdGenerator(memcached, key, 0);
@@ -48,7 +56,8 @@ public final class SequenceIdGenerator implements IdGenerator<SequenceId> {
 			number = Integer.MAX_VALUE + number;
 		}
 
-		String id = XTime.format(t, time_format) + StringUtils.complemented(number + "", '0', 10);
+		String id = XTime.format(t, time_format)
+				+ StringUtils.complemented(number + "", '0', 10);
 		return new SequenceId(t, id);
 	}
 }
