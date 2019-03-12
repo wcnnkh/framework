@@ -5,7 +5,7 @@ import scw.db.DBManager;
 import scw.utils.id.IdGenerator;
 import scw.utils.id.LongIdGenerator;
 
-public class TableLongIdGenerator implements IdGenerator<Long> {
+public final class TableLongIdGenerator implements IdGenerator<Long> {
 	private Class<?> tableClass;
 	private String fieldName;
 	private int serverId = 0;

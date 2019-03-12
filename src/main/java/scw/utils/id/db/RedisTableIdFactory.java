@@ -9,7 +9,7 @@ import scw.locks.RedisLock;
 import scw.redis.Redis;
 import scw.sql.orm.SelectMaxId;
 
-public class RedisTableIdFactory extends AbstractTableIdFactory {
+public final class RedisTableIdFactory extends AbstractTableIdFactory {
 	private static final String INCR_SCRIPT = "if redis.call('exists', KEYS[1]) == 1 then return redis.call('incr', KEYV[1]) else local newValue = ARGS[1] + 1; redis.call('set', KEYS[1], newValue) return newValue end";
 	private final Redis redis;
 

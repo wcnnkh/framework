@@ -6,7 +6,7 @@ import scw.locks.Lock;
 import scw.locks.MemcachedLock;
 import scw.memcached.Memcached;
 
-public class MemcachedTableIdFactory extends AbstractTableIdFactory {
+public final class MemcachedTableIdFactory extends AbstractTableIdFactory {
 	private final Memcached memcached;
 
 	public MemcachedTableIdFactory(scw.sql.orm.SelectMaxId db, Memcached memcached) {

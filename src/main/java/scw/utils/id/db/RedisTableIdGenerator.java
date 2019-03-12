@@ -6,7 +6,7 @@ import scw.redis.Redis;
 import scw.utils.id.IdGenerator;
 import scw.utils.id.RedisIdGenerator;
 
-public class RedisTableIdGenerator implements IdGenerator<Long> {
+public final class RedisTableIdGenerator implements IdGenerator<Long> {
 	private final Redis redis;
 	private final Class<?> tableClass;
 	private final String fieldName;

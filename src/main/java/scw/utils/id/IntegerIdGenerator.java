@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author shuchaowen
  *
  */
-public class IntegerIdGenerator implements IdGenerator<Integer>{
+public final class IntegerIdGenerator implements IdGenerator<Integer>{
 	private int serverId;
 	private int serverCount;
 	private AtomicInteger maxId;

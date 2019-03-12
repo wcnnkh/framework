@@ -12,7 +12,7 @@ import scw.redis.Redis;
  * @author shuchaowen
  *
  */
-public class SequenceIdGenerator implements IdGenerator<SequenceId> {
+public final class SequenceIdGenerator implements IdGenerator<SequenceId> {
 	private static final String DEFAULT_TIME_FORMAT = "yyyyMMddHHmmss";
 	private final IdGenerator<Long> idGenerator;
 	private final String time_format;

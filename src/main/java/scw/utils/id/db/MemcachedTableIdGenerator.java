@@ -6,7 +6,7 @@ import scw.memcached.Memcached;
 import scw.utils.id.IdGenerator;
 import scw.utils.id.MemcachedIdGenerator;
 
-public class MemcachedTableIdGenerator implements IdGenerator<Long> {
+public final class MemcachedTableIdGenerator implements IdGenerator<Long> {
 	private final Memcached memcached;
 	private final Class<?> tableClass;
 	private final String fieldName;

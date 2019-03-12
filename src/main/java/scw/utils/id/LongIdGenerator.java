@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author shuchaowen
  *
  */
-public class LongIdGenerator implements IdGenerator<Long>{
+public final class LongIdGenerator implements IdGenerator<Long>{
 	private int serverId;
 	private int serverCount;
 	private AtomicLong maxId;
