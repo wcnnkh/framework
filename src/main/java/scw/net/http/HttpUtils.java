@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -57,7 +56,7 @@ public final class HttpUtils {
 					http.setRequestProperty(entry.getKey(), entry.getValue());
 				}
 			}
-			http.setRequestEntity(new BodyRequestEntity(ByteBuffer.wrap(data)));
+			http.setRequestEntity(new BodyRequestEntity(data));
 			return http.getResponseByteArray();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
