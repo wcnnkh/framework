@@ -60,8 +60,7 @@ public final class AsyncCompleteFilter implements Filter {
 				for (File f : files) {
 					try {
 						AsyncInvokeInfo info = FileUtils.readObject(f);
-						new InvokeRunnable(info, f.getPath()).run();
-						f.deleteOnExit();
+						executorService.submit(new InvokeRunnable(info, f.getPath()));
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
@@ -94,6 +93,7 @@ public final class AsyncCompleteFilter implements Filter {
 				if(ClassUtils.isBooleanType(info.getMethodConfig().getReturnType())){
 					if(rtn != null && (Boolean)rtn == false){
 						retry();
+						return ;
 					}
 				}
 				deleteLog();
@@ -130,8 +130,7 @@ public final class AsyncCompleteFilter implements Filter {
 		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete,
 				method.getDeclaringClass(), method, args);
 		File file = fileManager.createRandomFileWriteObject(info);
-		InvokeRunnable runnable = new InvokeRunnable(info, file.getPath());
-		runnable.run();
+		executorService.submit(new InvokeRunnable(info, file.getPath()));
 		return null;
 	}
 
