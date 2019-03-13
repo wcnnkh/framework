@@ -9,44 +9,36 @@ import scw.transaction.savepoint.MultipleSavepoint;
 import scw.transaction.savepoint.Savepoint;
 
 public final class Transaction {
-	private Transaction parent;
-	private Map<Object, TransactionResource> resourceMap;
-	private TransactionDefinition transactionDefinition;
-	private TransactionLifeCycleCollection tlcc;
-	private Savepoint savepoint;
+	private final Transaction parent;
 	private final boolean active;
 	private final boolean newTransaction;
+	private final TransactionDefinition transactionDefinition;
+	
+	private Map<Object, TransactionResource> resourceMap;
+	private TransactionLifeCycleCollection tlcc;
+	private Savepoint savepoint;
 	private boolean complete;
 	private boolean rollbackOnly;// 此事务直接回滚，不再提供服务
 
-	/**
-	 * 创建一个新的事务
-	 * 
-	 * @param transactionDefinition
-	 * @param active
-	 */
-	protected Transaction(TransactionDefinition transactionDefinition, boolean active) {
+	protected Transaction(Transaction parent, TransactionDefinition transactionDefinition, boolean active) {
+		this.parent = parent;
 		this.active = active;
 		this.newTransaction = true;
 		this.transactionDefinition = transactionDefinition;
 	}
 
-	/**
-	 * 创建一个旧的
-	 * 
-	 * @param mcts
-	 */
-	protected Transaction(Transaction mcts) {
-		this.active = mcts.active;
+	protected Transaction(Transaction parent, TransactionDefinition transactionDefinition) {
+		this.parent = parent;
+		this.active = parent.isActive();
 		this.newTransaction = false;
-		this.parent = mcts;
+		this.transactionDefinition = transactionDefinition;
 	}
-	
-	private void checkStatus(){
-		if(complete){
+
+	private void checkStatus() {
+		if (complete) {
 			throw new TransactionException("当前事务已经结束，不能进行后序操作");
 		}
-		
+
 		if (rollbackOnly) {// 当前事务应该直接回滚，不能继续操作了
 			throw new TransactionException("当前事务已经被设置为只能回滚，不能进行后序操作");
 		}
@@ -55,7 +47,7 @@ public final class Transaction {
 	public void transactionLifeCycle(TransactionLifeCycle tlc) {
 		checkStatus();
 
-		if (parent != null) {
+		if (!newTransaction) {
 			parent.transactionLifeCycle(tlc);
 			return;
 		}
@@ -68,8 +60,8 @@ public final class Transaction {
 
 	public TransactionResource getResource(Object name) {
 		checkStatus();
-		
-		if (parent != null) {
+
+		if (!newTransaction) {
 			return parent.getResource(name);
 		}
 
@@ -78,8 +70,8 @@ public final class Transaction {
 
 	public void bindResource(Object name, TransactionResource resource) {
 		checkStatus();
-		
-		if (parent != null) {
+
+		if (!newTransaction) {
 			parent.bindResource(name, resource);
 			return;
 		}
@@ -105,21 +97,21 @@ public final class Transaction {
 		if (tslc != null) {
 			return;
 		}
-		
+
 		TransactionSynchronizationCollection stsc = new TransactionSynchronizationCollection();
 		if (resourceMap != null) {
 			for (Entry<Object, TransactionResource> entry : resourceMap.entrySet()) {
 				stsc.add(new TransactionResourceSynchronization(entry.getValue()));
 			}
-		}	
+		}
 		tslc = new TransactionSynchronizationLifeCycle(stsc, tlcc);
 	}
 
 	protected void process() throws TransactionException {
-		if(isComplete()){
-			return ;
+		if (isComplete()) {
+			return;
 		}
-		
+
 		if (isRollbackOnly()) {
 			return;
 		}
@@ -143,14 +135,14 @@ public final class Transaction {
 	}
 
 	protected void rollback() throws TransactionException {
-		if(complete){
-			return ;
+		if (complete) {
+			return;
 		}
-		
+
 		if (savepoint != null) {
 			savepoint.rollback();
 		}
-		
+
 		if (!newTransaction) {
 			return;
 		}
@@ -162,10 +154,10 @@ public final class Transaction {
 	}
 
 	protected void end() {
-		if(complete){
-			return ;
+		if (complete) {
+			return;
 		}
-		
+
 		if (savepoint != null) {
 			try {
 				savepoint.release();
@@ -173,7 +165,7 @@ public final class Transaction {
 				savepoint = null;
 			}
 		}
-		
+
 		if (!newTransaction) {
 			return;
 		}
@@ -190,7 +182,7 @@ public final class Transaction {
 
 	private Savepoint createSavepoint() throws TransactionException {
 		checkStatus();
-		
+
 		if (resourceMap == null) {
 			return null;
 		}
@@ -215,9 +207,6 @@ public final class Transaction {
 	}
 
 	public TransactionDefinition getTransactionDefinition() {
-		if (parent != null) {
-			return parent.getTransactionDefinition();
-		}
 		return transactionDefinition;
 	}
 

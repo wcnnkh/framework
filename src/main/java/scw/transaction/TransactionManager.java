@@ -7,48 +7,65 @@ public abstract class TransactionManager {
 	private static final ThreadLocal<Transaction> LOCAL = new ThreadLocal<Transaction>();
 
 	public static Transaction getTransaction(TransactionDefinition transactionDefinition) {
-		Transaction context = LOCAL.get();
-		if (context != null) {
-			context = new Transaction(context);
-		}
-
+		Transaction transaction = LOCAL.get();
 		switch (transactionDefinition.getPropagation()) {
 		case REQUIRED:
-			if (context == null) {
-				context = new Transaction(transactionDefinition, true);
+			if (transaction == null) {
+				transaction = new Transaction(transaction, transactionDefinition, true);
+			} else {
+				transaction = new Transaction(transaction, transactionDefinition);
 			}
 			break;
 		case SUPPORTS:
-			if (context == null) {
-				context = new Transaction(transactionDefinition, false);
+			if (transaction == null) {
+				transaction = new Transaction(transaction, transactionDefinition, false);
+			} else {
+				transaction = new Transaction(transaction, transactionDefinition);
 			}
 			break;
 		case MANDATORY:
-			if (context == null || !context.isActive()) {
+			if (transaction == null) {
 				throw new TransactionException(transactionDefinition.getPropagation().name());
+			} else {
+				if (transaction.isActive()) {
+					transaction = new Transaction(transaction, transactionDefinition);
+				} else {
+					throw new TransactionException(transactionDefinition.getPropagation().name());
+				}
 			}
 			break;
 		case REQUIRES_NEW:
-			context = new Transaction(transactionDefinition, true);
+			transaction = new Transaction(transaction, transactionDefinition, true);
 			break;
 		case NOT_SUPPORTED:
-			context = new Transaction(transactionDefinition, false);
+			transaction = new Transaction(transaction, transactionDefinition, false);
 			break;
 		case NEVER:
-			if (context != null && context.isActive()) {
-				throw new TransactionException(transactionDefinition.getPropagation().name());
+			if (transaction == null) {
+				transaction = new Transaction(transaction, transactionDefinition, false);
+			} else {
+				if (transaction.isActive()) {
+					throw new TransactionException(transactionDefinition.getPropagation().name());
+				} else {
+					transaction = new Transaction(transaction, transactionDefinition);
+				}
 			}
 			break;
 		case NESTED:
-			if (context != null && context.isActive()) {
-				context.createTempSavePoint();
-			} else if (context == null) {
-				context = new Transaction(transactionDefinition, true);
+			if (transaction == null) {
+				transaction = new Transaction(transaction, transactionDefinition, true);
+			} else {
+				if (transaction.isActive()) {
+					transaction = new Transaction(transaction, transactionDefinition);
+					transaction.createTempSavePoint();
+				} else {
+					transaction = new Transaction(transaction, transactionDefinition);
+				}
 			}
 			break;
 		}
-		LOCAL.set(context);
-		return context;
+		LOCAL.set(transaction);
+		return transaction;
 	}
 
 	private static void changeLocal(Transaction transaction) {
@@ -63,11 +80,11 @@ public abstract class TransactionManager {
 		if (transaction.isComplete()) {
 			return;
 		}
-		
+
 		if (transaction != LOCAL.get()) {
 			throw new TransactionException("事务需要顺序执行-commit");
 		}
-		
+
 		if (transaction.isRollbackOnly()) {// 直接回滚
 			rollback(transaction);
 		} else {
@@ -84,7 +101,7 @@ public abstract class TransactionManager {
 		if (transaction.isComplete()) {
 			return;
 		}
-		
+
 		if (transaction != LOCAL.get()) {
 			throw new TransactionException("事务需要顺序执行-rollback");
 		}
@@ -133,7 +150,7 @@ public abstract class TransactionManager {
 	public static void setRollbackOnly() {
 		Transaction transaction = getCurrentTransaction();
 		if (transaction == null) {
-			return ;
+			return;
 		}
 
 		transaction.setRollbackOnly(true);
