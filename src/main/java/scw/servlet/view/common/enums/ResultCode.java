@@ -1,6 +1,6 @@
 package scw.servlet.view.common.enums;
 
-public enum Code {
+public enum ResultCode {
 	login_status_expired(-1, "Your login status has expired or you have logged in elsewhere"),
 	success(0, "SUCCESS"),
 	error(1, "ERROR"),
@@ -9,7 +9,7 @@ public enum Code {
 	private final int code;
 	private final String msg;
 	
-	private Code(int code, String msg){
+	private ResultCode(int code, String msg){
 		this.code = code;
 		this.msg = msg;
 	}

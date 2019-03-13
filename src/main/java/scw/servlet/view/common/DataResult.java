@@ -1,5 +1,8 @@
 package scw.servlet.view.common;
 
+import scw.common.utils.StringUtils;
+import scw.servlet.view.common.enums.ResultCode;
+
 import com.alibaba.fastjson.JSONObject;
 
 public class DataResult<T> extends Result{
@@ -15,10 +18,29 @@ public class DataResult<T> extends Result{
 	}
 	
 	@Override
+	public DataResult<T> setCode(ResultCode code) {
+		super.setCode(code);
+		return this;
+	}
+	
+	@Override
+	public DataResult<T> setCode(int code, String msg) {
+		super.setCode(code, msg);
+		return this;
+	}
+	
+	@Override
+	public DataResult<T> setMsg(String msg) {
+		super.setMsg(msg);
+		return this;
+	};
+	
+	@Override
 	public String getResponseText() {
 		JSONObject json = new JSONObject(4);
-		json.put("code", getCode());
-		json.put("msg", getMsg());
+		String msg = getMsg();
+		json.put("code", StringUtils.isEmpty(msg)? 0:getCode());
+		json.put("msg", msg);
 		json.put("data", getData());
 		return json.toJSONString();	
 	}

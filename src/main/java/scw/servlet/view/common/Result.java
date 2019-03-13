@@ -2,10 +2,11 @@ package scw.servlet.view.common;
 
 import java.io.Serializable;
 
-import com.alibaba.fastjson.JSONObject;
-
+import scw.common.utils.StringUtils;
 import scw.servlet.view.AbstractTextView;
-import scw.servlet.view.common.enums.Code;
+import scw.servlet.view.common.enums.ResultCode;
+
+import com.alibaba.fastjson.JSONObject;
 
 public class Result extends AbstractTextView implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -25,29 +26,26 @@ public class Result extends AbstractTextView implements Serializable {
 	}
 
 	public Result setMsg(String msg) {
-		if (isSuccess()) {
-			this.code = Code.error.getCode();
-		}
 		this.msg = msg;
 		return this;
 	}
 
 	public boolean isSuccess() {
-		return getCode() == Code.success.getCode();
+		return getCode() == ResultCode.success.getCode();
 	}
 
 	public boolean isError() {
-		return getCode() != Code.success.getCode();
+		return getCode() != ResultCode.success.getCode();
 	}
 
-	public Result setCode(Code code) {
+	public Result setCode(ResultCode code) {
 		this.code = code.getCode();
 		this.msg = code.getMsg();
 		return this;
 	}
 
-	public Result setCode(Code code, String msg) {
-		this.code = code.getCode();
+	public Result setCode(int code, String msg) {
+		this.code = code;
 		this.msg = msg;
 		return this;
 	}
@@ -61,11 +59,11 @@ public class Result extends AbstractTextView implements Serializable {
 	}
 
 	public static Result loginExpired() {
-		return new Result().setCode(Code.login_status_expired);
+		return new Result().setCode(ResultCode.login_status_expired);
 	}
 
 	public static Result parameterError() {
-		return new Result().setCode(Code.parameter_error);
+		return new Result().setCode(ResultCode.parameter_error);
 	}
 
 	public static Result result(Result result) {
@@ -78,8 +76,9 @@ public class Result extends AbstractTextView implements Serializable {
 	@Override
 	public String getResponseText() {
 		JSONObject json = new JSONObject(4);
-		json.put("code", getCode());
-		json.put("msg", getMsg());
+		String msg = getMsg();
+		json.put("code", StringUtils.isEmpty(msg)? 0:getCode());
+		json.put("msg", msg);
 		return json.toJSONString();
 	}
 }

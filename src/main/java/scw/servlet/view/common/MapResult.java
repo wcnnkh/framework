@@ -3,6 +3,10 @@ package scw.servlet.view.common;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.common.utils.StringUtils;
+
+import com.alibaba.fastjson.JSONObject;
+
 public class MapResult extends DataResult<Map<String, Object>>{
 	private static final long serialVersionUID = 1L;
 	private Map<String, Object> dataMap = new HashMap<String, Object>();
@@ -15,5 +19,15 @@ public class MapResult extends DataResult<Map<String, Object>>{
 	public MapResult put(String key, Object value){
 		dataMap.put(key, value);
 		return this;
+	}
+	
+	@Override
+	public String getResponseText() {
+		JSONObject json = new JSONObject(4);
+		String msg = getMsg();
+		json.put("code", StringUtils.isEmpty(msg)? 0:getCode());
+		json.put("msg", msg);
+		json.put("data", dataMap);
+		return json.toJSONString();
 	}
 }

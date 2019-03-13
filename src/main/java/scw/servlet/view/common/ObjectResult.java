@@ -1,5 +1,6 @@
 package scw.servlet.view.common;
 
+
 public class ObjectResult extends DataResult<Object>{
 	private static final long serialVersionUID = 1L;
 	
