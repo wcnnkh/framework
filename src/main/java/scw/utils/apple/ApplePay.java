@@ -3,8 +3,8 @@ package scw.utils.apple;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 
 import scw.common.Logger;
 import scw.common.utils.StringUtils;
@@ -12,26 +12,15 @@ import scw.net.http.HttpUtils;
 
 public final class ApplePay {
 	private static final String SANDBOX_URL = "https://sandbox.itunes.apple.com/verifyReceipt";
-	private static final String DEV_RUL = "https://buy.itunes.apple.com/verifyReceipt";
-	private final boolean shandbox;
+	private static final String DEV_URL = "https://buy.itunes.apple.com/verifyReceipt";
 	private final boolean debug;
 
-	public ApplePay(boolean shandbox) {
-		this(shandbox, true);
+	public ApplePay() {
+		this(true);
 	}
 
-	/**
-	 * 是否沙盒模式
-	 * 
-	 * @param shandbox
-	 */
-	public ApplePay(boolean shandbox, boolean debug) {
-		this.shandbox = shandbox;
+	public ApplePay(boolean debug) {
 		this.debug = debug;
-	}
-
-	private String getPayUrl() {
-		return shandbox ? SANDBOX_URL : DEV_RUL;
 	}
 
 	/**
@@ -43,7 +32,8 @@ public final class ApplePay {
 	 *            可选
 	 * @return
 	 */
-	public JSONObject pay(String receiptData, String password, String excludeOldTransactions) {
+	public ReceiptResponse checkReceipt(String host, String receiptData, String password,
+			String excludeOldTransactions) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("receipt-data", receiptData);
 		if (!StringUtils.isEmpty(password)) {
@@ -54,34 +44,27 @@ public final class ApplePay {
 			map.put("exclude-old-transactions", excludeOldTransactions);
 		}
 
-		String response = HttpUtils.doPost(getPayUrl(), null, JSONObject.toJSONString(map));
+		String response = HttpUtils.doPost(host, null, JSONObject.toJSONString(map));
 		if (debug) {
 			Logger.debug(this.getClass().getName(), response);
 		}
 
-		return JSONObject.parseObject(response);
+		return JSONObject.parseObject(response, ReceiptResponse.class, Feature.SupportNonPublicField);
 	}
 
-	public String getProductIdAndCheckReceipt(String receiptData, String password, String excludeOldTransactions) {
-		JSONObject json = pay(receiptData, password, excludeOldTransactions);
-		if (json.containsKey("status") && json.getIntValue("status") == 0) {
-			json = json.getJSONObject("receipt");
-			if (json.containsKey("in_app")) {// ios7
-				JSONArray in_app = json.getJSONArray("in_app");
-				if (in_app == null || in_app.size() == 0) {
-					return null;
-				}
-
-				json = in_app.getJSONObject(0);
-				if (json == null) {
-					return null;
-				}
-
-				return json.getString("product_id");
-			} else {
-				return json.getString("product_id");
-			}
+	/**
+	 * 自动检查是否是沙盒模式
+	 * 
+	 * @param receiptData
+	 * @param password
+	 * @param excludeOldTransactions
+	 * @return
+	 */
+	public ReceiptResponse autoCheckReceipt(String receiptData, String password, String excludeOldTransactions) {
+		ReceiptResponse res = checkReceipt(DEV_URL, receiptData, password, excludeOldTransactions);
+		if (res.isOperationModeError()) {// 这是一个测试环境下的订单或者收据无法通过身份验证。
+			res = checkReceipt(SANDBOX_URL, receiptData, password, excludeOldTransactions);
 		}
-		return null;
+		return res;
 	}
 }
