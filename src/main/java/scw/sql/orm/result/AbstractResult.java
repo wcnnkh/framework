@@ -31,19 +31,32 @@ public abstract class AbstractResult implements Result {
 		Object o = tableInfo.newInstance();
 		for (ColumnInfo column : tableInfo.getColumns()) {
 			int index = metaData.getColumnIndex(column.getName(), tableName);
-			if (index == -1 && !column.isNullAble()) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(tableInfo.getClassInfo().getName());
-				sb.append(" [");
-				sb.append(column.getName());
-				sb.append("] not found for DataSource");
-				throw new ShuChaoWenRuntimeException(sb.toString());
+			if (index == -1) {
+				if (!column.isNullAble()) {
+					StringBuilder sb = new StringBuilder();
+					sb.append(tableInfo.getClassInfo().getName());
+					sb.append(" [");
+					sb.append(column.getName());
+					sb.append("] not found for DataSource");
+					throw new ShuChaoWenRuntimeException(sb.toString());
+				}
+				continue;
 			}
 
 			Object v = values[index];
-			if (v != null) {
-				column.setValueToField(o, v);
+			if (v == null) {
+				if (!column.isNullAble()) {
+					StringBuilder sb = new StringBuilder();
+					sb.append(tableInfo.getClassInfo().getName());
+					sb.append(" [");
+					sb.append(column.getName());
+					sb.append("] not is null");
+					throw new ShuChaoWenRuntimeException(sb.toString());
+				}
+
+				continue;
 			}
+			column.setValueToField(o, v);
 		}
 		return o;
 	}
@@ -52,19 +65,32 @@ public abstract class AbstractResult implements Result {
 		Object o = tableInfo.newInstance();
 		for (ColumnInfo column : tableInfo.getColumns()) {
 			int index = metaData.getSingleIndex(column.getName());
-			if (index == -1 && !column.isNullAble()) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(tableInfo.getClassInfo().getName());
-				sb.append(" [");
-				sb.append(column.getName());
-				sb.append("] not found for DataSource");
-				throw new ShuChaoWenRuntimeException(sb.toString());
+			if (index == -1) {
+				if (!column.isNullAble()) {
+					StringBuilder sb = new StringBuilder();
+					sb.append(tableInfo.getClassInfo().getName());
+					sb.append(" [");
+					sb.append(column.getName());
+					sb.append("] not found for DataSource");
+					throw new ShuChaoWenRuntimeException(sb.toString());
+				}
+				continue;
 			}
 
 			Object v = values[index];
-			if (v != null) {
-				column.setValueToField(o, v);
+			if (v == null) {
+				if (!column.isNullAble()) {
+					StringBuilder sb = new StringBuilder();
+					sb.append(tableInfo.getClassInfo().getName());
+					sb.append(" [");
+					sb.append(column.getName());
+					sb.append("] not is null");
+					throw new ShuChaoWenRuntimeException(sb.toString());
+				}
+
+				continue;
 			}
+			column.setValueToField(o, v);
 		}
 		return o;
 	}
