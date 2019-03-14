@@ -11,7 +11,6 @@ import javax.management.openmbean.KeyAlreadyExistsException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.common.Logger;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XMLUtils;
@@ -30,7 +29,6 @@ public final class XmlPropertyUtils {
 		String file = XMLUtils.getNodeAttributeValue(rootNode, "file");
 		if(!StringUtils.isNull(file)){
 			File f = ConfigUtils.getFile(file);
-			Logger.info("Properties", "file=" + f.getPath() + ", charset=" + charset);
 			Properties properties = ConfigUtils.getProperties(f, charset);
 			for(Entry<Object, Object> entry : properties.entrySet()){
 				String name = prefix == null? entry.getKey().toString():prefix + entry.getKey().toString();
