@@ -152,7 +152,7 @@ public final class BeanUtils {
 		}
 	}
 
-	public static void initDB(BeanFactory beanFactory, Collection<Class<?>> classList) {
+	private static void initDB(BeanFactory beanFactory, Collection<Class<?>> classList) {
 		for (Class<?> clz : classList) {
 			Deprecated deprecated = clz.getAnnotation(Deprecated.class);
 			if (deprecated != null) {

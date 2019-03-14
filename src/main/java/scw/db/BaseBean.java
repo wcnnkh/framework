@@ -8,6 +8,7 @@ import java.io.Serializable;
  * @author shuchaowen
  *
  */
+@Deprecated
 public abstract class BaseBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
