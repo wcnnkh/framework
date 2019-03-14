@@ -23,6 +23,7 @@ import org.w3c.dom.NodeList;
 
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
+import scw.common.Logger;
 import scw.common.StringFormatSystemProperties;
 
 public final class ConfigUtils {
@@ -149,6 +150,14 @@ public final class ConfigUtils {
 			if (testFile.exists()) {
 				return testFile;
 			}
+		}
+
+		if (!file.getPath().equals(filePath)) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(filePath);
+			sb.append(" ---> ");
+			sb.append(file.getPath());
+			Logger.info(ConfigUtils.class.getName(), sb.toString());
 		}
 		return file;
 	}

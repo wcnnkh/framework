@@ -12,7 +12,7 @@ import scw.sql.orm.PaginationSql;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.TableInfo;
 
-public class MysqlFormat implements SqlFormat {
+public final class MysqlFormat implements SqlFormat {
 	public Sql toCreateTableSql(TableInfo tableInfo, String tableName) {
 		return new CreateTableSQL(tableInfo, tableName);
 	}

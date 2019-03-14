@@ -11,7 +11,7 @@ import scw.common.utils.ConfigUtils;
 import scw.common.utils.PropertiesUtils;
 import scw.common.utils.StringUtils;
 import scw.sql.orm.SqlFormat;
-import scw.sql.orm.mysql.MysqlFormat;
+import scw.sql.orm.cache.Cache;
 
 public final class DruidDB extends AbstractDB {
 	private DruidDataSource datasource;
@@ -21,16 +21,17 @@ public final class DruidDB extends AbstractDB {
 	 * 
 	 * @param propertiesFilePath
 	 */
-	public DruidDB(String propertiesFilePath) {
-		this(new MysqlFormat(), propertiesFilePath, "utf-8");
+	public DruidDB(SqlFormat sqlFormat, String propertiesFilePath) {
+		this(sqlFormat, propertiesFilePath, "UTF-8");
 	}
 
 	public DruidDB(SqlFormat sqlFormat, String propertiesFilePath, String charsetName) {
-		this(sqlFormat, ConfigUtils.getProperties(propertiesFilePath, charsetName));
+		this(null, sqlFormat, propertiesFilePath, charsetName);
 	}
 
-	public DruidDB(SqlFormat sqlFormat, Properties properties) {
-		super(sqlFormat, null);
+	public DruidDB(Cache cache, SqlFormat sqlFormat, String propertiesFilePath, String charsetName) {
+		super(sqlFormat, cache);
+		Properties properties = ConfigUtils.getProperties(propertiesFilePath, charsetName);
 		String url = PropertiesUtils.getProperty(properties, "jdbcUrl", "url", "host");
 		String username = PropertiesUtils.getProperty(properties, "username", "user", "name");
 		String password = PropertiesUtils.getProperty(properties, "password", "pwd");
@@ -39,36 +40,17 @@ public final class DruidDB extends AbstractDB {
 		String driver = PropertiesUtils.getProperty(properties, "driver", "driverClass", "driverClassName");
 		String maxPoolPreparedStatementPerConnectionSize = PropertiesUtils.getProperty(properties,
 				"maxPoolPreparedStatementPerConnectionSize");
-
 		datasource = new DruidDataSource();
 		datasource.setUrl(url);
 		datasource.setDriverClassName(StringUtils.isEmpty(driver) ? "com.mysql.jdbc.Driver" : driver);
 		datasource.setUsername(username);
 		datasource.setPassword(password);
-		datasource.setInitialSize(StringUtils.isEmpty(minSize) ? 20 : Integer.parseInt(minSize));
-		datasource.setMinIdle(StringUtils.isEmpty(minSize) ? 20 : Integer.parseInt(minSize));
+		datasource.setInitialSize(StringUtils.isEmpty(minSize) ? 10 : Integer.parseInt(minSize));
+		datasource.setMinIdle(StringUtils.isEmpty(minSize) ? 10 : Integer.parseInt(minSize));
 		datasource.setMaxActive(StringUtils.isEmpty(maxSize) ? 100 : Integer.parseInt(maxSize));
 		datasource.setMaxPoolPreparedStatementPerConnectionSize(
 				StringUtils.isEmpty(maxPoolPreparedStatementPerConnectionSize) ? 20
 						: Integer.parseInt(maxPoolPreparedStatementPerConnectionSize));
-	}
-
-	public DruidDB(String url, String username, String password, int minSize, int maxSize) {
-		this(null, url, "com.mysql.jdbc.Driver", username, password, minSize, minSize, maxSize, 20);
-	}
-
-	public DruidDB(SqlFormat sqlFormat, String url, String driverClass, String username, String password, int initSize,
-			int minSize, int maxSize, int maxPoolPreparedStatementPerConnectionSize) {
-		super(sqlFormat, null);
-		datasource = new DruidDataSource();
-		datasource.setUrl(url);
-		datasource.setDriverClassName(driverClass);
-		datasource.setUsername(username);
-		datasource.setPassword(password);
-		datasource.setInitialSize(initSize);
-		datasource.setMinIdle(minSize);
-		datasource.setMaxActive(maxSize);
-		datasource.setMaxPoolPreparedStatementPerConnectionSize(maxPoolPreparedStatementPerConnectionSize);
 	}
 
 	public Connection getConnection() throws SQLException {
