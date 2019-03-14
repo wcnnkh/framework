@@ -34,6 +34,7 @@ public final class ConfigUtils {
 	public static final StringFormatSystemProperties format1 = new StringFormatSystemProperties("{", "}");
 	public static final StringFormatSystemProperties format2 = new StringFormatSystemProperties("[", "]");
 	public static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
+	private static final Map<String, String> SEARCH_PATH_CACHE = new HashMap<String, String>();
 
 	private ConfigUtils() {
 	};
@@ -131,15 +132,35 @@ public final class ConfigUtils {
 	}
 
 	public static File getFile(String filePath) {
-		String configSuffix = getSystemProperty(CONFIG_SUFFIX);
-		if (StringUtils.isNull(configSuffix)) {
-			return getFile(filePath, null);
-		} else {
-			return getFile(filePath, Arrays.asList(StringUtils.commonSplit(configSuffix)));
+		String cache = SEARCH_PATH_CACHE.get(filePath);
+		if (cache == null) {
+			synchronized (SEARCH_PATH_CACHE) {
+				cache = SEARCH_PATH_CACHE.get(filePath);
+				if (cache == null) {
+					File file;
+					String configSuffix = getSystemProperty(CONFIG_SUFFIX);
+					if (StringUtils.isNull(configSuffix)) {
+						file = getFile(filePath, null);
+					} else {
+						file = getFile(filePath, Arrays.asList(StringUtils.commonSplit(configSuffix)));
+					}
+
+					cache = file.getPath();
+					SEARCH_PATH_CACHE.put(filePath, cache);
+					if (!file.getPath().equals(filePath)) {
+						StringBuilder sb = new StringBuilder();
+						sb.append(filePath);
+						sb.append(" ---> ");
+						sb.append(file.getPath());
+						Logger.info(ConfigUtils.class.getName(), sb.toString());
+					}
+				}
+			}
 		}
+		return new File(cache);
 	}
 
-	public static File getFile(String filePath, Collection<String> testSuffix) {
+	private static File getFile(String filePath, Collection<String> testSuffix) {
 		File file = new File(getFilePath(filePath));
 		if (testSuffix == null || testSuffix.isEmpty()) {
 			return file;
@@ -150,14 +171,6 @@ public final class ConfigUtils {
 			if (testFile.exists()) {
 				return testFile;
 			}
-		}
-
-		if (!file.getPath().equals(filePath)) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(filePath);
-			sb.append(" ---> ");
-			sb.append(file.getPath());
-			Logger.info(ConfigUtils.class.getName(), sb.toString());
 		}
 		return file;
 	}
