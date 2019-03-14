@@ -15,6 +15,11 @@ public final class DataBaseUtils {
 	private DataBaseUtils() {
 	};
 
+	/**
+	 * ORMUtils.registerCglibProxyTableBean
+	 * @param pageName
+	 */
+	@Deprecated
 	public static void registerCglibProxyTableBean(String pageName) {
 		ORMUtils.registerCglibProxyTableBean(pageName);
 	}

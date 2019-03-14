@@ -19,7 +19,6 @@ import scw.sql.orm.annoation.Table;
  * @author shuchaowen
  *
  */
-@Deprecated
 public final class DBManager {
 	private DBManager() {
 	};
