@@ -16,11 +16,16 @@ import scw.db.AbstractDB;
 import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 
+/**
+ * 文件名中如果存在中文，标点符号应该使用全角的符号
+ * @author shuchaowen
+ *
+ */
 public class JxlExport {
 	/**
 	 * 导出excel
 	 * 
-	 * @param fileName
+	 * @param fileName 
 	 *            要生成的文件名
 	 * @param title
 	 *            列名
