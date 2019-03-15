@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import scw.common.ByteArray;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.StringUtils;
+import scw.core.NestedRuntimeException;
 import scw.net.http.entity.BodyRequestEntity;
 import scw.net.http.entity.FormRequestEntity;
 
@@ -169,20 +170,20 @@ public final class HttpUtils {
 		}
 	}
 
-	public static String encode(Object value, String charsetName) throws UnsupportedEncodingException {
+	public static String encode(Object value, String charsetName) {
 		if (value == null) {
 			return null;
 		}
 
-		return URLEncoder.encode(value.toString(), charsetName);
+		try {
+			return URLEncoder.encode(value.toString(), charsetName);
+		} catch (UnsupportedEncodingException e) {
+			throw new NestedRuntimeException(e);
+		}
 	}
 
 	public static String encode(Object value) {
-		try {
-			return encode(value, DEFAULT_CHARSET.name());
-		} catch (UnsupportedEncodingException e) {
-			throw new ShuChaoWenRuntimeException(e);
-		}
+		return encode(value, DEFAULT_CHARSET.name());
 	}
 
 	public static String decode(String value, String charsetName) throws UnsupportedEncodingException {

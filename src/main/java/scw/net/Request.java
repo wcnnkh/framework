@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.Permission;
 import java.util.List;
 import java.util.Map;
@@ -97,4 +98,6 @@ public interface Request {
 	ByteArray getResponseByteArray() throws IOException;
 
 	void setRequestEntity(RequestEntity entity) throws IOException;
+
+	URLConnection getURLConnection();
 }

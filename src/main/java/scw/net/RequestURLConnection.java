@@ -13,8 +13,7 @@ import scw.common.ByteArray;
 import scw.common.utils.IOUtils;
 
 public class RequestURLConnection implements Request{
-	
-	private final URLConnection urlConnection;
+	protected final URLConnection urlConnection;
 	
 	public RequestURLConnection(URLConnection urlConnection){
 		this.urlConnection = urlConnection;
@@ -193,5 +192,9 @@ public class RequestURLConnection implements Request{
 		if(entity != null){
 			entity.write(this);
 		}
+	}
+
+	public URLConnection getURLConnection() {
+		return urlConnection;
 	}
 }

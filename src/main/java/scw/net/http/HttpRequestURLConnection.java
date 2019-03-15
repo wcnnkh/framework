@@ -14,71 +14,71 @@ import scw.common.utils.IOUtils;
 import scw.net.RequestURLConnection;
 
 public class HttpRequestURLConnection extends RequestURLConnection implements HttpRequest {
-	private final HttpURLConnection httpURLConnection;
 
 	public HttpRequestURLConnection(String url) throws MalformedURLException, IOException {
 		this((HttpURLConnection) new URL(url).openConnection());
-		setConnectTimeout(10000);
-		setReadTimeout(10000);
 	}
 
 	public HttpRequestURLConnection(String url, Proxy proxy) throws MalformedURLException, IOException {
 		this((HttpURLConnection) new URL(url).openConnection(proxy));
-		setConnectTimeout(10000);
-		setReadTimeout(10000);
 	}
 
 	public HttpRequestURLConnection(HttpURLConnection httpURLConnection) {
 		super(httpURLConnection);
-		this.httpURLConnection = httpURLConnection;
+		init();
+	}
+
+	protected void init() {
+		setConnectTimeout(10000);
+		setReadTimeout(10000);
 	}
 
 	public void setFixedLengthStreamingMode(int contentLength) {
-		httpURLConnection.setFixedLengthStreamingMode(contentLength);
+		getHttpURLConnection().setFixedLengthStreamingMode(contentLength);
 	}
 
 	public void setFixedLengthStreamingMode(long contentLength) {
-		httpURLConnection.setFixedLengthStreamingMode(contentLength);
+		getHttpURLConnection().setFixedLengthStreamingMode(contentLength);
 	}
 
 	public void setChunkedStreamingMode(int chunklen) {
-		httpURLConnection.setChunkedStreamingMode(chunklen);
+		getHttpURLConnection().setChunkedStreamingMode(chunklen);
 	}
 
 	public void setInstanceFollowRedirects(boolean followRedirects) {
-		httpURLConnection.setInstanceFollowRedirects(followRedirects);
+		getHttpURLConnection().setInstanceFollowRedirects(followRedirects);
 	}
 
 	public boolean getInstanceFollowRedirects() {
-		return httpURLConnection.getInstanceFollowRedirects();
+		return getHttpURLConnection().getInstanceFollowRedirects();
 	}
 
 	public void setRequestMethod(String method) throws ProtocolException {
-		httpURLConnection.setRequestMethod(method);
+		getHttpURLConnection().setRequestMethod(method);
 	}
 
 	public String getRequestMethod() {
-		return httpURLConnection.getRequestMethod();
+		return getHttpURLConnection().getRequestMethod();
 	}
 
 	public int getResponseCode() throws IOException {
-		return httpURLConnection.getResponseCode();
+		return getHttpURLConnection().getResponseCode();
 	}
 
 	public String getResponseMessage() throws IOException {
-		return httpURLConnection.getResponseMessage();
+		return getHttpURLConnection().getResponseMessage();
 	}
 
 	public void disconnect() {
-		httpURLConnection.disconnect();
+		getHttpURLConnection().disconnect();
 	}
 
 	public boolean usingProxy() {
-		return httpURLConnection.usingProxy();
+		return getHttpURLConnection().usingProxy();
 	}
 
 	public InputStream getErrorStream() {
-		return httpURLConnection.getErrorStream();
+		return getHttpURLConnection().getErrorStream();
 	}
 
 	public String getResponseBody(Charset charset) throws IOException {
@@ -92,5 +92,9 @@ public class HttpRequestURLConnection extends RequestURLConnection implements Ht
 
 	public void setRequestContentType(String contentType) {
 		setRequestProperty("Content-Type", contentType);
+	}
+
+	public HttpURLConnection getHttpURLConnection() {
+		return (HttpURLConnection) getURLConnection();
 	}
 }
