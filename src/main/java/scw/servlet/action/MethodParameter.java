@@ -22,7 +22,7 @@ public final class MethodParameter {
 		} else if (Response.class.isAssignableFrom(type)) {
 			return response;
 		} else {
-			return request.getParameter(type, parameter, name);
+			return request.getParameter(parameter, name);
 		}
 	}
 

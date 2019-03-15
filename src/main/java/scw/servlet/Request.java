@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import scw.beans.annotaion.Require;
+import scw.common.utils.StringUtils;
 import scw.net.http.enums.Header;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.context.DefaultRequestBeanContext;
@@ -87,7 +89,8 @@ public abstract class Request extends HttpServletRequestWrapper {
 		return createTime;
 	}
 
-	private Object get(Class<?> type, String name) throws Exception {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected final Object get(Class<?> type, String name) throws Exception {
 		Object bean = requestBeanContext.getBean(type, name);
 		if (bean != null) {
 			return bean;
@@ -125,6 +128,9 @@ public abstract class Request extends HttpServletRequestWrapper {
 			return this;
 		} else if (ServletResponse.class.isAssignableFrom(type)) {
 			return response;
+		} else if (type.isEnum()) {
+			String v = getString(name);
+			return StringUtils.isEmpty(v) ? null : Enum.valueOf((Class<? extends Enum>) type, v);
 		} else {
 			return getObject(type, name);
 		}
@@ -142,8 +148,13 @@ public abstract class Request extends HttpServletRequestWrapper {
 		return v;
 	}
 
-	public final <T> T getParameter(Class<T> type, Parameter parameter, String name) throws Exception {
-		return getParameter(type, name);
+	public Object getParameter(Parameter parameter, String name) throws Exception {
+		Object value = getParameter(parameter.getType(), name);
+		Require require = parameter.getAnnotation(Require.class);
+		if (require != null && value == null) {
+			throw new NullPointerException("require '" + name + "'");
+		}
+		return value;
 	}
 
 	public boolean isDebug() {
