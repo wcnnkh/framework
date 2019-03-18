@@ -23,9 +23,9 @@ public final class DBManager {
 	private DBManager() {
 	};
 
-	private static final Map<String, AbstractDB> CLASS_NAME_TO_DB = new HashMap<String, AbstractDB>();
+	private static final Map<String, DB> CLASS_NAME_TO_DB = new HashMap<String, DB>();
 
-	private static void createTable(AbstractDB db, Class<?> tableClass) {
+	private static void createTable(DB db, Class<?> tableClass) {
 		Table table = tableClass.getAnnotation(Table.class);
 		if (table == null || table.create()) {
 			db.createTable(tableClass);
@@ -42,7 +42,7 @@ public final class DBManager {
 	 * @param create
 	 *            是否自动创建表
 	 */
-	public static void register(AbstractDB db, String packageName, boolean create) {
+	public static void register(DB db, String packageName, boolean create) {
 		Collection<Class<?>> list = ClassUtils.getClasses(packageName);
 		for (Class<?> tableClass : list) {
 			String name = ClassUtils.getProxyRealClassName(tableClass.getName());
@@ -127,9 +127,9 @@ public final class DBManager {
 	 * @param tableClass
 	 * @return
 	 */
-	public static AbstractDB getDB(Class<?> tableClass) {
+	public static DB getDB(Class<?> tableClass) {
 		String name = ClassUtils.getProxyRealClassName(tableClass);
-		AbstractDB db = CLASS_NAME_TO_DB.get(name);
+		DB db = CLASS_NAME_TO_DB.get(name);
 		if (db == null) {
 			throw new NullPointerException(name + " not found db");
 		}
@@ -167,10 +167,10 @@ public final class DBManager {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static Map<AbstractDB, List<Object>> getMap(Object... beans) {
-		Map<AbstractDB, List<Object>> map = new HashMap<AbstractDB, List<Object>>();
+	private static Map<DB, List<Object>> getMap(Object... beans) {
+		Map<DB, List<Object>> map = new HashMap<DB, List<Object>>();
 		for (Object obj : beans) {
-			AbstractDB db = getDB(obj.getClass());
+			DB db = getDB(obj.getClass());
 			List<Object> list = map.getOrDefault(db, new ArrayList<Object>());
 			if (obj instanceof Collection) {
 				list.addAll((Collection) obj);
@@ -190,7 +190,7 @@ public final class DBManager {
 	 * @param bean
 	 */
 	public static void save(Object... beans) {
-		for (Entry<AbstractDB, List<Object>> entry : getMap(beans).entrySet()) {
+		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
 			entry.getKey().save(entry.getValue());
 		}
 	}
@@ -201,19 +201,19 @@ public final class DBManager {
 	 * @param bean
 	 */
 	public static void delete(Object... beans) {
-		for (Entry<AbstractDB, List<Object>> entry : getMap(beans).entrySet()) {
+		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
 			entry.getKey().delete(entry.getValue());
 		}
 	}
 
 	public static void update(Object... beans) {
-		for (Entry<AbstractDB, List<Object>> entry : getMap(beans).entrySet()) {
+		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
 			entry.getKey().update(entry.getValue());
 		}
 	}
 
 	public static void saveOrUpdate(Object... beans) {
-		for (Entry<AbstractDB, List<Object>> entry : getMap(beans).entrySet()) {
+		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
 			entry.getKey().saveOrUpdate(entry.getValue());
 		}
 	}

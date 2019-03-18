@@ -19,21 +19,19 @@ import scw.sql.orm.SqlFormat;
 import scw.sql.orm.cache.Cache;
 
 @Bean(proxy = false)
-public class DruidDB extends AbstractDB {
+public class DruidDB extends DB {
 	private DruidDataSource datasource;
 	private final String driverName;
 
 	/**
-	 * 数据库配置文件目录 只支持mysql
-	 * 
 	 * @param propertiesFilePath
 	 */
 	public DruidDB(SqlFormat sqlFormat, String propertiesFilePath) {
-		this(sqlFormat, propertiesFilePath, "UTF-8");
+		this(null, sqlFormat, propertiesFilePath);
 	}
 
-	public DruidDB(SqlFormat sqlFormat, String propertiesFilePath, String charsetName) {
-		this(null, sqlFormat, propertiesFilePath, charsetName);
+	public DruidDB(Cache cache, SqlFormat sqlFormat, String propertiesFilePath) {
+		this(cache, sqlFormat, propertiesFilePath, "UTF-8");
 	}
 
 	public DruidDB(Cache cache, SqlFormat sqlFormat, String propertiesFilePath, String charsetName) {
@@ -70,7 +68,7 @@ public class DruidDB extends AbstractDB {
 	public void close() throws Exception {
 		datasource.close();
 
-		AbandonedConnectionCleanupThread.checkedShutdown();
+		AbandonedConnectionCleanupThread.uncheckedShutdown();
 
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
 		if (drivers != null) {

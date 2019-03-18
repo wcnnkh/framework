@@ -1,6 +1,6 @@
 package scw.utils.id.db;
 
-import scw.db.AbstractDB;
+import scw.db.DB;
 import scw.db.DBManager;
 import scw.memcached.Memcached;
 import scw.utils.id.IdGenerator;
@@ -13,14 +13,14 @@ public final class MemcachedIntegerTableIdGenerator implements IdGenerator<Integ
 	private volatile IdGenerator<Integer> idGenerator;
 	private final String key;
 	private final boolean checkKey;
-	private AbstractDB db;
+	private DB db;
 
 	public MemcachedIntegerTableIdGenerator(Class<?> tableClass,
 			Memcached memcached, String fieldName) {
 		this(tableClass, memcached, fieldName, true);
 	}
 
-	public MemcachedIntegerTableIdGenerator(AbstractDB db, Class<?> tableClass,
+	public MemcachedIntegerTableIdGenerator(DB db, Class<?> tableClass,
 			Memcached memcached, String fieldName) {
 		this(db, tableClass, memcached, fieldName, true);
 	}
@@ -41,7 +41,7 @@ public final class MemcachedIntegerTableIdGenerator implements IdGenerator<Integ
 		this.checkKey = checkKey;
 	}
 
-	public MemcachedIntegerTableIdGenerator(AbstractDB db, Class<?> tableClass,
+	public MemcachedIntegerTableIdGenerator(DB db, Class<?> tableClass,
 			Memcached memcached, String fieldName, boolean checkKey) {
 		this.memcached = memcached;
 		this.fieldName = fieldName;

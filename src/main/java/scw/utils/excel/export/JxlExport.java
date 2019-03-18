@@ -12,7 +12,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import scw.common.Iterator;
 import scw.database.DataBaseUtils;
-import scw.db.AbstractDB;
+import scw.db.DB;
 import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 
@@ -94,7 +94,7 @@ public class JxlExport {
 		response.flushBuffer();
 	}
 	
-	public static void sqlResultSetToExcel(String fileName, String title[], AbstractDB db
+	public static void sqlResultSetToExcel(String fileName, String title[], DB db
 			, HttpServletResponse response, SqlExportRow exportRow, Sql ...sqls)
 			throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
@@ -107,7 +107,7 @@ public class JxlExport {
 		response.flushBuffer();
 	}
 	
-	public static void sqlResultSetToExcel(String fileName, String title[], AbstractDB db,
+	public static void sqlResultSetToExcel(String fileName, String title[], DB db,
 			List<Sql> sqlList, HttpServletResponse response, SqlExportRow exportRow)
 			throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");

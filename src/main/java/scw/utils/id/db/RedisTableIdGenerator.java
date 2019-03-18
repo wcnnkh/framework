@@ -1,6 +1,6 @@
 package scw.utils.id.db;
 
-import scw.db.AbstractDB;
+import scw.db.DB;
 import scw.db.DBManager;
 import scw.redis.Redis;
 import scw.utils.id.IdGenerator;
@@ -13,14 +13,14 @@ public final class RedisTableIdGenerator implements IdGenerator<Long> {
 	private volatile RedisIdGenerator idGenerator;
 	private final String key;
 	private final boolean checkKey;
-	private AbstractDB db;
+	private DB db;
 
 	public RedisTableIdGenerator(Redis redis, Class<?> tableClass,
 			String fieldName) {
 		this(redis, tableClass, fieldName, true);
 	}
 
-	public RedisTableIdGenerator(Redis redis, AbstractDB db, Class<?> tableClass,
+	public RedisTableIdGenerator(Redis redis, DB db, Class<?> tableClass,
 			String fieldName) {
 		this(redis, tableClass, db, fieldName, true);
 	}
@@ -41,7 +41,7 @@ public final class RedisTableIdGenerator implements IdGenerator<Long> {
 		this.checkKey = checkKey;
 	}
 
-	public RedisTableIdGenerator(Redis redis, Class<?> tableClass, AbstractDB db,
+	public RedisTableIdGenerator(Redis redis, Class<?> tableClass, DB db,
 			String fieldName, boolean checkKey) {
 		this.redis = redis;
 		this.tableClass = tableClass;

@@ -1,6 +1,6 @@
 package scw.utils.id.db;
 
-import scw.db.AbstractDB;
+import scw.db.DB;
 import scw.db.DBManager;
 import scw.utils.id.IdGenerator;
 import scw.utils.id.IntegerIdGenerator;
@@ -10,14 +10,14 @@ public final class TableIntegerIdGenerator implements IdGenerator<Integer> {
 	private String fieldName;
 	private int serverId;
 	private int maxServerId = 1;
-	private AbstractDB db;
+	private DB db;
 	private volatile IntegerIdGenerator idGenerator;
 
 	public TableIntegerIdGenerator(Class<?> tableClass, String fieldName) {
 		this(tableClass, fieldName, 0, 1);
 	}
 
-	public TableIntegerIdGenerator(Class<?> tableClass, AbstractDB db, String fieldName) {
+	public TableIntegerIdGenerator(Class<?> tableClass, DB db, String fieldName) {
 		this(tableClass, db, fieldName, 0, 1);
 	}
 
@@ -29,7 +29,7 @@ public final class TableIntegerIdGenerator implements IdGenerator<Integer> {
 		this.maxServerId = maxServerId;
 	}
 
-	public TableIntegerIdGenerator(Class<?> tableClass, AbstractDB db,
+	public TableIntegerIdGenerator(Class<?> tableClass, DB db,
 			String fieldName, int serverId, int maxServerId) {
 		this.tableClass = tableClass;
 		this.fieldName = fieldName;

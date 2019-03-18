@@ -30,7 +30,6 @@ import scw.common.reflect.Invoker;
 import scw.common.reflect.ReflectInvoker;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
-import scw.db.DB;
 
 public final class BeanUtils {
 	private static volatile boolean initStatic = false;
@@ -123,7 +122,6 @@ public final class BeanUtils {
 		initStatic = true;
 		initAutowriteStatic(beanFactory, propertiesFactory, classList);
 		invokerInitStaticMethod(classList);
-		initDB(beanFactory, classList);
 	}
 
 	public static void autoWrite(Class<?> clz, BeanFactory beanFactory, PropertiesFactory propertiesFactory, Object obj,
@@ -150,29 +148,6 @@ public final class BeanUtils {
 
 				autoWrite(clz, beanFactory, propertiesFactory, null, field);
 			}
-		}
-	}
-
-	private static void initDB(BeanFactory beanFactory, Collection<Class<?>> classList) {
-		for (Class<?> clz : classList) {
-			Deprecated deprecated = clz.getAnnotation(Deprecated.class);
-			if (deprecated != null) {
-				continue;
-			}
-
-			if (!DB.class.isAssignableFrom(clz)) {
-				continue;
-			}
-
-			if (Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers())) {
-				continue;
-			}
-
-			if (!Modifier.isPublic(clz.getModifiers())) {
-				continue;
-			}
-
-			beanFactory.get(clz);
 		}
 	}
 
