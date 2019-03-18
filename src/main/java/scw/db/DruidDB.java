@@ -1,8 +1,10 @@
 package scw.db;
 
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import com.alibaba.druid.pool.DruidDataSource;
@@ -64,7 +66,13 @@ public final class DruidDB extends AbstractDB {
 	@Destroy
 	public void close() throws Exception {
 		datasource.close();
-		DriverManager.deregisterDriver(DriverManager.getDriver(driverName));
+		
+		Enumeration<Driver> drivers = DriverManager.getDrivers();
+		if (drivers != null) {
+			while (drivers.hasMoreElements()) {
+				DriverManager.deregisterDriver(drivers.nextElement());
+			}
+		}
 	}
 
 }
