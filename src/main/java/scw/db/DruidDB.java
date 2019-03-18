@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
 import scw.beans.annotaion.Destroy;
 import scw.common.utils.ConfigUtils;
@@ -66,6 +67,8 @@ public final class DruidDB extends AbstractDB {
 	@Destroy
 	public void close() throws Exception {
 		datasource.close();
+		
+		AbandonedConnectionCleanupThread.checkedShutdown();
 		
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
 		if (drivers != null) {
