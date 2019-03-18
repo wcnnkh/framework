@@ -287,7 +287,7 @@ public final class XMLUtils {
 			}
 
 			if (t == null) {
-				t = ClassUtils.newInstance(type, null);
+				t = ClassUtils.newInstance(type);
 			}
 			fieldInfo.set(t, StringUtils.conversion(value, fieldInfo.getType()));
 		}

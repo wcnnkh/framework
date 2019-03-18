@@ -65,25 +65,29 @@ public final class ClassUtils {
 	 * Map with primitive wrapper type as key and corresponding primitive type
 	 * as value, for example: Integer.class -> int.class.
 	 */
-	private static final Map<Class<?>, Class<?>> primitiveWrapperTypeMap = new HashMap<Class<?>, Class<?>>(8);
+	private static final Map<Class<?>, Class<?>> primitiveWrapperTypeMap = new HashMap<Class<?>, Class<?>>(
+			8);
 
 	/**
 	 * Map with primitive type as key and corresponding wrapper type as value,
 	 * for example: int.class -> Integer.class.
 	 */
-	private static final Map<Class<?>, Class<?>> primitiveTypeToWrapperMap = new HashMap<Class<?>, Class<?>>(8);
+	private static final Map<Class<?>, Class<?>> primitiveTypeToWrapperMap = new HashMap<Class<?>, Class<?>>(
+			8);
 
 	/**
 	 * Map with primitive type name as key and corresponding primitive type as
 	 * value, for example: "int" -> "int.class".
 	 */
-	private static final Map<String, Class<?>> primitiveTypeNameMap = new HashMap<String, Class<?>>(32);
+	private static final Map<String, Class<?>> primitiveTypeNameMap = new HashMap<String, Class<?>>(
+			32);
 
 	/**
 	 * Map with common "java.lang" class name as key and corresponding Class as
 	 * value. Primarily for efficient deserialization of remote invocations.
 	 */
-	private static final Map<String, Class<?>> commonClassCache = new HashMap<String, Class<?>>(32);
+	private static final Map<String, Class<?>> commonClassCache = new HashMap<String, Class<?>>(
+			32);
 
 	static {
 		primitiveWrapperTypeMap.put(Boolean.class, boolean.class);
@@ -95,26 +99,31 @@ public final class ClassUtils {
 		primitiveWrapperTypeMap.put(Long.class, long.class);
 		primitiveWrapperTypeMap.put(Short.class, short.class);
 
-		for (Map.Entry<Class<?>, Class<?>> entry : primitiveWrapperTypeMap.entrySet()) {
+		for (Map.Entry<Class<?>, Class<?>> entry : primitiveWrapperTypeMap
+				.entrySet()) {
 			primitiveTypeToWrapperMap.put(entry.getValue(), entry.getKey());
 			registerCommonClasses(entry.getKey());
 		}
 
 		Set<Class<?>> primitiveTypes = new HashSet<Class<?>>(32);
 		primitiveTypes.addAll(primitiveWrapperTypeMap.values());
-		primitiveTypes.addAll(Arrays.asList(new Class<?>[] { boolean[].class, byte[].class, char[].class,
-				double[].class, float[].class, int[].class, long[].class, short[].class }));
+		primitiveTypes.addAll(Arrays.asList(new Class<?>[] { boolean[].class,
+				byte[].class, char[].class, double[].class, float[].class,
+				int[].class, long[].class, short[].class }));
 		primitiveTypes.add(void.class);
 		for (Class<?> primitiveType : primitiveTypes) {
 			primitiveTypeNameMap.put(primitiveType.getName(), primitiveType);
 		}
 
-		registerCommonClasses(Boolean[].class, Byte[].class, Character[].class, Double[].class, Float[].class,
-				Integer[].class, Long[].class, Short[].class);
-		registerCommonClasses(Number.class, Number[].class, String.class, String[].class, Object.class, Object[].class,
-				Class.class, Class[].class);
-		registerCommonClasses(Throwable.class, Exception.class, RuntimeException.class, Error.class,
-				StackTraceElement.class, StackTraceElement[].class);
+		registerCommonClasses(Boolean[].class, Byte[].class, Character[].class,
+				Double[].class, Float[].class, Integer[].class, Long[].class,
+				Short[].class);
+		registerCommonClasses(Number.class, Number[].class, String.class,
+				String[].class, Object.class, Object[].class, Class.class,
+				Class[].class);
+		registerCommonClasses(Throwable.class, Exception.class,
+				RuntimeException.class, Error.class, StackTraceElement.class,
+				StackTraceElement[].class);
 	}
 
 	private ClassUtils() {
@@ -137,7 +146,8 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isCharType(Class<?> type) {
-		return Character.class.isAssignableFrom(type) || char.class.isAssignableFrom(type);
+		return Character.class.isAssignableFrom(type)
+				|| char.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -147,7 +157,8 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isByteType(Class<?> type) {
-		return byte.class.isAssignableFrom(type) || Byte.class.isAssignableFrom(type);
+		return byte.class.isAssignableFrom(type)
+				|| Byte.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -157,7 +168,8 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isShortType(Class<?> type) {
-		return short.class.isAssignableFrom(type) || Short.class.isAssignableFrom(type);
+		return short.class.isAssignableFrom(type)
+				|| Short.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -167,7 +179,8 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isIntType(Class<?> type) {
-		return int.class.isAssignableFrom(type) || Integer.class.isAssignableFrom(type);
+		return int.class.isAssignableFrom(type)
+				|| Integer.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -177,7 +190,8 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isLongType(Class<?> type) {
-		return long.class.isAssignableFrom(type) || Long.class.isAssignableFrom(type);
+		return long.class.isAssignableFrom(type)
+				|| Long.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -187,7 +201,8 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isFloatType(Class<?> type) {
-		return float.class.isAssignableFrom(type) || Float.class.isAssignableFrom(type);
+		return float.class.isAssignableFrom(type)
+				|| Float.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -197,7 +212,8 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isDoubleType(Class<?> type) {
-		return double.class.isAssignableFrom(type) || Double.class.isAssignableFrom(type);
+		return double.class.isAssignableFrom(type)
+				|| Double.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -207,7 +223,8 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isBooleanType(Class<?> type) {
-		return boolean.class.isAssignableFrom(type) || Boolean.class.isAssignableFrom(type);
+		return boolean.class.isAssignableFrom(type)
+				|| Boolean.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -308,7 +325,8 @@ public final class ClassUtils {
 				if (file.isFile()) {
 					String fileName = file.getName();
 					if (fileName.endsWith(".class")) {
-						String beanName = fileName.substring(0, fileName.lastIndexOf("."));
+						String beanName = fileName.substring(0,
+								fileName.lastIndexOf("."));
 						Class<?> clz = null;
 						try {
 							clz = Class.forName(rootPage + beanName);
@@ -349,7 +367,8 @@ public final class ClassUtils {
 		// 定义一个枚举的集合 并进行循环来处理这个目录下的things
 		Enumeration<URL> dirs;
 		try {
-			dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
+			dirs = Thread.currentThread().getContextClassLoader()
+					.getResources(packageDirName);
 			// 循环迭代下去
 			while (dirs.hasMoreElements()) {
 				// 获取下一个元素
@@ -361,14 +380,16 @@ public final class ClassUtils {
 					// 获取包的物理路径
 					String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
 					// 以文件的方式扫描整个包下的文件 并添加到集合中
-					findAndAddClassesInPackageByFile(packageName, filePath, recursive, classes);
+					findAndAddClassesInPackageByFile(packageName, filePath,
+							recursive, classes);
 				} else if ("jar".equals(protocol)) {
 					// 如果是jar包文件
 					// 定义一个JarFile
 					JarFile jar;
 					try {
 						// 获取jar
-						jar = ((JarURLConnection) url.openConnection()).getJarFile();
+						jar = ((JarURLConnection) url.openConnection())
+								.getJarFile();
 						// 从此jar包 得到一个枚举类
 						Enumeration<JarEntry> entries = jar.entries();
 						// 同样的进行循环迭代
@@ -387,18 +408,23 @@ public final class ClassUtils {
 								// 如果以"/"结尾 是一个包
 								if (idx != -1) {
 									// 获取包名 把"/"替换成"."
-									packageName = name.substring(0, idx).replace('/', '.');
+									packageName = name.substring(0, idx)
+											.replace('/', '.');
 								}
 								// 如果可以迭代下去 并且是一个包
 								if ((idx != -1) || recursive) {
 									// 如果是一个.class文件 而且不是目录
-									if (name.endsWith(".class") && !entry.isDirectory()) {
+									if (name.endsWith(".class")
+											&& !entry.isDirectory()) {
 										// 去掉后面的".class" 获取真正的类名
-										String className = name.substring(packageName.length() + 1, name.length() - 6);
+										String className = name.substring(
+												packageName.length() + 1,
+												name.length() - 6);
 										// 添加到classes
 										Class<?> clz = null;
 										try {
-											clz = Class.forName(packageName + '.' + className);
+											clz = Class.forName(packageName
+													+ '.' + className);
 										} catch (Throwable e) {
 										}
 
@@ -428,8 +454,8 @@ public final class ClassUtils {
 	 * @param recursive
 	 * @param classes
 	 */
-	private static void findAndAddClassesInPackageByFile(String packageName, String packagePath,
-			final boolean recursive, List<Class<?>> classes) {
+	private static void findAndAddClassesInPackageByFile(String packageName,
+			String packagePath, final boolean recursive, List<Class<?>> classes) {
 		// 获取此包的目录 建立一个File
 		File dir = new File(packagePath);
 		// 如果不存在或者 也不是目录就直接返回
@@ -440,18 +466,21 @@ public final class ClassUtils {
 		File[] dirfiles = dir.listFiles(new FileFilter() {
 			// 自定义过滤规则 如果可以循环(包含子目录) 或则是以.class结尾的文件(编译好的java类文件)
 			public boolean accept(File file) {
-				return (recursive && file.isDirectory()) || (file.getName().endsWith(".class"));
+				return (recursive && file.isDirectory())
+						|| (file.getName().endsWith(".class"));
 			}
 		});
 		// 循环所有文件
 		for (File file : dirfiles) {
 			// 如果是目录 则继续扫描
 			if (file.isDirectory()) {
-				findAndAddClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), recursive,
-						classes);
+				findAndAddClassesInPackageByFile(
+						packageName + "." + file.getName(),
+						file.getAbsolutePath(), recursive, classes);
 			} else {
 				// 如果是java类文件 去掉后面的.class 只留下类名
-				String className = file.getName().substring(0, file.getName().length() - 6);
+				String className = file.getName().substring(0,
+						file.getName().length() - 6);
 				// 添加到集合中去
 				if (packageName.startsWith(".")) {
 					packageName = packageName.substring(1);
@@ -493,15 +522,30 @@ public final class ClassUtils {
 	 * @throws NoSuchMethodException
 	 * @throws SecurityException
 	 */
-	public static <T> T newInstance(Class<T> type, Class<?>[] parameterTypes, Object... params)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException {
-		Constructor<T> constructor = type.getDeclaredConstructor(parameterTypes);
+	public static <T> T newInstance(Class<T> type, Class<?>[] parameterTypes,
+			Object... params) throws InstantiationException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException {
+		Constructor<T> constructor = type
+				.getDeclaredConstructor(parameterTypes);
 		if (Modifier.isPublic(constructor.getModifiers())) {
 			return constructor.newInstance(params);
 		} else {
 			constructor.setAccessible(true);
 			return constructor.newInstance(params);
+		}
+	}
+
+	public static <T> T newInstance(Class<T> type)
+			throws InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException {
+		Constructor<T> constructor = type.getDeclaredConstructor();
+		if (Modifier.isPublic(constructor.getModifiers())) {
+			return constructor.newInstance();
+		} else {
+			constructor.setAccessible(true);
+			return constructor.newInstance();
 		}
 	}
 
@@ -513,7 +557,8 @@ public final class ClassUtils {
 	 */
 	public static Class<?> getSuperClass(Class<?> clz) {
 		Class<?> superClz = clz.getSuperclass();
-		if (superClz == null || Object.class.getName().equals(superClz.getName())) {
+		if (superClz == null
+				|| Object.class.getName().equals(superClz.getName())) {
 			return null;
 		}
 		return superClz;
@@ -582,7 +627,8 @@ public final class ClassUtils {
 	public static Long getSerialVersionUID(Class<?> clz) {
 		try {
 			Field field = clz.getField("serialVersionUID");
-			if (field != null && Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())
+			if (field != null && Modifier.isStatic(field.getModifiers())
+					&& Modifier.isFinal(field.getModifiers())
 					&& long.class.isAssignableFrom(field.getType())) {
 				return (Long) field.get(null);
 			}
@@ -600,7 +646,8 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static boolean isInstance(Class<?> clz) {
-		return !(Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers()));
+		return !(Modifier.isAbstract(clz.getModifiers()) || Modifier
+				.isInterface(clz.getModifiers()));
 	}
 
 	/**
@@ -651,10 +698,13 @@ public final class ClassUtils {
 	 * @return the original thread context ClassLoader, or {@code null} if not
 	 *         overridden
 	 */
-	public static ClassLoader overrideThreadContextClassLoader(ClassLoader classLoaderToUse) {
+	public static ClassLoader overrideThreadContextClassLoader(
+			ClassLoader classLoaderToUse) {
 		Thread currentThread = Thread.currentThread();
-		ClassLoader threadContextClassLoader = currentThread.getContextClassLoader();
-		if (classLoaderToUse != null && !classLoaderToUse.equals(threadContextClassLoader)) {
+		ClassLoader threadContextClassLoader = currentThread
+				.getContextClassLoader();
+		if (classLoaderToUse != null
+				&& !classLoaderToUse.equals(threadContextClassLoader)) {
 			currentThread.setContextClassLoader(classLoaderToUse);
 			return threadContextClassLoader;
 		} else {
@@ -662,7 +712,8 @@ public final class ClassUtils {
 		}
 	}
 
-	public static Class<?> forName(String name) throws ClassNotFoundException, LinkageError {
+	public static Class<?> forName(String name) throws ClassNotFoundException,
+			LinkageError {
 		return forName(name, getDefaultClassLoader());
 	}
 
@@ -685,7 +736,8 @@ public final class ClassUtils {
 	 *             if the class file could not be loaded
 	 * @see Class#forName(String, boolean, ClassLoader)
 	 */
-	public static Class<?> forName(String name, ClassLoader classLoader) throws ClassNotFoundException {
+	public static Class<?> forName(String name, ClassLoader classLoader)
+			throws ClassNotFoundException {
 		Assert.notNull(name, "Name must not be null");
 
 		Class<?> clazz = resolvePrimitiveClassName(name);
@@ -698,14 +750,16 @@ public final class ClassUtils {
 
 		// "java.lang.String[]" style arrays
 		if (name.endsWith(ARRAY_SUFFIX)) {
-			String elementClassName = name.substring(0, name.length() - ARRAY_SUFFIX.length());
+			String elementClassName = name.substring(0, name.length()
+					- ARRAY_SUFFIX.length());
 			Class<?> elementClass = forName(elementClassName, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
 		// "[Ljava.lang.String;" style arrays
 		if (name.startsWith(NON_PRIMITIVE_ARRAY_PREFIX) && name.endsWith(";")) {
-			String elementName = name.substring(NON_PRIMITIVE_ARRAY_PREFIX.length(), name.length() - 1);
+			String elementName = name.substring(
+					NON_PRIMITIVE_ARRAY_PREFIX.length(), name.length() - 1);
 			Class<?> elementClass = forName(elementName, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
@@ -726,7 +780,8 @@ public final class ClassUtils {
 		} catch (ClassNotFoundException ex) {
 			int lastDotIndex = name.lastIndexOf('.');
 			if (lastDotIndex != -1) {
-				String innerClassName = name.substring(0, lastDotIndex) + '$' + name.substring(lastDotIndex + 1);
+				String innerClassName = name.substring(0, lastDotIndex) + '$'
+						+ name.substring(lastDotIndex + 1);
 				// try {
 				return classLoaderToUse.loadClass(innerClassName);
 				// } catch (ClassNotFoundException ex2) {
@@ -756,14 +811,17 @@ public final class ClassUtils {
 	 *             could not be found or the class file could not be loaded)
 	 * @see #forName(String, ClassLoader)
 	 */
-	public static Class<?> resolveClassName(String className, ClassLoader classLoader) throws IllegalArgumentException {
+	public static Class<?> resolveClassName(String className,
+			ClassLoader classLoader) throws IllegalArgumentException {
 		try {
 			return forName(className, classLoader);
 		} catch (ClassNotFoundException ex) {
-			throw new IllegalArgumentException("Cannot find class [" + className + "]", ex);
+			throw new IllegalArgumentException("Cannot find class ["
+					+ className + "]", ex);
 		} catch (LinkageError ex) {
-			throw new IllegalArgumentException(
-					"Error loading class [" + className + "]: problem with class file or dependent class.", ex);
+			throw new IllegalArgumentException("Error loading class ["
+					+ className
+					+ "]: problem with class file or dependent class.", ex);
 		}
 	}
 
@@ -934,7 +992,8 @@ public final class ClassUtils {
 	public static String getShortNameAsProperty(Class<?> clazz) {
 		String shortName = ClassUtils.getShortName(clazz);
 		int dotIndex = shortName.lastIndexOf('.');
-		shortName = (dotIndex != -1 ? shortName.substring(dotIndex + 1) : shortName);
+		shortName = (dotIndex != -1 ? shortName.substring(dotIndex + 1)
+				: shortName);
 		return Introspector.decapitalize(shortName);
 	}
 
@@ -979,7 +1038,8 @@ public final class ClassUtils {
 	public static String getPackageName(String fqClassName) {
 		Assert.notNull(fqClassName, "Class name must not be null");
 		int lastDotIndex = fqClassName.lastIndexOf(PACKAGE_SEPARATOR);
-		return (lastDotIndex != -1 ? fqClassName.substring(0, lastDotIndex) : "");
+		return (lastDotIndex != -1 ? fqClassName.substring(0, lastDotIndex)
+				: "");
 	}
 
 	/**
@@ -1071,8 +1131,9 @@ public final class ClassUtils {
 	 *            the type name to match
 	 */
 	public static boolean matchesTypeName(Class<?> clazz, String typeName) {
-		return (typeName != null && (typeName.equals(clazz.getName()) || typeName.equals(clazz.getSimpleName())
-				|| (clazz.isArray() && typeName.equals(getQualifiedNameForArray(clazz)))));
+		return (typeName != null && (typeName.equals(clazz.getName())
+				|| typeName.equals(clazz.getSimpleName()) || (clazz.isArray() && typeName
+				.equals(getQualifiedNameForArray(clazz)))));
 	}
 
 	/**
@@ -1105,7 +1166,8 @@ public final class ClassUtils {
 	 * @return the constructor, or {@code null} if not found
 	 * @see Class#getConstructor
 	 */
-	public static <T> Constructor<T> getConstructorIfAvailable(Class<T> clazz, Class<?>... paramTypes) {
+	public static <T> Constructor<T> getConstructorIfAvailable(Class<T> clazz,
+			Class<?>... paramTypes) {
 		Assert.notNull(clazz, "Class must not be null");
 		try {
 			return clazz.getConstructor(paramTypes);
@@ -1128,14 +1190,15 @@ public final class ClassUtils {
 	 * @return whether the class has a corresponding method
 	 * @see Class#getMethod
 	 */
-	public static boolean hasMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
+	public static boolean hasMethod(Class<?> clazz, String methodName,
+			Class<?>... paramTypes) {
 		return (getMethodIfAvailable(clazz, methodName, paramTypes) != null);
 	}
 
 	/**
 	 * Determine whether the given class has a method with the given signature,
-	 * and return it if available (else throws an
-	 * {@code IllegalStateException}).
+	 * and return it if available (else throws an {@code IllegalStateException}
+	 * ).
 	 * <p>
 	 * Essentially translates {@code NoSuchMethodException} to
 	 * {@code IllegalStateException}.
@@ -1151,7 +1214,8 @@ public final class ClassUtils {
 	 *             if the method has not been found
 	 * @see Class#getMethod
 	 */
-	public static Method getMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
+	public static Method getMethod(Class<?> clazz, String methodName,
+			Class<?>... paramTypes) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(methodName, "Method name must not be null");
 		try {
@@ -1176,7 +1240,8 @@ public final class ClassUtils {
 	 * @return the method, or {@code null} if not found
 	 * @see Class#getMethod
 	 */
-	public static Method getMethodIfAvailable(Class<?> clazz, String methodName, Class<?>... paramTypes) {
+	public static Method getMethodIfAvailable(Class<?> clazz,
+			String methodName, Class<?>... paramTypes) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(methodName, "Method name must not be null");
 		try {
@@ -1227,7 +1292,8 @@ public final class ClassUtils {
 	 *            the name of the method
 	 * @return whether there is at least one method with the given name
 	 */
-	public static boolean hasAtLeastOneMethodWithName(Class<?> clazz, String methodName) {
+	public static boolean hasAtLeastOneMethodWithName(Class<?> clazz,
+			String methodName) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(methodName, "Method name must not be null");
 		Method[] declaredMethods = clazz.getDeclaredMethods();
@@ -1242,7 +1308,8 @@ public final class ClassUtils {
 				return true;
 			}
 		}
-		return (clazz.getSuperclass() != null && hasAtLeastOneMethodWithName(clazz.getSuperclass(), methodName));
+		return (clazz.getSuperclass() != null && hasAtLeastOneMethodWithName(
+				clazz.getSuperclass(), methodName));
 	}
 
 	/**
@@ -1274,18 +1341,22 @@ public final class ClassUtils {
 	 * @return the specific target method, or the original method if the
 	 *         {@code targetClass} doesn't implement it or is {@code null}
 	 */
-	public static Method getMostSpecificMethod(Method method, Class<?> targetClass) {
-		if (method != null && isOverridable(method, targetClass) && targetClass != null
+	public static Method getMostSpecificMethod(Method method,
+			Class<?> targetClass) {
+		if (method != null && isOverridable(method, targetClass)
+				&& targetClass != null
 				&& !targetClass.equals(method.getDeclaringClass())) {
 			try {
 				if (Modifier.isPublic(method.getModifiers())) {
 					try {
-						return targetClass.getMethod(method.getName(), method.getParameterTypes());
+						return targetClass.getMethod(method.getName(),
+								method.getParameterTypes());
 					} catch (NoSuchMethodException ex) {
 						return method;
 					}
 				} else {
-					Method specificMethod = ReflectionUtils.findMethod(targetClass, method.getName(),
+					Method specificMethod = ReflectionUtils.findMethod(
+							targetClass, method.getName(),
 							method.getParameterTypes());
 					return (specificMethod != null ? specificMethod : method);
 				}
@@ -1311,10 +1382,12 @@ public final class ClassUtils {
 		if (Modifier.isPrivate(method.getModifiers())) {
 			return false;
 		}
-		if (Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers())) {
+		if (Modifier.isPublic(method.getModifiers())
+				|| Modifier.isProtected(method.getModifiers())) {
 			return true;
 		}
-		return getPackageName(method.getDeclaringClass()).equals(getPackageName(targetClass));
+		return getPackageName(method.getDeclaringClass()).equals(
+				getPackageName(targetClass));
 	}
 
 	/**
@@ -1330,7 +1403,8 @@ public final class ClassUtils {
 	 * @throws IllegalArgumentException
 	 *             if the method name is blank or the clazz is null
 	 */
-	public static Method getStaticMethod(Class<?> clazz, String methodName, Class<?>... args) {
+	public static Method getStaticMethod(Class<?> clazz, String methodName,
+			Class<?>... args) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(methodName, "Method name must not be null");
 		try {
@@ -1405,7 +1479,8 @@ public final class ClassUtils {
 	 */
 	public static Class<?> resolvePrimitiveIfNecessary(Class<?> clazz) {
 		Assert.notNull(clazz, "Class must not be null");
-		return (clazz.isPrimitive() && clazz != void.class ? primitiveTypeToWrapperMap.get(clazz) : clazz);
+		return (clazz.isPrimitive() && clazz != void.class ? primitiveTypeToWrapperMap
+				.get(clazz) : clazz);
 	}
 
 	/**
@@ -1434,7 +1509,8 @@ public final class ClassUtils {
 			}
 		} else {
 			Class resolvedWrapper = primitiveTypeToWrapperMap.get(rhsType);
-			if (resolvedWrapper != null && lhsType.isAssignableFrom(resolvedWrapper)) {
+			if (resolvedWrapper != null
+					&& lhsType.isAssignableFrom(resolvedWrapper)) {
 				return true;
 			}
 		}
@@ -1454,7 +1530,8 @@ public final class ClassUtils {
 	 */
 	public static boolean isAssignableValue(Class<?> type, Object value) {
 		Assert.notNull(type, "Type must not be null");
-		return (value != null ? isAssignable(type, value.getClass()) : !type.isPrimitive());
+		return (value != null ? isAssignable(type, value.getClass()) : !type
+				.isPrimitive());
 	}
 
 	/**
@@ -1503,7 +1580,8 @@ public final class ClassUtils {
 	 * @see ClassLoader#getResource
 	 * @see Class#getResource
 	 */
-	public static String addResourcePathToPackagePath(Class<?> clazz, String resourceName) {
+	public static String addResourcePathToPackagePath(Class<?> clazz,
+			String resourceName) {
 		Assert.notNull(resourceName, "Resource name must not be null");
 		if (!resourceName.startsWith("/")) {
 			return classPackageAsResourcePath(clazz) + "/" + resourceName;
@@ -1644,7 +1722,8 @@ public final class ClassUtils {
 	 * @return all interfaces that the given object implements as array
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Class<?>[] getAllInterfacesForClass(Class<?> clazz, ClassLoader classLoader) {
+	public static Class<?>[] getAllInterfacesForClass(Class<?> clazz,
+			ClassLoader classLoader) {
 		Set<Class> ifcs = getAllInterfacesForClassAsSet(clazz, classLoader);
 		return ifcs.toArray(new Class[ifcs.size()]);
 	}
@@ -1692,7 +1771,8 @@ public final class ClassUtils {
 	 * @return all interfaces that the given object implements as Set
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Set<Class> getAllInterfacesForClassAsSet(Class clazz, ClassLoader classLoader) {
+	public static Set<Class> getAllInterfacesForClassAsSet(Class clazz,
+			ClassLoader classLoader) {
 		Assert.notNull(clazz, "Class must not be null");
 		if (clazz.isInterface() && isVisible(clazz, classLoader)) {
 			return Collections.singleton(clazz);
@@ -1701,7 +1781,8 @@ public final class ClassUtils {
 		while (clazz != null) {
 			Class<?>[] ifcs = clazz.getInterfaces();
 			for (Class<?> ifc : ifcs) {
-				interfaces.addAll(getAllInterfacesForClassAsSet(ifc, classLoader));
+				interfaces.addAll(getAllInterfacesForClassAsSet(ifc,
+						classLoader));
 			}
 			clazz = clazz.getSuperclass();
 		}
@@ -1721,7 +1802,8 @@ public final class ClassUtils {
 	 * @return the merged interface as Class
 	 * @see java.lang.reflect.Proxy#getProxyClass
 	 */
-	public static Class<?> createCompositeInterface(Class<?>[] interfaces, ClassLoader classLoader) {
+	public static Class<?> createCompositeInterface(Class<?>[] interfaces,
+			ClassLoader classLoader) {
 		Assert.notEmpty(interfaces, "Interfaces must not be empty");
 		Assert.notNull(classLoader, "ClassLoader must not be null");
 		return Proxy.getProxyClass(classLoader, interfaces);
