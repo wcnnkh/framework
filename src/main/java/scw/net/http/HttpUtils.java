@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.common.ByteArray;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.StringUtils;
 import scw.core.NestedRuntimeException;
@@ -38,10 +37,9 @@ public final class HttpUtils {
 		return body.toString(DEFAULT_CHARSET);
 	}
 
-	public static ByteArray doPost(String url, Map<String, String> propertyMap, byte[] data) {
+	public static Body doPost(String url, Map<String, String> propertyMap, byte[] data) {
 		HttpRequest request = new BodyRequest(Method.POST, data);
-		Body body = NetworkUtils.executeHttp(url, request);
-		return body.getByteArray();
+		return NetworkUtils.executeHttp(url, request);
 	}
 
 	public static String doPost(String url, Map<String, String> propertyMap, String body, Charset charset) {
