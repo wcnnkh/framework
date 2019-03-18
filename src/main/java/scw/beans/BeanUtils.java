@@ -13,6 +13,7 @@ import java.util.concurrent.CountDownLatch;
 
 import net.sf.cglib.proxy.Enhancer;
 import scw.beans.annotaion.Autowrite;
+import scw.beans.annotaion.Bean;
 import scw.beans.annotaion.Config;
 import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
@@ -434,17 +435,23 @@ public final class BeanUtils {
 			return false;
 		}
 
+		boolean b = true;
 		if (filterNames != null && filterNames.length != 0) {
-			return true;
+			b = true;
 		}
 
 		for (Method method : type.getDeclaredMethods()) {
 			Retry retry = getRetry(method);
 			if (retry != null && retry.errors().length != 0) {
-				return true;
+				b = true;
 			}
 		}
-		return false;
+
+		Bean bean = type.getAnnotation(Bean.class);
+		if (bean != null && !bean.proxy()) {
+			b = false;
+		}
+		return b;
 	}
 
 	public static Retry getRetry(Method method) {

@@ -10,6 +10,7 @@ import java.util.Properties;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
+import scw.beans.annotaion.Bean;
 import scw.beans.annotaion.Destroy;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.PropertiesUtils;
@@ -17,7 +18,8 @@ import scw.common.utils.StringUtils;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.cache.Cache;
 
-public final class DruidDB extends AbstractDB {
+@Bean(proxy = false)
+public class DruidDB extends AbstractDB {
 	private DruidDataSource datasource;
 	private final String driverName;
 
@@ -67,9 +69,9 @@ public final class DruidDB extends AbstractDB {
 	@Destroy
 	public void close() throws Exception {
 		datasource.close();
-		
+
 		AbandonedConnectionCleanupThread.checkedShutdown();
-		
+
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
 		if (drivers != null) {
 			while (drivers.hasMoreElements()) {
