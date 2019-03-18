@@ -1,6 +1,7 @@
 package scw.db;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -15,6 +16,7 @@ import scw.sql.orm.cache.Cache;
 
 public final class DruidDB extends AbstractDB {
 	private DruidDataSource datasource;
+	private final String driverName;
 
 	/**
 	 * 数据库配置文件目录 只支持mysql
@@ -40,9 +42,11 @@ public final class DruidDB extends AbstractDB {
 		String driver = PropertiesUtils.getProperty(properties, "driver", "driverClass", "driverClassName");
 		String maxPoolPreparedStatementPerConnectionSize = PropertiesUtils.getProperty(properties,
 				"maxPoolPreparedStatementPerConnectionSize");
+
+		this.driverName = StringUtils.isEmpty(driver) ? "com.mysql.jdbc.Driver" : driver;
 		datasource = new DruidDataSource();
 		datasource.setUrl(url);
-		datasource.setDriverClassName(StringUtils.isEmpty(driver) ? "com.mysql.jdbc.Driver" : driver);
+		datasource.setDriverClassName(driverName);
 		datasource.setUsername(username);
 		datasource.setPassword(password);
 		datasource.setInitialSize(StringUtils.isEmpty(minSize) ? 10 : Integer.parseInt(minSize));
@@ -60,6 +64,7 @@ public final class DruidDB extends AbstractDB {
 	@Destroy
 	public void close() throws Exception {
 		datasource.close();
+		DriverManager.deregisterDriver(DriverManager.getDriver(driverName));
 	}
 
 }
