@@ -6,12 +6,15 @@ import java.net.URLConnection;
 public abstract class AbstractRequest implements Request {
 
 	public void request(URLConnection urlConnection) throws Throwable {
-		OutputStream os = null;
-		try {
-			doOutput(os);
-		} finally {
-			if (os != null) {
-				os.close();
+		if (urlConnection.getDoOutput()) {
+			OutputStream os = null;
+			try {
+				os = urlConnection.getOutputStream();
+				doOutput(os);
+			} finally {
+				if (os != null) {
+					os.close();
+				}
 			}
 		}
 	}

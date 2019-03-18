@@ -6,14 +6,18 @@ import java.net.URLConnection;
 public abstract class AbstractResponse<T> implements Response<T> {
 
 	public T response(URLConnection urlConnection) throws Throwable {
-		InputStream is = null;
-		try {
-			return doInput(is);
-		} finally {
-			if (is != null) {
-				is.close();
+		if (urlConnection.getDoInput()) {
+			InputStream is = null;
+			try {
+				is = urlConnection.getInputStream();
+				return doInput(is);
+			} finally {
+				if (is != null) {
+					is.close();
+				}
 			}
 		}
+		return null;
 	}
 
 	public abstract T doInput(InputStream is) throws Throwable;
