@@ -1,5 +1,9 @@
 package scw.beans.rpc.http;
 
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -7,12 +11,12 @@ import java.nio.charset.Charset;
 
 import scw.beans.BeanFactory;
 import scw.beans.rpc.transaction.TCCManager;
-import scw.common.ByteArray;
 import scw.common.reflect.Invoker;
-import scw.common.utils.IOUtils;
 import scw.common.utils.SignUtils;
-import scw.net.http.HttpPost;
-import scw.net.http.entity.JavaObjectRequestEntity;
+import scw.common.utils.XUtils;
+import scw.net.AbstractResponse;
+import scw.net.NetworkUtils;
+import scw.net.http.request.HttpRequest;
 
 public class HttpRPCBean extends AbstractInterfaceProxyBean {
 	private final String host;
@@ -59,26 +63,30 @@ class HttpConsumerInvoker implements Invoker {
 
 	public Object invoke(Object... args) throws Exception {
 		long cts = System.currentTimeMillis();
-		Message message = new Message(method, args);
+		final Message message = new Message(method, args);
 		message.setAttribute("t", cts);
 		message.setAttribute("sign", SignUtils.md5Str(cts + signStr, charset.name()));
-		HttpPost http = null;
-		JavaObjectRequestEntity requestEntity = new JavaObjectRequestEntity();
-		requestEntity.add(message);
-		try {
-			http = new HttpPost(host);
-			http.setRequestEntity(requestEntity);
 
-			ByteArray byteArray = http.getResponseByteArray();
-			byte[] data = byteArray.toByteArray();
-			if (data == null) {
-				return null;
+		HttpRequest request = new HttpRequest(scw.net.http.enums.Method.POST) {
+			@Override
+			public void doOutput(OutputStream os) throws Throwable {
+				ObjectOutputStream oos = new ObjectOutputStream(os);
+				oos.writeObject(message);
 			}
-			return IOUtils.byteToJavaObject(data);
-		} finally {
-			if (http != null) {
-				http.disconnect();
+		};
+
+		return NetworkUtils.executeHttp(host, request, new AbstractResponse<Object>() {
+
+			@Override
+			public Object doInput(InputStream is) throws Throwable {
+				ObjectInputStream ois = null;
+				try {
+					ois = new ObjectInputStream(is);
+					return ois.readObject();
+				} finally {
+					XUtils.close(ois);
+				}
 			}
-		}
+		});
 	}
 }

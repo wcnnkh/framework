@@ -1,8 +1,9 @@
-package scw.net.http;
+package scw.net.http.request;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -12,6 +13,7 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.util.LinkedList;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
@@ -19,11 +21,28 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import scw.common.utils.ConfigUtils;
+import scw.core.NestedRuntimeException;
+import scw.net.http.enums.Method;
 
-public class HttpsUtils {
-	public static X509TrustManager[] loadX509TrustManager(String filePath, String password)
+public class X509Request extends HttpRequest {
+	private final SSLSocketFactory sslSocketFactory;
+
+	public X509Request(Method method, String filePath, String password) {
+		super(method);
+		try {
+			this.sslSocketFactory = getSSLSocketFactory(filePath, password);
+		} catch (Exception e) {
+			throw new NestedRuntimeException(e);
+		}
+	}
+
+	public SSLSocketFactory getSslSocketFactory() {
+		return sslSocketFactory;
+	}
+
+	private SSLSocketFactory getSSLSocketFactory(String filePath, String password)
 			throws KeyStoreException, NoSuchAlgorithmException, NoSuchProviderException, CertificateException,
-			FileNotFoundException, IOException {
+			FileNotFoundException, IOException, KeyManagementException {
 		KeyStore ks = KeyStore.getInstance("JKS");
 		ks.load(new FileInputStream(ConfigUtils.getFile(filePath)), password.toCharArray());
 		TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509", "SunJSSE");
@@ -35,13 +54,16 @@ public class HttpsUtils {
 				list.add((X509TrustManager) tm);
 			}
 		}
-		return list.toArray(new X509TrustManager[0]);
+
+		SSLContext context = SSLContext.getInstance("SSL", "SunJSSE");
+		context.init(null, list.toArray(new TrustManager[0]), new SecureRandom());
+		return context.getSocketFactory();
 	}
 
-	public static SSLSocketFactory getSSLSocketFactory(X509TrustManager[] tms)
-			throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException {
-		SSLContext context = SSLContext.getInstance("SSL", "SunJSSE");
-		context.init(null, tms, new SecureRandom());
-		return context.getSocketFactory();
+	@Override
+	public void request(URLConnection urlConnection) throws Throwable {
+		HttpsURLConnection https = (HttpsURLConnection) urlConnection;
+		https.setSSLSocketFactory(sslSocketFactory);
+		super.request(urlConnection);
 	}
 }

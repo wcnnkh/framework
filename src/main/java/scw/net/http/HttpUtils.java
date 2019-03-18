@@ -1,8 +1,6 @@
 package scw.net.http;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -15,8 +13,13 @@ import scw.common.ByteArray;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.StringUtils;
 import scw.core.NestedRuntimeException;
-import scw.net.http.entity.BodyRequestEntity;
-import scw.net.http.entity.FormRequestEntity;
+import scw.net.NetworkUtils;
+import scw.net.http.enums.Method;
+import scw.net.http.request.BodyRequest;
+import scw.net.http.request.FormRequest;
+import scw.net.http.request.HttpRequest;
+import scw.net.response.Body;
+import scw.net.response.BodyResponse;
 
 public final class HttpUtils {
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
@@ -29,72 +32,22 @@ public final class HttpUtils {
 	}
 
 	public static String doGet(String url, Charset charset) {
-		HttpGet http = null;
-		try {
-			http = new HttpGet(url);
-			if (http.getRequestContentType() == null) {
-				http.setRequestContentType("application/x-www-form-urlencoded; charset=" + charset.name());
-			}
-			return http.getResponseBody(charset);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (http != null) {
-				http.disconnect();
-			}
-		}
-		return null;
+		HttpRequest request = new HttpRequest(Method.GET);
+		request.setRequestContentType("application/x-www-form-urlencoded; charset=" + charset.name());
+		Body body = NetworkUtils.executeHttp(url, request);
+		return body.toString(DEFAULT_CHARSET);
 	}
 
 	public static ByteArray doPost(String url, Map<String, String> propertyMap, byte[] data) {
-		HttpPost http = null;
-		try {
-			http = new HttpPost(url);
-			if (propertyMap != null && !propertyMap.isEmpty()) {
-				for (Entry<String, String> entry : propertyMap.entrySet()) {
-					http.setRequestProperty(entry.getKey(), entry.getValue());
-				}
-			}
-			http.setRequestEntity(new BodyRequestEntity(data));
-			return http.getResponseByteArray();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (http != null) {
-				http.disconnect();
-			}
-		}
-		return null;
+		HttpRequest request = new BodyRequest(Method.POST, data);
+		Body body = NetworkUtils.executeHttp(url, request);
+		return body.getByteArray();
 	}
 
 	public static String doPost(String url, Map<String, String> propertyMap, String body, Charset charset) {
-		HttpPost http = null;
-		try {
-			http = new HttpPost(url);
-			if (propertyMap != null && !propertyMap.isEmpty()) {
-				for (Entry<String, String> entry : propertyMap.entrySet()) {
-					http.setRequestProperty(entry.getKey(), entry.getValue());
-				}
-			}
-
-			if (body != null) {
-				http.setRequestEntity(new BodyRequestEntity(body, charset));
-			}
-			return http.getResponseBody(charset);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (http != null) {
-				http.disconnect();
-			}
-		}
-		return null;
+		HttpRequest request = new BodyRequest(Method.POST, body.getBytes(charset));
+		Body b = NetworkUtils.executeHttp(url, request);
+		return b.toString(charset);
 	}
 
 	public static String doPost(String url, Map<String, String> propertyMap, String body) {
@@ -103,29 +56,16 @@ public final class HttpUtils {
 
 	public static String doPost(String url, Map<String, String> propertyMap, Map<String, ?> parameterMap,
 			Charset charset) {
-		HttpPost http = null;
-		try {
-			http = new HttpPost(url);
-			if (propertyMap != null && !propertyMap.isEmpty()) {
-				for (Entry<String, String> entry : propertyMap.entrySet()) {
-					http.setRequestProperty(entry.getKey(), entry.getValue());
-				}
-			}
-
-			if (parameterMap != null) {
-				http.setRequestEntity(FormRequestEntity.wrapper(parameterMap, charset));
-			}
-			return http.getResponseBody(charset);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (http != null) {
-				http.disconnect();
+		FormRequest request = new FormRequest(Method.POST, charset.name());
+		request.setRequestProperties(propertyMap);
+		if (parameterMap != null) {
+			for (Entry<String, ?> entry : parameterMap.entrySet()) {
+				request.addParameter(entry.getKey(), entry.getValue());
 			}
 		}
-		return null;
+
+		Body body = NetworkUtils.executeHttp(url, request, new BodyResponse());
+		return body.toString(charset);
 	}
 
 	public static String doPost(String url, Map<String, ?> parameterMap) {
@@ -166,7 +106,7 @@ public final class HttpUtils {
 		try {
 			return appendParameters(prefix, paramMap, true, DEFAULT_CHARSET.name());
 		} catch (UnsupportedEncodingException e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new NestedRuntimeException(e);
 		}
 	}
 
