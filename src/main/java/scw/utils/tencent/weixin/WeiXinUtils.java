@@ -101,4 +101,5 @@ public final class WeiXinUtils {
 		signMap.put("timestamp", timeStamp + "");
 		return getPaySign(signMap, apiKey);
 	}
+	
 }

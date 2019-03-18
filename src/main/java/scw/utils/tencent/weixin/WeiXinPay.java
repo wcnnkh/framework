@@ -1,5 +1,6 @@
 package scw.utils.tencent.weixin;
 
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,12 +16,17 @@ import scw.common.exception.SignatureException;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XMLUtils;
+import scw.net.NetworkUtils;
 import scw.net.http.HttpUtils;
+import scw.net.http.enums.Method;
+import scw.net.http.request.X509Request;
+import scw.net.response.Body;
 import scw.utils.tencent.weixin.bean.Unifiedorder;
 
 public final class WeiXinPay {
 	private static final String weixin_unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 	private static final String DEFAULT_DEVICE_INFO = "WEB";
+	private static final String REFUND_URL = "https://api.mch.weixin.qq.com/secapi/pay/refund";
 
 	private final String appId;
 	private final String mch_id;
@@ -28,18 +34,27 @@ public final class WeiXinPay {
 	private final String sign_type;// 签名类型，默认为MD5，支持HMAC-SHA256和MD5。
 	private final Charset charset;
 	private final boolean debug;
+	private String certTrustFile;
+	private String password;
 
 	public WeiXinPay(String appId, String mch_id, String apiKey, boolean debug) {
-		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"), debug);
+		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"), debug, null, null);
 	}
 
-	public WeiXinPay(String appId, String mch_id, String apiKey, String sign_type, Charset charset, boolean debug) {
+	public WeiXinPay(String appId, String mch_id, String apiKey, boolean debug, String certTrustFile, String password) {
+		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"), debug, certTrustFile, password);
+	}
+
+	public WeiXinPay(String appId, String mch_id, String apiKey, String sign_type, Charset charset, boolean debug,
+			String certTrustFile, String password) {
 		this.appId = appId;
 		this.mch_id = mch_id;
 		this.apiKey = apiKey;
 		this.sign_type = sign_type.toUpperCase();
 		this.charset = charset;
 		this.debug = debug;
+		this.certTrustFile = certTrustFile;
+		this.password = password;
 	}
 
 	/**
@@ -260,6 +275,16 @@ public final class WeiXinPay {
 		map.put("product_id", product_id);
 		map.put("limit_pay", limit_pay);
 		map.put("openid", openid);
+
+		String content = getRequestContent(map);
+		String response = HttpUtils.doPost(weixin_unifiedorder_url, null, content);
+		if (debug) {
+			Logger.debug(this.getClass().getName(), response);
+		}
+		return response;
+	}
+
+	private String getRequestContent(Map<String, String> map) {
 		String[] keys = map.keySet().toArray(new String[0]);
 		Arrays.sort(keys);
 		String v;
@@ -294,18 +319,14 @@ public final class WeiXinPay {
 		}
 
 		String sign = toSign(sb.toString());
-		if (debug) {
-			Logger.debug(this.getClass().getName(), "签名：" + sign);
-		}
 		Element c = document.createElement("sign");
 		c.setTextContent(sign);
 		element.appendChild(c);
-		String xmlContent = XMLUtils.asXml(element);
+		String content = XMLUtils.asXml(element);
 		if (debug) {
-			Logger.debug(this.getClass().getName(), "签名XML：" + xmlContent);
+			Logger.debug(this.getClass().getName(), content);
 		}
-
-		return HttpUtils.doPost(weixin_unifiedorder_url, null, xmlContent);
+		return content;
 	}
 
 	public boolean checkSign(Map<String, String> params) {
@@ -330,5 +351,38 @@ public final class WeiXinPay {
 		} else {
 			throw new ShuChaoWenRuntimeException("不支持的签名方式:" + sign_type);
 		}
+	}
+
+	public String refund(String transaction_id, String out_trade_no, String nonce_str, String out_refund_no,
+			int total_fee, int refund_fee, String refund_fee_type, String refund_desc, String notify_url) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("appid", appId);
+		map.put("mch_id", mch_id);
+		map.put("nonce_str", nonce_str);
+		map.put("sign_type", sign_type);
+		map.put("transaction_id", transaction_id);
+		map.put("out_trade_no", out_trade_no);
+		map.put("out_refund_no", out_refund_no);
+		map.put("total_fee", total_fee + "");
+		map.put("refund_fee", refund_fee + "");
+		map.put("refund_fee_type", refund_fee_type);
+		map.put("refund_desc", refund_desc);
+		map.put("notify_url", notify_url);
+
+		final String content = getRequestContent(map);
+		X509Request request = new X509Request(Method.POST, certTrustFile, password) {
+			@Override
+			public void doOutput(OutputStream os) throws Throwable {
+				os.write(content.getBytes(charset));
+				super.doOutput(os);
+			}
+		};
+
+		Body response = NetworkUtils.executeHttp(REFUND_URL, request);
+		String str = response.toString(charset);
+		if (debug) {
+			Logger.debug(this.getClass().getName(), str);
+		}
+		return str;
 	}
 }
