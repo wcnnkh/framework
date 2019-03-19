@@ -1,7 +1,10 @@
 package scw.db;
 
 import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Enumeration;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -37,6 +40,12 @@ public class HikariCPDB extends DB {
 	@Destroy
 	public void close() throws Exception {
 		hds.close();
+		Enumeration<Driver> drivers = DriverManager.getDrivers();
+		if (drivers != null) {
+			while (drivers.hasMoreElements()) {
+				DriverManager.deregisterDriver(drivers.nextElement());
+			}
+		}
 	}
 
 }
