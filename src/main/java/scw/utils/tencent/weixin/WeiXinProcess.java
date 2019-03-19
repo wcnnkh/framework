@@ -3,19 +3,20 @@ package scw.utils.tencent.weixin;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.common.Logger;
-import scw.common.exception.ShuChaoWenRuntimeException;
-import scw.common.utils.StringUtils;
-import scw.net.http.HttpUtils;
-
 import com.alibaba.fastjson.JSONObject;
 
+import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
+import scw.net.http.HttpUtils;
+
 public abstract class WeiXinProcess {
-	private static final Map<String, String> postRequestProperties = new HashMap<String, String>(
-			2);
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	private static final Map<String, String> postRequestProperties = new HashMap<String, String>(2);
 	static {
-		postRequestProperties.put("Content-type",
-				"application/json;charset=utf-8");
+		postRequestProperties.put("Content-type", "application/json;charset=utf-8");
 	}
 
 	private int errcode;// 错误码
@@ -45,8 +46,7 @@ public abstract class WeiXinProcess {
 
 		String content = HttpUtils.doPost(url, postRequestProperties, body);
 		if (StringUtils.isNull(content)) {
-			throw new ShuChaoWenRuntimeException("请求错误：url=" + url + ", body="
-					+ body);
+			throw new ShuChaoWenRuntimeException("请求错误：url=" + url + ", body=" + body);
 		}
 
 		JSONObject json = wrapper(content);
@@ -55,7 +55,7 @@ public abstract class WeiXinProcess {
 			sb.append("api:").append(url);
 			sb.append(",body：").append(body);
 			sb.append(",response:").append(content);
-			Logger.warn(this.getClass().getName(), sb.toString());
+			logger.warn(sb.toString());
 		}
 		return json;
 	}
@@ -79,7 +79,7 @@ public abstract class WeiXinProcess {
 				StringBuilder sb = new StringBuilder();
 				sb.append("api:").append(url);
 				sb.append(",response:").append(content);
-				Logger.warn(this.getClass().getName(), sb.toString());
+				logger.warn(sb.toString());
 			}
 		}
 		return json;

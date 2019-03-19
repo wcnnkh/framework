@@ -2,12 +2,15 @@ package scw.servlet.view;
 
 import java.io.IOException;
 
-import scw.common.Logger;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.View;
 
 public class HttpCode implements View {
+	private static Logger logger = LoggerFactory.getLogger(HttpCode.class);
+
 	private int status;
 	private String msg;
 
@@ -29,7 +32,7 @@ public class HttpCode implements View {
 			sb.append(status);
 			sb.append(",msg=");
 			sb.append(msg);
-			Logger.debug(this.getClass().getName(), sb.toString());
+			logger.debug(sb.toString());
 		}
 		response.sendError(status, msg);
 	}

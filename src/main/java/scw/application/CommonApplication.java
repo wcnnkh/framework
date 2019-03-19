@@ -9,10 +9,10 @@ import scw.beans.XmlBeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboUtils;
-import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
+import scw.logger.LoggerFactory;
 import scw.sql.orm.plugin.SelectCacheFilter;
 import scw.transaction.TransactionFilter;
 
@@ -94,7 +94,7 @@ public class CommonApplication implements Application {
 		}
 
 		ProtocolConfig.destroyAll();
-		Logger.shutdown();
 		beanFactory.destroy();
+		LoggerFactory.destroy();
 	}
 }

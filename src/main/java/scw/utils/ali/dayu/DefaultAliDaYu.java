@@ -6,14 +6,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.common.Logger;
 import scw.common.ProcessResult;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.net.http.HttpUtils;
 
 public final class DefaultAliDaYu implements AliDaYu {
+	private static Logger logger = LoggerFactory.getLogger(DefaultAliDaYu.class);
+
 	private String host;
 	private String appKey;
 	private String version;
@@ -53,7 +56,7 @@ public final class DefaultAliDaYu implements AliDaYu {
 		map.put("rec_num", toPhones);
 		map.put("sign", getSign(map));
 		String content = HttpUtils.doPost(host, map);
-		Logger.info(this.getClass().getName(), content);
+		logger.debug(content);
 		return ProcessResult.success(content);
 	}
 

@@ -17,13 +17,14 @@ import scw.application.CommonApplication;
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.rpc.http.Message;
-import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.reflect.Invoker;
 import scw.common.reflect.ReflectInvoker;
 import scw.common.utils.IOUtils;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.net.http.enums.Method;
 import scw.servlet.action.Action;
 import scw.servlet.action.DefaultSearchAction;
@@ -40,6 +41,8 @@ import scw.servlet.request.RequestFactory;
  *
  */
 public class ServletApplication implements Application {
+	private static Logger logger = LoggerFactory.getLogger(ServletApplication.class);
+
 	private static final String CHARSET_NAME = "shuchaowen.charsetName";
 	private static final String RPC_SIGN = "shuchaowen.rpc-sign";
 	private static final String RPC_PATH = "shuchaowen.rpc-path";
@@ -131,7 +134,7 @@ public class ServletApplication implements Application {
 		}
 
 		if (StringUtils.isNull(rpcSignStr)) {// 不校验签名
-			Logger.warn("RPC", "Signature verification not opened(未开启签名验证)");
+			logger.warn("RPC Signature verification not opened(未开启签名验证)");
 			return true;
 		}
 
@@ -224,7 +227,7 @@ public class ServletApplication implements Application {
 			sb.append(",method=").append(httpServletRequest.getMethod());
 			sb.append(",status=").append(code);
 			sb.append(",msg=").append(msg);
-			Logger.debug(this.getClass().getName(), sb.toString());
+			logger.debug(sb.toString());
 		}
 
 		if (!httpServletResponse.isCommitted()) {

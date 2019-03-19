@@ -6,11 +6,14 @@ import java.util.Map;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 
-import scw.common.Logger;
 import scw.common.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.net.http.HttpUtils;
 
 public final class ApplePay {
+	private static Logger logger = LoggerFactory.getLogger(ApplePay.class);
+
 	private static final String SANDBOX_URL = "https://sandbox.itunes.apple.com/verifyReceipt";
 	private static final String DEV_URL = "https://buy.itunes.apple.com/verifyReceipt";
 	private final boolean debug;
@@ -46,7 +49,7 @@ public final class ApplePay {
 
 		String response = HttpUtils.doPost(host, null, JSONObject.toJSONString(map));
 		if (debug) {
-			Logger.debug(this.getClass().getName(), response);
+			logger.debug(response);
 		}
 
 		return JSONObject.parseObject(response, ReceiptResponse.class, Feature.SupportNonPublicField);

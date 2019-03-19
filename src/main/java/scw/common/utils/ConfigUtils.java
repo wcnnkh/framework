@@ -23,10 +23,14 @@ import org.w3c.dom.NodeList;
 
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
-import scw.common.Logger;
 import scw.common.StringFormatSystemProperties;
+import scw.common.exception.NotFoundException;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public final class ConfigUtils {
+	private static Logger logger = LoggerFactory.getLogger(ConfigUtils.class);
+	
 	private static final String WEB_ROOT = "web.root";
 	private static final String CLASSPATH = "classpath";
 	private static final String CLASSPATH_PREFIX = CLASSPATH + ":";
@@ -35,6 +39,7 @@ public final class ConfigUtils {
 	public static final StringFormatSystemProperties format2 = new StringFormatSystemProperties("[", "]");
 	public static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
 	private static final Map<String, String> SEARCH_PATH_CACHE = new HashMap<String, String>();
+	private static String work_path_cache;
 
 	private ConfigUtils() {
 	};
@@ -75,15 +80,22 @@ public final class ConfigUtils {
 		return newPath;
 	}
 
+	/**
+	 * 如果返回空就说明不存在WEB-INF目录
+	 * 
+	 * @return
+	 */
 	public static String getWorkPath() {
-		String path = ConfigUtils.class.getResource("/").getPath();
-		File file = new File(path);
-		file = file.getParentFile().getParentFile();
-		File f = FileUtils.searchDirectory(file.getPath(), WEB_INF);
-		if (f != null && f.exists()) {
-			f = f.getParentFile();
+		if (work_path_cache == null) {
+			String path = ConfigUtils.class.getResource("/").getPath();
+			File file = new File(path);
+			file = file.getParentFile().getParentFile();
+			File f = FileUtils.searchDirectory(file.getPath(), WEB_INF);
+			if (f != null && f.exists()) {
+				work_path_cache = f.getParentFile().getPath();
+			}
 		}
-		return f == null ? file.getPath() : f.getPath();
+		return work_path_cache;
 	}
 
 	public static String getClassPath() {
@@ -105,8 +117,22 @@ public final class ConfigUtils {
 		return t;
 	}
 
+	/**
+	 * 如果返回空就说明找不到文件
+	 * @param fileName
+	 * @return
+	 */
 	public static String searchFileName(String fileName) {
-		return FileUtils.searchFileName(fileName, getClassPath(), true);
+		String file = FileUtils.searchFileName(fileName, getClassPath(), true);
+		if (StringUtils.isNull(file)) {
+			String workPath = getWorkPath();
+			if (workPath == null) {
+				return null;
+			}
+
+			file = FileUtils.searchFileName(fileName, workPath, true);
+		}
+		return file;
 	}
 
 	private static String getFilePath(final String filePath) {
@@ -120,7 +146,12 @@ public final class ConfigUtils {
 			if (file.exists()) {
 				return classPath;
 			} else {// 如果clsspath下找不到就去workpath下去找
-				String workPath = getWorkPath() + path;
+				String workPath = getWorkPath();
+				if (workPath == null) {
+					return path;
+				}
+
+				workPath += path;
 				file = new File(workPath);
 				if (file.exists()) {
 					return workPath;
@@ -131,7 +162,7 @@ public final class ConfigUtils {
 		}
 	}
 
-	public static File getFile(String filePath) {
+	public static File getFile(String filePath) throws NotFoundException {
 		String cache = SEARCH_PATH_CACHE.get(filePath);
 		if (cache == null) {
 			synchronized (SEARCH_PATH_CACHE) {
@@ -145,6 +176,10 @@ public final class ConfigUtils {
 						file = getFile(filePath, Arrays.asList(StringUtils.commonSplit(configSuffix)));
 					}
 
+					if (file == null || !file.exists()) {
+						throw new NotFoundException(filePath);
+					}
+
 					cache = file.getPath();
 					SEARCH_PATH_CACHE.put(filePath, cache);
 					if (!file.getPath().equals(filePath)) {
@@ -152,7 +187,7 @@ public final class ConfigUtils {
 						sb.append(filePath);
 						sb.append(" ---> ");
 						sb.append(file.getPath());
-						Logger.info(ConfigUtils.class.getName(), sb.toString());
+						logger.info(sb.toString());
 					}
 				}
 			}
@@ -161,7 +196,12 @@ public final class ConfigUtils {
 	}
 
 	private static File getFile(String filePath, Collection<String> testSuffix) {
-		File file = new File(getFilePath(filePath));
+		String p = getFilePath(filePath);
+		if (p == null) {
+			return null;
+		}
+
+		File file = new File(p);
 		if (testSuffix == null || testSuffix.isEmpty()) {
 			return file;
 		}

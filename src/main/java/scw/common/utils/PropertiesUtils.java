@@ -13,11 +13,14 @@ import java.util.Properties;
 
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
-import scw.common.Logger;
 import scw.common.StringFormat;
 import scw.core.NestedRuntimeException;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public final class PropertiesUtils {
+	private static Logger logger = LoggerFactory.getLogger(PropertiesUtils.class);
+
 	private PropertiesUtils() {
 	};
 
@@ -201,9 +204,8 @@ public final class PropertiesUtils {
 
 			method.setAccessible(false);
 
-			if (log) {
-				Logger.info(PropertiesUtils.class.getName(),
-						"Property " + name + " on target " + instance.getClass().getName() + " set value " + value);
+			if (logger.isTraceEnabled()) {
+				logger.trace("Property {} on target {} set value {}", name, instance.getClass().getName(), value);
 			}
 
 			try {

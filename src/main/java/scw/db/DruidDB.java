@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
 import scw.beans.annotaion.Bean;
 import scw.beans.annotaion.Destroy;
@@ -32,6 +31,8 @@ public class DruidDB extends DB {
 		if (!datasource.isPoolPreparedStatements()) {// 如果配置文件中没有开启psCache
 			datasource.setMaxPoolPreparedStatementPerConnectionSize(20);
 		}
+		
+		datasource.setRemoveAbandoned(false);
 	}
 
 	public Connection getConnection() throws SQLException {
@@ -41,9 +42,6 @@ public class DruidDB extends DB {
 	@Destroy
 	public void close() throws Exception {
 		datasource.close();
-
-		AbandonedConnectionCleanupThread.uncheckedShutdown();
-
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
 		if (drivers != null) {
 			while (drivers.hasMoreElements()) {

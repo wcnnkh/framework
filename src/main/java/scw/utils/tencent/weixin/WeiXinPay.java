@@ -9,13 +9,14 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import scw.common.Logger;
 import scw.common.exception.NotSupportException;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.exception.SignatureException;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XMLUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpUtils;
 import scw.net.http.enums.Method;
@@ -24,6 +25,7 @@ import scw.net.response.Body;
 import scw.utils.tencent.weixin.bean.Unifiedorder;
 
 public final class WeiXinPay {
+	private static Logger logger = LoggerFactory.getLogger(WeiXinPay.class);
 	private static final String weixin_unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 	private static final String DEFAULT_DEVICE_INFO = "WEB";
 	private static final String REFUND_URL = "https://api.mch.weixin.qq.com/secapi/pay/refund";
@@ -101,10 +103,6 @@ public final class WeiXinPay {
 		String content = getUnifiedorder(device_info, nonce_str, body, detail, attach, out_trade_no, fee_type,
 				total_fee, spbill_create_ip, time_start, time_expire, goods_tag, notify_url, trade_type, product_id,
 				limit_pay, openid);
-		if (debug) {
-			Logger.debug(this.getClass().getName(), "统一下单接口返回：" + content);
-		}
-
 		Map<String, String> map = XMLUtils.xmlToMap(content);
 		if (map == null) {
 			throw new ShuChaoWenRuntimeException("服务器错误");
@@ -279,7 +277,7 @@ public final class WeiXinPay {
 		String content = getRequestContent(map);
 		String response = HttpUtils.doPost(weixin_unifiedorder_url, null, content);
 		if (debug) {
-			Logger.debug(this.getClass().getName(), response);
+			logger.debug("统一下单接口返回：{}", response);
 		}
 		return response;
 	}
@@ -314,8 +312,9 @@ public final class WeiXinPay {
 			sb.append(k).append("=").append(v);
 		}
 		sb.append("&key=").append(apiKey);
-		if (debug) {
-			Logger.debug(this.getClass().getName(), "签名字符串：" + sb.toString());
+
+		if (debug && logger.isDebugEnabled()) {
+			logger.debug("签名字符串：{}", sb.toString());
 		}
 
 		String sign = toSign(sb.toString());
@@ -324,7 +323,7 @@ public final class WeiXinPay {
 		element.appendChild(c);
 		String content = XMLUtils.asXml(element);
 		if (debug) {
-			Logger.debug(this.getClass().getName(), content);
+			logger.debug("微信支付请求xml内容:{}", content);
 		}
 		return content;
 	}
@@ -381,7 +380,7 @@ public final class WeiXinPay {
 		Body response = NetworkUtils.executeHttp(REFUND_URL, request);
 		String str = response.toString(charset);
 		if (debug) {
-			Logger.debug(this.getClass().getName(), str);
+			logger.debug("退款接口返回：{}", str);
 		}
 		return str;
 	}

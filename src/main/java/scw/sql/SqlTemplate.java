@@ -7,9 +7,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import scw.common.Logger;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private boolean debug;
 
 	public boolean isDebug() {
@@ -243,7 +245,7 @@ public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 
 	protected void log(Sql sql) {
 		if (isDebug()) {
-			Logger.debug(this.getClass().getName(), SqlUtils.getSqlId(sql));
+			logger.debug(SqlUtils.getSqlId(sql));
 		}
 	}
 }

@@ -15,10 +15,12 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
-import scw.common.Logger;
+import scw.common.exception.NotFoundException;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.net.http.enums.ContentType;
 import scw.servlet.Request;
 import scw.servlet.Response;
@@ -26,79 +28,101 @@ import scw.servlet.View;
 
 /**
  * freemarker
+ * 
  * @author shuchaowen
  *
  */
-public class Page extends HashMap<String, Object> implements View{
+public class Page extends HashMap<String, Object> implements View {
+	private static Logger logger = LoggerFactory.getLogger(Page.class);
+
 	private static Map<String, PageType> suffixMap = new HashMap<String, PageType>();
 	private static final long serialVersionUID = 1L;
 	private static Configuration freemarkerConfiguration;
 	private static String freemarker_default_encoding = "utf-8";
-	
-	static{
+
+	static {
 		suffixMap.put(".jsp", PageType.JSP);
 		suffixMap.put(".ftl", PageType.FREEMARKER);
 		suffixMap.put(".html", PageType.FREEMARKER);
 	}
-	
-	public static void setPageType(String suffix, PageType pageType){
+
+	public static void setPageType(String suffix, PageType pageType) {
 		Iterator<Entry<String, PageType>> iterator = suffixMap.entrySet().iterator();
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			Entry<String, PageType> entry = iterator.next();
-			if(entry.getKey().endsWith(suffix) || suffix.endsWith(entry.getKey())){
+			if (entry.getKey().endsWith(suffix) || suffix.endsWith(entry.getKey())) {
 				iterator.remove();
 			}
 		}
 		suffixMap.put(suffix, pageType);
 	}
-	
+
 	private String page;
 	private boolean freemarkerAppendAttrs = false;
 	private boolean appendParams = false;
-	
-	public static synchronized void initFreemarker(Version version, String default_encoding, String rootPath){
-		if(freemarkerConfiguration == null){
+
+	public static synchronized void initFreemarker(Version version, String default_encoding, String rootPath) {
+		if (freemarkerConfiguration == null) {
 			freemarkerConfiguration = new Configuration(version);
 		}
-		
+
 		freemarkerConfiguration.setDefaultEncoding(default_encoding);
+		String workPath = ConfigUtils.getWorkPath();
+		if (workPath == null) {
+			throw new NotFoundException("找不到WEB-INF目录");
+		}
+
 		try {
-			freemarkerConfiguration.setDirectoryForTemplateLoading(new File(StringUtils.isNull(rootPath)? ConfigUtils.getWorkPath():ConfigUtils.format(rootPath)));
+			freemarkerConfiguration.setDirectoryForTemplateLoading(
+					new File(StringUtils.isNull(rootPath) ? workPath : ConfigUtils.format(rootPath)));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		freemarker_default_encoding = default_encoding;
 		freemarkerConfiguration.setObjectWrapper(new DefaultObjectWrapper(version));
 	}
-	
-	public static void initFreemarker(final String rootPath){
-		initFreemarker(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS, freemarker_default_encoding, StringUtils.isNull(rootPath)? ConfigUtils.getWorkPath():ConfigUtils.format(rootPath));
+
+	public static void initFreemarker(final String rootPath) {
+		String workPath = ConfigUtils.getWorkPath();
+		if (workPath == null) {
+			throw new NotFoundException("找不到WEB-INF目录");
+		}
+
+		initFreemarker(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS, freemarker_default_encoding,
+				StringUtils.isNull(rootPath) ? workPath : ConfigUtils.format(rootPath));
 	}
-	
-	public static Configuration getFreemarkerConfiguration(){
-		if(freemarkerConfiguration == null){
+
+	public static Configuration getFreemarkerConfiguration() {
+		if (freemarkerConfiguration == null) {
 			defaultInitFreemarker();
 		}
 		return freemarkerConfiguration;
 	}
-	
-	private synchronized static void defaultInitFreemarker(){
-		if(freemarkerConfiguration == null){
+
+	private synchronized static void defaultInitFreemarker() {
+		if (freemarkerConfiguration == null) {
 			freemarkerConfiguration = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
 			freemarkerConfiguration.setDefaultEncoding(freemarker_default_encoding);
+
+			String workPath = ConfigUtils.getWorkPath();
+			if (workPath == null) {
+				throw new NotFoundException("找不到WEB-INF目录");
+			}
+
 			try {
-				freemarkerConfiguration.setDirectoryForTemplateLoading(new File(ConfigUtils.getWorkPath()));
+				freemarkerConfiguration.setDirectoryForTemplateLoading(new File(workPath));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			freemarkerConfiguration.setObjectWrapper(new DefaultObjectWrapper(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
+			freemarkerConfiguration
+					.setObjectWrapper(new DefaultObjectWrapper(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
 		}
 	}
-	
-	public Page(){
+
+	public Page() {
 		this(null);
 	}
-	
+
 	public Page(String page) {
 		this.page = page;
 	}
@@ -110,8 +134,8 @@ public class Page extends HashMap<String, Object> implements View{
 	public void setAppendParams(boolean appendParams) {
 		this.appendParams = appendParams;
 	}
-	
-	public Page put(String name, Object value){
+
+	public Page put(String name, Object value) {
 		super.put(name, value);
 		return this;
 	}
@@ -126,32 +150,32 @@ public class Page extends HashMap<String, Object> implements View{
 
 	public void render(Request request, Response response) throws IOException {
 		String realPage = getPage();
-		if(realPage == null || page.length() == 0){
+		if (realPage == null || page.length() == 0) {
 			realPage = response.getRequest().getServletPath();
 		}
-		
+
 		Iterator<String> iterator = suffixMap.keySet().iterator();
 		PageType pageType = null;
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			String suffix = iterator.next();
-			if(realPage.endsWith(suffix)){
+			if (realPage.endsWith(suffix)) {
 				pageType = suffixMap.get(suffix);
 				break;
 			}
 		}
-		
-		if(pageType == null){
-			Logger.error("not found page type :" + realPage);
-			return ;
+
+		if (pageType == null) {
+			logger.error("not found page type :" + realPage);
+			return;
 		}
-		
+
 		switch (pageType) {
 		case JSP:
-			if(response.getContentType() == null){
+			if (response.getContentType() == null) {
 				response.setContentType(ContentType.TEXT_HTML.getValue());
 			}
-			
-			for(Entry<String, Object> entry : entrySet()){
+
+			for (Entry<String, Object> entry : entrySet()) {
 				response.getRequest().setAttribute(entry.getKey(), entry.getValue());
 			}
 			try {
@@ -161,30 +185,30 @@ public class Page extends HashMap<String, Object> implements View{
 			}
 			break;
 		case FREEMARKER:
-			if(freemarkerConfiguration == null){
+			if (freemarkerConfiguration == null) {
 				defaultInitFreemarker();
 			}
-			
+
 			response.setCharacterEncoding(freemarker_default_encoding);
-			if(response.getContentType() == null){
+			if (response.getContentType() == null) {
 				response.setContentType(ContentType.TEXT_HTML.getValue());
 			}
-			
-			if(freemarkerAppendAttrs){
+
+			if (freemarkerAppendAttrs) {
 				Enumeration<?> enumeration = response.getRequest().getAttributeNames();
-				while(enumeration.hasMoreElements()){
+				while (enumeration.hasMoreElements()) {
 					Object obj = enumeration.nextElement();
-					if(obj != null){
+					if (obj != null) {
 						String name = obj.toString();
 						put(name, response.getRequest().getAttribute(name));
 					}
 				}
 			}
-			
-			if(appendParams){
+
+			if (appendParams) {
 				putAll(response.getRequest().getParameterMap());
 			}
-			
+
 			Template template = freemarkerConfiguration.getTemplate(realPage);
 			try {
 				template.process(this, response.getWriter());
@@ -195,17 +219,17 @@ public class Page extends HashMap<String, Object> implements View{
 		default:
 			break;
 		}
-		
-		if(response.getRequest().isDebug()){
+
+		if (response.getRequest().isDebug()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(pageType);
 			sb.append(":");
 			sb.append(realPage);
-			Logger.debug(this.getClass().getName(), sb.toString());
+			logger.debug(sb.toString());
 		}
 	}
-	
-	public static void jsp(Request request, Response response, String page) throws ServletException, IOException{
+
+	public static void jsp(Request request, Response response, String page) throws ServletException, IOException {
 		RequestDispatcher dispatcher = request.getRequestDispatcher(page);
 		dispatcher.forward(request, response);
 	}

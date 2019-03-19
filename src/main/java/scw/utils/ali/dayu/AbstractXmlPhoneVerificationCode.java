@@ -10,14 +10,15 @@ import org.w3c.dom.Node;
 import com.alibaba.fastjson.JSONObject;
 
 import scw.beans.annotaion.Destroy;
-import scw.common.Logger;
 import scw.common.ProcessResult;
-import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XMLUtils;
 import scw.common.utils.XTime;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final static String LAST_TIME_SEND_NAME = "lastSendTime";
 	private final static String CODE_NAME = "code";
 	private final static String COUNT_NAME = "count";
@@ -107,7 +108,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		String code = getNewCode();
 		parameterMap.put(codeParameterKey, code);
 		if (debug) {
-			Logger.debug(ClassUtils.getProxyRealClassName(this.getClass()), "向[" + phone + "]发送验证码:" + code);
+			logger.debug("向[{}]发送验证码:{}", phone, code);
 		}
 
 		processResult = sendMessage(configIndex, JSONObject.toJSONString(parameterMap), phone);

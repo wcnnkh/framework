@@ -8,13 +8,16 @@ import javax.servlet.http.HttpServletResponse;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import scw.common.Logger;
 import scw.common.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.servlet.Request;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.parameter.Body;
 
 public class JsonRequest extends Request {
+	private static Logger logger = LoggerFactory.getLogger(JsonRequest.class);
+	
 	private JSONObject json;
 
 	public JsonRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
@@ -22,8 +25,7 @@ public class JsonRequest extends Request {
 		super(requestBeanFactory, httpServletRequest, httpServletResponse, isDebug);
 		Body body = getBean(Body.class);
 		if (isDebug) {
-			Logger.debug(this.getClass().getName(),
-					"servletPath=" + getServletPath() + ",method=" + getMethod() + "," + body.getBody());
+			logger.debug("servletPath=" + getServletPath() + ",method=" + getMethod() + "," + body.getBody());
 		}
 		json = JSONObject.parseObject(body.getBody());
 	}

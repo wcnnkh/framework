@@ -10,13 +10,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
 
-import scw.common.Logger;
 import scw.common.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.servlet.Request;
 import scw.servlet.action.RestSearchAction;
 import scw.servlet.beans.RequestBeanFactory;
 
 public class FormRequest extends Request {
+	private static Logger logger = LoggerFactory.getLogger(FormRequest.class);
+	
 	private static final Charset GET_DEFAULT_CHARSET = Charset.forName("ISO-8859-1");
 	private final boolean cookieValue;
 
@@ -32,7 +35,7 @@ public class FormRequest extends Request {
 			sb.append(httpServletRequest.getMethod());
 			sb.append(",");
 			sb.append(JSONObject.toJSONString(getParameterMap()));
-			Logger.debug(this.getClass().getName(), sb.toString());
+			logger.debug(sb.toString());
 		}
 	}
 

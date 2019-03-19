@@ -7,11 +7,14 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import com.alibaba.fastjson.JSONObject;
 
-import scw.common.Logger;
 import scw.common.utils.ClassUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.net.http.enums.ContentType;
 
-public class Response extends HttpServletResponseWrapper{
+public class Response extends HttpServletResponseWrapper {
+	private static Logger logger = LoggerFactory.getLogger(Response.class);
+
 	private static final String JSONP_CALLBACK = "callback";
 	private static final String JSONP_RESP_PREFIX = "(";
 	private static final String JSONP_RESP_SUFFIX = ");";
@@ -25,31 +28,31 @@ public class Response extends HttpServletResponseWrapper{
 	public Request getRequest() {
 		return request;
 	}
-	
-	protected String toJsonString(Object data){
+
+	protected String toJsonString(Object data) {
 		return JSONObject.toJSONString(data);
 	}
 
-	public void write(Object obj) throws IOException{
+	public void write(Object obj) throws IOException {
 		if (obj != null) {
 			if (obj instanceof View) {
 				((View) obj).render(request, this);
 			} else {
 				String content;
-				if((obj instanceof String) || (ClassUtils.isPrimitiveOrWrapper(obj.getClass()))){
+				if ((obj instanceof String) || (ClassUtils.isPrimitiveOrWrapper(obj.getClass()))) {
 					content = obj.toString();
-				}else{
+				} else {
 					content = toJsonString(obj);
 				}
-				
+
 				String callback = null;
 				try {
 					callback = request.getParameter(String.class, JSONP_CALLBACK);
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
-				
-				if(callback != null && callback.length() != 0){
+
+				if (callback != null && callback.length() != 0) {
 					setContentType(ContentType.TEXT_JAVASCRIPT.getValue());
 					StringBuilder sb = new StringBuilder();
 					sb.append(callback);
@@ -57,14 +60,14 @@ public class Response extends HttpServletResponseWrapper{
 					sb.append(content);
 					sb.append(JSONP_RESP_SUFFIX);
 					content = sb.toString();
-				}else{
-					if(getContentType() == null){
+				} else {
+					if (getContentType() == null) {
 						setContentType(ContentType.TEXT_HTML.getValue());
 					}
 				}
-				
-				if(request.isDebug()){
-					Logger.debug(this.getClass().getName(), content);
+
+				if (request.isDebug()) {
+					logger.debug(content);
 				}
 				getWriter().write(content);
 			}

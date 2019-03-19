@@ -8,13 +8,16 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.common.Logger;
 import scw.common.MethodConfig;
 import scw.common.exception.NotFoundException;
 import scw.common.utils.CollectionUtils;
 import scw.common.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public class InvokeInfo implements Serializable {
+	private static Logger logger = LoggerFactory.getLogger(InvokeInfo.class);
+
 	private static final long serialVersionUID = 1L;
 	private Object tryRtnValue;
 	private MethodConfig tryMethod;
@@ -128,7 +131,7 @@ public class InvokeInfo implements Serializable {
 		StringBuilder sb = new StringBuilder();
 		sb.append("clz=").append(methodConfig.getClz().getName());
 		sb.append(",name=").append(StringUtils.isEmpty(stage.name()) ? method.getName() : stage.name());
-		Logger.debug(TCC.class.getName(), sb.toString());
+		logger.debug(sb.toString());
 
 		Object obj = beanFactory.get(methodConfig.getClz());
 		method.invoke(obj, params);

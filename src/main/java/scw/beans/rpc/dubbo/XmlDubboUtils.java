@@ -15,13 +15,16 @@ import scw.beans.BeanFactory;
 import scw.beans.annotaion.Service;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
-import scw.common.Logger;
 import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XMLUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public final class XmlDubboUtils {
+	private static Logger logger = LoggerFactory.getLogger(XmlDubboUtils.class);
+
 	private XmlDubboUtils() {
 	};
 
@@ -78,7 +81,7 @@ public final class XmlDubboUtils {
 					XMLUtils.requireAttribute(node, "port", "address");
 					String name = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "name");
 					int port = Integer.parseInt(XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "port"));
-					Logger.info("dubbo:service", "开始注册dubbo服务,name=" + name + ",port=" + port);
+					logger.debug("开始注册dubbo服务,name=" + name + ",port=" + port);
 					int threads = XmlBeanUtils.getIntegerValue(propertiesFactory, node, "treads", 200);
 					int timeout = XmlBeanUtils.getIntegerValue(propertiesFactory, node, "timeout", -1);
 
@@ -133,7 +136,7 @@ public final class XmlDubboUtils {
 									version, n);
 						}
 					}
-					Logger.info("dubbo:service", "dubbo服务注册完成,name=" + name + ",port=" + port);
+					logger.debug("dubbo服务注册完成,name=" + name + ",port=" + port);
 				}
 			}
 		}

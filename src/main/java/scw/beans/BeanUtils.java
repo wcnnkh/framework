@@ -24,14 +24,17 @@ import scw.beans.proxy.Filter;
 import scw.beans.xml.XmlBeanParameter;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
-import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.reflect.Invoker;
 import scw.common.reflect.ReflectInvoker;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public final class BeanUtils {
+	private static Logger logger = LoggerFactory.getLogger(BeanUtils.class);
+
 	private static volatile boolean initStatic = false;
 	private static volatile boolean destroyStatic = false;
 
@@ -225,7 +228,7 @@ public final class BeanUtils {
 				value = beanFactory.get(config.parse()).parse(beanFactory, field, config.value(), config.charset());
 				field.set(obj, value);
 			} catch (Exception e) {
-				Logger.error(Config.class.getName(), "clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
+				logger.error("clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
 			}
 		}
 	}
@@ -241,13 +244,14 @@ public final class BeanUtils {
 	private static void existDefaultValueWarnLog(String tag, Class<?> clz, FieldInfo field, Object obj)
 			throws IllegalArgumentException, IllegalAccessException {
 		if (checkExistDefaultValue(field, obj)) {
-			Logger.warn(tag, "class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
+			logger.warn(
+					tag + " class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
 		}
 	}
 
 	private static void staticFieldWarnLog(String tag, Class<?> clz, Field field) {
 		if (Modifier.isStatic(field.getModifiers())) {
-			Logger.warn(tag, "class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
+			logger.warn(tag + "class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
 		}
 	}
 
@@ -267,7 +271,7 @@ public final class BeanUtils {
 					field.set(obj, value);
 				}
 			} catch (Exception e) {
-				Logger.error(Properties.class.getName(), "clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
+				logger.error("clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
 			}
 		}
 	}
@@ -286,7 +290,7 @@ public final class BeanUtils {
 				existDefaultValueWarnLog(Autowrite.class.getName(), clz, field, obj);
 				field.set(obj, beanFactory.get(name));
 			} catch (Exception e) {
-				Logger.error(Autowrite.class.getName(), "clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
+				logger.error("clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
 			}
 		}
 	}

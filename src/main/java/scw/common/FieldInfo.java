@@ -7,8 +7,12 @@ import java.lang.reflect.Modifier;
 
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public final class FieldInfo {
+	private static Logger logger = LoggerFactory.getLogger(FieldInfo.class);
+
 	private String name;
 	private Field field;
 	private Class<?> type;
@@ -36,7 +40,7 @@ public final class FieldInfo {
 		if (ClassUtils.isBooleanType(type)) {
 			String methodNameSuffix = name;
 			if (name.startsWith("is")) {
-				Logger.warn("FieldInfo", "Boolean类型的字段不应该以is开头,class:" + clz.getName() + ",field:" + name);
+				logger.warn("Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(), name);
 				methodNameSuffix = name.substring(2);
 			}
 			methodNameSuffix = StringUtils.toUpperCase(name, 0, 1);

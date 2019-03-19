@@ -18,22 +18,25 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
-import scw.common.Logger;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.servlet.Request;
 
-public final class Multipart{
+public final class Multipart {
+	private static Logger logger = LoggerFactory.getLogger(Multipart.class);
+
 	private Request request;
 	private Map<String, List<String>> paramMap = new HashMap<String, List<String>>();
 	private Map<String, List<FileItem>> fileItemMap = new HashMap<String, List<FileItem>>();
 	private List<String> keys = new ArrayList<String>();
 	private List<FileItem> fileItemList = new ArrayList<FileItem>();
 	private HttpServletRequest httpServletRequest;
-	
-	public Multipart(Request request) throws IOException{
+
+	public Multipart(Request request) throws IOException {
 		this.request = request;
 		init(request, request.isDebug());
 	}
-	
+
 	/**
 	 * @return the request
 	 */
@@ -41,7 +44,7 @@ public final class Multipart{
 		return request;
 	}
 
-	private void init(HttpServletRequest httpServletRequest, boolean debug){
+	private void init(HttpServletRequest httpServletRequest, boolean debug) {
 		RequestContext requestContext;
 		DiskFileItemFactory factory;
 		ServletFileUpload upload;
@@ -63,7 +66,7 @@ public final class Multipart{
 					}
 
 					if (fileItem.isFormField()) {
-						Logger.debug("form表单字段[name=" + fileItem.getFieldName() + "]");
+						logger.trace("form表单字段[name=" + fileItem.getFieldName() + "]");
 						values = paramMap.get(fileItem.getFieldName());
 						if (values == null) {
 							values = new ArrayList<String>();
@@ -80,7 +83,7 @@ public final class Multipart{
 							sb.append(fileItem.getFieldName());
 							sb.append(",value=");
 							sb.append(value);
-							Logger.debug(sb.toString());
+							logger.trace(sb.toString());
 						}
 					} else {
 						fileItemList.add(fileItem);
@@ -101,18 +104,18 @@ public final class Multipart{
 							sb.append(", fileName=");
 							sb.append(fileItem.getName());
 							sb.append("]");
-							Logger.debug(sb.toString());
+							logger.debug(sb.toString());
 						}
 					}
 				}
 			} else {
-				Logger.debug("请求类型异常");
+				logger.error("请求类型异常");
 			}
 		} catch (Exception e) {
-			Logger.error("REQUEST", "获取上传文件请求内容异常！！", e);
+			logger.error("REQUEST", "获取上传文件请求内容异常！！", e);
 		}
 	}
-	
+
 	protected String getValue(String key) {
 		String value = httpServletRequest.getParameter(key);
 		if (value == null) {
@@ -191,7 +194,7 @@ public final class Multipart{
 				file = new File(toPath + fileItem.getName());
 				fileItem.write(file);
 			} catch (Exception e) {
-				Logger.error("upload", "保存上传的文件异常,路径" + toPath + ",文件名：" + fileItem.getName(), e);
+				logger.error("保存上传的文件异常,路径" + toPath + ",文件名：" + fileItem.getName(), e);
 			}
 		}
 	}

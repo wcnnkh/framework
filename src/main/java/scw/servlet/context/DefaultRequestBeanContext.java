@@ -1,7 +1,8 @@
 package scw.servlet.context;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import scw.common.exception.BeansException;
@@ -10,7 +11,7 @@ import scw.servlet.beans.RequestBean;
 import scw.servlet.beans.RequestBeanFactory;
 
 public class DefaultRequestBeanContext implements RequestBeanContext{
-	private volatile Map<String, Object> beanMap;
+	private volatile LinkedHashMap<String, Object> beanMap;
 	private Request request;
 	private RequestBeanFactory requestBeanFactory;
 	
@@ -46,7 +47,7 @@ public class DefaultRequestBeanContext implements RequestBeanContext{
 		if (beanMap == null) {
 			synchronized (this) {
 				if (beanMap == null) {
-					beanMap = new HashMap<String, Object>(4);
+					beanMap = new LinkedHashMap<String, Object>(4);
 					obj = newInstanceReuestBean(requestBean, type, name);
 				}
 			}
@@ -83,11 +84,15 @@ public class DefaultRequestBeanContext implements RequestBeanContext{
 		if (beanMap != null) {
 			synchronized (this) {
 				if (beanMap != null) {
+					List<String> beanKeyList = new ArrayList<String>();
 					for (Entry<String, Object> entry : beanMap.entrySet()) {
-						RequestBean requestBean = requestBeanFactory.get(entry
-								.getKey());
+						beanKeyList.add(entry.getKey());
+					}
+
+					for (String id : beanKeyList) {
+						RequestBean requestBean = requestBeanFactory.get(id);
 						try {
-							requestBean.destroy(entry.getValue());
+							requestBean.destroy(beanMap.get(id));
 						} catch (Exception e) {
 							e.printStackTrace();
 						}

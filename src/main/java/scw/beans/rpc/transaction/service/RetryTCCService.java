@@ -17,14 +17,17 @@ import scw.beans.rpc.transaction.StageType;
 import scw.beans.rpc.transaction.TCCService;
 import scw.common.Base64;
 import scw.common.FileManager;
-import scw.common.Logger;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.FileUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionException;
 import scw.transaction.TransactionManager;
 
 public final class RetryTCCService implements TCCService {
+	private static Logger logger = LoggerFactory.getLogger(RetryTCCService.class);
+
 	@Autowrite
 	private BeanFactory beanFactory;
 	private FileManager fileManager;
@@ -45,7 +48,7 @@ public final class RetryTCCService implements TCCService {
 		String classPath = ConfigUtils.getClassPath();
 		logPath += File.separator + "TCC_" + Base64.encode(classPath.getBytes("UTF-8"));
 		fileManager = new FileManager(logPath);
-		Logger.info(this.getClass().getName(), "logPath=" + logPath);
+		logger.debug("logPath=" + logPath);
 
 		File file = new File(logPath);
 		if (!file.exists()) {

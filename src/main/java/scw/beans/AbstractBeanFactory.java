@@ -1,7 +1,10 @@
 package scw.beans;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -12,7 +15,7 @@ import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 
 public abstract class AbstractBeanFactory implements BeanFactory {
-	private volatile Map<String, Object> singletonMap = new HashMap<String, Object>();
+	private volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, Bean> beanMap = new HashMap<String, Bean>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private boolean init = false;
@@ -235,7 +238,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		if (!init) {
 			throw new BeansException("还未初始化");
 		}
-		
+
 		try {
 			if (isInitStatic()) {
 				BeanUtils.destroyStaticMethod(getClassList());
@@ -244,12 +247,19 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			e.printStackTrace();
 		}
 
-		for (Entry<String, Object> entry : singletonMap.entrySet()) {
-			Bean bean = getBean(entry.getKey());
-			try {
-				bean.destroy(entry.getValue());
-			} catch (Exception e) {
-				e.printStackTrace();
+		synchronized (singletonMap) {
+			List<String> beanKeyList = new ArrayList<String>();
+			for (Entry<String, Object> entry : singletonMap.entrySet()) {
+				beanKeyList.add(entry.getKey());
+			}
+
+			for (String id : beanKeyList) {
+				Bean bean = getBean(id);
+				try {
+					bean.destroy(singletonMap.get(id));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		init = false;

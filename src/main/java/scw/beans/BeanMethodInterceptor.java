@@ -11,8 +11,9 @@ import scw.beans.annotaion.Retry;
 import scw.beans.proxy.Filter;
 import scw.beans.proxy.Invoker;
 import scw.beans.proxy.cglib.CglibInvoker;
-import scw.common.Logger;
 import scw.common.exception.BeansException;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 /**
  * 顶层的filter
@@ -21,6 +22,8 @@ import scw.common.exception.BeansException;
  *
  */
 public final class BeanMethodInterceptor implements MethodInterceptor {
+	private static Logger logger = LoggerFactory.getLogger(BeanMethodInterceptor.class);
+
 	private String[] filterNames;
 	private BeanFactory beanFactory;
 
@@ -73,7 +76,7 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 							sb.append("parameterTypes:").append(Arrays.toString(method.getParameterTypes()))
 									.append(",");
 							sb.append("args:").append(Arrays.toString(args));
-							Logger.info("@Retry", sb.toString());
+							logger.debug("retry " + sb.toString());
 						} catch (Exception e) {
 							e.printStackTrace();
 						}

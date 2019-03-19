@@ -3,13 +3,16 @@ package scw.sql.orm.mysql;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.common.Logger;
 import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 
 public class DeleteSQL implements Sql {
+	private static Logger logger = LoggerFactory.getLogger(DeleteSQL.class);
+
 	private static final long serialVersionUID = 1L;
 	private volatile static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;
@@ -19,10 +22,9 @@ public class DeleteSQL implements Sql {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
-		
-		if(params.length == 0){
-			Logger.warn(this.getClass().getName(), "你正在试图删除一个表的所有数据："
-					+ tableName);
+
+		if (params.length == 0) {
+			logger.warn("你正在试图删除一个表的所有数据：" + tableName);
 		}
 
 		this.params = params;
@@ -80,8 +82,7 @@ public class DeleteSQL implements Sql {
 		return params;
 	}
 
-	private static String getSql(TableInfo tableInfo, String tableName,
-			Object... params) {
+	private static String getSql(TableInfo tableInfo, String tableName, Object... params) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("delete from ");
 		sql.append("`");
@@ -103,8 +104,7 @@ public class DeleteSQL implements Sql {
 		return sql.toString();
 	}
 
-	private static String getSql(Object obj, TableInfo tableInfo,
-			String tableName) {
+	private static String getSql(Object obj, TableInfo tableInfo, String tableName) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("delete from ");
 		sql.append("`");

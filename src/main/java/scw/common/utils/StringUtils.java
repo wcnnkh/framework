@@ -2101,7 +2101,9 @@ public final class StringUtils {
 
 	/**
 	 * 把钱保留两位小数
-	 * @param price 单位:分
+	 * 
+	 * @param price
+	 *            单位:分
 	 * @return
 	 */
 	public static String formatNothingToYuan(double price) {
@@ -2142,5 +2144,33 @@ public final class StringUtils {
 		}
 		DecimalFormat decimalFormat = new DecimalFormat(new String(charBuffer.array()));
 		return decimalFormat.format(number);
+	}
+
+	public static String format(String text, String placeholder, Object... args) {
+		if (isEmpty(text) || isEmpty(placeholder) || args == null || args.length == 0) {
+			return text;
+		}
+
+		int lastFind = 0;
+		StringBuilder sb = null;
+		for (int i = 0; i < args.length; i++) {
+			int index = text.indexOf(placeholder, lastFind);
+			if (index == -1) {
+				break;
+			}
+
+			if (sb == null) {
+				sb = new StringBuilder(text.length() * 2);
+			}
+
+			sb.append(text.substring(lastFind, index));
+			sb.append(args[i]);
+			lastFind = index + placeholder.length();
+		}
+
+		if (lastFind == 0) {
+			return text;
+		}
+		return sb.toString();
 	}
 }

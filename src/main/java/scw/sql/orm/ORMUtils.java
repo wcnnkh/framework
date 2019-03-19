@@ -5,13 +5,15 @@ import java.util.Map;
 
 import scw.beans.BeanFieldListen;
 import scw.beans.BeanUtils;
-import scw.common.Logger;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
-import scw.database.DataBaseUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.sql.orm.annoation.Table;
 
 public abstract class ORMUtils {
+	private static Logger logger = LoggerFactory.getLogger(ORMUtils.class);
+	
 	private volatile static Map<String, TableInfo> tableMap = new HashMap<String, TableInfo>();
 
 	public static TableInfo getTableInfo(Class<?> clz) {
@@ -82,7 +84,7 @@ public abstract class ORMUtils {
 	}
 
 	public static void registerCglibProxyTableBean(String pageName) {
-		Logger.info(DataBaseUtils.class.getName(), "register proxy package:" + pageName);
+		logger.debug("register proxy package:{}", pageName);
 		for (Class<?> type : ClassUtils.getClasses(pageName)) {
 			Table table = type.getAnnotation(Table.class);
 			if (table == null) {

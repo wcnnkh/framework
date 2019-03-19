@@ -5,9 +5,12 @@ import java.util.TimerTask;
 
 import scw.beans.proxy.FilterChain;
 import scw.beans.proxy.Invoker;
-import scw.common.Logger;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 final class CacheTimerTask extends TimerTask {
+	private static Logger logger = LoggerFactory.getLogger(CacheTimerTask.class);
+
 	private final String key;
 	private final Invoker invoker;
 	private final Object proxy;
@@ -32,7 +35,7 @@ final class CacheTimerTask extends TimerTask {
 	@Override
 	public void run() {
 		if (debug) {
-			Logger.debug(this.getClass().getName(), key);
+			logger.debug(key);
 		}
 
 		try {
@@ -43,7 +46,7 @@ final class CacheTimerTask extends TimerTask {
 						rtn);
 			}
 		} catch (Throwable e) {
-			Logger.error(this.getClass().getName(), key, e);
+			logger.error(key, e);
 		}
 	}
 
