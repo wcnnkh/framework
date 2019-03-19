@@ -13,6 +13,7 @@ import java.util.Properties;
 
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
+import scw.common.Logger;
 import scw.common.StringFormat;
 import scw.core.NestedRuntimeException;
 
@@ -20,8 +21,7 @@ public final class PropertiesUtils {
 	private PropertiesUtils() {
 	};
 
-	public static <T> T setProperties(Object obj, Properties properties,
-			StringFormat stringFormat) {
+	public static <T> T setProperties(Object obj, Properties properties, StringFormat stringFormat) {
 		T t = null;
 		ClassInfo classInfo = ClassUtils.getClassInfo(obj.getClass());
 		FieldInfo fieldInfo;
@@ -30,8 +30,7 @@ public final class PropertiesUtils {
 				String key = stringFormat.format(entry.getKey().toString());
 				fieldInfo = classInfo.getFieldMap().get(key);
 				if (fieldInfo != null) {
-					String value = entry.getValue() == null ? null : entry
-							.getValue().toString();
+					String value = entry.getValue() == null ? null : entry.getValue().toString();
 					fieldInfo.set(obj, stringFormat.format(value));
 				}
 			}
@@ -56,11 +55,9 @@ public final class PropertiesUtils {
 		return null;
 	}
 
-	public static String getProperty(Properties properties,
-			Object defaultValue, String... key) {
+	public static String getProperty(Properties properties, Object defaultValue, String... key) {
 		String v = getProperty(properties, key);
-		return v == null ? (defaultValue == null ? null : defaultValue
-				.toString()) : v;
+		return v == null ? (defaultValue == null ? null : defaultValue.toString()) : v;
 	}
 
 	public static Object getValue(Class<?> type, Object value) throws Exception {
@@ -108,6 +105,12 @@ public final class PropertiesUtils {
 		}
 	}
 
+	public static <T> void loadProperties(T instance, String propertiesFile, Collection<String> asNameList,
+			boolean log) {
+		Properties properties = ConfigUtils.getProperties(propertiesFile, "UTF-8");
+		invokeSetterByProeprties(instance, properties, true, true, asNameList, true, log);
+	}
+
 	/**
 	 * 调用对象的set方法
 	 * 
@@ -119,11 +122,10 @@ public final class PropertiesUtils {
 	 * @param asNameList
 	 *            别名
 	 * @param findAndRemove
+	 * @param log
 	 */
-	public static <T> void invokeSetterByProeprties(Class<T> type, T instance,
-			Map<?, ?> properties, boolean propertieGetAndRemove,
-			boolean invokePublic, Collection<String> asNameList,
-			boolean findAndRemove) {
+	public static void invokeSetterByProeprties(Object instance, Map<?, ?> properties, boolean propertieGetAndRemove,
+			boolean invokePublic, Collection<String> asNameList, boolean findAndRemove, boolean log) {
 		List<String> nameList = null;
 		if (!CollectionUtils.isEmpty(asNameList)) {
 			nameList = new ArrayList<String>(asNameList);
@@ -139,17 +141,15 @@ public final class PropertiesUtils {
 			map.put(key.toString(), value.toString());
 		}
 
-		for (Method method : invokePublic ? type.getMethods() : type
-				.getDeclaredMethods()) {
+		for (Method method : invokePublic ? instance.getClass().getMethods()
+				: instance.getClass().getDeclaredMethods()) {
 			Class<?>[] parameterTypes = method.getParameterTypes();
-			if (!(parameterTypes.length == 1 && method.getName().startsWith(
-					"set"))) {
+			if (!(parameterTypes.length == 1 && method.getName().startsWith("set"))) {
 				continue;
 			}
 
 			Class<?> parameterType = parameterTypes[0];
-			if (!(ClassUtils.isPrimitiveOrWrapper(parameterType) || ClassUtils
-					.isStringType(parameterType))) {
+			if (!(ClassUtils.isPrimitiveOrWrapper(parameterType) || ClassUtils.isStringType(parameterType))) {
 				continue;
 			}
 
@@ -200,9 +200,14 @@ public final class PropertiesUtils {
 			}
 
 			method.setAccessible(false);
+
+			if (log) {
+				Logger.info(PropertiesUtils.class.getName(),
+						"Property " + name + " on target " + instance.getClass().getName() + " set value " + value);
+			}
+
 			try {
-				method.invoke(instance,
-						StringUtils.conversion(value, parameterType));
+				method.invoke(instance, StringUtils.conversion(value, parameterType));
 			} catch (IllegalAccessException e) {
 				throw new NestedRuntimeException(e);
 			} catch (IllegalArgumentException e) {
