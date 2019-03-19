@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.common.LinkedMultiValueMap;
@@ -29,6 +30,25 @@ public class FormRequest extends HttpRequest {
 		}
 
 		parameterMap.add(key, value.toString());
+	}
+
+	public void addAll(Map<String, ?> map) {
+		if (map == null) {
+			return;
+		}
+
+		if (parameterMap == null) {
+			parameterMap = new LinkedMultiValueMap<String, String>();
+		}
+
+		for (Entry<String, ?> entry : map.entrySet()) {
+			Object v = entry.getValue();
+			if (v == null) {
+				continue;
+			}
+
+			parameterMap.add(entry.getKey(), v.toString());
+		}
 	}
 
 	@Override
