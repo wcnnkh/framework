@@ -19,16 +19,16 @@ import scw.sql.orm.annoation.PrimaryKey;
 
 public final class ColumnInfo {
 	private String name;// 数据库字段名
-	private PrimaryKey primaryKey;// 索引
+	private final PrimaryKey primaryKey;// 索引
 	private String typeName;
-	private Class<?> type;
+	private final Class<?> type;
 	private int length;
-	private boolean nullAble;// 是否可以为空
+	private final boolean nullAble;// 是否可以为空
 	private boolean unique;// 是否建立唯一索引
-	private boolean isDataBaseType;
-	private FieldInfo fieldInfo;
+	private final boolean isDataBaseType;
+	private final FieldInfo fieldInfo;
 	private String sqlTableAndColumn;
-	private Column column;
+	private final Column column;
 	// 就是在name的两边加入了(``)
 	private String sqlColumnName;
 
@@ -39,7 +39,6 @@ public final class ColumnInfo {
 		this.type = field.getType();
 		this.typeName = this.type.getName();
 		this.length = -1;
-		this.nullAble = false;
 		this.isDataBaseType = ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
 				|| Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
 				|| Timestamp.class.isAssignableFrom(type) || InputStream.class.isAssignableFrom(type)
@@ -60,6 +59,8 @@ public final class ColumnInfo {
 			this.length = column.length();
 
 			this.nullAble = column.nullAble();
+		}else{
+			nullAble = !field.getType().isPrimitive();
 		}
 
 		this.sqlColumnName = "`" + name + "`";
