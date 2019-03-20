@@ -13,7 +13,7 @@ public final class Transaction {
 	private final boolean active;
 	private final boolean newTransaction;
 	private final TransactionDefinition transactionDefinition;
-	
+
 	private Map<Object, TransactionResource> resourceMap;
 	private TransactionLifeCycleCollection tlcc;
 	private Savepoint savepoint;
@@ -158,6 +158,8 @@ public final class Transaction {
 			return;
 		}
 
+		complete = true;
+		
 		if (savepoint != null) {
 			try {
 				savepoint.release();
@@ -171,12 +173,8 @@ public final class Transaction {
 		}
 
 		init();
-		try {
-			if (tslc != null) {
-				tslc.end();
-			}
-		} finally {
-			complete = true;
+		if (tslc != null) {
+			tslc.end();
 		}
 	}
 

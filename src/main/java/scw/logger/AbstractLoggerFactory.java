@@ -1,16 +1,12 @@
 package scw.logger;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicLong;
-
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
+import scw.utils.queue.MemoryQueue;
 
 public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable {
-	private Queue<Message> handlerQueue = new ConcurrentLinkedQueue<Message>();
+	private MemoryQueue<Message> handlerQueue = new MemoryQueue<Message>();
 	private final Thread thread;
-	private AtomicLong index = new AtomicLong();
 
 	public AbstractLoggerFactory() {
 		System.out.println("Init shuchaowen-logger [" + this.getClass().getName() + "]");
@@ -20,19 +16,12 @@ public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable 
 
 	public void log(Message message) {
 		handlerQueue.offer(message);
-		index.incrementAndGet();
 	}
 
 	public void run() {
 		try {
 			while (!thread.isInterrupted()) {
-				if (index.get() == 0) {
-					Thread.sleep(1);
-					continue;
-				}
-
-				Message message = handlerQueue.poll();
-				index.decrementAndGet();
+				Message message = handlerQueue.take();
 				out(message);
 			}
 		} catch (InterruptedException e) {

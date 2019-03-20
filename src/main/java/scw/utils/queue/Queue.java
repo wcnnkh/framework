@@ -10,17 +10,7 @@ public interface Queue<E> {
 	 * @return
 	 */
 	boolean offer(E e);
-
-	/**
-	 * 将指定元素插入到此队列的尾部，如有必要，则等待指定的时间以使空间变得可用
-	 * 
-	 * @param e
-	 * @param timeout
-	 * @param unit
-	 * @return
-	 */
-	boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException;
-
+	
 	/**
 	 * 获取但不移除此队列的头；如果此队列为空，则返回 null。
 	 * 
@@ -35,6 +25,16 @@ public interface Queue<E> {
 	 */
 	E poll();
 
+	/**
+	 * 将指定元素插入到此队列的尾部，如有必要，则等待指定的时间以使空间变得可用
+	 * 
+	 * @param e
+	 * @param timeout
+	 * @param unit
+	 * @return
+	 */
+	boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException;
+	
 	/**
 	 * 将指定元素插入到此队列的尾部，如有必要，则等待空间变得可用。
 	 * 
