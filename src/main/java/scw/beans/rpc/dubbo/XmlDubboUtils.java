@@ -81,7 +81,7 @@ public final class XmlDubboUtils {
 					XMLUtils.requireAttribute(node, "port", "address");
 					String name = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "name");
 					int port = Integer.parseInt(XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "port"));
-					logger.debug("开始注册dubbo服务,name=" + name + ",port=" + port);
+					logger.info("开始注册dubbo服务,name=" + name + ",port=" + port);
 					int threads = XmlBeanUtils.getIntegerValue(propertiesFactory, node, "treads", 200);
 					int timeout = XmlBeanUtils.getIntegerValue(propertiesFactory, node, "timeout", -1);
 
@@ -136,7 +136,7 @@ public final class XmlDubboUtils {
 									version, n);
 						}
 					}
-					logger.debug("dubbo服务注册完成,name=" + name + ",port=" + port);
+					logger.info("dubbo服务注册完成,name=" + name + ",port=" + port);
 				}
 			}
 		}

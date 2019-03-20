@@ -84,7 +84,7 @@ public abstract class ORMUtils {
 	}
 
 	public static void registerCglibProxyTableBean(String pageName) {
-		logger.debug("register proxy package:{}", pageName);
+		logger.info("register proxy package:{}", pageName);
 		for (Class<?> type : ClassUtils.getClasses(pageName)) {
 			Table table = type.getAnnotation(Table.class);
 			if (table == null) {
