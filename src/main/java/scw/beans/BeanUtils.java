@@ -251,7 +251,7 @@ public final class BeanUtils {
 
 	private static void staticFieldWarnLog(String tag, Class<?> clz, Field field) {
 		if (Modifier.isStatic(field.getModifiers())) {
-			logger.warn(tag + "class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
+			logger.warn(tag + " class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
 		}
 	}
 

@@ -11,7 +11,7 @@ import scw.common.utils.ConfigUtils;
 public class XmlToBeanMapParse implements ConfigParse{
 	public Object parse(BeanFactory beanFactory, FieldInfo field, String filePath, String charset) throws Exception{
 		File file = ConfigUtils.getFile(filePath);
-		String type = field.getField().getGenericType().getTypeName();
+		String type = field.getField().getGenericType().toString();
 		type = type.substring(type.indexOf("<") + 1, type.indexOf(">"));
 		String valueType = type.split(",")[1].trim();
 		
