@@ -163,7 +163,7 @@ public class AnnotationBean implements Bean {
 			}
 			return (T) bean;
 		} catch (Exception e) {
-			throw new BeansException(e);
+			throw new BeansException(getId(), e);
 		}
 	}
 
@@ -179,7 +179,7 @@ public class AnnotationBean implements Bean {
 			}
 			return (T) bean;
 		} catch (Exception e) {
-			throw new BeansException(e);
+			throw new BeansException(getId(), e);
 		}
 	}
 
