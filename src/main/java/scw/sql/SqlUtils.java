@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-public abstract class SqlUtils {
+public final class SqlUtils {
+	private SqlUtils(){};
+	
 	public static String getSqlId(Sql sql) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");

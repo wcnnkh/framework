@@ -20,7 +20,7 @@ import scw.common.utils.XTime;
  * @author shuchaowen
  *
  */
-public class Crontab {
+public final class Crontab {
 	private Timer timer = new Timer();
 	private ExecutorService executorService = new ThreadPoolExecutor(2, 100,
 			60L, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());

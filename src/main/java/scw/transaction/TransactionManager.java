@@ -1,6 +1,6 @@
 package scw.transaction;
 
-public abstract class TransactionManager {
+public final class TransactionManager {
 	private TransactionManager() {
 	};
 

@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author shuchaowen
  *
  */
-public class ProcessResult<T> implements Serializable {
+public final class ProcessResult<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private int code;
 	private String msg;

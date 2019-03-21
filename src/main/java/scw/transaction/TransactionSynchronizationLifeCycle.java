@@ -1,6 +1,6 @@
 package scw.transaction;
 
-class TransactionSynchronizationLifeCycle implements TransactionSynchronization {
+final class TransactionSynchronizationLifeCycle implements TransactionSynchronization {
 	private final TransactionLifeCycle transactionLifeCycle;
 	private final TransactionSynchronization transactionSynchronization;
 

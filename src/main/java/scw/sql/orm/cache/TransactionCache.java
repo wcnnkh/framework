@@ -8,7 +8,7 @@ import scw.redis.Redis;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 
-public class TransactionCache implements Cache {
+public final class TransactionCache implements Cache {
 	private final Cache cache;
 
 	public TransactionCache(Memcached memcached, int exp) {

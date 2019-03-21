@@ -13,7 +13,6 @@ import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.LoggerFactory;
-import scw.sql.orm.plugin.SelectCacheFilter;
 import scw.transaction.TransactionFilter;
 
 public class CommonApplication implements Application {
@@ -28,7 +27,6 @@ public class CommonApplication implements Application {
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
 			this.beanFactory.addFirstFilters(TransactionFilter.class.getName());
-			this.beanFactory.addFirstFilters(SelectCacheFilter.class.getName());
 			this.beanFactory.addFirstFilters(AsyncCompleteFilter.class.getName());
 		} catch (Exception e) {
 			throw new ShuChaoWenRuntimeException(e);

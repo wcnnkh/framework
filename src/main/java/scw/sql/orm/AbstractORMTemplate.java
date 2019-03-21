@@ -1,5 +1,6 @@
 package scw.sql.orm;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,14 +12,16 @@ import scw.common.Pagination;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
+import scw.sql.ResultSetMapper;
 import scw.sql.Sql;
 import scw.sql.SqlException;
 import scw.sql.SqlTemplate;
 import scw.sql.orm.annoation.Table;
 import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.mysql.MysqlSelect;
-import scw.sql.orm.plugin.SelectCacheUtils;
+import scw.sql.orm.result.DefaultResultSet;
 import scw.sql.orm.result.ResultSet;
+import scw.transaction.cache.QueryCacheUtils;
 
 public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSelect, ORMOperations, SelectMaxId {
 
@@ -228,7 +231,12 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 	}
 
 	public ResultSet select(Sql sql) {
-		return SelectCacheUtils.select(this, sql);
+		return QueryCacheUtils.query(this, sql, new ResultSetMapper<ResultSet>() {
+
+			public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
+				return new DefaultResultSet(resultSet);
+			}
+		});
 	}
 
 	public <T> List<T> select(Class<T> type, Sql sql) {

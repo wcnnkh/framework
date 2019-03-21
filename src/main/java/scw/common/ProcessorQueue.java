@@ -3,7 +3,7 @@ package scw.common;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ProcessorQueue{
+public final class ProcessorQueue{
 	private final BlockingQueue<Runnable> queue;
 	private final Thread thread;
 	

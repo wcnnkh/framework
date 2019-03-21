@@ -12,7 +12,7 @@ import scw.beans.proxy.Invoker;
  * @author shuchaowen
  *
  */
-public class TransactionFilter implements Filter {
+public final class TransactionFilter implements Filter {
 	/**
 	 * 默认的事务定义
 	 */

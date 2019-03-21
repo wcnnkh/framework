@@ -1,7 +1,7 @@
 package scw.common;
 
 
-public class ProcessorHashQueue<K>{
+public final class ProcessorHashQueue<K>{
 	private final ProcessorQueue[] queueArr;
 	
 	public ProcessorHashQueue(int threadSize, int maxProcessSize) {

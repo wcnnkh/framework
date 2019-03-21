@@ -10,7 +10,7 @@ import scw.beans.proxy.Invoker;
 import scw.common.utils.StringUtils;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
-import scw.sql.orm.plugin.SelectCacheUtils;
+import scw.transaction.cache.QueryCacheUtils;
 
 /**
  * 实现方法级别的分布式锁
@@ -61,7 +61,7 @@ public final class LockFilter implements Filter {
 				throw new HasBeenLockedException(lockKey);
 			}
 
-			SelectCacheUtils.setEnable(false);
+			QueryCacheUtils.setQueryCacheEnable(false);
 			return filterChain.doFilter(invoker, proxy, method, args);
 		} finally {
 			lock.unlock();

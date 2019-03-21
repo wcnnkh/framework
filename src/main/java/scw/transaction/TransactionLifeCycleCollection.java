@@ -2,7 +2,7 @@ package scw.transaction;
 
 import java.util.LinkedList;
 
-class TransactionLifeCycleCollection extends LinkedList<TransactionLifeCycle> implements TransactionLifeCycle {
+final class TransactionLifeCycleCollection extends LinkedList<TransactionLifeCycle> implements TransactionLifeCycle {
 	private static final long serialVersionUID = 1L;
 
 	public void beforeProcess() {
