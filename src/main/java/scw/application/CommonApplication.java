@@ -91,6 +91,7 @@ public class CommonApplication implements Application {
 			start = false;
 		}
 
+		
 		ProtocolConfig.destroyAll();
 		beanFactory.destroy();
 		LoggerFactory.destroy();

@@ -22,8 +22,8 @@ import scw.common.utils.XTime;
  */
 public final class Crontab {
 	private Timer timer = new Timer();
-	private ExecutorService executorService = new ThreadPoolExecutor(2, 100,
-			60L, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
+	private ExecutorService executorService = new ThreadPoolExecutor(2, 100, 60L, TimeUnit.MINUTES,
+			new LinkedBlockingQueue<Runnable>());
 	private CopyOnWriteArrayList<CrontabInfo> crontabInfos = new CopyOnWriteArrayList<CrontabInfo>();
 
 	public Crontab() {
@@ -31,8 +31,7 @@ public final class Crontab {
 		calendar.add(Calendar.MINUTE, 1);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
-		timer.scheduleAtFixedRate(new CrontabTimerTask(),
-				new Date(calendar.getTimeInMillis()), XTime.ONE_MINUTE);
+		timer.scheduleAtFixedRate(new CrontabTimerTask(), new Date(calendar.getTimeInMillis()), XTime.ONE_MINUTE);
 	}
 
 	/**
@@ -45,10 +44,8 @@ public final class Crontab {
 	 * @param minute
 	 * @param task
 	 */
-	public void crontab(String dayOfWeek, String month, String dayOfMonth,
-			String hour, String minute, Runnable task) {
-		crontabInfos.add(new CrontabInfo(dayOfWeek, month, dayOfMonth, hour,
-				minute, task));
+	public void crontab(String dayOfWeek, String month, String dayOfMonth, String hour, String minute, Runnable task) {
+		crontabInfos.add(new CrontabInfo(dayOfWeek, month, dayOfMonth, hour, minute, task));
 	}
 
 	/**
@@ -60,8 +57,7 @@ public final class Crontab {
 	 * @param minute
 	 * @param task
 	 */
-	public void crontabDayOfWeek(String dayOfWeek, String hour, String minute,
-			Runnable task) {
+	public void crontabDayOfWeek(String dayOfWeek, String hour, String minute, Runnable task) {
 		crontab(dayOfWeek, "*", "*", hour, minute, task);
 	}
 
@@ -73,8 +69,7 @@ public final class Crontab {
 	 * @param minute
 	 * @param task
 	 */
-	public void crontabDayOfMonth(String dayOfMonth, String hour,
-			String minute, Runnable task) {
+	public void crontabDayOfMonth(String dayOfMonth, String hour, String minute, Runnable task) {
 		crontab("*", "*", dayOfMonth, hour, minute, task);
 	}
 
@@ -130,8 +125,8 @@ class CrontabInfo {
 	private final String minute;
 	private final Runnable runnable;
 
-	public CrontabInfo(String dayOfWeek, String month, String dayOfMonth,
-			String hour, String minute, Runnable runnable) {
+	public CrontabInfo(String dayOfWeek, String month, String dayOfMonth, String hour, String minute,
+			Runnable runnable) {
 		this.dayOfWeek = dayOfWeek;
 		this.month = month;
 		this.dayOfMonth = dayOfMonth;
@@ -164,30 +159,6 @@ class CrontabInfo {
 		return runnable;
 	}
 
-	private boolean check(int value, String checkValue) {
-		if (StringUtils.isEmpty(checkValue) || "*".equals(checkValue)) {
-			return true;
-		}
-
-		if (StringUtils.isNumeric(checkValue)) {
-			return value == Integer.parseInt(checkValue);
-		} else {
-			String v = value + "";
-			for (int i = 0; i < v.length(); i++) {
-				char a = v.charAt(i);
-				char b = checkValue.charAt(i);
-				if (b == '*') {
-					continue;
-				}
-
-				if (a != b) {
-					return false;
-				}
-			}
-			return true;
-		}
-	}
-
 	private boolean checkBySplit(int value, String check) {
 		if (StringUtils.isEmpty(check)) {
 			return true;
@@ -195,7 +166,7 @@ class CrontabInfo {
 
 		String[] vs = StringUtils.commonSplit(check);
 		for (String v : vs) {
-			if (check(value, v)) {
+			if (StringUtils.test(value + "", v)) {
 				return true;
 			}
 		}

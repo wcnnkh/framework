@@ -43,10 +43,8 @@ public class DruidDB extends DB {
 	public void close() throws Exception {
 		datasource.close();
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
-		if (drivers != null) {
-			while (drivers.hasMoreElements()) {
-				DriverManager.deregisterDriver(drivers.nextElement());
-			}
+		while (drivers.hasMoreElements()) {
+			DriverManager.deregisterDriver(drivers.nextElement());
 		}
 	}
 

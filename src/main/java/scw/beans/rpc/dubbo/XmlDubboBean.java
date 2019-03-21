@@ -99,7 +99,7 @@ public class XmlDubboBean implements Bean {
 
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance() {
-		ReferenceConfig<T> referenceConfig = new ReferenceConfig<T>();
+		ReferenceConfig<?> referenceConfig = new ReferenceConfig<T>();
 		referenceConfig.setApplication(application);
 		referenceConfig.setRegistries(registryConfigs);
 		referenceConfig.setInterface(type);

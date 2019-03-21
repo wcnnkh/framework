@@ -255,9 +255,10 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
 			for (String id : beanKeyList) {
 				Bean bean = getBean(id);
+				Object obj = singletonMap.get(id);
 				try {
-					bean.destroy(singletonMap.get(id));
-				} catch (Exception e) {
+					bean.destroy(obj);
+				} catch (Throwable e) {
 					e.printStackTrace();
 				}
 			}

@@ -1,10 +1,10 @@
 package scw.transaction;
 
-final class AnnoationTransactionDefinition implements TransactionDefinition {
+final class AnnotationTransactionDefinition implements TransactionDefinition {
 	private Transactional clzTx;
 	private Transactional methodTx;
 
-	public AnnoationTransactionDefinition(Transactional clzTx, Transactional methodTx) {
+	public AnnotationTransactionDefinition(Transactional clzTx, Transactional methodTx) {
 		this.clzTx = clzTx;
 		this.methodTx = methodTx;
 	}

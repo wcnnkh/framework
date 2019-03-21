@@ -41,10 +41,8 @@ public class HikariCPDB extends DB {
 	public void close() throws Exception {
 		hds.close();
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
-		if (drivers != null) {
-			while (drivers.hasMoreElements()) {
-				DriverManager.deregisterDriver(drivers.nextElement());
-			}
+		while (drivers.hasMoreElements()) {
+			DriverManager.deregisterDriver(drivers.nextElement());
 		}
 	}
 

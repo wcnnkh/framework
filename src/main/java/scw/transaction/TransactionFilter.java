@@ -65,7 +65,7 @@ public final class TransactionFilter implements Filter {
 		}
 
 		Transaction transaction = TransactionManager
-				.getTransaction(new AnnoationTransactionDefinition(clzTx, methodTx));
+				.getTransaction(new AnnotationTransactionDefinition(clzTx, methodTx));
 		Object rtn;
 		try {
 			rtn = result(invoker, proxy, method, args, filterChain);

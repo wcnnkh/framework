@@ -2173,4 +2173,60 @@ public final class StringUtils {
 		}
 		return sb.toString();
 	}
+	
+	/**
+	 * 比较字符串写指定的统配符是否一致
+	 * 通配符只能是*
+	 * @param text
+	 * @param match 通配符
+	 * @return
+	 */
+	public static boolean test(String text, String match) {
+		if (StringUtils.isEmpty(match) || match.equals("*")) {
+			return true;
+		}
+
+		int lastIndex = 0;
+		int find = 0;
+		char[] arr = match.toCharArray();
+		for (int i = 0; i < arr.length; i++) {
+			if (arr[i] == '*') {
+				if (i == arr.length - 1) {
+					continue;
+				}
+
+				if (i == lastIndex) {
+					lastIndex = ++i;
+					continue;
+				}
+
+				String v = match.substring(lastIndex, i);
+				if (v.equals("*")) {
+					lastIndex = ++i;
+					continue;
+				}
+
+				find = text.indexOf(v, find);
+				if (find == -1) {
+					return false;
+				}
+
+				lastIndex = ++i;
+				if (match.indexOf("*", i) == -1) {
+					// 最后一次匹配了
+					lastIndex = find + v.length();
+					if (lastIndex > text.length()) {
+						return false;
+					}
+
+					return text.substring(lastIndex).equals(match.substring(i));
+				}
+			}
+		}
+
+		if (lastIndex == 0) {
+			return text.equals(match);
+		}
+		return true;
+	}
 }

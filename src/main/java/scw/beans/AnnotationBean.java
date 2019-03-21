@@ -1,7 +1,6 @@
 package scw.beans;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -23,8 +22,8 @@ public class AnnotationBean implements Bean {
 	private final Class<?> type;
 	private final String id;
 	private volatile Constructor<?> constructor;
-	private final Method[] initMethods;
-	private final Method[] destroyMethods;
+	private final BeanMethod[] initMethods;
+	private final BeanMethod[] destroyMethods;
 	private final boolean proxy;
 	private Enhancer enhancer;
 	private final PropertiesFactory propertiesFactory;
@@ -51,29 +50,8 @@ public class AnnotationBean implements Bean {
 		}
 		this.id = id;
 
-		List<Method> initMethodList = new ArrayList<Method>();
-		List<Method> destroyMethodList = new ArrayList<Method>();
-		Class<?> tempClz = type;
-		for (Method method : tempClz.getDeclaredMethods()) {
-			if (Modifier.isStatic(method.getModifiers())) {
-				continue;
-			}
-
-			InitMethod initMethod = method.getAnnotation(InitMethod.class);
-			if (initMethod != null) {
-				method.setAccessible(true);
-				initMethodList.add(method);
-			}
-
-			Destroy destroy = method.getAnnotation(Destroy.class);
-			if (destroy != null) {
-				method.setAccessible(true);
-				destroyMethodList.add(method);
-			}
-		}
-
-		this.initMethods = initMethodList.toArray(new Method[initMethodList.size()]);
-		this.destroyMethods = destroyMethodList.toArray(new Method[destroyMethodList.size()]);
+		this.initMethods = getInitMethodList(type).toArray(new BeanMethod[0]);
+		this.destroyMethods = getDestroyMethdoList(type).toArray(new BeanMethod[0]);
 		this.filterNames = filterNames;
 		this.proxy = BeanUtils.checkProxy(type, filterNames);
 		scw.beans.annotaion.Bean bean = type.getAnnotation(scw.beans.annotaion.Bean.class);
@@ -82,34 +60,26 @@ public class AnnotationBean implements Bean {
 
 	public static List<BeanMethod> getInitMethodList(Class<?> type) {
 		List<BeanMethod> list = new ArrayList<BeanMethod>();
-		Class<?> tempClz = type;
-		for (Method method : tempClz.getDeclaredMethods()) {
+		for (Method method : ClassUtils.getAnnoationMethods(type, true, true, InitMethod.class)) {
 			if (Modifier.isStatic(method.getModifiers())) {
 				continue;
 			}
 
-			InitMethod initMethod = method.getAnnotation(InitMethod.class);
-			if (initMethod != null) {
-				method.setAccessible(true);
-				list.add(new NoArgumentBeanMethod(method));
-			}
+			method.setAccessible(true);
+			list.add(new NoArgumentBeanMethod(method));
 		}
 		return list;
 	}
 
 	public static List<BeanMethod> getDestroyMethdoList(Class<?> type) {
 		List<BeanMethod> list = new ArrayList<BeanMethod>();
-		Class<?> tempClz = type;
-		for (Method method : tempClz.getDeclaredMethods()) {
+		for (Method method : ClassUtils.getAnnoationMethods(type, true, true, Destroy.class)) {
 			if (Modifier.isStatic(method.getModifiers())) {
 				continue;
 			}
 
-			Destroy destroy = method.getAnnotation(Destroy.class);
-			if (destroy != null) {
-				method.setAccessible(true);
-				list.add(new NoArgumentBeanMethod(method));
-			}
+			method.setAccessible(true);
+			list.add(new NoArgumentBeanMethod(method));
 		}
 		return list;
 	}
@@ -199,24 +169,16 @@ public class AnnotationBean implements Bean {
 
 	public void init(Object bean) throws Exception {
 		if (initMethods != null && initMethods.length != 0) {
-			for (Method method : initMethods) {
-				method.invoke(bean);
+			for (BeanMethod method : initMethods) {
+				method.invoke(bean, beanFactory, propertiesFactory);
 			}
 		}
 	}
 
-	public void destroy(Object bean) {
+	public void destroy(Object bean) throws Exception {
 		if (destroyMethods != null && destroyMethods.length != 0) {
-			for (Method method : destroyMethods) {
-				try {
-					method.invoke(bean);
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
+			for (BeanMethod method : destroyMethods) {
+				method.invoke(bean, beanFactory, propertiesFactory);
 			}
 		}
 	}
