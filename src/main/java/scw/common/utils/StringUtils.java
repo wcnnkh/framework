@@ -2173,12 +2173,13 @@ public final class StringUtils {
 		}
 		return sb.toString();
 	}
-	
+
 	/**
-	 * 比较字符串写指定的统配符是否一致
-	 * 通配符只能是*
+	 * 比较字符串写指定的统配符是否一致 通配符只能是*
+	 * 
 	 * @param text
-	 * @param match 通配符
+	 * @param match
+	 *            通配符
 	 * @return
 	 */
 	public static boolean test(String text, String match) {
@@ -2186,47 +2187,31 @@ public final class StringUtils {
 			return true;
 		}
 
-		int lastIndex = 0;
-		int find = 0;
-		char[] arr = match.toCharArray();
-		for (int i = 0; i < arr.length; i++) {
-			if (arr[i] == '*') {
-				if (i == arr.length - 1) {
-					continue;
-				}
-
-				if (i == lastIndex) {
-					lastIndex = ++i;
-					continue;
-				}
-
-				String v = match.substring(lastIndex, i);
-				if (v.equals("*")) {
-					lastIndex = ++i;
-					continue;
-				}
-
-				find = text.indexOf(v, find);
-				if (find == -1) {
+		int index = 0;
+		int textIndex = 0;
+		while (true) {
+			int lastIndex = match.indexOf("*", index);
+			if (lastIndex == -1) {
+				int in = text.length() - (match.length() - index);
+				if (in < 0) {
 					return false;
 				}
 
-				lastIndex = ++i;
-				if (match.indexOf("*", i) == -1) {
-					// 最后一次匹配了
-					lastIndex = find + v.length();
-					if (lastIndex > text.length()) {
-						return false;
-					}
-
-					return text.substring(lastIndex).equals(match.substring(i));
-				}
+				return text.substring(in).equals(match.substring(index));
 			}
-		}
 
-		if (lastIndex == 0) {
-			return text.equals(match);
+			if (index == lastIndex) {
+				index = lastIndex + 1;
+				continue;
+			}
+
+			String m = match.substring(index, lastIndex);
+			textIndex = text.indexOf(m, textIndex);
+			if (textIndex == -1) {
+				return false;
+			}
+
+			index = lastIndex + 1;
 		}
-		return true;
 	}
 }

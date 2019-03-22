@@ -118,54 +118,33 @@ public final class Crontab {
 }
 
 class CrontabInfo {
-	private final String dayOfWeek;
-	private final String month;
-	private final String dayOfMonth;
-	private final String hour;
-	private final String minute;
+	private final String[] dayOfWeek;
+	private final String[] month;
+	private final String[] dayOfMonth;
+	private final String[] hour;
+	private final String[] minute;
 	private final Runnable runnable;
 
 	public CrontabInfo(String dayOfWeek, String month, String dayOfMonth, String hour, String minute,
 			Runnable runnable) {
-		this.dayOfWeek = dayOfWeek;
-		this.month = month;
-		this.dayOfMonth = dayOfMonth;
-		this.hour = hour;
-		this.minute = minute;
+		this.dayOfWeek = StringUtils.commonSplit(dayOfWeek);
+		this.month = StringUtils.commonSplit(month);
+		this.dayOfMonth = StringUtils.commonSplit(dayOfMonth);
+		this.hour = StringUtils.commonSplit(hour);
+		this.minute = StringUtils.commonSplit(minute);
 		this.runnable = runnable;
-	}
-
-	public String getDayOfWeek() {
-		return dayOfWeek;
-	}
-
-	public String getMonth() {
-		return month;
-	}
-
-	public String getDayOfMonth() {
-		return dayOfMonth;
-	}
-
-	public String getHour() {
-		return hour;
-	}
-
-	public String getMinute() {
-		return minute;
 	}
 
 	public Runnable getRunnable() {
 		return runnable;
 	}
 
-	private boolean checkBySplit(int value, String check) {
-		if (StringUtils.isEmpty(check)) {
-			return true;
-		}
-
-		String[] vs = StringUtils.commonSplit(check);
-		for (String v : vs) {
+	private boolean checkBySplit(int value, String[] check) {
+		for (String v : check) {
+			if (StringUtils.isEmpty(v)) {
+				return true;
+			}
+			
 			if (StringUtils.test(value + "", v)) {
 				return true;
 			}
