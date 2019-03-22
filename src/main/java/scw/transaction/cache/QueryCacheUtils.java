@@ -11,10 +11,12 @@ import scw.transaction.TransactionManager;
 
 /**
  * 事务内的查询缓存
+ * 
  * @author shuchaowen
  *
  */
 public final class QueryCacheUtils {
+	private QueryCacheUtils(){};
 
 	public static boolean queryCacheEnable() {
 		Transaction transaction = TransactionManager.getCurrentTransaction();
@@ -46,43 +48,36 @@ public final class QueryCacheUtils {
 		cache.setEnable(enable);
 	}
 
-	public static <T> T query(SqlOperations sqlOperations, Sql sql, ResultSetMapper<T> resultSetMapper) {
+	private static MultipleConnectionQueryCache getMultipleConnectionQueryCache(SqlOperations sqlOperations) {
 		Transaction transaction = TransactionManager.getCurrentTransaction();
 		if (transaction == null) {
-			return sqlOperations.query(sql, resultSetMapper);
+			return null;
 		}
 
 		MultipleConnectionQueryCache cache = (MultipleConnectionQueryCache) transaction
 				.getResource(MultipleConnectionQueryCache.class);
 		if (cache == null) {
-			return sqlOperations.query(sql, resultSetMapper);
+			cache = new MultipleConnectionQueryCache();
+			transaction.bindResource(MultipleConnectionQueryCache.class, cache);
 		}
+		return cache;
+	}
 
-		if (cache.isEnable()) {
-			QueryCache queryCache = cache.getQueryCache(sqlOperations);
-			return queryCache.query(sql, resultSetMapper);
-		} else {
+	public static <T> T query(SqlOperations sqlOperations, Sql sql, ResultSetMapper<T> resultSetMapper) {
+		MultipleConnectionQueryCache cache = getMultipleConnectionQueryCache(sqlOperations);
+		if (cache == null) {
 			return sqlOperations.query(sql, resultSetMapper);
+		} else {
+			return cache.query(sqlOperations, sql, resultSetMapper);
 		}
 	}
 
 	public static <T> List<T> query(SqlOperations sqlOperations, Sql sql, RowMapper<T> rowMapper) {
-		Transaction transaction = TransactionManager.getCurrentTransaction();
-		if (transaction == null) {
-			return sqlOperations.query(sql, rowMapper);
-		}
-
-		MultipleConnectionQueryCache cache = (MultipleConnectionQueryCache) transaction
-				.getResource(MultipleConnectionQueryCache.class);
+		MultipleConnectionQueryCache cache = getMultipleConnectionQueryCache(sqlOperations);
 		if (cache == null) {
 			return sqlOperations.query(sql, rowMapper);
-		}
-
-		if (cache.isEnable()) {
-			QueryCache queryCache = cache.getQueryCache(sqlOperations);
-			return queryCache.query(sql, rowMapper);
 		} else {
-			return sqlOperations.query(sql, rowMapper);
+			return cache.query(sqlOperations, sql, rowMapper);
 		}
 	}
 }

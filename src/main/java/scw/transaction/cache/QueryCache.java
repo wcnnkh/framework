@@ -10,7 +10,7 @@ import scw.sql.Sql;
 import scw.sql.SqlOperations;
 import scw.sql.SqlUtils;
 
-public final class QueryCache {
+final class QueryCache {
 	private Map<String, Object> cache;
 	private Map<String, Object> listCache;
 	private final SqlOperations sqlOperations;

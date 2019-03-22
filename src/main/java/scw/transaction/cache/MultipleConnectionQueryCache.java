@@ -1,14 +1,18 @@
 package scw.transaction.cache;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import scw.sql.ResultSetMapper;
+import scw.sql.RowMapper;
+import scw.sql.Sql;
 import scw.sql.SqlOperations;
 import scw.transaction.TransactionException;
 import scw.transaction.TransactionResource;
 import scw.transaction.savepoint.Savepoint;
 
-public final class MultipleConnectionQueryCache implements TransactionResource {
+final class MultipleConnectionQueryCache implements TransactionResource {
 	private Map<SqlOperations, QueryCache> queryCacheMap;
 	private boolean enable = true;
 
@@ -26,6 +30,22 @@ public final class MultipleConnectionQueryCache implements TransactionResource {
 			}
 		}
 		return queryCache;
+	}
+
+	public <T> List<T> query(SqlOperations sqlOperations, Sql sql, RowMapper<T> rowMapper) {
+		if (enable) {
+			return getQueryCache(sqlOperations).query(sql, rowMapper);
+		} else {
+			return sqlOperations.query(sql, rowMapper);
+		}
+	}
+
+	public <T> T query(SqlOperations sqlOperations, Sql sql, ResultSetMapper<T> resultSetMapper) {
+		if (enable) {
+			return getQueryCache(sqlOperations).query(sql, resultSetMapper);
+		} else {
+			return sqlOperations.query(sql, resultSetMapper);
+		}
 	}
 
 	public boolean isEnable() {
