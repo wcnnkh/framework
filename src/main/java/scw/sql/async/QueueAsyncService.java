@@ -5,9 +5,11 @@ import scw.beans.annotaion.Destroy;
 import scw.sql.SqlOperations;
 import scw.sql.Sqls;
 import scw.sql.orm.SqlFormat;
+import scw.transaction.DefaultTransactionLifeCycle;
+import scw.transaction.TransactionManager;
 import scw.utils.queue.Queue;
 
-@Bean(proxy=false)
+@Bean(proxy = false)
 public class QueueAsyncService extends AbstractAsyncService implements Runnable {
 	private Queue<Sqls> queue;
 	private Thread thread;
@@ -38,7 +40,17 @@ public class QueueAsyncService extends AbstractAsyncService implements Runnable 
 		thread.interrupt();
 	}
 
-	public void execute(Sqls sqls) {
-		queue.offer(sqls);
+	public void execute(final Sqls sqls) {
+		if (TransactionManager.hasTransaction()) {
+			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+				@Override
+				public void afterProcess() {
+					queue.offer(sqls);
+					super.afterProcess();
+				}
+			});
+		} else {
+			queue.offer(sqls);
+		}
 	}
 }

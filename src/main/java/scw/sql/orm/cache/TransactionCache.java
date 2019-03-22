@@ -30,12 +30,12 @@ public final class TransactionCache implements Cache {
 	public void add(final String key, final Object bean) {
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
-			public void afterProcess() {
+			public void beforeProcess() {
 				cache.add(key, bean);
 			}
 
 			@Override
-			public void afterRollback() {
+			public void beforeRollback() {
 				cache.delete(key);
 			}
 		});
@@ -44,12 +44,12 @@ public final class TransactionCache implements Cache {
 	public void set(final String key, final Object bean) {
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
-			public void afterProcess() {
+			public void beforeProcess() {
 				cache.set(key, bean);
 			}
 
 			@Override
-			public void afterRollback() {
+			public void beforeRollback() {
 				cache.delete(key);
 			}
 		});

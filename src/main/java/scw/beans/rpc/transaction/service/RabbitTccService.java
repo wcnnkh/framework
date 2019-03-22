@@ -71,12 +71,12 @@ public final class RabbitTccService implements TCCService {
 	public void service(Object obj, final InvokeInfo invokeInfo) {
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
-			public void afterProcess() {
+			public void beforeProcess() {
 				invoke(invokeInfo, StageType.Confirm);
 			}
 
 			@Override
-			public void afterRollback() {
+			public void beforeRollback() {
 				invoke(invokeInfo, StageType.Cancel);
 			}
 
