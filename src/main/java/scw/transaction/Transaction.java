@@ -107,7 +107,7 @@ public final class Transaction {
 		tslc = new TransactionSynchronizationLifeCycle(stsc, tlcc);
 	}
 
-	protected void process() throws TransactionException {
+	protected void process() throws Throwable {
 		if (isComplete()) {
 			return;
 		}
@@ -159,7 +159,7 @@ public final class Transaction {
 		}
 
 		complete = true;
-		
+
 		if (savepoint != null) {
 			try {
 				savepoint.release();

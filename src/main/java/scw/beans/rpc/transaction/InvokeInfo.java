@@ -128,10 +128,8 @@ public class InvokeInfo implements Serializable {
 			params = getIndexMapppingArgs(methodConfig, tryRtnValue, stage.tryResultSetParameterIndex(), args);
 		}
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("clz=").append(methodConfig.getClz().getName());
-		sb.append(",name=").append(StringUtils.isEmpty(stage.name()) ? method.getName() : stage.name());
-		logger.debug(sb.toString());
+		logger.debug("clz={},name={}", methodConfig.getClz().getName(),
+				StringUtils.isEmpty(stage.name()) ? method.getName() : stage.name());
 
 		Object obj = beanFactory.get(methodConfig.getClz());
 		method.invoke(obj, params);

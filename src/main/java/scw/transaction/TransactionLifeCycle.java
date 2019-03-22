@@ -10,7 +10,7 @@ public interface TransactionLifeCycle {
 	/**
 	 * 在执行之前调用
 	 */
-	void beforeProcess();
+	void beforeProcess() throws Throwable;
 
 	/**
 	 * 在执行之后调用

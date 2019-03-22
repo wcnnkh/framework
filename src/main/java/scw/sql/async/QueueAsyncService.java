@@ -27,7 +27,7 @@ public class QueueAsyncService extends AbstractAsyncService implements Runnable 
 				Sqls sqls = queue.take();
 				try {
 					sqls.transactionExecute(sqlOperations);
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					e.printStackTrace();
 				}
 			}

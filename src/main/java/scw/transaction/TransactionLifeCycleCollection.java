@@ -5,7 +5,7 @@ import java.util.LinkedList;
 final class TransactionLifeCycleCollection extends LinkedList<TransactionLifeCycle> implements TransactionLifeCycle {
 	private static final long serialVersionUID = 1L;
 
-	public void beforeProcess() {
+	public void beforeProcess() throws Throwable {
 		for (TransactionLifeCycle lifeCycle : this) {
 			lifeCycle.beforeProcess();
 		}

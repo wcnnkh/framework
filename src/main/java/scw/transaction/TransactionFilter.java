@@ -32,6 +32,11 @@ public final class TransactionFilter implements Filter {
 			return result(invoker, proxy, method, args, filterChain);
 		}
 
+		return transaction(invoker, proxy, method, args, filterChain, transactionDefinition);
+	}
+
+	private Object transaction(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain,
+			TransactionDefinition transactionDefinition) throws Throwable {
 		Transaction transaction = TransactionManager.getTransaction(transactionDefinition);
 		Object v;
 		try {
@@ -64,16 +69,7 @@ public final class TransactionFilter implements Filter {
 			return defaultTransaction(invoker, proxy, method, args, filterChain);
 		}
 
-		Transaction transaction = TransactionManager
-				.getTransaction(new AnnotationTransactionDefinition(clzTx, methodTx));
-		Object rtn;
-		try {
-			rtn = result(invoker, proxy, method, args, filterChain);
-			TransactionManager.commit(transaction);
-		} catch (Throwable e) {
-			TransactionManager.rollback(transaction);
-			throw e;
-		}
-		return rtn;
+		return transaction(invoker, proxy, method, args, filterChain,
+				new AnnotationTransactionDefinition(clzTx, methodTx));
 	}
 }

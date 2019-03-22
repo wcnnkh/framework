@@ -76,7 +76,7 @@ public final class TransactionManager {
 		}
 	}
 
-	public static void commit(Transaction transaction) throws TransactionException {
+	public static void commit(Transaction transaction) throws Throwable {
 		if (transaction.isComplete()) {
 			return;
 		}
@@ -97,7 +97,7 @@ public final class TransactionManager {
 		}
 	}
 
-	public static void rollback(Transaction transaction) throws TransactionException {
+	public static void rollback(Transaction transaction) {
 		if (transaction.isComplete()) {
 			return;
 		}

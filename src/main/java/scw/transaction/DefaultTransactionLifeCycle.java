@@ -2,7 +2,7 @@ package scw.transaction;
 
 public class DefaultTransactionLifeCycle implements TransactionLifeCycle {
 
-	public void beforeProcess() {
+	public void beforeProcess() throws Throwable {
 		// TODO Auto-generated method stub
 
 	}

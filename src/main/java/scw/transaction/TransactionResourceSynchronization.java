@@ -7,7 +7,7 @@ class TransactionResourceSynchronization implements TransactionSynchronization {
 		this.transactionResource = transactionResource;
 	}
 
-	public void process() throws TransactionException {
+	public void process() throws Throwable {
 		if (transactionResource == null) {
 			return;
 		}
@@ -15,7 +15,7 @@ class TransactionResourceSynchronization implements TransactionSynchronization {
 		transactionResource.process();
 	}
 
-	public void rollback() throws TransactionException {
+	public void rollback() {
 		if (transactionResource == null) {
 			return;
 		}

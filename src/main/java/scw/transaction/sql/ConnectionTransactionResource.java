@@ -7,7 +7,6 @@ import scw.sql.ConnectionFactory;
 import scw.transaction.Isolation;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionDefinition;
-import scw.transaction.TransactionException;
 
 public final class ConnectionTransactionResource extends AbstractConnectionTransactionResource {
 	private final ConnectionFactory connectionFactory;
@@ -80,7 +79,7 @@ public final class ConnectionTransactionResource extends AbstractConnectionTrans
 			try {
 				connection.rollback();
 			} catch (SQLException e) {
-				throw new TransactionException(e);
+				e.printStackTrace();
 			}
 		}
 	}

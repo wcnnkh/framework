@@ -2,7 +2,7 @@ package scw.transaction;
 
 public interface TransactionSynchronization {
 
-	void process();
+	void process() throws Throwable;
 
 	void rollback();
 

@@ -10,7 +10,7 @@ final class TransactionSynchronizationLifeCycle implements TransactionSynchroniz
 		this.transactionSynchronization = transactionSynchronization;
 	}
 
-	public void process() {
+	public void process() throws Throwable {
 		if (transactionLifeCycle != null) {
 			transactionLifeCycle.beforeProcess();
 		}

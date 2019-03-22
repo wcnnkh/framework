@@ -34,7 +34,7 @@ public class Sqls extends LinkedList<Sql> implements Serializable {
 		}
 	}
 
-	public void transactionExecute(SqlOperations sqlOperations) {
+	public void transactionExecute(SqlOperations sqlOperations) throws Throwable {
 		if (isEmpty()) {
 			return;
 		}
@@ -50,9 +50,9 @@ public class Sqls extends LinkedList<Sql> implements Serializable {
 			}
 
 			TransactionManager.commit(transaction);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			TransactionManager.rollback(transaction);
-			e.printStackTrace();
+			throw e;
 		}
 	}
 }

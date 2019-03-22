@@ -6,12 +6,10 @@ import java.util.LinkedList;
 final class TransactionSynchronizationCollection extends LinkedList<TransactionSynchronization>
 		implements TransactionSynchronization {
 	private static final long serialVersionUID = 1L;
-	private int beginTag = 0;
-	private int processTag = 0;
 
-	public void process() {
+	public void process() throws Throwable {
 		Iterator<TransactionSynchronization> iterator = iterator();
-		for (; iterator.hasNext(); processTag++) {
+		while (iterator.hasNext()) {
 			TransactionSynchronization transaction = iterator.next();
 			if (transaction != null) {
 				transaction.process();
@@ -21,20 +19,28 @@ final class TransactionSynchronizationCollection extends LinkedList<TransactionS
 
 	public void end() {
 		Iterator<TransactionSynchronization> iterator = iterator();
-		for (; beginTag >= 0 && iterator.hasNext(); beginTag--) {
+		while (iterator.hasNext()) {
 			TransactionSynchronization transaction = iterator.next();
 			if (transaction != null) {
-				transaction.end();
+				try {
+					transaction.end();
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
 	public void rollback() {
 		Iterator<TransactionSynchronization> iterator = iterator();
-		for (; processTag >= 0 && iterator.hasNext(); processTag--) {
+		while (iterator.hasNext()) {
 			TransactionSynchronization transaction = iterator.next();
 			if (transaction != null) {
-				transaction.rollback();
+				try {
+					transaction.rollback();
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
