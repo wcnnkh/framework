@@ -19,8 +19,8 @@ public class MultipartRequest extends HttpRequest {
 	private final String boundary;
 	private List<AbstractMultipartParameter> parameters;
 
-	public MultipartRequest(Method method, String charsetName, String boundary) {
-		super(method);
+	public MultipartRequest(Method method, String url, String charsetName, String boundary) {
+		super(method, url);
 		if (method == Method.GET) {
 			throw new NotSupportException("发送文件不支持" + method + "请求");
 		}

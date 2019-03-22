@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import scw.core.NestedRuntimeException;
-import scw.net.response.Body;
 import scw.net.response.BodyResponse;
 
 public final class NetworkUtils {
@@ -19,45 +18,47 @@ public final class NetworkUtils {
 		return response.response(urlConnection);
 	}
 
-	public static <T> T executeHttp(URL url, Request request, Response<T> response) {
-		HttpURLConnection httpURLConnection = null;
+	public static <T> T execute(URL url, Proxy proxy, Request request, Response<T> response) {
+		URLConnection urlConnection = null;
 		try {
-			httpURLConnection = (HttpURLConnection) url.openConnection();
-			return execute(httpURLConnection, request, response);
+			if (proxy == null) {
+				urlConnection = url.openConnection();
+			} else {
+				urlConnection = url.openConnection(proxy);
+			}
+
+			return execute(urlConnection, request, response);
 		} catch (Throwable e) {
 			throw new NestedRuntimeException(e);
 		} finally {
-			if (httpURLConnection != null) {
-				httpURLConnection.disconnect();
+			if (urlConnection != null) {
+				if (urlConnection instanceof HttpURLConnection) {
+					((HttpURLConnection) urlConnection).disconnect();
+				}
 			}
 		}
 	}
 
-	public static <T> T executeHttp(URL url, Proxy proxy, Request request, Response<T> response) {
-		HttpURLConnection httpURLConnection = null;
-		try {
-			httpURLConnection = (HttpURLConnection) url.openConnection(proxy);
-			return execute(httpURLConnection, request, response);
-		} catch (Throwable e) {
-			throw new NestedRuntimeException(e);
-		} finally {
-			if (httpURLConnection != null) {
-				httpURLConnection.disconnect();
-			}
-		}
-	}
-
-	public static <T> T executeHttp(String url, Request request, Response<T> response) {
-		URL u;
+	public static <T> T execute(String url, Proxy proxy, Request request, Response<T> response) {
+		URL u = null;
 		try {
 			u = new URL(url);
 		} catch (MalformedURLException e) {
-			throw new NestedRuntimeException(e);
+			new NestedRuntimeException(e);
 		}
-		return executeHttp(u, request, response);
+
+		if (u == null) {
+			throw new NullPointerException(url);
+		}
+
+		return execute(u, proxy, request, response);
 	}
 
-	public static Body executeHttp(String url, Request request) {
-		return executeHttp(url, request, new BodyResponse());
+	public static <T> T execute(AbstractUrlRequest request, Response<T> response) {
+		return execute(request.getURL(), request.getProxy(), request, response);
+	}
+
+	public static Body execute(AbstractUrlRequest request) {
+		return execute(request, new BodyResponse());
 	}
 }

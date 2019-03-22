@@ -28,8 +28,8 @@ import scw.net.http.enums.Method;
 public class X509Request extends HttpRequest {
 	private final SSLSocketFactory sslSocketFactory;
 
-	public X509Request(Method method, String filePath, String password) {
-		super(method);
+	public X509Request(Method method, String url, String filePath, String password) {
+		super(method, url);
 		try {
 			this.sslSocketFactory = getSSLSocketFactory(filePath, password);
 		} catch (Exception e) {

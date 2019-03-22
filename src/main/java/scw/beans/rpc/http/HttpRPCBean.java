@@ -67,7 +67,7 @@ class HttpConsumerInvoker implements Invoker {
 		message.setAttribute("t", cts);
 		message.setAttribute("sign", SignUtils.md5Str(cts + signStr, charset.name()));
 
-		HttpRequest request = new HttpRequest(scw.net.http.enums.Method.POST) {
+		HttpRequest request = new HttpRequest(scw.net.http.enums.Method.POST, host) {
 			@Override
 			public void doOutput(OutputStream os) throws Throwable {
 				ObjectOutputStream oos = new ObjectOutputStream(os);
@@ -75,7 +75,7 @@ class HttpConsumerInvoker implements Invoker {
 			}
 		};
 
-		return NetworkUtils.executeHttp(host, request, new AbstractResponse<Object>() {
+		return NetworkUtils.execute(request, new AbstractResponse<Object>() {
 
 			@Override
 			public Object doInput(InputStream is) throws Throwable {

@@ -12,13 +12,12 @@ import java.util.Map.Entry;
 import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.StringUtils;
 import scw.core.NestedRuntimeException;
+import scw.net.Body;
 import scw.net.NetworkUtils;
 import scw.net.http.enums.Method;
 import scw.net.http.request.BodyRequest;
 import scw.net.http.request.FormRequest;
 import scw.net.http.request.HttpRequest;
-import scw.net.response.Body;
-import scw.net.response.BodyResponse;
 
 public final class HttpUtils {
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
@@ -27,34 +26,26 @@ public final class HttpUtils {
 	};
 
 	public static String doGet(String url) {
-		return doGet(url, DEFAULT_CHARSET);
-	}
-
-	public static String doGet(String url, Charset charset) {
-		HttpRequest request = new HttpRequest(Method.GET);
-		request.setRequestContentType("application/x-www-form-urlencoded; charset=" + charset.name());
-		Body body = NetworkUtils.executeHttp(url, request);
+		HttpRequest request = new HttpRequest(Method.GET, url);
+		request.setRequestContentType("application/x-www-form-urlencoded; charset=" + DEFAULT_CHARSET.name());
+		Body body = NetworkUtils.execute(request);
 		return body.toString(DEFAULT_CHARSET);
 	}
 
-	public static Body doPost(String url, Map<String, String> propertyMap, byte[] data) {
-		HttpRequest request = new BodyRequest(Method.POST, data);
-		return NetworkUtils.executeHttp(url, request);
-	}
-
-	public static String doPost(String url, Map<String, String> propertyMap, String body, Charset charset) {
-		HttpRequest request = new BodyRequest(Method.POST, body.getBytes(charset));
-		Body b = NetworkUtils.executeHttp(url, request);
-		return b.toString(charset);
-	}
-
 	public static String doPost(String url, Map<String, String> propertyMap, String body) {
-		return doPost(url, propertyMap, body, DEFAULT_CHARSET);
+		HttpRequest request = new BodyRequest(Method.POST, url, new Body(body, DEFAULT_CHARSET));
+		request.setRequestProperties(propertyMap);
+		Body response = NetworkUtils.execute(request);
+		if (response == null) {
+			return null;
+		}
+
+		return response.toString(DEFAULT_CHARSET);
 	}
 
 	public static String doPost(String url, Map<String, String> propertyMap, Map<String, ?> parameterMap,
 			Charset charset) {
-		FormRequest request = new FormRequest(Method.POST, charset.name());
+		FormRequest request = new FormRequest(Method.POST, url, charset.name());
 		request.setRequestProperties(propertyMap);
 		if (parameterMap != null) {
 			for (Entry<String, ?> entry : parameterMap.entrySet()) {
@@ -62,7 +53,7 @@ public final class HttpUtils {
 			}
 		}
 
-		Body body = NetworkUtils.executeHttp(url, request, new BodyResponse());
+		Body body = NetworkUtils.execute(request);
 		return body.toString(charset);
 	}
 

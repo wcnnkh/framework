@@ -17,11 +17,11 @@ import scw.common.utils.StringUtils;
 import scw.common.utils.XMLUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.net.Body;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpUtils;
 import scw.net.http.enums.Method;
 import scw.net.http.request.X509Request;
-import scw.net.response.Body;
 import scw.utils.tencent.weixin.bean.Unifiedorder;
 
 public final class WeiXinPay {
@@ -369,7 +369,7 @@ public final class WeiXinPay {
 		map.put("notify_url", notify_url);
 
 		final String content = getRequestContent(map);
-		X509Request request = new X509Request(Method.POST, certTrustFile, password) {
+		X509Request request = new X509Request(Method.POST, REFUND_URL, certTrustFile, password) {
 			@Override
 			public void doOutput(OutputStream os) throws Throwable {
 				os.write(content.getBytes(charset));
@@ -377,7 +377,7 @@ public final class WeiXinPay {
 			}
 		};
 
-		Body response = NetworkUtils.executeHttp(REFUND_URL, request);
+		Body response = NetworkUtils.execute(request);
 		String str = response.toString(charset);
 		if (debug) {
 			logger.debug("退款接口返回：{}", str);
