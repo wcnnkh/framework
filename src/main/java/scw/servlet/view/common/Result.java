@@ -2,18 +2,24 @@ package scw.servlet.view.common;
 
 import java.io.Serializable;
 
+import com.alibaba.fastjson.JSONObject;
+
 import scw.common.utils.StringUtils;
 import scw.servlet.view.AbstractTextView;
 import scw.servlet.view.common.enums.ResultCode;
+import scw.transaction.RollbackOnlyResult;
 
-import com.alibaba.fastjson.JSONObject;
+public class Result extends AbstractTextView implements Serializable, RollbackOnlyResult {
 
-public class Result extends AbstractTextView implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private int code;
 	private String msg;
 
 	public int getCode() {
+		if (code == 0) {
+			return StringUtils.isEmpty(getMsg()) ? 0 : ResultCode.error.getCode();
+		}
+
 		return code;
 	}
 
@@ -76,9 +82,12 @@ public class Result extends AbstractTextView implements Serializable {
 	@Override
 	public String getResponseText() {
 		JSONObject json = new JSONObject(4);
-		String msg = getMsg();
-		json.put("code", StringUtils.isEmpty(msg)? 0:getCode());
-		json.put("msg", msg);
+		json.put("code", getCode());
+		json.put("msg", getMsg());
 		return json.toJSONString();
+	}
+
+	public boolean isRollbackOnly() {
+		return isError();
 	}
 }
