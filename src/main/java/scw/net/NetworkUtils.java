@@ -29,7 +29,7 @@ public final class NetworkUtils {
 
 			return execute(urlConnection, request, response);
 		} catch (Throwable e) {
-			throw new NestedRuntimeException(e);
+			throw new NestedRuntimeException(url.toString(), e);
 		} finally {
 			if (urlConnection != null) {
 				if (urlConnection instanceof HttpURLConnection) {
