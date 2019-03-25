@@ -83,6 +83,51 @@ public final class Crontab {
 		crontabDayOfMonth("*", "1", "0", task);
 	}
 
+	/**
+	 * 第分钟执行一次
+	 * 
+	 * @param task
+	 */
+	public void perMinute(Runnable task) {
+		crontab("*", "*", "*", "*", "*", task);
+	}
+
+	/**
+	 * 每5分钟执行(当分钟的最后一位为0或5时)
+	 * 
+	 * @param task
+	 */
+	public void every5Minutes(Runnable task) {
+		crontab("*", "*", "*", "*", "*0,*5", task);
+	}
+
+	/**
+	 * 每10分钟(当分钟的最后一位为0时)
+	 * 
+	 * @param task
+	 */
+	public void every10Minutes(Runnable task) {
+		crontab("*", "*", "*", "*", "*0", task);
+	}
+
+	/**
+	 * 每半个小时(当分钟为0或30时)
+	 * 
+	 * @param task
+	 */
+	public void everyHalfHour(Runnable task) {
+		crontab("*", "*", "*", "*", "0,30", task);
+	}
+
+	/**
+	 * 每小时(当分钟为0时执行)
+	 * 
+	 * @param task
+	 */
+	public void perHour(Runnable task) {
+		crontab("*", "*", "*", "*", "0", task);
+	}
+
 	@Destroy
 	public void shutdown() {
 		timer.cancel();
@@ -144,7 +189,7 @@ class CrontabInfo {
 			if (StringUtils.isEmpty(v)) {
 				return true;
 			}
-			
+
 			if (StringUtils.test(value + "", v)) {
 				return true;
 			}

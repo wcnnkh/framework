@@ -6,6 +6,11 @@ public final class TransactionManager {
 
 	private static final ThreadLocal<Transaction> LOCAL = new ThreadLocal<Transaction>();
 
+	/**
+	 * 获取事务，会根据事务定义生成指定规则的事务
+	 * @param transactionDefinition
+	 * @return
+	 */
 	public static Transaction getTransaction(TransactionDefinition transactionDefinition) {
 		Transaction transaction = LOCAL.get();
 		switch (transactionDefinition.getPropagation()) {
@@ -76,6 +81,11 @@ public final class TransactionManager {
 		}
 	}
 
+	/**
+	 * 提交事务
+	 * @param transaction
+	 * @throws Throwable
+	 */
 	public static void commit(Transaction transaction) throws Throwable {
 		if (transaction.isComplete()) {
 			return;
@@ -97,6 +107,10 @@ public final class TransactionManager {
 		}
 	}
 
+	/**
+	 * 回滚事务
+	 * @param transaction
+	 */
 	public static void rollback(Transaction transaction) {
 		if (transaction.isComplete()) {
 			return;
@@ -126,6 +140,10 @@ public final class TransactionManager {
 		return getCurrentTransaction() != null;
 	}
 
+	/**
+	 * 加入到当前事务的生命周期
+	 * @param tlc
+	 */
 	public static void transactionLifeCycle(TransactionLifeCycle tlc) {
 		Transaction transaction = getCurrentTransaction();
 		if (transaction == null) {
