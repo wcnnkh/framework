@@ -22,8 +22,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
-import scw.common.utils.Assert;
-
 /**
  * Miscellaneous utility methods for number conversion and parsing.
  * Mainly for internal use within the framework; consider Jakarta's

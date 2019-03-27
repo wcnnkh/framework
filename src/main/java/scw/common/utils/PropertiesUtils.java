@@ -14,7 +14,6 @@ import java.util.Properties;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.StringFormat;
-import scw.core.NestedRuntimeException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
@@ -210,11 +209,11 @@ public final class PropertiesUtils {
 			try {
 				method.invoke(instance, StringUtils.conversion(value, parameterType));
 			} catch (IllegalAccessException e) {
-				throw new NestedRuntimeException(e);
+				throw new RuntimeException(e);
 			} catch (IllegalArgumentException e) {
-				throw new NestedRuntimeException(e);
+				throw new RuntimeException(e);
 			} catch (InvocationTargetException e) {
-				throw new NestedRuntimeException(e);
+				throw new RuntimeException(e);
 			}
 		}
 	}

@@ -3,10 +3,6 @@ package scw.common.exception;
 public class BeansException extends RuntimeException{
 	private static final long serialVersionUID = 1L;
 	
-	public BeansException(){
-		super();
-	}
-	
 	public BeansException(String message){
 		super(message);
 	}

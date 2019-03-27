@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.aop.jdk.JDKProxyUtils;
 import scw.beans.AsyncCompleteFilter;
 import scw.beans.BeanFactory;
-import scw.beans.proxy.jdk.JDKProxyUtils;
-import scw.common.MethodConfig;
+import scw.common.MethodDefinition;
 
 public final class TCCManager {
 	private TCCManager() {
@@ -42,14 +42,14 @@ public final class TCCManager {
 			return;
 		}
 
-		MethodConfig confirmMethod = info.getMethodConfig(tcc.confirm());
-		MethodConfig cancelMethod = info.getMethodConfig(tcc.cancel());
-		MethodConfig complateMethod = info.getMethodConfig(tcc.complete());
+		MethodDefinition confirmMethod = info.getMethodDefinition(tcc.confirm());
+		MethodDefinition cancelMethod = info.getMethodDefinition(tcc.cancel());
+		MethodDefinition complateMethod = info.getMethodDefinition(tcc.complete());
 		if (confirmMethod == null && cancelMethod == null && complateMethod == null) {
 			return;
 		}
 
-		MethodConfig tryMethod = new MethodConfig(interfaceClz, method);
+		MethodDefinition tryMethod = new MethodDefinition(interfaceClz, method);
 		TCCService tccService = beanFactory.get(tcc.service());
 		if (tccService == null) {
 			return;

@@ -12,7 +12,7 @@ import scw.common.utils.ConfigUtils;
  * @author shuchaowen
  *
  */
-public class XmlBeansParse implements ConfigParse{
+public final class XmlBeansParse implements ConfigParse{
 	public Object parse(BeanFactory beanFactory, FieldInfo field, String filePath, String charset) throws Exception{
 		File file = ConfigUtils.getFile(filePath);
 		String type = field.getField().getGenericType().toString();

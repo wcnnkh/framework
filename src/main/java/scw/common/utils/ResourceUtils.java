@@ -24,8 +24,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import scw.common.utils.Assert;
-import scw.common.utils.StringUtils;
 import scw.servlet.utils.Log4jConfigurer;
 
 /**

@@ -8,6 +8,7 @@ import java.util.Map;
 import scw.beans.BeanFactory;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.XUtils;
+import scw.servlet.Action;
 import scw.servlet.Request;
 import scw.servlet.action.annotation.Controller;
 

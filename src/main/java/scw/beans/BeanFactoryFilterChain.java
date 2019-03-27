@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import scw.beans.proxy.Filter;
-import scw.beans.proxy.FilterChain;
-import scw.beans.proxy.Invoker;
+import scw.aop.Filter;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
 
 public final class BeanFactoryFilterChain implements FilterChain {
 	private BeanFactory beanFactory;

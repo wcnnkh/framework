@@ -10,16 +10,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import scw.aop.Filter;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
 import scw.beans.annotaion.AsyncComplete;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
-import scw.beans.proxy.Filter;
-import scw.beans.proxy.FilterChain;
-import scw.beans.proxy.Invoker;
 import scw.common.Base64;
 import scw.common.FileManager;
-import scw.common.MethodConfig;
+import scw.common.MethodDefinition;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.FileUtils;
@@ -146,7 +146,7 @@ public final class AsyncCompleteFilter implements Filter {
 
 class AsyncInvokeInfo implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private MethodConfig methodConfig;
+	private MethodDefinition methodConfig;
 	private long delayMillis;
 	private TimeUnit timeUnit;
 	private Object[] args;
@@ -156,12 +156,12 @@ class AsyncInvokeInfo implements Serializable{
 
 	public AsyncInvokeInfo(AsyncComplete asyncComplete, Class<?> clz, Method method, Object[] args) {
 		this.delayMillis = asyncComplete.delayMillis();
-		this.methodConfig = new MethodConfig(clz, method);
+		this.methodConfig = new MethodDefinition(clz, method);
 		this.timeUnit = asyncComplete.timeUnit();
 		this.args = args;
 	}
 
-	public MethodConfig getMethodConfig() {
+	public MethodDefinition getMethodConfig() {
 		return methodConfig;
 	}
 
@@ -175,7 +175,7 @@ class AsyncInvokeInfo implements Serializable{
 
 	public Object invoke(BeanFactory beanFactory) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException {
-		Object bean = beanFactory.get(methodConfig.getClz());
+		Object bean = beanFactory.get(methodConfig.getBelongClass());
 		return methodConfig.getMethod().invoke(bean, args);
 	}
 }

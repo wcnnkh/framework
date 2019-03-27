@@ -15,7 +15,7 @@ public final class Message implements Serializable {
 
 	private transient volatile String messageKey;
 
-	public Message() {
+	protected Message() {
 	};
 
 	public Message(Method method, Object[] args) {

@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import scw.beans.property.PropertiesFactory;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.exception.BeansException;
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.ClassUtils;
 
 public abstract class AbstractBeanFactory implements BeanFactory {
@@ -230,7 +230,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 				BeanUtils.initStatic(this, getPropertiesFactory(), getClassList());
 			}
 		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new NestedRuntimeException(e);
 		}
 	}
 

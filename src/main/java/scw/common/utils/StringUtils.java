@@ -22,7 +22,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.ParameterException;
 
 public final class StringUtils {
 	public final static char[] CAPITAL_LETTERS = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
@@ -738,7 +738,7 @@ public final class StringUtils {
 	 */
 	public static String complemented(String str, char complemented, int length) {
 		if (length < str.length()) {
-			throw new ShuChaoWenRuntimeException("length error [" + str + "]");
+			throw new ParameterException("length error [" + str + "]");
 		}
 
 		if (length == str.length()) {
@@ -2095,7 +2095,7 @@ public final class StringUtils {
 		try {
 			return data == null ? null : data.getBytes(charsetName);
 		} catch (UnsupportedEncodingException e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 

@@ -18,7 +18,7 @@ import scw.net.AbstractResponse;
 import scw.net.NetworkUtils;
 import scw.net.http.request.HttpRequest;
 
-public class HttpRPCBean extends AbstractInterfaceProxyBean {
+public final class HttpRPCBean extends AbstractInterfaceProxyBean {
 	private final String host;
 	private final String signStr;
 	private final Charset charset;
@@ -48,7 +48,7 @@ public class HttpRPCBean extends AbstractInterfaceProxyBean {
 	}
 }
 
-class HttpConsumerInvoker implements Invoker {
+final class HttpConsumerInvoker implements Invoker {
 	private Method method;
 	private String host;
 	private Charset charset;

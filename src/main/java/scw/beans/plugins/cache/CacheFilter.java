@@ -2,9 +2,9 @@ package scw.beans.plugins.cache;
 
 import java.lang.reflect.Method;
 
-import scw.beans.proxy.Filter;
-import scw.beans.proxy.FilterChain;
-import scw.beans.proxy.Invoker;
+import scw.aop.Filter;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
 import scw.memcached.Memcached;
 import scw.redis.Redis;
 

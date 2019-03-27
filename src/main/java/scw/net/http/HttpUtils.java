@@ -9,9 +9,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.StringUtils;
-import scw.core.NestedRuntimeException;
 import scw.net.Body;
 import scw.net.NetworkUtils;
 import scw.net.http.enums.Method;
@@ -127,7 +126,7 @@ public final class HttpUtils {
 		try {
 			return decode(value, DEFAULT_CHARSET.name());
 		} catch (UnsupportedEncodingException e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new NestedRuntimeException(e);
 		}
 	}
 

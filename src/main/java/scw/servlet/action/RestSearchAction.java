@@ -10,6 +10,7 @@ import scw.beans.BeanFactory;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.XUtils;
 import scw.net.http.enums.Method;
+import scw.servlet.Action;
 import scw.servlet.Request;
 import scw.servlet.action.annotation.Controller;
 

@@ -16,7 +16,7 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 
-public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
+public final class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "dubbo:reference";
 
 	public XmlDubboBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String config) throws ClassNotFoundException {

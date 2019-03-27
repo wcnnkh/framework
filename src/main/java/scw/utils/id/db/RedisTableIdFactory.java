@@ -2,7 +2,7 @@ package scw.utils.id.db;
 
 import java.util.Arrays;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.locks.Lock;
 import scw.locks.RedisLock;
@@ -42,7 +42,7 @@ public final class RedisTableIdFactory extends AbstractTableIdFactory {
 							Arrays.asList(maxId + ""));
 				}
 			} catch (InterruptedException e) {
-				throw new ShuChaoWenRuntimeException(e);
+				throw new NestedRuntimeException(e);
 			} finally {
 				lock.unlock();
 			}

@@ -3,8 +3,8 @@ package scw.beans.plugins.cache;
 import java.lang.reflect.Method;
 import java.util.TimerTask;
 
-import scw.beans.proxy.FilterChain;
-import scw.beans.proxy.Invoker;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 

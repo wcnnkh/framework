@@ -6,11 +6,11 @@ import java.util.LinkedList;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import scw.aop.Filter;
+import scw.aop.Invoker;
+import scw.aop.cglib.CglibInvoker;
 import scw.beans.annotaion.BeanFilter;
 import scw.beans.annotaion.Retry;
-import scw.beans.proxy.Filter;
-import scw.beans.proxy.Invoker;
-import scw.beans.proxy.cglib.CglibInvoker;
 import scw.common.exception.BeansException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -106,7 +106,7 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 				}
 			}
 		}
-		throw new BeansException();
+		throw new BeansException(method.getDeclaringClass().getName());
 	}
 
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {

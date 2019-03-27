@@ -2,6 +2,7 @@ package scw.servlet.action;
 
 import java.util.Collection;
 
+import scw.servlet.Action;
 import scw.servlet.Request;
 
 public interface SearchAction {

@@ -9,7 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.exception.AlreadyExistsException;
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 
@@ -55,9 +55,8 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 				nameMapping.put(name, i);
 			}
 		} else if (rowIndex >= beginRowIndex && (endRowIndex == -1 || rowIndex <= endRowIndex)) {
-			System.out.println("来了啊。。。。。。");
 			if (nameMapping.isEmpty()) {
-				throw new ShuChaoWenRuntimeException("未加载name的映射关系, nameMappingIndex=" + nameMappingIndex);
+				throw new NestedRuntimeException("未加载name的映射关系, nameMappingIndex=" + nameMappingIndex);
 			}
 
 			try {

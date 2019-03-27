@@ -19,7 +19,7 @@ import com.aliyun.oss.model.PolicyConditions;
 
 import scw.common.exception.AlreadyExistsException;
 import scw.common.exception.NotFoundException;
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.ParameterException;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
 import scw.common.utils.XUtils;
@@ -197,7 +197,7 @@ public final class OSS {
 		}
 		
 		if(!checkObjectKey(objectKey, root, uid) || isBucketURL(objectKey)){
-			throw new ShuChaoWenRuntimeException("不合法的objectKey:" + objectKey);
+			throw new ParameterException("不合法的objectKey:" + objectKey);
 		}
 		
 		StringBuilder sb = new StringBuilder();
@@ -299,7 +299,7 @@ public final class OSS {
 		try {
 			binaryData = policy.getBytes(DEFAULT_CHARSET_NAME);
 		} catch (UnsupportedEncodingException e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new ParameterException(e);
 		}
         String encPolicy = BinaryUtil.toBase64String(binaryData);
         

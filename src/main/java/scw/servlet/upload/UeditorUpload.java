@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.FileUtils;
 import scw.servlet.Request;
 import scw.servlet.upload.ueditor.ActionEnter;
@@ -19,7 +19,7 @@ public final class UeditorUpload implements Upload {
 		try {
 			init();
 		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new NestedRuntimeException(e);
 		}
 	}
 

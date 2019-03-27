@@ -24,7 +24,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import scw.common.Base64;
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.NestedRuntimeException;
 
 public final class FileUtils {
 	private FileUtils() {
@@ -342,7 +342,7 @@ public final class FileUtils {
 			InputStreamReader isr = new InputStreamReader(fileInputStream, Charset.forName(charsetName));
 			return IOUtils.read(isr, 256, 0);
 		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new NestedRuntimeException(e);
 		} finally {
 			XUtils.close(fileInputStream);
 		}
@@ -370,7 +370,7 @@ public final class FileUtils {
 			br = new BufferedReader(isr);
 			return IOUtils.readLineList(br, -1);
 		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new RuntimeException(e);
 		} finally {
 			XUtils.close(br, isr, fis);
 		}
@@ -382,7 +382,7 @@ public final class FileUtils {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				throw new ShuChaoWenRuntimeException(e);
+				throw new RuntimeException(e);
 			}
 		}
 		writeFileContent(file, content, charsetName);

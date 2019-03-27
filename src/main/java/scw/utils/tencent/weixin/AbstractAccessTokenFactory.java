@@ -1,6 +1,6 @@
 package scw.utils.tencent.weixin;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.NestedRuntimeException;
 import scw.utils.tencent.weixin.bean.AccessToken;
 
 public abstract class AbstractAccessTokenFactory implements AccessTokenFactory {
@@ -32,7 +32,7 @@ public abstract class AbstractAccessTokenFactory implements AccessTokenFactory {
 		}
 
 		if (accessToken == null) {
-			throw new ShuChaoWenRuntimeException("无法获取token");
+			throw new NestedRuntimeException("无法获取token");
 		}
 
 		return accessToken.getAccess_token();

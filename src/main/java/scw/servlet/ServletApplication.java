@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import javax.servlet.ServletConfig;
@@ -17,7 +18,7 @@ import scw.application.CommonApplication;
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.rpc.http.Message;
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.NestedRuntimeException;
 import scw.common.reflect.Invoker;
 import scw.common.reflect.ReflectInvoker;
 import scw.common.utils.IOUtils;
@@ -26,7 +27,6 @@ import scw.common.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.http.enums.Method;
-import scw.servlet.action.Action;
 import scw.servlet.action.DefaultSearchAction;
 import scw.servlet.action.SearchAction;
 import scw.servlet.beans.CommonRequestBeanFactory;
@@ -43,12 +43,13 @@ import scw.servlet.request.RequestFactory;
 public class ServletApplication implements Application {
 	private static Logger logger = LoggerFactory.getLogger(ServletApplication.class);
 
-	private static final String CHARSET_NAME = "shuchaowen.charsetName";
-	private static final String RPC_SIGN = "shuchaowen.rpc-sign";
-	private static final String RPC_PATH = "shuchaowen.rpc-path";
-	private static final String REQUEST_FACTORY = "shuchaowen.request-factory";
-	private static final String SEARCH_ACTION = "shuchaowen.search-action";
-	private static final String DEFAULT_ACTION_KEY = "shuchaowen.actionKey";
+	private static final String CHARSET_NAME = "servlet.charsetName";
+	private static final String RPC_SIGN = "servlet.rpc-sign";
+	private static final String RPC_PATH = "servlet.rpc-path";
+	private static final String REQUEST_FACTORY = "servlet.request-factory";
+	private static final String SEARCH_ACTION = "servlet.search-action";
+	private static final String DEFAULT_ACTION_KEY = "servlet.actionKey";
+	private static final String DEFAULT_ACTION_FILTERS = "servlet.filters";
 
 	private final CommonApplication commonApplication;
 	private SearchAction searchAction;
@@ -60,6 +61,25 @@ public class ServletApplication implements Application {
 	private boolean rpcEnabled;
 	private final RequestBeanFactory requestBeanFactory;
 	private RequestFactory requestFactory;
+	private LinkedList<String> filters;
+
+	public void addFilter(String filter) {
+		if (filters == null) {
+			filters = new LinkedList<String>();
+			filters.add(filter);
+		} else {
+			for (String n : filters) {
+				if (n.equals(filter)) {
+					return;
+				}
+			}
+			filters.add(filter);
+		}
+	}
+
+	public void addFilter(Class<? extends Filter> filter) {
+		addFilter(filter.getName());
+	}
 
 	public ServletApplication(ServletConfig servletConfig) throws Exception {
 		ServletConfigPropertiesFactory propertiesFactory = new ServletConfigPropertiesFactory(servletConfig);
@@ -130,7 +150,7 @@ public class ServletApplication implements Application {
 	 */
 	private boolean rpcAuthorize(Message message) {
 		if (!isRpcEnabled()) {
-			throw new ShuChaoWenRuntimeException("RPC not opened");
+			throw new NestedRuntimeException("RPC not opened");
 		}
 
 		if (StringUtils.isNull(rpcSignStr)) {// 不校验签名
@@ -170,12 +190,12 @@ public class ServletApplication implements Application {
 	public void rpc(InputStream inputStream, OutputStream outputStream) throws Throwable {
 		Message message = IOUtils.readJavaObject(inputStream);
 		if (!rpcAuthorize(message)) {
-			throw new ShuChaoWenRuntimeException("RPC验证失败");
+			throw new NestedRuntimeException("RPC验证失败");
 		}
 
 		Invoker invoker = getRPCInvoker(message);
 		if (invoker == null) {
-			throw new ShuChaoWenRuntimeException("not found service:" + message.getMessageKey());
+			throw new NestedRuntimeException("not found service:" + message.getMessageKey());
 		}
 
 		Object obj = invoker.invoke(message.getArgs());
@@ -275,10 +295,22 @@ public class ServletApplication implements Application {
 			searchAction = new DefaultSearchAction(getBeanFactory(), actionKey);
 		}
 
+		String filterNames = getPropertiesFactory().getValue(DEFAULT_ACTION_FILTERS);
+		if (!StringUtils.isEmpty(filterNames)) {
+			String[] filterNameArr = StringUtils.commonSplit(filterNames);
+			for (String filter : filterNameArr) {
+				if (StringUtils.isEmpty(filter)) {
+					continue;
+				}
+
+				addFilter(filter);
+			}
+		}
+
 		try {
 			searchAction.init(commonApplication.getClasses());
 		} catch (Throwable e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new NestedRuntimeException(e);
 		}
 
 		if (requestFactory == null) {

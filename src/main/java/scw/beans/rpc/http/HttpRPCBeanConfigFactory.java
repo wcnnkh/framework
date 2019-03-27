@@ -12,7 +12,7 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 
-public class HttpRPCBeanConfigFactory extends AbstractBeanConfigFactory {
+public final class HttpRPCBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "http:reference";
 
 	public HttpRPCBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String config) throws Exception {

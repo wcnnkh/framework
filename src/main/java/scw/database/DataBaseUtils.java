@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.XUtils;
 import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
@@ -40,7 +39,7 @@ public final class DataBaseUtils {
 				iterator.iterator(rs);
 			}
 		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(SqlUtils.getSqlId(sql), e);
+			throw new RuntimeException(SqlUtils.getSqlId(sql), e);
 		} finally {
 			XUtils.close(rs, stmt, connection);
 		}

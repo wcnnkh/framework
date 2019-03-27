@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.ParameterException;
 import scw.db.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
@@ -47,7 +47,7 @@ public class MysqlSelect extends Select {
 	public Select whereAndValue(Class<?> tableClass, String name, Object value) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		if (!tableInfo.isTable()) {
-			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
+			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
 		String tableName = getTableName(tableClass);
@@ -67,7 +67,7 @@ public class MysqlSelect extends Select {
 	public Select whereOrValue(Class<?> tableClass, String name, Object value) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		if (!tableInfo.isTable()) {
-			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
+			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
 		String tableName = getTableName(tableClass);
@@ -90,7 +90,7 @@ public class MysqlSelect extends Select {
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		if (!tableInfo.isTable()) {
-			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
+			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
 		String tableName = getTableName(tableClass);
@@ -121,7 +121,7 @@ public class MysqlSelect extends Select {
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		if (!tableInfo.isTable()) {
-			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
+			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
 		String tableName = getTableName(tableClass);
@@ -152,7 +152,7 @@ public class MysqlSelect extends Select {
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		if (!tableInfo.isTable()) {
-			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
+			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
 		String tableName = getTableName(tableClass);
@@ -180,7 +180,7 @@ public class MysqlSelect extends Select {
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		if (!tableInfo.isTable()) {
-			throw new ShuChaoWenRuntimeException(tableClass.getName() + "not found @Table");
+			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
 		String tableName = getTableName(tableClass);

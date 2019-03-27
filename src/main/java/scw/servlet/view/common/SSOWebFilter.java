@@ -2,10 +2,10 @@ package scw.servlet.view.common;
 
 import javax.servlet.http.Cookie;
 
+import scw.servlet.Filter;
+import scw.servlet.FilterChain;
 import scw.servlet.Request;
 import scw.servlet.Response;
-import scw.servlet.action.Filter;
-import scw.servlet.action.FilterChain;
 import scw.servlet.view.common.enums.ResultCode;
 import scw.utils.login.Session;
 import scw.utils.login.LoginFactory;

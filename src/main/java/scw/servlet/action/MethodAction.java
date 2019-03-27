@@ -2,16 +2,17 @@ package scw.servlet.action;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.common.exception.ShuChaoWenRuntimeException;
-import scw.common.reflect.Invoker;
-import scw.common.reflect.ReflectInvoker;
+import scw.common.exception.ParameterException;
 import scw.common.utils.ClassUtils;
+import scw.servlet.Action;
+import scw.servlet.Filter;
+import scw.servlet.FilterChain;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.action.annotation.Controller;
@@ -19,29 +20,26 @@ import scw.servlet.action.annotation.Filters;
 import scw.servlet.action.annotation.Methods;
 
 public class MethodAction implements Action {
-	private final List<Filter> filterList;
-	private final Invoker invoke;
-	private final MethodParameter[] paramsInfo;
+	private MethodParameter[] methodParameters;
+	private BeanFactory beanFactory;
+	private Class<?> clz;
+	private Method method;
+	private List<String> filters;
 
 	public MethodAction(BeanFactory beanFactory, Class<?> clz, Method method) {
-		this.invoke = new ReflectInvoker(beanFactory, clz, method);
-		Controller clzController = clz.getAnnotation(Controller.class);
-		Controller methodControler = method.getAnnotation(Controller.class);
-		this.paramsInfo = getMethodParameter(method);
-		this.filterList = mergeFilter(beanFactory, clzController, method.getAnnotation(Filters.class), methodControler);
+		this.beanFactory = beanFactory;
+		this.clz = clz;
+		this.method = method;
+		this.methodParameters = getMethodParameter();
+		this.filters = mergeFilter();
 	}
 
 	public void doAction(Request request, Response response) throws Throwable {
-		FilterChain chain = new ActionFilterChain(invoke, paramsInfo, filterList);
-		chain.doFilter(request, response);
+		FilterChain filterChain = new ActionFilterChain(beanFactory, clz, method, methodParameters, filters);
+		filterChain.doFilter(request, response);
 	}
 
-	@Override
-	public String toString() {
-		return invoke.toString();
-	}
-
-	public static MethodParameter[] getMethodParameter(Method method) {
+	private MethodParameter[] getMethodParameter() {
 		String[] tempKeys = ClassUtils.getParameterName(method);
 		Class<?>[] types = method.getParameterTypes();
 		Parameter[] parameters = method.getParameters();
@@ -52,10 +50,13 @@ public class MethodAction implements Action {
 		return paramInfos;
 	}
 
-	public static List<Filter> mergeFilter(BeanFactory beanFactory, Controller clzController, Filters filters,
-			Controller methodController) {
+	private List<String> mergeFilter() {
+		Controller clzController = clz.getAnnotation(Controller.class);
+		Controller methodController = method.getAnnotation(Controller.class);
+		Filters filters = method.getAnnotation(Filters.class);
+
 		Map<String, Boolean> nameMap = new HashMap<String, Boolean>();
-		List<Filter> list = new ArrayList<Filter>();
+		List<String> list = new LinkedList<String>();
 
 		if (filters == null) {
 			if (clzController != null) {
@@ -66,7 +67,7 @@ public class MethodAction implements Action {
 					}
 
 					nameMap.put(name, true);
-					list.add(beanFactory.get(filter));
+					list.add(name);
 				}
 			}
 		} else {
@@ -77,7 +78,7 @@ public class MethodAction implements Action {
 				}
 
 				nameMap.put(name, true);
-				list.add(beanFactory.get(filter));
+				list.add(name);
 			}
 		}
 
@@ -89,7 +90,7 @@ public class MethodAction implements Action {
 				}
 
 				nameMap.put(name, true);
-				list.add(beanFactory.get(filter));
+				list.add(name);
 			}
 		}
 		return list;
@@ -99,7 +100,7 @@ public class MethodAction implements Action {
 		Controller clzController = clz.getAnnotation(Controller.class);
 		Controller methodController = method.getAnnotation(Controller.class);
 		if (clzController == null || methodController == null) {
-			throw new ShuChaoWenRuntimeException();
+			throw new ParameterException("方法或类上都不存在Controller注解");
 		}
 
 		Methods methods = method.getAnnotation(Methods.class);

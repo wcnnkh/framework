@@ -9,7 +9,7 @@ import scw.beans.XmlBeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboUtils;
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.LoggerFactory;
@@ -29,7 +29,7 @@ public class CommonApplication implements Application {
 			this.beanFactory.addFirstFilters(AsyncCompleteFilter.class.getName());
 			this.beanFactory.addFirstFilters(TransactionFilter.class.getName());
 		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new NestedRuntimeException(e);
 		}
 	}
 
@@ -51,12 +51,12 @@ public class CommonApplication implements Application {
 
 	public void init() {
 		if (start) {
-			throw new ShuChaoWenRuntimeException("已经启动了");
+			throw new RuntimeException("已经启动了");
 		}
 
 		synchronized (this) {
 			if (start) {
-				throw new ShuChaoWenRuntimeException("已经启动了");
+				throw new RuntimeException("已经启动了");
 			}
 
 			start = true;
@@ -80,12 +80,12 @@ public class CommonApplication implements Application {
 
 	public void destroy() {
 		if (!start) {
-			throw new ShuChaoWenRuntimeException("还未启动，无法销毁");
+			throw new RuntimeException("还未启动，无法销毁");
 		}
 
 		synchronized (this) {
 			if (!start) {
-				throw new ShuChaoWenRuntimeException("还未启动，无法销毁");
+				throw new RuntimeException("还未启动，无法销毁");
 			}
 
 			start = false;

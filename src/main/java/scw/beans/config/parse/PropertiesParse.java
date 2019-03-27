@@ -11,7 +11,7 @@ import scw.common.utils.ClassUtils;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.StringUtils;
 
-public class PropertiesParse implements ConfigParse {
+public final class PropertiesParse implements ConfigParse {
 	public Object parse(BeanFactory beanFactory, FieldInfo field, String filePath, String charset) throws Exception{
 		File file = ConfigUtils.getFile(filePath);
 		Properties properties = ConfigUtils.getProperties(file, charset);

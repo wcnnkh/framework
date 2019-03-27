@@ -3,7 +3,7 @@ package scw.logger.console;
 import scw.logger.AbstractLogger;
 import scw.logger.Message;
 
-public class ConsoleLogger extends AbstractLogger {
+public final class ConsoleLogger extends AbstractLogger {
 	private final ConsoleLoggerFactory consoleLoggerFactory;
 
 	public ConsoleLogger(boolean traceEnabled, boolean debugEnabled, boolean infoEnabled, boolean warnEnabled,

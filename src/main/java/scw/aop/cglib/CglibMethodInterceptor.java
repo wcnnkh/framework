@@ -1,15 +1,15 @@
-package scw.beans.proxy.cglib;
+package scw.aop.cglib;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import scw.beans.proxy.DefaultFilterChain;
-import scw.beans.proxy.Filter;
-import scw.beans.proxy.Invoker;
+import scw.aop.DefaultFilterChain;
+import scw.aop.Filter;
+import scw.aop.Invoker;
 
-public class CglibMethodInterceptor implements MethodInterceptor {
+public final class CglibMethodInterceptor implements MethodInterceptor {
 	private final Collection<Filter> filters;
 
 	public CglibMethodInterceptor(Collection<Filter> filters) {

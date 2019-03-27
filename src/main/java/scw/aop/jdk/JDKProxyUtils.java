@@ -1,14 +1,14 @@
-package scw.beans.proxy.jdk;
+package scw.aop.jdk;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
 
-import scw.beans.proxy.DefaultFilterChain;
-import scw.beans.proxy.Filter;
-import scw.beans.proxy.FilterChain;
-import scw.beans.proxy.Invoker;
+import scw.aop.DefaultFilterChain;
+import scw.aop.Filter;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
 
 public final class JDKProxyUtils {
 	private JDKProxyUtils() {

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.ClassUtils;
 import scw.sql.Sql;
 import scw.sql.orm.annoation.Table;
@@ -105,11 +105,11 @@ public final class DBManager {
 			}
 		} else {
 			if (CLASS_NAME_TO_DB.containsKey(name)) {
-				throw new ShuChaoWenRuntimeException(name + "已经存在了");
+				throw new AlreadyExistsException(name + "已经存在了");
 			} else {
 				synchronized (CLASS_NAME_TO_DB) {
 					if (CLASS_NAME_TO_DB.containsKey(name)) {
-						throw new ShuChaoWenRuntimeException(name + "已经存在了");
+						throw new AlreadyExistsException(name + "已经存在了");
 					} else {
 						CLASS_NAME_TO_DB.put(name, db);
 						if (create) {

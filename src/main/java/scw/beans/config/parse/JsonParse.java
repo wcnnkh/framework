@@ -16,7 +16,7 @@ import scw.common.utils.FileUtils;
  * @author shuchaowen
  *
  */
-public class JsonParse implements ConfigParse{
+public final class JsonParse implements ConfigParse{
 	
 	public Object parse(BeanFactory beanFactory, FieldInfo field, String filePath, String charset) throws Exception{
 		File file = ConfigUtils.getFile(filePath);

@@ -3,7 +3,7 @@ package scw.sql.orm.mysql;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.ParameterException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.sql.Sql;
@@ -23,7 +23,7 @@ public class UpdateSQL implements Sql {
 		}
 
 		if (valueMap == null || valueMap.isEmpty()) {
-			throw new ShuChaoWenRuntimeException("valueMap isEmpty");
+			throw new ParameterException("valueMap isEmpty");
 		}
 
 		if (params.length == 0) {

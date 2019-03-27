@@ -33,7 +33,6 @@ import org.xml.sax.SAXException;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.exception.NotFoundException;
-import scw.common.exception.ShuChaoWenRuntimeException;
 
 public final class XMLUtils {
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
@@ -52,7 +51,7 @@ public final class XMLUtils {
 		try {
 			return DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -60,7 +59,7 @@ public final class XMLUtils {
 		try {
 			return TRANSFORMER_FACTORY.newTransformer();
 		} catch (TransformerConfigurationException e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 

@@ -9,8 +9,8 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import scw.common.exception.NestedRuntimeException;
 import scw.common.exception.NotSupportException;
-import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.exception.SignatureException;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
@@ -105,15 +105,15 @@ public final class WeiXinPay {
 				limit_pay, openid);
 		Map<String, String> map = XMLUtils.xmlToMap(content);
 		if (map == null) {
-			throw new ShuChaoWenRuntimeException("服务器错误");
+			throw new NestedRuntimeException("服务器错误");
 		}
 
 		if (!"SUCCESS".equals(map.get("return_code"))) {
-			throw new ShuChaoWenRuntimeException(content);
+			throw new NestedRuntimeException(content);
 		}
 
 		if (!"SUCCESS".equals(map.get("result_code"))) {
-			throw new ShuChaoWenRuntimeException(content);
+			throw new NestedRuntimeException(content);
 		}
 
 		if (!checkSign(map)) {
@@ -348,7 +348,7 @@ public final class WeiXinPay {
 			// TODO
 			throw new NotSupportException(sign_type);
 		} else {
-			throw new ShuChaoWenRuntimeException("不支持的签名方式:" + sign_type);
+			throw new NotSupportException("不支持的签名方式:" + sign_type);
 		}
 	}
 

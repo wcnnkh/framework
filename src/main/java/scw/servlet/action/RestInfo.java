@@ -2,6 +2,8 @@ package scw.servlet.action;
 
 import java.util.Map;
 
+import scw.servlet.Action;
+
 public class RestInfo {
 	private String url;
 	private Map<Integer, String> keyMap;

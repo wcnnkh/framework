@@ -1,4 +1,4 @@
-package scw.beans.proxy;
+package scw.aop;
 
 import java.lang.reflect.Method;
 

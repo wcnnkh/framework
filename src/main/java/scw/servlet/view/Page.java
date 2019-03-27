@@ -15,8 +15,8 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
+import scw.common.exception.NestedRuntimeException;
 import scw.common.exception.NotFoundException;
-import scw.common.exception.ShuChaoWenRuntimeException;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.Logger;
@@ -181,7 +181,7 @@ public class Page extends HashMap<String, Object> implements View {
 			try {
 				jsp(response.getRequest(), response, realPage);
 			} catch (ServletException e) {
-				throw new ShuChaoWenRuntimeException(e);
+				throw new NestedRuntimeException(e);
 			}
 			break;
 		case FREEMARKER:

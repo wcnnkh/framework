@@ -3,7 +3,7 @@ package scw.sql.orm.mysql;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.NestedRuntimeException;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
@@ -37,7 +37,7 @@ public class InsertSQL implements Sql{
 		try {
 			this.params = getParams(tableInfo, obj);
 		} catch (Exception e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new NestedRuntimeException(e);
 		}
 	}
 	

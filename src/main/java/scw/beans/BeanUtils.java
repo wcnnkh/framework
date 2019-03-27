@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 
 import net.sf.cglib.proxy.Enhancer;
+import scw.aop.Filter;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.Bean;
 import scw.beans.annotaion.Config;
@@ -20,11 +21,10 @@ import scw.beans.annotaion.InitMethod;
 import scw.beans.annotaion.Properties;
 import scw.beans.annotaion.Retry;
 import scw.beans.property.PropertiesFactory;
-import scw.beans.proxy.Filter;
 import scw.beans.xml.XmlBeanParameter;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.BeansException;
 import scw.common.reflect.Invoker;
 import scw.common.reflect.ReflectInvoker;
 import scw.common.utils.ClassUtils;
@@ -62,7 +62,7 @@ public final class BeanUtils {
 				}
 
 				if (method.getParameterCount() != 0) {
-					throw new ShuChaoWenRuntimeException("ClassName=" + clz.getName() + ",MethodName="
+					throw new BeansException("ClassName=" + clz.getName() + ",MethodName="
 							+ method.getName() + "There must be no parameter.");
 				}
 
@@ -99,7 +99,7 @@ public final class BeanUtils {
 				}
 
 				if (method.getParameterCount() != 0) {
-					throw new ShuChaoWenRuntimeException("ClassName=" + clz.getName() + ",MethodName="
+					throw new RuntimeException("ClassName=" + clz.getName() + ",MethodName="
 							+ method.getName() + "There must be no parameter.");
 				}
 

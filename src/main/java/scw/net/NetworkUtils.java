@@ -6,7 +6,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 
-import scw.core.NestedRuntimeException;
+import scw.common.exception.NestedRuntimeException;
 import scw.net.response.BodyResponse;
 
 public final class NetworkUtils {

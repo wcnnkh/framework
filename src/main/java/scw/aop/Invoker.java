@@ -1,4 +1,4 @@
-package scw.beans.proxy;
+package scw.aop;
 
 public interface Invoker {
 	Object invoke() throws Throwable;

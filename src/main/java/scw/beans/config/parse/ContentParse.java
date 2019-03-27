@@ -9,7 +9,7 @@ import scw.common.FieldInfo;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.FileUtils;
 
-public class ContentParse implements ConfigParse{
+public final class ContentParse implements ConfigParse{
 	public Object parse(BeanFactory beanFactory, FieldInfo fieldInfo, String filePath, String charset) throws Exception{
 		File file = ConfigUtils.getFile(filePath);
 		List<String> list = FileUtils.getFileContentLineList(file, charset);

@@ -1,6 +1,6 @@
 package scw.sql;
 
-import scw.core.NestedRuntimeException;
+import scw.common.exception.NestedRuntimeException;
 
 public class SqlException extends NestedRuntimeException {
 	private static final long serialVersionUID = 1L;

@@ -1,8 +1,6 @@
 package scw.net;
 
-import scw.core.NestedRuntimeException;
-
-public class RequestException extends NestedRuntimeException {
+public class RequestException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public RequestException(String msg) {

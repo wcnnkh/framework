@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import scw.beans.BeanFieldListen;
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.ParameterException;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
@@ -22,7 +22,7 @@ public class UpdateSQLByBeanListen implements Sql {
 		}
 
 		if (beanFieldListen.get_field_change_map() == null || beanFieldListen.get_field_change_map().size() == 0) {
-			throw new ShuChaoWenRuntimeException("not change properties");
+			throw new ParameterException("not change properties");
 		}
 
 		StringBuilder sb = new StringBuilder(512);

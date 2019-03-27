@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import scw.common.ByteArray;
-import scw.common.exception.ShuChaoWenRuntimeException;
 
 public final class IOUtils {
 	private IOUtils() {
@@ -54,7 +53,7 @@ public final class IOUtils {
 			oos.flush();
 			return bos.toByteArray();
 		} catch (IOException e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new RuntimeException(e);
 		} finally {
 			XUtils.close(oos, bos);
 		}
@@ -68,7 +67,7 @@ public final class IOUtils {
 			ois = new ObjectInputStream(bis);
 			return (T) ois.readObject();
 		} catch (Throwable e) {
-			throw new ShuChaoWenRuntimeException(e);
+			throw new RuntimeException(e);
 		} finally {
 			XUtils.close(ois, bis);
 		}

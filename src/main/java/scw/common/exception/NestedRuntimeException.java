@@ -1,4 +1,4 @@
-package scw.core;
+package scw.common.exception;
 
 import com.sun.istack.Nullable;
 

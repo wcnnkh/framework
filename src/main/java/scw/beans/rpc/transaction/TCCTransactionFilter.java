@@ -2,12 +2,12 @@ package scw.beans.rpc.transaction;
 
 import java.lang.reflect.Method;
 
+import scw.aop.Filter;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
 import scw.beans.BeanFactory;
-import scw.beans.proxy.Filter;
-import scw.beans.proxy.FilterChain;
-import scw.beans.proxy.Invoker;
 
-class TCCTransactionFilter implements Filter {
+final class TCCTransactionFilter implements Filter {
 	
 	private final Object obj;
 	private final Class<?> interfaceClass;

@@ -18,7 +18,7 @@ import scw.common.exception.BeansException;
 import scw.common.exception.NotSupportException;
 import scw.common.utils.StringUtils;
 
-public class XmlDubboBean implements Bean {
+public final class XmlDubboBean implements Bean {
 	private final String[] names;
 	private final String id;
 	private final String version;

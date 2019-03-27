@@ -1,6 +1,6 @@
 package scw.utils.tencent.weixin;
 
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.NestedRuntimeException;
 import scw.utils.tencent.weixin.bean.JsApiTicket;
 
 public abstract class AbstractJsApiTicketFactory implements JsApiTicketFactory {
@@ -33,7 +33,7 @@ public abstract class AbstractJsApiTicketFactory implements JsApiTicketFactory {
 		}
 
 		if (jsApiTicket == null) {
-			throw new ShuChaoWenRuntimeException("无法获取ticket");
+			throw new NestedRuntimeException("无法获取ticket");
 		}
 		return jsApiTicket.getTicket();
 	}

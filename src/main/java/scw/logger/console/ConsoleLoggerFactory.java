@@ -4,7 +4,7 @@ import scw.logger.AbstractLoggerFactory;
 import scw.logger.Logger;
 import scw.logger.Message;
 
-public class ConsoleLoggerFactory extends AbstractLoggerFactory {
+public final class ConsoleLoggerFactory extends AbstractLoggerFactory {
 
 	@Override
 	protected void out(Message message) {

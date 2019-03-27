@@ -1,8 +1,8 @@
-package scw.beans.proxy.jdk;
+package scw.aop.jdk;
 
 import java.lang.reflect.Method;
 
-import scw.beans.proxy.Invoker;
+import scw.aop.Invoker;
 
 public final class JDKInvoker implements Invoker {
 	private final Object obj;

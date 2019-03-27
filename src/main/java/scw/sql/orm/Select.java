@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.common.Pagination;
-import scw.common.exception.ShuChaoWenRuntimeException;
+import scw.common.exception.ParameterException;
 import scw.sql.Sql;
 import scw.sql.orm.result.ResultSet;
 
@@ -154,7 +154,7 @@ public abstract class Select {
 		if (table2Columns == null || table2Columns.length == 0) {
 			if (t1.getPrimaryKeyColumns().length != t2.getPrimaryKeyColumns().length) {
 				// 两张表的主键数量不一致
-				throw new ShuChaoWenRuntimeException("primary key count atypism");
+				throw new ParameterException("primary key count atypism");
 			}
 
 			for (int i = 0; i < t1.getPrimaryKeyColumns().length; i++) {
@@ -169,7 +169,7 @@ public abstract class Select {
 		} else {
 			if (table2Columns.length != t1.getPrimaryKeyColumns().length) {
 				// 指明的外键和主键数量不一致
-				throw new ShuChaoWenRuntimeException("primary key count atypism");
+				throw new ParameterException("primary key count atypism");
 			}
 
 			for (int i = 0; i < table2Columns.length; i++) {

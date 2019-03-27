@@ -1,7 +1,7 @@
-package scw.beans.proxy.cglib;
+package scw.aop.cglib;
 
 import net.sf.cglib.proxy.MethodProxy;
-import scw.beans.proxy.Invoker;
+import scw.aop.Invoker;
 
 public final class CglibInvoker implements Invoker {
 	private final MethodProxy proxy;

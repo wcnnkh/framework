@@ -6,9 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.alibaba.fastjson.JSONArray;
 
-import scw.beans.proxy.Filter;
-import scw.beans.proxy.FilterChain;
-import scw.beans.proxy.Invoker;
+import scw.aop.Filter;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
 import scw.common.utils.StringUtils;
 
 public abstract class AbstractCacheFilter implements Filter {

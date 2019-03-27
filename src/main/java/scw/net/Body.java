@@ -8,8 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import scw.common.ByteArray;
+import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.IOUtils;
-import scw.core.NestedRuntimeException;
 
 public final class Body implements Serializable {
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
