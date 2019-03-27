@@ -9,19 +9,14 @@ import java.util.Map.Entry;
 
 import scw.sql.orm.AbstractORMTemplate;
 import scw.sql.orm.ORMUtils;
-import scw.sql.orm.SqlFormat;
 import scw.sql.orm.TableInfo;
 
 public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
-	private final Cache cache;
-
-	public AbstractORMCacheTemplate(SqlFormat sqlFormat, Cache cache) {
-		super(sqlFormat);
-		this.cache = cache;
-	}
+	public abstract Cache getCache();
 
 	@Override
 	public <T> T getById(String tableName, Class<T> type, Object... params) {
+		Cache cache = getCache();
 		if (cache == null) {
 			return super.getById(tableName, type, params);
 		}
@@ -39,6 +34,7 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 
 	@Override
 	public boolean delete(Object bean, String tableName) {
+		Cache cache = getCache();
 		if (cache == null) {
 			return super.delete(bean, tableName);
 		}
@@ -49,6 +45,7 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 
 	@Override
 	public boolean deleteById(String tableName, Class<?> type, Object... params) {
+		Cache cache = getCache();
 		if (cache == null) {
 			return super.deleteById(tableName, type, params);
 		}
@@ -59,6 +56,7 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 
 	@Override
 	public boolean save(Object bean, String tableName) {
+		Cache cache = getCache();
 		if (cache == null) {
 			return super.save(bean, tableName);
 		}
@@ -69,6 +67,7 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 
 	@Override
 	public boolean saveOrUpdate(Object bean, String tableName) {
+		Cache cache = getCache();
 		if (cache == null) {
 			return super.saveOrUpdate(bean, tableName);
 		}
@@ -79,6 +78,7 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 
 	@Override
 	public boolean update(Object bean, String tableName) {
+		Cache cache = getCache();
 		if (cache == null) {
 			return super.update(bean, tableName);
 		}
@@ -89,6 +89,7 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 
 	@Override
 	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params) {
+		Cache cache = getCache();
 		if (cache == null) {
 			return super.getInIdList(type, tableName, inIds, params);
 		}

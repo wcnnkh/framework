@@ -11,8 +11,9 @@ import java.util.Date;
 import java.util.List;
 
 public final class XTime {
-	private XTime(){};
-	
+	private XTime() {
+	};
+
 	/**
 	 * 一天的毫秒数
 	 */
@@ -29,37 +30,42 @@ public final class XTime {
 	 * 一秒的毫秒数
 	 */
 	public static final long ONE_SECOND = 1000L;
-	
+
 	/**
 	 * 将时间格式和时间字符串值传入，获得时间戳<br>
 	 * 举例时间格式 yyyy-MM-dd hh:mm:ss
-	 * @param timeStr,时间2010-09-12 00:00:00
-	 * @param format,时间格式 yyyy-MM-dd hh:mm:ss
+	 * 
+	 * @param timeStr,时间2010-09-12
+	 *            00:00:00
+	 * @param format,时间格式
+	 *            yyyy-MM-dd hh:mm:ss
 	 * @return
 	 */
-	public static long getTime(String timeStr, String format){// 
-		try{
-			//时间格式 yyyy-MM-dd hh:mm:ss
+	public static long getTime(String timeStr, String format) {//
+		try {
+			// 时间格式 yyyy-MM-dd hh:mm:ss
 			SimpleDateFormat sdf = new SimpleDateFormat(format);
 			Date d = sdf.parse(timeStr);
 			return d.getTime();
-		}catch(Exception ex){}
+		} catch (Exception ex) {
+		}
 		return 0L;
 	}
-	
+
 	/**
 	 * 获取今日的凌晨0:00
+	 * 
 	 * @return
 	 */
-	public static long getTodayBeginTime(){
+	public static long getTodayBeginTime() {
 		Calendar calendar = Calendar.getInstance();
-    	calendar.set(Calendar.HOUR_OF_DAY,   0);
-    	calendar.set(Calendar.MINUTE,   0);
-    	calendar.set(Calendar.SECOND,   0);
-    	calendar.set(Calendar.MILLISECOND,   0);
-    	return calendar.getTime().getTime();
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		return calendar.getTime().getTime();
 	}
-	
+
 	/**
 	 * 
 	 * @param 单位：秒
@@ -90,7 +96,7 @@ public final class XTime {
 
 		return time;
 	}
-	
+
 	/**
 	 * 
 	 * @param 单位：秒
@@ -122,7 +128,7 @@ public final class XTime {
 		df.applyPattern("00");
 		time += (":" + df.format(minute));
 		time += (":" + df.format(sec));
-		
+
 		df.applyPattern("000");
 		time += (":" + df.format(msec));
 
@@ -131,6 +137,7 @@ public final class XTime {
 
 	/**
 	 * 将时间转换成 day:hour:minute:second
+	 * 
 	 * @param 单位：秒
 	 * @return
 	 */
@@ -254,15 +261,16 @@ public final class XTime {
 
 	/**
 	 * 把 yyyy-MM-dd 类型的时间转化为毫秒数
+	 * 
 	 * @param date
 	 * @return
 	 * @throws ParseException
 	 */
-	public static long formatStr(String date) throws ParseException{
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");    
+	public static long formatStr(String date) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		return sdf.parse(date).getTime();
 	}
-	
+
 	/**
 	 * 支持把 hh:mm:ss 格式的字符串，转换成秒为单位的long。 mm:ss 或者 ss 格式的字符串也可以
 	 * 
@@ -291,270 +299,289 @@ public final class XTime {
 
 		return total;
 	}
-	
+
 	/**
 	 * 判断是否是同一天
 	 */
-	public static boolean isSameDay(long d1 , long d2){
+	public static boolean isSameDay(long d1, long d2) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String date1 = sdf.format(new Date(d1));
 		String date2 = sdf.format(new Date(d2));
 		return date1.equals(date2);
 	}
-	
+
 	/**
 	 * 判断是否是今天
 	 */
-	public static boolean isSameDay(Date d1,long l2){
+	public static boolean isSameDay(Date d1, long l2) {
 		Date d2 = new Date();
 		d2.setTime(l2);
-		
+
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String str1 = sdf.format(d1);
 		String str2 = sdf.format(d2);
-		if(str1.equals(str2)){
+		if (str1.equals(str2)) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 判断是否是今天
 	 */
-	public static boolean isToday(Date d1){
-		return isSameDay(d1,new Date());
+	public static boolean isToday(Date d1) {
+		return isSameDay(d1, new Date());
 	}
-	
+
 	/**
 	 * 判断是否是今天
 	 */
-	public static boolean isToday(long time){
+	public static boolean isToday(long time) {
 		Date dt = new Date(time);
-		return isSameDay(dt,new Date());
+		return isSameDay(dt, new Date());
 	}
-	
+
 	/**
 	 * 
 	 * @param d1
 	 * @param standardTime
 	 * @return
 	 */
-	public static boolean isSameDay(Date d1,Date standardTime){
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
-		String date1Str = sdf.format(d1);  
-		String date2Str = sdf.format(standardTime);  
-		return date1Str.equals(date2Str); 
+	public static boolean isSameDay(Date d1, Date standardTime) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String date1Str = sdf.format(d1);
+		String date2Str = sdf.format(standardTime);
+		return date1Str.equals(date2Str);
 	}
-	
-	public static String format(Date d){
-		if(d==null){
+
+	public static String format(Date d) {
+		if (d == null) {
 			return "";
 		}
-		SimpleDateFormat sdf = new SimpleDateFormat("yy年MM月dd日"); 
+		SimpleDateFormat sdf = new SimpleDateFormat("yy年MM月dd日");
 		return sdf.format(d);
 	}
-	
-	public static String format(Date d,String formatter){
-		if(d==null){
+
+	public static String format(Date d, String formatter) {
+		if (d == null) {
 			return "";
 		}
-		SimpleDateFormat sdf = new SimpleDateFormat(formatter); //"MM-dd HH:mm"
+		SimpleDateFormat sdf = new SimpleDateFormat(formatter); // "MM-dd HH:mm"
 		return sdf.format(d);
 	}
-	
-	public static String format(long t,String formatter){
+
+	public static String format(long t, String formatter) {
 		Date d = new Date();
 		d.setTime(t);
 		return format(d, formatter);
 	}
-	
+
 	/**
 	 * 输出格式:中文-今天/昨天/前天
+	 * 
 	 * @param d
 	 * @return
 	 */
-	public static String formatDate(Date d){
+	public static String formatDate(Date d) {
 		Date today = new Date();
-	
+
 		Date yesterday = new Date();
-		yesterday.setTime(today.getTime()-24*60*60*1000);
+		yesterday.setTime(today.getTime() - 24 * 60 * 60 * 1000);
 
 		Date beforeYesterday = new Date();
-		beforeYesterday.setTime(today.getTime()-48*60*60*1000);
-			
-		if(XTime.isSameDay(d, today)){
+		beforeYesterday.setTime(today.getTime() - 48 * 60 * 60 * 1000);
+
+		if (XTime.isSameDay(d, today)) {
 			return "今天";
-		}else if(XTime.isSameDay(d, yesterday)){
+		} else if (XTime.isSameDay(d, yesterday)) {
 			return "昨天";
-		}else if(XTime.isSameDay(d, beforeYesterday)){
+		} else if (XTime.isSameDay(d, beforeYesterday)) {
 			return "前天";
-		}else{
-			SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日");  
+		} else {
+			SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日");
 			return sdf.format(d);
 		}
 	}
-	
-	public static String formatTime(long time){
+
+	public static String formatTime(long time) {
 		Date d = new Date();
 		d.setTime(time);
 		return formatDate(d);
 	}
-	
+
 	/**
 	 * 得到指定时间点的时间戳<br>
 	 * 举例: 如取今天凌晨1点10分20秒的时间戳 <br>
-	 *   getDayTs(System.currentTimeMillis(), "01:10:20")
+	 * getDayTs(System.currentTimeMillis(), "01:10:20")
 	 */
-	public static long getDayTs(long ts, String endStr){
+	public static long getDayTs(long ts, String endStr) {
 		long endTs = 0L;
 		try {
-			DateFormat ft = new SimpleDateFormat("yyyy-MM-dd"); 
-			String ds = ft.format(new Date(ts))+" "+endStr;
+			DateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+			String ds = ft.format(new Date(ts)) + " " + endStr;
 			Date dt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(ds);
 			endTs = dt.getTime();
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 		return endTs;
 	}
-	
+
 	/**
 	 * 获取某个日子对应的星期
+	 * 
 	 * @param dt
 	 * @return
 	 */
-	public static int getWeek(Date dt){
+	public static int getWeek(Date dt) {
 		Calendar cal = Calendar.getInstance();
-        cal.setTime(dt);
-        int week = cal.get(Calendar.DAY_OF_WEEK);
-        
-        if(week==1){
-        	week = 8;
-        }
-        week--;
-        return week;
+		cal.setTime(dt);
+		int week = cal.get(Calendar.DAY_OF_WEEK);
+
+		if (week == 1) {
+			week = 8;
+		}
+		week--;
+		return week;
 	}
-	
+
 	/**
 	 * 获取某一天(yyyyMMdd)
+	 * 
 	 * @param dt
 	 * @return
 	 */
-	public static int getDay(Date dt){
+	public static int getDay(Date dt) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		String dayStr = sdf.format(dt);
 		int day = Integer.parseInt(dayStr);
 		return day;
 	}
-	
-	public static int getTime(Date dt){
+
+	public static int getTime(Date dt) {
 		SimpleDateFormat sdf = new SimpleDateFormat("HHmmss");
 		String dayStr = sdf.format(dt);
 		int day = Integer.parseInt(dayStr);
 		return day;
 	}
-	
+
 	/**
 	 * 获取年月
+	 * 
 	 * @param dt
 	 * @return
 	 */
-	public static int getYearMonth(Date dt){
+	public static int getYearMonth(Date dt) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 		String dayStr = sdf.format(dt);
 		int yearMonth = Integer.parseInt(dayStr);
 		return yearMonth;
 	}
-	
+
 	/**
 	 * 获取注册日期后count天的留存天数
+	 * 
 	 * @param regDay
 	 * @param count
 	 * @return
 	 */
-	public static int[] getRemainDays(int regDay, int count){
+	public static int[] getRemainDays(int regDay, int count) {
 		int[] remainDays = new int[count];
-		try{
+		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-			Date date = sdf.parse(""+regDay);
-			
+			Date date = sdf.parse("" + regDay);
+
 			long time = date.getTime();
-			for(int i=0;i<count;i++){
-				date.setTime(time+24*3600000L*i);
+			for (int i = 0; i < count; i++) {
+				date.setTime(time + 24 * 3600000L * i);
 				int day = getDay(date);
 				remainDays[i] = day;
 			}
-		}catch(Exception ex){
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		return remainDays;
 	}
-	
+
 	/**
 	 * 获取注册日期后 n 天日期
+	 * 
 	 * @param regDay
 	 * @param count
 	 * @return
 	 */
-	public static int getConverDay(int regDay, int count){
+	public static int getConverDay(int regDay, int count) {
 		int remainDays = 0;
-		try{
+		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-			Date date = sdf.parse(""+regDay);
-			
+			Date date = sdf.parse("" + regDay);
+
 			long time = date.getTime();
-			date.setTime(time+24*3600000L*count);
+			date.setTime(time + 24 * 3600000L * count);
 			int day = getDay(date);
 			remainDays = day;
-			
-		}catch(Exception ex){
+
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		return remainDays;
 	}
-	
+
 	/**
 	 * 获取时间段内所有天数
+	 * 
 	 * @param startDay
 	 * @param endDay
 	 * @return
 	 */
-	public static int[] getDays(int startDay, int endDay){
+	public static int[] getDays(int startDay, int endDay) {
 		int[] days = null;
-		try{
-			
-			if(endDay == 0 || startDay == endDay){
-				days = new int[]{startDay};
+		try {
+
+			if (endDay == 0 || startDay == endDay) {
+				days = new int[] { startDay };
 				return days;
 			}
-			
+
 			List<Integer> dayList = new ArrayList<Integer>();
-			
+
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-			Date startDate = sdf.parse(""+startDay);	
-	
+			Date startDate = sdf.parse("" + startDay);
+
 			dayList.add(startDay);
-			
+
 			boolean isEnd = false;
-			while(!isEnd){
+			while (!isEnd) {
 				long startTime = startDate.getTime();
-				startDate.setTime(startTime+24*3600000L);
+				startDate.setTime(startTime + 24 * 3600000L);
 				int day = getDay(startDate);
-				
-				if(day == endDay){
+
+				if (day == endDay) {
 					isEnd = true;
 				}
 				dayList.add(day);
 			}
-			
-			if(dayList.size() > 0){
+
+			if (dayList.size() > 0) {
 				days = new int[dayList.size()];
-				for(int i = 0; i<dayList.size(); i++){
+				for (int i = 0; i < dayList.size(); i++) {
 					days[i] = dayList.get(i);
 				}
 			}
-			
-		}catch(Exception ex){
+
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		return days;
+	}
+
+	/**
+	 * 获取到今天凌晨的时间间隔
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public static int getToTodayTimeInterval(long time) {
+		double interval = Math.abs(XTime.getTodayBeginTime() - time);
+		return (int) Math.ceil(interval / ONE_DAY);
 	}
 }

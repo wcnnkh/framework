@@ -19,6 +19,8 @@ import scw.transaction.sql.SqlTransactionUtils;
 public class JdbcTemplate extends AbstractORMCacheTemplate {
 	private final ConnectionFactory connectionFactory;
 	private final boolean lazy;// 延迟执行
+	private final Cache cache;
+	private final SqlFormat sqlFormat;
 
 	public JdbcTemplate(DataSource dataSource, SqlFormat sqlFormat, boolean lazy) {
 		this(dataSource, sqlFormat, null, lazy);
@@ -46,15 +48,17 @@ public class JdbcTemplate extends AbstractORMCacheTemplate {
 	}
 
 	public JdbcTemplate(DataSource dataSource, SqlFormat sqlFormat, Cache cache, boolean lazy) {
-		super(sqlFormat, cache);
 		this.connectionFactory = new DataSourceConnectionFactory(dataSource);
 		this.lazy = lazy;
+		this.cache = cache;
+		this.sqlFormat = sqlFormat;
 	}
 
 	public JdbcTemplate(ConnectionFactory connectionFactory, SqlFormat sqlFormat, Cache cache, boolean lazy) {
-		super(sqlFormat, cache);
 		this.connectionFactory = connectionFactory;
 		this.lazy = lazy;
+		this.cache = cache;
+		this.sqlFormat = sqlFormat;
 	}
 
 	public Connection getConnection() throws SQLException {
@@ -85,5 +89,15 @@ public class JdbcTemplate extends AbstractORMCacheTemplate {
 			}
 		}
 		return super.update(sql);
+	}
+
+	@Override
+	public Cache getCache() {
+		return cache;
+	}
+
+	@Override
+	public SqlFormat getSqlFormat() {
+		return sqlFormat;
 	}
 }

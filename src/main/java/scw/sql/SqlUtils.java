@@ -6,16 +6,22 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 public final class SqlUtils {
-	private SqlUtils(){};
-	
+	private SqlUtils() {
+	};
+
 	public static String getSqlId(Sql sql) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("[");
-		sb.append(sql.getSql());
-		sb.append("]");
-		sb.append(" - ");
-		sb.append(sql.getParams() == null ? "[]" : Arrays.toString(sql.getParams()));
-		return sb.toString();
+		Object[] params = sql.getParams();
+		if (params == null || params.length == 0) {
+			return sql.getSql();
+		} else {
+			StringBuilder sb = new StringBuilder();
+			sb.append("[");
+			sb.append(sql.getSql());
+			sb.append("]");
+			sb.append(" - ");
+			sb.append(Arrays.toString(sql.getParams()));
+			return sb.toString();
+		}
 	}
 
 	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql) throws SQLException {
@@ -80,5 +86,4 @@ public final class SqlUtils {
 		}
 		return preparedStatement;
 	}
-
 }

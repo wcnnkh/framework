@@ -108,10 +108,9 @@ public final class PropertiesUtils {
 		}
 	}
 
-	public static <T> void loadProperties(T instance, String propertiesFile, Collection<String> asNameList,
-			boolean log) {
+	public static <T> void loadProperties(T instance, String propertiesFile, Collection<String> asNameList) {
 		Properties properties = ConfigUtils.getProperties(propertiesFile, "UTF-8");
-		invokeSetterByProeprties(instance, properties, true, true, asNameList, true, log);
+		invokeSetterByProeprties(instance, properties, true, true, asNameList, true);
 	}
 
 	/**
@@ -128,7 +127,7 @@ public final class PropertiesUtils {
 	 * @param log
 	 */
 	public static void invokeSetterByProeprties(Object instance, Map<?, ?> properties, boolean propertieGetAndRemove,
-			boolean invokePublic, Collection<String> asNameList, boolean findAndRemove, boolean log) {
+			boolean invokePublic, Collection<String> asNameList, boolean findAndRemove) {
 		List<String> nameList = null;
 		if (!CollectionUtils.isEmpty(asNameList)) {
 			nameList = new ArrayList<String>(asNameList);

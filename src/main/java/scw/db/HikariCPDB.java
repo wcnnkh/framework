@@ -10,7 +10,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import scw.beans.annotaion.Destroy;
-import scw.sql.orm.SqlFormat;
+import scw.db.database.DataBase;
 import scw.sql.orm.cache.Cache;
 
 /**
@@ -21,16 +21,38 @@ import scw.sql.orm.cache.Cache;
  */
 public class HikariCPDB extends DB {
 	private HikariDataSource hds;
+	private DataBase dataBase;
+	private Cache cache;
 
-	public HikariCPDB(SqlFormat sqlFormat, String propertiesFile) {
-		this(sqlFormat, null, propertiesFile);
+	public HikariCPDB(String propertiesFile) {
+		this(null, propertiesFile);
 	}
 
-	public HikariCPDB(SqlFormat sqlFormat, Cache cache, String propertiesFile) {
-		super(sqlFormat, cache);
+	@Override
+	public Cache getCache() {
+		return cache;
+	}
+
+	@Override
+	public DataBase getDataBase() {
+		return dataBase;
+	}
+
+	public HikariCPDB(Cache cache, String propertiesFile) {
 		HikariConfig config = new HikariConfig();
 		DBUtils.loadProperties(config, propertiesFile);
+
+		this.dataBase = DBUtils.automaticRecognition(config.getDriverClassName(), config.getJdbcUrl(),
+				config.getUsername(), config.getPassword());
+		dataBase.create();
+
 		hds = new HikariDataSource(config);
+	}
+
+	public void createDataBase() {
+		if (dataBase != null) {
+			dataBase.create();
+		}
 	}
 
 	public Connection getConnection() throws SQLException {

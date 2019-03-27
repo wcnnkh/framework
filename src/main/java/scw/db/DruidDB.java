@@ -10,29 +10,45 @@ import com.alibaba.druid.pool.DruidDataSource;
 
 import scw.beans.annotaion.Bean;
 import scw.beans.annotaion.Destroy;
-import scw.sql.orm.SqlFormat;
+import scw.db.database.DataBase;
 import scw.sql.orm.cache.Cache;
 
 @Bean(proxy = false)
 public class DruidDB extends DB {
 	private DruidDataSource datasource;
+	private DataBase dataBase;
+	private Cache cache;
 
 	/**
 	 * @param propertiesFilePath
 	 */
-	public DruidDB(SqlFormat sqlFormat, String propertiesFilePath) {
-		this(null, sqlFormat, propertiesFilePath);
+	public DruidDB(String propertiesFilePath) {
+		this(null, propertiesFilePath);
 	}
 
-	public DruidDB(Cache cache, SqlFormat sqlFormat, String propertiesFilePath) {
-		super(sqlFormat, cache);
+	@Override
+	public DataBase getDataBase() {
+		return dataBase;
+	}
+	
+	@Override
+	public Cache getCache() {
+		return cache;
+	}
+
+	public DruidDB(Cache cache, String propertiesFilePath) {
+		this.cache = cache;
 		datasource = new DruidDataSource();
 		DBUtils.loadProperties(datasource, propertiesFilePath);
 		if (!datasource.isPoolPreparedStatements()) {// 如果配置文件中没有开启psCache
 			datasource.setMaxPoolPreparedStatementPerConnectionSize(20);
 		}
-		
+
 		datasource.setRemoveAbandoned(false);
+
+		this.dataBase = DBUtils.automaticRecognition(datasource.getDriverClassName(), datasource.getUrl(),
+				datasource.getUsername(), datasource.getPassword());
+		dataBase.create();
 	}
 
 	public Connection getConnection() throws SQLException {

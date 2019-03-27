@@ -1,5 +1,6 @@
 package scw.sql.orm;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,16 +25,8 @@ import scw.sql.orm.result.ResultSet;
 import scw.transaction.cache.QueryCacheUtils;
 
 public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSelect, ORMOperations, SelectMaxId {
-
-	private final SqlFormat sqlFormat;
-
-	public AbstractORMTemplate(SqlFormat sqlFormat) {
-		this.sqlFormat = sqlFormat;
-	}
-
-	public final SqlFormat getSqlFormat() {
-		return sqlFormat;
-	}
+	
+	public abstract SqlFormat getSqlFormat();
 
 	public <T> T getById(Class<T> type, Object... params) {
 		return getById(null, type, params);
@@ -92,7 +85,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		}
 
 		OperationBean operationBean = new OperationBean(OperationType.SAVE, bean, tableName);
-		Sql sql = operationBean.format(sqlFormat);
+		Sql sql = operationBean.format(getSqlFormat());
 		if (sql == null) {
 			return false;
 		}
@@ -111,7 +104,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		}
 
 		OperationBean operationBean = new OperationBean(OperationType.UPDATE, bean, tableName);
-		Sql sql = operationBean.format(sqlFormat);
+		Sql sql = operationBean.format(getSqlFormat());
 		if (sql == null) {
 			return false;
 		}
@@ -128,7 +121,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		}
 
 		OperationBean operationBean = new OperationBean(OperationType.DELETE, bean, tableName);
-		Sql sql = operationBean.format(sqlFormat);
+		Sql sql = operationBean.format(getSqlFormat());
 		if (sql == null) {
 			return false;
 		}
@@ -151,7 +144,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		}
 
 		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName() : tableName;
-		Sql sql = sqlFormat.toDeleteSql(tableInfo, tName, params);
+		Sql sql = getSqlFormat().toDeleteSql(tableInfo, tName, params);
 		return execute(sql);
 	}
 
@@ -161,7 +154,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		}
 
 		OperationBean operationBean = new OperationBean(OperationType.SAVE_OR_UPDATE, bean, tableName);
-		Sql sql = operationBean.format(sqlFormat);
+		Sql sql = operationBean.format(getSqlFormat());
 		if (sql == null) {
 			return false;
 		}
@@ -258,7 +251,11 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 			return v == null ? defaultValue : v;
 		}
 	}
-
+	
+	public void createDataBase(Connection connection, String databaseName, String charsetName, String collate){
+		
+	}
+	
 	public void createTable(Class<?> tableClass) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		createTable(tableClass, tableInfo.getName());
@@ -286,7 +283,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 
 	@SuppressWarnings("unchecked")
 	public <T> Pagination<List<T>> select(Class<T> type, long page, int limit, Sql sql) {
-		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page, limit);
+		PaginationSql paginationSql = getSqlFormat().toPaginationSql(sql, page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
 		if (count == null) {
 			count = 0L;
@@ -304,7 +301,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 	}
 
 	public Pagination<ResultSet> select(long page, int limit, Sql sql) {
-		PaginationSql paginationSql = sqlFormat.toPaginationSql(sql, page, limit);
+		PaginationSql paginationSql = getSqlFormat().toPaginationSql(sql, page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
 		if (count == null) {
 			count = 0L;
