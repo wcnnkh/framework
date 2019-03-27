@@ -1,5 +1,6 @@
 package scw.net.http;
 
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -14,7 +15,6 @@ import scw.common.utils.StringUtils;
 import scw.net.Body;
 import scw.net.NetworkUtils;
 import scw.net.http.enums.Method;
-import scw.net.http.request.BodyRequest;
 import scw.net.http.request.FormRequest;
 import scw.net.http.request.HttpRequest;
 
@@ -31,8 +31,14 @@ public final class HttpUtils {
 		return body.toString(DEFAULT_CHARSET);
 	}
 
-	public static String doPost(String url, Map<String, String> propertyMap, String body) {
-		HttpRequest request = new BodyRequest(Method.POST, url, new Body(body, DEFAULT_CHARSET));
+	public static String doPost(String url, Map<String, String> propertyMap, final String body) {
+		HttpRequest request = new HttpRequest(Method.POST, url) {
+			@Override
+			public void doOutput(OutputStream os) throws Throwable {
+				os.write(body.getBytes(DEFAULT_CHARSET));
+				super.doOutput(os);
+			}
+		};
 		request.setRequestProperties(propertyMap);
 		Body response = NetworkUtils.execute(request);
 		if (response == null) {

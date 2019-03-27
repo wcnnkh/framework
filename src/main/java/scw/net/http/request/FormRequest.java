@@ -23,12 +23,12 @@ public class FormRequest extends HttpRequest {
 	}
 
 	@Override
-	public String getUrl() {
+	public String getRequestAddress() {
 		if (method != Method.GET) {
-			return super.getUrl();
+			return super.getRequestAddress();
 		}
 
-		String url = super.getUrl();
+		String url = super.getRequestAddress();
 		if (url == null) {
 			return url;
 		}

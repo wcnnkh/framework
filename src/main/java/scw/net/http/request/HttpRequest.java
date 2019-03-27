@@ -17,15 +17,15 @@ import scw.net.http.enums.Method;
 public class HttpRequest extends AbstractUrlRequest {
 	protected final Method method;
 	private Map<String, String> requestProperties;
-	private String url;
+	private String requestUrl;
 
-	public HttpRequest(Method method, String url) {
+	public HttpRequest(Method method, String requestUrl) {
 		this.method = method;
-		this.url = url;
+		this.requestUrl = requestUrl;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getRequestAddress() {
+		return requestUrl;
 	}
 
 	@Override
@@ -77,9 +77,9 @@ public class HttpRequest extends AbstractUrlRequest {
 	@Override
 	public URL getURL() {
 		try {
-			return new URL(getUrl());
+			return new URL(getRequestAddress());
 		} catch (MalformedURLException e) {
-			throw new RequestException(url, e);
+			throw new RequestException(getRequestAddress(), e);
 		}
 	}
 

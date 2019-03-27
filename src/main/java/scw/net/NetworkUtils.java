@@ -1,5 +1,6 @@
 package scw.net;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.Proxy;
@@ -7,6 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import scw.common.exception.NestedRuntimeException;
+import scw.net.http.HttpException;
 import scw.net.response.BodyResponse;
 
 public final class NetworkUtils {
@@ -29,7 +31,21 @@ public final class NetworkUtils {
 
 			return execute(urlConnection, request, response);
 		} catch (Throwable e) {
-			throw new NestedRuntimeException(url.toString(), e);
+			if(urlConnection == null){
+				throw new RuntimeException(url.toString(), e);
+			}else{
+				if(urlConnection instanceof HttpURLConnection){
+					try {
+						int code = ((HttpURLConnection) urlConnection).getResponseCode();
+						String message = ((HttpURLConnection) urlConnection).getResponseMessage();
+						throw new HttpException(url.toString(), code, message, e);
+					} catch (IOException e1) {
+						throw new RuntimeException(e1);
+					}
+				}else{
+					throw new RuntimeException(url.toString(), e);
+				}
+			}
 		} finally {
 			if (urlConnection != null) {
 				if (urlConnection instanceof HttpURLConnection) {

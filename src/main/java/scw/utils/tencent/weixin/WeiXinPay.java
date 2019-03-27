@@ -9,7 +9,6 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import scw.common.exception.NestedRuntimeException;
 import scw.common.exception.NotSupportException;
 import scw.common.exception.SignatureException;
 import scw.common.utils.SignUtils;
@@ -105,15 +104,15 @@ public final class WeiXinPay {
 				limit_pay, openid);
 		Map<String, String> map = XMLUtils.xmlToMap(content);
 		if (map == null) {
-			throw new NestedRuntimeException("服务器错误");
+			throw new RuntimeException("服务器错误");
 		}
 
 		if (!"SUCCESS".equals(map.get("return_code"))) {
-			throw new NestedRuntimeException(content);
+			throw new RuntimeException(content);
 		}
 
 		if (!"SUCCESS".equals(map.get("result_code"))) {
-			throw new NestedRuntimeException(content);
+			throw new RuntimeException(content);
 		}
 
 		if (!checkSign(map)) {
@@ -274,8 +273,7 @@ public final class WeiXinPay {
 		map.put("limit_pay", limit_pay);
 		map.put("openid", openid);
 
-		String content = getRequestContent(map);
-		String response = HttpUtils.doPost(weixin_unifiedorder_url, null, content);
+		String response = HttpUtils.doPost(weixin_unifiedorder_url, null, getRequestContent(map));
 		if (debug) {
 			logger.debug("统一下单接口返回：{}", response);
 		}
