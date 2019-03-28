@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 
 import scw.aop.Invoker;
 import scw.beans.BeanFactory;
-import scw.beans.tcc.TCCManager;
+import scw.beans.BeanUtils;
 import scw.common.utils.SignUtils;
 import scw.common.utils.XUtils;
 import scw.net.AbstractResponse;
@@ -44,7 +44,7 @@ public final class HttpRPCBean extends AbstractInterfaceProxyBean {
 						return httpConsumerInvoker.invoke(args);
 					}
 				});
-		return (T) TCCManager.convertTransactionProxy(beanFactory, getType(), newProxyInstance);
+		return (T) BeanUtils.proxyInterface(beanFactory, getType(), newProxyInstance);
 	}
 }
 

@@ -1,6 +1,5 @@
 package scw.beans;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ public class AnnotationBean implements Bean {
 	private final BeanFactory beanFactory;
 	private final Class<?> type;
 	private final String id;
-	private volatile Constructor<?> constructor;
 	private final BeanMethod[] initMethods;
 	private final BeanMethod[] destroyMethods;
 	private final boolean proxy;
@@ -109,27 +107,13 @@ public class AnnotationBean implements Bean {
 
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance() {
-		if (constructor == null) {
-			synchronized (this) {
-				if (constructor == null) {
-					try {
-						this.constructor = type.getDeclaredConstructor();// 不用考虑并发
-					} catch (NoSuchMethodException e) {
-						e.printStackTrace();
-					} catch (SecurityException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-
 		Object bean;
 		try {
 			if (isProxy()) {
 				Enhancer enhancer = getProxyEnhancer();
 				bean = enhancer.create();
 			} else {
-				bean = constructor.newInstance();
+				bean = ClassUtils.newInstance(type);
 			}
 			return (T) bean;
 		} catch (Exception e) {

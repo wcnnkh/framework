@@ -11,8 +11,8 @@ import com.alibaba.dubbo.config.RegistryConfig;
 
 import scw.beans.Bean;
 import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
 import scw.beans.property.PropertiesFactory;
-import scw.beans.tcc.TCCManager;
 import scw.beans.xml.XmlBeanUtils;
 import scw.common.exception.BeansException;
 import scw.common.exception.NotSupportException;
@@ -110,7 +110,7 @@ public final class XmlDubboBean implements Bean {
 			referenceConfig.setTimeout(timeout);
 		}
 
-		return (T) TCCManager.convertTransactionProxy(beanFactory, type, referenceConfig.get());
+		return (T) BeanUtils.proxyInterface(beanFactory, type, referenceConfig.get());
 	}
 
 	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {

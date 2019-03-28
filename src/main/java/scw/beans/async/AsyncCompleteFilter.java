@@ -25,6 +25,11 @@ import scw.common.utils.ClassUtils;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.FileUtils;
 
+/**
+ * 只能受BeanFactory管理
+ * @author shuchaowen
+ *
+ */
 public final class AsyncCompleteFilter implements Filter {
 	private static ThreadLocal<Boolean> ENABLE_TAG = new ThreadLocal<Boolean>();
 
@@ -38,18 +43,19 @@ public final class AsyncCompleteFilter implements Filter {
 	}
 
 	private FileManager fileManager;
-	private final ScheduledExecutorService executorService = Executors
-			.newScheduledThreadPool(4);
+	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
 
 	@Autowrite
 	private BeanFactory beanFactory;
+
+	protected AsyncCompleteFilter() {
+	}
 
 	@InitMethod
 	private void init() throws UnsupportedEncodingException {
 		String logPath = System.getProperty("java.io.tmpdir");
 		String classPath = ConfigUtils.getClassPath();
-		logPath += File.separator + "AsyncComplate_"
-				+ Base64.encode(classPath.getBytes("UTF-8"));
+		logPath += File.separator + "AsyncComplate_" + Base64.encode(classPath.getBytes("UTF-8"));
 		fileManager = new FileManager(logPath);
 
 		File file = new File(fileManager.getRootPath());
@@ -91,10 +97,10 @@ public final class AsyncCompleteFilter implements Filter {
 			Object rtn;
 			try {
 				rtn = info.invoke(beanFactory);
-				if(ClassUtils.isBooleanType(info.getMethodConfig().getReturnType())){
-					if(rtn != null && (Boolean)rtn == false){
+				if (ClassUtils.isBooleanType(info.getMethodConfig().getReturnType())) {
+					if (rtn != null && (Boolean) rtn == false) {
 						retry();
-						return ;
+						return;
 					}
 				}
 				deleteLog();
@@ -103,22 +109,21 @@ public final class AsyncCompleteFilter implements Filter {
 				e.printStackTrace();
 			}
 		}
-		
-		private void deleteLog(){
+
+		private void deleteLog() {
 			File file = new File(logPath);
 			if (file.exists()) {
 				file.delete();
 			}
 		}
-		
-		private void retry(){
-			executorService.schedule(this, info.getDelayMillis(),
-					info.getTimeUnit());
+
+		private void retry() {
+			executorService.schedule(this, info.getDelayMillis(), info.getTimeUnit());
 		}
 	}
 
-	private Object realFilter(Invoker invoker, Object proxy, Method method,
-			Object[] args, FilterChain filterChain) throws Throwable {
+	private Object realFilter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
+			throws Throwable {
 		if (!isEnable()) {
 			return filterChain.doFilter(invoker, proxy, method, args);
 		}
@@ -128,15 +133,14 @@ public final class AsyncCompleteFilter implements Filter {
 			return filterChain.doFilter(invoker, proxy, method, args);
 		}
 
-		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete,
-				method.getDeclaringClass(), method, args);
+		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete, method.getDeclaringClass(), method, args);
 		File file = fileManager.createRandomFileWriteObject(info);
 		executorService.submit(new InvokeRunnable(info, file.getPath()));
 		return null;
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Method method,
-			Object[] args, FilterChain filterChain) throws Throwable {
+	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
+			throws Throwable {
 		try {
 			return realFilter(invoker, proxy, method, args, filterChain);
 		} finally {
@@ -145,7 +149,7 @@ public final class AsyncCompleteFilter implements Filter {
 	}
 }
 
-class AsyncInvokeInfo implements Serializable{
+class AsyncInvokeInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private MethodDefinition methodConfig;
 	private long delayMillis;
@@ -174,8 +178,8 @@ class AsyncInvokeInfo implements Serializable{
 		return timeUnit;
 	}
 
-	public Object invoke(BeanFactory beanFactory) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException {
+	public Object invoke(BeanFactory beanFactory) throws IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException {
 		Object bean = beanFactory.get(methodConfig.getBelongClass());
 		return methodConfig.getMethod().invoke(bean, args);
 	}

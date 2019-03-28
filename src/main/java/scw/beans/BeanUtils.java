@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
@@ -15,6 +16,7 @@ import net.sf.cglib.proxy.Enhancer;
 import scw.aop.Filter;
 import scw.aop.Invoker;
 import scw.aop.ReflectInvoker;
+import scw.aop.jdk.JDKProxyUtils;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.Bean;
 import scw.beans.annotaion.Config;
@@ -447,6 +449,12 @@ public final class BeanUtils {
 		} else {
 			return new ReflectInvoker(beanFactory.get(clz), method);
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T proxyInterface(BeanFactory beanFactory, Class<T> interfaceClass, Object obj){
+		Filter filter = beanFactory.get(CommonFilter.class);
+		return (T) JDKProxyUtils.newProxyInstance(obj, interfaceClass, Arrays.asList(filter));
 	}
 }
 
