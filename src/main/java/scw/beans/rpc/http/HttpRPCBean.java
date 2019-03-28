@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 
 import scw.aop.Invoker;
 import scw.beans.BeanFactory;
-import scw.beans.rpc.transaction.TCCManager;
+import scw.beans.tcc.TCCManager;
 import scw.common.utils.SignUtils;
 import scw.common.utils.XUtils;
 import scw.net.AbstractResponse;

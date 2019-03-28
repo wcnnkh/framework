@@ -1,11 +1,12 @@
-package scw.beans.rpc.transaction;
+package scw.beans.annotaion;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.beans.rpc.transaction.service.RetryTCCService;
+import scw.beans.tcc.TCCService;
+import scw.beans.tcc.service.RetryTCCService;
 
 /**
  * 只有在接口中定义并使用RPC调用时才有效

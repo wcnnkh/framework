@@ -1,11 +1,11 @@
-package scw.beans.rpc.transaction.service;
+package scw.beans.tcc.service;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
 import scw.beans.BeanFactory;
-import scw.beans.rpc.transaction.InvokeInfo;
-import scw.beans.rpc.transaction.StageType;
+import scw.beans.tcc.InvokeInfo;
+import scw.beans.tcc.StageType;
 
 public final class TransactionInfo implements Serializable {
 	private static final long serialVersionUID = 1L;

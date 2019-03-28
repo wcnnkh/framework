@@ -1,4 +1,4 @@
-package scw.beans.rpc.transaction.service;
+package scw.beans.tcc.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,9 +12,9 @@ import scw.beans.BeanFactory;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
-import scw.beans.rpc.transaction.InvokeInfo;
-import scw.beans.rpc.transaction.StageType;
-import scw.beans.rpc.transaction.TCCService;
+import scw.beans.tcc.InvokeInfo;
+import scw.beans.tcc.StageType;
+import scw.beans.tcc.TCCService;
 import scw.common.Base64;
 import scw.common.FileManager;
 import scw.common.utils.ConfigUtils;
@@ -89,7 +89,7 @@ public final class RetryTCCService implements TCCService {
 		}
 	}
 
-	public void service(final Object obj, final InvokeInfo invokeInfo) {
+	public void service(final InvokeInfo invokeInfo) {
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
 			public void beforeProcess() {

@@ -1,4 +1,4 @@
-package scw.beans.rpc.transaction.service;
+package scw.beans.tcc.service;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -18,9 +18,9 @@ import com.rabbitmq.client.Envelope;
 import scw.beans.BeanFactory;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.Destroy;
-import scw.beans.rpc.transaction.InvokeInfo;
-import scw.beans.rpc.transaction.StageType;
-import scw.beans.rpc.transaction.TCCService;
+import scw.beans.tcc.InvokeInfo;
+import scw.beans.tcc.StageType;
+import scw.beans.tcc.TCCService;
 import scw.common.utils.IOUtils;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
@@ -68,7 +68,7 @@ public final class RabbitTccService implements TCCService {
 		RabbitUtils.basicPublish(channel, exchangeName, routingKey, IOUtils.javaObjectToByte(info));
 	}
 
-	public void service(Object obj, final InvokeInfo invokeInfo) {
+	public void service(final InvokeInfo invokeInfo) {
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
 			public void beforeProcess() {

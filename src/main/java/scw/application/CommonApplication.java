@@ -4,11 +4,12 @@ import java.util.Collection;
 
 import com.alibaba.dubbo.config.ProtocolConfig;
 
-import scw.beans.AsyncCompleteFilter;
 import scw.beans.XmlBeanFactory;
+import scw.beans.async.AsyncCompleteFilter;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboUtils;
+import scw.beans.tcc.TCCTransactionFilter;
 import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
@@ -27,6 +28,7 @@ public class CommonApplication implements Application {
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
 			this.beanFactory.addFirstFilters(AsyncCompleteFilter.class.getName());
+			this.beanFactory.addFirstFilters(TCCTransactionFilter.class.getName());
 			this.beanFactory.addFirstFilters(TransactionFilter.class.getName());
 		} catch (Exception e) {
 			throw new NestedRuntimeException(e);

@@ -1,4 +1,4 @@
-package scw.beans.rpc.transaction;
+package scw.beans.tcc;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -6,8 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.aop.jdk.JDKProxyUtils;
-import scw.beans.AsyncCompleteFilter;
 import scw.beans.BeanFactory;
+import scw.beans.annotaion.TCC;
+import scw.beans.async.AsyncCompleteFilter;
 import scw.common.MethodDefinition;
 
 public final class TCCManager {
@@ -30,8 +31,8 @@ public final class TCCManager {
 		return classTCC;
 	}
 
-	protected static void transaction(BeanFactory beanFactory, Class<?> interfaceClz, Object rtnValue, Object obj,
-			Method method, Object[] args) {
+	protected static void transaction(BeanFactory beanFactory, Class<?> interfaceClz, Object rtnValue, Method method,
+			Object[] args) {
 		TCC tcc = method.getAnnotation(TCC.class);
 		if (tcc == null) {
 			return;
@@ -55,12 +56,12 @@ public final class TCCManager {
 			return;
 		}
 
-		tccService.service(obj, new InvokeInfo(rtnValue, tryMethod, confirmMethod, cancelMethod, complateMethod, args));
+		tccService.service(new InvokeInfo(rtnValue, tryMethod, confirmMethod, cancelMethod, complateMethod, args));
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T convertTransactionProxy(BeanFactory beanFactory, Class<T> interfaceClass, Object obj) {
-		TCCTransactionFilter tccTransactionFilter = new TCCTransactionFilter(beanFactory, interfaceClass, obj);
+		TCCTransactionFilter tccTransactionFilter = beanFactory.get(TCCTransactionFilter.class);
 		AsyncCompleteFilter asyncCompleteFilter = beanFactory.get(AsyncCompleteFilter.class);
 		return (T) JDKProxyUtils.newProxyInstance(obj, interfaceClass,
 				Arrays.asList(tccTransactionFilter, asyncCompleteFilter));

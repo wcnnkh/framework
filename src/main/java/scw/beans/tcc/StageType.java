@@ -1,4 +1,4 @@
-package scw.beans.rpc.transaction;
+package scw.beans.tcc;
 
 /**
  * 步骤类型

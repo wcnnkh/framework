@@ -1,4 +1,4 @@
-package scw.beans;
+package scw.beans.async;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.beans.BeanFactory;
 import scw.beans.annotaion.AsyncComplete;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.Destroy;

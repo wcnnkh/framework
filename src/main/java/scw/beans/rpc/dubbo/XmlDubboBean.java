@@ -12,7 +12,7 @@ import com.alibaba.dubbo.config.RegistryConfig;
 import scw.beans.Bean;
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
-import scw.beans.rpc.transaction.TCCManager;
+import scw.beans.tcc.TCCManager;
 import scw.beans.xml.XmlBeanUtils;
 import scw.common.exception.BeansException;
 import scw.common.exception.NotSupportException;
