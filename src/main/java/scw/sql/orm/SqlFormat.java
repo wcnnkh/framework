@@ -7,7 +7,7 @@ import scw.sql.Sql;
 
 public interface SqlFormat {
 	Sql toCreateTableSql(TableInfo tableInfo, String tableName);
-
+	
 	Sql toInsertSql(Object obj, TableInfo tableInfo, String tableName);
 
 	Sql toUpdateSql(Object obj, TableInfo tableInfo, String tableName);
@@ -18,14 +18,18 @@ public interface SqlFormat {
 
 	Sql toDeleteSql(Object bean, TableInfo tableInfo, String tableName);
 
-	Sql toDeleteSql(TableInfo tableInfo, String tableName, Object[] params);
+	Sql toDeleteSql(TableInfo tableInfo, String tableName, Object[] parimayKeys);
 
 	Sql toSelectByIdSql(TableInfo tableInfo, String tableName, Object[] params);
 
 	Sql toSelectInIdSql(TableInfo tableInfo, String tableName, Object[] params, Collection<?> inIdList);
 
+	Sql toIncrSql(TableInfo tableInfo, String tableName, Object[] parimayKeys, String fieldName, double limit, Double maxValue);
+	
 	Sql toIncrSql(Object obj, TableInfo tableInfo, String tableName, String fieldName, double limit, Double maxValue);
 
+	Sql toDecrSql(TableInfo tableInfo, String tableName, Object[] parimayKeys, String fieldName, double limit, Double minValue);
+	
 	Sql toDecrSql(Object obj, TableInfo tableInfo, String tableName, String fieldName, double limit, Double minValue);
 
 	PaginationSql toPaginationSql(Sql sql, long page, int limit);

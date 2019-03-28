@@ -13,7 +13,7 @@ import scw.sql.orm.annoation.Table;
 
 public abstract class ORMUtils {
 	private static Logger logger = LoggerFactory.getLogger(ORMUtils.class);
-	
+
 	private volatile static Map<String, TableInfo> tableMap = new HashMap<String, TableInfo>();
 
 	public static TableInfo getTableInfo(Class<?> clz) {
@@ -99,7 +99,8 @@ public abstract class ORMUtils {
 		}
 	}
 
-	public static String getTableName(String tableName, TableInfo tableInfo, Object obj) {
+	public static String getTableName(String tableName, TableInfo tableInfo,
+			Object obj) {
 		if (StringUtils.isEmpty(tableName)) {
 			if (obj instanceof TableName) {
 				return ((TableName) obj).tableName();
@@ -110,6 +111,20 @@ public abstract class ORMUtils {
 			return tableName;
 		}
 	}
-	
-	
+
+	public static Object[] getPrimaryKey(Object bean, TableInfo tableInfo) {
+		ColumnInfo[] columnInfos = tableInfo.getPrimaryKeyColumns();
+		Object[] objs = new Object[columnInfos.length];
+		int i = 0;
+		try {
+			for (; i < objs.length; i++) {
+				objs[i] = columnInfos[i].getValueToDB(bean);
+			}
+		} catch (IllegalArgumentException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+		return objs;
+	}
 }
