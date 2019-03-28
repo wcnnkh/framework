@@ -3,7 +3,9 @@ package scw.beans;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-public final class BeanFactoryInvoker {
+import scw.aop.Invoker;
+
+public final class BeanFactoryInvoker implements Invoker{
 	private final BeanFactory beanFactory;
 	private final Class<?> clz;
 	private final Method method;
@@ -14,7 +16,7 @@ public final class BeanFactoryInvoker {
 		this.beanFactory = beanFactory;
 	}
 
-	public Object invoke(Object[] args) throws Throwable {
+	public Object invoke(Object... args) throws Throwable {
 		if (Modifier.isStatic(method.getModifiers())) {
 			return method.invoke(null, args);
 		} else {

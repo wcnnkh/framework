@@ -13,14 +13,14 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import scw.aop.Invoker;
 import scw.application.Application;
 import scw.application.CommonApplication;
 import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.rpc.http.Message;
 import scw.common.exception.NestedRuntimeException;
-import scw.common.reflect.Invoker;
-import scw.common.reflect.ReflectInvoker;
 import scw.common.utils.IOUtils;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
@@ -177,7 +177,7 @@ public class ServletApplication implements Application {
 			synchronized (invokerRPCMap) {
 				invoker = invokerRPCMap.get(message.getMessageKey());
 				if (invoker == null) {
-					invoker = new ReflectInvoker(getBeanFactory(), message.getClz(), message.getMethod());
+					invoker = BeanUtils.getInvoker(getBeanFactory(), message.getClz(), message.getMethod());
 					if (invoker != null) {
 						invokerRPCMap.put(message.getMessageKey(), invoker);
 					}

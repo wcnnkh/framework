@@ -61,9 +61,9 @@ public class CommonApplication implements Application {
 
 			start = true;
 		}
-
+		
 		beanFactory.init();
-
+		
 		if (!StringUtils.isNull(configPath)) {
 			new Thread(new Runnable() {
 

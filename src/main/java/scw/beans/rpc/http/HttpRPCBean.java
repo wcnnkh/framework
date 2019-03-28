@@ -9,9 +9,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 
+import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.rpc.transaction.TCCManager;
-import scw.common.reflect.Invoker;
 import scw.common.utils.SignUtils;
 import scw.common.utils.XUtils;
 import scw.net.AbstractResponse;

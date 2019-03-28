@@ -2,11 +2,14 @@ package scw.beans;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Collection;
+import java.util.HashSet;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import scw.aop.DefaultFilterChain;
 import scw.aop.Filter;
+import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.aop.cglib.CglibInvoker;
 import scw.beans.annotaion.BeanFilter;
@@ -26,39 +29,54 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 
 	private String[] filterNames;
 	private BeanFactory beanFactory;
+	private volatile Collection<Filter> filters;
 
 	public BeanMethodInterceptor(BeanFactory beanFactory, String[] filterNames) {
 		this.filterNames = filterNames;
 		this.beanFactory = beanFactory;
 	}
 
+	private void initFilters(Class<?> clz, Method method) {
+		if (filters == null) {
+			HashSet<Filter> filters = new HashSet<Filter>();
+			if (filterNames != null) {
+				for (String name : filterNames) {
+					Filter filter = beanFactory.get(name);
+					filters.add(filter);
+				}
+			}
+
+			scw.beans.annotaion.BeanFilter beanFilter = method.getDeclaringClass()
+					.getAnnotation(scw.beans.annotaion.BeanFilter.class);
+			if (beanFilter != null) {
+				for (Class<? extends Filter> c : beanFilter.value()) {
+					filters.add(beanFactory.get(c));
+				}
+			}
+
+			beanFilter = method.getAnnotation(scw.beans.annotaion.BeanFilter.class);
+			if (beanFilter != null) {
+				for (Class<? extends Filter> c : beanFilter.value()) {
+					filters.add(beanFactory.get(c));
+				}
+			}
+
+			if (this.filters == null) {
+				synchronized (this) {
+					if (this.filters == null) {
+						this.filters = filters;
+					}
+				}
+			}
+		}
+	}
+
 	private Object filter(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		// 把重复的filter过渡
-		LinkedList<String> filterList = new LinkedList<String>();
-		if (filterNames != null) {
-			for (String name : filterNames) {
-				filterList.add(name);
-			}
-		}
-
-		scw.beans.annotaion.BeanFilter beanFilter = method.getDeclaringClass()
-				.getAnnotation(scw.beans.annotaion.BeanFilter.class);
-		if (beanFilter != null) {
-			for (Class<? extends Filter> c : beanFilter.value()) {
-				filterList.add(c.getName());
-			}
-		}
-
-		beanFilter = method.getAnnotation(scw.beans.annotaion.BeanFilter.class);
-		if (beanFilter != null) {
-			for (Class<? extends Filter> c : beanFilter.value()) {
-				filterList.add(c.getName());
-			}
-		}
-
-		BeanFactoryFilterChain chain = new BeanFactoryFilterChain(beanFactory, filterList);
-		Invoker invoker = new CglibInvoker(proxy, obj, args);
-		return chain.doFilter(invoker, obj, method, args);
+		initFilters(method.getDeclaringClass(), method);
+		FilterChain filterChain = new DefaultFilterChain(filters);
+		Invoker invoker = new CglibInvoker(proxy, obj);
+		return filterChain.doFilter(invoker, obj, method, args);
 	}
 
 	private Object retry(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {

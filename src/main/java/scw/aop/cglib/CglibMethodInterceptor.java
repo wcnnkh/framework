@@ -18,7 +18,7 @@ public final class CglibMethodInterceptor implements MethodInterceptor {
 
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		DefaultFilterChain chain = new DefaultFilterChain(filters);
-		Invoker invoker = new CglibInvoker(proxy, obj, args);
+		Invoker invoker = new CglibInvoker(proxy, obj);
 		return chain.doFilter(invoker, proxy, method, args);
 	}
 }

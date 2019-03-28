@@ -9,6 +9,7 @@ import scw.aop.DefaultFilterChain;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.aop.ReflectInvoker;
 
 public final class JDKProxyUtils {
 	private JDKProxyUtils() {
@@ -20,7 +21,7 @@ public final class JDKProxyUtils {
 
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 						FilterChain filterChain = new DefaultFilterChain(filters);
-						return filterChain.doFilter(new JDKInvoker(obj, method, args), proxy, method, args);
+						return filterChain.doFilter(new ReflectInvoker(obj, method), proxy, method, args);
 					}
 				});
 	}

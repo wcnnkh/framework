@@ -13,6 +13,8 @@ import java.util.concurrent.CountDownLatch;
 
 import net.sf.cglib.proxy.Enhancer;
 import scw.aop.Filter;
+import scw.aop.Invoker;
+import scw.aop.ReflectInvoker;
 import scw.beans.annotaion.Autowrite;
 import scw.beans.annotaion.Bean;
 import scw.beans.annotaion.Config;
@@ -25,8 +27,6 @@ import scw.beans.xml.XmlBeanParameter;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.exception.BeansException;
-import scw.common.reflect.Invoker;
-import scw.common.reflect.ReflectInvoker;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.Logger;
@@ -49,7 +49,7 @@ public final class BeanUtils {
 	 * @throws Exception
 	 */
 	private static void invokerInitStaticMethod(Collection<Class<?>> classList) throws Exception {
-		List<Invoker> list = new ArrayList<Invoker>();
+		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
 		for (Class<?> clz : classList) {
 			for (Method method : clz.getDeclaredMethods()) {
 				if (!Modifier.isStatic(method.getModifiers())) {
@@ -62,18 +62,18 @@ public final class BeanUtils {
 				}
 
 				if (method.getParameterCount() != 0) {
-					throw new BeansException("ClassName=" + clz.getName() + ",MethodName="
-							+ method.getName() + "There must be no parameter.");
+					throw new BeansException("ClassName=" + clz.getName() + ",MethodName=" + method.getName()
+							+ "There must be no parameter.");
 				}
 
-				Invoker invoke = new ReflectInvoker(null, method);
+				ReflectInvoker invoke = new ReflectInvoker(null, method);
 				list.add(invoke);
 			}
 		}
 
 		// 调用指定注解的方法
 		CountDownLatch countDownLatch = new CountDownLatch(list.size());
-		for (Invoker info : list) {
+		for (ReflectInvoker info : list) {
 			InitProcess process = new InitProcess(info, countDownLatch);
 			new Thread(process).start();
 		}
@@ -86,7 +86,7 @@ public final class BeanUtils {
 		}
 
 		destroyStatic = true;
-		List<Invoker> list = new ArrayList<Invoker>();
+		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
 		for (Class<?> clz : classList) {
 			for (Method method : clz.getDeclaredMethods()) {
 				if (!Modifier.isStatic(method.getModifiers())) {
@@ -99,17 +99,17 @@ public final class BeanUtils {
 				}
 
 				if (method.getParameterCount() != 0) {
-					throw new RuntimeException("ClassName=" + clz.getName() + ",MethodName="
-							+ method.getName() + "There must be no parameter.");
+					throw new RuntimeException("ClassName=" + clz.getName() + ",MethodName=" + method.getName()
+							+ "There must be no parameter.");
 				}
 
-				Invoker invoke = new ReflectInvoker(null, method);
+				ReflectInvoker invoke = new ReflectInvoker(null, method);
 				list.add(invoke);
 			}
 		}
 
 		CountDownLatch countDownLatch = new CountDownLatch(list.size());
-		for (Invoker info : list) {
+		for (ReflectInvoker info : list) {
 			InitProcess process = new InitProcess(info, countDownLatch);
 			new Thread(process).start();
 		}
@@ -440,13 +440,21 @@ public final class BeanUtils {
 		}
 		return retry;
 	}
+
+	public static Invoker getInvoker(BeanFactory beanFactory, Class<?> clz, Method method) {
+		if (Modifier.isStatic(method.getModifiers())) {
+			return new ReflectInvoker(null, method);
+		} else {
+			return new ReflectInvoker(beanFactory.get(clz), method);
+		}
+	}
 }
 
 class InitProcess implements Runnable {
-	private Invoker invoke;
+	private ReflectInvoker invoke;
 	private CountDownLatch countDown;
 
-	public InitProcess(Invoker invoke, CountDownLatch countDownLatch) {
+	public InitProcess(ReflectInvoker invoke, CountDownLatch countDownLatch) {
 		this.invoke = invoke;
 		this.countDown = countDownLatch;
 	}

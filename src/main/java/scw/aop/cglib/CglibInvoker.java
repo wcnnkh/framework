@@ -6,15 +6,13 @@ import scw.aop.Invoker;
 public final class CglibInvoker implements Invoker {
 	private final MethodProxy proxy;
 	private final Object obj;
-	private final Object[] args;
 
-	public CglibInvoker(MethodProxy proxy, Object obj, Object[] args) {
+	public CglibInvoker(MethodProxy proxy, Object obj) {
 		this.proxy = proxy;
 		this.obj = obj;
-		this.args = args;
 	}
 
-	public Object invoke() throws Throwable {
+	public Object invoke(Object... args) throws Throwable {
 		return proxy.invokeSuper(obj, args);
 	}
 }

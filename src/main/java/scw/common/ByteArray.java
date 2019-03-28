@@ -3,6 +3,7 @@ package scw.common;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
@@ -50,6 +51,19 @@ public class ByteArray implements Serializable {
 
 	public ByteArray(byte[] buf) {
 		this.buf = buf;
+		this.count = buf.length;
+	}
+
+	public ByteArray(String body, Charset charset) {
+		this(body.getBytes(charset));
+	}
+
+	public ByteArray(String body, String charsetName) {
+		this(body.getBytes(Charset.forName(charsetName)));
+	}
+
+	public ByteArray(String body) {
+		this(body, Constants.DEFAULT_CHARSET);
 	}
 
 	/**
@@ -179,5 +193,17 @@ public class ByteArray implements Serializable {
 	 */
 	public int size() {
 		return count;
+	}
+
+	public String toString(Charset charset) {
+		return new String(buf, 0, count, charset);
+	}
+
+	public String toString(String charsetName) {
+		return toString(Charset.forName(charsetName));
+	}
+
+	public String toString() {
+		return toString(Constants.DEFAULT_CHARSET);
 	}
 }

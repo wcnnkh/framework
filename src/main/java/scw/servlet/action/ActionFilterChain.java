@@ -1,12 +1,9 @@
 package scw.servlet.action;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
-import scw.beans.BeanFactory;
+import scw.aop.Invoker;
 import scw.common.utils.CollectionUtils;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;
@@ -14,22 +11,15 @@ import scw.servlet.Request;
 import scw.servlet.Response;
 
 public final class ActionFilterChain implements FilterChain {
-	private Iterator<String> iterator;
-	private final Method method;
-	private final Class<?> clz;
-	private final BeanFactory beanFactory;
+	private Iterator<Filter> iterator;
 	private final MethodParameter[] paramInfos;
-	private HashSet<Filter> cacheMap;
+	private final Invoker invoker;
 
-	public ActionFilterChain(BeanFactory beanFactory, Class<?> clz, Method method, MethodParameter[] paramInfos,
-			List<String> filterList) {
-		this.method = method;
-		this.clz = clz;
+	public ActionFilterChain(Invoker invoker, MethodParameter[] paramInfos, Collection<Filter> filterList) {
 		this.paramInfos = paramInfos;
-		this.beanFactory = beanFactory;
+		this.invoker = invoker;
 		if (!CollectionUtils.isEmpty(filterList)) {
 			iterator = filterList.iterator();
-			cacheMap = new HashSet<Filter>(filterList.size(), 1);
 		}
 	}
 
@@ -40,12 +30,7 @@ public final class ActionFilterChain implements FilterChain {
 		}
 
 		if (iterator.hasNext()) {
-			Filter filter = beanFactory.get(iterator.next());
-			if (cacheMap.add(filter)) {
-				filter.doFilter(request, response, this);
-			} else {
-				doFilter(request, response);
-			}
+			iterator.next().doFilter(request, response, this);
 		} else {
 			invoke(request, response);
 		}
@@ -56,13 +41,6 @@ public final class ActionFilterChain implements FilterChain {
 		for (int i = 0; i < paramInfos.length; i++) {
 			args[i] = paramInfos[i].getParameter(request, response);
 		}
-
-		Object rtn;
-		if (Modifier.isStatic(method.getModifiers())) {
-			rtn = method.invoke(null, args);
-		} else {
-			rtn = method.invoke(beanFactory.get(clz), args);
-		}
-		response.write(rtn);
+		response.write(invoker.invoke(args));
 	}
 }

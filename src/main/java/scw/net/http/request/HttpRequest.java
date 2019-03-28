@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.common.utils.StringUtils;
 import scw.net.AbstractUrlRequest;
 import scw.net.RequestException;
 import scw.net.http.enums.Method;
@@ -68,6 +69,22 @@ public class HttpRequest extends AbstractUrlRequest {
 
 	public void setRequestContentType(String contentType) {
 		setRequestProperties("Content-Type", contentType);
+	}
+
+	public void setContentTypeByJSON(String charsetName) {
+		if (StringUtils.isEmpty(charsetName)) {
+			setRequestContentType("application/json");
+		} else {
+			setRequestContentType("application/json; charset=" + charsetName);
+		}
+	}
+
+	public void setContentTypeByAJAX(String charsetName) {
+		if (StringUtils.isEmpty(charsetName)) {
+			setRequestContentType("application/x-www-form-urlencoded");
+		} else {
+			setRequestContentType("application/x-www-form-urlencoded; charset=" + charsetName);
+		}
 	}
 
 	public void setRequestProperties(Map<String, String> requestProperties) {

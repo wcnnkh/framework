@@ -7,9 +7,10 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 
+import scw.common.ByteArray;
 import scw.common.exception.NestedRuntimeException;
 import scw.net.http.HttpException;
-import scw.net.response.BodyResponse;
+import scw.net.response.ByteArrayResponse;
 
 public final class NetworkUtils {
 	private NetworkUtils() {
@@ -74,7 +75,7 @@ public final class NetworkUtils {
 		return execute(request.getURL(), request.getProxy(), request, response);
 	}
 
-	public static Body execute(AbstractUrlRequest request) {
-		return execute(request, new BodyResponse());
+	public static ByteArray execute(AbstractUrlRequest request) {
+		return execute(request, new ByteArrayResponse());
 	}
 }

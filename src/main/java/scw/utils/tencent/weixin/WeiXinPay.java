@@ -9,6 +9,7 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import scw.common.ByteArray;
 import scw.common.exception.NotSupportException;
 import scw.common.exception.SignatureException;
 import scw.common.utils.SignUtils;
@@ -16,7 +17,6 @@ import scw.common.utils.StringUtils;
 import scw.common.utils.XMLUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.Body;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpUtils;
 import scw.net.http.enums.Method;
@@ -375,7 +375,7 @@ public final class WeiXinPay {
 			}
 		};
 
-		Body response = NetworkUtils.execute(request);
+		ByteArray response = NetworkUtils.execute(request);
 		String str = response.toString(charset);
 		if (debug) {
 			logger.debug("退款接口返回：{}", str);

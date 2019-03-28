@@ -2,12 +2,15 @@ package scw.servlet.action;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
+import scw.aop.Invoker;
 import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
 import scw.common.exception.ParameterException;
 import scw.common.utils.ClassUtils;
 import scw.servlet.Action;
@@ -20,26 +23,22 @@ import scw.servlet.action.annotation.Filters;
 import scw.servlet.action.annotation.Methods;
 
 public class MethodAction implements Action {
-	private MethodParameter[] methodParameters;
-	private BeanFactory beanFactory;
-	private Class<?> clz;
-	private Method method;
-	private List<String> filters;
+	private final MethodParameter[] methodParameters;
+	private final Collection<Filter> filters;
+	private final Invoker invoker;
 
 	public MethodAction(BeanFactory beanFactory, Class<?> clz, Method method) {
-		this.beanFactory = beanFactory;
-		this.clz = clz;
-		this.method = method;
-		this.methodParameters = getMethodParameter();
-		this.filters = mergeFilter();
+		this.methodParameters = getMethodParameter(method);
+		this.filters = mergeFilter(clz, method, beanFactory);
+		this.invoker = BeanUtils.getInvoker(beanFactory, clz, method);
 	}
 
 	public void doAction(Request request, Response response) throws Throwable {
-		FilterChain filterChain = new ActionFilterChain(beanFactory, clz, method, methodParameters, filters);
+		FilterChain filterChain = new ActionFilterChain(invoker, methodParameters, filters);
 		filterChain.doFilter(request, response);
 	}
 
-	private MethodParameter[] getMethodParameter() {
+	private MethodParameter[] getMethodParameter(Method method) {
 		String[] tempKeys = ClassUtils.getParameterName(method);
 		Class<?>[] types = method.getParameterTypes();
 		Parameter[] parameters = method.getParameters();
@@ -50,50 +49,31 @@ public class MethodAction implements Action {
 		return paramInfos;
 	}
 
-	private List<String> mergeFilter() {
+	private Collection<Filter> mergeFilter(Class<?> clz, Method method, BeanFactory beanFactory) {
 		Controller clzController = clz.getAnnotation(Controller.class);
 		Controller methodController = method.getAnnotation(Controller.class);
 		Filters filters = method.getAnnotation(Filters.class);
 
-		Map<String, Boolean> nameMap = new HashMap<String, Boolean>();
-		List<String> list = new LinkedList<String>();
-
+		LinkedHashSet<Filter> list = new LinkedHashSet<Filter>();
 		if (filters == null) {
 			if (clzController != null) {
 				for (Class<? extends Filter> filter : clzController.filters()) {
-					String name = filter.getName();
-					if (nameMap.containsKey(name)) {
-						continue;
-					}
-
-					nameMap.put(name, true);
-					list.add(name);
+					list.add(beanFactory.get(filter));
 				}
 			}
 		} else {
 			for (Class<? extends Filter> filter : filters.value()) {
-				String name = filter.getName();
-				if (nameMap.containsKey(name)) {
-					continue;
-				}
-
-				nameMap.put(name, true);
-				list.add(name);
+				list.add(beanFactory.get(filter));
 			}
 		}
 
 		if (methodController != null) {
 			for (Class<? extends Filter> filter : methodController.filters()) {
-				String name = filter.getName();
-				if (nameMap.containsKey(name)) {
-					continue;
-				}
-
-				nameMap.put(name, true);
-				list.add(name);
+				list.add(beanFactory.get(filter));
 			}
 		}
-		return list;
+		
+		return new ArrayList<Filter>(list);
 	}
 
 	public static scw.net.http.enums.Method[] mergeRequestType(Class<?> clz, Method method) {

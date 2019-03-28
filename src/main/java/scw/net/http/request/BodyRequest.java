@@ -2,13 +2,13 @@ package scw.net.http.request;
 
 import java.io.OutputStream;
 
-import scw.net.Body;
+import scw.common.ByteArray;
 import scw.net.http.enums.Method;
 
 public class BodyRequest extends HttpRequest {
-	private final Body body;
+	private final ByteArray body;
 
-	public BodyRequest(Method method, String url, Body body) {
+	public BodyRequest(Method method, String url, ByteArray body) {
 		super(method, url);
 		this.body = body;
 	}

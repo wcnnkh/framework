@@ -1,5 +1,5 @@
 package scw.aop;
 
 public interface Invoker {
-	Object invoke() throws Throwable;
+	Object invoke(Object... args) throws Throwable;
 }

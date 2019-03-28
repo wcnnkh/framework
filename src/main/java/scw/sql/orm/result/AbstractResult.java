@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.common.exception.NestedRuntimeException;
+import scw.common.exception.NotFoundException;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
@@ -38,7 +38,7 @@ public abstract class AbstractResult implements Result {
 					sb.append(" [");
 					sb.append(column.getName());
 					sb.append("] not found for DataSource");
-					throw new NestedRuntimeException(sb.toString());
+					throw new NotFoundException(sb.toString());
 				}
 				continue;
 			}
@@ -51,7 +51,7 @@ public abstract class AbstractResult implements Result {
 					sb.append(" [");
 					sb.append(column.getName());
 					sb.append("] not is null");
-					throw new NestedRuntimeException(sb.toString());
+					throw new NotFoundException(sb.toString());
 				}
 
 				continue;
@@ -72,7 +72,7 @@ public abstract class AbstractResult implements Result {
 					sb.append(" [");
 					sb.append(column.getName());
 					sb.append("] not found for DataSource");
-					throw new NestedRuntimeException(sb.toString());
+					throw new NotFoundException(sb.toString());
 				}
 				continue;
 			}
@@ -85,7 +85,7 @@ public abstract class AbstractResult implements Result {
 					sb.append(" [");
 					sb.append(column.getName());
 					sb.append("] not is null");
-					throw new NestedRuntimeException(sb.toString());
+					throw new RuntimeException(sb.toString());
 				}
 
 				continue;

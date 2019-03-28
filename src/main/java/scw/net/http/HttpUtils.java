@@ -1,69 +1,63 @@
 package scw.net.http;
 
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.common.ByteArray;
+import scw.common.Constants;
 import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.StringUtils;
-import scw.net.Body;
 import scw.net.NetworkUtils;
 import scw.net.http.enums.Method;
+import scw.net.http.request.BodyRequest;
 import scw.net.http.request.FormRequest;
 import scw.net.http.request.HttpRequest;
 
 public final class HttpUtils {
-	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
-
 	private HttpUtils() {
 	};
 
 	public static String doGet(String url) {
 		HttpRequest request = new HttpRequest(Method.GET, url);
-		request.setRequestContentType("application/x-www-form-urlencoded; charset=" + DEFAULT_CHARSET.name());
-		Body body = NetworkUtils.execute(request);
-		return body.toString(DEFAULT_CHARSET);
+		request.setRequestContentType("application/x-www-form-urlencoded; charset=" + Constants.DEFAULT_CHARSET.name());
+		ByteArray byteArray = NetworkUtils.execute(request);
+		return byteArray.toString(Constants.DEFAULT_CHARSET);
 	}
 
-	public static String doPost(String url, Map<String, String> propertyMap, final String body) {
-		HttpRequest request = new HttpRequest(Method.POST, url) {
-			@Override
-			public void doOutput(OutputStream os) throws Throwable {
-				os.write(body.getBytes(DEFAULT_CHARSET));
-				super.doOutput(os);
-			}
-		};
-		request.setRequestProperties(propertyMap);
-		Body response = NetworkUtils.execute(request);
-		if (response == null) {
+	public static String doPost(String url, Map<String, String> requestProperties, String body, String charsetName) {
+		HttpRequest request = new BodyRequest(Method.POST, url, new ByteArray(body, charsetName));
+		request.setRequestProperties(requestProperties);
+		ByteArray responseBody = NetworkUtils.execute(request);
+		if (responseBody == null) {
 			return null;
 		}
 
-		return response.toString(DEFAULT_CHARSET);
+		return responseBody.toString(charsetName);
 	}
 
-	public static String doPost(String url, Map<String, String> propertyMap, Map<String, ?> parameterMap,
-			Charset charset) {
-		FormRequest request = new FormRequest(Method.POST, url, charset.name());
-		request.setRequestProperties(propertyMap);
-		if (parameterMap != null) {
-			for (Entry<String, ?> entry : parameterMap.entrySet()) {
-				request.addParameter(entry.getKey(), entry.getValue());
-			}
+	public static String doPost(String url, Map<String, String> requestProperties, String body) {
+		return doPost(url, requestProperties, body, Constants.DEFAULT_CHARSET.name());
+	}
+
+	public static String doPost(String url, Map<String, String> requestProperties, Map<String, ?> parameterMap,
+			String charsetName) {
+		FormRequest request = new FormRequest(Method.POST, url, charsetName);
+		request.setRequestProperties(requestProperties);
+		request.addAll(parameterMap);
+		ByteArray responseBody = NetworkUtils.execute(request);
+		if (responseBody == null) {
+			return null;
 		}
-
-		Body body = NetworkUtils.execute(request);
-		return body.toString(charset);
+		return responseBody.toString(charsetName);
 	}
 
-	public static String doPost(String url, Map<String, ?> parameterMap) {
-		return doPost(url, null, parameterMap, DEFAULT_CHARSET);
+	public static String doPost(String url, Map<String, String> requestProperties, Map<String, ?> parameterMap) {
+		return doPost(url, requestProperties, parameterMap, Constants.DEFAULT_CHARSET.name());
 	}
 
 	public static String appendParameters(String prefix, Map<String, Object> paramMap, boolean encode,
@@ -98,7 +92,7 @@ public final class HttpUtils {
 
 	public static String appendParameters(String prefix, Map<String, Object> paramMap) {
 		try {
-			return appendParameters(prefix, paramMap, true, DEFAULT_CHARSET.name());
+			return appendParameters(prefix, paramMap, true, Constants.DEFAULT_CHARSET.name());
 		} catch (UnsupportedEncodingException e) {
 			throw new NestedRuntimeException(e);
 		}
@@ -117,7 +111,7 @@ public final class HttpUtils {
 	}
 
 	public static String encode(Object value) {
-		return encode(value, DEFAULT_CHARSET.name());
+		return encode(value, Constants.DEFAULT_CHARSET.name());
 	}
 
 	public static String decode(String value, String charsetName) throws UnsupportedEncodingException {
@@ -130,7 +124,7 @@ public final class HttpUtils {
 
 	public static String decode(String value) {
 		try {
-			return decode(value, DEFAULT_CHARSET.name());
+			return decode(value, Constants.DEFAULT_CHARSET.name());
 		} catch (UnsupportedEncodingException e) {
 			throw new NestedRuntimeException(e);
 		}

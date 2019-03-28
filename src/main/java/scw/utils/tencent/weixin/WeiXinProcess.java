@@ -14,7 +14,7 @@ import scw.net.http.HttpUtils;
 public abstract class WeiXinProcess {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private static final Map<String, String> postRequestProperties = new HashMap<String, String>(2);
+	private static final Map<String, String> postRequestProperties = new HashMap<String, String>(2, 1);
 	static {
 		postRequestProperties.put("Content-type", "application/json;charset=utf-8");
 	}
