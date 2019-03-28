@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 
-import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -46,7 +45,7 @@ public abstract class WeiXinProcess {
 
 		String content = HttpUtils.doPost(url, postRequestProperties, body);
 		if (StringUtils.isNull(content)) {
-			throw new NestedRuntimeException("请求错误：url=" + url + ", body=" + body);
+			throw new RuntimeException("请求错误：url=" + url + ", body=" + body);
 		}
 
 		JSONObject json = wrapper(content);
@@ -70,7 +69,7 @@ public abstract class WeiXinProcess {
 	protected JSONObject get(String url) {
 		String content = HttpUtils.doGet(url);
 		if (StringUtils.isNull(content)) {
-			throw new NestedRuntimeException("请求错误:" + url);
+			throw new RuntimeException("请求错误:" + url);
 		}
 
 		JSONObject json = wrapper(content);

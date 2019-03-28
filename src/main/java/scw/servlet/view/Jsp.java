@@ -6,7 +6,6 @@ import java.util.HashMap;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 
-import scw.common.exception.NestedRuntimeException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.servlet.Request;
@@ -51,7 +50,7 @@ public class Jsp extends HashMap<String, Object> implements View {
 		try {
 			jsp(response.getRequest(), response, getPage());
 		} catch (ServletException e) {
-			throw new NestedRuntimeException(e);
+			throw new RuntimeException(e);
 		} finally {
 			if (response.getRequest().isDebug()) {
 				logger.debug(page);

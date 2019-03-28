@@ -4,28 +4,34 @@ import java.io.Serializable;
 
 /**
  * 可用于分页
+ * 
  * @author shuchaowen
  * @param <T>
  */
-public class Pagination<T> implements Serializable{
+public class Pagination<T> implements Serializable {
 	private static final long serialVersionUID = 1511962074546668955L;
 	private int limit;
 	private long totalCount;
 	private T data;
-	
-	public Pagination(){};
-	
-	public Pagination(long total, int limit, T data){
+
+	public Pagination() {
+	};
+
+	public Pagination(long total, int limit, T data) {
 		this.totalCount = total;
 		this.limit = limit;
 		this.data = data;
 	}
-	
-	public long getMaxPage(){
-		if(totalCount <= limit){
+
+	public int getMaxPage() {
+		return (int) getLongMaxPage();
+	}
+
+	public long getLongMaxPage() {
+		if (totalCount <= limit) {
 			return 1;
 		}
-		return (long) Math.ceil(((double)totalCount)/limit);
+		return (long) Math.ceil(((double) totalCount) / limit);
 	}
 
 	public int getLimit() {
@@ -36,7 +42,11 @@ public class Pagination<T> implements Serializable{
 		this.limit = limit;
 	}
 
-	public long getTotalCount() {
+	public int getTotalCount() {
+		return (int) getLongTotalCount();
+	}
+
+	public long getLongTotalCount() {
 		return totalCount;
 	}
 
@@ -51,8 +61,12 @@ public class Pagination<T> implements Serializable{
 	public void setData(T data) {
 		this.data = data;
 	}
-	
-	public static long getBegin(long page, int limit){
+
+	public static int getBegin(long page, int limit) {
+		return (int) getLongBegin(page, limit);
+	}
+
+	public static long getLongBegin(long page, int limit) {
 		return (page - 1) * limit;
 	}
 }

@@ -9,6 +9,7 @@ public final class ReflectInvoker implements Invoker {
 	public ReflectInvoker(Object obj, Method method) {
 		this.obj = obj;
 		this.method = method;
+		method.setAccessible(true);
 	}
 
 	public Object invoke(Object... args) throws Throwable {

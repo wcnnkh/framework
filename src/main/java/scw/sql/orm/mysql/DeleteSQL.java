@@ -3,7 +3,7 @@ package scw.sql.orm.mysql;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.common.exception.NestedRuntimeException;
+import scw.common.exception.ParameterException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.sql.Sql;
@@ -70,7 +70,7 @@ public class DeleteSQL implements Sql {
 		try {
 			this.params = getParams(tableInfo, obj);
 		} catch (Exception e) {
-			throw new NestedRuntimeException(e);
+			throw new ParameterException(e);
 		}
 	}
 

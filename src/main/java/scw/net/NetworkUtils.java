@@ -8,7 +8,6 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import scw.common.ByteArray;
-import scw.common.exception.NestedRuntimeException;
 import scw.net.http.HttpException;
 import scw.net.response.ByteArrayResponse;
 
@@ -61,7 +60,7 @@ public final class NetworkUtils {
 		try {
 			u = new URL(url);
 		} catch (MalformedURLException e) {
-			new NestedRuntimeException(e);
+			new RuntimeException(e);
 		}
 
 		if (u == null) {

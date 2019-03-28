@@ -2,7 +2,6 @@ package scw.utils.id.db;
 
 import java.util.Arrays;
 
-import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.locks.Lock;
 import scw.locks.RedisLock;
@@ -42,7 +41,7 @@ public final class RedisTableIdFactory extends AbstractTableIdFactory {
 							Arrays.asList(maxId + ""));
 				}
 			} catch (InterruptedException e) {
-				throw new NestedRuntimeException(e);
+				throw new RuntimeException(e);
 			} finally {
 				lock.unlock();
 			}

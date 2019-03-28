@@ -3,7 +3,7 @@ package scw.sql.orm.mysql;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.common.exception.NestedRuntimeException;
+import scw.common.exception.ParameterException;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
@@ -38,7 +38,7 @@ public class IncrSQL implements Sql{
 		try {
 			this.params = getParams(tableInfo, obj, limit, maxValue);
 		} catch (Exception e) {
-			throw new NestedRuntimeException(e);
+			throw new ParameterException(e);
 		}
 	}
 	

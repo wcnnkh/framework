@@ -1,8 +1,6 @@
 package scw.transaction;
 
-import scw.common.exception.NestedRuntimeException;
-
-public class TransactionException extends NestedRuntimeException {
+public class TransactionException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	/**

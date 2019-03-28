@@ -5,7 +5,6 @@ import java.util.Map;
 
 import scw.beans.BeanFieldListen;
 import scw.common.Pagination;
-import scw.common.exception.NestedRuntimeException;
 import scw.db.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.orm.PaginationSql;
@@ -37,7 +36,7 @@ public final class MysqlFormat implements SqlFormat {
 				return new UpdateSQL(obj, tableInfo, tableName);
 			}
 		} catch (Exception e) {
-			throw new NestedRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -49,7 +48,7 @@ public final class MysqlFormat implements SqlFormat {
 				return new SaveOrUpdateSQL(obj, tableInfo, tableName);
 			}
 		} catch (Exception e) {
-			throw new NestedRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 
 	}
@@ -68,7 +67,7 @@ public final class MysqlFormat implements SqlFormat {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
-		throw new NestedRuntimeException("转换为自减语句异常");
+		throw new RuntimeException("转换为自减语句异常");
 	}
 
 	public Sql toDeleteSql(TableInfo tableInfo, String tableName, Object[] params) {

@@ -94,7 +94,7 @@ public final class HttpUtils {
 		try {
 			return appendParameters(prefix, paramMap, true, Constants.DEFAULT_CHARSET.name());
 		} catch (UnsupportedEncodingException e) {
-			throw new NestedRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -106,7 +106,7 @@ public final class HttpUtils {
 		try {
 			return URLEncoder.encode(value.toString(), charsetName);
 		} catch (UnsupportedEncodingException e) {
-			throw new NestedRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 

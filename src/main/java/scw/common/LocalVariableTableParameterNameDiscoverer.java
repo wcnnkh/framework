@@ -129,7 +129,7 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 		private final Map<Member, String[]> memberMap;
 
 		public ParameterNameDiscoveringVisitor(Class<?> clazz, Map<Member, String[]> memberMap) {
-			super(AsmInfo.ASM_VERSION);
+			super(Constants.ASM_VERSION);
 			this.clazz = clazz;
 			this.memberMap = memberMap;
 		}
@@ -173,7 +173,7 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 
 		public LocalVariableTableVisitor(Class<?> clazz, Map<Member, String[]> map, String name, String desc,
 				boolean isStatic) {
-			super(AsmInfo.ASM_VERSION);
+			super(Constants.ASM_VERSION);
 			this.clazz = clazz;
 			this.memberMap = map;
 			this.name = name;

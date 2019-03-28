@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.common.exception.NestedRuntimeException;
 import scw.servlet.Request;
 import scw.servlet.ServletApplication;
 
@@ -20,7 +19,7 @@ public final class AsyncRequestService implements Runnable {
 			this.request = servletApplication.formatRequest(httpServletRequest,
 					httpServletResponse);
 		} catch (IOException e) {
-			throw new NestedRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 		this.servletApplication = servletApplication;
 	}

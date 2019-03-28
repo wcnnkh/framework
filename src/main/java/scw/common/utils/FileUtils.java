@@ -24,7 +24,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import scw.common.Base64;
-import scw.common.exception.NestedRuntimeException;
 
 public final class FileUtils {
 	private FileUtils() {
@@ -342,7 +341,7 @@ public final class FileUtils {
 			InputStreamReader isr = new InputStreamReader(fileInputStream, Charset.forName(charsetName));
 			return IOUtils.read(isr, 256, 0);
 		} catch (Exception e) {
-			throw new NestedRuntimeException(e);
+			throw new RuntimeException(e);
 		} finally {
 			XUtils.close(fileInputStream);
 		}

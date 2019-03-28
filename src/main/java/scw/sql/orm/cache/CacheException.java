@@ -1,8 +1,6 @@
 package scw.sql.orm.cache;
 
-import scw.common.exception.NestedRuntimeException;
-
-public class CacheException extends NestedRuntimeException {
+public class CacheException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public CacheException(String msg, Throwable cause) {

@@ -20,7 +20,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
-import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.StringUtils;
 import scw.net.http.enums.Method;
@@ -33,7 +32,7 @@ public class X509Request extends HttpRequest {
 		try {
 			this.sslSocketFactory = getSSLSocketFactory(filePath, password);
 		} catch (Exception e) {
-			throw new NestedRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 

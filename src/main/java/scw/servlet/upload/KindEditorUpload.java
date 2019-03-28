@@ -16,7 +16,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import com.alibaba.fastjson.JSONObject;
 
 import scw.common.Base64;
-import scw.common.exception.NestedRuntimeException;
+import scw.common.exception.ParameterException;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
 import scw.common.utils.XUtils;
@@ -49,7 +49,7 @@ public final class KindEditorUpload implements Upload {
 		}
 
 		if (!file.isDirectory()) {
-			throw new NestedRuntimeException("这不是一个目录：" + rootPath);
+			throw new ParameterException("这不是一个目录：" + rootPath);
 		}
 	}
 

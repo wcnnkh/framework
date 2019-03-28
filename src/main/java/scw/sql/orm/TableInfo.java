@@ -11,7 +11,6 @@ import scw.beans.BeanUtils;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.exception.AlreadyExistsException;
-import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.sql.orm.annoation.NotColumn;
@@ -49,7 +48,7 @@ public final class TableInfo {
 		try {
 			chars = Class.forName(ClassUtils.getProxyRealClassName(classInfo.getClz())).getSimpleName().toCharArray();
 		} catch (ClassNotFoundException e) {
-			throw new NestedRuntimeException(classInfo.getClz().getName());
+			throw new RuntimeException(classInfo.getClz().getName());
 		}
 
 		for (int i = 0; i < chars.length; i++) {

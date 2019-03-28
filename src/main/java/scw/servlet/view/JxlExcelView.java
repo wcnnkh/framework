@@ -3,7 +3,6 @@ package scw.servlet.view;
 import java.io.IOException;
 import java.util.Arrays;
 
-import scw.common.exception.NestedRuntimeException;
 import scw.db.DB;
 import scw.servlet.Request;
 import scw.servlet.Response;
@@ -40,7 +39,7 @@ public class JxlExcelView implements View{
 		try {
 			JxlExport.sqlResultSetToExcel(fileName, titles, db, Arrays.asList(sql), response, sqlExportRow);
 		} catch (Exception e) {
-			throw new NestedRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 }

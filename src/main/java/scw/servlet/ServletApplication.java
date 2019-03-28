@@ -190,12 +190,12 @@ public class ServletApplication implements Application {
 	public void rpc(InputStream inputStream, OutputStream outputStream) throws Throwable {
 		Message message = IOUtils.readJavaObject(inputStream);
 		if (!rpcAuthorize(message)) {
-			throw new NestedRuntimeException("RPC验证失败");
+			throw new RuntimeException("RPC验证失败");
 		}
 
 		Invoker invoker = getRPCInvoker(message);
 		if (invoker == null) {
-			throw new NestedRuntimeException("not found service:" + message.getMessageKey());
+			throw new RuntimeException("not found service:" + message.getMessageKey());
 		}
 
 		Object obj = invoker.invoke(message.getArgs());
