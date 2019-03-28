@@ -1,6 +1,7 @@
 package scw.beans;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -64,7 +65,7 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 			if (this.filters == null) {
 				synchronized (this) {
 					if (this.filters == null) {
-						this.filters = filters;
+						this.filters = new ArrayList<Filter>(filters);
 					}
 				}
 			}
