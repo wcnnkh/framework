@@ -16,7 +16,7 @@ public class InsertSQL implements Sql{
 	
 	public InsertSQL(TableInfo tableInfo, String tableName, Object obj){
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
-			throw new NullPointerException("not found primary key");
+			throw new ParameterException("not found primary key");
 		}
 		
 		StringBuilder sb = new StringBuilder();

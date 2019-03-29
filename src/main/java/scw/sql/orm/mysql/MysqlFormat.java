@@ -1,7 +1,6 @@
 package scw.sql.orm.mysql;
 
 import java.util.Collection;
-import java.util.Map;
 
 import scw.beans.BeanFieldListen;
 import scw.common.Pagination;
@@ -31,8 +30,7 @@ public final class MysqlFormat implements SqlFormat {
 	public Sql toUpdateSql(Object obj, TableInfo tableInfo, String tableName) {
 		try {
 			if (obj instanceof BeanFieldListen) {
-				return new UpdateSQLByBeanListen((BeanFieldListen) obj,
-						tableInfo, tableName);
+				return new UpdateSQLByBeanListen((BeanFieldListen) obj, tableInfo, tableName);
 			} else {
 				return new UpdateSQL(obj, tableInfo, tableName);
 			}
@@ -41,41 +39,20 @@ public final class MysqlFormat implements SqlFormat {
 		}
 	}
 
-	public Sql toSaveOrUpdateSql(Object obj, TableInfo tableInfo,
-			String tableName) {
+	public Sql toSaveOrUpdateSql(Object obj, TableInfo tableInfo, String tableName) {
 		try {
 			if (obj instanceof BeanFieldListen) {
-				return new SaveOrUpdateSQLByBeanListen((BeanFieldListen) obj,
-						tableInfo, tableName);
+				return new SaveOrUpdateSQLByBeanListen((BeanFieldListen) obj, tableInfo, tableName);
 			} else {
 				return new SaveOrUpdateSQL(obj, tableInfo, tableName);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-
 	}
 
-	public Sql toIncrSql(Object obj, TableInfo tableInfo, String tableName,
-			String fieldName, double limit, Double maxValue) {
-		return new IncrSQL(obj, tableInfo, tableName, fieldName, limit,
-				maxValue);
-	}
-
-	public Sql toDecrSql(Object obj, TableInfo tableInfo, String tableName,
-			String fieldName, double limit, Double minValue) {
-		return new DecrSQL(obj, tableInfo, tableName, fieldName, limit,
-				minValue);
-	}
-
-	public Sql toDeleteSql(TableInfo tableInfo, String tableName,
-			Object[] parimayKeys) {
+	public Sql toDeleteByIdSql(TableInfo tableInfo, String tableName, Object[] parimayKeys) {
 		return new DeleteSQL(tableInfo, tableName, parimayKeys);
-	}
-
-	public Sql toUpdateSql(TableInfo tableInfo, String tableName,
-			Map<String, Object> valueMap, Object[] params) {
-		return new UpdateSQL(tableInfo, tableName, valueMap, params);
 	}
 
 	public PaginationSql toPaginationSql(Sql sql, long page, int limit) {
@@ -101,39 +78,20 @@ public final class MysqlFormat implements SqlFormat {
 			whereSql = str.substring(fromIndex, orderIndex);
 		}
 
-		Sql countSql = new SimpleSql("select count(*)" + whereSql,
-				sql.getParams());
+		Sql countSql = new SimpleSql("select count(*)" + whereSql, sql.getParams());
 		StringBuilder sb = new StringBuilder(str);
-		sb.append(" limit ").append(Pagination.getBegin(page, limit))
-				.append(",").append(limit);
-		return new PaginationSql(countSql, new SimpleSql(sb.toString(),
-				sql.getParams()));
+		sb.append(" limit ").append(Pagination.getBegin(page, limit)).append(",").append(limit);
+		return new PaginationSql(countSql, new SimpleSql(sb.toString(), sql.getParams()));
 	}
 
-	public Sql toSelectInIdSql(TableInfo tableInfo, String tableName,
-			Object[] params, Collection<?> inIdList) {
+	public Sql toSelectInIdSql(TableInfo tableInfo, String tableName, Object[] params, Collection<?> inIdList) {
 		return new SelectInIdSQL(tableInfo, tableName, params, inIdList);
 	}
 
-	public Sql toCopyTableStructure(String newTableName, String oldTableName) {
+	public Sql toCopyTableStructureSql(String newTableName, String oldTableName) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("CREATE TABLE IF NOT EXISTS `").append(newTableName)
-				.append("`");
+		sb.append("CREATE TABLE IF NOT EXISTS `").append(newTableName).append("`");
 		sb.append(" like `").append(oldTableName).append("`");
 		return new SimpleSql(sb.toString());
-	}
-
-	public Sql toIncrSql(TableInfo tableInfo, String tableName,
-			Object[] parimayKeys, String fieldName, double limit,
-			Double maxValue) {
-		return new IncrSQL(tableInfo, tableName, parimayKeys, fieldName, limit,
-				maxValue);
-	}
-
-	public Sql toDecrSql(TableInfo tableInfo, String tableName,
-			Object[] parimayKeys, String fieldName, double limit,
-			Double minValue) {
-		return new DecrSQL(tableInfo, tableName, parimayKeys, fieldName, limit,
-				minValue);
 	}
 }

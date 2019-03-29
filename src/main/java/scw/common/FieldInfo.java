@@ -1,5 +1,6 @@
 package scw.common;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -138,5 +139,9 @@ public final class FieldInfo {
 
 	public boolean isFinal() {
 		return Modifier.isFinal(field.getModifiers());
+	}
+
+	public <T extends Annotation> T getAnnotation(Class<T> type) {
+		return field.getAnnotation(type);
 	}
 }

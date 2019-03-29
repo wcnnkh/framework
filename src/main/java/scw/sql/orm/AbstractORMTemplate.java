@@ -24,8 +24,8 @@ import scw.sql.orm.result.DefaultResultSet;
 import scw.sql.orm.result.ResultSet;
 import scw.transaction.cache.QueryCacheUtils;
 
-public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSelect, ORMOperations, SelectMaxId {
-	
+public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOperations, SelectMaxId {
+
 	public abstract SqlFormat getSqlFormat();
 
 	public <T> T getById(Class<T> type, Object... params) {
@@ -89,7 +89,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		if (sql == null) {
 			return false;
 		}
-		return execute(sql);
+		return update(sql) != 0;
 	}
 
 	public boolean update(Object bean, String tableName) {
@@ -108,7 +108,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		if (sql == null) {
 			return false;
 		}
-		return execute(sql);
+		return update(sql) != 0;
 	}
 
 	public boolean delete(Object bean) {
@@ -126,7 +126,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 			return false;
 		}
 
-		return execute(sql);
+		return update(sql) != 0;
 	}
 
 	public boolean deleteById(Class<?> type, Object... params) {
@@ -144,8 +144,8 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		}
 
 		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName() : tableName;
-		Sql sql = getSqlFormat().toDeleteSql(tableInfo, tName, params);
-		return execute(sql);
+		Sql sql = getSqlFormat().toDeleteByIdSql(tableInfo, tName, params);
+		return update(sql) != 0;
 	}
 
 	public boolean saveOrUpdate(Object bean, String tableName) {
@@ -159,7 +159,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 			return false;
 		}
 
-		return execute(sql);
+		return update(sql) != 0;
 	}
 
 	public boolean save(Object bean) {
@@ -251,11 +251,11 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 			return v == null ? defaultValue : v;
 		}
 	}
-	
-	public void createDataBase(Connection connection, String databaseName, String charsetName, String collate){
-		
+
+	public void createDataBase(Connection connection, String databaseName, String charsetName, String collate) {
+
 	}
-	
+
 	public void createTable(Class<?> tableClass) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		createTable(tableClass, tableInfo.getName());
@@ -318,6 +318,11 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements SqlSele
 		return select((long) page, limit, sql);
 	}
 
+	/**
+	 * 不推荐使用
+	 * 
+	 * @return
+	 */
 	public Select createSelect() {
 		return new MysqlSelect(this);
 	}

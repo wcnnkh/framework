@@ -1812,4 +1812,32 @@ public final class ClassUtils {
 			methodMap.put(key, method);
 		}
 	}
+
+	/**
+	 * 是否是数字类型，不包含char,boolean
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isNumberType(Class<?> type) {
+		if (Number.class.isAssignableFrom(type)) {
+			return true;
+		}
+
+		return int.class.isAssignableFrom(type) || long.class.isAssignableFrom(type)
+				|| short.class.isAssignableFrom(type) || float.class.isAssignableFrom(type)
+				|| double.class.isAssignableFrom(type) || byte.class.isAssignableFrom(type);
+	}
+
+	public static double getNumberValue(Object value) {
+		if (value == null) {
+			throw new NullPointerException();
+		}
+
+		if (value instanceof Number) {
+			return ((Number) value).doubleValue();
+		} else {
+			return (Double) value;
+		}
+	}
 }

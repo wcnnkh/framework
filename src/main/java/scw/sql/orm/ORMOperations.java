@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import scw.sql.Sql;
+import scw.sql.orm.result.ResultSet;
+
 public interface ORMOperations {
 	<T> T getById(Class<T> type, Object... params);
 
@@ -12,10 +15,16 @@ public interface ORMOperations {
 	<T> List<T> getByIdList(Class<T> type, Object... params);
 
 	<T> List<T> getByIdList(String tableName, Class<T> type, Object... params);
-	
+
 	<K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params);
-	
+
 	<K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList, Object... params);
+
+	ResultSet select(Sql sql);
+
+	<T> List<T> select(Class<T> type, Sql sql);
+
+	<T> T selectOne(Class<T> type, Sql sql);
 
 	boolean save(Object bean);
 

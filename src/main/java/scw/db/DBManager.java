@@ -191,7 +191,10 @@ public final class DBManager {
 	 */
 	public static void save(Object... beans) {
 		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
-			entry.getKey().save(entry.getValue());
+			List<Object> list = entry.getValue();
+			for(Object bean : list){
+				entry.getKey().save(bean);
+			}
 		}
 	}
 
@@ -202,19 +205,28 @@ public final class DBManager {
 	 */
 	public static void delete(Object... beans) {
 		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
-			entry.getKey().delete(entry.getValue());
+			List<Object> list = entry.getValue();
+			for(Object bean : list){
+				entry.getKey().delete(bean);
+			}
 		}
 	}
 
 	public static void update(Object... beans) {
 		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
-			entry.getKey().update(entry.getValue());
+			List<Object> list = entry.getValue();
+			for(Object bean : list){
+				entry.getKey().update(bean);
+			}
 		}
 	}
 
 	public static void saveOrUpdate(Object... beans) {
 		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
-			entry.getKey().saveOrUpdate(entry.getValue());
+			List<Object> list = entry.getValue();
+			for(Object bean : list){
+				entry.getKey().saveOrUpdate(bean);
+			}
 		}
 	}
 }

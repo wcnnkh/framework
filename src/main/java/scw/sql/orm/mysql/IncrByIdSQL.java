@@ -1,17 +1,23 @@
 package scw.sql.orm.mysql;
 
+import scw.common.exception.ParameterException;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
-import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
-public class DecrSQL implements Sql {
+/**
+ * 自增
+ * 
+ * @author shuchaowen
+ *
+ */
+public class IncrByIdSQL implements Sql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 
-	private String decrSql(TableInfo tableInfo, String tableName,
-			String fieldName, double limit, Double minValue) {
+	private String incrSql(TableInfo tableInfo, String tableName,
+			String fieldName, double limit, Double maxValue) {
 		StringBuilder sb = new StringBuilder(512);
 		sb.append("update ");
 		sb.append("`");
@@ -23,7 +29,7 @@ public class DecrSQL implements Sql {
 		sb.append(incrColumn.getSqlColumnName());
 		sb.append("=");
 		sb.append(incrColumn.getSqlColumnName());
-		sb.append("-").append(limit);
+		sb.append("+").append(limit);
 
 		sb.append(" WHERE ");
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
@@ -36,32 +42,22 @@ public class DecrSQL implements Sql {
 			sb.append("=?");
 		}
 
-		if (minValue != null) {
+		if (maxValue != null) {
 			sb.append(" and ");
 			sb.append(incrColumn.getSqlColumnName());
-			sb.append(">=").append(minValue);
+			sb.append("<=").append(maxValue);
 		}
 		return sb.toString();
 	}
 
-	public DecrSQL(TableInfo tableInfo, String tableName, Object[] primaryKeys,
-			String fieldName, double limit, Double minValue) {
-		if (tableInfo.getPrimaryKeyColumns().length != primaryKeys.length) {
-			throw new NullPointerException("not found primary key");
+	public IncrByIdSQL(TableInfo tableInfo, String tableName, Object[] parimayKeys,
+			String fieldName, double limit, Double maxValue) {
+		if (tableInfo.getPrimaryKeyColumns().length != parimayKeys.length) {
+			throw new ParameterException("primary key length error");
 		}
 
-		this.params = primaryKeys;
-		this.sql = decrSql(tableInfo, tableName, fieldName, limit, minValue);
-	}
-
-	public DecrSQL(Object obj, TableInfo tableInfo, String tableName,
-			String fieldName, double limit, Double minValue) {
-		if (tableInfo.getPrimaryKeyColumns().length == 0) {
-			throw new NullPointerException("not found primary key");
-		}
-
-		this.params = ORMUtils.getPrimaryKey(obj, tableInfo);
-		this.sql = decrSql(tableInfo, tableName, fieldName, limit, minValue);
+		this.params = parimayKeys;
+		this.sql = incrSql(tableInfo, tableName, fieldName, limit, maxValue);
 	}
 
 	public String getSql() {

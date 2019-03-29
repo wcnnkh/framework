@@ -11,7 +11,6 @@ import scw.beans.BeanMethod;
 import scw.beans.NoArgumentBeanMethod;
 import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
-import scw.beans.annotaion.Retry;
 import scw.common.exception.NotSupportException;
 import scw.common.utils.ClassUtils;
 
@@ -78,14 +77,6 @@ abstract class AbstractInterfaceProxyBean implements Bean {
 			}
 		}
 		return list;
-	}
-
-	public static Retry getRetry(Class<?> type, Method method) {
-		Retry retry = method.getAnnotation(Retry.class);
-		if (retry == null) {
-			retry = type.getAnnotation(Retry.class);
-		}
-		return retry;
 	}
 
 	public boolean isSingleton() {

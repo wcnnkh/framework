@@ -23,7 +23,6 @@ import scw.beans.annotaion.Config;
 import scw.beans.annotaion.Destroy;
 import scw.beans.annotaion.InitMethod;
 import scw.beans.annotaion.Properties;
-import scw.beans.annotaion.Retry;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanParameter;
 import scw.common.ClassInfo;
@@ -417,17 +416,6 @@ public final class BeanUtils {
 		}
 
 		boolean b = true;
-		if (filterNames != null && filterNames.length != 0) {
-			b = true;
-		}
-
-		for (Method method : type.getDeclaredMethods()) {
-			Retry retry = getRetry(method);
-			if (retry != null && retry.errors().length != 0) {
-				b = true;
-			}
-		}
-
 		Bean bean = type.getAnnotation(Bean.class);
 		if (bean != null && !bean.proxy()) {
 			b = false;
@@ -435,13 +423,6 @@ public final class BeanUtils {
 		return b;
 	}
 
-	public static Retry getRetry(Method method) {
-		Retry retry = method.getAnnotation(Retry.class);
-		if (retry == null) {
-			retry = method.getDeclaringClass().getAnnotation(Retry.class);
-		}
-		return retry;
-	}
 
 	public static Invoker getInvoker(BeanFactory beanFactory, Class<?> clz, Method method) {
 		if (Modifier.isStatic(method.getModifiers())) {

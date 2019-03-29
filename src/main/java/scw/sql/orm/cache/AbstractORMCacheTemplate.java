@@ -14,6 +14,26 @@ import scw.sql.orm.TableInfo;
 public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 	public abstract Cache getCache();
 
+	public void deleteCache(Class<?> clz, Object... params) {
+		Cache cache = getCache();
+		if (cache == null) {
+			return;
+		}
+
+		String key = CacheUtils.getByIdCacheKey(clz, params);
+		cache.delete(key);
+	}
+
+	public void deleteCache(Object bean) {
+		Cache cache = getCache();
+		if (cache == null) {
+			return;
+		}
+
+		String key = CacheUtils.getObjectCacheKey(bean);
+		cache.delete(key);
+	}
+
 	@Override
 	public <T> T getById(String tableName, Class<T> type, Object... params) {
 		Cache cache = getCache();

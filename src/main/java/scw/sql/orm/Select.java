@@ -23,10 +23,10 @@ import scw.sql.orm.result.ResultSet;
 public abstract class Select {
 	private Map<String, String> associationWhereMap;
 	private HashSet<String> selectTableSet;
-	protected SqlSelect db;
+	protected ORMOperations orm;
 
-	public Select(SqlSelect db) {
-		this.db = db;
+	public Select(ORMOperations orm) {
+		this.orm = orm;
 	}
 
 	public Select from(Class<?> tableClass) {
@@ -127,8 +127,8 @@ public abstract class Select {
 		return false;
 	}
 
-	public SqlSelect getDb() {
-		return db;
+	public ORMOperations getORMOperations() {
+		return orm;
 	}
 
 	public abstract Sql toSQL(String select, boolean order);

@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import scw.common.FieldInfo;
 import scw.common.utils.ClassUtils;
 import scw.sql.orm.annoation.Column;
+import scw.sql.orm.annoation.NumberRange;
 import scw.sql.orm.annoation.PrimaryKey;
 
 public final class ColumnInfo {
@@ -29,13 +30,17 @@ public final class ColumnInfo {
 	private final FieldInfo fieldInfo;
 	private String sqlTableAndColumn;
 	private final Column column;
+	private final NumberRange numberRange;
+	
 	// 就是在name的两边加入了(``)
 	private String sqlColumnName;
-
+	
 	protected ColumnInfo(String defaultTableName, FieldInfo field) {
+		this.numberRange = field.getAnnotation(NumberRange.class);
+		
 		this.fieldInfo = field;
 		this.name = field.getName();
-		this.primaryKey = field.getField().getAnnotation(PrimaryKey.class);
+		this.primaryKey = field.getAnnotation(PrimaryKey.class);
 		this.type = field.getType();
 		this.typeName = this.type.getName();
 		this.length = -1;
@@ -46,7 +51,7 @@ public final class ColumnInfo {
 				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
 				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type)
 				|| URL.class.isAssignableFrom(type) || byte[].class.isAssignableFrom(type);
-		this.column = field.getField().getAnnotation(Column.class);
+		this.column = field.getAnnotation(Column.class);
 		if (column != null) {
 			if (column.name().trim().length() != 0) {
 				this.name = column.name().trim();
@@ -162,5 +167,9 @@ public final class ColumnInfo {
 
 	public Column getColumn() {
 		return column;
+	}
+
+	public NumberRange getNumberRange() {
+		return numberRange;
 	}
 }

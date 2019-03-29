@@ -9,9 +9,9 @@ import scw.common.exception.ParameterException;
 import scw.db.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
+import scw.sql.orm.ORMOperations;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.Select;
-import scw.sql.orm.SqlSelect;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.result.ResultSet;
 
@@ -23,7 +23,7 @@ public class MysqlSelect extends Select {
 	private List<Object> paramList;
 	private StringBuilder orderBySql;
 
-	public MysqlSelect(SqlSelect db) {
+	public MysqlSelect(ORMOperations db) {
 		super(db);
 	}
 
@@ -204,14 +204,14 @@ public class MysqlSelect extends Select {
 	@Override
 	public long count() {
 		Sql sql = toSQL("count(*)", false);
-		scw.sql.orm.result.ResultSet resultSet = db.select(sql);
+		scw.sql.orm.result.ResultSet resultSet = orm.select(sql);
 		Long count = resultSet.getFirst().get(Long.class);
 		return count == null ? 0 : count;
 	}
 
 	@Override
 	public ResultSet getResultSet() {
-		return db.select(toSQL("*", true));
+		return orm.select(toSQL("*", true));
 	}
 
 	@Override
@@ -231,7 +231,7 @@ public class MysqlSelect extends Select {
 		args[args.length - 2] = begin;
 		args[args.length - 1] = limit;
 
-		return db.select(new SimpleSql(sql.getSql() + " limit ?,?", args));
+		return orm.select(new SimpleSql(sql.getSql() + " limit ?,?", args));
 	}
 
 	@Override
