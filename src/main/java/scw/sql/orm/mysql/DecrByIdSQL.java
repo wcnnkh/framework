@@ -45,19 +45,20 @@ public class DecrByIdSQL implements Sql {
 		if (minValue != null) {
 			sb.append(" and ");
 			sb.append(incrColumn.getSqlColumnName());
+			sb.append("-").append(limit);
 			sb.append(">=").append(minValue);
 		}
 		return sb.toString();
 	}
 
 	public DecrByIdSQL(TableInfo tableInfo, String tableName, Object[] parimayKeys,
-			String fieldName, double limit, Double maxValue) {
+			String fieldName, double limit, Double minValue) {
 		if (tableInfo.getPrimaryKeyColumns().length != parimayKeys.length) {
 			throw new ParameterException("primary key length error");
 		}
 
 		this.params = parimayKeys;
-		this.sql = decrSql(tableInfo, tableName, fieldName, limit, maxValue);
+		this.sql = decrSql(tableInfo, tableName, fieldName, limit, minValue);
 	}
 
 	public String getSql() {

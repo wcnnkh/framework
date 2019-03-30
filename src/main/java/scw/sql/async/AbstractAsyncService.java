@@ -1,8 +1,6 @@
 package scw.sql.async;
 
 import scw.sql.SqlOperations;
-import scw.sql.orm.MultipleOperation;
-import scw.sql.orm.OperationBean;
 import scw.sql.orm.SqlFormat;
 
 public abstract class AbstractAsyncService implements AsyncService {

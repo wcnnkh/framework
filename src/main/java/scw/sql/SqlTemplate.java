@@ -1,16 +1,15 @@
 package scw.sql;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
+public abstract class SqlTemplate implements SqlOperations {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private boolean debug;
 
@@ -22,6 +21,8 @@ public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 		this.debug = debug;
 	}
 
+	protected abstract Connection getUserConnection() throws SQLException;
+
 	protected void close(Connection connection) throws SqlException {
 		if (connection != null) {
 			try {
@@ -32,24 +33,12 @@ public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 		}
 	}
 
-	private boolean execute(Sql sql, Connection connection) throws SQLException {
-		PreparedStatement statement = null;
-		try {
-			statement = SqlUtils.createPreparedStatement(connection, sql);
-			return statement.execute();
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-		}
-	}
-
-	public boolean execute(Sql sql) throws SqlException {
+	public void execute(Sql sql) throws SqlException {
 		Connection connection = null;
 		log(sql);
 		try {
-			connection = getConnection();
-			return execute(sql, connection);
+			connection = getUserConnection();
+			SqlUtils.execute(connection, sql);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
@@ -57,36 +46,13 @@ public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 		}
 	}
 
-	private void query(PreparedStatement statement, ResultSetCallback resultSetCallback) throws SQLException {
-		ResultSet resultSet = null;
-		try {
-			resultSet = statement.executeQuery();
-			resultSetCallback.process(resultSet);
-		} finally {
-			if (resultSet != null) {
-				resultSet.close();
-			}
-		}
-	}
-
-	private void query(Sql sql, Connection connection, ResultSetCallback resultSetCallback) throws SQLException {
-		PreparedStatement statement = null;
-		try {
-			statement = SqlUtils.createPreparedStatement(connection, sql);
-			query(statement, resultSetCallback);
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-		}
-	}
-
-	public void query(Sql sql, ResultSetCallback resultSetCallback) throws SqlException {
+	public void query(Sql sql, ResultSetCallback resultSetCallback)
+			throws SqlException {
 		Connection connection = null;
 		log(sql);
 		try {
-			connection = getConnection();
-			query(sql, connection, resultSetCallback);
+			connection = getUserConnection();
+			SqlUtils.query(connection, sql, resultSetCallback);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
@@ -94,123 +60,25 @@ public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 		}
 	}
 
-	private void query(PreparedStatement statement, RowCallback rowCallback) throws SQLException {
-		ResultSet resultSet = null;
-		try {
-			resultSet = statement.executeQuery();
-			for (int i = 1; resultSet.next(); i++) {
-				rowCallback.processRow(resultSet, i);
-			}
-		} finally {
-			if (resultSet != null) {
-				resultSet.close();
-			}
-		}
-	}
+	public void query(Sql sql, final RowCallback rowCallback)
+			throws SqlException {
+		query(sql, new ResultSetCallback() {
 
-	private void query(Sql sql, Connection connection, RowCallback rowCallback) throws SQLException {
-		PreparedStatement statement = null;
-		try {
-			statement = SqlUtils.createPreparedStatement(connection, sql);
-			query(statement, rowCallback);
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-		}
-	}
-
-	public void query(Sql sql, RowCallback rowCallback) throws SqlException {
-		Connection connection = null;
-		log(sql);
-		try {
-			connection = getConnection();
-			query(sql, connection, rowCallback);
-		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSqlId(sql), e);
-		} finally {
-			close(connection);
-		}
-	}
-
-	private <T> T query(PreparedStatement statement, ResultSetMapper<T> resultSetMapper) throws SQLException {
-		ResultSet resultSet = null;
-		try {
-			resultSet = statement.executeQuery();
-			return resultSetMapper.mapper(resultSet);
-		} finally {
-			if (resultSet != null) {
-				resultSet.close();
-			}
-		}
-	}
-
-	private <T> T query(Sql sql, Connection connection, ResultSetMapper<T> resultSetMapper) throws SQLException {
-		PreparedStatement statement = null;
-		try {
-			statement = SqlUtils.createPreparedStatement(connection, sql);
-			return query(statement, resultSetMapper);
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-		}
-	}
-
-	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper) throws SqlException {
-		Connection connection = null;
-		log(sql);
-		try {
-			connection = getConnection();
-			return query(sql, connection, resultSetMapper);
-		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSqlId(sql), e);
-		} finally {
-			close(connection);
-		}
-	}
-
-	private <T> List<T> query(PreparedStatement statement, RowMapper<T> rowMapper) throws SQLException {
-		ResultSet resultSet = null;
-		List<T> list;
-		T t;
-		int row;
-		try {
-			resultSet = statement.executeQuery();
-			row = resultSet.getRow();
-			list = (row == 0 ? new ArrayList<T>() : new ArrayList<T>(row));
-			for (int i = 1; resultSet.next(); i++) {
-				t = rowMapper.mapRow(resultSet, i);
-				if (t != null) {
-					list.add(t);
+			public void process(ResultSet rs) throws SQLException {
+				for (int i = 1; rs.next(); i++) {
+					rowCallback.processRow(rs, i);
 				}
 			}
-			return list;
-		} finally {
-			if (resultSet != null) {
-				resultSet.close();
-			}
-		}
+		});
 	}
 
-	private <T> List<T> query(Sql sql, Connection connection, RowMapper<T> rowMapper) throws SQLException {
-		PreparedStatement statement = null;
-		try {
-			statement = SqlUtils.createPreparedStatement(connection, sql);
-			return query(statement, rowMapper);
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-		}
-	}
-
-	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper) throws SqlException {
+	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper)
+			throws SqlException {
 		Connection connection = null;
 		log(sql);
 		try {
-			connection = getConnection();
-			return query(sql, connection, rowMapper);
+			connection = getUserConnection();
+			return SqlUtils.query(connection, sql, resultSetMapper);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
@@ -218,24 +86,29 @@ public abstract class SqlTemplate implements SqlOperations, ConnectionFactory {
 		}
 	}
 
-	private int update(Sql sql, Connection connection) throws SQLException {
-		PreparedStatement statement = null;
-		try {
-			statement = SqlUtils.createPreparedStatement(connection, sql);
-			return statement.executeUpdate();
-		} finally {
-			if (statement != null) {
-				statement.close();
+	public <T> List<T> query(Sql sql, final RowMapper<T> rowMapper)
+			throws SqlException {
+		return query(sql, new ResultSetMapper<List<T>>() {
+
+			public List<T> mapper(ResultSet resultSet) throws SQLException {
+				List<T> list = new LinkedList<T>();
+				for (int i = 1; resultSet.next(); i++) {
+					T t = rowMapper.mapRow(resultSet, i);
+					if (t != null) {
+						list.add(t);
+					}
+				}
+				return list;
 			}
-		}
+		});
 	}
 
 	public int update(Sql sql) throws SqlException {
 		Connection connection = null;
 		log(sql);
 		try {
-			connection = getConnection();
-			return update(sql, connection);
+			connection = getUserConnection();
+			return SqlUtils.update(connection, sql);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {

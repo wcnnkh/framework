@@ -1,4 +1,4 @@
-package scw.sql.orm.enums;
+package scw.sql.async;
 
 /**
  * ORM的操作类型

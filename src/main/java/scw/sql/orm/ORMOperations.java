@@ -45,4 +45,12 @@ public interface ORMOperations {
 	boolean saveOrUpdate(Object bean);
 
 	boolean saveOrUpdate(Object bean, String tableName);
+	
+	boolean incrById(String fieldName, double limit, Double maxValue, String tableName, Class<?> clz, Object ...params);
+	
+	boolean incrById(String fieldName, double limit, Double maxValue, Class<?> clz, Object ...params);
+	
+	boolean decrById(String fieldName, double limit, Double minValue, String tableName, Class<?> clz, Object ...params);
+
+	boolean decrById(String fieldName, double limit, Double minValue, Class<?> clz, Object ...params);
 }

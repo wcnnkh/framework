@@ -1,26 +1,33 @@
 package scw.sql.orm.mysql;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
+import scw.sql.orm.annoation.Counter;
 
 public class SaveOrUpdateSQL implements Sql {
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = LoggerFactory
+			.getLogger(SaveOrUpdateSQL.class);
 	private String sql;
 	private Object[] params;
 
-	public SaveOrUpdateSQL(Object obj, TableInfo tableInfo, String tableName) throws IllegalArgumentException, IllegalAccessException {
+	public SaveOrUpdateSQL(Object obj, TableInfo tableInfo, String tableName)
+			throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
-		this.params = new Object[tableInfo.getColumns().length + tableInfo.getPrimaryKeyColumns().length
-				+ tableInfo.getNotPrimaryKeyColumns().length];
-		int index = 0;
 		StringBuilder sb = new StringBuilder(512);
 		ColumnInfo columnInfo;
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
+		List<Object> params = new LinkedList<Object>();
 		int i;
 		for (i = 0; i < tableInfo.getColumns().length; i++) {
 			columnInfo = tableInfo.getColumns()[i];
@@ -31,7 +38,7 @@ public class SaveOrUpdateSQL implements Sql {
 
 			cols.append(columnInfo.getSqlColumnName());
 			values.append("?");
-			params[index++] = columnInfo.getValueToDB(obj);
+			params.add(columnInfo.getValueToDB(obj));
 		}
 
 		sb.append("insert into `");
@@ -42,16 +49,54 @@ public class SaveOrUpdateSQL implements Sql {
 		sb.append(values);
 		sb.append(") ON DUPLICATE KEY UPDATE ");
 
+		int index = 0;
 		for (i = 0; i < tableInfo.getColumns().length; i++) {
 			columnInfo = tableInfo.getColumns()[i];
-			if (i > 0) {
+			if (columnInfo.getPrimaryKey() != null) {
+				continue;
+			}
+
+			Object v = columnInfo.getValueToDB(obj);
+			Counter counter = columnInfo.getCounter();
+			if (index++ > 0) {
 				sb.append(",");
 			}
-			sb.append(columnInfo.getSqlColumnName());
-			sb.append("=?");
-			params[index++] = columnInfo.getValueToDB(obj);
+
+			if (counter == null) {
+				sb.append(columnInfo.getSqlColumnName());
+				sb.append("=?");
+				params.add(v);
+			} else {
+				if (v == null) {
+					logger.warn("{}中计数器字段{}的值为空", tableInfo.getClassInfo()
+							.getName(), columnInfo.getName());
+					sb.append(columnInfo.getSqlColumnName());
+					sb.append("=?");
+					params.add(v);
+				} else {
+					sb.append(columnInfo.getSqlColumnName());
+					sb.append("=");
+					sb.append("IF(");
+					sb.append(columnInfo.getSqlColumnName());
+					sb.append("+").append(v);
+					sb.append(">=").append(counter.min());
+					sb.append(" and ");
+					sb.append(columnInfo.getSqlColumnName());
+					sb.append("+").append(v);
+					sb.append("<=").append(counter.max());
+					sb.append(",");
+					sb.append(columnInfo.getSqlColumnName());
+					sb.append("+?");
+					params.add(v);
+					sb.append(",");
+					sb.append(columnInfo.getSqlColumnName());
+					sb.append(")");
+				}
+			}
 		}
+
 		this.sql = sb.toString();
+		this.params = params.toArray();
 	}
 
 	public String getSql() {

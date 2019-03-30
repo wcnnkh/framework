@@ -13,8 +13,8 @@ import jxl.write.WritableWorkbook;
 import scw.common.Iterator;
 import scw.database.DataBaseUtils;
 import scw.db.DB;
-import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
+import scw.transaction.sql.ConnectionFactory;
 
 /**
  * 文件名中如果存在中文，标点符号应该使用全角的符号

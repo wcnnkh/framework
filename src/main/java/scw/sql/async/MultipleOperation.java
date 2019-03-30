@@ -1,10 +1,10 @@
-package scw.sql.orm;
+package scw.sql.async;
 
 import java.util.LinkedList;
 
 import scw.sql.Sql;
 import scw.sql.Sqls;
-import scw.sql.orm.enums.OperationType;
+import scw.sql.orm.SqlFormat;
 
 public final class MultipleOperation extends LinkedList<OperationBean> {
 	private static final long serialVersionUID = 1L;

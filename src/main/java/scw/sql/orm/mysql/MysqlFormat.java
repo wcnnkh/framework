@@ -41,11 +41,7 @@ public final class MysqlFormat implements SqlFormat {
 
 	public Sql toSaveOrUpdateSql(Object obj, TableInfo tableInfo, String tableName) {
 		try {
-			if (obj instanceof BeanFieldListen) {
-				return new SaveOrUpdateSQLByBeanListen((BeanFieldListen) obj, tableInfo, tableName);
-			} else {
-				return new SaveOrUpdateSQL(obj, tableInfo, tableName);
-			}
+			return new SaveOrUpdateSQL(obj, tableInfo, tableName);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -93,5 +89,15 @@ public final class MysqlFormat implements SqlFormat {
 		sb.append("CREATE TABLE IF NOT EXISTS `").append(newTableName).append("`");
 		sb.append(" like `").append(oldTableName).append("`");
 		return new SimpleSql(sb.toString());
+	}
+
+	public Sql toIncrByIdSql(String fieldName, double limit, Double maxValue,
+			String tableName, TableInfo tableInfo, Object... params) {
+		return new IncrByIdSQL(tableInfo, tableName, params, fieldName, limit, maxValue);
+	}
+
+	public Sql toDecrByIdSql(String fieldName, double limit, Double minValue,
+			String tableName, TableInfo tableInfo, Object... params) {
+		return new DecrByIdSQL(tableInfo, tableName, params, fieldName, limit, minValue);
 	}
 }

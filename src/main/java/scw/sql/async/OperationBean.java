@@ -1,10 +1,12 @@
-package scw.sql.orm;
+package scw.sql.async;
 
 import java.io.Serializable;
 
 import scw.common.exception.NotSupportException;
 import scw.sql.Sql;
-import scw.sql.orm.enums.OperationType;
+import scw.sql.orm.ORMUtils;
+import scw.sql.orm.SqlFormat;
+import scw.sql.orm.TableInfo;
 
 public final class OperationBean implements Serializable {
 	private static final long serialVersionUID = 1L;

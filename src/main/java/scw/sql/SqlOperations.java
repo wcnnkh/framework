@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface SqlOperations {
 
-	boolean execute(Sql sql) throws SqlException;
+	void execute(Sql sql) throws SqlException;
 
 	void query(Sql sql, ResultSetCallback resultSetCallback) throws SqlException;
 

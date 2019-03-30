@@ -45,6 +45,7 @@ public class IncrByIdSQL implements Sql {
 		if (maxValue != null) {
 			sb.append(" and ");
 			sb.append(incrColumn.getSqlColumnName());
+			sb.append("+").append(limit);
 			sb.append("<=").append(maxValue);
 		}
 		return sb.toString();

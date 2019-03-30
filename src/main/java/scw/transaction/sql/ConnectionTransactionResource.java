@@ -3,7 +3,6 @@ package scw.transaction.sql;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import scw.sql.ConnectionFactory;
 import scw.transaction.Isolation;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionDefinition;

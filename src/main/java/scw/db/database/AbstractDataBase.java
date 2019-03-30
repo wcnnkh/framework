@@ -2,7 +2,6 @@ package scw.db.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import scw.common.utils.XUtils;
@@ -58,17 +57,15 @@ public abstract class AbstractDataBase implements DataBase {
 
 	public void create(String database) {
 		Connection connection = null;
-		PreparedStatement ps = null;
 		String sql = getCreateSql(database);
 		logger.debug(sql);
 		try {
 			connection = getConnection();
-			ps = SqlUtils.createPreparedStatement(connection, new SimpleSql(sql));
-			ps.execute();
+			SqlUtils.execute(connection, new SimpleSql(sql));
 		} catch (SQLException e) {
 			throw new SqlException(e);
 		} finally {
-			XUtils.close(ps, connection);
+			XUtils.close(connection);
 		}
 	}
 

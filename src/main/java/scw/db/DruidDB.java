@@ -32,7 +32,7 @@ public class DruidDB extends DB {
 	}
 	
 	@Override
-	public Cache getCache() {
+	protected Cache getCache() {
 		return cache;
 	}
 

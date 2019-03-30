@@ -29,7 +29,7 @@ public class HikariCPDB extends DB {
 	}
 
 	@Override
-	public Cache getCache() {
+	protected Cache getCache() {
 		return cache;
 	}
 

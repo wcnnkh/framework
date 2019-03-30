@@ -1,7 +1,6 @@
 package scw.sql.async;
 
 import scw.sql.Sqls;
-import scw.sql.orm.OperationBean;
 
 public interface AsyncService {
 	void save(Object... objs);

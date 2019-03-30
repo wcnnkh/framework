@@ -5,10 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import scw.common.utils.XUtils;
-import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
 import scw.sql.orm.ORMUtils;
+import scw.transaction.sql.ConnectionFactory;
 
 public final class DataBaseUtils {
 	private DataBaseUtils() {

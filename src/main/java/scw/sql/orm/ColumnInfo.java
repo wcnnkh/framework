@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 import scw.common.FieldInfo;
 import scw.common.utils.ClassUtils;
 import scw.sql.orm.annoation.Column;
-import scw.sql.orm.annoation.NumberRange;
+import scw.sql.orm.annoation.Counter;
 import scw.sql.orm.annoation.PrimaryKey;
 
 public final class ColumnInfo {
@@ -30,13 +30,13 @@ public final class ColumnInfo {
 	private final FieldInfo fieldInfo;
 	private String sqlTableAndColumn;
 	private final Column column;
-	private final NumberRange numberRange;
+	private final Counter counter;
 	
 	// 就是在name的两边加入了(``)
 	private String sqlColumnName;
 	
 	protected ColumnInfo(String defaultTableName, FieldInfo field) {
-		this.numberRange = field.getAnnotation(NumberRange.class);
+		this.counter = field.getAnnotation(Counter.class);
 		
 		this.fieldInfo = field;
 		this.name = field.getName();
@@ -169,7 +169,7 @@ public final class ColumnInfo {
 		return column;
 	}
 
-	public NumberRange getNumberRange() {
-		return numberRange;
+	public Counter getCounter() {
+		return counter;
 	}
 }

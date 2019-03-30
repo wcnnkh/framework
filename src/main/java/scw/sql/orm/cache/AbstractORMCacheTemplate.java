@@ -12,7 +12,12 @@ import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
 public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
-	public abstract Cache getCache();
+	
+	/**
+	 * 获取二级缓存实现
+	 * @return
+	 */
+	protected abstract Cache getCache();
 
 	public void deleteCache(Class<?> clz, Object... params) {
 		Cache cache = getCache();
@@ -87,23 +92,13 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 
 	@Override
 	public boolean saveOrUpdate(Object bean, String tableName) {
-		Cache cache = getCache();
-		if (cache == null) {
-			return super.saveOrUpdate(bean, tableName);
-		}
-
-		cache.delete(CacheUtils.getObjectCacheKey(bean));
+		deleteCache(bean);
 		return super.saveOrUpdate(bean, tableName);
 	}
 
 	@Override
 	public boolean update(Object bean, String tableName) {
-		Cache cache = getCache();
-		if (cache == null) {
-			return super.update(bean, tableName);
-		}
-
-		cache.delete(CacheUtils.getObjectCacheKey(bean));
+		deleteCache(bean);
 		return super.update(bean, tableName);
 	}
 
@@ -170,5 +165,19 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 		} else {
 			return super.getInIdList(type, tableName, inIds, params);
 		}
+	}
+	
+	@Override
+	public boolean incrById(String fieldName, double limit, Double maxValue,
+			String tableName, Class<?> clz, Object... params) {
+		deleteCache(clz, params);
+		return super.incrById(fieldName, limit, maxValue, tableName, clz, params);
+	}
+	
+	@Override
+	public boolean decrById(String fieldName, double limit, Double minValue,
+			String tableName, Class<?> clz, Object... params) {
+		deleteCache(clz, params);
+		return super.decrById(fieldName, limit, minValue, tableName, clz, params);
 	}
 }
