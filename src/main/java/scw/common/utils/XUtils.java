@@ -186,6 +186,26 @@ public final class XUtils {
 		}
 		return a;
 	}
+
+	/**
+	 * 检查版本号 如果 version1>version2就返回true
+	 * 
+	 * @param version1
+	 * @param version2
+	 * @return
+	 */
+	public static boolean checkVersion(String version1, String version2) {
+		String[] arr1 = version1.split("\\.");
+		String[] arr2 = version2.split("\\.");
+		for (int i = 0; i < Math.min(arr1.length, arr2.length); i++) {
+			int v1 = Integer.parseInt(arr1[i]);
+			int v2 = Integer.parseInt(arr2[1]);
+			if (v1 > v2) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
 
 class AutoCloseableException extends RuntimeException {
