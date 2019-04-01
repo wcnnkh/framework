@@ -125,7 +125,7 @@ public class UpdateSQLByBeanListen implements Sql {
 			paramList.add(columnInfo.getValueToDB(beanFieldListen));
 		}
 
-		if (where.length() > 0) {
+		if (where != null) {
 			sb.append(" and ").append(where);
 		}
 
