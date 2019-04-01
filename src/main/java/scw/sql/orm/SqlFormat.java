@@ -39,4 +39,6 @@ public interface SqlFormat {
 
 	Sql toDecrByIdSql(String fieldName, double limit, Double minValue,
 			String tableName, TableInfo tableInfo, Object... params);
+	
+	Sql toLastInsertIdSql(String tableName);
 }

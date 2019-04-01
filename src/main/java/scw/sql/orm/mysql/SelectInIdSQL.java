@@ -7,7 +7,7 @@ import java.util.Map;
 import scw.sql.Sql;
 import scw.sql.orm.TableInfo;
 
-public class SelectInIdSQL implements Sql {
+public final class SelectInIdSQL implements Sql {
 	private static final long serialVersionUID = 1L;
 	private static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;

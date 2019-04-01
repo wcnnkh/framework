@@ -8,6 +8,7 @@ import scw.common.utils.XUtils;
 import scw.db.sql.SimpleSql;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.sql.Sql;
 import scw.sql.SqlException;
 import scw.sql.SqlUtils;
 
@@ -56,17 +57,19 @@ public abstract class AbstractDataBase implements DataBase {
 	}
 
 	public void create(String database) {
+		execute(new SimpleSql(getCreateSql(database)));
+	}
+
+	public void execute(Sql sql) {
 		Connection connection = null;
-		String sql = getCreateSql(database);
-		logger.debug(sql);
+		logger.debug(SqlUtils.getSqlId(sql));
 		try {
 			connection = getConnection();
-			SqlUtils.execute(connection, new SimpleSql(sql));
+			SqlUtils.execute(connection, sql);
 		} catch (SQLException e) {
 			throw new SqlException(e);
 		} finally {
 			XUtils.close(connection);
 		}
 	}
-
 }

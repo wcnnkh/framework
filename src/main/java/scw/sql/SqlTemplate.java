@@ -1,6 +1,7 @@
 package scw.sql;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -21,8 +22,6 @@ public abstract class SqlTemplate implements SqlOperations {
 		this.debug = debug;
 	}
 
-	protected abstract Connection getUserConnection() throws SQLException;
-
 	protected void close(Connection connection) throws SqlException {
 		if (connection != null) {
 			try {
@@ -33,12 +32,26 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
+	protected abstract Connection getUserConnection() throws SQLException;
+
+	protected boolean execute(Sql sql, Connection connection) throws SQLException {
+		log(sql);
+		PreparedStatement statement = null;
+		try {
+			statement = SqlUtils.createPreparedStatement(connection, sql);
+			return statement.execute();
+		} finally {
+			if (statement != null) {
+				statement.close();
+			}
+		}
+	}
+
 	public void execute(Sql sql) throws SqlException {
 		Connection connection = null;
-		log(sql);
 		try {
 			connection = getUserConnection();
-			SqlUtils.execute(connection, sql);
+			execute(sql, connection);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
@@ -46,13 +59,36 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	public void query(Sql sql, ResultSetCallback resultSetCallback)
-			throws SqlException {
+	private void query(PreparedStatement statement, ResultSetCallback resultSetCallback) throws SQLException {
+		ResultSet resultSet = null;
+		try {
+			resultSet = statement.executeQuery();
+			resultSetCallback.process(resultSet);
+		} finally {
+			if (resultSet != null) {
+				resultSet.close();
+			}
+		}
+	}
+
+	protected void query(Sql sql, Connection connection, ResultSetCallback resultSetCallback) throws SQLException {
+		log(sql);
+		PreparedStatement statement = null;
+		try {
+			statement = SqlUtils.createPreparedStatement(connection, sql);
+			query(statement, resultSetCallback);
+		} finally {
+			if (statement != null) {
+				statement.close();
+			}
+		}
+	}
+
+	public void query(Sql sql, ResultSetCallback resultSetCallback) throws SqlException {
 		Connection connection = null;
-		log(sql);
 		try {
 			connection = getUserConnection();
-			SqlUtils.query(connection, sql, resultSetCallback);
+			query(sql, connection, resultSetCallback);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
@@ -60,9 +96,8 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	public void query(Sql sql, final RowCallback rowCallback)
-			throws SqlException {
-		query(sql, new ResultSetCallback() {
+	protected void query(Sql sql, Connection connection, final RowCallback rowCallback) throws SQLException {
+		query(sql, connection, new ResultSetCallback() {
 
 			public void process(ResultSet rs) throws SQLException {
 				for (int i = 1; rs.next(); i++) {
@@ -72,13 +107,11 @@ public abstract class SqlTemplate implements SqlOperations {
 		});
 	}
 
-	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper)
-			throws SqlException {
+	public void query(Sql sql, final RowCallback rowCallback) throws SqlException {
 		Connection connection = null;
-		log(sql);
 		try {
 			connection = getUserConnection();
-			return SqlUtils.query(connection, sql, resultSetMapper);
+			query(sql, connection, rowCallback);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
@@ -86,9 +119,45 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	public <T> List<T> query(Sql sql, final RowMapper<T> rowMapper)
-			throws SqlException {
-		return query(sql, new ResultSetMapper<List<T>>() {
+	private <T> T query(PreparedStatement statement, ResultSetMapper<T> resultSetMapper) throws SQLException {
+		ResultSet resultSet = null;
+		try {
+			resultSet = statement.executeQuery();
+			return resultSetMapper.mapper(resultSet);
+		} finally {
+			if (resultSet != null) {
+				resultSet.close();
+			}
+		}
+	}
+
+	protected <T> T query(Sql sql, Connection connection, ResultSetMapper<T> resultSetMapper) throws SQLException {
+		log(sql);
+		PreparedStatement statement = null;
+		try {
+			statement = SqlUtils.createPreparedStatement(connection, sql);
+			return query(statement, resultSetMapper);
+		} finally {
+			if (statement != null) {
+				statement.close();
+			}
+		}
+	}
+
+	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper) throws SqlException {
+		Connection connection = null;
+		try {
+			connection = getUserConnection();
+			return query(sql, connection, resultSetMapper);
+		} catch (SQLException e) {
+			throw new SqlException(SqlUtils.getSqlId(sql), e);
+		} finally {
+			close(connection);
+		}
+	}
+
+	protected <T> List<T> query(Sql sql, Connection connection, final RowMapper<T> rowMapper) throws SQLException {
+		return query(sql, connection, new ResultSetMapper<List<T>>() {
 
 			public List<T> mapper(ResultSet resultSet) throws SQLException {
 				List<T> list = new LinkedList<T>();
@@ -103,12 +172,36 @@ public abstract class SqlTemplate implements SqlOperations {
 		});
 	}
 
-	public int update(Sql sql) throws SqlException {
+	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper) throws SqlException {
 		Connection connection = null;
-		log(sql);
 		try {
 			connection = getUserConnection();
-			return SqlUtils.update(connection, sql);
+			return query(sql, connection, rowMapper);
+		} catch (SQLException e) {
+			throw new SqlException(SqlUtils.getSqlId(sql), e);
+		} finally {
+			close(connection);
+		}
+	}
+
+	protected int update(Sql sql, Connection connection) throws SQLException {
+		log(sql);
+		PreparedStatement statement = null;
+		try {
+			statement = SqlUtils.createPreparedStatement(connection, sql);
+			return statement.executeUpdate();
+		} finally {
+			if (statement != null) {
+				statement.close();
+			}
+		}
+	}
+
+	public int update(Sql sql) throws SqlException {
+		Connection connection = null;
+		try {
+			connection = getUserConnection();
+			return update(sql, connection);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {

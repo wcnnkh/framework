@@ -91,13 +91,17 @@ public final class MysqlFormat implements SqlFormat {
 		return new SimpleSql(sb.toString());
 	}
 
-	public Sql toIncrByIdSql(String fieldName, double limit, Double maxValue,
-			String tableName, TableInfo tableInfo, Object... params) {
+	public Sql toIncrByIdSql(String fieldName, double limit, Double maxValue, String tableName, TableInfo tableInfo,
+			Object... params) {
 		return new IncrByIdSQL(tableInfo, tableName, params, fieldName, limit, maxValue);
 	}
 
-	public Sql toDecrByIdSql(String fieldName, double limit, Double minValue,
-			String tableName, TableInfo tableInfo, Object... params) {
+	public Sql toDecrByIdSql(String fieldName, double limit, Double minValue, String tableName, TableInfo tableInfo,
+			Object... params) {
 		return new DecrByIdSQL(tableInfo, tableName, params, fieldName, limit, minValue);
+	}
+
+	public Sql toLastInsertIdSql(String tableName) {
+		return new LastInsertIdSql(tableName);
 	}
 }

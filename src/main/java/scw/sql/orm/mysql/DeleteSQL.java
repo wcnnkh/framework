@@ -6,7 +6,7 @@ import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
-public class DeleteSQL implements Sql {
+public final class DeleteSQL implements Sql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;

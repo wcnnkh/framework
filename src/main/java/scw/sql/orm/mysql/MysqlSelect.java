@@ -15,7 +15,7 @@ import scw.sql.orm.Select;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.result.ResultSet;
 
-public class MysqlSelect extends Select {
+public final class MysqlSelect extends Select {
 	/**
 	 * 表和表的别名
 	 */

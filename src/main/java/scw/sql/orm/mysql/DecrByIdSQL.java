@@ -11,7 +11,7 @@ import scw.sql.orm.TableInfo;
  * @author shuchaowen
  *
  */
-public class DecrByIdSQL implements Sql {
+public final class DecrByIdSQL implements Sql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;

@@ -10,7 +10,7 @@ import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annoation.Counter;
 
-public class SaveOrUpdateSQL implements Sql {
+public final class SaveOrUpdateSQL implements Sql {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerFactory
 			.getLogger(SaveOrUpdateSQL.class);

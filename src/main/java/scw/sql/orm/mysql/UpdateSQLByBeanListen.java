@@ -15,7 +15,7 @@ import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annoation.Counter;
 
-public class UpdateSQLByBeanListen implements Sql {
+public final class UpdateSQLByBeanListen implements Sql {
 	private static Logger logger = LoggerFactory
 			.getLogger(UpdateSQLByBeanListen.class);
 

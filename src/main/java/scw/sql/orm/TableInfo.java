@@ -40,6 +40,7 @@ public final class TableInfo {
 	private ColumnInfo[] tableColumns;
 	private Class<?>[] proxyInterface;
 	private boolean parent = false;
+	private ColumnInfo autoIncrement;
 
 	TableInfo(ClassInfo classInfo) {
 		this.classInfo = classInfo;
@@ -128,6 +129,14 @@ public final class TableInfo {
 						if (fieldInfo.getSetter() != null) {
 							this.notPrimaryKeySetterNameMap.put(fieldInfo.getSetter().getName(), columnInfo);
 						}
+					}
+
+					if (columnInfo.getAutoIncrement() != null) {
+						if (autoIncrement != null) {
+							throw new RuntimeException(classInfo.getName() + "存在多个@AutoIncrement字段");
+						}
+
+						autoIncrement = columnInfo;
 					}
 				} else {
 					boolean javaType = fieldInfo.getField().getType().getName().startsWith("java.")
@@ -258,5 +267,9 @@ public final class TableInfo {
 			beanFieldListen.start_field_listen();
 			return (T) beanFieldListen;
 		}
+	}
+
+	public ColumnInfo getAutoIncrement() {
+		return autoIncrement;
 	}
 }

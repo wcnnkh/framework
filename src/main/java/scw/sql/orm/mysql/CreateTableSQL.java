@@ -15,7 +15,7 @@ import scw.sql.orm.annoation.Index;
 import scw.sql.orm.enums.IndexMethod;
 import scw.sql.orm.enums.IndexOrder;
 
-public class CreateTableSQL implements Sql {
+public final class CreateTableSQL implements Sql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 
@@ -40,8 +40,7 @@ public class CreateTableSQL implements Sql {
 				} else {
 					sb.append("(255)");
 				}
-			} else if ("float".equals(columnInfo.getTypeName())
-					|| "java.lang.Float".equals(columnInfo.getTypeName())) {
+			} else if ("float".equals(columnInfo.getTypeName()) || "java.lang.Float".equals(columnInfo.getTypeName())) {
 				sb.append("float");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
@@ -56,32 +55,28 @@ public class CreateTableSQL implements Sql {
 				} else {
 					sb.append("(20)");
 				}
-			} else if ("long".equals(columnInfo.getTypeName())
-					|| "java.lang.Long".equals(columnInfo.getTypeName())) {
+			} else if ("long".equals(columnInfo.getTypeName()) || "java.lang.Long".equals(columnInfo.getTypeName())) {
 				sb.append("bigint");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
 				} else {
 					sb.append("(20)");
 				}
-			} else if ("int".equals(columnInfo.getTypeName())
-					|| "java.lang.Integer".equals(columnInfo.getTypeName())) {
+			} else if ("int".equals(columnInfo.getTypeName()) || "java.lang.Integer".equals(columnInfo.getTypeName())) {
 				sb.append("int");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
 				} else {
 					sb.append("(10)");
 				}
-			} else if ("short".equals(columnInfo.getTypeName())
-					|| "java.lang.Short".equals(columnInfo.getTypeName())) {
+			} else if ("short".equals(columnInfo.getTypeName()) || "java.lang.Short".equals(columnInfo.getTypeName())) {
 				sb.append("SMALLINT");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
 				} else {
 					sb.append("(5)");
 				}
-			} else if ("byte".equals(columnInfo.getTypeName())
-					|| "java.lang.Byte".equals(columnInfo.getTypeName())) {
+			} else if ("byte".equals(columnInfo.getTypeName()) || "java.lang.Byte".equals(columnInfo.getTypeName())) {
 				sb.append("bit");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
@@ -103,10 +98,12 @@ public class CreateTableSQL implements Sql {
 				sb.append("not null ");
 			}
 
-			if (columnInfo.getColumn() != null
-					&& !StringUtils.isEmpty(columnInfo.getColumn().comment())) {
-				sb.append(" comment \'")
-						.append(columnInfo.getColumn().comment()).append("\'");
+			if (columnInfo.getColumn() != null && !StringUtils.isEmpty(columnInfo.getColumn().comment())) {
+				sb.append(" comment \'").append(columnInfo.getColumn().comment()).append("\'");
+			}
+
+			if (columnInfo.getAutoIncrement() != null) {
+				sb.append(" AUTO_INCREMENT");
 			}
 		}
 
@@ -126,8 +123,7 @@ public class CreateTableSQL implements Sql {
 		Map<String, Index> indexConfigMap = new HashMap<String, Index>();
 		for (int i = 0; i < tableInfo.getColumns().length; i++) {
 			ColumnInfo columnInfo = tableInfo.getColumns()[i];
-			Index index = columnInfo.getFieldInfo().getField()
-					.getAnnotation(Index.class);
+			Index index = columnInfo.getFieldInfo().getField().getAnnotation(Index.class);
 			if (index == null) {
 				continue;
 			}
@@ -190,8 +186,7 @@ public class CreateTableSQL implements Sql {
 				if (i > 0) {
 					sb.append(",");
 				}
-				sb.append(tableInfo.getPrimaryKeyColumns()[i]
-						.getSqlColumnName());
+				sb.append(tableInfo.getPrimaryKeyColumns()[i].getSqlColumnName());
 			}
 			sb.append(")");
 		}
@@ -201,10 +196,8 @@ public class CreateTableSQL implements Sql {
 		sb.append(" DEFAULT");
 		sb.append(" CHARSET=").append(tableInfo.getCharset());
 		sb.append(" ROW_FORMAT=").append(tableInfo.getRow_format());
-		if (tableInfo.getTable() != null
-				&& !StringUtils.isEmpty(tableInfo.getTable().comment())) {
-			sb.append(" comment=\'").append(tableInfo.getTable().comment())
-					.append("\'");
+		if (tableInfo.getTable() != null && !StringUtils.isEmpty(tableInfo.getTable().comment())) {
+			sb.append(" comment=\'").append(tableInfo.getTable().comment()).append("\'");
 
 		}
 		this.sql = sb.toString();

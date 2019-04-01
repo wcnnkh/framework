@@ -4,7 +4,7 @@ import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 
-public class UpdateSQL implements Sql {
+public final class UpdateSQL implements Sql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
