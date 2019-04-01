@@ -199,7 +199,7 @@ public final class XUtils {
 		String[] arr2 = version2.split("\\.");
 		for (int i = 0; i < Math.min(arr1.length, arr2.length); i++) {
 			int v1 = Integer.parseInt(arr1[i]);
-			int v2 = Integer.parseInt(arr2[1]);
+			int v2 = Integer.parseInt(arr2[i]);
 			if (v1 > v2) {
 				return true;
 			}
