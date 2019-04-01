@@ -24,7 +24,7 @@ import scw.sql.orm.result.ResultSet;
 import scw.transaction.cache.QueryCacheUtils;
 
 public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOperations, SelectMaxId {
-
+	
 	public abstract SqlFormat getSqlFormat();
 
 	public <T> T getById(Class<T> type, Object... params) {

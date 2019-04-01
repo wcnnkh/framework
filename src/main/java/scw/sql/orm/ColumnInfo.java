@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 
 import scw.common.FieldInfo;
 import scw.common.utils.ClassUtils;
+import scw.db.annotation.AutoCreate;
 import scw.sql.orm.annoation.AutoIncrement;
 import scw.sql.orm.annoation.Column;
 import scw.sql.orm.annoation.Counter;
@@ -33,6 +34,7 @@ public final class ColumnInfo {
 	private final Column column;
 	private final Counter counter;
 	private final AutoIncrement autoIncrement;
+	private final AutoCreate autoCreate;
 	
 	// 就是在name的两边加入了(``)
 	private String sqlColumnName;
@@ -40,6 +42,7 @@ public final class ColumnInfo {
 	protected ColumnInfo(String defaultTableName, FieldInfo field) {
 		this.counter = field.getAnnotation(Counter.class);
 		this.autoIncrement = field.getAnnotation(AutoIncrement.class);
+		this.autoCreate = field.getAnnotation(AutoCreate.class);
 		this.fieldInfo = field;
 		this.name = field.getName();
 		this.primaryKey = field.getAnnotation(PrimaryKey.class);
@@ -177,5 +180,9 @@ public final class ColumnInfo {
 
 	public AutoIncrement getAutoIncrement() {
 		return autoIncrement;
+	}
+
+	public AutoCreate getAutoCreate() {
+		return autoCreate;
 	}
 }
