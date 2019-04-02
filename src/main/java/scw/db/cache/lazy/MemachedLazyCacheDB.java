@@ -1,4 +1,4 @@
-package scw.sql.orm.cache;
+package scw.db.cache.lazy;
 
 import java.util.Collection;
 import java.util.Map;
@@ -6,17 +6,20 @@ import java.util.Map.Entry;
 
 import scw.beans.BeanFieldListen;
 import scw.memcached.Memcached;
+import scw.transaction.DefaultTransactionLifeCycle;
+import scw.transaction.TransactionManager;
 
-public class MemcachedCache implements Cache {
+public abstract class MemachedLazyCacheDB extends AbstractLazyCacheDB {
 	private final Memcached memcached;
 	private final int exp;
 
-	public MemcachedCache(Memcached memcached, int exp) {
+	public MemachedLazyCacheDB(Memcached memcached, int exp) {
 		this.memcached = memcached;
-		this.exp = exp;
+		this.exp = exp;   
 	}
 
-	public <T> T get(Class<T> type, String key) {
+	@Override
+	protected <T> T get(Class<T> type, String key) {
 		T t = memcached.getAndTocuh(key, exp);
 		if (t == null) {
 			return null;
@@ -32,12 +35,25 @@ public class MemcachedCache implements Cache {
 		memcached.delete(key);
 	}
 
-	public void add(String key, Object data) {
+	public void add(final String key, Object data) {
 		memcached.add(key, exp, data);
+		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+			@Override
+			public void afterRollback() {
+				memcached.delete(key);
+			}
+		});
 	}
 
-	public void set(String key, Object data) {
+	public void set(final String key, Object data) {
+
 		memcached.set(key, exp, data);
+		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+			@Override
+			public void afterProcess() {
+				memcached.delete(key);
+			}
+		});
 	}
 
 	public <T> Map<String, T> getMap(Class<T> type, Collection<String> keys) {

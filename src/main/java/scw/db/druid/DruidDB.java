@@ -1,4 +1,4 @@
-package scw.db;
+package scw.db.druid;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -10,34 +10,21 @@ import com.alibaba.druid.pool.DruidDataSource;
 
 import scw.beans.annotaion.Bean;
 import scw.beans.annotaion.Destroy;
+import scw.db.DB;
+import scw.db.DBUtils;
 import scw.db.database.DataBase;
-import scw.sql.orm.cache.Cache;
 
 @Bean(proxy = false)
 public class DruidDB extends DB {
 	private DruidDataSource datasource;
 	private DataBase dataBase;
-	private Cache cache;
-
-	/**
-	 * @param propertiesFilePath
-	 */
-	public DruidDB(String propertiesFilePath) {
-		this(null, propertiesFilePath);
-	}
 
 	@Override
 	public DataBase getDataBase() {
 		return dataBase;
 	}
 	
-	@Override
-	protected Cache getCache() {
-		return cache;
-	}
-
-	public DruidDB(Cache cache, String propertiesFilePath) {
-		this.cache = cache;
+	public DruidDB(String propertiesFilePath) {
 		datasource = new DruidDataSource();
 		DBUtils.loadProperties(datasource, propertiesFilePath);
 		if (!datasource.isPoolPreparedStatements()) {// 如果配置文件中没有开启psCache

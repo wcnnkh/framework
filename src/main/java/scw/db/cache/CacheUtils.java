@@ -1,4 +1,4 @@
-package scw.sql.orm.cache;
+package scw.db.cache;
 
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtobufIOUtil;
@@ -22,7 +22,7 @@ public abstract class CacheUtils {
 				sb.append("\\").append(columnInfo.getFieldInfo().forceGet(bean)).append("\\");
 			}
 		} catch (Exception e) {
-			throw new CacheException(e);
+			throw new RuntimeException(e);
 		}
 		return sb.toString();
 	}

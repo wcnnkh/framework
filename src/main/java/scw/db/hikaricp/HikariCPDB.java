@@ -1,4 +1,4 @@
-package scw.db;
+package scw.db.hikaricp;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -10,8 +10,9 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import scw.beans.annotaion.Destroy;
+import scw.db.DB;
+import scw.db.DBUtils;
 import scw.db.database.DataBase;
-import scw.sql.orm.cache.Cache;
 
 /**
  * 只在能java8中使用 除非你在pom引入你需要的版本，并排除本项目自带的版本
@@ -22,23 +23,13 @@ import scw.sql.orm.cache.Cache;
 public class HikariCPDB extends DB {
 	private HikariDataSource hds;
 	private DataBase dataBase;
-	private Cache cache;
-
-	public HikariCPDB(String propertiesFile) {
-		this(null, propertiesFile);
-	}
-
-	@Override
-	protected Cache getCache() {
-		return cache;
-	}
 
 	@Override
 	public DataBase getDataBase() {
 		return dataBase;
 	}
 
-	public HikariCPDB(Cache cache, String propertiesFile) {
+	public HikariCPDB(String propertiesFile) {
 		HikariConfig config = new HikariConfig();
 		DBUtils.loadProperties(config, propertiesFile);
 

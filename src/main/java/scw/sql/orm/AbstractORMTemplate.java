@@ -10,6 +10,7 @@ import java.util.Map;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanFieldListen;
+import scw.common.Iterator;
 import scw.common.Pagination;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.exception.NotFoundException;
@@ -17,6 +18,7 @@ import scw.common.exception.ParameterException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.sql.ResultSetMapper;
+import scw.sql.RowCallback;
 import scw.sql.Sql;
 import scw.sql.SqlTemplate;
 import scw.sql.orm.annoation.AutoCreate;
@@ -24,14 +26,16 @@ import scw.sql.orm.annoation.Table;
 import scw.sql.orm.auto.AutoCreateService;
 import scw.sql.orm.auto.CurrentTimeMillisAutoCreateService;
 import scw.sql.orm.mysql.MysqlSelect;
+import scw.sql.orm.result.DefaultResult;
 import scw.sql.orm.result.DefaultResultSet;
+import scw.sql.orm.result.Result;
 import scw.sql.orm.result.ResultSet;
 import scw.transaction.cache.QueryCacheUtils;
 
 public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOperations, SelectMaxId {
 	@AutoCreate
 	private BeanFactory beanFactory;
-	private Map<String, AutoCreateService> autoCreateMap;
+	private Map<String, AutoCreateService> autoCreateMap = new HashMap<String, AutoCreateService>();
 
 	{
 		setAutoCreateService("cts", CurrentTimeMillisAutoCreateService.CURRENT_TIME_MILLIS);
@@ -39,11 +43,15 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 	}
 
 	protected synchronized void setAutoCreateService(String groupName, AutoCreateService autoCreateService) {
-		if (autoCreateMap == null) {
-			autoCreateMap = new HashMap<String, AutoCreateService>();
-		}
-
 		autoCreateMap.put(groupName, autoCreateService);
+	}
+
+	protected AutoCreateService getAutoCreateService(String name) {
+		AutoCreateService autoCreateService = autoCreateMap.get(name);
+		if (autoCreateService == null && beanFactory != null) {
+			autoCreateService = beanFactory.get(name);
+		}
+		return autoCreateService;
 	}
 
 	public abstract SqlFormat getSqlFormat();
@@ -106,11 +114,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 		for (ColumnInfo columnInfo : tableInfo.getAutoCreateColumns()) {
 			AutoCreate autoCreate = columnInfo.getAutoCreate();
 			String name = StringUtils.isEmpty(autoCreate.value()) ? columnInfo.getName() : autoCreate.value();
-			AutoCreateService service = autoCreateMap == null ? null : autoCreateMap.get(name);
-			if (service == null && beanFactory != null) {
-				service = beanFactory.get(name);
-			}
-
+			AutoCreateService service = getAutoCreateService(name);
 			if (service == null) {
 				throw new NotFoundException(tableInfo.getClassInfo().getName() + "中字段[" + columnInfo.getName()
 						+ "的注解@AutoCreate找不到指定名称的实现:" + name);
@@ -364,6 +368,24 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 	 */
 	public Select createSelect() {
 		return new MysqlSelect(this);
+	}
+
+	public void iterator(Class<?> tableClass, Iterator<Result> iterator) {
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
+		iterator(getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getName(), null), iterator);
+	}
+
+	public void iterator(Sql sql, final Iterator<Result> iterator) {
+		query(sql, new RowCallback() {
+
+			public void processRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
+				try {
+					iterator.iterator(new DefaultResult(rs));
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	public <T> T getMaxValue(Class<T> type, Class<?> tableClass, String tableName, String columnName) {

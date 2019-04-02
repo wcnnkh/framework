@@ -1,4 +1,4 @@
-package scw.sql.orm.cache;
+package scw.db.cache.lazy;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,52 +7,53 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.sql.orm.AbstractORMTemplate;
+import scw.db.DB;
+import scw.db.cache.CacheUtils;
+import scw.db.cache.annotation.Cache;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
-public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
+public abstract class AbstractLazyCacheDB extends DB {
+	protected abstract <T> T get(Class<T> type, String key);
 
-	/**
-	 * 获取二级缓存实现
-	 * 
-	 * @return
-	 */
-	protected abstract Cache getCache();
+	protected abstract void delete(String key);
+
+	protected abstract void add(String key, Object bean);
+
+	protected abstract void set(String key, Object bean);
+
+	protected abstract <T> Map<String, T> getMap(Class<T> type, Collection<String> keys);
+
+	protected boolean cacheEnable(Class<?> clz) {
+		TableInfo tableInfo = ORMUtils.getTableInfo(clz);
+		Cache cache = tableInfo.getClassInfo().getClz().getAnnotation(Cache.class);
+		return cache != null;
+	}
 
 	public void deleteCache(Class<?> clz, Object... params) {
-		Cache cache = getCache();
-		if (cache == null) {
-			return;
+		if (cacheEnable(clz)) {
+			delete(CacheUtils.getByIdCacheKey(clz, params));
 		}
-
-		String key = CacheUtils.getByIdCacheKey(clz, params);
-		cache.delete(key);
 	}
 
 	public void deleteCache(Object bean) {
-		Cache cache = getCache();
-		if (cache == null) {
-			return;
+		if (cacheEnable(bean.getClass())) {
+			delete(CacheUtils.getObjectCacheKey(bean));
 		}
-
-		String key = CacheUtils.getObjectCacheKey(bean);
-		cache.delete(key);
 	}
 
 	@Override
 	public <T> T getById(String tableName, Class<T> type, Object... params) {
-		Cache cache = getCache();
-		if (cache == null) {
+		if (!cacheEnable(type)) {
 			return super.getById(tableName, type, params);
 		}
 
 		String cacheKey = CacheUtils.getByIdCacheKey(type, params);
-		T t = cache.get(type, cacheKey);
+		T t = get(type, cacheKey);
 		if (t == null) {
 			t = super.getById(tableName, type, params);
 			if (t != null) {
-				cache.set(cacheKey, t);
+				set(cacheKey, t);
 			}
 		}
 		return t;
@@ -80,9 +81,8 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 	public boolean save(Object bean, String tableName) {
 		boolean b = super.save(bean, tableName);
 		if (b) {
-			Cache cache = getCache();
-			if (cache != null) {
-				cache.add(CacheUtils.getObjectCacheKey(bean), bean);
+			if (cacheEnable(bean.getClass())) {
+				add(CacheUtils.getObjectCacheKey(bean), bean);
 			}
 		}
 		return b;
@@ -108,8 +108,7 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 
 	@Override
 	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params) {
-		Cache cache = getCache();
-		if (cache == null) {
+		if (!cacheEnable(type)) {
 			return super.getInIdList(type, tableName, inIds, params);
 		}
 
@@ -131,7 +130,7 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 				keyMap.put(id + k.toString(), k);
 			}
 
-			Map<String, V> map = cache.getMap(type, keyMap.keySet());
+			Map<String, V> map = getMap(type, keyMap.keySet());
 			if (map == null || map.isEmpty()) {
 				return super.getInIdList(type, tableName, inIds, params);
 			}
@@ -161,7 +160,7 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 					if (bean == null) {
 						continue;
 					}
-					cache.set(CacheUtils.getObjectCacheKey(bean), bean);
+					set(CacheUtils.getObjectCacheKey(bean), bean);
 					valueMap.put(entry.getKey(), bean);
 				}
 			}
