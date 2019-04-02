@@ -1,4 +1,4 @@
-package scw.sql.async;
+package scw.db.async;
 
 import java.io.Serializable;
 

@@ -2,10 +2,10 @@ package scw.sql.orm.mysql;
 
 import java.util.Collection;
 
-import scw.beans.BeanFieldListen;
 import scw.common.Pagination;
 import scw.db.sql.SimpleSql;
 import scw.sql.Sql;
+import scw.sql.orm.BeanFieldListen;
 import scw.sql.orm.PaginationSql;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.TableInfo;
@@ -24,7 +24,13 @@ public final class MysqlFormat implements SqlFormat {
 	}
 
 	public Sql toDeleteSql(Object obj, TableInfo tableInfo, String tableName) {
-		return new DeleteSQL(obj, tableInfo, tableName);
+		try {
+			return new DeleteSQL(obj, tableInfo, tableName);
+		} catch (IllegalArgumentException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public Sql toUpdateSql(Object obj, TableInfo tableInfo, String tableName) {

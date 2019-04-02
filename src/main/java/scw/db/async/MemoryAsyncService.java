@@ -1,4 +1,4 @@
-package scw.sql.async;
+package scw.db.async;
 
 import scw.sql.SqlOperations;
 import scw.sql.Sqls;

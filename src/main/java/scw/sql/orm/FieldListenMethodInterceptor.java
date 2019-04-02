@@ -1,4 +1,4 @@
-package scw.beans;
+package scw.sql.orm;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

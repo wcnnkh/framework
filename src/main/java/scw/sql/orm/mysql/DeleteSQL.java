@@ -3,7 +3,6 @@ package scw.sql.orm.mysql;
 import scw.common.exception.ParameterException;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
-import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
 public final class DeleteSQL implements Sql {
@@ -24,12 +23,17 @@ public final class DeleteSQL implements Sql {
 		this.sql = formatSql(tableInfo, tableName);
 	}
 
-	public DeleteSQL(Object obj, TableInfo tableInfo, String tableName) {
+	public DeleteSQL(Object obj, TableInfo tableInfo, String tableName)
+			throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
-		this.params = ORMUtils.getPrimaryKey(obj, tableInfo);
+		ColumnInfo[] columnInfos = tableInfo.getPrimaryKeyColumns();
+		this.params = new Object[columnInfos.length];
+		for (int i = 0; i < params.length; i++) {
+			params[i] = columnInfos[i].getValueToDB(obj);
+		}
 		this.sql = formatSql(tableInfo, tableName);
 	}
 

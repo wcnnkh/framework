@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.beans.BeanFieldListen;
 import scw.memcached.Memcached;
+import scw.sql.orm.BeanFieldListen;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 

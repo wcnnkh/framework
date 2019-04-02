@@ -21,4 +21,5 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 	protected Connection getUserConnection() throws SQLException {
 		return SqlTransactionUtils.getTransactionConnection(this);
 	}
+	
 }

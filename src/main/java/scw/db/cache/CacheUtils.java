@@ -6,7 +6,6 @@ import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
-import scw.beans.BeanFieldListen;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
@@ -45,10 +44,7 @@ public abstract class CacheUtils {
 		T t = ORMUtils.getTableInfo(type).newInstance();
 		Schema schema = RuntimeSchema.getSchema(type);
 		ProtostuffIOUtil.mergeFrom(data, t, schema);
-		if (t instanceof BeanFieldListen) {
-			((BeanFieldListen) t).start_field_listen();
-		}
-		return t;
+		return ORMUtils.restartFieldLinsten(t);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
