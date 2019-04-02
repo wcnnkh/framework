@@ -3,10 +3,11 @@ package scw.db.cache.memcached;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import scw.common.exception.ParameterException;
 import scw.db.cache.Cache;
@@ -31,28 +32,28 @@ public final class MemcachedFullKeyCache implements Cache {
 		this.exp = exp;
 	}
 
-	private boolean casAdd(String key, String value) {
-		CAS<LinkedHashSet<String>> cas = memcached.gets(key);
+	private boolean casAdd(String key, String value, String objectKey) {
+		CAS<LinkedHashMap<String, String>> cas = memcached.gets(key);
 		if (cas == null) {
-			LinkedHashSet<String> list = new LinkedHashSet<String>();
-			list.add(value);
-			return memcached.cas(key, list, 0);
+			LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
+			valueMap.put(value, objectKey);
+			return memcached.cas(key, valueMap, 0);
 		} else {
-			LinkedHashSet<String> list = cas.getValue();
-			list.add(value);
-			return memcached.cas(key, list, cas.getCas());
+			LinkedHashMap<String, String> valueMap = cas.getValue();
+			valueMap.put(value, objectKey);
+			return memcached.cas(key, valueMap, cas.getCas());
 		}
 	}
 
 	private boolean casRemove(String key, String value) {
-		CAS<LinkedHashSet<String>> cas = memcached.gets(key);
+		CAS<LinkedHashMap<String, String>> cas = memcached.gets(key);
 		if (cas == null) {
 			return true;
 		}
 
-		LinkedHashSet<String> list = cas.getValue();
-		list.remove(value);
-		return memcached.cas(key, list, cas.getCas());
+		LinkedHashMap<String, String> valueMap = cas.getValue();
+		valueMap.remove(value);
+		return memcached.cas(key, valueMap, cas.getCas());
 	}
 
 	private String getObjectKey(TableInfo tableInfo, Object bean)
@@ -88,7 +89,7 @@ public final class MemcachedFullKeyCache implements Cache {
 			sb.append(args[i]);
 			if (i > 0 && i < args.length - 1) {
 				String indexKey = sb.toString();
-				while (casAdd(indexKey, objectKey)) {
+				while (casAdd(indexKey, args[i].toString(), objectKey)) {
 					break;
 				}
 			}
@@ -132,7 +133,7 @@ public final class MemcachedFullKeyCache implements Cache {
 			sb.append(args[i]);
 			if (i > 0 && i < args.length - 1) {
 				String indexKey = sb.toString();
-				while (casAdd(indexKey, objectKey)) {
+				while (casAdd(indexKey, args[i].toString(), objectKey)) {
 					break;
 				}
 			}
@@ -177,41 +178,76 @@ public final class MemcachedFullKeyCache implements Cache {
 		}
 
 		String key = getObjectKeyById(tableInfo, params);
-		LinkedList<String> list = memcached.get(key);
-		if (list == null) {
+		LinkedHashMap<String, String> keyMap = memcached.get(key);
+		if (keyMap == null) {
 			return null;
 		}
 
-		Map<String, T> valueMap = memcached.get(list);
+		Map<String, T> valueMap = memcached.get(keyMap.values());
 		if (valueMap == null || valueMap.isEmpty()) {
 			return null;
 		}
 
 		List<T> valueList = new ArrayList<T>();
-		for (String k : list) {
-			valueList.add(valueMap.get(k));
+		for (Entry<String, String> entry : keyMap.entrySet()) {
+			valueList.add(valueMap.get(entry.getValue()));
 		}
 		return valueList;
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) throws Throwable {
+	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds,
+			Object... params) throws Throwable {
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		if (tableInfo.getPrimaryKeyColumns().length <= 1) {
 			throw new ParameterException("主键数量错误，至少要两个主键");
 		}
-		
+
 		if (params.length > tableInfo.getPrimaryKeyColumns().length) {
 			throw new ParameterException("主键参数错误");
 		}
-		
+
 		String indexKey = getObjectKeyById(tableInfo, params);
-		LinkedHashSet<String> list = memcached.get(indexKey);
-		if(list == null){
+		LinkedHashMap<String, String> keyMap = memcached.get(indexKey);
+		if (keyMap == null) {
 			return null;
 		}
-		
-		// TODO Auto-generated method stub
-		return null;
+
+		Map<String, String> map = new HashMap<String, String>();
+		for (K k : inIds) {
+			if (k == null) {
+				continue;
+			}
+
+			String key = k.toString();
+			String objectKey = keyMap.get(key);
+			map.put(objectKey, key);
+		}
+
+		if (map.isEmpty()) {
+			return null;
+		}
+
+		Map<String, V> valueMap = memcached.get(map.keySet());
+		Map<K, V> result = new HashMap<K, V>(valueMap.size());
+		for (K k : inIds) {
+			if (k == null) {
+				continue;
+			}
+
+			String key = k.toString();
+			String objectKey = keyMap.get(key);
+			if (objectKey == null) {
+				continue;
+			}
+
+			V v = valueMap.get(objectKey);
+			if (v == null) {
+				continue;
+			}
+
+			result.put(k, v);
+		}
+		return result;
 	}
 
 }
