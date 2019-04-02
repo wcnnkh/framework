@@ -12,9 +12,10 @@ import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
 public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
-	
+
 	/**
 	 * 获取二级缓存实现
+	 * 
 	 * @return
 	 */
 	protected abstract Cache getCache();
@@ -59,47 +60,50 @@ public abstract class AbstractORMCacheTemplate extends AbstractORMTemplate {
 
 	@Override
 	public boolean delete(Object bean, String tableName) {
-		Cache cache = getCache();
-		if (cache == null) {
-			return super.delete(bean, tableName);
+		boolean b = super.delete(bean, tableName);
+		if (b) {
+			deleteCache(bean);
 		}
-
-		cache.delete(CacheUtils.getObjectCacheKey(bean));
-		return super.delete(bean, tableName);
+		return b;
 	}
 
 	@Override
 	public boolean deleteById(String tableName, Class<?> type, Object... params) {
-		Cache cache = getCache();
-		if (cache == null) {
-			return super.deleteById(tableName, type, params);
+		boolean b = super.deleteById(tableName, type, params);
+		if (b) {
+			deleteCache(type, params);
 		}
-
-		cache.delete(CacheUtils.getByIdCacheKey(type, params));
-		return super.deleteById(tableName, type, params);
+		return b;
 	}
 
 	@Override
 	public boolean save(Object bean, String tableName) {
-		Cache cache = getCache();
-		if (cache == null) {
-			return super.save(bean, tableName);
+		boolean b = super.save(bean, tableName);
+		if (b) {
+			Cache cache = getCache();
+			if (cache != null) {
+				cache.add(CacheUtils.getObjectCacheKey(bean), bean);
+			}
 		}
-
-		cache.add(CacheUtils.getObjectCacheKey(bean), bean);
-		return super.save(bean, tableName);
+		return b;
 	}
 
 	@Override
 	public boolean saveOrUpdate(Object bean, String tableName) {
-		deleteCache(bean);
-		return super.saveOrUpdate(bean, tableName);
+		boolean b = super.saveOrUpdate(bean, tableName);
+		if (b) {
+			deleteCache(bean);
+		}
+		return b;
 	}
 
 	@Override
 	public boolean update(Object bean, String tableName) {
-		deleteCache(bean);
-		return super.update(bean, tableName);
+		boolean b = super.update(bean, tableName);
+		if (b) {
+			deleteCache(bean);
+		}
+		return b;
 	}
 
 	@Override

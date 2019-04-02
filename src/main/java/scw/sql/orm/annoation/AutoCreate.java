@@ -18,4 +18,10 @@ public @interface AutoCreate {
 	 * @return
 	 */
 	public String value() default "";
+	
+	/**
+	 * 参数
+	 * @return
+	 */
+	public String[] args() default {};
 }

@@ -6,7 +6,7 @@ import scw.sql.orm.TableInfo;
 
 public interface AutoCreateService {
 
-	void wrapper(ORMOperations ormOperations, Object bean, TableInfo tableInfo, ColumnInfo columnInfo, String tableName)
+	void wrapper(ORMOperations ormOperations, Object bean, TableInfo tableInfo, ColumnInfo columnInfo, String tableName, String[] args)
 			throws Throwable;
 
 }

@@ -117,7 +117,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 			}
 
 			try {
-				service.wrapper(this, bean, tableInfo, columnInfo, tName);
+				service.wrapper(this, bean, tableInfo, columnInfo, tName, autoCreate.args());
 			} catch (Throwable e) {
 				throw new RuntimeException(e);
 			}

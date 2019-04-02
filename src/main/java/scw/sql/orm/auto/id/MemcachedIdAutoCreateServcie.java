@@ -45,7 +45,7 @@ public class MemcachedIdAutoCreateServcie implements AutoCreateService {
 	}
 
 	public void wrapper(ORMOperations ormOperations, Object bean, TableInfo tableInfo, ColumnInfo columnInfo,
-			String tableName) throws Throwable {
+			String tableName, String[] args) throws Throwable {
 		String key = getCacheKey(tableInfo, columnInfo.getName());
 		long next;
 		if (memcached.get(key) == null) {

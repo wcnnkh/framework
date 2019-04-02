@@ -8,7 +8,7 @@ public final class CurrentTimeMillisAutoCreateService implements AutoCreateServi
 	public static final CurrentTimeMillisAutoCreateService CURRENT_TIME_MILLIS = new CurrentTimeMillisAutoCreateService();
 
 	public void wrapper(ORMOperations ormOperations, Object bean, TableInfo tableInfo, ColumnInfo columnInfo,
-			String tableName) throws Throwable {
+			String tableName, String[] args) throws Throwable {
 		columnInfo.setValueToField(bean, System.currentTimeMillis());
 	}
 

@@ -1,11 +1,12 @@
 package scw.db;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import scw.common.Iterator;
-import scw.database.DataBaseUtils;
 import scw.db.database.DataBase;
+import scw.sql.RowCallback;
 import scw.sql.Sql;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.SqlFormat;
@@ -17,7 +18,7 @@ import scw.transaction.sql.ConnectionFactory;
 import scw.transaction.sql.SqlTransactionUtils;
 
 public abstract class DB extends AbstractORMCacheTemplate implements ConnectionFactory, AutoCloseable {
-	
+
 	public abstract DataBase getDataBase();
 
 	@Override
@@ -42,11 +43,11 @@ public abstract class DB extends AbstractORMCacheTemplate implements ConnectionF
 	}
 
 	public void iterator(Sql sql, final Iterator<Result> iterator) {
-		DataBaseUtils.iterator(this, sql, new Iterator<java.sql.ResultSet>() {
+		query(sql, new RowCallback() {
 
-			public void iterator(java.sql.ResultSet data) {
+			public void processRow(ResultSet rs, int rowNum) throws SQLException {
 				try {
-					iterator.iterator(new DefaultResult(data));
+					iterator.iterator(new DefaultResult(rs));
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}

@@ -1,6 +1,8 @@
 package scw.utils.excel.export;
 
 import java.io.OutputStream;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,14 +12,13 @@ import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import scw.common.Iterator;
-import scw.database.DataBaseUtils;
 import scw.db.DB;
+import scw.sql.RowCallback;
 import scw.sql.Sql;
-import scw.transaction.sql.ConnectionFactory;
 
 /**
  * 文件名中如果存在中文，标点符号应该使用全角的符号
+ * 
  * @author shuchaowen
  *
  */
@@ -25,7 +26,7 @@ public class JxlExport {
 	/**
 	 * 导出excel
 	 * 
-	 * @param fileName 
+	 * @param fileName
 	 *            要生成的文件名
 	 * @param title
 	 *            列名
@@ -35,8 +36,8 @@ public class JxlExport {
 	 *            HttpServletResponse
 	 * @throws Exception
 	 */
-	public static void exportExcel(String fileName, String title[], List<Object[]> tempList, HttpServletResponse response)
-			throws Exception {
+	public static void exportExcel(String fileName, String title[], List<Object[]> tempList,
+			HttpServletResponse response) throws Exception {
 		String oldFileName = fileName;
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 
@@ -73,7 +74,6 @@ public class JxlExport {
 					toRow = tempList.size() % maxCount;
 				}
 
-				
 				// 开始写入
 				for (int r = 1; r <= toRow; r++) {
 					Object[] obj = tempList.get(formListIndex + r - 1);
@@ -93,10 +93,9 @@ public class JxlExport {
 		wwb.close();
 		response.flushBuffer();
 	}
-	
-	public static void sqlResultSetToExcel(String fileName, String title[], DB db
-			, HttpServletResponse response, SqlExportRow exportRow, Sql ...sqls)
-			throws Exception {
+
+	public static void sqlResultSetToExcel(String fileName, String title[], DB db, HttpServletResponse response,
+			SqlExportRow exportRow, Sql... sqls) throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		response.setContentType("application/vnd.ms-excel");
 		response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xls");
@@ -106,10 +105,9 @@ public class JxlExport {
 		sqlResultSetToExcel(title, db, Arrays.asList(sqls), os, exportRow);
 		response.flushBuffer();
 	}
-	
-	public static void sqlResultSetToExcel(String fileName, String title[], DB db,
-			List<Sql> sqlList, HttpServletResponse response, SqlExportRow exportRow)
-			throws Exception {
+
+	public static void sqlResultSetToExcel(String fileName, String title[], DB db, List<Sql> sqlList,
+			HttpServletResponse response, SqlExportRow exportRow) throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		response.setContentType("application/vnd.ms-excel");
 		response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xls");
@@ -119,19 +117,18 @@ public class JxlExport {
 		sqlResultSetToExcel(title, db, sqlList, os, exportRow);
 		response.flushBuffer();
 	}
-	
-	
-	public static void sqlResultSetToExcel(String title[], ConnectionFactory connectionSource, List<Sql> sqlList, OutputStream os, SqlExportRow exportRow)
-			throws Exception {
+
+	public static void sqlResultSetToExcel(String title[], DB db, List<Sql> sqlList, OutputStream os,
+			SqlExportRow exportRow) throws Exception {
 		// 创建Excel工作薄
 		WritableWorkbook wwb = Workbook.createWorkbook(os);
 		final ResultSetToExeclRowCall rowCall = new ResultSetToExeclRowCall(wwb, title, exportRow);
 		for (Sql sql : sqlList) {
-			DataBaseUtils.iterator(connectionSource, sql, new Iterator<java.sql.ResultSet>() {
-				
-				public void iterator(java.sql.ResultSet data) {
+			db.query(sql, new RowCallback() {
+
+				public void processRow(ResultSet rs, int rowNum) throws SQLException {
 					try {
-						rowCall.format(data);
+						rowCall.format(rs);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
