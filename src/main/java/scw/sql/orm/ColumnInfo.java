@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 
 import scw.common.FieldInfo;
 import scw.common.utils.ClassUtils;
-import scw.db.annotation.AutoCreate;
+import scw.sql.orm.annoation.AutoCreate;
 import scw.sql.orm.annoation.AutoIncrement;
 import scw.sql.orm.annoation.Column;
 import scw.sql.orm.annoation.Counter;
@@ -164,10 +164,6 @@ public final class ColumnInfo {
 
 	public boolean isUnique() {
 		return unique;
-	}
-
-	public void setUnique(boolean unique) {
-		this.unique = unique;
 	}
 
 	public Column getColumn() {

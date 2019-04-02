@@ -8,23 +8,44 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import scw.beans.BeanFactory;
 import scw.beans.BeanFieldListen;
 import scw.common.Pagination;
 import scw.common.exception.AlreadyExistsException;
+import scw.common.exception.NotFoundException;
 import scw.common.exception.ParameterException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.sql.ResultSetMapper;
 import scw.sql.Sql;
 import scw.sql.SqlTemplate;
+import scw.sql.orm.annoation.AutoCreate;
 import scw.sql.orm.annoation.Table;
+import scw.sql.orm.auto.AutoCreateService;
+import scw.sql.orm.auto.CurrentTimeMillisAutoCreateService;
 import scw.sql.orm.mysql.MysqlSelect;
 import scw.sql.orm.result.DefaultResultSet;
 import scw.sql.orm.result.ResultSet;
 import scw.transaction.cache.QueryCacheUtils;
 
 public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOperations, SelectMaxId {
-	
+	@AutoCreate
+	private BeanFactory beanFactory;
+	private Map<String, AutoCreateService> autoCreateMap;
+
+	{
+		setAutoCreateService("cts", CurrentTimeMillisAutoCreateService.CURRENT_TIME_MILLIS);
+		setAutoCreateService("createTime", CurrentTimeMillisAutoCreateService.CURRENT_TIME_MILLIS);
+	}
+
+	protected synchronized void setAutoCreateService(String groupName, AutoCreateService autoCreateService) {
+		if (autoCreateMap == null) {
+			autoCreateMap = new HashMap<String, AutoCreateService>();
+		}
+
+		autoCreateMap.put(groupName, autoCreateService);
+	}
+
 	public abstract SqlFormat getSqlFormat();
 
 	public <T> T getById(Class<T> type, Object... params) {
@@ -81,9 +102,30 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 	public boolean save(Object bean, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		String tName = ORMUtils.getTableName(tableName, tableInfo, bean);
+
+		for (ColumnInfo columnInfo : tableInfo.getAutoCreateColumns()) {
+			AutoCreate autoCreate = columnInfo.getAutoCreate();
+			String name = StringUtils.isEmpty(autoCreate.value()) ? columnInfo.getName() : autoCreate.value();
+			AutoCreateService service = autoCreateMap == null ? null : autoCreateMap.get(name);
+			if (service == null && beanFactory != null) {
+				service = beanFactory.get(name);
+			}
+
+			if (service == null) {
+				throw new NotFoundException(tableInfo.getClassInfo().getName() + "中字段[" + columnInfo.getName()
+						+ "的注解@AutoCreate找不到指定名称的实现:" + name);
+			}
+
+			try {
+				service.wrapper(this, bean, tableInfo, columnInfo, tName);
+			} catch (Throwable e) {
+				throw new RuntimeException(e);
+			}
+		}
+
 		Sql sql = getSqlFormat().toInsertSql(bean, tableInfo, tName);
 		if (tableInfo.getAutoIncrement() == null) {
-			return update(sql) != 0;
+			return ormUpdateSql(tableInfo, tName, sql);
 		} else {
 			Connection connection = null;
 			try {
@@ -123,7 +165,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		String tName = ORMUtils.getTableName(tableName, tableInfo, bean);
 		Sql sql = getSqlFormat().toUpdateSql(bean, tableInfo, tName);
-		return update(sql) != 0;
+		return ormUpdateSql(tableInfo, tName, sql);
 	}
 
 	public boolean delete(Object bean) {
@@ -134,7 +176,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		String tName = ORMUtils.getTableName(tableName, tableInfo, bean);
 		Sql sql = getSqlFormat().toDeleteSql(bean, tableInfo, tName);
-		return update(sql) != 0;
+		return ormUpdateSql(tableInfo, tName, sql);
 	}
 
 	public boolean deleteById(Class<?> type, Object... params) {
@@ -145,14 +187,14 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 		TableInfo tableInfo = getAndCheckPrimaryKey(type, params.length);
 		String tName = getTableName(tableName, tableInfo);
 		Sql sql = getSqlFormat().toDeleteByIdSql(tableInfo, tName, params);
-		return update(sql) != 0;
+		return ormUpdateSql(tableInfo, tName, sql);
 	}
 
 	public boolean saveOrUpdate(Object bean, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		String tName = ORMUtils.getTableName(tableName, tableInfo, bean);
 		Sql sql = getSqlFormat().toSaveOrUpdateSql(bean, tableInfo, tName);
-		return update(sql) != 0;
+		return ormUpdateSql(tableInfo, tName, sql);
 	}
 
 	public boolean save(Object bean) {
@@ -165,6 +207,10 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 
 	public boolean saveOrUpdate(Object bean) {
 		return saveOrUpdate(bean, null);
+	}
+
+	protected boolean ormUpdateSql(TableInfo tableInfo, String tableName, Sql sql) {
+		return update(sql) != 0;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -356,29 +402,5 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 
 	private String getTableName(String tableName, TableInfo tableInfo) {
 		return StringUtils.isEmpty(tableName) ? tableInfo.getName() : tableName;
-	}
-
-	public boolean incrById(String fieldName, double limit, Double maxValue, String tableName, Class<?> clz,
-			Object... params) {
-		TableInfo tableInfo = getAndCheckPrimaryKey(clz, params.length);
-		String tName = getTableName(tableName, tableInfo);
-		Sql sql = getSqlFormat().toIncrByIdSql(fieldName, limit, maxValue, tName, tableInfo, params);
-		return update(sql) != 0;
-	}
-
-	public boolean incrById(String fieldName, double limit, Double maxValue, Class<?> clz, Object... params) {
-		return incrById(fieldName, limit, maxValue, null, clz, params);
-	}
-
-	public boolean decrById(String fieldName, double limit, Double minValue, String tableName, Class<?> clz,
-			Object... params) {
-		TableInfo tableInfo = getAndCheckPrimaryKey(clz, params.length);
-		String tName = getTableName(tableName, tableInfo);
-		Sql sql = getSqlFormat().toDecrByIdSql(fieldName, limit, minValue, tName, tableInfo, params);
-		return update(sql) != 0;
-	}
-
-	public boolean decrById(String fieldName, double limit, Double minValue, Class<?> clz, Object... params) {
-		return decrById(fieldName, limit, minValue, null, clz, params);
 	}
 }

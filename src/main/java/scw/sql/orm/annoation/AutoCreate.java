@@ -1,4 +1,4 @@
-package scw.db.annotation;
+package scw.sql.orm.annoation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
