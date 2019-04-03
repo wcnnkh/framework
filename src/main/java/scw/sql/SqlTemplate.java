@@ -34,8 +34,9 @@ public abstract class SqlTemplate implements SqlOperations {
 
 	protected abstract Connection getUserConnection() throws SQLException;
 
-	protected boolean execute(Sql sql, Connection connection) throws SQLException {
-		executeLog(sql);
+	protected boolean execute(Sql sql, Connection connection)
+			throws SQLException {
+		log(sql);
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -59,7 +60,8 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	private void query(PreparedStatement statement, ResultSetCallback resultSetCallback) throws SQLException {
+	private void query(PreparedStatement statement,
+			ResultSetCallback resultSetCallback) throws SQLException {
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery();
@@ -71,8 +73,9 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	protected void query(Sql sql, Connection connection, ResultSetCallback resultSetCallback) throws SQLException {
-		queryLog(sql);
+	protected void query(Sql sql, Connection connection,
+			ResultSetCallback resultSetCallback) throws SQLException {
+		log(sql);
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -84,7 +87,8 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	public void query(Sql sql, ResultSetCallback resultSetCallback) throws SqlException {
+	public void query(Sql sql, ResultSetCallback resultSetCallback)
+			throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
@@ -96,7 +100,8 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	protected void query(Sql sql, Connection connection, final RowCallback rowCallback) throws SQLException {
+	protected void query(Sql sql, Connection connection,
+			final RowCallback rowCallback) throws SQLException {
 		query(sql, connection, new ResultSetCallback() {
 
 			public void process(ResultSet rs) throws SQLException {
@@ -107,7 +112,8 @@ public abstract class SqlTemplate implements SqlOperations {
 		});
 	}
 
-	public void query(Sql sql, final RowCallback rowCallback) throws SqlException {
+	public void query(Sql sql, final RowCallback rowCallback)
+			throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
@@ -119,7 +125,8 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	private <T> T query(PreparedStatement statement, ResultSetMapper<T> resultSetMapper) throws SQLException {
+	private <T> T query(PreparedStatement statement,
+			ResultSetMapper<T> resultSetMapper) throws SQLException {
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery();
@@ -131,8 +138,9 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	protected <T> T query(Sql sql, Connection connection, ResultSetMapper<T> resultSetMapper) throws SQLException {
-		queryLog(sql);
+	protected <T> T query(Sql sql, Connection connection,
+			ResultSetMapper<T> resultSetMapper) throws SQLException {
+		log(sql);
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -144,7 +152,8 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper) throws SqlException {
+	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper)
+			throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
@@ -156,7 +165,8 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	protected <T> List<T> query(Sql sql, Connection connection, final RowMapper<T> rowMapper) throws SQLException {
+	protected <T> List<T> query(Sql sql, Connection connection,
+			final RowMapper<T> rowMapper) throws SQLException {
 		return query(sql, connection, new ResultSetMapper<List<T>>() {
 
 			public List<T> mapper(ResultSet resultSet) throws SQLException {
@@ -172,7 +182,8 @@ public abstract class SqlTemplate implements SqlOperations {
 		});
 	}
 
-	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper) throws SqlException {
+	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper)
+			throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
@@ -185,7 +196,7 @@ public abstract class SqlTemplate implements SqlOperations {
 	}
 
 	protected int update(Sql sql, Connection connection) throws SQLException {
-		updateLog(sql);
+		log(sql);
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -209,19 +220,7 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	protected void queryLog(Sql sql) {
-		if (isDebug()) {
-			logger.debug(SqlUtils.getSqlId(sql));
-		}
-	}
-
-	protected void updateLog(Sql sql) {
-		if (isDebug()) {
-			logger.debug(SqlUtils.getSqlId(sql));
-		}
-	}
-
-	protected void executeLog(Sql sql) {
+	protected void log(Sql sql) {
 		if (isDebug()) {
 			logger.debug(SqlUtils.getSqlId(sql));
 		}

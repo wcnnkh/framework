@@ -2170,6 +2170,8 @@ public final class StringUtils {
 
 		if (lastFind == 0) {
 			return text;
+		}else{
+			sb.append(text.substring(lastFind));
 		}
 		return sb.toString();
 	}
