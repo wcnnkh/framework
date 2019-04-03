@@ -4,10 +4,12 @@ import java.nio.charset.Charset;
 
 import org.objectweb.asm.Opcodes;
 
-public class Constants {
+public final class Constants {
+	private Constants() {
+	};
 
 	public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
-	
+
 	/**
 	 * The ASM version used internally throughout the framework.
 	 *

@@ -1,65 +1,42 @@
-package scw.db.cache.memcached;
+package scw.db.cache;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.common.Constants;
 import scw.common.exception.ParameterException;
-import scw.db.cache.Cache;
-import scw.memcached.CAS;
-import scw.memcached.Memcached;
+import scw.redis.Redis;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
 /**
- * 缓存所有的key
+ * 缓存所有的数据
  * 
  * @author shuchaowen
  *
  */
-public final class MemcachedFullKeyCache implements Cache {
-	private final Memcached memcached;
+public final class RedisFullCache implements Cache {
+	private static final String PREFIX = "full:";
+	private final Redis redis;
 	private final int exp;
+	private final boolean allIndex;// 是否维护所有的索引
 
-	public MemcachedFullKeyCache(Memcached memcached, int exp) {
-		this.memcached = memcached;
+	public RedisFullCache(Redis redis, int exp, boolean allIndex) {
+		this.redis = redis;
 		this.exp = exp;
-	}
-
-	private boolean casAdd(String key, String value, String objectKey) {
-		CAS<LinkedHashMap<String, String>> cas = memcached.gets(key);
-		if (cas == null) {
-			LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
-			valueMap.put(value, objectKey);
-			return memcached.cas(key, valueMap, 0);
-		} else {
-			LinkedHashMap<String, String> valueMap = cas.getValue();
-			valueMap.put(value, objectKey);
-			return memcached.cas(key, valueMap, cas.getCas());
-		}
-	}
-
-	private boolean casRemove(String key, String value) {
-		CAS<LinkedHashMap<String, String>> cas = memcached.gets(key);
-		if (cas == null) {
-			return true;
-		}
-
-		LinkedHashMap<String, String> valueMap = cas.getValue();
-		valueMap.remove(value);
-		return memcached.cas(key, valueMap, cas.getCas());
+		this.allIndex = allIndex;
 	}
 
 	private String getObjectKey(TableInfo tableInfo, Object bean)
 			throws IllegalArgumentException, IllegalAccessException {
 		StringBuilder sb = new StringBuilder();
-		sb.append("fullKeys:").append(tableInfo.getClassInfo().getName());
+		sb.append(PREFIX).append(tableInfo.getClassInfo().getName());
 		for (ColumnInfo c : tableInfo.getPrimaryKeyColumns()) {
 			sb.append("&");
 			sb.append(c.getFieldInfo().forceGet(bean));
@@ -69,7 +46,7 @@ public final class MemcachedFullKeyCache implements Cache {
 
 	private String getObjectKeyById(TableInfo tableInfo, Object... params) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("fullKeys:").append(tableInfo.getClassInfo().getName());
+		sb.append(PREFIX).append(tableInfo.getClassInfo().getName());
 		for (int i = 0; i < params.length; i++) {
 			sb.append("&");
 			sb.append(params[i]);
@@ -81,43 +58,41 @@ public final class MemcachedFullKeyCache implements Cache {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		Object[] args = ORMUtils.getPrimaryKeys(bean, tableInfo, false);
 		String objectKey = getObjectKeyById(tableInfo, args);
-		memcached.add(objectKey, exp, bean);
+		redis.set(objectKey.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(bean),
+				Redis.NX.getBytes(Constants.DEFAULT_CHARSET), Redis.EX.getBytes(Constants.DEFAULT_CHARSET), exp);
 		StringBuilder sb = new StringBuilder();
-		sb.append("fullKeys:").append(tableInfo.getClassInfo().getName());
+		sb.append(PREFIX).append(tableInfo.getClassInfo().getName());
 		for (int i = 0; i < args.length; i++) {
+			if ((allIndex || i > 0) && i < args.length - 1) {
+				String indexKey = sb.toString();
+				redis.hset(indexKey, args[i].toString(), objectKey);
+			}
 			sb.append("&");
 			sb.append(args[i]);
-			if (i > 0 && i < args.length - 1) {
-				String indexKey = sb.toString();
-				while (casAdd(indexKey, args[i].toString(), objectKey)) {
-					break;
-				}
-			}
 		}
 	}
 
 	public void update(Object bean) throws Throwable {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		String objectKey = getObjectKey(tableInfo, bean);
-		memcached.set(objectKey, bean);
+		redis.set(objectKey.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(bean),
+				Redis.XX.getBytes(Constants.DEFAULT_CHARSET), Redis.EX.getBytes(Constants.DEFAULT_CHARSET), exp);
 	}
 
 	public void delete(Object bean) throws Throwable {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		Object[] args = ORMUtils.getPrimaryKeys(bean, tableInfo, false);
 		String objectKey = getObjectKeyById(tableInfo, args);
-		memcached.add(objectKey, exp, bean);
+		redis.delete(objectKey.getBytes(Constants.DEFAULT_CHARSET));
 		StringBuilder sb = new StringBuilder();
-		sb.append("fullKeys:").append(tableInfo.getClassInfo().getName());
+		sb.append(PREFIX).append(tableInfo.getClassInfo().getName());
 		for (int i = 0; i < args.length; i++) {
+			if ((allIndex || i > 0) && i < args.length - 1) {
+				String indexKey = sb.toString();
+				redis.hdel(indexKey, args[i].toString());
+			}
 			sb.append("&");
 			sb.append(args[i]);
-			if (i > 0 && i < args.length - 1) {
-				String indexKey = sb.toString();
-				while (casRemove(indexKey, objectKey)) {
-					break;
-				}
-			}
 		}
 	}
 
@@ -125,42 +100,48 @@ public final class MemcachedFullKeyCache implements Cache {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		Object[] args = ORMUtils.getPrimaryKeys(bean, tableInfo, false);
 		String objectKey = getObjectKeyById(tableInfo, args);
-		memcached.set(objectKey, exp, bean);
+		redis.set(objectKey.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(bean),
+				Redis.XX.getBytes(Constants.DEFAULT_CHARSET), Redis.EX.getBytes(Constants.DEFAULT_CHARSET), exp);
 		StringBuilder sb = new StringBuilder();
-		sb.append("fullKeys:").append(tableInfo.getClassInfo().getName());
+		sb.append(PREFIX).append(tableInfo.getClassInfo().getName());
 		for (int i = 0; i < args.length; i++) {
+			if ((allIndex || i > 0) && i < args.length - 1) {
+				String indexKey = sb.toString();
+				redis.hset(indexKey, args[i].toString(), objectKey);
+			}
 			sb.append("&");
 			sb.append(args[i]);
-			if (i > 0 && i < args.length - 1) {
-				String indexKey = sb.toString();
-				while (casAdd(indexKey, args[i].toString(), objectKey)) {
-					break;
-				}
-			}
 		}
 	}
 
 	public <T> T getById(Class<T> type, Object... params) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		StringBuilder sb = new StringBuilder();
-		sb.append("fullKeys:").append(tableInfo.getClassInfo().getName());
+		sb.append(PREFIX).append(tableInfo.getClassInfo().getName());
 		for (int i = 0; i < params.length; i++) {
 			sb.append("&");
 			sb.append(params[i]);
 		}
 
-		T t = memcached.get(sb.toString());
-		return ORMUtils.restartFieldLinsten(t);
+		byte[] data = redis.getAndTouch(sb.toString().getBytes(Constants.DEFAULT_CHARSET), exp);
+		if (data == null) {
+			return null;
+		}
+		return CacheUtils.decode(type, data);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getByIdList(Class<T> type, Object... params) {
-		if (params == null || params.length == 0) {
+		if (!allIndex && (params == null || params.length == 0)) {
 			throw new ParameterException("此缓存方式至少需要一个以上的主键支持");
 		}
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
-		if (tableInfo.getPrimaryKeyColumns().length <= 1) {
+		if (tableInfo.getPrimaryKeyColumns().length == 0) {
+			throw new ParameterException("至少需要一个主键");
+		}
+
+		if (!allIndex && tableInfo.getPrimaryKeyColumns().length <= 1) {
 			throw new ParameterException("主键数量错误，至少要两个主键");
 		}
 
@@ -178,28 +159,37 @@ public final class MemcachedFullKeyCache implements Cache {
 		}
 
 		String key = getObjectKeyById(tableInfo, params);
-		LinkedHashMap<String, String> keyMap = memcached.get(key);
+		Map<String, String> keyMap = redis.hGetAll(key);
 		if (keyMap == null) {
 			return null;
 		}
 
-		Map<String, T> valueMap = memcached.get(keyMap.values());
+		Map<byte[], byte[]> valueMap = redis.get(keyMap.values().toArray(new byte[0][]));
 		if (valueMap == null || valueMap.isEmpty()) {
 			return null;
 		}
 
-		List<T> valueList = new ArrayList<T>();
+		List<T> list = new ArrayList<T>(valueMap.size());
 		for (Entry<String, String> entry : keyMap.entrySet()) {
-			valueList.add(valueMap.get(entry.getValue()));
+			byte[] k = entry.getValue().getBytes(Constants.DEFAULT_CHARSET);
+			byte[] value = valueMap.get(k);
+			if (value == null) {
+				continue;
+			}
+
+			list.add(CacheUtils.decode(type, value));
 		}
-		return valueList;
+		return list;
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds,
-			Object... params) throws Throwable {
+	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) throws Throwable {
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
-		if (tableInfo.getPrimaryKeyColumns().length <= 1) {
+		if (!allIndex && tableInfo.getPrimaryKeyColumns().length <= 1) {
 			throw new ParameterException("主键数量错误，至少要两个主键");
+		}
+
+		if (tableInfo.getPrimaryKeyColumns().length == 0) {
+			throw new ParameterException("至少需要一个主键");
 		}
 
 		if (params.length > tableInfo.getPrimaryKeyColumns().length) {
@@ -207,7 +197,7 @@ public final class MemcachedFullKeyCache implements Cache {
 		}
 
 		String indexKey = getObjectKeyById(tableInfo, params);
-		LinkedHashMap<String, String> keyMap = memcached.get(indexKey);
+		Map<String, String> keyMap = redis.hGetAll(indexKey);
 		if (keyMap == null) {
 			return null;
 		}
@@ -227,7 +217,7 @@ public final class MemcachedFullKeyCache implements Cache {
 			return null;
 		}
 
-		Map<String, V> valueMap = memcached.get(map.keySet());
+		Map<byte[], byte[]> valueMap = redis.get(keyMap.values().toArray(new byte[0][]));
 		Map<K, V> result = new HashMap<K, V>(valueMap.size());
 		for (K k : inIds) {
 			if (k == null) {
@@ -240,12 +230,12 @@ public final class MemcachedFullKeyCache implements Cache {
 				continue;
 			}
 
-			V v = valueMap.get(objectKey);
-			if (v == null) {
+			byte[] data = valueMap.get(objectKey.getBytes(Constants.DEFAULT_CHARSET));
+			if (data == null) {
 				continue;
 			}
 
-			result.put(k, v);
+			result.put(k, CacheUtils.decode(type, data));
 		}
 		return result;
 	}

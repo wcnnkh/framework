@@ -1,6 +1,6 @@
 package scw.redis;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -231,6 +231,17 @@ public final class RedisByJedisPool implements Redis {
 		}
 	}
 
+	public Map<String, String> hGetAll(String key) {
+		Jedis jedis = jedisPool.getResource();
+		try {
+			return jedis.hgetAll(key);
+		} finally {
+			if (jedis != null) {
+				jedis.close();
+			}
+		}
+	}
+
 	public Long hsetnx(byte[] key, byte[] field, byte[] value) {
 		Jedis jedis = jedisPool.getResource();
 		try {
@@ -242,14 +253,10 @@ public final class RedisByJedisPool implements Redis {
 		}
 	}
 
-	public Map<String, String> get(String... key) {
-		Map<String, String> map = new HashMap<String, String>();
+	public List<String> mget(String... key) {
 		Jedis jedis = jedisPool.getResource();
 		try {
-			for (String k : key) {
-				map.put(k, jedis.get(k));
-			}
-			return map;
+			return jedis.mget(key);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -257,14 +264,10 @@ public final class RedisByJedisPool implements Redis {
 		}
 	}
 
-	public Map<byte[], byte[]> get(byte[]... key) {
-		Map<byte[], byte[]> map = new HashMap<byte[], byte[]>();
+	public List<byte[]> mget(byte[]... key) {
 		Jedis jedis = jedisPool.getResource();
 		try {
-			for (byte[] k : key) {
-				map.put(k, jedis.get(k));
-			}
-			return map;
+			return jedis.mget(key);
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -786,5 +789,41 @@ public final class RedisByJedisPool implements Redis {
 			expire(key, exp);
 		}
 		return v;
+	}
+
+	public Map<String, String> get(String... key) {
+		List<String> list = mget(key);
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>(list.size());
+		for (int i = 0, size = list.size(); i < size; i++) {
+			String value = list.get(i);
+			if (value == null) {
+				continue;
+			}
+
+			map.put(key[i], value);
+		}
+		return map;
+	}
+
+	public Map<byte[], byte[]> get(byte[]... key) {
+		List<byte[]> list = mget(key);
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+
+		LinkedHashMap<byte[], byte[]> map = new LinkedHashMap<byte[], byte[]>(list.size());
+		for (int i = 0, size = list.size(); i < size; i++) {
+			byte[] value = list.get(i);
+			if (value == null) {
+				continue;
+			}
+
+			map.put(key[i], value);
+		}
+		return map;
 	}
 }

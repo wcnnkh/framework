@@ -1,4 +1,4 @@
-package scw.db.hikaricp;
+package scw.db;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -10,8 +10,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import scw.beans.annotaion.Destroy;
-import scw.db.DB;
-import scw.db.DBUtils;
 import scw.db.database.DataBase;
 
 /**
