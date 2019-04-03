@@ -35,7 +35,7 @@ public abstract class SqlTemplate implements SqlOperations {
 	protected abstract Connection getUserConnection() throws SQLException;
 
 	protected boolean execute(Sql sql, Connection connection) throws SQLException {
-		log(sql);
+		executeLog(sql);
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -72,7 +72,7 @@ public abstract class SqlTemplate implements SqlOperations {
 	}
 
 	protected void query(Sql sql, Connection connection, ResultSetCallback resultSetCallback) throws SQLException {
-		log(sql);
+		queryLog(sql);
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -132,7 +132,7 @@ public abstract class SqlTemplate implements SqlOperations {
 	}
 
 	protected <T> T query(Sql sql, Connection connection, ResultSetMapper<T> resultSetMapper) throws SQLException {
-		log(sql);
+		queryLog(sql);
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -185,7 +185,7 @@ public abstract class SqlTemplate implements SqlOperations {
 	}
 
 	protected int update(Sql sql, Connection connection) throws SQLException {
-		log(sql);
+		updateLog(sql);
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -209,7 +209,19 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	protected void log(Sql sql) {
+	protected void queryLog(Sql sql) {
+		if (isDebug()) {
+			logger.debug(SqlUtils.getSqlId(sql));
+		}
+	}
+
+	protected void updateLog(Sql sql) {
+		if (isDebug()) {
+			logger.debug(SqlUtils.getSqlId(sql));
+		}
+	}
+
+	protected void executeLog(Sql sql) {
 		if (isDebug()) {
 			logger.debug(SqlUtils.getSqlId(sql));
 		}
