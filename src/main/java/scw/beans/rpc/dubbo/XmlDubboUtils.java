@@ -12,7 +12,7 @@ import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.config.ServiceConfig;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotaion.Service;
+import scw.beans.annotation.Service;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.common.exception.BeansException;

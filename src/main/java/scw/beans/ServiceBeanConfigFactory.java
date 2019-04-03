@@ -1,6 +1,6 @@
 package scw.beans;
 
-import scw.beans.annotaion.Service;
+import scw.beans.annotation.Service;
 import scw.beans.property.PropertiesFactory;
 import scw.common.utils.ClassUtils;
 

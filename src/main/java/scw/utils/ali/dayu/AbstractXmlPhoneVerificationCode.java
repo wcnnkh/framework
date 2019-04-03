@@ -9,7 +9,7 @@ import org.w3c.dom.Node;
 
 import com.alibaba.fastjson.JSONObject;
 
-import scw.beans.annotaion.Destroy;
+import scw.beans.annotation.Destroy;
 import scw.common.ProcessResult;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XMLUtils;

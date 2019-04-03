@@ -14,11 +14,11 @@ import java.sql.Timestamp;
 
 import scw.common.FieldInfo;
 import scw.common.utils.ClassUtils;
-import scw.sql.orm.annoation.AutoCreate;
-import scw.sql.orm.annoation.AutoIncrement;
-import scw.sql.orm.annoation.Column;
-import scw.sql.orm.annoation.Counter;
-import scw.sql.orm.annoation.PrimaryKey;
+import scw.sql.orm.annotation.AutoCreate;
+import scw.sql.orm.annotation.AutoIncrement;
+import scw.sql.orm.annotation.Column;
+import scw.sql.orm.annotation.Counter;
+import scw.sql.orm.annotation.PrimaryKey;
 
 public final class ColumnInfo {
 	private String name;// 数据库字段名

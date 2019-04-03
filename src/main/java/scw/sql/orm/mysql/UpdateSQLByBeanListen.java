@@ -13,7 +13,7 @@ import scw.sql.Sql;
 import scw.sql.orm.BeanFieldListen;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
-import scw.sql.orm.annoation.Counter;
+import scw.sql.orm.annotation.Counter;
 
 public final class UpdateSQLByBeanListen implements Sql {
 	private static Logger logger = LoggerFactory

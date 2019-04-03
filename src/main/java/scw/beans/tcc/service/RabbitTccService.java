@@ -16,8 +16,8 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotaion.Autowrite;
-import scw.beans.annotaion.Destroy;
+import scw.beans.annotation.Autowrite;
+import scw.beans.annotation.Destroy;
 import scw.beans.tcc.InvokeInfo;
 import scw.beans.tcc.StageType;
 import scw.beans.tcc.TCCService;

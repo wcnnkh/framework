@@ -12,9 +12,9 @@ import scw.common.FieldInfo;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
-import scw.sql.orm.annoation.NotColumn;
-import scw.sql.orm.annoation.Table;
-import scw.sql.orm.annoation.Transient;
+import scw.sql.orm.annotation.NotColumn;
+import scw.sql.orm.annotation.Table;
+import scw.sql.orm.annotation.Transient;
 
 public final class TableInfo {
 	private String name;

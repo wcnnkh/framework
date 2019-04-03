@@ -11,7 +11,7 @@ import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.sql.orm.annoation.Table;
+import scw.sql.orm.annotation.Table;
 
 public abstract class ORMUtils {
 	private static Logger logger = LoggerFactory.getLogger(ORMUtils.class);

@@ -1,4 +1,4 @@
-package scw.sql.orm.annoation;
+package scw.sql.orm.annotation;
 
 import scw.sql.orm.enums.IndexMethod;
 import scw.sql.orm.enums.IndexOrder;

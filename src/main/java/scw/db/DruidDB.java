@@ -8,7 +8,7 @@ import java.util.Enumeration;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
-import scw.beans.annotaion.Bean;
+import scw.beans.annotation.Bean;
 import scw.db.database.DataBase;
 
 @Bean(proxy = false)

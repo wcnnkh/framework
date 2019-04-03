@@ -1,7 +1,7 @@
 package scw.sql.orm.auto.id;
 
 import javassist.NotFoundException;
-import scw.beans.annotaion.Bean;
+import scw.beans.annotation.Bean;
 import scw.common.utils.Assert;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;

@@ -1,7 +1,7 @@
 package scw.mq;
 
-import scw.beans.annotaion.Destroy;
-import scw.beans.annotaion.InitMethod;
+import scw.beans.annotation.Destroy;
+import scw.beans.annotation.InitMethod;
 import scw.utils.queue.Queue;
 
 public class QueueMQ<T> extends AbstractMQ<T> implements Runnable {

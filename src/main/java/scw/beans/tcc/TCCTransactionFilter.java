@@ -8,8 +8,8 @@ import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.beans.BeanFactory;
-import scw.beans.annotaion.Autowrite;
-import scw.beans.annotaion.TCC;
+import scw.beans.annotation.Autowrite;
+import scw.beans.annotation.TCC;
 import scw.common.MethodDefinition;
 
 /**

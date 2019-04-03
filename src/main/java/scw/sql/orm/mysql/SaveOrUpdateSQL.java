@@ -8,7 +8,7 @@ import scw.logger.LoggerFactory;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
-import scw.sql.orm.annoation.Counter;
+import scw.sql.orm.annotation.Counter;
 
 public final class SaveOrUpdateSQL implements Sql {
 	private static final long serialVersionUID = 1L;

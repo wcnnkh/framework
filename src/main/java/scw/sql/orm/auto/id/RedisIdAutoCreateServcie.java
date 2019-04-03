@@ -2,7 +2,7 @@ package scw.sql.orm.auto.id;
 
 import java.util.Arrays;
 
-import scw.beans.annotaion.Bean;
+import scw.beans.annotation.Bean;
 import scw.db.sql.SimpleSql;
 import scw.locks.Lock;
 import scw.locks.RedisLock;

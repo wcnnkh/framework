@@ -11,7 +11,7 @@ import scw.common.utils.StringUtils;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
-import scw.sql.orm.annoation.Index;
+import scw.sql.orm.annotation.Index;
 import scw.sql.orm.enums.IndexMethod;
 import scw.sql.orm.enums.IndexOrder;
 

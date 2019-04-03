@@ -38,15 +38,15 @@ public final class BeanMethodInterceptor implements MethodInterceptor {
 			}
 		}
 
-		scw.beans.annotaion.BeanFilter beanFilter = method.getDeclaringClass()
-				.getAnnotation(scw.beans.annotaion.BeanFilter.class);
+		scw.beans.annotation.BeanFilter beanFilter = method.getDeclaringClass()
+				.getAnnotation(scw.beans.annotation.BeanFilter.class);
 		if (beanFilter != null) {
 			for (Class<? extends Filter> c : beanFilter.value()) {
 				list.add(c.getName());
 			}
 		}
 
-		beanFilter = method.getAnnotation(scw.beans.annotaion.BeanFilter.class);
+		beanFilter = method.getAnnotation(scw.beans.annotation.BeanFilter.class);
 		if (beanFilter != null) {
 			for (Class<? extends Filter> c : beanFilter.value()) {
 				list.add(c.getName());

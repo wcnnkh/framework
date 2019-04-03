@@ -9,8 +9,8 @@ import java.util.List;
 import scw.beans.Bean;
 import scw.beans.BeanMethod;
 import scw.beans.NoArgumentBeanMethod;
-import scw.beans.annotaion.Destroy;
-import scw.beans.annotaion.InitMethod;
+import scw.beans.annotation.Destroy;
+import scw.beans.annotation.InitMethod;
 import scw.common.exception.NotSupportException;
 import scw.common.utils.ClassUtils;
 

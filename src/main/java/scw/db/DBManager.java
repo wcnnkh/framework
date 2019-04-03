@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.ClassUtils;
 import scw.sql.Sql;
-import scw.sql.orm.annoation.Table;
+import scw.sql.orm.annotation.Table;
 
 /**
  * 只用于处理默认的数据库 不再推荐使用

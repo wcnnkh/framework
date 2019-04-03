@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotaion.Stage;
+import scw.beans.annotation.Stage;
 import scw.common.MethodDefinition;
 import scw.common.exception.NotFoundException;
 import scw.common.utils.CollectionUtils;

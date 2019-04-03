@@ -9,7 +9,7 @@ import java.util.Enumeration;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import scw.beans.annotaion.Destroy;
+import scw.beans.annotation.Destroy;
 import scw.db.database.DataBase;
 
 /**

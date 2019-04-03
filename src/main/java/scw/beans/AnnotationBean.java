@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.cglib.proxy.Enhancer;
-import scw.beans.annotaion.Destroy;
-import scw.beans.annotaion.InitMethod;
-import scw.beans.annotaion.Service;
+import scw.beans.annotation.Destroy;
+import scw.beans.annotation.InitMethod;
+import scw.beans.annotation.Service;
 import scw.beans.property.PropertiesFactory;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
@@ -52,7 +52,7 @@ public class AnnotationBean implements Bean {
 		this.destroyMethods = getDestroyMethdoList(type).toArray(new BeanMethod[0]);
 		this.filterNames = filterNames;
 		this.proxy = BeanUtils.checkProxy(type, filterNames);
-		scw.beans.annotaion.Bean bean = type.getAnnotation(scw.beans.annotaion.Bean.class);
+		scw.beans.annotation.Bean bean = type.getAnnotation(scw.beans.annotation.Bean.class);
 		this.singleton = bean == null ? true : bean.singleton();
 	}
 

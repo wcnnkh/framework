@@ -12,8 +12,8 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Envelope;
 
-import scw.beans.annotaion.Destroy;
-import scw.beans.annotaion.InitMethod;
+import scw.beans.annotation.Destroy;
+import scw.beans.annotation.InitMethod;
 
 public final class Rabbit extends ConnectionFactory {
 	private Connection connection;

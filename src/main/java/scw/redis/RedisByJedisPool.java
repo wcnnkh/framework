@@ -8,7 +8,7 @@ import java.util.Set;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import scw.beans.annotaion.Destroy;
+import scw.beans.annotation.Destroy;
 
 public final class RedisByJedisPool implements Redis {
 	private static final String SUCCESS = "OK";

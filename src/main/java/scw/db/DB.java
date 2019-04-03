@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.beans.annotaion.Destroy;
+import scw.beans.annotation.Destroy;
 import scw.common.Constants;
 import scw.common.Iterator;
 import scw.common.exception.NotSupportException;

@@ -9,9 +9,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotaion.Autowrite;
-import scw.beans.annotaion.Destroy;
-import scw.beans.annotaion.InitMethod;
+import scw.beans.annotation.Autowrite;
+import scw.beans.annotation.Destroy;
+import scw.beans.annotation.InitMethod;
 import scw.beans.tcc.InvokeInfo;
 import scw.beans.tcc.StageType;
 import scw.beans.tcc.TCCService;

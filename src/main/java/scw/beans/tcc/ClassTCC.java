@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.beans.annotaion.Stage;
+import scw.beans.annotation.Stage;
 import scw.common.MethodDefinition;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.StringUtils;

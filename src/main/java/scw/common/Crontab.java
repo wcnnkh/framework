@@ -10,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import scw.beans.annotaion.Destroy;
+import scw.beans.annotation.Destroy;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XTime;
 
