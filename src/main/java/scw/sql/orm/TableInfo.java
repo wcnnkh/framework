@@ -1,5 +1,6 @@
 package scw.sql.orm;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -280,5 +281,9 @@ public final class TableInfo {
 
 	public ColumnInfo[] getAutoCreateColumns() {
 		return autoCreateColumns;
+	}
+
+	public <T extends Annotation> T getAnnotation(Class<T> type) {
+		return classInfo.getClz().getAnnotation(type);
 	}
 }

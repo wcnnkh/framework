@@ -1,17 +1,19 @@
 package scw.db.async;
 
-import scw.sql.Sqls;
+import scw.sql.Sql;
 
 public interface AsyncService {
-	void save(Object... objs);
+	void asyncSave(Object... objs);
 
-	void update(Object... objs);
+	void asyncUpdate(Object... objs);
 
-	void delete(Object... objs);
+	void asyncDelete(Object... objs);
 
-	void saveOrUpdate(Object... objs);
+	void asyncSaveOrUpdate(Object... objs);
 
-	void execute(OperationBean... operationBeans);
+	void asyncExecute(OperationBean... operationBeans);
 
-	void execute(Sqls sqls);
+	void asyncExecute(MultipleOperation multipleOperation);
+
+	void asyncExecute(Sql... sqls);
 }

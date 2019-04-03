@@ -9,7 +9,6 @@ import java.util.Enumeration;
 import com.alibaba.druid.pool.DruidDataSource;
 
 import scw.beans.annotaion.Bean;
-import scw.beans.annotaion.Destroy;
 import scw.db.database.DataBase;
 
 @Bean(proxy = false)
@@ -40,13 +39,13 @@ public class DruidDB extends DB {
 		return datasource.getConnection();
 	}
 
-	@Destroy
 	public void close() throws Exception {
 		datasource.close();
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
 		while (drivers.hasMoreElements()) {
 			DriverManager.deregisterDriver(drivers.nextElement());
 		}
+		super.close();
 	}
 
 }

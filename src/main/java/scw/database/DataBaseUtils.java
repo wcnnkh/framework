@@ -2,6 +2,11 @@ package scw.database;
 
 import scw.sql.orm.ORMUtils;
 
+/**
+ * 此类已弃用，请不要使用
+ * @author shuchaowen
+ *
+ */
 public final class DataBaseUtils {
 	private DataBaseUtils() {
 	};

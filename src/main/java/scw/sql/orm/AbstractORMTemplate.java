@@ -187,8 +187,12 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 	}
 
 	public boolean deleteById(String tableName, Class<?> type, Object... params) {
-		TableInfo tableInfo = getAndCheckPrimaryKey(type, params.length);
-		String tName = getTableName(tableName, tableInfo);
+		TableInfo tableInfo = ORMUtils.getTableInfo(type);
+		if (tableInfo.getPrimaryKeyColumns().length != params.length) {
+			throw new ParameterException("主键数量和参数不一致:" + type.getName());
+		}
+
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName() : tableName;
 		Sql sql = getSqlFormat().toDeleteByIdSql(tableInfo, tName, params);
 		return ormUpdateSql(tableInfo, tName, sql);
 	}
@@ -369,9 +373,16 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 		return new MysqlSelect(this);
 	}
 
-	public void iterator(Class<?> tableClass, Iterator<Result> iterator) {
+	/**
+	 * 迭代所有的数据
+	 * 
+	 * @param tableClass
+	 * @param iterator
+	 */
+	public void iterator(final Class<?> tableClass, final Iterator<Result> iterator) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
-		iterator(getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getName(), null), iterator);
+		Sql sql = getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getName(), null);
+		iterator(sql, iterator);
 	}
 
 	public void iterator(Sql sql, final Iterator<Result> iterator) {
@@ -411,17 +422,5 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 			maxId = 0L;
 		}
 		return maxId;
-	}
-
-	private TableInfo getAndCheckPrimaryKey(Class<?> clz, int primaryLength) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(clz);
-		if (tableInfo.getPrimaryKeyColumns().length != primaryLength) {
-			throw new ParameterException("主键数量和参数不一致:" + clz.getName());
-		}
-		return tableInfo;
-	}
-
-	private String getTableName(String tableName, TableInfo tableInfo) {
-		return StringUtils.isEmpty(tableName) ? tableInfo.getName() : tableName;
 	}
 }

@@ -1,43 +1,43 @@
 package scw.db.async;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import scw.sql.Sql;
-import scw.sql.Sqls;
 import scw.sql.orm.SqlFormat;
 
 public final class MultipleOperation extends LinkedList<OperationBean> {
 	private static final long serialVersionUID = 1L;
 
 	public void save(Object bean, String tableName) {
-		if(bean == null){
-			return ;
+		if (bean == null) {
+			return;
 		}
-		
+
 		add(new OperationBean(OperationType.SAVE, bean, tableName));
 	}
 
 	public void update(Object bean, String tableName) {
-		if(bean == null){
-			return ;
+		if (bean == null) {
+			return;
 		}
-		
+
 		add(new OperationBean(OperationType.UPDATE, bean, tableName));
 	}
 
 	public void delete(Object bean, String tableName) {
-		if(bean == null){
-			return ;
+		if (bean == null) {
+			return;
 		}
-		
+
 		add(new OperationBean(OperationType.DELETE, bean, tableName));
 	}
 
 	public void saveOrUpdate(Object bean, String tableName) {
-		if(bean == null){
-			return ;
+		if (bean == null) {
+			return;
 		}
-		
+
 		add(new OperationBean(OperationType.SAVE_OR_UPDATE, bean, tableName));
 	}
 
@@ -46,31 +46,31 @@ public final class MultipleOperation extends LinkedList<OperationBean> {
 	}
 
 	public void update(Object bean) {
-		if(bean == null){
-			return ;
+		if (bean == null) {
+			return;
 		}
-		
+
 		add(new OperationBean(OperationType.UPDATE, bean, null));
 	}
 
 	public void delete(Object bean) {
-		if(bean == null){
-			return ;
+		if (bean == null) {
+			return;
 		}
-		
+
 		add(new OperationBean(OperationType.DELETE, bean, null));
 	}
 
 	public void saveOrUpdate(Object bean) {
-		if(bean == null){
-			return ;
+		if (bean == null) {
+			return;
 		}
-		
+
 		add(new OperationBean(OperationType.SAVE_OR_UPDATE, bean, null));
 	}
 
-	public Sqls format(SqlFormat sqlFormat) {
-		Sqls sqls = new Sqls();
+	public List<Sql> format(SqlFormat sqlFormat) {
+		LinkedList<Sql> sqls = new LinkedList<Sql>();
 		for (OperationBean operationBean : this) {
 			if (operationBean == null) {
 				continue;

@@ -37,7 +37,7 @@ public interface ORMOperations {
 	boolean delete(Object bean);
 
 	boolean delete(Object bean, String tableName);
-
+	
 	boolean deleteById(Class<?> type, Object... params);
 
 	boolean deleteById(String tableName, Class<?> type, Object... params);

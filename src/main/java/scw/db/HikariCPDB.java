@@ -55,6 +55,7 @@ public class HikariCPDB extends DB {
 		while (drivers.hasMoreElements()) {
 			DriverManager.deregisterDriver(drivers.nextElement());
 		}
+		super.close();
 	}
 
 }
