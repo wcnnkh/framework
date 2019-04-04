@@ -1,14 +1,18 @@
 package scw.utils.excel.export;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
+import scw.sql.ResultSetCallback;
 import scw.sql.orm.result.DefaultResult;
 import scw.sql.orm.result.Result;
 
-public class ResultSetToExeclRowCall {
+public class ResultSetToExeclRowCall implements ResultSetCallback{
 	// 创建Excel工作薄
 	private int tempSize = 0;
 	private int maxCount = 60000;// 一个sheet最多放多少数据
@@ -25,7 +29,7 @@ public class ResultSetToExeclRowCall {
 		this.exportRow = exportRow;
 	}
 
-	public void format(ResultSet resultSet) throws Exception {
+	public void process(ResultSet resultSet) throws SQLException {
 		if (sheet == null) {
 			sheet = wwb.createSheet("sheet" + sheetIndex, sheetIndex - 1);
 		}
@@ -36,7 +40,13 @@ public class ResultSetToExeclRowCall {
 				// 在Label对象的子对象中指明单元格的位置和内容
 				label = new Label(i, 0, title[i]);
 				// 将定义好的单元格添加到工作表中
-				sheet.addCell(label);
+				try {
+					sheet.addCell(label);
+				} catch (RowsExceededException e) {
+					e.printStackTrace();
+				} catch (WriteException e) {
+					e.printStackTrace();
+				}
 			}
 			tempSize++;
 		}
@@ -54,7 +64,13 @@ public class ResultSetToExeclRowCall {
 				}
 
 				label = new Label(i, tempSize, contents[i]);
-				sheet.addCell(label);
+				try {
+					sheet.addCell(label);
+				} catch (RowsExceededException e) {
+					e.printStackTrace();
+				} catch (WriteException e) {
+					e.printStackTrace();
+				}
 			}
 
 			tempSize++;

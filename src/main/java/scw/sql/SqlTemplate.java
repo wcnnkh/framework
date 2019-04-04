@@ -112,7 +112,7 @@ public abstract class SqlTemplate implements SqlOperations {
 		});
 	}
 
-	public void query(Sql sql, final RowCallback rowCallback)
+	public void query(Sql sql, RowCallback rowCallback)
 			throws SqlException {
 		Connection connection = null;
 		try {

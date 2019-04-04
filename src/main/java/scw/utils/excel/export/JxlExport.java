@@ -1,8 +1,6 @@
 package scw.utils.excel.export;
 
 import java.io.OutputStream;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,7 +11,6 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import scw.db.DB;
-import scw.sql.RowCallback;
 import scw.sql.Sql;
 
 /**
@@ -122,18 +119,8 @@ public class JxlExport {
 			SqlExportRow exportRow) throws Exception {
 		// 创建Excel工作薄
 		WritableWorkbook wwb = Workbook.createWorkbook(os);
-		final ResultSetToExeclRowCall rowCall = new ResultSetToExeclRowCall(wwb, title, exportRow);
 		for (Sql sql : sqlList) {
-			db.query(sql, new RowCallback() {
-
-				public void processRow(ResultSet rs, int rowNum) throws SQLException {
-					try {
-						rowCall.format(rs);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
+			db.query(sql, new ResultSetToExeclRowCall(wwb, title, exportRow));
 		}
 		// 写入数据
 		wwb.write();
