@@ -46,14 +46,6 @@ public abstract class AbstractLogger implements Logger {
 		log(new Message(Level.TRACE, tag, msg, null, t, null));
 	}
 
-	public void trace(Throwable t, String msg, Object... args) {
-		if (!traceEnabled) {
-			return;
-		}
-
-		log(new Message(Level.TRACE, tag, msg, args, t, null));
-	}
-
 	public boolean isDebugEnabled() {
 		return debugEnabled;
 	}
@@ -81,14 +73,6 @@ public abstract class AbstractLogger implements Logger {
 
 		log(new Message(Level.DEBUG, tag, msg, null, t, null));
 
-	}
-
-	public void debug(Throwable t, String format, Object... args) {
-		if (!debugEnabled) {
-			return;
-		}
-
-		log(new Message(Level.DEBUG, tag, format, args, t, null));
 	}
 
 	public boolean isInfoEnabled() {
@@ -119,14 +103,6 @@ public abstract class AbstractLogger implements Logger {
 		log(new Message(Level.INFO, tag, msg, null, t, null));
 	}
 
-	public void info(Throwable t, String format, Object... args) {
-		if (!infoEnabled) {
-			return;
-		}
-
-		log(new Message(Level.INFO, tag, format, args, t, null));
-	}
-
 	public boolean isWarnEnabled() {
 		return warnEnabled;
 	}
@@ -155,14 +131,6 @@ public abstract class AbstractLogger implements Logger {
 		log(new Message(Level.WARN, tag, msg, null, t, null));
 	}
 
-	public void warn(Throwable t, String format, Object... args) {
-		if (!warnEnabled) {
-			return;
-		}
-
-		log(new Message(Level.WARN, tag, format, args, t, null));
-	}
-
 	public boolean isErrorEnabled() {
 		return errorEnabled;
 	}
@@ -189,14 +157,6 @@ public abstract class AbstractLogger implements Logger {
 		}
 
 		log(new Message(Level.ERROR, tag, msg, null, t, null));
-	}
-
-	public void error(Throwable e, String format, Object... args) {
-		if (!errorEnabled) {
-			return;
-		}
-
-		log(new Message(Level.ERROR, tag, format, args, e, null));
 	}
 
 	protected abstract void log(Message message);

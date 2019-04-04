@@ -10,8 +10,6 @@ public interface Logger {
 
 	void trace(String msg, Throwable t);
 
-	void trace(Throwable t, String msg, Object... args);
-
 	boolean isDebugEnabled();
 
 	void debug(String msg);
@@ -19,8 +17,6 @@ public interface Logger {
 	void debug(String format, Object... args);
 
 	void debug(String msg, Throwable t);
-
-	void debug(Throwable t, String format, Object... args);
 
 	boolean isInfoEnabled();
 
@@ -30,8 +26,6 @@ public interface Logger {
 
 	void info(String msg, Throwable t);
 
-	void info(Throwable t, String format, Object... args);
-
 	boolean isWarnEnabled();
 
 	void warn(String msg);
@@ -40,15 +34,12 @@ public interface Logger {
 
 	void warn(String msg, Throwable t);
 
-	void warn(Throwable t, String format, Object... args);
-
 	boolean isErrorEnabled();
 
-	public void error(String msg);
+	void error(String msg);
 
-	public void error(String format, Object... args);
+	void error(String format, Object... args);
 
-	public void error(String msg, Throwable t);
+	void error(String msg, Throwable t);
 
-	void error(Throwable e, String format, Object... args);
 }

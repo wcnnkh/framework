@@ -9,7 +9,6 @@ public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable 
 	private final Thread thread;
 
 	public AbstractLoggerFactory() {
-		System.out.println("Init shuchaowen-logger [" + this.getClass().getName() + "]");
 		thread = new Thread(this, "shuchaowen-logger");
 		thread.start();
 	}
