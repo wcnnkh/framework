@@ -1,5 +1,6 @@
 package scw.redis;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -8,6 +9,7 @@ public interface Redis {
 	public static final String EX = "EX";
 	public static final String NX = "NX";
 	public static final String XX = "XX";
+	public static final String SUCCESS = "OK";
 
 	String get(String key);
 
@@ -46,7 +48,7 @@ public interface Redis {
 
 	Long hsetnx(String key, String field, String value);
 
-	Map<String, String> hGetAll(String key);
+	Map<String, String> hgetAll(String key);
 
 	List<String> mget(String... key);
 
@@ -72,9 +74,9 @@ public interface Redis {
 
 	String rpop(String key);
 
-	List<String> blpop(String... key);
+	List<String> blpop(int timeout, String... key);
 
-	List<String> brpop(String... key);
+	List<String> brpop(int timeout, String... key);
 
 	Object eval(String script, List<String> keys, List<String> args);
 
@@ -124,7 +126,7 @@ public interface Redis {
 
 	Long decr(byte[] key);
 
-	List<byte[]> hvals(byte[] key);
+	Collection<byte[]> hvals(byte[] key);
 
 	byte[] hget(byte[] key, byte[] field);
 
@@ -136,9 +138,9 @@ public interface Redis {
 
 	byte[] rpop(byte[] key);
 
-	List<byte[]> blpop(byte[]... key);
+	List<byte[]> blpop(int timeout, byte[]... key);
 
-	List<byte[]> brpop(byte[]... key);
+	List<byte[]> brpop(int timeout, byte[]... key);
 
 	byte[] lpop(byte[] key);
 

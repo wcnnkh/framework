@@ -111,7 +111,7 @@ public final class PropertiesUtils {
 		Properties properties = ConfigUtils.getProperties(propertiesFile, "UTF-8");
 		invokeSetterByProeprties(instance, properties, true, true, asNameList, true);
 	}
-
+	
 	/**
 	 * 调用对象的set方法
 	 * 

@@ -78,7 +78,7 @@ public final class RedisCache implements Cache {
 	}
 
 	public Map<String, String> getMap(String key) {
-		return redis.hGetAll(key);
+		return redis.hgetAll(key);
 	}
 
 	public void mapAdd(String key, String field, String value) {

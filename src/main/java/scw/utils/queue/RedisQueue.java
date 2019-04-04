@@ -49,7 +49,7 @@ public class RedisQueue<E> implements Queue<E> {
 	}
 
 	public E take() throws InterruptedException {
-		List<byte[]> dataList = redis.brpop(queueKey.getBytes(charset));
+		List<byte[]> dataList = redis.brpop(Integer.MAX_VALUE, queueKey.getBytes(charset));
 		if (dataList == null || dataList.isEmpty()) {
 			return null;
 		}
