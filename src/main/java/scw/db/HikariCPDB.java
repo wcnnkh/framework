@@ -10,7 +10,11 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import scw.beans.annotation.Destroy;
+import scw.common.Base64;
+import scw.common.Constants;
 import scw.db.database.DataBase;
+import scw.memcached.Memcached;
+import scw.redis.Redis;
 
 /**
  * 只在能java8中使用 除非你在pom引入你需要的版本，并排除本项目自带的版本
@@ -27,7 +31,7 @@ public class HikariCPDB extends DB {
 		return dataBase;
 	}
 
-	public HikariCPDB(String propertiesFile) {
+	private void init(String propertiesFile) {
 		HikariConfig config = new HikariConfig();
 		DBUtils.loadProperties(config, propertiesFile);
 
@@ -36,6 +40,28 @@ public class HikariCPDB extends DB {
 		dataBase.create();
 
 		hds = new HikariDataSource(config);
+	}
+
+	public HikariCPDB(String propertiesFile) {
+		init(propertiesFile);
+	}
+
+	public HikariCPDB(Memcached memcached, String queueName, String propertiesFile) {
+		super(memcached, queueName);
+		init(propertiesFile);
+	}
+
+	public HikariCPDB(Redis redis, String queueName, String propertiesFile) {
+		super(redis, queueName);
+		init(propertiesFile);
+	}
+
+	public HikariCPDB(Redis redis, String propertiesFile) {
+		this(redis, Base64.encode(propertiesFile.getBytes(Constants.DEFAULT_CHARSET)), propertiesFile);
+	}
+
+	public HikariCPDB(Memcached memcached, String propertiesFile) {
+		this(memcached, Base64.encode(propertiesFile.getBytes(Constants.DEFAULT_CHARSET)), propertiesFile);
 	}
 
 	public void createDataBase() {

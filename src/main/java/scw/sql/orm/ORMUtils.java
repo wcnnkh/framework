@@ -133,6 +133,8 @@ public abstract class ORMUtils {
 		enhancer.setInterfaces(beanListenInterfaces);
 		if (classInfo.getSerialVersionUID() != null) {
 			enhancer.setSerialVersionUID(classInfo.getSerialVersionUID());
+		}else{
+			enhancer.setSerialVersionUID(1L);
 		}
 
 		enhancer.setCallback(new FieldListenMethodInterceptor());

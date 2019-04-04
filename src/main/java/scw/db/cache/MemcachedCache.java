@@ -1,13 +1,13 @@
 package scw.db.cache;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.memcached.CAS;
 import scw.memcached.Memcached;
-import scw.sql.orm.ORMUtils;
 
 public final class MemcachedCache implements Cache {
 	private final Memcached memcached;
@@ -17,11 +17,11 @@ public final class MemcachedCache implements Cache {
 	}
 
 	public void add(String key, Object value, CacheConfig config) {
-		memcached.add(key, (int) config.timeUnit().toSeconds(config.exp()), value);
+		memcached.add(key, (int) config.timeUnit().toSeconds(config.exp()), CacheUtils.encode(value));
 	}
 
 	public void set(String key, Object value, CacheConfig config) {
-		memcached.set(key, (int) config.timeUnit().toSeconds(config.exp()), value);
+		memcached.set(key, (int) config.timeUnit().toSeconds(config.exp()), CacheUtils.encode(value));
 	}
 
 	public void delete(String key) {
@@ -29,25 +29,39 @@ public final class MemcachedCache implements Cache {
 	}
 
 	public <T> T get(Class<T> type, String key) {
-		T t = memcached.get(key);
-		return ORMUtils.restartFieldLinsten(t);
+		byte[] data = memcached.get(key);
+		if (data == null) {
+			return null;
+		}
+
+		return CacheUtils.decode(type, data);
 	}
 
 	public <T> T getAndTouch(Class<T> type, String key, CacheConfig config) {
-		T t = memcached.getAndTocuh(key, (int) config.timeUnit().toSeconds(config.exp()));
-		return ORMUtils.restartFieldLinsten(t);
+		byte[] data = memcached.getAndTocuh(key, (int) config.timeUnit().toSeconds(config.exp()));
+		if (data == null) {
+			return null;
+		}
+
+		return CacheUtils.decode(type, data);
 	}
 
 	public <T> Map<String, T> get(Class<T> type, Collection<String> keys) {
-		Map<String, T> map = memcached.get(keys);
+		Map<String, byte[]> map = memcached.get(keys);
 		if (map == null) {
 			return null;
 		}
 
-		for (Entry<String, T> entry : map.entrySet()) {
-			map.put(entry.getKey(), ORMUtils.restartFieldLinsten(entry.getValue()));
+		Map<String, T> valueMap = new HashMap<String, T>();
+		for (Entry<String, byte[]> entry : map.entrySet()) {
+			byte[] data = entry.getValue();
+			if (data == null) {
+				continue;
+			}
+
+			valueMap.put(entry.getKey(), CacheUtils.decode(type, data));
 		}
-		return map;
+		return valueMap;
 	}
 
 	public Map<String, String> getMap(String key) {

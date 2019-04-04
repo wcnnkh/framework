@@ -24,6 +24,8 @@ import scw.db.cache.CacheType;
 import scw.db.cache.MemcachedCache;
 import scw.db.cache.RedisCache;
 import scw.db.database.DataBase;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.memcached.Memcached;
 import scw.mq.Consumer;
 import scw.mq.MQ;
@@ -44,6 +46,7 @@ import scw.utils.queue.Queue;
 import scw.utils.queue.RedisQueue;
 
 public abstract class DB extends AbstractORMTemplate implements ConnectionFactory, AutoCloseable {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private static final String PREFIX = "cache:";
 	private static final String KEYS_PREFIX = "keys:";
 	private final Cache cache;
@@ -57,6 +60,7 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 
 	public DB(Memcached memcached, String queueKey) {
 		this.cache = new MemcachedCache(memcached);
+		logger.trace("memcached中异步处理队列名：{}", queueKey);
 		MemcachedQueue<AsyncInfo> queue = new MemcachedQueue<AsyncInfo>(memcached, queueKey);
 		QueueMQ<AsyncInfo> mq = new QueueMQ<AsyncInfo>(queue);
 		mq.start();
@@ -66,6 +70,7 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 
 	public DB(Redis redis, String queueKey) {
 		this.cache = new RedisCache(redis);
+		logger.trace("redis中异步处理队列名：{}", queueKey);
 		Queue<AsyncInfo> queue = new RedisQueue<AsyncInfo>(redis, Constants.DEFAULT_CHARSET, queueKey);
 		QueueMQ<AsyncInfo> mq = new QueueMQ<AsyncInfo>(queue);
 		mq.start();
@@ -118,9 +123,18 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 	}
 
 	protected void initCache(String packageName) {
+		if (cache == null) {
+			logger.warn("未启用缓存无法初始化：{}", packageName);
+			return;
+		}
+
 		for (final Class<?> clz : ClassUtils.getClasses(packageName)) {
 			final CacheConfig config = clz.getAnnotation(CacheConfig.class);
 			if (config == null) {
+				continue;
+			}
+			
+			if(config.type() == CacheType.lazy){
 				continue;
 			}
 
@@ -364,7 +378,7 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		String objectKey = getObjectKeyById(tableInfo, params);
 		if (config.type() == CacheType.lazy) {
-			T t = cache.getAndTouch(type, getObjectKeyById(tableInfo, params), config);
+			T t = cache.getAndTouch(type, objectKey, config);
 			if (t == null) {
 				t = super.getById(tableName, type, params);
 				if (t != null) {
@@ -373,7 +387,7 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 			}
 			return t;
 		} else if (config.type() == CacheType.keys) {
-			T t = cache.getAndTouch(type, getObjectKeyById(tableInfo, params), config);
+			T t = cache.getAndTouch(type, objectKey, config);
 			if (t == null) {
 				String tag = cache.getAndTouch(String.class, KEYS_PREFIX + objectKey, config);
 				if (tag != null) {
