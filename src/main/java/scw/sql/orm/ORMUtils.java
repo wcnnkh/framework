@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.sf.cglib.proxy.Enhancer;
+import scw.common.BeanFieldListen;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.utils.ClassUtils;
@@ -97,7 +97,8 @@ public abstract class ORMUtils {
 				continue;
 			}
 
-			getFieldListenProxyClass(type);
+			ClassInfo classInfo = ClassUtils.getClassInfo(type);
+			classInfo.createFieldListenProxyClass();
 		}
 	}
 
@@ -111,72 +112,6 @@ public abstract class ORMUtils {
 		} else {
 			return tableName;
 		}
-	}
-
-	public static Enhancer createFieldListenEnhancer(Class<?> clz) {
-		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
-		Class<?>[] beanListenInterfaces;
-		if (BeanFieldListen.class.isAssignableFrom(clz)) {
-			beanListenInterfaces = clz.getInterfaces();
-		} else {// 没有自己实现此接口，增加此接口
-			Class<?>[] arr = clz.getInterfaces();
-			if (arr.length == 0) {
-				beanListenInterfaces = new Class[] { BeanFieldListen.class };
-			} else {
-				beanListenInterfaces = new Class[arr.length + 1];
-				System.arraycopy(arr, 0, beanListenInterfaces, 0, arr.length);
-				beanListenInterfaces[arr.length] = BeanFieldListen.class;
-			}
-		}
-
-		Enhancer enhancer = new Enhancer();
-		enhancer.setInterfaces(beanListenInterfaces);
-		if (classInfo.getSerialVersionUID() != null) {
-			enhancer.setSerialVersionUID(classInfo.getSerialVersionUID());
-		}else{
-			enhancer.setSerialVersionUID(1L);
-		}
-
-		enhancer.setCallback(new FieldListenMethodInterceptor());
-		enhancer.setSuperclass(clz);
-		return enhancer;
-	}
-
-	public static Class<?> getFieldListenProxyClass(Class<?> clz) {
-		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
-		Class<?>[] beanListenInterfaces;
-		if (BeanFieldListen.class.isAssignableFrom(clz)) {
-			beanListenInterfaces = clz.getInterfaces();
-		} else {// 没有自己实现此接口，增加此接口
-			Class<?>[] arr = clz.getInterfaces();
-			if (arr.length == 0) {
-				beanListenInterfaces = new Class[] { BeanFieldListen.class };
-			} else {
-				beanListenInterfaces = new Class[arr.length + 1];
-				System.arraycopy(arr, 0, beanListenInterfaces, 0, arr.length);
-				beanListenInterfaces[arr.length] = BeanFieldListen.class;
-			}
-		}
-
-		Enhancer enhancer = new Enhancer();
-		enhancer.setInterfaces(beanListenInterfaces);
-		if (classInfo.getSerialVersionUID() != null) {
-			enhancer.setSerialVersionUID(classInfo.getSerialVersionUID());
-		}
-
-		enhancer.setCallbackType(FieldListenMethodInterceptor.class);
-		enhancer.setSuperclass(clz);
-		return enhancer.createClass();
-	}
-
-	/**
-	 * 可以监听属性变化
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T newFieldListenInstance(Class<T> clz) {
-		return (T) createFieldListenEnhancer(clz).create();
 	}
 
 	/**
@@ -204,8 +139,12 @@ public abstract class ORMUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T transformationFieldListen(T bean) {
+		if (bean instanceof BeanFieldListen) {
+			return restartFieldLinsten(bean);
+		}
+
 		ClassInfo classInfo = ClassUtils.getClassInfo(bean.getClass());
-		BeanFieldListen proxy = (BeanFieldListen) newFieldListenInstance(classInfo.getClz());
+		BeanFieldListen proxy = (BeanFieldListen) classInfo.newFieldListenInstance();
 		for (Entry<String, FieldInfo> entry : classInfo.getFieldMap().entrySet()) {
 			FieldInfo fieldInfo = entry.getValue();
 			if (fieldInfo.isStatic()) {
@@ -230,14 +169,17 @@ public abstract class ORMUtils {
 
 	/**
 	 * 获取主键数据
+	 * 
 	 * @param bean
 	 * @param tableInfo
-	 * @param parse 是否转化为数据库类型的值
+	 * @param parse
+	 *            是否转化为数据库类型的值
 	 * @return
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-	public static Object[] getPrimaryKeys(Object bean, TableInfo tableInfo, boolean parse) throws IllegalArgumentException, IllegalAccessException {
+	public static Object[] getPrimaryKeys(Object bean, TableInfo tableInfo, boolean parse)
+			throws IllegalArgumentException, IllegalAccessException {
 		ColumnInfo[] cs = tableInfo.getPrimaryKeyColumns();
 		Object[] objs = new Object[cs.length];
 		for (int i = 0; i < objs.length; i++) {

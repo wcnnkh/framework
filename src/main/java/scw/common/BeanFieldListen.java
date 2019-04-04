@@ -1,9 +1,7 @@
-package scw.sql.orm;
+package scw.common;
 
 import java.io.Serializable;
 import java.util.Map;
-
-import scw.common.FieldInfo;
 
 public interface BeanFieldListen extends Serializable{
 	public static final String GET_CHANGE_MAP = "get_field_change_map";

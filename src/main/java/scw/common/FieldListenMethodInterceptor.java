@@ -1,4 +1,4 @@
-package scw.sql.orm;
+package scw.common;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -6,8 +6,6 @@ import java.util.Map;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import scw.common.ClassInfo;
-import scw.common.FieldInfo;
 import scw.common.utils.ClassUtils;
 
 public final class FieldListenMethodInterceptor implements MethodInterceptor, BeanFieldListen {

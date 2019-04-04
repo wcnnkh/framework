@@ -1,9 +1,7 @@
-package scw.sql.orm;
+package scw.common;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import scw.common.FieldInfo;
 
 public class BeanFieldListenImpl implements BeanFieldListen{
 	private static final long serialVersionUID = 1L;

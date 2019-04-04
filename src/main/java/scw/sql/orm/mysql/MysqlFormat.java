@@ -2,10 +2,10 @@ package scw.sql.orm.mysql;
 
 import java.util.Collection;
 
+import scw.common.BeanFieldListen;
 import scw.common.Pagination;
 import scw.db.sql.SimpleSql;
 import scw.sql.Sql;
-import scw.sql.orm.BeanFieldListen;
 import scw.sql.orm.PaginationSql;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.TableInfo;

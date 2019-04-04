@@ -261,17 +261,12 @@ public final class TableInfo {
 	public <T> T newInstance() {
 		if (table == null) {
 			try {
-				return (T) classInfo.getClz().newInstance();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				return (T) ClassUtils.newInstance(classInfo.getClz());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			}
-			return null;
 		} else {
-			BeanFieldListen beanFieldListen = (BeanFieldListen) ORMUtils.newFieldListenInstance(classInfo.getClz());
-			beanFieldListen.start_field_listen();
-			return (T) beanFieldListen;
+			return (T) classInfo.newFieldListenInstance();
 		}
 	}
 

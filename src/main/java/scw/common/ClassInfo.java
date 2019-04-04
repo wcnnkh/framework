@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.cglib.proxy.Enhancer;
 import scw.common.utils.ClassUtils;
 
 /**
@@ -18,7 +19,7 @@ import scw.common.utils.ClassUtils;
  */
 public final class ClassInfo {
 	private static final String SerialVersionUID_FIELD_NAME = "serialVersionUID";
-	
+
 	/**
 	 * 类全名 xx.xx.xx
 	 */
@@ -40,8 +41,22 @@ public final class ClassInfo {
 
 	private ClassInfo superInfo;// 父类信息
 	private Long serialVersionUID;
+	private final Class<?>[] beanListenInterfaces;
 
-	public ClassInfo(Class<?> clz){
+	public ClassInfo(Class<?> clz) {
+		if (BeanFieldListen.class.isAssignableFrom(clz)) {
+			beanListenInterfaces = clz.getInterfaces();
+		} else {// 没有自己实现此接口，增加此接口
+			Class<?>[] arr = clz.getInterfaces();
+			if (arr.length == 0) {
+				beanListenInterfaces = new Class[] { BeanFieldListen.class };
+			} else {
+				beanListenInterfaces = new Class[arr.length + 1];
+				System.arraycopy(arr, 0, beanListenInterfaces, 0, arr.length);
+				beanListenInterfaces[arr.length] = BeanFieldListen.class;
+			}
+		}
+
 		this.clz = clz;
 		this.name = clz.getName();
 		this.simpleName = clz.getSimpleName();
@@ -62,11 +77,11 @@ public final class ClassInfo {
 				fieldSetterMethodMap.put(fieldInfo.getSetter().getName(), fieldInfo);
 			}
 		}
-		
-		if(Serializable.class.isAssignableFrom(clz)){
+
+		if (Serializable.class.isAssignableFrom(clz)) {
 			try {
 				Field field = clz.getDeclaredField(SerialVersionUID_FIELD_NAME);
-				if(Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())){
+				if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
 					field.setAccessible(true);
 					serialVersionUID = (Long) field.get(null);
 				}
@@ -140,4 +155,49 @@ public final class ClassInfo {
 	public Long getSerialVersionUID() {
 		return serialVersionUID;
 	}
+
+	private Enhancer createEnhacer() {
+		Enhancer enhancer = new Enhancer();
+		enhancer.setInterfaces(beanListenInterfaces);
+		if (BeanFieldListen.class.isAssignableFrom(clz)) {
+			if (serialVersionUID != null) {
+				enhancer.setSerialVersionUID(serialVersionUID);
+			}
+		} else {
+			enhancer.setSerialVersionUID(1L);
+		}
+
+		enhancer.setCallback(new FieldListenMethodInterceptor());
+		enhancer.setSuperclass(clz);
+		return enhancer;
+	}
+
+	public Object newFieldListenInstance() {
+		BeanFieldListen beanFieldListen = (BeanFieldListen) createEnhacer().create();
+		beanFieldListen.start_field_listen();
+		return beanFieldListen;
+	}
+
+	public Object newFieldListenInstance(Class<?>[] parameterTypes, Object... args) {
+		BeanFieldListen beanFieldListen = (BeanFieldListen) createEnhacer().create(parameterTypes, args);
+		beanFieldListen.start_field_listen();
+		return beanFieldListen;
+	}
+
+	public Class<?> createFieldListenProxyClass() {
+		Enhancer enhancer = new Enhancer();
+		enhancer.setInterfaces(beanListenInterfaces);
+		if (BeanFieldListen.class.isAssignableFrom(clz)) {
+			if (serialVersionUID != null) {
+				enhancer.setSerialVersionUID(serialVersionUID);
+			}
+		} else {
+			enhancer.setSerialVersionUID(1L);
+		}
+
+		enhancer.setCallbackType(FieldListenMethodInterceptor.class);
+		enhancer.setSuperclass(clz);
+		return enhancer.createClass();
+	}
+
 }
