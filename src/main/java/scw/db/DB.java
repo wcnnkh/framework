@@ -38,6 +38,8 @@ import scw.sql.orm.ORMUtils;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.result.Result;
+import scw.transaction.DefaultTransactionLifeCycle;
+import scw.transaction.TransactionManager;
 import scw.transaction.sql.ConnectionFactory;
 import scw.transaction.sql.SqlTransactionUtils;
 import scw.utils.queue.MemcachedQueue;
@@ -133,8 +135,8 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 			if (config == null) {
 				continue;
 			}
-			
-			if(config.type() == CacheType.lazy){
+
+			if (config.type() == CacheType.lazy) {
 				continue;
 			}
 
@@ -199,9 +201,17 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 		CacheConfig config = tableInfo.getAnnotation(CacheConfig.class);
 		if (config != null) {
 			Object[] args = ORMUtils.getPrimaryKeys(bean, tableInfo, false);
-			String objectKey = getObjectKeyById(tableInfo, args);
+			final String objectKey = getObjectKeyById(tableInfo, args);
 			cache.add(objectKey, bean, config);
-			if (config.type() == CacheType.keys) {
+			if (config.type() == CacheType.lazy) {
+				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+					@Override
+					public void beforeRollback() {
+						cache.delete(objectKey);
+						super.beforeRollback();
+					}
+				});
+			} else if (config.type() == CacheType.keys) {
 				cache.add(KEYS_PREFIX + objectKey, "", config);
 			} else if (config.type() == CacheType.full) {
 				StringBuilder sb = new StringBuilder();
@@ -238,7 +248,17 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 			return;
 		}
 
-		cache.set(getObjectKey(tableInfo, bean), bean, config);
+		final String objectKey = getObjectKey(tableInfo, bean);
+		cache.set(objectKey, bean, config);
+		if (config.type() == CacheType.lazy) {
+			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+				@Override
+				public void beforeRollback() {
+					cache.delete(objectKey);
+					super.beforeRollback();
+				}
+			});
+		}
 	}
 
 	@Override
@@ -332,9 +352,17 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 		CacheConfig config = tableInfo.getAnnotation(CacheConfig.class);
 		if (config != null) {
 			Object[] args = ORMUtils.getPrimaryKeys(bean, tableInfo, false);
-			String objectKey = getObjectKeyById(tableInfo, args);
+			final String objectKey = getObjectKeyById(tableInfo, args);
 			cache.set(objectKey, bean, config);
-			if (config.type() == CacheType.keys) {
+			if (config.type() == CacheType.lazy) {
+				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+					@Override
+					public void beforeRollback() {
+						cache.delete(objectKey);
+						super.beforeRollback();
+					}
+				});
+			} else if (config.type() == CacheType.keys) {
 				cache.set(PREFIX + objectKey, "", config);
 			} else if (config.type() == CacheType.full) {
 				StringBuilder sb = new StringBuilder();
