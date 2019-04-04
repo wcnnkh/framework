@@ -17,7 +17,7 @@ public final class LoggerFactory {
 			Class<?> clz = Class.forName(SLF4J_CLASS_NAME);
 			sl4j = (ILoggerFactory) ClassUtils.newInstance(clz);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			//ignore
 		}
 		
 		System.out.println("Init shuchaowen-logger [" + getILoggerFactory().getClass().getName() + "]");
