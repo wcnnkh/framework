@@ -21,6 +21,7 @@ import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
 import scw.sql.Sql;
 import scw.sql.SqlTemplate;
+import scw.sql.SqlUtils;
 import scw.sql.orm.annotation.AutoCreate;
 import scw.sql.orm.annotation.Table;
 import scw.sql.orm.auto.AutoCreateService;
@@ -36,7 +37,7 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 	@AutoCreate
 	private BeanFactory beanFactory;
 	private Map<String, AutoCreateService> autoCreateMap = new HashMap<String, AutoCreateService>();
-
+	
 	{
 		setAutoCreateService("cts", CurrentTimeMillisAutoCreateService.CURRENT_TIME_MILLIS);
 		setAutoCreateService("createTime", CurrentTimeMillisAutoCreateService.CURRENT_TIME_MILLIS);
@@ -136,6 +137,9 @@ public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOper
 				connection = getUserConnection();
 				boolean b = update(sql, connection) != 0;
 				if (!b) {
+					if(logger.isWarnEnabled()){
+						logger.warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
+					}
 					return false;
 				}
 

@@ -14,7 +14,6 @@ import scw.beans.annotation.Destroy;
 import scw.common.Constants;
 import scw.common.Iterator;
 import scw.common.exception.NotSupportException;
-import scw.common.utils.ClassUtils;
 import scw.db.async.AsyncInfo;
 import scw.db.async.MultipleOperation;
 import scw.db.async.OperationBean;
@@ -24,8 +23,6 @@ import scw.db.cache.CacheType;
 import scw.db.cache.MemcachedCache;
 import scw.db.cache.RedisCache;
 import scw.db.database.DataBase;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
 import scw.memcached.Memcached;
 import scw.mq.Consumer;
 import scw.mq.MQ;
@@ -48,7 +45,6 @@ import scw.utils.queue.Queue;
 import scw.utils.queue.RedisQueue;
 
 public abstract class DB extends AbstractORMTemplate implements ConnectionFactory, AutoCloseable {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private static final String PREFIX = "cache:";
 	private static final String KEYS_PREFIX = "keys:";
 	private final Cache cache;
@@ -124,34 +120,29 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 		return SqlTransactionUtils.getTransactionConnection(this);
 	}
 
-	protected void initCache(String packageName) {
-		if (cache == null) {
-			logger.warn("未启用缓存无法初始化：{}", packageName);
+	@Override
+	public void createTable(final Class<?> tableClass) {
+		super.createTable(tableClass);
+		final CacheConfig config = tableClass.getAnnotation(CacheConfig.class);
+		if (config == null) {
 			return;
 		}
 
-		for (final Class<?> clz : ClassUtils.getClasses(packageName)) {
-			final CacheConfig config = clz.getAnnotation(CacheConfig.class);
-			if (config == null) {
-				continue;
-			}
-
-			if (config.type() == CacheType.lazy) {
-				continue;
-			}
-
-			iterator(clz, new Iterator<Result>() {
-
-				public void iterator(Result data) {
-					Object bean = data.get(clz);
-					try {
-						loadToCache(bean, config);
-					} catch (Throwable e) {
-						e.printStackTrace();
-					}
-				}
-			});
+		if (config.type() == CacheType.lazy) {
+			return;
 		}
+
+		iterator(tableClass, new Iterator<Result>() {
+
+			public void iterator(Result data) {
+				Object bean = data.get(tableClass);
+				try {
+					loadToCache(bean, config);
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	protected void loadToCache(Object bean, CacheConfig config) throws Throwable {
@@ -548,10 +539,6 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 	}
 
 	public void asyncSave(Object... objs) {
-		if (asyncService == null) {
-			throw new NotSupportException("不支持异步执行sql语句");
-		}
-
 		MultipleOperation multipleOperation = new MultipleOperation();
 		for (Object obj : objs) {
 			multipleOperation.save(obj);
@@ -560,10 +547,6 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 	}
 
 	public void asyncUpdate(Object... objs) {
-		if (asyncService == null) {
-			throw new NotSupportException("不支持异步执行sql语句");
-		}
-
 		MultipleOperation multipleOperation = new MultipleOperation();
 		for (Object obj : objs) {
 			multipleOperation.update(obj);
