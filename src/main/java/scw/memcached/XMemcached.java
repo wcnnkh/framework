@@ -19,26 +19,32 @@ import net.rubyeye.xmemcached.exception.MemcachedException;
 import scw.beans.annotation.Destroy;
 import scw.common.utils.StringUtils;
 
-public final class XMemcached implements Memcached{
+public final class XMemcached implements Memcached {
 	private final MemcachedClient memcachedClient;
-	
+
 	/**
-	 * 获取一个本地的memcached对象
-	 * localhost:11211
+	 * 获取一个本地的memcached对象 localhost:11211
+	 * 
 	 * @throws IOException
 	 */
-	public XMemcached() throws IOException{
+	public XMemcached() throws IOException {
 		this("localhost:11211");
 	}
-	
-	public XMemcached(String hosts) throws IOException{
+
+	public XMemcached(String hosts) throws IOException {
 		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
 		String[] arr = StringUtils.commonSplit(hosts);
-		for(String a : arr){
-			InetSocketAddress address = new InetSocketAddress(a.split(":")[0], Integer.parseInt(a.split(":")[1]));
-			addresses.add(address);
+		for (String a : arr) {
+			String[] vs = a.split(":");
+			String h = vs[0];
+			int port = 11211;
+			if (vs.length == 2) {
+				port = Integer.parseInt(vs[1]);
+			}
+
+			addresses.add(new InetSocketAddress(h, port));
 		}
-	
+
 		MemcachedClientBuilder builder = new XMemcachedClientBuilder(addresses);
 		// 宕机报警
 		builder.setFailureMode(true);
@@ -58,12 +64,12 @@ public final class XMemcached implements Memcached{
 		 */
 		this.memcachedClient = builder.build();
 	}
-	
+
 	public MemcachedClient getMemcachedClient() {
 		return memcachedClient;
 	}
 
-	public <T> T get(String key){
+	public <T> T get(String key) {
 		try {
 			return memcachedClient.get(key);
 		} catch (TimeoutException e) {
@@ -79,7 +85,7 @@ public final class XMemcached implements Memcached{
 		GetsResponse<T> cas;
 		try {
 			cas = memcachedClient.gets(key);
-			if(cas == null){
+			if (cas == null) {
 				return null;
 			}
 			return new CAS<T>(cas.getCas(), cas.getValue());
@@ -165,11 +171,11 @@ public final class XMemcached implements Memcached{
 	}
 
 	public <T> T getAndTocuh(String key, int newExp) {
-		//因为可能不支持此协议
+		// 因为可能不支持此协议
 		T t;
 		try {
 			t = memcachedClient.get(key);
-			if(t != null){
+			if (t != null) {
 				memcachedClient.set(key, newExp, t);
 			}
 			return t;
@@ -208,7 +214,7 @@ public final class XMemcached implements Memcached{
 
 	public long incr(String key, long incr) {
 		try {
-			 return memcachedClient.incr(key, incr);
+			return memcachedClient.incr(key, incr);
 		} catch (TimeoutException e) {
 			throw new scw.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -253,7 +259,7 @@ public final class XMemcached implements Memcached{
 			throw new scw.memcached.MemcachedException(e);
 		}
 	}
-	
+
 	public <T> Map<String, CAS<T>> gets(Collection<String> keyCollections) {
 		Map<String, GetsResponse<T>> map = null;
 		try {
@@ -265,10 +271,10 @@ public final class XMemcached implements Memcached{
 		} catch (MemcachedException e) {
 			throw new scw.memcached.MemcachedException(e);
 		}
-		
-		if(map != null){
+
+		if (map != null) {
 			Map<String, CAS<T>> casMap = new HashMap<String, CAS<T>>();
-			for(Entry<String, GetsResponse<T>> entry : map.entrySet()){
+			for (Entry<String, GetsResponse<T>> entry : map.entrySet()) {
 				casMap.put(entry.getKey(), new CAS<T>(entry.getValue().getCas(), entry.getValue().getValue()));
 			}
 			return casMap;
@@ -299,9 +305,9 @@ public final class XMemcached implements Memcached{
 			throw new scw.memcached.MemcachedException(e);
 		}
 	}
-	
+
 	@Destroy
-	public void destroy() throws IOException{
+	public void destroy() throws IOException {
 		memcachedClient.shutdown();
 	}
 }

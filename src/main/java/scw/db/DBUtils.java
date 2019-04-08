@@ -9,6 +9,7 @@ import scw.db.database.DataBase;
 import scw.db.database.MysqlDataBase;
 import scw.db.database.OracleDataBase;
 import scw.db.database.SqlServerDataBase;
+import scw.logger.Logger;
 
 public final class DBUtils {
 	private DBUtils() {
@@ -60,5 +61,9 @@ public final class DBUtils {
 		}
 
 		throw new NotSupportException("不支持的数据库类型,driver=" + driverClassName + ",url=" + url);
+	}
+
+	protected static void queueNameWarn(Logger logger) {
+		logger.warn("当前异步队列名称为配置文件路径Base64之后的结果，请不要随意变更配置文件路径，如你已知晓请忽略此警告!");
 	}
 }

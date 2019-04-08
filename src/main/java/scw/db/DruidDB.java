@@ -34,13 +34,20 @@ public class DruidDB extends DB {
 		super(redis, queueName);
 		init(propertiesFilePath);
 	}
-
+	
+	/**
+	 * 在未指明异步队列名称的情况 下，队列名称是使用数据库配置文件路径base64之后的结果，所以在此情况下请不要随意变更配置文件路径
+	 * @param redis
+	 * @param propertiesFile
+	 */
 	public DruidDB(Redis redis, String propertiesFile) {
 		this(redis, Base64.encode(propertiesFile.getBytes(Constants.DEFAULT_CHARSET)), propertiesFile);
+		DBUtils.queueNameWarn(logger);
 	}
 
 	public DruidDB(Memcached memcached, String propertiesFile) {
 		this(memcached, Base64.encode(propertiesFile.getBytes(Constants.DEFAULT_CHARSET)), propertiesFile);
+		DBUtils.queueNameWarn(logger);
 	}
 
 	private void init(String propertiesFilePath) {

@@ -10,7 +10,7 @@ import scw.aop.Invoker;
 import scw.common.utils.StringUtils;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
-import scw.transaction.cache.QueryCacheUtils;
+import scw.transaction.sql.cache.QueryCacheUtils;
 
 /**
  * 实现方法级别的分布式锁

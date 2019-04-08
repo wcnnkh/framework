@@ -31,7 +31,7 @@ import scw.sql.orm.result.DefaultResult;
 import scw.sql.orm.result.DefaultResultSet;
 import scw.sql.orm.result.Result;
 import scw.sql.orm.result.ResultSet;
-import scw.transaction.cache.QueryCacheUtils;
+import scw.transaction.sql.cache.QueryCacheUtils;
 
 public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOperations, SelectMaxId {
 	@AutoCreate

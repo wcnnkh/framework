@@ -58,10 +58,12 @@ public class HikariCPDB extends DB {
 
 	public HikariCPDB(Redis redis, String propertiesFile) {
 		this(redis, Base64.encode(propertiesFile.getBytes(Constants.DEFAULT_CHARSET)), propertiesFile);
+		DBUtils.queueNameWarn(logger);
 	}
 
 	public HikariCPDB(Memcached memcached, String propertiesFile) {
 		this(memcached, Base64.encode(propertiesFile.getBytes(Constants.DEFAULT_CHARSET)), propertiesFile);
+		DBUtils.queueNameWarn(logger);
 	}
 
 	public void createDataBase() {
