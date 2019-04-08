@@ -59,14 +59,6 @@ public final class XMemcached implements Memcached{
 		this.memcachedClient = builder.build();
 	}
 	
-	/**
-	 * @param memcachedClient
-	 * @param abnormalInterruption 发生异常时是否中断
-	 */
-	public XMemcached(MemcachedClient memcachedClient){
-		this.memcachedClient = memcachedClient;
-	}
-	
 	public MemcachedClient getMemcachedClient() {
 		return memcachedClient;
 	}
