@@ -7,6 +7,7 @@ import scw.sql.orm.ORMUtils;
  * @author shuchaowen
  *
  */
+@Deprecated
 public final class DataBaseUtils {
 	private DataBaseUtils() {
 	};
