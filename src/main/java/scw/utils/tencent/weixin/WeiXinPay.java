@@ -18,8 +18,9 @@ import scw.common.utils.XMLUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.NetworkUtils;
-import scw.net.http.HttpUtils;
 import scw.net.http.enums.Method;
+import scw.net.http.request.BodyRequest;
+import scw.net.http.request.HttpRequest;
 import scw.net.http.request.X509Request;
 import scw.utils.tencent.weixin.bean.Unifiedorder;
 
@@ -99,26 +100,9 @@ public final class WeiXinPay {
 			String detail, String attach, String out_trade_no, String fee_type, int total_fee, String spbill_create_ip,
 			String time_start, String time_expire, String goods_tag, String notify_url, String trade_type,
 			String product_id, String limit_pay, String openid) {
-		String content = getUnifiedorder(device_info, nonce_str, body, detail, attach, out_trade_no, fee_type,
+		Map<String, String> map = getUnifiedorder(device_info, nonce_str, body, detail, attach, out_trade_no, fee_type,
 				total_fee, spbill_create_ip, time_start, time_expire, goods_tag, notify_url, trade_type, product_id,
 				limit_pay, openid);
-		Map<String, String> map = XMLUtils.xmlToMap(content);
-		if (map == null) {
-			throw new RuntimeException("服务器错误");
-		}
-
-		if (!"SUCCESS".equals(map.get("return_code"))) {
-			throw new RuntimeException(content);
-		}
-
-		if (!"SUCCESS".equals(map.get("result_code"))) {
-			throw new RuntimeException(content);
-		}
-
-		if (!checkSign(map)) {
-			throw new SignatureException(content);
-		}
-
 		String prepay_id = map.get("prepay_id");
 		Unifiedorder unifiedorder = new Unifiedorder();
 		unifiedorder.setTimestamp(timestamp);
@@ -247,10 +231,10 @@ public final class WeiXinPay {
 	 * @param openid
 	 * @return
 	 */
-	public String getUnifiedorder(String device_info, String nonce_str, String body, String detail, String attach,
-			String out_trade_no, String fee_type, int total_fee, String spbill_create_ip, String time_start,
-			String time_expire, String goods_tag, String notify_url, String trade_type, String product_id,
-			String limit_pay, String openid) {
+	public Map<String, String> getUnifiedorder(String device_info, String nonce_str, String body, String detail,
+			String attach, String out_trade_no, String fee_type, int total_fee, String spbill_create_ip,
+			String time_start, String time_expire, String goods_tag, String notify_url, String trade_type,
+			String product_id, String limit_pay, String openid) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("appid", appId);
 		map.put("mch_id", mch_id);
@@ -272,58 +256,7 @@ public final class WeiXinPay {
 		map.put("product_id", product_id);
 		map.put("limit_pay", limit_pay);
 		map.put("openid", openid);
-
-		String response = HttpUtils.doPost(weixin_unifiedorder_url, null, getRequestContent(map));
-		if (debug) {
-			logger.debug("统一下单接口返回：{}", response);
-		}
-		return response;
-	}
-
-	private String getRequestContent(Map<String, String> map) {
-		String[] keys = map.keySet().toArray(new String[0]);
-		Arrays.sort(keys);
-		String v;
-		String k;
-		StringBuilder sb = new StringBuilder();
-
-		Document document = XMLUtils.newDocumentBuilder().newDocument();
-		Element element = document.createElement("xml");
-		for (int i = 0; i < keys.length; i++) {
-			k = keys[i];
-			if (k == null) {
-				continue;
-			}
-
-			v = map.get(k);
-			if (v == null) {
-				continue;
-			}
-
-			Element c = document.createElement(k);
-			c.setTextContent(v);
-			element.appendChild(c);
-			if (sb.length() > 0) {
-				sb.append("&");
-			}
-
-			sb.append(k).append("=").append(v);
-		}
-		sb.append("&key=").append(apiKey);
-
-		if (debug && logger.isDebugEnabled()) {
-			logger.debug("签名字符串：{}", sb.toString());
-		}
-
-		String sign = toSign(sb.toString());
-		Element c = document.createElement("sign");
-		c.setTextContent(sign);
-		element.appendChild(c);
-		String content = XMLUtils.asXml(element);
-		if (debug) {
-			logger.debug("微信支付请求xml内容:{}", content);
-		}
-		return content;
+		return invoke(weixin_unifiedorder_url, map, false);
 	}
 
 	public boolean checkSign(Map<String, String> params) {
@@ -339,6 +272,96 @@ public final class WeiXinPay {
 		return sign.equals(toSign(checkStr.toString()));
 	}
 
+	/**
+	 * 向微信支付服务器发送请求
+	 * @param url
+	 * @param parameterMap
+	 * @param isCertTrustFile 请求中是否包含证书
+	 * @return
+	 */
+	public Map<String, String> invoke(String url, Map<String, ?> parameterMap, boolean isCertTrustFile) {
+		String[] keys = parameterMap.keySet().toArray(new String[0]);
+		Arrays.sort(keys);
+		StringBuilder sb = new StringBuilder();
+		Document document = XMLUtils.newDocumentBuilder().newDocument();
+		Element element = document.createElement("xml");
+		for (int i = 0; i < keys.length; i++) {
+			String k = keys[i];
+			if (k == null) {
+				continue;
+			}
+
+			Object v = parameterMap.get(k);
+			if (v == null) {
+				continue;
+			}
+
+			String value = v.toString();
+			Element c = document.createElement(k);
+			c.setTextContent(value);
+			element.appendChild(c);
+			if (sb.length() > 0) {
+				sb.append("&");
+			}
+
+			sb.append(k).append("=").append(value);
+		}
+		sb.append("&key=").append(apiKey);
+
+		String sign = toSign(sb.toString());
+		Element c = document.createElement("sign");
+		c.setTextContent(sign);
+		element.appendChild(c);
+		final String content = XMLUtils.asXml(element);
+		if (debug) {
+			logger.debug("微信支付请求xml内容:{}", content);
+		}
+
+		HttpRequest request;
+		if (isCertTrustFile) {
+			request = new X509Request(Method.POST, REFUND_URL, certTrustFile, password) {
+				@Override
+				public void doOutput(OutputStream os) throws Throwable {
+					os.write(content.getBytes(charset));
+					super.doOutput(os);
+				}
+			};
+		} else {
+			request = new BodyRequest(Method.POST, url, new ByteArray(content, charset));
+		}
+
+		ByteArray response = NetworkUtils.execute(request);
+		if (response == null) {
+			throw new RuntimeException("请求：" + url + "失败");
+		}
+
+		String res = response.toString(charset);
+		if (res == null) {
+			throw new RuntimeException("请求：" + url + "失败");
+		}
+
+		if (debug) {
+			logger.debug("请求：{}，返回{}", url, res);
+		}
+
+		Map<String, String> map = XMLUtils.xmlToMap(res);
+		String return_code = map.get("return_code");
+		if (!"SUCCESS".equals(return_code)) {
+			throw new RuntimeException(res);
+		}
+
+		String result_code = map.get("result_code");
+		if (!"SUCCESS".equals(result_code)) {
+			throw new RuntimeException(res);
+		}
+
+		if (!checkSign(map)) {
+			throw new SignatureException(res);
+		}
+
+		return map;
+	}
+
 	private String toSign(String str) {
 		if ("MD5".equalsIgnoreCase(sign_type)) {
 			return SignUtils.md5UpperStr(str, charset.name());
@@ -350,8 +373,9 @@ public final class WeiXinPay {
 		}
 	}
 
-	public String refund(String transaction_id, String out_trade_no, String nonce_str, String out_refund_no,
-			int total_fee, int refund_fee, String refund_fee_type, String refund_desc, String notify_url) {
+	public Map<String, String> refund(String transaction_id, String out_trade_no, String nonce_str,
+			String out_refund_no, int total_fee, int refund_fee, String refund_fee_type, String refund_desc,
+			String notify_url) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("appid", appId);
 		map.put("mch_id", mch_id);
@@ -365,21 +389,6 @@ public final class WeiXinPay {
 		map.put("refund_fee_type", refund_fee_type);
 		map.put("refund_desc", refund_desc);
 		map.put("notify_url", notify_url);
-
-		final String content = getRequestContent(map);
-		X509Request request = new X509Request(Method.POST, REFUND_URL, certTrustFile, password) {
-			@Override
-			public void doOutput(OutputStream os) throws Throwable {
-				os.write(content.getBytes(charset));
-				super.doOutput(os);
-			}
-		};
-
-		ByteArray response = NetworkUtils.execute(request);
-		String str = response.toString(charset);
-		if (debug) {
-			logger.debug("退款接口返回：{}", str);
-		}
-		return str;
+		return invoke(REFUND_URL, map, true);
 	}
 }

@@ -72,7 +72,7 @@ public final class WeiXinUtils {
 		StringBuilder sb = SignUtils.getShotParamsStr(paramMap);
 		sb.append("&key=").append(apiKey);
 		return SignUtils.md5UpperStr(sb.toString(), "UTF-8");
-	}
+	}	
 	
 	/**
 	 * 获取微信公众号支付签名
@@ -101,5 +101,4 @@ public final class WeiXinUtils {
 		signMap.put("timestamp", timeStamp + "");
 		return getPaySign(signMap, apiKey);
 	}
-	
 }
