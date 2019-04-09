@@ -3,6 +3,8 @@ package scw.db.cache;
 import java.util.Collection;
 import java.util.Map;
 
+import scw.db.annotation.CacheConfig;
+
 public interface Cache {
 	void add(String key, Object value, CacheConfig config);
 

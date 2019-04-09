@@ -58,12 +58,24 @@ public final class XTime {
 	 * @return
 	 */
 	public static long getTodayBeginTime() {
+		return getTodayBeginTime(0).getTimeInMillis();
+	}
+
+	/**
+	 * 获取一天凌晨时间
+	 * @param timeInMillis
+	 * @return
+	 */
+	public static Calendar getTodayBeginTime(long timeInMillis) {
 		Calendar calendar = Calendar.getInstance();
+		if (timeInMillis != 0) {
+			calendar.setTimeInMillis(timeInMillis);
+		}
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
-		return calendar.getTime().getTime();
+		return calendar;
 	}
 
 	/**
@@ -572,6 +584,26 @@ public final class XTime {
 			ex.printStackTrace();
 		}
 		return days;
+	}
+
+	/**
+	 * 获取月初时间
+	 * 
+	 * @param timeInMillis
+	 * @return
+	 */
+	public static Calendar getMonthBeginTime(long timeInMillis) {
+		Calendar calendar = Calendar.getInstance();
+		if (timeInMillis != 0) {
+			calendar.setTimeInMillis(timeInMillis);
+		}
+
+		calendar.set(Calendar.DAY_OF_MONTH, 0);
+		calendar.set(Calendar.HOUR, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		return calendar;
 	}
 
 	/**

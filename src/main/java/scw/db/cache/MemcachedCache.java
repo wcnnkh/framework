@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.db.annotation.CacheConfig;
 import scw.memcached.CAS;
 import scw.memcached.Memcached;
 
