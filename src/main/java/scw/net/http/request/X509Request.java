@@ -62,7 +62,9 @@ public class X509Request extends HttpRequest {
 			context.init(null, list.toArray(new TrustManager[0]), new SecureRandom());
 			return context.getSocketFactory();
 		} finally {
-			fis.close();
+			if(fis != null){
+				fis.close();
+			}
 		}
 	}
 

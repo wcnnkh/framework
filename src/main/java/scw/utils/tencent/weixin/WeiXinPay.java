@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 
 import scw.common.ByteArray;
 import scw.common.exception.NotSupportException;
+import scw.common.exception.ParameterException;
 import scw.common.exception.SignatureException;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
@@ -35,26 +36,24 @@ public final class WeiXinPay {
 	private final String apiKey;
 	private final String sign_type;// 签名类型，默认为MD5，支持HMAC-SHA256和MD5。
 	private final Charset charset;
-	private final boolean debug;
 	private String certTrustFile;
 	private String password;
 
-	public WeiXinPay(String appId, String mch_id, String apiKey, boolean debug) {
-		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"), debug, null, null);
+	public WeiXinPay(String appId, String mch_id, String apiKey) {
+		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"), null, null);
 	}
 
-	public WeiXinPay(String appId, String mch_id, String apiKey, boolean debug, String certTrustFile, String password) {
-		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"), debug, certTrustFile, password);
+	public WeiXinPay(String appId, String mch_id, String apiKey, String certTrustFile, String password) {
+		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"), certTrustFile, password);
 	}
 
-	public WeiXinPay(String appId, String mch_id, String apiKey, String sign_type, Charset charset, boolean debug,
+	public WeiXinPay(String appId, String mch_id, String apiKey, String sign_type, Charset charset,
 			String certTrustFile, String password) {
 		this.appId = appId;
 		this.mch_id = mch_id;
 		this.apiKey = apiKey;
 		this.sign_type = sign_type.toUpperCase();
 		this.charset = charset;
-		this.debug = debug;
 		this.certTrustFile = certTrustFile;
 		this.password = password;
 	}
@@ -274,12 +273,18 @@ public final class WeiXinPay {
 
 	/**
 	 * 向微信支付服务器发送请求
+	 * 
 	 * @param url
 	 * @param parameterMap
-	 * @param isCertTrustFile 请求中是否包含证书
+	 * @param isCertTrustFile
+	 *            请求中是否包含证书
 	 * @return
 	 */
 	public Map<String, String> invoke(String url, Map<String, ?> parameterMap, boolean isCertTrustFile) {
+		if (isCertTrustFile && StringUtils.isEmpty(certTrustFile)) {
+			throw new ParameterException("未配置API证书目录");
+		}
+
 		String[] keys = parameterMap.keySet().toArray(new String[0]);
 		Arrays.sort(keys);
 		StringBuilder sb = new StringBuilder();
@@ -313,9 +318,7 @@ public final class WeiXinPay {
 		c.setTextContent(sign);
 		element.appendChild(c);
 		final String content = XMLUtils.asXml(element);
-		if (debug) {
-			logger.debug("微信支付请求xml内容:{}", content);
-		}
+		logger.trace("微信支付请求xml内容:{}", content);
 
 		HttpRequest request;
 		if (isCertTrustFile) {
@@ -340,9 +343,7 @@ public final class WeiXinPay {
 			throw new RuntimeException("请求：" + url + "失败");
 		}
 
-		if (debug) {
-			logger.debug("请求：{}，返回{}", url, res);
-		}
+		logger.trace("请求：{}，返回{}", url, res);
 
 		Map<String, String> map = XMLUtils.xmlToMap(res);
 		String return_code = map.get("return_code");
