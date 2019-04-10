@@ -63,6 +63,7 @@ public final class XTime {
 
 	/**
 	 * 获取一天凌晨时间
+	 * 
 	 * @param timeInMillis
 	 * @return
 	 */
@@ -598,7 +599,27 @@ public final class XTime {
 			calendar.setTimeInMillis(timeInMillis);
 		}
 
-		calendar.set(Calendar.DAY_OF_MONTH, 0);
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		calendar.set(Calendar.HOUR, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		return calendar;
+	}
+
+	/**
+	 * 获取月未时间
+	 * 
+	 * @param timeInMillis
+	 * @return
+	 */
+	public static Calendar getMonthEndTime(long timeInMillis) {
+		Calendar calendar = Calendar.getInstance();
+		if (timeInMillis != 0) {
+			calendar.setTimeInMillis(timeInMillis);
+		}
+
+		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
 		calendar.set(Calendar.HOUR, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
