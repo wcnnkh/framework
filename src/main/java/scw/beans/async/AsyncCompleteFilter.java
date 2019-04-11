@@ -24,6 +24,8 @@ import scw.common.MethodDefinition;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.FileUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 /**
  * 只能受BeanFactory管理
@@ -31,6 +33,8 @@ import scw.common.utils.FileUtils;
  *
  */
 public final class AsyncCompleteFilter implements Filter {
+	private static Logger logger = LoggerFactory.getLogger(AsyncCompleteFilter.class);
+	
 	private static ThreadLocal<Boolean> ENABLE_TAG = new ThreadLocal<Boolean>();
 
 	public static boolean isEnable() {
@@ -56,6 +60,7 @@ public final class AsyncCompleteFilter implements Filter {
 		String logPath = System.getProperty("java.io.tmpdir");
 		String classPath = ConfigUtils.getClassPath();
 		logPath += File.separator + "AsyncComplate_" + Base64.encode(classPath.getBytes("UTF-8"));
+		logger.info("异步确认日志目录 ：{}", logPath);
 		fileManager = new FileManager(logPath);
 
 		File file = new File(fileManager.getRootPath());

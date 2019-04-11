@@ -1,4 +1,4 @@
-package scw.net.http.request;
+package scw.net.http;
 
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;

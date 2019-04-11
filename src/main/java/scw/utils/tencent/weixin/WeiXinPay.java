@@ -1,10 +1,11 @@
 package scw.utils.tencent.weixin;
 
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.net.ssl.SSLContext;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -13,16 +14,17 @@ import scw.common.ByteArray;
 import scw.common.exception.NotSupportException;
 import scw.common.exception.ParameterException;
 import scw.common.exception.SignatureException;
+import scw.common.utils.ConfigUtils;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XMLUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.NetworkUtils;
+import scw.net.http.BodyRequest;
+import scw.net.http.HttpRequest;
 import scw.net.http.enums.Method;
-import scw.net.http.request.BodyRequest;
-import scw.net.http.request.HttpRequest;
-import scw.net.http.request.X509Request;
+import scw.net.http.ssl.SSLContexts;
 import scw.utils.tencent.weixin.bean.Unifiedorder;
 
 public final class WeiXinPay {
@@ -37,25 +39,23 @@ public final class WeiXinPay {
 	private final String sign_type;// 签名类型，默认为MD5，支持HMAC-SHA256和MD5。
 	private final Charset charset;
 	private String certTrustFile;
-	private String password;
 
 	public WeiXinPay(String appId, String mch_id, String apiKey) {
-		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"), null, null);
+		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"), null);
 	}
 
-	public WeiXinPay(String appId, String mch_id, String apiKey, String certTrustFile, String password) {
-		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"), certTrustFile, password);
+	public WeiXinPay(String appId, String mch_id, String apiKey, String certTrustFile) {
+		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"), certTrustFile);
 	}
 
 	public WeiXinPay(String appId, String mch_id, String apiKey, String sign_type, Charset charset,
-			String certTrustFile, String password) {
+			String certTrustFile) {
 		this.appId = appId;
 		this.mch_id = mch_id;
 		this.apiKey = apiKey;
 		this.sign_type = sign_type.toUpperCase();
 		this.charset = charset;
 		this.certTrustFile = certTrustFile;
-		this.password = password;
 	}
 
 	/**
@@ -320,17 +320,17 @@ public final class WeiXinPay {
 		final String content = XMLUtils.asXml(element);
 		logger.trace("微信支付请求xml内容:{}", content);
 
-		HttpRequest request;
+		HttpRequest request = new BodyRequest(Method.POST, url, new ByteArray(content, charset));
+		request.setContentTypeByXML(charset.name());
 		if (isCertTrustFile) {
-			request = new X509Request(Method.POST, REFUND_URL, certTrustFile, password) {
-				@Override
-				public void doOutput(OutputStream os) throws Throwable {
-					os.write(content.getBytes(charset));
-					super.doOutput(os);
-				}
-			};
-		} else {
-			request = new BodyRequest(Method.POST, url, new ByteArray(content, charset));
+			char[] password = mch_id.toCharArray();
+			try {
+				SSLContext sslContext = SSLContexts.custom()
+						.loadKeyMaterial(ConfigUtils.getFile(certTrustFile), password, password).build();
+				request.setSslSocketFactory(sslContext.getSocketFactory());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 		ByteArray response = NetworkUtils.execute(request);

@@ -1,4 +1,4 @@
-package scw.net.http.request;
+package scw.net.http;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
+
 import scw.common.utils.StringUtils;
 import scw.net.AbstractUrlRequest;
 import scw.net.RequestException;
@@ -19,6 +22,7 @@ public class HttpRequest extends AbstractUrlRequest {
 	protected final Method method;
 	private Map<String, String> requestProperties;
 	private String requestUrl;
+	private SSLSocketFactory sslSocketFactory;
 
 	public HttpRequest(Method method, String requestUrl) {
 		this.method = method;
@@ -32,6 +36,14 @@ public class HttpRequest extends AbstractUrlRequest {
 	@Override
 	public void request(URLConnection urlConnection) throws Throwable {
 		HttpURLConnection http = (HttpURLConnection) urlConnection;
+		if (http instanceof HttpsURLConnection) {
+			SSLSocketFactory sslSocketFactory = getSslSocketFactory();
+			if(sslSocketFactory != null){
+				HttpsURLConnection https = (HttpsURLConnection) urlConnection;
+				https.setSSLSocketFactory(sslSocketFactory);
+			}
+		}
+
 		http.setRequestMethod(method.name());
 
 		urlConnection.setConnectTimeout(10000);
@@ -87,6 +99,14 @@ public class HttpRequest extends AbstractUrlRequest {
 		}
 	}
 
+	public void setContentTypeByXML(String charsetName) {
+		if (StringUtils.isEmpty(charsetName)) {
+			setRequestContentType("text/xml");
+		} else {
+			setRequestContentType("text/xml; charset=" + charsetName);
+		}
+	}
+
 	public void setRequestProperties(Map<String, String> requestProperties) {
 		this.requestProperties = requestProperties;
 	}
@@ -98,6 +118,14 @@ public class HttpRequest extends AbstractUrlRequest {
 		} catch (MalformedURLException e) {
 			throw new RequestException(getRequestAddress(), e);
 		}
+	}
+
+	public SSLSocketFactory getSslSocketFactory() {
+		return sslSocketFactory;
+	}
+
+	public void setSslSocketFactory(SSLSocketFactory sslSocketFactory) {
+		this.sslSocketFactory = sslSocketFactory;
 	}
 
 	@Override

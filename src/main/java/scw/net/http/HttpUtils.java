@@ -14,9 +14,6 @@ import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.StringUtils;
 import scw.net.NetworkUtils;
 import scw.net.http.enums.Method;
-import scw.net.http.request.BodyRequest;
-import scw.net.http.request.FormRequest;
-import scw.net.http.request.HttpRequest;
 
 public final class HttpUtils {
 	private HttpUtils() {

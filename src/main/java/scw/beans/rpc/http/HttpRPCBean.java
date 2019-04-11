@@ -16,7 +16,7 @@ import scw.common.utils.SignUtils;
 import scw.common.utils.XUtils;
 import scw.net.AbstractResponse;
 import scw.net.NetworkUtils;
-import scw.net.http.request.HttpRequest;
+import scw.net.http.HttpRequest;
 
 public final class HttpRPCBean extends AbstractInterfaceProxyBean {
 	private final String host;

@@ -2,6 +2,7 @@ package scw.transaction;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 final class TransactionSynchronizationCollection extends LinkedList<TransactionSynchronization>
 		implements TransactionSynchronization {
@@ -18,9 +19,9 @@ final class TransactionSynchronizationCollection extends LinkedList<TransactionS
 	}
 
 	public void end() {
-		Iterator<TransactionSynchronization> iterator = iterator();
-		while (iterator.hasNext()) {
-			TransactionSynchronization transaction = iterator.next();
+		ListIterator<TransactionSynchronization> iterator = listIterator(size());
+		while (iterator.hasPrevious()) {
+			TransactionSynchronization transaction = iterator.previous();
 			if (transaction != null) {
 				try {
 					transaction.end();
@@ -32,9 +33,9 @@ final class TransactionSynchronizationCollection extends LinkedList<TransactionS
 	}
 
 	public void rollback() {
-		Iterator<TransactionSynchronization> iterator = iterator();
-		while (iterator.hasNext()) {
-			TransactionSynchronization transaction = iterator.next();
+		ListIterator<TransactionSynchronization> iterator = listIterator(size());
+		while (iterator.hasPrevious()) {
+			TransactionSynchronization transaction = iterator.previous();
 			if (transaction != null) {
 				try {
 					transaction.rollback();
