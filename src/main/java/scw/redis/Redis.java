@@ -10,7 +10,9 @@ public interface Redis {
 	public static final String NX = "NX";
 	public static final String XX = "XX";
 	public static final String SUCCESS = "OK";
-
+	public static final String INCR_AND_INIT_SCRIPT = "if redis.call('exists', KEYS[1]) == 1 then return redis.call('incr', KEYV[1], ARGS[1]) else redis.call('set', KEYS[1], ARGS[2]) return ARGS[2] end";
+	public static final String DECR_AND_INIT_SCRIPT = "if redis.call('exists', KEYS[1]) == 1 then return redis.call('decr', KEYV[1], ARGS[1]) else redis.call('set', KEYS[1], ARGS[2]) return ARGS[2] end";
+	
 	String get(String key);
 
 	String getAndTouch(String key, int exp);
@@ -176,4 +178,8 @@ public interface Redis {
 	byte[] lindex(byte[] key, int index);
 
 	Long llen(byte[] key);
+
+	long incr(String key, long incr, long initValue);
+
+	long decr(String key, long decr, long initValue);
 }

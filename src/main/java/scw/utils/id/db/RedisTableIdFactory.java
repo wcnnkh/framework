@@ -1,7 +1,5 @@
 package scw.utils.id.db;
 
-import java.util.Arrays;
-
 import scw.common.utils.ClassUtils;
 import scw.locks.Lock;
 import scw.locks.RedisLock;
@@ -9,7 +7,6 @@ import scw.redis.Redis;
 import scw.sql.orm.SelectMaxId;
 
 public final class RedisTableIdFactory extends AbstractTableIdFactory {
-	private static final String INCR_SCRIPT = "if redis.call('exists', KEYS[1]) == 1 then return redis.call('incr', KEYV[1]) else local newValue = ARGS[1] + 1; redis.call('set', KEYS[1], newValue) return newValue end";
 	private final Redis redis;
 
 	public RedisTableIdFactory(SelectMaxId db, Redis redis) {
@@ -34,11 +31,9 @@ public final class RedisTableIdFactory extends AbstractTableIdFactory {
 			Lock lock = new RedisLock(redis, key + "&lock");
 			try {
 				lock.lockWait();
-
 				if (!redis.exists(key)) {
 					long maxId = getMaxId(tableClass, fieldName);
-					return (Long) redis.eval(INCR_SCRIPT, Arrays.asList(key),
-							Arrays.asList(maxId + ""));
+					return redis.incr(key, 1, maxId + 1);
 				}
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);

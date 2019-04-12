@@ -1,6 +1,7 @@
 package scw.redis;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -368,5 +369,15 @@ public final class RedisByJedisCluster implements Redis {
 			map.put(key[i], value);
 		}
 		return map;
+	}
+
+	public long incr(String key, long incr, long initValue) {
+		return (Long) jedisCluster.eval(INCR_AND_INIT_SCRIPT, Arrays.asList(key),
+				Arrays.asList(String.valueOf(incr), String.valueOf(initValue)));
+	}
+
+	public long decr(String key, long decr, long initValue) {
+		return (Long) jedisCluster.eval(DECR_AND_INIT_SCRIPT, Arrays.asList(key),
+				Arrays.asList(String.valueOf(decr), String.valueOf(initValue)));
 	}
 }
