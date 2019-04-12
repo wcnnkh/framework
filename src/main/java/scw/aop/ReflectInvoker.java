@@ -15,4 +15,9 @@ public final class ReflectInvoker implements Invoker {
 	public Object invoke(Object... args) throws Throwable {
 		return method.invoke(obj, args);
 	}
+	
+	@Override
+	public String toString() {
+		return method.toString();
+	}
 }

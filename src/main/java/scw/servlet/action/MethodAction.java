@@ -110,4 +110,9 @@ public class MethodAction implements Action {
 
 		return requestTypeMap.values().toArray(new scw.net.http.enums.Method[0]);
 	}
+	
+	@Override
+	public String toString() {
+		return invoker.toString();
+	}
 }
