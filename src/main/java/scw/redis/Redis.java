@@ -6,8 +6,21 @@ import java.util.Map;
 import java.util.Set;
 
 public interface Redis {
+	/**
+	 * 设置过期时间为秒
+	 */
 	public static final String EX = "EX";
+	/**
+	 * 设置过期时间为毫秒
+	 */
+	public static final String PX = "PX";
+	/**
+	 * 只在键不存在时，才对键进行设置操作
+	 */
 	public static final String NX = "NX";
+	/**
+	 * 只在键已经存在时，才对键进行设置操作
+	 */
 	public static final String XX = "XX";
 	public static final String SUCCESS = "OK";
 	public static final String INCR_AND_INIT_SCRIPT = "if redis.call('exists', KEYS[1]) == 1 then return redis.call('incr', KEYV[1], ARGS[1]) else redis.call('set', KEYS[1], ARGS[2]) return ARGS[2] end";

@@ -18,11 +18,13 @@ public final class MemcachedCache implements Cache {
 	}
 
 	public void add(String key, Object value, CacheConfig config) {
-		memcached.add(key, (int) config.timeUnit().toSeconds(config.exp()), CacheUtils.encode(value));
+		long exp = config.type() == CacheType.full? 0:config.timeUnit().toSeconds(config.exp());
+		memcached.add(key, (int)exp, CacheUtils.encode(value));
 	}
 
 	public void set(String key, Object value, CacheConfig config) {
-		memcached.set(key, (int) config.timeUnit().toSeconds(config.exp()), CacheUtils.encode(value));
+		long exp = config.type() == CacheType.full? 0:config.timeUnit().toSeconds(config.exp());
+		memcached.set(key, (int)exp, CacheUtils.encode(value));
 	}
 
 	public void delete(String key) {
@@ -39,7 +41,8 @@ public final class MemcachedCache implements Cache {
 	}
 
 	public <T> T getAndTouch(Class<T> type, String key, CacheConfig config) {
-		byte[] data = memcached.getAndTocuh(key, (int) config.timeUnit().toSeconds(config.exp()));
+		long exp = config.type() == CacheType.full? 0:config.timeUnit().toSeconds(config.exp());
+		byte[] data = memcached.getAndTocuh(key, (int) exp);
 		if (data == null) {
 			return null;
 		}

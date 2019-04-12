@@ -18,15 +18,17 @@ public final class RedisCache implements Cache {
 	}
 
 	public void add(String key, Object value, CacheConfig config) {
+		long exp = config.type() == CacheType.full? 0:config.timeUnit().toSeconds(config.exp());
 		redis.set(key.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(value),
 				Redis.NX.getBytes(Constants.DEFAULT_CHARSET), Redis.EX.getBytes(Constants.DEFAULT_CHARSET),
-				config.timeUnit().toSeconds(config.exp()));
+				exp);
 	}
 
 	public void set(String key, Object value, CacheConfig config) {
+		long exp = config.type() == CacheType.full? 0:config.timeUnit().toSeconds(config.exp());
 		redis.set(key.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(value),
 				Redis.XX.getBytes(Constants.DEFAULT_CHARSET), Redis.EX.getBytes(Constants.DEFAULT_CHARSET),
-				config.timeUnit().toSeconds(config.exp()));
+				exp);
 	}
 
 	public void delete(String key) {
@@ -43,8 +45,9 @@ public final class RedisCache implements Cache {
 	}
 
 	public <T> T getAndTouch(Class<T> type, String key, CacheConfig config) {
+		long exp = config.type() == CacheType.full? 0:config.timeUnit().toSeconds(config.exp());
 		byte[] data = redis.getAndTouch(key.getBytes(Constants.DEFAULT_CHARSET),
-				(int) config.timeUnit().toSeconds(config.exp()));
+				(int)exp);
 		if (data == null) {
 			return null;
 		}
