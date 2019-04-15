@@ -29,7 +29,7 @@ import scw.mq.MQ;
 import scw.mq.QueueMQ;
 import scw.redis.Redis;
 import scw.sql.Sql;
-import scw.sql.orm.AbstractORMTemplate;
+import scw.sql.orm.ORMTemplate;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.SqlFormat;
@@ -44,7 +44,7 @@ import scw.utils.queue.MemoryQueue;
 import scw.utils.queue.Queue;
 import scw.utils.queue.RedisQueue;
 
-public abstract class DB extends AbstractORMTemplate implements ConnectionFactory, AutoCloseable {
+public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoCloseable {
 	private static final String PREFIX = "cache:";
 	private static final String KEYS_PREFIX = "keys:";
 	private final Cache cache;

@@ -33,7 +33,7 @@ import scw.sql.orm.result.Result;
 import scw.sql.orm.result.ResultSet;
 import scw.transaction.sql.cache.QueryCacheUtils;
 
-public abstract class AbstractORMTemplate extends SqlTemplate implements ORMOperations, SelectMaxId {
+public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, SelectMaxId {
 	@AutoCreate
 	private BeanFactory beanFactory;
 	private Map<String, AutoCreateService> autoCreateMap = new HashMap<String, AutoCreateService>();
