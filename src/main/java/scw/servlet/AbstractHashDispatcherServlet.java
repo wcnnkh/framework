@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.common.ProcessorHashQueue;
-import scw.common.utils.StringUtils;
+import scw.common.utils.StringParseUtils;
 import scw.servlet.service.AsyncRPCService;
 import scw.servlet.service.AsyncRequestService;
 
@@ -15,7 +15,7 @@ public abstract class AbstractHashDispatcherServlet extends DispatcherServlet {
 
 	@Override
 	public void init() throws ServletException {
-		int poolSize = StringUtils.conversion(getConfig("poolSize", 50 + ""), int.class);
+		int poolSize = StringParseUtils.conversion(getConfig("poolSize", 50 + ""), int.class);
 		queueHash = new ProcessorHashQueue<Integer>(poolSize, 10000);
 		queueHash.start();
 		super.init();

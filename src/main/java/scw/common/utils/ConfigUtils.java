@@ -112,7 +112,7 @@ public final class ConfigUtils {
 			if (fieldInfo == null) {
 				continue;
 			}
-			fieldInfo.set(t, StringUtils.conversion(entry.getValue(), fieldInfo.getType()));
+			fieldInfo.set(t, StringParseUtils.conversion(entry.getValue(), fieldInfo.getType()));
 		}
 		return t;
 	}

@@ -8,6 +8,7 @@ import scw.common.BeanFieldListen;
 import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.utils.ClassUtils;
+import scw.common.utils.StringParseUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -54,7 +55,7 @@ public abstract class ORMUtils {
 				if (value instanceof Number) {
 					return ((Number) value).doubleValue() == 1;
 				} else if (value instanceof String) {
-					return StringUtils.parseBoolean((String) value);
+					return StringParseUtils.parseBoolean((String) value);
 				}
 			}
 		} else if (ClassUtils.isIntType(type)) {

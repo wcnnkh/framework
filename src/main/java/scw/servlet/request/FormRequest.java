@@ -8,14 +8,15 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSONObject;
-
+import scw.common.utils.StringParseUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.servlet.Request;
 import scw.servlet.action.RestSearchAction;
 import scw.servlet.beans.RequestBeanFactory;
+
+import com.alibaba.fastjson.JSONObject;
 
 public class FormRequest extends Request {
 	private static Logger logger = LoggerFactory.getLogger(FormRequest.class);
@@ -102,35 +103,35 @@ public class FormRequest extends Request {
 			return null;
 		}
 
-		return Short.valueOf(formatNumberText(v));
+		return Short.valueOf(StringParseUtils.formatNumberText(v));
 	}
 
 	public short getShortValue(String key) {
 		String v = getRequireValue(key);
 
-		return Short.parseShort(formatNumberText(v));
+		return Short.parseShort(StringParseUtils.formatNumberText(v));
 	}
 
 	public Integer getInteger(String key) {
 		String str = getValue(key);
-		return isNull(str) ? null : Integer.parseInt(formatNumberText(str));
+		return isNull(str) ? null : Integer.parseInt(StringParseUtils.formatNumberText(str));
 	}
 
 	public int getIntValue(String key) {
 		String v = getRequireValue(key);
 
-		return Integer.parseInt(formatNumberText(v));
+		return Integer.parseInt(StringParseUtils.formatNumberText(v));
 	}
 
 	public Long getLong(String key) {
 		String v = getValue(key);
-		return isNull(v) ? null : Long.valueOf(formatNumberText(v));
+		return isNull(v) ? null : Long.valueOf(StringParseUtils.formatNumberText(v));
 	}
 
 	public long getLongValue(String key) {
 		String v = getRequireValue(key);
 
-		return Long.parseLong(formatNumberText(v));
+		return Long.parseLong(StringParseUtils.formatNumberText(v));
 	}
 
 	public Boolean getBoolean(String key) {
@@ -139,32 +140,32 @@ public class FormRequest extends Request {
 			return null;
 		}
 
-		return StringUtils.parseBoolean(v);
+		return StringParseUtils.parseBoolean(v);
 	}
 
 	public boolean getBooleanValue(String key) {
 		String v = getRequireValue(key);
-		return StringUtils.parseBoolean(v);
+		return StringParseUtils.parseBoolean(v);
 	}
 
 	public Float getFloat(String key) {
 		String v = getValue(key);
-		return isNull(v) ? null : Float.valueOf(formatNumberText(v));
+		return isNull(v) ? null : Float.valueOf(StringParseUtils.formatNumberText(v));
 	}
 
 	public float getFloatValue(String key) {
 		String v = getRequireValue(key);
-		return Float.parseFloat(formatNumberText(v));
+		return Float.parseFloat(StringParseUtils.formatNumberText(v));
 	}
 
 	public Double getDouble(String key) {
 		String v = getValue(key);
-		return isNull(v) ? null : Double.valueOf(formatNumberText(v));
+		return isNull(v) ? null : Double.valueOf(StringParseUtils.formatNumberText(v));
 	}
 
 	public double getDoubleValue(String key) {
 		String v = getRequireValue(key);
-		return Double.parseDouble(formatNumberText(v));
+		return Double.parseDouble(StringParseUtils.formatNumberText(v));
 	}
 
 	@Override

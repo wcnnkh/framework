@@ -3,7 +3,6 @@ package scw.common.utils;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,22 +24,6 @@ import java.util.regex.Pattern;
 import scw.common.exception.ParameterException;
 
 public final class StringUtils {
-	public final static char[] CAPITAL_LETTERS = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-			'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', };
-
-	public final static char[] LOWERCASE_LETTERS = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-			'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
-
-	public final static char[] NUMBERIC_CHARACTER = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-
-	/**
-	 * 放在一起容易分辨的字符
-	 */
-	public final static char[] EASY_TO_DISTINGUISH = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'c', 'd',
-			'e', 'f', 'h', 'k', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'y', 'A', 'B', 'C', 'E', 'F', 'G', 'H', 'K',
-			'M', 'N', 'R', 'S', 'T', 'V', 'W', 'Y' };
-
-	public final static char[] ALL = mergeCharArray(NUMBERIC_CHARACTER, LOWERCASE_LETTERS, CAPITAL_LETTERS);
 	private static final String IOS_NULL = "(null)";
 
 	private static final String FOLDER_SEPARATOR = "/";
@@ -365,15 +348,6 @@ public final class StringUtils {
 		return dataArr;
 	}
 
-	public static boolean parseBoolean(String text) {
-		if (StringUtils.isEmpty(text)) {
-			return false;
-		}
-
-		return "1".equals(text) || "true".equalsIgnoreCase(text) || "yes".equalsIgnoreCase(text)
-				|| "T".equalsIgnoreCase(text);
-	}
-
 	/**
 	 * 1M = 1024K
 	 * 
@@ -410,7 +384,7 @@ public final class StringUtils {
 	}
 
 	public static String getRandomStr(int length) {
-		return new String(getRandomCharArray(ALL, length));
+		return new String(getRandomCharArray(RandomUtils.ALL, length));
 	}
 
 	public static String getRandomStr(String randomStr, int length) {
@@ -442,92 +416,6 @@ public final class StringUtils {
 			return str.substring(0, len) + repStr;
 		}
 		return str;
-	}
-
-	/**
-	 * 将字符串转换编码
-	 * 
-	 * @param str
-	 * @param oldCharsetName
-	 * @param charsetName
-	 * @return
-	 */
-	public static String charsetConvert(String str, Charset oldCharset, Charset charset) {
-		String v = null;
-		if (str != null) {
-			v = new String(str.getBytes(oldCharset), charset);
-		}
-		return v;
-	}
-
-	/**
-	 * 把unicode 转成中文
-	 * 
-	 * @return
-	 */
-	public static String convertUnicode(String ori) {
-		char aChar;
-		int len = ori.length();
-		StringBuffer outBuffer = new StringBuffer(len);
-		for (int x = 0; x < len;) {
-			aChar = ori.charAt(x++);
-			if (aChar == '\\') {
-				aChar = ori.charAt(x++);
-				if (aChar == 'u') {
-					// Read the xxxx
-					int value = 0;
-					for (int i = 0; i < 4; i++) {
-						aChar = ori.charAt(x++);
-						switch (aChar) {
-						case '0':
-						case '1':
-						case '2':
-						case '3':
-						case '4':
-						case '5':
-						case '6':
-						case '7':
-						case '8':
-						case '9':
-							value = (value << 4) + aChar - '0';
-							break;
-						case 'a':
-						case 'b':
-						case 'c':
-						case 'd':
-						case 'e':
-						case 'f':
-							value = (value << 4) + 10 + aChar - 'a';
-							break;
-						case 'A':
-						case 'B':
-						case 'C':
-						case 'D':
-						case 'E':
-						case 'F':
-							value = (value << 4) + 10 + aChar - 'A';
-							break;
-						default:
-							throw new IllegalArgumentException("Malformed   \\uxxxx   encoding.");
-						}
-					}
-					outBuffer.append((char) value);
-				} else {
-					if (aChar == 't')
-						aChar = '\t';
-					else if (aChar == 'r')
-						aChar = '\r';
-					else if (aChar == 'n')
-						aChar = '\n';
-					else if (aChar == 'f')
-						aChar = '\f';
-					outBuffer.append(aChar);
-				}
-			} else
-				outBuffer.append(aChar);
-
-		}
-		return outBuffer.toString();
 	}
 
 	/**
@@ -662,70 +550,13 @@ public final class StringUtils {
 	}
 
 	/**
-	 * 如果是string类类型就返回本身
-	 * 
-	 * @param value
-	 * @param basicType
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T conversion(String value, Class<T> basicType) {
-		if (ClassUtils.isStringType(basicType)) {
-			return (T) value;
-		} else {
-			return (T) conversionBasicType(value, basicType);
-		}
-	}
-
-	/**
-	 * 自动把string转化为基本数据类型 string不是基本数据类型
-	 * 
-	 * @param value
-	 * @param basicType
-	 * @return
-	 */
-	public static Object conversionBasicType(String value, Class<?> basicType) {
-		if (int.class.isAssignableFrom(basicType)) {
-			return Integer.parseInt(value);
-		} else if (Integer.class.isAssignableFrom(basicType)) {
-			return Integer.valueOf(value);
-		} else if (long.class.isAssignableFrom(basicType)) {
-			return Long.parseLong(value);
-		} else if (Long.class.isAssignableFrom(basicType)) {
-			return Long.valueOf(value);
-		} else if (float.class.isAssignableFrom(basicType)) {
-			return Float.parseFloat(value);
-		} else if (Float.class.isAssignableFrom(basicType)) {
-			return Float.valueOf(value);
-		} else if (short.class.isAssignableFrom(basicType)) {
-			return Short.parseShort(value);
-		} else if (Short.class.isAssignableFrom(basicType)) {
-			return Short.valueOf(value);
-		} else if (boolean.class.isAssignableFrom(basicType)) {
-			return parseBoolean(value);
-		} else if (Boolean.class.isAssignableFrom(basicType)) {
-			return isEmpty(value) ? null : parseBoolean(value);
-		} else if (byte.class.isAssignableFrom(basicType)) {
-			return Byte.parseByte(value);
-		} else if (Byte.class.isAssignableFrom(basicType)) {
-			return Byte.valueOf(value);
-		} else if (char.class.isAssignableFrom(basicType)) {
-			return value.charAt(0);
-		} else if (Character.class.isAssignableFrom(basicType)) {
-			return value == null ? null : value.charAt(0);
-		} else {
-			return value;
-		}
-	}
-
-	/**
 	 * 获取指定长度的随机数字组成的字符串
 	 * 
 	 * @param len
 	 * @return
 	 */
 	public static String getNumCode(int len) {
-		return new String(getRandomCharArray(NUMBERIC_CHARACTER, len));
+		return new String(getRandomCharArray(RandomUtils.NUMBERIC_CHARACTER, len));
 	}
 
 	/**

@@ -1,8 +1,6 @@
 package scw.common.utils;
 
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class XUtils {
 	private XUtils() {
@@ -28,75 +26,7 @@ public final class XUtils {
 		}
 	}
 
-	/**
-	 * 获取某闭区间的随机值[min, max]
-	 * 
-	 * @param min
-	 * @param max
-	 * @return
-	 */
-	public static int getRandValue(int min, int max) {
-		return (int) (Math.random() * (max - min + 1)) + min;
-	}
-
-	/**
-	 * 求最大公约数
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public static int greatestCommonDivisor(int a, int b) {
-		int gongyue = 0;
-		if (a < b) { // 交换a、b的值
-			a = a + b;
-			b = a - b;
-			a = a - b;
-		}
-		if (a % b == 0) {
-			gongyue = b;
-		}
-		while (a % b > 0) {
-			a = a % b;
-			if (a < b) {
-				a = a + b;
-				b = a - b;
-				a = a - b;
-			}
-			if (a % b == 0) {
-				gongyue = b;
-			}
-		}
-		return gongyue;
-	}
-
-	/**
-	 * 获取某数组的随机数
-	 * 
-	 * @param arr
-	 * @return
-	 */
-	public static int getRandValue(int[] arr) {
-		int idx = (int) (Math.random() * arr.length);
-		return arr[idx];
-	}
-
-	/**
-	 * 得到一组数是的最大值或最小值
-	 * 
-	 * @param isMax
-	 * @param num
-	 * @return
-	 */
-	public static long getMaxOrMinNum(boolean isMax, long... num) {
-		long temp = num[0];
-		for (long n : num) {
-			if (n > temp && isMax) {
-				temp = n;
-			}
-		}
-		return temp;
-	}
+	
 
 	public static String getUUID() {
 		String str = UUID.randomUUID().toString();
@@ -152,39 +82,6 @@ public final class XUtils {
 			}
 		}
 		return p1 + p2;
-	}
-
-	private static final String INNER_IP_PATTERN = "((192\\.168|172\\.([1][6-9]|[2]\\d|3[01]))"
-			+ "(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|"
-			+ "^(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})";
-
-	/**
-	 * 判断是否是内网IP
-	 * 
-	 * @param ip
-	 * @return
-	 */
-	public static boolean isInnerIP(String ip) {
-		Pattern p = Pattern.compile(INNER_IP_PATTERN);
-		Matcher matcher = p.matcher(ip);
-		return matcher.find();
-	}
-
-	/**
-	 * 求最大公约数 更相减损法
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public static int gcd(int a, int b) {
-		while (a != b) {
-			if (a > b)
-				a -= b;
-			else
-				b -= a;
-		}
-		return a;
 	}
 
 	/**

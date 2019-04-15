@@ -29,6 +29,7 @@ import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
+import scw.common.utils.StringParseUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -268,7 +269,7 @@ public final class BeanUtils {
 
 				String v = propertiesFactory.getValue(properties.value());
 				if (v != null) {
-					value = StringUtils.conversion(v, field.getType());
+					value = StringParseUtils.conversion(v, field.getType());
 					field.set(obj, value);
 				}
 			} catch (Exception e) {

@@ -9,7 +9,7 @@ import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.ConfigUtils;
-import scw.common.utils.StringUtils;
+import scw.common.utils.StringParseUtils;
 
 public final class PropertiesParse implements ConfigParse {
 	public Object parse(BeanFactory beanFactory, FieldInfo field, String filePath, String charset) throws Exception{
@@ -17,7 +17,7 @@ public final class PropertiesParse implements ConfigParse {
 		Properties properties = ConfigUtils.getProperties(file, charset);
 		if(ClassUtils.isPrimitiveOrWrapper(field.getType()) || ClassUtils.isStringType(field.getType())){
 			String v = ConfigUtils.format(properties.getProperty(field.getName()));
-			return StringUtils.conversion(v, field.getType());
+			return StringParseUtils.conversion(v, field.getType());
 		}else if(Properties.class.isAssignableFrom(field.getType())){
 			return properties;
 		}else{
@@ -32,7 +32,7 @@ public final class PropertiesParse implements ConfigParse {
 					}
 					
 					String value = ConfigUtils.format(properties.getProperty(key.toString()));
-					fieldInfo.set(obj, StringUtils.conversion(value, fieldInfo.getType()));
+					fieldInfo.set(obj, StringParseUtils.conversion(value, fieldInfo.getType()));
 				}
 				return obj;
 			} catch (Exception e) {

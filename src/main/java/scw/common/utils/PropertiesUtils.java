@@ -87,9 +87,9 @@ public final class PropertiesUtils {
 		} else if (Double.class.isAssignableFrom(type)) {
 			return Double.valueOf(v);
 		} else if (boolean.class.isAssignableFrom(type)) {
-			return StringUtils.parseBoolean(v);
+			return StringParseUtils.parseBoolean(v);
 		} else if (Boolean.class.isAssignableFrom(type)) {
-			return StringUtils.isEmpty(v) ? null : StringUtils.parseBoolean(v);
+			return StringUtils.isEmpty(v) ? null : StringParseUtils.parseBoolean(v);
 		} else if (byte.class.isAssignableFrom(type)) {
 			return Byte.parseByte(v);
 		} else if (Byte.class.isAssignableFrom(type)) {
@@ -207,7 +207,7 @@ public final class PropertiesUtils {
 			}
 
 			try {
-				method.invoke(instance, StringUtils.conversion(value, parameterType));
+				method.invoke(instance, StringParseUtils.conversion(value, parameterType));
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalArgumentException e) {

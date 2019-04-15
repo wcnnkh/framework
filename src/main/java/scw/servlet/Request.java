@@ -171,29 +171,6 @@ public abstract class Request extends HttpServletRequestWrapper {
 	}
 
 	/**
-	 * 可以解决1,234这种问题
-	 * 
-	 * @param text
-	 * @return
-	 */
-	protected String formatNumberText(final String text) {
-		if (text == null || text.length() == 0) {
-			return text;
-		}
-
-		char[] chars = new char[text.length()];
-		int pos = 0;
-		for (int i = 0; i < text.length(); i++) {
-			char c = text.charAt(i);
-			if (c == ' ' || c == ',') {
-				continue;
-			}
-			chars[pos++] = c;
-		}
-		return pos == 0 ? null : new String(chars, 0, pos);
-	}
-
-	/**
 	 * 从cookie中获取数据
 	 * 
 	 * @param name

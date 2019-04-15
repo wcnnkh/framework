@@ -171,6 +171,10 @@ public final class RegexUtils {
 	 * Regex of negative float.
 	 */
 	public static final String REGEX_NEGATIVE_FLOAT = "^-[1-9]\\d*\\.\\d*|-0\\.\\d*[1-9]\\d*$";
+	
+	private static final String INNER_IP_PATTERN = "((192\\.168|172\\.([1][6-9]|[2]\\d|3[01]))"
+			+ "(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|"
+			+ "^(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})";
 
 	private RegexUtils() {
 	};
@@ -434,5 +438,17 @@ public final class RegexUtils {
 		if (input == null)
 			return "";
 		return Pattern.compile(regex).matcher(input).replaceAll(replacement);
+	}
+	
+	/**
+	 * 判断是否是内网IP
+	 * 
+	 * @param ip
+	 * @return
+	 */
+	public static boolean isInnerIP(String ip) {
+		Pattern p = Pattern.compile(INNER_IP_PATTERN);
+		Matcher matcher = p.matcher(ip);
+		return matcher.find();
 	}
 }

@@ -5,15 +5,16 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-
+import scw.common.utils.StringParseUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.servlet.Request;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.parameter.Body;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 public class JsonRequest extends Request {
 	private static Logger logger = LoggerFactory.getLogger(JsonRequest.class);
@@ -86,7 +87,7 @@ public class JsonRequest extends Request {
 			return null;
 		}
 
-		return StringUtils.parseBoolean(v);
+		return StringParseUtils.parseBoolean(v);
 	}
 
 	@Override
@@ -96,7 +97,7 @@ public class JsonRequest extends Request {
 			throw new NullPointerException("require '" + key + "'");
 		}
 
-		return StringUtils.parseBoolean(v);
+		return StringParseUtils.parseBoolean(v);
 	}
 
 	@Override
