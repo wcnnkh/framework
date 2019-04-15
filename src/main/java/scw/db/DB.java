@@ -541,7 +541,13 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 		if (asyncService != null) {
 			CacheConfig config = tableInfo.getAnnotation(CacheConfig.class);
 			if (config != null && config.type() != CacheType.lazy) {
-				asyncService.push(new AsyncInfo(Arrays.asList(sql)));
+				if (TransactionManager.hasTransaction()) {
+					AsyncInfoTransactionLifeCycle aitlc = new AsyncInfoTransactionLifeCycle(
+							(new AsyncInfo(Arrays.asList(sql))));
+					TransactionManager.transactionLifeCycle(aitlc);
+				} else {
+					asyncService.push(new AsyncInfo(Arrays.asList(sql)));
+				}
 				return true;
 			}
 		}
@@ -593,7 +599,12 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 			throw new NotSupportException("不支持异步执行sql语句");
 		}
 
-		asyncService.push(new AsyncInfo(multipleOperation));
+		if (TransactionManager.hasTransaction()) {
+			AsyncInfoTransactionLifeCycle aitlc = new AsyncInfoTransactionLifeCycle((new AsyncInfo(multipleOperation)));
+			TransactionManager.transactionLifeCycle(aitlc);
+		} else {
+			asyncService.push(new AsyncInfo(multipleOperation));
+		}
 	}
 
 	/**
@@ -605,6 +616,27 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 		if (asyncService == null) {
 			throw new NotSupportException("不支持异步执行sql语句");
 		}
-		asyncService.push(new AsyncInfo(Arrays.asList(sql)));
+
+		if (TransactionManager.hasTransaction()) {
+			AsyncInfoTransactionLifeCycle aitlc = new AsyncInfoTransactionLifeCycle(
+					(new AsyncInfo(Arrays.asList(sql))));
+			TransactionManager.transactionLifeCycle(aitlc);
+		} else {
+			asyncService.push(new AsyncInfo(Arrays.asList(sql)));
+		}
+	}
+
+	final class AsyncInfoTransactionLifeCycle extends DefaultTransactionLifeCycle {
+		private final AsyncInfo asyncInfo;
+
+		public AsyncInfoTransactionLifeCycle(AsyncInfo asyncInfo) {
+			this.asyncInfo = asyncInfo;
+		}
+
+		@Override
+		public void afterProcess() {
+			asyncService.push(asyncInfo);
+			super.afterProcess();
+		}
 	}
 }
