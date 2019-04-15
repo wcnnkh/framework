@@ -49,6 +49,16 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 	private static final String KEYS_PREFIX = "keys:";
 	private final Cache cache;
 	private final MQ<AsyncInfo> asyncService;
+	private boolean debug;
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
+
+	@Override
+	public boolean isDebug() {
+		return debug;
+	}
 
 	public DB() {
 		this.cache = null;
@@ -116,7 +126,7 @@ public abstract class DB extends AbstractORMTemplate implements ConnectionFactor
 	}
 
 	@Override
-	protected Connection getUserConnection() throws SQLException {
+	public Connection getUserConnection() throws SQLException {
 		return SqlTransactionUtils.getTransactionConnection(this);
 	}
 

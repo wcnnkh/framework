@@ -12,15 +12,10 @@ import scw.logger.LoggerFactory;
 
 public abstract class SqlTemplate implements SqlOperations {
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
-	private boolean debug;
 
-	public boolean isDebug() {
-		return debug;
-	}
-
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
+	public abstract boolean isDebug();
+	
+	public abstract Connection getUserConnection() throws SQLException;
 
 	protected void close(Connection connection) throws SqlException {
 		if (connection != null) {
@@ -31,8 +26,6 @@ public abstract class SqlTemplate implements SqlOperations {
 			}
 		}
 	}
-
-	protected abstract Connection getUserConnection() throws SQLException;
 
 	protected boolean execute(Sql sql, Connection connection)
 			throws SQLException {
