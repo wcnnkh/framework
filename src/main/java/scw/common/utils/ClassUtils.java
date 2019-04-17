@@ -218,7 +218,7 @@ public final class ClassUtils {
 	 * @return
 	 */
 	public static ClassInfo getClassInfo(Class<?> clz) {
-		return getClassInfo(getProxyRealClassName(clz.getName()));
+		return getClassInfo(clz.getName());
 	}
 
 	/**
@@ -234,7 +234,7 @@ public final class ClassUtils {
 				info = clzMap.get(name);
 				if (info == null) {
 					try {
-						Class<?> clz = Class.forName(name);
+						Class<?> clz = Class.forName(getProxyRealClassName(name));
 						info = new ClassInfo(clz);
 						clzMap.put(name, info);
 					} catch (Exception e) {

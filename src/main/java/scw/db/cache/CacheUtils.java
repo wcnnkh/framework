@@ -15,7 +15,11 @@ public abstract class CacheUtils {
 		T t = ORMUtils.getTableInfo(type).newInstance();
 		Schema schema = RuntimeSchema.getSchema(type);
 		ProtostuffIOUtil.mergeFrom(data, t, schema);
-		return ORMUtils.restartFieldLinsten(t);
+		try {
+			return ORMUtils.restartFieldLinsten(t);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

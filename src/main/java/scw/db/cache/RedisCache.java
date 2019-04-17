@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import scw.common.Constants;
-import scw.db.annotation.CacheConfig;
 import scw.redis.Redis;
 
 public final class RedisCache implements Cache {
@@ -17,15 +16,13 @@ public final class RedisCache implements Cache {
 		this.redis = redis;
 	}
 
-	public void add(String key, Object value, CacheConfig config) {
-		long exp = config.type() == CacheType.full? 0:config.timeUnit().toSeconds(config.exp());
+	public void add(String key, Object value, int exp) {
 		redis.set(key.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(value),
 				Redis.NX.getBytes(Constants.DEFAULT_CHARSET), Redis.EX.getBytes(Constants.DEFAULT_CHARSET),
 				exp);
 	}
 
-	public void set(String key, Object value, CacheConfig config) {
-		long exp = config.type() == CacheType.full? 0:config.timeUnit().toSeconds(config.exp());
+	public void set(String key, Object value, int exp) {
 		redis.set(key.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(value),
 				Redis.XX.getBytes(Constants.DEFAULT_CHARSET), Redis.EX.getBytes(Constants.DEFAULT_CHARSET),
 				exp);
@@ -44,10 +41,9 @@ public final class RedisCache implements Cache {
 		return CacheUtils.decode(type, data);
 	}
 
-	public <T> T getAndTouch(Class<T> type, String key, CacheConfig config) {
-		long exp = config.type() == CacheType.full? 0:config.timeUnit().toSeconds(config.exp());
+	public <T> T getAndTouch(Class<T> type, String key, int exp) {
 		byte[] data = redis.getAndTouch(key.getBytes(Constants.DEFAULT_CHARSET),
-				(int)exp);
+				exp);
 		if (data == null) {
 			return null;
 		}

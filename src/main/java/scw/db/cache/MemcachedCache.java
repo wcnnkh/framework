@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.db.annotation.CacheConfig;
 import scw.memcached.CAS;
 import scw.memcached.Memcached;
 
@@ -17,14 +16,12 @@ public final class MemcachedCache implements Cache {
 		this.memcached = memcached;
 	}
 
-	public void add(String key, Object value, CacheConfig config) {
-		long exp = config.type() == CacheType.full? 0:config.timeUnit().toSeconds(config.exp());
-		memcached.add(key, (int)exp, CacheUtils.encode(value));
+	public void add(String key, Object value, int exp) {
+		memcached.add(key, exp, CacheUtils.encode(value));
 	}
 
-	public void set(String key, Object value, CacheConfig config) {
-		long exp = config.type() == CacheType.full? 0:config.timeUnit().toSeconds(config.exp());
-		memcached.set(key, (int)exp, CacheUtils.encode(value));
+	public void set(String key, Object value, int exp) {
+		memcached.set(key, exp, CacheUtils.encode(value));
 	}
 
 	public void delete(String key) {
@@ -40,9 +37,8 @@ public final class MemcachedCache implements Cache {
 		return CacheUtils.decode(type, data);
 	}
 
-	public <T> T getAndTouch(Class<T> type, String key, CacheConfig config) {
-		long exp = config.type() == CacheType.full? 0:config.timeUnit().toSeconds(config.exp());
-		byte[] data = memcached.getAndTocuh(key, (int) exp);
+	public <T> T getAndTouch(Class<T> type, String key, int exp) {
+		byte[] data = memcached.getAndTocuh(key, exp);
 		if (data == null) {
 			return null;
 		}

@@ -29,8 +29,8 @@ import scw.mq.MQ;
 import scw.mq.QueueMQ;
 import scw.redis.Redis;
 import scw.sql.Sql;
-import scw.sql.orm.ORMTemplate;
 import scw.sql.orm.ColumnInfo;
+import scw.sql.orm.ORMTemplate;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.TableInfo;
@@ -130,24 +130,41 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 		return SqlTransactionUtils.getTransactionConnection(this);
 	}
 
+	private Map<Class<?>, CacheConfigDefinition> configCacheMap = new HashMap<Class<?>, CacheConfigDefinition>();
+
+	/**
+	 * 不处理并发,因为即使缓存无效也不会有太大的性能损失
+	 * 
+	 * @param tableClass
+	 * @return
+	 */
+	private CacheConfigDefinition getCacheConfig(Class<?> tableClass) {
+		CacheConfigDefinition cacheConfigDefinition = configCacheMap.get(tableClass);
+		if (cacheConfigDefinition == null) {
+			cacheConfigDefinition = new CacheConfigDefinition(tableClass);
+			configCacheMap.put(tableClass, cacheConfigDefinition);
+		}
+		return cacheConfigDefinition.isEmpty() ? null : cacheConfigDefinition;
+	}
+
 	@Override
 	public void createTable(final Class<?> tableClass) {
 		super.createTable(tableClass);
-		final CacheConfig config = tableClass.getAnnotation(CacheConfig.class);
-		if (config == null) {
+		final CacheConfigDefinition definition = getCacheConfig(tableClass);
+		if (definition == null) {
 			return;
 		}
 
-		if (config.type() == CacheType.lazy) {
+		if (definition.getCacheType() == CacheType.lazy) {
 			return;
 		}
-
+		
 		iterator(tableClass, new Iterator<Result>() {
 
 			public void iterator(Result data) {
 				Object bean = data.get(tableClass);
 				try {
-					loadToCache(bean, config);
+					loadToCache(bean, definition);
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
@@ -155,18 +172,18 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 		});
 	}
 
-	protected void loadToCache(Object bean, CacheConfig config) throws Throwable {
+	protected void loadToCache(Object bean, CacheConfigDefinition config) throws Throwable {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		Object[] args = ORMUtils.getPrimaryKeys(bean, tableInfo, false);
 		String objectKey = getObjectKeyById(tableInfo, args);
-		if (config.type() == CacheType.keys) {
-			cache.add(KEYS_PREFIX + objectKey, "", config);
-		} else if (config.type() == CacheType.full) {
-			cache.add(objectKey, bean, config);
+		if (config.getCacheType() == CacheType.keys) {
+			cache.add(KEYS_PREFIX + objectKey, "", config.getExp());
+		} else if (config.getCacheType() == CacheType.full) {
+			cache.add(objectKey, bean, config.getExp());
 			StringBuilder sb = new StringBuilder();
 			sb.append(PREFIX).append(tableInfo.getClassInfo().getName());
 			for (int i = 0; i < args.length; i++) {
-				if ((config.fullKeys() || i > 0) && i < args.length - 1) {
+				if ((config.isFullKeys() || i > 0) && i < args.length - 1) {
 					cache.mapAdd(sb.toString(), args[i].toString(), objectKey);
 				}
 
@@ -198,13 +215,13 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 	}
 
 	public void saveToCache(Object bean) throws Throwable {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		CacheConfig config = tableInfo.getAnnotation(CacheConfig.class);
-		if (config != null) {
+		CacheConfigDefinition definition = getCacheConfig(bean.getClass());
+		if (definition != null) {
+			TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 			Object[] args = ORMUtils.getPrimaryKeys(bean, tableInfo, false);
 			final String objectKey = getObjectKeyById(tableInfo, args);
-			cache.add(objectKey, bean, config);
-			if (config.type() == CacheType.lazy) {
+			cache.add(objectKey, bean, definition.getExp());
+			if (definition.getCacheType() == CacheType.lazy) {
 				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 					@Override
 					public void beforeRollback() {
@@ -212,13 +229,13 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 						super.beforeRollback();
 					}
 				});
-			} else if (config.type() == CacheType.keys) {
-				cache.add(KEYS_PREFIX + objectKey, "", config);
-			} else if (config.type() == CacheType.full) {
+			} else if (definition.getCacheType() == CacheType.keys) {
+				cache.add(KEYS_PREFIX + objectKey, "", definition.getExp());
+			} else if (definition.getCacheType() == CacheType.full) {
 				StringBuilder sb = new StringBuilder();
 				sb.append(PREFIX).append(tableInfo.getClassInfo().getName());
 				for (int i = 0; i < args.length; i++) {
-					if ((config.fullKeys() || i > 0) && i < args.length - 1) {
+					if ((definition.isFullKeys() || i > 0) && i < args.length - 1) {
 						cache.mapAdd(sb.toString(), args[i].toString(), objectKey);
 					}
 
@@ -243,15 +260,14 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 	}
 
 	public void updateToCache(Object bean) throws Throwable {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		CacheConfig config = tableInfo.getAnnotation(CacheConfig.class);
-		if (config == null) {
+		CacheConfigDefinition definition = getCacheConfig(bean.getClass());
+		if (definition == null) {
 			return;
 		}
 
-		final String objectKey = getObjectKey(tableInfo, bean);
-		cache.set(objectKey, bean, config);
-		if (config.type() == CacheType.lazy) {
+		final String objectKey = getObjectKey(ORMUtils.getTableInfo(bean.getClass()), bean);
+		cache.set(objectKey, bean, definition.getExp());
+		if (definition.getCacheType() == CacheType.lazy) {
 			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 				@Override
 				public void beforeRollback() {
@@ -276,19 +292,19 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 	}
 
 	public void deleteToCache(Object bean) throws Throwable {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		CacheConfig config = tableInfo.getAnnotation(CacheConfig.class);
-		if (config != null) {
+		CacheConfigDefinition definition = getCacheConfig(bean.getClass());
+		if (definition != null) {
+			TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 			Object[] args = ORMUtils.getPrimaryKeys(bean, tableInfo, false);
 			String objectKey = getObjectKeyById(tableInfo, args);
 			cache.delete(objectKey);
-			if (config.type() == CacheType.keys) {
+			if (definition.getCacheType() == CacheType.keys) {
 				cache.delete(KEYS_PREFIX + objectKey);
-			} else if (config.type() == CacheType.full) {
+			} else if (definition.getCacheType() == CacheType.full) {
 				StringBuilder sb = new StringBuilder();
 				sb.append(PREFIX).append(tableInfo.getClassInfo().getName());
 				for (int i = 0; i < args.length; i++) {
-					if ((config.fullKeys() || i > 0) && i < args.length - 1) {
+					if ((definition.isFullKeys() || i > 0) && i < args.length - 1) {
 						cache.mapRemove(sb.toString(), args[i].toString());
 					}
 
@@ -349,13 +365,13 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 	}
 
 	public void saveOrUpdateToCache(Object bean) throws Throwable {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		CacheConfig config = tableInfo.getAnnotation(CacheConfig.class);
-		if (config != null) {
+		CacheConfigDefinition definition = getCacheConfig(bean.getClass());
+		if (definition != null) {
+			TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 			Object[] args = ORMUtils.getPrimaryKeys(bean, tableInfo, false);
 			final String objectKey = getObjectKeyById(tableInfo, args);
-			cache.set(objectKey, bean, config);
-			if (config.type() == CacheType.lazy) {
+			cache.set(objectKey, bean, definition.getExp());
+			if (definition.getCacheType() == CacheType.lazy) {
 				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 					@Override
 					public void beforeRollback() {
@@ -363,13 +379,13 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 						super.beforeRollback();
 					}
 				});
-			} else if (config.type() == CacheType.keys) {
-				cache.set(PREFIX + objectKey, "", config);
-			} else if (config.type() == CacheType.full) {
+			} else if (definition.getCacheType() == CacheType.keys) {
+				cache.set(PREFIX + objectKey, "", definition.getExp());
+			} else if (definition.getCacheType() == CacheType.full) {
 				StringBuilder sb = new StringBuilder();
 				sb.append(PREFIX).append(tableInfo.getClassInfo().getName());
 				for (int i = 0; i < args.length; i++) {
-					if ((config.fullKeys() || i > 0) && i < args.length - 1) {
+					if ((definition.isFullKeys() || i > 0) && i < args.length - 1) {
 						cache.mapAdd(sb.toString(), args[i].toString(), objectKey);
 					}
 
@@ -398,40 +414,40 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 		if (cache == null) {
 			return super.getById(tableName, type, params);
 		}
-
-		CacheConfig config = type.getAnnotation(CacheConfig.class);
-		if (config == null) {
+		
+		CacheConfigDefinition definition = getCacheConfig(type);
+		if (definition == null) {
 			return super.getById(tableName, type, params);
 		}
-
+		
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		String objectKey = getObjectKeyById(tableInfo, params);
-		if (config.type() == CacheType.lazy) {
-			T t = cache.getAndTouch(type, objectKey, config);
+		if (definition.getCacheType() == CacheType.lazy) {
+			T t = cache.getAndTouch(type, objectKey, definition.getExp());
 			if (t == null) {
 				t = super.getById(tableName, type, params);
 				if (t != null) {
-					cache.add(objectKey, t, config);
+					cache.add(objectKey, t, definition.getExp());
 				}
 			}
 			return t;
-		} else if (config.type() == CacheType.keys) {
-			T t = cache.getAndTouch(type, objectKey, config);
+		} else if (definition.getCacheType() == CacheType.keys) {
+			T t = cache.getAndTouch(type, objectKey, definition.getExp());
 			if (t == null) {
-				String tag = cache.getAndTouch(String.class, KEYS_PREFIX + objectKey, config);
+				String tag = cache.getAndTouch(String.class, KEYS_PREFIX + objectKey, definition.getExp());
 				if (tag != null) {
 					t = super.getById(tableName, type, params);
 					if (t != null) {
-						cache.add(objectKey, t, config);
+						cache.add(objectKey, t, definition.getExp());
 					}
 				}
 			}
 			return t;
-		} else if (config.type() == CacheType.full) {
+		} else if (definition.getCacheType() == CacheType.full) {
 			return cache.get(type, objectKey);
 		}
 
-		throw new NotSupportException("不支持的缓存方式：" + config.type());
+		throw new NotSupportException("不支持的缓存方式：" + definition.getCacheType());
 	}
 
 	@Override
@@ -440,16 +456,16 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 			return super.getByIdList(tableName, type, params);
 		}
 
-		CacheConfig config = type.getAnnotation(CacheConfig.class);
-		if (config == null) {
+		CacheConfigDefinition definition = getCacheConfig(type);
+		if (definition == null) {
 			return super.getByIdList(tableName, type, params);
 		}
 
-		if (config.type() != CacheType.full) {
+		if (definition.getCacheType() != CacheType.full) {
 			return super.getByIdList(tableName, type, params);
 		}
 
-		if (params.length == 1 && !config.fullKeys()) {
+		if (params.length == 1 && !definition.isFullKeys()) {
 			return super.getByIdList(tableName, type, params);
 		}
 
@@ -478,16 +494,16 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 			return super.getInIdList(type, tableName, inIds, params);
 		}
 
-		CacheConfig config = type.getAnnotation(CacheConfig.class);
-		if (config == null) {
+		CacheConfigDefinition definition = getCacheConfig(type);
+		if (definition == null) {
 			return super.getInIdList(type, tableName, inIds, params);
 		}
 
-		if (config.type() != CacheType.full) {
+		if (definition.getCacheType() != CacheType.full) {
 			return super.getInIdList(type, tableName, inIds, params);
 		}
 
-		if (params.length == 1 && !config.fullKeys()) {
+		if (params.length == 1 && !definition.isFullKeys()) {
 			return super.getInIdList(type, tableName, inIds, params);
 		}
 

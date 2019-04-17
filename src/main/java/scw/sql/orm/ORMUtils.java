@@ -17,21 +17,16 @@ import scw.sql.orm.annotation.Table;
 public abstract class ORMUtils {
 	private static Logger logger = LoggerFactory.getLogger(ORMUtils.class);
 
-	private volatile static Map<String, TableInfo> tableMap = new HashMap<String, TableInfo>();
+	private volatile static Map<Class<?>, TableInfo> tableMap = new HashMap<Class<?>, TableInfo>();
 
 	public static TableInfo getTableInfo(Class<?> clz) {
-		return getTableInfo(clz.getName());
-	}
-
-	private static TableInfo getTableInfo(String className) {
-		String name = ClassUtils.getProxyRealClassName(className);
-		TableInfo tableInfo = tableMap.get(name);
-		if (tableInfo == null) {
+		TableInfo tableInfo = tableMap.get(clz);
+		if(tableInfo == null){
 			synchronized (tableMap) {
-				tableInfo = tableMap.get(name);
-				if (tableInfo == null) {
-					tableInfo = new TableInfo(ClassUtils.getClassInfo(name));
-					tableMap.put(name, tableInfo);
+				tableInfo = tableMap.get(clz);
+				if(tableInfo == null){
+					tableInfo = new TableInfo(ClassUtils.getClassInfo(clz));
+					tableMap.put(clz, tableInfo);
 				}
 			}
 		}
@@ -121,51 +116,32 @@ public abstract class ORMUtils {
 	 * @param bean
 	 * @return
 	 */
-	public static <T> T restartFieldLinsten(T bean) {
+	@SuppressWarnings("unchecked")
+	public static <T> T restartFieldLinsten(T bean) throws Exception {
 		if (bean == null) {
 			return bean;
 		}
 
 		if (bean instanceof BeanFieldListen) {
 			((BeanFieldListen) bean).start_field_listen();
-		}
-		return bean;
-	}
-
-	/**
-	 * 把一个普通对象转成可以监听字段变化的对象
-	 * 
-	 * @param bean
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T transformationFieldListen(T bean) {
-		if (bean instanceof BeanFieldListen) {
-			return restartFieldLinsten(bean);
-		}
-
-		ClassInfo classInfo = ClassUtils.getClassInfo(bean.getClass());
-		BeanFieldListen proxy = (BeanFieldListen) classInfo.newFieldListenInstance();
-		for (Entry<String, FieldInfo> entry : classInfo.getFieldMap().entrySet()) {
-			FieldInfo fieldInfo = entry.getValue();
-			if (fieldInfo.isStatic()) {
-				continue;
-			}
-
-			Object v;
-			try {
-				v = fieldInfo.forceGet(bean);
-				if (v != null) {
-					fieldInfo.forceSet(proxy, v);
+			return bean;
+		} else {
+			ClassInfo classInfo = ClassUtils.getClassInfo(bean.getClass());
+			BeanFieldListen proxy = (BeanFieldListen) classInfo.newFieldListenInstance();
+			for (Entry<String, FieldInfo> entry : classInfo.getFieldMap().entrySet()) {
+				FieldInfo fieldInfo = entry.getValue();
+				if (fieldInfo.isStatic()) {
+					continue;
 				}
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+
+				Object v = fieldInfo.get(bean);
+				if (v != null) {
+					fieldInfo.set(proxy, v);
+				}
 			}
+			proxy.start_field_listen();
+			return (T) proxy;
 		}
-		proxy.start_field_listen();
-		return (T) proxy;
 	}
 
 	/**
