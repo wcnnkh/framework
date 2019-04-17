@@ -14,7 +14,6 @@ import scw.beans.annotation.Destroy;
 import scw.common.Constants;
 import scw.common.Iterator;
 import scw.common.exception.NotSupportException;
-import scw.db.annotation.CacheConfig;
 import scw.db.async.AsyncInfo;
 import scw.db.async.MultipleOperation;
 import scw.db.async.OperationBean;
@@ -158,7 +157,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 		if (definition.getCacheType() == CacheType.lazy) {
 			return;
 		}
-		
+
 		iterator(tableClass, new Iterator<Result>() {
 
 			public void iterator(Result data) {
@@ -316,18 +315,18 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 	}
 
 	public void deleteByIdToCache(Class<?> type, Object... params) throws Throwable {
-		TableInfo tableInfo = ORMUtils.getTableInfo(type);
-		CacheConfig config = tableInfo.getAnnotation(CacheConfig.class);
-		if (config != null) {
+		CacheConfigDefinition definition = getCacheConfig(type);
+		if (definition != null) {
+			TableInfo tableInfo = ORMUtils.getTableInfo(type);
 			String objectKey = getObjectKeyById(tableInfo, params);
 			cache.delete(objectKey);
-			if (config.type() == CacheType.keys) {
+			if (definition.getCacheType() == CacheType.keys) {
 				cache.delete(KEYS_PREFIX + objectKey);
-			} else if (config.type() == CacheType.full) {
+			} else if (definition.getCacheType() == CacheType.full) {
 				StringBuilder sb = new StringBuilder();
 				sb.append(PREFIX).append(tableInfo.getClassInfo().getName());
 				for (int i = 0; i < params.length; i++) {
-					if ((config.fullKeys() || i > 0) && i < params.length - 1) {
+					if ((definition.isFullKeys() || i > 0) && i < params.length - 1) {
 						cache.mapRemove(sb.toString(), params[i].toString());
 					}
 
@@ -414,12 +413,12 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 		if (cache == null) {
 			return super.getById(tableName, type, params);
 		}
-		
+
 		CacheConfigDefinition definition = getCacheConfig(type);
 		if (definition == null) {
 			return super.getById(tableName, type, params);
 		}
-		
+
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		String objectKey = getObjectKeyById(tableInfo, params);
 		if (definition.getCacheType() == CacheType.lazy) {
@@ -555,8 +554,8 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 	@Override
 	protected boolean ormUpdateSql(TableInfo tableInfo, String tableName, Sql sql) {
 		if (asyncService != null) {
-			CacheConfig config = tableInfo.getAnnotation(CacheConfig.class);
-			if (config != null && config.type() != CacheType.lazy) {
+			CacheConfigDefinition definition = getCacheConfig(tableInfo.getClassInfo().getClz());
+			if (definition != null && definition.getCacheType() != CacheType.lazy) {
 				if (TransactionManager.hasTransaction()) {
 					AsyncInfoTransactionLifeCycle aitlc = new AsyncInfoTransactionLifeCycle(
 							(new AsyncInfo(Arrays.asList(sql))));
