@@ -8,6 +8,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
@@ -29,6 +31,7 @@ import scw.common.ClassInfo;
 import scw.common.FieldInfo;
 import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
+import scw.common.utils.CollectionUtils;
 import scw.common.utils.StringParseUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.Logger;
@@ -328,7 +331,6 @@ public final class BeanUtils {
 		return b;
 	}
 
-
 	public static Invoker getInvoker(BeanFactory beanFactory, Class<?> clz, Method method) {
 		if (Modifier.isStatic(method.getModifiers())) {
 			return new ReflectInvoker(null, method);
@@ -336,11 +338,33 @@ public final class BeanUtils {
 			return new ReflectInvoker(beanFactory.get(clz), method);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static <T> T proxyInterface(BeanFactory beanFactory, Class<T> interfaceClass, Object obj){
+	public static <T> T proxyInterface(BeanFactory beanFactory, Class<T> interfaceClass, Object obj) {
 		Filter filter = beanFactory.get(CommonFilter.class);
 		return (T) JDKProxyUtils.newProxyInstance(obj, interfaceClass, Arrays.asList(filter));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> getBeanList(BeanFactory beanFactory, Collection<String> beanNameList) {
+		if (CollectionUtils.isEmpty(beanNameList)) {
+			return Collections.EMPTY_LIST;
+		}
+
+		LinkedHashSet<T> set = new LinkedHashSet<T>(beanNameList.size());
+		for (String name : beanNameList) {
+			if (StringUtils.isEmpty(name)) {
+				continue;
+			}
+
+			T t = beanFactory.get(name);
+			if (t == null) {
+				continue;
+			}
+
+			set.add(t);
+		}
+		return new ArrayList<T>(set);
 	}
 }
 

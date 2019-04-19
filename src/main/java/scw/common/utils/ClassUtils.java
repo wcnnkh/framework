@@ -678,6 +678,14 @@ public final class ClassUtils {
 		return forName(name, getDefaultClassLoader());
 	}
 
+	public static Class<?>[] forName(String... className) throws ClassNotFoundException {
+		Class<?>[] types = new Class<?>[className.length];
+		for (int i = 0; i < types.length; i++) {
+			types[i] = forName(className[i]);
+		}
+		return types;
+	}
+
 	/**
 	 * Replacement for {@code Class.forName()} that also returns Class instances
 	 * for primitives (e.g."int") and array class names (e.g. "String[]").

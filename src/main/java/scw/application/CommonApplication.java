@@ -31,6 +31,10 @@ public class CommonApplication implements Application {
 		}
 	}
 
+	public String getConfigPath() {
+		return configPath;
+	}
+
 	public CommonApplication(String configXml, boolean initStatic) {
 		this(configXml, initStatic, new XmlPropertiesFactory(configXml));
 	}

@@ -8,5 +8,5 @@ public interface Service {
 	 * 服务者
 	 * @param serviceClass
 	 */
-	public void service(InputStream in, OutputStream os);
+	public void service(InputStream in, OutputStream os) throws Throwable;
 }
