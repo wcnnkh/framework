@@ -205,15 +205,10 @@ public class DefaultServletService implements ServletService {
 		if (rpc(req, resp)) {
 			return;
 		}
+
+		req.setCharacterEncoding(getCharset().name());
+		resp.setCharacterEncoding(getCharset().name());
 		
-		if (StringUtils.isEmpty(req.getCharacterEncoding())) {
-			req.setCharacterEncoding(getCharset().name());
-		}
-
-		if (StringUtils.isEmpty(resp.getCharacterEncoding())) {
-			req.setCharacterEncoding(getCharset().name());
-		}
-
 		Request request = requestFactory.format(getRequestBeanFactory(), req, resp);
 		doAction(request, request.getResponse());
 	}
