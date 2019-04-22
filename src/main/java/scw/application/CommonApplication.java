@@ -71,7 +71,7 @@ public class CommonApplication implements Application {
 			/**
 			 * 注册代理类
 			 */
-			ORMUtils.registerCglibProxyTableBean("*");
+			ORMUtils.registerCglibProxyTableBean("com,indi,pers,priv,onem,team");
 		}
 
 		beanFactory.init();
