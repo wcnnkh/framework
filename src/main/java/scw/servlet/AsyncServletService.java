@@ -23,7 +23,7 @@ public class AsyncServletService extends DefaultServletService {
 	public AsyncServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configPath,
 			String[] rootBeanFilters) throws Throwable {
 		super(beanFactory, propertiesFactory, configPath, rootBeanFilters);
-		this.coreSize = StringParseUtils.parseInt(propertiesFactory.getValue(THREAD_CORE_SIZE), 32);
+		this.coreSize = StringParseUtils.parseInt(propertiesFactory.getValue(THREAD_CORE_SIZE), 16);
 		this.maxSize = StringParseUtils.parseInt(propertiesFactory.getValue(THREAD_MAX_SIZE), 256);
 	}
 
