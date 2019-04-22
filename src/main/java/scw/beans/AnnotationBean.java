@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.cglib.proxy.Enhancer;
+import scw.aop.jdk.ConstructorInvoker;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Service;
@@ -16,7 +17,7 @@ import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 
-public class AnnotationBean implements Bean {
+public class AnnotationBean implements BeanDefinition {
 	private final BeanFactory beanFactory;
 	private final Class<?> type;
 	private final String id;
@@ -169,5 +170,22 @@ public class AnnotationBean implements Bean {
 
 	public String[] getNames() {
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T newInstance(Object... params) {
+		ConstructorInvoker constructorInvoker = new ConstructorInvoker(getType(), params);
+		Object bean;
+		try {
+			if (isProxy()) {
+				Enhancer enhancer = getProxyEnhancer();
+				bean = enhancer.create(constructorInvoker.getConstructor().getParameterTypes(), params);
+			} else {
+				bean = constructorInvoker.invoke(params);
+			}
+			return (T) bean;
+		} catch (Throwable e) {
+			throw new BeansException(getId(), e);
+		}
 	}
 }

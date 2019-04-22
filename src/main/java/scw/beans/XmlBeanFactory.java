@@ -141,8 +141,8 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 			Node n = nodeList.item(a);
 			if (INIT_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {
 				String className = XmlBeanUtils.getRequireNodeAttributeValue(propertiesFactory, n, "class");
-				Bean bean = getBean(className);
-				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(bean.getType(), n);
+				BeanDefinition beanDefinition = getBeanDefinition(className);
+				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(beanDefinition.getType(), n);
 				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod().getModifiers())) {
 					// 静态方法
 					xmlBeanMethodInfo.invoke(null, this, propertiesFactory);
@@ -160,8 +160,8 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 			Node n = nodeList.item(a);
 			if (DESTROY_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {
 				String className = XmlBeanUtils.getRequireNodeAttributeValue(propertiesFactory, n, "class");
-				Bean bean = getBean(className);
-				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(bean.getType(), n);
+				BeanDefinition beanDefinition = getBeanDefinition(className);
+				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(beanDefinition.getType(), n);
 				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod().getModifiers())) {
 					// 静态方法
 					xmlBeanMethodInfo.invoke(null, this, propertiesFactory);
@@ -179,5 +179,23 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 			e.printStackTrace();
 		}
 		super.destroy();
+	}
+
+	@Override
+	public <T> T get(String name, Class<?>[] parameterTypes, Object... params) {
+		T bean = super.get(name, parameterTypes, params);
+		if (bean == null) {
+			throw new BeansException("not found [" + name + "]");
+		}
+		return bean;
+	}
+
+	@Override
+	public <T> T get(String name, Object... params) {
+		T bean = super.get(name, params);
+		if (bean == null) {
+			throw new BeansException("not found [" + name + "]");
+		}
+		return bean;
 	}
 }

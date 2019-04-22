@@ -4,38 +4,36 @@ import java.io.IOException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import scw.application.CommonApplication;
 
 public class DispatcherServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private CommonApplication commonApplication;
-	private Service service;
+	private ServletApplication application;
+	private ServletService servletService;
 
 	@Override
-	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		try {
-			service.service(req, resp);
-		} catch (Throwable e) {
-			service.sendError(req, resp, e);
-		}
+	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+		servletService.service(req, res);
 	}
-
+	
 	@Override
 	public final void init(ServletConfig servletConfig) throws ServletException {
-		commonApplication = ServletUtils.createCommonApplication(servletConfig);
-		commonApplication.init();
-		service = ServletUtils.createService(commonApplication);
-		super.init(servletConfig);
+		try {
+			application = new ServletApplication(servletConfig);
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
+		application.init();
+		this.servletService = ServletUtils.getServletService(application.getBeanFactory(),
+				application.getPropertiesFactory(), application.getCommonApplication().getConfigPath(),
+				application.getCommonApplication().getBeanFactory().getFilterNames());
 	}
 
 	@Override
 	public void destroy() {
-		commonApplication.destroy();
-		service.destroy();
+		application.destroy();
 		super.destroy();
 	}
 }

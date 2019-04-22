@@ -1,13 +1,12 @@
 package scw.servlet;
 
-import javax.servlet.ServletConfig;
-
-import scw.aop.jdk.ConstructorInvoker;
-import scw.application.CommonApplication;
-import scw.common.utils.StringUtils;
+import scw.beans.BeanFactory;
+import scw.beans.property.PropertiesFactory;
 
 public final class ServletUtils {
 	private static final String ASYNCCONTEXT_NAME = "javax.servlet.AsyncContext";
+	private static final String SERVLET_SERVICE_BEAN_NAME = "scw.servlet.DefaultServletService";
+	private static final String ASYNC_SERVLET_SERVICE_BEAN_ANEM = "scw.servlet.AsyncServletService";
 	private static boolean asyncSupport = true;// 是否支持异步处理
 
 	static {
@@ -30,28 +29,14 @@ public final class ServletUtils {
 		return asyncSupport;
 	}
 
-	public static CommonApplication createCommonApplication(ServletConfig config) {
-		ServletConfigPropertiesFactory propertiesFactory = new ServletConfigPropertiesFactory(config);
-		String initStaticStr = propertiesFactory.getServletConfig("init-static");
-		if (StringUtils.isNull(initStaticStr)) {
-			return new CommonApplication(propertiesFactory.getConfigXml(), false, propertiesFactory);
+	public static ServletService getServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+			String configPath, String[] rootBeanFilters) {
+		if (isAsyncSupport()) {
+			return beanFactory.get(ASYNC_SERVLET_SERVICE_BEAN_ANEM, beanFactory, propertiesFactory, configPath,
+					rootBeanFilters);
 		} else {
-			return new CommonApplication(propertiesFactory.getConfigXml(), Boolean.parseBoolean(initStaticStr),
-					propertiesFactory);
-		}
-	}
-
-	public static Service createService(CommonApplication commonApplication) {
-		try {
-			if (isAsyncSupport()) {
-				ConstructorInvoker invoker = new ConstructorInvoker("scw.servlet.AsyncService",
-						CommonApplication.class);
-				return (Service) invoker.invoke(commonApplication);
-			} else {
-				return new DefaultService(commonApplication);
-			}
-		} catch (Throwable e) {
-			throw new RuntimeException(e);
+			return beanFactory.get(SERVLET_SERVICE_BEAN_NAME, beanFactory, propertiesFactory, configPath,
+					rootBeanFilters);
 		}
 	}
 }

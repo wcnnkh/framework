@@ -1,4 +1,4 @@
-package scw.servlet.action;
+package scw.servlet.service;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -13,7 +13,6 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.common.exception.ParameterException;
 import scw.common.utils.ClassUtils;
-import scw.servlet.Action;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;
 import scw.servlet.Request;

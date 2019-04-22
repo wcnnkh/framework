@@ -1,4 +1,4 @@
-package scw.servlet.action;
+package scw.servlet.service;
 
 import java.util.Collection;
 import java.util.Iterator;

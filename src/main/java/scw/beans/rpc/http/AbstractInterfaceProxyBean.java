@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import scw.beans.Bean;
+import scw.beans.BeanDefinition;
 import scw.beans.BeanMethod;
 import scw.beans.NoArgumentBeanMethod;
 import scw.beans.annotation.Destroy;
@@ -14,7 +14,7 @@ import scw.beans.annotation.InitMethod;
 import scw.common.exception.NotSupportException;
 import scw.common.utils.ClassUtils;
 
-abstract class AbstractInterfaceProxyBean implements Bean {
+abstract class AbstractInterfaceProxyBean implements BeanDefinition {
 	private final Class<?> type;
 	private final String id;
 	private final List<Method> initMethodList = new ArrayList<Method>();
@@ -96,6 +96,10 @@ abstract class AbstractInterfaceProxyBean implements Bean {
 	}
 
 	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {
+		throw new NotSupportException(getType().getName());
+	}
+	
+	public <T> T newInstance(Object... params) {
 		throw new NotSupportException(getType().getName());
 	}
 

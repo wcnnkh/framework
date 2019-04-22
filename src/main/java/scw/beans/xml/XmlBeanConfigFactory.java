@@ -7,7 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.AbstractBeanConfigFactory;
-import scw.beans.Bean;
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.common.utils.StringUtils;
@@ -25,8 +25,8 @@ public class XmlBeanConfigFactory extends AbstractBeanConfigFactory {
 		for (int i = 0; i < nhosts.getLength(); i++) {
 			Node nRoot = nhosts.item(i);
 			if (BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
-				Bean bean = new XmlBean(beanFactory, propertiesFactory, nRoot, filterNames);
-				addBean(bean);
+				BeanDefinition beanDefinition = new XmlBean(beanFactory, propertiesFactory, nRoot, filterNames);
+				addBean(beanDefinition);
 			} else if (BEAN_FACTORY_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
 				Node node = nRoot.getAttributes().getNamedItem("value");
 				String name = node == null ? null : node.getNodeValue();

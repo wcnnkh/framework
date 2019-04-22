@@ -10,8 +10,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import net.sf.cglib.proxy.Enhancer;
+import scw.aop.jdk.ConstructorInvoker;
 import scw.beans.AnnotationBean;
-import scw.beans.Bean;
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
@@ -23,7 +24,7 @@ import scw.common.exception.NotFoundException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 
-public class XmlBean implements Bean {
+public class XmlBean implements BeanDefinition {
 	private static final String CLASS_ATTRIBUTE_KEY = "class";
 	private static final String ID_ATTRIBUTE_KEY = "id";
 	private static final String SINGLETON_ATTRIBUTE_KEY = "singleton";
@@ -308,5 +309,22 @@ public class XmlBean implements Bean {
 
 	public boolean isFactory() {
 		return factoryMethodInfo != null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T newInstance(Object... params) {
+		ConstructorInvoker constructorInvoker = new ConstructorInvoker(getType(), params);
+		Object bean;
+		try {
+			if (isProxy()) {
+				Enhancer enhancer = getProxyEnhancer();
+				bean = enhancer.create(constructorInvoker.getConstructor().getParameterTypes(), params);
+			} else {
+				bean = constructorInvoker.invoke(params);
+			}
+			return (T) bean;
+		} catch (Throwable e) {
+			throw new BeansException(getId(), e);
+		}
 	}
 }

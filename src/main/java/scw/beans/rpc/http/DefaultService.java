@@ -9,24 +9,22 @@ import java.util.Map;
 import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.common.Constants;
 import scw.common.utils.IOUtils;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.servlet.rpc.DefaultRPCServer;
 
 public class DefaultService implements Service {
-	private static Logger logger = LoggerFactory.getLogger(DefaultRPCServer.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultService.class);
 	private final Map<String, Invoker> invokerRPCMap = new HashMap<String, Invoker>();
 	private final String sign;
 	private final BeanFactory beanFactory;
-	private final String charsetName;
 
-	public DefaultService(BeanFactory beanFactory, String sign, String charsetName) {
+	public DefaultService(BeanFactory beanFactory, String sign) {
 		this.beanFactory = beanFactory;
 		this.sign = sign;
-		this.charsetName = charsetName;
 	}
 
 	public void service(InputStream in, OutputStream os) throws Throwable {
@@ -74,7 +72,7 @@ public class DefaultService implements Service {
 		}
 
 		long t = (Long) message.getAttribute("t");
-		String checkSign = SignUtils.md5Str(t + sign, charsetName);
+		String checkSign = SignUtils.md5Str(t + sign, Constants.DEFAULT_CHARSET.name());
 		if (t < System.currentTimeMillis() - 10000) {// 如果超过10秒失效
 			return false;
 		}

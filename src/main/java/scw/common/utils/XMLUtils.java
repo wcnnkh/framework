@@ -42,6 +42,7 @@ public final class XMLUtils {
 		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(true);
 		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(true);
 		DOCUMENT_BUILDER_FACTORY.setCoalescing(true);
+		DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(false);
 	}
 
 	private XMLUtils() {

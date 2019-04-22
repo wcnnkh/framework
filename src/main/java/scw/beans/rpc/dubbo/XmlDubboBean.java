@@ -9,7 +9,7 @@ import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ReferenceConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 
-import scw.beans.Bean;
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.property.PropertiesFactory;
@@ -18,7 +18,7 @@ import scw.common.exception.BeansException;
 import scw.common.exception.NotSupportException;
 import scw.common.utils.StringUtils;
 
-public final class XmlDubboBean implements Bean {
+public final class XmlDubboBean implements BeanDefinition {
 	private final String[] names;
 	private final String id;
 	private final String version;
@@ -124,5 +124,9 @@ public final class XmlDubboBean implements Bean {
 	}
 
 	public void destroy(Object bean) throws Exception {
+	}
+
+	public <T> T newInstance(Object... params) {
+		throw new NotSupportException(getType().getName());
 	}
 }

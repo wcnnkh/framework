@@ -1,6 +1,6 @@
 package scw.beans;
 
-public interface Bean {
+public interface BeanDefinition {
 	String getId();
 
 	String[] getNames();
@@ -12,6 +12,8 @@ public interface Bean {
 	boolean isProxy();
 
 	<T> T newInstance();
+	
+	<T> T newInstance(Object ...params);
 
 	<T> T newInstance(Class<?>[] parameterTypes, Object... args);
 

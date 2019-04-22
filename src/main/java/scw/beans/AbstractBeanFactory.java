@@ -16,7 +16,7 @@ import scw.common.utils.ClassUtils;
 
 public abstract class AbstractBeanFactory implements BeanFactory {
 	private volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
-	private volatile Map<String, Bean> beanMap = new HashMap<String, Bean>();
+	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private boolean init = false;
 
@@ -31,16 +31,16 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	public void addSingleton(String id, Object singleton) {
-		Bean bean = getBean(id);
-		if (bean == null) {
+		BeanDefinition beanDefinition = getBeanDefinition(id);
+		if (beanDefinition == null) {
 			throw new scw.common.exception.NotFoundException(id);
 		}
 
 		synchronized (singletonMap) {
 			singletonMap.put(id, singleton);
 			try {
-				bean.autowrite(singleton);
-				bean.init(singleton);
+				beanDefinition.autowrite(singleton);
+				beanDefinition.init(singleton);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -49,10 +49,10 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
 	public void addBeanConfigFactory(BeanConfigFactory beanConfigFactory) {
 		if (beanConfigFactory != null) {
-			Map<String, Bean> map = beanConfigFactory.getBeanMap();
+			Map<String, BeanDefinition> map = beanConfigFactory.getBeanMap();
 			if (map != null) {
 				synchronized (beanMap) {
-					for (Entry<String, Bean> entry : map.entrySet()) {
+					for (Entry<String, BeanDefinition> entry : map.entrySet()) {
 						String key = entry.getKey();
 						if (beanMap.containsKey(key)) {
 							throw new AlreadyExistsException(key);
@@ -79,6 +79,98 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	@SuppressWarnings("unchecked")
+	public <T> T get(String name, Class<?>[] parameterTypes, Object... params) {
+		if (!init) {
+			throw new BeansException("还未初始化");
+		}
+
+		Object obj = singletonMap.get(name);
+		if (obj != null) {
+			return (T) obj;
+		}
+
+		BeanDefinition beanDefinition = getBeanDefinition(name);
+		if (beanDefinition == null) {
+			return null;
+		}
+
+		if (beanDefinition.isSingleton()) {
+			obj = singletonMap.get(beanDefinition.getId());
+			if (obj == null) {
+				synchronized (singletonMap) {
+					obj = singletonMap.get(beanDefinition.getId());
+					if (obj == null) {
+						obj = beanDefinition.newInstance(parameterTypes, params);
+						singletonMap.put(beanDefinition.getId(), obj);
+						try {
+							beanDefinition.autowrite(obj);
+							beanDefinition.init(obj);
+						} catch (Exception e) {
+							throw new BeansException(beanDefinition.getId(), e);
+						}
+					}
+				}
+			}
+			return (T) obj;
+		} else {
+			obj = beanDefinition.newInstance(parameterTypes, params);
+			try {
+				beanDefinition.autowrite(obj);
+				beanDefinition.init(obj);
+			} catch (Exception e) {
+				throw new BeansException(e);
+			}
+			return (T) obj;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T get(String name, Object... params) {
+		if (!init) {
+			throw new BeansException("还未初始化");
+		}
+
+		Object obj = singletonMap.get(name);
+		if (obj != null) {
+			return (T) obj;
+		}
+
+		BeanDefinition beanDefinition = getBeanDefinition(name);
+		if (beanDefinition == null) {
+			return null;
+		}
+
+		if (beanDefinition.isSingleton()) {
+			obj = singletonMap.get(beanDefinition.getId());
+			if (obj == null) {
+				synchronized (singletonMap) {
+					obj = singletonMap.get(beanDefinition.getId());
+					if (obj == null) {
+						obj = beanDefinition.newInstance(params);
+						singletonMap.put(beanDefinition.getId(), obj);
+						try {
+							beanDefinition.autowrite(obj);
+							beanDefinition.init(obj);
+						} catch (Exception e) {
+							throw new BeansException(beanDefinition.getId(), e);
+						}
+					}
+				}
+			}
+			return (T) obj;
+		} else {
+			obj = beanDefinition.newInstance(params);
+			try {
+				beanDefinition.autowrite(obj);
+				beanDefinition.init(obj);
+			} catch (Exception e) {
+				throw new BeansException(e);
+			}
+			return (T) obj;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	public <T> T get(String name) {
 		if (!init) {
 			throw new BeansException("还未初始化");
@@ -89,34 +181,34 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			return (T) obj;
 		}
 
-		Bean bean = getBean(name);
-		if (bean == null) {
+		BeanDefinition beanDefinition = getBeanDefinition(name);
+		if (beanDefinition == null) {
 			return null;
 		}
 
-		if (bean.isSingleton()) {
-			obj = singletonMap.get(bean.getId());
+		if (beanDefinition.isSingleton()) {
+			obj = singletonMap.get(beanDefinition.getId());
 			if (obj == null) {
 				synchronized (singletonMap) {
-					obj = singletonMap.get(bean.getId());
+					obj = singletonMap.get(beanDefinition.getId());
 					if (obj == null) {
-						obj = bean.newInstance();
-						singletonMap.put(bean.getId(), obj);
+						obj = beanDefinition.newInstance();
+						singletonMap.put(beanDefinition.getId(), obj);
 						try {
-							bean.autowrite(obj);
-							bean.init(obj);
+							beanDefinition.autowrite(obj);
+							beanDefinition.init(obj);
 						} catch (Exception e) {
-							throw new BeansException(bean.getId(), e);
+							throw new BeansException(beanDefinition.getId(), e);
 						}
 					}
 				}
 			}
 			return (T) obj;
 		} else {
-			obj = bean.newInstance();
+			obj = beanDefinition.newInstance();
 			try {
-				bean.autowrite(obj);
-				bean.init(obj);
+				beanDefinition.autowrite(obj);
+				beanDefinition.init(obj);
 			} catch (Exception e) {
 				throw new BeansException(e);
 			}
@@ -128,17 +220,17 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		return get(type.getName());
 	}
 
-	public Bean getBean(String name) {
-		Bean bean = getBeanCache(name);
-		if (bean == null) {
+	public BeanDefinition getBeanDefinition(String name) {
+		BeanDefinition beanDefinition = getBeanCache(name);
+		if (beanDefinition == null) {
 			synchronized (beanMap) {
-				bean = getBeanCache(name);
-				if (bean == null) {
+				beanDefinition = getBeanCache(name);
+				if (beanDefinition == null) {
 					try {
-						bean = newBean(name);
-						if (bean != null) {
-							beanMap.put(bean.getId(), bean);
-							addBeanNameMapping(bean);
+						beanDefinition = newBeanDefinition(name);
+						if (beanDefinition != null) {
+							beanMap.put(beanDefinition.getId(), beanDefinition);
+							addBeanNameMapping(beanDefinition);
 						}
 					} catch (Exception e) {
 						throw new BeansException(e);
@@ -146,14 +238,14 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 				}
 			}
 		}
-		return bean;
+		return beanDefinition;
 	}
 
-	private void addBeanNameMapping(Bean bean) {
-		if (bean.getNames() != null) {
-			synchronized (bean) {
-				for (String n : bean.getNames()) {
-					nameMappingMap.put(n, bean.getId());
+	private void addBeanNameMapping(BeanDefinition beanDefinition) {
+		if (beanDefinition.getNames() != null) {
+			synchronized (beanDefinition) {
+				for (String n : beanDefinition.getNames()) {
+					nameMappingMap.put(n, beanDefinition.getId());
 				}
 			}
 		}
@@ -175,18 +267,18 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		return false;
 	}
 
-	private Bean getBeanCache(String name) {
-		Bean bean = beanMap.get(name);
-		if (bean == null) {
+	private BeanDefinition getBeanCache(String name) {
+		BeanDefinition beanDefinition = beanMap.get(name);
+		if (beanDefinition == null) {
 			String v = nameMappingMap.get(name);
 			if (v != null) {
-				bean = beanMap.get(v);
+				beanDefinition = beanMap.get(v);
 			}
 		}
-		return bean;
+		return beanDefinition;
 	}
 
-	private Bean newBean(String name) {
+	private BeanDefinition newBeanDefinition(String name) {
 		try {
 			String n = nameMappingMap.get(name);
 			if (n == null) {
@@ -254,15 +346,23 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			}
 
 			for (String id : beanKeyList) {
-				Bean bean = getBean(id);
+				BeanDefinition beanDefinition = getBeanDefinition(id);
 				Object obj = singletonMap.get(id);
 				try {
-					bean.destroy(obj);
+					beanDefinition.destroy(obj);
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
 			}
 		}
 		init = false;
+	}
+
+	public <T> T get(Class<T> type, Object... params) {
+		return get(type.getName(), params);
+	}
+
+	public <T> T get(Class<T> type, Class<?>[] parameterTypes, Object... params) {
+		return get(type.getName(), parameterTypes, params);
 	}
 }

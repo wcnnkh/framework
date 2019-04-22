@@ -7,15 +7,15 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import scw.servlet.service.RestService;
+
 
 import scw.common.utils.StringParseUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.servlet.Request;
-import scw.servlet.action.RestSearchAction;
 import scw.servlet.beans.RequestBeanFactory;
-
 import com.alibaba.fastjson.JSONObject;
 
 public class FormRequest extends Request {
@@ -60,7 +60,7 @@ public class FormRequest extends Request {
 		String v = getParameter(key);
 		if (v == null) {
 			Map<String, String> restParameterMap = (Map<String, String>) getAttribute(
-					RestSearchAction.RESTURL_PATH_PARAMETER);
+					RestService.RESTURL_PATH_PARAMETER);
 			if (restParameterMap != null) {
 				v = restParameterMap.get(key);
 			}

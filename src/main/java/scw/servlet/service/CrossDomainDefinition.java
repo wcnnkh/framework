@@ -1,4 +1,4 @@
-package scw.servlet;
+package scw.servlet.service;
 
 import scw.servlet.action.annotation.CrossDomain;
 
