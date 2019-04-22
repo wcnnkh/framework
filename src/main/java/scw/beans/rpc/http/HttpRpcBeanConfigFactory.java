@@ -12,10 +12,10 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 
-public final class HttpRPCBeanConfigFactory extends AbstractBeanConfigFactory {
+public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "http:reference";
 
-	public HttpRPCBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String config) throws Exception {
+	public HttpRpcBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String config) throws Exception {
 		Node rootNode = XmlBeanUtils.getRootNode(config);
 		NodeList rootNodeList = rootNode.getChildNodes();
 		for (int i = 0; i < rootNodeList.getLength(); i++) {
@@ -38,8 +38,8 @@ public final class HttpRPCBeanConfigFactory extends AbstractBeanConfigFactory {
 						continue;
 					}
 
-					HttpRPCBean httpRPCBean = new HttpRPCBean(beanFactory, clz, address, sign, Charset.forName(charsetName));
-					addBean(httpRPCBean);
+					HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, address, sign, Charset.forName(charsetName));
+					addBean(httpRpcBean);
 				}
 			}
 
@@ -66,8 +66,8 @@ public final class HttpRPCBeanConfigFactory extends AbstractBeanConfigFactory {
 				if (StringUtils.isNull(myAddress)) {
 					myAddress = address;
 				}
-				HttpRPCBean httpRPCBean = new HttpRPCBean(beanFactory, clz, myAddress, mySign, Charset.forName(myScharsetName));
-				addBean(httpRPCBean);
+				HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, myAddress, mySign, Charset.forName(myScharsetName));
+				addBean(httpRpcBean);
 			}
 		}
 	}

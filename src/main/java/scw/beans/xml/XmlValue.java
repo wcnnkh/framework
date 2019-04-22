@@ -36,10 +36,7 @@ public class XmlValue {
 				value = ConfigUtils.getFileContent(path, charset);
 			}
 		} else {
-			value = XMLUtils.getNodeAttributeValue(node, "value");
-			if (value == null) {
-				value = node.getNodeValue();
-			}
+			value = XMLUtils.getNodeAttributeValueOrNodeContent(node, "value");
 		}
 		this.value = value;
 	}

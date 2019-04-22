@@ -16,8 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.property.PropertiesFactory;
-import scw.beans.rpc.http.DefaultService;
-import scw.beans.rpc.http.Service;
+import scw.beans.rpc.http.DefaultRpcService;
+import scw.beans.rpc.http.RpcService;
 import scw.common.Constants;
 import scw.common.utils.CollectionUtils;
 import scw.common.utils.StringParseUtils;
@@ -30,6 +30,7 @@ import scw.servlet.request.DefaultRequestFactory;
 import scw.servlet.request.RequestFactory;
 import scw.servlet.service.CommonService;
 import scw.servlet.service.DefaultServiceChain;
+import scw.servlet.service.Service;
 
 public class DefaultServletService implements ServletService {
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -54,9 +55,9 @@ public class DefaultServletService implements ServletService {
 	private final RequestBeanFactory requestBeanFactory;
 	private final Charset charset;
 	private final boolean debug;
-	private final Service rpcService;
+	private final RpcService rpcService;
 	private final String rpcPath;
-	private final Collection<scw.servlet.service.Service> services;
+	private final Collection<Service> services;
 	private Collection<Filter> rootFilters;
 
 	@SuppressWarnings("unchecked")
@@ -84,10 +85,10 @@ public class DefaultServletService implements ServletService {
 		String rpcServerBeanName = propertiesFactory.getValue(RPC_SERVER);
 		if (StringUtils.isEmpty(rpcServerBeanName)) {
 			String sign = propertiesFactory.getValue(RPC_SIGN);
-
 			boolean enable = StringParseUtils.parseBoolean(propertiesFactory.getValue(RPC_ENABLE), false);
 			if (enable || !StringUtils.isEmpty(sign)) {// 开启
-				this.rpcService = beanFactory.get(DefaultService.class, beanFactory, sign);
+				logger.info("rpc签名：{}", sign);
+				this.rpcService = beanFactory.get(DefaultRpcService.class, beanFactory, sign);
 			} else {
 				this.rpcService = null;
 			}
@@ -110,7 +111,7 @@ public class DefaultServletService implements ServletService {
 			String packageName = propertiesFactory.getValue(SERVLET_SCANNING_PACKAGENAME);
 			packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
 			CommonService commonService = beanFactory.get(CommonService.class, packageName, actionKey);
-			this.services = new ArrayList<scw.servlet.service.Service>(2);
+			this.services = new ArrayList<Service>(2);
 			this.services.add(commonService);
 		} else {
 			this.services = BeanUtils.getBeanList(beanFactory, Arrays.asList(StringUtils.commonSplit(serviceNames)));
@@ -141,7 +142,7 @@ public class DefaultServletService implements ServletService {
 		return debug;
 	}
 
-	public Service getRpcService() {
+	public RpcService getRpcService() {
 		return rpcService;
 	}
 
@@ -201,16 +202,16 @@ public class DefaultServletService implements ServletService {
 	}
 
 	public void httpService(HttpServletRequest req, HttpServletResponse resp) throws Throwable {
+		if (rpc(req, resp)) {
+			return;
+		}
+		
 		if (StringUtils.isEmpty(req.getCharacterEncoding())) {
 			req.setCharacterEncoding(getCharset().name());
 		}
 
 		if (StringUtils.isEmpty(resp.getCharacterEncoding())) {
 			req.setCharacterEncoding(getCharset().name());
-		}
-
-		if (rpc(req, resp)) {
-			return;
 		}
 
 		Request request = requestFactory.format(getRequestBeanFactory(), req, resp);

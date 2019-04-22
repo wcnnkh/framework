@@ -47,7 +47,7 @@ public final class XmlPropertyUtils {
 			if (!"property".equalsIgnoreCase(nRoot.getNodeName())) {
 				continue;
 			}
-
+			
 			Property property = new Property(nRoot, charset);
 			String name = prefix == null? property.getName():prefix + property.getName();
 			if(map.containsKey(name)){

@@ -9,10 +9,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import scw.beans.BeanFactory;
+import scw.beans.annotation.Bean;
 import scw.beans.annotation.Destroy;
 import scw.beans.property.PropertiesFactory;
 import scw.common.utils.StringParseUtils;
 
+@Bean(proxy=false)
 public class AsyncServletService extends DefaultServletService {
 	private static final String THREAD_CORE_SIZE = "servlet.thread.core.size";
 	private static final String THREAD_MAX_SIZE = "servlet.thread.max.size";

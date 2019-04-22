@@ -8,7 +8,7 @@ import org.w3c.dom.NodeList;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory;
-import scw.beans.rpc.http.HttpRPCBeanConfigFactory;
+import scw.beans.rpc.http.HttpRpcBeanConfigFactory;
 import scw.beans.xml.XmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
@@ -122,7 +122,7 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 		try {
 			if (!StringUtils.isNull(xmlPath)) {
 				addBeanConfigFactory(new XmlDubboBeanConfigFactory(this, propertiesFactory, xmlPath));
-				addBeanConfigFactory(new HttpRPCBeanConfigFactory(this, propertiesFactory, xmlPath));
+				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this, propertiesFactory, xmlPath));
 				addBeanConfigFactory(new XmlBeanConfigFactory(this, propertiesFactory, xmlPath, filterNames));
 				addBeanConfigFactory(new ServiceBeanConfigFactory(this, propertiesFactory, packages, filterNames));
 			}

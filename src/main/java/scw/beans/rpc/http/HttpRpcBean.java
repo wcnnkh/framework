@@ -18,13 +18,13 @@ import scw.net.AbstractResponse;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpRequest;
 
-public final class HttpRPCBean extends AbstractInterfaceProxyBean {
+public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 	private final String host;
 	private final String signStr;
 	private final Charset charset;
 	private final BeanFactory beanFactory;
 
-	public HttpRPCBean(BeanFactory beanFactory, Class<?> interfaceClass, String host, String signStr, Charset charset)
+	public HttpRpcBean(BeanFactory beanFactory, Class<?> interfaceClass, String host, String signStr, Charset charset)
 			throws Exception {
 		super(interfaceClass);
 		this.beanFactory = beanFactory;

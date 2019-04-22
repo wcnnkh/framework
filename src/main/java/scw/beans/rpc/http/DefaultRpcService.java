@@ -16,13 +16,13 @@ import scw.common.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-public class DefaultService implements Service {
-	private static Logger logger = LoggerFactory.getLogger(DefaultService.class);
+public class DefaultRpcService implements RpcService {
+	private static Logger logger = LoggerFactory.getLogger(DefaultRpcService.class);
 	private final Map<String, Invoker> invokerRPCMap = new HashMap<String, Invoker>();
 	private final String sign;
 	private final BeanFactory beanFactory;
 
-	public DefaultService(BeanFactory beanFactory, String sign) {
+	public DefaultRpcService(BeanFactory beanFactory, String sign) {
 		this.beanFactory = beanFactory;
 		this.sign = sign;
 	}

@@ -29,7 +29,6 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 				}
 			}
 		}
-
 	}
 
 	public String getValue(String key) {
