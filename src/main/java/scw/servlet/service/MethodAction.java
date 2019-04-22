@@ -13,13 +13,13 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.common.exception.ParameterException;
 import scw.common.utils.ClassUtils;
+import scw.servlet.Filter;
+import scw.servlet.FilterChain;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.annotation.Controller;
 import scw.servlet.annotation.Filters;
 import scw.servlet.annotation.Methods;
-import scw.servlet.filter.Filter;
-import scw.servlet.filter.FilterChain;
 
 public class MethodAction implements Action {
 	private final MethodParameter[] methodParameters;

@@ -1,9 +1,9 @@
 package scw.servlet.session;
 
+import scw.servlet.Filter;
+import scw.servlet.FilterChain;
 import scw.servlet.Request;
 import scw.servlet.Response;
-import scw.servlet.filter.Filter;
-import scw.servlet.filter.FilterChain;
 import scw.servlet.view.common.Result;
 
 public class AppSessionFilter implements Filter {

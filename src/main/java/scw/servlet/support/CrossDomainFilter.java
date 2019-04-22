@@ -1,7 +1,9 @@
-package scw.servlet.filter;
+package scw.servlet.support;
 
 import scw.beans.annotation.Bean;
 import scw.common.utils.StringUtils;
+import scw.servlet.Filter;
+import scw.servlet.FilterChain;
 import scw.servlet.Request;
 import scw.servlet.Response;
 

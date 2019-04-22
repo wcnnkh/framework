@@ -26,8 +26,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.servlet.beans.CommonRequestBeanFactory;
 import scw.servlet.beans.RequestBeanFactory;
-import scw.servlet.filter.Filter;
-import scw.servlet.filter.FilterChain;
 import scw.servlet.request.DefaultRequestFactory;
 import scw.servlet.request.RequestFactory;
 import scw.servlet.service.CommonService;
