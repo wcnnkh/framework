@@ -1,6 +1,6 @@
 package scw.servlet.service;
 
-import scw.servlet.action.annotation.CrossDomain;
+import scw.servlet.annotation.CrossDomain;
 
 public final class CrossDomainDefinition {
 	private final String origin;

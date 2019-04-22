@@ -11,7 +11,7 @@ import scw.beans.annotation.Bean;
 import scw.common.exception.AlreadyExistsException;
 import scw.net.http.enums.Method;
 import scw.servlet.Request;
-import scw.servlet.action.annotation.Controller;
+import scw.servlet.annotation.Controller;
 
 @Bean(proxy=false)
 public class RestService extends AbstractService {

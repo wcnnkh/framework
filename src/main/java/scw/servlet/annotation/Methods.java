@@ -1,11 +1,11 @@
-package scw.servlet.action.annotation;
+package scw.servlet.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.servlet.Filter;
+import scw.net.http.enums.Method;
 
 /**
  * 此值会覆盖controller中的内容,如果要追加内容请在action中添加
@@ -14,10 +14,10 @@ import scw.servlet.Filter;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Filters {
+public @interface Methods {
 	/**
 	 * 此值会覆盖controller中的内容,如果要追加内容请在action中添加
 	 * @return
 	 */
-	public Class<? extends Filter>[] value() default {};
+	public Method[] value() default {};
 }

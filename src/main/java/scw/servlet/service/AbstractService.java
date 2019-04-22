@@ -10,7 +10,7 @@ import scw.beans.annotation.InitMethod;
 import scw.common.utils.XUtils;
 import scw.servlet.Request;
 import scw.servlet.Response;
-import scw.servlet.action.annotation.Controller;
+import scw.servlet.annotation.Controller;
 
 public abstract class AbstractService implements Service {
 	private Collection<Class<?>> classes;

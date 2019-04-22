@@ -17,9 +17,9 @@ import scw.servlet.Filter;
 import scw.servlet.FilterChain;
 import scw.servlet.Request;
 import scw.servlet.Response;
-import scw.servlet.action.annotation.Controller;
-import scw.servlet.action.annotation.Filters;
-import scw.servlet.action.annotation.Methods;
+import scw.servlet.annotation.Controller;
+import scw.servlet.annotation.Filters;
+import scw.servlet.annotation.Methods;
 
 public class MethodAction implements Action {
 	private final MethodParameter[] methodParameters;

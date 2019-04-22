@@ -5,11 +5,13 @@ import java.util.LinkedList;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Autowrite;
+import scw.beans.annotation.Bean;
 import scw.beans.annotation.InitMethod;
 import scw.common.utils.ClassUtils;
 import scw.servlet.Request;
 import scw.servlet.Response;
 
+@Bean(proxy=false)
 public class CommonService implements Service {
 	@Autowrite
 	private BeanFactory beanFactory;
