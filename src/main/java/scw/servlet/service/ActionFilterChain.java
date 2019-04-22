@@ -5,10 +5,10 @@ import java.util.Iterator;
 
 import scw.aop.Invoker;
 import scw.common.utils.CollectionUtils;
-import scw.servlet.Filter;
-import scw.servlet.FilterChain;
 import scw.servlet.Request;
 import scw.servlet.Response;
+import scw.servlet.filter.Filter;
+import scw.servlet.filter.FilterChain;
 
 public final class ActionFilterChain implements FilterChain {
 	private Iterator<Filter> iterator;

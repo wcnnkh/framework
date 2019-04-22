@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.common.annotation.Require;
 import scw.common.utils.StringUtils;
-import scw.net.http.enums.Header;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.context.DefaultRequestBeanContext;
 import scw.servlet.context.RequestBeanContext;
@@ -162,7 +161,7 @@ public abstract class Request extends HttpServletRequestWrapper {
 	}
 
 	public boolean isAJAX() {
-		return "XMLHttpRequest".equals(getHeader(Header.X_Requested_With.getValue()));
+		return "XMLHttpRequest".equals(getHeader("X-Requested-With"));
 	}
 
 	public String getIP() {
