@@ -6,32 +6,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.servlet.Request;
+import scw.servlet.ServletUtils;
 import scw.servlet.beans.RequestBeanFactory;
 
 public class DefaultRequestFactory implements RequestFactory {
-	private static final String FORM_CONTENT_TYPE_PREFIX = "application/x-www-form-urlencoded";
-	private static final String JSON_CONTENT_TYPE_PREFIX = "application/json";
 	private final boolean debug;
 
 	public DefaultRequestFactory(boolean debug) {
 		this.debug = debug;
 	}
 
-	public Request format(RequestBeanFactory requestBeanFactory,
-			HttpServletRequest httpServletRequest,
+	public Request format(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse) throws IOException {
-		if (httpServletRequest.getContentType() == null
-				|| httpServletRequest.getContentType().startsWith(
-						FORM_CONTENT_TYPE_PREFIX)) {
-			return new FormRequest(requestBeanFactory, httpServletRequest,
-					httpServletResponse, debug, false);
-		} else if (httpServletRequest.getContentType().startsWith(
-				JSON_CONTENT_TYPE_PREFIX)) {
-			return new JsonRequest(requestBeanFactory, httpServletRequest,
-					httpServletResponse, debug);
+		if (ServletUtils.isJsonRequest(httpServletRequest)) {
+			return new JsonRequest(requestBeanFactory, httpServletRequest, httpServletResponse, debug);
 		} else {
-			return new FormRequest(requestBeanFactory, httpServletRequest,
-					httpServletResponse, debug, false);
+			return new FormRequest(requestBeanFactory, httpServletRequest, httpServletResponse, debug, false);
 		}
 	}
 }

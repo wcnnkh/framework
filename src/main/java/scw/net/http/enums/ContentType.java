@@ -5,7 +5,7 @@ public enum ContentType {
 	TEXT_PLAIN("text/plain"),
 	JSON("application/json"),
 	FORM("application/x-www-form-urlencoded"),
-	FORM_DATA("multipart/form-data"),
+	MULTIPART("multipart/form-data"),
 	TEXT_JAVASCRIPT("text/javascript"),
 	;
 	

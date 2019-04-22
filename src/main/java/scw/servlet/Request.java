@@ -161,12 +161,11 @@ public abstract class Request extends HttpServletRequestWrapper {
 	}
 
 	public boolean isAJAX() {
-		return "XMLHttpRequest".equals(getHeader("X-Requested-With"));
+		return ServletUtils.isAjaxRequest(this);
 	}
 
 	public String getIP() {
-		String ip = getHeader("x-forwarded-for");
-		return ip == null ? getRequest().getRemoteAddr() : ip;
+		return ServletUtils.getIP(this);
 	}
 
 	/**
@@ -179,30 +178,6 @@ public abstract class Request extends HttpServletRequestWrapper {
 	 * @return
 	 */
 	public Cookie getCookie(String name, boolean ignoreCase) {
-		if (name == null) {
-			return null;
-		}
-
-		Cookie[] cookies = getCookies();
-		if (cookies == null || cookies.length == 0) {
-			return null;
-		}
-
-		for (Cookie cookie : cookies) {
-			if (cookie == null) {
-				continue;
-			}
-
-			if (ignoreCase) {
-				if (name.equalsIgnoreCase(cookie.getName())) {
-					return cookie;
-				}
-			} else {
-				if (name.equals(cookie.getName())) {
-					return cookie;
-				}
-			}
-		}
-		return null;
+		return ServletUtils.getCookie(this, name, ignoreCase);
 	}
 }
