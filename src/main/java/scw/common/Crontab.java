@@ -204,5 +204,4 @@ class CrontabInfo {
 				&& checkBySplit(calendar.get(Calendar.HOUR_OF_DAY), hour)
 				&& checkBySplit(calendar.get(Calendar.MINUTE), minute);
 	}
-
 }

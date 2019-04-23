@@ -2001,50 +2001,48 @@ public final class StringUtils {
 
 		if (lastFind == 0) {
 			return text;
-		}else{
+		} else {
 			sb.append(text.substring(lastFind));
 		}
 		return sb.toString();
 	}
 
 	/**
-	 * 比较字符串写指定的统配符是否一致 通配符只能是*
+	 * 判断字符串是否与通配符匹配
 	 * 
 	 * @param text
 	 * @param match
-	 *            通配符
+	 *            只能存在通配符*
 	 * @return
 	 */
 	public static boolean test(String text, String match) {
-		if (StringUtils.isEmpty(match) || match.equals("*")) {
+		if(StringUtils.isEmpty(match)){
+			return false;
+		}
+		
+		if("*".equals(match)){
 			return true;
 		}
-
+		
+		String[] arr = match.split("\\*");
+		if(arr.length == 1){
+			return text.equals(match);
+		}
+		
 		int index = 0;
-		int textIndex = 0;
-		while (true) {
-			int lastIndex = match.indexOf("*", index);
-			if (lastIndex == -1) {
-				int in = text.length() - (match.length() - index);
-				if (in < 0) {
-					return false;
-				}
-
-				return text.substring(in).equals(match.substring(index));
-			}
-
-			if (index == lastIndex) {
-				index = lastIndex + 1;
+		for (int i = 0; i < arr.length; i++) {
+			String m = arr[i];
+			if (m.length() == 0) {
 				continue;
 			}
 
-			String m = match.substring(index, lastIndex);
-			textIndex = text.indexOf(m, textIndex);
-			if (textIndex == -1) {
+			int tempIndex = text.indexOf(m, index);
+			if (tempIndex == -1) {
 				return false;
 			}
 
-			index = lastIndex + 1;
+			index = tempIndex + m.length();
 		}
+		return true;
 	}
 }
