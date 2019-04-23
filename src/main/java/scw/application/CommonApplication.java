@@ -11,13 +11,12 @@ import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboUtils;
 import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.ClassUtils;
-import scw.common.utils.StringParseUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.LoggerFactory;
 import scw.sql.orm.ORMUtils;
 
 public class CommonApplication implements Application {
-	private static final String AUTO_ORM_REGISTER = "orm.auto";
+	private static final String ORM_SCAN = "orm.scan";
 	private final XmlBeanFactory beanFactory;
 	private volatile boolean start = false;
 	private final PropertiesFactory propertiesFactory;
@@ -67,12 +66,12 @@ public class CommonApplication implements Application {
 			start = true;
 		}
 
-		if (StringParseUtils.parseBoolean(propertiesFactory.getValue(AUTO_ORM_REGISTER), true)) {
-			/**
-			 * 注册代理类
-			 */
-			ORMUtils.registerCglibProxyTableBean("com,indi,pers,priv,onem,team");
-		}
+		String ormScanPackageName = propertiesFactory.getValue(ORM_SCAN);
+		/**
+		 * 注册代理类
+		 */
+		ORMUtils.registerCglibProxyTableBean(
+				ormScanPackageName == null ? "com,indi,pers,priv,onem,team" : ormScanPackageName);
 
 		beanFactory.init();
 
