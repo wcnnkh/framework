@@ -2016,19 +2016,19 @@ public final class StringUtils {
 	 * @return
 	 */
 	public static boolean test(String text, String match) {
-		if(StringUtils.isEmpty(match)){
+		if (StringUtils.isEmpty(match)) {
 			return false;
 		}
-		
-		if("*".equals(match)){
+
+		if ("*".equals(match)) {
 			return true;
 		}
-		
-		String[] arr = match.split("\\*");
-		if(arr.length == 1){
+
+		if (match.indexOf("*") == -1) {
 			return text.equals(match);
 		}
-		
+
+		String[] arr = match.split("\\*");
 		int index = 0;
 		for (int i = 0; i < arr.length; i++) {
 			String m = arr[i];
