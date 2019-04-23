@@ -70,7 +70,6 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 				}
 			};
 
-			logger.trace(message.getMessageKey());
 			try {
 				return NetworkUtils.execute(request, new AbstractResponse<Object>() {
 
