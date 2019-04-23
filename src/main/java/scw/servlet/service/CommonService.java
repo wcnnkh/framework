@@ -31,14 +31,14 @@ public class CommonService implements Service {
 	@InitMethod
 	public void init() {
 		Collection<Class<?>> classes = ClassUtils.getClasses(packageName);
-		Service servletPathService = beanFactory.get(ServletPathService.class, beanFactory, classes);
 		Service parameterActionService = beanFactory.get(ParameterActionService.class, beanFactory, classes,
 				parameterActionKey);
+		Service servletPathService = beanFactory.get(ServletPathService.class, beanFactory, classes);
 		Service restService = beanFactory.get(RestService.class, beanFactory, classes);
 		Service notFoundService = beanFactory.get(NotFoundService.class);
 
-		addService(servletPathService);
 		addService(parameterActionService);
+		addService(servletPathService);
 		addService(restService);
 		addService(notFoundService);
 	}
