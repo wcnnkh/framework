@@ -76,10 +76,4 @@ public class ServletPathService extends AbstractService {
 		sb.append("]");
 		return sb.toString();
 	}
-
-	@Override
-	public CrossDomainDefinition getCrossDomainDefinition() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

@@ -48,12 +48,6 @@ public class ParameterActionService extends AbstractService {
 	}
 
 	@Override
-	public CrossDomainDefinition getCrossDomainDefinition() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void scanning(Class<?> clz, Method method, Controller classController, Controller methodController) {
 		String clzPath = classController == null ? "" : classController.value();
 		String path = XUtils.mergePath("/", clzPath);

@@ -5,76 +5,52 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.common.MethodDefinition;
+
 public final class Message implements Serializable {
 	private static final long serialVersionUID = -6216471725621438749L;
 	private Map<String, Object> attributeMap;
-	private Class<?> clz;
-	private String name;
-	private Class<?>[] types;
+	private MethodDefinition methodDefinition;
 	private Object[] args;
-
-	private transient volatile String messageKey;
 
 	protected Message() {
 	};
 
 	public Message(Method method, Object[] args) {
-		this.clz = method.getDeclaringClass();
-		this.name = method.getName();
-		this.types = method.getParameterTypes();
+		this.methodDefinition = new MethodDefinition(method.getDeclaringClass(), method);
 		this.args = args;
 	}
 
-	public Class<?> getClz() {
-		return clz;
+	public MethodDefinition getMethodDefinition() {
+		return methodDefinition;
 	}
 
-	public void setClz(Class<?> clz) {
-		this.clz = clz;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Class<?>[] getTypes() {
-		return types;
-	}
-
-	public void setTypes(Class<?>[] types) {
-		this.types = types;
+	protected void setMethodDefinition(MethodDefinition methodDefinition) {
+		this.methodDefinition = methodDefinition;
 	}
 
 	public Object[] getArgs() {
 		return args;
 	}
 
-	public void setArgs(Object[] args) {
+	protected void setArgs(Object[] args) {
 		this.args = args;
 	}
 
-	public Method getMethod() throws NoSuchMethodException, SecurityException {
-		return clz.getMethod(name, types);
+	public Method getMethod() {
+		try {
+			return methodDefinition.getMethod();
+		} catch (NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		} catch (SecurityException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
+	private transient String messageKey;
 	public String getMessageKey() {
 		if (messageKey == null) {
-			synchronized (this) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(clz.getName());
-				sb.append(name);
-				if (types.length != 0) {
-					for (Class<?> type : types) {
-						sb.append("," + type.getName());
-					}
-				}
-
-				this.messageKey = sb.toString();
-			}
+			this.messageKey = getMethod().toString();
 		}
 		return messageKey;
 	}

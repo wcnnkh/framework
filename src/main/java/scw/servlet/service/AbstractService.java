@@ -21,8 +21,6 @@ public abstract class AbstractService implements Service {
 
 	public abstract Action getAction(Request request);
 
-	public abstract CrossDomainDefinition getCrossDomainDefinition();
-
 	public abstract void scanning(Class<?> clz, Method method, Controller classController, Controller methodController);
 
 	@InitMethod

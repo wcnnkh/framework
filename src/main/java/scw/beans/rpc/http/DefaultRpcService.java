@@ -50,7 +50,8 @@ public class DefaultRpcService implements RpcService {
 			synchronized (invokerRPCMap) {
 				invoker = invokerRPCMap.get(message.getMessageKey());
 				if (invoker == null) {
-					invoker = BeanUtils.getInvoker(beanFactory, message.getClz(), message.getMethod());
+					invoker = BeanUtils.getInvoker(beanFactory, message.getMethodDefinition().getBelongClass(),
+							message.getMethod());
 					if (invoker != null) {
 						invokerRPCMap.put(message.getMessageKey(), invoker);
 					}

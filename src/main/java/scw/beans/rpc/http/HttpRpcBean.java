@@ -14,11 +14,14 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.common.utils.SignUtils;
 import scw.common.utils.XUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.net.AbstractResponse;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpRequest;
 
 public final class HttpRpcBean extends AbstractInterfaceProxyBean {
+	private Logger logger = LoggerFactory.getLogger(getClass());
 	private final String host;
 	private final String signStr;
 	private final Charset charset;
@@ -39,54 +42,53 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 				new InvocationHandler() {
 
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-						HttpConsumerInvoker httpConsumerInvoker = new HttpConsumerInvoker(host, method, signStr,
-								charset);
+						HttpConsumerInvoker httpConsumerInvoker = new HttpConsumerInvoker(method);
 						return httpConsumerInvoker.invoke(args);
 					}
 				});
 		return (T) BeanUtils.proxyInterface(beanFactory, getType(), newProxyInstance);
 	}
-}
 
-final class HttpConsumerInvoker implements Invoker {
-	private Method method;
-	private String host;
-	private Charset charset;
-	private String signStr;
+	final class HttpConsumerInvoker implements Invoker {
+		private Method method;
 
-	public HttpConsumerInvoker(String host, Method method, String signStr, Charset charset) {
-		this.method = method;
-		this.host = host;
-		this.charset = charset;
-		this.signStr = signStr;
-	}
+		public HttpConsumerInvoker(Method method) {
+			this.method = method;
+		}
 
-	public Object invoke(Object... args) throws Exception {
-		long cts = System.currentTimeMillis();
-		final Message message = new Message(method, args);
-		message.setAttribute("t", cts);
-		message.setAttribute("sign", SignUtils.md5Str(cts + signStr, charset.name()));
+		public Object invoke(Object... args) throws Throwable {
+			long cts = System.currentTimeMillis();
+			final Message message = new Message(method, args);
+			message.setAttribute("t", cts);
+			message.setAttribute("sign", SignUtils.md5Str((cts + signStr).getBytes(charset)));
 
-		HttpRequest request = new HttpRequest(scw.net.http.enums.Method.POST, host) {
-			@Override
-			public void doOutput(OutputStream os) throws Throwable {
-				ObjectOutputStream oos = new ObjectOutputStream(os);
-				oos.writeObject(message);
-			}
-		};
-
-		return NetworkUtils.execute(request, new AbstractResponse<Object>() {
-
-			@Override
-			public Object doInput(InputStream is) throws Throwable {
-				ObjectInputStream ois = null;
-				try {
-					ois = new ObjectInputStream(is);
-					return ois.readObject();
-				} finally {
-					XUtils.close(ois);
+			HttpRequest request = new HttpRequest(scw.net.http.enums.Method.POST, host) {
+				@Override
+				public void doOutput(OutputStream os) throws Throwable {
+					ObjectOutputStream oos = new ObjectOutputStream(os);
+					oos.writeObject(message);
 				}
+			};
+
+			logger.trace(message.getMessageKey());
+			try {
+				return NetworkUtils.execute(request, new AbstractResponse<Object>() {
+
+					@Override
+					public Object doInput(InputStream is) throws Throwable {
+						ObjectInputStream ois = null;
+						try {
+							ois = new ObjectInputStream(is);
+							return ois.readObject();
+						} finally {
+							XUtils.close(ois);
+						}
+					}
+				});
+			} catch (Throwable e) {
+				logger.error(message.getMessageKey());
+				throw e;
 			}
-		});
+		}
 	}
 }

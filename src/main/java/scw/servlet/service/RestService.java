@@ -101,10 +101,4 @@ public class RestService extends AbstractService {
 		}
 		return null;
 	}
-
-	@Override
-	public CrossDomainDefinition getCrossDomainDefinition() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
