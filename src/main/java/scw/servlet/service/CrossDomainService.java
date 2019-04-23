@@ -1,5 +1,9 @@
 package scw.servlet.service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import scw.beans.annotation.Bean;
 import scw.common.utils.StringUtils;
 import scw.servlet.Filter;
@@ -9,76 +13,45 @@ import scw.servlet.Response;
 
 /**
  * 跨域
+ * 
  * @author shuchaowen
  *
  */
 @Bean(proxy = false)
 public class CrossDomainService implements Filter {
-	public static final String ORIGIN_HEADER = "Access-Control-Allow-Origin";
-	public static final String METHODS_HEADER = "Access-Control-Allow-Methods";
-	public static final String MAX_AGE_HEADER = "Access-Control-Max-Age";
-	public static final String HEADERS_HEADER = "Access-Control-Allow-Headers";
-	public static final String CREDENTIALS_HEADER = "Access-Control-Allow-Credentials";
+	private static final CrossDomainDefinition DEFAULT = new CrossDomainDefinition(
+			"*", "*", "*", false, -1);
+	private Map<String, CrossDomainDefinition> crossDomainDefinitionMap = new HashMap<String, CrossDomainDefinition>();
 
-	private final String origin;
-	private final String methods;
-	private final int maxAge;
-	private final String headers;
-	private final boolean credentials;
-
-	public CrossDomainService() {
-		this("*", "*", -1, "*", false);
+	public synchronized void register(String matchPath, String origin,
+			String methods, int maxAge, String headers, boolean credentials) {
+		crossDomainDefinitionMap.put(matchPath, new CrossDomainDefinition(
+				origin, headers, methods, credentials, maxAge));
 	}
 
-	public CrossDomainService(String origin, String methods, int maxAge, String headers, boolean credentials) {
-		this.origin = origin;
-		this.methods = methods;
-		this.maxAge = maxAge;
-		this.headers = headers;
-		this.credentials = credentials;
-	}
-
-	public void doFilter(Request request, Response response, FilterChain filterChain) throws Throwable {
-		String origin = getOrigin();
-		/* 允许跨域的主机地址 */
-		response.setHeader(ORIGIN_HEADER, StringUtils.isEmpty(origin) ? "*" : origin);
-
-		String methods = getMethods();
-		/* 允许跨域的请求方法GET, POST, HEAD 等 */
-		response.setHeader(METHODS_HEADER, StringUtils.isEmpty(methods) ? "*" : methods);
-		/* 重新预检验跨域的缓存时间 (s) */
-		int maxAge = getMaxAge();
-		if (maxAge > 0) {
-			response.setHeader(MAX_AGE_HEADER, maxAge + "");
+	public CrossDomainDefinition getCrossDomainDefinition(String requestPath) {
+		if (crossDomainDefinitionMap.isEmpty()) {
+			return null;
 		}
 
-		String header = getHeaders();
-		/* 允许跨域的请求头 */
-		response.setHeader(HEADERS_HEADER, StringUtils.isEmpty(header) ? "*" : header);
+		for (Entry<String, CrossDomainDefinition> entry : crossDomainDefinitionMap
+				.entrySet()) {
+			if (StringUtils.test(requestPath, entry.getKey())) {
+				return entry.getValue();
+			}
+		}
+		return null;
+	}
 
-		/* 是否携带cookie */
-		response.setHeader(CREDENTIALS_HEADER, isCredentials() + "");
-
+	public void doFilter(Request request, Response response,
+			FilterChain filterChain) throws Throwable {
+		CrossDomainDefinition crossDomainDefinition = getCrossDomainDefinition(request
+				.getServletPath());
+		if (crossDomainDefinition == null) {
+			DEFAULT.write(response);
+		} else {
+			crossDomainDefinition.write(response);
+		}
 		filterChain.doFilter(request, response);
-	}
-
-	public String getOrigin() {
-		return origin;
-	}
-
-	public String getMethods() {
-		return methods;
-	}
-
-	public int getMaxAge() {
-		return maxAge;
-	}
-
-	public String getHeaders() {
-		return headers;
-	}
-
-	public boolean isCredentials() {
-		return credentials;
 	}
 }
