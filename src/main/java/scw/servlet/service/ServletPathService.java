@@ -14,7 +14,7 @@ import scw.servlet.Request;
 import scw.servlet.annotation.Controller;
 
 @Bean(proxy=false)
-public class ServletPathService extends AbstractService {
+public class ServletPathService extends AbstractServiceFilter {
 	private final Map<String, EnumMap<scw.net.http.enums.Method, Action>> actionMap = new HashMap<String, EnumMap<scw.net.http.enums.Method, Action>>();
 	private BeanFactory beanFactory;
 

@@ -14,8 +14,8 @@ public class DispatcherServlet extends HttpServlet {
 	private ServletService servletService;
 
 	@Override
-	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
-		servletService.service(req, res);
+	public void service(ServletRequest req, ServletResponse resp) throws ServletException, IOException {
+		servletService.service(req, resp);
 	}
 	
 	@Override

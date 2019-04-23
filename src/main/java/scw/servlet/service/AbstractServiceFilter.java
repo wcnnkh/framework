@@ -8,14 +8,16 @@ import java.util.Map;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.InitMethod;
 import scw.common.utils.XUtils;
+import scw.servlet.Filter;
+import scw.servlet.FilterChain;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.annotation.Controller;
 
-public abstract class AbstractService implements Service {
+public abstract class AbstractServiceFilter implements Filter{
 	private Collection<Class<?>> classes;
 
-	public AbstractService(Collection<Class<?>> classes) {
+	public AbstractServiceFilter(Collection<Class<?>> classes) {
 		this.classes = classes;
 	}
 
@@ -42,17 +44,18 @@ public abstract class AbstractService implements Service {
 		}
 		classes = null;
 	}
-
-	public void service(Request request, Response response, ServiceChain serviceChain) throws Throwable {
+	
+	public void doFilter(Request request, Response response,
+			FilterChain filterChain) throws Throwable {
 		Action action = getAction(request);
 		if (action == null) {
-			serviceChain.service(request, response);
+			filterChain.doFilter(request, response);
 			return;
 		}
 
 		action.doAction(request, response);
 	}
-	
+
 	public static RestInfo getRestInfo(BeanFactory beanFactory, Class<?> clz, java.lang.reflect.Method method) {
 		Controller clzController = clz.getAnnotation(Controller.class);
 		if (clzController == null) {

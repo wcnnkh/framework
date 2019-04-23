@@ -1,4 +1,4 @@
-package scw.servlet.support;
+package scw.servlet.service;
 
 import scw.beans.annotation.Bean;
 import scw.common.utils.StringUtils;
@@ -13,7 +13,7 @@ import scw.servlet.Response;
  *
  */
 @Bean(proxy = false)
-public class CrossDomainFilter implements Filter {
+public class CrossDomainService implements Filter {
 	public static final String ORIGIN_HEADER = "Access-Control-Allow-Origin";
 	public static final String METHODS_HEADER = "Access-Control-Allow-Methods";
 	public static final String MAX_AGE_HEADER = "Access-Control-Max-Age";
@@ -26,11 +26,11 @@ public class CrossDomainFilter implements Filter {
 	private final String headers;
 	private final boolean credentials;
 
-	public CrossDomainFilter() {
+	public CrossDomainService() {
 		this("*", "*", -1, "*", false);
 	}
 
-	public CrossDomainFilter(String origin, String methods, int maxAge, String headers, boolean credentials) {
+	public CrossDomainService(String origin, String methods, int maxAge, String headers, boolean credentials) {
 		this.origin = origin;
 		this.methods = methods;
 		this.maxAge = maxAge;

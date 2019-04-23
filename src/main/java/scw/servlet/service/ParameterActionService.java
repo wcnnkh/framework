@@ -13,7 +13,7 @@ import scw.servlet.Request;
 import scw.servlet.annotation.Controller;
 
 @Bean(proxy = false)
-public class ParameterActionService extends AbstractService {
+public class ParameterActionService extends AbstractServiceFilter {
 	private final Map<String, Map<String, Map<String, Action>>> actionMap = new HashMap<String, Map<String, Map<String, Action>>>();
 	private String key;
 	private BeanFactory beanFactory;
