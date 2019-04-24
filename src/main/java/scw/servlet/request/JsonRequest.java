@@ -31,10 +31,10 @@ public class JsonRequest extends AbstractRequest {
 	}
 
 	@Override
-	public String getValue(String key) {
-		String v = super.getValue(key);
+	public String getValue(String key, boolean cookie) {
+		String v = json.getString(key);
 		if (v == null) {
-			v = json.getString(key);
+			v = super.getValue(key, cookie);
 		}
 		return v;
 	}
