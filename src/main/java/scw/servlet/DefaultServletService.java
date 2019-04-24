@@ -43,6 +43,8 @@ public class DefaultServletService implements ServletService {
 	private static final String RPC_SERVER = "servlet.rpc";
 
 	private static final String REQUEST_FACTORY = "servlet.request-factory";
+	private static final String REQUEST_COOKIE_VALUE = "servlet.parameter.cookie";
+
 	private static final String DEFAULT_ACTION_KEY = "servlet.actionKey";
 	private static final String DEFAULT_ACTION_FILTERS = "servlet.filters";
 	private static final String DEBUG_KEY = "servlet.debug";
@@ -58,25 +60,21 @@ public class DefaultServletService implements ServletService {
 	private final String rpcPath;
 	private final Collection<Filter> filters = new LinkedList<Filter>();
 
-	public DefaultServletService(BeanFactory beanFactory,
-			PropertiesFactory propertiesFactory, String configPath,
+	public DefaultServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configPath,
 			String[] rootBeanFilters) throws Throwable {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
-		this.requestBeanFactory = new CommonRequestBeanFactory(beanFactory,
-				propertiesFactory, configPath, rootBeanFilters);
+		this.requestBeanFactory = new CommonRequestBeanFactory(beanFactory, propertiesFactory, configPath,
+				rootBeanFilters);
 
 		// 默认开启日志
-		this.debug = StringParseUtils.parseBoolean(
-				propertiesFactory.getValue(DEBUG_KEY), true);
+		this.debug = StringParseUtils.parseBoolean(propertiesFactory.getValue(DEBUG_KEY), true);
 		String charsetName = propertiesFactory.getValue(CHARSET_NAME);
-		this.charset = StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET
-				: Charset.forName(charsetName);
-		String requestFactoryBeanName = propertiesFactory
-				.getValue(REQUEST_FACTORY);
+		this.charset = StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET : Charset.forName(charsetName);
+		String requestFactoryBeanName = propertiesFactory.getValue(REQUEST_FACTORY);
 		if (StringUtils.isEmpty(requestFactoryBeanName)) {
-			this.requestFactory = beanFactory.get(DefaultRequestFactory.class,
-					this.debug);
+			this.requestFactory = beanFactory.get(DefaultRequestFactory.class, this.debug,
+					StringParseUtils.parseBoolean(propertiesFactory.getValue(REQUEST_COOKIE_VALUE), false));
 		} else {
 			this.requestFactory = beanFactory.get(requestFactoryBeanName);
 		}
@@ -87,12 +85,10 @@ public class DefaultServletService implements ServletService {
 		String rpcServerBeanName = propertiesFactory.getValue(RPC_SERVER);
 		if (StringUtils.isEmpty(rpcServerBeanName)) {
 			String sign = propertiesFactory.getValue(RPC_SIGN);
-			boolean enable = StringParseUtils.parseBoolean(
-					propertiesFactory.getValue(RPC_ENABLE), false);
+			boolean enable = StringParseUtils.parseBoolean(propertiesFactory.getValue(RPC_ENABLE), false);
 			if (enable || !StringUtils.isEmpty(sign)) {// 开启
 				logger.info("rpc签名：{}", sign);
-				this.rpcService = beanFactory.get(DefaultRpcService.class,
-						beanFactory, sign);
+				this.rpcService = beanFactory.get(DefaultRpcService.class, beanFactory, sign);
 			} else {
 				this.rpcService = null;
 			}
@@ -109,17 +105,13 @@ public class DefaultServletService implements ServletService {
 
 		String actionKey = propertiesFactory.getValue(DEFAULT_ACTION_KEY);
 		actionKey = StringUtils.isEmpty(actionKey) ? "action" : actionKey;
-		String packageName = propertiesFactory
-				.getValue(SERVLET_SCANNING_PACKAGENAME);
+		String packageName = propertiesFactory.getValue(SERVLET_SCANNING_PACKAGENAME);
 		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
 
 		Collection<Class<?>> classes = ClassUtils.getClasses(packageName);
-		Filter parameterActionService = beanFactory.get(
-				ParameterActionService.class, beanFactory, classes, actionKey);
-		Filter servletPathService = beanFactory.get(ServletPathService.class,
-				beanFactory, classes);
-		Filter restService = beanFactory.get(RestService.class, beanFactory,
-				classes);
+		Filter parameterActionService = beanFactory.get(ParameterActionService.class, beanFactory, classes, actionKey);
+		Filter servletPathService = beanFactory.get(ServletPathService.class, beanFactory, classes);
+		Filter restService = beanFactory.get(RestService.class, beanFactory, classes);
 		Filter notFoundService = beanFactory.get(NotFoundService.class);
 		filters.add(parameterActionService);
 		filters.add(servletPathService);
@@ -161,31 +153,25 @@ public class DefaultServletService implements ServletService {
 
 	public void service(ServletRequest req, ServletResponse resp) {
 		try {
-			if (req instanceof HttpServletRequest
-					&& resp instanceof HttpServletResponse) {
-				httpService((HttpServletRequest) req,
-						(HttpServletResponse) resp);
+			if (req instanceof HttpServletRequest && resp instanceof HttpServletResponse) {
+				httpService((HttpServletRequest) req, (HttpServletResponse) resp);
 			}
 		} catch (Throwable e) {
 			sendError(req, resp, e);
 		}
 	}
 
-	public void sendError(ServletRequest req, ServletResponse resp,
-			Throwable throwable) {
-		if (req instanceof HttpServletRequest
-				&& resp instanceof HttpServletResponse) {
+	public void sendError(ServletRequest req, ServletResponse resp, Throwable throwable) {
+		if (req instanceof HttpServletRequest && resp instanceof HttpServletResponse) {
 			sendError((HttpServletRequest) req, (HttpServletResponse) resp, 500);
 		}
 		throwable.printStackTrace();
 	}
 
-	public void sendError(HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse, int code) {
+	public void sendError(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, int code) {
 		if (!httpServletResponse.isCommitted()) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("servletPath=").append(
-					httpServletRequest.getServletPath());
+			sb.append("servletPath=").append(httpServletRequest.getServletPath());
 			sb.append(",method=").append(httpServletRequest.getMethod());
 			sb.append(",status=").append(500);
 			sb.append(",msg=").append("system error");
@@ -199,8 +185,7 @@ public class DefaultServletService implements ServletService {
 		}
 	}
 
-	public boolean rpc(HttpServletRequest req, HttpServletResponse resp)
-			throws Throwable {
+	public boolean rpc(HttpServletRequest req, HttpServletResponse resp) throws Throwable {
 		if (rpcService == null) {
 			return false;
 		}
@@ -217,8 +202,7 @@ public class DefaultServletService implements ServletService {
 		return true;
 	}
 
-	public void httpService(HttpServletRequest req, HttpServletResponse resp)
-			throws Throwable {
+	public void httpService(HttpServletRequest req, HttpServletResponse resp) throws Throwable {
 		if (rpc(req, resp)) {
 			return;
 		}
@@ -226,8 +210,7 @@ public class DefaultServletService implements ServletService {
 		req.setCharacterEncoding(getCharset().name());
 		resp.setCharacterEncoding(getCharset().name());
 
-		Request request = requestFactory.format(getRequestBeanFactory(), req,
-				resp);
+		Request request = requestFactory.format(getRequestBeanFactory(), req, resp);
 		doAction(request, request.getResponse());
 	}
 
@@ -243,8 +226,7 @@ public class DefaultServletService implements ServletService {
 			iterator = filters.iterator();
 		}
 
-		public void doFilter(Request request, Response response)
-				throws Throwable {
+		public void doFilter(Request request, Response response) throws Throwable {
 			if (iterator.hasNext()) {
 				iterator.next().doFilter(request, response, this);
 			}

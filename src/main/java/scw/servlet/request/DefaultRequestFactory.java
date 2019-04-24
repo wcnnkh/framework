@@ -11,17 +11,19 @@ import scw.servlet.beans.RequestBeanFactory;
 
 public class DefaultRequestFactory implements RequestFactory {
 	private final boolean debug;
+	private final boolean cookieValue;
 
-	public DefaultRequestFactory(boolean debug) {
+	public DefaultRequestFactory(boolean debug, boolean cookieValue) {
 		this.debug = debug;
+		this.cookieValue = cookieValue;
 	}
 
 	public Request format(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse) throws IOException {
 		if (ServletUtils.isJsonRequest(httpServletRequest)) {
-			return new JsonRequest(requestBeanFactory, httpServletRequest, httpServletResponse, debug);
+			return new JsonRequest(requestBeanFactory, httpServletRequest, httpServletResponse, debug, cookieValue);
 		} else {
-			return new FormRequest(requestBeanFactory, httpServletRequest, httpServletResponse, debug, false);
+			return new FormRequest(requestBeanFactory, httpServletRequest, httpServletResponse, debug, cookieValue);
 		}
 	}
 }
