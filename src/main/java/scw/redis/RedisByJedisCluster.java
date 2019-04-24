@@ -14,11 +14,11 @@ import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPoolConfig;
 import scw.beans.annotation.Destroy;
-import scw.common.Constants;
 import scw.common.exception.ParameterException;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.PropertiesUtils;
 import scw.common.utils.StringUtils;
+import scw.core.Constants;
 
 /**
  * redis集群

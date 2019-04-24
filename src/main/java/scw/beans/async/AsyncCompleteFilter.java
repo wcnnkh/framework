@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 import scw.aop.Filter;
 import scw.aop.FilterChain;
-import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.AsyncComplete;
 import scw.beans.annotation.Autowrite;
@@ -20,21 +19,23 @@ import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.common.Base64;
 import scw.common.FileManager;
-import scw.common.MethodDefinition;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.FileUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.reflect.Invoker;
+import scw.reflect.SerializableMethod;
 
 /**
  * 只能受BeanFactory管理
+ * 
  * @author shuchaowen
  *
  */
 public final class AsyncCompleteFilter implements Filter {
 	private static Logger logger = LoggerFactory.getLogger(AsyncCompleteFilter.class);
-	
+
 	private static ThreadLocal<Boolean> ENABLE_TAG = new ThreadLocal<Boolean>();
 
 	public static boolean isEnable() {
@@ -102,7 +103,7 @@ public final class AsyncCompleteFilter implements Filter {
 			Object rtn;
 			try {
 				rtn = info.invoke(beanFactory);
-				if (ClassUtils.isBooleanType(info.getMethodConfig().getReturnType())) {
+				if (ClassUtils.isBooleanType(info.getMethodConfig().getMethod().getReturnType())) {
 					if (rtn != null && (Boolean) rtn == false) {
 						retry();
 						return;
@@ -156,7 +157,7 @@ public final class AsyncCompleteFilter implements Filter {
 
 class AsyncInvokeInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private MethodDefinition methodConfig;
+	private SerializableMethod methodConfig;
 	private long delayMillis;
 	private TimeUnit timeUnit;
 	private Object[] args;
@@ -166,12 +167,12 @@ class AsyncInvokeInfo implements Serializable {
 
 	public AsyncInvokeInfo(AsyncComplete asyncComplete, Class<?> clz, Method method, Object[] args) {
 		this.delayMillis = asyncComplete.delayMillis();
-		this.methodConfig = new MethodDefinition(clz, method);
+		this.methodConfig = new SerializableMethod(clz, method);
 		this.timeUnit = asyncComplete.timeUnit();
 		this.args = args;
 	}
 
-	public MethodDefinition getMethodConfig() {
+	public SerializableMethod getMethodConfig() {
 		return methodConfig;
 	}
 

@@ -13,10 +13,10 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Destroy;
-import scw.common.Constants;
 import scw.common.utils.ConfigUtils;
 import scw.common.utils.PropertiesUtils;
 import scw.common.utils.StringUtils;
+import scw.core.Constants;
 
 @Bean(proxy = false)
 public class RedisByJedisPool implements Redis {

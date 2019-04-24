@@ -6,15 +6,15 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.common.Constants;
 import scw.common.utils.IOUtils;
 import scw.common.utils.SignUtils;
 import scw.common.utils.StringUtils;
+import scw.core.Constants;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.reflect.Invoker;
 
 public class DefaultRpcService implements RpcService {
 	private static Logger logger = LoggerFactory.getLogger(DefaultRpcService.class);

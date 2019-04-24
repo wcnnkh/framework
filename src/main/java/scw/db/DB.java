@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.beans.annotation.Destroy;
-import scw.common.Constants;
 import scw.common.Iterator;
 import scw.common.exception.NotSupportException;
+import scw.core.Constants;
 import scw.db.async.AsyncInfo;
 import scw.db.async.MultipleOperation;
 import scw.db.async.OperationBean;

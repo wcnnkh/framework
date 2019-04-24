@@ -10,7 +10,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 
 import scw.beans.annotation.Bean;
 import scw.common.Base64;
-import scw.common.Constants;
+import scw.core.Constants;
 import scw.db.database.DataBase;
 import scw.memcached.Memcached;
 import scw.redis.Redis;

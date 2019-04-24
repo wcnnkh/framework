@@ -10,7 +10,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import net.sf.cglib.proxy.Enhancer;
-import scw.aop.jdk.ConstructorInvoker;
 import scw.beans.AnnotationBean;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
@@ -23,6 +22,7 @@ import scw.common.exception.BeansException;
 import scw.common.exception.NotFoundException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
+import scw.reflect.ConstructorInvoker;
 
 public class XmlBean implements BeanDefinition {
 	private static final String CLASS_ATTRIBUTE_KEY = "class";

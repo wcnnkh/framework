@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.cglib.proxy.Enhancer;
-import scw.aop.jdk.ConstructorInvoker;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Service;
@@ -16,6 +15,7 @@ import scw.common.FieldInfo;
 import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
+import scw.reflect.ConstructorInvoker;
 
 public class AnnotationBean implements BeanDefinition {
 	private final BeanFactory beanFactory;

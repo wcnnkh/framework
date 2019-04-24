@@ -1,4 +1,4 @@
-package scw.aop;
+package scw.reflect;
 
 public interface Invoker {
 	Object invoke(Object... args) throws Throwable;

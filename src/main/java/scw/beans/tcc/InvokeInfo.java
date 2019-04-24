@@ -9,22 +9,23 @@ import java.util.Map;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Stage;
-import scw.common.MethodDefinition;
 import scw.common.exception.NotFoundException;
+import scw.common.utils.ClassUtils;
 import scw.common.utils.CollectionUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.reflect.SerializableMethod;
 
 public final class InvokeInfo implements Serializable {
 	private static Logger logger = LoggerFactory.getLogger(InvokeInfo.class);
 
 	private static final long serialVersionUID = 1L;
 	private Object tryRtnValue;
-	private MethodDefinition tryMethod;
-	private MethodDefinition confirmMethod;
-	private MethodDefinition cancelMethod;
-	private MethodDefinition completeMethod;
+	private SerializableMethod tryMethod;
+	private SerializableMethod confirmMethod;
+	private SerializableMethod cancelMethod;
+	private SerializableMethod completeMethod;
 	private Object[] args;
 
 	/**
@@ -33,8 +34,8 @@ public final class InvokeInfo implements Serializable {
 	protected InvokeInfo() {
 	}
 
-	protected InvokeInfo(Object tryRtnValue, MethodDefinition tryMethod, MethodDefinition confirmMethod,
-			MethodDefinition cancelMethod, MethodDefinition completeMethod, Object[] args) {
+	protected InvokeInfo(Object tryRtnValue, SerializableMethod tryMethod, SerializableMethod confirmMethod,
+			SerializableMethod cancelMethod, SerializableMethod completeMethod, Object[] args) {
 		this.tryRtnValue = tryRtnValue;
 		this.tryMethod = tryMethod;
 		this.confirmMethod = confirmMethod;
@@ -43,7 +44,7 @@ public final class InvokeInfo implements Serializable {
 		this.args = args;
 	}
 
-	private static Object[] getIndexMapppingArgs(MethodDefinition method, Object tryRtn, int resultSetIndex,
+	private static Object[] getIndexMapppingArgs(SerializableMethod method, Object tryRtn, int resultSetIndex,
 			Object[] args) {
 		if (resultSetIndex >= 0) {
 			if (method.getParameterCount() - 1 > args.length) {
@@ -71,7 +72,7 @@ public final class InvokeInfo implements Serializable {
 		return params.toArray();
 	}
 
-	private static Object[] getNameMappingArgs(MethodDefinition tryMethod, MethodDefinition method, Object tryRtn,
+	private static Object[] getNameMappingArgs(SerializableMethod tryMethod, SerializableMethod method, Object tryRtn,
 			int resultSetIndex, Object[] args) throws NoSuchMethodException, SecurityException {
 		if (resultSetIndex >= 0) {
 			if (method.getParameterCount() > args.length) {
@@ -88,13 +89,13 @@ public final class InvokeInfo implements Serializable {
 		}
 
 		Map<String, Integer> tryNameIndexMap = new HashMap<String, Integer>();
-		String[] tryMethodParameterNames = tryMethod.getParameterNames();
+		String[] tryMethodParameterNames = ClassUtils.getParameterName(tryMethod.getMethod());
 		for (int i = 0; i < tryMethodParameterNames.length; i++) {
 			tryNameIndexMap.put(tryMethodParameterNames[i], i);
 		}
 
 		LinkedList<Object> params = new LinkedList<Object>();
-		String[] methodParameterNames = method.getParameterNames();
+		String[] methodParameterNames = ClassUtils.getParameterName(method.getMethod());
 		for (int i = 0; i < methodParameterNames.length; i++) {
 			if (i == resultSetIndex) {
 				params.add(tryRtn);
@@ -110,7 +111,7 @@ public final class InvokeInfo implements Serializable {
 		return params.toArray();
 	}
 
-	private void invoke(BeanFactory beanFactory, MethodDefinition methodConfig) throws NoSuchMethodException,
+	private void invoke(BeanFactory beanFactory, SerializableMethod methodConfig) throws NoSuchMethodException,
 			SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (methodConfig == null) {
 			return;

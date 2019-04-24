@@ -7,8 +7,8 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
-import scw.aop.Invoker;
-import scw.aop.cglib.CglibInvoker;
+import scw.aop.support.CglibInvoker;
+import scw.reflect.Invoker;
 
 /**
  * 顶层的filter

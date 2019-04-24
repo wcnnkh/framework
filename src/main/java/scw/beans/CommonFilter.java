@@ -7,11 +7,11 @@ import java.util.LinkedList;
 import scw.aop.DefaultFilterChain;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
-import scw.aop.Invoker;
 import scw.beans.annotation.Autowrite;
 import scw.beans.annotation.InitMethod;
 import scw.beans.async.AsyncCompleteFilter;
 import scw.beans.tcc.TCCTransactionFilter;
+import scw.reflect.Invoker;
 import scw.transaction.TransactionFilter;
 
 /**

@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.common.ByteArray;
-import scw.common.Constants;
 import scw.common.exception.NestedRuntimeException;
 import scw.common.utils.StringUtils;
+import scw.core.Constants;
 import scw.net.NetworkUtils;
 import scw.net.http.enums.Method;
 

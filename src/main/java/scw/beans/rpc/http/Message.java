@@ -5,27 +5,27 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.common.MethodDefinition;
+import scw.reflect.SerializableMethod;
 
 public final class Message implements Serializable {
 	private static final long serialVersionUID = -6216471725621438749L;
 	private Map<String, Object> attributeMap;
-	private MethodDefinition methodDefinition;
+	private SerializableMethod methodDefinition;
 	private Object[] args;
 
 	protected Message() {
 	};
 
 	public Message(Method method, Object[] args) {
-		this.methodDefinition = new MethodDefinition(method.getDeclaringClass(), method);
+		this.methodDefinition = new SerializableMethod(method.getDeclaringClass(), method);
 		this.args = args;
 	}
 
-	public MethodDefinition getMethodDefinition() {
+	public SerializableMethod getMethodDefinition() {
 		return methodDefinition;
 	}
 
-	protected void setMethodDefinition(MethodDefinition methodDefinition) {
+	protected void setMethodDefinition(SerializableMethod methodDefinition) {
 		this.methodDefinition = methodDefinition;
 	}
 

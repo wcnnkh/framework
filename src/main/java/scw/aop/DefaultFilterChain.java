@@ -4,6 +4,8 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 
+import scw.reflect.Invoker;
+
 public final class DefaultFilterChain implements FilterChain {
 	private Iterator<Filter> iterator;
 

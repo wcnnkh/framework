@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import scw.common.Constants;
+import scw.core.Constants;
 import scw.redis.Redis;
 
 public final class RedisCache implements Cache {
