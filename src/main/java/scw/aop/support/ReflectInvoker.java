@@ -1,6 +1,8 @@
-package scw.reflect;
+package scw.aop.support;
 
 import java.lang.reflect.Method;
+
+import scw.aop.Invoker;
 
 public final class ReflectInvoker implements Invoker {
 	private final Object obj;

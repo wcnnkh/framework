@@ -6,10 +6,10 @@ import com.alibaba.fastjson.JSONArray;
 
 import scw.aop.Filter;
 import scw.aop.FilterChain;
+import scw.aop.Invoker;
 import scw.common.utils.StringUtils;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
-import scw.reflect.Invoker;
 import scw.transaction.sql.cache.QueryCacheUtils;
 
 /**

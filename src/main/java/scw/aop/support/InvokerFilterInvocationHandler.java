@@ -4,10 +4,9 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import scw.aop.DefaultFilterChain;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
-import scw.reflect.Invoker;
+import scw.aop.Invoker;
 
 public final class InvokerFilterInvocationHandler implements InvocationHandler {
 	private final Collection<Filter> filters;

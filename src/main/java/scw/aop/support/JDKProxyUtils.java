@@ -4,7 +4,7 @@ import java.lang.reflect.Proxy;
 import java.util.Collection;
 
 import scw.aop.Filter;
-import scw.reflect.Invoker;
+import scw.aop.Invoker;
 
 public final class JDKProxyUtils {
 	private JDKProxyUtils() {

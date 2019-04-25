@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.common.exception.ParameterException;
 import scw.common.utils.ClassUtils;
-import scw.reflect.Invoker;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;
 import scw.servlet.Request;

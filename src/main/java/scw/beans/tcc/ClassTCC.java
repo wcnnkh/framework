@@ -7,7 +7,7 @@ import java.util.Map;
 import scw.beans.annotation.Stage;
 import scw.common.exception.AlreadyExistsException;
 import scw.common.utils.StringUtils;
-import scw.reflect.SerializableMethod;
+import scw.core.reflect.SerializableMethod;
 
 class ClassTCC {
 	private Map<String, SerializableMethod> tccMethodMap;

@@ -16,7 +16,9 @@ import java.util.concurrent.CountDownLatch;
 
 import net.sf.cglib.proxy.Enhancer;
 import scw.aop.Filter;
+import scw.aop.Invoker;
 import scw.aop.support.JDKProxyUtils;
+import scw.aop.support.ReflectInvoker;
 import scw.beans.annotation.Autowrite;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Config;
@@ -34,8 +36,6 @@ import scw.common.utils.StringParseUtils;
 import scw.common.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.reflect.Invoker;
-import scw.reflect.ReflectInvoker;
 
 public final class BeanUtils {
 	private static Logger logger = LoggerFactory.getLogger(BeanUtils.class);

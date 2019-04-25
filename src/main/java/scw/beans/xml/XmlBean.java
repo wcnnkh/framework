@@ -22,7 +22,7 @@ import scw.common.exception.BeansException;
 import scw.common.exception.NotFoundException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
-import scw.reflect.ConstructorInvoker;
+import scw.core.reflect.ReflectUtils;
 
 public class XmlBean implements BeanDefinition {
 	private static final String CLASS_ATTRIBUTE_KEY = "class";
@@ -313,14 +313,18 @@ public class XmlBean implements BeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance(Object... params) {
-		ConstructorInvoker constructorInvoker = new ConstructorInvoker(getType(), params);
+		Constructor<T> constructor = (Constructor<T>) ReflectUtils.findConstructorByParameters(getType(), params);
+		if (constructor == null) {
+			throw new NotFoundException(getId() + "找不到指定的构造方法");
+		}
+
 		Object bean;
 		try {
 			if (isProxy()) {
 				Enhancer enhancer = getProxyEnhancer();
-				bean = enhancer.create(constructorInvoker.getConstructor().getParameterTypes(), params);
+				bean = enhancer.create(constructor.getParameterTypes(), params);
 			} else {
-				bean = constructorInvoker.invoke(params);
+				bean = constructor.newInstance(params);
 			}
 			return (T) bean;
 		} catch (Throwable e) {

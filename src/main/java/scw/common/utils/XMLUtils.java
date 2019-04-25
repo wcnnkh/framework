@@ -7,6 +7,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -332,5 +333,24 @@ public final class XMLUtils {
 
 	public static boolean checkNodeName(String name) {
 		return !(name == null || name.length() == 0 || "#text".equals(name));
+	}
+	
+	public static Map<String, String> attributeAsMap(Node node){
+		if(node == null){
+			return null;
+		}
+
+		NamedNodeMap map = node.getAttributes();
+		if(map == null){
+			return null;
+		}
+
+		int size = map.getLength();
+		Map<String, String> properties = new HashMap<String, String>(size, 1);
+		for(int i=0; i<size; i++){
+			Node n = map.item(i);
+			properties.put(n.getNodeName(), n.getNodeValue());
+		}
+		return properties;
 	}
 }

@@ -1,10 +1,10 @@
-package scw.reflect;
+package scw.core.reflect;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-public final class SerializableMethod implements Serializable, scw.reflect.Method {
+public final class SerializableMethod implements Serializable, scw.core.reflect.Method {
 	private static final long serialVersionUID = 1L;
 	private Class<?> belongClass;
 	private String methodName;

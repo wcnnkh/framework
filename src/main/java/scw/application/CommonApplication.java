@@ -67,11 +67,9 @@ public class CommonApplication implements Application {
 		}
 
 		String ormScanPackageName = propertiesFactory.getValue(ORM_SCAN);
-		/**
-		 * 注册代理类
-		 */
-		ORMUtils.registerCglibProxyTableBean(
-				ormScanPackageName == null ? "com,indi,pers,priv,onem,team" : ormScanPackageName);
+		if (StringUtils.isEmpty(ormScanPackageName)) {
+			ORMUtils.registerCglibProxyTableBean(ormScanPackageName);
+		}
 
 		beanFactory.init();
 
@@ -79,11 +77,7 @@ public class CommonApplication implements Application {
 			new Thread(new Runnable() {
 
 				public void run() {
-					try {
-						XmlDubboUtils.register(propertiesFactory, beanFactory, configPath);
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
-					}
+					XmlDubboUtils.serviceExport(propertiesFactory, beanFactory, configPath);
 				}
 			}).start();
 		}

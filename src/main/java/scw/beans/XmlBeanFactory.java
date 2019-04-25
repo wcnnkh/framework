@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javassist.NotFoundException;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory;
@@ -142,6 +143,10 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 			if (INIT_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {
 				String className = XmlBeanUtils.getRequireNodeAttributeValue(propertiesFactory, n, "class");
 				BeanDefinition beanDefinition = getBeanDefinition(className);
+				if (beanDefinition == null) {
+					throw new NotFoundException(className);
+				}
+
 				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(beanDefinition.getType(), n);
 				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod().getModifiers())) {
 					// 静态方法

@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.reflect.SerializableMethod;
+import scw.core.reflect.SerializableMethod;
 
 public final class Message implements Serializable {
 	private static final long serialVersionUID = -6216471725621438749L;

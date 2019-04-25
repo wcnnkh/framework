@@ -13,9 +13,9 @@ import scw.common.exception.NotFoundException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.CollectionUtils;
 import scw.common.utils.StringUtils;
+import scw.core.reflect.SerializableMethod;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.reflect.SerializableMethod;
 
 public final class InvokeInfo implements Serializable {
 	private static Logger logger = LoggerFactory.getLogger(InvokeInfo.class);

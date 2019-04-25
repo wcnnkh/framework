@@ -1,7 +1,9 @@
 package scw.beans.xml;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -13,6 +15,8 @@ import scw.common.exception.BeansException;
 import scw.common.utils.ClassUtils;
 import scw.common.utils.StringUtils;
 import scw.common.utils.XMLUtils;
+import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.SetterMapper;
 
 public final class XmlBeanUtils {
 	public static final String PARAMETER_TAG_NAME = "parameter";
@@ -160,5 +164,31 @@ public final class XmlBeanUtils {
 			}
 		}
 		return list;
+	}
+
+	public static <T> T newInstanceLoadAttributeBySetter(Class<T> type, PropertiesFactory propertiesFactory, Node node,
+			final SetterMapper mapper) {
+		Map<String, String> map = XMLUtils.attributeAsMap(node);
+		try {
+			T t = ClassUtils.newInstance(type);
+			ReflectUtils.setProperties(type, t, map, true, new SetterMapper() {
+
+				public Object mapper(Object bean, Method method, String name, String value, Class<?> type)
+						throws Throwable {
+					if (StringUtils.isEmpty(value)) {
+						return null;
+					}
+
+					if (Class.class.isAssignableFrom(type)) {
+						return Class.forName(value);
+					}
+
+					return mapper.mapper(bean, method, name, value, type);
+				}
+			});
+			return t;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

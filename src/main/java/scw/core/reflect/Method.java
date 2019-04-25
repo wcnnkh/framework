@@ -1,4 +1,4 @@
-package scw.reflect;
+package scw.core.reflect;
 
 public interface Method {
 	

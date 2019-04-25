@@ -3,8 +3,8 @@ package scw.servlet.service;
 import java.util.Collection;
 import java.util.Iterator;
 
+import scw.aop.Invoker;
 import scw.common.utils.CollectionUtils;
-import scw.reflect.Invoker;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;
 import scw.servlet.Request;

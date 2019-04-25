@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 
+import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.common.utils.SignUtils;
@@ -18,7 +19,6 @@ import scw.logger.LoggerFactory;
 import scw.net.AbstractResponse;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpRequest;
-import scw.reflect.Invoker;
 
 public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 	private Logger logger = LoggerFactory.getLogger(getClass());

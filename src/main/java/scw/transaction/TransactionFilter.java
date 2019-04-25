@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 import scw.aop.Filter;
 import scw.aop.FilterChain;
-import scw.reflect.Invoker;
+import scw.aop.Invoker;
 
 /**
  * 必须要在BeanFactory中管理

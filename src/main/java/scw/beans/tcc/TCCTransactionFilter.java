@@ -6,11 +6,11 @@ import java.util.Map;
 
 import scw.aop.Filter;
 import scw.aop.FilterChain;
+import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Autowrite;
 import scw.beans.annotation.TCC;
-import scw.reflect.Invoker;
-import scw.reflect.SerializableMethod;
+import scw.core.reflect.SerializableMethod;
 
 /**
  * 只能受BeanFactory管理
