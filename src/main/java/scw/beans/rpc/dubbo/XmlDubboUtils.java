@@ -176,6 +176,9 @@ public final class XmlDubboUtils {
 				if ("dubbo:service".equals(node.getNodeName())) {
 					List<ServiceConfig<?>> serviceConfigs = getServiceConfigList(propertiesFactory, beanFactory, node);
 					for (ServiceConfig<?> serviceConfig : serviceConfigs) {
+						if (size == 0) {
+							logger.trace("开始注册服务");
+						}
 						size++;
 						serviceConfig.export();
 					}
@@ -183,7 +186,7 @@ public final class XmlDubboUtils {
 			}
 		}
 		if (size > 0) {
-			logger.trace("dubbo服务注册完成，共{}个", size);
+			logger.trace("服务注册完成");
 		}
 	}
 
