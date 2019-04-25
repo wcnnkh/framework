@@ -22,8 +22,12 @@ import scw.common.utils.StringParseUtils;
 import scw.common.utils.StringUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.reflect.SetterMapper;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public final class XmlDubboUtils {
+	private static Logger logger = LoggerFactory.getLogger(XmlDubboUtils.class);
+
 	private XmlDubboUtils() {
 	};
 
@@ -160,6 +164,7 @@ public final class XmlDubboUtils {
 	 */
 	public static void serviceExport(PropertiesFactory propertiesFactory, final BeanFactory beanFactory,
 			String config) {
+		int size = 0;
 		NodeList rootNodeList = XmlBeanUtils.getRootNode(config).getChildNodes();
 		if (rootNodeList != null) {
 			for (int x = 0; x < rootNodeList.getLength(); x++) {
@@ -171,10 +176,14 @@ public final class XmlDubboUtils {
 				if ("dubbo:service".equals(node.getNodeName())) {
 					List<ServiceConfig<?>> serviceConfigs = getServiceConfigList(propertiesFactory, beanFactory, node);
 					for (ServiceConfig<?> serviceConfig : serviceConfigs) {
+						size++;
 						serviceConfig.export();
 					}
 				}
 			}
+		}
+		if (size > 0) {
+			logger.trace("dubbo服务注册完成，共{}个", size);
 		}
 	}
 
