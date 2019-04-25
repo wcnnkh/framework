@@ -2,6 +2,6 @@ package scw.core.reflect;
 
 import java.lang.reflect.Method;
 
-public interface SetterMapper {
-	Object mapper(Object bean, Method method, String name, String value, Class<?> type) throws Throwable;
+public interface SetterMapper<V> {
+	Object mapper(Object bean, Method method, String name, V value, Class<?> type) throws Throwable;
 }

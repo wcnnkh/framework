@@ -166,24 +166,26 @@ public final class XmlBeanUtils {
 		return list;
 	}
 
-	public static <T> T newInstanceLoadAttributeBySetter(Class<T> type, PropertiesFactory propertiesFactory, Node node,
-			final SetterMapper mapper) {
-		Map<String, String> map = XMLUtils.attributeAsMap(node);
+	public static <T> T newInstanceLoadAttributeBySetter(Class<T> type, final PropertiesFactory propertiesFactory,
+			Node node, final SetterMapper<String> mapper) {
+		Map<String, Node> map = XMLUtils.attributeAsMap(node);
 		try {
 			T t = ClassUtils.newInstance(type);
-			ReflectUtils.setProperties(type, t, map, true, new SetterMapper() {
+			ReflectUtils.setProperties(type, t, map, true, new SetterMapper<Node>() {
 
-				public Object mapper(Object bean, Method method, String name, String value, Class<?> type)
+				public Object mapper(Object bean, Method method, String name, Node value, Class<?> type)
 						throws Throwable {
-					if (StringUtils.isEmpty(value)) {
+					XmlValue xmlValue = new XmlValue(value.getNodeValue(), value);
+					String v = xmlValue.formatValue(propertiesFactory);
+					if (StringUtils.isEmpty(v)) {
 						return null;
 					}
 
 					if (Class.class.isAssignableFrom(type)) {
-						return Class.forName(value);
+						return Class.forName(v);
 					}
 
-					return mapper.mapper(bean, method, name, value, type);
+					return mapper.mapper(bean, method, name, v, type);
 				}
 			});
 			return t;

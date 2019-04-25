@@ -34,7 +34,7 @@ public final class XmlDubboUtils {
 	private static List<RegistryConfig> parseRegistryConfig(PropertiesFactory propertiesFactory,
 			BeanFactory beanFactory, Node node) {
 		RegistryConfig registryConfig = XmlBeanUtils.newInstanceLoadAttributeBySetter(RegistryConfig.class,
-				propertiesFactory, node, new SetterMapper() {
+				propertiesFactory, node, new SetterMapper<String>() {
 
 					public Object mapper(Object bean, Method method, String name, String value, Class<?> type) {
 						if ("address".equals(name)) {
@@ -66,7 +66,7 @@ public final class XmlDubboUtils {
 	private static List<ProtocolConfig> parseProtocolConfig(PropertiesFactory propertiesFactory,
 			BeanFactory beanFactory, Node node, final boolean root) {
 		ProtocolConfig config = XmlBeanUtils.newInstanceLoadAttributeBySetter(ProtocolConfig.class, propertiesFactory,
-				node, new SetterMapper() {
+				node, new SetterMapper<String>() {
 
 					public Object mapper(Object bean, Method method, String name, String value, Class<?> type) {
 						if (root && "name".equals(name)) {
@@ -92,7 +92,7 @@ public final class XmlDubboUtils {
 	private static ApplicationConfig parseApplicationConfig(PropertiesFactory propertiesFactory,
 			final BeanFactory beanFactory, Node node) {
 		return XmlBeanUtils.newInstanceLoadAttributeBySetter(ApplicationConfig.class, propertiesFactory, node,
-				new SetterMapper() {
+				new SetterMapper<String>() {
 
 					public Object mapper(Object bean, Method method, String name, String value, Class<?> type) {
 						if ("registry".equals(name) || "registries".equals(name)) {
@@ -107,7 +107,7 @@ public final class XmlDubboUtils {
 	private static List<ServiceConfig<?>> parseServiceConfig(PropertiesFactory propertiesFactory,
 			final BeanFactory beanFactory, Node node) {
 		ServiceConfig<?> serviceConfig = XmlBeanUtils.newInstanceLoadAttributeBySetter(ServiceConfig.class,
-				propertiesFactory, node, new SetterMapper() {
+				propertiesFactory, node, new SetterMapper<String>() {
 
 					public Object mapper(Object bean, Method method, String name, String value, Class<?> type) {
 						if (StringUtils.isEmpty(value)) {
@@ -194,7 +194,7 @@ public final class XmlDubboUtils {
 	private static List<ReferenceConfig<?>> parseReferenceConfig(PropertiesFactory propertiesFactory,
 			final BeanFactory beanFactory, Node node) {
 		ReferenceConfig<?> config = XmlBeanUtils.newInstanceLoadAttributeBySetter(ReferenceConfig.class,
-				propertiesFactory, node, new SetterMapper() {
+				propertiesFactory, node, new SetterMapper<String>() {
 
 					public Object mapper(Object bean, Method method, String name, String value, Class<?> type) {
 						if (StringUtils.isEmpty(value)) {

@@ -290,7 +290,7 @@ public final class XMLUtils {
 			if (t == null) {
 				t = ClassUtils.newInstance(type);
 			}
-			
+
 			fieldInfo.set(t, StringParseUtils.conversion(value, fieldInfo.getType()));
 		}
 		return t;
@@ -334,22 +334,22 @@ public final class XMLUtils {
 	public static boolean checkNodeName(String name) {
 		return !(name == null || name.length() == 0 || "#text".equals(name));
 	}
-	
-	public static Map<String, String> attributeAsMap(Node node){
-		if(node == null){
+
+	public static Map<String, Node> attributeAsMap(Node node) {
+		if (node == null) {
 			return null;
 		}
 
 		NamedNodeMap map = node.getAttributes();
-		if(map == null){
+		if (map == null) {
 			return null;
 		}
 
 		int size = map.getLength();
-		Map<String, String> properties = new HashMap<String, String>(size, 1);
-		for(int i=0; i<size; i++){
+		Map<String, Node> properties = new HashMap<String, Node>(size, 1);
+		for (int i = 0; i < size; i++) {
 			Node n = map.item(i);
-			properties.put(n.getNodeName(), n.getNodeValue());
+			properties.put(n.getNodeName(), n);
 		}
 		return properties;
 	}

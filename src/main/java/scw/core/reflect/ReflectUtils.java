@@ -18,13 +18,13 @@ public final class ReflectUtils {
 	private ReflectUtils() {
 	};
 
-	public static <T> void setProperties(Class<T> type, T bean, Map<String, String> properties, boolean isPublicMethod,
-			SetterMapper mapper) {
+	public static <T, V> void setProperties(Class<T> type, T bean, Map<String, V> properties, boolean isPublicMethod,
+			SetterMapper<V> mapper) {
 		if (properties == null || properties.isEmpty()) {
 			return;
 		}
 
-		for (Entry<String, String> entry : properties.entrySet()) {
+		for (Entry<String, V> entry : properties.entrySet()) {
 			String methodName = "set" + StringUtils.toUpperCase(entry.getKey(), 0, 1);
 			for (java.lang.reflect.Method method : isPublicMethod ? type.getMethods() : type.getDeclaredMethods()) {
 				if (method.getParameterTypes().length != 1) {
