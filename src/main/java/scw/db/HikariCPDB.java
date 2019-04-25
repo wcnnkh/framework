@@ -10,7 +10,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import scw.beans.annotation.Destroy;
-import scw.common.Base64;
+import scw.core.Base64;
 import scw.core.Constants;
 import scw.db.database.DataBase;
 import scw.memcached.Memcached;

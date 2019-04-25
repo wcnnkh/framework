@@ -1,8 +1,8 @@
 package scw.servlet.session;
 
 import scw.servlet.Request;
-import scw.utils.login.Session;
 import scw.utils.login.LoginFactory;
+import scw.utils.login.Session;
 
 /**
  * 此类和AppSession和一样 是为应对小项目中admin和app用同一个项目而写的

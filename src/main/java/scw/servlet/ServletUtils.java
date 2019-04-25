@@ -5,8 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
-import scw.common.utils.StringUtils;
-import scw.net.http.enums.ContentType;
+import scw.core.net.http.enums.ContentType;
+import scw.core.utils.StringUtils;
 
 public final class ServletUtils {
 	private static final String ASYNCCONTEXT_NAME = "javax.servlet.AsyncContext";

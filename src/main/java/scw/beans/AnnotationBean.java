@@ -11,13 +11,13 @@ import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Service;
 import scw.beans.property.PropertiesFactory;
-import scw.common.ClassInfo;
-import scw.common.FieldInfo;
-import scw.common.exception.BeansException;
-import scw.common.exception.NotFoundException;
-import scw.common.utils.ClassUtils;
-import scw.common.utils.StringUtils;
+import scw.core.ClassInfo;
+import scw.core.FieldInfo;
+import scw.core.exception.BeansException;
+import scw.core.exception.NotFoundException;
 import scw.core.reflect.ReflectUtils;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.StringUtils;
 
 public class AnnotationBean implements BeanDefinition {
 	private final BeanFactory beanFactory;

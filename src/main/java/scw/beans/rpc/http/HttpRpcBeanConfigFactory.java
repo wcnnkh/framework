@@ -9,8 +9,8 @@ import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
-import scw.common.utils.ClassUtils;
-import scw.common.utils.StringUtils;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.StringUtils;
 
 public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "http:reference";

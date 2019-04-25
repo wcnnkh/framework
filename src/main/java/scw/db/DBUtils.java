@@ -2,14 +2,14 @@ package scw.db;
 
 import java.util.Arrays;
 
-import scw.common.exception.NotSupportException;
-import scw.common.utils.PropertiesUtils;
-import scw.common.utils.StringUtils;
+import scw.core.exception.NotSupportException;
+import scw.core.logger.Logger;
+import scw.core.utils.PropertiesUtils;
+import scw.core.utils.StringUtils;
 import scw.db.database.DataBase;
 import scw.db.database.MysqlDataBase;
 import scw.db.database.OracleDataBase;
 import scw.db.database.SqlServerDataBase;
-import scw.logger.Logger;
 
 public final class DBUtils {
 	private DBUtils() {

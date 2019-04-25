@@ -5,11 +5,11 @@ import java.util.Properties;
 
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
-import scw.common.ClassInfo;
-import scw.common.FieldInfo;
-import scw.common.utils.ClassUtils;
-import scw.common.utils.ConfigUtils;
-import scw.common.utils.StringParseUtils;
+import scw.core.ClassInfo;
+import scw.core.FieldInfo;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.ConfigUtils;
+import scw.core.utils.StringParseUtils;
 
 public final class PropertiesParse implements ConfigParse {
 	public Object parse(BeanFactory beanFactory, FieldInfo field, String filePath, String charset) throws Exception{

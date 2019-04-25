@@ -7,9 +7,9 @@ import com.alibaba.fastjson.JSONObject;
 
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
-import scw.common.FieldInfo;
-import scw.common.utils.ConfigUtils;
-import scw.common.utils.FileUtils;
+import scw.core.FieldInfo;
+import scw.core.utils.ConfigUtils;
+import scw.core.utils.FileUtils;
 
 /**
  * 将内容解析为json

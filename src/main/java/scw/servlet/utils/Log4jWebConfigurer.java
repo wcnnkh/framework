@@ -20,7 +20,7 @@ import java.io.FileNotFoundException;
 
 import javax.servlet.ServletContext;
 
-import scw.common.utils.ResourceUtils;
+import scw.core.utils.ResourceUtils;
 
 
 /**

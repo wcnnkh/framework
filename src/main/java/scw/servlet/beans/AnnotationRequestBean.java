@@ -13,10 +13,10 @@ import scw.beans.BeanUtils;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.property.PropertiesFactory;
-import scw.common.ClassInfo;
-import scw.common.FieldInfo;
-import scw.common.exception.BeansException;
-import scw.common.utils.ClassUtils;
+import scw.core.ClassInfo;
+import scw.core.FieldInfo;
+import scw.core.exception.BeansException;
+import scw.core.utils.ClassUtils;
 import scw.servlet.Request;
 
 public final class AnnotationRequestBean implements RequestBean {

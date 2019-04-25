@@ -10,12 +10,12 @@ import org.w3c.dom.Node;
 import com.alibaba.fastjson.JSONObject;
 
 import scw.beans.annotation.Destroy;
-import scw.common.ProcessResult;
-import scw.common.utils.StringUtils;
-import scw.common.utils.XMLUtils;
-import scw.common.utils.XTime;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.core.ProcessResult;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
+import scw.core.utils.StringUtils;
+import scw.core.utils.XMLUtils;
+import scw.core.utils.XTime;
 
 public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());

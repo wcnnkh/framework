@@ -8,8 +8,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.common.utils.StringParseUtils;
-import scw.common.utils.StringUtils;
+import scw.core.utils.StringParseUtils;
+import scw.core.utils.StringUtils;
 import scw.servlet.Request;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.service.RestService;

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.beans.annotation.Bean;
-import scw.common.utils.StringUtils;
+import scw.core.utils.StringUtils;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;
 import scw.servlet.Request;

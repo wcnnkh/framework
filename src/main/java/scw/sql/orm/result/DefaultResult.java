@@ -3,7 +3,7 @@ package scw.sql.orm.result;
 import java.sql.SQLException;
 import java.util.Map;
 
-import scw.common.utils.ClassUtils;
+import scw.core.utils.ClassUtils;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 

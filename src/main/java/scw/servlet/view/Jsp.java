@@ -6,8 +6,8 @@ import java.util.HashMap;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.View;

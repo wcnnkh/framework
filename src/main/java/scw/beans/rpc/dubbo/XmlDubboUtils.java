@@ -17,13 +17,13 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Service;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
-import scw.common.utils.ClassUtils;
-import scw.common.utils.StringParseUtils;
-import scw.common.utils.StringUtils;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
 import scw.core.reflect.ReflectUtils;
 import scw.core.reflect.SetterMapper;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.StringParseUtils;
+import scw.core.utils.StringUtils;
 
 public final class XmlDubboUtils {
 	private static Logger logger = LoggerFactory.getLogger(XmlDubboUtils.class);
@@ -174,11 +174,12 @@ public final class XmlDubboUtils {
 				}
 
 				if ("dubbo:service".equals(node.getNodeName())) {
+					if(size == 0){
+						logger.trace("开始注册服务");
+					}
+					size ++;
 					List<ServiceConfig<?>> serviceConfigs = getServiceConfigList(propertiesFactory, beanFactory, node);
 					for (ServiceConfig<?> serviceConfig : serviceConfigs) {
-						if (size == 0) {
-							logger.trace("开始注册服务");
-						}
 						size++;
 						serviceConfig.export();
 					}

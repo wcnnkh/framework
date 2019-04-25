@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.beans.property.PropertiesFactory;
-import scw.common.exception.AlreadyExistsException;
-import scw.common.exception.BeansException;
-import scw.common.exception.NestedRuntimeException;
-import scw.common.utils.ClassUtils;
+import scw.core.exception.AlreadyExistsException;
+import scw.core.exception.BeansException;
+import scw.core.exception.NestedRuntimeException;
+import scw.core.utils.ClassUtils;
 
 public abstract class AbstractBeanFactory implements BeanFactory {
 	private volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
@@ -33,7 +33,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	public void addSingleton(String id, Object singleton) {
 		BeanDefinition beanDefinition = getBeanDefinition(id);
 		if (beanDefinition == null) {
-			throw new scw.common.exception.NotFoundException(id);
+			throw new scw.core.exception.NotFoundException(id);
 		}
 
 		synchronized (singletonMap) {

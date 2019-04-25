@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.alibaba.fastjson.JSONObject;
 
-import scw.common.utils.StringUtils;
+import scw.core.utils.StringUtils;
 import scw.servlet.view.AbstractTextView;
 import scw.servlet.view.common.enums.ResultCode;
 import scw.transaction.RollbackOnlyResult;

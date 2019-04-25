@@ -2,7 +2,7 @@ package scw.utils.tencent.weixin;
 
 import java.nio.charset.Charset;
 
-import scw.common.utils.IOUtils;
+import scw.core.utils.IOUtils;
 import scw.locks.RedisLock;
 import scw.redis.Redis;
 import scw.utils.tencent.weixin.bean.AccessToken;

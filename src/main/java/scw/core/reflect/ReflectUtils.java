@@ -7,10 +7,10 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.common.utils.ClassUtils;
-import scw.common.utils.StringUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.StringUtils;
 
 public final class ReflectUtils {
 	private static Logger logger = LoggerFactory.getLogger(ReflectUtils.class);

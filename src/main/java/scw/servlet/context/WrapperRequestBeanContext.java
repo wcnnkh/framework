@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.common.ClassInfo;
-import scw.common.FieldInfo;
-import scw.common.utils.ClassUtils;
+import scw.core.ClassInfo;
+import scw.core.FieldInfo;
+import scw.core.utils.ClassUtils;
 import scw.servlet.Request;
 
 public class WrapperRequestBeanContext implements RequestBeanContext {

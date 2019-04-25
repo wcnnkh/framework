@@ -5,9 +5,9 @@ import java.io.File;
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
-import scw.common.utils.ConfigUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
+import scw.core.utils.ConfigUtils;
 
 public abstract class AbstractJxlLoadExcel<T> extends AbstractLoadRow<T> implements Runnable, LoadRow {
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());

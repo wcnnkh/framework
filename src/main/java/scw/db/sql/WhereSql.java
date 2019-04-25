@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.common.utils.CollectionUtils;
-import scw.common.utils.StringUtils;
+import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
 import scw.sql.Sql;
 
 public class WhereSql implements Sql {

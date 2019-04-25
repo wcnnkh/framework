@@ -7,8 +7,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.xml.XmlBeanUtils;
-import scw.common.utils.ConfigUtils;
-import scw.common.utils.StringUtils;
+import scw.core.utils.ConfigUtils;
+import scw.core.utils.StringUtils;
 
 public class XmlPropertiesFactory implements PropertiesFactory {
 	private static final String PROPERTIES_TAG_NAME = "properties";

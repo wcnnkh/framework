@@ -17,13 +17,13 @@ import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.ObjectListing;
 import com.aliyun.oss.model.PolicyConditions;
 
-import scw.common.exception.AlreadyExistsException;
-import scw.common.exception.NotFoundException;
-import scw.common.exception.ParameterException;
-import scw.common.utils.StringUtils;
-import scw.common.utils.XTime;
-import scw.common.utils.XUtils;
-import scw.net.http.enums.ProtocolType;
+import scw.core.exception.AlreadyExistsException;
+import scw.core.exception.NotFoundException;
+import scw.core.exception.ParameterException;
+import scw.core.net.http.enums.ProtocolType;
+import scw.core.utils.StringUtils;
+import scw.core.utils.XTime;
+import scw.core.utils.XUtils;
 
 public final class OSS {
 	private static final int DEFAULT_EXPIRE = 120;

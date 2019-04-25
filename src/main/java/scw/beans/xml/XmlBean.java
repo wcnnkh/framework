@@ -16,13 +16,13 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
 import scw.beans.property.PropertiesFactory;
-import scw.common.ClassInfo;
-import scw.common.FieldInfo;
-import scw.common.exception.BeansException;
-import scw.common.exception.NotFoundException;
-import scw.common.utils.ClassUtils;
-import scw.common.utils.StringUtils;
+import scw.core.ClassInfo;
+import scw.core.FieldInfo;
+import scw.core.exception.BeansException;
+import scw.core.exception.NotFoundException;
 import scw.core.reflect.ReflectUtils;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.StringUtils;
 
 public class XmlBean implements BeanDefinition {
 	private static final String CLASS_ATTRIBUTE_KEY = "class";

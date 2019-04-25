@@ -9,8 +9,8 @@ import org.w3c.dom.NodeList;
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
-import scw.common.exception.AlreadyExistsException;
-import scw.common.utils.StringUtils;
+import scw.core.exception.AlreadyExistsException;
+import scw.core.utils.StringUtils;
 import scw.servlet.beans.RequestBean;
 import scw.servlet.beans.RequestBeanFactory;
 

@@ -1,8 +1,8 @@
 package scw.db.database;
 
-import scw.common.QueryString;
-import scw.common.exception.NotFoundException;
-import scw.common.utils.StringUtils;
+import scw.core.QueryString;
+import scw.core.exception.NotFoundException;
+import scw.core.utils.StringUtils;
 
 /**
  * Sql Server7.0/2000数据库

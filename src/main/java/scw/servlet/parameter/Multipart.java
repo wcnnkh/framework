@@ -18,8 +18,8 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
 import scw.servlet.Request;
 
 public final class Multipart {

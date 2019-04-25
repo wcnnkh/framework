@@ -3,7 +3,7 @@ package scw.beans;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.common.exception.AlreadyExistsException;
+import scw.core.exception.AlreadyExistsException;
 
 public abstract class AbstractBeanConfigFactory implements BeanConfigFactory {
 	protected Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();

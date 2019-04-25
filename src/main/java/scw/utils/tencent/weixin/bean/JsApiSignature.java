@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.common.utils.SignUtils;
-import scw.common.utils.StringUtils;
+import scw.core.utils.SignUtils;
+import scw.core.utils.StringUtils;
 
 public final class JsApiSignature implements Serializable{
 	private static final long serialVersionUID = 1L;

@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import scw.common.ClassInfo;
-import scw.common.FieldInfo;
-import scw.common.exception.AlreadyExistsException;
-import scw.common.utils.ClassUtils;
-import scw.common.utils.StringUtils;
+import scw.core.ClassInfo;
+import scw.core.FieldInfo;
+import scw.core.exception.AlreadyExistsException;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.StringUtils;
 import scw.sql.orm.annotation.NotColumn;
 import scw.sql.orm.annotation.Table;
 import scw.sql.orm.annotation.Transient;

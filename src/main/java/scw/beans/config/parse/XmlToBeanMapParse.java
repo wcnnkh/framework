@@ -4,9 +4,9 @@ import java.io.File;
 
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
-import scw.common.FieldInfo;
-import scw.common.utils.ClassUtils;
-import scw.common.utils.ConfigUtils;
+import scw.core.FieldInfo;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.ConfigUtils;
 
 public final class XmlToBeanMapParse implements ConfigParse{
 	public Object parse(BeanFactory beanFactory, FieldInfo field, String filePath, String charset) throws Exception{

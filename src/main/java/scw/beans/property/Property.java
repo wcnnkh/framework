@@ -3,7 +3,7 @@ package scw.beans.property;
 import org.w3c.dom.Node;
 
 import scw.beans.xml.XmlValue;
-import scw.common.utils.XMLUtils;
+import scw.core.utils.XMLUtils;
 
 public class Property {
 	private final String name;

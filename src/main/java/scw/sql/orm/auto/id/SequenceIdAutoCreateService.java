@@ -2,9 +2,9 @@ package scw.sql.orm.auto.id;
 
 import javassist.NotFoundException;
 import scw.beans.annotation.Bean;
-import scw.common.utils.Assert;
-import scw.common.utils.StringUtils;
-import scw.common.utils.XTime;
+import scw.core.utils.Assert;
+import scw.core.utils.StringUtils;
+import scw.core.utils.XTime;
 import scw.memcached.Memcached;
 import scw.redis.Redis;
 import scw.sql.orm.ColumnInfo;

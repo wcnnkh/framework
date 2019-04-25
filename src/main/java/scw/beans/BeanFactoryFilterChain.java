@@ -8,7 +8,7 @@ import java.util.Iterator;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
-import scw.common.utils.CollectionUtils;
+import scw.core.utils.CollectionUtils;
 
 public final class BeanFactoryFilterChain implements FilterChain {
 	private Iterator<String> iterator;

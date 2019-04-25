@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
 
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.parameter.Body;
 

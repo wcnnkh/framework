@@ -4,7 +4,7 @@ import javax.servlet.ServletConfig;
 
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
-import scw.common.utils.ConfigUtils;
+import scw.core.utils.ConfigUtils;
 
 public class ServletConfigPropertiesFactory implements PropertiesFactory {
 	/**

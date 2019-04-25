@@ -1,7 +1,7 @@
 package scw.beans.config;
 
 import scw.beans.BeanFactory;
-import scw.common.FieldInfo;
+import scw.core.FieldInfo;
 
 
 /**

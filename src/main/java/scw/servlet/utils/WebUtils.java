@@ -33,10 +33,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import scw.common.LinkedMultiValueMap;
-import scw.common.MultiValueMap;
-import scw.common.utils.Assert;
-import scw.common.utils.StringUtils;
+import scw.core.LinkedMultiValueMap;
+import scw.core.MultiValueMap;
+import scw.core.utils.Assert;
+import scw.core.utils.StringUtils;
 
 /**
  * Miscellaneous utilities for web applications.

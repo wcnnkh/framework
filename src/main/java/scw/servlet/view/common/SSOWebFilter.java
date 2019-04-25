@@ -7,8 +7,8 @@ import scw.servlet.FilterChain;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.view.common.enums.ResultCode;
-import scw.utils.login.Session;
 import scw.utils.login.LoginFactory;
+import scw.utils.login.Session;
 
 public class SSOWebFilter implements Filter{
 	private final LoginFactory loginFactory;

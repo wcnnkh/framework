@@ -7,7 +7,7 @@ import java.util.Map;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.InitMethod;
-import scw.common.utils.XUtils;
+import scw.core.utils.XUtils;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;
 import scw.servlet.Request;

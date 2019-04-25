@@ -2,7 +2,7 @@ package scw.db.async;
 
 import java.io.Serializable;
 
-import scw.common.exception.NotSupportException;
+import scw.core.exception.NotSupportException;
 import scw.sql.Sql;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.SqlFormat;

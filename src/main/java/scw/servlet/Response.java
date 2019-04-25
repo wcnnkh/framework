@@ -7,10 +7,10 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import com.alibaba.fastjson.JSONObject;
 
-import scw.common.utils.ClassUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
-import scw.net.http.enums.ContentType;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
+import scw.core.net.http.enums.ContentType;
+import scw.core.utils.ClassUtils;
 
 public class Response extends HttpServletResponseWrapper {
 	private static Logger logger = LoggerFactory.getLogger(Response.class);

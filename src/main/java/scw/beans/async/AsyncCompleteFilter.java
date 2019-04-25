@@ -18,14 +18,14 @@ import scw.beans.annotation.AsyncComplete;
 import scw.beans.annotation.Autowrite;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
-import scw.common.Base64;
-import scw.common.FileManager;
-import scw.common.utils.ClassUtils;
-import scw.common.utils.ConfigUtils;
-import scw.common.utils.FileUtils;
+import scw.core.Base64;
+import scw.core.FileManager;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
 import scw.core.reflect.SerializableMethod;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.ConfigUtils;
+import scw.core.utils.FileUtils;
 
 /**
  * 只能受BeanFactory管理

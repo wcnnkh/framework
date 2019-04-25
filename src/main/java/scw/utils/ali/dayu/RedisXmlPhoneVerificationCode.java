@@ -4,8 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import com.alibaba.fastjson.JSONObject;
 
-import scw.common.utils.XTime;
-import scw.common.utils.XUtils;
+import scw.core.utils.XTime;
+import scw.core.utils.XUtils;
 import scw.redis.Redis;
 
 public final class RedisXmlPhoneVerificationCode extends AbstractXmlPhoneVerificationCode {

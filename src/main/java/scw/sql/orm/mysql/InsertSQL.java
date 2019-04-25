@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import scw.common.exception.ParameterException;
+import scw.core.exception.ParameterException;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;

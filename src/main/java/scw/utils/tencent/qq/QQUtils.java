@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 
-import scw.net.http.HttpUtils;
+import scw.core.net.http.HttpUtils;
 
 public final class QQUtils {
 	private static final String callbackPrefix = "callback( ";

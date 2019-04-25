@@ -12,8 +12,8 @@ import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-import scw.common.FieldInfo;
-import scw.common.utils.ClassUtils;
+import scw.core.FieldInfo;
+import scw.core.utils.ClassUtils;
 import scw.sql.orm.annotation.AutoCreate;
 import scw.sql.orm.annotation.AutoIncrement;
 import scw.sql.orm.annotation.Column;

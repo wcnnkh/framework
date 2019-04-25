@@ -3,9 +3,9 @@ package scw.servlet.view.common;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.common.utils.StringUtils;
-
 import com.alibaba.fastjson.JSONObject;
+
+import scw.core.utils.StringUtils;
 
 public class MapResult extends DataResult<Map<String, Object>>{
 	private static final long serialVersionUID = 1L;

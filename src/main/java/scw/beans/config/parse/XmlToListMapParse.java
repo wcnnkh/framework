@@ -4,8 +4,8 @@ import java.io.File;
 
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
-import scw.common.FieldInfo;
-import scw.common.utils.ConfigUtils;
+import scw.core.FieldInfo;
+import scw.core.utils.ConfigUtils;
 
 public final class XmlToListMapParse implements ConfigParse{
 	public Object parse(BeanFactory beanFactory, FieldInfo field, String filePath, String charset) throws Exception{

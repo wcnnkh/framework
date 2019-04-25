@@ -11,8 +11,8 @@ import scw.beans.BeanMethod;
 import scw.beans.NoArgumentBeanMethod;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
-import scw.common.exception.NotSupportException;
-import scw.common.utils.ClassUtils;
+import scw.core.exception.NotSupportException;
+import scw.core.utils.ClassUtils;
 
 abstract class AbstractInterfaceProxyBean implements BeanDefinition {
 	private final Class<?> type;

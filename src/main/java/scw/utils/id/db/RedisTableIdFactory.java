@@ -1,6 +1,6 @@
 package scw.utils.id.db;
 
-import scw.common.utils.ClassUtils;
+import scw.core.utils.ClassUtils;
 import scw.locks.Lock;
 import scw.locks.RedisLock;
 import scw.redis.Redis;

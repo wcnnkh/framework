@@ -1,7 +1,7 @@
 package scw.utils.login.sso;
 
-import scw.utils.login.Session;
 import scw.utils.login.LoginFactory;
+import scw.utils.login.Session;
 
 public interface SSO extends LoginFactory{
 	Session getSessionByUid(String uid);

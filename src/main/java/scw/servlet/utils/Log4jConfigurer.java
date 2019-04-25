@@ -24,7 +24,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import scw.common.utils.ResourceUtils;
+import scw.core.utils.ResourceUtils;
 
 /**
  * Convenience class that features simple methods for custom log4j configuration.

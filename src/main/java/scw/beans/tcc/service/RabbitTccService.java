@@ -21,7 +21,7 @@ import scw.beans.annotation.Destroy;
 import scw.beans.tcc.InvokeInfo;
 import scw.beans.tcc.StageType;
 import scw.beans.tcc.TCCService;
-import scw.common.utils.IOUtils;
+import scw.core.utils.IOUtils;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 import scw.utils.mq.rabbit.RabbitUtils;

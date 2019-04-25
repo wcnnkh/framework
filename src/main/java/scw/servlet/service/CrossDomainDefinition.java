@@ -2,7 +2,7 @@ package scw.servlet.service;
 
 import javax.servlet.http.HttpServletResponse;
 
-import scw.common.utils.StringUtils;
+import scw.core.utils.StringUtils;
 
 public final class CrossDomainDefinition {
 	public static final String ORIGIN_HEADER = "Access-Control-Allow-Origin";

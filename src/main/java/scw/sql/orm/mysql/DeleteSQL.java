@@ -1,6 +1,6 @@
 package scw.sql.orm.mysql;
 
-import scw.common.exception.ParameterException;
+import scw.core.exception.ParameterException;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;

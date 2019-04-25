@@ -2,7 +2,7 @@ package scw.locks;
 
 import java.util.Collections;
 
-import scw.common.utils.XUtils;
+import scw.core.utils.XUtils;
 import scw.redis.Redis;
 
 public final class RedisLock extends AbstractLock {

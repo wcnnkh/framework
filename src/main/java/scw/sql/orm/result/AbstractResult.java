@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.common.exception.NotFoundException;
+import scw.core.exception.NotFoundException;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;

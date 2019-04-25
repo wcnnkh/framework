@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.common.exception.AlreadyExistsException;
-import scw.common.utils.ClassUtils;
+import scw.core.exception.AlreadyExistsException;
+import scw.core.utils.ClassUtils;
 import scw.sql.Sql;
 import scw.sql.orm.annotation.Table;
 

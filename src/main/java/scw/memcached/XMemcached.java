@@ -17,7 +17,7 @@ import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 import scw.beans.annotation.Destroy;
-import scw.common.utils.StringUtils;
+import scw.core.utils.StringUtils;
 
 public final class XMemcached implements Memcached {
 	private final MemcachedClient memcachedClient;

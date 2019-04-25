@@ -4,10 +4,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import scw.common.utils.XUtils;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
+import scw.core.utils.XUtils;
 import scw.db.sql.SimpleSql;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
 import scw.sql.Sql;
 import scw.sql.SqlException;
 import scw.sql.SqlUtils;

@@ -7,7 +7,7 @@ import com.alibaba.dubbo.config.ReferenceConfig;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.common.exception.NotSupportException;
+import scw.core.exception.NotSupportException;
 
 public final class XmlDubboBean implements BeanDefinition {
 	private final ReferenceConfig<?> referenceConfig;

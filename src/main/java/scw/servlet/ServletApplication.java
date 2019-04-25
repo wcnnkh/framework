@@ -6,7 +6,7 @@ import scw.application.Application;
 import scw.application.CommonApplication;
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
-import scw.common.utils.StringUtils;
+import scw.core.utils.StringUtils;
 
 public class ServletApplication implements Application {
 	private static final String INIT_STATIC_KEY = "init-static";

@@ -6,13 +6,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.common.ProcessResult;
-import scw.common.utils.SignUtils;
-import scw.common.utils.StringUtils;
-import scw.common.utils.XTime;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
-import scw.net.http.HttpUtils;
+import scw.core.ProcessResult;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
+import scw.core.net.http.HttpUtils;
+import scw.core.utils.SignUtils;
+import scw.core.utils.StringUtils;
+import scw.core.utils.XTime;
 
 public final class DefaultAliDaYu implements AliDaYu {
 	private static Logger logger = LoggerFactory.getLogger(DefaultAliDaYu.class);

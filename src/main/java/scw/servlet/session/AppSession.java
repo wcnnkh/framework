@@ -2,10 +2,10 @@ package scw.servlet.session;
 
 import javax.servlet.http.Cookie;
 
-import scw.common.utils.StringUtils;
+import scw.core.utils.StringUtils;
 import scw.servlet.Request;
-import scw.utils.login.Session;
 import scw.utils.login.LoginFactory;
+import scw.utils.login.Session;
 
 /**
  * 此类和WebSession和一样

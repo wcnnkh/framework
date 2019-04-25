@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.common.exception.AlreadyExistsException;
+import scw.core.exception.AlreadyExistsException;
 import scw.transaction.savepoint.MultipleSavepoint;
 import scw.transaction.savepoint.Savepoint;
 

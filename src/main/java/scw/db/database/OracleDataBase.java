@@ -1,7 +1,7 @@
 package scw.db.database;
 
-import scw.common.exception.NotFoundException;
-import scw.common.utils.StringUtils;
+import scw.core.exception.NotFoundException;
+import scw.core.utils.StringUtils;
 
 /**
  * Oracle8/8i/9i数据库（thin模式） 

@@ -13,8 +13,8 @@ import scw.beans.rpc.http.HttpRpcBeanConfigFactory;
 import scw.beans.xml.XmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
-import scw.common.exception.BeansException;
-import scw.common.utils.StringUtils;
+import scw.core.exception.BeansException;
+import scw.core.utils.StringUtils;
 
 public final class XmlBeanFactory extends AbstractBeanFactory {
 	private static final String INIT_METHOD_TAG_NAME = "init";

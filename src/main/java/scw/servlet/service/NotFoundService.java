@@ -1,8 +1,8 @@
 package scw.servlet.service;
 
 import scw.beans.annotation.Bean;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;
 import scw.servlet.Request;

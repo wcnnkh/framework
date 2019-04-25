@@ -10,21 +10,21 @@ import javax.net.ssl.SSLContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import scw.common.ByteArray;
-import scw.common.exception.NotSupportException;
-import scw.common.exception.ParameterException;
-import scw.common.exception.SignatureException;
-import scw.common.utils.ConfigUtils;
-import scw.common.utils.SignUtils;
-import scw.common.utils.StringUtils;
-import scw.common.utils.XMLUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
-import scw.net.NetworkUtils;
-import scw.net.http.BodyRequest;
-import scw.net.http.HttpRequest;
-import scw.net.http.enums.Method;
-import scw.net.http.ssl.SSLContexts;
+import scw.core.ByteArray;
+import scw.core.exception.NotSupportException;
+import scw.core.exception.ParameterException;
+import scw.core.exception.SignatureException;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
+import scw.core.net.NetworkUtils;
+import scw.core.net.http.BodyRequest;
+import scw.core.net.http.HttpRequest;
+import scw.core.net.http.enums.Method;
+import scw.core.net.http.ssl.SSLContexts;
+import scw.core.utils.ConfigUtils;
+import scw.core.utils.SignUtils;
+import scw.core.utils.StringUtils;
+import scw.core.utils.XMLUtils;
 import scw.utils.tencent.weixin.bean.Unifiedorder;
 
 public final class WeiXinPay {

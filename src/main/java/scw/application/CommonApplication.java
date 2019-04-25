@@ -9,10 +9,10 @@ import scw.beans.XmlBeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboUtils;
-import scw.common.exception.NestedRuntimeException;
-import scw.common.utils.ClassUtils;
-import scw.common.utils.StringUtils;
-import scw.logger.LoggerFactory;
+import scw.core.exception.NestedRuntimeException;
+import scw.core.logger.LoggerFactory;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.StringUtils;
 import scw.sql.orm.ORMUtils;
 
 public class CommonApplication implements Application {

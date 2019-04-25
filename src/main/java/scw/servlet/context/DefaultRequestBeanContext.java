@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import scw.common.exception.BeansException;
+import scw.core.exception.BeansException;
 import scw.servlet.Request;
 import scw.servlet.beans.RequestBean;
 import scw.servlet.beans.RequestBeanFactory;

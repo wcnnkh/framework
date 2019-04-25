@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.common.Pagination;
-import scw.common.exception.ParameterException;
+import scw.core.Pagination;
+import scw.core.exception.ParameterException;
 import scw.sql.Sql;
 import scw.sql.orm.result.ResultSet;
 

@@ -1,6 +1,6 @@
 package scw.locks;
 
-import scw.common.utils.XUtils;
+import scw.core.utils.XUtils;
 import scw.memcached.Memcached;
 
 public final class MemcachedLockFactory extends AbstractLockFactory {

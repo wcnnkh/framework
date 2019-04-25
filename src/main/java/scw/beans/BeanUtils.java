@@ -27,15 +27,15 @@ import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Properties;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanParameter;
-import scw.common.ClassInfo;
-import scw.common.FieldInfo;
-import scw.common.exception.BeansException;
-import scw.common.utils.ClassUtils;
-import scw.common.utils.CollectionUtils;
-import scw.common.utils.StringParseUtils;
-import scw.common.utils.StringUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.core.ClassInfo;
+import scw.core.FieldInfo;
+import scw.core.exception.BeansException;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringParseUtils;
+import scw.core.utils.StringUtils;
 
 public final class BeanUtils {
 	private static Logger logger = LoggerFactory.getLogger(BeanUtils.class);

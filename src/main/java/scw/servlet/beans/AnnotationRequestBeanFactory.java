@@ -5,8 +5,8 @@ import java.util.Map;
 
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
-import scw.common.exception.AlreadyExistsException;
-import scw.common.utils.ClassUtils;
+import scw.core.exception.AlreadyExistsException;
+import scw.core.utils.ClassUtils;
 
 public final class AnnotationRequestBeanFactory implements RequestBeanFactory {
 	private volatile Map<String, AnnotationRequestBean> beanMap = new HashMap<String, AnnotationRequestBean>();

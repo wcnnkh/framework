@@ -8,7 +8,7 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateNumberModel;
 import freemarker.template.TemplateScalarModel;
-import scw.common.utils.NumberUtils;
+import scw.core.utils.NumberUtils;
 
 /**
  * freemarker工具类

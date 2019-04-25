@@ -15,11 +15,11 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.alibaba.fastjson.JSONObject;
 
-import scw.common.Base64;
-import scw.common.exception.ParameterException;
-import scw.common.utils.StringUtils;
-import scw.common.utils.XTime;
-import scw.common.utils.XUtils;
+import scw.core.Base64;
+import scw.core.exception.ParameterException;
+import scw.core.utils.StringUtils;
+import scw.core.utils.XTime;
+import scw.core.utils.XUtils;
 import scw.servlet.Request;
 
 public final class KindEditorUpload implements Upload {

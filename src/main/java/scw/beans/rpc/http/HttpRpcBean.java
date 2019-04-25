@@ -12,13 +12,13 @@ import java.nio.charset.Charset;
 import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.common.utils.SignUtils;
-import scw.common.utils.XUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
-import scw.net.AbstractResponse;
-import scw.net.NetworkUtils;
-import scw.net.http.HttpRequest;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
+import scw.core.net.AbstractResponse;
+import scw.core.net.NetworkUtils;
+import scw.core.net.http.HttpRequest;
+import scw.core.utils.SignUtils;
+import scw.core.utils.XUtils;
 
 public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -62,7 +62,7 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 			message.setAttribute("t", cts);
 			message.setAttribute("sign", SignUtils.md5Str((cts + signStr).getBytes(charset)));
 
-			HttpRequest request = new HttpRequest(scw.net.http.enums.Method.POST, host) {
+			HttpRequest request = new HttpRequest(scw.core.net.http.enums.Method.POST, host) {
 				@Override
 				public void doOutput(OutputStream os) throws Throwable {
 					ObjectOutputStream oos = new ObjectOutputStream(os);

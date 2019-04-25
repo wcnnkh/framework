@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.common.BeanFieldListen;
-import scw.common.ClassInfo;
-import scw.common.FieldInfo;
-import scw.common.utils.ClassUtils;
-import scw.common.utils.StringParseUtils;
-import scw.common.utils.StringUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.core.BeanFieldListen;
+import scw.core.ClassInfo;
+import scw.core.FieldInfo;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.StringParseUtils;
+import scw.core.utils.StringUtils;
 import scw.sql.orm.annotation.Table;
 
 public abstract class ORMUtils {

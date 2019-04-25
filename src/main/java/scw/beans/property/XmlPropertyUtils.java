@@ -11,9 +11,9 @@ import javax.management.openmbean.KeyAlreadyExistsException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.common.utils.ConfigUtils;
-import scw.common.utils.StringUtils;
-import scw.common.utils.XMLUtils;
+import scw.core.utils.ConfigUtils;
+import scw.core.utils.StringUtils;
+import scw.core.utils.XMLUtils;
 
 public final class XmlPropertyUtils {
 	private XmlPropertyUtils() {};

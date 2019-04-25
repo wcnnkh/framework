@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.common.BeanFieldListen;
-import scw.common.exception.ParameterException;
-import scw.common.utils.ClassUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.core.BeanFieldListen;
+import scw.core.exception.ParameterException;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
+import scw.core.utils.ClassUtils;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;

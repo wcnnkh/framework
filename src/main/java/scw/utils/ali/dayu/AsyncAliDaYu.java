@@ -5,7 +5,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import scw.beans.annotation.Destroy;
-import scw.common.ProcessResult;
+import scw.core.ProcessResult;
 
 public final class AsyncAliDaYu implements AliDaYu {
 	private AliDaYu aliDaYu;

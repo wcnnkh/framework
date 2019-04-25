@@ -3,7 +3,7 @@ package scw.db.sql;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.common.utils.CollectionUtils;
+import scw.core.utils.CollectionUtils;
 import scw.sql.Sql;
 
 public class CommonSql implements Sql {

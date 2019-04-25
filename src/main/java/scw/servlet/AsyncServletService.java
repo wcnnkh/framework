@@ -12,7 +12,7 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Destroy;
 import scw.beans.property.PropertiesFactory;
-import scw.common.utils.StringParseUtils;
+import scw.core.utils.StringParseUtils;
 
 @Bean(proxy = false)
 public class AsyncServletService extends DefaultServletService {

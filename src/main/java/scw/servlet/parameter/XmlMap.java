@@ -10,7 +10,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import scw.common.utils.XMLUtils;
+import scw.core.utils.XMLUtils;
 import scw.servlet.Request;
 
 public final class XmlMap extends LinkedHashMap<String, String> {

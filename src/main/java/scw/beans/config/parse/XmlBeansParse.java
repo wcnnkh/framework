@@ -4,8 +4,8 @@ import java.io.File;
 
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
-import scw.common.FieldInfo;
-import scw.common.utils.ConfigUtils;
+import scw.core.FieldInfo;
+import scw.core.utils.ConfigUtils;
 
 /**
  * xml解析

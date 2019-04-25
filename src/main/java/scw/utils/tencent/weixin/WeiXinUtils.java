@@ -3,8 +3,8 @@ package scw.utils.tencent.weixin;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.common.utils.SignUtils;
-import scw.net.http.HttpUtils;
+import scw.core.net.http.HttpUtils;
+import scw.core.utils.SignUtils;
 
 /**
  * @author shuchaowen

@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.beans.annotation.Stage;
-import scw.common.exception.AlreadyExistsException;
-import scw.common.utils.StringUtils;
+import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.SerializableMethod;
+import scw.core.utils.StringUtils;
 
 class ClassTCC {
 	private Map<String, SerializableMethod> tccMethodMap;

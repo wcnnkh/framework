@@ -9,7 +9,7 @@ import java.util.Enumeration;
 import com.alibaba.druid.pool.DruidDataSource;
 
 import scw.beans.annotation.Bean;
-import scw.common.Base64;
+import scw.core.Base64;
 import scw.core.Constants;
 import scw.db.database.DataBase;
 import scw.memcached.Memcached;

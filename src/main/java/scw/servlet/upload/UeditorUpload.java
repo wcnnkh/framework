@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import scw.common.utils.FileUtils;
+import scw.core.utils.FileUtils;
 import scw.servlet.Request;
 import scw.servlet.upload.ueditor.ActionEnter;
 

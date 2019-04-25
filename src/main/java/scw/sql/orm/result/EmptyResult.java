@@ -3,7 +3,7 @@ package scw.sql.orm.result;
 import java.util.Collections;
 import java.util.Map;
 
-import scw.common.utils.CollectionUtils;
+import scw.core.utils.CollectionUtils;
 
 public final class EmptyResult implements Result {
 	private static final long serialVersionUID = 1L;

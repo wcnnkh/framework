@@ -2,7 +2,7 @@ package scw.beans;
 
 import scw.beans.annotation.Service;
 import scw.beans.property.PropertiesFactory;
-import scw.common.utils.ClassUtils;
+import scw.core.utils.ClassUtils;
 
 /**
  * 此类只要类是存在的不可能出现获取不到的情况

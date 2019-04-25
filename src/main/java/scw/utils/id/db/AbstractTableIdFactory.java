@@ -1,6 +1,6 @@
 package scw.utils.id.db;
 
-import scw.common.exception.NotFoundException;
+import scw.core.exception.NotFoundException;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.SelectMaxId;

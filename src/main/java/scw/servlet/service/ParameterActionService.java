@@ -7,8 +7,8 @@ import java.util.Map;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
-import scw.common.exception.AlreadyExistsException;
-import scw.common.utils.XUtils;
+import scw.core.exception.AlreadyExistsException;
+import scw.core.utils.XUtils;
 import scw.servlet.Request;
 import scw.servlet.annotation.Controller;
 
@@ -62,8 +62,8 @@ public class ParameterActionService extends AbstractServiceFilter {
 		}
 
 		Action action = new MethodAction(beanFactory, clz, method);
-		scw.net.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
-		for (scw.net.http.enums.Method type : types) {
+		scw.core.net.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
+		for (scw.core.net.http.enums.Method type : types) {
 			Map<String, Action> map = clzMap.get(type.name());
 			if (map == null) {
 				map = new HashMap<String, Action>();

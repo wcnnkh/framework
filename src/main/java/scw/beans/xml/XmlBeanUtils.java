@@ -11,12 +11,12 @@ import org.w3c.dom.NodeList;
 import scw.beans.BeanMethod;
 import scw.beans.EParameterType;
 import scw.beans.property.PropertiesFactory;
-import scw.common.exception.BeansException;
-import scw.common.utils.ClassUtils;
-import scw.common.utils.StringUtils;
-import scw.common.utils.XMLUtils;
+import scw.core.exception.BeansException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.reflect.SetterMapper;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.StringUtils;
+import scw.core.utils.XMLUtils;
 
 public final class XmlBeanUtils {
 	public static final String PARAMETER_TAG_NAME = "parameter";

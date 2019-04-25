@@ -9,7 +9,7 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
 import scw.beans.property.PropertiesFactory;
-import scw.common.exception.BeansException;
+import scw.core.exception.BeansException;
 
 public class XmlBeanMethodInfo implements BeanMethod {
 	private static final String NAME_KEY = "name";

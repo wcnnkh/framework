@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
 
 public abstract class SqlTemplate implements SqlOperations {
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());

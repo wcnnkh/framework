@@ -10,7 +10,7 @@ import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
-import scw.common.utils.StringUtils;
+import scw.core.utils.StringUtils;
 
 public class XmlBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String BEAN_TAG_NAME = "bean";

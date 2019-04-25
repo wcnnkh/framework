@@ -8,14 +8,14 @@ import java.util.Map;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
-import scw.common.exception.AlreadyExistsException;
-import scw.common.utils.XUtils;
+import scw.core.exception.AlreadyExistsException;
+import scw.core.utils.XUtils;
 import scw.servlet.Request;
 import scw.servlet.annotation.Controller;
 
 @Bean(proxy=false)
 public class ServletPathService extends AbstractServiceFilter {
-	private final Map<String, EnumMap<scw.net.http.enums.Method, Action>> actionMap = new HashMap<String, EnumMap<scw.net.http.enums.Method, Action>>();
+	private final Map<String, EnumMap<scw.core.net.http.enums.Method, Action>> actionMap = new HashMap<String, EnumMap<scw.core.net.http.enums.Method, Action>>();
 	private BeanFactory beanFactory;
 
 	public ServletPathService(BeanFactory beanFactory, Collection<Class<?>> classes) {
@@ -30,12 +30,12 @@ public class ServletPathService extends AbstractServiceFilter {
 	}
 
 	public Action getAction(Request request) {
-		EnumMap<scw.net.http.enums.Method, Action> map = actionMap.get(request.getServletPath());
+		EnumMap<scw.core.net.http.enums.Method, Action> map = actionMap.get(request.getServletPath());
 		if (map == null) {
 			return null;
 		}
 
-		scw.net.http.enums.Method method = scw.net.http.enums.Method.valueOf(request.getMethod());
+		scw.core.net.http.enums.Method method = scw.core.net.http.enums.Method.valueOf(request.getMethod());
 		return map.get(method);
 	}
 
@@ -52,13 +52,13 @@ public class ServletPathService extends AbstractServiceFilter {
 
 		String allPath = XUtils.mergePath("/", classController.value(), methodController.value());
 		Action action = restInfo.getAction();
-		EnumMap<scw.net.http.enums.Method, Action> map = actionMap.get(allPath);
+		EnumMap<scw.core.net.http.enums.Method, Action> map = actionMap.get(allPath);
 		if (map == null) {
-			map = new EnumMap<scw.net.http.enums.Method, Action>(scw.net.http.enums.Method.class);
+			map = new EnumMap<scw.core.net.http.enums.Method, Action>(scw.core.net.http.enums.Method.class);
 		}
 
-		scw.net.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
-		for (scw.net.http.enums.Method type : types) {
+		scw.core.net.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
+		for (scw.core.net.http.enums.Method type : types) {
 			if (map.containsKey(type.name())) {
 				throw new AlreadyExistsException(getExistActionErrMsg(action, map.get(type.name())));
 			}

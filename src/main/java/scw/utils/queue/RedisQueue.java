@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import scw.common.utils.IOUtils;
+import scw.core.utils.IOUtils;
 import scw.redis.Redis;
 
 public class RedisQueue<E> implements Queue<E> {
