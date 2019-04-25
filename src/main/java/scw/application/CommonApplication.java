@@ -67,7 +67,7 @@ public class CommonApplication implements Application {
 		}
 
 		String ormScanPackageName = propertiesFactory.getValue(ORM_SCAN);
-		if (StringUtils.isEmpty(ormScanPackageName)) {
+		if (!StringUtils.isEmpty(ormScanPackageName)) {
 			ORMUtils.registerCglibProxyTableBean(ormScanPackageName);
 		}
 
