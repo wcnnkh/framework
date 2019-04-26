@@ -9,7 +9,6 @@ import scw.beans.XmlBeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboUtils;
-import scw.core.exception.NestedRuntimeException;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
@@ -29,7 +28,7 @@ public class CommonApplication implements Application {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
 			this.beanFactory.addFirstFilters(CommonFilter.class.getName());
 		} catch (Exception e) {
-			throw new NestedRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 
