@@ -925,8 +925,8 @@ public class RedisByJedisPool implements Redis {
 		Jedis jedis = jedisPool.getResource();
 		try {
 			before(jedis);
-			return (Long) jedis.eval(INCR_AND_INIT_SCRIPT, Arrays.asList(key),
-					Arrays.asList(String.valueOf(incr), String.valueOf(initValue)));
+			return Long.parseLong((String)jedis.eval(INCR_AND_INIT_SCRIPT, Arrays.asList(key),
+					Arrays.asList(String.valueOf(incr), String.valueOf(initValue))));
 		} finally {
 			if (jedis != null) {
 				jedis.close();
@@ -938,8 +938,8 @@ public class RedisByJedisPool implements Redis {
 		Jedis jedis = jedisPool.getResource();
 		try {
 			before(jedis);
-			return (Long) jedis.eval(DECR_AND_INIT_SCRIPT, Arrays.asList(key),
-					Arrays.asList(String.valueOf(decr), String.valueOf(initValue)));
+			return Long.parseLong((String) jedis.eval(DECR_AND_INIT_SCRIPT, Arrays.asList(key),
+					Arrays.asList(String.valueOf(decr), String.valueOf(initValue))));
 		} finally {
 			if (jedis != null) {
 				jedis.close();

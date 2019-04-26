@@ -372,12 +372,12 @@ public final class RedisByJedisCluster implements Redis {
 	}
 
 	public long incr(String key, long incr, long initValue) {
-		return (Long) jedisCluster.eval(INCR_AND_INIT_SCRIPT, Arrays.asList(key),
-				Arrays.asList(String.valueOf(incr), String.valueOf(initValue)));
+		return Long.parseLong((String) jedisCluster.eval(INCR_AND_INIT_SCRIPT, Arrays.asList(key),
+				Arrays.asList(String.valueOf(incr), String.valueOf(initValue))));
 	}
 
 	public long decr(String key, long decr, long initValue) {
-		return (Long) jedisCluster.eval(DECR_AND_INIT_SCRIPT, Arrays.asList(key),
-				Arrays.asList(String.valueOf(decr), String.valueOf(initValue)));
+		return Long.parseLong((String) jedisCluster.eval(DECR_AND_INIT_SCRIPT, Arrays.asList(key),
+				Arrays.asList(String.valueOf(decr), String.valueOf(initValue))));
 	}
 }
