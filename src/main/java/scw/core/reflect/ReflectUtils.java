@@ -124,6 +124,12 @@ public final class ReflectUtils {
 		}
 	}
 
+	/**
+	 * 必须存在默认的
+	 * 
+	 * @param obj
+	 * @return
+	 */
 	public static <T> T clone(T obj) {
 		try {
 			return clone(obj, false, false);
@@ -161,8 +167,6 @@ public final class ReflectUtils {
 				Array.set(newArr, i, Array.get(obj, i));
 			}
 			return (T) newArr;
-		} else if (String.class.isAssignableFrom(type)) {
-			return obj;
 		}
 
 		T t = obj;
@@ -182,10 +186,6 @@ public final class ReflectUtils {
 		Class<?> clazz = type;
 		while (clazz != null) {
 			for (Field field : clazz.getDeclaredFields()) {
-				if (Modifier.isFinal(field.getModifiers())) {
-					continue;
-				}
-
 				if (!cloneStatic && Modifier.isStatic(field.getModifiers())) {
 					continue;
 				}
