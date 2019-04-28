@@ -1,16 +1,63 @@
 package scw.data.redis;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-public interface Commands {
-	String get(String key);
+public interface Commands<K, V> {
 
-	String set(String key, String value);
+	V get(K key);
+	
+	List<V> mget(K ...keys);
 
-	Long setnx(String key, String value);
+	Boolean set(K key, V value);
 
-	String setex(String key, int seconds, String value);
+	long setnx(K key, V value);
+
+	Boolean setex(K key, int seconds, V value);
+
+	Boolean exists(K key);
+
+	Long expire(K key, int seconds);
+
+	Long del(K key);
+
+	Long hset(K key, K field, V value);
+
+	Long hsetnx(K key, K field, V value);
+
+	Long hdel(K key, K... fields);
+
+	Boolean hexists(K key, K field);
+
+	Long ttl(K key);
+
+	Long incr(K key);
+
+	Long decr(K key);
+
+	Collection<V> hvals(K key);
+
+	V hget(K key, K field);
+
+	Collection<V> hmget(K key, K... fields);
+
+	Long lpush(K key, V... values);
+
+	Long rpush(K key, V... values);
+
+	V rpop(K key);
+
+	V lpop(K key);
+
+	Set<V> smembers(K key);
+
+	Long srem(K key, V... members);
+
+	Long sadd(K key, V... members);
+
+	Long zadd(K key, long score, V member);
 
 	/**
 	 * EX second ：设置键的过期时间为 second 秒。 SET key value EX second 效果等同于 SETEX key
@@ -25,47 +72,19 @@ public interface Commands {
 	 * @param time
 	 * @return
 	 */
-	boolean set(String key, String value, String nxxx, String expe, long time);
+	Boolean set(K key, V value, K nxxx, K expx, long time);
 
-	Boolean exists(String key);
+	Boolean sIsMember(K key, V member);
 
-	Long expire(String key, int seconds);
+	V lindex(K key, int index);
 
-	Long del(String key);
+	Long llen(K key);
 
-	Long hset(String key, String field, String value);
-
-	Long hsetnx(String key, String field, String value);
-
-	Map<String, String> hgetAll(String key);
-
-	Long hdel(String key, String... fields);
-
-	Boolean hexists(String key, String field);
-
-	Long ttl(String key);
-
-	Long incr(String key);
-
-	Long decr(String key);
-
-	List<String> hvals(String key);
-
-	String hget(String key, String field);
-
-	Long lpush(String key, String... value);
-
-	Long rpush(String key, String... value);
-
-	String rpop(String key);
-
-	List<String> blpop(int timeout, String key);
-
-	List<String> brpop(int timeout, String key);
-
-	String lpop(String key);
-
-	String lindex(String key, int index);
-
-	Long llen(String key);
+	Object eval(K script, List<K> keys, List<K> args);
+	
+	Map<K, K> hgetAll(K key);
+	
+	Collection<K> brpop(int timeout, K key);
+	
+	Collection<K> blpop(int timeout, K key);
 }

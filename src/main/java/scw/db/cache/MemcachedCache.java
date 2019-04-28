@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.memcached.CAS;
+import scw.data.memcached.CAS;
 import scw.memcached.Memcached;
 
 public final class MemcachedCache implements Cache {
@@ -38,7 +38,7 @@ public final class MemcachedCache implements Cache {
 	}
 
 	public <T> T getAndTouch(Class<T> type, String key, int exp) {
-		byte[] data = memcached.getAndTocuh(key, exp);
+		byte[] data = memcached.getAndTouch(key, exp);
 		if (data == null) {
 			return null;
 		}

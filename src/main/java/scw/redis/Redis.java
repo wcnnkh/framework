@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 此类已弃用
+ * @author shuchaowen
+ *
+ */
 public interface Redis {
 	/**
 	 * 设置过期时间为秒
@@ -30,11 +35,11 @@ public interface Redis {
 
 	String getAndTouch(String key, int exp);
 
-	String set(String key, String value);
+	Boolean	set(String key, String value);
 
 	Long setnx(String key, String value);
 
-	String setex(String key, int seconds, String value);
+	Boolean setex(String key, int seconds, String value);
 
 	/**
 	 * EX second ：设置键的过期时间为 second 秒。 SET key value EX second 效果等同于 SETEX key

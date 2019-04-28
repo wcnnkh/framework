@@ -1,4 +1,4 @@
-package scw.data.redis;
+package scw.data.redis.jedis;
 
 public interface ResourceManager<T> {
 	T getResource();

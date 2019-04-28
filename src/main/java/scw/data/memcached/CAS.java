@@ -1,4 +1,4 @@
-package scw.memcached;
+package scw.data.memcached;
 
 import net.rubyeye.xmemcached.GetsResponse;
 

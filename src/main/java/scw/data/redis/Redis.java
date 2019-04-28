@@ -1,15 +1,8 @@
 package scw.data.redis;
 
 public interface Redis {
-	Commands getCommands();
 
-	BinaryCommands getBinaryCommands();
+	RedisOperations<String, String> getStringOperations();
 
-	BinaryScriptingCommands getBinaryScriptingCommands();
-
-	ScriptingCommands getScriptingCommands();
-
-	MultiKeyBinaryCommands getMultiKeyBinaryCommands();
-
-	MultiKeyCommands getMultiKeyCommands();
+	RedisOperations<byte[], byte[]> getBinaryOperations();
 }
