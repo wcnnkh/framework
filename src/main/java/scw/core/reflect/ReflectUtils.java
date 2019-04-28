@@ -156,9 +156,9 @@ public final class ReflectUtils {
 				return obj;
 			}
 
-			Object[] newArr = new Object[size];
+			Object newArr = Array.newInstance(type.getComponentType(), size);
 			for (int i = 0; i < size; i++) {
-				newArr[i] = clone(Array.get(obj, i), cloneStatic, cloneTransient);
+				Array.set(newArr, i, Array.get(obj, i));
 			}
 			return (T) newArr;
 		} else if (String.class.isAssignableFrom(type)) {
