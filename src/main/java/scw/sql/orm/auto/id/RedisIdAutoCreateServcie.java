@@ -51,15 +51,15 @@ public class RedisIdAutoCreateServcie implements AutoCreateService {
 			String tableName, String[] args) throws Throwable {
 		String key = getCacheKey(tableInfo, columnInfo.getName());
 		long next;
-		if (!redis.exists(key)) {
+		if (!redis.getStringOperations().exists(key)) {
 			// 不存在
 			Lock lock = new RedisLock(redis, key + "&lock");
 			try {
 				lock.lockWait();
 
-				if (!redis.exists(key)) {
+				if (!redis.getStringOperations().exists(key)) {
 					long maxId = maxId(ormOperations, tableInfo, tableName, columnInfo);
-					next = (Long) redis.eval(INCR_SCRIPT, Arrays.asList(key), Arrays.asList(maxId + ""));
+					next = (Long) redis.getStringOperations().eval(INCR_SCRIPT, Arrays.asList(key), Arrays.asList(maxId + ""));
 				}
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
@@ -67,7 +67,7 @@ public class RedisIdAutoCreateServcie implements AutoCreateService {
 				lock.unlock();
 			}
 		}
-		next = redis.incr(key);
+		next = redis.getStringOperations().incr(key);
 		columnInfo.setValueToField(bean, next);
 	}
 }

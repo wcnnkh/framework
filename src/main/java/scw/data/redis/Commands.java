@@ -84,7 +84,7 @@ public interface Commands<K, V> {
 	
 	Map<K, K> hgetAll(K key);
 	
-	Collection<K> brpop(int timeout, K key);
+	List<K> brpop(int timeout, K key);
 	
-	Collection<K> blpop(int timeout, K key);
+	List<K> blpop(int timeout, K key);
 }

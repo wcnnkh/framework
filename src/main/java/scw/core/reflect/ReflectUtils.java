@@ -156,7 +156,9 @@ public final class ReflectUtils {
 		}
 
 		Class<?> type = obj.getClass();
-		if (type.isArray()) {
+		if (type == Object.class) {
+			return obj;
+		} else if (type.isArray()) {
 			int size = Array.getLength(obj);
 			if (size == 0) {
 				return obj;
@@ -200,7 +202,7 @@ public final class ReflectUtils {
 					continue;
 				}
 
-				if (!field.getType().isPrimitive() && !field.getType().isEnum()) {
+				if (!field.getType().isPrimitive() && !field.getType().isEnum() && field.getType() != Object.class) {
 					v = clone(v, cloneStatic, cloneTransient);
 				}
 

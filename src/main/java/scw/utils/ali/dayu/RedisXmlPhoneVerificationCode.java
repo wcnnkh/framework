@@ -22,7 +22,7 @@ public final class RedisXmlPhoneVerificationCode extends AbstractXmlPhoneVerific
 	@Override
 	public JSONObject getCacheData(int configIndex, String phone) {
 		String dataKey = tempPrefix + "&" + configIndex + "&" + phone;
-		String cache = redis.get(dataKey);
+		String cache = redis.getStringOperations().get(dataKey);
 		if (cache == null) {
 			return null;
 		}
@@ -36,6 +36,6 @@ public final class RedisXmlPhoneVerificationCode extends AbstractXmlPhoneVerific
 		}
 
 		String dataKey = tempPrefix + "&" + configIndex + "&" + phone;
-		redis.setex(dataKey, (int) XTime.ONE_DAY / 1000, json.toJSONString());
+		redis.getStringOperations().setex(dataKey, (int) XTime.ONE_DAY / 1000, json.toJSONString());
 	}
 }

@@ -20,7 +20,7 @@ public class RedisQueue<E> implements Queue<E> {
 
 	public boolean offer(E e) {
 		byte[] data = IOUtils.javaObjectToByte(e);
-		redis.lpush(queueKey.getBytes(charset), data);
+		redis.getBinaryOperations().lpush(queueKey.getBytes(charset), data);
 		return true;
 	}
 
@@ -29,7 +29,7 @@ public class RedisQueue<E> implements Queue<E> {
 	}
 
 	public E peek() {
-		byte[] data = redis.lindex(queueKey.getBytes(charset), -1);
+		byte[] data = redis.getBinaryOperations().lindex(queueKey.getBytes(charset), -1);
 		if (data == null) {
 			return null;
 		}
@@ -37,7 +37,7 @@ public class RedisQueue<E> implements Queue<E> {
 	}
 
 	public E poll() {
-		byte[] data = redis.rpop(queueKey.getBytes(charset));
+		byte[] data = redis.getBinaryOperations().rpop(queueKey.getBytes(charset));
 		if (data == null) {
 			return null;
 		}
@@ -49,7 +49,7 @@ public class RedisQueue<E> implements Queue<E> {
 	}
 
 	public E take() throws InterruptedException {
-		List<byte[]> dataList = redis.brpop(Integer.MAX_VALUE, queueKey.getBytes(charset));
+		List<byte[]> dataList = redis.getBinaryOperations().brpop(Integer.MAX_VALUE, queueKey.getBytes(charset));
 		if (dataList == null || dataList.isEmpty()) {
 			return null;
 		}

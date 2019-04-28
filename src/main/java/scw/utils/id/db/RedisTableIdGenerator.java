@@ -15,13 +15,11 @@ public final class RedisTableIdGenerator implements IdGenerator<Long> {
 	private final boolean checkKey;
 	private DB db;
 
-	public RedisTableIdGenerator(Redis redis, Class<?> tableClass,
-			String fieldName) {
+	public RedisTableIdGenerator(Redis redis, Class<?> tableClass, String fieldName) {
 		this(redis, tableClass, fieldName, true);
 	}
 
-	public RedisTableIdGenerator(Redis redis, DB db, Class<?> tableClass,
-			String fieldName) {
+	public RedisTableIdGenerator(Redis redis, DB db, Class<?> tableClass, String fieldName) {
 		this(redis, tableClass, db, fieldName, true);
 	}
 
@@ -32,8 +30,7 @@ public final class RedisTableIdGenerator implements IdGenerator<Long> {
 	 * @param checkKey
 	 *            是否每次都检查key是否存在
 	 */
-	public RedisTableIdGenerator(Redis redis, Class<?> tableClass,
-			String fieldName, boolean checkKey) {
+	public RedisTableIdGenerator(Redis redis, Class<?> tableClass, String fieldName, boolean checkKey) {
 		this.redis = redis;
 		this.tableClass = tableClass;
 		this.fieldName = fieldName;
@@ -41,8 +38,7 @@ public final class RedisTableIdGenerator implements IdGenerator<Long> {
 		this.checkKey = checkKey;
 	}
 
-	public RedisTableIdGenerator(Redis redis, Class<?> tableClass, DB db,
-			String fieldName, boolean checkKey) {
+	public RedisTableIdGenerator(Redis redis, Class<?> tableClass, DB db, String fieldName, boolean checkKey) {
 		this.redis = redis;
 		this.tableClass = tableClass;
 		this.fieldName = fieldName;
@@ -57,7 +53,7 @@ public final class RedisTableIdGenerator implements IdGenerator<Long> {
 		}
 
 		if (checkKey) {
-			return redis.exists(key);
+			return redis.getStringOperations().exists(key);
 		}
 		return true;
 	}

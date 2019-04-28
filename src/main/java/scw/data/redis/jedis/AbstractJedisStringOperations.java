@@ -8,6 +8,7 @@ import java.util.Set;
 import redis.clients.jedis.Jedis;
 import scw.data.redis.AbstractStringRedisOperations;
 import scw.data.redis.RedisUtils;
+import scw.data.redis.ResourceManager;
 
 public abstract class AbstractJedisStringOperations extends AbstractStringRedisOperations
 		implements ResourceManager<Jedis> {
@@ -322,7 +323,7 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 		}
 	}
 
-	public Collection<String> brpop(int timeout, String key) {
+	public List<String> brpop(int timeout, String key) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
@@ -332,7 +333,7 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 		}
 	}
 
-	public Collection<String> blpop(int timeout, String key) {
+	public List<String> blpop(int timeout, String key) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
@@ -341,7 +342,7 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 			close(jedis);
 		}
 	}
-	
+
 	public List<String> mget(String... keys) {
 		Jedis jedis = null;
 		try {

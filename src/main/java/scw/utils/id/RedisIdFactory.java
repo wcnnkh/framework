@@ -10,6 +10,6 @@ public final class RedisIdFactory implements IdFactory<Long> {
 	}
 
 	public Long generator(String name) {
-		return redis.incr(this.getClass().getName() + "#" + name);
+		return redis.getStringOperations().incr(this.getClass().getName() + "#" + name);
 	}
 }

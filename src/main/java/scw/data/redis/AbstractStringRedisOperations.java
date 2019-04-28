@@ -3,7 +3,7 @@ package scw.data.redis;
 import java.util.Arrays;
 
 public abstract class AbstractStringRedisOperations implements RedisOperations<String, String> {
-
+	
 	public long incr(String key, long incr, long initValue) {
 		return Long.parseLong((String) eval(INCR_AND_INIT_SCRIPT, Arrays.asList(key),
 				Arrays.asList(String.valueOf(incr), String.valueOf(initValue))));

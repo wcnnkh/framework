@@ -25,11 +25,11 @@ public final class RedisLock extends AbstractLock {
 	}
 
 	public boolean lock() {
-		return redis.set(key, id, "NX", "EX", timeout);
+		return redis.getStringOperations().set(key, id, "NX", "EX", timeout);
 	}
 
 	public void unlock() {
-		Object result = redis.eval(UNLOCK_SCRIPT, Collections.singletonList(key), Collections.singletonList(id));
+		Object result = redis.getStringOperations().eval(UNLOCK_SCRIPT, Collections.singletonList(key), Collections.singletonList(id));
 		UNLOCK_SUCCESS_RESULT.equals(result);
 	}
 }

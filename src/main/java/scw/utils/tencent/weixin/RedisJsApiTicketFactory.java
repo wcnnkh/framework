@@ -34,7 +34,7 @@ public final class RedisJsApiTicketFactory extends AbstractJsApiTicketFactory {
 
 	@Override
 	protected JsApiTicket getJsApiTicketByCache() {
-		byte[] data = redis.get(key);
+		byte[] data = redis.getBinaryOperations().get(key);
 		if (data == null) {
 			return null;
 		}
@@ -55,7 +55,7 @@ public final class RedisJsApiTicketFactory extends AbstractJsApiTicketFactory {
 					GetJsApiTicket getJsApiTicket = new GetJsApiTicket(getAccessToken());
 					if (getJsApiTicket.isSuccess()) {
 						JsApiTicket jsApiTicket = getJsApiTicket.getTicket();
-						redis.setex(key, jsApiTicket.getExpires_in(), IOUtils.javaObjectToByte(jsApiTicket));
+						redis.getBinaryOperations().setex(key, jsApiTicket.getExpires_in(), IOUtils.javaObjectToByte(jsApiTicket));
 						return jsApiTicket;
 					}
 				}

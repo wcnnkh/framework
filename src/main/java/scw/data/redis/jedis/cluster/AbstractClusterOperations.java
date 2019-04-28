@@ -3,7 +3,7 @@ package scw.data.redis.jedis.cluster;
 import redis.clients.jedis.JedisCluster;
 import scw.data.redis.Redis;
 import scw.data.redis.RedisOperations;
-import scw.data.redis.jedis.ResourceManager;
+import scw.data.redis.ResourceManager;
 
 public abstract class AbstractClusterOperations implements Redis, ResourceManager<JedisCluster> {
 	private final RedisOperations<String, String> stringCommands = new AbstractClusterStringOperations() {

@@ -9,10 +9,10 @@ public final class RedisIdGenerator implements IdGenerator<Long>{
 	public RedisIdGenerator(Redis redis, String key, long initId){
 		this.redis = redis;
 		this.key = key;
-		redis.setnx(key, initId + "");
+		redis.getStringOperations().setnx(key, initId + "");
 	}
 	
 	public Long next() {
-		return redis.incr(key);
+		return redis.getStringOperations().incr(key);
 	}
 }

@@ -17,23 +17,21 @@ public final class RedisCache implements Cache {
 	}
 
 	public void add(String key, Object value, int exp) {
-		redis.set(key.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(value),
-				Redis.NX.getBytes(Constants.DEFAULT_CHARSET), Redis.EX.getBytes(Constants.DEFAULT_CHARSET),
-				exp);
+		redis.getBinaryOperations().set(key.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(value),
+				Redis.NX.getBytes(Constants.DEFAULT_CHARSET), Redis.EX.getBytes(Constants.DEFAULT_CHARSET), exp);
 	}
 
 	public void set(String key, Object value, int exp) {
-		redis.set(key.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(value),
-				Redis.XX.getBytes(Constants.DEFAULT_CHARSET), Redis.EX.getBytes(Constants.DEFAULT_CHARSET),
-				exp);
+		redis.getBinaryOperations().set(key.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(value),
+				Redis.XX.getBytes(Constants.DEFAULT_CHARSET), Redis.EX.getBytes(Constants.DEFAULT_CHARSET), exp);
 	}
 
 	public void delete(String key) {
-		redis.delete(key.getBytes(Constants.DEFAULT_CHARSET));
+		redis.getBinaryOperations().del(key.getBytes(Constants.DEFAULT_CHARSET));
 	}
 
 	public <T> T get(Class<T> type, String key) {
-		byte[] data = redis.get(key.getBytes(Constants.DEFAULT_CHARSET));
+		byte[] data = redis.getBinaryOperations().get(key.getBytes(Constants.DEFAULT_CHARSET));
 		if (data == null) {
 			return null;
 		}
@@ -42,8 +40,7 @@ public final class RedisCache implements Cache {
 	}
 
 	public <T> T getAndTouch(Class<T> type, String key, int exp) {
-		byte[] data = redis.getAndTouch(key.getBytes(Constants.DEFAULT_CHARSET),
-				exp);
+		byte[] data = redis.getBinaryOperations().getAndTouch(key.getBytes(Constants.DEFAULT_CHARSET), exp);
 		if (data == null) {
 			return null;
 		}
@@ -58,7 +55,7 @@ public final class RedisCache implements Cache {
 			arr[i] = iterator.next().getBytes(Constants.DEFAULT_CHARSET);
 		}
 
-		List<byte[]> list = redis.mget(arr);
+		List<byte[]> list = redis.getBinaryOperations().mget(arr);
 		if (list == null || list.isEmpty()) {
 			return null;
 		}
@@ -78,15 +75,15 @@ public final class RedisCache implements Cache {
 	}
 
 	public Map<String, String> getMap(String key) {
-		return redis.hgetAll(key);
+		return redis.getStringOperations().hgetAll(key);
 	}
 
 	public void mapAdd(String key, String field, String value) {
-		redis.hsetnx(key, field, value);
+		redis.getStringOperations().hsetnx(key, field, value);
 	}
 
 	public void mapRemove(String key, String field) {
-		redis.hdel(key, field);
+		redis.getStringOperations().hdel(key, field);
 	}
 
 }

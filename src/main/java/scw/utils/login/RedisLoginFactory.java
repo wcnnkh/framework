@@ -20,7 +20,7 @@ public class RedisLoginFactory implements LoginFactory {
 			return null;
 		}
 
-		String uid = redis.getAndTouch(prefix + sessionId, exp);
+		String uid = redis.getStringOperations().getAndTouch(prefix + sessionId, exp);
 		if (uid == null) {
 			return null;
 		}
@@ -37,7 +37,7 @@ public class RedisLoginFactory implements LoginFactory {
 			return;
 		}
 
-		redis.delete(prefix + sessionId);
+		redis.getStringOperations().del(prefix + sessionId);
 	}
 
 	public Redis getRedis() {
@@ -61,7 +61,7 @@ public class RedisLoginFactory implements LoginFactory {
 	}
 
 	public Session login(String sessionId, String uid) {
-		redis.setex(prefix + sessionId, exp, uid);
+		redis.getStringOperations().setex(prefix + sessionId, exp, uid);
 		return new Session(sessionId, uid);
 	}
 }

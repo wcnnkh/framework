@@ -8,7 +8,7 @@ import java.util.Set;
 import redis.clients.jedis.JedisCluster;
 import scw.data.redis.AbstractBinaryRedisOperations;
 import scw.data.redis.RedisUtils;
-import scw.data.redis.jedis.ResourceManager;
+import scw.data.redis.ResourceManager;
 
 public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedisOperations
 		implements ResourceManager<JedisCluster> {
@@ -323,7 +323,7 @@ public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedi
 		}
 	}
 
-	public Collection<byte[]> brpop(int timeout, byte[] key) {
+	public List<byte[]> brpop(int timeout, byte[] key) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
@@ -333,7 +333,7 @@ public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedi
 		}
 	}
 
-	public Collection<byte[]> blpop(int timeout, byte[] key) {
+	public List<byte[]> blpop(int timeout, byte[] key) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();

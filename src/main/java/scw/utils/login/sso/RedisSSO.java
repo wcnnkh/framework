@@ -16,7 +16,7 @@ public final class RedisSSO extends RedisLoginFactory implements SSO {
 	}
 
 	public Session getSessionByUid(String uid) {
-		String sid = getRedis().get(getPrefix() + uid);
+		String sid = getRedis().getStringOperations().get(getPrefix() + uid);
 		if (sid == null) {
 			return null;
 		}
@@ -26,15 +26,15 @@ public final class RedisSSO extends RedisLoginFactory implements SSO {
 
 	@Override
 	public void cancelLogin(String sessionId) {
-		String uid = getRedis().get(getPrefix() + sessionId);
+		String uid = getRedis().getStringOperations().get(getPrefix() + sessionId);
 		if (uid != null) {
-			getRedis().delete(getPrefix() + uid);
+			getRedis().getStringOperations().del(getPrefix() + uid);
 		}
 		super.cancelLogin(sessionId);
 	}
 
 	public void cancelLoginByUid(String uid) {
-		String sid = getRedis().get(getPrefix() + uid);
+		String sid = getRedis().getStringOperations().get(getPrefix() + uid);
 		if (sid != null) {
 			cancelLogin(sid);
 		}
@@ -58,11 +58,11 @@ public final class RedisSSO extends RedisLoginFactory implements SSO {
 
 	@Override
 	public Session login(String sessionId, String uid) {
-		String oldSid = getRedis().get(getPrefix() + uid);
+		String oldSid = getRedis().getStringOperations().get(getPrefix() + uid);
 		if (oldSid != null) {
-			getRedis().delete(getPrefix() + oldSid);
+			getRedis().getStringOperations().del(getPrefix() + oldSid);
 		}
-		getRedis().set(getPrefix() + uid, sessionId);
+		getRedis().getStringOperations().set(getPrefix() + uid, sessionId);
 		return super.login(sessionId, uid);
 	}
 }

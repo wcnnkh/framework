@@ -7,7 +7,7 @@ import java.io.IOException;
  * @author shuchaowen
  *
  */
-public final class XMemcached extends scw.data.memcached.x.XMemcached {
+public final class XMemcached extends scw.data.memcached.x.XMemcached implements Memcached {
 	/**
 	 * 获取一个本地的memcached对象 localhost:11211
 	 * 

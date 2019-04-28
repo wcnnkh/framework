@@ -26,14 +26,14 @@ public final class RedisTableIdFactory extends AbstractTableIdFactory {
 
 	public long generator(Class<?> tableClass, String fieldName) {
 		String key = getCacheKey(tableClass, fieldName);
-		if (!redis.exists(key)) {
+		if (!redis.getStringOperations().exists(key)) {
 			// 不存在
 			Lock lock = new RedisLock(redis, key + "&lock");
 			try {
 				lock.lockWait();
-				if (!redis.exists(key)) {
+				if (!redis.getStringOperations().exists(key)) {
 					long maxId = getMaxId(tableClass, fieldName);
-					return redis.incr(key, 1, maxId + 1);
+					return redis.getStringOperations().incr(key, 1, maxId + 1);
 				}
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
@@ -41,7 +41,7 @@ public final class RedisTableIdFactory extends AbstractTableIdFactory {
 				lock.unlock();
 			}
 		}
-		return redis.incr(key);
+		return redis.getStringOperations().incr(key);
 	}
 
 }

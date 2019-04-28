@@ -26,7 +26,7 @@ public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory {
 
 	@Override
 	protected AccessToken getAccessTokenByCache() {
-		byte[] data = redis.get(key);
+		byte[] data = redis.getBinaryOperations().get(key);
 		if (data == null) {
 			return null;
 		}
@@ -47,7 +47,8 @@ public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory {
 					GetAccessToken getAccessToken = new GetAccessToken(getAppid(), getAppsecret());
 					if (getAccessToken.isSuccess()) {
 						AccessToken accessToken = getAccessToken.getAccessToken();
-						redis.setex(key, accessToken.getExpires_in(), IOUtils.javaObjectToByte(accessToken));
+						redis.getBinaryOperations().setex(key, accessToken.getExpires_in(),
+								IOUtils.javaObjectToByte(accessToken));
 						return accessToken;
 					}
 				}
