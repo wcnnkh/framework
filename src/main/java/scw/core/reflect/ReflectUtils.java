@@ -125,38 +125,41 @@ public final class ReflectUtils {
 	}
 
 	/**
-	 * 必须存在默认的
+	 * 必须要存在默认的构造方法
 	 * 
 	 * @param obj
+	 * @param recursion
+	 *            是否递归
 	 * @return
 	 */
-	public static <T> T clone(T obj) {
+	public static <T> T clone(T obj, boolean recursion) {
 		try {
-			return clone(obj, false, false);
-		} catch (Throwable e) {
+			return clone(obj, recursion, false, true, true);
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	/**
-	 * 深拷贝对象
+	 * 必须要存在默认的构造方法
 	 * 
 	 * @param obj
-	 * @param cloneStatic
-	 *            是否拷贝静态字段
-	 * @param cloneTransient
-	 *            是否拷贝transient修饰的字段
+	 * @param recursion
+	 * @param ignoreFinal
+	 * @param ignoreStatic
+	 * @param ignoreTransient
 	 * @return
-	 * @throws Throwable
+	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T clone(T obj, boolean cloneStatic, boolean cloneTransient) throws Throwable {
+	public static <T> T clone(T obj, boolean recursion, boolean ignoreFinal, boolean ignoreStatic,
+			boolean ignoreTransient) throws Exception {
 		if (obj == null) {
 			return null;
 		}
 
 		Class<?> type = obj.getClass();
-		if (type == Object.class) {
+		if (type.isPrimitive() || type.isEnum()) {
 			return obj;
 		} else if (type.isArray()) {
 			int size = Array.getLength(obj);
@@ -166,9 +169,11 @@ public final class ReflectUtils {
 
 			Object newArr = Array.newInstance(type.getComponentType(), size);
 			for (int i = 0; i < size; i++) {
-				Array.set(newArr, i, clone(Array.get(obj, i), cloneStatic, cloneTransient));
+				Array.set(newArr, i, clone(Array.get(obj, i), recursion, ignoreFinal, ignoreStatic, ignoreTransient));
 			}
 			return (T) newArr;
+		} else if (String.class.isAssignableFrom(type)) {
+			return (T) new String(((String) obj).toCharArray());
 		}
 
 		T t = obj;
@@ -181,18 +186,22 @@ public final class ReflectUtils {
 				}
 
 				t = (T) constructor.newInstance();
-			} catch (NoSuchMethodException e) {
+			} catch (Exception e) {
 			}
 		}
 
 		Class<?> clazz = type;
 		while (clazz != null) {
 			for (Field field : clazz.getDeclaredFields()) {
-				if (!cloneStatic && Modifier.isStatic(field.getModifiers())) {
+				if (ignoreFinal && Modifier.isFinal(field.getModifiers())) {
 					continue;
 				}
 
-				if (!cloneTransient && Modifier.isTransient(field.getModifiers())) {
+				if (ignoreStatic && Modifier.isStatic(field.getModifiers())) {
+					continue;
+				}
+
+				if (ignoreTransient && Modifier.isTransient(field.getModifiers())) {
 					continue;
 				}
 
@@ -202,8 +211,8 @@ public final class ReflectUtils {
 					continue;
 				}
 
-				if (!field.getType().isPrimitive() && !field.getType().isEnum() && field.getType() != Object.class) {
-					v = clone(v, cloneStatic, cloneTransient);
+				if (recursion && !field.getType().isPrimitive() && !field.getType().isEnum()) {
+					v = clone(v, recursion, ignoreFinal, ignoreStatic, ignoreTransient);
 				}
 
 				field.set(Modifier.isStatic(field.getModifiers()) ? null : t, v);

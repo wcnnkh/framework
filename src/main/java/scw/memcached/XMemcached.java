@@ -14,7 +14,7 @@ public final class XMemcached extends scw.data.memcached.x.XMemcached implements
 	 * @throws IOException
 	 */
 	public XMemcached() throws IOException {
-		this("localhost:11211");
+		super("localhost:11211");
 	}
 
 	public XMemcached(String hosts) throws IOException {

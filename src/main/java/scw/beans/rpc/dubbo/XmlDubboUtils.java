@@ -48,7 +48,7 @@ public final class XmlDubboUtils {
 		List<RegistryConfig> list = new LinkedList<RegistryConfig>();
 		String[] addressArray = StringUtils.commonSplit(XmlBeanUtils.getAddress(propertiesFactory, node));
 		for (String address : addressArray) {
-			RegistryConfig config = ReflectUtils.clone(registryConfig);
+			RegistryConfig config = ReflectUtils.clone(registryConfig, false);
 			config.setAddress(address);
 			list.add(config);
 		}
@@ -76,7 +76,6 @@ public final class XmlDubboUtils {
 						return StringParseUtils.conversion(value, type);
 					}
 				});
-
 		List<ProtocolConfig> list = new LinkedList<ProtocolConfig>();
 		list.add(config);
 		NodeList nodeList = node.getChildNodes();
@@ -132,11 +131,10 @@ public final class XmlDubboUtils {
 			for (Class<?> clz : ClassUtils.getClasses(packageName)) {
 				Service service = clz.getAnnotation(Service.class);
 				if (service != null) {
-					Class<?>[] interfaces = clz.getInterfaces();
 					Object ref = beanFactory.get(clz);
-					for (Class<?> i : interfaces) {
+					for (Class<?> i : clz.getInterfaces()) {
 						@SuppressWarnings("unchecked")
-						ServiceConfig<Object> config = (ServiceConfig<Object>) ReflectUtils.clone(serviceConfig);
+						ServiceConfig<Object> config = (ServiceConfig<Object>) ReflectUtils.clone(serviceConfig, false);
 						config.setInterface(i);
 						config.setRef(ref);
 						serviceConfigs.add(config);
@@ -219,7 +217,7 @@ public final class XmlDubboUtils {
 		if (packageName != null) {
 			for (Class<?> clz : ClassUtils.getClasses(packageName)) {
 				if (clz.isInterface()) {
-					ReferenceConfig<?> referenceConfig = ReflectUtils.clone(config);
+					ReferenceConfig<?> referenceConfig = ReflectUtils.clone(config, false);
 					referenceConfig.setInterface(clz);
 					referenceConfigs.add(referenceConfig);
 				}
