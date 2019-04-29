@@ -1,4 +1,4 @@
-package scw.utils.apple.response;
+package scw.support.apple.response;
 
 public class App {
 	private String quantity;

@@ -1,4 +1,4 @@
-package scw.utils.apple;
+package scw.support.apple;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -6,9 +6,18 @@ import com.alibaba.fastjson.JSONObject;
 public final class ReceiptResponse {
 	private Integer status;
 	private String receipt;
+	private boolean sandbox;//是否是测试模式
 
 	protected ReceiptResponse() {
 	};
+	
+	protected void setSandbox(boolean sandbox){
+		this.sandbox = sandbox;
+	}
+
+	public boolean isSandbox() {
+		return sandbox;
+	}
 
 	public String getReceipt() {
 		return receipt;

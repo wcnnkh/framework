@@ -1,4 +1,4 @@
-package scw.utils.apple.response;
+package scw.support.apple.response;
 
 /**
  * ios7以下的receipt数据格式

@@ -1,4 +1,4 @@
-package scw.utils.apple;
+package scw.support.apple;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +35,7 @@ public final class ApplePay {
 	 *            可选
 	 * @return
 	 */
-	public ReceiptResponse checkReceipt(String host, String receiptData, String password,
+	private ReceiptResponse checkReceipt(String host, String receiptData, String password,
 			String excludeOldTransactions) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("receipt-data", receiptData);
@@ -65,8 +65,10 @@ public final class ApplePay {
 	 */
 	public ReceiptResponse autoCheckReceipt(String receiptData, String password, String excludeOldTransactions) {
 		ReceiptResponse res = checkReceipt(DEV_URL, receiptData, password, excludeOldTransactions);
+		res.setSandbox(false);
 		if (res.isOperationModeError()) {// 这是一个测试环境下的订单或者收据无法通过身份验证。
 			res = checkReceipt(SANDBOX_URL, receiptData, password, excludeOldTransactions);
+			res.setSandbox(true);
 		}
 		return res;
 	}
