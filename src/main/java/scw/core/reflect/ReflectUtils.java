@@ -118,7 +118,7 @@ public final class ReflectUtils {
 
 	public static java.lang.reflect.Method getMethod(Class<?> type, String name, Class<?>... parameterTypes)
 			throws NoSuchMethodException {
-		java.lang.reflect.Method method = type.getMethod(name, parameterTypes);
+		java.lang.reflect.Method method = type.getDeclaredMethod(name, parameterTypes);
 		if (!Modifier.isPublic(type.getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
 			method.setAccessible(true);
 		}
@@ -137,31 +137,26 @@ public final class ReflectUtils {
 	 * 必须要存在默认的构造方法
 	 * 
 	 * @param obj
-	 * @param recursion
-	 *            是否递归
 	 * @return
 	 */
 	public static <T> T clone(T obj) {
 		try {
-			return clone(obj, true, true);
+			return clone(obj, true);
 		} catch (Exception e) {
-			logger.error("clone对象失败:{}", obj == null ? "" : obj.getClass());
 			throw new RuntimeException(e);
 		}
 	}
 
-	private static Object cloneArray(Class<?> type, Object array, boolean ignoreStatic, boolean ignoreTransient)
-			throws Exception {
+	private static Object cloneArray(Class<?> type, Object array, boolean ignoreTransient) throws Exception {
 		int size = Array.getLength(array);
 		Object newArr = Array.newInstance(type.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
-			Array.set(newArr, i, clone(Array.get(array, i), ignoreStatic, ignoreTransient));
+			Array.set(newArr, i, clone(Array.get(array, i), ignoreTransient));
 		}
 		return newArr;
 	}
 
-	private static Object cloneObject(Class<?> type, Object obj, boolean ignoreStatic, boolean ignoreTransient)
-			throws Exception {
+	private static Object cloneObject(Class<?> type, Object obj, boolean ignoreTransient) throws Exception {
 		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
 			return obj;
 		}
@@ -180,7 +175,7 @@ public final class ReflectUtils {
 		Class<?> clazz = type;
 		while (clazz != null) {
 			for (Field field : clazz.getDeclaredFields()) {
-				if (ignoreStatic && Modifier.isStatic(field.getModifiers())) {
+				if (Modifier.isStatic(field.getModifiers())) {
 					continue;
 				}
 
@@ -196,11 +191,9 @@ public final class ReflectUtils {
 
 				if (!field.getType().isPrimitive() && !field.getType().isEnum()) {
 					if (field.getType().isArray()) {
-						v = cloneArray(field.getType(), v, ignoreStatic, ignoreTransient);
-					} else if (String.class.isAssignableFrom(type)) {
-						return new String(((String) obj).toCharArray());
+						v = cloneArray(field.getType(), v, ignoreTransient);
 					} else {
-						v = clone(v, ignoreStatic, ignoreTransient);
+						v = clone(v, ignoreTransient);
 					}
 				}
 				field.set(Modifier.isStatic(field.getModifiers()) ? null : t, v);
@@ -214,14 +207,12 @@ public final class ReflectUtils {
 	 * 必须要存在默认的构造方法
 	 * 
 	 * @param obj
-	 * @param ignoreFinal
-	 * @param ignoreStatic
 	 * @param ignoreTransient
 	 * @return
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T clone(T obj, boolean ignoreStatic, boolean ignoreTransient) throws Exception {
+	public static <T> T clone(T obj, boolean ignoreTransient) throws Exception {
 		if (obj == null) {
 			return null;
 		}
@@ -230,13 +221,14 @@ public final class ReflectUtils {
 		if (type.isPrimitive() || type.isEnum()) {
 			return obj;
 		} else if (type.isArray()) {
-			return (T) cloneArray(type, obj, ignoreStatic, ignoreTransient);
-		} else if (String.class.isAssignableFrom(type)) {
-			return (T) new String(((String) obj).toCharArray());
+			return (T) cloneArray(type, obj, ignoreTransient);
 		} else if (obj instanceof Cloneable) {
-			return (T) getMethod(type, "clone").invoke(obj);
+			try {
+				return (T) getMethod(type, "clone").invoke(obj);
+			} catch (NoSuchMethodException e) {
+			}
 		}
 
-		return (T) cloneObject(type, obj, ignoreStatic, ignoreTransient);
+		return (T) cloneObject(type, obj, ignoreTransient);
 	}
 }
