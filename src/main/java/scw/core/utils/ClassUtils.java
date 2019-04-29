@@ -1779,6 +1779,11 @@ public final class ClassUtils {
 			if (useInterface) {
 				appendAnnoationInterfaceMethod(map, clz, annotationClass);
 			}
+			
+			if(!useSuper){
+				break;
+			}
+			
 			clz = clz.getSuperclass();
 		}
 		return map.values().toArray(new Method[map.size()]);
