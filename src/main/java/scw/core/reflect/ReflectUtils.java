@@ -141,22 +141,24 @@ public final class ReflectUtils {
 	 */
 	public static <T> T clone(T obj) {
 		try {
-			return clone(obj, true);
+			return clone(obj, true, true);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private static Object cloneArray(Class<?> type, Object array, boolean ignoreTransient) throws Exception {
+	private static Object cloneArray(Class<?> type, Object array, boolean ignoreStatic, boolean ignoreTransient)
+			throws Exception {
 		int size = Array.getLength(array);
 		Object newArr = Array.newInstance(type.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
-			Array.set(newArr, i, clone(Array.get(array, i), ignoreTransient));
+			Array.set(newArr, i, clone(Array.get(array, i), ignoreStatic, ignoreTransient));
 		}
 		return newArr;
 	}
 
-	private static Object cloneObject(Class<?> type, Object obj, boolean ignoreTransient) throws Exception {
+	private static Object cloneObject(Class<?> type, Object obj, boolean ignoreStatic, boolean ignoreTransient)
+			throws Exception {
 		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
 			return obj;
 		}
@@ -175,7 +177,7 @@ public final class ReflectUtils {
 		Class<?> clazz = type;
 		while (clazz != null) {
 			for (Field field : clazz.getDeclaredFields()) {
-				if (Modifier.isStatic(field.getModifiers())) {
+				if (ignoreStatic && Modifier.isStatic(field.getModifiers())) {
 					continue;
 				}
 
@@ -191,9 +193,9 @@ public final class ReflectUtils {
 
 				if (!field.getType().isPrimitive() && !field.getType().isEnum()) {
 					if (field.getType().isArray()) {
-						v = cloneArray(field.getType(), v, ignoreTransient);
+						v = cloneArray(field.getType(), v, ignoreStatic, ignoreTransient);
 					} else {
-						v = clone(v, ignoreTransient);
+						v = clone(v, ignoreStatic, ignoreTransient);
 					}
 				}
 				field.set(Modifier.isStatic(field.getModifiers()) ? null : t, v);
@@ -207,12 +209,13 @@ public final class ReflectUtils {
 	 * 必须要存在默认的构造方法
 	 * 
 	 * @param obj
+	 * @param ignoreStatic
 	 * @param ignoreTransient
 	 * @return
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T clone(T obj, boolean ignoreTransient) throws Exception {
+	public static <T> T clone(T obj, boolean ignoreStatic, boolean ignoreTransient) throws Exception {
 		if (obj == null) {
 			return null;
 		}
@@ -221,7 +224,7 @@ public final class ReflectUtils {
 		if (type.isPrimitive() || type.isEnum()) {
 			return obj;
 		} else if (type.isArray()) {
-			return (T) cloneArray(type, obj, ignoreTransient);
+			return (T) cloneArray(type, obj, ignoreStatic, ignoreTransient);
 		} else if (obj instanceof Cloneable) {
 			try {
 				return (T) getMethod(type, "clone").invoke(obj);
@@ -229,6 +232,6 @@ public final class ReflectUtils {
 			}
 		}
 
-		return (T) cloneObject(type, obj, ignoreTransient);
+		return (T) cloneObject(type, obj, ignoreStatic, ignoreTransient);
 	}
 }
