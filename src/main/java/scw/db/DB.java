@@ -16,6 +16,10 @@ import scw.core.Iterator;
 import scw.core.exception.NotSupportException;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
+import scw.data.utils.queue.MemcachedQueue;
+import scw.data.utils.queue.MemoryQueue;
+import scw.data.utils.queue.Queue;
+import scw.data.utils.queue.RedisQueue;
 import scw.db.async.AsyncInfo;
 import scw.db.async.MultipleOperation;
 import scw.db.async.OperationBean;
@@ -38,10 +42,6 @@ import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 import scw.transaction.sql.ConnectionFactory;
 import scw.transaction.sql.SqlTransactionUtils;
-import scw.utils.queue.MemcachedQueue;
-import scw.utils.queue.MemoryQueue;
-import scw.utils.queue.Queue;
-import scw.utils.queue.RedisQueue;
 
 public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoCloseable {
 	private static final String PREFIX = "cache:";

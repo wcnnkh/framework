@@ -1,11 +1,12 @@
 package scw.core.logger;
 
+import java.util.concurrent.LinkedBlockingQueue;
+
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
-import scw.utils.queue.MemoryQueue;
 
 public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable {
-	private MemoryQueue<Message> handlerQueue = new MemoryQueue<Message>();
+	private LinkedBlockingQueue<Message> handlerQueue = new LinkedBlockingQueue<Message>();
 	private final Thread thread;
 
 	public AbstractLoggerFactory() {

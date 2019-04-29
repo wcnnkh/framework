@@ -1,4 +1,4 @@
-package scw.utils.queue;
+package scw.data.utils.queue;
 
 import java.util.concurrent.TimeUnit;
 

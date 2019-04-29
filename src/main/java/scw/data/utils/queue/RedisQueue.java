@@ -1,4 +1,4 @@
-package scw.utils.queue;
+package scw.data.utils.queue;
 
 import java.nio.charset.Charset;
 import java.util.List;
