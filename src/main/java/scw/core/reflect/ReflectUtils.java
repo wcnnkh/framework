@@ -18,18 +18,15 @@ public final class ReflectUtils {
 	private ReflectUtils() {
 	};
 
-	public static <T, V> void setProperties(Class<T> type, T bean,
-			Map<String, V> properties, boolean isPublicMethod,
+	public static <T, V> void setProperties(Class<T> type, T bean, Map<String, V> properties, boolean isPublicMethod,
 			SetterMapper<V> mapper) {
 		if (properties == null || properties.isEmpty()) {
 			return;
 		}
 
 		for (Entry<String, V> entry : properties.entrySet()) {
-			String methodName = "set"
-					+ StringUtils.toUpperCase(entry.getKey(), 0, 1);
-			for (java.lang.reflect.Method method : isPublicMethod ? type
-					.getMethods() : type.getDeclaredMethods()) {
+			String methodName = "set" + StringUtils.toUpperCase(entry.getKey(), 0, 1);
+			for (java.lang.reflect.Method method : isPublicMethod ? type.getMethods() : type.getDeclaredMethods()) {
 				if (method.getParameterTypes().length != 1) {
 					continue;
 				}
@@ -40,22 +37,19 @@ public final class ReflectUtils {
 
 				Object v;
 				try {
-					v = mapper.mapper(bean, method, entry.getKey(),
-							entry.getValue(), method.getParameterTypes()[0]);
+					v = mapper.mapper(bean, method, entry.getKey(), entry.getValue(), method.getParameterTypes()[0]);
 					method.setAccessible(true);
 					method.invoke(bean, v);
 				} catch (Throwable e) {
 					logger.error(
-							"向对象" + type.getName() + "，插入name="
-									+ entry.getKey() + ",value="
-									+ entry.getValue() + "时异常", e);
+							"向对象" + type.getName() + "，插入name=" + entry.getKey() + ",value=" + entry.getValue() + "时异常",
+							e);
 				}
 			}
 		}
 	}
 
-	public static <T> Constructor<T> getConstructor(Class<T> type)
-			throws NoSuchMethodException, SecurityException {
+	public static <T> Constructor<T> getConstructor(Class<T> type) throws NoSuchMethodException, SecurityException {
 		Constructor<T> constructor = type.getConstructor();
 		if (!Modifier.isPublic(constructor.getModifiers())) {
 			constructor.setAccessible(true);
@@ -63,9 +57,8 @@ public final class ReflectUtils {
 		return constructor;
 	}
 
-	public static <T> Constructor<T> getConstructor(Class<T> type,
-			Class<?>... parameterTypes) throws NoSuchMethodException,
-			SecurityException {
+	public static <T> Constructor<T> getConstructor(Class<T> type, Class<?>... parameterTypes)
+			throws NoSuchMethodException, SecurityException {
 		Constructor<T> constructor = type.getConstructor(parameterTypes);
 		if (!Modifier.isPublic(constructor.getModifiers())) {
 			constructor.setAccessible(true);
@@ -73,23 +66,19 @@ public final class ReflectUtils {
 		return constructor;
 	}
 
-	public static Constructor<?> getConstructor(String className,
-			Class<?>... parameterTypes) throws NoSuchMethodException,
-			SecurityException, ClassNotFoundException {
+	public static Constructor<?> getConstructor(String className, Class<?>... parameterTypes)
+			throws NoSuchMethodException, SecurityException, ClassNotFoundException {
 		return getConstructor(Class.forName(className), parameterTypes);
 	}
 
-	public static <T> Constructor<T> getConstructor(Class<T> type,
-			String... parameterTypeNames) throws NoSuchMethodException,
-			SecurityException, ClassNotFoundException {
+	public static <T> Constructor<T> getConstructor(Class<T> type, String... parameterTypeNames)
+			throws NoSuchMethodException, SecurityException, ClassNotFoundException {
 		return getConstructor(type, ClassUtils.forName(parameterTypeNames));
 	}
 
-	public static Constructor<?> getConstructor(String className,
-			String... parameterTypes) throws ClassNotFoundException,
-			NoSuchMethodException, SecurityException {
-		return getConstructor(Class.forName(className),
-				ClassUtils.forName(className));
+	public static Constructor<?> getConstructor(String className, String... parameterTypes)
+			throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+		return getConstructor(Class.forName(className), ClassUtils.forName(className));
 	}
 
 	/**
@@ -100,8 +89,7 @@ public final class ReflectUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> findConstructorByParameters(Class<T> type,
-			Object... params) {
+	public static <T> Constructor<T> findConstructorByParameters(Class<T> type, Object... params) {
 		for (Constructor<?> constructor : type.getDeclaredConstructors()) {
 			Class<?>[] types = constructor.getParameterTypes();
 			if (types.length == params.length) {
@@ -128,6 +116,15 @@ public final class ReflectUtils {
 		return null;
 	}
 
+	public static java.lang.reflect.Method getMethod(Class<?> type, String name, Class<?>... parameterTypes)
+			throws NoSuchMethodException {
+		java.lang.reflect.Method method = type.getMethod(name, parameterTypes);
+		if (!Modifier.isPublic(type.getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
+			method.setAccessible(true);
+		}
+		return method;
+	}
+
 	public static <T> T newInstance(Class<T> type) {
 		try {
 			return getConstructor(type).newInstance();
@@ -146,66 +143,40 @@ public final class ReflectUtils {
 	 */
 	public static <T> T clone(T obj) {
 		try {
-			return clone(obj, true, true, true);
+			return clone(obj, true, true);
 		} catch (Exception e) {
+			logger.error("clone对象失败:{}", obj == null ? "" : obj.getClass());
 			throw new RuntimeException(e);
 		}
 	}
 
-	/**
-	 * 必须要存在默认的构造方法
-	 * 
-	 * @param obj
-	 * @param recursion
-	 * @param ignoreFinal
-	 * @param ignoreStatic
-	 * @param ignoreTransient
-	 * @return
-	 * @throws Exception
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T clone(T obj, boolean recursion, boolean ignoreStatic,
-			boolean ignoreTransient) throws Exception {
-		if (obj == null) {
-			return null;
+	private static Object cloneArray(Class<?> type, Object array, boolean ignoreStatic, boolean ignoreTransient)
+			throws Exception {
+		int size = Array.getLength(array);
+		Object newArr = Array.newInstance(type.getComponentType(), size);
+		for (int i = 0; i < size; i++) {
+			Array.set(newArr, i, clone(Array.get(array, i), ignoreStatic, ignoreTransient));
 		}
+		return newArr;
+	}
 
-		Class<?> type = obj.getClass();
-		if (type.isPrimitive() || type.isEnum()) {
+	private static Object cloneObject(Class<?> type, Object obj, boolean ignoreStatic, boolean ignoreTransient)
+			throws Exception {
+		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
 			return obj;
-		} else if (type.isArray()) {
-			int size = Array.getLength(obj);
-			if (size == 0) {
-				return obj;
-			}
-
-			Object newArr = Array.newInstance(type.getComponentType(), size);
-			for (int i = 0; i < size; i++) {
-				Array.set(
-						newArr,
-						i,
-						clone(Array.get(obj, i), recursion, ignoreStatic,
-								ignoreTransient));
-			}
-			return (T) newArr;
-		} else if (String.class.isAssignableFrom(type)) {
-			return (T) new String(((String) obj).toCharArray());
 		}
 
-		T t = obj;
-		if (!type.isInterface() || !Modifier.isAbstract(type.getModifiers())) {
-			Constructor<?> constructor = null;
-			try {
-				constructor = type.getConstructor();
-				if (!Modifier.isPublic(constructor.getModifiers())) {
-					constructor.setAccessible(true);
-				}
-
-				t = (T) constructor.newInstance();
-			} catch (Exception e) {
-			}
+		Constructor<?> constructor = null;
+		try {
+			constructor = getConstructor(type);
+		} catch (NoSuchMethodException e) {
 		}
 
+		if (constructor == null) {
+			return obj;
+		}
+
+		Object t = constructor.newInstance();
 		Class<?> clazz = type;
 		while (clazz != null) {
 			for (Field field : clazz.getDeclaredFields()) {
@@ -213,8 +184,7 @@ public final class ReflectUtils {
 					continue;
 				}
 
-				if (ignoreTransient
-						&& Modifier.isTransient(field.getModifiers())) {
+				if (ignoreTransient && Modifier.isTransient(field.getModifiers())) {
 					continue;
 				}
 
@@ -224,15 +194,49 @@ public final class ReflectUtils {
 					continue;
 				}
 
-				if (recursion && !field.getType().isPrimitive()
-						&& !field.getType().isEnum()) {
-					v = clone(v, recursion, ignoreStatic, ignoreTransient);
+				if (!field.getType().isPrimitive() && !field.getType().isEnum()) {
+					if (field.getType().isArray()) {
+						v = cloneArray(field.getType(), v, ignoreStatic, ignoreTransient);
+					} else if (String.class.isAssignableFrom(type)) {
+						return new String(((String) obj).toCharArray());
+					} else {
+						v = clone(v, ignoreStatic, ignoreTransient);
+					}
 				}
-
 				field.set(Modifier.isStatic(field.getModifiers()) ? null : t, v);
 			}
 			clazz = clazz.getSuperclass();
 		}
 		return t;
+	}
+
+	/**
+	 * 必须要存在默认的构造方法
+	 * 
+	 * @param obj
+	 * @param ignoreFinal
+	 * @param ignoreStatic
+	 * @param ignoreTransient
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T clone(T obj, boolean ignoreStatic, boolean ignoreTransient) throws Exception {
+		if (obj == null) {
+			return null;
+		}
+
+		Class<?> type = obj.getClass();
+		if (type.isPrimitive() || type.isEnum()) {
+			return obj;
+		} else if (type.isArray()) {
+			return (T) cloneArray(type, obj, ignoreStatic, ignoreTransient);
+		} else if (String.class.isAssignableFrom(type)) {
+			return (T) new String(((String) obj).toCharArray());
+		} else if (obj instanceof Cloneable) {
+			return (T) getMethod(type, "clone").invoke(obj);
+		}
+
+		return (T) cloneObject(type, obj, ignoreStatic, ignoreTransient);
 	}
 }
