@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.data.memcached.CAS;
-import scw.memcached.Memcached;
+import scw.data.memcached.Memcached;
 
 public final class MemcachedCache implements Cache {
 	private final Memcached memcached;

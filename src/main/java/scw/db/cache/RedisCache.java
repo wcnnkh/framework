@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import scw.core.Constants;
-import scw.redis.Redis;
+import scw.data.redis.Redis;
+import scw.data.redis.RedisUtils;
 
 public final class RedisCache implements Cache {
 	private final Redis redis;
@@ -18,12 +19,12 @@ public final class RedisCache implements Cache {
 
 	public void add(String key, Object value, int exp) {
 		redis.getBinaryOperations().set(key.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(value),
-				Redis.NX.getBytes(Constants.DEFAULT_CHARSET), Redis.EX.getBytes(Constants.DEFAULT_CHARSET), exp);
+				RedisUtils.NX.getBytes(Constants.DEFAULT_CHARSET), RedisUtils.EX.getBytes(Constants.DEFAULT_CHARSET), exp);
 	}
 
 	public void set(String key, Object value, int exp) {
 		redis.getBinaryOperations().set(key.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(value),
-				Redis.XX.getBytes(Constants.DEFAULT_CHARSET), Redis.EX.getBytes(Constants.DEFAULT_CHARSET), exp);
+				RedisUtils.XX.getBytes(Constants.DEFAULT_CHARSET), RedisUtils.EX.getBytes(Constants.DEFAULT_CHARSET), exp);
 	}
 
 	public void delete(String key) {

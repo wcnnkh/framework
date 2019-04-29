@@ -26,31 +26,25 @@ import scw.core.utils.StringParseUtils;
 import scw.core.utils.StringUtils;
 
 public final class XmlDubboUtils {
-	private static Logger logger = LoggerFactory.getLogger(XmlDubboUtils.class);
-
 	private XmlDubboUtils() {
 	};
 
-	private static List<RegistryConfig> parseRegistryConfig(
-			PropertiesFactory propertiesFactory, BeanFactory beanFactory,
-			Node node) {
-		RegistryConfig registryConfig = XmlBeanUtils
-				.newInstanceLoadAttributeBySetter(RegistryConfig.class,
-						propertiesFactory, node, new SetterMapper<String>() {
+	private static List<RegistryConfig> parseRegistryConfig(PropertiesFactory propertiesFactory,
+			BeanFactory beanFactory, Node node) {
+		RegistryConfig registryConfig = XmlBeanUtils.newInstanceLoadAttributeBySetter(RegistryConfig.class,
+				propertiesFactory, node, new SetterMapper<String>() {
 
-							public Object mapper(Object bean, Method method,
-									String name, String value, Class<?> type) {
-								if ("address".equals(name)) {
-									return null;
-								}
+					public Object mapper(Object bean, Method method, String name, String value, Class<?> type) {
+						if ("address".equals(name)) {
+							return null;
+						}
 
-								return StringParseUtils.conversion(value, type);
-							}
-						});
+						return StringParseUtils.conversion(value, type);
+					}
+				});
 
 		List<RegistryConfig> list = new LinkedList<RegistryConfig>();
-		String[] addressArray = StringUtils.commonSplit(XmlBeanUtils
-				.getAddress(propertiesFactory, node));
+		String[] addressArray = StringUtils.commonSplit(XmlBeanUtils.getAddress(propertiesFactory, node));
 		for (String address : addressArray) {
 			RegistryConfig config = ReflectUtils.clone(registryConfig);
 			config.setAddress(address);
@@ -61,22 +55,18 @@ public final class XmlDubboUtils {
 		for (int i = 0, size = nodeList.getLength(); i < size; i++) {
 			Node n = nodeList.item(i);
 			if ("registry".equals(n.getNodeName())) {
-				list.addAll(parseRegistryConfig(propertiesFactory, beanFactory,
-						n));
+				list.addAll(parseRegistryConfig(propertiesFactory, beanFactory, n));
 			}
 		}
 		return list;
 	}
 
-	private static List<ProtocolConfig> parseProtocolConfig(
-			PropertiesFactory propertiesFactory, BeanFactory beanFactory,
-			Node node, final boolean root) {
-		ProtocolConfig config = XmlBeanUtils.newInstanceLoadAttributeBySetter(
-				ProtocolConfig.class, propertiesFactory, node,
-				new SetterMapper<String>() {
+	private static List<ProtocolConfig> parseProtocolConfig(PropertiesFactory propertiesFactory,
+			BeanFactory beanFactory, Node node, final boolean root) {
+		ProtocolConfig config = XmlBeanUtils.newInstanceLoadAttributeBySetter(ProtocolConfig.class, propertiesFactory,
+				node, new SetterMapper<String>() {
 
-					public Object mapper(Object bean, Method method,
-							String name, String value, Class<?> type) {
+					public Object mapper(Object bean, Method method, String name, String value, Class<?> type) {
 						if (root && "name".equals(name)) {
 							return null;
 						}
@@ -90,24 +80,19 @@ public final class XmlDubboUtils {
 		for (int i = 0, size = nodeList.getLength(); i < size; i++) {
 			Node n = nodeList.item(i);
 			if ("protocol".equals(n.getNodeName())) {
-				list.addAll(parseProtocolConfig(propertiesFactory, beanFactory,
-						n, false));
+				list.addAll(parseProtocolConfig(propertiesFactory, beanFactory, n, false));
 			}
 		}
 		return list;
 	}
 
-	private static ApplicationConfig parseApplicationConfig(
-			PropertiesFactory propertiesFactory, final BeanFactory beanFactory,
-			Node node) {
-		return XmlBeanUtils.newInstanceLoadAttributeBySetter(
-				ApplicationConfig.class, propertiesFactory, node,
+	private static ApplicationConfig parseApplicationConfig(PropertiesFactory propertiesFactory,
+			final BeanFactory beanFactory, Node node) {
+		return XmlBeanUtils.newInstanceLoadAttributeBySetter(ApplicationConfig.class, propertiesFactory, node,
 				new SetterMapper<String>() {
 
-					public Object mapper(Object bean, Method method,
-							String name, String value, Class<?> type) {
-						if ("registry".equals(name)
-								|| "registries".equals(name)) {
+					public Object mapper(Object bean, Method method, String name, String value, Class<?> type) {
+						if ("registry".equals(name) || "registries".equals(name)) {
 							return beanFactory.get(value);
 						}
 
@@ -116,36 +101,30 @@ public final class XmlDubboUtils {
 				});
 	}
 
-	private static List<ServiceConfig<?>> parseServiceConfig(
-			PropertiesFactory propertiesFactory, final BeanFactory beanFactory,
-			Node node) {
-		ServiceConfig<?> serviceConfig = XmlBeanUtils
-				.newInstanceLoadAttributeBySetter(ServiceConfig.class,
-						propertiesFactory, node, new SetterMapper<String>() {
+	private static List<ServiceConfig<?>> parseServiceConfig(PropertiesFactory propertiesFactory,
+			final BeanFactory beanFactory, Node node) {
+		ServiceConfig<?> serviceConfig = XmlBeanUtils.newInstanceLoadAttributeBySetter(ServiceConfig.class,
+				propertiesFactory, node, new SetterMapper<String>() {
 
-							public Object mapper(Object bean, Method method,
-									String name, String value, Class<?> type) {
-								if (StringUtils.isEmpty(value)) {
-									return null;
-								}
+					public Object mapper(Object bean, Method method, String name, String value, Class<?> type) {
+						if (StringUtils.isEmpty(value)) {
+							return null;
+						}
 
-								if ("registry".equals(name)
-										|| "registries".equals(name)
-										|| "ref".equals(name)) {
-									return beanFactory.get(value);
-								}
+						if ("registry".equals(name) || "registries".equals(name) || "ref".equals(name)) {
+							return beanFactory.get(value);
+						}
 
-								return StringParseUtils.conversion(value, type);
-							}
-						});
+						return StringParseUtils.conversion(value, type);
+					}
+				});
 
 		List<ServiceConfig<?>> serviceConfigs = new LinkedList<ServiceConfig<?>>();
 		if (serviceConfig.getInterface() != null) {
 			serviceConfigs.add(serviceConfig);
 		}
 
-		String packageName = XmlBeanUtils.getNodeAttributeValue(
-				propertiesFactory, node, "package");
+		String packageName = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "package");
 		if (packageName != null) {
 			for (Class<?> clz : ClassUtils.getClasses(packageName)) {
 				Service service = clz.getAnnotation(Service.class);
@@ -153,8 +132,7 @@ public final class XmlDubboUtils {
 					Object ref = beanFactory.get(clz);
 					for (Class<?> i : clz.getInterfaces()) {
 						@SuppressWarnings("unchecked")
-						ServiceConfig<Object> config = (ServiceConfig<Object>) ReflectUtils
-								.clone(serviceConfig);
+						ServiceConfig<Object> config = (ServiceConfig<Object>) ReflectUtils.clone(serviceConfig);
 						config.setInterface(i);
 						config.setRef(ref);
 						serviceConfigs.add(config);
@@ -167,8 +145,7 @@ public final class XmlDubboUtils {
 		for (int i = 0, size = nodeList.getLength(); i < size; i++) {
 			Node n = nodeList.item(i);
 			if ("service".equals(n.getNodeName())) {
-				serviceConfigs.addAll(parseServiceConfig(propertiesFactory,
-						beanFactory, n));
+				serviceConfigs.addAll(parseServiceConfig(propertiesFactory, beanFactory, n));
 			}
 		}
 		return serviceConfigs;
@@ -181,73 +158,40 @@ public final class XmlDubboUtils {
 	 * @param beanFactory
 	 * @param config
 	 */
-	public static void serviceExport(PropertiesFactory propertiesFactory,
-			final BeanFactory beanFactory, String config) {
-		int size = 0;
-		NodeList rootNodeList = XmlBeanUtils.getRootNode(config)
-				.getChildNodes();
-		if (rootNodeList != null) {
-			for (int x = 0; x < rootNodeList.getLength(); x++) {
-				Node node = rootNodeList.item(x);
-				if (node == null) {
-					continue;
-				}
-
-				if ("dubbo:service".equals(node.getNodeName())) {
-					if (size == 0) {
-						logger.trace("开始注册服务");
-					}
-					size++;
-					List<ServiceConfig<?>> serviceConfigs = getServiceConfigList(
-							propertiesFactory, beanFactory, node);
-					for (ServiceConfig<?> serviceConfig : serviceConfigs) {
-						size++;
-						serviceConfig.export();
-					}
-				}
-			}
-		}
-		if (size > 0) {
-			logger.trace("服务注册完成");
-		}
+	public static void serviceExport(PropertiesFactory propertiesFactory, final BeanFactory beanFactory,
+			String config) {
+		new ServiceExort(propertiesFactory, beanFactory, config).start();
 	}
 
-	private static List<ReferenceConfig<?>> parseReferenceConfig(
-			PropertiesFactory propertiesFactory, final BeanFactory beanFactory,
-			Node node) {
-		ReferenceConfig<?> config = XmlBeanUtils
-				.newInstanceLoadAttributeBySetter(ReferenceConfig.class,
-						propertiesFactory, node, new SetterMapper<String>() {
+	private static List<ReferenceConfig<?>> parseReferenceConfig(PropertiesFactory propertiesFactory,
+			final BeanFactory beanFactory, Node node) {
+		ReferenceConfig<?> config = XmlBeanUtils.newInstanceLoadAttributeBySetter(ReferenceConfig.class,
+				propertiesFactory, node, new SetterMapper<String>() {
 
-							public Object mapper(Object bean, Method method,
-									String name, String value, Class<?> type) {
-								if (StringUtils.isEmpty(value)) {
-									return null;
-								}
+					public Object mapper(Object bean, Method method, String name, String value, Class<?> type) {
+						if (StringUtils.isEmpty(value)) {
+							return null;
+						}
 
-								if ("consumer".equals(name)
-										|| "methods".equals(name)
-										|| "registries".equals(name)
-										|| "registry".equals(name)) {
-									return beanFactory.get(value);
-								}
+						if ("consumer".equals(name) || "methods".equals(name) || "registries".equals(name)
+								|| "registry".equals(name)) {
+							return beanFactory.get(value);
+						}
 
-								return StringParseUtils.conversion(value, type);
-							}
-						});
+						return StringParseUtils.conversion(value, type);
+					}
+				});
 
 		List<ReferenceConfig<?>> referenceConfigs = new LinkedList<ReferenceConfig<?>>();
 		if (config.getInterface() != null) {
 			referenceConfigs.add(config);
 		}
 
-		String packageName = XmlBeanUtils.getNodeAttributeValue(
-				propertiesFactory, node, "package");
+		String packageName = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "package");
 		if (packageName != null) {
 			for (Class<?> clz : ClassUtils.getClasses(packageName)) {
 				if (clz.isInterface()) {
-					ReferenceConfig<?> referenceConfig = ReflectUtils
-							.clone(config);
+					ReferenceConfig<?> referenceConfig = ReflectUtils.clone(config);
 					referenceConfig.setInterface(clz);
 					referenceConfigs.add(referenceConfig);
 				}
@@ -258,23 +202,18 @@ public final class XmlDubboUtils {
 		for (int i = 0, size = nodeList.getLength(); i < size; i++) {
 			Node n = nodeList.item(i);
 			if ("reference".equals(n.getNodeName())) {
-				referenceConfigs.addAll(parseReferenceConfig(propertiesFactory,
-						beanFactory, n));
+				referenceConfigs.addAll(parseReferenceConfig(propertiesFactory, beanFactory, n));
 			}
 		}
 		return referenceConfigs;
 	}
 
-	public static List<ServiceConfig<?>> getServiceConfigList(
-			PropertiesFactory propertiesFactory, BeanFactory beanFactory,
-			Node node) {
-		ApplicationConfig applicationConfig = getApplicationConfig(
-				propertiesFactory, beanFactory, node);
+	public static List<ServiceConfig<?>> getServiceConfigList(PropertiesFactory propertiesFactory,
+			BeanFactory beanFactory, Node node) {
+		ApplicationConfig applicationConfig = getApplicationConfig(propertiesFactory, beanFactory, node);
 
-		List<ProtocolConfig> protocolConfigs = parseProtocolConfig(
-				propertiesFactory, beanFactory, node, true);
-		List<ServiceConfig<?>> serviceConfigs = parseServiceConfig(
-				propertiesFactory, beanFactory, node);
+		List<ProtocolConfig> protocolConfigs = parseProtocolConfig(propertiesFactory, beanFactory, node, true);
+		List<ServiceConfig<?>> serviceConfigs = parseServiceConfig(propertiesFactory, beanFactory, node);
 		for (ServiceConfig<?> serviceConfig : serviceConfigs) {
 			serviceConfig.setApplication(applicationConfig);
 			serviceConfig.setProtocols(protocolConfigs);
@@ -282,13 +221,10 @@ public final class XmlDubboUtils {
 		return serviceConfigs;
 	}
 
-	private static ApplicationConfig getApplicationConfig(
-			PropertiesFactory propertiesFactory, BeanFactory beanFactory,
+	private static ApplicationConfig getApplicationConfig(PropertiesFactory propertiesFactory, BeanFactory beanFactory,
 			Node node) {
-		ApplicationConfig applicationConfig = parseApplicationConfig(
-				propertiesFactory, beanFactory, node);
-		List<RegistryConfig> registryConfigs = parseRegistryConfig(
-				propertiesFactory, beanFactory, node);
+		ApplicationConfig applicationConfig = parseApplicationConfig(propertiesFactory, beanFactory, node);
+		List<RegistryConfig> registryConfigs = parseRegistryConfig(propertiesFactory, beanFactory, node);
 		if (applicationConfig.getRegistries() == null) {
 			applicationConfig.setRegistries(registryConfigs);
 		} else {
@@ -297,17 +233,95 @@ public final class XmlDubboUtils {
 		return applicationConfig;
 	}
 
-	public static List<ReferenceConfig<?>> getReferenceConfigList(
-			PropertiesFactory propertiesFactory, BeanFactory beanFactory,
-			Node node) {
-		ApplicationConfig applicationConfig = getApplicationConfig(
-				propertiesFactory, beanFactory, node);
+	public static List<ReferenceConfig<?>> getReferenceConfigList(PropertiesFactory propertiesFactory,
+			BeanFactory beanFactory, Node node) {
+		ApplicationConfig applicationConfig = getApplicationConfig(propertiesFactory, beanFactory, node);
 
-		List<ReferenceConfig<?>> referenceConfigs = XmlDubboUtils
-				.parseReferenceConfig(propertiesFactory, beanFactory, node);
+		List<ReferenceConfig<?>> referenceConfigs = XmlDubboUtils.parseReferenceConfig(propertiesFactory, beanFactory,
+				node);
 		for (ReferenceConfig<?> referenceConfig : referenceConfigs) {
 			referenceConfig.setApplication(applicationConfig);
 		}
 		return referenceConfigs;
+	}
+
+}
+
+class ServiceExort extends Thread {
+	private static Logger logger = LoggerFactory.getLogger(ServiceExort.class);
+
+	private final PropertiesFactory propertiesFactory;
+	private final BeanFactory beanFactory;
+	private final String config;
+	private boolean tag = false;
+	private int size = 0;
+	private Thread thread;
+
+	public ServiceExort(PropertiesFactory propertiesFactory, BeanFactory beanFactory, String config) {
+		this.propertiesFactory = propertiesFactory;
+		this.beanFactory = beanFactory;
+		this.config = config;
+	}
+
+	@Override
+	public void run() {
+		try {
+			export();
+		} finally {
+			tag = true;
+		}
+
+		if (size > 0) {
+			logger.trace("-------dubbo服务注册完成-------");
+		}
+	}
+
+	private void check() {
+		if (thread == null) {
+			thread = new Thread(new Runnable() {
+
+				public void run() {
+					try {
+						while (!tag && !Thread.currentThread().isInterrupted()) {
+							Thread.sleep(3000L);
+							if (tag) {
+								break;
+							}
+							logger.trace("-------正在检查dubbo服务是否注册完成-------");
+						}
+					} catch (InterruptedException e) {
+					}
+				}
+			});
+		} else {
+			thread.interrupt();
+		}
+		thread.start();
+	}
+
+	private void export() {
+		NodeList rootNodeList = XmlBeanUtils.getRootNode(config).getChildNodes();
+		if (rootNodeList != null) {
+			for (int x = 0; x < rootNodeList.getLength(); x++) {
+				Node node = rootNodeList.item(x);
+				if (node == null) {
+					continue;
+				}
+
+				if ("dubbo:service".equals(node.getNodeName())) {
+					if (size == 0) {
+						logger.trace("-------开始注册dubbo服务-------");
+						check();
+					}
+					size++;
+					List<ServiceConfig<?>> serviceConfigs = XmlDubboUtils.getServiceConfigList(propertiesFactory,
+							beanFactory, node);
+					for (ServiceConfig<?> serviceConfig : serviceConfigs) {
+						size++;
+						serviceConfig.export();
+					}
+				}
+			}
+		}
 	}
 }

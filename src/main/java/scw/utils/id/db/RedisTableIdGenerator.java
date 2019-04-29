@@ -1,8 +1,8 @@
 package scw.utils.id.db;
 
+import scw.data.redis.Redis;
 import scw.db.DB;
 import scw.db.DBManager;
-import scw.redis.Redis;
 import scw.utils.id.IdGenerator;
 import scw.utils.id.RedisIdGenerator;
 

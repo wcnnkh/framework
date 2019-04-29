@@ -73,12 +73,7 @@ public class CommonApplication implements Application {
 		beanFactory.init();
 
 		if (!StringUtils.isNull(configPath)) {
-			new Thread(new Runnable() {
-
-				public void run() {
-					XmlDubboUtils.serviceExport(propertiesFactory, beanFactory, configPath);
-				}
-			}).start();
+			XmlDubboUtils.serviceExport(propertiesFactory, beanFactory, configPath);
 		}
 	}
 

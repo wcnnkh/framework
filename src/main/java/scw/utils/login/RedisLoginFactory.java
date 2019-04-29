@@ -2,7 +2,7 @@ package scw.utils.login;
 
 import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
-import scw.redis.Redis;
+import scw.data.redis.Redis;
 
 public class RedisLoginFactory implements LoginFactory {
 	private final Redis redis;

@@ -12,9 +12,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import scw.beans.annotation.Destroy;
 import scw.core.Base64;
 import scw.core.Constants;
+import scw.data.memcached.Memcached;
+import scw.data.redis.Redis;
 import scw.db.database.DataBase;
-import scw.memcached.Memcached;
-import scw.redis.Redis;
 
 /**
  * 只在能java8中使用 除非你在pom引入你需要的版本，并排除本项目自带的版本

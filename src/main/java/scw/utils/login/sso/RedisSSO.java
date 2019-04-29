@@ -1,7 +1,7 @@
 package scw.utils.login.sso;
 
 import scw.core.utils.XUtils;
-import scw.redis.Redis;
+import scw.data.redis.Redis;
 import scw.utils.login.RedisLoginFactory;
 import scw.utils.login.Session;
 

@@ -51,7 +51,7 @@ public class XmlBeanMethodInfo implements BeanMethod {
 		}
 
 		if (this.method == null) {
-			throw new BeansException("not found method [" + name + "]");
+			throw new BeansException(type.getName() + " not found method [" + name + "]");
 		}
 	}
 

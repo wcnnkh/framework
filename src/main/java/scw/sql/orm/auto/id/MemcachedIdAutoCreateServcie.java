@@ -1,10 +1,10 @@
 package scw.sql.orm.auto.id;
 
 import scw.beans.annotation.Bean;
+import scw.data.memcached.Memcached;
 import scw.db.sql.SimpleSql;
 import scw.locks.Lock;
 import scw.locks.MemcachedLock;
-import scw.memcached.Memcached;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMOperations;
 import scw.sql.orm.TableInfo;

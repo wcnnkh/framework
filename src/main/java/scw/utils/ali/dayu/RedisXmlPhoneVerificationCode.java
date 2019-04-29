@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import scw.core.utils.XTime;
 import scw.core.utils.XUtils;
-import scw.redis.Redis;
+import scw.data.redis.Redis;
 
 public final class RedisXmlPhoneVerificationCode extends AbstractXmlPhoneVerificationCode {
 	private final Redis redis;

@@ -1,7 +1,7 @@
 package scw.locks;
 
-import scw.memcached.Memcached;
-import scw.redis.Redis;
+import scw.data.memcached.Memcached;
+import scw.data.redis.Redis;
 
 public final class DistributedLockFactory implements LockFactory {
 	private LockFactory lockFactory;

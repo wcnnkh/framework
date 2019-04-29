@@ -1,7 +1,7 @@
 package scw.utils.login.sso;
 
 import scw.core.utils.XUtils;
-import scw.memcached.Memcached;
+import scw.data.memcached.Memcached;
 import scw.utils.login.MemcachedLoginFactory;
 import scw.utils.login.Session;
 

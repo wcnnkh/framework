@@ -1,6 +1,6 @@
 package scw.utils.id;
 
-import scw.memcached.Memcached;
+import scw.data.memcached.Memcached;
 
 public final class MemcachedIntegerIdGenerator implements IdGenerator<Integer>{
 	private final Memcached memcached;

@@ -2,7 +2,7 @@ package scw.locks;
 
 import scw.core.utils.XUtils;
 import scw.data.memcached.CAS;
-import scw.memcached.Memcached;
+import scw.data.memcached.Memcached;
 
 public final class MemcachedLock extends AbstractLock {
 	private final Memcached memcached;

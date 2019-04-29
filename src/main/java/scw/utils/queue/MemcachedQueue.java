@@ -2,7 +2,7 @@ package scw.utils.queue;
 
 import java.util.concurrent.TimeUnit;
 
-import scw.memcached.Memcached;
+import scw.data.memcached.Memcached;
 
 public class MemcachedQueue<E> implements Queue<E> {
 	private static final String READ_KEY = "_read";

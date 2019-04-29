@@ -3,8 +3,8 @@ package scw.utils.tencent.weixin;
 import java.nio.charset.Charset;
 
 import scw.core.utils.IOUtils;
+import scw.data.redis.Redis;
 import scw.locks.RedisLock;
-import scw.redis.Redis;
 import scw.utils.tencent.weixin.bean.AccessToken;
 import scw.utils.tencent.weixin.process.GetAccessToken;
 

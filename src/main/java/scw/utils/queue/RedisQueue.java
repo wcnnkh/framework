@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import scw.core.utils.IOUtils;
-import scw.redis.Redis;
+import scw.data.redis.Redis;
 
 public class RedisQueue<E> implements Queue<E> {
 	private final Redis redis;

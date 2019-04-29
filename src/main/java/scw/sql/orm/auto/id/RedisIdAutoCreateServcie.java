@@ -3,10 +3,10 @@ package scw.sql.orm.auto.id;
 import java.util.Arrays;
 
 import scw.beans.annotation.Bean;
+import scw.data.redis.Redis;
 import scw.db.sql.SimpleSql;
 import scw.locks.Lock;
 import scw.locks.RedisLock;
-import scw.redis.Redis;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMOperations;
 import scw.sql.orm.TableInfo;

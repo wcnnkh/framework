@@ -3,7 +3,7 @@ package scw.locks;
 import java.util.Collections;
 
 import scw.core.utils.XUtils;
-import scw.redis.Redis;
+import scw.data.redis.Redis;
 
 public final class RedisLock extends AbstractLock {
 	private static final String UNLOCK_SCRIPT = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";

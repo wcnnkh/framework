@@ -11,9 +11,9 @@ import com.alibaba.druid.pool.DruidDataSource;
 import scw.beans.annotation.Bean;
 import scw.core.Base64;
 import scw.core.Constants;
+import scw.data.memcached.Memcached;
+import scw.data.redis.Redis;
 import scw.db.database.DataBase;
-import scw.memcached.Memcached;
-import scw.redis.Redis;
 
 @Bean(proxy = false)
 public class DruidDB extends DB {
