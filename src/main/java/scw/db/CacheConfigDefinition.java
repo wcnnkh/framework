@@ -1,5 +1,7 @@
 package scw.db;
 
+import java.util.concurrent.TimeUnit;
+
 import scw.db.annotation.CacheConfig;
 import scw.db.cache.CacheType;
 import scw.sql.orm.ORMUtils;
@@ -16,8 +18,14 @@ public final class CacheConfigDefinition {
 		if (cacheConfig != null) {
 			this.cacheType = cacheConfig.type();
 			this.fullKeys = cacheConfig.fullKeys();
-			this.exp = cacheType == CacheType.full? 0:(int) cacheConfig.timeUnit().toSeconds(cacheConfig.exp());
+			this.exp = cacheType == CacheType.full ? 0 : (int) cacheConfig.timeUnit().toSeconds(cacheConfig.exp());
 		}
+	}
+
+	public CacheConfigDefinition(CacheType cacheType, TimeUnit timeUnit, int exp, boolean fullKeys) {
+		this.cacheType = cacheType;
+		this.exp = cacheType == CacheType.full ? 0 : (int) timeUnit.toSeconds(exp);
+		this.fullKeys = fullKeys;
 	}
 
 	public CacheType getCacheType() {

@@ -137,7 +137,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 	 * @param tableClass
 	 * @return
 	 */
-	private CacheConfigDefinition getCacheConfig(Class<?> tableClass) {
+	protected CacheConfigDefinition getCacheConfig(Class<?> tableClass) {
 		CacheConfigDefinition cacheConfigDefinition = configCacheMap.get(tableClass);
 		if (cacheConfigDefinition == null) {
 			cacheConfigDefinition = new CacheConfigDefinition(tableClass);
