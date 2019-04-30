@@ -1,10 +1,12 @@
-package scw.core;
+package scw.core.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+
+import scw.core.Constants;
 
 /**
  * 此类非线程安全的

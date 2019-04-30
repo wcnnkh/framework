@@ -61,7 +61,8 @@ public class HttpRequest extends AbstractUrlRequest {
 		super.request(urlConnection);
 	}
 
-	public void doOutput(OutputStream os) throws Throwable {
+	@Override
+	protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
 	}
 
 	public void setRequestProperties(String key, Object value) {

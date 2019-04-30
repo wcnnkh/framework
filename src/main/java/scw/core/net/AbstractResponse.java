@@ -10,7 +10,7 @@ public abstract class AbstractResponse<T> implements Response<T> {
 			InputStream is = null;
 			try {
 				is = urlConnection.getInputStream();
-				return doInput(is);
+				return doInput(urlConnection, is);
 			} finally {
 				if (is != null) {
 					is.close();
@@ -20,5 +20,5 @@ public abstract class AbstractResponse<T> implements Response<T> {
 		return null;
 	}
 
-	public abstract T doInput(InputStream is) throws Throwable;
+	protected abstract T doInput(final URLConnection urlConnection, final InputStream is) throws Throwable;
 }

@@ -2,6 +2,7 @@ package scw.core.net.http;
 
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
@@ -110,7 +111,7 @@ public class FormRequest extends HttpRequest {
 	}
 
 	@Override
-	public void doOutput(OutputStream os) throws Throwable {
+	protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
 		if (parameterMap != null) {
 			os.write(getParameterString().getBytes(charsetName));
 		}

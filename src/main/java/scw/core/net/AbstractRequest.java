@@ -10,7 +10,7 @@ public abstract class AbstractRequest implements Request {
 			OutputStream os = null;
 			try {
 				os = urlConnection.getOutputStream();
-				doOutput(os);
+				doOutput(urlConnection, os);
 			} finally {
 				if (os != null) {
 					os.close();
@@ -19,5 +19,5 @@ public abstract class AbstractRequest implements Request {
 		}
 	}
 
-	public abstract void doOutput(OutputStream os) throws Throwable;
+	protected abstract void doOutput(final URLConnection urlConnection, final OutputStream os) throws Throwable;
 }

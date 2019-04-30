@@ -49,7 +49,7 @@ public class MultipartRequest extends HttpRequest {
 	}
 
 	@Override
-	public void doOutput(OutputStream os) throws Throwable {
+	protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
 		if (parameters != null) {
 			Iterator<AbstractMultipartParameter> iterator = parameters.iterator();
 			while (iterator.hasNext()) {

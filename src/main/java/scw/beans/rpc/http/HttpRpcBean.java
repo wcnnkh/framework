@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 
 import scw.aop.Invoker;
@@ -64,7 +65,7 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 
 			HttpRequest request = new HttpRequest(scw.core.net.http.enums.Method.POST, host) {
 				@Override
-				public void doOutput(OutputStream os) throws Throwable {
+				protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
 					ObjectOutputStream oos = new ObjectOutputStream(os);
 					oos.writeObject(message);
 				}
@@ -74,7 +75,7 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 				return NetworkUtils.execute(request, new AbstractResponse<Object>() {
 
 					@Override
-					public Object doInput(InputStream is) throws Throwable {
+					protected Object doInput(URLConnection urlConnection, InputStream is) throws Throwable {
 						ObjectInputStream ois = null;
 						try {
 							ois = new ObjectInputStream(is);

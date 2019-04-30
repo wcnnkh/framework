@@ -1,8 +1,9 @@
 package scw.core.net.http;
 
 import java.io.OutputStream;
+import java.net.URLConnection;
 
-import scw.core.ByteArray;
+import scw.core.io.ByteArray;
 import scw.core.net.http.enums.Method;
 
 public class BodyRequest extends HttpRequest {
@@ -14,7 +15,7 @@ public class BodyRequest extends HttpRequest {
 	}
 
 	@Override
-	public void doOutput(OutputStream os) throws Throwable {
+	protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
 		body.writeTo(os);
 	}
 }

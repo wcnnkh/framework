@@ -10,10 +10,10 @@ import javax.net.ssl.SSLContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import scw.core.ByteArray;
 import scw.core.exception.NotSupportException;
 import scw.core.exception.ParameterException;
 import scw.core.exception.SignatureException;
+import scw.core.io.ByteArray;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.NetworkUtils;
