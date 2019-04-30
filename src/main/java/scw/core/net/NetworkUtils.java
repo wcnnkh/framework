@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import scw.core.io.ByteArray;
-import scw.core.net.response.ByteArrayResponse;
 
 public final class NetworkUtils {
 	private NetworkUtils() {

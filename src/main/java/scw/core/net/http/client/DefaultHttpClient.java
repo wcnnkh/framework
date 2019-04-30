@@ -7,22 +7,20 @@ import java.util.Map;
 
 import scw.core.io.ByteArray;
 import scw.core.net.AbstractResponse;
+import scw.core.net.ByteArrayResponse;
 import scw.core.net.NetworkUtils;
 import scw.core.net.Response;
 import scw.core.net.http.FormRequest;
 import scw.core.net.http.HttpRequest;
 import scw.core.net.http.enums.Method;
-import scw.core.net.response.ByteArrayResponse;
 
 /**
- * 此类对于cookie和
- * 
+ * TODO 还未完成
  * @author shuchaowen
  *
  */
 public class DefaultHttpClient implements HttpClient {
 	private final Charset charset;
-	private volatile String reference;
 
 	public DefaultHttpClient(Charset charset) {
 		this.charset = charset;
@@ -46,13 +44,9 @@ public class DefaultHttpClient implements HttpClient {
 	}
 
 	protected void requestFilter(HttpRequest request) {
-		if (reference != null) {
-			request.setRequestProperties("reference", reference);
-		}
 	}
 
 	protected void responseFilter(String url, HttpURLConnection response) {
-		this.reference = url;
 	}
 
 	public String doGet(String url) {
