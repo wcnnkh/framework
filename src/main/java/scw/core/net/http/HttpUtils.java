@@ -151,7 +151,7 @@ public final class HttpUtils {
 		return newContent;
 	}
 
-	public static final Map<String, String> paramsToMap(String params) {
+	public static Map<String, String> paramsToMap(String params) {
 		Map<String, String> map = new Hashtable<String, String>();
 		if (params != null) {
 			String[] strs = params.split("&");

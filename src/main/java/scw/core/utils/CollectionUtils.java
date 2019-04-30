@@ -549,6 +549,31 @@ public abstract class CollectionUtils {
 	}
 
 	/**
+	 * @param map
+	 * @param key
+	 * @param valueIsNull
+	 *            map中value是否可以为空
+	 * @param defaultValue
+	 *            默认值
+	 * @return
+	 */
+	public static <K, V> V getValueByMap(Map<K, V> map, K key, boolean valueIsNull, V defaultValue) {
+		if (map == null || map.isEmpty()) {
+			return defaultValue;
+		}
+
+		if (valueIsNull) {
+			if (map.containsKey(key)) {
+				return map.get(key);
+			}
+			return defaultValue;
+		} else {
+			V v = map.get(key);
+			return v == null ? defaultValue : v;
+		}
+	}
+
+	/**
 	 * Iterator wrapping an Enumeration.
 	 */
 	private static class EnumerationIterator<E> implements Iterator<E> {
