@@ -15,12 +15,14 @@ public class XmlValue {
 	private final String replace_prefix;
 	private final String replace_suffix;
 	private final Node node;
+	private final boolean require;
 
 	public XmlValue(Node node, String parentCharsetName) {
 		this.node = node;
 		this.replace = XMLUtils.getBooleanValue(node, "replace", true);
 		this.replace_prefix = XMLUtils.getNodeAttributeValue(node, "replace-prefix");
 		this.replace_suffix = XMLUtils.getNodeAttributeValue(node, "replace-suffix");
+		this.require = XMLUtils.getBooleanValue(node, "require", false);
 		String charset = XmlBeanUtils.getCharsetName(node, parentCharsetName);
 
 		String value;
@@ -47,6 +49,11 @@ public class XmlValue {
 		this.replace = XMLUtils.getBooleanValue(node, "replace", true);
 		this.replace_prefix = XMLUtils.getNodeAttributeValue(node, "replace-prefix");
 		this.replace_suffix = XMLUtils.getNodeAttributeValue(node, "replace-suffix");
+		this.require = XMLUtils.getBooleanValue(node, "require", false);
+	}
+
+	public boolean isRequire() {
+		return require;
 	}
 
 	public String getValue() {

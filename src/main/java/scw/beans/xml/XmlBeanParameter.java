@@ -61,21 +61,26 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 
 	public Object parseValue(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> parameterType)
 			throws Exception {
+		Object value = null;
 		switch (type) {
 		case value:
-			return formatStringValue(xmlValue.formatValue(propertiesFactory), parameterType);
+			value = formatStringValue(xmlValue.formatValue(propertiesFactory), parameterType);
+			break;
 		case ref:
-			return beanFactory.get(xmlValue.formatValue(propertiesFactory));
+			value = beanFactory.get(xmlValue.formatValue(propertiesFactory));
+			break;
 		case property:
-			String value = propertiesFactory.getValue(xmlValue.getValue());
-			if (value == null) {
-				throw new NotFoundException("not found property:" + xmlValue.getValue());
-			}
-			return formatStringValue(value, parameterType);
+			String v = propertiesFactory.getValue(xmlValue.getValue());
+			value = formatStringValue(v, parameterType);
+			break;
 		default:
 			break;
 		}
-		return null;
+
+		if (xmlValue.isRequire() && value == null) {
+			throw new NotFoundException(xmlValue.getValue());
+		}
+		return value;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

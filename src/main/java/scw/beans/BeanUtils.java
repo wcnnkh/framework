@@ -199,17 +199,8 @@ public final class BeanUtils {
 				methodParameters[i] = beanMethodParameter;
 				methodParameters[i].setParameterType(types[i]);
 			}
-
 		}
-
-		boolean find = true;
-		for (int b = 0; b < types.length; b++) {
-			if (oldTypes[b] != types[b]) {
-				find = false;
-				break;
-			}
-		}
-		return find ? methodParameters : null;
+		return ClassUtils.equals(oldTypes, types) ? methodParameters : null;
 	}
 
 	public static Object[] getBeanMethodParameterArgs(XmlBeanParameter[] beanParameters, BeanFactory beanFactory,
