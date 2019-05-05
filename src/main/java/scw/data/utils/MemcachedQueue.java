@@ -18,7 +18,7 @@ public class MemcachedQueue<E> implements Queue<E> {
 	}
 
 	private boolean checkCanRead(Long readIndex) {
-		Long writeIndex = memcached.get(queueKey + WRITE_KEY);
+		Long writeIndex = (Long) memcached.get(queueKey + WRITE_KEY);
 		if (writeIndex == null) {
 			return false;
 		}
@@ -66,7 +66,7 @@ public class MemcachedQueue<E> implements Queue<E> {
 
 	public E peek() {
 		while (true) {
-			Long readIndex = memcached.get(queueKey + READ_KEY);
+			Long readIndex = (Long) memcached.get(queueKey + READ_KEY);
 			if (checkCanRead(readIndex)) {
 				if (readIndex == null) {
 					readIndex = 0L;
@@ -74,7 +74,8 @@ public class MemcachedQueue<E> implements Queue<E> {
 					readIndex++;
 				}
 
-				E message = memcached.get(queueKey + readIndex);
+				@SuppressWarnings("unchecked")
+				E message = (E) memcached.get(queueKey + readIndex);
 				if (message == null) {
 					memcached.set(queueKey + READ_KEY, readIndex);
 					continue;
@@ -88,7 +89,7 @@ public class MemcachedQueue<E> implements Queue<E> {
 
 	public E poll() {
 		while (true) {
-			Long readIndex = memcached.get(queueKey + READ_KEY);
+			Long readIndex = (Long) memcached.get(queueKey + READ_KEY);
 			if (checkCanRead(readIndex)) {
 				if (readIndex == null) {
 					readIndex = 0L;
@@ -96,7 +97,8 @@ public class MemcachedQueue<E> implements Queue<E> {
 					readIndex++;
 				}
 
-				E message = memcached.get(queueKey + readIndex);
+				@SuppressWarnings("unchecked")
+				E message = (E) memcached.get(queueKey + readIndex);
 				if (message == null) {
 					memcached.set(queueKey + READ_KEY, readIndex);
 					continue;

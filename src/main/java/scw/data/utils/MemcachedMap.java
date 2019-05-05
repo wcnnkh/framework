@@ -18,7 +18,7 @@ public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
 	}
 
 	public V get(String key) {
-		Map<String, V> map = memcached.get(dataKey);
+		Map<String, V> map = getMap();
 		if (map == null) {
 			return null;
 		}
@@ -27,7 +27,7 @@ public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
 	}
 
 	public V remove(String key) {
-		CAS<LinkedHashMap<String, V>> cas = memcached.gets(dataKey);
+		CAS<LinkedHashMap<String, V>> cas = getCasMap();
 		if (cas == null) {
 			return null;
 		}
@@ -43,7 +43,7 @@ public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
 	}
 
 	public boolean containsKey(String key) {
-		Map<String, V> map = memcached.get(dataKey);
+		Map<String, V> map = getMap();
 		if (map == null) {
 			return false;
 		}
@@ -52,7 +52,7 @@ public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
 	}
 
 	public V put(String key, V value) {
-		CAS<LinkedHashMap<String, V>> cas = memcached.gets(dataKey);
+		CAS<LinkedHashMap<String, V>> cas = getCasMap();
 		if (cas == null) {
 			LinkedHashMap<String, V> valueMap = new LinkedHashMap<String, V>();
 			V v = valueMap.put(key, value);
@@ -79,7 +79,7 @@ public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
 	}
 
 	public long longSize() {
-		Long size = memcached.get(sizeKey);
+		Long size = (Long) memcached.get(sizeKey);
 		return size == null ? 0 : size;
 	}
 
@@ -88,7 +88,7 @@ public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
 	}
 
 	public V putIfAbsent(String key, V value) {
-		CAS<LinkedHashMap<String, V>> cas = memcached.gets(dataKey);
+		CAS<LinkedHashMap<String, V>> cas = getCasMap();
 		if (cas == null) {
 			LinkedHashMap<String, V> valueMap = new LinkedHashMap<String, V>();
 			V v = valueMap.putIfAbsent(key, value);
@@ -111,7 +111,7 @@ public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
 	}
 
 	public void putAll(Map<? extends String, ? extends V> m) {
-		CAS<LinkedHashMap<String, V>> cas = memcached.gets(dataKey);
+		CAS<LinkedHashMap<String, V>> cas = getCasMap();
 		if (cas == null) {
 			LinkedHashMap<String, V> valueMap = new LinkedHashMap<String, V>();
 			valueMap.putAll(m);
@@ -131,8 +131,19 @@ public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
 		}
 	}
 
-	public Map<String, V> asMap() {
-		return memcached.get(dataKey);
+	public Map<String, V> asLocalMap() {
+		return getMap();
 	}
 
+	@SuppressWarnings("unchecked")
+	private CAS<LinkedHashMap<String, V>> getCasMap() {
+		CAS<Object> v = memcached.gets(dataKey);
+		return v == null ? null : new CAS<LinkedHashMap<String, V>>(v.getCas(),
+				(LinkedHashMap<String, V>) v.getValue());
+	}
+
+	@SuppressWarnings("unchecked")
+	private LinkedHashMap<String, V> getMap() {
+		return (LinkedHashMap<String, V>) memcached.get(dataKey);
+	}
 }

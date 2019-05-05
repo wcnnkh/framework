@@ -29,7 +29,7 @@ public final class MemcachedCache implements Cache {
 	}
 
 	public <T> T get(Class<T> type, String key) {
-		byte[] data = memcached.get(key);
+		byte[] data = (byte[]) memcached.get(key);
 		if (data == null) {
 			return null;
 		}
@@ -38,7 +38,7 @@ public final class MemcachedCache implements Cache {
 	}
 
 	public <T> T getAndTouch(Class<T> type, String key, int exp) {
-		byte[] data = memcached.getAndTouch(key, exp);
+		byte[] data = (byte[]) memcached.getAndTouch(key, exp);
 		if (data == null) {
 			return null;
 		}
@@ -47,14 +47,14 @@ public final class MemcachedCache implements Cache {
 	}
 
 	public <T> Map<String, T> get(Class<T> type, Collection<String> keys) {
-		Map<String, byte[]> map = memcached.get(keys);
+		Map<String, Object> map = memcached.get(keys);
 		if (map == null) {
 			return null;
 		}
 
 		Map<String, T> valueMap = new HashMap<String, T>();
-		for (Entry<String, byte[]> entry : map.entrySet()) {
-			byte[] data = entry.getValue();
+		for (Entry<String, Object> entry : map.entrySet()) {
+			byte[] data = (byte[]) entry.getValue();
 			if (data == null) {
 				continue;
 			}
@@ -64,8 +64,9 @@ public final class MemcachedCache implements Cache {
 		return valueMap;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map<String, String> getMap(String key) {
-		return memcached.get(key);
+		return (Map<String, String>) memcached.get(key);
 	}
 
 	public void mapAdd(String key, String field, String value) {
@@ -74,14 +75,16 @@ public final class MemcachedCache implements Cache {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean casMapAdd(String key, String field, String value) {
-		CAS<LinkedHashMap<String, String>> cas = memcached.gets(key);
+		CAS<Object> cas = memcached.gets(key);
 		if (cas == null) {
 			LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
 			valueMap.put(field, value);
 			return memcached.cas(key, valueMap, 0);
 		} else {
-			LinkedHashMap<String, String> valueMap = cas.getValue();
+			LinkedHashMap<String, String> valueMap = (LinkedHashMap<String, String>) cas
+					.getValue();
 			valueMap.put(field, value);
 			return memcached.cas(key, valueMap, cas.getCas());
 		}
@@ -93,13 +96,15 @@ public final class MemcachedCache implements Cache {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean casMapRemove(String key, String field) {
-		CAS<LinkedHashMap<String, String>> cas = memcached.gets(key);
+		CAS<Object> cas = memcached.gets(key);
 		if (cas == null) {
 			return true;
 		}
 
-		LinkedHashMap<String, String> valueMap = cas.getValue();
+		LinkedHashMap<String, String> valueMap = (LinkedHashMap<String, String>) cas
+				.getValue();
 		valueMap.remove(field);
 		return memcached.cas(key, valueMap, cas.getCas());
 	}

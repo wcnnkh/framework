@@ -24,5 +24,5 @@ public interface Map<K, V> {
 
 	void putAll(java.util.Map<? extends K, ? extends V> m);
 
-	java.util.Map<K, V> asMap();
+	java.util.Map<K, V> asLocalMap();
 }

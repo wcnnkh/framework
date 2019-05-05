@@ -23,7 +23,7 @@ public final class MemcachedJsApiTicketFactory extends AbstractJsApiTicketFactor
 
 	@Override
 	protected JsApiTicket getJsApiTicketByCache() {
-		return memcached.get(key);
+		return (JsApiTicket) memcached.get(key);
 	}
 
 	@Override

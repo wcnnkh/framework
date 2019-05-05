@@ -3,12 +3,12 @@ package scw.data.memcached;
 import java.util.Collection;
 import java.util.Map;
 
-public interface Commands<K, V> {
-	<T> T get(K key);
+public interface MemcachedCommands<K, V> {
+	V get(K key);
 	
-	<T> T getAndTouch(K key, int newExp);
+	V getAndTouch(K key, int newExp);
 
-	<T> CAS<T> gets(K key);
+	CAS<V> gets(K key);
 
 	boolean set(K key, V data);
 
@@ -24,9 +24,9 @@ public interface Commands<K, V> {
 
 	boolean touch(String key, int exp);
 
-	<T> Map<K, T> get(Collection<K> keyCollections);
+	Map<K, V> get(Collection<K> keyCollections);
 
-	<T> Map<K, CAS<T>> gets(Collection<String> keyCollections);
+	Map<K, CAS<V>> gets(Collection<K> keyCollections);
 
 	long incr(K key, long incr);
 

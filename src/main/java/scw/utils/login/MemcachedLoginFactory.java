@@ -20,7 +20,7 @@ public class MemcachedLoginFactory implements LoginFactory {
 			return null;
 		}
 
-		String uid = memcached.getAndTouch(prefix + sessionId, exp);
+		String uid = (String) memcached.getAndTouch(prefix + sessionId, exp);
 		if (uid == null) {
 			return null;
 		}

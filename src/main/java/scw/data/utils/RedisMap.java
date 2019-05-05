@@ -98,7 +98,7 @@ public class RedisMap<V> implements scw.data.utils.Map<String, V> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public java.util.Map<String, V> asMap() {
+	public java.util.Map<String, V> asLocalMap() {
 		java.util.Map<byte[], byte[]> map = commands.hgetAll(dataKey);
 		if (map == null || map.isEmpty()) {
 			return null;

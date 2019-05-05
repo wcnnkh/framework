@@ -18,7 +18,7 @@ public final class MemcachedSSO extends MemcachedLoginFactory implements SSO {
 
 	@Override
 	public void cancelLogin(String sessionId) {
-		String uid = getMemcached().get(getPrefix() + sessionId);
+		String uid = (String) getMemcached().get(getPrefix() + sessionId);
 		if (uid != null) {
 			getMemcached().delete(getPrefix() + uid);
 		}
@@ -26,7 +26,7 @@ public final class MemcachedSSO extends MemcachedLoginFactory implements SSO {
 	}
 
 	public Session getSessionByUid(String uid) {
-		String sid = getMemcached().get(getPrefix() + uid);
+		String sid = (String) getMemcached().get(getPrefix() + uid);
 		if (sid == null) {
 			return null;
 		}
@@ -34,7 +34,7 @@ public final class MemcachedSSO extends MemcachedLoginFactory implements SSO {
 	}
 
 	public void cancelLoginByUid(String uid) {
-		String sid = getMemcached().get(getPrefix() + uid);
+		String sid = (String) getMemcached().get(getPrefix() + uid);
 		if (sid != null) {
 			cancelLogin(sid);
 		}
@@ -58,7 +58,7 @@ public final class MemcachedSSO extends MemcachedLoginFactory implements SSO {
 
 	@Override
 	public Session login(String sessionId, String uid) {
-		String oldSid = getMemcached().get(getPrefix() + uid);
+		String oldSid = (String) getMemcached().get(getPrefix() + uid);
 		if (oldSid != null) {
 			getMemcached().delete(getPrefix() + oldSid);
 		}

@@ -21,7 +21,7 @@ public final class MemcachedXmlPhoneVerificationCode extends AbstractXmlPhoneVer
 
 	public JSONObject getCacheData(int configIndex, String phone) {
 		String dataKey = tempPrefix + "&" + configIndex + "&" + phone;
-		String cache = memcached.get(dataKey);
+		String cache = (String) memcached.get(dataKey);
 		if (cache == null) {
 			return null;
 		}

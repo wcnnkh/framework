@@ -19,7 +19,7 @@ public final class MemcachedAccessTokenFactory extends AbstractAccessTokenFactor
 	
 	@Override
 	protected AccessToken getAccessTokenByCache() {
-		return memcached.get(key);
+		return (AccessToken) memcached.get(key);
 	}
 
 	@Override
