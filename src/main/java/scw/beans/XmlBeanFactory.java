@@ -5,7 +5,6 @@ import java.lang.reflect.Modifier;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javassist.NotFoundException;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory;
@@ -14,6 +13,7 @@ import scw.beans.xml.XmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.exception.BeansException;
+import scw.core.exception.NotFoundException;
 import scw.core.utils.StringUtils;
 
 public final class XmlBeanFactory extends AbstractBeanFactory {
