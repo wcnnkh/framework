@@ -1,10 +1,7 @@
-package scw.aop.support;
+package scw.core.aop;
 
 import java.lang.reflect.Proxy;
 import java.util.Collection;
-
-import scw.aop.Filter;
-import scw.aop.Invoker;
 
 public final class JDKProxyUtils {
 	private JDKProxyUtils() {

@@ -3,8 +3,6 @@ package scw.sql.orm.result;
 import java.util.Collections;
 import java.util.Map;
 
-import scw.core.utils.CollectionUtils;
-
 public final class EmptyResult implements Result {
 	private static final long serialVersionUID = 1L;
 
@@ -21,7 +19,7 @@ public final class EmptyResult implements Result {
 	}
 
 	public Object[] getValues() {
-		return CollectionUtils.EMPTY_ARRAY;
+		return new Object[0];
 	}
 
 	public <T> T get(int index) {

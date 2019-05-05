@@ -1,10 +1,10 @@
 package scw.beans;
 
-public interface BeanFactory {
+import scw.core.instance.InstanceFactory;
+
+public interface BeanFactory extends InstanceFactory{
 	<T> T get(String name);
 
-	<T> T get(Class<T> type);
-	
 	<T> T get(String name, Object ...params);
 	
 	<T> T get(Class<T> type, Object ...params);

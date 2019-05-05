@@ -313,7 +313,7 @@ public class XmlBean implements BeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance(Object... params) {
-		Constructor<T> constructor = (Constructor<T>) ReflectUtils.findConstructorByParameters(getType(), params);
+		Constructor<T> constructor = (Constructor<T>) ReflectUtils.findConstructorByParameters(getType(), true, params);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}

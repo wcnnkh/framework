@@ -14,7 +14,6 @@ import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.reflect.SerializableMethod;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 
 public final class InvokeInfo implements Serializable {
@@ -57,7 +56,7 @@ public final class InvokeInfo implements Serializable {
 		}
 
 		if (method.getParameterCount() == 0) {
-			return CollectionUtils.EMPTY_ARRAY;
+			return new Object[0];
 		}
 
 		LinkedList<Object> params = new LinkedList<Object>();
@@ -85,7 +84,7 @@ public final class InvokeInfo implements Serializable {
 		}
 
 		if (method.getParameterCount() == 0) {
-			return CollectionUtils.EMPTY_ARRAY;
+			return new Object[0];
 		}
 
 		Map<String, Integer> tryNameIndexMap = new HashMap<String, Integer>();

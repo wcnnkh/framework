@@ -3,13 +3,14 @@ package scw.support.crontab;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 
-import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.annotation.Autowrite;
 import scw.beans.annotation.InitMethod;
+import scw.core.aop.Invoker;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
+import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
@@ -50,7 +51,7 @@ public final class CrontabService {
 
 	public synchronized void scan(String scanPackage) {
 		for (Class<?> clz : ClassUtils.getClasses(scanPackage)) {
-			for (Method method : ClassUtils.getAnnoationMethods(clz, true, true, Crontab.class)) {
+			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Crontab.class)) {
 				Crontab c = method.getAnnotation(Crontab.class);
 				if (taskNameSet.contains(c.name())) {
 					logger.warn("任务：" + c.name() + "已经存在");

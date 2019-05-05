@@ -38,8 +38,6 @@ import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.NotFoundException;
 
 public abstract class CollectionUtils {
-	public static final Object[] EMPTY_ARRAY = new Object[0];
-
 	/**
 	 * Return {@code true} if the supplied Collection is {@code null} or empty.
 	 * Otherwise, return {@code false}.

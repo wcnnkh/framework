@@ -10,9 +10,9 @@ import java.lang.reflect.Proxy;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 
-import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.core.aop.Invoker;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.AbstractResponse;

@@ -3,7 +3,7 @@ package scw.beans;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import scw.aop.Invoker;
+import scw.core.aop.Invoker;
 
 public final class BeanFactoryInvoker implements Invoker{
 	private final BeanFactory beanFactory;

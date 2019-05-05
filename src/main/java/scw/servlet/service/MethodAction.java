@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.core.aop.Invoker;
 import scw.core.exception.ParameterException;
 import scw.core.utils.ClassUtils;
 import scw.servlet.Filter;

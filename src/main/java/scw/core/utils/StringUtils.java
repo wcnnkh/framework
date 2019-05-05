@@ -531,6 +531,14 @@ public final class StringUtils {
 		return new String(chars);
 	}
 
+	public static String toLowerCase(String str, int begin, int end) {
+		char[] chars = str.toCharArray();
+		for (int i = begin; i < end; i++) {
+			chars[i] = Character.toLowerCase(chars[i]);
+		}
+		return new String(chars);
+	}
+
 	/**
 	 * 将文件分割符换成与当前操作系统一致
 	 * 

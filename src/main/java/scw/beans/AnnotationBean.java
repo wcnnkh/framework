@@ -16,6 +16,7 @@ import scw.core.FieldInfo;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
 import scw.core.reflect.ReflectUtils;
+import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 
@@ -61,7 +62,7 @@ public class AnnotationBean implements BeanDefinition {
 
 	public static List<BeanMethod> getInitMethodList(Class<?> type) {
 		List<BeanMethod> list = new ArrayList<BeanMethod>();
-		for (Method method : ClassUtils.getAnnoationMethods(type, true, true, InitMethod.class)) {
+		for (Method method : AnnotationUtils.getAnnoationMethods(type, true, true, InitMethod.class)) {
 			if (Modifier.isStatic(method.getModifiers())) {
 				continue;
 			}
@@ -74,7 +75,7 @@ public class AnnotationBean implements BeanDefinition {
 
 	public static List<BeanMethod> getDestroyMethdoList(Class<?> type) {
 		List<BeanMethod> list = new ArrayList<BeanMethod>();
-		for (Method method : ClassUtils.getAnnoationMethods(type, true, true, Destroy.class)) {
+		for (Method method : AnnotationUtils.getAnnoationMethods(type, true, true, Destroy.class)) {
 			if (Modifier.isStatic(method.getModifiers())) {
 				continue;
 			}
@@ -176,7 +177,7 @@ public class AnnotationBean implements BeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance(Object... params) {
-		Constructor<T> constructor = (Constructor<T>) ReflectUtils.findConstructorByParameters(getType(), params);
+		Constructor<T> constructor = (Constructor<T>) ReflectUtils.findConstructorByParameters(getType(), true, params);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}

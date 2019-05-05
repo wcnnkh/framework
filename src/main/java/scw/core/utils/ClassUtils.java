@@ -4,7 +4,6 @@ import java.beans.Introspector;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -15,7 +14,6 @@ import java.lang.reflect.Proxy;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,6 +34,7 @@ import scw.core.ClassInfo;
 import scw.core.LocalVariableTableParameterNameDiscoverer;
 
 public final class ClassUtils {
+	private static final String SERIAL_VERSION_UID = "serialVersionUID";
 	public static final String ALL_PACKAGE_NAME = "*";
 
 	/** Suffix for array class names: "[]" */
@@ -480,32 +479,6 @@ public final class ClassUtils {
 		return lvtpnd.getParameterNames(constructor);
 	}
 
-	/**
-	 * 实例化一个对象，会尝试寻找未公开的构造方法
-	 * 
-	 * @param type
-	 * @param parameterTypes
-	 * @param params
-	 * @return
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws InvocationTargetException
-	 * @throws NoSuchMethodException
-	 * @throws SecurityException
-	 */
-	public static <T> T newInstance(Class<T> type, Class<?>[] parameterTypes, Object... params)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException {
-		Constructor<T> constructor = type.getDeclaredConstructor(parameterTypes);
-		if (Modifier.isPublic(constructor.getModifiers())) {
-			return constructor.newInstance(params);
-		} else {
-			constructor.setAccessible(true);
-			return constructor.newInstance(params);
-		}
-	}
-
 	public static <T> T newInstance(Class<T> type) throws InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		Constructor<T> constructor = type.getDeclaredConstructor();
@@ -593,9 +566,10 @@ public final class ClassUtils {
 
 	public static Long getSerialVersionUID(Class<?> clz) {
 		try {
-			Field field = clz.getField("serialVersionUID");
+			Field field = clz.getField(SERIAL_VERSION_UID);
 			if (field != null && Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())
 					&& long.class.isAssignableFrom(field.getType())) {
+				field.setAccessible(true);
 				return (Long) field.get(null);
 			}
 		} catch (NoSuchFieldException e) {
@@ -1038,19 +1012,6 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Return the qualified name of the given method, consisting of fully
-	 * qualified interface/class name + "." + method name.
-	 * 
-	 * @param method
-	 *            the method
-	 * @return the qualified name of the method
-	 */
-	public static String getQualifiedMethodName(Method method) {
-		Assert.notNull(method, "Method must not be null");
-		return method.getDeclaringClass().getName() + "." + method.getName();
-	}
-
-	/**
 	 * Return a descriptive name for the given object's type: usually simply the
 	 * class name, but component type class name + "[]" for arrays, and an
 	 * appended list of implemented interfaces for JDK proxies.
@@ -1093,272 +1054,6 @@ public final class ClassUtils {
 	public static boolean matchesTypeName(Class<?> clazz, String typeName) {
 		return (typeName != null && (typeName.equals(clazz.getName()) || typeName.equals(clazz.getSimpleName())
 				|| (clazz.isArray() && typeName.equals(getQualifiedNameForArray(clazz)))));
-	}
-
-	/**
-	 * Determine whether the given class has a public constructor with the given
-	 * signature.
-	 * <p>
-	 * Essentially translates {@code NoSuchMethodException} to "false".
-	 * 
-	 * @param clazz
-	 *            the clazz to analyze
-	 * @param paramTypes
-	 *            the parameter types of the method
-	 * @return whether the class has a corresponding constructor
-	 * @see Class#getMethod
-	 */
-	public static boolean hasConstructor(Class<?> clazz, Class<?>... paramTypes) {
-		return (getConstructorIfAvailable(clazz, paramTypes) != null);
-	}
-
-	/**
-	 * Determine whether the given class has a public constructor with the given
-	 * signature, and return it if available (else return {@code null}).
-	 * <p>
-	 * Essentially translates {@code NoSuchMethodException} to {@code null}.
-	 * 
-	 * @param clazz
-	 *            the clazz to analyze
-	 * @param paramTypes
-	 *            the parameter types of the method
-	 * @return the constructor, or {@code null} if not found
-	 * @see Class#getConstructor
-	 */
-	public static <T> Constructor<T> getConstructorIfAvailable(Class<T> clazz, Class<?>... paramTypes) {
-		Assert.notNull(clazz, "Class must not be null");
-		try {
-			return clazz.getConstructor(paramTypes);
-		} catch (NoSuchMethodException ex) {
-			return null;
-		}
-	}
-
-	/**
-	 * Determine whether the given class has a method with the given signature.
-	 * <p>
-	 * Essentially translates {@code NoSuchMethodException} to "false".
-	 * 
-	 * @param clazz
-	 *            the clazz to analyze
-	 * @param methodName
-	 *            the name of the method
-	 * @param paramTypes
-	 *            the parameter types of the method
-	 * @return whether the class has a corresponding method
-	 * @see Class#getMethod
-	 */
-	public static boolean hasMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
-		return (getMethodIfAvailable(clazz, methodName, paramTypes) != null);
-	}
-
-	/**
-	 * Determine whether the given class has a method with the given signature,
-	 * and return it if available (else throws an {@code IllegalStateException}
-	 * ).
-	 * <p>
-	 * Essentially translates {@code NoSuchMethodException} to
-	 * {@code IllegalStateException}.
-	 * 
-	 * @param clazz
-	 *            the clazz to analyze
-	 * @param methodName
-	 *            the name of the method
-	 * @param paramTypes
-	 *            the parameter types of the method
-	 * @return the method (never {@code null})
-	 * @throws IllegalStateException
-	 *             if the method has not been found
-	 * @see Class#getMethod
-	 */
-	public static Method getMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(methodName, "Method name must not be null");
-		try {
-			return clazz.getMethod(methodName, paramTypes);
-		} catch (NoSuchMethodException ex) {
-			throw new IllegalStateException("Expected method not found: " + ex);
-		}
-	}
-
-	/**
-	 * Determine whether the given class has a method with the given signature,
-	 * and return it if available (else return {@code null}).
-	 * <p>
-	 * Essentially translates {@code NoSuchMethodException} to {@code null}.
-	 * 
-	 * @param clazz
-	 *            the clazz to analyze
-	 * @param methodName
-	 *            the name of the method
-	 * @param paramTypes
-	 *            the parameter types of the method
-	 * @return the method, or {@code null} if not found
-	 * @see Class#getMethod
-	 */
-	public static Method getMethodIfAvailable(Class<?> clazz, String methodName, Class<?>... paramTypes) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(methodName, "Method name must not be null");
-		try {
-			return clazz.getMethod(methodName, paramTypes);
-		} catch (NoSuchMethodException ex) {
-			return null;
-		}
-	}
-
-	/**
-	 * Return the number of methods with a given name (with any argument types),
-	 * for the given class and/or its superclasses. Includes non-public methods.
-	 * 
-	 * @param clazz
-	 *            the clazz to check
-	 * @param methodName
-	 *            the name of the method
-	 * @return the number of methods with the given name
-	 */
-	public static int getMethodCountForName(Class<?> clazz, String methodName) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(methodName, "Method name must not be null");
-		int count = 0;
-		Method[] declaredMethods = clazz.getDeclaredMethods();
-		for (Method method : declaredMethods) {
-			if (methodName.equals(method.getName())) {
-				count++;
-			}
-		}
-		Class<?>[] ifcs = clazz.getInterfaces();
-		for (Class<?> ifc : ifcs) {
-			count += getMethodCountForName(ifc, methodName);
-		}
-		if (clazz.getSuperclass() != null) {
-			count += getMethodCountForName(clazz.getSuperclass(), methodName);
-		}
-		return count;
-	}
-
-	/**
-	 * Does the given class or one of its superclasses at least have one or more
-	 * methods with the supplied name (with any argument types)? Includes
-	 * non-public methods.
-	 * 
-	 * @param clazz
-	 *            the clazz to check
-	 * @param methodName
-	 *            the name of the method
-	 * @return whether there is at least one method with the given name
-	 */
-	public static boolean hasAtLeastOneMethodWithName(Class<?> clazz, String methodName) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(methodName, "Method name must not be null");
-		Method[] declaredMethods = clazz.getDeclaredMethods();
-		for (Method method : declaredMethods) {
-			if (method.getName().equals(methodName)) {
-				return true;
-			}
-		}
-		Class<?>[] ifcs = clazz.getInterfaces();
-		for (Class<?> ifc : ifcs) {
-			if (hasAtLeastOneMethodWithName(ifc, methodName)) {
-				return true;
-			}
-		}
-		return (clazz.getSuperclass() != null && hasAtLeastOneMethodWithName(clazz.getSuperclass(), methodName));
-	}
-
-	/**
-	 * Given a method, which may come from an interface, and a target class used
-	 * in the current reflective invocation, find the corresponding target
-	 * method if there is one. E.g. the method may be {@code IFoo.bar()} and the
-	 * target class may be {@code DefaultFoo}. In this case, the method may be
-	 * {@code DefaultFoo.bar()}. This enables attributes on that method to be
-	 * found.
-	 * <p>
-	 * <b>NOTE:</b> In contrast to
-	 * {@link shuchaowen.spring.aop.support.AopUtils#getMostSpecificMethod},
-	 * this method does <i>not</i> resolve Java 5 bridge methods automatically.
-	 * Call
-	 * {@link shuchaowen.spring.core.reference.spring.core.spring.core.BridgeMethodResolver#findBridgedMethod}
-	 * if bridge method resolution is desirable (e.g. for obtaining metadata
-	 * from the original method definition).
-	 * <p>
-	 * <b>NOTE:</b> Since Spring 3.1.1, if Java security settings disallow
-	 * reflective access (e.g. calls to {@code Class#getDeclaredMethods} etc,
-	 * this implementation will fall back to returning the originally provided
-	 * method.
-	 * 
-	 * @param method
-	 *            the method to be invoked, which may come from an interface
-	 * @param targetClass
-	 *            the target class for the current invocation. May be
-	 *            {@code null} or may not even implement the method.
-	 * @return the specific target method, or the original method if the
-	 *         {@code targetClass} doesn't implement it or is {@code null}
-	 */
-	public static Method getMostSpecificMethod(Method method, Class<?> targetClass) {
-		if (method != null && isOverridable(method, targetClass) && targetClass != null
-				&& !targetClass.equals(method.getDeclaringClass())) {
-			try {
-				if (Modifier.isPublic(method.getModifiers())) {
-					try {
-						return targetClass.getMethod(method.getName(), method.getParameterTypes());
-					} catch (NoSuchMethodException ex) {
-						return method;
-					}
-				} else {
-					Method specificMethod = ReflectionUtils.findMethod(targetClass, method.getName(),
-							method.getParameterTypes());
-					return (specificMethod != null ? specificMethod : method);
-				}
-			} catch (AccessControlException ex) {
-				// Security settings are disallowing reflective access; fall
-				// back to 'method' below.
-			}
-		}
-		return method;
-	}
-
-	/**
-	 * Determine whether the given method is overridable in the given target
-	 * class.
-	 * 
-	 * @param method
-	 *            the method to check
-	 * @param targetClass
-	 *            the target class to check against
-	 */
-	@SuppressWarnings("rawtypes")
-	private static boolean isOverridable(Method method, Class targetClass) {
-		if (Modifier.isPrivate(method.getModifiers())) {
-			return false;
-		}
-		if (Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers())) {
-			return true;
-		}
-		return getPackageName(method.getDeclaringClass()).equals(getPackageName(targetClass));
-	}
-
-	/**
-	 * Return a public static method of a class.
-	 * 
-	 * @param methodName
-	 *            the static method name
-	 * @param clazz
-	 *            the class which defines the method
-	 * @param args
-	 *            the parameter types to the method
-	 * @return the static method, or {@code null} if no static method was found
-	 * @throws IllegalArgumentException
-	 *             if the method name is blank or the clazz is null
-	 */
-	public static Method getStaticMethod(Class<?> clazz, String methodName, Class<?>... args) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(methodName, "Method name must not be null");
-		try {
-			Method method = clazz.getMethod(methodName, args);
-			return Modifier.isStatic(method.getModifiers()) ? method : null;
-		} catch (NoSuchMethodException ex) {
-			return null;
-		}
 	}
 
 	/**
@@ -1770,62 +1465,6 @@ public final class ClassUtils {
 		}
 	}
 
-	public static Method[] getAnnoationMethods(Class<?> type, boolean useSuper, boolean useInterface,
-			Class<? extends Annotation> annotationClass) {
-		Map<String, Method> map = new HashMap<String, Method>();
-		Class<?> clz = type;
-		while (clz != null) {
-			appendAnnoationMethod(map, clz, annotationClass);
-			if (useInterface) {
-				appendAnnoationInterfaceMethod(map, clz, annotationClass);
-			}
-			
-			if(!useSuper){
-				break;
-			}
-			
-			clz = clz.getSuperclass();
-		}
-		return map.values().toArray(new Method[map.size()]);
-	}
-
-	private static void appendAnnoationInterfaceMethod(Map<String, Method> methodMap, Class<?> type,
-			Class<? extends Annotation> annotationClass) {
-		Class<?>[] interfaces = type.getInterfaces();
-		if (interfaces == null || interfaces.length == 0) {
-			return;
-		}
-
-		for (Class<?> clz : interfaces) {
-			appendAnnoationMethod(methodMap, clz, annotationClass);
-			appendAnnoationInterfaceMethod(methodMap, clz, annotationClass);
-		}
-	}
-
-	private static void appendAnnoationMethod(Map<String, Method> methodMap, Class<?> type,
-			Class<? extends Annotation> annotationClass) {
-		for (Method method : type.getDeclaredMethods()) {
-			Annotation annotation = method.getAnnotation(annotationClass);
-			if (annotation == null) {
-				continue;
-			}
-
-			StringBuilder sb = new StringBuilder();
-			sb.append(method.getName());
-			for (Class<?> t : method.getParameterTypes()) {
-				sb.append("&");
-				sb.append(t.getName());
-			}
-
-			String key = sb.toString();
-			if (methodMap.containsKey(key)) {
-				continue;
-			}
-
-			methodMap.put(key, method);
-		}
-	}
-
 	/**
 	 * 是否是数字类型，不包含char,boolean
 	 * 
@@ -1837,20 +1476,28 @@ public final class ClassUtils {
 			return true;
 		}
 
-		return int.class.isAssignableFrom(type) || long.class.isAssignableFrom(type)
-				|| short.class.isAssignableFrom(type) || float.class.isAssignableFrom(type)
-				|| double.class.isAssignableFrom(type) || byte.class.isAssignableFrom(type);
+		return isIntType(type) || isLongType(type) || isShortType(type) || isFloatType(type) || isDoubleType(type)
+				|| isByteType(type);
 	}
 
-	public static double getNumberValue(Object value) {
-		if (value == null) {
-			throw new NullPointerException();
+	public static boolean equals(Class<?>[] clazzArray1, Class<?>[] clazzArray2) {
+		if (clazzArray1 == null || clazzArray1.length == 0) {
+			return clazzArray2 == null || clazzArray2.length == 0;
 		}
 
-		if (value instanceof Number) {
-			return ((Number) value).doubleValue();
-		} else {
-			return (Double) value;
+		if (clazzArray2 == null || clazzArray2.length == 0) {
+			return clazzArray1 == null || clazzArray1.length == 0;
 		}
+
+		if (clazzArray1.length != clazzArray2.length) {
+			return false;
+		}
+
+		for (int i = 0; i < clazzArray1.length; i++) {
+			if (clazzArray1[i] != clazzArray2[i]) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

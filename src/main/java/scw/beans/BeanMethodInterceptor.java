@@ -5,10 +5,10 @@ import java.util.LinkedList;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import scw.aop.Filter;
-import scw.aop.FilterChain;
-import scw.aop.Invoker;
-import scw.aop.support.CglibInvoker;
+import scw.core.aop.CglibInvoker;
+import scw.core.aop.Filter;
+import scw.core.aop.FilterChain;
+import scw.core.aop.Invoker;
 
 /**
  * 顶层的filter

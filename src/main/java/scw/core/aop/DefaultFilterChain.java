@@ -1,12 +1,8 @@
-package scw.aop.support;
+package scw.core.aop;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
-
-import scw.aop.Filter;
-import scw.aop.FilterChain;
-import scw.aop.Invoker;
 
 public final class DefaultFilterChain implements FilterChain {
 	private Iterator<Filter> iterator;

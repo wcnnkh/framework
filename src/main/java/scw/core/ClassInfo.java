@@ -2,7 +2,6 @@ package scw.core;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,8 +17,6 @@ import scw.core.utils.ClassUtils;
  *
  */
 public final class ClassInfo {
-	private static final String SerialVersionUID_FIELD_NAME = "serialVersionUID";
-
 	/**
 	 * 类全名 xx.xx.xx
 	 */
@@ -79,14 +76,7 @@ public final class ClassInfo {
 		}
 
 		if (Serializable.class.isAssignableFrom(clz)) {
-			try {
-				Field field = clz.getDeclaredField(SerialVersionUID_FIELD_NAME);
-				if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
-					field.setAccessible(true);
-					serialVersionUID = (Long) field.get(null);
-				}
-			} catch (Exception e) {
-			}
+			this.serialVersionUID = ClassUtils.getSerialVersionUID(clz);
 		}
 
 		this.fieldNames = fieldNameList.toArray(new String[0]);

@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.core.utils.CollectionUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.sql.Sql;
 
@@ -122,7 +122,7 @@ public class WhereSql implements Sql {
 	}
 
 	public Object[] getParams() {
-		return paramList == null ? CollectionUtils.EMPTY_ARRAY : paramList.toArray();
+		return ArrayUtils.toArray(Object.class, paramList);
 	}
 
 	public Sql assembleSql(String beforeSql, String afterSql, Object... params) {

@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.aop.Filter;
+import scw.core.aop.Filter;
 
 /**
  * 

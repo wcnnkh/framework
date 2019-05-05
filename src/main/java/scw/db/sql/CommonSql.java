@@ -3,7 +3,7 @@ package scw.db.sql;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.core.utils.CollectionUtils;
+import scw.core.utils.ArrayUtils;
 import scw.sql.Sql;
 
 public class CommonSql implements Sql {
@@ -71,7 +71,7 @@ public class CommonSql implements Sql {
 	}
 
 	public Object[] getParams() {
-		return paramList == null ? CollectionUtils.EMPTY_ARRAY : paramList.toArray();
+		return ArrayUtils.toArray(Object.class, paramList);
 	}
 
 	public void clear() {

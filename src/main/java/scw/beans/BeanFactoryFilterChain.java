@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import scw.aop.Filter;
-import scw.aop.FilterChain;
-import scw.aop.Invoker;
+import scw.core.aop.Filter;
+import scw.core.aop.FilterChain;
+import scw.core.aop.Invoker;
 import scw.core.utils.CollectionUtils;
 
 public final class BeanFactoryFilterChain implements FilterChain {

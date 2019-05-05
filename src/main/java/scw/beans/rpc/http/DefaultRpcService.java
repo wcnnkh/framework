@@ -6,10 +6,10 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.Constants;
+import scw.core.aop.Invoker;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.IOUtils;
