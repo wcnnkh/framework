@@ -352,4 +352,24 @@ public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedi
 			close(jedisCluster);
 		}
 	}
+	
+	public Long hlen(byte[] key) {
+		JedisCluster jedisCluster = null;
+		try {
+			jedisCluster = getResource();
+			return jedisCluster.hlen(key);
+		} finally {
+			close(jedisCluster);
+		}
+	}
+	
+	public Boolean hmset(byte[] key, Map<byte[], byte[]> hash) {
+		JedisCluster jedisCluster = null;
+		try {
+			jedisCluster = getResource();
+			return RedisUtils.isOK(jedisCluster.hmset(key, hash));
+		} finally {
+			close(jedisCluster);
+		}
+	}
 }

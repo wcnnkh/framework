@@ -1,6 +1,6 @@
 package scw.data.redis;
 
-public interface RedisOperations<K, V> extends Commands<K, V> {
+public interface RedisOperations<K, V> extends RedisCommands<K, V> {
 	public static final String INCR_AND_INIT_SCRIPT = "if redis.call('exists', KEYS[1]) == 1 then return redis.call('incr', KEYS[1], ARGV[1]) else redis.call('set', KEYS[1], ARGV[2]) return ARGV[2] end";
 	public static final String DECR_AND_INIT_SCRIPT = "if redis.call('exists', KEYS[1]) == 1 then return redis.call('decr', KEYS[1], ARGV[1]) else redis.call('set', KEYS[1], ARGV[2]) return ARGV[2] end";
 

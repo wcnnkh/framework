@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface Commands<K, V> {
+public interface RedisCommands<K, V> {
 
 	V get(K key);
 	
@@ -28,6 +28,8 @@ public interface Commands<K, V> {
 	Long hsetnx(K key, K field, V value);
 
 	Long hdel(K key, K... fields);
+	
+	Long hlen(K key);
 
 	Boolean hexists(K key, K field);
 
@@ -82,9 +84,11 @@ public interface Commands<K, V> {
 
 	Object eval(K script, List<K> keys, List<K> args);
 	
-	Map<K, K> hgetAll(K key);
+	Map<K, V> hgetAll(K key);
 	
 	List<K> brpop(int timeout, K key);
 	
 	List<K> blpop(int timeout, K key);
+	
+	Boolean hmset(K key, Map<K, V> hash);
 }

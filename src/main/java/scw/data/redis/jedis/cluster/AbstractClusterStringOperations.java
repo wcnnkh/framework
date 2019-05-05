@@ -352,4 +352,24 @@ public abstract class AbstractClusterStringOperations extends AbstractStringRedi
 			close(jedisCluster);
 		}
 	}
+
+	public Long hlen(String key) {
+		JedisCluster jedisCluster = null;
+		try {
+			jedisCluster = getResource();
+			return jedisCluster.hlen(key);
+		} finally {
+			close(jedisCluster);
+		}
+	}
+
+	public Boolean hmset(String key, Map<String, String> hash) {
+		JedisCluster jedisCluster = null;
+		try {
+			jedisCluster = getResource();
+			return RedisUtils.isOK(jedisCluster.hmset(key, hash));
+		} finally {
+			close(jedisCluster);
+		}
+	}
 }

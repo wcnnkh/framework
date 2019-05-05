@@ -352,4 +352,24 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 			close(jedis);
 		}
 	}
+
+	public Long hlen(String key) {
+		Jedis jedis = null;
+		try {
+			jedis = getResource();
+			return jedis.hlen(key);
+		} finally {
+			close(jedis);
+		}
+	}
+
+	public Boolean hmset(String key, Map<String, String> hash) {
+		Jedis jedis = null;
+		try {
+			jedis = getResource();
+			return RedisUtils.isOK(jedis.hmset(key, hash));
+		} finally {
+			close(jedis);
+		}
+	}
 }

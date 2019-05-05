@@ -322,7 +322,7 @@ public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisO
 			close(jedis);
 		}
 	}
-	
+
 	public List<byte[]> brpop(int timeout, byte[] key) {
 		Jedis jedis = null;
 		try {
@@ -332,7 +332,7 @@ public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisO
 			close(jedis);
 		}
 	}
-	
+
 	public List<byte[]> blpop(int timeout, byte[] key) {
 		Jedis jedis = null;
 		try {
@@ -342,12 +342,32 @@ public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisO
 			close(jedis);
 		}
 	}
-	
+
 	public List<byte[]> mget(byte[]... keys) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
 			return jedis.mget(keys);
+		} finally {
+			close(jedis);
+		}
+	}
+
+	public Long hlen(byte[] key) {
+		Jedis jedis = null;
+		try {
+			jedis = getResource();
+			return jedis.hlen(key);
+		} finally {
+			close(jedis);
+		}
+	}
+
+	public Boolean hmset(byte[] key, Map<byte[], byte[]> hash) {
+		Jedis jedis = null;
+		try {
+			jedis = getResource();
+			return RedisUtils.isOK(jedis.hmset(key, hash));
 		} finally {
 			close(jedis);
 		}
