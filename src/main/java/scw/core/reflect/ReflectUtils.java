@@ -25,15 +25,18 @@ public final class ReflectUtils {
 	private ReflectUtils() {
 	};
 
-	public static <T, V> void setProperties(Class<T> type, T bean, Map<String, V> properties, boolean isPublicMethod,
+	public static <T, V> void setProperties(Class<T> type, T bean,
+			Map<String, V> properties, boolean isPublicMethod,
 			SetterMapper<V> mapper) {
 		if (properties == null || properties.isEmpty()) {
 			return;
 		}
 
 		for (Entry<String, V> entry : properties.entrySet()) {
-			String methodName = "set" + StringUtils.toUpperCase(entry.getKey(), 0, 1);
-			for (java.lang.reflect.Method method : isPublicMethod ? type.getMethods() : type.getDeclaredMethods()) {
+			String methodName = "set"
+					+ StringUtils.toUpperCase(entry.getKey(), 0, 1);
+			for (java.lang.reflect.Method method : isPublicMethod ? type
+					.getMethods() : type.getDeclaredMethods()) {
 				if (method.getParameterTypes().length != 1) {
 					continue;
 				}
@@ -44,19 +47,22 @@ public final class ReflectUtils {
 
 				Object v;
 				try {
-					v = mapper.mapper(bean, method, entry.getKey(), entry.getValue(), method.getParameterTypes()[0]);
+					v = mapper.mapper(bean, method, entry.getKey(),
+							entry.getValue(), method.getParameterTypes()[0]);
 					method.setAccessible(true);
 					method.invoke(bean, v);
 				} catch (Throwable e) {
 					logger.error(
-							"向对象" + type.getName() + "，插入name=" + entry.getKey() + ",value=" + entry.getValue() + "时异常",
-							e);
+							"向对象" + type.getName() + "，插入name="
+									+ entry.getKey() + ",value="
+									+ entry.getValue() + "时异常", e);
 				}
 			}
 		}
 	}
 
-	public static <T> Constructor<T> getConstructor(Class<T> type, boolean isPublic) throws NoSuchMethodException {
+	public static <T> Constructor<T> getConstructor(Class<T> type,
+			boolean isPublic) throws NoSuchMethodException {
 		Constructor<T> constructor;
 		if (isPublic) {
 			constructor = type.getConstructor();
@@ -69,7 +75,8 @@ public final class ReflectUtils {
 		return constructor;
 	}
 
-	public static <T> Constructor<T> getConstructor(Class<T> type, boolean isPublic, Class<?>... parameterTypes)
+	public static <T> Constructor<T> getConstructor(Class<T> type,
+			boolean isPublic, Class<?>... parameterTypes)
 			throws NoSuchMethodException {
 		Constructor<T> constructor;
 		if (isPublic) {
@@ -83,19 +90,25 @@ public final class ReflectUtils {
 		return constructor;
 	}
 
-	public static Constructor<?> getConstructor(String className, boolean isPublic, Class<?>... parameterTypes)
+	public static Constructor<?> getConstructor(String className,
+			boolean isPublic, Class<?>... parameterTypes)
 			throws NoSuchMethodException, ClassNotFoundException {
-		return getConstructor(Class.forName(className), isPublic, parameterTypes);
+		return getConstructor(Class.forName(className), isPublic,
+				parameterTypes);
 	}
 
-	public static <T> Constructor<T> getConstructor(Class<T> type, boolean isPublic, String... parameterTypeNames)
+	public static <T> Constructor<T> getConstructor(Class<T> type,
+			boolean isPublic, String... parameterTypeNames)
 			throws NoSuchMethodException, ClassNotFoundException {
-		return getConstructor(type, isPublic, ClassUtils.forName(parameterTypeNames));
+		return getConstructor(type, isPublic,
+				ClassUtils.forName(parameterTypeNames));
 	}
 
-	public static Constructor<?> getConstructor(String className, boolean isPublic, String... parameterTypes)
+	public static Constructor<?> getConstructor(String className,
+			boolean isPublic, String... parameterTypes)
 			throws ClassNotFoundException, NoSuchMethodException {
-		return getConstructor(Class.forName(className), isPublic, ClassUtils.forName(className));
+		return getConstructor(Class.forName(className), isPublic,
+				ClassUtils.forName(className));
 	}
 
 	/**
@@ -106,8 +119,10 @@ public final class ReflectUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> findConstructorByParameters(Class<T> type, boolean isPublic, Object... params) {
-		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
+	public static <T> Constructor<T> findConstructorByParameters(Class<T> type,
+			boolean isPublic, Object... params) {
+		for (Constructor<?> constructor : isPublic ? type.getConstructors()
+				: type.getDeclaredConstructors()) {
 			Class<?>[] types = constructor.getParameterTypes();
 			if (types.length == params.length) {
 				boolean find = true;
@@ -123,7 +138,8 @@ public final class ReflectUtils {
 				}
 
 				if (find) {
-					if (!isPublic && !Modifier.isPublic(constructor.getModifiers())) {
+					if (!isPublic
+							&& !Modifier.isPublic(constructor.getModifiers())) {
 						constructor.setAccessible(true);
 					}
 					return (Constructor<T>) constructor;
@@ -143,8 +159,8 @@ public final class ReflectUtils {
 	 * @throws NoSuchMethodException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(Class<T> type, boolean isPublic, Map<String, Object> parameterMap)
-			throws NoSuchMethodException {
+	public static <T> T newInstance(Class<T> type, boolean isPublic,
+			Map<String, Object> parameterMap) throws NoSuchMethodException {
 		if (CollectionUtils.isEmpty(parameterMap)) {
 			try {
 				return getConstructor(type, isPublic).newInstance();
@@ -160,7 +176,8 @@ public final class ReflectUtils {
 		}
 
 		int size = parameterMap.size();
-		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
+		for (Constructor<?> constructor : isPublic ? type.getConstructors()
+				: type.getDeclaredConstructors()) {
 			if (size == constructor.getParameterTypes().length) {
 				String[] names = ClassUtils.getParameterName(constructor);
 				Object[] args = new Object[size];
@@ -201,8 +218,9 @@ public final class ReflectUtils {
 	 * @param parameterMap
 	 * @return
 	 */
-	public static <T> Object invoke(Class<T> type, Object instance, String name, boolean isPublic,
-			Map<String, Object> parameterMap) throws NoSuchMethodException {
+	public static <T> Object invoke(Class<T> type, Object instance,
+			String name, boolean isPublic, Map<String, Object> parameterMap)
+			throws NoSuchMethodException {
 		if (CollectionUtils.isEmpty(parameterMap)) {
 			try {
 				return getMethod(type, isPublic, name).invoke(instance);
@@ -216,7 +234,8 @@ public final class ReflectUtils {
 		}
 
 		int size = parameterMap.size();
-		for (Method method : isPublic ? type.getMethods() : type.getDeclaredMethods()) {
+		for (Method method : isPublic ? type.getMethods() : type
+				.getDeclaredMethods()) {
 			if (size == method.getParameterTypes().length) {
 				String[] names = ClassUtils.getParameterName(method);
 				Object[] args = new Object[size];
@@ -247,14 +266,16 @@ public final class ReflectUtils {
 		throw new NoSuchMethodException(type.getName() + ", method=" + name);
 	}
 
-	public static Method getMethod(Class<?> clazz, boolean isPublic, String name, Class<?>... parameterTypes)
+	public static Method getMethod(Class<?> clazz, boolean isPublic,
+			String name, Class<?>... parameterTypes)
 			throws NoSuchMethodException {
 		Method method;
 		if (isPublic) {
 			method = clazz.getMethod(name, parameterTypes);
 		} else {
 			method = clazz.getDeclaredMethod(name, parameterTypes);
-			if (!Modifier.isPublic(clazz.getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
+			if (!Modifier.isPublic(clazz.getModifiers())
+					|| !Modifier.isPublic(method.getModifiers())) {
 				method.setAccessible(true);
 			}
 		}
@@ -292,7 +313,8 @@ public final class ReflectUtils {
 	 *            the name of the method
 	 * @return whether there is at least one method with the given name
 	 */
-	public static boolean hasAtLeastOneMethodWithName(Class<?> clazz, String methodName) {
+	public static boolean hasAtLeastOneMethodWithName(Class<?> clazz,
+			String methodName) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(methodName, "Method name must not be null");
 		Method[] declaredMethods = clazz.getDeclaredMethods();
@@ -307,7 +329,8 @@ public final class ReflectUtils {
 				return true;
 			}
 		}
-		return (clazz.getSuperclass() != null && hasAtLeastOneMethodWithName(clazz.getSuperclass(), methodName));
+		return (clazz.getSuperclass() != null && hasAtLeastOneMethodWithName(
+				clazz.getSuperclass(), methodName));
 	}
 
 	/**
@@ -339,18 +362,22 @@ public final class ReflectUtils {
 	 * @return the specific target method, or the original method if the
 	 *         {@code targetClass} doesn't implement it or is {@code null}
 	 */
-	public static Method getMostSpecificMethod(Method method, Class<?> targetClass) {
-		if (method != null && isOverridable(method, targetClass) && targetClass != null
+	public static Method getMostSpecificMethod(Method method,
+			Class<?> targetClass) {
+		if (method != null && isOverridable(method, targetClass)
+				&& targetClass != null
 				&& !targetClass.equals(method.getDeclaringClass())) {
 			try {
 				if (Modifier.isPublic(method.getModifiers())) {
 					try {
-						return targetClass.getMethod(method.getName(), method.getParameterTypes());
+						return targetClass.getMethod(method.getName(),
+								method.getParameterTypes());
 					} catch (NoSuchMethodException ex) {
 						return method;
 					}
 				} else {
-					Method specificMethod = ReflectionUtils.findMethod(targetClass, method.getName(),
+					Method specificMethod = ReflectionUtils.findMethod(
+							targetClass, method.getName(),
 							method.getParameterTypes());
 					return (specificMethod != null ? specificMethod : method);
 				}
@@ -376,10 +403,12 @@ public final class ReflectUtils {
 		if (Modifier.isPrivate(method.getModifiers())) {
 			return false;
 		}
-		if (Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers())) {
+		if (Modifier.isPublic(method.getModifiers())
+				|| Modifier.isProtected(method.getModifiers())) {
 			return true;
 		}
-		return ClassUtils.getPackageName(method.getDeclaringClass()).equals(ClassUtils.getPackageName(targetClass));
+		return ClassUtils.getPackageName(method.getDeclaringClass()).equals(
+				ClassUtils.getPackageName(targetClass));
 	}
 
 	/**
@@ -432,24 +461,30 @@ public final class ReflectUtils {
 	 */
 	public static <T> T clone(T obj) {
 		try {
-			return clone(obj, true, true);
+			return clone(obj, true, true, true);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private static Object cloneArray(Class<?> type, Object array, boolean ignoreStatic, boolean ignoreTransient)
-			throws Exception {
+	private static Object cloneArray(Class<?> type, Object array,
+			boolean ignoreStatic, boolean ignoreTransient,
+			boolean invokeCloneableMethod) throws Exception {
 		int size = Array.getLength(array);
 		Object newArr = Array.newInstance(type.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
-			Array.set(newArr, i, clone(Array.get(array, i), ignoreStatic, ignoreTransient));
+			Array.set(
+					newArr,
+					i,
+					clone(Array.get(array, i), ignoreStatic, ignoreTransient,
+							invokeCloneableMethod));
 		}
 		return newArr;
 	}
 
-	private static Object cloneObject(Class<?> type, Object obj, boolean ignoreStatic, boolean ignoreTransient)
-			throws Exception {
+	private static Object cloneObject(Class<?> type, Object obj,
+			boolean ignoreStatic, boolean ignoreTransient,
+			boolean invokeCloneableMethod) throws Exception {
 		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
 			return obj;
 		}
@@ -472,7 +507,8 @@ public final class ReflectUtils {
 					continue;
 				}
 
-				if (ignoreTransient && Modifier.isTransient(field.getModifiers())) {
+				if (ignoreTransient
+						&& Modifier.isTransient(field.getModifiers())) {
 					continue;
 				}
 
@@ -484,9 +520,11 @@ public final class ReflectUtils {
 
 				if (!field.getType().isPrimitive() && !field.getType().isEnum()) {
 					if (field.getType().isArray()) {
-						v = cloneArray(field.getType(), v, ignoreStatic, ignoreTransient);
+						v = cloneArray(field.getType(), v, ignoreStatic,
+								ignoreTransient, invokeCloneableMethod);
 					} else {
-						v = clone(v, ignoreStatic, ignoreTransient);
+						v = clone(v, ignoreStatic, ignoreTransient,
+								invokeCloneableMethod);
 					}
 				}
 				field.set(Modifier.isStatic(field.getModifiers()) ? null : t, v);
@@ -502,28 +540,38 @@ public final class ReflectUtils {
 	 * @param obj
 	 * @param ignoreStatic
 	 * @param ignoreTransient
+	 * @param invokeCloneMethod
+	 *            如果对象实现了java.lang.Cloneable接口，是否反射调用clone方法
 	 * @return
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T clone(T obj, boolean ignoreStatic, boolean ignoreTransient) throws Exception {
+	public static <T> T clone(T obj, boolean ignoreStatic,
+			boolean ignoreTransient, boolean invokeCloneableMethod)
+			throws Exception {
 		if (obj == null) {
 			return null;
+		}
+
+		if (obj instanceof scw.core.Cloneable) {
+			return (T) ((scw.core.Cloneable) obj).clone();
 		}
 
 		Class<?> type = obj.getClass();
 		if (type.isPrimitive() || type.isEnum()) {
 			return obj;
 		} else if (type.isArray()) {
-			return (T) cloneArray(type, obj, ignoreStatic, ignoreTransient);
-		} else if (obj instanceof Cloneable) {
+			return (T) cloneArray(type, obj, ignoreStatic, ignoreTransient,
+					invokeCloneableMethod);
+		} else if (invokeCloneableMethod && obj instanceof Cloneable) {
 			try {
 				return (T) getMethod(type, false, "clone").invoke(obj);
 			} catch (NoSuchMethodException e) {
 			}
 		}
 
-		return (T) cloneObject(type, obj, ignoreStatic, ignoreTransient);
+		return (T) cloneObject(type, obj, ignoreStatic, ignoreTransient,
+				invokeCloneableMethod);
 	}
 
 	public static Map<String, Object> getter(Object instance) {
