@@ -52,7 +52,7 @@ public abstract class AbstractHttpClient implements HttpClient {
 	protected void responseFilter(URL url, HttpURLConnection response) {
 		CookieManager cookieManager = getCookieManager();
 		if (cookieManager != null) {
-			List<String> cookies = CollectionUtils.getValueByMap(response.getHeaderFields(), SET_COOKIE, true, null);
+			List<String> cookies = CollectionUtils.getValue(response.getHeaderFields(), true, null, SET_COOKIE);
 			if (!CollectionUtils.isEmpty(cookies)) {
 				for (String cookie : cookies) {
 					if (!StringUtils.isEmpty(cookie)) {
