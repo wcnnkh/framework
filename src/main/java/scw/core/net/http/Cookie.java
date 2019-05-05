@@ -1,4 +1,4 @@
-package scw.core.net.http.client.cookie;
+package scw.core.net.http;
 
 import java.util.Date;
 

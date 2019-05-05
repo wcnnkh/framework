@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.net.http.client.cookie.DefaultCookie;
+import scw.core.net.http.ReadOnlyCookie;
 import scw.core.utils.StringUtils;
 
 public final class MemoryCookieManager implements CookieManager {
@@ -62,7 +62,7 @@ public final class MemoryCookieManager implements CookieManager {
 			logger.debug("SET [{}] cookie: {}", url.toString(), cookies);
 		}
 
-		DefaultCookie setCookie = new DefaultCookie(url, cookies);
+		ReadOnlyCookie setCookie = new ReadOnlyCookie(url, cookies);
 		boolean find = false;
 		for (Entry<String, PathCookie> entry : cookieMap.entrySet()) {
 			if (!setCookie.getDomain().endsWith(entry.getKey())) {
@@ -85,7 +85,7 @@ public final class MemoryCookieManager implements CookieManager {
 }
 
 class PathCookie {
-	private Map<String, Map<String, DefaultCookie>> pathCookieMap = new ConcurrentHashMap<String, Map<String, DefaultCookie>>(
+	private Map<String, Map<String, ReadOnlyCookie>> pathCookieMap = new ConcurrentHashMap<String, Map<String, ReadOnlyCookie>>(
 			2, 1);
 
 	public String getCookie(URL url) {
@@ -95,13 +95,13 @@ class PathCookie {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		for (Entry<String, Map<String, DefaultCookie>> entry : pathCookieMap.entrySet()) {
+		for (Entry<String, Map<String, ReadOnlyCookie>> entry : pathCookieMap.entrySet()) {
 			if (!path.startsWith(entry.getKey())) {
 				continue;
 			}
 
-			for (Entry<String, DefaultCookie> ce : entry.getValue().entrySet()) {
-				DefaultCookie cookie = ce.getValue();
+			for (Entry<String, ReadOnlyCookie> ce : entry.getValue().entrySet()) {
+				ReadOnlyCookie cookie = ce.getValue();
 				if (!cookie.isEffective()) {
 					entry.getValue().remove(cookie.getName());
 					continue;
@@ -116,8 +116,8 @@ class PathCookie {
 		return sb.toString();
 	}
 
-	public void setCookie(DefaultCookie cookie) {
-		for (Entry<String, Map<String, DefaultCookie>> entry : pathCookieMap.entrySet()) {
+	public void setCookie(ReadOnlyCookie cookie) {
+		for (Entry<String, Map<String, ReadOnlyCookie>> entry : pathCookieMap.entrySet()) {
 			if (!cookie.getPath().startsWith(entry.getKey())) {
 				continue;
 			}
@@ -130,10 +130,10 @@ class PathCookie {
 		}
 	}
 
-	private void setCasCookie(DefaultCookie cookie) {
-		Map<String, DefaultCookie> map = pathCookieMap.get(cookie.getPath());
+	private void setCasCookie(ReadOnlyCookie cookie) {
+		Map<String, ReadOnlyCookie> map = pathCookieMap.get(cookie.getPath());
 		if (map == null) {
-			if (pathCookieMap.putIfAbsent(cookie.getPath(), new HashMap<String, DefaultCookie>()) == null) {
+			if (pathCookieMap.putIfAbsent(cookie.getPath(), new HashMap<String, ReadOnlyCookie>()) == null) {
 				setCasCookie(cookie);
 				return;
 			}

@@ -1,4 +1,4 @@
-package scw.core.net.http.client.cookie;
+package scw.core.net.http;
 
 import java.io.Serializable;
 import java.net.URL;
@@ -8,7 +8,7 @@ import java.util.Date;
 
 import scw.core.utils.StringParseUtils;
 
-public final class DefaultCookie implements Cookie, Serializable {
+public final class ReadOnlyCookie implements Cookie, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String cookie;
 	private String name;
@@ -20,7 +20,7 @@ public final class DefaultCookie implements Cookie, Serializable {
 	private Date expires;
 	private long createTime;
 
-	public DefaultCookie(URL url, String cookie) {
+	public ReadOnlyCookie(URL url, String cookie) {
 		this.createTime = System.currentTimeMillis();
 		this.cookie = cookie;
 		String[] arrs = cookie.split("; ");
