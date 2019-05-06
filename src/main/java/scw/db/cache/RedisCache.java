@@ -2,11 +2,11 @@ package scw.db.cache;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import scw.core.Constants;
+import scw.core.BeanFieldListen;
+import scw.core.utils.CollectionUtils;
 import scw.data.redis.Redis;
 import scw.data.redis.RedisUtils;
 
@@ -18,59 +18,55 @@ public final class RedisCache implements Cache {
 	}
 
 	public void add(String key, Object value, int exp) {
-		redis.getBinaryOperations().set(key.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(value),
-				RedisUtils.NX.getBytes(Constants.DEFAULT_CHARSET), RedisUtils.EX.getBytes(Constants.DEFAULT_CHARSET), exp);
+		redis.getObjectOperations().set(key, value, RedisUtils.NX, RedisUtils.EX, exp);
 	}
 
 	public void set(String key, Object value, int exp) {
-		redis.getBinaryOperations().set(key.getBytes(Constants.DEFAULT_CHARSET), CacheUtils.encode(value),
-				RedisUtils.XX.getBytes(Constants.DEFAULT_CHARSET), RedisUtils.EX.getBytes(Constants.DEFAULT_CHARSET), exp);
+		redis.getObjectOperations().set(key, value, RedisUtils.XX, RedisUtils.EX, exp);
 	}
 
 	public void delete(String key) {
-		redis.getBinaryOperations().del(key.getBytes(Constants.DEFAULT_CHARSET));
+		redis.getObjectOperations().del(key);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T get(Class<T> type, String key) {
-		byte[] data = redis.getBinaryOperations().get(key.getBytes(Constants.DEFAULT_CHARSET));
-		if (data == null) {
-			return null;
+		T t = (T) redis.getObjectOperations().get(key);
+		if (t != null && t instanceof BeanFieldListen) {
+			((BeanFieldListen) t).start_field_listen();
 		}
-
-		return CacheUtils.decode(type, data);
+		return t;
 	}
 
 	public <T> T getAndTouch(Class<T> type, String key, int exp) {
-		byte[] data = redis.getBinaryOperations().getAndTouch(key.getBytes(Constants.DEFAULT_CHARSET), exp);
-		if (data == null) {
-			return null;
+		@SuppressWarnings("unchecked")
+		T t = (T) redis.getObjectOperations().getAndTouch(key, exp);
+		if (t != null && t instanceof BeanFieldListen) {
+			((BeanFieldListen) t).start_field_listen();
 		}
-
-		return CacheUtils.decode(type, data);
+		return t;
 	}
 
 	public <T> Map<String, T> get(Class<T> type, Collection<String> keys) {
-		byte[][] arr = new byte[keys.size()][];
-		Iterator<String> iterator = keys.iterator();
-		for (int i = 0; iterator.hasNext(); i++) {
-			arr[i] = iterator.next().getBytes(Constants.DEFAULT_CHARSET);
+		if (type == null || CollectionUtils.isEmpty(keys)) {
+			return null;
 		}
 
-		List<byte[]> list = redis.getBinaryOperations().mget(arr);
+		String[] keyArr = keys.toArray(new String[keys.size()]);
+		@SuppressWarnings("unchecked")
+		List<T> list = (List<T>) redis.getObjectOperations().mget(keyArr);
 		if (list == null || list.isEmpty()) {
 			return null;
 		}
 
-		Map<String, T> valueMap = new HashMap<String, T>(arr.length);
-		iterator = keys.iterator();
-		for (int i = 0; iterator.hasNext(); i++) {
-			String key = iterator.next();
-			byte[] data = list.get(i);
-			if (data == null) {
+		Map<String, T> valueMap = new HashMap<String, T>(keyArr.length);
+		for (int i = 0; i < keyArr.length; i++) {
+			T v = list.get(i);
+			if (v == null) {
 				continue;
 			}
 
-			valueMap.put(key, CacheUtils.decode(type, data));
+			valueMap.put(keyArr[i], v);
 		}
 		return valueMap;
 	}
