@@ -5,4 +5,6 @@ public interface Redis {
 	RedisOperations<String, String> getStringOperations();
 
 	RedisOperations<byte[], byte[]> getBinaryOperations();
+
+	RedisOperations<String, Object> getObjectOperations();
 }

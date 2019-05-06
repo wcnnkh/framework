@@ -5,8 +5,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.DeflaterOutputStream;
@@ -43,6 +48,86 @@ public final class Bytes {
 		byte[] dest = new byte[length];
 		System.arraycopy(src, 0, dest, 0, Math.min(src.length, length));
 		return dest;
+	}
+
+	public static List<byte[]> string2byteList(Charset charset, Collection<String> strings) {
+		if (strings == null) {
+			return null;
+		}
+
+		List<byte[]> list = new ArrayList<byte[]>(strings.size());
+		Iterator<String> iterator = strings.iterator();
+		while (iterator.hasNext()) {
+			String v = iterator.next();
+			if (v == null) {
+				list.add(null);
+				continue;
+			}
+
+			list.add(v.getBytes(charset));
+		}
+		return list;
+	}
+
+	public static byte[][] string2bytes(Charset charset, Collection<String> strings) {
+		if (strings == null) {
+			return null;
+		}
+
+		byte[][] bs = new byte[strings.size()][];
+		int i = 0;
+		Iterator<String> iterator = strings.iterator();
+		while (iterator.hasNext()) {
+			String v = iterator.next();
+			if (v == null) {
+				i++;
+				continue;
+			}
+
+			bs[i++] = v.getBytes(charset);
+		}
+		return bs;
+	}
+
+	public static byte[][] string2bytes(String charsetName, Collection<String> strings) {
+		if (strings == null) {
+			return null;
+		}
+
+		return string2bytes(Charset.forName(charsetName), strings);
+	}
+
+	public static List<byte[]> string2byteList(String charsetName, Collection<String> strings) {
+		if (strings == null) {
+			return null;
+		}
+
+		return string2byteList(Charset.forName(charsetName), strings);
+	}
+
+	public static byte[][] string2bytes(Charset charset, String... strings) {
+		if (strings == null) {
+			return null;
+		}
+
+		byte[][] bs = new byte[strings.length][];
+		for (int i = 0; i < strings.length; i++) {
+			String v = strings[i];
+			if (v == null) {
+				continue;
+			}
+
+			bs[i] = v.getBytes(charset);
+		}
+		return bs;
+	}
+
+	public static byte[][] string2bytes(String charsetName, String... strings) {
+		if (strings == null) {
+			return null;
+		}
+
+		return string2bytes(Charset.forName(charsetName), strings);
 	}
 
 	/**

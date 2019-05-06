@@ -3,6 +3,7 @@ package scw.data.utils;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import scw.core.utils.CollectionUtils;
 import scw.data.memcached.CAS;
 import scw.data.memcached.Memcached;
 
@@ -33,11 +34,14 @@ public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
 		}
 
 		LinkedHashMap<String, V> valueMap = cas.getValue();
+		boolean b = valueMap.containsKey(key);
 		V v = valueMap.remove(key);
 		if (!memcached.cas(dataKey, valueMap, cas.getCas())) {
-			v = remove(key);
-		} else {
-			memcached.set(sizeKey, valueMap.size());
+			return remove(key);
+		}
+
+		if (b) {
+			memcached.decr(sizeKey, 1);
 		}
 		return v;
 	}
@@ -57,18 +61,21 @@ public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
 			LinkedHashMap<String, V> valueMap = new LinkedHashMap<String, V>();
 			V v = valueMap.put(key, value);
 			if (!memcached.cas(dataKey, valueMap, 0)) {
-				v = put(key, value);
-			} else {
-				memcached.set(sizeKey, 1);
+				return put(key, value);
 			}
+
+			memcached.incr(sizeKey, 1, 1);
 			return v;
 		} else {
 			LinkedHashMap<String, V> valueMap = cas.getValue();
+			boolean b = valueMap.containsKey(key);
 			V v = valueMap.put(key, value);
 			if (!memcached.cas(dataKey, valueMap, cas.getCas())) {
-				v = put(key, value);
-			} else {
-				memcached.set(sizeKey, valueMap.size());
+				return put(key, value);
+			}
+
+			if (b) {
+				memcached.incr(sizeKey, 1);
 			}
 			return v;
 		}
@@ -91,55 +98,64 @@ public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
 		CAS<LinkedHashMap<String, V>> cas = getCasMap();
 		if (cas == null) {
 			LinkedHashMap<String, V> valueMap = new LinkedHashMap<String, V>();
-			V v = valueMap.putIfAbsent(key, value);
+			V v = valueMap.put(key, value);
 			if (!memcached.cas(dataKey, valueMap, 0)) {
-				v = put(key, value);
-			} else {
-				memcached.set(sizeKey, 1);
+				return put(key, value);
 			}
+
+			memcached.incr(sizeKey, 1, 1);
 			return v;
 		} else {
 			LinkedHashMap<String, V> valueMap = cas.getValue();
+			boolean b = valueMap.containsKey(key);
 			V v = valueMap.putIfAbsent(key, value);
 			if (!memcached.cas(dataKey, valueMap, cas.getCas())) {
-				v = put(key, value);
-			} else {
-				memcached.set(sizeKey, valueMap.size());
+				return put(key, value);
+			}
+			if (b) {
+				memcached.incr(sizeKey, 1);
 			}
 			return v;
 		}
 	}
 
 	public void putAll(Map<? extends String, ? extends V> m) {
+		if (CollectionUtils.isEmpty(m)) {
+			return;
+		}
+
 		CAS<LinkedHashMap<String, V>> cas = getCasMap();
 		if (cas == null) {
 			LinkedHashMap<String, V> valueMap = new LinkedHashMap<String, V>();
 			valueMap.putAll(m);
 			if (!memcached.cas(dataKey, valueMap, 0)) {
 				putAll(m);
-			} else {
-				memcached.set(sizeKey, valueMap.size());
+				return;
 			}
+
+			memcached.incr(sizeKey, m.size(), m.size());
 		} else {
 			LinkedHashMap<String, V> valueMap = cas.getValue();
+			int oldSize = valueMap.size();
 			valueMap.putAll(m);
+			int size = valueMap.size() - oldSize;
 			if (!memcached.cas(dataKey, valueMap, cas.getCas())) {
 				putAll(m);
-			} else {
-				memcached.set(sizeKey, valueMap.size());
+				return;
 			}
+			memcached.incr(sizeKey, size, size);
 		}
 	}
 
-	public Map<String, V> asLocalMap() {
+	public Map<String, V> asMap() {
 		return getMap();
 	}
 
 	@SuppressWarnings("unchecked")
 	private CAS<LinkedHashMap<String, V>> getCasMap() {
 		CAS<Object> v = memcached.gets(dataKey);
-		return v == null ? null : new CAS<LinkedHashMap<String, V>>(v.getCas(),
-				(LinkedHashMap<String, V>) v.getValue());
+		return v == null ? null
+				: new CAS<LinkedHashMap<String, V>>(v.getCas(), (LinkedHashMap<String, V>) v.getValue());
 	}
 
 	@SuppressWarnings("unchecked")

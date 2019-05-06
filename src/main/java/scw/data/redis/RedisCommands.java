@@ -8,8 +8,8 @@ import java.util.Set;
 public interface RedisCommands<K, V> {
 
 	V get(K key);
-	
-	List<V> mget(K ...keys);
+
+	List<V> mget(K... keys);
 
 	Boolean set(K key, V value);
 
@@ -28,7 +28,7 @@ public interface RedisCommands<K, V> {
 	Long hsetnx(K key, K field, V value);
 
 	Long hdel(K key, K... fields);
-	
+
 	Long hlen(K key);
 
 	Boolean hexists(K key, K field);
@@ -82,13 +82,13 @@ public interface RedisCommands<K, V> {
 
 	Long llen(K key);
 
-	Object eval(K script, List<K> keys, List<K> args);
-	
+	Object eval(K script, List<K> keys, List<V> args);
+
 	Map<K, V> hgetAll(K key);
-	
-	List<K> brpop(int timeout, K key);
-	
-	List<K> blpop(int timeout, K key);
-	
+
+	List<V> brpop(int timeout, K key);
+
+	List<V> blpop(int timeout, K key);
+
 	Boolean hmset(K key, Map<K, V> hash);
 }

@@ -1,8 +1,5 @@
 package scw.utils.tencent.weixin;
 
-import java.nio.charset.Charset;
-
-import scw.core.utils.IOUtils;
 import scw.data.redis.Redis;
 import scw.locks.RedisLock;
 import scw.utils.tencent.weixin.bean.JsApiTicket;
@@ -10,36 +7,23 @@ import scw.utils.tencent.weixin.process.GetJsApiTicket;
 
 public final class RedisJsApiTicketFactory extends AbstractJsApiTicketFactory {
 	private final Redis redis;
-	private final byte[] key;
+	private final String key;
 	private final String lockKey;
 
-	public RedisJsApiTicketFactory(Redis redis, String appid, String appsecret, String charsetName) {
-		this(redis, charsetName, appid, new RedisAccessTokenFactory(redis, charsetName, appid, appsecret));
+	public RedisJsApiTicketFactory(Redis redis, String appid, String appsecret) {
+		this(redis, appid, new RedisAccessTokenFactory(redis, appid, appsecret));
 	}
 
-	public RedisJsApiTicketFactory(Redis redis, String appid, String appsecret, Charset charset) {
-		this(redis, charset, appid, new RedisAccessTokenFactory(redis, charset, appid, appsecret));
-	}
-
-	public RedisJsApiTicketFactory(Redis redis, String charsetName, String key, AccessTokenFactory accessTokenFactory) {
-		this(redis, Charset.forName(charsetName), key, accessTokenFactory);
-	}
-
-	public RedisJsApiTicketFactory(Redis redis, Charset charset, String key, AccessTokenFactory accessTokenFactory) {
+	public RedisJsApiTicketFactory(Redis redis, String key, AccessTokenFactory accessTokenFactory) {
 		super(accessTokenFactory);
 		this.redis = redis;
-		this.key = (this.getClass().getName() + "#" + key).getBytes(charset);
+		this.key = this.getClass().getName() + "#" + key;
 		this.lockKey = this.getClass().getName() + "#lock#" + key;
 	}
 
 	@Override
 	protected JsApiTicket getJsApiTicketByCache() {
-		byte[] data = redis.getBinaryOperations().get(key);
-		if (data == null) {
-			return null;
-		}
-
-		return IOUtils.byteToJavaObject(data);
+		return (JsApiTicket) redis.getObjectOperations().get(key);
 	}
 
 	@Override
@@ -55,7 +39,7 @@ public final class RedisJsApiTicketFactory extends AbstractJsApiTicketFactory {
 					GetJsApiTicket getJsApiTicket = new GetJsApiTicket(getAccessToken());
 					if (getJsApiTicket.isSuccess()) {
 						JsApiTicket jsApiTicket = getJsApiTicket.getTicket();
-						redis.getBinaryOperations().setex(key, jsApiTicket.getExpires_in(), IOUtils.javaObjectToByte(jsApiTicket));
+						redis.getObjectOperations().setex(key, jsApiTicket.getExpires_in(), jsApiTicket);
 						return jsApiTicket;
 					}
 				}

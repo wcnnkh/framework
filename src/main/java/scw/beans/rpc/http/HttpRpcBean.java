@@ -2,7 +2,6 @@ package scw.beans.rpc.http;
 
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -12,6 +11,7 @@ import java.nio.charset.Charset;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.core.Constants;
 import scw.core.aop.Invoker;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
@@ -66,8 +66,7 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 			HttpRequest request = new HttpRequest(scw.core.net.http.enums.Method.POST, host) {
 				@Override
 				protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
-					ObjectOutputStream oos = new ObjectOutputStream(os);
-					oos.writeObject(message);
+					Constants.JAVA_SERIALIZER.serialize(os, message);
 				}
 			};
 

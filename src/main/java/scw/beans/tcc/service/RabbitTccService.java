@@ -21,7 +21,7 @@ import scw.beans.annotation.Destroy;
 import scw.beans.tcc.InvokeInfo;
 import scw.beans.tcc.StageType;
 import scw.beans.tcc.TCCService;
-import scw.core.utils.IOUtils;
+import scw.core.Constants;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 import scw.utils.mq.rabbit.RabbitUtils;
@@ -65,7 +65,7 @@ public final class RabbitTccService implements TCCService {
 		}
 
 		TransactionInfo info = new TransactionInfo(invokeInfo, stageType);
-		RabbitUtils.basicPublish(channel, exchangeName, routingKey, IOUtils.javaObjectToByte(info));
+		RabbitUtils.basicPublish(channel, exchangeName, routingKey, Constants.JAVA_SERIALIZER.serialize(info));
 	}
 
 	public void service(final InvokeInfo invokeInfo) {
@@ -96,7 +96,7 @@ public final class RabbitTccService implements TCCService {
 		@Override
 		public void handleDelivery(String consumerTag, final Envelope envelope, BasicProperties properties, byte[] body)
 				throws IOException {
-			final TransactionInfo info = IOUtils.byteToJavaObject(body);
+			final TransactionInfo info = Constants.JAVA_SERIALIZER.deserialize(body);
 			executorService.execute(new Runnable() {
 
 				public void run() {

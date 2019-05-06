@@ -60,8 +60,6 @@ public final class RetryTCCService implements TCCService {
 					try {
 						TransactionInfo info = FileUtils.readObject(f);
 						new RetryInvoker(info, retryTime, f.getPath()).start();
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

@@ -1,16 +1,12 @@
 package scw.core.utils;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -248,39 +244,6 @@ public final class IOUtils {
 		writeLines(new FileOutputStream(file, true), lines);
 	}
 
-	public static byte[] javaObjectToByte(Object obj) {
-		if (obj == null) {
-			return null;
-		}
-
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = null;
-		try {
-			oos = new ObjectOutputStream(bos);
-			oos.writeObject(obj);
-			oos.flush();
-			return bos.toByteArray();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			XUtils.close(oos, bos);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T byteToJavaObject(byte[] buf) {
-		ByteArrayInputStream bis = new ByteArrayInputStream(buf);
-		ObjectInputStream ois = null;
-		try {
-			ois = new ObjectInputStream(bis);
-			return (T) ois.readObject();
-		} catch (Throwable e) {
-			throw new RuntimeException(e);
-		} finally {
-			XUtils.close(ois, bis);
-		}
-	}
-
 	/**
 	 * 读取内容
 	 * 
@@ -313,20 +276,6 @@ public final class IOUtils {
 				}
 			}
 		}
-	}
-
-	public static <T> T readJavaObject(InputStream is) throws IOException, ClassNotFoundException {
-		ObjectInputStream ois = new ObjectInputStream(is);
-		try {
-			return readJavaObject(ois);
-		} finally {
-			ois.close();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T readJavaObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		return (T) ois.readObject();
 	}
 
 	public static String read(Reader reader, int buffSize, int mark) throws IOException {

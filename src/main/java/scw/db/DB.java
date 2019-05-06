@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.beans.annotation.Destroy;
-import scw.core.Constants;
 import scw.core.Iterator;
 import scw.core.exception.NotSupportException;
 import scw.data.memcached.Memcached;
@@ -78,7 +77,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 	public DB(Redis redis, String queueKey) {
 		this.cache = new RedisCache(redis);
 		logger.trace("redis中异步处理队列名：{}", queueKey);
-		Queue<AsyncInfo> queue = new RedisQueue<AsyncInfo>(redis, Constants.DEFAULT_CHARSET, queueKey);
+		Queue<AsyncInfo> queue = new RedisQueue<AsyncInfo>(redis, queueKey);
 		QueueMQ<AsyncInfo> mq = new QueueMQ<AsyncInfo>(queue);
 		mq.start();
 		this.asyncService = mq;

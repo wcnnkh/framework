@@ -1,10 +1,6 @@
 package scw.data.redis;
 
-import scw.data.redis.serialize.JavaObjectRedisSerialize;
-import scw.data.redis.serialize.RedisSerialize;
-
 public final class RedisUtils {
-	public static final RedisSerialize DEFAULT_OBJECT_SERIALIZE = new JavaObjectRedisSerialize();
 
 	/**
 	 * 设置过期时间为秒

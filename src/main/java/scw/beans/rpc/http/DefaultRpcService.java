@@ -1,7 +1,6 @@
 package scw.beans.rpc.http;
 
 import java.io.InputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +11,6 @@ import scw.core.Constants;
 import scw.core.aop.Invoker;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.utils.IOUtils;
 import scw.core.utils.SignUtils;
 import scw.core.utils.StringUtils;
 
@@ -28,7 +26,7 @@ public class DefaultRpcService implements RpcService {
 	}
 
 	public void service(InputStream in, OutputStream os) throws Throwable {
-		Message message = IOUtils.readJavaObject(in);
+		Message message = Constants.JAVA_SERIALIZER.deserialize(in);
 		if (!rpcAuthorize(message)) {
 			throw new RuntimeException("RPC验证失败");
 		}
@@ -39,9 +37,7 @@ public class DefaultRpcService implements RpcService {
 		}
 
 		Object obj = invoker.invoke(message.getArgs());
-		ObjectOutputStream oos = new ObjectOutputStream(os);
-		oos.writeObject(obj);
-		oos.flush();
+		Constants.JAVA_SERIALIZER.serialize(os, obj);
 	}
 
 	protected Invoker getRPCInvoker(final Message message) throws NoSuchMethodException, SecurityException {

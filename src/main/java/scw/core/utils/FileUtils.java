@@ -24,6 +24,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import scw.core.Base64;
+import scw.core.Constants;
 
 public final class FileUtils {
 	private FileUtils() {
@@ -347,11 +348,11 @@ public final class FileUtils {
 		}
 	}
 
-	public static <T> T readObject(File file) throws ClassNotFoundException, IOException {
+	public static <T> T readObject(File file) throws IOException {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
-			return IOUtils.readJavaObject(fis);
+			return Constants.JAVA_SERIALIZER.deserialize(fis);
 		} finally {
 			if (fis != null) {
 				fis.close();

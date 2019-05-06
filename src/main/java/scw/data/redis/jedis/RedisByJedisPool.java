@@ -1,6 +1,7 @@
 package scw.data.redis.jedis;
 
 import java.io.Closeable;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -10,6 +11,7 @@ import redis.clients.jedis.JedisPoolConfig;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Destroy;
 import scw.core.Constants;
+import scw.core.serializer.NoTypeSpecifiedSerializer;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
@@ -74,5 +76,15 @@ public class RedisByJedisPool extends AbstractJedisOperations implements Closeab
 		if (resource != null) {
 			resource.close();
 		}
+	}
+
+	@Override
+	protected NoTypeSpecifiedSerializer getSerializer() {
+		return Constants.AUTO_NO_TYPE_SPECIFIED_SERIALIZER;
+	}
+
+	@Override
+	protected Charset getCharset() {
+		return Constants.DEFAULT_CHARSET;
 	}
 }

@@ -17,7 +17,5 @@ public interface Cache {
 
 	boolean containsKey(String key);
 
-	<T> Map<String, T> gets(Collection<String> keys);
-
-	<T> scw.data.utils.Map<String, T> getMap(Class<T> type, String key);
+	<T> Map<String, T> gets(Class<T> type, Collection<String> keys);
 }

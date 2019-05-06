@@ -74,8 +74,6 @@ public final class AsyncCompleteFilter implements Filter {
 					try {
 						AsyncInvokeInfo info = FileUtils.readObject(f);
 						executorService.submit(new InvokeRunnable(info, f.getPath()));
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
