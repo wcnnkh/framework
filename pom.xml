@@ -11,7 +11,6 @@
 		<cglib-nodep.version>3.2.8</cglib-nodep.version>
 		<junit.version>4.12</junit.version>
 		<freemarker.version>2.3.23</freemarker.version>
-		<!-- <dom4j.version>1.6.1</dom4j.version> -->
 		<commons-fileupload.version>1.3.3</commons-fileupload.version>
 		<dubbo.version>2.5.3</dubbo.version>
 		<zookeeper.version>3.4.7</zookeeper.version>
@@ -45,12 +44,12 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>org.freemarker</groupId>
@@ -98,6 +97,14 @@
 				<exclusion>
 					<groupId>io.netty</groupId>
 					<artifactId>netty</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jline</groupId>
+    				<artifactId>jline</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -149,8 +156,8 @@
 		<dependency>
 			<groupId>com.aliyun.oss</groupId>
 			<artifactId>aliyun-sdk-oss</artifactId>
-			<scope>provided</scope>
 			<version>3.1.0</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
