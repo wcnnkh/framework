@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import scw.core.Constants;
 import scw.core.serializer.NoTypeSpecifiedSerializer;
 
 public class AutoNoTypeSpecifiedSerializer implements NoTypeSpecifiedSerializer {
 	private static NoTypeSpecifiedSerializer serializer;
 	static {
-		serializer = Constants.JAVA_SERIALIZER;
+		serializer = new JavaObjectSerializer();
 	}
 
 	public void serialize(OutputStream out, Object data) throws IOException {
@@ -28,5 +27,4 @@ public class AutoNoTypeSpecifiedSerializer implements NoTypeSpecifiedSerializer 
 	public <T> T deserialize(byte[] data) {
 		return serializer.deserialize(data);
 	}
-
 }

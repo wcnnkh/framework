@@ -1,21 +1,13 @@
 package scw.data.cache;
 
-import java.util.Collection;
-import java.util.Map;
+public interface Cache<T> {
+	boolean save(String key);
 
-public interface Cache {
-
-	boolean save(String key, Object bean, int exp);
-
-	boolean update(String key, Object bean, int exp);
-
-	void saveOrUpdate(String key, Object bean, int exp);
+	boolean update(String key, T value);
 
 	boolean delete(String key);
 
-	<T> T getAndTouch(Class<T> type, String key, int exp);
+	boolean saveOrUpdate(String key, T value);
 
-	boolean containsKey(String key);
-
-	<T> Map<String, T> gets(Class<T> type, Collection<String> keys);
+	T get(String key);
 }

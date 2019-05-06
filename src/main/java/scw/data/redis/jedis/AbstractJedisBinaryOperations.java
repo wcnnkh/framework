@@ -303,11 +303,11 @@ public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisO
 		}
 	}
 
-	public Object eval(byte[] script, List<byte[]> keys, List<byte[]> args) {
+	public byte[] eval(byte[] script, List<byte[]> keys, List<byte[]> args) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return jedis.eval(script, keys, args);
+			return (byte[]) jedis.eval(script, keys, args);
 		} finally {
 			close(jedis);
 		}

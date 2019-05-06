@@ -22,7 +22,7 @@ public class RedisMap<V> implements scw.data.utils.Map<String, V> {
 		this.operations = operations;
 		this.dataKey = dataKey;
 	}
-	
+
 	public int size() {
 		return (int) longSize();
 	}
@@ -54,18 +54,31 @@ public class RedisMap<V> implements scw.data.utils.Map<String, V> {
 		return (Map<String, V>) operations.hgetAll(dataKey);
 	}
 
+	public boolean remove(String key) {
+		return operations.hdel(dataKey, key) == 1;
+	}
+
+	public void put(String key, V value) {
+		operations.hset(dataKey, key, value);
+		return;
+	}
+
+	public boolean putIfAbsent(String key, V value) {
+		return operations.hsetnx(dataKey, key, value) == 1;
+	}
+
 	@SuppressWarnings("unchecked")
-	public V remove(String key) {
+	public V getAndRemove(String key) {
 		return (V) operations.eval(REMOVE_SCRIPT, Arrays.asList(dataKey, key), null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public V put(String key, V value) {
+	public V getAndPut(String key, V value) {
 		return (V) operations.eval(PUT_SCRIPT, Arrays.asList(dataKey, key), Arrays.asList(key, value));
 	}
 
 	@SuppressWarnings("unchecked")
-	public V putIfAbsent(String key, V value) {
+	public V getAndPutIfAbsent(String key, V value) {
 		return (V) operations.eval(PUT_IFABSENT_SCRIPT, Arrays.asList(dataKey, key), Arrays.asList(key, value));
 	}
 

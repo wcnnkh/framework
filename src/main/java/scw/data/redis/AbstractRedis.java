@@ -14,13 +14,16 @@ import java.util.Set;
 
 import scw.core.io.Bytes;
 import scw.core.serializer.NoTypeSpecifiedSerializer;
+import scw.core.serializer.SpecifiedTypeSerializer;
 import scw.core.utils.Assert;
 import scw.core.utils.CollectionUtils;
 
 public abstract class AbstractRedis implements Redis {
 	private final RedisOperations<String, Object> objectOperations = new ObjectOperations();
 
-	protected abstract NoTypeSpecifiedSerializer getSerializer();
+	protected abstract NoTypeSpecifiedSerializer getNoTypeSpecifiedSerializer();
+
+	protected abstract SpecifiedTypeSerializer getSpecifiedTypeSerializer();
 
 	protected abstract Charset getCharset();
 
@@ -28,18 +31,27 @@ public abstract class AbstractRedis implements Redis {
 		return objectOperations;
 	}
 
-	private final class ObjectOperations implements RedisOperations<String, Object> {
+	public <T> RedisOperations<String, T> getSpecifiedTypeOperations(Class<T> type) {
+		return new SpecifiedTypeOperations<T>(type);
+	}
 
-		public Object get(String key) {
+	private final class SpecifiedTypeOperations<T> implements RedisOperations<String, T> {
+		private final Class<T> type;
+
+		SpecifiedTypeOperations(Class<T> type) {
+			this.type = type;
+		}
+
+		public T get(String key) {
 			byte[] data = getBinaryOperations().get(key.getBytes(getCharset()));
 			if (data == null) {
 				return null;
 			}
 
-			return getSerializer().deserialize(data);
+			return getSpecifiedTypeSerializer().deserialize(type, data);
 		}
 
-		public List<Object> mget(String... keys) {
+		public List<T> mget(String... keys) {
 			if (keys == null) {
 				return null;
 			}
@@ -50,9 +62,9 @@ public abstract class AbstractRedis implements Redis {
 				return null;
 			}
 
-			List<Object> dataList = new ArrayList<Object>(keys.length);
+			List<T> dataList = new ArrayList<T>(keys.length);
 			for (byte[] data : list) {
-				dataList.add(data == null ? null : getSerializer().deserialize(data));
+				dataList.add(data == null ? null : getSpecifiedTypeSerializer().deserialize(type, data));
 			}
 			return dataList;
 		}
@@ -62,7 +74,7 @@ public abstract class AbstractRedis implements Redis {
 				return false;
 			}
 
-			return getBinaryOperations().set(key.getBytes(getCharset()), getSerializer().serialize(value));
+			return getBinaryOperations().set(key.getBytes(getCharset()), getSpecifiedTypeSerializer().serialize(value));
 		}
 
 		public long setnx(String key, Object value) {
@@ -70,7 +82,8 @@ public abstract class AbstractRedis implements Redis {
 				return 0;
 			}
 
-			return getBinaryOperations().setnx(key.getBytes(getCharset()), getSerializer().serialize(value));
+			return getBinaryOperations().setnx(key.getBytes(getCharset()),
+					getSpecifiedTypeSerializer().serialize(value));
 		}
 
 		public Boolean setex(String key, int seconds, Object value) {
@@ -78,7 +91,8 @@ public abstract class AbstractRedis implements Redis {
 				return false;
 			}
 
-			return getBinaryOperations().setex(key.getBytes(getCharset()), seconds, getSerializer().serialize(value));
+			return getBinaryOperations().setex(key.getBytes(getCharset()), seconds,
+					getSpecifiedTypeSerializer().serialize(value));
 		}
 
 		public Boolean exists(String key) {
@@ -111,7 +125,7 @@ public abstract class AbstractRedis implements Redis {
 			}
 
 			return getBinaryOperations().hset(key.getBytes(getCharset()), field.getBytes(getCharset()),
-					getSerializer().serialize(value));
+					getSpecifiedTypeSerializer().serialize(value));
 		}
 
 		public Long hsetnx(String key, String field, Object value) {
@@ -120,7 +134,450 @@ public abstract class AbstractRedis implements Redis {
 			}
 
 			return getBinaryOperations().hsetnx(key.getBytes(getCharset()), field.getBytes(getCharset()),
-					getSerializer().serialize(value));
+					getSpecifiedTypeSerializer().serialize(value));
+		}
+
+		public Long hdel(String key, String... fields) {
+			if (key == null || fields == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().hdel(key.getBytes(getCharset()), Bytes.string2bytes(getCharset(), fields));
+		}
+
+		public Long hlen(String key) {
+			if (key == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().hlen(key.getBytes(getCharset()));
+		}
+
+		public Boolean hexists(String key, String field) {
+			if (key == null || field == null) {
+				return false;
+			}
+
+			return getBinaryOperations().hexists(key.getBytes(getCharset()), field.getBytes(getCharset()));
+		}
+
+		public Long ttl(String key) {
+			if (key == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().ttl(key.getBytes(getCharset()));
+		}
+
+		public Long incr(String key) {
+			if (key == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().incr(key.getBytes(getCharset()));
+		}
+
+		public Long decr(String key) {
+			if (key == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().decr(key.getBytes(getCharset()));
+		}
+
+		public Collection<T> hvals(String key) {
+			if (key == null) {
+				return null;
+			}
+
+			Collection<byte[]> list = getBinaryOperations().hvals(key.getBytes(getCharset()));
+			if (CollectionUtils.isEmpty(list)) {
+				return null;
+			}
+
+			List<T> dataList = new ArrayList<T>(list.size());
+			for (byte[] data : list) {
+				dataList.add(data == null ? null : getSpecifiedTypeSerializer().deserialize(type, data));
+			}
+			return dataList;
+		}
+
+		public T hget(String key, String field) {
+			if (key == null || field == null) {
+				return null;
+			}
+
+			byte[] data = getBinaryOperations().hget(key.getBytes(getCharset()), field.getBytes(getCharset()));
+			return data == null ? null : getSpecifiedTypeSerializer().deserialize(type, data);
+		}
+
+		public Collection<T> hmget(String key, String... fields) {
+			if (key == null || fields == null) {
+				return null;
+			}
+
+			Collection<byte[]> list = getBinaryOperations().hmget(key.getBytes(),
+					Bytes.string2bytes(getCharset(), fields));
+			if (CollectionUtils.isEmpty(list)) {
+				return null;
+			}
+
+			List<T> valueList = new ArrayList<T>(list.size());
+			for (byte[] data : list) {
+				valueList.add(data == null ? null : getSpecifiedTypeSerializer().deserialize(type, data));
+			}
+			return valueList;
+		}
+
+		private byte[][] objectsSerialize(Object... values) {
+			byte[][] bs = new byte[values.length][];
+			for (int i = 0; i < values.length; i++) {
+				Object v = values[i];
+				if (v == null) {
+					continue;
+				}
+
+				bs[i] = getSpecifiedTypeSerializer().serialize(v);
+			}
+			return bs;
+		}
+
+		public Long lpush(String key, Object... values) {
+			if (key == null || values == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().lpush(key.getBytes(getCharset()), objectsSerialize(values));
+		}
+
+		public Long rpush(String key, Object... values) {
+			if (key == null || values == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().rpush(key.getBytes(getCharset()), objectsSerialize(values));
+		}
+
+		public T rpop(String key) {
+			if (key == null) {
+				return null;
+			}
+
+			byte[] data = getBinaryOperations().rpop(key.getBytes(getCharset()));
+			return data == null ? null : getSpecifiedTypeSerializer().deserialize(type, data);
+		}
+
+		public T lpop(String key) {
+			if (key == null) {
+				return null;
+			}
+
+			byte[] data = getBinaryOperations().lpop(key.getBytes(getCharset()));
+			return data == null ? null : getSpecifiedTypeSerializer().deserialize(type, data);
+		}
+
+		public Set<T> smembers(String key) {
+			if (key == null) {
+				return null;
+			}
+
+			Set<byte[]> set = getBinaryOperations().smembers(key.getBytes(getCharset()));
+			if (CollectionUtils.isEmpty(set)) {
+				return null;
+			}
+
+			Set<T> hashSet = new HashSet<T>(set.size(), 1);
+			Iterator<byte[]> iterator = set.iterator();
+			while (iterator.hasNext()) {
+				byte[] data = iterator.next();
+				hashSet.add(data == null ? null : getSpecifiedTypeSerializer().deserialize(type, data));
+			}
+			return hashSet;
+		}
+
+		public Long srem(String key, Object... members) {
+			if (key == null || members == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().srem(key.getBytes(getCharset()), objectsSerialize(members));
+		}
+
+		public Long sadd(String key, Object... members) {
+			if (key == null || members == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().sadd(key.getBytes(getCharset()), objectsSerialize(members));
+		}
+
+		public Long zadd(String key, long score, Object member) {
+			if (key == null || member == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().zadd(key.getBytes(getCharset()), score,
+					getSpecifiedTypeSerializer().serialize(member));
+		}
+
+		public Boolean set(String key, Object value, String nxxx, String expx, long time) {
+			if (key == null || value == null || nxxx == null || expx == null) {
+				return false;
+			}
+
+			return getBinaryOperations().set(key.getBytes(getCharset()), getSpecifiedTypeSerializer().serialize(value),
+					nxxx.getBytes(getCharset()), expx.getBytes(getCharset()), time);
+		}
+
+		public Boolean sIsMember(String key, Object member) {
+			if (key == null || member == null) {
+				return false;
+			}
+
+			return getBinaryOperations().sIsMember(key.getBytes(getCharset()),
+					getSpecifiedTypeSerializer().serialize(member));
+		}
+
+		public T lindex(String key, int index) {
+			if (key == null) {
+				return null;
+			}
+
+			byte[] data = getBinaryOperations().lindex(key.getBytes(getCharset()), index);
+			return data == null ? null : getSpecifiedTypeSerializer().deserialize(type, data);
+		}
+
+		public Long llen(String key) {
+			if (key == null) {
+				return -1L;
+			}
+			return getBinaryOperations().llen(key.getBytes(getCharset()));
+		}
+
+		public T eval(String script, List<String> keys, List<T> args) {
+			if (script == null) {
+				return null;
+			}
+
+			List<byte[]> ks = null;
+			if (!CollectionUtils.isEmpty(keys)) {
+				ks = new ArrayList<byte[]>(keys.size());
+				Iterator<String> iterator = keys.iterator();
+				while (iterator.hasNext()) {
+					String v = iterator.next();
+					ks.add(v == null ? null : v.getBytes(getCharset()));
+				}
+			}
+
+			List<byte[]> bs = null;
+			if (!CollectionUtils.isEmpty(args)) {
+				bs = new ArrayList<byte[]>(args.size());
+				Iterator<T> iterator = args.iterator();
+				while (iterator.hasNext()) {
+					T v = iterator.next();
+					bs.add(v == null ? null : getSpecifiedTypeSerializer().serialize(v));
+				}
+			}
+
+			byte[] data = getBinaryOperations().eval(script.getBytes(getCharset()), ks, bs);
+			return data == null ? null : getSpecifiedTypeSerializer().deserialize(type, data);
+		}
+
+		private Map<String, T> mapDeSerizale(Map<byte[], byte[]> map) {
+			if (CollectionUtils.isEmpty(map)) {
+				return null;
+			}
+
+			Map<String, T> valueMap = new LinkedHashMap<String, T>(map.size(), 1);
+			for (Entry<byte[], byte[]> entry : map.entrySet()) {
+				byte[] data = entry.getValue();
+				valueMap.put(new String(entry.getKey(), getCharset()),
+						data == null ? null : getSpecifiedTypeSerializer().deserialize(type, data));
+			}
+			return valueMap;
+		}
+
+		public Map<String, T> hgetAll(String key) {
+			if (key == null) {
+				return null;
+			}
+
+			Map<byte[], byte[]> map = getBinaryOperations().hgetAll(key.getBytes(getCharset()));
+			return mapDeSerizale(map);
+		}
+
+		private List<T> popObjectResponse(List<byte[]> list) {
+			int i = 0;
+			byte[] v1 = list.get(i++);
+			if (v1 != null) {
+				return null;
+			}
+
+			List<T> valueList = new ArrayList<T>(list.size());
+			for (int size = list.size(); i < size; i++) {
+				byte[] v = list.get(i);
+				if (v == null) {
+					continue;
+				}
+
+				valueList.add(getSpecifiedTypeSerializer().deserialize(type, v));
+			}
+			return valueList;
+		}
+
+		public List<T> brpop(int timeout, String key) {
+			if (key == null) {
+				return null;
+			}
+
+			List<byte[]> list = getBinaryOperations().brpop(timeout, key.getBytes(getCharset()));
+			return popObjectResponse(list);
+		}
+
+		public List<T> blpop(int timeout, String key) {
+			if (key == null) {
+				return null;
+			}
+
+			List<byte[]> list = getBinaryOperations().blpop(timeout, key.getBytes(getCharset()));
+			return popObjectResponse(list);
+		}
+
+		public Boolean hmset(String key, Map<String, T> hash) {
+			if (key == null || CollectionUtils.isEmpty(hash)) {
+				return false;
+			}
+
+			Map<byte[], byte[]> map = new HashMap<byte[], byte[]>(hash.size(), 1);
+			for (Entry<String, T> entry : hash.entrySet()) {
+				String k = entry.getKey();
+				if (k == null) {
+					continue;
+				}
+
+				T v = entry.getValue();
+				map.put(k.getBytes(getCharset()), v == null ? null : getSpecifiedTypeSerializer().serialize(v));
+			}
+
+			return getBinaryOperations().hmset(key.getBytes(getCharset()), map);
+		}
+
+		public long incr(String key, long incr, long initValue) {
+			Assert.notNull(key);
+			return getStringOperations().incr(key, incr, initValue);
+		}
+
+		public long decr(String key, long decr, long initValue) {
+			Assert.notNull(key);
+			return getStringOperations().decr(key, decr, initValue);
+		}
+
+		public T getAndTouch(String key, int newExp) {
+			if (key == null) {
+				return null;
+			}
+
+			byte[] data = getBinaryOperations().getAndTouch(key.getBytes(getCharset()), newExp);
+			return data == null ? null : getSpecifiedTypeSerializer().deserialize(type, data);
+		}
+	}
+
+	private final class ObjectOperations implements RedisOperations<String, Object> {
+
+		public Object get(String key) {
+			byte[] data = getBinaryOperations().get(key.getBytes(getCharset()));
+			if (data == null) {
+				return null;
+			}
+
+			return getNoTypeSpecifiedSerializer().deserialize(data);
+		}
+
+		public List<Object> mget(String... keys) {
+			if (keys == null) {
+				return null;
+			}
+
+			byte[][] ks = Bytes.string2bytes(getCharset(), keys);
+			List<byte[]> list = getBinaryOperations().mget(ks);
+			if (CollectionUtils.isEmpty(list)) {
+				return null;
+			}
+
+			List<Object> dataList = new ArrayList<Object>(keys.length);
+			for (byte[] data : list) {
+				dataList.add(data == null ? null : getNoTypeSpecifiedSerializer().deserialize(data));
+			}
+			return dataList;
+		}
+
+		public Boolean set(String key, Object value) {
+			if (key == null || value == null) {
+				return false;
+			}
+
+			return getBinaryOperations().set(key.getBytes(getCharset()),
+					getNoTypeSpecifiedSerializer().serialize(value));
+		}
+
+		public long setnx(String key, Object value) {
+			if (key == null || value == null) {
+				return 0;
+			}
+
+			return getBinaryOperations().setnx(key.getBytes(getCharset()),
+					getNoTypeSpecifiedSerializer().serialize(value));
+		}
+
+		public Boolean setex(String key, int seconds, Object value) {
+			if (key == null || value == null) {
+				return false;
+			}
+
+			return getBinaryOperations().setex(key.getBytes(getCharset()), seconds,
+					getNoTypeSpecifiedSerializer().serialize(value));
+		}
+
+		public Boolean exists(String key) {
+			if (key == null) {
+				return false;
+			}
+
+			return getBinaryOperations().exists(key.getBytes(getCharset()));
+		}
+
+		public Long expire(String key, int seconds) {
+			if (key == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().expire(key.getBytes(getCharset()), seconds);
+		}
+
+		public Long del(String key) {
+			if (key == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().del(key.getBytes(getCharset()));
+		}
+
+		public Long hset(String key, String field, Object value) {
+			if (key == null || field == null || value == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().hset(key.getBytes(getCharset()), field.getBytes(getCharset()),
+					getNoTypeSpecifiedSerializer().serialize(value));
+		}
+
+		public Long hsetnx(String key, String field, Object value) {
+			if (key == null || field == null || value == null) {
+				return -1L;
+			}
+
+			return getBinaryOperations().hsetnx(key.getBytes(getCharset()), field.getBytes(getCharset()),
+					getNoTypeSpecifiedSerializer().serialize(value));
 		}
 
 		public Long hdel(String key, String... fields) {
@@ -183,7 +640,7 @@ public abstract class AbstractRedis implements Redis {
 
 			List<Object> dataList = new ArrayList<Object>(list.size());
 			for (byte[] data : list) {
-				dataList.add(data == null ? null : getSerializer().deserialize(data));
+				dataList.add(data == null ? null : getNoTypeSpecifiedSerializer().deserialize(data));
 			}
 			return dataList;
 		}
@@ -194,7 +651,7 @@ public abstract class AbstractRedis implements Redis {
 			}
 
 			byte[] data = getBinaryOperations().hget(key.getBytes(getCharset()), field.getBytes(getCharset()));
-			return data == null ? null : getSerializer().deserialize(data);
+			return data == null ? null : getNoTypeSpecifiedSerializer().deserialize(data);
 		}
 
 		public Collection<Object> hmget(String key, String... fields) {
@@ -210,7 +667,7 @@ public abstract class AbstractRedis implements Redis {
 
 			List<Object> valueList = new ArrayList<Object>(list.size());
 			for (byte[] data : list) {
-				valueList.add(data == null ? null : getSerializer().deserialize(data));
+				valueList.add(data == null ? null : getNoTypeSpecifiedSerializer().deserialize(data));
 			}
 			return valueList;
 		}
@@ -223,7 +680,7 @@ public abstract class AbstractRedis implements Redis {
 					continue;
 				}
 
-				bs[i] = getSerializer().serialize(v);
+				bs[i] = getNoTypeSpecifiedSerializer().serialize(v);
 			}
 			return bs;
 		}
@@ -250,7 +707,7 @@ public abstract class AbstractRedis implements Redis {
 			}
 
 			byte[] data = getBinaryOperations().rpop(key.getBytes(getCharset()));
-			return data == null ? null : getSerializer().deserialize(data);
+			return data == null ? null : getNoTypeSpecifiedSerializer().deserialize(data);
 		}
 
 		public Object lpop(String key) {
@@ -259,7 +716,7 @@ public abstract class AbstractRedis implements Redis {
 			}
 
 			byte[] data = getBinaryOperations().lpop(key.getBytes(getCharset()));
-			return data == null ? null : getSerializer().deserialize(data);
+			return data == null ? null : getNoTypeSpecifiedSerializer().deserialize(data);
 		}
 
 		public Set<Object> smembers(String key) {
@@ -276,7 +733,7 @@ public abstract class AbstractRedis implements Redis {
 			Iterator<byte[]> iterator = set.iterator();
 			while (iterator.hasNext()) {
 				byte[] data = iterator.next();
-				hashSet.add(data == null ? null : getSerializer().deserialize(data));
+				hashSet.add(data == null ? null : getNoTypeSpecifiedSerializer().deserialize(data));
 			}
 			return hashSet;
 		}
@@ -302,7 +759,8 @@ public abstract class AbstractRedis implements Redis {
 				return -1L;
 			}
 
-			return getBinaryOperations().zadd(key.getBytes(getCharset()), score, getSerializer().serialize(member));
+			return getBinaryOperations().zadd(key.getBytes(getCharset()), score,
+					getNoTypeSpecifiedSerializer().serialize(member));
 		}
 
 		public Boolean set(String key, Object value, String nxxx, String expx, long time) {
@@ -310,8 +768,9 @@ public abstract class AbstractRedis implements Redis {
 				return false;
 			}
 
-			return getBinaryOperations().set(key.getBytes(getCharset()), getSerializer().serialize(value),
-					nxxx.getBytes(getCharset()), expx.getBytes(getCharset()), time);
+			return getBinaryOperations().set(key.getBytes(getCharset()),
+					getNoTypeSpecifiedSerializer().serialize(value), nxxx.getBytes(getCharset()),
+					expx.getBytes(getCharset()), time);
 		}
 
 		public Boolean sIsMember(String key, Object member) {
@@ -319,7 +778,8 @@ public abstract class AbstractRedis implements Redis {
 				return false;
 			}
 
-			return getBinaryOperations().sIsMember(key.getBytes(getCharset()), getSerializer().serialize(member));
+			return getBinaryOperations().sIsMember(key.getBytes(getCharset()),
+					getNoTypeSpecifiedSerializer().serialize(member));
 		}
 
 		public Object lindex(String key, int index) {
@@ -328,7 +788,7 @@ public abstract class AbstractRedis implements Redis {
 			}
 
 			byte[] data = getBinaryOperations().lindex(key.getBytes(getCharset()), index);
-			return data == null ? null : getSerializer().deserialize(data);
+			return data == null ? null : getNoTypeSpecifiedSerializer().deserialize(data);
 		}
 
 		public Long llen(String key) {
@@ -359,11 +819,12 @@ public abstract class AbstractRedis implements Redis {
 				Iterator<Object> iterator = args.iterator();
 				while (iterator.hasNext()) {
 					Object v = iterator.next();
-					bs.add(v == null ? null : getSerializer().serialize(v));
+					bs.add(v == null ? null : getNoTypeSpecifiedSerializer().serialize(v));
 				}
 			}
 
-			return getBinaryOperations().eval(script.getBytes(getCharset()), ks, bs);
+			byte[] data = getBinaryOperations().eval(script.getBytes(getCharset()), ks, bs);
+			return data == null ? null : getNoTypeSpecifiedSerializer().deserialize(data);
 		}
 
 		private Map<String, Object> mapDeSerizale(Map<byte[], byte[]> map) {
@@ -375,21 +836,9 @@ public abstract class AbstractRedis implements Redis {
 			for (Entry<byte[], byte[]> entry : map.entrySet()) {
 				byte[] data = entry.getValue();
 				valueMap.put(new String(entry.getKey(), getCharset()),
-						data == null ? null : getSerializer().deserialize(data));
+						data == null ? null : getNoTypeSpecifiedSerializer().deserialize(data));
 			}
 			return valueMap;
-		}
-
-		private List<Object> listDeSerizale(Collection<byte[]> list) {
-			if (CollectionUtils.isEmpty(list)) {
-				return null;
-			}
-
-			List<Object> valueList = new ArrayList<Object>();
-			for (byte[] data : list) {
-				valueList.add(data == null ? null : getSerializer().deserialize(data));
-			}
-			return valueList;
 		}
 
 		public Map<String, Object> hgetAll(String key) {
@@ -401,13 +850,32 @@ public abstract class AbstractRedis implements Redis {
 			return mapDeSerizale(map);
 		}
 
+		private List<Object> popObjectResponse(List<byte[]> list) {
+			int i = 0;
+			byte[] v1 = list.get(i++);
+			if (v1 != null) {
+				return null;
+			}
+
+			List<Object> valueList = new ArrayList<Object>(list.size());
+			for (int size = list.size(); i < size; i++) {
+				byte[] v = list.get(i);
+				if (v == null) {
+					continue;
+				}
+
+				valueList.add(getNoTypeSpecifiedSerializer().deserialize(v));
+			}
+			return valueList;
+		}
+
 		public List<Object> brpop(int timeout, String key) {
 			if (key == null) {
 				return null;
 			}
 
 			List<byte[]> list = getBinaryOperations().brpop(timeout, key.getBytes(getCharset()));
-			return listDeSerizale(list);
+			return popObjectResponse(list);
 		}
 
 		public List<Object> blpop(int timeout, String key) {
@@ -416,21 +884,7 @@ public abstract class AbstractRedis implements Redis {
 			}
 
 			List<byte[]> list = getBinaryOperations().blpop(timeout, key.getBytes(getCharset()));
-			if (list == null || list.size() != 0) {
-				return null;
-			}
-
-			List<Object> valueList = new ArrayList<Object>(list.size());
-			byte[] v1 = list.get(0);
-			byte[] v2 = list.get(1);
-			if (v1 == null) {
-				valueList.add(null);
-				valueList.add(Bytes.bytes2int(v2));
-			} else {
-				valueList.add(new String(v1, getCharset()));
-				valueList.add(v2 == null ? null : getSerializer().deserialize(v2));
-			}
-			return valueList;
+			return popObjectResponse(list);
 		}
 
 		public Boolean hmset(String key, Map<String, Object> hash) {
@@ -446,7 +900,7 @@ public abstract class AbstractRedis implements Redis {
 				}
 
 				Object v = entry.getValue();
-				map.put(k.getBytes(getCharset()), v == null ? null : getSerializer().serialize(v));
+				map.put(k.getBytes(getCharset()), v == null ? null : getNoTypeSpecifiedSerializer().serialize(v));
 			}
 
 			return getBinaryOperations().hmset(key.getBytes(getCharset()), map);
@@ -454,12 +908,12 @@ public abstract class AbstractRedis implements Redis {
 
 		public long incr(String key, long incr, long initValue) {
 			Assert.notNull(key);
-			return getBinaryOperations().incr(key.getBytes(getCharset()), incr, initValue);
+			return getStringOperations().incr(key, incr, initValue);
 		}
 
 		public long decr(String key, long decr, long initValue) {
 			Assert.notNull(key);
-			return getBinaryOperations().decr(key.getBytes(getCharset()), decr, initValue);
+			return getStringOperations().decr(key, decr, initValue);
 		}
 
 		public Object getAndTouch(String key, int newExp) {
@@ -467,7 +921,8 @@ public abstract class AbstractRedis implements Redis {
 				return null;
 			}
 
-			return getBinaryOperations().getAndTouch(key.getBytes(getCharset()), newExp);
+			byte[] data = getBinaryOperations().getAndTouch(key.getBytes(getCharset()), newExp);
+			return data == null ? null : getNoTypeSpecifiedSerializer().deserialize(data);
 		}
 
 	}

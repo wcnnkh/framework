@@ -7,15 +7,21 @@ public interface Map<K, V> {
 
 	V get(K key);
 
-	V remove(K key);
-	
+	boolean remove(K key);
+
 	boolean containsKey(K key);
 
-	V put(K key, V value);
+	void put(K key, V value);
 
-	V putIfAbsent(K key, V value);
-	
+	boolean putIfAbsent(K key, V value);
+
 	void putAll(java.util.Map<? extends K, ? extends V> m);
 
 	java.util.Map<K, V> asMap();
+
+	V getAndRemove(K key);
+
+	V getAndPut(K key, V value);
+
+	V getAndPutIfAbsent(K key, V value);
 }

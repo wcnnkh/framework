@@ -1,20 +1,15 @@
 package scw.data.redis;
 
-import java.util.Arrays;
-
-import scw.core.Constants;
-import scw.core.io.Bytes;
+import scw.core.exception.NotSupportException;
 
 public abstract class AbstractBinaryRedisOperations implements RedisOperations<byte[], byte[]> {
 
 	public long incr(byte[] key, long incr, long initValue) {
-		return Long.parseLong((String) eval(INCR_AND_INIT_SCRIPT.getBytes(Constants.DEFAULT_CHARSET),
-				Arrays.asList(key), Arrays.asList(Bytes.long2bytes(incr), Bytes.long2bytes(initValue))));
+		throw new NotSupportException("不支持此操作");
 	}
 
 	public long decr(byte[] key, long decr, long initValue) {
-		return Long.parseLong((String) eval(DECR_AND_INIT_SCRIPT.getBytes(Constants.DEFAULT_CHARSET),
-				Arrays.asList(key), Arrays.asList(Bytes.long2bytes(decr), Bytes.long2bytes(initValue))));
+		throw new NotSupportException("不支持此操作");
 	}
 
 	public byte[] getAndTouch(byte[] key, int newExp) {

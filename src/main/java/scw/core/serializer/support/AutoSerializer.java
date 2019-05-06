@@ -4,14 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import scw.core.Constants;
 import scw.core.serializer.Serializer;
 
 public class AutoSerializer extends Serializer {
 	private static Serializer serializer;
 
 	static {
-		serializer = Constants.JAVA_SERIALIZER;
+		serializer = new JavaObjectSerializer();
 	}
 
 	public void serialize(OutputStream out, Object data) throws IOException {

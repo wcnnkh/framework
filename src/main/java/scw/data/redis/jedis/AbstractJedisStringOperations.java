@@ -303,11 +303,11 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 		}
 	}
 
-	public Object eval(String script, List<String> keys, List<String> args) {
+	public String eval(String script, List<String> keys, List<String> args) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return jedis.eval(script, keys, args);
+			return (String) jedis.eval(script, keys, args);
 		} finally {
 			close(jedis);
 		}

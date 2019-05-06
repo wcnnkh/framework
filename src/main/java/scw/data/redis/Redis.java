@@ -7,4 +7,6 @@ public interface Redis {
 	RedisOperations<byte[], byte[]> getBinaryOperations();
 
 	RedisOperations<String, Object> getObjectOperations();
+
+	<T> RedisOperations<String, T> getSpecifiedTypeOperations(Class<T> type);
 }

@@ -1,7 +1,5 @@
 package scw.sql.orm.auto.id;
 
-import java.util.Arrays;
-
 import scw.beans.annotation.Bean;
 import scw.data.redis.Redis;
 import scw.db.sql.SimpleSql;
@@ -14,7 +12,6 @@ import scw.sql.orm.auto.AutoCreateService;
 
 @Bean(proxy = false)
 public class RedisIdAutoCreateServcie implements AutoCreateService {
-	private static final String INCR_SCRIPT = "if redis.call('exists', KEYS[1]) == 1 then return redis.call('incr', KEYV[1]) else local newValue = ARGS[1] + 1; redis.call('set', KEYS[1], newValue) return newValue end";
 	private final Redis redis;
 
 	public RedisIdAutoCreateServcie(Redis redis) {
@@ -59,7 +56,7 @@ public class RedisIdAutoCreateServcie implements AutoCreateService {
 
 				if (!redis.getStringOperations().exists(key)) {
 					long maxId = maxId(ormOperations, tableInfo, tableName, columnInfo);
-					next = (Long) redis.getStringOperations().eval(INCR_SCRIPT, Arrays.asList(key), Arrays.asList(maxId + ""));
+					next = redis.getStringOperations().incr(key, 1, maxId);
 				}
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);

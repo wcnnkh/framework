@@ -303,11 +303,11 @@ public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedi
 		}
 	}
 
-	public Object eval(byte[] script, List<byte[]> keys, List<byte[]> args) {
+	public byte[] eval(byte[] script, List<byte[]> keys, List<byte[]> args) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return jedisCluster.eval(script, keys, args);
+			return (byte[]) jedisCluster.eval(script, keys, args);
 		} finally {
 			close(jedisCluster);
 		}
@@ -342,7 +342,7 @@ public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedi
 			close(jedisCluster);
 		}
 	}
-	
+
 	public List<byte[]> mget(byte[]... keys) {
 		JedisCluster jedisCluster = null;
 		try {
@@ -352,7 +352,7 @@ public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedi
 			close(jedisCluster);
 		}
 	}
-	
+
 	public Long hlen(byte[] key) {
 		JedisCluster jedisCluster = null;
 		try {
@@ -362,7 +362,7 @@ public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedi
 			close(jedisCluster);
 		}
 	}
-	
+
 	public Boolean hmset(byte[] key, Map<byte[], byte[]> hash) {
 		JedisCluster jedisCluster = null;
 		try {
