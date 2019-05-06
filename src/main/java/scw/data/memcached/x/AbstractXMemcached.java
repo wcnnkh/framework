@@ -11,10 +11,11 @@ import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 import scw.data.memcached.CAS;
 
-public abstract class AbstractXMemcached implements scw.data.memcached.Memcached {
+public abstract class AbstractXMemcached implements
+		scw.data.memcached.Memcached {
 	public abstract MemcachedClient getMemcachedClient();
 
-	public Object get(String key) {
+	public <T> T get(String key) {
 		try {
 			return getMemcachedClient().get(key);
 		} catch (TimeoutException e) {
@@ -26,14 +27,14 @@ public abstract class AbstractXMemcached implements scw.data.memcached.Memcached
 		}
 	}
 
-	public CAS<Object> gets(String key) {
-		GetsResponse<Object> cas;
+	public <T> CAS<T> gets(String key) {
+		GetsResponse<T> cas;
 		try {
 			cas = getMemcachedClient().gets(key);
 			if (cas == null) {
 				return null;
 			}
-			return new CAS<Object>(cas.getCas(), cas.getValue());
+			return new CAS<T>(cas.getCas(), cas.getValue());
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -115,9 +116,9 @@ public abstract class AbstractXMemcached implements scw.data.memcached.Memcached
 		}
 	}
 
-	public Object getAndTouch(String key, int newExp) {
+	public <T> T getAndTouch(String key, int newExp) {
 		// 因为可能不支持此协议
-		Object t;
+		T t;
 		try {
 			t = getMemcachedClient().get(key);
 			if (t != null) {
@@ -145,7 +146,7 @@ public abstract class AbstractXMemcached implements scw.data.memcached.Memcached
 		}
 	}
 
-	public Map<String, Object> get(Collection<String> keyCollections) {
+	public <T> Map<String, T> get(Collection<String> keyCollections) {
 		try {
 			return getMemcachedClient().get(keyCollections);
 		} catch (TimeoutException e) {
@@ -205,8 +206,8 @@ public abstract class AbstractXMemcached implements scw.data.memcached.Memcached
 		}
 	}
 
-	public Map<String, CAS<Object>> gets(Collection<String> keyCollections) {
-		Map<String, GetsResponse<Object>> map = null;
+	public <T> Map<String, CAS<T>> gets(Collection<String> keyCollections) {
+		Map<String, GetsResponse<T>> map = null;
 		try {
 			map = getMemcachedClient().gets(keyCollections);
 		} catch (TimeoutException e) {
@@ -218,15 +219,16 @@ public abstract class AbstractXMemcached implements scw.data.memcached.Memcached
 		}
 
 		if (map != null) {
-			Map<String, CAS<Object>> casMap = new HashMap<String, CAS<Object>>();
-			for (Entry<String, GetsResponse<Object>> entry : map.entrySet()) {
-				casMap.put(entry.getKey(), new CAS<Object>(entry.getValue().getCas(), entry.getValue().getValue()));
+			Map<String, CAS<T>> casMap = new HashMap<String, CAS<T>>();
+			for (Entry<String, GetsResponse<T>> entry : map.entrySet()) {
+				casMap.put(entry.getKey(), new CAS<T>(
+						entry.getValue().getCas(), entry.getValue().getValue()));
 			}
 			return casMap;
 		}
 		return null;
 	}
-
+	
 	public boolean delete(String key) {
 		try {
 			return getMemcachedClient().delete(key);
