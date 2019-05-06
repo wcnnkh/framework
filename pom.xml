@@ -43,6 +43,19 @@
 			<version>${cglib-nodep.version}</version>
 			<scope>compile</scope>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.esotericsoftware/kryo -->
+		<dependency>
+		    <groupId>com.esotericsoftware</groupId>
+		    <artifactId>kryo</artifactId>
+		    <version>4.0.2</version>
+		    <exclusions>
+		    	<exclusion>
+		    		<groupId>org.ow2.asm</groupId>
+					<artifactId>asm</artifactId>
+		    	</exclusion>
+		    </exclusions>
+		</dependency>
 
 		<!-- <dependency>
 			<groupId>junit</groupId>

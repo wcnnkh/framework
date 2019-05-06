@@ -13,20 +13,21 @@ public class AutoSpecifiedTypeSerializer implements SpecifiedTypeSerializer {
 		serializer = new JavaObjectSerializer();
 	}
 
-	public void serialize(OutputStream out, Object data) throws IOException {
-		serializer.serialize(out, data);
-	}
-
-	public byte[] serialize(Object data) {
-		return serializer.serialize(data);
-	}
-
 	public <T> T deserialize(Class<T> type, InputStream input) throws IOException {
 		return serializer.deserialize(type, input);
 	}
 
 	public <T> T deserialize(Class<T> type, byte[] data) {
 		return serializer.deserialize(type, data);
+	}
+
+	public <T> void serialize(OutputStream out, Class<T> type, T data)
+			throws IOException {
+		serializer.serialize(out, type, data);
+	}
+
+	public <T> byte[] serialize(Class<T> type, T data) {
+		return serializer.serialize(type, data);
 	}
 
 }
