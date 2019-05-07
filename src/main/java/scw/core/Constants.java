@@ -19,6 +19,13 @@ public final class Constants {
 			serializerClass = Class.forName("scw.core.serializer.support.Hessian2Serializer");
 		} catch (Throwable e) {
 		}
+		
+		if(serializerClass == null){
+			try {
+				serializerClass = Class.forName("scw.core.serializer.support.HessianSerializer");
+			} catch (Throwable e) {
+			}
+		}
 
 		if (serializerClass == null) {
 			serializerClass = JavaSerializer.class;
