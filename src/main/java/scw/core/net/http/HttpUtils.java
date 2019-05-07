@@ -21,7 +21,7 @@ public final class HttpUtils {
 
 	public static String doGet(String url) {
 		HttpRequest request = new HttpRequest(Method.GET, url);
-		request.setRequestContentType("application/x-www-form-urlencoded; charset=" + Constants.DEFAULT_CHARSET.name());
+		request.setContentType(new DefaultContentType(ContentType.APPLICATION_X_WWW_FORM_URLENCODED, Constants.DEFAULT_CHARSET));
 		ByteArray byteArray = NetworkUtils.execute(request);
 		return byteArray.toString(Constants.DEFAULT_CHARSET);
 	}

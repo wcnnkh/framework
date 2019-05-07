@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
-import scw.core.net.http.enums.ContentType;
+import scw.core.net.http.ContentType;
 import scw.core.utils.StringUtils;
 
 public final class ServletUtils {
@@ -46,15 +46,15 @@ public final class ServletUtils {
 	 * @return
 	 */
 	public static boolean isJsonRequest(HttpServletRequest request) {
-		return isDesignatedContentType(request, ContentType.JSON.getValue());
+		return isDesignatedContentType(request, scw.core.net.http.ContentType.APPLICATION_JSON);
 	}
 
 	public static boolean isFormRequest(HttpServletRequest request) {
-		return isDesignatedContentType(request, ContentType.FORM.getValue());
+		return isDesignatedContentType(request, ContentType.APPLICATION_X_WWW_FORM_URLENCODED);
 	}
 
 	public static boolean isMultipartRequest(HttpServletRequest request) {
-		return isDesignatedContentType(request, ContentType.MULTIPART.getValue());
+		return isDesignatedContentType(request, ContentType.MULTIPART_FORM_DATA);
 	}
 
 	public static boolean isDesignatedContentType(HttpServletRequest request, String contentType) {

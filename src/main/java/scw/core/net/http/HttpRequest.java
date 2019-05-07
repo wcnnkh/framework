@@ -16,7 +16,6 @@ import javax.net.ssl.SSLSocketFactory;
 import scw.core.net.AbstractUrlRequest;
 import scw.core.net.RequestException;
 import scw.core.net.http.enums.Method;
-import scw.core.utils.StringUtils;
 
 public class HttpRequest extends AbstractUrlRequest {
 	protected final Method method;
@@ -80,36 +79,16 @@ public class HttpRequest extends AbstractUrlRequest {
 		return method;
 	}
 
-	public void setRequestContentType(String contentType) {
+	public void setContentType(String contentType) {
 		setRequestProperties("Content-Type", contentType);
-	}
-
-	public void setContentTypeByJSON(String charsetName) {
-		if (StringUtils.isEmpty(charsetName)) {
-			setRequestContentType("application/json");
-		} else {
-			setRequestContentType("application/json; charset=" + charsetName);
-		}
-	}
-
-	public void setContentTypeByAJAX(String charsetName) {
-		if (StringUtils.isEmpty(charsetName)) {
-			setRequestContentType("application/x-www-form-urlencoded");
-		} else {
-			setRequestContentType("application/x-www-form-urlencoded; charset=" + charsetName);
-		}
-	}
-
-	public void setContentTypeByXML(String charsetName) {
-		if (StringUtils.isEmpty(charsetName)) {
-			setRequestContentType("text/xml");
-		} else {
-			setRequestContentType("text/xml; charset=" + charsetName);
-		}
 	}
 
 	public void setRequestProperties(Map<String, String> requestProperties) {
 		this.requestProperties = requestProperties;
+	}
+	
+	public void setContentType(ContentType contentType){
+		setContentType(contentType.asString());
 	}
 
 	@Override

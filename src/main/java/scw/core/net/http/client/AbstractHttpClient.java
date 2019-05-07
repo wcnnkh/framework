@@ -12,6 +12,8 @@ import scw.core.net.AbstractResponse;
 import scw.core.net.ByteArrayResponse;
 import scw.core.net.NetworkUtils;
 import scw.core.net.Response;
+import scw.core.net.http.ContentType;
+import scw.core.net.http.DefaultContentType;
 import scw.core.net.http.FormRequest;
 import scw.core.net.http.HttpRequest;
 import scw.core.net.http.enums.Method;
@@ -65,7 +67,7 @@ public abstract class AbstractHttpClient implements HttpClient {
 
 	public String doGet(String url) {
 		HttpRequest httpRequest = new HttpRequest(Method.GET, url);
-		httpRequest.setContentTypeByAJAX(getCharset().name());
+		httpRequest.setContentType(new DefaultContentType(ContentType.APPLICATION_X_WWW_FORM_URLENCODED, getCharset()));
 		ByteArray byteArray = invoke(httpRequest, new ByteArrayResponse());
 		return byteArray.toString(getCharset());
 	}

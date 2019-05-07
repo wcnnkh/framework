@@ -9,7 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.net.http.enums.ContentType;
+import scw.core.net.http.ContentType;
 import scw.core.utils.ClassUtils;
 
 public class Response extends HttpServletResponseWrapper {
@@ -53,7 +53,7 @@ public class Response extends HttpServletResponseWrapper {
 				}
 
 				if (callback != null && callback.length() != 0) {
-					setContentType(ContentType.TEXT_JAVASCRIPT.getValue());
+					setContentType(ContentType.TEXT_JAVASCRIPT);
 					StringBuilder sb = new StringBuilder();
 					sb.append(callback);
 					sb.append(JSONP_RESP_PREFIX);
@@ -62,7 +62,7 @@ public class Response extends HttpServletResponseWrapper {
 					content = sb.toString();
 				} else {
 					if (getContentType() == null) {
-						setContentType(ContentType.TEXT_HTML.getValue());
+						setContentType(ContentType.TEXT_HTML);
 					}
 				}
 

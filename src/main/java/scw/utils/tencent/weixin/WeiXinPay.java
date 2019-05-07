@@ -18,6 +18,8 @@ import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.NetworkUtils;
 import scw.core.net.http.BodyRequest;
+import scw.core.net.http.ContentType;
+import scw.core.net.http.DefaultContentType;
 import scw.core.net.http.HttpRequest;
 import scw.core.net.http.enums.Method;
 import scw.core.net.http.ssl.SSLContexts;
@@ -321,7 +323,7 @@ public final class WeiXinPay {
 		logger.trace("微信支付请求xml内容:{}", content);
 
 		HttpRequest request = new BodyRequest(Method.POST, url, new ByteArray(content, charset));
-		request.setContentTypeByXML(charset.name());
+		request.setContentType(new DefaultContentType(ContentType.TEXT_XML, charset));
 		if (isCertTrustFile) {
 			char[] password = mch_id.toCharArray();
 			try {

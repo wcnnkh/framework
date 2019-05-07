@@ -18,7 +18,7 @@ import freemarker.template.Version;
 import scw.core.exception.NotFoundException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.net.http.enums.ContentType;
+import scw.core.net.http.ContentType;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.servlet.Request;
@@ -171,7 +171,7 @@ public class Page extends HashMap<String, Object> implements View {
 		switch (pageType) {
 		case JSP:
 			if (response.getContentType() == null) {
-				response.setContentType(ContentType.TEXT_HTML.getValue());
+				response.setContentType(ContentType.TEXT_HTML);
 			}
 
 			for (Entry<String, Object> entry : entrySet()) {
@@ -190,7 +190,7 @@ public class Page extends HashMap<String, Object> implements View {
 
 			response.setCharacterEncoding(freemarker_default_encoding);
 			if (response.getContentType() == null) {
-				response.setContentType(ContentType.TEXT_HTML.getValue());
+				response.setContentType(ContentType.TEXT_HTML);
 			}
 
 			if (freemarkerAppendAttrs) {

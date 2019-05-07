@@ -1,7 +1,6 @@
 package scw.beans.rpc.http;
 
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -17,9 +16,9 @@ import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.AbstractResponse;
 import scw.core.net.NetworkUtils;
+import scw.core.net.http.ContentType;
 import scw.core.net.http.HttpRequest;
 import scw.core.utils.SignUtils;
-import scw.core.utils.XUtils;
 
 public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -69,19 +68,14 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 					Constants.DEFAULT_SERIALIZER.serialize(os, message);
 				}
 			};
+			request.setContentType(ContentType.APPLICATION_OCTET_STREAM);
 
 			try {
 				return NetworkUtils.execute(request, new AbstractResponse<Object>() {
 
 					@Override
 					protected Object doInput(URLConnection urlConnection, InputStream is) throws Throwable {
-						ObjectInputStream ois = null;
-						try {
-							ois = new ObjectInputStream(is);
-							return ois.readObject();
-						} finally {
-							XUtils.close(ois);
-						}
+						return Constants.DEFAULT_SERIALIZER.deserialize(is);
 					}
 				});
 			} catch (Throwable e) {
