@@ -10,6 +10,7 @@ import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import scw.beans.annotation.Destroy;
+import scw.core.serializer.Serializer;
 import scw.core.utils.StringUtils;
 
 public class XMemcached extends AbstractXMemcached {
@@ -28,6 +29,14 @@ public class XMemcached extends AbstractXMemcached {
 		this(hosts, 1);
 	}
 
+	public XMemcached(String hosts, Serializer serializer) throws IOException {
+		this(hosts, 1, serializer);
+	}
+
+	public XMemcached(String hosts, int poolSize) throws IOException {
+		this(hosts, poolSize, null);
+	}
+
 	/**
 	 * * 设置连接池大小，即客户端个数 In a high concurrent enviroment,you may want to pool
 	 * memcached clients. But a xmemcached client has to start a reactor thread
@@ -44,7 +53,8 @@ public class XMemcached extends AbstractXMemcached {
 	 * @param poolSize
 	 * @throws IOException
 	 */
-	public XMemcached(String hosts, int poolSize) throws IOException {
+	public XMemcached(String hosts, int poolSize, Serializer serializer) throws IOException {
+		super(serializer);
 		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
 		String[] arr = StringUtils.commonSplit(hosts);
 		for (String a : arr) {
