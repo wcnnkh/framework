@@ -21,7 +21,7 @@ import scw.core.net.http.BodyRequest;
 import scw.core.net.http.ContentType;
 import scw.core.net.http.DefaultContentType;
 import scw.core.net.http.HttpRequest;
-import scw.core.net.http.enums.Method;
+import scw.core.net.http.Method;
 import scw.core.net.http.ssl.SSLContexts;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.SignUtils;

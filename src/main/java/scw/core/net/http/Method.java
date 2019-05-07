@@ -1,4 +1,4 @@
-package scw.core.net.http.enums;
+package scw.core.net.http;
 
 public enum Method {
 	CONNECT,

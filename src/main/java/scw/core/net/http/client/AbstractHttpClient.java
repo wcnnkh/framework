@@ -16,7 +16,7 @@ import scw.core.net.http.ContentType;
 import scw.core.net.http.DefaultContentType;
 import scw.core.net.http.FormRequest;
 import scw.core.net.http.HttpRequest;
-import scw.core.net.http.enums.Method;
+import scw.core.net.http.Method;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 

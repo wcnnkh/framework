@@ -20,7 +20,7 @@ import com.aliyun.oss.model.PolicyConditions;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.NotFoundException;
 import scw.core.exception.ParameterException;
-import scw.core.net.http.enums.ProtocolType;
+import scw.core.net.http.ProtocolType;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.core.utils.XUtils;

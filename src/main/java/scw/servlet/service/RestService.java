@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
 import scw.core.exception.AlreadyExistsException;
-import scw.core.net.http.enums.Method;
+import scw.core.net.http.Method;
 import scw.servlet.Request;
 import scw.servlet.annotation.Controller;
 
@@ -40,8 +40,8 @@ public class RestService extends AbstractServiceFilter {
 		/**
 		 * resturl
 		 */
-		scw.core.net.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
-		for (scw.core.net.http.enums.Method type : types) {
+		scw.core.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
+		for (scw.core.net.http.Method type : types) {
 			Map<String, RestInfo> map = restMap.get(type);
 			if (map == null) {
 				map = new HashMap<String, RestInfo>();

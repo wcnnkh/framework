@@ -10,7 +10,6 @@ import java.util.List;
 
 import scw.core.exception.NotSupportException;
 import scw.core.net.http.entity.parameter.AbstractMultipartParameter;
-import scw.core.net.http.enums.Method;
 
 public class MultipartRequest extends HttpRequest {
 	public static final String DEFAULT_BOUNDARY = "----WebKitFormBoundaryKSD2ndz6G9RPNjx0";

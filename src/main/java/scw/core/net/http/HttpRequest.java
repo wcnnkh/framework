@@ -15,7 +15,6 @@ import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.net.AbstractUrlRequest;
 import scw.core.net.RequestException;
-import scw.core.net.http.enums.Method;
 
 public class HttpRequest extends AbstractUrlRequest {
 	protected final Method method;

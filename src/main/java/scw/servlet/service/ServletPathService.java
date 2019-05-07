@@ -15,7 +15,7 @@ import scw.servlet.annotation.Controller;
 
 @Bean(proxy=false)
 public class ServletPathService extends AbstractServiceFilter {
-	private final Map<String, EnumMap<scw.core.net.http.enums.Method, Action>> actionMap = new HashMap<String, EnumMap<scw.core.net.http.enums.Method, Action>>();
+	private final Map<String, EnumMap<scw.core.net.http.Method, Action>> actionMap = new HashMap<String, EnumMap<scw.core.net.http.Method, Action>>();
 	private BeanFactory beanFactory;
 
 	public ServletPathService(BeanFactory beanFactory, Collection<Class<?>> classes) {
@@ -30,12 +30,12 @@ public class ServletPathService extends AbstractServiceFilter {
 	}
 
 	public Action getAction(Request request) {
-		EnumMap<scw.core.net.http.enums.Method, Action> map = actionMap.get(request.getServletPath());
+		EnumMap<scw.core.net.http.Method, Action> map = actionMap.get(request.getServletPath());
 		if (map == null) {
 			return null;
 		}
 
-		scw.core.net.http.enums.Method method = scw.core.net.http.enums.Method.valueOf(request.getMethod());
+		scw.core.net.http.Method method = scw.core.net.http.Method.valueOf(request.getMethod());
 		return map.get(method);
 	}
 
@@ -52,13 +52,13 @@ public class ServletPathService extends AbstractServiceFilter {
 
 		String allPath = XUtils.mergePath("/", classController.value(), methodController.value());
 		Action action = restInfo.getAction();
-		EnumMap<scw.core.net.http.enums.Method, Action> map = actionMap.get(allPath);
+		EnumMap<scw.core.net.http.Method, Action> map = actionMap.get(allPath);
 		if (map == null) {
-			map = new EnumMap<scw.core.net.http.enums.Method, Action>(scw.core.net.http.enums.Method.class);
+			map = new EnumMap<scw.core.net.http.Method, Action>(scw.core.net.http.Method.class);
 		}
 
-		scw.core.net.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
-		for (scw.core.net.http.enums.Method type : types) {
+		scw.core.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
+		for (scw.core.net.http.Method type : types) {
 			if (map.containsKey(type.name())) {
 				throw new AlreadyExistsException(getExistActionErrMsg(action, map.get(type.name())));
 			}

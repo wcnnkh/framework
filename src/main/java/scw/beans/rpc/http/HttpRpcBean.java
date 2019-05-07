@@ -62,7 +62,7 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 			message.setAttribute("t", cts);
 			message.setAttribute("sign", SignUtils.md5Str((cts + signStr).getBytes(charset)));
 
-			HttpRequest request = new HttpRequest(scw.core.net.http.enums.Method.POST, host) {
+			HttpRequest request = new HttpRequest(scw.core.net.http.Method.POST, host) {
 				@Override
 				protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
 					Constants.DEFAULT_SERIALIZER.serialize(os, message);

@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
 import scw.core.net.RequestException;
-import scw.core.net.http.enums.Method;
 
 public class FormRequest extends HttpRequest {
 	private MultiValueMap<String, String> parameterMap;

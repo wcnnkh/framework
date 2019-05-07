@@ -75,7 +75,7 @@ public class MethodAction implements Action {
 		return new ArrayList<Filter>(list);
 	}
 
-	public static scw.core.net.http.enums.Method[] mergeRequestType(Class<?> clz, Method method) {
+	public static scw.core.net.http.Method[] mergeRequestType(Class<?> clz, Method method) {
 		Controller clzController = clz.getAnnotation(Controller.class);
 		Controller methodController = method.getAnnotation(Controller.class);
 		if (clzController == null || methodController == null) {
@@ -84,30 +84,30 @@ public class MethodAction implements Action {
 
 		Methods methods = method.getAnnotation(Methods.class);
 
-		Map<String, scw.core.net.http.enums.Method> requestTypeMap = new HashMap<String, scw.core.net.http.enums.Method>();
+		Map<String, scw.core.net.http.Method> requestTypeMap = new HashMap<String, scw.core.net.http.Method>();
 		if (methods == null) {
 			if (clzController != null) {
-				for (scw.core.net.http.enums.Method requestType : clzController.methods()) {
+				for (scw.core.net.http.Method requestType : clzController.methods()) {
 					requestTypeMap.put(requestType.name(), requestType);
 				}
 			}
 		} else {
-			for (scw.core.net.http.enums.Method requestType : methods.value()) {
+			for (scw.core.net.http.Method requestType : methods.value()) {
 				requestTypeMap.put(requestType.name(), requestType);
 			}
 		}
 
 		if (methodController != null) {
-			for (scw.core.net.http.enums.Method requestType : methodController.methods()) {
+			for (scw.core.net.http.Method requestType : methodController.methods()) {
 				requestTypeMap.put(requestType.name(), requestType);
 			}
 		}
 
 		if (requestTypeMap.size() == 0) {
-			requestTypeMap.put(scw.core.net.http.enums.Method.GET.name(), scw.core.net.http.enums.Method.GET);
+			requestTypeMap.put(scw.core.net.http.Method.GET.name(), scw.core.net.http.Method.GET);
 		}
 
-		return requestTypeMap.values().toArray(new scw.core.net.http.enums.Method[0]);
+		return requestTypeMap.values().toArray(new scw.core.net.http.Method[0]);
 	}
 	
 	@Override

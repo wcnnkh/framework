@@ -4,7 +4,6 @@ import java.io.OutputStream;
 import java.net.URLConnection;
 
 import scw.core.io.ByteArray;
-import scw.core.net.http.enums.Method;
 
 public class BodyRequest extends HttpRequest {
 	private final ByteArray body;

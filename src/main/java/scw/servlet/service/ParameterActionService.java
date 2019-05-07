@@ -62,8 +62,8 @@ public class ParameterActionService extends AbstractServiceFilter {
 		}
 
 		Action action = new MethodAction(beanFactory, clz, method);
-		scw.core.net.http.enums.Method[] types = MethodAction.mergeRequestType(clz, method);
-		for (scw.core.net.http.enums.Method type : types) {
+		scw.core.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
+		for (scw.core.net.http.Method type : types) {
 			Map<String, Action> map = clzMap.get(type.name());
 			if (map == null) {
 				map = new HashMap<String, Action>();

@@ -12,7 +12,6 @@ import scw.core.Constants;
 import scw.core.exception.NestedRuntimeException;
 import scw.core.io.ByteArray;
 import scw.core.net.NetworkUtils;
-import scw.core.net.http.enums.Method;
 import scw.core.utils.StringUtils;
 
 public final class HttpUtils {
