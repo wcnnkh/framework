@@ -4,14 +4,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import scw.core.serializer.Serializer;
-
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
+import scw.core.serializer.Serializer;
+
 public class KryoSerializer extends Serializer {
-	final ThreadLocal<Kryo> kryoLocal = new ThreadLocal<Kryo>() {
+	/**
+	 * 一般来说只使用此单例就够了
+	 */
+	public static final KryoSerializer instance = new KryoSerializer();
+
+	private final ThreadLocal<Kryo> kryoLocal = new ThreadLocal<Kryo>() {
 		protected Kryo initialValue() {
 			Kryo kryo = new Kryo();
 			return kryo;
@@ -22,7 +27,7 @@ public class KryoSerializer extends Serializer {
 		return kryoLocal.get();
 	}
 
-	final ThreadLocal<Output> outputLocal = new ThreadLocal<Output>() {
+	private final ThreadLocal<Output> outputLocal = new ThreadLocal<Output>() {
 		protected Output initialValue() {
 			Output output = new Output();
 			output.setBuffer(new byte[1024], -1);
@@ -30,7 +35,7 @@ public class KryoSerializer extends Serializer {
 		};
 	};
 
-	final ThreadLocal<Input> inputLocal = new ThreadLocal<Input>() {
+	private final ThreadLocal<Input> inputLocal = new ThreadLocal<Input>() {
 		protected Input initialValue() {
 			return new Input();
 		};
@@ -91,8 +96,7 @@ public class KryoSerializer extends Serializer {
 	}
 
 	@Override
-	public <T> void serialize(OutputStream out, Class<T> type, T data)
-			throws IOException {
+	public <T> void serialize(OutputStream out, Class<T> type, T data) throws IOException {
 		Output output = getOutput(out);
 		getKryo().writeObjectOrNull(output, data, type);
 		output.flush();
@@ -104,8 +108,7 @@ public class KryoSerializer extends Serializer {
 	}
 
 	@Override
-	public <T> T deserialize(Class<T> type, InputStream input)
-			throws IOException {
+	public <T> T deserialize(Class<T> type, InputStream input) throws IOException {
 		return getKryo().readObjectOrNull(getInput(input), type);
 	}
 }

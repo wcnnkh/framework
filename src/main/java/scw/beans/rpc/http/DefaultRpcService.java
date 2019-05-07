@@ -26,7 +26,7 @@ public class DefaultRpcService implements RpcService {
 	}
 
 	public void service(InputStream in, OutputStream os) throws Throwable {
-		Message message = Constants.JAVA_SERIALIZER.deserialize(in);
+		Message message = Constants.DEFAULT_SERIALIZER.deserialize(in);
 		if (!rpcAuthorize(message)) {
 			throw new RuntimeException("RPC验证失败");
 		}
@@ -37,7 +37,7 @@ public class DefaultRpcService implements RpcService {
 		}
 
 		Object obj = invoker.invoke(message.getArgs());
-		Constants.JAVA_SERIALIZER.serialize(os, obj);
+		Constants.DEFAULT_SERIALIZER.serialize(os, obj);
 	}
 
 	protected Invoker getRPCInvoker(final Message message) throws NoSuchMethodException, SecurityException {

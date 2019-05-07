@@ -48,6 +48,7 @@ public class JavaObjectSerializer extends Serializer {
 		try {
 			oos = new ObjectOutputStream(out);
 			oos.writeObject(data);
+			oos.flush();
 		} finally {
 			if (oos != null) {
 				oos.close();

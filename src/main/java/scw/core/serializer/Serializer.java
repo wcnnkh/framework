@@ -16,6 +16,14 @@ public abstract class Serializer implements NoTypeSpecifiedSerializer,
 	public <T> T deserialize(InputStream input) throws IOException {
 		throw new NotSupportException("不支持不指定类型的反序列化方式(2)");
 	}
+	
+	public byte[] serialize(Object data) {
+		throw new NotSupportException("不支持不指定类型的序列化方式(1)");
+	}
+
+	public void serialize(OutputStream out, Object data) throws IOException {
+		throw new NotSupportException("不支持不指定类型的序列化方式(2)");
+	}
 
 	public <T> T deserialize(Class<T> type, byte[] data) {
 		return deserialize(data);
@@ -24,14 +32,6 @@ public abstract class Serializer implements NoTypeSpecifiedSerializer,
 	public <T> T deserialize(Class<T> type, InputStream input)
 			throws IOException {
 		return deserialize(input);
-	}
-
-	public byte[] serialize(Object data) {
-		throw new NotSupportException("不支持不指定类型的序列化方式(1)");
-	}
-
-	public void serialize(OutputStream out, Object data) throws IOException {
-		throw new NotSupportException("不支持不指定类型的序列化方式(2)");
 	}
 
 	public <T> byte[] serialize(Class<T> type, T data) {

@@ -352,7 +352,7 @@ public final class FileUtils {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
-			return Constants.JAVA_SERIALIZER.deserialize(fis);
+			return Constants.DEFAULT_SERIALIZER.deserialize(fis);
 		} finally {
 			if (fis != null) {
 				fis.close();

@@ -65,7 +65,7 @@ public final class RabbitTccService implements TCCService {
 		}
 
 		TransactionInfo info = new TransactionInfo(invokeInfo, stageType);
-		RabbitUtils.basicPublish(channel, exchangeName, routingKey, Constants.JAVA_SERIALIZER.serialize(info));
+		RabbitUtils.basicPublish(channel, exchangeName, routingKey, Constants.DEFAULT_SERIALIZER.serialize(info));
 	}
 
 	public void service(final InvokeInfo invokeInfo) {
@@ -96,7 +96,7 @@ public final class RabbitTccService implements TCCService {
 		@Override
 		public void handleDelivery(String consumerTag, final Envelope envelope, BasicProperties properties, byte[] body)
 				throws IOException {
-			final TransactionInfo info = Constants.JAVA_SERIALIZER.deserialize(body);
+			final TransactionInfo info = Constants.DEFAULT_SERIALIZER.deserialize(body);
 			executorService.execute(new Runnable() {
 
 				public void run() {

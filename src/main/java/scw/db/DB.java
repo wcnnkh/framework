@@ -421,6 +421,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		String objectKey = getObjectKeyById(tableInfo, params);
 		if (definition.getCacheType() == CacheType.lazy) {
+			System.out.println(objectKey);
 			T t = cache.getAndTouch(type, objectKey, definition.getExp());
 			if (t == null) {
 				t = super.getById(tableName, type, params);

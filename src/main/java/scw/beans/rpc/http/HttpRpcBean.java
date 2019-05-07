@@ -66,7 +66,7 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 			HttpRequest request = new HttpRequest(scw.core.net.http.enums.Method.POST, host) {
 				@Override
 				protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
-					Constants.JAVA_SERIALIZER.serialize(os, message);
+					Constants.DEFAULT_SERIALIZER.serialize(os, message);
 				}
 			};
 

@@ -11,8 +11,7 @@ import redis.clients.jedis.JedisPoolConfig;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Destroy;
 import scw.core.Constants;
-import scw.core.serializer.NoTypeSpecifiedSerializer;
-import scw.core.serializer.SpecifiedTypeSerializer;
+import scw.core.serializer.Serializer;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
@@ -85,12 +84,7 @@ public class RedisByJedisPool extends AbstractJedisOperations implements Closeab
 	}
 
 	@Override
-	protected NoTypeSpecifiedSerializer getNoTypeSpecifiedSerializer() {
-		return Constants.AUTO_NO_TYPE_SPECIFIED_SERIALIZER;
-	}
-
-	@Override
-	protected SpecifiedTypeSerializer getSpecifiedTypeSerializer() {
-		return Constants.AUTO_SPECIFIED_TYPE_SERIALIZER;
+	protected Serializer getSerializer() {
+		return Constants.DEFAULT_SERIALIZER;
 	}
 }
