@@ -10,6 +10,9 @@ public final class SerializableMethod implements Serializable, scw.core.reflect.
 	private String methodName;
 	private Class<?>[] parameterTypes;
 	private transient Method method;
+	
+	//用于序列化
+	protected SerializableMethod(){};
 
 	public SerializableMethod(Class<?> belongClass, Method method) {
 		this.belongClass = belongClass;
