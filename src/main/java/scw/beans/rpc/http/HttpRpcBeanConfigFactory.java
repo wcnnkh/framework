@@ -9,13 +9,16 @@ import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
+import scw.core.Constants;
+import scw.core.serializer.Serializer;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 
 public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "http:reference";
 
-	public HttpRpcBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String config) throws Exception {
+	public HttpRpcBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String config)
+			throws Exception {
 		Node rootNode = XmlBeanUtils.getRootNode(config);
 		NodeList rootNodeList = rootNode.getChildNodes();
 		for (int i = 0; i < rootNodeList.getLength(); i++) {
@@ -31,14 +34,19 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 			String sign = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "sign");
 			String packageName = XmlBeanUtils.getPackageName(propertiesFactory, node);
 			String charsetName = XmlBeanUtils.getCharsetName(propertiesFactory, node, "UTF-8");
+			String serializer = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "serializer");
 			String address = XmlBeanUtils.getAddress(propertiesFactory, node);
+
+			Serializer ser = StringUtils.isEmpty(serializer) ? Constants.DEFAULT_SERIALIZER
+					: (Serializer) beanFactory.get(serializer);
 			if (!StringUtils.isNull(packageName)) {
 				for (Class<?> clz : ClassUtils.getClasses(packageName)) {
 					if (!clz.isInterface()) {
 						continue;
 					}
 
-					HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, address, sign, Charset.forName(charsetName));
+					HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, address, sign,
+							Charset.forName(charsetName), ser);
 					addBean(httpRpcBean);
 				}
 			}
@@ -66,7 +74,9 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 				if (StringUtils.isNull(myAddress)) {
 					myAddress = address;
 				}
-				HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, myAddress, mySign, Charset.forName(myScharsetName));
+				
+				HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, myAddress, mySign,
+						Charset.forName(myScharsetName), ser);
 				addBean(httpRpcBean);
 			}
 		}

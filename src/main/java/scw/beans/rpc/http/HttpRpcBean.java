@@ -10,7 +10,6 @@ import java.nio.charset.Charset;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.Constants;
 import scw.core.aop.Invoker;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
@@ -18,6 +17,7 @@ import scw.core.net.AbstractResponse;
 import scw.core.net.NetworkUtils;
 import scw.core.net.http.ContentType;
 import scw.core.net.http.HttpRequest;
+import scw.core.serializer.Serializer;
 import scw.core.utils.SignUtils;
 
 public final class HttpRpcBean extends AbstractInterfaceProxyBean {
@@ -26,14 +26,16 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 	private final String signStr;
 	private final Charset charset;
 	private final BeanFactory beanFactory;
+	private final Serializer serializer;
 
-	public HttpRpcBean(BeanFactory beanFactory, Class<?> interfaceClass, String host, String signStr, Charset charset)
-			throws Exception {
+	public HttpRpcBean(BeanFactory beanFactory, Class<?> interfaceClass, String host, String signStr, Charset charset,
+			Serializer serializer) throws Exception {
 		super(interfaceClass);
 		this.beanFactory = beanFactory;
 		this.host = host;
 		this.signStr = signStr;
 		this.charset = charset;
+		this.serializer = serializer;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -65,7 +67,7 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 			HttpRequest request = new HttpRequest(scw.core.net.http.Method.POST, host) {
 				@Override
 				protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
-					Constants.DEFAULT_SERIALIZER.serialize(os, message);
+					serializer.serialize(os, message);
 				}
 			};
 			request.setContentType(ContentType.APPLICATION_OCTET_STREAM);
@@ -75,7 +77,7 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 
 					@Override
 					protected Object doInput(URLConnection urlConnection, InputStream is) throws Throwable {
-						return Constants.DEFAULT_SERIALIZER.deserialize(is);
+						return serializer.deserialize(is);
 					}
 				});
 			} catch (Throwable e) {

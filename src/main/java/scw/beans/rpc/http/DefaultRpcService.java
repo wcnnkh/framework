@@ -11,6 +11,7 @@ import scw.core.Constants;
 import scw.core.aop.Invoker;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
+import scw.core.serializer.Serializer;
 import scw.core.utils.SignUtils;
 import scw.core.utils.StringUtils;
 
@@ -19,14 +20,16 @@ public class DefaultRpcService implements RpcService {
 	private final Map<String, Invoker> invokerRPCMap = new HashMap<String, Invoker>();
 	private final String sign;
 	private final BeanFactory beanFactory;
+	private final Serializer serializer;
 
-	public DefaultRpcService(BeanFactory beanFactory, String sign) {
+	public DefaultRpcService(BeanFactory beanFactory, String sign, Serializer serializer) {
 		this.beanFactory = beanFactory;
 		this.sign = sign;
+		this.serializer = serializer;
 	}
 
 	public void service(InputStream in, OutputStream os) throws Throwable {
-		Message message = Constants.DEFAULT_SERIALIZER.deserialize(in);
+		Message message = serializer.deserialize(in);
 		if (!rpcAuthorize(message)) {
 			throw new RuntimeException("RPC验证失败");
 		}
@@ -37,7 +40,7 @@ public class DefaultRpcService implements RpcService {
 		}
 
 		Object obj = invoker.invoke(message.getArgs());
-		Constants.DEFAULT_SERIALIZER.serialize(os, obj);
+		serializer.serialize(os, obj);
 	}
 
 	protected Invoker getRPCInvoker(final Message message) throws NoSuchMethodException, SecurityException {
