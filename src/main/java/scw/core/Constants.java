@@ -5,7 +5,7 @@ import java.nio.charset.Charset;
 import org.objectweb.asm.Opcodes;
 
 import scw.core.serializer.Serializer;
-import scw.core.serializer.support.JavaObjectSerializer;
+import scw.core.serializer.support.Hessian2Serializer;
 
 public final class Constants {
 	private Constants() {
@@ -23,5 +23,5 @@ public final class Constants {
 	/**
 	 * 默认的序列化实现
 	 */
-	public static final Serializer DEFAULT_SERIALIZER = new JavaObjectSerializer();
+	public static final Serializer DEFAULT_SERIALIZER = new Hessian2Serializer();
 }

@@ -7,6 +7,18 @@ public final class StreamUtils {
 	private StreamUtils() {
 	}
 
+	private static final ThreadLocal<UnsafeByteArrayOutputStream> OUTPUT_LOCAL = new ThreadLocal<UnsafeByteArrayOutputStream>() {
+		protected UnsafeByteArrayOutputStream initialValue() {
+			return new UnsafeByteArrayOutputStream();
+		};
+	};
+
+	public static UnsafeByteArrayOutputStream getUnsafeByteArrayOutputStream() {
+		UnsafeByteArrayOutputStream out = OUTPUT_LOCAL.get();
+		out.reset();
+		return out;
+	}
+
 	public static InputStream limitedInputStream(final InputStream is, final int limit) throws IOException {
 		return new InputStream() {
 			private int mPosition = 0, mMark = 0, mLimit = Math.min(limit, is.available());

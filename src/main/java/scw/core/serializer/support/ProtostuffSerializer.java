@@ -16,6 +16,9 @@ import scw.core.io.ByteArray;
 import scw.core.serializer.Serializer;
 
 public class ProtostuffSerializer extends Serializer {
+	/**
+	 * 一般来说只使用此单例就够了
+	 */
 	public static final ProtostuffSerializer instance = new ProtostuffSerializer();
 
 	private static final Map<Class<?>, byte[]> CLASS_TO_BYTES = new HashMap<Class<?>, byte[]>();

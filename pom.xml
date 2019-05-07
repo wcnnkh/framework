@@ -206,13 +206,13 @@
 		    <groupId>com.esotericsoftware</groupId>
 		    <artifactId>kryo</artifactId>
 		    <version>4.0.2</version>
+		    <scope>provided</scope>
 		    <exclusions>
 		    	<exclusion>
 		    		<groupId>org.ow2.asm</groupId>
 					<artifactId>asm</artifactId>
 		    	</exclusion>
 		    </exclusions>
-		    <scope>provided</scope>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/com.dyuproject.protostuff/protostuff-core -->
@@ -220,6 +220,7 @@
 			<groupId>com.dyuproject.protostuff</groupId>
 			<artifactId>protostuff-core</artifactId>
 			<version>${protostuff-core.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.dyuproject.protostuff/protostuff-runtime -->
@@ -227,6 +228,7 @@
 			<groupId>com.dyuproject.protostuff</groupId>
 			<artifactId>protostuff-runtime</artifactId>
 			<version>${protostuff-runtime.version}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

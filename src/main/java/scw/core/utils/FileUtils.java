@@ -360,6 +360,18 @@ public final class FileUtils {
 		}
 	}
 
+	public static void writeObject(File file, Object obj) throws IOException {
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(file);
+			Constants.DEFAULT_SERIALIZER.serialize(fos, obj);
+		} finally {
+			if (fos != null) {
+				fos.close();
+			}
+		}
+	}
+
 	public static List<String> getFileContentLineList(File file, String charsetName) {
 		FileInputStream fis = null;
 		InputStreamReader isr = null;

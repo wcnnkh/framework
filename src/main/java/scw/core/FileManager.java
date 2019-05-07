@@ -1,13 +1,11 @@
 package scw.core;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.concurrent.atomic.AtomicLong;
 
+import scw.core.utils.FileUtils;
 import scw.core.utils.XTime;
-import scw.core.utils.XUtils;
 
 public final class FileManager {
 	private final String rootPath;
@@ -49,15 +47,7 @@ public final class FileManager {
 			}
 		}
 
-		FileOutputStream fos = null;
-		ObjectOutputStream oos = null;
-		try {
-			fos = new FileOutputStream(file);
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(bean);
-		} finally {
-			XUtils.close(oos, fos);
-		}
+		FileUtils.writeObject(file, bean);
 		return file;
 	}
 }

@@ -1,17 +1,18 @@
 package scw.core.serializer.support;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
+import scw.core.io.StreamUtils;
+import scw.core.io.UnsafeByteArrayInputStream;
+import scw.core.io.UnsafeByteArrayOutputStream;
 import scw.core.serializer.Serializer;
 import scw.core.utils.XUtils;
 
-public class JavaObjectSerializer extends Serializer {
+public class JavaSerializer extends Serializer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T deserialize(InputStream input) throws IOException {
@@ -31,7 +32,7 @@ public class JavaObjectSerializer extends Serializer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T deserialize(byte[] data) {
-		ByteArrayInputStream bis = new ByteArrayInputStream(data);
+		UnsafeByteArrayInputStream bis = new UnsafeByteArrayInputStream(data);
 		ObjectInputStream ois = null;
 		try {
 			ois = new ObjectInputStream(bis);
@@ -57,7 +58,7 @@ public class JavaObjectSerializer extends Serializer {
 	}
 
 	public byte[] serialize(Object data) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		UnsafeByteArrayOutputStream bos = StreamUtils.getUnsafeByteArrayOutputStream();
 		ObjectOutputStream oos = null;
 		try {
 			oos = new ObjectOutputStream(bos);
