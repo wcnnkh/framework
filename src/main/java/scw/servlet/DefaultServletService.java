@@ -20,6 +20,7 @@ import scw.beans.rpc.http.RpcService;
 import scw.core.Constants;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
+import scw.core.serializer.Serializer;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParseUtils;
 import scw.core.utils.StringUtils;
@@ -41,6 +42,7 @@ public class DefaultServletService implements ServletService {
 	private static final String RPC_PATH = "servlet.rpc-path";
 	private static final String RPC_ENABLE = "servlet.rpc-enable";
 	private static final String RPC_SERVER = "servlet.rpc";
+	private static final String RPC_SERIALIZER = "servlet.rpc-serializer";
 
 	private static final String REQUEST_FACTORY = "servlet.request-factory";
 	private static final String REQUEST_COOKIE_VALUE = "servlet.parameter.cookie";
@@ -88,7 +90,10 @@ public class DefaultServletService implements ServletService {
 			boolean enable = StringParseUtils.parseBoolean(propertiesFactory.getValue(RPC_ENABLE), false);
 			if (enable || !StringUtils.isEmpty(sign)) {// 开启
 				logger.info("rpc签名：{}", sign);
-				this.rpcService = beanFactory.get(DefaultRpcService.class, beanFactory, sign);
+				String serializer = propertiesFactory.getValue(RPC_SERIALIZER);
+				this.rpcService = beanFactory.get(DefaultRpcService.class, beanFactory, sign,
+						StringUtils.isEmpty(serializer) ? Constants.DEFAULT_SERIALIZER
+								: (Serializer) beanFactory.get(serializer));
 			} else {
 				this.rpcService = null;
 			}
