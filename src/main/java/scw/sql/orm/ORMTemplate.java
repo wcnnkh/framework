@@ -10,6 +10,7 @@ import java.util.Map;
 
 import scw.beans.BeanFactory;
 import scw.core.BeanFieldListen;
+import scw.core.ClassInfo;
 import scw.core.Iterator;
 import scw.core.Pagination;
 import scw.core.exception.AlreadyExistsException;
@@ -325,6 +326,9 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 			if (table == null) {
 				continue;
 			}
+			
+			ClassInfo classInfo = ClassUtils.getClassInfo(tableClass);
+			classInfo.createFieldListenProxyClass();
 
 			if (table.create()) {
 				createTable(tableClass);

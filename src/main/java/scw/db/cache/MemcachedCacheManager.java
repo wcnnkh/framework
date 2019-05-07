@@ -8,10 +8,10 @@ import scw.core.BeanFieldListen;
 import scw.data.memcached.CAS;
 import scw.data.memcached.Memcached;
 
-public final class MemcachedCache implements Cache {
+public final class MemcachedCacheManager implements CacheManager {
 	private final Memcached memcached;
 
-	public MemcachedCache(Memcached memcached) {
+	public MemcachedCacheManager(Memcached memcached) {
 		this.memcached = memcached;
 	}
 

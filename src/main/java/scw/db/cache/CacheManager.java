@@ -3,7 +3,7 @@ package scw.db.cache;
 import java.util.Collection;
 import java.util.Map;
 
-public interface Cache {
+public interface CacheManager {
 	void add(String key, Object value, int exp);
 
 	void set(String key, Object value, int exp);

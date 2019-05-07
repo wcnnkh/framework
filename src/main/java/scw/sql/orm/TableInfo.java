@@ -10,6 +10,7 @@ import java.util.Map;
 import scw.core.ClassInfo;
 import scw.core.FieldInfo;
 import scw.core.exception.AlreadyExistsException;
+import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.sql.orm.annotation.NotColumn;
@@ -260,11 +261,7 @@ public final class TableInfo {
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance() {
 		if (table == null) {
-			try {
-				return (T) ClassUtils.newInstance(classInfo.getClz());
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
+			return (T) ReflectUtils.newInstance(classInfo.getClz());
 		} else {
 			return (T) classInfo.newFieldListenInstance();
 		}

@@ -118,9 +118,10 @@ public class ProtostuffSerializer extends Serializer {
 		byte[] nameBytes = new byte[len];
 		System.arraycopy(data, 4, nameBytes, 0, len);
 		Class<?> type = bytesToClass(nameBytes);
+		
 		Schema schema = RuntimeSchema.getSchema(type);
 		Object t = schema.newMessage();
-		ProtostuffIOUtil.mergeFrom(data, t, schema);
+		ProtostuffIOUtil.mergeFrom(data, 4 + len, data.length - 4 - len, t, schema);
 		return (T) t;
 	}
 

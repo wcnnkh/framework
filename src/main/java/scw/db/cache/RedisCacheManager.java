@@ -10,10 +10,10 @@ import scw.core.utils.CollectionUtils;
 import scw.data.redis.Redis;
 import scw.data.redis.RedisUtils;
 
-public final class RedisCache implements Cache {
+public final class RedisCacheManager implements CacheManager {
 	private final Redis redis;
 
-	public RedisCache(Redis redis) {
+	public RedisCacheManager(Redis redis) {
 		this.redis = redis;
 	}
 

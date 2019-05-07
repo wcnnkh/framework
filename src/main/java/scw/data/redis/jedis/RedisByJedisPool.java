@@ -12,6 +12,7 @@ import scw.beans.annotation.Bean;
 import scw.beans.annotation.Destroy;
 import scw.core.Constants;
 import scw.core.serializer.Serializer;
+import scw.core.serializer.support.ProtostuffSerializer;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
@@ -85,6 +86,6 @@ public class RedisByJedisPool extends AbstractJedisOperations implements Closeab
 
 	@Override
 	protected Serializer getSerializer() {
-		return Constants.DEFAULT_SERIALIZER;
+		return ProtostuffSerializer.instance;
 	}
 }
