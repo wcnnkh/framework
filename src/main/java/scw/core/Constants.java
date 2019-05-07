@@ -15,15 +15,20 @@ public final class Constants {
 
 	static {
 		Class<?> serializerClass = null;
-		try {
-			serializerClass = Class.forName("scw.core.serializer.support.Hessian2Serializer");
-		} catch (Throwable e) {
-		}
-		
-		if(serializerClass == null){
+		String[] seralizerClassNames = {
+				"scw.core.serializer.support.Hessian2Serializer",
+				"scw.core.serializer.support.DubboHessian2Serializer",
+				"scw.core.serializer.support.HessianSerializer",
+				"scw.core.serializer.support.DubboHessianSerializer" };
+
+		for (String name : seralizerClassNames) {
 			try {
-				serializerClass = Class.forName("scw.core.serializer.support.HessianSerializer");
+				serializerClass = Class.forName(name);
 			} catch (Throwable e) {
+			}
+
+			if (serializerClass != null) {
+				break;
 			}
 		}
 
@@ -31,7 +36,8 @@ public final class Constants {
 			serializerClass = JavaSerializer.class;
 		}
 
-		DEFAULT_SERIALIZER = (Serializer) ReflectUtils.newInstance(serializerClass);
+		DEFAULT_SERIALIZER = (Serializer) ReflectUtils
+				.newInstance(serializerClass);
 		logger.info("default serializer：" + serializerClass.getName());
 	}
 
