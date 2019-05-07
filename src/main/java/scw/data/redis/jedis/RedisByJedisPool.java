@@ -12,7 +12,6 @@ import scw.beans.annotation.Bean;
 import scw.beans.annotation.Destroy;
 import scw.core.Constants;
 import scw.core.serializer.Serializer;
-import scw.core.serializer.support.ProtostuffSerializer;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
@@ -22,8 +21,9 @@ public class RedisByJedisPool extends AbstractJedisOperations implements Closeab
 
 	private final JedisPool jedisPool;
 	private final String auth;
+	private final Serializer serializer;
 
-	public RedisByJedisPool(String propertiesFile) {
+	public RedisByJedisPool(String propertiesFile, Serializer serializer) {
 		JedisPoolConfig config = createConfig(propertiesFile);
 		Properties properties = ConfigUtils.getProperties(propertiesFile, Constants.DEFAULT_CHARSET.name());
 		String host = PropertiesUtils.getProperty(properties, "host", "address");
@@ -34,6 +34,11 @@ public class RedisByJedisPool extends AbstractJedisOperations implements Closeab
 		} else {
 			this.jedisPool = new JedisPool(config, host, Integer.parseInt(port));
 		}
+		this.serializer = serializer;
+	}
+
+	public RedisByJedisPool(String propertiesFile) {
+		this(propertiesFile, Constants.DEFAULT_SERIALIZER);
 	}
 
 	public static JedisPoolConfig createConfig(String propertiesFile) {
@@ -43,12 +48,7 @@ public class RedisByJedisPool extends AbstractJedisOperations implements Closeab
 	}
 
 	public RedisByJedisPool() {
-		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-		jedisPoolConfig.setMaxTotal(512);
-		jedisPoolConfig.setMaxIdle(200);
-		jedisPoolConfig.setTestOnBorrow(true);
-		this.jedisPool = new JedisPool(jedisPoolConfig, "localhost");
-		this.auth = null;
+		this(512, 200, true, "localhost");
 	}
 
 	public RedisByJedisPool(int maxTotal, int maxIdle, boolean testOnBorrow, String host) {
@@ -58,6 +58,7 @@ public class RedisByJedisPool extends AbstractJedisOperations implements Closeab
 		jedisPoolConfig.setTestOnBorrow(testOnBorrow);
 		this.jedisPool = new JedisPool(jedisPoolConfig, host);
 		this.auth = null;
+		this.serializer = Constants.DEFAULT_SERIALIZER;
 	}
 
 	@Destroy
@@ -86,6 +87,6 @@ public class RedisByJedisPool extends AbstractJedisOperations implements Closeab
 
 	@Override
 	protected Serializer getSerializer() {
-		return ProtostuffSerializer.instance;
+		return serializer;
 	}
 }
