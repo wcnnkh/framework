@@ -16,26 +16,21 @@ import scw.core.io.ByteArray;
 import scw.core.serializer.Serializer;
 
 public class ProtostuffSerializer extends Serializer {
-	/**
-	 * 一般来说只使用此单例就够了
-	 */
-	public static final ProtostuffSerializer instance = new ProtostuffSerializer();
-
 	private static final Map<Class<?>, byte[]> CLASS_TO_BYTES = new HashMap<Class<?>, byte[]>();
 	private static final Map<byte[], Class<?>> BYTES_TO_CLASS = new HashMap<byte[], Class<?>>();
 
-	private final ThreadLocal<LinkedBuffer> bufferLocal = new ThreadLocal<LinkedBuffer>() {
+	private static final ThreadLocal<LinkedBuffer> bufferLocal = new ThreadLocal<LinkedBuffer>() {
 		protected LinkedBuffer initialValue() {
 			return LinkedBuffer.allocate(1024);
 		};
 	};
 
-	public LinkedBuffer getLinkedBuffer() {
+	public static LinkedBuffer getLinkedBuffer() {
 		return bufferLocal.get().clear();
 	}
 
 	// 不用担心并发，因为最终结果都是一致的
-	private byte[] classToBytes(Class<?> clazz) {
+	private static byte[] classToBytes(Class<?> clazz) {
 		byte[] data = CLASS_TO_BYTES.get(clazz);
 		if (data == null) {
 			String name = clazz.getName();
@@ -51,7 +46,7 @@ public class ProtostuffSerializer extends Serializer {
 		return data;
 	}
 
-	private Class<?> bytesToClass(byte[] bs) {
+	private static Class<?> bytesToClass(byte[] bs) {
 		Class<?> clz = BYTES_TO_CLASS.get(bs);
 		if (clz == null) {
 			StringBuilder sb = new StringBuilder();

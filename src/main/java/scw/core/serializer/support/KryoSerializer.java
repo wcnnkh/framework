@@ -11,23 +11,18 @@ import com.esotericsoftware.kryo.io.Output;
 import scw.core.serializer.Serializer;
 
 public class KryoSerializer extends Serializer {
-	/**
-	 * 一般来说只使用此单例就够了
-	 */
-	public static final KryoSerializer instance = new KryoSerializer();
-
-	private final ThreadLocal<Kryo> kryoLocal = new ThreadLocal<Kryo>() {
+	private static final ThreadLocal<Kryo> kryoLocal = new ThreadLocal<Kryo>() {
 		protected Kryo initialValue() {
 			Kryo kryo = new Kryo();
 			return kryo;
 		};
 	};
 
-	public Kryo getKryo() {
+	public static Kryo getKryo() {
 		return kryoLocal.get();
 	}
 
-	private final ThreadLocal<Output> outputLocal = new ThreadLocal<Output>() {
+	private static final ThreadLocal<Output> outputLocal = new ThreadLocal<Output>() {
 		protected Output initialValue() {
 			Output output = new Output();
 			output.setBuffer(new byte[1024], -1);
@@ -35,31 +30,31 @@ public class KryoSerializer extends Serializer {
 		};
 	};
 
-	private final ThreadLocal<Input> inputLocal = new ThreadLocal<Input>() {
+	private static final ThreadLocal<Input> inputLocal = new ThreadLocal<Input>() {
 		protected Input initialValue() {
 			return new Input();
 		};
 	};
 
-	public Output getOutput() {
+	public static Output getOutput() {
 		Output output = outputLocal.get();
 		output.clear();
 		return output;
 	}
 
-	public Output getOutput(OutputStream outputStream) {
+	public static Output getOutput(OutputStream outputStream) {
 		Output output = outputLocal.get();
 		output.setOutputStream(outputStream);
 		return output;
 	}
 
-	public Input getInput(byte[] data) {
+	public static Input getInput(byte[] data) {
 		Input input = inputLocal.get();
 		input.setBuffer(data);
 		return input;
 	}
 
-	public Input getInput(InputStream inputStream) {
+	public static Input getInput(InputStream inputStream) {
 		Input input = inputLocal.get();
 		input.setInputStream(inputStream);
 		return input;
