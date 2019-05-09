@@ -13,14 +13,19 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 import scw.core.FieldInfo;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
 import scw.sql.orm.annotation.AutoCreate;
 import scw.sql.orm.annotation.AutoIncrement;
 import scw.sql.orm.annotation.Column;
 import scw.sql.orm.annotation.Counter;
+import scw.sql.orm.annotation.Index;
 import scw.sql.orm.annotation.PrimaryKey;
 
 public final class ColumnInfo {
+	private static Logger logger = LoggerFactory.getLogger(ColumnInfo.class);
+
 	private String name;// 数据库字段名
 	private final PrimaryKey primaryKey;// 索引
 	private String typeName;
@@ -35,10 +40,10 @@ public final class ColumnInfo {
 	private final Counter counter;
 	private final AutoIncrement autoIncrement;
 	private final AutoCreate autoCreate;
-	
+
 	// 就是在name的两边加入了(``)
 	private String sqlColumnName;
-	
+
 	protected ColumnInfo(String defaultTableName, FieldInfo field) {
 		this.counter = field.getAnnotation(Counter.class);
 		this.autoIncrement = field.getAnnotation(AutoIncrement.class);
@@ -68,9 +73,20 @@ public final class ColumnInfo {
 
 			this.length = column.length();
 
-			this.nullAble = column.nullAble();
-		}else{
-			nullAble = !field.getType().isPrimitive();
+			if (column.unique() || primaryKey != null || field.getAnnotation(Index.class) != null) {
+				this.nullAble = false;
+				if (column.nullAble()) {
+					logger.warn("字段{}不能或不推荐设置为允许为空，因为他可能是主键或索引", getName());
+				}
+			} else {
+				this.nullAble = column.nullAble();
+			}
+		} else {
+			if (primaryKey != null || field.getAnnotation(Index.class) != null) {
+				this.nullAble = false;
+			} else {
+				this.nullAble = !field.getType().isPrimitive();
+			}
 		}
 
 		this.sqlColumnName = "`" + name + "`";
