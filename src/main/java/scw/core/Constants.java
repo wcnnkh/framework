@@ -24,11 +24,8 @@ public final class Constants {
 		for (String name : seralizerClassNames) {
 			try {
 				serializerClass = Class.forName(name);
-			} catch (Throwable e) {
-			}
-
-			if (serializerClass != null) {
 				break;
+			} catch (Throwable e) {
 			}
 		}
 

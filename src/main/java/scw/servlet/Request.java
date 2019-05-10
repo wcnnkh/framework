@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.core.annotation.Require;
 import scw.core.utils.StringUtils;
+import scw.json.JSONParseSupport;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.context.DefaultRequestBeanContext;
 import scw.servlet.context.RequestBeanContext;
@@ -23,15 +24,22 @@ public abstract class Request extends HttpServletRequestWrapper {
 	private Response response;
 	private RequestBeanContext requestBeanContext;
 	private RequestBeanContext wrapperBeanContext;
+	private JSONParseSupport jsonParseSupport;
 
-	public Request(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse, boolean isDebug) throws IOException {
+	public Request(JSONParseSupport jsonParseSupport, RequestBeanFactory requestBeanFactory,
+			HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean isDebug)
+			throws IOException {
 		super(httpServletRequest);
 		this.createTime = System.currentTimeMillis();
 		this.isDebug = isDebug;
-		this.response = new Response(this, httpServletResponse);
+		this.jsonParseSupport = jsonParseSupport;
+		this.response = new Response(jsonParseSupport, this, httpServletResponse);
 		this.requestBeanContext = new DefaultRequestBeanContext(this, requestBeanFactory);
 		this.wrapperBeanContext = new WrapperRequestBeanContext(this);
+	}
+
+	public JSONParseSupport getJsonParseSupport() {
+		return jsonParseSupport;
 	}
 
 	public abstract String getString(String name);

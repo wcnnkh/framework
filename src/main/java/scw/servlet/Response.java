@@ -5,12 +5,11 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import com.alibaba.fastjson.JSONObject;
-
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.http.ContentType;
 import scw.core.utils.ClassUtils;
+import scw.json.JSONParseSupport;
 
 public class Response extends HttpServletResponseWrapper {
 	private static Logger logger = LoggerFactory.getLogger(Response.class);
@@ -19,9 +18,11 @@ public class Response extends HttpServletResponseWrapper {
 	private static final String JSONP_RESP_PREFIX = "(";
 	private static final String JSONP_RESP_SUFFIX = ");";
 	private Request request;
+	private JSONParseSupport jsonParseSupport;
 
-	public Response(Request request, HttpServletResponse httpServletResponse) {
+	public Response(JSONParseSupport jsonParseSupport, Request request, HttpServletResponse httpServletResponse) {
 		super(httpServletResponse);
+		this.jsonParseSupport = jsonParseSupport;
 		this.request = request;
 	}
 
@@ -30,7 +31,7 @@ public class Response extends HttpServletResponseWrapper {
 	}
 
 	protected String toJsonString(Object data) {
-		return JSONObject.toJSONString(data);
+		return jsonParseSupport.toJSONString(data);
 	}
 
 	public void write(Object obj) throws IOException {

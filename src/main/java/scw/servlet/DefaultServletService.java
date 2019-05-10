@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,8 @@ import scw.core.serializer.Serializer;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParseUtils;
 import scw.core.utils.StringUtils;
+import scw.json.JSONParseSupport;
+import scw.json.JSONUtils;
 import scw.servlet.beans.CommonRequestBeanFactory;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.request.DefaultRequestFactory;
@@ -44,6 +47,8 @@ public class DefaultServletService implements ServletService {
 	private static final String RPC_SERVER = "servlet.rpc";
 	private static final String RPC_SERIALIZER = "servlet.rpc-serializer";
 
+	private static final String JSON_PARSE = "servlet.json";
+
 	private static final String REQUEST_FACTORY = "servlet.request-factory";
 	private static final String REQUEST_COOKIE_VALUE = "servlet.parameter.cookie";
 
@@ -55,12 +60,18 @@ public class DefaultServletService implements ServletService {
 	private final PropertiesFactory propertiesFactory;
 	private final BeanFactory beanFactory;
 	private final RequestFactory requestFactory;
+	private final JSONParseSupport jsonParseSupport;
 	private final RequestBeanFactory requestBeanFactory;
 	private final Charset charset;
 	private final boolean debug;
 	private final RpcService rpcService;
 	private final String rpcPath;
 	private final Collection<Filter> filters = new LinkedList<Filter>();
+	
+	public void init(ServletConfig servletConfig) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	public DefaultServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configPath,
 			String[] rootBeanFilters) throws Throwable {
@@ -79,6 +90,13 @@ public class DefaultServletService implements ServletService {
 					StringParseUtils.parseBoolean(propertiesFactory.getValue(REQUEST_COOKIE_VALUE), false));
 		} else {
 			this.requestFactory = beanFactory.get(requestFactoryBeanName);
+		}
+
+		String jsonParseSupportBeanName = propertiesFactory.getValue(JSON_PARSE);
+		if (StringUtils.isEmpty(jsonParseSupportBeanName)) {
+			this.jsonParseSupport = JSONUtils.DEFAULT_PARSE_SUPPORT;
+		} else {
+			this.jsonParseSupport = beanFactory.get(jsonParseSupportBeanName);
 		}
 
 		String path = propertiesFactory.getValue(RPC_PATH);
@@ -156,6 +174,10 @@ public class DefaultServletService implements ServletService {
 		return rpcPath;
 	}
 
+	public JSONParseSupport getJsonParseSupport() {
+		return jsonParseSupport;
+	}
+
 	public void service(ServletRequest req, ServletResponse resp) {
 		try {
 			if (req instanceof HttpServletRequest && resp instanceof HttpServletResponse) {
@@ -215,7 +237,7 @@ public class DefaultServletService implements ServletService {
 		req.setCharacterEncoding(getCharset().name());
 		resp.setCharacterEncoding(getCharset().name());
 
-		Request request = requestFactory.format(getRequestBeanFactory(), req, resp);
+		Request request = requestFactory.format(getJsonParseSupport(), getRequestBeanFactory(), req, resp);
 		doAction(request, request.getResponse());
 	}
 

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.core.utils.StringParseUtils;
 import scw.core.utils.StringUtils;
+import scw.json.JSONParseSupport;
 import scw.servlet.Request;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.service.RestService;
@@ -18,9 +19,10 @@ public class AbstractRequest extends Request {
 	private static final Charset GET_DEFAULT_CHARSET = Charset.forName("ISO-8859-1");
 	private final boolean cookieValue;
 
-	public AbstractRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse, boolean isDebug, boolean cookieValue) throws IOException {
-		super(requestBeanFactory, httpServletRequest, httpServletResponse, isDebug);
+	public AbstractRequest(JSONParseSupport jsonParseSupport, RequestBeanFactory requestBeanFactory,
+			HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean isDebug,
+			boolean cookieValue) throws IOException {
+		super(jsonParseSupport, requestBeanFactory, httpServletRequest, httpServletResponse, isDebug);
 		this.cookieValue = cookieValue;
 	}
 

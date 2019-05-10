@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import scw.json.JSONParseSupport;
 import scw.servlet.Request;
 import scw.servlet.ServletUtils;
 import scw.servlet.beans.RequestBeanFactory;
@@ -18,12 +19,12 @@ public class DefaultRequestFactory implements RequestFactory {
 		this.cookieValue = cookieValue;
 	}
 
-	public Request format(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
+	public Request format(JSONParseSupport jsonParseSupport, RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse) throws IOException {
 		if (ServletUtils.isJsonRequest(httpServletRequest)) {
-			return new JsonRequest(requestBeanFactory, httpServletRequest, httpServletResponse, debug, cookieValue);
+			return new JsonRequest(jsonParseSupport, requestBeanFactory, httpServletRequest, httpServletResponse, debug, cookieValue);
 		} else {
-			return new FormRequest(requestBeanFactory, httpServletRequest, httpServletResponse, debug, cookieValue);
+			return new FormRequest(jsonParseSupport, requestBeanFactory, httpServletRequest, httpServletResponse, debug, cookieValue);
 		}
 	}
 }

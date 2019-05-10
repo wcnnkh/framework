@@ -1,12 +1,12 @@
-package scw.utils;
+package scw.json.support;
 
 import java.util.List;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-public final class FastJsonUtils {
-	private FastJsonUtils(){};
+public final class FastJSONUtils {
+	private FastJSONUtils(){};
 	
 	/**
 	 * 移出指定字段

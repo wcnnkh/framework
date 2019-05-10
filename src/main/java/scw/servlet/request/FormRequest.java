@@ -9,14 +9,15 @@ import com.alibaba.fastjson.JSONObject;
 
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
+import scw.json.JSONParseSupport;
 import scw.servlet.beans.RequestBeanFactory;
 
 public class FormRequest extends AbstractRequest {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
-	public FormRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
+	public FormRequest(JSONParseSupport jsonParseSupport, RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, boolean isDebug, boolean cookieValue) throws IOException {
-		super(requestBeanFactory, httpServletRequest, httpServletResponse, isDebug, cookieValue);
+		super(jsonParseSupport, requestBeanFactory, httpServletRequest, httpServletResponse, isDebug, cookieValue);
 		if (isDebug) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("servletPath=");
