@@ -1,7 +1,9 @@
 package scw.servlet.view.common;
 
-import com.alibaba.fastjson.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
 
+import scw.json.JSONUtils;
 import scw.servlet.view.common.enums.ResultCode;
 
 public class DataResult<T> extends Result {
@@ -37,10 +39,10 @@ public class DataResult<T> extends Result {
 
 	@Override
 	public String getResponseText() {
-		JSONObject json = new JSONObject(4);
-		json.put("code", getCode());
-		json.put("msg", getMsg());
-		json.put("data", getData());
-		return json.toJSONString();
+		Map<String, Object> map = new HashMap<String, Object>(3, 1);
+		map.put("code", getCode());
+		map.put("msg", getMsg());
+		map.put("data", getData());
+		return JSONUtils.toJSONString(map);
 	}
 }

@@ -1,10 +1,11 @@
 package scw.servlet.view.common;
 
 import java.io.Serializable;
-
-import com.alibaba.fastjson.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
 
 import scw.core.utils.StringUtils;
+import scw.json.JSONUtils;
 import scw.servlet.view.AbstractTextView;
 import scw.servlet.view.common.enums.ResultCode;
 import scw.transaction.RollbackOnlyResult;
@@ -81,10 +82,10 @@ public class Result extends AbstractTextView implements Serializable, RollbackOn
 
 	@Override
 	public String getResponseText() {
-		JSONObject json = new JSONObject(4);
-		json.put("code", getCode());
-		json.put("msg", getMsg());
-		return json.toJSONString();
+		Map<String, Object> result = new HashMap<String, Object>(2, 1);
+		result.put("code", getCode());
+		result.put("msg", getMsg());
+		return JSONUtils.toJSONString(result);
 	}
 
 	public boolean isRollbackOnly() {
