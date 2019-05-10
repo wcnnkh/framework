@@ -24,7 +24,7 @@ public final class SerializableMethod implements Serializable, scw.core.reflect.
 		}
 	}
 
-	public Method getMethod() throws NoSuchMethodException, SecurityException {
+	public Method getMethod() throws NoSuchMethodException {
 		if (method == null) {
 			method = belongClass.getDeclaredMethod(methodName, parameterTypes);
 			if (!Modifier.isPublic(method.getModifiers())) {

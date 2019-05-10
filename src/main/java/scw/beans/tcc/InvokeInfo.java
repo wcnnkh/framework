@@ -72,7 +72,7 @@ public final class InvokeInfo implements Serializable {
 	}
 
 	private static Object[] getNameMappingArgs(SerializableMethod tryMethod, SerializableMethod method, Object tryRtn,
-			int resultSetIndex, Object[] args) throws NoSuchMethodException, SecurityException {
+			int resultSetIndex, Object[] args) throws NoSuchMethodException {
 		if (resultSetIndex >= 0) {
 			if (method.getParameterCount() > args.length) {
 				throw new IndexOutOfBoundsException();
@@ -136,7 +136,7 @@ public final class InvokeInfo implements Serializable {
 		method.invoke(obj, params);
 	}
 
-	public void invoke(StageType stageType, BeanFactory beanFactory) throws NoSuchMethodException, SecurityException,
+	public void invoke(StageType stageType, BeanFactory beanFactory) throws NoSuchMethodException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		switch (stageType) {
 		case Confirm:

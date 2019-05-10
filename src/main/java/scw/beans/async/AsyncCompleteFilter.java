@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -108,7 +107,7 @@ public final class AsyncCompleteFilter implements Filter {
 					}
 				}
 				deleteLog();
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				retry();
 				e.printStackTrace();
 			}
@@ -182,9 +181,8 @@ class AsyncInvokeInfo implements Serializable {
 		return timeUnit;
 	}
 
-	public Object invoke(BeanFactory beanFactory) throws IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException, SecurityException {
+	public Object invoke(BeanFactory beanFactory) throws Throwable {
 		Object bean = beanFactory.get(methodConfig.getBelongClass());
-		return methodConfig.getMethod().invoke(bean, args);
+		return methodConfig.invoke(bean, args);
 	}
 }

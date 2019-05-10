@@ -42,8 +42,6 @@ public final class Message implements Serializable {
 			return methodDefinition.getMethod();
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
-		} catch (SecurityException e) {
-			throw new RuntimeException(e);
 		}
 	}
 
