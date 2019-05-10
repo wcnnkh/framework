@@ -12,7 +12,7 @@ public final class JSONUtils {
 	};
 
 	static {
-		String[] supportClassNames = { "scw.json.support.FastJSONParseSupport" };
+		String[] supportClassNames = { "scw.json.support.fastjson.FastJSONParseSupport" };
 
 		Class<?> jsonSupportClass = null;
 		for (String name : supportClassNames) {
