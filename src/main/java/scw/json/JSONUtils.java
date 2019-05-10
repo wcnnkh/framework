@@ -5,7 +5,6 @@ import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.reflect.ReflectUtils;
 
-@SuppressWarnings("unchecked")
 public final class JSONUtils {
 	private static Logger logger = LoggerFactory.getLogger(JSONUtils.class);
 
@@ -15,10 +14,10 @@ public final class JSONUtils {
 	static {
 		String[] supportClassNames = { "scw.json.support.FastJSONParseSupport" };
 
-		Class<JSONParseSupport> jsonSupportClass = null;
+		Class<?> jsonSupportClass = null;
 		for (String name : supportClassNames) {
 			try {
-				jsonSupportClass = (Class<JSONParseSupport>) Class.forName(name);
+				jsonSupportClass = Class.forName(name);
 				break;
 			} catch (Throwable e) {
 			}
@@ -29,7 +28,7 @@ public final class JSONUtils {
 		}
 
 		logger.info("default json parse：{}", jsonSupportClass.getName());
-		DEFAULT_PARSE_SUPPORT = ReflectUtils.newInstance(jsonSupportClass);
+		DEFAULT_PARSE_SUPPORT = (JSONParseSupport) ReflectUtils.newInstance(jsonSupportClass);
 	}
 
 	/**
