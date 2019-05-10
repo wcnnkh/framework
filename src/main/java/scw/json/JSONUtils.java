@@ -40,11 +40,15 @@ public final class JSONUtils {
 		return DEFAULT_PARSE_SUPPORT.toJSONString(obj);
 	}
 
-	public static JSONObject parseObject(String json) {
-		return DEFAULT_PARSE_SUPPORT.parseObject(json);
+	public static JSONObject parseObject(String text) {
+		return DEFAULT_PARSE_SUPPORT.parseObject(text);
 	}
 
-	public static JSONArray parseArray(String json) {
-		return DEFAULT_PARSE_SUPPORT.parseArray(json);
+	public static JSONArray parseArray(String text) {
+		return DEFAULT_PARSE_SUPPORT.parseArray(text);
+	}
+
+	public static <T> T parseObject(String text, Class<T> type) {
+		return DEFAULT_PARSE_SUPPORT.parseObject(text, type);
 	}
 }

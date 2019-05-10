@@ -1,4 +1,4 @@
-package scw.json.support;
+package scw.json.support.fastjson;
 
 import java.util.List;
 
