@@ -10,6 +10,7 @@ import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import scw.beans.annotation.Destroy;
+import scw.core.Constants;
 import scw.core.serializer.Serializer;
 import scw.core.utils.StringUtils;
 
@@ -34,7 +35,7 @@ public class XMemcached extends AbstractXMemcached {
 	}
 
 	public XMemcached(String hosts, int poolSize) throws IOException {
-		this(hosts, poolSize, null);
+		this(hosts, poolSize, Constants.DEFAULT_SERIALIZER);
 	}
 
 	/**
