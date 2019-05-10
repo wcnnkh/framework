@@ -14,7 +14,7 @@ import scw.core.Constants;
 import scw.core.serializer.Serializer;
 import scw.core.utils.StringUtils;
 
-public class XMemcached extends AbstractXMemcached {
+public final class XMemcached extends AbstractXMemcached {
 	private final MemcachedClient memcachedClient;
 
 	/**

@@ -8,7 +8,6 @@ import java.util.Properties;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import scw.beans.annotation.Bean;
 import scw.beans.annotation.Destroy;
 import scw.core.Constants;
 import scw.core.serializer.Serializer;
@@ -16,8 +15,7 @@ import scw.core.utils.ConfigUtils;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
 
-@Bean(proxy = false)
-public class RedisByJedisPool extends AbstractJedisOperations implements Closeable {
+public final class RedisByJedisPool extends AbstractJedisOperations implements Closeable {
 
 	private final JedisPool jedisPool;
 	private final String auth;
