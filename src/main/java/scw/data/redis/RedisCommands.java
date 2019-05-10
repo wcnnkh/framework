@@ -82,7 +82,7 @@ public interface RedisCommands<K, V> {
 
 	Long llen(K key);
 
-	V eval(K script, List<K> keys, List<V> args);
+	Object eval(K script, List<K> keys, List<V> args);
 
 	Map<K, V> hgetAll(K key);
 

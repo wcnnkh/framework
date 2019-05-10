@@ -345,7 +345,7 @@ public abstract class AbstractRedis implements Redis {
 			return getBinaryOperations().llen(key.getBytes(getCharset()));
 		}
 
-		public T eval(String script, List<String> keys, List<T> args) {
+		public Object eval(String script, List<String> keys, List<T> args) {
 			if (script == null) {
 				return null;
 			}
@@ -370,8 +370,7 @@ public abstract class AbstractRedis implements Redis {
 				}
 			}
 
-			byte[] data = getBinaryOperations().eval(script.getBytes(getCharset()), ks, bs);
-			return data == null ? null : getSerializer().deserialize(type, data);
+			return getBinaryOperations().eval(script.getBytes(getCharset()), ks, bs);
 		}
 
 		private Map<String, T> mapDeSerizale(Map<byte[], byte[]> map) {
@@ -804,8 +803,7 @@ public abstract class AbstractRedis implements Redis {
 				}
 			}
 
-			byte[] data = getBinaryOperations().eval(script.getBytes(getCharset()), ks, bs);
-			return data == null ? null : getSerializer().deserialize(data);
+			return getBinaryOperations().eval(script.getBytes(getCharset()), ks, bs);
 		}
 
 		private Map<String, Object> mapDeSerizale(Map<byte[], byte[]> map) {

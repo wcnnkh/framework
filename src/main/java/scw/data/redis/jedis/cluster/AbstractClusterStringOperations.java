@@ -303,11 +303,11 @@ public abstract class AbstractClusterStringOperations extends AbstractStringRedi
 		}
 	}
 
-	public String eval(String script, List<String> keys, List<String> args) {
+	public Object eval(String script, List<String> keys, List<String> args) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return (String) jedisCluster.eval(script, keys, args);
+			return jedisCluster.eval(script, keys, args);
 		} finally {
 			close(jedisCluster);
 		}

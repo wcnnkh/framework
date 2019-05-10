@@ -303,11 +303,11 @@ public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedi
 		}
 	}
 
-	public byte[] eval(byte[] script, List<byte[]> keys, List<byte[]> args) {
+	public Object eval(byte[] script, List<byte[]> keys, List<byte[]> args) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return (byte[]) jedisCluster.eval(script, keys, args);
+			return jedisCluster.eval(script, keys, args);
 		} finally {
 			close(jedisCluster);
 		}
