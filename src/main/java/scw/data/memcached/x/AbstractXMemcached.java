@@ -2,7 +2,6 @@ package scw.data.memcached.x;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeoutException;
@@ -10,29 +9,16 @@ import java.util.concurrent.TimeoutException;
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.exception.MemcachedException;
-import scw.core.serializer.NoTypeSpecifiedSerializer;
-import scw.core.utils.CollectionUtils;
-import scw.data.memcached.AbstractMemcached;
 import scw.data.memcached.CAS;
+import scw.data.memcached.Memcached;
 
-public abstract class AbstractXMemcached extends AbstractMemcached {
-
-	public AbstractXMemcached(NoTypeSpecifiedSerializer serializer) {
-		super(serializer);
-	}
+public abstract class AbstractXMemcached implements Memcached {
 
 	public abstract MemcachedClient getMemcachedClient();
 
-	@SuppressWarnings("unchecked")
 	public <T> T get(String key) {
-		Object data;
 		try {
-			data = getMemcachedClient().get(key);
-			if (data == null) {
-				return null;
-			}
-
-			return (T) (serializer == null ? data : serializer.deserialize((byte[]) data));
+			return getMemcachedClient().get(key);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -42,17 +28,15 @@ public abstract class AbstractXMemcached extends AbstractMemcached {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> CAS<T> gets(String key) {
-		GetsResponse<Object> cas;
+		GetsResponse<T> cas;
 		try {
 			cas = getMemcachedClient().gets(key);
 			if (cas == null) {
 				return null;
 			}
 
-			T v = (T) (serializer == null ? cas.getValue() : serializer.deserialize((byte[]) cas.getValue()));
-			return new CAS<T>(cas.getCas(), v);
+			return new CAS<T>(cas.getCas(), cas.getValue());
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -67,9 +51,8 @@ public abstract class AbstractXMemcached extends AbstractMemcached {
 			return false;
 		}
 
-		Object v = serializer == null ? value : serializer.serialize(value);
 		try {
-			return getMemcachedClient().set(key, 0, v);
+			return getMemcachedClient().set(key, 0, value);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -84,9 +67,8 @@ public abstract class AbstractXMemcached extends AbstractMemcached {
 			return false;
 		}
 
-		Object v = serializer == null ? data : serializer.serialize(data);
 		try {
-			return getMemcachedClient().set(key, exp, v);
+			return getMemcachedClient().set(key, exp, data);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -101,9 +83,8 @@ public abstract class AbstractXMemcached extends AbstractMemcached {
 			return false;
 		}
 
-		Object v = serializer == null ? value : serializer.serialize(value);
 		try {
-			return getMemcachedClient().add(key, 0, v);
+			return getMemcachedClient().add(key, 0, value);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -118,9 +99,8 @@ public abstract class AbstractXMemcached extends AbstractMemcached {
 			return false;
 		}
 
-		Object v = serializer == null ? data : serializer.serialize(data);
 		try {
-			return getMemcachedClient().add(key, exp, v);
+			return getMemcachedClient().add(key, exp, data);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -135,9 +115,8 @@ public abstract class AbstractXMemcached extends AbstractMemcached {
 			return false;
 		}
 
-		Object v = serializer == null ? data : serializer.serialize(data);
 		try {
-			return getMemcachedClient().cas(key, 0, v, cas);
+			return getMemcachedClient().cas(key, 0, data, cas);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -152,9 +131,8 @@ public abstract class AbstractXMemcached extends AbstractMemcached {
 			return false;
 		}
 
-		Object v = serializer == null ? data : serializer.serialize(data);
 		try {
-			return getMemcachedClient().cas(key, exp, v, cas);
+			return getMemcachedClient().cas(key, exp, data, cas);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -178,7 +156,7 @@ public abstract class AbstractXMemcached extends AbstractMemcached {
 				getMemcachedClient().set(key, newExp, v);
 			}
 
-			return (T) (serializer == null ? v : serializer.deserialize((byte[]) v));
+			return (T) v;
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -200,39 +178,15 @@ public abstract class AbstractXMemcached extends AbstractMemcached {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> Map<String, T> get(Collection<String> keyCollections) {
-		if (serializer == null) {
-			try {
-				return getMemcachedClient().get(keyCollections);
-			} catch (TimeoutException e) {
-				throw new scw.data.memcached.MemcachedException(e);
-			} catch (InterruptedException e) {
-				throw new scw.data.memcached.MemcachedException(e);
-			} catch (MemcachedException e) {
-				throw new scw.data.memcached.MemcachedException(e);
-			}
-		} else {
-			Map<String, byte[]> data;
-			try {
-				data = getMemcachedClient().get(keyCollections);
-			} catch (TimeoutException e) {
-				throw new scw.data.memcached.MemcachedException(e);
-			} catch (InterruptedException e) {
-				throw new scw.data.memcached.MemcachedException(e);
-			} catch (MemcachedException e) {
-				throw new scw.data.memcached.MemcachedException(e);
-			}
-
-			if (CollectionUtils.isEmpty(data)) {
-				return null;
-			}
-
-			Map<String, T> valueMap = new LinkedHashMap<String, T>(data.size(), 1);
-			for (Entry<String, byte[]> entry : data.entrySet()) {
-				valueMap.put(entry.getKey(), (T) serializer.deserialize(entry.getValue()));
-			}
-			return valueMap;
+		try {
+			return getMemcachedClient().get(keyCollections);
+		} catch (TimeoutException e) {
+			throw new scw.data.memcached.MemcachedException(e);
+		} catch (InterruptedException e) {
+			throw new scw.data.memcached.MemcachedException(e);
+		} catch (MemcachedException e) {
+			throw new scw.data.memcached.MemcachedException(e);
 		}
 	}
 
@@ -284,9 +238,8 @@ public abstract class AbstractXMemcached extends AbstractMemcached {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> Map<String, CAS<T>> gets(Collection<String> keyCollections) {
-		Map<String, GetsResponse<Object>> map = null;
+		Map<String, GetsResponse<T>> map = null;
 		try {
 			map = getMemcachedClient().gets(keyCollections);
 		} catch (TimeoutException e) {
@@ -299,10 +252,9 @@ public abstract class AbstractXMemcached extends AbstractMemcached {
 
 		if (map != null) {
 			Map<String, CAS<T>> casMap = new HashMap<String, CAS<T>>();
-			for (Entry<String, GetsResponse<Object>> entry : map.entrySet()) {
-				GetsResponse<Object> v = entry.getValue();
-				T value = (T) (serializer == null ? v.getValue() : serializer.deserialize((byte[]) v.getValue()));
-				casMap.put(entry.getKey(), new CAS<T>(v.getCas(), value));
+			for (Entry<String, GetsResponse<T>> entry : map.entrySet()) {
+				GetsResponse<T> v = entry.getValue();
+				casMap.put(entry.getKey(), new CAS<T>(v.getCas(), v.getValue()));
 			}
 			return casMap;
 		}

@@ -38,6 +38,10 @@ public final class XMemcached extends AbstractXMemcached {
 		this(hosts, poolSize, Constants.DEFAULT_SERIALIZER);
 	}
 
+	public XMemcached(String hosts, int poolSize, Serializer serializer) throws IOException {
+		this(hosts, poolSize, serializer, -1);
+	}
+
 	/**
 	 * * 设置连接池大小，即客户端个数 In a high concurrent enviroment,you may want to pool
 	 * memcached clients. But a xmemcached client has to start a reactor thread
@@ -54,8 +58,7 @@ public final class XMemcached extends AbstractXMemcached {
 	 * @param poolSize
 	 * @throws IOException
 	 */
-	public XMemcached(String hosts, int poolSize, Serializer serializer) throws IOException {
-		super(serializer);
+	public XMemcached(String hosts, int poolSize, Serializer serializer, int max) throws IOException {
 		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
 		String[] arr = StringUtils.commonSplit(hosts);
 		for (String a : arr) {
@@ -74,6 +77,7 @@ public final class XMemcached extends AbstractXMemcached {
 		builder.setFailureMode(true);
 		// 使用二进制文件
 		builder.setCommandFactory(new BinaryCommandFactory());
+		builder.setTranscoder(max <= 0 ? new MyTranscoder(serializer) : new MyTranscoder(max, serializer));
 		builder.setConnectionPoolSize(poolSize);
 		this.memcachedClient = builder.build();
 	}
