@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.core.annotation.Require;
+import scw.core.exception.ParameterException;
 import scw.core.utils.StringUtils;
 import scw.json.JSONParseSupport;
 import scw.servlet.beans.RequestBeanFactory;
@@ -26,15 +27,19 @@ public abstract class Request extends HttpServletRequestWrapper {
 	private RequestBeanContext wrapperBeanContext;
 	private JSONParseSupport jsonParseSupport;
 
-	public Request(JSONParseSupport jsonParseSupport, RequestBeanFactory requestBeanFactory,
-			HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, boolean isDebug)
+	public Request(JSONParseSupport jsonParseSupport,
+			RequestBeanFactory requestBeanFactory,
+			HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse, boolean isDebug)
 			throws IOException {
 		super(httpServletRequest);
 		this.createTime = System.currentTimeMillis();
 		this.isDebug = isDebug;
 		this.jsonParseSupport = jsonParseSupport;
-		this.response = new Response(jsonParseSupport, this, httpServletResponse);
-		this.requestBeanContext = new DefaultRequestBeanContext(this, requestBeanFactory);
+		this.response = new Response(jsonParseSupport, this,
+				httpServletResponse);
+		this.requestBeanContext = new DefaultRequestBeanContext(this,
+				requestBeanFactory);
 		this.wrapperBeanContext = new WrapperRequestBeanContext(this);
 	}
 
@@ -137,14 +142,16 @@ public abstract class Request extends HttpServletRequestWrapper {
 			return response;
 		} else if (type.isEnum()) {
 			String v = getString(name);
-			return StringUtils.isEmpty(v) ? null : Enum.valueOf((Class<? extends Enum>) type, v);
+			return StringUtils.isEmpty(v) ? null : Enum.valueOf(
+					(Class<? extends Enum>) type, v);
 		} else {
 			return getObject(type, name);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <T> T getParameter(Class<T> type, String name) throws Exception {
+	public final <T> T getParameter(Class<T> type, String name)
+			throws Exception {
 		T v = (T) getAttribute(name);
 		if (v == null) {
 			v = (T) get(type, name);
@@ -155,8 +162,15 @@ public abstract class Request extends HttpServletRequestWrapper {
 		return v;
 	}
 
-	public Object getParameter(Parameter parameter, String name) throws Exception {
-		Object value = getParameter(parameter.getType(), name);
+	public Object getParameter(Parameter parameter, String name) {
+		Object value;
+		try {
+			value = getParameter(parameter.getType(), name);
+		} catch (Exception e) {
+			throw new ParameterException(e, "解析参数错误name=" + name + ",type="
+					+ parameter.getType().getName());
+		}
+
 		Require require = parameter.getAnnotation(Require.class);
 		if (require != null && value == null) {
 			throw new NullPointerException("require '" + name + "'");
