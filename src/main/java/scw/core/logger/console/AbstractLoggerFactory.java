@@ -1,7 +1,9 @@
-package scw.core.logger;
+package scw.core.logger.console;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import scw.core.logger.ILoggerFactory;
+import scw.core.logger.Message;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 
@@ -23,6 +25,7 @@ public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable 
 			while (!thread.isInterrupted()) {
 				Message message = handlerQueue.take();
 				out(message);
+				message = null;
 			}
 		} catch (InterruptedException e) {
 		}
@@ -55,6 +58,7 @@ public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable 
 		if (message.getThrowable() != null) {
 			message.getThrowable().printStackTrace();
 		}
+		sb = null;
 	}
 
 	public void destroy() {

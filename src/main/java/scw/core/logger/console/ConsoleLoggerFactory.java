@@ -1,6 +1,5 @@
 package scw.core.logger.console;
 
-import scw.core.logger.AbstractLoggerFactory;
 import scw.core.logger.Logger;
 import scw.core.logger.Message;
 
