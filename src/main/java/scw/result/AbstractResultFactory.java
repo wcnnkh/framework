@@ -28,12 +28,6 @@ public abstract class AbstractResultFactory implements ResultFactory {
 		}
 	}
 
-	public abstract int getDefaultErrorCode();
-
-	public abstract int getDefaultSuccessCode();
-
-	public abstract int getAuthorizationFailureCode();
-
 	public synchronized void registerCode2Msg(int code, String msg) {
 		if (code2msgMap == null) {
 			code2msgMap = new HashMap<Integer, String>();
@@ -44,6 +38,14 @@ public abstract class AbstractResultFactory implements ResultFactory {
 	public String getMsg(int code) {
 		return code2msgMap.get(code);
 	}
+
+	public abstract int getDefaultErrorCode();
+
+	public abstract int getDefaultSuccessCode();
+
+	public abstract int getAuthorizationFailureCode();
+
+	public abstract int getParamterErrorCode();
 
 	public <D, T extends DataResult<? super D>> T success(D data) {
 		int code = getDefaultSuccessCode();
@@ -73,5 +75,11 @@ public abstract class AbstractResultFactory implements ResultFactory {
 		int code = getAuthorizationFailureCode();
 		String msg = getMsg(code);
 		return error(code, msg == null ? "登录状态已过期" : msg);
+	}
+
+	public <T extends Result> T parameterError() {
+		int code = getParamterErrorCode();
+		String msg = getMsg(code);
+		return error(code, msg == null ? "参数错误" : msg);
 	}
 }

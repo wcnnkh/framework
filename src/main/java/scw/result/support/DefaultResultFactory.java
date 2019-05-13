@@ -6,26 +6,30 @@ import scw.result.AbstractResultFactory;
 import scw.result.DataResult;
 import scw.result.Result;
 
-@Bean(proxy=false)
+@Bean(proxy = false)
 public class DefaultResultFactory extends AbstractResultFactory {
 	private final int defaultErrorCode;
 	private final int defaultSuccessCode;
 	private final int authorizationFailureCode;
+	private final int parameterErrorCode;
 
 	public DefaultResultFactory(String propertiesFilePath) {
-		this(propertiesFilePath, Constants.DEFAULT_CHARSET.name(), 1, 0, -1);
+		this(propertiesFilePath, Constants.DEFAULT_CHARSET.name(), 1, 0, -1, 1);
 	}
 
-	public DefaultResultFactory(String propertiesFilePath, String charsetName, int defaultErrorCode,
-			int defaultSuccessCode, int authorizationFailureCode) {
+	public DefaultResultFactory(String propertiesFilePath, String charsetName,
+			int defaultErrorCode, int defaultSuccessCode,
+			int authorizationFailureCode, int parameterErrorCode) {
 		super(propertiesFilePath, charsetName);
 		this.defaultErrorCode = defaultErrorCode;
 		this.defaultSuccessCode = defaultSuccessCode;
 		this.authorizationFailureCode = authorizationFailureCode;
+		this.parameterErrorCode = parameterErrorCode;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <D, T extends DataResult<? super D>> T success(int code, D data, String msg) {
+	public <D, T extends DataResult<? super D>> T success(int code, D data,
+			String msg) {
 		return (T) new DefaultResult<D>(true, code, data, msg);
 	}
 
@@ -47,6 +51,11 @@ public class DefaultResultFactory extends AbstractResultFactory {
 	@Override
 	public int getAuthorizationFailureCode() {
 		return authorizationFailureCode;
+	}
+
+	@Override
+	public int getParamterErrorCode() {
+		return parameterErrorCode;
 	}
 
 }
