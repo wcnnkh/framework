@@ -25,7 +25,7 @@ public class DefaultResultFactory extends AbstractResultFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <D, T extends DataResult<D>> T success(int code, D data, String msg) {
+	public <D, T extends DataResult<? super D>> T success(int code, D data, String msg) {
 		return (T) new DefaultResult<D>(true, code, data, msg);
 	}
 

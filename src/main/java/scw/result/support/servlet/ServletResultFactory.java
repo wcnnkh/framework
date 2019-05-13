@@ -21,7 +21,7 @@ public final class ServletResultFactory extends DefaultResultFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <D, T extends DataResult<D>> T success(int code, D data, String msg) {
+	public <D, T extends DataResult<? super D>> T success(int code, D data, String msg) {
 		return (T) new ServletViewResult<D>(true, code, data, msg, contentType);
 	}
 

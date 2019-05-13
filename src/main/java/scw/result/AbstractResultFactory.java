@@ -45,7 +45,7 @@ public abstract class AbstractResultFactory implements ResultFactory {
 		return code2msgMap.get(code);
 	}
 
-	public <D, T extends DataResult<D>> T success(D data) {
+	public <D, T extends DataResult<? super D>> T success(D data) {
 		int code = getDefaultSuccessCode();
 		return success(code, data, getMsg(code));
 	}
