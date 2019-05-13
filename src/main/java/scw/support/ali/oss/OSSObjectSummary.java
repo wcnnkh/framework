@@ -1,4 +1,4 @@
-package scw.utils.ali.oss;
+package scw.support.ali.oss;
 
 import java.io.Serializable;
 import java.util.Date;

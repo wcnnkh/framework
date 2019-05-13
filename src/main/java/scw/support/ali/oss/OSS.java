@@ -1,4 +1,4 @@
-package scw.utils.ali.oss;
+package scw.support.ali.oss;
 
 import static com.aliyun.oss.internal.OSSConstants.DEFAULT_CHARSET_NAME;
 
@@ -229,7 +229,7 @@ public final class OSS {
 	 * @param nextMarker
 	 * @return
 	 */
-	public scw.utils.ali.oss.ObjectListing myListObject(String bucketName, String prefix, int limit, String nextMarker){
+	public scw.support.ali.oss.ObjectListing myListObject(String bucketName, String prefix, int limit, String nextMarker){
 		ListObjectsRequest listObjectsRequest = new ListObjectsRequest();
 		listObjectsRequest.setBucketName(bucketName);
 		String newPrefix = debug? debugPrefix + prefix:prefix;
@@ -240,7 +240,7 @@ public final class OSS {
 		
 		listObjectsRequest.setMaxKeys(limit);
 		ObjectListing objectListing = ossClient.listObjects(listObjectsRequest);
-		return objectListing == null? null:new scw.utils.ali.oss.ObjectListing(objectListing);
+		return objectListing == null? null:new scw.support.ali.oss.ObjectListing(objectListing);
 	}
 	
 	public void shutdown(){

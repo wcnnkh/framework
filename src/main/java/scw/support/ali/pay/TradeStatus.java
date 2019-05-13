@@ -1,4 +1,4 @@
-package scw.support.alipay;
+package scw.support.ali.pay;
 
 /**
  * 支付宝交易

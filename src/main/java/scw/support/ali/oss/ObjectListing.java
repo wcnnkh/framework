@@ -1,4 +1,4 @@
-package scw.utils.ali.oss;
+package scw.support.ali.oss;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public final class ObjectListing implements Serializable{
 	/**
      * A list of summary information describing the objects stored in the bucket
      */
-    private List<scw.utils.ali.oss.OSSObjectSummary> objectSummaries = new ArrayList<scw.utils.ali.oss.OSSObjectSummary>();
+    private List<scw.support.ali.oss.OSSObjectSummary> objectSummaries = new ArrayList<scw.support.ali.oss.OSSObjectSummary>();
 
     private List<String> commonPrefixes = new ArrayList<String>();
 
@@ -41,7 +41,7 @@ public final class ObjectListing implements Serializable{
     				continue;
     			}
     			
-    			objectSummaries.add(new scw.utils.ali.oss.OSSObjectSummary(ossObjectSummary));
+    			objectSummaries.add(new scw.support.ali.oss.OSSObjectSummary(ossObjectSummary));
     		}
     	}
     	this.commonPrefixes = objectListing.getCommonPrefixes();
@@ -55,11 +55,11 @@ public final class ObjectListing implements Serializable{
     	this.encodingType = objectListing.getEncodingType();
     }
 
-    public List<scw.utils.ali.oss.OSSObjectSummary> getObjectSummaries() {
+    public List<scw.support.ali.oss.OSSObjectSummary> getObjectSummaries() {
 		return objectSummaries;
 	}
 
-	public void setObjectSummaries(List<scw.utils.ali.oss.OSSObjectSummary> objectSummaries) {
+	public void setObjectSummaries(List<scw.support.ali.oss.OSSObjectSummary> objectSummaries) {
 		this.objectSummaries = objectSummaries;
 	}
 
