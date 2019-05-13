@@ -11,14 +11,14 @@ import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.View;
 
-public final class DataServletViewResult<T> extends DefaultResult<T> implements View {
+public final class ServletViewResult<T> extends DefaultResult<T> implements View {
 	private static final long serialVersionUID = 1L;
 	private String contentType;
 
-	protected DataServletViewResult() {
+	protected ServletViewResult() {
 	}
 
-	public DataServletViewResult(boolean success, int code, T data, String msg, String contentType) {
+	public ServletViewResult(boolean success, int code, T data, String msg, String contentType) {
 		super(success, code, data, msg);
 		this.contentType = contentType;
 	}

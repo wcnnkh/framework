@@ -22,11 +22,11 @@ public final class ServletResultFactory extends DefaultResultFactory {
 
 	@SuppressWarnings("unchecked")
 	public <D, T extends DataResult<D>> T success(int code, D data, String msg) {
-		return (T) new DataServletViewResult<D>(true, code, data, msg, contentType);
+		return (T) new ServletViewResult<D>(true, code, data, msg, contentType);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends Result> T error(int code, String msg) {
-		return (T) new DataServletViewResult<T>(false, code, null, msg, contentType);
+		return (T) new ServletViewResult<T>(false, code, null, msg, contentType);
 	}
 }
