@@ -1,11 +1,25 @@
 package scw.servlet;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
+import scw.core.DefaultKeyValuePair;
+import scw.core.KeyValuePair;
+import scw.core.KeyValuePairFilter;
+import scw.core.LinkedMultiValueMap;
+import scw.core.MultiValueMap;
 import scw.core.net.http.ContentType;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 
 public final class ServletUtils {
@@ -131,4 +145,140 @@ public final class ServletUtils {
 		}
 		return null;
 	}
+
+	public static Map<String, String> getRequestFirstValueParameters(ServletRequest request,
+			KeyValuePairFilter<String, String> filter) {
+		Map<String, String[]> requestParams = request.getParameterMap();
+		if (requestParams == null || requestParams.isEmpty()) {
+			return null;
+		}
+
+		Map<String, String> map = new HashMap<String, String>();
+		for (Entry<String, String[]> entry : requestParams.entrySet()) {
+			String name = entry.getKey();
+			if (name == null) {
+				continue;
+			}
+
+			String[] values = entry.getValue();
+			if (values == null || values.length == 0) {
+				continue;
+			}
+
+			KeyValuePair<String, String> keyValuePair = filter
+					.filter(new DefaultKeyValuePair<String, String>(name, values[0]));
+			if (keyValuePair == null) {
+				continue;
+			}
+
+			map.put(keyValuePair.getKey(), keyValuePair.getValue());
+		}
+		return map;
+	}
+
+	public static MultiValueMap<String, String> getRequestParameters(ServletRequest request,
+			KeyValuePairFilter<String, String[]> filter) {
+		Map<String, String[]> requestParams = request.getParameterMap();
+		if (requestParams == null || requestParams.isEmpty()) {
+			return null;
+		}
+
+		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>(requestParams.size(), 1);
+		for (Entry<String, String[]> entry : requestParams.entrySet()) {
+			String name = entry.getKey();
+			if (name == null) {
+				continue;
+			}
+
+			String[] values = entry.getValue();
+			if (values == null || values.length == 0) {
+				continue;
+			}
+
+			if (filter == null) {
+				map.put(name, new LinkedList<String>(Arrays.asList(values)));
+			} else {
+				KeyValuePair<String, String[]> keyValuePair = filter
+						.filter(new DefaultKeyValuePair<String, String[]>(name, values));
+				if (keyValuePair == null) {
+					continue;
+				}
+
+				map.put(keyValuePair.getKey(), new LinkedList<String>(Arrays.asList(keyValuePair.getValue())));
+			}
+		}
+		return map;
+	}
+
+	public static Map<String, String> getRequestParameterAndAppendValues(ServletRequest request,
+			CharSequence appendValueChars, KeyValuePairFilter<String, String[]> filter) {
+		if (filter == null) {
+			Map<String, String[]> requestParams = request.getParameterMap();
+			if (CollectionUtils.isEmpty(requestParams)) {
+				return null;
+			}
+
+			Map<String, String> params = new HashMap<String, String>(requestParams.size(), 1);
+			for (Entry<String, String[]> entry : requestParams.entrySet()) {
+				String name = entry.getKey();
+				if (name == null) {
+					continue;
+				}
+
+				String[] values = entry.getValue();
+				if (values == null || values.length == 0) {
+					continue;
+				}
+
+				if (appendValueChars == null) {
+					params.put(name, values[0]);
+				} else {
+					StringBuilder sb = new StringBuilder();
+					for (String value : values) {
+						if (sb.length() != 0) {
+							sb.append(appendValueChars);
+						}
+
+						sb.append(value);
+					}
+					params.put(name, sb.toString());
+				}
+			}
+			return params;
+		} else {
+			MultiValueMap<String, String> requestParams = getRequestParameters(request, filter);
+			if (CollectionUtils.isEmpty(requestParams)) {
+				return null;
+			}
+
+			Map<String, String> params = new HashMap<String, String>(requestParams.size(), 1);
+			for (Entry<String, List<String>> entry : requestParams.entrySet()) {
+				String name = entry.getKey();
+				if (name == null) {
+					continue;
+				}
+
+				List<String> values = entry.getValue();
+				if (CollectionUtils.isEmpty(values)) {
+					continue;
+				}
+
+				if (appendValueChars == null) {
+					params.put(name, requestParams.getFirst(name));
+				} else {
+					StringBuilder sb = new StringBuilder();
+					for (String value : values) {
+						if (sb.length() != 0) {
+							sb.append(appendValueChars);
+						}
+
+						sb.append(value);
+					}
+					params.put(name, sb.toString());
+				}
+			}
+			return params;
+		}
+	}
+
 }

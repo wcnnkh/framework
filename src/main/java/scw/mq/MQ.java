@@ -1,11 +1,6 @@
 package scw.mq;
 
-public interface MQ<T> {
-	/**
-	 * 推送数据
-	 * @param message
-	 */
-	void push(T message);
+public interface MQ<T> extends Producer<T>{
 
 	/**
 	 * 添加消费者

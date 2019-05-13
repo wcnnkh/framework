@@ -27,11 +27,11 @@ public final class XMemcached extends AbstractXMemcached {
 	}
 
 	public XMemcached(String hosts) throws IOException {
-		this(hosts, 1);
+		this(hosts, Runtime.getRuntime().availableProcessors());
 	}
 
 	public XMemcached(String hosts, Serializer serializer) throws IOException {
-		this(hosts, 1, serializer);
+		this(hosts, Runtime.getRuntime().availableProcessors(), serializer);
 	}
 
 	public XMemcached(String hosts, int poolSize) throws IOException {

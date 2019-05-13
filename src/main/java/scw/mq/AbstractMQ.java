@@ -10,7 +10,7 @@ public abstract class AbstractMQ<T> implements MQ<T> {
 		consumers.add(consumer);
 	};
 
-	protected void execute(T message) {
+	protected void execute(T message) throws Throwable{
 		Iterator<Consumer<T>> iterator = consumers.iterator();
 		while (iterator.hasNext()) {
 			iterator.next().consumer(message);

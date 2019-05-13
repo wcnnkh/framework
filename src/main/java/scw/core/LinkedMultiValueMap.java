@@ -25,11 +25,13 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Simple implementation of {@link MultiValueMap} that wraps a {@link LinkedHashMap},
- * storing multiple values in a {@link LinkedList}.
+ * Simple implementation of {@link MultiValueMap} that wraps a
+ * {@link LinkedHashMap}, storing multiple values in a {@link LinkedList}.
  *
- * <p>This Map implementation is generally not thread-safe. It is primarily designed
- * for data structures exposed from request objects, for use in a single thread only.
+ * <p>
+ * This Map implementation is generally not thread-safe. It is primarily
+ * designed for data structures exposed from request objects, for use in a
+ * single thread only.
  *
  * @author Arjen Poutsma
  * @author Juergen Hoeller
@@ -41,32 +43,79 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 
 	private final Map<K, List<V>> targetMap;
 
-
 	/**
 	 * Create a new LinkedMultiValueMap that wraps a {@link LinkedHashMap}.
 	 */
 	public LinkedMultiValueMap() {
-		this.targetMap = new LinkedHashMap<K, List<V>>();
+		this.targetMap = new LinkedHashMap<K, List<V>>() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected boolean removeEldestEntry(Entry<K, List<V>> eldest) {
+				return overrideRemoveEldestEntry(eldest);
+			}
+		};
 	}
 
 	/**
-	 * Create a new LinkedMultiValueMap that wraps a {@link LinkedHashMap}
-	 * with the given initial capacity.
-	 * @param initialCapacity the initial capacity
+	 * Create a new LinkedMultiValueMap that wraps a {@link LinkedHashMap} with
+	 * the given initial capacity.
+	 * 
+	 * @param initialCapacity
+	 *            the initial capacity
 	 */
 	public LinkedMultiValueMap(int initialCapacity) {
-		this.targetMap = new LinkedHashMap<K, List<V>>(initialCapacity);
+		this.targetMap = new LinkedHashMap<K, List<V>>(initialCapacity) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected boolean removeEldestEntry(Entry<K, List<V>> eldest) {
+				return overrideRemoveEldestEntry(eldest);
+			}
+		};
+	}
+
+	public LinkedMultiValueMap(int initialCapacity, float loadFactor) {
+		this.targetMap = new LinkedHashMap<K, List<V>>(initialCapacity, loadFactor) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected boolean removeEldestEntry(Entry<K, List<V>> eldest) {
+				return overrideRemoveEldestEntry(eldest);
+			}
+		};
+	}
+
+	public LinkedMultiValueMap(int initialCapacity, float loadFactor, boolean accessOrder) {
+		this.targetMap = new LinkedHashMap<K, List<V>>(initialCapacity, loadFactor, accessOrder) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected boolean removeEldestEntry(Entry<K, List<V>> eldest) {
+				return overrideRemoveEldestEntry(eldest);
+			}
+		};
+	}
+
+	/**
+	 * 重写LinkedHashMap的此方法
+	 * @param eldest
+	 * @return
+	 */
+	protected boolean overrideRemoveEldestEntry(java.util.Map.Entry<K, List<V>> eldest) {
+		return false;
 	}
 
 	/**
 	 * Copy constructor: Create a new LinkedMultiValueMap with the same mappings
 	 * as the specified Map.
-	 * @param otherMap the Map whose mappings are to be placed in this Map
+	 * 
+	 * @param otherMap
+	 *            the Map whose mappings are to be placed in this Map
 	 */
 	public LinkedMultiValueMap(Map<K, List<V>> otherMap) {
 		this.targetMap = new LinkedHashMap<K, List<V>>(otherMap);
 	}
-
 
 	// MultiValueMap implementation
 
@@ -97,13 +146,12 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 	}
 
 	public Map<K, V> toSingleValueMap() {
-		LinkedHashMap<K, V> singleValueMap = new LinkedHashMap<K,V>(this.targetMap.size());
+		LinkedHashMap<K, V> singleValueMap = new LinkedHashMap<K, V>(this.targetMap.size());
 		for (Entry<K, List<V>> entry : targetMap.entrySet()) {
 			singleValueMap.put(entry.getKey(), entry.getValue().get(0));
 		}
 		return singleValueMap;
 	}
-
 
 	// Map implementation
 
@@ -154,7 +202,6 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 	public Set<Entry<K, List<V>>> entrySet() {
 		return this.targetMap.entrySet();
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
