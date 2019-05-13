@@ -24,8 +24,9 @@ public class Result extends AbstractTextView implements Serializable, RollbackOn
 		return code;
 	}
 
-	public void setCode(int code) {
+	public Result setCode(int code) {
 		this.code = code;
+		return this;
 	}
 
 	public String getMsg() {
