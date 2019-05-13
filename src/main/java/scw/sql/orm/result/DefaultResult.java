@@ -40,7 +40,7 @@ public final class DefaultResult extends AbstractResult {
 		}
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
-		String tableName = getTableName(tableInfo, tableInfo.getName(), type, tableMapping);
+		String tableName = getTableName(tableInfo, tableInfo.getDefaultName(), type, tableMapping);
 		try {
 			return (T) wrapper(tableInfo, tableName, tableMapping);
 		} catch (IllegalArgumentException e) {
@@ -94,7 +94,7 @@ public final class DefaultResult extends AbstractResult {
 		}
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
-		String tableName = getTableName(tableInfo, tableInfo.getName(), type, null);
+		String tableName = getTableName(tableInfo, tableInfo.getDefaultName(), type, null);
 		try {
 			return (T) wrapper(tableInfo, tableName, null);
 		} catch (IllegalArgumentException e) {

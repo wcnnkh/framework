@@ -70,7 +70,7 @@ public final class DefaultResultSet extends AbstractResultSet {
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		try {
-			return wrapper(type, tableInfo, tableInfo.getName(), tableMapping);
+			return wrapper(type, tableInfo, tableInfo.getDefaultName(), tableMapping);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -116,7 +116,7 @@ public final class DefaultResultSet extends AbstractResultSet {
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		try {
-			return wrapper(type, tableInfo, tableInfo.getName(), null);
+			return wrapper(type, tableInfo, tableInfo.getDefaultName(), null);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

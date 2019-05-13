@@ -68,7 +68,7 @@ public abstract class Select {
 	}
 
 	public String getTableName(Class<?> tableClass) {
-		return ORMUtils.getTableInfo(tableClass).getName();
+		return ORMUtils.getTableInfo(tableClass).getDefaultName();
 	}
 
 	protected void addSelectTable(String tableName) {

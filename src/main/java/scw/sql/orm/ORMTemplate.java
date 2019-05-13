@@ -38,7 +38,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 	@AutoCreate
 	private BeanFactory beanFactory;
 	private Map<String, AutoCreateService> autoCreateMap = new HashMap<String, AutoCreateService>();
-	
+
 	{
 		setAutoCreateService("cts", CurrentTimeMillisAutoCreateService.CURRENT_TIME_MILLIS);
 		setAutoCreateService("createTime", CurrentTimeMillisAutoCreateService.CURRENT_TIME_MILLIS);
@@ -84,7 +84,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 			throw new NullPointerException("params length not equals primary key lenght");
 		}
 
-		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getDefaultName() : tableName;
 		Sql sql = getSqlFormat().toSelectByIdSql(tableInfo, tName, params);
 		ResultSet resultSet = select(sql);
 		return resultSet.getFirst().get(type, tName);
@@ -104,14 +104,14 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 			throw new NullPointerException("params length  greater than primary key lenght");
 		}
 
-		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getDefaultName() : tableName;
 		ResultSet resultSet = select(getSqlFormat().toSelectByIdSql(tableInfo, tName, params));
 		return resultSet.getList(type, tName);
 	}
 
 	public boolean save(Object bean, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = ORMUtils.getTableName(tableName, tableInfo, bean);
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
 
 		for (ColumnInfo columnInfo : tableInfo.getAutoCreateColumns()) {
 			AutoCreate autoCreate = columnInfo.getAutoCreate();
@@ -138,7 +138,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 				connection = getUserConnection();
 				boolean b = update(sql, connection) != 0;
 				if (!b) {
-					if(logger.isWarnEnabled()){
+					if (logger.isWarnEnabled()) {
 						logger.warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
 					}
 					return false;
@@ -172,7 +172,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 		}
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = ORMUtils.getTableName(tableName, tableInfo, bean);
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
 		Sql sql = getSqlFormat().toUpdateSql(bean, tableInfo, tName);
 		return ormUpdateSql(tableInfo, tName, sql);
 	}
@@ -183,7 +183,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 
 	public boolean delete(Object bean, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = ORMUtils.getTableName(tableName, tableInfo, bean);
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
 		Sql sql = getSqlFormat().toDeleteSql(bean, tableInfo, tName);
 		return ormUpdateSql(tableInfo, tName, sql);
 	}
@@ -198,14 +198,14 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 			throw new ParameterException("主键数量和参数不一致:" + type.getName());
 		}
 
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName() : tableName;
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getDefaultName() : tableName;
 		Sql sql = getSqlFormat().toDeleteByIdSql(tableInfo, tName, params);
 		return ormUpdateSql(tableInfo, tName, sql);
 	}
 
 	public boolean saveOrUpdate(Object bean, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = ORMUtils.getTableName(tableName, tableInfo, bean);
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
 		Sql sql = getSqlFormat().toSaveOrUpdateSql(bean, tableInfo, tName);
 		return ormUpdateSql(tableInfo, tName, sql);
 	}
@@ -246,7 +246,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 			throw new NullPointerException("params length  greater than primary key lenght");
 		}
 
-		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getName() : tableName;
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getDefaultName() : tableName;
 		ResultSet resultSet = select(getSqlFormat().toSelectInIdSql(tableInfo, tName, params, inIds));
 		List<V> list = resultSet.getList(type, tName);
 		if (list == null || list.isEmpty()) {
@@ -310,7 +310,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 
 	public void createTable(Class<?> tableClass) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
-		createTable(tableClass, tableInfo.getName());
+		createTable(tableClass, tableInfo.getDefaultName());
 	}
 
 	public void createTable(Class<?> tableClass, String tableName) {
@@ -326,7 +326,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 			if (table == null) {
 				continue;
 			}
-			
+
 			ClassInfo classInfo = ClassUtils.getClassInfo(tableClass);
 			classInfo.createFieldListenProxyClass();
 
@@ -390,7 +390,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 	 */
 	public void iterator(final Class<?> tableClass, final Iterator<Result> iterator) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
-		Sql sql = getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getName(), null);
+		Sql sql = getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getDefaultName(), null);
 		iterator(sql, iterator);
 	}
 

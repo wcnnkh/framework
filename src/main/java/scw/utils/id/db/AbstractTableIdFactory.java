@@ -20,7 +20,7 @@ public abstract class AbstractTableIdFactory implements TableIdFactory {
 			throw new NotFoundException(fieldName);
 		}
 
-		Number maxNumber = (Number) db.getMaxValue(columnInfo.getType(), tableClass, tableInfo.getName(), fieldName);
+		Number maxNumber = (Number) db.getMaxValue(columnInfo.getType(), tableClass, tableInfo.getDefaultName(), fieldName);
 		return maxNumber == null ? 0 : maxNumber.longValue();
 	}
 }

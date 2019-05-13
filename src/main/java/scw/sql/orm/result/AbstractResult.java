@@ -136,7 +136,7 @@ public abstract class AbstractResult implements Result {
 		Object o = wrapper(tableInfo, tableName);
 		for (ColumnInfo column : tableInfo.getTableColumns()) {
 			TableInfo tInfo = ORMUtils.getTableInfo(column.getType());
-			String tName = getTableName(tInfo, tInfo.getName(), column.getType(), tableMapping);
+			String tName = getTableName(tInfo, tInfo.getDefaultName(), column.getType(), tableMapping);
 			Object v = wrapper(tInfo, tName, tableMapping);
 			if (v != null) {
 				column.setValueToField(o, v);

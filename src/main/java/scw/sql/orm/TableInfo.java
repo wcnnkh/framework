@@ -172,7 +172,7 @@ public final class TableInfo {
 		this.autoCreateColumns = autoCreateColumnList.toArray(new ColumnInfo[autoCreateColumnList.size()]);
 	}
 
-	public String getName() {
+	public String getDefaultName() {
 		return name;
 	}
 
@@ -277,5 +277,13 @@ public final class TableInfo {
 
 	public <T extends Annotation> T getAnnotation(Class<T> type) {
 		return classInfo.getClz().getAnnotation(type);
+	}
+
+	public String getName(Object bean) {
+		if (bean instanceof TableName) {
+			return ((TableName) bean).tableName();
+		}
+
+		return name;
 	}
 }

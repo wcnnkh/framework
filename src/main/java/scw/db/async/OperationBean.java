@@ -3,6 +3,7 @@ package scw.db.async;
 import java.io.Serializable;
 
 import scw.core.exception.NotSupportException;
+import scw.core.utils.StringUtils;
 import scw.sql.Sql;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.SqlFormat;
@@ -36,7 +37,7 @@ public final class OperationBean implements Serializable {
 		}
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = ORMUtils.getTableName(tableName, tableInfo, bean);
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
 		switch (operationType) {
 		case SAVE:
 			return sqlFormat.toInsertSql(bean, tableInfo, tName);

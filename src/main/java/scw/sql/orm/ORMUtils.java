@@ -11,20 +11,21 @@ import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParseUtils;
-import scw.core.utils.StringUtils;
 import scw.sql.orm.annotation.Table;
 
-public abstract class ORMUtils {
+public final class ORMUtils {
+	private ORMUtils(){};
+	
 	private static Logger logger = LoggerFactory.getLogger(ORMUtils.class);
 
 	private volatile static Map<Class<?>, TableInfo> tableMap = new HashMap<Class<?>, TableInfo>();
 
 	public static TableInfo getTableInfo(Class<?> clz) {
 		TableInfo tableInfo = tableMap.get(clz);
-		if(tableInfo == null){
+		if (tableInfo == null) {
 			synchronized (tableMap) {
 				tableInfo = tableMap.get(clz);
-				if(tableInfo == null){
+				if (tableInfo == null) {
 					tableInfo = new TableInfo(ClassUtils.getClassInfo(clz));
 					tableMap.put(clz, tableInfo);
 				}
@@ -98,18 +99,6 @@ public abstract class ORMUtils {
 		}
 	}
 
-	public static String getTableName(String tableName, TableInfo tableInfo, Object obj) {
-		if (StringUtils.isEmpty(tableName)) {
-			if (obj instanceof TableName) {
-				return ((TableName) obj).tableName();
-			} else {
-				return tableInfo.getName();
-			}
-		} else {
-			return tableName;
-		}
-	}
-
 	/**
 	 * 重新监听
 	 * 
@@ -117,7 +106,7 @@ public abstract class ORMUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T restartFieldLinsten(T bean) throws Exception {
+	public static <T> T restartFieldLinsten(T bean) {
 		if (bean == null) {
 			return bean;
 		}
@@ -134,9 +123,14 @@ public abstract class ORMUtils {
 					continue;
 				}
 
-				Object v = fieldInfo.get(bean);
-				if (v != null) {
-					fieldInfo.set(proxy, v);
+				Object v;
+				try {
+					v = fieldInfo.get(bean);
+					if (v != null) {
+						fieldInfo.set(proxy, v);
+					}
+				} catch (Exception e) {
+					throw new RuntimeException(e);
 				}
 			}
 			proxy.start_field_listen();
