@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -66,7 +67,7 @@ public final class PropertiesUtils {
 		Properties properties = ConfigUtils.getProperties(propertiesFile, "UTF-8");
 		invokeSetterByProeprties(instance, properties, true, true, asNameList, true);
 	}
-	
+
 	/**
 	 * 调用对象的set方法
 	 * 
@@ -171,5 +172,23 @@ public final class PropertiesUtils {
 				throw new RuntimeException(e);
 			}
 		}
+	}
+
+	public static Map<String, String> getProperties(Properties properties) {
+		if (CollectionUtils.isEmpty(properties)) {
+			return null;
+		}
+
+		Map<String, String> map = new LinkedHashMap<String, String>(properties.size(), 1);
+		for (Entry<?, ?> entry : properties.entrySet()) {
+			Object key = entry.getKey();
+			if (key == null) {
+				continue;
+			}
+
+			Object value = entry.getValue();
+			map.put(key.toString(), value == null ? null : value.toString());
+		}
+		return map;
 	}
 }
