@@ -10,18 +10,18 @@ import scw.result.Result;
 public class DefaultResultFactory extends AbstractResultFactory {
 	private final int defaultErrorCode;
 	private final int defaultSuccessCode;
-	private final int loginExpiredCode;
+	private final int authorizationFailureCode;
 
 	public DefaultResultFactory(String propertiesFilePath) {
 		this(propertiesFilePath, Constants.DEFAULT_CHARSET.name(), 1, 0, -1);
 	}
 
 	public DefaultResultFactory(String propertiesFilePath, String charsetName, int defaultErrorCode,
-			int defaultSuccessCode, int loginExpiredCode) {
+			int defaultSuccessCode, int authorizationFailureCode) {
 		super(propertiesFilePath, charsetName);
 		this.defaultErrorCode = defaultErrorCode;
 		this.defaultSuccessCode = defaultSuccessCode;
-		this.loginExpiredCode = loginExpiredCode;
+		this.authorizationFailureCode = authorizationFailureCode;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -45,8 +45,8 @@ public class DefaultResultFactory extends AbstractResultFactory {
 	}
 
 	@Override
-	public int getLoginExpiredCode() {
-		return loginExpiredCode;
+	public int getAuthorizationFailureCode() {
+		return authorizationFailureCode;
 	}
 
 }

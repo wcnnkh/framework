@@ -9,7 +9,7 @@ import scw.core.Constants;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.PropertiesUtils;
 
-public abstract class AbstractResultFactory implements ResultFactory, LoginResultFactory {
+public abstract class AbstractResultFactory implements ResultFactory {
 	private Map<Integer, String> code2msgMap;
 
 	public AbstractResultFactory(String propertiesFilePath) {
@@ -17,7 +17,8 @@ public abstract class AbstractResultFactory implements ResultFactory, LoginResul
 	}
 
 	public AbstractResultFactory(String propertiesFilePath, String charsetName) {
-		Properties properties = ConfigUtils.getProperties(propertiesFilePath, charsetName);
+		Properties properties = ConfigUtils.getProperties(propertiesFilePath,
+				charsetName);
 		Map<String, String> map = PropertiesUtils.getProperties(properties);
 		if (map != null) {
 			for (Entry<String, String> entry : map.entrySet()) {
@@ -31,7 +32,7 @@ public abstract class AbstractResultFactory implements ResultFactory, LoginResul
 
 	public abstract int getDefaultSuccessCode();
 
-	public abstract int getLoginExpiredCode();
+	public abstract int getAuthorizationFailureCode();
 
 	public synchronized void registerCode2Msg(int code, String msg) {
 		if (code2msgMap == null) {
@@ -54,18 +55,23 @@ public abstract class AbstractResultFactory implements ResultFactory, LoginResul
 	}
 
 	public <T extends Result> T error() {
-		return error(getDefaultErrorCode(), "error");
+		int code = getDefaultErrorCode();
+		String msg = getMsg(code);
+		return error(code, msg == null ? "系统错误" : msg);
 	}
 
 	public <T extends Result> T error(int code) {
-		return error(code, getMsg(code));
+		String msg = getMsg(code);
+		return error(code, msg == null ? "操作失败" : msg);
 	}
 
 	public <T extends Result> T error(String msg) {
 		return error(getDefaultErrorCode(), msg);
 	}
 
-	public <T extends Result> T loginExpired() {
-		return error(getLoginExpiredCode(), "登录状态已过期或已在其他地方登录！");
+	public <T extends Result> T authorizationFailure() {
+		int code = getAuthorizationFailureCode();
+		String msg = getMsg(code);
+		return error(code, msg == null ? "登录状态已过期" : msg);
 	}
 }
