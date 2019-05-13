@@ -16,7 +16,7 @@ public final class MethodParameter {
 		this.parameter = parameter;
 	}
 
-	public Object getParameter(Request request, Response response) throws Throwable {
+	public Object getParameter(Request request, Response response) {
 		if (Request.class.isAssignableFrom(type)) {
 			return request;
 		} else if (Response.class.isAssignableFrom(type)) {
