@@ -11,7 +11,7 @@ import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.View;
 
-public final class ServletViewResult<T> extends DefaultResult<T> implements View {
+public class ServletViewResult<T> extends DefaultResult<T> implements View {
 	private static final long serialVersionUID = 1L;
 	private String contentType;
 
