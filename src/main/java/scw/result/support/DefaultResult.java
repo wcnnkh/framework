@@ -42,4 +42,19 @@ public class DefaultResult<T> implements DataResult<T>, Serializable, RollbackOn
 		return !isSuccess();
 	}
 
+	public void setSuccess(boolean success) {
+		this.success = success;
+	}
+
+	public void setCode(int code) {
+		this.code = code;
+	}
+
+	public void setData(T data) {
+		this.data = data;
+	}
+
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
 }
