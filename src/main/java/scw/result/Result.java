@@ -6,4 +6,6 @@ public interface Result {
 	String getMsg();
 
 	boolean isSuccess();
+	
+	boolean isError();
 }

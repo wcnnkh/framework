@@ -57,4 +57,8 @@ public class DefaultResult<T> implements DataResult<T>, Serializable, RollbackOn
 	public void setMsg(String msg) {
 		this.msg = msg;
 	}
+
+	public boolean isError() {
+		return !success;
+	}
 }
