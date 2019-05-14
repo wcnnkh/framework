@@ -7,14 +7,15 @@ import com.alibaba.fastjson.JSONObject;
 import scw.core.utils.XTime;
 import scw.core.utils.XUtils;
 import scw.data.redis.Redis;
+import scw.result.ResultFactory;
 
 public final class RedisXmlPhoneVerificationCode extends AbstractXmlPhoneVerificationCode {
 	private final Redis redis;
 	private final String tempPrefix;
 
-	public RedisXmlPhoneVerificationCode(String xmlPath, Redis redis)
+	public RedisXmlPhoneVerificationCode(String xmlPath, Redis redis, ResultFactory resultFactory)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		super(xmlPath);
+		super(xmlPath, resultFactory);
 		this.redis = redis;
 		this.tempPrefix = XUtils.getUUID();
 	}

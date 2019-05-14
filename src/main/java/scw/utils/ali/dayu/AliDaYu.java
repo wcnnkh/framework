@@ -1,7 +1,7 @@
 package scw.utils.ali.dayu;
 
-import scw.core.ProcessResult;
+import scw.result.DataResult;
 
 public interface AliDaYu {
-	ProcessResult<String> sendMessage(MessageModel messageModel, String sms_param, String toPhones);
+	DataResult<String> sendMessage(MessageModel messageModel, String sms_param, String toPhones);
 }

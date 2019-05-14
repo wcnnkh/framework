@@ -6,39 +6,42 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.core.ProcessResult;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.http.HttpUtils;
 import scw.core.utils.SignUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
+import scw.result.DataResult;
+import scw.result.ResultFactory;
 
 public final class DefaultAliDaYu implements AliDaYu {
 	private static Logger logger = LoggerFactory.getLogger(DefaultAliDaYu.class);
 
-	private String host;
-	private String appKey;
-	private String version;
-	private String format;
-	private String sign_method;
-	private String appSecret;
+	private final String host;
+	private final String appKey;
+	private final String version;
+	private final String format;
+	private final String sign_method;
+	private final String appSecret;
+	private final ResultFactory resultFactory;
 
-	public DefaultAliDaYu(String appKey, String appSecret) {
-		this("http://gw.api.taobao.com/router/rest", appKey, "2.0", "json", "md5", appSecret);
+	public DefaultAliDaYu(String appKey, String appSecret, ResultFactory resultFactory) {
+		this("http://gw.api.taobao.com/router/rest", appKey, "2.0", "json", "md5", appSecret, resultFactory);
 	}
 
 	public DefaultAliDaYu(String host, String appKey, String version, String format, String sign_method,
-			String appSecret) {
+			String appSecret, ResultFactory resultFactory) {
 		this.host = host;
 		this.appKey = appKey;
 		this.version = version;
 		this.format = format;
 		this.sign_method = sign_method;
 		this.appSecret = appSecret;
+		this.resultFactory = resultFactory;
 	}
 
-	public ProcessResult<String> sendMessage(MessageModel messageModel, String sms_param, String toPhones) {
+	public DataResult<String> sendMessage(MessageModel messageModel, String sms_param, String toPhones) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("app_key", appKey);
 		map.put("v", version);
@@ -58,7 +61,7 @@ public final class DefaultAliDaYu implements AliDaYu {
 		String content = HttpUtils.doPost(host, null, map);
 		;
 		logger.debug(content);
-		return ProcessResult.success(content);
+		return resultFactory.success(content);
 	}
 
 	/**

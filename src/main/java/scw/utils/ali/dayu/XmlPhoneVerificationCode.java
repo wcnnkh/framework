@@ -2,10 +2,10 @@ package scw.utils.ali.dayu;
 
 import java.util.Map;
 
-import scw.core.ProcessResult;
+import scw.result.DataResult;
 
 public interface XmlPhoneVerificationCode extends AliDaYu{
-	ProcessResult<String> sendMessage(int configIndex, String sms_param, String toPhones);
+	DataResult<String> sendMessage(int configIndex, String sms_param, String toPhones);
 	
 	/**
 	 * 发送验证码
@@ -14,7 +14,7 @@ public interface XmlPhoneVerificationCode extends AliDaYu{
 	 * @param parameterMap
 	 * @return
 	 */
-	ProcessResult<String> sendCode(int configIndex, String phone, Map<String, String> parameterMap);
+	DataResult<String> sendCode(int configIndex, String phone, Map<String, String> parameterMap);
 	
 	/**
 	 * 检查验证码是否有效
@@ -34,5 +34,5 @@ public interface XmlPhoneVerificationCode extends AliDaYu{
 	 * @param phone
 	 * @return
 	 */
-	<T> ProcessResult<T> canSend(int configIndex, String phone);
+	<T> DataResult<T> canSend(int configIndex, String phone);
 }

@@ -7,14 +7,15 @@ import com.alibaba.fastjson.JSONObject;
 import scw.core.utils.XTime;
 import scw.core.utils.XUtils;
 import scw.data.memcached.Memcached;
+import scw.result.ResultFactory;
 
 public final class MemcachedXmlPhoneVerificationCode extends AbstractXmlPhoneVerificationCode {
 	private final Memcached memcached;
 	private final String tempPrefix;
 
-	public MemcachedXmlPhoneVerificationCode(String xmlPath, Memcached memcached)
+	public MemcachedXmlPhoneVerificationCode(String xmlPath, Memcached memcached, ResultFactory resultFactory)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		super(xmlPath);
+		super(xmlPath, resultFactory);
 		this.memcached = memcached;
 		this.tempPrefix = XUtils.getUUID();
 	}

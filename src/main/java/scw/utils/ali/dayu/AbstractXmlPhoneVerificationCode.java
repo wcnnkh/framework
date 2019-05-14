@@ -10,12 +10,13 @@ import org.w3c.dom.Node;
 import com.alibaba.fastjson.JSONObject;
 
 import scw.beans.annotation.Destroy;
-import scw.core.ProcessResult;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.core.utils.XTime;
+import scw.result.DataResult;
+import scw.result.ResultFactory;
 
 public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -31,9 +32,11 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 	private final int maxActiveTime;// 验证码有效时间
 	private final List<MessageModel> modelList;
 	private final AliDaYu aLiDaYu;
+	private final ResultFactory resultFactory;
 
-	public AbstractXmlPhoneVerificationCode(String xmlPath)
+	public AbstractXmlPhoneVerificationCode(String xmlPath, ResultFactory resultFactory)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		this.resultFactory = resultFactory;
 		Node root = XMLUtils.getRootElement(xmlPath);
 		String host = XMLUtils.getNodeAttributeValue(root, "host", "http://gw.api.taobao.com/router/rest");
 		String appKey = XMLUtils.getRequireNodeAttributeValue(root, "appKey");
@@ -42,11 +45,10 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		String signMethod = XMLUtils.getNodeAttributeValue(root, "sign-method", "md5");
 		String appSecret = XMLUtils.getRequireNodeAttributeValue(root, "appSecret");
 		boolean async = XMLUtils.getBooleanValue(root, "async", false);
-
 		if (async) {
-			this.aLiDaYu = new AsyncAliDaYu(host, appKey, version, format, signMethod, appSecret);
+			this.aLiDaYu = new AsyncAliDaYu(host, appKey, version, format, signMethod, appSecret, resultFactory);
 		} else {
-			this.aLiDaYu = new DefaultAliDaYu(host, appKey, version, format, signMethod, appSecret);
+			this.aLiDaYu = new DefaultAliDaYu(host, appKey, version, format, signMethod, appSecret, resultFactory);
 		}
 
 		this.modelList = XMLUtils.getBeanList(root, MessageModel.class);
@@ -71,10 +73,10 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		return modelList.get(index);
 	}
 
-	public ProcessResult<String> sendMessage(int configIndex, final String sms_param, final String toPhones) {
+	public DataResult<String> sendMessage(int configIndex, final String sms_param, final String toPhones) {
 		MessageModel messageModel = getMessageModel(configIndex);
 		if (messageModel == null) {
-			return ProcessResult.simpleError("系统配置错误");
+			return resultFactory.error("系统配置错误");
 		}
 
 		return sendMessage(messageModel, sms_param, toPhones);
@@ -87,7 +89,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		}
 	}
 
-	public ProcessResult<String> sendMessage(MessageModel messageModel, String sms_param, String toPhones) {
+	public DataResult<String> sendMessage(MessageModel messageModel, String sms_param, String toPhones) {
 		return aLiDaYu.sendMessage(messageModel, sms_param, toPhones);
 	}
 
@@ -95,9 +97,9 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		return StringUtils.getNumCode(codeLength);
 	}
 
-	public ProcessResult<String> sendCode(int configIndex, String phone, Map<String, String> parameterMap) {
-		ProcessResult<String> processResult = canSend(configIndex, phone);
-		if (processResult.isError()) {
+	public DataResult<String> sendCode(int configIndex, String phone, Map<String, String> parameterMap) {
+		DataResult<String> processResult = canSend(configIndex, phone);
+		if (!processResult.isSuccess()) {
 			return processResult;
 		}
 
@@ -112,7 +114,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		}
 
 		processResult = sendMessage(configIndex, JSONObject.toJSONString(parameterMap), phone);
-		if (processResult.isError()) {
+		if (!processResult.isSuccess()) {
 			return processResult;
 		}
 
@@ -184,22 +186,22 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		setCacheData(configIndex, phone, json);
 	}
 
-	public <T> ProcessResult<T> canSend(int configIndex, String phone) {
+	public <T> DataResult<T> canSend(int configIndex, String phone) {
 		JSONObject json = getCacheData(configIndex, phone);
 		if (json == null) {
-			return ProcessResult.success();
+			return resultFactory.success();
 		}
 
 		long lastSendTime = json.getLong(LAST_TIME_SEND_NAME);
 		if (getMaxTimeInterval() > 0 && (System.currentTimeMillis() - lastSendTime) < getMaxTimeInterval() * 1000L) {
-			return ProcessResult.simpleError("发送过于频繁");
+			return resultFactory.error("发送过于频繁");
 		}
 
 		int count = json.getIntValue(COUNT_NAME);
 		if (getEveryDayMaxSize() > 0 && (count > getEveryDayMaxSize())) {
-			return ProcessResult.simpleError("今日发送次数过多");
+			return resultFactory.error("今日发送次数过多");
 		}
-		return ProcessResult.success();
+		return resultFactory.success();
 	}
 
 	public abstract JSONObject getCacheData(int configIndex, String phone);

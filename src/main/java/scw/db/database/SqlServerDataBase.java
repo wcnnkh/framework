@@ -31,7 +31,7 @@ public class SqlServerDataBase extends AbstractDataBase {
 
 		String query = url.substring(databaseBeginIndex + 1);
 		QueryString queryString = new QueryString(query);
-		this.database = queryString.getParameter("DatabaseName");
+		this.database = queryString.getFirst("DatabaseName");
 		if (StringUtils.isEmpty(this.database)) {
 			throw new NotFoundException("无法解析数据库名称：" + url);
 		}
