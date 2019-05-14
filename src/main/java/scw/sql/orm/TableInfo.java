@@ -26,19 +26,14 @@ public final class TableInfo {
 
 	private final ClassInfo classInfo;
 
-	private final Map<String, ColumnInfo> columnMap = new HashMap<String, ColumnInfo>();// 所有的
+	private final Map<String, ColumnInfo> columnMap;// 所有的
 	// 数据库字段名到字段的映射
-	private final Map<String, String> fieldToColumn = new HashMap<String, String>();// 所有的
-	// 字段名数据库名的映射
-	// 字段的set方法，如果没有set方法就不到这个集合里面
-	// 用来做监听非主键字段的更新
-	private final Map<String, ColumnInfo> notPrimaryKeySetterNameMap = new HashMap<String, ColumnInfo>();
+	private final Map<String, String> fieldToColumn;// 所有的
 
 	private final ColumnInfo[] columns;
 	private final ColumnInfo[] primaryKeyColumns;
 	private final ColumnInfo[] notPrimaryKeyColumns;
 	private final ColumnInfo[] tableColumns;
-	private Class<?>[] proxyInterface;
 	private boolean parent = false;
 	private ColumnInfo autoIncrement;
 	private final ColumnInfo[] autoCreateColumns;
@@ -48,7 +43,8 @@ public final class TableInfo {
 		StringBuilder sb = new StringBuilder();
 		char[] chars;
 		try {
-			chars = Class.forName(ClassUtils.getProxyRealClassName(classInfo.getSource())).getSimpleName().toCharArray();
+			chars = Class.forName(ClassUtils.getProxyRealClassName(classInfo.getSource())).getSimpleName()
+					.toCharArray();
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(classInfo.getSource().getName());
 		}
@@ -94,6 +90,9 @@ public final class TableInfo {
 		List<ColumnInfo> tableColumnList = new ArrayList<ColumnInfo>();
 		List<ColumnInfo> autoCreateColumnList = new ArrayList<ColumnInfo>();
 
+		Map<String, ColumnInfo> columnMap = new HashMap<String, ColumnInfo>();
+		Map<String, String> fieldToColumn = new HashMap<String, String>();
+
 		ClassInfo tempClassInfo = classInfo;
 		while (tempClassInfo != null) {
 			for (FieldInfo fieldInfo : tempClassInfo.getFieldInfos()) {
@@ -118,8 +117,8 @@ public final class TableInfo {
 					throw new AlreadyExistsException("[" + columnInfo.getName() + "]字段已存在");
 				}
 
-				this.columnMap.put(columnInfo.getName(), columnInfo);
-				this.fieldToColumn.put(fieldInfo.getName(), columnInfo.getName());
+				columnMap.put(columnInfo.getName(), columnInfo);
+				fieldToColumn.put(fieldInfo.getName(), columnInfo.getName());
 
 				if (columnInfo.isDataBaseType()) {
 					allColumnList.add(columnInfo);
@@ -127,9 +126,6 @@ public final class TableInfo {
 						idNameList.add(columnInfo);
 					} else {
 						notIdNameList.add(columnInfo);
-						if (fieldInfo.getSetter() != null) {
-							this.notPrimaryKeySetterNameMap.put(fieldInfo.getSetter().getName(), columnInfo);
-						}
 					}
 
 					if (columnInfo.getAutoIncrement() != null) {
@@ -169,6 +165,10 @@ public final class TableInfo {
 		this.notPrimaryKeyColumns = notIdNameList.toArray(new ColumnInfo[0]);
 		this.tableColumns = tableColumnList.toArray(new ColumnInfo[tableColumnList.size()]);
 		this.autoCreateColumns = autoCreateColumnList.toArray(new ColumnInfo[autoCreateColumnList.size()]);
+		this.columnMap = new HashMap<String, ColumnInfo>(columnMap.size(), 1);
+		this.columnMap.putAll(columnMap);
+		this.fieldToColumn = new HashMap<String, String>(fieldToColumn.size(), 1);
+		this.fieldToColumn.putAll(fieldToColumn);
 	}
 
 	public String getDefaultName() {
@@ -218,14 +218,6 @@ public final class TableInfo {
 
 	public ColumnInfo[] getNotPrimaryKeyColumns() {
 		return notPrimaryKeyColumns;
-	}
-
-	public ColumnInfo getColumnByNotPrimaryKeySetterNameMap(String setterMethodName) {
-		return notPrimaryKeySetterNameMap.get(setterMethodName);
-	}
-
-	public Class<?>[] getProxyInterface() {
-		return proxyInterface;
 	}
 
 	public boolean isTable() {

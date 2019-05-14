@@ -27,7 +27,7 @@ public final class ClassInfo {
 	 * 类的字段
 	 */
 	private final Map<String, FieldInfo> fieldMap;
-	private final Map<String, FieldInfo> fieldSetterMethodMap = new HashMap<String, FieldInfo>();
+	private final Map<String, FieldInfo> fieldSetterMethodMap;
 	private final Class<?>[] beanListenInterfaces;
 	private final boolean serializer;
 
@@ -47,6 +47,7 @@ public final class ClassInfo {
 			}
 		}
 
+		Map<String, FieldInfo> fieldSetterMethodMap = new HashMap<String, FieldInfo>();
 		fieldMap = new LinkedHashMap<String, FieldInfo>(clazz.getDeclaredFields().length, 1);
 		for (Field field : clazz.getDeclaredFields()) {
 			Deprecated deprecated = field.getAnnotation(Deprecated.class);
@@ -62,6 +63,8 @@ public final class ClassInfo {
 				fieldSetterMethodMap.put(fieldInfo.getSetter().getName(), fieldInfo);
 			}
 		}
+		this.fieldSetterMethodMap = new HashMap<String, FieldInfo>(fieldSetterMethodMap.size(), 1);
+		this.fieldSetterMethodMap.putAll(fieldSetterMethodMap);
 	}
 
 	public boolean isSerializer() {
@@ -119,10 +122,10 @@ public final class ClassInfo {
 		enhancer.setInterfaces(beanListenInterfaces);
 		enhancer.setCallback(new FieldListenMethodInterceptor());
 		enhancer.setSuperclass(source);
-		if(serializer){
+		if (serializer) {
 			enhancer.setSerialVersionUID(1L);
 		}
-		
+
 		BeanFieldListen beanFieldListen = (BeanFieldListen) enhancer.create();
 		beanFieldListen.start_field_listen();
 		return (T) beanFieldListen;
