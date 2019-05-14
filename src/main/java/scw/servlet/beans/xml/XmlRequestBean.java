@@ -6,11 +6,10 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.cglib.proxy.Enhancer;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import net.sf.cglib.proxy.Enhancer;
 import scw.beans.AnnotationBean;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
@@ -78,14 +77,14 @@ public final class XmlRequestBean implements RequestBean {
 		}
 
 		this.classInfo = ClassUtils.getClassInfo(className);
-		this.type = classInfo.getClz();
+		this.type = classInfo.getSource();
 
 		Node idNode = beanNode.getAttributes().getNamedItem(ID_ATTRIBUTE_KEY);
 		if (idNode == null) {
-			this.id = classInfo.getName();
+			this.id = classInfo.getSource().getName();
 		} else {
 			String v = idNode.getNodeValue();
-			this.id = StringUtils.isNull(v) ? classInfo.getName() : v;
+			this.id = StringUtils.isNull(v) ? classInfo.getSource().getName() : v;
 		}
 
 		Node filtersNode = beanNode.getAttributes().getNamedItem(FILTERS_ATTRIBUTE_KEY);
@@ -225,7 +224,7 @@ public final class XmlRequestBean implements RequestBean {
 		}
 
 		for (XmlBeanParameter beanProperties : properties) {
-			FieldInfo fieldInfo = classInfo.getFieldInfo(beanProperties.getName());
+			FieldInfo fieldInfo = classInfo.getFieldInfo(beanProperties.getName(), true);
 			if (fieldInfo != null) {
 				Object value = beanProperties.parseValue(beanFactory, propertiesFactory, fieldInfo.getType());
 				if (value != null) {
@@ -251,8 +250,8 @@ public final class XmlRequestBean implements RequestBean {
 				continue;
 			}
 
-			BeanUtils.autoWrite(classInfo.getClz(), beanFactory, propertiesFactory, bean,
-					classInfo.getFieldInfo(field.getName()));
+			BeanUtils.autoWrite(classInfo.getSource(), beanFactory, propertiesFactory, bean,
+					classInfo.getFieldInfo(field.getName(), true));
 		}
 		setProperties(bean);
 	}

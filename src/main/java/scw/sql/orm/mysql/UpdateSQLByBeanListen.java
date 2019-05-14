@@ -89,7 +89,7 @@ public final class UpdateSQLByBeanListen implements Sql {
 					}
 					continue;
 				} else {
-					logger.warn("{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}", tableInfo.getClassInfo().getName(),
+					logger.warn("{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}", tableInfo.getClassInfo().getSource().getName(),
 							columnInfo.getFieldInfo().getName(), oldValue, value);
 				}
 			}

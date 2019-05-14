@@ -26,7 +26,7 @@ public final class PropertiesParse implements ConfigParse {
 			try {
 				Object obj = fieldTpe.newInstance();
 				for (Object key : properties.keySet()) {
-					FieldInfo fieldInfo = fieldClassInfo.getFieldMap().get(key.toString());
+					FieldInfo fieldInfo = fieldClassInfo.getFieldInfo(key.toString(), false);
 					if(fieldInfo == null){
 						continue;
 					}

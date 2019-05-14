@@ -69,7 +69,7 @@ public final class SaveOrUpdateSQL implements Sql {
 				params.add(v);
 			} else {
 				if (v == null) {
-					logger.warn("{}中计数器字段{}的值为空", tableInfo.getClassInfo().getName(), columnInfo.getName());
+					logger.warn("{}中计数器字段{}的值为空", tableInfo.getClassInfo().getSource().getName(), columnInfo.getName());
 					sb.append(columnInfo.getSqlColumnName());
 					sb.append("=?");
 					params.add(v);

@@ -114,12 +114,12 @@ public final class AnnotationRequestBean implements RequestBean {
 	public void autowrite(Object bean) throws Exception {
 		ClassInfo tempClzInfo = classInfo;
 		while (tempClzInfo != null) {
-			for (FieldInfo field : tempClzInfo.getFieldMap().values()) {
+			for (FieldInfo field : tempClzInfo.getFieldInfos()) {
 				if (Modifier.isStatic(field.getField().getModifiers())) {
 					continue;
 				}
 
-				BeanUtils.autoWrite(tempClzInfo.getClz(), beanFactory, propertiesFactory, bean, field);
+				BeanUtils.autoWrite(tempClzInfo.getSource(), beanFactory, propertiesFactory, bean, field);
 			}
 			tempClzInfo = tempClzInfo.getSuperInfo();
 		}

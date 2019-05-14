@@ -108,7 +108,7 @@ public final class ConfigUtils {
 		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
 		T t = clz.newInstance();
 		for (Entry<String, String> entry : map.entrySet()) {
-			FieldInfo fieldInfo = classInfo.getFieldInfo(entry.getKey());
+			FieldInfo fieldInfo = classInfo.getFieldInfo(entry.getKey(), true);
 			if (fieldInfo == null) {
 				continue;
 			}

@@ -118,7 +118,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 			String name = StringUtils.isEmpty(autoCreate.value()) ? columnInfo.getName() : autoCreate.value();
 			AutoCreateService service = getAutoCreateService(name);
 			if (service == null) {
-				throw new NotFoundException(tableInfo.getClassInfo().getName() + "中字段[" + columnInfo.getName()
+				throw new NotFoundException(tableInfo.getClassInfo().getSource().getName() + "中字段[" + columnInfo.getName()
 						+ "的注解@AutoCreate找不到指定名称的实现:" + name);
 			}
 
@@ -328,7 +328,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 			}
 
 			ClassInfo classInfo = ClassUtils.getClassInfo(tableClass);
-			classInfo.createFieldListenProxyClass();
+			classInfo.getFieldListenProxyClass();
 
 			if (table.create()) {
 				createTable(tableClass);

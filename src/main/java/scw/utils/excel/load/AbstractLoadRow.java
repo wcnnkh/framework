@@ -3,15 +3,16 @@ package scw.utils.excel.load;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
 import scw.core.ClassInfo;
 import scw.core.FieldInfo;
 import scw.core.exception.AlreadyExistsException;
+import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParseUtils;
 import scw.core.utils.StringUtils;
-
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 public abstract class AbstractLoadRow<T> implements LoadRow {
 	private final int nameMappingIndex;
@@ -62,7 +63,7 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 			try {
 				T obj = newInstance();
 				for (Entry<String, Integer> entry : nameMapping.entrySet()) {
-					FieldInfo fieldInfo = classInfo.getFieldInfo(entry.getKey());
+					FieldInfo fieldInfo = classInfo.getFieldInfo(entry.getKey(), true);
 					if (fieldInfo == null) {
 						continue;
 					}
@@ -85,9 +86,8 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public T newInstance() throws Exception {
-		return (T) classInfo.getClz().newInstance();
+		return ReflectUtils.newInstance(classInfo.getSource());
 	}
 
 	public Object format(String name, String value, Class<?> type) {

@@ -105,7 +105,7 @@ public abstract class CollectionUtils {
 				classInfo = ClassUtils.getClassInfo(v.getClass());
 			}
 
-			FieldInfo fieldInfo = classInfo.getFieldInfo(keyFieldName);
+			FieldInfo fieldInfo = classInfo.getFieldInfo(keyFieldName, true);
 			if (fieldInfo == null) {
 				throw new NotFoundException("list转map时无法在实体中找到此字段：" + keyFieldName);
 			}
@@ -524,7 +524,7 @@ public abstract class CollectionUtils {
 				classInfo = ClassUtils.getClassInfo(obj.getClass());
 			}
 
-			FieldInfo fieldInfo = classInfo.getFieldInfo(fieldName);
+			FieldInfo fieldInfo = classInfo.getFieldInfo(fieldName, true);
 			if (fieldInfo == null) {
 				continue;
 			}

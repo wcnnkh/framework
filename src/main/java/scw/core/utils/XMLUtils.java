@@ -34,6 +34,7 @@ import org.xml.sax.SAXException;
 import scw.core.ClassInfo;
 import scw.core.FieldInfo;
 import scw.core.exception.NotFoundException;
+import scw.core.reflect.ReflectUtils;
 
 public final class XMLUtils {
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
@@ -273,7 +274,7 @@ public final class XMLUtils {
 				continue;
 			}
 
-			FieldInfo fieldInfo = classInfo.getFieldInfo(nodeName);
+			FieldInfo fieldInfo = classInfo.getFieldInfo(nodeName, true);
 			if (fieldInfo == null) {
 				continue;
 			}
@@ -288,7 +289,7 @@ public final class XMLUtils {
 			}
 
 			if (t == null) {
-				t = ClassUtils.newInstance(type);
+				t = ReflectUtils.newInstance(type);
 			}
 
 			fieldInfo.set(t, StringParseUtils.conversion(value, fieldInfo.getType()));

@@ -31,7 +31,7 @@ public final class PropertiesUtils {
 		try {
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				String key = stringFormat.format(entry.getKey().toString());
-				fieldInfo = classInfo.getFieldMap().get(key);
+				fieldInfo = classInfo.getFieldInfo(key, true);
 				if (fieldInfo != null) {
 					String value = entry.getValue() == null ? null : entry.getValue().toString();
 					fieldInfo.set(obj, stringFormat.format(value));

@@ -48,9 +48,9 @@ public final class TableInfo {
 		StringBuilder sb = new StringBuilder();
 		char[] chars;
 		try {
-			chars = Class.forName(ClassUtils.getProxyRealClassName(classInfo.getClz())).getSimpleName().toCharArray();
+			chars = Class.forName(ClassUtils.getProxyRealClassName(classInfo.getSource())).getSimpleName().toCharArray();
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(classInfo.getClz().getName());
+			throw new RuntimeException(classInfo.getSource().getName());
 		}
 
 		for (int i = 0; i < chars.length; i++) {
@@ -67,7 +67,7 @@ public final class TableInfo {
 
 		this.name = sb.toString();
 
-		this.table = classInfo.getClz().getAnnotation(Table.class);
+		this.table = classInfo.getSource().getAnnotation(Table.class);
 		if (table != null) {
 			if (!"".equals(table.name())) {
 				this.name = table.name();
@@ -96,8 +96,7 @@ public final class TableInfo {
 
 		ClassInfo tempClassInfo = classInfo;
 		while (tempClassInfo != null) {
-			for (String fieldName : tempClassInfo.getFieldNames()) {
-				FieldInfo fieldInfo = tempClassInfo.getFieldMap().get(fieldName);
+			for (FieldInfo fieldInfo : tempClassInfo.getFieldInfos()) {
 				NotColumn exclude = fieldInfo.getField().getAnnotation(NotColumn.class);
 				if (exclude != null) {
 					continue;
@@ -135,7 +134,7 @@ public final class TableInfo {
 
 					if (columnInfo.getAutoIncrement() != null) {
 						if (autoIncrement != null) {
-							throw new RuntimeException(classInfo.getName() + "存在多个@AutoIncrement字段");
+							throw new RuntimeException(classInfo.getSource().getName() + "存在多个@AutoIncrement字段");
 						}
 
 						autoIncrement = columnInfo;
@@ -154,7 +153,7 @@ public final class TableInfo {
 			}
 
 			boolean parent = true;
-			Table table = tempClassInfo.getClz().getAnnotation(Table.class);
+			Table table = tempClassInfo.getSource().getAnnotation(Table.class);
 			if (table != null) {
 				parent = table.parent();
 			}
@@ -261,7 +260,7 @@ public final class TableInfo {
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance() {
 		if (table == null) {
-			return (T) ReflectUtils.newInstance(classInfo.getClz());
+			return (T) ReflectUtils.newInstance(classInfo.getSource());
 		} else {
 			return (T) classInfo.newFieldListenInstance();
 		}
@@ -276,7 +275,7 @@ public final class TableInfo {
 	}
 
 	public <T extends Annotation> T getAnnotation(Class<T> type) {
-		return classInfo.getClz().getAnnotation(type);
+		return classInfo.getSource().getAnnotation(type);
 	}
 
 	public String getName(Object bean) {

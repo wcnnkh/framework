@@ -25,6 +25,24 @@ public abstract class AbstractResult implements Result {
 		this.metaData = metaData;
 		this.values = values;
 	}
+	
+	private static String getNotFoundForDataSourceErrorMsg(TableInfo tableInfo, ColumnInfo column){
+		StringBuilder sb = new StringBuilder();
+		sb.append(tableInfo.getClassInfo().getSource().getName());
+		sb.append(" [");
+		sb.append(column.getName());
+		sb.append("] not found for DataSource");
+		return sb.toString();
+	}
+	
+	private static String getNotNullErrorMsg(TableInfo tableInfo, ColumnInfo column){
+		StringBuilder sb = new StringBuilder();
+		sb.append(tableInfo.getClassInfo().getSource().getName());
+		sb.append(" [");
+		sb.append(column.getName());
+		sb.append("] not is null");
+		return sb.toString();
+	}
 
 	private Object wrapperTable(TableInfo tableInfo, String tableName)
 			throws IllegalArgumentException, IllegalAccessException {
@@ -33,12 +51,7 @@ public abstract class AbstractResult implements Result {
 			int index = metaData.getColumnIndex(column.getName(), tableName);
 			if (index == -1) {
 				if (!column.isNullAble()) {
-					StringBuilder sb = new StringBuilder();
-					sb.append(tableInfo.getClassInfo().getName());
-					sb.append(" [");
-					sb.append(column.getName());
-					sb.append("] not found for DataSource");
-					throw new NotFoundException(sb.toString());
+					throw new NotFoundException(getNotFoundForDataSourceErrorMsg(tableInfo, column));
 				}
 				continue;
 			}
@@ -46,12 +59,7 @@ public abstract class AbstractResult implements Result {
 			Object v = values[index];
 			if (v == null) {
 				if (!column.isNullAble()) {
-					StringBuilder sb = new StringBuilder();
-					sb.append(tableInfo.getClassInfo().getName());
-					sb.append(" [");
-					sb.append(column.getName());
-					sb.append("] not is null");
-					throw new NotFoundException(sb.toString());
+					throw new NotFoundException(getNotNullErrorMsg(tableInfo, column));
 				}
 
 				continue;
@@ -67,12 +75,7 @@ public abstract class AbstractResult implements Result {
 			int index = metaData.getSingleIndex(column.getName());
 			if (index == -1) {
 				if (!column.isNullAble()) {
-					StringBuilder sb = new StringBuilder();
-					sb.append(tableInfo.getClassInfo().getName());
-					sb.append(" [");
-					sb.append(column.getName());
-					sb.append("] not found for DataSource");
-					throw new NotFoundException(sb.toString());
+					throw new NotFoundException(getNotFoundForDataSourceErrorMsg(tableInfo, column));
 				}
 				continue;
 			}
@@ -80,12 +83,7 @@ public abstract class AbstractResult implements Result {
 			Object v = values[index];
 			if (v == null) {
 				if (!column.isNullAble()) {
-					StringBuilder sb = new StringBuilder();
-					sb.append(tableInfo.getClassInfo().getName());
-					sb.append(" [");
-					sb.append(column.getName());
-					sb.append("] not is null");
-					throw new RuntimeException(sb.toString());
+					throw new RuntimeException(getNotNullErrorMsg(tableInfo, column));
 				}
 
 				continue;

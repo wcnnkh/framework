@@ -6,8 +6,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
@@ -34,7 +32,6 @@ import scw.core.ClassInfo;
 import scw.core.LocalVariableTableParameterNameDiscoverer;
 
 public final class ClassUtils {
-	private static final String SERIAL_VERSION_UID = "serialVersionUID";
 	public static final String ALL_PACKAGE_NAME = "*";
 
 	/** Suffix for array class names: "[]" */
@@ -479,17 +476,6 @@ public final class ClassUtils {
 		return lvtpnd.getParameterNames(constructor);
 	}
 
-	public static <T> T newInstance(Class<T> type) throws InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		Constructor<T> constructor = type.getDeclaredConstructor();
-		if (Modifier.isPublic(constructor.getModifiers())) {
-			return constructor.newInstance();
-		} else {
-			constructor.setAccessible(true);
-			return constructor.newInstance();
-		}
-	}
-
 	/**
 	 * 获取父类 不包含java.lang.Object
 	 * 
@@ -562,22 +548,6 @@ public final class ClassUtils {
 	 */
 	public static boolean isCglibProxyClassName(String className) {
 		return (className != null && className.contains(CGLIB_CLASS_SEPARATOR));
-	}
-
-	public static Long getSerialVersionUID(Class<?> clz) {
-		try {
-			Field field = clz.getField(SERIAL_VERSION_UID);
-			if (field != null && Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())
-					&& long.class.isAssignableFrom(field.getType())) {
-				field.setAccessible(true);
-				return (Long) field.get(null);
-			}
-		} catch (NoSuchFieldException e) {
-		} catch (SecurityException e) {
-		} catch (IllegalArgumentException e) {
-		} catch (IllegalAccessException e) {
-		}
-		return null;
 	}
 
 	/**

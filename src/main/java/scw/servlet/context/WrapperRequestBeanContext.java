@@ -67,8 +67,7 @@ public class WrapperRequestBeanContext implements RequestBeanContext {
 	private <T> T wrapperObject(Class<T> type, String prefix) throws Exception {
 		T t = type.newInstance();
 		ClassInfo classInfo = ClassUtils.getClassInfo(type);
-		for (Entry<String, FieldInfo> entry : classInfo.getFieldMap()
-				.entrySet()) {
+		for (Entry<String, FieldInfo> entry : classInfo.getFieldEntrySet()) {
 			FieldInfo fieldInfo = entry.getValue();
 			if (fieldInfo.isStatic() || fieldInfo.isFinal()) {
 				continue;

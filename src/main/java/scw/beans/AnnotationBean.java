@@ -117,7 +117,7 @@ public class AnnotationBean implements BeanDefinition {
 				Enhancer enhancer = getProxyEnhancer();
 				bean = enhancer.create();
 			} else {
-				bean = ClassUtils.newInstance(type);
+				bean = ReflectUtils.newInstance(type);
 			}
 			return (T) bean;
 		} catch (Exception e) {
@@ -144,7 +144,7 @@ public class AnnotationBean implements BeanDefinition {
 	public void autowrite(Object bean) throws Exception {
 		ClassInfo classInfo = ClassUtils.getClassInfo(type);
 		while (classInfo != null) {
-			for (FieldInfo field : classInfo.getFieldMap().values()) {
+			for (FieldInfo field : classInfo.getFieldInfos()) {
 				if (Modifier.isStatic(field.getField().getModifiers())) {
 					continue;
 				}

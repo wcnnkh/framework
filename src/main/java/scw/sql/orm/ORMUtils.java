@@ -95,7 +95,7 @@ public final class ORMUtils {
 			}
 
 			ClassInfo classInfo = ClassUtils.getClassInfo(type);
-			classInfo.createFieldListenProxyClass();
+			classInfo.getFieldListenProxyClass();
 		}
 	}
 
@@ -117,7 +117,7 @@ public final class ORMUtils {
 		} else {
 			ClassInfo classInfo = ClassUtils.getClassInfo(bean.getClass());
 			BeanFieldListen proxy = (BeanFieldListen) classInfo.newFieldListenInstance();
-			for (Entry<String, FieldInfo> entry : classInfo.getFieldMap().entrySet()) {
+			for (Entry<String, FieldInfo> entry : classInfo.getFieldEntrySet()) {
 				FieldInfo fieldInfo = entry.getValue();
 				if (fieldInfo.isStatic()) {
 					continue;

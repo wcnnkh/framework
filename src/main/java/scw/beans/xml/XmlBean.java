@@ -88,7 +88,7 @@ public class XmlBean implements BeanDefinition {
 			this.id = type.getName();
 		} else {
 			String v = idNode.getNodeValue();
-			this.id = StringUtils.isNull(v) ? classInfo.getName() : v;
+			this.id = StringUtils.isNull(v) ? type.getName() : v;
 		}
 
 		Node filtersNode = beanNode.getAttributes().getNamedItem(FILTERS_ATTRIBUTE_KEY);
@@ -221,7 +221,7 @@ public class XmlBean implements BeanDefinition {
 		}
 
 		for (XmlBeanParameter beanProperties : properties) {
-			FieldInfo fieldInfo = classInfo.getFieldInfo(beanProperties.getName());
+			FieldInfo fieldInfo = classInfo.getFieldInfo(beanProperties.getName(), true);
 			if (fieldInfo != null) {
 				Object value = beanProperties.parseValue(beanFactory, propertiesFactory, fieldInfo.getType());
 				fieldInfo.set(bean, value);
@@ -244,7 +244,7 @@ public class XmlBean implements BeanDefinition {
 				continue;
 			}
 
-			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, classInfo.getFieldInfo(field.getName()));
+			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, classInfo.getFieldInfo(field.getName(), true));
 		}
 		setProperties(bean);
 	}

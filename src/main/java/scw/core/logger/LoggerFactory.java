@@ -1,7 +1,7 @@
 package scw.core.logger;
 
 import scw.core.logger.console.ConsoleLoggerFactory;
-import scw.core.utils.ClassUtils;
+import scw.core.reflect.ReflectUtils;
 
 public final class LoggerFactory {
 	private static final String SLF4J_CLASS_NAME = "scw.logger.slf4j.Sl4jILoggerFactory";
@@ -15,7 +15,7 @@ public final class LoggerFactory {
 	static {
 		try {
 			Class<?> clz = Class.forName(SLF4J_CLASS_NAME);
-			sl4j = (ILoggerFactory) ClassUtils.newInstance(clz);
+			sl4j = ReflectUtils.newInstance(clz);
 		} catch (Throwable e) {
 			//ignore
 		}

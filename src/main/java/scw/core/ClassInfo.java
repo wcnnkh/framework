@@ -1,11 +1,12 @@
 package scw.core;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import net.sf.cglib.proxy.Enhancer;
 import scw.core.utils.ClassUtils;
@@ -18,33 +19,22 @@ import scw.core.utils.ClassUtils;
  */
 public final class ClassInfo {
 	/**
-	 * 类全名 xx.xx.xx
-	 */
-	private String name;
-	/**
-	 * 类名
-	 */
-	private String simpleName;
-	/**
 	 * 类
 	 */
-	private final Class<?> clz;
+	private final Class<?> source;
 	/**
 	 * 类的字段
 	 */
-	private String[] fieldNames;
-	private Map<String, FieldInfo> fieldMap = new HashMap<String, FieldInfo>();
+	private Map<String, FieldInfo> fieldMap;
 	private Map<String, FieldInfo> fieldSetterMethodMap = new HashMap<String, FieldInfo>();
+	private Class<?>[] beanListenInterfaces;
 
-	private ClassInfo superInfo;// 父类信息
-	private Long serialVersionUID;
-	private final Class<?>[] beanListenInterfaces;
-
-	public ClassInfo(Class<?> clz) {
-		if (BeanFieldListen.class.isAssignableFrom(clz)) {
-			beanListenInterfaces = clz.getInterfaces();
+	public ClassInfo(Class<?> clazz) {
+		this.source = clazz;
+		if (BeanFieldListen.class.isAssignableFrom(source)) {
+			beanListenInterfaces = source.getInterfaces();
 		} else {// 没有自己实现此接口，增加此接口
-			Class<?>[] arr = clz.getInterfaces();
+			Class<?>[] arr = source.getInterfaces();
 			if (arr.length == 0) {
 				beanListenInterfaces = new Class[] { BeanFieldListen.class };
 			} else {
@@ -54,139 +44,93 @@ public final class ClassInfo {
 			}
 		}
 
-		this.clz = clz;
-		this.name = clz.getName();
-		this.simpleName = clz.getSimpleName();
-
-		List<String> fieldNameList = new ArrayList<String>();
-		for (Field field : clz.getDeclaredFields()) {
+		fieldMap = new LinkedHashMap<String, FieldInfo>(clazz.getDeclaredFields().length, 1);
+		for (Field field : clazz.getDeclaredFields()) {
 			Deprecated deprecated = field.getAnnotation(Deprecated.class);
 			if (deprecated != null) {
 				continue;
 			}
 
 			field.setAccessible(true);
-			fieldNameList.add(field.getName());
-			FieldInfo fieldInfo = new FieldInfo(clz, field);
+			FieldInfo fieldInfo = new FieldInfo(clazz, field);
 			this.fieldMap.put(field.getName(), fieldInfo);
 
 			if (fieldInfo.getSetter() != null) {
 				fieldSetterMethodMap.put(fieldInfo.getSetter().getName(), fieldInfo);
 			}
 		}
-
-		if (Serializable.class.isAssignableFrom(clz)) {
-			this.serialVersionUID = ClassUtils.getSerialVersionUID(clz);
-		}
-
-		this.fieldNames = fieldNameList.toArray(new String[0]);
-		Class<?> superClz = clz.getSuperclass();
-		if (superClz != null) {
-			superInfo = ClassUtils.getClassInfo(superClz);
-		}
 	}
 
-	public String getName() {
-		return name;
+	public Class<?> getSource() {
+		return source;
 	}
 
-	public String getSimpleName() {
-		return simpleName;
-	}
+	public FieldInfo getFieldInfo(String fieldName, boolean searchSuper) {
+		if (searchSuper) {
+			ClassInfo classInfo = this;
+			FieldInfo fieldInfo = classInfo.getFieldInfo(fieldName, false);
+			while (fieldInfo == null) {
+				classInfo = classInfo.getSuperInfo();
+				if (classInfo == null) {
+					break;
+				}
 
-	public Class<?> getClz() {
-		return clz;
-	}
-
-	public String[] getFieldNames() {
-		return fieldNames;
-	}
-
-	public Map<String, FieldInfo> getFieldMap() {
-		return fieldMap;
-	}
-
-	public FieldInfo getFieldInfo(String fieldName) {
-		ClassInfo classInfo = this;
-		FieldInfo fieldInfo = classInfo.getFieldMap().get(fieldName);
-		while (fieldInfo == null) {
-			classInfo = classInfo.getSuperInfo();
-			if (classInfo == null) {
-				break;
+				fieldInfo = classInfo.getFieldInfo(fieldName, false);
 			}
-
-			fieldInfo = classInfo.getFieldMap().get(fieldName);
+			return fieldInfo;
+		} else {
+			return fieldMap.get(fieldName);
 		}
-		return fieldInfo;
 	}
 
-	public FieldInfo getFieldInfoBySetterName(String setterName) {
-		ClassInfo classInfo = this;
-		FieldInfo fieldInfo = classInfo.getFieldSetterMethodMap().get(setterName);
-		while (fieldInfo == null) {
-			classInfo = classInfo.getSuperInfo();
-			if (classInfo == null) {
-				break;
+	public FieldInfo getFieldInfoBySetterName(String setterName, boolean searchSuper) {
+		if (searchSuper) {
+			ClassInfo classInfo = this;
+			FieldInfo fieldInfo = classInfo.getFieldInfoBySetterName(setterName, false);
+			while (fieldInfo == null) {
+				classInfo = classInfo.getSuperInfo();
+				if (classInfo == null) {
+					break;
+				}
+
+				fieldInfo = classInfo.getFieldInfoBySetterName(setterName, false);
 			}
-
-			fieldInfo = classInfo.getFieldSetterMethodMap().get(setterName);
+			return fieldInfo;
+		} else {
+			return fieldSetterMethodMap.get(setterName);
 		}
-		return fieldInfo;
-	}
-
-	protected Map<String, FieldInfo> getFieldSetterMethodMap() {
-		return fieldSetterMethodMap;
 	}
 
 	public ClassInfo getSuperInfo() {
-		return superInfo;
+		Class<?> superClz = source.getSuperclass();
+		return superClz == null ? null : ClassUtils.getClassInfo(superClz);
 	}
 
-	public Long getSerialVersionUID() {
-		return serialVersionUID;
-	}
-
-	private Enhancer createEnhacer() {
+	@SuppressWarnings("unchecked")
+	public <T> T newFieldListenInstance() {
 		Enhancer enhancer = new Enhancer();
 		enhancer.setInterfaces(beanListenInterfaces);
-		if (BeanFieldListen.class.isAssignableFrom(clz)) {
-			if (serialVersionUID != null) {
-				enhancer.setSerialVersionUID(serialVersionUID);
-			}
-		} else {
-			enhancer.setSerialVersionUID(1L);
-		}
-
 		enhancer.setCallback(new FieldListenMethodInterceptor());
-		enhancer.setSuperclass(clz);
-		return enhancer;
-	}
-
-	public Object newFieldListenInstance() {
-		BeanFieldListen beanFieldListen = (BeanFieldListen) createEnhacer().create();
+		enhancer.setSuperclass(source);
+		BeanFieldListen beanFieldListen = (BeanFieldListen) enhancer.create();
 		beanFieldListen.start_field_listen();
-		return beanFieldListen;
+		return (T) beanFieldListen;
 	}
 
-	public Object newFieldListenInstance(Class<?>[] parameterTypes, Object... args) {
-		BeanFieldListen beanFieldListen = (BeanFieldListen) createEnhacer().create(parameterTypes, args);
-		beanFieldListen.start_field_listen();
-		return beanFieldListen;
+	public Set<Entry<String, FieldInfo>> getFieldEntrySet() {
+		return fieldMap.entrySet();
 	}
 
-	public Class<?> createFieldListenProxyClass() {
+	public Collection<FieldInfo> getFieldInfos() {
+		return fieldMap.values();
+	}
+
+	@SuppressWarnings("unchecked")
+	public Class<? extends BeanFieldListen> getFieldListenProxyClass() {
 		Enhancer enhancer = new Enhancer();
 		enhancer.setInterfaces(beanListenInterfaces);
-		if (BeanFieldListen.class.isAssignableFrom(clz)) {
-			if (serialVersionUID != null) {
-				enhancer.setSerialVersionUID(serialVersionUID);
-			}
-		} else {
-			enhancer.setSerialVersionUID(1L);
-		}
-
 		enhancer.setCallbackType(FieldListenMethodInterceptor.class);
-		enhancer.setSuperclass(clz);
+		enhancer.setSuperclass(source);
 		return enhancer.createClass();
 	}
 

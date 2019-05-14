@@ -148,7 +148,7 @@ public final class BeanUtils {
 			Collection<Class<?>> classList) throws Exception {
 		for (Class<?> clz : classList) {
 			ClassInfo classInfo = ClassUtils.getClassInfo(clz);
-			for (Entry<String, FieldInfo> entry : classInfo.getFieldMap().entrySet()) {
+			for (Entry<String, FieldInfo> entry : classInfo.getFieldEntrySet()) {
 				FieldInfo field = entry.getValue();
 				if (!Modifier.isStatic(field.getField().getModifiers())) {
 					continue;
@@ -292,14 +292,8 @@ public final class BeanUtils {
 	}
 
 	public static Enhancer createEnhancer(Class<?> clz, BeanFactory beanFactory, String[] filterNames) {
-		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
 		Enhancer enhancer = new Enhancer();
-
 		enhancer.setInterfaces(clz.getInterfaces());
-		if (classInfo.getSerialVersionUID() != null) {
-			enhancer.setSerialVersionUID(classInfo.getSerialVersionUID());
-		}
-
 		enhancer.setCallback(new BeanMethodInterceptor(beanFactory, filterNames));
 		enhancer.setSuperclass(clz);
 		return enhancer;
