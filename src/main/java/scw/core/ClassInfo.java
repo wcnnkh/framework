@@ -1,5 +1,6 @@
 package scw.core;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,12 +26,14 @@ public final class ClassInfo {
 	/**
 	 * 类的字段
 	 */
-	private Map<String, FieldInfo> fieldMap;
-	private Map<String, FieldInfo> fieldSetterMethodMap = new HashMap<String, FieldInfo>();
-	private Class<?>[] beanListenInterfaces;
+	private final Map<String, FieldInfo> fieldMap;
+	private final Map<String, FieldInfo> fieldSetterMethodMap = new HashMap<String, FieldInfo>();
+	private final Class<?>[] beanListenInterfaces;
+	private final boolean serializer;
 
 	public ClassInfo(Class<?> clazz) {
 		this.source = clazz;
+		this.serializer = Serializable.class.isAssignableFrom(clazz);
 		if (BeanFieldListen.class.isAssignableFrom(source)) {
 			beanListenInterfaces = source.getInterfaces();
 		} else {// 没有自己实现此接口，增加此接口
@@ -59,6 +62,10 @@ public final class ClassInfo {
 				fieldSetterMethodMap.put(fieldInfo.getSetter().getName(), fieldInfo);
 			}
 		}
+	}
+
+	public boolean isSerializer() {
+		return serializer;
 	}
 
 	public Class<?> getSource() {
@@ -108,8 +115,15 @@ public final class ClassInfo {
 
 	@SuppressWarnings("unchecked")
 	public <T> T newFieldListenInstance() {
-		BeanFieldListen beanFieldListen = (BeanFieldListen) Enhancer.create(source, beanListenInterfaces,
-				new FieldListenMethodInterceptor());
+		Enhancer enhancer = new Enhancer();
+		enhancer.setInterfaces(beanListenInterfaces);
+		enhancer.setCallback(new FieldListenMethodInterceptor());
+		enhancer.setSuperclass(source);
+		if(serializer){
+			enhancer.setSerialVersionUID(1L);
+		}
+		
+		BeanFieldListen beanFieldListen = (BeanFieldListen) enhancer.create();
 		beanFieldListen.start_field_listen();
 		return (T) beanFieldListen;
 	}
@@ -128,6 +142,9 @@ public final class ClassInfo {
 		enhancer.setInterfaces(beanListenInterfaces);
 		enhancer.setCallbackType(FieldListenMethodInterceptor.class);
 		enhancer.setSuperclass(source);
+		if (serializer) {
+			enhancer.setSerialVersionUID(1L);
+		}
 		return enhancer.createClass();
 	}
 

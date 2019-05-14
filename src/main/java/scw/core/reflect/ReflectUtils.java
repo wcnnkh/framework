@@ -21,7 +21,6 @@ import scw.core.utils.StringUtils;
 
 public final class ReflectUtils {
 	private static Logger logger = LoggerFactory.getLogger(ReflectUtils.class);
-	private static final String SERIAL_VERSION_UID = "serialVersionUID";
 	
 	private ReflectUtils() {
 	};
@@ -595,21 +594,5 @@ public final class ReflectUtils {
 			}
 		}
 		return map;
-	}
-	
-	public static Long getSerialVersionUID(Class<?> clz) {
-		try {
-			Field field = clz.getField(SERIAL_VERSION_UID);
-			if (field != null && Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())
-					&& long.class.isAssignableFrom(field.getType())) {
-				field.setAccessible(true);
-				return (Long) field.get(null);
-			}
-		} catch (NoSuchFieldException e) {
-		} catch (SecurityException e) {
-		} catch (IllegalArgumentException e) {
-		} catch (IllegalAccessException e) {
-		}
-		return null;
 	}
 }
