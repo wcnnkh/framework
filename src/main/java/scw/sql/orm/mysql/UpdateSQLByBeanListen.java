@@ -17,7 +17,6 @@ import scw.sql.orm.annotation.Counter;
 
 public final class UpdateSQLByBeanListen implements Sql {
 	private static Logger logger = LoggerFactory.getLogger(UpdateSQLByBeanListen.class);
-
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
@@ -34,11 +33,9 @@ public final class UpdateSQLByBeanListen implements Sql {
 		}
 
 		StringBuilder sb = new StringBuilder(512);
-		sb.append("update ");
-		sb.append("`");
+		sb.append(UpdateSQL.UPDATE_PREFIX);
 		sb.append(tableName);
-		sb.append("`");
-		sb.append(" set ");
+		sb.append(UpdateSQL.SET);
 
 		int index = 0;
 		StringBuilder where = null;
@@ -74,7 +71,7 @@ public final class UpdateSQLByBeanListen implements Sql {
 					if (where == null) {
 						where = new StringBuilder();
 					} else {
-						where.append(" and ");
+						where.append(UpdateSQL.AND);
 					}
 
 					if (change == 0) {
@@ -84,7 +81,7 @@ public final class UpdateSQLByBeanListen implements Sql {
 						where.append(change > 0 ? "+" : "-");
 						where.append(Math.abs(change));
 						where.append(">=").append(counter.min());
-						where.append(" and ");
+						where.append(UpdateSQL.AND);
 						where.append(columnInfo.getSqlColumnName());
 						where.append(change > 0 ? "+" : "-");
 						where.append(Math.abs(change));
@@ -108,11 +105,11 @@ public final class UpdateSQLByBeanListen implements Sql {
 
 		beanFieldListen.start_field_listen();// 重新开始监听
 
-		sb.append(" where ");
+		sb.append(UpdateSQL.WHERE);
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
 			columnInfo = tableInfo.getPrimaryKeyColumns()[i];
 			if (i > 0) {
-				sb.append(" and ");
+				sb.append(UpdateSQL.AND);
 			}
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");
@@ -121,7 +118,7 @@ public final class UpdateSQLByBeanListen implements Sql {
 		}
 
 		if (where != null) {
-			sb.append(" and ").append(where);
+			sb.append(UpdateSQL.AND).append(where);
 		}
 
 		this.sql = sb.toString();

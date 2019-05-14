@@ -6,6 +6,12 @@ import scw.sql.orm.TableInfo;
 
 public final class UpdateSQL implements Sql {
 	private static final long serialVersionUID = 1L;
+	protected static final String UPDATE_PREFIX = "update `";
+	protected static final String SET = "` set ";
+	protected static final String WHERE = " where ";
+	protected static final String AND = " and ";
+	protected static final String OR = " or ";
+
 	private String sql;
 	private Object[] params;
 
@@ -16,11 +22,9 @@ public final class UpdateSQL implements Sql {
 		}
 
 		StringBuilder sb = new StringBuilder(512);
-		sb.append("update ");
-		sb.append("`");
+		sb.append(UPDATE_PREFIX);
 		sb.append(tableName);
-		sb.append("`");
-		sb.append(" set ");
+		sb.append(SET);
 		int index = 0;
 		int i;
 		ColumnInfo columnInfo;
@@ -36,11 +40,11 @@ public final class UpdateSQL implements Sql {
 			params[index++] = columnInfo.getValueToDB(obj);
 		}
 
-		sb.append(" where ");
+		sb.append(WHERE);
 		for (i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
 			columnInfo = tableInfo.getPrimaryKeyColumns()[i];
 			if (i > 0) {
-				sb.append(" and ");
+				sb.append(AND);
 			}
 			sb.append(columnInfo.getSqlColumnName());
 			sb.append("=?");

@@ -53,7 +53,7 @@ public final class MysqlSelect extends Select {
 		String tableName = getTableName(tableClass);
 		checkWhereInit();
 		if (whereSql.length() != 0) {
-			whereSql.append(" and ");
+			whereSql.append(UpdateSQL.AND);
 		}
 		whereSql.append(tableInfo.getColumnInfo(name).getSQLName(tableName));
 		whereSql.append("=?");
@@ -73,7 +73,7 @@ public final class MysqlSelect extends Select {
 		String tableName = getTableName(tableClass);
 		checkWhereInit();
 		if (whereSql.length() != 0) {
-			whereSql.append(" or ");
+			whereSql.append(UpdateSQL.OR);
 		}
 		whereSql.append(tableInfo.getColumnInfo(name).getSQLName(tableName));
 		whereSql.append("=?");

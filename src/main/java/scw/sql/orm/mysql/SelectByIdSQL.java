@@ -8,6 +8,8 @@ import scw.sql.orm.TableInfo;
 
 public final class SelectByIdSQL implements Sql {
 	private static final long serialVersionUID = 1L;
+	protected static final String SELECT_ALL_PREFIX = "select * from `";
+	
 	private static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;
 	private Object[] params;
@@ -43,12 +45,12 @@ public final class SelectByIdSQL implements Sql {
 
 	private static String getSql(TableInfo info, String tableName, Object[] ids) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("select * from `").append(tableName).append("`");
+		sb.append(SELECT_ALL_PREFIX).append(tableName).append("`");
 		if (ids != null && ids.length > 0) {
-			sb.append(" where ");
+			sb.append(UpdateSQL.WHERE);
 			for (int i = 0; i < ids.length; i++) {
 				if (i != 0) {
-					sb.append(" and ");
+					sb.append(UpdateSQL.AND);
 				}
 				sb.append(info.getPrimaryKeyColumns()[i].getSQLName(tableName));
 				sb.append("=?");

@@ -7,6 +7,8 @@ import scw.sql.orm.TableInfo;
 
 public final class DeleteSQL implements Sql {
 	private static final long serialVersionUID = 1L;
+	protected static final String DELETE_PREFIX = "delete from `";
+	protected static final String WHERE = "` where ";
 	private String sql;
 	private Object[] params;
 
@@ -47,15 +49,13 @@ public final class DeleteSQL implements Sql {
 
 	private String formatSql(TableInfo tableInfo, String tableName) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("delete from ");
-		sql.append("`");
+		sql.append(DELETE_PREFIX);
 		sql.append(tableName);
-		sql.append("`");
-		sql.append(" where ");
+		sql.append(WHERE);
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
 			ColumnInfo columnInfo = tableInfo.getPrimaryKeyColumns()[i];
 			if (i > 0) {
-				sql.append(" and ");
+				sql.append(UpdateSQL.AND);
 			}
 
 			sql.append(columnInfo.getSqlColumnName());

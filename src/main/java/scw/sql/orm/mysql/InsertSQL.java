@@ -11,7 +11,10 @@ import scw.sql.orm.TableInfo;
 
 public final class InsertSQL implements Sql {
 	private static final long serialVersionUID = 1L;
-	private static Map<String, String> sqlCache = new HashMap<String, String>();
+	protected static final String INSERT_INTO_PREFIX = "insert into `";
+	protected static final String VALUES = ") values(";
+	
+	private volatile static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;
 	private Object[] params;
 
@@ -69,11 +72,11 @@ public final class InsertSQL implements Sql {
 			values.append("?");
 		}
 
-		sql.append("insert into `");
+		sql.append(INSERT_INTO_PREFIX);
 		sql.append(tableName);
 		sql.append("`(");
 		sql.append(cols);
-		sql.append(") values(");
+		sql.append(VALUES);
 		sql.append(values);
 		sql.append(")");
 		return sql.toString();

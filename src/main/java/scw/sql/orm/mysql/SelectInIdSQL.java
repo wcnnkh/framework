@@ -9,6 +9,7 @@ import scw.sql.orm.TableInfo;
 
 public final class SelectInIdSQL implements Sql {
 	private static final long serialVersionUID = 1L;
+	protected static final String IN = " in (";
 	private static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;
 	private Object[] params;
@@ -56,7 +57,7 @@ public final class SelectInIdSQL implements Sql {
 		if (ids.length > 0) {
 			for (int i = 0; i < ids.length; i++) {
 				if (sb.length() != 0) {
-					sb.append(" and ");
+					sb.append(UpdateSQL.AND);
 				}
 				sb.append(info.getPrimaryKeyColumns()[i].getSQLName(tableName));
 				sb.append("=?");
@@ -65,11 +66,11 @@ public final class SelectInIdSQL implements Sql {
 
 		if (inIdList != null && !inIdList.isEmpty()) {
 			if (sb.length() != 0) {
-				sb.append(" and ");
+				sb.append(UpdateSQL.AND);
 			}
 
 			sb.append(info.getPrimaryKeyColumns()[ids.length].getSQLName(tableName));
-			sb.append(" in (");
+			sb.append(IN);
 			for (int i = 0; i < inIdList.size(); i++) {
 				if (i != 0) {
 					sb.append(",");
@@ -81,8 +82,8 @@ public final class SelectInIdSQL implements Sql {
 
 		String where = sb.toString();
 		sb = new StringBuilder();
-		sb.append("select * from `").append(tableName).append("`");
-		sb.append(" where ").append(where);
+		sb.append(SelectByIdSQL.SELECT_ALL_PREFIX).append(tableName).append("`");
+		sb.append(UpdateSQL.WHERE).append(where);
 		return sb.toString();
 	}
 

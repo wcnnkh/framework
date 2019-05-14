@@ -16,14 +16,11 @@ public final class IncrByIdSQL implements Sql {
 	private String sql;
 	private Object[] params;
 
-	private String incrSql(TableInfo tableInfo, String tableName,
-			String fieldName, double limit, Double maxValue) {
+	private String incrSql(TableInfo tableInfo, String tableName, String fieldName, double limit, Double maxValue) {
 		StringBuilder sb = new StringBuilder(512);
-		sb.append("update ");
-		sb.append("`");
+		sb.append(UpdateSQL.UPDATE_PREFIX);
 		sb.append(tableName);
-		sb.append("`");
-		sb.append(" set ");
+		sb.append(UpdateSQL.SET);
 
 		ColumnInfo incrColumn = tableInfo.getColumnInfo(fieldName);
 		sb.append(incrColumn.getSqlColumnName());
@@ -31,11 +28,11 @@ public final class IncrByIdSQL implements Sql {
 		sb.append(incrColumn.getSqlColumnName());
 		sb.append("+").append(limit);
 
-		sb.append(" WHERE ");
+		sb.append(UpdateSQL.WHERE);
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
 			ColumnInfo columnInfo = tableInfo.getPrimaryKeyColumns()[i];
 			if (i > 0) {
-				sb.append(" and ");
+				sb.append(UpdateSQL.AND);
 			}
 
 			sb.append(columnInfo.getSqlColumnName());
@@ -43,7 +40,7 @@ public final class IncrByIdSQL implements Sql {
 		}
 
 		if (maxValue != null) {
-			sb.append(" and ");
+			sb.append(UpdateSQL.AND);
 			sb.append(incrColumn.getSqlColumnName());
 			sb.append("+").append(limit);
 			sb.append("<=").append(maxValue);
@@ -51,8 +48,8 @@ public final class IncrByIdSQL implements Sql {
 		return sb.toString();
 	}
 
-	public IncrByIdSQL(TableInfo tableInfo, String tableName, Object[] parimayKeys,
-			String fieldName, double limit, Double maxValue) {
+	public IncrByIdSQL(TableInfo tableInfo, String tableName, Object[] parimayKeys, String fieldName, double limit,
+			Double maxValue) {
 		if (tableInfo.getPrimaryKeyColumns().length != parimayKeys.length) {
 			throw new ParameterException("primary key length error");
 		}

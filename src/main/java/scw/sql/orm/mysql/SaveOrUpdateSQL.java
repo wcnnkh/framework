@@ -12,8 +12,9 @@ import scw.sql.orm.annotation.Counter;
 
 public final class SaveOrUpdateSQL implements Sql {
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LoggerFactory
-			.getLogger(SaveOrUpdateSQL.class);
+	private static Logger logger = LoggerFactory.getLogger(SaveOrUpdateSQL.class);
+	private static final String TEMP = ") ON DUPLICATE KEY UPDATE ";
+	private static final String IF = "IF(";
 	private String sql;
 	private Object[] params;
 
@@ -41,13 +42,13 @@ public final class SaveOrUpdateSQL implements Sql {
 			params.add(columnInfo.getValueToDB(obj));
 		}
 
-		sb.append("insert into `");
+		sb.append(InsertSQL.INSERT_INTO_PREFIX);
 		sb.append(tableName);
 		sb.append("`(");
 		sb.append(cols);
-		sb.append(") values(");
+		sb.append(InsertSQL.VALUES);
 		sb.append(values);
-		sb.append(") ON DUPLICATE KEY UPDATE ");
+		sb.append(TEMP);
 
 		int index = 0;
 		for (i = 0; i < tableInfo.getColumns().length; i++) {
@@ -68,19 +69,18 @@ public final class SaveOrUpdateSQL implements Sql {
 				params.add(v);
 			} else {
 				if (v == null) {
-					logger.warn("{}中计数器字段{}的值为空", tableInfo.getClassInfo()
-							.getName(), columnInfo.getName());
+					logger.warn("{}中计数器字段{}的值为空", tableInfo.getClassInfo().getName(), columnInfo.getName());
 					sb.append(columnInfo.getSqlColumnName());
 					sb.append("=?");
 					params.add(v);
 				} else {
 					sb.append(columnInfo.getSqlColumnName());
 					sb.append("=");
-					sb.append("IF(");
+					sb.append(IF);
 					sb.append(columnInfo.getSqlColumnName());
 					sb.append("+").append(v);
 					sb.append(">=").append(counter.min());
-					sb.append(" and ");
+					sb.append(UpdateSQL.AND);
 					sb.append(columnInfo.getSqlColumnName());
 					sb.append("+").append(v);
 					sb.append("<=").append(counter.max());

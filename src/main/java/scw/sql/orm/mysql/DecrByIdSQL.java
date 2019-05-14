@@ -19,11 +19,9 @@ public final class DecrByIdSQL implements Sql {
 	private String decrSql(TableInfo tableInfo, String tableName,
 			String fieldName, double limit, Double minValue) {
 		StringBuilder sb = new StringBuilder(512);
-		sb.append("update ");
-		sb.append("`");
+		sb.append(UpdateSQL.UPDATE_PREFIX);
 		sb.append(tableName);
-		sb.append("`");
-		sb.append(" set ");
+		sb.append(UpdateSQL.SET);
 
 		ColumnInfo incrColumn = tableInfo.getColumnInfo(fieldName);
 		sb.append(incrColumn.getSqlColumnName());
@@ -31,11 +29,11 @@ public final class DecrByIdSQL implements Sql {
 		sb.append(incrColumn.getSqlColumnName());
 		sb.append("-").append(limit);
 
-		sb.append(" WHERE ");
+		sb.append(UpdateSQL.WHERE);
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
 			ColumnInfo columnInfo = tableInfo.getPrimaryKeyColumns()[i];
 			if (i > 0) {
-				sb.append(" and ");
+				sb.append(UpdateSQL.AND);
 			}
 
 			sb.append(columnInfo.getSqlColumnName());
