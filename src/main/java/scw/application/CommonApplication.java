@@ -15,7 +15,6 @@ import scw.core.utils.StringUtils;
 import scw.sql.orm.ORMUtils;
 
 public class CommonApplication implements Application {
-	private static final String ORM_SCAN = "orm.scan";
 	private final XmlBeanFactory beanFactory;
 	private volatile boolean start = false;
 	private final PropertiesFactory propertiesFactory;
@@ -65,7 +64,7 @@ public class CommonApplication implements Application {
 			start = true;
 		}
 
-		String ormScanPackageName = propertiesFactory.getValue(ORM_SCAN);
+		String ormScanPackageName = propertiesFactory.getValue("orm.scan");
 		if (!StringUtils.isEmpty(ormScanPackageName)) {
 			ORMUtils.registerCglibProxyTableBean(ormScanPackageName);
 		}

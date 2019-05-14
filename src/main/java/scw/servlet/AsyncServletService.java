@@ -1,6 +1,5 @@
 package scw.servlet;
 
-
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -17,9 +16,6 @@ import scw.core.utils.StringParseUtils;
 
 @Bean(proxy = false)
 public class AsyncServletService extends DefaultServletService {
-	private static final String THREAD_CORE_SIZE = "servlet.thread.core.size";
-	private static final String THREAD_MAX_SIZE = "servlet.thread.max.size";
-	private static final String CONTAINER_THREAD_MANAGER = "servlet.thread.container";
 	private ThreadPoolExecutor executor;
 	private final int coreSize;
 	private final int maxSize;
@@ -31,10 +27,10 @@ public class AsyncServletService extends DefaultServletService {
 	public AsyncServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configPath,
 			String[] rootBeanFilters) throws Throwable {
 		super(beanFactory, propertiesFactory, configPath, rootBeanFilters);
-		this.coreSize = StringParseUtils.parseInt(propertiesFactory.getValue(THREAD_CORE_SIZE), 16);
-		this.maxSize = StringParseUtils.parseInt(propertiesFactory.getValue(THREAD_MAX_SIZE), 256);
+		this.coreSize = StringParseUtils.parseInt(propertiesFactory.getValue("servlet.thread.core.size"), 16);
+		this.maxSize = StringParseUtils.parseInt(propertiesFactory.getValue("servlet.thread.max.size"), 256);
 		this.containerThreadManager = StringParseUtils
-				.parseBoolean(propertiesFactory.getValue(CONTAINER_THREAD_MANAGER), false);
+				.parseBoolean(propertiesFactory.getValue("servlet.thread.container"), false);
 	}
 
 	@Override

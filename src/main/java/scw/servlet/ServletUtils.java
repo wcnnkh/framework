@@ -23,18 +23,11 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 
 public final class ServletUtils {
-	private static final String ASYNCCONTEXT_NAME = "javax.servlet.AsyncContext";
-	private static final String SERVLET_SERVICE_BEAN_NAME = "scw.servlet.DefaultServletService";
-	private static final String ASYNC_SERVLET_SERVICE_BEAN_ANEM = "scw.servlet.AsyncServletService";
-
-	private static final String AJAX_HEADER_NAME = "X-Requested-With";
-	private static final String AJAX_HEADER_VALUE = "XMLHttpRequest";
-
 	private static boolean asyncSupport = true;// 是否支持异步处理
 
 	static {
 		try {
-			Class.forName(ASYNCCONTEXT_NAME);
+			Class.forName("javax.servlet.AsyncContext");
 		} catch (Throwable e) {
 			asyncSupport = false;// 不支持
 		}
@@ -50,7 +43,7 @@ public final class ServletUtils {
 	 * @return
 	 */
 	public static boolean isAjaxRequest(HttpServletRequest request) {
-		return AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME));
+		return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
 	}
 
 	/**
@@ -99,10 +92,10 @@ public final class ServletUtils {
 	public static ServletService getServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
 			String configPath, String[] rootBeanFilters) {
 		if (isAsyncSupport()) {
-			return beanFactory.get(ASYNC_SERVLET_SERVICE_BEAN_ANEM, beanFactory, propertiesFactory, configPath,
+			return beanFactory.get("scw.servlet.AsyncServletService", beanFactory, propertiesFactory, configPath,
 					rootBeanFilters);
 		} else {
-			return beanFactory.get(SERVLET_SERVICE_BEAN_NAME, beanFactory, propertiesFactory, configPath,
+			return beanFactory.get("scw.servlet.DefaultServletService", beanFactory, propertiesFactory, configPath,
 					rootBeanFilters);
 		}
 	}

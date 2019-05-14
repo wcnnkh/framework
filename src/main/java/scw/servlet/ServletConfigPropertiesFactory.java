@@ -7,18 +7,13 @@ import scw.beans.property.XmlPropertiesFactory;
 import scw.core.utils.ConfigUtils;
 
 public class ServletConfigPropertiesFactory implements PropertiesFactory {
-	/**
-	 * 配置文件目录key
-	 */
-	public static final String SHUCHAOWEN = "shuchaowen";
-
 	private final ServletConfig servletConfig;
 	private final PropertiesFactory propertiesFactory;
 	private final String configXml;
 
 	public ServletConfigPropertiesFactory(ServletConfig servletConfig) {
 		this.servletConfig = servletConfig;
-		this.configXml = getServletConfig(SHUCHAOWEN);
+		this.configXml = getServletConfig("shuchaowen");
 		this.propertiesFactory = new XmlPropertiesFactory(configXml);
 	}
 

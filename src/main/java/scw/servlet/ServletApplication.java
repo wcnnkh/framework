@@ -9,12 +9,11 @@ import scw.beans.property.PropertiesFactory;
 import scw.core.utils.StringUtils;
 
 public class ServletApplication implements Application {
-	private static final String INIT_STATIC_KEY = "init-static";
 	private final CommonApplication commonApplication;
 
 	public ServletApplication(ServletConfig servletConfig) throws Throwable {
 		ServletConfigPropertiesFactory propertiesFactory = new ServletConfigPropertiesFactory(servletConfig);
-		String initStaticStr = propertiesFactory.getServletConfig(INIT_STATIC_KEY);
+		String initStaticStr = propertiesFactory.getServletConfig("init-static");
 		if (StringUtils.isNull(initStaticStr)) {
 			this.commonApplication = new CommonApplication(propertiesFactory.getConfigXml(), false, propertiesFactory);
 		} else {

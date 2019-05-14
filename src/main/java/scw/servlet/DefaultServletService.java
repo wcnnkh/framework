@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -39,24 +38,6 @@ import scw.servlet.service.ServletPathService;
 public class DefaultServletService implements ServletService {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
-	private static final String CHARSET_NAME = "servlet.charsetName";
-	// RPC
-	private static final String RPC_SIGN = "servlet.rpc-sign";
-	private static final String RPC_PATH = "servlet.rpc-path";
-	private static final String RPC_ENABLE = "servlet.rpc-enable";
-	private static final String RPC_SERVER = "servlet.rpc";
-	private static final String RPC_SERIALIZER = "servlet.rpc-serializer";
-
-	private static final String JSON_PARSE = "servlet.json";
-
-	private static final String REQUEST_FACTORY = "servlet.request-factory";
-	private static final String REQUEST_COOKIE_VALUE = "servlet.parameter.cookie";
-
-	private static final String DEFAULT_ACTION_KEY = "servlet.actionKey";
-	private static final String DEFAULT_ACTION_FILTERS = "servlet.filters";
-	private static final String DEBUG_KEY = "servlet.debug";
-	private static final String SERVLET_SCANNING_PACKAGENAME = "servlet.scanning";
-
 	private final PropertiesFactory propertiesFactory;
 	private final BeanFactory beanFactory;
 	private final RequestFactory requestFactory;
@@ -67,11 +48,6 @@ public class DefaultServletService implements ServletService {
 	private final RpcService rpcService;
 	private final String rpcPath;
 	private final Collection<Filter> filters = new LinkedList<Filter>();
-	
-	public void init(ServletConfig servletConfig) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	public DefaultServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configPath,
 			String[] rootBeanFilters) throws Throwable {
@@ -80,35 +56,36 @@ public class DefaultServletService implements ServletService {
 		this.requestBeanFactory = new CommonRequestBeanFactory(beanFactory, propertiesFactory, configPath,
 				rootBeanFilters);
 
+		//将下面的字符串(如：servlet.debug)设置为常量可以提高代码可读性，但此字符串只使用一次，设置为常量会浪费一部分内存
 		// 默认开启日志
-		this.debug = StringParseUtils.parseBoolean(propertiesFactory.getValue(DEBUG_KEY), true);
-		String charsetName = propertiesFactory.getValue(CHARSET_NAME);
+		this.debug = StringParseUtils.parseBoolean(propertiesFactory.getValue("servlet.debug"), true);
+		String charsetName = propertiesFactory.getValue("servlet.charsetName");
 		this.charset = StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET : Charset.forName(charsetName);
-		String requestFactoryBeanName = propertiesFactory.getValue(REQUEST_FACTORY);
+		String requestFactoryBeanName = propertiesFactory.getValue("servlet.request-factory");
 		if (StringUtils.isEmpty(requestFactoryBeanName)) {
 			this.requestFactory = beanFactory.get(DefaultRequestFactory.class, this.debug,
-					StringParseUtils.parseBoolean(propertiesFactory.getValue(REQUEST_COOKIE_VALUE), false));
+					StringParseUtils.parseBoolean(propertiesFactory.getValue("servlet.parameter.cookie"), false));
 		} else {
 			this.requestFactory = beanFactory.get(requestFactoryBeanName);
 		}
 
-		String jsonParseSupportBeanName = propertiesFactory.getValue(JSON_PARSE);
+		String jsonParseSupportBeanName = propertiesFactory.getValue("servlet.json");
 		if (StringUtils.isEmpty(jsonParseSupportBeanName)) {
 			this.jsonParseSupport = JSONUtils.DEFAULT_PARSE_SUPPORT;
 		} else {
 			this.jsonParseSupport = beanFactory.get(jsonParseSupportBeanName);
 		}
 
-		String path = propertiesFactory.getValue(RPC_PATH);
+		String path = propertiesFactory.getValue("servlet.rpc-path");
 		this.rpcPath = StringUtils.isEmpty(path) ? "/rpc" : path;
 
-		String rpcServerBeanName = propertiesFactory.getValue(RPC_SERVER);
+		String rpcServerBeanName = propertiesFactory.getValue("servlet.rpc");
 		if (StringUtils.isEmpty(rpcServerBeanName)) {
-			String sign = propertiesFactory.getValue(RPC_SIGN);
-			boolean enable = StringParseUtils.parseBoolean(propertiesFactory.getValue(RPC_ENABLE), false);
+			String sign = propertiesFactory.getValue("servlet.rpc-sign");
+			boolean enable = StringParseUtils.parseBoolean(propertiesFactory.getValue("servlet.rpc-enable"), false);
 			if (enable || !StringUtils.isEmpty(sign)) {// 开启
 				logger.info("rpc签名：{}", sign);
-				String serializer = propertiesFactory.getValue(RPC_SERIALIZER);
+				String serializer = propertiesFactory.getValue("servlet.rpc-serializer");
 				this.rpcService = beanFactory.get(DefaultRpcService.class, beanFactory, sign,
 						StringUtils.isEmpty(serializer) ? Constants.DEFAULT_SERIALIZER
 								: (Serializer) beanFactory.get(serializer));
@@ -119,16 +96,16 @@ public class DefaultServletService implements ServletService {
 			this.rpcService = beanFactory.get(rpcServerBeanName);
 		}
 
-		String filterNames = propertiesFactory.getValue(DEFAULT_ACTION_FILTERS);
+		String filterNames = propertiesFactory.getValue("servlet.filters");
 		if (!StringUtils.isEmpty(filterNames)) {
 			Collection<Filter> rootFilter = BeanUtils.getBeanList(beanFactory,
 					Arrays.asList(StringUtils.commonSplit(filterNames)));
 			filters.addAll(rootFilter);
 		}
 
-		String actionKey = propertiesFactory.getValue(DEFAULT_ACTION_KEY);
+		String actionKey = propertiesFactory.getValue("servlet.actionKey");
 		actionKey = StringUtils.isEmpty(actionKey) ? "action" : actionKey;
-		String packageName = propertiesFactory.getValue(SERVLET_SCANNING_PACKAGENAME);
+		String packageName = propertiesFactory.getValue("servlet.scanning");
 		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
 
 		Collection<Class<?>> classes = ClassUtils.getClasses(packageName);
