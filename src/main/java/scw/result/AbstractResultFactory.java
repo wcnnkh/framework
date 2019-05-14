@@ -8,6 +8,7 @@ import java.util.Properties;
 import scw.core.Constants;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.PropertiesUtils;
+import scw.core.utils.StringUtils;
 
 public abstract class AbstractResultFactory implements ResultFactory {
 	private Map<Integer, String> code2msgMap;
@@ -17,8 +18,11 @@ public abstract class AbstractResultFactory implements ResultFactory {
 	}
 
 	public AbstractResultFactory(String propertiesFilePath, String charsetName) {
-		Properties properties = ConfigUtils.getProperties(propertiesFilePath,
-				charsetName);
+		if (StringUtils.isEmpty(propertiesFilePath)) {
+			return;
+		}
+
+		Properties properties = ConfigUtils.getProperties(propertiesFilePath, charsetName);
 		Map<String, String> map = PropertiesUtils.getProperties(properties);
 		if (map != null) {
 			for (Entry<String, String> entry : map.entrySet()) {
@@ -36,7 +40,7 @@ public abstract class AbstractResultFactory implements ResultFactory {
 	}
 
 	public String getMsg(int code) {
-		return code2msgMap.get(code);
+		return code2msgMap == null? null:code2msgMap.get(code);
 	}
 
 	public abstract int getDefaultErrorCode();
@@ -47,37 +51,37 @@ public abstract class AbstractResultFactory implements ResultFactory {
 
 	public abstract int getParamterErrorCode();
 
-	public <D, T extends DataResult<? super D>> T success(D data) {
+	public <T> DataResult<T> success(T data) {
 		int code = getDefaultSuccessCode();
 		return success(code, data, getMsg(code));
 	}
 
-	public <T extends Result> T success() {
+	public <T> DataResult<T> success() {
 		return success(null);
 	}
 
-	public <T extends Result> T error() {
+	public <T> DataResult<T> error() {
 		int code = getDefaultErrorCode();
 		String msg = getMsg(code);
 		return error(code, msg == null ? "系统错误" : msg);
 	}
 
-	public <T extends Result> T error(int code) {
+	public <T> DataResult<T> error(int code) {
 		String msg = getMsg(code);
 		return error(code, msg == null ? "操作失败" : msg);
 	}
 
-	public <T extends Result> T error(String msg) {
+	public <T> DataResult<T> error(String msg) {
 		return error(getDefaultErrorCode(), msg);
 	}
 
-	public <T extends Result> T authorizationFailure() {
+	public <T> DataResult<T> authorizationFailure() {
 		int code = getAuthorizationFailureCode();
 		String msg = getMsg(code);
 		return error(code, msg == null ? "登录状态已过期" : msg);
 	}
 
-	public <T extends Result> T parameterError() {
+	public <T> DataResult<T> parameterError() {
 		int code = getParamterErrorCode();
 		String msg = getMsg(code);
 		return error(code, msg == null ? "参数错误" : msg);

@@ -1,11 +1,11 @@
 package scw.result;
 
 public interface ErrorResultFactory {
-	<T extends Result> T error();
+	<T> DataResult<T> error();
 
-	<T extends Result> T error(int code, String msg);
+	<T> DataResult<T> error(int code, String msg);
 
-	<T extends Result> T error(int code);
+	<T> DataResult<T> error(int code);
 
-	<T extends Result> T error(String msg);
+	<T> DataResult<T> error(String msg);
 }

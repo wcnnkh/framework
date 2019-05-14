@@ -6,12 +6,12 @@ public interface ResultFactory extends SuccessResultFactory, ErrorResultFactory 
 	 * 
 	 * @return
 	 */
-	<T extends Result> T authorizationFailure();
+	<T> DataResult<T> authorizationFailure();
 
 	/**
 	 * 参数错误
 	 * 
 	 * @return
 	 */
-	<T extends Result> T parameterError();
+	<T> DataResult<T> parameterError();
 }

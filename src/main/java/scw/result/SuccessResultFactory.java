@@ -1,11 +1,10 @@
 package scw.result;
 
 public interface SuccessResultFactory {
-	<T extends Result> T success();
+	<T> DataResult<T> success();
 
-	<D, T extends DataResult<? super D>> T success(D data);
+	<T> DataResult<T> success(T data);
 
-	<D, T extends DataResult<? super D>> T success(int code, D data,
-			String msg);
+	<T> DataResult<T> success(int code, T data, String msg);
 
 }
