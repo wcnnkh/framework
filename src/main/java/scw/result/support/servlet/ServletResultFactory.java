@@ -1,10 +1,8 @@
 package scw.result.support.servlet;
 
-import scw.beans.annotation.Bean;
 import scw.result.DataResult;
 import scw.result.support.DefaultResultFactory;
 
-@Bean(proxy = false)
 public final class ServletResultFactory extends DefaultResultFactory {
 	private final String contentType;
 
