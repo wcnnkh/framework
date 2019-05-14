@@ -57,7 +57,7 @@ public final class ClassInfo {
 
 			field.setAccessible(true);
 			FieldInfo fieldInfo = new FieldInfo(clazz, field);
-			this.fieldMap.put(field.getName(), fieldInfo);
+			fieldMap.put(field.getName(), fieldInfo);
 
 			if (fieldInfo.getSetter() != null) {
 				fieldSetterMethodMap.put(fieldInfo.getSetter().getName(), fieldInfo);
