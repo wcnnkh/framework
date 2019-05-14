@@ -108,11 +108,8 @@ public final class ClassInfo {
 
 	@SuppressWarnings("unchecked")
 	public <T> T newFieldListenInstance() {
-		Enhancer enhancer = new Enhancer();
-		enhancer.setInterfaces(beanListenInterfaces);
-		enhancer.setCallback(new FieldListenMethodInterceptor());
-		enhancer.setSuperclass(source);
-		BeanFieldListen beanFieldListen = (BeanFieldListen) enhancer.create();
+		BeanFieldListen beanFieldListen = (BeanFieldListen) Enhancer.create(source, beanListenInterfaces,
+				new FieldListenMethodInterceptor());
 		beanFieldListen.start_field_listen();
 		return (T) beanFieldListen;
 	}
