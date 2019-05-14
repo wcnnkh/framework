@@ -1,7 +1,6 @@
 package scw.result.support;
 
 import scw.beans.annotation.Bean;
-import scw.core.Constants;
 import scw.result.AbstractResultFactory;
 import scw.result.DataResult;
 
@@ -11,10 +10,6 @@ public class DefaultResultFactory extends AbstractResultFactory {
 	private final int defaultSuccessCode;
 	private final int authorizationFailureCode;
 	private final int parameterErrorCode;
-
-	public DefaultResultFactory(String propertiesFilePath) {
-		this(propertiesFilePath, Constants.DEFAULT_CHARSET.name(), 1, 0, -1, 1);
-	}
 
 	public DefaultResultFactory(String propertiesFilePath, String charsetName, int defaultErrorCode,
 			int defaultSuccessCode, int authorizationFailureCode, int parameterErrorCode) {

@@ -5,18 +5,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import scw.core.Constants;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
 
 public abstract class AbstractResultFactory implements ResultFactory {
 	private Map<Integer, String> code2msgMap;
-
-	public AbstractResultFactory(String propertiesFilePath) {
-		this(propertiesFilePath, Constants.DEFAULT_CHARSET.name());
-	}
-
+	
 	public AbstractResultFactory(String propertiesFilePath, String charsetName) {
 		if (StringUtils.isEmpty(propertiesFilePath)) {
 			return;

@@ -6,11 +6,6 @@ import scw.result.support.DefaultResultFactory;
 public final class ServletResultFactory extends DefaultResultFactory {
 	private final String contentType;
 
-	public ServletResultFactory(String propertiesFilePath, String contentType) {
-		super(propertiesFilePath);
-		this.contentType = contentType;
-	}
-
 	public ServletResultFactory(String propertiesFilePath, String charsetName, int defaultErrorCode,
 			int defaultSuccessCode, int loginExpiredCode, int parameterErrorCode, String contentType) {
 		super(propertiesFilePath, charsetName, defaultErrorCode, defaultSuccessCode, loginExpiredCode,
