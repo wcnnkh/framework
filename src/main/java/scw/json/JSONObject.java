@@ -1,9 +1,10 @@
 package scw.json;
 
-import java.util.Set;
+import java.io.Serializable;
+import java.util.Map;
 
-public interface JSONObject {
-	
+public interface JSONObject extends Map<String, Object>, Serializable {
+
 	String getString(String key);
 
 	byte getByteValue(String key);
@@ -30,13 +31,11 @@ public interface JSONObject {
 
 	Double getDouble(String key);
 
-	JSONObject getJsonObject(String key);
+	JSONObject getJSONObject(String key);
 
-	JSONArray getJsonArray(String key);
+	JSONArray getJSONArray(String key);
 
 	<T> T getObject(String key, Class<T> type);
 
-	Set<String> keySet();
-	
 	String toJSONString();
 }

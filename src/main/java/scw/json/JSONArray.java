@@ -1,6 +1,9 @@
 package scw.json;
 
-public interface JSONArray {
+import java.io.Serializable;
+import java.util.List;
+
+public interface JSONArray extends List<Object>, Serializable{
 
 	String getString(int index);
 
@@ -28,13 +31,11 @@ public interface JSONArray {
 
 	Double getDouble(int index);
 
-	JSONObject getJsonObject(int index);
+	JSONObject getJSONObject(int index);
 
-	JSONArray getJsonArray(int index);
+	JSONArray getJSONArray(int index);
 
 	<T> T getObject(int index, Class<T> type);
 
-	int size();
-	
 	String toJSONString();
 }

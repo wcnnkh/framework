@@ -1,9 +1,16 @@
 package scw.json.support.fastjson;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 public final class FastJSONObject implements scw.json.JSONObject {
-	private final com.alibaba.fastjson.JSONObject json;
+	private static final long serialVersionUID = 1L;
+	private com.alibaba.fastjson.JSONObject json;
+
+	// 用于序列化
+	protected FastJSONObject() {
+	};
 
 	public FastJSONObject(com.alibaba.fastjson.JSONObject json) {
 		this.json = json;
@@ -61,12 +68,12 @@ public final class FastJSONObject implements scw.json.JSONObject {
 		return json.getDouble(key);
 	}
 
-	public scw.json.JSONObject getJsonObject(String key) {
+	public scw.json.JSONObject getJSONObject(String key) {
 		com.alibaba.fastjson.JSONObject jo = json.getJSONObject(key);
 		return jo == null ? null : new FastJSONObject(jo);
 	}
 
-	public scw.json.JSONArray getJsonArray(String key) {
+	public scw.json.JSONArray getJSONArray(String key) {
 		com.alibaba.fastjson.JSONArray jarr = json.getJSONArray(key);
 		return jarr == null ? null : new FastJSONArray(jarr);
 	}
@@ -88,8 +95,48 @@ public final class FastJSONObject implements scw.json.JSONObject {
 		return toJSONString();
 	}
 
-	public com.alibaba.fastjson.JSONObject getJson() {
-		return json;
+	public int size() {
+		return json.size();
+	}
+
+	public boolean isEmpty() {
+		return json.isEmpty();
+	}
+
+	public boolean containsKey(Object key) {
+		return json.containsKey(key);
+	}
+
+	public boolean containsValue(Object value) {
+		return json.containsValue(value);
+	}
+
+	public Object get(Object key) {
+		return json.get(key);
+	}
+
+	public Object put(String key, Object value) {
+		return json.put(key, value);
+	}
+
+	public Object remove(Object key) {
+		return json.remove(key);
+	}
+
+	public void putAll(Map<? extends String, ? extends Object> m) {
+		json.putAll(m);
+	}
+
+	public void clear() {
+		json.clear();
+	}
+
+	public Collection<Object> values() {
+		return json.values();
+	}
+
+	public Set<java.util.Map.Entry<String, Object>> entrySet() {
+		return json.entrySet();
 	}
 
 }
