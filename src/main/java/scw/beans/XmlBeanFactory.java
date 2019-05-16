@@ -17,9 +17,6 @@ import scw.core.exception.NotFoundException;
 import scw.core.utils.StringUtils;
 
 public final class XmlBeanFactory extends AbstractBeanFactory {
-	private static final String INIT_METHOD_TAG_NAME = "init";
-	private static final String DESTROY_METHOD_TAG_NAME = "destroy";
-
 	private final PropertiesFactory propertiesFactory;
 	private String[] filterNames;
 	private String packages;
@@ -27,14 +24,11 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	private final String xmlPath;
 
 	public XmlBeanFactory(String xmlPath, boolean initStatic) throws Exception {
-		this.xmlPath = xmlPath;
-		this.propertiesFactory = new XmlPropertiesFactory(xmlPath);
-		this.initStatic = initStatic;
-		initParameter(xmlPath);
-		register();
+		this(new XmlPropertiesFactory(xmlPath), xmlPath, initStatic);
 	}
 
-	public XmlBeanFactory(PropertiesFactory propertiesFactory, String xmlPath, boolean initStatic) throws Exception {
+	public XmlBeanFactory(PropertiesFactory propertiesFactory, String xmlPath,
+			boolean initStatic) throws Exception {
 		this.xmlPath = xmlPath;
 		this.initStatic = initStatic;
 		this.propertiesFactory = propertiesFactory;
@@ -44,15 +38,17 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 
 	private void register() {
 		addSingleton(XmlBeanFactory.class.getName(), this);
-		registerNameMapping(BeanFactory.class.getName(), XmlBeanFactory.class.getName());
+		registerNameMapping(BeanFactory.class.getName(),
+				XmlBeanFactory.class.getName());
 	}
 
 	private void initParameter(String xmlPath) {
 		if (!StringUtils.isNull(xmlPath)) {
 			Node root = XmlBeanUtils.getRootNode(xmlPath);
-			this.packages = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, root, "packages");
-			this.filterNames = StringUtils
-					.commonSplit(XmlBeanUtils.getNodeAttributeValue(propertiesFactory, root, "filters"));
+			this.packages = XmlBeanUtils.getNodeAttributeValue(
+					propertiesFactory, root, "packages");
+			this.filterNames = StringUtils.commonSplit(XmlBeanUtils
+					.getNodeAttributeValue(propertiesFactory, root, "filters"));
 		}
 	}
 
@@ -122,10 +118,14 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	public void init() {
 		try {
 			if (!StringUtils.isNull(xmlPath)) {
-				addBeanConfigFactory(new XmlDubboBeanConfigFactory(this, propertiesFactory, xmlPath));
-				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this, propertiesFactory, xmlPath));
-				addBeanConfigFactory(new XmlBeanConfigFactory(this, propertiesFactory, xmlPath, filterNames));
-				addBeanConfigFactory(new ServiceBeanConfigFactory(this, propertiesFactory, packages, filterNames));
+				addBeanConfigFactory(new XmlDubboBeanConfigFactory(this,
+						propertiesFactory, xmlPath));
+				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this,
+						propertiesFactory, xmlPath));
+				addBeanConfigFactory(new XmlBeanConfigFactory(this,
+						propertiesFactory, xmlPath, filterNames));
+				addBeanConfigFactory(new ServiceBeanConfigFactory(this,
+						propertiesFactory, packages, filterNames));
 			}
 
 			super.init();
@@ -140,19 +140,23 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 		NodeList nodeList = root.getChildNodes();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
-			if (INIT_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {
-				String className = XmlBeanUtils.getRequireNodeAttributeValue(propertiesFactory, n, "class");
+			if ("init".equalsIgnoreCase(n.getNodeName())) {
+				String className = XmlBeanUtils.getRequireNodeAttributeValue(
+						propertiesFactory, n, "class");
 				BeanDefinition beanDefinition = getBeanDefinition(className);
 				if (beanDefinition == null) {
 					throw new NotFoundException(className);
 				}
 
-				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(beanDefinition.getType(), n);
-				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod().getModifiers())) {
+				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(
+						beanDefinition.getType(), n);
+				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod()
+						.getModifiers())) {
 					// 静态方法
 					xmlBeanMethodInfo.invoke(null, this, propertiesFactory);
 				} else {
-					xmlBeanMethodInfo.invoke(get(className), this, propertiesFactory);
+					xmlBeanMethodInfo.invoke(get(className), this,
+							propertiesFactory);
 				}
 			}
 		}
@@ -163,15 +167,19 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 		NodeList nodeList = root.getChildNodes();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
-			if (DESTROY_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {
-				String className = XmlBeanUtils.getRequireNodeAttributeValue(propertiesFactory, n, "class");
+			if ("destroy".equalsIgnoreCase(n.getNodeName())) {
+				String className = XmlBeanUtils.getRequireNodeAttributeValue(
+						propertiesFactory, n, "class");
 				BeanDefinition beanDefinition = getBeanDefinition(className);
-				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(beanDefinition.getType(), n);
-				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod().getModifiers())) {
+				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(
+						beanDefinition.getType(), n);
+				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod()
+						.getModifiers())) {
 					// 静态方法
 					xmlBeanMethodInfo.invoke(null, this, propertiesFactory);
 				} else {
-					xmlBeanMethodInfo.invoke(get(className), this, propertiesFactory);
+					xmlBeanMethodInfo.invoke(get(className), this,
+							propertiesFactory);
 				}
 			}
 		}

@@ -4,7 +4,6 @@ import scw.core.logger.console.ConsoleLoggerFactory;
 import scw.core.reflect.ReflectUtils;
 
 public final class LoggerFactory {
-	private static final String SLF4J_CLASS_NAME = "scw.logger.slf4j.Sl4jILoggerFactory";
 	private static final ILoggerFactory CONSOLE_LOGGER_FACTORY = new ConsoleLoggerFactory();
 	@SuppressWarnings("unused")
 	private static ILoggerFactory sl4j;
@@ -14,13 +13,14 @@ public final class LoggerFactory {
 
 	static {
 		try {
-			Class<?> clz = Class.forName(SLF4J_CLASS_NAME);
+			Class<?> clz = Class.forName("scw.logger.slf4j.Sl4jILoggerFactory");
 			sl4j = ReflectUtils.newInstance(clz);
 		} catch (Throwable e) {
-			//ignore
+			// ignore
 		}
-		
-		System.out.println("Init shuchaowen-logger [" + getILoggerFactory().getClass().getName() + "]");
+
+		System.out.println("Init shuchaowen-logger ["
+				+ getILoggerFactory().getClass().getName() + "]");
 	}
 
 	public static Logger getLogger(String name) {
@@ -37,10 +37,9 @@ public final class LoggerFactory {
 
 	public static ILoggerFactory getILoggerFactory() {
 		return CONSOLE_LOGGER_FACTORY;
-		/*if(sl4j == null){
-			return CONSOLE_LOGGER_FACTORY;
-		}else{
-			return sl4j;
-		}*/
+		/*
+		 * if(sl4j == null){ return CONSOLE_LOGGER_FACTORY; }else{ return sl4j;
+		 * }
+		 */
 	}
 }

@@ -16,7 +16,6 @@ import scw.core.exception.NotFoundException;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 
 public class AnnotationBeanDefinition implements BeanDefinition {
@@ -28,7 +27,7 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 	private final boolean proxy;
 	private volatile Enhancer enhancer;
 	private final PropertiesFactory propertiesFactory;
-	private String[] filterNames;
+	private final String[] filterNames;
 	private final boolean singleton;
 	private final FieldDefinition[] autowriteFieldDefinition;
 
@@ -37,8 +36,7 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		this.beanFactory = beanFactory;
 		this.type = type;
 		this.propertiesFactory = propertiesFactory;
-
-		String id = ClassUtils.getProxyRealClassName(type);
+		String id = type.getName();
 		Service service = type.getAnnotation(Service.class);
 		if (service != null) {
 			Class<?>[] interfaces = type.getInterfaces();
@@ -51,7 +49,6 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 			}
 		}
 		this.id = id;
-
 		this.initMethods = getInitMethodList(type).toArray(new BeanMethod[0]);
 		this.destroyMethods = getDestroyMethdoList(type).toArray(new BeanMethod[0]);
 		this.filterNames = filterNames;

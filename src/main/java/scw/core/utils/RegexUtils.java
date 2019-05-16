@@ -202,7 +202,7 @@ public final class RegexUtils {
 	public static boolean isMobileExact(final CharSequence input) {
 		return isMatch(REGEX_MOBILE_EXACT, input);
 	}
-
+	
 	/**
 	 * Return whether input matches regex of telephone number.
 	 *

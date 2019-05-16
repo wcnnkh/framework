@@ -14,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
@@ -383,28 +382,6 @@ public final class StringUtils {
 		}
 	}
 
-	public static String getRandomStr(int length) {
-		return new String(getRandomCharArray(RandomUtils.ALL, length));
-	}
-
-	public static String getRandomStr(String randomStr, int length) {
-		return new String(getRandomCharArray(randomStr.toCharArray(), length));
-	}
-
-	public static char[] getRandomCharArray(char[] randomCharArray, int length) {
-		char[] cArr = new char[length];
-		for (int i = 0; i < length; ++i) {
-			cArr[i] = randomCharArray[new Random().nextInt(randomCharArray.length)];
-		}
-		return cArr;
-	}
-
-	public static boolean isMobileNum(String telNum) {
-		Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
-		Matcher m = p.matcher(telNum);
-		return m.matches();
-	}
-
 	/**
 	 * 将字符串的走出指定长度的部分截取，向后面添加指定字符串
 	 * 
@@ -416,32 +393,6 @@ public final class StringUtils {
 			return str.substring(0, len) + repStr;
 		}
 		return str;
-	}
-
-	/**
-	 * 产生一串随机的邀请码
-	 * 
-	 * @param strLength
-	 *            邀请码的长度
-	 * @return
-	 */
-	public static String getStrNo(int strLength) {
-		String strNo = "";
-		Random rand = new Random();
-		char option[] = { 'a', 'c', 'd', 'e', 'f', 'h', 'i', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 't', 'u', 'v', 'w', 'x',
-				'y' };// 可以出现的字符
-		for (int i = 0; i < strLength; i++) {
-			int randNum = rand.nextInt(2);
-			int strTemp = rand.nextInt(option.length);
-			char strBig = option[strTemp];
-			char strSmall = (char) ('0' + Math.random() * 10);
-			if (randNum == 0) {
-				strNo = strNo + strBig;
-			} else if (randNum == 1) {
-				strNo = strNo + strSmall;
-			}
-		}
-		return strNo;
 	}
 
 	/**
@@ -555,16 +506,6 @@ public final class StringUtils {
 		} else {
 			return path.replaceAll("/", "\\\\");
 		}
-	}
-
-	/**
-	 * 获取指定长度的随机数字组成的字符串
-	 * 
-	 * @param len
-	 * @return
-	 */
-	public static String getNumCode(int len) {
-		return new String(getRandomCharArray(RandomUtils.NUMBERIC_CHARACTER, len));
 	}
 
 	/**

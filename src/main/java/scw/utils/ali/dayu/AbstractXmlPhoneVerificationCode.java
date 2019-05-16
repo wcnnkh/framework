@@ -7,16 +7,16 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
-import com.alibaba.fastjson.JSONObject;
-
 import scw.beans.annotation.Destroy;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.utils.StringUtils;
+import scw.core.utils.RandomUtils;
 import scw.core.utils.XMLUtils;
 import scw.core.utils.XTime;
 import scw.result.DataResult;
 import scw.result.ResultFactory;
+
+import com.alibaba.fastjson.JSONObject;
 
 public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -94,7 +94,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 	}
 
 	public String getNewCode() {
-		return StringUtils.getNumCode(codeLength);
+		return RandomUtils.getNumCode(codeLength);
 	}
 
 	public DataResult<String> sendCode(int configIndex, String phone, Map<String, String> parameterMap) {
