@@ -1,4 +1,4 @@
-package scw.db.annotation;
+package scw.db;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -12,7 +12,7 @@ import scw.db.cache.CacheType;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface CacheConfig {
+public @interface Cache {
 	/**
 	 * 默认过期时间是两天
 	 * 

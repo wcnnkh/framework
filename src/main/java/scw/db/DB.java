@@ -212,34 +212,46 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 		return sb.toString();
 	}
 
-	public void saveToCache(Object bean) throws Throwable {
+	private void savefullKeys(TableInfo tableInfo, boolean full, String objectKey, Object[] primaryKeys) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(PREFIX).append(tableInfo.getClassInfo().getSource().getName());
+		for (int i = 0; i < primaryKeys.length; i++) {
+			if ((full || i > 0) && i < primaryKeys.length - 1) {
+				cacheManager.mapAdd(sb.toString(), primaryKeys[i].toString(), objectKey);
+			}
+
+			sb.append("&");
+			sb.append(primaryKeys[i]);
+		}
+	}
+
+	private void removeFullKeys(TableInfo tableInfo, boolean full, Object[] primaryKeys) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(PREFIX).append(tableInfo.getClassInfo().getSource().getName());
+		for (int i = 0; i < primaryKeys.length; i++) {
+			if ((full || i > 0) && i < primaryKeys.length - 1) {
+				cacheManager.mapRemove(sb.toString(), primaryKeys[i].toString());
+			}
+
+			sb.append("&");
+			sb.append(primaryKeys[i]);
+		}
+	}
+
+	public void saveToCache(final Object bean) throws Throwable {
 		CacheConfigDefinition definition = getCacheConfig(bean.getClass());
 		if (definition != null) {
 			TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 			Object[] args = ORMUtils.getPrimaryKeys(bean, tableInfo, false);
-			final String objectKey = getObjectKeyById(tableInfo, args);
+			String objectKey = getObjectKeyById(tableInfo, args);
 			cacheManager.add(objectKey, bean, definition.getExp());
+
 			if (definition.getCacheType() == CacheType.lazy) {
-				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
-					@Override
-					public void beforeRollback() {
-						cacheManager.delete(objectKey);
-						super.beforeRollback();
-					}
-				});
+				TransactionManager.transactionLifeCycle(new DeleteLazyDataTransaction(objectKey));
 			} else if (definition.getCacheType() == CacheType.keys) {
 				cacheManager.add(KEYS_PREFIX + objectKey, "", definition.getExp());
 			} else if (definition.getCacheType() == CacheType.full) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(PREFIX).append(tableInfo.getClassInfo().getSource().getName());
-				for (int i = 0; i < args.length; i++) {
-					if ((definition.isFullKeys() || i > 0) && i < args.length - 1) {
-						cacheManager.mapAdd(sb.toString(), args[i].toString(), objectKey);
-					}
-
-					sb.append("&");
-					sb.append(args[i]);
-				}
+				savefullKeys(tableInfo, definition.isFullKeys(), objectKey, args);
 			}
 		}
 	}
@@ -263,16 +275,10 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 			return;
 		}
 
-		final String objectKey = getObjectKey(ORMUtils.getTableInfo(bean.getClass()), bean);
+		String objectKey = getObjectKey(ORMUtils.getTableInfo(bean.getClass()), bean);
 		cacheManager.set(objectKey, bean, definition.getExp());
 		if (definition.getCacheType() == CacheType.lazy) {
-			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
-				@Override
-				public void beforeRollback() {
-					cacheManager.delete(objectKey);
-					super.beforeRollback();
-				}
-			});
+			TransactionManager.transactionLifeCycle(new DeleteLazyDataTransaction(objectKey));
 		}
 	}
 
@@ -299,16 +305,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 			if (definition.getCacheType() == CacheType.keys) {
 				cacheManager.delete(KEYS_PREFIX + objectKey);
 			} else if (definition.getCacheType() == CacheType.full) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(PREFIX).append(tableInfo.getClassInfo().getSource().getName());
-				for (int i = 0; i < args.length; i++) {
-					if ((definition.isFullKeys() || i > 0) && i < args.length - 1) {
-						cacheManager.mapRemove(sb.toString(), args[i].toString());
-					}
-
-					sb.append("&");
-					sb.append(args[i]);
-				}
+				removeFullKeys(tableInfo, definition.isFullKeys(), args);
 			}
 		}
 	}
@@ -322,16 +319,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 			if (definition.getCacheType() == CacheType.keys) {
 				cacheManager.delete(KEYS_PREFIX + objectKey);
 			} else if (definition.getCacheType() == CacheType.full) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(PREFIX).append(tableInfo.getClassInfo().getSource().getName());
-				for (int i = 0; i < params.length; i++) {
-					if ((definition.isFullKeys() || i > 0) && i < params.length - 1) {
-						cacheManager.mapRemove(sb.toString(), params[i].toString());
-					}
-
-					sb.append("&");
-					sb.append(params[i]);
-				}
+				removeFullKeys(tableInfo, definition.isFullKeys(), params);
 			}
 		}
 	}
@@ -367,29 +355,14 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 		if (definition != null) {
 			TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 			Object[] args = ORMUtils.getPrimaryKeys(bean, tableInfo, false);
-			final String objectKey = getObjectKeyById(tableInfo, args);
+			String objectKey = getObjectKeyById(tableInfo, args);
 			cacheManager.set(objectKey, bean, definition.getExp());
 			if (definition.getCacheType() == CacheType.lazy) {
-				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
-					@Override
-					public void beforeRollback() {
-						cacheManager.delete(objectKey);
-						super.beforeRollback();
-					}
-				});
+				TransactionManager.transactionLifeCycle(new DeleteLazyDataTransaction(objectKey));
 			} else if (definition.getCacheType() == CacheType.keys) {
-				cacheManager.set(PREFIX + objectKey, "", definition.getExp());
+				cacheManager.add(KEYS_PREFIX + objectKey, "", definition.getExp());
 			} else if (definition.getCacheType() == CacheType.full) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(PREFIX).append(tableInfo.getClassInfo().getSource().getName());
-				for (int i = 0; i < args.length; i++) {
-					if ((definition.isFullKeys() || i > 0) && i < args.length - 1) {
-						cacheManager.mapAdd(sb.toString(), args[i].toString(), objectKey);
-					}
-
-					sb.append("&");
-					sb.append(args[i]);
-				}
+				savefullKeys(tableInfo, definition.isFullKeys(), objectKey, args);
 			}
 		}
 	}
@@ -458,12 +431,12 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 		if (definition == null) {
 			return super.getByIdList(tableName, type, params);
 		}
-
-		if (definition.getCacheType() != CacheType.full) {
+		
+		if(!definition.isFullKeys() && params.length == 0){
 			return super.getByIdList(tableName, type, params);
 		}
-
-		if (params.length == 1 && !definition.isFullKeys()) {
+		
+		if (definition.getCacheType() != CacheType.full) {
 			return super.getByIdList(tableName, type, params);
 		}
 
@@ -651,6 +624,19 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 		public void afterProcess() {
 			asyncService.push(asyncInfo);
 			super.afterProcess();
+		}
+	}
+
+	final class DeleteLazyDataTransaction extends DefaultTransactionLifeCycle {
+		private String objectKey;
+
+		public DeleteLazyDataTransaction(String objectKey) {
+			this.objectKey = objectKey;
+		}
+
+		@Override
+		public void afterRollback() {
+			cacheManager.delete(objectKey);
 		}
 	}
 }
