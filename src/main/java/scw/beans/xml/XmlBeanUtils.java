@@ -169,7 +169,7 @@ public final class XmlBeanUtils {
 		Map<String, Node> map = XMLUtils.attributeAsMap(node);
 		try {
 			T t = ReflectUtils.newInstance(type);
-			ReflectUtils.setProperties(type, t, map, true, new SetterMapper<Node>() {
+			ReflectUtils.invokeSetterMethod(type, t, map, true, new SetterMapper<Node>() {
 
 				public Object mapper(Object bean, Method method, String name, Node value, Class<?> type)
 						throws Throwable {

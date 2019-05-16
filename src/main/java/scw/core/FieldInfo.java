@@ -6,68 +6,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
-import scw.core.utils.ClassUtils;
-import scw.core.utils.StringUtils;
+import scw.core.reflect.ReflectUtils;
 
 public final class FieldInfo {
-	private static Logger logger = LoggerFactory.getLogger(FieldInfo.class);
-
 	private Field field;
 	private Method getter;
 	private Method setter;
 
 	public FieldInfo(Class<?> clz, Field field) {
 		this.field = field;
-		String name = field.getName();
-		Class<?> type = field.getType();
-		this.field.setAccessible(true);
-
-		try {
-			this.getter = clz.getDeclaredMethod("get" + StringUtils.toUpperCase(name, 0, 1));
-		} catch (NoSuchMethodException e) {
-		} catch (SecurityException e) {
-		}
-
-		try {
-			this.setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(name, 0, 1), type);
-		} catch (NoSuchMethodException e) {
-		} catch (SecurityException e) {
-		}
-
-		if (ClassUtils.isBooleanType(type)) {
-			String methodNameSuffix = name;
-			if (name.startsWith("is")) {
-				logger.warn("Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(), name);
-				methodNameSuffix = name.substring(2);
-			}
-			methodNameSuffix = StringUtils.toUpperCase(name, 0, 1);
-
-			if (this.getter == null) {
-				try {
-					this.getter = clz.getDeclaredMethod("is" + methodNameSuffix);
-				} catch (NoSuchMethodException e) {
-				} catch (SecurityException e) {
-				}
-			}
-
-			if (this.setter == null) {
-				try {
-					this.setter = clz.getDeclaredMethod("set" + methodNameSuffix, type);
-				} catch (NoSuchMethodException e) {
-				} catch (SecurityException e) {
-				}
-			}
-		}
-
-		if (this.getter != null) {
-			this.getter.setAccessible(true);
-		}
-
-		if (this.setter != null) {
-			this.setter.setAccessible(true);
-		}
+		this.getter = ReflectUtils.getGetterMethod(clz, field, false);
+		this.setter = ReflectUtils.getSetterMethod(clz, field, false);
 	}
 
 	public String getName() {
