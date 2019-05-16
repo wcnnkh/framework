@@ -2,7 +2,6 @@ package scw.servlet.beans.xml;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,31 +17,19 @@ import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanParameter;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.ClassInfo;
-import scw.core.FieldInfo;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
-import scw.core.utils.ClassUtils;
+import scw.core.reflect.FieldDefinition;
+import scw.core.reflect.ReflectUtils;
 import scw.core.utils.StringUtils;
 import scw.servlet.Request;
 import scw.servlet.beans.RequestBean;
 import scw.servlet.beans.RequestBeanUtils;
 
 public final class XmlRequestBean implements RequestBean {
-	private static final String CLASS_ATTRIBUTE_KEY = "class";
-	private static final String ID_ATTRIBUTE_KEY = "id";
-	private static final String FILTERS_ATTRIBUTE_KEY = "filters";
-	private static final String NAME_ATTRIBUTE_KEY = "name";// 别名
-
-	private static final String CONSTRUCTOR_TAG_NAME = "constructor";
-	private static final String PROPERTIES_TAG_NAME = "properties";
-	private static final String INIT_METHOD_TAG_NAME = "init";
-	private static final String DESTROY_METHOD_TAG_NAME = "destroy";
-	private static final String FACTORY_METHOD_TAG_NAME = "factory-method";
 
 	private final BeanFactory beanFactory;
 	private final PropertiesFactory propertiesFactory;
-	private final ClassInfo classInfo;
 	private final Class<?> type;
 	private String[] names;
 	private final String id;
@@ -59,35 +46,34 @@ public final class XmlRequestBean implements RequestBean {
 	private final Class<?>[] constructorParameterTypes;
 	private XmlBeanParameter[] beanMethodParameters;
 	private Enhancer enhancer;
+	private final FieldDefinition[] autoWriteFields;
 
 	public XmlRequestBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode,
 			String[] filterNames) throws Exception {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
 
-		Node classNode = beanNode.getAttributes().getNamedItem(CLASS_ATTRIBUTE_KEY);
-		Node nameNode = beanNode.getAttributes().getNamedItem(NAME_ATTRIBUTE_KEY);
+		Node classNode = beanNode.getAttributes().getNamedItem("class");
+		Node nameNode = beanNode.getAttributes().getNamedItem("name");
 		if (nameNode != null) {
 			this.names = StringUtils.commonSplit(nameNode.getNodeValue());
 		}
 
 		String className = classNode == null ? null : classNode.getNodeValue();
 		if (StringUtils.isNull(className)) {
-			throw new BeansException("not found attribute [" + CLASS_ATTRIBUTE_KEY + "]");
+			throw new BeansException("not found attribute [class]");
 		}
 
-		this.classInfo = ClassUtils.getClassInfo(className);
-		this.type = classInfo.getSource();
-
-		Node idNode = beanNode.getAttributes().getNamedItem(ID_ATTRIBUTE_KEY);
+		this.type = Class.forName(className);
+		Node idNode = beanNode.getAttributes().getNamedItem("id");
 		if (idNode == null) {
-			this.id = classInfo.getSource().getName();
+			this.id = type.getName();
 		} else {
 			String v = idNode.getNodeValue();
-			this.id = StringUtils.isNull(v) ? classInfo.getSource().getName() : v;
+			this.id = StringUtils.isNull(v) ? type.getName() : v;
 		}
 
-		Node filtersNode = beanNode.getAttributes().getNamedItem(FILTERS_ATTRIBUTE_KEY);
+		Node filtersNode = beanNode.getAttributes().getNamedItem("filters");
 		String[] filters = null;
 		if (filtersNode != null) {
 			filters = StringUtils.commonSplit(filtersNode.getNodeValue());
@@ -116,23 +102,23 @@ public final class XmlRequestBean implements RequestBean {
 		NodeList nodeList = beanNode.getChildNodes();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
-			if (CONSTRUCTOR_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// Constructor
+			if ("constructor".equalsIgnoreCase(n.getNodeName())) {// Constructor
 				List<XmlBeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
 				if (list != null) {
 					constructorParameterList.addAll(list);
 				}
-			} else if (PROPERTIES_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// Properties
+			} else if ("properties".equalsIgnoreCase(n.getNodeName())) {// Properties
 				List<XmlBeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
 				if (list != null) {
 					propertiesList.addAll(list);
 				}
-			} else if (INIT_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// InitMethod
+			} else if ("init".equalsIgnoreCase(n.getNodeName())) {// InitMethod
 				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(type, n);
 				initMethodList.add(xmlBeanMethodInfo);
-			} else if (DESTROY_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {// DestroyMethod
+			} else if ("destroy".equalsIgnoreCase(n.getNodeName())) {// DestroyMethod
 				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(type, n);
 				destroyMethodList.add(xmlBeanMethodInfo);
-			} else if (FACTORY_METHOD_TAG_NAME.equalsIgnoreCase(n.getNodeName())) {
+			} else if ("factory-method".equalsIgnoreCase(n.getNodeName())) {
 				if (factoryMethodInfo != null) {
 					throw new BeansException("只能有一个factory-method");
 				}
@@ -151,10 +137,11 @@ public final class XmlRequestBean implements RequestBean {
 
 		this.proxy = BeanUtils.checkProxy(type, this.filterNames);
 		this.constructor = getConstructor();
-		if(constructor == null){
+		if (constructor == null) {
 			throw new NotFoundException(type.getName());
 		}
 		this.constructorParameterTypes = constructor.getParameterTypes();
+		this.autoWriteFields = BeanUtils.getAutowriteFieldDefinitionList(type, false).toArray(new FieldDefinition[0]);
 	}
 
 	private Constructor<?> getConstructor() {
@@ -224,13 +211,13 @@ public final class XmlRequestBean implements RequestBean {
 		}
 
 		for (XmlBeanParameter beanProperties : properties) {
-			FieldInfo fieldInfo = classInfo.getFieldInfo(beanProperties.getName(), true);
-			if (fieldInfo != null) {
-				Object value = beanProperties.parseValue(beanFactory, propertiesFactory, fieldInfo.getType());
-				if (value != null) {
-					fieldInfo.set(bean, value);
-				}
+			Field field = ReflectUtils.getField(type, beanProperties.getName(), true);
+			if (field == null) {
+				continue;
 			}
+
+			ReflectUtils.setFieldValue(type, field, bean,
+					beanProperties.parseValue(beanFactory, propertiesFactory, field.getType()));
 		}
 	}
 
@@ -245,13 +232,8 @@ public final class XmlRequestBean implements RequestBean {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		for (Field field : type.getDeclaredFields()) {
-			if (Modifier.isStatic(field.getModifiers())) {
-				continue;
-			}
-
-			BeanUtils.autoWrite(classInfo.getSource(), beanFactory, propertiesFactory, bean,
-					classInfo.getFieldInfo(field.getName(), true));
+		for (FieldDefinition fieldDefinition : autoWriteFields) {
+			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, fieldDefinition);
 		}
 		setProperties(bean);
 	}

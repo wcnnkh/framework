@@ -12,6 +12,7 @@ import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Index;
+import scw.sql.orm.annotation.Table;
 import scw.sql.orm.enums.IndexMethod;
 import scw.sql.orm.enums.IndexOrder;
 
@@ -123,7 +124,7 @@ public final class CreateTableSQL implements Sql {
 		Map<String, Index> indexConfigMap = new HashMap<String, Index>();
 		for (int i = 0; i < tableInfo.getColumns().length; i++) {
 			ColumnInfo columnInfo = tableInfo.getColumns()[i];
-			Index index = columnInfo.getFieldInfo().getField().getAnnotation(Index.class);
+			Index index = columnInfo.getField().getAnnotation(Index.class);
 			if (index == null) {
 				continue;
 			}
@@ -196,8 +197,10 @@ public final class CreateTableSQL implements Sql {
 		sb.append(" DEFAULT");
 		sb.append(" CHARSET=").append(tableInfo.getCharset());
 		sb.append(" ROW_FORMAT=").append(tableInfo.getRow_format());
-		if (tableInfo.getTable() != null && !StringUtils.isEmpty(tableInfo.getTable().comment())) {
-			sb.append(" comment=\'").append(tableInfo.getTable().comment()).append("\'");
+
+		Table table = tableInfo.getAnnotation(Table.class);
+		if (table != null && !StringUtils.isEmpty(table.comment())) {
+			sb.append(" comment=\'").append(table.comment()).append("\'");
 
 		}
 		this.sql = sb.toString();

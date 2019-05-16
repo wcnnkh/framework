@@ -16,10 +16,9 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
 import scw.beans.property.PropertiesFactory;
-import scw.core.ClassInfo;
-import scw.core.FieldInfo;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
+import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
@@ -28,7 +27,6 @@ public class XmlBeanDefinition implements BeanDefinition {
 	private final BeanFactory beanFactory;
 	private final PropertiesFactory propertiesFactory;
 	private final Class<?> type;
-	private final ClassInfo classInfo;
 	private String[] names;
 	private final String id;
 	private final boolean singleton;
@@ -45,6 +43,7 @@ public class XmlBeanDefinition implements BeanDefinition {
 	private Class<?>[] constructorParameterTypes;
 	private XmlBeanParameter[] beanMethodParameters;
 	private Enhancer enhancer;
+	private final FieldDefinition[] autowriteFields;
 
 	public XmlBeanDefinition(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode,
 			String[] filterNames) throws Exception {
@@ -63,7 +62,6 @@ public class XmlBeanDefinition implements BeanDefinition {
 		}
 
 		this.type = ClassUtils.forName(className);
-		this.classInfo = ClassUtils.getClassInfo(type);
 		Node singletonNode = beanNode.getAttributes().getNamedItem("singleton");
 		if (singletonNode != null) {
 			String v = singletonNode.getNodeValue();
@@ -134,6 +132,7 @@ public class XmlBeanDefinition implements BeanDefinition {
 			throw new NotFoundException(type.getName() + "找不到对应的构造函数");
 		}
 		this.constructorParameterTypes = constructor.getParameterTypes();
+		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type, false).toArray(new FieldDefinition[0]);
 	}
 
 	private Constructor<?> getConstructor() {
@@ -205,16 +204,14 @@ public class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	private void setProperties(Object bean) throws Exception {
-		if (properties.length == 0) {
-			return;
-		}
-
 		for (XmlBeanParameter beanProperties : properties) {
-			FieldInfo fieldInfo = classInfo.getFieldInfo(beanProperties.getName(), true);
-			if (fieldInfo != null) {
-				Object value = beanProperties.parseValue(beanFactory, propertiesFactory, fieldInfo.getType());
-				fieldInfo.set(bean, value);
+			Field field = ReflectUtils.getField(type, beanProperties.getName(), true);
+			if (field == null) {
+				continue;
 			}
+
+			ReflectUtils.setFieldValue(type, field, bean,
+					beanProperties.parseValue(beanFactory, propertiesFactory, field.getType()));
 		}
 	}
 
@@ -228,13 +225,8 @@ public class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		for (Field field : type.getDeclaredFields()) {
-			if (Modifier.isStatic(field.getModifiers())) {
-				continue;
-			}
-
-			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean,
-					classInfo.getFieldInfo(field.getName(), true));
+		for (FieldDefinition fieldDefinition : autowriteFields) {
+			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, fieldDefinition);
 		}
 		setProperties(bean);
 	}

@@ -13,9 +13,8 @@ import scw.beans.BeanUtils;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.property.PropertiesFactory;
-import scw.core.ClassInfo;
-import scw.core.FieldInfo;
 import scw.core.exception.BeansException;
+import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ClassUtils;
 import scw.servlet.Request;
 
@@ -29,7 +28,7 @@ public final class AnnotationRequestBean implements RequestBean {
 	private final boolean proxy;
 	private Enhancer enhancer;
 	private final PropertiesFactory propertiesFactory;
-	private ClassInfo classInfo;
+	private final FieldDefinition[] autowriteFields;
 
 	public AnnotationRequestBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type,
 			String[] filterNames) throws Exception {
@@ -67,7 +66,7 @@ public final class AnnotationRequestBean implements RequestBean {
 			throw new BeansException("not found constructor");
 		}
 		enhancer = BeanUtils.createEnhancer(type, beanFactory, filterNames);
-		this.classInfo = ClassUtils.getClassInfo(type);
+		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type, false).toArray(new FieldDefinition[0]);
 	}
 
 	public static Constructor<?> getAnnotationRequestBeanConstructor(Class<?> type) {
@@ -112,16 +111,8 @@ public final class AnnotationRequestBean implements RequestBean {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		ClassInfo tempClzInfo = classInfo;
-		while (tempClzInfo != null) {
-			for (FieldInfo field : tempClzInfo.getFieldInfos()) {
-				if (Modifier.isStatic(field.getField().getModifiers())) {
-					continue;
-				}
-
-				BeanUtils.autoWrite(tempClzInfo.getSource(), beanFactory, propertiesFactory, bean, field);
-			}
-			tempClzInfo = tempClzInfo.getSuperInfo();
+		for (FieldDefinition definition : autowriteFields) {
+			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, definition);
 		}
 	}
 

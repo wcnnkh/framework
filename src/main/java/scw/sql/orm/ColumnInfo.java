@@ -2,6 +2,7 @@ package scw.sql.orm;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -12,7 +13,6 @@ import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-import scw.core.FieldInfo;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
@@ -33,7 +33,7 @@ public final class ColumnInfo {
 	private final boolean nullAble;// 是否可以为空
 	private boolean unique;// 是否建立唯一索引
 	private final boolean isDataBaseType;
-	private final FieldInfo fieldInfo;
+	private final Field field;
 	private String sqlTableAndColumn;
 	private final Column column;
 	private final Counter counter;
@@ -43,11 +43,11 @@ public final class ColumnInfo {
 	// 就是在name的两边加入了(``)
 	private String sqlColumnName;
 
-	protected ColumnInfo(String defaultTableName, FieldInfo field) {
+	protected ColumnInfo(String defaultTableName, Field field) {
 		this.counter = field.getAnnotation(Counter.class);
 		this.autoIncrement = field.getAnnotation(AutoIncrement.class);
 		this.autoCreate = field.getAnnotation(AutoCreate.class);
-		this.fieldInfo = field;
+		this.field = field;
 		this.name = field.getName();
 		PrimaryKey primaryKey = field.getAnnotation(PrimaryKey.class);
 		this.isPrimaryKey = primaryKey != null;
@@ -94,12 +94,12 @@ public final class ColumnInfo {
 	}
 
 	private Object fieldValueToDBValue(Object value) {
-		if (boolean.class == fieldInfo.getType()) {
+		if (boolean.class == field.getType()) {
 			boolean b = value == null ? false : (Boolean) value;
 			return b ? 1 : 0;
 		}
 
-		if (Boolean.class == fieldInfo.getType()) {
+		if (Boolean.class == field.getType()) {
 			if (value == null) {
 				return null;
 			}
@@ -109,11 +109,11 @@ public final class ColumnInfo {
 	}
 
 	public Object getValueToDB(Object bean) throws IllegalArgumentException, IllegalAccessException {
-		return fieldValueToDBValue(fieldInfo.forceGet(bean));
+		return fieldValueToDBValue(field.get(bean));
 	}
 
 	public void setValueToField(Object bean, Object dbValue) throws IllegalArgumentException, IllegalAccessException {
-		fieldInfo.forceSet(bean, ORMUtils.parse(fieldInfo.getType(), dbValue));
+		field.set(bean, ORMUtils.parse(field.getType(), dbValue));
 	}
 
 	public String getName() {
@@ -129,7 +129,7 @@ public final class ColumnInfo {
 	}
 
 	public Class<?> getType() {
-		return fieldInfo.getType();
+		return field.getType();
 	}
 
 	public int getLength() {
@@ -174,8 +174,8 @@ public final class ColumnInfo {
 		return isDataBaseType;
 	}
 
-	public FieldInfo getFieldInfo() {
-		return fieldInfo;
+	public Field getField() {
+		return field;
 	}
 
 	public boolean isUnique() {

@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.core.BeanFieldListen;
-import scw.core.ClassInfo;
 import scw.core.Iterator;
 import scw.core.Pagination;
 import scw.core.exception.AlreadyExistsException;
@@ -118,7 +116,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 			String name = StringUtils.isEmpty(autoCreate.value()) ? columnInfo.getName() : autoCreate.value();
 			AutoCreateService service = getAutoCreateService(name);
 			if (service == null) {
-				throw new NotFoundException(tableInfo.getClassInfo().getSource().getName() + "中字段[" + columnInfo.getName()
+				throw new NotFoundException(tableInfo.getSource().getName() + "中字段[" + columnInfo.getName()
 						+ "的注解@AutoCreate找不到指定名称的实现:" + name);
 			}
 
@@ -257,7 +255,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 		for (V v : list) {
 			K k;
 			try {
-				k = (K) columnInfo.getFieldInfo().forceGet(v);
+				k = (K) columnInfo.getField().get(v);
 				if (map.containsKey(k)) {
 					throw new AlreadyExistsException(k + "");
 				}
@@ -326,9 +324,6 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 			if (table == null) {
 				continue;
 			}
-
-			ClassInfo classInfo = ClassUtils.getClassInfo(tableClass);
-			classInfo.getFieldListenProxyClass();
 
 			if (table.create()) {
 				createTable(tableClass);

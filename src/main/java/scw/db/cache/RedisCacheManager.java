@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import scw.core.BeanFieldListen;
 import scw.core.utils.CollectionUtils;
 import scw.data.redis.Redis;
 import scw.data.redis.RedisUtils;
+import scw.sql.orm.BeanFieldListen;
 
 public final class RedisCacheManager implements CacheManager {
 	private final Redis redis;

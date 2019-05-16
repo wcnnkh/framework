@@ -24,7 +24,7 @@ public final class InsertSQL implements Sql {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		sb.append(tableInfo.getClassInfo().getSource().getName());
+		sb.append(tableInfo.getSource().getName());
 		sb.append(":");
 		sb.append(tableName);
 		String id = sb.toString();

@@ -5,15 +5,15 @@ import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
-import scw.core.FieldInfo;
+import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.FileUtils;
 
 public final class ContentParse implements ConfigParse{
-	public Object parse(BeanFactory beanFactory, FieldInfo fieldInfo, String filePath, String charset) throws Exception{
+	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset) throws Exception{
 		File file = ConfigUtils.getFile(filePath);
 		List<String> list = FileUtils.getFileContentLineList(file, charset);
-		if(String.class.isAssignableFrom(fieldInfo.getType())){
+		if(String.class.isAssignableFrom(fieldDefinition.getField().getType())){
 			StringBuilder sb = new StringBuilder();
 			if(list != null){
 				for(String str : list){
@@ -21,7 +21,7 @@ public final class ContentParse implements ConfigParse{
 				}
 			}
 			return sb.toString();
-		}else if(List.class.isAssignableFrom(fieldInfo.getType())){
+		}else if(List.class.isAssignableFrom(fieldDefinition.getField().getType())){
 			return list;
 		}
 		return null;

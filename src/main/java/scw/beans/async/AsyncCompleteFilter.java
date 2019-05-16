@@ -21,7 +21,7 @@ import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.reflect.SerializableMethod;
+import scw.core.reflect.SerializableMethodDefinition;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.FileUtils;
@@ -154,7 +154,7 @@ public final class AsyncCompleteFilter implements Filter {
 
 class AsyncInvokeInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private SerializableMethod methodConfig;
+	private SerializableMethodDefinition methodConfig;
 	private long delayMillis;
 	private TimeUnit timeUnit;
 	private Object[] args;
@@ -164,12 +164,12 @@ class AsyncInvokeInfo implements Serializable {
 
 	public AsyncInvokeInfo(AsyncComplete asyncComplete, Class<?> clz, Method method, Object[] args) {
 		this.delayMillis = asyncComplete.delayMillis();
-		this.methodConfig = new SerializableMethod(clz, method);
+		this.methodConfig = new SerializableMethodDefinition(clz, method);
 		this.timeUnit = asyncComplete.timeUnit();
 		this.args = args;
 	}
 
-	public SerializableMethod getMethodConfig() {
+	public SerializableMethodDefinition getMethodConfig() {
 		return methodConfig;
 	}
 

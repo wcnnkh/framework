@@ -1,6 +1,7 @@
-package scw.core;
+package scw.sql.orm;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.Map;
 
 public interface BeanFieldListen extends Serializable{
@@ -14,7 +15,7 @@ public interface BeanFieldListen extends Serializable{
 	 */
 	Map<String, Object> get_field_change_map();
 	
-	void field_change(FieldInfo fieldInfo, Object oldValue);
+	void field_change(Field fieldInfo, Object oldValue);
 	
 	/**
 	 * 开始监听

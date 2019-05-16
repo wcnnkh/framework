@@ -179,7 +179,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 		} else if (config.getCacheType() == CacheType.full) {
 			cacheManager.add(objectKey, bean, config.getExp());
 			StringBuilder sb = new StringBuilder();
-			sb.append(PREFIX).append(tableInfo.getClassInfo().getSource().getName());
+			sb.append(PREFIX).append(tableInfo.getSource().getName());
 			for (int i = 0; i < args.length; i++) {
 				if ((config.isFullKeys() || i > 0) && i < args.length - 1) {
 					cacheManager.mapAdd(sb.toString(), args[i].toString(), objectKey);
@@ -194,17 +194,17 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 	private String getObjectKey(TableInfo tableInfo, Object bean)
 			throws IllegalArgumentException, IllegalAccessException {
 		StringBuilder sb = new StringBuilder();
-		sb.append(PREFIX).append(tableInfo.getClassInfo().getSource().getName());
+		sb.append(PREFIX).append(tableInfo.getSource().getName());
 		for (ColumnInfo c : tableInfo.getPrimaryKeyColumns()) {
 			sb.append("&");
-			sb.append(c.getFieldInfo().forceGet(bean));
+			sb.append(c.getField().get(bean));
 		}
 		return sb.toString();
 	}
 
 	private String getObjectKeyById(TableInfo tableInfo, Object... params) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(PREFIX).append(tableInfo.getClassInfo().getSource().getName());
+		sb.append(PREFIX).append(tableInfo.getSource().getName());
 		for (int i = 0; i < params.length; i++) {
 			sb.append("&");
 			sb.append(params[i]);
@@ -214,7 +214,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 
 	private void savefullKeys(TableInfo tableInfo, boolean full, String objectKey, Object[] primaryKeys) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(PREFIX).append(tableInfo.getClassInfo().getSource().getName());
+		sb.append(PREFIX).append(tableInfo.getSource().getName());
 		for (int i = 0; i < primaryKeys.length; i++) {
 			if ((full || i > 0) && i < primaryKeys.length - 1) {
 				cacheManager.mapAdd(sb.toString(), primaryKeys[i].toString(), objectKey);
@@ -227,7 +227,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 
 	private void removeFullKeys(TableInfo tableInfo, boolean full, Object[] primaryKeys) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(PREFIX).append(tableInfo.getClassInfo().getSource().getName());
+		sb.append(PREFIX).append(tableInfo.getSource().getName());
 		for (int i = 0; i < primaryKeys.length; i++) {
 			if ((full || i > 0) && i < primaryKeys.length - 1) {
 				cacheManager.mapRemove(sb.toString(), primaryKeys[i].toString());
@@ -431,11 +431,11 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 		if (definition == null) {
 			return super.getByIdList(tableName, type, params);
 		}
-		
-		if(!definition.isFullKeys() && params.length == 0){
+
+		if (!definition.isFullKeys() && params.length == 0) {
 			return super.getByIdList(tableName, type, params);
 		}
-		
+
 		if (definition.getCacheType() != CacheType.full) {
 			return super.getByIdList(tableName, type, params);
 		}
@@ -526,7 +526,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, AutoC
 	@Override
 	protected boolean ormUpdateSql(TableInfo tableInfo, String tableName, Sql sql) {
 		if (asyncService != null) {
-			CacheConfigDefinition definition = getCacheConfig(tableInfo.getClassInfo().getSource());
+			CacheConfigDefinition definition = getCacheConfig(tableInfo.getSource());
 			if (definition != null && definition.getCacheType() != CacheType.lazy) {
 				if (TransactionManager.hasTransaction()) {
 					AsyncInfoTransactionLifeCycle aitlc = new AsyncInfoTransactionLifeCycle(

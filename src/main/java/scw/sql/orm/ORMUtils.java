@@ -2,11 +2,7 @@ package scw.sql.orm;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import scw.core.BeanFieldListen;
-import scw.core.ClassInfo;
-import scw.core.FieldInfo;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
@@ -14,19 +10,20 @@ import scw.core.utils.StringParseUtils;
 import scw.sql.orm.annotation.Table;
 
 public final class ORMUtils {
-	private ORMUtils(){};
-	
+	private ORMUtils() {
+	};
+
 	private static Logger logger = LoggerFactory.getLogger(ORMUtils.class);
 
 	private volatile static Map<Class<?>, TableInfo> tableMap = new HashMap<Class<?>, TableInfo>();
-
-	public static TableInfo getTableInfo(Class<?> clz) {
+	public static TableInfo getTableInfo(Class<?> clazz) {
+		Class<?> clz = ClassUtils.getUserClass(clazz);
 		TableInfo tableInfo = tableMap.get(clz);
 		if (tableInfo == null) {
 			synchronized (tableMap) {
 				tableInfo = tableMap.get(clz);
 				if (tableInfo == null) {
-					tableInfo = new TableInfo(ClassUtils.getClassInfo(clz));
+					tableInfo = new TableInfo(clz);
 					tableMap.put(clz, tableInfo);
 				}
 			}
@@ -89,55 +86,10 @@ public final class ORMUtils {
 			if (table == null) {
 				continue;
 			}
-
-			if (BeanFieldListen.class.isAssignableFrom(type)) {
-				continue;
-			}
-
-			ClassInfo classInfo = ClassUtils.getClassInfo(type);
-			classInfo.getFieldListenProxyClass();
+			getTableInfo(type);
 		}
 	}
-
-	/**
-	 * 重新监听
-	 * 
-	 * @param bean
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T restartFieldLinsten(T bean) {
-		if (bean == null) {
-			return bean;
-		}
-
-		if (bean instanceof BeanFieldListen) {
-			((BeanFieldListen) bean).start_field_listen();
-			return bean;
-		} else {
-			ClassInfo classInfo = ClassUtils.getClassInfo(bean.getClass());
-			BeanFieldListen proxy = (BeanFieldListen) classInfo.newFieldListenInstance();
-			for (Entry<String, FieldInfo> entry : classInfo.getFieldEntrySet()) {
-				FieldInfo fieldInfo = entry.getValue();
-				if (fieldInfo.isStatic()) {
-					continue;
-				}
-
-				Object v;
-				try {
-					v = fieldInfo.get(bean);
-					if (v != null) {
-						fieldInfo.set(proxy, v);
-					}
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-			}
-			proxy.start_field_listen();
-			return (T) proxy;
-		}
-	}
-
+	
 	/**
 	 * 获取主键数据
 	 * 
@@ -157,7 +109,7 @@ public final class ORMUtils {
 			if (parse) {
 				objs[i] = cs[i].getValueToDB(bean);
 			} else {
-				objs[i] = cs[i].getFieldInfo().forceGet(bean);
+				objs[i] = cs[i].getField().get(bean);
 			}
 		}
 		return objs;

@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -31,9 +33,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import scw.core.ClassInfo;
-import scw.core.FieldInfo;
 import scw.core.exception.NotFoundException;
+import scw.core.reflect.DefaultFieldDefinition;
+import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 
 public final class XMLUtils {
@@ -262,10 +264,8 @@ public final class XMLUtils {
 		return StringUtils.isNull(value) ? defaultValue : Boolean.parseBoolean(value);
 	}
 
-	public static <T> T getBean(Node node, Class<T> type) throws InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public static <T> T getBean(Node node, Class<T> type) throws Exception {
 		T t = null;
-		ClassInfo classInfo = ClassUtils.getClassInfo(type.getName());
 		NodeList nodeList = node.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node n = nodeList.item(i);
@@ -274,12 +274,12 @@ public final class XMLUtils {
 				continue;
 			}
 
-			FieldInfo fieldInfo = classInfo.getFieldInfo(nodeName, true);
-			if (fieldInfo == null) {
+			Field field = ReflectUtils.getField(type, nodeName, true);
+			if (field == null) {
 				continue;
 			}
 
-			if (fieldInfo.isStatic() || fieldInfo.isFinal()) {
+			if (Modifier.isStatic(field.getModifiers())) {
 				continue;
 			}
 
@@ -292,7 +292,8 @@ public final class XMLUtils {
 				t = ReflectUtils.newInstance(type);
 			}
 
-			fieldInfo.set(t, StringParseUtils.conversion(value, fieldInfo.getType()));
+			FieldDefinition fieldDefinition = new DefaultFieldDefinition(type, field, true, false, true);
+			fieldDefinition.set(t, StringParseUtils.conversion(value, field.getType()));
 		}
 		return t;
 	}
@@ -323,9 +324,7 @@ public final class XMLUtils {
 					continue;
 				}
 				list.add(t);
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

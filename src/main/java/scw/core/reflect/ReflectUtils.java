@@ -7,11 +7,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessControlException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.core.exception.AlreadyExistsException;
+import scw.core.exception.NotFoundException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.Assert;
@@ -34,7 +39,7 @@ public final class ReflectUtils {
 
 		for (Entry<String, V> entry : properties.entrySet()) {
 			String methodName = "set" + StringUtils.toUpperCase(entry.getKey(), 0, 1);
-			for (java.lang.reflect.Method method : isPublicMethod ? type.getMethods() : type.getDeclaredMethods()) {
+			for (Method method : isPublicMethod ? type.getMethods() : type.getDeclaredMethods()) {
 				if (method.getParameterTypes().length != 1) {
 					continue;
 				}
@@ -405,27 +410,6 @@ public final class ReflectUtils {
 		}
 	}
 
-	public static String getGetterFieldName(Method method) {
-		String name = method.getName();
-		if (name.startsWith("is")) {
-			name = name.substring(2);
-		} else if (name.startsWith("get")) {
-			name = name.substring(3);
-		} else {
-			return null;
-		}
-
-		return StringUtils.toLowerCase(name, 0, 1);
-	}
-
-	public static String getSetterFieldName(Method method) {
-		String name = method.getName();
-		if (name.startsWith("set")) {
-			name = name.substring(1);
-		}
-		return StringUtils.toLowerCase(name, 0, 1);
-	}
-
 	/**
 	 * 必须要存在默认的构造方法
 	 * 
@@ -535,30 +519,9 @@ public final class ReflectUtils {
 		return (T) cloneObject(type, obj, ignoreStatic, ignoreTransient, invokeCloneableMethod);
 	}
 
-	public static Map<String, Object> getter(Object instance) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		for (Method method : instance.getClass().getMethods()) {
-			if (method.getParameterTypes().length != 0) {
-				continue;
-			}
-
-			String name = getGetterFieldName(method);
-			if (name == null) {
-				continue;
-			}
-
-			try {
-				map.put(name, method.invoke(instance));
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-		return map;
-	}
-
 	public static Field getField(Class<?> type, String name, boolean sup) {
 		Class<?> clz = type;
-		while (clz != null) {
+		while (clz != null && clz != Object.class) {
 			try {
 				return clz.getDeclaredField(name);
 			} catch (NoSuchFieldException e) {
@@ -566,7 +529,7 @@ public final class ReflectUtils {
 
 			if (sup) {
 				clz = clz.getSuperclass();
-			}else{
+			} else {
 				break;
 			}
 		}
@@ -576,7 +539,7 @@ public final class ReflectUtils {
 	public static Method findGetterMethod(Class<?> clazz, String fieldName, boolean sup) {
 		Method find = null;
 		Class<?> clz = clazz;
-		while(clz != null){
+		while (clz != null && clz != Object.class) {
 			for (Method method : clz.getDeclaredMethods()) {
 				if (method.getParameterTypes().length != 0) {
 					continue;
@@ -599,20 +562,20 @@ public final class ReflectUtils {
 						find = method;
 					}
 				}
-				
+
 				if (find != null) {
 					find.setAccessible(true);
 					break;
 				}
 			}
-			
-			if(find != null){
+
+			if (find != null) {
 				break;
 			}
-			
-			if(sup){
+
+			if (sup) {
 				clz = clz.getSuperclass();
-			}else{
+			} else {
 				break;
 			}
 		}
@@ -622,7 +585,7 @@ public final class ReflectUtils {
 	public static Method[] findSetterMethods(Class<?> clazz, String fieldName, boolean sup) {
 		LinkedList<Method> methods = new LinkedList<Method>();
 		Class<?> clz = clazz;
-		while (clz != null) {
+		while (clz != null && clz != Object.class) {
 			for (Method method : clz.getDeclaredMethods()) {
 				if (method.getParameterTypes().length != 1) {
 					continue;
@@ -655,7 +618,7 @@ public final class ReflectUtils {
 
 			if (sup) {
 				clz = clz.getSuperclass();
-			}else{
+			} else {
 				break;
 			}
 		}
@@ -670,7 +633,7 @@ public final class ReflectUtils {
 	public static Method getGetterMethod(Class<?> clazz, Field field, boolean sup) {
 		Method getter = null;
 		Class<?> clz = clazz;
-		while (clz != null) {
+		while (clz != null && clz != Object.class) {
 			if (ClassUtils.isBooleanType(field.getType())) {
 				String methodNameSuffix = field.getName();
 				if (methodNameSuffix.startsWith("is")) {
@@ -699,7 +662,7 @@ public final class ReflectUtils {
 
 			if (sup) {
 				clz = clz.getSuperclass();
-			}else{
+			} else {
 				break;
 			}
 		}
@@ -709,7 +672,7 @@ public final class ReflectUtils {
 	public static Method getSetterMethod(Class<?> clazz, Field field, boolean sup) {
 		Method setter = null;
 		Class<?> clz = clazz;
-		while (clz != null) {
+		while (clz != null && clz != Object.class) {
 			if (ClassUtils.isBooleanType(field.getType())) {
 				String methodNameSuffix = field.getName();
 				if (methodNameSuffix.startsWith("is")) {
@@ -742,10 +705,116 @@ public final class ReflectUtils {
 
 			if (sup) {
 				clz = clz.getSuperclass();
-			}else{
+			} else {
 				break;
 			}
 		}
 		return setter;
+	}
+
+	/**
+	 * 提取多个对象的字段
+	 * 
+	 * @param objList
+	 * @param fieldName
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Collection<T> getFieldCollection(Collection<?> objList, String fieldName) {
+		if (CollectionUtils.isEmpty(objList) || StringUtils.isEmpty(fieldName)) {
+			return Collections.EMPTY_LIST;
+		}
+
+		LinkedList<T> list = new LinkedList<T>();
+		Iterator<?> iterator = objList.iterator();
+		Field field = null;
+		while (iterator.hasNext()) {
+			Object obj = iterator.next();
+			if (obj == null) {
+				continue;
+			}
+
+			if (field == null) {
+				field = getField(obj.getClass(), fieldName, true);
+				if (field == null) {
+					throw new NotFoundException(fieldName);
+				}
+			}
+
+			Object v;
+			try {
+				v = field.get(obj);
+				if (v == null) {
+					continue;
+				}
+
+				list.add((T) v);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <K, V> Map<K, V> listToMap(String keyFieldName, Iterable<V> list) {
+		if (list == null) {
+			return Collections.EMPTY_MAP;
+		}
+
+		Field field = null;
+		Map<K, V> map = null;
+		for (V v : list) {
+			if (v == null) {
+				continue;
+			}
+
+			if (map == null) {
+				map = new HashMap<K, V>();
+			}
+
+			if (field == null) {
+				field = getField(v.getClass(), keyFieldName, true);
+				if (field == null) {
+					throw new NotFoundException("list转map时无法在实体中找到此字段：" + keyFieldName);
+				}
+			}
+
+			K fv = null;
+			try {
+				fv = (K) field.get(v);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+
+			if (fv == null) {
+				throw new NullPointerException("key不能为空[" + keyFieldName + "]");
+			}
+
+			if (map.containsKey(fv)) {
+				throw new AlreadyExistsException("list转map时发现已经存在相同的key[" + fv + "], fieldName=" + keyFieldName);
+			}
+
+			map.put(fv, v);
+		}
+
+		if (map == null) {
+			return Collections.EMPTY_MAP;
+		}
+		return map;
+	}
+
+	public static Object setFieldValue(Class<?> clz, Field field, Object obj, Object value) throws Exception {
+		Method method = getSetterMethod(clz, field, true);
+		if (method == null) {
+			field.set(obj, value);
+			return null;
+		} else {
+			return method.invoke(obj, value);
+		}
 	}
 }

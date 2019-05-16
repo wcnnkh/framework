@@ -67,7 +67,7 @@ public class SequenceIdAutoCreateService implements AutoCreateService {
 			String tableName, String[] args) throws Throwable {
 		if (args.length == 0) {
 			throw new NotFoundException(
-					tableInfo.getClassInfo().getSource().getName() + "中字段[" + columnInfo.getName() + "]要生成流水号但找不到时间戳字段");
+					tableInfo.getSource().getName() + "中字段[" + columnInfo.getName() + "]要生成流水号但找不到时间戳字段");
 		}
 
 		ColumnInfo cts = tableInfo.getColumnInfo(args[0]);

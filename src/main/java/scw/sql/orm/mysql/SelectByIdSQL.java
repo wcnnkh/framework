@@ -16,7 +16,7 @@ public final class SelectByIdSQL implements Sql {
 
 	public SelectByIdSQL(TableInfo info, String tableName, Object[] ids) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(info.getClassInfo().getSource().getName());
+		sb.append(info.getSource().getName());
 		sb.append(tableName);
 		sb.append("&");
 		sb.append(ids == null ? 0 : ids.length);

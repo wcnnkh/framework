@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.BeanFieldListen;
 import scw.core.exception.ParameterException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
 import scw.sql.Sql;
+import scw.sql.orm.BeanFieldListen;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Counter;
@@ -89,8 +89,8 @@ public final class UpdateSQLByBeanListen implements Sql {
 					}
 					continue;
 				} else {
-					logger.warn("{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}", tableInfo.getClassInfo().getSource().getName(),
-							columnInfo.getFieldInfo().getName(), oldValue, value);
+					logger.warn("{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}", tableInfo.getSource().getName(),
+							columnInfo.getField().getName(), oldValue, value);
 				}
 			}
 

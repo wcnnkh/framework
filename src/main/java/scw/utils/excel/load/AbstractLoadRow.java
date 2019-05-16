@@ -1,13 +1,12 @@
 package scw.utils.excel.load;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import scw.core.ClassInfo;
-import scw.core.FieldInfo;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
@@ -58,19 +57,18 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 
 			try {
 				T obj = ReflectUtils.newInstance(type);
-				ClassInfo classInfo = new ClassInfo(type);
 				for (Entry<String, Integer> entry : nameMapping.entrySet()) {
-					FieldInfo fieldInfo = classInfo.getFieldInfo(entry.getKey(), true);
-					if (fieldInfo == null) {
+					Field field = ReflectUtils.getField(type, entry.getKey(), true);
+					if (field == null) {
 						continue;
 					}
 
-					Object value = format(entry.getKey(), contents[entry.getValue()], fieldInfo.getField().getType());
+					Object value = format(entry.getKey(), contents[entry.getValue()], field.getType());
 					if (value == null) {
 						continue;
 					}
 
-					fieldInfo.set(obj, value);
+					ReflectUtils.setFieldValue(type, field, obj, value);
 				}
 
 				if (obj == null) {

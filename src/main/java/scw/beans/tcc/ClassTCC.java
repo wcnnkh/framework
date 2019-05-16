@@ -6,11 +6,11 @@ import java.util.Map;
 
 import scw.beans.annotation.Stage;
 import scw.core.exception.AlreadyExistsException;
-import scw.core.reflect.SerializableMethod;
+import scw.core.reflect.SerializableMethodDefinition;
 import scw.core.utils.StringUtils;
 
 class ClassTCC {
-	private Map<String, SerializableMethod> tccMethodMap;
+	private Map<String, SerializableMethodDefinition> tccMethodMap;
 	private final Class<?> clz;
 
 	public ClassTCC(Class<?> clz) {
@@ -19,7 +19,7 @@ class ClassTCC {
 			Stage stage = method.getAnnotation(Stage.class);
 			if (stage != null) {
 				if (tccMethodMap == null) {
-					tccMethodMap = new HashMap<String, SerializableMethod>();
+					tccMethodMap = new HashMap<String, SerializableMethodDefinition>();
 				}
 
 				String name = StringUtils.isEmpty(stage.name()) ? method.getName() : stage.name();
@@ -28,7 +28,7 @@ class ClassTCC {
 					throw new AlreadyExistsException(clz.getName() + "存在相同的TCC配置,name=" + name);
 				}
 
-				tccMethodMap.put(name, new SerializableMethod(clz, method));
+				tccMethodMap.put(name, new SerializableMethodDefinition(clz, method));
 			}
 		}
 	}
@@ -37,7 +37,7 @@ class ClassTCC {
 		return clz;
 	}
 
-	public SerializableMethod getMethodDefinition(String name) {
+	public SerializableMethodDefinition getMethodDefinition(String name) {
 		return tccMethodMap == null ? null : tccMethodMap.get(name);
 	}
 }

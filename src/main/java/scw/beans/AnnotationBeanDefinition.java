@@ -11,10 +11,9 @@ import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Service;
 import scw.beans.property.PropertiesFactory;
-import scw.core.ClassInfo;
-import scw.core.FieldInfo;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
+import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
@@ -31,6 +30,7 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 	private final PropertiesFactory propertiesFactory;
 	private String[] filterNames;
 	private final boolean singleton;
+	private final FieldDefinition[] autowriteFieldDefinition;
 
 	public AnnotationBeanDefinition(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type,
 			String[] filterNames) throws Exception {
@@ -58,6 +58,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		this.proxy = BeanUtils.checkProxy(type, filterNames);
 		scw.beans.annotation.Bean bean = type.getAnnotation(scw.beans.annotation.Bean.class);
 		this.singleton = bean == null ? true : bean.singleton();
+		this.autowriteFieldDefinition = BeanUtils.getAutowriteFieldDefinitionList(type, false)
+				.toArray(new FieldDefinition[0]);
 	}
 
 	public static List<BeanMethod> getInitMethodList(Class<?> type) {
@@ -105,7 +107,7 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 	private Enhancer getProxyEnhancer() {
 		if (enhancer == null) {
 			synchronized (this) {
-				if(enhancer == null){
+				if (enhancer == null) {
 					enhancer = BeanUtils.createEnhancer(type, beanFactory, filterNames);
 				}
 			}
@@ -146,16 +148,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		ClassInfo classInfo = ClassUtils.getClassInfo(type);
-		while (classInfo != null) {
-			for (FieldInfo field : classInfo.getFieldInfos()) {
-				if (Modifier.isStatic(field.getField().getModifiers())) {
-					continue;
-				}
-
-				BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, field);
-			}
-			classInfo = classInfo.getSuperInfo();
+		for (FieldDefinition fieldDefinition : autowriteFieldDefinition) {
+			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, fieldDefinition);
 		}
 	}
 

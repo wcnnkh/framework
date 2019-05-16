@@ -28,7 +28,7 @@ public abstract class AbstractResult implements Result {
 	
 	private static String getNotFoundForDataSourceErrorMsg(TableInfo tableInfo, ColumnInfo column){
 		StringBuilder sb = new StringBuilder();
-		sb.append(tableInfo.getClassInfo().getSource().getName());
+		sb.append(tableInfo.getSource().getName());
 		sb.append(" [");
 		sb.append(column.getName());
 		sb.append("] not found for DataSource");
@@ -37,7 +37,7 @@ public abstract class AbstractResult implements Result {
 	
 	private static String getNotNullErrorMsg(TableInfo tableInfo, ColumnInfo column){
 		StringBuilder sb = new StringBuilder();
-		sb.append(tableInfo.getClassInfo().getSource().getName());
+		sb.append(tableInfo.getSource().getName());
 		sb.append(" [");
 		sb.append(column.getName());
 		sb.append("] not is null");

@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -31,11 +30,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import scw.core.ClassInfo;
-import scw.core.FieldInfo;
 import scw.core.MultiValueMap;
-import scw.core.exception.AlreadyExistsException;
-import scw.core.exception.NotFoundException;
 
 public abstract class CollectionUtils {
 	/**
@@ -82,58 +77,6 @@ public abstract class CollectionUtils {
 			}
 		}
 		return false;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <K, V> Map<K, V> listToMap(String keyFieldName, Iterable<V> list) {
-		if (list == null) {
-			return Collections.EMPTY_MAP;
-		}
-
-		ClassInfo classInfo = null;
-		Map<K, V> map = null;
-		for (V v : list) {
-			if (v == null) {
-				continue;
-			}
-
-			if (map == null) {
-				map = new HashMap<K, V>();
-			}
-
-			if (classInfo == null) {
-				classInfo = ClassUtils.getClassInfo(v.getClass());
-			}
-
-			FieldInfo fieldInfo = classInfo.getFieldInfo(keyFieldName, true);
-			if (fieldInfo == null) {
-				throw new NotFoundException("list转map时无法在实体中找到此字段：" + keyFieldName);
-			}
-
-			K fv = null;
-			try {
-				fv = (K) fieldInfo.forceGet(v);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-
-			if (fv == null) {
-				throw new NullPointerException("key不能为空[" + keyFieldName + "]");
-			}
-
-			if (map.containsKey(fv)) {
-				throw new AlreadyExistsException("list转map时发现已经存在相同的key[" + fv + "], fieldName=" + keyFieldName);
-			}
-
-			map.put(fv, v);
-		}
-
-		if (map == null) {
-			return Collections.EMPTY_MAP;
-		}
-		return map;
 	}
 
 	/**
@@ -496,54 +439,6 @@ public abstract class CollectionUtils {
 			collection.add(values[i]);
 		}
 		return collection;
-	}
-
-	/**
-	 * 提取多个对象的字段
-	 * 
-	 * @param objList
-	 * @param fieldName
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> Collection<T> getFieldCollection(Collection<?> objList, String fieldName) {
-		if (isEmpty(objList) || StringUtils.isEmpty(fieldName)) {
-			return Collections.EMPTY_LIST;
-		}
-
-		LinkedList<T> list = new LinkedList<T>();
-		Iterator<?> iterator = objList.iterator();
-		ClassInfo classInfo = null;
-		while (iterator.hasNext()) {
-			Object obj = iterator.next();
-			if (obj == null) {
-				continue;
-			}
-
-			if (classInfo == null) {
-				classInfo = ClassUtils.getClassInfo(obj.getClass());
-			}
-
-			FieldInfo fieldInfo = classInfo.getFieldInfo(fieldName, true);
-			if (fieldInfo == null) {
-				continue;
-			}
-
-			Object v;
-			try {
-				v = fieldInfo.forceGet(obj);
-				if (v == null) {
-					continue;
-				}
-
-				list.add((T) v);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		}
-		return list;
 	}
 
 	/**

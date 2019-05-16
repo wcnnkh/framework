@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.core.BeanFieldListen;
 import scw.data.memcached.CAS;
 import scw.data.memcached.Memcached;
+import scw.sql.orm.BeanFieldListen;
 
 public final class MemcachedCacheManager implements CacheManager {
 	private final Memcached memcached;

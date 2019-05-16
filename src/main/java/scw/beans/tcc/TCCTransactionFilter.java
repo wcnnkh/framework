@@ -10,7 +10,7 @@ import scw.beans.annotation.TCC;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
-import scw.core.reflect.SerializableMethod;
+import scw.core.reflect.SerializableMethodDefinition;
 
 /**
  * 只能受BeanFactory管理
@@ -51,14 +51,14 @@ public final class TCCTransactionFilter implements Filter {
 			return;
 		}
 
-		SerializableMethod confirmMethod = info.getMethodDefinition(tcc.confirm());
-		SerializableMethod cancelMethod = info.getMethodDefinition(tcc.cancel());
-		SerializableMethod complateMethod = info.getMethodDefinition(tcc.complete());
+		SerializableMethodDefinition confirmMethod = info.getMethodDefinition(tcc.confirm());
+		SerializableMethodDefinition cancelMethod = info.getMethodDefinition(tcc.cancel());
+		SerializableMethodDefinition complateMethod = info.getMethodDefinition(tcc.complete());
 		if (confirmMethod == null && cancelMethod == null && complateMethod == null) {
 			return;
 		}
 
-		SerializableMethod tryMethod = new SerializableMethod(interfaceClz, method);
+		SerializableMethodDefinition tryMethod = new SerializableMethodDefinition(interfaceClz, method);
 		TCCService tccService = beanFactory.get(tcc.service());
 		if (tccService == null) {
 			return;

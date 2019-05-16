@@ -5,27 +5,27 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.core.reflect.SerializableMethod;
+import scw.core.reflect.SerializableMethodDefinition;
 
 public final class Message implements Serializable {
 	private static final long serialVersionUID = -6216471725621438749L;
 	private Map<String, Object> attributeMap;
-	private SerializableMethod methodDefinition;
+	private SerializableMethodDefinition methodDefinition;
 	private Object[] args;
 
 	protected Message() {
 	};
 
 	public Message(Method method, Object[] args) {
-		this.methodDefinition = new SerializableMethod(method.getDeclaringClass(), method);
+		this.methodDefinition = new SerializableMethodDefinition(method.getDeclaringClass(), method);
 		this.args = args;
 	}
 
-	public SerializableMethod getMethodDefinition() {
+	public SerializableMethodDefinition getMethodDefinition() {
 		return methodDefinition;
 	}
 
-	protected void setMethodDefinition(SerializableMethod methodDefinition) {
+	protected void setMethodDefinition(SerializableMethodDefinition methodDefinition) {
 		this.methodDefinition = methodDefinition;
 	}
 
@@ -38,14 +38,11 @@ public final class Message implements Serializable {
 	}
 
 	public Method getMethod() {
-		try {
-			return methodDefinition.getMethod();
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		}
+		return methodDefinition.getMethod();
 	}
 
 	private transient String messageKey;
+
 	public String getMessageKey() {
 		if (messageKey == null) {
 			this.messageKey = getMethod().toString();

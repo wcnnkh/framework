@@ -28,7 +28,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import net.sf.cglib.core.TypeUtils;
-import scw.core.ClassInfo;
 import scw.core.LocalVariableTableParameterNameDiscoverer;
 
 public final class ClassUtils {
@@ -55,7 +54,6 @@ public final class ClassUtils {
 	/** The ".class" file suffix */
 	public static final String CLASS_FILE_SUFFIX = ".class";
 
-	private volatile static Map<String, ClassInfo> clzMap = new HashMap<String, ClassInfo>();
 	private static LocalVariableTableParameterNameDiscoverer lvtpnd = new LocalVariableTableParameterNameDiscoverer();
 
 	/**
@@ -205,41 +203,6 @@ public final class ClassUtils {
 	 */
 	public static boolean isBooleanType(Class<?> type) {
 		return boolean.class.isAssignableFrom(type) || Boolean.class.isAssignableFrom(type);
-	}
-
-	/**
-	 * 获取类信息，先会从缓存中查找
-	 * 
-	 * @param clz
-	 * @return
-	 */
-	public static ClassInfo getClassInfo(Class<?> clz) {
-		return getClassInfo(clz.getName());
-	}
-
-	/**
-	 * 获取类信息，先会从缓存中查找
-	 * 
-	 * @param className
-	 * @return
-	 */
-	public static ClassInfo getClassInfo(String name) {
-		ClassInfo info = clzMap.get(name);
-		if (info == null) {
-			synchronized (clzMap) {
-				info = clzMap.get(name);
-				if (info == null) {
-					try {
-						Class<?> clz = Class.forName(getProxyRealClassName(name));
-						info = new ClassInfo(clz);
-						clzMap.put(name, info);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		return info;
 	}
 
 	/**

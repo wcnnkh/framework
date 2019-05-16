@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -23,8 +23,6 @@ import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Properties;
 import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanParameter;
-import scw.core.ClassInfo;
-import scw.core.FieldInfo;
 import scw.core.aop.Filter;
 import scw.core.aop.Invoker;
 import scw.core.aop.JDKProxyUtils;
@@ -32,6 +30,9 @@ import scw.core.aop.ReflectInvoker;
 import scw.core.exception.BeansException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
+import scw.core.reflect.DefaultFieldDefinition;
+import scw.core.reflect.FieldDefinition;
+import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringParseUtils;
@@ -133,7 +134,7 @@ public final class BeanUtils {
 	}
 
 	public static void autoWrite(Class<?> clz, BeanFactory beanFactory, PropertiesFactory propertiesFactory, Object obj,
-			FieldInfo field) {
+			FieldDefinition field) {
 		setBean(beanFactory, clz, obj, field);
 		setConfig(beanFactory, clz, obj, field);
 		setProperties(beanFactory, propertiesFactory, clz, obj, field);
@@ -147,14 +148,8 @@ public final class BeanUtils {
 	private static void initAutowriteStatic(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
 			Collection<Class<?>> classList) throws Exception {
 		for (Class<?> clz : classList) {
-			ClassInfo classInfo = ClassUtils.getClassInfo(clz);
-			for (Entry<String, FieldInfo> entry : classInfo.getFieldEntrySet()) {
-				FieldInfo field = entry.getValue();
-				if (!Modifier.isStatic(field.getField().getModifiers())) {
-					continue;
-				}
-
-				autoWrite(clz, beanFactory, propertiesFactory, null, field);
+			for (FieldDefinition fieldDefinition : getAutowriteFieldDefinitionList(clz, true)) {
+				autoWrite(clz, beanFactory, propertiesFactory, null, fieldDefinition);
 			}
 		}
 	}
@@ -213,10 +208,10 @@ public final class BeanUtils {
 		return args;
 	}
 
-	private static void setConfig(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) {
+	private static void setConfig(BeanFactory beanFactory, Class<?> clz, Object obj, FieldDefinition field) {
 		Config config = field.getField().getAnnotation(Config.class);
 		if (config != null) {
-			staticFieldWarnLog(Config.class.getName(), clz, field.getField());
+			staticFieldWarnLog(Config.class.getName(), clz, field);
 			Object value = null;
 			try {
 				existDefaultValueWarnLog(Config.class.getName(), clz, field, obj);
@@ -224,38 +219,38 @@ public final class BeanUtils {
 				value = beanFactory.get(config.parse()).parse(beanFactory, field, config.value(), config.charset());
 				field.set(obj, value);
 			} catch (Exception e) {
-				logger.error("clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
+				logger.error("clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
 			}
 		}
 	}
 
-	private static boolean checkExistDefaultValue(FieldInfo field, Object obj)
-			throws IllegalArgumentException, IllegalAccessException {
-		if (field.getType().isPrimitive()) {// 值类型一定是有默认值的,所以不用判断直接所回false
+	private static boolean checkExistDefaultValue(FieldDefinition field, Object obj) throws Exception {
+		if (field.getField().getType().isPrimitive()) {// 值类型一定是有默认值的,所以不用判断直接所回false
 			return false;
 		}
-		return field.forceGet(obj) != null;
+		return field.get(obj) != null;
 	}
 
-	private static void existDefaultValueWarnLog(String tag, Class<?> clz, FieldInfo field, Object obj)
-			throws IllegalArgumentException, IllegalAccessException {
+	private static void existDefaultValueWarnLog(String tag, Class<?> clz, FieldDefinition field, Object obj)
+			throws Exception {
 		if (checkExistDefaultValue(field, obj)) {
-			logger.warn(
-					tag + " class[" + clz.getName() + "] fieldName[" + field.getName() + "] existence default value");
+			logger.warn(tag + " class[" + clz.getName() + "] fieldName[" + field.getField().getName()
+					+ "] existence default value");
 		}
 	}
 
-	private static void staticFieldWarnLog(String tag, Class<?> clz, Field field) {
-		if (Modifier.isStatic(field.getModifiers())) {
-			logger.warn(tag + " class[" + clz.getName() + "] fieldName[" + field.getName() + "] is a static field");
+	private static void staticFieldWarnLog(String tag, Class<?> clz, FieldDefinition field) {
+		if (Modifier.isStatic(field.getField().getModifiers())) {
+			logger.warn(tag + " class[" + clz.getName() + "] fieldName[" + field.getField().getName()
+					+ "] is a static field");
 		}
 	}
 
 	private static void setProperties(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> clz,
-			Object obj, FieldInfo field) {
+			Object obj, FieldDefinition field) {
 		Properties properties = field.getField().getAnnotation(Properties.class);
 		if (properties != null) {
-			staticFieldWarnLog(Properties.class.getName(), clz, field.getField());
+			staticFieldWarnLog(Properties.class.getName(), clz, field);
 
 			Object value = null;
 			try {
@@ -263,30 +258,30 @@ public final class BeanUtils {
 
 				String v = propertiesFactory.getValue(properties.value());
 				if (v != null) {
-					value = StringParseUtils.conversion(v, field.getType());
+					value = StringParseUtils.conversion(v, field.getField().getType());
 					field.set(obj, value);
 				}
 			} catch (Exception e) {
-				logger.error("clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
+				logger.error("clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
 			}
 		}
 	}
 
-	private static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldInfo field) {
+	private static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldDefinition field) {
 		Autowrite s = field.getField().getAnnotation(Autowrite.class);
 		if (s != null) {
-			staticFieldWarnLog(Autowrite.class.getName(), clz, field.getField());
+			staticFieldWarnLog(Autowrite.class.getName(), clz, field);
 
 			String name = s.value();
 			if (name.length() == 0) {
-				name = field.getType().getName();
+				name = field.getField().getName();
 			}
 
 			try {
 				existDefaultValueWarnLog(Autowrite.class.getName(), clz, field, obj);
 				field.set(obj, beanFactory.get(name));
 			} catch (Exception e) {
-				logger.error("clz=" + clz.getName() + ",fieldName=" + field.getName(), e);
+				logger.error("clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
 			}
 		}
 	}
@@ -350,6 +345,41 @@ public final class BeanUtils {
 			set.add(t);
 		}
 		return new ArrayList<T>(set);
+	}
+
+	public static LinkedList<FieldDefinition> getAutowriteFieldDefinitionList(Class<?> clazz, boolean isStatic) {
+		Class<?> clz = clazz;
+		LinkedList<FieldDefinition> list = new LinkedList<FieldDefinition>();
+		while (clz != null && clz != Object.class) {
+			for (final Field field : clz.getDeclaredFields()) {
+				if (AnnotationUtils.isDeprecated(field)) {
+					continue;
+				}
+
+				Autowrite autowrite = field.getAnnotation(Autowrite.class);
+				Config config = field.getAnnotation(Config.class);
+				Properties properties = field.getAnnotation(Properties.class);
+				if (autowrite != null || config != null || properties != null) {
+					continue;
+				}
+
+				field.setAccessible(true);
+				if (isStatic) {
+					if (Modifier.isStatic(field.getModifiers())) {
+						list.add(new DefaultFieldDefinition(clz, field, false, false, true));
+					}
+				} else {
+					if (Modifier.isStatic(field.getModifiers())) {
+						continue;
+					}
+
+					list.add(new DefaultFieldDefinition(clz, field, false, false, true));
+				}
+			}
+
+			clz = clz.getSuperclass();
+		}
+		return list;
 	}
 }
 

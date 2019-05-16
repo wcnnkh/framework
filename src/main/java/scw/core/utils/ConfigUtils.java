@@ -21,16 +21,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.core.ClassInfo;
-import scw.core.FieldInfo;
 import scw.core.StringFormatSystemProperties;
 import scw.core.exception.NotFoundException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
+import scw.core.reflect.ReflectUtils;
 
 public final class ConfigUtils {
 	private static Logger logger = LoggerFactory.getLogger(ConfigUtils.class);
-	
+
 	private static final String WEB_ROOT = "web.root";
 	private static final String CLASSPATH = "classpath";
 	private static final String CLASSPATH_PREFIX = CLASSPATH + ":";
@@ -105,20 +104,20 @@ public final class ConfigUtils {
 	public static <T> T parseObject(Map<String, String> map, Class<T> clz)
 			throws InstantiationException, IllegalAccessException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, InvocationTargetException {
-		ClassInfo classInfo = ClassUtils.getClassInfo(clz);
 		T t = clz.newInstance();
 		for (Entry<String, String> entry : map.entrySet()) {
-			FieldInfo fieldInfo = classInfo.getFieldInfo(entry.getKey(), true);
-			if (fieldInfo == null) {
+			Field field = ReflectUtils.getField(clz, entry.getKey(), true);
+			if (field == null) {
 				continue;
 			}
-			fieldInfo.set(t, StringParseUtils.conversion(entry.getValue(), fieldInfo.getType()));
+			field.set(t, StringParseUtils.conversion(entry.getValue(), field.getType()));
 		}
 		return t;
 	}
 
 	/**
 	 * 如果返回空就说明找不到文件
+	 * 
 	 * @param fileName
 	 * @return
 	 */

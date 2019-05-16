@@ -23,7 +23,7 @@ public class RedisIdAutoCreateServcie implements AutoCreateService {
 		sb.append("id:");
 		sb.append(this.getClass().getName());
 		sb.append("&");
-		sb.append(tableInfo.getClassInfo().getSource().getName());
+		sb.append(tableInfo.getSource().getName());
 		sb.append("&");
 		sb.append(fieldName);
 		return sb.toString();

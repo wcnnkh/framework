@@ -1,27 +1,27 @@
-package scw.core;
+package scw.sql.orm;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import scw.core.utils.ClassUtils;
 
 public final class FieldListenMethodInterceptor implements MethodInterceptor, BeanFieldListen {
 	private static final long serialVersionUID = 1L;
 	private Map<String, Object> changeColumnMap;
 	private boolean startListen = false;
-	private transient ClassInfo classInfo;
+	private transient TableInfo tableInfo;
 
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		if (classInfo == null) {
-			classInfo = ClassUtils.getClassInfo(obj.getClass());
+		if (tableInfo == null) {
+			tableInfo = ORMUtils.getTableInfo(obj.getClass());
 		}
 
 		if (args.length == 0) {
 			if (BeanFieldListen.START_LISTEN.equals(method.getName())) {
-				if (BeanFieldListen.class.isAssignableFrom(classInfo.getSource())) {
+				if (BeanFieldListen.class.isAssignableFrom(tableInfo.getSource())) {
 					startListen = true;
 					return proxy.invokeSuper(obj, args);
 				} else {
@@ -29,7 +29,7 @@ public final class FieldListenMethodInterceptor implements MethodInterceptor, Be
 					return null;
 				}
 			} else if (BeanFieldListen.GET_CHANGE_MAP.equals(method.getName())) {
-				if (BeanFieldListen.class.isAssignableFrom(classInfo.getSource())) {
+				if (BeanFieldListen.class.isAssignableFrom(tableInfo.getSource())) {
 					return proxy.invokeSuper(obj, args);
 				} else {
 					return get_field_change_map();
@@ -38,16 +38,16 @@ public final class FieldListenMethodInterceptor implements MethodInterceptor, Be
 		}
 
 		if (startListen) {
-			FieldInfo fieldInfo = classInfo.getFieldInfoBySetterName(method.getName(), true);
-			if (fieldInfo != null) {
+			Field field = tableInfo.getFieldInfoBySetterName(method.getName());
+			if (field != null) {
 				Object rtn;
 				Object oldValue = null;
-				oldValue = fieldInfo.forceGet(obj);
+				oldValue = field.get(obj);
 				rtn = proxy.invokeSuper(obj, args);
-				if (BeanFieldListen.class.isAssignableFrom(classInfo.getSource())) {
-					((BeanFieldListen) obj).field_change(fieldInfo, oldValue);
+				if (BeanFieldListen.class.isAssignableFrom(tableInfo.getSource())) {
+					((BeanFieldListen) obj).field_change(field, oldValue);
 				} else {
-					field_change(fieldInfo, oldValue);
+					field_change(field, oldValue);
 				}
 				return rtn;
 			}
@@ -66,10 +66,10 @@ public final class FieldListenMethodInterceptor implements MethodInterceptor, Be
 		startListen = true;
 	}
 
-	public void field_change(FieldInfo fieldInfo, Object oldValue) {
+	public void field_change(Field field, Object oldValue) {
 		if (changeColumnMap == null) {
 			changeColumnMap = new HashMap<String, Object>();
 		}
-		changeColumnMap.put(fieldInfo.getName(), oldValue);
+		changeColumnMap.put(field.getName(), oldValue);
 	}
 }

@@ -1,17 +1,18 @@
 package scw.sql.orm;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import scw.core.ClassInfo;
-import scw.core.FieldInfo;
+import net.sf.cglib.proxy.Enhancer;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.ReflectUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.sql.orm.annotation.NotColumn;
 import scw.sql.orm.annotation.Table;
@@ -19,13 +20,11 @@ import scw.sql.orm.annotation.Transient;
 
 public final class TableInfo {
 	private String name;
-	private final Table table;
 	private String engine = "InnoDB";
 	private String charset = "utf8";
 	private String row_format = "COMPACT";
 
-	private final ClassInfo classInfo;
-
+	private final Class<?> source;
 	private final Map<String, ColumnInfo> columnMap;// 所有的
 	// 数据库字段名到字段的映射
 	private final Map<String, String> fieldToColumn;// 所有的
@@ -34,21 +33,31 @@ public final class TableInfo {
 	private final ColumnInfo[] primaryKeyColumns;
 	private final ColumnInfo[] notPrimaryKeyColumns;
 	private final ColumnInfo[] tableColumns;
-	private boolean parent = false;
 	private ColumnInfo autoIncrement;
 	private final ColumnInfo[] autoCreateColumns;
+	private final Map<String, Field> fieldSetterMethodMap;
+	private final Class<?>[] beanListenInterfaces;
+	private final boolean serializer;
+	private final boolean table;
 
-	TableInfo(ClassInfo classInfo) {
-		this.classInfo = classInfo;
-		StringBuilder sb = new StringBuilder();
-		char[] chars;
-		try {
-			chars = Class.forName(ClassUtils.getProxyRealClassName(classInfo.getSource())).getSimpleName()
-					.toCharArray();
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(classInfo.getSource().getName());
+	TableInfo(Class<?> clz) {
+		this.source = clz;
+		this.serializer = Serializable.class.isAssignableFrom(source);
+		if (BeanFieldListen.class.isAssignableFrom(source)) {
+			beanListenInterfaces = source.getInterfaces();
+		} else {// 没有自己实现此接口，增加此接口
+			Class<?>[] arr = source.getInterfaces();
+			if (arr.length == 0) {
+				beanListenInterfaces = new Class[] { BeanFieldListen.class };
+			} else {
+				beanListenInterfaces = new Class[arr.length + 1];
+				System.arraycopy(arr, 0, beanListenInterfaces, 0, arr.length);
+				beanListenInterfaces[arr.length] = BeanFieldListen.class;
+			}
 		}
 
+		StringBuilder sb = new StringBuilder();
+		char[] chars = source.getSimpleName().toCharArray();
 		for (int i = 0; i < chars.length; i++) {
 			char c = chars[i];
 			if (Character.isUpperCase(c)) {// 如果是大写的
@@ -60,10 +69,10 @@ public final class TableInfo {
 				sb.append(c);
 			}
 		}
-
 		this.name = sb.toString();
 
-		this.table = classInfo.getSource().getAnnotation(Table.class);
+		Table table = source.getAnnotation(Table.class);
+		this.table = table != null;
 		if (table != null) {
 			if (!"".equals(table.name())) {
 				this.name = table.name();
@@ -80,8 +89,6 @@ public final class TableInfo {
 			if (!StringUtils.isNull(table.row_format())) {
 				this.row_format = table.row_format();
 			}
-
-			this.parent = table.parent();
 		}
 
 		List<ColumnInfo> allColumnList = new ArrayList<ColumnInfo>();
@@ -93,32 +100,43 @@ public final class TableInfo {
 		Map<String, ColumnInfo> columnMap = new HashMap<String, ColumnInfo>();
 		Map<String, String> fieldToColumn = new HashMap<String, String>();
 
-		ClassInfo tempClassInfo = classInfo;
+		Map<String, Field> fieldSetterMethodMap = new HashMap<String, Field>();
+		Class<?> tempClassInfo = clz;
 		while (tempClassInfo != null) {
-			for (FieldInfo fieldInfo : tempClassInfo.getFieldInfos()) {
-				NotColumn exclude = fieldInfo.getField().getAnnotation(NotColumn.class);
+			for (Field field : source.getDeclaredFields()) {
+				Deprecated deprecated = field.getAnnotation(Deprecated.class);
+				if (deprecated != null) {
+					continue;
+				}
+
+				NotColumn exclude = field.getAnnotation(NotColumn.class);
 				if (exclude != null) {
 					continue;
 				}
 
-				Transient tr = fieldInfo.getField().getAnnotation(Transient.class);
+				Transient tr = field.getAnnotation(Transient.class);
 				if (tr != null) {
 					continue;
 				}
 
-				if (Modifier.isStatic(fieldInfo.getField().getModifiers())
-						|| Modifier.isFinal(fieldInfo.getField().getModifiers())
-						|| Modifier.isTransient(fieldInfo.getField().getModifiers())) {
+				if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())
+						|| Modifier.isTransient(field.getModifiers())) {
 					continue;
 				}
 
-				ColumnInfo columnInfo = new ColumnInfo(name, fieldInfo);
-				if (columnMap.containsKey(columnInfo.getName()) || fieldToColumn.containsKey(fieldInfo.getName())) {
+				ColumnInfo columnInfo = new ColumnInfo(name, field);
+				if (columnMap.containsKey(columnInfo.getName()) || fieldToColumn.containsKey(field.getName())) {
 					throw new AlreadyExistsException("[" + columnInfo.getName() + "]字段已存在");
 				}
 
+				field.setAccessible(true);
+				Method method = ReflectUtils.getSetterMethod(tempClassInfo, field, false);
+				if (method != null) {
+					fieldSetterMethodMap.put(method.getName(), field);
+				}
+
 				columnMap.put(columnInfo.getName(), columnInfo);
-				fieldToColumn.put(fieldInfo.getName(), columnInfo.getName());
+				fieldToColumn.put(field.getName(), columnInfo.getName());
 
 				if (columnInfo.isDataBaseType()) {
 					allColumnList.add(columnInfo);
@@ -130,7 +148,7 @@ public final class TableInfo {
 
 					if (columnInfo.getAutoIncrement() != null) {
 						if (autoIncrement != null) {
-							throw new RuntimeException(classInfo.getSource().getName() + "存在多个@AutoIncrement字段");
+							throw new RuntimeException(source.getName() + "存在多个@AutoIncrement字段");
 						}
 
 						autoIncrement = columnInfo;
@@ -140,8 +158,8 @@ public final class TableInfo {
 						autoCreateColumnList.add(columnInfo);
 					}
 				} else {
-					boolean javaType = fieldInfo.getField().getType().getName().startsWith("java.")
-							|| fieldInfo.getField().getType().getName().startsWith("javax.");
+					boolean javaType = field.getType().getName().startsWith("java.")
+							|| field.getType().getName().startsWith("javax.");
 					if (!javaType) {
 						tableColumnList.add(columnInfo);
 					}
@@ -149,15 +167,15 @@ public final class TableInfo {
 			}
 
 			boolean parent = true;
-			Table table = tempClassInfo.getSource().getAnnotation(Table.class);
-			if (table != null) {
-				parent = table.parent();
+			Table myTable = tempClassInfo.getAnnotation(Table.class);
+			if (myTable != null) {
+				parent = myTable.parent();
 			}
 
 			if (!parent) {
 				break;
 			}
-			tempClassInfo = tempClassInfo.getSuperInfo();
+			tempClassInfo = tempClassInfo.getSuperclass();
 		}
 
 		this.columns = allColumnList.toArray(new ColumnInfo[allColumnList.size()]);
@@ -169,6 +187,10 @@ public final class TableInfo {
 		this.columnMap.putAll(columnMap);
 		this.fieldToColumn = new HashMap<String, String>(fieldToColumn.size(), 1);
 		this.fieldToColumn.putAll(fieldToColumn);
+		this.fieldSetterMethodMap = new HashMap<String, Field>(fieldSetterMethodMap.size(), 1);
+		this.fieldSetterMethodMap.putAll(fieldSetterMethodMap);
+
+		getProxyClass();
 	}
 
 	public String getDefaultName() {
@@ -200,10 +222,6 @@ public final class TableInfo {
 		return columnInfo;
 	}
 
-	public Table getTable() {
-		return table;
-	}
-
 	public Map<String, String> getFieldToColumn() {
 		return fieldToColumn;
 	}
@@ -221,7 +239,7 @@ public final class TableInfo {
 	}
 
 	public boolean isTable() {
-		return table != null;
+		return table;
 	}
 
 	/*
@@ -233,29 +251,56 @@ public final class TableInfo {
 		return tableColumns;
 	}
 
-	public ClassInfo getClassInfo() {
-		return classInfo;
-	}
-
-	public boolean isParent() {
-		return parent;
+	public Class<?> getSource() {
+		return source;
 	}
 
 	public Object[] getPrimaryKeyParameter(Object data) throws IllegalArgumentException, IllegalAccessException {
 		Object[] params = new Object[getPrimaryKeyColumns().length];
 		for (int i = 0; i < params.length; i++) {
-			params[i] = getPrimaryKeyColumns()[i].getFieldInfo().forceGet(data);
+			params[i] = getPrimaryKeyColumns()[i].getField().get(data);
 		}
 		return params;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance() {
-		if (table == null) {
-			return (T) ReflectUtils.newInstance(classInfo.getSource());
+		if (table) {
+			Enhancer enhancer = new Enhancer();
+			enhancer.setInterfaces(beanListenInterfaces);
+			enhancer.setCallback(new FieldListenMethodInterceptor());
+			enhancer.setSuperclass(source);
+			if (serializer) {
+				enhancer.setSerialVersionUID(1L);
+			}
+
+			BeanFieldListen beanFieldListen = (BeanFieldListen) enhancer.create();
+			beanFieldListen.start_field_listen();
+			return (T) beanFieldListen;
 		} else {
-			return (T) classInfo.newFieldListenInstance();
+			return ReflectUtils.newInstance(source);
 		}
+	}
+
+	private volatile Class<? extends BeanFieldListen> proxyClass;
+
+	@SuppressWarnings("unchecked")
+	public Class<? extends BeanFieldListen> getProxyClass() {
+		if (proxyClass == null) {
+			synchronized (this) {
+				if (proxyClass == null) {
+					Enhancer enhancer = new Enhancer();
+					enhancer.setInterfaces(beanListenInterfaces);
+					enhancer.setCallbackType(FieldListenMethodInterceptor.class);
+					enhancer.setSuperclass(source);
+					if (serializer) {
+						enhancer.setSerialVersionUID(1L);
+					}
+					this.proxyClass = enhancer.createClass();
+				}
+			}
+		}
+		return proxyClass;
 	}
 
 	public ColumnInfo getAutoIncrement() {
@@ -267,7 +312,7 @@ public final class TableInfo {
 	}
 
 	public <T extends Annotation> T getAnnotation(Class<T> type) {
-		return classInfo.getSource().getAnnotation(type);
+		return source.getAnnotation(type);
 	}
 
 	public String getName(Object bean) {
@@ -276,5 +321,9 @@ public final class TableInfo {
 		}
 
 		return name;
+	}
+
+	public Field getFieldInfoBySetterName(String setterName) {
+		return fieldSetterMethodMap.get(setterName);
 	}
 }

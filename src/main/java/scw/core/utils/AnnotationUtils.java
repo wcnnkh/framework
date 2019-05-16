@@ -1,8 +1,11 @@
 package scw.core.utils;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public final class AnnotationUtils {
@@ -44,6 +47,10 @@ public final class AnnotationUtils {
 	private static void appendAnnoationMethod(Map<String, Method> methodMap, Class<?> type,
 			Class<? extends Annotation> annotationClass) {
 		for (Method method : type.getDeclaredMethods()) {
+			if (isDeprecated(method)) {
+				continue;
+			}
+
 			Annotation annotation = method.getAnnotation(annotationClass);
 			if (annotation == null) {
 				continue;
@@ -63,5 +70,35 @@ public final class AnnotationUtils {
 
 			methodMap.put(key, method);
 		}
+	}
+
+	public static boolean isDeprecated(AccessibleObject accessibleObject) {
+		return accessibleObject.getAnnotation(Deprecated.class) != null;
+	}
+
+	public static LinkedList<Field> getAnnotationFieldList(Class<?> clazz, boolean isDeclared, boolean sup,
+			Class<? extends Annotation> annotationClass) {
+		Class<?> clz = clazz;
+		LinkedList<Field> fieldList = new LinkedList<Field>();
+		while (clz != null && clz != Object.class) {
+			for (Field field : isDeclared ? clz.getDeclaredFields() : clz.getFields()) {
+				if (isDeprecated(field)) {
+					continue;
+				}
+
+				Annotation annotation = field.getAnnotation(annotationClass);
+				if (annotation == null) {
+					continue;
+				}
+
+				fieldList.add(field);
+				if (sup) {
+					clz = clz.getSuperclass();
+				} else {
+					break;
+				}
+			}
+		}
+		return fieldList;
 	}
 }

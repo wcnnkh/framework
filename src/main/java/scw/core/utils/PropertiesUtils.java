@@ -1,5 +1,6 @@
 package scw.core.utils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,11 +13,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import scw.core.ClassInfo;
-import scw.core.FieldInfo;
 import scw.core.StringFormat;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
+import scw.core.reflect.ReflectUtils;
 
 public final class PropertiesUtils {
 	private static Logger logger = LoggerFactory.getLogger(PropertiesUtils.class);
@@ -26,16 +26,18 @@ public final class PropertiesUtils {
 
 	public static <T> T setProperties(Object obj, Properties properties, StringFormat stringFormat) {
 		T t = null;
-		ClassInfo classInfo = ClassUtils.getClassInfo(obj.getClass());
-		FieldInfo fieldInfo;
 		try {
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				String key = stringFormat.format(entry.getKey().toString());
-				fieldInfo = classInfo.getFieldInfo(key, true);
-				if (fieldInfo != null) {
-					String value = entry.getValue() == null ? null : entry.getValue().toString();
-					fieldInfo.set(obj, stringFormat.format(value));
+				Field field = ReflectUtils.getField(obj.getClass(), key, true);
+				if (field == null) {
+					continue;
 				}
+
+				String value = entry.getValue() == null ? null : entry.getValue().toString();
+				value = stringFormat.format(value);
+				ReflectUtils.setFieldValue(obj.getClass(), field, obj,
+						StringParseUtils.conversion(value, field.getType()));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

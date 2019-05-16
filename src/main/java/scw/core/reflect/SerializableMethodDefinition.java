@@ -4,17 +4,19 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-public final class SerializableMethod implements Serializable, scw.core.reflect.Method {
+public final class SerializableMethodDefinition implements Serializable, MethodDefinition {
 	private static final long serialVersionUID = 1L;
 	private Class<?> belongClass;
 	private String methodName;
 	private Class<?>[] parameterTypes;
-	private transient Method method;
-	
-	//用于序列化
-	protected SerializableMethod(){};
 
-	public SerializableMethod(Class<?> belongClass, Method method) {
+	private volatile transient Method method;
+
+	// 用于序列化
+	protected SerializableMethodDefinition() {
+	};
+
+	public SerializableMethodDefinition(Class<?> belongClass, Method method) {
 		this.belongClass = belongClass;
 		this.methodName = method.getName();
 		this.parameterTypes = method.getParameterTypes();
@@ -24,11 +26,16 @@ public final class SerializableMethod implements Serializable, scw.core.reflect.
 		}
 	}
 
-	public Method getMethod() throws NoSuchMethodException {
+	public Method getMethod() {
 		if (method == null) {
-			method = belongClass.getDeclaredMethod(methodName, parameterTypes);
-			if (!Modifier.isPublic(method.getModifiers())) {
-				method.setAccessible(true);
+			synchronized (this) {
+				if (method == null) {
+					try {
+						this.method = ReflectUtils.getMethod(belongClass, false, methodName, parameterTypes);
+					} catch (NoSuchMethodException e) {
+						throw new RuntimeException(e);
+					}
+				}
 			}
 		}
 		return method;
