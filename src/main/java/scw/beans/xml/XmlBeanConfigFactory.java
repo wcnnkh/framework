@@ -25,7 +25,7 @@ public class XmlBeanConfigFactory extends AbstractBeanConfigFactory {
 		for (int i = 0; i < nhosts.getLength(); i++) {
 			Node nRoot = nhosts.item(i);
 			if (BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
-				BeanDefinition beanDefinition = new XmlBean(beanFactory, propertiesFactory, nRoot, filterNames);
+				BeanDefinition beanDefinition = new XmlBeanDefinition(beanFactory, propertiesFactory, nRoot, filterNames);
 				addBean(beanDefinition);
 			} else if (BEAN_FACTORY_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
 				Node node = nRoot.getAttributes().getNamedItem("value");

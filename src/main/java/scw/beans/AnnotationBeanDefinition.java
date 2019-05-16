@@ -20,19 +20,19 @@ import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 
-public class AnnotationBean implements BeanDefinition {
+public class AnnotationBeanDefinition implements BeanDefinition {
 	private final BeanFactory beanFactory;
 	private final Class<?> type;
 	private final String id;
 	private final BeanMethod[] initMethods;
 	private final BeanMethod[] destroyMethods;
 	private final boolean proxy;
-	private Enhancer enhancer;
+	private volatile Enhancer enhancer;
 	private final PropertiesFactory propertiesFactory;
 	private String[] filterNames;
 	private final boolean singleton;
 
-	public AnnotationBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type,
+	public AnnotationBeanDefinition(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type,
 			String[] filterNames) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
@@ -104,7 +104,11 @@ public class AnnotationBean implements BeanDefinition {
 
 	private Enhancer getProxyEnhancer() {
 		if (enhancer == null) {
-			enhancer = BeanUtils.createEnhancer(type, beanFactory, filterNames);
+			synchronized (this) {
+				if(enhancer == null){
+					enhancer = BeanUtils.createEnhancer(type, beanFactory, filterNames);
+				}
+			}
 		}
 		return enhancer;
 	}

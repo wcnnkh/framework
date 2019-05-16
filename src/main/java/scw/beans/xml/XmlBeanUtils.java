@@ -19,8 +19,6 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 
 public final class XmlBeanUtils {
-	public static final String PARAMETER_TAG_NAME = "parameter";
-
 	private XmlBeanUtils() {
 	};
 
@@ -100,7 +98,7 @@ public final class XmlBeanUtils {
 		NodeList nodeList = node.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node nRoot = nodeList.item(i);
-			if (nRoot.getNodeName().equals(PARAMETER_TAG_NAME)) {
+			if (nRoot.getNodeName().equals("parameter")) {
 				if (nRoot.getAttributes() == null) {
 					continue;
 				}

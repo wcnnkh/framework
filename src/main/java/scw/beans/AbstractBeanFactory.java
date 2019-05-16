@@ -288,7 +288,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			if (!ClassUtils.isInstance(clz)) {
 				return null;
 			}
-			return new AnnotationBean(this, getPropertiesFactory(), clz, getFilterNames());
+			return new AnnotationBeanDefinition(this, getPropertiesFactory(), clz, getFilterNames());
 		} catch (Exception e) {
 		}
 		return null;

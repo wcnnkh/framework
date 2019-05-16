@@ -12,7 +12,6 @@ import scw.beans.property.PropertiesFactory;
 import scw.core.exception.BeansException;
 
 public class XmlBeanMethodInfo implements BeanMethod {
-	private static final String NAME_KEY = "name";
 	private Method method;
 	private XmlBeanParameter[] beanMethodParameters;
 
@@ -21,7 +20,7 @@ public class XmlBeanMethodInfo implements BeanMethod {
 			throw new BeansException("not found method name");
 		}
 
-		Node nameNode = node.getAttributes().getNamedItem(NAME_KEY);
+		Node nameNode = node.getAttributes().getNamedItem("name");
 		if (nameNode == null) {
 			throw new BeansException("not found method name");
 		}

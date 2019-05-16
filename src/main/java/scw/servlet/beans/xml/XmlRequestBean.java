@@ -10,7 +10,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import net.sf.cglib.proxy.Enhancer;
-import scw.beans.AnnotationBean;
+import scw.beans.AnnotationBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
@@ -143,10 +143,10 @@ public final class XmlRequestBean implements RequestBean {
 		this.constructorParameters = constructorParameterList
 				.toArray(new XmlBeanParameter[constructorParameterList.size()]);
 		this.properties = propertiesList.toArray(new XmlBeanParameter[propertiesList.size()]);
-		initMethodList.addAll(AnnotationBean.getInitMethodList(type));
+		initMethodList.addAll(AnnotationBeanDefinition.getInitMethodList(type));
 		this.initMethods = initMethodList.toArray(new BeanMethod[initMethodList.size()]);
 
-		destroyMethodList.addAll(AnnotationBean.getDestroyMethdoList(type));
+		destroyMethodList.addAll(AnnotationBeanDefinition.getDestroyMethdoList(type));
 		this.destroyMethods = destroyMethodList.toArray(new BeanMethod[destroyMethodList.size()]);
 
 		this.proxy = BeanUtils.checkProxy(type, this.filterNames);

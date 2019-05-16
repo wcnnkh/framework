@@ -16,7 +16,7 @@ public class ServiceBeanConfigFactory extends AbstractBeanConfigFactory {
 		for (Class<?> clz : ClassUtils.getClasses(packageNames)) {
 			Service service = clz.getAnnotation(Service.class);
 			if (service != null) {
-				AnnotationBean bean = new AnnotationBean(beanFactory, propertiesFactory, clz, filterNames);
+				AnnotationBeanDefinition bean = new AnnotationBeanDefinition(beanFactory, propertiesFactory, clz, filterNames);
 				addBean(bean);
 			}
 		}
