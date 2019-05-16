@@ -53,7 +53,7 @@ public final class SaveOrUpdateSQL implements Sql {
 		int index = 0;
 		for (i = 0; i < tableInfo.getColumns().length; i++) {
 			columnInfo = tableInfo.getColumns()[i];
-			if (columnInfo.getPrimaryKey() != null) {
+			if (columnInfo.isPrimaryKey()) {
 				continue;
 			}
 

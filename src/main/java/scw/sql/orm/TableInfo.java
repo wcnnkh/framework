@@ -122,7 +122,7 @@ public final class TableInfo {
 
 				if (columnInfo.isDataBaseType()) {
 					allColumnList.add(columnInfo);
-					if (columnInfo.getPrimaryKey() != null) {
+					if (columnInfo.isPrimaryKey()) {
 						idNameList.add(columnInfo);
 					} else {
 						notIdNameList.add(columnInfo);

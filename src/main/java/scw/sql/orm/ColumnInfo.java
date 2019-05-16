@@ -27,9 +27,8 @@ public final class ColumnInfo {
 	private static Logger logger = LoggerFactory.getLogger(ColumnInfo.class);
 
 	private String name;// 数据库字段名
-	private final PrimaryKey primaryKey;// 索引
+	private final boolean isPrimaryKey;// 索引
 	private String typeName;
-	private final Class<?> type;
 	private int length;
 	private final boolean nullAble;// 是否可以为空
 	private boolean unique;// 是否建立唯一索引
@@ -50,9 +49,10 @@ public final class ColumnInfo {
 		this.autoCreate = field.getAnnotation(AutoCreate.class);
 		this.fieldInfo = field;
 		this.name = field.getName();
-		this.primaryKey = field.getAnnotation(PrimaryKey.class);
-		this.type = field.getType();
-		this.typeName = this.type.getName();
+		PrimaryKey primaryKey = field.getAnnotation(PrimaryKey.class);
+		this.isPrimaryKey = primaryKey != null;
+		Class<?> type = field.getType();
+		this.typeName = type.getName();
 		this.length = -1;
 		this.isDataBaseType = ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
 				|| Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
@@ -94,12 +94,12 @@ public final class ColumnInfo {
 	}
 
 	private Object fieldValueToDBValue(Object value) {
-		if (boolean.class == type) {
+		if (boolean.class == fieldInfo.getType()) {
 			boolean b = value == null ? false : (Boolean) value;
 			return b ? 1 : 0;
 		}
 
-		if (Boolean.class == type) {
+		if (Boolean.class == fieldInfo.getType()) {
 			if (value == null) {
 				return null;
 			}
@@ -113,15 +113,15 @@ public final class ColumnInfo {
 	}
 
 	public void setValueToField(Object bean, Object dbValue) throws IllegalArgumentException, IllegalAccessException {
-		fieldInfo.forceSet(bean, ORMUtils.parse(type, dbValue));
+		fieldInfo.forceSet(bean, ORMUtils.parse(fieldInfo.getType(), dbValue));
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public PrimaryKey getPrimaryKey() {
-		return primaryKey;
+	public boolean isPrimaryKey() {
+		return isPrimaryKey;
 	}
 
 	public String getTypeName() {
@@ -129,7 +129,7 @@ public final class ColumnInfo {
 	}
 
 	public Class<?> getType() {
-		return type;
+		return fieldInfo.getType();
 	}
 
 	public int getLength() {

@@ -14,20 +14,18 @@ import scw.core.utils.StringUtils;
 public final class FieldInfo {
 	private static Logger logger = LoggerFactory.getLogger(FieldInfo.class);
 
-	private String name;
 	private Field field;
-	private Class<?> type;
 	private Method getter;
 	private Method setter;
 
 	public FieldInfo(Class<?> clz, Field field) {
 		this.field = field;
-		this.name = field.getName();
-		this.type = field.getType();
+		String name = field.getName();
+		Class<?> type = field.getType();
 		this.field.setAccessible(true);
 
 		try {
-			this.getter = clz.getDeclaredMethod("is" + StringUtils.toUpperCase(name, 0, 1));
+			this.getter = clz.getDeclaredMethod("get" + StringUtils.toUpperCase(name, 0, 1));
 		} catch (NoSuchMethodException e) {
 		} catch (SecurityException e) {
 		}
@@ -73,7 +71,7 @@ public final class FieldInfo {
 	}
 
 	public String getName() {
-		return name;
+		return field.getName();
 	}
 
 	public Field getField() {
@@ -81,7 +79,7 @@ public final class FieldInfo {
 	}
 
 	public Class<?> getType() {
-		return type;
+		return field.getType();
 	}
 
 	public Method getGetter() {

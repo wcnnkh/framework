@@ -43,7 +43,7 @@ public final class UpdateSQLByBeanListen implements Sql {
 		List<Object> paramList = new LinkedList<Object>();
 		for (Entry<String, Object> entry : changeMap.entrySet()) {
 			columnInfo = tableInfo.getColumnInfo(entry.getKey());
-			if (columnInfo.getPrimaryKey() != null) {
+			if (columnInfo.isPrimaryKey()) {
 				continue;
 			}
 
