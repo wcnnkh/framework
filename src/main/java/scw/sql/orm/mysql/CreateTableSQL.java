@@ -21,6 +21,7 @@ public final class CreateTableSQL implements Sql {
 	private String sql;
 
 	public CreateTableSQL(TableInfo tableInfo, String tableName) {
+		Table table = tableInfo.getAnnotation(Table.class);
 		StringBuilder sb = new StringBuilder();
 		sb.append("CREATE TABLE IF NOT EXISTS `").append(tableName).append("`");
 		sb.append(" (");
@@ -193,12 +194,14 @@ public final class CreateTableSQL implements Sql {
 		}
 
 		sb.append(")");
-		sb.append(" ENGINE=").append(tableInfo.getEngine());
-		sb.append(" DEFAULT");
-		sb.append(" CHARSET=").append(tableInfo.getCharset());
-		sb.append(" ROW_FORMAT=").append(tableInfo.getRow_format());
-
-		Table table = tableInfo.getAnnotation(Table.class);
+		
+		if(table != null){
+			sb.append(" ENGINE=").append(table.engine());
+			sb.append(" DEFAULT");
+			sb.append(" CHARSET=").append(table.charset());
+			sb.append(" ROW_FORMAT=").append(table.row_format());
+		}
+		
 		if (table != null && !StringUtils.isEmpty(table.comment())) {
 			sb.append(" comment=\'").append(table.comment()).append("\'");
 

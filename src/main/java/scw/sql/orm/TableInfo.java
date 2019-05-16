@@ -13,17 +13,12 @@ import java.util.Map;
 import net.sf.cglib.proxy.Enhancer;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.ReflectUtils;
-import scw.core.utils.StringUtils;
 import scw.sql.orm.annotation.NotColumn;
 import scw.sql.orm.annotation.Table;
 import scw.sql.orm.annotation.Transient;
 
 public final class TableInfo {
 	private String name;
-	private String engine = "InnoDB";
-	private String charset = "utf8";
-	private String row_format = "COMPACT";
-
 	private final Class<?> source;
 	private final Map<String, ColumnInfo> columnMap;// 所有的
 	// 数据库字段名到字段的映射
@@ -76,18 +71,6 @@ public final class TableInfo {
 		if (table != null) {
 			if (!"".equals(table.name())) {
 				this.name = table.name();
-			}
-
-			if (!StringUtils.isNull(table.engine())) {
-				this.engine = table.engine();
-			}
-
-			if (!StringUtils.isNull(table.charset())) {
-				this.charset = table.charset();
-			}
-
-			if (!StringUtils.isNull(table.row_format())) {
-				this.row_format = table.row_format();
 			}
 		}
 
@@ -195,18 +178,6 @@ public final class TableInfo {
 
 	public String getDefaultName() {
 		return name;
-	}
-
-	public String getEngine() {
-		return engine;
-	}
-
-	public String getCharset() {
-		return charset;
-	}
-
-	public String getRow_format() {
-		return row_format;
 	}
 
 	public ColumnInfo getColumnInfo(String fieldName) {
