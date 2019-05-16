@@ -19,7 +19,7 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 	private final int beginRowIndex;
 	private final int endRowIndex;
 	private final HashMap<String, Integer> nameMapping = new HashMap<String, Integer>();
-	private final ClassInfo classInfo;
+	private final Class<T> type;
 
 	/**
 	 * @param type
@@ -32,11 +32,7 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 		this.nameMappingIndex = nameMappingIndex;
 		this.beginRowIndex = beginRowIndex;
 		this.endRowIndex = endRowIndex;
-		this.classInfo = ClassUtils.getClassInfo(type);
-	}
-
-	public final ClassInfo getClassInfo() {
-		return classInfo;
+		this.type = type;
 	}
 
 	public final void load(int sheetIndex, int rowIndex, String[] contents) {
@@ -61,7 +57,8 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 			}
 
 			try {
-				T obj = newInstance();
+				T obj = ReflectUtils.newInstance(type);
+				ClassInfo classInfo = new ClassInfo(type);
 				for (Entry<String, Integer> entry : nameMapping.entrySet()) {
 					FieldInfo fieldInfo = classInfo.getFieldInfo(entry.getKey(), true);
 					if (fieldInfo == null) {
@@ -84,10 +81,6 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	public T newInstance() throws Exception {
-		return ReflectUtils.newInstance(classInfo.getSource());
 	}
 
 	public Object format(String name, String value, Class<?> type) {
