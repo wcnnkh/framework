@@ -34,13 +34,13 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import scw.core.exception.NotFoundException;
-import scw.core.reflect.DefaultFieldDefinition;
-import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 
 public final class XMLUtils {
-	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
-	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
+	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory
+			.newInstance();
+	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory
+			.newInstance();
 
 	static {
 		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(true);
@@ -214,7 +214,8 @@ public final class XMLUtils {
 	 * @param defaultValue
 	 * @return
 	 */
-	public static <T> T getNodeAttributeValue(Class<T> basicType, Node node, String name, T defaultValue) {
+	public static <T> T getNodeAttributeValue(Class<T> basicType, Node node,
+			String name, T defaultValue) {
 		String value = getNodeAttributeValue(node, name);
 		if (value == null) {
 			return defaultValue;
@@ -223,7 +224,8 @@ public final class XMLUtils {
 		}
 	}
 
-	public static String getNodeAttributeValue(Node node, String name, String defaultValue) {
+	public static String getNodeAttributeValue(Node node, String name,
+			String defaultValue) {
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		if (namedNodeMap == null) {
 			return null;
@@ -233,7 +235,8 @@ public final class XMLUtils {
 		return n == null ? defaultValue : n.getNodeValue();
 	}
 
-	public static String getNodeAttributeValueOrNodeContent(Node node, String name) {
+	public static String getNodeAttributeValueOrNodeContent(Node node,
+			String name) {
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		if (namedNodeMap == null) {
 			return null;
@@ -259,9 +262,11 @@ public final class XMLUtils {
 		}
 	}
 
-	public static boolean getBooleanValue(Node node, String name, boolean defaultValue) {
+	public static boolean getBooleanValue(Node node, String name,
+			boolean defaultValue) {
 		String value = getNodeAttributeValue(node, name);
-		return StringUtils.isNull(value) ? defaultValue : Boolean.parseBoolean(value);
+		return StringUtils.isNull(value) ? defaultValue : Boolean
+				.parseBoolean(value);
 	}
 
 	public static <T> T getBean(Node node, Class<T> type) throws Exception {
@@ -292,14 +297,15 @@ public final class XMLUtils {
 				t = ReflectUtils.newInstance(type);
 			}
 
-			FieldDefinition fieldDefinition = new DefaultFieldDefinition(type, field, true, false, true);
-			fieldDefinition.set(t, StringParseUtils.conversion(value, field.getType()));
+			ReflectUtils.setFieldValue(type, field, t,
+					StringParseUtils.conversion(value, field.getType()));
 		}
 		return t;
 	}
 
 	public static <T> List<T> getBeanList(Node rootNode, Class<T> type)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+			throws InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
 		if (rootNode == null) {
 			return null;
 		}

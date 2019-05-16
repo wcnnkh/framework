@@ -225,7 +225,7 @@ public final class BeanUtils {
 
 	private static void setConfig(BeanFactory beanFactory, Class<?> clz,
 			Object obj, FieldDefinition field) {
-		Config config = field.getField().getAnnotation(Config.class);
+		Config config = field.getAnnotation(Config.class);
 		if (config != null) {
 			staticFieldWarnLog(Config.class.getName(), clz, field);
 			Object value = null;
@@ -270,8 +270,7 @@ public final class BeanUtils {
 	private static void setProperties(BeanFactory beanFactory,
 			PropertiesFactory propertiesFactory, Class<?> clz, Object obj,
 			FieldDefinition field) {
-		Properties properties = field.getField()
-				.getAnnotation(Properties.class);
+		Properties properties = field.getAnnotation(Properties.class);
 		if (properties != null) {
 			staticFieldWarnLog(Properties.class.getName(), clz, field);
 
@@ -295,7 +294,7 @@ public final class BeanUtils {
 
 	private static void setBean(BeanFactory beanFactory, Class<?> clz,
 			Object obj, FieldDefinition field) {
-		Autowrite s = field.getField().getAnnotation(Autowrite.class);
+		Autowrite s = field.getAnnotation(Autowrite.class);
 		if (s != null) {
 			staticFieldWarnLog(Autowrite.class.getName(), clz, field);
 
@@ -402,7 +401,7 @@ public final class BeanUtils {
 				if (isStatic) {
 					if (Modifier.isStatic(field.getModifiers())) {
 						list.add(new DefaultFieldDefinition(clz, field, false,
-								false, true));
+								false, true, true));
 					}
 				} else {
 					if (Modifier.isStatic(field.getModifiers())) {
@@ -410,7 +409,7 @@ public final class BeanUtils {
 					}
 
 					list.add(new DefaultFieldDefinition(clz, field, false,
-							false, true));
+							false, true, true));
 				}
 			}
 
