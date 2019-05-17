@@ -26,12 +26,5 @@ public @interface Table {
 	 */
 	public boolean create() default true;
 	
-	/**
-	 * 是否遍历父级字段
-	 * 默认是false
-	 * @return
-	 */
-	public boolean parent() default false;
-	
 	public String comment() default "";
 }

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import scw.data.memcached.CAS;
 import scw.data.memcached.Memcached;
-import scw.sql.orm.BeanFieldListen;
+import scw.sql.orm.TableFieldListen;
 
 public final class MemcachedCacheManager implements CacheManager {
 	private final Memcached memcached;
@@ -29,16 +29,16 @@ public final class MemcachedCacheManager implements CacheManager {
 
 	public <T> T get(Class<T> type, String key) {
 		T t = memcached.get(key);
-		if (t != null && t instanceof BeanFieldListen) {
-			((BeanFieldListen) t).start_field_listen();
+		if (t != null && t instanceof TableFieldListen) {
+			((TableFieldListen) t).start_field_listen();
 		}
 		return t;
 	}
 
 	public <T> T getAndTouch(Class<T> type, String key, int exp) {
 		T t = memcached.getAndTouch(key, exp);
-		if (t != null && t instanceof BeanFieldListen) {
-			((BeanFieldListen) t).start_field_listen();
+		if (t != null && t instanceof TableFieldListen) {
+			((TableFieldListen) t).start_field_listen();
 		}
 		return t;
 	}

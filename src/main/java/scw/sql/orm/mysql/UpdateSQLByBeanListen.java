@@ -10,7 +10,7 @@ import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
 import scw.sql.Sql;
-import scw.sql.orm.BeanFieldListen;
+import scw.sql.orm.TableFieldListen;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Counter;
@@ -21,7 +21,7 @@ public final class UpdateSQLByBeanListen implements Sql {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanListen(BeanFieldListen beanFieldListen, TableInfo tableInfo, String tableName)
+	public UpdateSQLByBeanListen(TableFieldListen beanFieldListen, TableInfo tableInfo, String tableName)
 			throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");

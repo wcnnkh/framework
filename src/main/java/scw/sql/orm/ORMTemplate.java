@@ -163,8 +163,8 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 	}
 
 	public boolean update(Object bean, String tableName) {
-		if (bean instanceof BeanFieldListen) {
-			if (((BeanFieldListen) bean).get_field_change_map() == null) {
+		if (bean instanceof TableFieldListen) {
+			if (((TableFieldListen) bean).get_field_change_map() == null) {
 				return true;
 			}
 		}

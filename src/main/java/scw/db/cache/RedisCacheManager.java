@@ -8,7 +8,7 @@ import java.util.Map;
 import scw.core.utils.CollectionUtils;
 import scw.data.redis.Redis;
 import scw.data.redis.RedisUtils;
-import scw.sql.orm.BeanFieldListen;
+import scw.sql.orm.TableFieldListen;
 
 public final class RedisCacheManager implements CacheManager {
 	private final Redis redis;
@@ -32,8 +32,8 @@ public final class RedisCacheManager implements CacheManager {
 	@SuppressWarnings("unchecked")
 	public <T> T get(Class<T> type, String key) {
 		T t = (T) redis.getObjectOperations().get(key);
-		if (t != null && t instanceof BeanFieldListen) {
-			((BeanFieldListen) t).start_field_listen();
+		if (t != null && t instanceof TableFieldListen) {
+			((TableFieldListen) t).start_field_listen();
 		}
 		return t;
 	}
@@ -41,8 +41,8 @@ public final class RedisCacheManager implements CacheManager {
 	public <T> T getAndTouch(Class<T> type, String key, int exp) {
 		@SuppressWarnings("unchecked")
 		T t = (T) redis.getObjectOperations().getAndTouch(key, exp);
-		if (t != null && t instanceof BeanFieldListen) {
-			((BeanFieldListen) t).start_field_listen();
+		if (t != null && t instanceof TableFieldListen) {
+			((TableFieldListen) t).start_field_listen();
 		}
 		return t;
 	}

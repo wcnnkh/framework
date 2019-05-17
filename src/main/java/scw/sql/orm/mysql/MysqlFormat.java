@@ -5,7 +5,7 @@ import java.util.Collection;
 import scw.core.Pagination;
 import scw.db.sql.SimpleSql;
 import scw.sql.Sql;
-import scw.sql.orm.BeanFieldListen;
+import scw.sql.orm.TableFieldListen;
 import scw.sql.orm.PaginationSql;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.TableInfo;
@@ -35,8 +35,8 @@ public final class MysqlFormat implements SqlFormat {
 
 	public Sql toUpdateSql(Object obj, TableInfo tableInfo, String tableName) {
 		try {
-			if (obj instanceof BeanFieldListen) {
-				return new UpdateSQLByBeanListen((BeanFieldListen) obj, tableInfo, tableName);
+			if (obj instanceof TableFieldListen) {
+				return new UpdateSQLByBeanListen((TableFieldListen) obj, tableInfo, tableName);
 			} else {
 				return new UpdateSQL(obj, tableInfo, tableName);
 			}

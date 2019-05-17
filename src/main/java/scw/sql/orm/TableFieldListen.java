@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-public interface BeanFieldListen extends Serializable{
+public interface TableFieldListen extends Serializable{
 	public static final String GET_CHANGE_MAP = "get_field_change_map";
 	public static final String START_LISTEN = "start_field_listen";
 	public static final String IS_START_LISTEN = "is_start_field_listen";

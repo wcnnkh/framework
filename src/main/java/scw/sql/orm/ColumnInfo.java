@@ -27,7 +27,8 @@ public final class ColumnInfo {
 	private static Logger logger = LoggerFactory.getLogger(ColumnInfo.class);
 
 	private String name;// 数据库字段名
-	private final boolean isPrimaryKey;// 索引
+	private final boolean primaryKey;// 索引
+	private final boolean autoIncrement;
 	private String typeName;
 	private int length;
 	private final boolean nullAble;// 是否可以为空
@@ -35,9 +36,7 @@ public final class ColumnInfo {
 	private final boolean isDataBaseType;
 	private final Field field;
 	private String sqlTableAndColumn;
-	private final Column column;
 	private final Counter counter;
-	private final AutoIncrement autoIncrement;
 	private final AutoCreate autoCreate;
 
 	// 就是在name的两边加入了(``)
@@ -45,12 +44,12 @@ public final class ColumnInfo {
 
 	protected ColumnInfo(String defaultTableName, Field field) {
 		this.counter = field.getAnnotation(Counter.class);
-		this.autoIncrement = field.getAnnotation(AutoIncrement.class);
+		this.autoIncrement = field.getAnnotation(AutoIncrement.class) != null;
 		this.autoCreate = field.getAnnotation(AutoCreate.class);
 		this.field = field;
 		this.name = field.getName();
 		PrimaryKey primaryKey = field.getAnnotation(PrimaryKey.class);
-		this.isPrimaryKey = primaryKey != null;
+		this.primaryKey = primaryKey != null;
 		Class<?> type = field.getType();
 		this.typeName = type.getName();
 		this.length = -1;
@@ -61,7 +60,7 @@ public final class ColumnInfo {
 				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
 				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type)
 				|| URL.class.isAssignableFrom(type) || byte[].class.isAssignableFrom(type);
-		this.column = field.getAnnotation(Column.class);
+		Column column = field.getAnnotation(Column.class);
 		if (column != null) {
 			if (column.name().trim().length() != 0) {
 				this.name = column.name().trim();
@@ -121,7 +120,7 @@ public final class ColumnInfo {
 	}
 
 	public boolean isPrimaryKey() {
-		return isPrimaryKey;
+		return primaryKey;
 	}
 
 	public String getTypeName() {
@@ -182,15 +181,11 @@ public final class ColumnInfo {
 		return unique;
 	}
 
-	public Column getColumn() {
-		return column;
-	}
-
 	public Counter getCounter() {
 		return counter;
 	}
 
-	public AutoIncrement getAutoIncrement() {
+	public boolean isAutoIncrement() {
 		return autoIncrement;
 	}
 

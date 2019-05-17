@@ -8,10 +8,10 @@ import java.util.Map;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
-public final class FieldListenMethodInterceptor implements MethodInterceptor, BeanFieldListen {
+public final class TableFieldListenInterceptor implements MethodInterceptor, TableFieldListen {
 	private static final long serialVersionUID = 1L;
-	private Map<String, Object> changeColumnMap;
-	private boolean startListen = false;
+	private transient Map<String, Object> changeColumnMap;
+	private transient boolean startListen = false;
 	private transient TableInfo tableInfo;
 
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
@@ -20,16 +20,16 @@ public final class FieldListenMethodInterceptor implements MethodInterceptor, Be
 		}
 
 		if (args.length == 0) {
-			if (BeanFieldListen.START_LISTEN.equals(method.getName())) {
-				if (BeanFieldListen.class.isAssignableFrom(tableInfo.getSource())) {
+			if (TableFieldListen.START_LISTEN.equals(method.getName())) {
+				if (TableFieldListen.class.isAssignableFrom(tableInfo.getSource())) {
 					startListen = true;
 					return proxy.invokeSuper(obj, args);
 				} else {
 					start_field_listen();
 					return null;
 				}
-			} else if (BeanFieldListen.GET_CHANGE_MAP.equals(method.getName())) {
-				if (BeanFieldListen.class.isAssignableFrom(tableInfo.getSource())) {
+			} else if (TableFieldListen.GET_CHANGE_MAP.equals(method.getName())) {
+				if (TableFieldListen.class.isAssignableFrom(tableInfo.getSource())) {
 					return proxy.invokeSuper(obj, args);
 				} else {
 					return get_field_change_map();
@@ -44,8 +44,8 @@ public final class FieldListenMethodInterceptor implements MethodInterceptor, Be
 				Object oldValue = null;
 				oldValue = field.get(obj);
 				rtn = proxy.invokeSuper(obj, args);
-				if (BeanFieldListen.class.isAssignableFrom(tableInfo.getSource())) {
-					((BeanFieldListen) obj).field_change(field, oldValue);
+				if (TableFieldListen.class.isAssignableFrom(tableInfo.getSource())) {
+					((TableFieldListen) obj).field_change(field, oldValue);
 				} else {
 					field_change(field, oldValue);
 				}

@@ -13,7 +13,7 @@ public final class InsertSQL implements Sql {
 	private static final long serialVersionUID = 1L;
 	protected static final String INSERT_INTO_PREFIX = "insert into `";
 	protected static final String VALUES = ") values(";
-	
+
 	private volatile static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;
 	private Object[] params;
@@ -53,13 +53,14 @@ public final class InsertSQL implements Sql {
 		return params;
 	}
 
-	private static String getSql(TableInfo tableInfo, String tableName, Object obj) {
+	private static String getSql(TableInfo tableInfo, String tableName,
+			Object obj) {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
 		int index = 0;
 		for (ColumnInfo columnInfo : tableInfo.getColumns()) {
-			if (columnInfo.getAutoIncrement() != null) {
+			if (columnInfo.isAutoIncrement()) {
 				continue;
 			}
 
@@ -86,7 +87,7 @@ public final class InsertSQL implements Sql {
 			throws IllegalArgumentException, IllegalAccessException {
 		LinkedList<Object> list = new LinkedList<Object>();
 		for (ColumnInfo columnInfo : tableInfo.getColumns()) {
-			if (columnInfo.getAutoIncrement() != null) {
+			if (columnInfo.isAutoIncrement()) {
 				continue;
 			}
 

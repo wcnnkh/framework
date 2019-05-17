@@ -11,6 +11,7 @@ import scw.core.utils.StringUtils;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
+import scw.sql.orm.annotation.Column;
 import scw.sql.orm.annotation.Index;
 import scw.sql.orm.annotation.Table;
 import scw.sql.orm.enums.IndexMethod;
@@ -42,7 +43,8 @@ public final class CreateTableSQL implements Sql {
 				} else {
 					sb.append("(255)");
 				}
-			} else if ("float".equals(columnInfo.getTypeName()) || "java.lang.Float".equals(columnInfo.getTypeName())) {
+			} else if ("float".equals(columnInfo.getTypeName())
+					|| "java.lang.Float".equals(columnInfo.getTypeName())) {
 				sb.append("float");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
@@ -57,28 +59,32 @@ public final class CreateTableSQL implements Sql {
 				} else {
 					sb.append("(20)");
 				}
-			} else if ("long".equals(columnInfo.getTypeName()) || "java.lang.Long".equals(columnInfo.getTypeName())) {
+			} else if ("long".equals(columnInfo.getTypeName())
+					|| "java.lang.Long".equals(columnInfo.getTypeName())) {
 				sb.append("bigint");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
 				} else {
 					sb.append("(20)");
 				}
-			} else if ("int".equals(columnInfo.getTypeName()) || "java.lang.Integer".equals(columnInfo.getTypeName())) {
+			} else if ("int".equals(columnInfo.getTypeName())
+					|| "java.lang.Integer".equals(columnInfo.getTypeName())) {
 				sb.append("int");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
 				} else {
 					sb.append("(10)");
 				}
-			} else if ("short".equals(columnInfo.getTypeName()) || "java.lang.Short".equals(columnInfo.getTypeName())) {
+			} else if ("short".equals(columnInfo.getTypeName())
+					|| "java.lang.Short".equals(columnInfo.getTypeName())) {
 				sb.append("SMALLINT");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
 				} else {
 					sb.append("(5)");
 				}
-			} else if ("byte".equals(columnInfo.getTypeName()) || "java.lang.Byte".equals(columnInfo.getTypeName())) {
+			} else if ("byte".equals(columnInfo.getTypeName())
+					|| "java.lang.Byte".equals(columnInfo.getTypeName())) {
 				sb.append("bit");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
@@ -100,11 +106,12 @@ public final class CreateTableSQL implements Sql {
 				sb.append("not null ");
 			}
 
-			if (columnInfo.getColumn() != null && !StringUtils.isEmpty(columnInfo.getColumn().comment())) {
-				sb.append(" comment \'").append(columnInfo.getColumn().comment()).append("\'");
+			Column column = columnInfo.getField().getAnnotation(Column.class);
+			if (column != null && !StringUtils.isEmpty(column.comment())) {
+				sb.append(" comment \'").append(column.comment()).append("\'");
 			}
 
-			if (columnInfo.getAutoIncrement() != null) {
+			if (columnInfo.isAutoIncrement()) {
 				sb.append(" AUTO_INCREMENT");
 			}
 		}
@@ -188,20 +195,21 @@ public final class CreateTableSQL implements Sql {
 				if (i > 0) {
 					sb.append(",");
 				}
-				sb.append(tableInfo.getPrimaryKeyColumns()[i].getSqlColumnName());
+				sb.append(tableInfo.getPrimaryKeyColumns()[i]
+						.getSqlColumnName());
 			}
 			sb.append(")");
 		}
 
 		sb.append(")");
-		
-		if(table != null){
+
+		if (table != null) {
 			sb.append(" ENGINE=").append(table.engine());
 			sb.append(" DEFAULT");
 			sb.append(" CHARSET=").append(table.charset());
 			sb.append(" ROW_FORMAT=").append(table.row_format());
 		}
-		
+
 		if (table != null && !StringUtils.isEmpty(table.comment())) {
 			sb.append(" comment=\'").append(table.comment()).append("\'");
 
