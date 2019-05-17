@@ -66,7 +66,6 @@ public final class TableInfo {
 			}
 		}
 		this.name = sb.toString();
-
 		Table table = source.getAnnotation(Table.class);
 		this.table = table != null;
 		if (table != null) {
@@ -86,8 +85,8 @@ public final class TableInfo {
 
 		Map<String, Field> fieldSetterMethodMap = new HashMap<String, Field>();
 		Class<?> tempClassInfo = clz;
-		while (tempClassInfo != null) {
-			for (Field field : source.getDeclaredFields()) {
+		while (tempClassInfo != null && tempClassInfo != Object.class) {
+			for (Field field : tempClassInfo.getDeclaredFields()) {
 				if (AnnotationUtils.isDeprecated(field)) {
 					continue;
 				}
@@ -111,7 +110,7 @@ public final class TableInfo {
 				ColumnInfo columnInfo = new ColumnInfo(name, field);
 				if (columnMap.containsKey(columnInfo.getName())
 						|| fieldToColumn.containsKey(field.getName())) {
-					throw new AlreadyExistsException("[" + columnInfo.getName()
+					throw new AlreadyExistsException(source.getName() + "中[" + columnInfo.getName()
 							+ "]字段已存在");
 				}
 
@@ -300,6 +299,12 @@ public final class TableInfo {
 		return name;
 	}
 
+	/**
+	 * 如果不存在参数类型一致的set方法则返回空
+	 * 
+	 * @param setterName
+	 * @return
+	 */
 	public Field getFieldInfoBySetterName(String setterName) {
 		return fieldSetterMethodMap.get(setterName);
 	}
