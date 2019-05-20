@@ -23,41 +23,43 @@ public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedi
 		}
 	}
 
-	public Boolean set(byte[] key, byte[] value) {
+	public void set(byte[] key, byte[] value) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return RedisUtils.isOK(jedisCluster.set(key, value));
+			jedisCluster.set(key, value);
 		} finally {
 			close(jedisCluster);
 		}
 	}
 
-	public long setnx(byte[] key, byte[] value) {
+	public boolean setnx(byte[] key, byte[] value) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return jedisCluster.setnx(key, value);
+			return jedisCluster.setnx(key, value) == 1;
 		} finally {
 			close(jedisCluster);
 		}
 	}
 
-	public Boolean setex(byte[] key, int seconds, byte[] value) {
+	public void setex(byte[] key, int seconds, byte[] value) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return RedisUtils.isOK(jedisCluster.setex(key, seconds, value));
+			jedisCluster.setex(key, seconds, value);
 		} finally {
 			close(jedisCluster);
 		}
 	}
 
-	public Boolean exists(byte[] key) {
+	public boolean exists(byte[] key) {
 		JedisCluster jedisCluster = null;
+		Boolean b;
 		try {
 			jedisCluster = getResource();
-			return jedisCluster.exists(key);
+			b = jedisCluster.exists(key);
+			return b == null ? false : b;
 		} finally {
 			close(jedisCluster);
 		}
@@ -73,11 +75,11 @@ public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedi
 		}
 	}
 
-	public Long del(byte[] key) {
+	public boolean del(byte[] key) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return jedisCluster.del(key);
+			return jedisCluster.del(key) == 1;
 		} finally {
 			close(jedisCluster);
 		}

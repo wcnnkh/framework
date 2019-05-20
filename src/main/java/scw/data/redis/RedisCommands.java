@@ -11,17 +11,47 @@ public interface RedisCommands<K, V> {
 
 	List<V> mget(K... keys);
 
-	Boolean set(K key, V value);
+	/**
+	 * 如果 key 已经持有其他值， SET 就覆写旧值，无视类型。
+	 * 对于某个原本带有生存时间（TTL）的键来说， 当 SET 命令成功在这个键上执行时，
+	 * 这个键原有的 TTL 将被清除。
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	void set(K key, V value);
 
-	long setnx(K key, V value);
+	/**
+	 * 只在键 key 不存在的情况下， 将键 key 的值设置为 value 。
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	boolean setnx(K key, V value);
 
-	Boolean setex(K key, int seconds, V value);
+	/**
+	 * 将值 value 关联到 key ，并将 key 的生存时间设为 seconds (以秒为单位)。
+	 * 
+	 * 如果 key 已经存在， SETEX 命令将覆写旧值。
+	 * 
+	 * 这个命令类似于以下两个命令：
+	 * 
+	 * SET key value EXPIRE key seconds # 设置生存时间
+	 * 
+	 * @param key
+	 * @param seconds
+	 * @param value
+	 * @return
+	 */
+	void setex(K key, int seconds, V value);
 
-	Boolean exists(K key);
+	boolean exists(K key);
 
 	Long expire(K key, int seconds);
 
-	Long del(K key);
+	boolean del(K key);
 
 	Long hset(K key, K field, V value);
 

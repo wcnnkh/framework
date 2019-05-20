@@ -23,41 +23,43 @@ public abstract class AbstractClusterStringOperations extends AbstractStringRedi
 		}
 	}
 
-	public Boolean set(String key, String value) {
+	public void set(String key, String value) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return RedisUtils.isOK(jedisCluster.set(key, value));
+			jedisCluster.set(key, value);
 		} finally {
 			close(jedisCluster);
 		}
 	}
 
-	public long setnx(String key, String value) {
+	public boolean setnx(String key, String value) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return jedisCluster.setnx(key, value);
+			return jedisCluster.setnx(key, value) == 1;
 		} finally {
 			close(jedisCluster);
 		}
 	}
 
-	public Boolean setex(String key, int seconds, String value) {
+	public void setex(String key, int seconds, String value) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return RedisUtils.isOK(jedisCluster.setex(key, seconds, value));
+			jedisCluster.setex(key, seconds, value);
 		} finally {
 			close(jedisCluster);
 		}
 	}
 
-	public Boolean exists(String key) {
+	public boolean exists(String key) {
 		JedisCluster jedisCluster = null;
+		Boolean b;
 		try {
 			jedisCluster = getResource();
-			return jedisCluster.exists(key);
+			b = jedisCluster.exists(key);
+			return b == null ? false : b;
 		} finally {
 			close(jedisCluster);
 		}
@@ -73,11 +75,11 @@ public abstract class AbstractClusterStringOperations extends AbstractStringRedi
 		}
 	}
 
-	public Long del(String key) {
+	public boolean del(String key) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return jedisCluster.del(key);
+			return jedisCluster.del(key) == 1;
 		} finally {
 			close(jedisCluster);
 		}

@@ -62,32 +62,31 @@ public abstract class AbstractRedis implements Redis {
 			return dataList;
 		}
 
-		public Boolean set(String key, T value) {
-			if (key == null || value == null) {
-				return false;
+		public void set(String key, T value) {
+			if (key == null) {
+				return;
 			}
 
-			return getBinaryOperations().set(key.getBytes(getCharset()), getSerializer().serialize(type, value));
+			getBinaryOperations().set(key.getBytes(getCharset()), getSerializer().serialize(type, value));
 		}
 
-		public long setnx(String key, T value) {
-			if (key == null || value == null) {
-				return 0;
+		public boolean setnx(String key, T value) {
+			if (key == null) {
+				return false;
 			}
 
 			return getBinaryOperations().setnx(key.getBytes(getCharset()), getSerializer().serialize(type, value));
 		}
 
-		public Boolean setex(String key, int seconds, T value) {
-			if (key == null || value == null) {
-				return false;
+		public void setex(String key, int seconds, T value) {
+			if (key == null) {
+				return;
 			}
 
-			return getBinaryOperations().setex(key.getBytes(getCharset()), seconds,
-					getSerializer().serialize(type, value));
+			getBinaryOperations().setex(key.getBytes(getCharset()), seconds, getSerializer().serialize(type, value));
 		}
 
-		public Boolean exists(String key) {
+		public boolean exists(String key) {
 			if (key == null) {
 				return false;
 			}
@@ -103,9 +102,9 @@ public abstract class AbstractRedis implements Redis {
 			return getBinaryOperations().expire(key.getBytes(getCharset()), seconds);
 		}
 
-		public Long del(String key) {
+		public boolean del(String key) {
 			if (key == null) {
-				return -1L;
+				return false;
 			}
 
 			return getBinaryOperations().del(key.getBytes(getCharset()));
@@ -497,31 +496,31 @@ public abstract class AbstractRedis implements Redis {
 			return dataList;
 		}
 
-		public Boolean set(String key, Object value) {
-			if (key == null || value == null) {
-				return false;
+		public void set(String key, Object value) {
+			if (key == null) {
+				return;
 			}
 
-			return getBinaryOperations().set(key.getBytes(getCharset()), getSerializer().serialize(value));
+			getBinaryOperations().set(key.getBytes(getCharset()), getSerializer().serialize(value));
 		}
 
-		public long setnx(String key, Object value) {
-			if (key == null || value == null) {
-				return 0;
+		public boolean setnx(String key, Object value) {
+			if (key == null) {
+				return false;
 			}
 
 			return getBinaryOperations().setnx(key.getBytes(getCharset()), getSerializer().serialize(value));
 		}
 
-		public Boolean setex(String key, int seconds, Object value) {
-			if (key == null || value == null) {
-				return false;
+		public void setex(String key, int seconds, Object value) {
+			if (key == null) {
+				return;
 			}
 
-			return getBinaryOperations().setex(key.getBytes(getCharset()), seconds, getSerializer().serialize(value));
+			getBinaryOperations().setex(key.getBytes(getCharset()), seconds, getSerializer().serialize(value));
 		}
 
-		public Boolean exists(String key) {
+		public boolean exists(String key) {
 			if (key == null) {
 				return false;
 			}
@@ -537,9 +536,9 @@ public abstract class AbstractRedis implements Redis {
 			return getBinaryOperations().expire(key.getBytes(getCharset()), seconds);
 		}
 
-		public Long del(String key) {
+		public boolean del(String key) {
 			if (key == null) {
-				return -1L;
+				return false;
 			}
 
 			return getBinaryOperations().del(key.getBytes(getCharset()));

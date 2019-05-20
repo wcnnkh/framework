@@ -23,41 +23,43 @@ public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisO
 		}
 	}
 
-	public Boolean set(byte[] key, byte[] value) {
+	public void set(byte[] key, byte[] value) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return RedisUtils.isOK(jedis.set(key, value));
+			jedis.set(key, value);
 		} finally {
 			close(jedis);
 		}
 	}
 
-	public long setnx(byte[] key, byte[] value) {
+	public boolean setnx(byte[] key, byte[] value) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return jedis.setnx(key, value);
+			return jedis.setnx(key, value) == 1;
 		} finally {
 			close(jedis);
 		}
 	}
 
-	public Boolean setex(byte[] key, int seconds, byte[] value) {
+	public void setex(byte[] key, int seconds, byte[] value) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return RedisUtils.isOK(jedis.setex(key, seconds, value));
+			jedis.setex(key, seconds, value);
 		} finally {
 			close(jedis);
 		}
 	}
 
-	public Boolean exists(byte[] key) {
+	public boolean exists(byte[] key) {
 		Jedis jedis = null;
+		Boolean b;
 		try {
 			jedis = getResource();
-			return jedis.exists(key);
+			b = jedis.exists(key);
+			return b == null ? false : b;
 		} finally {
 			close(jedis);
 		}
@@ -73,11 +75,11 @@ public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisO
 		}
 	}
 
-	public Long del(byte[] key) {
+	public boolean del(byte[] key) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return jedis.del(key);
+			return jedis.del(key) == 1;
 		} finally {
 			close(jedis);
 		}

@@ -23,41 +23,43 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 		}
 	}
 
-	public Boolean set(String key, String value) {
+	public void set(String key, String value) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return RedisUtils.isOK(jedis.set(key, value));
+			RedisUtils.isOK(jedis.set(key, value));
 		} finally {
 			close(jedis);
 		}
 	}
 
-	public long setnx(String key, String value) {
+	public boolean setnx(String key, String value) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return jedis.setnx(key, value);
+			return jedis.setnx(key, value) == 1;
 		} finally {
 			close(jedis);
 		}
 	}
 
-	public Boolean setex(String key, int seconds, String value) {
+	public void setex(String key, int seconds, String value) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return RedisUtils.isOK(jedis.setex(key, seconds, value));
+			jedis.setex(key, seconds, value);
 		} finally {
 			close(jedis);
 		}
 	}
 
-	public Boolean exists(String key) {
+	public boolean exists(String key) {
 		Jedis jedis = null;
+		Boolean b;
 		try {
 			jedis = getResource();
-			return jedis.exists(key);
+			b = jedis.exists(key);
+			return b == null ? false : b;
 		} finally {
 			close(jedis);
 		}
@@ -73,11 +75,11 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 		}
 	}
 
-	public Long del(String key) {
+	public boolean del(String key) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return jedis.del(key);
+			return jedis.del(key) == 1;
 		} finally {
 			close(jedis);
 		}

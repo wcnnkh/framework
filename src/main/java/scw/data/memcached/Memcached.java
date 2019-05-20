@@ -39,4 +39,6 @@ public interface Memcached {
 	boolean delete(String key);
 
 	boolean delete(String key, long cas, long opTimeout);
+	
+	boolean isExist(String key);
 }

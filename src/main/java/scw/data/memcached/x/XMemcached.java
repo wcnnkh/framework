@@ -91,4 +91,8 @@ public final class XMemcached extends AbstractXMemcached {
 	public MemcachedClient getMemcachedClient() {
 		return memcachedClient;
 	}
+
+	public boolean isExist(String key) {
+		return get(key) != null;
+	}
 }
