@@ -5,11 +5,10 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSONObject;
-
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.json.JSONParseSupport;
+import scw.json.JSONUtils;
 import scw.servlet.beans.RequestBeanFactory;
 
 public class FormRequest extends AbstractRequest {
@@ -25,7 +24,7 @@ public class FormRequest extends AbstractRequest {
 			sb.append(",method=");
 			sb.append(httpServletRequest.getMethod());
 			sb.append(",");
-			sb.append(JSONObject.toJSONString(getParameterMap()));
+			sb.append(JSONUtils.toJSONString(getParameterMap()));
 			logger.debug(sb.toString());
 		}
 	}

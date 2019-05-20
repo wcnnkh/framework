@@ -56,7 +56,7 @@ public class DefaultServletService implements ServletService {
 		this.requestBeanFactory = new CommonRequestBeanFactory(beanFactory, propertiesFactory, configPath,
 				rootBeanFilters);
 
-		//将下面的字符串(如：servlet.debug)设置为常量可以提高代码可读性，但此字符串只使用一次，设置为常量会浪费一部分内存
+		// 将下面的字符串(如：servlet.debug)设置为常量可以提高代码可读性，但此字符串只使用一次，设置为常量会浪费一部分内存
 		// 默认开启日志
 		this.debug = StringParseUtils.parseBoolean(propertiesFactory.getValue("servlet.debug"), true);
 		String charsetName = propertiesFactory.getValue("servlet.charsetName");
@@ -177,7 +177,7 @@ public class DefaultServletService implements ServletService {
 			StringBuilder sb = new StringBuilder();
 			sb.append("servletPath=").append(httpServletRequest.getServletPath());
 			sb.append(",method=").append(httpServletRequest.getMethod());
-			sb.append(",status=").append(500);
+			sb.append(",status=").append(code);
 			sb.append(",msg=").append("system error");
 			String msg = sb.toString();
 			try {
@@ -215,7 +215,11 @@ public class DefaultServletService implements ServletService {
 		resp.setCharacterEncoding(getCharset().name());
 
 		Request request = requestFactory.format(getJsonParseSupport(), getRequestBeanFactory(), req, resp);
-		doAction(request, request.getResponse());
+		try {
+			doAction(request, request.getResponse());
+		} finally {
+			request.destroy();
+		}
 	}
 
 	public void doAction(Request request, Response response) throws Throwable {
