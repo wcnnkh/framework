@@ -1,6 +1,8 @@
 package scw.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,6 +26,8 @@ import scw.core.KeyValuePairFilter;
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
 import scw.core.net.http.ContentType;
+import scw.core.reflect.ReflectUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 
@@ -58,18 +62,21 @@ public final class ServletUtils {
 	 * @return
 	 */
 	public static boolean isJsonRequest(HttpServletRequest request) {
-		return isDesignatedContentType(request, scw.core.net.http.ContentType.APPLICATION_JSON);
+		return isDesignatedContentType(request,
+				scw.core.net.http.ContentType.APPLICATION_JSON);
 	}
 
 	public static boolean isFormRequest(HttpServletRequest request) {
-		return isDesignatedContentType(request, ContentType.APPLICATION_X_WWW_FORM_URLENCODED);
+		return isDesignatedContentType(request,
+				ContentType.APPLICATION_X_WWW_FORM_URLENCODED);
 	}
 
 	public static boolean isMultipartRequest(HttpServletRequest request) {
 		return isDesignatedContentType(request, ContentType.MULTIPART_FORM_DATA);
 	}
 
-	public static boolean isDesignatedContentType(HttpServletRequest request, String contentType) {
+	public static boolean isDesignatedContentType(HttpServletRequest request,
+			String contentType) {
 		String ct = request.getContentType();
 		return StringUtils.isEmpty(ct) ? false : ct.startsWith(contentType);
 	}
@@ -94,14 +101,17 @@ public final class ServletUtils {
 		return asyncSupport;
 	}
 
-	public static ServletService getServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
-			String configPath, String[] rootBeanFilters) {
+	public static ServletService getServletService(BeanFactory beanFactory,
+			PropertiesFactory propertiesFactory, String configPath,
+			String[] rootBeanFilters) {
 		if (isAsyncSupport()) {
-			return beanFactory.get("scw.servlet.AsyncServletService", beanFactory, propertiesFactory, configPath,
-					rootBeanFilters);
+			return beanFactory
+					.get("scw.servlet.AsyncServletService", beanFactory,
+							propertiesFactory, configPath, rootBeanFilters);
 		} else {
-			return beanFactory.get("scw.servlet.DefaultServletService", beanFactory, propertiesFactory, configPath,
-					rootBeanFilters);
+			return beanFactory
+					.get("scw.servlet.DefaultServletService", beanFactory,
+							propertiesFactory, configPath, rootBeanFilters);
 		}
 	}
 
@@ -116,7 +126,8 @@ public final class ServletUtils {
 	 *            查找时是否忽略大小写
 	 * @return
 	 */
-	public static Cookie getCookie(HttpServletRequest request, String name, boolean ignoreCase) {
+	public static Cookie getCookie(HttpServletRequest request, String name,
+			boolean ignoreCase) {
 		if (name == null) {
 			return null;
 		}
@@ -144,8 +155,8 @@ public final class ServletUtils {
 		return null;
 	}
 
-	public static Map<String, String> getRequestFirstValueParameters(ServletRequest request,
-			KeyValuePairFilter<String, String> filter) {
+	public static Map<String, String> getRequestFirstValueParameters(
+			ServletRequest request, KeyValuePairFilter<String, String> filter) {
 		Map<String, String[]> requestParams = request.getParameterMap();
 		if (requestParams == null || requestParams.isEmpty()) {
 			return null;
@@ -164,7 +175,8 @@ public final class ServletUtils {
 			}
 
 			KeyValuePair<String, String> keyValuePair = filter
-					.filter(new DefaultKeyValuePair<String, String>(name, values[0]));
+					.filter(new DefaultKeyValuePair<String, String>(name,
+							values[0]));
 			if (keyValuePair == null) {
 				continue;
 			}
@@ -174,14 +186,15 @@ public final class ServletUtils {
 		return map;
 	}
 
-	public static MultiValueMap<String, String> getRequestParameters(ServletRequest request,
-			KeyValuePairFilter<String, String[]> filter) {
+	public static MultiValueMap<String, String> getRequestParameters(
+			ServletRequest request, KeyValuePairFilter<String, String[]> filter) {
 		Map<String, String[]> requestParams = request.getParameterMap();
 		if (requestParams == null || requestParams.isEmpty()) {
 			return null;
 		}
 
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>(requestParams.size(), 1);
+		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>(
+				requestParams.size(), 1);
 		for (Entry<String, String[]> entry : requestParams.entrySet()) {
 			String name = entry.getKey();
 			if (name == null) {
@@ -197,26 +210,31 @@ public final class ServletUtils {
 				map.put(name, new LinkedList<String>(Arrays.asList(values)));
 			} else {
 				KeyValuePair<String, String[]> keyValuePair = filter
-						.filter(new DefaultKeyValuePair<String, String[]>(name, values));
+						.filter(new DefaultKeyValuePair<String, String[]>(name,
+								values));
 				if (keyValuePair == null) {
 					continue;
 				}
 
-				map.put(keyValuePair.getKey(), new LinkedList<String>(Arrays.asList(keyValuePair.getValue())));
+				map.put(keyValuePair.getKey(),
+						new LinkedList<String>(Arrays.asList(keyValuePair
+								.getValue())));
 			}
 		}
 		return map;
 	}
 
-	public static Map<String, String> getRequestParameterAndAppendValues(ServletRequest request,
-			CharSequence appendValueChars, KeyValuePairFilter<String, String[]> filter) {
+	public static Map<String, String> getRequestParameterAndAppendValues(
+			ServletRequest request, CharSequence appendValueChars,
+			KeyValuePairFilter<String, String[]> filter) {
 		if (filter == null) {
 			Map<String, String[]> requestParams = request.getParameterMap();
 			if (CollectionUtils.isEmpty(requestParams)) {
 				return null;
 			}
 
-			Map<String, String> params = new HashMap<String, String>(requestParams.size(), 1);
+			Map<String, String> params = new HashMap<String, String>(
+					requestParams.size(), 1);
 			for (Entry<String, String[]> entry : requestParams.entrySet()) {
 				String name = entry.getKey();
 				if (name == null) {
@@ -244,12 +262,14 @@ public final class ServletUtils {
 			}
 			return params;
 		} else {
-			MultiValueMap<String, String> requestParams = getRequestParameters(request, filter);
+			MultiValueMap<String, String> requestParams = getRequestParameters(
+					request, filter);
 			if (CollectionUtils.isEmpty(requestParams)) {
 				return null;
 			}
 
-			Map<String, String> params = new HashMap<String, String>(requestParams.size(), 1);
+			Map<String, String> params = new HashMap<String, String>(
+					requestParams.size(), 1);
 			for (Entry<String, List<String>> entry : requestParams.entrySet()) {
 				String name = entry.getKey();
 				if (name == null) {
@@ -281,17 +301,70 @@ public final class ServletUtils {
 
 	/**
 	 * 判断是否是HttpServlet
+	 * 
 	 * @param request
 	 * @param response
 	 * @return
 	 */
-	public static boolean isHttpServlet(ServletRequest request, ServletResponse response) {
-		return request instanceof HttpServletRequest && response instanceof HttpServletResponse;
+	public static boolean isHttpServlet(ServletRequest request,
+			ServletResponse response) {
+		return request instanceof HttpServletRequest
+				&& response instanceof HttpServletResponse;
 	}
-	
-	public static void jsp(ServletRequest request, ServletResponse response, String page) throws ServletException, IOException {
+
+	public static void jsp(ServletRequest request, ServletResponse response,
+			String page) throws ServletException, IOException {
 		RequestDispatcher dispatcher = request.getRequestDispatcher(page);
 		dispatcher.forward(request, response);
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public static <T> T getRequestObjectParameterWrapper(Request request,
+			Class<T> type, String name) {
+		try {
+			return (T) privateRequestObjectParameterWrapper(request, type,
+					StringUtils.isEmpty(name) ? null : name + ".");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private static Object privateRequestObjectParameterWrapper(Request request,
+			Class<?> type, String prefix) throws Exception {
+		if (!ReflectUtils.isInstance(type)) {
+			return null;
+		}
+
+		Object t = ReflectUtils.newInstance(type);
+		Class<?> clz = type;
+		while (clz != null && clz != Object.class) {
+			for (Field field : clz.getDeclaredFields()) {
+				if (Modifier.isStatic(field.getModifiers())
+						|| Modifier.isFinal(field.getModifiers())) {
+					continue;
+				}
+
+				String key = prefix == null ? field.getName() : prefix
+						+ field.getName();
+				if (String.class.isAssignableFrom(field.getType())
+						|| ClassUtils.isPrimitiveOrWrapper(field.getType())) {
+					// 如果是基本数据类型
+					Object v = request.getParameter(field.getType(), key);
+					if (v != null) {
+						ReflectUtils.setFieldValue(clz, field, t, v);
+					}
+				} else {
+					ReflectUtils.setFieldValue(
+							clz,
+							field,
+							t,
+							privateRequestObjectParameterWrapper(request,
+									field.getType(), key + "."));
+				}
+			}
+			clz = clz.getSuperclass();
+		}
+		return t;
+	}
 }

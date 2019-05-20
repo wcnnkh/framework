@@ -248,7 +248,7 @@ public class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T newInstance() {
+	public <T> T create() {
 		Object bean = null;
 		try {
 			if (factoryMethodInfo == null || !Modifier.isStatic(factoryMethodInfo.getMethod().getModifiers())) {
@@ -265,7 +265,7 @@ public class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {
+	public <T> T create(Class<?>[] parameterTypes, Object... args) {
 		Object bean = null;
 		try {
 			if (factoryMethodInfo == null || !Modifier.isStatic(factoryMethodInfo.getMethod().getModifiers())) {
@@ -294,7 +294,7 @@ public class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T newInstance(Object... params) {
+	public <T> T create(Object... params) {
 		Constructor<T> constructor = (Constructor<T>) ReflectUtils.findConstructorByParameters(getType(), true, params);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");

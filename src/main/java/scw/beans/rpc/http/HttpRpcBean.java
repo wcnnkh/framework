@@ -39,7 +39,7 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T newInstance() {
+	public <T> T create() {
 		Object newProxyInstance = Proxy.newProxyInstance(getType().getClassLoader(), new Class[] { getType() },
 				new InvocationHandler() {
 

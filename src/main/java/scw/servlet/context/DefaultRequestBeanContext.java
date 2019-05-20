@@ -5,42 +5,44 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.servlet.ServletRequest;
-
 import scw.core.exception.BeansException;
+import scw.servlet.Request;
+import scw.servlet.ServletUtils;
 import scw.servlet.beans.RequestBean;
 import scw.servlet.beans.RequestBeanFactory;
 
 public class DefaultRequestBeanContext implements RequestBeanContext {
 	private volatile LinkedHashMap<String, Object> beanMap;
-	private ServletRequest request;
-	private RequestBeanFactory requestBeanFactory;
+	private final Request request;
+	private final RequestBeanFactory requestBeanFactory;
 
-	public DefaultRequestBeanContext(ServletRequest request, RequestBeanFactory requestBeanFactory) {
+	public DefaultRequestBeanContext(Request request,
+			RequestBeanFactory requestBeanFactory) {
 		this.request = request;
 		this.requestBeanFactory = requestBeanFactory;
 	}
 
-	public final <T> T getBean(Class<T> type) {
+	public <T> T getBean(Class<T> type) {
+		RequestBean requestBean = requestBeanFactory.get(type.getName());
+		if (requestBean == null) {
+			return getRequestObjectParameterWrapper(type, null);
+		}
 		return getBean(type, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <T> T getBean(Class<T> type, String name) {
-		RequestBean requestBean = null;
-		if (name != null && name.length() != 0) {
-			requestBean = requestBeanFactory.get(name);
-		}
-
+	public <T> T getBean(Class<T> type, String name) {
+		RequestBean requestBean = requestBeanFactory.get(name);
 		if (requestBean == null) {
-			requestBean = requestBeanFactory.get(type.getName());
-		}
-
-		if (requestBean == null) {
-			return null;
+			return getRequestObjectParameterWrapper(type, name);
 		}
 
 		return (T) getBean(requestBean, type, name);
+	}
+
+	protected <T> T getRequestObjectParameterWrapper(Class<T> type, String name) {
+		return ServletUtils.getRequestObjectParameterWrapper(request, type,
+				name);
 	}
 
 	private Object getBean(RequestBean requestBean, Class<?> type, String name) {
@@ -66,7 +68,8 @@ public class DefaultRequestBeanContext implements RequestBeanContext {
 		return obj;
 	}
 
-	private Object newInstanceReuestBean(RequestBean requestBean, Class<?> type, String name) {
+	private Object newInstanceReuestBean(RequestBean requestBean,
+			Class<?> type, String name) {
 		Object obj = requestBean.newInstance(request);
 		if (obj != null) {
 			beanMap.put(requestBean.getId(), obj);
@@ -101,5 +104,13 @@ public class DefaultRequestBeanContext implements RequestBeanContext {
 				beanMap = null;
 			}
 		}
+	}
+
+	public final Request getRequest() {
+		return request;
+	}
+
+	public final RequestBeanFactory getRequestBeanFactory() {
+		return requestBeanFactory;
 	}
 }

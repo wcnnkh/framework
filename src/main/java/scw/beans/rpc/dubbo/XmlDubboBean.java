@@ -39,11 +39,11 @@ public final class XmlDubboBean implements BeanDefinition {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T newInstance() {
+	public <T> T create() {
 		return (T) BeanUtils.proxyInterface(beanFactory, getType(), referenceConfig.get());
 	}
 
-	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {
+	public <T> T create(Class<?>[] parameterTypes, Object... args) {
 		throw new NotSupportException(Arrays.toString(parameterTypes));
 	}
 
@@ -56,7 +56,7 @@ public final class XmlDubboBean implements BeanDefinition {
 	public void destroy(Object bean) throws Exception {
 	}
 
-	public <T> T newInstance(Object... params) {
+	public <T> T create(Object... params) {
 		throw new NotSupportException(getType().getName());
 	}
 }

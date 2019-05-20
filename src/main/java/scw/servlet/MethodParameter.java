@@ -23,7 +23,8 @@ public final class MethodParameter {
 			try {
 				return request.getParameter(type, name);
 			} catch (Exception e) {
-				throw new ParameterException(e, "解析参数错误name=" + name + ",type=" + type.getName());
+				throw new ParameterException(e, "解析参数错误name=" + name + ",type="
+						+ type.getName());
 			}
 		}
 	}

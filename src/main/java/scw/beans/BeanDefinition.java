@@ -1,6 +1,8 @@
 package scw.beans;
 
-public interface BeanDefinition {
+import scw.core.Instance;
+
+public interface BeanDefinition extends Instance{
 	String getId();
 
 	String[] getNames();
@@ -10,13 +12,7 @@ public interface BeanDefinition {
 	boolean isSingleton();
 
 	boolean isProxy();
-
-	<T> T newInstance();
 	
-	<T> T newInstance(Object ...params);
-
-	<T> T newInstance(Class<?>[] parameterTypes, Object... args);
-
 	void autowrite(Object bean) throws Exception;
 
 	void init(Object bean) throws Exception;

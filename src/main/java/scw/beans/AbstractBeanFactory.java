@@ -101,7 +101,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 				synchronized (singletonMap) {
 					obj = singletonMap.get(beanDefinition.getId());
 					if (obj == null) {
-						obj = beanDefinition.newInstance(parameterTypes, params);
+						obj = beanDefinition.create(parameterTypes, params);
 						singletonMap.put(beanDefinition.getId(), obj);
 						try {
 							beanDefinition.autowrite(obj);
@@ -114,7 +114,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			}
 			return (T) obj;
 		} else {
-			obj = beanDefinition.newInstance(parameterTypes, params);
+			obj = beanDefinition.create(parameterTypes, params);
 			try {
 				beanDefinition.autowrite(obj);
 				beanDefinition.init(obj);
@@ -147,7 +147,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 				synchronized (singletonMap) {
 					obj = singletonMap.get(beanDefinition.getId());
 					if (obj == null) {
-						obj = beanDefinition.newInstance(params);
+						obj = beanDefinition.create(params);
 						singletonMap.put(beanDefinition.getId(), obj);
 						try {
 							beanDefinition.autowrite(obj);
@@ -160,7 +160,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			}
 			return (T) obj;
 		} else {
-			obj = beanDefinition.newInstance(params);
+			obj = beanDefinition.create(params);
 			try {
 				beanDefinition.autowrite(obj);
 				beanDefinition.init(obj);
@@ -193,7 +193,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 				synchronized (singletonMap) {
 					obj = singletonMap.get(beanDefinition.getId());
 					if (obj == null) {
-						obj = beanDefinition.newInstance();
+						obj = beanDefinition.create();
 						singletonMap.put(beanDefinition.getId(), obj);
 						try {
 							beanDefinition.autowrite(obj);
@@ -206,7 +206,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			}
 			return (T) obj;
 		} else {
-			obj = beanDefinition.newInstance();
+			obj = beanDefinition.create();
 			try {
 				beanDefinition.autowrite(obj);
 				beanDefinition.init(obj);

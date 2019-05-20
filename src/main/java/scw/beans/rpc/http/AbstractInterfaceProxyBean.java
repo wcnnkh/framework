@@ -95,11 +95,11 @@ abstract class AbstractInterfaceProxyBean implements BeanDefinition {
 		return this.type;
 	}
 
-	public <T> T newInstance(Class<?>[] parameterTypes, Object... args) {
+	public <T> T create(Class<?>[] parameterTypes, Object... args) {
 		throw new NotSupportException(getType().getName());
 	}
 	
-	public <T> T newInstance(Object... params) {
+	public <T> T create(Object... params) {
 		throw new NotSupportException(getType().getName());
 	}
 
