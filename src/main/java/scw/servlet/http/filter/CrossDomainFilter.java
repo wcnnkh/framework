@@ -22,7 +22,7 @@ import scw.servlet.ServletUtils;
  *
  */
 @Bean(proxy = false)
-public class CrossDomainService implements Filter {
+public class CrossDomainFilter implements Filter {
 	private static final CrossDomainDefinition DEFAULT = new CrossDomainDefinition("*", "*", "*", false, -1);
 	private Map<String, CrossDomainDefinition> crossDomainDefinitionMap = new HashMap<String, CrossDomainDefinition>();
 

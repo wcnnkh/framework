@@ -27,11 +27,11 @@ import scw.json.JSONUtils;
 import scw.servlet.beans.CommonRequestBeanFactory;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.http.HttpWrapperFactory;
-import scw.servlet.http.filter.NotFoundService;
-import scw.servlet.http.filter.ParameterActionService;
+import scw.servlet.http.filter.NotFoundServiceFilter;
+import scw.servlet.http.filter.ParameterActionServiceFilter;
 import scw.servlet.http.filter.RPCFilter;
-import scw.servlet.http.filter.RestService;
-import scw.servlet.http.filter.ServletPathService;
+import scw.servlet.http.filter.RestServiceFilter;
+import scw.servlet.http.filter.ServletPathServiceFilter;
 
 public abstract class AbstractServletService extends LinkedList<Filter>
 		implements ServletService {
@@ -125,15 +125,15 @@ public abstract class AbstractServletService extends LinkedList<Filter>
 				.get(RPCFilter.class, rpcPath, rpcService);
 		add(rpcFilter);
 		Filter parameterActionService = beanFactory.get(
-				ParameterActionService.class, beanFactory, classes, actionKey);
+				ParameterActionServiceFilter.class, beanFactory, classes, actionKey);
 		add(parameterActionService);
-		Filter servletPathService = beanFactory.get(ServletPathService.class,
+		Filter servletPathService = beanFactory.get(ServletPathServiceFilter.class,
 				beanFactory, classes);
 		add(servletPathService);
-		Filter restService = beanFactory.get(RestService.class, beanFactory,
+		Filter restService = beanFactory.get(RestServiceFilter.class, beanFactory,
 				classes);
 		add(restService);
-		Filter notFoundService = beanFactory.get(NotFoundService.class);
+		Filter notFoundService = beanFactory.get(NotFoundServiceFilter.class);
 		add(notFoundService);
 	}
 

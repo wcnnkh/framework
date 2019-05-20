@@ -17,13 +17,13 @@ import scw.servlet.DefaultMethodAction;
 import scw.servlet.annotation.Controller;
 
 @Bean(proxy=false)
-public class RestService extends AbstractServiceFilter {
+public class RestServiceFilter extends AbstractServiceFilter {
 	public static final String RESTURL_PATH_PARAMETER = "_resturl_path_parameter";
 	private final EnumMap<Method, Map<String, RestInfo>> restMap = new EnumMap<Method, Map<String, RestInfo>>(
 			Method.class);
 	private final BeanFactory beanFactory;
 
-	public RestService(BeanFactory beanFactory, Collection<Class<?>> classes) {
+	public RestServiceFilter(BeanFactory beanFactory, Collection<Class<?>> classes) {
 		super(classes);
 		this.beanFactory = beanFactory;
 	}
@@ -51,7 +51,7 @@ public class RestService extends AbstractServiceFilter {
 			}
 
 			if (map.containsKey(restUrlInfo.getUrl())) {
-				throw new AlreadyExistsException(ServletPathService.getExistActionErrMsg(restUrlInfo.getAction(),
+				throw new AlreadyExistsException(ServletPathServiceFilter.getExistActionErrMsg(restUrlInfo.getAction(),
 						map.get(restUrlInfo.getUrl()).getAction()));
 			}
 

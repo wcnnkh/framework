@@ -13,7 +13,7 @@ import scw.servlet.Response;
 import scw.servlet.ServletUtils;
 
 @Bean(proxy = false)
-public class NotFoundService implements Filter {
+public class NotFoundServiceFilter implements Filter {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void doFilter(Request request, Response response, FilterChain filterChain) throws Throwable {

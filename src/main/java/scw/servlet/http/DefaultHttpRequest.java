@@ -15,7 +15,7 @@ import scw.servlet.ServletUtils;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.context.DefaultRequestBeanContext;
 import scw.servlet.context.RequestBeanContext;
-import scw.servlet.http.filter.RestService;
+import scw.servlet.http.filter.RestServiceFilter;
 
 public class DefaultHttpRequest extends HttpServletRequestWrapper implements HttpRequest, Destroy {
 	private static final Charset GET_DEFAULT_CHARSET = Charset.forName("ISO-8859-1");
@@ -111,7 +111,7 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 		String v = super.getParameter(name);
 		if (v == null) {
 			Map<String, String> restParameterMap = (Map<String, String>) getAttribute(
-					RestService.RESTURL_PATH_PARAMETER);
+					RestServiceFilter.RESTURL_PATH_PARAMETER);
 			if (restParameterMap != null) {
 				v = restParameterMap.get(name);
 			}

@@ -16,12 +16,12 @@ import scw.servlet.DefaultMethodAction;
 import scw.servlet.annotation.Controller;
 
 @Bean(proxy = false)
-public class ParameterActionService extends AbstractServiceFilter {
+public class ParameterActionServiceFilter extends AbstractServiceFilter {
 	private final Map<String, Map<String, Map<String, Action>>> actionMap = new HashMap<String, Map<String, Map<String, Action>>>();
 	private String key;
 	private BeanFactory beanFactory;
 
-	public ParameterActionService(BeanFactory beanFactory, Collection<Class<?>> classes, String key) {
+	public ParameterActionServiceFilter(BeanFactory beanFactory, Collection<Class<?>> classes, String key) {
 		super(classes);
 		this.beanFactory = beanFactory;
 		this.key = key;
@@ -73,7 +73,7 @@ public class ParameterActionService extends AbstractServiceFilter {
 			}
 
 			if (map.containsKey(actionName)) {
-				throw new AlreadyExistsException(ServletPathService.getExistActionErrMsg(action, map.get(actionName)));
+				throw new AlreadyExistsException(ServletPathServiceFilter.getExistActionErrMsg(action, map.get(actionName)));
 			}
 
 			map.put(actionName, action);
