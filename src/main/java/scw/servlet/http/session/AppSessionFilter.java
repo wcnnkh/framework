@@ -1,4 +1,4 @@
-package scw.servlet.session;
+package scw.servlet.http.session;
 
 import scw.result.ResultFactory;
 import scw.servlet.Filter;
@@ -13,8 +13,7 @@ public class AppSessionFilter implements Filter {
 		this.resultFactory = resultFactory;
 	}
 
-	public void doFilter(Request request, Response response,
-			FilterChain filterChain) throws Throwable {
+	public void doFilter(Request request, Response response, FilterChain filterChain) throws Throwable {
 		AppSession session = request.getBean(AppSession.class);
 		if (!session.isLogin()) {
 			response.write(resultFactory.authorizationFailure());

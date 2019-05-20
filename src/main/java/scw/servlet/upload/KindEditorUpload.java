@@ -1,7 +1,6 @@
 package scw.servlet.upload;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +20,8 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.core.utils.XUtils;
 import scw.servlet.Request;
+import scw.servlet.http.HttpRequest;
+import scw.servlet.http.HttpResponse;
 
 public final class KindEditorUpload implements Upload {
 	private final HashMap<String, String> extMap = new HashMap<String, String>();
@@ -83,9 +84,9 @@ public final class KindEditorUpload implements Upload {
 		return size <= maxSize;
 	}
 
-	public void execute(Request request) throws IOException {
+	public void execute(HttpRequest request, HttpResponse response) throws Exception {
 		if (!ServletFileUpload.isMultipartContent(request)) {
-			request.getResponse().write(getError("请选择文件"));
+			response.write(getError("请选择文件"));
 			return;
 		}
 
@@ -94,7 +95,7 @@ public final class KindEditorUpload implements Upload {
 			dirName = "image";
 		}
 		if (!extMap.containsKey(dirName)) {
-			request.getResponse().write(getError("目录名不正确"));
+			response.write(getError("目录名不正确"));
 			return;
 		}
 
@@ -114,7 +115,7 @@ public final class KindEditorUpload implements Upload {
 		}
 
 		if (items == null) {
-			request.getResponse().write(getError("请选择文件"));
+			response.write(getError("请选择文件"));
 			return;
 		}
 
@@ -141,13 +142,13 @@ public final class KindEditorUpload implements Upload {
 				String fileName = fileItem.getName();
 				long fileSize = fileItem.getSize();
 				if (!checkFileSize(dirName, fileSize)) {
-					request.getResponse().write(getError("上传文件大小超过限制。"));
+					response.write(getError("上传文件大小超过限制。"));
 					return;
 				}
 
 				String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
 				if (!checkFileExt(dirName, fileExt)) {
-					request.getResponse().write(getError("上传文件扩展名是不允许的扩展名。只允许" + extMap.get(dirName) + "格式。"));
+					response.write(getError("上传文件扩展名是不允许的扩展名。只允许" + extMap.get(dirName) + "格式。"));
 					return;
 				}
 
@@ -161,34 +162,34 @@ public final class KindEditorUpload implements Upload {
 				try {
 					fileItem.write(file);
 				} catch (Exception e) {
-					request.getResponse().write(getError("上传失败"));
+					response.write(getError("上传失败"));
 					return;
 				}
 
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("error", 0);
 				jsonObject.put("url", url.toString());
-				request.getResponse().write(jsonObject.toJSONString());
+				response.write(jsonObject.toJSONString());
 				return;
 			}
 		}
 	}
-	
-	public void manager(Request request) throws IOException{
+
+	public void manager(HttpRequest request, HttpResponse response) throws Exception {
 		String dirName = request.getString("dir");
-		if(dirName != null){
-			if(extMap.containsKey(dirName)){
-				request.getResponse().write("Invalid Directory name.");
+		if (dirName != null) {
+			if (extMap.containsKey(dirName)) {
+				response.write("Invalid Directory name.");
 				return;
 			}
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append(rootPath);
 		sb.append("/");
 		sb.append(dirName);
 		sb.append("/");
-		//TODO 
+		// TODO
 	}
 
 	private String getError(String message) {

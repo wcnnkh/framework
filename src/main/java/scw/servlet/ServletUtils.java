@@ -1,5 +1,6 @@
 package scw.servlet;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -7,9 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
@@ -274,4 +279,19 @@ public final class ServletUtils {
 		}
 	}
 
+	/**
+	 * 判断是否是HttpServlet
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	public static boolean isHttpServlet(ServletRequest request, ServletResponse response) {
+		return request instanceof HttpServletRequest && response instanceof HttpServletResponse;
+	}
+	
+	public static void jsp(ServletRequest request, ServletResponse response, String page) throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(page);
+		dispatcher.forward(request, response);
+	}
+	
 }

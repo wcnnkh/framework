@@ -1,4 +1,4 @@
-package scw.servlet.service;
+package scw.servlet.http.filter;
 
 import java.util.Collection;
 import java.util.EnumMap;
@@ -6,11 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
+
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.net.http.Method;
-import scw.servlet.Request;
+import scw.servlet.Action;
+import scw.servlet.DefaultMethodAction;
 import scw.servlet.annotation.Controller;
 
 @Bean(proxy=false)
@@ -40,7 +43,7 @@ public class RestService extends AbstractServiceFilter {
 		/**
 		 * resturl
 		 */
-		scw.core.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
+		scw.core.net.http.Method[] types = DefaultMethodAction.mergeRequestType(clz, method);
 		for (scw.core.net.http.Method type : types) {
 			Map<String, RestInfo> map = restMap.get(type);
 			if (map == null) {
@@ -58,7 +61,7 @@ public class RestService extends AbstractServiceFilter {
 	}
 
 	@Override
-	public Action getAction(Request request) {
+	public Action getAction(HttpServletRequest request) {
 		Method method = Method.valueOf(request.getMethod());
 		if (method == null) {
 			return null;

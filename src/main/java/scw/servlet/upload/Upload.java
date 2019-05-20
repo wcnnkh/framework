@@ -1,9 +1,8 @@
 package scw.servlet.upload;
 
-import java.io.IOException;
-
-import scw.servlet.Request;
+import scw.servlet.http.HttpRequest;
+import scw.servlet.http.HttpResponse;
 
 public interface Upload {
-	void execute(Request request) throws IOException;
+	void execute(HttpRequest request, HttpResponse response) throws Exception;
 }

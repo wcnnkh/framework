@@ -5,6 +5,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletRequest;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -22,7 +24,6 @@ import scw.core.exception.NotFoundException;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.StringUtils;
-import scw.servlet.Request;
 import scw.servlet.beans.RequestBean;
 import scw.servlet.beans.RequestBeanUtils;
 
@@ -146,7 +147,7 @@ public final class XmlRequestBean implements RequestBean {
 
 	private Constructor<?> getConstructor() {
 		if (constructorParameters.length == 0) {
-			return getConstructorByParameterTypes();
+			return ReflectUtils.getConstructor(type, false);
 		} else {
 			for (Constructor<?> constructor : type.getDeclaredConstructors()) {
 				XmlBeanParameter[] beanMethodParameters = BeanUtils.sortParameters(constructor, constructorParameters);
@@ -155,25 +156,6 @@ public final class XmlRequestBean implements RequestBean {
 					constructor.setAccessible(true);
 					return constructor;
 				}
-			}
-		}
-		return null;
-	}
-
-	private Constructor<?> getConstructorByParameterTypes(Class<?>... parameterTypes) {
-		try {
-			return type.getConstructor(parameterTypes);
-		} catch (NoSuchMethodException e) {
-			try {
-				return type.getDeclaredConstructor(parameterTypes);
-			} catch (NoSuchMethodException e1) {
-			} catch (SecurityException e1) {
-			}
-		} catch (SecurityException e) {
-			try {
-				return type.getDeclaredConstructor(parameterTypes);
-			} catch (NoSuchMethodException e1) {
-			} catch (SecurityException e1) {
 			}
 		}
 		return null;
@@ -194,7 +176,7 @@ public final class XmlRequestBean implements RequestBean {
 		return enhancer;
 	}
 
-	private Object createProxyInstance(Request request) throws Exception {
+	private Object createProxyInstance(ServletRequest request) throws Exception {
 		Enhancer enhancer = getProxyEnhancer();
 		if (constructorParameters.length == 0) {
 			return enhancer.create();
@@ -221,7 +203,7 @@ public final class XmlRequestBean implements RequestBean {
 		}
 	}
 
-	private Object createInstance(Request request) throws Exception {
+	private Object createInstance(ServletRequest request) throws Exception {
 		if (constructorParameterTypes == null || constructorParameterTypes.length == 0) {
 			return constructor.newInstance();
 		} else {
@@ -255,7 +237,7 @@ public final class XmlRequestBean implements RequestBean {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T newInstance(Request request) {
+	public <T> T newInstance(ServletRequest request) {
 		Object bean;
 		try {
 			if (proxy) {

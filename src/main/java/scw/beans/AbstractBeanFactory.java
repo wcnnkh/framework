@@ -12,6 +12,7 @@ import scw.beans.property.PropertiesFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.BeansException;
 import scw.core.exception.NestedRuntimeException;
+import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 
 public abstract class AbstractBeanFactory implements BeanFactory {
@@ -259,7 +260,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
 		try {
 			Class<?> clz = Class.forName(name);
-			if (ClassUtils.isInstance(clz)) {
+			if (ReflectUtils.isInstance(clz)) {
 				b = true;
 			}
 		} catch (ClassNotFoundException e) {
@@ -285,7 +286,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 				n = name;
 			}
 			Class<?> clz = Class.forName(n);
-			if (!ClassUtils.isInstance(clz)) {
+			if (!ReflectUtils.isInstance(clz)) {
 				return null;
 			}
 			return new AnnotationBeanDefinition(this, getPropertiesFactory(), clz, getFilterNames());

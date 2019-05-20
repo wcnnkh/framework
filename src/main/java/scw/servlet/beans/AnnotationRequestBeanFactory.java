@@ -6,6 +6,7 @@ import java.util.Map;
 import scw.beans.BeanFactory;
 import scw.beans.property.PropertiesFactory;
 import scw.core.exception.AlreadyExistsException;
+import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 
 public final class AnnotationRequestBeanFactory implements RequestBeanFactory {
@@ -14,8 +15,8 @@ public final class AnnotationRequestBeanFactory implements RequestBeanFactory {
 	private final PropertiesFactory propertiesFactory;
 	private final String[] filterNames;
 
-	public AnnotationRequestBeanFactory(BeanFactory beanFactory,
-			PropertiesFactory propertiesFactory, String[] filterNames) {
+	public AnnotationRequestBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+			String[] filterNames) {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
 		this.filterNames = filterNames;
@@ -28,8 +29,8 @@ public final class AnnotationRequestBeanFactory implements RequestBeanFactory {
 				bean = beanMap.get(name);
 				if (bean == null && contains(name)) {
 					try {
-						bean = new AnnotationRequestBean(beanFactory,
-								propertiesFactory, ClassUtils.forName(name), filterNames);
+						bean = new AnnotationRequestBean(beanFactory, propertiesFactory, ClassUtils.forName(name),
+								filterNames);
 						if (beanMap.containsKey(bean.getId())) {
 							throw new AlreadyExistsException(bean.getId());
 						}
@@ -52,9 +53,7 @@ public final class AnnotationRequestBeanFactory implements RequestBeanFactory {
 		}
 		try {
 			Class<?> clz = ClassUtils.forName(name);
-			if (ClassUtils.isInstance(clz)
-					&& AnnotationRequestBean
-							.getAnnotationRequestBeanConstructor(clz) != null) {
+			if (ReflectUtils.isInstance(clz)) {
 				return true;
 			}
 		} catch (ClassNotFoundException e) {

@@ -8,7 +8,7 @@ import java.util.Map;
 import scw.core.reflect.SerializableMethodDefinition;
 
 public final class Message implements Serializable {
-	private static final long serialVersionUID = -6216471725621438749L;
+	private static final long serialVersionUID = 1L;
 	private Map<String, Object> attributeMap;
 	private SerializableMethodDefinition methodDefinition;
 	private Object[] args;

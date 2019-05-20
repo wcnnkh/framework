@@ -1,6 +1,8 @@
-package scw.servlet.service;
+package scw.servlet.http.filter;
 
 import java.util.Map;
+
+import scw.servlet.Action;
 
 public class RestInfo {
 	private String url;

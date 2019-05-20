@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -511,15 +510,6 @@ public final class ClassUtils {
 	 */
 	public static boolean isCglibProxyClassName(String className) {
 		return (className != null && className.contains(CGLIB_CLASS_SEPARATOR));
-	}
-
-	/**
-	 * 是否可以实例化
-	 * 
-	 * @return
-	 */
-	public static boolean isInstance(Class<?> clz) {
-		return !(Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers()));
 	}
 
 	/**

@@ -5,17 +5,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.servlet.ServletRequest;
+
 import scw.core.exception.BeansException;
-import scw.servlet.Request;
 import scw.servlet.beans.RequestBean;
 import scw.servlet.beans.RequestBeanFactory;
 
-public class DefaultRequestBeanContext implements RequestBeanContext{
+public class DefaultRequestBeanContext implements RequestBeanContext {
 	private volatile LinkedHashMap<String, Object> beanMap;
-	private Request request;
+	private ServletRequest request;
 	private RequestBeanFactory requestBeanFactory;
-	
-	public DefaultRequestBeanContext(Request request, RequestBeanFactory requestBeanFactory){
+
+	public DefaultRequestBeanContext(ServletRequest request, RequestBeanFactory requestBeanFactory) {
 		this.request = request;
 		this.requestBeanFactory = requestBeanFactory;
 	}
@@ -30,8 +31,8 @@ public class DefaultRequestBeanContext implements RequestBeanContext{
 		if (name != null && name.length() != 0) {
 			requestBean = requestBeanFactory.get(name);
 		}
-		
-		if(requestBean == null){
+
+		if (requestBean == null) {
 			requestBean = requestBeanFactory.get(type.getName());
 		}
 
@@ -65,8 +66,7 @@ public class DefaultRequestBeanContext implements RequestBeanContext{
 		return obj;
 	}
 
-	private Object newInstanceReuestBean(RequestBean requestBean,
-			Class<?> type, String name) {
+	private Object newInstanceReuestBean(RequestBean requestBean, Class<?> type, String name) {
 		Object obj = requestBean.newInstance(request);
 		if (obj != null) {
 			beanMap.put(requestBean.getId(), obj);

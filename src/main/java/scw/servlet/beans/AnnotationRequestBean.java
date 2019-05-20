@@ -7,28 +7,31 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletRequest;
+
 import net.sf.cglib.proxy.Enhancer;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.property.PropertiesFactory;
-import scw.core.exception.BeansException;
+import scw.core.exception.NotFoundException;
 import scw.core.reflect.FieldDefinition;
+import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
-import scw.servlet.Request;
 
 public final class AnnotationRequestBean implements RequestBean {
 	private final BeanFactory beanFactory;
 	private final Class<?> type;
 	private final String id;
-	private Constructor<?> constructor;
 	private final Method[] initMethods;
 	private final Method[] destroyMethods;
 	private final boolean proxy;
 	private Enhancer enhancer;
 	private final PropertiesFactory propertiesFactory;
 	private final FieldDefinition[] autowriteFields;
+	private Constructor<?> constructor;
+	private int parameterLength;
 
 	public AnnotationRequestBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type,
 			String[] filterNames) throws Exception {
@@ -60,22 +63,20 @@ public final class AnnotationRequestBean implements RequestBean {
 		this.initMethods = initMethodList.toArray(new Method[initMethodList.size()]);
 		this.destroyMethods = destroyMethodList.toArray(new Method[destroyMethodList.size()]);
 
-		this.proxy = BeanUtils.checkProxy(type, filterNames);
-		this.constructor = getAnnotationRequestBeanConstructor(type);
-		if (this.constructor == null) {
-			throw new BeansException("not found constructor");
+		this.constructor = ReflectUtils.findConstructor(type, false, ServletRequest.class);
+		if (constructor == null) {
+			this.constructor = ReflectUtils.findConstructor(type, false);
 		}
+
+		if (this.constructor == null) {
+			throw new NotFoundException(type.getName() + "找不到合法的构造方法");
+		}
+
+		this.parameterLength = constructor.getParameterTypes().length;
+
+		this.proxy = BeanUtils.checkProxy(type, filterNames);
 		enhancer = BeanUtils.createEnhancer(type, beanFactory, filterNames);
 		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type, false).toArray(new FieldDefinition[0]);
-	}
-
-	public static Constructor<?> getAnnotationRequestBeanConstructor(Class<?> type) {
-		try {
-			return type.getDeclaredConstructor(Request.class);
-		} catch (NoSuchMethodException e) {
-		} catch (SecurityException e) {
-		}
-		return null;
 	}
 
 	public boolean isProxy() {
@@ -91,22 +92,25 @@ public final class AnnotationRequestBean implements RequestBean {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T newInstance(Request request) {
-		Object bean;
+	public <T> T newInstance(ServletRequest request) {
+		Object obj;
 		try {
-			if (isProxy()) {
-				bean = constructor.getParameterCount() == 0 ? enhancer.create()
-						: enhancer.create(constructor.getParameterTypes(), new Object[] { request });
-			} else {
-				if (constructor.getParameterCount() == 0) {
-					bean = constructor.newInstance();
+			if (parameterLength == 0) {
+				if (isProxy()) {
+					obj = enhancer.create();
 				} else {
-					bean = constructor.newInstance(request);
+					obj = constructor.newInstance();
+				}
+			} else {
+				if (isProxy()) {
+					obj = enhancer.create(constructor.getParameterTypes(), new Object[] { request });
+				} else {
+					obj = constructor.newInstance(request);
 				}
 			}
-			return (T) bean;
+			return (T) obj;
 		} catch (Exception e) {
-			throw new BeansException(e);
+			throw new RuntimeException(type.getName());
 		}
 	}
 

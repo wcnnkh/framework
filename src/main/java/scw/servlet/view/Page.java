@@ -7,8 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
@@ -16,6 +15,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
 import scw.core.exception.NotFoundException;
+import scw.core.logger.DebugLogger;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.http.ContentType;
@@ -23,6 +23,7 @@ import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.servlet.Request;
 import scw.servlet.Response;
+import scw.servlet.ServletUtils;
 import scw.servlet.View;
 
 /**
@@ -147,10 +148,10 @@ public class Page extends HashMap<String, Object> implements View {
 		this.page = page;
 	}
 
-	public void render(Request request, Response response) throws IOException {
+	public void render(Request request, Response response) throws Exception {
 		String realPage = getPage();
-		if (realPage == null || page.length() == 0) {
-			realPage = response.getRequest().getServletPath();
+		if (StringUtils.isEmpty(realPage) && request instanceof HttpServletRequest) {
+			realPage = ((HttpServletRequest) request).getServletPath();
 		}
 
 		Iterator<String> iterator = suffixMap.keySet().iterator();
@@ -175,13 +176,10 @@ public class Page extends HashMap<String, Object> implements View {
 			}
 
 			for (Entry<String, Object> entry : entrySet()) {
-				response.getRequest().setAttribute(entry.getKey(), entry.getValue());
+				request.setAttribute(entry.getKey(), entry.getValue());
 			}
-			try {
-				jsp(response.getRequest(), response, realPage);
-			} catch (ServletException e) {
-				throw new RuntimeException(e);
-			}
+
+			ServletUtils.jsp(request, response, realPage);
 			break;
 		case FREEMARKER:
 			if (freemarkerConfiguration == null) {
@@ -194,18 +192,18 @@ public class Page extends HashMap<String, Object> implements View {
 			}
 
 			if (freemarkerAppendAttrs) {
-				Enumeration<?> enumeration = response.getRequest().getAttributeNames();
+				Enumeration<?> enumeration = request.getAttributeNames();
 				while (enumeration.hasMoreElements()) {
 					Object obj = enumeration.nextElement();
 					if (obj != null) {
 						String name = obj.toString();
-						put(name, response.getRequest().getAttribute(name));
+						put(name, request.getAttribute(name));
 					}
 				}
 			}
 
 			if (appendParams) {
-				putAll(response.getRequest().getParameterMap());
+				putAll(request.getParameterMap());
 			}
 
 			Template template = freemarkerConfiguration.getTemplate(realPage);
@@ -219,17 +217,14 @@ public class Page extends HashMap<String, Object> implements View {
 			break;
 		}
 
-		if (response.getRequest().isDebug()) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(pageType);
-			sb.append(":");
-			sb.append(realPage);
-			logger.debug(sb.toString());
+		if (response instanceof DebugLogger) {
+			if (((DebugLogger) response).isDebugEnabled()) {
+				StringBuilder sb = new StringBuilder();
+				sb.append(pageType);
+				sb.append(":");
+				sb.append(realPage);
+				((DebugLogger) response).debug(sb.toString());
+			}
 		}
-	}
-
-	public static void jsp(Request request, Response response, String page) throws ServletException, IOException {
-		RequestDispatcher dispatcher = request.getRequestDispatcher(page);
-		dispatcher.forward(request, response);
 	}
 }

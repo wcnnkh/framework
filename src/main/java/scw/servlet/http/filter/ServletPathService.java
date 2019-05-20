@@ -1,4 +1,4 @@
-package scw.servlet.service;
+package scw.servlet.http.filter;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -6,11 +6,14 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.XUtils;
-import scw.servlet.Request;
+import scw.servlet.Action;
+import scw.servlet.DefaultMethodAction;
 import scw.servlet.annotation.Controller;
 
 @Bean(proxy=false)
@@ -29,7 +32,7 @@ public class ServletPathService extends AbstractServiceFilter {
 		this.beanFactory = null;
 	}
 
-	public Action getAction(Request request) {
+	public Action getAction(HttpServletRequest request) {
 		EnumMap<scw.core.net.http.Method, Action> map = actionMap.get(request.getServletPath());
 		if (map == null) {
 			return null;
@@ -57,7 +60,7 @@ public class ServletPathService extends AbstractServiceFilter {
 			map = new EnumMap<scw.core.net.http.Method, Action>(scw.core.net.http.Method.class);
 		}
 
-		scw.core.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
+		scw.core.net.http.Method[] types = DefaultMethodAction.mergeRequestType(clz, method);
 		for (scw.core.net.http.Method type : types) {
 			if (map.containsKey(type.name())) {
 				throw new AlreadyExistsException(getExistActionErrMsg(action, map.get(type.name())));

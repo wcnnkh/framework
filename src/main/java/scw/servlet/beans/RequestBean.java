@@ -1,6 +1,6 @@
 package scw.servlet.beans;
 
-import scw.servlet.Request;
+import javax.servlet.ServletRequest;
 
 public interface RequestBean {
 	String getId();
@@ -9,7 +9,7 @@ public interface RequestBean {
 	
 	Class<?> getType();
 
-	<T> T newInstance(Request request);
+	<T> T newInstance(ServletRequest request);
 	
 	void autowrite(Object bean) throws Exception;
 

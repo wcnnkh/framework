@@ -37,6 +37,6 @@ public class ServletViewResult<T> extends DefaultResult<T> implements View {
 		map.put("code", getCode());
 		map.put("data", getData());
 		map.put("msg", getMsg());
-		response.write(JSONUtils.toJSONString(map));
+		response.getWriter().write(JSONUtils.toJSONString(map));
 	}
 }

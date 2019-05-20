@@ -1,4 +1,4 @@
-package scw.servlet.service;
+package scw.servlet.http.filter;
 
 import javax.servlet.http.HttpServletResponse;
 

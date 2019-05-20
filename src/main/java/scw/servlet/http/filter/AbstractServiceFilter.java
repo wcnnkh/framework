@@ -1,27 +1,32 @@
-package scw.servlet.service;
+package scw.servlet.http.filter;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import scw.beans.BeanFactory;
 import scw.beans.annotation.InitMethod;
 import scw.core.utils.XUtils;
+import scw.servlet.Action;
+import scw.servlet.DefaultMethodAction;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;
 import scw.servlet.Request;
 import scw.servlet.Response;
+import scw.servlet.ServletUtils;
 import scw.servlet.annotation.Controller;
 
-public abstract class AbstractServiceFilter implements Filter{
+public abstract class AbstractServiceFilter implements Filter {
 	private Collection<Class<?>> classes;
 
 	public AbstractServiceFilter(Collection<Class<?>> classes) {
 		this.classes = classes;
 	}
 
-	public abstract Action getAction(Request request);
+	public abstract Action getAction(HttpServletRequest request);
 
 	public abstract void scanning(Class<?> clz, Method method, Controller classController, Controller methodController);
 
@@ -44,10 +49,14 @@ public abstract class AbstractServiceFilter implements Filter{
 		}
 		classes = null;
 	}
-	
-	public void doFilter(Request request, Response response,
-			FilterChain filterChain) throws Throwable {
-		Action action = getAction(request);
+
+	public void doFilter(Request request, Response response, FilterChain filterChain) throws Throwable {
+		if (!ServletUtils.isHttpServlet(request, response)) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
+		Action action = getAction((HttpServletRequest) request);
 		if (action == null) {
 			filterChain.doFilter(request, response);
 			return;
@@ -98,7 +107,7 @@ public abstract class AbstractServiceFilter implements Filter{
 		restUrl.setUrl(newRequestPath.toString());
 		restUrl.setRegArr(newRequestPath.toString().split("/"));
 		restUrl.setKeyMap(resultKeyMap);
-		restUrl.setAction(new MethodAction(beanFactory, clz, method));
+		restUrl.setAction(new DefaultMethodAction(beanFactory, clz, method));
 		return restUrl;
 	}
 }

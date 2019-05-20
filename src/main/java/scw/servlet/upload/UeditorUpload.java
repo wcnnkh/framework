@@ -2,10 +2,10 @@ package scw.servlet.upload;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import scw.core.utils.FileUtils;
-import scw.servlet.Request;
+import scw.servlet.http.HttpRequest;
+import scw.servlet.http.HttpResponse;
 import scw.servlet.upload.ueditor.ActionEnter;
 
 public final class UeditorUpload implements Upload {
@@ -40,9 +40,9 @@ public final class UeditorUpload implements Upload {
 		FileUtils.copyFileUsingFileChannels(myConfigPath, configFile);
 	}
 
-	public void execute(Request request) throws IOException {
-		ActionEnter actionEnter = new ActionEnter(request, rootPath);
-		request.getResponse().write(actionEnter.exec());
+	public void execute(HttpRequest httpRequest, HttpResponse httpResponse) throws Exception {
+		ActionEnter actionEnter = new ActionEnter(httpRequest, rootPath);
+		httpResponse.write(actionEnter.exec());
 	}
 
 }

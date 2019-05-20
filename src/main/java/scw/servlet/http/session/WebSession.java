@@ -1,6 +1,8 @@
-package scw.servlet.session;
+package scw.servlet.http.session;
 
-import scw.servlet.Request;
+import javax.servlet.http.HttpServletResponse;
+
+import scw.servlet.http.HttpRequest;
 import scw.utils.login.LoginFactory;
 import scw.utils.login.Session;
 
@@ -11,13 +13,13 @@ import scw.utils.login.Session;
  *
  */
 public class WebSession extends AppSession {
-	public WebSession(Request request, LoginFactory loginFactory, String uidKey, String sidKey) {
+	public WebSession(HttpRequest request, LoginFactory loginFactory, String uidKey, String sidKey) {
 		super(request, loginFactory, uidKey, sidKey, true);
 	}
 
-	public Session login(String uid) {
+	public Session login(HttpServletResponse httpServletResponse, String uid) {
 		Session session = super.login(uid);
-		addCookie();
+		addCookie(httpServletResponse);
 		return session;
 	}
 }

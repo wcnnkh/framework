@@ -1,6 +1,6 @@
 package scw.core.logger;
 
-public interface Logger {
+public interface Logger extends DebugLogger{
 
 	boolean isTraceEnabled();
 
@@ -9,14 +9,6 @@ public interface Logger {
 	void trace(String format, Object... args);
 
 	void trace(String msg, Throwable t);
-
-	boolean isDebugEnabled();
-
-	void debug(String msg);
-
-	void debug(String format, Object... args);
-
-	void debug(String msg, Throwable t);
 
 	boolean isInfoEnabled();
 

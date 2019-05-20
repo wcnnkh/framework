@@ -19,8 +19,7 @@ public final class LoggerFactory {
 			// ignore
 		}
 
-		System.out.println("Init shuchaowen-logger ["
-				+ getILoggerFactory().getClass().getName() + "]");
+		System.out.println("Init shuchaowen-logger [" + getILoggerFactory().getClass().getName() + "]");
 	}
 
 	public static Logger getLogger(String name) {

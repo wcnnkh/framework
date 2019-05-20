@@ -1,28 +1,29 @@
-package scw.servlet.session;
+package scw.servlet.http.session;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 import scw.core.utils.StringUtils;
-import scw.servlet.Request;
+import scw.servlet.http.HttpRequest;
 import scw.utils.login.LoginFactory;
 import scw.utils.login.Session;
 
 /**
- * 此类和WebSession和一样
- * 是为应对小项目中admin和app用同一个项目而写的
+ * 此类和WebSession和一样 是为应对小项目中admin和app用同一个项目而写的
+ * 
  * @author asus1
  *
  */
 public class AppSession {
 	private LoginFactory loginFactory;
-	private Request request;
+	private HttpRequest request;
 	private boolean cookie;
 	private Session session;
 	private String uidKey;
 	private String sidKey;
-	
-	public AppSession(Request request, LoginFactory loginFactory,
-			String uidKey, String sidKey, boolean cookie) {
+
+	public AppSession(HttpRequest request, LoginFactory loginFactory, String uidKey,
+			String sidKey, boolean cookie) {
 		this.request = request;
 		this.cookie = cookie;
 		this.loginFactory = loginFactory;
@@ -77,15 +78,14 @@ public class AppSession {
 		return login(uid + "");
 	}
 
-	public void addCookie() {
+	public void addCookie(HttpServletResponse httpServletResponse) {
 		if (session == null) {
 			return;
 		}
 
-		request.getResponse().addCookie(new Cookie(sidKey, session.getId()));
+		httpServletResponse.addCookie(new Cookie(sidKey, session.getId()));
 		if (!StringUtils.isNull(uidKey)) {
-			request.getResponse().addCookie(
-					new Cookie(uidKey, session.getUid()));
+			httpServletResponse.addCookie(new Cookie(uidKey, session.getUid()));
 		}
 	}
 }

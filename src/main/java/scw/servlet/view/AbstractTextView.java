@@ -1,13 +1,15 @@
 package scw.servlet.view;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletResponse;
+
 import scw.core.net.http.ContentType;
 import scw.servlet.Request;
 import scw.servlet.Response;
+import scw.servlet.ServletUtils;
 import scw.servlet.View;
 
 public abstract class AbstractTextView implements View {
@@ -22,16 +24,21 @@ public abstract class AbstractTextView implements View {
 		responseProperties.put(key, value);
 	}
 
-	public void render(Request request, Response response) throws IOException {
+	public void render(Request request, Response response) throws Exception {
+		if (!ServletUtils.isHttpServlet(request, response)) {
+			return;
+		}
+
+		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 		if (responseProperties != null) {
 			for (Entry<String, String> entry : responseProperties.entrySet()) {
-				response.setHeader(entry.getKey(), entry.getValue());
+				httpServletResponse.setHeader(entry.getKey(), entry.getValue());
 			}
 		}
 
 		if (response.getContentType() == null) {
 			response.setContentType(ContentType.TEXT_HTML);
 		}
-		response.write(getResponseText());
+		httpServletResponse.getWriter().write(getResponseText());
 	}
 }

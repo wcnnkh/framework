@@ -1,7 +1,6 @@
-package scw.servlet.service;
+package scw.servlet;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,37 +12,43 @@ import scw.beans.BeanUtils;
 import scw.core.aop.Invoker;
 import scw.core.exception.ParameterException;
 import scw.core.utils.ClassUtils;
-import scw.servlet.Filter;
-import scw.servlet.FilterChain;
-import scw.servlet.Request;
-import scw.servlet.Response;
 import scw.servlet.annotation.Controller;
 import scw.servlet.annotation.Filters;
 import scw.servlet.annotation.Methods;
 
-public class MethodAction implements Action {
+public class DefaultMethodAction implements Action {
 	private final MethodParameter[] methodParameters;
 	private final Collection<Filter> filters;
 	private final Invoker invoker;
 
-	public MethodAction(BeanFactory beanFactory, Class<?> clz, Method method) {
+	public DefaultMethodAction(BeanFactory beanFactory, Class<?> clz, Method method) {
 		this.methodParameters = getMethodParameter(method);
 		this.filters = mergeFilter(clz, method, beanFactory);
 		this.invoker = BeanUtils.getInvoker(beanFactory, clz, method);
 	}
 
 	public void doAction(Request request, Response response) throws Throwable {
-		FilterChain filterChain = new ActionFilterChain(invoker, methodParameters, filters);
+		FilterChain filterChain = new DefaultFilterChain(filters, new RealAction());
 		filterChain.doFilter(request, response);
+	}
+
+	final class RealAction implements Action {
+		public void doAction(Request request, Response response) throws Throwable {
+			Object[] args = new Object[methodParameters.length];
+			for (int i = 0; i < methodParameters.length; i++) {
+				args[i] = methodParameters[i].getParameter(request, response);
+			}
+
+			response.write(invoker.invoke(args));
+		}
 	}
 
 	private MethodParameter[] getMethodParameter(Method method) {
 		String[] tempKeys = ClassUtils.getParameterName(method);
 		Class<?>[] types = method.getParameterTypes();
-		Parameter[] parameters = method.getParameters();
 		MethodParameter[] paramInfos = new MethodParameter[types.length];
 		for (int l = 0; l < types.length; l++) {
-			paramInfos[l] = new MethodParameter(types[l], parameters[l], tempKeys[l]);
+			paramInfos[l] = new MethodParameter(types[l], tempKeys[l]);
 		}
 		return paramInfos;
 	}
@@ -71,7 +76,7 @@ public class MethodAction implements Action {
 				list.add(beanFactory.get(filter));
 			}
 		}
-		
+
 		return new ArrayList<Filter>(list);
 	}
 
@@ -109,7 +114,7 @@ public class MethodAction implements Action {
 
 		return requestTypeMap.values().toArray(new scw.core.net.http.Method[0]);
 	}
-	
+
 	@Override
 	public String toString() {
 		return invoker.toString();

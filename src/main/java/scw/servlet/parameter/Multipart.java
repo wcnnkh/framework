@@ -20,28 +20,18 @@ import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.servlet.Request;
 
 public final class Multipart {
 	private static Logger logger = LoggerFactory.getLogger(Multipart.class);
 
-	private Request request;
 	private Map<String, List<String>> paramMap = new HashMap<String, List<String>>();
 	private Map<String, List<FileItem>> fileItemMap = new HashMap<String, List<FileItem>>();
 	private List<String> keys = new ArrayList<String>();
 	private List<FileItem> fileItemList = new ArrayList<FileItem>();
 	private HttpServletRequest httpServletRequest;
 
-	public Multipart(Request request) throws IOException {
-		this.request = request;
-		init(request, request.isDebug());
-	}
-
-	/**
-	 * @return the request
-	 */
-	public Request getRequest() {
-		return request;
+	public Multipart(HttpServletRequest request) throws IOException {
+		init(request, true);
 	}
 
 	private void init(HttpServletRequest httpServletRequest, boolean debug) {

@@ -1,19 +1,17 @@
 package scw.servlet.view;
 
-import java.io.IOException;
 import java.util.HashMap;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
+import scw.core.logger.DebugLogger;
 import scw.servlet.Request;
 import scw.servlet.Response;
+import scw.servlet.ServletUtils;
 import scw.servlet.View;
 
 public class Jsp extends HashMap<String, Object> implements View {
-	private static Logger logger = LoggerFactory.getLogger(Jsp.class);
 	private static final long serialVersionUID = 1L;
 	private String page;
 
@@ -29,37 +27,30 @@ public class Jsp extends HashMap<String, Object> implements View {
 		this.page = page;
 	}
 
-	public void render(Request request, Response response) throws IOException {
+	public void render(Request request, Response response) throws Exception {
 		if (response.getContentType() == null) {
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
 		}
 
-		if (getPage() == null) {
-			setPage(response.getRequest().getServletPath());
-		}
-
 		for (Entry<String, Object> entry : entrySet()) {
-			response.getRequest().setAttribute(entry.getKey(), entry.getValue());
+			request.setAttribute(entry.getKey(), entry.getValue());
 		}
 
 		String page = getPage();
-		if (page == null) {
-			page = response.getRequest().getServletPath() + ".jsp";
+		if (page == null && request instanceof HttpServletRequest) {
+			page = ((HttpServletRequest) request).getServletPath();
 		}
 
 		try {
-			jsp(response.getRequest(), response, getPage());
+			ServletUtils.jsp(request, response, page);
 		} catch (ServletException e) {
 			throw new RuntimeException(e);
 		} finally {
-			if (response.getRequest().isDebug()) {
-				logger.debug(page);
+			if (response instanceof DebugLogger) {
+				if (((DebugLogger) response).isDebugEnabled()) {
+					((DebugLogger) response).debug(page);
+				}
 			}
 		}
-	}
-
-	public static void jsp(Request request, Response response, String page) throws ServletException, IOException {
-		RequestDispatcher dispatcher = request.getRequestDispatcher(page);
-		dispatcher.forward(request, response);
 	}
 }

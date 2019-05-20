@@ -1,15 +1,18 @@
-package scw.servlet.service;
+package scw.servlet.http.filter;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.XUtils;
-import scw.servlet.Request;
+import scw.servlet.Action;
+import scw.servlet.DefaultMethodAction;
 import scw.servlet.annotation.Controller;
 
 @Bean(proxy = false)
@@ -25,7 +28,7 @@ public class ParameterActionService extends AbstractServiceFilter {
 	}
 
 	@Override
-	public Action getAction(Request request) {
+	public Action getAction(HttpServletRequest request) {
 		if (key == null) {
 			return null;
 		}
@@ -40,7 +43,7 @@ public class ParameterActionService extends AbstractServiceFilter {
 			return null;
 		}
 
-		String action = request.getString(key);
+		String action = request.getParameter(key);
 		if (action == null) {
 			return null;
 		}
@@ -61,8 +64,8 @@ public class ParameterActionService extends AbstractServiceFilter {
 			actionName = method.getName();
 		}
 
-		Action action = new MethodAction(beanFactory, clz, method);
-		scw.core.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
+		Action action = new DefaultMethodAction(beanFactory, clz, method);
+		scw.core.net.http.Method[] types = DefaultMethodAction.mergeRequestType(clz, method);
 		for (scw.core.net.http.Method type : types) {
 			Map<String, Action> map = clzMap.get(type.name());
 			if (map == null) {
