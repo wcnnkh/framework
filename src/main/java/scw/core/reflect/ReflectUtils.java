@@ -592,9 +592,12 @@ public final class ReflectUtils {
 
 					if (method.getName().equals("is" + StringUtils.toUpperCase(methodNameSuffix, 0, 1))) {
 						find = method;
-						logger.warn("Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(), fieldName);
 					} else if (method.getName().equals("is" + StringUtils.toUpperCase(fieldName, 0, 1))) {
 						find = method;
+					}
+
+					if (find != null && fieldName.startsWith("is")) {
+						logger.warn("Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(), fieldName);
 					}
 				} else {
 					if (method.getName().equals("get" + StringUtils.toUpperCase(fieldName, 0, 1))) {
@@ -639,9 +642,12 @@ public final class ReflectUtils {
 
 					if (method.getName().equals("set" + StringUtils.toUpperCase(methodNameSuffix, 0, 1))) {
 						find = method;
-						logger.warn("Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(), fieldName);
 					} else if (method.getName().equals("set" + StringUtils.toUpperCase(fieldName, 0, 1))) {
 						find = method;
+					}
+
+					if (find != null && fieldName.startsWith("is")) {
+						logger.warn("Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(), fieldName);
 					}
 				} else {
 					if (method.getName().equals("set" + StringUtils.toUpperCase(fieldName, 0, 1))) {
