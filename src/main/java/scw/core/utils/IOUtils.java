@@ -47,11 +47,11 @@ public final class IOUtils {
 	 * write.
 	 * 
 	 * @param is
-	 *            InputStream instance.
+	 *            InputStream instance
 	 * @param os
-	 *            OutputStream instance.
-	 * @return count.
-	 * @throws IOException.
+	 *            OutputStream instance
+	 * @return count
+	 * @throws IOException
 	 */
 	public static long write(InputStream is, OutputStream os) throws IOException {
 		return write(is, os, BUFFER_SIZE);
@@ -61,13 +61,13 @@ public final class IOUtils {
 	 * write.
 	 * 
 	 * @param is
-	 *            InputStream instance.
+	 *            InputStream instance
 	 * @param os
-	 *            OutputStream instance.
+	 *            OutputStream instance
 	 * @param bufferSize
-	 *            buffer size.
-	 * @return count.
-	 * @throws IOException.
+	 *            buffer size
+	 * @return count
+	 * @throws IOException
 	 */
 	public static long write(InputStream is, OutputStream os, int bufferSize) throws IOException {
 		int read;
