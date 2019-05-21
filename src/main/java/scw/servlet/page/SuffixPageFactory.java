@@ -7,8 +7,20 @@ import scw.core.exception.NotFoundException;
 public class SuffixPageFactory implements PageFactory {
 	private LinkedList<SuffixPageInfo> suffixPageInfos = new LinkedList<SuffixPageInfo>();
 
-	public synchronized void register(String suffix, PageFactory pageFactory) {
-		suffixPageInfos.add(new SuffixPageInfo(suffix, pageFactory));
+	{
+		registerLast(".jsp", JspPageFactory.instance);
+	}
+
+	public void registerLast(String suffix, PageFactory pageFactory) {
+		synchronized (suffixPageInfos) {
+			suffixPageInfos.add(new SuffixPageInfo(suffix, pageFactory));
+		}
+	}
+
+	public synchronized void registerFirst(String suffix, PageFactory pageFactory) {
+		synchronized (suffixPageInfos) {
+			suffixPageInfos.addFirst(new SuffixPageInfo(suffix, pageFactory));
+		}
 	}
 
 	public Page create(String page) {

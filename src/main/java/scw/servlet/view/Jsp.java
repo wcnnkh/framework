@@ -2,7 +2,6 @@ package scw.servlet.view;
 
 import java.util.HashMap;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import scw.core.logger.DebugLogger;
@@ -40,17 +39,13 @@ public class Jsp extends HashMap<String, Object> implements View {
 		if (page == null && request instanceof HttpServletRequest) {
 			page = ((HttpServletRequest) request).getServletPath();
 		}
-
-		try {
-			ServletUtils.jsp(request, response, page);
-		} catch (ServletException e) {
-			throw new RuntimeException(e);
-		} finally {
-			if (response instanceof DebugLogger) {
-				if (((DebugLogger) response).isDebugEnabled()) {
-					((DebugLogger) response).debug(page);
-				}
+		
+		if (response instanceof DebugLogger) {
+			if (((DebugLogger) response).isDebugEnabled()) {
+				((DebugLogger) response).debug(page);
 			}
 		}
+
+		ServletUtils.jsp(request, response, page);
 	}
 }
