@@ -43,7 +43,7 @@ public class DefaultRpcService implements RpcService {
 		try {
 			obj = invoker.invoke(message.getArgs());
 		} catch (IllegalArgumentException e) {
-			logger.warn("参数类型不一致：{}", message.getMessageKey());
+			logger.warn("参数不一致：{}", message.getMessageKey());
 			throw e;
 		}
 		serializer.serialize(os, obj);
