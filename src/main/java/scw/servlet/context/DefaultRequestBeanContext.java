@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import scw.core.exception.BeansException;
 import scw.servlet.Request;
-import scw.servlet.ServletUtils;
+import scw.servlet.beans.Parameter;
 import scw.servlet.beans.RequestBean;
 import scw.servlet.beans.RequestBeanFactory;
 
@@ -16,33 +16,28 @@ public class DefaultRequestBeanContext implements RequestBeanContext {
 	private final Request request;
 	private final RequestBeanFactory requestBeanFactory;
 
-	public DefaultRequestBeanContext(Request request,
-			RequestBeanFactory requestBeanFactory) {
+	public DefaultRequestBeanContext(Request request, RequestBeanFactory requestBeanFactory) {
 		this.request = request;
 		this.requestBeanFactory = requestBeanFactory;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T getBean(Class<T> type) {
 		RequestBean requestBean = requestBeanFactory.get(type.getName());
 		if (requestBean == null) {
-			return getRequestObjectParameterWrapper(type, null);
+			return null;
 		}
-		return getBean(type, null);
+		return (T) getBean(requestBean, type, type.getName());
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T getBean(Class<T> type, String name) {
 		RequestBean requestBean = requestBeanFactory.get(name);
 		if (requestBean == null) {
-			return getRequestObjectParameterWrapper(type, name);
+			return null;
 		}
 
 		return (T) getBean(requestBean, type, name);
-	}
-
-	protected <T> T getRequestObjectParameterWrapper(Class<T> type, String name) {
-		return ServletUtils.getRequestObjectParameterWrapper(request, type,
-				name);
 	}
 
 	private Object getBean(RequestBean requestBean, Class<?> type, String name) {
@@ -68,8 +63,7 @@ public class DefaultRequestBeanContext implements RequestBeanContext {
 		return obj;
 	}
 
-	private Object newInstanceReuestBean(RequestBean requestBean,
-			Class<?> type, String name) {
+	private Object newInstanceReuestBean(RequestBean requestBean, Class<?> type, String name) {
 		Object obj = requestBean.newInstance(request);
 		if (obj != null) {
 			beanMap.put(requestBean.getId(), obj);
@@ -78,6 +72,10 @@ public class DefaultRequestBeanContext implements RequestBeanContext {
 				requestBean.init(obj);
 			} catch (Exception e) {
 				throw new BeansException(e);
+			}
+
+			if (obj instanceof Parameter) {
+				((Parameter) obj).wrapper(request);
 			}
 		}
 		return obj;

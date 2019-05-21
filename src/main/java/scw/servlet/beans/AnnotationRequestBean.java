@@ -64,7 +64,7 @@ public final class AnnotationRequestBean implements RequestBean {
 		this.destroyMethods = destroyMethodList.toArray(new Method[destroyMethodList.size()]);
 
 		this.constructor = ReflectUtils.findConstructor(type, false, ServletRequest.class);
-		if (constructor == null) {
+		if (this.constructor == null) {
 			this.constructor = ReflectUtils.findConstructor(type, false);
 		}
 

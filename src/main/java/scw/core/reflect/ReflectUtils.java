@@ -446,7 +446,7 @@ public final class ReflectUtils {
 		try {
 			return (T) getConstructor(type, false).newInstance();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("无法实例化：" + type.getName(), e);
 		}
 	}
 
