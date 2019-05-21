@@ -16,7 +16,6 @@ import scw.core.utils.StringParseUtils;
 
 @Bean(proxy = false)
 public class AsyncServletService extends DefaultServletService {
-	private static final long serialVersionUID = 1L;
 	private ThreadPoolExecutor executor;
 	private final int coreSize;
 	private final int maxSize;
