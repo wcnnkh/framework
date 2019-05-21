@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.aop.Invoker;
@@ -16,12 +19,12 @@ import scw.servlet.annotation.Controller;
 import scw.servlet.annotation.Filters;
 import scw.servlet.annotation.Methods;
 
-public class DefaultMethodAction implements Action {
+public final class MethodAction implements Action {
 	private final MethodParameter[] methodParameters;
 	private final Collection<Filter> filters;
 	private final Invoker invoker;
 
-	public DefaultMethodAction(BeanFactory beanFactory, Class<?> clz, Method method) {
+	public MethodAction(BeanFactory beanFactory, Class<?> clz, Method method) {
 		this.methodParameters = getMethodParameter(method);
 		this.filters = mergeFilter(clz, method, beanFactory);
 		this.invoker = BeanUtils.getInvoker(beanFactory, clz, method);
@@ -118,5 +121,29 @@ public class DefaultMethodAction implements Action {
 	@Override
 	public String toString() {
 		return invoker.toString();
+	}
+}
+
+final class MethodParameter {
+	private final Class<?> type;
+	private final String name;
+
+	public MethodParameter(Class<?> type, String name) {
+		this.type = type;
+		this.name = name;
+	}
+
+	public Object getParameter(Request request, ServletResponse response) {
+		if (ServletRequest.class.isAssignableFrom(type)) {
+			return request;
+		} else if (ServletResponse.class.isAssignableFrom(type)) {
+			return response;
+		} else {
+			try {
+				return request.getParameter(type, name);
+			} catch (Exception e) {
+				throw new ParameterException(e, "解析参数错误name=" + name + ",type=" + type.getName());
+			}
+		}
 	}
 }

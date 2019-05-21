@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.XUtils;
 import scw.servlet.Action;
-import scw.servlet.DefaultMethodAction;
+import scw.servlet.MethodAction;
 import scw.servlet.annotation.Controller;
 
 final class ServletPathServiceFilter extends AbstractHttpServiceFilter {
@@ -44,7 +44,7 @@ final class ServletPathServiceFilter extends AbstractHttpServiceFilter {
 			map = new EnumMap<scw.core.net.http.Method, Action>(scw.core.net.http.Method.class);
 		}
 
-		scw.core.net.http.Method[] types = DefaultMethodAction.mergeRequestType(clz, method);
+		scw.core.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
 		for (scw.core.net.http.Method type : types) {
 			if (map.containsKey(type.name())) {
 				throw new AlreadyExistsException(getExistActionErrMsg(action, map.get(type.name())));

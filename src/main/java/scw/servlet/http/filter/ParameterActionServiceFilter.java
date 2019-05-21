@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.XUtils;
 import scw.servlet.Action;
-import scw.servlet.DefaultMethodAction;
+import scw.servlet.MethodAction;
 import scw.servlet.annotation.Controller;
 
 final class ParameterActionServiceFilter extends AbstractHttpServiceFilter {
@@ -58,7 +58,7 @@ final class ParameterActionServiceFilter extends AbstractHttpServiceFilter {
 			actionName = method.getName();
 		}
 
-		scw.core.net.http.Method[] types = DefaultMethodAction.mergeRequestType(clz, method);
+		scw.core.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
 		for (scw.core.net.http.Method type : types) {
 			Map<String, Action> map = clzMap.get(type.name());
 			if (map == null) {

@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import scw.beans.BeanFactory;
 import scw.servlet.Action;
 import scw.servlet.DefaultFilterChain;
-import scw.servlet.DefaultMethodAction;
+import scw.servlet.MethodAction;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;
 import scw.servlet.Request;
@@ -38,7 +38,7 @@ public final class HttpServiceFilter implements Filter {
 				for (Filter filter : filters) {
 					if (filter instanceof AbstractHttpServiceFilter) {
 						((AbstractHttpServiceFilter) filter).scanning(clz, method, clzController, methodController,
-								new DefaultMethodAction(beanFactory, clz, method));
+								new MethodAction(beanFactory, clz, method));
 					}
 				}
 			}
