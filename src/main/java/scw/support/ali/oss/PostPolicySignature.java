@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.alibaba.fastjson.JSONObject;
 
-import scw.servlet.view.AbstractTextView;
+import scw.servlet.http.view.AbstractTextView;
 
 public final class PostPolicySignature extends AbstractTextView implements Serializable{
 	private static final long serialVersionUID = -7835802870759182746L;

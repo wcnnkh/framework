@@ -1,4 +1,4 @@
-package scw.servlet.view;
+package scw.servlet.http.view;
 
 import java.io.File;
 import java.io.FileReader;
