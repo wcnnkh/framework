@@ -6,7 +6,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URLConnection;
-import java.nio.charset.Charset;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
@@ -24,17 +23,17 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private final String host;
 	private final String signStr;
-	private final Charset charset;
+	private final String charsetName;
 	private final BeanFactory beanFactory;
 	private final Serializer serializer;
 
-	public HttpRpcBean(BeanFactory beanFactory, Class<?> interfaceClass, String host, String signStr, Charset charset,
+	public HttpRpcBean(BeanFactory beanFactory, Class<?> interfaceClass, String host, String signStr, String charsetName,
 			Serializer serializer) throws Exception {
 		super(interfaceClass);
 		this.beanFactory = beanFactory;
 		this.host = host;
 		this.signStr = signStr;
-		this.charset = charset;
+		this.charsetName = charsetName;
 		this.serializer = serializer;
 	}
 
@@ -60,9 +59,9 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 
 		public Object invoke(Object... args) throws Throwable {
 			long cts = System.currentTimeMillis();
-			final Message message = new Message(method, args);
+			final Message message = new Message(getType(), method, args);
 			message.setAttribute("t", cts);
-			message.setAttribute("sign", SignUtils.md5Str((cts + signStr).getBytes(charset)));
+			message.setAttribute("sign", SignUtils.md5Str((cts + signStr).getBytes(charsetName)));
 
 			HttpRequest request = new HttpRequest(scw.core.net.http.Method.POST, host) {
 				@Override

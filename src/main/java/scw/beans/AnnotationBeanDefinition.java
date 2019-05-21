@@ -40,7 +40,7 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		Service service = type.getAnnotation(Service.class);
 		if (service != null) {
 			Class<?>[] interfaces = type.getInterfaces();
-			if (interfaces.length != 0) {
+			if (interfaces.length != 0) { 
 				id = interfaces[0].getName();
 			}
 

@@ -1,7 +1,5 @@
 package scw.beans.rpc.http;
 
-import java.nio.charset.Charset;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -45,8 +43,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 						continue;
 					}
 
-					HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, address, sign,
-							Charset.forName(charsetName), ser);
+					HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, address, sign, charsetName, ser);
 					addBean(httpRpcBean);
 				}
 			}
@@ -74,9 +71,8 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 				if (StringUtils.isNull(myAddress)) {
 					myAddress = address;
 				}
-				
-				HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, myAddress, mySign,
-						Charset.forName(myScharsetName), ser);
+
+				HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, myAddress, mySign, myScharsetName, ser);
 				addBean(httpRpcBean);
 			}
 		}

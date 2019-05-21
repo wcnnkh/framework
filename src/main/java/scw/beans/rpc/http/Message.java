@@ -16,8 +16,8 @@ public final class Message implements Serializable {
 	protected Message() {
 	};
 
-	public Message(Method method, Object[] args) {
-		this.methodDefinition = new SerializableMethodDefinition(method.getDeclaringClass(), method);
+	public Message(Class<?> clz, Method method, Object[] args) {
+		this.methodDefinition = new SerializableMethodDefinition(clz, method);
 		this.args = args;
 	}
 
