@@ -207,8 +207,9 @@ public final class IOUtils {
 	public static void writeLines(OutputStream os, String[] lines) throws IOException {
 		PrintWriter writer = new PrintWriter(new OutputStreamWriter(os));
 		try {
-			for (String line : lines)
+			for (String line : lines) {
 				writer.println(line);
+			}
 			writer.flush();
 		} finally {
 			writer.close();
@@ -225,8 +226,9 @@ public final class IOUtils {
 	 * @throws IOException
 	 */
 	public static void writeLines(File file, String[] lines) throws IOException {
-		if (file == null)
+		if (file == null) {
 			throw new IOException("File is null.");
+		}
 		writeLines(new FileOutputStream(file), lines);
 	}
 
