@@ -39,33 +39,8 @@ public final class TableInfo {
 	TableInfo(Class<?> clz) {
 		this.source = clz;
 		this.serializer = Serializable.class.isAssignableFrom(source);
-		if (TableFieldListen.class.isAssignableFrom(source)) {
-			beanListenInterfaces = source.getInterfaces();
-		} else {// 没有自己实现此接口，增加此接口
-			Class<?>[] arr = source.getInterfaces();
-			if (arr.length == 0) {
-				beanListenInterfaces = new Class[] { TableFieldListen.class };
-			} else {
-				beanListenInterfaces = new Class[arr.length + 1];
-				System.arraycopy(arr, 0, beanListenInterfaces, 0, arr.length);
-				beanListenInterfaces[arr.length] = TableFieldListen.class;
-			}
-		}
-
-		StringBuilder sb = new StringBuilder();
-		char[] chars = source.getSimpleName().toCharArray();
-		for (int i = 0; i < chars.length; i++) {
-			char c = chars[i];
-			if (Character.isUpperCase(c)) {// 如果是大写的
-				if (i != 0) {
-					sb.append("_");
-				}
-				sb.append(Character.toLowerCase(c));
-			} else {
-				sb.append(c);
-			}
-		}
-		this.name = sb.toString();
+		this.beanListenInterfaces = ORMUtils.getTableFieldListenProxyInterfaces(source);
+		this.name = ORMUtils.getDefaultTableName(source);
 		Table table = source.getAnnotation(Table.class);
 		this.table = table != null;
 		if (table != null) {
@@ -101,22 +76,18 @@ public final class TableInfo {
 					continue;
 				}
 
-				if (Modifier.isStatic(field.getModifiers())
-						|| Modifier.isFinal(field.getModifiers())
+				if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())
 						|| Modifier.isTransient(field.getModifiers())) {
 					continue;
 				}
 
 				ColumnInfo columnInfo = new ColumnInfo(name, field);
-				if (columnMap.containsKey(columnInfo.getName())
-						|| fieldToColumn.containsKey(field.getName())) {
-					throw new AlreadyExistsException(source.getName() + "中[" + columnInfo.getName()
-							+ "]字段已存在");
+				if (columnMap.containsKey(columnInfo.getName()) || fieldToColumn.containsKey(field.getName())) {
+					throw new AlreadyExistsException(source.getName() + "中[" + columnInfo.getName() + "]字段已存在");
 				}
 
 				field.setAccessible(true);
-				Method method = ReflectUtils.getSetterMethod(tempClassInfo,
-						field, false);
+				Method method = ReflectUtils.getSetterMethod(tempClassInfo, field, false);
 				if (method != null) {
 					fieldSetterMethodMap.put(method.getName(), field);
 				}
@@ -134,8 +105,7 @@ public final class TableInfo {
 
 					if (columnInfo.isAutoIncrement()) {
 						if (autoIncrement != null) {
-							throw new RuntimeException(source.getName()
-									+ "存在多个@AutoIncrement字段");
+							throw new RuntimeException(source.getName() + "存在多个@AutoIncrement字段");
 						}
 
 						autoIncrement = columnInfo;
@@ -145,8 +115,7 @@ public final class TableInfo {
 						autoCreateColumnList.add(columnInfo);
 					}
 				} else {
-					boolean javaType = field.getType().getName()
-							.startsWith("java.")
+					boolean javaType = field.getType().getName().startsWith("java.")
 							|| field.getType().getName().startsWith("javax.");
 					if (!javaType) {
 						tableColumnList.add(columnInfo);
@@ -156,21 +125,16 @@ public final class TableInfo {
 			tempClassInfo = tempClassInfo.getSuperclass();
 		}
 
-		this.columns = allColumnList.toArray(new ColumnInfo[allColumnList
-				.size()]);
+		this.columns = allColumnList.toArray(new ColumnInfo[allColumnList.size()]);
 		this.primaryKeyColumns = idNameList.toArray(new ColumnInfo[0]);
 		this.notPrimaryKeyColumns = notIdNameList.toArray(new ColumnInfo[0]);
-		this.tableColumns = tableColumnList
-				.toArray(new ColumnInfo[tableColumnList.size()]);
-		this.autoCreateColumns = autoCreateColumnList
-				.toArray(new ColumnInfo[autoCreateColumnList.size()]);
+		this.tableColumns = tableColumnList.toArray(new ColumnInfo[tableColumnList.size()]);
+		this.autoCreateColumns = autoCreateColumnList.toArray(new ColumnInfo[autoCreateColumnList.size()]);
 		this.columnMap = new HashMap<String, ColumnInfo>(columnMap.size(), 1);
 		this.columnMap.putAll(columnMap);
-		this.fieldToColumn = new HashMap<String, String>(fieldToColumn.size(),
-				1);
+		this.fieldToColumn = new HashMap<String, String>(fieldToColumn.size(), 1);
 		this.fieldToColumn.putAll(fieldToColumn);
-		this.fieldSetterMethodMap = new HashMap<String, Field>(
-				fieldSetterMethodMap.size(), 1);
+		this.fieldSetterMethodMap = new HashMap<String, Field>(fieldSetterMethodMap.size(), 1);
 		this.fieldSetterMethodMap.putAll(fieldSetterMethodMap);
 
 		if (this.table) {
@@ -187,8 +151,7 @@ public final class TableInfo {
 		if (columnInfo == null) {
 			String v = fieldToColumn.get(fieldName);
 			if (v == null) {
-				throw new NullPointerException("not found table[" + this.name
-						+ "] fieldName[" + fieldName + "]");
+				throw new NullPointerException("not found table[" + this.name + "] fieldName[" + fieldName + "]");
 			}
 
 			columnInfo = columnMap.get(v);
@@ -229,8 +192,7 @@ public final class TableInfo {
 		return source;
 	}
 
-	public Object[] getPrimaryKeyParameter(Object data)
-			throws IllegalArgumentException, IllegalAccessException {
+	public Object[] getPrimaryKeyParameter(Object data) throws IllegalArgumentException, IllegalAccessException {
 		Object[] params = new Object[getPrimaryKeyColumns().length];
 		for (int i = 0; i < params.length; i++) {
 			params[i] = getPrimaryKeyColumns()[i].getField().get(data);
@@ -249,8 +211,7 @@ public final class TableInfo {
 				enhancer.setSerialVersionUID(1L);
 			}
 
-			TableFieldListen beanFieldListen = (TableFieldListen) enhancer
-					.create();
+			TableFieldListen beanFieldListen = (TableFieldListen) enhancer.create();
 			beanFieldListen.start_field_listen();
 			return (T) beanFieldListen;
 		} else {

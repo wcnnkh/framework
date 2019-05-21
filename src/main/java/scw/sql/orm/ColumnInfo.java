@@ -1,21 +1,9 @@
 package scw.sql.orm;
 
-import java.io.InputStream;
-import java.io.Reader;
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Date;
-import java.sql.NClob;
-import java.sql.Time;
-import java.sql.Timestamp;
 
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.utils.ClassUtils;
 import scw.sql.orm.annotation.AutoCreate;
 import scw.sql.orm.annotation.AutoIncrement;
 import scw.sql.orm.annotation.Column;
@@ -53,13 +41,7 @@ public final class ColumnInfo {
 		Class<?> type = field.getType();
 		this.typeName = type.getName();
 		this.length = -1;
-		this.isDataBaseType = ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
-				|| Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
-				|| Timestamp.class.isAssignableFrom(type) || InputStream.class.isAssignableFrom(type)
-				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
-				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
-				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type)
-				|| URL.class.isAssignableFrom(type) || byte[].class.isAssignableFrom(type);
+		this.isDataBaseType = ORMUtils.isDataBaseType(type);
 		Column column = field.getAnnotation(Column.class);
 		if (column != null) {
 			if (column.name().trim().length() != 0) {
