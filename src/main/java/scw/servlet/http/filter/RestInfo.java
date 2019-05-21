@@ -4,7 +4,7 @@ import java.util.Map;
 
 import scw.servlet.Action;
 
-public class RestInfo {
+final class RestInfo {
 	private String url;
 	private Map<Integer, String> keyMap;
 	private String[] regArr;

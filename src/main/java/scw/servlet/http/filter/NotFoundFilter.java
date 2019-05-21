@@ -3,7 +3,6 @@ package scw.servlet.http.filter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.beans.annotation.Bean;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.servlet.Filter;
@@ -12,8 +11,7 @@ import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.ServletUtils;
 
-@Bean(proxy = false)
-public class NotFoundServiceFilter implements Filter {
+public final class NotFoundFilter implements Filter {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void doFilter(Request request, Response response, FilterChain filterChain) throws Throwable {

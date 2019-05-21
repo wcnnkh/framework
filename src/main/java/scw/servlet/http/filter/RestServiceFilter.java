@@ -1,6 +1,5 @@
 package scw.servlet.http.filter;
 
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,30 +7,21 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import scw.beans.BeanFactory;
-import scw.beans.annotation.Bean;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.net.http.Method;
 import scw.servlet.Action;
 import scw.servlet.DefaultMethodAction;
 import scw.servlet.annotation.Controller;
+import scw.servlet.http.DefaultHttpRequest;
 
-@Bean(proxy=false)
-public class RestServiceFilter extends AbstractHttpServiceFilter {
-	public static final String RESTURL_PATH_PARAMETER = "_resturl_path_parameter";
+final class RestServiceFilter extends AbstractHttpServiceFilter {
 	private final EnumMap<Method, Map<String, RestInfo>> restMap = new EnumMap<Method, Map<String, RestInfo>>(
 			Method.class);
-	private final BeanFactory beanFactory;
-
-	public RestServiceFilter(BeanFactory beanFactory, Collection<Class<?>> classes) {
-		super(classes);
-		this.beanFactory = beanFactory;
-	}
 
 	@Override
 	public void scanning(Class<?> clz, java.lang.reflect.Method method, Controller classController,
-			Controller methodController) {
-		RestInfo restUrlInfo = getRestInfo(beanFactory, clz, method);
+			Controller methodController, Action action) {
+		RestInfo restUrlInfo = getRestInfo(action, clz, method);
 		if (restUrlInfo == null) {
 			return;
 		}
@@ -97,7 +87,7 @@ public class RestServiceFilter extends AbstractHttpServiceFilter {
 			}
 
 			if (find) {
-				request.setAttribute(RESTURL_PATH_PARAMETER, valueMap);
+				request.setAttribute(DefaultHttpRequest.RESTURL_PATH_PARAMETER, valueMap);
 				return restUrl.getAction();
 			}
 		}

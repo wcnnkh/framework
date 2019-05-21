@@ -1,36 +1,20 @@
 package scw.servlet.http.filter;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import scw.beans.BeanFactory;
-import scw.beans.annotation.Bean;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.XUtils;
 import scw.servlet.Action;
 import scw.servlet.DefaultMethodAction;
 import scw.servlet.annotation.Controller;
 
-@Bean(proxy=false)
-public class ServletPathServiceFilter extends AbstractHttpServiceFilter {
+final class ServletPathServiceFilter extends AbstractHttpServiceFilter {
 	private final Map<String, EnumMap<scw.core.net.http.Method, Action>> actionMap = new HashMap<String, EnumMap<scw.core.net.http.Method, Action>>();
-	private BeanFactory beanFactory;
-
-	public ServletPathServiceFilter(BeanFactory beanFactory, Collection<Class<?>> classes) {
-		super(classes);
-		this.beanFactory = beanFactory;
-	}
-	
-	@Override
-	public void init() {
-		super.init();
-		this.beanFactory = null;
-	}
 
 	public Action getAction(HttpServletRequest request) {
 		EnumMap<scw.core.net.http.Method, Action> map = actionMap.get(request.getServletPath());
@@ -43,8 +27,9 @@ public class ServletPathServiceFilter extends AbstractHttpServiceFilter {
 	}
 
 	@Override
-	public void scanning(Class<?> clz, Method method, Controller classController, Controller methodController) {
-		RestInfo restInfo = getRestInfo(beanFactory, clz, method);
+	public void scanning(Class<?> clz, Method method, Controller classController, Controller methodController,
+			Action action) {
+		RestInfo restInfo = getRestInfo(action, clz, method);
 		if (restInfo == null) {
 			return;
 		}
@@ -54,7 +39,6 @@ public class ServletPathServiceFilter extends AbstractHttpServiceFilter {
 		}
 
 		String allPath = XUtils.mergePath("/", classController.value(), methodController.value());
-		Action action = restInfo.getAction();
 		EnumMap<scw.core.net.http.Method, Action> map = actionMap.get(allPath);
 		if (map == null) {
 			map = new EnumMap<scw.core.net.http.Method, Action>(scw.core.net.http.Method.class);

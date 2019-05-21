@@ -1,17 +1,13 @@
 package scw.servlet.http.filter;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import scw.beans.BeanFactory;
-import scw.beans.annotation.InitMethod;
 import scw.core.utils.XUtils;
 import scw.servlet.Action;
-import scw.servlet.DefaultMethodAction;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;
 import scw.servlet.Request;
@@ -19,36 +15,11 @@ import scw.servlet.Response;
 import scw.servlet.ServletUtils;
 import scw.servlet.annotation.Controller;
 
-public abstract class AbstractHttpServiceFilter implements Filter {
-	private Collection<Class<?>> classes;
-
-	public AbstractHttpServiceFilter(Collection<Class<?>> classes) {
-		this.classes = classes;
-	}
-
+abstract class AbstractHttpServiceFilter implements Filter {
 	public abstract Action getAction(HttpServletRequest request);
 
-	public abstract void scanning(Class<?> clz, Method method, Controller classController, Controller methodController);
-
-	@InitMethod
-	public void init() {
-		for (Class<?> clz : classes) {
-			Controller clzController = clz.getAnnotation(Controller.class);
-			if (clzController == null) {
-				continue;
-			}
-
-			for (Method method : clz.getDeclaredMethods()) {
-				Controller methodController = method.getAnnotation(Controller.class);
-				if (methodController == null) {
-					continue;
-				}
-
-				scanning(clz, method, clzController, methodController);
-			}
-		}
-		classes = null;
-	}
+	public abstract void scanning(Class<?> clz, Method method, Controller classController, Controller methodController,
+			Action action);
 
 	public void doFilter(Request request, Response response, FilterChain filterChain) throws Throwable {
 		if (!ServletUtils.isHttpServlet(request, response)) {
@@ -65,7 +36,7 @@ public abstract class AbstractHttpServiceFilter implements Filter {
 		action.doAction(request, response);
 	}
 
-	public static RestInfo getRestInfo(BeanFactory beanFactory, Class<?> clz, java.lang.reflect.Method method) {
+	public static RestInfo getRestInfo(Action action, Class<?> clz, java.lang.reflect.Method method) {
 		Controller clzController = clz.getAnnotation(Controller.class);
 		if (clzController == null) {
 			return null;
@@ -107,7 +78,7 @@ public abstract class AbstractHttpServiceFilter implements Filter {
 		restUrl.setUrl(newRequestPath.toString());
 		restUrl.setRegArr(newRequestPath.toString().split("/"));
 		restUrl.setKeyMap(resultKeyMap);
-		restUrl.setAction(new DefaultMethodAction(beanFactory, clz, method));
+		restUrl.setAction(action);
 		return restUrl;
 	}
 }

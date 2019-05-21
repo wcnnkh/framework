@@ -30,11 +30,9 @@ import scw.json.JSONUtils;
 import scw.servlet.beans.CommonRequestBeanFactory;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.http.HttpWrapperFactory;
-import scw.servlet.http.filter.NotFoundServiceFilter;
-import scw.servlet.http.filter.ParameterActionServiceFilter;
 import scw.servlet.http.filter.HttpRPCFilter;
-import scw.servlet.http.filter.RestServiceFilter;
-import scw.servlet.http.filter.ServletPathServiceFilter;
+import scw.servlet.http.filter.HttpServiceFilter;
+import scw.servlet.http.filter.NotFoundFilter;
 
 public class DefaultServletService extends LinkedList<Filter> implements ServletService {
 	private static final long serialVersionUID = 1L;
@@ -107,18 +105,16 @@ public class DefaultServletService extends LinkedList<Filter> implements Servlet
 		String packageName = propertiesFactory.getValue("servlet.scanning");
 		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
 
-		Collection<Class<?>> classes = ClassUtils.getClasses(packageName);
-		Filter rpcFilter = beanFactory.get(HttpRPCFilter.class, rpcPath, rpcService);
-		add(rpcFilter);
-		Filter parameterActionService = beanFactory.get(ParameterActionServiceFilter.class, beanFactory, classes,
-				actionKey);
-		add(parameterActionService);
-		Filter servletPathService = beanFactory.get(ServletPathServiceFilter.class, beanFactory, classes);
-		add(servletPathService);
-		Filter restService = beanFactory.get(RestServiceFilter.class, beanFactory, classes);
-		add(restService);
-		Filter notFoundService = beanFactory.get(NotFoundServiceFilter.class);
-		add(notFoundService);
+		add(beanFactory.get(HttpRPCFilter.class, rpcPath, rpcService));
+		add(beanFactory.get(HttpServiceFilter.class, beanFactory, ClassUtils.getClasses(packageName), actionKey));
+
+		String lastFilterNames = propertiesFactory.getValue("servlet.lastFilters");
+		if (!StringUtils.isEmpty(lastFilterNames)) {
+			Collection<Filter> rootFilter = BeanUtils.getBeanList(beanFactory,
+					Arrays.asList(StringUtils.commonSplit(lastFilterNames)));
+			addAll(rootFilter);
+		}
+		add(beanFactory.get(NotFoundFilter.class));
 	}
 
 	protected WrapperFactory getWrapperFactory() {

@@ -18,9 +18,10 @@ import scw.servlet.ServletUtils;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.context.DefaultRequestBeanContext;
 import scw.servlet.context.RequestBeanContext;
-import scw.servlet.http.filter.RestServiceFilter;
 
 public class DefaultHttpRequest extends HttpServletRequestWrapper implements HttpRequest, Destroy, DebugLogger {
+	public static final String RESTURL_PATH_PARAMETER = "_resturl_path_parameter";
+
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpRequest.class);
 	private static final Charset GET_DEFAULT_CHARSET = Charset.forName("ISO-8859-1");
 	private long createTime;
@@ -116,8 +117,7 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 	public String getParameter(String name) {
 		String v = super.getParameter(name);
 		if (v == null) {
-			Map<String, String> restParameterMap = (Map<String, String>) getAttribute(
-					RestServiceFilter.RESTURL_PATH_PARAMETER);
+			Map<String, String> restParameterMap = (Map<String, String>) getAttribute(RESTURL_PATH_PARAMETER);
 			if (restParameterMap != null) {
 				v = restParameterMap.get(name);
 			}

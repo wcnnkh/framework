@@ -1,29 +1,22 @@
 package scw.servlet.http.filter;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import scw.beans.BeanFactory;
-import scw.beans.annotation.Bean;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.XUtils;
 import scw.servlet.Action;
 import scw.servlet.DefaultMethodAction;
 import scw.servlet.annotation.Controller;
 
-@Bean(proxy = false)
-public class ParameterActionServiceFilter extends AbstractHttpServiceFilter {
+final class ParameterActionServiceFilter extends AbstractHttpServiceFilter {
 	private final Map<String, Map<String, Map<String, Action>>> actionMap = new HashMap<String, Map<String, Map<String, Action>>>();
 	private String key;
-	private BeanFactory beanFactory;
 
-	public ParameterActionServiceFilter(BeanFactory beanFactory, Collection<Class<?>> classes, String key) {
-		super(classes);
-		this.beanFactory = beanFactory;
+	public ParameterActionServiceFilter(String key) {
 		this.key = key;
 	}
 
@@ -51,7 +44,8 @@ public class ParameterActionServiceFilter extends AbstractHttpServiceFilter {
 	}
 
 	@Override
-	public void scanning(Class<?> clz, Method method, Controller classController, Controller methodController) {
+	public void scanning(Class<?> clz, Method method, Controller classController, Controller methodController,
+			Action action) {
 		String clzPath = classController == null ? "" : classController.value();
 		String path = XUtils.mergePath("/", clzPath);
 		Map<String, Map<String, Action>> clzMap = actionMap.get(path);
@@ -64,7 +58,6 @@ public class ParameterActionServiceFilter extends AbstractHttpServiceFilter {
 			actionName = method.getName();
 		}
 
-		Action action = new DefaultMethodAction(beanFactory, clz, method);
 		scw.core.net.http.Method[] types = DefaultMethodAction.mergeRequestType(clz, method);
 		for (scw.core.net.http.Method type : types) {
 			Map<String, Action> map = clzMap.get(type.name());
@@ -73,7 +66,8 @@ public class ParameterActionServiceFilter extends AbstractHttpServiceFilter {
 			}
 
 			if (map.containsKey(actionName)) {
-				throw new AlreadyExistsException(ServletPathServiceFilter.getExistActionErrMsg(action, map.get(actionName)));
+				throw new AlreadyExistsException(
+						ServletPathServiceFilter.getExistActionErrMsg(action, map.get(actionName)));
 			}
 
 			map.put(actionName, action);
