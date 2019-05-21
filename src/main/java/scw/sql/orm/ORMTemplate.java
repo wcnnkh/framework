@@ -166,7 +166,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 		if (bean instanceof TableFieldListen) {
 			if (((TableFieldListen) bean).get_field_change_map() == null) {
 				logger.warn("更新对象[{}]不存在数据变更", bean.getClass().getName());
-				return true;
+				return false;
 			}
 		}
 
