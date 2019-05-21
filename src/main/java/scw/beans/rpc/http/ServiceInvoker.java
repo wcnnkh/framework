@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 import scw.core.utils.NumberUtils;
 
-public class ServiceInvoker {
+final class ServiceInvoker {
 	private Method method;
 
 	public ServiceInvoker(Method method) {
