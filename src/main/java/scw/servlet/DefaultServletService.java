@@ -32,7 +32,7 @@ import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.http.HttpWrapperFactory;
 import scw.servlet.http.filter.NotFoundServiceFilter;
 import scw.servlet.http.filter.ParameterActionServiceFilter;
-import scw.servlet.http.filter.RPCFilter;
+import scw.servlet.http.filter.HttpRPCFilter;
 import scw.servlet.http.filter.RestServiceFilter;
 import scw.servlet.http.filter.ServletPathServiceFilter;
 
@@ -108,7 +108,7 @@ public class DefaultServletService extends LinkedList<Filter> implements Servlet
 		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
 
 		Collection<Class<?>> classes = ClassUtils.getClasses(packageName);
-		Filter rpcFilter = beanFactory.get(RPCFilter.class, rpcPath, rpcService);
+		Filter rpcFilter = beanFactory.get(HttpRPCFilter.class, rpcPath, rpcService);
 		add(rpcFilter);
 		Filter parameterActionService = beanFactory.get(ParameterActionServiceFilter.class, beanFactory, classes,
 				actionKey);

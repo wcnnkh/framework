@@ -19,10 +19,10 @@ import scw.servlet.Response;
 import scw.servlet.ServletUtils;
 import scw.servlet.annotation.Controller;
 
-public abstract class AbstractServiceFilter implements Filter {
+public abstract class AbstractHttpServiceFilter implements Filter {
 	private Collection<Class<?>> classes;
 
-	public AbstractServiceFilter(Collection<Class<?>> classes) {
+	public AbstractHttpServiceFilter(Collection<Class<?>> classes) {
 		this.classes = classes;
 	}
 

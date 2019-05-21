@@ -17,7 +17,7 @@ import scw.servlet.DefaultMethodAction;
 import scw.servlet.annotation.Controller;
 
 @Bean(proxy=false)
-public class RestServiceFilter extends AbstractServiceFilter {
+public class RestServiceFilter extends AbstractHttpServiceFilter {
 	public static final String RESTURL_PATH_PARAMETER = "_resturl_path_parameter";
 	private final EnumMap<Method, Map<String, RestInfo>> restMap = new EnumMap<Method, Map<String, RestInfo>>(
 			Method.class);

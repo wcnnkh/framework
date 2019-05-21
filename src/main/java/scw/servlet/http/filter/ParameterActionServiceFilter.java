@@ -16,7 +16,7 @@ import scw.servlet.DefaultMethodAction;
 import scw.servlet.annotation.Controller;
 
 @Bean(proxy = false)
-public class ParameterActionServiceFilter extends AbstractServiceFilter {
+public class ParameterActionServiceFilter extends AbstractHttpServiceFilter {
 	private final Map<String, Map<String, Map<String, Action>>> actionMap = new HashMap<String, Map<String, Map<String, Action>>>();
 	private String key;
 	private BeanFactory beanFactory;

@@ -12,11 +12,11 @@ import scw.servlet.Response;
 import scw.servlet.ServletUtils;
 
 @Bean(proxy = false)
-public class RPCFilter implements Filter {
+public class HttpRPCFilter implements Filter {
 	private final String path;
 	private final RpcService rpcService;
 
-	public RPCFilter(String path, RpcService rpcService) {
+	public HttpRPCFilter(String path, RpcService rpcService) {
 		this.path = path;
 		this.rpcService = rpcService;
 	}
