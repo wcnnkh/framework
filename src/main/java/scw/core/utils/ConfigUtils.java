@@ -236,13 +236,7 @@ public final class ConfigUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if (isr != null) {
-				try {
-					isr.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+			IOUtils.closeReader(isr);
 		}
 		return properties;
 	}
