@@ -6,6 +6,12 @@ import java.util.List;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.alibaba.dubbo.config.ApplicationConfig;
+import com.alibaba.dubbo.config.ProtocolConfig;
+import com.alibaba.dubbo.config.ReferenceConfig;
+import com.alibaba.dubbo.config.RegistryConfig;
+import com.alibaba.dubbo.config.ServiceConfig;
+
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Service;
 import scw.beans.property.PropertiesFactory;
@@ -17,12 +23,6 @@ import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParseUtils;
 import scw.core.utils.StringUtils;
-
-import com.alibaba.dubbo.config.ApplicationConfig;
-import com.alibaba.dubbo.config.ProtocolConfig;
-import com.alibaba.dubbo.config.ReferenceConfig;
-import com.alibaba.dubbo.config.RegistryConfig;
-import com.alibaba.dubbo.config.ServiceConfig;
 
 public final class XmlDubboUtils {
 	private XmlDubboUtils() {
@@ -49,7 +49,7 @@ public final class XmlDubboUtils {
 		String[] addressArray = StringUtils.commonSplit(XmlBeanUtils
 				.getAddress(propertiesFactory, node));
 		for (String address : addressArray) {
-			RegistryConfig config = ReflectUtils.clone(registryConfig);
+			RegistryConfig config = ReflectUtils.clone(registryConfig, true);
 			config.setAddress(address);
 			list.add(config);
 		}
@@ -151,7 +151,7 @@ public final class XmlDubboUtils {
 					for (Class<?> i : clz.getInterfaces()) {
 						@SuppressWarnings("unchecked")
 						ServiceConfig<Object> config = (ServiceConfig<Object>) ReflectUtils
-								.clone(serviceConfig);
+								.clone(serviceConfig, true);
 						config.setInterface(i);
 						config.setRef(ref);
 						serviceConfigs.add(config);
@@ -218,7 +218,7 @@ public final class XmlDubboUtils {
 			for (Class<?> clz : ClassUtils.getClasses(packageName)) {
 				if (clz.isInterface()) {
 					ReferenceConfig<?> referenceConfig = ReflectUtils
-							.clone(config);
+							.clone(config, true);
 					referenceConfig.setInterface(clz);
 					referenceConfigs.add(referenceConfig);
 				}

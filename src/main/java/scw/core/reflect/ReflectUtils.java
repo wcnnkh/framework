@@ -456,9 +456,9 @@ public final class ReflectUtils {
 	 * @param obj
 	 * @return
 	 */
-	public static <T> T clone(T obj) {
+	public static <T> T clone(T obj, boolean ignoreTransient) {
 		try {
-			return clone(obj, true, true, true);
+			return clone(obj, true, ignoreTransient, true);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
