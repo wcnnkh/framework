@@ -6,9 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
 import scw.core.Constants;
-import scw.core.aop.Invoker;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.serializer.Serializer;
@@ -17,7 +15,7 @@ import scw.core.utils.StringUtils;
 
 public class DefaultRpcService implements RpcService {
 	private static Logger logger = LoggerFactory.getLogger(DefaultRpcService.class);
-	private final Map<String, Invoker> invokerRPCMap = new HashMap<String, Invoker>();
+	private final Map<String, ServiceInvoker> invokerRPCMap = new HashMap<String, ServiceInvoker>();
 	private final String sign;
 	private final BeanFactory beanFactory;
 	private final Serializer serializer;
@@ -34,14 +32,14 @@ public class DefaultRpcService implements RpcService {
 			throw new RuntimeException("RPC验证失败");
 		}
 
-		Invoker invoker = getRPCInvoker(message);
+		ServiceInvoker invoker = getRPCInvoker(message);
 		if (invoker == null) {
 			throw new RuntimeException("not found service:" + message.getMessageKey());
 		}
 
 		Object obj;
 		try {
-			obj = invoker.invoke(message.getArgs());
+			obj = invoker.invoke(beanFactory.get(message.getMethodDefinition().getBelongClass()), message.getArgs());
 		} catch (IllegalArgumentException e) {
 			logger.warn("参数不一致：{}", message.getMessageKey());
 			throw e;
@@ -49,14 +47,13 @@ public class DefaultRpcService implements RpcService {
 		serializer.serialize(os, obj);
 	}
 
-	protected Invoker getRPCInvoker(final Message message) throws NoSuchMethodException, SecurityException {
-		Invoker invoker = invokerRPCMap.get(message.getMessageKey());
+	protected ServiceInvoker getRPCInvoker(final Message message) throws NoSuchMethodException, SecurityException {
+		ServiceInvoker invoker = invokerRPCMap.get(message.getMessageKey());
 		if (invoker == null) {
 			synchronized (invokerRPCMap) {
 				invoker = invokerRPCMap.get(message.getMessageKey());
 				if (invoker == null) {
-					invoker = BeanUtils.getInvoker(beanFactory, message.getMethodDefinition().getBelongClass(),
-							message.getMethod());
+					invoker = new ServiceInvoker(message.getMethod());
 					if (invoker != null) {
 						invokerRPCMap.put(message.getMessageKey(), invoker);
 					}
