@@ -1,6 +1,8 @@
 package scw.data.redis.jedis;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,8 +12,8 @@ import scw.data.redis.AbstractBinaryRedisOperations;
 import scw.data.redis.RedisUtils;
 import scw.data.redis.ResourceManager;
 
-public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisOperations
-		implements ResourceManager<Jedis> {
+public abstract class AbstractJedisBinaryOperations extends
+		AbstractBinaryRedisOperations implements ResourceManager<Jedis> {
 
 	public byte[] get(byte[] key) {
 		Jedis jedis = null;
@@ -265,7 +267,8 @@ public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisO
 		}
 	}
 
-	public Boolean set(byte[] key, byte[] value, byte[] nxxx, byte[] expx, long time) {
+	public Boolean set(byte[] key, byte[] value, byte[] nxxx, byte[] expx,
+			long time) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
@@ -373,5 +376,30 @@ public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisO
 		} finally {
 			close(jedis);
 		}
+	}
+
+	public Map<byte[], byte[]> mget(Collection<byte[]> keys) {
+		if (keys == null || keys.isEmpty()) {
+			return null;
+		}
+
+		List<byte[]> list = mget(keys.toArray(new byte[keys.size()][]));
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+
+		Map<byte[], byte[]> map = new HashMap<byte[], byte[]>(keys.size(), 1);
+		Iterator<byte[]> keyIterator = keys.iterator();
+		Iterator<byte[]> valueIterator = list.iterator();
+		while (keyIterator.hasNext() && valueIterator.hasNext()) {
+			byte[] key = keyIterator.next();
+			byte[] value = valueIterator.next();
+			if (key == null || value == null) {
+				continue;
+			}
+
+			map.put(key, value);
+		}
+		return map;
 	}
 }

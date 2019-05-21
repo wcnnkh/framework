@@ -1,6 +1,8 @@
 package scw.data.redis.jedis;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,8 +12,8 @@ import scw.data.redis.AbstractStringRedisOperations;
 import scw.data.redis.RedisUtils;
 import scw.data.redis.ResourceManager;
 
-public abstract class AbstractJedisStringOperations extends AbstractStringRedisOperations
-		implements ResourceManager<Jedis> {
+public abstract class AbstractJedisStringOperations extends
+		AbstractStringRedisOperations implements ResourceManager<Jedis> {
 
 	public String get(String key) {
 		Jedis jedis = null;
@@ -265,7 +267,8 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 		}
 	}
 
-	public Boolean set(String key, String value, String nxxx, String expx, long time) {
+	public Boolean set(String key, String value, String nxxx, String expx,
+			long time) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
@@ -373,5 +376,30 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 		} finally {
 			close(jedis);
 		}
+	}
+
+	public Map<String, String> mget(Collection<String> keys) {
+		if (keys == null || keys.isEmpty()) {
+			return null;
+		}
+
+		List<String> list = mget(keys.toArray(new String[keys.size()]));
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+
+		Map<String, String> map = new HashMap<String, String>(keys.size(), 1);
+		Iterator<String> keyIterator = keys.iterator();
+		Iterator<String> valueIterator = list.iterator();
+		while (keyIterator.hasNext() && valueIterator.hasNext()) {
+			String key = keyIterator.next();
+			String value = valueIterator.next();
+			if (key == null || value == null) {
+				continue;
+			}
+
+			map.put(key, value);
+		}
+		return map;
 	}
 }

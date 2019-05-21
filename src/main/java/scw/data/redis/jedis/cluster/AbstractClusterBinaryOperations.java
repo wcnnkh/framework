@@ -1,6 +1,8 @@
 package scw.data.redis.jedis.cluster;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,8 +12,8 @@ import scw.data.redis.AbstractBinaryRedisOperations;
 import scw.data.redis.RedisUtils;
 import scw.data.redis.ResourceManager;
 
-public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedisOperations
-		implements ResourceManager<JedisCluster> {
+public abstract class AbstractClusterBinaryOperations extends
+		AbstractBinaryRedisOperations implements ResourceManager<JedisCluster> {
 
 	public byte[] get(byte[] key) {
 		JedisCluster jedisCluster = null;
@@ -265,11 +267,13 @@ public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedi
 		}
 	}
 
-	public Boolean set(byte[] key, byte[] value, byte[] nxxx, byte[] expx, long time) {
+	public Boolean set(byte[] key, byte[] value, byte[] nxxx, byte[] expx,
+			long time) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return RedisUtils.isOK(jedisCluster.set(key, value, nxxx, expx, time));
+			return RedisUtils.isOK(jedisCluster.set(key, value, nxxx, expx,
+					time));
 		} finally {
 			close(jedisCluster);
 		}
@@ -373,5 +377,30 @@ public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedi
 		} finally {
 			close(jedisCluster);
 		}
+	}
+
+	public Map<byte[], byte[]> mget(Collection<byte[]> keys) {
+		if (keys == null || keys.isEmpty()) {
+			return null;
+		}
+
+		List<byte[]> list = mget(keys.toArray(new byte[keys.size()][]));
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+
+		Map<byte[], byte[]> map = new HashMap<byte[], byte[]>(keys.size(), 1);
+		Iterator<byte[]> keyIterator = keys.iterator();
+		Iterator<byte[]> valueIterator = list.iterator();
+		while (keyIterator.hasNext() && valueIterator.hasNext()) {
+			byte[] key = keyIterator.next();
+			byte[] value = valueIterator.next();
+			if (key == null || value == null) {
+				continue;
+			}
+
+			map.put(key, value);
+		}
+		return map;
 	}
 }

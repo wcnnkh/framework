@@ -18,11 +18,13 @@ public final class RedisCacheManager implements CacheManager {
 	}
 
 	public void add(String key, Object value, int exp) {
-		redis.getObjectOperations().set(key, value, RedisUtils.NX, RedisUtils.EX, exp);
+		redis.getObjectOperations().set(key, value, RedisUtils.NX,
+				RedisUtils.EX, exp);
 	}
 
 	public void set(String key, Object value, int exp) {
-		redis.getObjectOperations().set(key, value, RedisUtils.XX, RedisUtils.EX, exp);
+		redis.getObjectOperations().set(key, value, RedisUtils.XX,
+				RedisUtils.EX, exp);
 	}
 
 	public void delete(String key) {
@@ -33,7 +35,7 @@ public final class RedisCacheManager implements CacheManager {
 	public <T> T get(Class<T> type, String key) {
 		T t = (T) redis.getObjectOperations().get(key);
 		if (t != null && t instanceof TableFieldListen) {
-			((TableFieldListen) t).start_field_listen();
+			((TableFieldListen) t).clear_field_listen();
 		}
 		return t;
 	}
@@ -42,7 +44,7 @@ public final class RedisCacheManager implements CacheManager {
 		@SuppressWarnings("unchecked")
 		T t = (T) redis.getObjectOperations().getAndTouch(key, exp);
 		if (t != null && t instanceof TableFieldListen) {
-			((TableFieldListen) t).start_field_listen();
+			((TableFieldListen) t).clear_field_listen();
 		}
 		return t;
 	}

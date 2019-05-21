@@ -16,7 +16,7 @@ public final class MemcachedCacheManager implements CacheManager {
 	}
 
 	public void add(String key, Object value, int exp) {
-		memcached.add(key, exp, value);
+		memcached.set(key, exp, value);
 	}
 
 	public void set(String key, Object value, int exp) {
@@ -30,7 +30,7 @@ public final class MemcachedCacheManager implements CacheManager {
 	public <T> T get(Class<T> type, String key) {
 		T t = memcached.get(key);
 		if (t != null && t instanceof TableFieldListen) {
-			((TableFieldListen) t).start_field_listen();
+			((TableFieldListen) t).clear_field_listen();
 		}
 		return t;
 	}
@@ -38,7 +38,7 @@ public final class MemcachedCacheManager implements CacheManager {
 	public <T> T getAndTouch(Class<T> type, String key, int exp) {
 		T t = memcached.getAndTouch(key, exp);
 		if (t != null && t instanceof TableFieldListen) {
-			((TableFieldListen) t).start_field_listen();
+			((TableFieldListen) t).clear_field_listen();
 		}
 		return t;
 	}

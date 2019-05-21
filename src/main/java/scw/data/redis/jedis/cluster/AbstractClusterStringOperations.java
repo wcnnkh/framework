@@ -1,6 +1,8 @@
 package scw.data.redis.jedis.cluster;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -373,5 +375,30 @@ public abstract class AbstractClusterStringOperations extends AbstractStringRedi
 		} finally {
 			close(jedisCluster);
 		}
+	}
+	
+	public Map<String, String> mget(Collection<String> keys) {
+		if (keys == null || keys.isEmpty()) {
+			return null;
+		}
+
+		List<String> list = mget(keys.toArray(new String[keys.size()]));
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+
+		Map<String, String> map = new HashMap<String, String>(keys.size(), 1);
+		Iterator<String> keyIterator = keys.iterator();
+		Iterator<String> valueIterator = list.iterator();
+		while (keyIterator.hasNext() && valueIterator.hasNext()) {
+			String key = keyIterator.next();
+			String value = valueIterator.next();
+			if (key == null || value == null) {
+				continue;
+			}
+
+			map.put(key, value);
+		}
+		return map;
 	}
 }
