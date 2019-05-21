@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.beans.annotation.Bean;
 import scw.core.utils.StringUtils;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;
@@ -21,8 +20,7 @@ import scw.servlet.ServletUtils;
  * @author shuchaowen
  *
  */
-@Bean(proxy = false)
-public class CrossDomainFilter implements Filter {
+public final class CrossDomainFilter implements Filter {
 	private static final CrossDomainDefinition DEFAULT = new CrossDomainDefinition("*", "*", "*", false, -1);
 	private Map<String, CrossDomainDefinition> crossDomainDefinitionMap = new HashMap<String, CrossDomainDefinition>();
 

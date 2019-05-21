@@ -14,8 +14,8 @@ import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.annotation.Controller;
 
-public class HttpServiceFilter implements Filter {
-	private Collection<Filter> filters;
+public final class HttpServiceFilter implements Filter {
+	private final Collection<Filter> filters;
 
 	public HttpServiceFilter(BeanFactory beanFactory, Collection<Class<?>> classes, String actionKey) {
 		filters = new LinkedList<Filter>();
