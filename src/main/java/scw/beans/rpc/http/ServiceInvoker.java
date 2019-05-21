@@ -25,8 +25,10 @@ public class ServiceInvoker {
 			if (v instanceof Number) {
 				if (types[i].isPrimitive()) {
 					values[i] = NumberUtils.converPrimitive((Number) v, types[i]);
-				} else {
+				} else if (Number.class.isAssignableFrom(types[i])) {
 					values[i] = NumberUtils.convertNumberToTargetClass((Number) v, (Class<Number>) types[i]);
+				} else {
+					values[i] = v;
 				}
 			} else {
 				values[i] = v;
