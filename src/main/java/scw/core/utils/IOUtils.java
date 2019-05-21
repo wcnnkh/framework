@@ -186,8 +186,9 @@ public final class IOUtils {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		try {
 			String line;
-			while ((line = reader.readLine()) != null)
+			while ((line = reader.readLine()) != null) {
 				lines.add(line);
+			}
 			return lines.toArray(new String[0]);
 		} finally {
 			reader.close();
@@ -344,6 +345,78 @@ public final class IOUtils {
 				if (br.markSupported()) {
 					br.reset();
 				}
+			}
+		}
+	}
+
+	public static void closeReader(Reader... readers) {
+		if (readers == null) {
+			return;
+		}
+
+		for (Reader reader : readers) {
+			if (reader == null) {
+				continue;
+			}
+
+			try {
+				reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void closeInputStream(InputStream... inputStreams) {
+		if (inputStreams == null) {
+			return;
+		}
+
+		for (InputStream inputStream : inputStreams) {
+			if (inputStream == null) {
+				continue;
+			}
+
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void closeOutputStream(OutputStream... outputStreams) {
+		if (outputStreams == null) {
+			return;
+		}
+
+		for (OutputStream outputStream : outputStreams) {
+			if (outputStream == null) {
+				continue;
+			}
+
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void closeWrite(Writer... writers) {
+		if (writers == null) {
+			return;
+		}
+
+		for (Writer writer : writers) {
+			if (writer == null) {
+				continue;
+			}
+
+			try {
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}

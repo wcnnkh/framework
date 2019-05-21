@@ -236,7 +236,13 @@ public final class ConfigUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			XUtils.close(isr);
+			if (isr != null) {
+				try {
+					isr.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return properties;
 	}

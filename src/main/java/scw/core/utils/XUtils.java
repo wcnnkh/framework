@@ -14,20 +14,6 @@ public final class XUtils {
 		return System.getProperty("os.name").toLowerCase().startsWith("mac");
 	}
 
-	public static void close(AutoCloseable... closeables) {
-		for (AutoCloseable closeable : closeables) {
-			if (closeable != null) {
-				try {
-					closeable.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	
-
 	public static String getUUID() {
 		String str = UUID.randomUUID().toString();
 		char[] cs = new char[32];

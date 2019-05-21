@@ -10,7 +10,7 @@ import scw.core.io.StreamUtils;
 import scw.core.io.UnsafeByteArrayInputStream;
 import scw.core.io.UnsafeByteArrayOutputStream;
 import scw.core.serializer.Serializer;
-import scw.core.utils.XUtils;
+import scw.core.utils.IOUtils;
 
 public class JavaSerializer extends Serializer {
 	@SuppressWarnings("unchecked")
@@ -40,7 +40,7 @@ public class JavaSerializer extends Serializer {
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		} finally {
-			XUtils.close(ois, bis);
+			IOUtils.closeInputStream(ois, bis);
 		}
 	}
 
@@ -68,7 +68,7 @@ public class JavaSerializer extends Serializer {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
-			XUtils.close(oos, bos);
+			IOUtils.closeOutputStream(oos, bos);
 		}
 	}
 }

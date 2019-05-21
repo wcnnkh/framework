@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.utils.XUtils;
 import scw.db.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.SqlException;
@@ -69,7 +68,13 @@ public abstract class AbstractDataBase implements DataBase {
 		} catch (SQLException e) {
 			throw new SqlException(e);
 		} finally {
-			XUtils.close(connection);
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 }

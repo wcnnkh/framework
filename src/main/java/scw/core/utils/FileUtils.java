@@ -344,7 +344,13 @@ public final class FileUtils {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} finally {
-			XUtils.close(fileInputStream);
+			if (fileInputStream != null) {
+				try {
+					fileInputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -384,7 +390,8 @@ public final class FileUtils {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} finally {
-			XUtils.close(br, isr, fis);
+			IOUtils.closeReader(br, isr);
+			IOUtils.closeInputStream(fis);
 		}
 	}
 
@@ -409,7 +416,7 @@ public final class FileUtils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			XUtils.close(fos);
+			IOUtils.closeOutputStream(fos);
 		}
 	}
 }
