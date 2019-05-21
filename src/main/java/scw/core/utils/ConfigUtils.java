@@ -33,10 +33,8 @@ public final class ConfigUtils {
 	private static final String CLASSPATH = "classpath";
 	private static final String CLASSPATH_PREFIX = CLASSPATH + ":";
 	private static final String WEB_INF = "WEB-INF";
-	public static final StringFormatSystemProperties format1 = new StringFormatSystemProperties(
-			"{", "}");
-	public static final StringFormatSystemProperties format2 = new StringFormatSystemProperties(
-			"[", "]");
+	public static final StringFormatSystemProperties format1 = new StringFormatSystemProperties("{", "}");
+	public static final StringFormatSystemProperties format2 = new StringFormatSystemProperties("[", "]");
 	public static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
 	private static final Map<String, String> SEARCH_PATH_CACHE = new HashMap<String, String>();
 	private static String work_path_cache;
@@ -75,8 +73,7 @@ public final class ConfigUtils {
 		String prefix = newPath.substring(0, CLASSPATH_PREFIX.length());
 		prefix = prefix.toUpperCase();
 		if (prefix.equals(CLASSPATH_PREFIX.toUpperCase())) {
-			return getClassPath()
-					+ newPath.substring(CLASSPATH_PREFIX.length());
+			return getClassPath() + newPath.substring(CLASSPATH_PREFIX.length());
 		}
 		return newPath;
 	}
@@ -88,12 +85,18 @@ public final class ConfigUtils {
 	 */
 	public static String getWorkPath() {
 		if (work_path_cache == null) {
-			String path = ConfigUtils.class.getResource("/").getPath();
-			File file = new File(path);
-			file = file.getParentFile().getParentFile();
-			File f = FileUtils.searchDirectory(file.getPath(), WEB_INF);
-			if (f != null && f.exists()) {
-				work_path_cache = f.getParentFile().getPath();
+			synchronized (ConfigUtils.class) {
+				if (work_path_cache == null) {
+					String path = ConfigUtils.class.getResource("/").getPath();
+					File file = new File(path);
+					file = file.getParentFile().getParentFile();
+					File f = FileUtils.searchDirectory(file.getPath(), WEB_INF);
+					if (f != null && f.exists()) {
+						work_path_cache = f.getParentFile().getPath();
+					} else {
+						work_path_cache = "";
+					}
+				}
 			}
 		}
 		return work_path_cache;
@@ -103,8 +106,7 @@ public final class ConfigUtils {
 		return ConfigUtils.class.getResource("/").getPath();
 	}
 
-	public static <T> T parseObject(Map<String, String> map, Class<T> clz)
-			throws Exception {
+	public static <T> T parseObject(Map<String, String> map, Class<T> clz) throws Exception {
 		T t = clz.newInstance();
 		for (Entry<String, String> entry : map.entrySet()) {
 			Field field = ReflectUtils.getField(clz, entry.getKey(), true);
@@ -112,12 +114,7 @@ public final class ConfigUtils {
 				continue;
 			}
 
-			ReflectUtils.setFieldValue(
-					clz,
-					field,
-					t,
-					StringParseUtils.conversion(entry.getValue(),
-							field.getType()));
+			ReflectUtils.setFieldValue(clz, field, t, StringParseUtils.conversion(entry.getValue(), field.getType()));
 		}
 		return t;
 	}
@@ -179,8 +176,7 @@ public final class ConfigUtils {
 					if (StringUtils.isNull(configSuffix)) {
 						file = getFile(filePath, null);
 					} else {
-						file = getFile(filePath, Arrays.asList(StringUtils
-								.commonSplit(configSuffix)));
+						file = getFile(filePath, Arrays.asList(StringUtils.commonSplit(configSuffix)));
 					}
 
 					if (file == null || !file.exists()) {
@@ -214,8 +210,7 @@ public final class ConfigUtils {
 		}
 
 		for (String sf : testSuffix) {
-			File testFile = new File(file.getParent() + File.separator
-					+ getTestFileName(file.getName(), sf));
+			File testFile = new File(file.getParent() + File.separator + getTestFileName(file.getName(), sf));
 			if (testFile.exists()) {
 				return testFile;
 			}
@@ -228,8 +223,7 @@ public final class ConfigUtils {
 		if (index == -1) {// 不存在
 			return fileName + str;
 		} else {
-			return fileName.substring(0, index) + str
-					+ fileName.substring(index);
+			return fileName.substring(0, index) + str + fileName.substring(index);
 		}
 	}
 
@@ -247,8 +241,7 @@ public final class ConfigUtils {
 		return properties;
 	}
 
-	public static List<Map<String, String>> getDefaultXmlContent(File file,
-			String rootTag) {
+	public static List<Map<String, String>> getDefaultXmlContent(File file, String rootTag) {
 		if (rootTag == null) {
 			throw new NullPointerException("rootTag is null");
 		}
@@ -275,8 +268,7 @@ public final class ConfigUtils {
 	}
 
 	public static <T> List<T> xmlToList(Class<T> type, File file) {
-		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(file,
-				"config");
+		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(file, "config");
 		List<T> objList = new ArrayList<T>();
 		try {
 			for (Map<String, String> map : list) {
@@ -306,8 +298,7 @@ public final class ConfigUtils {
 				throw new NullPointerException("打不到主键字段");
 			}
 
-			List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(
-					file, "config");
+			List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(file, "config");
 			Map<K, V> map = new HashMap<K, V>();
 			for (Map<String, String> tempMap : list) {
 				Object obj = ConfigUtils.parseObject(tempMap, valueType);
@@ -315,9 +306,8 @@ public final class ConfigUtils {
 				Object kV = keyField.get(obj);
 				keyField.setAccessible(false);
 				if (map.containsKey(kV)) {
-					throw new NullPointerException("已经存在的key="
-							+ keyField.getName() + ",value=" + kV
-							+ ", filePath=" + file.getPath());
+					throw new NullPointerException(
+							"已经存在的key=" + keyField.getName() + ",value=" + kV + ", filePath=" + file.getPath());
 				}
 				map.put((K) kV, (V) obj);
 			}
@@ -333,13 +323,11 @@ public final class ConfigUtils {
 		return getProperties(getFile(filePath), charsetName);
 	}
 
-	public static List<String> getFileContentLineList(String filePath,
-			String charsetName) {
+	public static List<String> getFileContentLineList(String filePath, String charsetName) {
 		return FileUtils.getFileContentLineList(getFile(filePath), charsetName);
 	}
 
 	public static String getFileContent(String filePath, String charsetName) {
-		return FileUtils.readerFileContent(getFile(filePath), charsetName)
-				.toString();
+		return FileUtils.readerFileContent(getFile(filePath), charsetName).toString();
 	}
 }
