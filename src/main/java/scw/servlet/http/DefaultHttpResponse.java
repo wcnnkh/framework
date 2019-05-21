@@ -71,26 +71,30 @@ public class DefaultHttpResponse extends HttpServletResponseWrapper implements H
 		}
 	}
 
+	protected Logger getLogger() {
+		return logger;
+	}
+
 	public boolean isDebugEnabled() {
 		return debug;
 	}
 
 	public void debug(String msg) {
-		if (debug) {
-			logger.debug(msg);
+		if (isDebugEnabled()) {
+			getLogger().debug(msg);
 		}
 
 	}
 
 	public void debug(String format, Object... args) {
-		if (debug) {
-			logger.debug(format, args);
+		if (isDebugEnabled()) {
+			getLogger().debug(format, args);
 		}
 	}
 
 	public void debug(String msg, Throwable t) {
-		if (debug) {
-			logger.debug(msg, t);
+		if (isDebugEnabled()) {
+			getLogger().debug(msg, t);
 		}
 	}
 }

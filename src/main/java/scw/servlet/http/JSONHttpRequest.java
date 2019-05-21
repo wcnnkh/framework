@@ -15,14 +15,19 @@ public class JSONHttpRequest extends DefaultHttpRequest {
 	private static Logger logger = LoggerFactory.getLogger(JSONHttpRequest.class);
 	private JSONObject json;
 
-	public JSONHttpRequest(RequestBeanFactory requestBeanFactory,
-			HttpServletRequest httpServletRequest, boolean cookieValue, JSONParseSupport jsonParseSupport, boolean debug) throws IOException {
-		super(requestBeanFactory, httpServletRequest, cookieValue);
+	public JSONHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
+			boolean cookieValue, JSONParseSupport jsonParseSupport, boolean debug) throws IOException {
+		super(requestBeanFactory, httpServletRequest, cookieValue, debug);
 		Body body = getBean(Body.class);
 		if (debug) {
-			logger.debug("servletPath=" + getServletPath() + ",method=" + getMethod() + "," + body.getBody());
+			debug("servletPath={},method={},{}", getServletPath(), getMethod(), body.getBody());
 		}
 		json = jsonParseSupport.parseObject(body.getBody());
+	}
+
+	@Override
+	public Logger getLogger() {
+		return logger;
 	}
 
 	@Override

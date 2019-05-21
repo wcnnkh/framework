@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import scw.core.Destroy;
+import scw.core.logger.DebugLogger;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
 import scw.core.utils.StringParseUtils;
 import scw.core.utils.StringUtils;
 import scw.servlet.ServletUtils;
@@ -17,18 +20,21 @@ import scw.servlet.context.DefaultRequestBeanContext;
 import scw.servlet.context.RequestBeanContext;
 import scw.servlet.http.filter.RestServiceFilter;
 
-public class DefaultHttpRequest extends HttpServletRequestWrapper implements HttpRequest, Destroy {
+public class DefaultHttpRequest extends HttpServletRequestWrapper implements HttpRequest, Destroy, DebugLogger {
+	private static Logger logger = LoggerFactory.getLogger(DefaultHttpRequest.class);
 	private static final Charset GET_DEFAULT_CHARSET = Charset.forName("ISO-8859-1");
 	private long createTime;
 	private RequestBeanContext requestBeanContext;
 	private boolean cookieValue;
+	private boolean debug;
 
 	public DefaultHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
-			boolean cookieValue) throws IOException {
+			boolean cookieValue, boolean debug) throws IOException {
 		super(httpServletRequest);
 		this.createTime = System.currentTimeMillis();
 		this.requestBeanContext = new DefaultRequestBeanContext(this, requestBeanFactory);
 		this.cookieValue = cookieValue;
+		this.debug = debug;
 	}
 
 	public long getCreateTime() {
@@ -258,5 +264,31 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 
 	public final <T> T getBean(Class<T> type) {
 		return requestBeanContext.getBean(type);
+	}
+
+	public Logger getLogger() {
+		return logger;
+	}
+
+	public boolean isDebugEnabled() {
+		return debug;
+	}
+
+	public void debug(String msg) {
+		if (isDebugEnabled()) {
+			getLogger().debug(msg);
+		}
+	}
+
+	public void debug(String format, Object... args) {
+		if (isDebugEnabled()) {
+			getLogger().debug(format, args);
+		}
+	}
+
+	public void debug(String msg, Throwable t) {
+		if (isDebugEnabled()) {
+			getLogger().debug(msg, t);
+		}
 	}
 }

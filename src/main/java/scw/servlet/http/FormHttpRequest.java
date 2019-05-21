@@ -14,16 +14,15 @@ public class FormHttpRequest extends DefaultHttpRequest {
 
 	public FormHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
 			boolean cookieValue, boolean debug) throws IOException {
-		super(requestBeanFactory, httpServletRequest, cookieValue);
+		super(requestBeanFactory, httpServletRequest, cookieValue, debug);
 		if (debug) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("servletPath=");
-			sb.append(httpServletRequest.getServletPath());
-			sb.append(",method=");
-			sb.append(httpServletRequest.getMethod());
-			sb.append(",");
-			sb.append(JSONUtils.toJSONString(getParameterMap()));
-			logger.debug(sb.toString());
+			debug("servletPath={},method={},{}", httpServletRequest.getServletPath(), httpServletRequest.getMethod(),
+					JSONUtils.toJSONString(getParameterMap()));
 		}
+	}
+
+	@Override
+	public Logger getLogger() {
+		return logger;
 	}
 }
