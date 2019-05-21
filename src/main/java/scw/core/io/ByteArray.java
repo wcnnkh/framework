@@ -3,6 +3,7 @@ package scw.core.io;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
@@ -57,11 +58,16 @@ public class ByteArray implements Serializable {
 	}
 
 	public ByteArray(String body, Charset charset) {
-		this(body.getBytes(charset));
+		this(body, charset.name());
 	}
 
 	public ByteArray(String body, String charsetName) {
-		this(body.getBytes(Charset.forName(charsetName)));
+		try {
+			this.buf = body.getBytes(charsetName);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+		this.count = buf.length;
 	}
 
 	public ByteArray(String body) {
@@ -197,15 +203,15 @@ public class ByteArray implements Serializable {
 		return count;
 	}
 
-	public String toString(Charset charset) {
-		return new String(buf, 0, count, charset);
-	}
-
 	public String toString(String charsetName) {
-		return toString(Charset.forName(charsetName));
+		try {
+			return new String(buf, 0, count, charsetName);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public String toString() {
-		return toString(Constants.DEFAULT_CHARSET);
+		return toString(Constants.DEFAULT_CHARSET.name());
 	}
 }

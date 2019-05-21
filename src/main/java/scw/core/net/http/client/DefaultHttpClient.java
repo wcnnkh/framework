@@ -1,31 +1,23 @@
 package scw.core.net.http.client;
 
-import java.nio.charset.Charset;
-
 import scw.core.Constants;
 
-/**
- * TODO 还未完成
- * 
- * @author shuchaowen
- *
- */
 public class DefaultHttpClient extends AbstractHttpClient {
 	private final CookieManager cookieManager;
-	private final Charset charset;
+	private final String charsetName;
 
 	public DefaultHttpClient(boolean debug) {
-		this(new MemoryCookieManager(debug), Constants.DEFAULT_CHARSET);
+		this(new MemoryCookieManager(debug), Constants.DEFAULT_CHARSET.name());
 	}
 
-	public DefaultHttpClient(CookieManager cookieManager, Charset charset) {
+	public DefaultHttpClient(CookieManager cookieManager, String charsetName) {
 		this.cookieManager = cookieManager;
-		this.charset = charset;
+		this.charsetName = charsetName;
 	}
 
 	@Override
-	protected Charset getCharset() {
-		return charset;
+	protected String getCharsetName() {
+		return charsetName;
 	}
 
 	@Override

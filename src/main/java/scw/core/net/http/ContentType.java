@@ -1,7 +1,5 @@
 package scw.core.net.http;
 
-import java.nio.charset.Charset;
-
 import scw.core.KeyValuePair;
 
 public interface ContentType {
@@ -16,7 +14,7 @@ public interface ContentType {
 
 	String getMimeType();
 
-	Charset getCharset();
+	String getCharsetName();
 
 	KeyValuePair<String, String>[] getParams();
 

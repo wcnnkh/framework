@@ -22,7 +22,7 @@ public final class HttpUtils {
 		HttpRequest request = new HttpRequest(Method.GET, url);
 		request.setContentType(new DefaultContentType(ContentType.APPLICATION_X_WWW_FORM_URLENCODED, Constants.DEFAULT_CHARSET));
 		ByteArray byteArray = NetworkUtils.execute(request);
-		return byteArray.toString(Constants.DEFAULT_CHARSET);
+		return byteArray.toString(Constants.DEFAULT_CHARSET.name());
 	}
 
 	public static String doPost(String url, Map<String, String> requestProperties, String body, String charsetName) {

@@ -8,23 +8,23 @@ import scw.core.KeyValuePair;
 public class DefaultContentType implements ContentType, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String mimeType;
-	private final Charset charset;
+	private final String charsetName;
 	private final KeyValuePair<String, String>[] params;
 
 	DefaultContentType() {
 		this.mimeType = null;
-		this.charset = null;
+		this.charsetName = null;
 		this.params = null;
 	};
 
 	public DefaultContentType(String mimeType) {
 		this.mimeType = mimeType;
-		this.charset = null;
+		this.charsetName = null;
 		this.params = null;
 	}
 
 	public DefaultContentType(String mimeType, Charset charset) {
-		this(mimeType, charset, null);
+		this(mimeType, charset.name(), null);
 	}
 
 	public DefaultContentType(String mimeType, String charsetName) {
@@ -32,12 +32,14 @@ public class DefaultContentType implements ContentType, Serializable {
 	}
 
 	public DefaultContentType(String mimeType, String charsetName, KeyValuePair<String, String>[] params) {
-		this(mimeType, Charset.forName(charsetName), params);
+		this.mimeType = mimeType;
+		this.charsetName = charsetName;
+		this.params = params;
 	}
 
 	public DefaultContentType(String mimeType, Charset charset, KeyValuePair<String, String>[] params) {
 		this.mimeType = mimeType;
-		this.charset = charset;
+		this.charsetName = charset.name();
 		this.params = params;
 	}
 
@@ -45,8 +47,8 @@ public class DefaultContentType implements ContentType, Serializable {
 		return mimeType;
 	}
 
-	public Charset getCharset() {
-		return charset;
+	public String getCharsetName() {
+		return charsetName;
 	}
 
 	public KeyValuePair<String, String>[] getParams() {
@@ -55,13 +57,13 @@ public class DefaultContentType implements ContentType, Serializable {
 
 	public String asString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(mimeType);
-		if (charset != null) {
-			sb.append("; ").append("charset=").append(charset.name());
+		sb.append(getMimeType());
+		if (getCharsetName() != null) {
+			sb.append("; ").append("charset=").append(getCharsetName());
 		}
 
-		if (params != null && params.length != 0) {
-			for (KeyValuePair<String, String> pair : params) {
+		if (getParams() != null) {
+			for (KeyValuePair<String, String> pair : getParams()) {
 				sb.append("; ").append(pair.getKey()).append("=").append(pair.getValue());
 			}
 		}

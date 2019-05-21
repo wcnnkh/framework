@@ -3,7 +3,6 @@ package scw.core.net.http.client;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ public abstract class AbstractHttpClient implements HttpClient {
 		});
 	}
 
-	protected abstract Charset getCharset();
+	protected abstract String getCharsetName();
 
 	protected abstract CookieManager getCookieManager();
 
@@ -67,15 +66,15 @@ public abstract class AbstractHttpClient implements HttpClient {
 
 	public String doGet(String url) {
 		HttpRequest httpRequest = new HttpRequest(Method.GET, url);
-		httpRequest.setContentType(new DefaultContentType(ContentType.APPLICATION_X_WWW_FORM_URLENCODED, getCharset()));
+		httpRequest.setContentType(new DefaultContentType(ContentType.APPLICATION_X_WWW_FORM_URLENCODED, getCharsetName()));
 		ByteArray byteArray = invoke(httpRequest, new ByteArrayResponse());
-		return byteArray.toString(getCharset());
+		return byteArray.toString(getCharsetName());
 	}
 
 	public String doPost(String url, Map<String, ?> parameterMap) {
-		FormRequest request = new FormRequest(Method.POST, url, getCharset().name());
+		FormRequest request = new FormRequest(Method.POST, url, getCharsetName());
 		request.addAll(parameterMap);
 		ByteArray byteArray = invoke(request, new ByteArrayResponse());
-		return byteArray.toString(getCharset());
+		return byteArray.toString(getCharsetName());
 	}
 }

@@ -1,6 +1,5 @@
 package scw.utils.tencent.weixin;
 
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +9,7 @@ import javax.net.ssl.SSLContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import scw.core.Constants;
 import scw.core.exception.NotSupportException;
 import scw.core.exception.ParameterException;
 import scw.core.exception.SignatureException;
@@ -40,26 +40,26 @@ public final class WeiXinPay {
 	private final String mch_id;
 	private final String apiKey;
 	private final String sign_type;// 签名类型，默认为MD5，支持HMAC-SHA256和MD5。
-	private final Charset charset;
+	private final String charsetName;
 	private String certTrustFile;
 
 	public WeiXinPay(String appId, String mch_id, String apiKey) {
-		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"), null);
+		this(appId, mch_id, apiKey, "MD5", Constants.DEFAULT_CHARSET.name(), null);
 	}
 
 	public WeiXinPay(String appId, String mch_id, String apiKey,
 			String certTrustFile) {
-		this(appId, mch_id, apiKey, "MD5", Charset.forName("UTF-8"),
+		this(appId, mch_id, apiKey, "MD5", Constants.DEFAULT_CHARSET.name(),
 				certTrustFile);
 	}
 
 	public WeiXinPay(String appId, String mch_id, String apiKey,
-			String sign_type, Charset charset, String certTrustFile) {
+			String sign_type, String charsetName, String certTrustFile) {
 		this.appId = appId;
 		this.mch_id = mch_id;
 		this.apiKey = apiKey;
 		this.sign_type = sign_type.toUpperCase();
-		this.charset = charset;
+		this.charsetName = charsetName;
 		this.certTrustFile = certTrustFile;
 	}
 
@@ -341,9 +341,9 @@ public final class WeiXinPay {
 		logger.trace("微信支付请求xml内容:{}", content);
 
 		HttpRequest request = new BodyRequest(Method.POST, url, new ByteArray(
-				content, charset));
+				content, charsetName));
 		request.setContentType(new DefaultContentType(ContentType.TEXT_XML,
-				charset));
+				charsetName));
 		if (isCertTrustFile) {
 			char[] password = mch_id.toCharArray();
 			try {
@@ -362,7 +362,7 @@ public final class WeiXinPay {
 			throw new RuntimeException("请求：" + url + "失败");
 		}
 
-		String res = response.toString(charset);
+		String res = response.toString(charsetName);
 		if (res == null) {
 			throw new RuntimeException("请求：" + url + "失败");
 		}
@@ -389,7 +389,7 @@ public final class WeiXinPay {
 
 	private String toSign(String str) {
 		if ("MD5".equalsIgnoreCase(sign_type)) {
-			return SignUtils.md5UpperStr(str, charset.name());
+			return SignUtils.md5UpperStr(str, charsetName);
 		} else if ("HMAC-SHA256".equalsIgnoreCase(sign_type)) {
 			// TODO
 			throw new NotSupportException(sign_type);
