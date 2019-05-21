@@ -39,7 +39,13 @@ public class DefaultRpcService implements RpcService {
 			throw new RuntimeException("not found service:" + message.getMessageKey());
 		}
 
-		Object obj = invoker.invoke(message.getArgs());
+		Object obj;
+		try {
+			obj = invoker.invoke(message.getArgs());
+		} catch (IllegalArgumentException e) {
+			logger.warn("参数类型不一致，可能是interface的jar不一致");
+			throw e;
+		}
 		serializer.serialize(os, obj);
 	}
 
