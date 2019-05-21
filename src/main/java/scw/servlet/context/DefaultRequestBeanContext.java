@@ -34,6 +34,10 @@ public class DefaultRequestBeanContext implements RequestBeanContext {
 	public <T> T getBean(Class<T> type, String name) {
 		RequestBean requestBean = requestBeanFactory.get(name);
 		if (requestBean == null) {
+			requestBean = requestBeanFactory.get(type.getName());
+		}
+
+		if (requestBean == null) {
 			return null;
 		}
 
@@ -46,7 +50,7 @@ public class DefaultRequestBeanContext implements RequestBeanContext {
 			synchronized (this) {
 				if (beanMap == null) {
 					beanMap = new LinkedHashMap<String, Object>(4);
-					obj = newInstanceReuestBean(requestBean, type, name);
+					obj = newInstanceReuestBean(requestBean);
 				}
 			}
 		} else {
@@ -55,7 +59,7 @@ public class DefaultRequestBeanContext implements RequestBeanContext {
 				synchronized (this) {
 					obj = beanMap.get(requestBean.getId());
 					if (obj == null) {
-						obj = newInstanceReuestBean(requestBean, type, name);
+						obj = newInstanceReuestBean(requestBean);
 					}
 				}
 			}
@@ -63,7 +67,7 @@ public class DefaultRequestBeanContext implements RequestBeanContext {
 		return obj;
 	}
 
-	private Object newInstanceReuestBean(RequestBean requestBean, Class<?> type, String name) {
+	private Object newInstanceReuestBean(RequestBean requestBean) {
 		Object obj = requestBean.newInstance(request);
 		if (obj != null) {
 			beanMap.put(requestBean.getId(), obj);

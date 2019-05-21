@@ -36,7 +36,7 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected final Object get(Class<?> type, String name) {
+	protected final Object getObject(Class<?> type, String name) {
 		if (String.class.isAssignableFrom(type)) {
 			return getString(name);
 		} else if (int.class.isAssignableFrom(type)) {
@@ -71,7 +71,7 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 			String v = getString(name);
 			return StringUtils.isEmpty(v) ? null : Enum.valueOf((Class<? extends Enum>) type, v);
 		} else {
-			return requestBeanContext.getBean(type, name);
+			return getBean(type, name);
 		}
 	}
 
@@ -79,7 +79,7 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 	public final <T> T getParameter(Class<T> type, String name) {
 		T v = (T) getAttribute(name);
 		if (v == null) {
-			v = (T) get(type, name);
+			v = (T) getObject(type, name);
 		}
 		return v;
 	}
