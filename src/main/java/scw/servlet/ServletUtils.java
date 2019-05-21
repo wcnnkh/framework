@@ -101,7 +101,7 @@ public final class ServletUtils {
 		return asyncSupport;
 	}
 
-	public static ServletService getServletService(BeanFactory beanFactory,
+	protected static ServletService getServletService(BeanFactory beanFactory,
 			PropertiesFactory propertiesFactory, String configPath,
 			String[] rootBeanFilters) {
 		if (isAsyncSupport()) {
