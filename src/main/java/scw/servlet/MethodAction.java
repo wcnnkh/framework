@@ -31,7 +31,7 @@ public final class MethodAction implements Action {
 	}
 
 	public void doAction(Request request, Response response) throws Throwable {
-		FilterChain filterChain = new DefaultFilterChain(filters, new RealAction());
+		FilterChain filterChain = new IteratorFilterChain(filters, new RealAction());
 		filterChain.doFilter(request, response);
 	}
 

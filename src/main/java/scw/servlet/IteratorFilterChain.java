@@ -3,11 +3,11 @@ package scw.servlet;
 import java.util.Collection;
 import java.util.Iterator;
 
-public final class DefaultFilterChain implements FilterChain {
+public final class IteratorFilterChain implements FilterChain {
 	private final Iterator<Filter> iterator;
 	private final Action action;
 
-	public DefaultFilterChain(Collection<Filter> filters, Action action) {
+	public IteratorFilterChain(Collection<Filter> filters, Action action) {
 		this.iterator = (filters == null || filters.isEmpty()) ? null : filters.iterator();
 		this.action = action;
 	}

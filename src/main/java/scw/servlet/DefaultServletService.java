@@ -150,7 +150,7 @@ public class DefaultServletService extends LinkedList<Filter> implements Servlet
 
 		Request request = null;
 		Response response = null;
-		FilterChain filterChain = new scw.servlet.DefaultFilterChain(this, null);
+		FilterChain filterChain = new scw.servlet.IteratorFilterChain(this, null);
 		try {
 			request = getWrapperFactory().wrapperRequest(req, resp);
 			if (request == null) {
