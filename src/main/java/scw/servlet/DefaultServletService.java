@@ -202,6 +202,12 @@ public class DefaultServletService implements ServletService {
 					((Destroy) request).destroy();
 				}
 			}
+
+			if (response != null) {
+				if (response instanceof Destroy) {
+					((Destroy) response).destroy();
+				}
+			}
 		}
 	}
 
