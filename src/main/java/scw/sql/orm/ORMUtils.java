@@ -46,7 +46,7 @@ public final class ORMUtils {
 		if (ClassUtils.isBooleanType(type)) {
 			if (value != null) {
 				if (value instanceof Number) {
-					return ((Number) value).doubleValue() == 1;
+					return ((Number) value).intValue() == 1;
 				} else if (value instanceof String) {
 					return StringParseUtils.parseBoolean((String) value);
 				}
