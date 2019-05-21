@@ -167,9 +167,9 @@ public final class IOUtils {
 	 * @throws IOException
 	 */
 	public static String[] readLines(File file) throws IOException {
-		if (file == null || !file.exists() || !file.canRead())
+		if (file == null || !file.exists() || !file.canRead()){
 			return new String[0];
-
+		}
 		return readLines(new FileInputStream(file));
 	}
 
@@ -242,8 +242,9 @@ public final class IOUtils {
 	 * @throws IOException
 	 */
 	public static void appendLines(File file, String[] lines) throws IOException {
-		if (file == null)
+		if (file == null){
 			throw new IOException("File is null.");
+		}
 		writeLines(new FileOutputStream(file, true), lines);
 	}
 
