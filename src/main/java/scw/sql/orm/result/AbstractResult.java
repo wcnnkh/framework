@@ -5,12 +5,14 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.core.exception.NotFoundException;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
 public abstract class AbstractResult implements Result {
+	private static Logger logger = LoggerFactory.getLogger(Result.class);
 	private static final long serialVersionUID = 1L;
 	protected MetaData metaData;
 	protected Object[] values;
@@ -25,24 +27,6 @@ public abstract class AbstractResult implements Result {
 		this.metaData = metaData;
 		this.values = values;
 	}
-	
-	private static String getNotFoundForDataSourceErrorMsg(TableInfo tableInfo, ColumnInfo column){
-		StringBuilder sb = new StringBuilder();
-		sb.append(tableInfo.getSource().getName());
-		sb.append(" [");
-		sb.append(column.getName());
-		sb.append("] not found for DataSource");
-		return sb.toString();
-	}
-	
-	private static String getNotNullErrorMsg(TableInfo tableInfo, ColumnInfo column){
-		StringBuilder sb = new StringBuilder();
-		sb.append(tableInfo.getSource().getName());
-		sb.append(" [");
-		sb.append(column.getName());
-		sb.append("] not is null");
-		return sb.toString();
-	}
 
 	private Object wrapperTable(TableInfo tableInfo, String tableName)
 			throws IllegalArgumentException, IllegalAccessException {
@@ -51,7 +35,7 @@ public abstract class AbstractResult implements Result {
 			int index = metaData.getColumnIndex(column.getName(), tableName);
 			if (index == -1) {
 				if (!column.isNullAble()) {
-					throw new NotFoundException(getNotFoundForDataSourceErrorMsg(tableInfo, column));
+					logger.warn("{} [{}] not found for DataSource", tableInfo.getSource().getName(), column.getName());
 				}
 				continue;
 			}
@@ -59,9 +43,8 @@ public abstract class AbstractResult implements Result {
 			Object v = values[index];
 			if (v == null) {
 				if (!column.isNullAble()) {
-					throw new NotFoundException(getNotNullErrorMsg(tableInfo, column));
+					logger.warn("{} [{}] not is null", tableInfo.getSource().getName(), column.getName());
 				}
-
 				continue;
 			}
 			column.setValueToField(o, v);
@@ -75,7 +58,7 @@ public abstract class AbstractResult implements Result {
 			int index = metaData.getSingleIndex(column.getName());
 			if (index == -1) {
 				if (!column.isNullAble()) {
-					throw new NotFoundException(getNotFoundForDataSourceErrorMsg(tableInfo, column));
+					logger.warn("{} [{}] not found for DataSource", tableInfo.getSource().getName(), column.getName());
 				}
 				continue;
 			}
@@ -83,9 +66,8 @@ public abstract class AbstractResult implements Result {
 			Object v = values[index];
 			if (v == null) {
 				if (!column.isNullAble()) {
-					throw new RuntimeException(getNotNullErrorMsg(tableInfo, column));
+					logger.warn("{} [{}] not is null", tableInfo.getSource().getName(), column.getName());
 				}
-
 				continue;
 			}
 			column.setValueToField(o, v);
