@@ -17,11 +17,11 @@ public abstract class LazyDataManager implements CacheManager {
 	private static final String DEFAULT_KEY_PREFIX = "lazy:";
 	private static final String KEY = "key:";
 	private static final String DEFAULT_CONNECTOR = "|";
-	private static final LazyCacheConfig DEFAULT_CONFIG = new DefaultLazyCacheConfig((int) (XTime.ONE_DAY * 2 / 1000),
+	private static final LazyCacheConfig DEFAULT_CONFIG = new LazyCacheConfig((int) (XTime.ONE_DAY * 2 / 1000),
 			false, false);
 	private static volatile Map<Class<?>, LazyCacheConfig> configMap = new HashMap<Class<?>, LazyCacheConfig>();
 
-	protected LazyCacheConfig getCacheConfig(Class<?> tableClass) {
+	private static final LazyCacheConfig getCacheConfig(Class<?> tableClass) {
 		LazyCacheConfig config = configMap.get(tableClass);
 		if (config == null) {
 			synchronized (configMap) {
@@ -31,7 +31,7 @@ public abstract class LazyDataManager implements CacheManager {
 					if (lazyCache == null) {
 						config = DEFAULT_CONFIG;
 					} else {
-						config = new DefaultLazyCacheConfig(lazyCache);
+						config = new LazyCacheConfig(lazyCache);
 					}
 					configMap.put(tableClass, config);
 				}

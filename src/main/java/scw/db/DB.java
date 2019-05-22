@@ -332,7 +332,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 		}
 	}
 
-	final class AsyncInfoTransactionLifeCycle extends DefaultTransactionLifeCycle {
+	private final class AsyncInfoTransactionLifeCycle extends DefaultTransactionLifeCycle {
 		private final AsyncInfo asyncInfo;
 
 		public AsyncInfoTransactionLifeCycle(AsyncInfo asyncInfo) {

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import scw.data.redis.Redis;
 
-public class RedisLazyCacheManager extends LazyDataManager {
+public final class RedisLazyCacheManager extends LazyDataManager {
 	private final Redis redis;
 
 	public RedisLazyCacheManager(Redis redis) {
@@ -36,11 +36,11 @@ public class RedisLazyCacheManager extends LazyDataManager {
 
 	@Override
 	protected void addKey(String key) {
-		redis.getStringOperations().set(key, "");
+		redis.getObjectOperations().set(key, "");
 	}
 
 	@Override
 	protected boolean isExist(String key) {
-		return redis.getStringOperations().exists(key);
+		return redis.getObjectOperations().exists(key);
 	}
 }

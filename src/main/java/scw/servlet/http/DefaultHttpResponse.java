@@ -6,13 +6,16 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import scw.core.logger.DebugLogger;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
+import scw.core.logger.WarnLogger;
 import scw.core.net.http.ContentType;
 import scw.core.utils.ClassUtils;
 import scw.json.JSONParseSupport;
 import scw.servlet.View;
 
-public class DefaultHttpResponse extends HttpServletResponseWrapper implements HttpResponse, DebugLogger {
-	private static Logger logger = LoggerFactory.getLogger(DefaultHttpResponse.class);
+public class DefaultHttpResponse extends HttpServletResponseWrapper implements
+		HttpResponse, DebugLogger, WarnLogger {
+	private static Logger logger = LoggerFactory
+			.getLogger(DefaultHttpResponse.class);
 	private static final String JSONP_CALLBACK = "callback";
 	private static final String JSONP_RESP_PREFIX = "(";
 	private static final String JSONP_RESP_SUFFIX = ");";
@@ -20,8 +23,9 @@ public class DefaultHttpResponse extends HttpServletResponseWrapper implements H
 	private JSONParseSupport jsonParseSupport;
 	private boolean debug;
 
-	public DefaultHttpResponse(JSONParseSupport jsonParseSupport, HttpRequest httpRequest,
-			HttpServletResponse httpServletResponse, boolean debug) {
+	public DefaultHttpResponse(JSONParseSupport jsonParseSupport,
+			HttpRequest httpRequest, HttpServletResponse httpServletResponse,
+			boolean debug) {
 		super(httpServletResponse);
 		this.jsonParseSupport = jsonParseSupport;
 		this.httpRequest = httpRequest;
@@ -38,7 +42,8 @@ public class DefaultHttpResponse extends HttpServletResponseWrapper implements H
 				((View) obj).render(httpRequest, this);
 			} else {
 				String content;
-				if ((obj instanceof String) || (ClassUtils.isPrimitiveOrWrapper(obj.getClass()))) {
+				if ((obj instanceof String)
+						|| (ClassUtils.isPrimitiveOrWrapper(obj.getClass()))) {
 					content = obj.toString();
 				} else {
 					content = jsonParseSupport.toJSONString(obj);
@@ -46,7 +51,8 @@ public class DefaultHttpResponse extends HttpServletResponseWrapper implements H
 
 				String callback = null;
 				try {
-					callback = httpRequest.getParameter(String.class, JSONP_CALLBACK);
+					callback = httpRequest.getParameter(String.class,
+							JSONP_CALLBACK);
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
@@ -95,6 +101,28 @@ public class DefaultHttpResponse extends HttpServletResponseWrapper implements H
 	public void debug(String msg, Throwable t) {
 		if (isDebugEnabled()) {
 			getLogger().debug(msg, t);
+		}
+	}
+
+	public boolean isWarnEnabled() {
+		return getLogger().isDebugEnabled();
+	}
+
+	public void warn(String msg) {
+		if (isWarnEnabled()) {
+			getLogger().warn(msg);
+		}
+	}
+
+	public void warn(String format, Object... args) {
+		if (isWarnEnabled()) {
+			getLogger().warn(format, args);
+		}
+	}
+
+	public void warn(String msg, Throwable t) {
+		if (isWarnEnabled()) {
+			getLogger().warn(msg, t);
 		}
 	}
 }

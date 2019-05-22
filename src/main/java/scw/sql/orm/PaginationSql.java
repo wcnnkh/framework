@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import scw.sql.Sql;
 
-public class PaginationSql implements Serializable {
+public final class PaginationSql implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Sql countSql;
 	private Sql resultSql;
