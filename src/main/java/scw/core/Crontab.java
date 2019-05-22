@@ -98,7 +98,7 @@ public final class Crontab {
 	 * @param task
 	 */
 	public void every5Minutes(Runnable task) {
-		crontab("*", "*", "*", "*", "*0,*5", task);
+		crontab("*", "*", "*", "*", "*0,5", task);
 	}
 
 	/**
