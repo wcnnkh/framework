@@ -233,7 +233,7 @@ public class DefaultServletService implements ServletService {
 			}
 
 			if (t > warnExecuteTime) {
-				logger.warn("执行{}超时，用时{}ms", request.toString());
+				logger.warn("执行{}超时，用时{}ms", request.toString(), t);
 			}
 		}
 	}
