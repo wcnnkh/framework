@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.core.logger.DebugLogger;
-import scw.core.logger.WarnLogger;
 import scw.core.net.http.ContentType;
 import scw.json.JSONUtils;
 import scw.result.support.DefaultResult;
@@ -16,16 +15,14 @@ import scw.servlet.View;
 public class ServletViewResult<T> extends DefaultResult<T> implements View {
 	private static final long serialVersionUID = 1L;
 	private String contentType;
-	private int timeout;
 
 	protected ServletViewResult() {
 	}
 
 	public ServletViewResult(boolean success, int code, T data, String msg,
-			String contentType, int timeout) {
+			String contentType) {
 		super(success, code, data, msg);
 		this.contentType = contentType;
-		this.timeout = timeout;
 	}
 
 	protected String parseString(Object obj) {
@@ -50,18 +47,9 @@ public class ServletViewResult<T> extends DefaultResult<T> implements View {
 		String content = parseString(map);
 		response.getWriter().write(content);
 
-		long time = System.currentTimeMillis() - request.getCreateTime();
-		if (time > timeout) {
-			if (response instanceof WarnLogger) {
-				if (((WarnLogger) response).isWarnEnabled()) {
-					((WarnLogger) response).warn("超时{},返回{}", time, content);
-				}
-			}
-		} else {
-			if (response instanceof DebugLogger) {
-				if (((DebugLogger) response).isDebugEnabled()) {
-					((DebugLogger) response).debug("用时{},返回{}", time, content);
-				}
+		if (response instanceof DebugLogger) {
+			if (((DebugLogger) response).isDebugEnabled()) {
+				((DebugLogger) response).debug(content);
 			}
 		}
 	}

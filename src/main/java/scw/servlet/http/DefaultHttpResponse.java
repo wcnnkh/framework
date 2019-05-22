@@ -105,7 +105,7 @@ public class DefaultHttpResponse extends HttpServletResponseWrapper implements
 	}
 
 	public boolean isWarnEnabled() {
-		return getLogger().isDebugEnabled();
+		return getLogger().isWarnEnabled();
 	}
 
 	public void warn(String msg) {

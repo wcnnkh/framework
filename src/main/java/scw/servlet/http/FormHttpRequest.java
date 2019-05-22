@@ -10,13 +10,15 @@ import scw.json.JSONUtils;
 import scw.servlet.beans.RequestBeanFactory;
 
 public class FormHttpRequest extends DefaultHttpRequest {
-	private static Logger logger = LoggerFactory.getLogger(FormHttpRequest.class);
+	private static Logger logger = LoggerFactory
+			.getLogger(FormHttpRequest.class);
 
-	public FormHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
-			boolean cookieValue, boolean debug) throws IOException {
+	public FormHttpRequest(RequestBeanFactory requestBeanFactory,
+			HttpServletRequest httpServletRequest, boolean cookieValue,
+			boolean debug) throws IOException {
 		super(requestBeanFactory, httpServletRequest, cookieValue, debug);
 		if (debug) {
-			debug("servletPath={},method={},{}", httpServletRequest.getServletPath(), httpServletRequest.getMethod(),
+			debug("servletPath={},method={},{}", getServletPath(), getMethod(),
 					JSONUtils.toJSONString(getParameterMap()));
 		}
 	}
@@ -24,5 +26,14 @@ public class FormHttpRequest extends DefaultHttpRequest {
 	@Override
 	public Logger getLogger() {
 		return logger;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("servletPath=").append(getServletPath());
+		sb.append(",method=").append(getMethod());
+		sb.append(",").append(JSONUtils.toJSONString(getParameterMap()));
+		return sb.toString();
 	}
 }
