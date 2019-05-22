@@ -129,15 +129,15 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 
 		Sql sql = getSqlFormat().toInsertSql(bean, tableInfo, tName);
 		if (tableInfo.getAutoIncrement() == null) {
-			return ormUpdateSql(tableInfo, tName, sql);
+			return update(sql) != 0;
 		} else {
 			Connection connection = null;
 			try {
 				connection = getUserConnection();
 				boolean b = update(sql, connection) != 0;
 				if (!b) {
-					if (logger.isWarnEnabled()) {
-						logger.warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
+					if (isWarnEnabled()) {
+						warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
 					}
 					return false;
 				}
@@ -165,7 +165,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 	public boolean update(Object bean, String tableName) {
 		if (bean instanceof TableFieldListen) {
 			if (((TableFieldListen) bean).get_field_change_map() == null) {
-				logger.warn("更新对象[{}]不存在数据变更", bean.getClass().getName());
+				warn("更新对象[{}]不存在数据变更", bean.getClass().getName());
 				return false;
 			}
 		}
@@ -173,7 +173,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
 		Sql sql = getSqlFormat().toUpdateSql(bean, tableInfo, tName);
-		return ormUpdateSql(tableInfo, tName, sql);
+		return update(sql) != 0;
 	}
 
 	public boolean delete(Object bean) {
@@ -184,7 +184,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
 		Sql sql = getSqlFormat().toDeleteSql(bean, tableInfo, tName);
-		return ormUpdateSql(tableInfo, tName, sql);
+		return update(sql) != 0;
 	}
 
 	public boolean deleteById(Class<?> type, Object... params) {
@@ -199,14 +199,14 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 
 		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getDefaultName() : tableName;
 		Sql sql = getSqlFormat().toDeleteByIdSql(tableInfo, tName, params);
-		return ormUpdateSql(tableInfo, tName, sql);
+		return update(sql) != 0;
 	}
 
 	public boolean saveOrUpdate(Object bean, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
 		Sql sql = getSqlFormat().toSaveOrUpdateSql(bean, tableInfo, tName);
-		return ormUpdateSql(tableInfo, tName, sql);
+		return update(sql) != 0;
 	}
 
 	public boolean save(Object bean) {
@@ -219,10 +219,6 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 
 	public boolean saveOrUpdate(Object bean) {
 		return saveOrUpdate(bean, null);
-	}
-
-	protected boolean ormUpdateSql(TableInfo tableInfo, String tableName, Sql sql) {
-		return update(sql) != 0;
 	}
 
 	@SuppressWarnings("unchecked")

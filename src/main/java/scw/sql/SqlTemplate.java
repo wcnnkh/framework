@@ -7,14 +7,11 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import scw.core.logger.DebugLogger;
 import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
+import scw.core.logger.WarnLogger;
 
-public abstract class SqlTemplate implements SqlOperations {
-	protected Logger logger = LoggerFactory.getLogger(this.getClass());
-
-	public abstract boolean isDebug();
-	
+public abstract class SqlTemplate implements SqlOperations, DebugLogger, WarnLogger {
 	public abstract Connection getUserConnection() throws SQLException;
 
 	protected void close(Connection connection) throws SqlException {
@@ -27,9 +24,11 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	protected boolean execute(Sql sql, Connection connection)
-			throws SQLException {
-		log(sql);
+	protected boolean execute(Sql sql, Connection connection) throws SQLException {
+		if (isDebugEnabled()) {
+			debug(SqlUtils.getSqlId(sql));
+		}
+
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -53,8 +52,7 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	private void query(PreparedStatement statement,
-			ResultSetCallback resultSetCallback) throws SQLException {
+	private void query(PreparedStatement statement, ResultSetCallback resultSetCallback) throws SQLException {
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery();
@@ -66,9 +64,11 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	protected void query(Sql sql, Connection connection,
-			ResultSetCallback resultSetCallback) throws SQLException {
-		log(sql);
+	protected void query(Sql sql, Connection connection, ResultSetCallback resultSetCallback) throws SQLException {
+		if (isDebugEnabled()) {
+			debug(SqlUtils.getSqlId(sql));
+		}
+
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -80,8 +80,7 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	public void query(Sql sql, ResultSetCallback resultSetCallback)
-			throws SqlException {
+	public void query(Sql sql, ResultSetCallback resultSetCallback) throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
@@ -93,8 +92,7 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	protected void query(Sql sql, Connection connection,
-			final RowCallback rowCallback) throws SQLException {
+	protected void query(Sql sql, Connection connection, final RowCallback rowCallback) throws SQLException {
 		query(sql, connection, new ResultSetCallback() {
 
 			public void process(ResultSet rs) throws SQLException {
@@ -105,8 +103,7 @@ public abstract class SqlTemplate implements SqlOperations {
 		});
 	}
 
-	public void query(Sql sql, RowCallback rowCallback)
-			throws SqlException {
+	public void query(Sql sql, RowCallback rowCallback) throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
@@ -118,8 +115,7 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	private <T> T query(PreparedStatement statement,
-			ResultSetMapper<T> resultSetMapper) throws SQLException {
+	private <T> T query(PreparedStatement statement, ResultSetMapper<T> resultSetMapper) throws SQLException {
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery();
@@ -131,9 +127,10 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	protected <T> T query(Sql sql, Connection connection,
-			ResultSetMapper<T> resultSetMapper) throws SQLException {
-		log(sql);
+	protected <T> T query(Sql sql, Connection connection, ResultSetMapper<T> resultSetMapper) throws SQLException {
+		if (isDebugEnabled()) {
+			debug(SqlUtils.getSqlId(sql));
+		}
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -145,8 +142,7 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper)
-			throws SqlException {
+	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper) throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
@@ -158,8 +154,7 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	protected <T> List<T> query(Sql sql, Connection connection,
-			final RowMapper<T> rowMapper) throws SQLException {
+	protected <T> List<T> query(Sql sql, Connection connection, final RowMapper<T> rowMapper) throws SQLException {
 		return query(sql, connection, new ResultSetMapper<List<T>>() {
 
 			public List<T> mapper(ResultSet resultSet) throws SQLException {
@@ -175,8 +170,7 @@ public abstract class SqlTemplate implements SqlOperations {
 		});
 	}
 
-	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper)
-			throws SqlException {
+	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper) throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
@@ -189,7 +183,9 @@ public abstract class SqlTemplate implements SqlOperations {
 	}
 
 	protected int update(Sql sql, Connection connection) throws SQLException {
-		log(sql);
+		if (isDebugEnabled()) {
+			debug(SqlUtils.getSqlId(sql));
+		}
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -213,9 +209,49 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	protected void log(Sql sql) {
-		if (isDebug()) {
-			logger.debug(SqlUtils.getSqlId(sql));
+	protected abstract Logger getLogger();
+
+	public boolean isDebugEnabled() {
+		return getLogger().isDebugEnabled();
+	}
+
+	public void debug(String msg) {
+		if (isDebugEnabled()) {
+			getLogger().debug(msg);
+		}
+	}
+
+	public void debug(String format, Object... args) {
+		if (isDebugEnabled()) {
+			getLogger().debug(format, args);
+		}
+	}
+
+	public void debug(String msg, Throwable t) {
+		if (isDebugEnabled()) {
+			getLogger().debug(msg, t);
+		}
+	}
+
+	public boolean isWarnEnabled() {
+		return getLogger().isWarnEnabled();
+	}
+
+	public void warn(String format, Object... args) {
+		if (isWarnEnabled()) {
+			getLogger().warn(format, args);
+		}
+	}
+
+	public void warn(String msg) {
+		if (isWarnEnabled()) {
+			getLogger().warn(msg);
+		}
+	}
+
+	public void warn(String msg, Throwable t) {
+		if (isWarnEnabled()) {
+			getLogger().warn(msg, t);
 		}
 	}
 }

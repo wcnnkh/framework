@@ -34,20 +34,21 @@ public class DruidDB extends DB {
 		super(redis, queueName);
 		init(propertiesFilePath);
 	}
-	
+
 	/**
 	 * 在未指明异步队列名称的情况 下，队列名称是使用数据库配置文件路径base64之后的结果，所以在此情况下请不要随意变更配置文件路径
+	 * 
 	 * @param redis
 	 * @param propertiesFile
 	 */
 	public DruidDB(Redis redis, String propertiesFile) {
 		this(redis, Base64.encode(propertiesFile.getBytes(Constants.DEFAULT_CHARSET)), propertiesFile);
-		DBUtils.queueNameWarn(logger);
+		DBUtils.queueNameWarn(getLogger());
 	}
 
 	public DruidDB(Memcached memcached, String propertiesFile) {
 		this(memcached, Base64.encode(propertiesFile.getBytes(Constants.DEFAULT_CHARSET)), propertiesFile);
-		DBUtils.queueNameWarn(logger);
+		DBUtils.queueNameWarn(getLogger());
 	}
 
 	private void init(String propertiesFilePath) {
@@ -73,13 +74,17 @@ public class DruidDB extends DB {
 		return datasource.getConnection();
 	}
 
-	public void close() throws Exception {
+	@Override
+	public void destroy() {
 		datasource.close();
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
 		while (drivers.hasMoreElements()) {
-			DriverManager.deregisterDriver(drivers.nextElement());
+			try {
+				DriverManager.deregisterDriver(drivers.nextElement());
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		super.close();
+		super.destroy();
 	}
-
 }

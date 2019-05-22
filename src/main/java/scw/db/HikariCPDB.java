@@ -58,12 +58,12 @@ public class HikariCPDB extends DB {
 
 	public HikariCPDB(Redis redis, String propertiesFile) {
 		this(redis, Base64.encode(propertiesFile.getBytes(Constants.DEFAULT_CHARSET)), propertiesFile);
-		DBUtils.queueNameWarn(logger);
+		DBUtils.queueNameWarn(getLogger());
 	}
 
 	public HikariCPDB(Memcached memcached, String propertiesFile) {
 		this(memcached, Base64.encode(propertiesFile.getBytes(Constants.DEFAULT_CHARSET)), propertiesFile);
-		DBUtils.queueNameWarn(logger);
+		DBUtils.queueNameWarn(getLogger());
 	}
 
 	public void createDataBase() {
@@ -77,13 +77,17 @@ public class HikariCPDB extends DB {
 	}
 
 	@Destroy
-	public void close() throws Exception {
+	public void destroy() {
 		hds.close();
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
 		while (drivers.hasMoreElements()) {
-			DriverManager.deregisterDriver(drivers.nextElement());
+			try {
+				DriverManager.deregisterDriver(drivers.nextElement());
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		super.close();
+		super.destroy();
 	}
 
 }

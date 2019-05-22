@@ -13,6 +13,10 @@ final class ServiceInvoker {
 
 	@SuppressWarnings("unchecked")
 	public Object invoke(Object bean, Object... args) throws Throwable {
+		if(args == null || args.length == 0){
+			return method.invoke(bean, args);
+		}
+		
 		Object[] values = new Object[args.length];
 		Class<?>[] types = method.getParameterTypes();
 		for (int i = 0; i < values.length; i++) {

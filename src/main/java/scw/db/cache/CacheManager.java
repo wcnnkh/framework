@@ -1,24 +1,26 @@
 package scw.db.cache;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface CacheManager {
-	void add(String key, Object value, int exp);
+	void save(Object bean);
 
-	void set(String key, Object value, int exp);
+	void update(Object bean);
 
-	void delete(String key);
+	void delete(Object bean);
 
-	<T> T get(Class<T> type, String key);
+	void deleteById(Class<?> type, Object... params);
 
-	<T> T getAndTouch(Class<T> type, String key, int exp);
+	void saveOrUpdate(Object bean);
 
-	<T> Map<String, T> get(Class<T> type, Collection<String> keys);
+	<T> T getById(Class<T> type, Object... params);
 
-	Map<String, String> getMap(String key);
+	<T> List<T> getByIdList(Class<T> type, Object... params);
 
-	void mapAdd(String key, String field, String value);
-
-	void mapRemove(String key, String field);
+	<K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds,
+			Object... params);
+	
+	boolean isExist(Class<?> type, Object... params);
 }
