@@ -1,6 +1,5 @@
 package scw.data.redis;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,18 +16,15 @@ import scw.core.serializer.Serializer;
 import scw.core.utils.Assert;
 import scw.core.utils.CollectionUtils;
 
-public abstract class AbstractObjectOperations implements
-		RedisOperations<String, Object> {
+public abstract class AbstractObjectOperations implements RedisOperations<String, Object> {
 	protected abstract RedisOperations<byte[], byte[]> getBinaryOperations();
 
 	protected abstract RedisOperations<String, String> getStringOperations();
 
 	protected abstract Serializer getSerializer();
 
-	protected abstract Charset getCharset();
-
 	public Object get(String key) {
-		byte[] data = getBinaryOperations().get(key.getBytes(getCharset()));
+		byte[] data = getBinaryOperations().get(Bytes.string2bytes(key));
 		return data == null ? null : getSerializer().deserialize(data);
 	}
 
@@ -37,7 +33,7 @@ public abstract class AbstractObjectOperations implements
 			return null;
 		}
 
-		byte[][] ks = Bytes.string2bytes(getCharset(), keys);
+		byte[][] ks = Bytes.string2bytes(keys);
 		List<byte[]> list = getBinaryOperations().mget(ks);
 		if (CollectionUtils.isEmpty(list)) {
 			return null;
@@ -45,8 +41,7 @@ public abstract class AbstractObjectOperations implements
 
 		List<Object> dataList = new ArrayList<Object>(keys.length);
 		for (byte[] data : list) {
-			dataList.add(data == null ? null : getSerializer()
-					.deserialize(data));
+			dataList.add(data == null ? null : getSerializer().deserialize(data));
 		}
 		return dataList;
 	}
@@ -56,8 +51,7 @@ public abstract class AbstractObjectOperations implements
 			return;
 		}
 
-		getBinaryOperations().set(key.getBytes(getCharset()),
-				getSerializer().serialize(value));
+		getBinaryOperations().set(Bytes.string2bytes(key), getSerializer().serialize(value));
 	}
 
 	public boolean setnx(String key, Object value) {
@@ -65,8 +59,7 @@ public abstract class AbstractObjectOperations implements
 			return false;
 		}
 
-		return getBinaryOperations().setnx(key.getBytes(getCharset()),
-				getSerializer().serialize(value));
+		return getBinaryOperations().setnx(Bytes.string2bytes(key), getSerializer().serialize(value));
 	}
 
 	public void setex(String key, int seconds, Object value) {
@@ -74,8 +67,7 @@ public abstract class AbstractObjectOperations implements
 			return;
 		}
 
-		getBinaryOperations().setex(key.getBytes(getCharset()), seconds,
-				getSerializer().serialize(value));
+		getBinaryOperations().setex(Bytes.string2bytes(key), seconds, getSerializer().serialize(value));
 	}
 
 	public boolean exists(String key) {
@@ -83,7 +75,7 @@ public abstract class AbstractObjectOperations implements
 			return false;
 		}
 
-		return getBinaryOperations().exists(key.getBytes(getCharset()));
+		return getBinaryOperations().exists(Bytes.string2bytes(key));
 	}
 
 	public Long expire(String key, int seconds) {
@@ -91,8 +83,7 @@ public abstract class AbstractObjectOperations implements
 			return -1L;
 		}
 
-		return getBinaryOperations()
-				.expire(key.getBytes(getCharset()), seconds);
+		return getBinaryOperations().expire(Bytes.string2bytes(key), seconds);
 	}
 
 	public boolean del(String key) {
@@ -100,7 +91,7 @@ public abstract class AbstractObjectOperations implements
 			return false;
 		}
 
-		return getBinaryOperations().del(key.getBytes(getCharset()));
+		return getBinaryOperations().del(Bytes.string2bytes(key));
 	}
 
 	public Long hset(String key, String field, Object value) {
@@ -108,8 +99,8 @@ public abstract class AbstractObjectOperations implements
 			return -1L;
 		}
 
-		return getBinaryOperations().hset(key.getBytes(getCharset()),
-				field.getBytes(getCharset()), getSerializer().serialize(value));
+		return getBinaryOperations().hset(Bytes.string2bytes(key), Bytes.string2bytes(field),
+				getSerializer().serialize(value));
 	}
 
 	public Long hsetnx(String key, String field, Object value) {
@@ -117,8 +108,8 @@ public abstract class AbstractObjectOperations implements
 			return -1L;
 		}
 
-		return getBinaryOperations().hsetnx(key.getBytes(getCharset()),
-				field.getBytes(getCharset()), getSerializer().serialize(value));
+		return getBinaryOperations().hsetnx(Bytes.string2bytes(key), Bytes.string2bytes(field),
+				getSerializer().serialize(value));
 	}
 
 	public Long hdel(String key, String... fields) {
@@ -126,8 +117,7 @@ public abstract class AbstractObjectOperations implements
 			return -1L;
 		}
 
-		return getBinaryOperations().hdel(key.getBytes(getCharset()),
-				Bytes.string2bytes(getCharset(), fields));
+		return getBinaryOperations().hdel(Bytes.string2bytes(key), Bytes.string2bytes(fields));
 	}
 
 	public Long hlen(String key) {
@@ -135,7 +125,7 @@ public abstract class AbstractObjectOperations implements
 			return -1L;
 		}
 
-		return getBinaryOperations().hlen(key.getBytes(getCharset()));
+		return getBinaryOperations().hlen(Bytes.string2bytes(key));
 	}
 
 	public Boolean hexists(String key, String field) {
@@ -143,8 +133,7 @@ public abstract class AbstractObjectOperations implements
 			return false;
 		}
 
-		return getBinaryOperations().hexists(key.getBytes(getCharset()),
-				field.getBytes(getCharset()));
+		return getBinaryOperations().hexists(Bytes.string2bytes(key), Bytes.string2bytes(field));
 	}
 
 	public Long ttl(String key) {
@@ -152,7 +141,7 @@ public abstract class AbstractObjectOperations implements
 			return -1L;
 		}
 
-		return getBinaryOperations().ttl(key.getBytes(getCharset()));
+		return getBinaryOperations().ttl(Bytes.string2bytes(key));
 	}
 
 	public Long incr(String key) {
@@ -160,7 +149,7 @@ public abstract class AbstractObjectOperations implements
 			return -1L;
 		}
 
-		return getBinaryOperations().incr(key.getBytes(getCharset()));
+		return getBinaryOperations().incr(Bytes.string2bytes(key));
 	}
 
 	public Long decr(String key) {
@@ -168,7 +157,7 @@ public abstract class AbstractObjectOperations implements
 			return -1L;
 		}
 
-		return getBinaryOperations().decr(key.getBytes(getCharset()));
+		return getBinaryOperations().decr(Bytes.string2bytes(key));
 	}
 
 	public Collection<Object> hvals(String key) {
@@ -176,16 +165,14 @@ public abstract class AbstractObjectOperations implements
 			return null;
 		}
 
-		Collection<byte[]> list = getBinaryOperations().hvals(
-				key.getBytes(getCharset()));
+		Collection<byte[]> list = getBinaryOperations().hvals(Bytes.string2bytes(key));
 		if (CollectionUtils.isEmpty(list)) {
 			return null;
 		}
 
 		List<Object> dataList = new ArrayList<Object>(list.size());
 		for (byte[] data : list) {
-			dataList.add(data == null ? null : getSerializer()
-					.deserialize(data));
+			dataList.add(data == null ? null : getSerializer().deserialize(data));
 		}
 		return dataList;
 	}
@@ -195,8 +182,7 @@ public abstract class AbstractObjectOperations implements
 			return null;
 		}
 
-		byte[] data = getBinaryOperations().hget(key.getBytes(getCharset()),
-				field.getBytes(getCharset()));
+		byte[] data = getBinaryOperations().hget(Bytes.string2bytes(key), Bytes.string2bytes(field));
 		return data == null ? null : getSerializer().deserialize(data);
 	}
 
@@ -205,16 +191,14 @@ public abstract class AbstractObjectOperations implements
 			return null;
 		}
 
-		Collection<byte[]> list = getBinaryOperations().hmget(key.getBytes(),
-				Bytes.string2bytes(getCharset(), fields));
+		Collection<byte[]> list = getBinaryOperations().hmget(Bytes.string2bytes(key), Bytes.string2bytes(fields));
 		if (CollectionUtils.isEmpty(list)) {
 			return null;
 		}
 
 		List<Object> valueList = new ArrayList<Object>(list.size());
 		for (byte[] data : list) {
-			valueList.add(data == null ? null : getSerializer().deserialize(
-					data));
+			valueList.add(data == null ? null : getSerializer().deserialize(data));
 		}
 		return valueList;
 	}
@@ -237,8 +221,7 @@ public abstract class AbstractObjectOperations implements
 			return -1L;
 		}
 
-		return getBinaryOperations().lpush(key.getBytes(getCharset()),
-				objectsSerialize(values));
+		return getBinaryOperations().lpush(Bytes.string2bytes(key), objectsSerialize(values));
 	}
 
 	public Long rpush(String key, Object... values) {
@@ -246,8 +229,7 @@ public abstract class AbstractObjectOperations implements
 			return -1L;
 		}
 
-		return getBinaryOperations().rpush(key.getBytes(getCharset()),
-				objectsSerialize(values));
+		return getBinaryOperations().rpush(Bytes.string2bytes(key), objectsSerialize(values));
 	}
 
 	public Object rpop(String key) {
@@ -255,7 +237,7 @@ public abstract class AbstractObjectOperations implements
 			return null;
 		}
 
-		byte[] data = getBinaryOperations().rpop(key.getBytes(getCharset()));
+		byte[] data = getBinaryOperations().rpop(Bytes.string2bytes(key));
 		return data == null ? null : getSerializer().deserialize(data);
 	}
 
@@ -264,7 +246,7 @@ public abstract class AbstractObjectOperations implements
 			return null;
 		}
 
-		byte[] data = getBinaryOperations().lpop(key.getBytes(getCharset()));
+		byte[] data = getBinaryOperations().lpop(Bytes.string2bytes(key));
 		return data == null ? null : getSerializer().deserialize(data);
 	}
 
@@ -273,8 +255,7 @@ public abstract class AbstractObjectOperations implements
 			return null;
 		}
 
-		Set<byte[]> set = getBinaryOperations().smembers(
-				key.getBytes(getCharset()));
+		Set<byte[]> set = getBinaryOperations().smembers(Bytes.string2bytes(key));
 		if (CollectionUtils.isEmpty(set)) {
 			return null;
 		}
@@ -293,8 +274,7 @@ public abstract class AbstractObjectOperations implements
 			return -1L;
 		}
 
-		return getBinaryOperations().srem(key.getBytes(getCharset()),
-				objectsSerialize(members));
+		return getBinaryOperations().srem(Bytes.string2bytes(key), objectsSerialize(members));
 	}
 
 	public Long sadd(String key, Object... members) {
@@ -302,8 +282,7 @@ public abstract class AbstractObjectOperations implements
 			return -1L;
 		}
 
-		return getBinaryOperations().sadd(key.getBytes(getCharset()),
-				objectsSerialize(members));
+		return getBinaryOperations().sadd(Bytes.string2bytes(key), objectsSerialize(members));
 	}
 
 	public Long zadd(String key, long score, Object member) {
@@ -311,19 +290,16 @@ public abstract class AbstractObjectOperations implements
 			return -1L;
 		}
 
-		return getBinaryOperations().zadd(key.getBytes(getCharset()), score,
-				getSerializer().serialize(member));
+		return getBinaryOperations().zadd(Bytes.string2bytes(key), score, getSerializer().serialize(member));
 	}
 
-	public Boolean set(String key, Object value, String nxxx, String expx,
-			long time) {
+	public Boolean set(String key, Object value, String nxxx, String expx, long time) {
 		if (key == null || value == null || nxxx == null || expx == null) {
 			return false;
 		}
 
-		return getBinaryOperations().set(key.getBytes(getCharset()),
-				getSerializer().serialize(value), nxxx.getBytes(getCharset()),
-				expx.getBytes(getCharset()), time);
+		return getBinaryOperations().set(Bytes.string2bytes(key), getSerializer().serialize(value),
+				Bytes.string2bytes(nxxx), Bytes.string2bytes(expx), time);
 	}
 
 	public Boolean sIsMember(String key, Object member) {
@@ -331,8 +307,7 @@ public abstract class AbstractObjectOperations implements
 			return false;
 		}
 
-		return getBinaryOperations().sIsMember(key.getBytes(getCharset()),
-				getSerializer().serialize(member));
+		return getBinaryOperations().sIsMember(Bytes.string2bytes(key), getSerializer().serialize(member));
 	}
 
 	public Object lindex(String key, int index) {
@@ -340,8 +315,7 @@ public abstract class AbstractObjectOperations implements
 			return null;
 		}
 
-		byte[] data = getBinaryOperations().lindex(key.getBytes(getCharset()),
-				index);
+		byte[] data = getBinaryOperations().lindex(Bytes.string2bytes(key), index);
 		return data == null ? null : getSerializer().deserialize(data);
 	}
 
@@ -349,7 +323,7 @@ public abstract class AbstractObjectOperations implements
 		if (key == null) {
 			return -1L;
 		}
-		return getBinaryOperations().llen(key.getBytes(getCharset()));
+		return getBinaryOperations().llen(Bytes.string2bytes(key));
 	}
 
 	public Object eval(String script, List<String> keys, List<Object> args) {
@@ -363,7 +337,7 @@ public abstract class AbstractObjectOperations implements
 			Iterator<String> iterator = keys.iterator();
 			while (iterator.hasNext()) {
 				String v = iterator.next();
-				ks.add(v == null ? null : v.getBytes(getCharset()));
+				ks.add(v == null ? null : Bytes.string2bytes(v));
 			}
 		}
 
@@ -377,8 +351,7 @@ public abstract class AbstractObjectOperations implements
 			}
 		}
 
-		return getBinaryOperations()
-				.eval(script.getBytes(getCharset()), ks, bs);
+		return getBinaryOperations().eval(Bytes.string2bytes(script), ks, bs);
 	}
 
 	private Map<String, Object> mapDeSerizale(Map<byte[], byte[]> map) {
@@ -386,11 +359,10 @@ public abstract class AbstractObjectOperations implements
 			return null;
 		}
 
-		Map<String, Object> valueMap = new LinkedHashMap<String, Object>(
-				map.size(), 1);
+		Map<String, Object> valueMap = new LinkedHashMap<String, Object>(map.size(), 1);
 		for (Entry<byte[], byte[]> entry : map.entrySet()) {
 			byte[] data = entry.getValue();
-			valueMap.put(new String(entry.getKey(), getCharset()),
+			valueMap.put(new String(Bytes.bytes2chars(entry.getKey())),
 					data == null ? null : getSerializer().deserialize(data));
 		}
 		return valueMap;
@@ -401,8 +373,7 @@ public abstract class AbstractObjectOperations implements
 			return null;
 		}
 
-		Map<byte[], byte[]> map = getBinaryOperations().hgetAll(
-				key.getBytes(getCharset()));
+		Map<byte[], byte[]> map = getBinaryOperations().hgetAll(Bytes.string2bytes(key));
 		return mapDeSerizale(map);
 	}
 
@@ -430,8 +401,7 @@ public abstract class AbstractObjectOperations implements
 			return null;
 		}
 
-		List<byte[]> list = getBinaryOperations().brpop(timeout,
-				key.getBytes(getCharset()));
+		List<byte[]> list = getBinaryOperations().brpop(timeout, Bytes.string2bytes(key));
 		return popObjectResponse(list);
 	}
 
@@ -440,8 +410,7 @@ public abstract class AbstractObjectOperations implements
 			return null;
 		}
 
-		List<byte[]> list = getBinaryOperations().blpop(timeout,
-				key.getBytes(getCharset()));
+		List<byte[]> list = getBinaryOperations().blpop(timeout, Bytes.string2bytes(key));
 		return popObjectResponse(list);
 	}
 
@@ -458,11 +427,10 @@ public abstract class AbstractObjectOperations implements
 			}
 
 			Object v = entry.getValue();
-			map.put(k.getBytes(getCharset()), v == null ? null
-					: getSerializer().serialize(v));
+			map.put(Bytes.string2bytes(key), v == null ? null : getSerializer().serialize(v));
 		}
 
-		return getBinaryOperations().hmset(key.getBytes(getCharset()), map);
+		return getBinaryOperations().hmset(Bytes.string2bytes(key), map);
 	}
 
 	public long incr(String key, long incr, long initValue) {
@@ -480,8 +448,7 @@ public abstract class AbstractObjectOperations implements
 			return null;
 		}
 
-		byte[] data = getBinaryOperations().getAndTouch(
-				key.getBytes(getCharset()), newExp);
+		byte[] data = getBinaryOperations().getAndTouch(Bytes.string2bytes(key), newExp);
 		return data == null ? null : getSerializer().deserialize(data);
 	}
 

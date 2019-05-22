@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -17,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
+import scw.core.Bits;
 import scw.core.utils.IOUtils;
 
 public final class Bytes {
@@ -50,7 +50,7 @@ public final class Bytes {
 		return dest;
 	}
 
-	public static List<byte[]> string2byteList(Charset charset, Collection<String> strings) {
+	public static List<byte[]> string2byteList(Collection<String> strings) {
 		if (strings == null) {
 			return null;
 		}
@@ -64,12 +64,12 @@ public final class Bytes {
 				continue;
 			}
 
-			list.add(v.getBytes(charset));
+			list.add(string2bytes(v));
 		}
 		return list;
 	}
 
-	public static byte[][] string2bytes(Charset charset, Collection<String> strings) {
+	public static byte[][] string2bytes(Collection<String> strings) {
 		if (strings == null) {
 			return null;
 		}
@@ -79,55 +79,42 @@ public final class Bytes {
 		Iterator<String> iterator = strings.iterator();
 		while (iterator.hasNext()) {
 			String v = iterator.next();
-			if (v == null) {
-				i++;
-				continue;
-			}
-
-			bs[i++] = v.getBytes(charset);
+			bs[i++] = string2bytes(v);
 		}
 		return bs;
 	}
 
-	public static byte[][] string2bytes(String charsetName, Collection<String> strings) {
-		if (strings == null) {
+	public static byte[] string2bytes(String string) {
+		if (string == null) {
 			return null;
 		}
 
-		return string2bytes(Charset.forName(charsetName), strings);
+		int size = string.length();
+		byte[] bytes = new byte[size * 2];
+		for (int i = 0, b = 0; i < size; i++, b += 2) {
+			Bits.putChar(bytes, b, string.charAt(i));
+		}
+		return bytes;
 	}
 
-	public static List<byte[]> string2byteList(String charsetName, Collection<String> strings) {
-		if (strings == null) {
+	public static String bytes2String(byte[] b) {
+		if (b == null) {
 			return null;
 		}
 
-		return string2byteList(Charset.forName(charsetName), strings);
+		return new String(bytes2chars(b));
 	}
 
-	public static byte[][] string2bytes(Charset charset, String... strings) {
+	public static byte[][] string2bytes(String... strings) {
 		if (strings == null) {
 			return null;
 		}
 
 		byte[][] bs = new byte[strings.length][];
 		for (int i = 0; i < strings.length; i++) {
-			String v = strings[i];
-			if (v == null) {
-				continue;
-			}
-
-			bs[i] = v.getBytes(charset);
+			bs[i] = string2bytes(strings[i]);
 		}
 		return bs;
-	}
-
-	public static byte[][] string2bytes(String charsetName, String... strings) {
-		if (strings == null) {
-			return null;
-		}
-
-		return string2bytes(Charset.forName(charsetName), strings);
 	}
 
 	/**
@@ -472,6 +459,18 @@ public final class Bytes {
 				+ ((b[off + 4] & 0xFFL) << 24) + ((b[off + 3] & 0xFFL) << 32) + ((b[off + 2] & 0xFFL) << 40)
 				+ ((b[off + 1] & 0xFFL) << 48) + (((long) b[off + 0]) << 56);
 		return Double.longBitsToDouble(j);
+	}
+
+	public static char[] bytes2chars(byte[] b) {
+		if ((b.length & 1) != 0) {
+			throw new IllegalArgumentException("一个char占用两个byte，所以输入的byte数组长度必须是一个偶数");
+		}
+
+		char[] chars = new char[b.length >> 1];
+		for (int i = 0, index = 0; i < b.length; i += 2, index++) {
+			chars[index] = Bits.getChar(b, i);
+		}
+		return chars;
 	}
 
 	/**

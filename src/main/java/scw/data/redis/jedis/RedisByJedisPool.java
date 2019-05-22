@@ -1,7 +1,6 @@
 package scw.data.redis.jedis;
 
 import java.io.Closeable;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -76,11 +75,6 @@ public final class RedisByJedisPool extends AbstractJedisOperations implements C
 		if (resource != null) {
 			resource.close();
 		}
-	}
-
-	@Override
-	protected Charset getCharset() {
-		return Constants.DEFAULT_CHARSET;
 	}
 
 	@Override

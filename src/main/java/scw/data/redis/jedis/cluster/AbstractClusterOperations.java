@@ -1,6 +1,7 @@
 package scw.data.redis.jedis.cluster;
 
 import redis.clients.jedis.JedisCluster;
+import scw.core.io.Bytes;
 import scw.data.redis.AbstractRedis;
 import scw.data.redis.Redis;
 import scw.data.redis.RedisOperations;
@@ -29,11 +30,11 @@ public abstract class AbstractClusterOperations extends AbstractRedis implements
 		}
 
 		public long incr(byte[] key, long incr, long initValue) {
-			return getStringOperations().incr(new String(key, getCharset()), incr, initValue);
+			return getStringOperations().incr(Bytes.bytes2String(key), incr, initValue);
 		};
 
 		public long decr(byte[] key, long decr, long initValue) {
-			return getStringOperations().decr(new String(key, getCharset()), decr, initValue);
+			return getStringOperations().decr(Bytes.bytes2String(key), decr, initValue);
 		};
 	};
 
