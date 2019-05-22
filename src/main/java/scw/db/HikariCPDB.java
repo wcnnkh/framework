@@ -10,8 +10,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import scw.beans.annotation.Destroy;
-import scw.core.Base64;
-import scw.core.Constants;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 import scw.db.database.DataBase;
@@ -57,13 +55,11 @@ public class HikariCPDB extends DB {
 	}
 
 	public HikariCPDB(Redis redis, String propertiesFile) {
-		this(redis, Base64.encode(propertiesFile.getBytes(Constants.DEFAULT_CHARSET)), propertiesFile);
-		DBUtils.queueNameWarn(getLogger());
+		this(redis, null, propertiesFile);
 	}
 
 	public HikariCPDB(Memcached memcached, String propertiesFile) {
-		this(memcached, Base64.encode(propertiesFile.getBytes(Constants.DEFAULT_CHARSET)), propertiesFile);
-		DBUtils.queueNameWarn(getLogger());
+		this(memcached, null, propertiesFile);
 	}
 
 	public void createDataBase() {

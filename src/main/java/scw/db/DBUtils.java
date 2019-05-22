@@ -3,7 +3,6 @@ package scw.db;
 import java.util.Arrays;
 
 import scw.core.exception.NotSupportException;
-import scw.core.logger.Logger;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
 import scw.db.database.DataBase;
@@ -61,9 +60,5 @@ public final class DBUtils {
 		}
 
 		throw new NotSupportException("不支持的数据库类型,driver=" + driverClassName + ",url=" + url);
-	}
-
-	protected static void queueNameWarn(Logger logger) {
-		logger.warn("当前异步队列名称为配置文件路径Base64之后的结果，请不要随意变更配置文件路径，如你已知晓请忽略此警告!");
 	}
 }
