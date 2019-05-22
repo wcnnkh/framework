@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.core.logger.DebugLogger;
 import scw.core.net.http.ContentType;
 import scw.json.JSONUtils;
 import scw.result.support.DefaultResult;
@@ -23,6 +24,10 @@ public class ServletViewResult<T> extends DefaultResult<T> implements View {
 		this.contentType = contentType;
 	}
 
+	protected String parseString(Object obj) {
+		return JSONUtils.toJSONString(obj);
+	}
+
 	public void render(Request request, Response response) throws IOException {
 		if (contentType != null) {
 			response.setContentType(contentType);
@@ -37,6 +42,13 @@ public class ServletViewResult<T> extends DefaultResult<T> implements View {
 		map.put("code", getCode());
 		map.put("data", getData());
 		map.put("msg", getMsg());
-		response.getWriter().write(JSONUtils.toJSONString(map));
+
+		String content = parseString(map);
+		if (response instanceof DebugLogger) {
+			if (((DebugLogger) response).isDebugEnabled()) {
+				((DebugLogger) response).debug(content);
+			}
+		}
+		response.getWriter().write(content);
 	}
 }

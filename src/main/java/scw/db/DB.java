@@ -198,7 +198,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 
 		List<T> list = cacheManager.getByIdList(type, params);
 		if (list == null) {
-			return super.getByIdList(type, params);
+			return super.getByIdList(tableName, type, params);
 		}
 		return list;
 	}

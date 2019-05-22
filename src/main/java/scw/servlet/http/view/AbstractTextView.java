@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletResponse;
 
+import scw.core.logger.DebugLogger;
 import scw.core.net.http.ContentType;
 import scw.servlet.Request;
 import scw.servlet.Response;
@@ -39,6 +40,13 @@ public abstract class AbstractTextView implements View {
 		if (response.getContentType() == null) {
 			response.setContentType(ContentType.TEXT_HTML);
 		}
-		httpServletResponse.getWriter().write(getResponseText());
+
+		String content = getResponseText();
+		if (response instanceof DebugLogger) {
+			if (((DebugLogger) response).isDebugEnabled()) {
+				((DebugLogger) response).debug(content);
+			}
+		}
+		httpServletResponse.getWriter().write(content);
 	}
 }
