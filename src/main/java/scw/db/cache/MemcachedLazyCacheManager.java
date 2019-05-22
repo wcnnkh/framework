@@ -8,14 +8,13 @@ import scw.data.memcached.Memcached;
 public class MemcachedLazyCacheManager extends LazyDataManager {
 	private final Memcached memcached;
 
-	public MemcachedLazyCacheManager(Memcached memcached, int exp, boolean key) {
-		super(exp, key);
+	public MemcachedLazyCacheManager(Memcached memcached) {
 		this.memcached = memcached;
 	}
 
 	@Override
-	protected void set(String key, Object value) {
-		memcached.set(key, getExp(), value);
+	protected void set(String key, int exp, Object value) {
+		memcached.set(key, exp, value);
 	}
 
 	@Override
@@ -24,8 +23,8 @@ public class MemcachedLazyCacheManager extends LazyDataManager {
 	}
 
 	@Override
-	protected <T> T get(Class<T> type, String key) {
-		return memcached.get(key);
+	protected <T> T getAndTouch(Class<T> type, String key, int exp) {
+		return memcached.getAndTouch(key, exp);
 	}
 
 	@SuppressWarnings("unchecked")

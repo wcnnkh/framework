@@ -8,14 +8,13 @@ import scw.data.redis.Redis;
 public class RedisLazyCacheManager extends LazyDataManager {
 	private final Redis redis;
 
-	public RedisLazyCacheManager(Redis redis, int exp, boolean key) {
-		super(exp, key);
+	public RedisLazyCacheManager(Redis redis) {
 		this.redis = redis;
 	}
 
 	@Override
-	protected void set(String key, Object value) {
-		redis.getObjectOperations().setex(key, getExp(), value);
+	protected void set(String key, int exp, Object value) {
+		redis.getObjectOperations().setex(key, exp, value);
 	}
 
 	@Override
@@ -25,8 +24,8 @@ public class RedisLazyCacheManager extends LazyDataManager {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected <T> T get(Class<T> type, String key) {
-		return (T) redis.getObjectOperations().get(key);
+	protected <T> T getAndTouch(Class<T> type, String key, int exp) {
+		return (T) redis.getObjectOperations().getAndTouch(key, exp);
 	}
 
 	@SuppressWarnings("unchecked")

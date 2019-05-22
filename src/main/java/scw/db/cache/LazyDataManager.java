@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.core.utils.XTime;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
@@ -16,27 +17,34 @@ public abstract class LazyDataManager implements CacheManager {
 	private static final String DEFAULT_KEY_PREFIX = "lazy:";
 	private static final String KEY = "key:";
 	private static final String DEFAULT_CONNECTOR = "|";
-	private final boolean key;
-	private final int exp;
+	private static final LazyCacheConfig DEFAULT_CONFIG = new DefaultLazyCacheConfig((int) (XTime.ONE_DAY * 2 / 1000),
+			false, false);
+	private static volatile Map<Class<?>, LazyCacheConfig> configMap = new HashMap<Class<?>, LazyCacheConfig>();
 
-	public LazyDataManager(int exp, boolean key) {
-		this.exp = exp;
-		this.key = key;
+	protected LazyCacheConfig getCacheConfig(Class<?> tableClass) {
+		LazyCacheConfig config = configMap.get(tableClass);
+		if (config == null) {
+			synchronized (configMap) {
+				config = configMap.get(tableClass);
+				if (config == null) {
+					LazyCache lazyCache = tableClass.getAnnotation(LazyCache.class);
+					if (lazyCache == null) {
+						config = DEFAULT_CONFIG;
+					} else {
+						config = new DefaultLazyCacheConfig(lazyCache);
+					}
+					configMap.put(tableClass, config);
+				}
+			}
+		}
+		return config;
 	}
 
-	public final int getExp() {
-		return exp;
-	}
-
-	public final boolean isKey() {
-		return key;
-	}
-
-	protected abstract void set(String key, Object value);
+	protected abstract void set(String key, int exp, Object value);
 
 	protected abstract void del(String key);
 
-	protected abstract <T> T get(Class<T> type, String key);
+	protected abstract <T> T getAndTouch(Class<T> type, String key, int exp);
 
 	protected abstract <T> Map<String, T> mget(Class<T> type, Collection<String> keys);
 
@@ -45,15 +53,21 @@ public abstract class LazyDataManager implements CacheManager {
 	protected abstract boolean isExist(String key);
 
 	public void save(Object bean) {
-		final String objectKey = getObjectKey(ORMUtils.getTableInfo(bean.getClass()), bean);
+		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
+		LazyCacheConfig config = getCacheConfig(tableInfo.getSource());
+		if (config.isDisable()) {
+			return;
+		}
+
+		final String objectKey = getObjectKey(tableInfo, bean);
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
 			public void afterRollback() {
 				del(objectKey);
 			}
 		});
-		set(objectKey, bean);
-		if (key) {
+		set(objectKey, config.getExp(), bean);
+		if (config.isKeys()) {
 			final String index = KEY + objectKey;
 			addKey(index);
 			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
@@ -66,20 +80,32 @@ public abstract class LazyDataManager implements CacheManager {
 	}
 
 	public void update(Object bean) {
-		final String objectKey = getObjectKey(ORMUtils.getTableInfo(bean.getClass()), bean);
+		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
+		LazyCacheConfig config = getCacheConfig(tableInfo.getSource());
+		if (config.isDisable()) {
+			return;
+		}
+
+		final String objectKey = getObjectKey(tableInfo, bean);
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
 			public void afterRollback() {
 				del(objectKey);
 			}
 		});
-		set(objectKey, bean);
+		set(objectKey, config.getExp(), bean);
 	}
 
 	public void delete(Object bean) {
-		final String objectKey = getObjectKey(ORMUtils.getTableInfo(bean.getClass()), bean);
+		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
+		LazyCacheConfig config = getCacheConfig(tableInfo.getSource());
+		if (config.isDisable()) {
+			return;
+		}
+
+		final String objectKey = getObjectKey(tableInfo, bean);
 		del(objectKey);
-		if (key) {
+		if (config.isKeys()) {
 			final String index = KEY + objectKey;
 			del(index);
 			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
@@ -92,9 +118,14 @@ public abstract class LazyDataManager implements CacheManager {
 	}
 
 	public void deleteById(Class<?> type, Object... params) {
+		LazyCacheConfig config = getCacheConfig(type);
+		if (config.isDisable()) {
+			return;
+		}
+
 		final String objectKey = getObjectKeyById(type, params);
 		del(objectKey);
-		if (key) {
+		if (config.isKeys()) {
 			final String index = KEY + objectKey;
 			del(index);
 			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
@@ -107,15 +138,21 @@ public abstract class LazyDataManager implements CacheManager {
 	}
 
 	public void saveOrUpdate(Object bean) {
-		final String objectKey = getObjectKey(ORMUtils.getTableInfo(bean.getClass()), bean);
+		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
+		LazyCacheConfig config = getCacheConfig(tableInfo.getSource());
+		if (config.isDisable()) {
+			return;
+		}
+
+		final String objectKey = getObjectKey(tableInfo, bean);
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 			@Override
 			public void afterRollback() {
 				del(objectKey);
 			}
 		});
-		set(objectKey, bean);
-		if (key) {
+		set(objectKey, config.getExp(), bean);
+		if (config.isKeys()) {
 			final String index = KEY + objectKey;
 			boolean exist = isExist(index);
 			addKey(index);
@@ -131,7 +168,12 @@ public abstract class LazyDataManager implements CacheManager {
 	}
 
 	public <T> T getById(Class<T> type, Object... params) {
-		return get(type, getObjectKeyById(type, params));
+		LazyCacheConfig config = getCacheConfig(type);
+		if (config.isDisable()) {
+			return null;
+		}
+
+		return getAndTouch(type, getObjectKeyById(type, params), config.getExp());
 	}
 
 	public <T> List<T> getByIdList(Class<T> type, Object... params) {
@@ -139,6 +181,11 @@ public abstract class LazyDataManager implements CacheManager {
 	}
 
 	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {
+		LazyCacheConfig config = getCacheConfig(type);
+		if (config.isDisable()) {
+			return null;
+		}
+
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		if (params.length != tableInfo.getPrimaryKeyColumns().length - 1) {
 			return null;
@@ -168,7 +215,11 @@ public abstract class LazyDataManager implements CacheManager {
 	}
 
 	public boolean isExist(Class<?> type, Object... params) {
-		if (key) {
+		LazyCacheConfig config = getCacheConfig(type);
+		if (config.isDisable()) {
+			return true;
+		}
+		if (config.isKeys()) {
 			return isExist(getObjectKeyById(type, params));
 		}
 		return true;

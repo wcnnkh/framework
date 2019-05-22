@@ -12,7 +12,6 @@ import scw.beans.annotation.Destroy;
 import scw.core.exception.NotSupportException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.utils.XTime;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 import scw.data.utils.MemcachedQueue;
@@ -64,7 +63,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	};
 
 	public DB(Memcached memcached, String queueKey) {
-		this.cacheManager = new MemcachedLazyCacheManager(memcached, (int) XTime.ONE_DAY * 2 / 1000, false);
+		this.cacheManager = new MemcachedLazyCacheManager(memcached);
 		getLogger().trace("memcached中异步处理队列名：{}", queueKey);
 		MemcachedQueue<AsyncInfo> queue = new MemcachedQueue<AsyncInfo>(memcached, queueKey);
 		QueueMQ<AsyncInfo> mq = new QueueMQ<AsyncInfo>(queue);
@@ -74,7 +73,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	}
 
 	public DB(Redis redis, String queueKey) {
-		this.cacheManager = new RedisLazyCacheManager(redis, (int) XTime.ONE_DAY * 2 / 1000, false);
+		this.cacheManager = new RedisLazyCacheManager(redis);
 		getLogger().trace("redis中异步处理队列名：{}", queueKey);
 		Queue<AsyncInfo> queue = new RedisQueue<AsyncInfo>(redis, queueKey);
 		QueueMQ<AsyncInfo> mq = new QueueMQ<AsyncInfo>(queue);
