@@ -3,8 +3,7 @@ package scw.data.redis;
 import scw.core.serializer.Serializer;
 
 public abstract class AbstractRedis implements Redis {
-	private final RedisOperations<String, Object> objectOperations = new ObjectOperations(getBinaryOperations(),
-			getStringOperations(), getSerializer());
+	private final RedisOperations<String, Object> objectOperations = new ObjectOperations(this);
 
 	protected abstract Serializer getSerializer();
 
