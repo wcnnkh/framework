@@ -90,4 +90,31 @@ public final class StringSplitUtils {
 		}
 		return list.toArray(new String[list.size()]);
 	}
+	
+
+	public static int[] splitIntArr(String str, String regex) {
+		String[] arr = split(str, regex);
+		if (arr == null) {
+			return null;
+		}
+
+		int[] dataArr = new int[arr.length];
+		for (int i = 0; i < arr.length; i++) {
+			dataArr[i] = Integer.parseInt(arr[i]);
+		}
+		return dataArr;
+	}
+
+	public static long[] splitLongArr(String str, String regex) {
+		String[] arr = split(str, regex);
+		if (arr == null) {
+			return null;
+		}
+
+		long[] dataArr = new long[arr.length];
+		for (int i = 0; i < arr.length; i++) {
+			dataArr[i] = Long.parseLong(arr[i]);
+		}
+		return dataArr;
+	}
 }
