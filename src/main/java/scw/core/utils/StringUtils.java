@@ -90,44 +90,7 @@ public final class StringUtils {
 	}
 
 	public static String[] commonSplit(String str) {
-		return split(str, ' ', ',', ';', '、');
-	}
-
-	public static String[] split(String str, char... regex) {
-		if (str == null || str.length() == 0) {
-			return null;
-		}
-
-		int lastFind = 0;
-		List<String> list = new ArrayList<String>();
-		char[] chars = str.toCharArray();
-		int i = 0;
-		for (; i < chars.length; i++) {
-			boolean b = false;
-			for (char r : regex) {
-				if (r == chars[i]) {
-					b = true;
-					break;
-				}
-			}
-
-			if (b) {// 找到了
-				if (i != lastFind) {
-					list.add(new String(chars, lastFind, i - lastFind));
-				}
-				i++;
-				lastFind = i;
-			}
-		}
-
-		if (lastFind != i) {
-			list.add(new String(chars, lastFind, i - lastFind));
-		}
-
-		if (list.isEmpty()) {
-			return new String[] { str };
-		}
-		return list.toArray(new String[list.size()]);
+		return StringSplitUtils.split(str, ' ', ',', ';', '、');
 	}
 
 	public static String join(Collection<?> collection, String join) {
@@ -1980,18 +1943,19 @@ public final class StringUtils {
 			}
 		}
 
-		String[] arr = match.split("\\*");
+		String[] arr = StringSplitUtils.split(match, true, '*');
 		int begin = 0;
-		for (int i = 0; i < arr.length; i++) {
-			String v = arr[i];
-			if (text.length() < v.length()) {
+		int len = text.length();
+		for (String v : arr) {
+			int vLen = v.length();
+			if (len < vLen) {
 				return false;
 			}
 
 			boolean b = false;
 			int a = begin;
-			for (; a < text.length(); a++) {
-				int end = a + v.length();
+			for (; a < len; a++) {
+				int end = a + vLen;
 				if (end > text.length()) {
 					return false;
 				}
@@ -2007,7 +1971,7 @@ public final class StringUtils {
 				return false;
 			}
 
-			begin = a + v.length();
+			begin = a + vLen;
 		}
 		return true;
 	}
