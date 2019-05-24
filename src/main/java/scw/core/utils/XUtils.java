@@ -1,6 +1,10 @@
 package scw.core.utils;
 
+import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public final class XUtils {
 	private XUtils() {
@@ -89,12 +93,86 @@ public final class XUtils {
 		}
 		return false;
 	}
+
+	public static void concurrentSimulation(Collection<Runnable> runnables) {
+		if (CollectionUtils.isEmpty(runnables)) {
+			return;
+		}
+
+		CountDownLatch countDownLatch = new CountDownLatch(runnables.size());
+		for (Runnable runnable : runnables) {
+			new Thread(new ConcurrentSimulation(runnable, countDownLatch)).start();
+		}
+	}
+
+	private static CountDownLatch createCountDownLatch(ThreadPoolExecutor executor, Collection<Runnable> runnables) {
+		final CountDownLatch countDownLatch = new CountDownLatch(runnables.size());
+		for (final Runnable runnable : runnables) {
+			Runnable r = new Runnable() {
+
+				public void run() {
+					try {
+						runnable.run();
+					} finally {
+						countDownLatch.countDown();
+					}
+				}
+			};
+			if (executor == null) {
+				new Thread(r).start();
+			} else {
+				executor.submit(r);
+			}
+		}
+		return countDownLatch;
+	}
+
+	public static void multitask(ThreadPoolExecutor executor, Collection<Runnable> runnables, TimeUnit unit,
+			long timeout) throws InterruptedException {
+		if (CollectionUtils.isEmpty(runnables)) {
+			return;
+		}
+
+		CountDownLatch countDownLatch = createCountDownLatch(executor, runnables);
+		countDownLatch.await(timeout, unit);
+	}
+
+	public static void multitask(ThreadPoolExecutor executor, Collection<Runnable> runnables)
+			throws InterruptedException {
+		if (CollectionUtils.isEmpty(runnables)) {
+			return;
+		}
+
+		CountDownLatch countDownLatch = createCountDownLatch(executor, runnables);
+		countDownLatch.await();
+	}
+
+	public static void multitask(Collection<Runnable> runnables) throws InterruptedException {
+		multitask(null, runnables);
+	}
+
+	public static void multitask(Collection<Runnable> runnables, TimeUnit unit, long timeout)
+			throws InterruptedException {
+		multitask(null, runnables, unit, timeout);
+	}
 }
 
-class AutoCloseableException extends RuntimeException {
-	private static final long serialVersionUID = 1L;
+class ConcurrentSimulation implements Runnable {
+	private Runnable runnable;
+	private CountDownLatch countDownLatch;
 
-	public AutoCloseableException(Throwable e) {
-		super(e);
+	public ConcurrentSimulation(Runnable runnable, CountDownLatch countDownLatch) {
+		this.countDownLatch = countDownLatch;
+		this.runnable = runnable;
+	}
+
+	public void run() {
+		countDownLatch.countDown();
+		try {
+			countDownLatch.await();
+			runnable.run();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }
