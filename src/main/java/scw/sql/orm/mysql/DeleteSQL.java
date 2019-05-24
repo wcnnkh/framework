@@ -58,8 +58,9 @@ public final class DeleteSQL implements Sql {
 				sql.append(UpdateSQL.AND);
 			}
 
-			sql.append(columnInfo.getSqlColumnName());
-			sql.append("=?");
+			sql.append("`");
+			sql.append(columnInfo.getName());
+			sql.append("`=?");
 		}
 		return sql.toString();
 	}

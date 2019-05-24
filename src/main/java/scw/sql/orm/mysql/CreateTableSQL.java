@@ -34,7 +34,7 @@ public final class CreateTableSQL implements Sql {
 
 			ColumnInfo columnInfo = tableInfo.getColumns()[i];
 			int len = columnInfo.getLength();
-			sb.append(columnInfo.getSqlColumnName());
+			sb.append("`").append(columnInfo.getName()).append("`");
 			sb.append(" ");
 			if ("java.lang.String".equals(columnInfo.getTypeName())) {
 				sb.append("varchar");
@@ -43,8 +43,7 @@ public final class CreateTableSQL implements Sql {
 				} else {
 					sb.append("(255)");
 				}
-			} else if ("float".equals(columnInfo.getTypeName())
-					|| "java.lang.Float".equals(columnInfo.getTypeName())) {
+			} else if ("float".equals(columnInfo.getTypeName()) || "java.lang.Float".equals(columnInfo.getTypeName())) {
 				sb.append("float");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
@@ -59,32 +58,28 @@ public final class CreateTableSQL implements Sql {
 				} else {
 					sb.append("(20)");
 				}
-			} else if ("long".equals(columnInfo.getTypeName())
-					|| "java.lang.Long".equals(columnInfo.getTypeName())) {
+			} else if ("long".equals(columnInfo.getTypeName()) || "java.lang.Long".equals(columnInfo.getTypeName())) {
 				sb.append("bigint");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
 				} else {
 					sb.append("(20)");
 				}
-			} else if ("int".equals(columnInfo.getTypeName())
-					|| "java.lang.Integer".equals(columnInfo.getTypeName())) {
+			} else if ("int".equals(columnInfo.getTypeName()) || "java.lang.Integer".equals(columnInfo.getTypeName())) {
 				sb.append("int");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
 				} else {
 					sb.append("(10)");
 				}
-			} else if ("short".equals(columnInfo.getTypeName())
-					|| "java.lang.Short".equals(columnInfo.getTypeName())) {
+			} else if ("short".equals(columnInfo.getTypeName()) || "java.lang.Short".equals(columnInfo.getTypeName())) {
 				sb.append("SMALLINT");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
 				} else {
 					sb.append("(5)");
 				}
-			} else if ("byte".equals(columnInfo.getTypeName())
-					|| "java.lang.Byte".equals(columnInfo.getTypeName())) {
+			} else if ("byte".equals(columnInfo.getTypeName()) || "java.lang.Byte".equals(columnInfo.getTypeName())) {
 				sb.append("bit");
 				if (len > 0) {
 					sb.append("(").append(len).append(")");
@@ -124,7 +119,7 @@ public final class CreateTableSQL implements Sql {
 
 			sb.append(",");
 			sb.append("UNIQUE (");
-			sb.append(columnInfo.getSqlColumnName());
+			sb.append("`").append(columnInfo.getName()).append("`");
 			sb.append(")");
 		}
 
@@ -137,8 +132,8 @@ public final class CreateTableSQL implements Sql {
 				continue;
 			}
 
-			if (!indexConfigMap.containsKey(columnInfo.getSqlColumnName())) {
-				indexConfigMap.put(columnInfo.getSqlColumnName(), index);
+			if (!indexConfigMap.containsKey(columnInfo.getName())) {
+				indexConfigMap.put(columnInfo.getName(), index);
 			}
 
 			List<IndexInfo> indexList = indexMap.get(index.name());
@@ -146,7 +141,7 @@ public final class CreateTableSQL implements Sql {
 				indexList = new ArrayList<IndexInfo>();
 				indexMap.put(index.name(), indexList);
 			}
-			indexList.add(new IndexInfo(columnInfo.getSqlColumnName(), index));
+			indexList.add(new IndexInfo(columnInfo.getName(), index));
 		}
 
 		for (Entry<String, List<IndexInfo>> entry : indexMap.entrySet()) {
@@ -195,8 +190,9 @@ public final class CreateTableSQL implements Sql {
 				if (i > 0) {
 					sb.append(",");
 				}
-				sb.append(tableInfo.getPrimaryKeyColumns()[i]
-						.getSqlColumnName());
+				sb.append("`");
+				sb.append(tableInfo.getPrimaryKeyColumns()[i].getName());
+				sb.append("`");
 			}
 			sb.append(")");
 		}

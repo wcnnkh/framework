@@ -16,14 +16,12 @@ import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Counter;
 
 public final class UpdateSQLByBeanListen implements Sql {
-	private static Logger logger = LoggerFactory
-			.getLogger(UpdateSQLByBeanListen.class);
+	private static Logger logger = LoggerFactory.getLogger(UpdateSQLByBeanListen.class);
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanListen(TableFieldListen beanFieldListen,
-			TableInfo tableInfo, String tableName)
+	public UpdateSQLByBeanListen(TableFieldListen beanFieldListen, TableInfo tableInfo, String tableName)
 			throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
@@ -51,8 +49,7 @@ public final class UpdateSQLByBeanListen implements Sql {
 
 			Object value = columnInfo.getValueToDB(beanFieldListen);
 			Counter counter = columnInfo.getCounter();
-			if (counter != null
-					&& ClassUtils.isNumberType(columnInfo.getType())) {
+			if (counter != null && ClassUtils.isNumberType(columnInfo.getType())) {
 				Object oldValue = entry.getValue();
 				if (oldValue != null && value != null) {
 					// incr or decr
@@ -64,11 +61,13 @@ public final class UpdateSQLByBeanListen implements Sql {
 					}
 
 					double change = newV - oldV;
-					sb.append(columnInfo.getSqlColumnName());
-					sb.append("=");
+					sb.append("`");
+					sb.append(columnInfo.getName());
+					sb.append("`=");
 
-					sb.append(columnInfo.getSqlColumnName());
-					sb.append(change > 0 ? "+" : "-");
+					sb.append("`");
+					sb.append(columnInfo.getName());
+					sb.append(change > 0 ? "`+" : "`-");
 					sb.append(Math.abs(change));
 
 					if (where == null) {
@@ -80,22 +79,23 @@ public final class UpdateSQLByBeanListen implements Sql {
 					if (change == 0) {
 						where.append("1 != 1");
 					} else {
-						where.append(columnInfo.getSqlColumnName());
-						where.append(change > 0 ? "+" : "-");
+						where.append("`");
+						where.append(columnInfo.getName());
+						where.append(change > 0 ? "`+" : "`-");
 						where.append(Math.abs(change));
 						where.append(">=").append(counter.min());
 						where.append(UpdateSQL.AND);
-						where.append(columnInfo.getSqlColumnName());
+						where.append("`");
+						where.append(columnInfo.getName());
+						where.append("`");
 						where.append(change > 0 ? "+" : "-");
 						where.append(Math.abs(change));
 						where.append("<=").append(counter.max());
 					}
 					continue;
 				} else {
-					logger.warn(
-							"{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}",
-							tableInfo.getSource().getName(), columnInfo
-									.getField().getName(), oldValue, value);
+					logger.warn("{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}", tableInfo.getSource().getName(),
+							columnInfo.getField().getName(), oldValue, value);
 				}
 			}
 
@@ -103,8 +103,9 @@ public final class UpdateSQLByBeanListen implements Sql {
 				sb.append(",");
 			}
 
-			sb.append(columnInfo.getSqlColumnName());
-			sb.append("=?");
+			sb.append("`");
+			sb.append(columnInfo.getName());
+			sb.append("`=?");
 			paramList.add(value);
 		}
 
@@ -116,8 +117,10 @@ public final class UpdateSQLByBeanListen implements Sql {
 			if (i > 0) {
 				sb.append(UpdateSQL.AND);
 			}
-			sb.append(columnInfo.getSqlColumnName());
-			sb.append("=?");
+
+			sb.append("`");
+			sb.append(columnInfo.getName());
+			sb.append("`=?");
 
 			paramList.add(columnInfo.getValueToDB(beanFieldListen));
 		}

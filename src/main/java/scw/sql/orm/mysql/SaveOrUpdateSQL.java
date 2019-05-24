@@ -37,7 +37,9 @@ public final class SaveOrUpdateSQL implements Sql {
 				values.append(",");
 			}
 
-			cols.append(columnInfo.getSqlColumnName());
+			cols.append("`");
+			cols.append(columnInfo.getName());
+			cols.append("`");
 			values.append("?");
 			params.add(columnInfo.getValueToDB(obj));
 		}
@@ -64,33 +66,38 @@ public final class SaveOrUpdateSQL implements Sql {
 			}
 
 			if (counter == null) {
-				sb.append(columnInfo.getSqlColumnName());
-				sb.append("=?");
+				sb.append("`");
+				sb.append(columnInfo.getName());
+				sb.append("`=?");
 				params.add(v);
 			} else {
 				if (v == null) {
 					logger.warn("{}中计数器字段{}的值为空", tableInfo.getSource().getName(), columnInfo.getName());
-					sb.append(columnInfo.getSqlColumnName());
-					sb.append("=?");
+					sb.append("`");
+					sb.append(columnInfo.getName());
+					sb.append("`=?");
 					params.add(v);
 				} else {
-					sb.append(columnInfo.getSqlColumnName());
-					sb.append("=");
+					sb.append("`");
+					sb.append(columnInfo.getName());
+					sb.append("`=");
 					sb.append(IF);
-					sb.append(columnInfo.getSqlColumnName());
-					sb.append("+").append(v);
+					sb.append("`");
+					sb.append(columnInfo.getName());
+					sb.append("`+").append(v);
 					sb.append(">=").append(counter.min());
 					sb.append(UpdateSQL.AND);
-					sb.append(columnInfo.getSqlColumnName());
-					sb.append("+").append(v);
+					sb.append("`");
+					sb.append(columnInfo.getName());
+					sb.append("`+").append(v);
 					sb.append("<=").append(counter.max());
-					sb.append(",");
-					sb.append(columnInfo.getSqlColumnName());
-					sb.append("+?");
+					sb.append(",`");
+					sb.append(columnInfo.getName());
+					sb.append("`+?");
 					params.add(v);
-					sb.append(",");
-					sb.append(columnInfo.getSqlColumnName());
-					sb.append(")");
+					sb.append(",`");
+					sb.append(columnInfo.getName());
+					sb.append("`)");
 				}
 			}
 		}

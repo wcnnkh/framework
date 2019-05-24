@@ -24,10 +24,9 @@ public final class DecrByIdSQL implements Sql {
 		sb.append(UpdateSQL.SET);
 
 		ColumnInfo incrColumn = tableInfo.getColumnInfo(fieldName);
-		sb.append(incrColumn.getSqlColumnName());
-		sb.append("=");
-		sb.append(incrColumn.getSqlColumnName());
-		sb.append("-").append(limit);
+		sb.append("`").append(incrColumn.getName());
+		sb.append("`=`").append(incrColumn.getName());
+		sb.append("`-").append(limit);
 
 		sb.append(UpdateSQL.WHERE);
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
@@ -36,14 +35,14 @@ public final class DecrByIdSQL implements Sql {
 				sb.append(UpdateSQL.AND);
 			}
 
-			sb.append(columnInfo.getSqlColumnName());
-			sb.append("=?");
+			sb.append("`").append(columnInfo.getName());
+			sb.append("`=?");
 		}
 
 		if (minValue != null) {
-			sb.append(" and ");
-			sb.append(incrColumn.getSqlColumnName());
-			sb.append("-").append(limit);
+			sb.append(UpdateSQL.AND);
+			sb.append("`").append(incrColumn.getName());
+			sb.append("`-").append(limit);
 			sb.append(">=").append(minValue);
 		}
 		return sb.toString();

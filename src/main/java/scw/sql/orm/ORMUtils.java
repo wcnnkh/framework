@@ -2,6 +2,7 @@ package scw.sql.orm;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -18,6 +19,9 @@ import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.sql.orm.annotation.Column;
+import scw.sql.orm.annotation.Index;
+import scw.sql.orm.annotation.PrimaryKey;
 import scw.sql.orm.annotation.Table;
 
 public final class ORMUtils {
@@ -163,6 +167,60 @@ public final class ORMUtils {
 			}
 		}
 		return name;
+	}
+
+	public static String getAnnotationColumnName(Field field) {
+		String name = field.getName();
+		Column column = field.getAnnotation(Column.class);
+		if (column != null && column.name().length() != 0) {
+			name = column.name();
+		}
+		return name;
+	}
+
+	public static String getAnnotationColumnTypeName(Field field) {
+		String typeName = field.getType().getName();
+		Column column = field.getAnnotation(Column.class);
+		if (column != null && column.type().length() != 0) {
+			typeName = column.type();
+		}
+		return typeName;
+	}
+
+	public static int getAnnotationColumnLength(Field field) {
+		Column column = field.getAnnotation(Column.class);
+		return column == null ? -1 : column.length();
+	}
+
+	public static boolean isAnnoataionPrimaryKey(Field field) {
+		return field.getAnnotation(PrimaryKey.class) != null;
+	}
+
+	public static boolean isAnnoataionColumnNullAble(Field field) {
+		boolean nullAble;
+		Column column = field.getAnnotation(Column.class);
+		if (column != null) {
+			if (column.unique() || isAnnoataionPrimaryKey(field) || field.getAnnotation(Index.class) != null) {
+				nullAble = false;
+				if (column.nullAble()) {
+					logger.warn("字段{}不能或不推荐设置为允许为空，因为他可能是主键或索引", field.getName());
+				}
+			} else {
+				nullAble = column.nullAble();
+			}
+		} else {
+			if (isAnnoataionPrimaryKey(field) || field.getAnnotation(Index.class) != null) {
+				nullAble = false;
+			} else {
+				nullAble = !field.getType().isPrimitive();
+			}
+		}
+		return nullAble;
+	}
+
+	public static boolean isAnnoataionColumnUnique(Field field) {
+		Column column = field.getAnnotation(Column.class);
+		return column == null ? false : column.unique();
 	}
 
 	public static Class<?>[] getTableFieldListenProxyInterfaces(Class<?> clazz) {

@@ -35,8 +35,9 @@ public final class UpdateSQL implements Sql {
 				sb.append(",");
 			}
 
-			sb.append(columnInfo.getSqlColumnName());
-			sb.append("=?");
+			sb.append("`");
+			sb.append(columnInfo.getName());
+			sb.append("`=?");
 			params[index++] = columnInfo.getValueToDB(obj);
 		}
 
@@ -46,8 +47,10 @@ public final class UpdateSQL implements Sql {
 			if (i > 0) {
 				sb.append(AND);
 			}
-			sb.append(columnInfo.getSqlColumnName());
-			sb.append("=?");
+			
+			sb.append("`");
+			sb.append(columnInfo.getName());
+			sb.append("`=?");
 			params[index++] = columnInfo.getValueToDB(obj);
 		}
 		this.sql = sb.toString();

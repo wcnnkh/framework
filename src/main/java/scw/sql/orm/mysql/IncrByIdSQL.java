@@ -23,10 +23,9 @@ public final class IncrByIdSQL implements Sql {
 		sb.append(UpdateSQL.SET);
 
 		ColumnInfo incrColumn = tableInfo.getColumnInfo(fieldName);
-		sb.append(incrColumn.getSqlColumnName());
-		sb.append("=");
-		sb.append(incrColumn.getSqlColumnName());
-		sb.append("+").append(limit);
+		sb.append("`").append(incrColumn.getName());
+		sb.append("`=`").append(incrColumn.getName());
+		sb.append("`+").append(limit);
 
 		sb.append(UpdateSQL.WHERE);
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
@@ -35,13 +34,16 @@ public final class IncrByIdSQL implements Sql {
 				sb.append(UpdateSQL.AND);
 			}
 
-			sb.append(columnInfo.getSqlColumnName());
-			sb.append("=?");
+			sb.append("`");
+			sb.append(columnInfo.getName());
+			sb.append("`=?");
 		}
 
 		if (maxValue != null) {
 			sb.append(UpdateSQL.AND);
-			sb.append(incrColumn.getSqlColumnName());
+			sb.append("`");
+			sb.append(incrColumn.getName());
+			sb.append("`");
 			sb.append("+").append(limit);
 			sb.append("<=").append(maxValue);
 		}

@@ -8,11 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import scw.beans.BeanFactory;
 import scw.core.Iterator;
 import scw.core.Pagination;
 import scw.core.exception.AlreadyExistsException;
-import scw.core.exception.NotFoundException;
 import scw.core.exception.ParameterException;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
@@ -21,10 +19,7 @@ import scw.sql.RowCallback;
 import scw.sql.Sql;
 import scw.sql.SqlTemplate;
 import scw.sql.SqlUtils;
-import scw.sql.orm.annotation.AutoCreate;
 import scw.sql.orm.annotation.Table;
-import scw.sql.orm.auto.AutoCreateService;
-import scw.sql.orm.auto.CurrentTimeMillisAutoCreateService;
 import scw.sql.orm.mysql.MysqlSelect;
 import scw.sql.orm.result.DefaultResult;
 import scw.sql.orm.result.DefaultResultSet;
@@ -33,26 +28,6 @@ import scw.sql.orm.result.ResultSet;
 import scw.transaction.sql.cache.QueryCacheUtils;
 
 public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, SelectMaxId {
-	@AutoCreate
-	private BeanFactory beanFactory;
-	private Map<String, AutoCreateService> autoCreateMap = new HashMap<String, AutoCreateService>();
-
-	{
-		setAutoCreateService("cts", CurrentTimeMillisAutoCreateService.CURRENT_TIME_MILLIS);
-		setAutoCreateService("createTime", CurrentTimeMillisAutoCreateService.CURRENT_TIME_MILLIS);
-	}
-
-	protected synchronized void setAutoCreateService(String groupName, AutoCreateService autoCreateService) {
-		autoCreateMap.put(groupName, autoCreateService);
-	}
-
-	protected AutoCreateService getAutoCreateService(String name) {
-		AutoCreateService autoCreateService = autoCreateMap.get(name);
-		if (autoCreateService == null && beanFactory != null) {
-			autoCreateService = beanFactory.get(name);
-		}
-		return autoCreateService;
-	}
 
 	public abstract SqlFormat getSqlFormat();
 
@@ -110,22 +85,6 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 	public boolean save(Object bean, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
-
-		for (ColumnInfo columnInfo : tableInfo.getAutoCreateColumns()) {
-			AutoCreate autoCreate = columnInfo.getAutoCreate();
-			String name = StringUtils.isEmpty(autoCreate.value()) ? columnInfo.getName() : autoCreate.value();
-			AutoCreateService service = getAutoCreateService(name);
-			if (service == null) {
-				throw new NotFoundException(tableInfo.getSource().getName() + "中字段[" + columnInfo.getName()
-						+ "的注解@AutoCreate找不到指定名称的实现:" + name);
-			}
-
-			try {
-				service.wrapper(this, bean, tableInfo, columnInfo, tName, autoCreate.args());
-			} catch (Throwable e) {
-				throw new RuntimeException(e);
-			}
-		}
 
 		Sql sql = getSqlFormat().toInsertSql(bean, tableInfo, tName);
 		if (tableInfo.getAutoIncrement() == null) {

@@ -69,7 +69,9 @@ public final class InsertSQL implements Sql {
 				values.append(",");
 			}
 
-			cols.append(columnInfo.getSqlColumnName());
+			cols.append("`");
+			cols.append(columnInfo.getName());
+			cols.append("`");
 			values.append("?");
 		}
 

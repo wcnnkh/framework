@@ -29,7 +29,6 @@ public final class TableInfo {
 	private final ColumnInfo[] notPrimaryKeyColumns;
 	private final ColumnInfo[] tableColumns;
 	private ColumnInfo autoIncrement;
-	private final ColumnInfo[] autoCreateColumns;
 	private final Class<?>[] beanListenInterfaces;
 	private final boolean serializer;
 	private final boolean table;
@@ -46,7 +45,6 @@ public final class TableInfo {
 		List<ColumnInfo> idNameList = new ArrayList<ColumnInfo>();
 		List<ColumnInfo> notIdNameList = new ArrayList<ColumnInfo>();
 		List<ColumnInfo> tableColumnList = new ArrayList<ColumnInfo>();
-		List<ColumnInfo> autoCreateColumnList = new ArrayList<ColumnInfo>();
 
 		Map<String, ColumnInfo> columnMap = new HashMap<String, ColumnInfo>();
 		Map<String, String> fieldToColumn = new HashMap<String, String>();
@@ -98,10 +96,6 @@ public final class TableInfo {
 
 						autoIncrement = columnInfo;
 					}
-
-					if (columnInfo.getAutoCreate() != null) {
-						autoCreateColumnList.add(columnInfo);
-					}
 				} else {
 					boolean javaType = field.getType().getName().startsWith("java.")
 							|| field.getType().getName().startsWith("javax.");
@@ -117,7 +111,6 @@ public final class TableInfo {
 		this.primaryKeyColumns = idNameList.toArray(new ColumnInfo[0]);
 		this.notPrimaryKeyColumns = notIdNameList.toArray(new ColumnInfo[0]);
 		this.tableColumns = tableColumnList.toArray(new ColumnInfo[tableColumnList.size()]);
-		this.autoCreateColumns = autoCreateColumnList.toArray(new ColumnInfo[autoCreateColumnList.size()]);
 		this.columnMap = new HashMap<String, ColumnInfo>(columnMap.size(), 1);
 		this.columnMap.putAll(columnMap);
 		this.fieldToColumn = new HashMap<String, String>(fieldToColumn.size(), 1);
@@ -228,10 +221,6 @@ public final class TableInfo {
 
 	public ColumnInfo getAutoIncrement() {
 		return autoIncrement;
-	}
-
-	public ColumnInfo[] getAutoCreateColumns() {
-		return autoCreateColumns;
 	}
 
 	public <T extends Annotation> T getAnnotation(Class<T> type) {
