@@ -7,13 +7,9 @@ import java.util.Map;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
-import scw.sql.orm.annotation.UpdateField;
 
 public final class TableFieldListenInterceptor implements MethodInterceptor, TableFieldListen {
-	private static Logger logger = LoggerFactory.getLogger(TableFieldListenInterceptor.class);
 	private static final long serialVersionUID = 1L;
 	private transient Map<String, Object> field_change_map;
 	private transient TableInfo tableInfo;
@@ -40,15 +36,7 @@ public final class TableFieldListenInterceptor implements MethodInterceptor, Tab
 			}
 		}
 
-		UpdateField updateField = method.getAnnotation(UpdateField.class);
-		if (updateField != null) {
-			ColumnInfo columnInfo = tableInfo.getColumnInfo(updateField.value());
-			if (columnInfo == null) {
-				logger.warn("指明的更新不存在,class={},field={}", tableInfo.getSource().getName(), updateField.value());
-			} else {
-				return change(obj, method, args, proxy, columnInfo.getField());
-			}
-		} else if (args.length == 1 && method.getName().startsWith("set")) {
+		if (args.length == 1 && method.getName().startsWith("set")) {
 			char[] chars = new char[method.getName().length() - 3];
 			chars[0] = Character.toLowerCase(method.getName().charAt(3));
 			method.getName().getChars(4, method.getName().length(), chars, 1);
