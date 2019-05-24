@@ -328,7 +328,7 @@ public abstract class ResourceUtils {
 	 * @throws URISyntaxException if the location wasn't a valid URI
 	 */
 	public static URI toURI(String location) throws URISyntaxException {
-		return new URI(StringUtils.replace(location, " ", "%20"));
+		return new URI(SpringStringUtils.replace(location, " ", "%20"));
 	}
 
 	/**

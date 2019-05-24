@@ -11,7 +11,7 @@ public final class StringParseUtils {
 	 * @return
 	 */
 	public static String formatNumberText(String text) {
-		if (text == null || text.length() == 0) {
+		if (StringUtils.isEmpty(text)) {
 			return text;
 		}
 
@@ -32,17 +32,37 @@ public final class StringParseUtils {
 			return defaultValue;
 		}
 
-		return "1".equals(text) || "true".equalsIgnoreCase(text)
-				|| "yes".equalsIgnoreCase(text) || "T".equalsIgnoreCase(text);
+		return "1".equals(text) || "true".equalsIgnoreCase(text) || "yes".equalsIgnoreCase(text)
+				|| "T".equalsIgnoreCase(text);
 	}
 
 	public static boolean parseBoolean(String text) {
 		return parseBoolean(text, false);
 	}
 
+	public static byte parseByte(String text, byte defaultValue) {
+		String v = formatNumberText(text);
+		if (StringUtils.isEmpty(v)) {
+			return defaultValue;
+		}
+		return Byte.parseByte(text);
+	}
+
+	public static short parseShort(String text) {
+		return parseShort(text, (short) 0);
+	}
+
+	public static short parseShort(String text, short defaultValue) {
+		String v = formatNumberText(text);
+		if (StringUtils.isEmpty(v)) {
+			return defaultValue;
+		}
+		return Short.parseShort(text);
+	}
+
 	public static int parseInt(String text, int defaultValue) {
 		String v = formatNumberText(text);
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isEmpty(v)) {
 			return defaultValue;
 		}
 		return Integer.parseInt(v);
@@ -51,7 +71,47 @@ public final class StringParseUtils {
 	public static int parseInt(String text) {
 		return parseInt(text, 0);
 	}
-	
+
+	public static long parseLong(String text) {
+		return parseLong(text, 0L);
+	}
+
+	public static byte parseByte(String text) {
+		return parseByte(text, (byte) 0);
+	}
+
+	public static long parseLong(String text, long defaultValue) {
+		String v = formatNumberText(text);
+		if (StringUtils.isEmpty(v)) {
+			return defaultValue;
+		}
+		return Long.parseLong(v);
+	}
+
+	public static float parseFloat(String text) {
+		return parseFloat(text, 0f);
+	}
+
+	public static float parseFloat(String text, float defaultValue) {
+		String v = formatNumberText(text);
+		if (StringUtils.isEmpty(v)) {
+			return defaultValue;
+		}
+		return Float.parseFloat(v);
+	}
+
+	public static double parseDouble(String text) {
+		return parseDouble(text, 0);
+	}
+
+	public static double parseDouble(String text, double defaultValue) {
+		String v = formatNumberText(text);
+		if (StringUtils.isEmpty(v)) {
+			return defaultValue;
+		}
+		return Double.parseDouble(v);
+	}
+
 	/**
 	 * 把unicode 转成中文
 	 * 
@@ -121,7 +181,7 @@ public final class StringParseUtils {
 		}
 		return outBuffer.toString();
 	}
-	
+
 	/**
 	 * 如果是string类类型就返回本身
 	 * 
@@ -147,35 +207,107 @@ public final class StringParseUtils {
 	 */
 	public static Object conversionBasicType(String value, Class<?> basicType) {
 		if (int.class.isAssignableFrom(basicType)) {
-			return Integer.parseInt(value);
+			return parseInt(value, 0);
 		} else if (Integer.class.isAssignableFrom(basicType)) {
-			return Integer.valueOf(value);
+			return StringUtils.isEmpty(value) ? null : parseInt(value, 0);
 		} else if (long.class.isAssignableFrom(basicType)) {
-			return Long.parseLong(value);
+			return parseLong(value, 0);
 		} else if (Long.class.isAssignableFrom(basicType)) {
-			return Long.valueOf(value);
+			return StringUtils.isEmpty(value) ? null : parseLong(value, 0L);
 		} else if (float.class.isAssignableFrom(basicType)) {
-			return Float.parseFloat(value);
+			return parseFloat(value, 0f);
 		} else if (Float.class.isAssignableFrom(basicType)) {
-			return Float.valueOf(value);
+			return StringUtils.isEmpty(value) ? null : parseFloat(value, 0f);
 		} else if (short.class.isAssignableFrom(basicType)) {
-			return Short.parseShort(value);
+			return parseShort(value, (short) 0);
 		} else if (Short.class.isAssignableFrom(basicType)) {
-			return Short.valueOf(value);
+			return StringUtils.isEmpty(value) ? null : parseShort(value, (short) 0);
 		} else if (boolean.class.isAssignableFrom(basicType)) {
 			return parseBoolean(value);
 		} else if (Boolean.class.isAssignableFrom(basicType)) {
 			return StringUtils.isEmpty(value) ? null : parseBoolean(value);
 		} else if (byte.class.isAssignableFrom(basicType)) {
-			return Byte.parseByte(value);
+			return parseByte(value, (byte) 0);
 		} else if (Byte.class.isAssignableFrom(basicType)) {
-			return Byte.valueOf(value);
+			return StringUtils.isEmpty(value) ? null : parseByte(value, (byte) 0);
 		} else if (char.class.isAssignableFrom(basicType)) {
 			return value.charAt(0);
 		} else if (Character.class.isAssignableFrom(basicType)) {
-			return value == null ? null : value.charAt(0);
+			return StringUtils.isEmpty(value) ? null : value.charAt(0);
 		} else {
 			return value;
 		}
+	}
+
+	public static int[] parseIntArray(String[] arr) {
+		if (arr == null) {
+			return null;
+		}
+
+		int[] values = new int[arr.length];
+		for (int i = 0; i < arr.length; i++) {
+			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : parseInt(arr[i]);
+		}
+		return values;
+	}
+
+	public static long[] parseLongArray(String[] arr) {
+		if (arr == null) {
+			return null;
+		}
+
+		long[] values = new long[arr.length];
+		for (int i = 0; i < arr.length; i++) {
+			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : parseLong(arr[i]);
+		}
+		return values;
+	}
+
+	public static byte[] parseByteArray(String[] arr) {
+		if (arr == null) {
+			return null;
+		}
+
+		byte[] values = new byte[arr.length];
+		for (int i = 0; i < arr.length; i++) {
+			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : parseByte(arr[i]);
+		}
+		return values;
+	}
+
+	public static short[] parseShortArray(String[] arr) {
+		if (arr == null) {
+			return null;
+		}
+
+		short[] values = new short[arr.length];
+		for (int i = 0; i < arr.length; i++) {
+			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : parseShort(arr[i]);
+		}
+		return values;
+	}
+
+	public static float[] parseFloatArray(String[] arr) {
+		if (arr == null) {
+			return null;
+		}
+
+		float[] values = new float[arr.length];
+		for (int i = 0; i < arr.length; i++) {
+			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : parseFloat(arr[i]);
+		}
+		return values;
+	}
+
+	public static double[] parseDoubleArray(String[] arr) {
+		if (arr == null) {
+			return null;
+		}
+
+		double[] values = new double[arr.length];
+		for (int i = 0; i < arr.length; i++) {
+			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : parseDouble(arr[i]);
+		}
+		return values;
 	}
 }

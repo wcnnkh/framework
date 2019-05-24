@@ -132,7 +132,7 @@ public abstract class Assert {
 	 * @see StringUtils#hasLength
 	 */
 	public static void hasLength(String text, String message) {
-		if (!StringUtils.hasLength(text)) {
+		if (!StringUtils.isEmpty(text)) {
 			throw new IllegalArgumentException(message);
 		}
 	}
@@ -158,7 +158,7 @@ public abstract class Assert {
 	 * @see StringUtils#hasText
 	 */
 	public static void hasText(String text, String message) {
-		if (!StringUtils.hasText(text)) {
+		if (!StringUtils.isEmpty(text)) {
 			throw new IllegalArgumentException(message);
 		}
 	}
@@ -183,7 +183,7 @@ public abstract class Assert {
 	 * @param message the exception message to use if the assertion fails
 	 */
 	public static void doesNotContain(String textToSearch, String substring, String message) {
-		if (StringUtils.hasLength(textToSearch) && StringUtils.hasLength(substring) &&
+		if (StringUtils.isEmpty(textToSearch) && StringUtils.isEmpty(substring) &&
 				textToSearch.contains(substring)) {
 			throw new IllegalArgumentException(message);
 		}
@@ -339,7 +339,7 @@ public abstract class Assert {
 		notNull(type, "Type to check against must not be null");
 		if (!type.isInstance(obj)) {
 			throw new IllegalArgumentException(
-					(StringUtils.hasLength(message) ? message + " " : "") +
+					(StringUtils.isEmpty(message) ? message + " " : "") +
 					"Object of class [" + (obj != null ? obj.getClass().getName() : "null") +
 					"] must be an instance of " + type);
 		}

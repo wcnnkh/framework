@@ -3,9 +3,9 @@ package scw.core.utils;
 import java.util.LinkedList;
 
 public final class StringSplitUtils {
-	private StringSplitUtils(){
+	private StringSplitUtils() {
 	}
-	
+
 	public static String[] split(String str, char... filters) {
 		if (str == null || str.length() == 0) {
 			return null;
@@ -29,7 +29,8 @@ public final class StringSplitUtils {
 
 		LinkedList<String> list = new LinkedList<String>();
 		int begin = 0;
-		for (int i = 0, size = str.length(); i < size; i++) {
+		int size = str.length();
+		for (int i = 0; i < size; i++) {
 			char c = str.charAt(i);
 			boolean find = false;
 			for (char s : filters) {
@@ -51,6 +52,10 @@ public final class StringSplitUtils {
 
 		if (begin == 0) {
 			return new String[] { str };
+		} else {
+			if (begin != size - 1) {
+				list.add(str.substring(begin));
+			}
 		}
 		return list.toArray(new String[list.size()]);
 	}
@@ -88,12 +93,16 @@ public final class StringSplitUtils {
 				}
 			}
 		}
+
+		if (begin != str.length() - 1) {
+			list.add(str.substring(begin));
+		}
+
 		return list.toArray(new String[list.size()]);
 	}
-	
 
-	public static int[] splitIntArr(String str, String regex) {
-		String[] arr = split(str, regex);
+	public static int[] splitIntArray(String str, String... filter) {
+		String[] arr = split(str, filter);
 		if (arr == null) {
 			return null;
 		}
@@ -105,16 +114,12 @@ public final class StringSplitUtils {
 		return dataArr;
 	}
 
-	public static long[] splitLongArr(String str, String regex) {
-		String[] arr = split(str, regex);
+	public static long[] splitLongArray(String str, String... filter) {
+		String[] arr = split(str, filter);
 		if (arr == null) {
 			return null;
 		}
 
-		long[] dataArr = new long[arr.length];
-		for (int i = 0; i < arr.length; i++) {
-			dataArr[i] = Long.parseLong(arr[i]);
-		}
-		return dataArr;
+		return StringParseUtils.parseLongArray(arr);
 	}
 }

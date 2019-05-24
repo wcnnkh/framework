@@ -37,6 +37,7 @@ public abstract class NumberUtils {
 
 	/**
 	 * 把一个number转换成基本数据类型
+	 * 
 	 * @param number
 	 * @param targetClass
 	 * @return
@@ -59,16 +60,16 @@ public abstract class NumberUtils {
 			return number.doubleValue();
 		} else if (ClassUtils.isBooleanType(targetClass)) {
 			return number.intValue() == 1;
-		} else if(ClassUtils.isCharType(targetClass)){
-			return (char)number.intValue();
+		} else if (ClassUtils.isCharType(targetClass)) {
+			return (char) number.intValue();
 		} else {
 			throw new ParameterException(targetClass.getName() + "不是一个基本数据类型");
 		}
 	}
 
 	/**
-	 * 注意，boolean不是number类型
-	 * Convert the given number into an instance of the given target class.
+	 * 注意，boolean不是number类型 Convert the given number into an instance of the
+	 * given target class.
 	 * 
 	 * @param number
 	 *            the number to convert
@@ -182,7 +183,7 @@ public abstract class NumberUtils {
 	public static <T extends Number> T parseNumber(String text, Class<T> targetClass) {
 		Assert.notNull(text, "Text must not be null");
 		Assert.notNull(targetClass, "Target class must not be null");
-		String trimmed = StringUtils.trimAllWhitespace(text);
+		String trimmed = SpringStringUtils.trimAllWhitespace(text);
 
 		if (targetClass.equals(Byte.class)) {
 			return (T) (isHexNumber(trimmed) ? Byte.decode(trimmed) : Byte.valueOf(trimmed));
@@ -240,7 +241,7 @@ public abstract class NumberUtils {
 				}
 			}
 			try {
-				Number number = numberFormat.parse(StringUtils.trimAllWhitespace(text));
+				Number number = numberFormat.parse(SpringStringUtils.trimAllWhitespace(text));
 				return convertNumberToTargetClass(number, targetClass);
 			} catch (ParseException ex) {
 				throw new IllegalArgumentException("Could not parse number: " + ex.getMessage());
