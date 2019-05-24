@@ -1,9 +1,8 @@
-package scw.utils.excel;
+package scw.support.jxl;
 
+import java.io.File;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,29 +18,16 @@ import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
+import scw.core.utils.ConfigUtils;
+import scw.support.jxl.load.LoadRow;
 
-public class JxlUtils {
-	private static SimpleDateFormat dateFormate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+public final class JxlUtils {
+	private JxlUtils() {
+	};
 
-	/**
-	 * 格式化时间
-	 * 
-	 * @param date
-	 * @return 格式：yyyy-MM-dd HH:mm:ss
-	 */
-	public static String formate(Date date) {
-		return dateFormate.format(date);
-	}
-
-	/**
-	 * 格式化时间
-	 * 
-	 * @param dateMS
-	 * @return 格式：yyyy-MM-dd HH:mm:ss
-	 */
-	public static String formate(long dateMS) {
-		return formate(new Date(dateMS));
-	}
+	private static Logger logger = LoggerFactory.getLogger(JxlUtils.class);
 
 	/**
 	 * String "0" == null true<br>
@@ -390,5 +376,35 @@ public class JxlUtils {
 			buf.append(obj);
 		}
 		return buf.toString();
+	}
+
+	public static void load(String filePath, LoadRow loadRow) {
+		File excel = ConfigUtils.getFile(filePath);
+		logger.debug("开始读取:{}", excel.getPath());
+		long t = System.currentTimeMillis();
+		Workbook workbook = null;
+		try {
+			workbook = Workbook.getWorkbook(excel);
+			Sheet[] sheets = workbook.getSheets();
+			for (int sheetIndex = 0; sheetIndex < sheets.length; sheetIndex++) {
+				Sheet sheet = sheets[sheetIndex];
+				for (int rowIndex = 0; rowIndex < sheet.getRows(); rowIndex++) {
+					int columns = sheet.getColumns();
+					String[] contents = new String[columns];
+					for (int columnIndex = 0; columnIndex < columns; columnIndex++) {
+						Cell cell = sheet.getCell(columnIndex, rowIndex);
+						contents[columnIndex] = cell.getContents();
+					}
+					loadRow.load(sheetIndex, rowIndex, contents);
+				}
+			}
+			logger.debug("加载{}完成, 用时：{}ms", excel.getName(), (System.currentTimeMillis() - t));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (workbook != null) {
+				workbook.close();
+			}
+		}
 	}
 }

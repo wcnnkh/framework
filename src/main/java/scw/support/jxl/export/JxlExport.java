@@ -1,4 +1,4 @@
-package scw.utils.excel.export;
+package scw.support.jxl.export;
 
 import java.io.OutputStream;
 import java.util.Arrays;
