@@ -99,9 +99,20 @@ public final class XUtils {
 			return;
 		}
 
-		CountDownLatch countDownLatch = new CountDownLatch(runnables.size());
-		for (Runnable runnable : runnables) {
-			new Thread(new ConcurrentSimulation(runnable, countDownLatch)).start();
+		final CountDownLatch countDownLatch = new CountDownLatch(runnables.size());
+		for (final Runnable runnable : runnables) {
+			new Thread(new Runnable() {
+
+				public void run() {
+					countDownLatch.countDown();
+					try {
+						countDownLatch.await();
+						runnable.run();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
 		}
 	}
 
@@ -154,25 +165,5 @@ public final class XUtils {
 	public static void multitask(Collection<Runnable> runnables, TimeUnit unit, long timeout)
 			throws InterruptedException {
 		multitask(null, runnables, unit, timeout);
-	}
-}
-
-class ConcurrentSimulation implements Runnable {
-	private Runnable runnable;
-	private CountDownLatch countDownLatch;
-
-	public ConcurrentSimulation(Runnable runnable, CountDownLatch countDownLatch) {
-		this.countDownLatch = countDownLatch;
-		this.runnable = runnable;
-	}
-
-	public void run() {
-		countDownLatch.countDown();
-		try {
-			countDownLatch.await();
-			runnable.run();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 }
