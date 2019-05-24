@@ -3,7 +3,6 @@ package scw.sql.orm;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +18,7 @@ import scw.sql.orm.annotation.Table;
 import scw.sql.orm.annotation.Transient;
 
 public final class TableInfo {
-	private String name;
+	private final String name;
 	private final Class<?> source;
 	private final Map<String, ColumnInfo> columnMap;// 所有的
 	// 数据库字段名到字段的映射
@@ -31,7 +30,6 @@ public final class TableInfo {
 	private final ColumnInfo[] tableColumns;
 	private ColumnInfo autoIncrement;
 	private final ColumnInfo[] autoCreateColumns;
-	private final Map<String, Field> fieldSetterMethodMap;
 	private final Class<?>[] beanListenInterfaces;
 	private final boolean serializer;
 	private final boolean table;
@@ -39,16 +37,10 @@ public final class TableInfo {
 	TableInfo(Class<?> clz) {
 		this.source = clz;
 		this.serializer = Serializable.class.isAssignableFrom(source);
-		this.beanListenInterfaces = ORMUtils
-				.getTableFieldListenProxyInterfaces(source);
-		this.name = ORMUtils.getDefaultTableName(source);
+		this.beanListenInterfaces = ORMUtils.getTableFieldListenProxyInterfaces(source);
+		this.name = ORMUtils.getAnnotationTableName(source);
 		Table table = source.getAnnotation(Table.class);
 		this.table = table != null;
-		if (table != null) {
-			if (!"".equals(table.name())) {
-				this.name = table.name();
-			}
-		}
 
 		List<ColumnInfo> allColumnList = new ArrayList<ColumnInfo>();
 		List<ColumnInfo> idNameList = new ArrayList<ColumnInfo>();
@@ -59,7 +51,6 @@ public final class TableInfo {
 		Map<String, ColumnInfo> columnMap = new HashMap<String, ColumnInfo>();
 		Map<String, String> fieldToColumn = new HashMap<String, String>();
 
-		Map<String, Field> fieldSetterMethodMap = new HashMap<String, Field>();
 		Class<?> tempClassInfo = clz;
 		while (tempClassInfo != null && tempClassInfo != Object.class) {
 			for (Field field : tempClassInfo.getDeclaredFields()) {
@@ -77,24 +68,16 @@ public final class TableInfo {
 					continue;
 				}
 
-				if (Modifier.isStatic(field.getModifiers())
-						|| Modifier.isFinal(field.getModifiers())
+				if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())
 						|| Modifier.isTransient(field.getModifiers())) {
 					continue;
 				}
 
-				ColumnInfo columnInfo = new ColumnInfo(name, field);
-				if (columnMap.containsKey(columnInfo.getName())
-						|| fieldToColumn.containsKey(field.getName())) {
-					throw new AlreadyExistsException(source.getName() + "中["
-							+ columnInfo.getName() + "]字段已存在");
-				}
-
 				field.setAccessible(true);
-				Method method = ReflectUtils.getSetterMethod(tempClassInfo,
-						field, false);
-				if (method != null) {
-					fieldSetterMethodMap.put(method.getName(), field);
+
+				ColumnInfo columnInfo = new ColumnInfo(name, field);
+				if (columnMap.containsKey(columnInfo.getName()) || fieldToColumn.containsKey(field.getName())) {
+					throw new AlreadyExistsException(source.getName() + "中[" + columnInfo.getName() + "]字段已存在");
 				}
 
 				columnMap.put(columnInfo.getName(), columnInfo);
@@ -110,8 +93,7 @@ public final class TableInfo {
 
 					if (columnInfo.isAutoIncrement()) {
 						if (autoIncrement != null) {
-							throw new RuntimeException(source.getName()
-									+ "存在多个@AutoIncrement字段");
+							throw new RuntimeException(source.getName() + "存在多个@AutoIncrement字段");
 						}
 
 						autoIncrement = columnInfo;
@@ -121,8 +103,7 @@ public final class TableInfo {
 						autoCreateColumnList.add(columnInfo);
 					}
 				} else {
-					boolean javaType = field.getType().getName()
-							.startsWith("java.")
+					boolean javaType = field.getType().getName().startsWith("java.")
 							|| field.getType().getName().startsWith("javax.");
 					if (!javaType) {
 						tableColumnList.add(columnInfo);
@@ -132,22 +113,15 @@ public final class TableInfo {
 			tempClassInfo = tempClassInfo.getSuperclass();
 		}
 
-		this.columns = allColumnList.toArray(new ColumnInfo[allColumnList
-				.size()]);
+		this.columns = allColumnList.toArray(new ColumnInfo[allColumnList.size()]);
 		this.primaryKeyColumns = idNameList.toArray(new ColumnInfo[0]);
 		this.notPrimaryKeyColumns = notIdNameList.toArray(new ColumnInfo[0]);
-		this.tableColumns = tableColumnList
-				.toArray(new ColumnInfo[tableColumnList.size()]);
-		this.autoCreateColumns = autoCreateColumnList
-				.toArray(new ColumnInfo[autoCreateColumnList.size()]);
+		this.tableColumns = tableColumnList.toArray(new ColumnInfo[tableColumnList.size()]);
+		this.autoCreateColumns = autoCreateColumnList.toArray(new ColumnInfo[autoCreateColumnList.size()]);
 		this.columnMap = new HashMap<String, ColumnInfo>(columnMap.size(), 1);
 		this.columnMap.putAll(columnMap);
-		this.fieldToColumn = new HashMap<String, String>(fieldToColumn.size(),
-				1);
+		this.fieldToColumn = new HashMap<String, String>(fieldToColumn.size(), 1);
 		this.fieldToColumn.putAll(fieldToColumn);
-		this.fieldSetterMethodMap = new HashMap<String, Field>(
-				fieldSetterMethodMap.size(), 1);
-		this.fieldSetterMethodMap.putAll(fieldSetterMethodMap);
 
 		if (this.table) {
 			getProxyClass();
@@ -163,8 +137,7 @@ public final class TableInfo {
 		if (columnInfo == null) {
 			String v = fieldToColumn.get(fieldName);
 			if (v == null) {
-				throw new NullPointerException("not found table[" + this.name
-						+ "] fieldName[" + fieldName + "]");
+				throw new NullPointerException("not found table[" + this.name + "] fieldName[" + fieldName + "]");
 			}
 
 			columnInfo = columnMap.get(v);
@@ -205,8 +178,7 @@ public final class TableInfo {
 		return source;
 	}
 
-	public Object[] getPrimaryKeyParameter(Object data)
-			throws IllegalArgumentException, IllegalAccessException {
+	public Object[] getPrimaryKeyParameter(Object data) throws IllegalArgumentException, IllegalAccessException {
 		Object[] params = new Object[getPrimaryKeyColumns().length];
 		for (int i = 0; i < params.length; i++) {
 			params[i] = getPrimaryKeyColumns()[i].getField().get(data);
@@ -225,8 +197,7 @@ public final class TableInfo {
 				enhancer.setSerialVersionUID(1L);
 			}
 
-			TableFieldListen beanFieldListen = (TableFieldListen) enhancer
-					.create();
+			TableFieldListen beanFieldListen = (TableFieldListen) enhancer.create();
 			beanFieldListen.clear_field_listen();
 			return (T) beanFieldListen;
 		} else {
@@ -273,15 +244,5 @@ public final class TableInfo {
 		}
 
 		return name;
-	}
-
-	/**
-	 * 如果不存在参数类型一致的set方法则返回空
-	 * 
-	 * @param setterName
-	 * @return
-	 */
-	public Field getFieldInfoBySetterName(String setterName) {
-		return fieldSetterMethodMap.get(setterName);
 	}
 }

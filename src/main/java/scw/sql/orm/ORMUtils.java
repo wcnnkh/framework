@@ -154,6 +154,17 @@ public final class ORMUtils {
 		return sb.toString();
 	}
 
+	public static String getAnnotationTableName(Class<?> clazz) {
+		String name = getDefaultTableName(clazz);
+		Table table = clazz.getAnnotation(Table.class);
+		if (table != null) {
+			if (!"".equals(table.name())) {
+				name = table.name();
+			}
+		}
+		return name;
+	}
+
 	public static Class<?>[] getTableFieldListenProxyInterfaces(Class<?> clazz) {
 		Class<?>[] interfaces;
 		if (TableFieldListen.class.isAssignableFrom(clazz)) {

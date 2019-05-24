@@ -31,6 +31,8 @@ public final class ReflectUtils {
 	private ReflectUtils() {
 	};
 
+	private static volatile Map<Class<?>, Map<String, Field>> fieldCache = new HashMap<Class<?>, Map<String, Field>>();
+
 	public static <T, V> void setProperties(Class<T> type, T bean, Map<String, V> properties,
 			PropertyMapper<V> mapper) {
 		if (properties == null || properties.isEmpty()) {
@@ -884,5 +886,43 @@ public final class ReflectUtils {
 	 */
 	public static boolean isInstance(Class<?> clz) {
 		return !(Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers()));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Map<String, Field> getFieldMapUseCache(Class<?> clazz) {
+		Map<String, Field> map = fieldCache.get(clazz);
+		if (map == null) {
+			synchronized (fieldCache) {
+				map = fieldCache.get(clazz);
+				if (map == null) {
+					Field[] fields = clazz.getDeclaredFields();
+					if (fields.length == 0) {
+						map = Collections.EMPTY_MAP;
+					} else {
+						map = new HashMap<String, Field>(fields.length, 1);
+						for (Field field : fields) {
+							field.setAccessible(true);
+							if (ClassUtils.isBooleanType(field.getType())) {
+								if (field.getName().startsWith("is")) {
+									logger.warn("Boolean类型的字段不应该以is开头,class:{},field:{}", clazz.getName(),
+											field.getName());
+								}
+							}
+							map.put(field.getName(), field);
+						}
+					}
+					fieldCache.put(clazz, map);
+				}
+			}
+		}
+
+		if (map.isEmpty()) {
+			return map;
+		}
+		return Collections.unmodifiableMap(map);
+	}
+
+	public static Field getFieldUseCache(Class<?> clazz, String fieldName) {
+		return getFieldMapUseCache(clazz).get(fieldName);
 	}
 }
