@@ -1376,17 +1376,21 @@ public final class StringUtils {
 		}
 	}
 
+	public static <T> List<T> splitList(Class<T> type, String strs, String filter) {
+		return splitList(type, strs, filter, true);
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T> List<T> splitList(Class<T> type, String strs, String filter, boolean isTrim) {
 		Assert.notNull(type);
 		Assert.notNull(filter);
 
-		List<T> list = new ArrayList<T>();
 		if (strs == null) {
-			return list;
+			return Collections.EMPTY_LIST;
 		}
 
 		String[] arr = split(strs, isTrim, filter);
+		List<T> list = new ArrayList<T>(arr.length);
 		if (String.class.isAssignableFrom(type)) {
 			for (String str : arr) {
 				if (str.length() == 0) {
