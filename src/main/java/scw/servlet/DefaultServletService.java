@@ -23,7 +23,6 @@ import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.serializer.Serializer;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.StringParseUtils;
 import scw.core.utils.StringUtils;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
@@ -64,11 +63,11 @@ public class DefaultServletService implements ServletService {
 			jsonParseSupport = beanFactory.get(jsonParseSupportBeanName);
 		}
 
-		this.warnExecuteTime = StringParseUtils.parseInt(
+		this.warnExecuteTime = StringUtils.parseInt(
 				propertiesFactory.getValue("servlet.warn-execute-time"), 100);
 		// 将下面的字符串(如：servlet.debug)设置为常量可以提高代码可读性，但此字符串只使用一次，设置为常量会浪费一部分内存
 		// 默认开启日志
-		boolean debug = StringParseUtils.parseBoolean(
+		boolean debug = StringUtils.parseBoolean(
 				propertiesFactory.getValue("servlet.debug"), true);
 		String charsetName = propertiesFactory.getValue("servlet.charsetName");
 		this.charsetName = StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET
@@ -77,7 +76,7 @@ public class DefaultServletService implements ServletService {
 				.getValue("servlet.request-factory");
 		if (StringUtils.isEmpty(requestFactoryBeanName)) {
 			this.wrapperFactory = beanFactory.get(HttpWrapperFactory.class,
-					requestBeanFactory, debug, StringParseUtils.parseBoolean(
+					requestBeanFactory, debug, StringUtils.parseBoolean(
 							propertiesFactory
 									.getValue("servlet.parameter.cookie"),
 							false), jsonParseSupport);
@@ -91,7 +90,7 @@ public class DefaultServletService implements ServletService {
 		String rpcServerBeanName = propertiesFactory.getValue("servlet.rpc");
 		if (StringUtils.isEmpty(rpcServerBeanName)) {
 			String sign = propertiesFactory.getValue("servlet.rpc-sign");
-			boolean enable = StringParseUtils.parseBoolean(
+			boolean enable = StringUtils.parseBoolean(
 					propertiesFactory.getValue("servlet.rpc-enable"), false);
 			if (enable || !StringUtils.isEmpty(sign)) {// 开启
 				logger.info("rpc签名：{}", sign);

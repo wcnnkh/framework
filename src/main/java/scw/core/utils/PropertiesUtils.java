@@ -37,7 +37,7 @@ public final class PropertiesUtils {
 				String value = entry.getValue() == null ? null : entry.getValue().toString();
 				value = stringFormat.format(value);
 				ReflectUtils.setFieldValue(obj.getClass(), field, obj,
-						StringParseUtils.conversion(value, field.getType()));
+						StringUtils.conversion(value, field.getType()));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -165,7 +165,7 @@ public final class PropertiesUtils {
 			}
 
 			try {
-				method.invoke(instance, StringParseUtils.conversion(value, parameterType));
+				method.invoke(instance, StringUtils.conversion(value, parameterType));
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalArgumentException e) {

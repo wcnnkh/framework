@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import scw.core.utils.StringParseUtils;
+import scw.core.utils.StringUtils;
 
 public final class ReadOnlyCookie implements Cookie, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -35,7 +35,7 @@ public final class ReadOnlyCookie implements Cookie, Serializable {
 				if (PATH.equals(n)) {
 					this.path = v;
 				} else if (SECURE.equals(n)) {
-					this.secure = StringParseUtils.parseBoolean(v, false);
+					this.secure = StringUtils.parseBoolean(v, false);
 				} else if (DOMAIN.equals(n)) {
 					this.domain = v;
 				} else if (MAX_AGE.equals(n)) {

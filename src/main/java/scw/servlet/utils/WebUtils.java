@@ -36,7 +36,7 @@ import javax.servlet.http.HttpSession;
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
 import scw.core.utils.Assert;
-import scw.core.utils.SpringStringUtils;
+import scw.core.utils.StringUtils;
 
 /**
  * Miscellaneous utilities for web applications. Used by various framework
@@ -159,7 +159,7 @@ public final class WebUtils {
 		String param = servletContext.getInitParameter(WEB_APP_ROOT_KEY_PARAM);
 		String key = (param != null ? param : DEFAULT_WEB_APP_ROOT_KEY);
 		String oldValue = System.getProperty(key);
-		if (oldValue != null && !SpringStringUtils.pathEquals(oldValue, root)) {
+		if (oldValue != null && !StringUtils.pathEquals(oldValue, root)) {
 			throw new IllegalStateException("Web app root system property already set to different value: '" + key
 					+ "' = [" + oldValue + "] instead of [" + root + "] - "
 					+ "Choose unique values for the 'webAppRootKey' context-param in your web.xml files!");
@@ -221,7 +221,7 @@ public final class WebUtils {
 		}
 		Assert.notNull(servletContext, "ServletContext must not be null");
 		String param = servletContext.getInitParameter(HTML_ESCAPE_CONTEXT_PARAM);
-		return (SpringStringUtils.hasText(param) ? Boolean.valueOf(param) : null);
+		return (StringUtils.hasText(param) ? Boolean.valueOf(param) : null);
 	}
 
 	/**
@@ -840,7 +840,7 @@ public final class WebUtils {
 	 */
 	public static MultiValueMap<String, String> parseMatrixVariables(String matrixVariables) {
 		MultiValueMap<String, String> result = new LinkedMultiValueMap<String, String>();
-		if (!SpringStringUtils.hasText(matrixVariables)) {
+		if (!StringUtils.hasText(matrixVariables)) {
 			return result;
 		}
 		StringTokenizer pairs = new StringTokenizer(matrixVariables, ";");
@@ -850,7 +850,7 @@ public final class WebUtils {
 			if (index != -1) {
 				String name = pair.substring(0, index);
 				String rawValue = pair.substring(index + 1);
-				for (String value : SpringStringUtils.commaDelimitedListToStringArray(rawValue)) {
+				for (String value : StringUtils.commaDelimitedListToStringArray(rawValue)) {
 					result.add(name, value);
 				}
 			} else {

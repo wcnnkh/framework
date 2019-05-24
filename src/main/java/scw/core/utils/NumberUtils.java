@@ -183,7 +183,7 @@ public abstract class NumberUtils {
 	public static <T extends Number> T parseNumber(String text, Class<T> targetClass) {
 		Assert.notNull(text, "Text must not be null");
 		Assert.notNull(targetClass, "Target class must not be null");
-		String trimmed = SpringStringUtils.trimAllWhitespace(text);
+		String trimmed = StringUtils.trimAllWhitespace(text);
 
 		if (targetClass.equals(Byte.class)) {
 			return (T) (isHexNumber(trimmed) ? Byte.decode(trimmed) : Byte.valueOf(trimmed));
@@ -241,7 +241,7 @@ public abstract class NumberUtils {
 				}
 			}
 			try {
-				Number number = numberFormat.parse(SpringStringUtils.trimAllWhitespace(text));
+				Number number = numberFormat.parse(StringUtils.trimAllWhitespace(text));
 				return convertNumberToTargetClass(number, targetClass);
 			} catch (ParseException ex) {
 				throw new IllegalArgumentException("Could not parse number: " + ex.getMessage());

@@ -17,7 +17,7 @@ import java.util.Map;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.StringParseUtils;
+import scw.core.utils.StringUtils;
 import scw.sql.orm.annotation.Table;
 
 public final class ORMUtils {
@@ -60,7 +60,7 @@ public final class ORMUtils {
 				if (value instanceof Number) {
 					return ((Number) value).intValue() == 1;
 				} else if (value instanceof String) {
-					return StringParseUtils.parseBoolean((String) value);
+					return StringUtils.parseBoolean((String) value);
 				}
 			}
 		} else if (ClassUtils.isIntType(type)) {

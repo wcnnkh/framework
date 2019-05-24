@@ -12,7 +12,6 @@ import scw.beans.EParameterType;
 import scw.beans.property.PropertiesFactory;
 import scw.core.exception.NotFoundException;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.StringParseUtils;
 import scw.core.utils.StringUtils;
 
 public final class XmlBeanParameter implements Cloneable, Serializable {
@@ -106,6 +105,6 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 		} else if (parameterType.isEnum()) {
 			return Enum.valueOf((Class<? extends Enum>) parameterType, v);
 		}
-		return StringParseUtils.conversion(v, parameterType);
+		return StringUtils.conversion(v, parameterType);
 	}
 }

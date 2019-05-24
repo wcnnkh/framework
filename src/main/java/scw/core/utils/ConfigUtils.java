@@ -114,7 +114,7 @@ public final class ConfigUtils {
 				continue;
 			}
 
-			ReflectUtils.setFieldValue(clz, field, t, StringParseUtils.conversion(entry.getValue(), field.getType()));
+			ReflectUtils.setFieldValue(clz, field, t, StringUtils.conversion(entry.getValue(), field.getType()));
 		}
 		return t;
 	}

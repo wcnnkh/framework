@@ -10,7 +10,7 @@ import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ConfigUtils;
-import scw.core.utils.StringParseUtils;
+import scw.core.utils.StringUtils;
 
 public final class PropertiesParse implements ConfigParse {
 	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset)
@@ -20,7 +20,7 @@ public final class PropertiesParse implements ConfigParse {
 		if (ClassUtils.isPrimitiveOrWrapper(fieldDefinition.getField().getType())
 				|| ClassUtils.isStringType(fieldDefinition.getField().getType())) {
 			String v = ConfigUtils.format(properties.getProperty(fieldDefinition.getField().getName()));
-			return StringParseUtils.conversion(v, fieldDefinition.getField().getType());
+			return StringUtils.conversion(v, fieldDefinition.getField().getType());
 		} else if (Properties.class.isAssignableFrom(fieldDefinition.getField().getType())) {
 			return properties;
 		} else {
@@ -34,8 +34,7 @@ public final class PropertiesParse implements ConfigParse {
 					}
 
 					String value = ConfigUtils.format(properties.getProperty(key.toString()));
-					ReflectUtils.setFieldValue(fieldType, field, obj,
-							StringParseUtils.conversion(value, field.getType()));
+					ReflectUtils.setFieldValue(fieldType, field, obj, value);
 				}
 				return obj;
 			} catch (Exception e) {

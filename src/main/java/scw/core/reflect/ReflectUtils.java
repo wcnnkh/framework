@@ -873,6 +873,10 @@ public final class ReflectUtils {
 		}
 	}
 
+	public static Object setFieldValueAutoType(Class<?> clz, Field field, Object obj, String value) throws Exception {
+		return ReflectUtils.setFieldValue(clz, field, obj, StringUtils.conversion(value, field.getType()));
+	}
+
 	/**
 	 * 是否可以实例化
 	 * 

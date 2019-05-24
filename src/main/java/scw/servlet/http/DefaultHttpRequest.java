@@ -12,7 +12,6 @@ import scw.core.Destroy;
 import scw.core.logger.DebugLogger;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.utils.StringParseUtils;
 import scw.core.utils.StringUtils;
 import scw.servlet.ServletUtils;
 import scw.servlet.beans.RequestBeanFactory;
@@ -175,35 +174,35 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 			return null;
 		}
 
-		return Short.valueOf(StringParseUtils.formatNumberText(v));
+		return Short.valueOf(StringUtils.formatNumberText(v));
 	}
 
 	public short getShortValue(String key) {
 		String v = getRequireParameter(key);
 
-		return Short.parseShort(StringParseUtils.formatNumberText(v));
+		return Short.parseShort(StringUtils.formatNumberText(v));
 	}
 
 	public Integer getInteger(String key) {
 		String str = getParameter(key);
-		return isNull(str) ? null : Integer.parseInt(StringParseUtils.formatNumberText(str));
+		return isNull(str) ? null : Integer.parseInt(StringUtils.formatNumberText(str));
 	}
 
 	public int getIntValue(String key) {
 		String v = getRequireParameter(key);
 
-		return Integer.parseInt(StringParseUtils.formatNumberText(v));
+		return Integer.parseInt(StringUtils.formatNumberText(v));
 	}
 
 	public Long getLong(String key) {
 		String v = getParameter(key);
-		return isNull(v) ? null : Long.valueOf(StringParseUtils.formatNumberText(v));
+		return isNull(v) ? null : Long.valueOf(StringUtils.formatNumberText(v));
 	}
 
 	public long getLongValue(String key) {
 		String v = getRequireParameter(key);
 
-		return Long.parseLong(StringParseUtils.formatNumberText(v));
+		return Long.parseLong(StringUtils.formatNumberText(v));
 	}
 
 	public Boolean getBoolean(String key) {
@@ -212,32 +211,32 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 			return null;
 		}
 
-		return StringParseUtils.parseBoolean(v);
+		return StringUtils.parseBoolean(v);
 	}
 
 	public boolean getBooleanValue(String key) {
 		String v = getRequireParameter(key);
-		return StringParseUtils.parseBoolean(v);
+		return StringUtils.parseBoolean(v);
 	}
 
 	public Float getFloat(String key) {
 		String v = getParameter(key);
-		return isNull(v) ? null : Float.valueOf(StringParseUtils.formatNumberText(v));
+		return isNull(v) ? null : Float.valueOf(StringUtils.formatNumberText(v));
 	}
 
 	public float getFloatValue(String key) {
 		String v = getRequireParameter(key);
-		return Float.parseFloat(StringParseUtils.formatNumberText(v));
+		return Float.parseFloat(StringUtils.formatNumberText(v));
 	}
 
 	public Double getDouble(String key) {
 		String v = getParameter(key);
-		return isNull(v) ? null : Double.valueOf(StringParseUtils.formatNumberText(v));
+		return isNull(v) ? null : Double.valueOf(StringUtils.formatNumberText(v));
 	}
 
 	public double getDoubleValue(String key) {
 		String v = getRequireParameter(key);
-		return Double.parseDouble(StringParseUtils.formatNumberText(v));
+		return Double.parseDouble(StringUtils.formatNumberText(v));
 	}
 
 	public char getChar(String key) {

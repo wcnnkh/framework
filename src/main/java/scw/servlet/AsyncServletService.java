@@ -12,7 +12,7 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Destroy;
 import scw.beans.property.PropertiesFactory;
-import scw.core.utils.StringParseUtils;
+import scw.core.utils.StringUtils;
 
 @Bean(proxy = false)
 public class AsyncServletService extends DefaultServletService {
@@ -27,10 +27,10 @@ public class AsyncServletService extends DefaultServletService {
 	public AsyncServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configPath,
 			String[] rootBeanFilters) throws Throwable {
 		super(beanFactory, propertiesFactory, configPath, rootBeanFilters);
-		this.coreSize = StringParseUtils.parseInt(propertiesFactory.getValue("servlet.thread.core.size"), 16);
-		this.maxSize = StringParseUtils.parseInt(propertiesFactory.getValue("servlet.thread.max.size"), 256);
-		this.containerThreadManager = StringParseUtils
-				.parseBoolean(propertiesFactory.getValue("servlet.thread.container"), false);
+		this.coreSize = StringUtils.parseInt(propertiesFactory.getValue("servlet.thread.core.size"), 16);
+		this.maxSize = StringUtils.parseInt(propertiesFactory.getValue("servlet.thread.max.size"), 256);
+		this.containerThreadManager = StringUtils.parseBoolean(propertiesFactory.getValue("servlet.thread.container"),
+				false);
 	}
 
 	@Override

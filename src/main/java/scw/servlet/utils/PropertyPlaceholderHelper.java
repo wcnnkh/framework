@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import scw.core.utils.Assert;
-import scw.core.utils.SpringStringUtils;
+import scw.core.utils.StringUtils;
 
 /**
  * Utility class for working with Strings that have placeholder values in them.
@@ -203,14 +203,14 @@ public class PropertyPlaceholderHelper {
 		int index = startIndex + this.placeholderPrefix.length();
 		int withinNestedPlaceholder = 0;
 		while (index < buf.length()) {
-			if (SpringStringUtils.substringMatch(buf, index, this.placeholderSuffix)) {
+			if (StringUtils.substringMatch(buf, index, this.placeholderSuffix)) {
 				if (withinNestedPlaceholder > 0) {
 					withinNestedPlaceholder--;
 					index = index + this.placeholderSuffix.length();
 				} else {
 					return index;
 				}
-			} else if (SpringStringUtils.substringMatch(buf, index, this.simplePrefix)) {
+			} else if (StringUtils.substringMatch(buf, index, this.simplePrefix)) {
 				withinNestedPlaceholder++;
 				index = index + this.simplePrefix.length();
 			} else {

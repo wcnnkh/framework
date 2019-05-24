@@ -217,7 +217,7 @@ public final class XMLUtils {
 		if (value == null) {
 			return defaultValue;
 		} else {
-			return StringParseUtils.conversion(value, basicType);
+			return StringUtils.conversion(value, basicType);
 		}
 	}
 
@@ -290,7 +290,7 @@ public final class XMLUtils {
 				t = ReflectUtils.newInstance(type);
 			}
 
-			ReflectUtils.setFieldValue(type, field, t, StringParseUtils.conversion(value, field.getType()));
+			ReflectUtils.setFieldValue(type, field, t, StringUtils.conversion(value, field.getType()));
 		}
 		return t;
 	}

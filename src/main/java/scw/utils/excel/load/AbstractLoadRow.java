@@ -10,7 +10,6 @@ import com.alibaba.fastjson.JSONObject;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.StringParseUtils;
 import scw.core.utils.StringUtils;
 
 public abstract class AbstractLoadRow<T> implements LoadRow {
@@ -89,7 +88,7 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 		if (ClassUtils.isStringType(type)) {
 			return value;
 		} else if (ClassUtils.isPrimitiveOrWrapper(type)) {
-			return StringParseUtils.conversion(value, type);
+			return StringUtils.conversion(value, type);
 		} else if (JSONObject.class.isAssignableFrom(type)) {
 			return JSONObject.parse(value);
 		} else if (JSONArray.class.isAssignableFrom(type)) {
