@@ -69,8 +69,6 @@ public final class TableInfo {
 					continue;
 				}
 
-				field.setAccessible(true);
-
 				ColumnInfo columnInfo = new ColumnInfo(name, field);
 				if (columnMap.containsKey(columnInfo.getName())
 						|| fieldToColumn.containsKey(field.getName())) {
