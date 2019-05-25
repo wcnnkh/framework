@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -984,7 +985,7 @@ public final class ReflectUtils {
 					if (fields.length == 0) {
 						map = Collections.EMPTY_MAP;
 					} else {
-						map = new HashMap<String, Field>(fields.length, 1);
+						map = new LinkedHashMap<String, Field>(fields.length, 1);
 						for (Field field : fields) {
 							field.setAccessible(true);
 							if (ClassUtils.isBooleanType(field.getType())) {

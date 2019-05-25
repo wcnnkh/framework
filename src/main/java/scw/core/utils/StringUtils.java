@@ -931,32 +931,6 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Split a String at the first occurrence of the delimiter. Does not include
-	 * the delimiter in the result.
-	 * 
-	 * @param toSplit
-	 *            the string to split
-	 * @param delimiter
-	 *            to split the string up with
-	 * @return a two element array with index 0 being before the delimiter, and
-	 *         index 1 being after the delimiter (neither element includes the
-	 *         delimiter); or {@code null} if the delimiter wasn't found in the
-	 *         given input String
-	 */
-	public static String[] split(String toSplit, String delimiter) {
-		if (!hasLength(toSplit) || !hasLength(delimiter)) {
-			return null;
-		}
-		int offset = toSplit.indexOf(delimiter);
-		if (offset < 0) {
-			return null;
-		}
-		String beforeDelimiter = toSplit.substring(0, offset);
-		String afterDelimiter = toSplit.substring(offset + delimiter.length());
-		return new String[] { beforeDelimiter, afterDelimiter };
-	}
-
-	/**
 	 * Take an array Strings and split each element based on the given
 	 * delimiter. A {@code Properties} instance is then generated, with the left
 	 * of the delimiter providing the key, and the right of the delimiter
@@ -1857,7 +1831,7 @@ public final class StringUtils {
 	}
 
 	/**
-	 * 判断字符串是否与通配符匹配 只能存在通配符\\*和? ?代表1个 *代表多个
+	 * 判断字符串是否与通配符匹配 只能存在通配符\\*和? ?代表1个 *代表0个或多个
 	 * 
 	 * @param text
 	 * @param match
@@ -1880,7 +1854,19 @@ public final class StringUtils {
 			}
 		}
 
-		String[] arr = split(match, true, '*');
+		String[] arr = split(match, false, '*');
+		if(!match.startsWith("*")){
+			if(!text.startsWith(arr[0])){
+				return false;
+			}
+		}
+		
+		if(!match.endsWith("*")){
+			if(!text.endsWith(arr[arr.length - 1])){
+				return false;
+			}
+		}
+		
 		int begin = 0;
 		int len = text.length();
 		for (String v : arr) {
@@ -1910,6 +1896,7 @@ public final class StringUtils {
 
 			begin = a + vLen;
 		}
+		
 		return true;
 	}
 
@@ -1997,19 +1984,18 @@ public final class StringUtils {
 
 			if (find) {
 				if (ignoreNull && i == begin) {
+					begin ++;
 					continue;
 				}
 
 				list.add(str.substring(begin, i));
 				begin = i + 1;
-			}
-		}
-
-		if (begin == 0) {
-			return new String[] { str };
-		} else {
-			if (begin != size - 1) {
-				list.add(str.substring(begin));
+			}else if(i == size - 1){
+				if(begin == 0){
+					list.add(str);
+				}else{
+					list.add(str.substring(begin));
+				}
 			}
 		}
 		return list.toArray(new String[list.size()]);
@@ -2037,6 +2023,18 @@ public final class StringUtils {
 
 		LinkedList<String> list = new LinkedList<String>();
 		while (index != -1 && v != null) {
+			if(ignoreNull && begin == index){
+				begin ++;
+				for (String f : filters) {
+					index = str.indexOf(f, begin);
+					if (index != -1) {
+						v = f;
+						break;
+					}
+				}
+				continue;
+			}
+			
 			list.add(str.substring(begin, index));
 			begin = index + v.length();
 
@@ -2048,8 +2046,8 @@ public final class StringUtils {
 				}
 			}
 		}
-
-		if (begin != str.length() - 1) {
+		
+		if(begin < str.length()){
 			list.add(str.substring(begin));
 		}
 
