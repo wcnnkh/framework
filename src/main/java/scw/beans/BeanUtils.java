@@ -25,7 +25,7 @@ import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanParameter;
 import scw.core.aop.Filter;
 import scw.core.aop.Invoker;
-import scw.core.aop.JDKProxyUtils;
+import scw.core.aop.ProxyUtils;
 import scw.core.aop.ReflectInvoker;
 import scw.core.exception.BeansException;
 import scw.core.logger.Logger;
@@ -352,7 +352,7 @@ public final class BeanUtils {
 	public static <T> T proxyInterface(BeanFactory beanFactory,
 			Class<T> interfaceClass, Object obj) {
 		Filter filter = beanFactory.get(CommonFilter.class);
-		return (T) JDKProxyUtils.newProxyInstance(obj, interfaceClass,
+		return (T) ProxyUtils.newProxyInstance(obj, interfaceClass,
 				Arrays.asList(filter));
 	}
 

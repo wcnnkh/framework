@@ -117,8 +117,9 @@ public final class ORMUtils {
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-	public static Object[] getPrimaryKeys(Object bean, TableInfo tableInfo, boolean parse)
-			throws IllegalArgumentException, IllegalAccessException {
+	public static Object[] getPrimaryKeys(Object bean, TableInfo tableInfo,
+			boolean parse) throws IllegalArgumentException,
+			IllegalAccessException {
 		ColumnInfo[] cs = tableInfo.getPrimaryKeyColumns();
 		Object[] objs = new Object[cs.length];
 		for (int i = 0; i < objs.length; i++) {
@@ -132,13 +133,20 @@ public final class ORMUtils {
 	}
 
 	public static boolean isDataBaseType(Class<?> type) {
-		return ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
-				|| Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
-				|| Timestamp.class.isAssignableFrom(type) || InputStream.class.isAssignableFrom(type)
-				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
-				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
-				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type)
-				|| URL.class.isAssignableFrom(type) || byte[].class.isAssignableFrom(type);
+		return ClassUtils.isPrimitiveOrWrapper(type)
+				|| String.class.isAssignableFrom(type)
+				|| Date.class.isAssignableFrom(type)
+				|| Time.class.isAssignableFrom(type)
+				|| Timestamp.class.isAssignableFrom(type)
+				|| InputStream.class.isAssignableFrom(type)
+				|| Array.class.isAssignableFrom(type)
+				|| Blob.class.isAssignableFrom(type)
+				|| Clob.class.isAssignableFrom(type)
+				|| BigDecimal.class.isAssignableFrom(type)
+				|| Reader.class.isAssignableFrom(type)
+				|| NClob.class.isAssignableFrom(type)
+				|| URL.class.isAssignableFrom(type)
+				|| byte[].class.isAssignableFrom(type);
 	}
 
 	public static String getDefaultTableName(Class<?> clazz) {
@@ -200,16 +208,19 @@ public final class ORMUtils {
 		boolean nullAble;
 		Column column = field.getAnnotation(Column.class);
 		if (column != null) {
-			if (column.unique() || isAnnoataionPrimaryKey(field) || field.getAnnotation(Index.class) != null) {
+			if (column.unique() || isAnnoataionPrimaryKey(field)
+					|| field.getAnnotation(Index.class) != null) {
 				nullAble = false;
 				if (column.nullAble()) {
-					logger.warn("字段{}不能或不推荐设置为允许为空，因为他可能是主键或索引", field.getName());
+					logger.warn("字段{}不能或不推荐设置为允许为空，因为他可能是主键或索引",
+							field.getName());
 				}
 			} else {
 				nullAble = column.nullAble();
 			}
 		} else {
-			if (isAnnoataionPrimaryKey(field) || field.getAnnotation(Index.class) != null) {
+			if (isAnnoataionPrimaryKey(field)
+					|| field.getAnnotation(Index.class) != null) {
 				nullAble = false;
 			} else {
 				nullAble = !field.getType().isPrimitive();
@@ -221,22 +232,5 @@ public final class ORMUtils {
 	public static boolean isAnnoataionColumnUnique(Field field) {
 		Column column = field.getAnnotation(Column.class);
 		return column == null ? false : column.unique();
-	}
-
-	public static Class<?>[] getTableFieldListenProxyInterfaces(Class<?> clazz) {
-		Class<?>[] interfaces;
-		if (TableFieldListen.class.isAssignableFrom(clazz)) {
-			interfaces = clazz.getInterfaces();
-		} else {// 没有自己实现此接口，增加此接口
-			Class<?>[] arr = clazz.getInterfaces();
-			if (arr.length == 0) {
-				interfaces = new Class[] { TableFieldListen.class };
-			} else {
-				interfaces = new Class[arr.length + 1];
-				System.arraycopy(arr, 0, interfaces, 0, arr.length);
-				interfaces[arr.length] = TableFieldListen.class;
-			}
-		}
-		return interfaces;
 	}
 }

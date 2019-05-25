@@ -10,6 +10,7 @@ import java.util.Map;
 
 import scw.core.Iterator;
 import scw.core.Pagination;
+import scw.core.aop.FieldSetterListen;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.ParameterException;
 import scw.core.utils.ClassUtils;
@@ -122,8 +123,8 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 	}
 
 	public boolean update(Object bean, String tableName) {
-		if (bean instanceof TableFieldListen) {
-			if (((TableFieldListen) bean).get_field_change_map() == null) {
+		if (bean instanceof FieldSetterListen) {
+			if (((FieldSetterListen) bean).get_field_setter_map() == null) {
 				warn("更新对象[{}]不存在数据变更", bean.getClass().getName());
 				return false;
 			}

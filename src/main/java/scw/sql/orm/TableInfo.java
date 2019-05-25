@@ -1,6 +1,5 @@
 package scw.sql.orm;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -9,7 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.cglib.proxy.Enhancer;
+import scw.core.aop.FieldSetterListen;
+import scw.core.aop.FieldSetterListenUtils;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
@@ -29,14 +29,10 @@ public final class TableInfo {
 	private final ColumnInfo[] notPrimaryKeyColumns;
 	private final ColumnInfo[] tableColumns;
 	private ColumnInfo autoIncrement;
-	private final Class<?>[] beanListenInterfaces;
-	private final boolean serializer;
 	private final boolean table;
 
 	TableInfo(Class<?> clz) {
 		this.source = clz;
-		this.serializer = Serializable.class.isAssignableFrom(source);
-		this.beanListenInterfaces = ORMUtils.getTableFieldListenProxyInterfaces(source);
 		this.name = ORMUtils.getAnnotationTableName(source);
 		Table table = source.getAnnotation(Table.class);
 		this.table = table != null;
@@ -51,7 +47,8 @@ public final class TableInfo {
 
 		Class<?> tempClassInfo = clz;
 		while (tempClassInfo != null && tempClassInfo != Object.class) {
-			for (Field field : tempClassInfo.getDeclaredFields()) {
+			for (Field field : ReflectUtils.getFieldMapUseCache(tempClassInfo)
+					.values()) {
 				if (AnnotationUtils.isDeprecated(field)) {
 					continue;
 				}
@@ -66,7 +63,8 @@ public final class TableInfo {
 					continue;
 				}
 
-				if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())
+				if (Modifier.isStatic(field.getModifiers())
+						|| Modifier.isFinal(field.getModifiers())
 						|| Modifier.isTransient(field.getModifiers())) {
 					continue;
 				}
@@ -74,8 +72,10 @@ public final class TableInfo {
 				field.setAccessible(true);
 
 				ColumnInfo columnInfo = new ColumnInfo(name, field);
-				if (columnMap.containsKey(columnInfo.getName()) || fieldToColumn.containsKey(field.getName())) {
-					throw new AlreadyExistsException(source.getName() + "中[" + columnInfo.getName() + "]字段已存在");
+				if (columnMap.containsKey(columnInfo.getName())
+						|| fieldToColumn.containsKey(field.getName())) {
+					throw new AlreadyExistsException(source.getName() + "中["
+							+ columnInfo.getName() + "]字段已存在");
 				}
 
 				columnMap.put(columnInfo.getName(), columnInfo);
@@ -91,13 +91,15 @@ public final class TableInfo {
 
 					if (columnInfo.isAutoIncrement()) {
 						if (autoIncrement != null) {
-							throw new RuntimeException(source.getName() + "存在多个@AutoIncrement字段");
+							throw new RuntimeException(source.getName()
+									+ "存在多个@AutoIncrement字段");
 						}
 
 						autoIncrement = columnInfo;
 					}
 				} else {
-					boolean javaType = field.getType().getName().startsWith("java.")
+					boolean javaType = field.getType().getName()
+							.startsWith("java.")
 							|| field.getType().getName().startsWith("javax.");
 					if (!javaType) {
 						tableColumnList.add(columnInfo);
@@ -107,13 +109,16 @@ public final class TableInfo {
 			tempClassInfo = tempClassInfo.getSuperclass();
 		}
 
-		this.columns = allColumnList.toArray(new ColumnInfo[allColumnList.size()]);
+		this.columns = allColumnList.toArray(new ColumnInfo[allColumnList
+				.size()]);
 		this.primaryKeyColumns = idNameList.toArray(new ColumnInfo[0]);
 		this.notPrimaryKeyColumns = notIdNameList.toArray(new ColumnInfo[0]);
-		this.tableColumns = tableColumnList.toArray(new ColumnInfo[tableColumnList.size()]);
+		this.tableColumns = tableColumnList
+				.toArray(new ColumnInfo[tableColumnList.size()]);
 		this.columnMap = new HashMap<String, ColumnInfo>(columnMap.size(), 1);
 		this.columnMap.putAll(columnMap);
-		this.fieldToColumn = new HashMap<String, String>(fieldToColumn.size(), 1);
+		this.fieldToColumn = new HashMap<String, String>(fieldToColumn.size(),
+				1);
 		this.fieldToColumn.putAll(fieldToColumn);
 
 		if (this.table) {
@@ -130,7 +135,8 @@ public final class TableInfo {
 		if (columnInfo == null) {
 			String v = fieldToColumn.get(fieldName);
 			if (v == null) {
-				throw new NullPointerException("not found table[" + this.name + "] fieldName[" + fieldName + "]");
+				throw new NullPointerException("not found table[" + this.name
+						+ "] fieldName[" + fieldName + "]");
 			}
 
 			columnInfo = columnMap.get(v);
@@ -171,7 +177,8 @@ public final class TableInfo {
 		return source;
 	}
 
-	public Object[] getPrimaryKeyParameter(Object data) throws IllegalArgumentException, IllegalAccessException {
+	public Object[] getPrimaryKeyParameter(Object data)
+			throws IllegalArgumentException, IllegalAccessException {
 		Object[] params = new Object[getPrimaryKeyColumns().length];
 		for (int i = 0; i < params.length; i++) {
 			params[i] = getPrimaryKeyColumns()[i].getField().get(data);
@@ -182,41 +189,15 @@ public final class TableInfo {
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance() {
 		if (table) {
-			Enhancer enhancer = new Enhancer();
-			enhancer.setInterfaces(beanListenInterfaces);
-			enhancer.setCallback(new TableFieldListenInterceptor());
-			enhancer.setSuperclass(source);
-			if (serializer) {
-				enhancer.setSerialVersionUID(1L);
-			}
-
-			TableFieldListen beanFieldListen = (TableFieldListen) enhancer.create();
-			beanFieldListen.clear_field_listen();
-			return (T) beanFieldListen;
+			return (T) FieldSetterListenUtils
+					.newFieldSetterListenInstance(source);
 		} else {
 			return ReflectUtils.newInstance(source);
 		}
 	}
 
-	private volatile Class<? extends TableFieldListen> proxyClass;
-
-	@SuppressWarnings("unchecked")
-	public Class<? extends TableFieldListen> getProxyClass() {
-		if (proxyClass == null) {
-			synchronized (this) {
-				if (proxyClass == null) {
-					Enhancer enhancer = new Enhancer();
-					enhancer.setInterfaces(beanListenInterfaces);
-					enhancer.setCallbackType(TableFieldListenInterceptor.class);
-					enhancer.setSuperclass(source);
-					if (serializer) {
-						enhancer.setSerialVersionUID(1L);
-					}
-					this.proxyClass = enhancer.createClass();
-				}
-			}
-		}
-		return proxyClass;
+	public Class<? extends FieldSetterListen> getProxyClass() {
+		return FieldSetterListenUtils.createFieldSetterListenProxyClass(source);
 	}
 
 	public ColumnInfo getAutoIncrement() {

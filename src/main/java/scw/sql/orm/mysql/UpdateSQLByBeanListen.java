@@ -5,29 +5,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.core.aop.FieldSetterListen;
 import scw.core.exception.ParameterException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
-import scw.sql.orm.TableFieldListen;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Counter;
 
 public final class UpdateSQLByBeanListen implements Sql {
-	private static Logger logger = LoggerFactory.getLogger(UpdateSQLByBeanListen.class);
+	private static Logger logger = LoggerFactory
+			.getLogger(UpdateSQLByBeanListen.class);
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanListen(TableFieldListen beanFieldListen, TableInfo tableInfo, String tableName)
+	public UpdateSQLByBeanListen(FieldSetterListen beanFieldListen,
+			TableInfo tableInfo, String tableName)
 			throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
-		Map<String, Object> changeMap = beanFieldListen.get_field_change_map();
+		Map<String, Object> changeMap = beanFieldListen.get_field_setter_map();
 		if (changeMap == null || changeMap.isEmpty()) {
 			throw new ParameterException("not change properties");
 		}
@@ -49,7 +51,8 @@ public final class UpdateSQLByBeanListen implements Sql {
 
 			Object value = columnInfo.getValueToDB(beanFieldListen);
 			Counter counter = columnInfo.getCounter();
-			if (counter != null && ClassUtils.isNumberType(columnInfo.getType())) {
+			if (counter != null
+					&& ClassUtils.isNumberType(columnInfo.getType())) {
 				Object oldValue = entry.getValue();
 				if (oldValue != null && value != null) {
 					// incr or decr
@@ -94,8 +97,10 @@ public final class UpdateSQLByBeanListen implements Sql {
 					}
 					continue;
 				} else {
-					logger.warn("{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}", tableInfo.getSource().getName(),
-							columnInfo.getField().getName(), oldValue, value);
+					logger.warn(
+							"{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}",
+							tableInfo.getSource().getName(), columnInfo
+									.getField().getName(), oldValue, value);
 				}
 			}
 
@@ -109,7 +114,7 @@ public final class UpdateSQLByBeanListen implements Sql {
 			paramList.add(value);
 		}
 
-		beanFieldListen.clear_field_listen();// 重新开始监听
+		beanFieldListen.clear_field_setter_listen();// 重新开始监听
 
 		sb.append(UpdateSQL.WHERE);
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
