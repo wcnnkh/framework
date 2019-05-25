@@ -11,34 +11,27 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
-import scw.sql.orm.ORMUtils;
-import scw.sql.orm.TableInfo;
 
-public class FieldSetterListenInterceptor implements MethodInterceptor,
-		FieldSetterListen, Serializable {
+public class FieldSetterListenInterceptor implements MethodInterceptor, FieldSetterListen, Serializable {
 	private static final long serialVersionUID = 1L;
 	private transient Map<String, Object> field_change_map;
-	private transient TableInfo tableInfo;
+	private transient Class<?> source;
 
-	public final Object intercept(Object obj, Method method, Object[] args,
-			MethodProxy proxy) throws Throwable {
-		if (tableInfo == null) {
-			tableInfo = ORMUtils.getTableInfo(obj.getClass());
+	public final Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+		if (source == null) {
+			source = ClassUtils.getUserClass(obj);
 		}
 
 		if (args.length == 0) {
 			if (FieldSetterListen.CLEAR_FIELD_LISTEN.equals(method.getName())) {
-				if (FieldSetterListen.class.isAssignableFrom(tableInfo
-						.getSource())) {
+				if (FieldSetterListen.class.isAssignableFrom(source)) {
 					return proxy.invokeSuper(obj, args);
 				} else {
 					clear_field_setter_listen();
 					return null;
 				}
-			} else if (FieldSetterListen.GET_CHANGE_MAP
-					.equals(method.getName())) {
-				if (FieldSetterListen.class.isAssignableFrom(tableInfo
-						.getSource())) {
+			} else if (FieldSetterListen.GET_CHANGE_MAP.equals(method.getName())) {
+				if (FieldSetterListen.class.isAssignableFrom(source)) {
 					return proxy.invokeSuper(obj, args);
 				} else {
 					return get_field_setter_map();
@@ -48,8 +41,7 @@ public class FieldSetterListenInterceptor implements MethodInterceptor,
 
 		FieldSetter fieldSetter = method.getAnnotation(FieldSetter.class);
 		if (fieldSetter != null) {
-			Field field = ReflectUtils.getFieldUseCache(obj.getClass(),
-					fieldSetter.value(), true);
+			Field field = ReflectUtils.getFieldUseCache(source, fieldSetter.value(), true);
 			if (field != null && checkField(field)) {
 				return change(obj, method, args, proxy, field);
 			}
@@ -57,15 +49,11 @@ public class FieldSetterListenInterceptor implements MethodInterceptor,
 			char[] chars = new char[method.getName().length() - 3];
 			chars[0] = Character.toLowerCase(method.getName().charAt(3));
 			method.getName().getChars(4, method.getName().length(), chars, 1);
-			String fieldName = new String(chars);
-			Field field = ReflectUtils.getFieldUseCache(obj.getClass(),
-					fieldName, true);
+			Field field = ReflectUtils.getFieldUseCache(source, new String(chars), true);
 			if (field == null) {
 				chars[0] = Character.toUpperCase(chars[0]);
-				field = ReflectUtils.getFieldUseCache(obj.getClass(), "is"
-						+ new String(chars), true);
-				if (field != null && ClassUtils.isBooleanType(field.getType())
-						&& checkField(field)) {
+				field = ReflectUtils.getFieldUseCache(source, "is" + new String(chars), true);
+				if (field != null && ClassUtils.isBooleanType(field.getType()) && checkField(field)) {
 					return change(obj, method, args, proxy, field);
 				}
 			} else if (checkField(field)) {
@@ -77,21 +65,20 @@ public class FieldSetterListenInterceptor implements MethodInterceptor,
 	}
 
 	protected boolean checkField(Field field) {
-		if (Modifier.isStatic(field.getModifiers())
-				|| Modifier.isTransient(field.getModifiers())
+		if (Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers())
 				|| Modifier.isFinal(field.getModifiers())) {
 			return false;
 		}
 		return true;
 	}
 
-	private final Object change(Object obj, Method method, Object[] args,
-			MethodProxy proxy, Field field) throws Throwable {
+	private final Object change(Object obj, Method method, Object[] args, MethodProxy proxy, Field field)
+			throws Throwable {
 		Object rtn;
 		Object oldValue = null;
 		oldValue = field.get(obj);
 		rtn = proxy.invokeSuper(obj, args);
-		if (FieldSetterListen.class.isAssignableFrom(tableInfo.getSource())) {
+		if (FieldSetterListen.class.isAssignableFrom(source)) {
 			((FieldSetterListen) obj).field_setter(obj, field, oldValue);
 		} else {
 			field_setter(obj, field, oldValue);
@@ -105,8 +92,7 @@ public class FieldSetterListenInterceptor implements MethodInterceptor,
 
 	public void field_setter(Object bean, Field field, Object oldValue) {
 		if (field_change_map == null) {
-			field_change_map = new HashMap<String, Object>(
-					tableInfo.getNotPrimaryKeyColumns().length, 1);
+			field_change_map = new HashMap<String, Object>(8);
 		}
 
 		if (field_change_map.containsKey(field.getName())) {
