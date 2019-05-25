@@ -1,5 +1,6 @@
 package scw.core.aop;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -14,7 +15,8 @@ import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
 public class FieldSetterListenInterceptor implements MethodInterceptor,
-		FieldSetterListen {
+		FieldSetterListen, Serializable {
+	private static final long serialVersionUID = 1L;
 	private transient Map<String, Object> field_change_map;
 	private transient TableInfo tableInfo;
 
