@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.aop.FieldSetterListen;
+import scw.core.FieldSetterListen;
 import scw.core.exception.ParameterException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;

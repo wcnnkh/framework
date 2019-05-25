@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import scw.core.FieldSetterListen;
 import scw.core.Iterator;
 import scw.core.Pagination;
-import scw.core.aop.FieldSetterListen;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.ParameterException;
 import scw.core.utils.ClassUtils;

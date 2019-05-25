@@ -1,10 +1,14 @@
-package scw.core.aop;
+package scw.core.utils;
 
 import java.io.Serializable;
 
+import scw.core.FieldSetterListen;
+import scw.core.FieldSetterListenInterceptor;
 import net.sf.cglib.proxy.Enhancer;
 
 public final class FieldSetterListenUtils {
+	private FieldSetterListenUtils(){};
+	
 	private static final Class<?>[] FIELD_SETTER_LISTEN_INTERFACES = new Class<?>[] { FieldSetterListen.class };
 
 	@SuppressWarnings("unchecked")

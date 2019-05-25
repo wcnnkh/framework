@@ -1,4 +1,4 @@
-package scw.core.aop;
+package scw.core;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;

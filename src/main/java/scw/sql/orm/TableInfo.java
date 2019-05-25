@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import scw.core.aop.FieldSetterListen;
-import scw.core.aop.FieldSetterListenUtils;
+import scw.core.FieldSetterListen;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
+import scw.core.utils.FieldSetterListenUtils;
 import scw.sql.orm.annotation.NotColumn;
 import scw.sql.orm.annotation.Table;
 import scw.sql.orm.annotation.Transient;
