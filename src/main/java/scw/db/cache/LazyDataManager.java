@@ -2,7 +2,6 @@ package scw.db.cache;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -174,10 +173,6 @@ public abstract class LazyDataManager implements CacheManager {
 		}
 
 		return getAndTouch(type, getObjectKeyById(type, params), config.getExp());
-	}
-
-	public <T> List<T> getByIdList(Class<T> type, Object... params) {
-		return null;
 	}
 
 	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {

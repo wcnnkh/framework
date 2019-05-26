@@ -118,8 +118,7 @@ public final class ORMUtils {
 	 * @throws IllegalAccessException
 	 */
 	public static Object[] getPrimaryKeys(Object bean, TableInfo tableInfo,
-			boolean parse) throws IllegalArgumentException,
-			IllegalAccessException {
+			boolean parse) throws Exception{
 		ColumnInfo[] cs = tableInfo.getPrimaryKeyColumns();
 		Object[] objs = new Object[cs.length];
 		for (int i = 0; i < objs.length; i++) {

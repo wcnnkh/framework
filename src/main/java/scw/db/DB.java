@@ -22,7 +22,7 @@ import scw.data.utils.RedisQueue;
 import scw.db.async.AsyncInfo;
 import scw.db.async.MultipleOperation;
 import scw.db.async.OperationBean;
-import scw.db.cache.CacheManager;
+import scw.db.cache.LazyDataManager;
 import scw.db.cache.MemcachedLazyCacheManager;
 import scw.db.cache.RedisLazyCacheManager;
 import scw.db.database.DataBase;
@@ -37,9 +37,10 @@ import scw.transaction.TransactionManager;
 import scw.transaction.sql.ConnectionFactory;
 import scw.transaction.sql.SqlTransactionUtils;
 
-public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.core.Destroy {
+public abstract class DB extends ORMTemplate implements ConnectionFactory,
+		scw.core.Destroy {
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	private final CacheManager cacheManager;
+	private final LazyDataManager cacheManager;
 	private final MQ<AsyncInfo> asyncService;
 	private boolean debug;
 
@@ -74,10 +75,12 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	public DB(Memcached memcached, String queueKey) {
 		this.cacheManager = new MemcachedLazyCacheManager(memcached);
 		if (StringUtils.isEmpty(queueKey)) {
-			this.asyncService = new QueueMQ<AsyncInfo>(new MemoryQueue<AsyncInfo>());
+			this.asyncService = new QueueMQ<AsyncInfo>(
+					new MemoryQueue<AsyncInfo>());
 		} else {
 			getLogger().trace("memcached中异步处理队列名：{}", queueKey);
-			MemcachedQueue<AsyncInfo> queue = new MemcachedQueue<AsyncInfo>(memcached, queueKey);
+			MemcachedQueue<AsyncInfo> queue = new MemcachedQueue<AsyncInfo>(
+					memcached, queueKey);
 			QueueMQ<AsyncInfo> mq = new QueueMQ<AsyncInfo>(queue);
 			mq.start();
 			this.asyncService = mq;
@@ -88,7 +91,8 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	public DB(Redis redis, String queueKey) {
 		this.cacheManager = new RedisLazyCacheManager(redis);
 		if (StringUtils.isEmpty(queueKey)) {
-			this.asyncService = new QueueMQ<AsyncInfo>(new MemoryQueue<AsyncInfo>());
+			this.asyncService = new QueueMQ<AsyncInfo>(
+					new MemoryQueue<AsyncInfo>());
 		} else {
 			getLogger().trace("redis中异步处理队列名：{}", queueKey);
 			Queue<AsyncInfo> queue = new RedisQueue<AsyncInfo>(redis, queueKey);
@@ -99,7 +103,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 		initAsyncService();
 	}
 
-	public DB(CacheManager cacheManager, MQ<AsyncInfo> asyncService) {
+	public DB(LazyDataManager cacheManager, MQ<AsyncInfo> asyncService) {
 		this.cacheManager = cacheManager;
 		this.asyncService = asyncService;
 		initAsyncService();
@@ -207,20 +211,8 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	}
 
 	@Override
-	public <T> List<T> getByIdList(String tableName, Class<T> type, Object... params) {
-		if (cacheManager == null) {
-			return super.getByIdList(tableName, type, params);
-		}
-
-		List<T> list = cacheManager.getByIdList(type, params);
-		if (list == null) {
-			return super.getByIdList(tableName, type, params);
-		}
-		return list;
-	}
-
-	@Override
-	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName,
+			Collection<K> inIds, Object... params) {
 		if (cacheManager == null) {
 			return super.getInIdList(type, tableName, inIds, params);
 		}
@@ -251,7 +243,8 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 			notFoundList.add(k);
 		}
 
-		Map<K, V> dbMap = super.getInIdList(type, tableName, notFoundList, params);
+		Map<K, V> dbMap = super.getInIdList(type, tableName, notFoundList,
+				params);
 		if (dbMap == null || dbMap.isEmpty()) {
 			return map;
 		}
@@ -306,7 +299,8 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 		}
 
 		if (TransactionManager.hasTransaction()) {
-			AsyncInfoTransactionLifeCycle aitlc = new AsyncInfoTransactionLifeCycle((new AsyncInfo(multipleOperation)));
+			AsyncInfoTransactionLifeCycle aitlc = new AsyncInfoTransactionLifeCycle(
+					(new AsyncInfo(multipleOperation)));
 			TransactionManager.transactionLifeCycle(aitlc);
 		} else {
 			asyncService.push(new AsyncInfo(multipleOperation));
@@ -332,7 +326,8 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 		}
 	}
 
-	private final class AsyncInfoTransactionLifeCycle extends DefaultTransactionLifeCycle {
+	private final class AsyncInfoTransactionLifeCycle extends
+			DefaultTransactionLifeCycle {
 		private final AsyncInfo asyncInfo;
 
 		public AsyncInfoTransactionLifeCycle(AsyncInfo asyncInfo) {
