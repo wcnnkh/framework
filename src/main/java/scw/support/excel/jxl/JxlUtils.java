@@ -21,7 +21,7 @@ import jxl.write.WritableWorkbook;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ConfigUtils;
-import scw.support.excel.jxl.load.LoadRow;
+import scw.support.excel.RowCallback;
 
 public final class JxlUtils {
 	private JxlUtils() {
@@ -378,7 +378,7 @@ public final class JxlUtils {
 		return buf.toString();
 	}
 
-	public static void load(String filePath, LoadRow loadRow) {
+	public static void load(String filePath, RowCallback callback) {
 		File excel = ConfigUtils.getFile(filePath);
 		logger.debug("开始读取:{}", excel.getPath());
 		long t = System.currentTimeMillis();
@@ -395,7 +395,7 @@ public final class JxlUtils {
 						Cell cell = sheet.getCell(columnIndex, rowIndex);
 						contents[columnIndex] = cell.getContents();
 					}
-					loadRow.load(sheetIndex, rowIndex, contents);
+					callback.call(sheetIndex, rowIndex, contents);
 				}
 			}
 			logger.debug("加载{}完成, 用时：{}ms", excel.getName(), (System.currentTimeMillis() - t));
