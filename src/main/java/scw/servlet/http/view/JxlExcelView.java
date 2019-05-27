@@ -9,9 +9,9 @@ import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.View;
 import scw.sql.Sql;
-import scw.support.jxl.export.JxlExport;
-import scw.support.jxl.export.SimpleExportRowImpl;
-import scw.support.jxl.export.SqlExportRow;
+import scw.support.excel.jxl.export.JxlExport;
+import scw.support.excel.jxl.export.SimpleExportRowImpl;
+import scw.support.excel.jxl.export.SqlExportRow;
 
 public class JxlExcelView implements View {
 	private Sql sql;

@@ -1,4 +1,4 @@
-package scw.support.jxl.load;
+package scw.support.excel.jxl.load;
 
 import java.io.File;
 

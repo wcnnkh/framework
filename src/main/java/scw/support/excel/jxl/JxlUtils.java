@@ -1,4 +1,4 @@
-package scw.support.jxl;
+package scw.support.excel.jxl;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -21,7 +21,7 @@ import jxl.write.WritableWorkbook;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ConfigUtils;
-import scw.support.jxl.load.LoadRow;
+import scw.support.excel.jxl.load.LoadRow;
 
 public final class JxlUtils {
 	private JxlUtils() {
