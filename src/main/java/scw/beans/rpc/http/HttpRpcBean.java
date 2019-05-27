@@ -9,6 +9,7 @@ import java.net.URLConnection;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.beans.rpc.AbstractInterfaceProxyBean;
 import scw.core.aop.Invoker;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;

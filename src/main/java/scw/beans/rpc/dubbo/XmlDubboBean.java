@@ -1,62 +1,23 @@
 package scw.beans.rpc.dubbo;
 
-import java.util.Arrays;
-
 import com.alibaba.dubbo.config.ReferenceConfig;
 
-import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.exception.NotSupportException;
+import scw.beans.rpc.AbstractInterfaceProxyBean;
 
-public final class XmlDubboBean implements BeanDefinition {
+public final class XmlDubboBean extends AbstractInterfaceProxyBean {
 	private final ReferenceConfig<?> referenceConfig;
 	private final BeanFactory beanFactory;
 
-	public XmlDubboBean(BeanFactory beanFactory, ReferenceConfig<?> referenceConfig) {
+	public XmlDubboBean(BeanFactory beanFactory, Class<?> clz, ReferenceConfig<?> referenceConfig) throws Exception {
+		super(clz);
 		this.referenceConfig = referenceConfig;
 		this.beanFactory = beanFactory;
-	}
-
-	public String getId() {
-		return referenceConfig.getInterface();
-	}
-
-	public String[] getNames() {
-		return new String[] { getId() };
-	}
-
-	public Class<?> getType() {
-		return referenceConfig.getInterfaceClass();
-	}
-
-	public boolean isSingleton() {
-		return true;
-	}
-
-	public boolean isProxy() {
-		return true;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T create() {
 		return (T) BeanUtils.proxyInterface(beanFactory, getType(), referenceConfig.get());
-	}
-
-	public <T> T create(Class<?>[] parameterTypes, Object... args) {
-		throw new NotSupportException(Arrays.toString(parameterTypes));
-	}
-
-	public void autowrite(Object bean) throws Exception {
-	}
-
-	public void init(Object bean) throws Exception {
-	}
-
-	public void destroy(Object bean) throws Exception {
-	}
-
-	public <T> T create(Object... params) {
-		throw new NotSupportException(getType().getName());
 	}
 }

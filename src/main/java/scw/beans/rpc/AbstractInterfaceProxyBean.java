@@ -1,4 +1,4 @@
-package scw.beans.rpc.http;
+package scw.beans.rpc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,7 +14,7 @@ import scw.beans.annotation.InitMethod;
 import scw.core.exception.NotSupportException;
 import scw.core.utils.ClassUtils;
 
-abstract class AbstractInterfaceProxyBean implements BeanDefinition {
+public abstract class AbstractInterfaceProxyBean implements BeanDefinition {
 	private final Class<?> type;
 	private final String id;
 	private final List<Method> initMethodList = new ArrayList<Method>();
@@ -98,7 +98,7 @@ abstract class AbstractInterfaceProxyBean implements BeanDefinition {
 	public <T> T create(Class<?>[] parameterTypes, Object... args) {
 		throw new NotSupportException(getType().getName());
 	}
-	
+
 	public <T> T create(Object... params) {
 		throw new NotSupportException(getType().getName());
 	}
@@ -128,6 +128,10 @@ abstract class AbstractInterfaceProxyBean implements BeanDefinition {
 					e.printStackTrace();
 				}
 			}
+		}
+
+		if (bean instanceof scw.core.Destroy) {
+			((scw.core.Destroy) bean).destroy();
 		}
 	}
 

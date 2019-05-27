@@ -13,6 +13,8 @@ import scw.core.serializer.Serializer;
 import scw.core.utils.IOUtils;
 
 public class JavaSerializer extends Serializer {
+	public final static JavaSerializer SERIALIZER = new JavaSerializer();
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T deserialize(InputStream input) throws IOException {

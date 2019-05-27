@@ -142,6 +142,10 @@ public final class AnnotationRequestBean implements RequestBean {
 				}
 			}
 		}
+
+		if (bean instanceof scw.core.Destroy) {
+			((scw.core.Destroy) bean).destroy();
+		}
 	}
 
 	public String[] getNames() {

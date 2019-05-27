@@ -19,6 +19,7 @@ import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanParameter;
 import scw.beans.xml.XmlBeanUtils;
+import scw.core.Destroy;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
 import scw.core.reflect.FieldDefinition;
@@ -233,6 +234,10 @@ public final class XmlRequestBean implements RequestBean {
 			for (BeanMethod method : destroyMethods) {
 				method.invoke(bean, beanFactory, propertiesFactory);
 			}
+		}
+
+		if (bean instanceof Destroy) {
+			((Destroy) bean).destroy();
 		}
 	}
 

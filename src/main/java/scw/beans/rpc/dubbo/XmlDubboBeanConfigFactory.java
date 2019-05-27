@@ -16,7 +16,7 @@ public final class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "dubbo:reference";
 
 	public XmlDubboBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String config)
-			throws ClassNotFoundException {
+			throws Exception {
 		NodeList rootNodeList = XmlBeanUtils.getRootNode(config).getChildNodes();
 		if (rootNodeList != null) {
 			for (int x = 0; x < rootNodeList.getLength(); x++) {
@@ -32,7 +32,8 @@ public final class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 				List<ReferenceConfig<?>> referenceConfigs = XmlDubboUtils.getReferenceConfigList(propertiesFactory,
 						beanFactory, node);
 				for (ReferenceConfig<?> referenceConfig : referenceConfigs) {
-					XmlDubboBean xmlDubboBean = new XmlDubboBean(beanFactory, referenceConfig);
+					XmlDubboBean xmlDubboBean = new XmlDubboBean(beanFactory, referenceConfig.getInterfaceClass(),
+							referenceConfig);
 					addBean(xmlDubboBean);
 				}
 			}

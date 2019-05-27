@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import scw.beans.annotation.Destroy;
 import scw.core.exception.NotSupportException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
@@ -120,7 +119,6 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory,
 		}
 	}
 
-	@Destroy
 	public void destroy() {
 		if (asyncService != null && asyncService instanceof QueueMQ) {
 			((QueueMQ<AsyncInfo>) asyncService).shutdown();
