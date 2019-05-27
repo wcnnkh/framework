@@ -868,11 +868,16 @@ public final class ReflectUtils {
 	 */
 	public static Object setFieldValue(Class<?> clz, Field field, Object obj, Object value) throws Exception {
 		Method method = getSetterMethod(clz, field, true);
-		if (method == null) {
-			field.set(obj, value);
-			return null;
-		} else {
-			return method.invoke(obj, value);
+		try {
+			if (method == null) {
+				field.set(obj, value);
+				return null;
+			} else {
+				return method.invoke(obj, value);
+			}
+		} catch (Exception e) {
+			logger.error("向对象{}，插入field={}时异常", clz.getName(), field.getName());
+			throw e;
 		}
 	}
 
