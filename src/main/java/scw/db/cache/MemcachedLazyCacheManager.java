@@ -5,7 +5,7 @@ import java.util.Map;
 
 import scw.data.memcached.Memcached;
 
-public final class MemcachedLazyCacheManager extends LazyDataManager {
+public final class MemcachedLazyCacheManager extends LazyCacheManager {
 	private final Memcached memcached;
 
 	public MemcachedLazyCacheManager(Memcached memcached) {

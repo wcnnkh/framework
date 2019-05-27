@@ -22,7 +22,7 @@ import scw.data.utils.RedisQueue;
 import scw.db.async.AsyncInfo;
 import scw.db.async.MultipleOperation;
 import scw.db.async.OperationBean;
-import scw.db.cache.LazyDataManager;
+import scw.db.cache.LazyCacheManager;
 import scw.db.cache.MemcachedLazyCacheManager;
 import scw.db.cache.RedisLazyCacheManager;
 import scw.db.database.DataBase;
@@ -40,7 +40,7 @@ import scw.transaction.sql.SqlTransactionUtils;
 public abstract class DB extends ORMTemplate implements ConnectionFactory,
 		scw.core.Destroy {
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	private final LazyDataManager cacheManager;
+	private final LazyCacheManager cacheManager;
 	private final MQ<AsyncInfo> asyncService;
 	private boolean debug;
 
@@ -103,7 +103,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory,
 		initAsyncService();
 	}
 
-	public DB(LazyDataManager cacheManager, MQ<AsyncInfo> asyncService) {
+	public DB(LazyCacheManager cacheManager, MQ<AsyncInfo> asyncService) {
 		this.cacheManager = cacheManager;
 		this.asyncService = asyncService;
 		initAsyncService();

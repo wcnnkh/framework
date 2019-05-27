@@ -12,7 +12,7 @@ import scw.sql.orm.TableInfo;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 
-public abstract class LazyDataManager implements CacheManager {
+public abstract class LazyCacheManager implements CacheManager {
 	private static final String DEFAULT_KEY_PREFIX = "lazy:";
 	private static final String KEY = "key:";
 	private static final String DEFAULT_CONNECTOR = "|";

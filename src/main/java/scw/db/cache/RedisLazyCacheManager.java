@@ -5,7 +5,7 @@ import java.util.Map;
 
 import scw.data.redis.Redis;
 
-public final class RedisLazyCacheManager extends LazyDataManager {
+public final class RedisLazyCacheManager extends LazyCacheManager {
 	private final Redis redis;
 
 	public RedisLazyCacheManager(Redis redis) {
