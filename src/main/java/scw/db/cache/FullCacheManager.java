@@ -30,8 +30,7 @@ public abstract class FullCacheManager implements CacheManager {
 
 	abstract void mapRemove(String key, String field);
 
-	private String getObjectKey(TableInfo tableInfo, Object bean)
-			throws Exception {
+	private String getObjectKey(TableInfo tableInfo, Object bean) throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append(PREFIX).append(tableInfo.getSource().getName());
 		for (ColumnInfo c : tableInfo.getPrimaryKeyColumns()) {
@@ -51,31 +50,34 @@ public abstract class FullCacheManager implements CacheManager {
 		return sb.toString();
 	}
 
-	private void savefullKeys(TableInfo tableInfo, boolean full,
-			String objectKey, Object[] primaryKeys) {
+	private void savefullKeys(TableInfo tableInfo, String objectKey, Object[] primaryKeys) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(PREFIX).append(tableInfo.getSource().getName());
 		for (int i = 0; i < primaryKeys.length; i++) {
-			if ((full || i > 0) && i < primaryKeys.length - 1) {
-				mapAdd(sb.toString(), primaryKeys[i].toString(), objectKey);
+			if (i == primaryKeys.length - 1) {
+				continue;
 			}
 
+			String v = primaryKeys[i].toString();
+			mapAdd(sb.toString(), v, objectKey);
+
 			sb.append("&");
-			sb.append(primaryKeys[i]);
+			sb.append(v);
 		}
 	}
 
-	private void removeFullKeys(TableInfo tableInfo, boolean full,
-			Object[] primaryKeys) {
+	private void removeFullKeys(TableInfo tableInfo, Object[] primaryKeys) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(PREFIX).append(tableInfo.getSource().getName());
 		for (int i = 0; i < primaryKeys.length; i++) {
-			if ((full || i > 0) && i < primaryKeys.length - 1) {
-				mapRemove(sb.toString(), primaryKeys[i].toString());
+			if (i == primaryKeys.length - 1) {
+				continue;
 			}
 
+			String v = primaryKeys[i].toString();
+			mapRemove(sb.toString(), v);
 			sb.append("&");
-			sb.append(primaryKeys[i]);
+			sb.append(v);
 		}
 	}
 
@@ -90,14 +92,13 @@ public abstract class FullCacheManager implements CacheManager {
 
 		String objectKey = getObjectKeyById(tableInfo, args);
 		add(objectKey, bean);
-		savefullKeys(tableInfo, true, objectKey, args);
+		savefullKeys(tableInfo, objectKey, args);
 	}
 
 	public void update(Object bean) {
 		String objectKey;
 		try {
-			objectKey = getObjectKey(ORMUtils.getTableInfo(bean.getClass()),
-					bean);
+			objectKey = getObjectKey(ORMUtils.getTableInfo(bean.getClass()), bean);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -114,14 +115,14 @@ public abstract class FullCacheManager implements CacheManager {
 		}
 		String objectKey = getObjectKeyById(tableInfo, args);
 		delete(objectKey);
-		removeFullKeys(tableInfo, true, args);
+		removeFullKeys(tableInfo, args);
 	}
 
 	public void deleteById(Class<?> type, Object... params) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		String objectKey = getObjectKeyById(tableInfo, params);
 		delete(objectKey);
-		removeFullKeys(tableInfo, true, params);
+		removeFullKeys(tableInfo, params);
 	}
 
 	public void saveOrUpdate(Object bean) {
@@ -134,7 +135,7 @@ public abstract class FullCacheManager implements CacheManager {
 		}
 		String objectKey = getObjectKeyById(tableInfo, args);
 		set(objectKey, bean);
-		savefullKeys(tableInfo, true, objectKey, args);
+		savefullKeys(tableInfo, objectKey, args);
 	}
 
 	public <T> T getById(Class<T> type, Object... params) {
@@ -163,8 +164,7 @@ public abstract class FullCacheManager implements CacheManager {
 		return valueList;
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds,
-			Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		String indexKey = getObjectKeyById(tableInfo, params);
 		Map<String, String> keyMap = getMap(indexKey);
