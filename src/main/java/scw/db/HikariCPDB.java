@@ -9,7 +9,6 @@ import java.util.Enumeration;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import scw.beans.annotation.Destroy;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 import scw.db.database.DataBase;
@@ -72,7 +71,6 @@ public class HikariCPDB extends DB {
 		return hds.getConnection();
 	}
 
-	@Destroy
 	public void destroy() {
 		hds.close();
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
