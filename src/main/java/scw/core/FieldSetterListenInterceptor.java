@@ -14,14 +14,14 @@ import scw.core.utils.ClassUtils;
 
 public class FieldSetterListenInterceptor implements MethodInterceptor, FieldSetterListen, Serializable {
 	private static final long serialVersionUID = 1L;
-	private transient Map<String, Object> field_change_map;
+	private transient Map<String, Object> field_setter_map;
 	private transient Class<?> source;
 
 	public final Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		if (source == null) {
 			source = ClassUtils.getUserClass(obj);
 		}
-
+		
 		if (args.length == 0) {
 			if (FieldSetterListen.CLEAR_FIELD_LISTEN.equals(method.getName())) {
 				if (FieldSetterListen.class.isAssignableFrom(source)) {
@@ -87,22 +87,22 @@ public class FieldSetterListenInterceptor implements MethodInterceptor, FieldSet
 	}
 
 	public Map<String, Object> get_field_setter_map() {
-		return field_change_map;
+		return field_setter_map;
 	}
 
 	public void field_setter(Object bean, Field field, Object oldValue) {
-		if (field_change_map == null) {
-			field_change_map = new HashMap<String, Object>(8);
+		if (field_setter_map == null) {
+			field_setter_map = new HashMap<String, Object>(8);
 		}
 
-		if (field_change_map.containsKey(field.getName())) {
+		if (field_setter_map.containsKey(field.getName())) {
 			return;
 		}
 
-		field_change_map.put(field.getName(), oldValue);
+		field_setter_map.put(field.getName(), oldValue);
 	}
 
 	public void clear_field_setter_listen() {
-		field_change_map = null;
+		field_setter_map = null;
 	}
 }

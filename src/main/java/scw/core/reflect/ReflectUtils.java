@@ -930,7 +930,7 @@ public final class ReflectUtils {
 
 	public static Field getFieldUseCache(Class<?> clazz, String fieldName, boolean searchSuper) {
 		Field field = getFieldMapUseCache(clazz).get(fieldName);
-		if (searchSuper) {
+		if (field == null && searchSuper) {
 			Class<?> clz = clazz.getSuperclass();
 			while (clz != null && clz != Object.class) {
 				field = getFieldMapUseCache(clz).get(fieldName);
