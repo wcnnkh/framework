@@ -11,6 +11,7 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.rpc.AbstractInterfaceProxyBean;
 import scw.core.aop.Invoker;
+import scw.core.io.Bytes;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.AbstractResponse;
@@ -24,17 +25,15 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private final String host;
 	private final String signStr;
-	private final String charsetName;
 	private final BeanFactory beanFactory;
 	private final Serializer serializer;
 
-	public HttpRpcBean(BeanFactory beanFactory, Class<?> interfaceClass, String host, String signStr, String charsetName,
+	public HttpRpcBean(BeanFactory beanFactory, Class<?> interfaceClass, String host, String signStr,
 			Serializer serializer) throws Exception {
 		super(interfaceClass);
 		this.beanFactory = beanFactory;
 		this.host = host;
 		this.signStr = signStr;
-		this.charsetName = charsetName;
 		this.serializer = serializer;
 	}
 
@@ -62,7 +61,7 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 			long cts = System.currentTimeMillis();
 			final Message message = new Message(getType(), method, args);
 			message.setAttribute("t", cts);
-			message.setAttribute("sign", SignUtils.md5Str((cts + signStr).getBytes(charsetName)));
+			message.setAttribute("sign", SignUtils.md5Str(Bytes.string2bytes(cts + signStr)));
 
 			HttpRequest request = new HttpRequest(scw.core.net.http.Method.POST, host) {
 				@Override

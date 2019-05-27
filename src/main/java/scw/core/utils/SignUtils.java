@@ -13,8 +13,9 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 public final class SignUtils {
-	private SignUtils(){};
-	
+	private SignUtils() {
+	};
+
 	public static StringBuilder getShotParamsStr(Map<String, String> map) {
 		StringBuilder sb = new StringBuilder();
 		if (map != null) {
@@ -44,6 +45,7 @@ public final class SignUtils {
 
 	/**
 	 * 把二进制转化为十六进制
+	 * 
 	 * @param bytes
 	 * @return
 	 */
@@ -56,26 +58,28 @@ public final class SignUtils {
 		formatter.close();
 		return result;
 	}
-	
+
 	/**
-	 * 把二进制转化为十六进制  推荐
+	 * 把二进制转化为十六进制 推荐
+	 * 
 	 * @param bytes
 	 * @return
 	 */
 	public static String byte2hex(byte[] bytes) {
-	    StringBuilder sign = new StringBuilder();
-	    for (int i = 0; i < bytes.length; i++) {
-	        String hex = Integer.toHexString(bytes[i] & 0xFF);
-	        if (hex.length() == 1) {
-	            sign.append("0");
-	        }
-	        sign.append(hex);
-	    }
-	    return sign.toString();
+		StringBuilder sign = new StringBuilder();
+		for (int i = 0; i < bytes.length; i++) {
+			String hex = Integer.toHexString(bytes[i] & 0xFF);
+			if (hex.length() == 1) {
+				sign.append("0");
+			}
+			sign.append(hex);
+		}
+		return sign.toString();
 	}
-	
+
 	/**
 	 * HmacMD5加密
+	 * 
 	 * @param data
 	 * @param secret
 	 * @return
@@ -87,88 +91,91 @@ public final class SignUtils {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-    	return null;
+		return null;
 	}
-	
-	 /**  
-     * 签名方法对对encryptText进行签名  
-     * @param encryptText 被签名内容
-     * @param encryptKey  密钥  
-     * @param signType 签名方式    HmacSHA1   HmacMD5
-     * @return  
-     * @throws Exception  
-     */ 
-	 public static byte[] HmacEncrypt(byte[] encryptText, byte[] encryptKey, String signType)     
-	    {       
-	    	try {
-	            SecretKey secretKey = new SecretKeySpec(encryptKey, signType);   
-	            Mac mac = Mac.getInstance(secretKey.getAlgorithm());   
-	            mac.init(secretKey);    
-	            return mac.doFinal(encryptText);    
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-	    	return null;
-	    }
-      
-	 /**  
-     * 使用 HMAC-SHA1 签名方法对对encryptText进行签名  
-     * @param encryptText 被签名的字符串  
-     * @param encryptKey  密钥  
-     * @return  
-     * @throws Exception  
-     */ 
-    public static byte[] HmacSHA1(String encryptText, String encryptKey, String charsetName)     
-    {       
-    	try {
+
+	/**
+	 * 签名方法对对encryptText进行签名
+	 * 
+	 * @param encryptText
+	 *            被签名内容
+	 * @param encryptKey
+	 *            密钥
+	 * @param signType
+	 *            签名方式 HmacSHA1 HmacMD5
+	 * @return
+	 * @throws Exception
+	 */
+	public static byte[] HmacEncrypt(byte[] encryptText, byte[] encryptKey, String signType) {
+		try {
+			SecretKey secretKey = new SecretKeySpec(encryptKey, signType);
+			Mac mac = Mac.getInstance(secretKey.getAlgorithm());
+			mac.init(secretKey);
+			return mac.doFinal(encryptText);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 使用 HMAC-SHA1 签名方法对对encryptText进行签名
+	 * 
+	 * @param encryptText
+	 *            被签名的字符串
+	 * @param encryptKey
+	 *            密钥
+	 * @return
+	 * @throws Exception
+	 */
+	public static byte[] HmacSHA1(String encryptText, String encryptKey, String charsetName) {
+		try {
 			return HmacEncrypt(encryptText.getBytes(charsetName), encryptKey.getBytes(charsetName), "HmacSHA1");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-    	return null;
-    }
-	
-	public static byte[] md5(byte[] byteArray) throws NoSuchAlgorithmException{
-		return MessageDigest.getInstance("MD5").digest(byteArray);
+		return null;
 	}
-	
-	public static String md5Str(byte[] byteArray) throws NoSuchAlgorithmException{
+
+	public static byte[] md5(byte[] byteArray) {
+		try {
+			return MessageDigest.getInstance("MD5").digest(byteArray);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static String md5Str(byte[] byteArray) {
 		return byte2hex(md5(byteArray));
 	}
-	
-	public static String md5UpperStr(String str, String charsetName){
+
+	public static String md5UpperStr(String str, String charsetName) {
 		try {
 			return md5Str(str.getBytes(charsetName)).toUpperCase();
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
 		}
 		return null;
 	}
-	
-	public static byte[] md5Tobyte(String str, String charsetName){
+
+	public static byte[] md5Tobyte(String str, String charsetName) {
 		try {
 			return md5(str.getBytes(charsetName));
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
-	public static String md5Str(String str, String charsetName){
+
+	public static String md5Str(String str, String charsetName) {
 		try {
 			return md5Str(str.getBytes(charsetName));
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	public static String sha1(byte[] byteArray) {
 		try {
 			MessageDigest crypt = MessageDigest.getInstance("SHA-1");
@@ -180,7 +187,7 @@ public final class SignUtils {
 		}
 		return "";
 	}
-	
+
 	public static String sha1(String str, String charsetName) {
 		try {
 			MessageDigest crypt = MessageDigest.getInstance("SHA-1");

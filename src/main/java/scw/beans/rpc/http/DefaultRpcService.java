@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.core.Constants;
+import scw.core.io.Bytes;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.serializer.Serializer;
@@ -75,7 +75,7 @@ public class DefaultRpcService implements RpcService {
 		}
 
 		long t = (Long) message.getAttribute("t");
-		String checkSign = SignUtils.md5Str(t + sign, Constants.DEFAULT_CHARSET.name());
+		String checkSign = SignUtils.md5Str(Bytes.string2bytes(t + sign));
 		if (t < System.currentTimeMillis() - 10000) {// 如果超过10秒失效
 			return false;
 		}

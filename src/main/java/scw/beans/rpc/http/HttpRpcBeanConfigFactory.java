@@ -31,7 +31,6 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 
 			String sign = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "sign");
 			String packageName = XmlBeanUtils.getPackageName(propertiesFactory, node);
-			String charsetName = XmlBeanUtils.getCharsetName(propertiesFactory, node, "UTF-8");
 			String serializer = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "serializer");
 			String address = XmlBeanUtils.getAddress(propertiesFactory, node);
 
@@ -43,7 +42,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 						continue;
 					}
 
-					HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, address, sign, charsetName, ser);
+					HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, address, sign, ser);
 					addBean(httpRpcBean);
 				}
 			}
@@ -66,13 +65,12 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 					mySign = sign;
 				}
 
-				String myScharsetName = XmlBeanUtils.getCharsetName(propertiesFactory, node, charsetName);
 				String myAddress = XmlBeanUtils.getAddress(propertiesFactory, node);
 				if (StringUtils.isNull(myAddress)) {
 					myAddress = address;
 				}
 
-				HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, myAddress, mySign, myScharsetName, ser);
+				HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, myAddress, mySign, ser);
 				addBean(httpRpcBean);
 			}
 		}

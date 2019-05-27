@@ -1,7 +1,5 @@
 package scw.utils.ali.dayu;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -94,13 +92,7 @@ public final class DefaultAliDaYu implements AliDaYu {
 		byte[] bytes = null;
 		if (isMd5) {
 			sb.append(appSecret);
-			try {
-				bytes = SignUtils.md5(sb.toString().getBytes("utf-8"));
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			}
+			bytes = SignUtils.md5Tobyte(sb.toString(), "UTF-8");
 		} else {
 			bytes = SignUtils.HmacMD5(sb.toString(), appSecret, "UTF-8");
 		}
