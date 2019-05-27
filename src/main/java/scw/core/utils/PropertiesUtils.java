@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import scw.core.Constants;
 import scw.core.StringFormat;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
@@ -36,8 +37,7 @@ public final class PropertiesUtils {
 
 				String value = entry.getValue() == null ? null : entry.getValue().toString();
 				value = stringFormat.format(value);
-				ReflectUtils.setFieldValue(obj.getClass(), field, obj,
-						StringUtils.conversion(value, field.getType()));
+				ReflectUtils.setFieldValueAutoType(obj.getClass(), field, obj, value);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -66,7 +66,7 @@ public final class PropertiesUtils {
 	}
 
 	public static <T> void loadProperties(T instance, String propertiesFile, Collection<String> asNameList) {
-		Properties properties = ConfigUtils.getProperties(propertiesFile, "UTF-8");
+		Properties properties = ConfigUtils.getProperties(propertiesFile, Constants.DEFAULT_CHARSET.name());
 		invokeSetterByProeprties(instance, properties, true, true, asNameList, true);
 	}
 

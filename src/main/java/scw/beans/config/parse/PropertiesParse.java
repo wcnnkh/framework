@@ -34,7 +34,7 @@ public final class PropertiesParse implements ConfigParse {
 					}
 
 					String value = ConfigUtils.format(properties.getProperty(key.toString()));
-					ReflectUtils.setFieldValue(fieldType, field, obj, value);
+					ReflectUtils.setFieldValueAutoType(fieldType, field, obj, value);
 				}
 				return obj;
 			} catch (Exception e) {
