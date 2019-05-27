@@ -1,5 +1,6 @@
 package scw.beans;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
@@ -316,8 +317,10 @@ public final class BeanUtils {
 	public static Enhancer createEnhancer(Class<?> clz,
 			BeanFactory beanFactory, String[] filterNames) {
 		Enhancer enhancer = new Enhancer();
-		enhancer.setInterfaces(clz.getInterfaces());
 		enhancer.setCallback(new BeanMethodInterceptor(beanFactory, filterNames));
+		if(Serializable.class.isAssignableFrom(clz)){
+			enhancer.setSerialVersionUID(1L);
+		}
 		enhancer.setSuperclass(clz);
 		return enhancer;
 	}
