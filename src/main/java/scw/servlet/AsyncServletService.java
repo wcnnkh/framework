@@ -10,12 +10,11 @@ import javax.servlet.ServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
-import scw.beans.annotation.Destroy;
 import scw.beans.property.PropertiesFactory;
 import scw.core.utils.StringUtils;
 
 @Bean(proxy = false)
-public class AsyncServletService extends DefaultServletService {
+public class AsyncServletService extends DefaultServletService implements scw.core.Destroy {
 	private ThreadPoolExecutor executor;
 	private final int coreSize;
 	private final int maxSize;
@@ -79,7 +78,6 @@ public class AsyncServletService extends DefaultServletService {
 		}
 	}
 
-	@Destroy
 	public void destroy() {
 		if (executor != null) {
 			executor.shutdownNow();

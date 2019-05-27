@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.AsyncComplete;
 import scw.beans.annotation.Autowrite;
-import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.core.Base64;
 import scw.core.FileManager;
@@ -32,7 +31,7 @@ import scw.core.utils.FileUtils;
  * @author shuchaowen
  *
  */
-public final class AsyncCompleteFilter implements Filter {
+public final class AsyncCompleteFilter implements Filter, scw.core.Destroy {
 	private static Logger logger = LoggerFactory.getLogger(AsyncCompleteFilter.class);
 
 	private static ThreadLocal<Boolean> ENABLE_TAG = new ThreadLocal<Boolean>();
@@ -81,8 +80,7 @@ public final class AsyncCompleteFilter implements Filter {
 		}
 	}
 
-	@Destroy
-	private void destory() {
+	public void destroy() {
 		executorService.shutdownNow();
 	}
 

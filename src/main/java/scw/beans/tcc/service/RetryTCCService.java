@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Autowrite;
-import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.tcc.InvokeInfo;
 import scw.beans.tcc.StageType;
@@ -25,7 +24,7 @@ import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionException;
 import scw.transaction.TransactionManager;
 
-public final class RetryTCCService implements TCCService {
+public final class RetryTCCService implements TCCService, scw.core.Destroy {
 	private static Logger logger = LoggerFactory.getLogger(RetryTCCService.class);
 
 	@Autowrite
@@ -68,8 +67,7 @@ public final class RetryTCCService implements TCCService {
 		}
 	}
 
-	@Destroy
-	public void destory() {
+	public void destroy() {
 		executorService.shutdownNow();
 	}
 

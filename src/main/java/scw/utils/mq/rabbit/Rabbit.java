@@ -12,24 +12,23 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Envelope;
 
-import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.core.Constants;
 import scw.core.serializer.NoTypeSpecifiedSerializer;
 import scw.core.serializer.Serializer;
 
-public final class Rabbit extends ConnectionFactory {
+public final class Rabbit extends ConnectionFactory implements scw.core.Destroy {
 	private final NoTypeSpecifiedSerializer serializer;
-	
-	public Rabbit(){
+
+	public Rabbit() {
 		this(Constants.DEFAULT_SERIALIZER);
 	}
-	
-	public Rabbit(Serializer serializer){
+
+	public Rabbit(Serializer serializer) {
 		this.serializer = serializer;
 		executorService = new ThreadPoolExecutor(1, 20, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 	}
-	
+
 	private volatile Connection singleConnection;
 
 	/**
@@ -51,7 +50,7 @@ public final class Rabbit extends ConnectionFactory {
 		}
 		return singleConnection;
 	}
-	
+
 	public NoTypeSpecifiedSerializer getSerializer() {
 		return serializer;
 	}
@@ -65,6 +64,7 @@ public final class Rabbit extends ConnectionFactory {
 
 	/**
 	 * ack确认
+	 * 
 	 * @param channel
 	 * @param envelope
 	 * @param multiple
@@ -94,9 +94,12 @@ public final class Rabbit extends ConnectionFactory {
 		return connection;
 	}
 
-	@Destroy
-	public void close() throws IOException {
+	public void destroy() {
 		executorService.shutdownNow();
-		connection.close();
+		try {
+			connection.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

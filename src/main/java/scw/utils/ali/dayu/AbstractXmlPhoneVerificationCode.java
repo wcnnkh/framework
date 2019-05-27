@@ -7,7 +7,8 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
-import scw.beans.annotation.Destroy;
+import com.alibaba.fastjson.JSONObject;
+
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.RandomUtils;
@@ -16,9 +17,7 @@ import scw.core.utils.XTime;
 import scw.result.DataResult;
 import scw.result.ResultFactory;
 
-import com.alibaba.fastjson.JSONObject;
-
-public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode {
+public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode, scw.core.Destroy {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final static String LAST_TIME_SEND_NAME = "lastSendTime";
 	private final static String CODE_NAME = "code";
@@ -82,10 +81,9 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		return sendMessage(messageModel, sms_param, toPhones);
 	}
 
-	@Destroy
 	public void destroy() {
 		if (aLiDaYu instanceof AsyncAliDaYu) {
-			((AsyncAliDaYu) aLiDaYu).destory();
+			((AsyncAliDaYu) aLiDaYu).destroy();
 		}
 	}
 

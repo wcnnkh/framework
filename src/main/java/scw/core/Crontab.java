@@ -10,7 +10,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import scw.beans.annotation.Destroy;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 
@@ -20,7 +19,7 @@ import scw.core.utils.XTime;
  * @author shuchaowen
  *
  */
-public final class Crontab {
+public final class Crontab implements scw.core.Destroy {
 	private Timer timer = new Timer();
 	private ExecutorService executorService = new ThreadPoolExecutor(2, 100, 60L, TimeUnit.MINUTES,
 			new LinkedBlockingQueue<Runnable>());
@@ -128,8 +127,7 @@ public final class Crontab {
 		crontab("*", "*", "*", "*", "0", task);
 	}
 
-	@Destroy
-	public void shutdown() {
+	public void destroy() {
 		timer.cancel();
 		executorService.shutdownNow();
 	}

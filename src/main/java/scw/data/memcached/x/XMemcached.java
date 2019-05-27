@@ -9,12 +9,11 @@ import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
-import scw.beans.annotation.Destroy;
 import scw.core.Constants;
 import scw.core.serializer.Serializer;
 import scw.core.utils.StringUtils;
 
-public final class XMemcached extends AbstractXMemcached {
+public final class XMemcached extends AbstractXMemcached implements scw.core.Destroy {
 	private final MemcachedClient memcachedClient;
 
 	/**
@@ -82,9 +81,12 @@ public final class XMemcached extends AbstractXMemcached {
 		this.memcachedClient = builder.build();
 	}
 
-	@Destroy
-	public void destroy() throws IOException {
-		memcachedClient.shutdown();
+	public void destroy() {
+		try {
+			memcachedClient.shutdown();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

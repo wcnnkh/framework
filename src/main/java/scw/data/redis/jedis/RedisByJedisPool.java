@@ -1,20 +1,18 @@
 package scw.data.redis.jedis;
 
-import java.io.Closeable;
 import java.util.Arrays;
 import java.util.Properties;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import scw.beans.annotation.Destroy;
 import scw.core.Constants;
 import scw.core.serializer.Serializer;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
 
-public final class RedisByJedisPool extends AbstractJedisOperations implements Closeable {
+public final class RedisByJedisPool extends AbstractJedisOperations implements scw.core.Destroy {
 
 	private final JedisPool jedisPool;
 	private final String auth;
@@ -58,8 +56,7 @@ public final class RedisByJedisPool extends AbstractJedisOperations implements C
 		this.serializer = Constants.DEFAULT_SERIALIZER;
 	}
 
-	@Destroy
-	public void close() {
+	public void destroy() {
 		jedisPool.close();
 	}
 

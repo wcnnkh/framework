@@ -1,10 +1,9 @@
 package scw.mq;
 
-import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.data.utils.Queue;
 
-public class QueueMQ<T> extends AbstractMQ<T> implements Runnable {
+public class QueueMQ<T> extends AbstractMQ<T> implements Runnable, scw.core.Destroy {
 	private Queue<T> queue;
 	private Thread thread = new Thread(this);
 
@@ -17,8 +16,7 @@ public class QueueMQ<T> extends AbstractMQ<T> implements Runnable {
 		thread.start();
 	}
 
-	@Destroy
-	public void shutdown() {
+	public void destroy() {
 		thread.interrupt();
 	}
 

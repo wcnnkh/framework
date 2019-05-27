@@ -17,7 +17,6 @@ import com.rabbitmq.client.Envelope;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Autowrite;
-import scw.beans.annotation.Destroy;
 import scw.beans.tcc.InvokeInfo;
 import scw.beans.tcc.StageType;
 import scw.beans.tcc.TCCService;
@@ -27,7 +26,7 @@ import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 import scw.utils.mq.rabbit.RabbitUtils;
 
-public final class RabbitTccService implements TCCService {
+public final class RabbitTccService implements TCCService, scw.core.Destroy {
 	private Connection connection;
 	private ExecutorService executorService = new ThreadPoolExecutor(1, 20, 0, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>());
@@ -61,10 +60,13 @@ public final class RabbitTccService implements TCCService {
 		channel.basicConsume(queueName, false, new TccConsumter(channel));
 	}
 
-	@Destroy
-	public void destory() throws IOException {
+	public void destroy() {
 		executorService.shutdownNow();
-		connection.close();
+		try {
+			connection.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void invoke(InvokeInfo invokeInfo, StageType stageType) {
