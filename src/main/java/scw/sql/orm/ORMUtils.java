@@ -12,8 +12,7 @@ import java.sql.Date;
 import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.IdentityHashMap;
 
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
@@ -30,7 +29,7 @@ public final class ORMUtils {
 
 	private static Logger logger = LoggerFactory.getLogger(ORMUtils.class);
 
-	private volatile static Map<Class<?>, TableInfo> tableMap = new HashMap<Class<?>, TableInfo>();
+	private volatile static IdentityHashMap<Class<?>, TableInfo> tableMap = new IdentityHashMap<Class<?>, TableInfo>();
 
 	public static TableInfo getTableInfo(Class<?> clazz) {
 		Class<?> clz = ClassUtils.getUserClass(clazz);
