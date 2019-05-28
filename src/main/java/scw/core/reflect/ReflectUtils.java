@@ -10,6 +10,7 @@ import java.security.AccessControlException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -32,8 +33,8 @@ public final class ReflectUtils {
 	private ReflectUtils() {
 	};
 
-	private static volatile Map<Class<?>, Map<String, Field>> fieldCache = new HashMap<Class<?>, Map<String, Field>>();
-
+	private static volatile IdentityHashMap<Class<?>, Map<String, Field>> fieldCache = new IdentityHashMap<Class<?>, Map<String, Field>>();
+	
 	public static <T, V> void setProperties(Class<T> type, T bean, Map<String, V> properties,
 			PropertyMapper<V> mapper) {
 		if (properties == null || properties.isEmpty()) {
