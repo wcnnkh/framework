@@ -36,6 +36,7 @@ import org.xml.sax.SAXException;
 import scw.core.PropertiesFactory;
 import scw.core.StringFormat;
 import scw.core.exception.NotFoundException;
+import scw.core.reflect.PropertyMapper;
 import scw.core.reflect.ReflectUtils;
 
 public final class XMLUtils {
@@ -400,5 +401,30 @@ public final class XMLUtils {
 			throw new NotFoundException("not found attribute " + name);
 		}
 		return value;
+	}
+
+	public static <T> T newInstanceLoadAttributeBySetter(Class<T> type, final PropertiesFactory propertiesFactory,
+			Node node, final PropertyMapper<String> mapper) {
+		Map<String, Node> map = attributeAsMap(node);
+		try {
+			T t = ReflectUtils.newInstance(type);
+			ReflectUtils.setProperties(type, t, map, new PropertyMapper<Node>() {
+				public Object mapper(String name, Node value, Class<?> type) throws Exception {
+					String v = formatNodeValue(propertiesFactory, value, value.getNodeValue());
+					if (StringUtils.isEmpty(v)) {
+						return null;
+					}
+
+					if (Class.class.isAssignableFrom(type)) {
+						return Class.forName(v);
+					}
+
+					return mapper.mapper(name, v, type);
+				}
+			});
+			return t;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

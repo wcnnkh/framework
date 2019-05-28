@@ -30,7 +30,7 @@ public final class XmlDubboUtils {
 
 	private static List<RegistryConfig> parseRegistryConfig(PropertiesFactory propertiesFactory,
 			BeanFactory beanFactory, Node node) {
-		RegistryConfig registryConfig = XmlBeanUtils.newInstanceLoadAttributeBySetter(RegistryConfig.class,
+		RegistryConfig registryConfig = XMLUtils.newInstanceLoadAttributeBySetter(RegistryConfig.class,
 				propertiesFactory, node, new PropertyMapper<String>() {
 
 					public Object mapper(String name, String value, Class<?> type) {
@@ -62,7 +62,7 @@ public final class XmlDubboUtils {
 
 	private static List<ProtocolConfig> parseProtocolConfig(PropertiesFactory propertiesFactory,
 			BeanFactory beanFactory, Node node, final boolean root) {
-		ProtocolConfig config = XmlBeanUtils.newInstanceLoadAttributeBySetter(ProtocolConfig.class, propertiesFactory,
+		ProtocolConfig config = XMLUtils.newInstanceLoadAttributeBySetter(ProtocolConfig.class, propertiesFactory,
 				node, new PropertyMapper<String>() {
 
 					public Object mapper(String name, String value, Class<?> type) {
@@ -87,7 +87,7 @@ public final class XmlDubboUtils {
 
 	private static ApplicationConfig parseApplicationConfig(PropertiesFactory propertiesFactory,
 			final BeanFactory beanFactory, Node node) {
-		return XmlBeanUtils.newInstanceLoadAttributeBySetter(ApplicationConfig.class, propertiesFactory, node,
+		return XMLUtils.newInstanceLoadAttributeBySetter(ApplicationConfig.class, propertiesFactory, node,
 				new PropertyMapper<String>() {
 
 					public Object mapper(String name, String value, Class<?> type) {
@@ -102,7 +102,7 @@ public final class XmlDubboUtils {
 
 	private static List<ServiceConfig<?>> parseServiceConfig(PropertiesFactory propertiesFactory,
 			final BeanFactory beanFactory, Node node) {
-		ServiceConfig<?> serviceConfig = XmlBeanUtils.newInstanceLoadAttributeBySetter(ServiceConfig.class,
+		ServiceConfig<?> serviceConfig = XMLUtils.newInstanceLoadAttributeBySetter(ServiceConfig.class,
 				propertiesFactory, node, new PropertyMapper<String>() {
 
 					public Object mapper(String name, String value, Class<?> type) {
@@ -164,7 +164,7 @@ public final class XmlDubboUtils {
 
 	private static List<ReferenceConfig<?>> parseReferenceConfig(PropertiesFactory propertiesFactory,
 			final BeanFactory beanFactory, Node node) {
-		ReferenceConfig<?> config = XmlBeanUtils.newInstanceLoadAttributeBySetter(ReferenceConfig.class,
+		ReferenceConfig<?> config = XMLUtils.newInstanceLoadAttributeBySetter(ReferenceConfig.class,
 				propertiesFactory, node, new PropertyMapper<String>() {
 
 					public Object mapper(String name, String value, Class<?> type) {
