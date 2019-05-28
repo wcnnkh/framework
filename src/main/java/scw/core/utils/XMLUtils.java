@@ -33,6 +33,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import scw.core.PropertiesFactory;
+import scw.core.StringFormat;
 import scw.core.exception.NotFoundException;
 import scw.core.reflect.ReflectUtils;
 
@@ -349,5 +351,54 @@ public final class XMLUtils {
 			properties.put(n.getNodeName(), n);
 		}
 		return properties;
+	}
+
+	public static String formatNodeValue(final PropertiesFactory propertiesFactory, Node node, String value) {
+		if (StringUtils.isEmpty(value)) {
+			return value;
+		}
+
+		if (!getBooleanValue(node, "replace", true)) {
+			return value;
+		}
+
+		String replacePrefix = getNodeAttributeValue(node, "replace-prefix");
+		String replaceSuffix = getNodeAttributeValue(node, "replace-suffix");
+		replacePrefix = StringUtils.isEmpty(replacePrefix) ? "{" : replacePrefix;
+		replaceSuffix = StringUtils.isEmpty(replaceSuffix) ? "}" : replaceSuffix;
+		StringFormat stringFormat = new StringFormat(replacePrefix, replaceSuffix) {
+
+			public String getValue(String key) {
+				return propertiesFactory.getValue(key);
+			}
+		};
+		return stringFormat.format(value);
+	}
+
+	public static String getNodeAttributeValue(PropertiesFactory propertiesFactory, Node node, String name) {
+		String value = getNodeAttributeValue(node, name);
+		if (value == null || value.length() == 0) {
+			return value;
+		}
+
+		return formatNodeValue(propertiesFactory, node, value);
+	}
+
+	public static String getNodeAttributeValueOrNodeContent(PropertiesFactory propertiesFactory, Node node,
+			String name) {
+		String value = getNodeAttributeValueOrNodeContent(node, name);
+		if (StringUtils.isEmpty(value)) {
+			return null;
+		}
+
+		return formatNodeValue(propertiesFactory, node, value);
+	}
+
+	public static String getRequireNodeAttributeValue(PropertiesFactory propertiesFactory, Node node, String name) {
+		String value = getNodeAttributeValue(propertiesFactory, node, name);
+		if (StringUtils.isEmpty(value)) {
+			throw new NotFoundException("not found attribute " + name);
+		}
+		return value;
 	}
 }

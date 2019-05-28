@@ -14,11 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.beans.property.PropertiesFactory;
 import scw.beans.rpc.http.DefaultRpcService;
 import scw.beans.rpc.http.RpcService;
 import scw.core.Constants;
 import scw.core.Destroy;
+import scw.core.PropertiesFactory;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.serializer.Serializer;

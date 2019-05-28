@@ -1,7 +1,7 @@
 package scw.servlet.beans;
 
 import scw.beans.BeanFactory;
-import scw.beans.property.PropertiesFactory;
+import scw.core.PropertiesFactory;
 import scw.servlet.beans.xml.XmlRequestBeanFactory;
 
 public final class CommonRequestBeanFactory implements RequestBeanFactory {

@@ -5,7 +5,7 @@ import javax.servlet.ServletConfig;
 import scw.application.Application;
 import scw.application.CommonApplication;
 import scw.beans.BeanFactory;
-import scw.beans.property.PropertiesFactory;
+import scw.core.PropertiesFactory;
 import scw.core.utils.StringUtils;
 
 public class ServletApplication implements Application {

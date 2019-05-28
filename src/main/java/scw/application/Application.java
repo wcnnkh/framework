@@ -1,7 +1,7 @@
 package scw.application;
 
 import scw.beans.BeanFactory;
-import scw.beans.property.PropertiesFactory;
+import scw.core.PropertiesFactory;
 
 public interface Application {
 	/**

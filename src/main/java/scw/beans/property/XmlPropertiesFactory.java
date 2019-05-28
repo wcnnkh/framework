@@ -7,11 +7,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.xml.XmlBeanUtils;
+import scw.core.PropertiesFactory;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 
 public class XmlPropertiesFactory implements PropertiesFactory {
-	private static final String PROPERTIES_TAG_NAME = "properties";
 	private Map<String, Property> propertiesMap = new HashMap<String, Property>();
 
 	public XmlPropertiesFactory(String beanXml) {
@@ -22,7 +22,7 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 		NodeList nhosts = XmlBeanUtils.getRootNode(beanXml).getChildNodes();
 		for (int i = 0; i < nhosts.getLength(); i++) {
 			Node nRoot = nhosts.item(i);
-			if (PROPERTIES_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
+			if ("properties".equalsIgnoreCase(nRoot.getNodeName())) {
 				Map<String, Property> map = XmlPropertyUtils.parse(nRoot);
 				if (map != null) {
 					propertiesMap.putAll(map);

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.beans.property.PropertiesFactory;
+import scw.core.PropertiesFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;

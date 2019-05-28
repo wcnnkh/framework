@@ -7,13 +7,16 @@ import java.util.Map;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import scw.beans.AnnotationBeanDefinition;
 import scw.beans.BeanMethod;
 import scw.beans.EParameterType;
-import scw.beans.property.PropertiesFactory;
+import scw.core.PropertiesFactory;
 import scw.core.exception.BeansException;
 import scw.core.reflect.PropertyMapper;
 import scw.core.reflect.ReflectUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 
@@ -21,53 +24,23 @@ public final class XmlBeanUtils {
 	private XmlBeanUtils() {
 	};
 
-	public static String formatNodeValue(
-			final PropertiesFactory propertiesFactory, Node node, String value) {
-		XmlValue xmlValue = new XmlValue(value, node);
-		return xmlValue.formatValue(propertiesFactory);
-	}
-
-	public static String getNodeAttributeValue(
-			final PropertiesFactory propertiesFactory, Node node, String name) {
-		String value = XMLUtils.getNodeAttributeValue(node, name);
-		if (value == null || value.length() == 0) {
-			return value;
-		}
-
-		return formatNodeValue(propertiesFactory, node, value);
-	}
-
-	public static String getRequireNodeAttributeValue(
-			PropertiesFactory propertiesFactory, Node node, String name) {
-		String value = getNodeAttributeValue(propertiesFactory, node, name);
-		if (StringUtils.isNull(value)) {
-			throw new BeansException("not found attribute " + name);
-		}
-		return value;
-	}
-
-	public static XmlBeanParameter parseBeanParameter(Node node)
-			throws ClassNotFoundException {
+	public static XmlBeanParameter parseBeanParameter(Node node) throws ClassNotFoundException {
 		String name = XMLUtils.getNodeAttributeValue(node, "name");
 		String ref = XMLUtils.getNodeAttributeValue(node, "ref");
 		String value = XMLUtils.getNodeAttributeValue(node, "value");
 		String type = XMLUtils.getNodeAttributeValue(node, "type");
 		String property = XMLUtils.getNodeAttributeValue(node, "property");
 
-		Class<?> typeClass = StringUtils.isNull(type) ? null : ClassUtils
-				.forName(type);
-		if (!StringUtils.isNull(ref)) {
-			return new XmlBeanParameter(EParameterType.ref, typeClass, name,
-					ref, node);
-		} else if (!StringUtils.isNull(property)) {
-			return new XmlBeanParameter(EParameterType.property, typeClass,
-					name, property, node);
+		Class<?> typeClass = StringUtils.isNull(type) ? null : ClassUtils.forName(type);
+		if (!StringUtils.isEmpty(ref)) {
+			return new XmlBeanParameter(EParameterType.ref, typeClass, name, ref, node);
+		} else if (!StringUtils.isEmpty(property)) {
+			return new XmlBeanParameter(EParameterType.property, typeClass, name, property, node);
 		} else {
-			if (StringUtils.isNull(value)) {
+			if (StringUtils.isEmpty(value)) {
 				value = node.getNodeValue();
 			}
-			return new XmlBeanParameter(EParameterType.value, typeClass, name,
-					value, node);
+			return new XmlBeanParameter(EParameterType.value, typeClass, name, value, node);
 		}
 	}
 
@@ -77,35 +50,21 @@ public final class XmlBeanUtils {
 
 	public static String[] getNames(Node node) {
 		String name = XMLUtils.getNodeAttributeValue(node, "name");
-		return StringUtils.isNull(name) ? null : StringUtils.commonSplit(name);
+		return StringUtils.isEmpty(name) ? null : StringUtils.commonSplit(name);
 	}
 
-	public static String getNodeValue(PropertiesFactory propertiesFactory,
-			Node node, String name) {
-		String value = XMLUtils.getNodeAttributeValue(node, name);
-		if (StringUtils.isNull(value)) {
-			value = node.getNodeValue();
-		}
-
-		return formatNodeValue(propertiesFactory, node, value);
+	public static boolean getBooleanValue(PropertiesFactory propertiesFactory, Node node, String name,
+			boolean defaultValue) {
+		String value = XMLUtils.getNodeAttributeValue(propertiesFactory, node, name);
+		return StringUtils.isEmpty(value) ? defaultValue : Boolean.parseBoolean(value);
 	}
 
-	public static boolean getBooleanValue(PropertiesFactory propertiesFactory,
-			Node node, String name, boolean defaultValue) {
-		String value = getNodeAttributeValue(propertiesFactory, node, name);
-		return StringUtils.isNull(value) ? defaultValue : Boolean
-				.parseBoolean(value);
+	public static int getIntegerValue(PropertiesFactory propertiesFactory, Node node, String name, int defaultValue) {
+		String value = XMLUtils.getNodeAttributeValue(propertiesFactory, node, name);
+		return StringUtils.isEmpty(value) ? defaultValue : Integer.parseInt(value);
 	}
 
-	public static int getIntegerValue(PropertiesFactory propertiesFactory,
-			Node node, String name, int defaultValue) {
-		String value = getNodeAttributeValue(propertiesFactory, node, name);
-		return StringUtils.isNull(value) ? defaultValue : Integer
-				.parseInt(value);
-	}
-
-	public static List<XmlBeanParameter> parseBeanParameterList(Node node)
-			throws ClassNotFoundException {
+	public static List<XmlBeanParameter> parseBeanParameterList(Node node) throws ClassNotFoundException {
 		List<XmlBeanParameter> xmlBeanParameters = new ArrayList<XmlBeanParameter>();
 		NodeList nodeList = node.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
@@ -125,8 +84,7 @@ public final class XmlBeanUtils {
 		try {
 			Node root = XMLUtils.getRootElement(config);
 			if (!"beans".equals(root.getNodeName())) {
-				throw new BeansException("root tag name error ["
-						+ root.getNodeName() + "]");
+				throw new BeansException("root tag name error [" + root.getNodeName() + "]");
 			}
 			return root;
 		} catch (Exception e) {
@@ -134,30 +92,25 @@ public final class XmlBeanUtils {
 		}
 	}
 
-	public static String getPackageName(PropertiesFactory propertiesFactory,
-			Node node) {
-		return getNodeAttributeValue(propertiesFactory, node, "package");
+	public static String getPackageName(PropertiesFactory propertiesFactory, Node node) {
+		return XMLUtils.getNodeAttributeValue(propertiesFactory, node, "package");
 	}
 
-	public static String getVersion(PropertiesFactory propertiesFactory,
-			Node node) {
-		return getNodeAttributeValue(propertiesFactory, node, "version");
+	public static String getVersion(PropertiesFactory propertiesFactory, Node node) {
+		return XMLUtils.getNodeAttributeValue(propertiesFactory, node, "version");
 	}
 
-	public static String getAddress(PropertiesFactory propertiesFactory,
-			Node node) {
-		return getRequireNodeAttributeValue(propertiesFactory, node, "address");
+	public static String getAddress(PropertiesFactory propertiesFactory, Node node) {
+		return XMLUtils.getRequireNodeAttributeValue(propertiesFactory, node, "address");
 	}
 
-	public static String getCharsetName(PropertiesFactory propertiesFactory,
-			Node node, String defaultValue) {
-		String charsetName = getNodeAttributeValue(propertiesFactory, node,
-				"charset");
+	public static String getCharsetName(PropertiesFactory propertiesFactory, Node node, String defaultValue) {
+		String charsetName = XMLUtils.getNodeAttributeValue(propertiesFactory, node, "charsetName");
 		return StringUtils.isNull(charsetName) ? defaultValue : charsetName;
 	}
 
 	public static String getCharsetName(Node node, String defaultValue) {
-		String charsetName = XMLUtils.getNodeAttributeValue(node, "charset");
+		String charsetName = XMLUtils.getNodeAttributeValue(node, "charsetName");
 		return StringUtils.isNull(charsetName) ? defaultValue : charsetName;
 	}
 
@@ -170,47 +123,118 @@ public final class XmlBeanUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<BeanMethod> getBeanMethodList(Class<?> clz,
-			NodeList nodeList, String tagName) throws Exception {
+	public static List<BeanMethod> getBeanMethodList(Class<?> clz, NodeList nodeList, String tagName) throws Exception {
 		List<BeanMethod> list = new ArrayList<BeanMethod>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if (tagName.equalsIgnoreCase(n.getNodeName())) {
-				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(
-						clz, n);
+				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(clz, n);
 				list.add(xmlBeanMethodInfo);
 			}
 		}
 		return list;
 	}
 
-	public static <T> T newInstanceLoadAttributeBySetter(Class<T> type,
-			final PropertiesFactory propertiesFactory, Node node,
-			final PropertyMapper<String> mapper) {
+	public static BeanMethod[] getFactoryMethodList(Class<?> clz, NodeList nodeList) throws Exception {
+		List<BeanMethod> list = XmlBeanUtils.getBeanMethodList(clz, nodeList, "factory");
+		return CollectionUtils.isEmpty(list) ? null : list.toArray(new BeanMethod[list.size()]);
+	}
+
+	public static BeanMethod[] getInitMethodList(Class<?> clz, NodeList nodeList) throws Exception {
+		List<BeanMethod> initMethodList = XmlBeanUtils.getBeanMethodList(clz, nodeList, "init");
+		initMethodList.addAll(AnnotationBeanDefinition.getInitMethodList(clz));
+		return CollectionUtils.isEmpty(initMethodList) ? null
+				: initMethodList.toArray(new BeanMethod[initMethodList.size()]);
+	}
+
+	public static BeanMethod[] getDestroyMethodList(Class<?> clz, NodeList nodeList) throws Exception {
+		List<BeanMethod> list = XmlBeanUtils.getBeanMethodList(clz, nodeList, "destroy");
+		list.addAll(AnnotationBeanDefinition.getDestroyMethdoList(clz));
+		return CollectionUtils.isEmpty(list) ? null : list.toArray(new BeanMethod[list.size()]);
+	}
+
+	public static XmlBeanParameter[] getConstructorParameters(NodeList nodeList) throws Exception {
+		List<XmlBeanParameter> constructorParameterList = new ArrayList<XmlBeanParameter>();
+		for (int a = 0; a < nodeList.getLength(); a++) {
+			Node n = nodeList.item(a);
+			if ("constructor".equalsIgnoreCase(n.getNodeName())) {// Constructor
+				List<XmlBeanParameter> list = parseBeanParameterList(n);
+				if (list != null) {
+					constructorParameterList.addAll(list);
+				}
+			}
+		}
+
+		return CollectionUtils.isEmpty(constructorParameterList) ? null
+				: constructorParameterList.toArray(new XmlBeanParameter[constructorParameterList.size()]);
+	}
+
+	public static XmlBeanParameter[] getBeanProperties(NodeList nodeList) throws Exception {
+		List<XmlBeanParameter> propertiesList = new ArrayList<XmlBeanParameter>();
+		for (int a = 0; a < nodeList.getLength(); a++) {
+			Node n = nodeList.item(a);
+			if ("properties".equalsIgnoreCase(n.getNodeName())) {// Properties
+				List<XmlBeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
+				if (list != null) {
+					propertiesList.addAll(list);
+				}
+			}
+		}
+
+		return CollectionUtils.isEmpty(propertiesList) ? null
+				: propertiesList.toArray(new XmlBeanParameter[propertiesList.size()]);
+	}
+
+	public static <T> T newInstanceLoadAttributeBySetter(Class<T> type, final PropertiesFactory propertiesFactory,
+			Node node, final PropertyMapper<String> mapper) {
 		Map<String, Node> map = XMLUtils.attributeAsMap(node);
 		try {
 			T t = ReflectUtils.newInstance(type);
-			ReflectUtils.setProperties(type, t, map,
-					new PropertyMapper<Node>() {
-						public Object mapper(String name, Node value,
-								Class<?> type) throws Exception {
-							XmlValue xmlValue = new XmlValue(value
-									.getNodeValue(), value);
-							String v = xmlValue.formatValue(propertiesFactory);
-							if (StringUtils.isEmpty(v)) {
-								return null;
-							}
+			ReflectUtils.setProperties(type, t, map, new PropertyMapper<Node>() {
+				public Object mapper(String name, Node value, Class<?> type) throws Exception {
+					XmlValue xmlValue = new XmlValue(value.getNodeValue(), value);
+					String v = xmlValue.formatValue(propertiesFactory);
+					if (StringUtils.isEmpty(v)) {
+						return null;
+					}
 
-							if (Class.class.isAssignableFrom(type)) {
-								return Class.forName(v);
-							}
+					if (Class.class.isAssignableFrom(type)) {
+						return Class.forName(v);
+					}
 
-							return mapper.mapper(name, v, type);
-						}
-					});
+					return mapper.mapper(name, v, type);
+				}
+			});
 			return t;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	public static String[] getFilters(Node node, String[] rootFilters) {
+		String filters = XMLUtils.getNodeAttributeValue(node, "filters");
+		if (StringUtils.isEmpty(filters)) {
+			return ArrayUtils.clone(rootFilters);
+		}
+
+		String[] arr = StringUtils.commonSplit(filters);
+		return ArrayUtils.merge(rootFilters, arr);
+	}
+
+	public static String getClassName(Node node) {
+		return XMLUtils.getRequireNodeAttributeValue(node, "class");
+	}
+
+	public static String getId(Node node) {
+		String id = XMLUtils.getNodeAttributeValue(node, "id");
+		return StringUtils.isEmpty(id) ? getClassName(node) : id;
+	}
+
+	public static Class<?> getClass(Node node) {
+		try {
+			return Class.forName(getClassName(node));
+		} catch (ClassNotFoundException e) {
+			throw new BeansException(e);
 		}
 	}
 }

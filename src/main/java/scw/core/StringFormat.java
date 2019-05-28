@@ -2,7 +2,7 @@ package scw.core;
 
 import scw.core.utils.StringUtils;
 
-public abstract class StringFormat{
+public abstract class StringFormat implements PropertiesFactory {
 	private char[] prefix;
 	private char[] suffix;
 
@@ -16,10 +16,10 @@ public abstract class StringFormat{
 	}
 
 	public final String format(final String text) {
-		if(StringUtils.isNull(text)){
+		if (StringUtils.isNull(text)) {
 			return text;
 		}
-		
+
 		char[] chars = text.toCharArray();
 		StringBuilder sb = new StringBuilder(chars.length * 2);
 		int begin = 0;
@@ -70,6 +70,4 @@ public abstract class StringFormat{
 		}
 		return true;
 	}
-	
-	protected abstract String getValue(final String key);
 }

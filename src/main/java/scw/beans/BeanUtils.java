@@ -22,8 +22,8 @@ import scw.beans.annotation.Config;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Properties;
-import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanParameter;
+import scw.core.PropertiesFactory;
 import scw.core.aop.Filter;
 import scw.core.aop.Invoker;
 import scw.core.aop.ProxyUtils;
@@ -212,7 +212,7 @@ public final class BeanUtils {
 
 	public static Object[] getBeanMethodParameterArgs(
 			XmlBeanParameter[] beanParameters, BeanFactory beanFactory,
-			scw.beans.property.PropertiesFactory propertiesFactory)
+			scw.core.PropertiesFactory propertiesFactory)
 			throws Exception {
 		Object[] args = new Object[beanParameters.length];
 		for (int i = 0; i < args.length; i++) {

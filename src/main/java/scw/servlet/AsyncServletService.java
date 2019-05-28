@@ -10,7 +10,7 @@ import javax.servlet.ServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
-import scw.beans.property.PropertiesFactory;
+import scw.core.PropertiesFactory;
 import scw.core.utils.StringUtils;
 
 @Bean(proxy = false)

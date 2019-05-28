@@ -6,9 +6,9 @@ import com.alibaba.dubbo.config.ProtocolConfig;
 
 import scw.beans.CommonFilter;
 import scw.beans.XmlBeanFactory;
-import scw.beans.property.PropertiesFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboUtils;
+import scw.core.PropertiesFactory;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;

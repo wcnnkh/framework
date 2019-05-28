@@ -19,12 +19,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
-import scw.beans.property.PropertiesFactory;
 import scw.core.DefaultKeyValuePair;
 import scw.core.KeyValuePair;
 import scw.core.KeyValuePairFilter;
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
+import scw.core.PropertiesFactory;
 import scw.core.net.http.ContentType;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;

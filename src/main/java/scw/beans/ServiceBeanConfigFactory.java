@@ -1,7 +1,7 @@
 package scw.beans;
 
 import scw.beans.annotation.Service;
-import scw.beans.property.PropertiesFactory;
+import scw.core.PropertiesFactory;
 import scw.core.utils.ClassUtils;
 
 /**

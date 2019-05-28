@@ -9,7 +9,7 @@ import org.w3c.dom.NodeList;
 import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.beans.property.PropertiesFactory;
+import scw.core.PropertiesFactory;
 import scw.core.utils.StringUtils;
 
 public class XmlBeanConfigFactory extends AbstractBeanConfigFactory {

@@ -9,7 +9,7 @@ import org.w3c.dom.Node;
 
 import scw.beans.BeanFactory;
 import scw.beans.EParameterType;
-import scw.beans.property.PropertiesFactory;
+import scw.core.PropertiesFactory;
 import scw.core.exception.NotFoundException;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;

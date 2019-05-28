@@ -11,7 +11,7 @@ public final class RequestBeanUtils {
 
 	public static Object[] getBeanMethodParameterArgs(ServletRequest request,
 			Class<?>[] constructorParameterTypes, XmlBeanParameter[] beanParameters, BeanFactory beanFactory,
-			scw.beans.property.PropertiesFactory propertiesFactory) throws Exception {
+			scw.core.PropertiesFactory propertiesFactory) throws Exception {
 		Object[] args = new Object[beanParameters.length];
 		for (int i = 0; i < args.length; i++) {
 			if (ServletRequest.class.isAssignableFrom(constructorParameterTypes[i])) {

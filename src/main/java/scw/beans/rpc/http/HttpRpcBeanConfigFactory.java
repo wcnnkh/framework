@@ -5,12 +5,13 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanFactory;
-import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.Constants;
+import scw.core.PropertiesFactory;
 import scw.core.serializer.Serializer;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.XMLUtils;
 
 public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "http:reference";
@@ -29,9 +30,9 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 				continue;
 			}
 
-			String sign = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "sign");
+			String sign = XMLUtils.getNodeAttributeValue(propertiesFactory, node, "sign");
 			String packageName = XmlBeanUtils.getPackageName(propertiesFactory, node);
-			String serializer = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "serializer");
+			String serializer = XMLUtils.getNodeAttributeValue(propertiesFactory, node, "serializer");
 			String address = XmlBeanUtils.getAddress(propertiesFactory, node);
 
 			Serializer ser = StringUtils.isEmpty(serializer) ? Constants.DEFAULT_SERIALIZER
@@ -54,13 +55,13 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 					continue;
 				}
 
-				String className = XmlBeanUtils.getNodeValue(propertiesFactory, node, "interface");
+				String className = XMLUtils.getNodeAttributeValue(propertiesFactory, node, "interface");
 				if (StringUtils.isNull(className)) {
 					continue;
 				}
 
 				Class<?> clz = Class.forName(className);
-				String mySign = XmlBeanUtils.getNodeAttributeValue(propertiesFactory, node, "sign");
+				String mySign = XMLUtils.getNodeAttributeValue(propertiesFactory, node, "sign");
 				if (StringUtils.isNull(mySign)) {
 					mySign = sign;
 				}

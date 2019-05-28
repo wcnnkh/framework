@@ -9,8 +9,8 @@ import com.alibaba.dubbo.config.ReferenceConfig;
 
 import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanFactory;
-import scw.beans.property.PropertiesFactory;
 import scw.beans.xml.XmlBeanUtils;
+import scw.core.PropertiesFactory;
 
 public final class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "dubbo:reference";

@@ -2,142 +2,80 @@ package scw.beans.xml;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import net.sf.cglib.proxy.Enhancer;
-import scw.beans.AnnotationBeanDefinition;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
-import scw.beans.property.PropertiesFactory;
 import scw.core.Destroy;
+import scw.core.PropertiesFactory;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
-import scw.core.utils.ClassUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.XMLUtils;
 
 public class XmlBeanDefinition implements BeanDefinition {
 	private final BeanFactory beanFactory;
 	private final PropertiesFactory propertiesFactory;
-	private final Class<?> type;
 	private String[] names;
 	private final String id;
 	private final boolean singleton;
 	private final String[] filterNames;
 	// 构造函数的参数
-	private final XmlBeanParameter[] constructorParameters;
+	private XmlBeanParameter[] constructorParameters;
 	private final XmlBeanParameter[] properties;
 	private final BeanMethod[] initMethods;
 	private final BeanMethod[] destroyMethods;
-	private BeanMethod factoryMethodInfo;
+	private final BeanMethod[] factoryMethods;
 	private final boolean proxy;
 
-	private final Constructor<?> constructor;
-	private Class<?>[] constructorParameterTypes;
 	private XmlBeanParameter[] beanMethodParameters;
 	private Enhancer enhancer;
 	private final FieldDefinition[] autowriteFields;
+	private final Class<?> type;
+	private final String refId;
+
+	// 如果是引用的就会为空
+	private Constructor<?> constructor;
+	private Class<?>[] constructorParameterTypes;
 
 	public XmlBeanDefinition(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode,
 			String[] filterNames) throws Exception {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
-
-		Node classNode = beanNode.getAttributes().getNamedItem("class");
-		Node nameNode = beanNode.getAttributes().getNamedItem("name");
-		if (nameNode != null) {
-			this.names = StringUtils.commonSplit(nameNode.getNodeValue());
-		}
-
-		String className = classNode == null ? null : classNode.getNodeValue();
-		if (StringUtils.isNull(className)) {
-			throw new BeansException("not found attribute [class]");
-		}
-
-		this.type = ClassUtils.forName(className);
-		Node singletonNode = beanNode.getAttributes().getNamedItem("singleton");
-		if (singletonNode != null) {
-			String v = singletonNode.getNodeValue();
-			this.singleton = StringUtils.isNull(v) ? true : Boolean.parseBoolean(v);
-		} else {
-			this.singleton = true;
-		}
-
-		Node idNode = beanNode.getAttributes().getNamedItem("id");
-		if (idNode == null) {
-			this.id = type.getName();
-		} else {
-			String v = idNode.getNodeValue();
-			this.id = StringUtils.isNull(v) ? type.getName() : v;
-		}
-
-		Node filtersNode = beanNode.getAttributes().getNamedItem("filters");
-		String[] filters = null;
-		if (filtersNode != null) {
-			filters = StringUtils.commonSplit(filtersNode.getNodeValue());
-		}
-
-		List<String> beanFilters = new ArrayList<String>();
-		if (filterNames != null) {
-			for (String name : filterNames) {
-				beanFilters.add(name);
-			}
-		}
-
-		if (filters != null) {
-			for (String f : filters) {
-				beanFilters.add(f);
-			}
-		}
-		this.filterNames = beanFilters.toArray(new String[beanFilters.size()]);
-
-		List<XmlBeanParameter> propertiesList = new ArrayList<XmlBeanParameter>();
-		List<XmlBeanParameter> constructorParameterList = new ArrayList<XmlBeanParameter>();
-		// constructor
+		this.type = XmlBeanUtils.getClass(beanNode);
+		this.names = XmlBeanUtils.getNames(beanNode);
+		this.refId = XMLUtils.getNodeAttributeValue(beanNode, "ref");
+		this.id = XmlBeanUtils.getId(beanNode);
+		this.singleton = XmlBeanUtils.isSingleton(beanNode);
+		this.filterNames = XmlBeanUtils.getFilters(beanNode, filterNames);
 		NodeList nodeList = beanNode.getChildNodes();
-		List<BeanMethod> initMethodList = XmlBeanUtils.getBeanMethodList(type, nodeList, "init");
-		List<BeanMethod> destroyMethodList = XmlBeanUtils.getBeanMethodList(type, nodeList, "destroy");
-		for (int a = 0; a < nodeList.getLength(); a++) {
-			Node n = nodeList.item(a);
-			if ("constructor".equalsIgnoreCase(n.getNodeName())) {// Constructor
-				List<XmlBeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
-				if (list != null) {
-					constructorParameterList.addAll(list);
-				}
-			} else if ("properties".equalsIgnoreCase(n.getNodeName())) {// Properties
-				List<XmlBeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
-				if (list != null) {
-					propertiesList.addAll(list);
-				}
-			}
-		}
-		this.properties = propertiesList.toArray(new XmlBeanParameter[propertiesList.size()]);
-		this.constructorParameters = constructorParameterList
-				.toArray(new XmlBeanParameter[constructorParameterList.size()]);
-
-		initMethodList.addAll(AnnotationBeanDefinition.getInitMethodList(type));
-		destroyMethodList.addAll(AnnotationBeanDefinition.getDestroyMethdoList(type));
-		this.initMethods = initMethodList.toArray(new BeanMethod[initMethodList.size()]);
-		this.destroyMethods = destroyMethodList.toArray(new BeanMethod[destroyMethodList.size()]);
+		this.factoryMethods = XmlBeanUtils.getFactoryMethodList(type, nodeList);
+		this.initMethods = XmlBeanUtils.getInitMethodList(type, nodeList);
+		this.destroyMethods = XmlBeanUtils.getDestroyMethodList(type, nodeList);
+		this.properties = XmlBeanUtils.getBeanProperties(nodeList);
 		this.proxy = BeanUtils.checkProxy(type, this.filterNames);
-		this.constructor = getConstructor();
-		if (constructor == null) {
-			throw new NotFoundException(type.getName() + "找不到对应的构造函数");
-		}
-		this.constructorParameterTypes = constructor.getParameterTypes();
 		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type, false).toArray(new FieldDefinition[0]);
+
+		if (StringUtils.isEmpty(refId)) {
+			this.constructorParameters = XmlBeanUtils.getConstructorParameters(nodeList);
+			this.constructor = getConstructor();
+			if (constructor == null) {
+				throw new NotFoundException(type.getName() + "找不到对应的构造函数");
+			}
+			this.constructorParameterTypes = constructor.getParameterTypes();
+		}
 	}
 
 	private Constructor<?> getConstructor() {
-		if (constructorParameters == null || constructorParameters.length == 0) {
+		if (ArrayUtils.isEmpty(constructorParameters)) {
 			return getConstructorByParameterTypes();
 		} else {
 			for (Constructor<?> constructor : type.getDeclaredConstructors()) {
@@ -196,7 +134,7 @@ public class XmlBeanDefinition implements BeanDefinition {
 
 	private Object createProxyInstance() throws Exception {
 		Enhancer enhancer = getProxyEnhancer();
-		if (constructorParameters.length == 0) {
+		if (ArrayUtils.isEmpty(constructorParameters)) {
 			return enhancer.create();
 		} else {
 			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertiesFactory);
@@ -205,6 +143,10 @@ public class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	private void setProperties(Object bean) throws Exception {
+		if (ArrayUtils.isEmpty(properties)) {
+			return;
+		}
+
 		for (XmlBeanParameter beanProperties : properties) {
 			Field field = ReflectUtils.getField(type, beanProperties.getName(), true);
 			if (field == null) {
@@ -217,7 +159,7 @@ public class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	private Object createInstance() throws Exception {
-		if (constructorParameterTypes == null || constructorParameterTypes.length == 0) {
+		if (ArrayUtils.isEmpty(constructorParameterTypes)) {
 			return constructor.newInstance();
 		} else {
 			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertiesFactory);
@@ -226,14 +168,17 @@ public class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		for (FieldDefinition fieldDefinition : autowriteFields) {
-			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, fieldDefinition);
+		if (!ArrayUtils.isEmpty(autowriteFields)) {
+			for (FieldDefinition fieldDefinition : autowriteFields) {
+				BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, fieldDefinition);
+			}
 		}
+
 		setProperties(bean);
 	}
 
 	public void init(Object bean) throws Exception {
-		if (initMethods != null && initMethods.length != 0) {
+		if (!ArrayUtils.isEmpty(initMethods)) {
 			for (BeanMethod method : initMethods) {
 				method.invoke(bean, beanFactory, propertiesFactory);
 			}
@@ -241,13 +186,13 @@ public class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	public void destroy(Object bean) throws Exception {
-		if (destroyMethods != null && destroyMethods.length != 0) {
+		if (!ArrayUtils.isEmpty(destroyMethods)) {
 			for (BeanMethod method : destroyMethods) {
 				method.invoke(bean, beanFactory, propertiesFactory);
 			}
 		}
-		
-		if(bean instanceof Destroy){
+
+		if (bean instanceof Destroy) {
 			((Destroy) bean).destroy();
 		}
 	}
@@ -256,24 +201,44 @@ public class XmlBeanDefinition implements BeanDefinition {
 	public <T> T create() {
 		Object bean = null;
 		try {
-			if (factoryMethodInfo == null || !Modifier.isStatic(factoryMethodInfo.getMethod().getModifiers())) {
+			if (!StringUtils.isEmpty(refId)) {
+				bean = beanFactory.get(refId);
+			} else {
 				if (isProxy()) {
 					bean = createProxyInstance();
 				} else {
 					bean = createInstance();
 				}
 			}
-			return (T) bean;
+
+			return (T) invokeFactory(bean);
 		} catch (Exception e) {
 			throw new BeansException(type.getName(), e);
 		}
+	}
+
+	private Object invokeFactory(Object bean) throws Exception {
+		if (ArrayUtils.isEmpty(factoryMethods)) {
+			return bean;
+		}
+
+		Object v = bean;
+		for (BeanMethod beanMethod : factoryMethods) {
+			Object temp = beanMethod.invoke(v, beanFactory, propertiesFactory);
+			if (!Void.class.isAssignableFrom(beanMethod.getMethod().getReturnType())) {
+				v = temp;
+			}
+		}
+		return v;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T create(Class<?>[] parameterTypes, Object... args) {
 		Object bean = null;
 		try {
-			if (factoryMethodInfo == null || !Modifier.isStatic(factoryMethodInfo.getMethod().getModifiers())) {
+			if (!StringUtils.isEmpty(refId)) {
+				bean = beanFactory.get(refId);
+			} else {
 				if (isProxy()) {
 					bean = getProxyEnhancer().create(parameterTypes, args);
 				} else {
@@ -281,10 +246,7 @@ public class XmlBeanDefinition implements BeanDefinition {
 				}
 			}
 
-			if (factoryMethodInfo != null) {
-				bean = factoryMethodInfo.invoke(bean, beanFactory, propertiesFactory);
-			}
-			return (T) bean;
+			return (T) invokeFactory(bean);
 		} catch (Exception e) {
 			throw new BeansException(e);
 		}
@@ -292,10 +254,6 @@ public class XmlBeanDefinition implements BeanDefinition {
 
 	public String[] getNames() {
 		return names;
-	}
-
-	public boolean isFactory() {
-		return factoryMethodInfo != null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -307,13 +265,18 @@ public class XmlBeanDefinition implements BeanDefinition {
 
 		Object bean;
 		try {
-			if (isProxy()) {
-				Enhancer enhancer = getProxyEnhancer();
-				bean = enhancer.create(constructor.getParameterTypes(), params);
+			if (!StringUtils.isEmpty(refId)) {
+				bean = beanFactory.get(refId);
 			} else {
-				bean = constructor.newInstance(params);
+				if (isProxy()) {
+					Enhancer enhancer = getProxyEnhancer();
+					bean = enhancer.create(constructor.getParameterTypes(), params);
+				} else {
+					bean = constructor.newInstance(params);
+				}
 			}
-			return (T) bean;
+
+			return (T) invokeFactory(bean);
 		} catch (Throwable e) {
 			throw new BeansException(getId(), e);
 		}
