@@ -132,11 +132,6 @@ public final class XmlBeanUtils {
 		return list;
 	}
 
-	public static BeanMethod[] getFactoryMethodList(Class<?> clz, NodeList nodeList) throws Exception {
-		List<BeanMethod> list = XmlBeanUtils.getBeanMethodList(clz, nodeList, "factory");
-		return CollectionUtils.isEmpty(list) ? null : list.toArray(new BeanMethod[list.size()]);
-	}
-
 	public static BeanMethod[] getInitMethodList(Class<?> clz, NodeList nodeList) throws Exception {
 		List<BeanMethod> initMethodList = XmlBeanUtils.getBeanMethodList(clz, nodeList, "init");
 		initMethodList.addAll(AnnotationBeanDefinition.getInitMethodList(clz));
