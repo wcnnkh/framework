@@ -33,7 +33,6 @@ public class XmlBeanDefinition implements BeanDefinition {
 	private final XmlBeanParameter[] properties;
 	private final BeanMethod[] initMethods;
 	private final BeanMethod[] destroyMethods;
-	private final BeanMethod[] factoryMethods;
 	private final boolean proxy;
 
 	private XmlBeanParameter[] beanMethodParameters;
@@ -57,7 +56,6 @@ public class XmlBeanDefinition implements BeanDefinition {
 		this.singleton = XmlBeanUtils.isSingleton(beanNode);
 		this.filterNames = XmlBeanUtils.getFilters(beanNode, filterNames);
 		NodeList nodeList = beanNode.getChildNodes();
-		this.factoryMethods = XmlBeanUtils.getFactoryMethodList(type, nodeList);
 		this.initMethods = XmlBeanUtils.getInitMethodList(type, nodeList);
 		this.destroyMethods = XmlBeanUtils.getDestroyMethodList(type, nodeList);
 		this.properties = XmlBeanUtils.getBeanProperties(nodeList);
@@ -211,25 +209,10 @@ public class XmlBeanDefinition implements BeanDefinition {
 				}
 			}
 
-			return (T) invokeFactory(bean);
+			return (T) bean;
 		} catch (Exception e) {
 			throw new BeansException(type.getName(), e);
 		}
-	}
-
-	private Object invokeFactory(Object bean) throws Exception {
-		if (ArrayUtils.isEmpty(factoryMethods)) {
-			return bean;
-		}
-
-		Object v = bean;
-		for (BeanMethod beanMethod : factoryMethods) {
-			Object temp = beanMethod.invoke(v, beanFactory, propertiesFactory);
-			if (!Void.class.isAssignableFrom(beanMethod.getMethod().getReturnType())) {
-				v = temp;
-			}
-		}
-		return v;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -246,7 +229,7 @@ public class XmlBeanDefinition implements BeanDefinition {
 				}
 			}
 
-			return (T) invokeFactory(bean);
+			return (T) bean;
 		} catch (Exception e) {
 			throw new BeansException(e);
 		}
@@ -276,7 +259,7 @@ public class XmlBeanDefinition implements BeanDefinition {
 				}
 			}
 
-			return (T) invokeFactory(bean);
+			return (T) bean;
 		} catch (Throwable e) {
 			throw new BeansException(getId(), e);
 		}
