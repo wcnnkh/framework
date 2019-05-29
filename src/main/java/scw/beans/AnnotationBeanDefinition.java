@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -16,6 +17,7 @@ import scw.core.exception.NotFoundException;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 
 public class AnnotationBeanDefinition implements BeanDefinition {
@@ -30,25 +32,15 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 	private final String[] filterNames;
 	private final boolean singleton;
 	private final FieldDefinition[] autowriteFieldDefinition;
+	private final String[] names;
 
 	public AnnotationBeanDefinition(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type,
 			String[] filterNames) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
 		this.propertiesFactory = propertiesFactory;
-		String id = type.getName();
-		Service service = type.getAnnotation(Service.class);
-		if (service != null) {
-			Class<?>[] interfaces = type.getInterfaces();
-			if (interfaces.length != 0) {
-				id = interfaces[0].getName();
-			}
-
-			if (!StringUtils.isNull(service.value())) {
-				id = service.value();
-			}
-		}
-		this.id = id;
+		this.id = getServiceId(type);
+		this.names = getServiceNames(type);
 		this.initMethods = getInitMethodList(type).toArray(new BeanMethod[0]);
 		this.destroyMethods = getDestroyMethdoList(type).toArray(new BeanMethod[0]);
 		this.filterNames = filterNames;
@@ -83,6 +75,40 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 			list.add(new NoArgumentBeanMethod(method));
 		}
 		return list;
+	}
+
+	public static String getServiceId(Class<?> clz) {
+		Service service = clz.getAnnotation(Service.class);
+		if (service == null) {
+			return clz.getName();
+		} else {
+			if (!StringUtils.isEmpty(service.value())) {
+				return service.value();
+			}
+
+			Class<?>[] clzs = clz.getInterfaces();
+			if (ArrayUtils.isEmpty(clzs)) {
+				return clz.getName();
+			} else {
+				return clzs[0].getName();
+			}
+		}
+	}
+
+	public static String[] getServiceNames(Class<?> clz) {
+		Service service = clz.getAnnotation(Service.class);
+		if (service == null) {
+			return null;
+		}
+
+		HashSet<String> list = new HashSet<String>();
+		Class<?>[] clzs = clz.getInterfaces();
+		if (clzs != null) {
+			for (Class<?> i : clzs) {
+				list.add(i.getName());
+			}
+		}
+		return list.isEmpty() ? null : list.toArray(new String[list.size()]);
 	}
 
 	public boolean isSingleton() {
@@ -171,7 +197,7 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 	}
 
 	public String[] getNames() {
-		return null;
+		return names;
 	}
 
 	@SuppressWarnings("unchecked")
