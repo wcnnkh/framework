@@ -105,6 +105,10 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		Class<?>[] clzs = clz.getInterfaces();
 		if (clzs != null) {
 			for (Class<?> i : clzs) {
+				if(i.getName().startsWith("java.") || i.getName().startsWith("javax.") || i.getName().startsWith("scw.")){
+					continue;
+				}
+				
 				list.add(i.getName());
 			}
 		}
