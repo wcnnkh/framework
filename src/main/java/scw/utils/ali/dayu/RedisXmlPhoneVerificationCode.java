@@ -2,6 +2,7 @@ package scw.utils.ali.dayu;
 
 import java.lang.reflect.InvocationTargetException;
 
+import scw.core.utils.XTime;
 import scw.data.redis.Redis;
 import scw.result.ResultFactory;
 
@@ -34,6 +35,6 @@ public final class RedisXmlPhoneVerificationCode extends AbstractXmlPhoneVerific
 		sb.append(phone);
 		sb.append("&").append(configIndex);
 		sb.append("&").append(tempSuffix);
-		redis.getObjectOperations().setex(sb.toString(), getMaxActiveTime(), json);
+		redis.getObjectOperations().setex(sb.toString(), (int) (XTime.ONE_DAY / 1000), json);
 	}
 }

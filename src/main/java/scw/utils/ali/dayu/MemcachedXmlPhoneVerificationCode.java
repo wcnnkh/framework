@@ -2,6 +2,7 @@ package scw.utils.ali.dayu;
 
 import java.lang.reflect.InvocationTargetException;
 
+import scw.core.utils.XTime;
 import scw.data.memcached.Memcached;
 import scw.result.ResultFactory;
 
@@ -32,6 +33,6 @@ public final class MemcachedXmlPhoneVerificationCode extends AbstractXmlPhoneVer
 		sb.append(phone);
 		sb.append("&").append(configIndex);
 		sb.append("&").append(tempSuffix);
-		memcached.set(sb.toString(), getMaxActiveTime(), json);
+		memcached.set(sb.toString(), (int) (XTime.ONE_DAY / 1000), json);
 	}
 }
