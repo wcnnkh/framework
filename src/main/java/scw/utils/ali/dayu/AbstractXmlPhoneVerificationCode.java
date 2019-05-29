@@ -7,28 +7,24 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
-import com.alibaba.fastjson.JSONObject;
-
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.RandomUtils;
 import scw.core.utils.XMLUtils;
 import scw.core.utils.XTime;
-import scw.result.DataResult;
+import scw.json.JSONUtils;
+import scw.result.Result;
 import scw.result.ResultFactory;
 
 public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode, scw.core.Destroy {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final static String LAST_TIME_SEND_NAME = "lastSendTime";
-	private final static String CODE_NAME = "code";
-	private final static String COUNT_NAME = "count";
 
 	private final String codeParameterKey;
 	private final int codeLength;
 	private final boolean debug;
 	private final int everyDayMaxSize;// 每天发送限制
 	private final int maxTimeInterval;// 两次发送时间限制
-	private final int maxActiveTime;// 验证码有效时间
+	private int maxActiveTime;// 验证码有效时间
 	private final List<MessageModel> modelList;
 	private final AliDaYu aLiDaYu;
 	private final ResultFactory resultFactory;
@@ -57,7 +53,9 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		this.everyDayMaxSize = XMLUtils.getNodeAttributeValue(Integer.class, root, "everyDayMaxSize", 10);
 		this.maxTimeInterval = XMLUtils.getNodeAttributeValue(Integer.class, root, "maxTimeInterval", 30);
 		this.maxActiveTime = XMLUtils.getNodeAttributeValue(Integer.class, root, "maxActiveTime", 300);
-
+		if (this.maxActiveTime <= 0) {
+			maxActiveTime = 300;
+		}
 	}
 
 	public MessageModel getMessageModel(int index) {
@@ -72,7 +70,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		return modelList.get(index);
 	}
 
-	public DataResult<String> sendMessage(int configIndex, final String sms_param, final String toPhones) {
+	public Result sendMessage(int configIndex, final String sms_param, final String toPhones) {
 		MessageModel messageModel = getMessageModel(configIndex);
 		if (messageModel == null) {
 			return resultFactory.error("系统配置错误");
@@ -87,7 +85,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		}
 	}
 
-	public DataResult<String> sendMessage(MessageModel messageModel, String sms_param, String toPhones) {
+	public Result sendMessage(MessageModel messageModel, String sms_param, String toPhones) {
 		return aLiDaYu.sendMessage(messageModel, sms_param, toPhones);
 	}
 
@@ -95,8 +93,8 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		return RandomUtils.getNumCode(codeLength);
 	}
 
-	public DataResult<String> sendCode(int configIndex, String phone, Map<String, String> parameterMap) {
-		DataResult<String> processResult = canSend(configIndex, phone);
+	public Result sendCode(int configIndex, String phone, Map<String, String> parameterMap) {
+		Result processResult = canSend(configIndex, phone);
 		if (!processResult.isSuccess()) {
 			return processResult;
 		}
@@ -111,7 +109,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 			logger.debug("向[{}]发送验证码:{}", phone, code);
 		}
 
-		processResult = sendMessage(configIndex, JSONObject.toJSONString(parameterMap), phone);
+		processResult = sendMessage(configIndex, JSONUtils.toJSONString(parameterMap), phone);
 		if (!processResult.isSuccess()) {
 			return processResult;
 		}
@@ -120,89 +118,89 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		return processResult;
 	}
 
-	public String getCodeParameterKey() {
+	public final String getCodeParameterKey() {
 		return codeParameterKey;
 	}
 
-	public int getCodeLength() {
+	public final int getCodeLength() {
 		return codeLength;
 	}
 
-	public boolean isDebug() {
+	public final boolean isDebug() {
 		return debug;
 	}
 
-	public int getEveryDayMaxSize() {
+	public final int getEveryDayMaxSize() {
 		return everyDayMaxSize;
 	}
 
-	public int getMaxTimeInterval() {
+	public final int getMaxTimeInterval() {
 		return maxTimeInterval;
 	}
 
-	public int getMaxActiveTime() {
+	public final int getMaxActiveTime() {
 		return maxActiveTime;
 	}
 
 	public boolean checkCode(int configIndex, String phone, String code, boolean duplicateCheck) {
-		JSONObject json = getCacheData(configIndex, phone);
+		PhoneVerificationCode json = getCacheData(configIndex, phone);
 		if (json == null) {
 			return false;
 		}
 
-		long lastSendTime = json.getLong(LAST_TIME_SEND_NAME);
+		long lastSendTime = json.getLastSendTime();
 		if (getMaxActiveTime() > 0 && (System.currentTimeMillis() - lastSendTime) > getMaxActiveTime() * 1000L) {
 			return false;// 验证码已过期
 		}
 
-		String cacheCode = json.getString(CODE_NAME);
+		String cacheCode = json.getCode();
 		if (!code.equals(cacheCode)) {
 			return false;// 验证码错误
 		}
 
 		if (!duplicateCheck) {// 如果此验证码不可以重复验证，那么在验证后删除此验证码
-			json.put(CODE_NAME, "");
+			json.setCode("");
 			setCacheData(configIndex, phone, json);
 		}
 		return true;
 	}
 
 	public void successCall(int configIndex, String phone, String code) {
-		JSONObject json = getCacheData(configIndex, phone);
+		PhoneVerificationCode json = getCacheData(configIndex, phone);
 		if (json == null) {
-			json = new JSONObject();
+			json = new PhoneVerificationCode();
 		}
 
-		if (System.currentTimeMillis() - json.getLongValue(LAST_TIME_SEND_NAME) > XTime.ONE_DAY) {
-			json.put(COUNT_NAME, 1);
+		if (System.currentTimeMillis() - json.getLastSendTime() > XTime.ONE_DAY) {
+			json.setCount(1);
 		} else {
-			json.put(COUNT_NAME, json.getIntValue(COUNT_NAME) + 1);
+			json.setCount(json.getCount() + 1);
 		}
 
-		json.put(CODE_NAME, code);
-		json.put(LAST_TIME_SEND_NAME, System.currentTimeMillis());
+		json.setCode(code);
+		json.setLastSendTime(System.currentTimeMillis());
 		setCacheData(configIndex, phone, json);
 	}
 
-	public <T> DataResult<T> canSend(int configIndex, String phone) {
-		JSONObject json = getCacheData(configIndex, phone);
-		if (json == null) {
+	public Result canSend(int configIndex, String phone) {
+		PhoneVerificationCode info = getCacheData(configIndex, phone);
+		if (info == null) {
 			return resultFactory.success();
 		}
 
-		long lastSendTime = json.getLong(LAST_TIME_SEND_NAME);
+		long lastSendTime = info.getLastSendTime();
 		if (getMaxTimeInterval() > 0 && (System.currentTimeMillis() - lastSendTime) < getMaxTimeInterval() * 1000L) {
 			return resultFactory.error("发送过于频繁");
 		}
 
-		int count = json.getIntValue(COUNT_NAME);
+		int count = info.getCount();
 		if (getEveryDayMaxSize() > 0 && (count > getEveryDayMaxSize())) {
 			return resultFactory.error("今日发送次数过多");
 		}
 		return resultFactory.success();
 	}
 
-	public abstract JSONObject getCacheData(int configIndex, String phone);
+	public abstract PhoneVerificationCode getCacheData(int configIndex, String phone);
 
-	public abstract void setCacheData(int configIndex, String phone, JSONObject json);
+	public abstract void setCacheData(int configIndex, String phone, PhoneVerificationCode data);
 }

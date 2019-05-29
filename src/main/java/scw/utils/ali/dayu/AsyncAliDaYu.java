@@ -4,14 +4,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import scw.result.DataResult;
+import scw.result.Result;
 import scw.result.ResultFactory;
 
 public final class AsyncAliDaYu implements AliDaYu, scw.core.Destroy{
 	private final AliDaYu aliDaYu;
 	private final ResultFactory resultFactory;
 	
-	private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(5, 20, 0L, TimeUnit.MILLISECONDS,
+	private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 100, 10, TimeUnit.MINUTES,
 			new LinkedBlockingQueue<Runnable>(512));
 
 	public AsyncAliDaYu(String appKey, String appSecret, ResultFactory resultFactory) {
@@ -25,7 +25,7 @@ public final class AsyncAliDaYu implements AliDaYu, scw.core.Destroy{
 		this.resultFactory = resultFactory;
 	}
 
-	public DataResult<String> sendMessage(final MessageModel messageModel, final String sms_param,
+	public Result sendMessage(final MessageModel messageModel, final String sms_param,
 			final String toPhones) {
 		threadPoolExecutor.submit(new Runnable() {
 

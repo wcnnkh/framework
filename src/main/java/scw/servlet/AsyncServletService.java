@@ -16,8 +16,6 @@ import scw.core.utils.StringUtils;
 @Bean(proxy = false)
 public class AsyncServletService extends DefaultServletService implements scw.core.Destroy {
 	private ThreadPoolExecutor executor;
-	private final int coreSize;
-	private final int maxSize;
 	/**
 	 * 把线程交给servlet容器来管理
 	 */
@@ -26,10 +24,14 @@ public class AsyncServletService extends DefaultServletService implements scw.co
 	public AsyncServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configPath,
 			String[] rootBeanFilters) throws Throwable {
 		super(beanFactory, propertiesFactory, configPath, rootBeanFilters);
-		this.coreSize = StringUtils.parseInt(propertiesFactory.getValue("servlet.thread.core.size"), 16);
-		this.maxSize = StringUtils.parseInt(propertiesFactory.getValue("servlet.thread.max.size"), 256);
+		int coreSize = StringUtils.parseInt(propertiesFactory.getValue("servlet.thread.core.size"), 16);
+		int maxSize = StringUtils.parseInt(propertiesFactory.getValue("servlet.thread.max.size"), 512);
 		this.containerThreadManager = StringUtils.parseBoolean(propertiesFactory.getValue("servlet.thread.container"),
 				false);
+		if (!containerThreadManager) {
+			executor = new ThreadPoolExecutor(coreSize, maxSize, 10, TimeUnit.MINUTES,
+					new LinkedBlockingQueue<Runnable>());
+		}
 	}
 
 	@Override
@@ -39,14 +41,6 @@ public class AsyncServletService extends DefaultServletService implements scw.co
 			if (containerThreadManager) {
 				command.defaultExecute();
 			} else {
-				if (executor == null) {
-					synchronized (this) {
-						if (executor == null) {
-							executor = new ThreadPoolExecutor(coreSize, maxSize, 1, TimeUnit.MINUTES,
-									new LinkedBlockingQueue<Runnable>());
-						}
-					}
-				}
 				executor.execute(command);
 			}
 			return;
