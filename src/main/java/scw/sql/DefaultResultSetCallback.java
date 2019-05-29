@@ -12,7 +12,9 @@ public final class DefaultResultSetCallback implements ResultSetCallback {
 
 	public void process(ResultSet rs) throws SQLException {
 		for (int i = 1; rs.next(); i++) {
-			rowCallback.processRow(rs, i);
+			if(!rowCallback.processRow(rs, i)){
+				break;
+			}
 		}
 	}
 

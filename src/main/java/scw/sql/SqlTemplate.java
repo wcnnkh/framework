@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 
 import scw.core.logger.DebugLogger;
@@ -92,22 +91,11 @@ public abstract class SqlTemplate implements SqlOperations, DebugLogger, WarnLog
 		}
 	}
 
-	protected void query(Sql sql, Connection connection, final RowCallback rowCallback) throws SQLException {
-		query(sql, connection, new ResultSetCallback() {
-
-			public void process(ResultSet rs) throws SQLException {
-				for (int i = 1; rs.next(); i++) {
-					rowCallback.processRow(rs, i);
-				}
-			}
-		});
-	}
-
 	public void query(Sql sql, RowCallback rowCallback) throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
-			query(sql, connection, rowCallback);
+			query(sql, connection, new DefaultResultSetCallback(rowCallback));
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
@@ -154,27 +142,11 @@ public abstract class SqlTemplate implements SqlOperations, DebugLogger, WarnLog
 		}
 	}
 
-	protected <T> List<T> query(Sql sql, Connection connection, final RowMapper<T> rowMapper) throws SQLException {
-		return query(sql, connection, new ResultSetMapper<List<T>>() {
-
-			public List<T> mapper(ResultSet resultSet) throws SQLException {
-				List<T> list = new LinkedList<T>();
-				for (int i = 1; resultSet.next(); i++) {
-					T t = rowMapper.mapRow(resultSet, i);
-					if (t != null) {
-						list.add(t);
-					}
-				}
-				return list;
-			}
-		});
-	}
-
 	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper) throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
-			return query(sql, connection, rowMapper);
+			return query(sql, connection, new DefaultResultSetMapper<T>(rowMapper));
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {

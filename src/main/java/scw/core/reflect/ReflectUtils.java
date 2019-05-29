@@ -7,13 +7,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessControlException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -21,6 +24,7 @@ import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.NotFoundException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.Assert;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -34,7 +38,7 @@ public final class ReflectUtils {
 	};
 
 	private static volatile IdentityHashMap<Class<?>, Map<String, Field>> fieldCache = new IdentityHashMap<Class<?>, Map<String, Field>>();
-	
+
 	public static <T, V> void setProperties(Class<T> type, T bean, Map<String, V> properties,
 			PropertyMapper<V> mapper) {
 		if (properties == null || properties.isEmpty()) {
@@ -882,6 +886,20 @@ public final class ReflectUtils {
 		}
 	}
 
+	public static Object getFieldValue(Class<?> clz, Object obj, Field field) throws Exception {
+		Method method = getGetterMethod(clz, field, true);
+		try {
+			if (method == null) {
+				return field.get(obj);
+			} else {
+				return method.invoke(obj);
+			}
+		} catch (Exception e) {
+			logger.error("获取对象{}中field={}时值时异常", clz.getName(), field.getName());
+			throw e;
+		}
+	}
+
 	public static Object setFieldValueAutoType(Class<?> clz, Field field, Object obj, String value) throws Exception {
 		return ReflectUtils.setFieldValue(clz, field, obj, StringUtils.conversion(value, field.getType()));
 	}
@@ -896,37 +914,44 @@ public final class ReflectUtils {
 	}
 
 	@SuppressWarnings("unchecked")
+	public static Map<String, Field> getFieldMap(Class<?> clz, boolean pub, boolean sup, boolean trimMap) {
+		final Map<String, Field> map = new LinkedHashMap<String, Field>();
+		iteratorField(clz, pub, sup, new scw.core.Iterator<Field>() {
+
+			public boolean iterator(Field data) {
+				if (Modifier.isStatic(data.getModifiers())) {
+					return true;
+				}
+
+				map.put(data.getName(), data);
+				return true;
+			}
+		});
+
+		if (trimMap) {
+			if (map.isEmpty()) {
+				return Collections.EMPTY_MAP;
+			}
+
+			Map<String, Field> trim = new LinkedHashMap<String, Field>(map.size(), 1);
+			trim.putAll(map);
+			return Collections.unmodifiableMap(trim);
+		}
+		return map;
+	}
+
 	public static Map<String, Field> getFieldMapUseCache(Class<?> clazz) {
 		Map<String, Field> map = fieldCache.get(clazz);
 		if (map == null) {
 			synchronized (fieldCache) {
 				map = fieldCache.get(clazz);
 				if (map == null) {
-					Field[] fields = clazz.getDeclaredFields();
-					if (fields.length == 0) {
-						map = Collections.EMPTY_MAP;
-					} else {
-						map = new LinkedHashMap<String, Field>(fields.length, 1);
-						for (Field field : fields) {
-							field.setAccessible(true);
-							if (ClassUtils.isBooleanType(field.getType())) {
-								if (field.getName().startsWith("is")) {
-									logger.warn("Boolean类型的字段不应该以is开头,class:{},field:{}", clazz.getName(),
-											field.getName());
-								}
-							}
-							map.put(field.getName(), field);
-						}
-					}
+					map = getFieldMap(clazz, false, false, true);
 					fieldCache.put(clazz, map);
 				}
 			}
 		}
-
-		if (map.isEmpty()) {
-			return map;
-		}
-		return Collections.unmodifiableMap(map);
+		return map;
 	}
 
 	public static Field getFieldUseCache(Class<?> clazz, String fieldName, boolean searchSuper) {
@@ -945,4 +970,281 @@ public final class ReflectUtils {
 		return field;
 	}
 
+	public static void iteratorField(Class<?> clazz, scw.core.Iterator<Field> iterator) {
+		iteratorField(clazz, false, true, iterator);
+	}
+
+	public static void iteratorField(Class<?> clazz, boolean pub, boolean sup, scw.core.Iterator<Field> iterator) {
+		Class<?> clz = clazz;
+		while (clz != null && clz != Object.class) {
+			for (Field field : pub ? clz.getFields() : clz.getDeclaredFields()) {
+				field.setAccessible(true);
+				if (!iterator.iterator(field)) {
+					break;
+				}
+			}
+
+			if (sup) {
+				clz = clz.getSuperclass();
+			} else {
+				break;
+			}
+		}
+	}
+
+	public static void iteratorMethod(Class<?> clazz, scw.core.Iterator<Method> iterator) {
+		iteratorMethod(clazz, false, true, iterator);
+	}
+
+	public static void iteratorMethod(Class<?> clazz, boolean pub, boolean sup, scw.core.Iterator<Method> iterator) {
+		Class<?> clz = clazz;
+		while (clz != null && clz != Object.class) {
+			for (Method method : pub ? clz.getMethods() : clz.getDeclaredMethods()) {
+				method.setAccessible(true);
+				if (!iterator.iterator(method)) {
+					break;
+				}
+			}
+
+			if (sup) {
+				clz = clz.getSuperclass();
+			} else {
+				break;
+			}
+		}
+	}
+
+	public static Map<String, Object> getFieldValueMap(final Object bean) {
+		if (bean == null) {
+			return null;
+		}
+
+		final Map<String, Object> map = new HashMap<String, Object>();
+		iteratorField(bean.getClass(), new scw.core.Iterator<Field>() {
+
+			public boolean iterator(Field data) {
+				if (Modifier.isStatic(data.getModifiers())) {
+					return true;
+				}
+
+				try {
+					map.put(data.getName(), getFieldValue(bean.getClass(), bean, data));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return true;
+			}
+		});
+		return map;
+	}
+
+	/**
+	 * 移出指定字段
+	 * 
+	 * @param bean
+	 * @param excludeName
+	 * @return
+	 */
+	public static Map<String, Object> getFieldValueMapExcludeName(final Object bean, String... excludeName) {
+		if (bean == null) {
+			return null;
+		}
+
+		final HashSet<String> hashSet;
+		if (ArrayUtils.isEmpty(excludeName)) {
+			hashSet = null;
+		} else {
+			hashSet = new HashSet<String>(excludeName.length);
+			for (String name : excludeName) {
+				hashSet.add(name);
+			}
+		}
+
+		final Map<String, Object> map = new HashMap<String, Object>();
+		iteratorField(bean.getClass(), new scw.core.Iterator<Field>() {
+
+			public boolean iterator(Field data) {
+				if (Modifier.isStatic(data.getModifiers())) {
+					return true;
+				}
+
+				if (hashSet != null && hashSet.contains(data.getName())) {
+					return true;
+				}
+
+				try {
+					map.put(data.getName(), getFieldValue(bean.getClass(), bean, data));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				return true;
+			}
+		});
+		return map;
+	}
+
+	/**
+	 * 只保留指定字段
+	 * 
+	 * @param object
+	 * @param effectiveName
+	 *            要保留的字段
+	 * @return
+	 */
+	public static Map<String, Object> getFieldValueMapEffectiveName(final Object bean, String... effectiveName) {
+		if (bean == null) {
+			return null;
+		}
+
+		final HashSet<String> hashSet;
+		if (ArrayUtils.isEmpty(effectiveName)) {
+			hashSet = null;
+		} else {
+			hashSet = new HashSet<String>(effectiveName.length);
+			for (String name : effectiveName) {
+				hashSet.add(name);
+			}
+		}
+
+		final Map<String, Object> map = new HashMap<String, Object>();
+		iteratorField(bean.getClass(), new scw.core.Iterator<Field>() {
+
+			public boolean iterator(Field data) {
+				if (Modifier.isStatic(data.getModifiers())) {
+					return true;
+				}
+
+				if (hashSet != null && !hashSet.contains(data.getName())) {
+					return true;
+				}
+
+				try {
+					map.put(data.getName(), getFieldValue(bean.getClass(), bean, data));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return true;
+			}
+		});
+		return map;
+	}
+
+	/**
+	 * 移出指定字段
+	 * 
+	 * @param bean
+	 * @param excludeName
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<Map<String, Object>> getObjectsFieldValueMapExcludeName(Collection<?> objects,
+			String... excludeName) {
+		if (CollectionUtils.isEmpty(objects)) {
+			return Collections.EMPTY_LIST;
+		}
+
+		final HashSet<String> hashSet;
+		if (ArrayUtils.isEmpty(excludeName)) {
+			hashSet = null;
+		} else {
+			hashSet = new HashSet<String>(excludeName.length);
+			for (String name : excludeName) {
+				hashSet.add(name);
+			}
+		}
+
+		List<Map<String, Object>> values = new ArrayList<Map<String, Object>>(objects.size());
+		Map<String, Field> fieldCache = null;
+		for (Object obj : objects) {
+			if (obj == null) {
+				continue;
+			}
+
+			if (fieldCache == null) {
+				fieldCache = getFieldMap(obj.getClass(), false, true, false);
+			}
+
+			Map<String, Object> map = new HashMap<String, Object>(fieldCache.size(), 1);
+			for (Entry<String, Field> entry : fieldCache.entrySet()) {
+				if (hashSet != null && hashSet.contains(entry.getKey())) {
+					continue;
+				}
+
+				Object v = null;
+				try {
+					v = getFieldValue(obj.getClass(), obj, entry.getValue());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				if (v == null) {
+					continue;
+				}
+
+				map.put(entry.getKey(), v);
+			}
+			values.add(map);
+		}
+		return values;
+	}
+
+	/**
+	 * 只保留指定字段
+	 * 
+	 * @param objects
+	 * @param excludeName
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<Map<String, Object>> getObjectsFieldValueMapEffectiveName(Collection<?> objects,
+			String... effectiveName) {
+		if (CollectionUtils.isEmpty(objects)) {
+			return Collections.EMPTY_LIST;
+		}
+
+		final HashSet<String> hashSet;
+		if (ArrayUtils.isEmpty(effectiveName)) {
+			hashSet = null;
+		} else {
+			hashSet = new HashSet<String>(effectiveName.length);
+			for (String name : effectiveName) {
+				hashSet.add(name);
+			}
+		}
+
+		List<Map<String, Object>> values = new ArrayList<Map<String, Object>>(objects.size());
+		Map<String, Field> fieldCache = null;
+		for (Object obj : objects) {
+			if (obj == null) {
+				continue;
+			}
+
+			if (fieldCache == null) {
+				fieldCache = getFieldMap(obj.getClass(), false, true, false);
+			}
+
+			Map<String, Object> map = new HashMap<String, Object>(fieldCache.size(), 1);
+			for (Entry<String, Field> entry : fieldCache.entrySet()) {
+				if (hashSet != null && !hashSet.contains(entry.getKey())) {
+					continue;
+				}
+
+				Object v = null;
+				try {
+					v = getFieldValue(obj.getClass(), obj, entry.getValue());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				if (v == null) {
+					continue;
+				}
+
+				map.put(entry.getKey(), v);
+			}
+			values.add(map);
+		}
+		return values;
+	}
 }
