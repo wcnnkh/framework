@@ -22,9 +22,9 @@ import scw.beans.tcc.StageType;
 import scw.beans.tcc.TCCService;
 import scw.core.Constants;
 import scw.core.serializer.Serializer;
+import scw.mq.rabbit.RabbitUtils;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
-import scw.utils.mq.rabbit.RabbitUtils;
 
 public final class RabbitTccService implements TCCService, scw.core.Destroy {
 	private Connection connection;

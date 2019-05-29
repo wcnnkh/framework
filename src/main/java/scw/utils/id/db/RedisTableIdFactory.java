@@ -2,9 +2,9 @@ package scw.utils.id.db;
 
 import scw.core.utils.ClassUtils;
 import scw.data.redis.Redis;
-import scw.locks.Lock;
-import scw.locks.RedisLock;
 import scw.sql.orm.SelectMaxId;
+import scw.utils.locks.Lock;
+import scw.utils.locks.RedisLock;
 
 public final class RedisTableIdFactory extends AbstractTableIdFactory {
 	private final Redis redis;

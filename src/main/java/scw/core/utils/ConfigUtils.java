@@ -186,11 +186,7 @@ public final class ConfigUtils {
 					cache = file.getPath();
 					SEARCH_PATH_CACHE.put(filePath, cache);
 					if (!file.getPath().equals(filePath)) {
-						StringBuilder sb = new StringBuilder();
-						sb.append(filePath);
-						sb.append(" ---> ");
-						sb.append(file.getPath());
-						logger.info(sb.toString());
+						logger.trace("{} ---> {}", filePath, file.getPath());
 					}
 				}
 			}

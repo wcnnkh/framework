@@ -1,7 +1,7 @@
 package scw.utils.tencent.weixin;
 
 import scw.data.redis.Redis;
-import scw.locks.RedisLock;
+import scw.utils.locks.RedisLock;
 import scw.utils.tencent.weixin.bean.AccessToken;
 import scw.utils.tencent.weixin.process.GetAccessToken;
 

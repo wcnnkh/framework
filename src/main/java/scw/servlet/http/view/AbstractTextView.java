@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletResponse;
 
+import scw.core.ConvertToString;
 import scw.core.logger.DebugLogger;
 import scw.core.net.http.ContentType;
 import scw.servlet.Request;
@@ -13,10 +14,8 @@ import scw.servlet.Response;
 import scw.servlet.ServletUtils;
 import scw.servlet.View;
 
-public abstract class AbstractTextView implements View {
+public abstract class AbstractTextView implements View, ConvertToString {
 	private Map<String, String> responseProperties;
-
-	public abstract String getResponseText();
 
 	public void addResponseHeader(String key, String value) {
 		if (responseProperties == null) {
@@ -24,7 +23,7 @@ public abstract class AbstractTextView implements View {
 		}
 		responseProperties.put(key, value);
 	}
-
+	
 	public void render(Request request, Response response) throws Exception {
 		if (!ServletUtils.isHttpServlet(request, response)) {
 			return;
@@ -41,7 +40,7 @@ public abstract class AbstractTextView implements View {
 			response.setContentType(ContentType.TEXT_HTML);
 		}
 
-		String content = getResponseText();
+		String content = convertToString();
 		if (response instanceof DebugLogger) {
 			if (((DebugLogger) response).isDebugEnabled()) {
 				((DebugLogger) response).debug(content);

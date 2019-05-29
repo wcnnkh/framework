@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.View;
-import scw.support.excel.jxl.export.JxlExport;
+import scw.utils.excel.jxl.export.JxlExport;
 
 public class JxlListToExcelView implements View {
 	private String fileName;

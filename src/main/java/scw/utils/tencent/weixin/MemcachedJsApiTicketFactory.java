@@ -1,7 +1,7 @@
 package scw.utils.tencent.weixin;
 
 import scw.data.memcached.Memcached;
-import scw.locks.MemcachedLock;
+import scw.utils.locks.MemcachedLock;
 import scw.utils.tencent.weixin.bean.JsApiTicket;
 import scw.utils.tencent.weixin.process.GetJsApiTicket;
 

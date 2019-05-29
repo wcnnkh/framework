@@ -3,6 +3,7 @@ package scw.servlet.http;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import scw.core.ConvertToString;
 import scw.core.logger.DebugLogger;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
@@ -12,10 +13,8 @@ import scw.core.utils.ClassUtils;
 import scw.json.JSONParseSupport;
 import scw.servlet.View;
 
-public class DefaultHttpResponse extends HttpServletResponseWrapper implements
-		HttpResponse, DebugLogger, WarnLogger {
-	private static Logger logger = LoggerFactory
-			.getLogger(DefaultHttpResponse.class);
+public class DefaultHttpResponse extends HttpServletResponseWrapper implements HttpResponse, DebugLogger, WarnLogger {
+	private static Logger logger = LoggerFactory.getLogger(DefaultHttpResponse.class);
 	private static final String JSONP_CALLBACK = "callback";
 	private static final String JSONP_RESP_PREFIX = "(";
 	private static final String JSONP_RESP_SUFFIX = ");";
@@ -23,9 +22,8 @@ public class DefaultHttpResponse extends HttpServletResponseWrapper implements
 	private JSONParseSupport jsonParseSupport;
 	private boolean debug;
 
-	public DefaultHttpResponse(JSONParseSupport jsonParseSupport,
-			HttpRequest httpRequest, HttpServletResponse httpServletResponse,
-			boolean debug) {
+	public DefaultHttpResponse(JSONParseSupport jsonParseSupport, HttpRequest httpRequest,
+			HttpServletResponse httpServletResponse, boolean debug) {
 		super(httpServletResponse);
 		this.jsonParseSupport = jsonParseSupport;
 		this.httpRequest = httpRequest;
@@ -42,8 +40,9 @@ public class DefaultHttpResponse extends HttpServletResponseWrapper implements
 				((View) obj).render(httpRequest, this);
 			} else {
 				String content;
-				if ((obj instanceof String)
-						|| (ClassUtils.isPrimitiveOrWrapper(obj.getClass()))) {
+				if (obj instanceof ConvertToString) {
+					content = ((ConvertToString) obj).convertToString();
+				} else if ((obj instanceof String) || (ClassUtils.isPrimitiveOrWrapper(obj.getClass()))) {
 					content = obj.toString();
 				} else {
 					content = jsonParseSupport.toJSONString(obj);
@@ -51,8 +50,7 @@ public class DefaultHttpResponse extends HttpServletResponseWrapper implements
 
 				String callback = null;
 				try {
-					callback = httpRequest.getParameter(String.class,
-							JSONP_CALLBACK);
+					callback = httpRequest.getParameter(String.class, JSONP_CALLBACK);
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
