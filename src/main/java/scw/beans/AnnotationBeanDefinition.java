@@ -101,18 +101,23 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 			return null;
 		}
 
-		HashSet<String> list = new HashSet<String>();
-		Class<?>[] clzs = clz.getInterfaces();
-		if (clzs != null) {
-			for (Class<?> i : clzs) {
-				if(i.getName().startsWith("java.") || i.getName().startsWith("javax.") || i.getName().startsWith("scw.")){
-					continue;
+		if (ArrayUtils.isEmpty(service.names())) {
+			HashSet<String> list = new HashSet<String>();
+			Class<?>[] clzs = clz.getInterfaces();
+			if (clzs != null) {
+				for (Class<?> i : clzs) {
+					if (i.getName().startsWith("java.") || i.getName().startsWith("javax.")
+							|| i == scw.core.Destroy.class) {
+						continue;
+					}
+
+					list.add(i.getName());
 				}
-				
-				list.add(i.getName());
 			}
+			return list.isEmpty() ? null : list.toArray(new String[list.size()]);
+		} else {
+			return service.names();
 		}
-		return list.isEmpty() ? null : list.toArray(new String[list.size()]);
 	}
 
 	public boolean isSingleton() {
