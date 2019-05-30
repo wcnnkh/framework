@@ -1,4 +1,4 @@
-package scw.utils.crontab;
+package scw.application.crontab;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -19,4 +19,6 @@ public @interface Crontab {
 	public String hour() default "*";
 
 	public String minute() default "*";
+
+	public Class<? extends CrontabContextFactory> factory() default DefaultCrontabContextFactory.class;
 }

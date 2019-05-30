@@ -98,11 +98,12 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 	public static String[] getServiceNames(Class<?> clz) {
 		Service service = clz.getAnnotation(Service.class);
 		if (service == null) {
-			return null;
+			return new String[] { clz.getName() };
 		}
 
 		if (ArrayUtils.isEmpty(service.names())) {
 			HashSet<String> list = new HashSet<String>();
+			list.add(clz.getName());
 			Class<?>[] clzs = clz.getInterfaces();
 			if (clzs != null) {
 				for (Class<?> i : clzs) {

@@ -3,9 +3,8 @@ package scw.core.logger.console;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import scw.core.logger.ILoggerFactory;
+import scw.core.logger.LoggerUtils;
 import scw.core.logger.Message;
-import scw.core.utils.StringUtils;
-import scw.core.utils.XTime;
 
 public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable {
 	private LinkedBlockingQueue<Message> handlerQueue = new LinkedBlockingQueue<Message>();
@@ -34,31 +33,22 @@ public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable 
 	protected abstract void out(Message message);
 
 	public void console(Message message) {
-		StringBuilder sb = new StringBuilder(512);
-		sb.append(XTime.format(message.getCts(), "yyyy-MM-dd HH:mm:ss,SSS"));
-		sb.append(" ").append(message.getLevel());
-		if (message.getTag() != null) {
-			sb.append(" [").append(message.getTag()).append("]");
-		}
-
-		sb.append(" - ");
-		sb.append(StringUtils.format(message.getMsg(),
-				StringUtils.isNull(message.getPlaceholder()) ? "{}" : message.getPlaceholder(), message.getParams()));
-
+		String msg = LoggerUtils.getLogMessage(message.getCts(), message.getLevel().name(), message.getTag(),
+				message.getPlaceholder(), message.getMsg(), message.getParams());
 		switch (message.getLevel()) {
 		case ERROR:
 		case WARN:
-			System.err.println(sb.toString());
+			System.err.println(msg);
 			break;
 		default:
-			System.out.println(sb.toString());
+			System.out.println(msg);
 			break;
 		}
 
 		if (message.getThrowable() != null) {
 			message.getThrowable().printStackTrace();
 		}
-		sb = null;
+		msg = null;
 	}
 
 	public void destroy() {

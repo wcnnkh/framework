@@ -1,15 +1,25 @@
 package scw.application;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.alibaba.dubbo.config.ProtocolConfig;
 
+import scw.application.crontab.Crontab;
+import scw.application.crontab.CrontabContext;
+import scw.application.crontab.CrontabContextFactory;
+import scw.beans.BeanUtils;
 import scw.beans.CommonFilter;
 import scw.beans.XmlBeanFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboUtils;
 import scw.core.PropertiesFactory;
+import scw.core.aop.Invoker;
+import scw.core.exception.AlreadyExistsException;
 import scw.core.logger.LoggerFactory;
+import scw.core.logger.LoggerUtils;
+import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.sql.orm.ORMUtils;
@@ -74,6 +84,8 @@ public class CommonApplication implements Application {
 		if (!StringUtils.isNull(configPath)) {
 			XmlDubboUtils.serviceExport(propertiesFactory, beanFactory, configPath);
 		}
+
+		crontabService();
 	}
 
 	public void destroy() {
@@ -92,5 +104,65 @@ public class CommonApplication implements Application {
 		ProtocolConfig.destroyAll();
 		beanFactory.destroy();
 		LoggerFactory.destroy();
+	}
+
+	protected final void crontabService() {
+		HashSet<String> taskNameSet = new HashSet<String>();
+		for (Class<?> clz : getClasses()) {
+			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Crontab.class)) {
+				Crontab c = method.getAnnotation(Crontab.class);
+				if (taskNameSet.contains(c.name())) {
+					throw new AlreadyExistsException("任务：" + c.name() + "已经存在");
+				}
+				scw.core.Crontab crontab = getBeanFactory().get(scw.core.Crontab.class);
+
+				CrontabRun crontabRun = new CrontabRun(c.name(), getBeanFactory().get(c.factory()),
+						BeanUtils.getInvoker(getBeanFactory(), clz, method));
+				crontab.crontab(c.dayOfWeek(), c.month(), c.dayOfMonth(), c.hour(), c.minute(), crontabRun);
+			}
+		}
+	}
+
+	final class CrontabRun implements Runnable {
+		private final String name;
+		private final Invoker invoker;
+		private final CrontabContextFactory crontabContextFactory;
+
+		public CrontabRun(String name, CrontabContextFactory crontabContextFactory, Invoker invoker) {
+			this.name = name;
+			this.crontabContextFactory = crontabContextFactory;
+			this.invoker = invoker;
+		}
+
+		public void run() {
+			CrontabContext context = crontabContextFactory.getContext(name);
+			if (context == null) {
+				execute();
+			} else {
+				if (!context.begin()) {
+					context.completet();
+					return;
+				}
+
+				try {
+					invoker.invoke();
+					context.end();
+				} catch (Throwable e) {
+					context.error(e);
+				} finally {
+					context.completet();
+				}
+			}
+		}
+
+		private void execute() {
+			LoggerUtils.info("开始执行Crontab：{}" + name);
+			try {
+				invoker.invoke();
+				LoggerUtils.info("执行Crontab结束：{}" + name);
+			} catch (Throwable e) {
+				LoggerUtils.error(e, name);
+			}
+		}
 	}
 }
