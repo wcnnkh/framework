@@ -11,6 +11,7 @@ import java.util.Map;
 import scw.core.exception.NotSupportException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
+import scw.core.utils.Assert;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
@@ -40,6 +41,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private final LazyCacheManager cacheManager;
 	private final MQ<AsyncInfo> asyncService;
+	private final boolean destroyAsyncService;
 	private boolean debug;
 
 	public void setDebug(boolean debug) {
@@ -58,7 +60,10 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 
 	public DB() {
 		this.cacheManager = null;
-		this.asyncService = new QueueMQ<AsyncInfo>(new MemoryQueue<AsyncInfo>());
+		QueueMQ<AsyncInfo> mq = new QueueMQ<AsyncInfo>(new MemoryQueue<AsyncInfo>());
+		mq.start();
+		this.asyncService = mq;
+		this.destroyAsyncService = true;
 		initAsyncService();
 	};
 
@@ -71,36 +76,43 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	}
 
 	public DB(Memcached memcached, String queueKey) {
+		Assert.notNull(memcached);
 		this.cacheManager = new MemcachedLazyCacheManager(memcached);
+		QueueMQ<AsyncInfo> mq;
 		if (StringUtils.isEmpty(queueKey)) {
-			this.asyncService = new QueueMQ<AsyncInfo>(new MemoryQueue<AsyncInfo>());
+			mq = new QueueMQ<AsyncInfo>(new MemoryQueue<AsyncInfo>());
 		} else {
 			getLogger().trace("memcached中异步处理队列名：{}", queueKey);
 			MemcachedQueue<AsyncInfo> queue = new MemcachedQueue<AsyncInfo>(memcached, queueKey);
-			QueueMQ<AsyncInfo> mq = new QueueMQ<AsyncInfo>(queue);
-			mq.start();
-			this.asyncService = mq;
+			mq = new QueueMQ<AsyncInfo>(queue);
 		}
+		mq.start();
+		this.asyncService = mq;
+		this.destroyAsyncService = true;
 		initAsyncService();
 	}
 
 	public DB(Redis redis, String queueKey) {
+		Assert.notNull(redis);
 		this.cacheManager = new RedisLazyCacheManager(redis);
+		QueueMQ<AsyncInfo> mq;
 		if (StringUtils.isEmpty(queueKey)) {
-			this.asyncService = new QueueMQ<AsyncInfo>(new MemoryQueue<AsyncInfo>());
+			mq = new QueueMQ<AsyncInfo>(new MemoryQueue<AsyncInfo>());
 		} else {
 			getLogger().trace("redis中异步处理队列名：{}", queueKey);
 			Queue<AsyncInfo> queue = new RedisQueue<AsyncInfo>(redis, queueKey);
-			QueueMQ<AsyncInfo> mq = new QueueMQ<AsyncInfo>(queue);
-			mq.start();
-			this.asyncService = mq;
+			mq = new QueueMQ<AsyncInfo>(queue);
 		}
+		mq.start();
+		this.asyncService = mq;
+		this.destroyAsyncService = true;
 		initAsyncService();
 	}
 
 	public DB(LazyCacheManager cacheManager, MQ<AsyncInfo> asyncService) {
 		this.cacheManager = cacheManager;
 		this.asyncService = asyncService;
+		this.destroyAsyncService = false;
 		initAsyncService();
 	}
 
@@ -116,8 +128,10 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	}
 
 	public void destroy() {
-		if (asyncService != null && asyncService instanceof QueueMQ) {
-			((QueueMQ<AsyncInfo>) asyncService).destroy();
+		if (destroyAsyncService) {
+			if (asyncService != null && asyncService instanceof QueueMQ) {
+				((QueueMQ<AsyncInfo>) asyncService).destroy();
+			}
 		}
 	}
 
