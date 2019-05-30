@@ -10,10 +10,10 @@ public final class LoggerUtils {
 	private LoggerUtils() {
 	};
 
-	public static String getLogMessage(long cts, String level, String tag, String placeholder, String msg,
+	public static String getLogMessage(String time, String level, String tag, String placeholder, String msg,
 			Object... args) {
 		StringBuilder sb = new StringBuilder(256);
-		sb.append(XTime.format(cts, TIME_FORMAT));
+		sb.append(time);
 
 		if (!StringUtils.isEmpty(level)) {
 			sb.append(" ").append(level);
@@ -26,6 +26,11 @@ public final class LoggerUtils {
 		sb.append(" - ");
 		sb.append(StringUtils.format(msg, StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER : placeholder, args));
 		return sb.toString();
+	}
+
+	public static String getLogMessage(long time, String level, String tag, String placeholder, String msg,
+			Object... args) {
+		return getLogMessage(XTime.format(time, TIME_FORMAT), level, tag, placeholder, msg, args);
 	}
 
 	public static void info(String msg, Object... args) {
