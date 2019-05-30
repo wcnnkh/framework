@@ -19,7 +19,7 @@ public final class LoggerUtils {
 			sb.append(" ").append(level);
 		}
 
-		if (StringUtils.isEmpty(tag)) {
+		if (!StringUtils.isEmpty(tag)) {
 			sb.append(" [").append(tag).append("]");
 		}
 
