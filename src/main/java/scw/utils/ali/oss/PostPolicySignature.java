@@ -5,15 +5,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.json.JSONUtils;
-import scw.servlet.http.view.AbstractTextView;
+import scw.servlet.view.AbstractTextView;
 
 /**
- * 请注意
- * 由于历史遗留问题，导致字段和返回的json字符串名称不一致
+ * 请注意 由于历史遗留问题，导致字段和返回的json字符串名称不一致
+ * 
  * @author shuchaowen
  *
  */
-public final class PostPolicySignature extends AbstractTextView implements Serializable {
+public final class PostPolicySignature extends AbstractTextView implements
+		Serializable {
 	private static final long serialVersionUID = 1L;
 	private String accessId;
 	private String policy;

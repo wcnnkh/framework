@@ -25,10 +25,6 @@ public class ServletViewResult<T> extends DefaultResult<T> implements View {
 		this.contentType = contentType;
 	}
 
-	protected String parseString(Object obj) {
-		return JSONUtils.toJSONString(obj);
-	}
-
 	public void render(Request request, Response response) throws IOException {
 		if (contentType != null) {
 			response.setContentType(contentType);
@@ -44,7 +40,7 @@ public class ServletViewResult<T> extends DefaultResult<T> implements View {
 		map.put("data", getData());
 		map.put("msg", getMsg());
 
-		String content = parseString(map);
+		String content = JSONUtils.toJSONString(map);
 		response.getWriter().write(content);
 
 		if (response instanceof DebugLogger) {
