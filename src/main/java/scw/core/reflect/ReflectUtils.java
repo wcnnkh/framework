@@ -773,12 +773,12 @@ public final class ReflectUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> Collection<T> getFieldCollection(Collection<?> objList, String fieldName) {
+	public static <T> List<T> getFieldValueList(Collection<?> objList, String fieldName) {
 		if (CollectionUtils.isEmpty(objList) || StringUtils.isEmpty(fieldName)) {
 			return Collections.EMPTY_LIST;
 		}
 
-		LinkedList<T> list = new LinkedList<T>();
+		List<T> list = new ArrayList<T>(objList.size());
 		Iterator<?> iterator = objList.iterator();
 		Field field = null;
 		while (iterator.hasNext()) {
