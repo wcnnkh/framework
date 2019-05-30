@@ -17,7 +17,7 @@ import scw.core.exception.NotFoundException;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
-import scw.core.utils.StringUtils;
+import scw.core.utils.ArrayUtils;
 
 public class AnnotationBeanDefinition implements BeanDefinition {
 	private final BeanFactory beanFactory;
@@ -78,8 +78,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 
 	public static String[] getServiceNames(Class<?> clz) {
 		Service service = clz.getAnnotation(Service.class);
-		if (service != null && !StringUtils.isEmpty(service.value())) {
-			return new String[] { service.value() };
+		if (service != null && !ArrayUtils.isEmpty(service.value())) {
+			return service.value();
 		}
 
 		HashSet<String> list = new HashSet<String>();
