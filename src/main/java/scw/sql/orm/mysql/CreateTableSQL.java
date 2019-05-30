@@ -3,6 +3,7 @@ package scw.sql.orm.mysql;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -123,7 +124,7 @@ public final class CreateTableSQL implements Sql {
 			sb.append(")");
 		}
 
-		Map<String, List<IndexInfo>> indexMap = new HashMap<String, List<IndexInfo>>();
+		Map<String, List<IndexInfo>> indexMap = new LinkedHashMap<String, List<IndexInfo>>();
 		Map<String, Index> indexConfigMap = new HashMap<String, Index>();
 		for (int i = 0; i < tableInfo.getColumns().length; i++) {
 			ColumnInfo columnInfo = tableInfo.getColumns()[i];
@@ -132,8 +133,8 @@ public final class CreateTableSQL implements Sql {
 				continue;
 			}
 
-			if (!indexConfigMap.containsKey(columnInfo.getName())) {
-				indexConfigMap.put(columnInfo.getName(), index);
+			if (!indexConfigMap.containsKey(index.name())) {
+				indexConfigMap.put(index.name(), index);
 			}
 
 			List<IndexInfo> indexList = indexMap.get(index.name());

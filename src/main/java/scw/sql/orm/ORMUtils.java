@@ -116,8 +116,7 @@ public final class ORMUtils {
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-	public static Object[] getPrimaryKeys(Object bean, TableInfo tableInfo,
-			boolean parse) throws Exception{
+	public static Object[] getPrimaryKeys(Object bean, TableInfo tableInfo, boolean parse) throws Exception {
 		ColumnInfo[] cs = tableInfo.getPrimaryKeyColumns();
 		Object[] objs = new Object[cs.length];
 		for (int i = 0; i < objs.length; i++) {
@@ -131,20 +130,13 @@ public final class ORMUtils {
 	}
 
 	public static boolean isDataBaseType(Class<?> type) {
-		return ClassUtils.isPrimitiveOrWrapper(type)
-				|| String.class.isAssignableFrom(type)
-				|| Date.class.isAssignableFrom(type)
-				|| Time.class.isAssignableFrom(type)
-				|| Timestamp.class.isAssignableFrom(type)
-				|| InputStream.class.isAssignableFrom(type)
-				|| Array.class.isAssignableFrom(type)
-				|| Blob.class.isAssignableFrom(type)
-				|| Clob.class.isAssignableFrom(type)
-				|| BigDecimal.class.isAssignableFrom(type)
-				|| Reader.class.isAssignableFrom(type)
-				|| NClob.class.isAssignableFrom(type)
-				|| URL.class.isAssignableFrom(type)
-				|| byte[].class.isAssignableFrom(type);
+		return ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
+				|| Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
+				|| Timestamp.class.isAssignableFrom(type) || InputStream.class.isAssignableFrom(type)
+				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
+				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
+				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type)
+				|| URL.class.isAssignableFrom(type) || byte[].class.isAssignableFrom(type);
 	}
 
 	public static String getDefaultTableName(Class<?> clazz) {
@@ -202,23 +194,24 @@ public final class ORMUtils {
 		return field.getAnnotation(PrimaryKey.class) != null;
 	}
 
+	public static boolean isIndexColumn(Field field) {
+		return field.getAnnotation(Index.class) != null;
+	}
+
 	public static boolean isAnnoataionColumnNullAble(Field field) {
 		boolean nullAble;
 		Column column = field.getAnnotation(Column.class);
 		if (column != null) {
-			if (column.unique() || isAnnoataionPrimaryKey(field)
-					|| field.getAnnotation(Index.class) != null) {
+			if (column.unique() || isAnnoataionPrimaryKey(field) || isIndexColumn(field)) {
 				nullAble = false;
 				if (column.nullAble()) {
-					logger.warn("字段{}不能或不推荐设置为允许为空，因为他可能是主键或索引",
-							field.getName());
+					logger.warn("字段{}不能或不推荐设置为允许为空，因为他可能是主键或索引", field.getName());
 				}
 			} else {
 				nullAble = column.nullAble();
 			}
 		} else {
-			if (isAnnoataionPrimaryKey(field)
-					|| field.getAnnotation(Index.class) != null) {
+			if (isAnnoataionPrimaryKey(field) || isIndexColumn(field)) {
 				nullAble = false;
 			} else {
 				nullAble = !field.getType().isPrimitive();

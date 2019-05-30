@@ -1,5 +1,10 @@
 package scw.sql.orm.annotation;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import scw.sql.orm.enums.IndexMethod;
 import scw.sql.orm.enums.IndexOrder;
 import scw.sql.orm.enums.IndexType;
@@ -10,6 +15,8 @@ import scw.sql.orm.enums.IndexType;
  * @author shuchaowen
  *
  */
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Index {
 	public String name() default "";
 
