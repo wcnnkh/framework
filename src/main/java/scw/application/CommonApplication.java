@@ -119,6 +119,7 @@ public class CommonApplication implements Application {
 				CrontabRun crontabRun = new CrontabRun(c.name(), getBeanFactory().get(c.factory()),
 						BeanUtils.getInvoker(getBeanFactory(), clz, method));
 				crontab.crontab(c.dayOfWeek(), c.month(), c.dayOfMonth(), c.hour(), c.minute(), crontabRun);
+				LoggerUtils.info("添加计划任务：{}", c.name());
 			}
 		}
 	}
