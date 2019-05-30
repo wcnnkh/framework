@@ -17,7 +17,6 @@ import scw.core.exception.NotFoundException;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
-import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 
 public class AnnotationBeanDefinition implements BeanDefinition {
@@ -39,7 +38,7 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		this.beanFactory = beanFactory;
 		this.type = type;
 		this.propertiesFactory = propertiesFactory;
-		this.id = getServiceId(type);
+		this.id = type.getName();
 		this.names = getServiceNames(type);
 		this.initMethods = getInitMethodList(type).toArray(new BeanMethod[0]);
 		this.destroyMethods = getDestroyMethdoList(type).toArray(new BeanMethod[0]);
@@ -77,48 +76,25 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		return list;
 	}
 
-	public static String getServiceId(Class<?> clz) {
-		Service service = clz.getAnnotation(Service.class);
-		if (service == null) {
-			return clz.getName();
-		} else {
-			if (!StringUtils.isEmpty(service.value())) {
-				return service.value();
-			}
-
-			Class<?>[] clzs = clz.getInterfaces();
-			if (ArrayUtils.isEmpty(clzs)) {
-				return clz.getName();
-			} else {
-				return clzs[0].getName();
-			}
-		}
-	}
-
 	public static String[] getServiceNames(Class<?> clz) {
 		Service service = clz.getAnnotation(Service.class);
-		if (service == null) {
-			return new String[] { clz.getName() };
+		if (service != null && !StringUtils.isEmpty(service.value())) {
+			return new String[] { service.value() };
 		}
 
-		if (ArrayUtils.isEmpty(service.names())) {
-			HashSet<String> list = new HashSet<String>();
-			list.add(clz.getName());
-			Class<?>[] clzs = clz.getInterfaces();
-			if (clzs != null) {
-				for (Class<?> i : clzs) {
-					if (i.getName().startsWith("java.") || i.getName().startsWith("javax.")
-							|| i == scw.core.Destroy.class) {
-						continue;
-					}
-
-					list.add(i.getName());
+		HashSet<String> list = new HashSet<String>();
+		Class<?>[] clzs = clz.getInterfaces();
+		if (clzs != null) {
+			for (Class<?> i : clzs) {
+				if (i.getName().startsWith("java.") || i.getName().startsWith("javax.")
+						|| i == scw.core.Destroy.class) {
+					continue;
 				}
+
+				list.add(i.getName());
 			}
-			return list.isEmpty() ? null : list.toArray(new String[list.size()]);
-		} else {
-			return service.names();
 		}
+		return list.isEmpty() ? null : list.toArray(new String[list.size()]);
 	}
 
 	public boolean isSingleton() {

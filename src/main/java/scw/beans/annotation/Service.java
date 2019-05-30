@@ -16,6 +16,4 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Service {
 	public String value() default "";
-	
-	public String[] names() default {};
 }
