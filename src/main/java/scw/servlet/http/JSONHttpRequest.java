@@ -12,19 +12,15 @@ import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.parameter.Body;
 
 public class JSONHttpRequest extends DefaultHttpRequest {
-	private static Logger logger = LoggerFactory
-			.getLogger(JSONHttpRequest.class);
+	private static Logger logger = LoggerFactory.getLogger(JSONHttpRequest.class);
 	private JSONObject json;
 
-	public JSONHttpRequest(RequestBeanFactory requestBeanFactory,
-			HttpServletRequest httpServletRequest, boolean cookieValue,
-			JSONParseSupport jsonParseSupport, boolean debug)
-			throws IOException {
+	public JSONHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
+			boolean cookieValue, JSONParseSupport jsonParseSupport, boolean debug) throws IOException {
 		super(requestBeanFactory, httpServletRequest, cookieValue, debug);
 		Body body = getBean(Body.class);
 		if (debug) {
-			debug("servletPath={},method={},{}", getServletPath(), getMethod(),
-					body.getBody());
+			debug("servletPath={},method={},{}", getServletPath(), getMethod(), body.getBody());
 		}
 		json = jsonParseSupport.parseObject(body.getBody());
 	}
@@ -36,6 +32,10 @@ public class JSONHttpRequest extends DefaultHttpRequest {
 
 	@Override
 	public String getParameter(String name) {
+		if (json == null) {
+			return null;
+		}
+
 		String v = json.getString(name);
 		if (v == null) {
 			v = super.getParameter(name);
@@ -48,7 +48,9 @@ public class JSONHttpRequest extends DefaultHttpRequest {
 		StringBuilder sb = new StringBuilder();
 		sb.append("servletPath=").append(getServletPath());
 		sb.append(",method=").append(getMethod());
-		sb.append(",").append(json.toJSONString());
+		if (json != null) {
+			sb.append(",").append(json.toJSONString());
+		}
 		return sb.toString();
 	}
 }

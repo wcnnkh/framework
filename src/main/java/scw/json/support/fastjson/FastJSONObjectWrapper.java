@@ -4,15 +4,15 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public final class FastJSONObject implements scw.json.JSONObject {
+public final class FastJSONObjectWrapper implements scw.json.JSONObject {
 	private static final long serialVersionUID = 1L;
 	private com.alibaba.fastjson.JSONObject json;
 
 	// 用于序列化
-	protected FastJSONObject() {
+	protected FastJSONObjectWrapper() {
 	};
 
-	public FastJSONObject(com.alibaba.fastjson.JSONObject json) {
+	public FastJSONObjectWrapper(com.alibaba.fastjson.JSONObject json) {
 		this.json = json;
 	}
 
@@ -70,12 +70,12 @@ public final class FastJSONObject implements scw.json.JSONObject {
 
 	public scw.json.JSONObject getJSONObject(String key) {
 		com.alibaba.fastjson.JSONObject jo = json.getJSONObject(key);
-		return jo == null ? null : new FastJSONObject(jo);
+		return jo == null ? null : new FastJSONObjectWrapper(jo);
 	}
 
 	public scw.json.JSONArray getJSONArray(String key) {
 		com.alibaba.fastjson.JSONArray jarr = json.getJSONArray(key);
-		return jarr == null ? null : new FastJSONArray(jarr);
+		return jarr == null ? null : new FastJSONArrayWrapper(jarr);
 	}
 
 	public <T> T getObject(String key, Class<T> type) {

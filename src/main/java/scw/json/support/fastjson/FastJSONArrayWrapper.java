@@ -5,14 +5,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public final class FastJSONArray implements scw.json.JSONArray {
+public final class FastJSONArrayWrapper implements scw.json.JSONArray {
 	private static final long serialVersionUID = 1L;
 	private com.alibaba.fastjson.JSONArray jsonArray;
 	
 	//用于序列化
-	protected FastJSONArray(){};
+	protected FastJSONArrayWrapper(){};
 
-	public FastJSONArray(com.alibaba.fastjson.JSONArray jsonArray) {
+	public FastJSONArrayWrapper(com.alibaba.fastjson.JSONArray jsonArray) {
 		this.jsonArray = jsonArray;
 	}
 
@@ -70,12 +70,12 @@ public final class FastJSONArray implements scw.json.JSONArray {
 
 	public scw.json.JSONObject getJSONObject(int index) {
 		com.alibaba.fastjson.JSONObject jsonObject = jsonArray.getJSONObject(index);
-		return jsonObject == null ? null : new FastJSONObject(jsonObject);
+		return jsonObject == null ? null : new FastJSONObjectWrapper(jsonObject);
 	}
 
 	public scw.json.JSONArray getJSONArray(int index) {
 		com.alibaba.fastjson.JSONArray jarr = jsonArray.getJSONArray(index);
-		return jarr == null ? null : new FastJSONArray(jarr);
+		return jarr == null ? null : new FastJSONArrayWrapper(jarr);
 	}
 
 	public <T> T getObject(int index, Class<T> type) {
