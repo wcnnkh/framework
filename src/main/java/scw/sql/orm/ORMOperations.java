@@ -37,7 +37,7 @@ public interface ORMOperations {
 	boolean delete(Object bean);
 
 	boolean delete(Object bean, String tableName);
-	
+
 	boolean deleteById(Class<?> type, Object... params);
 
 	boolean deleteById(String tableName, Class<?> type, Object... params);
@@ -45,4 +45,8 @@ public interface ORMOperations {
 	boolean saveOrUpdate(Object bean);
 
 	boolean saveOrUpdate(Object bean, String tableName);
+
+	<T> T getMaxValue(Class<?> tableClass, String tableName, String idField);
+	
+	<T> T getMaxValue(Class<?> tableClass, String idField);
 }

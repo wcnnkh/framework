@@ -108,7 +108,12 @@ public final class MysqlFormat implements SqlFormat {
 	}
 
 	private static final String LAST_INSERT_ID_SQL = "select last_insert_id()";
+
 	public Sql toLastInsertIdSql(String tableName) {
 		return new SimpleSql(LAST_INSERT_ID_SQL);
+	}
+
+	public Sql toMaxIdSql(TableInfo tableInfo, String tableName, String idField) {
+		return new MaxIdSql(tableInfo, tableName, idField);
 	}
 }

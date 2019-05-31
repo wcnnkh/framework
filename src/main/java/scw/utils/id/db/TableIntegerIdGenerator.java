@@ -21,16 +21,14 @@ public final class TableIntegerIdGenerator implements IdGenerator<Integer> {
 		this(tableClass, db, fieldName, 0, 1);
 	}
 
-	public TableIntegerIdGenerator(Class<?> tableClass, String fieldName,
-			int serverId, int maxServerId) {
+	public TableIntegerIdGenerator(Class<?> tableClass, String fieldName, int serverId, int maxServerId) {
 		this.tableClass = tableClass;
 		this.fieldName = fieldName;
 		this.serverId = serverId;
 		this.maxServerId = maxServerId;
 	}
 
-	public TableIntegerIdGenerator(Class<?> tableClass, DB db,
-			String fieldName, int serverId, int maxServerId) {
+	public TableIntegerIdGenerator(Class<?> tableClass, DB db, String fieldName, int serverId, int maxServerId) {
 		this.tableClass = tableClass;
 		this.fieldName = fieldName;
 		this.serverId = serverId;
@@ -46,10 +44,9 @@ public final class TableIntegerIdGenerator implements IdGenerator<Integer> {
 						db = DBManager.getDB(tableClass);
 					}
 
-					Integer maxId = db.getMaxIntValue(tableClass, fieldName);
+					Integer maxId = db.getMaxValue(tableClass, fieldName);
 					maxId = maxId == null ? 0 : maxId;
-					idGenerator = new IntegerIdGenerator(serverId, maxServerId,
-							maxId);
+					idGenerator = new IntegerIdGenerator(serverId, maxServerId, maxId);
 				}
 			}
 		}

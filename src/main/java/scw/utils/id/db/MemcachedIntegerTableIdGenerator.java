@@ -15,13 +15,11 @@ public final class MemcachedIntegerTableIdGenerator implements IdGenerator<Integ
 	private final boolean checkKey;
 	private DB db;
 
-	public MemcachedIntegerTableIdGenerator(Class<?> tableClass,
-			Memcached memcached, String fieldName) {
+	public MemcachedIntegerTableIdGenerator(Class<?> tableClass, Memcached memcached, String fieldName) {
 		this(tableClass, memcached, fieldName, true);
 	}
 
-	public MemcachedIntegerTableIdGenerator(DB db, Class<?> tableClass,
-			Memcached memcached, String fieldName) {
+	public MemcachedIntegerTableIdGenerator(DB db, Class<?> tableClass, Memcached memcached, String fieldName) {
 		this(db, tableClass, memcached, fieldName, true);
 	}
 
@@ -32,8 +30,8 @@ public final class MemcachedIntegerTableIdGenerator implements IdGenerator<Integ
 	 * @param checkKey
 	 *            是否每次都检查key是否存在
 	 */
-	public MemcachedIntegerTableIdGenerator(Class<?> tableClass,
-			Memcached memcached, String fieldName, boolean checkKey) {
+	public MemcachedIntegerTableIdGenerator(Class<?> tableClass, Memcached memcached, String fieldName,
+			boolean checkKey) {
 		this.memcached = memcached;
 		this.fieldName = fieldName;
 		this.tableClass = tableClass;
@@ -41,8 +39,8 @@ public final class MemcachedIntegerTableIdGenerator implements IdGenerator<Integ
 		this.checkKey = checkKey;
 	}
 
-	public MemcachedIntegerTableIdGenerator(DB db, Class<?> tableClass,
-			Memcached memcached, String fieldName, boolean checkKey) {
+	public MemcachedIntegerTableIdGenerator(DB db, Class<?> tableClass, Memcached memcached, String fieldName,
+			boolean checkKey) {
 		this.memcached = memcached;
 		this.fieldName = fieldName;
 		this.tableClass = tableClass;
@@ -70,10 +68,9 @@ public final class MemcachedIntegerTableIdGenerator implements IdGenerator<Integ
 						db = DBManager.getDB(tableClass);
 					}
 
-					Integer maxId = db.getMaxIntValue(tableClass, fieldName);
+					Integer maxId = db.getMaxValue(tableClass, fieldName);
 					maxId = maxId == null ? 0 : maxId;
-					idGenerator = new MemcachedIntegerIdGenerator(memcached,
-							key, maxId);
+					idGenerator = new MemcachedIntegerIdGenerator(memcached, key, maxId);
 				}
 			}
 		}

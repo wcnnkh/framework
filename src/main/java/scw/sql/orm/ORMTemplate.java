@@ -28,7 +28,7 @@ import scw.sql.orm.result.Result;
 import scw.sql.orm.result.ResultSet;
 import scw.transaction.sql.cache.QueryCacheUtils;
 
-public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, SelectMaxId {
+public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 
 	public abstract SqlFormat getSqlFormat();
 
@@ -366,29 +366,14 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations, 
 		});
 	}
 
-	public <T> T getMaxValue(Class<T> type, Class<?> tableClass, String tableName, String columnName) {
-		Select select = createSelect();
-		select.desc(tableClass, columnName);
-		return select.getResultSet().getFirst().get(type, tableName);
+	public <T> T getMaxValue(Class<?> tableClass, String tableName, String idField) {
+		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getDefaultName() : tableName;
+		Sql sql = getSqlFormat().toMaxIdSql(tableInfo, tName, idField);
+		return select(sql).getFirst().get(0);
 	}
 
-	public <T> T getMaxValue(Class<T> type, Class<?> tableClass, String columnName) {
-		return getMaxValue(type, tableClass, null, columnName);
-	}
-
-	public int getMaxIntValue(Class<?> tableClass, String fieldName) {
-		Integer maxId = getMaxValue(Integer.class, tableClass, fieldName);
-		if (maxId == null) {
-			maxId = 0;
-		}
-		return maxId;
-	}
-
-	public long getMaxLongValue(Class<?> tableClass, String fieldName) {
-		Long maxId = getMaxValue(Long.class, tableClass, fieldName);
-		if (maxId == null) {
-			maxId = 0L;
-		}
-		return maxId;
+	public <T> T getMaxValue(Class<?> tableClass, String idField) {
+		return getMaxValue(tableClass, null, idField);
 	}
 }

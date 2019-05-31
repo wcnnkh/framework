@@ -2,14 +2,14 @@ package scw.utils.id.db;
 
 import scw.core.exception.NotFoundException;
 import scw.sql.orm.ColumnInfo;
+import scw.sql.orm.ORMOperations;
 import scw.sql.orm.ORMUtils;
-import scw.sql.orm.SelectMaxId;
 import scw.sql.orm.TableInfo;
 
 public abstract class AbstractTableIdFactory implements TableIdFactory {
-	private final SelectMaxId db;
+	private final ORMOperations db;
 
-	public AbstractTableIdFactory(SelectMaxId db) {
+	public AbstractTableIdFactory(ORMOperations db) {
 		this.db = db;
 	}
 
@@ -20,7 +20,7 @@ public abstract class AbstractTableIdFactory implements TableIdFactory {
 			throw new NotFoundException(fieldName);
 		}
 
-		Number maxNumber = (Number) db.getMaxValue(columnInfo.getType(), tableClass, tableInfo.getDefaultName(), fieldName);
+		Number maxNumber = (Number) db.getMaxValue(tableClass, tableInfo.getDefaultName(), fieldName);
 		return maxNumber == null ? 0 : maxNumber.longValue();
 	}
 }

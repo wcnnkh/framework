@@ -22,8 +22,7 @@ import java.util.Map.Entry;
 
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.NotFoundException;
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
+import scw.core.logger.LoggerUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.Assert;
 import scw.core.utils.ClassUtils;
@@ -32,8 +31,6 @@ import scw.core.utils.ReflectionUtils;
 import scw.core.utils.StringUtils;
 
 public final class ReflectUtils {
-	private static Logger logger = LoggerFactory.getLogger(ReflectUtils.class);
-
 	private ReflectUtils() {
 	};
 
@@ -58,9 +55,9 @@ public final class ReflectUtils {
 					value = mapper.mapper(entry.getKey(), entry.getValue(), type);
 					field.set(bean, value);
 				} catch (Exception e) {
-					logger.error(
-							"向对象" + type.getName() + "，插入name=" + entry.getKey() + ",value=" + entry.getValue() + "时异常",
-							e);
+					LoggerUtils.warn(ReflectUtils.class, "向对象{}，插入name={},value={}时异常", type.getName(), entry.getKey(),
+							entry.getValue());
+					e.printStackTrace();
 				}
 				continue;
 			}
@@ -71,8 +68,9 @@ public final class ReflectUtils {
 					value = mapper.mapper(entry.getKey(), entry.getValue(), method.getParameterTypes()[0]);
 					method.invoke(bean, value);
 				} catch (Exception e) {
-					logger.error("向对象" + type.getName() + "，插入name=" + entry.getKey() + ",value=" + entry.getValue()
-							+ "时异常(调用set方法)", e);
+					LoggerUtils.warn(ReflectUtils.class, "向对象{}，插入name={},value={}时异常(调用set方法)", type.getName(),
+							entry.getKey(), entry.getValue());
+					e.printStackTrace();
 				}
 			}
 		}
@@ -605,7 +603,8 @@ public final class ReflectUtils {
 					}
 
 					if (find != null && fieldName.startsWith("is")) {
-						logger.warn("Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(), fieldName);
+						LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
+								fieldName);
 					}
 				} else {
 					if (method.getName().equals("get" + StringUtils.toUpperCase(fieldName, 0, 1))) {
@@ -655,7 +654,8 @@ public final class ReflectUtils {
 					}
 
 					if (find != null && fieldName.startsWith("is")) {
-						logger.warn("Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(), fieldName);
+						LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
+								fieldName);
 					}
 				} else {
 					if (method.getName().equals("set" + StringUtils.toUpperCase(fieldName, 0, 1))) {
@@ -690,7 +690,8 @@ public final class ReflectUtils {
 			if (ClassUtils.isBooleanType(field.getType())) {
 				String methodNameSuffix = field.getName();
 				if (methodNameSuffix.startsWith("is")) {
-					logger.warn("Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(), methodNameSuffix);
+					LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
+							methodNameSuffix);
 					methodNameSuffix = methodNameSuffix.substring(2);
 				}
 				try {
@@ -729,7 +730,8 @@ public final class ReflectUtils {
 			if (ClassUtils.isBooleanType(field.getType())) {
 				String methodNameSuffix = field.getName();
 				if (methodNameSuffix.startsWith("is")) {
-					logger.warn("Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(), methodNameSuffix);
+					LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
+							methodNameSuffix);
 					methodNameSuffix = methodNameSuffix.substring(2);
 				}
 
@@ -881,7 +883,7 @@ public final class ReflectUtils {
 				return method.invoke(obj, value);
 			}
 		} catch (Exception e) {
-			logger.error("向对象{}，插入field={}时异常", clz.getName(), field.getName());
+			LoggerUtils.warn(ReflectUtils.class, "向对象{}，插入field={}时异常", clz.getName(), field.getName());
 			throw e;
 		}
 	}
@@ -895,7 +897,7 @@ public final class ReflectUtils {
 				return method.invoke(obj);
 			}
 		} catch (Exception e) {
-			logger.error("获取对象{}中field={}时值时异常", clz.getName(), field.getName());
+			LoggerUtils.warn(ReflectUtils.class, "获取对象{}中field={}时值时异常", clz.getName(), field.getName());
 			throw e;
 		}
 	}

@@ -21,16 +21,14 @@ public final class TableLongIdGenerator implements IdGenerator<Long> {
 		this(tableClass, db, fieldName, 0, 1);
 	}
 
-	public TableLongIdGenerator(Class<?> tableClass, String fieldName,
-			int serverId, int maxServerId) {
+	public TableLongIdGenerator(Class<?> tableClass, String fieldName, int serverId, int maxServerId) {
 		this.tableClass = tableClass;
 		this.fieldName = fieldName;
 		this.serverId = serverId;
 		this.maxServerId = maxServerId;
 	}
 
-	public TableLongIdGenerator(Class<?> tableClass, DB db, String fieldName,
-			int serverId, int maxServerId) {
+	public TableLongIdGenerator(Class<?> tableClass, DB db, String fieldName, int serverId, int maxServerId) {
 		this.tableClass = tableClass;
 		this.fieldName = fieldName;
 		this.serverId = serverId;
@@ -45,10 +43,9 @@ public final class TableLongIdGenerator implements IdGenerator<Long> {
 					if (db == null) {
 						db = DBManager.getDB(tableClass);
 					}
-					Long maxId = db.getMaxLongValue(tableClass, fieldName);
+					Long maxId = db.getMaxValue(tableClass, fieldName);
 					maxId = maxId == null ? 0 : maxId;
-					idGenerator = new LongIdGenerator(serverId, maxServerId,
-							maxId);
+					idGenerator = new LongIdGenerator(serverId, maxServerId, maxId);
 				}
 			}
 		}
