@@ -3,11 +3,10 @@ package scw.beans.xml;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-import net.sf.cglib.proxy.Enhancer;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import net.sf.cglib.proxy.Enhancer;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
@@ -213,22 +212,6 @@ public final class XmlBeanDefinition implements BeanDefinition {
 			return (T) bean;
 		} catch (Exception e) {
 			throw new BeansException(type.getName(), e);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T create(Class<?>[] parameterTypes, Object... args) {
-		Object bean = null;
-		try {
-			if (isProxy()) {
-				bean = getProxyEnhancer().create(parameterTypes, args);
-			} else {
-				bean = type.getConstructor(parameterTypes).newInstance(args);
-			}
-
-			return (T) bean;
-		} catch (Exception e) {
-			throw new BeansException(e);
 		}
 	}
 

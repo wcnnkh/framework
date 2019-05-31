@@ -15,8 +15,8 @@ public class FormHttpRequest extends DefaultHttpRequest {
 
 	public FormHttpRequest(RequestBeanFactory requestBeanFactory,
 			HttpServletRequest httpServletRequest, boolean cookieValue,
-			boolean debug) throws IOException {
-		super(requestBeanFactory, httpServletRequest, cookieValue, debug);
+			boolean debug, boolean require) throws IOException {
+		super(requestBeanFactory, httpServletRequest, cookieValue, debug, require);
 		if (debug) {
 			debug("servletPath={},method={},{}", getServletPath(), getMethod(),
 					JSONUtils.toJSONString(getParameterMap()));

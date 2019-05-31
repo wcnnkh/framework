@@ -443,9 +443,10 @@ public final class ServletUtils {
 		String requestFactoryBeanName = propertiesFactory.getValue("servlet.wrapper-factory");
 		if (StringUtils.isEmpty(requestFactoryBeanName)) {
 			return beanFactory.get(HttpWrapperFactory.class, requestBeanFactory, isDebug(propertiesFactory),
-					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.parameter.cookie"), false),
+					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.parameter.cookie")),
 					getJsonParseSupport(beanFactory, propertiesFactory),
-					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.jsonp"), false));
+					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.jsonp")),
+					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.parameter.require"), true));
 		} else {
 			return beanFactory.get(requestFactoryBeanName);
 		}
@@ -511,4 +512,45 @@ public final class ServletUtils {
 		String[] filters = StringUtils.isEmpty(beanFilters) ? rootBeanFilters : StringUtils.commonSplit(beanFilters);
 		return beanFactory.get(CommonRequestBeanFactory.class, beanFactory, propertiesFactory, config, filters);
 	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Object getParameter(Request request, Class<?> type, String name) {
+		if (String.class.isAssignableFrom(type)) {
+			return request.getString(name);
+		} else if (int.class.isAssignableFrom(type)) {
+			return request.getIntValue(name);
+		} else if (Integer.class.isAssignableFrom(type)) {
+			return request.getInteger(name);
+		} else if (long.class.isAssignableFrom(type)) {
+			return request.getLongValue(name);
+		} else if (Long.class.isAssignableFrom(type)) {
+			return request.getLong(name);
+		} else if (float.class.isAssignableFrom(type)) {
+			return request.getFloatValue(name);
+		} else if (Float.class.isAssignableFrom(type)) {
+			return request.getFloat(name);
+		} else if (short.class.isAssignableFrom(type)) {
+			return request.getShortValue(name);
+		} else if (Short.class.isAssignableFrom(type)) {
+			return request.getShort(name);
+		} else if (boolean.class.isAssignableFrom(type)) {
+			return request.getBooleanValue(name);
+		} else if (Boolean.class.isAssignableFrom(type)) {
+			return request.getBoolean(name);
+		} else if (byte.class.isAssignableFrom(type)) {
+			return request.getByteValue(name);
+		} else if (Byte.class.isAssignableFrom(type)) {
+			return request.getByte(name);
+		} else if (char.class.isAssignableFrom(type)) {
+			return request.getChar(name);
+		} else if (Character.class.isAssignableFrom(type)) {
+			return request.getCharacter(name);
+		} else if (type.isEnum()) {
+			String v = request.getString(name);
+			return StringUtils.isEmpty(v) ? null : Enum.valueOf((Class<? extends Enum>) type, v);
+		} else {
+			return request.getBean(type, name);
+		}
+	}
+	
 }

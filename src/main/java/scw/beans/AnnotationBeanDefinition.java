@@ -140,22 +140,6 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T create(Class<?>[] parameterTypes, Object... args) {
-		Object bean;
-		try {
-			if (isProxy()) {
-				Enhancer enhancer = getProxyEnhancer();
-				bean = enhancer.create(parameterTypes, args);
-			} else {
-				bean = type.getDeclaredConstructor(parameterTypes).newInstance(args);
-			}
-			return (T) bean;
-		} catch (Exception e) {
-			throw new BeansException(getId(), e);
-		}
-	}
-
 	public void autowrite(Object bean) throws Exception {
 		for (FieldDefinition fieldDefinition : autowriteFieldDefinition) {
 			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, fieldDefinition);

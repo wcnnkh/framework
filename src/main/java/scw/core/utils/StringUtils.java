@@ -1855,18 +1855,18 @@ public final class StringUtils {
 		}
 
 		String[] arr = split(match, false, '*');
-		if(!match.startsWith("*")){
-			if(!text.startsWith(arr[0])){
+		if (!match.startsWith("*")) {
+			if (!text.startsWith(arr[0])) {
 				return false;
 			}
 		}
-		
-		if(!match.endsWith("*")){
-			if(!text.endsWith(arr[arr.length - 1])){
+
+		if (!match.endsWith("*")) {
+			if (!text.endsWith(arr[arr.length - 1])) {
 				return false;
 			}
 		}
-		
+
 		int begin = 0;
 		int len = text.length();
 		for (String v : arr) {
@@ -1896,7 +1896,7 @@ public final class StringUtils {
 
 			begin = a + vLen;
 		}
-		
+
 		return true;
 	}
 
@@ -1984,16 +1984,16 @@ public final class StringUtils {
 
 			if (find) {
 				if (ignoreNull && i == begin) {
-					begin ++;
+					begin++;
 					continue;
 				}
 
 				list.add(str.substring(begin, i));
 				begin = i + 1;
-			}else if(i == size - 1){
-				if(begin == 0){
+			} else if (i == size - 1) {
+				if (begin == 0) {
 					list.add(str);
-				}else{
+				} else {
 					list.add(str.substring(begin));
 				}
 			}
@@ -2023,8 +2023,8 @@ public final class StringUtils {
 
 		LinkedList<String> list = new LinkedList<String>();
 		while (index != -1 && v != null) {
-			if(ignoreNull && begin == index){
-				begin ++;
+			if (ignoreNull && begin == index) {
+				begin++;
 				for (String f : filters) {
 					index = str.indexOf(f, begin);
 					if (index != -1) {
@@ -2034,7 +2034,7 @@ public final class StringUtils {
 				}
 				continue;
 			}
-			
+
 			list.add(str.substring(begin, index));
 			begin = index + v.length();
 
@@ -2046,8 +2046,8 @@ public final class StringUtils {
 				}
 			}
 		}
-		
-		if(begin < str.length()){
+
+		if (begin < str.length()) {
 			list.add(str.substring(begin));
 		}
 
@@ -2182,6 +2182,18 @@ public final class StringUtils {
 			return defaultValue;
 		}
 		return Double.parseDouble(v);
+	}
+
+	public static char parseChar(String text) {
+		return parseChar(text, (char) 0);
+	}
+
+	public static char parseChar(String text, char defaultValue) {
+		String v = formatNumberText(text);
+		if (StringUtils.isEmpty(v)) {
+			return defaultValue;
+		}
+		return text.charAt(0);
 	}
 
 	/**

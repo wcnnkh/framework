@@ -27,65 +27,27 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 	private RequestBeanContext requestBeanContext;
 	private boolean cookieValue;
 	private boolean debug;
+	private boolean require;
 
 	public DefaultHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
-			boolean cookieValue, boolean debug) throws IOException {
+			boolean cookieValue, boolean debug, boolean require) throws IOException {
 		super(httpServletRequest);
 		this.createTime = System.currentTimeMillis();
 		this.requestBeanContext = new DefaultRequestBeanContext(this, requestBeanFactory);
 		this.cookieValue = cookieValue;
 		this.debug = debug;
+		this.require = require;
 	}
 
 	public long getCreateTime() {
 		return createTime;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected final Object getObject(Class<?> type, String name) {
-		if (String.class.isAssignableFrom(type)) {
-			return getString(name);
-		} else if (int.class.isAssignableFrom(type)) {
-			return getIntValue(name);
-		} else if (Integer.class.isAssignableFrom(type)) {
-			return getInteger(name);
-		} else if (long.class.isAssignableFrom(type)) {
-			return getLongValue(name);
-		} else if (Long.class.isAssignableFrom(type)) {
-			return getLong(name);
-		} else if (float.class.isAssignableFrom(type)) {
-			return getFloatValue(name);
-		} else if (Float.class.isAssignableFrom(type)) {
-			return getFloat(name);
-		} else if (short.class.isAssignableFrom(type)) {
-			return getShortValue(name);
-		} else if (Short.class.isAssignableFrom(type)) {
-			return getShort(name);
-		} else if (boolean.class.isAssignableFrom(type)) {
-			return getBooleanValue(name);
-		} else if (Boolean.class.isAssignableFrom(type)) {
-			return getBoolean(name);
-		} else if (byte.class.isAssignableFrom(type)) {
-			return getByteValue(name);
-		} else if (Byte.class.isAssignableFrom(type)) {
-			return getByte(name);
-		} else if (char.class.isAssignableFrom(type)) {
-			return getChar(name);
-		} else if (Character.class.isAssignableFrom(type)) {
-			return getCharacter(name);
-		} else if (type.isEnum()) {
-			String v = getString(name);
-			return StringUtils.isEmpty(v) ? null : Enum.valueOf((Class<? extends Enum>) type, v);
-		} else {
-			return getBean(type, name);
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	public final <T> T getParameter(Class<T> type, String name) {
 		T v = (T) getAttribute(name);
 		if (v == null) {
-			v = (T) getObject(type, name);
+			v = (T) ServletUtils.getParameter(this, type, name);
 		}
 		return v;
 	}
@@ -122,29 +84,31 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 			}
 		}
 
-		if (isNull(v)) {
-			return null;
-		}
-
-		if ("GET".equals(getMethod())) {
-			v = decodeGETParameter(v);
-		}
-
-		if (v == null && cookieValue) {
-			Cookie cookie = getCookie(name, false);
-			if (cookie != null) {
-				v = cookie.getValue();
+		if (v == null) {
+			if (cookieValue) {
+				Cookie cookie = getCookie(name, false);
+				if (cookie != null) {
+					v = cookie.getValue();
+				}
+			}
+		} else {
+			if ("GET".equals(getMethod())) {
+				v = decodeGETParameter(v);
 			}
 		}
 		return v;
 	}
 
-	public String getRequireParameter(String key) {
-		String v = getParameter(key);
-		if (isNull(v)) {
-			throw new NullPointerException("require '" + key + "'");
+	public String getRequireParameter(String name) {
+		String v = getParameter(name);
+		if (require && isNull(v)) {
+			throw new NullPointerException("require '" + name + "'");
 		}
 		return v;
+	}
+
+	protected boolean isNull(String value) {
+		return StringUtils.isEmpty(value);
 	}
 
 	public String decodeGETParameter(String value) {
@@ -164,8 +128,7 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 	}
 
 	public byte getByteValue(String key) {
-		String v = getRequireParameter(key);
-		return Byte.parseByte(v);
+		return StringUtils.parseByte(getRequireParameter(key));
 	}
 
 	public Short getShort(String key) {
@@ -178,31 +141,25 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 	}
 
 	public short getShortValue(String key) {
-		String v = getRequireParameter(key);
-
-		return Short.parseShort(StringUtils.formatNumberText(v));
+		return StringUtils.parseShort(getRequireParameter(key));
 	}
 
 	public Integer getInteger(String key) {
-		String str = getParameter(key);
-		return isNull(str) ? null : Integer.parseInt(StringUtils.formatNumberText(str));
+		String v = getParameter(key);
+		return isNull(v) ? null : StringUtils.parseInt(v);
 	}
 
 	public int getIntValue(String key) {
-		String v = getRequireParameter(key);
-
-		return Integer.parseInt(StringUtils.formatNumberText(v));
+		return StringUtils.parseInt(getRequireParameter(key));
 	}
 
 	public Long getLong(String key) {
 		String v = getParameter(key);
-		return isNull(v) ? null : Long.valueOf(StringUtils.formatNumberText(v));
+		return isNull(v) ? null : StringUtils.parseLong(v);
 	}
 
 	public long getLongValue(String key) {
-		String v = getRequireParameter(key);
-
-		return Long.parseLong(StringUtils.formatNumberText(v));
+		return StringUtils.parseLong(getRequireParameter(key));
 	}
 
 	public Boolean getBoolean(String key) {
@@ -215,42 +172,34 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 	}
 
 	public boolean getBooleanValue(String key) {
-		String v = getRequireParameter(key);
-		return StringUtils.parseBoolean(v);
+		return StringUtils.parseBoolean(getRequireParameter(key));
 	}
 
 	public Float getFloat(String key) {
 		String v = getParameter(key);
-		return isNull(v) ? null : Float.valueOf(StringUtils.formatNumberText(v));
+		return isNull(v) ? null : StringUtils.parseFloat(v);
 	}
 
 	public float getFloatValue(String key) {
-		String v = getRequireParameter(key);
-		return Float.parseFloat(StringUtils.formatNumberText(v));
+		return StringUtils.parseFloat(getRequireParameter(key));
 	}
 
 	public Double getDouble(String key) {
 		String v = getParameter(key);
-		return isNull(v) ? null : Double.valueOf(StringUtils.formatNumberText(v));
+		return isNull(v) ? null : StringUtils.parseDouble(v);
 	}
 
 	public double getDoubleValue(String key) {
-		String v = getRequireParameter(key);
-		return Double.parseDouble(StringUtils.formatNumberText(v));
+		return StringUtils.parseDouble(getRequireParameter(key));
 	}
 
 	public char getChar(String key) {
-		String v = getRequireParameter(key);
-		return v.charAt(0);
+		return StringUtils.parseChar(getRequireParameter(key));
 	}
 
 	public Character getCharacter(String key) {
 		String v = getParameter(key);
-		return isNull(v) ? null : v.charAt(0);
-	}
-
-	protected boolean isNull(String value) {
-		return StringUtils.isEmpty(value);
+		return isNull(v) ? null : StringUtils.parseChar(v);
 	}
 
 	public void destroy() {

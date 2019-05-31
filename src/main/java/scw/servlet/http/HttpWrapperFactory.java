@@ -16,28 +16,30 @@ public class HttpWrapperFactory extends AbstractWrapperFactory {
 	private final boolean cookieValue;
 	private final JSONParseSupport jsonParseSupport;
 	private boolean jsonp;
+	private boolean require;
 
 	public HttpWrapperFactory(RequestBeanFactory requestBeanFactory, boolean debug, boolean cookieValue,
-			JSONParseSupport jsonParseSupport, boolean jsonp) {
+			JSONParseSupport jsonParseSupport, boolean jsonp, boolean require) {
 		super(requestBeanFactory, debug);
 		this.cookieValue = cookieValue;
 		this.jsonParseSupport = jsonParseSupport;
 		this.jsonp = jsonp;
+		this.require = require;
 	}
 
 	public Request wrapperRequest(ServletRequest request, ServletResponse response) throws Exception {
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 		if (ServletUtils.isJsonRequest(httpServletRequest)) {
 			return new JSONHttpRequest(getRequestBeanFactory(), httpServletRequest, cookieValue, jsonParseSupport,
-					isDebug());
+					isDebug(), require);
 		} else {
-			return new FormHttpRequest(getRequestBeanFactory(), httpServletRequest, cookieValue, isDebug());
+			return new FormHttpRequest(getRequestBeanFactory(), httpServletRequest, cookieValue, isDebug(), require);
 		}
 	}
 
 	public Response wrapperResponse(ServletRequest request, ServletResponse response) throws Exception {
-		return new DefaultHttpResponse(jsonParseSupport, (HttpRequest) request, (HttpServletResponse) response,
-				jsonp, isDebug());
+		return new DefaultHttpResponse(jsonParseSupport, (HttpRequest) request, (HttpServletResponse) response, jsonp,
+				isDebug());
 	}
 
 }
