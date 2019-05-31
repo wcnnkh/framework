@@ -1,10 +1,8 @@
-package scw.result.support;
+package scw.result;
 
 import scw.beans.annotation.Bean;
-import scw.result.AbstractResultFactory;
-import scw.result.DataResult;
 
-@Bean(proxy = false)
+@Bean(proxy=false)
 public class DefaultResultFactory extends AbstractResultFactory {
 	private final int defaultErrorCode;
 	private final int defaultSuccessCode;

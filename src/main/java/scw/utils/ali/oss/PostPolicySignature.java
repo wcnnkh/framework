@@ -13,8 +13,7 @@ import scw.servlet.view.AbstractTextView;
  * @author shuchaowen
  *
  */
-public final class PostPolicySignature extends AbstractTextView implements
-		Serializable {
+public final class PostPolicySignature extends AbstractTextView implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String accessId;
 	private String policy;
@@ -53,7 +52,7 @@ public final class PostPolicySignature extends AbstractTextView implements
 		this.key = key;
 	}
 
-	public String convertToString() {
+	public String getTextContent() {
 		Map<String, Object> map = new HashMap<String, Object>(4, 1);
 		map.put("key", key);
 		map.put("OSSAccessKeyId", accessId);

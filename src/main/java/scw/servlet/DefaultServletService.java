@@ -2,9 +2,7 @@ package scw.servlet;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.ServletRequest;
@@ -13,24 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
-import scw.beans.rpc.http.DefaultRpcService;
 import scw.beans.rpc.http.RpcService;
-import scw.core.Constants;
 import scw.core.Destroy;
 import scw.core.PropertiesFactory;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.serializer.Serializer;
-import scw.core.utils.ClassUtils;
-import scw.core.utils.StringUtils;
-import scw.json.JSONParseSupport;
-import scw.json.JSONUtils;
-import scw.servlet.beans.CommonRequestBeanFactory;
 import scw.servlet.beans.RequestBeanFactory;
-import scw.servlet.http.HttpWrapperFactory;
-import scw.servlet.http.filter.HttpServiceFilter;
-import scw.servlet.http.filter.NotFoundFilter;
 
 public class DefaultServletService implements ServletService {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
@@ -38,7 +24,6 @@ public class DefaultServletService implements ServletService {
 	private final PropertiesFactory propertiesFactory;
 	private final BeanFactory beanFactory;
 	private final WrapperFactory wrapperFactory;
-	private final RequestBeanFactory requestBeanFactory;
 	private final String charsetName;
 	private final String rpcPath;
 	private final RpcService rpcService;
@@ -49,81 +34,21 @@ public class DefaultServletService implements ServletService {
 			String[] rootBeanFilters) throws Throwable {
 		this.beanFactory = beanFactory;
 		this.propertiesFactory = propertiesFactory;
-		this.requestBeanFactory = beanFactory.get(CommonRequestBeanFactory.class, beanFactory, propertiesFactory,
+		this.charsetName = ServletUtils.getCharsetName(propertiesFactory);
+		this.warnExecuteTime = ServletUtils.getWarnExecuteTime(propertiesFactory);
+
+		RequestBeanFactory requestBeanFactory = ServletUtils.getRequestBeanFactory(beanFactory, propertiesFactory,
 				configPath, rootBeanFilters);
+		this.wrapperFactory = ServletUtils.getWrapperFactory(beanFactory, requestBeanFactory, propertiesFactory);
 
-		JSONParseSupport jsonParseSupport;
-		String jsonParseSupportBeanName = propertiesFactory.getValue("servlet.json");
-		if (StringUtils.isEmpty(jsonParseSupportBeanName)) {
-			jsonParseSupport = JSONUtils.DEFAULT_PARSE_SUPPORT;
-		} else {
-			jsonParseSupport = beanFactory.get(jsonParseSupportBeanName);
-		}
+		this.rpcPath = ServletUtils.getRPCPath(propertiesFactory);
+		this.rpcService = ServletUtils.getRPCService(beanFactory, propertiesFactory);
 
-		this.warnExecuteTime = StringUtils.parseInt(propertiesFactory.getValue("servlet.warn-execute-time"), 100);
-		// 将下面的字符串(如：servlet.debug)设置为常量可以提高代码可读性，但此字符串只使用一次，设置为常量会浪费一部分内存
-		// 默认开启日志
-		boolean debug = StringUtils.parseBoolean(propertiesFactory.getValue("servlet.debug"), true);
-		String charsetName = propertiesFactory.getValue("servlet.charsetName");
-		this.charsetName = StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET.name() : charsetName;
-		String requestFactoryBeanName = propertiesFactory.getValue("servlet.request-factory");
-		if (StringUtils.isEmpty(requestFactoryBeanName)) {
-			this.wrapperFactory = beanFactory.get(HttpWrapperFactory.class, requestBeanFactory, debug,
-					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.parameter.cookie"), false),
-					jsonParseSupport);
-		} else {
-			this.wrapperFactory = beanFactory.get(requestFactoryBeanName);
-		}
-
-		String path = propertiesFactory.getValue("servlet.rpc-path");
-		this.rpcPath = StringUtils.isEmpty(path) ? "/rpc" : path;
-
-		String rpcServerBeanName = propertiesFactory.getValue("servlet.rpc");
-		if (StringUtils.isEmpty(rpcServerBeanName)) {
-			String sign = propertiesFactory.getValue("servlet.rpc-sign");
-			boolean enable = StringUtils.parseBoolean(propertiesFactory.getValue("servlet.rpc-enable"), false);
-			if (enable || !StringUtils.isEmpty(sign)) {// 开启
-				logger.info("rpc签名：{}", sign);
-				String serializer = propertiesFactory.getValue("servlet.rpc-serializer");
-				this.rpcService = beanFactory.get(DefaultRpcService.class, beanFactory, sign,
-						StringUtils.isEmpty(serializer) ? Constants.DEFAULT_SERIALIZER
-								: (Serializer) beanFactory.get(serializer));
-			} else {
-				this.rpcService = null;
-			}
-		} else {
-			this.rpcService = beanFactory.get(rpcServerBeanName);
-		}
-
-		List<Filter> filters = new ArrayList<Filter>();
-		String filterNames = propertiesFactory.getValue("servlet.filters");
-		if (!StringUtils.isEmpty(filterNames)) {
-			Collection<Filter> rootFilter = BeanUtils.getBeanList(beanFactory,
-					Arrays.asList(StringUtils.commonSplit(filterNames)));
-			filters.addAll(rootFilter);
-		}
-
-		String actionKey = propertiesFactory.getValue("servlet.actionKey");
-		actionKey = StringUtils.isEmpty(actionKey) ? "action" : actionKey;
-		String packageName = propertiesFactory.getValue("servlet.scanning");
-		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
-		filters.add(
-				beanFactory.get(HttpServiceFilter.class, beanFactory, ClassUtils.getClasses(packageName), actionKey));
-		String lastFilterNames = propertiesFactory.getValue("servlet.lastFilters");
-		if (!StringUtils.isEmpty(lastFilterNames)) {
-			Collection<Filter> rootFilter = BeanUtils.getBeanList(beanFactory,
-					Arrays.asList(StringUtils.commonSplit(lastFilterNames)));
-			filters.addAll(rootFilter);
-		}
-		filters.add(beanFactory.get(NotFoundFilter.class));
+		List<Filter> filters = ServletUtils.getFilters(beanFactory, propertiesFactory);
 		this.filters = Arrays.asList(filters.toArray(new Filter[filters.size()]));
 	}
 
-	protected WrapperFactory getWrapperFactory() {
-		return wrapperFactory;
-	}
-
-	public String getCharsetName() {
+	public final String getCharsetName() {
 		return charsetName;
 	}
 
@@ -135,16 +60,8 @@ public class DefaultServletService implements ServletService {
 		return beanFactory;
 	}
 
-	public RequestBeanFactory getRequestBeanFactory() {
-		return requestBeanFactory;
-	}
-
-	public RpcService getRpcService() {
-		return rpcService;
-	}
-
-	protected boolean checkRPCEnable(HttpServletRequest request) {
-		if (getRpcService() == null) {
+	protected final boolean checkRPCEnable(HttpServletRequest request) {
+		if (rpcService == null) {
 			return false;
 		}
 
@@ -172,7 +89,7 @@ public class DefaultServletService implements ServletService {
 		if (req instanceof HttpServletRequest) {
 			if (checkRPCEnable((HttpServletRequest) req)) {
 				try {
-					getRpcService().service(req.getInputStream(), resp.getOutputStream());
+					rpcService.service(req.getInputStream(), resp.getOutputStream());
 				} catch (Throwable e) {
 					error(req, resp, e);
 				}
@@ -185,12 +102,12 @@ public class DefaultServletService implements ServletService {
 		FilterChain filterChain = new scw.servlet.IteratorFilterChain(filters, null);
 		long t = System.currentTimeMillis();
 		try {
-			request = getWrapperFactory().wrapperRequest(req, resp);
+			request = wrapperFactory.wrapperRequest(req, resp);
 			if (request == null) {
 				return;
 			}
 
-			response = getWrapperFactory().wrapperResponse(request, resp);
+			response = wrapperFactory.wrapperResponse(request, resp);
 			if (response == null) {
 				return;
 			}

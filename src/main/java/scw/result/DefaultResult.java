@@ -1,8 +1,7 @@
-package scw.result.support;
+package scw.result;
 
 import java.io.Serializable;
 
-import scw.result.DataResult;
 import scw.transaction.RollbackOnlyResult;
 
 public class DefaultResult<T> implements DataResult<T>, Serializable, RollbackOnlyResult {

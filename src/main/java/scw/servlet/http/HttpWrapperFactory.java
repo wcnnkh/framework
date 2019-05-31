@@ -15,12 +15,14 @@ import scw.servlet.beans.RequestBeanFactory;
 public class HttpWrapperFactory extends AbstractWrapperFactory {
 	private final boolean cookieValue;
 	private final JSONParseSupport jsonParseSupport;
+	private boolean jsonp;
 
 	public HttpWrapperFactory(RequestBeanFactory requestBeanFactory, boolean debug, boolean cookieValue,
-			JSONParseSupport jsonParseSupport) {
+			JSONParseSupport jsonParseSupport, boolean jsonp) {
 		super(requestBeanFactory, debug);
 		this.cookieValue = cookieValue;
 		this.jsonParseSupport = jsonParseSupport;
+		this.jsonp = jsonp;
 	}
 
 	public Request wrapperRequest(ServletRequest request, ServletResponse response) throws Exception {
@@ -35,7 +37,7 @@ public class HttpWrapperFactory extends AbstractWrapperFactory {
 
 	public Response wrapperResponse(ServletRequest request, ServletResponse response) throws Exception {
 		return new DefaultHttpResponse(jsonParseSupport, (HttpRequest) request, (HttpServletResponse) response,
-				isDebug());
+				jsonp, isDebug());
 	}
 
 }
