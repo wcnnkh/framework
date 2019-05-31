@@ -112,7 +112,7 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 	}
 
 	public String decodeGETParameter(String value) {
-		if (!StringUtils.containsChinese(value)) {
+		if (StringUtils.containsChinese(value)) {
 			return value;
 		}
 		
