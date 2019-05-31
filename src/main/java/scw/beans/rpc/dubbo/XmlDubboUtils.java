@@ -62,8 +62,8 @@ public final class XmlDubboUtils {
 
 	private static List<ProtocolConfig> parseProtocolConfig(PropertiesFactory propertiesFactory,
 			BeanFactory beanFactory, Node node, final boolean root) {
-		ProtocolConfig config = XMLUtils.newInstanceLoadAttributeBySetter(ProtocolConfig.class, propertiesFactory,
-				node, new PropertyMapper<String>() {
+		ProtocolConfig config = XMLUtils.newInstanceLoadAttributeBySetter(ProtocolConfig.class, propertiesFactory, node,
+				new PropertyMapper<String>() {
 
 					public Object mapper(String name, String value, Class<?> type) {
 						if (root && "name".equals(name)) {
@@ -157,15 +157,15 @@ public final class XmlDubboUtils {
 	 * @param beanFactory
 	 * @param config
 	 */
-	public static void serviceExport(PropertiesFactory propertiesFactory, final BeanFactory beanFactory,
-			String config) {
-		new ServiceExort(propertiesFactory, beanFactory, config).start();
+	public static void serviceExport(PropertiesFactory propertiesFactory, final BeanFactory beanFactory, String config,
+			Runnable callback) {
+		new ServiceExort(propertiesFactory, beanFactory, config, callback).start();
 	}
 
 	private static List<ReferenceConfig<?>> parseReferenceConfig(PropertiesFactory propertiesFactory,
 			final BeanFactory beanFactory, Node node) {
-		ReferenceConfig<?> config = XMLUtils.newInstanceLoadAttributeBySetter(ReferenceConfig.class,
-				propertiesFactory, node, new PropertyMapper<String>() {
+		ReferenceConfig<?> config = XMLUtils.newInstanceLoadAttributeBySetter(ReferenceConfig.class, propertiesFactory,
+				node, new PropertyMapper<String>() {
 
 					public Object mapper(String name, String value, Class<?> type) {
 						if (StringUtils.isEmpty(value)) {
@@ -255,11 +255,14 @@ class ServiceExort extends Thread {
 	private boolean tag = false;
 	private int size = 0;
 	private Thread thread;
+	private Runnable callback;
 
-	public ServiceExort(PropertiesFactory propertiesFactory, BeanFactory beanFactory, String config) {
+	public ServiceExort(PropertiesFactory propertiesFactory, BeanFactory beanFactory, String config,
+			Runnable callback) {
 		this.propertiesFactory = propertiesFactory;
 		this.beanFactory = beanFactory;
 		this.config = config;
+		this.callback = callback;
 	}
 
 	@Override
@@ -268,6 +271,9 @@ class ServiceExort extends Thread {
 			export();
 		} finally {
 			tag = true;
+			if(callback != null){
+				callback.run();
+			}
 		}
 
 		if (size > 0) {

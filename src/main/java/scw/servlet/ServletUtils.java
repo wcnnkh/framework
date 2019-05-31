@@ -463,7 +463,7 @@ public final class ServletUtils {
 			String sign = propertiesFactory.getValue("servlet.rpc-sign");
 			boolean enable = StringUtils.parseBoolean(propertiesFactory.getValue("servlet.rpc-enable"), false);
 			if (enable || !StringUtils.isEmpty(sign)) {// 开启
-				LoggerUtils.info("rpc签名：{}", sign);
+				LoggerUtils.info(ServletUtils.class, "rpc签名：{}", sign);
 				String serializer = propertiesFactory.getValue("servlet.rpc-serializer");
 				return beanFactory.get(DefaultRpcService.class, beanFactory, sign, StringUtils.isEmpty(serializer)
 						? Constants.DEFAULT_SERIALIZER : (Serializer) beanFactory.get(serializer));
@@ -552,5 +552,5 @@ public final class ServletUtils {
 			return request.getBean(type, name);
 		}
 	}
-	
+
 }

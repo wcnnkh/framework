@@ -22,13 +22,10 @@ import org.w3c.dom.NodeList;
 
 import scw.core.StringFormatSystemProperties;
 import scw.core.exception.NotFoundException;
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
+import scw.core.logger.LoggerUtils;
 import scw.core.reflect.ReflectUtils;
 
 public final class ConfigUtils {
-	private static Logger logger = LoggerFactory.getLogger(ConfigUtils.class);
-
 	private static final String WEB_ROOT = "web.root";
 	private static final String CLASSPATH = "classpath";
 	private static final String CLASSPATH_PREFIX = CLASSPATH + ":";
@@ -186,12 +183,18 @@ public final class ConfigUtils {
 					cache = file.getPath();
 					SEARCH_PATH_CACHE.put(filePath, cache);
 					if (!file.getPath().equals(filePath)) {
-						logger.trace("{} ---> {}", filePath, file.getPath());
+						LoggerUtils.info(ConfigUtils.class, "{} ---> {}", filePath, file.getPath());
 					}
 				}
 			}
 		}
 		return new File(cache);
+	}
+	
+	public static void clearSearchPathCache(){
+		synchronized (SEARCH_PATH_CACHE) {
+			SEARCH_PATH_CACHE.clear();
+		}
 	}
 
 	private static File getFile(String filePath, Collection<String> testSuffix) {

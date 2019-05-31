@@ -33,19 +33,13 @@ public final class LoggerUtils {
 		return getLogMessage(XTime.format(time, TIME_FORMAT), level, tag, placeholder, msg, args);
 	}
 
-	public static void info(String msg, Object... args) {
-		System.out.println(getLogMessage(System.currentTimeMillis(), Level.INFO.name(), LoggerUtils.class.getName(),
+	public static void info(Class<?> clazz, String msg, Object ...args){
+		System.out.println(getLogMessage(System.currentTimeMillis(), Level.INFO.name(), clazz.getName(),
 				null, msg, args));
 	}
 
-	public static void warn(String msg, Object... args) {
-		System.err.println(getLogMessage(System.currentTimeMillis(), Level.WARN.name(), LoggerUtils.class.getName(),
+	public static void warn(Class<?> clazz, String msg, Object ...args){
+		System.err.println(getLogMessage(System.currentTimeMillis(), Level.WARN.name(), clazz.getName(),
 				null, msg, args));
-	}
-
-	public static void error(Throwable e, String msg, Object... args) {
-		System.err.println(getLogMessage(System.currentTimeMillis(), Level.ERROR.name(), LoggerUtils.class.getName(),
-				null, msg, args));
-		e.printStackTrace();
 	}
 }

@@ -21,6 +21,7 @@ import scw.core.logger.LoggerFactory;
 import scw.core.logger.LoggerUtils;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.sql.orm.ORMUtils;
 
@@ -82,10 +83,16 @@ public class CommonApplication implements Application {
 		beanFactory.init();
 
 		if (!StringUtils.isNull(configPath)) {
-			XmlDubboUtils.serviceExport(propertiesFactory, beanFactory, configPath);
-		}
+			XmlDubboUtils.serviceExport(propertiesFactory, beanFactory, configPath, new Runnable() {
 
+				public void run() {
+					ConfigUtils.clearSearchPathCache();
+				}
+			});
+		}
+		
 		crontabService();
+		ConfigUtils.clearSearchPathCache();
 	}
 
 	public void destroy() {
@@ -119,7 +126,7 @@ public class CommonApplication implements Application {
 				CrontabRun crontabRun = new CrontabRun(c.name(), getBeanFactory().get(c.factory()),
 						BeanUtils.getInvoker(getBeanFactory(), clz, method));
 				crontab.crontab(c.dayOfWeek(), c.month(), c.dayOfMonth(), c.hour(), c.minute(), crontabRun);
-				LoggerUtils.info("添加计划任务：{}", c.name());
+				LoggerUtils.info(CommonApplication.class, "添加计划任务：{}", c.name());
 			}
 		}
 	}
@@ -157,12 +164,13 @@ public class CommonApplication implements Application {
 		}
 
 		private void execute() {
-			LoggerUtils.info("开始执行Crontab：{}" + name);
+			LoggerUtils.info(CrontabRun.class, "开始执行Crontab：{}" + name);
 			try {
 				invoker.invoke();
-				LoggerUtils.info("执行Crontab结束：{}" + name);
+				LoggerUtils.info(CrontabRun.class, "执行Crontab结束：{}" + name);
 			} catch (Throwable e) {
-				LoggerUtils.error(e, name);
+				LoggerUtils.warn(CrontabRun.class, name);
+				e.printStackTrace();
 			}
 		}
 	}
