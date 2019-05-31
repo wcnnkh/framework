@@ -33,7 +33,7 @@ public final class ConfigUtils {
 	public static final StringFormatSystemProperties format1 = new StringFormatSystemProperties("{", "}");
 	public static final StringFormatSystemProperties format2 = new StringFormatSystemProperties("[", "]");
 	public static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
-	private static final Map<String, String> SEARCH_PATH_CACHE = new HashMap<String, String>();
+
 	private static String work_path_cache;
 
 	private ConfigUtils() {
@@ -163,38 +163,22 @@ public final class ConfigUtils {
 	}
 
 	public static File getFile(String filePath) throws NotFoundException {
-		String cache = SEARCH_PATH_CACHE.get(filePath);
-		if (cache == null) {
-			synchronized (SEARCH_PATH_CACHE) {
-				cache = SEARCH_PATH_CACHE.get(filePath);
-				if (cache == null) {
-					File file;
-					String configSuffix = getSystemProperty(CONFIG_SUFFIX);
-					if (StringUtils.isNull(configSuffix)) {
-						file = getFile(filePath, null);
-					} else {
-						file = getFile(filePath, Arrays.asList(StringUtils.commonSplit(configSuffix)));
-					}
-
-					if (file == null || !file.exists()) {
-						throw new NotFoundException(filePath);
-					}
-
-					cache = file.getPath();
-					SEARCH_PATH_CACHE.put(filePath, cache);
-					if (!file.getPath().equals(filePath)) {
-						LoggerUtils.info(ConfigUtils.class, "{} ---> {}", filePath, file.getPath());
-					}
-				}
-			}
+		File file;
+		String configSuffix = getSystemProperty(CONFIG_SUFFIX);
+		if (StringUtils.isEmpty(configSuffix)) {
+			file = getFile(filePath, null);
+		} else {
+			file = getFile(filePath, Arrays.asList(StringUtils.commonSplit(configSuffix)));
 		}
-		return new File(cache);
-	}
-	
-	public static void clearSearchPathCache(){
-		synchronized (SEARCH_PATH_CACHE) {
-			SEARCH_PATH_CACHE.clear();
+
+		if (file == null || !file.exists()) {
+			throw new NotFoundException(filePath);
 		}
+
+		if (!file.getPath().equals(filePath)) {
+			LoggerUtils.info(ConfigUtils.class, "{} ---> {}", filePath, file.getPath());
+		}
+		return file;
 	}
 
 	private static File getFile(String filePath, Collection<String> testSuffix) {

@@ -21,7 +21,6 @@ import scw.core.logger.LoggerFactory;
 import scw.core.logger.LoggerUtils;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.sql.orm.ORMUtils;
 
@@ -83,16 +82,10 @@ public class CommonApplication implements Application {
 		beanFactory.init();
 
 		if (!StringUtils.isNull(configPath)) {
-			XmlDubboUtils.serviceExport(propertiesFactory, beanFactory, configPath, new Runnable() {
-
-				public void run() {
-					ConfigUtils.clearSearchPathCache();
-				}
-			});
+			XmlDubboUtils.serviceExport(propertiesFactory, beanFactory, configPath);
 		}
 		
 		crontabService();
-		ConfigUtils.clearSearchPathCache();
 	}
 
 	public void destroy() {

@@ -157,9 +157,9 @@ public final class XmlDubboUtils {
 	 * @param beanFactory
 	 * @param config
 	 */
-	public static void serviceExport(PropertiesFactory propertiesFactory, final BeanFactory beanFactory, String config,
-			Runnable callback) {
-		new ServiceExort(propertiesFactory, beanFactory, config, callback).start();
+	public static void serviceExport(PropertiesFactory propertiesFactory, final BeanFactory beanFactory,
+			String config) {
+		new ServiceExort(propertiesFactory, beanFactory, config).start();
 	}
 
 	private static List<ReferenceConfig<?>> parseReferenceConfig(PropertiesFactory propertiesFactory,
@@ -255,14 +255,11 @@ class ServiceExort extends Thread {
 	private boolean tag = false;
 	private int size = 0;
 	private Thread thread;
-	private Runnable callback;
 
-	public ServiceExort(PropertiesFactory propertiesFactory, BeanFactory beanFactory, String config,
-			Runnable callback) {
+	public ServiceExort(PropertiesFactory propertiesFactory, BeanFactory beanFactory, String config) {
 		this.propertiesFactory = propertiesFactory;
 		this.beanFactory = beanFactory;
 		this.config = config;
-		this.callback = callback;
 	}
 
 	@Override
@@ -271,9 +268,6 @@ class ServiceExort extends Thread {
 			export();
 		} finally {
 			tag = true;
-			if(callback != null){
-				callback.run();
-			}
 		}
 
 		if (size > 0) {
