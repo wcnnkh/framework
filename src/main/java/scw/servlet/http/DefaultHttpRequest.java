@@ -1,7 +1,7 @@
 package scw.servlet.http;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -22,7 +22,7 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 	public static final String RESTURL_PATH_PARAMETER = "_resturl_path_parameter";
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpRequest.class);
-	private static final Charset GET_DEFAULT_CHARSET = Charset.forName("ISO-8859-1");
+	private static final String GET_DEFAULT_CHARSET_ANME = "ISO-8859-1";
 	private long createTime;
 	private RequestBeanContext requestBeanContext;
 	private boolean cookieValue;
@@ -112,10 +112,16 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 	}
 
 	public String decodeGETParameter(String value) {
-		if (StringUtils.containsChinese(value)) {
+		if (!StringUtils.containsChinese(value)) {
 			return value;
 		}
-		return new String(value.getBytes(GET_DEFAULT_CHARSET), Charset.forName(getCharacterEncoding()));
+		
+		try {
+			return new String(value.getBytes(GET_DEFAULT_CHARSET_ANME), getCharacterEncoding());
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return value;
+		}
 	}
 
 	public String getString(String key) {
