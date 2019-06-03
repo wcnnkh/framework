@@ -152,10 +152,10 @@ public final class StringAppend implements CharSequence, Appendable, Serializabl
 	}
 
 	/**
-	 * 清空
+	 * 重置
 	 * 
 	 */
-	public void clear() {
+	public void reset() {
 		count = 0;
 	}
 

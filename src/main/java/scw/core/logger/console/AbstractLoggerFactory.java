@@ -29,7 +29,7 @@ public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable 
 					continue;
 				}
 
-				stringAppend.clear();
+				stringAppend.reset();
 				out(stringAppend, message);
 				message = null;
 			}
