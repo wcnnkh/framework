@@ -27,6 +27,22 @@ public final class StringAppend implements CharSequence, Appendable, Serializabl
 		this.count = chars.length;
 	}
 
+	public StringAppend(char[] chars) {
+		this.count = chars.length;
+		this.chars = new char[chars.length];
+		System.arraycopy(chars, 0, this.chars, 0, count);
+	}
+
+	public StringAppend(char[] chars, int start, int end) {
+		this.count = end - start;
+		if (count < 0) {
+			throw new IndexOutOfBoundsException(start + "");
+		}
+
+		this.chars = new char[count];
+		System.arraycopy(chars, start, chars, 0, count);
+	}
+
 	public StringAppend appendNull() {
 		expandCapacity(count + 4);
 		chars[count++] = 'n';
@@ -172,14 +188,14 @@ public final class StringAppend implements CharSequence, Appendable, Serializabl
 		return new String(chars, 0, count);
 	}
 
-	public CharSequence subSequence(int start, int end) {
+	public StringAppend subSequence(int start, int end) {
 		if (start < 0)
 			throw new StringIndexOutOfBoundsException(start);
 		if (end > count)
 			throw new StringIndexOutOfBoundsException(end);
 		if (start > end)
 			throw new StringIndexOutOfBoundsException(end - start);
-		return new String(chars, start, end - start);
+		return new StringAppend(chars, start, end);
 	}
 
 	public char charAt(int index) {
