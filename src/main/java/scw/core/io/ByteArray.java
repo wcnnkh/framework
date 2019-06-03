@@ -71,7 +71,7 @@ public class ByteArray implements Serializable {
 	}
 
 	public ByteArray(String body) {
-		this(body, Constants.DEFAULT_CHARSET);
+		this(body, Constants.DEFAULT_CHARSET_NAME);
 	}
 
 	/**
@@ -212,6 +212,6 @@ public class ByteArray implements Serializable {
 	}
 
 	public String toString() {
-		return toString(Constants.DEFAULT_CHARSET.name());
+		return toString(Constants.DEFAULT_CHARSET_NAME);
 	}
 }

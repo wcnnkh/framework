@@ -66,7 +66,7 @@ public final class PropertiesUtils {
 	}
 
 	public static <T> void loadProperties(T instance, String propertiesFile, Collection<String> asNameList) {
-		Properties properties = ConfigUtils.getProperties(propertiesFile, Constants.DEFAULT_CHARSET.name());
+		Properties properties = ConfigUtils.getProperties(propertiesFile, Constants.DEFAULT_CHARSET_NAME);
 		invokeSetterByProeprties(instance, properties, true, true, asNameList, true);
 	}
 

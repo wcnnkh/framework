@@ -3,12 +3,12 @@ package scw.utils.tencent.weixin;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONObject;
-
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.http.HttpUtils;
 import scw.core.utils.StringUtils;
+import scw.json.JSONObject;
+import scw.json.JSONUtils;
 
 public abstract class WeiXinProcess {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -40,7 +40,7 @@ public abstract class WeiXinProcess {
 	protected JSONObject post(String url, Object data) {
 		String body = null;
 		if (data != null) {
-			body = JSONObject.toJSONString(body);
+			body = JSONUtils.toJSONString(body);
 		}
 
 		String content = HttpUtils.doPost(url, postRequestProperties, body);
@@ -60,7 +60,7 @@ public abstract class WeiXinProcess {
 	}
 
 	private JSONObject wrapper(String content) {
-		JSONObject json = JSONObject.parseObject(content);
+		JSONObject json = JSONUtils.parseObject(content);
 		this.errcode = json.getIntValue("errcode");
 		this.errmsg = json.getString("errmsg");
 		return json;

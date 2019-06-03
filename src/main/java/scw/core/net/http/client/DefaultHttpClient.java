@@ -7,7 +7,7 @@ public class DefaultHttpClient extends AbstractHttpClient {
 	private final String charsetName;
 
 	public DefaultHttpClient(boolean debug) {
-		this(new MemoryCookieManager(debug), Constants.DEFAULT_CHARSET.name());
+		this(new MemoryCookieManager(debug), Constants.DEFAULT_CHARSET_NAME);
 	}
 
 	public DefaultHttpClient(CookieManager cookieManager, String charsetName) {

@@ -1,7 +1,5 @@
 package scw.core;
 
-import java.nio.charset.Charset;
-
 import org.objectweb.asm.Opcodes;
 
 import scw.core.logger.Logger;
@@ -41,7 +39,7 @@ public final class Constants {
 	private Constants() {
 	};
 
-	public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+	public static final String DEFAULT_CHARSET_NAME = "UTF-8";
 
 	/**
 	 * The ASM version used internally throughout the framework.

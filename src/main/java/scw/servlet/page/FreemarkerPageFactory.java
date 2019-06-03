@@ -23,7 +23,7 @@ public class FreemarkerPageFactory {
 
 	public FreemarkerPageFactory(String rootPath, String contentType) throws IOException {
 		this.configuration = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
-		configuration.setDefaultEncoding(Constants.DEFAULT_CHARSET.name());
+		configuration.setDefaultEncoding(Constants.DEFAULT_CHARSET_NAME);
 		configuration.setDirectoryForTemplateLoading(new File(rootPath));
 		configuration.setObjectWrapper(new DefaultObjectWrapper(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
 		this.contentType = contentType;
@@ -57,7 +57,7 @@ public class FreemarkerPageFactory {
 	}
 
 	public Page create(String page) {
-		return new Freemarker(getConfiguration(), page, getContentType());
+		return new FreemarkerPage(getConfiguration(), page, getContentType());
 	}
 
 }

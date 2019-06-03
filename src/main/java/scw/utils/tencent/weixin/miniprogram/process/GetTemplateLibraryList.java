@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-
+import scw.json.JSONArray;
+import scw.json.JSONObject;
 import scw.utils.tencent.weixin.WeiXinProcess;
 import scw.utils.tencent.weixin.miniprogram.bean.TemplateLibrary;
 

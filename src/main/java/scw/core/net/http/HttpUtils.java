@@ -20,9 +20,10 @@ public final class HttpUtils {
 
 	public static String doGet(String url) {
 		HttpRequest request = new HttpRequest(Method.GET, url);
-		request.setContentType(new DefaultContentType(ContentType.APPLICATION_X_WWW_FORM_URLENCODED, Constants.DEFAULT_CHARSET));
+		request.setContentType(
+				new DefaultContentType(ContentType.APPLICATION_X_WWW_FORM_URLENCODED, Constants.DEFAULT_CHARSET_NAME));
 		ByteArray byteArray = NetworkUtils.execute(request);
-		return byteArray.toString(Constants.DEFAULT_CHARSET.name());
+		return byteArray.toString(Constants.DEFAULT_CHARSET_NAME);
 	}
 
 	public static String doPost(String url, Map<String, String> requestProperties, String body, String charsetName) {
@@ -37,7 +38,7 @@ public final class HttpUtils {
 	}
 
 	public static String doPost(String url, Map<String, String> requestProperties, String body) {
-		return doPost(url, requestProperties, body, Constants.DEFAULT_CHARSET.name());
+		return doPost(url, requestProperties, body, Constants.DEFAULT_CHARSET_NAME);
 	}
 
 	public static String doPost(String url, Map<String, String> requestProperties, Map<String, ?> parameterMap,
@@ -53,7 +54,7 @@ public final class HttpUtils {
 	}
 
 	public static String doPost(String url, Map<String, String> requestProperties, Map<String, ?> parameterMap) {
-		return doPost(url, requestProperties, parameterMap, Constants.DEFAULT_CHARSET.name());
+		return doPost(url, requestProperties, parameterMap, Constants.DEFAULT_CHARSET_NAME);
 	}
 
 	public static String appendParameters(String prefix, Map<String, Object> paramMap, boolean encode,
@@ -88,7 +89,7 @@ public final class HttpUtils {
 
 	public static String appendParameters(String prefix, Map<String, Object> paramMap) {
 		try {
-			return appendParameters(prefix, paramMap, true, Constants.DEFAULT_CHARSET.name());
+			return appendParameters(prefix, paramMap, true, Constants.DEFAULT_CHARSET_NAME);
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
@@ -107,7 +108,7 @@ public final class HttpUtils {
 	}
 
 	public static String encode(Object value) {
-		return encode(value, Constants.DEFAULT_CHARSET.name());
+		return encode(value, Constants.DEFAULT_CHARSET_NAME);
 	}
 
 	public static String decode(String value, String charsetName) throws UnsupportedEncodingException {
@@ -120,7 +121,7 @@ public final class HttpUtils {
 
 	public static String decode(String value) {
 		try {
-			return decode(value, Constants.DEFAULT_CHARSET.name());
+			return decode(value, Constants.DEFAULT_CHARSET_NAME);
 		} catch (UnsupportedEncodingException e) {
 			throw new NestedRuntimeException(e);
 		}

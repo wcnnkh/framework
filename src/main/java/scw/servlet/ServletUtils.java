@@ -466,8 +466,7 @@ public final class ServletUtils {
 
 	public static String getCharsetName(PropertiesFactory propertiesFactory) {
 		String charsetName = propertiesFactory.getValue("servlet.charsetName");
-		return StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET
-				.name() : charsetName;
+		return StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME : charsetName;
 	}
 
 	public static WrapperFactory getWrapperFactory(BeanFactory beanFactory,

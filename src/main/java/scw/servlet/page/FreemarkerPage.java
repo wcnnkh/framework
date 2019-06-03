@@ -10,20 +10,20 @@ import scw.core.utils.StringUtils;
 import scw.servlet.Request;
 import scw.servlet.Response;
 
-public class Freemarker extends AbstractPage {
+public class FreemarkerPage extends AbstractPage {
 	private static final long serialVersionUID = 1L;
 	private transient Configuration configuration;
 	private String contentType;
 
-	protected Freemarker() {
+	protected FreemarkerPage() {
 		super(null);
 	}
 
-	Freemarker(Configuration configuration, String page) {
+	FreemarkerPage(Configuration configuration, String page) {
 		this(configuration, page, null);
 	}
 
-	public Freemarker(Configuration configuration, String page, String contentType) {
+	public FreemarkerPage(Configuration configuration, String page, String contentType) {
 		super(page);
 		this.configuration = configuration;
 		this.contentType = contentType;
@@ -65,13 +65,14 @@ public class Freemarker extends AbstractPage {
 			put(key, entry.getValue());
 		}
 
+		String page = getPage();
+		Template template = configuration.getTemplate(page, request.getCharacterEncoding());
+		template.process(this, response.getWriter());
+
 		if (response instanceof DebugLogger) {
 			if (((DebugLogger) response).isDebugEnabled()) {
-				((DebugLogger) response).debug("freemarker：" + getPage());
+				((DebugLogger) response).debug("freemarker：" + page);
 			}
 		}
-		
-		Template template = configuration.getTemplate(getPage());
-		template.process(this, response.getWriter());
 	}
 }

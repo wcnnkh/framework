@@ -1,7 +1,6 @@
 package scw.utils.tencent.weixin.process;
 
-import com.alibaba.fastjson.JSONObject;
-
+import scw.json.JSONObject;
 import scw.utils.tencent.weixin.WeiXinProcess;
 import scw.utils.tencent.weixin.bean.AccessToken;
 

@@ -44,12 +44,12 @@ public final class WeiXinPay {
 	private String certTrustFile;
 
 	public WeiXinPay(String appId, String mch_id, String apiKey) {
-		this(appId, mch_id, apiKey, "MD5", Constants.DEFAULT_CHARSET.name(), null);
+		this(appId, mch_id, apiKey, "MD5", Constants.DEFAULT_CHARSET_NAME, null);
 	}
 
 	public WeiXinPay(String appId, String mch_id, String apiKey,
 			String certTrustFile) {
-		this(appId, mch_id, apiKey, "MD5", Constants.DEFAULT_CHARSET.name(),
+		this(appId, mch_id, apiKey, "MD5", Constants.DEFAULT_CHARSET_NAME,
 				certTrustFile);
 	}
 
