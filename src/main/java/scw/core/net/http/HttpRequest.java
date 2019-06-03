@@ -14,6 +14,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.net.AbstractUrlRequest;
+import scw.core.net.ContentType;
 import scw.core.net.RequestException;
 
 public class HttpRequest extends AbstractUrlRequest {

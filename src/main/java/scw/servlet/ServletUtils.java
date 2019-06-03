@@ -33,7 +33,7 @@ import scw.core.MultiValueMap;
 import scw.core.PropertiesFactory;
 import scw.core.logger.DebugLogger;
 import scw.core.logger.LoggerUtils;
-import scw.core.net.http.ContentType;
+import scw.core.net.ContentType;
 import scw.core.reflect.ReflectUtils;
 import scw.core.serializer.Serializer;
 import scw.core.utils.ClassUtils;
@@ -82,7 +82,7 @@ public final class ServletUtils {
 	 */
 	public static boolean isJsonRequest(HttpServletRequest request) {
 		return isDesignatedContentType(request,
-				scw.core.net.http.ContentType.APPLICATION_JSON);
+				scw.core.net.ContentType.APPLICATION_JSON);
 	}
 
 	public static boolean isFormRequest(HttpServletRequest request) {

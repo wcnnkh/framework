@@ -18,7 +18,7 @@ import scw.core.exception.NotFoundException;
 import scw.core.logger.DebugLogger;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.net.http.ContentType;
+import scw.core.net.ContentType;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.servlet.Request;

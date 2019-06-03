@@ -5,7 +5,7 @@ import java.util.Enumeration;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import scw.core.logger.DebugLogger;
-import scw.core.net.http.ContentType;
+import scw.core.net.ContentType;
 import scw.core.utils.StringUtils;
 import scw.servlet.Request;
 import scw.servlet.Response;

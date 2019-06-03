@@ -1,7 +1,7 @@
 package scw.servlet.view;
 
 import scw.core.logger.DebugLogger;
-import scw.core.net.http.ContentType;
+import scw.core.net.ContentType;
 import scw.core.utils.StringUtils;
 import scw.servlet.Request;
 import scw.servlet.Response;

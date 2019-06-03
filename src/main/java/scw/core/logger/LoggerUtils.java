@@ -12,7 +12,7 @@ public final class LoggerUtils {
 
 	public static String getLogMessage(String time, String level, String tag, String placeholder, String msg,
 			Object... args) {
-		StringBuilder sb = new StringBuilder(256);
+		StringBuilder sb = new StringBuilder(128);
 		sb.append(time);
 
 		if (!StringUtils.isEmpty(level)) {

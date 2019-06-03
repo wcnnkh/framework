@@ -11,6 +11,8 @@ import java.util.Map.Entry;
 import scw.core.Constants;
 import scw.core.exception.NestedRuntimeException;
 import scw.core.io.ByteArray;
+import scw.core.net.ContentType;
+import scw.core.net.DefaultContentType;
 import scw.core.net.NetworkUtils;
 import scw.core.utils.StringUtils;
 

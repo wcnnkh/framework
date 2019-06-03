@@ -1,4 +1,4 @@
-package scw.core.net.http;
+package scw.core.net;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
