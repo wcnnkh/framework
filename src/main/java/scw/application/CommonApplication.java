@@ -84,7 +84,7 @@ public class CommonApplication implements Application {
 		if (!StringUtils.isNull(configPath)) {
 			XmlDubboUtils.serviceExport(propertiesFactory, beanFactory, configPath);
 		}
-		
+
 		crontabService();
 	}
 
@@ -119,7 +119,9 @@ public class CommonApplication implements Application {
 				CrontabRun crontabRun = new CrontabRun(c.name(), getBeanFactory().get(c.factory()),
 						BeanUtils.getInvoker(getBeanFactory(), clz, method));
 				crontab.crontab(c.dayOfWeek(), c.month(), c.dayOfMonth(), c.hour(), c.minute(), crontabRun);
-				LoggerUtils.info(CommonApplication.class, "添加计划任务：{}", c.name());
+				LoggerUtils.info(CommonApplication.class,
+						"添加计划任务：{},dayOfWeek={},method={},dayOfMonth={},hour={},minute={}", c.name(), c.dayOfWeek(),
+						c.month(), c.dayOfMonth(), c.hour(), c.minute());
 			}
 		}
 	}
