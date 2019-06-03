@@ -1,5 +1,6 @@
 package scw.core.logger;
 
+import scw.core.StringAppend;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 
@@ -10,36 +11,45 @@ public final class LoggerUtils {
 	private LoggerUtils() {
 	};
 
-	public static String getLogMessage(String time, String level, String tag, String placeholder, String msg,
-			Object... args) {
-		StringBuilder sb = new StringBuilder(128);
-		sb.append(time);
+	public static String getLogMessage(StringAppend sb, String time, String level, String tag, String placeholder,
+			String msg, Object... args) {
+		if (!StringUtils.isEmpty(time)) {
+			sb.append(time);
+		}
 
 		if (!StringUtils.isEmpty(level)) {
-			sb.append(" ").append(level);
+			if (sb.length() > 0) {
+				sb.append(" ");
+			}
+			sb.append(level);
 		}
 
 		if (!StringUtils.isEmpty(tag)) {
-			sb.append(" [").append(tag).append("]");
+			if (sb.length() > 0) {
+				sb.append(" ");
+			}
+			sb.append("[").append(tag).append("]");
 		}
 
-		sb.append(" - ");
+		if (sb.length() > 0) {
+			sb.append(" - ");
+		}
 		sb.append(StringUtils.format(msg, StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER : placeholder, args));
 		return sb.toString();
 	}
 
-	public static String getLogMessage(long time, String level, String tag, String placeholder, String msg,
-			Object... args) {
-		return getLogMessage(XTime.format(time, TIME_FORMAT), level, tag, placeholder, msg, args);
+	public static String getLogMessage(StringAppend stringAppend, long time, String level, String tag,
+			String placeholder, String msg, Object... args) {
+		return getLogMessage(stringAppend, XTime.format(time, TIME_FORMAT), level, tag, placeholder, msg, args);
 	}
 
-	public static void info(Class<?> clazz, String msg, Object ...args){
-		System.out.println(getLogMessage(System.currentTimeMillis(), Level.INFO.name(), clazz.getName(),
-				null, msg, args));
+	public static void info(Class<?> clazz, String msg, Object... args) {
+		System.out.println(getLogMessage(new StringAppend(256), System.currentTimeMillis(), Level.INFO.name(),
+				clazz.getName(), null, msg, args));
 	}
 
-	public static void warn(Class<?> clazz, String msg, Object ...args){
-		System.err.println(getLogMessage(System.currentTimeMillis(), Level.WARN.name(), clazz.getName(),
-				null, msg, args));
+	public static void warn(Class<?> clazz, String msg, Object... args) {
+		System.err.println(getLogMessage(new StringAppend(256), System.currentTimeMillis(), Level.WARN.name(),
+				clazz.getName(), null, msg, args));
 	}
 }

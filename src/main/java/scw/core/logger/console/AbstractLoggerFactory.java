@@ -2,6 +2,7 @@ package scw.core.logger.console;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import scw.core.StringAppend;
 import scw.core.logger.ILoggerFactory;
 import scw.core.logger.LoggerUtils;
 import scw.core.logger.Message;
@@ -9,6 +10,7 @@ import scw.core.logger.Message;
 public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable {
 	private LinkedBlockingQueue<Message> handlerQueue = new LinkedBlockingQueue<Message>();
 	private final Thread thread;
+	private final StringAppend stringAppend = new StringAppend();
 
 	public AbstractLoggerFactory() {
 		thread = new Thread(this, "shuchaowen-logger");
@@ -23,17 +25,20 @@ public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable 
 		try {
 			while (!thread.isInterrupted()) {
 				Message message = handlerQueue.take();
-				out(message);
+				if (message == null) {
+					continue;
+				}
+
+				stringAppend.clear();
+				out(stringAppend, message);
 				message = null;
 			}
 		} catch (InterruptedException e) {
 		}
 	}
 
-	protected abstract void out(Message message);
-
-	public void console(Message message) {
-		String msg = LoggerUtils.getLogMessage(message.getCts(), message.getLevel().name(), message.getTag(),
+	public void out(StringAppend append, Message message) {
+		String msg = LoggerUtils.getLogMessage(append, message.getCts(), message.getLevel().name(), message.getTag(),
 				message.getPlaceholder(), message.getMsg(), message.getParams());
 		switch (message.getLevel()) {
 		case ERROR:
