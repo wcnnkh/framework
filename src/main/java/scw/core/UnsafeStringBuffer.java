@@ -3,37 +3,31 @@ package scw.core;
 import java.io.IOException;
 import java.io.Serializable;
 
-/**
- * 字符串拼接
- * 
- * @author shuchaowen
- *
- */
-public final class StringAppend implements CharSequence, Appendable, Serializable {
+public final class UnsafeStringBuffer implements CharSequence, Appendable, Serializable {
 	private static final long serialVersionUID = 1L;
 	private char[] chars;
 	private int count;
 
-	public StringAppend() {
+	public UnsafeStringBuffer() {
 		this(16);
 	}
 
-	public StringAppend(int initCapacity) {
+	public UnsafeStringBuffer(int initCapacity) {
 		this.chars = new char[initCapacity];
 	}
 
-	public StringAppend(String text) {
+	public UnsafeStringBuffer(String text) {
 		this.chars = text.toCharArray();
 		this.count = chars.length;
 	}
 
-	public StringAppend(char[] chars) {
+	public UnsafeStringBuffer(char[] chars) {
 		this.count = chars.length;
 		this.chars = new char[chars.length];
 		System.arraycopy(chars, 0, this.chars, 0, count);
 	}
 
-	public StringAppend(char[] chars, int start, int end) {
+	public UnsafeStringBuffer(char[] chars, int start, int end) {
 		this.count = end - start;
 		if (count < 0) {
 			throw new IndexOutOfBoundsException(start + "");
@@ -43,7 +37,7 @@ public final class StringAppend implements CharSequence, Appendable, Serializabl
 		System.arraycopy(chars, start, chars, 0, count);
 	}
 
-	public StringAppend appendNull() {
+	public UnsafeStringBuffer appendNull() {
 		expandCapacity(count + 4);
 		chars[count++] = 'n';
 		chars[count++] = 'u';
@@ -52,7 +46,7 @@ public final class StringAppend implements CharSequence, Appendable, Serializabl
 		return this;
 	}
 
-	public StringAppend append(String text) {
+	public UnsafeStringBuffer append(String text) {
 		if (text == null) {
 			return appendNull();
 		}
@@ -68,7 +62,7 @@ public final class StringAppend implements CharSequence, Appendable, Serializabl
 		return this;
 	}
 
-	public StringAppend append(Object value) {
+	public UnsafeStringBuffer append(Object value) {
 		if (value == null) {
 			return appendNull();
 		}
@@ -102,7 +96,7 @@ public final class StringAppend implements CharSequence, Appendable, Serializabl
 		}
 	}
 
-	public StringAppend append(String text, int start, int end) {
+	public UnsafeStringBuffer append(String text, int start, int end) {
 		if (text == null) {
 			return appendNull();
 		}
@@ -159,7 +153,7 @@ public final class StringAppend implements CharSequence, Appendable, Serializabl
 		count = 0;
 	}
 
-	public StringAppend append(CharSequence sequence, int start, int end) {
+	public UnsafeStringBuffer append(CharSequence sequence, int start, int end) {
 		if (sequence == null) {
 			return appendNull();
 		}
@@ -188,14 +182,14 @@ public final class StringAppend implements CharSequence, Appendable, Serializabl
 		return new String(chars, 0, count);
 	}
 
-	public StringAppend subSequence(int start, int end) {
+	public UnsafeStringBuffer subSequence(int start, int end) {
 		if (start < 0)
 			throw new StringIndexOutOfBoundsException(start);
 		if (end > count)
 			throw new StringIndexOutOfBoundsException(end);
 		if (start > end)
 			throw new StringIndexOutOfBoundsException(end - start);
-		return new StringAppend(chars, start, end);
+		return new UnsafeStringBuffer(chars, start, end);
 	}
 
 	public char charAt(int index) {
@@ -206,7 +200,7 @@ public final class StringAppend implements CharSequence, Appendable, Serializabl
 		return chars[index];
 	}
 
-	public StringAppend append(CharSequence csq) {
+	public UnsafeStringBuffer append(CharSequence csq) {
 		if (csq == null) {
 			return appendNull();
 		}

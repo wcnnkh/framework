@@ -1,6 +1,6 @@
 package scw.core.logger;
 
-import scw.core.StringAppend;
+import scw.core.UnsafeStringBuffer;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 
@@ -11,7 +11,7 @@ public final class LoggerUtils {
 	private LoggerUtils() {
 	};
 
-	public static String getLogMessage(StringAppend sb, String time, String level, String tag, String placeholder,
+	public static String getLogMessage(UnsafeStringBuffer sb, String time, String level, String tag, String placeholder,
 			String msg, Object... args) {
 		if (!StringUtils.isEmpty(time)) {
 			sb.append(time);
@@ -38,18 +38,18 @@ public final class LoggerUtils {
 		return sb.toString();
 	}
 
-	public static String getLogMessage(StringAppend stringAppend, long time, String level, String tag,
+	public static String getLogMessage(UnsafeStringBuffer unsafeStringBuffer, long time, String level, String tag,
 			String placeholder, String msg, Object... args) {
-		return getLogMessage(stringAppend, XTime.format(time, TIME_FORMAT), level, tag, placeholder, msg, args);
+		return getLogMessage(unsafeStringBuffer, XTime.format(time, TIME_FORMAT), level, tag, placeholder, msg, args);
 	}
 
 	public static void info(Class<?> clazz, String msg, Object... args) {
-		System.out.println(getLogMessage(new StringAppend(256), System.currentTimeMillis(), Level.INFO.name(),
+		System.out.println(getLogMessage(new UnsafeStringBuffer(256), System.currentTimeMillis(), Level.INFO.name(),
 				clazz.getName(), null, msg, args));
 	}
 
 	public static void warn(Class<?> clazz, String msg, Object... args) {
-		System.err.println(getLogMessage(new StringAppend(256), System.currentTimeMillis(), Level.WARN.name(),
+		System.err.println(getLogMessage(new UnsafeStringBuffer(256), System.currentTimeMillis(), Level.WARN.name(),
 				clazz.getName(), null, msg, args));
 	}
 }
