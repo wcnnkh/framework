@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import scw.core.Consumer;
 import scw.core.exception.NotSupportException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
@@ -26,7 +27,6 @@ import scw.db.cache.LazyCacheManager;
 import scw.db.cache.MemcachedLazyCacheManager;
 import scw.db.cache.RedisLazyCacheManager;
 import scw.db.database.DataBase;
-import scw.mq.Consumer;
 import scw.mq.MQ;
 import scw.mq.QueueMQ;
 import scw.sql.Sql;
@@ -120,7 +120,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 		if (asyncService != null) {
 			asyncService.addConsumer(new Consumer<AsyncInfo>() {
 
-				public void consumer(AsyncInfo message) {
+				public void consume(AsyncInfo message) {
 					dbConsumer(message);
 				}
 			});

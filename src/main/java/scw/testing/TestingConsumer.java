@@ -1,5 +1,6 @@
 package scw.testing;
 
-public interface TestingConsumer<T> {
-	void consumer(T message);
+import scw.core.Consumer;
+
+public interface TestingConsumer<T> extends Consumer<T>{
 }

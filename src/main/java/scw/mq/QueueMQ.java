@@ -20,10 +20,6 @@ public class QueueMQ<T> extends AbstractMQ<T> implements Runnable, scw.core.Dest
 		thread.interrupt();
 	}
 
-	public void push(T message) {
-		queue.offer(message);
-	}
-
 	public void run() {
 		try {
 			while (!Thread.interrupted()) {
@@ -36,6 +32,10 @@ public class QueueMQ<T> extends AbstractMQ<T> implements Runnable, scw.core.Dest
 			}
 		} catch (InterruptedException e) {
 		}
+	}
+
+	public void push(T message) {
+		queue.offer(message);
 	}
 
 }

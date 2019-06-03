@@ -1,5 +1,8 @@
 package scw.mq;
 
+import scw.core.Consumer;
+import scw.core.Producer;
+
 public interface MQ<T> extends Producer<T>{
 
 	/**

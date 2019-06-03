@@ -28,7 +28,7 @@ public class DefaultTestingProducer<T> implements TestingProducer<T>, scw.core.D
 		thread.start();
 	}
 
-	public void producer(T message) {
+	public void push(T message) {
 		queue.offer(message);
 	}
 

@@ -23,7 +23,7 @@ public final class MyHttpServletTestingFilter implements Filter {
 			return;
 		}
 
-		producer.producer(new ServletHttpTestingRequestMessage((HttpServletRequest) request));
+		producer.push(new ServletHttpTestingRequestMessage((HttpServletRequest) request));
 	}
 
 }

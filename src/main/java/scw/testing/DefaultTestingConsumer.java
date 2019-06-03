@@ -28,7 +28,7 @@ public abstract class DefaultTestingConsumer<T> implements TestingConsumer<T> {
 			ois = new ObjectInputStream(fis);
 			T obj;
 			while ((obj = (T) ois.readObject()) != null) {
-				consumer(obj);
+				consume(obj);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

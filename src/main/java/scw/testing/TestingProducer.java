@@ -1,5 +1,6 @@
 package scw.testing;
 
-public interface TestingProducer<T> {
-	void producer(T message);
+import scw.core.Producer;
+
+public interface TestingProducer<T> extends Producer<T>{
 }
