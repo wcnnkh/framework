@@ -12,6 +12,7 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
 import scw.core.Destroy;
+import scw.core.Init;
 import scw.core.PropertiesFactory;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
@@ -184,6 +185,10 @@ public final class XmlBeanDefinition implements BeanDefinition {
 			for (BeanMethod method : initMethods) {
 				method.invoke(bean, beanFactory, propertiesFactory);
 			}
+		}
+		
+		if(bean instanceof Init){
+			((Init) bean).init();
 		}
 	}
 

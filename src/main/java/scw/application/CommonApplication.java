@@ -120,7 +120,7 @@ public class CommonApplication implements Application {
 						BeanUtils.getInvoker(getBeanFactory(), clz, method));
 				crontab.crontab(c.dayOfWeek(), c.month(), c.dayOfMonth(), c.hour(), c.minute(), crontabRun);
 				LoggerUtils.info(CommonApplication.class,
-						"添加计划任务：{},dayOfWeek={},method={},dayOfMonth={},hour={},minute={}", c.name(), c.dayOfWeek(),
+						"添加计划任务：{},dayOfWeek={},month={},dayOfMonth={},hour={},minute={}", c.name(), c.dayOfWeek(),
 						c.month(), c.dayOfMonth(), c.hour(), c.minute());
 			}
 		}

@@ -1,21 +1,20 @@
 package scw.mq;
 
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
 
 import scw.core.Consumer;
 
 public abstract class AbstractMQ<T> implements MQ<T> {
-	private LinkedList<Consumer<T>> consumers = new LinkedList<Consumer<T>>();
+	private Map<String, Consumer<T>> consumerMap = new HashMap<String, Consumer<T>>();
 
-	public synchronized void addConsumer(Consumer<T> consumer) {
-		consumers.add(consumer);
-	};
+	public Consumer<T> getConsumer(String name) {
+		return consumerMap.get(name);
+	}
 
-	protected void execute(T message) throws Throwable {
-		Iterator<Consumer<T>> iterator = consumers.iterator();
-		while (iterator.hasNext()) {
-			iterator.next().consume(message);
+	public void addConsumer(String name, Consumer<T> consumer) {
+		synchronized (consumerMap) {
+			consumerMap.put(name, consumer);
 		}
 	}
 }

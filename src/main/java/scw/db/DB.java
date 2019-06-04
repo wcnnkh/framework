@@ -16,10 +16,6 @@ import scw.core.utils.Assert;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
-import scw.data.utils.MemcachedQueue;
-import scw.data.utils.MemoryQueue;
-import scw.data.utils.Queue;
-import scw.data.utils.RedisQueue;
 import scw.db.async.AsyncInfo;
 import scw.db.async.MultipleOperation;
 import scw.db.async.OperationBean;
@@ -28,7 +24,9 @@ import scw.db.cache.MemcachedLazyCacheManager;
 import scw.db.cache.RedisLazyCacheManager;
 import scw.db.database.DataBase;
 import scw.mq.MQ;
+import scw.mq.MemcachedMQ;
 import scw.mq.QueueMQ;
+import scw.mq.RedisMQ;
 import scw.sql.Sql;
 import scw.sql.orm.ORMTemplate;
 import scw.sql.orm.SqlFormat;
@@ -43,6 +41,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	private final MQ<AsyncInfo> asyncService;
 	private final boolean destroyAsyncService;
 	private boolean debug;
+	private String queueName = getClass().getName();
 
 	public void setDebug(boolean debug) {
 		this.debug = debug;
@@ -60,8 +59,8 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 
 	public DB() {
 		this.cacheManager = null;
-		QueueMQ<AsyncInfo> mq = new QueueMQ<AsyncInfo>(new MemoryQueue<AsyncInfo>());
-		mq.start();
+		QueueMQ<AsyncInfo> mq = new MemoryMQ<AsyncInfo>(true);
+		mq.init();
 		this.asyncService = mq;
 		this.destroyAsyncService = true;
 		initAsyncService();
@@ -75,50 +74,51 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 		this(redis, null);
 	}
 
-	public DB(Memcached memcached, String queueKey) {
+	public DB(Memcached memcached, String queueName) {
 		Assert.notNull(memcached);
 		this.cacheManager = new MemcachedLazyCacheManager(memcached);
 		QueueMQ<AsyncInfo> mq;
-		if (StringUtils.isEmpty(queueKey)) {
-			mq = new QueueMQ<AsyncInfo>(new MemoryQueue<AsyncInfo>());
+		if (StringUtils.isEmpty(queueName)) {
+			mq = new MemoryMQ<AsyncInfo>(true);
 		} else {
-			getLogger().trace("memcached中异步处理队列名：{}", queueKey);
-			MemcachedQueue<AsyncInfo> queue = new MemcachedQueue<AsyncInfo>(memcached, queueKey);
-			mq = new QueueMQ<AsyncInfo>(queue);
+			getLogger().trace("memcached中异步处理队列名：{}", queueName);
+			this.queueName = queueName;
+			mq = new MemcachedMQ<AsyncInfo>(true, memcached);
 		}
-		mq.start();
+		mq.init();
 		this.asyncService = mq;
 		this.destroyAsyncService = true;
 		initAsyncService();
 	}
 
-	public DB(Redis redis, String queueKey) {
+	public DB(Redis redis, String queueName) {
 		Assert.notNull(redis);
 		this.cacheManager = new RedisLazyCacheManager(redis);
 		QueueMQ<AsyncInfo> mq;
-		if (StringUtils.isEmpty(queueKey)) {
-			mq = new QueueMQ<AsyncInfo>(new MemoryQueue<AsyncInfo>());
+		if (StringUtils.isEmpty(queueName)) {
+			mq = new MemoryMQ<AsyncInfo>(true);
 		} else {
-			getLogger().trace("redis中异步处理队列名：{}", queueKey);
-			Queue<AsyncInfo> queue = new RedisQueue<AsyncInfo>(redis, queueKey);
-			mq = new QueueMQ<AsyncInfo>(queue);
+			getLogger().trace("redis中异步处理队列名：{}", queueName);
+			this.queueName = queueName;
+			mq = new RedisMQ<AsyncInfo>(true, redis);
 		}
-		mq.start();
+		mq.init();
 		this.asyncService = mq;
 		this.destroyAsyncService = true;
 		initAsyncService();
 	}
 
-	public DB(LazyCacheManager cacheManager, MQ<AsyncInfo> asyncService) {
+	public DB(LazyCacheManager cacheManager, MQ<AsyncInfo> asyncService, String queueName) {
 		this.cacheManager = cacheManager;
 		this.asyncService = asyncService;
 		this.destroyAsyncService = false;
+		this.queueName = queueName;
 		initAsyncService();
 	}
 
 	private void initAsyncService() {
 		if (asyncService != null) {
-			asyncService.addConsumer(new Consumer<AsyncInfo>() {
+			asyncService.addConsumer(queueName, new Consumer<AsyncInfo>() {
 
 				public void consume(AsyncInfo message) {
 					dbConsumer(message);
@@ -299,7 +299,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 		asyncExecute(multipleOperation);
 	}
 
-	public void asyncExecute(MultipleOperation multipleOperation) {
+	public final void asyncExecute(MultipleOperation multipleOperation) {
 		if (asyncService == null) {
 			throw new NotSupportException("不支持异步执行sql语句");
 		}
@@ -308,7 +308,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 			AsyncInfoTransactionLifeCycle aitlc = new AsyncInfoTransactionLifeCycle((new AsyncInfo(multipleOperation)));
 			TransactionManager.transactionLifeCycle(aitlc);
 		} else {
-			asyncService.push(new AsyncInfo(multipleOperation));
+			asyncService.push(queueName, new AsyncInfo(multipleOperation));
 		}
 	}
 
@@ -317,7 +317,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	 * 
 	 * @param sql
 	 */
-	public void asyncExecute(Sql... sql) {
+	public final void asyncExecute(Sql... sql) {
 		if (asyncService == null) {
 			throw new NotSupportException("不支持异步执行sql语句");
 		}
@@ -327,7 +327,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 					(new AsyncInfo(Arrays.asList(sql))));
 			TransactionManager.transactionLifeCycle(aitlc);
 		} else {
-			asyncService.push(new AsyncInfo(Arrays.asList(sql)));
+			asyncService.push(queueName, new AsyncInfo(Arrays.asList(sql)));
 		}
 	}
 
@@ -340,7 +340,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 
 		@Override
 		public void afterProcess() {
-			asyncService.push(asyncInfo);
+			asyncService.push(queueName, asyncInfo);
 			super.afterProcess();
 		}
 	}

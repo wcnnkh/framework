@@ -46,7 +46,7 @@ public final class Constants {
 	 *
 	 * @see Opcodes#ASM4
 	 */
-	public static final int ASM_VERSION = Opcodes.ASM4;
+	public static final int ASM_VERSION = Opcodes.ASM5;
 
 	/**
 	 * 默认的序列化实现

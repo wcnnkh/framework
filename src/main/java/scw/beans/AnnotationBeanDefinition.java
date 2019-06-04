@@ -11,6 +11,7 @@ import net.sf.cglib.proxy.Enhancer;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Service;
+import scw.core.Init;
 import scw.core.PropertiesFactory;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
@@ -86,8 +87,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		Class<?>[] clzs = clz.getInterfaces();
 		if (clzs != null) {
 			for (Class<?> i : clzs) {
-				if (i.getName().startsWith("java.") || i.getName().startsWith("javax.")
-						|| i == scw.core.Destroy.class) {
+				if (i.getName().startsWith("java.") || i.getName().startsWith("javax.") || i == scw.core.Destroy.class
+						|| i == Init.class) {
 					continue;
 				}
 
@@ -151,6 +152,10 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 			for (BeanMethod method : initMethods) {
 				method.invoke(bean, beanFactory, propertiesFactory);
 			}
+		}
+
+		if (bean instanceof Init) {
+			((Init) bean).init();
 		}
 	}
 

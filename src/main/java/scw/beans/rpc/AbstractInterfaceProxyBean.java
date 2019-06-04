@@ -11,6 +11,7 @@ import scw.beans.BeanMethod;
 import scw.beans.NoArgumentBeanMethod;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
+import scw.core.Init;
 import scw.core.exception.NotSupportException;
 import scw.core.utils.ClassUtils;
 
@@ -108,6 +109,10 @@ public abstract class AbstractInterfaceProxyBean implements BeanDefinition {
 			for (Method method : initMethodList) {
 				method.invoke(bean);
 			}
+		}
+		
+		if(bean instanceof Init){
+			((Init) bean).init();
 		}
 	}
 
