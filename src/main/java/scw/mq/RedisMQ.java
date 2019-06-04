@@ -7,8 +7,7 @@ import scw.data.utils.RedisQueue;
 public final class RedisMQ<T> extends QueueMQ<T> {
 	private final Redis redis;
 
-	public RedisMQ(boolean dynamicCreationQueue, Redis redis) {
-		super(dynamicCreationQueue);
+	public RedisMQ(Redis redis) {
 		this.redis = redis;
 	}
 

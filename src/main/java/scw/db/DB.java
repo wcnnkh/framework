@@ -59,9 +59,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 
 	public DB() {
 		this.cacheManager = null;
-		QueueMQ<AsyncInfo> mq = new MemoryMQ<AsyncInfo>(true);
-		mq.init();
-		this.asyncService = mq;
+		this.asyncService = new MemoryMQ<AsyncInfo>();
 		this.destroyAsyncService = true;
 		initAsyncService();
 	};
@@ -79,13 +77,12 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 		this.cacheManager = new MemcachedLazyCacheManager(memcached);
 		QueueMQ<AsyncInfo> mq;
 		if (StringUtils.isEmpty(queueName)) {
-			mq = new MemoryMQ<AsyncInfo>(true);
+			mq = new MemoryMQ<AsyncInfo>();
 		} else {
 			getLogger().trace("memcached中异步处理队列名：{}", queueName);
 			this.queueName = queueName;
-			mq = new MemcachedMQ<AsyncInfo>(true, memcached);
+			mq = new MemcachedMQ<AsyncInfo>(memcached);
 		}
-		mq.init();
 		this.asyncService = mq;
 		this.destroyAsyncService = true;
 		initAsyncService();
@@ -96,13 +93,12 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 		this.cacheManager = new RedisLazyCacheManager(redis);
 		QueueMQ<AsyncInfo> mq;
 		if (StringUtils.isEmpty(queueName)) {
-			mq = new MemoryMQ<AsyncInfo>(true);
+			mq = new MemoryMQ<AsyncInfo>();
 		} else {
 			getLogger().trace("redis中异步处理队列名：{}", queueName);
 			this.queueName = queueName;
-			mq = new RedisMQ<AsyncInfo>(true, redis);
+			mq = new RedisMQ<AsyncInfo>(redis);
 		}
-		mq.init();
 		this.asyncService = mq;
 		this.destroyAsyncService = true;
 		initAsyncService();

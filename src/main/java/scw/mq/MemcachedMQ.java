@@ -7,8 +7,7 @@ import scw.data.utils.Queue;
 public final class MemcachedMQ<T> extends QueueMQ<T> {
 	private final Memcached memcached;
 
-	public MemcachedMQ(boolean dynamicCreationQueue, Memcached memcached) {
-		super(dynamicCreationQueue);
+	public MemcachedMQ(Memcached memcached) {
 		this.memcached = memcached;
 	}
 
