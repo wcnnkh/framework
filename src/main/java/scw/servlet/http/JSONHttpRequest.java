@@ -42,11 +42,14 @@ public final class JSONHttpRequest extends AbstractHttpRequest {
 		return v;
 	}
 
-	public void appendLogger(Appendable appendable) throws IOException {
+	@Override
+	public String toString() {
+		StringBuilder appendable = new StringBuilder();
 		appendable.append("servletPath=").append(getServletPath());
 		appendable.append(",method=").append(getMethod());
 		if (json != null) {
 			appendable.append(",").append(json.toJSONString());
 		}
+		return appendable.toString();
 	}
 }

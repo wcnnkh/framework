@@ -4,9 +4,8 @@ import javax.servlet.ServletRequest;
 
 import scw.core.logger.DebugLogger;
 import scw.core.logger.Logger;
-import scw.core.logger.LoggerAppend;
 
-public interface Request extends ServletRequest, DebugLogger, LoggerAppend {
+public interface Request extends ServletRequest, DebugLogger {
 	String getString(String name);
 
 	Byte getByte(String name);

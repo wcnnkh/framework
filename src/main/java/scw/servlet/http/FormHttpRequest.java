@@ -15,7 +15,7 @@ public final class FormHttpRequest extends AbstractHttpRequest {
 	public FormHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
 			boolean cookieValue, boolean debug) throws IOException {
 		super(requestBeanFactory, httpServletRequest, cookieValue, debug);
-		if (debug) {
+		if (isDebugEnabled()) {
 			debug("servletPath={},method={},{}", getServletPath(), getMethod(),
 					JSONUtils.toJSONString(getParameterMap()));
 		}
@@ -24,10 +24,13 @@ public final class FormHttpRequest extends AbstractHttpRequest {
 	public Logger getLogger() {
 		return logger;
 	}
-
-	public void appendLogger(Appendable appendable) throws IOException {
+	
+	@Override
+	public String toString() {
+		StringBuilder appendable = new StringBuilder();
 		appendable.append("servletPath=").append(getServletPath());
 		appendable.append(",method=").append(getMethod());
 		appendable.append(",").append(JSONUtils.toJSONString(getParameterMap()));
+		return appendable.toString();
 	}
 }

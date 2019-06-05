@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
+import scw.beans.annotation.Bean;
 import scw.beans.rpc.http.RpcService;
 import scw.core.Destroy;
 import scw.core.PropertiesFactory;
@@ -18,6 +19,7 @@ import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.servlet.beans.RequestBeanFactory;
 
+@Bean(proxy=false)
 public class DefaultServletService implements ServletService {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
