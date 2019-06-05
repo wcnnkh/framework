@@ -1,22 +1,28 @@
 package scw.core.logger;
 
-public final class Message {
+import java.io.IOException;
+
+public final class Message implements LoggerAppend {
 	private final long cts;
 	private final Level level;
-	private final String msg;
-	private final Object[] params;
+	private final LoggerAppend msg;
 	private final String tag;
 	private final Throwable throwable;
-	private final String placeholder;
 
-	public Message(Level level, String tag, String msg, Object[] params, Throwable throwable, String placeholder) {
+	public Message(Level level, String tag, LoggerAppend msg, Throwable throwable) {
 		this.cts = System.currentTimeMillis();
-		this.msg = msg;
 		this.level = level;
-		this.params = params;
+		this.msg = msg;
 		this.throwable = throwable;
-		this.placeholder = placeholder;
 		this.tag = tag;
+	}
+
+	public Message(Level level, String tag, String msg, Object[] args, Throwable throwable, String placeholder) {
+		this.cts = System.currentTimeMillis();
+		this.level = level;
+		this.throwable = throwable;
+		this.tag = tag;
+		this.msg = new DefaultLoggerFormatAppend(msg, placeholder, args);
 	}
 
 	public long getCts() {
@@ -27,12 +33,8 @@ public final class Message {
 		return level;
 	}
 
-	public String getMsg() {
+	public LoggerAppend getMsg() {
 		return msg;
-	}
-
-	public Object[] getParams() {
-		return params;
 	}
 
 	public String getTag() {
@@ -43,7 +45,7 @@ public final class Message {
 		return throwable;
 	}
 
-	public String getPlaceholder() {
-		return placeholder;
+	public void appendLogger(Appendable appendable) throws IOException {
+		LoggerUtils.loggerAppend(appendable, cts, level.name(), tag, msg);
 	}
 }

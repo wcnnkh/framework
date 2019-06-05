@@ -8,7 +8,7 @@ public final class ConsoleLogger extends AbstractLogger {
 
 	public ConsoleLogger(boolean traceEnabled, boolean debugEnabled, boolean infoEnabled, boolean warnEnabled,
 			boolean errorEnabled, String tag, ConsoleLoggerFactory consoleLoggerFactory) {
-		super(traceEnabled, debugEnabled, infoEnabled, warnEnabled, errorEnabled, tag);
+		super(traceEnabled, debugEnabled, infoEnabled, warnEnabled, errorEnabled, tag, null);
 		this.consoleLoggerFactory = consoleLoggerFactory;
 	}
 

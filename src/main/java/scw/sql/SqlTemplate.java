@@ -8,9 +8,10 @@ import java.util.List;
 
 import scw.core.logger.DebugLogger;
 import scw.core.logger.Logger;
-import scw.core.logger.WarnLogger;
 
-public abstract class SqlTemplate implements SqlOperations, DebugLogger, WarnLogger {
+public abstract class SqlTemplate implements SqlOperations, DebugLogger {
+	public abstract Logger getLogger();
+
 	public abstract Connection getUserConnection() throws SQLException;
 
 	protected void close(Connection connection) throws SqlException {
@@ -181,49 +182,13 @@ public abstract class SqlTemplate implements SqlOperations, DebugLogger, WarnLog
 		}
 	}
 
-	protected abstract Logger getLogger();
-
 	public boolean isDebugEnabled() {
 		return getLogger().isDebugEnabled();
-	}
-
-	public void debug(String msg) {
-		if (isDebugEnabled()) {
-			getLogger().debug(msg);
-		}
 	}
 
 	public void debug(String format, Object... args) {
 		if (isDebugEnabled()) {
 			getLogger().debug(format, args);
-		}
-	}
-
-	public void debug(String msg, Throwable t) {
-		if (isDebugEnabled()) {
-			getLogger().debug(msg, t);
-		}
-	}
-
-	public boolean isWarnEnabled() {
-		return getLogger().isWarnEnabled();
-	}
-
-	public void warn(String format, Object... args) {
-		if (isWarnEnabled()) {
-			getLogger().warn(format, args);
-		}
-	}
-
-	public void warn(String msg) {
-		if (isWarnEnabled()) {
-			getLogger().warn(msg);
-		}
-	}
-
-	public void warn(String msg, Throwable t) {
-		if (isWarnEnabled()) {
-			getLogger().warn(msg, t);
 		}
 	}
 }

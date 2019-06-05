@@ -3,7 +3,7 @@ package scw.core;
 import java.io.IOException;
 import java.io.Serializable;
 
-public final class UnsafeStringBuffer implements CharSequence, Appendable, Serializable {
+public final class UnsafeStringBuffer implements CharSequence, java.lang.Appendable, Serializable {
 	private static final long serialVersionUID = 1L;
 	private char[] chars;
 	private int count;
@@ -217,7 +217,7 @@ public final class UnsafeStringBuffer implements CharSequence, Appendable, Seria
 		return this;
 	}
 
-	public Appendable append(char c) throws IOException {
+	public UnsafeStringBuffer append(char c) throws IOException {
 		chars[count++] = c;
 		return this;
 	}

@@ -10,8 +10,6 @@ import java.util.Map;
 
 import scw.core.Consumer;
 import scw.core.exception.NotSupportException;
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
 import scw.core.utils.Assert;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
@@ -36,7 +34,6 @@ import scw.transaction.sql.ConnectionFactory;
 import scw.transaction.sql.SqlTransactionUtils;
 
 public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.core.Destroy {
-	private Logger logger = LoggerFactory.getLogger(getClass());
 	private final LazyCacheManager cacheManager;
 	private final MQ<AsyncInfo> asyncService;
 	private final boolean destroyAsyncService;
@@ -47,13 +44,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 		this.debug = debug;
 	}
 
-	@Override
-	protected Logger getLogger() {
-		return logger;
-	}
-
-	@Override
-	public boolean isDebugEnabled() {
+	public boolean isDebug() {
 		return debug;
 	}
 

@@ -1,6 +1,8 @@
 package scw.core.logger;
 
-import scw.core.UnsafeStringBuffer;
+import java.io.IOException;
+
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 
@@ -11,45 +13,105 @@ public final class LoggerUtils {
 	private LoggerUtils() {
 	};
 
-	public static String getLogMessage(UnsafeStringBuffer sb, String time, String level, String tag, String placeholder,
-			String msg, Object... args) {
+	public static void loggerAppend(Appendable appendable, String text, String placeholder, Object... args)
+			throws IOException {
+		if (StringUtils.isEmpty(text) || ArrayUtils.isEmpty(args)) {
+			appendable.append(text);
+			return;
+		}
+
+		String findText = StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER : placeholder;
+		int lastFind = 0;
+		for (int i = 0; i < args.length; i++) {
+			int index = text.indexOf(findText, lastFind);
+			if (index == -1) {
+				break;
+			}
+
+			appendable.append(text.substring(lastFind, index));
+			Object v = args[i];
+			if (v == null) {
+				appendable.append("null");
+			} else {
+				if (v instanceof LoggerAppend) {
+					((LoggerAppend) v).appendLogger(appendable);
+				} else {
+					appendable.append(v.toString());
+				}
+			}
+			lastFind = index + findText.length();
+		}
+
+		if (lastFind == 0) {
+			appendable.append(text);
+		} else {
+			appendable.append(text.substring(lastFind));
+		}
+	}
+
+	public static void loggerAppend(Appendable appendable, String time, String level, String tag,
+			LoggerAppend loggerAppend) throws IOException {
+		boolean b = false;
 		if (!StringUtils.isEmpty(time)) {
-			sb.append(time);
+			appendable.append(time);
+			b = true;
 		}
 
 		if (!StringUtils.isEmpty(level)) {
-			if (sb.length() > 0) {
-				sb.append(" ");
+			if (b) {
+				appendable.append(" ");
 			}
-			sb.append(level);
+			b = true;
+			appendable.append(level);
 		}
 
 		if (!StringUtils.isEmpty(tag)) {
-			if (sb.length() > 0) {
-				sb.append(" ");
+			if (b) {
+				appendable.append(" ");
 			}
-			sb.append("[").append(tag).append("]");
+			b = true;
+			appendable.append("[");
+			appendable.append(tag);
+			appendable.append("]");
 		}
 
-		if (sb.length() > 0) {
-			sb.append(" - ");
+		if (loggerAppend != null) {
+			if(b){
+				appendable.append(" - ");
+			}
+			b = true;
+			loggerAppend.appendLogger(appendable);
 		}
-		sb.append(StringUtils.format(msg, StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER : placeholder, args));
-		return sb.toString();
 	}
 
-	public static String getLogMessage(UnsafeStringBuffer unsafeStringBuffer, long time, String level, String tag,
-			String placeholder, String msg, Object... args) {
-		return getLogMessage(unsafeStringBuffer, XTime.format(time, TIME_FORMAT), level, tag, placeholder, msg, args);
+	public static void loggerAppend(Appendable appendable, long time, String level, String tag,
+			LoggerAppend loggerAppend) throws IOException {
+		loggerAppend(appendable, XTime.format(time, TIME_FORMAT), level, tag, loggerAppend);
+	}
+
+	public static void loggerAppend(Appendable appendable, long time, String level, String tag, String placeholder,
+			String msg, Object... args) throws IOException {
+		LoggerAppend loggerAppend = new DefaultLoggerFormatAppend(msg, placeholder, args);
+		loggerAppend(appendable, time, level, tag, loggerAppend);
 	}
 
 	public static void info(Class<?> clazz, String msg, Object... args) {
-		System.out.println(getLogMessage(new UnsafeStringBuffer(256), System.currentTimeMillis(), Level.INFO.name(),
-				clazz.getName(), null, msg, args));
+		StringBuilder sb = new StringBuilder(256);
+		try {
+			loggerAppend(sb, System.currentTimeMillis(), "INFO", clazz.getName(), null, msg, args);
+			System.out.println(sb.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void warn(Class<?> clazz, String msg, Object... args) {
-		System.err.println(getLogMessage(new UnsafeStringBuffer(256), System.currentTimeMillis(), Level.WARN.name(),
-				clazz.getName(), null, msg, args));
+		StringBuilder sb = new StringBuilder(256);
+		try {
+			loggerAppend(sb, System.currentTimeMillis(), "WARN", clazz.getName(), null, msg, args);
+			System.err.println(sb.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -13,6 +13,8 @@ import scw.core.Iterator;
 import scw.core.Pagination;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.ParameterException;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.sql.ResultSetMapper;
@@ -29,8 +31,13 @@ import scw.sql.orm.result.ResultSet;
 import scw.transaction.sql.cache.QueryCacheUtils;
 
 public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	public abstract SqlFormat getSqlFormat();
+
+	public final Logger getLogger() {
+		return logger;
+	}
 
 	public <T> T getById(Class<T> type, Object... params) {
 		return getById(null, type, params);
@@ -96,9 +103,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 				connection = getUserConnection();
 				boolean b = update(sql, connection) != 0;
 				if (!b) {
-					if (isWarnEnabled()) {
-						warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
-					}
+					getLogger().warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
 					return false;
 				}
 
@@ -125,7 +130,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	public boolean update(Object bean, String tableName) {
 		if (bean instanceof FieldSetterListen) {
 			if (((FieldSetterListen) bean).get_field_setter_map() == null) {
-				warn("更新对象[{}]不存在数据变更", bean.getClass().getName());
+				getLogger().warn("更新对象[{}]不存在数据变更", bean.getClass().getName());
 				return false;
 			}
 		}

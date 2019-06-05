@@ -3,11 +3,14 @@ package scw.core.logger;
 public interface Logger extends DebugLogger, WarnLogger, ErrorLogger, TraceLogger {
 
 	boolean isInfoEnabled();
-
-	void info(String msg);
-
 	void info(String format, Object... args);
+	void info(Throwable e, String msg, Object ...args);
 
-	void info(String msg, Throwable t);
-
+	void trace(Throwable e, String msg, Object ...args);
+	
+	void warn(Throwable e, String msg, Object ...args);
+	
+	void error(String format, Object... args);
+	
+	void debug(Throwable e, String msg, Object ...args)	;
 }
