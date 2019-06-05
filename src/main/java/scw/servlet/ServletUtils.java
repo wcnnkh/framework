@@ -455,8 +455,7 @@ public final class ServletUtils {
 			return beanFactory.get(HttpWrapperFactory.class, requestBeanFactory, isDebug(propertiesFactory),
 					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.parameter.cookie")),
 					getJsonParseSupport(beanFactory, propertiesFactory),
-					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.jsonp")),
-					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.parameter.require")));
+					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.jsonp")));
 		} else {
 			return beanFactory.get(requestFactoryBeanName);
 		}
