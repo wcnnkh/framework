@@ -16,8 +16,8 @@ public final class JSONHttpRequest extends AbstractHttpRequest {
 	private JSONObject json;
 
 	public JSONHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
-			boolean cookieValue, JSONParseSupport jsonParseSupport, boolean debug, boolean require) throws IOException {
-		super(requestBeanFactory, httpServletRequest, cookieValue, debug, require);
+			boolean cookieValue, JSONParseSupport jsonParseSupport, boolean debug) throws IOException {
+		super(requestBeanFactory, httpServletRequest, cookieValue, debug);
 		Body body = getBean(Body.class);
 		if (debug) {
 			debug("servletPath={},method={},{}", getServletPath(), getMethod(), body.getBody());

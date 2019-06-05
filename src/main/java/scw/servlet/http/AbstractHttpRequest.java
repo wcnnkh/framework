@@ -21,16 +21,14 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 	private RequestBeanContext requestBeanContext;
 	private boolean cookieValue;
 	private boolean debug;
-	private boolean require;
 
 	public AbstractHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
-			boolean cookieValue, boolean debug, boolean require) throws IOException {
+			boolean cookieValue, boolean debug) throws IOException {
 		super(httpServletRequest);
 		this.createTime = System.currentTimeMillis();
 		this.requestBeanContext = new DefaultRequestBeanContext(this, requestBeanFactory);
 		this.cookieValue = cookieValue;
 		this.debug = debug;
-		this.require = require;
 	}
 
 	public long getCreateTime() {
@@ -92,14 +90,6 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 		return v;
 	}
 
-	public String getRequireParameter(String name) {
-		String v = getParameter(name);
-		if (require && isNull(v)) {
-			throw new NullPointerException("require '" + name + "'");
-		}
-		return v;
-	}
-
 	protected boolean isNull(String value) {
 		return StringUtils.isEmpty(value);
 	}
@@ -121,13 +111,32 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 		return getParameter(key);
 	}
 
+	protected void parameterError(Exception e, String key, String v) {
+		getLogger().error("参数解析错误key={},value={}", key, v);
+	}
+
 	public Byte getByte(String key) {
 		String v = getParameter(key);
-		return StringUtils.isNull(v) ? null : Byte.valueOf(v);
+		if (isNull(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseByte(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
 	}
 
 	public byte getByteValue(String key) {
-		return StringUtils.parseByte(getRequireParameter(key));
+		String v = getParameter(key);
+		try {
+			return StringUtils.parseByte(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
 	}
 
 	public Short getShort(String key) {
@@ -136,69 +145,166 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 			return null;
 		}
 
-		return Short.valueOf(StringUtils.formatNumberText(v));
+		try {
+			return StringUtils.parseShort(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
 	}
 
 	public short getShortValue(String key) {
-		return StringUtils.parseShort(getRequireParameter(key));
+		String v = getParameter(key);
+		try {
+			return StringUtils.parseShort(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
 	}
 
 	public Integer getInteger(String key) {
 		String v = getParameter(key);
-		return isNull(v) ? null : StringUtils.parseInt(v);
+		if (isNull(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseInt(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
 	}
 
 	public int getIntValue(String key) {
-		return StringUtils.parseInt(getRequireParameter(key));
+		String v = getParameter(key);
+		try {
+			return StringUtils.parseInt(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
 	}
 
 	public Long getLong(String key) {
 		String v = getParameter(key);
-		return isNull(v) ? null : StringUtils.parseLong(v);
+		if (isNull(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseLong(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
 	}
 
 	public long getLongValue(String key) {
-		return StringUtils.parseLong(getRequireParameter(key));
+		String v = getParameter(key);
+		try {
+			return StringUtils.parseLong(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
 	}
 
 	public Boolean getBoolean(String key) {
 		String v = getParameter(key);
-		if (StringUtils.isEmpty(v)) {
+		if (isNull(v)) {
 			return null;
 		}
 
-		return StringUtils.parseBoolean(v);
+		try {
+			return StringUtils.parseBoolean(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
 	}
 
 	public boolean getBooleanValue(String key) {
-		return StringUtils.parseBoolean(getRequireParameter(key));
+		String v = getParameter(key);
+		try {
+			return StringUtils.parseBoolean(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return false;
 	}
 
 	public Float getFloat(String key) {
 		String v = getParameter(key);
-		return isNull(v) ? null : StringUtils.parseFloat(v);
+		if (isNull(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseFloat(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
 	}
 
 	public float getFloatValue(String key) {
-		return StringUtils.parseFloat(getRequireParameter(key));
+		String v = getParameter(key);
+		try {
+			return StringUtils.parseFloat(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
 	}
 
 	public Double getDouble(String key) {
 		String v = getParameter(key);
-		return isNull(v) ? null : StringUtils.parseDouble(v);
+		if (isNull(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseDouble(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
 	}
 
 	public double getDoubleValue(String key) {
-		return StringUtils.parseDouble(getRequireParameter(key));
+		String v = getParameter(key);
+		try {
+			return StringUtils.parseDouble(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
 	}
 
 	public char getChar(String key) {
-		return StringUtils.parseChar(getRequireParameter(key));
+		String v = getParameter(key);
+		try {
+			return StringUtils.parseChar(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
 	}
 
 	public Character getCharacter(String key) {
 		String v = getParameter(key);
-		return isNull(v) ? null : StringUtils.parseChar(v);
+		if (isNull(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseChar(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
 	}
 
 	public void destroy() {

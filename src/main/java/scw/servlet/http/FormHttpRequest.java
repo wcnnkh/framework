@@ -13,8 +13,8 @@ public final class FormHttpRequest extends AbstractHttpRequest {
 	private static Logger logger = LoggerFactory.getLogger(FormHttpRequest.class);
 
 	public FormHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
-			boolean cookieValue, boolean debug, boolean require) throws IOException {
-		super(requestBeanFactory, httpServletRequest, cookieValue, debug, require);
+			boolean cookieValue, boolean debug) throws IOException {
+		super(requestBeanFactory, httpServletRequest, cookieValue, debug);
 		if (debug) {
 			debug("servletPath={},method={},{}", getServletPath(), getMethod(),
 					JSONUtils.toJSONString(getParameterMap()));
