@@ -35,24 +35,6 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 		return createTime;
 	}
 
-	private String servletPath;
-	@Override
-	public String getServletPath() {
-		if (servletPath == null) {
-			servletPath = super.getServletPath();
-		}
-		return servletPath;
-	}
-	
-	private String method;
-	@Override
-	public String getMethod() {
-		if(method == null){
-			method = super.getMethod();
-		}
-		return method;
-	}
-
 	@SuppressWarnings("unchecked")
 	public final <T> T getParameter(Class<T> type, String name) {
 		T v = (T) getAttribute(name);
