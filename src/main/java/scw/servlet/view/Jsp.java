@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import scw.core.logger.DebugLogger;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.ServletUtils;
@@ -40,10 +39,8 @@ public class Jsp extends HashMap<String, Object> implements View {
 			page = ((HttpServletRequest) request).getServletPath();
 		}
 		
-		if (response instanceof DebugLogger) {
-			if (((DebugLogger) response).isDebugEnabled()) {
-				((DebugLogger) response).debug(page);
-			}
+		if(response.isDebugEnabled()){
+			response.debug("jsp:{}", page);
 		}
 
 		ServletUtils.jsp(request, response, page);

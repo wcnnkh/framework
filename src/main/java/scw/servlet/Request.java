@@ -2,7 +2,11 @@ package scw.servlet;
 
 import javax.servlet.ServletRequest;
 
-public interface Request extends ServletRequest {
+import scw.core.logger.DebugLogger;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerAppend;
+
+public interface Request extends ServletRequest, DebugLogger, LoggerAppend {
 	String getString(String name);
 
 	Byte getByte(String name);
@@ -44,4 +48,6 @@ public interface Request extends ServletRequest {
 	<T> T getBean(Class<T> type);
 
 	<T> T getBean(Class<T> type, String name);
+	
+	Logger getLogger();
 }

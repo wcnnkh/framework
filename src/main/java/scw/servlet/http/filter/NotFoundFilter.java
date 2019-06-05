@@ -1,6 +1,5 @@
 package scw.servlet.http.filter;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.core.logger.Logger;
@@ -19,10 +18,8 @@ public final class NotFoundFilter implements Filter {
 			return;
 		}
 
-		if (!response.isCommitted()) {
-			HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-			logger.warn("servletPath={},method={},status={}", httpServletRequest.getServletPath(),
-					httpServletRequest.getMethod(), 404);
+		logger.warn("not found：{}", request);
+		if (!response.isCommitted() && response instanceof HttpServletResponse) {
 			((HttpServletResponse) response).sendError(404, "not found action");
 		}
 		filterChain.doFilter(request, response);

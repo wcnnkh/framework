@@ -11,7 +11,7 @@ import scw.json.JSONParseSupport;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.parameter.Body;
 
-public class JSONHttpRequest extends DefaultHttpRequest {
+public final class JSONHttpRequest extends AbstractHttpRequest {
 	private static Logger logger = LoggerFactory.getLogger(JSONHttpRequest.class);
 	private JSONObject json;
 
@@ -25,7 +25,6 @@ public class JSONHttpRequest extends DefaultHttpRequest {
 		json = jsonParseSupport.parseObject(body.getBody());
 	}
 
-	@Override
 	public Logger getLogger() {
 		return logger;
 	}
@@ -43,14 +42,11 @@ public class JSONHttpRequest extends DefaultHttpRequest {
 		return v;
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("servletPath=").append(getServletPath());
-		sb.append(",method=").append(getMethod());
+	public void appendLogger(Appendable appendable) throws IOException {
+		appendable.append("servletPath=").append(getServletPath());
+		appendable.append(",method=").append(getMethod());
 		if (json != null) {
-			sb.append(",").append(json.toJSONString());
+			appendable.append(",").append(json.toJSONString());
 		}
-		return sb.toString();
 	}
 }

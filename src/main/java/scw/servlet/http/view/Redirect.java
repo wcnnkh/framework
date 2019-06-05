@@ -2,7 +2,6 @@ package scw.servlet.http.view;
 
 import javax.servlet.http.HttpServletResponse;
 
-import scw.core.logger.DebugLogger;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.View;
@@ -20,10 +19,8 @@ public class Redirect implements View {
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
 		}
 
-		if (response instanceof DebugLogger) {
-			if (((DebugLogger) response).isDebugEnabled()) {
-				((DebugLogger) response).debug("redirect：" + url);
-			}
+		if (response.isDebugEnabled()) {
+			response.debug("redirect:{}", url);
 		}
 		httpServletResponse.sendRedirect(url);
 	}

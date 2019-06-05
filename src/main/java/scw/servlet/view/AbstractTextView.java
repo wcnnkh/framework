@@ -1,6 +1,5 @@
 package scw.servlet.view;
 
-import scw.core.logger.DebugLogger;
 import scw.core.net.ContentType;
 import scw.core.utils.StringUtils;
 import scw.servlet.Request;
@@ -22,10 +21,8 @@ public abstract class AbstractTextView implements View, Text {
 		}
 
 		response.getWriter().write(content);
-		if (response instanceof DebugLogger) {
-			if (((DebugLogger) response).isDebugEnabled()) {
-				((DebugLogger) response).debug(content);
-			}
+		if (response.isDebugEnabled()) {
+			response.debug(content);
 		}
 	}
 

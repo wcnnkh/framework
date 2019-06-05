@@ -99,7 +99,6 @@ public class DefaultServletService implements ServletService {
 
 		Request request = null;
 		Response response = null;
-		FilterChain filterChain = new scw.servlet.IteratorFilterChain(filters, null);
 		long t = System.currentTimeMillis();
 		try {
 			request = wrapperFactory.wrapperRequest(req, resp);
@@ -112,7 +111,7 @@ public class DefaultServletService implements ServletService {
 				return;
 			}
 
-			filterChain.doFilter(request, response);
+			ServletUtils.service(request, response, filters);
 		} catch (Throwable e) {
 			error(request, response, e);
 		} finally {
@@ -131,33 +130,21 @@ public class DefaultServletService implements ServletService {
 			} finally {
 				t = System.currentTimeMillis() - t;
 				if (t > warnExecuteTime) {
-					logger.warn("执行{}超时，用时{}ms", request.toString(), t);
+					logger.warn("执行{}超时，用时{}ms", request, t);
 				}
 			}
 		}
 	}
 
 	protected void error(ServletRequest request, ServletResponse response, Throwable e) {
-		if (!response.isCommitted() && request instanceof HttpServletRequest
-				&& response instanceof HttpServletResponse) {
-			HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-			HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-			if (!httpServletResponse.isCommitted()) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("servletPath=").append(httpServletRequest.getServletPath());
-				sb.append(",method=").append(httpServletRequest.getMethod());
-				sb.append(",status=").append(500);
-				sb.append(",msg=").append("system error");
-				String msg = sb.toString();
-				try {
-					httpServletResponse.sendError(500, msg);
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-				logger.error(msg, e);
+		logger.error(e, "执行{}异常", request);
+		if (!response.isCommitted() && response instanceof HttpServletResponse) {
+			try {
+				((HttpServletResponse) response).sendError(500, "system error");
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 			return;
 		}
-		e.printStackTrace();
 	}
 }

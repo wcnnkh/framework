@@ -3,7 +3,6 @@ package scw.servlet.http.view;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.core.logger.DebugLogger;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.ServletUtils;
@@ -29,17 +28,9 @@ public class HttpCode implements View {
 
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-		if (response instanceof DebugLogger) {
-			if (((DebugLogger) response).isDebugEnabled()) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("servletPath=").append(httpServletRequest.getServletPath());
-				sb.append(",method=").append(httpServletRequest.getMethod());
-				sb.append(",status=");
-				sb.append(status);
-				sb.append(",msg=");
-				sb.append(msg);
-				((DebugLogger) response).debug(sb.toString());
-			}
+		if (response.isDebugEnabled()) {
+			response.debug("servletPath={},method={},status={},msg={}", httpServletRequest.getServletPath(),
+					httpServletRequest.getMethod(), status, msg);
 		}
 		httpServletResponse.sendError(status, msg);
 	}

@@ -15,7 +15,6 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
 import scw.core.exception.NotFoundException;
-import scw.core.logger.DebugLogger;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.ContentType;
@@ -217,14 +216,8 @@ public class Page extends HashMap<String, Object> implements View {
 			break;
 		}
 
-		if (response instanceof DebugLogger) {
-			if (((DebugLogger) response).isDebugEnabled()) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(pageType);
-				sb.append(":");
-				sb.append(realPage);
-				((DebugLogger) response).debug(sb.toString());
-			}
+		if (response.isDebugEnabled()) {
+			response.debug("{}:{}", pageType, realPage);
 		}
 	}
 }

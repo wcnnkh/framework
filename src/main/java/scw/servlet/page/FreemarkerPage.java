@@ -4,7 +4,6 @@ import java.util.Enumeration;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import scw.core.logger.DebugLogger;
 import scw.core.net.ContentType;
 import scw.core.utils.StringUtils;
 import scw.servlet.Request;
@@ -69,10 +68,8 @@ public class FreemarkerPage extends AbstractPage {
 		Template template = configuration.getTemplate(page, request.getCharacterEncoding());
 		template.process(this, response.getWriter());
 
-		if (response instanceof DebugLogger) {
-			if (((DebugLogger) response).isDebugEnabled()) {
-				((DebugLogger) response).debug("freemarker：" + page);
-			}
+		if (response.isDebugEnabled()) {
+			response.debug("freemarker:{}", page);
 		}
 	}
 }

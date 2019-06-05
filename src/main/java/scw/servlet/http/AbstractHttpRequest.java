@@ -9,19 +9,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import scw.core.Destroy;
-import scw.core.logger.DebugLogger;
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
 import scw.core.utils.StringUtils;
 import scw.servlet.ServletUtils;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.context.DefaultRequestBeanContext;
 import scw.servlet.context.RequestBeanContext;
 
-public class DefaultHttpRequest extends HttpServletRequestWrapper implements HttpRequest, Destroy, DebugLogger {
-	public static final String RESTURL_PATH_PARAMETER = "_resturl_path_parameter";
-
-	private static Logger logger = LoggerFactory.getLogger(DefaultHttpRequest.class);
+public abstract class AbstractHttpRequest extends HttpServletRequestWrapper implements HttpRequest, Destroy {
 	private static final String GET_DEFAULT_CHARSET_ANME = "ISO-8859-1";
 	private long createTime;
 	private RequestBeanContext requestBeanContext;
@@ -29,7 +23,7 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 	private boolean debug;
 	private boolean require;
 
-	public DefaultHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
+	public AbstractHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
 			boolean cookieValue, boolean debug, boolean require) throws IOException {
 		super(httpServletRequest);
 		this.createTime = System.currentTimeMillis();
@@ -73,12 +67,11 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 		return ServletUtils.getCookie(this, name, ignoreCase);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public String getParameter(String name) {
 		String v = super.getParameter(name);
 		if (v == null) {
-			Map<String, String> restParameterMap = (Map<String, String>) getAttribute(RESTURL_PATH_PARAMETER);
+			Map<String, String> restParameterMap = ServletUtils.getRestPathParameterMap(this);
 			if (restParameterMap != null) {
 				v = restParameterMap.get(name);
 			}
@@ -115,7 +108,7 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 		if (StringUtils.containsChinese(value)) {
 			return value;
 		}
-		
+
 		try {
 			return new String(value.getBytes(GET_DEFAULT_CHARSET_ANME), getCharacterEncoding());
 		} catch (UnsupportedEncodingException e) {
@@ -220,29 +213,13 @@ public class DefaultHttpRequest extends HttpServletRequestWrapper implements Htt
 		return requestBeanContext.getBean(type);
 	}
 
-	public Logger getLogger() {
-		return logger;
-	}
-
 	public boolean isDebugEnabled() {
 		return debug;
-	}
-
-	public void debug(String msg) {
-		if (isDebugEnabled()) {
-			getLogger().debug(msg);
-		}
 	}
 
 	public void debug(String format, Object... args) {
 		if (isDebugEnabled()) {
 			getLogger().debug(format, args);
-		}
-	}
-
-	public void debug(String msg, Throwable t) {
-		if (isDebugEnabled()) {
-			getLogger().debug(msg, t);
 		}
 	}
 }

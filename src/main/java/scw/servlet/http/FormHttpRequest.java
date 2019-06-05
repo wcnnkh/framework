@@ -9,13 +9,11 @@ import scw.core.logger.LoggerFactory;
 import scw.json.JSONUtils;
 import scw.servlet.beans.RequestBeanFactory;
 
-public class FormHttpRequest extends DefaultHttpRequest {
-	private static Logger logger = LoggerFactory
-			.getLogger(FormHttpRequest.class);
+public final class FormHttpRequest extends AbstractHttpRequest {
+	private static Logger logger = LoggerFactory.getLogger(FormHttpRequest.class);
 
-	public FormHttpRequest(RequestBeanFactory requestBeanFactory,
-			HttpServletRequest httpServletRequest, boolean cookieValue,
-			boolean debug, boolean require) throws IOException {
+	public FormHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
+			boolean cookieValue, boolean debug, boolean require) throws IOException {
 		super(requestBeanFactory, httpServletRequest, cookieValue, debug, require);
 		if (debug) {
 			debug("servletPath={},method={},{}", getServletPath(), getMethod(),
@@ -23,17 +21,13 @@ public class FormHttpRequest extends DefaultHttpRequest {
 		}
 	}
 
-	@Override
 	public Logger getLogger() {
 		return logger;
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("servletPath=").append(getServletPath());
-		sb.append(",method=").append(getMethod());
-		sb.append(",").append(JSONUtils.toJSONString(getParameterMap()));
-		return sb.toString();
+	public void appendLogger(Appendable appendable) throws IOException {
+		appendable.append("servletPath=").append(getServletPath());
+		appendable.append(",method=").append(getMethod());
+		appendable.append(",").append(JSONUtils.toJSONString(getParameterMap()));
 	}
 }

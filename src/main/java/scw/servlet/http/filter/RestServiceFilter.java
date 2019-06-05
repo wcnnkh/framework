@@ -11,8 +11,8 @@ import scw.core.exception.AlreadyExistsException;
 import scw.core.net.http.Method;
 import scw.servlet.Action;
 import scw.servlet.MethodAction;
+import scw.servlet.ServletUtils;
 import scw.servlet.annotation.Controller;
-import scw.servlet.http.DefaultHttpRequest;
 
 final class RestServiceFilter extends AbstractHttpServiceFilter {
 	private final EnumMap<Method, Map<String, RestInfo>> restMap = new EnumMap<Method, Map<String, RestInfo>>(
@@ -87,7 +87,7 @@ final class RestServiceFilter extends AbstractHttpServiceFilter {
 			}
 
 			if (find) {
-				request.setAttribute(DefaultHttpRequest.RESTURL_PATH_PARAMETER, valueMap);
+				ServletUtils.setRestPathParameterMap(request, valueMap);
 				return restUrl.getAction();
 			}
 		}
