@@ -1364,6 +1364,10 @@ public final class StringUtils {
 		}
 
 		String[] arr = split(strs, isTrim, filter);
+		if (ArrayUtils.isEmpty(arr)) {
+			return Collections.EMPTY_LIST;
+		}
+
 		List<T> list = new ArrayList<T>(arr.length);
 		if (String.class.isAssignableFrom(type)) {
 			for (String str : arr) {
@@ -1966,7 +1970,7 @@ public final class StringUtils {
 
 	public static String[] split(String str, boolean ignoreNull, char... filters) {
 		if (isEmpty(str)) {
-			return null;
+			return ArrayUtils.EMPTY_STRING_ARRAY;
 		}
 
 		LinkedList<String> list = new LinkedList<String>();
@@ -2003,7 +2007,7 @@ public final class StringUtils {
 
 	public static String[] split(String str, boolean ignoreNull, String... filters) {
 		if (isEmpty(str)) {
-			return null;
+			return ArrayUtils.EMPTY_STRING_ARRAY;
 		}
 
 		int begin = 0;
@@ -2057,7 +2061,7 @@ public final class StringUtils {
 	public static int[] splitIntArray(String str, String... filter) {
 		String[] arr = split(str, filter);
 		if (arr == null) {
-			return null;
+			return ArrayUtils.EMPTY_INT_ARRAY;
 		}
 
 		int[] dataArr = new int[arr.length];
@@ -2070,7 +2074,7 @@ public final class StringUtils {
 	public static long[] splitLongArray(String str, String... filter) {
 		String[] arr = split(str, filter);
 		if (arr == null) {
-			return null;
+			return ArrayUtils.EMPTY_LONG_ARRAY;
 		}
 
 		return parseLongArray(arr);
