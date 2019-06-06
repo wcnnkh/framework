@@ -1954,7 +1954,7 @@ public final class StringUtils {
 
 	public static String[] split(String str, char... filters) {
 		if (isEmpty(str)) {
-			return null;
+			return new String[0];
 		}
 
 		return split(str, true, filters);
@@ -1962,7 +1962,7 @@ public final class StringUtils {
 
 	public static String[] split(String str, String... filters) {
 		if (isEmpty(str)) {
-			return null;
+			return new String[0];
 		}
 
 		return split(str, true, filters);
@@ -1970,7 +1970,7 @@ public final class StringUtils {
 
 	public static String[] split(String str, boolean ignoreNull, char... filters) {
 		if (isEmpty(str)) {
-			return ArrayUtils.EMPTY_STRING_ARRAY;
+			return new String[0];
 		}
 
 		LinkedList<String> list = new LinkedList<String>();
@@ -2007,7 +2007,7 @@ public final class StringUtils {
 
 	public static String[] split(String str, boolean ignoreNull, String... filters) {
 		if (isEmpty(str)) {
-			return ArrayUtils.EMPTY_STRING_ARRAY;
+			return new String[0];
 		}
 
 		int begin = 0;
@@ -2061,7 +2061,7 @@ public final class StringUtils {
 	public static int[] splitIntArray(String str, String... filter) {
 		String[] arr = split(str, filter);
 		if (arr == null) {
-			return ArrayUtils.EMPTY_INT_ARRAY;
+			return new int[0];
 		}
 
 		int[] dataArr = new int[arr.length];
@@ -2074,7 +2074,7 @@ public final class StringUtils {
 	public static long[] splitLongArray(String str, String... filter) {
 		String[] arr = split(str, filter);
 		if (arr == null) {
-			return ArrayUtils.EMPTY_LONG_ARRAY;
+			return new long[0];
 		}
 
 		return parseLongArray(arr);
