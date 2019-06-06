@@ -132,14 +132,14 @@ public class DefaultServletService implements ServletService {
 			} finally {
 				t = System.currentTimeMillis() - t;
 				if (t > warnExecuteTime) {
-					logger.warn("执行{}超时，用时{}ms", request, t);
+					logger.warn("执行{}超时，用时{}ms", request.toString(), t);
 				}
 			}
 		}
 	}
 
 	protected void error(ServletRequest request, ServletResponse response, Throwable e) {
-		logger.error(e, "执行{}异常", request);
+		logger.error(e, "执行{}异常", request.toString());
 		if (!response.isCommitted() && response instanceof HttpServletResponse) {
 			try {
 				((HttpServletResponse) response).sendError(500, "system error");
