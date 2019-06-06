@@ -72,24 +72,10 @@ public final class UnsafeStringBuffer implements CharSequence, java.lang.Appenda
 		} else if (value instanceof CharSequence) {
 			return append((CharSequence) value);
 		} else if (value instanceof StringBuilder) {
-			StringBuilder sb = (StringBuilder) value;
-			int len = sb.length();
-			if (len == 0) {
-				return this;
-			}
-
-			sb.getChars(0, len, chars, count);
-			count += len;
+			appendStringBuilder((StringBuilder) value);
 			return this;
 		} else if (value instanceof StringBuffer) {
-			StringBuffer sb = (StringBuffer) value;
-			int len = sb.length();
-			if (len == 0) {
-				return this;
-			}
-
-			sb.getChars(0, len, chars, count);
-			count += len;
+			appendStringBuffer((StringBuffer) value);
 			return this;
 		} else {
 			return append(value.toString());
@@ -205,6 +191,20 @@ public final class UnsafeStringBuffer implements CharSequence, java.lang.Appenda
 			return appendNull();
 		}
 
+		if (csq instanceof String) {
+			return append((String) csq);
+		}
+
+		if (csq instanceof StringBuilder) {
+			appendStringBuilder((StringBuilder) csq);
+			return this;
+		}
+
+		if (csq instanceof StringBuffer) {
+			appendStringBuffer((StringBuffer) csq);
+			return this;
+		}
+
 		int len = csq.length();
 		if (len == 0) {
 			return this;
@@ -220,5 +220,27 @@ public final class UnsafeStringBuffer implements CharSequence, java.lang.Appenda
 	public UnsafeStringBuffer append(char c) throws IOException {
 		chars[count++] = c;
 		return this;
+	}
+
+	private void appendStringBuilder(StringBuilder sb) {
+		int len = sb.length();
+		if (len == 0) {
+			return;
+		}
+
+		expandCapacity(count + len);
+		sb.getChars(0, len, chars, count);
+		count += len;
+	}
+
+	private void appendStringBuffer(StringBuffer sb) {
+		int len = sb.length();
+		if (len == 0) {
+			return;
+		}
+
+		expandCapacity(count + len);
+		sb.getChars(0, len, chars, count);
+		count += len;
 	}
 }
