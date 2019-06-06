@@ -1949,7 +1949,7 @@ public final class StringUtils {
 	}
 
 	public static String[] split(String str, char... filters) {
-		if (str == null || str.length() == 0) {
+		if (isEmpty(str)) {
 			return null;
 		}
 
@@ -1957,7 +1957,7 @@ public final class StringUtils {
 	}
 
 	public static String[] split(String str, String... filters) {
-		if (str == null || str.length() == 0) {
+		if (isEmpty(str)) {
 			return null;
 		}
 
@@ -1965,7 +1965,7 @@ public final class StringUtils {
 	}
 
 	public static String[] split(String str, boolean ignoreNull, char... filters) {
-		if (str == null) {
+		if (isEmpty(str)) {
 			return null;
 		}
 
@@ -2002,7 +2002,7 @@ public final class StringUtils {
 	}
 
 	public static String[] split(String str, boolean ignoreNull, String... filters) {
-		if (str == null) {
+		if (isEmpty(str)) {
 			return null;
 		}
 
@@ -2083,7 +2083,7 @@ public final class StringUtils {
 	 * @return
 	 */
 	public static String formatNumberText(String text) {
-		if (StringUtils.isEmpty(text)) {
+		if (isEmpty(text)) {
 			return text;
 		}
 
