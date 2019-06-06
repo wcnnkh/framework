@@ -2,9 +2,10 @@ package scw.data.utils;
 
 import java.util.concurrent.TimeUnit;
 
+import scw.core.BlockingQueue;
 import scw.data.memcached.Memcached;
 
-public class MemcachedQueue<E> implements Queue<E> {
+public class MemcachedBlockingQueue<E> implements BlockingQueue<E> {
 	private static final String READ_KEY = "_read";
 	private static final String WRITE_KEY = "_write";
 	private static final String WRITE_INDEX_KEY = "_write_index";
@@ -12,7 +13,7 @@ public class MemcachedQueue<E> implements Queue<E> {
 	private final Memcached memcached;
 	private final String queueKey;
 
-	public MemcachedQueue(Memcached memcached, String queueKey) {
+	public MemcachedBlockingQueue(Memcached memcached, String queueKey) {
 		this.memcached = memcached;
 		this.queueKey = queueKey;
 	}

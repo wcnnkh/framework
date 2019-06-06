@@ -3,13 +3,14 @@ package scw.data.utils;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import scw.core.BlockingQueue;
 import scw.data.redis.Redis;
 
-public class RedisQueue<E> implements Queue<E> {
+public class RedisBlockingQueue<E> implements BlockingQueue<E> {
 	private final Redis redis;
 	private final String queueKey;
 
-	public RedisQueue(Redis redis, String queueKey) {
+	public RedisBlockingQueue(Redis redis, String queueKey) {
 		this.redis = redis;
 		this.queueKey = queueKey;
 	}

@@ -1,21 +1,21 @@
 package scw.mq;
 
+import scw.core.BlockingQueue;
 import scw.core.Consumer;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.Producer;
-import scw.data.utils.Queue;
 
-public abstract class SingleQueueMQ<T> implements Consumer<T>, Producer<T>, Init, Destroy, Runnable {
-	private Queue<T> queue;
+public abstract class SingleBlockingQueueMQ<T> implements Consumer<T>, Producer<T>, Init, Destroy, Runnable {
+	private BlockingQueue<T> blockingQueue;
 	private Thread thread = new Thread(this);
 
-	protected Queue<T> getQueue() {
-		return queue;
+	protected BlockingQueue<T> getBlockingQueue() {
+		return blockingQueue;
 	}
 
-	public SingleQueueMQ(Queue<T> queue) {
-		this.queue = queue;
+	public SingleBlockingQueueMQ(BlockingQueue<T> queue) {
+		this.blockingQueue = queue;
 	}
 
 	public void init() {
@@ -31,7 +31,7 @@ public abstract class SingleQueueMQ<T> implements Consumer<T>, Producer<T>, Init
 	public void run() {
 		try {
 			while (!Thread.interrupted()) {
-				T message = queue.take();
+				T message = blockingQueue.take();
 				if (message == null) {
 					continue;
 				}
@@ -47,7 +47,11 @@ public abstract class SingleQueueMQ<T> implements Consumer<T>, Producer<T>, Init
 	}
 
 	public void push(T message) {
-		queue.offer(message);
+		try {
+			blockingQueue.put(message);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

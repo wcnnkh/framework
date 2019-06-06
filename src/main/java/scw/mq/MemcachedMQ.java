@@ -1,10 +1,10 @@
 package scw.mq;
 
+import scw.core.BlockingQueue;
 import scw.data.memcached.Memcached;
-import scw.data.utils.MemcachedQueue;
-import scw.data.utils.Queue;
+import scw.data.utils.MemcachedBlockingQueue;
 
-public final class MemcachedMQ<T> extends QueueMQ<T> {
+public final class MemcachedMQ<T> extends BlockingQueueMQ<T> {
 	private final Memcached memcached;
 
 	public MemcachedMQ(Memcached memcached) {
@@ -12,7 +12,7 @@ public final class MemcachedMQ<T> extends QueueMQ<T> {
 	}
 
 	@Override
-	protected Queue<T> newQueue(String name) {
-		return new MemcachedQueue<T>(memcached, name);
+	protected BlockingQueue<T> newQueue(String name) {
+		return new MemcachedBlockingQueue<T>(memcached, name);
 	}
 }

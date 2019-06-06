@@ -23,7 +23,7 @@ import scw.db.cache.RedisLazyCacheManager;
 import scw.db.database.DataBase;
 import scw.mq.MQ;
 import scw.mq.MemcachedMQ;
-import scw.mq.QueueMQ;
+import scw.mq.BlockingQueueMQ;
 import scw.mq.RedisMQ;
 import scw.sql.Sql;
 import scw.sql.orm.ORMTemplate;
@@ -66,7 +66,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	public DB(Memcached memcached, String queueName) {
 		Assert.notNull(memcached);
 		this.cacheManager = new MemcachedLazyCacheManager(memcached);
-		QueueMQ<AsyncInfo> mq;
+		BlockingQueueMQ<AsyncInfo> mq;
 		if (StringUtils.isEmpty(queueName)) {
 			mq = new MemoryMQ<AsyncInfo>();
 		} else {
@@ -82,7 +82,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	public DB(Redis redis, String queueName) {
 		Assert.notNull(redis);
 		this.cacheManager = new RedisLazyCacheManager(redis);
-		QueueMQ<AsyncInfo> mq;
+		BlockingQueueMQ<AsyncInfo> mq;
 		if (StringUtils.isEmpty(queueName)) {
 			mq = new MemoryMQ<AsyncInfo>();
 		} else {
@@ -116,8 +116,8 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 
 	public void destroy() {
 		if (destroyAsyncService) {
-			if (asyncService != null && asyncService instanceof QueueMQ) {
-				((QueueMQ<AsyncInfo>) asyncService).destroy();
+			if (asyncService != null && asyncService instanceof BlockingQueueMQ) {
+				((BlockingQueueMQ<AsyncInfo>) asyncService).destroy();
 			}
 		}
 	}

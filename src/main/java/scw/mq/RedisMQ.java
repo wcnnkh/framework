@@ -1,10 +1,10 @@
 package scw.mq;
 
+import scw.core.BlockingQueue;
 import scw.data.redis.Redis;
-import scw.data.utils.Queue;
-import scw.data.utils.RedisQueue;
+import scw.data.utils.RedisBlockingQueue;
 
-public final class RedisMQ<T> extends QueueMQ<T> {
+public final class RedisMQ<T> extends BlockingQueueMQ<T> {
 	private final Redis redis;
 
 	public RedisMQ(Redis redis) {
@@ -12,7 +12,7 @@ public final class RedisMQ<T> extends QueueMQ<T> {
 	}
 
 	@Override
-	protected Queue<T> newQueue(String name) {
-		return new RedisQueue<T>(redis, name);
+	protected BlockingQueue<T> newQueue(String name) {
+		return new RedisBlockingQueue<T>(redis, name);
 	}
 }

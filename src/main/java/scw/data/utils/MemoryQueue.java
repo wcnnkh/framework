@@ -4,7 +4,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class MemoryQueue<E> extends ConcurrentLinkedQueue<E> implements Queue<E> {
+import scw.core.BlockingQueue;
+
+public class MemoryQueue<E> extends ConcurrentLinkedQueue<E> implements BlockingQueue<E> {
 	private static final long serialVersionUID = 1L;
 	private AtomicLong index = new AtomicLong();
 

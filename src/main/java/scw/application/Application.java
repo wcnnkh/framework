@@ -1,9 +1,11 @@
 package scw.application;
 
 import scw.beans.BeanFactory;
+import scw.core.Destroy;
+import scw.core.Init;
 import scw.core.PropertiesFactory;
 
-public interface Application {
+public interface Application extends Init, Destroy{
 	/**
 	 * 获取实例工厂
 	 * @return
@@ -11,14 +13,4 @@ public interface Application {
 	BeanFactory getBeanFactory();
 	
 	PropertiesFactory getPropertiesFactory();
-	
-	/**
-	 * 初始化
-	 */
-	void init();
-	
-	/**
-	 * 销毁
-	 */
-	void destroy();
 }

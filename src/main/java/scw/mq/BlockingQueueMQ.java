@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.core.BlockingQueue;
 import scw.core.Consumer;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.data.utils.Queue;
 
-public class QueueMQ<T> extends AbstractMQ<T> implements scw.core.Destroy {
+public class BlockingQueueMQ<T> extends AbstractMQ<T> implements scw.core.Destroy {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private volatile Map<String, MyQueueMQ> queueMap = new HashMap<String, MyQueueMQ>();
 
@@ -20,7 +20,7 @@ public class QueueMQ<T> extends AbstractMQ<T> implements scw.core.Destroy {
 				if (queueMap.containsKey(name)) {
 					queue = queueMap.get(name);
 				} else {
-					Queue<T> q = newQueue(name);
+					BlockingQueue<T> q = newQueue(name);
 					if (q != null) {
 						queue = new MyQueueMQ(name, q);
 						queue.init();
@@ -42,7 +42,7 @@ public class QueueMQ<T> extends AbstractMQ<T> implements scw.core.Destroy {
 	 * @param name
 	 * @return
 	 */
-	protected Queue<T> newQueue(String name) {
+	protected BlockingQueue<T> newQueue(String name) {
 		return null;
 	}
 
@@ -52,10 +52,10 @@ public class QueueMQ<T> extends AbstractMQ<T> implements scw.core.Destroy {
 		}
 	}
 
-	final class MyQueueMQ extends SingleQueueMQ<T> {
+	final class MyQueueMQ extends SingleBlockingQueueMQ<T> {
 		private final String name;
 
-		public MyQueueMQ(String name, Queue<T> queue) {
+		public MyQueueMQ(String name, BlockingQueue<T> queue) {
 			super(queue);
 			this.name = name;
 		}

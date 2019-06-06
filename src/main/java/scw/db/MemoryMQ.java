@@ -1,13 +1,13 @@
 package scw.db;
 
+import scw.core.BlockingQueue;
 import scw.data.utils.MemoryQueue;
-import scw.data.utils.Queue;
-import scw.mq.QueueMQ;
+import scw.mq.BlockingQueueMQ;
 
-public final class MemoryMQ<T> extends QueueMQ<T> {
+public final class MemoryMQ<T> extends BlockingQueueMQ<T> {
 
 	@Override
-	protected Queue<T> newQueue(String name) {
+	protected BlockingQueue<T> newQueue(String name) {
 		return new MemoryQueue<T>();
 	}
 }
