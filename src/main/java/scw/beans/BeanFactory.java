@@ -10,4 +10,6 @@ public interface BeanFactory extends InstanceFactory {
 	<T> T get(String name, Class<?>[] parameterTypes, Object... params);
 
 	boolean contains(String name);
+
+	boolean isProxy(String name);
 }

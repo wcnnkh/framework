@@ -197,4 +197,9 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 		}
 		return bean;
 	}
+
+	public boolean isProxy(String name) {
+		BeanDefinition beanDefinition = getBeanDefinition(name);
+		return beanDefinition.isProxy();
+	}
 }
