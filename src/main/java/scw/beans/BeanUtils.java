@@ -219,7 +219,7 @@ public final class BeanUtils {
 				value = beanFactory.get(config.parse()).parse(beanFactory, field, config.value(), config.charset());
 				field.set(obj, value);
 			} catch (Exception e) {
-				logger.error("clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
+				logger.error(e, "config：clz={},fieldName={}", clz.getName(), field.getField().getName());
 			}
 		}
 	}
@@ -262,7 +262,7 @@ public final class BeanUtils {
 					field.set(obj, value);
 				}
 			} catch (Exception e) {
-				logger.error("clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
+				logger.error(e, "properties：clz={},fieldName={}", clz.getName(), field.getField().getName());
 			}
 		}
 	}
@@ -281,7 +281,7 @@ public final class BeanUtils {
 				existDefaultValueWarnLog(Autowrite.class.getName(), clz, field, obj);
 				field.set(obj, beanFactory.get(name));
 			} catch (Exception e) {
-				logger.error("clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
+				logger.error(e, "autowrite：clz={},fieldName={}", clz.getName(), field.getField().getName());
 			}
 		}
 	}
