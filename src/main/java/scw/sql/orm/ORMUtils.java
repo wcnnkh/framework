@@ -199,25 +199,12 @@ public final class ORMUtils {
 	}
 
 	public static boolean isAnnoataionColumnNullAble(Field field) {
-		boolean nullAble;
-		Column column = field.getAnnotation(Column.class);
-		if (column != null) {
-			if (column.unique() || isAnnoataionPrimaryKey(field) || isIndexColumn(field)) {
-				nullAble = false;
-				if (column.nullAble()) {
-					logger.warn("字段{}不能或不推荐设置为允许为空，因为他可能是主键或索引", field.getName());
-				}
-			} else {
-				nullAble = column.nullAble();
-			}
-		} else {
-			if (isAnnoataionPrimaryKey(field) || isIndexColumn(field)) {
-				nullAble = false;
-			} else {
-				nullAble = !field.getType().isPrimitive();
-			}
+		if(field.getType().isPrimitive() || isAnnoataionPrimaryKey(field) || isIndexColumn(field)){
+			return false;
 		}
-		return nullAble;
+		
+		Column column = field.getAnnotation(Column.class);
+		return column == null? true:column.nullAble();
 	}
 
 	public static boolean isAnnoataionColumnUnique(Field field) {

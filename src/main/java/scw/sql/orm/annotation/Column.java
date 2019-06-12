@@ -14,7 +14,12 @@ public @interface Column {
 
 	public int length() default 0;
 
-	public boolean nullAble() default false;
+	/**
+	 * 默认是可以为空的，但是基本数据类型(值类型)、索引、主键列是不能为空的
+	 * 
+	 * @return
+	 */
+	public boolean nullAble() default true;
 
 	/**
 	 * 是否建立唯一索引
