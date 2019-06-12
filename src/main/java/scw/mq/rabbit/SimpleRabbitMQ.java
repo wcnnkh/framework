@@ -22,7 +22,7 @@ import scw.core.serializer.support.JavaSerializer;
  *
  * @param <T>
  */
-public final class SimpleRabbitMQ<T> extends AbstractRabbitMQ<T> implements Destroy {
+public class SimpleRabbitMQ<T> extends AbstractRabbitMQ<T> implements Destroy {
 	private volatile Map<String, Channel> channelMap = new HashMap<String, Channel>();
 	private final Connection connection;
 	private final String exchange;

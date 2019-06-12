@@ -1,6 +1,5 @@
 package scw.application;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,6 +17,7 @@ import scw.beans.XmlBeanFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboUtils;
 import scw.core.Consumer;
+import scw.core.Parameters;
 import scw.core.PropertiesFactory;
 import scw.core.aop.Invoker;
 import scw.core.exception.AlreadyExistsException;
@@ -26,7 +26,7 @@ import scw.core.logger.LoggerUtils;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.mq.MQ;
+import scw.mq.ParametersMQ;
 import scw.sql.orm.ORMUtils;
 
 public class CommonApplication implements Application {
@@ -116,7 +116,7 @@ public class CommonApplication implements Application {
 		for (Class<?> clz : getClasses()) {
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, MQConsumer.class)) {
 				MQConsumer c = method.getAnnotation(MQConsumer.class);
-				MQ<Object> mq = getBeanFactory().get(c.service());
+				ParametersMQ mq = getBeanFactory().get(c.service());
 				LoggerUtils.info(CommonApplication.class, "添加消费者：{}, clz={}, method={}", c.name(), clz.getName(),
 						method);
 				mq.addConsumer(c.name(), new MqMethodConsumer(c.name(), clz, method));
@@ -124,7 +124,7 @@ public class CommonApplication implements Application {
 		}
 	}
 
-	final class MqMethodConsumer implements Consumer<Object> {
+	final class MqMethodConsumer implements Consumer<Parameters> {
 		private String name;
 		private Class<?> clz;
 		private Method method;
@@ -135,36 +135,17 @@ public class CommonApplication implements Application {
 			this.method = method;
 		}
 
-		public void consume(Object message) {
+		public void consume(Parameters message) {
 			if (message == null) {
 				return;
 			}
 
-			if (message instanceof MethodParameterMessage) {
-				Invoker invoker = new MethodProxyInvoker(getBeanFactory(), clz, method,
-						getBeanFactory().getFilterNames());
-				try {
-					invoker.invoke(((MethodParameterMessage) message).getArgs());
-				} catch (Throwable e) {
-					throw new RuntimeException("消费者[" + name + "]异常", e);
-				}
+			Invoker invoker = new MethodProxyInvoker(getBeanFactory(), clz, method, getBeanFactory().getFilterNames());
+			try {
+				invoker.invoke(message.getParameters());
+			} catch (Throwable e) {
+				throw new RuntimeException("消费者[" + name + "]异常", e);
 			}
-		}
-	}
-
-	final class MethodParameterMessage implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private Object[] args;
-
-		protected MethodParameterMessage() {
-		};
-
-		public MethodParameterMessage(Object[] args) {
-			this.args = args;
-		}
-
-		public Object[] getArgs() {
-			return args;
 		}
 	}
 
