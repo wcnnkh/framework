@@ -13,7 +13,7 @@ import scw.core.logger.LoggerFactory;
 import scw.core.serializer.support.JavaSerializer;
 import scw.mq.Producer;
 
-public abstract class AbstractRabbitProducer<T> extends DefaultChannelFactory implements Producer<T> {
+public abstract class AbstractRabbitProducer<T> extends ChannelFactory implements Producer<T> {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	public AbstractRabbitProducer(ConnectionFactory connectionFactory, String exchange, String exchangeType)

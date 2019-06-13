@@ -10,9 +10,9 @@ import scw.core.Parameters;
 import scw.mq.ParametersProducer;
 
 public class RabbitParametersProducer extends RabbitProducer<Parameters> implements ParametersProducer {
-	public RabbitParametersProducer(ConnectionFactory connectionFactory, String exchange, String exchangeType)
+	public RabbitParametersProducer(ConnectionFactory connectionFactory, String exchange)
 			throws IOException, TimeoutException {
-		super(connectionFactory, exchange, exchangeType);
+		super(connectionFactory, exchange);
 	}
 
 	public RabbitParametersProducer(ConnectionFactory connectionFactory, String exchange, String exchangeType,

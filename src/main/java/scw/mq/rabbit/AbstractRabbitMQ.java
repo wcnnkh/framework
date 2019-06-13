@@ -2,9 +2,11 @@ package scw.mq.rabbit;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
@@ -12,24 +14,16 @@ import scw.beans.annotation.AsyncComplete;
 import scw.core.Consumer;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.serializer.NoTypeSpecifiedSerializer;
+import scw.core.serializer.support.JavaSerializer;
 import scw.core.utils.StringUtils;
 import scw.mq.MQ;
 
-public abstract class AbstractRabbitMQ<T> implements MQ<T> {
+public abstract class AbstractRabbitMQ<T> extends ChannelFactory implements MQ<T> {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
-	private final NoTypeSpecifiedSerializer serializer;
 
-	public AbstractRabbitMQ(NoTypeSpecifiedSerializer serializer) {
-		this.serializer = serializer;
-	}
-
-	protected abstract Channel getChannel(String name);
-
-	protected abstract String getExchange(String name);
-
-	public final NoTypeSpecifiedSerializer getSerializer() {
-		return serializer;
+	public AbstractRabbitMQ(ConnectionFactory connectionFactory, String exchange, String exchangeType)
+			throws IOException, TimeoutException {
+		super(connectionFactory, exchange, exchangeType);
 	}
 
 	protected abstract String getRoutingKey(String name);
@@ -62,8 +56,8 @@ public abstract class AbstractRabbitMQ<T> implements MQ<T> {
 		}
 
 		try {
-			channel.basicPublish(getExchange(name), getRoutingKey(name), isMandatory(name), isImmediate(name),
-					getBasicProperties(name), serializer.serialize(message));
+			channel.basicPublish(getExchange(), getRoutingKey(name), isMandatory(name), isImmediate(name),
+					getBasicProperties(name), JavaSerializer.SERIALIZER.serialize(message));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -105,24 +99,21 @@ public abstract class AbstractRabbitMQ<T> implements MQ<T> {
 
 		try {
 			channel.queueDeclare(name, isDurable(name), isExclusive(name), isAutoDelete(name), getArguments(name));
-			channel.queueBind(name, getExchange(name), getRoutingKey(name));
+			channel.queueBind(name, getExchange(), getRoutingKey(name));
 			channel.basicConsume(name, isAutoDelete(name),
-					new RabbitDefaultConsumer(channel, isAutoDelete(name), consumer, serializer, name));
+					new RabbitDefaultConsumer(channel, isAutoDelete(name), consumer, name));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	final class RabbitDefaultConsumer extends DefaultConsumer {
-		private final NoTypeSpecifiedSerializer serializer;
 		private final Consumer<T> consumer;
 		private final boolean autoAck;
 		private final String name;
 
-		public RabbitDefaultConsumer(Channel channel, boolean autoAck, Consumer<T> consumer,
-				NoTypeSpecifiedSerializer serializer, String name) {
+		public RabbitDefaultConsumer(Channel channel, boolean autoAck, Consumer<T> consumer, String name) {
 			super(channel);
-			this.serializer = serializer;
 			this.consumer = consumer;
 			this.autoAck = autoAck;
 			this.name = name;
@@ -137,14 +128,14 @@ public abstract class AbstractRabbitMQ<T> implements MQ<T> {
 
 			T message;
 			try {
-				message = serializer.deserialize(body);
+				message = JavaSerializer.SERIALIZER.deserialize(body);
 				consumer.consume(message);
 				if (!autoAck) {
 					getChannel().basicAck(envelope.getDeliveryTag(), false);
 				}
 			} catch (Throwable e) {
-				logger.error("消费者异常, exchange=" + getExchange(name) + ", routingKey=" + getRoutingKey(name)
-						+ ", queueName=" + name, e);
+				logger.error("消费者异常, exchange=" + getExchange() + ", routingKey=" + getRoutingKey(name) + ", queueName="
+						+ name, e);
 			}
 		}
 	}

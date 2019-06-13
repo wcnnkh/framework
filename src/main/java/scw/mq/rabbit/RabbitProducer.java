@@ -4,15 +4,16 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
+import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.ConnectionFactory;
 
 public class RabbitProducer<T> extends AbstractRabbitProducer<T> {
 	private final boolean mandatory;
 	private final boolean immediate;
 
-	public RabbitProducer(ConnectionFactory connectionFactory, String exchange, String exchangeType)
+	public RabbitProducer(ConnectionFactory connectionFactory, String exchange)
 			throws IOException, TimeoutException {
-		this(connectionFactory, exchange, exchangeType, false, false);
+		this(connectionFactory, exchange, BuiltinExchangeType.DIRECT.name(), false, false);
 	}
 
 	public RabbitProducer(ConnectionFactory connectionFactory, String exchange, String exchangeType,
