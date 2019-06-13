@@ -28,7 +28,6 @@ public class SimpleRabbitMQ<T> extends AbstractRabbitMQ<T> implements Destroy {
 	private final String exchange;
 	private final String exchangeType;
 	private final String routingKey;
-	private final boolean closeConnection;
 	private final boolean durable;
 	private final boolean exclusive;
 	private final boolean autoDelete;
@@ -52,21 +51,7 @@ public class SimpleRabbitMQ<T> extends AbstractRabbitMQ<T> implements Destroy {
 		this.connection = connectionFactory.newConnection();
 		this.exchange = exchange;
 		this.exchangeType = exchangeType;
-		this.closeConnection = true;
 		this.routingKey = routingKey;
-		this.durable = durable;
-		this.exclusive = exclusive;
-		this.autoDelete = autoDelete;
-	}
-
-	public SimpleRabbitMQ(Connection connection, String exchange, String exchangeType, String routingKey,
-			NoTypeSpecifiedSerializer serializer, boolean durable, boolean exclusive, boolean autoDelete) {
-		super(serializer);
-		this.connection = connection;
-		this.exchange = exchange;
-		this.exchangeType = exchangeType;
-		this.routingKey = routingKey;
-		this.closeConnection = false;
 		this.durable = durable;
 		this.exclusive = exclusive;
 		this.autoDelete = autoDelete;
@@ -148,12 +133,10 @@ public class SimpleRabbitMQ<T> extends AbstractRabbitMQ<T> implements Destroy {
 			}
 		}
 
-		if (closeConnection) {
-			try {
-				connection.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try {
+			connection.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }

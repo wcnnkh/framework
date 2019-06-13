@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import com.rabbitmq.client.BuiltinExchangeType;
-import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
 import scw.beans.annotation.AsyncComplete;
@@ -35,11 +34,6 @@ public class RabbitParametersMQ extends SimpleRabbitMQ<Parameters> implements Pa
 			String routingKey, NoTypeSpecifiedSerializer serializer, boolean durable, boolean exclusive,
 			boolean autoDelete) throws IOException, TimeoutException {
 		super(connectionFactory, exchange, exchangeType, routingKey, serializer, durable, exclusive, autoDelete);
-	}
-
-	public RabbitParametersMQ(Connection connection, String exchange, String exchangeType, String routingKey,
-			NoTypeSpecifiedSerializer serializer, boolean durable, boolean exclusive, boolean autoDelete) {
-		super(connection, exchange, exchangeType, routingKey, serializer, durable, exclusive, autoDelete);
 	}
 
 	public void pushParameters(final String name, Object... parameters) {
