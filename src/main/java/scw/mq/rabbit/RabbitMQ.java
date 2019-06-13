@@ -22,7 +22,7 @@ import scw.core.serializer.support.JavaSerializer;
  *
  * @param <T>
  */
-public class SimpleRabbitMQ<T> extends AbstractRabbitMQ<T> implements Destroy {
+public class RabbitMQ<T> extends AbstractRabbitMQ<T> implements Destroy {
 	private volatile Map<String, Channel> channelMap = new HashMap<String, Channel>();
 	private final Connection connection;
 	private final String exchange;
@@ -32,19 +32,19 @@ public class SimpleRabbitMQ<T> extends AbstractRabbitMQ<T> implements Destroy {
 	private final boolean exclusive;
 	private final boolean autoDelete;
 
-	public SimpleRabbitMQ(ConnectionFactory connectionFactory, String exchange, String routingKey, boolean durable,
+	public RabbitMQ(ConnectionFactory connectionFactory, String exchange, String routingKey, boolean durable,
 			boolean exclusive, boolean autoDelete) throws IOException, TimeoutException {
 		this(connectionFactory, exchange, BuiltinExchangeType.DIRECT.name(), routingKey, durable, exclusive,
 				autoDelete);
 	}
 
-	public SimpleRabbitMQ(ConnectionFactory connectionFactory, String exchange, String exchangeType, String routingKey,
+	public RabbitMQ(ConnectionFactory connectionFactory, String exchange, String exchangeType, String routingKey,
 			boolean durable, boolean exclusive, boolean autoDelete) throws IOException, TimeoutException {
 		this(connectionFactory, exchange, exchangeType, routingKey, JavaSerializer.SERIALIZER, durable, exclusive,
 				autoDelete);
 	}
 
-	public SimpleRabbitMQ(ConnectionFactory connectionFactory, String exchange, String exchangeType, String routingKey,
+	public RabbitMQ(ConnectionFactory connectionFactory, String exchange, String exchangeType, String routingKey,
 			NoTypeSpecifiedSerializer serializer, boolean durable, boolean exclusive, boolean autoDelete)
 			throws IOException, TimeoutException {
 		super(serializer);

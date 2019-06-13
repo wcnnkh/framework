@@ -100,6 +100,10 @@ public final class XmlBeanUtils {
 	public static String getAddress(PropertiesFactory propertiesFactory, Node node) {
 		return XMLUtils.getRequireNodeAttributeValue(propertiesFactory, node, "address");
 	}
+	
+	public static String getRef(PropertiesFactory propertiesFactory, Node node) {
+		return XMLUtils.getRequireNodeAttributeValue(propertiesFactory, node, "ref");
+	}
 
 	public static String getCharsetName(PropertiesFactory propertiesFactory, Node node, String defaultValue) {
 		String charsetName = XMLUtils.getNodeAttributeValue(propertiesFactory, node, "charsetName");

@@ -1,20 +1,20 @@
 package scw.mq;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import scw.core.Consumer;
+import scw.core.LinkedMultiValueMap;
 
 public abstract class AbstractMQ<T> implements MQ<T> {
-	private Map<String, Consumer<T>> consumerMap = new HashMap<String, Consumer<T>>();
+	private LinkedMultiValueMap<String, Consumer<T>> consumerMap = new LinkedMultiValueMap<String, Consumer<T>>();
 
-	public Consumer<T> getConsumer(String name) {
+	public List<Consumer<T>> getConsumerList(String name) {
 		return consumerMap.get(name);
 	}
 
 	public void addConsumer(String name, Consumer<T> consumer) {
 		synchronized (consumerMap) {
-			consumerMap.put(name, consumer);
+			consumerMap.add(name, consumer);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package scw.mq;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -8,6 +9,7 @@ import scw.core.BlockingQueue;
 import scw.core.Consumer;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
+import scw.core.utils.CollectionUtils;
 
 public class BlockingQueueMQ<T> extends AbstractMQ<T> implements scw.core.Destroy {
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -62,12 +64,14 @@ public class BlockingQueueMQ<T> extends AbstractMQ<T> implements scw.core.Destro
 
 		@Override
 		public void consume(T message) {
-			Consumer<T> consumer = getConsumer(name);
-			if (consumer == null) {
+			List<Consumer<T>> consumerList = getConsumerList(name);
+			if (CollectionUtils.isEmpty(consumerList)) {
 				return;
 			}
 
-			consumer.consume(message);
+			for (Consumer<T> consumer : consumerList) {
+				consumer.consume(message);
+			}
 		}
 	}
 }

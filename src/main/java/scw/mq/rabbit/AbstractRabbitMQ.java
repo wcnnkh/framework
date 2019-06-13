@@ -8,14 +8,15 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
+import scw.beans.annotation.AsyncComplete;
 import scw.core.Consumer;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.serializer.NoTypeSpecifiedSerializer;
 import scw.core.utils.StringUtils;
-import scw.mq.AbstractMQ;
+import scw.mq.MQ;
 
-public abstract class AbstractRabbitMQ<T> extends AbstractMQ<T> {
+public abstract class AbstractRabbitMQ<T> implements MQ<T> {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	private final NoTypeSpecifiedSerializer serializer;
 
@@ -47,6 +48,7 @@ public abstract class AbstractRabbitMQ<T> extends AbstractMQ<T> {
 
 	protected abstract boolean isImmediate(String name);
 
+	@AsyncComplete
 	public void push(String name, T message) {
 		if (StringUtils.isEmpty(name) || message == null) {
 			logger.error("队列名称或消费内容为空，队列名称：{}", name);
@@ -89,7 +91,6 @@ public abstract class AbstractRabbitMQ<T> extends AbstractMQ<T> {
 
 	protected abstract Map<String, Object> getArguments(String name);
 
-	@Override
 	public void addConsumer(String name, Consumer<T> consumer) {
 		if (StringUtils.isEmpty(name) || consumer == null) {
 			logger.error("队列名称或消费者为空，队列名称：{}", name);
