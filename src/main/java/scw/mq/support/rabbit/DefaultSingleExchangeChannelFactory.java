@@ -1,4 +1,4 @@
-package scw.mq.rabbit;
+package scw.mq.support.rabbit;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -10,28 +10,19 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
-import scw.core.Destroy;
-
-public class ChannelFactory implements Destroy {
+public class DefaultSingleExchangeChannelFactory implements SingleExchangeChannelFactory {
 	private volatile Map<String, Channel> channelMap = new HashMap<String, Channel>();
 	private final Connection connection;
 	private final String exchange;
 	private final String exchangeType;
 	private final boolean autoClose;
 
-	public ChannelFactory(ConnectionFactory connectionFactory, String exchange, String exchangeType)
+	public DefaultSingleExchangeChannelFactory(ConnectionFactory connectionFactory, String exchange, String exchangeType)
 			throws IOException, TimeoutException {
 		this.connection = connectionFactory.newConnection();
 		this.exchange = exchange;
 		this.exchangeType = exchangeType;
 		this.autoClose = true;
-	}
-
-	public ChannelFactory(Connection connection, String exchange, String exchangeType) {
-		this.connection = connection;
-		this.exchange = exchange;
-		this.exchangeType = exchangeType;
-		this.autoClose = false;
 	}
 
 	public final String getExchange() {

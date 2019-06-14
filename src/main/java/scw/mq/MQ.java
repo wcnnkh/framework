@@ -2,8 +2,10 @@ package scw.mq;
 
 import scw.core.Consumer;
 
-public interface MQ<T> extends Producer<T>{
+public interface MQ<T>{
 
+	void push(String name, T message);
+	
 	/**
 	 * 添加消费者
 	 * 

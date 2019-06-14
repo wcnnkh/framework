@@ -9,15 +9,12 @@ import com.alibaba.dubbo.config.ProtocolConfig;
 import scw.application.crontab.Crontab;
 import scw.application.crontab.CrontabContext;
 import scw.application.crontab.CrontabContextFactory;
-import scw.application.mq.MQConsumer;
+import scw.application.mq.AnnotationMQUtils;
 import scw.beans.BeanUtils;
 import scw.beans.CommonFilter;
-import scw.beans.MethodProxyInvoker;
 import scw.beans.XmlBeanFactory;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.XmlDubboUtils;
-import scw.core.Consumer;
-import scw.core.Parameters;
 import scw.core.PropertiesFactory;
 import scw.core.aop.Invoker;
 import scw.core.exception.AlreadyExistsException;
@@ -26,7 +23,6 @@ import scw.core.logger.LoggerUtils;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.mq.ParametersMQ;
 import scw.sql.orm.ORMUtils;
 
 public class CommonApplication implements Application {
@@ -91,7 +87,7 @@ public class CommonApplication implements Application {
 		}
 
 		crontabService();
-		mqConsumer();
+		AnnotationMQUtils.scanningAMQPParamsConsumer(getBeanFactory(), getClasses(), getBeanFactory().getFilterNames());
 	}
 
 	public void destroy() {
@@ -110,43 +106,6 @@ public class CommonApplication implements Application {
 		ProtocolConfig.destroyAll();
 		beanFactory.destroy();
 		LoggerFactory.destroy();
-	}
-
-	protected final void mqConsumer() {
-		for (Class<?> clz : getClasses()) {
-			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, MQConsumer.class)) {
-				MQConsumer c = method.getAnnotation(MQConsumer.class);
-				ParametersMQ mq = getBeanFactory().get(c.service());
-				LoggerUtils.info(CommonApplication.class, "添加消费者：{}, clz={}, method={}", c.name(), clz.getName(),
-						method);
-				mq.addConsumer(c.name(), new MqMethodConsumer(c.name(), clz, method));
-			}
-		}
-	}
-
-	final class MqMethodConsumer implements Consumer<Parameters> {
-		private String name;
-		private Class<?> clz;
-		private Method method;
-
-		public MqMethodConsumer(String name, Class<?> clz, Method method) {
-			this.name = name;
-			this.clz = clz;
-			this.method = method;
-		}
-
-		public void consume(Parameters message) {
-			if (message == null) {
-				return;
-			}
-
-			Invoker invoker = new MethodProxyInvoker(getBeanFactory(), clz, method, getBeanFactory().getFilterNames());
-			try {
-				invoker.invoke(message.getParameters());
-			} catch (Throwable e) {
-				throw new RuntimeException("消费者[" + name + "]异常", e);
-			}
-		}
 	}
 
 	protected final void crontabService() {

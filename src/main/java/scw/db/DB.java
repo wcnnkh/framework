@@ -8,12 +8,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import scw.core.Consumer;
-import scw.core.exception.NotSupportException;
+import scw.core.BlockingQueue;
 import scw.core.utils.Assert;
+import scw.core.utils.DefaultBlockingQueue;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
+import scw.data.utils.MemcachedBlockingQueue;
+import scw.data.utils.RedisBlockingQueue;
 import scw.db.async.AsyncInfo;
 import scw.db.async.MultipleOperation;
 import scw.db.async.OperationBean;
@@ -21,24 +23,21 @@ import scw.db.cache.LazyCacheManager;
 import scw.db.cache.MemcachedLazyCacheManager;
 import scw.db.cache.RedisLazyCacheManager;
 import scw.db.database.DataBase;
-import scw.mq.MQ;
-import scw.mq.MemcachedMQ;
-import scw.mq.BlockingQueueMQ;
-import scw.mq.RedisMQ;
 import scw.sql.Sql;
 import scw.sql.orm.ORMTemplate;
 import scw.sql.orm.SqlFormat;
+import scw.transaction.DefaultTransactionDefinition;
 import scw.transaction.DefaultTransactionLifeCycle;
+import scw.transaction.Transaction;
 import scw.transaction.TransactionManager;
 import scw.transaction.sql.ConnectionFactory;
 import scw.transaction.sql.SqlTransactionUtils;
 
 public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.core.Destroy {
 	private final LazyCacheManager cacheManager;
-	private final MQ<AsyncInfo> asyncService;
-	private final boolean destroyAsyncService;
+	private final BlockingQueue<AsyncInfo> asyncBlockingQueue;
 	private boolean debug;
-	private String queueName = getClass().getName();
+	private Thread syncThread;
 
 	public void setDebug(boolean debug) {
 		this.debug = debug;
@@ -49,10 +48,7 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	}
 
 	public DB() {
-		this.cacheManager = null;
-		this.asyncService = new MemoryMQ<AsyncInfo>();
-		this.destroyAsyncService = true;
-		initAsyncService();
+		this(null, new DefaultBlockingQueue<AsyncInfo>());
 	};
 
 	public DB(Memcached memcached) {
@@ -66,68 +62,85 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	public DB(Memcached memcached, String queueName) {
 		Assert.notNull(memcached);
 		this.cacheManager = new MemcachedLazyCacheManager(memcached);
-		BlockingQueueMQ<AsyncInfo> mq;
 		if (StringUtils.isEmpty(queueName)) {
-			mq = new MemoryMQ<AsyncInfo>();
+			this.asyncBlockingQueue = new DefaultBlockingQueue<AsyncInfo>();
 		} else {
 			getLogger().trace("memcached中异步处理队列名：{}", queueName);
-			this.queueName = queueName;
-			mq = new MemcachedMQ<AsyncInfo>(memcached);
+			this.asyncBlockingQueue = new MemcachedBlockingQueue<AsyncInfo>(memcached, queueName);
 		}
-		this.asyncService = mq;
-		this.destroyAsyncService = true;
-		initAsyncService();
+		this.syncThread = new Thread(new AsyncExecute());
+		this.syncThread.start();
 	}
 
 	public DB(Redis redis, String queueName) {
 		Assert.notNull(redis);
 		this.cacheManager = new RedisLazyCacheManager(redis);
-		BlockingQueueMQ<AsyncInfo> mq;
 		if (StringUtils.isEmpty(queueName)) {
-			mq = new MemoryMQ<AsyncInfo>();
+			this.asyncBlockingQueue = new DefaultBlockingQueue<AsyncInfo>();
 		} else {
 			getLogger().trace("redis中异步处理队列名：{}", queueName);
-			this.queueName = queueName;
-			mq = new RedisMQ<AsyncInfo>(redis);
+			this.asyncBlockingQueue = new RedisBlockingQueue<AsyncInfo>(redis, queueName);
 		}
-		this.asyncService = mq;
-		this.destroyAsyncService = true;
-		initAsyncService();
+		this.syncThread = new Thread(new AsyncExecute());
+		this.syncThread.start();
 	}
 
-	public DB(LazyCacheManager cacheManager, MQ<AsyncInfo> asyncService, String queueName) {
+	public DB(LazyCacheManager cacheManager, BlockingQueue<AsyncInfo> asyncBlockingQueue) {
 		this.cacheManager = cacheManager;
-		this.asyncService = asyncService;
-		this.destroyAsyncService = false;
-		this.queueName = queueName;
-		initAsyncService();
+		this.asyncBlockingQueue = asyncBlockingQueue;
+		this.syncThread = new Thread(new AsyncExecute());
+		this.syncThread.start();
 	}
 
-	private void initAsyncService() {
-		if (asyncService != null) {
-			asyncService.addConsumer(queueName, new Consumer<AsyncInfo>() {
+	private final class AsyncExecute implements Runnable {
+		public void run() {
+			try {
+				while (!Thread.currentThread().isInterrupted()) {
+					AsyncInfo asyncInfo = asyncBlockingQueue.take();
+					if (asyncInfo == null) {
+						continue;
+					}
 
-				public void consume(AsyncInfo message) {
-					dbConsumer(message);
+					Transaction transaction = TransactionManager.getTransaction(new DefaultTransactionDefinition());
+					Collection<Sql> sqls = asyncInfo.getSqls();
+					MultipleOperation multipleOperation = asyncInfo.getMultipleOperation();
+					try {
+						if (sqls != null) {
+							for (Sql sql : sqls) {
+								if (sql == null) {
+									continue;
+								}
+
+								execute(sql);
+							}
+						}
+
+						if (multipleOperation != null) {
+							List<Sql> list = multipleOperation.format(getSqlFormat());
+							if (list != null) {
+								for (Sql sql : list) {
+									if (sql == null) {
+										continue;
+									}
+
+									execute(sql);
+								}
+							}
+						}
+
+						TransactionManager.commit(transaction);
+					} catch (Throwable e) {
+						TransactionManager.rollback(transaction);
+						e.printStackTrace();
+					}
 				}
-			});
-		}
-	}
-
-	public void destroy() {
-		if (destroyAsyncService) {
-			if (asyncService != null && asyncService instanceof BlockingQueueMQ) {
-				((BlockingQueueMQ<AsyncInfo>) asyncService).destroy();
+			} catch (InterruptedException e) {
 			}
 		}
 	}
 
-	private void dbConsumer(AsyncInfo asyncInfo) {
-		try {
-			asyncInfo.execute(this, getSqlFormat());
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+	public void destroy() {
+		syncThread.interrupt();
 	}
 
 	public abstract DataBase getDataBase();
@@ -287,15 +300,15 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	}
 
 	public final void asyncExecute(MultipleOperation multipleOperation) {
-		if (asyncService == null) {
-			throw new NotSupportException("不支持异步执行sql语句");
-		}
-
 		if (TransactionManager.hasTransaction()) {
 			AsyncInfoTransactionLifeCycle aitlc = new AsyncInfoTransactionLifeCycle((new AsyncInfo(multipleOperation)));
 			TransactionManager.transactionLifeCycle(aitlc);
 		} else {
-			asyncService.push(queueName, new AsyncInfo(multipleOperation));
+			try {
+				asyncBlockingQueue.put(new AsyncInfo(multipleOperation));
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -305,16 +318,16 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	 * @param sql
 	 */
 	public final void asyncExecute(Sql... sql) {
-		if (asyncService == null) {
-			throw new NotSupportException("不支持异步执行sql语句");
-		}
-
 		if (TransactionManager.hasTransaction()) {
 			AsyncInfoTransactionLifeCycle aitlc = new AsyncInfoTransactionLifeCycle(
 					(new AsyncInfo(Arrays.asList(sql))));
 			TransactionManager.transactionLifeCycle(aitlc);
 		} else {
-			asyncService.push(queueName, new AsyncInfo(Arrays.asList(sql)));
+			try {
+				asyncBlockingQueue.put(new AsyncInfo(Arrays.asList(sql)));
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -327,7 +340,11 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 
 		@Override
 		public void afterProcess() {
-			asyncService.push(queueName, asyncInfo);
+			try {
+				asyncBlockingQueue.put(asyncInfo);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 			super.afterProcess();
 		}
 	}
