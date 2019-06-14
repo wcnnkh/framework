@@ -26,4 +26,12 @@ public final class FastJSONParseSupport implements JSONParseSupport {
 		return JSON.parseObject(text, type);
 	}
 
+	public scw.json.JSONArray createJSONArray() {
+		return new FastJSONArrayWrapper(new JSONArray());
+	}
+
+	public JSONObject createJSONObject() {
+		return new FastJSONObjectWrapper(new com.alibaba.fastjson.JSONObject());
+	}
+
 }

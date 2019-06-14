@@ -51,4 +51,12 @@ public final class JSONUtils {
 	public static <T> T parseObject(String text, Class<T> type) {
 		return DEFAULT_PARSE_SUPPORT.parseObject(text, type);
 	}
+
+	public static JSONArray createJSONArray() {
+		return DEFAULT_PARSE_SUPPORT.createJSONArray();
+	}
+
+	public static JSONObject createJSONObject() {
+		return DEFAULT_PARSE_SUPPORT.createJSONObject();
+	}
 }
