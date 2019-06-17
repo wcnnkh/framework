@@ -3,6 +3,8 @@ package scw.data.memcached;
 import java.util.Collection;
 import java.util.Map;
 
+import scw.data.cas.CAS;
+
 public interface Memcached {
 	<T> T get(String key);
 

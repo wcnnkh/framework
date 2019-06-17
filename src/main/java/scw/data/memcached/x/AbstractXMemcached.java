@@ -9,7 +9,7 @@ import java.util.concurrent.TimeoutException;
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.exception.MemcachedException;
-import scw.data.memcached.CAS;
+import scw.data.cas.CAS;
 import scw.data.memcached.Memcached;
 
 public abstract class AbstractXMemcached implements Memcached {

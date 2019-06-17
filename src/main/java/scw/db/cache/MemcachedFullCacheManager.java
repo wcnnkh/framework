@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.data.memcached.CAS;
+import scw.data.cas.CAS;
 import scw.data.memcached.Memcached;
 
 public final class MemcachedFullCacheManager extends FullCacheManager {

@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import scw.core.utils.CollectionUtils;
-import scw.data.memcached.CAS;
+import scw.data.cas.CAS;
 import scw.data.memcached.Memcached;
 
 public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
