@@ -130,6 +130,9 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	private void initMethod() throws Exception {
+		if(StringUtils.isEmpty(xmlPath)){
+			return ;
+		}
 		Node root = XmlBeanUtils.getRootNode(xmlPath);
 		NodeList nodeList = root.getChildNodes();
 		for (int a = 0; a < nodeList.getLength(); a++) {
@@ -153,6 +156,10 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	private void destroyMethod() throws Exception {
+		if(StringUtils.isEmpty(xmlPath)){
+			return ;
+		}
+		
 		Node root = XmlBeanUtils.getRootNode(xmlPath);
 		NodeList nodeList = root.getChildNodes();
 		for (int a = 0; a < nodeList.getLength(); a++) {
