@@ -43,7 +43,7 @@ public final class Crontab implements scw.core.Destroy {
 	 * @param minute
 	 * @param task
 	 */
-	public void crontab(String dayOfWeek, String month, String dayOfMonth, String hour, String minute, Runnable task) {
+	public void crontab(String dayOfWeek, String month, String dayOfMonth, String hour, String minute, CrontabTask task) {
 		crontabInfos.add(new CrontabInfo(dayOfWeek, month, dayOfMonth, hour, minute, task));
 	}
 
@@ -56,7 +56,7 @@ public final class Crontab implements scw.core.Destroy {
 	 * @param minute
 	 * @param task
 	 */
-	public void crontabDayOfWeek(String dayOfWeek, String hour, String minute, Runnable task) {
+	public void crontabDayOfWeek(String dayOfWeek, String hour, String minute, CrontabTask task) {
 		crontab(dayOfWeek, "*", "*", hour, minute, task);
 	}
 
@@ -68,7 +68,7 @@ public final class Crontab implements scw.core.Destroy {
 	 * @param minute
 	 * @param task
 	 */
-	public void crontabDayOfMonth(String dayOfMonth, String hour, String minute, Runnable task) {
+	public void crontabDayOfMonth(String dayOfMonth, String hour, String minute, CrontabTask task) {
 		crontab("*", "*", dayOfMonth, hour, minute, task);
 	}
 
@@ -78,7 +78,7 @@ public final class Crontab implements scw.core.Destroy {
 	 * @param name
 	 * @param task
 	 */
-	public void crontabDailyAtOneAM(Runnable task) {
+	public void crontabDailyAtOneAM(CrontabTask task) {
 		crontabDayOfMonth("*", "1", "0", task);
 	}
 
@@ -87,7 +87,7 @@ public final class Crontab implements scw.core.Destroy {
 	 * 
 	 * @param task
 	 */
-	public void perMinute(Runnable task) {
+	public void perMinute(CrontabTask task) {
 		crontab("*", "*", "*", "*", "*", task);
 	}
 
@@ -96,7 +96,7 @@ public final class Crontab implements scw.core.Destroy {
 	 * 
 	 * @param task
 	 */
-	public void every5Minutes(Runnable task) {
+	public void every5Minutes(CrontabTask task) {
 		crontab("*", "*", "*", "*", "*0,*5", task);
 	}
 
@@ -105,7 +105,7 @@ public final class Crontab implements scw.core.Destroy {
 	 * 
 	 * @param task
 	 */
-	public void every10Minutes(Runnable task) {
+	public void every10Minutes(CrontabTask task) {
 		crontab("*", "*", "*", "*", "*0", task);
 	}
 
@@ -114,7 +114,7 @@ public final class Crontab implements scw.core.Destroy {
 	 * 
 	 * @param task
 	 */
-	public void everyHalfHour(Runnable task) {
+	public void everyHalfHour(CrontabTask task) {
 		crontab("*", "*", "*", "*", "0,30", task);
 	}
 
@@ -123,7 +123,7 @@ public final class Crontab implements scw.core.Destroy {
 	 * 
 	 * @param task
 	 */
-	public void perHour(Runnable task) {
+	public void perHour(CrontabTask task) {
 		crontab("*", "*", "*", "*", "0", task);
 	}
 
@@ -153,23 +153,38 @@ public final class Crontab implements scw.core.Destroy {
 
 			for (CrontabInfo crontab : crontabInfos) {
 				if (crontab.checkTime(calendar)) {
-					executorService.execute(crontab.getRunnable());
+					executorService.execute(new CrontabInvoker(cts, crontab.getRunnable()));
 				}
 			}
 		}
 	}
 }
 
-class CrontabInfo {
+final class CrontabInvoker implements Runnable {
+	private long cts;
+	private CrontabTask runnable;
+
+	public CrontabInvoker(long cts, CrontabTask runnable) {
+		this.cts = cts;
+		this.runnable = runnable;
+	}
+
+	public void run() {
+		runnable.run(cts);
+	}
+
+}
+
+final class CrontabInfo {
 	private final String[] dayOfWeek;
 	private final String[] month;
 	private final String[] dayOfMonth;
 	private final String[] hour;
 	private final String[] minute;
-	private final Runnable runnable;
+	private final CrontabTask runnable;
 
 	public CrontabInfo(String dayOfWeek, String month, String dayOfMonth, String hour, String minute,
-			Runnable runnable) {
+			CrontabTask runnable) {
 		this.dayOfWeek = StringUtils.commonSplit(dayOfWeek);
 		this.month = StringUtils.commonSplit(month);
 		this.dayOfMonth = StringUtils.commonSplit(dayOfMonth);
@@ -178,7 +193,7 @@ class CrontabInfo {
 		this.runnable = runnable;
 	}
 
-	public Runnable getRunnable() {
+	public CrontabTask getRunnable() {
 		return runnable;
 	}
 
