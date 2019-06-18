@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -556,7 +557,19 @@ public final class ServletUtils {
 		} else if (Character.class.isAssignableFrom(type)) {
 			return request.getCharacter(name);
 		} else if (BigDecimal.class.isAssignableFrom(type)) {
-			return new BigDecimal(request.getDoubleValue(name));
+			String v = request.getString(name);
+			if (StringUtils.isEmpty(v)) {
+				return null;
+			}
+
+			return new BigDecimal(v);
+		} else if (BigInteger.class.isAssignableFrom(type)) {
+			String v = request.getString(name);
+			if (StringUtils.isEmpty(v)) {
+				return null;
+			}
+
+			return new BigInteger(v);
 		} else if (type.isEnum()) {
 			String v = request.getString(name);
 			return StringUtils.isEmpty(v) ? null : Enum.valueOf((Class<? extends Enum>) type, v);
