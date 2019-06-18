@@ -30,7 +30,7 @@ public final class MemcachedLazyCacheManager extends LazyCacheManager {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <T> Map<String, T> mget(Class<T> type, Collection<String> keys) {
-		return (Map<String, T>) memcached.gets(keys);
+		return (Map<String, T>) memcached.get(keys);
 	}
 
 	@Override

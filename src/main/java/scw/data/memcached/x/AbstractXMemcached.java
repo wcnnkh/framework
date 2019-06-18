@@ -13,7 +13,6 @@ import scw.data.cas.CAS;
 import scw.data.memcached.Memcached;
 
 public abstract class AbstractXMemcached implements Memcached {
-
 	public abstract MemcachedClient getMemcachedClient();
 
 	public <T> T get(String key) {

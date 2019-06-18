@@ -18,11 +18,11 @@ public interface CASOperations {
 
 	<T> CAS<T> get(String key);
 
-	boolean set(String key, Object value, int exp);
+	void set(String key, Object value, int exp);
 
 	boolean delete(String key);
 
 	boolean add(String key, Object value, int exp);
 
-	<T> Map<String, CAS<T>> gets(Collection<String> keys);
+	<T> Map<String, CAS<T>> get(Collection<String> keys);
 }

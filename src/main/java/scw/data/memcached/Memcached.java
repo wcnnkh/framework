@@ -3,14 +3,12 @@ package scw.data.memcached;
 import java.util.Collection;
 import java.util.Map;
 
-import scw.data.cas.CAS;
+import scw.data.cas.CASOperations;
 
 public interface Memcached {
 	<T> T get(String key);
 
 	<T> T getAndTouch(String key, int newExp);
-
-	<T> CAS<T> gets(String key);
 
 	boolean set(String key, Object data);
 
@@ -20,15 +18,9 @@ public interface Memcached {
 
 	boolean add(String key, int exp, Object data);
 
-	boolean cas(String key, Object data, long cas);
-
-	boolean cas(String key, int exp, Object data, long cas);
-
 	boolean touch(String key, int exp);
 
 	<T> Map<String, T> get(Collection<String> keyCollections);
-
-	<T> Map<String, CAS<T>> gets(Collection<String> keyCollections);
 
 	long incr(String key, long incr);
 
@@ -41,6 +33,8 @@ public interface Memcached {
 	boolean delete(String key);
 
 	boolean delete(String key, long cas, long opTimeout);
-	
+
 	boolean isExist(String key);
+
+	CASOperations getCASOperations();
 }

@@ -46,16 +46,15 @@ public final class MemcachedFullCacheManager extends FullCacheManager {
 
 	@SuppressWarnings("unchecked")
 	private boolean casMapAdd(String key, String field, String value) {
-		CAS<Object> cas = memcached.gets(key);
+		CAS<Object> cas = memcached.getCASOperations().get(key);
 		if (cas == null) {
 			LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
 			valueMap.put(field, value);
-			return memcached.cas(key, valueMap, 0);
+			return memcached.getCASOperations().cas(key, valueMap, 0, 0);
 		} else {
-			LinkedHashMap<String, String> valueMap = (LinkedHashMap<String, String>) cas
-					.getValue();
+			LinkedHashMap<String, String> valueMap = (LinkedHashMap<String, String>) cas.getValue();
 			valueMap.put(field, value);
-			return memcached.cas(key, valueMap, cas.getCas());
+			return memcached.getCASOperations().cas(key, valueMap, 0, cas.getCas());
 		}
 	}
 
@@ -67,15 +66,14 @@ public final class MemcachedFullCacheManager extends FullCacheManager {
 
 	@SuppressWarnings("unchecked")
 	private boolean casMapRemove(String key, String field) {
-		CAS<Object> cas = memcached.gets(key);
+		CAS<Object> cas = memcached.get(key);
 		if (cas == null) {
 			return true;
 		}
 
-		LinkedHashMap<String, String> valueMap = (LinkedHashMap<String, String>) cas
-				.getValue();
+		LinkedHashMap<String, String> valueMap = (LinkedHashMap<String, String>) cas.getValue();
 		valueMap.remove(field);
-		return memcached.cas(key, valueMap, cas.getCas());
+		return memcached.getCASOperations().cas(key, valueMap, 0, cas.getCas());
 	}
 
 }

@@ -1,6 +1,7 @@
 package scw.data.redis.jedis;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,8 +13,8 @@ import scw.data.redis.AbstractBinaryRedisOperations;
 import scw.data.redis.RedisUtils;
 import scw.data.redis.ResourceManager;
 
-public abstract class AbstractJedisBinaryOperations extends
-		AbstractBinaryRedisOperations implements ResourceManager<Jedis> {
+public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisOperations
+		implements ResourceManager<Jedis> {
 
 	public byte[] get(byte[] key) {
 		Jedis jedis = null;
@@ -267,8 +268,7 @@ public abstract class AbstractJedisBinaryOperations extends
 		}
 	}
 
-	public Boolean set(byte[] key, byte[] value, byte[] nxxx, byte[] expx,
-			long time) {
+	public Boolean set(byte[] key, byte[] value, byte[] nxxx, byte[] expx, long time) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
@@ -308,11 +308,13 @@ public abstract class AbstractJedisBinaryOperations extends
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object eval(byte[] script, List<byte[]> keys, List<byte[]> args) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return jedis.eval(script, keys, args);
+			return jedis.eval(script, keys == null ? Collections.EMPTY_LIST : keys,
+					args == null ? Collections.EMPTY_LIST : args);
 		} finally {
 			close(jedis);
 		}

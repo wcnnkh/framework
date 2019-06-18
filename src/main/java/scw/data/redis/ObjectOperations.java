@@ -1,12 +1,16 @@
 package scw.data.redis;
 
+import java.io.UnsupportedEncodingException;
+
 import scw.core.serializer.Serializer;
 
 final class ObjectOperations extends AbstractObjectOperations {
 	private final AbstractRedis redis;
+	private final String charsetName;
 
-	public ObjectOperations(AbstractRedis redis) {
+	public ObjectOperations(AbstractRedis redis, String charsetName) {
 		this.redis = redis;
+		this.charsetName = charsetName;
 	}
 
 	@Override
@@ -15,13 +19,26 @@ final class ObjectOperations extends AbstractObjectOperations {
 	}
 
 	@Override
-	protected RedisOperations<String, String> getStringOperations() {
-		return redis.getStringOperations();
+	public Serializer getSerializer() {
+		return redis.getSerializer();
 	}
 
 	@Override
-	protected Serializer getSerializer() {
-		return redis.getSerializer();
+	public byte[] string2bytes(String key) {
+		try {
+			return key.getBytes(charsetName);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public String bytes2string(byte[] bytes) {
+		try {
+			return new String(bytes, charsetName);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

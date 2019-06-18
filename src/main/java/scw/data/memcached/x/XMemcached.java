@@ -12,8 +12,15 @@ import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import scw.core.Constants;
 import scw.core.serializer.Serializer;
 import scw.core.utils.StringUtils;
+import scw.data.cas.CASOperations;
 
 public final class XMemcached extends AbstractXMemcached implements scw.core.Destroy {
+	private final CASOperations casOperations;
+
+	public CASOperations getCASOperations() {
+		return casOperations;
+	}
+
 	private final MemcachedClient memcachedClient;
 
 	/**
@@ -79,6 +86,7 @@ public final class XMemcached extends AbstractXMemcached implements scw.core.Des
 		builder.setTranscoder(max <= 0 ? new MyTranscoder(serializer) : new MyTranscoder(max, serializer));
 		builder.setConnectionPoolSize(poolSize);
 		this.memcachedClient = builder.build();
+		this.casOperations = new XMemcachedCASOperations(memcachedClient);
 	}
 
 	public void destroy() {

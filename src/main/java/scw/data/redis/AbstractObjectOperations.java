@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import scw.core.io.Bytes;
 import scw.core.serializer.Serializer;
 import scw.core.utils.Assert;
 import scw.core.utils.CollectionUtils;
@@ -19,12 +18,22 @@ import scw.core.utils.CollectionUtils;
 public abstract class AbstractObjectOperations implements RedisOperations<String, Object> {
 	protected abstract RedisOperations<byte[], byte[]> getBinaryOperations();
 
-	protected abstract RedisOperations<String, String> getStringOperations();
+	public abstract byte[] string2bytes(String key);
 
-	protected abstract Serializer getSerializer();
+	protected byte[][] string2bytes(String... keys) {
+		byte[][] ks = new byte[keys.length][];
+		for (int i = 0; i < keys.length; i++) {
+			ks[i] = string2bytes(keys[i]);
+		}
+		return ks;
+	}
+
+	public abstract String bytes2string(byte[] bytes);
+
+	public abstract Serializer getSerializer();
 
 	public Object get(String key) {
-		byte[] data = getBinaryOperations().get(Bytes.string2bytes(key));
+		byte[] data = getBinaryOperations().get(string2bytes(key));
 		return data == null ? null : getSerializer().deserialize(data);
 	}
 
@@ -33,7 +42,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return null;
 		}
 
-		byte[][] ks = Bytes.string2bytes(keys);
+		byte[][] ks = string2bytes(keys);
 		List<byte[]> list = getBinaryOperations().mget(ks);
 		if (CollectionUtils.isEmpty(list)) {
 			return null;
@@ -51,7 +60,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return;
 		}
 
-		getBinaryOperations().set(Bytes.string2bytes(key), getSerializer().serialize(value));
+		getBinaryOperations().set(string2bytes(key), getSerializer().serialize(value));
 	}
 
 	public boolean setnx(String key, Object value) {
@@ -59,7 +68,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return false;
 		}
 
-		return getBinaryOperations().setnx(Bytes.string2bytes(key), getSerializer().serialize(value));
+		return getBinaryOperations().setnx(string2bytes(key), getSerializer().serialize(value));
 	}
 
 	public void setex(String key, int seconds, Object value) {
@@ -67,7 +76,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return;
 		}
 
-		getBinaryOperations().setex(Bytes.string2bytes(key), seconds, getSerializer().serialize(value));
+		getBinaryOperations().setex(string2bytes(key), seconds, getSerializer().serialize(value));
 	}
 
 	public boolean exists(String key) {
@@ -75,7 +84,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return false;
 		}
 
-		return getBinaryOperations().exists(Bytes.string2bytes(key));
+		return getBinaryOperations().exists(string2bytes(key));
 	}
 
 	public Long expire(String key, int seconds) {
@@ -83,7 +92,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return -1L;
 		}
 
-		return getBinaryOperations().expire(Bytes.string2bytes(key), seconds);
+		return getBinaryOperations().expire(string2bytes(key), seconds);
 	}
 
 	public boolean del(String key) {
@@ -91,7 +100,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return false;
 		}
 
-		return getBinaryOperations().del(Bytes.string2bytes(key));
+		return getBinaryOperations().del(string2bytes(key));
 	}
 
 	public Long hset(String key, String field, Object value) {
@@ -99,8 +108,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return -1L;
 		}
 
-		return getBinaryOperations().hset(Bytes.string2bytes(key), Bytes.string2bytes(field),
-				getSerializer().serialize(value));
+		return getBinaryOperations().hset(string2bytes(key), string2bytes(field), getSerializer().serialize(value));
 	}
 
 	public Long hsetnx(String key, String field, Object value) {
@@ -108,8 +116,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return -1L;
 		}
 
-		return getBinaryOperations().hsetnx(Bytes.string2bytes(key), Bytes.string2bytes(field),
-				getSerializer().serialize(value));
+		return getBinaryOperations().hsetnx(string2bytes(key), string2bytes(field), getSerializer().serialize(value));
 	}
 
 	public Long hdel(String key, String... fields) {
@@ -117,7 +124,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return -1L;
 		}
 
-		return getBinaryOperations().hdel(Bytes.string2bytes(key), Bytes.string2bytes(fields));
+		return getBinaryOperations().hdel(string2bytes(key), string2bytes(fields));
 	}
 
 	public Long hlen(String key) {
@@ -125,7 +132,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return -1L;
 		}
 
-		return getBinaryOperations().hlen(Bytes.string2bytes(key));
+		return getBinaryOperations().hlen(string2bytes(key));
 	}
 
 	public Boolean hexists(String key, String field) {
@@ -133,7 +140,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return false;
 		}
 
-		return getBinaryOperations().hexists(Bytes.string2bytes(key), Bytes.string2bytes(field));
+		return getBinaryOperations().hexists(string2bytes(key), string2bytes(field));
 	}
 
 	public Long ttl(String key) {
@@ -141,7 +148,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return -1L;
 		}
 
-		return getBinaryOperations().ttl(Bytes.string2bytes(key));
+		return getBinaryOperations().ttl(string2bytes(key));
 	}
 
 	public Long incr(String key) {
@@ -149,7 +156,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return -1L;
 		}
 
-		return getBinaryOperations().incr(Bytes.string2bytes(key));
+		return getBinaryOperations().incr(string2bytes(key));
 	}
 
 	public Long decr(String key) {
@@ -157,7 +164,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return -1L;
 		}
 
-		return getBinaryOperations().decr(Bytes.string2bytes(key));
+		return getBinaryOperations().decr(string2bytes(key));
 	}
 
 	public Collection<Object> hvals(String key) {
@@ -165,7 +172,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return null;
 		}
 
-		Collection<byte[]> list = getBinaryOperations().hvals(Bytes.string2bytes(key));
+		Collection<byte[]> list = getBinaryOperations().hvals(string2bytes(key));
 		if (CollectionUtils.isEmpty(list)) {
 			return null;
 		}
@@ -182,7 +189,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return null;
 		}
 
-		byte[] data = getBinaryOperations().hget(Bytes.string2bytes(key), Bytes.string2bytes(field));
+		byte[] data = getBinaryOperations().hget(string2bytes(key), string2bytes(field));
 		return data == null ? null : getSerializer().deserialize(data);
 	}
 
@@ -191,7 +198,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return null;
 		}
 
-		Collection<byte[]> list = getBinaryOperations().hmget(Bytes.string2bytes(key), Bytes.string2bytes(fields));
+		Collection<byte[]> list = getBinaryOperations().hmget(string2bytes(key), string2bytes(fields));
 		if (CollectionUtils.isEmpty(list)) {
 			return null;
 		}
@@ -221,7 +228,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return -1L;
 		}
 
-		return getBinaryOperations().lpush(Bytes.string2bytes(key), objectsSerialize(values));
+		return getBinaryOperations().lpush(string2bytes(key), objectsSerialize(values));
 	}
 
 	public Long rpush(String key, Object... values) {
@@ -229,7 +236,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return -1L;
 		}
 
-		return getBinaryOperations().rpush(Bytes.string2bytes(key), objectsSerialize(values));
+		return getBinaryOperations().rpush(string2bytes(key), objectsSerialize(values));
 	}
 
 	public Object rpop(String key) {
@@ -237,7 +244,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return null;
 		}
 
-		byte[] data = getBinaryOperations().rpop(Bytes.string2bytes(key));
+		byte[] data = getBinaryOperations().rpop(string2bytes(key));
 		return data == null ? null : getSerializer().deserialize(data);
 	}
 
@@ -246,7 +253,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return null;
 		}
 
-		byte[] data = getBinaryOperations().lpop(Bytes.string2bytes(key));
+		byte[] data = getBinaryOperations().lpop(string2bytes(key));
 		return data == null ? null : getSerializer().deserialize(data);
 	}
 
@@ -255,7 +262,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return null;
 		}
 
-		Set<byte[]> set = getBinaryOperations().smembers(Bytes.string2bytes(key));
+		Set<byte[]> set = getBinaryOperations().smembers(string2bytes(key));
 		if (CollectionUtils.isEmpty(set)) {
 			return null;
 		}
@@ -274,7 +281,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return -1L;
 		}
 
-		return getBinaryOperations().srem(Bytes.string2bytes(key), objectsSerialize(members));
+		return getBinaryOperations().srem(string2bytes(key), objectsSerialize(members));
 	}
 
 	public Long sadd(String key, Object... members) {
@@ -282,7 +289,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return -1L;
 		}
 
-		return getBinaryOperations().sadd(Bytes.string2bytes(key), objectsSerialize(members));
+		return getBinaryOperations().sadd(string2bytes(key), objectsSerialize(members));
 	}
 
 	public Long zadd(String key, long score, Object member) {
@@ -290,7 +297,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return -1L;
 		}
 
-		return getBinaryOperations().zadd(Bytes.string2bytes(key), score, getSerializer().serialize(member));
+		return getBinaryOperations().zadd(string2bytes(key), score, getSerializer().serialize(member));
 	}
 
 	public Boolean set(String key, Object value, String nxxx, String expx, long time) {
@@ -298,8 +305,8 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return false;
 		}
 
-		return getBinaryOperations().set(Bytes.string2bytes(key), getSerializer().serialize(value),
-				Bytes.string2bytes(nxxx), Bytes.string2bytes(expx), time);
+		return getBinaryOperations().set(string2bytes(key), getSerializer().serialize(value), string2bytes(nxxx),
+				string2bytes(expx), time);
 	}
 
 	public Boolean sIsMember(String key, Object member) {
@@ -307,7 +314,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return false;
 		}
 
-		return getBinaryOperations().sIsMember(Bytes.string2bytes(key), getSerializer().serialize(member));
+		return getBinaryOperations().sIsMember(string2bytes(key), getSerializer().serialize(member));
 	}
 
 	public Object lindex(String key, int index) {
@@ -315,7 +322,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return null;
 		}
 
-		byte[] data = getBinaryOperations().lindex(Bytes.string2bytes(key), index);
+		byte[] data = getBinaryOperations().lindex(string2bytes(key), index);
 		return data == null ? null : getSerializer().deserialize(data);
 	}
 
@@ -323,7 +330,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 		if (key == null) {
 			return -1L;
 		}
-		return getBinaryOperations().llen(Bytes.string2bytes(key));
+		return getBinaryOperations().llen(string2bytes(key));
 	}
 
 	public Object eval(String script, List<String> keys, List<Object> args) {
@@ -337,7 +344,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			Iterator<String> iterator = keys.iterator();
 			while (iterator.hasNext()) {
 				String v = iterator.next();
-				ks.add(v == null ? null : Bytes.string2bytes(v));
+				ks.add(v == null ? null : string2bytes(v));
 			}
 		}
 
@@ -351,7 +358,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			}
 		}
 
-		return getBinaryOperations().eval(Bytes.string2bytes(script), ks, bs);
+		return getBinaryOperations().eval(string2bytes(script), ks, bs);
 	}
 
 	private Map<String, Object> mapDeSerizale(Map<byte[], byte[]> map) {
@@ -362,8 +369,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 		Map<String, Object> valueMap = new LinkedHashMap<String, Object>(map.size(), 1);
 		for (Entry<byte[], byte[]> entry : map.entrySet()) {
 			byte[] data = entry.getValue();
-			valueMap.put(new String(Bytes.bytes2chars(entry.getKey())),
-					data == null ? null : getSerializer().deserialize(data));
+			valueMap.put(bytes2string(entry.getKey()), data == null ? null : getSerializer().deserialize(data));
 		}
 		return valueMap;
 	}
@@ -373,7 +379,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return null;
 		}
 
-		Map<byte[], byte[]> map = getBinaryOperations().hgetAll(Bytes.string2bytes(key));
+		Map<byte[], byte[]> map = getBinaryOperations().hgetAll(string2bytes(key));
 		return mapDeSerizale(map);
 	}
 
@@ -401,7 +407,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return null;
 		}
 
-		List<byte[]> list = getBinaryOperations().brpop(timeout, Bytes.string2bytes(key));
+		List<byte[]> list = getBinaryOperations().brpop(timeout, string2bytes(key));
 		return popObjectResponse(list);
 	}
 
@@ -410,7 +416,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return null;
 		}
 
-		List<byte[]> list = getBinaryOperations().blpop(timeout, Bytes.string2bytes(key));
+		List<byte[]> list = getBinaryOperations().blpop(timeout, string2bytes(key));
 		return popObjectResponse(list);
 	}
 
@@ -427,20 +433,20 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			}
 
 			Object v = entry.getValue();
-			map.put(Bytes.string2bytes(key), v == null ? null : getSerializer().serialize(v));
+			map.put(string2bytes(key), v == null ? null : getSerializer().serialize(v));
 		}
 
-		return getBinaryOperations().hmset(Bytes.string2bytes(key), map);
+		return getBinaryOperations().hmset(string2bytes(key), map);
 	}
 
 	public long incr(String key, long incr, long initValue) {
 		Assert.notNull(key);
-		return getStringOperations().incr(key, incr, initValue);
+		return getBinaryOperations().incr(string2bytes(key), incr, initValue);
 	}
 
 	public long decr(String key, long decr, long initValue) {
 		Assert.notNull(key);
-		return getStringOperations().decr(key, decr, initValue);
+		return getBinaryOperations().decr(string2bytes(key), decr, initValue);
 	}
 
 	public Object getAndTouch(String key, int newExp) {
@@ -448,7 +454,7 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 			return null;
 		}
 
-		byte[] data = getBinaryOperations().getAndTouch(Bytes.string2bytes(key), newExp);
+		byte[] data = getBinaryOperations().getAndTouch(string2bytes(key), newExp);
 		return data == null ? null : getSerializer().deserialize(data);
 	}
 
