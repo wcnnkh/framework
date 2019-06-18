@@ -3,6 +3,7 @@ package scw.servlet;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -554,6 +555,8 @@ public final class ServletUtils {
 			return request.getChar(name);
 		} else if (Character.class.isAssignableFrom(type)) {
 			return request.getCharacter(name);
+		} else if (BigDecimal.class.isAssignableFrom(type)) {
+			return new BigDecimal(request.getDoubleValue(name));
 		} else if (type.isEnum()) {
 			String v = request.getString(name);
 			return StringUtils.isEmpty(v) ? null : Enum.valueOf((Class<? extends Enum>) type, v);
