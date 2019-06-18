@@ -30,11 +30,12 @@ public final class MethodProxyInvoker implements Invoker {
 		if (!proxy) {
 			this.filters = BeanUtils.getBeanFilterNameList(clz, method, rootFilters);
 		}
+		
 	}
 
 	public Object invoke(Object... args) throws Throwable {
 		if (proxy) {
-			return BeanUtils.getInvoker(beanFactory, clz, method);
+			return BeanUtils.getInvoker(beanFactory, clz, method).invoke(args);
 		}
 
 		Object bean = Modifier.isStatic(method.getModifiers()) ? null : beanFactory.get(clz);
