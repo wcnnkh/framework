@@ -11,5 +11,5 @@ public interface MQ<T>{
 	 * 
 	 * @param message
 	 */
-	void addConsumer(String name, Consumer<T> consumer);
+	void bindConsumer(String name, Consumer<T> consumer);
 }

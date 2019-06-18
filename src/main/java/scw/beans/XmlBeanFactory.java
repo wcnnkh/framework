@@ -133,8 +133,7 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 		if(StringUtils.isEmpty(xmlPath)){
 			return ;
 		}
-		Node root = XmlBeanUtils.getRootNode(xmlPath);
-		NodeList nodeList = root.getChildNodes();
+		NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);;
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("init".equalsIgnoreCase(n.getNodeName())) {
@@ -160,8 +159,7 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 			return ;
 		}
 		
-		Node root = XmlBeanUtils.getRootNode(xmlPath);
-		NodeList nodeList = root.getChildNodes();
+		NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("destroy".equalsIgnoreCase(n.getNodeName())) {

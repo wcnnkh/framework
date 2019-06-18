@@ -20,8 +20,7 @@ public class XmlBeanConfigFactory extends AbstractBeanConfigFactory {
 
 	public XmlBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String beanXml,
 			String[] filterNames) throws Exception {
-		Node root = XmlBeanUtils.getRootNode(beanXml);
-		NodeList nhosts = root.getChildNodes();
+		NodeList nhosts =  XmlBeanUtils.getRootNodeList(beanXml);
 		for (int i = 0; i < nhosts.getLength(); i++) {
 			Node nRoot = nhosts.item(i);
 			if (BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {

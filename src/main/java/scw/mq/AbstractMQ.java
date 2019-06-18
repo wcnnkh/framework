@@ -12,7 +12,7 @@ public abstract class AbstractMQ<T> implements MQ<T> {
 		return consumerMap.get(name);
 	}
 
-	public void addConsumer(String name, Consumer<T> consumer) {
+	public void bindConsumer(String name, Consumer<T> consumer) {
 		synchronized (consumerMap) {
 			consumerMap.add(name, consumer);
 		}

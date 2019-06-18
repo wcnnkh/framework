@@ -20,15 +20,16 @@ public final class XmlRequestBeanFactory implements RequestBeanFactory {
 
 	private static final String BEAN_TAG_NAME = "request:bean";
 
-	public XmlRequestBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configXml,
+	public XmlRequestBeanFactory(BeanFactory beanFactory,
+			PropertiesFactory propertiesFactory, String configXml,
 			String[] filterNames) throws Exception {
 		if (!StringUtils.isNull(configXml)) {
-			Node root = XmlBeanUtils.getRootNode(configXml);
-			NodeList nhosts = root.getChildNodes();
+			NodeList nhosts = XmlBeanUtils.getRootNodeList(configXml);
 			for (int i = 0; i < nhosts.getLength(); i++) {
 				Node nRoot = nhosts.item(i);
 				if (BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
-					XmlRequestBean bean = new XmlRequestBean(beanFactory, propertiesFactory, nRoot, filterNames);
+					XmlRequestBean bean = new XmlRequestBean(beanFactory,
+							propertiesFactory, nRoot, filterNames);
 					if (beanMap.containsKey(bean.getId())) {
 						throw new AlreadyExistsException(bean.getId());
 					}

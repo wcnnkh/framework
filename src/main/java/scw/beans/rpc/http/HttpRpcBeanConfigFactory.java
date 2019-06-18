@@ -18,8 +18,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 
 	public HttpRpcBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String config)
 			throws Exception {
-		Node rootNode = XmlBeanUtils.getRootNode(config);
-		NodeList rootNodeList = rootNode.getChildNodes();
+		NodeList rootNodeList = XmlBeanUtils.getRootNodeList(config);;
 		for (int i = 0; i < rootNodeList.getLength(); i++) {
 			Node node = rootNodeList.item(i);
 			if (node == null) {

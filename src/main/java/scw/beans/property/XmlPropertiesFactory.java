@@ -19,7 +19,7 @@ public class XmlPropertiesFactory implements PropertiesFactory {
 			return;
 		}
 
-		NodeList nhosts = XmlBeanUtils.getRootNode(beanXml).getChildNodes();
+		NodeList nhosts = XmlBeanUtils.getRootNodeList(beanXml);;
 		for (int i = 0; i < nhosts.getLength(); i++) {
 			Node nRoot = nhosts.item(i);
 			if ("properties".equalsIgnoreCase(nRoot.getNodeName())) {

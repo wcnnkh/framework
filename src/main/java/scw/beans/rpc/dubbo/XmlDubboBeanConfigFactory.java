@@ -5,19 +5,18 @@ import java.util.List;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.alibaba.dubbo.config.ReferenceConfig;
-
 import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertiesFactory;
 
+import com.alibaba.dubbo.config.ReferenceConfig;
+
 public final class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
-	private static final String TAG_NAME = "dubbo:reference";
 
 	public XmlDubboBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String config)
 			throws Exception {
-		NodeList rootNodeList = XmlBeanUtils.getRootNode(config).getChildNodes();
+		NodeList rootNodeList = XmlBeanUtils.getRootNodeList(config);;
 		if (rootNodeList != null) {
 			for (int x = 0; x < rootNodeList.getLength(); x++) {
 				Node node = rootNodeList.item(x);
@@ -25,7 +24,7 @@ public final class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 					continue;
 				}
 
-				if (!TAG_NAME.equals(node.getNodeName())) {
+				if (!"dubbo:reference".equals(node.getNodeName())) {
 					continue;
 				}
 
