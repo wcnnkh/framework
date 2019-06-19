@@ -557,19 +557,9 @@ public final class ServletUtils {
 		} else if (Character.class.isAssignableFrom(type)) {
 			return request.getCharacter(name);
 		} else if (BigDecimal.class.isAssignableFrom(type)) {
-			String v = request.getString(name);
-			if (StringUtils.isEmpty(v)) {
-				return null;
-			}
-
-			return new BigDecimal(v);
+			return StringUtils.parseBigDecimal(request.getString(name), null);
 		} else if (BigInteger.class.isAssignableFrom(type)) {
-			String v = request.getString(name);
-			if (StringUtils.isEmpty(v)) {
-				return null;
-			}
-
-			return new BigInteger(v);
+			return StringUtils.parseBigInteger(request.getString(name), 10, null);
 		} else if (type.isEnum()) {
 			String v = request.getString(name);
 			return StringUtils.isEmpty(v) ? null : Enum.valueOf((Class<? extends Enum>) type, v);

@@ -1,6 +1,8 @@
 package scw.core.utils;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.CharBuffer;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -2200,6 +2203,24 @@ public final class StringUtils {
 		return text.charAt(0);
 	}
 
+	public static BigInteger parseBigInteger(String text, int radix, BigInteger defaultValue) {
+		String v = formatNumberText(text);
+		if (StringUtils.isEmpty(v)) {
+			return defaultValue;
+		}
+
+		return new BigInteger(v, radix);
+	}
+
+	public static BigDecimal parseBigDecimal(String text, BigDecimal defaultValue) {
+		String v = formatNumberText(text);
+		if (StringUtils.isEmpty(v)) {
+			return defaultValue;
+		}
+
+		return new BigDecimal(v);
+	}
+
 	/**
 	 * 把unicode 转成中文
 	 * 
@@ -2271,30 +2292,27 @@ public final class StringUtils {
 	}
 
 	/**
-	 * 如果是string类类型就返回本身
+	 * 如果是string类类型就返回本身 自动把string转化为基本数据类型 string不是基本数据类型
 	 * 
 	 * @param value
 	 * @param basicType
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T conversion(String value, Class<T> basicType) {
-		if (ClassUtils.isStringType(basicType)) {
-			return (T) value;
-		} else {
-			return (T) conversionBasicType(value, basicType);
-		}
+	public static <T> T conversion(final String value, final Class<T> basicType) {
+		return (T) conversion(value, basicType, new Callable<Object>() {
+
+			public Object call() throws Exception {
+				throw new RuntimeException(value + "无法转换为" + basicType.getName() + "类型");
+			}
+		});
 	}
 
-	/**
-	 * 自动把string转化为基本数据类型 string不是基本数据类型
-	 * 
-	 * @param value
-	 * @param basicType
-	 * @return
-	 */
-	public static Object conversionBasicType(String value, Class<?> basicType) {
-		if (int.class.isAssignableFrom(basicType)) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Object conversion(String value, Class<?> basicType, Callable<?> notfoundTypeCallable) {
+		if (String.class.isAssignableFrom(basicType)) {
+			return value;
+		} else if (int.class.isAssignableFrom(basicType)) {
 			return parseInt(value, 0);
 		} else if (Integer.class.isAssignableFrom(basicType)) {
 			return StringUtils.isEmpty(value) ? null : parseInt(value, 0);
@@ -2319,11 +2337,21 @@ public final class StringUtils {
 		} else if (Byte.class.isAssignableFrom(basicType)) {
 			return StringUtils.isEmpty(value) ? null : parseByte(value, (byte) 0);
 		} else if (char.class.isAssignableFrom(basicType)) {
-			return value.charAt(0);
+			return parseChar(value);
 		} else if (Character.class.isAssignableFrom(basicType)) {
 			return StringUtils.isEmpty(value) ? null : value.charAt(0);
+		} else if (BigInteger.class.isAssignableFrom(basicType)) {
+			return parseBigInteger(value, 10, null);
+		} else if (BigDecimal.class.isAssignableFrom(basicType)) {
+			return parseBigDecimal(value, null);
+		} else if (basicType.isEnum()) {
+			return StringUtils.isEmpty(value) ? null : Enum.valueOf((Class<? extends Enum>) basicType, value);
 		} else {
-			return value;
+			try {
+				return notfoundTypeCallable.call();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
