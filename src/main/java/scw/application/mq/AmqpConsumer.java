@@ -7,16 +7,16 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AmqpParametersConsumer {
+public @interface AmqpConsumer {
 	public String routingKey();
 
 	public String queueName();
 
 	public boolean durable() default true;
 
-	public boolean exclusive() default true;
+	public boolean exclusive() default false;
 
 	public boolean autoDelete() default false;
 	
-	public String paramsExchange();
+	public String exchangeService();
 }
