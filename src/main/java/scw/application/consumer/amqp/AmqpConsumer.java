@@ -1,4 +1,4 @@
-package scw.application.mq;
+package scw.application.consumer.amqp;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

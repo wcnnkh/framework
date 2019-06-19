@@ -4,8 +4,9 @@ import java.util.Collection;
 
 import com.alibaba.dubbo.config.ProtocolConfig;
 
+import scw.application.consumer.AnnotationConsumerUtils;
+import scw.application.consumer.XmlConsumerFactory;
 import scw.application.crontab.CrontabAnnotationUtils;
-import scw.application.mq.AnnotationMQUtils;
 import scw.beans.CommonFilter;
 import scw.beans.XmlBeanFactory;
 import scw.beans.property.XmlPropertiesFactory;
@@ -78,7 +79,10 @@ public class CommonApplication implements Application {
 		}
 
 		CrontabAnnotationUtils.crontabService(getClasses(), beanFactory, getBeanFactory().getFilterNames());
-		AnnotationMQUtils.scanningAMQPParamsConsumer(getBeanFactory(), getClasses(), getBeanFactory().getFilterNames());
+		AnnotationConsumerUtils.scanningAMQPConsumer(getBeanFactory(), getClasses(), getBeanFactory().getFilterNames());
+		AnnotationConsumerUtils.scanningConsumer(beanFactory,
+				new XmlConsumerFactory(beanFactory, propertiesFactory, configPath), getClasses(),
+				getBeanFactory().getFilterNames());
 	}
 
 	public void destroy() {

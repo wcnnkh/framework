@@ -15,6 +15,7 @@ import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.logger.LoggerUtils;
 import scw.core.serializer.NoTypeSpecifiedSerializer;
+import scw.mq.amqp.AmqpQueueConfig;
 import scw.mq.amqp.Exchange;
 
 public class SingleExchange<T> implements Exchange<T> {
@@ -129,5 +130,10 @@ public class SingleExchange<T> implements Exchange<T> {
 
 	public void bindConsumer(String routingKey, String queueName, Consumer<T> consumer) {
 		bindConsumer(routingKey, queueName, true, false, false, null, consumer);
+	}
+
+	public void bindConsumer(AmqpQueueConfig config, Consumer<T> consumer) {
+		bindConsumer(config.getRoutingKey(), config.getQueueName(), config.isDurable(), config.isExclusive(),
+				config.isAutoDelete(), null, consumer);
 	}
 }
