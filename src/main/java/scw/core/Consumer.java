@@ -11,5 +11,5 @@ public interface Consumer<T> {
 	 * 消费
 	 * @param message
 	 */
-	void consume(T message);
+	void consume(T message) throws Exception;
 }

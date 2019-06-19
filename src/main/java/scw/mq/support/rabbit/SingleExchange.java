@@ -36,8 +36,8 @@ public class SingleExchange<T> implements Exchange<T> {
 		return serializer;
 	}
 
-	public void addConsumer(String routingKey, String queueName, boolean durable, boolean exclusive, boolean autoDelete,
-			Map<String, Object> arguments, Consumer<T> consumer) {
+	public void bindConsumer(String routingKey, String queueName, boolean durable, boolean exclusive,
+			boolean autoDelete, Map<String, Object> arguments, Consumer<T> consumer) {
 		Channel channel = channelFactory.getChannel(routingKey);
 		try {
 			channel.queueDeclare(queueName, durable, exclusive, autoDelete, arguments);
@@ -56,9 +56,9 @@ public class SingleExchange<T> implements Exchange<T> {
 		}
 	}
 
-	public void addConsumer(String routingKey, String queueName, boolean durable, boolean exclusive, boolean autoDelete,
-			Consumer<T> consumer) {
-		addConsumer(routingKey, queueName, durable, exclusive, autoDelete, null, consumer);
+	public void bindConsumer(String routingKey, String queueName, boolean durable, boolean exclusive,
+			boolean autoDelete, Consumer<T> consumer) {
+		bindConsumer(routingKey, queueName, durable, exclusive, autoDelete, null, consumer);
 	}
 
 	@AsyncComplete
@@ -125,5 +125,9 @@ public class SingleExchange<T> implements Exchange<T> {
 						+ ", queueName=" + name, e);
 			}
 		}
+	}
+
+	public void bindConsumer(String routingKey, String queueName, Consumer<T> consumer) {
+		bindConsumer(routingKey, queueName, true, false, false, null, consumer);
 	}
 }

@@ -70,7 +70,11 @@ public class BlockingQueueMQ<T> extends AbstractMQ<T> implements scw.core.Destro
 			}
 
 			for (Consumer<T> consumer : consumerList) {
-				consumer.consume(message);
+				try {
+					consumer.consume(message);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

@@ -27,7 +27,7 @@ public final class AnnotationMQUtils {
 						"添加消费者：{}, amqp routingKey={}, queueName={}, durable={}, exclusive={}, autoDelete={}, clz={}, method={}",
 						c.routingKey(), c.queueName(), c.durable(), c.exclusive(), c.autoDelete(), clz.getName(),
 						method);
-				mq.addConsumer(c.routingKey(), c.queueName(), c.durable(), c.exclusive(), c.autoDelete(),
+				mq.bindConsumer(c.routingKey(), c.queueName(), c.durable(), c.exclusive(), c.autoDelete(),
 						new MqMethodConsumer(new MethodProxyInvoker(beanFactory, clz, method, rootFilters)));
 			}
 		}
