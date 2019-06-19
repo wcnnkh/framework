@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import scw.core.BlockingQueue;
 import scw.core.utils.Assert;
+import scw.core.utils.BlockingQueue;
 import scw.core.utils.DefaultBlockingQueue;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;

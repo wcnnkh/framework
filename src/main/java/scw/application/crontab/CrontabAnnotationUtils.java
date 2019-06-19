@@ -6,7 +6,6 @@ import java.util.HashSet;
 
 import scw.beans.BeanFactory;
 import scw.beans.MethodProxyInvoker;
-import scw.core.CrontabTask;
 import scw.core.aop.Invoker;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.logger.Logger;
@@ -14,6 +13,7 @@ import scw.core.logger.LoggerFactory;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.CrontabTask;
 
 public final class CrontabAnnotationUtils {
 	private static Logger logger = LoggerFactory.getLogger(CrontabAnnotationUtils.class);
@@ -29,7 +29,7 @@ public final class CrontabAnnotationUtils {
 				if (taskNameSet.contains(c.name())) {
 					throw new AlreadyExistsException("任务：" + c.name() + "已经存在");
 				}
-				scw.core.Crontab crontab = beanFactory.get(scw.core.Crontab.class);
+				scw.core.utils.Crontab crontab = beanFactory.get(scw.core.utils.Crontab.class);
 
 				boolean invokeTime = !ArrayUtils.isEmpty(method.getParameterTypes())
 						&& method.getParameterTypes().length == 1

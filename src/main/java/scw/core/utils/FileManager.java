@@ -1,11 +1,8 @@
-package scw.core;
+package scw.core.utils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
-
-import scw.core.utils.FileUtils;
-import scw.core.utils.XTime;
 
 public final class FileManager {
 	private final String rootPath;

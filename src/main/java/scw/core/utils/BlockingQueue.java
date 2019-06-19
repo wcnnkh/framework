@@ -1,4 +1,4 @@
-package scw.core;
+package scw.core.utils;
 
 /**
  * 阻塞队列

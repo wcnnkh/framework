@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 import scw.core.FieldSetterListen;
-import scw.core.Iterator;
 import scw.core.Pagination;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.ParameterException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.Iterator;
 import scw.core.utils.StringUtils;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;

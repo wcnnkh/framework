@@ -1,4 +1,4 @@
-package scw.core;
+package scw.core.utils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -10,8 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import scw.core.utils.StringUtils;
-import scw.core.utils.XTime;
+import scw.core.Destroy;
 
 /**
  * 计划任务
@@ -19,7 +18,7 @@ import scw.core.utils.XTime;
  * @author shuchaowen
  *
  */
-public final class Crontab implements scw.core.Destroy {
+public final class Crontab implements Destroy {
 	private Timer timer = new Timer();
 	private ExecutorService executorService = new ThreadPoolExecutor(2, 100, 60L, TimeUnit.MINUTES,
 			new LinkedBlockingQueue<Runnable>());
@@ -43,7 +42,8 @@ public final class Crontab implements scw.core.Destroy {
 	 * @param minute
 	 * @param task
 	 */
-	public void crontab(String dayOfWeek, String month, String dayOfMonth, String hour, String minute, CrontabTask task) {
+	public void crontab(String dayOfWeek, String month, String dayOfMonth, String hour, String minute,
+			CrontabTask task) {
 		crontabInfos.add(new CrontabInfo(dayOfWeek, month, dayOfMonth, hour, minute, task));
 	}
 

@@ -1,12 +1,11 @@
-package scw.mq;
+package scw.core.utils;
 
-import scw.core.BlockingQueue;
 import scw.core.Consumer;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.Producer;
 
-public abstract class SingleBlockingQueueMQ<T> implements Consumer<T>, Producer<T>, Init, Destroy, Runnable {
+public abstract class AbstractBlockingQueue<T> implements Consumer<T>, Producer<T>, Init, Destroy, Runnable {
 	private BlockingQueue<T> blockingQueue;
 	private Thread thread = new Thread(this);
 
@@ -14,7 +13,7 @@ public abstract class SingleBlockingQueueMQ<T> implements Consumer<T>, Producer<
 		return blockingQueue;
 	}
 
-	public SingleBlockingQueueMQ(BlockingQueue<T> queue) {
+	public AbstractBlockingQueue(BlockingQueue<T> queue) {
 		this.blockingQueue = queue;
 	}
 

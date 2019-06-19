@@ -14,7 +14,6 @@ import scw.beans.annotation.AsyncComplete;
 import scw.beans.annotation.Autowrite;
 import scw.beans.annotation.InitMethod;
 import scw.core.Base64;
-import scw.core.FileManager;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
@@ -23,6 +22,7 @@ import scw.core.logger.LoggerFactory;
 import scw.core.reflect.SerializableMethodDefinition;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ConfigUtils;
+import scw.core.utils.FileManager;
 import scw.core.utils.FileUtils;
 
 /**
