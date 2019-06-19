@@ -4,10 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,32 +17,26 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
+import scw.core.LinkedMultiValueMap;
+import scw.core.MultiValueMap;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
+import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
 
-public final class Multipart {
+public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
+	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerFactory.getLogger(Multipart.class);
 
-	private Map<String, List<String>> paramMap = new HashMap<String, List<String>>();
-	private Map<String, List<FileItem>> fileItemMap = new HashMap<String, List<FileItem>>();
-	private List<String> keys = new ArrayList<String>();
-	private List<FileItem> fileItemList = new ArrayList<FileItem>();
-	private HttpServletRequest httpServletRequest;
-
 	public Multipart(HttpServletRequest request) throws IOException {
-		init(request, true);
-	}
-
-	private void init(HttpServletRequest httpServletRequest, boolean debug) {
 		RequestContext requestContext;
 		DiskFileItemFactory factory;
 		ServletFileUpload upload;
 		List<FileItem> items;
 		Iterator<FileItem> iterator;
 		FileItem fileItem;
-		List<String> values;
 		try {
-			requestContext = new ServletRequestContext(httpServletRequest);
+			requestContext = new ServletRequestContext(request);
 			if (FileUpload.isMultipartContent(requestContext)) {
 				factory = new DiskFileItemFactory();
 				upload = new ServletFileUpload(factory);
@@ -55,156 +48,126 @@ public final class Multipart {
 						continue;
 					}
 
+					add(fileItem.getFieldName(), fileItem);
 					if (fileItem.isFormField()) {
-						logger.trace("form表单字段[name=" + fileItem.getFieldName() + "]");
-						values = paramMap.get(fileItem.getFieldName());
-						if (values == null) {
-							values = new ArrayList<String>();
-							keys.add(fileItem.getFieldName());
-						}
-
-						String value = fileItem.getString();
-						values.add(value);
-						paramMap.put(fileItem.getFieldName(), values);
-
-						if (debug) {
-							StringBuilder sb = new StringBuilder();
-							sb.append("form表单字段name=");
-							sb.append(fileItem.getFieldName());
-							sb.append(",value=");
-							sb.append(value);
-							logger.trace(sb.toString());
-						}
+						logger.trace("form表单字段name={}, value=", fileItem.getFieldName(), fileItem.toString());
 					} else {
-						fileItemList.add(fileItem);
-						List<FileItem> fList = fileItemMap.get(fileItem.getFieldName());
-						if (fList == null) {
-							fList = new ArrayList<FileItem>();
-							keys.add(fileItem.getFieldName());
-						}
-						fList.add(fileItem);
-						fileItemMap.put(fileItem.getFieldName(), fList);
-
-						if (debug) {
-							StringBuilder sb = new StringBuilder();
-							sb.append("form表单文件[name=");
-							sb.append(fileItem.getFieldName());
-							sb.append(", size=");
-							sb.append(fileItem.getSize());
-							sb.append(", fileName=");
-							sb.append(fileItem.getName());
-							sb.append("]");
-							logger.debug(sb.toString());
-						}
+						logger.trace("form表单文件[name={}, size={}, fileName={}]", fileItem.getFieldName(),
+								fileItem.getSize(), fileItem.getName());
 					}
 				}
 			} else {
 				logger.error("请求类型异常");
 			}
 		} catch (Exception e) {
-			logger.error("REQUEST", "获取上传文件请求内容异常！！", e);
+			logger.error(e, "获取上传文件请求内容异常！！");
 		}
 	}
 
-	protected String getValue(String key) {
-		String value = httpServletRequest.getParameter(key);
-		if (value == null) {
-			return getTextValue(key, httpServletRequest.getCharacterEncoding());
+	public MultiValueMap<String, FileItem> getFieldItemMap(boolean formField, boolean checkSize) {
+		MultiValueMap<String, FileItem> map = new LinkedMultiValueMap<String, FileItem>();
+		for (Entry<String, List<FileItem>> entry : entrySet()) {
+			List<FileItem> list = entry.getValue();
+			if (CollectionUtils.isEmpty(list)) {
+				continue;
+			}
+
+			List<FileItem> values = new ArrayList<FileItem>(list.size());
+			for (FileItem item : list) {
+				if (item == null) {
+					continue;
+				}
+
+				if (checkSize && item.getSize() == 0) {
+					continue;
+				}
+
+				if (formField) {
+					if (item.isFormField()) {
+						values.add(item);
+					}
+				} else {
+					if (!item.isFormField()) {
+						values.add(item);
+					}
+				}
+			}
+
+			if (CollectionUtils.isEmpty(values)) {
+				continue;
+			}
+
+			map.put(entry.getKey(), values);
 		}
-		return value;
+		return map;
 	}
 
-	/**
-	 * 根据FileItemName来查找文件，如果找不到就使用全部的
-	 * 
-	 * @param key
-	 * @return
-	 */
-	protected List<FileItem> getMyFileItemList(String key) {
-		List<FileItem> list = getFileItemList(key);
-		if (list == null) {
-			return getFileItemList();
+	public List<FileItem> getFieldItemList(String name, boolean formField, boolean checkSize) {
+		List<FileItem> fileItems = get(name);
+		if (CollectionUtils.isEmpty(fileItems)) {
+			return null;
+		}
+
+		List<FileItem> list = new ArrayList<FileItem>(fileItems.size());
+		for (FileItem fileItem : fileItems) {
+			if (fileItem == null) {
+				continue;
+			}
+
+			if (checkSize && fileItem.getSize() == 0) {
+				continue;
+			}
+
+			if (formField) {
+				if (fileItem.isFormField()) {
+					list.add(fileItem);
+				}
+			} else {
+				if (!fileItem.isFormField()) {
+					list.add(fileItem);
+				}
+			}
 		}
 		return list;
 	}
 
-	public Map<String, List<String>> getParamMap() {
-		return paramMap;
-	}
-
-	public List<FileItem> getFileItemList() {
-		return fileItemList;
-	}
-
-	public List<String> getTextValues(String key) {
-		return paramMap.get(key);
-	}
-
-	public String getTextValue(String key) {
-		List<String> values = paramMap.get(key);
-		if (values == null) {
+	public String getParameter(String name) {
+		List<FileItem> list = getFieldItemList(name, true, false);
+		if (CollectionUtils.isEmpty(list)) {
 			return null;
 		}
 
-		return values.get(0);
+		return list.get(0).toString();
 	}
 
-	public String getTextValueToUTF_8(String key) {
-		String v = getValue(key);
-		if (v != null) {
-			try {
-				return new String(v.getBytes("ISO-8859-1"), "UTF-8");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return v;
+	public String getTextValue(String key) {
+		return getTextValue(key, "UTF-8");
 	}
 
 	public String getTextValue(String key, String charsetName) {
-		String value = getValue(key);
-		if (value != null) {
-			try {
-				return new String(charsetName.getBytes("iso-8859-1"), charsetName);
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+		String value = getParameter(key);
+		if (StringUtils.isEmpty(value)) {
+			return value;
+		}
+		try {
+			return new String(charsetName.getBytes("iso-8859-1"), charsetName);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public List<String> getKeys() {
-		return keys;
-	}
+	public static void save(String toPath, Collection<FileItem> fileItems) {
+		if (CollectionUtils.isEmpty(fileItems)) {
+			return;
+		}
 
-	public static void save(String toPath, FileItem... fileItems) {
 		for (FileItem fileItem : fileItems) {
-			File file;
 			try {
-				file = new File(toPath + fileItem.getName());
-				fileItem.write(file);
+				fileItem.write(new File(toPath + fileItem.getName()));
 			} catch (Exception e) {
 				logger.error("保存上传的文件异常,路径" + toPath + ",文件名：" + fileItem.getName(), e);
 			}
 		}
-	}
-
-	public List<FileItem> getFileItemList(String key) {
-		return fileItemMap.get(key);
-	}
-
-	public FileItem getFileItem(String key) {
-		List<FileItem> list = getFileItemList(key);
-		if (list == null || list.size() == 0) {
-			return null;
-		}
-		return list.get(0);
-	}
-
-	public FileItem getFirstFileItem() {
-		if (fileItemList != null && fileItemList.size() != 0) {
-			return fileItemList.get(0);
-		}
-		return null;
 	}
 }
