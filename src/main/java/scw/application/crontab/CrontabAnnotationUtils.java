@@ -33,7 +33,7 @@ public final class CrontabAnnotationUtils {
 
 				boolean invokeTime = !ArrayUtils.isEmpty(method.getParameterTypes())
 						&& method.getParameterTypes().length == 1
-						&& ClassUtils.isLongType(method.getParameterTypes()[1]);
+						&& ClassUtils.isLongType(method.getParameterTypes()[0]);
 				CrontabRunnable crontabRun = new CrontabRunnable(c.name(), beanFactory.get(c.factory()),
 						new MethodProxyInvoker(beanFactory, clz, method, filters), invokeTime);
 				crontab.crontab(c.dayOfWeek(), c.month(), c.dayOfMonth(), c.hour(), c.minute(), crontabRun);
