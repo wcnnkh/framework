@@ -16,8 +16,8 @@ public abstract class LazyCacheManager implements CacheManager {
 	private static final String DEFAULT_KEY_PREFIX = "lazy:";
 	private static final String KEY = "key:";
 	private static final String DEFAULT_CONNECTOR = "|";
-	private static final LazyCacheConfig DEFAULT_CONFIG = new LazyCacheConfig((int) (XTime.ONE_DAY * 2 / 1000),
-			false, false);
+	private static final LazyCacheConfig DEFAULT_CONFIG = new LazyCacheConfig((int) (XTime.ONE_DAY * 2 / 1000), false,
+			false);
 	private static volatile Map<Class<?>, LazyCacheConfig> configMap = new HashMap<Class<?>, LazyCacheConfig>();
 
 	private static final LazyCacheConfig getCacheConfig(Class<?> tableClass) {
@@ -186,7 +186,7 @@ public abstract class LazyCacheManager implements CacheManager {
 			return null;
 		}
 
-		String key = getObjectKeyById(type, params);
+		String key = getObjectKeyById(tableInfo.getPrimaryKeyColumns().length, type, params);
 		Map<String, K> keyMap = new HashMap<String, K>(inIds.size(), 1);
 		for (K k : inIds) {
 			keyMap.put(appendObjectKey(key, k), k);
@@ -244,9 +244,13 @@ public abstract class LazyCacheManager implements CacheManager {
 	}
 
 	protected String getObjectKeyById(Class<?> clazz, Object... params) {
+		return getObjectKeyById(params.length, clazz, params);
+	}
+
+	protected String getObjectKeyById(int parameterLen, Class<?> clazz, Object... params) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(DEFAULT_KEY_PREFIX).append(clazz.getName());
-		sb.append(DEFAULT_CONNECTOR).append(params.length);
+		sb.append(DEFAULT_CONNECTOR).append(parameterLen);
 		for (int i = 0; i < params.length; i++) {
 			sb.append(DEFAULT_CONNECTOR);
 			Object v = params[i];
