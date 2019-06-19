@@ -13,13 +13,12 @@ import scw.beans.annotation.AsyncComplete;
 import scw.core.Consumer;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.core.logger.LoggerUtils;
 import scw.core.serializer.NoTypeSpecifiedSerializer;
 import scw.mq.amqp.AmqpQueueConfig;
 import scw.mq.amqp.Exchange;
 
 public class SingleExchange<T> implements Exchange<T> {
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+	protected static Logger logger = LoggerFactory.getLogger(SingleExchange.class);
 	private final SingleExchangeChannelFactory channelFactory;
 	private final NoTypeSpecifiedSerializer serializer;
 
@@ -46,14 +45,9 @@ public class SingleExchange<T> implements Exchange<T> {
 			channel.basicConsume(queueName, autoDelete,
 					new RabbitDefaultConsumer(channel, autoDelete, consumer, queueName));
 		} catch (IOException e) {
-			StringBuilder sb = new StringBuilder();
-			try {
-				LoggerUtils.loggerAppend(sb, "exchange={},rotingKey={},durable={},exclusive={},autoDelete={}", null,
-						channelFactory.getExchangeType(), routingKey, durable, exclusive, autoDelete);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			throw new RuntimeException(sb.toString(), e);
+			logger.error("bind：exchange={},rotingKey={},durable={},exclusive={},autoDelete={}",
+					channelFactory.getExchangeType(), routingKey, durable, exclusive, autoDelete);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -68,14 +62,9 @@ public class SingleExchange<T> implements Exchange<T> {
 			channelFactory.getChannel(routingKey).basicPublish(channelFactory.getExchange(), routingKey, mandatory,
 					immediate, null, getSerializer().serialize(message));
 		} catch (IOException e) {
-			StringBuilder sb = new StringBuilder();
-			try {
-				LoggerUtils.loggerAppend(sb, "exchange={},rotingKey={},mandatory={},immediate={}", null,
-						channelFactory.getExchange(), routingKey, mandatory, immediate);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			throw new RuntimeException(sb.toString(), e);
+			logger.error("推送消息异常：exchange={},rotingKey={},mandatory={},immediate={}", channelFactory.getExchange(),
+					routingKey, mandatory, immediate);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -84,14 +73,8 @@ public class SingleExchange<T> implements Exchange<T> {
 			channelFactory.getChannel(routingKey).basicPublish(channelFactory.getExchange(), routingKey, null,
 					getSerializer().serialize(message));
 		} catch (IOException e) {
-			StringBuilder sb = new StringBuilder();
-			try {
-				LoggerUtils.loggerAppend(sb, "exchange={},rotingKey={}", null, channelFactory.getExchange(),
-						routingKey);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			throw new RuntimeException(sb.toString(), e);
+			logger.error("push：exchange={},rotingKey={}", channelFactory.getExchange(), routingKey);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -122,8 +105,8 @@ public class SingleExchange<T> implements Exchange<T> {
 					getChannel().basicAck(envelope.getDeliveryTag(), false);
 				}
 			} catch (Throwable e) {
-				logger.error("消费者异常, exchange=" + envelope.getExchange() + ", routingKey=" + envelope.getRoutingKey()
-						+ ", queueName=" + name, e);
+				logger.error(e, "消费者异常, exchange={}, routingKey={}, queueName={}", envelope.getExchange(),
+						envelope.getRoutingKey(), name);
 			}
 		}
 	}
