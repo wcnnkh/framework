@@ -7,9 +7,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import scw.core.utils.Assert;
 import scw.core.utils.BlockingQueue;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.DefaultBlockingQueue;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
@@ -38,13 +40,23 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 	private final BlockingQueue<AsyncInfo> asyncBlockingQueue;
 	private boolean debug;
 	private Thread syncThread;
+	private boolean inIdAppendCache = true;// 使用inId查询结果是否添加到缓存
 
 	public void setDebug(boolean debug) {
 		this.debug = debug;
 	}
 
-	public boolean isDebug() {
+	@Override
+	public boolean isDebugEnabled() {
 		return debug;
+	}
+
+	public final boolean isInIdAppendCache() {
+		return inIdAppendCache;
+	}
+
+	public void setInIdAppendCache(boolean inIdAppendCache) {
+		this.inIdAppendCache = inIdAppendCache;
 	}
 
 	public DB() {
@@ -229,8 +241,16 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 		}
 
 		Map<K, V> map = cacheManager.getInIdList(type, inIds, params);
-		if (map == null || map.isEmpty()) {
-			return super.getInIdList(type, tableName, inIds, params);
+		if (CollectionUtils.isEmpty(map)) {
+			Map<K, V> valueMap = super.getInIdList(type, tableName, inIds, params);
+			if (inIdAppendCache) {
+				if (!CollectionUtils.isEmpty(valueMap)) {
+					for (Entry<K, V> entry : valueMap.entrySet()) {
+						cacheManager.save(entry.getValue());
+					}
+				}
+			}
+			return valueMap;
 		}
 
 		if (map.size() == inIds.size()) {
@@ -253,6 +273,12 @@ public abstract class DB extends ORMTemplate implements ConnectionFactory, scw.c
 		Map<K, V> dbMap = super.getInIdList(type, tableName, notFoundList, params);
 		if (dbMap == null || dbMap.isEmpty()) {
 			return map;
+		}
+
+		if (inIdAppendCache) {
+			for (Entry<K, V> entry : dbMap.entrySet()) {
+				cacheManager.save(entry.getValue());
+			}
 		}
 
 		map.putAll(dbMap);
