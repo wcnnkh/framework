@@ -1,9 +1,14 @@
 package scw.core.utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 public final class CSVUtils {
 	private CSVUtils() {
@@ -51,5 +56,23 @@ public final class CSVUtils {
 
 	public static void write(Writer writer, Collection<Object[]> dataList) throws IOException {
 		write(writer, DEFAULT_SPLIT, dataList);
+	}
+
+	public static List<String[]> readLines(InputStream inputStream, char split) throws IOException {
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+		try {
+			return readLines(bufferedReader, split);
+		} finally {
+			bufferedReader.close();
+		}
+	}
+
+	public static List<String[]> readLines(BufferedReader reader, char split) throws IOException {
+		List<String[]> lines = new ArrayList<String[]>();
+		String line;
+		while ((line = reader.readLine()) != null) {
+			lines.add(StringUtils.split(line, split));
+		}
+		return lines;
 	}
 }
