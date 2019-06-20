@@ -5,8 +5,6 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
 
-import scw.core.Constants;
-
 public final class CSVUtils {
 	private CSVUtils() {
 	};
@@ -43,7 +41,7 @@ public final class CSVUtils {
 			}
 
 			if (i != 0) {
-				writer.write(Constants.LINE_SEPARATOR);
+				writer.write("\n");
 			}
 
 			i++;

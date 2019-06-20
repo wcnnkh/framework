@@ -46,11 +46,4 @@ public final class Constants {
 	 * 默认的序列化实现
 	 */
 	public static final Serializer DEFAULT_SERIALIZER;
-
-	/**
-	 * 行分割符
-	 */
-	@SuppressWarnings("restriction")
-	public static final String LINE_SEPARATOR = java.security.AccessController
-			.doPrivileged(new sun.security.action.GetPropertyAction("line.separator"));
 }
