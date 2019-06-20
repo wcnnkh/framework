@@ -42,10 +42,6 @@ public class XmlConsumerFactory implements ConsumerFactory {
 							node, new PropertyMapper<String>() {
 
 								public Object mapper(String name, String value, Class<?> type) throws Exception {
-									if (name.equals("name")) {
-										return null;
-									}
-
 									if (name.equals("exchange")) {
 										return beanFactory.get(value);
 									}

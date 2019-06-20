@@ -5,7 +5,6 @@ import scw.mq.amqp.Exchange;
 
 @SuppressWarnings("rawtypes")
 public class AmqpConfig implements AmqpQueueConfig {
-	private String name;
 	private String routingKey;
 	private String queueName;
 	private boolean durable = true;
@@ -59,13 +58,5 @@ public class AmqpConfig implements AmqpQueueConfig {
 
 	public void setAutoDelete(boolean autoDelete) {
 		this.autoDelete = autoDelete;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 }
