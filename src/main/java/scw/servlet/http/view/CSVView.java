@@ -35,9 +35,8 @@ public final class CSVView extends LinkedList<Object[]> implements View {
 		response.setContentType("text/csv");
 		if (response instanceof HttpServletResponse) {
 			((HttpServletResponse) response).setHeader("Content-Disposition",
-					"attachment;filename=" + fileName + ".csv");
+					"attachment;filename=" + new String(fileName.getBytes(), "ISO-8859-1") + ".csv");
 		}
-
 		CSVUtils.write(response.getWriter(), split, this);
 	}
 
