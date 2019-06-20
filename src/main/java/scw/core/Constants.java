@@ -2,15 +2,12 @@ package scw.core;
 
 import org.objectweb.asm.Opcodes;
 
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
+import scw.core.logger.LoggerUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.serializer.Serializer;
 import scw.core.serializer.support.JavaSerializer;
 
 public final class Constants {
-	private static Logger logger = LoggerFactory.getLogger(Constants.class);
-
 	static {
 		Class<?> serializerClass = null;
 		String[] seralizerClassNames = { "scw.core.serializer.support.Hessian2Serializer",
@@ -30,7 +27,7 @@ public final class Constants {
 		}
 
 		DEFAULT_SERIALIZER = (Serializer) ReflectUtils.newInstance(serializerClass);
-		logger.info("default serializer：" + serializerClass.getName());
+		LoggerUtils.info(Constants.class, "default serializer：" + serializerClass.getName());
 	}
 
 	private Constants() {
