@@ -13,10 +13,8 @@ public final class Constants {
 
 	static {
 		Class<?> serializerClass = null;
-		String[] seralizerClassNames = {
-				"scw.core.serializer.support.Hessian2Serializer",
-				"scw.core.serializer.support.DubboHessian2Serializer",
-				"scw.core.serializer.support.HessianSerializer",
+		String[] seralizerClassNames = { "scw.core.serializer.support.Hessian2Serializer",
+				"scw.core.serializer.support.DubboHessian2Serializer", "scw.core.serializer.support.HessianSerializer",
 				"scw.core.serializer.support.DubboHessianSerializer" };
 
 		for (String name : seralizerClassNames) {
@@ -31,8 +29,7 @@ public final class Constants {
 			serializerClass = JavaSerializer.class;
 		}
 
-		DEFAULT_SERIALIZER = (Serializer) ReflectUtils
-				.newInstance(serializerClass);
+		DEFAULT_SERIALIZER = (Serializer) ReflectUtils.newInstance(serializerClass);
 		logger.info("default serializer：" + serializerClass.getName());
 	}
 
@@ -52,4 +49,11 @@ public final class Constants {
 	 * 默认的序列化实现
 	 */
 	public static final Serializer DEFAULT_SERIALIZER;
+
+	/**
+	 * 行分割符
+	 */
+	@SuppressWarnings("restriction")
+	public static final String LINE_SEPARATOR = java.security.AccessController
+			.doPrivileged(new sun.security.action.GetPropertyAction("line.separator"));
 }
