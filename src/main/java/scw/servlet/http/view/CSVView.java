@@ -30,12 +30,16 @@ public final class CSVView extends LinkedList<Object[]> implements View {
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
+	
+	protected String fileNameConver(String fileName) throws Exception{
+		 return new String(fileName.getBytes(), "ISO-8859-1");
+	}
 
 	public void render(Request request, Response response) throws Exception {
 		response.setContentType("text/csv");
 		if (response instanceof HttpServletResponse) {
 			((HttpServletResponse) response).setHeader("Content-Disposition",
-					"attachment;filename=" + new String(fileName.getBytes(), "ISO-8859-1") + ".csv");
+					"attachment;filename=" + fileNameConver(fileName) + ".csv");
 		}
 		CSVUtils.write(response.getWriter(), split, this);
 	}
