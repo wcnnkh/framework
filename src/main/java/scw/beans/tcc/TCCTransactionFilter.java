@@ -53,8 +53,7 @@ public final class TCCTransactionFilter implements Filter {
 
 		SerializableMethodDefinition confirmMethod = info.getMethodDefinition(tcc.confirm());
 		SerializableMethodDefinition cancelMethod = info.getMethodDefinition(tcc.cancel());
-		SerializableMethodDefinition complateMethod = info.getMethodDefinition(tcc.complete());
-		if (confirmMethod == null && cancelMethod == null && complateMethod == null) {
+		if (confirmMethod == null && cancelMethod == null) {
 			return;
 		}
 
@@ -64,7 +63,7 @@ public final class TCCTransactionFilter implements Filter {
 			return;
 		}
 
-		tccService.service(new InvokeInfo(rtnValue, tryMethod, confirmMethod, cancelMethod, complateMethod, args));
+		tccService.service(new InvokeInfo(rtnValue, tryMethod, confirmMethod, cancelMethod, args));
 	}
 
 	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain chain)

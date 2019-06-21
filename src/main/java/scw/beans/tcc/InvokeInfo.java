@@ -24,7 +24,6 @@ public final class InvokeInfo implements Serializable {
 	private SerializableMethodDefinition tryMethod;
 	private SerializableMethodDefinition confirmMethod;
 	private SerializableMethodDefinition cancelMethod;
-	private SerializableMethodDefinition completeMethod;
 	private Object[] args;
 
 	/**
@@ -34,12 +33,11 @@ public final class InvokeInfo implements Serializable {
 	}
 
 	protected InvokeInfo(Object tryRtnValue, SerializableMethodDefinition tryMethod, SerializableMethodDefinition confirmMethod,
-			SerializableMethodDefinition cancelMethod, SerializableMethodDefinition completeMethod, Object[] args) {
+			SerializableMethodDefinition cancelMethod, Object[] args) {
 		this.tryRtnValue = tryRtnValue;
 		this.tryMethod = tryMethod;
 		this.confirmMethod = confirmMethod;
 		this.cancelMethod = cancelMethod;
-		this.completeMethod = completeMethod;
 		this.args = args;
 	}
 
@@ -145,9 +143,6 @@ public final class InvokeInfo implements Serializable {
 		case Cancel:
 			invoke(beanFactory, cancelMethod);
 			break;
-		case Complete:
-			invoke(beanFactory, completeMethod);
-			break;
 		default:
 			break;
 		}
@@ -165,8 +160,6 @@ public final class InvokeInfo implements Serializable {
 			return confirmMethod != null;
 		case Cancel:
 			return cancelMethod != null;
-		case Complete:
-			return completeMethod != null;
 		default:
 			return false;
 		}

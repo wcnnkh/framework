@@ -65,11 +65,6 @@ public final class RabbitTccService implements TCCService, scw.core.Destroy {
 			public void beforeRollback() {
 				invoke(invokeInfo, StageType.Cancel);
 			}
-
-			@Override
-			public void complete() {
-				invoke(invokeInfo, StageType.Complete);
-			}
 		});
 	}
 

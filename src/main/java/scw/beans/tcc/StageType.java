@@ -7,7 +7,7 @@ package scw.beans.tcc;
  *
  */
 public enum StageType {
-	Try(0), Confirm(1), Cancel(2), Complete(3);
+	Try(0), Confirm(1), Cancel(2);
 
 	private final int status;
 

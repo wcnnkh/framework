@@ -20,8 +20,6 @@ public @interface TCC {
 
 	public String cancel() default "";
 
-	public String complete() default "";
-
 	/**
 	 * TCC事务的服务方式， 默认是以定时器的方式重试
 	 * 
