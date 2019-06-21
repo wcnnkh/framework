@@ -2426,4 +2426,26 @@ public final class StringUtils {
 		}
 		return values;
 	}
+
+	public static void replace(char[] chars, char replace, char newChar) {
+		if (ArrayUtils.isEmpty(chars)) {
+			return;
+		}
+
+		for (int i = 0; i < chars.length; i++) {
+			if (chars[i] == replace) {
+				chars[i] = newChar;
+			}
+		}
+	}
+
+	public static String replace(String text, char replace, char newChar) {
+		if (StringUtils.isEmpty(text)) {
+			return text;
+		}
+
+		char[] chars = text.toCharArray();
+		replace(chars, replace, newChar);
+		return new String(chars);
+	}
 }

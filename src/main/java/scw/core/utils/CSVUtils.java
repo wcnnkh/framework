@@ -16,7 +16,8 @@ public final class CSVUtils {
 
 	public static final char DEFAULT_SPLIT = ',';
 
-	public static void writeRow(Writer writer, char split, Object[] values) throws IOException {
+	public static void writeRow(Writer writer, char split, boolean removeLineBreaks, Object[] values)
+			throws IOException {
 		if (ArrayUtils.isEmpty(values)) {
 			return;
 		}
@@ -27,16 +28,26 @@ public final class CSVUtils {
 				sb.append(split);
 			}
 
-			sb.append(values[i]);
+			Object v = values[i];
+			if (v == null) {
+				sb.append(v);
+			} else {
+				if (removeLineBreaks) {
+					sb.append(v.toString().replaceAll("\\n", ""));
+				} else {
+					sb.append(v.toString().replaceAll("\\n", "\\\n"));
+				}
+			}
 		}
 		writer.write(sb.toString());
 	}
 
 	public static void writeRow(Writer writer, Object[] values) throws IOException {
-		writeRow(writer, DEFAULT_SPLIT, values);
+		writeRow(writer, DEFAULT_SPLIT, true, values);
 	}
 
-	public static void write(Writer writer, char split, Collection<Object[]> dataList) throws IOException {
+	public static void write(Writer writer, char split, boolean removeLineBreaks, Collection<Object[]> dataList)
+			throws IOException {
 		int i = 0;
 		Iterator<Object[]> iterator = dataList.iterator();
 		while (iterator.hasNext()) {
@@ -50,12 +61,12 @@ public final class CSVUtils {
 			}
 
 			i++;
-			writeRow(writer, split, values);
+			writeRow(writer, split, removeLineBreaks, values);
 		}
 	}
 
 	public static void write(Writer writer, Collection<Object[]> dataList) throws IOException {
-		write(writer, DEFAULT_SPLIT, dataList);
+		write(writer, DEFAULT_SPLIT, true, dataList);
 	}
 
 	public static List<String[]> readLines(InputStream inputStream, char split) throws IOException {
@@ -75,4 +86,5 @@ public final class CSVUtils {
 		}
 		return lines;
 	}
+
 }
