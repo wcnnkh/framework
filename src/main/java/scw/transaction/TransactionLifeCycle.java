@@ -30,4 +30,9 @@ public interface TransactionLifeCycle {
 	 * @throws Throwable
 	 */
 	void afterRollback();
+
+	/**
+	 * 事务结束后调用
+	 */
+	void complete();
 }
