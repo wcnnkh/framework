@@ -28,11 +28,4 @@ final class TransactionLifeCycleCollection extends LinkedList<TransactionLifeCyc
 			lifeCycle.afterRollback();
 		}
 	}
-
-	public void complete() {
-		for (TransactionLifeCycle lifeCycle : this) {
-			lifeCycle.complete();
-		}
-	}
-
 }

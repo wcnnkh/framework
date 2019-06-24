@@ -39,14 +39,8 @@ final class TransactionSynchronizationLifeCycle implements TransactionSynchroniz
 	}
 
 	public void end() {
-		try {
-			if(transactionSynchronization != null){
-				transactionSynchronization.end();
-			}
-		} finally {
-			if (transactionLifeCycle != null) {
-				transactionLifeCycle.complete();
-			}
+		if (transactionSynchronization != null) {
+			transactionSynchronization.end();
 		}
 	}
 }
