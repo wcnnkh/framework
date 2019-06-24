@@ -1767,8 +1767,8 @@ public final class StringUtils {
 	 *            单位:分
 	 * @return
 	 */
-	public static String formatNothingToYuan(double price) {
-		return formatNumberPrecision(price / 100, 2);
+	public static String formatNothingToYuan(long price) {
+		return formatNumberPrecision((double)price / 100, 2);
 	}
 
 	/**
