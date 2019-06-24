@@ -17,28 +17,28 @@ public class ParametersSingleExchange extends SingleExchange<Parameters> impleme
 	private boolean destory;
 
 	public ParametersSingleExchange(SingleExchangeChannelFactory channelFactory, NoTypeSpecifiedSerializer serializer,
-			boolean errorAutoAppend) throws IOException, TimeoutException {
-		super(channelFactory, serializer, errorAutoAppend);
+			boolean errorAutoAppend, boolean asyncComplete) throws IOException, TimeoutException {
+		super(channelFactory, serializer, errorAutoAppend, asyncComplete);
 		this.destory = false;
 	}
 
 	public ParametersSingleExchange(ConnectionFactory connectionFactory, String exchange, String exchangeType,
-			boolean errorAutoAppend) throws IOException, TimeoutException {
+			boolean errorAutoAppend, boolean asyncComplete) throws IOException, TimeoutException {
 		this(new DefaultSingleExchangeChannelFactory(connectionFactory, exchange, exchangeType),
-				JavaSerializer.SERIALIZER, errorAutoAppend);
+				JavaSerializer.SERIALIZER, errorAutoAppend, asyncComplete);
 		this.destory = true;
 	}
 
-	public ParametersSingleExchange(ConnectionFactory connectionFactory, String exchange, boolean errorAutoAppend)
+	public ParametersSingleExchange(ConnectionFactory connectionFactory, String exchange, boolean errorAutoAppend, boolean asyncComplete)
 			throws IOException, TimeoutException {
 		this(new DefaultSingleExchangeChannelFactory(connectionFactory, exchange, BuiltinExchangeType.DIRECT.getType()),
-				JavaSerializer.SERIALIZER, errorAutoAppend);
+				JavaSerializer.SERIALIZER, errorAutoAppend, asyncComplete);
 		this.destory = true;
 	}
 
 	public ParametersSingleExchange(ConnectionFactory connectionFactory, String exchange)
 			throws IOException, TimeoutException {
-		this(connectionFactory, exchange, true);
+		this(connectionFactory, exchange, true, true);
 	}
 
 	public void pushArgs(String routingKey, Object... args) {

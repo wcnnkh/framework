@@ -16,18 +16,23 @@ import scw.core.logger.LoggerFactory;
 import scw.core.serializer.NoTypeSpecifiedSerializer;
 import scw.mq.amqp.AmqpQueueConfig;
 import scw.mq.amqp.Exchange;
+import scw.transaction.DefaultTransactionLifeCycle;
+import scw.transaction.TransactionManager;
 
 public class SingleExchange<T> implements Exchange<T> {
 	protected static Logger logger = LoggerFactory.getLogger(SingleExchange.class);
 	private final SingleExchangeChannelFactory channelFactory;
 	private final NoTypeSpecifiedSerializer serializer;
 	private final boolean autoErrorAppend;
+	// 是否使用异步确认
+	private final boolean asyncComplete;
 
-	public SingleExchange(SingleExchangeChannelFactory channelFactory, NoTypeSpecifiedSerializer serializer, boolean autoErrorAppend)
-			throws IOException, TimeoutException {
+	public SingleExchange(SingleExchangeChannelFactory channelFactory, NoTypeSpecifiedSerializer serializer,
+			boolean autoErrorAppend, boolean asyncComplete) throws IOException, TimeoutException {
 		this.channelFactory = channelFactory;
 		this.serializer = serializer;
 		this.autoErrorAppend = autoErrorAppend;
+		this.asyncComplete = asyncComplete;
 	}
 
 	public final SingleExchangeChannelFactory getChannelFactory() {
@@ -58,8 +63,7 @@ public class SingleExchange<T> implements Exchange<T> {
 		bindConsumer(routingKey, queueName, durable, exclusive, autoDelete, null, consumer);
 	}
 
-	@AsyncComplete
-	public void push(String routingKey, boolean mandatory, boolean immediate, T message) {
+	private void basePush(String routingKey, boolean mandatory, boolean immediate, T message) {
 		try {
 			channelFactory.getChannel(routingKey).basicPublish(channelFactory.getExchange(), routingKey, mandatory,
 					immediate, null, getSerializer().serialize(message));
@@ -71,13 +75,64 @@ public class SingleExchange<T> implements Exchange<T> {
 	}
 
 	@AsyncComplete
-	public void push(String routingKey, T message) {
+	public void asyncPush(String routingKey, boolean mandatory, boolean immediate, T message) {
+		basePush(routingKey, mandatory, immediate, message);
+	}
+
+	private void basePush(String routingKey, T message) {
 		try {
 			channelFactory.getChannel(routingKey).basicPublish(channelFactory.getExchange(), routingKey, null,
 					getSerializer().serialize(message));
 		} catch (IOException e) {
 			logger.error("push：exchange={},rotingKey={}", channelFactory.getExchange(), routingKey);
 			throw new RuntimeException(e);
+		}
+	}
+
+	@AsyncComplete
+	public void asyncPush(String routingKey, T message) {
+		basePush(routingKey, message);
+	}
+
+	public void push(final String routingKey, final boolean mandatory, final boolean immediate, final T message) {
+		if (TransactionManager.hasTransaction()) {
+			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+				@Override
+				public void afterProcess() {
+					if (asyncComplete) {
+						asyncPush(routingKey, mandatory, immediate, message);
+					} else {
+						basePush(routingKey, mandatory, immediate, message);
+					}
+				}
+			});
+		} else {
+			if (asyncComplete) {
+				asyncPush(routingKey, mandatory, immediate, message);
+			} else {
+				basePush(routingKey, mandatory, immediate, message);
+			}
+		}
+	}
+
+	public void push(final String routingKey, final T message) {
+		if (TransactionManager.hasTransaction()) {
+			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+				@Override
+				public void afterProcess() {
+					if (asyncComplete) {
+						asyncPush(routingKey, message);
+					} else {
+						basePush(routingKey, message);
+					}
+				}
+			});
+		} else {
+			if (asyncComplete) {
+				asyncPush(routingKey, message);
+			} else {
+				basePush(routingKey, message);
+			}
 		}
 	}
 
