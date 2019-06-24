@@ -16,24 +16,29 @@ import scw.mq.amqp.ParametersExchange;
 public class ParametersSingleExchange extends SingleExchange<Parameters> implements ParametersExchange, Destroy {
 	private boolean destory;
 
-	public ParametersSingleExchange(SingleExchangeChannelFactory channelFactory, NoTypeSpecifiedSerializer serializer)
-			throws IOException, TimeoutException {
-		super(channelFactory, serializer);
+	public ParametersSingleExchange(SingleExchangeChannelFactory channelFactory, NoTypeSpecifiedSerializer serializer,
+			boolean errorAutoAppend) throws IOException, TimeoutException {
+		super(channelFactory, serializer, errorAutoAppend);
 		this.destory = false;
 	}
 
-	public ParametersSingleExchange(ConnectionFactory connectionFactory, String exchange, String exchangeType)
-			throws IOException, TimeoutException {
+	public ParametersSingleExchange(ConnectionFactory connectionFactory, String exchange, String exchangeType,
+			boolean errorAutoAppend) throws IOException, TimeoutException {
 		this(new DefaultSingleExchangeChannelFactory(connectionFactory, exchange, exchangeType),
-				JavaSerializer.SERIALIZER);
+				JavaSerializer.SERIALIZER, errorAutoAppend);
+		this.destory = true;
+	}
+
+	public ParametersSingleExchange(ConnectionFactory connectionFactory, String exchange, boolean errorAutoAppend)
+			throws IOException, TimeoutException {
+		this(new DefaultSingleExchangeChannelFactory(connectionFactory, exchange, BuiltinExchangeType.DIRECT.getType()),
+				JavaSerializer.SERIALIZER, errorAutoAppend);
 		this.destory = true;
 	}
 
 	public ParametersSingleExchange(ConnectionFactory connectionFactory, String exchange)
 			throws IOException, TimeoutException {
-		this(new DefaultSingleExchangeChannelFactory(connectionFactory, exchange, BuiltinExchangeType.DIRECT.getType()),
-				JavaSerializer.SERIALIZER);
-		this.destory = true;
+		this(connectionFactory, exchange, true);
 	}
 
 	public void pushArgs(String routingKey, Object... args) {

@@ -6,9 +6,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeoutException;
 
+import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+
+import scw.core.utils.Assert;
+import scw.core.utils.StringUtils;
 
 public class DefaultSingleExchangeChannelFactory implements SingleExchangeChannelFactory {
 	private volatile Map<String, Channel> channelMap = new HashMap<String, Channel>();
@@ -17,11 +21,14 @@ public class DefaultSingleExchangeChannelFactory implements SingleExchangeChanne
 	private final String exchangeType;
 	private final boolean autoClose;
 
-	public DefaultSingleExchangeChannelFactory(ConnectionFactory connectionFactory, String exchange, String exchangeType)
-			throws IOException, TimeoutException {
+	public DefaultSingleExchangeChannelFactory(ConnectionFactory connectionFactory, String exchange,
+			String exchangeType) throws IOException, TimeoutException {
+		Assert.notNull(connectionFactory);
+		Assert.notNull(exchange);
+		
 		this.connection = connectionFactory.newConnection();
 		this.exchange = exchange;
-		this.exchangeType = exchangeType;
+		this.exchangeType = StringUtils.isEmpty(exchangeType) ? BuiltinExchangeType.DIRECT.getType() : exchangeType;
 		this.autoClose = true;
 	}
 

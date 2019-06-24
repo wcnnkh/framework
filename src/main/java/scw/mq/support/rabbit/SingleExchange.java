@@ -21,11 +21,13 @@ public class SingleExchange<T> implements Exchange<T> {
 	protected static Logger logger = LoggerFactory.getLogger(SingleExchange.class);
 	private final SingleExchangeChannelFactory channelFactory;
 	private final NoTypeSpecifiedSerializer serializer;
+	private final boolean autoErrorAppend;
 
-	public SingleExchange(SingleExchangeChannelFactory channelFactory, NoTypeSpecifiedSerializer serializer)
+	public SingleExchange(SingleExchangeChannelFactory channelFactory, NoTypeSpecifiedSerializer serializer, boolean autoErrorAppend)
 			throws IOException, TimeoutException {
 		this.channelFactory = channelFactory;
 		this.serializer = serializer;
+		this.autoErrorAppend = autoErrorAppend;
 	}
 
 	public final SingleExchangeChannelFactory getChannelFactory() {
@@ -43,7 +45,7 @@ public class SingleExchange<T> implements Exchange<T> {
 			channel.queueDeclare(queueName, durable, exclusive, autoDelete, arguments);
 			channel.queueBind(queueName, channelFactory.getExchange(), routingKey, arguments);
 			channel.basicConsume(queueName, autoDelete,
-					new RabbitDefaultConsumer(channel, autoDelete, consumer, queueName));
+					new RabbitDefaultConsumer(channel, autoDelete, consumer, queueName, autoErrorAppend));
 		} catch (IOException e) {
 			logger.error("bind：exchange={},rotingKey={},durable={},exclusive={},autoDelete={}",
 					channelFactory.getExchangeType(), routingKey, durable, exclusive, autoDelete);
@@ -62,12 +64,13 @@ public class SingleExchange<T> implements Exchange<T> {
 			channelFactory.getChannel(routingKey).basicPublish(channelFactory.getExchange(), routingKey, mandatory,
 					immediate, null, getSerializer().serialize(message));
 		} catch (IOException e) {
-			logger.error("推送消息异常：exchange={},rotingKey={},mandatory={},immediate={}", channelFactory.getExchange(),
+			logger.error("push：exchange={},rotingKey={},mandatory={},immediate={}", channelFactory.getExchange(),
 					routingKey, mandatory, immediate);
 			throw new RuntimeException(e);
 		}
 	}
 
+	@AsyncComplete
 	public void push(String routingKey, T message) {
 		try {
 			channelFactory.getChannel(routingKey).basicPublish(channelFactory.getExchange(), routingKey, null,
@@ -82,12 +85,15 @@ public class SingleExchange<T> implements Exchange<T> {
 		private final Consumer<T> consumer;
 		private final boolean autoAck;
 		private final String name;
+		private final boolean autoErrorAppend;// 如果异常，自动添加到队列尾部
 
-		public RabbitDefaultConsumer(Channel channel, boolean autoAck, Consumer<T> consumer, String name) {
+		public RabbitDefaultConsumer(Channel channel, boolean autoAck, Consumer<T> consumer, String name,
+				boolean autoErrorAppend) {
 			super(channel);
 			this.consumer = consumer;
 			this.autoAck = autoAck;
 			this.name = name;
+			this.autoErrorAppend = autoErrorAppend;
 		}
 
 		@Override
@@ -97,7 +103,7 @@ public class SingleExchange<T> implements Exchange<T> {
 				return;
 			}
 
-			T message;
+			T message = null;
 			try {
 				message = getSerializer().deserialize(body);
 				consumer.consume(message);
@@ -107,6 +113,12 @@ public class SingleExchange<T> implements Exchange<T> {
 			} catch (Throwable e) {
 				logger.error(e, "消费者异常, exchange={}, routingKey={}, queueName={}", envelope.getExchange(),
 						envelope.getRoutingKey(), name);
+				if (autoErrorAppend) {
+					push(envelope.getRoutingKey(), message);
+					if (!autoAck) {
+						getChannel().basicAck(envelope.getDeliveryTag(), false);
+					}
+				}
 			}
 		}
 	}
