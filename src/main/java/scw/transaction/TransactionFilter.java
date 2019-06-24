@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
+import scw.core.utils.ClassUtils;
 
 /**
  * 必须要在BeanFactory中管理
@@ -63,7 +64,7 @@ public final class TransactionFilter implements Filter {
 
 	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
-		Transactional clzTx = method.getDeclaringClass().getAnnotation(Transactional.class);
+		Transactional clzTx = ClassUtils.getUserClass(proxy).getAnnotation(Transactional.class);
 		Transactional methodTx = method.getAnnotation(Transactional.class);
 		if (clzTx == null && methodTx == null) {
 			return defaultTransaction(invoker, proxy, method, args, filterChain);

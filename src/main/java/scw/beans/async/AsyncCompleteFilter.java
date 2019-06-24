@@ -134,7 +134,7 @@ public final class AsyncCompleteFilter implements Filter, scw.core.Destroy {
 			return filterChain.doFilter(invoker, proxy, method, args);
 		}
 
-		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete, method.getDeclaringClass(), method, args);
+		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete, ClassUtils.getUserClass(proxy), method, args);
 		File file = fileManager.createRandomFileWriteObject(info);
 		executorService.submit(new InvokeRunnable(info, file.getPath()));
 		return null;
