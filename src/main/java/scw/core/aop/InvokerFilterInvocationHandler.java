@@ -15,7 +15,7 @@ public final class InvokerFilterInvocationHandler implements InvocationHandler {
 
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		FilterChain filterChain = new DefaultFilterChain(filters);
-		return filterChain.doFilter(invoker, proxy, method, args);
+		return filterChain.doFilter(invoker == null ? new ReflectInvoker(proxy, method) : invoker, proxy, method, args);
 	}
 
 }

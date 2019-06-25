@@ -11,7 +11,6 @@ import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
 import scw.core.reflect.SerializableMethodDefinition;
-import scw.core.utils.ClassUtils;
 
 /**
  * 只能受BeanFactory管理
@@ -70,7 +69,7 @@ public final class TCCTransactionFilter implements Filter {
 	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain chain)
 			throws Throwable {
 		Object rtn = chain.doFilter(invoker, proxy, method, args);
-		transaction(method.getDeclaringClass(), ClassUtils.getUserClass(proxy), rtn, method, args);
+		transaction(method.getDeclaringClass(), method.getDeclaringClass(), rtn, method, args);
 		return rtn;
 	}
 
