@@ -17,28 +17,28 @@ public class ParametersSingleExchange extends SingleExchange<Parameters> impleme
 	private boolean destory;
 
 	public ParametersSingleExchange(SingleExchangeChannelFactory channelFactory, NoTypeSpecifiedSerializer serializer,
-			boolean errorAutoAppend, boolean asyncComplete) throws IOException, TimeoutException {
-		super(channelFactory, serializer, errorAutoAppend, asyncComplete);
+			boolean errorAutoAppend, boolean asyncComplete, boolean alwaysNotify) throws IOException, TimeoutException {
+		super(channelFactory, serializer, errorAutoAppend, asyncComplete, alwaysNotify);
 		this.destory = false;
 	}
 
 	public ParametersSingleExchange(ConnectionFactory connectionFactory, String exchange, String exchangeType,
-			boolean errorAutoAppend, boolean asyncComplete) throws IOException, TimeoutException {
+			boolean errorAutoAppend, boolean asyncComplete, boolean alwaysNotify) throws IOException, TimeoutException {
 		this(new DefaultSingleExchangeChannelFactory(connectionFactory, exchange, exchangeType),
-				JavaSerializer.SERIALIZER, errorAutoAppend, asyncComplete);
+				JavaSerializer.SERIALIZER, errorAutoAppend, asyncComplete, alwaysNotify);
 		this.destory = true;
 	}
 
-	public ParametersSingleExchange(ConnectionFactory connectionFactory, String exchange, boolean errorAutoAppend, boolean asyncComplete)
-			throws IOException, TimeoutException {
+	public ParametersSingleExchange(ConnectionFactory connectionFactory, String exchange, boolean errorAutoAppend,
+			boolean asyncComplete, boolean alwaysNotify) throws IOException, TimeoutException {
 		this(new DefaultSingleExchangeChannelFactory(connectionFactory, exchange, BuiltinExchangeType.DIRECT.getType()),
-				JavaSerializer.SERIALIZER, errorAutoAppend, asyncComplete);
+				JavaSerializer.SERIALIZER, errorAutoAppend, asyncComplete, alwaysNotify);
 		this.destory = true;
 	}
 
 	public ParametersSingleExchange(ConnectionFactory connectionFactory, String exchange)
 			throws IOException, TimeoutException {
-		this(connectionFactory, exchange, true, true);
+		this(connectionFactory, exchange, true, true, true);
 	}
 
 	public void pushArgs(String routingKey, Object... args) {

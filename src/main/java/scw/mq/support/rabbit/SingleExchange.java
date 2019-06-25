@@ -27,13 +27,16 @@ public class SingleExchange<T> implements Exchange<T> {
 	private final boolean autoErrorAppend;
 	// 是否使用异步确认
 	private final boolean asyncComplete;
+	// 无论事务是否成功总是发送
+	private final boolean alwaysNotify;
 
 	public SingleExchange(SingleExchangeChannelFactory channelFactory, NoTypeSpecifiedSerializer serializer,
-			boolean autoErrorAppend, boolean asyncComplete) throws IOException, TimeoutException {
+			boolean autoErrorAppend, boolean asyncComplete, boolean alwaysNotify) throws IOException, TimeoutException {
 		this.channelFactory = channelFactory;
 		this.serializer = serializer;
 		this.autoErrorAppend = autoErrorAppend;
 		this.asyncComplete = asyncComplete;
+		this.alwaysNotify = alwaysNotify;
 	}
 
 	public final SingleExchangeChannelFactory getChannelFactory() {
@@ -75,7 +78,7 @@ public class SingleExchange<T> implements Exchange<T> {
 		}
 	}
 
-	@AsyncComplete(service=DefaultAsyncCompleteService.class)
+	@AsyncComplete(service = DefaultAsyncCompleteService.class)
 	public void asyncPush(String routingKey, boolean mandatory, boolean immediate, T message) {
 		basePush(routingKey, mandatory, immediate, message);
 	}
@@ -90,23 +93,36 @@ public class SingleExchange<T> implements Exchange<T> {
 		}
 	}
 
-	@AsyncComplete(service=DefaultAsyncCompleteService.class)
+	@AsyncComplete(service = DefaultAsyncCompleteService.class)
 	public void asyncPush(String routingKey, T message) {
 		basePush(routingKey, message);
 	}
 
 	public void push(final String routingKey, final boolean mandatory, final boolean immediate, final T message) {
 		if (TransactionManager.hasTransaction()) {
-			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
-				@Override
-				public void afterProcess() {
-					if (asyncComplete) {
-						asyncPush(routingKey, mandatory, immediate, message);
-					} else {
-						basePush(routingKey, mandatory, immediate, message);
+			if (alwaysNotify) {
+				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+					@Override
+					public void complete() {
+						if (asyncComplete) {
+							asyncPush(routingKey, mandatory, immediate, message);
+						} else {
+							basePush(routingKey, mandatory, immediate, message);
+						}
 					}
-				}
-			});
+				});
+			} else {
+				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+					@Override
+					public void afterProcess() {
+						if (asyncComplete) {
+							asyncPush(routingKey, mandatory, immediate, message);
+						} else {
+							basePush(routingKey, mandatory, immediate, message);
+						}
+					}
+				});
+			}
 		} else {
 			if (asyncComplete) {
 				asyncPush(routingKey, mandatory, immediate, message);
@@ -118,16 +134,29 @@ public class SingleExchange<T> implements Exchange<T> {
 
 	public void push(final String routingKey, final T message) {
 		if (TransactionManager.hasTransaction()) {
-			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
-				@Override
-				public void afterProcess() {
-					if (asyncComplete) {
-						asyncPush(routingKey, message);
-					} else {
-						basePush(routingKey, message);
+			if (alwaysNotify) {
+				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+					@Override
+					public void complete() {
+						if (asyncComplete) {
+							asyncPush(routingKey, message);
+						} else {
+							basePush(routingKey, message);
+						}
 					}
-				}
-			});
+				});
+			} else {
+				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+					@Override
+					public void afterProcess() {
+						if (asyncComplete) {
+							asyncPush(routingKey, message);
+						} else {
+							basePush(routingKey, message);
+						}
+					}
+				});
+			}
 		} else {
 			if (asyncComplete) {
 				asyncPush(routingKey, message);
