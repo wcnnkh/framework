@@ -10,6 +10,7 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
 import scw.beans.annotation.AsyncComplete;
+import scw.beans.async.DefaultAsyncCompleteService;
 import scw.core.Consumer;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
@@ -74,7 +75,7 @@ public class SingleExchange<T> implements Exchange<T> {
 		}
 	}
 
-	@AsyncComplete
+	@AsyncComplete(service=DefaultAsyncCompleteService.class)
 	public void asyncPush(String routingKey, boolean mandatory, boolean immediate, T message) {
 		basePush(routingKey, mandatory, immediate, message);
 	}
@@ -89,7 +90,7 @@ public class SingleExchange<T> implements Exchange<T> {
 		}
 	}
 
-	@AsyncComplete
+	@AsyncComplete(service=DefaultAsyncCompleteService.class)
 	public void asyncPush(String routingKey, T message) {
 		basePush(routingKey, message);
 	}
