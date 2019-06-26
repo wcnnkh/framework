@@ -1,6 +1,5 @@
 package scw.core.logger.console;
 
-import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import scw.core.UnsafeStringBuffer;
@@ -32,7 +31,7 @@ public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable 
 				unsafeStringBuffer.reset();
 				try {
 					out(unsafeStringBuffer, message);
-				} catch (IOException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				message = null;
@@ -41,8 +40,8 @@ public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable 
 		}
 	}
 
-	public void out(UnsafeStringBuffer append, Message message) throws IOException {
-		message.appendLogger(append);
+	public void out(UnsafeStringBuffer append, Message message) throws Exception {
+		message.appendTo(append);
 		String msg = append.toString();
 		switch (message.getLevel()) {
 		case ERROR:

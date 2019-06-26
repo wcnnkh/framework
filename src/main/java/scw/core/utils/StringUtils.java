@@ -35,6 +35,8 @@ public final class StringUtils {
 
 	private static final char EXTENSION_SEPARATOR = '.';
 
+	private static final String DEFAULT_PLACEHOLDER = "{}";
+
 	private StringUtils() {
 	};
 
@@ -1768,7 +1770,7 @@ public final class StringUtils {
 	 * @return
 	 */
 	public static String formatNothingToYuan(long price) {
-		return formatNumberPrecision((double)price / 100, 2);
+		return formatNumberPrecision((double) price / 100, 2);
 	}
 
 	/**
@@ -1805,36 +1807,6 @@ public final class StringUtils {
 		}
 		DecimalFormat decimalFormat = new DecimalFormat(new String(charBuffer.array()));
 		return decimalFormat.format(number);
-	}
-
-	public static String format(String text, String placeholder, Object... args) {
-		if (isEmpty(text) || isEmpty(placeholder) || args == null || args.length == 0) {
-			return text;
-		}
-
-		int lastFind = 0;
-		StringBuilder sb = null;
-		for (int i = 0; i < args.length; i++) {
-			int index = text.indexOf(placeholder, lastFind);
-			if (index == -1) {
-				break;
-			}
-
-			if (sb == null) {
-				sb = new StringBuilder(text.length() * 2);
-			}
-
-			sb.append(text.substring(lastFind, index));
-			sb.append(args[i]);
-			lastFind = index + placeholder.length();
-		}
-
-		if (lastFind == 0) {
-			return text;
-		} else {
-			sb.append(text.substring(lastFind));
-		}
-		return sb.toString();
 	}
 
 	/**
@@ -2447,5 +2419,51 @@ public final class StringUtils {
 		char[] chars = text.toCharArray();
 		replace(chars, replace, newChar);
 		return new String(chars);
+	}
+
+	public static String formatPlaceholder(String text, String placeholder, Object... args) {
+		StringBuilder sb = new StringBuilder();
+		try {
+			formatPlaceholder(sb, text, placeholder, args);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return sb.toString();
+	}
+
+	public static void formatPlaceholder(Appendable appendable, String text, String placeholder, Object... args)
+			throws Exception {
+		if (StringUtils.isEmpty(text) || ArrayUtils.isEmpty(args)) {
+			appendable.append(text);
+			return;
+		}
+
+		String findText = StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER : placeholder;
+		int lastFind = 0;
+		for (int i = 0; i < args.length; i++) {
+			int index = text.indexOf(findText, lastFind);
+			if (index == -1) {
+				break;
+			}
+
+			appendable.append(text.substring(lastFind, index));
+			Object v = args[i];
+			if (v == null) {
+				appendable.append("null");
+			} else {
+				if (v instanceof StringAppend) {
+					((StringAppend) v).appendTo(appendable);
+				} else {
+					appendable.append(v.toString());
+				}
+			}
+			lastFind = index + findText.length();
+		}
+
+		if (lastFind == 0) {
+			appendable.append(text);
+		} else {
+			appendable.append(text.substring(lastFind));
+		}
 	}
 }

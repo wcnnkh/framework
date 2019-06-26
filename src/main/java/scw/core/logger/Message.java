@@ -1,15 +1,15 @@
 package scw.core.logger;
 
-import java.io.IOException;
+import scw.core.utils.StringAppend;
 
-public final class Message implements LoggerAppend {
+public final class Message implements StringAppend {
 	private final long cts;
 	private final Level level;
-	private final LoggerAppend msg;
+	private final StringAppend msg;
 	private final String tag;
 	private final Throwable throwable;
 
-	public Message(Level level, String tag, LoggerAppend msg, Throwable throwable) {
+	public Message(Level level, String tag, StringAppend msg, Throwable throwable) {
 		this.cts = System.currentTimeMillis();
 		this.level = level;
 		this.msg = msg;
@@ -33,7 +33,7 @@ public final class Message implements LoggerAppend {
 		return level;
 	}
 
-	public LoggerAppend getMsg() {
+	public StringAppend getMsg() {
 		return msg;
 	}
 
@@ -45,7 +45,7 @@ public final class Message implements LoggerAppend {
 		return throwable;
 	}
 
-	public void appendLogger(Appendable appendable) throws IOException {
+	public void appendTo(Appendable appendable) throws Exception {
 		LoggerUtils.loggerAppend(appendable, cts, level.name(), tag, msg);
 	}
 }

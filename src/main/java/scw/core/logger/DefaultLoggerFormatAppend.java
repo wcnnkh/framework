@@ -1,8 +1,9 @@
 package scw.core.logger;
 
-import java.io.IOException;
+import scw.core.utils.StringAppend;
+import scw.core.utils.StringUtils;
 
-public final class DefaultLoggerFormatAppend implements LoggerAppend {
+public final class DefaultLoggerFormatAppend implements StringAppend {
 	private final String msg;
 	private final Object[] args;
 	private final String placeholder;
@@ -13,8 +14,8 @@ public final class DefaultLoggerFormatAppend implements LoggerAppend {
 		this.args = args;
 	}
 
-	public void appendLogger(Appendable appendable) throws IOException {
-		LoggerUtils.loggerAppend(appendable, msg, placeholder, args);
+	public void appendTo(Appendable appendable) throws Exception {
+		StringUtils.formatPlaceholder(appendable, msg, placeholder, args);
 	}
 
 }
