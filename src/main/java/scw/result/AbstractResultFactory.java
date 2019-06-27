@@ -11,7 +11,7 @@ import scw.core.utils.StringUtils;
 
 public abstract class AbstractResultFactory implements ResultFactory {
 	private Map<Integer, String> code2msgMap;
-	
+
 	public AbstractResultFactory(String propertiesFilePath, String charsetName) {
 		if (StringUtils.isEmpty(propertiesFilePath)) {
 			return;
@@ -35,7 +35,7 @@ public abstract class AbstractResultFactory implements ResultFactory {
 	}
 
 	public String getMsg(int code) {
-		return code2msgMap == null? null:code2msgMap.get(code);
+		return code2msgMap == null ? null : code2msgMap.get(code);
 	}
 
 	public abstract int getDefaultErrorCode();
@@ -75,5 +75,9 @@ public abstract class AbstractResultFactory implements ResultFactory {
 		int code = getParamterErrorCode();
 		String msg = getMsg(code);
 		return error(code, msg == null ? "参数错误" : msg);
+	}
+
+	public <T> DataResult<T> error(Result result) {
+		return error(result.getCode(), result.getMsg());
 	}
 }
