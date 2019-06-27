@@ -46,11 +46,6 @@ public abstract class AbstractResultFactory implements ResultFactory {
 
 	public abstract int getParamterErrorCode();
 
-	public <T> DataResult<T> success(T data) {
-		int code = getDefaultSuccessCode();
-		return success(code, data, getMsg(code));
-	}
-
 	public <T> DataResult<T> success() {
 		return success(null);
 	}

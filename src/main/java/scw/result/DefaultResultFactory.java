@@ -2,7 +2,7 @@ package scw.result;
 
 import scw.beans.annotation.Bean;
 
-@Bean(proxy=false)
+@Bean(proxy = false)
 public class DefaultResultFactory extends AbstractResultFactory {
 	private final int defaultErrorCode;
 	private final int defaultSuccessCode;
@@ -16,10 +16,6 @@ public class DefaultResultFactory extends AbstractResultFactory {
 		this.defaultSuccessCode = defaultSuccessCode;
 		this.authorizationFailureCode = authorizationFailureCode;
 		this.parameterErrorCode = parameterErrorCode;
-	}
-
-	public <T> DataResult<T> success(int code, T data, String msg) {
-		return new DefaultResult<T>(true, code, data, msg);
 	}
 
 	public <T> DataResult<T> error(int code, String msg) {
@@ -44,6 +40,11 @@ public class DefaultResultFactory extends AbstractResultFactory {
 	@Override
 	public int getParamterErrorCode() {
 		return parameterErrorCode;
+	}
+
+	public <T> DataResult<T> success(T data) {
+		int code = getDefaultSuccessCode();
+		return new DefaultResult<T>(true, code, data, getMsg(code));
 	}
 
 }
