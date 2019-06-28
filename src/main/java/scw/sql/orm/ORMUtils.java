@@ -3,6 +3,7 @@ package scw.sql.orm;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -16,12 +17,15 @@ import java.util.IdentityHashMap;
 
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
+import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.sql.orm.annotation.Column;
 import scw.sql.orm.annotation.Index;
+import scw.sql.orm.annotation.NotColumn;
 import scw.sql.orm.annotation.PrimaryKey;
 import scw.sql.orm.annotation.Table;
+import scw.sql.orm.annotation.Transient;
 
 public final class ORMUtils {
 	private ORMUtils() {
@@ -38,12 +42,34 @@ public final class ORMUtils {
 			synchronized (tableMap) {
 				tableInfo = tableMap.get(clz);
 				if (tableInfo == null) {
-					tableInfo = new TableInfo(clz);
+					tableInfo = new DefaultTableInfo(clz);
 					tableMap.put(clz, tableInfo);
 				}
 			}
 		}
 		return tableInfo;
+	}
+
+	public static boolean ignoreField(Field field) {
+		if (AnnotationUtils.isDeprecated(field)) {
+			return true;
+		}
+
+		NotColumn exclude = field.getAnnotation(NotColumn.class);
+		if (exclude != null) {
+			return true;
+		}
+
+		Transient tr = field.getAnnotation(Transient.class);
+		if (tr != null) {
+			return true;
+		}
+
+		if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())
+				|| Modifier.isTransient(field.getModifiers())) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -199,12 +225,12 @@ public final class ORMUtils {
 	}
 
 	public static boolean isAnnoataionColumnNullAble(Field field) {
-		if(field.getType().isPrimitive() || isAnnoataionPrimaryKey(field) || isIndexColumn(field)){
+		if (field.getType().isPrimitive() || isAnnoataionPrimaryKey(field) || isIndexColumn(field)) {
 			return false;
 		}
-		
+
 		Column column = field.getAnnotation(Column.class);
-		return column == null? true:column.nullAble();
+		return column == null ? true : column.nullAble();
 	}
 
 	public static boolean isAnnoataionColumnUnique(Field field) {

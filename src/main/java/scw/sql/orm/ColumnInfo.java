@@ -2,73 +2,24 @@ package scw.sql.orm;
 
 import java.lang.reflect.Field;
 
-import scw.sql.orm.annotation.AutoIncrement;
 import scw.sql.orm.annotation.Counter;
 
-public final class ColumnInfo {
-	private final String name;// 数据库字段名
-	private final boolean primaryKey;// 索引
-	private final boolean autoIncrement;
-	private final boolean isDataBaseType;
-	private final Field field;
-	private final Counter counter;
+public interface ColumnInfo {
+	Object getValueToDB(Object bean) throws IllegalArgumentException, IllegalAccessException;
 
-	protected ColumnInfo(String defaultTableName, Field field) {
-		this.counter = field.getAnnotation(Counter.class);
-		this.autoIncrement = field.getAnnotation(AutoIncrement.class) != null;
-		this.field = field;
-		this.name = ORMUtils.getAnnotationColumnName(field);
-		this.primaryKey = ORMUtils.isAnnoataionPrimaryKey(field);
-		Class<?> type = field.getType();
-		this.isDataBaseType = ORMUtils.isDataBaseType(type);
-	}
+	void setValueToField(Object bean, Object dbValue) throws IllegalArgumentException, IllegalAccessException;
 
-	private Object fieldValueToDBValue(Object value) {
-		if (boolean.class == field.getType()) {
-			boolean b = value == null ? false : (Boolean) value;
-			return b ? 1 : 0;
-		}
+	String getName();
 
-		if (Boolean.class == field.getType()) {
-			if (value == null) {
-				return null;
-			}
-			return (Boolean) value ? 1 : 0;
-		}
-		return value;
-	}
+	boolean isPrimaryKey();
 
-	public Object getValueToDB(Object bean) throws IllegalArgumentException, IllegalAccessException {
-		return fieldValueToDBValue(field.get(bean));
-	}
+	String getTypeName();
 
-	public void setValueToField(Object bean, Object dbValue) throws IllegalArgumentException, IllegalAccessException {
-		field.set(bean, ORMUtils.parse(field.getType(), dbValue));
-	}
+	Class<?> getType();
 
-	public String getName() {
-		return name;
-	}
+	int getLength();
 
-	public boolean isPrimaryKey() {
-		return primaryKey;
-	}
-
-	public String getTypeName() {
-		return ORMUtils.getAnnotationColumnTypeName(field);
-	}
-
-	public Class<?> getType() {
-		return field.getType();
-	}
-
-	public int getLength() {
-		return ORMUtils.getAnnotationColumnLength(field);
-	}
-
-	public boolean isNullAble() {
-		return ORMUtils.isAnnoataionColumnNullAble(field);
-	}
+	boolean isNullAble();
 
 	/**
 	 * 把指定的表名和字段组合在一起
@@ -76,34 +27,15 @@ public final class ColumnInfo {
 	 * @param tableName
 	 * @return
 	 */
-	public String getSQLName(String tableName) {
-		StringBuilder sb = new StringBuilder(32);
-		if (tableName != null && tableName.length() != 0) {
-			sb.append("`");
-			sb.append(tableName);
-			sb.append("`.");
-		}
-		sb.append("`").append(name).append("`");
-		return sb.toString();
-	}
+	String getSQLName(String tableName);
 
-	public boolean isDataBaseType() {
-		return isDataBaseType;
-	}
+	boolean isDataBaseType();
 
-	public Field getField() {
-		return field;
-	}
+	Field getField();
 
-	public boolean isUnique() {
-		return ORMUtils.isAnnoataionColumnUnique(field);
-	}
+	boolean isUnique();
 
-	public Counter getCounter() {
-		return counter;
-	}
+	Counter getCounter();
 
-	public boolean isAutoIncrement() {
-		return autoIncrement;
-	}
+	boolean isAutoIncrement();
 }
