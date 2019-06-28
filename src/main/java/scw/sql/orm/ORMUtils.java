@@ -15,8 +15,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.IdentityHashMap;
 
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
+import scw.core.logger.LoggerUtils;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
@@ -30,8 +29,6 @@ import scw.sql.orm.annotation.Transient;
 public final class ORMUtils {
 	private ORMUtils() {
 	};
-
-	private static Logger logger = LoggerFactory.getLogger(ORMUtils.class);
 
 	private volatile static IdentityHashMap<Class<?>, TableInfo> tableMap = new IdentityHashMap<Class<?>, TableInfo>();
 
@@ -121,7 +118,7 @@ public final class ORMUtils {
 	}
 
 	public static void registerCglibProxyTableBean(String pageName) {
-		logger.info("register proxy package:{}", pageName);
+		LoggerUtils.info(ORMUtils.class, "register proxy package:{}", pageName);
 		for (Class<?> type : ClassUtils.getClasses(pageName)) {
 			Table table = type.getAnnotation(Table.class);
 			if (table == null) {

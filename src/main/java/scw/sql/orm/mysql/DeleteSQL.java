@@ -1,14 +1,11 @@
 package scw.sql.orm.mysql;
 
 import scw.core.exception.ParameterException;
-import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 
-public final class DeleteSQL implements Sql {
+public final class DeleteSQL extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
-	protected static final String DELETE_PREFIX = "delete from `";
-	protected static final String WHERE = "` where ";
 	private String sql;
 	private Object[] params;
 
@@ -50,7 +47,7 @@ public final class DeleteSQL implements Sql {
 	private String formatSql(TableInfo tableInfo, String tableName) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(DELETE_PREFIX);
-		sql.append(tableName);
+		keywordProcessing(sql, tableName);
 		sql.append(WHERE);
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
 			ColumnInfo columnInfo = tableInfo.getPrimaryKeyColumns()[i];
