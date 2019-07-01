@@ -33,7 +33,7 @@ public class UpdateSQL extends MysqlOrmSql {
 			}
 
 			keywordProcessing(sb, columnInfo.getName());
-			if (columnInfo.getCasType() == CasType.AUTO) {
+			if (columnInfo.getCasType() == CasType.AUTO_INCREMENT) {
 				sb.append("=");
 				keywordProcessing(sb, columnInfo.getName());
 				sb.append("+1");

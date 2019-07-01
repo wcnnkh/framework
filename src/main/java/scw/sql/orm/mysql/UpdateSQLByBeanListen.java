@@ -42,7 +42,7 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 		StringBuilder where = null;
 		List<Object> paramList = new LinkedList<Object>();
 		for (ColumnInfo columnInfo : tableInfo.getNotPrimaryKeyColumns()) {
-			if (columnInfo.getCasType() != CasType.AUTO) {
+			if (columnInfo.getCasType() != CasType.AUTO_INCREMENT) {
 				continue;
 			}
 
