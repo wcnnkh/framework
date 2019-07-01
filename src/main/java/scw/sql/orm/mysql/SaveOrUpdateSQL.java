@@ -51,12 +51,8 @@ public class SaveOrUpdateSQL extends MysqlOrmSql {
 		sb.append(TEMP);
 
 		int index = 0;
-		for (i = 0; i < tableInfo.getColumns().length; i++) {
-			columnInfo = tableInfo.getColumns()[i];
-			if (columnInfo.isPrimaryKey()) {
-				continue;
-			}
-
+		for (i = 0; i < tableInfo.getNotPrimaryKeyColumns().length; i++) {
+			columnInfo = tableInfo.getNotPrimaryKeyColumns()[i];
 			Object v = ORMUtils.get(columnInfo.getField(), obj);
 			Counter counter = columnInfo.getCounter();
 			if (index++ > 0) {

@@ -2,8 +2,8 @@ package scw.sql.orm;
 
 import java.lang.reflect.Field;
 
-import scw.sql.orm.annotation.Cas;
 import scw.sql.orm.annotation.Counter;
+import scw.sql.orm.enums.CasType;
 
 public interface ColumnInfo {
 	String getName();
@@ -28,5 +28,5 @@ public interface ColumnInfo {
 
 	boolean isAutoIncrement();
 	
-	Cas getCas();
+	CasType getCasType();
 }

@@ -2,6 +2,10 @@ package scw.sql.orm.enums;
 
 public enum CasType {
 	/**
+	 * 不参与 cas更新
+	 */
+	NOTHING,
+	/**
 	 * 只有当存在更新时才会使用此字段的cas
 	 */
 	DEFAULT,

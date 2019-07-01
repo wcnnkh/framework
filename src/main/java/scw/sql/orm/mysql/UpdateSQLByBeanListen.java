@@ -14,6 +14,7 @@ import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Counter;
+import scw.sql.orm.enums.CasType;
 
 public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 	private static Logger logger = LoggerFactory.getLogger(UpdateSQLByBeanListen.class);
@@ -39,8 +40,27 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 
 		int index = 0;
 		StringBuilder where = null;
-		ColumnInfo columnInfo;
 		List<Object> paramList = new LinkedList<Object>();
+		for (ColumnInfo columnInfo : tableInfo.getNotPrimaryKeyColumns()) {
+			if (columnInfo.getCasType() != CasType.AUTO) {
+				continue;
+			}
+
+			if (changeMap.containsKey(columnInfo.getField().getName())) {
+				continue;
+			}
+
+			if (index++ > 0) {
+				sb.append(",");
+			}
+
+			keywordProcessing(sb, columnInfo.getName());
+			sb.append("=");
+			keywordProcessing(sb, columnInfo.getName());
+			sb.append("+1");
+		}
+
+		ColumnInfo columnInfo;
 		for (Entry<String, Object> entry : changeMap.entrySet()) {
 			columnInfo = tableInfo.getColumnInfo(entry.getKey());
 			if (columnInfo.isPrimaryKey()) {
@@ -103,24 +123,45 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 			paramList.add(value);
 		}
 
+		for (int i = 0; i < tableInfo.getNotPrimaryKeyColumns().length; i++) {
+			columnInfo = tableInfo.getNotPrimaryKeyColumns()[i];
+			if (columnInfo.getCasType() != CasType.NOTHING) {
+				continue;
+			}
+
+			if (where == null) {
+				where = new StringBuilder();
+			} else {
+				where.append(AND);
+			}
+
+			keywordProcessing(where, columnInfo.getName());
+			where.append("=?");
+			if (changeMap.containsKey(columnInfo.getField().getName())) {
+				// 存在旧值
+				paramList.add(changeMap.get(columnInfo.getField().getName()));
+			} else {
+				paramList.add(ORMUtils.get(columnInfo.getField(), beanFieldListen));
+			}
+		}
+
 		beanFieldListen.clear_field_setter_listen();// 重新开始监听
 
-		sb.append(UpdateSQL.WHERE);
+		sb.append(WHERE);
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
 			columnInfo = tableInfo.getPrimaryKeyColumns()[i];
 			if (i > 0) {
-				sb.append(UpdateSQL.AND);
+				sb.append(AND);
 			}
 
 			sb.append("`");
 			sb.append(columnInfo.getName());
 			sb.append("`=?");
-
-			ORMUtils.get(columnInfo.getField(), beanFieldListen);
+			paramList.add(ORMUtils.get(columnInfo.getField(), beanFieldListen));
 		}
 
 		if (where != null) {
-			sb.append(UpdateSQL.AND).append(where);
+			sb.append(AND).append(where);
 		}
 
 		this.sql = sb.toString();

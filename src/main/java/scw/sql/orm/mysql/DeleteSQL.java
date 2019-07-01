@@ -1,9 +1,13 @@
 package scw.sql.orm.mysql;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import scw.core.exception.ParameterException;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
+import scw.sql.orm.enums.CasType;
 
 public class DeleteSQL extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
@@ -29,12 +33,34 @@ public class DeleteSQL extends MysqlOrmSql {
 			throw new NullPointerException("not found primary key");
 		}
 
-		ColumnInfo[] columnInfos = tableInfo.getPrimaryKeyColumns();
-		this.params = new Object[columnInfos.length];
-		for (int i = 0; i < params.length; i++) {
-			params[i] = ORMUtils.get(columnInfos[i].getField(), obj);
+		List<Object> params = new ArrayList<Object>(tableInfo.getColumns().length);
+		StringBuilder sql = new StringBuilder();
+		sql.append(DELETE_PREFIX);
+		keywordProcessing(sql, tableName);
+		sql.append(WHERE);
+		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
+			ColumnInfo columnInfo = tableInfo.getPrimaryKeyColumns()[i];
+			if (i > 0) {
+				sql.append(AND);
+			}
+
+			keywordProcessing(sql, columnInfo.getName());
+			sql.append("=?");
+			params.add(ORMUtils.get(columnInfo.getField(), obj));
 		}
-		this.sql = formatSql(tableInfo, tableName);
+
+		for (ColumnInfo columnInfo : tableInfo.getNotPrimaryKeyColumns()) {
+			if (columnInfo.getCasType() == CasType.NOTHING) {
+				continue;
+			}
+
+			sql.append(AND);
+			keywordProcessing(sql, columnInfo.getName());
+			sql.append("=?");
+			params.add(ORMUtils.get(columnInfo.getField(), obj));
+		}
+		this.sql = sql.toString();
+		this.params = params.toArray();
 	}
 
 	public String getSql() {
@@ -58,6 +84,17 @@ public class DeleteSQL extends MysqlOrmSql {
 
 			keywordProcessing(sql, columnInfo.getName());
 			sql.append("=?");
+		}
+
+		for (ColumnInfo columnInfo : tableInfo.getNotPrimaryKeyColumns()) {
+			if (columnInfo.getCasType() == CasType.NOTHING) {
+				continue;
+			}
+
+			sql.append(AND);
+			keywordProcessing(sql, columnInfo.getName());
+			sql.append("=?");
+
 		}
 		return sql.toString();
 	}

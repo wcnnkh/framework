@@ -3,20 +3,20 @@ package scw.sql.orm;
 import java.lang.reflect.Field;
 
 import scw.sql.orm.annotation.AutoIncrement;
-import scw.sql.orm.annotation.Cas;
 import scw.sql.orm.annotation.Counter;
+import scw.sql.orm.enums.CasType;
 
 public final class DefaultColumnInfo implements ColumnInfo {
 	private final String name;// 数据库字段名
 	private final Field field;
 	private final Counter counter;
-	private Cas cas;
+	private final CasType casType;
 
-	protected DefaultColumnInfo(String defaultTableName, Field field) {
+	protected DefaultColumnInfo(Field field) {
 		this.counter = field.getAnnotation(Counter.class);
-		this.cas = field.getAnnotation(Cas.class);
 		this.field = field;
 		this.name = ORMUtils.getAnnotationColumnName(field);
+		this.casType = ORMUtils.getCasType(field);
 	}
 
 	public String getName() {
@@ -80,7 +80,7 @@ public final class DefaultColumnInfo implements ColumnInfo {
 		return field.getAnnotation(AutoIncrement.class) != null;
 	}
 
-	public Cas getCas() {
-		return cas;
+	public CasType getCasType() {
+		return casType;
 	}
 }

@@ -25,6 +25,7 @@ import scw.sql.orm.annotation.NotColumn;
 import scw.sql.orm.annotation.PrimaryKey;
 import scw.sql.orm.annotation.Table;
 import scw.sql.orm.annotation.Transient;
+import scw.sql.orm.enums.CasType;
 
 public final class ORMUtils {
 	private ORMUtils() {
@@ -218,6 +219,19 @@ public final class ORMUtils {
 			name = column.name();
 		}
 		return name;
+	}
+
+	public static CasType getCasType(Field field) {
+		if (isAnnoataionPrimaryKey(field)) {
+			return CasType.NOTHING;
+		}
+
+		Column column = field.getAnnotation(Column.class);
+		if (column == null) {
+			return CasType.NOTHING;
+		}
+
+		return column.casType();
 	}
 
 	public static String getAnnotationColumnTypeName(Field field) {

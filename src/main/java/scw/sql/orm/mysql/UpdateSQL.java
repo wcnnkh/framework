@@ -1,5 +1,8 @@
 package scw.sql.orm.mysql;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
@@ -20,10 +23,9 @@ public class UpdateSQL extends MysqlOrmSql {
 		sb.append(UPDATE_PREFIX);
 		keywordProcessing(sb, tableName);
 		sb.append(SET);
-		int index = 0;
 		int i;
 		ColumnInfo columnInfo;
-		this.params = new Object[tableInfo.getNotPrimaryKeyColumns().length + tableInfo.getPrimaryKeyColumns().length];
+		List<Object> params = new ArrayList<Object>(tableInfo.getColumns().length);
 		for (i = 0; i < tableInfo.getNotPrimaryKeyColumns().length; i++) {
 			columnInfo = tableInfo.getNotPrimaryKeyColumns()[i];
 			if (i > 0) {
@@ -31,13 +33,13 @@ public class UpdateSQL extends MysqlOrmSql {
 			}
 
 			keywordProcessing(sb, columnInfo.getName());
-			if (columnInfo.getCas() != null && columnInfo.getCas().value() == CasType.AUTO) {
+			if (columnInfo.getCasType() == CasType.AUTO) {
 				sb.append("=");
 				keywordProcessing(sb, columnInfo.getName());
 				sb.append("+1");
 			} else {
 				sb.append("=?");
-				params[index++] = ORMUtils.get(columnInfo.getField(), obj);
+				params.add(ORMUtils.get(columnInfo.getField(), obj));
 			}
 		}
 
@@ -50,22 +52,23 @@ public class UpdateSQL extends MysqlOrmSql {
 
 			keywordProcessing(sb, columnInfo.getName());
 			sb.append("=?");
-			params[index++] = ORMUtils.get(columnInfo.getField(), obj);
+			params.add(ORMUtils.get(columnInfo.getField(), obj));
 		}
 
 		for (i = 0; i < tableInfo.getNotPrimaryKeyColumns().length; i++) {
 			columnInfo = tableInfo.getNotPrimaryKeyColumns()[i];
-			if (columnInfo.getCas() == null) {
+			if (columnInfo.getCasType() == CasType.NOTHING) {
 				continue;
 			}
 
 			sb.append(AND);
 			keywordProcessing(sb, columnInfo.getName());
 			sb.append("=?");
-			params[index++] = ORMUtils.get(columnInfo.getField(), obj);
+			params.add(ORMUtils.get(columnInfo.getField(), obj));
 		}
 
 		this.sql = sb.toString();
+		this.params = params.toArray(new Object[params.size()]);
 	}
 
 	public String getSql() {

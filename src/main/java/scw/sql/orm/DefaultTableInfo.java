@@ -49,7 +49,7 @@ final class DefaultTableInfo implements TableInfo {
 					return true;
 				}
 
-				ColumnInfo columnInfo = new DefaultColumnInfo(name, field);
+				ColumnInfo columnInfo = new DefaultColumnInfo(field);
 				if (columnMap.containsKey(columnInfo.getName()) || fieldToColumn.containsKey(field.getName())) {
 					throw new AlreadyExistsException(source.getName() + "中[" + columnInfo.getName() + "]字段已存在");
 				}
