@@ -123,30 +123,6 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 			paramList.add(value);
 		}
 
-		for (int i = 0; i < tableInfo.getNotPrimaryKeyColumns().length; i++) {
-			columnInfo = tableInfo.getNotPrimaryKeyColumns()[i];
-			if (columnInfo.getCasType() != CasType.NOTHING) {
-				continue;
-			}
-
-			if (where == null) {
-				where = new StringBuilder();
-			} else {
-				where.append(AND);
-			}
-
-			keywordProcessing(where, columnInfo.getName());
-			where.append("=?");
-			if (changeMap.containsKey(columnInfo.getField().getName())) {
-				// 存在旧值
-				paramList.add(changeMap.get(columnInfo.getField().getName()));
-			} else {
-				paramList.add(ORMUtils.get(columnInfo.getField(), beanFieldListen));
-			}
-		}
-
-		beanFieldListen.clear_field_setter_listen();// 重新开始监听
-
 		sb.append(WHERE);
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
 			columnInfo = tableInfo.getPrimaryKeyColumns()[i];
@@ -159,6 +135,24 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 			sb.append("`=?");
 			paramList.add(ORMUtils.get(columnInfo.getField(), beanFieldListen));
 		}
+
+		for (int i = 0; i < tableInfo.getNotPrimaryKeyColumns().length; i++) {
+			columnInfo = tableInfo.getNotPrimaryKeyColumns()[i];
+			if (columnInfo.getCasType() != CasType.NOTHING) {
+				continue;
+			}
+
+			sb.append(AND);
+			keywordProcessing(sb, columnInfo.getName());
+			sb.append("=?");
+			if (changeMap.containsKey(columnInfo.getField().getName())) {
+				// 存在旧值
+				paramList.add(changeMap.get(columnInfo.getField().getName()));
+			} else {
+				paramList.add(ORMUtils.get(columnInfo.getField(), beanFieldListen));
+			}
+		}
+		beanFieldListen.clear_field_setter_listen();// 重新开始监听
 
 		if (where != null) {
 			sb.append(AND).append(where);
