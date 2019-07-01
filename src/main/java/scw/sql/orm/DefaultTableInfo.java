@@ -11,6 +11,7 @@ import scw.core.FieldSetterListen;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.FieldSetterListenUtils;
+import scw.core.utils.Iterator;
 import scw.sql.orm.annotation.Table;
 
 final class DefaultTableInfo implements TableInfo {
@@ -33,19 +34,19 @@ final class DefaultTableInfo implements TableInfo {
 		Table table = source.getAnnotation(Table.class);
 		this.table = table != null;
 
-		List<ColumnInfo> allColumnList = new ArrayList<ColumnInfo>();
-		List<ColumnInfo> idNameList = new ArrayList<ColumnInfo>();
-		List<ColumnInfo> notIdNameList = new ArrayList<ColumnInfo>();
-		List<ColumnInfo> tableColumnList = new ArrayList<ColumnInfo>();
+		final List<ColumnInfo> allColumnList = new ArrayList<ColumnInfo>();
+		final List<ColumnInfo> idNameList = new ArrayList<ColumnInfo>();
+		final List<ColumnInfo> notIdNameList = new ArrayList<ColumnInfo>();
+		final List<ColumnInfo> tableColumnList = new ArrayList<ColumnInfo>();
 
-		Map<String, ColumnInfo> columnMap = new HashMap<String, ColumnInfo>();
-		Map<String, String> fieldToColumn = new HashMap<String, String>();
+		final Map<String, ColumnInfo> columnMap = new HashMap<String, ColumnInfo>();
+		final Map<String, String> fieldToColumn = new HashMap<String, String>();
 
-		Class<?> tempClassInfo = clz;
-		while (tempClassInfo != null && tempClassInfo != Object.class) {
-			for (Field field : ReflectUtils.getFieldMapUseCache(tempClassInfo).values()) {
+		ReflectUtils.iteratorField(source, new Iterator<Field>() {
+
+			public boolean iterator(Field field) {
 				if (ORMUtils.ignoreField(field)) {
-					continue;
+					return true;
 				}
 
 				ColumnInfo columnInfo = new DefaultColumnInfo(name, field);
@@ -78,13 +79,12 @@ final class DefaultTableInfo implements TableInfo {
 						tableColumnList.add(columnInfo);
 					}
 				}
+				return true;
 			}
-			tempClassInfo = tempClassInfo.getSuperclass();
-		}
-
+		});
 		this.columns = allColumnList.toArray(new ColumnInfo[allColumnList.size()]);
-		this.primaryKeyColumns = idNameList.toArray(new ColumnInfo[0]);
-		this.notPrimaryKeyColumns = notIdNameList.toArray(new ColumnInfo[0]);
+		this.primaryKeyColumns = idNameList.toArray(new ColumnInfo[idNameList.size()]);
+		this.notPrimaryKeyColumns = notIdNameList.toArray(new ColumnInfo[notIdNameList.size()]);
 		this.tableColumns = tableColumnList.toArray(new ColumnInfo[tableColumnList.size()]);
 		this.columnMap = new HashMap<String, ColumnInfo>(columnMap.size(), 1);
 		this.columnMap.putAll(columnMap);

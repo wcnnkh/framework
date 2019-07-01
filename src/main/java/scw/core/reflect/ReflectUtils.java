@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -33,8 +32,6 @@ import scw.core.utils.StringUtils;
 public final class ReflectUtils {
 	private ReflectUtils() {
 	};
-
-	private static volatile IdentityHashMap<Class<?>, Map<String, Field>> fieldCache = new IdentityHashMap<Class<?>, Map<String, Field>>();
 
 	public static <T, V> void setProperties(Class<T> type, T bean, Map<String, V> properties,
 			PropertyMapper<V> mapper) {
@@ -942,36 +939,6 @@ public final class ReflectUtils {
 		return map;
 	}
 
-	public static Map<String, Field> getFieldMapUseCache(Class<?> clazz) {
-		Map<String, Field> map = fieldCache.get(clazz);
-		if (map == null) {
-			synchronized (fieldCache) {
-				map = fieldCache.get(clazz);
-				if (map == null) {
-					map = getFieldMap(clazz, false, false, true);
-					fieldCache.put(clazz, map);
-				}
-			}
-		}
-		return map;
-	}
-
-	public static Field getFieldUseCache(Class<?> clazz, String fieldName, boolean searchSuper) {
-		Field field = getFieldMapUseCache(clazz).get(fieldName);
-		if (field == null && searchSuper) {
-			Class<?> clz = clazz.getSuperclass();
-			while (clz != null && clz != Object.class) {
-				field = getFieldMapUseCache(clz).get(fieldName);
-				if (field != null) {
-					break;
-				}
-
-				clz = clz.getSuperclass();
-			}
-		}
-		return field;
-	}
-
 	public static void iteratorField(Class<?> clazz, scw.core.utils.Iterator<Field> iterator) {
 		iteratorField(clazz, false, true, iterator);
 	}
@@ -1022,7 +989,8 @@ public final class ReflectUtils {
 		}
 
 		final Map<String, Object> map = new HashMap<String, Object>();
-		iteratorField(bean.getClass(), new scw.core.utils.Iterator<Field>() {
+		final Class<?> clazz = ClassUtils.getUserClass(bean);
+		iteratorField(clazz, new scw.core.utils.Iterator<Field>() {
 
 			public boolean iterator(Field data) {
 				if (Modifier.isStatic(data.getModifiers())) {
@@ -1030,7 +998,7 @@ public final class ReflectUtils {
 				}
 
 				try {
-					map.put(data.getName(), getFieldValue(bean.getClass(), bean, data));
+					map.put(data.getName(), getFieldValue(clazz, bean, data));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -1063,7 +1031,8 @@ public final class ReflectUtils {
 		}
 
 		final Map<String, Object> map = new HashMap<String, Object>();
-		iteratorField(bean.getClass(), new scw.core.utils.Iterator<Field>() {
+		final Class<?> clazz = ClassUtils.getUserClass(bean);
+		iteratorField(clazz, new scw.core.utils.Iterator<Field>() {
 
 			public boolean iterator(Field data) {
 				if (Modifier.isStatic(data.getModifiers())) {
@@ -1075,7 +1044,7 @@ public final class ReflectUtils {
 				}
 
 				try {
-					map.put(data.getName(), getFieldValue(bean.getClass(), bean, data));
+					map.put(data.getName(), getFieldValue(clazz, bean, data));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -1110,7 +1079,8 @@ public final class ReflectUtils {
 		}
 
 		final Map<String, Object> map = new HashMap<String, Object>();
-		iteratorField(bean.getClass(), new scw.core.utils.Iterator<Field>() {
+		final Class<?> clazz = ClassUtils.getUserClass(bean);
+		iteratorField(clazz, new scw.core.utils.Iterator<Field>() {
 
 			public boolean iterator(Field data) {
 				if (Modifier.isStatic(data.getModifiers())) {
@@ -1122,7 +1092,7 @@ public final class ReflectUtils {
 				}
 
 				try {
-					map.put(data.getName(), getFieldValue(bean.getClass(), bean, data));
+					map.put(data.getName(), getFieldValue(clazz, bean, data));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -1163,8 +1133,9 @@ public final class ReflectUtils {
 				continue;
 			}
 
+			Class<?> clazz = ClassUtils.getUserClass(obj);
 			if (fieldCache == null) {
-				fieldCache = getFieldMap(obj.getClass(), false, true, false);
+				fieldCache = getFieldMap(clazz, false, true, false);
 			}
 
 			Map<String, Object> map = new HashMap<String, Object>(fieldCache.size(), 1);
@@ -1175,7 +1146,7 @@ public final class ReflectUtils {
 
 				Object v = null;
 				try {
-					v = getFieldValue(obj.getClass(), obj, entry.getValue());
+					v = getFieldValue(clazz, obj, entry.getValue());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -1222,8 +1193,9 @@ public final class ReflectUtils {
 				continue;
 			}
 
+			Class<?> clazz = ClassUtils.getUserClass(obj);
 			if (fieldCache == null) {
-				fieldCache = getFieldMap(obj.getClass(), false, true, false);
+				fieldCache = getFieldMap(clazz, false, true, false);
 			}
 
 			Map<String, Object> map = new HashMap<String, Object>(fieldCache.size(), 1);
@@ -1234,7 +1206,7 @@ public final class ReflectUtils {
 
 				Object v = null;
 				try {
-					v = getFieldValue(obj.getClass(), obj, entry.getValue());
+					v = getFieldValue(clazz, obj, entry.getValue());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
