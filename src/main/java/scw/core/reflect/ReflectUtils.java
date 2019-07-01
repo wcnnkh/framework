@@ -915,9 +915,9 @@ public final class ReflectUtils {
 	@SuppressWarnings("unchecked")
 	public static Map<String, Field> getFieldMap(Class<?> clz, boolean pub, boolean sup, boolean trimMap) {
 		final Map<String, Field> map = new LinkedHashMap<String, Field>();
-		iteratorField(clz, pub, sup, new scw.core.utils.Iterator<Field>() {
+		iteratorField(clz, pub, sup, new scw.core.utils.IteratorCallback<Field>() {
 
-			public boolean iterator(Field data) {
+			public boolean iteratorCallback(Field data) {
 				if (Modifier.isStatic(data.getModifiers())) {
 					return true;
 				}
@@ -939,16 +939,16 @@ public final class ReflectUtils {
 		return map;
 	}
 
-	public static void iteratorField(Class<?> clazz, scw.core.utils.Iterator<Field> iterator) {
+	public static void iteratorField(Class<?> clazz, scw.core.utils.IteratorCallback<Field> iterator) {
 		iteratorField(clazz, false, true, iterator);
 	}
 
-	public static void iteratorField(Class<?> clazz, boolean pub, boolean sup, scw.core.utils.Iterator<Field> iterator) {
+	public static void iteratorField(Class<?> clazz, boolean pub, boolean sup, scw.core.utils.IteratorCallback<Field> iterator) {
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
 			for (Field field : pub ? clz.getFields() : clz.getDeclaredFields()) {
 				field.setAccessible(true);
-				if (!iterator.iterator(field)) {
+				if (!iterator.iteratorCallback(field)) {
 					break;
 				}
 			}
@@ -961,16 +961,16 @@ public final class ReflectUtils {
 		}
 	}
 
-	public static void iteratorMethod(Class<?> clazz, scw.core.utils.Iterator<Method> iterator) {
+	public static void iteratorMethod(Class<?> clazz, scw.core.utils.IteratorCallback<Method> iterator) {
 		iteratorMethod(clazz, false, true, iterator);
 	}
 
-	public static void iteratorMethod(Class<?> clazz, boolean pub, boolean sup, scw.core.utils.Iterator<Method> iterator) {
+	public static void iteratorMethod(Class<?> clazz, boolean pub, boolean sup, scw.core.utils.IteratorCallback<Method> iterator) {
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
 			for (Method method : pub ? clz.getMethods() : clz.getDeclaredMethods()) {
 				method.setAccessible(true);
-				if (!iterator.iterator(method)) {
+				if (!iterator.iteratorCallback(method)) {
 					break;
 				}
 			}
@@ -990,9 +990,9 @@ public final class ReflectUtils {
 
 		final Map<String, Object> map = new HashMap<String, Object>();
 		final Class<?> clazz = ClassUtils.getUserClass(bean);
-		iteratorField(clazz, new scw.core.utils.Iterator<Field>() {
+		iteratorField(clazz, new scw.core.utils.IteratorCallback<Field>() {
 
-			public boolean iterator(Field data) {
+			public boolean iteratorCallback(Field data) {
 				if (Modifier.isStatic(data.getModifiers())) {
 					return true;
 				}
@@ -1032,9 +1032,9 @@ public final class ReflectUtils {
 
 		final Map<String, Object> map = new HashMap<String, Object>();
 		final Class<?> clazz = ClassUtils.getUserClass(bean);
-		iteratorField(clazz, new scw.core.utils.Iterator<Field>() {
+		iteratorField(clazz, new scw.core.utils.IteratorCallback<Field>() {
 
-			public boolean iterator(Field data) {
+			public boolean iteratorCallback(Field data) {
 				if (Modifier.isStatic(data.getModifiers())) {
 					return true;
 				}
@@ -1080,9 +1080,9 @@ public final class ReflectUtils {
 
 		final Map<String, Object> map = new HashMap<String, Object>();
 		final Class<?> clazz = ClassUtils.getUserClass(bean);
-		iteratorField(clazz, new scw.core.utils.Iterator<Field>() {
+		iteratorField(clazz, new scw.core.utils.IteratorCallback<Field>() {
 
-			public boolean iterator(Field data) {
+			public boolean iteratorCallback(Field data) {
 				if (Modifier.isStatic(data.getModifiers())) {
 					return true;
 				}

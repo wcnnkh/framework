@@ -15,7 +15,7 @@ import scw.core.exception.ParameterException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.Iterator;
+import scw.core.utils.IteratorCallback;
 import scw.core.utils.StringUtils;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
@@ -345,28 +345,28 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	 * @param tableClass
 	 * @param iterator
 	 */
-	public <T> void iterator(final Class<T> tableClass, final Iterator<T> iterator) {
+	public <T> void iterator(final Class<T> tableClass, final IteratorCallback<T> iterator) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		Sql sql = getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getDefaultName(), null);
-		iterator(sql, new Iterator<Result>() {
+		iterator(sql, new IteratorCallback<Result>() {
 
-			public boolean iterator(Result data) {
+			public boolean iteratorCallback(Result data) {
 				T t = data.get(tableClass);
 				if (t == null) {
 					return true;
 				}
 
-				return iterator.iterator(t);
+				return iterator.iteratorCallback(t);
 			}
 
 		});
 	}
 
-	public void iterator(Sql sql, final Iterator<Result> iterator) {
+	public void iterator(Sql sql, final IteratorCallback<Result> iterator) {
 		query(sql, new RowCallback() {
 
 			public boolean processRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
-				return iterator.iterator(new DefaultResult(rs));
+				return iterator.iteratorCallback(new DefaultResult(rs));
 			}
 		});
 	}

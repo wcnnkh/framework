@@ -11,7 +11,7 @@ import scw.core.FieldSetterListen;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.FieldSetterListenUtils;
-import scw.core.utils.Iterator;
+import scw.core.utils.IteratorCallback;
 import scw.sql.orm.annotation.Table;
 
 final class DefaultTableInfo implements TableInfo {
@@ -42,9 +42,9 @@ final class DefaultTableInfo implements TableInfo {
 		final Map<String, ColumnInfo> columnMap = new HashMap<String, ColumnInfo>();
 		final Map<String, String> fieldToColumn = new HashMap<String, String>();
 
-		ReflectUtils.iteratorField(source, new Iterator<Field>() {
+		ReflectUtils.iteratorField(source, new IteratorCallback<Field>() {
 
-			public boolean iterator(Field field) {
+			public boolean iteratorCallback(Field field) {
 				if (ORMUtils.ignoreField(field)) {
 					return true;
 				}
