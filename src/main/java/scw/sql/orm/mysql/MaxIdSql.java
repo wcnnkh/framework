@@ -1,10 +1,9 @@
 package scw.sql.orm.mysql;
 
-import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 
-public class MaxIdSql implements Sql {
+public class MaxIdSql extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 
@@ -12,14 +11,11 @@ public class MaxIdSql implements Sql {
 		StringBuilder sb = new StringBuilder();
 		ColumnInfo columnInfo = info.getColumnInfo(idField);
 		sb.append("select ");
-		sb.append("`");
-		sb.append(columnInfo.getName());
-		sb.append("`");
-		sb.append(" from ").append("`").append(tableName).append("`");
+		keywordProcessing(sb, columnInfo.getName());
+		sb.append(" from ");
+		keywordProcessing(sb, tableName);
 		sb.append(" order by ");
-		sb.append("`");
-		sb.append(columnInfo.getName());
-		sb.append("`");
+		keywordProcessing(sb, columnInfo.getName());
 		sb.append(" desc");
 		this.sql = sb.toString();
 	}
@@ -31,9 +27,4 @@ public class MaxIdSql implements Sql {
 	public Object[] getParams() {
 		return null;
 	}
-
-	public boolean isStoredProcedure() {
-		return false;
-	}
-
 }

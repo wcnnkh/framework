@@ -5,12 +5,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import scw.sql.orm.enums.CasType;
+
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Cas {
 	/**
-	 * 在更新此字段时才使用cas
+	 * 指定cas的使用方式
 	 * @return
 	 */
-	public boolean update() default true;
+	public CasType value() default CasType.DEFAULT;
 }

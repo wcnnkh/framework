@@ -10,20 +10,18 @@ import scw.core.exception.ParameterException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
-import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
+import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Counter;
 
-public final class UpdateSQLByBeanListen implements Sql {
-	private static Logger logger = LoggerFactory
-			.getLogger(UpdateSQLByBeanListen.class);
+public final class UpdateSQLByBeanListen extends MysqlOrmSql {
+	private static Logger logger = LoggerFactory.getLogger(UpdateSQLByBeanListen.class);
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanListen(FieldSetterListen beanFieldListen,
-			TableInfo tableInfo, String tableName)
+	public UpdateSQLByBeanListen(FieldSetterListen beanFieldListen, TableInfo tableInfo, String tableName)
 			throws IllegalArgumentException, IllegalAccessException {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
@@ -35,9 +33,9 @@ public final class UpdateSQLByBeanListen implements Sql {
 		}
 
 		StringBuilder sb = new StringBuilder(512);
-		sb.append(UpdateSQL.UPDATE_PREFIX);
-		sb.append(tableName);
-		sb.append(UpdateSQL.SET);
+		sb.append(UPDATE_PREFIX);
+		keywordProcessing(sb, tableName);
+		sb.append(SET);
 
 		int index = 0;
 		StringBuilder where = null;
@@ -49,10 +47,9 @@ public final class UpdateSQLByBeanListen implements Sql {
 				continue;
 			}
 
-			Object value = columnInfo.getValueToDB(beanFieldListen);
+			Object value = ORMUtils.get(columnInfo.getField(), beanFieldListen);
 			Counter counter = columnInfo.getCounter();
-			if (counter != null
-					&& ClassUtils.isNumberType(columnInfo.getType())) {
+			if (counter != null && ClassUtils.isNumberType(columnInfo.getType())) {
 				Object oldValue = entry.getValue();
 				if (oldValue != null && value != null) {
 					// incr or decr
@@ -64,43 +61,36 @@ public final class UpdateSQLByBeanListen implements Sql {
 					}
 
 					double change = newV - oldV;
-					sb.append("`");
-					sb.append(columnInfo.getName());
-					sb.append("`=");
+					keywordProcessing(sb, columnInfo.getName());
+					sb.append("=");
 
-					sb.append("`");
-					sb.append(columnInfo.getName());
-					sb.append(change > 0 ? "`+" : "`-");
+					keywordProcessing(sb, columnInfo.getName());
+					sb.append(change > 0 ? "+" : "-");
 					sb.append(Math.abs(change));
 
 					if (where == null) {
 						where = new StringBuilder();
 					} else {
-						where.append(UpdateSQL.AND);
+						where.append(AND);
 					}
 
 					if (change == 0) {
 						where.append("1 != 1");
 					} else {
-						where.append("`");
-						where.append(columnInfo.getName());
-						where.append(change > 0 ? "`+" : "`-");
+						keywordProcessing(where, columnInfo.getName());
+						where.append(change > 0 ? "+" : "-");
 						where.append(Math.abs(change));
 						where.append(">=").append(counter.min());
-						where.append(UpdateSQL.AND);
-						where.append("`");
-						where.append(columnInfo.getName());
-						where.append("`");
+						where.append(AND);
+						keywordProcessing(where, columnInfo.getName());
 						where.append(change > 0 ? "+" : "-");
 						where.append(Math.abs(change));
 						where.append("<=").append(counter.max());
 					}
 					continue;
 				} else {
-					logger.warn(
-							"{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}",
-							tableInfo.getSource().getName(), columnInfo
-									.getField().getName(), oldValue, value);
+					logger.warn("{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}", tableInfo.getSource().getName(),
+							columnInfo.getField().getName(), oldValue, value);
 				}
 			}
 
@@ -108,9 +98,8 @@ public final class UpdateSQLByBeanListen implements Sql {
 				sb.append(",");
 			}
 
-			sb.append("`");
-			sb.append(columnInfo.getName());
-			sb.append("`=?");
+			keywordProcessing(sb, columnInfo.getName());
+			sb.append("=?");
 			paramList.add(value);
 		}
 
@@ -127,7 +116,7 @@ public final class UpdateSQLByBeanListen implements Sql {
 			sb.append(columnInfo.getName());
 			sb.append("`=?");
 
-			paramList.add(columnInfo.getValueToDB(beanFieldListen));
+			ORMUtils.get(columnInfo.getField(), beanFieldListen);
 		}
 
 		if (where != null) {

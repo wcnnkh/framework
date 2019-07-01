@@ -17,11 +17,15 @@ public class FieldSetterListenInterceptor implements MethodInterceptor, FieldSet
 	private transient Map<String, Object> field_setter_map;
 	private transient Class<?> source;
 
+	public Class<?> getSource() {
+		return source;
+	}
+
 	public final Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		if (source == null) {
 			source = ClassUtils.getUserClass(obj);
 		}
-		
+
 		if (args.length == 0) {
 			if (FieldSetterListen.CLEAR_FIELD_LISTEN.equals(method.getName())) {
 				if (FieldSetterListen.class.isAssignableFrom(source)) {
@@ -41,7 +45,7 @@ public class FieldSetterListenInterceptor implements MethodInterceptor, FieldSet
 
 		FieldSetter fieldSetter = method.getAnnotation(FieldSetter.class);
 		if (fieldSetter != null) {
-			Field field = ReflectUtils.getFieldUseCache(source, fieldSetter.value(), true);
+			Field field = ReflectUtils.getField(source, fieldSetter.value(), true);
 			if (field != null && checkField(field)) {
 				return change(obj, method, args, proxy, field);
 			}
@@ -49,10 +53,10 @@ public class FieldSetterListenInterceptor implements MethodInterceptor, FieldSet
 			char[] chars = new char[method.getName().length() - 3];
 			chars[0] = Character.toLowerCase(method.getName().charAt(3));
 			method.getName().getChars(4, method.getName().length(), chars, 1);
-			Field field = ReflectUtils.getFieldUseCache(source, new String(chars), true);
+			Field field = ReflectUtils.getField(source, new String(chars), true);
 			if (field == null) {
 				chars[0] = Character.toUpperCase(chars[0]);
-				field = ReflectUtils.getFieldUseCache(source, "is" + new String(chars), true);
+				field = ReflectUtils.getField(source, "is" + new String(chars), true);
 				if (field != null && ClassUtils.isBooleanType(field.getType()) && checkField(field)) {
 					return change(obj, method, args, proxy, field);
 				}

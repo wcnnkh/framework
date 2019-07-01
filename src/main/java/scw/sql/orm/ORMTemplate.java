@@ -117,7 +117,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 								return null;
 							}
 						});
-				tableInfo.getAutoIncrement().setValueToField(bean, lastId);
+				ORMUtils.set(tableInfo.getAutoIncrement().getField(), bean, lastId);
 				return true;
 			} catch (Exception e) {
 				throw new RuntimeException(e);

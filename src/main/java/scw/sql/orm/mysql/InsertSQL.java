@@ -5,13 +5,12 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import scw.core.exception.ParameterException;
-import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
+import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
-public final class InsertSQL implements Sql {
+public final class InsertSQL extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
-	protected static final String INSERT_INTO_PREFIX = "insert into `";
 	protected static final String VALUES = ") values(";
 
 	private volatile static Map<String, String> sqlCache = new HashMap<String, String>();
@@ -53,8 +52,7 @@ public final class InsertSQL implements Sql {
 		return params;
 	}
 
-	private static String getSql(TableInfo tableInfo, String tableName,
-			Object obj) {
+	private String getSql(TableInfo tableInfo, String tableName, Object obj) {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
@@ -69,15 +67,13 @@ public final class InsertSQL implements Sql {
 				values.append(",");
 			}
 
-			cols.append("`");
-			cols.append(columnInfo.getName());
-			cols.append("`");
+			keywordProcessing(cols, columnInfo.getName());
 			values.append("?");
 		}
 
 		sql.append(INSERT_INTO_PREFIX);
-		sql.append(tableName);
-		sql.append("`(");
+		keywordProcessing(sql, tableName);
+		sql.append("(");
 		sql.append(cols);
 		sql.append(VALUES);
 		sql.append(values);
@@ -93,12 +89,8 @@ public final class InsertSQL implements Sql {
 				continue;
 			}
 
-			list.add(columnInfo.getValueToDB(obj));
+			list.add(ORMUtils.get(columnInfo.getField(), obj));
 		}
 		return list.toArray();
-	}
-
-	public boolean isStoredProcedure() {
-		return false;
 	}
 }

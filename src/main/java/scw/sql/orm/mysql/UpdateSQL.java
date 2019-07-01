@@ -1,17 +1,12 @@
 package scw.sql.orm.mysql;
 
-import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
+import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
+import scw.sql.orm.enums.CasType;
 
-public final class UpdateSQL implements Sql {
+public class UpdateSQL extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
-	protected static final String UPDATE_PREFIX = "update `";
-	protected static final String SET = "` set ";
-	protected static final String WHERE = " where ";
-	protected static final String AND = " and ";
-	protected static final String OR = " or ";
-
 	private String sql;
 	private Object[] params;
 
@@ -23,7 +18,7 @@ public final class UpdateSQL implements Sql {
 
 		StringBuilder sb = new StringBuilder(512);
 		sb.append(UPDATE_PREFIX);
-		sb.append(tableName);
+		keywordProcessing(sb, tableName);
 		sb.append(SET);
 		int index = 0;
 		int i;
@@ -35,10 +30,15 @@ public final class UpdateSQL implements Sql {
 				sb.append(",");
 			}
 
-			sb.append("`");
-			sb.append(columnInfo.getName());
-			sb.append("`=?");
-			params[index++] = columnInfo.getValueToDB(obj);
+			keywordProcessing(sb, columnInfo.getName());
+			if (columnInfo.getCas() != null && columnInfo.getCas().value() == CasType.AUTO) {
+				sb.append("=");
+				keywordProcessing(sb, columnInfo.getName());
+				sb.append("+1");
+			} else {
+				sb.append("=?");
+				params[index++] = ORMUtils.get(columnInfo.getField(), obj);
+			}
 		}
 
 		sb.append(WHERE);
@@ -47,12 +47,24 @@ public final class UpdateSQL implements Sql {
 			if (i > 0) {
 				sb.append(AND);
 			}
-			
-			sb.append("`");
-			sb.append(columnInfo.getName());
-			sb.append("`=?");
-			params[index++] = columnInfo.getValueToDB(obj);
+
+			keywordProcessing(sb, columnInfo.getName());
+			sb.append("=?");
+			params[index++] = ORMUtils.get(columnInfo.getField(), obj);
 		}
+
+		for (i = 0; i < tableInfo.getNotPrimaryKeyColumns().length; i++) {
+			columnInfo = tableInfo.getNotPrimaryKeyColumns()[i];
+			if (columnInfo.getCas() == null) {
+				continue;
+			}
+
+			sb.append(AND);
+			keywordProcessing(sb, columnInfo.getName());
+			sb.append("=?");
+			params[index++] = ORMUtils.get(columnInfo.getField(), obj);
+		}
+
 		this.sql = sb.toString();
 	}
 
@@ -62,9 +74,5 @@ public final class UpdateSQL implements Sql {
 
 	public Object[] getParams() {
 		return params;
-	}
-
-	public boolean isStoredProcedure() {
-		return false;
 	}
 }

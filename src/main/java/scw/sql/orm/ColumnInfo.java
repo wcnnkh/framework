@@ -2,13 +2,10 @@ package scw.sql.orm;
 
 import java.lang.reflect.Field;
 
+import scw.sql.orm.annotation.Cas;
 import scw.sql.orm.annotation.Counter;
 
 public interface ColumnInfo {
-	Object getValueToDB(Object bean) throws IllegalArgumentException, IllegalAccessException;
-
-	void setValueToField(Object bean, Object dbValue) throws IllegalArgumentException, IllegalAccessException;
-
 	String getName();
 
 	boolean isPrimaryKey();
@@ -21,14 +18,6 @@ public interface ColumnInfo {
 
 	boolean isNullAble();
 
-	/**
-	 * 把指定的表名和字段组合在一起
-	 * 
-	 * @param tableName
-	 * @return
-	 */
-	String getSQLName(String tableName);
-
 	boolean isDataBaseType();
 
 	Field getField();
@@ -38,4 +27,6 @@ public interface ColumnInfo {
 	Counter getCounter();
 
 	boolean isAutoIncrement();
+	
+	Cas getCas();
 }

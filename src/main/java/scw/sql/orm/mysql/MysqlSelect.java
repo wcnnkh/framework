@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import scw.core.exception.ParameterException;
+import scw.core.utils.CollectionUtils;
 import scw.db.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
@@ -16,6 +17,7 @@ import scw.sql.orm.TableInfo;
 import scw.sql.orm.result.ResultSet;
 
 public final class MysqlSelect extends Select {
+	private static final long serialVersionUID = 1L;
 	/**
 	 * 表和表的别名
 	 */
@@ -55,7 +57,8 @@ public final class MysqlSelect extends Select {
 		if (whereSql.length() != 0) {
 			whereSql.append(UpdateSQL.AND);
 		}
-		whereSql.append(tableInfo.getColumnInfo(name).getSQLName(tableName));
+
+		keywordProcessing(whereSql, tableName, tableInfo.getColumnInfo(name).getName());
 		whereSql.append("=?");
 		paramList.add(value);
 
@@ -75,7 +78,8 @@ public final class MysqlSelect extends Select {
 		if (whereSql.length() != 0) {
 			whereSql.append(UpdateSQL.OR);
 		}
-		whereSql.append(tableInfo.getColumnInfo(name).getSQLName(tableName));
+
+		keywordProcessing(whereSql, tableName, tableInfo.getColumnInfo(name).getName());
 		whereSql.append("=?");
 		paramList.add(value);
 		addSelectTable(tableName);
@@ -98,7 +102,8 @@ public final class MysqlSelect extends Select {
 		if (whereSql.length() != 0) {
 			whereSql.append(" and ");
 		}
-		whereSql.append(tableInfo.getColumnInfo(name).getSQLName(tableName));
+
+		keywordProcessing(whereSql, tableName, tableInfo.getColumnInfo(name).getName());
 		whereSql.append(" in(");
 		Iterator<?> iterator = values.iterator();
 		while (iterator.hasNext()) {
@@ -129,7 +134,8 @@ public final class MysqlSelect extends Select {
 		if (whereSql.length() != 0) {
 			whereSql.append(" or ");
 		}
-		whereSql.append(tableInfo.getColumnInfo(name).getSQLName(tableName));
+
+		keywordProcessing(whereSql, tableName, tableInfo.getColumnInfo(name).getName());
 		whereSql.append(" in(");
 		Iterator<?> iterator = values.iterator();
 		while (iterator.hasNext()) {
@@ -161,7 +167,7 @@ public final class MysqlSelect extends Select {
 		Iterator<String> iterator = nameList.iterator();
 		while (iterator.hasNext()) {
 			ColumnInfo columnInfo = tableInfo.getColumnInfo(iterator.next());
-			orderBySql.append(columnInfo.getSQLName(tableName));
+			keywordProcessing(orderBySql, tableName, columnInfo.getName());
 			if (iterator.hasNext()) {
 				orderBySql.append(",");
 			}
@@ -189,8 +195,7 @@ public final class MysqlSelect extends Select {
 		Iterator<String> iterator = nameList.iterator();
 		while (iterator.hasNext()) {
 			ColumnInfo columnInfo = tableInfo.getColumnInfo(iterator.next());
-			orderBySql.append(columnInfo.getSQLName(tableName));
-
+			keywordProcessing(orderBySql, tableName, columnInfo.getName());
 			if (iterator.hasNext()) {
 				orderBySql.append(",");
 			}
@@ -236,38 +241,7 @@ public final class MysqlSelect extends Select {
 
 	@Override
 	public Sql toSQL(String select, boolean order) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("select ").append(select).append(" from ");
-		sb.append(getSelectTables());
-
-		String where = getAssociationWhere();
-		if (whereSql != null && whereSql.length() != 0) {
-			sb.append(" where ");
-			sb.append(whereSql);
-			if (where != null && where.length() != 0) {
-				sb.append(" and ");
-				sb.append(where);
-			}
-
-		} else {
-			if (where != null && where.length() != 0) {
-				sb.append(" where ");
-				sb.append(where);
-			}
-		}
-
-		if (order) {
-			if (orderBySql != null && orderBySql.length() != 0) {
-				sb.append(" order by ");
-				sb.append(orderBySql);
-			}
-		}
-
-		if (paramList == null) {
-			return new SimpleSql(sb.toString());
-		} else {
-			return new SimpleSql(sb.toString(), paramList.toArray());
-		}
+		return new SimpleSql(getSql(select, order), getParams());
 	}
 
 	@Override
@@ -296,5 +270,43 @@ public final class MysqlSelect extends Select {
 			paramList.addAll(values);
 		}
 		return this;
+	}
+
+	public String getSql(String select, boolean order) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("select ").append(select).append(" from ");
+		sb.append(getSelectTables());
+
+		String where = getAssociationWhere();
+		if (whereSql != null && whereSql.length() != 0) {
+			sb.append(" where ");
+			sb.append(whereSql);
+			if (where != null && where.length() != 0) {
+				sb.append(" and ");
+				sb.append(where);
+			}
+
+		} else {
+			if (where != null && where.length() != 0) {
+				sb.append(" where ");
+				sb.append(where);
+			}
+		}
+
+		if (order) {
+			if (orderBySql != null && orderBySql.length() != 0) {
+				sb.append(" order by ");
+				sb.append(orderBySql);
+			}
+		}
+		return sb.toString();
+	}
+
+	public String getSql() {
+		return getSql("*", true);
+	}
+
+	public Object[] getParams() {
+		return CollectionUtils.isEmpty(paramList) ? new Object[0] : paramList.toArray(new Object[paramList.size()]);
 	}
 }

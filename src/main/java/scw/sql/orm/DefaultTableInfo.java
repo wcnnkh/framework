@@ -146,14 +146,6 @@ final class DefaultTableInfo implements TableInfo {
 		return source;
 	}
 
-	public Object[] getPrimaryKeyParameter(Object data) throws IllegalArgumentException, IllegalAccessException {
-		Object[] params = new Object[getPrimaryKeyColumns().length];
-		for (int i = 0; i < params.length; i++) {
-			params[i] = getPrimaryKeyColumns()[i].getField().get(data);
-		}
-		return params;
-	}
-
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance() {
 		if (table) {

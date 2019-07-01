@@ -3,47 +3,20 @@ package scw.sql.orm;
 import java.lang.reflect.Field;
 
 import scw.sql.orm.annotation.AutoIncrement;
+import scw.sql.orm.annotation.Cas;
 import scw.sql.orm.annotation.Counter;
 
 public final class DefaultColumnInfo implements ColumnInfo {
 	private final String name;// 数据库字段名
-	private final boolean primaryKey;// 索引
-	private final boolean autoIncrement;
-	private final boolean isDataBaseType;
 	private final Field field;
 	private final Counter counter;
+	private Cas cas;
 
 	protected DefaultColumnInfo(String defaultTableName, Field field) {
 		this.counter = field.getAnnotation(Counter.class);
-		this.autoIncrement = field.getAnnotation(AutoIncrement.class) != null;
+		this.cas = field.getAnnotation(Cas.class);
 		this.field = field;
 		this.name = ORMUtils.getAnnotationColumnName(field);
-		this.primaryKey = ORMUtils.isAnnoataionPrimaryKey(field);
-		Class<?> type = field.getType();
-		this.isDataBaseType = ORMUtils.isDataBaseType(type);
-	}
-
-	private Object fieldValueToDBValue(Object value) {
-		if (boolean.class == field.getType()) {
-			boolean b = value == null ? false : (Boolean) value;
-			return b ? 1 : 0;
-		}
-
-		if (Boolean.class == field.getType()) {
-			if (value == null) {
-				return null;
-			}
-			return (Boolean) value ? 1 : 0;
-		}
-		return value;
-	}
-
-	public Object getValueToDB(Object bean) throws IllegalArgumentException, IllegalAccessException {
-		return fieldValueToDBValue(field.get(bean));
-	}
-
-	public void setValueToField(Object bean, Object dbValue) throws IllegalArgumentException, IllegalAccessException {
-		field.set(bean, ORMUtils.parse(field.getType(), dbValue));
 	}
 
 	public String getName() {
@@ -51,7 +24,7 @@ public final class DefaultColumnInfo implements ColumnInfo {
 	}
 
 	public boolean isPrimaryKey() {
-		return primaryKey;
+		return ORMUtils.isAnnoataionPrimaryKey(field);
 	}
 
 	public String getTypeName() {
@@ -88,7 +61,7 @@ public final class DefaultColumnInfo implements ColumnInfo {
 	}
 
 	public boolean isDataBaseType() {
-		return isDataBaseType;
+		return ORMUtils.isDataBaseType(field.getType());
 	}
 
 	public Field getField() {
@@ -104,6 +77,10 @@ public final class DefaultColumnInfo implements ColumnInfo {
 	}
 
 	public boolean isAutoIncrement() {
-		return autoIncrement;
+		return field.getAnnotation(AutoIncrement.class) != null;
+	}
+
+	public Cas getCas() {
+		return cas;
 	}
 }

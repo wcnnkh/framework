@@ -47,6 +47,27 @@ public final class ORMUtils {
 		return tableInfo;
 	}
 
+	public static Object get(Field field, Object bean) throws IllegalArgumentException, IllegalAccessException {
+		Object value = field.get(bean);
+		if (boolean.class == field.getType()) {
+			boolean b = value == null ? false : (Boolean) value;
+			return b ? 1 : 0;
+		}
+
+		if (Boolean.class == field.getType()) {
+			if (value == null) {
+				return null;
+			}
+			return (Boolean) value ? 1 : 0;
+		}
+		return value;
+	}
+
+	public static void set(Field field, Object bean, Object value)
+			throws IllegalArgumentException, IllegalAccessException {
+		field.set(bean, parse(field.getType(), value));
+	}
+
 	public static boolean ignoreField(Field field) {
 		if (AnnotationUtils.isDeprecated(field)) {
 			return true;
@@ -144,7 +165,7 @@ public final class ORMUtils {
 		Object[] objs = new Object[cs.length];
 		for (int i = 0; i < objs.length; i++) {
 			if (parse) {
-				objs[i] = cs[i].getValueToDB(bean);
+				objs[i] = get(cs[i].getField(), bean);
 			} else {
 				objs[i] = cs[i].getField().get(bean);
 			}

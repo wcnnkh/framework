@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.utils.StringUtils;
-import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Column;
@@ -18,7 +17,7 @@ import scw.sql.orm.annotation.Table;
 import scw.sql.orm.enums.IndexMethod;
 import scw.sql.orm.enums.IndexOrder;
 
-public final class CreateTableSQL implements Sql {
+public class CreateTableSQL extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 
@@ -220,10 +219,6 @@ public final class CreateTableSQL implements Sql {
 
 	public Object[] getParams() {
 		return null;
-	}
-
-	public boolean isStoredProcedure() {
-		return false;
 	}
 }
 

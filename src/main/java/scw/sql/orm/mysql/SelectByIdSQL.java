@@ -3,13 +3,10 @@ package scw.sql.orm.mysql;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.sql.Sql;
 import scw.sql.orm.TableInfo;
 
-public final class SelectByIdSQL implements Sql {
+public final class SelectByIdSQL extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
-	protected static final String SELECT_ALL_PREFIX = "select * from `";
-	
 	private static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;
 	private Object[] params;
@@ -43,16 +40,19 @@ public final class SelectByIdSQL implements Sql {
 		return params;
 	}
 
-	private static String getSql(TableInfo info, String tableName, Object[] ids) {
+	private String getSql(TableInfo info, String tableName, Object[] ids) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(SELECT_ALL_PREFIX).append(tableName).append("`");
+		sb.append(SELECT_ALL_PREFIX);
+		keywordProcessing(sb, tableName);
 		if (ids != null && ids.length > 0) {
+
 			sb.append(UpdateSQL.WHERE);
 			for (int i = 0; i < ids.length; i++) {
 				if (i != 0) {
-					sb.append(UpdateSQL.AND);
+					sb.append(AND);
 				}
-				sb.append(info.getPrimaryKeyColumns()[i].getSQLName(tableName));
+
+				keywordProcessing(sb, info.getPrimaryKeyColumns()[i].getName());
 				sb.append("=?");
 			}
 
@@ -61,9 +61,5 @@ public final class SelectByIdSQL implements Sql {
 			}
 		}
 		return sb.toString();
-	}
-
-	public boolean isStoredProcedure() {
-		return false;
 	}
 }

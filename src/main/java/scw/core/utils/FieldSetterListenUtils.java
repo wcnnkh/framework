@@ -2,9 +2,9 @@ package scw.core.utils;
 
 import java.io.Serializable;
 
+import net.sf.cglib.proxy.Enhancer;
 import scw.core.FieldSetterListen;
 import scw.core.FieldSetterListenInterceptor;
-import net.sf.cglib.proxy.Enhancer;
 
 public final class FieldSetterListenUtils {
 	private FieldSetterListenUtils(){};

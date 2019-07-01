@@ -4,12 +4,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.sql.Sql;
 import scw.sql.orm.TableInfo;
 
-public final class SelectInIdSQL implements Sql {
+public final class SelectInIdSQL extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
-	protected static final String IN = " in (";
+	private static final String IN = " in (";
 	private static Map<String, String> sqlCache = new HashMap<String, String>();
 	private String sql;
 	private Object[] params;
@@ -52,24 +51,25 @@ public final class SelectInIdSQL implements Sql {
 		return params;
 	}
 
-	private static String getSql(TableInfo info, String tableName, Object[] ids, Collection<?> inIdList) {
+	private String getSql(TableInfo info, String tableName, Object[] ids, Collection<?> inIdList) {
 		StringBuilder sb = new StringBuilder();
 		if (ids.length > 0) {
 			for (int i = 0; i < ids.length; i++) {
 				if (sb.length() != 0) {
-					sb.append(UpdateSQL.AND);
+					sb.append(AND);
 				}
-				sb.append(info.getPrimaryKeyColumns()[i].getSQLName(tableName));
+
+				keywordProcessing(sb, info.getPrimaryKeyColumns()[i].getName());
 				sb.append("=?");
 			}
 		}
 
 		if (inIdList != null && !inIdList.isEmpty()) {
 			if (sb.length() != 0) {
-				sb.append(UpdateSQL.AND);
+				sb.append(AND);
 			}
 
-			sb.append(info.getPrimaryKeyColumns()[ids.length].getSQLName(tableName));
+			keywordProcessing(sb, info.getPrimaryKeyColumns()[ids.length].getName());
 			sb.append(IN);
 			for (int i = 0; i < inIdList.size(); i++) {
 				if (i != 0) {
@@ -82,8 +82,9 @@ public final class SelectInIdSQL implements Sql {
 
 		String where = sb.toString();
 		sb = new StringBuilder();
-		sb.append(SelectByIdSQL.SELECT_ALL_PREFIX).append(tableName).append("`");
-		sb.append(UpdateSQL.WHERE).append(where);
+		sb.append(SELECT_ALL_PREFIX);
+		keywordProcessing(sb, tableName);
+		sb.append(WHERE).append(where);
 		return sb.toString();
 	}
 

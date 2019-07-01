@@ -47,7 +47,7 @@ public abstract class AbstractResult implements Result {
 				}
 				continue;
 			}
-			column.setValueToField(o, v);
+			ORMUtils.set(column.getField(), o, v);
 		}
 		return o;
 	}
@@ -70,7 +70,7 @@ public abstract class AbstractResult implements Result {
 				}
 				continue;
 			}
-			column.setValueToField(o, v);
+			ORMUtils.set(column.getField(), o, v);
 		}
 		return o;
 	}
@@ -119,7 +119,7 @@ public abstract class AbstractResult implements Result {
 			String tName = getTableName(tInfo, tInfo.getDefaultName(), column.getType(), tableMapping);
 			Object v = wrapper(tInfo, tName, tableMapping);
 			if (v != null) {
-				column.setValueToField(o, v);
+				ORMUtils.set(column.getField(), o, v);
 			}
 		}
 		return o;

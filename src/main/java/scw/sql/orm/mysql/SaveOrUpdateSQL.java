@@ -5,12 +5,12 @@ import java.util.List;
 
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
+import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Counter;
 
-public final class SaveOrUpdateSQL implements Sql {
+public class SaveOrUpdateSQL extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerFactory.getLogger(SaveOrUpdateSQL.class);
 	private static final String TEMP = ") ON DUPLICATE KEY UPDATE ";
@@ -37,16 +37,14 @@ public final class SaveOrUpdateSQL implements Sql {
 				values.append(",");
 			}
 
-			cols.append("`");
-			cols.append(columnInfo.getName());
-			cols.append("`");
+			keywordProcessing(cols, columnInfo.getName());
 			values.append("?");
-			params.add(columnInfo.getValueToDB(obj));
+			params.add(ORMUtils.get(columnInfo.getField(), obj));
 		}
 
-		sb.append(InsertSQL.INSERT_INTO_PREFIX);
-		sb.append(tableName);
-		sb.append("`(");
+		sb.append(INSERT_INTO_PREFIX);
+		keywordProcessing(sb, tableName);
+		sb.append("(");
 		sb.append(cols);
 		sb.append(InsertSQL.VALUES);
 		sb.append(values);
@@ -59,45 +57,40 @@ public final class SaveOrUpdateSQL implements Sql {
 				continue;
 			}
 
-			Object v = columnInfo.getValueToDB(obj);
+			Object v = ORMUtils.get(columnInfo.getField(), obj);
 			Counter counter = columnInfo.getCounter();
 			if (index++ > 0) {
 				sb.append(",");
 			}
 
 			if (counter == null) {
-				sb.append("`");
-				sb.append(columnInfo.getName());
-				sb.append("`=?");
+				keywordProcessing(sb, columnInfo.getName());
+				sb.append("=?");
 				params.add(v);
 			} else {
 				if (v == null) {
 					logger.warn("{}中计数器字段{}的值为空", tableInfo.getSource().getName(), columnInfo.getName());
-					sb.append("`");
-					sb.append(columnInfo.getName());
-					sb.append("`=?");
+					keywordProcessing(sb, columnInfo.getName());
+					sb.append("=?");
 					params.add(v);
 				} else {
-					sb.append("`");
-					sb.append(columnInfo.getName());
-					sb.append("`=");
+					keywordProcessing(sb, columnInfo.getName());
+					sb.append("=");
 					sb.append(IF);
-					sb.append("`");
-					sb.append(columnInfo.getName());
-					sb.append("`+").append(v);
+					keywordProcessing(sb, columnInfo.getName());
+					sb.append("+").append(v);
 					sb.append(">=").append(counter.min());
-					sb.append(UpdateSQL.AND);
-					sb.append("`");
-					sb.append(columnInfo.getName());
-					sb.append("`+").append(v);
+					sb.append(AND);
+					keywordProcessing(sb, columnInfo.getName());
+					sb.append("+").append(v);
 					sb.append("<=").append(counter.max());
-					sb.append(",`");
-					sb.append(columnInfo.getName());
-					sb.append("`+?");
+					sb.append(",");
+					keywordProcessing(sb, columnInfo.getName());
+					sb.append("+?");
 					params.add(v);
-					sb.append(",`");
-					sb.append(columnInfo.getName());
-					sb.append("`)");
+					sb.append(",");
+					keywordProcessing(sb, columnInfo.getName());
+					sb.append(")");
 				}
 			}
 		}
@@ -112,9 +105,5 @@ public final class SaveOrUpdateSQL implements Sql {
 
 	public Object[] getParams() {
 		return params;
-	}
-
-	public boolean isStoredProcedure() {
-		return false;
 	}
 }

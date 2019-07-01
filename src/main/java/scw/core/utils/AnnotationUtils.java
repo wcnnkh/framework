@@ -2,9 +2,11 @@ package scw.core.utils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -100,5 +102,20 @@ public final class AnnotationUtils {
 			}
 		}
 		return fieldList;
+	}
+
+	public static IdentityHashMap<Class<? extends Annotation>, Annotation> getAnnoataionMap(
+			AnnotatedElement annotatedElement) {
+		Annotation[] annotations = annotatedElement.getAnnotations();
+		if (ArrayUtils.isEmpty(annotations)) {
+			return null;
+		}
+
+		IdentityHashMap<Class<? extends Annotation>, Annotation> map = new IdentityHashMap<Class<? extends Annotation>, Annotation>(
+				annotations.length);
+		for (Annotation annotation : annotations) {
+			map.put(annotation.getClass(), annotation);
+		}
+		return map;
 	}
 }

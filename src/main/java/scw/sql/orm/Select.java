@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import scw.core.Pagination;
 import scw.core.exception.ParameterException;
 import scw.sql.Sql;
+import scw.sql.orm.mysql.MysqlOrmSql;
 import scw.sql.orm.result.ResultSet;
 
 /**
@@ -20,7 +21,8 @@ import scw.sql.orm.result.ResultSet;
  * @author shuchaowen
  *
  */
-public abstract class Select {
+public abstract class Select extends MysqlOrmSql {
+	private static final long serialVersionUID = 1L;
 	private Map<String, String> associationWhereMap;
 	private HashSet<String> selectTableSet;
 	protected ORMOperations orm;
@@ -60,11 +62,6 @@ public abstract class Select {
 			}
 		}
 		return sb.toString();
-	}
-
-	public String getSQLColumn(Class<?> tableClass, String name) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
-		return tableInfo.getColumnInfo(name).getSQLName(getTableName(tableClass));
 	}
 
 	public String getTableName(Class<?> tableClass) {
@@ -158,8 +155,8 @@ public abstract class Select {
 			}
 
 			for (int i = 0; i < t1.getPrimaryKeyColumns().length; i++) {
-				String n1 = t1.getPrimaryKeyColumns()[i].getSQLName(tName1);
-				String n2 = t2.getPrimaryKeyColumns()[i].getSQLName(tName2);
+				String n1 = getSqlName(tName1, t1.getPrimaryKeyColumns()[i].getName());
+				String n2 = getSqlName(tName2, t2.getPrimaryKeyColumns()[i].getName());
 				if (checkWhere(associationWhereMap, n1, n2)) {
 					continue;
 				}
@@ -173,8 +170,8 @@ public abstract class Select {
 			}
 
 			for (int i = 0; i < table2Columns.length; i++) {
-				String n1 = t2.getColumnInfo(table2Columns[i]).getSQLName(tName2);
-				String n2 = t1.getPrimaryKeyColumns()[i].getSQLName(tName1);
+				String n1 = getSqlName(tName2, t2.getColumnInfo(table2Columns[i]).getName());
+				String n2 = getSqlName(tName1, t1.getPrimaryKeyColumns()[i].getName());
 				if (checkWhere(associationWhereMap, n1, n2)) {
 					continue;
 				}

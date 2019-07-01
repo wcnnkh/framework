@@ -26,8 +26,6 @@ public interface TableInfo {
 
 	Class<?> getSource();
 
-	Object[] getPrimaryKeyParameter(Object data) throws IllegalArgumentException, IllegalAccessException;
-
 	<T> T newInstance();
 
 	Class<? extends FieldSetterListen> getProxyClass();

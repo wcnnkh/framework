@@ -1,7 +1,6 @@
 package scw.sql.orm.mysql;
 
 import scw.core.exception.ParameterException;
-import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 
@@ -11,7 +10,7 @@ import scw.sql.orm.TableInfo;
  * @author shuchaowen
  *
  */
-public final class IncrByIdSQL implements Sql {
+public class IncrByIdSQL extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
@@ -23,9 +22,10 @@ public final class IncrByIdSQL implements Sql {
 		sb.append(UpdateSQL.SET);
 
 		ColumnInfo incrColumn = tableInfo.getColumnInfo(fieldName);
-		sb.append("`").append(incrColumn.getName());
-		sb.append("`=`").append(incrColumn.getName());
-		sb.append("`+").append(limit);
+		keywordProcessing(sb, incrColumn.getName());
+		sb.append("=");
+		keywordProcessing(sb, incrColumn.getName());
+		sb.append("+").append(limit);
 
 		sb.append(UpdateSQL.WHERE);
 		for (int i = 0; i < tableInfo.getPrimaryKeyColumns().length; i++) {
@@ -34,16 +34,13 @@ public final class IncrByIdSQL implements Sql {
 				sb.append(UpdateSQL.AND);
 			}
 
-			sb.append("`");
-			sb.append(columnInfo.getName());
-			sb.append("`=?");
+			keywordProcessing(sb, columnInfo.getName());
+			sb.append("=?");
 		}
 
 		if (maxValue != null) {
-			sb.append(UpdateSQL.AND);
-			sb.append("`");
-			sb.append(incrColumn.getName());
-			sb.append("`");
+			sb.append(AND);
+			keywordProcessing(sb, incrColumn.getName());
 			sb.append("+").append(limit);
 			sb.append("<=").append(maxValue);
 		}
@@ -66,9 +63,5 @@ public final class IncrByIdSQL implements Sql {
 
 	public Object[] getParams() {
 		return params;
-	}
-
-	public boolean isStoredProcedure() {
-		return false;
 	}
 }
