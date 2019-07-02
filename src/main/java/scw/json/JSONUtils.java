@@ -1,13 +1,10 @@
 package scw.json;
 
 import scw.core.exception.NotSupportException;
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
+import scw.core.logger.LoggerUtils;
 import scw.core.reflect.ReflectUtils;
 
 public final class JSONUtils {
-	private static Logger logger = LoggerFactory.getLogger(JSONUtils.class);
-
 	private JSONUtils() {
 	};
 
@@ -27,7 +24,7 @@ public final class JSONUtils {
 			throw new NotSupportException("not found default json parse support");
 		}
 
-		logger.info("default json parse：{}", jsonSupportClass.getName());
+		LoggerUtils.info(JSONUtils.class, "default json parse：{}", jsonSupportClass.getName());
 		DEFAULT_PARSE_SUPPORT = (JSONParseSupport) ReflectUtils.newInstance(jsonSupportClass);
 	}
 
