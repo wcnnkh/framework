@@ -8,6 +8,10 @@ public interface JSONArrayReadOnly extends Serializable{
 	byte getByteValue(int index);
 
 	Byte getByte(int index);
+	
+	boolean getBooleanValue(int index);
+	
+	Boolean getBoolean(int index);
 
 	short getShortValue(int index);
 

@@ -8,6 +8,10 @@ public interface JSONObjectReadOnly extends Serializable{
 	byte getByteValue(String key);
 
 	Byte getByte(String key);
+	
+	boolean getBooleanValue(String key);
+	
+	Boolean getBoolean(String key);
 
 	short getShortValue(String key);
 

@@ -47,7 +47,7 @@ public final class ApplePay {
 			map.put("exclude-old-transactions", excludeOldTransactions);
 		}
 
-		String response = HttpUtils.doPost(host, null, JSONObject.toJSONString(map));
+		String response = HttpUtils.postJson(host, null, JSONObject.toJSONString(map));
 		if (debug) {
 			logger.debug(response);
 		}

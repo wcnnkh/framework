@@ -1,8 +1,5 @@
 package scw.utils.tencent.weixin;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.http.HttpUtils;
@@ -12,11 +9,6 @@ import scw.json.JSONUtils;
 
 public abstract class WeiXinProcess {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-	private static final Map<String, String> postRequestProperties = new HashMap<String, String>(2, 1);
-	static {
-		postRequestProperties.put("Content-type", "application/json;charset=utf-8");
-	}
 
 	private int errcode;// 错误码
 	private String errmsg;// 错误信息
@@ -43,7 +35,7 @@ public abstract class WeiXinProcess {
 			body = JSONUtils.toJSONString(body);
 		}
 
-		String content = HttpUtils.doPost(url, postRequestProperties, body);
+		String content = HttpUtils.postJson(url, null, body);
 		if (StringUtils.isNull(content)) {
 			throw new RuntimeException("请求错误：url=" + url + ", body=" + body);
 		}

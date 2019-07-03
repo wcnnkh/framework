@@ -139,4 +139,12 @@ public final class FastJSONObjectWrapper implements scw.json.JSONObject {
 		return json.entrySet();
 	}
 
+	public boolean getBooleanValue(String key) {
+		return json.getBooleanValue(key);
+	}
+
+	public Boolean getBoolean(String key) {
+		return json.getBoolean(key);
+	}
+
 }

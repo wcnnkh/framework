@@ -41,7 +41,7 @@ public final class QQUtils {
 		map.put("client_secret", appKey);
 		map.put("redirect_uri", redirect_uri);
 		map.put("code", code);
-		return HttpUtils.doPost(qq_get_pc_token, null, map);
+		return HttpUtils.postForm(qq_get_pc_token, null, map);
 	}
 	
 	public static String formatCallBackPrefix(String data){
