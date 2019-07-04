@@ -56,7 +56,7 @@ public class FormRequest extends HttpRequest {
 			parameterMap = new LinkedMultiValueMap<String, String>();
 		}
 
-		parameterMap.add(key, value.toString());
+		parameterMap.add(key, toString(value));
 	}
 
 	public void addAll(Map<String, ?> map) {
@@ -74,14 +74,19 @@ public class FormRequest extends HttpRequest {
 				continue;
 			}
 
-			if (v instanceof String
-					|| ClassUtils.isPrimitiveOrWrapper(v.getClass())) {
-				v = v.toString();
-			} else {
-				v = JSONUtils.toJSONString(v);
-			}
+			parameterMap.add(entry.getKey(), toString(v));
+		}
+	}
 
-			parameterMap.add(entry.getKey(), v.toString());
+	private String toString(Object value) {
+		if (value instanceof String
+				|| ClassUtils.isPrimitiveOrWrapper(value.getClass())) {
+			return value.toString();
+		} else if (value instanceof ToParameterMap) {
+			return JSONUtils.toJSONString(HttpUtils
+					.toParameterMap((ToParameterMap) value));
+		} else {
+			return JSONUtils.toJSONString(value);
 		}
 	}
 
