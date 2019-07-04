@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.json.JSONUtils;
+import scw.core.json.JSONUtils;
 import scw.servlet.view.AbstractTextView;
 
 /**

@@ -4,12 +4,12 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import scw.core.json.JSONObject;
+import scw.core.json.JSONUtils;
 import scw.core.net.http.HttpUtils;
+import scw.core.net.http.ToParameterMap;
 import scw.core.utils.SignType;
 import scw.core.utils.SignUtils;
-import scw.json.JSONObject;
-import scw.json.JSONUtils;
-import scw.utils.express.kdniao.response.EbusinessOrderHandleResponse;
 
 /**
  * 快递鸟接口
@@ -133,6 +133,27 @@ public class KDNiao {
 		}
 
 		return new EbusinessOrderHandleResponse(json);
+	}
+
+	public String distRequest(String requestType, ToParameterMap paramsMap) {
+		return doRequest(
+				isSandbox() ? "http://sandboxapi.kdniao.com:8080/kdniaosandbox/gateway/exterfaceInvoke.json"
+						: "http://api.kdniao.com/api/dist", requestType,
+				HttpUtils.toParameterMap(paramsMap));
+	}
+
+	public SubscribeResponse subscribe(SubscribeRequestParameter parameter) {
+		String content = distRequest("1008", parameter);
+		if (content == null) {
+			return null;
+		}
+
+		JSONObject json = JSONUtils.parseObject(content);
+		if (json == null) {
+			return null;
+		}
+
+		return new SubscribeResponse(json);
 	}
 
 	public static void main(String[] args) {

@@ -1,10 +1,10 @@
-package scw.json.support.fastjson;
+package scw.core.json.support.fastjson;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public final class FastJSONObjectWrapper implements scw.json.JSONObject {
+public final class FastJSONObjectWrapper implements scw.core.json.JSONObject {
 	private static final long serialVersionUID = 1L;
 	private com.alibaba.fastjson.JSONObject json;
 
@@ -68,12 +68,12 @@ public final class FastJSONObjectWrapper implements scw.json.JSONObject {
 		return json.getDouble(key);
 	}
 
-	public scw.json.JSONObject getJSONObject(String key) {
+	public scw.core.json.JSONObject getJSONObject(String key) {
 		com.alibaba.fastjson.JSONObject jo = json.getJSONObject(key);
 		return jo == null ? null : new FastJSONObjectWrapper(jo);
 	}
 
-	public scw.json.JSONArray getJSONArray(String key) {
+	public scw.core.json.JSONArray getJSONArray(String key) {
 		com.alibaba.fastjson.JSONArray jarr = json.getJSONArray(key);
 		return jarr == null ? null : new FastJSONArrayWrapper(jarr);
 	}

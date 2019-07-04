@@ -1,4 +1,4 @@
-package scw.json;
+package scw.core.json;
 
 import scw.core.exception.NotSupportException;
 import scw.core.logger.LoggerUtils;

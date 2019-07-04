@@ -1,6 +1,6 @@
 package scw.utils.tencent.weixin.miniprogram.process;
 
-import scw.json.JSONObject;
+import scw.core.json.JSONObject;
 import scw.utils.tencent.weixin.WeiXinProcess;
 
 /**

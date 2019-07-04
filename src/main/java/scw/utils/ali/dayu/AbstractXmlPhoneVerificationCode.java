@@ -7,12 +7,12 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
+import scw.core.json.JSONUtils;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.RandomUtils;
 import scw.core.utils.XMLUtils;
 import scw.core.utils.XTime;
-import scw.json.JSONUtils;
 import scw.result.Result;
 import scw.result.ResultFactory;
 

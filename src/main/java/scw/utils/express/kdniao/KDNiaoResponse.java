@@ -1,25 +1,39 @@
-package scw.utils.express.kdniao.response;
+package scw.utils.express.kdniao;
 
 import java.io.Serializable;
 
-import scw.json.JSONObject;
+import scw.core.json.JSONObject;
 
 /**
  * 快递鸟通用返回
  * 
- * @author asus1
+ * @author shuchaowen
  *
  */
 public class KDNiaoResponse implements Serializable {
 	private static final long serialVersionUID = 1L;
+	// 用户ID
+	private String businessId;
 	// 成功与否
 	private boolean success;
 	// 失败原因
 	private String reason;
 
 	public KDNiaoResponse(JSONObject json) {
-		this.success = json.getBooleanValue("Success");
-		this.reason = json.getString("Reason");
+		if (json != null) {
+			this.success = json.getBooleanValue("Success");
+			this.reason = json.getString("Reason");
+			this.businessId = json.getString("EBusinessID");
+		}
+	}
+
+	/**
+	 * 用户ID
+	 * 
+	 * @return
+	 */
+	public final String getBusinessId() {
+		return businessId;
 	}
 
 	/**

@@ -3,7 +3,7 @@ package scw.servlet.http;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import scw.json.JSONParseSupport;
+import scw.core.json.JSONParseSupport;
 import scw.servlet.ServletUtils;
 
 public abstract class AbstractHttpResponse extends HttpServletResponseWrapper implements HttpResponse {

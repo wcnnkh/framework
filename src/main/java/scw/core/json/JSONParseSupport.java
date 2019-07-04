@@ -1,4 +1,4 @@
-package scw.json;
+package scw.core.json;
 
 public interface JSONParseSupport {
 	String toJSONString(Object obj);

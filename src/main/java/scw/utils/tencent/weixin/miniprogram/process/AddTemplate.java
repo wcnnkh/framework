@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.json.JSONObject;
+import scw.core.json.JSONObject;
 import scw.utils.tencent.weixin.WeiXinProcess;
 
 /**

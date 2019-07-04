@@ -5,7 +5,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.json.JSONParseSupport;
+import scw.core.json.JSONParseSupport;
 import scw.servlet.AbstractWrapperFactory;
 import scw.servlet.Request;
 import scw.servlet.Response;

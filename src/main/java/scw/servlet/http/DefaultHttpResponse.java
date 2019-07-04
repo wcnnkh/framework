@@ -2,9 +2,9 @@ package scw.servlet.http;
 
 import javax.servlet.http.HttpServletResponse;
 
+import scw.core.json.JSONParseSupport;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.json.JSONParseSupport;
 
 public final class DefaultHttpResponse extends AbstractHttpResponse {
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpResponse.class);

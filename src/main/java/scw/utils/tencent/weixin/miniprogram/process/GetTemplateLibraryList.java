@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import scw.json.JSONArray;
-import scw.json.JSONObject;
+import scw.core.json.JSONArray;
+import scw.core.json.JSONObject;
 import scw.utils.tencent.weixin.WeiXinProcess;
 import scw.utils.tencent.weixin.miniprogram.bean.TemplateLibrary;
 

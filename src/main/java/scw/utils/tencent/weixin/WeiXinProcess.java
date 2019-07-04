@@ -1,11 +1,11 @@
 package scw.utils.tencent.weixin;
 
+import scw.core.json.JSONObject;
+import scw.core.json.JSONUtils;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.http.HttpUtils;
 import scw.core.utils.StringUtils;
-import scw.json.JSONObject;
-import scw.json.JSONUtils;
 
 public abstract class WeiXinProcess {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());

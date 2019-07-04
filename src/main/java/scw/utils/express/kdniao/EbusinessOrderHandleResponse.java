@@ -1,8 +1,8 @@
-package scw.utils.express.kdniao.response;
+package scw.utils.express.kdniao;
 
 import java.util.List;
 
-import scw.json.JSONObject;
+import scw.core.json.JSONObject;
 
 /**
  * 快递鸟即时查询API返回
@@ -12,8 +12,6 @@ import scw.json.JSONObject;
  */
 public final class EbusinessOrderHandleResponse extends KDNiaoResponse {
 	private static final long serialVersionUID = 1L;
-	// 用户ID
-	private String businessId;
 	// 订单编号
 	private String orderCode;
 	// 快递公司编码
@@ -24,18 +22,22 @@ public final class EbusinessOrderHandleResponse extends KDNiaoResponse {
 	private String state;
 	private List<Traces> traces;
 
+	EbusinessOrderHandleResponse() {
+		super(null);
+	}
+
 	public EbusinessOrderHandleResponse(JSONObject json) {
 		super(json);
-		this.businessId = json.getString("EBusinessID");
+
+		if (json == null) {
+			return;
+		}
+
 		this.orderCode = json.getString("OrderCode");
 		this.shipperCode = json.getString("ShipperCode");
 		this.logisticCode = json.getString("LogisticCode");
-		this.state = json.getString("state");
-		this.traces = Traces.parseTraces(json.getJSONArray("traces"));
-	}
-
-	public String getBusinessId() {
-		return businessId;
+		this.state = json.getString("State");
+		this.traces = Traces.parseTraces(json.getJSONArray("Traces"));
 	}
 
 	public String getOrderCode() {

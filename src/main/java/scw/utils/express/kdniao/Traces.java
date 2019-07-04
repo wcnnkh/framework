@@ -1,17 +1,17 @@
-package scw.utils.express.kdniao.response;
+package scw.utils.express.kdniao;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import scw.core.json.JSONArray;
+import scw.core.json.JSONObject;
 import scw.core.utils.CollectionUtils;
-import scw.json.JSONArray;
-import scw.json.JSONObject;
 
 /**
  * 快递鸟物流轨迹
  * 
- * @author asus1
+ * @author shuchaowen
  *
  */
 public class Traces implements Serializable {

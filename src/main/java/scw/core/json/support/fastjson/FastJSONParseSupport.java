@@ -1,14 +1,14 @@
-package scw.json.support.fastjson;
+package scw.core.json.support.fastjson;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
-import scw.json.JSONObject;
-import scw.json.JSONParseSupport;
+import scw.core.json.JSONObject;
+import scw.core.json.JSONParseSupport;
 
 public final class FastJSONParseSupport implements JSONParseSupport {
 
-	public scw.json.JSONArray parseArray(String text) {
+	public scw.core.json.JSONArray parseArray(String text) {
 		JSONArray jArray = com.alibaba.fastjson.JSONArray.parseArray(text);
 		return jArray == null ? null : new FastJSONArrayWrapper(jArray);
 	}
@@ -26,7 +26,7 @@ public final class FastJSONParseSupport implements JSONParseSupport {
 		return JSON.parseObject(text, type);
 	}
 
-	public scw.json.JSONArray createJSONArray() {
+	public scw.core.json.JSONArray createJSONArray() {
 		return new FastJSONArrayWrapper(new JSONArray());
 	}
 

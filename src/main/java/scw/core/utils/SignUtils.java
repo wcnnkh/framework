@@ -225,6 +225,10 @@ public final class SignUtils {
 			return md5Str(text, charsetName);
 		case BASE64:
 			return base64Encode(text, charsetName);
+		case MD5_UPPERCASE:
+			return md5UpperStr(text, charsetName);
+		case SHA1:
+			return sha1(text, charsetName);
 		default:
 			throw new NotFoundException("不支持的签名方式");
 		}

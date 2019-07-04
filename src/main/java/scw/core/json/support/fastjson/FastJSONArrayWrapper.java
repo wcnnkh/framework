@@ -1,11 +1,11 @@
-package scw.json.support.fastjson;
+package scw.core.json.support.fastjson;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public final class FastJSONArrayWrapper implements scw.json.JSONArray {
+public final class FastJSONArrayWrapper implements scw.core.json.JSONArray {
 	private static final long serialVersionUID = 1L;
 	private com.alibaba.fastjson.JSONArray jsonArray;
 
@@ -69,14 +69,14 @@ public final class FastJSONArrayWrapper implements scw.json.JSONArray {
 		return jsonArray.getDouble(index);
 	}
 
-	public scw.json.JSONObject getJSONObject(int index) {
+	public scw.core.json.JSONObject getJSONObject(int index) {
 		com.alibaba.fastjson.JSONObject jsonObject = jsonArray
 				.getJSONObject(index);
 		return jsonObject == null ? null
 				: new FastJSONObjectWrapper(jsonObject);
 	}
 
-	public scw.json.JSONArray getJSONArray(int index) {
+	public scw.core.json.JSONArray getJSONArray(int index) {
 		com.alibaba.fastjson.JSONArray jarr = jsonArray.getJSONArray(index);
 		return jarr == null ? null : new FastJSONArrayWrapper(jarr);
 	}

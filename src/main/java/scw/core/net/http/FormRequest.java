@@ -11,7 +11,10 @@ import java.util.Map.Entry;
 
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
+import scw.core.json.JSONUtils;
 import scw.core.net.RequestException;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.CollectionUtils;
 
 public class FormRequest extends HttpRequest {
 	private MultiValueMap<String, String> parameterMap;
@@ -57,7 +60,7 @@ public class FormRequest extends HttpRequest {
 	}
 
 	public void addAll(Map<String, ?> map) {
-		if (map == null) {
+		if (CollectionUtils.isEmpty(map)) {
 			return;
 		}
 
@@ -71,6 +74,13 @@ public class FormRequest extends HttpRequest {
 				continue;
 			}
 
+			if (v instanceof String
+					|| ClassUtils.isPrimitiveOrWrapper(v.getClass())) {
+				v = v.toString();
+			} else {
+				v = JSONUtils.toJSONString(v);
+			}
+
 			parameterMap.add(entry.getKey(), v.toString());
 		}
 	}
@@ -78,7 +88,8 @@ public class FormRequest extends HttpRequest {
 	private String getParameterString() throws UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder(512);
 		boolean append = false;
-		Iterator<Entry<String, List<String>>> iterator = parameterMap.entrySet().iterator();
+		Iterator<Entry<String, List<String>>> iterator = parameterMap
+				.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, List<String>> entry = iterator.next();
 
@@ -110,7 +121,8 @@ public class FormRequest extends HttpRequest {
 	}
 
 	@Override
-	protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
+	protected void doOutput(URLConnection urlConnection, OutputStream os)
+			throws Throwable {
 		if (parameterMap != null) {
 			os.write(getParameterString().getBytes(charsetName));
 		}

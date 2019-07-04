@@ -1,4 +1,4 @@
-package scw.json;
+package scw.core.json;
 
 import java.io.Serializable;
 
