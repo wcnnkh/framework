@@ -138,7 +138,7 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 
 		for (int i = 0; i < tableInfo.getNotPrimaryKeyColumns().length; i++) {
 			columnInfo = tableInfo.getNotPrimaryKeyColumns()[i];
-			if (columnInfo.getCasType() != CasType.NOTHING) {
+			if (columnInfo.getCasType() == CasType.NOTHING) {
 				continue;
 			}
 
