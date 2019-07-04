@@ -155,12 +155,4 @@ public class KDNiao {
 
 		return new SubscribeResponse(json);
 	}
-
-	public static void main(String[] args) {
-		KDNiao kdNiao = new KDNiao("1283561",
-				"421640a9-4eb0-4ed0-9e0b-1d326a5d41cd");
-		EbusinessOrderHandleResponse response = kdNiao.businessOrderHandle(
-				null, "ZTO", "73115314882583");
-		System.out.println(JSONUtils.toJSONString(response));
-	}
 }
