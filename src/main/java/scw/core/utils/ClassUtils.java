@@ -572,7 +572,7 @@ public final class ClassUtils {
 		}
 	}
 
-	public static Class<?> forName(String name) throws ClassNotFoundException, LinkageError {
+	public static Class<?> forName(String name) throws ClassNotFoundException {
 		return forName(name, getDefaultClassLoader());
 	}
 

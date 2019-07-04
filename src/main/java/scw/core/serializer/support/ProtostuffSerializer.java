@@ -3,8 +3,6 @@ package scw.core.serializer.support;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
@@ -12,13 +10,12 @@ import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
 import scw.core.Bits;
-import scw.core.io.ByteArray;
+import scw.core.io.StreamUtils;
+import scw.core.io.UnsafeByteArrayOutputStream;
 import scw.core.serializer.Serializer;
+import scw.core.utils.ClassUtils;
 
 public class ProtostuffSerializer extends Serializer {
-	private static final Map<Class<?>, byte[]> CLASS_TO_BYTES = new HashMap<Class<?>, byte[]>();
-	private static final Map<byte[], Class<?>> BYTES_TO_CLASS = new HashMap<byte[], Class<?>>();
-
 	private static final ThreadLocal<LinkedBuffer> bufferLocal = new ThreadLocal<LinkedBuffer>() {
 		protected LinkedBuffer initialValue() {
 			return LinkedBuffer.allocate(1024);
@@ -31,37 +28,28 @@ public class ProtostuffSerializer extends Serializer {
 
 	// 不用担心并发，因为最终结果都是一致的
 	private static byte[] classToBytes(Class<?> clazz) {
-		byte[] data = CLASS_TO_BYTES.get(clazz);
-		if (data == null) {
-			String name = clazz.getName();
-			ByteArray byteArray = new ByteArray();
-			for (char c : name.toCharArray()) {
-				byte[] bs = { 0, 0 };
-				Bits.putChar(bs, 0, c);
-				byteArray.write(bs, 0, bs.length);
-			}
-			data = byteArray.toByteArray();
-			CLASS_TO_BYTES.put(clazz, data);
+		String name = clazz.getName();
+		UnsafeByteArrayOutputStream byteArray = StreamUtils.getUnsafeByteArrayOutputStream();
+		for (char c : name.toCharArray()) {
+			byte[] bs = { 0, 0 };
+			Bits.putChar(bs, 0, c);
+			byteArray.write(bs, 0, bs.length);
 		}
-		return data;
+		return byteArray.toByteArray();
 	}
 
 	private static Class<?> bytesToClass(byte[] bs) {
-		Class<?> clz = BYTES_TO_CLASS.get(bs);
-		if (clz == null) {
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < bs.length; i += 2) {
-				char c = Bits.getChar(bs, i);
-				sb.append(c);
-			}
-			try {
-				clz = Class.forName(sb.toString());
-				BYTES_TO_CLASS.put(bs, clz);
-			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
-			}
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < bs.length; i += 2) {
+			char c = Bits.getChar(bs, i);
+			sb.append(c);
 		}
-		return clz;
+		
+		try {
+			return ClassUtils.forName(sb.toString());
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -116,7 +104,7 @@ public class ProtostuffSerializer extends Serializer {
 		byte[] nameBytes = new byte[len];
 		System.arraycopy(data, 4, nameBytes, 0, len);
 		Class<?> type = bytesToClass(nameBytes);
-		
+
 		Schema schema = RuntimeSchema.getSchema(type);
 		Object t = schema.newMessage();
 		ProtostuffIOUtil.mergeFrom(data, 4 + len, data.length - 4 - len, t, schema);
