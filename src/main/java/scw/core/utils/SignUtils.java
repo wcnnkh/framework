@@ -12,6 +12,9 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import scw.core.Base64;
+import scw.core.exception.NotFoundException;
+
 public final class SignUtils {
 	private SignUtils() {
 	};
@@ -87,7 +90,8 @@ public final class SignUtils {
 	 */
 	public static byte[] HmacMD5(String data, String secret, String charsetName) {
 		try {
-			return HmacEncrypt(data.getBytes(charsetName), secret.getBytes(charsetName), "HmacMD5");
+			return HmacEncrypt(data.getBytes(charsetName),
+					secret.getBytes(charsetName), "HmacMD5");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -106,7 +110,8 @@ public final class SignUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static byte[] HmacEncrypt(byte[] encryptText, byte[] encryptKey, String signType) {
+	public static byte[] HmacEncrypt(byte[] encryptText, byte[] encryptKey,
+			String signType) {
 		try {
 			SecretKey secretKey = new SecretKeySpec(encryptKey, signType);
 			Mac mac = Mac.getInstance(secretKey.getAlgorithm());
@@ -128,9 +133,11 @@ public final class SignUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static byte[] HmacSHA1(String encryptText, String encryptKey, String charsetName) {
+	public static byte[] HmacSHA1(String encryptText, String encryptKey,
+			String charsetName) {
 		try {
-			return HmacEncrypt(encryptText.getBytes(charsetName), encryptKey.getBytes(charsetName), "HmacSHA1");
+			return HmacEncrypt(encryptText.getBytes(charsetName),
+					encryptKey.getBytes(charsetName), "HmacSHA1");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -198,5 +205,38 @@ public final class SignUtils {
 			e.printStackTrace();
 		}
 		return "";
+	}
+
+	public static String base64Encode(String text, String charsetName) {
+		try {
+			return Base64.encode(text.getBytes(charsetName));
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static String characterStringSign(String text, String charsetName,
+			SignType signType) {
+		Assert.notNull(text);
+		Assert.notNull(charsetName);
+		Assert.notNull(signType);
+		switch (signType) {
+		case MD5:
+			return md5Str(text, charsetName);
+		case BASE64:
+			return base64Encode(text, charsetName);
+		default:
+			throw new NotFoundException("不支持的签名方式");
+		}
+	}
+
+	public static String characterStringSign(String text, String charsetName,
+			SignType... signType) {
+		Assert.notEmpty(signType);
+		String sign = text;
+		for (SignType type : signType) {
+			sign = characterStringSign(sign, charsetName, type);
+		}
+		return sign;
 	}
 }

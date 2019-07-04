@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.core.Base64;
 import scw.core.net.http.HttpUtils;
+import scw.core.utils.SignType;
 import scw.core.utils.SignUtils;
 import scw.json.JSONObject;
 import scw.json.JSONUtils;
@@ -33,6 +33,10 @@ public class KDNiao {
 		this.https = https;
 	}
 
+	public KDNiao(String businessId, String apiKey) {
+		this(businessId, apiKey, false, true);
+	}
+
 	public synchronized void addDataSignUrlNotEncodeRequestTypeSet(
 			String requestType) {
 		if (dataSignUrlNotEncodeRequestTypeSet == null) {
@@ -44,6 +48,10 @@ public class KDNiao {
 	public boolean dataSignIsUrlEncodeByRequestType(String requestType) {
 		if ("101".equals(requestType) || "102".equals(requestType)) {
 			return false;
+		}
+
+		if (dataSignUrlNotEncodeRequestTypeSet == null) {
+			return true;
 		}
 
 		return !dataSignUrlNotEncodeRequestTypeSet.contains(requestType);
@@ -82,16 +90,13 @@ public class KDNiao {
 				HttpUtils.encode(requestData, CHARSET_NAME));
 		parameterMap.put("EBusinessID", businessId);
 		parameterMap.put("RequestType", requestType);
-
-		String dataSign = Base64.encode(SignUtils.md5Tobyte(requestData
-				+ apiKey, CHARSET_NAME));
+		String dataSign = SignUtils.characterStringSign(requestData + apiKey,
+				CHARSET_NAME, SignType.MD5, SignType.BASE64);
 		if (dataSignIsUrlEncodeByRequestType(requestType)) {
 			dataSign = HttpUtils.encode(dataSign, CHARSET_NAME);
 		}
-
 		parameterMap.put("DataSign", dataSign);
 		parameterMap.put("DataType", "2");
-
 		return HttpUtils.postForm(requestUrl, null, parameterMap, CHARSET_NAME);
 	}
 
@@ -128,5 +133,13 @@ public class KDNiao {
 		}
 
 		return new EbusinessOrderHandleResponse(json);
+	}
+
+	public static void main(String[] args) {
+		KDNiao kdNiao = new KDNiao("1283561",
+				"421640a9-4eb0-4ed0-9e0b-1d326a5d41cd");
+		EbusinessOrderHandleResponse response = kdNiao.businessOrderHandle(
+				null, "ZTO", "73115314882583");
+		System.out.println(JSONUtils.toJSONString(response));
 	}
 }
