@@ -15,6 +15,10 @@ public final class ArrayUtils {
 		return array == null || array.length == 0;
 	}
 
+	public static boolean isEmpty(long[] array) {
+		return array == null || array.length == 0;
+	}
+
 	public static boolean isEmpty(float[] array) {
 		return array == null || array.length == 0;
 	}

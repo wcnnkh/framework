@@ -3,7 +3,9 @@ package scw.sql.orm.result;
 import java.io.Serializable;
 import java.util.Map;
 
-public interface Result extends Serializable {
+import scw.core.Cloneable;
+
+public interface Result extends Serializable, Cloneable {
 	public final static Result EMPTY_RESULT = new EmptyResult();
 
 	/**

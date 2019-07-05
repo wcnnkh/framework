@@ -38,4 +38,9 @@ public final class EmptyResult implements Result {
 	public boolean isEmpty() {
 		return true;
 	}
+
+	@Override
+	public Object clone() {
+		return EMPTY_RESULT;
+	}
 }

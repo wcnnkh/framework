@@ -47,4 +47,9 @@ public final class EmptyResultSet implements ResultSet {
 	public Iterator<Result> iterator() {
 		return Collections.emptyIterator();
 	}
+	
+	@Override
+	public Object clone() {
+		return EMPTY_RESULTSET;
+	}
 }

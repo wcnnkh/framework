@@ -108,4 +108,10 @@ public final class DefaultResult extends AbstractResult {
 	protected static boolean isOriginalType(Class<?> type) {
 		return type.getName().startsWith("java.") || ClassUtils.isPrimitiveOrWrapper(type);
 	}
+
+	@Override
+	public Object clone() {
+		return new DefaultResult(metaData, values);
+	}
+	
 }

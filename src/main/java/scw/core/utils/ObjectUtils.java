@@ -140,7 +140,7 @@ public abstract class ObjectUtils {
 				return true;
 			}
 		} else if (obj.getClass().isArray()) {
-			if (((Object[]) obj).length == 0) {
+			if (Array.getLength(obj) == 0) {
 				return true;
 			}
 		}

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,10 @@ public final class DefaultResultSet extends AbstractResultSet {
 	 */
 	protected DefaultResultSet() {
 	};
+
+	DefaultResultSet(MetaData metaData, LinkedList<Object[]> dataList) {
+		super(metaData, dataList);
+	}
 
 	public DefaultResultSet(java.sql.ResultSet resultSet) throws SQLException {
 		super(resultSet);
@@ -163,5 +168,10 @@ public final class DefaultResultSet extends AbstractResultSet {
 		public Result next() {
 			return new DefaultResult(metaData, iterator.next());
 		}
+	}
+
+	@Override
+	public Object clone() {
+		return new DefaultResultSet(metaData, dataList);
 	}
 }

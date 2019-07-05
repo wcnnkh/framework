@@ -264,10 +264,6 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		}
 	}
 
-	public void createDataBase(Connection connection, String databaseName, String charsetName, String collate) {
-
-	}
-
 	public void createTable(Class<?> tableClass) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
 		createTable(tableClass, tableInfo.getDefaultName());

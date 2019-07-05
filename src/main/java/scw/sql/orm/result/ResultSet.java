@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public interface ResultSet extends Serializable, Iterable<Result> {
+public interface ResultSet extends Serializable, Iterable<Result>, scw.core.Cloneable{
 	public static final ResultSet EMPTY_RESULTSET = new EmptyResultSet();
 
 	/**

@@ -17,6 +17,11 @@ public abstract class AbstractResultSet implements ResultSet {
 	protected AbstractResultSet() {
 	};
 
+	protected AbstractResultSet(MetaData metaData, LinkedList<Object[]> dataList) {
+		this.metaData = metaData;
+		this.dataList = dataList;
+	}
+
 	public AbstractResultSet(java.sql.ResultSet resultSet) throws SQLException {
 		while (resultSet.next()) {
 			if (metaData == null) {// 第一次
@@ -42,10 +47,13 @@ public abstract class AbstractResultSet implements ResultSet {
 
 	@SuppressWarnings("unchecked")
 	public List<Object[]> getList() {
-		if(isEmpty()){
+		if (isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
-		
+
 		return new ArrayList<Object[]>(dataList);
 	}
+
+	@Override
+	public abstract Object clone();
 }

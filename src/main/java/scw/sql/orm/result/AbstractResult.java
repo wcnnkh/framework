@@ -173,4 +173,8 @@ public abstract class AbstractResult implements Result {
 		System.arraycopy(values, 0, dest, 0, dest.length);
 		return dest;
 	}
+	
+
+	@Override
+	public abstract Object clone();
 }
