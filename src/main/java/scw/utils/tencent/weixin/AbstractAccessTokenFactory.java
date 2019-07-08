@@ -1,22 +1,20 @@
 package scw.utils.tencent.weixin;
 
-import scw.utils.tencent.weixin.bean.AccessToken;
-
 public abstract class AbstractAccessTokenFactory implements AccessTokenFactory {
-	private final String appid;
-	private final String appsecret;
+	private final String appId;
+	private final String appSecret;
 
-	public AbstractAccessTokenFactory(String appid, String appsecret) {
-		this.appid = appid;
-		this.appsecret = appsecret;
+	public AbstractAccessTokenFactory(String appId, String appSecret) {
+		this.appId = appId;
+		this.appSecret = appSecret;
 	}
 
-	public String getAppid() {
-		return appid;
+	public String getAppId() {
+		return appId;
 	}
 
-	public String getAppsecret() {
-		return appsecret;
+	public String getAppSecret() {
+		return appSecret;
 	}
 
 	protected boolean isExpires() {

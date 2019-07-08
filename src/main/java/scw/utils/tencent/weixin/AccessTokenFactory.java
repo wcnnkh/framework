@@ -1,9 +1,9 @@
 package scw.utils.tencent.weixin;
 
 public interface AccessTokenFactory {
-	String getAppid();
+	String getAppId();
 
-	String getAppsecret();
+	String getAppSecret();
 
 	String getAccessToken();
 }

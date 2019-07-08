@@ -3,6 +3,10 @@ package scw.utils.tencent.weixin;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.core.json.JSONObject;
+import scw.core.json.JSONUtils;
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
 import scw.core.net.http.HttpUtils;
 import scw.core.utils.SignUtils;
 
@@ -10,20 +14,24 @@ import scw.core.utils.SignUtils;
  * @author shuchaowen
  */
 public final class WeiXinUtils {
+	private static Logger logger = LoggerFactory.getLogger(WeiXinUtils.class);
+	private static final String CODE_NAME = "errcode";
 	public static final String weixin_authorize_url = "https://open.weixin.qq.com/connect/oauth2/authorize";
 	public static final String weixin_qrconnect_url = "https://open.weixin.qq.com/connect/qrconnect";
 
-	private WeiXinUtils(){};
-	
+	private WeiXinUtils() {
+	};
+
 	/**
 	 * 授权登录
+	 * 
 	 * @param appid
 	 * @param redirect_uri
 	 * @param scope
 	 * @param state
 	 * @return
 	 */
-	public static String authorizeUlr(String appid, String redirect_uri, String scope, String state){
+	public static String authorizeUlr(String appid, String redirect_uri, String scope, String state) {
 		StringBuilder sb = new StringBuilder(weixin_authorize_url);
 		sb.append("?appid=").append(appid);
 		sb.append("&redirect_uri=").append(HttpUtils.encode(redirect_uri));
@@ -33,16 +41,17 @@ public final class WeiXinUtils {
 		sb.append("#wechat_redirect");
 		return sb.toString();
 	}
-	
+
 	/**
 	 * 扫码登录
+	 * 
 	 * @param appid
 	 * @param redirect_uri
 	 * @param scope
 	 * @param state
 	 * @return
 	 */
-	public static String qrcodeAuthorizeUrl(String appid, String redirect_uri, String scope, String state){
+	public static String qrcodeAuthorizeUrl(String appid, String redirect_uri, String scope, String state) {
 		StringBuilder sb = new StringBuilder(weixin_qrconnect_url);
 		sb.append("?appid=").append(appid);
 		sb.append("&redirect_uri=").append(HttpUtils.encode(redirect_uri));
@@ -67,21 +76,23 @@ public final class WeiXinUtils {
 			return 7 * 24 * 3600;
 		}
 	}
-	
-	public static String getPaySign(Map<String, String> paramMap, String apiKey){
+
+	public static String getPaySign(Map<String, String> paramMap, String apiKey) {
 		StringBuilder sb = SignUtils.getShotParamsStr(paramMap);
 		sb.append("&key=").append(apiKey);
 		return SignUtils.md5UpperStr(sb.toString(), "UTF-8");
-	}	
-	
+	}
+
 	/**
 	 * 获取微信公众号支付签名
+	 * 
 	 * @param timeStamp
 	 * @param nonceStr
 	 * @param prepay_id
 	 * @return
 	 */
-	public static String getBrandWCPayRequestSign(String appId, String apiKey, String timeStamp, String nonceStr, String prepay_id){
+	public static String getBrandWCPayRequestSign(String appId, String apiKey, String timeStamp, String nonceStr,
+			String prepay_id) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("appId", appId);
 		map.put("timeStamp", timeStamp);
@@ -90,8 +101,9 @@ public final class WeiXinUtils {
 		map.put("signType", "MD5");
 		return getPaySign(map, apiKey);
 	}
-	
-	public static String getAppPayRequestSign(String appId, String mch_id, String apiKey, long timeStamp, String noceStr, String prepay_id){
+
+	public static String getAppPayRequestSign(String appId, String mch_id, String apiKey, long timeStamp,
+			String noceStr, String prepay_id) {
 		Map<String, String> signMap = new HashMap<String, String>();
 		signMap.put("appid", appId);
 		signMap.put("partnerid", mch_id);
@@ -100,5 +112,57 @@ public final class WeiXinUtils {
 		signMap.put("noncestr", noceStr);
 		signMap.put("timestamp", timeStamp + "");
 		return getPaySign(signMap, apiKey);
+	}
+
+	private static boolean checkResponse(JSONObject json) {
+		if (json == null) {
+			return false;
+		}
+
+		Integer code = json.getInteger(CODE_NAME);
+		return code != null && code == 0;
+	}
+
+	public static JSONObject doPost(String url, Object data) {
+		String content = HttpUtils.postJson(url, null, data);
+		JSONObject json = JSONUtils.parseObject(content);
+		if (!checkResponse(json)) {
+			logger.error("{}请求错误：{}", url, content);
+		}
+		return json;
+	}
+
+	public static JSONObject doGet(String url) {
+		String content = HttpUtils.doGet(url);
+		JSONObject json = JSONUtils.parseObject(content);
+		if (!checkResponse(json)) {
+			logger.error("{}请求错误：{}", url, content);
+		}
+		return json;
+	}
+
+	public static AccessToken getAccessToken(String appId, String appSecret) {
+		return getAccessToken("client_credential", appId, appSecret);
+	}
+
+	public static AccessToken getAccessToken(String grant_type, String appId, String appSecret) {
+		StringBuilder sb = new StringBuilder("https://api.weixin.qq.com/cgi-bin/token");
+		sb.append("?grant_type=").append(grant_type);
+		sb.append("&appid=").append(appId);
+		sb.append("&secret=").append(appSecret);
+		JSONObject json = doGet(sb.toString());
+		return new AccessToken(json);
+	}
+
+	public static Ticket getJsApiTicket(String access_token) {
+		return getTicket(access_token, "jsapi");
+	}
+
+	public static Ticket getTicket(String access_token, String type) {
+		StringBuilder sb = new StringBuilder("https://api.weixin.qq.com/cgi-bin/ticket/getticket");
+		sb.append("?access_token=").append(access_token);
+		sb.append("&type=").append(type);
+		JSONObject json = doGet(sb.toString());
+		return new Ticket(json);
 	}
 }

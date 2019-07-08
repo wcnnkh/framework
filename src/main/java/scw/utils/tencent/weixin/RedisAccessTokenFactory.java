@@ -2,8 +2,6 @@ package scw.utils.tencent.weixin;
 
 import scw.data.redis.Redis;
 import scw.utils.locks.RedisLock;
-import scw.utils.tencent.weixin.bean.AccessToken;
-import scw.utils.tencent.weixin.process.GetAccessToken;
 
 public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory {
 	private final Redis redis;
@@ -13,8 +11,8 @@ public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory {
 	public RedisAccessTokenFactory(Redis redis, String appid, String appsecret) {
 		super(appid, appsecret);
 		this.redis = redis;
-		this.key = this.getClass().getName() + "#" + getAppid();
-		this.lockKey = this.getClass().getName() + "#lock#" + getAppid();
+		this.key = this.getClass().getName() + "#" + getAppId();
+		this.lockKey = this.getClass().getName() + "#lock#" + getAppSecret();
 	}
 
 	@Override
@@ -32,9 +30,8 @@ public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory {
 		if (lock.lock()) {
 			try {
 				if (isExpires()) {
-					GetAccessToken getAccessToken = new GetAccessToken(getAppid(), getAppsecret());
-					if (getAccessToken.isSuccess()) {
-						AccessToken accessToken = getAccessToken.getAccessToken();
+					AccessToken accessToken = WeiXinUtils.getAccessToken(getAppId(), getAppSecret());
+					if (accessToken.isSuccess()) {
 						redis.getObjectOperations().setex(key, accessToken.getExpires_in(), accessToken);
 						return accessToken;
 					}
