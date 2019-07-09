@@ -5,15 +5,15 @@ import scw.beans.annotation.Bean;
 @Bean(proxy = false)
 public class DefaultResultFactory extends AbstractResultFactory {
 	private final int defaultErrorCode;
-	private final int defaultSuccessCode;
+	private final int successCode;
 	private final int authorizationFailureCode;
 	private final int parameterErrorCode;
 
 	public DefaultResultFactory(String propertiesFilePath, String charsetName, int defaultErrorCode,
-			int defaultSuccessCode, int authorizationFailureCode, int parameterErrorCode) {
+			int successCode, int authorizationFailureCode, int parameterErrorCode) {
 		super(propertiesFilePath, charsetName);
 		this.defaultErrorCode = defaultErrorCode;
-		this.defaultSuccessCode = defaultSuccessCode;
+		this.successCode = successCode;
 		this.authorizationFailureCode = authorizationFailureCode;
 		this.parameterErrorCode = parameterErrorCode;
 	}
@@ -28,8 +28,8 @@ public class DefaultResultFactory extends AbstractResultFactory {
 	}
 
 	@Override
-	public int getDefaultSuccessCode() {
-		return defaultSuccessCode;
+	public int getSuccessCode() {
+		return successCode;
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class DefaultResultFactory extends AbstractResultFactory {
 	}
 
 	public <T> DataResult<T> success(T data) {
-		int code = getDefaultSuccessCode();
+		int code = getSuccessCode();
 		return new DefaultResult<T>(true, code, data, getMsg(code));
 	}
 

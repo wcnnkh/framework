@@ -1,6 +1,7 @@
 package scw.core.utils;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.CharBuffer;
@@ -183,7 +184,8 @@ public final class StringUtils {
 		while (sb.length() > 0 && Character.isWhitespace(sb.charAt(0))) {
 			sb.deleteCharAt(0);
 		}
-		while (sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
+		while (sb.length() > 0
+				&& Character.isWhitespace(sb.charAt(sb.length() - 1))) {
 			sb.deleteCharAt(sb.length() - 1);
 		}
 		return sb.toString();
@@ -246,7 +248,8 @@ public final class StringUtils {
 			return str;
 		}
 		StringBuilder sb = new StringBuilder(str);
-		while (sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
+		while (sb.length() > 0
+				&& Character.isWhitespace(sb.charAt(sb.length() - 1))) {
 			sb.deleteCharAt(sb.length() - 1);
 		}
 		return sb.toString();
@@ -283,12 +286,14 @@ public final class StringUtils {
 	 *            the trailing character to be trimmed
 	 * @return the trimmed String
 	 */
-	public static String trimTrailingCharacter(String str, char trailingCharacter) {
+	public static String trimTrailingCharacter(String str,
+			char trailingCharacter) {
 		if (!hasLength(str)) {
 			return str;
 		}
 		StringBuilder sb = new StringBuilder(str);
-		while (sb.length() > 0 && sb.charAt(sb.length() - 1) == trailingCharacter) {
+		while (sb.length() > 0
+				&& sb.charAt(sb.length() - 1) == trailingCharacter) {
 			sb.deleteCharAt(sb.length() - 1);
 		}
 		return sb.toString();
@@ -340,7 +345,8 @@ public final class StringUtils {
 			return false;
 		}
 
-		String lcStr = str.substring(str.length() - suffix.length()).toLowerCase();
+		String lcStr = str.substring(str.length() - suffix.length())
+				.toLowerCase();
 		String lcSuffix = suffix.toLowerCase();
 		return lcStr.equals(lcSuffix);
 	}
@@ -356,7 +362,8 @@ public final class StringUtils {
 	 * @param substring
 	 *            the substring to match at the given index
 	 */
-	public static boolean substringMatch(CharSequence str, int index, CharSequence substring) {
+	public static boolean substringMatch(CharSequence str, int index,
+			CharSequence substring) {
 		for (int j = 0; j < substring.length(); j++) {
 			int i = index + j;
 			if (i >= str.length() || str.charAt(i) != substring.charAt(j)) {
@@ -375,7 +382,8 @@ public final class StringUtils {
 	 *            string to search for. Return 0 if this is null.
 	 */
 	public static int countOccurrencesOf(String str, String sub) {
-		if (str == null || sub == null || str.length() == 0 || sub.length() == 0) {
+		if (str == null || sub == null || str.length() == 0
+				|| sub.length() == 0) {
 			return 0;
 		}
 		int count = 0;
@@ -400,8 +408,10 @@ public final class StringUtils {
 	 *            String to insert
 	 * @return a String with the replacements
 	 */
-	public static String replace(String inString, String oldPattern, String newPattern) {
-		if (!hasLength(inString) || !hasLength(oldPattern) || newPattern == null) {
+	public static String replace(String inString, String oldPattern,
+			String newPattern) {
+		if (!hasLength(inString) || !hasLength(oldPattern)
+				|| newPattern == null) {
 			return inString;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -507,7 +517,8 @@ public final class StringUtils {
 	 *            the separator
 	 */
 	public static String unqualify(String qualifiedName, char separator) {
-		return qualifiedName.substring(qualifiedName.lastIndexOf(separator) + 1);
+		return qualifiedName
+				.substring(qualifiedName.lastIndexOf(separator) + 1);
 	}
 
 	/**
@@ -534,7 +545,8 @@ public final class StringUtils {
 		return changeFirstCharacterCase(str, false);
 	}
 
-	private static String changeFirstCharacterCase(String str, boolean capitalize) {
+	private static String changeFirstCharacterCase(String str,
+			boolean capitalize) {
 		if (str == null || str.length() == 0) {
 			return str;
 		}
@@ -561,7 +573,8 @@ public final class StringUtils {
 			return null;
 		}
 		int separatorIndex = path.lastIndexOf(FOLDER_SEPARATOR);
-		return (separatorIndex != -1 ? path.substring(separatorIndex + 1) : path);
+		return (separatorIndex != -1 ? path.substring(separatorIndex + 1)
+				: path);
 	}
 
 	/**
@@ -650,7 +663,8 @@ public final class StringUtils {
 		if (path == null) {
 			return null;
 		}
-		String pathToUse = replace(path, WINDOWS_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
+		String pathToUse = replace(path, WINDOWS_FOLDER_SEPARATOR,
+				FOLDER_SEPARATOR);
 
 		// Strip prefix from path to analyze, to not treat it as part of the
 		// first path element. This is necessary to correctly parse paths like
@@ -667,7 +681,8 @@ public final class StringUtils {
 			pathToUse = pathToUse.substring(1);
 		}
 
-		String[] pathArray = delimitedListToStringArray(pathToUse, FOLDER_SEPARATOR);
+		String[] pathArray = delimitedListToStringArray(pathToUse,
+				FOLDER_SEPARATOR);
 		List<String> pathElements = new LinkedList<String>();
 		int tops = 0;
 
@@ -695,7 +710,8 @@ public final class StringUtils {
 			pathElements.add(0, TOP_PATH);
 		}
 
-		return prefix + collectionToDelimitedString(pathElements, FOLDER_SEPARATOR);
+		return prefix
+				+ collectionToDelimitedString(pathElements, FOLDER_SEPARATOR);
 	}
 
 	/**
@@ -734,22 +750,26 @@ public final class StringUtils {
 			// There is definitely a variant, and it is everything after the
 			// country
 			// code sans the separator between the country code and the variant.
-			int endIndexOfCountryCode = localeString.lastIndexOf(country) + country.length();
+			int endIndexOfCountryCode = localeString.lastIndexOf(country)
+					+ country.length();
 			// Strip off any leading '_' and whitespace, what's left is the
 			// variant.
-			variant = trimLeadingWhitespace(localeString.substring(endIndexOfCountryCode));
+			variant = trimLeadingWhitespace(localeString
+					.substring(endIndexOfCountryCode));
 			if (variant.startsWith("_")) {
 				variant = trimLeadingCharacter(variant, '_');
 			}
 		}
-		return (language.length() > 0 ? new Locale(language, country, variant) : null);
+		return (language.length() > 0 ? new Locale(language, country, variant)
+				: null);
 	}
 
 	private static void validateLocalePart(String localePart) {
 		for (int i = 0; i < localePart.length(); i++) {
 			char ch = localePart.charAt(i);
 			if (ch != '_' && ch != ' ' && !Character.isLetterOrDigit(ch)) {
-				throw new IllegalArgumentException("Locale part \"" + localePart + "\" contains invalid characters");
+				throw new IllegalArgumentException("Locale part \""
+						+ localePart + "\" contains invalid characters");
 			}
 		}
 	}
@@ -763,7 +783,9 @@ public final class StringUtils {
 	 * @return the RFC 3066 compliant language tag as String
 	 */
 	public static String toLanguageTag(Locale locale) {
-		return locale.getLanguage() + (hasText(locale.getCountry()) ? "-" + locale.getCountry() : "");
+		return locale.getLanguage()
+				+ (hasText(locale.getCountry()) ? "-" + locale.getCountry()
+						: "");
 	}
 
 	// ---------------------------------------------------------------------
@@ -803,7 +825,8 @@ public final class StringUtils {
 	 * @return the new array ({@code null} if both given arrays were
 	 *         {@code null})
 	 */
-	public static String[] concatenateStringArrays(String[] array1, String[] array2) {
+	public static String[] concatenateStringArrays(String[] array1,
+			String[] array2) {
 		if (ObjectUtils.isEmpty(array1)) {
 			return array2;
 		}
@@ -951,7 +974,8 @@ public final class StringUtils {
 	 * @return a {@code Properties} instance representing the array contents, or
 	 *         {@code null} if the array to process was null or empty
 	 */
-	public static Properties splitArrayElementsIntoProperties(String[] array, String delimiter) {
+	public static Properties splitArrayElementsIntoProperties(String[] array,
+			String delimiter) {
 		return splitArrayElementsIntoProperties(array, delimiter, null);
 	}
 
@@ -975,7 +999,8 @@ public final class StringUtils {
 	 * @return a {@code Properties} instance representing the array contents, or
 	 *         {@code null} if the array to process was {@code null} or empty
 	 */
-	public static Properties splitArrayElementsIntoProperties(String[] array, String delimiter, String charsToDelete) {
+	public static Properties splitArrayElementsIntoProperties(String[] array,
+			String delimiter, String charsToDelete) {
 
 		if (ObjectUtils.isEmpty(array)) {
 			return null;
@@ -989,7 +1014,8 @@ public final class StringUtils {
 			if (splittedElement == null) {
 				continue;
 			}
-			result.setProperty(splittedElement[0].trim(), splittedElement[1].trim());
+			result.setProperty(splittedElement[0].trim(),
+					splittedElement[1].trim());
 		}
 		return result;
 	}
@@ -1042,8 +1068,8 @@ public final class StringUtils {
 	 * @see String#trim()
 	 * @see #delimitedListToStringArray
 	 */
-	public static String[] tokenizeToStringArray(String str, String delimiters, boolean trimTokens,
-			boolean ignoreEmptyTokens) {
+	public static String[] tokenizeToStringArray(String str, String delimiters,
+			boolean trimTokens, boolean ignoreEmptyTokens) {
 
 		if (str == null) {
 			return null;
@@ -1078,7 +1104,8 @@ public final class StringUtils {
 	 * @return an array of the tokens in the list
 	 * @see #tokenizeToStringArray
 	 */
-	public static String[] delimitedListToStringArray(String str, String delimiter) {
+	public static String[] delimitedListToStringArray(String str,
+			String delimiter) {
 		return delimitedListToStringArray(str, delimiter, null);
 	}
 
@@ -1102,7 +1129,8 @@ public final class StringUtils {
 	 * @return an array of the tokens in the list
 	 * @see #tokenizeToStringArray
 	 */
-	public static String[] delimitedListToStringArray(String str, String delimiter, String charsToDelete) {
+	public static String[] delimitedListToStringArray(String str,
+			String delimiter, String charsToDelete) {
 		if (str == null) {
 			return new String[0];
 		}
@@ -1171,7 +1199,8 @@ public final class StringUtils {
 	 *            the String to end each element with
 	 * @return the delimited String
 	 */
-	public static String collectionToDelimitedString(Collection<?> coll, String delim, String prefix, String suffix) {
+	public static String collectionToDelimitedString(Collection<?> coll,
+			String delim, String prefix, String suffix) {
 		if (CollectionUtils.isEmpty(coll)) {
 			return "";
 		}
@@ -1196,7 +1225,8 @@ public final class StringUtils {
 	 *            the delimiter to use (probably a ",")
 	 * @return the delimited String
 	 */
-	public static String collectionToDelimitedString(Collection<?> coll, String delim) {
+	public static String collectionToDelimitedString(Collection<?> coll,
+			String delim) {
 		return collectionToDelimitedString(coll, delim, "", "");
 	}
 
@@ -1253,11 +1283,13 @@ public final class StringUtils {
 
 	/** ------------------传说中的分割线----------------------- **/
 	private static final String IOS_NULL = "(null)";
-	private static final char[] DEFAULT_SPLIT_CHARS = new char[] { ' ', ',', ';', '、' };
+	private static final char[] DEFAULT_SPLIT_CHARS = new char[] { ' ', ',',
+			';', '、' };
 
 	public static boolean isNull(boolean trim, String... text) {
 		for (String s : text) {
-			if (s == null || s.length() == 0 || (trim && s.trim().length() == 0)) {
+			if (s == null || s.length() == 0
+					|| (trim && s.trim().length() == 0)) {
 				return true;
 			}
 		}
@@ -1355,12 +1387,14 @@ public final class StringUtils {
 		}
 	}
 
-	public static <T> List<T> splitList(Class<T> type, String strs, String filter) {
+	public static <T> List<T> splitList(Class<T> type, String strs,
+			String filter) {
 		return splitList(type, strs, filter, true);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> List<T> splitList(Class<T> type, String strs, String filter, boolean isTrim) {
+	public static <T> List<T> splitList(Class<T> type, String strs,
+			String filter, boolean isTrim) {
 		Assert.notNull(type);
 		Assert.notNull(filter);
 
@@ -1805,7 +1839,8 @@ public final class StringUtils {
 		for (int i = 0; i < len; i++) {
 			charBuffer.put("0");
 		}
-		DecimalFormat decimalFormat = new DecimalFormat(new String(charBuffer.array()));
+		DecimalFormat decimalFormat = new DecimalFormat(new String(
+				charBuffer.array()));
 		return decimalFormat.format(number);
 	}
 
@@ -1879,7 +1914,8 @@ public final class StringUtils {
 		return true;
 	}
 
-	public static boolean test(String text, String match, char matchChar, boolean multiple) {
+	public static boolean test(String text, String match, char matchChar,
+			boolean multiple) {
 		if (match.indexOf(matchChar) == -1) {
 			return text.equals(match);
 		}
@@ -1943,7 +1979,8 @@ public final class StringUtils {
 		return split(str, true, filters);
 	}
 
-	public static String[] split(String str, boolean ignoreNull, char... filters) {
+	public static String[] split(String str, boolean ignoreNull,
+			char... filters) {
 		if (isEmpty(str)) {
 			return new String[0];
 		}
@@ -1980,7 +2017,8 @@ public final class StringUtils {
 		return list.toArray(new String[list.size()]);
 	}
 
-	public static String[] split(String str, boolean ignoreNull, String... filters) {
+	public static String[] split(String str, boolean ignoreNull,
+			String... filters) {
 		if (isEmpty(str)) {
 			return new String[0];
 		}
@@ -2083,8 +2121,8 @@ public final class StringUtils {
 			return defaultValue;
 		}
 
-		return "1".equals(text) || "true".equalsIgnoreCase(text) || "yes".equalsIgnoreCase(text)
-				|| "T".equalsIgnoreCase(text);
+		return "1".equals(text) || "true".equalsIgnoreCase(text)
+				|| "yes".equalsIgnoreCase(text) || "T".equalsIgnoreCase(text);
 	}
 
 	public static boolean parseBoolean(String text) {
@@ -2175,7 +2213,8 @@ public final class StringUtils {
 		return text.charAt(0);
 	}
 
-	public static BigInteger parseBigInteger(String text, int radix, BigInteger defaultValue) {
+	public static BigInteger parseBigInteger(String text, int radix,
+			BigInteger defaultValue) {
 		String v = formatNumberText(text);
 		if (StringUtils.isEmpty(v)) {
 			return defaultValue;
@@ -2184,7 +2223,8 @@ public final class StringUtils {
 		return new BigInteger(v, radix);
 	}
 
-	public static BigDecimal parseBigDecimal(String text, BigDecimal defaultValue) {
+	public static BigDecimal parseBigDecimal(String text,
+			BigDecimal defaultValue) {
 		String v = formatNumberText(text);
 		if (StringUtils.isEmpty(v)) {
 			return defaultValue;
@@ -2241,7 +2281,8 @@ public final class StringUtils {
 							value = (value << 4) + 10 + aChar - 'A';
 							break;
 						default:
-							throw new IllegalArgumentException("Malformed   \\uxxxx   encoding.");
+							throw new IllegalArgumentException(
+									"Malformed   \\uxxxx   encoding.");
 						}
 					}
 					outBuffer.append((char) value);
@@ -2275,13 +2316,15 @@ public final class StringUtils {
 		return (T) conversion(value, basicType, new Callable<Object>() {
 
 			public Object call() throws Exception {
-				throw new RuntimeException(value + "无法转换为" + basicType.getName() + "类型");
+				throw new RuntimeException(value + "无法转换为"
+						+ basicType.getName() + "类型");
 			}
 		});
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static Object conversion(String value, Class<?> basicType, Callable<?> notfoundTypeCallable) {
+	public static Object conversion(String value, Class<?> basicType,
+			Callable<?> notfoundTypeCallable) {
 		if (String.class.isAssignableFrom(basicType)) {
 			return value;
 		} else if (int.class.isAssignableFrom(basicType)) {
@@ -2299,7 +2342,8 @@ public final class StringUtils {
 		} else if (short.class.isAssignableFrom(basicType)) {
 			return parseShort(value, (short) 0);
 		} else if (Short.class.isAssignableFrom(basicType)) {
-			return StringUtils.isEmpty(value) ? null : parseShort(value, (short) 0);
+			return StringUtils.isEmpty(value) ? null : parseShort(value,
+					(short) 0);
 		} else if (boolean.class.isAssignableFrom(basicType)) {
 			return parseBoolean(value);
 		} else if (Boolean.class.isAssignableFrom(basicType)) {
@@ -2307,7 +2351,8 @@ public final class StringUtils {
 		} else if (byte.class.isAssignableFrom(basicType)) {
 			return parseByte(value, (byte) 0);
 		} else if (Byte.class.isAssignableFrom(basicType)) {
-			return StringUtils.isEmpty(value) ? null : parseByte(value, (byte) 0);
+			return StringUtils.isEmpty(value) ? null : parseByte(value,
+					(byte) 0);
 		} else if (char.class.isAssignableFrom(basicType)) {
 			return parseChar(value);
 		} else if (Character.class.isAssignableFrom(basicType)) {
@@ -2317,7 +2362,8 @@ public final class StringUtils {
 		} else if (BigDecimal.class.isAssignableFrom(basicType)) {
 			return parseBigDecimal(value, null);
 		} else if (basicType.isEnum()) {
-			return StringUtils.isEmpty(value) ? null : Enum.valueOf((Class<? extends Enum>) basicType, value);
+			return StringUtils.isEmpty(value) ? null : Enum.valueOf(
+					(Class<? extends Enum>) basicType, value);
 		} else {
 			try {
 				return notfoundTypeCallable.call();
@@ -2421,7 +2467,8 @@ public final class StringUtils {
 		return new String(chars);
 	}
 
-	public static String formatPlaceholder(String text, String placeholder, Object... args) {
+	public static String formatPlaceholder(String text, String placeholder,
+			Object... args) {
 		StringBuilder sb = new StringBuilder();
 		try {
 			formatPlaceholder(sb, text, placeholder, args);
@@ -2431,14 +2478,15 @@ public final class StringUtils {
 		return sb.toString();
 	}
 
-	public static void formatPlaceholder(Appendable appendable, String text, String placeholder, Object... args)
-			throws Exception {
+	public static void formatPlaceholder(Appendable appendable, String text,
+			String placeholder, Object... args) throws Exception {
 		if (StringUtils.isEmpty(text) || ArrayUtils.isEmpty(args)) {
 			appendable.append(text);
 			return;
 		}
 
-		String findText = StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER : placeholder;
+		String findText = StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER
+				: placeholder;
 		int lastFind = 0;
 		for (int i = 0; i < args.length; i++) {
 			int index = text.indexOf(findText, lastFind);
@@ -2464,6 +2512,14 @@ public final class StringUtils {
 			appendable.append(text);
 		} else {
 			appendable.append(text.substring(lastFind));
+		}
+	}
+
+	public static String createString(byte[] bytes, String charsetName) {
+		try {
+			return new String(bytes, charsetName);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

@@ -40,7 +40,7 @@ public abstract class AbstractResultFactory implements ResultFactory {
 
 	public abstract int getDefaultErrorCode();
 
-	public abstract int getDefaultSuccessCode();
+	public abstract int getSuccessCode();
 
 	public abstract int getAuthorizationFailureCode();
 
