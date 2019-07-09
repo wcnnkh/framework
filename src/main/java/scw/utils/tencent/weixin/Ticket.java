@@ -1,4 +1,4 @@
-package scw.utils.tencent.weixin.ticket;
+package scw.utils.tencent.weixin;
 
 import scw.core.json.JSONObject;
 import scw.utils.tencent.weixin.BaseResponse;

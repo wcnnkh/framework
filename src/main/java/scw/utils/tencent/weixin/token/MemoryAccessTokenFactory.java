@@ -1,5 +1,6 @@
 package scw.utils.tencent.weixin.token;
 
+import scw.utils.tencent.weixin.AccessToken;
 import scw.utils.tencent.weixin.WeiXinUtils;
 
 public final class MemoryAccessTokenFactory extends AbstractAccessTokenFactory {

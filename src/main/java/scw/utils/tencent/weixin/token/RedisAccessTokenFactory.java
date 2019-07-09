@@ -2,6 +2,7 @@ package scw.utils.tencent.weixin.token;
 
 import scw.data.redis.Redis;
 import scw.utils.locks.RedisLock;
+import scw.utils.tencent.weixin.AccessToken;
 import scw.utils.tencent.weixin.WeiXinUtils;
 
 public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory {

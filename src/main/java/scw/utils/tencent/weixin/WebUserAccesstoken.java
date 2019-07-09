@@ -1,7 +1,6 @@
 package scw.utils.tencent.weixin;
 
 import scw.core.json.JSONObject;
-import scw.utils.tencent.weixin.token.AccessToken;
 
 /**
  * 用code换取的信息

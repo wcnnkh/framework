@@ -10,8 +10,6 @@ import scw.core.logger.LoggerFactory;
 import scw.core.net.http.HttpUtils;
 import scw.core.utils.SignUtils;
 import scw.utils.tencent.weixin.miniprogram.WeappTemplateMsg;
-import scw.utils.tencent.weixin.ticket.Ticket;
-import scw.utils.tencent.weixin.token.AccessToken;
 
 /**
  * @author shuchaowen
