@@ -1,22 +1,34 @@
-package scw.utils.tencent.weixin;
+package scw.utils.tencent.weixin.ticket;
 
 import scw.data.redis.Redis;
 import scw.utils.locks.RedisLock;
+import scw.utils.tencent.weixin.Ticket;
+import scw.utils.tencent.weixin.WeiXinUtils;
+import scw.utils.tencent.weixin.token.AccessTokenFactory;
+import scw.utils.tencent.weixin.token.RedisAccessTokenFactory;
 
 public final class RedisTicketFactory extends AbstractTicketFactory {
 	private final Redis redis;
 	private final String key;
 	private final String lockKey;
 
-	public RedisTicketFactory(Redis redis, String appid, String appsecret, String type) {
-		this(redis, appid, new RedisAccessTokenFactory(redis, appid, appsecret), type);
+	public RedisTicketFactory(Redis redis, String appId, String appSecret) {
+		this(redis, appId, appSecret, "jsapi");
+	}
+
+	public RedisTicketFactory(Redis redis, String appId, String appSecret, String type) {
+		this(redis, appId, new RedisAccessTokenFactory(redis, appId, appSecret), type);
+	}
+
+	public RedisTicketFactory(Redis redis, String key, AccessTokenFactory accessTokenFactory) {
+		this(redis, key, accessTokenFactory, "jsapi");
 	}
 
 	public RedisTicketFactory(Redis redis, String key, AccessTokenFactory accessTokenFactory, String type) {
 		super(accessTokenFactory, type);
 		this.redis = redis;
-		this.key = this.getClass().getName() + "#" + key;
-		this.lockKey = this.getClass().getName() + "#lock#" + key;
+		this.key = "wx_ticket:#" + type + "#" + key;
+		this.lockKey = "wx_ticket:#lock#" + type + "#" + key;
 	}
 
 	@Override

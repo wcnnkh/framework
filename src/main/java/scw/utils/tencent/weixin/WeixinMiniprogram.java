@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 
 import scw.core.json.JSONArray;
 import scw.core.json.JSONObject;
-import scw.utils.tencent.weixin.bean.MpTemplateMsg;
 
 /**
  * 微信小程序实现
@@ -218,18 +217,6 @@ public class WeixinMiniprogram {
 		map.put("template_info", template_info);
 		JSONObject json = WeiXinUtils.doPost(
 				"https://api.weixin.qq.com/cgi-bin/message/wxopen/updatablemsg/send?access_token=" + access_token, map);
-		return new BaseResponse(json);
-	}
-
-	public BaseResponse sendUniformMessage(String access_token, String touser, WeappTemplateMsg weapp_template_msg,
-			MpTemplateMsg mp_template_msg) {
-		Map<String, Object> map = new HashMap<String, Object>(4, 1);
-		map.put("touser", touser);
-		map.put("weapp_template_msg", weapp_template_msg);
-		map.put("mp_template_msg", mp_template_msg);
-		JSONObject json = WeiXinUtils.doPost(
-				"https://api.weixin.qq.com/cgi-bin/message/wxopen/template/uniform_send?access_token=" + access_token,
-				map);
 		return new BaseResponse(json);
 	}
 

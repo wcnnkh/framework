@@ -1,7 +1,9 @@
-package scw.utils.tencent.weixin;
+package scw.utils.tencent.weixin.token;
 
 import scw.data.memcached.Memcached;
 import scw.utils.locks.MemcachedLock;
+import scw.utils.tencent.weixin.AccessToken;
+import scw.utils.tencent.weixin.WeiXinUtils;
 
 public final class MemcachedAccessTokenFactory extends AbstractAccessTokenFactory {
 	private final Memcached memcached;
@@ -11,8 +13,8 @@ public final class MemcachedAccessTokenFactory extends AbstractAccessTokenFactor
 	public MemcachedAccessTokenFactory(Memcached memcached, String appid, String appsecret) {
 		super(appid, appsecret);
 		this.memcached = memcached;
-		this.key = this.getClass().getName() + "#" + getAppId();
-		this.lockKey = this.getClass().getName() + "#lock#" + getAppId();
+		this.key = "wx_access_token:#" + getAppId();
+		this.lockKey = "wx_access_token:#lock#" + getAppId();
 	}
 
 	@Override

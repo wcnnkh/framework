@@ -2,7 +2,7 @@ package scw.utils.tencent.weixin;
 
 import scw.core.json.JSONObject;
 
-public final class AccessToken extends BaseResponse {
+public class AccessToken extends BaseResponse {
 	private static final long serialVersionUID = 1L;
 	private String access_token;
 	private int expires_in;

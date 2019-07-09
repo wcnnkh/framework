@@ -1,9 +1,16 @@
-package scw.utils.tencent.weixin;
+package scw.utils.tencent.weixin.ticket;
+
+import scw.utils.tencent.weixin.Ticket;
+import scw.utils.tencent.weixin.token.AccessTokenFactory;
 
 public abstract class AbstractTicketFactory implements TicketFactory {
 	private final AccessTokenFactory accessTokenFactory;
 	private String type;
 
+	/**
+	 * @param accessTokenFactory
+	 * @param type 一般使用jsapi
+	 */
 	public AbstractTicketFactory(AccessTokenFactory accessTokenFactory, String type) {
 		this.accessTokenFactory = accessTokenFactory;
 		this.type = type;

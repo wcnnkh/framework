@@ -1,7 +1,9 @@
-package scw.utils.tencent.weixin;
+package scw.utils.tencent.weixin.token;
 
 import scw.data.redis.Redis;
 import scw.utils.locks.RedisLock;
+import scw.utils.tencent.weixin.AccessToken;
+import scw.utils.tencent.weixin.WeiXinUtils;
 
 public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory {
 	private final Redis redis;
@@ -11,8 +13,8 @@ public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory {
 	public RedisAccessTokenFactory(Redis redis, String appid, String appsecret) {
 		super(appid, appsecret);
 		this.redis = redis;
-		this.key = this.getClass().getName() + "#" + getAppId();
-		this.lockKey = this.getClass().getName() + "#lock#" + getAppSecret();
+		this.key = "wx_access_token:#" + getAppId();
+		this.lockKey = "wx_access_token:#lock#" + getAppSecret();
 	}
 
 	@Override

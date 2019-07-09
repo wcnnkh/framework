@@ -28,7 +28,6 @@ import scw.core.utils.RandomUtils;
 import scw.core.utils.SignUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-import scw.utils.tencent.weixin.bean.Unifiedorder;
 
 public final class WeiXinPay {
 	private static Logger logger = LoggerFactory.getLogger(WeiXinPay.class);

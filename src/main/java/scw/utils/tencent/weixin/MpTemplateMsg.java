@@ -1,4 +1,4 @@
-package scw.utils.tencent.weixin.bean;
+package scw.utils.tencent.weixin;
 
 import java.io.Serializable;
 

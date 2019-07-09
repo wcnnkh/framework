@@ -9,6 +9,7 @@ import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.http.HttpUtils;
 import scw.core.utils.SignUtils;
+import scw.utils.tencent.weixin.WeixinMiniprogram.WeappTemplateMsg;
 
 /**
  * @author shuchaowen
@@ -18,6 +19,10 @@ public final class WeiXinUtils {
 	private static final String CODE_NAME = "errcode";
 	public static final String weixin_authorize_url = "https://open.weixin.qq.com/connect/oauth2/authorize";
 	public static final String weixin_qrconnect_url = "https://open.weixin.qq.com/connect/qrconnect";
+
+	public enum Scope {
+		snsapi_base, snsapi_userinfo
+	}
 
 	private WeiXinUtils() {
 	};
@@ -164,5 +169,45 @@ public final class WeiXinUtils {
 		sb.append("&type=").append(type);
 		JSONObject json = doGet(sb.toString());
 		return new Ticket(json);
+	}
+
+	public static WebUserAccesstoken getWebUserAccesstoken(String appid, String appsecret, String code) {
+		Map<String, String> map = new HashMap<String, String>(4, 1);
+		map.put("appid", appid);
+		map.put("secret", appsecret);
+		map.put("code", code);
+		map.put("grant_type", "authorization_code");
+		JSONObject json = doPost("https://api.weixin.qq.com/sns/oauth2/access_token", map);
+		return new WebUserAccesstoken(json);
+	}
+
+	public static WebUserAccesstoken refreshWebUserAccesstoken(String appid, String refresh_token) {
+		Map<String, String> map = new HashMap<String, String>(4, 1);
+		map.put("appid", appid);
+		map.put("grant_type", "refresh_token");
+		map.put("refresh_token", refresh_token);
+		JSONObject json = doPost("https://api.weixin.qq.com/sns/oauth2/refresh_token", map);
+		return new WebUserAccesstoken(json);
+	}
+
+	public static WebUserInfo getWebUserInfo(String openid, String user_access_token) {
+		Map<String, String> paramMap = new HashMap<String, String>();
+		paramMap.put("access_token", user_access_token);
+		paramMap.put("openid", openid);
+		paramMap.put("lang", "zh_CN");
+		JSONObject json = doPost("https://api.weixin.qq.com/sns/userinfo", paramMap);
+		return new WebUserInfo(json);
+	}
+	
+	public BaseResponse sendUniformMessage(String access_token, String touser, WeappTemplateMsg weapp_template_msg,
+			MpTemplateMsg mp_template_msg) {
+		Map<String, Object> map = new HashMap<String, Object>(4, 1);
+		map.put("touser", touser);
+		map.put("weapp_template_msg", weapp_template_msg);
+		map.put("mp_template_msg", mp_template_msg);
+		JSONObject json = WeiXinUtils.doPost(
+				"https://api.weixin.qq.com/cgi-bin/message/wxopen/template/uniform_send?access_token=" + access_token,
+				map);
+		return new BaseResponse(json);
 	}
 }
