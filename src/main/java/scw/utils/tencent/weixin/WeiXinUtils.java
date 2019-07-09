@@ -36,7 +36,8 @@ public final class WeiXinUtils {
 	 * @param state
 	 * @return
 	 */
-	public static String authorizeUlr(String appid, String redirect_uri, String scope, String state) {
+	public static String authorizeUlr(String appid, String redirect_uri,
+			String scope, String state) {
 		StringBuilder sb = new StringBuilder(weixin_authorize_url);
 		sb.append("?appid=").append(appid);
 		sb.append("&redirect_uri=").append(HttpUtils.encode(redirect_uri));
@@ -56,7 +57,8 @@ public final class WeiXinUtils {
 	 * @param state
 	 * @return
 	 */
-	public static String qrcodeAuthorizeUrl(String appid, String redirect_uri, String scope, String state) {
+	public static String qrcodeAuthorizeUrl(String appid, String redirect_uri,
+			String scope, String state) {
 		StringBuilder sb = new StringBuilder(weixin_qrconnect_url);
 		sb.append("?appid=").append(appid);
 		sb.append("&redirect_uri=").append(HttpUtils.encode(redirect_uri));
@@ -96,8 +98,8 @@ public final class WeiXinUtils {
 	 * @param prepay_id
 	 * @return
 	 */
-	public static String getBrandWCPayRequestSign(String appId, String apiKey, String timeStamp, String nonceStr,
-			String prepay_id) {
+	public static String getBrandWCPayRequestSign(String appId, String apiKey,
+			String timeStamp, String nonceStr, String prepay_id) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("appId", appId);
 		map.put("timeStamp", timeStamp);
@@ -107,8 +109,8 @@ public final class WeiXinUtils {
 		return getPaySign(map, apiKey);
 	}
 
-	public static String getAppPayRequestSign(String appId, String mch_id, String apiKey, long timeStamp,
-			String noceStr, String prepay_id) {
+	public static String getAppPayRequestSign(String appId, String mch_id,
+			String apiKey, long timeStamp, String noceStr, String prepay_id) {
 		Map<String, String> signMap = new HashMap<String, String>();
 		signMap.put("appid", appId);
 		signMap.put("partnerid", mch_id);
@@ -124,8 +126,7 @@ public final class WeiXinUtils {
 			return false;
 		}
 
-		Integer code = json.getInteger(CODE_NAME);
-		return code != null && code == 0;
+		return json.getIntValue(CODE_NAME) == 0;
 	}
 
 	public static JSONObject doPost(String url, Object data) {
@@ -150,8 +151,10 @@ public final class WeiXinUtils {
 		return getAccessToken("client_credential", appId, appSecret);
 	}
 
-	public static AccessToken getAccessToken(String grant_type, String appId, String appSecret) {
-		StringBuilder sb = new StringBuilder("https://api.weixin.qq.com/cgi-bin/token");
+	public static AccessToken getAccessToken(String grant_type, String appId,
+			String appSecret) {
+		StringBuilder sb = new StringBuilder(
+				"https://api.weixin.qq.com/cgi-bin/token");
 		sb.append("?grant_type=").append(grant_type);
 		sb.append("&appid=").append(appId);
 		sb.append("&secret=").append(appSecret);
@@ -164,50 +167,57 @@ public final class WeiXinUtils {
 	}
 
 	public static Ticket getTicket(String access_token, String type) {
-		StringBuilder sb = new StringBuilder("https://api.weixin.qq.com/cgi-bin/ticket/getticket");
+		StringBuilder sb = new StringBuilder(
+				"https://api.weixin.qq.com/cgi-bin/ticket/getticket");
 		sb.append("?access_token=").append(access_token);
 		sb.append("&type=").append(type);
 		JSONObject json = doGet(sb.toString());
 		return new Ticket(json);
 	}
 
-	public static WebUserAccesstoken getWebUserAccesstoken(String appid, String appsecret, String code) {
+	public static WebUserAccesstoken getWebUserAccesstoken(String appid,
+			String appsecret, String code) {
 		Map<String, String> map = new HashMap<String, String>(4, 1);
 		map.put("appid", appid);
 		map.put("secret", appsecret);
 		map.put("code", code);
 		map.put("grant_type", "authorization_code");
-		JSONObject json = doPost("https://api.weixin.qq.com/sns/oauth2/access_token", map);
+		JSONObject json = doPost(
+				"https://api.weixin.qq.com/sns/oauth2/access_token", map);
 		return new WebUserAccesstoken(json);
 	}
 
-	public static WebUserAccesstoken refreshWebUserAccesstoken(String appid, String refresh_token) {
+	public static WebUserAccesstoken refreshWebUserAccesstoken(String appid,
+			String refresh_token) {
 		Map<String, String> map = new HashMap<String, String>(4, 1);
 		map.put("appid", appid);
 		map.put("grant_type", "refresh_token");
 		map.put("refresh_token", refresh_token);
-		JSONObject json = doPost("https://api.weixin.qq.com/sns/oauth2/refresh_token", map);
+		JSONObject json = doPost(
+				"https://api.weixin.qq.com/sns/oauth2/refresh_token", map);
 		return new WebUserAccesstoken(json);
 	}
 
-	public static WebUserInfo getWebUserInfo(String openid, String user_access_token) {
+	public static WebUserInfo getWebUserInfo(String openid,
+			String user_access_token) {
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("access_token", user_access_token);
 		paramMap.put("openid", openid);
 		paramMap.put("lang", "zh_CN");
-		JSONObject json = doPost("https://api.weixin.qq.com/sns/userinfo", paramMap);
+		JSONObject json = doPost("https://api.weixin.qq.com/sns/userinfo",
+				paramMap);
 		return new WebUserInfo(json);
 	}
 
-	public BaseResponse sendUniformMessage(String access_token, String touser, WeappTemplateMsg weapp_template_msg,
-			MpTemplateMsg mp_template_msg) {
+	public BaseResponse sendUniformMessage(String access_token, String touser,
+			WeappTemplateMsg weapp_template_msg, MpTemplateMsg mp_template_msg) {
 		Map<String, Object> map = new HashMap<String, Object>(4, 1);
 		map.put("touser", touser);
 		map.put("weapp_template_msg", weapp_template_msg);
 		map.put("mp_template_msg", mp_template_msg);
-		JSONObject json = WeiXinUtils.doPost(
-				"https://api.weixin.qq.com/cgi-bin/message/wxopen/template/uniform_send?access_token=" + access_token,
-				map);
+		JSONObject json = WeiXinUtils
+				.doPost("https://api.weixin.qq.com/cgi-bin/message/wxopen/template/uniform_send?access_token="
+						+ access_token, map);
 		return new BaseResponse(json);
 	}
 }

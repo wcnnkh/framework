@@ -6,7 +6,7 @@ import scw.core.json.JSONObject;
 
 public class BaseResponse implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private Integer errcode;// 错误码
+	private int errcode;// 错误码
 	private String errmsg;// 错误信息
 
 	BaseResponse() {
@@ -21,11 +21,11 @@ public class BaseResponse implements Serializable {
 		this.errmsg = json.getString("errmsg");
 	}
 
-	public int getErrcode() {
+	public final int getErrcode() {
 		return errcode;
 	}
 
-	public String getErrmsg() {
+	public final String getErrmsg() {
 		return errmsg;
 	}
 
