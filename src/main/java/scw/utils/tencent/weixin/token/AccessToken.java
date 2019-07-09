@@ -1,6 +1,7 @@
-package scw.utils.tencent.weixin;
+package scw.utils.tencent.weixin.token;
 
 import scw.core.json.JSONObject;
+import scw.utils.tencent.weixin.BaseResponse;
 
 public class AccessToken extends BaseResponse {
 	private static final long serialVersionUID = 1L;

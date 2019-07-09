@@ -2,7 +2,6 @@ package scw.utils.tencent.weixin.ticket;
 
 import scw.data.memcached.Memcached;
 import scw.utils.locks.MemcachedLock;
-import scw.utils.tencent.weixin.Ticket;
 import scw.utils.tencent.weixin.WeiXinUtils;
 import scw.utils.tencent.weixin.token.AccessTokenFactory;
 import scw.utils.tencent.weixin.token.MemcachedAccessTokenFactory;

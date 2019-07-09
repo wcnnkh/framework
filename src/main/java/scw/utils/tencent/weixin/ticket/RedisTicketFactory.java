@@ -2,7 +2,6 @@ package scw.utils.tencent.weixin.ticket;
 
 import scw.data.redis.Redis;
 import scw.utils.locks.RedisLock;
-import scw.utils.tencent.weixin.Ticket;
 import scw.utils.tencent.weixin.WeiXinUtils;
 import scw.utils.tencent.weixin.token.AccessTokenFactory;
 import scw.utils.tencent.weixin.token.RedisAccessTokenFactory;

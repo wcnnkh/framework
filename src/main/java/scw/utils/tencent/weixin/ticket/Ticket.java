@@ -1,6 +1,7 @@
-package scw.utils.tencent.weixin;
+package scw.utils.tencent.weixin.ticket;
 
 import scw.core.json.JSONObject;
+import scw.utils.tencent.weixin.BaseResponse;
 
 public final class Ticket extends BaseResponse {
 	private static final long serialVersionUID = 1L;

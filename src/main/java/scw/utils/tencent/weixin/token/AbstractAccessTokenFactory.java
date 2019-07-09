@@ -1,7 +1,5 @@
 package scw.utils.tencent.weixin.token;
 
-import scw.utils.tencent.weixin.AccessToken;
-
 public abstract class AbstractAccessTokenFactory implements AccessTokenFactory {
 	private final String appId;
 	private final String appSecret;

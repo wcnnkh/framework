@@ -2,7 +2,6 @@ package scw.utils.tencent.weixin.token;
 
 import scw.data.memcached.Memcached;
 import scw.utils.locks.MemcachedLock;
-import scw.utils.tencent.weixin.AccessToken;
 import scw.utils.tencent.weixin.WeiXinUtils;
 
 public final class MemcachedAccessTokenFactory extends AbstractAccessTokenFactory {

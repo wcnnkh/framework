@@ -9,7 +9,9 @@ import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
 import scw.core.net.http.HttpUtils;
 import scw.core.utils.SignUtils;
-import scw.utils.tencent.weixin.WeixinMiniprogram.WeappTemplateMsg;
+import scw.utils.tencent.weixin.miniprogram.WeappTemplateMsg;
+import scw.utils.tencent.weixin.ticket.Ticket;
+import scw.utils.tencent.weixin.token.AccessToken;
 
 /**
  * @author shuchaowen
@@ -198,7 +200,7 @@ public final class WeiXinUtils {
 		JSONObject json = doPost("https://api.weixin.qq.com/sns/userinfo", paramMap);
 		return new WebUserInfo(json);
 	}
-	
+
 	public BaseResponse sendUniformMessage(String access_token, String touser, WeappTemplateMsg weapp_template_msg,
 			MpTemplateMsg mp_template_msg) {
 		Map<String, Object> map = new HashMap<String, Object>(4, 1);

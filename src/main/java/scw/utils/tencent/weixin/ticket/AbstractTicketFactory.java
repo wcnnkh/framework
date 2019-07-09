@@ -1,6 +1,5 @@
 package scw.utils.tencent.weixin.ticket;
 
-import scw.utils.tencent.weixin.Ticket;
 import scw.utils.tencent.weixin.token.AccessTokenFactory;
 
 public abstract class AbstractTicketFactory implements TicketFactory {
