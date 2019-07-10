@@ -1,15 +1,22 @@
 package scw.utils.tencent.weixin.miniprogram;
 
+import scw.core.json.JSONObject;
 import scw.core.json.JSONObjectReadOnly;
 import scw.core.json.JSONObjectReadOnlyWarpper;
+import scw.core.json.JSONUtils;
 
 /**
  * 未明确定义字段，因为在微信文档中说明返回内容字段可能增加
+ * 
  * @author asus1
  *
  */
 public class UserInfo extends JSONObjectReadOnlyWarpper {
 	private static final long serialVersionUID = 1L;
+
+	public UserInfo(String encryptedData, String sessionKey, String iv) {
+		this(JSONUtils.parseObject(WeiXinMiniprogramUtils.decrypt(encryptedData, sessionKey, iv)));
+	}
 
 	public UserInfo(JSONObjectReadOnly jsonObjectReadOnly) {
 		super(jsonObjectReadOnly);
@@ -48,22 +55,7 @@ public class UserInfo extends JSONObjectReadOnlyWarpper {
 	}
 
 	public WaterMark getWaterMark() {
-		return getObject("watermark", WaterMark.class);
-	}
-
-	public static class WaterMark extends JSONObjectReadOnlyWarpper {
-		private static final long serialVersionUID = 1L;
-
-		public WaterMark(JSONObjectReadOnly jsonObjectReadOnly) {
-			super(jsonObjectReadOnly);
-		}
-
-		public String getAppid() {
-			return getString("appid");
-		}
-
-		public long getTimestamp() {
-			return getLongValue("timestamp");
-		}
+		JSONObject json = getJSONObject("watermark");
+		return json == null ? null : new WaterMark(json);
 	}
 }
