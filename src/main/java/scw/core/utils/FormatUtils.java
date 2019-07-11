@@ -28,7 +28,7 @@ public final class FormatUtils {
 
 	public static class LocalFormat {
 		private LazyFactory<String, LazyFactory<Locale, SimpleDateFormat>> simpleDateFormatMap = new DefaultLazyFactory<String, LazyFactory<Locale, SimpleDateFormat>>() {
-			protected Map<String, LazyFactory<Locale, SimpleDateFormat>> init() {
+			protected Map<String, LazyFactory<Locale, SimpleDateFormat>> initMap() {
 				return new HashMap<String, LazyFactory<Locale, SimpleDateFormat>>(
 						8);
 			};
@@ -39,7 +39,7 @@ public final class FormatUtils {
 
 				return new DefaultLazyFactory<Locale, SimpleDateFormat>() {
 
-					protected Map<Locale, SimpleDateFormat> init() {
+					protected Map<Locale, SimpleDateFormat> initMap() {
 						return new HashMap<Locale, SimpleDateFormat>(4);
 					};
 

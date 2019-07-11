@@ -6,14 +6,14 @@ import java.util.Map;
 public abstract class DefaultLazyFactory<K, V> implements LazyFactory<K, V> {
 	private Map<K, V> map;
 
-	protected Map<K, V> init() {
+	protected Map<K, V> initMap() {
 		return new HashMap<K, V>();
 	}
 
 	public V get(K key) {
 		V v;
 		if (map == null) {
-			init();
+			map = initMap();
 			v = createValue(key);
 			map.put(key, v);
 		} else {
