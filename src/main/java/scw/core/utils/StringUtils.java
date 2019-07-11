@@ -36,8 +36,6 @@ public final class StringUtils {
 
 	private static final char EXTENSION_SEPARATOR = '.';
 
-	private static final String DEFAULT_PLACEHOLDER = "{}";
-
 	private StringUtils() {
 	};
 
@@ -2465,54 +2463,6 @@ public final class StringUtils {
 		char[] chars = text.toCharArray();
 		replace(chars, replace, newChar);
 		return new String(chars);
-	}
-
-	public static String formatPlaceholder(String text, String placeholder,
-			Object... args) {
-		StringBuilder sb = new StringBuilder();
-		try {
-			formatPlaceholder(sb, text, placeholder, args);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return sb.toString();
-	}
-
-	public static void formatPlaceholder(Appendable appendable, String text,
-			String placeholder, Object... args) throws Exception {
-		if (StringUtils.isEmpty(text) || ArrayUtils.isEmpty(args)) {
-			appendable.append(text);
-			return;
-		}
-
-		String findText = StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER
-				: placeholder;
-		int lastFind = 0;
-		for (int i = 0; i < args.length; i++) {
-			int index = text.indexOf(findText, lastFind);
-			if (index == -1) {
-				break;
-			}
-
-			appendable.append(text.substring(lastFind, index));
-			Object v = args[i];
-			if (v == null) {
-				appendable.append("null");
-			} else {
-				if (v instanceof StringAppend) {
-					((StringAppend) v).appendTo(appendable);
-				} else {
-					appendable.append(v.toString());
-				}
-			}
-			lastFind = index + findText.length();
-		}
-
-		if (lastFind == 0) {
-			appendable.append(text);
-		} else {
-			appendable.append(text.substring(lastFind));
-		}
 	}
 
 	public static String createString(byte[] bytes, String charsetName) {

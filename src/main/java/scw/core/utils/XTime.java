@@ -35,18 +35,15 @@ public final class XTime {
 	 * 将时间格式和时间字符串值传入，获得时间戳<br>
 	 * 举例时间格式 yyyy-MM-dd hh:mm:ss
 	 * 
-	 * @param timeStr,时间2010-09-12
-	 *            00:00:00
-	 * @param format,时间格式
-	 *            yyyy-MM-dd hh:mm:ss
+	 * @param timeStr
+	 *            ,时间2010-09-12 00:00:00
+	 * @param format
+	 *            ,时间格式 yyyy-MM-dd hh:mm:ss
 	 * @return
 	 */
 	public static long getTime(String timeStr, String format) {//
 		try {
-			// 时间格式 yyyy-MM-dd hh:mm:ss
-			SimpleDateFormat sdf = new SimpleDateFormat(format);
-			Date d = sdf.parse(timeStr);
-			return d.getTime();
+			return FormatUtils.getDate(timeStr, format).getTime();
 		} catch (Exception ex) {
 		}
 		return 0L;
@@ -81,7 +78,8 @@ public final class XTime {
 
 	/**
 	 * 
-	 * @param 单位：秒
+	 * @param 单位
+	 *            ：秒
 	 * @return
 	 */
 	public static String formatSec(long l) {
@@ -112,7 +110,8 @@ public final class XTime {
 
 	/**
 	 * 
-	 * @param 单位：秒
+	 * @param 单位
+	 *            ：秒
 	 * @return
 	 */
 	public static String formatMSec(long l) {
@@ -151,7 +150,8 @@ public final class XTime {
 	/**
 	 * 将时间转换成 day:hour:minute:second
 	 * 
-	 * @param 单位：秒
+	 * @param 单位
+	 *            ：秒
 	 * @return
 	 */
 	public static String formatDay(long l) {
@@ -188,7 +188,8 @@ public final class XTime {
 	/**
 	 * 将时间转换成 day:hour:minute:second
 	 * 
-	 * @param 单位：秒
+	 * @param 单位
+	 *            ：秒
 	 * @return
 	 */
 	public static String formatDayCN(long l) {
@@ -222,7 +223,8 @@ public final class XTime {
 	}
 
 	/**
-	 * @param 单位：毫秒
+	 * @param 单位
+	 *            ：毫秒
 	 * @return
 	 */
 
@@ -383,8 +385,8 @@ public final class XTime {
 		if (d == null) {
 			return "";
 		}
-		SimpleDateFormat sdf = new SimpleDateFormat(formatter); // "MM-dd HH:mm"
-		return sdf.format(d);
+
+		return FormatUtils.dateFormat(d, formatter);
 	}
 
 	public static String format(long t, String formatter) {
@@ -623,11 +625,15 @@ public final class XTime {
 			calendar.setTimeInMillis(timeInMillis);
 		}
 
-		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+		calendar.set(Calendar.DAY_OF_MONTH,
+				calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
 		calendar.set(Calendar.HOUR, calendar.getActualMaximum(Calendar.HOUR));
-		calendar.set(Calendar.MINUTE, calendar.getActualMaximum(Calendar.MINUTE));
-		calendar.set(Calendar.SECOND, calendar.getActualMaximum(Calendar.SECOND));
-		calendar.set(Calendar.MILLISECOND, calendar.getActualMaximum(Calendar.MILLISECOND));
+		calendar.set(Calendar.MINUTE,
+				calendar.getActualMaximum(Calendar.MINUTE));
+		calendar.set(Calendar.SECOND,
+				calendar.getActualMaximum(Calendar.SECOND));
+		calendar.set(Calendar.MILLISECOND,
+				calendar.getActualMaximum(Calendar.MILLISECOND));
 		return calendar;
 	}
 

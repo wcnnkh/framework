@@ -1,7 +1,7 @@
 package scw.core.logger;
 
+import scw.core.utils.FormatUtils;
 import scw.core.utils.StringAppend;
-import scw.core.utils.StringUtils;
 
 public final class DefaultLoggerFormatAppend implements StringAppend {
 	private final String msg;
@@ -15,7 +15,7 @@ public final class DefaultLoggerFormatAppend implements StringAppend {
 	}
 
 	public void appendTo(Appendable appendable) throws Exception {
-		StringUtils.formatPlaceholder(appendable, msg, placeholder, args);
+		FormatUtils.formatPlaceholder(appendable, msg, placeholder, args);
 	}
 
 }
