@@ -279,9 +279,13 @@ public final class XTime {
 	 * @return
 	 * @throws ParseException
 	 */
-	public static long formatStr(String date) throws ParseException {
+	public static long formatStr(String date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		return sdf.parse(date).getTime();
+		try {
+			return sdf.parse(date).getTime();
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -626,7 +630,7 @@ public final class XTime {
 		calendar.set(Calendar.MILLISECOND, calendar.getActualMaximum(Calendar.MILLISECOND));
 		return calendar;
 	}
-	
+
 	/**
 	 * 获取到今天凌晨的时间间隔
 	 * 
