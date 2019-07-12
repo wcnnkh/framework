@@ -22,22 +22,18 @@ public class DefaultResultFactory extends AbstractResultFactory {
 		return new DefaultResult<T>(false, code, null, msg);
 	}
 
-	@Override
 	public int getDefaultErrorCode() {
 		return defaultErrorCode;
 	}
 
-	@Override
 	public int getSuccessCode() {
 		return successCode;
 	}
 
-	@Override
 	public int getAuthorizationFailureCode() {
 		return authorizationFailureCode;
 	}
 
-	@Override
 	public int getParamterErrorCode() {
 		return parameterErrorCode;
 	}

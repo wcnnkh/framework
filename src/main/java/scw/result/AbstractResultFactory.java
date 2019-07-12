@@ -38,14 +38,6 @@ public abstract class AbstractResultFactory implements ResultFactory {
 		return code2msgMap == null ? null : code2msgMap.get(code);
 	}
 
-	public abstract int getDefaultErrorCode();
-
-	public abstract int getSuccessCode();
-
-	public abstract int getAuthorizationFailureCode();
-
-	public abstract int getParamterErrorCode();
-
 	public <T> DataResult<T> success() {
 		return success(null);
 	}
