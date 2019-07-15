@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 
 import scw.core.instance.InstanceFactory;
 import scw.core.reflect.ReflectUtils;
+import scw.core.utils.StringUtils;
 
 public class ReflectionInstanceFactory implements InstanceFactory {
 
@@ -20,7 +21,11 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		return newInstance(constructor);
 	}
 
-	private Class<?> forName(String className) {
+	public static Class<?> forName(String className) {
+		if(StringUtils.isEmpty(className)){
+			return null;
+		}
+		
 		try {
 			return Class.forName(className);
 		} catch (ClassNotFoundException e) {

@@ -37,20 +37,19 @@ public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(Class<T> type) {
+		if (type == null) {
+			return null;
+		}
+
 		try {
 			return (T) getConstructor(type).newInstance();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			return null;
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name) {
-		try {
-			return (T) getConstructor(Class.forName(name)).newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-
+		return (T) getInstance(ReflectionInstanceFactory.forName(name));
 	}
 }

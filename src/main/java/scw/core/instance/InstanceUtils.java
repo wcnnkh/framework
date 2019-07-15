@@ -21,6 +21,11 @@ public final class InstanceUtils {
 		NoArgsInstanceFactory instanceFactory = REFLECTION_INSTANCE_FACTORY
 				.getInstance("scw.core.instance.support.SunNoArgsInstanceFactory");
 		if (instanceFactory == null) {
+			instanceFactory = REFLECTION_INSTANCE_FACTORY
+					.getInstance("scw.core.instance.support.UnsafeNoArgsInstanceFactory");
+		}
+
+		if (instanceFactory == null) {
 			throw new NotSupportException("Instances that do not call constructors are not supported");
 		}
 
