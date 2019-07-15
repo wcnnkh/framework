@@ -2,8 +2,7 @@ package scw.servlet.upload.ueditor.upload;
 
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
-
+import scw.core.Base64;
 import scw.servlet.upload.ueditor.PathFormat;
 import scw.servlet.upload.ueditor.define.AppInfo;
 import scw.servlet.upload.ueditor.define.BaseState;
@@ -42,7 +41,7 @@ public final class Base64Uploader {
 	}
 
 	private static byte[] decode(String content) {
-		return Base64.decodeBase64(content);
+		return Base64.decode(content);
 	}
 
 	private static boolean validSize(byte[] data, long length) {

@@ -4,9 +4,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.core.utils.StringUtils;
+import scw.login.LoginFactory;
+import scw.login.Session;
 import scw.servlet.http.HttpRequest;
-import scw.utils.login.LoginFactory;
-import scw.utils.login.Session;
 
 /**
  * 此类和WebSession和一样 是为应对小项目中admin和app用同一个项目而写的

@@ -2,9 +2,9 @@ package scw.servlet.http.session;
 
 import javax.servlet.http.HttpServletResponse;
 
+import scw.login.LoginFactory;
+import scw.login.Session;
 import scw.servlet.http.HttpRequest;
-import scw.utils.login.LoginFactory;
-import scw.utils.login.Session;
 
 /**
  * 此类和AppSession和一样 是为应对小项目中admin和app用同一个项目而写的

@@ -1,7 +1,5 @@
 package scw.core.exception;
 
-import com.sun.istack.Nullable;
-
 public class NestedRuntimeException extends RuntimeException {
 
 	/** Use serialVersionUID from Spring 1.2 for interoperability. */
@@ -35,7 +33,7 @@ public class NestedRuntimeException extends RuntimeException {
 	 * @param cause
 	 *            the nested exception
 	 */
-	public NestedRuntimeException(@Nullable String msg, @Nullable Throwable cause) {
+	public NestedRuntimeException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
 

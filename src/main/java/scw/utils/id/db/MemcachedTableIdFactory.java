@@ -2,9 +2,9 @@ package scw.utils.id.db;
 
 import scw.core.utils.ClassUtils;
 import scw.data.memcached.Memcached;
+import scw.locks.Lock;
+import scw.locks.MemcachedLock;
 import scw.sql.orm.ORMOperations;
-import scw.utils.locks.Lock;
-import scw.utils.locks.MemcachedLock;
 
 public final class MemcachedTableIdFactory extends AbstractTableIdFactory {
 	private final Memcached memcached;
