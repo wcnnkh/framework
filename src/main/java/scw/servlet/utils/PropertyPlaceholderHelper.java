@@ -22,9 +22,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import scw.core.logger.Logger;
+import scw.core.logger.LoggerFactory;
 import scw.core.utils.Assert;
 import scw.core.utils.StringUtils;
 
@@ -42,8 +41,7 @@ import scw.core.utils.StringUtils;
  * @since 3.0
  */
 public class PropertyPlaceholderHelper {
-
-	private static final Log logger = LogFactory.getLog(PropertyPlaceholderHelper.class);
+	private static final Logger logger = LoggerFactory.getLogger(PropertyPlaceholderHelper.class);
 
 	private static final Map<String, String> wellKnownSimplePrefixes = new HashMap<String, String>(4);
 

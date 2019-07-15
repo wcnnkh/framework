@@ -5,26 +5,24 @@ import java.util.List;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.AbstractBeanConfigFactory;
-import scw.beans.BeanFactory;
-import scw.beans.xml.XmlBeanUtils;
-import scw.core.PropertiesFactory;
-
 import com.alibaba.dubbo.config.ReferenceConfig;
 
-public final class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
+import scw.beans.AbstractBeanConfigFactory;
+import scw.beans.BeanFactory;
+import scw.core.PropertiesFactory;
 
-	public XmlDubboBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String config)
+public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
+
+	public XmlDubboBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, NodeList nodeList)
 			throws Exception {
-		NodeList rootNodeList = XmlBeanUtils.getRootNodeList(config);;
-		if (rootNodeList != null) {
-			for (int x = 0; x < rootNodeList.getLength(); x++) {
-				Node node = rootNodeList.item(x);
+		if (nodeList != null) {
+			for (int x = 0; x < nodeList.getLength(); x++) {
+				Node node = nodeList.item(x);
 				if (node == null) {
 					continue;
 				}
 
-				if (!"dubbo:reference".equals(node.getNodeName())) {
+				if (!DubboUtils.isReferenceNode(node)) {
 					continue;
 				}
 

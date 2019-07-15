@@ -19,10 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.InstanceFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.NotFoundException;
-import scw.core.exception.NotSupportException;
 import scw.core.logger.LoggerUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.Assert;
@@ -32,27 +30,6 @@ import scw.core.utils.ReflectionUtils;
 import scw.core.utils.StringUtils;
 
 public final class ReflectUtils {
-	private static final InstanceFactory INSTANCE_FACTORY;
-
-	static {
-		Class<?> clz = null;
-		try {
-			clz = Class.forName("scw.core.reflect.instance.SunInstanceFactory");
-		} catch (ClassNotFoundException e) {
-		}
-
-		if (clz == null) {
-			throw new NotSupportException("Instances that do not call constructors are not supported");
-		}
-
-		LoggerUtils.info(ReflectUtils.class, "default not call constructors instance factory:{}", clz.getName());
-		try {
-			INSTANCE_FACTORY = (InstanceFactory) clz.newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	private ReflectUtils() {
 	};
 
@@ -474,10 +451,6 @@ public final class ReflectUtils {
 		} catch (Exception e) {
 			throw new RuntimeException("无法实例化：" + type.getName(), e);
 		}
-	}
-
-	public static InstanceFactory getNotConstructorInstanceFactory() {
-		return INSTANCE_FACTORY;
 	}
 
 	/**

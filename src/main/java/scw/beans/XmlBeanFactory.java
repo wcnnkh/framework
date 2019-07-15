@@ -6,7 +6,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.property.XmlPropertiesFactory;
-import scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory;
+import scw.beans.rpc.dubbo.DubboUtils;
 import scw.beans.rpc.http.HttpRpcBeanConfigFactory;
 import scw.beans.xml.XmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
@@ -116,9 +116,15 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	public void init() {
 		try {
 			if (!StringUtils.isNull(xmlPath)) {
-				addBeanConfigFactory(new XmlDubboBeanConfigFactory(this, propertiesFactory, xmlPath));
-				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this, propertiesFactory, xmlPath));
-				addBeanConfigFactory(new XmlBeanConfigFactory(this, propertiesFactory, xmlPath, filterNames));
+				NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
+				BeanConfigFactory dubboBeanConfigFactory = DubboUtils.getReferenceBeanConfigFactory(this,
+						propertiesFactory, nodeList);
+				if (dubboBeanConfigFactory == null) {
+					addBeanConfigFactory(dubboBeanConfigFactory);
+				}
+
+				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this, propertiesFactory, nodeList));
+				addBeanConfigFactory(new XmlBeanConfigFactory(this, propertiesFactory, nodeList, filterNames));
 				addBeanConfigFactory(new ServiceBeanConfigFactory(this, propertiesFactory, packages, filterNames));
 			}
 
@@ -130,10 +136,11 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	private void initMethod() throws Exception {
-		if(StringUtils.isEmpty(xmlPath)){
-			return ;
+		if (StringUtils.isEmpty(xmlPath)) {
+			return;
 		}
-		NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);;
+		NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
+		;
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("init".equalsIgnoreCase(n.getNodeName())) {
@@ -155,10 +162,10 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	private void destroyMethod() throws Exception {
-		if(StringUtils.isEmpty(xmlPath)){
-			return ;
+		if (StringUtils.isEmpty(xmlPath)) {
+			return;
 		}
-		
+
 		NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);

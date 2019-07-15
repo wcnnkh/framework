@@ -10,7 +10,8 @@ import scw.application.crontab.CrontabAnnotationUtils;
 import scw.beans.CommonFilter;
 import scw.beans.XmlBeanFactory;
 import scw.beans.property.XmlPropertiesFactory;
-import scw.beans.rpc.dubbo.XmlDubboUtils;
+import scw.beans.rpc.dubbo.DubboUtils;
+import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertiesFactory;
 import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
@@ -75,7 +76,7 @@ public class CommonApplication implements Application {
 		beanFactory.init();
 
 		if (!StringUtils.isNull(configPath)) {
-			XmlDubboUtils.serviceExport(propertiesFactory, beanFactory, configPath);
+			DubboUtils.exportService(beanFactory, propertiesFactory, XmlBeanUtils.getRootNodeList(configPath));
 		}
 
 		CrontabAnnotationUtils.crontabService(getClasses(), beanFactory, getBeanFactory().getFilterNames());

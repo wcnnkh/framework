@@ -18,13 +18,13 @@ public class XmlBeanConfigFactory extends AbstractBeanConfigFactory {
 
 	private List<String> beanFactoryList;
 
-	public XmlBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String beanXml,
+	public XmlBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, NodeList rootNodeList,
 			String[] filterNames) throws Exception {
-		NodeList nhosts =  XmlBeanUtils.getRootNodeList(beanXml);
-		for (int i = 0; i < nhosts.getLength(); i++) {
-			Node nRoot = nhosts.item(i);
+		for (int i = 0; i < rootNodeList.getLength(); i++) {
+			Node nRoot = rootNodeList.item(i);
 			if (BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
-				BeanDefinition beanDefinition = new XmlBeanDefinition(beanFactory, propertiesFactory, nRoot, filterNames);
+				BeanDefinition beanDefinition = new XmlBeanDefinition(beanFactory, propertiesFactory, nRoot,
+						filterNames);
 				addBean(beanDefinition);
 			} else if (BEAN_FACTORY_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
 				Node node = nRoot.getAttributes().getNamedItem("value");

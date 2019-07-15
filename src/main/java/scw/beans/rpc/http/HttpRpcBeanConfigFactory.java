@@ -16,9 +16,8 @@ import scw.core.utils.XMLUtils;
 public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "http:reference";
 
-	public HttpRpcBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String config)
+	public HttpRpcBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, NodeList rootNodeList)
 			throws Exception {
-		NodeList rootNodeList = XmlBeanUtils.getRootNodeList(config);;
 		for (int i = 0; i < rootNodeList.getLength(); i++) {
 			Node node = rootNodeList.item(i);
 			if (node == null) {
