@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 import scw.core.InstanceFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.NotFoundException;
+import scw.core.exception.NotSupportException;
 import scw.core.logger.LoggerUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.Assert;
@@ -41,14 +42,14 @@ public final class ReflectUtils {
 		}
 
 		if (clz == null) {
-			LoggerUtils.warn(ReflectUtils.class, "Instances that do not call constructors are not supported");
-			INSTANCE_FACTORY = null;
-		} else {
-			try {
-				INSTANCE_FACTORY = (InstanceFactory) clz.newInstance();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
+			throw new NotSupportException("Instances that do not call constructors are not supported");
+		}
+
+		LoggerUtils.info(ReflectUtils.class, "default not call constructors instance factory:{}", clz.getName());
+		try {
+			INSTANCE_FACTORY = (InstanceFactory) clz.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -475,9 +476,8 @@ public final class ReflectUtils {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> T newInstanceNoConstructor(Class<?> type) {
-		return (T) (INSTANCE_FACTORY == null ? newInstance(type) : INSTANCE_FACTORY.getInstance(type));
+	public static InstanceFactory getNotConstructorInstanceFactory() {
+		return INSTANCE_FACTORY;
 	}
 
 	/**
@@ -1249,5 +1249,18 @@ public final class ReflectUtils {
 			values.add(map);
 		}
 		return values;
+	}
+
+	public static Long getSerialVersionUID(Class<?> clz) {
+		Field field;
+		try {
+			field = clz.getDeclaredField("serialVersionUID");
+			if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
+				field.setAccessible(true);
+				return field.getLong(null);
+			}
+		} catch (Exception ex) {
+		}
+		return null;
 	}
 }
