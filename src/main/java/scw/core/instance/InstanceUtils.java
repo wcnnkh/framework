@@ -9,22 +9,25 @@ public final class InstanceUtils {
 	private InstanceUtils() {
 	};
 
+	private static final ReflectionInstanceFactory REFLECTION_INSTANCE_FACTORY = new ReflectionInstanceFactory();
+
+	public static ReflectionInstanceFactory getReflectionInstanceFactory() {
+		return REFLECTION_INSTANCE_FACTORY;
+	}
+
 	private static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY;
 
 	static {
-		Class<?> clz = null;
-		try {
-			clz = Class.forName("scw.core.instance.support.SunNoArgsInstanceFactory");
-		} catch (ClassNotFoundException e) {
-		}
-
-		if (clz == null) {
+		NoArgsInstanceFactory instanceFactory = REFLECTION_INSTANCE_FACTORY
+				.getInstance("scw.core.instance.support.SunNoArgsInstanceFactory");
+		if (instanceFactory == null) {
 			throw new NotSupportException("Instances that do not call constructors are not supported");
 		}
 
-		LoggerUtils.info(ReflectUtils.class, "default not call constructors instance factory:{}", clz.getName());
+		LoggerUtils.info(ReflectUtils.class, "default not call constructors instance factory：{}",
+				instanceFactory.getClass().getName());
 		try {
-			NO_ARGS_INSTANCE_FACTORY = (InstanceFactory) clz.newInstance();
+			NO_ARGS_INSTANCE_FACTORY = instanceFactory;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -32,11 +35,5 @@ public final class InstanceUtils {
 
 	public static NoArgsInstanceFactory getNotConstructorNoArgsInstanceFactory() {
 		return NO_ARGS_INSTANCE_FACTORY;
-	}
-
-	private static final ReflectionInstanceFactory REFLECTION_INSTANCE_FACTORY = new ReflectionInstanceFactory();
-
-	public static ReflectionInstanceFactory getReflectionInstanceFactory() {
-		return REFLECTION_INSTANCE_FACTORY;
 	}
 }

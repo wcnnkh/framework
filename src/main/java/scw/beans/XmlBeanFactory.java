@@ -119,7 +119,7 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 				NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
 				BeanConfigFactory dubboBeanConfigFactory = DubboUtils.getReferenceBeanConfigFactory(this,
 						propertiesFactory, nodeList);
-				if (dubboBeanConfigFactory == null) {
+				if (dubboBeanConfigFactory != null) {
 					addBeanConfigFactory(dubboBeanConfigFactory);
 				}
 
