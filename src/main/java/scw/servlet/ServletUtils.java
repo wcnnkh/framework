@@ -135,10 +135,10 @@ public final class ServletUtils {
 	protected static ServletService getServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
 			String configPath, String[] rootBeanFilters) {
 		if (isAsyncSupport()) {
-			return beanFactory.get("scw.servlet.AsyncServletService", beanFactory, propertiesFactory, configPath,
+			return beanFactory.getInstance("scw.servlet.AsyncServletService", beanFactory, propertiesFactory, configPath,
 					rootBeanFilters);
 		} else {
-			return beanFactory.get("scw.servlet.DefaultServletService", beanFactory, propertiesFactory, configPath,
+			return beanFactory.getInstance("scw.servlet.DefaultServletService", beanFactory, propertiesFactory, configPath,
 					rootBeanFilters);
 		}
 	}
@@ -440,7 +440,7 @@ public final class ServletUtils {
 		if (StringUtils.isEmpty(jsonParseSupportBeanName)) {
 			jsonParseSupport = JSONUtils.DEFAULT_PARSE_SUPPORT;
 		} else {
-			jsonParseSupport = beanFactory.get(jsonParseSupportBeanName);
+			jsonParseSupport = beanFactory.getInstance(jsonParseSupportBeanName);
 		}
 		return jsonParseSupport;
 	}
@@ -454,12 +454,12 @@ public final class ServletUtils {
 			PropertiesFactory propertiesFactory) {
 		String requestFactoryBeanName = propertiesFactory.getValue("servlet.wrapper-factory");
 		if (StringUtils.isEmpty(requestFactoryBeanName)) {
-			return beanFactory.get(HttpWrapperFactory.class, requestBeanFactory, isDebug(propertiesFactory),
+			return beanFactory.getInstance(HttpWrapperFactory.class, requestBeanFactory, isDebug(propertiesFactory),
 					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.parameter.cookie")),
 					getJsonParseSupport(beanFactory, propertiesFactory),
 					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.jsonp")));
 		} else {
-			return beanFactory.get(requestFactoryBeanName);
+			return beanFactory.getInstance(requestFactoryBeanName);
 		}
 	}
 
@@ -476,11 +476,11 @@ public final class ServletUtils {
 			if (enable || !StringUtils.isEmpty(sign)) {// 开启
 				LoggerUtils.info(ServletUtils.class, "rpc签名：{}", sign);
 				String serializer = propertiesFactory.getValue("servlet.rpc-serializer");
-				return beanFactory.get(DefaultRpcService.class, beanFactory, sign, StringUtils.isEmpty(serializer)
-						? Constants.DEFAULT_SERIALIZER : (Serializer) beanFactory.get(serializer));
+				return beanFactory.getInstance(DefaultRpcService.class, beanFactory, sign, StringUtils.isEmpty(serializer)
+						? Constants.DEFAULT_SERIALIZER : (Serializer) beanFactory.getInstance(serializer));
 			}
 		} else {
-			return beanFactory.get(rpcServerBeanName);
+			return beanFactory.getInstance(rpcServerBeanName);
 		}
 
 		return null;
@@ -491,7 +491,7 @@ public final class ServletUtils {
 		actionKey = StringUtils.isEmpty(actionKey) ? "action" : actionKey;
 		String packageName = propertiesFactory.getValue("servlet.scanning");
 		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
-		return beanFactory.get(HttpServiceFilter.class, beanFactory, ClassUtils.getClasses(packageName), actionKey);
+		return beanFactory.getInstance(HttpServiceFilter.class, beanFactory, ClassUtils.getClasses(packageName), actionKey);
 
 	}
 
@@ -511,7 +511,7 @@ public final class ServletUtils {
 					Arrays.asList(StringUtils.commonSplit(lastFilterNames)));
 			filters.addAll(rootFilter);
 		}
-		filters.add(beanFactory.get(NotFoundFilter.class));
+		filters.add(beanFactory.getInstance(NotFoundFilter.class));
 		return filters;
 	}
 
@@ -521,7 +521,7 @@ public final class ServletUtils {
 		String beanFilters = propertiesFactory.getValue("servlet.beans.filters");
 		config = StringUtils.isEmpty(config) ? configPath : config;
 		String[] filters = StringUtils.isEmpty(beanFilters) ? rootBeanFilters : StringUtils.commonSplit(beanFilters);
-		return beanFactory.get(CommonRequestBeanFactory.class, beanFactory, propertiesFactory, config, filters);
+		return beanFactory.getInstance(CommonRequestBeanFactory.class, beanFactory, propertiesFactory, config, filters);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

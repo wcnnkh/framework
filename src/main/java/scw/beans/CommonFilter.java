@@ -29,9 +29,9 @@ public final class CommonFilter implements Filter {
 	@InitMethod
 	private void init() {
 		filter = new LinkedList<Filter>();
-		filter.add(beanFactory.get(TransactionFilter.class));
-		filter.add(beanFactory.get(TCCTransactionFilter.class));
-		filter.add(beanFactory.get(AsyncCompleteFilter.class));
+		filter.add(beanFactory.getInstance(TransactionFilter.class));
+		filter.add(beanFactory.getInstance(TCCTransactionFilter.class));
+		filter.add(beanFactory.getInstance(AsyncCompleteFilter.class));
 	}
 
 	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)

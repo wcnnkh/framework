@@ -58,7 +58,7 @@ public final class TCCTransactionFilter implements Filter {
 		}
 
 		SerializableMethodDefinition tryMethod = new SerializableMethodDefinition(belongClass, method);
-		TCCService tccService = beanFactory.get(tcc.service());
+		TCCService tccService = beanFactory.getInstance(tcc.service());
 		if (tccService == null) {
 			return;
 		}

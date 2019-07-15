@@ -38,7 +38,7 @@ public final class MethodProxyInvoker implements Invoker {
 			return BeanUtils.getInvoker(beanFactory, clz, method).invoke(args);
 		}
 
-		Object bean = Modifier.isStatic(method.getModifiers()) ? null : beanFactory.get(clz);
+		Object bean = Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(clz);
 		Invoker invoker = new ReflectInvoker(bean, method);
 		FilterChain filterChain = new BeanFactoryFilterChain(beanFactory, filters);
 		return filterChain.doFilter(invoker, bean, method, args);

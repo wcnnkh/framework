@@ -216,7 +216,7 @@ public final class BeanUtils {
 			try {
 				existDefaultValueWarnLog(Config.class.getName(), clz, field, obj);
 
-				value = beanFactory.get(config.parse()).parse(beanFactory, field, config.value(), config.charset());
+				value = beanFactory.getInstance(config.parse()).parse(beanFactory, field, config.value(), config.charset());
 				field.set(obj, value);
 			} catch (Exception e) {
 				logger.error(e, "config：clz={},fieldName={}", clz.getName(), field.getField().getName());
@@ -279,7 +279,7 @@ public final class BeanUtils {
 
 			try {
 				existDefaultValueWarnLog(Autowrite.class.getName(), clz, field, obj);
-				field.set(obj, beanFactory.get(name));
+				field.set(obj, beanFactory.getInstance(name));
 			} catch (Exception e) {
 				logger.error(e, "autowrite：clz={},fieldName={}", clz.getName(), field.getField().getName());
 			}
@@ -317,7 +317,7 @@ public final class BeanUtils {
 		if (Modifier.isStatic(method.getModifiers())) {
 			return new ReflectInvoker(null, method);
 		} else {
-			return new ReflectInvoker(beanFactory.get(clz), method);
+			return new ReflectInvoker(beanFactory.getInstance(clz), method);
 		}
 	}
 
@@ -349,7 +349,7 @@ public final class BeanUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T proxyInterface(BeanFactory beanFactory, Class<T> interfaceClass, Object obj) {
-		Filter filter = beanFactory.get(CommonFilter.class);
+		Filter filter = beanFactory.getInstance(CommonFilter.class);
 		return (T) ProxyUtils.newProxyInstance(obj, interfaceClass, Arrays.asList(filter));
 	}
 
@@ -365,7 +365,7 @@ public final class BeanUtils {
 				continue;
 			}
 
-			T t = beanFactory.get(name);
+			T t = beanFactory.getInstance(name);
 			if (t == null) {
 				continue;
 			}

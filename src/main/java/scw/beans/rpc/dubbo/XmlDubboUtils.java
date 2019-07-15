@@ -105,7 +105,7 @@ public final class XmlDubboUtils {
 							Class<?> type) {
 						if ("registry".equals(name)
 								|| "registries".equals(name)) {
-							return beanFactory.get(value);
+							return beanFactory.getInstance(value);
 						}
 
 						return StringUtils.conversion(value, type);
@@ -129,7 +129,7 @@ public final class XmlDubboUtils {
 								if ("registry".equals(name)
 										|| "registries".equals(name)
 										|| "ref".equals(name)) {
-									return beanFactory.get(value);
+									return beanFactory.getInstance(value);
 								}
 
 								return StringUtils.conversion(value, type);
@@ -147,7 +147,7 @@ public final class XmlDubboUtils {
 			for (Class<?> clz : ClassUtils.getClasses(packageName)) {
 				Service service = clz.getAnnotation(Service.class);
 				if (service != null) {
-					Object ref = beanFactory.get(clz);
+					Object ref = beanFactory.getInstance(clz);
 					for (Class<?> i : clz.getInterfaces()) {
 						@SuppressWarnings("unchecked")
 						ServiceConfig<Object> config = (ServiceConfig<Object>) ReflectUtils
@@ -199,7 +199,7 @@ public final class XmlDubboUtils {
 						if ("consumer".equals(name) || "methods".equals(name)
 								|| "registries".equals(name)
 								|| "registry".equals(name)) {
-							return beanFactory.get(value);
+							return beanFactory.getInstance(value);
 						}
 
 						return StringUtils.conversion(value, type);

@@ -130,7 +130,7 @@ public final class InvokeInfo implements Serializable {
 		logger.debug("clz={},name={}", methodConfig.getBelongClass().getName(),
 				StringUtils.isEmpty(stage.name()) ? method.getName() : stage.name());
 
-		Object obj = beanFactory.get(methodConfig.getBelongClass());
+		Object obj = beanFactory.getInstance(methodConfig.getBelongClass());
 		method.invoke(obj, params);
 	}
 

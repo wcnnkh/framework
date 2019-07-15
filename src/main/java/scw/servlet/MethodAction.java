@@ -65,18 +65,18 @@ public final class MethodAction implements Action {
 		if (filters == null) {
 			if (clzController != null) {
 				for (Class<? extends Filter> filter : clzController.filters()) {
-					list.add(beanFactory.get(filter));
+					list.add(beanFactory.getInstance(filter));
 				}
 			}
 		} else {
 			for (Class<? extends Filter> filter : filters.value()) {
-				list.add(beanFactory.get(filter));
+				list.add(beanFactory.getInstance(filter));
 			}
 		}
 
 		if (methodController != null) {
 			for (Class<? extends Filter> filter : methodController.filters()) {
-				list.add(beanFactory.get(filter));
+				list.add(beanFactory.getInstance(filter));
 			}
 		}
 

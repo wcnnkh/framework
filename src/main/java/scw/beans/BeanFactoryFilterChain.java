@@ -27,7 +27,7 @@ public final class BeanFactoryFilterChain implements FilterChain {
 		if (iterator == null) {
 			return invoker.invoke(args);
 		} else if (iterator.hasNext()) {
-			Filter filter = beanFactory.get(iterator.next());
+			Filter filter = beanFactory.getInstance(iterator.next());
 			if (cache.add(filter)) {
 				return filter.filter(invoker, proxy, method, args, this);
 			} else {

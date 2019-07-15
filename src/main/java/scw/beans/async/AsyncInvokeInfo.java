@@ -41,7 +41,7 @@ public class AsyncInvokeInfo implements Serializable {
 
 	public Object invoke(BeanFactory beanFactory) throws Throwable {
 		AsyncCompleteFilter.setEnable(false);
-		Object bean = beanFactory.get(beanName);
+		Object bean = beanFactory.getInstance(beanName);
 		return methodConfig.invoke(bean, args);
 	}
 }

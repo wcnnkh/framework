@@ -80,7 +80,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T get(String name, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
 		if (!init) {
 			throw new BeansException("还未初始化");
 		}
@@ -126,7 +126,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T get(String name, Object... params) {
+	public <T> T getInstance(String name, Object... params) {
 		if (!init) {
 			throw new BeansException("还未初始化");
 		}
@@ -172,7 +172,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T get(String name) {
+	public <T> T getInstance(String name) {
 		if (!init) {
 			throw new BeansException("还未初始化");
 		}
@@ -217,8 +217,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		}
 	}
 
-	public <T> T get(Class<T> type) {
-		return get(type.getName());
+	public <T> T getInstance(Class<T> type) {
+		return getInstance(type.getName());
 	}
 
 	public BeanDefinition getBeanDefinition(String name) {
@@ -359,11 +359,11 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		init = false;
 	}
 
-	public <T> T get(Class<T> type, Object... params) {
-		return get(type.getName(), params);
+	public <T> T getInstance(Class<T> type, Object... params) {
+		return getInstance(type.getName(), params);
 	}
 
-	public <T> T get(Class<T> type, Class<?>[] parameterTypes, Object... params) {
-		return get(type.getName(), parameterTypes, params);
+	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
+		return getInstance(type.getName(), parameterTypes, params);
 	}
 }

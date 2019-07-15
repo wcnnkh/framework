@@ -51,8 +51,8 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T get(String name) {
-		Object bean = super.get(name);
+	public <T> T getInstance(String name) {
+		Object bean = super.getInstance(name);
 		if (bean == null) {
 			throw new BeansException("not found [" + name + "]");
 		}
@@ -148,7 +148,7 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 					// 静态方法
 					xmlBeanMethodInfo.invoke(null, this, propertiesFactory);
 				} else {
-					xmlBeanMethodInfo.invoke(get(className), this, propertiesFactory);
+					xmlBeanMethodInfo.invoke(getInstance(className), this, propertiesFactory);
 				}
 			}
 		}
@@ -170,7 +170,7 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 					// 静态方法
 					xmlBeanMethodInfo.invoke(null, this, propertiesFactory);
 				} else {
-					xmlBeanMethodInfo.invoke(get(className), this, propertiesFactory);
+					xmlBeanMethodInfo.invoke(getInstance(className), this, propertiesFactory);
 				}
 			}
 		}
@@ -186,8 +186,8 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	@Override
-	public <T> T get(String name, Class<?>[] parameterTypes, Object... params) {
-		T bean = super.get(name, parameterTypes, params);
+	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
+		T bean = super.getInstance(name, parameterTypes, params);
 		if (bean == null) {
 			throw new BeansException("not found [" + name + "]");
 		}
@@ -195,8 +195,8 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	@Override
-	public <T> T get(String name, Object... params) {
-		T bean = super.get(name, params);
+	public <T> T getInstance(String name, Object... params) {
+		T bean = super.getInstance(name, params);
 		if (bean == null) {
 			throw new BeansException("not found [" + name + "]");
 		}

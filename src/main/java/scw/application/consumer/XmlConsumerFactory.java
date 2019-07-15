@@ -43,7 +43,7 @@ public class XmlConsumerFactory implements ConsumerFactory {
 
 								public Object mapper(String name, String value, Class<?> type) throws Exception {
 									if (name.equals("exchange")) {
-										return beanFactory.get(value);
+										return beanFactory.getInstance(value);
 									}
 
 									return StringUtils.conversion(value, type);

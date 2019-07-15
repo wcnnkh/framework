@@ -29,12 +29,12 @@ public final class CrontabAnnotationUtils {
 				if (taskNameSet.contains(c.name())) {
 					throw new AlreadyExistsException("任务：" + c.name() + "已经存在");
 				}
-				scw.core.utils.Crontab crontab = beanFactory.get(scw.core.utils.Crontab.class);
+				scw.core.utils.Crontab crontab = beanFactory.getInstance(scw.core.utils.Crontab.class);
 
 				boolean invokeTime = !ArrayUtils.isEmpty(method.getParameterTypes())
 						&& method.getParameterTypes().length == 1
 						&& ClassUtils.isLongType(method.getParameterTypes()[0]);
-				CrontabRunnable crontabRun = new CrontabRunnable(c.name(), beanFactory.get(c.factory()),
+				CrontabRunnable crontabRun = new CrontabRunnable(c.name(), beanFactory.getInstance(c.factory()),
 						new MethodProxyInvoker(beanFactory, clz, method, filters), invokeTime);
 				crontab.crontab(c.dayOfWeek(), c.month(), c.dayOfMonth(), c.hour(), c.minute(), crontabRun);
 				logger.info("添加计划任务：{},dayOfWeek={},month={},dayOfMonth={},hour={},minute={}", c.name(), c.dayOfWeek(),

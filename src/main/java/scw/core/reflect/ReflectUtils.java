@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.core.InstanceFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.NotFoundException;
 import scw.core.logger.LoggerUtils;
@@ -30,6 +31,27 @@ import scw.core.utils.ReflectionUtils;
 import scw.core.utils.StringUtils;
 
 public final class ReflectUtils {
+	private static final InstanceFactory INSTANCE_FACTORY;
+
+	static {
+		Class<?> clz = null;
+		try {
+			clz = Class.forName("scw.core.reflect.instance.SunInstanceFactory");
+		} catch (ClassNotFoundException e) {
+		}
+
+		if (clz == null) {
+			LoggerUtils.warn(ReflectUtils.class, "Instances that do not call constructors are not supported");
+			INSTANCE_FACTORY = null;
+		} else {
+			try {
+				INSTANCE_FACTORY = (InstanceFactory) clz.newInstance();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
 	private ReflectUtils() {
 	};
 
@@ -451,6 +473,11 @@ public final class ReflectUtils {
 		} catch (Exception e) {
 			throw new RuntimeException("无法实例化：" + type.getName(), e);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T newInstanceNoConstructor(Class<?> type) {
+		return (T) (INSTANCE_FACTORY == null ? newInstance(type) : INSTANCE_FACTORY.getInstance(type));
 	}
 
 	/**
@@ -943,7 +970,8 @@ public final class ReflectUtils {
 		iteratorField(clazz, false, true, iterator);
 	}
 
-	public static void iteratorField(Class<?> clazz, boolean pub, boolean sup, scw.core.utils.IteratorCallback<Field> iterator) {
+	public static void iteratorField(Class<?> clazz, boolean pub, boolean sup,
+			scw.core.utils.IteratorCallback<Field> iterator) {
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
 			for (Field field : pub ? clz.getFields() : clz.getDeclaredFields()) {
@@ -965,7 +993,8 @@ public final class ReflectUtils {
 		iteratorMethod(clazz, false, true, iterator);
 	}
 
-	public static void iteratorMethod(Class<?> clazz, boolean pub, boolean sup, scw.core.utils.IteratorCallback<Method> iterator) {
+	public static void iteratorMethod(Class<?> clazz, boolean pub, boolean sup,
+			scw.core.utils.IteratorCallback<Method> iterator) {
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
 			for (Method method : pub ? clz.getMethods() : clz.getDeclaredMethods()) {

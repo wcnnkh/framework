@@ -39,7 +39,7 @@ public class DefaultRpcService implements RpcService {
 
 		Object obj;
 		try {
-			obj = invoker.invoke(beanFactory.get(message.getMethodDefinition().getBelongClass()), message.getArgs());
+			obj = invoker.invoke(beanFactory.getInstance(message.getMethodDefinition().getBelongClass()), message.getArgs());
 		} catch (IllegalArgumentException e) {
 			logger.warn("参数不一致：{}", message.getMessageKey());
 			throw e;

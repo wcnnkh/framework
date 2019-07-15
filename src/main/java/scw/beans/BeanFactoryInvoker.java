@@ -20,7 +20,7 @@ public final class BeanFactoryInvoker implements Invoker{
 		if (Modifier.isStatic(method.getModifiers())) {
 			return method.invoke(null, args);
 		} else {
-			return method.invoke(beanFactory.get(clz), args);
+			return method.invoke(beanFactory.getInstance(clz), args);
 		}
 	}
 }

@@ -54,7 +54,7 @@ public final class AsyncCompleteFilter implements Filter {
 		}
 
 		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete, method.getDeclaringClass(), beanName, method, args);
-		AsyncCompleteService service = beanFactory.get(asyncComplete.service());
+		AsyncCompleteService service = beanFactory.getInstance(asyncComplete.service());
 		return service.service(info);
 	}
 

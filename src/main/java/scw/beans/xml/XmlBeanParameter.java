@@ -66,7 +66,7 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 			value = formatStringValue(xmlValue.formatValue(propertiesFactory), parameterType);
 			break;
 		case ref:
-			value = beanFactory.get(xmlValue.formatValue(propertiesFactory));
+			value = beanFactory.getInstance(xmlValue.formatValue(propertiesFactory));
 			break;
 		case property:
 			String v = propertiesFactory.getValue(xmlValue.getValue());
