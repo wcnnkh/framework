@@ -25,13 +25,12 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-
+import scw.core.asm.ClassReader;
+import scw.core.asm.ClassVisitor;
+import scw.core.asm.Label;
+import scw.core.asm.MethodVisitor;
+import scw.core.asm.Opcodes;
+import scw.core.asm.Type;
 import scw.core.utils.ClassUtils;
 
 /**

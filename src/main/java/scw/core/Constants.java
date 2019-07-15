@@ -1,7 +1,6 @@
 package scw.core;
 
-import org.objectweb.asm.Opcodes;
-
+import scw.core.asm.Opcodes;
 import scw.core.logger.LoggerUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.serializer.Serializer;
