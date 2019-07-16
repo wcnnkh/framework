@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.sf.cglib.proxy.Enhancer;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
@@ -14,6 +13,7 @@ import scw.beans.BeanUtils;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.PropertiesFactory;
+import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
 import scw.core.reflect.FieldDefinition;

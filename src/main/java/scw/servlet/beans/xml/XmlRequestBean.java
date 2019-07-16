@@ -8,7 +8,6 @@ import javax.servlet.ServletRequest;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.sf.cglib.proxy.Enhancer;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
@@ -16,6 +15,7 @@ import scw.beans.xml.XmlBeanParameter;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.Destroy;
 import scw.core.PropertiesFactory;
+import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
 import scw.core.reflect.FieldDefinition;

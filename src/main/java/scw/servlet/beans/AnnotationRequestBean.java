@@ -9,12 +9,12 @@ import java.util.List;
 
 import javax.servlet.ServletRequest;
 
-import net.sf.cglib.proxy.Enhancer;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.core.PropertiesFactory;
+import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.NotFoundException;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;

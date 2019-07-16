@@ -27,8 +27,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import net.sf.cglib.core.TypeUtils;
 import scw.core.LocalVariableTableParameterNameDiscoverer;
+import scw.core.cglib.core.TypeUtils;
 
 public final class ClassUtils {
 	public static final String ALL_PACKAGE_NAME = "*";

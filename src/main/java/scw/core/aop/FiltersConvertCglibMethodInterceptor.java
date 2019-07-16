@@ -3,8 +3,8 @@ package scw.core.aop;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
+import scw.core.cglib.proxy.MethodInterceptor;
+import scw.core.cglib.proxy.MethodProxy;
 
 public final class FiltersConvertCglibMethodInterceptor implements MethodInterceptor {
 	private final Collection<Filter> filters;

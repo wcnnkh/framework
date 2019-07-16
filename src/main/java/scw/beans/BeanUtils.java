@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import net.sf.cglib.proxy.Enhancer;
 import scw.beans.annotation.Autowrite;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Config;
@@ -28,6 +27,7 @@ import scw.core.aop.Filter;
 import scw.core.aop.Invoker;
 import scw.core.aop.ProxyUtils;
 import scw.core.aop.ReflectInvoker;
+import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
