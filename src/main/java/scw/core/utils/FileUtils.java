@@ -27,6 +27,7 @@ import scw.core.Base64;
 import scw.core.Constants;
 
 public final class FileUtils {
+
 	private FileUtils() {
 	};
 
@@ -162,7 +163,8 @@ public final class FileUtils {
 	 *            是否递归
 	 * @return
 	 */
-	public static String searchFileName(String fileName, String rootPath, boolean recursion) {
+	public static String searchFileName(String fileName, String rootPath,
+			boolean recursion) {
 		File file = new File(rootPath);
 		for (File f : file.listFiles()) {
 			if (recursion) {
@@ -302,7 +304,8 @@ public final class FileUtils {
 		return false;
 	}
 
-	public static void copyFileUsingFileChannels(File source, File dest) throws IOException {
+	public static void copyFileUsingFileChannels(File source, File dest)
+			throws IOException {
 		FileChannel inputChannel = null;
 		FileChannel outputChannel = null;
 		FileInputStream fis = null;
@@ -339,7 +342,8 @@ public final class FileUtils {
 		FileInputStream fileInputStream = null;
 		try {
 			fileInputStream = new FileInputStream(file);
-			InputStreamReader isr = new InputStreamReader(fileInputStream, Charset.forName(charsetName));
+			InputStreamReader isr = new InputStreamReader(fileInputStream,
+					Charset.forName(charsetName));
 			return IOUtils.read(isr, 256, 0);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -378,7 +382,8 @@ public final class FileUtils {
 		}
 	}
 
-	public static List<String> getFileContentLineList(File file, String charsetName) {
+	public static List<String> getFileContentLineList(File file,
+			String charsetName) {
 		FileInputStream fis = null;
 		InputStreamReader isr = null;
 		BufferedReader br = null;
@@ -395,7 +400,8 @@ public final class FileUtils {
 		}
 	}
 
-	public static void writeFileContent(String filePath, String content, String charsetName) {
+	public static void writeFileContent(String filePath, String content,
+			String charsetName) {
 		File file = new File(filePath);
 		if (!file.exists()) {
 			try {
@@ -407,7 +413,8 @@ public final class FileUtils {
 		writeFileContent(file, content, charsetName);
 	}
 
-	public static void writeFileContent(File file, String content, String charsetName) {
+	public static void writeFileContent(File file, String content,
+			String charsetName) {
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(file);
@@ -418,5 +425,21 @@ public final class FileUtils {
 		} finally {
 			IOUtils.closeOutputStream(fos);
 		}
+	}
+
+	public static String getTempDirectoryPath() {
+		return System.getProperty("java.io.tmpdir");
+	}
+
+	public static File getTempDirectory() {
+		return new File(getTempDirectoryPath());
+	}
+
+	public static String getUserDirectoryPath() {
+		return System.getProperty("user.home");
+	}
+
+	public static File getUserDirectory() {
+		return new File(getUserDirectoryPath());
 	}
 }
