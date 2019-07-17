@@ -3,7 +3,6 @@ package scw.data.utils;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import scw.core.utils.BlockingQueue;
 import scw.data.redis.Redis;
 
 public class RedisBlockingQueue<E> implements BlockingQueue<E> {

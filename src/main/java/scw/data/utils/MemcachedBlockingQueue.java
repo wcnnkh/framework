@@ -2,7 +2,6 @@ package scw.data.utils;
 
 import java.util.concurrent.TimeUnit;
 
-import scw.core.utils.BlockingQueue;
 import scw.data.memcached.Memcached;
 
 public class MemcachedBlockingQueue<E> implements BlockingQueue<E> {

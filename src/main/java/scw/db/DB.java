@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.utils.Assert;
-import scw.core.utils.BlockingQueue;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.DefaultBlockingQueue;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
+import scw.data.utils.BlockingQueue;
+import scw.data.utils.DefaultBlockingQueue;
 import scw.data.utils.MemcachedBlockingQueue;
 import scw.data.utils.RedisBlockingQueue;
 import scw.db.async.AsyncInfo;

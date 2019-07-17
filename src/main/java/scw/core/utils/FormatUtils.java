@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import scw.core.lazy.DefaultLazyFactory;
+import scw.core.lazy.UnsafeMapLazyFactory;
 import scw.core.lazy.LazyFactory;
 
 public final class FormatUtils {
@@ -27,44 +27,37 @@ public final class FormatUtils {
 	}
 
 	public static class LocalFormat {
-		private LazyFactory<String, LazyFactory<Locale, SimpleDateFormat>> simpleDateFormatMap = new DefaultLazyFactory<String, LazyFactory<Locale, SimpleDateFormat>>() {
-			protected Map<String, LazyFactory<Locale, SimpleDateFormat>> initMap() {
-				return new HashMap<String, LazyFactory<Locale, SimpleDateFormat>>(
-						8);
+		private LazyFactory<String, LazyFactory<Locale, SimpleDateFormat>> simpleDateFormatMap = new UnsafeMapLazyFactory<String, LazyFactory<Locale, SimpleDateFormat>>() {
+			public Map<String, LazyFactory<Locale, SimpleDateFormat>> createMap() {
+				return new HashMap<String, LazyFactory<Locale, SimpleDateFormat>>(8);
 			};
 
-			@Override
-			protected LazyFactory<Locale, SimpleDateFormat> createValue(
-					final String pattern) {
+			public LazyFactory<Locale, SimpleDateFormat> createValue(final String pattern) {
 
-				return new DefaultLazyFactory<Locale, SimpleDateFormat>() {
+				return new UnsafeMapLazyFactory<Locale, SimpleDateFormat>() {
 
-					protected Map<Locale, SimpleDateFormat> initMap() {
+					public Map<Locale, SimpleDateFormat> createMap() {
 						return new HashMap<Locale, SimpleDateFormat>(4);
 					};
 
-					@Override
-					protected SimpleDateFormat createValue(Locale locale) {
+					public SimpleDateFormat createValue(Locale locale) {
 						return new SimpleDateFormat(pattern, locale);
 					}
 				};
 			}
 		};
 
-		public SimpleDateFormat getSimpleDateFormat(String pattern,
-				Locale locale) {
+		public SimpleDateFormat getSimpleDateFormat(String pattern, Locale locale) {
 			return simpleDateFormatMap.get(pattern).get(locale);
 		}
 
 		public SimpleDateFormat getSimpleDateFormat(String pattern) {
-			return getSimpleDateFormat(pattern,
-					Locale.getDefault(Locale.Category.FORMAT));
+			return getSimpleDateFormat(pattern, Locale.getDefault(Locale.Category.FORMAT));
 		}
 
-		private LazyFactory<String, DecimalFormat> decimalFormatMap = new DefaultLazyFactory<String, DecimalFormat>() {
+		private LazyFactory<String, DecimalFormat> decimalFormatMap = new UnsafeMapLazyFactory<String, DecimalFormat>() {
 
-			@Override
-			protected DecimalFormat createValue(String key) {
+			public DecimalFormat createValue(String key) {
 				return new DecimalFormat(key);
 			}
 		};
@@ -76,8 +69,7 @@ public final class FormatUtils {
 
 	private static final String DEFAULT_PLACEHOLDER = "{}";
 
-	public static String formatPlaceholder(String text, String placeholder,
-			Object... args) {
+	public static String formatPlaceholder(String text, String placeholder, Object... args) {
 		StringBuilder sb = new StringBuilder();
 		try {
 			formatPlaceholder(sb, text, placeholder, args);
@@ -87,15 +79,14 @@ public final class FormatUtils {
 		return sb.toString();
 	}
 
-	public static void formatPlaceholder(Appendable appendable, String text,
-			String placeholder, Object... args) throws Exception {
+	public static void formatPlaceholder(Appendable appendable, String text, String placeholder, Object... args)
+			throws Exception {
 		if (StringUtils.isEmpty(text) || ArrayUtils.isEmpty(args)) {
 			appendable.append(text);
 			return;
 		}
 
-		String findText = StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER
-				: placeholder;
+		String findText = StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER : placeholder;
 		int lastFind = 0;
 		for (int i = 0; i < args.length; i++) {
 			int index = text.indexOf(findText, lastFind);
@@ -156,13 +147,10 @@ public final class FormatUtils {
 		for (int i = 0; i < len; i++) {
 			charBuffer.put("0");
 		}
-		return getLocalFormat()
-				.getDecimalFormat(new String(charBuffer.array()))
-				.format(number);
+		return getLocalFormat().getDecimalFormat(new String(charBuffer.array())).format(number);
 	}
 
-	public static Date getDate(String date, String formatter)
-			throws ParseException {
+	public static Date getDate(String date, String formatter) throws ParseException {
 		return getLocalFormat().getSimpleDateFormat(formatter).parse(date);
 	}
 

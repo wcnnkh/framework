@@ -4,6 +4,7 @@ import scw.core.Consumer;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.Producer;
+import scw.data.utils.BlockingQueue;
 
 public abstract class AbstractBlockingQueue<T> implements Consumer<T>, Producer<T>, Init, Destroy, Runnable {
 	private BlockingQueue<T> blockingQueue;
