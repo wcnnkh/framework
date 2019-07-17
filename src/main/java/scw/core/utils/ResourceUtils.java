@@ -24,8 +24,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import scw.servlet.utils.Log4jConfigurer;
-
 /**
  * Utility methods for resolving resource locations to files in the file system.
  * Mainly for internal use within the framework.

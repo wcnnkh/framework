@@ -17,7 +17,6 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
 import scw.core.Bits;
-import scw.core.utils.IOUtils;
 
 public final class Bytes {
 	private Bytes() {

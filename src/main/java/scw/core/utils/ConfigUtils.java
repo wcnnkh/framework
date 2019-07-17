@@ -22,6 +22,8 @@ import org.w3c.dom.NodeList;
 
 import scw.core.StringFormatSystemProperties;
 import scw.core.exception.NotFoundException;
+import scw.core.io.FileUtils;
+import scw.core.io.IOUtils;
 import scw.core.logger.LoggerUtils;
 import scw.core.reflect.ReflectUtils;
 
@@ -219,7 +221,7 @@ public final class ConfigUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			IOUtils.closeReader(isr);
+			IOUtils.close(isr);
 		}
 		return properties;
 	}

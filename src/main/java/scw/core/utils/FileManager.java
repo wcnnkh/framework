@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 
+import scw.core.io.FileUtils;
+
 public final class FileManager {
 	private final String rootPath;
 	private final AtomicLong atomicLong = new AtomicLong();

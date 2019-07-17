@@ -9,7 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import scw.core.io.ByteArray;
-import scw.core.utils.IOUtils;
+import scw.core.io.IOUtils;
 import scw.testing.http.HttpTestingRequestMessage;
 
 public final class ServletHttpTestingRequestMessage implements Serializable, HttpTestingRequestMessage {

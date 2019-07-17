@@ -6,11 +6,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
-import scw.core.io.StreamUtils;
+import scw.core.io.IOUtils;
 import scw.core.io.UnsafeByteArrayInputStream;
 import scw.core.io.UnsafeByteArrayOutputStream;
 import scw.core.serializer.Serializer;
-import scw.core.utils.IOUtils;
 
 public class JavaSerializer extends Serializer {
 	public final static JavaSerializer SERIALIZER = new JavaSerializer();
@@ -42,7 +41,7 @@ public class JavaSerializer extends Serializer {
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		} finally {
-			IOUtils.closeInputStream(ois, bis);
+			IOUtils.close(ois, bis);
 		}
 	}
 
@@ -53,14 +52,12 @@ public class JavaSerializer extends Serializer {
 			oos.writeObject(data);
 			oos.flush();
 		} finally {
-			if (oos != null) {
-				oos.close();
-			}
+			IOUtils.close(oos);
 		}
 	}
 
 	public byte[] serialize(Object data) {
-		UnsafeByteArrayOutputStream bos = StreamUtils.getUnsafeByteArrayOutputStream();
+		UnsafeByteArrayOutputStream bos = IOUtils.getUnsafeByteArrayOutputStream();
 		ObjectOutputStream oos = null;
 		try {
 			oos = new ObjectOutputStream(bos);
@@ -70,7 +67,7 @@ public class JavaSerializer extends Serializer {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
-			IOUtils.closeOutputStream(oos, bos);
+			IOUtils.close(oos, bos);
 		}
 	}
 }

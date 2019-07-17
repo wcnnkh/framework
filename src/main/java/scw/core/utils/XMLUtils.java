@@ -37,6 +37,7 @@ import org.xml.sax.SAXException;
 import scw.core.PropertiesFactory;
 import scw.core.StringFormat;
 import scw.core.exception.NotFoundException;
+import scw.core.io.IOUtils;
 import scw.core.reflect.PropertyMapper;
 import scw.core.reflect.ReflectUtils;
 
@@ -223,7 +224,7 @@ public final class XMLUtils {
 		} catch (TransformerException e) {
 			e.printStackTrace();
 		} finally {
-			IOUtils.closeWrite(sw);
+			IOUtils.close(sw);
 		}
 		return content;
 	}

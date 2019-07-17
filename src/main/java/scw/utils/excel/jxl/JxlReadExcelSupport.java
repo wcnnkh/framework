@@ -9,8 +9,8 @@ import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import scw.core.io.IOUtils;
 import scw.core.utils.ConfigUtils;
-import scw.core.utils.IOUtils;
 import scw.utils.excel.ReadExcelSupport;
 import scw.utils.excel.RowCallback;
 
@@ -29,7 +29,7 @@ public class JxlReadExcelSupport implements ReadExcelSupport {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} finally {
-			IOUtils.closeInputStream(fis);
+			IOUtils.close(fis);
 		}
 	}
 

@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.net.URLConnection;
 
 import scw.core.io.ByteArray;
-import scw.core.utils.IOUtils;
+import scw.core.io.IOUtils;
 
 public final class ByteArrayResponse extends AbstractResponse<ByteArray> {
 

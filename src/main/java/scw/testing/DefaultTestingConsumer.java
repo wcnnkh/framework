@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-import scw.core.utils.IOUtils;
+import scw.core.io.IOUtils;
 
 public abstract class DefaultTestingConsumer<T> implements TestingConsumer<T> {
 	private String file;
@@ -33,7 +33,7 @@ public abstract class DefaultTestingConsumer<T> implements TestingConsumer<T> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			IOUtils.closeInputStream(ois, fis);
+			IOUtils.close(ois, fis);
 		}
 	}
 }

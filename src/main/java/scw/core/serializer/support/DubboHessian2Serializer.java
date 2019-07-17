@@ -8,7 +8,7 @@ import com.alibaba.com.caucho.hessian.io.Hessian2Input;
 import com.alibaba.com.caucho.hessian.io.Hessian2Output;
 import com.alibaba.com.caucho.hessian.io.SerializerFactory;
 
-import scw.core.io.StreamUtils;
+import scw.core.io.IOUtils;
 import scw.core.io.UnsafeByteArrayInputStream;
 import scw.core.io.UnsafeByteArrayOutputStream;
 import scw.core.serializer.Serializer;
@@ -30,7 +30,7 @@ public class DubboHessian2Serializer extends Serializer {
 
 	@Override
 	public byte[] serialize(Object data) {
-		UnsafeByteArrayOutputStream out = StreamUtils.getUnsafeByteArrayOutputStream();
+		UnsafeByteArrayOutputStream out = IOUtils.getUnsafeByteArrayOutputStream();
 		try {
 			serialize(out, data);
 			return out.toByteArray();

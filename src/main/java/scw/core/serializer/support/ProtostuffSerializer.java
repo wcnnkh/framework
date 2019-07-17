@@ -10,7 +10,7 @@ import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
 import scw.core.Bits;
-import scw.core.io.StreamUtils;
+import scw.core.io.IOUtils;
 import scw.core.io.UnsafeByteArrayOutputStream;
 import scw.core.serializer.Serializer;
 import scw.core.utils.ClassUtils;
@@ -29,7 +29,7 @@ public class ProtostuffSerializer extends Serializer {
 	// 不用担心并发，因为最终结果都是一致的
 	private static byte[] classToBytes(Class<?> clazz) {
 		String name = clazz.getName();
-		UnsafeByteArrayOutputStream byteArray = StreamUtils.getUnsafeByteArrayOutputStream();
+		UnsafeByteArrayOutputStream byteArray = IOUtils.getUnsafeByteArrayOutputStream();
 		for (char c : name.toCharArray()) {
 			byte[] bs = { 0, 0 };
 			Bits.putChar(bs, 0, c);

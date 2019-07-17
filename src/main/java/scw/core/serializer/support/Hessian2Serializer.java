@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import scw.core.io.StreamUtils;
-import scw.core.io.UnsafeByteArrayInputStream;
-import scw.core.io.UnsafeByteArrayOutputStream;
-import scw.core.serializer.Serializer;
-
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
+
+import scw.core.io.IOUtils;
+import scw.core.io.UnsafeByteArrayInputStream;
+import scw.core.io.UnsafeByteArrayOutputStream;
+import scw.core.serializer.Serializer;
 
 public class Hessian2Serializer extends Serializer {
 	private static final SerializerFactory SERIALIZER_FACTORY = new SerializerFactory();
@@ -30,7 +30,7 @@ public class Hessian2Serializer extends Serializer {
 
 	@Override
 	public byte[] serialize(Object data) {
-		UnsafeByteArrayOutputStream out = StreamUtils.getUnsafeByteArrayOutputStream();
+		UnsafeByteArrayOutputStream out = IOUtils.getUnsafeByteArrayOutputStream();
 		try {
 			serialize(out, data);
 			return out.toByteArray();
