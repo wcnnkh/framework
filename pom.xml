@@ -58,42 +58,12 @@
 					<artifactId>spring</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>com.google.protobuf</groupId>
-					<artifactId>protobuf-java</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>org.javassist</groupId>
 					<artifactId>javassist</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>org.jboss.netty</groupId>
 					<artifactId>netty</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>com.github.sgroschupf</groupId>
-			<artifactId>zkclient</artifactId>
-			<version>${zkclient.version}</version>
-			<scope>provided</scope>
-			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>netty</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>junit</groupId>
-					<artifactId>junit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>jline</groupId>
-					<artifactId>jline</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -152,21 +122,6 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.16</version>
-			<scope>provided</scope>
-			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.protobuf</groupId>
-					<artifactId>protobuf-java</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
@@ -200,6 +155,12 @@
 			<version>3.3.1</version>
 			<scope>provided</scope>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.esotericsoftware/kryo -->
@@ -213,6 +174,14 @@
 				<exclusion>
 					<groupId>com.esotericsoftware</groupId>
 					<artifactId>reflectasm</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.esotericsoftware</groupId>
+					<artifactId>minlog</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.objenesis</groupId>
+					<artifactId>objenesis</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
