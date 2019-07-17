@@ -34,6 +34,10 @@ public abstract class UnsafeMapLazyFactory<K, V> extends AbstractMapLazyFactory<
 			map.put(k, v);
 		} else {
 			v = map.get(k);
+			if (v == null) {
+				v = createValue(k);
+				map.put(k, v);
+			}
 		}
 		return v;
 	}
