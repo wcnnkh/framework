@@ -22,13 +22,14 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 	}
 
 	public static Class<?> forName(String className) {
-		if(StringUtils.isEmpty(className)){
+		if (StringUtils.isEmpty(className)) {
 			return null;
 		}
-		
+
 		try {
 			return Class.forName(className);
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -42,6 +43,7 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		try {
 			return (T) constructor.newInstance(params);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -83,6 +85,7 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		try {
 			constructor = ReflectUtils.getConstructor(type, false, parameterTypes);
 		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
 			return null;
 		}
 
