@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import com.alibaba.fastjson.JSONObject;
+
 public final class FastJSONObjectWrapper implements scw.core.json.JSONObject {
 	private static final long serialVersionUID = 1L;
 	private com.alibaba.fastjson.JSONObject json;
@@ -87,7 +89,7 @@ public final class FastJSONObjectWrapper implements scw.core.json.JSONObject {
 	}
 
 	public String toJSONString() {
-		return json.toJSONString();
+		return JSONObject.toJSONString(json, BaseProperyFilter.BASE_PROPERY_FILTER);
 	}
 
 	@Override

@@ -19,7 +19,7 @@ public final class FastJSONParseSupport implements JSONParseSupport {
 	}
 
 	public String toJSONString(Object obj) {
-		return JSON.toJSONString(obj);
+		return JSON.toJSONString(obj, BaseProperyFilter.BASE_PROPERY_FILTER);
 	}
 
 	public <T> T parseObject(String text, Class<T> type) {
@@ -33,5 +33,4 @@ public final class FastJSONParseSupport implements JSONParseSupport {
 	public JSONObject createJSONObject() {
 		return new FastJSONObjectWrapper(new com.alibaba.fastjson.JSONObject());
 	}
-
 }

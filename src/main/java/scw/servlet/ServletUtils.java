@@ -135,11 +135,11 @@ public final class ServletUtils {
 	protected static ServletService getServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
 			String configPath, String[] rootBeanFilters) {
 		if (isAsyncSupport()) {
-			return beanFactory.getInstance("scw.servlet.AsyncServletService", beanFactory, propertiesFactory, configPath,
-					rootBeanFilters);
+			return beanFactory.getInstance("scw.servlet.AsyncServletService", beanFactory, propertiesFactory,
+					configPath, rootBeanFilters);
 		} else {
-			return beanFactory.getInstance("scw.servlet.DefaultServletService", beanFactory, propertiesFactory, configPath,
-					rootBeanFilters);
+			return beanFactory.getInstance("scw.servlet.DefaultServletService", beanFactory, propertiesFactory,
+					configPath, rootBeanFilters);
 		}
 	}
 
@@ -438,7 +438,7 @@ public final class ServletUtils {
 		JSONParseSupport jsonParseSupport;
 		String jsonParseSupportBeanName = propertiesFactory.getValue("servlet.json");
 		if (StringUtils.isEmpty(jsonParseSupportBeanName)) {
-			jsonParseSupport = JSONUtils.DEFAULT_PARSE_SUPPORT;
+			jsonParseSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
 		} else {
 			jsonParseSupport = beanFactory.getInstance(jsonParseSupportBeanName);
 		}
@@ -476,8 +476,9 @@ public final class ServletUtils {
 			if (enable || !StringUtils.isEmpty(sign)) {// 开启
 				LoggerUtils.info(ServletUtils.class, "rpc签名：{}", sign);
 				String serializer = propertiesFactory.getValue("servlet.rpc-serializer");
-				return beanFactory.getInstance(DefaultRpcService.class, beanFactory, sign, StringUtils.isEmpty(serializer)
-						? Constants.DEFAULT_SERIALIZER : (Serializer) beanFactory.getInstance(serializer));
+				return beanFactory.getInstance(DefaultRpcService.class, beanFactory, sign,
+						StringUtils.isEmpty(serializer) ? Constants.DEFAULT_SERIALIZER
+								: (Serializer) beanFactory.getInstance(serializer));
 			}
 		} else {
 			return beanFactory.getInstance(rpcServerBeanName);
@@ -491,7 +492,8 @@ public final class ServletUtils {
 		actionKey = StringUtils.isEmpty(actionKey) ? "action" : actionKey;
 		String packageName = propertiesFactory.getValue("servlet.scanning");
 		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
-		return beanFactory.getInstance(HttpServiceFilter.class, beanFactory, ClassUtils.getClasses(packageName), actionKey);
+		return beanFactory.getInstance(HttpServiceFilter.class, beanFactory, ClassUtils.getClasses(packageName),
+				actionKey);
 
 	}
 

@@ -5,6 +5,9 @@ import java.util.List;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import scw.core.cglib.proxy.Factory;
+
+//不再推荐使用
 public final class FastJSONUtils {
 	private FastJSONUtils(){};
 	
@@ -17,6 +20,10 @@ public final class FastJSONUtils {
 	public static JSONObject toJsonObjectExcludeName(Object object, String... excludeName) {
 		JSONObject jsonObject = (JSONObject) JSONObject.toJSON(object);
 		// 未使用PropertyFilter的方式
+		if(object instanceof Factory){
+			jsonObject.remove("callbacks");
+		}
+		
 		if (excludeName != null) {
 			for (String name : excludeName) {
 				jsonObject.remove(name);

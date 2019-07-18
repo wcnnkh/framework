@@ -25,35 +25,35 @@ public final class JSONUtils {
 		}
 
 		LoggerUtils.info(JSONUtils.class, "default json parse：{}", jsonSupportClass.getName());
-		DEFAULT_PARSE_SUPPORT = (JSONParseSupport) ReflectUtils.newInstance(jsonSupportClass);
+		DEFAULT_JSON_SUPPORT = (JSONParseSupport) ReflectUtils.newInstance(jsonSupportClass);
 	}
 
 	/**
 	 * 默认的json序列化工具
 	 */
-	public static final JSONParseSupport DEFAULT_PARSE_SUPPORT;
+	public static final JSONParseSupport DEFAULT_JSON_SUPPORT;
 
 	public static String toJSONString(Object obj) {
-		return DEFAULT_PARSE_SUPPORT.toJSONString(obj);
+		return DEFAULT_JSON_SUPPORT.toJSONString(obj);
 	}
 
 	public static JSONObject parseObject(String text) {
-		return DEFAULT_PARSE_SUPPORT.parseObject(text);
+		return DEFAULT_JSON_SUPPORT.parseObject(text);
 	}
 
 	public static JSONArray parseArray(String text) {
-		return DEFAULT_PARSE_SUPPORT.parseArray(text);
+		return DEFAULT_JSON_SUPPORT.parseArray(text);
 	}
 
 	public static <T> T parseObject(String text, Class<T> type) {
-		return DEFAULT_PARSE_SUPPORT.parseObject(text, type);
+		return DEFAULT_JSON_SUPPORT.parseObject(text, type);
 	}
 
 	public static JSONArray createJSONArray() {
-		return DEFAULT_PARSE_SUPPORT.createJSONArray();
+		return DEFAULT_JSON_SUPPORT.createJSONArray();
 	}
 
 	public static JSONObject createJSONObject() {
-		return DEFAULT_PARSE_SUPPORT.createJSONObject();
+		return DEFAULT_JSON_SUPPORT.createJSONObject();
 	}
 }
