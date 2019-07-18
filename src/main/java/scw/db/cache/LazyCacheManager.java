@@ -13,7 +13,6 @@ import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 
 public abstract class LazyCacheManager implements CacheManager {
-	private static final String DEFAULT_KEY_PREFIX = "lazy:";
 	private static final String KEY = "key:";
 	private static final String DEFAULT_CONNECTOR = "|";
 	private static final LazyCacheConfig DEFAULT_CONFIG = new LazyCacheConfig((int) (XTime.ONE_DAY * 2 / 1000), false,
@@ -37,6 +36,16 @@ public abstract class LazyCacheManager implements CacheManager {
 			}
 		}
 		return config;
+	}
+
+	private final String keyPrefix;
+
+	public LazyCacheManager(String keyPrefix) {
+		this.keyPrefix = keyPrefix;
+	}
+
+	public final String getKeyPrefix() {
+		return keyPrefix;
 	}
 
 	protected abstract void set(String key, int exp, Object value);
@@ -223,7 +232,9 @@ public abstract class LazyCacheManager implements CacheManager {
 	protected String getObjectKey(TableInfo tableInfo, Object bean) {
 		ColumnInfo[] cs = tableInfo.getPrimaryKeyColumns();
 		StringBuilder sb = new StringBuilder(128);
-		sb.append(DEFAULT_KEY_PREFIX);
+		if (keyPrefix != null) {
+			sb.append(keyPrefix);
+		}
 		sb.append(tableInfo.getSource().getName());
 		sb.append(DEFAULT_CONNECTOR).append(cs.length);
 		Object v;
@@ -249,7 +260,10 @@ public abstract class LazyCacheManager implements CacheManager {
 
 	protected String getObjectKeyById(int parameterLen, Class<?> clazz, Object... params) {
 		StringBuilder sb = new StringBuilder(128);
-		sb.append(DEFAULT_KEY_PREFIX).append(clazz.getName());
+		if (keyPrefix != null) {
+			sb.append(keyPrefix);
+		}
+		sb.append(clazz.getName());
 		sb.append(DEFAULT_CONNECTOR).append(parameterLen);
 		for (int i = 0; i < params.length; i++) {
 			sb.append(DEFAULT_CONNECTOR);

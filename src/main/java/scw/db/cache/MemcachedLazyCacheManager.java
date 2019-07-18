@@ -8,7 +8,8 @@ import scw.data.memcached.Memcached;
 public final class MemcachedLazyCacheManager extends LazyCacheManager {
 	private final Memcached memcached;
 
-	public MemcachedLazyCacheManager(Memcached memcached) {
+	public MemcachedLazyCacheManager(Memcached memcached, String keyPrefix) {
+		super(keyPrefix);
 		this.memcached = memcached;
 	}
 

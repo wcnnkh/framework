@@ -11,7 +11,10 @@ import com.alibaba.druid.pool.DruidDataSource;
 import scw.beans.annotation.Bean;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
+import scw.db.async.AsyncInfo;
+import scw.db.cache.LazyCacheManager;
 import scw.db.database.DataBase;
+import scw.mq.MQ;
 
 @Bean(proxy = false)
 public class DruidDB extends DB {
@@ -23,17 +26,30 @@ public class DruidDB extends DB {
 		return dataBase;
 	}
 
-	public DruidDB(Memcached memcached, String queueName, String propertiesFilePath) {
-		super(memcached, queueName);
+	public DruidDB(LazyCacheManager lazyCacheManager, MQ<AsyncInfo> mq, String queueName) {
+		super(lazyCacheManager, mq, queueName);
+	}
+
+	public DruidDB(Memcached memcached, String cacheKeyPrefix, String queueName, String propertiesFilePath) {
+		super(memcached, cacheKeyPrefix, queueName);
 		init(propertiesFilePath);
 	}
 
-	public DruidDB(Memcached memcached, String propertiesFilePath) {
-		this(memcached, null, propertiesFilePath);
+	public DruidDB(Memcached memcached, String cacheKeyPrefix, String propertiesFilePath) {
+		this(memcached, cacheKeyPrefix, null, propertiesFilePath);
 	}
 
-	public DruidDB(Redis redis, String queueName, String propertiesFilePath) {
-		super(redis, queueName);
+	public DruidDB(Memcached memcached, String propertiesFilePath) {
+		this(memcached, null, null, propertiesFilePath);
+	}
+
+	public DruidDB(Redis redis, String cacheKeyPrefix, String queueName, String propertiesFilePath) {
+		super(redis, cacheKeyPrefix, queueName);
+		init(propertiesFilePath);
+	}
+
+	public DruidDB(Redis redis, String cacheKeyPrefix, String propertiesFilePath) {
+		super(redis, cacheKeyPrefix, null);
 		init(propertiesFilePath);
 	}
 

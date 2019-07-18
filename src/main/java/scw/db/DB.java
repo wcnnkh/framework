@@ -26,19 +26,27 @@ public abstract class DB extends AbstractDB implements scw.core.Destroy {
 	}
 
 	public DB(Redis redis) {
-		this(redis, null);
+		this(redis, null); 
 	}
 
 	public DB(Memcached memcached, String queueName) {
-		super(new MemcachedLazyCacheManager(memcached),
+		this(memcached, null, queueName);
+	}
+
+	public DB(Redis redis, String queueName) {
+		this(redis, null, queueName);
+	}
+
+	public DB(Memcached memcached, String cacheKeyPrefix, String queueName) {
+		super(new MemcachedLazyCacheManager(memcached, cacheKeyPrefix),
 				StringUtils.isEmpty(queueName) ? new MemoryBlockingQueueMQ<AsyncInfo>(true)
 						: new MemcachedBlockingQueueMQ<AsyncInfo>(memcached, true),
 				StringUtils.isEmpty(queueName) ? DB.class.getName() : queueName);
 		this.destroyMQ = true;
 	}
 
-	public DB(Redis redis, String queueName) {
-		super(new RedisLazyCacheManager(redis),
+	public DB(Redis redis, String cacheKeyPrefix, String queueName) {
+		super(new RedisLazyCacheManager(redis, cacheKeyPrefix),
 				StringUtils.isEmpty(queueName) ? new MemoryBlockingQueueMQ<AsyncInfo>(true)
 						: new RedisBlockingQueueMQ<AsyncInfo>(redis, true),
 				StringUtils.isEmpty(queueName) ? DB.class.getName() : queueName);

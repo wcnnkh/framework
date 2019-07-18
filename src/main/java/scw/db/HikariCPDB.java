@@ -11,7 +11,10 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
+import scw.db.async.AsyncInfo;
+import scw.db.cache.LazyCacheManager;
 import scw.db.database.DataBase;
+import scw.mq.MQ;
 
 /**
  * 只在能java8中使用 除非你在pom引入你需要的版本，并排除本项目自带的版本
@@ -39,26 +42,35 @@ public class HikariCPDB extends DB {
 		hds = new HikariDataSource(config);
 	}
 
-	public HikariCPDB(String propertiesFile) {
-		init(propertiesFile);
+	public HikariCPDB(LazyCacheManager lazyCacheManager, MQ<AsyncInfo> mq, String queueName) {
+		super(lazyCacheManager, mq, queueName);
 	}
 
-	public HikariCPDB(Memcached memcached, String queueName, String propertiesFile) {
-		super(memcached, queueName);
-		init(propertiesFile);
+	public HikariCPDB(Memcached memcached, String cacheKeyPrefix, String queueName, String propertiesFilePath) {
+		super(memcached, cacheKeyPrefix, queueName);
+		init(propertiesFilePath);
 	}
 
-	public HikariCPDB(Redis redis, String queueName, String propertiesFile) {
-		super(redis, queueName);
-		init(propertiesFile);
+	public HikariCPDB(Memcached memcached, String cacheKeyPrefix, String propertiesFilePath) {
+		this(memcached, cacheKeyPrefix, null, propertiesFilePath);
 	}
 
-	public HikariCPDB(Redis redis, String propertiesFile) {
-		this(redis, null, propertiesFile);
+	public HikariCPDB(Memcached memcached, String propertiesFilePath) {
+		this(memcached, null, null, propertiesFilePath);
 	}
 
-	public HikariCPDB(Memcached memcached, String propertiesFile) {
-		this(memcached, null, propertiesFile);
+	public HikariCPDB(Redis redis, String cacheKeyPrefix, String queueName, String propertiesFilePath) {
+		super(redis, cacheKeyPrefix, queueName);
+		init(propertiesFilePath);
+	}
+
+	public HikariCPDB(Redis redis, String cacheKeyPrefix, String propertiesFilePath) {
+		super(redis, cacheKeyPrefix, null);
+		init(propertiesFilePath);
+	}
+
+	public HikariCPDB(Redis redis, String propertiesFilePath) {
+		this(redis, null, propertiesFilePath);
 	}
 
 	public void createDataBase() {

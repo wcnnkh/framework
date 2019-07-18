@@ -8,7 +8,8 @@ import scw.data.redis.Redis;
 public final class RedisLazyCacheManager extends LazyCacheManager {
 	private final Redis redis;
 
-	public RedisLazyCacheManager(Redis redis) {
+	public RedisLazyCacheManager(Redis redis, String keyPrefix) {
+		super(keyPrefix);
 		this.redis = redis;
 	}
 
