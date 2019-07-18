@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import com.alibaba.fastjson.JSON;
+
 public final class FastJSONArrayWrapper implements scw.core.json.JSONArray {
 	private static final long serialVersionUID = 1L;
 	private com.alibaba.fastjson.JSONArray jsonArray;
@@ -90,7 +92,7 @@ public final class FastJSONArrayWrapper implements scw.core.json.JSONArray {
 	}
 
 	public String toJSONString() {
-		return jsonArray.toJSONString();
+		return JSON.toJSONString(jsonArray, BaseProperyFilter.BASE_PROPERY_FILTER);
 	}
 
 	@Override

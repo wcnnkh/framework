@@ -7,7 +7,7 @@ import scw.core.Destroy;
 import scw.core.lazy.MapLazyFactory;
 import scw.core.lazy.SafeMapLazyFactory;
 
-public abstract class AbstractBlockingQueueMQ<T> implements MQ<T>, Destroy {
+public abstract class BlockingQueueMQ<T> implements MQ<T>, Destroy {
 	private MapLazyFactory<String, SingleBlockingQueueMQ<T>> map = new SafeMapLazyFactory<String, SingleBlockingQueueMQ<T>>() {
 
 		public SingleBlockingQueueMQ<T> createValue(String key) {

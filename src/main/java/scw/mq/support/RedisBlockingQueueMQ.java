@@ -1,10 +1,10 @@
 package scw.mq.support;
 
 import scw.data.redis.Redis;
-import scw.mq.AbstractBlockingQueueMQ;
+import scw.mq.BlockingQueueMQ;
 import scw.mq.SingleBlockingQueueMQ;
 
-public class RedisBlockingQueueMQ<T> extends AbstractBlockingQueueMQ<T> {
+public class RedisBlockingQueueMQ<T> extends BlockingQueueMQ<T> {
 	private final Redis redis;;
 	private final boolean transaction;
 
