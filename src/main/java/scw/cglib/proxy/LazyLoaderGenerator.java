@@ -36,7 +36,7 @@ class LazyLoaderGenerator implements CallbackGenerator {
     private static final Signature LOAD_OBJECT = 
       TypeUtils.parseSignature("Object loadObject()");
     private static final Type LAZY_LOADER =
-      TypeUtils.parseType("scw.cglib.proxy.LazyLoader");
+      TypeUtils.parseType(LazyLoader.class.getName());
 
     public void generate(ClassEmitter ce, Context context, List methods) {
         Set indexes = new HashSet();

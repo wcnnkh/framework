@@ -16,7 +16,6 @@
 package scw.cglib.proxy;
 
 import java.util.HashMap;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +31,7 @@ import scw.cglib.core.EmitUtils;
 import scw.cglib.core.Local;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.ObjectSwitchCallback;
+import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
 import scw.cglib.core.Transformer;
 import scw.cglib.core.TypeUtils;
@@ -50,11 +50,11 @@ implements CallbackGenerator
     private static final Type METHOD =
       TypeUtils.parseType("java.lang.reflect.Method");
     private static final Type REFLECT_UTILS =
-      TypeUtils.parseType("scw.cglib.core.ReflectUtils");
+      TypeUtils.parseType(ReflectUtils.class.getName());
     private static final Type METHOD_PROXY =
-      TypeUtils.parseType("scw.cglib.proxy.MethodProxy");
+      TypeUtils.parseType(MethodProxy.class.getName());
     private static final Type METHOD_INTERCEPTOR =
-      TypeUtils.parseType("scw.cglib.proxy.MethodInterceptor");
+      TypeUtils.parseType(MethodInterceptor.class.getName());
     private static final Signature GET_DECLARED_METHODS =
       TypeUtils.parseSignature("java.lang.reflect.Method[] getDeclaredMethods()");
     @SuppressWarnings("unused")

@@ -123,7 +123,7 @@ public class Enhancer extends AbstractClassGenerator
     private static final Type OBJECT_TYPE =
       TypeUtils.parseType("Object");
     private static final Type FACTORY =
-      TypeUtils.parseType("scw.cglib.proxy.Factory");
+      TypeUtils.parseType(Factory.class.getName());
     private static final Type ILLEGAL_STATE_EXCEPTION =
       TypeUtils.parseType("IllegalStateException");
     private static final Type ILLEGAL_ARGUMENT_EXCEPTION =
@@ -131,7 +131,7 @@ public class Enhancer extends AbstractClassGenerator
     private static final Type THREAD_LOCAL =
       TypeUtils.parseType("ThreadLocal");
     private static final Type CALLBACK =
-      TypeUtils.parseType("scw.cglib.proxy.Callback");
+      TypeUtils.parseType(Callback.class.getName());
     private static final Type CALLBACK_ARRAY =
       Type.getType(Callback[].class);
     private static final Signature CSTRUCT_NULL =

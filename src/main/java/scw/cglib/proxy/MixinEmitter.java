@@ -42,7 +42,7 @@ class MixinEmitter extends ClassEmitter {
     private static final Signature CSTRUCT_OBJECT_ARRAY =
       TypeUtils.parseConstructor("Object[]");
     private static final Type MIXIN =
-      TypeUtils.parseType("scw.cglib.proxy.Mixin");
+      TypeUtils.parseType(Mixin.class.getName());
     private static final Signature NEW_INSTANCE =
       new Signature("newInstance", MIXIN, new Type[]{ Constants.TYPE_OBJECT_ARRAY });
 

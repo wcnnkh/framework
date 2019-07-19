@@ -40,9 +40,9 @@ class BulkBeanEmitter extends ClassEmitter {
     private static final Signature CSTRUCT_EXCEPTION =
       TypeUtils.parseConstructor("Throwable, int");
     private static final Type BULK_BEAN =
-      TypeUtils.parseType("scw.cglib.beans.BulkBean");
+      TypeUtils.parseType(BulkBean.class.getName());
     private static final Type BULK_BEAN_EXCEPTION =
-      TypeUtils.parseType("scw.cglib.beans.BulkBeanException");
+      TypeUtils.parseType(BulkBeanException.class.getName());
         
     public BulkBeanEmitter(ClassVisitor v,
                            String className,

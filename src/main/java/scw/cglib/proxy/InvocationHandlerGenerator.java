@@ -15,6 +15,7 @@
  */
 package scw.cglib.proxy;
 
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,11 +36,11 @@ implements CallbackGenerator
     public static final InvocationHandlerGenerator INSTANCE = new InvocationHandlerGenerator();
 
     private static final Type INVOCATION_HANDLER =
-      TypeUtils.parseType("scw.cglib.proxy.InvocationHandler");
+      TypeUtils.parseType(InvocationHandler.class.getName());
     private static final Type UNDECLARED_THROWABLE_EXCEPTION =
-      TypeUtils.parseType("scw.cglib.proxy.UndeclaredThrowableException");
+      TypeUtils.parseType(UndeclaredThrowableException.class.getName());
     private static final Type METHOD =
-      TypeUtils.parseType("java.lang.reflect.Method");
+      TypeUtils.parseType(Method.class.getName());
     private static final Signature INVOKE =
       TypeUtils.parseSignature("Object invoke(Object, java.lang.reflect.Method, Object[])");
 

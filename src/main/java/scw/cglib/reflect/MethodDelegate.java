@@ -161,7 +161,7 @@ abstract public class MethodDelegate {
     public static class Generator extends AbstractClassGenerator {
         private static final Source SOURCE = new Source(MethodDelegate.class.getName());
         private static final Type METHOD_DELEGATE =
-          TypeUtils.parseType("scw.cglib.reflect.MethodDelegate");
+          TypeUtils.parseType(MethodDelegate.class.getName());
         private static final Signature NEW_INSTANCE =
           new Signature("newInstance", METHOD_DELEGATE, new Type[]{ Constants.TYPE_OBJECT });
 

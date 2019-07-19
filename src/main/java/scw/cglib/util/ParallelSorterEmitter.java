@@ -27,7 +27,7 @@ import scw.cglib.core.TypeUtils;
 
 class ParallelSorterEmitter extends ClassEmitter {
     private static final Type PARALLEL_SORTER =
-      TypeUtils.parseType("scw.cglib.util.ParallelSorter");
+      TypeUtils.parseType(ParallelSorter.class.getName());
     private static final Signature CSTRUCT_OBJECT_ARRAY =
       TypeUtils.parseConstructor("Object[]");
     private static final Signature NEW_INSTANCE =
