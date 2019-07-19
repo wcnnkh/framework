@@ -1,4 +1,4 @@
-package scw.core.serializer.support;
+package scw.serializer.support;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,10 +8,10 @@ import com.caucho.hessian.io.HessianInput;
 import com.caucho.hessian.io.HessianOutput;
 import com.caucho.hessian.io.SerializerFactory;
 
-import scw.core.serializer.Serializer;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
+import scw.serializer.Serializer;
 
 public class HessianSerializer extends Serializer {
 	private static final SerializerFactory SERIALIZER_FACTORY = new SerializerFactory();

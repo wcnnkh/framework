@@ -10,9 +10,9 @@ import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import scw.core.Constants;
-import scw.core.serializer.Serializer;
 import scw.core.utils.StringUtils;
 import scw.data.cas.CASOperations;
+import scw.serializer.Serializer;
 
 public final class XMemcached extends AbstractXMemcached implements scw.core.Destroy {
 	private final CASOperations casOperations;

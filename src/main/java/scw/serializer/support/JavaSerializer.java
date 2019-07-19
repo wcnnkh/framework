@@ -1,4 +1,4 @@
-package scw.core.serializer.support;
+package scw.serializer.support;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,10 +6,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
-import scw.core.serializer.Serializer;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
+import scw.serializer.Serializer;
 
 public class JavaSerializer extends Serializer {
 	public final static JavaSerializer SERIALIZER = new JavaSerializer();

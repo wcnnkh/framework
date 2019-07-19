@@ -1,4 +1,4 @@
-package scw.core.serializer;
+package scw.serializer;
 
 import java.io.IOException;
 import java.io.InputStream;

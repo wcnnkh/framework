@@ -2,9 +2,9 @@ package scw.core;
 
 import scw.asm.Opcodes;
 import scw.core.reflect.ReflectUtils;
-import scw.core.serializer.Serializer;
-import scw.core.serializer.support.JavaSerializer;
 import scw.logger.LoggerUtils;
+import scw.serializer.Serializer;
+import scw.serializer.support.JavaSerializer;
 
 public final class Constants {
 	static {

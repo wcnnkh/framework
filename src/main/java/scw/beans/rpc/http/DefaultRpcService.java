@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.core.serializer.Serializer;
 import scw.core.utils.SignUtils;
 import scw.core.utils.StringUtils;
 import scw.io.Bytes;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.serializer.Serializer;
 
 public class DefaultRpcService implements RpcService {
 	private static Logger logger = LoggerFactory.getLogger(DefaultRpcService.class);

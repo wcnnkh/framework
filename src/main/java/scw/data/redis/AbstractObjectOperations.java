@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import scw.core.serializer.Serializer;
 import scw.core.utils.Assert;
 import scw.core.utils.CollectionUtils;
+import scw.serializer.Serializer;
 
 public abstract class AbstractObjectOperations implements RedisOperations<String, Object> {
 	protected abstract RedisOperations<byte[], byte[]> getBinaryOperations();

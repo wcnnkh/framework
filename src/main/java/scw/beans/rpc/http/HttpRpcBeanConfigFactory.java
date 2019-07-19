@@ -8,10 +8,10 @@ import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.Constants;
 import scw.core.PropertiesFactory;
-import scw.core.serializer.Serializer;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
+import scw.serializer.Serializer;
 
 public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "http:reference";
