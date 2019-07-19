@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Autowrite;
+import scw.beans.annotation.Autowired;
 import scw.beans.annotation.InitMethod;
 import scw.core.Base64;
 import scw.core.Destroy;
@@ -35,7 +35,7 @@ public class DefaultAsyncCompleteService implements AsyncCompleteService, Destro
 	private FileManager fileManager;
 	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
 
-	@Autowrite
+	@Autowired
 	private BeanFactory beanFactory;
 
 	@InitMethod

@@ -9,7 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Autowrite;
+import scw.beans.annotation.Autowired;
 import scw.beans.annotation.InitMethod;
 import scw.beans.tcc.InvokeInfo;
 import scw.beans.tcc.StageType;
@@ -27,7 +27,7 @@ import scw.transaction.TransactionManager;
 public final class RetryTCCService implements TCCService, scw.core.Destroy {
 	private static Logger logger = LoggerFactory.getLogger(RetryTCCService.class);
 
-	@Autowrite
+	@Autowired
 	private BeanFactory beanFactory;
 	private FileManager fileManager;
 	private final int retryTime;// 秒

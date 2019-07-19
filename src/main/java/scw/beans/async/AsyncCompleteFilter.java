@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.AsyncComplete;
-import scw.beans.annotation.Autowrite;
+import scw.beans.annotation.Autowired;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
@@ -30,7 +30,7 @@ public final class AsyncCompleteFilter implements Filter {
 		ENABLE_TAG.set(enable);
 	}
 
-	@Autowrite
+	@Autowired
 	private BeanFactory beanFactory;
 
 	private Object realFilter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)

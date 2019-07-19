@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import scw.beans.annotation.Autowrite;
+import scw.beans.annotation.Autowired;
 import scw.beans.annotation.InitMethod;
 import scw.beans.async.AsyncCompleteFilter;
 import scw.beans.tcc.TCCTransactionFilter;
@@ -20,7 +20,7 @@ import scw.transaction.TransactionFilter;
  *
  */
 public final class CommonFilter implements Filter {
-	@Autowrite
+	@Autowired
 	private BeanFactory beanFactory;
 	private Collection<Filter> filter;
 	

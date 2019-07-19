@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import com.rabbitmq.client.Connection;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Autowrite;
+import scw.beans.annotation.Autowired;
 import scw.beans.tcc.InvokeInfo;
 import scw.beans.tcc.StageType;
 import scw.beans.tcc.TCCService;
@@ -23,7 +23,7 @@ public final class RabbitTccService implements TCCService, scw.core.Destroy {
 	private ExecutorService executorService = new ThreadPoolExecutor(1, 20, 0, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>());
 	private Exchange<TransactionInfo> exchange;
-	@Autowrite
+	@Autowired
 	private BeanFactory beanFactory;
 	private String routingKey;
 

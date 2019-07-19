@@ -15,12 +15,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import scw.beans.annotation.Autowrite;
+import scw.beans.annotation.Autowired;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Config;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
-import scw.beans.annotation.Properties;
+import scw.beans.annotation.Value;
 import scw.beans.xml.XmlBeanParameter;
 import scw.cglib.proxy.Enhancer;
 import scw.core.PropertiesFactory;
@@ -216,7 +216,8 @@ public final class BeanUtils {
 			try {
 				existDefaultValueWarnLog(Config.class.getName(), clz, field, obj);
 
-				value = beanFactory.getInstance(config.parse()).parse(beanFactory, field, config.value(), config.charset());
+				value = beanFactory.getInstance(config.parse()).parse(beanFactory, field, config.value(),
+						config.charset());
 				field.set(obj, value);
 			} catch (Exception e) {
 				logger.error(e, "config：clz={},fieldName={}", clz.getName(), field.getField().getName());
@@ -248,18 +249,18 @@ public final class BeanUtils {
 
 	private static void setProperties(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> clz,
 			Object obj, FieldDefinition field) {
-		Properties properties = field.getAnnotation(Properties.class);
-		if (properties != null) {
-			staticFieldWarnLog(Properties.class.getName(), clz, field);
+		Value value = field.getAnnotation(Value.class);
+		if (value != null) {
+			staticFieldWarnLog(Value.class.getName(), clz, field);
 
-			Object value = null;
+			Object val = null;
 			try {
-				existDefaultValueWarnLog(Properties.class.getName(), clz, field, obj);
+				existDefaultValueWarnLog(Value.class.getName(), clz, field, obj);
 
-				String v = propertiesFactory.getValue(properties.value());
+				String v = propertiesFactory.getValue(value.value());
 				if (v != null) {
-					value = StringUtils.conversion(v, field.getField().getType());
-					field.set(obj, value);
+					val = StringUtils.conversion(v, field.getField().getType());
+					field.set(obj, val);
 				}
 			} catch (Exception e) {
 				logger.error(e, "properties：clz={},fieldName={}", clz.getName(), field.getField().getName());
@@ -268,9 +269,9 @@ public final class BeanUtils {
 	}
 
 	private static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldDefinition field) {
-		Autowrite s = field.getAnnotation(Autowrite.class);
+		Autowired s = field.getAnnotation(Autowired.class);
 		if (s != null) {
-			staticFieldWarnLog(Autowrite.class.getName(), clz, field);
+			staticFieldWarnLog(Autowired.class.getName(), clz, field);
 
 			String name = s.value();
 			if (name.length() == 0) {
@@ -278,7 +279,7 @@ public final class BeanUtils {
 			}
 
 			try {
-				existDefaultValueWarnLog(Autowrite.class.getName(), clz, field, obj);
+				existDefaultValueWarnLog(Autowired.class.getName(), clz, field, obj);
 				field.set(obj, beanFactory.getInstance(name));
 			} catch (Exception e) {
 				logger.error(e, "autowrite：clz={},fieldName={}", clz.getName(), field.getField().getName());
@@ -384,10 +385,10 @@ public final class BeanUtils {
 					continue;
 				}
 
-				Autowrite autowrite = field.getAnnotation(Autowrite.class);
+				Autowired autowired = field.getAnnotation(Autowired.class);
 				Config config = field.getAnnotation(Config.class);
-				Properties properties = field.getAnnotation(Properties.class);
-				if (autowrite == null && config == null && properties == null) {
+				Value value = field.getAnnotation(Value.class);
+				if (autowired == null && config == null && value == null) {
 					continue;
 				}
 
