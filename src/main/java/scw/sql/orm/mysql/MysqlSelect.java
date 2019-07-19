@@ -7,7 +7,7 @@ import java.util.List;
 
 import scw.core.exception.ParameterException;
 import scw.core.utils.CollectionUtils;
-import scw.db.sql.SimpleSql;
+import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMOperations;

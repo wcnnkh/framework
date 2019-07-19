@@ -1,6 +1,4 @@
-package scw.db.sql;
-
-import scw.sql.Sql;
+package scw.sql;
 
 public class SimpleSql implements Sql {
 	private static final long serialVersionUID = 1L;

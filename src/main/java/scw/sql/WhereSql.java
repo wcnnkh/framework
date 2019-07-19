@@ -1,4 +1,4 @@
-package scw.db.sql;
+package scw.sql;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,7 +8,6 @@ import java.util.List;
 
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
-import scw.sql.Sql;
 
 public class WhereSql implements Sql {
 	private static final long serialVersionUID = 1L;

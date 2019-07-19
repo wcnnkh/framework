@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import scw.core.logger.Logger;
 import scw.core.logger.LoggerFactory;
-import scw.db.sql.SimpleSql;
+import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.SqlException;
 import scw.sql.SqlUtils;
