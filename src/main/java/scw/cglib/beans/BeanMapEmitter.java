@@ -36,9 +36,9 @@ import scw.cglib.core.TypeUtils;
 @SuppressWarnings({"rawtypes", "unchecked"})
 class BeanMapEmitter extends ClassEmitter {
     private static final Type BEAN_MAP =
-      TypeUtils.parseType("scw.core.cglib.beans.BeanMap");
+      TypeUtils.parseType("scw.cglib.beans.BeanMap");
     private static final Type FIXED_KEY_SET =
-      TypeUtils.parseType("scw.core.cglib.beans.FixedKeySet");
+      TypeUtils.parseType("scw.cglib.beans.FixedKeySet");
     private static final Signature CSTRUCT_OBJECT =
       TypeUtils.parseConstructor("Object");
     private static final Signature CSTRUCT_STRING_ARRAY =

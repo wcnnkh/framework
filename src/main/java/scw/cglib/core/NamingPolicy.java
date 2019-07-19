@@ -23,7 +23,7 @@ public interface NamingPolicy {
     /**
      * Choose a name for a generated class.
      * @param prefix a dotted-name chosen by the generating class (possibly to put the generated class in a particular package)
-     * @param source the fully-qualified class name of the generating class (for example "scw.core.cglib.proxy.Enhancer")
+     * @param source the fully-qualified class name of the generating class (for example "scw.cglib.proxy.Enhancer")
      * @param key A key object representing the state of the parameters; for caching to work properly, equal keys should result
      * in the same generated class name. The default policy incorporates <code>key.hashCode()</code> into the class name.
      * @param names a predicate that returns true if the given classname has already been used in the same ClassLoader.

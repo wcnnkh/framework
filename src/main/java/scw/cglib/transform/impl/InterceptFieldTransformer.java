@@ -30,9 +30,9 @@ import scw.cglib.transform.ClassEmitterTransformer;
 public class InterceptFieldTransformer extends ClassEmitterTransformer {
     private static final String CALLBACK_FIELD = "$CGLIB_READ_WRITE_CALLBACK";
     private static final Type CALLBACK =
-      TypeUtils.parseType("scw.core.cglib.transform.impl.InterceptFieldCallback");
+      TypeUtils.parseType("scw.cglib.transform.impl.InterceptFieldCallback");
     private static final Type ENABLED =
-      TypeUtils.parseType("scw.core.cglib.transform.impl.InterceptFieldEnabled");
+      TypeUtils.parseType("scw.cglib.transform.impl.InterceptFieldEnabled");
     private static final Signature ENABLED_SET =
       new Signature("setInterceptFieldCallback", Type.VOID_TYPE, new Type[]{ CALLBACK });
     private static final Signature ENABLED_GET =

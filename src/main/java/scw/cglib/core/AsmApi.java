@@ -7,11 +7,11 @@ import scw.asm.Opcodes;
 
 final class AsmApi {
 
-    private static final String EXPERIMENTAL_ASM7_PROPERTY_NAME = "scw.core.cglib.experimental_asm7";
+    private static final String EXPERIMENTAL_ASM7_PROPERTY_NAME = "scw.cglib.experimental_asm7";
 
     /**
      * Returns the latest stable ASM API value in {@link Opcodes} unless overridden via the
-     * scw.core.cglib.experimental_asm7 property.
+     * scw.cglib.experimental_asm7 property.
      */
     static int value() {
         boolean experimentalAsm7;

@@ -57,7 +57,7 @@ public interface Constants extends scw.asm.Opcodes {
     public static final Type TYPE_RUNTIME_EXCEPTION = TypeUtils.parseType("RuntimeException");
     public static final Type TYPE_ERROR = TypeUtils.parseType("Error");
     public static final Type TYPE_SYSTEM = TypeUtils.parseType("System");
-    public static final Type TYPE_SIGNATURE = TypeUtils.parseType("scw.core.cglib.core.Signature");
+    public static final Type TYPE_SIGNATURE = TypeUtils.parseType("scw.cglib.core.Signature");
     public static final Type TYPE_TYPE = Type.getType(Type.class);
 
     public static final String CONSTRUCTOR_NAME = "<init>";

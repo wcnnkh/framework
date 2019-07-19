@@ -33,9 +33,9 @@ class DispatcherGenerator implements CallbackGenerator {
       new DispatcherGenerator(true);
 
     private static final Type DISPATCHER =
-      TypeUtils.parseType("scw.core.cglib.proxy.Dispatcher");
+      TypeUtils.parseType("scw.cglib.proxy.Dispatcher");
     private static final Type PROXY_REF_DISPATCHER =
-      TypeUtils.parseType("scw.core.cglib.proxy.ProxyRefDispatcher");
+      TypeUtils.parseType("scw.cglib.proxy.ProxyRefDispatcher");
     private static final Signature LOAD_OBJECT =
       TypeUtils.parseSignature("Object loadObject()");
     private static final Signature PROXY_REF_LOAD_OBJECT =

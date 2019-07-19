@@ -79,7 +79,7 @@ abstract public class MulticastDelegate implements Cloneable {
     public static class Generator extends AbstractClassGenerator {
         private static final Source SOURCE = new Source(MulticastDelegate.class.getName());
         private static final Type MULTICAST_DELEGATE =
-          TypeUtils.parseType("scw.core.cglib.reflect.MulticastDelegate");
+          TypeUtils.parseType("scw.cglib.reflect.MulticastDelegate");
         private static final Signature NEW_INSTANCE =
           new Signature("newInstance", MULTICAST_DELEGATE, new Type[0]);
         private static final Signature ADD_DELEGATE =

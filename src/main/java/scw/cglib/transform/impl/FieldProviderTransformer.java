@@ -37,7 +37,7 @@ public class FieldProviderTransformer extends ClassEmitterTransformer {
     private static final String FIELD_TYPES = "CGLIB$FIELD_TYPES";
     
     private static final Type FIELD_PROVIDER =
-      TypeUtils.parseType("scw.core.cglib.transform.impl.FieldProvider");
+      TypeUtils.parseType("scw.cglib.transform.impl.FieldProvider");
     private static final Type ILLEGAL_ARGUMENT_EXCEPTION =
       TypeUtils.parseType("IllegalArgumentException");
     private static final Signature PROVIDER_GET =

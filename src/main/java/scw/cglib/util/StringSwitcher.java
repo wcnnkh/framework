@@ -38,7 +38,7 @@ import scw.cglib.core.TypeUtils;
 @SuppressWarnings({"rawtypes"})
 abstract public class StringSwitcher {
     private static final Type STRING_SWITCHER =
-      TypeUtils.parseType("scw.core.cglib.util.StringSwitcher");
+      TypeUtils.parseType("scw.cglib.util.StringSwitcher");
     private static final Signature INT_VALUE =
       TypeUtils.parseSignature("int intValue(String)");
     private static final StringSwitcherKey KEY_FACTORY =

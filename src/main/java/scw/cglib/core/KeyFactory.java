@@ -70,7 +70,7 @@ abstract public class KeyFactory {
     private static final Signature APPEND_STRING =
       TypeUtils.parseSignature("StringBuffer append(String)");
     private static final Type KEY_FACTORY =
-      TypeUtils.parseType("scw.core.cglib.core.KeyFactory");
+      TypeUtils.parseType("scw.cglib.core.KeyFactory");
     private static final Signature GET_SORT =
       TypeUtils.parseSignature("int getSort()");
 

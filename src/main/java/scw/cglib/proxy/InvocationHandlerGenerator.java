@@ -35,9 +35,9 @@ implements CallbackGenerator
     public static final InvocationHandlerGenerator INSTANCE = new InvocationHandlerGenerator();
 
     private static final Type INVOCATION_HANDLER =
-      TypeUtils.parseType("scw.core.cglib.proxy.InvocationHandler");
+      TypeUtils.parseType("scw.cglib.proxy.InvocationHandler");
     private static final Type UNDECLARED_THROWABLE_EXCEPTION =
-      TypeUtils.parseType("scw.core.cglib.proxy.UndeclaredThrowableException");
+      TypeUtils.parseType("scw.cglib.proxy.UndeclaredThrowableException");
     private static final Type METHOD =
       TypeUtils.parseType("java.lang.reflect.Method");
     private static final Signature INVOKE =

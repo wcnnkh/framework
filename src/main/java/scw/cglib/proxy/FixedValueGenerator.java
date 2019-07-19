@@ -29,7 +29,7 @@ import scw.cglib.core.TypeUtils;
 class FixedValueGenerator implements CallbackGenerator {
     public static final FixedValueGenerator INSTANCE = new FixedValueGenerator();
     private static final Type FIXED_VALUE =
-      TypeUtils.parseType("scw.core.cglib.proxy.FixedValue");
+      TypeUtils.parseType("scw.cglib.proxy.FixedValue");
     private static final Signature LOAD_OBJECT =
       TypeUtils.parseSignature("Object loadObject()");
 

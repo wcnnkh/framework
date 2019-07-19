@@ -18,7 +18,7 @@ package scw.cglib.core;
 /**
  * The default policy used by {@link AbstractClassGenerator}.
  * Generates names such as
- * <p><code>scw.core.cglib.Foo$$EnhancerByCGLIB$$38272841</code><p>
+ * <p><code>scw.cglib.Foo$$EnhancerByCGLIB$$38272841</code><p>
  * This is composed of a prefix based on the name of the superclass, a fixed
  * string incorporating the CGLIB class responsible for generation, and a
  * hashcode derived from the parameters used to create the object. If the same
@@ -31,11 +31,11 @@ public class DefaultNamingPolicy implements NamingPolicy {
     /**
      * This allows to test collisions of {@code key.hashCode()}.
      */
-    private final static boolean STRESS_HASH_CODE = Boolean.getBoolean("scw.core.cglib.test.stressHashCodes");
+    private final static boolean STRESS_HASH_CODE = Boolean.getBoolean("scw.cglib.test.stressHashCodes");
     
     public String getClassName(String prefix, String source, Object key, Predicate names) {
         if (prefix == null) {
-            prefix = "scw.core.cglib.empty.Object";
+            prefix = "scw.cglib.empty.Object";
         } else if (prefix.startsWith("java")) {
             prefix = "$" + prefix;
         }

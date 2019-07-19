@@ -50,11 +50,11 @@ implements CallbackGenerator
     private static final Type METHOD =
       TypeUtils.parseType("java.lang.reflect.Method");
     private static final Type REFLECT_UTILS =
-      TypeUtils.parseType("scw.core.cglib.core.ReflectUtils");
+      TypeUtils.parseType("scw.cglib.core.ReflectUtils");
     private static final Type METHOD_PROXY =
-      TypeUtils.parseType("scw.core.cglib.proxy.MethodProxy");
+      TypeUtils.parseType("scw.cglib.proxy.MethodProxy");
     private static final Type METHOD_INTERCEPTOR =
-      TypeUtils.parseType("scw.core.cglib.proxy.MethodInterceptor");
+      TypeUtils.parseType("scw.cglib.proxy.MethodInterceptor");
     private static final Signature GET_DECLARED_METHODS =
       TypeUtils.parseSignature("java.lang.reflect.Method[] getDeclaredMethods()");
     @SuppressWarnings("unused")
