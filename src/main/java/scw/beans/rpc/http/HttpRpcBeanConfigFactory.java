@@ -6,12 +6,12 @@ import org.w3c.dom.NodeList;
 import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.Constants;
 import scw.core.PropertiesFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-import scw.serializer.Serializer;
+import scw.io.serializer.Serializer;
+import scw.io.serializer.SerializerUtils;
 
 public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "http:reference";
@@ -33,7 +33,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 			String serializer = XMLUtils.getNodeAttributeValue(propertiesFactory, node, "serializer");
 			String address = XmlBeanUtils.getAddress(propertiesFactory, node);
 
-			Serializer ser = StringUtils.isEmpty(serializer) ? Constants.DEFAULT_SERIALIZER
+			Serializer ser = StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 					: (Serializer) beanFactory.getInstance(serializer);
 			if (!StringUtils.isNull(packageName)) {
 				for (Class<?> clz : ClassUtils.getClasses(packageName)) {

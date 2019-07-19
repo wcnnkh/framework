@@ -9,9 +9,9 @@ import scw.beans.BeanFactory;
 import scw.core.utils.SignUtils;
 import scw.core.utils.StringUtils;
 import scw.io.Bytes;
+import scw.io.serializer.Serializer;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.serializer.Serializer;
 
 public class DefaultRpcService implements RpcService {
 	private static Logger logger = LoggerFactory.getLogger(DefaultRpcService.class);

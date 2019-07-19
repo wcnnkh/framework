@@ -1,19 +1,19 @@
-package scw.serializer.support;
+package scw.io.serializer.support;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.alibaba.com.caucho.hessian.io.Hessian2Input;
-import com.alibaba.com.caucho.hessian.io.Hessian2Output;
-import com.alibaba.com.caucho.hessian.io.SerializerFactory;
+import com.caucho.hessian.io.Hessian2Input;
+import com.caucho.hessian.io.Hessian2Output;
+import com.caucho.hessian.io.SerializerFactory;
 
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
-import scw.serializer.Serializer;
+import scw.io.serializer.Serializer;
 
-public class DubboHessian2Serializer extends Serializer {
+public class Hessian2Serializer extends Serializer {
 	private static final SerializerFactory SERIALIZER_FACTORY = new SerializerFactory();
 	
 	@Override

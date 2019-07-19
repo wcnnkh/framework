@@ -1,4 +1,4 @@
-package scw.serializer.support;
+package scw.io.serializer.support;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +8,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-import scw.serializer.Serializer;
+import scw.io.serializer.Serializer;
 
 public class KryoSerializer extends Serializer {
 	private static final ThreadLocal<Kryo> kryoLocal = new ThreadLocal<Kryo>() {

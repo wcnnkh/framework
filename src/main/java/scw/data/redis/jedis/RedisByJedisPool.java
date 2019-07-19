@@ -10,7 +10,8 @@ import scw.core.Constants;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
-import scw.serializer.Serializer;
+import scw.io.serializer.Serializer;
+import scw.io.serializer.SerializerUtils;
 
 public final class RedisByJedisPool extends AbstractJedisOperations implements scw.core.Destroy {
 	private final JedisPool jedisPool;
@@ -32,7 +33,7 @@ public final class RedisByJedisPool extends AbstractJedisOperations implements s
 	}
 
 	public RedisByJedisPool(String propertiesFile) {
-		this(propertiesFile, Constants.DEFAULT_SERIALIZER);
+		this(propertiesFile, SerializerUtils.DEFAULT_SERIALIZER);
 	}
 
 	public static JedisPoolConfig createConfig(String propertiesFile) {
@@ -52,7 +53,7 @@ public final class RedisByJedisPool extends AbstractJedisOperations implements s
 		jedisPoolConfig.setTestOnBorrow(testOnBorrow);
 		this.jedisPool = new JedisPool(jedisPoolConfig, host);
 		this.auth = null;
-		this.serializer = Constants.DEFAULT_SERIALIZER;
+		this.serializer = SerializerUtils.DEFAULT_SERIALIZER;
 	}
 
 	public void destroy() {

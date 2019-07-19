@@ -34,8 +34,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import scw.core.Base64;
-import scw.core.Constants;
 import scw.core.exception.AlreadyExistsException;
+import scw.io.serializer.SerializerUtils;
 
 public final class FileUtils {
 
@@ -2875,7 +2875,7 @@ public final class FileUtils {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
-			return Constants.DEFAULT_SERIALIZER.deserialize(fis);
+			return SerializerUtils.DEFAULT_SERIALIZER.deserialize(fis);
 		} finally {
 			if (fis != null) {
 				fis.close();
@@ -2887,7 +2887,7 @@ public final class FileUtils {
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(file);
-			Constants.DEFAULT_SERIALIZER.serialize(fos, obj);
+			SerializerUtils.DEFAULT_SERIALIZER.serialize(fos, obj);
 		} finally {
 			if (fos != null) {
 				fos.close();

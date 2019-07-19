@@ -1,4 +1,4 @@
-package scw.serializer.support;
+package scw.io.serializer.support;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,10 +10,8 @@ import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
 import scw.core.Bits;
-import scw.core.utils.ClassUtils;
-import scw.io.IOUtils;
-import scw.io.UnsafeByteArrayOutputStream;
-import scw.serializer.Serializer;
+import scw.io.serializer.Serializer;
+import scw.io.serializer.SerializerUtils;
 
 public class ProtostuffSerializer extends Serializer {
 	private static final ThreadLocal<LinkedBuffer> bufferLocal = new ThreadLocal<LinkedBuffer>() {
@@ -24,32 +22,6 @@ public class ProtostuffSerializer extends Serializer {
 
 	public static LinkedBuffer getLinkedBuffer() {
 		return bufferLocal.get().clear();
-	}
-
-	// 不用担心并发，因为最终结果都是一致的
-	private static byte[] classToBytes(Class<?> clazz) {
-		String name = clazz.getName();
-		UnsafeByteArrayOutputStream byteArray = IOUtils.getUnsafeByteArrayOutputStream();
-		for (char c : name.toCharArray()) {
-			byte[] bs = { 0, 0 };
-			Bits.putChar(bs, 0, c);
-			byteArray.write(bs, 0, bs.length);
-		}
-		return byteArray.toByteArray();
-	}
-
-	private static Class<?> bytesToClass(byte[] bs) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < bs.length; i += 2) {
-			char c = Bits.getChar(bs, i);
-			sb.append(c);
-		}
-		
-		try {
-			return ClassUtils.forName(sb.toString());
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	@Override
@@ -78,7 +50,7 @@ public class ProtostuffSerializer extends Serializer {
 			return null;
 		}
 
-		byte[] nameBytes = classToBytes(data.getClass());
+		byte[] nameBytes = SerializerUtils.class2bytes(data.getClass());
 		byte[] objBytes = serialize((Class) data.getClass(), data);
 		byte[] buff = new byte[4 + nameBytes.length + objBytes.length];
 		Bits.putInt(buff, 0, nameBytes.length);
@@ -103,7 +75,12 @@ public class ProtostuffSerializer extends Serializer {
 		int len = Bits.getInt(data, 0);
 		byte[] nameBytes = new byte[len];
 		System.arraycopy(data, 4, nameBytes, 0, len);
-		Class<?> type = bytesToClass(nameBytes);
+		Class<?> type;
+		try {
+			type = SerializerUtils.bytes2class(nameBytes);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 
 		Schema schema = RuntimeSchema.getSchema(type);
 		Object t = schema.newMessage();
@@ -130,7 +107,13 @@ public class ProtostuffSerializer extends Serializer {
 		byte[] nameBytes = new byte[Bits.getInt(lenBytes, 0)];
 		input.read(nameBytes);
 
-		Class<?> type = bytesToClass(nameBytes);
+		Class<?> type;
+		try {
+			type = SerializerUtils.bytes2class(nameBytes);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		
 		Schema schema = RuntimeSchema.getSchema(type);
 		Object t = schema.newMessage();
 		ProtostuffIOUtil.mergeFrom(input, t, schema, getLinkedBuffer());

@@ -1,7 +1,7 @@
 package scw.data.redis;
 
 import scw.data.cas.CASOperations;
-import scw.serializer.Serializer;
+import scw.io.serializer.Serializer;
 
 public abstract class AbstractRedis implements Redis {
 	private final AbstractObjectOperations objectOperations = new ObjectOperations(this, getCharsetName());

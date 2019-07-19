@@ -12,11 +12,11 @@ import com.rabbitmq.client.Envelope;
 import scw.beans.annotation.AsyncComplete;
 import scw.beans.async.DefaultAsyncCompleteService;
 import scw.core.Consumer;
+import scw.io.serializer.NoTypeSpecifiedSerializer;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mq.amqp.AmqpQueueConfig;
 import scw.mq.amqp.Exchange;
-import scw.serializer.NoTypeSpecifiedSerializer;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 

@@ -14,7 +14,7 @@ import java.util.Set;
 import scw.core.utils.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.io.Bytes;
-import scw.serializer.Serializer;
+import scw.io.serializer.Serializer;
 
 public abstract class AbstractSpecifiedTypeOperations<T> implements RedisOperations<String, T> {
 	private final Class<T> type;

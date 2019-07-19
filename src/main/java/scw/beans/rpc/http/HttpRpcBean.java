@@ -13,13 +13,13 @@ import scw.beans.rpc.AbstractInterfaceProxyBean;
 import scw.core.aop.Invoker;
 import scw.core.utils.SignUtils;
 import scw.io.Bytes;
+import scw.io.serializer.Serializer;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.AbstractResponse;
 import scw.net.ContentType;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpRequest;
-import scw.serializer.Serializer;
 
 public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 	private Logger logger = LoggerFactory.getLogger(getClass());

@@ -37,11 +37,12 @@ import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.io.serializer.Serializer;
+import scw.io.serializer.SerializerUtils;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.logger.LoggerUtils;
 import scw.net.ContentType;
-import scw.serializer.Serializer;
 import scw.servlet.beans.CommonRequestBeanFactory;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.http.HttpWrapperFactory;
@@ -477,7 +478,7 @@ public final class ServletUtils {
 				LoggerUtils.info(ServletUtils.class, "rpc签名：{}", sign);
 				String serializer = propertiesFactory.getValue("servlet.rpc-serializer");
 				return beanFactory.getInstance(DefaultRpcService.class, beanFactory, sign,
-						StringUtils.isEmpty(serializer) ? Constants.DEFAULT_SERIALIZER
+						StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 								: (Serializer) beanFactory.getInstance(serializer));
 			}
 		} else {
