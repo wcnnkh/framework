@@ -1,10 +1,10 @@
-package scw.utils.id.db;
+package scw.id.db;
 
 import scw.data.redis.Redis;
 import scw.db.DB;
 import scw.db.DBManager;
-import scw.utils.id.IdGenerator;
-import scw.utils.id.RedisIdGenerator;
+import scw.id.IdGenerator;
+import scw.id.RedisIdGenerator;
 
 public final class RedisTableIdGenerator implements IdGenerator<Long> {
 	private final Redis redis;

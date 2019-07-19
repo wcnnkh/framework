@@ -1,4 +1,4 @@
-package scw.utils.id;
+package scw.id;
 
 import scw.data.memcached.Memcached;
 

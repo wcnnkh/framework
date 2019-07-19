@@ -1,4 +1,4 @@
-package scw.utils.id;
+package scw.id;
 
 /**
  * ID生成器

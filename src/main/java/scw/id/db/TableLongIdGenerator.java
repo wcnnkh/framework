@@ -1,34 +1,34 @@
-package scw.utils.id.db;
+package scw.id.db;
 
 import scw.db.DB;
 import scw.db.DBManager;
-import scw.utils.id.IdGenerator;
-import scw.utils.id.IntegerIdGenerator;
+import scw.id.IdGenerator;
+import scw.id.LongIdGenerator;
 
-public final class TableIntegerIdGenerator implements IdGenerator<Integer> {
+public final class TableLongIdGenerator implements IdGenerator<Long> {
 	private Class<?> tableClass;
 	private String fieldName;
-	private int serverId;
+	private int serverId = 0;
 	private int maxServerId = 1;
 	private DB db;
-	private volatile IntegerIdGenerator idGenerator;
+	private volatile LongIdGenerator idGenerator;
 
-	public TableIntegerIdGenerator(Class<?> tableClass, String fieldName) {
+	public TableLongIdGenerator(Class<?> tableClass, String fieldName) {
 		this(tableClass, fieldName, 0, 1);
 	}
 
-	public TableIntegerIdGenerator(Class<?> tableClass, DB db, String fieldName) {
+	public TableLongIdGenerator(Class<?> tableClass, DB db, String fieldName) {
 		this(tableClass, db, fieldName, 0, 1);
 	}
 
-	public TableIntegerIdGenerator(Class<?> tableClass, String fieldName, int serverId, int maxServerId) {
+	public TableLongIdGenerator(Class<?> tableClass, String fieldName, int serverId, int maxServerId) {
 		this.tableClass = tableClass;
 		this.fieldName = fieldName;
 		this.serverId = serverId;
 		this.maxServerId = maxServerId;
 	}
 
-	public TableIntegerIdGenerator(Class<?> tableClass, DB db, String fieldName, int serverId, int maxServerId) {
+	public TableLongIdGenerator(Class<?> tableClass, DB db, String fieldName, int serverId, int maxServerId) {
 		this.tableClass = tableClass;
 		this.fieldName = fieldName;
 		this.serverId = serverId;
@@ -36,17 +36,16 @@ public final class TableIntegerIdGenerator implements IdGenerator<Integer> {
 		this.db = db;
 	}
 
-	public Integer next() {
+	public Long next() {
 		if (idGenerator == null) {
 			synchronized (this) {
 				if (idGenerator == null) {
 					if (db == null) {
 						db = DBManager.getDB(tableClass);
 					}
-
-					Integer maxId = db.getMaxValue(tableClass, fieldName);
+					Long maxId = db.getMaxValue(tableClass, fieldName);
 					maxId = maxId == null ? 0 : maxId;
-					idGenerator = new IntegerIdGenerator(serverId, maxServerId, maxId);
+					idGenerator = new LongIdGenerator(serverId, maxServerId, maxId);
 				}
 			}
 		}

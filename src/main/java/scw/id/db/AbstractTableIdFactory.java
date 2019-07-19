@@ -1,4 +1,4 @@
-package scw.utils.id.db;
+package scw.id.db;
 
 import scw.core.exception.NotFoundException;
 import scw.sql.orm.ColumnInfo;

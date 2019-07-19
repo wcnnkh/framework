@@ -1,17 +1,17 @@
-package scw.utils.id.db;
+package scw.id.db;
 
 import scw.core.utils.ClassUtils;
-import scw.data.memcached.Memcached;
+import scw.data.redis.Redis;
 import scw.locks.Lock;
-import scw.locks.MemcachedLock;
+import scw.locks.RedisLock;
 import scw.sql.orm.ORMOperations;
 
-public final class MemcachedTableIdFactory extends AbstractTableIdFactory {
-	private final Memcached memcached;
+public final class RedisTableIdFactory extends AbstractTableIdFactory {
+	private final Redis redis;
 
-	public MemcachedTableIdFactory(ORMOperations db, Memcached memcached) {
+	public RedisTableIdFactory(ORMOperations db, Redis redis) {
 		super(db);
-		this.memcached = memcached;
+		this.redis = redis;
 	}
 
 	private String getCacheKey(Class<?> tableClass, String fieldName) {
@@ -26,15 +26,14 @@ public final class MemcachedTableIdFactory extends AbstractTableIdFactory {
 
 	public long generator(Class<?> tableClass, String fieldName) {
 		String key = getCacheKey(tableClass, fieldName);
-		if (memcached.get(key) == null) {
+		if (!redis.getStringOperations().exists(key)) {
 			// 不存在
-			Lock lock = new MemcachedLock(memcached, key + "&lock");
+			Lock lock = new RedisLock(redis, key + "&lock");
 			try {
 				lock.lockWait();
-
-				if (memcached.get(key) == null) {
+				if (!redis.getStringOperations().exists(key)) {
 					long maxId = getMaxId(tableClass, fieldName);
-					return memcached.incr(key, 1, maxId + 1);
+					return redis.getStringOperations().incr(key, 1, maxId + 1);
 				}
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
@@ -42,7 +41,7 @@ public final class MemcachedTableIdFactory extends AbstractTableIdFactory {
 				lock.unlock();
 			}
 		}
-		return memcached.incr(key, 1);
+		return redis.getStringOperations().incr(key);
 	}
 
 }
