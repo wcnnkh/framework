@@ -14,15 +14,15 @@ import scw.servlet.MethodAction;
 import scw.servlet.annotation.Controller;
 
 final class ServletPathServiceFilter extends AbstractHttpServiceFilter {
-	private final Map<String, EnumMap<scw.core.net.http.Method, Action>> actionMap = new HashMap<String, EnumMap<scw.core.net.http.Method, Action>>();
+	private final Map<String, EnumMap<scw.net.http.Method, Action>> actionMap = new HashMap<String, EnumMap<scw.net.http.Method, Action>>();
 
 	public Action getAction(HttpServletRequest request) {
-		EnumMap<scw.core.net.http.Method, Action> map = actionMap.get(request.getServletPath());
+		EnumMap<scw.net.http.Method, Action> map = actionMap.get(request.getServletPath());
 		if (map == null) {
 			return null;
 		}
 
-		scw.core.net.http.Method method = scw.core.net.http.Method.valueOf(request.getMethod());
+		scw.net.http.Method method = scw.net.http.Method.valueOf(request.getMethod());
 		return map.get(method);
 	}
 
@@ -39,13 +39,13 @@ final class ServletPathServiceFilter extends AbstractHttpServiceFilter {
 		}
 
 		String allPath = XUtils.mergePath("/", classController.value(), methodController.value());
-		EnumMap<scw.core.net.http.Method, Action> map = actionMap.get(allPath);
+		EnumMap<scw.net.http.Method, Action> map = actionMap.get(allPath);
 		if (map == null) {
-			map = new EnumMap<scw.core.net.http.Method, Action>(scw.core.net.http.Method.class);
+			map = new EnumMap<scw.net.http.Method, Action>(scw.net.http.Method.class);
 		}
 
-		scw.core.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
-		for (scw.core.net.http.Method type : types) {
+		scw.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
+		for (scw.net.http.Method type : types) {
 			if (map.containsKey(type.name())) {
 				throw new AlreadyExistsException(getExistActionErrMsg(action, map.get(type.name())));
 			}

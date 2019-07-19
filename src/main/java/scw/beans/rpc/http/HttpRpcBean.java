@@ -11,15 +11,15 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.rpc.AbstractInterfaceProxyBean;
 import scw.core.aop.Invoker;
-import scw.core.io.Bytes;
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
-import scw.core.net.AbstractResponse;
-import scw.core.net.ContentType;
-import scw.core.net.NetworkUtils;
-import scw.core.net.http.HttpRequest;
 import scw.core.serializer.Serializer;
 import scw.core.utils.SignUtils;
+import scw.io.Bytes;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
+import scw.net.AbstractResponse;
+import scw.net.ContentType;
+import scw.net.NetworkUtils;
+import scw.net.http.HttpRequest;
 
 public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -63,7 +63,7 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 			message.setAttribute("t", cts);
 			message.setAttribute("sign", SignUtils.md5Str(Bytes.string2bytes(cts + signStr)));
 
-			HttpRequest request = new HttpRequest(scw.core.net.http.Method.POST, host) {
+			HttpRequest request = new HttpRequest(scw.net.http.Method.POST, host) {
 				@Override
 				protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
 					serializer.serialize(os, message);

@@ -2,7 +2,7 @@ package scw.core.aop;
 
 import java.util.Collection;
 
-import scw.core.cglib.proxy.Enhancer;
+import scw.cglib.proxy.Enhancer;
 
 public final class CglibUtils {
 	private CglibUtils() {

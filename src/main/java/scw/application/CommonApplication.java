@@ -13,9 +13,9 @@ import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.DubboUtils;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertiesFactory;
-import scw.core.logger.LoggerFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.logger.LoggerFactory;
 import scw.sql.orm.ORMUtils;
 
 public class CommonApplication implements Application {

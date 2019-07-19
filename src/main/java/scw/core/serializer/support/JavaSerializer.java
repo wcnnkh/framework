@@ -6,10 +6,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
-import scw.core.io.IOUtils;
-import scw.core.io.UnsafeByteArrayInputStream;
-import scw.core.io.UnsafeByteArrayOutputStream;
 import scw.core.serializer.Serializer;
+import scw.io.IOUtils;
+import scw.io.UnsafeByteArrayInputStream;
+import scw.io.UnsafeByteArrayOutputStream;
 
 public class JavaSerializer extends Serializer {
 	public final static JavaSerializer SERIALIZER = new JavaSerializer();

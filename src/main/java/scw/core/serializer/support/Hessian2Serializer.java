@@ -8,10 +8,10 @@ import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
 
-import scw.core.io.IOUtils;
-import scw.core.io.UnsafeByteArrayInputStream;
-import scw.core.io.UnsafeByteArrayOutputStream;
 import scw.core.serializer.Serializer;
+import scw.io.IOUtils;
+import scw.io.UnsafeByteArrayInputStream;
+import scw.io.UnsafeByteArrayOutputStream;
 
 public class Hessian2Serializer extends Serializer {
 	private static final SerializerFactory SERIALIZER_FACTORY = new SerializerFactory();

@@ -1,6 +1,6 @@
 package scw.core.aop;
 
-import scw.core.cglib.proxy.MethodProxy;
+import scw.cglib.proxy.MethodProxy;
 
 public final class CglibInvoker implements Invoker {
 	private final MethodProxy proxy;

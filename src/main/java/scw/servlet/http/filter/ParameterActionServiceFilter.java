@@ -58,8 +58,8 @@ final class ParameterActionServiceFilter extends AbstractHttpServiceFilter {
 			actionName = method.getName();
 		}
 
-		scw.core.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
-		for (scw.core.net.http.Method type : types) {
+		scw.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
+		for (scw.net.http.Method type : types) {
 			Map<String, Action> map = clzMap.get(type.name());
 			if (map == null) {
 				map = new HashMap<String, Action>();

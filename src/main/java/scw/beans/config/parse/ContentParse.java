@@ -5,9 +5,9 @@ import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
-import scw.core.io.FileUtils;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ConfigUtils;
+import scw.io.FileUtils;
 
 public final class ContentParse implements ConfigParse{
 	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset) throws Exception{

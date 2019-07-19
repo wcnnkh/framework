@@ -15,9 +15,9 @@ import java.util.Properties;
 
 import scw.core.Constants;
 import scw.core.StringFormat;
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
 import scw.core.reflect.ReflectUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public final class PropertiesUtils {
 	private static Logger logger = LoggerFactory.getLogger(PropertiesUtils.class);

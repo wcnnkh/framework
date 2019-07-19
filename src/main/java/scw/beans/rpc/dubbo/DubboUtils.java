@@ -7,7 +7,7 @@ import scw.beans.BeanConfigFactory;
 import scw.beans.BeanFactory;
 import scw.core.PropertiesFactory;
 import scw.core.instance.InstanceUtils;
-import scw.core.logger.LoggerUtils;
+import scw.logger.LoggerUtils;
 
 public final class DubboUtils {
 	private DubboUtils() {

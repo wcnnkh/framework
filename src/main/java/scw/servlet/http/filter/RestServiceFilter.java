@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 
 import scw.core.exception.AlreadyExistsException;
-import scw.core.net.http.Method;
+import scw.net.http.Method;
 import scw.servlet.Action;
 import scw.servlet.MethodAction;
 import scw.servlet.ServletUtils;
@@ -33,8 +33,8 @@ final class RestServiceFilter extends AbstractHttpServiceFilter {
 		/**
 		 * resturl
 		 */
-		scw.core.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
-		for (scw.core.net.http.Method type : types) {
+		scw.net.http.Method[] types = MethodAction.mergeRequestType(clz, method);
+		for (scw.net.http.Method type : types) {
 			Map<String, RestInfo> map = restMap.get(type);
 			if (map == null) {
 				map = new HashMap<String, RestInfo>();

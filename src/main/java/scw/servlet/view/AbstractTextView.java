@@ -1,7 +1,7 @@
 package scw.servlet.view;
 
-import scw.core.net.ContentType;
 import scw.core.utils.StringUtils;
+import scw.net.ContentType;
 import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.Text;

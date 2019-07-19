@@ -33,15 +33,15 @@ import scw.core.KeyValuePairFilter;
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
 import scw.core.PropertiesFactory;
-import scw.core.json.JSONParseSupport;
-import scw.core.json.JSONUtils;
-import scw.core.logger.LoggerUtils;
-import scw.core.net.ContentType;
 import scw.core.reflect.ReflectUtils;
 import scw.core.serializer.Serializer;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.json.JSONParseSupport;
+import scw.json.JSONUtils;
+import scw.logger.LoggerUtils;
+import scw.net.ContentType;
 import scw.servlet.beans.CommonRequestBeanFactory;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.http.HttpWrapperFactory;
@@ -96,7 +96,7 @@ public final class ServletUtils {
 	 * @return
 	 */
 	public static boolean isJsonRequest(HttpServletRequest request) {
-		return isDesignatedContentType(request, scw.core.net.ContentType.APPLICATION_JSON);
+		return isDesignatedContentType(request, scw.net.ContentType.APPLICATION_JSON);
 	}
 
 	public static boolean isFormRequest(HttpServletRequest request) {

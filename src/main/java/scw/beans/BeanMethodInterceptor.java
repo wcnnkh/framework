@@ -2,12 +2,12 @@ package scw.beans;
 
 import java.lang.reflect.Method;
 
+import scw.cglib.proxy.MethodInterceptor;
+import scw.cglib.proxy.MethodProxy;
 import scw.core.aop.CglibInvoker;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
-import scw.core.cglib.proxy.MethodInterceptor;
-import scw.core.cglib.proxy.MethodProxy;
 
 /**
  * 顶层的filter

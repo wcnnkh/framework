@@ -3,10 +3,10 @@ package scw.beans.xml;
 import org.w3c.dom.Node;
 
 import scw.core.PropertiesFactory;
-import scw.core.net.http.HttpUtils;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
+import scw.net.http.HttpUtils;
 
 public class XmlValue {
 	private final String value;

@@ -8,12 +8,12 @@ import scw.beans.BeanFactory;
 import scw.beans.MethodProxyInvoker;
 import scw.core.aop.Invoker;
 import scw.core.exception.AlreadyExistsException;
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CrontabTask;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public final class CrontabAnnotationUtils {
 	private static Logger logger = LoggerFactory.getLogger(CrontabAnnotationUtils.class);

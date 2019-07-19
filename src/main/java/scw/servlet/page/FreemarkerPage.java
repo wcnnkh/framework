@@ -4,8 +4,8 @@ import java.util.Enumeration;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import scw.core.net.ContentType;
 import scw.core.utils.StringUtils;
+import scw.net.ContentType;
 import scw.servlet.Request;
 import scw.servlet.Response;
 

@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.core.net.http.Method;
+import scw.net.http.Method;
 import scw.servlet.Filter;
 
 @Target({ElementType.TYPE, ElementType.METHOD})

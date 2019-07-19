@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.core.logger.Logger;
-import scw.core.logger.LoggerFactory;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
