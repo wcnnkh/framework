@@ -9,9 +9,9 @@ import scw.serializer.support.JavaSerializer;
 public final class Constants {
 	static {
 		Class<?> serializerClass = null;
-		String[] seralizerClassNames = { "scw.core.serializer.support.Hessian2Serializer",
-				"scw.core.serializer.support.DubboHessian2Serializer", "scw.core.serializer.support.HessianSerializer",
-				"scw.core.serializer.support.DubboHessianSerializer" };
+		String[] seralizerClassNames = { "scw.serializer.support.Hessian2Serializer",
+				"scw.serializer.support.DubboHessian2Serializer", "scw.serializer.support.HessianSerializer",
+				"scw.serializer.support.DubboHessianSerializer" };
 
 		for (String name : seralizerClassNames) {
 			try {
