@@ -7,25 +7,21 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.aop.Invoker;
 import scw.core.exception.ParameterException;
-import scw.core.utils.ClassUtils;
 import scw.servlet.annotation.Controller;
 import scw.servlet.annotation.Filters;
 import scw.servlet.annotation.Methods;
 
 public final class MethodAction implements Action {
-	private final MethodParameter[] methodParameters;
+	private final ActionParameter[] parameters;
 	private final Collection<Filter> filters;
 	private final Invoker invoker;
 
 	public MethodAction(BeanFactory beanFactory, Class<?> clz, Method method) {
-		this.methodParameters = getMethodParameter(method);
+		this.parameters = ServletUtils.getActionParameter(method);
 		this.filters = mergeFilter(clz, method, beanFactory);
 		this.invoker = BeanUtils.getInvoker(beanFactory, clz, method);
 	}
@@ -35,25 +31,15 @@ public final class MethodAction implements Action {
 		filterChain.doFilter(request, response);
 	}
 
-	final class RealAction implements Action {
+	private final class RealAction implements Action {
 		public void doAction(Request request, Response response) throws Throwable {
-			Object[] args = new Object[methodParameters.length];
-			for (int i = 0; i < methodParameters.length; i++) {
-				args[i] = methodParameters[i].getParameter(request, response);
+			Object[] args = new Object[parameters.length];
+			for (int i = 0; i < parameters.length; i++) {
+				args[i] = parameters[i].getParameter(request, response);
 			}
 
 			response.write(invoker.invoke(args));
 		}
-	}
-
-	private MethodParameter[] getMethodParameter(Method method) {
-		String[] tempKeys = ClassUtils.getParameterName(method);
-		Class<?>[] types = method.getParameterTypes();
-		MethodParameter[] paramInfos = new MethodParameter[types.length];
-		for (int l = 0; l < types.length; l++) {
-			paramInfos[l] = new MethodParameter(types[l], tempKeys[l]);
-		}
-		return paramInfos;
 	}
 
 	private Collection<Filter> mergeFilter(Class<?> clz, Method method, BeanFactory beanFactory) {
@@ -121,29 +107,5 @@ public final class MethodAction implements Action {
 	@Override
 	public String toString() {
 		return invoker.toString();
-	}
-}
-
-final class MethodParameter {
-	private final Class<?> type;
-	private final String name;
-
-	public MethodParameter(Class<?> type, String name) {
-		this.type = type;
-		this.name = name;
-	}
-
-	public Object getParameter(Request request, ServletResponse response) {
-		if (ServletRequest.class.isAssignableFrom(type)) {
-			return request;
-		} else if (ServletResponse.class.isAssignableFrom(type)) {
-			return response;
-		} else {
-			try {
-				return request.getParameter(type, name);
-			} catch (Exception e) {
-				throw new ParameterException(e, "解析参数错误name=" + name + ",type=" + type.getName());
-			}
-		}
 	}
 }

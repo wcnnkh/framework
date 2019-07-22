@@ -2,8 +2,8 @@ package scw.servlet;
 
 import javax.servlet.ServletRequest;
 
-import scw.logger.DebugLogger;
-import scw.logger.Logger;
+import scw.core.logger.DebugLogger;
+import scw.core.logger.Logger;
 
 public interface Request extends ServletRequest, DebugLogger {
 	String getString(String name);

@@ -2,6 +2,7 @@ package scw.servlet;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -33,10 +34,10 @@ import scw.core.KeyValuePairFilter;
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
 import scw.core.PropertiesFactory;
+import scw.core.logger.LoggerUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.LoggerUtils;
 import scw.core.utils.StringUtils;
 import scw.io.serializer.Serializer;
 import scw.io.serializer.SerializerUtils;
@@ -125,7 +126,7 @@ public final class ServletUtils {
 	}
 
 	/**
-	 * 是否支持异步处理
+	 * 是否支持异步处理(实际是否支持还要判断request)
 	 * 
 	 * @return
 	 */
@@ -574,5 +575,20 @@ public final class ServletUtils {
 	public static void service(Request request, Response response, Collection<Filter> serviceFilter) throws Throwable {
 		FilterChain filterChain = new IteratorFilterChain(serviceFilter, null);
 		filterChain.doFilter(request, response);
+	}
+	
+
+	public static ActionParameter[] getActionParameter(Method method) {
+		String[] tempKeys = ClassUtils.getParameterName(method);
+		Class<?>[] types = method.getParameterTypes();
+		ActionParameter[] paramInfos = new ActionParameter[types.length];
+		for (int l = 0; l < types.length; l++) {
+			paramInfos[l] = new ActionParameter(types[l], tempKeys[l]);
+		}
+		return paramInfos;
+	}
+	
+	public static Action crateAction(BeanFactory beanFactory, Class<?> clazz, Method method){
+		return new MethodAction(beanFactory, clazz, method);
 	}
 }

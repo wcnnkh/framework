@@ -11,11 +11,11 @@ import scw.beans.annotation.Autowired;
 import scw.beans.annotation.InitMethod;
 import scw.core.Base64;
 import scw.core.Destroy;
+import scw.core.logger.Logger;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.FileManager;
 import scw.io.FileUtils;
-import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public class DefaultAsyncCompleteService implements AsyncCompleteService, Destroy {

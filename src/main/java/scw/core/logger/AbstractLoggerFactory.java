@@ -1,10 +1,8 @@
-package scw.logger.console;
+package scw.core.logger;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
 import scw.core.UnsafeStringBuffer;
-import scw.logger.ILoggerFactory;
-import scw.logger.Message;
 
 public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable {
 	private LinkedBlockingQueue<Message> handlerQueue = new LinkedBlockingQueue<Message>();

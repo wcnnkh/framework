@@ -1,4 +1,4 @@
-package scw.logger;
+package scw.core.logger;
 
 import scw.core.utils.FormatUtils;
 import scw.core.utils.StringAppend;

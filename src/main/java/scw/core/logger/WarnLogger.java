@@ -1,4 +1,4 @@
-package scw.logger;
+package scw.core.logger;
 
 public interface WarnLogger {
 	boolean isWarnEnabled();

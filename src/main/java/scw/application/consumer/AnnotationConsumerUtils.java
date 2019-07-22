@@ -6,8 +6,8 @@ import java.util.Collection;
 import scw.application.consumer.amqp.AmqpConsumer;
 import scw.beans.BeanFactory;
 import scw.beans.MethodProxyInvoker;
+import scw.core.logger.LoggerUtils;
 import scw.core.utils.AnnotationUtils;
-import scw.core.utils.LoggerUtils;
 import scw.mq.amqp.Exchange;
 
 public final class AnnotationConsumerUtils {

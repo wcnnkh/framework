@@ -1,7 +1,4 @@
-package scw.logger.console;
-
-import scw.logger.AbstractLogger;
-import scw.logger.Message;
+package scw.core.logger;
 
 public final class ConsoleLogger extends AbstractLogger {
 	private final ConsoleLoggerFactory consoleLoggerFactory;

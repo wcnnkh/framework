@@ -29,13 +29,13 @@ import scw.core.aop.ProxyUtils;
 import scw.core.aop.ReflectInvoker;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
+import scw.core.logger.Logger;
 import scw.core.reflect.DefaultFieldDefinition;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public final class BeanUtils {

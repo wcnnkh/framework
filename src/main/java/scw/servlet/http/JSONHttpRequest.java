@@ -4,9 +4,10 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import scw.core.logger.Logger;
+import scw.json.JSONArray;
 import scw.json.JSONObject;
 import scw.json.JSONParseSupport;
-import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.parameter.Body;
@@ -27,6 +28,21 @@ public final class JSONHttpRequest extends AbstractHttpRequest {
 
 	public Logger getLogger() {
 		return logger;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getBean(Class<T> type, String name) {
+		T t = super.getBean(type, name);
+		if (t == null) {
+			if (JSONObject.class.isAssignableFrom(type)) {
+				t = (T) json.getJSONObject(name);
+			} else if (JSONArray.class.isAssignableFrom(type)) {
+				t = (T) json.getJSONArray(name);
+			}
+			t = json.getObject(name, type);
+		}
+		return t;
 	}
 
 	@Override

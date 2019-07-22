@@ -1,9 +1,9 @@
 package scw.io.serializer;
 
 import scw.core.Bits;
+import scw.core.logger.LoggerUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.LoggerUtils;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.io.serializer.support.JavaSerializer;

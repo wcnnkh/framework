@@ -1,8 +1,8 @@
 package scw.json;
 
 import scw.core.exception.NotSupportException;
+import scw.core.logger.LoggerUtils;
 import scw.core.reflect.ReflectUtils;
-import scw.core.utils.LoggerUtils;
 
 public final class JSONUtils {
 	private JSONUtils() {

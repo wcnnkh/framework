@@ -2,7 +2,7 @@ package scw.servlet.http.filter;
 
 import javax.servlet.http.HttpServletResponse;
 
-import scw.logger.Logger;
+import scw.core.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;

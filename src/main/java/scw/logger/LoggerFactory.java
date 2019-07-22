@@ -1,7 +1,9 @@
 package scw.logger;
 
+import scw.core.logger.ConsoleLoggerFactory;
+import scw.core.logger.ILoggerFactory;
+import scw.core.logger.Logger;
 import scw.core.reflect.ReflectUtils;
-import scw.logger.console.ConsoleLoggerFactory;
 
 public final class LoggerFactory {
 	private static final ILoggerFactory CONSOLE_LOGGER_FACTORY = new ConsoleLoggerFactory();

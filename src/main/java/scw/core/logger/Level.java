@@ -1,4 +1,4 @@
-package scw.logger;
+package scw.core.logger;
 
 public enum Level {
 	TRACE,

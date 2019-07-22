@@ -1,6 +1,4 @@
-package scw.logger.console;
-
-import scw.logger.Logger;
+package scw.core.logger;
 
 public final class ConsoleLoggerFactory extends AbstractLoggerFactory {
 

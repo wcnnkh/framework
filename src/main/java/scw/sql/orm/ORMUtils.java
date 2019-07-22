@@ -15,9 +15,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.IdentityHashMap;
 
+import scw.core.logger.LoggerUtils;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.LoggerUtils;
 import scw.core.utils.StringUtils;
 import scw.sql.orm.annotation.Column;
 import scw.sql.orm.annotation.Index;

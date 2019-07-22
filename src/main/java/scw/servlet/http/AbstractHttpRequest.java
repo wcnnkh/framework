@@ -36,7 +36,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <T> T getParameter(Class<T> type, String name) {
+	public <T> T getParameter(Class<T> type, String name) {
 		T v = (T) getAttribute(name);
 		if (v == null) {
 			v = (T) ServletUtils.getParameter(this, type, name);

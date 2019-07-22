@@ -1,4 +1,4 @@
-package scw.logger;
+package scw.core.logger;
 
 public abstract class AbstractLogger implements Logger {
 	private final boolean traceEnabled;

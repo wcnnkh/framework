@@ -1,6 +1,5 @@
-package scw.logger;
+package scw.core.logger;
 
-import scw.core.utils.LoggerUtils;
 import scw.core.utils.StringAppend;
 
 public final class Message implements StringAppend {
