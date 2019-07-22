@@ -24,10 +24,10 @@ public final class AnnotationRequestBeanFactory implements RequestBeanFactory {
 
 	public RequestBean get(String name) {
 		AnnotationRequestBean bean = beanMap.get(name);
-		if (bean == null) {
+		if (bean == null && !beanMap.containsKey(name)) {
 			synchronized (beanMap) {
 				bean = beanMap.get(name);
-				if (bean == null) {
+				if (bean == null && !beanMap.containsKey(name)) {
 					if (!isBean(name)) {
 						beanMap.put(name, null);
 						return null;
