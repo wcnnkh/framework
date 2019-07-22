@@ -63,11 +63,7 @@ public final class AnnotationRequestBean implements RequestBean {
 		this.initMethods = initMethodList.toArray(new Method[initMethodList.size()]);
 		this.destroyMethods = destroyMethodList.toArray(new Method[destroyMethodList.size()]);
 
-		this.constructor = ReflectUtils.findConstructor(type, false, ServletRequest.class);
-		if (this.constructor == null) {
-			this.constructor = ReflectUtils.findConstructor(type, false);
-		}
-
+		this.constructor = getConstructor(type);
 		if (this.constructor == null) {
 			throw new NotFoundException(type.getName() + "找不到合法的构造方法");
 		}
@@ -77,6 +73,10 @@ public final class AnnotationRequestBean implements RequestBean {
 		this.proxy = BeanUtils.checkProxy(type, filterNames);
 		enhancer = BeanUtils.createEnhancer(type, beanFactory, filterNames);
 		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type, false).toArray(new FieldDefinition[0]);
+	}
+
+	public static Constructor<?> getConstructor(Class<?> type) {
+		return ReflectUtils.findConstructor(type, false, ServletRequest.class);
 	}
 
 	public boolean isProxy() {

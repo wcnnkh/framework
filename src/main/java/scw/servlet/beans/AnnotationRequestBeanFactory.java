@@ -27,7 +27,12 @@ public final class AnnotationRequestBeanFactory implements RequestBeanFactory {
 		if (bean == null) {
 			synchronized (beanMap) {
 				bean = beanMap.get(name);
-				if (bean == null && contains(name)) {
+				if (bean == null) {
+					if (!isBean(name)) {
+						beanMap.put(name, null);
+						return null;
+					}
+
 					try {
 						bean = new AnnotationRequestBean(beanFactory, propertiesFactory, ClassUtils.forName(name),
 								filterNames);
@@ -47,18 +52,14 @@ public final class AnnotationRequestBeanFactory implements RequestBeanFactory {
 		return bean;
 	}
 
-	public boolean contains(String name) {
-		if (beanMap.containsKey(name)) {
-			return true;
-		}
+	private boolean isBean(String name) {
 		try {
 			Class<?> clz = ClassUtils.forName(name);
-			if (ReflectUtils.isInstance(clz)) {
+			if (ReflectUtils.isInstance(clz) && AnnotationRequestBean.getConstructor(clz) != null) {
 				return true;
 			}
 		} catch (ClassNotFoundException e) {
 		}
 		return false;
 	}
-
 }

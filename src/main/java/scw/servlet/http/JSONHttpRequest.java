@@ -39,8 +39,9 @@ public final class JSONHttpRequest extends AbstractHttpRequest {
 				t = (T) json.getJSONObject(name);
 			} else if (JSONArray.class.isAssignableFrom(type)) {
 				t = (T) json.getJSONArray(name);
+			}else{
+				t = json.getObject(name, type);
 			}
-			t = json.getObject(name, type);
 		}
 		return t;
 	}

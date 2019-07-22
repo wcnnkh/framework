@@ -22,8 +22,4 @@ public final class CommonRequestBeanFactory implements RequestBeanFactory {
 		}
 		return requestBean;
 	}
-
-	public boolean contains(String name) {
-		return xmlRequestBeanFactory.contains(name) || annotationRequestBeanFactory.contains(name);
-	}
 }
