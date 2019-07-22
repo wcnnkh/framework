@@ -1,8 +1,6 @@
-package scw.logger;
+package scw.core.utils;
 
-import scw.core.utils.StringAppend;
-import scw.core.utils.StringUtils;
-import scw.core.utils.XTime;
+import scw.logger.DefaultLoggerFormatAppend;
 
 public final class LoggerUtils {
 	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";

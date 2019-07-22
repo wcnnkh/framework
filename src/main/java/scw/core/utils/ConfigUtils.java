@@ -25,7 +25,6 @@ import scw.core.exception.NotFoundException;
 import scw.core.reflect.ReflectUtils;
 import scw.io.FileUtils;
 import scw.io.IOUtils;
-import scw.logger.LoggerUtils;
 
 public final class ConfigUtils {
 	private static final String WEB_ROOT = "web.root";

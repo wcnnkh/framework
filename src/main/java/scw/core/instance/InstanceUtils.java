@@ -3,7 +3,7 @@ package scw.core.instance;
 import scw.core.exception.NotSupportException;
 import scw.core.instance.support.ReflectionInstanceFactory;
 import scw.core.reflect.ReflectUtils;
-import scw.logger.LoggerUtils;
+import scw.core.utils.LoggerUtils;
 
 public final class InstanceUtils {
 	private InstanceUtils() {
