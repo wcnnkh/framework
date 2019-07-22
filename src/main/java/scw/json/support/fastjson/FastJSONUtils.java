@@ -5,7 +5,7 @@ import java.util.List;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import scw.cglib.proxy.Factory;
+import scw.core.cglib.proxy.Factory;
 
 //不再推荐使用
 public final class FastJSONUtils {

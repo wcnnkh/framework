@@ -1,6 +1,6 @@
 package scw.core;
 
-import scw.asm.Opcodes;
+import scw.core.asm.Opcodes;
 
 public final class Constants {
 	private Constants() {

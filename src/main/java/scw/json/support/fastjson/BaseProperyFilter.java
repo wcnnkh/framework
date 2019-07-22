@@ -2,7 +2,7 @@ package scw.json.support.fastjson;
 
 import com.alibaba.fastjson.serializer.PropertyFilter;
 
-import scw.cglib.proxy.Factory;
+import scw.core.cglib.proxy.Factory;
 
 public class BaseProperyFilter implements PropertyFilter {
 	public static final BaseProperyFilter BASE_PROPERY_FILTER = new BaseProperyFilter();
