@@ -13,10 +13,19 @@ import java.sql.Date;
 import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.IdentityHashMap;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
+import scw.core.cglib.proxy.Factory;
+import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.CompareUtils;
+import scw.core.utils.FieldSetterListenUtils;
+import scw.core.utils.IteratorCallback;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerUtils;
 import scw.sql.orm.annotation.Column;
@@ -146,7 +155,8 @@ public final class ORMUtils {
 			if (table == null) {
 				continue;
 			}
-			getTableInfo(type);
+
+			FieldSetterListenUtils.createFieldSetterListenProxyClass(type);
 		}
 	}
 
@@ -268,5 +278,46 @@ public final class ORMUtils {
 	public static boolean isAnnoataionColumnUnique(Field field) {
 		Column column = field.getAnnotation(Column.class);
 		return column == null ? false : column.unique();
+	}
+
+	private static void iteratorTable(Class<?> table, final IteratorCallback<Field> iteratorCallback) {
+		ReflectUtils.iteratorField(table, false, false, new IteratorCallback<Field>() {
+
+			public boolean iteratorCallback(Field data) {
+				if (ORMUtils.ignoreField(data)) {
+					return true;
+				}
+
+				return iteratorCallback.iteratorCallback(data);
+			}
+		});
+	}
+
+	public static void iterator(Class<?> table, IteratorCallback<Field> iteratorCallback) {
+		Class<?> sup = table;
+		LinkedList<Class<?>> list = new LinkedList<Class<?>>();
+		while (sup != null && sup != Object.class) {
+			if (sup == Factory.class) {
+				sup = sup.getSuperclass();
+				continue;
+			}
+
+			list.add(sup);
+			sup = sup.getSuperclass();
+		}
+
+		Collections.sort(list, new Comparator<Class<?>>() {
+
+			public int compare(Class<?> table1, Class<?> table2) {
+				Table t1 = table1.getAnnotation(Table.class);
+				Table t2 = table2.getAnnotation(Table.class);
+				return CompareUtils.compare(t1 == null ? 0 : t1.sort(), t2 == null ? 0 : t2.sort(), false);
+			}
+		});
+
+		ListIterator<Class<?>> iterator = list.listIterator(list.size());
+		while (iterator.hasPrevious()) {
+			iteratorTable(iterator.previous(), iteratorCallback);
+		}
 	}
 }

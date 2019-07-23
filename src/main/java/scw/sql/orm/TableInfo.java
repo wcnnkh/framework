@@ -2,8 +2,6 @@ package scw.sql.orm;
 
 import java.lang.annotation.Annotation;
 
-import scw.core.FieldSetterListen;
-
 public interface TableInfo {
 	String getDefaultName();
 
@@ -27,8 +25,6 @@ public interface TableInfo {
 	Class<?> getSource();
 
 	<T> T newInstance();
-
-	Class<? extends FieldSetterListen> getProxyClass();
 
 	ColumnInfo getAutoIncrement();
 

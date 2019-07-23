@@ -4,11 +4,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import scw.core.FieldSetterListen;
-import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.FieldSetterListenUtils;
 import scw.core.utils.IteratorCallback;
@@ -34,66 +34,57 @@ final class DefaultTableInfo implements TableInfo {
 		Table table = source.getAnnotation(Table.class);
 		this.table = table != null;
 
+		final Map<String, ColumnInfo> tempColumnMap = new LinkedHashMap<String, ColumnInfo>();
+		final Map<String, String> tempFieldToColumn = new LinkedHashMap<String, String>();
+		ORMUtils.iterator(source, new IteratorCallback<Field>() {
+
+			public boolean iteratorCallback(Field field) {
+				ColumnInfo columnInfo = new DefaultColumnInfo(field);
+				tempColumnMap.remove(columnInfo.getName());
+				tempColumnMap.put(columnInfo.getName(), columnInfo);
+				tempFieldToColumn.put(field.getName(), columnInfo.getName());
+				return true;
+			}
+		});
+		this.columnMap = new HashMap<String, ColumnInfo>(tempColumnMap.size(), 1);
+		this.columnMap.putAll(tempColumnMap);
+		this.fieldToColumn = new HashMap<String, String>(tempFieldToColumn.size(), 1);
+		this.fieldToColumn.putAll(tempFieldToColumn);
+
 		final List<ColumnInfo> allColumnList = new ArrayList<ColumnInfo>();
 		final List<ColumnInfo> idNameList = new ArrayList<ColumnInfo>();
 		final List<ColumnInfo> notIdNameList = new ArrayList<ColumnInfo>();
 		final List<ColumnInfo> tableColumnList = new ArrayList<ColumnInfo>();
-
-		final Map<String, ColumnInfo> columnMap = new HashMap<String, ColumnInfo>();
-		final Map<String, String> fieldToColumn = new HashMap<String, String>();
-
-		ReflectUtils.iteratorField(source, new IteratorCallback<Field>() {
-
-			public boolean iteratorCallback(Field field) {
-				if (ORMUtils.ignoreField(field)) {
-					return true;
-				}
-
-				ColumnInfo columnInfo = new DefaultColumnInfo(field);
-				if (columnMap.containsKey(columnInfo.getName()) || fieldToColumn.containsKey(field.getName())) {
-					throw new AlreadyExistsException(source.getName() + "中[" + columnInfo.getName() + "]字段已存在");
-				}
-
-				columnMap.put(columnInfo.getName(), columnInfo);
-				fieldToColumn.put(field.getName(), columnInfo.getName());
-
-				if (columnInfo.isDataBaseType()) {
-					allColumnList.add(columnInfo);
-					if (columnInfo.isPrimaryKey()) {
-						idNameList.add(columnInfo);
-					} else {
-						notIdNameList.add(columnInfo);
-					}
-
-					if (columnInfo.isAutoIncrement()) {
-						if (autoIncrement != null) {
-							throw new RuntimeException(source.getName() + "存在多个@AutoIncrement字段");
-						}
-
-						autoIncrement = columnInfo;
-					}
+		for (Entry<String, ColumnInfo> entry : tempColumnMap.entrySet()) {
+			ColumnInfo columnInfo = entry.getValue();
+			if (columnInfo.isDataBaseType()) {
+				allColumnList.add(columnInfo);
+				if (columnInfo.isPrimaryKey()) {
+					idNameList.add(columnInfo);
 				} else {
-					boolean javaType = field.getType().getName().startsWith("java.")
-							|| field.getType().getName().startsWith("javax.");
-					if (!javaType) {
-						tableColumnList.add(columnInfo);
-					}
+					notIdNameList.add(columnInfo);
 				}
-				return true;
+
+				if (columnInfo.isAutoIncrement()) {
+					if (autoIncrement != null) {
+						throw new RuntimeException(source.getName() + "存在多个@AutoIncrement字段");
+					}
+
+					autoIncrement = columnInfo;
+				}
+			} else {
+				boolean javaType = columnInfo.getField().getType().getName().startsWith("java.")
+						|| columnInfo.getField().getType().getName().startsWith("javax.");
+				if (!javaType) {
+					tableColumnList.add(columnInfo);
+				}
 			}
-		});
+		}
+
 		this.columns = allColumnList.toArray(new ColumnInfo[allColumnList.size()]);
 		this.primaryKeyColumns = idNameList.toArray(new ColumnInfo[idNameList.size()]);
 		this.notPrimaryKeyColumns = notIdNameList.toArray(new ColumnInfo[notIdNameList.size()]);
 		this.tableColumns = tableColumnList.toArray(new ColumnInfo[tableColumnList.size()]);
-		this.columnMap = new HashMap<String, ColumnInfo>(columnMap.size(), 1);
-		this.columnMap.putAll(columnMap);
-		this.fieldToColumn = new HashMap<String, String>(fieldToColumn.size(), 1);
-		this.fieldToColumn.putAll(fieldToColumn);
-
-		if (this.table) {
-			getProxyClass();
-		}
 	}
 
 	public String getDefaultName() {
@@ -153,10 +144,6 @@ final class DefaultTableInfo implements TableInfo {
 		} else {
 			return ReflectUtils.newInstance(source);
 		}
-	}
-
-	public Class<? extends FieldSetterListen> getProxyClass() {
-		return FieldSetterListenUtils.createFieldSetterListenProxyClass(source);
 	}
 
 	public ColumnInfo getAutoIncrement() {
