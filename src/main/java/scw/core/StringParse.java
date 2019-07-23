@@ -3,23 +3,25 @@ package scw.core;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import scw.core.exception.NotSupportException;
+import scw.core.json.JSONUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 
-public class StringParse implements Parse<String>, Verification<CharSequence> {
+public class StringParse implements Verification<CharSequence> {
 	public static final StringParse DEFAULT = new StringParse();
 
 	private final StringEmptyVerification verification;
 	private final int numberRadix;
+	private final char[] splitArray;
 
 	public StringParse() {
 		this(null, 10);
 	}
 
-	public StringParse(StringEmptyVerification verification, int numberRadix) {
+	public StringParse(StringEmptyVerification verification, int numberRadix, char... splitArray) {
 		this.verification = verification;
 		this.numberRadix = numberRadix;
+		this.splitArray = splitArray;
 	}
 
 	public boolean verification(CharSequence data) {
@@ -36,6 +38,10 @@ public class StringParse implements Parse<String>, Verification<CharSequence> {
 
 	public final int getNumberRadix() {
 		return numberRadix;
+	}
+
+	public final char[] getSplitArray() {
+		return splitArray;
 	}
 
 	protected Object castInteger(String e) {
@@ -183,100 +189,110 @@ public class StringParse implements Parse<String>, Verification<CharSequence> {
 		return Enum.valueOf(enumType, e);
 	}
 
-	protected Object cast(String e, Class<?> type) {
+	protected Object cast(String text, Class<?> type) {
 		if (type.isArray()) {
-			return castArray(e, type.getComponentType());
+			return castArray(text, type.getComponentType());
 		}
 
-		throw new NotSupportException("无法将" + e + "转换为" + type.getName() + "类型");
+		return JSONUtils.parseObject(text, type);
 	}
 
-	private Object castArray(String e, Class<?> type) {
+	private Object castArray(String text, Class<?> type) {
+		String[] arr;
+		if (splitArray == null) {
+			arr = StringUtils.commonSplit(text);
+		} else {
+			arr = StringUtils.split(text, splitArray);
+		}
+
+		if (String.class == type) {
+			return arr;
+		}
 		return null;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Object parse(String e, Class<?> type) {
+	public Object parse(String text, Class<?> type) {
 		if (ClassUtils.isStringType(type)) {
-			return e;
+			return text;
 		}
 
 		if (Integer.class == type) {
-			return castInteger(e);
+			return castInteger(text);
 		}
 
 		if (int.class == type) {
-			return castIntValue(e);
+			return castIntValue(text);
 		}
 
 		if (Long.class == type) {
-			return castLong(e);
+			return castLong(text);
 		}
 
 		if (long.class == type) {
-			return castLongValue(e);
+			return castLongValue(text);
 		}
 
 		if (Boolean.class == type) {
-			return castBoolean(e);
+			return castBoolean(text);
 		}
 
 		if (boolean.class == type) {
-			return castBooleanValue(e);
+			return castBooleanValue(text);
 		}
 
 		if (Short.class == type) {
-			return castShort(e);
+			return castShort(text);
 		}
 
 		if (short.class == type) {
-			return castShortValue(e);
+			return castShortValue(text);
 		}
 
 		if (Float.class == type) {
-			return castFloat(e);
+			return castFloat(text);
 		}
 
 		if (float.class == type) {
-			return castFloatValue(e);
+			return castFloatValue(text);
 		}
 
 		if (Double.class == type) {
-			return castDouble(e);
+			return castDouble(text);
 		}
 
 		if (double.class == type) {
-			return castDoubleValue(e);
+			return castDoubleValue(text);
 		}
 
 		if (Byte.class == type) {
-			return castByte(e);
+			return castByte(text);
 		}
 
 		if (byte.class == type) {
-			return castByteValue(e);
+			return castByteValue(text);
 		}
 
 		if (Character.class == type) {
-			return castCharacter(e);
+			return castCharacter(text);
 		}
 
 		if (char.class == type) {
-			return castChar(e);
+			return castChar(text);
 		}
 
 		if (BigInteger.class == type) {
-			return castBigInteger(e);
+			return castBigInteger(text);
 		}
 
 		if (BigDecimal.class == type) {
-			return castBigDecimal(e);
+			return castBigDecimal(text);
 		}
 
 		if (type.isEnum()) {
-			return castEnum((Class<? extends Enum>) type, e);
+			return castEnum((Class<? extends Enum>) type, text);
 		}
-		return cast(e, type);
+		return cast(text, type);
 	}
 
 	public static String formatNumberText(String text) {
