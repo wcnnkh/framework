@@ -2,23 +2,23 @@ package scw.result;
 
 import java.io.Serializable;
 
-import scw.transaction.RollbackOnlyResult;
-
-public class DefaultResult<T> implements DataResult<T>, Serializable, RollbackOnlyResult {
+public class DefaultResult<T> implements DataResult<T>, Serializable{
 	private static final long serialVersionUID = 1L;
 	private boolean success = true;
 	private int code;
 	private T data;
 	private String msg;
+	private boolean rollbackOnly;
 
 	protected DefaultResult() {
 	}
 
-	public DefaultResult(boolean success, int code, T data, String msg) {
+	public DefaultResult(boolean success, int code, T data, String msg, boolean rollbackOnly) {
 		this.success = success;
 		this.code = code;
 		this.data = data;
 		this.msg = msg;
+		this.rollbackOnly = rollbackOnly;
 	}
 
 	public int getCode() {
@@ -38,7 +38,7 @@ public class DefaultResult<T> implements DataResult<T>, Serializable, RollbackOn
 	}
 
 	public boolean isRollbackOnly() {
-		return !isSuccess();
+		return rollbackOnly;
 	}
 
 	public void setSuccess(boolean success) {

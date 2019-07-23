@@ -42,10 +42,21 @@ public abstract class AbstractResultFactory implements ResultFactory {
 		return success(null);
 	}
 
-	public <T> DataResult<T> error() {
-		int code = getDefaultErrorCode();
+	public <T> DataResult<T> error(int code, String msg, T data) {
+		return error(code, msg, data, true);
+	}
+
+	public <T> DataResult<T> error(int code, T data, boolean rollbackOnly) {
 		String msg = getMsg(code);
-		return error(code, msg == null ? "系统错误" : msg);
+		return error(code, msg == null ? "操作失败" : msg, data, rollbackOnly);
+	}
+
+	public <T> DataResult<T> error(int code, String msg) {
+		return error(code, msg, null);
+	}
+
+	public <T> DataResult<T> error(int code, T data) {
+		return error(code, data, true);
 	}
 
 	public <T> DataResult<T> error(int code) {
@@ -53,8 +64,30 @@ public abstract class AbstractResultFactory implements ResultFactory {
 		return error(code, msg == null ? "操作失败" : msg);
 	}
 
+	public <T> DataResult<T> error(String msg, T data, boolean rollbackOnly) {
+		return error(getDefaultErrorCode(), msg, data, rollbackOnly);
+	}
+
+	public <T> DataResult<T> error(T data, boolean rollbackOnly) {
+		return error(getDefaultErrorCode(), data, rollbackOnly);
+	}
+
+	public <T> DataResult<T> error(T data) {
+		return error(data, true);
+	}
+
+	public <T> DataResult<T> error(String msg, T data) {
+		return error(msg, data, true);
+	}
+
 	public <T> DataResult<T> error(String msg) {
 		return error(getDefaultErrorCode(), msg);
+	}
+
+	public <T> DataResult<T> error() {
+		int code = getDefaultErrorCode();
+		String msg = getMsg(code);
+		return error(code, msg == null ? "系统错误" : msg);
 	}
 
 	public <T> DataResult<T> authorizationFailure() {

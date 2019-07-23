@@ -15,8 +15,8 @@ public class ServletTextResult<T> extends DefaultResult<T> implements Text {
 	}
 
 	public ServletTextResult(boolean success, int code, T data, String msg,
-			String contentType) {
-		super(success, code, data, msg);
+			String contentType, boolean rollbackOnly) {
+		super(success, code, data, msg, rollbackOnly);
 		this.contentType = contentType;
 	}
 

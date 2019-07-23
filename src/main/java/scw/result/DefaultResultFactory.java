@@ -9,8 +9,8 @@ public class DefaultResultFactory extends AbstractResultFactory {
 	private final int authorizationFailureCode;
 	private final int parameterErrorCode;
 
-	public DefaultResultFactory(String propertiesFilePath, String charsetName, int defaultErrorCode,
-			int successCode, int authorizationFailureCode, int parameterErrorCode) {
+	public DefaultResultFactory(String propertiesFilePath, String charsetName, int defaultErrorCode, int successCode,
+			int authorizationFailureCode, int parameterErrorCode) {
 		super(propertiesFilePath, charsetName);
 		this.defaultErrorCode = defaultErrorCode;
 		this.successCode = successCode;
@@ -18,8 +18,8 @@ public class DefaultResultFactory extends AbstractResultFactory {
 		this.parameterErrorCode = parameterErrorCode;
 	}
 
-	public <T> DataResult<T> error(int code, String msg) {
-		return new DefaultResult<T>(false, code, null, msg);
+	public <T> DataResult<T> error(int code, String msg, T data, boolean rollbackOnly) {
+		return new DefaultResult<T>(false, code, data, msg, rollbackOnly);
 	}
 
 	public int getDefaultErrorCode() {
@@ -40,7 +40,7 @@ public class DefaultResultFactory extends AbstractResultFactory {
 
 	public <T> DataResult<T> success(T data) {
 		int code = getSuccessCode();
-		return new DefaultResult<T>(true, code, data, getMsg(code));
+		return new DefaultResult<T>(true, code, data, getMsg(code), false);
 	}
 
 }
