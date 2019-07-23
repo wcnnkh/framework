@@ -190,24 +190,26 @@ public class StringParse implements Verification<CharSequence> {
 	}
 
 	protected Object cast(String text, Class<?> type) {
-		if (type.isArray()) {
-			return castArray(text, type.getComponentType());
-		}
-
 		return JSONUtils.parseObject(text, type);
 	}
 
-	private Object castArray(String text, Class<?> type) {
-		String[] arr;
+	protected String[] split(String text) {
 		if (splitArray == null) {
-			arr = StringUtils.commonSplit(text);
+			return StringUtils.commonSplit(text);
 		} else {
-			arr = StringUtils.split(text, splitArray);
+			return StringUtils.split(text, splitArray);
 		}
+	}
 
-		if (String.class == type) {
-			return arr;
-		}
+	protected Object castArray(String[] arr, Class<?> type) {
+		return null;
+	}
+
+	protected Object castIntegerArray(String[] arr) {
+		return null;
+	}
+
+	protected Object castIntArray(String[] arr) {
 		return null;
 	}
 
@@ -291,6 +293,27 @@ public class StringParse implements Verification<CharSequence> {
 
 		if (type.isEnum()) {
 			return castEnum((Class<? extends Enum>) type, text);
+		}
+
+		if (type.isArray()) {
+			if(verification(text)){
+				return null;
+			}
+			
+			String[] arr = split(text);
+			if (String.class == type) {
+				return arr;
+			}
+
+			if (Integer.class == type.getComponentType()) {
+				return castIntegerArray(arr);
+			}
+
+			if (int.class == type.getComponentType()) {
+				return castIntArray(arr);
+			}
+
+			return castArray(arr, type.getComponentType());
 		}
 		return cast(text, type);
 	}
