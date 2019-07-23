@@ -7,11 +7,11 @@ import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertiesFactory;
+import scw.core.io.serializer.Serializer;
+import scw.core.io.serializer.SerializerUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-import scw.io.serializer.Serializer;
-import scw.io.serializer.SerializerUtils;
 
 public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "http:reference";

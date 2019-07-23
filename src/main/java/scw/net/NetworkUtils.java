@@ -6,7 +6,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 
-import scw.io.ByteArray;
+import scw.core.io.ByteArray;
 
 public final class NetworkUtils {
 	private NetworkUtils() {

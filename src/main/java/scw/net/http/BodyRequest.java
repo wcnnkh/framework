@@ -3,7 +3,7 @@ package scw.net.http;
 import java.io.OutputStream;
 import java.net.URLConnection;
 
-import scw.io.ByteArray;
+import scw.core.io.ByteArray;
 
 public class BodyRequest extends HttpRequest {
 	private final ByteArray body;

@@ -2,7 +2,7 @@ package scw.data.redis;
 
 import java.io.UnsupportedEncodingException;
 
-import scw.io.serializer.Serializer;
+import scw.core.io.serializer.Serializer;
 
 final class ObjectOperations extends AbstractObjectOperations {
 	private final AbstractRedis redis;

@@ -2,7 +2,7 @@ package scw.testing.http;
 
 import java.util.Map;
 
-import scw.io.ByteArray;
+import scw.core.io.ByteArray;
 
 public interface HttpTestingRequestMessage {
 	Map<String, String> getHeader();

@@ -3,8 +3,8 @@ package scw.net;
 import java.io.InputStream;
 import java.net.URLConnection;
 
-import scw.io.ByteArray;
-import scw.io.IOUtils;
+import scw.core.io.ByteArray;
+import scw.core.io.IOUtils;
 
 public final class ByteArrayResponse extends AbstractResponse<ByteArray> {
 

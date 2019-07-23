@@ -1,11 +1,11 @@
 package scw.data.redis.jedis.cluster;
 
 import redis.clients.jedis.JedisCluster;
+import scw.core.io.Bytes;
 import scw.data.redis.AbstractRedis;
 import scw.data.redis.Redis;
 import scw.data.redis.RedisOperations;
 import scw.data.redis.ResourceManager;
-import scw.io.Bytes;
 
 public abstract class AbstractClusterOperations extends AbstractRedis implements Redis, ResourceManager<JedisCluster> {
 	private final RedisOperations<String, String> stringCommands = new AbstractClusterStringOperations() {

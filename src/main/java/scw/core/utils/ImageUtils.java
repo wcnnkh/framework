@@ -17,7 +17,7 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import scw.io.FileUtils;
+import scw.core.io.FileUtils;
 
 public final class ImageUtils {
 	private ImageUtils(){};

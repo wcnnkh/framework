@@ -11,9 +11,9 @@ import java.util.Map.Entry;
 
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
+import scw.core.json.JSONUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.json.JSONUtils;
 import scw.net.RequestException;
 
 public class FormRequest extends HttpRequest {

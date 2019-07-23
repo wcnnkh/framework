@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-import scw.io.IOUtils;
+import scw.core.io.IOUtils;
 
 public abstract class DefaultTestingConsumer<T> implements TestingConsumer<T> {
 	private String file;

@@ -6,9 +6,9 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
 
+import scw.core.io.ByteArray;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.io.ByteArray;
 import scw.net.AbstractResponse;
 import scw.net.ByteArrayResponse;
 import scw.net.ContentType;
