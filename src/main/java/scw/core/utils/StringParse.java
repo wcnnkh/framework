@@ -317,7 +317,7 @@ public class StringParse implements Verification<CharSequence> {
 	}
 
 	public static Boolean parseBoolean(String text, Verification<CharSequence> verification, Boolean defaultValue) {
-		if (verification.verification(text)) {
+		if (verification(verification, text)) {
 			return defaultValue;
 		}
 
