@@ -11,10 +11,10 @@ import scw.logger.LoggerUtils;
 public final class SerializerUtils {
 	static {
 		Class<?> serializerClass = null;
-		String[] seralizerClassNames = { "scw.core.io.serializer.support.Hessian2Serializer",
-				"scw.core.io.serializer.support.DubboHessian2Serializer",
-				"scw.core.io.serializer.support.HessianSerializer",
-				"scw.core.io.serializer.support.DubboHessianSerializer" };
+		String[] seralizerClassNames = { "scw.io.serializer.support.Hessian2Serializer",
+				"scw.io.serializer.support.DubboHessian2Serializer",
+				"scw.io.serializer.support.HessianSerializer",
+				"scw.io.serializer.support.DubboHessianSerializer" };
 
 		for (String name : seralizerClassNames) {
 			try {
