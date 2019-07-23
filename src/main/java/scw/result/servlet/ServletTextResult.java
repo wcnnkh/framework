@@ -3,7 +3,7 @@ package scw.result.servlet;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.core.json.JSONUtils;
+import scw.json.JSONUtils;
 import scw.result.DefaultResult;
 import scw.servlet.Text;
 

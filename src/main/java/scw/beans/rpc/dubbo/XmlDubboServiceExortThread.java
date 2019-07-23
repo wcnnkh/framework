@@ -9,7 +9,7 @@ import com.alibaba.dubbo.config.ServiceConfig;
 
 import scw.beans.BeanFactory;
 import scw.core.PropertiesFactory;
-import scw.core.logger.Logger;
+import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public class XmlDubboServiceExortThread extends Thread {

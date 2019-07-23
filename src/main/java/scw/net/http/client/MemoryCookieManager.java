@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import scw.core.logger.Logger;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.http.ReadOnlyCookie;
 

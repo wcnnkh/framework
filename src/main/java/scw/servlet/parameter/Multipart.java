@@ -19,9 +19,9 @@ import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
-import scw.core.logger.Logger;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public final class Multipart extends LinkedMultiValueMap<String, FileItem> {

@@ -11,10 +11,10 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.core.Consumer;
 import scw.core.PropertiesFactory;
 import scw.core.exception.AlreadyExistsException;
-import scw.core.logger.LoggerUtils;
 import scw.core.reflect.PropertyMapper;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
+import scw.logger.LoggerUtils;
 
 public class XmlConsumerFactory implements ConsumerFactory {
 	private Map<String, AmqpConfig> amqpMap = new HashMap<String, AmqpConfig>();

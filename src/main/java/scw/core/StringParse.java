@@ -3,9 +3,9 @@ package scw.core;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import scw.core.json.JSONUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.json.JSONUtils;
 
 public class StringParse implements Verification<CharSequence> {
 	public static final StringParse DEFAULT = new StringParse();

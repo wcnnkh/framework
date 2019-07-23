@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import scw.core.logger.Logger;
+import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;

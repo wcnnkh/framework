@@ -7,8 +7,8 @@ import java.util.Map.Entry;
 
 import scw.core.FieldSetterListen;
 import scw.core.exception.ParameterException;
-import scw.core.logger.Logger;
 import scw.core.utils.ClassUtils;
+import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;

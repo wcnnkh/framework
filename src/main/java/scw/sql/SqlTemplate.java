@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import scw.core.logger.DebugLogger;
-import scw.core.logger.Logger;
+import scw.logger.DebugLogger;
+import scw.logger.Logger;
 
 public abstract class SqlTemplate implements SqlOperations, DebugLogger {
 	public abstract Logger getLogger();

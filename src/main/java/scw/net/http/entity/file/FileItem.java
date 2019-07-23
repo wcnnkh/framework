@@ -3,7 +3,7 @@ package scw.net.http.entity.file;
 import java.io.File;
 import java.io.IOException;
 
-import scw.core.io.FileUtils;
+import scw.io.FileUtils;
 
 public class FileItem{
 	private File file;

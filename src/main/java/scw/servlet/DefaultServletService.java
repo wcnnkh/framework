@@ -15,7 +15,7 @@ import scw.beans.annotation.Bean;
 import scw.beans.rpc.http.RpcService;
 import scw.core.Destroy;
 import scw.core.PropertiesFactory;
-import scw.core.logger.Logger;
+import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.servlet.beans.RequestBeanFactory;
 

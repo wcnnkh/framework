@@ -37,9 +37,9 @@ import org.xml.sax.SAXException;
 import scw.core.PropertiesFactory;
 import scw.core.StringFormat;
 import scw.core.exception.NotFoundException;
-import scw.core.io.IOUtils;
 import scw.core.reflect.PropertyMapper;
 import scw.core.reflect.ReflectUtils;
+import scw.io.IOUtils;
 
 public final class XMLUtils {
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory
