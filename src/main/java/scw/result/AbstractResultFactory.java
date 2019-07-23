@@ -103,6 +103,6 @@ public abstract class AbstractResultFactory implements ResultFactory {
 	}
 
 	public <T> DataResult<T> error(Result result) {
-		return error(result.getCode(), result.getMsg());
+		return error(result.getCode(), result.getMsg(), null, result.isRollbackOnly());
 	}
 }
