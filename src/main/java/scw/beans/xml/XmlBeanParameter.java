@@ -12,6 +12,7 @@ import scw.beans.EParameterType;
 import scw.core.PropertiesFactory;
 import scw.core.exception.NotFoundException;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 
 public final class XmlBeanParameter implements Cloneable, Serializable {
@@ -82,7 +83,6 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 		return value;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Object formatStringValue(String v, Class<?> parameterType) throws ClassNotFoundException, ParseException {
 		if (v == null) {
 			return null;
@@ -102,9 +102,7 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 				SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 				return sdf.parse(v);
 			}
-		} else if (parameterType.isEnum()) {
-			return Enum.valueOf((Class<? extends Enum>) parameterType, v);
 		}
-		return StringUtils.conversion(v, parameterType);
+		return StringParse.DEFAULT.parse(v, parameterType);
 	}
 }

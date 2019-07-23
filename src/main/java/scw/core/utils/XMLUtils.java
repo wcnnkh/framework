@@ -281,13 +281,14 @@ public final class XMLUtils {
 	 * @param defaultValue
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> T getNodeAttributeValue(Class<T> basicType, Node node,
 			String name, T defaultValue) {
 		String value = getNodeAttributeValue(node, name);
 		if (value == null) {
 			return defaultValue;
 		} else {
-			return StringUtils.conversion(value, basicType);
+			return (T) StringParse.defaultParse(value, basicType);
 		}
 	}
 
@@ -365,7 +366,7 @@ public final class XMLUtils {
 			}
 
 			ReflectUtils.setFieldValue(type, field, t,
-					StringUtils.conversion(value, field.getType()));
+					StringParse.defaultParse(value, field.getType()));
 		}
 		return t;
 	}

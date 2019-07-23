@@ -34,6 +34,7 @@ import scw.core.reflect.FieldDefinition;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -259,7 +260,7 @@ public final class BeanUtils {
 
 				String v = propertiesFactory.getValue(value.value());
 				if (v != null) {
-					val = StringUtils.conversion(v, field.getField().getType());
+					val = StringParse.DEFAULT.parse(v, field.getField().getType());
 					field.set(obj, val);
 				}
 			} catch (Exception e) {

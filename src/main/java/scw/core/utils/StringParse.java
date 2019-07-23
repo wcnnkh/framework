@@ -1,10 +1,10 @@
-package scw.core;
+package scw.core.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import scw.core.utils.ClassUtils;
-import scw.core.utils.StringUtils;
+import scw.core.StringEmptyVerification;
+import scw.core.Verification;
 import scw.json.JSONUtils;
 
 public class StringParse implements Verification<CharSequence> {
@@ -295,6 +295,10 @@ public class StringParse implements Verification<CharSequence> {
 		return cast(text, type);
 	}
 
+	public static Object defaultParse(String text, Class<?> type) {
+		return DEFAULT.parse(text, type);
+	}
+
 	public static String formatNumberText(String text) {
 		if (StringUtils.isEmpty(text)) {
 			return text;
@@ -321,13 +325,25 @@ public class StringParse implements Verification<CharSequence> {
 				|| "T".equalsIgnoreCase(text);
 	}
 
-	public static boolean parseBoolean(String text) {
+	public static Boolean parseBoolean(String text, Boolean defaultValue) {
+		return parseBoolean(text, null, defaultValue);
+	}
+
+	public static boolean parseBooleanValue(String text) {
 		return parseBoolean(text, StringEmptyVerification.INSTANCE, false);
+	}
+
+	private static boolean verification(Verification<CharSequence> verification, CharSequence charSequence) {
+		if (verification == null) {
+			return StringEmptyVerification.INSTANCE.verification(charSequence);
+		} else {
+			return verification.verification(charSequence);
+		}
 	}
 
 	public static Byte parseByte(String text, Verification<CharSequence> verification, Byte defaultValue) {
 		String v = formatNumberText(text);
-		if (verification.verification(v)) {
+		if (verification(verification, v)) {
 			return defaultValue;
 		}
 		return Byte.parseByte(text);
@@ -339,7 +355,7 @@ public class StringParse implements Verification<CharSequence> {
 
 	public static Short parseShort(String text, Verification<CharSequence> verification, Short defaultValue) {
 		String v = formatNumberText(text);
-		if (verification.verification(v)) {
+		if (verification(verification, v)) {
 			return defaultValue;
 		}
 		return Short.parseShort(text);
@@ -347,10 +363,14 @@ public class StringParse implements Verification<CharSequence> {
 
 	public static Integer parseInteger(String text, Verification<CharSequence> verification, Integer defaultValue) {
 		String v = formatNumberText(text);
-		if (verification.verification(v)) {
+		if (verification(verification, v)) {
 			return defaultValue;
 		}
 		return Integer.parseInt(v);
+	}
+
+	public static Integer parseInteger(String text, Integer defaultValue) {
+		return parseInteger(text, null, defaultValue);
 	}
 
 	public static int parseIntValue(String text) {
@@ -367,7 +387,7 @@ public class StringParse implements Verification<CharSequence> {
 
 	public static Long parseLong(String text, Verification<CharSequence> verification, Long defaultValue) {
 		String v = formatNumberText(text);
-		if (verification.verification(v)) {
+		if (verification(verification, v)) {
 			return defaultValue;
 		}
 		return Long.parseLong(v);
@@ -379,7 +399,7 @@ public class StringParse implements Verification<CharSequence> {
 
 	public static Float parseFloat(String text, Verification<CharSequence> verification, Float defaultValue) {
 		String v = formatNumberText(text);
-		if (verification.verification(v)) {
+		if (verification(verification, v)) {
 			return defaultValue;
 		}
 		return Float.parseFloat(v);
@@ -391,7 +411,7 @@ public class StringParse implements Verification<CharSequence> {
 
 	public static Double parseDouble(String text, Verification<CharSequence> verification, Double defaultValue) {
 		String v = formatNumberText(text);
-		if (verification.verification(v)) {
+		if (verification(verification, v)) {
 			return defaultValue;
 		}
 		return Double.parseDouble(v);
@@ -403,7 +423,7 @@ public class StringParse implements Verification<CharSequence> {
 
 	public static Character parseChar(String text, Verification<CharSequence> verification, Character defaultValue) {
 		String v = formatNumberText(text);
-		if (verification.verification(v)) {
+		if (verification(verification, v)) {
 			return defaultValue;
 		}
 
@@ -413,7 +433,7 @@ public class StringParse implements Verification<CharSequence> {
 	public static BigInteger parseBigInteger(String text, int radix, Verification<CharSequence> verification,
 			BigInteger defaultValue) {
 		String v = formatNumberText(text);
-		if (verification.verification(v)) {
+		if (verification(verification, v)) {
 			return defaultValue;
 		}
 
@@ -422,7 +442,7 @@ public class StringParse implements Verification<CharSequence> {
 
 	public static BigDecimal parseBigDecimal(String text, Verification<CharSequence> verification,
 			BigDecimal defaultValue) {
-		if (verification.verification(text)) {
+		if (verification(verification, text)) {
 			return defaultValue;
 		}
 

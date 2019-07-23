@@ -37,6 +37,7 @@ import scw.core.PropertiesFactory;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.io.serializer.Serializer;
 import scw.io.serializer.SerializerUtils;
@@ -134,15 +135,20 @@ public final class ServletUtils {
 		return asyncSupport;
 	}
 
-	protected static ServletService getServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
-			String configPath, String[] rootBeanFilters) {
-		if (isAsyncSupport()) {
+	public static ServletService getServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+			String configPath, String[] rootBeanFilters, boolean async) {
+		if (async) {
 			return beanFactory.getInstance("scw.servlet.AsyncServletService", beanFactory, propertiesFactory,
 					configPath, rootBeanFilters);
 		} else {
 			return beanFactory.getInstance("scw.servlet.DefaultServletService", beanFactory, propertiesFactory,
 					configPath, rootBeanFilters);
 		}
+	}
+
+	protected static ServletService getServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+			String configPath, String[] rootBeanFilters) {
+		return getServletService(beanFactory, propertiesFactory, configPath, rootBeanFilters, isAsyncSupport());
 	}
 
 	/**
@@ -429,11 +435,11 @@ public final class ServletUtils {
 	}
 
 	public static boolean isDebug(PropertiesFactory propertiesFactory) {
-		return StringUtils.parseBoolean(propertiesFactory.getValue("servlet.debug"), true);
+		return StringParse.parseBoolean(propertiesFactory.getValue("servlet.debug"), true);
 	}
 
 	public static int getWarnExecuteTime(PropertiesFactory propertiesFactory) {
-		return StringUtils.parseInt(propertiesFactory.getValue("servlet.warn-execute-time"), 100);
+		return StringParse.parseInteger(propertiesFactory.getValue("servlet.warn-execute-time"), 100);
 	}
 
 	public static JSONParseSupport getJsonParseSupport(BeanFactory beanFactory, PropertiesFactory propertiesFactory) {
@@ -576,7 +582,6 @@ public final class ServletUtils {
 		FilterChain filterChain = new IteratorFilterChain(serviceFilter, null);
 		filterChain.doFilter(request, response);
 	}
-	
 
 	public static ActionParameter[] getActionParameter(Method method) {
 		String[] tempKeys = ClassUtils.getParameterName(method);
@@ -587,8 +592,8 @@ public final class ServletUtils {
 		}
 		return paramInfos;
 	}
-	
-	public static Action crateAction(BeanFactory beanFactory, Class<?> clazz, Method method){
+
+	public static Action crateAction(BeanFactory beanFactory, Class<?> clazz, Method method) {
 		return new MethodAction(beanFactory, clazz, method);
 	}
 }

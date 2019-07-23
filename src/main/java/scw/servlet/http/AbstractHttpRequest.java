@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import scw.core.Destroy;
+import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.servlet.ServletUtils;
 import scw.servlet.beans.RequestBeanFactory;
@@ -170,7 +171,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 		}
 
 		try {
-			return StringUtils.parseInt(v);
+			return StringParse.parseIntValue(v);
 		} catch (Exception e) {
 			parameterError(e, key, v);
 		}
@@ -180,7 +181,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 	public int getIntValue(String key) {
 		String v = getParameter(key);
 		try {
-			return StringUtils.parseInt(v);
+			return StringParse.parseIntValue(v);
 		} catch (Exception e) {
 			parameterError(e, key, v);
 		}

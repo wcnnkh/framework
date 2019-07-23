@@ -19,6 +19,7 @@ import scw.core.PropertiesFactory;
 import scw.core.reflect.PropertyMapper;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 
@@ -36,7 +37,7 @@ public final class XmlDubboUtils {
 							return null;
 						}
 
-						return StringUtils.conversion(value, type);
+						return StringParse.defaultParse(value, type);
 					}
 				});
 
@@ -68,7 +69,7 @@ public final class XmlDubboUtils {
 							return null;
 						}
 
-						return StringUtils.conversion(value, type);
+						return StringParse.defaultParse(value, type);
 					}
 				});
 		List<ProtocolConfig> list = new LinkedList<ProtocolConfig>();
@@ -93,7 +94,7 @@ public final class XmlDubboUtils {
 							return beanFactory.getInstance(value);
 						}
 
-						return StringUtils.conversion(value, type);
+						return StringParse.defaultParse(value, type);
 					}
 				});
 	}
@@ -112,7 +113,7 @@ public final class XmlDubboUtils {
 							return beanFactory.getInstance(value);
 						}
 
-						return StringUtils.conversion(value, type);
+						return StringParse.defaultParse(value, type);
 					}
 				});
 
@@ -163,7 +164,7 @@ public final class XmlDubboUtils {
 							return beanFactory.getInstance(value);
 						}
 
-						return StringUtils.conversion(value, type);
+						return StringParse.defaultParse(value, type);
 					}
 				});
 

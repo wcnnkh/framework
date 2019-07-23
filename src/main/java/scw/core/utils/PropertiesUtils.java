@@ -165,7 +165,7 @@ public final class PropertiesUtils {
 			}
 
 			try {
-				method.invoke(instance, StringUtils.conversion(value, parameterType));
+				method.invoke(instance, StringParse.DEFAULT.parse(value, parameterType));
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalArgumentException e) {

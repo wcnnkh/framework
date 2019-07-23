@@ -19,7 +19,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -2041,7 +2040,7 @@ public final class StringUtils {
 
 		int[] dataArr = new int[arr.length];
 		for (int i = 0; i < arr.length; i++) {
-			dataArr[i] = parseInt(arr[i]);
+			dataArr[i] = StringParse.parseIntValue(arr[i]);
 		}
 		return dataArr;
 	}
@@ -2109,18 +2108,6 @@ public final class StringUtils {
 			return defaultValue;
 		}
 		return Short.parseShort(text);
-	}
-
-	public static int parseInt(String text, int defaultValue) {
-		String v = formatNumberText(text);
-		if (StringUtils.isEmpty(v)) {
-			return defaultValue;
-		}
-		return Integer.parseInt(v);
-	}
-
-	public static int parseInt(String text) {
-		return parseInt(text, 0);
 	}
 
 	public static long parseLong(String text) {
@@ -2263,70 +2250,6 @@ public final class StringUtils {
 		return outBuffer.toString();
 	}
 
-	/**
-	 * 如果是string类类型就返回本身 自动把string转化为基本数据类型 string不是基本数据类型
-	 * 
-	 * @param value
-	 * @param basicType
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T conversion(final String value, final Class<T> basicType) {
-		return (T) conversion(value, basicType, new Callable<Object>() {
-
-			public Object call() throws Exception {
-				throw new RuntimeException(value + "无法转换为" + basicType.getName() + "类型");
-			}
-		});
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static Object conversion(String value, Class<?> basicType, Callable<?> notfoundTypeCallable) {
-		if (String.class.isAssignableFrom(basicType)) {
-			return value;
-		} else if (int.class.isAssignableFrom(basicType)) {
-			return parseInt(value, 0);
-		} else if (Integer.class.isAssignableFrom(basicType)) {
-			return StringUtils.isEmpty(value) ? null : parseInt(value, 0);
-		} else if (long.class.isAssignableFrom(basicType)) {
-			return parseLong(value, 0);
-		} else if (Long.class.isAssignableFrom(basicType)) {
-			return StringUtils.isEmpty(value) ? null : parseLong(value, 0L);
-		} else if (float.class.isAssignableFrom(basicType)) {
-			return parseFloat(value, 0f);
-		} else if (Float.class.isAssignableFrom(basicType)) {
-			return StringUtils.isEmpty(value) ? null : parseFloat(value, 0f);
-		} else if (short.class.isAssignableFrom(basicType)) {
-			return parseShort(value, (short) 0);
-		} else if (Short.class.isAssignableFrom(basicType)) {
-			return StringUtils.isEmpty(value) ? null : parseShort(value, (short) 0);
-		} else if (boolean.class.isAssignableFrom(basicType)) {
-			return parseBoolean(value);
-		} else if (Boolean.class.isAssignableFrom(basicType)) {
-			return StringUtils.isEmpty(value) ? null : parseBoolean(value);
-		} else if (byte.class.isAssignableFrom(basicType)) {
-			return parseByte(value, (byte) 0);
-		} else if (Byte.class.isAssignableFrom(basicType)) {
-			return StringUtils.isEmpty(value) ? null : parseByte(value, (byte) 0);
-		} else if (char.class.isAssignableFrom(basicType)) {
-			return parseChar(value);
-		} else if (Character.class.isAssignableFrom(basicType)) {
-			return StringUtils.isEmpty(value) ? null : value.charAt(0);
-		} else if (BigInteger.class.isAssignableFrom(basicType)) {
-			return parseBigInteger(value, 10, null);
-		} else if (BigDecimal.class.isAssignableFrom(basicType)) {
-			return parseBigDecimal(value, null);
-		} else if (basicType.isEnum()) {
-			return StringUtils.isEmpty(value) ? null : Enum.valueOf((Class<? extends Enum>) basicType, value);
-		} else {
-			try {
-				return notfoundTypeCallable.call();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
 	public static int[] parseIntArray(String[] arr) {
 		if (arr == null) {
 			return null;
@@ -2334,7 +2257,7 @@ public final class StringUtils {
 
 		int[] values = new int[arr.length];
 		for (int i = 0; i < arr.length; i++) {
-			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : parseInt(arr[i]);
+			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : StringParse.parseIntValue(arr[i]);
 		}
 		return values;
 	}

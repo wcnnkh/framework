@@ -12,6 +12,7 @@ import scw.core.Consumer;
 import scw.core.PropertiesFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.PropertyMapper;
+import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.logger.LoggerUtils;
@@ -46,7 +47,7 @@ public class XmlConsumerFactory implements ConsumerFactory {
 										return beanFactory.getInstance(value);
 									}
 
-									return StringUtils.conversion(value, type);
+									return StringParse.defaultParse(value, type);
 								}
 							}));
 				}

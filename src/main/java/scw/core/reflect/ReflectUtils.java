@@ -26,6 +26,7 @@ import scw.core.utils.Assert;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ReflectionUtils;
+import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerUtils;
 
@@ -900,7 +901,7 @@ public final class ReflectUtils {
 	}
 
 	public static Object setFieldValueAutoType(Class<?> clz, Field field, Object obj, String value) throws Exception {
-		return ReflectUtils.setFieldValue(clz, field, obj, StringUtils.conversion(value, field.getType()));
+		return ReflectUtils.setFieldValue(clz, field, obj, StringParse.DEFAULT.parse(value, field.getType()));
 	}
 
 	/**
