@@ -11,7 +11,13 @@ public class DefaultResultFactory extends AbstractResultFactory {
 
 	public DefaultResultFactory(String propertiesFilePath, String charsetName, int defaultErrorCode, int successCode,
 			int authorizationFailureCode, int parameterErrorCode) {
-		super(propertiesFilePath, charsetName);
+		this(propertiesFilePath, charsetName, defaultErrorCode, successCode, authorizationFailureCode,
+				parameterErrorCode, true);
+	}
+
+	public DefaultResultFactory(String propertiesFilePath, String charsetName, int defaultErrorCode, int successCode,
+			int authorizationFailureCode, int parameterErrorCode, boolean defaultRollbackOnly) {
+		super(defaultRollbackOnly, propertiesFilePath, charsetName);
 		this.defaultErrorCode = defaultErrorCode;
 		this.successCode = successCode;
 		this.authorizationFailureCode = authorizationFailureCode;

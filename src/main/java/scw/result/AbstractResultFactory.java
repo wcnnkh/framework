@@ -11,8 +11,10 @@ import scw.core.utils.StringUtils;
 
 public abstract class AbstractResultFactory implements ResultFactory {
 	private Map<Integer, String> code2msgMap;
+	private final boolean defaultRollbackOnly;
 
-	public AbstractResultFactory(String propertiesFilePath, String charsetName) {
+	public AbstractResultFactory(boolean defaultRollbackOnly, String propertiesFilePath, String charsetName) {
+		this.defaultRollbackOnly = defaultRollbackOnly;
 		if (StringUtils.isEmpty(propertiesFilePath)) {
 			return;
 		}
@@ -43,7 +45,7 @@ public abstract class AbstractResultFactory implements ResultFactory {
 	}
 
 	public <T> DataResult<T> error(int code, String msg, T data) {
-		return error(code, msg, data, true);
+		return error(code, msg, data, defaultRollbackOnly);
 	}
 
 	public <T> DataResult<T> error(int code, T data, boolean rollbackOnly) {

@@ -8,8 +8,15 @@ public final class ServletResultFactory extends DefaultResultFactory {
 
 	public ServletResultFactory(String propertiesFilePath, String charsetName, int defaultErrorCode,
 			int defaultSuccessCode, int loginExpiredCode, int parameterErrorCode, String contentType) {
+		this(propertiesFilePath, charsetName, defaultErrorCode, defaultSuccessCode, loginExpiredCode,
+				parameterErrorCode, contentType, true);
+	}
+
+	public ServletResultFactory(String propertiesFilePath, String charsetName, int defaultErrorCode,
+			int defaultSuccessCode, int loginExpiredCode, int parameterErrorCode, String contentType,
+			boolean defaultRollbackOnly) {
 		super(propertiesFilePath, charsetName, defaultErrorCode, defaultSuccessCode, loginExpiredCode,
-				parameterErrorCode);
+				parameterErrorCode, defaultRollbackOnly);
 		this.contentType = contentType;
 	}
 
