@@ -1,5 +1,6 @@
 package scw.core.utils;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -7,7 +8,7 @@ import scw.core.StringEmptyVerification;
 import scw.core.Verification;
 import scw.json.JSONUtils;
 
-public class StringParse implements Verification<CharSequence> {
+public class StringParse implements Verification<CharSequence>, ValueFactory<String> {
 	public static final StringParse DEFAULT = new StringParse();
 
 	private final StringEmptyVerification verification;
@@ -24,12 +25,16 @@ public class StringParse implements Verification<CharSequence> {
 		this.splitArray = splitArray;
 	}
 
-	public boolean verification(CharSequence data) {
-		if (verification == null) {
-			return StringEmptyVerification.INSTANCE.verification(data);
-		} else {
-			return verification.verification(data) || StringEmptyVerification.INSTANCE.verification(data);
+	public boolean verification(CharSequence text) {
+		return verification(verification, text);
+	}
+
+	public boolean verificationNumberText(String text) {
+		if (StringUtils.isEmpty(text)) {
+			return true;
 		}
+
+		return verification(text);
 	}
 
 	public final StringEmptyVerification getVerification() {
@@ -44,156 +49,7 @@ public class StringParse implements Verification<CharSequence> {
 		return splitArray;
 	}
 
-	protected Object castInteger(String e) {
-		String text = formatNumberText(e);
-		if (verification(text)) {
-			return null;
-		}
-
-		return Integer.parseInt(text, numberRadix);
-	}
-
-	protected Object castIntValue(String e) {
-		String text = formatNumberText(e);
-		if (verification(text)) {
-			return 0;
-		}
-
-		return Integer.parseInt(text, numberRadix);
-	}
-
-	protected Object castLong(String e) {
-		String text = formatNumberText(e);
-		if (verification(text)) {
-			return null;
-		}
-		return Long.parseLong(text, numberRadix);
-	}
-
-	protected Object castLongValue(String e) {
-		String text = formatNumberText(e);
-		if (verification(text)) {
-			return 0;
-		}
-		return Long.parseLong(text, numberRadix);
-	}
-
-	protected Object castBoolean(String e) {
-		return parseBoolean(e, this, null);
-	}
-
-	protected Object castBooleanValue(String e) {
-		return parseBoolean(e, this, false);
-	}
-
-	protected Object castShort(String e) {
-		String text = formatNumberText(e);
-		if (verification(text)) {
-			return null;
-		}
-		return Short.parseShort(text, numberRadix);
-	}
-
-	protected Object castShortValue(String e) {
-		String text = formatNumberText(e);
-		if (verification(text)) {
-			return 0;
-		}
-		return Short.parseShort(text, numberRadix);
-	}
-
-	protected Object castFloat(String e) {
-		String text = formatNumberText(e);
-		if (verification(text)) {
-			return null;
-		}
-		return Float.parseFloat(text);
-	}
-
-	protected Object castFloatValue(String e) {
-		String text = formatNumberText(e);
-		if (verification(text)) {
-			return 0f;
-		}
-		return Float.parseFloat(text);
-	}
-
-	protected Object castDouble(String e) {
-		String text = formatNumberText(e);
-		if (verification(text)) {
-			return null;
-		}
-		return Double.parseDouble(text);
-	}
-
-	protected Object castDoubleValue(String e) {
-		String text = formatNumberText(e);
-		if (verification(text)) {
-			return 0;
-		}
-		return Double.parseDouble(text);
-	}
-
-	protected Object castByte(String e) {
-		String text = formatNumberText(e);
-		if (verification(text)) {
-			return null;
-		}
-		return Byte.parseByte(text, numberRadix);
-	}
-
-	protected Object castByteValue(String e) {
-		String text = formatNumberText(e);
-		if (verification(text)) {
-			return 0;
-		}
-		return Byte.parseByte(text, numberRadix);
-	}
-
-	protected Object castCharacter(String e) {
-		if (verification(e)) {
-			return null;
-		}
-		return e.charAt(0);
-	}
-
-	protected Object castChar(String e) {
-		if (verification(e)) {
-			return (char) 0;
-		}
-		return e.charAt(0);
-	}
-
-	protected Object castBigInteger(String e) {
-		if (verification(e)) {
-			return null;
-		}
-
-		return new BigInteger(e, numberRadix);
-	}
-
-	protected Object castBigDecimal(String e) {
-		if (verification(e)) {
-			return null;
-		}
-
-		return new BigDecimal(e);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected Object castEnum(Class<? extends Enum> enumType, String e) {
-		if (verification(e)) {
-			return null;
-		}
-
-		return Enum.valueOf(enumType, e);
-	}
-
-	protected Object cast(String text, Class<?> type) {
-		return JSONUtils.parseObject(text, type);
-	}
-
-	protected String[] split(String text) {
+	public String[] split(String text) {
 		if (splitArray == null) {
 			return StringUtils.commonSplit(text);
 		} else {
@@ -201,159 +57,25 @@ public class StringParse implements Verification<CharSequence> {
 		}
 	}
 
-	protected Object castArray(String[] arr, Class<?> type) {
-		return null;
+	@SuppressWarnings("unchecked")
+	public <T> T[] getArray(String[] arr, Class<?> type) {
+		if (ArrayUtils.isEmpty(arr)) {
+			return (T[]) Array.newInstance(type, 0);
+		}
+
+		Object objects = Array.newInstance(type, arr.length);
+		for (int i = 0; i < arr.length; i++) {
+			Array.set(objects, i, getObject(arr[i], type));
+		}
+		return (T[]) objects;
 	}
 
-	protected Object castIntegerArray(String[] arr) {
-		return null;
-	}
-
-	protected Object castIntArray(String[] arr) {
-		return null;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object parse(String text, Class<?> type) {
-		if (ClassUtils.isStringType(type)) {
-			return text;
-		}
-
-		if (Integer.class == type) {
-			return castInteger(text);
-		}
-
-		if (int.class == type) {
-			return castIntValue(text);
-		}
-
-		if (Long.class == type) {
-			return castLong(text);
-		}
-
-		if (long.class == type) {
-			return castLongValue(text);
-		}
-
-		if (Boolean.class == type) {
-			return castBoolean(text);
-		}
-
-		if (boolean.class == type) {
-			return castBooleanValue(text);
-		}
-
-		if (Short.class == type) {
-			return castShort(text);
-		}
-
-		if (short.class == type) {
-			return castShortValue(text);
-		}
-
-		if (Float.class == type) {
-			return castFloat(text);
-		}
-
-		if (float.class == type) {
-			return castFloatValue(text);
-		}
-
-		if (Double.class == type) {
-			return castDouble(text);
-		}
-
-		if (double.class == type) {
-			return castDoubleValue(text);
-		}
-
-		if (Byte.class == type) {
-			return castByte(text);
-		}
-
-		if (byte.class == type) {
-			return castByteValue(text);
-		}
-
-		if (Character.class == type) {
-			return castCharacter(text);
-		}
-
-		if (char.class == type) {
-			return castChar(text);
-		}
-
-		if (BigInteger.class == type) {
-			return castBigInteger(text);
-		}
-
-		if (BigDecimal.class == type) {
-			return castBigDecimal(text);
-		}
-
-		if (type.isEnum()) {
-			return castEnum((Class<? extends Enum>) type, text);
-		}
-
-		if (type.isArray()) {
-			if(verification(text)){
-				return null;
-			}
-			
-			String[] arr = split(text);
-			if (String.class == type) {
-				return arr;
-			}
-
-			if (Integer.class == type.getComponentType()) {
-				return castIntegerArray(arr);
-			}
-
-			if (int.class == type.getComponentType()) {
-				return castIntArray(arr);
-			}
-
-			return castArray(arr, type.getComponentType());
-		}
-		return cast(text, type);
+		return getObject(text, type);
 	}
 
 	public static Object defaultParse(String text, Class<?> type) {
 		return DEFAULT.parse(text, type);
-	}
-
-	public static String formatNumberText(String text) {
-		if (StringUtils.isEmpty(text)) {
-			return text;
-		}
-
-		char[] chars = new char[text.length()];
-		int pos = 0;
-		for (int i = 0; i < text.length(); i++) {
-			char c = text.charAt(i);
-			if (c == ' ' || c == ',') {
-				continue;
-			}
-			chars[pos++] = c;
-		}
-		return pos == 0 ? null : new String(chars, 0, pos);
-	}
-
-	public static Boolean parseBoolean(String text, Verification<CharSequence> verification, Boolean defaultValue) {
-		if (verification(verification, text)) {
-			return defaultValue;
-		}
-
-		return "1".equals(text) || "true".equalsIgnoreCase(text) || "yes".equalsIgnoreCase(text)
-				|| "T".equalsIgnoreCase(text);
-	}
-
-	public static Boolean parseBoolean(String text, Boolean defaultValue) {
-		return parseBoolean(text, null, defaultValue);
-	}
-
-	public static boolean parseBooleanValue(String text) {
-		return parseBoolean(text, StringEmptyVerification.INSTANCE, false);
 	}
 
 	private static boolean verification(Verification<CharSequence> verification, CharSequence charSequence) {
@@ -364,111 +86,246 @@ public class StringParse implements Verification<CharSequence> {
 		}
 	}
 
-	public static Byte parseByte(String text, Verification<CharSequence> verification, Byte defaultValue) {
-		String v = formatNumberText(text);
-		if (verification(verification, v)) {
-			return defaultValue;
+	public Byte getByte(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return null;
 		}
-		return Byte.parseByte(text);
+		return Byte.parseByte(text, numberRadix);
 	}
 
-	public static short parseShortValue(String text) {
-		return parseShort(text, StringEmptyVerification.INSTANCE, (short) 0);
-	}
-
-	public static Short parseShort(String text, Verification<CharSequence> verification, Short defaultValue) {
-		String v = formatNumberText(text);
-		if (verification(verification, v)) {
-			return defaultValue;
+	public byte getByteValue(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return 0;
 		}
-		return Short.parseShort(text);
+		return Byte.parseByte(text, numberRadix);
 	}
 
-	public static Integer parseInteger(String text, Verification<CharSequence> verification, Integer defaultValue) {
-		String v = formatNumberText(text);
-		if (verification(verification, v)) {
-			return defaultValue;
+	public Short getShort(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return null;
 		}
-		return Integer.parseInt(v);
+		return Short.parseShort(text, numberRadix);
 	}
 
-	public static Integer parseInteger(String text, Integer defaultValue) {
-		return parseInteger(text, null, defaultValue);
-	}
-
-	public static int parseIntValue(String text) {
-		return parseInteger(text, StringEmptyVerification.INSTANCE, 0);
-	}
-
-	public static long parseLongValue(String text) {
-		return parseLong(text, StringEmptyVerification.INSTANCE, 0L);
-	}
-
-	public static byte parseByteValue(String text) {
-		return parseByte(text, StringEmptyVerification.INSTANCE, (byte) 0);
-	}
-
-	public static Long parseLong(String text, Verification<CharSequence> verification, Long defaultValue) {
-		String v = formatNumberText(text);
-		if (verification(verification, v)) {
-			return defaultValue;
+	public short getShortValue(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return 0;
 		}
-		return Long.parseLong(v);
+		return Short.parseShort(text, numberRadix);
 	}
 
-	public static float parseFloatValue(String text) {
-		return parseFloat(text, StringEmptyVerification.INSTANCE, 0f);
-	}
-
-	public static Float parseFloat(String text, Verification<CharSequence> verification, Float defaultValue) {
-		String v = formatNumberText(text);
-		if (verification(verification, v)) {
-			return defaultValue;
-		}
-		return Float.parseFloat(v);
-	}
-
-	public static double parseDoubleValue(String text) {
-		return parseDouble(text, StringEmptyVerification.INSTANCE, 0d);
-	}
-
-	public static Double parseDouble(String text, Verification<CharSequence> verification, Double defaultValue) {
-		String v = formatNumberText(text);
-		if (verification(verification, v)) {
-			return defaultValue;
-		}
-		return Double.parseDouble(v);
-	}
-
-	public static char parseCharValue(String text) {
-		return parseChar(text, StringEmptyVerification.INSTANCE, (char) 0);
-	}
-
-	public static Character parseChar(String text, Verification<CharSequence> verification, Character defaultValue) {
-		String v = formatNumberText(text);
-		if (verification(verification, v)) {
-			return defaultValue;
+	public Integer getInteger(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return null;
 		}
 
-		return text.charAt(0);
+		return Integer.parseInt(text, numberRadix);
 	}
 
-	public static BigInteger parseBigInteger(String text, int radix, Verification<CharSequence> verification,
-			BigInteger defaultValue) {
-		String v = formatNumberText(text);
-		if (verification(verification, v)) {
-			return defaultValue;
+	public int getIntValue(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return 0;
 		}
 
-		return new BigInteger(v, radix);
+		return Integer.parseInt(text, numberRadix);
 	}
 
-	public static BigDecimal parseBigDecimal(String text, Verification<CharSequence> verification,
-			BigDecimal defaultValue) {
-		if (verification(verification, text)) {
-			return defaultValue;
+	public Long getLong(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return null;
+		}
+		return Long.parseLong(text, numberRadix);
+	}
+
+	public long getLongValue(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return 0;
+		}
+		return Long.parseLong(text, numberRadix);
+	}
+
+	public Boolean getBoolean(String data) {
+		return StringUtils.parseBoolean(data, null);
+	}
+
+	public boolean getBooleanValue(String data) {
+		return StringUtils.parseBoolean(data);
+	}
+
+	public Float getFloat(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return null;
+		}
+		return Float.parseFloat(text);
+	}
+
+	public float getFloatValue(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return 0f;
+		}
+		return Float.parseFloat(text);
+	}
+
+	public Double getDouble(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return null;
+		}
+		return Double.parseDouble(text);
+	}
+
+	public double getDoubleValue(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return 0;
+		}
+		return Double.parseDouble(text);
+	}
+
+	public char getChar(String data) {
+		if (verificationNumberText(data)) {
+			return (char) 0;
+		}
+		return data.charAt(0);
+	}
+
+	public Character getCharacter(String data) {
+		if (verificationNumberText(data)) {
+			return null;
+		}
+		return data.charAt(0);
+	}
+
+	public String getString(String data) {
+		return data;
+	}
+
+	public BigInteger getBigInteger(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return null;
+		}
+
+		return new BigInteger(text, numberRadix);
+	}
+
+	public BigDecimal getBigDecimal(String data) {
+		String text = StringUtils.formatNumberText(data);
+		if (verificationNumberText(text)) {
+			return null;
 		}
 
 		return new BigDecimal(text);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Object getObject(String text, Class<?> type) {
+		if (String.class == type) {
+			return getString(text);
+		}
+
+		if (Integer.class == type) {
+			return getInteger(text);
+		}
+
+		if (int.class == type) {
+			return getIntValue(text);
+		}
+
+		if (Long.class == type) {
+			return getLong(text);
+		}
+
+		if (long.class == type) {
+			return getLongValue(text);
+		}
+
+		if (Boolean.class == type) {
+			return getBoolean(text);
+		}
+
+		if (boolean.class == type) {
+			return getBooleanValue(text);
+		}
+
+		if (Short.class == type) {
+			return getShort(text);
+		}
+
+		if (short.class == type) {
+			return getShortValue(text);
+		}
+
+		if (Float.class == type) {
+			return getFloat(text);
+		}
+
+		if (float.class == type) {
+			return getFloatValue(text);
+		}
+
+		if (Double.class == type) {
+			return getDouble(text);
+		}
+
+		if (double.class == type) {
+			return getDoubleValue(text);
+		}
+
+		if (Byte.class == type) {
+			return getByte(text);
+		}
+
+		if (byte.class == type) {
+			return getByteValue(text);
+		}
+
+		if (Character.class == type) {
+			return getCharacter(text);
+		}
+
+		if (char.class == type) {
+			return getChar(text);
+		}
+
+		if (BigInteger.class == type) {
+			return getBigInteger(text);
+		}
+
+		if (BigDecimal.class == type) {
+			return getBigDecimal(text);
+		}
+
+		if (type.isEnum()) {
+			return getEnum(text, (Class<? extends Enum>) type);
+		}
+
+		if (type.isArray()) {
+			return getArray(text, type.getComponentType());
+		}
+		return JSONUtils.parseObject(text, type);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Enum<?> getEnum(String data, Class<? extends Enum> enumType) {
+		if (verification(data)) {
+			return null;
+		}
+
+		return Enum.valueOf(enumType, data);
+	}
+
+	public <E> E[] getArray(String text, Class<E> type) {
+		return getArray(split(text), type);
 	}
 }

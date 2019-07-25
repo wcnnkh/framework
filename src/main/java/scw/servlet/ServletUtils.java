@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,11 +32,12 @@ import scw.core.KeyValuePairFilter;
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
 import scw.core.PropertiesFactory;
+import scw.core.exception.ParameterException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
+import scw.core.utils.XUtils;
 import scw.io.serializer.Serializer;
 import scw.io.serializer.SerializerUtils;
 import scw.json.JSONParseSupport;
@@ -353,6 +352,14 @@ public final class ServletUtils {
 		return null;
 	}
 
+	public static Object getParameter(Request request, String name, Class<?> type) {
+		try {
+			return XUtils.getValue(request, name, type);
+		} catch (Exception e) {
+			throw new ParameterException(e, "解析参数错误name=" + name + ",type=" + type.getName());
+		}
+	}
+
 	private static Object privateRequestObjectParameterWrapper(Request request, Class<?> type, String prefix)
 			throws Exception {
 		if (!ReflectUtils.isInstance(type)) {
@@ -371,7 +378,7 @@ public final class ServletUtils {
 				if (String.class.isAssignableFrom(field.getType())
 						|| ClassUtils.isPrimitiveOrWrapper(field.getType())) {
 					// 如果是基本数据类型
-					Object v = request.getParameter(field.getType(), key);
+					Object v = request.getObject(key, field.getType());
 					if (v != null) {
 						ReflectUtils.setFieldValue(clz, field, t, v);
 					}
@@ -435,11 +442,11 @@ public final class ServletUtils {
 	}
 
 	public static boolean isDebug(PropertiesFactory propertiesFactory) {
-		return StringParse.parseBoolean(propertiesFactory.getValue("servlet.debug"), true);
+		return StringUtils.parseBoolean(propertiesFactory.getValue("servlet.debug"), true);
 	}
 
 	public static int getWarnExecuteTime(PropertiesFactory propertiesFactory) {
-		return StringParse.parseInteger(propertiesFactory.getValue("servlet.warn-execute-time"), 100);
+		return StringUtils.parseInt(propertiesFactory.getValue("servlet.warn-execute-time"), 100);
 	}
 
 	public static JSONParseSupport getJsonParseSupport(BeanFactory beanFactory, PropertiesFactory propertiesFactory) {
@@ -532,50 +539,6 @@ public final class ServletUtils {
 		config = StringUtils.isEmpty(config) ? configPath : config;
 		String[] filters = StringUtils.isEmpty(beanFilters) ? rootBeanFilters : StringUtils.commonSplit(beanFilters);
 		return beanFactory.getInstance(CommonRequestBeanFactory.class, beanFactory, propertiesFactory, config, filters);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static Object getParameter(Request request, Class<?> type, String name) {
-		if (String.class.isAssignableFrom(type)) {
-			return request.getString(name);
-		} else if (int.class.isAssignableFrom(type)) {
-			return request.getIntValue(name);
-		} else if (Integer.class.isAssignableFrom(type)) {
-			return request.getInteger(name);
-		} else if (long.class.isAssignableFrom(type)) {
-			return request.getLongValue(name);
-		} else if (Long.class.isAssignableFrom(type)) {
-			return request.getLong(name);
-		} else if (float.class.isAssignableFrom(type)) {
-			return request.getFloatValue(name);
-		} else if (Float.class.isAssignableFrom(type)) {
-			return request.getFloat(name);
-		} else if (short.class.isAssignableFrom(type)) {
-			return request.getShortValue(name);
-		} else if (Short.class.isAssignableFrom(type)) {
-			return request.getShort(name);
-		} else if (boolean.class.isAssignableFrom(type)) {
-			return request.getBooleanValue(name);
-		} else if (Boolean.class.isAssignableFrom(type)) {
-			return request.getBoolean(name);
-		} else if (byte.class.isAssignableFrom(type)) {
-			return request.getByteValue(name);
-		} else if (Byte.class.isAssignableFrom(type)) {
-			return request.getByte(name);
-		} else if (char.class.isAssignableFrom(type)) {
-			return request.getChar(name);
-		} else if (Character.class.isAssignableFrom(type)) {
-			return request.getCharacter(name);
-		} else if (BigDecimal.class.isAssignableFrom(type)) {
-			return StringUtils.parseBigDecimal(request.getString(name), null);
-		} else if (BigInteger.class.isAssignableFrom(type)) {
-			return StringUtils.parseBigInteger(request.getString(name), 10, null);
-		} else if (type.isEnum()) {
-			String v = request.getString(name);
-			return StringUtils.isEmpty(v) ? null : Enum.valueOf((Class<? extends Enum>) type, v);
-		} else {
-			return request.getBean(type, name);
-		}
 	}
 
 	public static void service(Request request, Response response, Collection<Filter> serviceFilter) throws Throwable {

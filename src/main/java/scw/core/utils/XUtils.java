@@ -1,10 +1,14 @@
 package scw.core.utils;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import scw.core.exception.NotSupportException;
 
 public final class XUtils {
 	private XUtils() {
@@ -165,5 +169,83 @@ public final class XUtils {
 	public static void multitask(Collection<Runnable> runnables, TimeUnit unit, long timeout)
 			throws InterruptedException {
 		multitask(null, runnables, unit, timeout);
+	}
+
+	public static <T> Object getValue(PrimitiveTypeValueFactory<T> primitiveTypeValueFactory, T data, Class<?> type) {
+		if (int.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getIntValue(data);
+		} else if (Integer.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getInteger(data);
+		} else if (long.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getLongValue(data);
+		} else if (Long.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getLong(data);
+		} else if (float.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getFloatValue(data);
+		} else if (Float.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getFloat(data);
+		} else if (short.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getShortValue(data);
+		} else if (Short.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getShort(data);
+		} else if (boolean.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getBooleanValue(data);
+		} else if (Boolean.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getBoolean(data);
+		} else if (byte.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getByteValue(data);
+		} else if (Byte.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getByte(data);
+		} else if (char.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getChar(data);
+		} else if (Character.class.isAssignableFrom(type)) {
+			return primitiveTypeValueFactory.getCharacter(data);
+		}
+		throw new NotSupportException("不支持的类型：" + type.getName());
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <T> Object getValue(ValueFactory<T> valueFactory, T data, Class<?> type) {
+		if (String.class.isAssignableFrom(type)) {
+			return valueFactory.getString(data);
+		} else if (int.class.isAssignableFrom(type)) {
+			return valueFactory.getIntValue(data);
+		} else if (Integer.class.isAssignableFrom(type)) {
+			return valueFactory.getInteger(data);
+		} else if (long.class.isAssignableFrom(type)) {
+			return valueFactory.getLongValue(data);
+		} else if (Long.class.isAssignableFrom(type)) {
+			return valueFactory.getLong(data);
+		} else if (float.class.isAssignableFrom(type)) {
+			return valueFactory.getFloatValue(data);
+		} else if (Float.class.isAssignableFrom(type)) {
+			return valueFactory.getFloat(data);
+		} else if (short.class.isAssignableFrom(type)) {
+			return valueFactory.getShortValue(data);
+		} else if (Short.class.isAssignableFrom(type)) {
+			return valueFactory.getShort(data);
+		} else if (boolean.class.isAssignableFrom(type)) {
+			return valueFactory.getBooleanValue(data);
+		} else if (Boolean.class.isAssignableFrom(type)) {
+			return valueFactory.getBoolean(data);
+		} else if (byte.class.isAssignableFrom(type)) {
+			return valueFactory.getByteValue(data);
+		} else if (Byte.class.isAssignableFrom(type)) {
+			return valueFactory.getByte(data);
+		} else if (char.class.isAssignableFrom(type)) {
+			return valueFactory.getChar(data);
+		} else if (Character.class.isAssignableFrom(type)) {
+			return valueFactory.getCharacter(data);
+		} else if (BigDecimal.class.isAssignableFrom(type)) {
+			return valueFactory.getBigDecimal(data);
+		} else if (BigInteger.class.isAssignableFrom(type)) {
+			return valueFactory.getBigInteger(data);
+		} else if (type.isEnum()) {
+			return valueFactory.getEnum(data, (Class<? extends Enum>) type);
+		} else if(type.isArray()){
+			return valueFactory.getArray(data, type.getComponentType());
+		} else {
+			return valueFactory.getObject(data, type);
+		}
 	}
 }

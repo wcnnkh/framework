@@ -11,7 +11,7 @@ import javax.servlet.ServletResponse;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
 import scw.core.PropertiesFactory;
-import scw.core.utils.StringParse;
+import scw.core.utils.StringUtils;
 
 @Bean(proxy = false)
 public class AsyncServletService extends DefaultServletService implements scw.core.Destroy {
@@ -24,10 +24,9 @@ public class AsyncServletService extends DefaultServletService implements scw.co
 	public AsyncServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configPath,
 			String[] rootBeanFilters) throws Throwable {
 		super(beanFactory, propertiesFactory, configPath, rootBeanFilters);
-		int coreSize = StringParse.parseInteger(propertiesFactory.getValue("servlet.thread.core.size"), 16);
-		int maxSize = StringParse.parseInteger(propertiesFactory.getValue("servlet.thread.max.size"), 512);
-		this.containerThreadManager = StringParse
-				.parseBooleanValue(propertiesFactory.getValue("servlet.thread.container"));
+		int coreSize = StringUtils.parseInt(propertiesFactory.getValue("servlet.thread.core.size"), 16);
+		int maxSize = StringUtils.parseInt(propertiesFactory.getValue("servlet.thread.max.size"), 512);
+		this.containerThreadManager = StringUtils.parseBoolean(propertiesFactory.getValue("servlet.thread.container"));
 		if (!containerThreadManager) {
 			executor = new ThreadPoolExecutor(coreSize, maxSize, 10, TimeUnit.MINUTES,
 					new LinkedBlockingQueue<Runnable>());

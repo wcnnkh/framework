@@ -21,17 +21,6 @@ public final class FormHttpRequest extends AbstractHttpRequest {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getParameter(Class<T> type, String name) {
-		if (type.isArray()) {
-			if (type.getComponentType().isAssignableFrom(String.class)) {
-				return (T) getParameterValues(name);
-			}
-		}
-		return super.getParameter(type, name);
-	}
-
 	public Logger getLogger() {
 		return logger;
 	}

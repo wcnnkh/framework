@@ -30,19 +30,19 @@ public final class JSONHttpRequest extends AbstractHttpRequest {
 		return logger;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getBean(Class<T> type, String name) {
-		T t = super.getBean(type, name);
-		if (t == null) {
+	public Object getObject(String name, Class<?> type) {
+		Object t;
+		if (json != null) {
 			if (JSONObject.class.isAssignableFrom(type)) {
-				t = (T) json.getJSONObject(name);
+				t = json.getJSONObject(name);
 			} else if (JSONArray.class.isAssignableFrom(type)) {
-				t = (T) json.getJSONArray(name);
-			}else{
+				t = json.getJSONArray(name);
+			} else {
 				t = json.getObject(name, type);
 			}
 		}
+		t = super.getObject(name, type);
 		return t;
 	}
 

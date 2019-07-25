@@ -2040,7 +2040,7 @@ public final class StringUtils {
 
 		int[] dataArr = new int[arr.length];
 		for (int i = 0; i < arr.length; i++) {
-			dataArr[i] = StringParse.parseIntValue(arr[i]);
+			dataArr[i] = parseInt(arr[i]);
 		}
 		return dataArr;
 	}
@@ -2077,62 +2077,132 @@ public final class StringUtils {
 		return pos == 0 ? null : new String(chars, 0, pos);
 	}
 
-	public static boolean parseBoolean(String text, boolean defaultValue) {
-		if (StringUtils.isEmpty(text)) {
+	public static Boolean parseBoolean(String text, Boolean defaultValue) {
+		if (isEmpty(text)) {
 			return defaultValue;
 		}
 
+		return parseBooleanValue(text);
+	}
+
+	private static boolean parseBooleanValue(String text) {
 		return "1".equals(text) || "true".equalsIgnoreCase(text) || "yes".equalsIgnoreCase(text)
 				|| "T".equalsIgnoreCase(text);
+	}
+
+	public static boolean parseBoolean(String text, boolean defaultValue) {
+		if (isEmpty(text)) {
+			return defaultValue;
+		}
+
+		return parseBooleanValue(text);
 	}
 
 	public static boolean parseBoolean(String text) {
 		return parseBoolean(text, false);
 	}
 
-	public static byte parseByte(String text, byte defaultValue) {
+	public static Byte parseByte(String text, int radix, Byte defaultValue) {
 		String v = formatNumberText(text);
-		if (StringUtils.isEmpty(v)) {
+		if (isEmpty(v)) {
 			return defaultValue;
 		}
-		return Byte.parseByte(text);
+		return Byte.parseByte(text, radix);
 	}
 
-	public static short parseShort(String text) {
-		return parseShort(text, (short) 0);
-	}
-
-	public static short parseShort(String text, short defaultValue) {
+	public static byte parseByte(String text, int radix, byte defaultValue) {
 		String v = formatNumberText(text);
-		if (StringUtils.isEmpty(v)) {
+		if (isEmpty(v)) {
 			return defaultValue;
 		}
-		return Short.parseShort(text);
-	}
-
-	public static long parseLong(String text) {
-		return parseLong(text, 0L);
+		return Byte.parseByte(text, radix);
 	}
 
 	public static byte parseByte(String text) {
-		return parseByte(text, (byte) 0);
+		return parseByte(text, 10, (byte) 0);
 	}
 
-	public static long parseLong(String text, long defaultValue) {
+	public static short parseShort(String text) {
+		return parseShort(text, 10, (short) 0);
+	}
+
+	public static Short parseShort(String text, int radix, Short defaultValue) {
 		String v = formatNumberText(text);
-		if (StringUtils.isEmpty(v)) {
+		if (isEmpty(v)) {
 			return defaultValue;
 		}
-		return Long.parseLong(v);
+		return Short.parseShort(text, radix);
+	}
+
+	public static short parseShort(String text, int radix, short defaultValue) {
+		String v = formatNumberText(text);
+		if (isEmpty(v)) {
+			return defaultValue;
+		}
+		return Short.parseShort(text, radix);
+	}
+
+	public static Integer parseInt(String text, int radix, Integer defaultValue) {
+		String v = formatNumberText(text);
+		if (isEmpty(v)) {
+			return defaultValue;
+		}
+		return Integer.parseInt(text, radix);
+	}
+
+	public static int parseInt(String text, int radix, int defaultValue) {
+		String v = formatNumberText(text);
+		if (isEmpty(v)) {
+			return defaultValue;
+		}
+		return Integer.parseInt(text, radix);
+	}
+
+	public static int parseInt(String text, int defaultValue) {
+		return parseInt(text, 10, defaultValue);
+	}
+
+	public static int parseInt(String text) {
+		return parseInt(text, 0);
+	}
+
+	public static Long parseLong(String text, int radix, Long defaultValue) {
+		String v = formatNumberText(text);
+		if (isEmpty(v)) {
+			return defaultValue;
+		}
+
+		return Long.parseLong(v, radix);
+	}
+
+	public static long parseLong(String text, int radix, long defaultValue) {
+		String v = formatNumberText(text);
+		if (isEmpty(v)) {
+			return defaultValue;
+		}
+
+		return Long.parseLong(v, radix);
+	}
+
+	public static long parseLong(String text) {
+		return parseLong(text, 10, 0L);
 	}
 
 	public static float parseFloat(String text) {
 		return parseFloat(text, 0f);
 	}
 
+	public static Float parseFloat(String text, Float defaultValue) {
+		String v = formatNumberText(text);
+		if (isEmpty(v)) {
+			return defaultValue;
+		}
+		return Float.parseFloat(v);
+	}
+
 	public static float parseFloat(String text, float defaultValue) {
 		String v = formatNumberText(text);
-		if (StringUtils.isEmpty(v)) {
+		if (isEmpty(v)) {
 			return defaultValue;
 		}
 		return Float.parseFloat(v);
@@ -2142,11 +2212,21 @@ public final class StringUtils {
 		return parseDouble(text, 0);
 	}
 
-	public static double parseDouble(String text, double defaultValue) {
+	public static Double parseDouble(String text, Double defaultValue) {
 		String v = formatNumberText(text);
-		if (StringUtils.isEmpty(v)) {
+		if (isEmpty(v)) {
 			return defaultValue;
 		}
+
+		return Double.parseDouble(v);
+	}
+
+	public static double parseDouble(String text, double defaultValue) {
+		String v = formatNumberText(text);
+		if (isEmpty(v)) {
+			return defaultValue;
+		}
+
 		return Double.parseDouble(v);
 	}
 
@@ -2154,9 +2234,16 @@ public final class StringUtils {
 		return parseChar(text, (char) 0);
 	}
 
+	public static Character parseChar(String text, Character defaultValue) {
+		if (isEmpty(text)) {
+			return defaultValue;
+		}
+
+		return text.charAt(0);
+	}
+
 	public static char parseChar(String text, char defaultValue) {
-		String v = formatNumberText(text);
-		if (StringUtils.isEmpty(v)) {
+		if (isEmpty(text)) {
 			return defaultValue;
 		}
 		return text.charAt(0);
@@ -2164,7 +2251,7 @@ public final class StringUtils {
 
 	public static BigInteger parseBigInteger(String text, int radix, BigInteger defaultValue) {
 		String v = formatNumberText(text);
-		if (StringUtils.isEmpty(v)) {
+		if (isEmpty(v)) {
 			return defaultValue;
 		}
 
@@ -2257,7 +2344,7 @@ public final class StringUtils {
 
 		int[] values = new int[arr.length];
 		for (int i = 0; i < arr.length; i++) {
-			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : StringParse.parseIntValue(arr[i]);
+			values[i] = parseInt(arr[i]);
 		}
 		return values;
 	}
@@ -2269,7 +2356,7 @@ public final class StringUtils {
 
 		long[] values = new long[arr.length];
 		for (int i = 0; i < arr.length; i++) {
-			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : parseLong(arr[i]);
+			values[i] = parseLong(arr[i]);
 		}
 		return values;
 	}
@@ -2281,7 +2368,7 @@ public final class StringUtils {
 
 		byte[] values = new byte[arr.length];
 		for (int i = 0; i < arr.length; i++) {
-			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : parseByte(arr[i]);
+			values[i] = parseByte(arr[i]);
 		}
 		return values;
 	}
@@ -2293,7 +2380,7 @@ public final class StringUtils {
 
 		short[] values = new short[arr.length];
 		for (int i = 0; i < arr.length; i++) {
-			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : parseShort(arr[i]);
+			values[i] = parseShort(arr[i]);
 		}
 		return values;
 	}
@@ -2305,7 +2392,7 @@ public final class StringUtils {
 
 		float[] values = new float[arr.length];
 		for (int i = 0; i < arr.length; i++) {
-			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : parseFloat(arr[i]);
+			values[i] = parseFloat(arr[i]);
 		}
 		return values;
 	}
@@ -2317,7 +2404,7 @@ public final class StringUtils {
 
 		double[] values = new double[arr.length];
 		for (int i = 0; i < arr.length; i++) {
-			values[i] = StringUtils.isEmpty(arr[i]) ? 0 : parseDouble(arr[i]);
+			values[i] = parseDouble(arr[i]);
 		}
 		return values;
 	}

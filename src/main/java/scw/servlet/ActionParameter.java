@@ -5,9 +5,7 @@ import java.io.Serializable;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import scw.core.exception.ParameterException;
-
-public class ActionParameter implements Serializable{
+public class ActionParameter implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final Class<?> type;
 	private final String name;
@@ -23,11 +21,7 @@ public class ActionParameter implements Serializable{
 		} else if (ServletResponse.class.isAssignableFrom(type)) {
 			return response;
 		} else {
-			try {
-				return request.getParameter(type, name);
-			} catch (Exception e) {
-				throw new ParameterException(e, "解析参数错误name=" + name + ",type=" + type.getName());
-			}
+			return ServletUtils.getParameter(request, name, type);
 		}
 	}
 }

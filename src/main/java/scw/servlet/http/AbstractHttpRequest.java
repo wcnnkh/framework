@@ -2,6 +2,8 @@ package scw.servlet.http;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -18,10 +20,10 @@ import scw.servlet.context.RequestBeanContext;
 
 public abstract class AbstractHttpRequest extends HttpServletRequestWrapper implements HttpRequest, Destroy {
 	private static final String GET_DEFAULT_CHARSET_ANME = "ISO-8859-1";
-	private long createTime;
-	private RequestBeanContext requestBeanContext;
-	private boolean cookieValue;
-	private boolean debug;
+	private final long createTime;
+	private final RequestBeanContext requestBeanContext;
+	private final boolean cookieValue;
+	private final boolean debug;
 
 	public AbstractHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
 			boolean cookieValue, boolean debug) throws IOException {
@@ -36,13 +38,8 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 		return createTime;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T getParameter(Class<T> type, String name) {
-		T v = (T) getAttribute(name);
-		if (v == null) {
-			v = (T) ServletUtils.getParameter(this, type, name);
-		}
-		return v;
+	public boolean verification(CharSequence data) {
+		return StringUtils.isEmpty(data);
 	}
 
 	public boolean isAJAX() {
@@ -91,10 +88,6 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 		return v;
 	}
 
-	protected boolean isNull(String value) {
-		return StringUtils.isEmpty(value);
-	}
-
 	public String decodeGETParameter(String value) {
 		if (StringUtils.containsChinese(value)) {
 			return value;
@@ -118,7 +111,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 
 	public Byte getByte(String key) {
 		String v = getParameter(key);
-		if (isNull(v)) {
+		if (verification(v)) {
 			return null;
 		}
 
@@ -142,7 +135,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 
 	public Short getShort(String key) {
 		String v = getParameter(key);
-		if (isNull(v)) {
+		if (verification(v)) {
 			return null;
 		}
 
@@ -166,12 +159,12 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 
 	public Integer getInteger(String key) {
 		String v = getParameter(key);
-		if (isNull(v)) {
+		if (verification(v)) {
 			return null;
 		}
 
 		try {
-			return StringParse.parseIntValue(v);
+			return StringUtils.parseInt(v);
 		} catch (Exception e) {
 			parameterError(e, key, v);
 		}
@@ -181,7 +174,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 	public int getIntValue(String key) {
 		String v = getParameter(key);
 		try {
-			return StringParse.parseIntValue(v);
+			return StringUtils.parseInt(v);
 		} catch (Exception e) {
 			parameterError(e, key, v);
 		}
@@ -190,7 +183,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 
 	public Long getLong(String key) {
 		String v = getParameter(key);
-		if (isNull(v)) {
+		if (verification(v)) {
 			return null;
 		}
 
@@ -214,7 +207,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 
 	public Boolean getBoolean(String key) {
 		String v = getParameter(key);
-		if (isNull(v)) {
+		if (verification(v)) {
 			return null;
 		}
 
@@ -238,7 +231,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 
 	public Float getFloat(String key) {
 		String v = getParameter(key);
-		if (isNull(v)) {
+		if (verification(v)) {
 			return null;
 		}
 
@@ -262,7 +255,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 
 	public Double getDouble(String key) {
 		String v = getParameter(key);
-		if (isNull(v)) {
+		if (verification(v)) {
 			return null;
 		}
 
@@ -296,7 +289,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 
 	public Character getCharacter(String key) {
 		String v = getParameter(key);
-		if (isNull(v)) {
+		if (verification(v)) {
 			return null;
 		}
 
@@ -312,10 +305,6 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 		requestBeanContext.destroy();
 	}
 
-	public <T> T getBean(Class<T> type, String name) {
-		return requestBeanContext.getBean(type, name);
-	}
-
 	public final <T> T getBean(Class<T> type) {
 		return requestBeanContext.getBean(type);
 	}
@@ -328,5 +317,39 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 		if (isDebugEnabled()) {
 			getLogger().debug(format, args);
 		}
+	}
+
+	public <E> E[] getArray(String name, Class<E> type) {
+		String[] values = getParameterValues(name);
+		return StringParse.DEFAULT.getArray(values, type);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Enum<?> getEnum(Class<? extends Enum> enumType, String name) {
+		return StringParse.DEFAULT.getEnum(getString(name), enumType);
+	}
+
+	public BigInteger getBigInteger(String name) {
+		return StringParse.DEFAULT.getBigInteger(getString(name));
+	}
+
+	public BigDecimal getBigDecimal(String name) {
+		return StringParse.DEFAULT.getBigDecimal(getString(name));
+	}
+
+	/**
+	 * 此方法不处理爱ValueFactory管理的其他类型
+	 */
+	public Object getObject(String name, Class<?> type) {
+		Object v = getAttribute(name);
+		if (v == null) {
+			v = requestBeanContext.getBean(type, name);
+		}
+		return v;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Enum<?> getEnum(String name, Class<? extends Enum> enumType) {
+		return StringParse.DEFAULT.getEnum(getString(name), enumType);
 	}
 }

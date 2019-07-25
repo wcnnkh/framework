@@ -15,7 +15,7 @@ import scw.logger.LoggerFactory;
 
 public class DefaultRpcService implements RpcService {
 	private static Logger logger = LoggerFactory.getLogger(DefaultRpcService.class);
-	private final Map<String, ServiceInvoker> invokerRPCMap = new HashMap<String, ServiceInvoker>();
+	private volatile Map<String, ServiceInvoker> invokerRPCMap = new HashMap<String, ServiceInvoker>();
 	private final String sign;
 	private final BeanFactory beanFactory;
 	private final Serializer serializer;
