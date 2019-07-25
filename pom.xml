@@ -17,11 +17,31 @@
 		<jedis.version>2.9.0</jedis.version>
 		<xmemcached.version>2.4.4</xmemcached.version>
 		<fastjson.version>1.2.56</fastjson.version>
+		<slf4j.version>1.7.26</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
 		<amqp-client.version>5.4.3</amqp-client.version>
 	</properties>
 
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
+
+
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
@@ -199,7 +219,7 @@
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
@@ -207,7 +227,7 @@
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
