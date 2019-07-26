@@ -42,9 +42,6 @@ import scw.logger.LoggerFactory;
 public final class BeanUtils {
 	private static Logger logger = LoggerFactory.getLogger(BeanUtils.class);
 
-	private static volatile boolean initStatic = false;
-	private static volatile boolean destroyStatic = false;
-
 	private BeanUtils() {
 	};
 
@@ -88,11 +85,6 @@ public final class BeanUtils {
 	}
 
 	public synchronized static void destroyStaticMethod(Collection<Class<?>> classList) throws Exception {
-		if (!initStatic && destroyStatic) {
-			return;
-		}
-
-		destroyStatic = true;
 		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
 		for (Class<?> clz : classList) {
 			for (Method method : clz.getDeclaredMethods()) {
@@ -125,11 +117,6 @@ public final class BeanUtils {
 
 	public synchronized static void initStatic(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
 			Collection<Class<?>> classList) throws Exception {
-		if (initStatic) {
-			return;
-		}
-
-		initStatic = true;
 		initAutowriteStatic(beanFactory, propertiesFactory, classList);
 		invokerInitStaticMethod(classList);
 	}

@@ -145,7 +145,7 @@ public final class ServletUtils {
 		}
 	}
 
-	protected static ServletService getServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+	public static ServletService getServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
 			String configPath, String[] rootBeanFilters) {
 		return getServletService(beanFactory, propertiesFactory, configPath, rootBeanFilters, isAsyncSupport());
 	}

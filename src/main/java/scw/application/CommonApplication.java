@@ -14,6 +14,7 @@ import scw.beans.rpc.dubbo.DubboUtils;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertiesFactory;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerFactory;
 import scw.sql.orm.ORMUtils;
@@ -24,11 +25,23 @@ public class CommonApplication implements Application {
 	private final PropertiesFactory propertiesFactory;
 	private final String configPath;
 
-	public CommonApplication(String configPath, boolean initStatic, PropertiesFactory propertiesFactory) {
-		this.configPath = configPath;
-		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(configPath) : propertiesFactory;
+	public CommonApplication(String configXml, boolean initStatic, PropertiesFactory propertiesFactory) {
+		this.configPath = StringUtils.isEmpty(configXml) ? null : ConfigUtils.getFile(configXml).getPath();
+		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(this.configPath)
+				: propertiesFactory;
 		try {
-			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, configPath, initStatic);
+			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, this.configPath, initStatic);
+			this.beanFactory.addFirstFilters(CommonFilter.class.getName());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public CommonApplication(String configXml, boolean initStatic) {
+		this.configPath = StringUtils.isEmpty(configXml) ? null : ConfigUtils.getFile(configXml).getPath();
+		this.propertiesFactory = new XmlPropertiesFactory(this.configPath);
+		try {
+			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, this.configPath, initStatic);
 			this.beanFactory.addFirstFilters(CommonFilter.class.getName());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -37,10 +50,6 @@ public class CommonApplication implements Application {
 
 	public String getConfigPath() {
 		return configPath;
-	}
-
-	public CommonApplication(String configXml, boolean initStatic) {
-		this(configXml, initStatic, new XmlPropertiesFactory(configXml));
 	}
 
 	public Collection<Class<?>> getClasses() {
