@@ -20,6 +20,7 @@
 		<slf4j.version>1.7.26</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
 		<amqp-client.version>5.4.3</amqp-client.version>
+		<tomcat.version>7.0.94</tomcat.version>
 	</properties>
 
 	<dependencies>
@@ -239,7 +240,7 @@
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
-			<version>7.0.94</version>
+			<version>${tomcat.version}</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>

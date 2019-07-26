@@ -41,4 +41,10 @@ public final class InstanceUtils {
 	public static NoArgsInstanceFactory getNotConstructorNoArgsInstanceFactory() {
 		return NO_ARGS_INSTANCE_FACTORY;
 	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T getInstance(String name, boolean invokeConstructor) {
+		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY.getInstance(name)
+				: NO_ARGS_INSTANCE_FACTORY.getInstance(name));
+	}
 }
