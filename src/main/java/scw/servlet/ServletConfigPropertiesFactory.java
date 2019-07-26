@@ -5,6 +5,7 @@ import javax.servlet.ServletConfig;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.core.PropertiesFactory;
 import scw.core.utils.ConfigUtils;
+import scw.core.utils.StringUtils;
 
 public class ServletConfigPropertiesFactory implements PropertiesFactory {
 	private final ServletConfig servletConfig;
@@ -13,8 +14,9 @@ public class ServletConfigPropertiesFactory implements PropertiesFactory {
 
 	public ServletConfigPropertiesFactory(ServletConfig servletConfig) {
 		this.servletConfig = servletConfig;
-		this.configXml = getServletConfig("shuchaowen");
-		this.propertiesFactory = new XmlPropertiesFactory(configXml);
+		String configXml = getServletConfig("shuchaowen");
+		this.configXml = StringUtils.isEmpty(configXml) ? null : configXml;
+		this.propertiesFactory = new XmlPropertiesFactory(this.configXml);
 	}
 
 	public String getConfig(String name) {
