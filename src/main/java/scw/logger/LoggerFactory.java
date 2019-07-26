@@ -12,7 +12,7 @@ public final class LoggerFactory {
 
 	static {
 		try {
-			Class<?> clz = Class.forName("scw.logger.slf4j.Sl4jILoggerFactory");
+			Class<?> clz = Class.forName("scw.logger.slf4j.Slf4jILoggerFactory");
 			sl4j = ReflectUtils.newInstance(clz);
 		} catch (Throwable e) {
 			// ignore

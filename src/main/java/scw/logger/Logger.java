@@ -1,6 +1,7 @@
 package scw.logger;
 
 public interface Logger extends DebugLogger, WarnLogger, ErrorLogger, TraceLogger {
+	String getName();
 
 	boolean isInfoEnabled();
 	

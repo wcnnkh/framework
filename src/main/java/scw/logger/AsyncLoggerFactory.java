@@ -4,18 +4,22 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import scw.core.UnsafeStringBuffer;
 
-public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable {
+public abstract class AsyncLoggerFactory implements ILoggerFactory, Runnable {
 	private LinkedBlockingQueue<Message> handlerQueue = new LinkedBlockingQueue<Message>();
 	private final Thread thread;
 	private final UnsafeStringBuffer unsafeStringBuffer = new UnsafeStringBuffer();
 
-	public AbstractLoggerFactory() {
-		thread = new Thread(this, "shuchaowen-logger");
+	public AsyncLoggerFactory(String threadName) {
+		thread = new Thread(this, threadName);
 		thread.start();
 	}
 
 	public void log(Message message) {
 		handlerQueue.offer(message);
+	}
+
+	public Logger getLogger(String name) {
+		return new AsyncLogger(true, true, true, true, true, name, this);
 	}
 
 	public void run() {
@@ -28,20 +32,19 @@ public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable 
 
 				unsafeStringBuffer.reset();
 				try {
-					out(unsafeStringBuffer, message);
+					message.appendTo(unsafeStringBuffer);
+					String msg = unsafeStringBuffer.toString();
+					out(message.getTag(), message.getLevel(), msg, message.getThrowable());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				message = null;
 			}
 		} catch (InterruptedException e) {
 		}
 	}
 
-	public void out(UnsafeStringBuffer append, Message message) throws Exception {
-		message.appendTo(append);
-		String msg = append.toString();
-		switch (message.getLevel()) {
+	public void out(String name, Level level, String msg, Throwable e) throws Exception {
+		switch (level) {
 		case ERROR:
 		case WARN:
 			System.err.println(msg);
@@ -51,10 +54,9 @@ public abstract class AbstractLoggerFactory implements ILoggerFactory, Runnable 
 			break;
 		}
 
-		if (message.getThrowable() != null) {
-			message.getThrowable().printStackTrace();
+		if (e != null) {
+			e.printStackTrace();
 		}
-		msg = null;
 	}
 
 	public void destroy() {

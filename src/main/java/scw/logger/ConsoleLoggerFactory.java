@@ -1,8 +1,12 @@
 package scw.logger;
 
-public final class ConsoleLoggerFactory extends AbstractLoggerFactory {
+public final class ConsoleLoggerFactory extends AsyncLoggerFactory {
+
+	public ConsoleLoggerFactory() {
+		super("scw-logger");
+	}
 
 	public Logger getLogger(String name) {
-		return new ConsoleLogger(true, true, true, true, true, name, this);
+		return new AsyncLogger(true, true, true, true, true, name, this);
 	}
 }
