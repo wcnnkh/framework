@@ -126,6 +126,10 @@ public final class Crontab implements Destroy {
 	public void perHour(CrontabTask task) {
 		crontab("*", "*", "*", "*", "0", task);
 	}
+	
+	public void execute(Runnable command){
+		executorService.execute(command);
+	}
 
 	public void destroy() {
 		timer.cancel();
