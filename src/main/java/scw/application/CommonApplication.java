@@ -1,5 +1,6 @@
 package scw.application;
 
+import java.io.File;
 import java.util.Collection;
 
 import com.alibaba.dubbo.config.ProtocolConfig;
@@ -16,6 +17,7 @@ import scw.core.PropertiesFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
+import scw.io.FileUtils;
 import scw.logger.LoggerFactory;
 import scw.sql.orm.ORMUtils;
 
@@ -111,5 +113,23 @@ public class CommonApplication implements Application {
 		ProtocolConfig.destroyAll();
 		beanFactory.destroy();
 		LoggerFactory.destroy();
+	}
+
+	public static String getDefaultConfigPath() {
+		String defaultFileName = "beans.xml";
+		String beans = FileUtils.searchFileName(defaultFileName, ConfigUtils.getClassPath(), true);
+		if (StringUtils.isEmpty(beans) && ConfigUtils.getWorkPath() != null) {
+			beans = FileUtils.searchFileName(defaultFileName, ConfigUtils.getWorkPath(), true);
+		}
+
+		if (StringUtils.isEmpty(beans)) {
+			return null;
+		}
+
+		File file = new File(beans);
+		if (!file.exists()) {
+			return null;
+		}
+		return beans;
 	}
 }

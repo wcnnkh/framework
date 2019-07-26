@@ -36,7 +36,7 @@ public final class ConfigUtils {
 	public static final StringFormatSystemProperties format2 = new StringFormatSystemProperties("[", "]");
 	public static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
 
-	private static String work_path_cache;
+	private volatile static String work_path_cache;
 
 	private ConfigUtils() {
 	};
@@ -98,7 +98,7 @@ public final class ConfigUtils {
 				}
 			}
 		}
-		return work_path_cache;
+		return StringUtils.isEmpty(work_path_cache) ? null : work_path_cache;
 	}
 
 	public static String getClassPath() {
