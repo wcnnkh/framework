@@ -18,7 +18,7 @@ public final class NotFoundFilter implements Filter {
 			return;
 		}
 
-		logger.warn("not found：{}", request);
+		logger.warn("not found：{}", request.toString());
 		if (!response.isCommitted() && response instanceof HttpServletResponse) {
 			((HttpServletResponse) response).sendError(404, "not found action");
 		}

@@ -2,6 +2,7 @@ package scw.servlet;
 
 import javax.servlet.ServletConfig;
 
+import scw.application.CommonApplication;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.core.PropertiesFactory;
 import scw.core.utils.ConfigUtils;
@@ -15,6 +16,9 @@ public class ServletConfigPropertiesFactory implements PropertiesFactory {
 	public ServletConfigPropertiesFactory(ServletConfig servletConfig) {
 		this.servletConfig = servletConfig;
 		String configXml = getServletConfig("shuchaowen");
+		if (StringUtils.isEmpty(configXml)) {
+			configXml = CommonApplication.getDefaultConfigPath();
+		}
 		this.configXml = StringUtils.isEmpty(configXml) ? null : configXml;
 		this.propertiesFactory = new XmlPropertiesFactory(this.configXml);
 	}

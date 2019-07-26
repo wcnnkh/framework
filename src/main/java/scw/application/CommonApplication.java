@@ -27,6 +27,10 @@ public class CommonApplication implements Application {
 	private final PropertiesFactory propertiesFactory;
 	private final String configPath;
 
+	public CommonApplication() {
+		this(getDefaultConfigPath(), false);
+	}
+
 	public CommonApplication(String configXml, boolean initStatic, PropertiesFactory propertiesFactory) {
 		this.configPath = StringUtils.isEmpty(configXml) ? null : ConfigUtils.getFile(configXml).getPath();
 		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(this.configPath)
