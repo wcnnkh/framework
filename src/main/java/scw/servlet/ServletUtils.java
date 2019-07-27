@@ -33,6 +33,7 @@ import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
 import scw.core.PropertiesFactory;
 import scw.core.exception.ParameterException;
+import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -366,7 +367,7 @@ public final class ServletUtils {
 			return null;
 		}
 
-		Object t = ReflectUtils.newInstance(type);
+		Object t = InstanceUtils.newInstance(type);
 		Class<?> clz = type;
 		while (clz != null && clz != Object.class) {
 			for (Field field : clz.getDeclaredFields()) {

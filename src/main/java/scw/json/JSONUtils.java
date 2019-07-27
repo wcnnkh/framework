@@ -1,7 +1,7 @@
 package scw.json;
 
 import scw.core.exception.NotSupportException;
-import scw.core.reflect.ReflectUtils;
+import scw.core.instance.InstanceUtils;
 import scw.logger.LoggerUtils;
 
 public final class JSONUtils {
@@ -10,22 +10,22 @@ public final class JSONUtils {
 
 	static {
 		String[] supportClassNames = { "scw.json.support.fastjson.FastJSONParseSupport" };
-
-		Class<?> jsonSupportClass = null;
+		JSONParseSupport jsonSupport = null;
 		for (String name : supportClassNames) {
-			try {
-				jsonSupportClass = Class.forName(name);
+			jsonSupport = InstanceUtils.getInstance(name);
+			if (jsonSupport != null) {
 				break;
-			} catch (Throwable e) {
 			}
 		}
 
-		if (jsonSupportClass == null) {
-			throw new NotSupportException("not found default json parse support");
+		if (jsonSupport == null) {
+			throw new NotSupportException(
+					"not found default json parse support");
 		}
 
-		LoggerUtils.info(JSONUtils.class, "default json parse：{}", jsonSupportClass.getName());
-		DEFAULT_JSON_SUPPORT = (JSONParseSupport) ReflectUtils.newInstance(jsonSupportClass);
+		LoggerUtils.info(JSONUtils.class, "default json parse：{}", jsonSupport
+				.getClass().getName());
+		DEFAULT_JSON_SUPPORT = jsonSupport;
 	}
 
 	/**

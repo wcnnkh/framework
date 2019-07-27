@@ -1,7 +1,7 @@
 package scw.io.serializer;
 
 import scw.core.Bits;
-import scw.core.reflect.ReflectUtils;
+import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayOutputStream;
@@ -24,8 +24,8 @@ public final class SerializerUtils {
 			}
 		}
 
-		DEFAULT_SERIALIZER = serializerClass == null ? JavaSerializer.SERIALIZER
-				: (Serializer) ReflectUtils.newInstance(serializerClass);
+		DEFAULT_SERIALIZER = (Serializer) (serializerClass == null ? JavaSerializer.SERIALIZER
+				: InstanceUtils.getInstance(serializerClass));
 		LoggerUtils.info(SerializerUtils.class, "default serializer：" + serializerClass.getName());
 	}
 

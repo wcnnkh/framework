@@ -30,16 +30,18 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	private ServletService servletService;
 
 	public TomcatApplication(String configXml) {
-		super(configXml, false);
+		super(configXml, true);
 	}
 
-	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+	public void service(ServletRequest req, ServletResponse res)
+			throws ServletException, IOException {
 		servletService.service(req, res);
 	}
 
 	protected Tomcat createTomcat() {
 		Tomcat tomcat = new Tomcat();
-		tomcat.setPort(StringUtils.parseInt(getPropertiesFactory().getValue("servlet.port"), 8080));
+		tomcat.setPort(StringUtils.parseInt(
+				getPropertiesFactory().getValue("servlet.port"), 8080));
 
 		String basedir = getPropertiesFactory().getValue("servlet.basedir");
 		if (StringUtils.isEmpty(basedir)) {
@@ -61,38 +63,47 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	@Override
 	public void init() {
 		super.init();
-		this.servletService = ServletUtils.getServletService(getBeanFactory(), getPropertiesFactory(), getConfigPath(),
-				getBeanFactory().getFilterNames());
+		this.servletService = ServletUtils.getServletService(getBeanFactory(),
+				getPropertiesFactory(), getConfigPath(), getBeanFactory()
+						.getFilterNames());
 
 		this.tomcat = createTomcat();
-		String contextPath = getPropertiesFactory().getValue("servlet.contextPath");
+		String contextPath = getPropertiesFactory().getValue(
+				"servlet.contextPath");
 		contextPath = StringUtils.isEmpty(contextPath) ? "" : contextPath;
-		Context context = tomcat.addContext(contextPath, ConfigUtils.getWorkPath());
+		Context context = tomcat.addContext(contextPath,
+				ConfigUtils.getWorkPath());
 
 		String servletName = getPropertiesFactory().getValue("servlet.name");
 		servletName = StringUtils.isEmpty(servletName) ? "def" : servletName;
 		Tomcat.addServlet(context, servletName, this);
 
-		if (StringUtils.parseBoolean(getPropertiesFactory().getValue("servlet.jsp"))) {
-			try {
-				context.addServletContainerInitializer((ServletContainerInitializer) InstanceUtils
-						.getInstance("org.apache.jasper.servlet.JasperInitializer", true), null);
-			} catch (Exception e) {
-				// Probably not Tomcat 8
-			}
+		if (StringUtils.parseBoolean(getPropertiesFactory().getValue(
+				"servlet.jsp"))) {
+			ServletContainerInitializer containerInitializer = InstanceUtils
+					.getInstance("org.apache.jasper.servlet.JasperInitializer",
+							true);
+			if (containerInitializer != null) {
+				context.addServletContainerInitializer(containerInitializer,
+						null);
+			}// else Probably not Tomcat 8
 
-			Tomcat.addServlet(context, "jsp", "org.apache.jasper.servlet.JspServlet");
+			Tomcat.addServlet(context, "jsp",
+					"org.apache.jasper.servlet.JspServlet");
 			context.addServletMapping("*.jsp", "jsp", true);
 			context.addServletMapping("*.jspx", "jsp", true);
 		}
 
-		String sourceMapping = getPropertiesFactory().getValue("servlet.source");
+		String sourceMapping = getPropertiesFactory()
+				.getValue("servlet.source");
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
-				Tomcat.addServlet(context, "default", "org.apache.catalina.servlets.DefaultServlet");
+				Tomcat.addServlet(context, "default",
+						"org.apache.catalina.servlets.DefaultServlet");
 				for (String pattern : patternArr) {
-					LoggerUtils.info(TomcatApplication.class, "source mapping [{}]", pattern);
+					LoggerUtils.info(TomcatApplication.class,
+							"source mapping [{}]", pattern);
 					context.addServletMapping(pattern, "default");
 				}
 			}
@@ -128,7 +139,8 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 
 	public static void run(String beanXml) {
 		if (StringUtils.isEmpty(beanXml)) {
-			LoggerUtils.warn(TomcatApplication.class, "No default beans.xml exists");
+			LoggerUtils.warn(TomcatApplication.class,
+					"No default beans.xml exists");
 		}
 
 		TomcatApplication application = new TomcatApplication(beanXml);

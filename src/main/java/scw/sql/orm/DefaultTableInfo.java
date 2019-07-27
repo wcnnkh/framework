@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.reflect.ReflectUtils;
+import scw.core.instance.InstanceUtils;
 import scw.core.utils.FieldSetterListenUtils;
 import scw.core.utils.IteratorCallback;
 import scw.sql.orm.annotation.Table;
@@ -142,7 +142,7 @@ final class DefaultTableInfo implements TableInfo {
 		if (table) {
 			return (T) FieldSetterListenUtils.newFieldSetterListenInstance(source);
 		} else {
-			return ReflectUtils.newInstance(source);
+			return InstanceUtils.newInstance(source);
 		}
 	}
 

@@ -1,24 +1,26 @@
 package scw.logger;
 
-import scw.core.reflect.ReflectUtils;
+import scw.core.instance.InstanceUtils;
 
 public final class LoggerFactory {
-	private static final ILoggerFactory CONSOLE_LOGGER_FACTORY = new ConsoleLoggerFactory();
-	@SuppressWarnings("unused")
-	private static ILoggerFactory sl4j;
+	private static final ILoggerFactory LOGGER_FACTORY;
 
 	private LoggerFactory() {
 	};
 
 	static {
-		try {
-			Class<?> clz = Class.forName("scw.logger.slf4j.Slf4jILoggerFactory");
-			sl4j = ReflectUtils.newInstance(clz);
-		} catch (Throwable e) {
-			// ignore
+		String[] supportArr = { "scw.logger.slf4j.Slf4jILoggerFactory" };
+
+		//TODO 暂不使用其他日志框架，这里只是伪代码
+		@SuppressWarnings("unused")
+		ILoggerFactory loggerFactory;
+		for (String name : supportArr) {
+			loggerFactory = InstanceUtils.newInstance(name);
 		}
 
-		System.out.println("Init shuchaowen-logger [" + getILoggerFactory().getClass().getName() + "]");
+		LOGGER_FACTORY = new ConsoleLoggerFactory();
+		System.out.println("Init shuchaowen-logger ["
+				+ getILoggerFactory().getClass().getName() + "]");
 	}
 
 	public static Logger getLogger(String name) {
@@ -34,10 +36,6 @@ public final class LoggerFactory {
 	}
 
 	public static ILoggerFactory getILoggerFactory() {
-		return CONSOLE_LOGGER_FACTORY;
-		/*
-		 * if(sl4j == null){ return CONSOLE_LOGGER_FACTORY; }else{ return sl4j;
-		 * }
-		 */
+		return LOGGER_FACTORY;
 	}
 }

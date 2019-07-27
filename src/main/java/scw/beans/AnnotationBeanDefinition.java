@@ -15,6 +15,7 @@ import scw.core.PropertiesFactory;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
+import scw.core.instance.InstanceUtils;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
@@ -34,7 +35,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 	private final FieldDefinition[] autowriteFieldDefinition;
 	private final String[] names;
 
-	public AnnotationBeanDefinition(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type,
+	public AnnotationBeanDefinition(BeanFactory beanFactory,
+			PropertiesFactory propertiesFactory, Class<?> type,
 			String[] filterNames) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
@@ -42,18 +44,22 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		this.id = type.getName();
 		this.names = getServiceNames(type);
 		this.initMethods = getInitMethodList(type).toArray(new BeanMethod[0]);
-		this.destroyMethods = getDestroyMethdoList(type).toArray(new BeanMethod[0]);
+		this.destroyMethods = getDestroyMethdoList(type).toArray(
+				new BeanMethod[0]);
 		this.filterNames = filterNames;
 		this.proxy = BeanUtils.checkProxy(type, filterNames);
-		scw.beans.annotation.Bean bean = type.getAnnotation(scw.beans.annotation.Bean.class);
+		scw.beans.annotation.Bean bean = type
+				.getAnnotation(scw.beans.annotation.Bean.class);
 		this.singleton = bean == null ? true : bean.singleton();
-		this.autowriteFieldDefinition = BeanUtils.getAutowriteFieldDefinitionList(type, false)
-				.toArray(new FieldDefinition[0]);
+		this.autowriteFieldDefinition = BeanUtils
+				.getAutowriteFieldDefinitionList(type, false).toArray(
+						new FieldDefinition[0]);
 	}
 
 	public static List<BeanMethod> getInitMethodList(Class<?> type) {
 		List<BeanMethod> list = new ArrayList<BeanMethod>();
-		for (Method method : AnnotationUtils.getAnnoationMethods(type, true, true, InitMethod.class)) {
+		for (Method method : AnnotationUtils.getAnnoationMethods(type, true,
+				true, InitMethod.class)) {
 			if (Modifier.isStatic(method.getModifiers())) {
 				continue;
 			}
@@ -66,7 +72,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 
 	public static List<BeanMethod> getDestroyMethdoList(Class<?> type) {
 		List<BeanMethod> list = new ArrayList<BeanMethod>();
-		for (Method method : AnnotationUtils.getAnnoationMethods(type, true, true, Destroy.class)) {
+		for (Method method : AnnotationUtils.getAnnoationMethods(type, true,
+				true, Destroy.class)) {
 			if (Modifier.isStatic(method.getModifiers())) {
 				continue;
 			}
@@ -87,8 +94,9 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		Class<?>[] clzs = clz.getInterfaces();
 		if (clzs != null) {
 			for (Class<?> i : clzs) {
-				if (i.getName().startsWith("java.") || i.getName().startsWith("javax.") || i == scw.core.Destroy.class
-						|| i == Init.class) {
+				if (i.getName().startsWith("java.")
+						|| i.getName().startsWith("javax.")
+						|| i == scw.core.Destroy.class || i == Init.class) {
 					continue;
 				}
 
@@ -118,7 +126,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		if (enhancer == null) {
 			synchronized (this) {
 				if (enhancer == null) {
-					enhancer = BeanUtils.createEnhancer(type, beanFactory, filterNames);
+					enhancer = BeanUtils.createEnhancer(type, beanFactory,
+							filterNames);
 				}
 			}
 		}
@@ -133,7 +142,7 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 				Enhancer enhancer = getProxyEnhancer();
 				bean = enhancer.create();
 			} else {
-				bean = ReflectUtils.newInstance(type);
+				bean = InstanceUtils.getInstance(type);
 			}
 			return (T) bean;
 		} catch (Exception e) {
@@ -143,7 +152,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 
 	public void autowrite(Object bean) throws Exception {
 		for (FieldDefinition fieldDefinition : autowriteFieldDefinition) {
-			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, fieldDefinition);
+			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean,
+					fieldDefinition);
 		}
 	}
 
@@ -177,7 +187,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	public <T> T create(Object... params) {
-		Constructor<T> constructor = (Constructor<T>) ReflectUtils.findConstructorByParameters(getType(), true, params);
+		Constructor<T> constructor = (Constructor<T>) ReflectUtils
+				.findConstructorByParameters(getType(), true, params);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}

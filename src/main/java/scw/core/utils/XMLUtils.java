@@ -37,6 +37,7 @@ import org.xml.sax.SAXException;
 import scw.core.PropertiesFactory;
 import scw.core.StringFormat;
 import scw.core.exception.NotFoundException;
+import scw.core.instance.InstanceUtils;
 import scw.core.reflect.PropertyMapper;
 import scw.core.reflect.ReflectUtils;
 import scw.io.IOUtils;
@@ -362,7 +363,7 @@ public final class XMLUtils {
 			}
 
 			if (t == null) {
-				t = ReflectUtils.newInstance(type);
+				t = InstanceUtils.newInstance(type);
 			}
 
 			ReflectUtils.setFieldValue(type, field, t,
@@ -488,7 +489,7 @@ public final class XMLUtils {
 			final PropertyMapper<String> mapper) {
 		Map<String, Node> map = attributeAsMap(node);
 		try {
-			T t = ReflectUtils.newInstance(type);
+			T t = InstanceUtils.newInstance(type);
 			ReflectUtils.setProperties(type, t, map,
 					new PropertyMapper<Node>() {
 						public Object mapper(String name, Node value,

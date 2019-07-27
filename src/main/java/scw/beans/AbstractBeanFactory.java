@@ -64,7 +64,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 				}
 			}
 
-			Map<String, String> nameMapping = beanConfigFactory.getNameMappingMap();
+			Map<String, String> nameMapping = beanConfigFactory
+					.getNameMappingMap();
 			if (nameMapping != null) {
 				synchronized (nameMappingMap) {
 					for (Entry<String, String> entry : nameMapping.entrySet()) {
@@ -80,7 +81,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(String name, Class<?>[] parameterTypes,
+			Object... params) {
 		if (!init) {
 			throw new BeansException("还未初始化");
 		}
@@ -253,7 +255,9 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	public boolean contains(String name) {
-		boolean b = singletonMap.containsKey(name) || nameMappingMap.containsKey(name) || beanMap.containsKey(name);
+		boolean b = singletonMap.containsKey(name)
+				|| nameMappingMap.containsKey(name)
+				|| beanMap.containsKey(name);
 		if (b) {
 			return b;
 		}
@@ -261,9 +265,10 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		try {
 			Class<?> clz = Class.forName(name);
 			if (ReflectUtils.isInstance(clz)) {
-				b = true;
+				return true;
 			}
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -289,8 +294,10 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			if (!ReflectUtils.isInstance(clz)) {
 				return null;
 			}
-			return new AnnotationBeanDefinition(this, getPropertiesFactory(), clz, getFilterNames());
+			return new AnnotationBeanDefinition(this, getPropertiesFactory(),
+					clz, getFilterNames());
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -320,7 +327,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
 		try {
 			if (isInitStatic()) {
-				BeanUtils.initStatic(this, getPropertiesFactory(), getClassList());
+				BeanUtils.initStatic(this, getPropertiesFactory(),
+						getClassList());
 			}
 		} catch (Exception e) {
 			throw new NestedRuntimeException(e);
@@ -363,7 +371,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		return getInstance(type.getName(), params);
 	}
 
-	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
+			Object... params) {
 		return getInstance(type.getName(), parameterTypes, params);
 	}
 }

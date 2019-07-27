@@ -184,64 +184,6 @@ public final class ReflectUtils {
 	}
 
 	/**
-	 * 根据参数名来调用构造方法
-	 * 
-	 * @param type
-	 * @param isPublic
-	 * @param parameterMap
-	 * @return
-	 * @throws NoSuchMethodException
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(Class<T> type, boolean isPublic, Map<String, Object> parameterMap)
-			throws NoSuchMethodException {
-		if (CollectionUtils.isEmpty(parameterMap)) {
-			try {
-				return getConstructor(type, isPublic).newInstance();
-			} catch (InstantiationException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalArgumentException e) {
-				throw new RuntimeException(e);
-			} catch (InvocationTargetException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		int size = parameterMap.size();
-		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
-			if (size == constructor.getParameterTypes().length) {
-				String[] names = ClassUtils.getParameterName(constructor);
-				Object[] args = new Object[size];
-				boolean find = true;
-				for (int i = 0; i < names.length; i++) {
-					if (!parameterMap.containsKey(names[i])) {
-						find = false;
-						break;
-					}
-
-					args[i] = parameterMap.get(names[i]);
-				}
-
-				if (find) {
-					if (!Modifier.isPublic(constructor.getModifiers())) {
-						constructor.setAccessible(true);
-					}
-					try {
-						return (T) constructor.newInstance(args);
-					} catch (Exception e) {
-						new RuntimeException(e);
-					}
-					break;
-				}
-			}
-		}
-
-		throw new NoSuchMethodException(type.getName());
-	}
-
-	/**
 	 * 根据参数名来调用方法
 	 * 
 	 * @param type
@@ -443,15 +385,6 @@ public final class ReflectUtils {
 	public static String getQualifiedMethodName(Method method) {
 		Assert.notNull(method, "Method must not be null");
 		return method.getDeclaringClass().getName() + "." + method.getName();
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(Class<?> type) {
-		try {
-			return (T) getConstructor(type, false).newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException("无法实例化：" + type.getName(), e);
-		}
 	}
 
 	/**

@@ -7,7 +7,6 @@ import scw.core.reflect.ReflectUtils;
 import scw.core.utils.StringUtils;
 
 public class ReflectionInstanceFactory implements InstanceFactory {
-
 	public <T> T getInstance(Class<T> type) {
 		if (type == null) {
 			return null;
@@ -29,9 +28,8 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		try {
 			return Class.forName(className);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -43,7 +41,6 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		try {
 			return (T) constructor.newInstance(params);
 		} catch (Exception e) {
-			e.printStackTrace();
 			return null;
 		}
 	}
@@ -63,7 +60,8 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 			return null;
 		}
 
-		Constructor<?> constructor = ReflectUtils.findConstructorByParameters(type, false, params);
+		Constructor<?> constructor = ReflectUtils.findConstructorByParameters(
+				type, false, params);
 		if (constructor == null) {
 			return null;
 		}
@@ -72,23 +70,24 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(String name, Class<?>[] parameterTypes,
+			Object... params) {
 		return (T) getInstance(forName(name), parameterTypes, params);
 	}
 
-	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
+			Object... params) {
 		if (type == null) {
 			return null;
 		}
 
 		Constructor<?> constructor = null;
 		try {
-			constructor = ReflectUtils.getConstructor(type, false, parameterTypes);
+			constructor = ReflectUtils.getConstructor(type, false,
+					parameterTypes);
 		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
 			return null;
 		}
-
 		return newInstance(constructor, params);
 	}
 
