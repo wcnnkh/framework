@@ -75,8 +75,13 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 				ConfigUtils.getWorkPath());
 
 		String servletName = getPropertiesFactory().getValue("servlet.name");
-		servletName = StringUtils.isEmpty(servletName) ? "def" : servletName;
+		servletName = StringUtils.isEmpty(servletName) ? "scw" : servletName;
 		Tomcat.addServlet(context, servletName, this);
+
+		String servletPattern = getPropertiesFactory().getValue(
+				"servlet.pattern");
+		context.addServletMapping(StringUtils.isEmpty(servletPattern) ? "/"
+				: servletPattern, servletName);
 
 		if (StringUtils.parseBoolean(getPropertiesFactory().getValue(
 				"servlet.jsp"))) {
@@ -148,7 +153,11 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	}
 
 	public static void run() {
-		run(getDefaultConfigPath());
+		String path = getDefaultConfigPath();
+		if (!StringUtils.isEmpty(path)) {
+			LoggerUtils.info(TomcatApplication.class, "{}", path);
+		}
+		run(path);
 	}
 }
 
