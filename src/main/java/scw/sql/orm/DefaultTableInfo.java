@@ -46,9 +46,11 @@ final class DefaultTableInfo implements TableInfo {
 				return true;
 			}
 		});
-		this.columnMap = new HashMap<String, ColumnInfo>(tempColumnMap.size(), 1);
+		this.columnMap = new HashMap<String, ColumnInfo>(tempColumnMap.size(),
+				1);
 		this.columnMap.putAll(tempColumnMap);
-		this.fieldToColumn = new HashMap<String, String>(tempFieldToColumn.size(), 1);
+		this.fieldToColumn = new HashMap<String, String>(
+				tempFieldToColumn.size(), 1);
 		this.fieldToColumn.putAll(tempFieldToColumn);
 
 		final List<ColumnInfo> allColumnList = new ArrayList<ColumnInfo>();
@@ -67,24 +69,31 @@ final class DefaultTableInfo implements TableInfo {
 
 				if (columnInfo.isAutoIncrement()) {
 					if (autoIncrement != null) {
-						throw new RuntimeException(source.getName() + "存在多个@AutoIncrement字段");
+						throw new RuntimeException(source.getName()
+								+ "存在多个@AutoIncrement字段");
 					}
 
 					autoIncrement = columnInfo;
 				}
 			} else {
-				boolean javaType = columnInfo.getField().getType().getName().startsWith("java.")
-						|| columnInfo.getField().getType().getName().startsWith("javax.");
+				boolean javaType = columnInfo.getField().getType().getName()
+						.startsWith("java.")
+						|| columnInfo.getField().getType().getName()
+								.startsWith("javax.");
 				if (!javaType) {
 					tableColumnList.add(columnInfo);
 				}
 			}
 		}
 
-		this.columns = allColumnList.toArray(new ColumnInfo[allColumnList.size()]);
-		this.primaryKeyColumns = idNameList.toArray(new ColumnInfo[idNameList.size()]);
-		this.notPrimaryKeyColumns = notIdNameList.toArray(new ColumnInfo[notIdNameList.size()]);
-		this.tableColumns = tableColumnList.toArray(new ColumnInfo[tableColumnList.size()]);
+		this.columns = allColumnList.toArray(new ColumnInfo[allColumnList
+				.size()]);
+		this.primaryKeyColumns = idNameList.toArray(new ColumnInfo[idNameList
+				.size()]);
+		this.notPrimaryKeyColumns = notIdNameList
+				.toArray(new ColumnInfo[notIdNameList.size()]);
+		this.tableColumns = tableColumnList
+				.toArray(new ColumnInfo[tableColumnList.size()]);
 	}
 
 	public String getDefaultName() {
@@ -96,7 +105,8 @@ final class DefaultTableInfo implements TableInfo {
 		if (columnInfo == null) {
 			String v = fieldToColumn.get(fieldName);
 			if (v == null) {
-				throw new NullPointerException("not found table[" + this.name + "] fieldName[" + fieldName + "]");
+				throw new NullPointerException("not found table[" + this.name
+						+ "] fieldName[" + fieldName + "]");
 			}
 
 			columnInfo = columnMap.get(v);
@@ -140,7 +150,12 @@ final class DefaultTableInfo implements TableInfo {
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance() {
 		if (table) {
-			return (T) FieldSetterListenUtils.newFieldSetterListenInstance(source);
+			try {
+				return (T) FieldSetterListenUtils
+						.newFieldSetterListenInstance(source);
+			} catch (Throwable e) {
+				return InstanceUtils.newInstance(source);
+			}
 		} else {
 			return InstanceUtils.newInstance(source);
 		}

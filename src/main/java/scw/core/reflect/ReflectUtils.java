@@ -1,6 +1,5 @@
 package scw.core.reflect;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -24,6 +23,7 @@ import scw.core.exception.NotFoundException;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.Assert;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.CloneUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ReflectionUtils;
 import scw.core.utils.StringParse;
@@ -385,110 +385,6 @@ public final class ReflectUtils {
 	public static String getQualifiedMethodName(Method method) {
 		Assert.notNull(method, "Method must not be null");
 		return method.getDeclaringClass().getName() + "." + method.getName();
-	}
-
-	/**
-	 * 必须要存在默认的构造方法
-	 * 
-	 * @param obj
-	 * @return
-	 */
-	public static <T> T clone(T obj, boolean ignoreTransient) {
-		try {
-			return clone(obj, true, ignoreTransient, true);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private static Object cloneArray(Class<?> type, Object array, boolean ignoreStatic, boolean ignoreTransient,
-			boolean invokeCloneableMethod) throws Exception {
-		int size = Array.getLength(array);
-		Object newArr = Array.newInstance(type.getComponentType(), size);
-		for (int i = 0; i < size; i++) {
-			Array.set(newArr, i, clone(Array.get(array, i), ignoreStatic, ignoreTransient, invokeCloneableMethod));
-		}
-		return newArr;
-	}
-
-	private static Object cloneObject(Class<?> type, Object obj, boolean ignoreStatic, boolean ignoreTransient,
-			boolean invokeCloneableMethod) throws Exception {
-		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
-			return obj;
-		}
-
-		Constructor<?> constructor = getConstructor(type, false);
-		if (constructor == null) {
-			return obj;
-		}
-
-		Object t = constructor.newInstance();
-		Class<?> clazz = type;
-		while (clazz != null) {
-			for (Field field : clazz.getDeclaredFields()) {
-				if (ignoreStatic && Modifier.isStatic(field.getModifiers())) {
-					continue;
-				}
-
-				if (ignoreTransient && Modifier.isTransient(field.getModifiers())) {
-					continue;
-				}
-
-				field.setAccessible(true);
-				Object v = field.get(obj);
-				if (v == null) {
-					continue;
-				}
-
-				if (!field.getType().isPrimitive() && !field.getType().isEnum()) {
-					if (field.getType().isArray()) {
-						v = cloneArray(field.getType(), v, ignoreStatic, ignoreTransient, invokeCloneableMethod);
-					} else {
-						v = clone(v, ignoreStatic, ignoreTransient, invokeCloneableMethod);
-					}
-				}
-				field.set(Modifier.isStatic(field.getModifiers()) ? null : t, v);
-			}
-			clazz = clazz.getSuperclass();
-		}
-		return t;
-	}
-
-	/**
-	 * 必须要存在默认的构造方法
-	 * 
-	 * @param obj
-	 * @param ignoreStatic
-	 * @param ignoreTransient
-	 * @param invokeCloneMethod
-	 *            如果对象实现了java.lang.Cloneable接口，是否反射调用clone方法
-	 * @return
-	 * @throws Exception
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T clone(T obj, boolean ignoreStatic, boolean ignoreTransient, boolean invokeCloneableMethod)
-			throws Exception {
-		if (obj == null) {
-			return null;
-		}
-
-		if (obj instanceof scw.core.Cloneable) {
-			return (T) ((scw.core.Cloneable) obj).clone();
-		}
-
-		Class<?> type = obj.getClass();
-		if (type.isPrimitive() || type.isEnum()) {
-			return obj;
-		} else if (type.isArray()) {
-			return (T) cloneArray(type, obj, ignoreStatic, ignoreTransient, invokeCloneableMethod);
-		} else if (invokeCloneableMethod && obj instanceof Cloneable) {
-			try {
-				return (T) getMethod(type, false, "clone").invoke(obj);
-			} catch (NoSuchMethodException e) {
-			}
-		}
-
-		return (T) cloneObject(type, obj, ignoreStatic, ignoreTransient, invokeCloneableMethod);
 	}
 
 	public static Field getField(Class<?> type, String name, boolean sup) {
@@ -1169,5 +1065,9 @@ public final class ReflectUtils {
 		} catch (Exception ex) {
 		}
 		return null;
+	}
+	
+	public static Object clone(Object source, boolean ignoreTransient){
+		return CloneUtils.clone(source, ignoreTransient);
 	}
 }
