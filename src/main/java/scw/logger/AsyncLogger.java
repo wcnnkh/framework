@@ -4,8 +4,8 @@ public final class AsyncLogger extends AbstractLogger {
 	private final AsyncLoggerFactory asyncLoggerFactory;
 
 	public AsyncLogger(boolean traceEnabled, boolean debugEnabled, boolean infoEnabled, boolean warnEnabled,
-			boolean errorEnabled, String tag, AsyncLoggerFactory asyncLoggerFactory) {
-		super(traceEnabled, debugEnabled, infoEnabled, warnEnabled, errorEnabled, tag, null);
+			boolean errorEnabled, String name, AsyncLoggerFactory asyncLoggerFactory) {
+		super(traceEnabled, debugEnabled, infoEnabled, warnEnabled, errorEnabled, name, null);
 		this.asyncLoggerFactory = asyncLoggerFactory;
 	}
 

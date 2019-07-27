@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import scw.core.utils.ConfigUtils;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
 
@@ -19,7 +18,7 @@ public abstract class AbstractResultFactory implements ResultFactory {
 			return;
 		}
 
-		Properties properties = ConfigUtils.getProperties(propertiesFilePath, charsetName);
+		Properties properties = PropertiesUtils.getProperties(propertiesFilePath, charsetName);
 		Map<String, String> map = PropertiesUtils.getProperties(properties);
 		if (map != null) {
 			for (Entry<String, String> entry : map.entrySet()) {

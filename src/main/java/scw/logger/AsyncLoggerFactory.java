@@ -30,11 +30,8 @@ public abstract class AsyncLoggerFactory implements ILoggerFactory, Runnable {
 					continue;
 				}
 
-				unsafeStringBuffer.reset();
 				try {
-					message.appendTo(unsafeStringBuffer);
-					String msg = unsafeStringBuffer.toString();
-					out(message.getTag(), message.getLevel(), msg, message.getThrowable());
+					out(unsafeStringBuffer, message);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -43,8 +40,15 @@ public abstract class AsyncLoggerFactory implements ILoggerFactory, Runnable {
 		}
 	}
 
-	public void out(String name, Level level, String msg, Throwable e) throws Exception {
-		switch (level) {
+	protected String getMessage(Message message) throws Exception {
+		message.appendTo(unsafeStringBuffer);
+		return unsafeStringBuffer.toString();
+	}
+
+	public void out(UnsafeStringBuffer unsafeStringBuffer, Message message)
+			throws Exception {
+		String msg = message.toString(unsafeStringBuffer);
+		switch (message.getLevel()) {
 		case ERROR:
 		case WARN:
 			System.err.println(msg);
@@ -54,8 +58,8 @@ public abstract class AsyncLoggerFactory implements ILoggerFactory, Runnable {
 			break;
 		}
 
-		if (e != null) {
-			e.printStackTrace();
+		if (message.getThrowable() != null) {
+			message.getThrowable().printStackTrace();
 		}
 	}
 

@@ -9,16 +9,16 @@ public final class LoggerFactory {
 	};
 
 	static {
-		String[] supportArr = { "scw.logger.slf4j.Slf4jILoggerFactory" };
+		String[] supportArr = { "scw.logger.log4j.Log4jLoggerFactory" };
 
-		//TODO 暂不使用其他日志框架，这里只是伪代码
-		@SuppressWarnings("unused")
-		ILoggerFactory loggerFactory;
+		ILoggerFactory loggerFactory = null;
 		for (String name : supportArr) {
-			loggerFactory = InstanceUtils.newInstance(name);
+			loggerFactory = InstanceUtils.getInstance(name);
 		}
 
-		LOGGER_FACTORY = new ConsoleLoggerFactory();
+		LOGGER_FACTORY = loggerFactory == null ? new ConsoleLoggerFactory()
+				: loggerFactory;
+
 		System.out.println("Init shuchaowen-logger ["
 				+ getILoggerFactory().getClass().getName() + "]");
 	}

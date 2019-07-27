@@ -7,7 +7,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import scw.core.Constants;
-import scw.core.utils.ConfigUtils;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
 import scw.io.serializer.Serializer;
@@ -20,7 +19,7 @@ public final class RedisByJedisPool extends AbstractJedisOperations implements s
 
 	public RedisByJedisPool(String propertiesFile, Serializer serializer) {
 		JedisPoolConfig config = createConfig(propertiesFile);
-		Properties properties = ConfigUtils.getProperties(propertiesFile, Constants.DEFAULT_CHARSET_NAME);
+		Properties properties = PropertiesUtils.getProperties(propertiesFile, Constants.DEFAULT_CHARSET_NAME);
 		String host = PropertiesUtils.getProperty(properties, "host", "address");
 		String port = PropertiesUtils.getProperty(properties, "port");
 		this.auth = PropertiesUtils.getProperty(properties, "auth", "password", "pwd");

@@ -10,13 +10,14 @@ import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ConfigUtils;
+import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringParse;
 
 public final class PropertiesParse implements ConfigParse {
 	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
 		File file = ConfigUtils.getFile(filePath);
-		Properties properties = ConfigUtils.getProperties(file, charset);
+		Properties properties = PropertiesUtils.getProperties(file, charset);
 		if (ClassUtils.isPrimitiveOrWrapper(fieldDefinition.getField().getType())
 				|| ClassUtils.isStringType(fieldDefinition.getField().getType())) {
 			String v = ConfigUtils.format(properties.getProperty(fieldDefinition.getField().getName()));

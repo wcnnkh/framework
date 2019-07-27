@@ -1,27 +1,30 @@
 package scw.logger;
 
+import scw.core.UnsafeStringBuffer;
 import scw.core.utils.StringAppend;
 
 public final class Message implements StringAppend {
 	private final long cts;
 	private final Level level;
 	private final StringAppend msg;
-	private final String tag;
+	private final String name;
 	private final Throwable throwable;
 
-	public Message(Level level, String tag, StringAppend msg, Throwable throwable) {
+	public Message(Level level, String name, StringAppend msg,
+			Throwable throwable) {
 		this.cts = System.currentTimeMillis();
 		this.level = level;
 		this.msg = msg;
 		this.throwable = throwable;
-		this.tag = tag;
+		this.name = name;
 	}
 
-	public Message(Level level, String tag, String msg, Object[] args, Throwable throwable, String placeholder) {
+	public Message(Level level, String name, String msg, Object[] args,
+			Throwable throwable, String placeholder) {
 		this.cts = System.currentTimeMillis();
 		this.level = level;
 		this.throwable = throwable;
-		this.tag = tag;
+		this.name = name;
 		this.msg = new DefaultLoggerFormatAppend(msg, placeholder, args);
 	}
 
@@ -37,8 +40,8 @@ public final class Message implements StringAppend {
 		return msg;
 	}
 
-	public String getTag() {
-		return tag;
+	public String getName() {
+		return name;
 	}
 
 	public Throwable getThrowable() {
@@ -46,6 +49,20 @@ public final class Message implements StringAppend {
 	}
 
 	public void appendTo(Appendable appendable) throws Exception {
-		LoggerUtils.loggerAppend(appendable, cts, level.name(), tag, msg);
+		LoggerUtils.loggerAppend(appendable, cts, level.name(), name, msg);
+	}
+
+	public String toString(UnsafeStringBuffer unsafeStringBuffer)
+			throws Exception {
+		unsafeStringBuffer.reset();
+		appendTo(unsafeStringBuffer);
+		return unsafeStringBuffer.toString();
+	}
+
+	public String toMessage(UnsafeStringBuffer unsafeStringBuffer)
+			throws Exception {
+		unsafeStringBuffer.reset();
+		msg.appendTo(unsafeStringBuffer);
+		return unsafeStringBuffer.toString();
 	}
 }

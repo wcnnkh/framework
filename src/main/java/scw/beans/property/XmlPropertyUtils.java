@@ -12,6 +12,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.core.utils.ConfigUtils;
+import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 
@@ -29,7 +30,7 @@ public final class XmlPropertyUtils {
 		String file = XMLUtils.getNodeAttributeValue(rootNode, "file");
 		if(!StringUtils.isNull(file)){
 			File f = ConfigUtils.getFile(file);
-			Properties properties = ConfigUtils.getProperties(f, charset);
+			Properties properties = PropertiesUtils.getProperties(f, charset);
 			for(Entry<Object, Object> entry : properties.entrySet()){
 				String name = prefix == null? entry.getKey().toString():prefix + entry.getKey().toString();
 				Property property = new Property(name, entry.getValue().toString(), rootNode);

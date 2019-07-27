@@ -1,5 +1,9 @@
 package scw.core.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,16 +20,19 @@ import java.util.Properties;
 import scw.core.Constants;
 import scw.core.StringFormat;
 import scw.core.reflect.ReflectUtils;
+import scw.io.IOUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public final class PropertiesUtils {
-	private static Logger logger = LoggerFactory.getLogger(PropertiesUtils.class);
+	private static Logger logger = LoggerFactory
+			.getLogger(PropertiesUtils.class);
 
 	private PropertiesUtils() {
 	};
 
-	public static <T> T setProperties(Object obj, Properties properties, StringFormat stringFormat) {
+	public static <T> T setProperties(Object obj, Properties properties,
+			StringFormat stringFormat) {
 		T t = null;
 		try {
 			for (Entry<Object, Object> entry : properties.entrySet()) {
@@ -35,9 +42,11 @@ public final class PropertiesUtils {
 					continue;
 				}
 
-				String value = entry.getValue() == null ? null : entry.getValue().toString();
+				String value = entry.getValue() == null ? null : entry
+						.getValue().toString();
 				value = stringFormat.format(value);
-				ReflectUtils.setFieldValueAutoType(obj.getClass(), field, obj, value);
+				ReflectUtils.setFieldValueAutoType(obj.getClass(), field, obj,
+						value);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -60,14 +69,19 @@ public final class PropertiesUtils {
 		return null;
 	}
 
-	public static String getProperty(Properties properties, Object defaultValue, String... key) {
+	public static String getProperty(Properties properties,
+			Object defaultValue, String... key) {
 		String v = getProperty(properties, key);
-		return v == null ? (defaultValue == null ? null : defaultValue.toString()) : v;
+		return v == null ? (defaultValue == null ? null : defaultValue
+				.toString()) : v;
 	}
 
-	public static <T> void loadProperties(T instance, String propertiesFile, Collection<String> asNameList) {
-		Properties properties = ConfigUtils.getProperties(propertiesFile, Constants.DEFAULT_CHARSET_NAME);
-		invokeSetterByProeprties(instance, properties, true, true, asNameList, true);
+	public static <T> void loadProperties(T instance, String propertiesFile,
+			Collection<String> asNameList) {
+		Properties properties = getProperties(propertiesFile,
+				Constants.DEFAULT_CHARSET_NAME);
+		invokeSetterByProeprties(instance, properties, true, true, asNameList,
+				true);
 	}
 
 	/**
@@ -83,8 +97,10 @@ public final class PropertiesUtils {
 	 * @param findAndRemove
 	 * @param log
 	 */
-	public static void invokeSetterByProeprties(Object instance, Map<?, ?> properties, boolean propertieGetAndRemove,
-			boolean invokePublic, Collection<String> asNameList, boolean findAndRemove) {
+	public static void invokeSetterByProeprties(Object instance,
+			Map<?, ?> properties, boolean propertieGetAndRemove,
+			boolean invokePublic, Collection<String> asNameList,
+			boolean findAndRemove) {
 		List<String> nameList = null;
 		if (!CollectionUtils.isEmpty(asNameList)) {
 			nameList = new ArrayList<String>(asNameList);
@@ -103,12 +119,14 @@ public final class PropertiesUtils {
 		for (Method method : invokePublic ? instance.getClass().getMethods()
 				: instance.getClass().getDeclaredMethods()) {
 			Class<?>[] parameterTypes = method.getParameterTypes();
-			if (!(parameterTypes.length == 1 && method.getName().startsWith("set"))) {
+			if (!(parameterTypes.length == 1 && method.getName().startsWith(
+					"set"))) {
 				continue;
 			}
 
 			Class<?> parameterType = parameterTypes[0];
-			if (!(ClassUtils.isPrimitiveOrWrapper(parameterType) || ClassUtils.isStringType(parameterType))) {
+			if (!(ClassUtils.isPrimitiveOrWrapper(parameterType) || ClassUtils
+					.isStringType(parameterType))) {
 				continue;
 			}
 
@@ -161,11 +179,13 @@ public final class PropertiesUtils {
 			method.setAccessible(false);
 
 			if (logger.isTraceEnabled()) {
-				logger.trace("Property {} on target {} set value {}", name, instance.getClass().getName(), value);
+				logger.trace("Property {} on target {} set value {}", name,
+						instance.getClass().getName(), value);
 			}
 
 			try {
-				method.invoke(instance, StringParse.DEFAULT.parse(value, parameterType));
+				method.invoke(instance,
+						StringParse.DEFAULT.parse(value, parameterType));
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalArgumentException e) {
@@ -181,7 +201,8 @@ public final class PropertiesUtils {
 			return null;
 		}
 
-		Map<String, String> map = new LinkedHashMap<String, String>(properties.size(), 1);
+		Map<String, String> map = new LinkedHashMap<String, String>(
+				properties.size(), 1);
 		for (Entry<?, ?> entry : properties.entrySet()) {
 			Object key = entry.getKey();
 			if (key == null) {
@@ -192,5 +213,41 @@ public final class PropertiesUtils {
 			map.put(key.toString(), value == null ? null : value.toString());
 		}
 		return map;
+	}
+
+	public static Properties getProperties(File file, String charsetName) {
+		Properties properties = new Properties();
+		InputStreamReader isr = null;
+		try {
+			isr = new InputStreamReader(new FileInputStream(file), charsetName);
+			properties.load(isr);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			IOUtils.close(isr);
+		}
+		return properties;
+	}
+
+	public static Properties getProperties(File file) {
+		Properties properties = new Properties();
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(file);
+			properties.load(fis);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			IOUtils.close(fis);
+		}
+		return properties;
+	}
+
+	public static Properties getProperties(String filePath, String charsetName) {
+		return getProperties(ConfigUtils.getFile(filePath), charsetName);
+	}
+
+	public static Properties getProperties(String filePath) {
+		return getProperties(ConfigUtils.getFile(filePath));
 	}
 }

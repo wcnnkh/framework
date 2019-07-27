@@ -1,9 +1,6 @@
 package scw.core.utils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -13,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,7 +20,6 @@ import scw.core.StringFormatSystemProperties;
 import scw.core.exception.NotFoundException;
 import scw.core.reflect.ReflectUtils;
 import scw.io.FileUtils;
-import scw.io.IOUtils;
 import scw.logger.LoggerUtils;
 
 public final class ConfigUtils {
@@ -32,8 +27,10 @@ public final class ConfigUtils {
 	private static final String CLASSPATH = "classpath";
 	private static final String CLASSPATH_PREFIX = CLASSPATH + ":";
 	private static final String WEB_INF = "WEB-INF";
-	public static final StringFormatSystemProperties format1 = new StringFormatSystemProperties("{", "}");
-	public static final StringFormatSystemProperties format2 = new StringFormatSystemProperties("[", "]");
+	public static final StringFormatSystemProperties format1 = new StringFormatSystemProperties(
+			"{", "}");
+	public static final StringFormatSystemProperties format2 = new StringFormatSystemProperties(
+			"[", "]");
 	public static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
 
 	private volatile static String work_path_cache;
@@ -72,7 +69,8 @@ public final class ConfigUtils {
 		String prefix = newPath.substring(0, CLASSPATH_PREFIX.length());
 		prefix = prefix.toUpperCase();
 		if (prefix.equals(CLASSPATH_PREFIX.toUpperCase())) {
-			return getClassPath() + newPath.substring(CLASSPATH_PREFIX.length());
+			return getClassPath()
+					+ newPath.substring(CLASSPATH_PREFIX.length());
 		}
 		return newPath;
 	}
@@ -105,7 +103,8 @@ public final class ConfigUtils {
 		return ConfigUtils.class.getResource("/").getPath();
 	}
 
-	public static <T> T parseObject(Map<String, String> map, Class<T> clz) throws Exception {
+	public static <T> T parseObject(Map<String, String> map, Class<T> clz)
+			throws Exception {
 		T t = clz.newInstance();
 		for (Entry<String, String> entry : map.entrySet()) {
 			Field field = ReflectUtils.getField(clz, entry.getKey(), true);
@@ -113,7 +112,8 @@ public final class ConfigUtils {
 				continue;
 			}
 
-			ReflectUtils.setFieldValue(clz, field, t, StringParse.DEFAULT.parse(entry.getValue(), field.getType()));
+			ReflectUtils.setFieldValue(clz, field, t, StringParse.DEFAULT
+					.parse(entry.getValue(), field.getType()));
 		}
 		return t;
 	}
@@ -170,7 +170,8 @@ public final class ConfigUtils {
 		if (StringUtils.isEmpty(configSuffix)) {
 			file = getFile(filePath, null);
 		} else {
-			file = getFile(filePath, Arrays.asList(StringUtils.commonSplit(configSuffix)));
+			file = getFile(filePath,
+					Arrays.asList(StringUtils.commonSplit(configSuffix)));
 		}
 
 		if (file == null || !file.exists()) {
@@ -178,7 +179,8 @@ public final class ConfigUtils {
 		}
 
 		if (!file.getPath().equals(filePath)) {
-			LoggerUtils.info(ConfigUtils.class, "{} ---> {}", filePath, file.getPath());
+			LoggerUtils.info(ConfigUtils.class, "{} ---> {}", filePath,
+					file.getPath());
 		}
 		return file;
 	}
@@ -195,7 +197,8 @@ public final class ConfigUtils {
 		}
 
 		for (String sf : testSuffix) {
-			File testFile = new File(file.getParent() + File.separator + getTestFileName(file.getName(), sf));
+			File testFile = new File(file.getParent() + File.separator
+					+ getTestFileName(file.getName(), sf));
 			if (testFile.exists()) {
 				return testFile;
 			}
@@ -208,25 +211,13 @@ public final class ConfigUtils {
 		if (index == -1) {// 不存在
 			return fileName + str;
 		} else {
-			return fileName.substring(0, index) + str + fileName.substring(index);
+			return fileName.substring(0, index) + str
+					+ fileName.substring(index);
 		}
 	}
 
-	public static final Properties getProperties(File file, String charsetName) {
-		Properties properties = new Properties();
-		InputStreamReader isr = null;
-		try {
-			isr = new InputStreamReader(new FileInputStream(file), charsetName);
-			properties.load(isr);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			IOUtils.close(isr);
-		}
-		return properties;
-	}
-
-	public static List<Map<String, String>> getDefaultXmlContent(File file, String rootTag) {
+	public static List<Map<String, String>> getDefaultXmlContent(File file,
+			String rootTag) {
 		if (rootTag == null) {
 			throw new NullPointerException("rootTag is null");
 		}
@@ -253,7 +244,8 @@ public final class ConfigUtils {
 	}
 
 	public static <T> List<T> xmlToList(Class<T> type, File file) {
-		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(file, "config");
+		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(file,
+				"config");
 		List<T> objList = new ArrayList<T>();
 		try {
 			for (Map<String, String> map : list) {
@@ -283,7 +275,8 @@ public final class ConfigUtils {
 				throw new NullPointerException("打不到主键字段");
 			}
 
-			List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(file, "config");
+			List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(
+					file, "config");
 			Map<K, V> map = new HashMap<K, V>();
 			for (Map<String, String> tempMap : list) {
 				Object obj = ConfigUtils.parseObject(tempMap, valueType);
@@ -291,8 +284,9 @@ public final class ConfigUtils {
 				Object kV = keyField.get(obj);
 				keyField.setAccessible(false);
 				if (map.containsKey(kV)) {
-					throw new NullPointerException(
-							"已经存在的key=" + keyField.getName() + ",value=" + kV + ", filePath=" + file.getPath());
+					throw new NullPointerException("已经存在的key="
+							+ keyField.getName() + ",value=" + kV
+							+ ", filePath=" + file.getPath());
 				}
 				map.put((K) kV, (V) obj);
 			}
@@ -304,15 +298,13 @@ public final class ConfigUtils {
 		return null;
 	}
 
-	public static Properties getProperties(String filePath, String charsetName) {
-		return getProperties(getFile(filePath), charsetName);
-	}
-
-	public static List<String> getFileContentLineList(String filePath, String charsetName) {
+	public static List<String> getFileContentLineList(String filePath,
+			String charsetName) {
 		return FileUtils.getFileContentLineList(getFile(filePath), charsetName);
 	}
 
 	public static String getFileContent(String filePath, String charsetName) {
-		return FileUtils.readerFileContent(getFile(filePath), charsetName).toString();
+		return FileUtils.readerFileContent(getFile(filePath), charsetName)
+				.toString();
 	}
 }
