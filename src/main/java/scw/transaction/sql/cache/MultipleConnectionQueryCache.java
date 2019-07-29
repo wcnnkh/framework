@@ -14,7 +14,7 @@ import scw.transaction.savepoint.Savepoint;
 
 final class MultipleConnectionQueryCache implements TransactionResource {
 	private Map<SqlOperations, QueryCache> queryCacheMap;
-	private boolean enable = true;
+	private boolean enable = QueryCacheUtils.isGlobalCacheEnable();
 
 	public QueryCache getQueryCache(SqlOperations sqlOperations) {
 		QueryCache queryCache;
@@ -67,6 +67,7 @@ final class MultipleConnectionQueryCache implements TransactionResource {
 
 	public void end() {
 		queryCacheMap = null;
+		this.enable = QueryCacheUtils.isGlobalCacheEnable();
 	}
 
 	public Savepoint createSavepoint() throws TransactionException {

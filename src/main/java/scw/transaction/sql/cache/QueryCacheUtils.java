@@ -20,6 +20,14 @@ public final class QueryCacheUtils {
 
 	private QueryCacheUtils() {
 	};
+	
+	public static boolean isGlobalCacheEnable(){
+		return cacheEnable;
+	}
+
+	public static void setGlobalCacheEnable(boolean enable) {
+		cacheEnable = enable;
+	}
 
 	public static boolean queryCacheEnable() {
 		if (!cacheEnable) {
@@ -38,10 +46,6 @@ public final class QueryCacheUtils {
 		}
 
 		return cache.isEnable();
-	}
-
-	public static void setGlobalCacheEnable(boolean enable) {
-		cacheEnable = enable;
 	}
 
 	public static void setQueryCacheEnable(boolean enable) {
