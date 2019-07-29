@@ -17,7 +17,6 @@ import scw.core.PropertiesFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
-import scw.io.FileUtils;
 import scw.logger.LoggerFactory;
 import scw.sql.orm.ORMUtils;
 
@@ -120,12 +119,7 @@ public class CommonApplication implements Application {
 	}
 
 	public static String getDefaultConfigPath() {
-		String defaultFileName = "beans.xml";
-		String beans = FileUtils.searchFileName(defaultFileName, ConfigUtils.getClassPath(), true);
-		if (StringUtils.isEmpty(beans) && ConfigUtils.getWorkPath() != null) {
-			beans = FileUtils.searchFileName(defaultFileName, ConfigUtils.getWorkPath(), true);
-		}
-
+		String beans = ConfigUtils.searchFileName("beans.xml");
 		if (StringUtils.isEmpty(beans)) {
 			return null;
 		}

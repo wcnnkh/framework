@@ -17,12 +17,7 @@
 package scw.core;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Simple implementation of {@link MultiValueMap} that wraps a
@@ -51,7 +46,7 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected boolean removeEldestEntry(Entry<K, List<V>> eldest) {
+			protected boolean removeEldestEntry(java.util.Map.Entry<K, List<V>> eldest) {
 				return overrideRemoveEldestEntry(eldest);
 			}
 		};
@@ -99,6 +94,7 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 
 	/**
 	 * 重写LinkedHashMap的此方法
+	 * 
 	 * @param eldest
 	 * @return
 	 */
