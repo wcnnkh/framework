@@ -17,7 +17,12 @@
 package scw.core;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Simple implementation of {@link MultiValueMap} that wraps a
@@ -64,7 +69,7 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected boolean removeEldestEntry(Entry<K, List<V>> eldest) {
+			protected boolean removeEldestEntry(java.util.Map.Entry<K, List<V>> eldest) {
 				return overrideRemoveEldestEntry(eldest);
 			}
 		};
@@ -75,7 +80,7 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected boolean removeEldestEntry(Entry<K, List<V>> eldest) {
+			protected boolean removeEldestEntry(java.util.Map.Entry<K, List<V>> eldest) {
 				return overrideRemoveEldestEntry(eldest);
 			}
 		};
@@ -86,7 +91,7 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected boolean removeEldestEntry(Entry<K, List<V>> eldest) {
+			protected boolean removeEldestEntry(java.util.Map.Entry<K, List<V>> eldest) {
 				return overrideRemoveEldestEntry(eldest);
 			}
 		};
@@ -136,14 +141,14 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 	}
 
 	public void setAll(Map<K, V> values) {
-		for (Entry<K, V> entry : values.entrySet()) {
+		for (java.util.Map.Entry<K, V> entry : values.entrySet()) {
 			set(entry.getKey(), entry.getValue());
 		}
 	}
 
 	public Map<K, V> toSingleValueMap() {
 		LinkedHashMap<K, V> singleValueMap = new LinkedHashMap<K, V>(this.targetMap.size());
-		for (Entry<K, List<V>> entry : targetMap.entrySet()) {
+		for (java.util.Map.Entry<K, List<V>> entry : targetMap.entrySet()) {
 			singleValueMap.put(entry.getKey(), entry.getValue().get(0));
 		}
 		return singleValueMap;
@@ -195,7 +200,7 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 		return this.targetMap.values();
 	}
 
-	public Set<Entry<K, List<V>>> entrySet() {
+	public Set<java.util.Map.Entry<K, List<V>>> entrySet() {
 		return this.targetMap.entrySet();
 	}
 
