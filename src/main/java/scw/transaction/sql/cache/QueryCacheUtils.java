@@ -16,9 +16,16 @@ import scw.transaction.TransactionManager;
  *
  */
 public final class QueryCacheUtils {
-	private QueryCacheUtils(){};
+	private static volatile boolean cacheEnable = true;
+
+	private QueryCacheUtils() {
+	};
 
 	public static boolean queryCacheEnable() {
+		if (!cacheEnable) {
+			return false;
+		}
+
 		Transaction transaction = TransactionManager.getCurrentTransaction();
 		if (transaction == null) {
 			return false;
@@ -31,6 +38,10 @@ public final class QueryCacheUtils {
 		}
 
 		return cache.isEnable();
+	}
+
+	public static void setGlobalCacheEnable(boolean enable) {
+		cacheEnable = enable;
 	}
 
 	public static void setQueryCacheEnable(boolean enable) {
@@ -49,6 +60,10 @@ public final class QueryCacheUtils {
 	}
 
 	private static MultipleConnectionQueryCache getMultipleConnectionQueryCache(SqlOperations sqlOperations) {
+		if(!cacheEnable){
+			return null;
+		}
+		
 		Transaction transaction = TransactionManager.getCurrentTransaction();
 		if (transaction == null) {
 			return null;

@@ -54,6 +54,9 @@ final class MultipleConnectionQueryCache implements TransactionResource {
 
 	public void setEnable(boolean enable) {
 		this.enable = enable;
+		if (!enable) {
+			queryCacheMap = null;
+		}
 	}
 
 	public void process() {
