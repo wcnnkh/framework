@@ -246,9 +246,24 @@ public final class ReflectUtils {
 			method = clazz.getMethod(name, parameterTypes);
 		} else {
 			method = clazz.getDeclaredMethod(name, parameterTypes);
+
 			if (!Modifier.isPublic(clazz.getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
 				method.setAccessible(true);
 			}
+		}
+		return method;
+	}
+
+	public static Method findMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
+		Method method;
+		try {
+			method = clazz.getDeclaredMethod(name, parameterTypes);
+		} catch (NoSuchMethodException e) {
+			return null;
+		}
+
+		if (!Modifier.isPublic(clazz.getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
+			method.setAccessible(true);
 		}
 		return method;
 	}
@@ -1066,8 +1081,8 @@ public final class ReflectUtils {
 		}
 		return null;
 	}
-	
-	public static Object clone(Object source, boolean ignoreTransient){
+
+	public static Object clone(Object source, boolean ignoreTransient) {
 		return CloneUtils.clone(source, ignoreTransient);
 	}
 }
