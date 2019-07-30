@@ -3,11 +3,15 @@ package scw.beans;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import scw.beans.annotation.Proxy;
+import scw.beans.proxy.ProxyBeanDefinitionFactory;
 import scw.core.PropertiesFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.BeansException;
@@ -19,6 +23,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	private volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
+	private volatile Set<String> notFoundSet = new HashSet<String>();
+
 	private boolean init = false;
 
 	public void registerNameMapping(String key, String value) {
@@ -262,15 +268,12 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			return b;
 		}
 
-		try {
-			Class<?> clz = Class.forName(name);
-			if (ReflectUtils.isInstance(clz)) {
-				return true;
-			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+		if (notFoundSet.contains(name)) {
+			return false;
 		}
-		return false;
+
+		BeanDefinition beanDefinition = getBeanDefinition(name);
+		return beanDefinition != null;
 	}
 
 	private BeanDefinition getBeanCache(String name) {
@@ -284,14 +287,36 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		return beanDefinition;
 	}
 
+	private void addNotFoundName(String name) {
+		if (!notFoundSet.contains(name)) {
+			synchronized (notFoundSet) {
+				if (!notFoundSet.contains(name)) {
+					notFoundSet.add(name);
+				}
+			}
+		}
+	}
+
 	private BeanDefinition newBeanDefinition(String name) {
+		if (notFoundSet.contains(name)) {
+			return null;
+		}
+
 		try {
 			String n = nameMappingMap.get(name);
 			if (n == null) {
 				n = name;
 			}
+
 			Class<?> clz = Class.forName(n);
+			Proxy proxy = clz.getAnnotation(Proxy.class);
+			if (proxy != null) {
+				ProxyBeanDefinitionFactory factory = getInstance(proxy.value());
+				return factory.getBeanDefinition(clz);
+			}
+
 			if (!ReflectUtils.isInstance(clz)) {
+				addNotFoundName(name);
 				return null;
 			}
 			return new AnnotationBeanDefinition(this, getPropertiesFactory(),
@@ -299,6 +324,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		addNotFoundName(name);
 		return null;
 	}
 

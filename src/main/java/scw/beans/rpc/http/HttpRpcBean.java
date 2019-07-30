@@ -7,9 +7,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URLConnection;
 
+import scw.beans.AbstractInterfaceBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.beans.rpc.AbstractInterfaceProxyBean;
 import scw.core.aop.Invoker;
 import scw.core.utils.SignUtils;
 import scw.io.Bytes;
@@ -21,15 +21,15 @@ import scw.net.ContentType;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpRequest;
 
-public final class HttpRpcBean extends AbstractInterfaceProxyBean {
+public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private final String host;
 	private final String signStr;
 	private final BeanFactory beanFactory;
 	private final Serializer serializer;
 
-	public HttpRpcBean(BeanFactory beanFactory, Class<?> interfaceClass, String host, String signStr,
-			Serializer serializer) throws Exception {
+	public HttpRpcBean(BeanFactory beanFactory, Class<?> interfaceClass,
+			String host, String signStr, Serializer serializer) {
 		super(interfaceClass);
 		this.beanFactory = beanFactory;
 		this.host = host;
@@ -39,15 +39,19 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 
 	@SuppressWarnings("unchecked")
 	public <T> T create() {
-		Object newProxyInstance = Proxy.newProxyInstance(getType().getClassLoader(), new Class[] { getType() },
+		Object newProxyInstance = Proxy.newProxyInstance(getInterfaceClass()
+				.getClassLoader(), new Class[] { getInterfaceClass() },
 				new InvocationHandler() {
 
-					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-						HttpConsumerInvoker httpConsumerInvoker = new HttpConsumerInvoker(method);
+					public Object invoke(Object proxy, Method method,
+							Object[] args) throws Throwable {
+						HttpConsumerInvoker httpConsumerInvoker = new HttpConsumerInvoker(
+								method);
 						return httpConsumerInvoker.invoke(args);
 					}
 				});
-		return (T) BeanUtils.proxyInterface(beanFactory, getType(), newProxyInstance);
+		return (T) BeanUtils.proxyInterface(beanFactory, getInterfaceClass(),
+				newProxyInstance);
 	}
 
 	final class HttpConsumerInvoker implements Invoker {
@@ -61,24 +65,30 @@ public final class HttpRpcBean extends AbstractInterfaceProxyBean {
 			long cts = System.currentTimeMillis();
 			final Message message = new Message(getType(), method, args);
 			message.setAttribute("t", cts);
-			message.setAttribute("sign", SignUtils.md5Str(Bytes.string2bytes(cts + signStr)));
+			message.setAttribute("sign",
+					SignUtils.md5Str(Bytes.string2bytes(cts + signStr)));
 
-			HttpRequest request = new HttpRequest(scw.net.http.Method.POST, host) {
+			HttpRequest request = new HttpRequest(scw.net.http.Method.POST,
+					host) {
 				@Override
-				protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
+				protected void doOutput(URLConnection urlConnection,
+						OutputStream os) throws Throwable {
 					serializer.serialize(os, message);
 				}
 			};
 			request.setContentType(ContentType.APPLICATION_OCTET_STREAM);
 
 			try {
-				return NetworkUtils.execute(request, new AbstractResponse<Object>() {
+				return NetworkUtils.execute(request,
+						new AbstractResponse<Object>() {
 
-					@Override
-					protected Object doInput(URLConnection urlConnection, InputStream is) throws Throwable {
-						return serializer.deserialize(is);
-					}
-				});
+							@Override
+							protected Object doInput(
+									URLConnection urlConnection, InputStream is)
+									throws Throwable {
+								return serializer.deserialize(is);
+							}
+						});
 			} catch (Throwable e) {
 				logger.error(message.getMessageKey());
 				throw e;

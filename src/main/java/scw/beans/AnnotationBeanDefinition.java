@@ -25,8 +25,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 	private final BeanFactory beanFactory;
 	private final Class<?> type;
 	private final String id;
-	private final BeanMethod[] initMethods;
-	private final BeanMethod[] destroyMethods;
+	private final NoArgumentBeanMethod[] initMethods;
+	private final NoArgumentBeanMethod[] destroyMethods;
 	private final boolean proxy;
 	private volatile Enhancer enhancer;
 	private final PropertiesFactory propertiesFactory;
@@ -43,9 +43,10 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		this.propertiesFactory = propertiesFactory;
 		this.id = type.getName();
 		this.names = getServiceNames(type);
-		this.initMethods = getInitMethodList(type).toArray(new BeanMethod[0]);
+		this.initMethods = getInitMethodList(type).toArray(
+				new NoArgumentBeanMethod[0]);
 		this.destroyMethods = getDestroyMethdoList(type).toArray(
-				new BeanMethod[0]);
+				new NoArgumentBeanMethod[0]);
 		this.filterNames = filterNames;
 		this.proxy = BeanUtils.checkProxy(type, filterNames);
 		scw.beans.annotation.Bean bean = type
@@ -56,8 +57,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 						new FieldDefinition[0]);
 	}
 
-	public static List<BeanMethod> getInitMethodList(Class<?> type) {
-		List<BeanMethod> list = new ArrayList<BeanMethod>();
+	public static List<NoArgumentBeanMethod> getInitMethodList(Class<?> type) {
+		List<NoArgumentBeanMethod> list = new ArrayList<NoArgumentBeanMethod>();
 		for (Method method : AnnotationUtils.getAnnoationMethods(type, true,
 				true, InitMethod.class)) {
 			if (Modifier.isStatic(method.getModifiers())) {
@@ -70,8 +71,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		return list;
 	}
 
-	public static List<BeanMethod> getDestroyMethdoList(Class<?> type) {
-		List<BeanMethod> list = new ArrayList<BeanMethod>();
+	public static List<NoArgumentBeanMethod> getDestroyMethdoList(Class<?> type) {
+		List<NoArgumentBeanMethod> list = new ArrayList<NoArgumentBeanMethod>();
 		for (Method method : AnnotationUtils.getAnnoationMethods(type, true,
 				true, Destroy.class)) {
 			if (Modifier.isStatic(method.getModifiers())) {
@@ -159,8 +160,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 
 	public void init(Object bean) throws Exception {
 		if (initMethods != null && initMethods.length != 0) {
-			for (BeanMethod method : initMethods) {
-				method.invoke(bean, beanFactory, propertiesFactory);
+			for (NoArgumentBeanMethod method : initMethods) {
+				method.noArgumentInvoke(bean);
 			}
 		}
 
@@ -171,8 +172,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 
 	public void destroy(Object bean) throws Exception {
 		if (destroyMethods != null && destroyMethods.length != 0) {
-			for (BeanMethod method : destroyMethods) {
-				method.invoke(bean, beanFactory, propertiesFactory);
+			for (NoArgumentBeanMethod method : destroyMethods) {
+				method.invoke(bean);
 			}
 		}
 
