@@ -119,7 +119,7 @@ public class CommonApplication implements Application {
 	}
 
 	public static String getDefaultConfigPath() {
-		String beans = ConfigUtils.searchFileName("beans.xml");
+		String beans = ConfigUtils.searchFile("beans.xml");
 		if (StringUtils.isEmpty(beans)) {
 			return null;
 		}

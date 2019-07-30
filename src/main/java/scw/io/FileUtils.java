@@ -2672,19 +2672,15 @@ public final class FileUtils {
 	 *            要查找的文件名 不包含目录
 	 * @param rootPath
 	 *            父目录
-	 * @param recursion
-	 *            是否递归
 	 * @return
 	 */
-	public static String searchFileName(String fileName, String rootPath, boolean recursion) {
+	public static String searchFile(String fileName, String rootPath) {
 		File file = new File(rootPath);
 		for (File f : file.listFiles()) {
 			if (f.isDirectory()) {
-				if (recursion) {
-					String name = searchFileName(fileName, f.getPath(), recursion);
-					if (name != null) {
-						return name;
-					}
+				String name = searchFile(fileName, f.getPath());
+				if (name != null) {
+					return name;
 				}
 			} else {
 				if (f.getName().equals(fileName)) {
@@ -2734,32 +2730,6 @@ public final class FileUtils {
 					if (f != null) {
 						return f;
 					}
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * 在目录下递归搜索指定文件
-	 * 
-	 * @param rootPath
-	 * @param searchFileName
-	 * @return
-	 */
-	public static File searchFile(String rootPath, String searchFileName) {
-		File rootFile = new File(rootPath);
-		if (rootFile.exists()) {
-			File[] files = rootFile.listFiles();
-			for (File file : files) {
-				if (file.isFile()) {
-					if (file.getName().equals(searchFileName)) {
-						return file;
-					} else {
-						continue;
-					}
-				} else {
-					return searchFile(file.getPath(), searchFileName);
 				}
 			}
 		}

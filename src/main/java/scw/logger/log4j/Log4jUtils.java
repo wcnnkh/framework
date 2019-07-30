@@ -22,7 +22,7 @@ public class Log4jUtils {
 	}
 
 	public static void defaultInit() {
-		String log4j = ConfigUtils.searchFileName("log4j.properties");
+		String log4j = ConfigUtils.searchFile("log4j.properties");
 		if(StringUtils.isEmpty(log4j)){
 			throw new NotFoundException("log4j.properties");
 		}

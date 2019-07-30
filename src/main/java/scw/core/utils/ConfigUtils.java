@@ -124,15 +124,15 @@ public final class ConfigUtils {
 	 * @param fileName
 	 * @return
 	 */
-	public static String searchFileName(String fileName) {
-		String file = FileUtils.searchFileName(fileName, getClassPath(), true);
+	public static String searchFile(String fileName) {
+		String file = FileUtils.searchFile(fileName, getClassPath());
 		if (StringUtils.isNull(file)) {
 			String workPath = getWorkPath();
 			if (workPath == null) {
 				return null;
 			}
 
-			file = FileUtils.searchFileName(fileName, workPath, true);
+			file = FileUtils.searchFile(fileName, workPath);
 		}
 		return file;
 	}
