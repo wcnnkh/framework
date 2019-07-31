@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.beans.annotation.InterfaceProxy;
+import scw.core.Destroy;
+import scw.core.Init;
 import scw.core.LRULinkedHashMap;
 import scw.core.PropertiesFactory;
 import scw.core.exception.AlreadyExistsException;
@@ -18,7 +20,7 @@ import scw.core.exception.NestedRuntimeException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 
-public abstract class AbstractBeanFactory implements BeanFactory {
+public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy {
 	private volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
@@ -299,7 +301,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 				return new InterfaceProxyBeanDefinition(this, clz, invocationHandler, getFilterNames());
 			}
 
-			if (!ReflectUtils.isInstance(clz, true)) {
+			if (!ReflectUtils.isInstance(clz)) {
 				return null;
 			}
 			return new AnnotationBeanDefinition(this, getPropertiesFactory(), clz, getFilterNames());

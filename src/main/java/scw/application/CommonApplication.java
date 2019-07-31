@@ -22,7 +22,7 @@ import scw.logger.LoggerFactory;
 import scw.sql.orm.ORMUtils;
 import scw.transaction.TransactionFilter;
 
-public class CommonApplication implements Application {
+public class CommonApplication implements Application{
 	private final XmlBeanFactory beanFactory;
 	private volatile boolean start = false;
 	private final PropertiesFactory propertiesFactory;
