@@ -32,9 +32,11 @@ import scw.core.KeyValuePairFilter;
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
 import scw.core.PropertiesFactory;
+import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.ParameterException;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectUtils;
+import scw.core.utils.Assert;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -57,6 +59,7 @@ public final class ServletUtils {
 	private static final String JSONP_CALLBACK = "callback";
 	private static final String JSONP_RESP_PREFIX = "(";
 	private static final String JSONP_RESP_SUFFIX = ");";
+	private static ThreadLocal<Map<Object, Object>> controllerLocal = new ThreadLocal<Map<Object, Object>>();
 
 	static {
 		try {
@@ -543,8 +546,32 @@ public final class ServletUtils {
 	}
 
 	public static void service(Request request, Response response, Collection<Filter> serviceFilter) throws Throwable {
-		FilterChain filterChain = new IteratorFilterChain(serviceFilter, null);
-		filterChain.doFilter(request, response);
+		try {
+			FilterChain filterChain = new IteratorFilterChain(serviceFilter, null);
+			filterChain.doFilter(request, response);
+		} finally {
+			controllerLocal.remove();
+		}
+	}
+
+	public static Object getControllerThreadLocalResource(Object name) {
+		Map<Object, Object> map = controllerLocal.get();
+		return map == null ? null : map.get(name);
+	}
+
+	public static void bindControllerThreadLocalResource(Object name, Object value) {
+		Assert.notNull(name);
+		Map<Object, Object> map = controllerLocal.get();
+		if (map == null) {
+			map = new HashMap<Object, Object>(4);
+			map.put(name, value);
+			controllerLocal.set(map);
+		} else {
+			if (map.containsKey(name)) {
+				throw new AlreadyExistsException(name.toString());
+			}
+			map.put(name, value);
+		}
 	}
 
 	public static ActionParameter[] getActionParameter(Method method) {
