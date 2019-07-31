@@ -1,17 +1,17 @@
 package scw.beans.rpc;
 
-import scw.beans.annotation.HttpProxy;
+import scw.beans.annotation.HttpCall;
 import scw.net.http.Method;
 
-public final class HttpProxyDefinition {
+public final class HttpCallDefinition {
 	public static final String COOKIE = "Cookie";
 
 	private final String[] headers;
 	private final boolean form;
 	private final Method method;
 
-	public HttpProxyDefinition(java.lang.reflect.Method method) {
-		HttpProxy httpProxy = method.getAnnotation(HttpProxy.class);
+	public HttpCallDefinition(java.lang.reflect.Method method) {
+		HttpCall httpProxy = method.getAnnotation(HttpCall.class);
 		if (httpProxy == null) {
 			this.headers = new String[] { COOKIE };
 			this.form = true;

@@ -382,7 +382,7 @@ public final class ServletUtils {
 				if (String.class.isAssignableFrom(field.getType())
 						|| ClassUtils.isPrimitiveOrWrapper(field.getType())) {
 					// 如果是基本数据类型
-					Object v = request.getObject(key, field.getType());
+					Object v = getParameter(request, key, field.getType());
 					if (v != null) {
 						ReflectUtils.setFieldValue(clz, field, t, v);
 					}
