@@ -37,8 +37,8 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	private void register() {
-		addSingleton(XmlBeanFactory.class.getName(), this);
-		registerNameMapping(BeanFactory.class.getName(), XmlBeanFactory.class.getName());
+		addSingleton(PropertiesFactory.class.getName(), propertiesFactory);
+		addSingleton(BeanFactory.class.getName(), this);
 	}
 
 	private void initParameter(String xmlPath) {

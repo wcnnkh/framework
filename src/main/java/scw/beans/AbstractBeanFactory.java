@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import scw.beans.annotation.InterfaceProxy;
 import scw.core.Destroy;
 import scw.core.Init;
-import scw.core.LRULinkedHashMap;
 import scw.core.PropertiesFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.BeansException;
@@ -24,7 +23,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	private volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
-	private volatile Map<String, Object> notFoundMap = new LRULinkedHashMap<String, Object>(1024);
+	private volatile Map<String, Object> notFoundMap = new HashMap<String, Object>();
 
 	private boolean init = false;
 
@@ -49,6 +48,10 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	public void addSingleton(String id, Object singleton) {
+		if (singletonMap.containsKey(id)) {
+			throw new AlreadyExistsException(id);
+		}
+
 		synchronized (singletonMap) {
 			singletonMap.put(id, singleton);
 		}
