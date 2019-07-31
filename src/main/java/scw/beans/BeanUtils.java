@@ -20,8 +20,6 @@ import scw.beans.annotation.Config;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Value;
-import scw.beans.async.AsyncCompleteFilter;
-import scw.beans.tcc.TCCTransactionFilter;
 import scw.beans.xml.XmlBeanParameter;
 import scw.core.PropertiesFactory;
 import scw.core.aop.Filter;
@@ -39,7 +37,6 @@ import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.transaction.TransactionFilter;
 
 public final class BeanUtils {
 	private static Logger logger = LoggerFactory.getLogger(BeanUtils.class);
@@ -315,9 +312,6 @@ public final class BeanUtils {
 	public static LinkedList<String> getBeanFilterNameList(Class<?> clz, Method method, String[] filterNames) {
 		// 把重复的filter过渡
 		LinkedList<String> list = new LinkedList<String>();
-		list.add(TransactionFilter.class.getName());
-		list.add(TCCTransactionFilter.class.getName());
-		list.add(AsyncCompleteFilter.class.getName());
 		if (filterNames != null) {
 			for (String name : filterNames) {
 				list.addFirst(name);
