@@ -24,7 +24,7 @@ public class RootFilter implements Filter, MethodInterceptor {
 		}
 
 		Invoker invoker = new CglibInvoker(proxy, obj);
-		return invoke(invoker, proxy, method, args);
+		return invoke(invoker, obj, method, args);
 	}
 
 	private Object invoke(Invoker invoker, Object proxy, Method method, Object[] args) throws Throwable {
