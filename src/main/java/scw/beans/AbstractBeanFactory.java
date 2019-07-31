@@ -366,7 +366,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			}
 
 			for (String id : beanKeyList) {
-				BeanDefinition beanDefinition = getBeanDefinition(id);
+				BeanDefinition beanDefinition = getBeanCache(id);
 				if (beanDefinition == null) {
 					continue;
 				}

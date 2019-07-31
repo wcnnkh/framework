@@ -8,13 +8,19 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestEvent;
+import javax.servlet.ServletRequestListener;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.startup.Tomcat;
 
+import scw.core.PropertiesFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceUtils;
@@ -25,6 +31,7 @@ import scw.core.utils.StringUtils;
 import scw.logger.LoggerUtils;
 import scw.servlet.ServletService;
 import scw.servlet.ServletUtils;
+import scw.servlet.http.filter.CrossDomainFilter;
 
 public class TomcatApplication extends CommonApplication implements Servlet {
 	private Tomcat tomcat;
@@ -80,6 +87,97 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 		}
 	}
 
+	private void configShutdown(Context context) {
+		String tomcatShutdownServletPath = getPropertiesFactory().getValue("tomcat.shutdown.path");
+		if (StringUtils.isEmpty(tomcatShutdownServletPath)) {
+			return;
+		}
+
+		String tomcatShutdownServletName = getPropertiesFactory().getValue("tomcat.shutdown.name");
+		if (StringUtils.isEmpty(tomcatShutdownServletName)) {
+			tomcatShutdownServletName = "shutdown";
+		}
+
+		Tomcat.addServlet(context, tomcatShutdownServletName, new ShutdownHttpServlet(getPropertiesFactory()));
+		addServletMapping(context, tomcatShutdownServletPath, tomcatShutdownServletName);
+	}
+
+	private static class ShutdownHttpServlet extends HttpServlet {
+		private static final long serialVersionUID = 1L;
+		private final String[] ips;
+		private final String username;
+		private final String password;
+		private volatile boolean shutdown;
+
+		public ShutdownHttpServlet(PropertiesFactory propertiesFactory) {
+			this.username = propertiesFactory.getValue("tomcat.shutdown.username");
+			this.password = propertiesFactory.getValue("tomcat.shutdown.password");
+			String ip = propertiesFactory.getValue("tomcat.shutdown.ip");
+			this.ips = StringUtils.commonSplit(ip);
+		}
+
+		private boolean checkIp(String requestIp) {
+			if (StringUtils.isEmpty(requestIp)) {
+				return false;
+			}
+
+			for (String ip : ips) {
+				if (ip.equals(requestIp)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@Override
+		public void init(ServletConfig config) throws ServletException {
+			shutdown = false;
+			config.getServletContext().addListener(new ServletRequestListener() {
+
+				public void requestInitialized(ServletRequestEvent sre) {
+				}
+
+				public void requestDestroyed(ServletRequestEvent sre) {
+					if (shutdown) {
+						shutdown();
+					}
+				}
+			});
+			super.init(config);
+		}
+
+		@Override
+		protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			CrossDomainFilter.DEFAULT.write(resp);
+			if (!ArrayUtils.isEmpty(ips)) {
+				String requestIp = ServletUtils.getIP(req);
+				if (!checkIp(requestIp)) {
+					resp.getWriter().write("Illegal IP [" + requestIp + "]");
+					return;
+				}
+			}
+
+			if (!StringUtils.isEmpty(username)) {
+				String requestUsername = req.getParameter("username");
+				if (!username.equals(requestUsername)) {
+					resp.getWriter().write("username error");
+					return;
+				}
+			}
+
+			if (!StringUtils.isEmpty(password)) {
+				String requestPassword = req.getParameter("password");
+				if (!password.equals(requestPassword)) {
+					resp.getWriter().write("password error");
+					return;
+				}
+			}
+
+			resp.getWriter().write("success");
+			shutdown = false;
+		}
+	}
+
 	private void configureServlet(Context context) {
 		String servletName = getPropertiesFactory().getValue("servlet.name");
 		servletName = StringUtils.isEmpty(servletName) ? "scw" : servletName;
@@ -125,7 +223,7 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 		configureLifecycleListener(context);
 		configureJSP(context);
 		configureServlet(context);
-
+		configShutdown(context);
 		try {
 			tomcat.start();
 		} catch (LifecycleException e) {
@@ -137,10 +235,11 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	public void destroy() {
 		try {
 			tomcat.destroy();
-			super.destroy();
 		} catch (LifecycleException e) {
-			e.printStackTrace();
+			// Ignore
 		}
+
+		super.destroy();
 	}
 
 	public void init(ServletConfig config) throws ServletException {
@@ -174,8 +273,10 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 			throw new NotFoundException("not found server");
 		}
 
+		LoggerUtils.info(TomcatApplication.class, "---------------shutdown---------------");
 		application.destroy();
 		application = null;
+		System.exit(0);
 	}
 
 	public static void run() {

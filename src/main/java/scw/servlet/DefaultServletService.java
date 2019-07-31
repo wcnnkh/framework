@@ -19,7 +19,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.servlet.beans.RequestBeanFactory;
 
-@Bean(proxy=false)
+@Bean(proxy = false)
 public class DefaultServletService implements ServletService {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -139,8 +139,8 @@ public class DefaultServletService implements ServletService {
 	}
 
 	protected void error(ServletRequest request, ServletResponse response, Throwable e) {
-		logger.error(e, "执行{}异常", request.toString());
-		if (!response.isCommitted() && response instanceof HttpServletResponse) {
+		logger.error(e, "执行{}异常", request == null ? null : request.toString());
+		if (response != null && !response.isCommitted() && response instanceof HttpServletResponse) {
 			try {
 				((HttpServletResponse) response).sendError(500, "system error");
 			} catch (IOException e1) {
