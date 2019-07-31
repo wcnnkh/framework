@@ -362,6 +362,10 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
 			for (String id : beanKeyList) {
 				BeanDefinition beanDefinition = getBeanDefinition(id);
+				if (beanDefinition == null) {
+					continue;
+				}
+
 				Object obj = singletonMap.get(id);
 				try {
 					beanDefinition.destroy(obj);
