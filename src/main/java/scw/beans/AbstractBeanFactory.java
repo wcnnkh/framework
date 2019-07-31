@@ -1,17 +1,16 @@
 package scw.beans;
 
+import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import scw.beans.annotation.Proxy;
-import scw.beans.proxy.ProxyBeanDefinitionFactory;
+import scw.beans.annotation.InterfaceProxy;
+import scw.core.LRULinkedHashMap;
 import scw.core.PropertiesFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.BeansException;
@@ -23,7 +22,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	private volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
-	private volatile Set<String> notFoundSet = new HashSet<String>();
+	private volatile Map<String, Object> notFoundMap = new LRULinkedHashMap<String, Object>(1024);
 
 	private boolean init = false;
 
@@ -34,6 +33,16 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
 		synchronized (nameMappingMap) {
 			nameMappingMap.put(key, value);
+		}
+	}
+
+	private void addNotFoundName(String name) {
+		if (!notFoundMap.containsKey(name)) {
+			synchronized (notFoundMap) {
+				if (!notFoundMap.containsKey(name)) {
+					notFoundMap.put(name, null);
+				}
+			}
 		}
 	}
 
@@ -228,6 +237,10 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	public BeanDefinition getBeanDefinition(String name) {
+		if (notFoundMap.containsKey(name)) {
+			return null;
+		}
+
 		BeanDefinition beanDefinition = getBeanCache(name);
 		if (beanDefinition == null) {
 			synchronized (beanMap) {
@@ -244,6 +257,10 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 					}
 				}
 			}
+		}
+
+		if (beanDefinition == null) {
+			addNotFoundName(name);
 		}
 		return beanDefinition;
 	}
@@ -264,10 +281,6 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			return b;
 		}
 
-		if (notFoundSet.contains(name)) {
-			return false;
-		}
-
 		BeanDefinition beanDefinition = getBeanDefinition(name);
 		return beanDefinition != null;
 	}
@@ -283,21 +296,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		return beanDefinition;
 	}
 
-	private void addNotFoundName(String name) {
-		if (!notFoundSet.contains(name)) {
-			synchronized (notFoundSet) {
-				if (!notFoundSet.contains(name)) {
-					notFoundSet.add(name);
-				}
-			}
-		}
-	}
-
 	private BeanDefinition newBeanDefinition(String name) {
-		if (notFoundSet.contains(name)) {
-			return null;
-		}
-
 		try {
 			String n = nameMappingMap.get(name);
 			if (n == null) {
@@ -305,13 +304,13 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			}
 
 			Class<?> clz = Class.forName(n);
-			Proxy proxy = clz.getAnnotation(Proxy.class);
-			if (proxy != null) {
-				ProxyBeanDefinitionFactory factory = getInstance(proxy.value());
-				return factory.getBeanDefinition(clz, this, getPropertiesFactory(), getFilterNames());
+			InterfaceProxy interfaceProxy = clz.getAnnotation(InterfaceProxy.class);
+			if (interfaceProxy != null) {
+				InvocationHandler invocationHandler = getInstance(interfaceProxy.value());
+				return new InterfaceProxyBeanDefinition(this, clz, invocationHandler, getFilterNames());
 			}
 
-			if (!ReflectUtils.isInstance(clz)) {
+			if (!ReflectUtils.isInstance(clz, true)) {
 				addNotFoundName(name);
 				return null;
 			}

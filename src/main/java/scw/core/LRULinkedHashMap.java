@@ -14,23 +14,15 @@ public class LRULinkedHashMap<K, V> extends LinkedHashMap<K, V> {
 	private static final long serialVersionUID = 1L;
 	private final int maxCapacity;
 
-	public LRULinkedHashMap(int maxCapacity, boolean accessOrder) {
-		this(maxCapacity, maxCapacity + 1, 1, accessOrder);
+	public LRULinkedHashMap(int maxCapacity) {
+		this(maxCapacity, maxCapacity + 1, 1);
 	}
 
-	public LRULinkedHashMap(int maxCapacity, int initialCapacity,
-			float loadFactor) {
+	public LRULinkedHashMap(int maxCapacity, int initialCapacity, float loadFactor) {
 		this(maxCapacity, initialCapacity, loadFactor, false);
 	}
 
-	public LRULinkedHashMap(int maxCapacity, int initialCapacity,
-			boolean accessOrder) {
-		super(initialCapacity, 0.75f, accessOrder);
-		this.maxCapacity = maxCapacity;
-	}
-
-	public LRULinkedHashMap(int maxCapacity, int initialCapacity,
-			float loadFactor, boolean accessOrder) {
+	public LRULinkedHashMap(int maxCapacity, int initialCapacity, float loadFactor, boolean accessOrder) {
 		super(initialCapacity, loadFactor, accessOrder);
 		this.maxCapacity = maxCapacity;
 	}

@@ -1,11 +1,7 @@
-package scw.beans.proxy;
+package scw.beans;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
-
-import scw.beans.AbstractInterfaceBeanDefinition;
-import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
 
 public class InterfaceProxyBeanDefinition extends AbstractInterfaceBeanDefinition {
 	private final InvocationHandler invocationHandler;

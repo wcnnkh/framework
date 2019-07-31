@@ -754,7 +754,28 @@ public final class ReflectUtils {
 	 * @return
 	 */
 	public static boolean isInstance(Class<?> clz) {
-		return !(Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers()));
+		return isInstance(clz, false);
+	}
+
+	/**
+	 * 是否可以实例化
+	 * 
+	 * @param clz
+	 * @param checkConstructor
+	 *            是否检查存在无参的构造方法
+	 * @return
+	 */
+	public static boolean isInstance(Class<?> clz, boolean checkConstructor) {
+		boolean b = !(Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers()))
+				|| !clz.isEnum() || !clz.isArray();
+		if (b && checkConstructor) {
+			try {
+				clz.getDeclaredConstructor();
+			} catch (NoSuchMethodException e) {
+				return false;
+			}
+		}
+		return b;
 	}
 
 	@SuppressWarnings("unchecked")
