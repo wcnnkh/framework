@@ -15,6 +15,8 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.startup.Tomcat;
 
+import scw.core.exception.AlreadyExistsException;
+import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ArrayUtils;
@@ -152,13 +154,28 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 		return null;
 	}
 
-	public static void run(String beanXml) {
+	private static volatile Application application;
+
+	public synchronized static void run(String beanXml) {
+		if (application != null) {
+			throw new AlreadyExistsException("server already exists");
+		}
+
 		if (StringUtils.isEmpty(beanXml)) {
 			LoggerUtils.warn(TomcatApplication.class, "No default beans.xml exists");
 		}
 
-		TomcatApplication application = new TomcatApplication(beanXml);
+		application = new TomcatApplication(beanXml);
 		application.init();
+	}
+
+	public synchronized static void shutdown() {
+		if (application == null) {
+			throw new NotFoundException("not found server");
+		}
+
+		application.destroy();
+		application = null;
 	}
 
 	public static void run() {
