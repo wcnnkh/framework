@@ -8,8 +8,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.ServletRequestListener;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -107,7 +105,6 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 		private final String[] ips;
 		private final String username;
 		private final String password;
-		private volatile boolean shutdown;
 
 		public ShutdownHttpServlet(PropertiesFactory propertiesFactory) {
 			this.username = propertiesFactory.getValue("tomcat.shutdown.username");
@@ -127,23 +124,6 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 				}
 			}
 			return false;
-		}
-
-		@Override
-		public void init(ServletConfig config) throws ServletException {
-			shutdown = false;
-			config.getServletContext().addListener(new ServletRequestListener() {
-
-				public void requestInitialized(ServletRequestEvent sre) {
-				}
-
-				public void requestDestroyed(ServletRequestEvent sre) {
-					if (shutdown) {
-						shutdown();
-					}
-				}
-			});
-			super.init(config);
 		}
 
 		@Override
@@ -173,8 +153,7 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 				}
 			}
 
-			resp.getWriter().write("success");
-			shutdown = false;
+			shutdown();
 		}
 	}
 
