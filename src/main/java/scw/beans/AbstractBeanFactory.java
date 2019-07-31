@@ -47,19 +47,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	public void addSingleton(String id, Object singleton) {
-		BeanDefinition beanDefinition = getBeanDefinition(id);
-		if (beanDefinition == null) {
-			throw new scw.core.exception.NotFoundException(id);
-		}
-
 		synchronized (singletonMap) {
 			singletonMap.put(id, singleton);
-			try {
-				beanDefinition.autowrite(singleton);
-				beanDefinition.init(singleton);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 	}
 
@@ -311,14 +300,12 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 			}
 
 			if (!ReflectUtils.isInstance(clz, true)) {
-				addNotFoundName(name);
 				return null;
 			}
 			return new AnnotationBeanDefinition(this, getPropertiesFactory(), clz, getFilterNames());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		addNotFoundName(name);
 		return null;
 	}
 
