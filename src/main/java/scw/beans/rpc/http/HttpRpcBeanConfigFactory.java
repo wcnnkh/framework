@@ -16,8 +16,8 @@ import scw.io.serializer.SerializerUtils;
 public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "http:reference";
 
-	public HttpRpcBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, NodeList rootNodeList)
-			throws Exception {
+	public HttpRpcBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, NodeList rootNodeList,
+			String[] filterNames) throws Exception {
 		for (int i = 0; i < rootNodeList.getLength(); i++) {
 			Node node = rootNodeList.item(i);
 			if (node == null) {
@@ -41,7 +41,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 						continue;
 					}
 
-					HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, address, sign, ser);
+					HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, address, sign, ser, filterNames);
 					addBean(httpRpcBean);
 				}
 			}
@@ -69,7 +69,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 					myAddress = address;
 				}
 
-				HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, myAddress, mySign, ser);
+				HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, myAddress, mySign, ser, filterNames);
 				addBean(httpRpcBean);
 			}
 		}

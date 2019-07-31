@@ -1,8 +1,11 @@
 package scw.core.aop;
 
+import java.io.Serializable;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.Collection;
 
+import scw.core.cglib.proxy.Enhancer;
 import scw.core.utils.Assert;
 
 public final class ProxyUtils {
@@ -20,13 +23,35 @@ public final class ProxyUtils {
 		return isJDKProxy(instance.getClass());
 	}
 
+	public static Object newProxyInstance(Object obj, Class<?> interfaceClass, Filter... filters) {
+		return newProxyInstance(obj, interfaceClass, Arrays.asList(filters));
+	}
+
 	public static Object newProxyInstance(Object obj, Class<?> interfaceClass, Collection<Filter> filters) {
 		return Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] { interfaceClass },
 				new FilterInvocationHandler(obj, filters));
 	}
 
-	public static Object newProxyInstance(Class<?> interfaceClass, Collection<Filter> filters, Invoker invoker) {
+	public static Object newProxyInstance(Invoker invoker, Class<?> interfaceClass, Filter... filters) {
+		return newProxyInstance(invoker, interfaceClass, Arrays.asList(filters));
+	}
+
+	public static Object newProxyInstance(Invoker invoker, Class<?> interfaceClass, Collection<Filter> filters) {
 		return Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] { interfaceClass },
 				new InvokerFilterInvocationHandler(invoker, filters));
+	}
+
+	public static Enhancer createEnhancer(Class<?> type, Filter... filters) {
+		return createEnhancer(type, Arrays.asList(filters));
+	}
+
+	public static Enhancer createEnhancer(Class<?> type, Collection<Filter> filters) {
+		Enhancer enhancer = new Enhancer();
+		enhancer.setCallback(new FiltersConvertCglibMethodInterceptor(filters));
+		if (Serializable.class.isAssignableFrom(type)) {
+			enhancer.setSerialVersionUID(1L);
+		}
+		enhancer.setSuperclass(type);
+		return enhancer;
 	}
 }

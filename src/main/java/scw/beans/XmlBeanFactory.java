@@ -118,12 +118,12 @@ public final class XmlBeanFactory extends AbstractBeanFactory {
 			if (!StringUtils.isNull(xmlPath)) {
 				NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
 				BeanConfigFactory dubboBeanConfigFactory = DubboUtils.getReferenceBeanConfigFactory(this,
-						propertiesFactory, nodeList);
+						propertiesFactory, nodeList, filterNames);
 				if (dubboBeanConfigFactory != null) {
 					addBeanConfigFactory(dubboBeanConfigFactory);
 				}
 
-				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this, propertiesFactory, nodeList));
+				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this, propertiesFactory, nodeList, filterNames));
 				addBeanConfigFactory(new XmlBeanConfigFactory(this, propertiesFactory, nodeList, filterNames));
 				addBeanConfigFactory(new ServiceBeanConfigFactory(this, propertiesFactory, packages, filterNames));
 			}

@@ -66,39 +66,33 @@ public final class DubboUtils {
 		return false;
 	}
 
-	public static BeanConfigFactory getReferenceBeanConfigFactory(
-			BeanFactory beanFactory, PropertiesFactory propertiesFactory,
-			NodeList nodeList) {
+	public static BeanConfigFactory getReferenceBeanConfigFactory(BeanFactory beanFactory,
+			PropertiesFactory propertiesFactory, NodeList nodeList, String[] filterNames) {
 		if (!xmlExistDubboReference(nodeList)) {
 			return null;
 		}
 
 		if (!isSupport()) {
-			LoggerUtils.warn(DubboUtils.class,
-					"------not support reference dubbo service------");
+			LoggerUtils.warn(DubboUtils.class, "------not support reference dubbo service------");
 			return null;
 		}
 
-		return InstanceUtils.getInstance(
-				"scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory", beanFactory,
-				propertiesFactory, nodeList);
+		return InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory", beanFactory,
+				propertiesFactory, nodeList, filterNames);
 	}
 
-	public static void exportService(BeanFactory beanFactory,
-			PropertiesFactory propertiesFactory, NodeList nodeList) {
+	public static void exportService(BeanFactory beanFactory, PropertiesFactory propertiesFactory, NodeList nodeList) {
 		if (!xmlExistDubboService(nodeList)) {
 			return;
 		}
 
 		if (!isSupport()) {
-			LoggerUtils.warn(DubboUtils.class,
-					"------not support export dubbo service------");
+			LoggerUtils.warn(DubboUtils.class, "------not support export dubbo service------");
 			return;
 		}
 
-		Thread thread = InstanceUtils.getInstance(
-				"scw.beans.rpc.dubbo.XmlDubboServiceExortThread",
-				propertiesFactory, beanFactory, nodeList);
+		Thread thread = InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboServiceExortThread", propertiesFactory,
+				beanFactory, nodeList);
 		if (thread == null) {
 			return;
 		}

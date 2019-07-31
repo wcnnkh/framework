@@ -13,7 +13,7 @@ import scw.core.PropertiesFactory;
 
 public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 
-	public XmlDubboBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, NodeList nodeList)
+	public XmlDubboBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, NodeList nodeList, String[] filterNames)
 			throws Exception {
 		if (nodeList != null) {
 			for (int x = 0; x < nodeList.getLength(); x++) {
@@ -30,7 +30,7 @@ public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 						beanFactory, node);
 				for (ReferenceConfig<?> referenceConfig : referenceConfigs) {
 					XmlDubboBean xmlDubboBean = new XmlDubboBean(beanFactory, referenceConfig.getInterfaceClass(),
-							referenceConfig);
+							referenceConfig, filterNames);
 					addBean(xmlDubboBean);
 				}
 			}

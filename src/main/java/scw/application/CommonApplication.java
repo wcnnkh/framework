@@ -8,10 +8,11 @@ import com.alibaba.dubbo.config.ProtocolConfig;
 import scw.application.consumer.AnnotationConsumerUtils;
 import scw.application.consumer.XmlConsumerFactory;
 import scw.application.crontab.CrontabAnnotationUtils;
-import scw.beans.CommonFilter;
 import scw.beans.XmlBeanFactory;
+import scw.beans.async.AsyncCompleteFilter;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.beans.rpc.dubbo.DubboUtils;
+import scw.beans.tcc.TCCTransactionFilter;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertiesFactory;
 import scw.core.utils.ClassUtils;
@@ -19,6 +20,7 @@ import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerFactory;
 import scw.sql.orm.ORMUtils;
+import scw.transaction.TransactionFilter;
 
 public class CommonApplication implements Application {
 	private final XmlBeanFactory beanFactory;
@@ -36,10 +38,11 @@ public class CommonApplication implements Application {
 				: propertiesFactory;
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, this.configPath, initStatic);
-			this.beanFactory.addFirstFilters(CommonFilter.class.getName());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+
+		createAfter();
 	}
 
 	public CommonApplication(String configXml, boolean initStatic) {
@@ -47,25 +50,31 @@ public class CommonApplication implements Application {
 		this.propertiesFactory = new XmlPropertiesFactory(this.configPath);
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, this.configPath, initStatic);
-			this.beanFactory.addFirstFilters(CommonFilter.class.getName());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		createAfter();
 	}
 
-	public String getConfigPath() {
+	private void createAfter() {
+		this.beanFactory.addFirstFilters(AsyncCompleteFilter.class.getName());
+		this.beanFactory.addFirstFilters(TCCTransactionFilter.class.getName());
+		this.beanFactory.addFirstFilters(TransactionFilter.class.getName());
+	}
+
+	public final String getConfigPath() {
 		return configPath;
 	}
 
-	public Collection<Class<?>> getClasses() {
+	public final Collection<Class<?>> getClasses() {
 		return ClassUtils.getClasses(beanFactory.getPackages());
 	}
 
-	public XmlBeanFactory getBeanFactory() {
+	public final XmlBeanFactory getBeanFactory() {
 		return beanFactory;
 	}
 
-	public PropertiesFactory getPropertiesFactory() {
+	public final PropertiesFactory getPropertiesFactory() {
 		return beanFactory.getPropertiesFactory();
 	}
 
