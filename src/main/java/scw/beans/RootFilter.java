@@ -9,7 +9,7 @@ import scw.core.aop.Invoker;
 import scw.core.cglib.proxy.MethodInterceptor;
 import scw.core.cglib.proxy.MethodProxy;
 
-public class RootFilter implements Filter, MethodInterceptor {
+final class RootFilter implements Filter, MethodInterceptor {
 	private String[] filterNames;
 	private BeanFactory beanFactory;
 
