@@ -32,9 +32,6 @@ import scw.servlet.ServletUtils;
 import scw.servlet.http.filter.CrossDomainFilter;
 
 public class TomcatApplication extends CommonApplication implements Servlet {
-	private static final String SERVLET_NAME = "scw";
-	private static final String SOURCE_SERVLET_NAME = "default";
-
 	private Tomcat tomcat;
 	private ServletService servletService;
 
@@ -161,16 +158,16 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	}
 
 	private void configureServlet(Context context) {
-		Tomcat.addServlet(context, SERVLET_NAME, this);
-		addServletMapping(context, "/", SERVLET_NAME);
+		Tomcat.addServlet(context, "scw", this);
+		addServletMapping(context, "/", "scw");
 		String sourceMapping = getPropertiesFactory().getValue("tomcat.source");
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
-				Tomcat.addServlet(context, SOURCE_SERVLET_NAME, "org.apache.catalina.servlets.DefaultServlet");
+				Tomcat.addServlet(context, "default", "org.apache.catalina.servlets.DefaultServlet");
 				for (String pattern : patternArr) {
 					LoggerUtils.info(TomcatApplication.class, "source mapping [{}]", pattern);
-					addServletMapping(context, pattern, SOURCE_SERVLET_NAME);
+					addServletMapping(context, pattern, "default");
 				}
 			}
 		}
