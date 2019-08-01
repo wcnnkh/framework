@@ -33,28 +33,22 @@ public final class HttpUtils {
 
 	public static String doGet(String url, String charsetName) {
 		HttpRequest request = new HttpRequest(Method.GET, url);
-		request.setContentType(new DefaultContentType(
-				ContentType.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
+		request.setContentType(new DefaultContentType(ContentType.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
 		ByteArray byteArray = NetworkUtils.execute(request);
 		return byteArray.toString(charsetName);
 	}
 
-	public static String postJson(String url,
-			Map<String, String> requestProperties, Object body,
-			String charsetName) {
+	public static String postJson(String url, Map<String, String> requestProperties, Object body, String charsetName) {
 		String text = null;
 		if (body != null) {
 			if (body instanceof String) {
 				text = body.toString();
 			} else if (body instanceof ToParameterMap) {
-				text = JSONUtils
-						.toJSONString(toParameterMap((ToParameterMap) body));
+				text = JSONUtils.toJSONString(toParameterMap((ToParameterMap) body));
 			}
 		}
-		HttpRequest request = new BodyRequest(Method.POST, url, new ByteArray(
-				text, charsetName));
-		request.setContentType(new DefaultContentType(
-				ContentType.APPLICATION_JSON, charsetName));
+		HttpRequest request = new BodyRequest(Method.POST, url, new ByteArray(text, charsetName));
+		request.setContentType(new DefaultContentType(ContentType.APPLICATION_JSON, charsetName));
 		request.setRequestProperties(requestProperties);
 		ByteArray responseBody = NetworkUtils.execute(request);
 		if (responseBody == null) {
@@ -64,14 +58,11 @@ public final class HttpUtils {
 		return responseBody.toString(charsetName);
 	}
 
-	public static String postJson(String url,
-			Map<String, String> requestProperties, Object body) {
-		return postJson(url, requestProperties, body,
-				Constants.DEFAULT_CHARSET_NAME);
+	public static String postJson(String url, Map<String, String> requestProperties, Object body) {
+		return postJson(url, requestProperties, body, Constants.DEFAULT_CHARSET_NAME);
 	}
 
-	public static Map<String, Object> toParameterMap(
-			ToParameterMap toRequestParameterMap) {
+	public static Map<String, Object> toParameterMap(ToParameterMap toRequestParameterMap) {
 		if (toRequestParameterMap == null) {
 			return null;
 		}
@@ -134,12 +125,10 @@ public final class HttpUtils {
 		return value;
 	}
 
-	public static String postForm(String url,
-			Map<String, String> requestProperties, Map<String, ?> parameterMap,
+	public static String postForm(String url, Map<String, String> requestProperties, Map<String, ?> parameterMap,
 			String charsetName) {
 		FormRequest request = new FormRequest(Method.POST, url, charsetName);
-		request.setContentType(new DefaultContentType(
-				ContentType.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
+		request.setContentType(new DefaultContentType(ContentType.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
 		request.setRequestProperties(requestProperties);
 		request.addAll(parameterMap);
 		ByteArray responseBody = NetworkUtils.execute(request);
@@ -149,34 +138,32 @@ public final class HttpUtils {
 		return responseBody.toString(charsetName);
 	}
 
-	public static String postForm(String url,
-			Map<String, String> requestProperties,
+	public static String postForm(String url, Map<String, String> requestProperties,
 			ToParameterMap toRequestParameterMap, String charsetName) {
-		return postForm(url, requestProperties,
-				toParameterMap(toRequestParameterMap), charsetName);
+		return postForm(url, requestProperties, toParameterMap(toRequestParameterMap), charsetName);
 	}
 
-	public static String postForm(String url,
-			Map<String, String> requestProperties, Map<String, ?> parameterMap) {
-		return postForm(url, requestProperties, parameterMap,
-				Constants.DEFAULT_CHARSET_NAME);
+	public static String postForm(String url, Map<String, String> requestProperties, Map<String, ?> parameterMap) {
+		return postForm(url, requestProperties, parameterMap, Constants.DEFAULT_CHARSET_NAME);
 	}
 
-	public static String appendParameters(String prefix,
-			Map<String, Object> paramMap, boolean encode, String charsetName)
+	public static String appendParameters(String url, Map<String, Object> paramMap, String charsetName)
 			throws UnsupportedEncodingException {
-		if (prefix == null || paramMap == null || paramMap.isEmpty()) {
-			return prefix;
+		if (paramMap == null || paramMap.isEmpty()) {
+			return url;
 		}
 
 		StringBuilder sb = new StringBuilder(128);
-		sb.append(prefix);
-		if (prefix != null || prefix.lastIndexOf("?") == -1) {
-			sb.append("?");
+		if (!StringUtils.isEmpty(url)) {
+			sb.append(url);
+			if (url.lastIndexOf("?") == -1) {
+				sb.append("?");
+			} else {
+				sb.append("&");
+			}
 		}
 
-		Iterator<Entry<String, Object>> iterator = paramMap.entrySet()
-				.iterator();
+		Iterator<Entry<String, Object>> iterator = paramMap.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, Object> entry = iterator.next();
 			if (StringUtils.isNull(entry.getKey()) || entry.getValue() == null) {
@@ -185,24 +172,17 @@ public final class HttpUtils {
 
 			sb.append(entry.getKey());
 			sb.append("=");
-			if (encode) {
-				sb.append(URLEncoder.encode(entry.getValue().toString(),
-						charsetName));
+			if (StringUtils.isEmpty(charsetName)) {
+				sb.append(URLEncoder.encode(entry.getValue().toString(), charsetName));
 			} else {
 				sb.append(entry.getValue());
 			}
+
+			if (iterator.hasNext()) {
+				sb.append("&");
+			}
 		}
 		return sb.toString();
-	}
-
-	public static String appendParameters(String prefix,
-			Map<String, Object> paramMap) {
-		try {
-			return appendParameters(prefix, paramMap, true,
-					Constants.DEFAULT_CHARSET_NAME);
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	public static String encode(Object value, String charsetName) {
@@ -221,8 +201,7 @@ public final class HttpUtils {
 		return encode(value, Constants.DEFAULT_CHARSET_NAME);
 	}
 
-	public static String decode(String value, String charsetName)
-			throws UnsupportedEncodingException {
+	public static String decode(String value, String charsetName) throws UnsupportedEncodingException {
 		if (value == null) {
 			return null;
 		}
@@ -238,8 +217,7 @@ public final class HttpUtils {
 		}
 	}
 
-	public static String decode(String content, String charsetName, int count)
-			throws UnsupportedEncodingException {
+	public static String decode(String content, String charsetName, int count) throws UnsupportedEncodingException {
 		if (count <= 0) {
 			return content;
 		}
@@ -251,8 +229,7 @@ public final class HttpUtils {
 		return newContent;
 	}
 
-	public static String encode(String content, String charsetName, int count)
-			throws UnsupportedEncodingException {
+	public static String encode(String content, String charsetName, int count) throws UnsupportedEncodingException {
 		if (count <= 0) {
 			return content;
 		}

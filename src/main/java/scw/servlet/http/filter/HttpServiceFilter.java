@@ -19,6 +19,7 @@ public final class HttpServiceFilter implements Filter {
 
 	public HttpServiceFilter(BeanFactory beanFactory, Collection<Class<?>> classes, String actionKey) {
 		filters = new ArrayList<Filter>(3);
+		filters.add(beanFactory.getInstance(HeaderSpreadFilter.class));
 		filters.add(new ParameterActionServiceFilter(actionKey));
 		filters.add(new ServletPathServiceFilter());
 		filters.add(new RestServiceFilter());
