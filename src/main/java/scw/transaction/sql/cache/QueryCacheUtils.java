@@ -20,8 +20,8 @@ public final class QueryCacheUtils {
 
 	private QueryCacheUtils() {
 	};
-	
-	public static boolean isGlobalCacheEnable(){
+
+	public static boolean isGlobalCacheEnable() {
 		return cacheEnable;
 	}
 
@@ -29,33 +29,17 @@ public final class QueryCacheUtils {
 		cacheEnable = enable;
 	}
 
-	public static boolean queryCacheEnable() {
-		if (!cacheEnable) {
-			return false;
-		}
-
-		Transaction transaction = TransactionManager.getCurrentTransaction();
-		if (transaction == null) {
-			return false;
-		}
-
-		MultipleConnectionQueryCache cache = (MultipleConnectionQueryCache) transaction
-				.getResource(MultipleConnectionQueryCache.class);
-		if (cache == null) {
-			return false;
-		}
-
-		return cache.isEnable();
-	}
-
+	/**
+	 * 禁用会清除事务缓存
+	 * @param enable
+	 */
 	public static void setQueryCacheEnable(boolean enable) {
 		Transaction transaction = TransactionManager.getCurrentTransaction();
 		if (transaction == null) {
 			return;
 		}
 
-		MultipleConnectionQueryCache cache = (MultipleConnectionQueryCache) transaction
-				.getResource(MultipleConnectionQueryCache.class);
+		MultipleConnectionQueryCache cache = getMultipleConnectionQueryCache();
 		if (cache == null) {
 			return;
 		}
@@ -63,11 +47,11 @@ public final class QueryCacheUtils {
 		cache.setEnable(enable);
 	}
 
-	private static MultipleConnectionQueryCache getMultipleConnectionQueryCache(SqlOperations sqlOperations) {
-		if(!cacheEnable){
+	private static MultipleConnectionQueryCache getMultipleConnectionQueryCache() {
+		if (!cacheEnable) {
 			return null;
 		}
-		
+
 		Transaction transaction = TransactionManager.getCurrentTransaction();
 		if (transaction == null) {
 			return null;
@@ -83,7 +67,7 @@ public final class QueryCacheUtils {
 	}
 
 	public static <T> T query(SqlOperations sqlOperations, Sql sql, ResultSetMapper<T> resultSetMapper) {
-		MultipleConnectionQueryCache cache = getMultipleConnectionQueryCache(sqlOperations);
+		MultipleConnectionQueryCache cache = getMultipleConnectionQueryCache();
 		if (cache == null) {
 			return sqlOperations.query(sql, resultSetMapper);
 		} else {
@@ -92,7 +76,7 @@ public final class QueryCacheUtils {
 	}
 
 	public static <T> List<T> query(SqlOperations sqlOperations, Sql sql, RowMapper<T> rowMapper) {
-		MultipleConnectionQueryCache cache = getMultipleConnectionQueryCache(sqlOperations);
+		MultipleConnectionQueryCache cache = getMultipleConnectionQueryCache();
 		if (cache == null) {
 			return sqlOperations.query(sql, rowMapper);
 		} else {

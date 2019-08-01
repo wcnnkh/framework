@@ -32,6 +32,15 @@ import scw.transaction.sql.cache.QueryCacheUtils;
 
 public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	private Logger logger = LoggerFactory.getLogger(getClass());
+	private volatile boolean cacheEnable = QueryCacheUtils.isGlobalCacheEnable();
+
+	public final boolean isCacheEnable() {
+		return cacheEnable;
+	}
+
+	public final void setCacheEnable(boolean cacheEnable) {
+		this.cacheEnable = cacheEnable;
+	}
 
 	public abstract SqlFormat getSqlFormat();
 
@@ -236,12 +245,21 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public ResultSet select(Sql sql) {
-		return QueryCacheUtils.query(this, sql, new ResultSetMapper<ResultSet>() {
+		if (cacheEnable && QueryCacheUtils.isGlobalCacheEnable()) {
+			return QueryCacheUtils.query(this, sql, new ResultSetMapper<ResultSet>() {
 
-			public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
-				return new DefaultResultSet(resultSet);
-			}
-		});
+				public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
+					return new DefaultResultSet(resultSet);
+				}
+			});
+		} else {
+			return query(sql, new ResultSetMapper<ResultSet>() {
+
+				public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
+					return new DefaultResultSet(resultSet);
+				}
+			});
+		}
 	}
 
 	public <T> List<T> select(Class<T> type, Sql sql) {
