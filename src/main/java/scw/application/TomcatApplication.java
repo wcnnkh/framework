@@ -32,6 +32,9 @@ import scw.servlet.ServletUtils;
 import scw.servlet.http.filter.CrossDomainFilter;
 
 public class TomcatApplication extends CommonApplication implements Servlet {
+	private static final String SERVLET_NAME = "scw";
+	private static final String SOURCE_SERVLET_NAME = "default";
+
 	private Tomcat tomcat;
 	private ServletService servletService;
 
@@ -45,10 +48,10 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 
 	private Tomcat createTomcat() {
 		Tomcat tomcat = new Tomcat();
-		int port = StringUtils.parseInt(getPropertiesFactory().getValue("servlet.port"), 8080);
+		int port = StringUtils.parseInt(getPropertiesFactory().getValue("tomcat.port"), 8080);
 		tomcat.setPort(port);
 
-		String basedir = getPropertiesFactory().getValue("servlet.basedir");
+		String basedir = getPropertiesFactory().getValue("tomcat.basedir");
 		if (StringUtils.isEmpty(basedir)) {
 			basedir = ConfigUtils.getWorkPath();
 		}
@@ -60,7 +63,7 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	}
 
 	private Context createContext() {
-		String contextPath = getPropertiesFactory().getValue("servlet.contextPath");
+		String contextPath = getPropertiesFactory().getValue("tomcat.contextPath");
 		contextPath = StringUtils.isEmpty(contextPath) ? "" : contextPath;
 		return tomcat.addContext(contextPath, ConfigUtils.getWorkPath());
 	}
@@ -72,7 +75,7 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	}
 
 	private void configureJSP(Context context) {
-		if (StringUtils.parseBoolean(getPropertiesFactory().getValue("servlet.jsp"))) {
+		if (StringUtils.parseBoolean(getPropertiesFactory().getValue("tomcat.jsp"))) {
 			ServletContainerInitializer containerInitializer = InstanceUtils
 					.getInstance("org.apache.jasper.servlet.JasperInitializer", true);
 			if (containerInitializer != null) {
@@ -158,20 +161,16 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	}
 
 	private void configureServlet(Context context) {
-		String servletName = getPropertiesFactory().getValue("servlet.name");
-		servletName = StringUtils.isEmpty(servletName) ? "scw" : servletName;
-		Tomcat.addServlet(context, servletName, this);
-
-		String servletPattern = getPropertiesFactory().getValue("servlet.pattern");
-		addServletMapping(context, StringUtils.isEmpty(servletPattern) ? "/" : servletPattern, servletName);
-		String sourceMapping = getPropertiesFactory().getValue("servlet.source");
+		Tomcat.addServlet(context, SERVLET_NAME, this);
+		addServletMapping(context, "/", SERVLET_NAME);
+		String sourceMapping = getPropertiesFactory().getValue("tomcat.source");
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
-				Tomcat.addServlet(context, "default", "org.apache.catalina.servlets.DefaultServlet");
+				Tomcat.addServlet(context, SOURCE_SERVLET_NAME, "org.apache.catalina.servlets.DefaultServlet");
 				for (String pattern : patternArr) {
 					LoggerUtils.info(TomcatApplication.class, "source mapping [{}]", pattern);
-					addServletMapping(context, pattern, "default");
+					addServletMapping(context, pattern, SOURCE_SERVLET_NAME);
 				}
 			}
 		}
