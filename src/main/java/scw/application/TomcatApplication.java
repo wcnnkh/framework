@@ -222,10 +222,22 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 		configureServlet(context);
 		configShutdown(context);
 		try {
+			tomcat8();
+		} catch (Throwable e1) {
+		}
+
+		try {
 			tomcat.start();
 		} catch (LifecycleException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private void tomcat8() throws Throwable {
+		Class<?> clz = Class
+				.forName("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory");
+		Method method = clz.getDeclaredMethod("disable");
+		method.invoke(null);
 	}
 
 	@Override

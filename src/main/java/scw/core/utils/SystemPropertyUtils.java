@@ -64,6 +64,7 @@ public abstract class SystemPropertyUtils {
 
 	private static final String WEB_ROOT = "web.root";
 	private static final String WORK_PATH_PROPERTY_NAME = "scw_work_path";
+	private static final String DEFAULT_WORK_PATH_DIR = "public,www";
 
 	/**
 	 * Resolve ${...} placeholders in the given text, replacing them with
@@ -144,6 +145,17 @@ public abstract class SystemPropertyUtils {
 		System.setProperty(WORK_PATH_PROPERTY_NAME, path);
 	}
 
+	private static String getDefaultWorkPath() {
+		for (String name : StringUtils.commonSplit(DEFAULT_WORK_PATH_DIR)) {
+			File file = new File(getUserDir() + File.separator + name);
+			if (file.exists()) {
+				return file.getPath();
+			}
+		}
+
+		return getUserDir();
+	}
+
 	/**
 	 * 如果返回空就说明不存在WEB-INF目录
 	 * 
@@ -154,23 +166,30 @@ public abstract class SystemPropertyUtils {
 		if (path == null) {
 			URL url = ResourceUtils.getClassPathURL();
 			if (url == null) {
-				path = getUserDir();
+				path = getDefaultWorkPath();
 			} else {
 				File file = new File(url.getPath());
 				if (file.isFile()) {
 					path = getUserDir();
 				} else {
-					file = file.getParentFile().getParentFile();
-					file = FileUtils.searchDirectory(file, "WEB-INF");
+					file = file.getParentFile();
 					if (file != null) {
-						path = file.getPath();
+						file = file.getParentFile();
+					}
+
+					if (file != null) {
+						file = FileUtils.searchDirectory(file, "WEB-INF");
+						if (file != null) {
+							path = file.getPath();
+						}
 					}
 				}
-			}
 
-			if (path != null) {
-				setWorkPath(path);
+				if (path == null) {
+					path = getDefaultWorkPath();
+				}
 			}
+			setWorkPath(path);
 		}
 		return path;
 	}
@@ -207,9 +226,9 @@ public abstract class SystemPropertyUtils {
 
 	public static String getSystemOnlyId() {
 		try {
-			return scw.core.Base64
-					.encode((getUserDir() + "&" + ResourceUtils.getClassPathURL())
-							.getBytes(Constants.DEFAULT_CHARSET_NAME));
+			return scw.core.Base64.encode((getUserDir() + "&" + ResourceUtils
+					.getClassPathURL())
+					.getBytes(Constants.DEFAULT_CHARSET_NAME));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}

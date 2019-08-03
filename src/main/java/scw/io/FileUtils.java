@@ -2766,17 +2766,25 @@ public final class FileUtils {
 	 *            父目录
 	 * @return
 	 */
-	public static String searchFile(String fileName, String rootPath) {
-		File file = new File(rootPath);
-		for (File f : file.listFiles()) {
+	public static File searchFile(String fileName, File rootFile) {
+		if (!rootFile.exists()) {
+			return null;
+		}
+
+		File[] files = rootFile.listFiles();
+		if (files == null) {
+			return null;
+		}
+
+		for (File f : files) {
 			if (f.isDirectory()) {
-				String name = searchFile(fileName, f.getPath());
-				if (name != null) {
-					return name;
+				File file = searchFile(fileName, f);
+				if (file != null) {
+					return file;
 				}
 			} else {
 				if (f.getName().equals(fileName)) {
-					return f.getPath();
+					return f;
 				}
 			}
 		}
@@ -2809,18 +2817,24 @@ public final class FileUtils {
 	 * @return
 	 */
 	public static File searchDirectory(File rootFile, String directoryName) {
-		if (rootFile.exists()) {
-			File[] files = rootFile.listFiles();
-			for (File file : files) {
-				if (file.isDirectory()) {
-					if (file.getName().equals(directoryName)) {
-						return file;
-					}
+		if (!rootFile.exists()) {
+			return null;
+		}
+		
+		File[] files = rootFile.listFiles();
+		if (files == null) {
+			return null;
+		}
 
-					File f = searchDirectory(file, directoryName);
-					if (f != null) {
-						return f;
-					}
+		for (File file : files) {
+			if (file.isDirectory()) {
+				if (file.getName().equals(directoryName)) {
+					return file;
+				}
+
+				File f = searchDirectory(file, directoryName);
+				if (f != null) {
+					return f;
 				}
 			}
 		}

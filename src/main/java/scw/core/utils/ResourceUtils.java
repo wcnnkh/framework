@@ -19,6 +19,7 @@ package scw.core.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -28,11 +29,16 @@ import java.net.URLConnection;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import scw.core.Constants;
 import scw.core.Consumer;
 import scw.core.Convert;
 import scw.core.Verification;
@@ -102,6 +108,9 @@ public abstract class ResourceUtils {
 	private static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
 
 	private static final String RESOURCE_SUFFIX = "scw_res_suffix";
+
+	private static final String MANIFEST = "META-INF/MANIFEST.MF";
+	private static final String MANIFEST_CLASS_PATH_NAME = "Class-Path";
 
 	/**
 	 * Return whether the given resource location is a URL: either a special
@@ -520,7 +529,7 @@ public abstract class ResourceUtils {
 			boolean b = false;
 			URL url = getClassPathURL();
 			if (url != null) {
-				b = consumterInputStream(url.getPath(), eqPath, suffixs,
+				b = consumterInputStream(url.toString(), eqPath, suffixs,
 						consumer);
 			}
 
@@ -703,8 +712,50 @@ public abstract class ResourceUtils {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	public static Map<String, String> formatManifestFile(JarFile jarFile) {
+		JarEntry jarEntry = jarFile.getJarEntry(MANIFEST);
+		if (jarEntry == null) {
+			return Collections.EMPTY_MAP;
+		}
+
+		InputStream inputStream = null;
+		try {
+			inputStream = jarFile.getInputStream(jarEntry);
+			return formatManifestFile(inputStream,
+					Constants.DEFAULT_CHARSET_NAME);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Collections.EMPTY_MAP;
+	}
+
+	private static Map<String, String> formatManifestFile(
+			InputStream inputStream, String charsetName) throws IOException {
+		Map<String, String> map = new HashMap<String, String>(8);
+		List<String> list = IOUtils.readLines(inputStream, charsetName);
+		for (String content : list) {
+			content = content.trim();
+			if (StringUtils.isEmpty(content)) {
+				continue;
+			}
+
+			int index = content.indexOf(":");
+			if (index == -1) {
+				continue;
+			}
+
+			String name = content.substring(0, index);
+			String value = content.substring(index + 1);
+			value = value.trim();
+			map.put(name, value);
+		}
+		return map;
+	}
+
 	private static void appendJarClass(Collection<Class<?>> classList,
-			JarFile jarFile, Verification<String> verification) {
+			JarFile jarFile, Verification<String> verification,
+			boolean appendManifest) {
 		Enumeration<JarEntry> enumeration = jarFile.entries();
 		while (enumeration.hasMoreElements()) {
 			JarEntry jarEntry = enumeration.nextElement();
@@ -718,6 +769,19 @@ public abstract class ResourceUtils {
 				Class<?> clz = forFileNmae(name, verification);
 				if (clz != null) {
 					classList.add(clz);
+				}
+			}
+		}
+
+		if (appendManifest) {
+			Map<String, String> map = formatManifestFile(jarFile);
+			String classPath = map.get(MANIFEST_CLASS_PATH_NAME);
+			if (!StringUtils.isEmpty(classPath)) {
+				String[] pathArray = StringUtils.split(classPath, ' ');
+				if (!ArrayUtils.isEmpty(pathArray)) {
+					for (String path : pathArray) {
+						appendClass(path, classList, verification, false);
+					}
 				}
 			}
 		}
@@ -746,22 +810,32 @@ public abstract class ResourceUtils {
 						classList.add(clz);
 					}
 				} else if (f.getName().endsWith(".jar")) {
-					appendJarClass(f, classList, verification);
+					appendJarClass(f, classList, verification, false);
 				}
 			}
 		}
 	}
 
 	private static void appendJarClass(File file,
-			Collection<Class<?>> classList, Verification<String> verification) {
+			Collection<Class<?>> classList, Verification<String> verification, boolean appendManifest) {
 		JarFile jarFile = null;
 		try {
 			jarFile = new JarFile(file);
-			appendJarClass(classList, jarFile, verification);
+			appendJarClass(classList, jarFile, verification, appendManifest);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			IOUtils.close(jarFile);
+		}
+	}
+
+	private static void appendClass(String path, Collection<Class<?>> list,
+			Verification<String> verification, boolean appendManifest) {
+		File file = new File(path);
+		if (file.isFile()) {
+			appendJarClass(file, list, verification, appendManifest);
+		} else {
+			appendDirectoryClass(null, list, file, verification);
 		}
 	}
 
@@ -770,23 +844,11 @@ public abstract class ResourceUtils {
 		LinkedHashSet<Class<?>> list = new LinkedHashSet<Class<?>>();
 		URL url = getClassPathURL();
 		if (url != null) {
-			File file = new File(url.getPath());
-			if (file != null) {
-				if (file.isFile()) {
-					appendJarClass(file, list, verification);
-				} else {
-					appendDirectoryClass(null, list, file, verification);
-				}
-			}
+			appendClass(url.toString(), list, verification, true);
 		}
 
 		for (String name : SystemPropertyUtils.getJavaClassPathArray()) {
-			File file = new File(name);
-			if (file.isFile()) {
-				appendJarClass(file, list, verification);
-			} else {
-				appendDirectoryClass(null, list, file, verification);
-			}
+			appendClass(name, list, verification, true);
 		}
 		return list;
 	}
@@ -818,8 +880,7 @@ public abstract class ResourceUtils {
 			Verification<String> {
 		public boolean verification(String name) {
 			return !((name.startsWith("java.") || name.startsWith("javax.")
-					|| name.indexOf(".") == -1
-					|| name.startsWith("scw.")
+					|| name.indexOf(".") == -1 || name.startsWith("scw.")
 					|| name.startsWith("org.apache.")
 					|| name.startsWith("freemarker.")
 					|| name.startsWith("com.alibaba.")
@@ -860,9 +921,8 @@ public abstract class ResourceUtils {
 					|| name.startsWith("com.fasterxml")
 					|| name.startsWith("org.objectweb.")
 					|| name.startsWith("lombok.")
-					|| name.startsWith("com.zwitserloot.")
-					|| name.startsWith("org.eclipse.")
-					));
+					|| name.startsWith("com.zwitserloot.") || name
+						.startsWith("org.eclipse.")));
 		}
 	}
 }
