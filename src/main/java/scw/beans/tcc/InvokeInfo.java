@@ -44,11 +44,11 @@ public final class InvokeInfo implements Serializable {
 	private static Object[] getIndexMapppingArgs(SerializableMethodDefinition method, Object tryRtn, int resultSetIndex,
 			Object[] args) {
 		if (resultSetIndex >= 0) {
-			if (method.getParameterCount() - 1 > args.length) {
+			if (method.getParameterCount() - 1 > (args == null? 0:args.length)) {
 				throw new IndexOutOfBoundsException();
 			}
 		} else {
-			if (method.getParameterCount() - 1 > args.length) {
+			if (method.getParameterCount() - 1 > (args == null? 0:args.length)) {
 				throw new IndexOutOfBoundsException();
 			}
 		}

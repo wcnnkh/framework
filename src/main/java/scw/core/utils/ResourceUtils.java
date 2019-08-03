@@ -818,8 +818,8 @@ public abstract class ResourceUtils {
 			Verification<String> {
 		public boolean verification(String name) {
 			return !((name.startsWith("java.") || name.startsWith("javax.")
-					|| name.startsWith("scw.core.")
-					|| name.startsWith("scw.integration.")
+					|| name.indexOf(".") == -1
+					|| name.startsWith("scw.")
 					|| name.startsWith("org.apache.")
 					|| name.startsWith("freemarker.")
 					|| name.startsWith("com.alibaba.")
@@ -862,23 +862,7 @@ public abstract class ResourceUtils {
 					|| name.startsWith("lombok.")
 					|| name.startsWith("com.zwitserloot.")
 					|| name.startsWith("org.eclipse.")
-					|| name.indexOf(".") == -1
-					|| name.startsWith("scw.transaction.")
-					|| name.startsWith("scw.id.") || name.startsWith("scw.io")
-					|| name.startsWith("scw.application")
-					|| name.startsWith("scw.beans.")
-					|| name.startsWith("scw.data.")
-					|| name.startsWith("scw.db.")
-					|| name.startsWith("scw.logger.")
-					|| name.startsWith("scw.mq.")
-					|| name.startsWith("scw.net.")
-					|| name.startsWith("scw.json.")
-					|| name.startsWith("scw.locks.")
-					|| name.startsWith("scw.login.")
-					|| name.startsWith("scw.servlet.")
-					|| name.startsWith("scw.testing.")
-					|| name.startsWith("scw.sql.") || name
-						.startsWith("scw.result.")));
+					));
 		}
 	}
 }

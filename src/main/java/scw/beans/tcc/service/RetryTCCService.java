@@ -17,7 +17,6 @@ import scw.beans.tcc.TCCService;
 import scw.core.utils.FileManager;
 import scw.core.utils.SystemPropertyUtils;
 import scw.io.FileUtils;
-import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.transaction.DefaultTransactionLifeCycle;
@@ -125,7 +124,6 @@ public final class RetryTCCService implements TCCService, scw.core.Destroy {
 		@Override
 		public void run() {
 			try {
-				System.out.println("tcc:"+JSONUtils.toJSONString(transactionInfo));
 				transactionInfo.invoke(beanFactory);
 				File file = new File(fileId);
 				if (file.exists()) {
