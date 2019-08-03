@@ -1,16 +1,14 @@
 package scw.beans.config.parse;
 
-import java.io.File;
-
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ConfigUtils;
 
 public final class XmlToListMapParse implements ConfigParse {
-	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset)
+	public Object parse(BeanFactory beanFactory,
+			FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
-		File file = ConfigUtils.getFile(filePath);
-		return ConfigUtils.getDefaultXmlContent(file, "config");
+		return ConfigUtils.getDefaultXmlContent(filePath, "config");
 	}
 }

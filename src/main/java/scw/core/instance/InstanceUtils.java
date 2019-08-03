@@ -33,7 +33,7 @@ public final class InstanceUtils {
 					"Instances that do not call constructors are not supported");
 		}
 
-		LoggerUtils.info(ReflectUtils.class,
+		LoggerUtils.info(InstanceUtils.class,
 				"default not call constructors instance factory：{}",
 				instanceFactory.getClass().getName());
 		NO_ARGS_INSTANCE_FACTORY = instanceFactory;

@@ -1,6 +1,6 @@
 package scw.core;
 
-import scw.core.utils.ConfigUtils;
+import scw.core.utils.SystemPropertyUtils;
 
 public final class StringFormatSystemProperties extends StringFormat {
 	public StringFormatSystemProperties(String prefix, String suffix) {
@@ -8,6 +8,6 @@ public final class StringFormatSystemProperties extends StringFormat {
 	}
 
 	public String getValue(final String key) {
-		return ConfigUtils.getSystemProperty(key);
+		return SystemPropertyUtils.getProperty(key);
 	}
 }

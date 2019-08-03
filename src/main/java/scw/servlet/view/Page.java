@@ -9,14 +9,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.Version;
 import scw.core.exception.NotFoundException;
-import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.ContentType;
@@ -24,6 +19,11 @@ import scw.servlet.Request;
 import scw.servlet.Response;
 import scw.servlet.ServletUtils;
 import scw.servlet.View;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.Version;
 
 /**
  * freemarker
@@ -66,14 +66,14 @@ public class Page extends HashMap<String, Object> implements View {
 		}
 
 		freemarkerConfiguration.setDefaultEncoding(default_encoding);
-		String workPath = ConfigUtils.getWorkPath();
+		String workPath = SystemPropertyUtils.getWorkPath();
 		if (workPath == null) {
 			throw new NotFoundException("找不到WEB-INF目录");
 		}
 
 		try {
 			freemarkerConfiguration.setDirectoryForTemplateLoading(
-					new File(StringUtils.isNull(rootPath) ? workPath : ConfigUtils.format(rootPath)));
+					new File(StringUtils.isNull(rootPath) ? workPath : SystemPropertyUtils.format(rootPath)));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -82,13 +82,13 @@ public class Page extends HashMap<String, Object> implements View {
 	}
 
 	public static void initFreemarker(final String rootPath) {
-		String workPath = ConfigUtils.getWorkPath();
+		String workPath = SystemPropertyUtils.getWorkPath();
 		if (workPath == null) {
 			throw new NotFoundException("找不到WEB-INF目录");
 		}
 
 		initFreemarker(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS, freemarker_default_encoding,
-				StringUtils.isNull(rootPath) ? workPath : ConfigUtils.format(rootPath));
+				StringUtils.isNull(rootPath) ? workPath : SystemPropertyUtils.format(rootPath));
 	}
 
 	public static Configuration getFreemarkerConfiguration() {
@@ -103,7 +103,7 @@ public class Page extends HashMap<String, Object> implements View {
 			freemarkerConfiguration = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
 			freemarkerConfiguration.setDefaultEncoding(freemarker_default_encoding);
 
-			String workPath = ConfigUtils.getWorkPath();
+			String workPath = SystemPropertyUtils.getWorkPath();
 			if (workPath == null) {
 				throw new NotFoundException("找不到WEB-INF目录");
 			}

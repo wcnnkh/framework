@@ -1,6 +1,5 @@
 package scw.beans.config.parse;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
@@ -9,18 +8,17 @@ import scw.beans.config.ConfigParse;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.ConfigUtils;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringParse;
+import scw.core.utils.SystemPropertyUtils;
 
 public final class PropertiesParse implements ConfigParse {
 	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
-		File file = ConfigUtils.getFile(filePath);
-		Properties properties = PropertiesUtils.getProperties(file, charset);
+		Properties properties = PropertiesUtils.getProperties(filePath, charset);
 		if (ClassUtils.isPrimitiveOrWrapper(fieldDefinition.getField().getType())
 				|| ClassUtils.isStringType(fieldDefinition.getField().getType())) {
-			String v = ConfigUtils.format(properties.getProperty(fieldDefinition.getField().getName()));
+			String v = SystemPropertyUtils.format(properties.getProperty(fieldDefinition.getField().getName()));
 			return StringParse.DEFAULT.parse(v, fieldDefinition.getField().getType());
 		} else if (Properties.class.isAssignableFrom(fieldDefinition.getField().getType())) {
 			return properties;
@@ -34,7 +32,7 @@ public final class PropertiesParse implements ConfigParse {
 						continue;
 					}
 
-					String value = ConfigUtils.format(properties.getProperty(key.toString()));
+					String value = SystemPropertyUtils.format(properties.getProperty(key.toString()));
 					ReflectUtils.setFieldValueAutoType(fieldType, field, obj, value);
 				}
 				return obj;

@@ -12,16 +12,17 @@ import scw.core.Consumer;
 import scw.core.PropertiesFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.PropertyMapper;
+import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringParse;
-import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.logger.LoggerUtils;
 
 public class XmlConsumerFactory implements ConsumerFactory {
 	private Map<String, AmqpConfig> amqpMap = new HashMap<String, AmqpConfig>();
 
-	public XmlConsumerFactory(final BeanFactory beanFactory, PropertiesFactory propertiesFactory, String xmlPath) {
-		if (!StringUtils.isEmpty(xmlPath)) {
+	public XmlConsumerFactory(final BeanFactory beanFactory,
+			PropertiesFactory propertiesFactory, String xmlPath) {
+		if (ResourceUtils.isExist(xmlPath)) {
 			NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
 			for (int i = 0, size = nodeList.getLength(); i < size; i++) {
 				Node node = nodeList.item(i);
@@ -33,23 +34,30 @@ public class XmlConsumerFactory implements ConsumerFactory {
 					continue;
 				}
 
-				String name = XMLUtils.getNodeAttributeValue(propertiesFactory, node, "name");
+				String name = XMLUtils.getNodeAttributeValue(propertiesFactory,
+						node, "name");
 				if (exists(name)) {
 					throw new AlreadyExistsException(name + "消费者已经存在");
 				}
 
 				if (node.getNodeName().equals("consumer:amqp")) {
-					amqpMap.put(name, XMLUtils.newInstanceLoadAttributeBySetter(AmqpConfig.class, propertiesFactory,
-							node, new PropertyMapper<String>() {
+					amqpMap.put(name, XMLUtils
+							.newInstanceLoadAttributeBySetter(AmqpConfig.class,
+									propertiesFactory, node,
+									new PropertyMapper<String>() {
 
-								public Object mapper(String name, String value, Class<?> type) throws Exception {
-									if (name.equals("exchange")) {
-										return beanFactory.getInstance(value);
-									}
+										public Object mapper(String name,
+												String value, Class<?> type)
+												throws Exception {
+											if (name.equals("exchange")) {
+												return beanFactory
+														.getInstance(value);
+											}
 
-									return StringParse.defaultParse(value, type);
-								}
-							}));
+											return StringParse.defaultParse(
+													value, type);
+										}
+									}));
 				}
 			}
 		}

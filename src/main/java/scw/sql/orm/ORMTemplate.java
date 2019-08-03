@@ -14,6 +14,7 @@ import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.ParameterException;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.IteratorCallback;
+import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -294,7 +295,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public void createTable(String packageName) {
-		Collection<Class<?>> list = ClassUtils.getClasses(packageName);
+		Collection<Class<?>> list = ResourceUtils.getClassList(packageName);
 		for (Class<?> tableClass : list) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {

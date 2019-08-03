@@ -1,9 +1,6 @@
 package scw.application;
 
-import java.io.File;
 import java.util.Collection;
-
-import com.alibaba.dubbo.config.ProtocolConfig;
 
 import scw.application.consumer.AnnotationConsumerUtils;
 import scw.application.consumer.XmlConsumerFactory;
@@ -15,12 +12,13 @@ import scw.beans.rpc.dubbo.DubboUtils;
 import scw.beans.tcc.TCCTransactionFilter;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertiesFactory;
-import scw.core.utils.ClassUtils;
-import scw.core.utils.ConfigUtils;
+import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerFactory;
 import scw.sql.orm.ORMUtils;
 import scw.transaction.TransactionFilter;
+
+import com.alibaba.dubbo.config.ProtocolConfig;
 
 public class CommonApplication implements Application{
 	private final XmlBeanFactory beanFactory;
@@ -29,11 +27,11 @@ public class CommonApplication implements Application{
 	private final String configPath;
 
 	public CommonApplication() {
-		this(getDefaultConfigPath(), false);
+		this("classpath:benas.xml", false);
 	}
 
 	public CommonApplication(String configXml, boolean initStatic, PropertiesFactory propertiesFactory) {
-		this.configPath = StringUtils.isEmpty(configXml) ? null : ConfigUtils.getFile(configXml).getPath();
+		this.configPath = configXml;
 		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(this.configPath)
 				: propertiesFactory;
 		try {
@@ -46,7 +44,7 @@ public class CommonApplication implements Application{
 	}
 
 	public CommonApplication(String configXml, boolean initStatic) {
-		this.configPath = StringUtils.isEmpty(configXml) ? null : ConfigUtils.getFile(configXml).getPath();
+		this.configPath = configXml;
 		this.propertiesFactory = new XmlPropertiesFactory(this.configPath);
 		try {
 			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, this.configPath, initStatic);
@@ -67,7 +65,7 @@ public class CommonApplication implements Application{
 	}
 
 	public final Collection<Class<?>> getClasses() {
-		return ClassUtils.getClasses(beanFactory.getPackages());
+		return ResourceUtils.getClassList(beanFactory.getPackages());
 	}
 
 	public final XmlBeanFactory getBeanFactory() {
@@ -98,7 +96,7 @@ public class CommonApplication implements Application{
 
 		beanFactory.init();
 
-		if (!StringUtils.isNull(configPath)) {
+		if(ResourceUtils.isExist(configPath)){
 			DubboUtils.exportService(beanFactory, propertiesFactory, XmlBeanUtils.getRootNodeList(configPath));
 		}
 
@@ -125,18 +123,5 @@ public class CommonApplication implements Application{
 		ProtocolConfig.destroyAll();
 		beanFactory.destroy();
 		LoggerFactory.destroy();
-	}
-
-	public static String getDefaultConfigPath() {
-		String beans = ConfigUtils.searchFile("beans.xml");
-		if (StringUtils.isEmpty(beans)) {
-			return null;
-		}
-
-		File file = new File(beans);
-		if (!file.exists()) {
-			return null;
-		}
-		return beans;
 	}
 }

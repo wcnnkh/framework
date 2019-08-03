@@ -17,7 +17,7 @@ import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.BeansException;
 import scw.core.exception.NestedRuntimeException;
 import scw.core.reflect.ReflectUtils;
-import scw.core.utils.ClassUtils;
+import scw.core.utils.ResourceUtils;
 
 public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy {
 	private volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
@@ -321,7 +321,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	public abstract String[] getFilterNames();
 
 	public Collection<Class<?>> getClassList() {
-		return ClassUtils.getClasses(getPackages());
+		return ResourceUtils.getClassList(getPackages());
 	}
 
 	/**

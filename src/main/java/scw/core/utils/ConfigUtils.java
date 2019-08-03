@@ -1,11 +1,10 @@
 package scw.core.utils;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,99 +15,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.core.StringFormatSystemProperties;
-import scw.core.exception.NotFoundException;
+import scw.core.Convert;
 import scw.core.reflect.ReflectUtils;
-import scw.io.FileUtils;
-import scw.logger.LoggerUtils;
+import scw.io.IOUtils;
 
 public final class ConfigUtils {
-	private static final String WEB_ROOT = "web.root";
-	private static final String CLASSPATH = "classpath";
-	private static final String CLASSPATH_PREFIX = CLASSPATH + ":";
-	private static final String WEB_INF = "WEB-INF";
-	public static final StringFormatSystemProperties format1 = new StringFormatSystemProperties("{", "}");
-	public static final StringFormatSystemProperties format2 = new StringFormatSystemProperties("[", "]");
-	public static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
-
-	private volatile static String work_path_cache;
-
 	private ConfigUtils() {
 	};
 
-	public static void setConfigSuffix(String suffix) {
-		if(StringUtils.isEmpty(suffix)){
-			return ;
-		}
-		
-		System.setProperty(CONFIG_SUFFIX, suffix);
-	}
-
-	public static String getSystemProperty(String key) {
-		String v = System.getProperty(key);
-		if (v == null) {
-			v = System.getenv(key);
-		}
-
-		if (v == null) {
-			if (WEB_ROOT.equalsIgnoreCase(key)) {
-				return getWorkPath();
-			} else if (CLASSPATH.equalsIgnoreCase(key)) {
-				return getClassPath();
-			}
-		}
-		return v;
-	}
-
-	public static String format(String value) {
-		if (StringUtils.isNull(value)) {
-			return value;
-		}
-
-		String newPath = format1.format(value);
-		newPath = format2.format(newPath);
-
-		if (newPath.length() < CLASSPATH_PREFIX.length()) {
-			return newPath;
-		}
-
-		String prefix = newPath.substring(0, CLASSPATH_PREFIX.length());
-		prefix = prefix.toUpperCase();
-		if (prefix.equals(CLASSPATH_PREFIX.toUpperCase())) {
-			return getClassPath() + newPath.substring(CLASSPATH_PREFIX.length());
-		}
-		return newPath;
-	}
-
-	/**
-	 * 如果返回空就说明不存在WEB-INF目录
-	 * 
-	 * @return
-	 */
-	public static String getWorkPath() {
-		if (work_path_cache == null) {
-			synchronized (ConfigUtils.class) {
-				if (work_path_cache == null) {
-					String path = ConfigUtils.class.getResource("/").getPath();
-					File file = new File(path);
-					file = file.getParentFile().getParentFile();
-					File f = FileUtils.searchDirectory(file.getPath(), WEB_INF);
-					if (f != null && f.exists()) {
-						work_path_cache = f.getParentFile().getPath();
-					} else {
-						work_path_cache = "";
-					}
-				}
-			}
-		}
-		return StringUtils.isEmpty(work_path_cache) ? null : work_path_cache;
-	}
-
-	public static String getClassPath() {
-		return ConfigUtils.class.getResource("/").getPath();
-	}
-
-	public static <T> T parseObject(Map<String, String> map, Class<T> clz) throws Exception {
+	public static <T> T parseObject(Map<String, String> map, Class<T> clz)
+			throws Exception {
 		T t = clz.newInstance();
 		for (Entry<String, String> entry : map.entrySet()) {
 			Field field = ReflectUtils.getField(clz, entry.getKey(), true);
@@ -116,106 +32,26 @@ public final class ConfigUtils {
 				continue;
 			}
 
-			ReflectUtils.setFieldValue(clz, field, t, StringParse.DEFAULT.parse(entry.getValue(), field.getType()));
+			ReflectUtils.setFieldValue(clz, field, t, StringParse.DEFAULT
+					.parse(entry.getValue(), field.getType()));
 		}
 		return t;
 	}
 
-	/**
-	 * 如果返回空就说明找不到文件
-	 * 
-	 * @param fileName
-	 * @return
-	 */
-	public static String searchFile(String fileName) {
-		String file = FileUtils.searchFile(fileName, getClassPath());
-		if (StringUtils.isNull(file)) {
-			String workPath = getWorkPath();
-			if (workPath == null) {
-				return null;
-			}
+	public static List<Map<String, String>> getDefaultXmlContent(String path,
+			final String rootTag) {
+		return ResourceUtils.getAndConvert(path,
+				new Convert<InputStream, List<Map<String, String>>>() {
 
-			file = FileUtils.searchFile(fileName, workPath);
-		}
-		return file;
+					public List<Map<String, String>> convert(
+							InputStream inputStream) {
+						return getDefaultXmlContent(inputStream, rootTag);
+					}
+				});
 	}
 
-	private static String getFilePath(final String filePath) {
-		String path = format(filePath);
-		File file = new File(path);
-		if (file.exists()) {
-			return path;
-		} else {// 如果找不到目录就到classpath下去找
-			String classPath = getClassPath() + path;
-			file = new File(classPath);
-			if (file.exists()) {
-				return classPath;
-			} else {// 如果clsspath下找不到就去workpath下去找
-				String workPath = getWorkPath();
-				if (workPath == null) {
-					return path;
-				}
-
-				workPath += path;
-				file = new File(workPath);
-				if (file.exists()) {
-					return workPath;
-				} else {
-					return path;
-				}
-			}
-		}
-	}
-
-	public static File getFile(String filePath) throws NotFoundException {
-		File file;
-		String configSuffix = getSystemProperty(CONFIG_SUFFIX);
-		if (StringUtils.isEmpty(configSuffix)) {
-			file = getFile(filePath, null);
-		} else {
-			file = getFile(filePath, Arrays.asList(StringUtils.commonSplit(configSuffix)));
-		}
-
-		if (file == null || !file.exists()) {
-			throw new NotFoundException(filePath);
-		}
-
-		if (!file.getPath().equals(filePath)) {
-			LoggerUtils.info(ConfigUtils.class, "{} ---> {}", filePath, file.getPath());
-		}
-		return file;
-	}
-
-	private static File getFile(String filePath, Collection<String> testSuffix) {
-		String p = getFilePath(filePath);
-		if (p == null) {
-			return null;
-		}
-
-		File file = new File(p);
-		if (testSuffix == null || testSuffix.isEmpty()) {
-			return file;
-		}
-
-		for (String sf : testSuffix) {
-			File testFile = new File(file.getParent() + File.separator + getTestFileName(file.getName(), sf));
-			if (testFile.exists()) {
-				return testFile;
-			}
-		}
-		return file;
-	}
-
-	private static String getTestFileName(String fileName, String str) {
-		int index = fileName.indexOf(".");
-		if (index == -1) {// 不存在
-			return fileName + str;
-		} else {
-			return fileName.substring(0, index) + str + fileName.substring(index);
-		}
-	}
-
-	public static List<Map<String, String>> getDefaultXmlContent(File file, String rootTag) {
+	public static List<Map<String, String>> getDefaultXmlContent(
+			InputStream inputStream, String rootTag) {
 		if (rootTag == null) {
 			throw new NullPointerException("rootTag is null");
 		}
@@ -223,7 +59,7 @@ public final class ConfigUtils {
 		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 		try {
 			try {
-				Document doc = XMLUtils.parse(file);
+				Document doc = XMLUtils.parse(inputStream);
 				Element root = doc.getDocumentElement();
 				NodeList nhosts = root.getChildNodes();
 				for (int x = 0; x < nhosts.getLength(); x++) {
@@ -241,8 +77,19 @@ public final class ConfigUtils {
 		return list;
 	}
 
-	public static <T> List<T> xmlToList(Class<T> type, File file) {
-		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(file, "config");
+	public static <T> List<T> xmlToList(final Class<T> type, String path) {
+		return ResourceUtils.getAndConvert(path,
+				new Convert<InputStream, List<T>>() {
+
+					public List<T> convert(InputStream inputStream) {
+						return xmlToList(type, inputStream);
+					}
+				});
+	}
+
+	public static <T> List<T> xmlToList(Class<T> type, InputStream inputStream) {
+		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(
+				inputStream, "config");
 		List<T> objList = new ArrayList<T>();
 		try {
 			for (Map<String, String> map : list) {
@@ -255,8 +102,20 @@ public final class ConfigUtils {
 		return null;
 	}
 
+	public static <K, V> Map<K, V> xmlToMap(final Class<V> valueType,
+			String path) {
+		return ResourceUtils.getAndConvert(path,
+				new Convert<InputStream, Map<K, V>>() {
+
+					public Map<K, V> convert(InputStream inputStream) {
+						return xmlToMap(valueType, inputStream);
+					}
+				});
+	}
+
 	@SuppressWarnings("unchecked")
-	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType, File file) {
+	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType,
+			InputStream inputStream) {
 		try {
 			Field keyField = null;
 			for (Field f : valueType.getDeclaredFields()) {
@@ -272,7 +131,8 @@ public final class ConfigUtils {
 				throw new NullPointerException("打不到主键字段");
 			}
 
-			List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(file, "config");
+			List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(
+					inputStream, "config");
 			Map<K, V> map = new HashMap<K, V>();
 			for (Map<String, String> tempMap : list) {
 				Object obj = ConfigUtils.parseObject(tempMap, valueType);
@@ -280,8 +140,8 @@ public final class ConfigUtils {
 				Object kV = keyField.get(obj);
 				keyField.setAccessible(false);
 				if (map.containsKey(kV)) {
-					throw new NullPointerException(
-							"已经存在的key=" + keyField.getName() + ",value=" + kV + ", filePath=" + file.getPath());
+					throw new NullPointerException("已经存在的key="
+							+ keyField.getName() + ",value=" + kV);
 				}
 				map.put((K) kV, (V) obj);
 			}
@@ -293,11 +153,29 @@ public final class ConfigUtils {
 		return null;
 	}
 
-	public static List<String> getFileContentLineList(String filePath, String charsetName) {
-		return FileUtils.getFileContentLineList(getFile(filePath), charsetName);
+	public static List<String> getFileContentLineList(String path,
+			final String charsetName) {
+		return ResourceUtils.getAndConvert(path,
+				new Convert<InputStream, List<String>>() {
+
+					public List<String> convert(InputStream inputStream) {
+						try {
+							return IOUtils.readLines(inputStream, charsetName);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						return null;
+					}
+				});
 	}
 
-	public static String getFileContent(String filePath, String charsetName) {
-		return FileUtils.readerFileContent(getFile(filePath), charsetName).toString();
+	public static String getFileContent(String path, final String charsetName) {
+		return ResourceUtils.getAndConvert(path,
+				new Convert<InputStream, String>() {
+
+					public String convert(InputStream inputStream) {
+						return IOUtils.readContent(inputStream, charsetName);
+					}
+				});
 	}
 }

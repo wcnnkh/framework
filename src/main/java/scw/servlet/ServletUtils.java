@@ -39,6 +39,7 @@ import scw.core.reflect.ReflectUtils;
 import scw.core.utils.Assert;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
 import scw.io.serializer.Serializer;
@@ -511,7 +512,7 @@ public final class ServletUtils {
 		actionKey = StringUtils.isEmpty(actionKey) ? "action" : actionKey;
 		String packageName = propertiesFactory.getValue("servlet.scanning");
 		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
-		return beanFactory.getInstance(HttpServiceFilter.class, beanFactory, ClassUtils.getClasses(packageName),
+		return beanFactory.getInstance(HttpServiceFilter.class, beanFactory, ResourceUtils.getClassList(packageName),
 				actionKey);
 
 	}

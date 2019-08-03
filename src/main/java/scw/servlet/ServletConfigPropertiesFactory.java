@@ -2,11 +2,9 @@ package scw.servlet;
 
 import javax.servlet.ServletConfig;
 
-import scw.application.CommonApplication;
 import scw.beans.property.XmlPropertiesFactory;
 import scw.core.PropertiesFactory;
-import scw.core.utils.ConfigUtils;
-import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 
 public class ServletConfigPropertiesFactory implements PropertiesFactory {
 	private final ServletConfig servletConfig;
@@ -15,18 +13,14 @@ public class ServletConfigPropertiesFactory implements PropertiesFactory {
 
 	public ServletConfigPropertiesFactory(ServletConfig servletConfig) {
 		this.servletConfig = servletConfig;
-		String configXml = getServletConfig("shuchaowen");
-		if (StringUtils.isEmpty(configXml)) {
-			configXml = CommonApplication.getDefaultConfigPath();
-		}
-		this.configXml = StringUtils.isEmpty(configXml) ? null : configXml;
+		this.configXml = getServletConfig("shuchaowen");
 		this.propertiesFactory = new XmlPropertiesFactory(this.configXml);
 	}
 
 	public String getConfig(String name) {
 		String value = servletConfig.getInitParameter(name);
 		if (value == null) {
-			value = ConfigUtils.getSystemProperty(name);
+			value = SystemPropertyUtils.getProperty(name);
 		}
 		return value;
 	}

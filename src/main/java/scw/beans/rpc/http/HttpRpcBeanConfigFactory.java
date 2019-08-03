@@ -7,7 +7,7 @@ import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertiesFactory;
-import scw.core.utils.ClassUtils;
+import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.io.serializer.Serializer;
@@ -36,7 +36,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 			Serializer ser = StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 					: (Serializer) beanFactory.getInstance(serializer);
 			if (!StringUtils.isNull(packageName)) {
-				for (Class<?> clz : ClassUtils.getClasses(packageName)) {
+				for (Class<?> clz : ResourceUtils.getClassList(packageName)) {
 					if (!clz.isInterface()) {
 						continue;
 					}

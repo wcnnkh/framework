@@ -26,6 +26,7 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CompareUtils;
 import scw.core.utils.FieldSetterListenUtils;
 import scw.core.utils.IteratorCallback;
+import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerUtils;
 import scw.sql.orm.annotation.Column;
@@ -150,7 +151,7 @@ public final class ORMUtils {
 
 	public static void registerCglibProxyTableBean(String pageName) {
 		LoggerUtils.info(ORMUtils.class, "register proxy package:{}", pageName);
-		for (Class<?> type : ClassUtils.getClasses(pageName)) {
+		for (Class<?> type : ResourceUtils.getClassList(pageName)) {
 			Table table = type.getAnnotation(Table.class);
 			if (table == null) {
 				continue;

@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.ResourceUtils;
 import scw.sql.Sql;
 import scw.sql.orm.annotation.Table;
 
@@ -43,7 +44,7 @@ public final class DBManager {
 	 *            是否自动创建表
 	 */
 	public static void register(DB db, String packageName, boolean create) {
-		Collection<Class<?>> list = ClassUtils.getClasses(packageName);
+		Collection<Class<?>> list = ResourceUtils.getClassList(packageName);
 		for (Class<?> tableClass : list) {
 			String name = ClassUtils.getProxyRealClassName(tableClass.getName());
 			if (CLASS_NAME_TO_DB.containsKey(name)) {

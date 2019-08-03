@@ -17,12 +17,28 @@
 package scw.core.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
+import scw.core.Consumer;
+import scw.core.Convert;
+import scw.core.Verification;
+import scw.core.exception.NotFoundException;
+import scw.io.IOUtils;
+import scw.logger.log4j.Log4jConfigurer;
 
 /**
  * Utility methods for resolving resource locations to files in the file system.
@@ -83,6 +99,10 @@ public abstract class ResourceUtils {
 	/** Separator between JAR URL and file path within the JAR */
 	public static final String JAR_URL_SEPARATOR = "!/";
 
+	private static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
+
+	private static final String RESOURCE_SUFFIX = "scw_res_suffix";
+
 	/**
 	 * Return whether the given resource location is a URL: either a special
 	 * "classpath" pseudo URL or a standard URL.
@@ -121,14 +141,18 @@ public abstract class ResourceUtils {
 	 * @throws FileNotFoundException
 	 *             if the resource cannot be resolved to a URL
 	 */
-	public static URL getURL(String resourceLocation) throws FileNotFoundException {
+	public static URL getURL(String resourceLocation)
+			throws FileNotFoundException {
 		Assert.notNull(resourceLocation, "Resource location must not be null");
 		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
-			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX.length());
+			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX
+					.length());
 			URL url = ClassUtils.getDefaultClassLoader().getResource(path);
 			if (url == null) {
 				String description = "class path resource [" + path + "]";
-				throw new FileNotFoundException(description + " cannot be resolved to URL because it does not exist");
+				throw new FileNotFoundException(
+						description
+								+ " cannot be resolved to URL because it does not exist");
 			}
 			return url;
 		}
@@ -140,8 +164,9 @@ public abstract class ResourceUtils {
 			try {
 				return new File(resourceLocation).toURI().toURL();
 			} catch (MalformedURLException ex2) {
-				throw new FileNotFoundException(
-						"Resource location [" + resourceLocation + "] is neither a URL not a well-formed file path");
+				throw new FileNotFoundException("Resource location ["
+						+ resourceLocation
+						+ "] is neither a URL not a well-formed file path");
 			}
 		}
 	}
@@ -161,14 +186,17 @@ public abstract class ResourceUtils {
 	 *             if the resource cannot be resolved to a file in the file
 	 *             system
 	 */
-	public static File getFile(String resourceLocation) throws FileNotFoundException {
+	public static File getFile(String resourceLocation)
+			throws FileNotFoundException {
 		Assert.notNull(resourceLocation, "Resource location must not be null");
 		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
-			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX.length());
+			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX
+					.length());
 			String description = "class path resource [" + path + "]";
 			URL url = ClassUtils.getDefaultClassLoader().getResource(path);
 			if (url == null) {
-				throw new FileNotFoundException(description + " cannot be resolved to absolute file path "
+				throw new FileNotFoundException(description
+						+ " cannot be resolved to absolute file path "
 						+ "because it does not reside in the file system");
 			}
 			return getFile(url, description);
@@ -209,11 +237,14 @@ public abstract class ResourceUtils {
 	 * @throws FileNotFoundException
 	 *             if the URL cannot be resolved to a file in the file system
 	 */
-	public static File getFile(URL resourceUrl, String description) throws FileNotFoundException {
+	public static File getFile(URL resourceUrl, String description)
+			throws FileNotFoundException {
 		Assert.notNull(resourceUrl, "Resource URL must not be null");
 		if (!URL_PROTOCOL_FILE.equals(resourceUrl.getProtocol())) {
-			throw new FileNotFoundException(description + " cannot be resolved to absolute file path "
-					+ "because it does not reside in the file system: " + resourceUrl);
+			throw new FileNotFoundException(description
+					+ " cannot be resolved to absolute file path "
+					+ "because it does not reside in the file system: "
+					+ resourceUrl);
 		}
 		try {
 			return new File(toURI(resourceUrl).getSchemeSpecificPart());
@@ -251,11 +282,14 @@ public abstract class ResourceUtils {
 	 * @throws FileNotFoundException
 	 *             if the URL cannot be resolved to a file in the file system
 	 */
-	public static File getFile(URI resourceUri, String description) throws FileNotFoundException {
+	public static File getFile(URI resourceUri, String description)
+			throws FileNotFoundException {
 		Assert.notNull(resourceUri, "Resource URI must not be null");
 		if (!URL_PROTOCOL_FILE.equals(resourceUri.getScheme())) {
-			throw new FileNotFoundException(description + " cannot be resolved to absolute file path "
-					+ "because it does not reside in the file system: " + resourceUri);
+			throw new FileNotFoundException(description
+					+ " cannot be resolved to absolute file path "
+					+ "because it does not reside in the file system: "
+					+ resourceUri);
 		}
 		return new File(resourceUri.getSchemeSpecificPart());
 	}
@@ -270,7 +304,8 @@ public abstract class ResourceUtils {
 	 */
 	public static boolean isFileURL(URL url) {
 		String protocol = url.getProtocol();
-		return (URL_PROTOCOL_FILE.equals(protocol) || protocol.startsWith(URL_PROTOCOL_VFS));
+		return (URL_PROTOCOL_FILE.equals(protocol) || protocol
+				.startsWith(URL_PROTOCOL_VFS));
 	}
 
 	/**
@@ -288,9 +323,10 @@ public abstract class ResourceUtils {
 	 */
 	public static boolean isJarURL(URL url) {
 		String protocol = url.getProtocol();
-		return (URL_PROTOCOL_JAR.equals(protocol) || URL_PROTOCOL_ZIP.equals(protocol)
-				|| URL_PROTOCOL_WSJAR.equals(protocol)
-				|| (URL_PROTOCOL_CODE_SOURCE.equals(protocol) && url.getPath().contains(JAR_URL_SEPARATOR)));
+		return (URL_PROTOCOL_JAR.equals(protocol)
+				|| URL_PROTOCOL_ZIP.equals(protocol)
+				|| URL_PROTOCOL_WSJAR.equals(protocol) || (URL_PROTOCOL_CODE_SOURCE
+				.equals(protocol) && url.getPath().contains(JAR_URL_SEPARATOR)));
 	}
 
 	/**
@@ -303,7 +339,8 @@ public abstract class ResourceUtils {
 	 * @throws MalformedURLException
 	 *             if no valid jar file URL could be extracted
 	 */
-	public static URL extractJarFileURL(URL jarUrl) throws MalformedURLException {
+	public static URL extractJarFileURL(URL jarUrl)
+			throws MalformedURLException {
 		String urlFile = jarUrl.getFile();
 		int separatorIndex = urlFile.indexOf(JAR_URL_SEPARATOR);
 		if (separatorIndex != -1) {
@@ -369,4 +406,479 @@ public abstract class ResourceUtils {
 		con.setUseCaches(con.getClass().getSimpleName().startsWith("JNLP"));
 	}
 
+	public static URL getClassPathURL() {
+		URL url = ResourceUtils.class.getResource("/");
+		if (url == null) {
+			ProtectionDomain protectionDomain = ResourceUtils.class
+					.getProtectionDomain();
+			if (protectionDomain != null) {
+				CodeSource codeSource = protectionDomain.getCodeSource();
+				if (codeSource != null) {
+					url = codeSource.getLocation();
+				}
+			}
+		}
+		return url;
+	}
+
+	public static void setConfigSuffix(String suffix) {
+		if (StringUtils.isEmpty(suffix)) {
+			return;
+		}
+
+		System.setProperty(CONFIG_SUFFIX, suffix);
+	}
+
+	private static String searchNameByJar(JarFile jarFile, String searchName) {
+		Enumeration<JarEntry> enumeration = jarFile.entries();
+		while (enumeration.hasMoreElements()) {
+			JarEntry jarEntry = enumeration.nextElement();
+			if (jarEntry == null) {
+				continue;
+			}
+
+			String name = jarEntry.getName();
+			name = name.replaceAll("\\\\", "/");
+			if (name.endsWith(searchName)) {
+				return jarEntry.getName();
+			}
+		}
+		return null;
+	}
+
+	private static boolean consumterInputStream(String rootPath, String path,
+			String[] suffixs, Consumer<InputStream> consumer) {
+		File file = new File(rootPath);
+		if (!file.exists()) {
+			return false;
+		}
+
+		if (file.isFile()) {// jar
+			File configFile = searchJarClassPathConfigFile(file, "config",
+					suffixs, path);
+			if (configFile != null) {
+				consumerFileInputStream(configFile, consumer);
+				return true;
+			}
+
+			JarFile jarFile = null;
+			InputStream inputStream = null;
+			try {
+				jarFile = new JarFile(file);
+				String entryName = null;
+				if (!ArrayUtils.isEmpty(suffixs)) {
+					for (String name : suffixs) {
+						String n = getTestFileName(path, name);
+						entryName = searchNameByJar(jarFile, n);
+						if (entryName != null) {
+							break;
+						}
+					}
+				}
+
+				if (entryName == null) {
+					entryName = searchNameByJar(jarFile, path);
+				}
+
+				if (entryName == null) {
+					return false;
+				}
+
+				inputStream = jarFile.getInputStream(jarFile
+						.getEntry(entryName));
+				consumer.consume(inputStream);
+				return true;
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			} finally {
+				IOUtils.close(inputStream, jarFile);
+			}
+		} else {
+			File f = getClassPathFile(file, suffixs, path);
+			if (f == null) {
+				return false;
+			}
+
+			consumerFileInputStream(f, consumer);
+			return true;
+		}
+	}
+
+	public static void consumterInputStream(String path,
+			Consumer<InputStream> consumer) {
+		if (StringUtils.isEmpty(path)) {
+			throw new NotFoundException(path);
+		}
+
+		String text = SystemPropertyUtils.format(path);
+		String[] suffixs = getResourceSuffix();
+		String eqPath = path.replaceAll("\\\\", "/");
+		if (text.length() > CLASSPATH_URL_PREFIX.length()
+				&& text.substring(0, CLASSPATH_URL_PREFIX.length())
+						.toLowerCase().startsWith(CLASSPATH_URL_PREFIX)) {
+			eqPath = eqPath.substring(CLASSPATH_URL_PREFIX.length());
+			boolean b = false;
+			URL url = getClassPathURL();
+			if (url != null) {
+				b = consumterInputStream(url.getPath(), eqPath, suffixs,
+						consumer);
+			}
+
+			if (!b) {
+				for (String classPath : SystemPropertyUtils
+						.getJavaClassPathArray()) {
+					b = consumterInputStream(classPath, eqPath, suffixs,
+							consumer);
+					if (b) {
+						break;
+					}
+				}
+			}
+
+			if (!b) {
+				throw new NotFoundException(path);
+			}
+		} else {
+			File file = null;
+			if (!ArrayUtils.isEmpty(suffixs)) {
+				for (String name : suffixs) {
+					file = new File(getTestFileName(path, name));
+					if (file.exists()) {
+						break;
+					}
+				}
+			}
+
+			if (file == null) {
+				file = new File(path);
+				if (!file.exists()) {
+					file = null;
+				}
+			}
+
+			if (file == null) {
+				throw new NotFoundException(path);
+			}
+			consumerFileInputStream(file, consumer);
+		}
+	}
+
+	private static File searchJarClassPathConfigFile(File rootFile,
+			String configPath, String[] suffixs, String path) {
+		File file = new File(rootFile.getParent() + File.separator + configPath);
+		if (!file.exists()) {
+			return null;
+		}
+
+		return getClassPathFile(file, suffixs, path);
+	}
+
+	private static File getClassPathFile(File rootFile, String[] suffixs,
+			String path) {
+		File f = null;
+		if (!ArrayUtils.isEmpty(suffixs)) {
+			for (String name : suffixs) {
+				f = searchFile(getTestFileName(path, name), rootFile);
+				if (f != null) {
+					break;
+				}
+			}
+		}
+
+		if (f == null) {
+			f = searchFile(path, rootFile);
+		}
+
+		return f;
+	}
+
+	private static void consumerFileInputStream(File file,
+			Consumer<InputStream> consumer) {
+		InputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream(file);
+			consumer.consume(inputStream);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			IOUtils.close(inputStream);
+		}
+	}
+
+	private static File searchFile(String path, File rootFile) {
+		if (!rootFile.exists()) {
+			return null;
+		}
+
+		File[] files = rootFile.listFiles();
+		if (files == null) {
+			return null;
+		}
+
+		for (File file : files) {
+			if (file.isFile()) {
+				String p = file.getPath().replaceAll("\\\\", "/");
+				if (p.endsWith(path)) {
+					return file;
+				}
+			} else {
+				File f = searchFile(path, file);
+				if (f != null) {
+					return f;
+				}
+			}
+		}
+		return null;
+	}
+
+	private static String[] getResourceSuffix() {
+		String value = SystemPropertyUtils.getProperty(RESOURCE_SUFFIX);
+		if (value == null) {
+			value = SystemPropertyUtils.getProperty(CONFIG_SUFFIX);
+		}
+
+		return StringUtils.isEmpty(value) ? null : StringUtils
+				.commonSplit(value);
+	}
+
+	private static String getTestFileName(String fileName, String str) {
+		int index = fileName.indexOf(".");
+		if (index == -1) {// 不存在
+			return fileName + str;
+		} else {
+			return fileName.substring(0, index) + str
+					+ fileName.substring(index);
+		}
+	}
+
+	public static boolean isExist(String path) {
+		if (StringUtils.isEmpty(path)) {
+			return false;
+		}
+
+		try {
+			consumterInputStream(path, new Consumer<InputStream>() {
+
+				public void consume(InputStream message) throws Exception {
+					// ignore
+				}
+			});
+			return true;
+		} catch (NotFoundException e) {
+			return false;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T getAndConvert(String path,
+			final Convert<InputStream, T> convert) {
+		final Object[] objs = new Object[1];
+		consumterInputStream(path, new Consumer<InputStream>() {
+
+			public void consume(InputStream message) throws Exception {
+				objs[0] = convert.convert(message);
+			}
+		});
+		return (T) objs[0];
+	}
+
+	private static Class<?> forFileNmae(String classFile,
+			Verification<String> verification) {
+		if (!classFile.endsWith(".class")) {
+			return null;
+		}
+
+		String name = classFile.substring(0, classFile.length() - 6);
+		name = name.replaceAll("\\\\", ".");
+		name = name.replaceAll("/", ".");
+		if (!verification.verification(name)) {
+			return null;
+		}
+
+		try {
+			return Class.forName(name, false,
+					ClassUtils.getDefaultClassLoader());
+		} catch (Throwable e) {
+		}
+		return null;
+	}
+
+	private static void appendJarClass(Collection<Class<?>> classList,
+			JarFile jarFile, Verification<String> verification) {
+		Enumeration<JarEntry> enumeration = jarFile.entries();
+		while (enumeration.hasMoreElements()) {
+			JarEntry jarEntry = enumeration.nextElement();
+			if (jarEntry == null) {
+				continue;
+			}
+
+			String name = jarEntry.getName();
+			if (name.endsWith(".class")) {
+				// class
+				Class<?> clz = forFileNmae(name, verification);
+				if (clz != null) {
+					classList.add(clz);
+				}
+			}
+		}
+	}
+
+	private static void appendDirectoryClass(String rootPackage,
+			Collection<Class<?>> classList, File file,
+			Verification<String> verification) {
+		File[] files = file.listFiles();
+		if (ArrayUtils.isEmpty(files)) {
+			return;
+		}
+
+		for (File f : files) {
+			if (f.isDirectory()) {
+				appendDirectoryClass(
+						StringUtils.isEmpty(rootPackage) ? f.getName() + "."
+								: rootPackage + f.getName() + ".", classList,
+						f, verification);
+			} else {
+				if (f.getName().endsWith(".class")) {
+					String classFile = StringUtils.isEmpty(rootPackage) ? f
+							.getName() : rootPackage + f.getName();
+					Class<?> clz = forFileNmae(classFile, verification);
+					if (clz != null) {
+						classList.add(clz);
+					}
+				} else if (f.getName().endsWith(".jar")) {
+					appendJarClass(f, classList, verification);
+				}
+			}
+		}
+	}
+
+	private static void appendJarClass(File file,
+			Collection<Class<?>> classList, Verification<String> verification) {
+		JarFile jarFile = null;
+		try {
+			jarFile = new JarFile(file);
+			appendJarClass(classList, jarFile, verification);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			IOUtils.close(jarFile);
+		}
+	}
+
+	public static Collection<Class<?>> getClassList(
+			Verification<String> verification) {
+		LinkedHashSet<Class<?>> list = new LinkedHashSet<Class<?>>();
+		URL url = getClassPathURL();
+		if (url != null) {
+			File file = new File(url.getPath());
+			if (file != null) {
+				if (file.isFile()) {
+					appendJarClass(file, list, verification);
+				} else {
+					appendDirectoryClass(null, list, file, verification);
+				}
+			}
+		}
+
+		for (String name : SystemPropertyUtils.getJavaClassPathArray()) {
+			File file = new File(name);
+			if (file.isFile()) {
+				appendJarClass(file, list, verification);
+			} else {
+				appendDirectoryClass(null, list, file, verification);
+			}
+		}
+		return list;
+	}
+
+	public static Collection<Class<?>> getClassList(String packagePrefix) {
+		if (StringUtils.isEmpty(packagePrefix)) {
+			return getClassList();
+		}
+
+		final String[] arr = StringUtils.commonSplit(packagePrefix);
+		return getClassList(new Verification<String>() {
+
+			public boolean verification(String data) {
+				for (String name : arr) {
+					if (data.startsWith(name)) {
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+	}
+
+	public static Collection<Class<?>> getClassList() {
+		return getClassList(new DefaultClassNameVerification());
+	}
+
+	public static class DefaultClassNameVerification implements
+			Verification<String> {
+		public boolean verification(String name) {
+			return !((name.startsWith("java.") || name.startsWith("javax.")
+					|| name.startsWith("scw.core.")
+					|| name.startsWith("scw.integration.")
+					|| name.startsWith("org.apache.")
+					|| name.startsWith("freemarker.")
+					|| name.startsWith("com.alibaba.")
+					|| name.startsWith("com.caucho.")
+					|| name.startsWith("redis.clients.")
+					|| name.startsWith("com.google.")
+					|| name.startsWith("net.rubyeye.")
+					|| name.startsWith("com.rabbitmq.")
+					|| name.startsWith("com.esotericsoftware.")
+					|| name.startsWith("com.zaxxer.")
+					|| name.startsWith("support.")
+					|| name.startsWith("com.oracle.")
+					|| name.startsWith("com.sun.") || name.startsWith("jdk.")
+					|| name.startsWith("org.w3c.")
+					|| name.startsWith("org.omg.")
+					|| name.startsWith("org.xml.")
+					|| name.startsWith("org.jcp.")
+					|| name.startsWith("org.ietf.") || name.startsWith("sun.")
+					|| name.startsWith("oracle.")
+					|| name.startsWith("netscape.")
+					|| name.startsWith("junit.")
+					|| name.startsWith("com.aliyun.")
+					|| name.startsWith("mozilla.")
+					|| name.startsWith("org.jdom")
+					|| name.startsWith("org.codehaus.")
+					|| name.startsWith("com.aliyuncs.")
+					|| name.startsWith("org.json")
+					|| name.startsWith("javassist.")
+					|| name.startsWith("org.jboss")
+					|| name.startsWith("org.I0Itec.")
+					|| name.startsWith("common.") || name.startsWith("jxl.")
+					|| name.startsWith("com.mysql.")
+					|| name.startsWith("google.")
+					|| name.startsWith("com.corundumstudio.")
+					|| name.startsWith("io.netty.")
+					|| name.startsWith("org.slf4j.")
+					|| name.startsWith("org.fasterxml.")
+					|| name.startsWith("com.fasterxml")
+					|| name.startsWith("org.objectweb.")
+					|| name.startsWith("lombok.")
+					|| name.startsWith("com.zwitserloot.")
+					|| name.startsWith("org.eclipse.")
+					|| name.indexOf(".") == -1
+					|| name.startsWith("scw.transaction.")
+					|| name.startsWith("scw.id.") || name.startsWith("scw.io")
+					|| name.startsWith("scw.application")
+					|| name.startsWith("scw.beans.")
+					|| name.startsWith("scw.data.")
+					|| name.startsWith("scw.db.")
+					|| name.startsWith("scw.logger.")
+					|| name.startsWith("scw.mq.")
+					|| name.startsWith("scw.net.")
+					|| name.startsWith("scw.json.")
+					|| name.startsWith("scw.locks.")
+					|| name.startsWith("scw.login.")
+					|| name.startsWith("scw.servlet.")
+					|| name.startsWith("scw.testing.")
+					|| name.startsWith("scw.sql.") || name
+						.startsWith("scw.result.")));
+		}
+	}
 }

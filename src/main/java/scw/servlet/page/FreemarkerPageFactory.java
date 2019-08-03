@@ -3,18 +3,18 @@ package scw.servlet.page;
 import java.io.File;
 import java.io.IOException;
 
+import scw.core.Constants;
+import scw.core.utils.SystemPropertyUtils;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Version;
-import scw.core.Constants;
-import scw.core.utils.ConfigUtils;
 
 public class FreemarkerPageFactory {
 	private final Configuration configuration;
 	private final String contentType;
 
 	public FreemarkerPageFactory() throws IOException {
-		this(ConfigUtils.getWorkPath());
+		this(SystemPropertyUtils.getWorkPath());
 	}
 
 	public FreemarkerPageFactory(String rootPath) throws IOException {

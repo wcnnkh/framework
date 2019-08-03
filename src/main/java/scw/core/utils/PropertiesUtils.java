@@ -1,8 +1,7 @@
 package scw.core.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -18,7 +17,9 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import scw.core.Constants;
+import scw.core.Consumer;
 import scw.core.StringFormat;
+import scw.core.exception.NotFoundException;
 import scw.core.reflect.ReflectUtils;
 import scw.io.IOUtils;
 import scw.logger.Logger;
@@ -215,11 +216,12 @@ public final class PropertiesUtils {
 		return map;
 	}
 
-	public static Properties getProperties(File file, String charsetName) {
+	public static Properties getProperties(InputStream inputStream,
+			String charsetName) {
 		Properties properties = new Properties();
 		InputStreamReader isr = null;
 		try {
-			isr = new InputStreamReader(new FileInputStream(file), charsetName);
+			isr = new InputStreamReader(inputStream, charsetName);
 			properties.load(isr);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -229,25 +231,29 @@ public final class PropertiesUtils {
 		return properties;
 	}
 
-	public static Properties getProperties(File file) {
-		Properties properties = new Properties();
-		FileInputStream fis = null;
+	public static Properties getProperties(String path, final String charsetName) {
+		final Properties properties = new Properties();
 		try {
-			fis = new FileInputStream(file);
-			properties.load(fis);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			IOUtils.close(fis);
+			ResourceUtils.consumterInputStream(path,
+					new Consumer<InputStream>() {
+
+						public void consume(InputStream inputStream)
+								throws Exception {
+							InputStreamReader isr = null;
+							try {
+								isr = new InputStreamReader(inputStream,
+										charsetName);
+								properties.load(isr);
+							} catch (IOException e) {
+								e.printStackTrace();
+							} finally {
+								IOUtils.close(isr);
+							}
+						}
+					});
+		} catch (NotFoundException e) {
+			return null;
 		}
 		return properties;
-	}
-
-	public static Properties getProperties(String filePath, String charsetName) {
-		return getProperties(ConfigUtils.getFile(filePath), charsetName);
-	}
-
-	public static Properties getProperties(String filePath) {
-		return getProperties(ConfigUtils.getFile(filePath));
 	}
 }

@@ -11,8 +11,8 @@ import scw.beans.annotation.Service;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertiesFactory;
 import scw.core.reflect.PropertyMapper;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.CloneUtils;
+import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
@@ -143,7 +143,7 @@ public final class XmlDubboUtils {
 		String packageName = XMLUtils.getNodeAttributeValue(propertiesFactory,
 				node, "package");
 		if (packageName != null) {
-			for (Class<?> clz : ClassUtils.getClasses(packageName)) {
+			for (Class<?> clz : ResourceUtils.getClassList(packageName)) {
 				Service service = clz.getAnnotation(Service.class);
 				if (service != null) {
 					Object ref = beanFactory.getInstance(clz);
@@ -201,7 +201,7 @@ public final class XmlDubboUtils {
 		String packageName = XMLUtils.getNodeAttributeValue(propertiesFactory,
 				node, "package");
 		if (packageName != null) {
-			for (Class<?> clz : ClassUtils.getClasses(packageName)) {
+			for (Class<?> clz : ResourceUtils.getClassList(packageName)) {
 				if (clz.isInterface()) {
 					ReferenceConfig<?> referenceConfig = CloneUtils.clone(
 							config, true);

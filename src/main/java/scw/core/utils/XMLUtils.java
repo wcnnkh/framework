@@ -34,6 +34,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import scw.core.Convert;
 import scw.core.PropertiesFactory;
 import scw.core.StringFormat;
 import scw.core.exception.NotFoundException;
@@ -138,9 +139,18 @@ public final class XMLUtils {
 		return parse(new InputSource(new StringReader(text)));
 	}
 
+	public static Document getDocument(String path) {
+		return ResourceUtils.getAndConvert(path,
+				new Convert<InputStream, Document>() {
+
+					public Document convert(InputStream inputStream) {
+						return parse(inputStream);
+					}
+				});
+	}
+
 	public static Element getRootElement(String xmlPath) {
-		File xml = ConfigUtils.getFile(xmlPath);
-		Document document = XMLUtils.parse(xml);
+		Document document = getDocument(xmlPath);
 		return document.getDocumentElement();
 	}
 
@@ -151,17 +161,12 @@ public final class XMLUtils {
 			return new MyNodeList();
 		}
 
-		File xml = ConfigUtils.getFile(file);
-		if (!xml.exists()) {
-			return new MyNodeList();
-		}
-
-		if (includeHashSet.contains(xml.getPath())) {
+		if (includeHashSet.contains(file)) {
 			throw new RuntimeException(file + "存在循环引用，请检查include地址");
 		}
 
-		includeHashSet.add(xml.getPath());
-		Document document = XMLUtils.parse(xml);
+		includeHashSet.add(file);
+		Document document = XMLUtils.getDocument(file);
 		Node root = document.getDocumentElement();
 		if (root == null) {
 			return new MyNodeList();

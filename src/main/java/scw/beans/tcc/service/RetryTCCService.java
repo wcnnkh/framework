@@ -14,9 +14,8 @@ import scw.beans.annotation.InitMethod;
 import scw.beans.tcc.InvokeInfo;
 import scw.beans.tcc.StageType;
 import scw.beans.tcc.TCCService;
-import scw.core.Base64;
-import scw.core.utils.ConfigUtils;
 import scw.core.utils.FileManager;
+import scw.core.utils.SystemPropertyUtils;
 import scw.io.FileUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -25,13 +24,15 @@ import scw.transaction.TransactionException;
 import scw.transaction.TransactionManager;
 
 public final class RetryTCCService implements TCCService, scw.core.Destroy {
-	private static Logger logger = LoggerFactory.getLogger(RetryTCCService.class);
+	private static Logger logger = LoggerFactory
+			.getLogger(RetryTCCService.class);
 
 	@Autowired
 	private BeanFactory beanFactory;
 	private FileManager fileManager;
 	private final int retryTime;// 秒
-	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
+	private final ScheduledExecutorService executorService = Executors
+			.newScheduledThreadPool(4);
 
 	public RetryTCCService() {
 		this(30);
@@ -44,8 +45,8 @@ public final class RetryTCCService implements TCCService, scw.core.Destroy {
 	@InitMethod
 	public void init() throws UnsupportedEncodingException {
 		String logPath = System.getProperty("java.io.tmpdir");
-		String classPath = ConfigUtils.getClassPath();
-		logPath += File.separator + "TCC_" + Base64.encode(classPath.getBytes("UTF-8"));
+		logPath += File.separator + "TCC_"
+				+ SystemPropertyUtils.getSystemOnlyId();
 		fileManager = new FileManager(logPath);
 		logger.debug("logPath=" + logPath);
 
@@ -86,17 +87,18 @@ public final class RetryTCCService implements TCCService, scw.core.Destroy {
 	}
 
 	public void service(final InvokeInfo invokeInfo) {
-		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
-			@Override
-			public void beforeProcess() {
-				invoke(invokeInfo, StageType.Confirm);
-			}
+		TransactionManager
+				.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+					@Override
+					public void beforeProcess() {
+						invoke(invokeInfo, StageType.Confirm);
+					}
 
-			@Override
-			public void beforeRollback() {
-				invoke(invokeInfo, StageType.Cancel);
-			}
-		});
+					@Override
+					public void beforeRollback() {
+						invoke(invokeInfo, StageType.Cancel);
+					}
+				});
 	}
 
 	class RetryInvoker extends TimerTask {
@@ -112,7 +114,8 @@ public final class RetryTCCService implements TCCService, scw.core.Destroy {
 		 * @param method
 		 * @param args
 		 */
-		public RetryInvoker(TransactionInfo transactionInfo, int retryTime, String fileId) {
+		public RetryInvoker(TransactionInfo transactionInfo, int retryTime,
+				String fileId) {
 			this.transactionInfo = transactionInfo;
 			this.retryTime = retryTime;
 			this.fileId = fileId;
