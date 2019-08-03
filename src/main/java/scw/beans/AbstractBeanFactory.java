@@ -298,10 +298,12 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			}
 
 			Class<?> clz = Class.forName(n);
-			InterfaceProxy interfaceProxy = clz.getAnnotation(InterfaceProxy.class);
-			if (interfaceProxy != null) {
-				InvocationHandler invocationHandler = getInstance(interfaceProxy.value());
-				return new InterfaceProxyBeanDefinition(this, clz, invocationHandler, getFilterNames());
+			if(clz.isInterface()){
+				InterfaceProxy interfaceProxy = clz.getAnnotation(InterfaceProxy.class);
+				if (interfaceProxy != null) {
+					InvocationHandler invocationHandler = getInstance(interfaceProxy.value());
+					return new InterfaceProxyBeanDefinition(this, clz, invocationHandler, getFilterNames());
+				}
 			}
 
 			if (!ReflectUtils.isInstance(clz)) {

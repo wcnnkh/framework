@@ -208,7 +208,7 @@ public abstract class SystemPropertyUtils {
 	public static String getSystemOnlyId() {
 		try {
 			return scw.core.Base64
-					.encode((getUserDir() + "&" + getJavaClassPathArray()[0])
+					.encode((getUserDir() + "&" + ResourceUtils.getClassPathURL())
 							.getBytes(Constants.DEFAULT_CHARSET_NAME));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
