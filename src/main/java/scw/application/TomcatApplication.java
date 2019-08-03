@@ -2,10 +2,12 @@ package scw.application;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -17,6 +19,8 @@ import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.tomcat.JarScanner;
+import org.apache.tomcat.JarScannerCallback;
 
 import scw.core.PropertiesFactory;
 import scw.core.exception.AlreadyExistsException;
@@ -59,6 +63,7 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 		if (!StringUtils.isEmpty(basedir)) {
 			tomcat.setBaseDir(basedir);
 		}
+
 		return tomcat;
 	}
 
@@ -74,6 +79,16 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 		if (AprLifecycleListener.isAprAvailable()) {
 			context.addLifecycleListener(new AprLifecycleListener());
 		}
+	}
+
+	private void configureJarScanner(Context context) {
+		context.setJarScanner(new JarScanner() {
+
+			public void scan(ServletContext context, ClassLoader classloader,
+					JarScannerCallback callback, Set<String> jarsToSkip) {
+				// ignore
+			}
+		});
 	}
 
 	private void configureJSP(Context context) {
@@ -217,6 +232,7 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 
 		this.tomcat = createTomcat();
 		Context context = createContext();
+		configureJarScanner(context);
 		configureLifecycleListener(context);
 		configureJSP(context);
 		configureServlet(context);
