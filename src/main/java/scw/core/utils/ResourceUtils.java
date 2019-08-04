@@ -540,7 +540,7 @@ public abstract class ResourceUtils {
 			boolean b = false;
 			URL url = getClassPathURL();
 			if (url != null) {
-				b = consumterInputStream(url.toString(), eqPath, suffixs,
+				b = consumterInputStream(url.getPath(), eqPath, suffixs,
 						consumer);
 			}
 
@@ -856,7 +856,7 @@ public abstract class ResourceUtils {
 		LinkedHashSet<Class<?>> list = new LinkedHashSet<Class<?>>();
 		URL url = getClassPathURL();
 		if (url != null) {
-			appendClass(url.toString(), list, verification, true);
+			appendClass(url.getPath(), list, verification, true);
 		}
 
 		for (String name : SystemPropertyUtils.getJavaClassPathArray()) {
