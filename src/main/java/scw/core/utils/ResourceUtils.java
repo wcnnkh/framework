@@ -522,10 +522,21 @@ public abstract class ResourceUtils {
 		String text = SystemPropertyUtils.format(path);
 		String[] suffixs = getResourceSuffix();
 		String eqPath = path.replaceAll("\\\\", "/");
-		if (text.length() > CLASSPATH_URL_PREFIX.length()
-				&& text.substring(0, CLASSPATH_URL_PREFIX.length())
-						.toLowerCase().startsWith(CLASSPATH_URL_PREFIX)) {
-			eqPath = eqPath.substring(CLASSPATH_URL_PREFIX.length());
+
+		//兼容老版本
+		if (StringUtils.startsWithIgnoreCase(text, CLASSPATH_URL_PREFIX)
+				|| StringUtils.startsWithIgnoreCase(text, "{"
+						+ CLASSPATH_URL_PREFIX + "}")
+				|| StringUtils.startsWithIgnoreCase(text, "{classpath}")) {
+			if (StringUtils.startsWithIgnoreCase(text, CLASSPATH_URL_PREFIX)) {
+				eqPath = eqPath.substring(CLASSPATH_URL_PREFIX.length());
+			} else if (StringUtils.startsWithIgnoreCase(text, "{"
+					+ CLASSPATH_URL_PREFIX + "}")) {
+				eqPath = eqPath.substring(CLASSPATH_URL_PREFIX.length() + 2);
+			} else {
+				eqPath = eqPath.substring(CLASSPATH_URL_PREFIX.length() + 1);
+			}
+
 			boolean b = false;
 			URL url = getClassPathURL();
 			if (url != null) {
@@ -817,7 +828,8 @@ public abstract class ResourceUtils {
 	}
 
 	private static void appendJarClass(File file,
-			Collection<Class<?>> classList, Verification<String> verification, boolean appendManifest) {
+			Collection<Class<?>> classList, Verification<String> verification,
+			boolean appendManifest) {
 		JarFile jarFile = null;
 		try {
 			jarFile = new JarFile(file);

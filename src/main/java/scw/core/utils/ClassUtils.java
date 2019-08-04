@@ -1230,6 +1230,10 @@ public final class ClassUtils {
 		}
 		return true;
 	}
+	
+	public static boolean isExist(String className) {
+		return isExist(className, false);
+	}
 
 	public static boolean isExist(String className, boolean printStackTrace) {
 		try {

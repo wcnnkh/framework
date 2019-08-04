@@ -2,12 +2,11 @@ package scw.application;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Set;
+import java.lang.reflect.Proxy;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -17,15 +16,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.util.ServerInfo;
 import org.apache.tomcat.JarScanner;
-import org.apache.tomcat.JarScannerCallback;
 
 import scw.core.PropertiesFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceUtils;
+import scw.core.reflect.EmptyInvocationHandler;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ResourceUtils;
@@ -64,7 +65,43 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 			tomcat.setBaseDir(basedir);
 		}
 
+		configureConnector(tomcat, port);
 		return tomcat;
+	}
+
+	private boolean isVersion(String version) {
+		return StringUtils.startsWithIgnoreCase(ServerInfo.getServerNumber(),
+				version);
+	}
+
+	private JarScanner createNullScanner() {
+		return (JarScanner) Proxy.newProxyInstance(
+				JarScanner.class.getClassLoader(),
+				new Class[] { JarScanner.class }, new EmptyInvocationHandler());
+	}
+
+	private void configureConnector(Tomcat tomcat, int port) {
+		Connector connector = null;
+		String connectorName = getPropertiesFactory().getValue(
+				"tomcat.connector");
+		if (!StringUtils.isEmpty(connectorName)) {
+			connector = getBeanFactory().getInstance(connectorName);
+		} else {
+			String protocol = getPropertiesFactory()
+					.getValue("tomcat.protocol");
+			if (!StringUtils.isEmpty(protocol)) {
+				connector = new Connector(protocol);
+			} else {
+				if (isVersion("9.0")) {
+					connector = new Connector();
+				}
+			}
+		}
+
+		if (connector != null) {
+			connector.setPort(port);
+			tomcat.setConnector(connector);
+		}
 	}
 
 	private Context createContext() {
@@ -75,20 +112,15 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 				.addContext(contextPath, SystemPropertyUtils.getWorkPath());
 	}
 
+	private void configureTLD(Context context) {
+		context.setTldValidation(false);
+		context.setJarScanner(createNullScanner());
+	}
+
 	private void configureLifecycleListener(Context context) {
 		if (AprLifecycleListener.isAprAvailable()) {
 			context.addLifecycleListener(new AprLifecycleListener());
 		}
-	}
-
-	private void configureJarScanner(Context context) {
-		context.setJarScanner(new JarScanner() {
-
-			public void scan(ServletContext context, ClassLoader classloader,
-					JarScannerCallback callback, Set<String> jarsToSkip) {
-				// ignore
-			}
-		});
 	}
 
 	private void configureJSP(Context context) {
@@ -230,18 +262,18 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 				getPropertiesFactory(), getConfigPath(), getBeanFactory()
 						.getFilterNames());
 
-		this.tomcat = createTomcat();
-		Context context = createContext();
-		configureJarScanner(context);
-		configureLifecycleListener(context);
-		configureJSP(context);
-		configureServlet(context);
-		configShutdown(context);
 		try {
 			tomcat8();
 		} catch (Throwable e1) {
 		}
 
+		this.tomcat = createTomcat();
+		Context context = createContext();
+		configureTLD(context);
+		configureLifecycleListener(context);
+		configureJSP(context);
+		configureServlet(context);
+		configShutdown(context);
 		try {
 			tomcat.start();
 		} catch (LifecycleException e) {
