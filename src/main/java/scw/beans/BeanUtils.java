@@ -2,7 +2,6 @@ package scw.beans;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -64,7 +63,7 @@ public final class BeanUtils {
 					continue;
 				}
 
-				if (method.getParameterCount() != 0) {
+				if (method.getParameterTypes().length != 0) {
 					throw new BeansException("ClassName=" + clz.getName() + ",MethodName=" + method.getName()
 							+ "There must be no parameter.");
 				}
@@ -96,7 +95,7 @@ public final class BeanUtils {
 					continue;
 				}
 
-				if (method.getParameterCount() != 0) {
+				if (method.getParameterTypes().length != 0) {
 					throw new RuntimeException("ClassName=" + clz.getName() + ",MethodName=" + method.getName()
 							+ "There must be no parameter.");
 				}
@@ -141,6 +140,31 @@ public final class BeanUtils {
 		}
 	}
 
+	private static XmlBeanParameter[] sortParameters(String[] paramNames, Class<?>[] parameterTypes, XmlBeanParameter[] beanMethodParameters) {
+		XmlBeanParameter[] methodParameters = new XmlBeanParameter[beanMethodParameters.length];
+		Class<?>[] types = new Class<?>[methodParameters.length];
+		for (int i = 0; i < methodParameters.length; i++) {
+			XmlBeanParameter beanMethodParameter = beanMethodParameters[i].clone();
+			if (!StringUtils.isNull(beanMethodParameter.getName())) {
+				for (int a = 0; a < paramNames.length; a++) {
+					if (paramNames[a].equals(beanMethodParameter.getName())) {
+						types[a] = parameterTypes[a];
+						methodParameters[a] = beanMethodParameters[i].clone();
+						methodParameters[a].setParameterType(parameterTypes[a]);
+					}
+				}
+			} else if (beanMethodParameter.getParameterType() != null) {
+				methodParameters[i] = beanMethodParameter;
+				types[i] = beanMethodParameter.getParameterType();
+			} else {
+				types[i] = parameterTypes[i];
+				methodParameters[i] = beanMethodParameter;
+				methodParameters[i].setParameterType(types[i]);
+			}
+		}
+		return ClassUtils.equals(parameterTypes, types) ? methodParameters : null;
+	}
+	
 	/**
 	 * 对参数重新排序
 	 * 
@@ -148,41 +172,20 @@ public final class BeanUtils {
 	 * @param beanMethodParameters
 	 * @return
 	 */
-	public static XmlBeanParameter[] sortParameters(Executable executable, XmlBeanParameter[] beanMethodParameters) {
-		if (executable.getParameterCount() != beanMethodParameters.length) {
+	public static XmlBeanParameter[] sortParameters(Method method, XmlBeanParameter[] beanMethodParameters) {
+		if (method.getParameterTypes().length != beanMethodParameters.length) {
 			return null;
 		}
 
-		String[] paramNames;
-		if (executable instanceof Constructor) {
-			paramNames = ClassUtils.getParameterName((Constructor<?>) executable);
-		} else {
-			paramNames = ClassUtils.getParameterName((Method) executable);
+		return sortParameters(ClassUtils.getParameterName(method), method.getParameterTypes(), beanMethodParameters);
+	}
+	
+	public static XmlBeanParameter[] sortParameters(Constructor<?> constructor, XmlBeanParameter[] beanMethodParameters) {
+		if (constructor.getParameterTypes().length != beanMethodParameters.length) {
+			return null;
 		}
 
-		XmlBeanParameter[] methodParameters = new XmlBeanParameter[beanMethodParameters.length];
-		Class<?>[] oldTypes = executable.getParameterTypes();
-		Class<?>[] types = new Class<?>[methodParameters.length];
-		for (int i = 0; i < methodParameters.length; i++) {
-			XmlBeanParameter beanMethodParameter = beanMethodParameters[i].clone();
-			if (!StringUtils.isNull(beanMethodParameter.getName())) {
-				for (int a = 0; a < paramNames.length; a++) {
-					if (paramNames[a].equals(beanMethodParameter.getName())) {
-						types[a] = oldTypes[a];
-						methodParameters[a] = beanMethodParameters[i].clone();
-						methodParameters[a].setParameterType(oldTypes[a]);
-					}
-				}
-			} else if (beanMethodParameter.getParameterType() != null) {
-				methodParameters[i] = beanMethodParameter;
-				types[i] = beanMethodParameter.getParameterType();
-			} else {
-				types[i] = oldTypes[i];
-				methodParameters[i] = beanMethodParameter;
-				methodParameters[i].setParameterType(types[i]);
-			}
-		}
-		return ClassUtils.equals(oldTypes, types) ? methodParameters : null;
+		return sortParameters(ClassUtils.getParameterName(constructor), constructor.getParameterTypes(), beanMethodParameters);
 	}
 
 	public static Object[] getBeanMethodParameterArgs(XmlBeanParameter[] beanParameters, BeanFactory beanFactory,
