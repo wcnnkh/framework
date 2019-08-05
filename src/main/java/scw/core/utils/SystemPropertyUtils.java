@@ -233,4 +233,8 @@ public abstract class SystemPropertyUtils {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public static String getMavenHome() {
+		return getProperty("maven.home");
+	}
 }

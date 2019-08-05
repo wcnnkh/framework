@@ -523,7 +523,7 @@ public abstract class ResourceUtils {
 		String[] suffixs = getResourceSuffix();
 		String eqPath = path.replaceAll("\\\\", "/");
 
-		//兼容老版本
+		// 兼容老版本
 		if (StringUtils.startsWithIgnoreCase(text, CLASSPATH_URL_PREFIX)
 				|| StringUtils.startsWithIgnoreCase(text, "{"
 						+ CLASSPATH_URL_PREFIX + "}")
@@ -538,10 +538,13 @@ public abstract class ResourceUtils {
 			}
 
 			boolean b = false;
-			URL url = getClassPathURL();
-			if (url != null) {
-				b = consumterInputStream(url.getPath(), eqPath, suffixs,
-						consumer);
+			// 因为maven修改了java.class.path环境变量
+			if (!StringUtils.isEmpty(SystemPropertyUtils.getMavenHome())) {
+				URL url = getClassPathURL();
+				if (url != null) {
+					b = consumterInputStream(url.getPath(), eqPath, suffixs,
+							consumer);
+				}
 			}
 
 			if (!b) {
@@ -711,7 +714,7 @@ public abstract class ResourceUtils {
 		String name = classFile.substring(0, classFile.length() - 6);
 		name = name.replaceAll("\\\\", ".");
 		name = name.replaceAll("/", ".");
-		if (!verification.verification(name)) {
+		if (verification != null && !verification.verification(name)) {
 			return null;
 		}
 
@@ -765,8 +768,8 @@ public abstract class ResourceUtils {
 	}
 
 	private static void appendJarClass(Collection<Class<?>> classList,
-			JarFile jarFile, Verification<String> verification,
-			boolean appendManifest) {
+			JarFile jarFile, Verification<String> jarVerification,
+			Verification<String> verification, boolean appendManifest) {
 		Enumeration<JarEntry> enumeration = jarFile.entries();
 		while (enumeration.hasMoreElements()) {
 			JarEntry jarEntry = enumeration.nextElement();
@@ -791,7 +794,8 @@ public abstract class ResourceUtils {
 				String[] pathArray = StringUtils.split(classPath, ' ');
 				if (!ArrayUtils.isEmpty(pathArray)) {
 					for (String path : pathArray) {
-						appendClass(path, classList, verification, false);
+						appendClass(path, classList, jarVerification,
+								verification, false);
 					}
 				}
 			}
@@ -800,6 +804,7 @@ public abstract class ResourceUtils {
 
 	private static void appendDirectoryClass(String rootPackage,
 			Collection<Class<?>> classList, File file,
+			Verification<String> jarVerification,
 			Verification<String> verification) {
 		File[] files = file.listFiles();
 		if (ArrayUtils.isEmpty(files)) {
@@ -811,7 +816,7 @@ public abstract class ResourceUtils {
 				appendDirectoryClass(
 						StringUtils.isEmpty(rootPackage) ? f.getName() + "."
 								: rootPackage + f.getName() + ".", classList,
-						f, verification);
+						f, jarVerification, verification);
 			} else {
 				if (f.getName().endsWith(".class")) {
 					String classFile = StringUtils.isEmpty(rootPackage) ? f
@@ -821,19 +826,25 @@ public abstract class ResourceUtils {
 						classList.add(clz);
 					}
 				} else if (f.getName().endsWith(".jar")) {
-					appendJarClass(f, classList, verification, false);
+					if (jarVerification == null
+							|| jarVerification.verification(f.getName())) {
+						appendJarClass(f, classList, jarVerification,
+								verification, false);
+					}
 				}
 			}
 		}
 	}
 
 	private static void appendJarClass(File file,
-			Collection<Class<?>> classList, Verification<String> verification,
-			boolean appendManifest) {
+			Collection<Class<?>> classList,
+			Verification<String> jarVerification,
+			Verification<String> verification, boolean appendManifest) {
 		JarFile jarFile = null;
 		try {
 			jarFile = new JarFile(file);
-			appendJarClass(classList, jarFile, verification, appendManifest);
+			appendJarClass(classList, jarFile, jarVerification, verification,
+					appendManifest);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -842,27 +853,42 @@ public abstract class ResourceUtils {
 	}
 
 	private static void appendClass(String path, Collection<Class<?>> list,
+			Verification<String> jarVerification,
 			Verification<String> verification, boolean appendManifest) {
 		File file = new File(path);
 		if (file.isFile()) {
-			appendJarClass(file, list, verification, appendManifest);
+			if (jarVerification == null
+					|| jarVerification.verification(file.getName())) {
+				appendJarClass(file, list, jarVerification, verification,
+						appendManifest);
+			}
 		} else {
-			appendDirectoryClass(null, list, file, verification);
+			appendDirectoryClass(null, list, file, jarVerification,
+					verification);
 		}
 	}
 
 	public static Collection<Class<?>> getClassList(
+			Verification<String> jarVerification,
 			Verification<String> verification) {
 		LinkedHashSet<Class<?>> list = new LinkedHashSet<Class<?>>();
-		URL url = getClassPathURL();
-		if (url != null) {
-			appendClass(url.getPath(), list, verification, true);
+		if (!StringUtils.isEmpty(SystemPropertyUtils.getMavenHome())) {
+			URL url = getClassPathURL();
+			if (url != null) {
+				appendClass(url.getPath(), list, jarVerification, verification,
+						true);
+			}
 		}
 
 		for (String name : SystemPropertyUtils.getJavaClassPathArray()) {
-			appendClass(name, list, verification, true);
+			appendClass(name, list, jarVerification, verification, true);
 		}
 		return list;
+	}
+
+	public static Collection<Class<?>> getClassList(
+			Verification<String> verification) {
+		return getClassList(new DefaultJarVerification(), verification);
 	}
 
 	public static Collection<Class<?>> getClassList(String packagePrefix) {
@@ -871,17 +897,11 @@ public abstract class ResourceUtils {
 		}
 
 		final String[] arr = StringUtils.commonSplit(packagePrefix);
-		return getClassList(new Verification<String>() {
+		if (ArrayUtils.isEmpty(arr)) {
+			return getClassList();
+		}
 
-			public boolean verification(String data) {
-				for (String name : arr) {
-					if (data.startsWith(name)) {
-						return true;
-					}
-				}
-				return false;
-			}
-		});
+		return ClassUtils.getClasses(packagePrefix);
 	}
 
 	public static Collection<Class<?>> getClassList() {
@@ -936,5 +956,16 @@ public abstract class ResourceUtils {
 					|| name.startsWith("com.zwitserloot.") || name
 						.startsWith("org.eclipse.")));
 		}
+	}
+
+	public static class DefaultJarVerification implements Verification<String> {
+
+		public boolean verification(String name) {
+			/*
+			 * if(name.startsWith("plexus-classworlds-")){ return false; }
+			 */
+			return true;
+		}
+
 	}
 }
