@@ -2,11 +2,18 @@ package scw.core.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import scw.core.exception.NotSupportException;
 
@@ -120,55 +127,57 @@ public final class XUtils {
 		}
 	}
 
-	private static CountDownLatch createCountDownLatch(ThreadPoolExecutor executor, Collection<Runnable> runnables) {
-		final CountDownLatch countDownLatch = new CountDownLatch(runnables.size());
-		for (final Runnable runnable : runnables) {
-			Runnable r = new Runnable() {
-
-				public void run() {
-					try {
-						runnable.run();
-					} finally {
-						countDownLatch.countDown();
-					}
-				}
-			};
-			if (executor == null) {
-				new Thread(r).start();
-			} else {
-				executor.submit(r);
-			}
-		}
-		return countDownLatch;
-	}
-
-	public static void multitask(ThreadPoolExecutor executor, Collection<Runnable> runnables, TimeUnit unit,
-			long timeout) throws InterruptedException {
-		if (CollectionUtils.isEmpty(runnables)) {
-			return;
+	@SuppressWarnings("unchecked")
+	public static <V> Collection<Future<V>> submit(ExecutorService executorService, Collection<Callable<V>> callables) {
+		if (CollectionUtils.isEmpty(callables)) {
+			return Collections.EMPTY_LIST;
 		}
 
-		CountDownLatch countDownLatch = createCountDownLatch(executor, runnables);
-		countDownLatch.await(timeout, unit);
+		List<Future<V>> list = new ArrayList<Future<V>>(callables.size());
+		for (Callable<V> callable : callables) {
+			list.add(executorService.submit(callable));
+		}
+		return list;
 	}
 
-	public static void multitask(ThreadPoolExecutor executor, Collection<Runnable> runnables)
-			throws InterruptedException {
-		if (CollectionUtils.isEmpty(runnables)) {
-			return;
+	@SuppressWarnings("unchecked")
+	public static <V> Collection<V> getAndAwait(Collection<Future<V>> futures, long timeout, TimeUnit unit)
+			throws InterruptedException, ExecutionException, TimeoutException {
+		if (CollectionUtils.isEmpty(futures)) {
+			return Collections.EMPTY_LIST;
 		}
 
-		CountDownLatch countDownLatch = createCountDownLatch(executor, runnables);
-		countDownLatch.await();
+		List<V> list = new ArrayList<V>(futures.size());
+		for (Future<V> future : futures) {
+			list.add(future.get(timeout, unit));
+		}
+		return list;
 	}
 
-	public static void multitask(Collection<Runnable> runnables) throws InterruptedException {
-		multitask(null, runnables);
+	@SuppressWarnings("unchecked")
+	public static <V> Collection<V> getAndAwait(Collection<Future<V>> futures)
+			throws InterruptedException, ExecutionException {
+		if (CollectionUtils.isEmpty(futures)) {
+			return Collections.EMPTY_LIST;
+		}
+
+		List<V> list = new ArrayList<V>(futures.size());
+		for (Future<V> future : futures) {
+			list.add(future.get());
+		}
+		return list;
 	}
 
-	public static void multitask(Collection<Runnable> runnables, TimeUnit unit, long timeout)
-			throws InterruptedException {
-		multitask(null, runnables, unit, timeout);
+	public static <V> Collection<V> submitAndAwait(ExecutorService executorService, Collection<Callable<V>> callables,
+			long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+		Collection<Future<V>> collection = submit(executorService, callables);
+		return getAndAwait(collection, timeout, unit);
+	}
+
+	public static <V> Collection<V> submitAndAwait(ExecutorService executorService, Collection<Callable<V>> callables)
+			throws InterruptedException, ExecutionException {
+		Collection<Future<V>> collection = submit(executorService, callables);
+		return getAndAwait(collection);
 	}
 
 	public static <T> Object getValue(PrimitiveTypeValueFactory<T> primitiveTypeValueFactory, T data, Class<?> type) {
@@ -242,7 +251,7 @@ public final class XUtils {
 			return valueFactory.getBigInteger(data);
 		} else if (type.isEnum()) {
 			return valueFactory.getEnum(data, (Class<? extends Enum>) type);
-		} else if(type.isArray()){
+		} else if (type.isArray()) {
 			return valueFactory.getArray(data, type.getComponentType());
 		} else {
 			return valueFactory.getObject(data, type);
