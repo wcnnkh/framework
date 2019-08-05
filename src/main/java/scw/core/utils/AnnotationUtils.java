@@ -10,6 +10,8 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import scw.core.reflect.ReflectUtils;
+
 public final class AnnotationUtils {
 	private AnnotationUtils() {
 	};
@@ -48,7 +50,7 @@ public final class AnnotationUtils {
 
 	private static void appendAnnoationMethod(Map<String, Method> methodMap, Class<?> type,
 			Class<? extends Annotation> annotationClass) {
-		for (Method method : type.getDeclaredMethods()) {
+		for (Method method : ReflectUtils.getDeclaredMethods(type)) {
 			if (isDeprecated(method)) {
 				continue;
 			}
@@ -83,7 +85,7 @@ public final class AnnotationUtils {
 		Class<?> clz = clazz;
 		LinkedList<Field> fieldList = new LinkedList<Field>();
 		while (clz != null && clz != Object.class) {
-			for (Field field : isDeclared ? clz.getDeclaredFields() : clz.getFields()) {
+			for (Field field : ReflectUtils.getFields(clz, isDeclared)) {
 				if (isDeprecated(field)) {
 					continue;
 				}

@@ -2,9 +2,12 @@ package scw.application;
 
 import java.util.Collection;
 
+import com.alibaba.dubbo.config.ProtocolConfig;
+
 import scw.application.consumer.AnnotationConsumerUtils;
 import scw.application.consumer.XmlConsumerFactory;
 import scw.application.crontab.CrontabAnnotationUtils;
+import scw.beans.BeanUtils;
 import scw.beans.XmlBeanFactory;
 import scw.beans.async.AsyncCompleteFilter;
 import scw.beans.property.XmlPropertiesFactory;
@@ -18,40 +21,51 @@ import scw.logger.LoggerFactory;
 import scw.sql.orm.ORMUtils;
 import scw.transaction.TransactionFilter;
 
-import com.alibaba.dubbo.config.ProtocolConfig;
-
-public class CommonApplication implements Application{
+public class CommonApplication implements Application {
 	private final XmlBeanFactory beanFactory;
 	private volatile boolean start = false;
 	private final PropertiesFactory propertiesFactory;
 	private final String configPath;
 
 	public CommonApplication() {
-		this("classpath:benas.xml", false);
+		this(null);
 	}
 
-	public CommonApplication(String configXml, boolean initStatic, PropertiesFactory propertiesFactory) {
+	public String getConfigPath() {
+		return configPath;
+	}
+
+	public CommonApplication(String configXml, PropertiesFactory propertiesFactory) {
 		this.configPath = configXml;
 		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(this.configPath)
 				: propertiesFactory;
-		try {
-			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, this.configPath, initStatic);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-
+		this.beanFactory = getXmlBeanFactory();
 		createAfter();
 	}
 
-	public CommonApplication(String configXml, boolean initStatic) {
+	public CommonApplication(String configXml) {
 		this.configPath = configXml;
-		this.propertiesFactory = new XmlPropertiesFactory(this.configPath);
+		this.propertiesFactory = new XmlPropertiesFactory(getConfigPath());
+		this.beanFactory = getXmlBeanFactory();
+		createAfter();
+	}
+
+	private XmlBeanFactory getXmlBeanFactory() {
 		try {
-			this.beanFactory = new XmlBeanFactory(this.propertiesFactory, this.configPath, initStatic);
+			return new XmlBeanFactory(this.propertiesFactory, getConfigPath()) {
+				@Override
+				protected String getInitStaticPackage() {
+					return getStaticAnnotationPackage();
+				}
+
+				@Override
+				protected String getServicePackage() {
+					return getServiceAnnotationPackage();
+				}
+			};
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		createAfter();
 	}
 
 	private void createAfter() {
@@ -60,20 +74,41 @@ public class CommonApplication implements Application{
 		this.beanFactory.addFirstFilters(TransactionFilter.class.getName());
 	}
 
-	public final String getConfigPath() {
-		return configPath;
-	}
-
-	public final Collection<Class<?>> getClasses() {
-		return ResourceUtils.getClassList(beanFactory.getPackages());
-	}
-
 	public final XmlBeanFactory getBeanFactory() {
 		return beanFactory;
 	}
 
 	public final PropertiesFactory getPropertiesFactory() {
 		return beanFactory.getPropertiesFactory();
+	}
+
+	protected String getAnnotationPackage() {
+		return BeanUtils.getAnnotationPackage(propertiesFactory);
+	}
+
+	protected String getORMPackage() {
+		String orm = BeanUtils.getORMPackage(propertiesFactory);
+		return orm == null ? getAnnotationPackage() : orm;
+	}
+
+	protected String getServiceAnnotationPackage() {
+		String service = BeanUtils.getServiceAnnotationPackage(propertiesFactory);
+		return service == null ? getAnnotationPackage() : service;
+	}
+
+	protected String getCrontabAnnotationPackage() {
+		String crontab = BeanUtils.getCrontabAnnotationPackage(propertiesFactory);
+		return crontab == null ? getAnnotationPackage() : crontab;
+	}
+
+	protected String getConsumerAnnotationPackage() {
+		String consumer = BeanUtils.getConsumerAnnotationPackage(propertiesFactory);
+		return consumer == null ? getAnnotationPackage() : consumer;
+	}
+
+	protected String getStaticAnnotationPackage() {
+		String init = BeanUtils.getInitStaticPackage(propertiesFactory);
+		return init == null ? getAnnotationPackage() : init;
 	}
 
 	public void init() {
@@ -94,16 +129,24 @@ public class CommonApplication implements Application{
 			ORMUtils.registerCglibProxyTableBean(ormScanPackageName);
 		}
 
+		ORMUtils.registerCglibProxyTableBean(getORMPackage());
+
 		beanFactory.init();
 
-		if(ResourceUtils.isExist(configPath)){
+		if (ResourceUtils.isExist(configPath)) {
 			DubboUtils.exportService(beanFactory, propertiesFactory, XmlBeanUtils.getRootNodeList(configPath));
 		}
 
-		CrontabAnnotationUtils.crontabService(getClasses(), beanFactory, getBeanFactory().getFilterNames());
-		AnnotationConsumerUtils.scanningAMQPConsumer(getBeanFactory(), getClasses(), getBeanFactory().getFilterNames());
+		CrontabAnnotationUtils.crontabService(ResourceUtils.getClassList(getCrontabAnnotationPackage()), beanFactory,
+				getBeanFactory().getFilterNames());
+		scanningConsumer();
+	}
+
+	private void scanningConsumer() {
+		Collection<Class<?>> classes = ResourceUtils.getClassList(getConsumerAnnotationPackage());
+		AnnotationConsumerUtils.scanningAMQPConsumer(getBeanFactory(), classes, getBeanFactory().getFilterNames());
 		AnnotationConsumerUtils.scanningConsumer(beanFactory,
-				new XmlConsumerFactory(beanFactory, propertiesFactory, configPath), getClasses(),
+				new XmlConsumerFactory(beanFactory, propertiesFactory, configPath), classes,
 				getBeanFactory().getFilterNames());
 	}
 

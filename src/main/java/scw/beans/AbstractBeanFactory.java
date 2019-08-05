@@ -2,7 +2,6 @@ package scw.beans;
 
 import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -230,6 +229,12 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		return getInstance(type.getName());
 	}
 
+	/**
+	 * 对静态类型的注解扫描目录
+	 * @return
+	 */
+	protected abstract String getInitStaticPackage();
+
 	public BeanDefinition getBeanDefinition(String name) {
 		if (notFoundMap.containsKey(name)) {
 			return null;
@@ -298,7 +303,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			}
 
 			Class<?> clz = Class.forName(n);
-			if(clz.isInterface()){
+			if (clz.isInterface()) {
 				InterfaceProxy interfaceProxy = clz.getAnnotation(InterfaceProxy.class);
 				if (interfaceProxy != null) {
 					InvocationHandler invocationHandler = getInstance(interfaceProxy.value());
@@ -318,20 +323,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	public abstract PropertiesFactory getPropertiesFactory();
 
-	public abstract String getPackages();
-
 	public abstract String[] getFilterNames();
-
-	public Collection<Class<?>> getClassList() {
-		return ResourceUtils.getClassList(getPackages());
-	}
-
-	/**
-	 * 是否初始化静态方法,兼容老版本
-	 * 
-	 * @return
-	 */
-	public abstract boolean isInitStatic();
 
 	public synchronized void init() {
 		if (init) {
@@ -340,9 +332,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		init = true;
 
 		try {
-			if (isInitStatic()) {
-				BeanUtils.initStatic(this, getPropertiesFactory(), getClassList());
-			}
+			BeanUtils.initStatic(this, getPropertiesFactory(), ResourceUtils.getClassList(getInitStaticPackage()));
 		} catch (Exception e) {
 			throw new NestedRuntimeException(e);
 		}
@@ -354,9 +344,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 
 		try {
-			if (isInitStatic()) {
-				BeanUtils.destroyStaticMethod(getClassList());
-			}
+			BeanUtils.destroyStaticMethod(ResourceUtils.getClassList(getInitStaticPackage()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

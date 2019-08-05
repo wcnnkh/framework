@@ -29,6 +29,7 @@ import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.reflect.DefaultFieldDefinition;
 import scw.core.reflect.FieldDefinition;
+import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -53,7 +54,7 @@ public final class BeanUtils {
 	private static void invokerInitStaticMethod(Collection<Class<?>> classList) throws Exception {
 		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
 		for (Class<?> clz : classList) {
-			for (Method method : clz.getDeclaredMethods()) {
+			for (Method method : ReflectUtils.getDeclaredMethods(clz)) {
 				if (!Modifier.isStatic(method.getModifiers())) {
 					continue;
 				}
@@ -85,7 +86,7 @@ public final class BeanUtils {
 	public synchronized static void destroyStaticMethod(Collection<Class<?>> classList) throws Exception {
 		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
 		for (Class<?> clz : classList) {
-			for (Method method : clz.getDeclaredMethods()) {
+			for (Method method : ReflectUtils.getDeclaredMethods(clz)) {
 				if (!Modifier.isStatic(method.getModifiers())) {
 					continue;
 				}
@@ -140,7 +141,8 @@ public final class BeanUtils {
 		}
 	}
 
-	private static XmlBeanParameter[] sortParameters(String[] paramNames, Class<?>[] parameterTypes, XmlBeanParameter[] beanMethodParameters) {
+	private static XmlBeanParameter[] sortParameters(String[] paramNames, Class<?>[] parameterTypes,
+			XmlBeanParameter[] beanMethodParameters) {
 		XmlBeanParameter[] methodParameters = new XmlBeanParameter[beanMethodParameters.length];
 		Class<?>[] types = new Class<?>[methodParameters.length];
 		for (int i = 0; i < methodParameters.length; i++) {
@@ -164,7 +166,7 @@ public final class BeanUtils {
 		}
 		return ClassUtils.equals(parameterTypes, types) ? methodParameters : null;
 	}
-	
+
 	/**
 	 * 对参数重新排序
 	 * 
@@ -179,13 +181,15 @@ public final class BeanUtils {
 
 		return sortParameters(ClassUtils.getParameterName(method), method.getParameterTypes(), beanMethodParameters);
 	}
-	
-	public static XmlBeanParameter[] sortParameters(Constructor<?> constructor, XmlBeanParameter[] beanMethodParameters) {
+
+	public static XmlBeanParameter[] sortParameters(Constructor<?> constructor,
+			XmlBeanParameter[] beanMethodParameters) {
 		if (constructor.getParameterTypes().length != beanMethodParameters.length) {
 			return null;
 		}
 
-		return sortParameters(ClassUtils.getParameterName(constructor), constructor.getParameterTypes(), beanMethodParameters);
+		return sortParameters(ClassUtils.getParameterName(constructor), constructor.getParameterTypes(),
+				beanMethodParameters);
 	}
 
 	public static Object[] getBeanMethodParameterArgs(XmlBeanParameter[] beanParameters, BeanFactory beanFactory,
@@ -370,7 +374,7 @@ public final class BeanUtils {
 		Class<?> clz = clazz;
 		LinkedList<FieldDefinition> list = new LinkedList<FieldDefinition>();
 		while (clz != null && clz != Object.class) {
-			for (final Field field : clz.getDeclaredFields()) {
+			for (final Field field : ReflectUtils.getDeclaredFields(clz)) {
 				if (AnnotationUtils.isDeprecated(field)) {
 					continue;
 				}
@@ -399,6 +403,30 @@ public final class BeanUtils {
 			clz = clz.getSuperclass();
 		}
 		return list;
+	}
+
+	public static String getAnnotationPackage(PropertiesFactory propertiesFactory) {
+		return propertiesFactory.getValue("scan.package");
+	}
+
+	public static String getORMPackage(PropertiesFactory propertiesFactory) {
+		return propertiesFactory.getValue("scan.orm");
+	}
+
+	public static String getServiceAnnotationPackage(PropertiesFactory propertiesFactory) {
+		return propertiesFactory.getValue("scan.service");
+	}
+
+	public static String getCrontabAnnotationPackage(PropertiesFactory propertiesFactory) {
+		return propertiesFactory.getValue("scan.crontab");
+	}
+
+	public static String getConsumerAnnotationPackage(PropertiesFactory propertiesFactory) {
+		return propertiesFactory.getValue("scan.consumer");
+	}
+
+	public static String getInitStaticPackage(PropertiesFactory propertiesFactory) {
+		return propertiesFactory.getValue("scan.static");
 	}
 }
 

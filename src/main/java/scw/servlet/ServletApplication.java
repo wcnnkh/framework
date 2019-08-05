@@ -6,20 +6,13 @@ import scw.application.Application;
 import scw.application.CommonApplication;
 import scw.beans.BeanFactory;
 import scw.core.PropertiesFactory;
-import scw.core.utils.StringUtils;
 
 public class ServletApplication implements Application {
 	private final CommonApplication commonApplication;
 
 	public ServletApplication(ServletConfig servletConfig) throws Throwable {
 		ServletConfigPropertiesFactory propertiesFactory = new ServletConfigPropertiesFactory(servletConfig);
-		String initStaticStr = propertiesFactory.getServletConfig("init-static");
-		if (StringUtils.isNull(initStaticStr)) {
-			this.commonApplication = new CommonApplication(propertiesFactory.getConfigXml(), false, propertiesFactory);
-		} else {
-			this.commonApplication = new CommonApplication(propertiesFactory.getConfigXml(),
-					Boolean.parseBoolean(initStaticStr), propertiesFactory);
-		}
+		this.commonApplication = new CommonApplication(propertiesFactory.getConfigXml(), propertiesFactory);
 	}
 
 	public BeanFactory getBeanFactory() {

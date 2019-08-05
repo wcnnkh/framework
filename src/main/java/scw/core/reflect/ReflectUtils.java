@@ -34,8 +34,8 @@ public final class ReflectUtils {
 	private ReflectUtils() {
 	};
 
-	public static <T, V> void setProperties(Class<T> type, T bean,
-			Map<String, V> properties, PropertyMapper<V> mapper) {
+	public static <T, V> void setProperties(Class<T> type, T bean, Map<String, V> properties,
+			PropertyMapper<V> mapper) {
 		if (properties == null || properties.isEmpty()) {
 			return;
 		}
@@ -50,13 +50,11 @@ public final class ReflectUtils {
 
 				Object value;
 				try {
-					value = mapper.mapper(entry.getKey(), entry.getValue(),
-							type);
+					value = mapper.mapper(entry.getKey(), entry.getValue(), type);
 					field.set(bean, value);
 				} catch (Exception e) {
-					LoggerUtils.warn(ReflectUtils.class,
-							"向对象{}，插入name={},value={}时异常", type.getName(),
-							entry.getKey(), entry.getValue());
+					LoggerUtils.warn(ReflectUtils.class, "向对象{}，插入name={},value={}时异常", type.getName(), entry.getKey(),
+							entry.getValue());
 					e.printStackTrace();
 				}
 				continue;
@@ -65,21 +63,18 @@ public final class ReflectUtils {
 			for (Method method : methods) {
 				Object value;
 				try {
-					value = mapper.mapper(entry.getKey(), entry.getValue(),
-							method.getParameterTypes()[0]);
+					value = mapper.mapper(entry.getKey(), entry.getValue(), method.getParameterTypes()[0]);
 					method.invoke(bean, value);
 				} catch (Exception e) {
-					LoggerUtils.warn(ReflectUtils.class,
-							"向对象{}，插入name={},value={}时异常(调用set方法)",
-							type.getName(), entry.getKey(), entry.getValue());
+					LoggerUtils.warn(ReflectUtils.class, "向对象{}，插入name={},value={}时异常(调用set方法)", type.getName(),
+							entry.getKey(), entry.getValue());
 					e.printStackTrace();
 				}
 			}
 		}
 	}
 
-	public static <T> Constructor<T> getConstructor(Class<T> type,
-			boolean isPublic) {
+	public static <T> Constructor<T> getConstructor(Class<T> type, boolean isPublic) {
 		Constructor<T> constructor = null;
 		if (isPublic) {
 			try {
@@ -92,16 +87,14 @@ public final class ReflectUtils {
 			} catch (NoSuchMethodException e) {
 			}
 
-			if (constructor != null
-					&& !Modifier.isPublic(constructor.getModifiers())) {
+			if (constructor != null && !Modifier.isPublic(constructor.getModifiers())) {
 				constructor.setAccessible(true);
 			}
 		}
 		return constructor;
 	}
 
-	public static <T> Constructor<T> getConstructor(Class<T> type,
-			boolean isPublic, Class<?>... parameterTypes)
+	public static <T> Constructor<T> getConstructor(Class<T> type, boolean isPublic, Class<?>... parameterTypes)
 			throws NoSuchMethodException {
 		Constructor<T> constructor;
 		if (isPublic) {
@@ -115,32 +108,24 @@ public final class ReflectUtils {
 		return constructor;
 	}
 
-	public static Constructor<?> getConstructor(String className,
-			boolean isPublic, Class<?>... parameterTypes)
+	public static Constructor<?> getConstructor(String className, boolean isPublic, Class<?>... parameterTypes)
 			throws NoSuchMethodException, ClassNotFoundException {
-		return getConstructor(Class.forName(className), isPublic,
-				parameterTypes);
+		return getConstructor(Class.forName(className), isPublic, parameterTypes);
 	}
 
-	public static <T> Constructor<T> getConstructor(Class<T> type,
-			boolean isPublic, String... parameterTypeNames)
+	public static <T> Constructor<T> getConstructor(Class<T> type, boolean isPublic, String... parameterTypeNames)
 			throws NoSuchMethodException, ClassNotFoundException {
-		return getConstructor(type, isPublic,
-				ClassUtils.forName(parameterTypeNames));
+		return getConstructor(type, isPublic, ClassUtils.forName(parameterTypeNames));
 	}
 
-	public static Constructor<?> getConstructor(String className,
-			boolean isPublic, String... parameterTypes)
+	public static Constructor<?> getConstructor(String className, boolean isPublic, String... parameterTypes)
 			throws ClassNotFoundException, NoSuchMethodException {
-		return getConstructor(Class.forName(className), isPublic,
-				ClassUtils.forName(className));
+		return getConstructor(Class.forName(className), isPublic, ClassUtils.forName(className));
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> findConstructor(Class<T> type,
-			boolean isPublic, Class<?>... parameterTypes) {
-		for (Constructor<?> constructor : isPublic ? type.getConstructors()
-				: type.getDeclaredConstructors()) {
+	public static <T> Constructor<T> findConstructor(Class<T> type, boolean isPublic, Class<?>... parameterTypes) {
+		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
 			Class<?>[] types = constructor.getParameterTypes();
 			if (types.length == parameterTypes.length) {
 				boolean find = true;
@@ -152,8 +137,7 @@ public final class ReflectUtils {
 				}
 
 				if (find) {
-					if (!isPublic
-							&& !Modifier.isPublic(constructor.getModifiers())) {
+					if (!isPublic && !Modifier.isPublic(constructor.getModifiers())) {
 						constructor.setAccessible(true);
 					}
 					return (Constructor<T>) constructor;
@@ -171,10 +155,8 @@ public final class ReflectUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> findConstructorByParameters(Class<T> type,
-			boolean isPublic, Object... params) {
-		for (Constructor<?> constructor : isPublic ? type.getConstructors()
-				: type.getDeclaredConstructors()) {
+	public static <T> Constructor<T> findConstructorByParameters(Class<T> type, boolean isPublic, Object... params) {
+		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
 			Class<?>[] types = constructor.getParameterTypes();
 			if (types.length == params.length) {
 				boolean find = true;
@@ -191,8 +173,7 @@ public final class ReflectUtils {
 				}
 
 				if (find) {
-					if (!isPublic
-							&& !Modifier.isPublic(constructor.getModifiers())) {
+					if (!isPublic && !Modifier.isPublic(constructor.getModifiers())) {
 						constructor.setAccessible(true);
 					}
 					return (Constructor<T>) constructor;
@@ -212,9 +193,8 @@ public final class ReflectUtils {
 	 * @param parameterMap
 	 * @return
 	 */
-	public static <T> Object invoke(Class<T> type, Object instance,
-			String name, boolean isPublic, Map<String, Object> parameterMap)
-			throws NoSuchMethodException {
+	public static <T> Object invoke(Class<T> type, Object instance, String name, boolean isPublic,
+			Map<String, Object> parameterMap) throws NoSuchMethodException {
 		if (CollectionUtils.isEmpty(parameterMap)) {
 			try {
 				return getMethod(type, isPublic, name).invoke(instance);
@@ -228,8 +208,7 @@ public final class ReflectUtils {
 		}
 
 		int size = parameterMap.size();
-		for (Method method : isPublic ? type.getMethods() : type
-				.getDeclaredMethods()) {
+		for (Method method : isPublic ? type.getMethods() : type.getDeclaredMethods()) {
 			if (size == method.getParameterTypes().length) {
 				String[] names = ClassUtils.getParameterName(method);
 				Object[] args = new Object[size];
@@ -260,8 +239,7 @@ public final class ReflectUtils {
 		throw new NoSuchMethodException(type.getName() + ", method=" + name);
 	}
 
-	public static Method getMethod(Class<?> clazz, boolean isPublic,
-			String name, Class<?>... parameterTypes)
+	public static Method getMethod(Class<?> clazz, boolean isPublic, String name, Class<?>... parameterTypes)
 			throws NoSuchMethodException {
 		Method method;
 		if (isPublic) {
@@ -269,16 +247,14 @@ public final class ReflectUtils {
 		} else {
 			method = clazz.getDeclaredMethod(name, parameterTypes);
 
-			if (!Modifier.isPublic(clazz.getModifiers())
-					|| !Modifier.isPublic(method.getModifiers())) {
+			if (!Modifier.isPublic(clazz.getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
 				method.setAccessible(true);
 			}
 		}
 		return method;
 	}
 
-	public static Method findMethod(Class<?> clazz, String name,
-			Class<?>... parameterTypes) {
+	public static Method findMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
 		Method method;
 		try {
 			method = clazz.getDeclaredMethod(name, parameterTypes);
@@ -286,8 +262,7 @@ public final class ReflectUtils {
 			return null;
 		}
 
-		if (!Modifier.isPublic(clazz.getModifiers())
-				|| !Modifier.isPublic(method.getModifiers())) {
+		if (!Modifier.isPublic(clazz.getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
 			method.setAccessible(true);
 		}
 		return method;
@@ -324,8 +299,7 @@ public final class ReflectUtils {
 	 *            the name of the method
 	 * @return whether there is at least one method with the given name
 	 */
-	public static boolean hasAtLeastOneMethodWithName(Class<?> clazz,
-			String methodName) {
+	public static boolean hasAtLeastOneMethodWithName(Class<?> clazz, String methodName) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(methodName, "Method name must not be null");
 		Method[] declaredMethods = clazz.getDeclaredMethods();
@@ -340,8 +314,7 @@ public final class ReflectUtils {
 				return true;
 			}
 		}
-		return (clazz.getSuperclass() != null && hasAtLeastOneMethodWithName(
-				clazz.getSuperclass(), methodName));
+		return (clazz.getSuperclass() != null && hasAtLeastOneMethodWithName(clazz.getSuperclass(), methodName));
 	}
 
 	/**
@@ -373,22 +346,18 @@ public final class ReflectUtils {
 	 * @return the specific target method, or the original method if the
 	 *         {@code targetClass} doesn't implement it or is {@code null}
 	 */
-	public static Method getMostSpecificMethod(Method method,
-			Class<?> targetClass) {
-		if (method != null && isOverridable(method, targetClass)
-				&& targetClass != null
+	public static Method getMostSpecificMethod(Method method, Class<?> targetClass) {
+		if (method != null && isOverridable(method, targetClass) && targetClass != null
 				&& !targetClass.equals(method.getDeclaringClass())) {
 			try {
 				if (Modifier.isPublic(method.getModifiers())) {
 					try {
-						return targetClass.getMethod(method.getName(),
-								method.getParameterTypes());
+						return targetClass.getMethod(method.getName(), method.getParameterTypes());
 					} catch (NoSuchMethodException ex) {
 						return method;
 					}
 				} else {
-					Method specificMethod = ReflectionUtils.findMethod(
-							targetClass, method.getName(),
+					Method specificMethod = ReflectionUtils.findMethod(targetClass, method.getName(),
 							method.getParameterTypes());
 					return (specificMethod != null ? specificMethod : method);
 				}
@@ -414,12 +383,10 @@ public final class ReflectUtils {
 		if (Modifier.isPrivate(method.getModifiers())) {
 			return false;
 		}
-		if (Modifier.isPublic(method.getModifiers())
-				|| Modifier.isProtected(method.getModifiers())) {
+		if (Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers())) {
 			return true;
 		}
-		return ClassUtils.getPackageName(method.getDeclaringClass()).equals(
-				ClassUtils.getPackageName(targetClass));
+		return ClassUtils.getPackageName(method.getDeclaringClass()).equals(ClassUtils.getPackageName(targetClass));
 	}
 
 	/**
@@ -456,8 +423,7 @@ public final class ReflectUtils {
 		return null;
 	}
 
-	public static Method findGetterMethod(Class<?> clazz, String fieldName,
-			boolean sup) {
+	public static Method findGetterMethod(Class<?> clazz, String fieldName, boolean sup) {
 		Method find = null;
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
@@ -472,24 +438,18 @@ public final class ReflectUtils {
 						methodNameSuffix = fieldName.substring(2);
 					}
 
-					if (method.getName().equals(
-							"is"
-									+ StringUtils.toUpperCase(methodNameSuffix,
-											0, 1))) {
+					if (method.getName().equals("is" + StringUtils.toUpperCase(methodNameSuffix, 0, 1))) {
 						find = method;
-					} else if (method.getName().equals(
-							"is" + StringUtils.toUpperCase(fieldName, 0, 1))) {
+					} else if (method.getName().equals("is" + StringUtils.toUpperCase(fieldName, 0, 1))) {
 						find = method;
 					}
 
 					if (find != null && fieldName.startsWith("is")) {
-						LoggerUtils.warn(ReflectUtils.class,
-								"Boolean类型的字段不应该以is开头,class:{},field:{}",
-								clz.getName(), fieldName);
+						LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
+								fieldName);
 					}
 				} else {
-					if (method.getName().equals(
-							"get" + StringUtils.toUpperCase(fieldName, 0, 1))) {
+					if (method.getName().equals("get" + StringUtils.toUpperCase(fieldName, 0, 1))) {
 						find = method;
 					}
 				}
@@ -513,8 +473,7 @@ public final class ReflectUtils {
 		return find;
 	}
 
-	public static Method[] findSetterMethods(Class<?> clazz, String fieldName,
-			boolean sup) {
+	public static Method[] findSetterMethods(Class<?> clazz, String fieldName, boolean sup) {
 		LinkedList<Method> methods = new LinkedList<Method>();
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
@@ -530,24 +489,18 @@ public final class ReflectUtils {
 						methodNameSuffix = fieldName.substring(2);
 					}
 
-					if (method.getName().equals(
-							"set"
-									+ StringUtils.toUpperCase(methodNameSuffix,
-											0, 1))) {
+					if (method.getName().equals("set" + StringUtils.toUpperCase(methodNameSuffix, 0, 1))) {
 						find = method;
-					} else if (method.getName().equals(
-							"set" + StringUtils.toUpperCase(fieldName, 0, 1))) {
+					} else if (method.getName().equals("set" + StringUtils.toUpperCase(fieldName, 0, 1))) {
 						find = method;
 					}
 
 					if (find != null && fieldName.startsWith("is")) {
-						LoggerUtils.warn(ReflectUtils.class,
-								"Boolean类型的字段不应该以is开头,class:{},field:{}",
-								clz.getName(), fieldName);
+						LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
+								fieldName);
 					}
 				} else {
-					if (method.getName().equals(
-							"set" + StringUtils.toUpperCase(fieldName, 0, 1))) {
+					if (method.getName().equals("set" + StringUtils.toUpperCase(fieldName, 0, 1))) {
 						find = method;
 					}
 				}
@@ -564,45 +517,36 @@ public final class ReflectUtils {
 				break;
 			}
 		}
-		return methods.isEmpty() ? null : methods.toArray(new Method[methods
-				.size()]);
+		return methods.isEmpty() ? null : methods.toArray(new Method[methods.size()]);
 	}
 
-	public static Method findSetterMethod(Class<?> clz, String fieldName,
-			boolean sup) {
+	public static Method findSetterMethod(Class<?> clz, String fieldName, boolean sup) {
 		Method[] methods = findSetterMethods(clz, fieldName, sup);
 		return methods == null ? null : methods[0];
 	}
 
-	public static Method getGetterMethod(Class<?> clazz, Field field,
-			boolean sup) {
+	public static Method getGetterMethod(Class<?> clazz, Field field, boolean sup) {
 		Method getter = null;
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
 			if (ClassUtils.isBooleanType(field.getType())) {
 				String methodNameSuffix = field.getName();
 				if (methodNameSuffix.startsWith("is")) {
-					LoggerUtils.warn(ReflectUtils.class,
-							"Boolean类型的字段不应该以is开头,class:{},field:{}",
-							clz.getName(), methodNameSuffix);
+					LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
+							methodNameSuffix);
 					methodNameSuffix = methodNameSuffix.substring(2);
 				}
 				try {
-					getter = clz.getDeclaredMethod("is"
-							+ StringUtils.toUpperCase(methodNameSuffix, 0, 1));
+					getter = clz.getDeclaredMethod("is" + StringUtils.toUpperCase(methodNameSuffix, 0, 1));
 				} catch (NoSuchMethodException e1) {
 					try {
-						getter = clz
-								.getDeclaredMethod("is"
-										+ StringUtils.toUpperCase(
-												field.getName(), 0, 1));
+						getter = clz.getDeclaredMethod("is" + StringUtils.toUpperCase(field.getName(), 0, 1));
 					} catch (NoSuchMethodException e) {
 					}
 				}
 			} else {
 				try {
-					getter = clz.getDeclaredMethod("get"
-							+ StringUtils.toUpperCase(field.getName(), 0, 1));
+					getter = clz.getDeclaredMethod("get" + StringUtils.toUpperCase(field.getName(), 0, 1));
 				} catch (NoSuchMethodException e) {
 				}
 			}
@@ -621,41 +565,32 @@ public final class ReflectUtils {
 		return getter;
 	}
 
-	public static Method getSetterMethod(Class<?> clazz, Field field,
-			boolean sup) {
+	public static Method getSetterMethod(Class<?> clazz, Field field, boolean sup) {
 		Method setter = null;
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
 			if (ClassUtils.isBooleanType(field.getType())) {
 				String methodNameSuffix = field.getName();
 				if (methodNameSuffix.startsWith("is")) {
-					LoggerUtils.warn(ReflectUtils.class,
-							"Boolean类型的字段不应该以is开头,class:{},field:{}",
-							clz.getName(), methodNameSuffix);
+					LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
+							methodNameSuffix);
 					methodNameSuffix = methodNameSuffix.substring(2);
 				}
 
 				try {
-					setter = clz.getDeclaredMethod(
-							"set"
-									+ StringUtils.toUpperCase(methodNameSuffix,
-											0, 1), field.getType());
+					setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(methodNameSuffix, 0, 1),
+							field.getType());
 				} catch (NoSuchMethodException e1) {
 					try {
-						setter = clz.getDeclaredMethod(
-								"set"
-										+ StringUtils.toUpperCase(
-												field.getName(), 0, 1),
+						setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(field.getName(), 0, 1),
 								field.getType());
 					} catch (NoSuchMethodException e) {
 					}
 				}
 			} else {
 				try {
-					setter = clz.getDeclaredMethod(
-							"set"
-									+ StringUtils.toUpperCase(field.getName(),
-											0, 1), field.getType());
+					setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(field.getName(), 0, 1),
+							field.getType());
 				} catch (NoSuchMethodException e) {
 				}
 			}
@@ -682,8 +617,7 @@ public final class ReflectUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> List<T> getFieldValueList(Collection<?> objList,
-			String fieldName) {
+	public static <T> List<T> getFieldValueList(Collection<?> objList, String fieldName) {
 		if (CollectionUtils.isEmpty(objList) || StringUtils.isEmpty(fieldName)) {
 			return Collections.EMPTY_LIST;
 		}
@@ -722,8 +656,7 @@ public final class ReflectUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <K, V> Map<K, V> listToMap(String keyFieldName,
-			Iterable<V> list) {
+	public static <K, V> Map<K, V> listToMap(String keyFieldName, Iterable<V> list) {
 		if (list == null) {
 			return Collections.EMPTY_MAP;
 		}
@@ -742,8 +675,7 @@ public final class ReflectUtils {
 			if (field == null) {
 				field = getField(v.getClass(), keyFieldName, true);
 				if (field == null) {
-					throw new NotFoundException("list转map时无法在实体中找到此字段："
-							+ keyFieldName);
+					throw new NotFoundException("list转map时无法在实体中找到此字段：" + keyFieldName);
 				}
 			}
 
@@ -761,8 +693,7 @@ public final class ReflectUtils {
 			}
 
 			if (map.containsKey(fv)) {
-				throw new AlreadyExistsException("list转map时发现已经存在相同的key[" + fv
-						+ "], fieldName=" + keyFieldName);
+				throw new AlreadyExistsException("list转map时发现已经存在相同的key[" + fv + "], fieldName=" + keyFieldName);
 			}
 
 			map.put(fv, v);
@@ -776,8 +707,7 @@ public final class ReflectUtils {
 
 	public static void setAccessibleField(Field field) {
 		if (!field.isAccessible()
-				&& (Modifier.isPrivate(field.getModifiers()) || Modifier
-						.isProtected(field.getModifiers()))) {
+				&& (Modifier.isPrivate(field.getModifiers()) || Modifier.isProtected(field.getModifiers()))) {
 			field.setAccessible(true);
 		}
 	}
@@ -792,8 +722,7 @@ public final class ReflectUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Object setFieldValue(Class<?> clz, Field field, Object obj,
-			Object value) throws Exception {
+	public static Object setFieldValue(Class<?> clz, Field field, Object obj, Object value) throws Exception {
 		Method method = getSetterMethod(clz, field, true);
 		try {
 			if (method == null) {
@@ -804,14 +733,12 @@ public final class ReflectUtils {
 				return method.invoke(obj, value);
 			}
 		} catch (Exception e) {
-			LoggerUtils.warn(ReflectUtils.class, "向对象{}，插入field={}时异常",
-					clz.getName(), field.getName());
+			LoggerUtils.warn(ReflectUtils.class, "向对象{}，插入field={}时异常", clz.getName(), field.getName());
 			throw e;
 		}
 	}
 
-	public static Object getFieldValue(Class<?> clz, Object obj, Field field)
-			throws Exception {
+	public static Object getFieldValue(Class<?> clz, Object obj, Field field) throws Exception {
 		Method method = getGetterMethod(clz, field, true);
 		try {
 			if (method == null) {
@@ -821,16 +748,13 @@ public final class ReflectUtils {
 				return method.invoke(obj);
 			}
 		} catch (Exception e) {
-			LoggerUtils.warn(ReflectUtils.class, "获取对象{}中field={}时值时异常",
-					clz.getName(), field.getName());
+			LoggerUtils.warn(ReflectUtils.class, "获取对象{}中field={}时值时异常", clz.getName(), field.getName());
 			throw e;
 		}
 	}
 
-	public static Object setFieldValueAutoType(Class<?> clz, Field field,
-			Object obj, String value) throws Exception {
-		return setFieldValue(clz, field, obj,
-				StringParse.DEFAULT.parse(value, field.getType()));
+	public static Object setFieldValueAutoType(Class<?> clz, Field field, Object obj, String value) throws Exception {
+		return setFieldValue(clz, field, obj, StringParse.DEFAULT.parse(value, field.getType()));
 	}
 
 	/**
@@ -851,10 +775,8 @@ public final class ReflectUtils {
 	 * @return
 	 */
 	public static boolean isInstance(Class<?> clz, boolean checkConstructor) {
-		boolean b = !(Modifier.isAbstract(clz.getModifiers()) || Modifier
-				.isInterface(clz.getModifiers()))
-				|| !clz.isEnum()
-				|| !clz.isArray();
+		boolean b = !(Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers()))
+				|| !clz.isEnum() || !clz.isArray();
 		if (b && checkConstructor) {
 			try {
 				clz.getDeclaredConstructor();
@@ -866,37 +788,33 @@ public final class ReflectUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Map<String, Field> getFieldMap(Class<?> clz, boolean pub,
-			boolean sup, boolean trimMap) {
+	public static Map<String, Field> getFieldMap(Class<?> clz, boolean pub, boolean sup, boolean trimMap) {
 		final Map<String, Field> map = new LinkedHashMap<String, Field>();
-		iteratorField(clz, pub, sup,
-				new scw.core.utils.IteratorCallback<Field>() {
+		iteratorField(clz, pub, sup, new scw.core.utils.IteratorCallback<Field>() {
 
-					public boolean iteratorCallback(Field data) {
-						if (Modifier.isStatic(data.getModifiers())) {
-							return true;
-						}
+			public boolean iteratorCallback(Field data) {
+				if (Modifier.isStatic(data.getModifiers())) {
+					return true;
+				}
 
-						map.put(data.getName(), data);
-						return true;
-					}
-				});
+				map.put(data.getName(), data);
+				return true;
+			}
+		});
 
 		if (trimMap) {
 			if (map.isEmpty()) {
 				return Collections.EMPTY_MAP;
 			}
 
-			Map<String, Field> trim = new LinkedHashMap<String, Field>(
-					map.size(), 1);
+			Map<String, Field> trim = new LinkedHashMap<String, Field>(map.size(), 1);
 			trim.putAll(map);
 			return Collections.unmodifiableMap(trim);
 		}
 		return map;
 	}
 
-	public static void iteratorField(Class<?> clazz,
-			scw.core.utils.IteratorCallback<Field> iterator) {
+	public static void iteratorField(Class<?> clazz, scw.core.utils.IteratorCallback<Field> iterator) {
 		iteratorField(clazz, false, true, iterator);
 	}
 
@@ -919,8 +837,7 @@ public final class ReflectUtils {
 		}
 	}
 
-	public static void iteratorMethod(Class<?> clazz,
-			scw.core.utils.IteratorCallback<Method> iterator) {
+	public static void iteratorMethod(Class<?> clazz, scw.core.utils.IteratorCallback<Method> iterator) {
 		iteratorMethod(clazz, false, true, iterator);
 	}
 
@@ -928,8 +845,7 @@ public final class ReflectUtils {
 			scw.core.utils.IteratorCallback<Method> iterator) {
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
-			for (Method method : pub ? clz.getMethods() : clz
-					.getDeclaredMethods()) {
+			for (Method method : pub ? clz.getMethods() : clz.getDeclaredMethods()) {
 				method.setAccessible(true);
 				if (!iterator.iteratorCallback(method)) {
 					break;
@@ -976,8 +892,7 @@ public final class ReflectUtils {
 	 * @param excludeName
 	 * @return
 	 */
-	public static Map<String, Object> getFieldValueMapExcludeName(
-			final Object bean, String... excludeName) {
+	public static Map<String, Object> getFieldValueMapExcludeName(final Object bean, String... excludeName) {
 		if (bean == null) {
 			return null;
 		}
@@ -1025,8 +940,7 @@ public final class ReflectUtils {
 	 *            要保留的字段
 	 * @return
 	 */
-	public static Map<String, Object> getFieldValueMapEffectiveName(
-			final Object bean, String... effectiveName) {
+	public static Map<String, Object> getFieldValueMapEffectiveName(final Object bean, String... effectiveName) {
 		if (bean == null) {
 			return null;
 		}
@@ -1073,8 +987,8 @@ public final class ReflectUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<Map<String, Object>> getObjectsFieldValueMapExcludeName(
-			Collection<?> objects, String... excludeName) {
+	public static List<Map<String, Object>> getObjectsFieldValueMapExcludeName(Collection<?> objects,
+			String... excludeName) {
 		if (CollectionUtils.isEmpty(objects)) {
 			return Collections.EMPTY_LIST;
 		}
@@ -1089,8 +1003,7 @@ public final class ReflectUtils {
 			}
 		}
 
-		List<Map<String, Object>> values = new ArrayList<Map<String, Object>>(
-				objects.size());
+		List<Map<String, Object>> values = new ArrayList<Map<String, Object>>(objects.size());
 		Map<String, Field> fieldCache = null;
 		for (Object obj : objects) {
 			if (obj == null) {
@@ -1102,8 +1015,7 @@ public final class ReflectUtils {
 				fieldCache = getFieldMap(clazz, false, true, false);
 			}
 
-			Map<String, Object> map = new HashMap<String, Object>(
-					fieldCache.size(), 1);
+			Map<String, Object> map = new HashMap<String, Object>(fieldCache.size(), 1);
 			for (Entry<String, Field> entry : fieldCache.entrySet()) {
 				if (hashSet != null && hashSet.contains(entry.getKey())) {
 					continue;
@@ -1135,8 +1047,8 @@ public final class ReflectUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<Map<String, Object>> getObjectsFieldValueMapEffectiveName(
-			Collection<?> objects, String... effectiveName) {
+	public static List<Map<String, Object>> getObjectsFieldValueMapEffectiveName(Collection<?> objects,
+			String... effectiveName) {
 		if (CollectionUtils.isEmpty(objects)) {
 			return Collections.EMPTY_LIST;
 		}
@@ -1151,8 +1063,7 @@ public final class ReflectUtils {
 			}
 		}
 
-		List<Map<String, Object>> values = new ArrayList<Map<String, Object>>(
-				objects.size());
+		List<Map<String, Object>> values = new ArrayList<Map<String, Object>>(objects.size());
 		Map<String, Field> fieldCache = null;
 		for (Object obj : objects) {
 			if (obj == null) {
@@ -1164,8 +1075,7 @@ public final class ReflectUtils {
 				fieldCache = getFieldMap(clazz, false, true, false);
 			}
 
-			Map<String, Object> map = new HashMap<String, Object>(
-					fieldCache.size(), 1);
+			Map<String, Object> map = new HashMap<String, Object>(fieldCache.size(), 1);
 			for (Entry<String, Field> entry : fieldCache.entrySet()) {
 				if (hashSet != null && !hashSet.contains(entry.getKey())) {
 					continue;
@@ -1193,8 +1103,7 @@ public final class ReflectUtils {
 		Field field;
 		try {
 			field = clz.getDeclaredField("serialVersionUID");
-			if (Modifier.isStatic(field.getModifiers())
-					&& Modifier.isFinal(field.getModifiers())) {
+			if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
 				field.setAccessible(true);
 				return field.getLong(null);
 			}
@@ -1205,5 +1114,41 @@ public final class ReflectUtils {
 
 	public static Object clone(Object source, boolean ignoreTransient) {
 		return CloneUtils.clone(source, ignoreTransient);
+	}
+
+	public static Field[] getDeclaredFields(Class<?> clazz) {
+		return getFields(clazz, true);
+	}
+
+	public static Field[] getFields(Class<?> clazz, boolean declared) {
+		Field[] fields = null;
+		try {
+			fields = declared ? clazz.getDeclaredFields() : clazz.getFields();
+		} catch (Throwable e) {
+			// ingore
+		}
+
+		if (fields == null) {
+			fields = new Field[0];
+		}
+		return fields;
+	}
+
+	public static Method[] getMethods(Class<?> clazz, boolean declared) {
+		Method[] methods = null;
+		try {
+			methods = declared ? clazz.getDeclaredMethods() : clazz.getMethods();
+		} catch (Throwable e) {
+			// ingore
+		}
+
+		if (methods == null) {
+			methods = new Method[0];
+		}
+		return methods;
+	}
+
+	public static Method[] getDeclaredMethods(Class<?> clazz) {
+		return getMethods(clazz, true);
 	}
 }

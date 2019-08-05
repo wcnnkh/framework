@@ -42,18 +42,16 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	private ServletService servletService;
 
 	public TomcatApplication(String configXml) {
-		super(configXml, true);
+		super(configXml);
 	}
 
-	public void service(ServletRequest req, ServletResponse res)
-			throws ServletException, IOException {
+	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 		servletService.service(req, res);
 	}
 
 	private Tomcat createTomcat() {
 		Tomcat tomcat = new Tomcat();
-		int port = StringUtils.parseInt(
-				getPropertiesFactory().getValue("tomcat.port"), 8080);
+		int port = StringUtils.parseInt(getPropertiesFactory().getValue("tomcat.port"), 8080);
 		tomcat.setPort(port);
 
 		String basedir = getPropertiesFactory().getValue("tomcat.basedir");
@@ -70,25 +68,21 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	}
 
 	private boolean isVersion(String version) {
-		return StringUtils.startsWithIgnoreCase(ServerInfo.getServerNumber(),
-				version);
+		return StringUtils.startsWithIgnoreCase(ServerInfo.getServerNumber(), version);
 	}
 
 	private JarScanner createNullScanner() {
-		return (JarScanner) Proxy.newProxyInstance(
-				JarScanner.class.getClassLoader(),
-				new Class[] { JarScanner.class }, new EmptyInvocationHandler());
+		return (JarScanner) Proxy.newProxyInstance(JarScanner.class.getClassLoader(), new Class[] { JarScanner.class },
+				new EmptyInvocationHandler());
 	}
 
 	private void configureConnector(Tomcat tomcat, int port) {
 		Connector connector = null;
-		String connectorName = getPropertiesFactory().getValue(
-				"tomcat.connector");
+		String connectorName = getPropertiesFactory().getValue("tomcat.connector");
 		if (!StringUtils.isEmpty(connectorName)) {
 			connector = getBeanFactory().getInstance(connectorName);
 		} else {
-			String protocol = getPropertiesFactory()
-					.getValue("tomcat.protocol");
+			String protocol = getPropertiesFactory().getValue("tomcat.protocol");
 			if (!StringUtils.isEmpty(protocol)) {
 				connector = new Connector(protocol);
 			} else {
@@ -105,11 +99,9 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	}
 
 	private Context createContext() {
-		String contextPath = getPropertiesFactory().getValue(
-				"tomcat.contextPath");
+		String contextPath = getPropertiesFactory().getValue("tomcat.contextPath");
 		contextPath = StringUtils.isEmpty(contextPath) ? "" : contextPath;
-		return tomcat
-				.addContext(contextPath, SystemPropertyUtils.getWorkPath());
+		return tomcat.addContext(contextPath, SystemPropertyUtils.getWorkPath());
 	}
 
 	private void configureTLD(Context context) {
@@ -124,40 +116,32 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	}
 
 	private void configureJSP(Context context) {
-		if (StringUtils.parseBoolean(getPropertiesFactory().getValue(
-				"tomcat.jsp"))) {
+		if (StringUtils.parseBoolean(getPropertiesFactory().getValue("tomcat.jsp"))) {
 			ServletContainerInitializer containerInitializer = InstanceUtils
-					.getInstance("org.apache.jasper.servlet.JasperInitializer",
-							true);
+					.getInstance("org.apache.jasper.servlet.JasperInitializer", true);
 			if (containerInitializer != null) {
-				context.addServletContainerInitializer(containerInitializer,
-						null);
+				context.addServletContainerInitializer(containerInitializer, null);
 			} // else Probably not Tomcat 8
 
-			Tomcat.addServlet(context, "jsp",
-					"org.apache.jasper.servlet.JspServlet");
+			Tomcat.addServlet(context, "jsp", "org.apache.jasper.servlet.JspServlet");
 			addServletMapping(context, "*.jsp", "jsp");
 			addServletMapping(context, "*.jspx", "jsp");
 		}
 	}
 
 	private void configShutdown(Context context) {
-		String tomcatShutdownServletPath = getPropertiesFactory().getValue(
-				"tomcat.shutdown.path");
+		String tomcatShutdownServletPath = getPropertiesFactory().getValue("tomcat.shutdown.path");
 		if (StringUtils.isEmpty(tomcatShutdownServletPath)) {
 			return;
 		}
 
-		String tomcatShutdownServletName = getPropertiesFactory().getValue(
-				"tomcat.shutdown.name");
+		String tomcatShutdownServletName = getPropertiesFactory().getValue("tomcat.shutdown.name");
 		if (StringUtils.isEmpty(tomcatShutdownServletName)) {
 			tomcatShutdownServletName = "shutdown";
 		}
 
-		Tomcat.addServlet(context, tomcatShutdownServletName,
-				new ShutdownHttpServlet(getPropertiesFactory()));
-		addServletMapping(context, tomcatShutdownServletPath,
-				tomcatShutdownServletName);
+		Tomcat.addServlet(context, tomcatShutdownServletName, new ShutdownHttpServlet(getPropertiesFactory()));
+		addServletMapping(context, tomcatShutdownServletPath, tomcatShutdownServletName);
 	}
 
 	private static class ShutdownHttpServlet extends HttpServlet {
@@ -167,10 +151,8 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 		private final String password;
 
 		public ShutdownHttpServlet(PropertiesFactory propertiesFactory) {
-			this.username = propertiesFactory
-					.getValue("tomcat.shutdown.username");
-			this.password = propertiesFactory
-					.getValue("tomcat.shutdown.password");
+			this.username = propertiesFactory.getValue("tomcat.shutdown.username");
+			this.password = propertiesFactory.getValue("tomcat.shutdown.password");
 			String ip = propertiesFactory.getValue("tomcat.shutdown.ip");
 			this.ips = StringUtils.commonSplit(ip);
 		}
@@ -189,8 +171,7 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 		}
 
 		@Override
-		protected void service(HttpServletRequest req, HttpServletResponse resp)
-				throws ServletException, IOException {
+		protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 			CrossDomainFilter.DEFAULT.write(resp);
 			if (!ArrayUtils.isEmpty(ips)) {
 				String requestIp = ServletUtils.getIP(req);
@@ -227,24 +208,19 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
-				Tomcat.addServlet(context, "default",
-						"org.apache.catalina.servlets.DefaultServlet");
+				Tomcat.addServlet(context, "default", "org.apache.catalina.servlets.DefaultServlet");
 				for (String pattern : patternArr) {
-					LoggerUtils.info(TomcatApplication.class,
-							"source mapping [{}]", pattern);
+					LoggerUtils.info(TomcatApplication.class, "source mapping [{}]", pattern);
 					addServletMapping(context, pattern, "default");
 				}
 			}
 		}
 	}
 
-	private void addServletMapping(Context context, String pattern,
-			String servletName) {
-		Method method = ReflectUtils.findMethod(Context.class,
-				"addServletMappingDecoded", String.class, String.class);
+	private void addServletMapping(Context context, String pattern, String servletName) {
+		Method method = ReflectUtils.findMethod(Context.class, "addServletMappingDecoded", String.class, String.class);
 		if (method == null) {// tomcat8以下
-			method = ReflectUtils.findMethod(Context.class,
-					"addServletMapping", String.class, String.class);
+			method = ReflectUtils.findMethod(Context.class, "addServletMapping", String.class, String.class);
 		}
 		try {
 			method.invoke(context, pattern, servletName);
@@ -258,9 +234,8 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	@Override
 	public void init() {
 		super.init();
-		this.servletService = ServletUtils.getServletService(getBeanFactory(),
-				getPropertiesFactory(), getConfigPath(), getBeanFactory()
-						.getFilterNames());
+		this.servletService = ServletUtils.getServletService(getBeanFactory(), getPropertiesFactory(), getConfigPath(),
+				getBeanFactory().getFilterNames());
 
 		try {
 			tomcat8();
@@ -282,8 +257,7 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 	}
 
 	private void tomcat8() throws Throwable {
-		Class<?> clz = Class
-				.forName("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory");
+		Class<?> clz = Class.forName("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory");
 		Method method = clz.getDeclaredMethod("disable");
 		method.invoke(null);
 	}
@@ -312,7 +286,7 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 
 	private static volatile Application application;
 
-	public synchronized static void run(String beanXml) {
+	public synchronized static void run(final Class<?> clazz, String beanXml) {
 		if (application != null) {
 			throw new AlreadyExistsException("The service has been started");
 		}
@@ -321,7 +295,41 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 			LoggerUtils.warn(TomcatApplication.class, "not found " + beanXml);
 		}
 
-		application = new TomcatApplication(beanXml);
+		if (clazz == null) {
+			application = new TomcatApplication(beanXml);
+		} else {
+			application = new TomcatApplication(beanXml) {
+				@Override
+				protected String getAnnotationPackage() {
+					String[] arr = StringUtils.split(clazz.getName(), '.');
+					if (arr.length < 2) {
+						return super.getAnnotationPackage();
+					} else if (arr.length == 2) {
+						String p = super.getAnnotationPackage();
+						if (StringUtils.isEmpty(p)) {
+							return arr[0];
+						} else {
+							return p + "," + arr[0];
+						}
+					} else {
+						StringBuilder sb = new StringBuilder();
+						for (int i = 0; i < 2; i++) {
+							if (i != 0) {
+								sb.append(".");
+							}
+							sb.append(arr[i]);
+						}
+
+						String p = super.getAnnotationPackage();
+						if (StringUtils.isEmpty(p)) {
+							return sb.toString();
+						} else {
+							return p + "," + sb.toString();
+						}
+					}
+				}
+			};
+		}
 		application.init();
 	}
 
@@ -330,14 +338,17 @@ public class TomcatApplication extends CommonApplication implements Servlet {
 			throw new NotFoundException("Service not started");
 		}
 
-		LoggerUtils.info(TomcatApplication.class,
-				"---------------shutdown---------------");
+		LoggerUtils.info(TomcatApplication.class, "---------------shutdown---------------");
 		application.destroy();
 		application = null;
 		System.exit(0);
 	}
 
+	public static void run(Class<?> clazz) {
+		run(clazz, "classpath:beans.xml");
+	}
+
 	public static void run() {
-		run("classpath:beans.xml");
+		run(null);
 	}
 }
