@@ -21,8 +21,6 @@
 		<amqp-client.version>5.4.3</amqp-client.version>
 		<!-- tomcat7只支持jdk1.6以上的版本 -->
 		<tomcat.version>7.0.94</tomcat.version>
-		<!-- jetty只支持jdk1.6以上的版本 -->
-		<jetty.version>7.0.0.M4</jetty.version>
 	</properties>
 
 	<dependencies>
@@ -231,28 +229,6 @@
       				<artifactId>tomcat-annotations-api</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		
-		<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server -->
-		<dependency>
-		    <groupId>org.eclipse.jetty</groupId>
-		    <artifactId>jetty-server</artifactId>
-		    <version>${jetty.version}</version>
-		    <scope>provided</scope>
-		    <exclusions>
-		    	<exclusion>
-		    		<groupId>javax.servlet</groupId>
-      				<artifactId>servlet-api</artifactId>
-		    	</exclusion>
-		    	<exclusion>
-		         	<groupId>org.eclipse.jetty</groupId>
-		      		<artifactId>jetty-http</artifactId>
-		        </exclusion>
-		        <exclusion>
-		        	<groupId>org.eclipse.jetty</groupId>
-      				<artifactId>jetty-continuation</artifactId>
-		        </exclusion>
-		    </exclusions>
 		</dependency>
 	</dependencies>
 </project>

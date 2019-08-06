@@ -22,9 +22,9 @@ public final class ShutdownHttpServlet extends HttpServlet {
 	private final Destroy destroy;
 
 	public ShutdownHttpServlet(PropertiesFactory propertiesFactory, Destroy destroy) {
-		this.username = propertiesFactory.getValue("tomcat.shutdown.username");
-		this.password = propertiesFactory.getValue("tomcat.shutdown.password");
-		String ip = propertiesFactory.getValue("tomcat.shutdown.ip");
+		this.username = EmbeddedUtils.getShutdownUserName(propertiesFactory);
+		this.password = EmbeddedUtils.getShutdownPassword(propertiesFactory);
+		String ip = EmbeddedUtils.getShutdownIp(propertiesFactory);
 		this.ips = StringUtils.commonSplit(ip);
 		this.destroy = destroy;
 	}

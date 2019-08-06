@@ -21,6 +21,7 @@ import scw.core.instance.InstanceUtils;
 import scw.core.reflect.EmptyInvocationHandler;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ArrayUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.logger.LoggerUtils;
@@ -30,10 +31,10 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 
 	private Tomcat createTomcat(BeanFactory beanFactory, PropertiesFactory propertiesFactory) {
 		Tomcat tomcat = new Tomcat();
-		int port = StringUtils.parseInt(propertiesFactory.getValue("tomcat.port"), 8080);
+		int port = EmbeddedUtils.getPort(propertiesFactory);
 		tomcat.setPort(port);
 
-		String basedir = propertiesFactory.getValue("tomcat.basedir");
+		String basedir = EmbeddedUtils.getBaseDir(propertiesFactory);
 		if (StringUtils.isEmpty(basedir)) {
 			basedir = SystemPropertyUtils.getWorkPath();
 		}
@@ -58,11 +59,11 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	private void configureConnector(Tomcat tomcat, int port, BeanFactory beanFactory,
 			PropertiesFactory propertiesFactory) {
 		Connector connector = null;
-		String connectorName = propertiesFactory.getValue("tomcat.connector");
+		String connectorName = EmbeddedUtils.getTomcatConnectorName(propertiesFactory);
 		if (!StringUtils.isEmpty(connectorName)) {
 			connector = beanFactory.getInstance(connectorName);
 		} else {
-			String protocol = propertiesFactory.getValue("tomcat.protocol");
+			String protocol = EmbeddedUtils.getTomcatProtocol(propertiesFactory);
 			if (!StringUtils.isEmpty(protocol)) {
 				connector = new Connector(protocol);
 			} else {
@@ -79,7 +80,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	}
 
 	private Context createContext(PropertiesFactory propertiesFactory) {
-		String contextPath = propertiesFactory.getValue("tomcat.contextPath");
+		String contextPath = EmbeddedUtils.getContextPath(propertiesFactory);
 		contextPath = StringUtils.isEmpty(contextPath) ? "" : contextPath;
 		return tomcat.addContext(contextPath, SystemPropertyUtils.getWorkPath());
 	}
@@ -96,7 +97,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	}
 
 	private void configureJSP(Context context, PropertiesFactory propertiesFactory) {
-		if (StringUtils.parseBoolean(propertiesFactory.getValue("tomcat.jsp"))) {
+		if (ClassUtils.isExist("org.apache.jasper.servlet.JspServlet")) {
 			ServletContainerInitializer containerInitializer = InstanceUtils
 					.getInstance("org.apache.jasper.servlet.JasperInitializer", true);
 			if (containerInitializer != null) {
@@ -110,12 +111,12 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	}
 
 	private void configShutdown(Context context, PropertiesFactory propertiesFactory, Servlet destroy) {
-		String tomcatShutdownServletPath = propertiesFactory.getValue("tomcat.shutdown.path");
+		String tomcatShutdownServletPath = EmbeddedUtils.getShutdownPath(propertiesFactory);
 		if (StringUtils.isEmpty(tomcatShutdownServletPath)) {
 			return;
 		}
 
-		String tomcatShutdownServletName = propertiesFactory.getValue("tomcat.shutdown.name");
+		String tomcatShutdownServletName = EmbeddedUtils.getShutdownName(propertiesFactory);
 		if (StringUtils.isEmpty(tomcatShutdownServletName)) {
 			tomcatShutdownServletName = "shutdown";
 		}
@@ -141,7 +142,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	private void configureServlet(Context context, Servlet servlet, PropertiesFactory propertiesFactory) {
 		Tomcat.addServlet(context, "scw", servlet);
 		addServletMapping(context, "/", "scw");
-		String sourceMapping = propertiesFactory.getValue("tomcat.source");
+		String sourceMapping = EmbeddedUtils.getSource(propertiesFactory);
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {

@@ -1,9 +1,9 @@
 package scw.application;
 
 import scw.application.embedded.EmbeddedServlet;
+import scw.application.embedded.EmbeddedUtils;
 import scw.application.embedded.ServletEmbedded;
 import scw.application.embedded.ShutdownHttpServlet;
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
@@ -32,26 +32,25 @@ public class EmbeddedApplication extends CommonApplication {
 	@Override
 	public void init() {
 		super.init();
-		String servletEmbedded = getPropertiesFactory().getValue("application.embedded");
-		if (StringUtils.isEmpty(servletEmbedded)) {
+		String embeddedName = EmbeddedUtils.getEmbeddedName(getPropertiesFactory());
+		if (StringUtils.isEmpty(embeddedName)) {
 			String name = getSupportServletEmbeddedClassName();
 			if (name == null) {
 				LoggerUtils.warn(EmbeddedApplication.class, "未找到支持的embedded, 如需支持请导入对应的jar");
 			} else {
-				ServletService service = ServletUtils.getServletService(getBeanFactory(), getPropertiesFactory(),
-						getConfigPath(), getBeanFactory().getFilterNames());
-				embedded = InstanceUtils.getInstance(name);
-				embedded.init(getBeanFactory(), getPropertiesFactory(),
-						new ShutdownHttpServlet(getPropertiesFactory(), this), new EmbeddedServlet(service));
+				initEmbedded(name);
 			}
 		} else {
-			ServletService service = ServletUtils.getServletService(getBeanFactory(), getPropertiesFactory(),
-					getConfigPath(), getBeanFactory().getFilterNames());
-			embedded = getBeanFactory().getInstance(servletEmbedded);
-			embedded.init(getBeanFactory(), getPropertiesFactory(),
-					new ShutdownHttpServlet(getPropertiesFactory(), this), new EmbeddedServlet(service));
+			initEmbedded(embeddedName);
 		}
+	}
 
+	private void initEmbedded(String embeddedName) {
+		ServletService service = ServletUtils.getServletService(getBeanFactory(), getPropertiesFactory(),
+				getConfigPath(), getBeanFactory().getFilterNames());
+		embedded = getBeanFactory().getInstance(embeddedName);
+		embedded.init(getBeanFactory(), getPropertiesFactory(), new ShutdownHttpServlet(getPropertiesFactory(), this),
+				new EmbeddedServlet(service));
 	}
 
 	@Override
