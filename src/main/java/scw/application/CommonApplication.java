@@ -18,18 +18,17 @@ import scw.core.PropertiesFactory;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 import scw.sql.orm.ORMUtils;
 import scw.transaction.TransactionFilter;
 
 public class CommonApplication implements Application {
+	public static final String DEFAULT_BEANS_PATH = "classpath:beans.xml";
+
 	private final XmlBeanFactory beanFactory;
 	private volatile boolean start = false;
 	private final PropertiesFactory propertiesFactory;
 	private final String configPath;
-
-	public CommonApplication() {
-		this(null);
-	}
 
 	public String getConfigPath() {
 		return configPath;
@@ -166,5 +165,57 @@ public class CommonApplication implements Application {
 		ProtocolConfig.destroyAll();
 		beanFactory.destroy();
 		LoggerFactory.destroy();
+	}
+
+	public synchronized static void run(final Class<?> clazz, String beanXml) {
+		if (!ResourceUtils.isExist(beanXml)) {
+			LoggerUtils.warn(TomcatApplication.class, "not found " + beanXml);
+		}
+
+		CommonApplication application;
+		if (clazz == null) {
+			application = new CommonApplication(beanXml);
+		} else {
+			application = new CommonApplication(beanXml) {
+				@Override
+				protected String getAnnotationPackage() {
+					String[] arr = StringUtils.split(clazz.getName(), '.');
+					if (arr.length < 2) {
+						return super.getAnnotationPackage();
+					} else if (arr.length == 2) {
+						String p = super.getAnnotationPackage();
+						if (StringUtils.isEmpty(p)) {
+							return arr[0];
+						} else {
+							return p + "," + arr[0];
+						}
+					} else {
+						StringBuilder sb = new StringBuilder();
+						for (int i = 0; i < 2; i++) {
+							if (i != 0) {
+								sb.append(".");
+							}
+							sb.append(arr[i]);
+						}
+
+						String p = super.getAnnotationPackage();
+						if (StringUtils.isEmpty(p)) {
+							return sb.toString();
+						} else {
+							return p + "," + sb.toString();
+						}
+					}
+				}
+			};
+		}
+		application.init();
+	}
+
+	public static void run(Class<?> clazz) {
+		run(clazz, DEFAULT_BEANS_PATH);
+	}
+
+	public static void run() {
+		run(null);
 	}
 }

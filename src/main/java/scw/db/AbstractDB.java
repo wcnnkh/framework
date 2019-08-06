@@ -9,14 +9,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.core.Constants;
 import scw.core.Consumer;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.ConfigUtils;
+import scw.core.utils.StringUtils;
 import scw.db.async.AsyncInfo;
 import scw.db.async.MultipleOperation;
 import scw.db.async.OperationBean;
 import scw.db.cache.LazyCacheManager;
 import scw.db.database.DataBase;
 import scw.mq.MQ;
+import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.orm.ORMTemplate;
 import scw.sql.orm.SqlFormat;
@@ -308,5 +312,29 @@ public abstract class AbstractDB extends ORMTemplate implements ConnectionFactor
 			mq.push(queueName, asyncInfo);
 			super.afterProcess();
 		}
+	}
+
+	public void executeSqlByFile(String filePath) {
+		String sql = ConfigUtils.getFileContent(filePath, Constants.DEFAULT_CHARSET_NAME);
+		if (StringUtils.isEmpty(sql)) {
+			return;
+		}
+
+		execute(new SimpleSql(sql));
+	}
+
+	public void executeSqlByFileLine(String filePath, String ignoreStartsWith) throws SQLException {
+		Collection<String> sqlList = ConfigUtils.getFileContentLineList(filePath, Constants.DEFAULT_CHARSET_NAME);
+		for (String sql : sqlList) {
+			if (!StringUtils.isEmpty(ignoreStartsWith) && sql.startsWith(ignoreStartsWith)) {
+				continue;
+			}
+
+			execute(new SimpleSql(sql));
+		}
+	}
+
+	public void executeSqlsByFileLine(String filePath) throws SQLException {
+		executeSqlByFileLine(filePath, "##");
 	}
 }
