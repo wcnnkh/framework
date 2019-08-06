@@ -180,7 +180,7 @@ public abstract class SystemPropertyUtils {
 					if (file != null) {
 						file = FileUtils.searchDirectory(file, "WEB-INF");
 						if (file != null) {
-							path = file.getPath();
+							path = file.getParent();
 						}
 					}
 				}

@@ -521,13 +521,12 @@ public abstract class ResourceUtils {
 
 		String text = SystemPropertyUtils.format(path);
 		String[] suffixs = getResourceSuffix();
-		String eqPath = path.replaceAll("\\\\", "/");
-
 		// 兼容老版本
 		if (StringUtils.startsWithIgnoreCase(text, CLASSPATH_URL_PREFIX)
 				|| StringUtils.startsWithIgnoreCase(text, "{"
 						+ CLASSPATH_URL_PREFIX + "}")
 				|| StringUtils.startsWithIgnoreCase(text, "{classpath}")) {
+			String eqPath = text.replaceAll("\\\\", "/");
 			if (StringUtils.startsWithIgnoreCase(text, CLASSPATH_URL_PREFIX)) {
 				eqPath = eqPath.substring(CLASSPATH_URL_PREFIX.length());
 			} else if (StringUtils.startsWithIgnoreCase(text, "{"
@@ -536,7 +535,6 @@ public abstract class ResourceUtils {
 			} else {
 				eqPath = eqPath.substring(CLASSPATH_URL_PREFIX.length() + 1);
 			}
-
 			boolean b = false;
 			// 因为maven修改了java.class.path环境变量
 			if (!StringUtils.isEmpty(SystemPropertyUtils.getMavenHome())) {
@@ -565,15 +563,17 @@ public abstract class ResourceUtils {
 			File file = null;
 			if (!ArrayUtils.isEmpty(suffixs)) {
 				for (String name : suffixs) {
-					file = new File(getTestFileName(path, name));
+					file = new File(getTestFileName(text, name));
 					if (file.exists()) {
 						break;
+					}else{
+						file = null;
 					}
 				}
 			}
 
 			if (file == null) {
-				file = new File(path);
+				file = new File(text);
 				if (!file.exists()) {
 					file = null;
 				}
@@ -582,6 +582,7 @@ public abstract class ResourceUtils {
 			if (file == null) {
 				throw new NotFoundException(path);
 			}
+			
 			consumerFileInputStream(file, consumer);
 		}
 	}
@@ -665,7 +666,7 @@ public abstract class ResourceUtils {
 	}
 
 	private static String getTestFileName(String fileName, String str) {
-		int index = fileName.indexOf(".");
+		int index = fileName.lastIndexOf(".");
 		if (index == -1) {// 不存在
 			return fileName + str;
 		} else {
