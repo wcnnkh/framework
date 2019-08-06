@@ -44,34 +44,11 @@ import scw.core.Convert;
 import scw.core.Verification;
 import scw.core.exception.NotFoundException;
 import scw.io.IOUtils;
-import scw.logger.log4j.Log4jConfigurer;
 
 /**
- * Utility methods for resolving resource locations to files in the file system.
- * Mainly for internal use within the framework.
- *
- * <p>
- * Consider using Spring's Resource abstraction in the core package for handling
- * all kinds of file resources in a uniform manner.
- * {@link shuchaowen.spring.core.io.ResourceLoader}'s {@code getResource} method
- * can resolve any location to a {@link shuchaowen.spring.core.io.Resource}
- * object, which in turn allows to obtain a {@code java.io.File} in the file
- * system through its {@code getFile()} method.
- *
- * <p>
- * The main reason for these utility methods for resource location handling is
- * to support {@link Log4jConfigurer}, which must be able to resolve resource
- * locations <i>before the logging system has been initialized</i>. Spring'
- * Resource abstraction in the core package, on the other hand, already expects
- * the logging system to be available.
- *
- * @author Juergen Hoeller
- * @since 1.1.5
- * @see shuchaowen.spring.core.io.Resource
- * @see shuchaowen.spring.core.io.ClassPathResource
- * @see shuchaowen.spring.core.io.FileSystemResource
- * @see shuchaowen.spring.core.io.UrlResource
- * @see shuchaowen.spring.core.io.ResourceLoader
+ * 资源工具
+ * 
+ * @author scw
  */
 public abstract class ResourceUtils {
 
@@ -455,6 +432,59 @@ public abstract class ResourceUtils {
 		return null;
 	}
 
+	/**
+	 * 
+	 * 此方法在jdk的getResourceAsStream基础上加上了resource-prefix环境变量检查
+	 * 如果已经明确了路径请直接调用XXX.class.getResourceAsStream(resource)
+	 * @param resource
+	 * @param consumer
+	 * @return
+	 */
+	public static boolean consumterResource(String resource,
+			Consumer<InputStream> consumer) {
+		return consumterClassPathInputStream(resource, getResourceSuffix(),
+				consumer);
+	}
+
+	private static boolean consumterClassPathInputStream(String path,
+			String[] suffixs, Consumer<InputStream> consumer) {
+		boolean b = false;
+		if (ArrayUtils.isEmpty(suffixs)) {
+			for (String suffix : suffixs) {
+				InputStream inputStream = null;
+				try {
+					inputStream = ResourceUtils.class
+							.getResourceAsStream(getTestFileName(path, suffix));
+					b = inputStream != null;
+					if (b) {
+						consumer.consume(inputStream);
+						break;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					IOUtils.close(inputStream);
+				}
+			}
+		}
+
+		if (!b) {
+			InputStream inputStream = null;
+			try {
+				inputStream = ResourceUtils.class.getResourceAsStream(path);
+				if (inputStream != null) {
+					b = true;
+					consumer.consume(inputStream);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				IOUtils.close(inputStream);
+			}
+		}
+		return b;
+	}
+
 	private static boolean consumterInputStream(String rootPath, String path,
 			String[] suffixs, Consumer<InputStream> consumer) {
 		File file = new File(rootPath);
@@ -513,13 +543,20 @@ public abstract class ResourceUtils {
 		}
 	}
 
-	public static void consumterInputStream(String path,
+	/**
+	 * 此方法会遍历java.class.path中的内容
+	 * 
+	 * @param resource
+	 * @param consumer
+	 * @return
+	 */
+	public static boolean consumterResourceBySearch(String resource,
 			Consumer<InputStream> consumer) {
-		if (StringUtils.isEmpty(path)) {
-			throw new NotFoundException(path);
+		if (StringUtils.isEmpty(resource)) {
+			return false;
 		}
 
-		String text = SystemPropertyUtils.format(path);
+		String text = SystemPropertyUtils.format(resource);
 		String[] suffixs = getResourceSuffix();
 		// 兼容老版本
 		if (StringUtils.startsWithIgnoreCase(text, CLASSPATH_URL_PREFIX)
@@ -535,9 +572,10 @@ public abstract class ResourceUtils {
 			} else {
 				eqPath = eqPath.substring(CLASSPATH_URL_PREFIX.length() + 1);
 			}
+			
 			boolean b = false;
 			// 因为maven修改了java.class.path环境变量
-			if (!StringUtils.isEmpty(SystemPropertyUtils.getMavenHome())) {
+			if (!b && !StringUtils.isEmpty(SystemPropertyUtils.getMavenHome())) {
 				URL url = getClassPathURL();
 				if (url != null) {
 					b = consumterInputStream(url.getPath(), eqPath, suffixs,
@@ -556,9 +594,7 @@ public abstract class ResourceUtils {
 				}
 			}
 
-			if (!b) {
-				throw new NotFoundException(path);
-			}
+			return b;
 		} else {
 			File file = null;
 			if (!ArrayUtils.isEmpty(suffixs)) {
@@ -566,7 +602,7 @@ public abstract class ResourceUtils {
 					file = new File(getTestFileName(text, name));
 					if (file.exists()) {
 						break;
-					}else{
+					} else {
 						file = null;
 					}
 				}
@@ -580,10 +616,19 @@ public abstract class ResourceUtils {
 			}
 
 			if (file == null) {
-				throw new NotFoundException(path);
+				return false;
 			}
-			
+
 			consumerFileInputStream(file, consumer);
+			return true;
+		}
+	}
+
+	public static void consumterInputStream(String resource,
+			Consumer<InputStream> consumer) {
+		boolean b = consumterResourceBySearch(resource, consumer);
+		if (!b) {
+			throw new NotFoundException(resource);
 		}
 	}
 
@@ -680,17 +725,12 @@ public abstract class ResourceUtils {
 			return false;
 		}
 
-		try {
-			consumterInputStream(path, new Consumer<InputStream>() {
+		return consumterResourceBySearch(path, new Consumer<InputStream>() {
 
-				public void consume(InputStream message) throws Exception {
-					// ignore
-				}
-			});
-			return true;
-		} catch (NotFoundException e) {
-			return false;
-		}
+			public void consume(InputStream message) throws Exception {
+				// ignore
+			}
+		});
 	}
 
 	@SuppressWarnings("unchecked")
@@ -962,21 +1002,16 @@ public abstract class ResourceUtils {
 	public static class DefaultJarVerification implements Verification<String> {
 
 		public boolean verification(String name) {
-			if (name.startsWith("plexus-")
-					|| name.startsWith("junit-")
+			if (name.startsWith("plexus-") || name.startsWith("junit-")
 					|| name.startsWith("aliyun-")
 					|| name.startsWith("httpclient-")
 					|| name.startsWith("httpcore-")
-					|| name.startsWith("commons-")
-					|| name.startsWith("jdom-")
+					|| name.startsWith("commons-") || name.startsWith("jdom-")
 					|| name.startsWith("jersey-")
-					|| name.startsWith("jettison-")
-					|| name.startsWith("stax-")
-					|| name.startsWith("jaxb-")
-					|| name.startsWith("stax-")
+					|| name.startsWith("jettison-") || name.startsWith("stax-")
+					|| name.startsWith("jaxb-") || name.startsWith("stax-")
 					|| name.startsWith("activation-")
-					|| name.startsWith("jackson-")
-					|| name.startsWith("json-")
+					|| name.startsWith("jackson-") || name.startsWith("json-")
 					|| name.startsWith("HikariCP-")
 					|| name.startsWith("freemarker-")
 					|| name.startsWith("dubbo-")
@@ -984,25 +1019,18 @@ public abstract class ResourceUtils {
 					|| name.startsWith("netty-")
 					|| name.startsWith("zkclient-")
 					|| name.startsWith("zookeeper-")
-					|| name.startsWith("log4j-")
-					|| name.startsWith("jxl-")
+					|| name.startsWith("log4j-") || name.startsWith("jxl-")
 					|| name.startsWith("jedis-")
 					|| name.startsWith("xmemcached-")
-					|| name.startsWith("fastjson-")
-					|| name.startsWith("amqp-")
-					|| name.startsWith("druid-")
-					|| name.startsWith("mysql-")
+					|| name.startsWith("fastjson-") || name.startsWith("amqp-")
+					|| name.startsWith("druid-") || name.startsWith("mysql-")
 					|| name.startsWith("protobuf-")
-					|| name.startsWith("javax.")
-					|| name.startsWith("jstl-")
-					|| name.startsWith("jsp-")
-					|| name.startsWith("slf4j-")	
+					|| name.startsWith("javax.") || name.startsWith("jstl-")
+					|| name.startsWith("jsp-") || name.startsWith("slf4j-")
 					|| name.startsWith("javassist-")
-					|| name.startsWith("tomcat-")
-					|| name.startsWith("lombok-")
+					|| name.startsWith("tomcat-") || name.startsWith("lombok-")
 					|| name.startsWith("resources.jar")
-					|| name.startsWith("rt.jar")
-					|| name.startsWith("jsse.jar")
+					|| name.startsWith("rt.jar") || name.startsWith("jsse.jar")
 					|| name.startsWith("jce.jar")
 					|| name.startsWith("charsets.jar")
 					|| name.startsWith("jfr.jar")
@@ -1017,8 +1045,7 @@ public abstract class ResourceUtils {
 					|| name.startsWith("zipfs.jar")
 					|| name.startsWith("sunpkcs11.jar")
 					|| name.startsWith("sunmscapi.jar")
-					|| name.startsWith("sunjce_provider.jar")
-					) {
+					|| name.startsWith("sunjce_provider.jar")) {
 				return false;
 			}
 			return true;
