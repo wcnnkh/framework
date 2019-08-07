@@ -593,6 +593,10 @@ public abstract class ResourceUtils {
 					}
 				}
 			}
+			
+			if(!b){
+				b = consumterResource(eqPath, consumer);
+			}
 
 			return b;
 		} else {
@@ -616,6 +620,9 @@ public abstract class ResourceUtils {
 			}
 
 			if (file == null) {
+				if(consumterResource(text.replaceAll("\\\\", "/"), consumer)){
+					return true;
+				}
 				return false;
 			}
 
