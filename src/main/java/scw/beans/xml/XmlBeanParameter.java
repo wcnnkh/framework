@@ -9,7 +9,7 @@ import org.w3c.dom.Node;
 
 import scw.beans.BeanFactory;
 import scw.beans.EParameterType;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.exception.NotFoundException;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParse;
@@ -55,22 +55,22 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 		this.parameterType = parameterType;
 	}
 
-	public Object parseValue(BeanFactory beanFactory, PropertiesFactory propertiesFactory) throws Exception {
-		return parseValue(beanFactory, propertiesFactory, this.parameterType);
+	public Object parseValue(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
+		return parseValue(beanFactory, propertyFactory, this.parameterType);
 	}
 
-	public Object parseValue(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> parameterType)
+	public Object parseValue(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> parameterType)
 			throws Exception {
 		Object value = null;
 		switch (type) {
 		case value:
-			value = formatStringValue(xmlValue.formatValue(propertiesFactory), parameterType);
+			value = formatStringValue(xmlValue.formatValue(propertyFactory), parameterType);
 			break;
 		case ref:
-			value = beanFactory.getInstance(xmlValue.formatValue(propertiesFactory));
+			value = beanFactory.getInstance(xmlValue.formatValue(propertyFactory));
 			break;
 		case property:
-			String v = propertiesFactory.getValue(xmlValue.getValue());
+			String v = propertyFactory.getProperty(xmlValue.getValue());
 			value = formatStringValue(v, parameterType);
 			break;
 		default:

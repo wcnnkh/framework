@@ -13,7 +13,7 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.NotFoundException;
 import scw.core.reflect.FieldDefinition;
@@ -28,16 +28,16 @@ public final class AnnotationRequestBean implements RequestBean {
 	private final Method[] destroyMethods;
 	private final boolean proxy;
 	private Enhancer enhancer;
-	private final PropertiesFactory propertiesFactory;
+	private final PropertyFactory propertyFactory;
 	private final FieldDefinition[] autowriteFields;
 	private Constructor<?> constructor;
 	private int parameterLength;
 
-	public AnnotationRequestBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> type,
+	public AnnotationRequestBean(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> type,
 			String[] filterNames) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
-		this.propertiesFactory = propertiesFactory;
+		this.propertyFactory = propertyFactory;
 		this.id = ClassUtils.getProxyRealClassName(type);
 
 		List<Method> initMethodList = new ArrayList<Method>();
@@ -116,7 +116,7 @@ public final class AnnotationRequestBean implements RequestBean {
 
 	public void autowrite(Object bean) throws Exception {
 		for (FieldDefinition definition : autowriteFields) {
-			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, definition);
+			BeanUtils.autoWrite(type, beanFactory, propertyFactory, bean, definition);
 		}
 	}
 

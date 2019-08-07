@@ -2,7 +2,7 @@ package scw.beans.xml;
 
 import org.w3c.dom.Node;
 
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
@@ -56,7 +56,7 @@ public class XmlValue {
 		return XMLUtils.getNodeAttributeValue(node, name);
 	}
 
-	public String formatValue(final PropertiesFactory propertiesFactory) {
-		return XMLUtils.formatNodeValue(propertiesFactory, node, value);
+	public String formatValue(final PropertyFactory propertyFactory) {
+		return XMLUtils.formatNodeValue(propertyFactory, node, value);
 	}
 }

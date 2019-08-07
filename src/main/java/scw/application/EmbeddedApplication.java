@@ -32,7 +32,7 @@ public class EmbeddedApplication extends CommonApplication {
 	@Override
 	public void init() {
 		super.init();
-		String embeddedName = EmbeddedUtils.getEmbeddedName(getPropertiesFactory());
+		String embeddedName = EmbeddedUtils.getEmbeddedName(getPropertyFactory());
 		if (StringUtils.isEmpty(embeddedName)) {
 			String name = getSupportServletEmbeddedClassName();
 			if (name == null) {
@@ -46,10 +46,10 @@ public class EmbeddedApplication extends CommonApplication {
 	}
 
 	private void initEmbedded(String embeddedName) {
-		ServletService service = ServletUtils.getServletService(getBeanFactory(), getPropertiesFactory(),
+		ServletService service = ServletUtils.getServletService(getBeanFactory(), getPropertyFactory(),
 				getConfigPath(), getBeanFactory().getFilterNames());
 		embedded = getBeanFactory().getInstance(embeddedName);
-		embedded.init(getBeanFactory(), getPropertiesFactory(), new ShutdownHttpServlet(getPropertiesFactory(), this),
+		embedded.init(getBeanFactory(), getPropertyFactory(), new ShutdownHttpServlet(getPropertyFactory(), this),
 				new EmbeddedServlet(service));
 	}
 

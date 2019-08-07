@@ -1,6 +1,6 @@
 package scw.application.embedded;
 
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 
 public final class EmbeddedUtils {
@@ -15,63 +15,63 @@ public final class EmbeddedUtils {
 		return "tomcat." + name;
 	}
 
-	private static String getProperty(PropertiesFactory propertiesFactory, String name) {
-		String v = propertiesFactory.getValue(getApplicationKey(name));
+	private static String getProperty(PropertyFactory propertyFactory, String name) {
+		String v = propertyFactory.getProperty(getApplicationKey(name));
 		if (StringUtils.isEmpty(v)) {
-			v = propertiesFactory.getValue(getTomcatKey(name));
+			v = propertyFactory.getProperty(getTomcatKey(name));
 		}
 		return v;
 	}
 
-	public static int getPort(PropertiesFactory propertiesFactory) {
-		return StringUtils.parseInt(getProperty(propertiesFactory, "port"), 8080);
+	public static int getPort(PropertyFactory propertyFactory) {
+		return StringUtils.parseInt(getProperty(propertyFactory, "port"), 8080);
 	}
 
-	public static String getEmbeddedName(PropertiesFactory propertiesFactory) {
-		return propertiesFactory.getValue(getApplicationKey("embedded"));
+	public static String getEmbeddedName(PropertyFactory propertyFactory) {
+		return propertyFactory.getProperty(getApplicationKey("embedded"));
 	}
 
-	public static String getBaseDir(PropertiesFactory propertiesFactory) {
-		return getProperty(propertiesFactory, "basedir");
+	public static String getBaseDir(PropertyFactory propertyFactory) {
+		return getProperty(propertyFactory, "basedir");
 	}
 
-	public static String getContextPath(PropertiesFactory propertiesFactory) {
-		return getProperty(propertiesFactory, "contextPath");
+	public static String getContextPath(PropertyFactory propertyFactory) {
+		return getProperty(propertyFactory, "contextPath");
 	}
 	
-	public static String getSource(PropertiesFactory propertiesFactory){
-		return getProperty(propertiesFactory, "source");
+	public static String getSource(PropertyFactory propertyFactory){
+		return getProperty(propertyFactory, "source");
 	}
 
-	public static String getTomcatProtocol(PropertiesFactory propertiesFactory) {
-		return propertiesFactory.getValue(getTomcatKey("protocol"));
+	public static String getTomcatProtocol(PropertyFactory propertyFactory) {
+		return propertyFactory.getProperty(getTomcatKey("protocol"));
 	}
 
-	public static String getTomcatConnectorName(PropertiesFactory propertiesFactory) {
-		return propertiesFactory.getValue(getTomcatKey("connector"));
+	public static String getTomcatConnectorName(PropertyFactory propertyFactory) {
+		return propertyFactory.getProperty(getTomcatKey("connector"));
 	}
 
-	private static String getShutdownProperty(PropertiesFactory propertiesFactory, String name) {
-		return getProperty(propertiesFactory, "shutdown." + name);
+	private static String getShutdownProperty(PropertyFactory propertyFactory, String name) {
+		return getProperty(propertyFactory, "shutdown." + name);
 	}
 
-	public static String getShutdownPath(PropertiesFactory propertiesFactory) {
-		return getShutdownProperty(propertiesFactory, "path");
+	public static String getShutdownPath(PropertyFactory propertyFactory) {
+		return getShutdownProperty(propertyFactory, "path");
 	}
 
-	public static String getShutdownName(PropertiesFactory propertiesFactory) {
-		return getShutdownProperty(propertiesFactory, "name");
+	public static String getShutdownName(PropertyFactory propertyFactory) {
+		return getShutdownProperty(propertyFactory, "name");
 	}
 	
-	public static String getShutdownIp(PropertiesFactory propertiesFactory){
-		return getShutdownProperty(propertiesFactory, "ip");
+	public static String getShutdownIp(PropertyFactory propertyFactory){
+		return getShutdownProperty(propertyFactory, "ip");
 	}
 	
-	public static String getShutdownUserName(PropertiesFactory propertiesFactory){
-		return getShutdownProperty(propertiesFactory, "username");
+	public static String getShutdownUserName(PropertyFactory propertyFactory){
+		return getShutdownProperty(propertyFactory, "username");
 	}
 	
-	public static String getShutdownPassword(PropertiesFactory propertiesFactory){
-		return getShutdownProperty(propertiesFactory, "password");
+	public static String getShutdownPassword(PropertyFactory propertyFactory){
+		return getShutdownProperty(propertyFactory, "password");
 	}
 }

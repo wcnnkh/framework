@@ -10,7 +10,7 @@ import javax.servlet.ServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 
 @Bean(proxy = false)
@@ -21,12 +21,12 @@ public class AsyncServletService extends DefaultServletService implements scw.co
 	 */
 	private final boolean containerThreadManager;
 
-	public AsyncServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configPath,
+	public AsyncServletService(BeanFactory beanFactory, PropertyFactory propertyFactory, String configPath,
 			String[] rootBeanFilters) throws Throwable {
-		super(beanFactory, propertiesFactory, configPath, rootBeanFilters);
-		int coreSize = StringUtils.parseInt(propertiesFactory.getValue("servlet.thread.core.size"), 16);
-		int maxSize = StringUtils.parseInt(propertiesFactory.getValue("servlet.thread.max.size"), 512);
-		this.containerThreadManager = StringUtils.parseBoolean(propertiesFactory.getValue("servlet.thread.container"));
+		super(beanFactory, propertyFactory, configPath, rootBeanFilters);
+		int coreSize = StringUtils.parseInt(propertyFactory.getProperty("servlet.thread.core.size"), 16);
+		int maxSize = StringUtils.parseInt(propertyFactory.getProperty("servlet.thread.max.size"), 512);
+		this.containerThreadManager = StringUtils.parseBoolean(propertyFactory.getProperty("servlet.thread.container"));
 		if (!containerThreadManager) {
 			executor = new ThreadPoolExecutor(coreSize, maxSize, 10, TimeUnit.MINUTES,
 					new LinkedBlockingQueue<Runnable>());

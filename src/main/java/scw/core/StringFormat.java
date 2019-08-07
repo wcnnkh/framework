@@ -2,7 +2,7 @@ package scw.core;
 
 import scw.core.utils.StringUtils;
 
-public abstract class StringFormat implements PropertiesFactory {
+public abstract class StringFormat implements PropertyFactory {
 	private char[] prefix;
 	private char[] suffix;
 
@@ -30,7 +30,7 @@ public abstract class StringFormat implements PropertiesFactory {
 				String value = null;
 				while (begin < chars.length) {
 					if (suffixEq(chars, begin)) {
-						value = getValue(new String(chars, tempBegin + prefix.length, begin - tempBegin - 1));
+						value = getProperty(new String(chars, tempBegin + prefix.length, begin - tempBegin - 1));
 						begin += suffix.length;
 						break;
 					} else {

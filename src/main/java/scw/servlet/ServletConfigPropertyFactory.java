@@ -2,19 +2,19 @@ package scw.servlet;
 
 import javax.servlet.ServletConfig;
 
-import scw.beans.property.XmlPropertiesFactory;
-import scw.core.PropertiesFactory;
+import scw.beans.property.XmlPropertyFactory;
+import scw.core.PropertyFactory;
 import scw.core.utils.SystemPropertyUtils;
 
-public class ServletConfigPropertiesFactory implements PropertiesFactory {
+public class ServletConfigPropertyFactory implements PropertyFactory {
 	private final ServletConfig servletConfig;
-	private final PropertiesFactory propertiesFactory;
+	private final PropertyFactory propertyFactory;
 	private final String configXml;
 
-	public ServletConfigPropertiesFactory(ServletConfig servletConfig) {
+	public ServletConfigPropertyFactory(ServletConfig servletConfig) {
 		this.servletConfig = servletConfig;
 		this.configXml = getServletConfig("shuchaowen");
-		this.propertiesFactory = new XmlPropertiesFactory(this.configXml);
+		this.propertyFactory = new XmlPropertyFactory(this.configXml);
 	}
 
 	public String getConfig(String name) {
@@ -29,10 +29,10 @@ public class ServletConfigPropertiesFactory implements PropertiesFactory {
 		return servletConfig.getInitParameter(key);
 	}
 
-	public String getValue(String key) {
+	public String getProperty(String key) {
 		String value = null;
-		if (propertiesFactory != null) {
-			value = propertiesFactory.getValue(key);
+		if (propertyFactory != null) {
+			value = propertyFactory.getProperty(key);
 		}
 
 		if (value == null) {

@@ -11,14 +11,14 @@ public final class RequestBeanUtils {
 
 	public static Object[] getBeanMethodParameterArgs(ServletRequest request,
 			Class<?>[] constructorParameterTypes, XmlBeanParameter[] beanParameters, BeanFactory beanFactory,
-			scw.core.PropertiesFactory propertiesFactory) throws Exception {
+			scw.core.PropertyFactory propertyFactory) throws Exception {
 		Object[] args = new Object[beanParameters.length];
 		for (int i = 0; i < args.length; i++) {
 			if (ServletRequest.class.isAssignableFrom(constructorParameterTypes[i])) {
 				args[i] = request;
 			} else {
 				XmlBeanParameter xmlBeanParameter = beanParameters[i];
-				args[i] = xmlBeanParameter.parseValue(beanFactory, propertiesFactory);
+				args[i] = xmlBeanParameter.parseValue(beanFactory, propertyFactory);
 			}
 		}
 		return args;

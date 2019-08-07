@@ -12,7 +12,7 @@ import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
 import scw.core.Destroy;
 import scw.core.Init;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
@@ -22,7 +22,7 @@ import scw.core.utils.ArrayUtils;
 
 public final class XmlBeanDefinition implements BeanDefinition {
 	private final BeanFactory beanFactory;
-	private final PropertiesFactory propertiesFactory;
+	private final PropertyFactory propertyFactory;
 	private String[] names;
 	private final String id;
 	private final boolean singleton;
@@ -44,10 +44,10 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	private final Class<?>[] constructorParameterTypes;
 
 	public XmlBeanDefinition(BeanFactory beanFactory,
-			PropertiesFactory propertiesFactory, Node beanNode,
+			PropertyFactory propertyFactory, Node beanNode,
 			String[] filterNames) throws Exception {
 		this.beanFactory = beanFactory;
-		this.propertiesFactory = propertiesFactory;
+		this.propertyFactory = propertyFactory;
 		this.type = XmlBeanUtils.getClass(beanNode);
 		this.names = XmlBeanUtils.getNames(beanNode);
 		this.id = XmlBeanUtils.getId(beanNode);
@@ -136,7 +136,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 			return enhancer.create();
 		} else {
 			Object[] args = BeanUtils.getBeanMethodParameterArgs(
-					beanMethodParameters, beanFactory, propertiesFactory);
+					beanMethodParameters, beanFactory, propertyFactory);
 			return enhancer.create(constructorParameterTypes, args);
 		}
 	}
@@ -154,7 +154,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 			}
 
 			ReflectUtils.setFieldValue(type, field, bean,
-					beanProperties.parseValue(beanFactory, propertiesFactory,
+					beanProperties.parseValue(beanFactory, propertyFactory,
 							field.getType()));
 		}
 	}
@@ -164,7 +164,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 			return constructor.newInstance();
 		} else {
 			Object[] args = BeanUtils.getBeanMethodParameterArgs(
-					beanMethodParameters, beanFactory, propertiesFactory);
+					beanMethodParameters, beanFactory, propertyFactory);
 			return constructor.newInstance(args);
 		}
 	}
@@ -172,7 +172,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	public void autowrite(Object bean) throws Exception {
 		if (!ArrayUtils.isEmpty(autowriteFields)) {
 			for (FieldDefinition fieldDefinition : autowriteFields) {
-				BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean,
+				BeanUtils.autoWrite(type, beanFactory, propertyFactory, bean,
 						fieldDefinition);
 			}
 		}
@@ -183,7 +183,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	public void init(Object bean) throws Exception {
 		if (!ArrayUtils.isEmpty(initMethods)) {
 			for (BeanMethod method : initMethods) {
-				method.invoke(bean, beanFactory, propertiesFactory);
+				method.invoke(bean, beanFactory, propertyFactory);
 			}
 		}
 		
@@ -195,7 +195,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	public void destroy(Object bean) throws Exception {
 		if (!ArrayUtils.isEmpty(destroyMethods)) {
 			for (BeanMethod method : destroyMethods) {
-				method.invoke(bean, beanFactory, propertiesFactory);
+				method.invoke(bean, beanFactory, propertyFactory);
 			}
 		}
 

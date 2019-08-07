@@ -102,7 +102,7 @@ public final class HttpCallUitls {
 		}
 
 		StringFormat stringFormat = new StringFormat("{", "}") {
-			public String getValue(String key) {
+			public String getProperty(String key) {
 				Object value = map.remove(key);
 				return value == null ? "null" : value.toString();
 			};

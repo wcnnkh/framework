@@ -28,7 +28,7 @@ public class DispatcherServlet extends GenericServlet {
 		}
 		application.init();
 		this.servletService = ServletUtils.getServletService(application
-				.getBeanFactory(), application.getPropertiesFactory(),
+				.getBeanFactory(), application.getPropertyFactory(),
 				application.getCommonApplication().getConfigPath(), application
 						.getCommonApplication().getBeanFactory()
 						.getFilterNames());

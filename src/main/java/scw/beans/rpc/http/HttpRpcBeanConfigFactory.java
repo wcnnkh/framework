@@ -6,7 +6,7 @@ import org.w3c.dom.NodeList;
 import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
@@ -16,7 +16,7 @@ import scw.io.serializer.SerializerUtils;
 public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "http:reference";
 
-	public HttpRpcBeanConfigFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory, NodeList rootNodeList,
+	public HttpRpcBeanConfigFactory(BeanFactory beanFactory, PropertyFactory propertyFactory, NodeList rootNodeList,
 			String[] filterNames) throws Exception {
 		for (int i = 0; i < rootNodeList.getLength(); i++) {
 			Node node = rootNodeList.item(i);
@@ -28,10 +28,10 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 				continue;
 			}
 
-			String sign = XMLUtils.getNodeAttributeValue(propertiesFactory, node, "sign");
-			String packageName = XmlBeanUtils.getPackageName(propertiesFactory, node);
-			String serializer = XMLUtils.getNodeAttributeValue(propertiesFactory, node, "serializer");
-			String address = XmlBeanUtils.getAddress(propertiesFactory, node);
+			String sign = XMLUtils.getNodeAttributeValue(propertyFactory, node, "sign");
+			String packageName = XmlBeanUtils.getPackageName(propertyFactory, node);
+			String serializer = XMLUtils.getNodeAttributeValue(propertyFactory, node, "serializer");
+			String address = XmlBeanUtils.getAddress(propertyFactory, node);
 
 			Serializer ser = StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 					: (Serializer) beanFactory.getInstance(serializer);
@@ -53,18 +53,18 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 					continue;
 				}
 
-				String className = XMLUtils.getNodeAttributeValue(propertiesFactory, node, "interface");
+				String className = XMLUtils.getNodeAttributeValue(propertyFactory, node, "interface");
 				if (StringUtils.isNull(className)) {
 					continue;
 				}
 
 				Class<?> clz = Class.forName(className);
-				String mySign = XMLUtils.getNodeAttributeValue(propertiesFactory, node, "sign");
+				String mySign = XMLUtils.getNodeAttributeValue(propertyFactory, node, "sign");
 				if (StringUtils.isNull(mySign)) {
 					mySign = sign;
 				}
 
-				String myAddress = XmlBeanUtils.getAddress(propertiesFactory, node);
+				String myAddress = XmlBeanUtils.getAddress(propertyFactory, node);
 				if (StringUtils.isNull(myAddress)) {
 					myAddress = address;
 				}

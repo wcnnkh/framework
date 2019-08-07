@@ -8,7 +8,7 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.StringUtils;
 import scw.servlet.beans.RequestBean;
@@ -21,7 +21,7 @@ public final class XmlRequestBeanFactory implements RequestBeanFactory {
 	private static final String BEAN_TAG_NAME = "request:bean";
 
 	public XmlRequestBeanFactory(BeanFactory beanFactory,
-			PropertiesFactory propertiesFactory, String configXml,
+			PropertyFactory propertyFactory, String configXml,
 			String[] filterNames) throws Exception {
 		if (!StringUtils.isNull(configXml)) {
 			NodeList nhosts = XmlBeanUtils.getRootNodeList(configXml);
@@ -29,7 +29,7 @@ public final class XmlRequestBeanFactory implements RequestBeanFactory {
 				Node nRoot = nhosts.item(i);
 				if (BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
 					XmlRequestBean bean = new XmlRequestBean(beanFactory,
-							propertiesFactory, nRoot, filterNames);
+							propertyFactory, nRoot, filterNames);
 					if (beanMap.containsKey(bean.getId())) {
 						throw new AlreadyExistsException(bean.getId());
 					}

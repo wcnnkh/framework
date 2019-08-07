@@ -31,7 +31,7 @@ import scw.core.KeyValuePair;
 import scw.core.KeyValuePairFilter;
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.ParameterException;
 import scw.core.instance.InstanceUtils;
@@ -139,20 +139,20 @@ public final class ServletUtils {
 		return asyncSupport;
 	}
 
-	public static ServletService getServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+	public static ServletService getServletService(BeanFactory beanFactory, PropertyFactory propertyFactory,
 			String configPath, String[] rootBeanFilters, boolean async) {
 		if (async) {
-			return beanFactory.getInstance("scw.servlet.AsyncServletService", beanFactory, propertiesFactory,
+			return beanFactory.getInstance("scw.servlet.AsyncServletService", beanFactory, propertyFactory,
 					configPath, rootBeanFilters);
 		} else {
-			return beanFactory.getInstance("scw.servlet.DefaultServletService", beanFactory, propertiesFactory,
+			return beanFactory.getInstance("scw.servlet.DefaultServletService", beanFactory, propertyFactory,
 					configPath, rootBeanFilters);
 		}
 	}
 
-	public static ServletService getServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+	public static ServletService getServletService(BeanFactory beanFactory, PropertyFactory propertyFactory,
 			String configPath, String[] rootBeanFilters) {
-		return getServletService(beanFactory, propertiesFactory, configPath, rootBeanFilters, isAsyncSupport());
+		return getServletService(beanFactory, propertyFactory, configPath, rootBeanFilters, isAsyncSupport());
 	}
 
 	/**
@@ -446,17 +446,17 @@ public final class ServletUtils {
 		}
 	}
 
-	public static boolean isDebug(PropertiesFactory propertiesFactory) {
-		return StringUtils.parseBoolean(propertiesFactory.getValue("servlet.debug"), true);
+	public static boolean isDebug(PropertyFactory propertyFactory) {
+		return StringUtils.parseBoolean(propertyFactory.getProperty("servlet.debug"), true);
 	}
 
-	public static int getWarnExecuteTime(PropertiesFactory propertiesFactory) {
-		return StringUtils.parseInt(propertiesFactory.getValue("servlet.warn-execute-time"), 100);
+	public static int getWarnExecuteTime(PropertyFactory propertyFactory) {
+		return StringUtils.parseInt(propertyFactory.getProperty("servlet.warn-execute-time"), 100);
 	}
 
-	public static JSONParseSupport getJsonParseSupport(BeanFactory beanFactory, PropertiesFactory propertiesFactory) {
+	public static JSONParseSupport getJsonParseSupport(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		JSONParseSupport jsonParseSupport;
-		String jsonParseSupportBeanName = propertiesFactory.getValue("servlet.json");
+		String jsonParseSupportBeanName = propertyFactory.getProperty("servlet.json");
 		if (StringUtils.isEmpty(jsonParseSupportBeanName)) {
 			jsonParseSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
 		} else {
@@ -465,37 +465,37 @@ public final class ServletUtils {
 		return jsonParseSupport;
 	}
 
-	public static String getCharsetName(PropertiesFactory propertiesFactory) {
-		String charsetName = propertiesFactory.getValue("servlet.charsetName");
+	public static String getCharsetName(PropertyFactory propertyFactory) {
+		String charsetName = propertyFactory.getProperty("servlet.charsetName");
 		return StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME : charsetName;
 	}
 
 	public static WrapperFactory getWrapperFactory(BeanFactory beanFactory, RequestBeanFactory requestBeanFactory,
-			PropertiesFactory propertiesFactory) {
-		String requestFactoryBeanName = propertiesFactory.getValue("servlet.wrapper-factory");
+			PropertyFactory propertyFactory) {
+		String requestFactoryBeanName = propertyFactory.getProperty("servlet.wrapper-factory");
 		if (StringUtils.isEmpty(requestFactoryBeanName)) {
-			return beanFactory.getInstance(HttpWrapperFactory.class, requestBeanFactory, isDebug(propertiesFactory),
-					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.parameter.cookie")),
-					getJsonParseSupport(beanFactory, propertiesFactory),
-					StringUtils.parseBoolean(propertiesFactory.getValue("servlet.jsonp")));
+			return beanFactory.getInstance(HttpWrapperFactory.class, requestBeanFactory, isDebug(propertyFactory),
+					StringUtils.parseBoolean(propertyFactory.getProperty("servlet.parameter.cookie")),
+					getJsonParseSupport(beanFactory, propertyFactory),
+					StringUtils.parseBoolean(propertyFactory.getProperty("servlet.jsonp")));
 		} else {
 			return beanFactory.getInstance(requestFactoryBeanName);
 		}
 	}
 
-	public static String getRPCPath(PropertiesFactory propertiesFactory) {
-		String path = propertiesFactory.getValue("servlet.rpc-path");
+	public static String getRPCPath(PropertyFactory propertyFactory) {
+		String path = propertyFactory.getProperty("servlet.rpc-path");
 		return StringUtils.isEmpty(path) ? "/rpc" : path;
 	}
 
-	public static RpcService getRPCService(BeanFactory beanFactory, PropertiesFactory propertiesFactory) {
-		String rpcServerBeanName = propertiesFactory.getValue("servlet.rpc");
+	public static RpcService getRPCService(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+		String rpcServerBeanName = propertyFactory.getProperty("servlet.rpc");
 		if (StringUtils.isEmpty(rpcServerBeanName)) {
-			String sign = propertiesFactory.getValue("servlet.rpc-sign");
-			boolean enable = StringUtils.parseBoolean(propertiesFactory.getValue("servlet.rpc-enable"), false);
+			String sign = propertyFactory.getProperty("servlet.rpc-sign");
+			boolean enable = StringUtils.parseBoolean(propertyFactory.getProperty("servlet.rpc-enable"), false);
 			if (enable || !StringUtils.isEmpty(sign)) {// 开启
 				LoggerUtils.info(ServletUtils.class, "rpc签名：{}", sign);
-				String serializer = propertiesFactory.getValue("servlet.rpc-serializer");
+				String serializer = propertyFactory.getProperty("servlet.rpc-serializer");
 				return beanFactory.getInstance(DefaultRpcService.class, beanFactory, sign,
 						StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 								: (Serializer) beanFactory.getInstance(serializer));
@@ -507,27 +507,27 @@ public final class ServletUtils {
 		return null;
 	}
 
-	public static HttpServiceFilter getHttpServiceFilter(BeanFactory beanFactory, PropertiesFactory propertiesFactory) {
-		String actionKey = propertiesFactory.getValue("servlet.actionKey");
+	public static HttpServiceFilter getHttpServiceFilter(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+		String actionKey = propertyFactory.getProperty("servlet.actionKey");
 		actionKey = StringUtils.isEmpty(actionKey) ? "action" : actionKey;
-		String packageName = propertiesFactory.getValue("servlet.scanning");
+		String packageName = propertyFactory.getProperty("servlet.scanning");
 		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
 		return beanFactory.getInstance(HttpServiceFilter.class, beanFactory, ResourceUtils.getClassList(packageName),
 				actionKey);
 
 	}
 
-	public static List<Filter> getFilters(BeanFactory beanFactory, PropertiesFactory propertiesFactory) {
+	public static List<Filter> getFilters(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		List<Filter> filters = new ArrayList<Filter>();
-		String filterNames = propertiesFactory.getValue("servlet.filters");
+		String filterNames = propertyFactory.getProperty("servlet.filters");
 		if (!StringUtils.isEmpty(filterNames)) {
 			Collection<Filter> rootFilter = BeanUtils.getBeanList(beanFactory,
 					Arrays.asList(StringUtils.commonSplit(filterNames)));
 			filters.addAll(rootFilter);
 		}
 
-		filters.add(getHttpServiceFilter(beanFactory, propertiesFactory));
-		String lastFilterNames = propertiesFactory.getValue("servlet.lastFilters");
+		filters.add(getHttpServiceFilter(beanFactory, propertyFactory));
+		String lastFilterNames = propertyFactory.getProperty("servlet.lastFilters");
 		if (!StringUtils.isEmpty(lastFilterNames)) {
 			Collection<Filter> rootFilter = BeanUtils.getBeanList(beanFactory,
 					Arrays.asList(StringUtils.commonSplit(lastFilterNames)));
@@ -537,13 +537,13 @@ public final class ServletUtils {
 		return filters;
 	}
 
-	public static RequestBeanFactory getRequestBeanFactory(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+	public static RequestBeanFactory getRequestBeanFactory(BeanFactory beanFactory, PropertyFactory propertyFactory,
 			String configPath, String[] rootBeanFilters) {
-		String config = propertiesFactory.getValue("servlet.beans.config");
-		String beanFilters = propertiesFactory.getValue("servlet.beans.filters");
+		String config = propertyFactory.getProperty("servlet.beans.config");
+		String beanFilters = propertyFactory.getProperty("servlet.beans.filters");
 		config = StringUtils.isEmpty(config) ? configPath : config;
 		String[] filters = StringUtils.isEmpty(beanFilters) ? rootBeanFilters : StringUtils.commonSplit(beanFilters);
-		return beanFactory.getInstance(CommonRequestBeanFactory.class, beanFactory, propertiesFactory, config, filters);
+		return beanFactory.getInstance(CommonRequestBeanFactory.class, beanFactory, propertyFactory, config, filters);
 	}
 
 	public static void service(Request request, Response response, Collection<Filter> serviceFilter) throws Throwable {

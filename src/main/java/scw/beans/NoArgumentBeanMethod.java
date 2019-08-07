@@ -3,7 +3,7 @@ package scw.beans;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 
 public class NoArgumentBeanMethod implements BeanMethod {
 	private final Method method;
@@ -15,7 +15,7 @@ public class NoArgumentBeanMethod implements BeanMethod {
 	}
 
 	public Object invoke(Object bean, BeanFactory beanFactory,
-			PropertiesFactory propertiesFactory) throws Exception {
+			PropertyFactory propertyFactory) throws Exception {
 		return noArgumentInvoke(bean);
 	}
 

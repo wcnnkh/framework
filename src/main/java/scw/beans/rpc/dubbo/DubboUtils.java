@@ -5,7 +5,7 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.BeanConfigFactory;
 import scw.beans.BeanFactory;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.logger.LoggerUtils;
 
@@ -67,7 +67,7 @@ public final class DubboUtils {
 	}
 
 	public static BeanConfigFactory getReferenceBeanConfigFactory(BeanFactory beanFactory,
-			PropertiesFactory propertiesFactory, NodeList nodeList, String[] filterNames) {
+			PropertyFactory propertyFactory, NodeList nodeList, String[] filterNames) {
 		if (!xmlExistDubboReference(nodeList)) {
 			return null;
 		}
@@ -78,10 +78,10 @@ public final class DubboUtils {
 		}
 
 		return InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory", beanFactory,
-				propertiesFactory, nodeList, filterNames);
+				propertyFactory, nodeList, filterNames);
 	}
 
-	public static void exportService(BeanFactory beanFactory, PropertiesFactory propertiesFactory, NodeList nodeList) {
+	public static void exportService(BeanFactory beanFactory, PropertyFactory propertyFactory, NodeList nodeList) {
 		if (!xmlExistDubboService(nodeList)) {
 			return;
 		}
@@ -91,7 +91,7 @@ public final class DubboUtils {
 			return;
 		}
 
-		Thread thread = InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboServiceExortThread", propertiesFactory,
+		Thread thread = InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboServiceExortThread", propertyFactory,
 				beanFactory, nodeList);
 		if (thread == null) {
 			return;

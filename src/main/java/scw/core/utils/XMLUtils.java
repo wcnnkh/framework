@@ -35,7 +35,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import scw.core.Converter;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.StringFormat;
 import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceUtils;
@@ -435,7 +435,7 @@ public final class XMLUtils {
 	}
 
 	public static String formatNodeValue(
-			final PropertiesFactory propertiesFactory, Node node, String value) {
+			final PropertyFactory propertyFactory, Node node, String value) {
 		if (StringUtils.isEmpty(value)) {
 			return value;
 		}
@@ -453,36 +453,36 @@ public final class XMLUtils {
 		StringFormat stringFormat = new StringFormat(replacePrefix,
 				replaceSuffix) {
 
-			public String getValue(String key) {
-				return propertiesFactory.getValue(key);
+			public String getProperty(String key) {
+				return propertyFactory.getProperty(key);
 			}
 		};
 		return stringFormat.format(value);
 	}
 
 	public static String getNodeAttributeValue(
-			PropertiesFactory propertiesFactory, Node node, String name) {
+			PropertyFactory propertyFactory, Node node, String name) {
 		String value = getNodeAttributeValue(node, name);
 		if (value == null || value.length() == 0) {
 			return value;
 		}
 
-		return formatNodeValue(propertiesFactory, node, value);
+		return formatNodeValue(propertyFactory, node, value);
 	}
 
 	public static String getNodeAttributeValueOrNodeContent(
-			PropertiesFactory propertiesFactory, Node node, String name) {
+			PropertyFactory propertyFactory, Node node, String name) {
 		String value = getNodeAttributeValueOrNodeContent(node, name);
 		if (StringUtils.isEmpty(value)) {
 			return null;
 		}
 
-		return formatNodeValue(propertiesFactory, node, value);
+		return formatNodeValue(propertyFactory, node, value);
 	}
 
 	public static String getRequireNodeAttributeValue(
-			PropertiesFactory propertiesFactory, Node node, String name) {
-		String value = getNodeAttributeValue(propertiesFactory, node, name);
+			PropertyFactory propertyFactory, Node node, String name) {
+		String value = getNodeAttributeValue(propertyFactory, node, name);
 		if (StringUtils.isEmpty(value)) {
 			throw new NotFoundException("not found attribute " + name);
 		}
@@ -490,7 +490,7 @@ public final class XMLUtils {
 	}
 
 	public static <T> T newInstanceLoadAttributeBySetter(Class<T> type,
-			final PropertiesFactory propertiesFactory, Node node,
+			final PropertyFactory propertyFactory, Node node,
 			final PropertyMapper<String> mapper) {
 		Map<String, Node> map = attributeAsMap(node);
 		try {
@@ -499,7 +499,7 @@ public final class XMLUtils {
 					new PropertyMapper<Node>() {
 						public Object mapper(String name, Node value,
 								Class<?> type) throws Exception {
-							String v = formatNodeValue(propertiesFactory,
+							String v = formatNodeValue(propertyFactory,
 									value, value.getNodeValue());
 							if (StringUtils.isEmpty(v)) {
 								return null;

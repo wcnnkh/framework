@@ -5,13 +5,13 @@ import java.lang.reflect.Modifier;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.property.XmlPropertiesFactory;
+import scw.beans.property.XmlPropertyFactory;
 import scw.beans.rpc.dubbo.DubboUtils;
 import scw.beans.rpc.http.HttpRpcBeanConfigFactory;
 import scw.beans.xml.XmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
 import scw.core.utils.ResourceUtils;
@@ -19,23 +19,23 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
-	private final PropertiesFactory propertiesFactory;
+	private final PropertyFactory propertyFactory;
 	private String[] filterNames;
 	private final String xmlPath;
 
 	public XmlBeanFactory(String xmlPath) throws Exception {
-		this(new XmlPropertiesFactory(xmlPath), xmlPath);
+		this(new XmlPropertyFactory(xmlPath), xmlPath);
 	}
 
-	public XmlBeanFactory(PropertiesFactory propertiesFactory, String xmlPath) throws Exception {
+	public XmlBeanFactory(PropertyFactory propertyFactory, String xmlPath) throws Exception {
 		this.xmlPath = xmlPath;
-		this.propertiesFactory = propertiesFactory;
+		this.propertyFactory = propertyFactory;
 		initParameter(xmlPath);
 		register();
 	}
 
 	private void register() {
-		addSingleton(PropertiesFactory.class.getName(), propertiesFactory);
+		addSingleton(PropertyFactory.class.getName(), propertyFactory);
 		addSingleton(BeanFactory.class.getName(), this);
 	}
 
@@ -43,7 +43,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		if (ResourceUtils.isExist(xmlPath)) {
 			Node root = XmlBeanUtils.getRootNode(xmlPath);
 			this.filterNames = StringUtils
-					.commonSplit(XMLUtils.getNodeAttributeValue(propertiesFactory, root, "filters"));
+					.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, root, "filters"));
 		}
 	}
 
@@ -56,8 +56,8 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		return (T) bean;
 	}
 
-	public final PropertiesFactory getPropertiesFactory() {
-		return propertiesFactory;
+	public final PropertyFactory getPropertyFactory() {
+		return propertyFactory;
 	}
 
 	public String[] getFilterNames() {
@@ -99,8 +99,8 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	protected String getServicePackage() {
-		String p = BeanUtils.getServiceAnnotationPackage(propertiesFactory);
-		return p == null ? BeanUtils.getAnnotationPackage(propertiesFactory) : p;
+		String p = BeanUtils.getServiceAnnotationPackage(propertyFactory);
+		return p == null ? BeanUtils.getAnnotationPackage(propertyFactory) : p;
 	}
 
 	public void init() {
@@ -108,14 +108,14 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 			if (ResourceUtils.isExist(xmlPath)) {
 				NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
 				BeanConfigFactory dubboBeanConfigFactory = DubboUtils.getReferenceBeanConfigFactory(this,
-						propertiesFactory, nodeList, filterNames);
+						propertyFactory, nodeList, filterNames);
 				if (dubboBeanConfigFactory != null) {
 					addBeanConfigFactory(dubboBeanConfigFactory);
 				}
 
-				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this, propertiesFactory, nodeList, filterNames));
-				addBeanConfigFactory(new XmlBeanConfigFactory(this, propertiesFactory, nodeList, filterNames));
-				addBeanConfigFactory(new ServiceBeanConfigFactory(this, propertiesFactory, getServicePackage(), filterNames));
+				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this, propertyFactory, nodeList, filterNames));
+				addBeanConfigFactory(new XmlBeanConfigFactory(this, propertyFactory, nodeList, filterNames));
+				addBeanConfigFactory(new ServiceBeanConfigFactory(this, propertyFactory, getServicePackage(), filterNames));
 				super.init();
 				initMethod(nodeList);
 			} else {
@@ -130,7 +130,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("init".equalsIgnoreCase(n.getNodeName())) {
-				String className = XMLUtils.getRequireNodeAttributeValue(propertiesFactory, n, "class");
+				String className = XMLUtils.getRequireNodeAttributeValue(propertyFactory, n, "class");
 				BeanDefinition beanDefinition = getBeanDefinition(className);
 				if (beanDefinition == null) {
 					throw new NotFoundException(className);
@@ -139,9 +139,9 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(beanDefinition.getType(), n);
 				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod().getModifiers())) {
 					// 静态方法
-					xmlBeanMethodInfo.invoke(null, this, propertiesFactory);
+					xmlBeanMethodInfo.invoke(null, this, propertyFactory);
 				} else {
-					xmlBeanMethodInfo.invoke(getInstance(className), this, propertiesFactory);
+					xmlBeanMethodInfo.invoke(getInstance(className), this, propertyFactory);
 				}
 			}
 		}
@@ -156,14 +156,14 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("destroy".equalsIgnoreCase(n.getNodeName())) {
-				String className = XMLUtils.getRequireNodeAttributeValue(propertiesFactory, n, "class");
+				String className = XMLUtils.getRequireNodeAttributeValue(propertyFactory, n, "class");
 				BeanDefinition beanDefinition = getBeanDefinition(className);
 				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(beanDefinition.getType(), n);
 				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod().getModifiers())) {
 					// 静态方法
-					xmlBeanMethodInfo.invoke(null, this, propertiesFactory);
+					xmlBeanMethodInfo.invoke(null, this, propertyFactory);
 				} else {
-					xmlBeanMethodInfo.invoke(getInstance(className), this, propertiesFactory);
+					xmlBeanMethodInfo.invoke(getInstance(className), this, propertyFactory);
 				}
 			}
 		}
@@ -203,7 +203,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 
 	@Override
 	protected String getInitStaticPackage() {
-		String init = BeanUtils.getInitStaticPackage(propertiesFactory);
-		return init == null ? BeanUtils.getAnnotationPackage(propertiesFactory) : init;
+		String init = BeanUtils.getInitStaticPackage(propertyFactory);
+		return init == null ? BeanUtils.getAnnotationPackage(propertyFactory) : init;
 	}
 }

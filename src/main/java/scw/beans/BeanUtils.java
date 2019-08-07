@@ -20,7 +20,7 @@ import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Value;
 import scw.beans.xml.XmlBeanParameter;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.aop.Filter;
 import scw.core.aop.Invoker;
 import scw.core.aop.ProxyUtils;
@@ -114,17 +114,17 @@ public final class BeanUtils {
 		countDownLatch.await();
 	}
 
-	public synchronized static void initStatic(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+	public synchronized static void initStatic(BeanFactory beanFactory, PropertyFactory propertyFactory,
 			Collection<Class<?>> classList) throws Exception {
-		initAutowriteStatic(beanFactory, propertiesFactory, classList);
+		initAutowriteStatic(beanFactory, propertyFactory, classList);
 		invokerInitStaticMethod(classList);
 	}
 
-	public static void autoWrite(Class<?> clz, BeanFactory beanFactory, PropertiesFactory propertiesFactory, Object obj,
+	public static void autoWrite(Class<?> clz, BeanFactory beanFactory, PropertyFactory propertyFactory, Object obj,
 			FieldDefinition field) {
 		setBean(beanFactory, clz, obj, field);
 		setConfig(beanFactory, clz, obj, field);
-		setProperties(beanFactory, propertiesFactory, clz, obj, field);
+		setProperties(beanFactory, propertyFactory, clz, obj, field);
 	}
 
 	/**
@@ -132,11 +132,11 @@ public final class BeanUtils {
 	 * 
 	 * @param classList
 	 */
-	private static void initAutowriteStatic(BeanFactory beanFactory, PropertiesFactory propertiesFactory,
+	private static void initAutowriteStatic(BeanFactory beanFactory, PropertyFactory propertyFactory,
 			Collection<Class<?>> classList) throws Exception {
 		for (Class<?> clz : classList) {
 			for (FieldDefinition fieldDefinition : getAutowriteFieldDefinitionList(clz, true)) {
-				autoWrite(clz, beanFactory, propertiesFactory, null, fieldDefinition);
+				autoWrite(clz, beanFactory, propertyFactory, null, fieldDefinition);
 			}
 		}
 	}
@@ -193,11 +193,11 @@ public final class BeanUtils {
 	}
 
 	public static Object[] getBeanMethodParameterArgs(XmlBeanParameter[] beanParameters, BeanFactory beanFactory,
-			scw.core.PropertiesFactory propertiesFactory) throws Exception {
+			scw.core.PropertyFactory propertyFactory) throws Exception {
 		Object[] args = new Object[beanParameters.length];
 		for (int i = 0; i < args.length; i++) {
 			XmlBeanParameter xmlBeanParameter = beanParameters[i];
-			args[i] = xmlBeanParameter.parseValue(beanFactory, propertiesFactory);
+			args[i] = xmlBeanParameter.parseValue(beanFactory, propertyFactory);
 		}
 		return args;
 	}
@@ -241,7 +241,7 @@ public final class BeanUtils {
 		}
 	}
 
-	private static void setProperties(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Class<?> clz,
+	private static void setProperties(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clz,
 			Object obj, FieldDefinition field) {
 		Value value = field.getAnnotation(Value.class);
 		if (value != null) {
@@ -251,7 +251,7 @@ public final class BeanUtils {
 			try {
 				existDefaultValueWarnLog(Value.class.getName(), clz, field, obj);
 
-				String v = propertiesFactory.getValue(value.value());
+				String v = propertyFactory.getProperty(value.value());
 				if (v != null) {
 					val = StringParse.DEFAULT.parse(v, field.getField().getType());
 					field.set(obj, val);
@@ -405,28 +405,28 @@ public final class BeanUtils {
 		return list;
 	}
 
-	public static String getAnnotationPackage(PropertiesFactory propertiesFactory) {
-		return propertiesFactory.getValue("scan.package");
+	public static String getAnnotationPackage(PropertyFactory propertyFactory) {
+		return propertyFactory.getProperty("scan.package");
 	}
 
-	public static String getORMPackage(PropertiesFactory propertiesFactory) {
-		return propertiesFactory.getValue("scan.orm");
+	public static String getORMPackage(PropertyFactory propertyFactory) {
+		return propertyFactory.getProperty("scan.orm");
 	}
 
-	public static String getServiceAnnotationPackage(PropertiesFactory propertiesFactory) {
-		return propertiesFactory.getValue("scan.service");
+	public static String getServiceAnnotationPackage(PropertyFactory propertyFactory) {
+		return propertyFactory.getProperty("scan.service");
 	}
 
-	public static String getCrontabAnnotationPackage(PropertiesFactory propertiesFactory) {
-		return propertiesFactory.getValue("scan.crontab");
+	public static String getCrontabAnnotationPackage(PropertyFactory propertyFactory) {
+		return propertyFactory.getProperty("scan.crontab");
 	}
 
-	public static String getConsumerAnnotationPackage(PropertiesFactory propertiesFactory) {
-		return propertiesFactory.getValue("scan.consumer");
+	public static String getConsumerAnnotationPackage(PropertyFactory propertyFactory) {
+		return propertyFactory.getProperty("scan.consumer");
 	}
 
-	public static String getInitStaticPackage(PropertiesFactory propertiesFactory) {
-		return propertiesFactory.getValue("scan.static");
+	public static String getInitStaticPackage(PropertyFactory propertyFactory) {
+		return propertyFactory.getProperty("scan.static");
 	}
 }
 

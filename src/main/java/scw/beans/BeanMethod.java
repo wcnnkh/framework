@@ -2,10 +2,10 @@ package scw.beans;
 
 import java.lang.reflect.Method;
 
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 
 public interface BeanMethod {
-	Object invoke(Object bean, BeanFactory beanFactory, PropertiesFactory propertiesFactory) throws Exception;
+	Object invoke(Object bean, BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception;
 	
 	Method getMethod();
 }

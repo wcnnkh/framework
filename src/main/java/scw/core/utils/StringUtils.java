@@ -24,7 +24,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import scw.core.StringEmptyVerification;
-import scw.core.StringFormat;
 import scw.core.exception.ParameterException;
 
 public final class StringUtils {
@@ -2482,14 +2481,7 @@ public final class StringUtils {
 	}
 
 	public static String format(String text, final Map<String, ?> valueMap) {
-		StringFormat stringFormat = new StringFormat("{", "}") {
-
-			public String getValue(String key) {
-				Object value = valueMap.get(key);
-				return value == null ? null : value.toString();
-			}
-		};
-		return stringFormat.format(text);
+		return FormatUtils.format(text, valueMap);
 	}
 
 	public static String format(String text, Object... args) {

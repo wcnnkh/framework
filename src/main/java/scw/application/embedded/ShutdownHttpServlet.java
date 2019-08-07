@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.core.Destroy;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.servlet.ServletUtils;
@@ -21,10 +21,10 @@ public final class ShutdownHttpServlet extends HttpServlet {
 	private final String password;
 	private final Destroy destroy;
 
-	public ShutdownHttpServlet(PropertiesFactory propertiesFactory, Destroy destroy) {
-		this.username = EmbeddedUtils.getShutdownUserName(propertiesFactory);
-		this.password = EmbeddedUtils.getShutdownPassword(propertiesFactory);
-		String ip = EmbeddedUtils.getShutdownIp(propertiesFactory);
+	public ShutdownHttpServlet(PropertyFactory propertyFactory, Destroy destroy) {
+		this.username = EmbeddedUtils.getShutdownUserName(propertyFactory);
+		this.password = EmbeddedUtils.getShutdownPassword(propertyFactory);
+		String ip = EmbeddedUtils.getShutdownIp(propertyFactory);
 		this.ips = StringUtils.commonSplit(ip);
 		this.destroy = destroy;
 	}

@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import scw.beans.annotation.InterfaceProxy;
 import scw.core.Destroy;
 import scw.core.Init;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.BeansException;
 import scw.core.exception.NestedRuntimeException;
@@ -314,14 +314,14 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			if (!ReflectUtils.isInstance(clz)) {
 				return null;
 			}
-			return new AnnotationBeanDefinition(this, getPropertiesFactory(), clz, getFilterNames());
+			return new AnnotationBeanDefinition(this, getPropertyFactory(), clz, getFilterNames());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public abstract PropertiesFactory getPropertiesFactory();
+	public abstract PropertyFactory getPropertyFactory();
 
 	public abstract String[] getFilterNames();
 
@@ -332,7 +332,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		init = true;
 
 		try {
-			BeanUtils.initStatic(this, getPropertiesFactory(), ResourceUtils.getClassList(getInitStaticPackage()));
+			BeanUtils.initStatic(this, getPropertyFactory(), ResourceUtils.getClassList(getInitStaticPackage()));
 		} catch (Exception e) {
 			throw new NestedRuntimeException(e);
 		}

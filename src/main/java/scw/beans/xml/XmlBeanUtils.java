@@ -9,7 +9,7 @@ import org.w3c.dom.NodeList;
 import scw.beans.AnnotationBeanDefinition;
 import scw.beans.BeanMethod;
 import scw.beans.EParameterType;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.exception.BeansException;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
@@ -55,17 +55,17 @@ public final class XmlBeanUtils {
 		return StringUtils.isEmpty(name) ? null : StringUtils.commonSplit(name);
 	}
 
-	public static boolean getBooleanValue(PropertiesFactory propertiesFactory,
+	public static boolean getBooleanValue(PropertyFactory propertyFactory,
 			Node node, String name, boolean defaultValue) {
-		String value = XMLUtils.getNodeAttributeValue(propertiesFactory, node,
+		String value = XMLUtils.getNodeAttributeValue(propertyFactory, node,
 				name);
 		return StringUtils.isEmpty(value) ? defaultValue : Boolean
 				.parseBoolean(value);
 	}
 
-	public static int getIntegerValue(PropertiesFactory propertiesFactory,
+	public static int getIntegerValue(PropertyFactory propertyFactory,
 			Node node, String name, int defaultValue) {
-		String value = XMLUtils.getNodeAttributeValue(propertiesFactory, node,
+		String value = XMLUtils.getNodeAttributeValue(propertyFactory, node,
 				name);
 		return StringUtils.isEmpty(value) ? defaultValue : Integer
 				.parseInt(value);
@@ -105,32 +105,32 @@ public final class XmlBeanUtils {
 		}
 	}
 
-	public static String getPackageName(PropertiesFactory propertiesFactory,
+	public static String getPackageName(PropertyFactory propertyFactory,
 			Node node) {
-		return XMLUtils.getNodeAttributeValue(propertiesFactory, node,
+		return XMLUtils.getNodeAttributeValue(propertyFactory, node,
 				"package");
 	}
 
-	public static String getVersion(PropertiesFactory propertiesFactory,
+	public static String getVersion(PropertyFactory propertyFactory,
 			Node node) {
-		return XMLUtils.getNodeAttributeValue(propertiesFactory, node,
+		return XMLUtils.getNodeAttributeValue(propertyFactory, node,
 				"version");
 	}
 
-	public static String getAddress(PropertiesFactory propertiesFactory,
+	public static String getAddress(PropertyFactory propertyFactory,
 			Node node) {
-		return XMLUtils.getRequireNodeAttributeValue(propertiesFactory, node,
+		return XMLUtils.getRequireNodeAttributeValue(propertyFactory, node,
 				"address");
 	}
 
-	public static String getRef(PropertiesFactory propertiesFactory, Node node) {
-		return XMLUtils.getRequireNodeAttributeValue(propertiesFactory, node,
+	public static String getRef(PropertyFactory propertyFactory, Node node) {
+		return XMLUtils.getRequireNodeAttributeValue(propertyFactory, node,
 				"ref");
 	}
 
-	public static String getCharsetName(PropertiesFactory propertiesFactory,
+	public static String getCharsetName(PropertyFactory propertyFactory,
 			Node node, String defaultValue) {
-		String charsetName = XMLUtils.getNodeAttributeValue(propertiesFactory,
+		String charsetName = XMLUtils.getNodeAttributeValue(propertyFactory,
 				node, "charsetName");
 		return StringUtils.isNull(charsetName) ? defaultValue : charsetName;
 	}

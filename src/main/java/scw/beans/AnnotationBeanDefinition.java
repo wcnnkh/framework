@@ -11,7 +11,7 @@ import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Service;
 import scw.core.Init;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
@@ -29,18 +29,18 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 	private final NoArgumentBeanMethod[] destroyMethods;
 	private final boolean proxy;
 	private volatile Enhancer enhancer;
-	private final PropertiesFactory propertiesFactory;
+	private final PropertyFactory propertyFactory;
 	private final String[] filterNames;
 	private final boolean singleton;
 	private final FieldDefinition[] autowriteFieldDefinition;
 	private final String[] names;
 
 	public AnnotationBeanDefinition(BeanFactory beanFactory,
-			PropertiesFactory propertiesFactory, Class<?> type,
+			PropertyFactory propertyFactory, Class<?> type,
 			String[] filterNames) throws Exception {
 		this.beanFactory = beanFactory;
 		this.type = type;
-		this.propertiesFactory = propertiesFactory;
+		this.propertyFactory = propertyFactory;
 		this.id = type.getName();
 		this.names = getServiceNames(type);
 		this.initMethods = getInitMethodList(type).toArray(
@@ -153,7 +153,7 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 
 	public void autowrite(Object bean) throws Exception {
 		for (FieldDefinition fieldDefinition : autowriteFieldDefinition) {
-			BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean,
+			BeanUtils.autoWrite(type, beanFactory, propertyFactory, bean,
 					fieldDefinition);
 		}
 	}

@@ -5,22 +5,22 @@ import javax.servlet.ServletConfig;
 import scw.application.Application;
 import scw.application.CommonApplication;
 import scw.beans.BeanFactory;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 
 public class ServletApplication implements Application {
 	private final CommonApplication commonApplication;
 
 	public ServletApplication(ServletConfig servletConfig) throws Throwable {
-		ServletConfigPropertiesFactory propertiesFactory = new ServletConfigPropertiesFactory(servletConfig);
-		this.commonApplication = new CommonApplication(propertiesFactory.getConfigXml(), propertiesFactory);
+		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(servletConfig);
+		this.commonApplication = new CommonApplication(propertyFactory.getConfigXml(), propertyFactory);
 	}
 
 	public BeanFactory getBeanFactory() {
 		return commonApplication.getBeanFactory();
 	}
 
-	public PropertiesFactory getPropertiesFactory() {
-		return commonApplication.getPropertiesFactory();
+	public PropertyFactory getPropertyFactory() {
+		return commonApplication.getPropertyFactory();
 	}
 
 	public void init() {

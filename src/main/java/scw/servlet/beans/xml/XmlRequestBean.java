@@ -14,7 +14,7 @@ import scw.beans.BeanUtils;
 import scw.beans.xml.XmlBeanParameter;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.Destroy;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
@@ -27,7 +27,7 @@ import scw.servlet.beans.RequestBeanUtils;
 public final class XmlRequestBean implements RequestBean {
 
 	private final BeanFactory beanFactory;
-	private final PropertiesFactory propertiesFactory;
+	private final PropertyFactory propertyFactory;
 	private final Class<?> type;
 	private String[] names;
 	private final String id;
@@ -45,10 +45,10 @@ public final class XmlRequestBean implements RequestBean {
 	private Enhancer enhancer;
 	private final FieldDefinition[] autoWriteFields;
 
-	public XmlRequestBean(BeanFactory beanFactory, PropertiesFactory propertiesFactory, Node beanNode,
+	public XmlRequestBean(BeanFactory beanFactory, PropertyFactory propertyFactory, Node beanNode,
 			String[] filterNames) throws Exception {
 		this.beanFactory = beanFactory;
-		this.propertiesFactory = propertiesFactory;
+		this.propertyFactory = propertyFactory;
 		this.type = XmlBeanUtils.getClass(beanNode);
 		this.id = XmlBeanUtils.getId(beanNode);
 		this.names = XmlBeanUtils.getNames(beanNode);
@@ -105,7 +105,7 @@ public final class XmlRequestBean implements RequestBean {
 			return enhancer.create();
 		} else {
 			Object[] args = RequestBeanUtils.getBeanMethodParameterArgs(request, constructorParameterTypes,
-					beanMethodParameters, beanFactory, propertiesFactory);
+					beanMethodParameters, beanFactory, propertyFactory);
 			return enhancer.create(constructorParameterTypes, args);
 		}
 	}
@@ -122,7 +122,7 @@ public final class XmlRequestBean implements RequestBean {
 			}
 
 			ReflectUtils.setFieldValue(type, field, bean,
-					beanProperties.parseValue(beanFactory, propertiesFactory, field.getType()));
+					beanProperties.parseValue(beanFactory, propertyFactory, field.getType()));
 		}
 	}
 
@@ -131,7 +131,7 @@ public final class XmlRequestBean implements RequestBean {
 			return constructor.newInstance();
 		} else {
 			Object[] args = RequestBeanUtils.getBeanMethodParameterArgs(request, constructorParameterTypes,
-					beanMethodParameters, beanFactory, propertiesFactory);
+					beanMethodParameters, beanFactory, propertyFactory);
 			return constructor.newInstance(args);
 		}
 	}
@@ -139,7 +139,7 @@ public final class XmlRequestBean implements RequestBean {
 	public void autowrite(Object bean) throws Exception {
 		if (!ArrayUtils.isEmpty(autoWriteFields)) {
 			for (FieldDefinition fieldDefinition : autoWriteFields) {
-				BeanUtils.autoWrite(type, beanFactory, propertiesFactory, bean, fieldDefinition);
+				BeanUtils.autoWrite(type, beanFactory, propertyFactory, bean, fieldDefinition);
 			}
 		}
 
@@ -149,7 +149,7 @@ public final class XmlRequestBean implements RequestBean {
 	public void init(Object bean) throws Exception {
 		if (!ArrayUtils.isEmpty(initMethods)) {
 			for (BeanMethod method : initMethods) {
-				method.invoke(bean, beanFactory, propertiesFactory);
+				method.invoke(bean, beanFactory, propertyFactory);
 			}
 		}
 	}
@@ -157,7 +157,7 @@ public final class XmlRequestBean implements RequestBean {
 	public void destroy(Object bean) throws Exception {
 		if (!ArrayUtils.isEmpty(destroyMethods)) {
 			for (BeanMethod method : destroyMethods) {
-				method.invoke(bean, beanFactory, propertiesFactory);
+				method.invoke(bean, beanFactory, propertyFactory);
 			}
 		}
 

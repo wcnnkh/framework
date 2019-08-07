@@ -8,21 +8,21 @@ import org.w3c.dom.NodeList;
 import com.alibaba.dubbo.config.ServiceConfig;
 
 import scw.beans.BeanFactory;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public class XmlDubboServiceExortThread extends Thread {
 	private static Logger logger = LoggerFactory.getLogger(XmlDubboServiceExortThread.class);
-	private final PropertiesFactory propertiesFactory;
+	private final PropertyFactory propertyFactory;
 	private final BeanFactory beanFactory;
 	private final NodeList nodeList;
 	private boolean tag = false;
 	private int size = 0;
 	private Thread thread;
 
-	public XmlDubboServiceExortThread(PropertiesFactory propertiesFactory, BeanFactory beanFactory, NodeList nodeList) {
-		this.propertiesFactory = propertiesFactory;
+	public XmlDubboServiceExortThread(PropertyFactory propertyFactory, BeanFactory beanFactory, NodeList nodeList) {
+		this.propertyFactory = propertyFactory;
 		this.beanFactory = beanFactory;
 		this.nodeList = nodeList;
 	}
@@ -77,7 +77,7 @@ public class XmlDubboServiceExortThread extends Thread {
 						check();
 					}
 					size++;
-					List<ServiceConfig<?>> serviceConfigs = XmlDubboUtils.getServiceConfigList(propertiesFactory,
+					List<ServiceConfig<?>> serviceConfigs = XmlDubboUtils.getServiceConfigList(propertyFactory,
 							beanFactory, node);
 					for (ServiceConfig<?> serviceConfig : serviceConfigs) {
 						size++;

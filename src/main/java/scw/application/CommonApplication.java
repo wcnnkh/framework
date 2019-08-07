@@ -10,11 +10,11 @@ import scw.application.crontab.CrontabAnnotationUtils;
 import scw.beans.BeanUtils;
 import scw.beans.XmlBeanFactory;
 import scw.beans.async.AsyncCompleteFilter;
-import scw.beans.property.XmlPropertiesFactory;
+import scw.beans.property.XmlPropertyFactory;
 import scw.beans.rpc.dubbo.DubboUtils;
 import scw.beans.tcc.TCCTransactionFilter;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerFactory;
@@ -27,31 +27,31 @@ public class CommonApplication implements Application {
 
 	private final XmlBeanFactory beanFactory;
 	private volatile boolean start = false;
-	private final PropertiesFactory propertiesFactory;
+	private final PropertyFactory propertyFactory;
 	private final String configPath;
 
 	public String getConfigPath() {
 		return configPath;
 	}
 
-	public CommonApplication(String configXml, PropertiesFactory propertiesFactory) {
+	public CommonApplication(String configXml, PropertyFactory propertyFactory) {
 		this.configPath = configXml;
-		this.propertiesFactory = propertiesFactory == null ? new XmlPropertiesFactory(this.configPath)
-				: propertiesFactory;
+		this.propertyFactory = propertyFactory == null ? new XmlPropertyFactory(this.configPath)
+				: propertyFactory;
 		this.beanFactory = getXmlBeanFactory();
 		createAfter();
 	}
 
 	public CommonApplication(String configXml) {
 		this.configPath = configXml;
-		this.propertiesFactory = new XmlPropertiesFactory(getConfigPath());
+		this.propertyFactory = new XmlPropertyFactory(getConfigPath());
 		this.beanFactory = getXmlBeanFactory();
 		createAfter();
 	}
 
 	private XmlBeanFactory getXmlBeanFactory() {
 		try {
-			return new XmlBeanFactory(this.propertiesFactory, getConfigPath()) {
+			return new XmlBeanFactory(this.propertyFactory, getConfigPath()) {
 				@Override
 				protected String getInitStaticPackage() {
 					return getStaticAnnotationPackage();
@@ -77,36 +77,36 @@ public class CommonApplication implements Application {
 		return beanFactory;
 	}
 
-	public final PropertiesFactory getPropertiesFactory() {
-		return beanFactory.getPropertiesFactory();
+	public final PropertyFactory getPropertyFactory() {
+		return beanFactory.getPropertyFactory();
 	}
 
 	protected String getAnnotationPackage() {
-		return BeanUtils.getAnnotationPackage(propertiesFactory);
+		return BeanUtils.getAnnotationPackage(propertyFactory);
 	}
 
 	protected String getORMPackage() {
-		String orm = BeanUtils.getORMPackage(propertiesFactory);
+		String orm = BeanUtils.getORMPackage(propertyFactory);
 		return orm == null ? getAnnotationPackage() : orm;
 	}
 
 	protected String getServiceAnnotationPackage() {
-		String service = BeanUtils.getServiceAnnotationPackage(propertiesFactory);
+		String service = BeanUtils.getServiceAnnotationPackage(propertyFactory);
 		return service == null ? getAnnotationPackage() : service;
 	}
 
 	protected String getCrontabAnnotationPackage() {
-		String crontab = BeanUtils.getCrontabAnnotationPackage(propertiesFactory);
+		String crontab = BeanUtils.getCrontabAnnotationPackage(propertyFactory);
 		return crontab == null ? getAnnotationPackage() : crontab;
 	}
 
 	protected String getConsumerAnnotationPackage() {
-		String consumer = BeanUtils.getConsumerAnnotationPackage(propertiesFactory);
+		String consumer = BeanUtils.getConsumerAnnotationPackage(propertyFactory);
 		return consumer == null ? getAnnotationPackage() : consumer;
 	}
 
 	protected String getStaticAnnotationPackage() {
-		String init = BeanUtils.getInitStaticPackage(propertiesFactory);
+		String init = BeanUtils.getInitStaticPackage(propertyFactory);
 		return init == null ? getAnnotationPackage() : init;
 	}
 
@@ -123,7 +123,7 @@ public class CommonApplication implements Application {
 			start = true;
 		}
 
-		String ormScanPackageName = propertiesFactory.getValue("orm.scan");
+		String ormScanPackageName = propertyFactory.getProperty("orm.scan");
 		if (!StringUtils.isEmpty(ormScanPackageName)) {
 			ORMUtils.registerCglibProxyTableBean(ormScanPackageName);
 		}
@@ -133,7 +133,7 @@ public class CommonApplication implements Application {
 		beanFactory.init();
 
 		if (ResourceUtils.isExist(configPath)) {
-			DubboUtils.exportService(beanFactory, propertiesFactory, XmlBeanUtils.getRootNodeList(configPath));
+			DubboUtils.exportService(beanFactory, propertyFactory, XmlBeanUtils.getRootNodeList(configPath));
 		}
 
 		CrontabAnnotationUtils.crontabService(ResourceUtils.getClassList(getCrontabAnnotationPackage()), beanFactory,
@@ -145,7 +145,7 @@ public class CommonApplication implements Application {
 		Collection<Class<?>> classes = ResourceUtils.getClassList(getConsumerAnnotationPackage());
 		AnnotationConsumerUtils.scanningAMQPConsumer(getBeanFactory(), classes, getBeanFactory().getFilterNames());
 		AnnotationConsumerUtils.scanningConsumer(beanFactory,
-				new XmlConsumerFactory(beanFactory, propertiesFactory, configPath), classes,
+				new XmlConsumerFactory(beanFactory, propertyFactory, configPath), classes,
 				getBeanFactory().getFilterNames());
 	}
 

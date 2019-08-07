@@ -8,7 +8,7 @@ import org.w3c.dom.Node;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.core.exception.BeansException;
 
 public class XmlBeanMethodInfo implements BeanMethod {
@@ -54,11 +54,11 @@ public class XmlBeanMethodInfo implements BeanMethod {
 		}
 	}
 
-	public Object invoke(Object bean, BeanFactory beanFactory, PropertiesFactory propertiesFactory) throws Exception {
+	public Object invoke(Object bean, BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
 		if (method.getParameterCount() == 0) {
 			return method.invoke(bean);
 		} else {
-			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertiesFactory);
+			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertyFactory);
 			return method.invoke(bean, args);
 		}
 	}

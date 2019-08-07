@@ -14,7 +14,7 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
 import scw.beans.rpc.http.RpcService;
 import scw.core.Destroy;
-import scw.core.PropertiesFactory;
+import scw.core.PropertyFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.servlet.beans.RequestBeanFactory;
@@ -23,7 +23,7 @@ import scw.servlet.beans.RequestBeanFactory;
 public class DefaultServletService implements ServletService {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
-	private final PropertiesFactory propertiesFactory;
+	private final PropertyFactory propertyFactory;
 	private final BeanFactory beanFactory;
 	private final WrapperFactory wrapperFactory;
 	private final String charsetName;
@@ -32,21 +32,21 @@ public class DefaultServletService implements ServletService {
 	private final List<Filter> filters;
 	private final int warnExecuteTime;
 
-	public DefaultServletService(BeanFactory beanFactory, PropertiesFactory propertiesFactory, String configPath,
+	public DefaultServletService(BeanFactory beanFactory, PropertyFactory propertyFactory, String configPath,
 			String[] rootBeanFilters) throws Throwable {
 		this.beanFactory = beanFactory;
-		this.propertiesFactory = propertiesFactory;
-		this.charsetName = ServletUtils.getCharsetName(propertiesFactory);
-		this.warnExecuteTime = ServletUtils.getWarnExecuteTime(propertiesFactory);
+		this.propertyFactory = propertyFactory;
+		this.charsetName = ServletUtils.getCharsetName(propertyFactory);
+		this.warnExecuteTime = ServletUtils.getWarnExecuteTime(propertyFactory);
 
-		RequestBeanFactory requestBeanFactory = ServletUtils.getRequestBeanFactory(beanFactory, propertiesFactory,
+		RequestBeanFactory requestBeanFactory = ServletUtils.getRequestBeanFactory(beanFactory, propertyFactory,
 				configPath, rootBeanFilters);
-		this.wrapperFactory = ServletUtils.getWrapperFactory(beanFactory, requestBeanFactory, propertiesFactory);
+		this.wrapperFactory = ServletUtils.getWrapperFactory(beanFactory, requestBeanFactory, propertyFactory);
 
-		this.rpcPath = ServletUtils.getRPCPath(propertiesFactory);
-		this.rpcService = ServletUtils.getRPCService(beanFactory, propertiesFactory);
+		this.rpcPath = ServletUtils.getRPCPath(propertyFactory);
+		this.rpcService = ServletUtils.getRPCService(beanFactory, propertyFactory);
 
-		List<Filter> filters = ServletUtils.getFilters(beanFactory, propertiesFactory);
+		List<Filter> filters = ServletUtils.getFilters(beanFactory, propertyFactory);
 		this.filters = Arrays.asList(filters.toArray(new Filter[filters.size()]));
 	}
 
@@ -54,8 +54,8 @@ public class DefaultServletService implements ServletService {
 		return charsetName;
 	}
 
-	public final PropertiesFactory getPropertiesFactory() {
-		return propertiesFactory;
+	public final PropertyFactory getPropertyFactory() {
+		return propertyFactory;
 	}
 
 	public final BeanFactory getBeanFactory() {
