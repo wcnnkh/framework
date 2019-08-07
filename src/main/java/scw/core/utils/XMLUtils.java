@@ -34,7 +34,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import scw.core.Convert;
+import scw.core.Converter;
 import scw.core.PropertiesFactory;
 import scw.core.StringFormat;
 import scw.core.exception.NotFoundException;
@@ -141,7 +141,7 @@ public final class XMLUtils {
 
 	public static Document getDocument(String path) {
 		return ResourceUtils.getAndConvert(path,
-				new Convert<InputStream, Document>() {
+				new Converter<InputStream, Document>() {
 
 					public Document convert(InputStream inputStream) {
 						return parse(inputStream);

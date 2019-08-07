@@ -1,5 +1,5 @@
 package scw.core;
 
-public interface Convert<K, V> {
+public interface Converter<K, V> {
 	V convert(K k);
 }

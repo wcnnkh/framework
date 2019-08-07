@@ -15,7 +15,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.core.Convert;
+import scw.core.Converter;
 import scw.core.reflect.ReflectUtils;
 import scw.io.IOUtils;
 
@@ -41,7 +41,7 @@ public final class ConfigUtils {
 	public static List<Map<String, String>> getDefaultXmlContent(String path,
 			final String rootTag) {
 		return ResourceUtils.getAndConvert(path,
-				new Convert<InputStream, List<Map<String, String>>>() {
+				new Converter<InputStream, List<Map<String, String>>>() {
 
 					public List<Map<String, String>> convert(
 							InputStream inputStream) {
@@ -79,7 +79,7 @@ public final class ConfigUtils {
 
 	public static <T> List<T> xmlToList(final Class<T> type, String path) {
 		return ResourceUtils.getAndConvert(path,
-				new Convert<InputStream, List<T>>() {
+				new Converter<InputStream, List<T>>() {
 
 					public List<T> convert(InputStream inputStream) {
 						return xmlToList(type, inputStream);
@@ -105,7 +105,7 @@ public final class ConfigUtils {
 	public static <K, V> Map<K, V> xmlToMap(final Class<V> valueType,
 			String path) {
 		return ResourceUtils.getAndConvert(path,
-				new Convert<InputStream, Map<K, V>>() {
+				new Converter<InputStream, Map<K, V>>() {
 
 					public Map<K, V> convert(InputStream inputStream) {
 						return xmlToMap(valueType, inputStream);
@@ -156,7 +156,7 @@ public final class ConfigUtils {
 	public static List<String> getFileContentLineList(String path,
 			final String charsetName) {
 		return ResourceUtils.getAndConvert(path,
-				new Convert<InputStream, List<String>>() {
+				new Converter<InputStream, List<String>>() {
 
 					public List<String> convert(InputStream inputStream) {
 						try {
@@ -171,7 +171,7 @@ public final class ConfigUtils {
 
 	public static String getFileContent(String path, final String charsetName) {
 		return ResourceUtils.getAndConvert(path,
-				new Convert<InputStream, String>() {
+				new Converter<InputStream, String>() {
 
 					public String convert(InputStream inputStream) {
 						return IOUtils.readContent(inputStream, charsetName);

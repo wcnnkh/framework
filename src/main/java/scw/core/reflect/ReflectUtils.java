@@ -254,6 +254,20 @@ public final class ReflectUtils {
 		return method;
 	}
 
+	public static Method findMethod(String className, String methodName, Class<?>... parameterTypes) {
+		Class<?> clz = null;
+		try {
+			clz = Class.forName(className);
+		} catch (Throwable e) {
+		}
+
+		if (clz == null) {
+			return null;
+		}
+
+		return findMethod(clz, methodName, parameterTypes);
+	}
+
 	public static Method findMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
 		Method method;
 		try {

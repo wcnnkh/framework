@@ -53,14 +53,11 @@ public abstract class SystemPropertyUtils {
 	/** Value separator for system property placeholders: ":" */
 	private static final String VALUE_SEPARATOR = ":";
 
-	public static final PropertyPlaceholderHelper strictHelper = new PropertyPlaceholderHelper(
-			PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, VALUE_SEPARATOR, false);
+	public static final PropertyPlaceholderHelper strictHelper = new PropertyPlaceholderHelper(PLACEHOLDER_PREFIX,
+			PLACEHOLDER_SUFFIX, VALUE_SEPARATOR, false);
 
-	public static final PropertyPlaceholderHelper nonStrictHelper = new PropertyPlaceholderHelper(
-			PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, VALUE_SEPARATOR, true);
-
-	private static final StringFormatSystemProperties STRING_FORMAT_SYSTEM_PROPERTIES = new StringFormatSystemProperties(
-			"{", "}");
+	public static final PropertyPlaceholderHelper nonStrictHelper = new PropertyPlaceholderHelper(PLACEHOLDER_PREFIX,
+			PLACEHOLDER_SUFFIX, VALUE_SEPARATOR, true);
 
 	private static final String WEB_ROOT = "web.root";
 	private static final String WORK_PATH_PROPERTY_NAME = "scw_work_path";
@@ -98,16 +95,12 @@ public abstract class SystemPropertyUtils {
 	 * @throws IllegalArgumentException
 	 *             if there is an unresolvable placeholder and the flag is false
 	 */
-	public static String resolvePlaceholders(String text,
-			boolean ignoreUnresolvablePlaceholders) {
-		PropertyPlaceholderHelper helper = (ignoreUnresolvablePlaceholders ? nonStrictHelper
-				: strictHelper);
-		return helper.replacePlaceholders(text,
-				new SystemPropertyPlaceholderResolver(text));
+	public static String resolvePlaceholders(String text, boolean ignoreUnresolvablePlaceholders) {
+		PropertyPlaceholderHelper helper = (ignoreUnresolvablePlaceholders ? nonStrictHelper : strictHelper);
+		return helper.replacePlaceholders(text, new SystemPropertyPlaceholderResolver(text));
 	}
 
-	private static class SystemPropertyPlaceholderResolver implements
-			PlaceholderResolver {
+	private static class SystemPropertyPlaceholderResolver implements PlaceholderResolver {
 
 		private final String text;
 
@@ -119,8 +112,7 @@ public abstract class SystemPropertyUtils {
 			try {
 				return getProperty(placeholderName);
 			} catch (Throwable ex) {
-				System.err.println("Could not resolve placeholder '"
-						+ placeholderName + "' in [" + this.text
+				System.err.println("Could not resolve placeholder '" + placeholderName + "' in [" + this.text
 						+ "] as system property: " + ex);
 				return null;
 			}
@@ -195,7 +187,7 @@ public abstract class SystemPropertyUtils {
 	}
 
 	public static String format(String text) {
-		return STRING_FORMAT_SYSTEM_PROPERTIES.format(text);
+		return StringFormatSystemProperties.formatText(text);
 	}
 
 	/**
@@ -226,9 +218,8 @@ public abstract class SystemPropertyUtils {
 
 	public static String getSystemOnlyId() {
 		try {
-			return scw.core.Base64.encode((getUserDir() + "&" + ResourceUtils
-					.getClassPathURL())
-					.getBytes(Constants.DEFAULT_CHARSET_NAME));
+			return scw.core.Base64.encode(
+					(getUserDir() + "&" + ResourceUtils.getClassPathURL()).getBytes(Constants.DEFAULT_CHARSET_NAME));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
