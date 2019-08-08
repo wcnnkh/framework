@@ -166,7 +166,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 			try {
 				tomcat.destroy();
 			} catch (LifecycleException e) {
-				e.printStackTrace();
+				//ignore
 			}
 		}
 	}

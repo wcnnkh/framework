@@ -32,11 +32,13 @@ public class EmbeddedApplication extends CommonApplication {
 	@Override
 	public void init() {
 		super.init();
-		String embeddedName = EmbeddedUtils.getEmbeddedName(getPropertyFactory());
+		String embeddedName = EmbeddedUtils
+				.getEmbeddedName(getPropertyFactory());
 		if (StringUtils.isEmpty(embeddedName)) {
 			String name = getSupportServletEmbeddedClassName();
 			if (name == null) {
-				LoggerUtils.warn(EmbeddedApplication.class, "未找到支持的embedded, 如需支持请导入对应的jar");
+				LoggerUtils.warn(EmbeddedApplication.class,
+						"未找到支持的embedded, 如需支持请导入对应的jar");
 			} else {
 				initEmbedded(name);
 			}
@@ -46,16 +48,19 @@ public class EmbeddedApplication extends CommonApplication {
 	}
 
 	private void initEmbedded(String embeddedName) {
-		ServletService service = ServletUtils.getServletService(getBeanFactory(), getPropertyFactory(),
-				getConfigPath(), getBeanFactory().getFilterNames());
+		ServletService service = ServletUtils.getServletService(
+				getBeanFactory(), getPropertyFactory(), getConfigPath(),
+				getBeanFactory().getFilterNames());
 		embedded = getBeanFactory().getInstance(embeddedName);
-		embedded.init(getBeanFactory(), getPropertyFactory(), new ShutdownHttpServlet(getPropertyFactory(), this),
+		embedded.init(getBeanFactory(), getPropertyFactory(),
+				new ShutdownHttpServlet(getPropertyFactory(), this),
 				new EmbeddedServlet(service));
 	}
 
 	@Override
 	public void destroy() {
-		LoggerUtils.info(TomcatApplication.class, "---------------shutdown---------------");
+		LoggerUtils.info(TomcatApplication.class,
+				"---------------shutdown---------------");
 		if (embedded != null) {
 			embedded.destroy();
 		}
@@ -63,48 +68,66 @@ public class EmbeddedApplication extends CommonApplication {
 		System.exit(0);
 	}
 
-	public synchronized static void run(final Class<?> clazz, String beanXml) {
-		if (!ResourceUtils.isExist(beanXml)) {
-			LoggerUtils.warn(TomcatApplication.class, "not found " + beanXml);
+	private static class Run extends Thread {
+		private Class<?> clazz;
+		private String beanXml;
+
+		public Run(Class<?> clazz, String beanXml) {
+			this.clazz = clazz;
+			this.beanXml = beanXml;
 		}
 
-		Application application;
-		if (clazz == null) {
-			application = new EmbeddedApplication(beanXml);
-		} else {
-			application = new EmbeddedApplication(beanXml) {
-				@Override
-				protected String getAnnotationPackage() {
-					String[] arr = StringUtils.split(clazz.getName(), '.');
-					if (arr.length < 2) {
-						return super.getAnnotationPackage();
-					} else if (arr.length == 2) {
-						String p = super.getAnnotationPackage();
-						if (StringUtils.isEmpty(p)) {
-							return arr[0];
-						} else {
-							return p + "," + arr[0];
-						}
-					} else {
-						StringBuilder sb = new StringBuilder();
-						for (int i = 0; i < 2; i++) {
-							if (i != 0) {
-								sb.append(".");
-							}
-							sb.append(arr[i]);
-						}
+		public void run() {
+			if (!ResourceUtils.isExist(beanXml)) {
+				LoggerUtils.warn(TomcatApplication.class, "not found "
+						+ beanXml);
+			}
 
-						String p = super.getAnnotationPackage();
-						if (StringUtils.isEmpty(p)) {
-							return sb.toString();
+			Application application;
+			if (clazz == null) {
+				application = new EmbeddedApplication(beanXml);
+			} else {
+				application = new EmbeddedApplication(beanXml) {
+					@Override
+					protected String getAnnotationPackage() {
+						String[] arr = StringUtils.split(clazz.getName(), '.');
+						if (arr.length < 2) {
+							return super.getAnnotationPackage();
+						} else if (arr.length == 2) {
+							String p = super.getAnnotationPackage();
+							if (StringUtils.isEmpty(p)) {
+								return arr[0];
+							} else {
+								return p + "," + arr[0];
+							}
 						} else {
-							return p + "," + sb.toString();
+							StringBuilder sb = new StringBuilder();
+							for (int i = 0; i < 2; i++) {
+								if (i != 0) {
+									sb.append(".");
+								}
+								sb.append(arr[i]);
+							}
+
+							String p = super.getAnnotationPackage();
+							if (StringUtils.isEmpty(p)) {
+								return sb.toString();
+							} else {
+								return p + "," + sb.toString();
+							}
 						}
 					}
-				}
-			};
+				};
+			}
+			application.init();
 		}
-		application.init();
+
+	}
+
+	public synchronized static void run(final Class<?> clazz, String beanXml) {
+		Run run = new Run(clazz, beanXml);
+		run.setDaemon(false);
+		run.start();
 	}
 
 	public static void run(Class<?> clazz) {
