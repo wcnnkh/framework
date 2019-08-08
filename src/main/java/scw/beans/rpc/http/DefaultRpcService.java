@@ -8,6 +8,7 @@ import java.util.Map;
 import scw.beans.BeanFactory;
 import scw.core.utils.SignUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.XTime;
 import scw.io.Bytes;
 import scw.io.serializer.Serializer;
 import scw.logger.Logger;
@@ -39,7 +40,8 @@ public class DefaultRpcService implements RpcService {
 
 		Object obj;
 		try {
-			obj = invoker.invoke(beanFactory.getInstance(message.getMethodDefinition().getBelongClass()), message.getArgs());
+			obj = invoker.invoke(beanFactory.getInstance(message.getMethodDefinition().getBelongClass()),
+					message.getArgs());
 		} catch (IllegalArgumentException e) {
 			logger.warn("参数不一致：{}", message.getMessageKey());
 			throw e;
@@ -75,16 +77,10 @@ public class DefaultRpcService implements RpcService {
 		}
 
 		long t = (Long) message.getAttribute("t");
-		String checkSign = SignUtils.md5Str(Bytes.string2bytes(t + sign));
-		if (t < System.currentTimeMillis() - 10000) {// 如果超过10秒失效
+		if (t < System.currentTimeMillis() - XTime.ONE_MINUTE) {// 如果超过10秒失效
 			return false;
 		}
-
-		String sign = (String) message.getAttribute("sign");
-		if (!checkSign.equals(sign)) {
-			logger.error("签名错误：{}", this.sign);
-			return false;
-		}
-		return true;
+		
+		return SignUtils.md5Str(Bytes.string2bytes(t + sign)).equals((String) message.getAttribute("sign"));
 	}
 }
