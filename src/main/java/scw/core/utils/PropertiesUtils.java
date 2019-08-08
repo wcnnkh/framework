@@ -3,6 +3,7 @@ package scw.core.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,21 +20,15 @@ import java.util.Properties;
 import scw.core.Constants;
 import scw.core.Consumer;
 import scw.core.StringFormat;
-import scw.core.exception.NotFoundException;
 import scw.core.reflect.ReflectUtils;
 import scw.io.IOUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 
 public final class PropertiesUtils {
-	private static Logger logger = LoggerFactory
-			.getLogger(PropertiesUtils.class);
-
 	private PropertiesUtils() {
 	};
 
-	public static <T> T setProperties(Object obj, Properties properties,
-			StringFormat stringFormat) {
+	public static <T> T setProperties(Object obj, Properties properties, StringFormat stringFormat) {
 		T t = null;
 		try {
 			for (Entry<Object, Object> entry : properties.entrySet()) {
@@ -43,11 +38,9 @@ public final class PropertiesUtils {
 					continue;
 				}
 
-				String value = entry.getValue() == null ? null : entry
-						.getValue().toString();
+				String value = entry.getValue() == null ? null : entry.getValue().toString();
 				value = stringFormat.format(value);
-				ReflectUtils.setFieldValueAutoType(obj.getClass(), field, obj,
-						value);
+				ReflectUtils.setFieldValueAutoType(obj.getClass(), field, obj, value);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -70,19 +63,14 @@ public final class PropertiesUtils {
 		return null;
 	}
 
-	public static String getProperty(Properties properties,
-			Object defaultValue, String... key) {
+	public static String getProperty(Properties properties, Object defaultValue, String... key) {
 		String v = getProperty(properties, key);
-		return v == null ? (defaultValue == null ? null : defaultValue
-				.toString()) : v;
+		return v == null ? (defaultValue == null ? null : defaultValue.toString()) : v;
 	}
 
-	public static <T> void loadProperties(T instance, String propertiesFile,
-			Collection<String> asNameList) {
-		Properties properties = getProperties(propertiesFile,
-				Constants.DEFAULT_CHARSET_NAME);
-		invokeSetterByProeprties(instance, properties, true, true, asNameList,
-				true);
+	public static <T> void loadProperties(T instance, String propertiesFile, Collection<String> asNameList) {
+		Properties properties = getProperties(propertiesFile, Constants.DEFAULT_CHARSET_NAME);
+		invokeSetterByProeprties(instance, properties, true, true, asNameList, true);
 	}
 
 	/**
@@ -98,10 +86,8 @@ public final class PropertiesUtils {
 	 * @param findAndRemove
 	 * @param log
 	 */
-	public static void invokeSetterByProeprties(Object instance,
-			Map<?, ?> properties, boolean propertieGetAndRemove,
-			boolean invokePublic, Collection<String> asNameList,
-			boolean findAndRemove) {
+	public static void invokeSetterByProeprties(Object instance, Map<?, ?> properties, boolean propertieGetAndRemove,
+			boolean invokePublic, Collection<String> asNameList, boolean findAndRemove) {
 		List<String> nameList = null;
 		if (!CollectionUtils.isEmpty(asNameList)) {
 			nameList = new ArrayList<String>(asNameList);
@@ -120,14 +106,12 @@ public final class PropertiesUtils {
 		for (Method method : invokePublic ? instance.getClass().getMethods()
 				: instance.getClass().getDeclaredMethods()) {
 			Class<?>[] parameterTypes = method.getParameterTypes();
-			if (!(parameterTypes.length == 1 && method.getName().startsWith(
-					"set"))) {
+			if (!(parameterTypes.length == 1 && method.getName().startsWith("set"))) {
 				continue;
 			}
 
 			Class<?> parameterType = parameterTypes[0];
-			if (!(ClassUtils.isPrimitiveOrWrapper(parameterType) || ClassUtils
-					.isStringType(parameterType))) {
+			if (!(ClassUtils.isPrimitiveOrWrapper(parameterType) || ClassUtils.isStringType(parameterType))) {
 				continue;
 			}
 
@@ -179,14 +163,11 @@ public final class PropertiesUtils {
 
 			method.setAccessible(false);
 
-			if (logger.isTraceEnabled()) {
-				logger.trace("Property {} on target {} set value {}", name,
-						instance.getClass().getName(), value);
-			}
+			LoggerUtils.info(PropertiesUtils.class, "Property {} on target {} set value {}", name,
+					instance.getClass().getName(), value);
 
 			try {
-				method.invoke(instance,
-						StringParse.DEFAULT.parse(value, parameterType));
+				method.invoke(instance, StringParse.DEFAULT.parse(value, parameterType));
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalArgumentException e) {
@@ -202,8 +183,7 @@ public final class PropertiesUtils {
 			return null;
 		}
 
-		Map<String, String> map = new LinkedHashMap<String, String>(
-				properties.size(), 1);
+		Map<String, String> map = new LinkedHashMap<String, String>(properties.size(), 1);
 		for (Entry<?, ?> entry : properties.entrySet()) {
 			Object key = entry.getKey();
 			if (key == null) {
@@ -216,8 +196,7 @@ public final class PropertiesUtils {
 		return map;
 	}
 
-	public static Properties getProperties(InputStream inputStream,
-			String charsetName) {
+	public static Properties getProperties(InputStream inputStream, String charsetName) {
 		Properties properties = new Properties();
 		InputStreamReader isr = null;
 		try {
@@ -231,29 +210,41 @@ public final class PropertiesUtils {
 		return properties;
 	}
 
-	public static Properties getProperties(String path, final String charsetName) {
+	public static Properties getProperties(final String path) {
 		final Properties properties = new Properties();
-		try {
-			ResourceUtils.consumterInputStream(path,
-					new Consumer<InputStream>() {
+		ResourceUtils.consumterInputStream(path, new Consumer<InputStream>() {
 
-						public void consume(InputStream inputStream)
-								throws Exception {
-							InputStreamReader isr = null;
-							try {
-								isr = new InputStreamReader(inputStream,
-										charsetName);
-								properties.load(isr);
-							} catch (IOException e) {
-								e.printStackTrace();
-							} finally {
-								IOUtils.close(isr);
-							}
-						}
-					});
-		} catch (NotFoundException e) {
-			return null;
-		}
+			public void consume(InputStream inputStream) throws Exception {
+				if (path.endsWith(".xml")) {
+					properties.loadFromXML(inputStream);
+				} else {
+					properties.load(inputStream);
+				}
+			}
+		});
 		return properties;
+	}
+
+	public static Properties getProperties(String path, final String charsetName) {
+		final Method method = ReflectUtils.findMethod(Properties.class, "load", Reader.class);
+		if (method == null) {
+			LoggerUtils.warn(PropertiesUtils.class, "jdk1.6及以上的版本才支持指定字符集: {}" + path);
+			return getProperties(path);
+		} else {
+			final Properties properties = new Properties();
+			ResourceUtils.consumterInputStream(path, new Consumer<InputStream>() {
+
+				public void consume(InputStream inputStream) throws Exception {
+					InputStreamReader isr = null;
+					try {
+						isr = new InputStreamReader(inputStream, charsetName);
+						method.invoke(properties, isr);
+					} finally {
+						IOUtils.close(isr);
+					}
+				}
+			});
+			return properties;
+		}
 	}
 }
