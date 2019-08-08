@@ -1,6 +1,5 @@
 package scw.beans.property;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,7 +14,7 @@ import scw.core.utils.ResourceUtils;
 import scw.core.utils.SystemPropertyUtils;
 
 public class XmlPropertyFactory implements PropertyFactory {
-	private Map<String, String> propertyMap = new HashMap<String, String>();
+	private final Map<String, Property> propertyMap = new LinkedHashMap<String, Property>();
 
 	public XmlPropertyFactory(String beanXml) {
 		init(beanXml);
@@ -26,7 +25,6 @@ public class XmlPropertyFactory implements PropertyFactory {
 			return;
 		}
 
-		Map<String, Property> propertiesMap = new LinkedHashMap<String, Property>();
 		NodeList nhosts = XmlBeanUtils.getRootNodeList(xml);
 		for (int i = 0; i < nhosts.getLength(); i++) {
 			Node nRoot = nhosts.item(i);
@@ -34,30 +32,18 @@ public class XmlPropertyFactory implements PropertyFactory {
 				Map<String, Property> map = XmlPropertyUtils.parse(nRoot);
 				if (map != null) {
 					for (Entry<String, Property> entry : map.entrySet()) {
-						if (propertiesMap.containsKey(entry.getKey())) {
+						if (propertyMap.containsKey(entry.getKey())) {
 							throw new AlreadyExistsException(entry.getKey());
 						}
-						propertiesMap.put(entry.getKey(), entry.getValue());
+						propertyMap.put(entry.getKey(), entry.getValue());
 					}
 				}
-			}
-		}
-
-		for (Entry<String, Property> entry : propertiesMap.entrySet()) {
-			String value = entry.getValue().getXmlValue().formatValue(this);
-			if (entry.getValue().isSystem()) {
-				System.setProperty(entry.getKey(), value);
-			} else {
-				propertyMap.put(entry.getKey(), value);
 			}
 		}
 	}
 
 	public String getProperty(String key) {
-		String value = propertyMap.get(key);
-		if (value == null) {
-			value = SystemPropertyUtils.getProperty(key);
-		}
-		return value;
+		Property property = propertyMap.get(key);
+		return property == null ? SystemPropertyUtils.getProperty(key) : property.getXmlValue().formatValue(this);
 	}
 }

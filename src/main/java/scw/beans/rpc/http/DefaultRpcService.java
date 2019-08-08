@@ -82,6 +82,7 @@ public class DefaultRpcService implements RpcService {
 
 		String sign = (String) message.getAttribute("sign");
 		if (!checkSign.equals(sign)) {
+			logger.error("签名错误：{}", this.sign);
 			return false;
 		}
 		return true;
