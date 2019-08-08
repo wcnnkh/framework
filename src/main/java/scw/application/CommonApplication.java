@@ -23,7 +23,7 @@ import scw.sql.orm.ORMUtils;
 import scw.transaction.TransactionFilter;
 
 public class CommonApplication implements Application {
-	public static final String DEFAULT_BEANS_PATH = "classpath:beans.xml";
+	public static final String DEFAULT_BEANS_PATH = "classpath:/beans.xml";
 
 	private final XmlBeanFactory beanFactory;
 	private volatile boolean start = false;

@@ -60,14 +60,14 @@ public final class Log4jUtils {
 		boolean b = false;
 		String path = SystemPropertyUtils.getProperty(LOG4J_PATH);
 		if (StringUtils.isEmpty(path)) {
-			if (ResourceUtils.isExist("classpath:log4j.properties")) {
+			if (ResourceUtils.isExist("classpath:/log4j.properties")) {
 				b = true;
-				Properties properties = PropertiesUtils.getProperties("classpath:log4j.properties",
+				Properties properties = PropertiesUtils.getProperties("classpath:/log4j.properties",
 						Constants.DEFAULT_CHARSET_NAME);
 				initByProperties(properties);
-			} else if (ResourceUtils.isExist("classpath:log4j.xml")) {
+			} else if (ResourceUtils.isExist("classpath:/log4j.xml")) {
 				b = true;
-				Element element = XMLUtils.getRootElement("classpath:log4j.xml");
+				Element element = XMLUtils.getRootElement("classpath:/log4j.xml");
 				initByXml(element);
 			}
 		} else {
