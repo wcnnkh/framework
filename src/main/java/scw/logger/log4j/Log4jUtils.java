@@ -84,37 +84,8 @@ public final class Log4jUtils {
 			}
 		}
 
-		if (!b) { 
+		if (!b) {
 			throw new NotSupportException("log4j");
-			//initByProperties(getDefaultProperties());
 		}
 	}
-
-	/*private static Properties getDefaultProperties() {
-		Properties properties = new Properties();
-		// set log levels
-		properties.put("log4j.rootLogger", "debug,stdout,D,E");
-		// 输出到控制台
-		properties.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
-		properties.put("log4j.appender.stdout.Target", "System.out");
-		properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
-		properties.put("log4j.appender.stdout.layout.ConversionPatter", "%d{ABSOLUTE} %5p %c{ 1 }:%L - %m%n");
-		// 输出到日志文件
-		properties.put("log4j.appender.D", "org.apache.log4j.DailyRollingFileAppender");
-		properties.put("log4j.appender.D.File", "logs/log.log");
-		properties.put("log4j.appender.D.Append", "true");
-		properties.put("log4j.appender.D.Threshold", "DEBUG");
-		properties.put("log4j.appender.D.layout", "org.apache.log4j.PatternLayout");
-		properties.put("log4j.appender.D.layout.ConversionPattern",
-				"%-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] - [ %p ]  %m%n");
-		// 保存异常信息到单独文件
-		properties.put("log4j.appender.D", "org.apache.log4j.DailyRollingFileAppender");
-		properties.put("log4j.appender.D.File", "logs/error.log");
-		properties.put("log4j.appender.D.Append", "true");
-		properties.put("log4j.appender.D.Threshold", "ERROR");
-		properties.put("log4j.appender.D.layout", "org.apache.log4j.PatternLayout");
-		properties.put("log4j.appender.D.layout.ConversionPattern",
-				"%-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] - [ %p ]  %m%n");
-		return properties;
-	}*/
 }
