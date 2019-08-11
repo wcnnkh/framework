@@ -19,7 +19,7 @@ public class EmbeddedApplication extends CommonApplication {
 	}
 
 	private String getSupportServletEmbeddedClassName() {
-		String[] classNames = new String[] { "scw.application.embedded.TomcatServletEmbedded", };
+		String[] classNames = new String[] { "scw.application.embedded.tomcat.TomcatServletEmbedded", };
 
 		for (String name : classNames) {
 			if (ClassUtils.isExist(name)) {
