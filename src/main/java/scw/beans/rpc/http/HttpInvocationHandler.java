@@ -113,8 +113,13 @@ public final class HttpInvocationHandler implements InvocationHandler {
 		}
 
 		public Object response(URLConnection urlConnection) throws Throwable {
+			if(urlConnection.getDoInput()){
+				return null;
+			}
+			
 			InputStream input = null;
 			try {
+				input = urlConnection.getInputStream();
 				return deserializer(urlConnection.getContentType(), input, clazz, method);
 			} finally {
 				IOUtils.close(input);
