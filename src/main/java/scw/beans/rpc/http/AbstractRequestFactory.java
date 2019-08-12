@@ -14,10 +14,10 @@ import scw.net.http.HttpRequest;
 import scw.net.http.HttpUtils;
 import scw.servlet.ServletUtils;
 
-public abstract class AbstractRPCRequestFactory implements RpcRequestFactory {
+public abstract class AbstractRequestFactory implements RequestFactory {
 	private String charsetName;
 
-	public AbstractRPCRequestFactory(String charsetName) {
+	public AbstractRequestFactory(String charsetName) {
 		this.charsetName = charsetName;
 	}
 

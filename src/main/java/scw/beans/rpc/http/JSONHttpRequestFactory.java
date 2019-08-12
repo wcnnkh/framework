@@ -9,7 +9,7 @@ import scw.net.ContentType;
 import scw.net.DefaultContentType;
 import scw.net.http.HttpRequest;
 
-public class JSONHttpRequestFactory extends AbstractRPCRequestFactory {
+public class JSONHttpRequestFactory extends AbstractRequestFactory {
 	public JSONHttpRequestFactory() {
 		this(Constants.DEFAULT_CHARSET_NAME);
 	}

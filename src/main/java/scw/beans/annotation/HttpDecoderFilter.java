@@ -5,12 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.io.DeserializerFilter;
+import scw.net.DecoderFilter;
 
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HttpDeserializerFilter {
-	public Class<? extends DeserializerFilter>[] value();
+public @interface HttpDecoderFilter {
+	public Class<? extends DecoderFilter>[] value();
 	
 	public String[] name() default{};
 }

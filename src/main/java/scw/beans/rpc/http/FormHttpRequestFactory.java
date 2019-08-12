@@ -9,7 +9,7 @@ import scw.net.DefaultContentType;
 import scw.net.http.HttpRequest;
 import scw.net.http.HttpUtils;
 
-public final class FormHttpRequestFactory extends AbstractRPCRequestFactory {
+public final class FormHttpRequestFactory extends AbstractRequestFactory {
 	public FormHttpRequestFactory() {
 		this(Constants.DEFAULT_CHARSET_NAME);
 	}

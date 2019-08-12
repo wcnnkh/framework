@@ -16,7 +16,7 @@ public final class NetworkUtils {
 		request.request(urlConnection);
 		return response.response(urlConnection);
 	}
-
+	
 	public static <T> T execute(URL url, Proxy proxy, Request request, Response<T> response) {
 		URLConnection urlConnection = null;
 		try {
