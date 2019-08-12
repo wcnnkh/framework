@@ -3,12 +3,14 @@ package scw.beans.rpc.http;
 import java.io.OutputStream;
 import java.util.Map;
 
+import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.json.JSONUtils;
 import scw.net.ContentType;
 import scw.net.DefaultContentType;
 import scw.net.http.HttpRequest;
 
+@Bean(proxy=false)
 public class JSONHttpRequestFactory extends AbstractRequestFactory {
 	public JSONHttpRequestFactory() {
 		this(Constants.DEFAULT_CHARSET_NAME);

@@ -3,13 +3,15 @@ package scw.beans.rpc.http;
 import java.io.OutputStream;
 import java.util.Map;
 
+import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.net.ContentType;
 import scw.net.DefaultContentType;
 import scw.net.http.HttpRequest;
 import scw.net.http.HttpUtils;
 
-public final class FormHttpRequestFactory extends AbstractRequestFactory {
+@Bean(proxy=false)
+public class FormHttpRequestFactory extends AbstractRequestFactory {
 	public FormHttpRequestFactory() {
 		this(Constants.DEFAULT_CHARSET_NAME);
 	}
