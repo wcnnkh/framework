@@ -19,7 +19,7 @@ public final class AnnotationConsumerUtils {
 		for (Class<?> clz : classes) {
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Consumer.class)) {
 				Consumer c = method.getAnnotation(Consumer.class);
-				LoggerUtils.info(AmqpConsumer.class, "添加消费者：{}, name={}, clz={}, method={}", c.name(), clz.getName(),
+				LoggerUtils.info(AmqpConsumer.class, "添加消费者： name={}, clz={}, method={}", c.name(), clz.getName(),
 						method);
 				consumerFactory.bindConsumer(c.name(),
 						new MqMethodConsumer(new MethodProxyInvoker(beanFactory, clz, method, rootFilters)));

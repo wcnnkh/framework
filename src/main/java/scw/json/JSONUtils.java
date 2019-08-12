@@ -2,6 +2,7 @@ package scw.json;
 
 import scw.core.exception.NotSupportException;
 import scw.core.instance.InstanceUtils;
+import scw.core.utils.ClassUtils;
 import scw.logger.LoggerUtils;
 
 public final class JSONUtils {
@@ -19,12 +20,10 @@ public final class JSONUtils {
 		}
 
 		if (jsonSupport == null) {
-			throw new NotSupportException(
-					"not found default json parse support");
+			throw new NotSupportException("not found default json parse support");
 		}
 
-		LoggerUtils.info(JSONUtils.class, "default json parse：{}", jsonSupport
-				.getClass().getName());
+		LoggerUtils.info(JSONUtils.class, "default json parse：{}", jsonSupport.getClass().getName());
 		DEFAULT_JSON_SUPPORT = jsonSupport;
 	}
 
@@ -55,5 +54,13 @@ public final class JSONUtils {
 
 	public static JSONObject createJSONObject() {
 		return DEFAULT_JSON_SUPPORT.createJSONObject();
+	}
+
+	/**
+	 * 是否支持fastjson
+	 * @return
+	 */
+	public static boolean isSupportFastJSON() {
+		return ClassUtils.isExist("scw.json.support.fastjson.FastJSONParseSupport");
 	}
 }

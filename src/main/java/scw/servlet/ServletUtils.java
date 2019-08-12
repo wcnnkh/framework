@@ -7,7 +7,9 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,7 @@ import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.ParameterException;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.Assert;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -61,7 +64,8 @@ public final class ServletUtils {
 	private static final String JSONP_RESP_PREFIX = "(";
 	private static final String JSONP_RESP_SUFFIX = ");";
 	private static ThreadLocal<Map<Object, Object>> controllerLocal = new ThreadLocal<Map<Object, Object>>();
-
+	public static final String COOKIE_HEADER_NAME = "Cookie";
+	
 	static {
 		try {
 			Class.forName("javax.servlet.AsyncContext");
@@ -142,8 +146,8 @@ public final class ServletUtils {
 	public static ServletService getServletService(BeanFactory beanFactory, PropertyFactory propertyFactory,
 			String configPath, String[] rootBeanFilters, boolean async) {
 		if (async) {
-			return beanFactory.getInstance("scw.servlet.AsyncServletService", beanFactory, propertyFactory,
-					configPath, rootBeanFilters);
+			return beanFactory.getInstance("scw.servlet.AsyncServletService", beanFactory, propertyFactory, configPath,
+					rootBeanFilters);
 		} else {
 			return beanFactory.getInstance("scw.servlet.DefaultServletService", beanFactory, propertyFactory,
 					configPath, rootBeanFilters);
@@ -587,5 +591,90 @@ public final class ServletUtils {
 
 	public static Action crateAction(BeanFactory beanFactory, Class<?> clazz, Method method) {
 		return new MethodAction(beanFactory, clazz, method);
+	}
+
+	/** ----------------------------spread---------------------------- **/
+	private static final String HEAD_SOURCE_NAME = ServletUtils.class.getName() + "#header";
+
+	@SuppressWarnings("unchecked")
+	private static Map<String, String> privateGetSpreadHeaderMap() {
+		return (Map<String, String>) getControllerThreadLocalResource(HEAD_SOURCE_NAME);
+	}
+
+	public static void setSpreadHeader(String name, String value) {
+		Map<String, String> headerMap = privateGetSpreadHeaderMap();
+		if (headerMap == null) {
+			headerMap = new HashMap<String, String>(4);
+			bindControllerThreadLocalResource(HEAD_SOURCE_NAME, headerMap);
+		}
+		headerMap.put(name, value);
+	}
+
+	public static Map<String, String> getSpreadHeaderMap() {
+		Map<String, String> headerMap = privateGetSpreadHeaderMap();
+		return headerMap == null ? null : Collections.unmodifiableMap(headerMap);
+	}
+
+	public static String getSpreadHeader(String name) {
+		Map<String, String> headerMap = privateGetSpreadHeaderMap();
+		return headerMap == null ? null : headerMap.get(name);
+	}
+
+	public static void clearSpreadHeader() {
+		bindControllerThreadLocalResource(HEAD_SOURCE_NAME, null);
+	}
+
+	public static void removeSpreadHeader(String name) {
+		Map<String, String> headerMap = privateGetSpreadHeaderMap();
+		if (headerMap == null) {
+			return;
+		}
+		headerMap.remove(name);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static HashMap<String, Object> getSpreadData() {
+		return (HashMap<String, Object>) getControllerThreadLocalResource(ServletUtils.class);
+	}
+
+	public static void setSpreadData(String name) {
+		HashMap<String, Object> map = getSpreadData();
+		if (map == null) {
+			return;
+		}
+		map.remove(name);
+	}
+
+	public static void setSpreadData(String name, Object value) {
+		HashMap<String, Object> map = getSpreadData();
+		if (map == null) {
+			map = new HashMap<String, Object>(8);
+			bindControllerThreadLocalResource(ServletUtils.class, map);
+		}
+		map.put(name, value);
+	}
+
+	public static void removeSpreadData(String name) {
+		Map<String, Object> map = getSpreadData();
+		if (map == null) {
+			return;
+		}
+		map.remove(name);
+	}
+
+	public static Map<String, Object> getRequestParameterMap(Method method, Object[] args) {
+		String[] names = ClassUtils.getParameterName(method);
+		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		if (!ArrayUtils.isEmpty(names)) {
+			for (int i = 0; i < names.length; i++) {
+				map.put(names[i], args[i]);
+			}
+		}
+
+		Map<String, Object> spreadMap = getSpreadData();
+		if (!CollectionUtils.isEmpty(spreadMap)) {
+			map.putAll(spreadMap);
+		}
+		return map;
 	}
 }
