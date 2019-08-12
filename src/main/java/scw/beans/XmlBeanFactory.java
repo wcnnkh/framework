@@ -11,6 +11,7 @@ import scw.beans.rpc.http.HttpRpcBeanConfigFactory;
 import scw.beans.xml.XmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
+import scw.beans.xml.XmlInterfaceProxyBeanConfigFactory;
 import scw.core.PropertyFactory;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
@@ -115,6 +116,8 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 					addBeanConfigFactory(dubboBeanConfigFactory);
 				}
 
+				addBeanConfigFactory(new XmlInterfaceProxyBeanConfigFactory(
+						this, propertyFactory, nodeList, filterNames));
 				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this,
 						propertyFactory, nodeList, filterNames));
 				addBeanConfigFactory(new XmlBeanConfigFactory(this,

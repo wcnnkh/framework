@@ -8,15 +8,15 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
 
-public class XmlBeanConfigFactory extends AbstractBeanConfigFactory {
-
-	public XmlBeanConfigFactory(BeanFactory beanFactory,
+public class XmlInterfaceProxyBeanConfigFactory extends
+		AbstractBeanConfigFactory {
+	public XmlInterfaceProxyBeanConfigFactory(BeanFactory beanFactory,
 			PropertyFactory propertyFactory, NodeList rootNodeList,
 			String[] filterNames) throws Exception {
 		for (int i = 0; i < rootNodeList.getLength(); i++) {
 			Node nRoot = rootNodeList.item(i);
-			if ("bean".equalsIgnoreCase(nRoot.getNodeName())) {
-				BeanDefinition beanDefinition = new XmlBeanDefinition(
+			if ("interface".equalsIgnoreCase(nRoot.getNodeName())) {
+				BeanDefinition beanDefinition = new XmlInterfaceProxyBeanDefinition(
 						beanFactory, propertyFactory, nRoot, filterNames);
 				addBean(beanDefinition);
 			}
