@@ -1244,7 +1244,7 @@ public final class ClassUtils {
 
 	public static boolean isExist(String className, boolean printStackTrace) {
 		try {
-			forName(className);
+			Class.forName(className, false, getDefaultClassLoader());
 			return true;
 		} catch (ClassNotFoundException e) {
 			if (printStackTrace) {

@@ -13,6 +13,9 @@ public final class TomcatApplication {
 		EmbeddedApplication.run(null, beanXml);
 	}
 
+	/**
+	 * 推荐使用run(java.lang.Class clazz)方法
+	 */
 	public static void run() {
 		EmbeddedApplication.run(null);
 	}

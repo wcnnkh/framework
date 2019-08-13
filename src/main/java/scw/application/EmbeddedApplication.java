@@ -134,6 +134,9 @@ public class EmbeddedApplication extends CommonApplication {
 		run(clazz, DEFAULT_BEANS_PATH);
 	}
 
+	/**
+	 * 推荐使用run(java.lang.Class clazz)方法
+	 */
 	public static void run() {
 		run(null);
 	}
