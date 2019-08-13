@@ -8,14 +8,57 @@ import java.util.Properties;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import scw.beans.xml.XmlBeanUtils;
+import scw.core.Constants;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
+import scw.core.utils.XTime;
 
 public final class XmlPropertyUtils {
 	private XmlPropertyUtils() {
 	};
+
+	public static String getPrefix(Node node) {
+		return XMLUtils.getNodeAttributeValue(node, "prefix");
+	}
+
+	public static String getName(Node node) {
+		return XMLUtils.getRequireNodeAttributeValue(node, "name");
+	}
+
+	/**
+	 * 注意，此方法会返回空
+	 * 
+	 * @param node
+	 * @return
+	 */
+	public static Properties getProperties(Node node) {
+		String file = XMLUtils.getRequireNodeAttributeValue(node, "file");
+		if (StringUtils.isEmpty(file)) {
+			return null;
+		}
+
+		return PropertiesUtils.getProperties(file, getCharsetName(node));
+	}
+
+	public static String getCharsetName(Node node) {
+		return XmlBeanUtils
+				.getCharsetName(node, Constants.DEFAULT_CHARSET_NAME);
+	}
+
+	public static long getRefreshPeriod(Node node) {
+		String value = XMLUtils.getNodeAttributeValue(node, "refresh");
+		if (StringUtils.isEmpty(value)) {
+			return 0;
+		}
+
+		String format = XMLUtils.getNodeAttributeValue(node, "refresh-format");
+		return XTime.getTime(value,
+				StringUtils.isEmpty(format) ? "yyyy-MM-dd HH:mm:ss,SSS"
+						: format);
+	}
 
 	public static Map<String, Property> parse(Node rootNode) {
 		Map<String, Property> map = new LinkedHashMap<String, Property>();
@@ -27,8 +70,6 @@ public final class XmlPropertyUtils {
 
 		String file = XMLUtils.getNodeAttributeValue(rootNode, "file");
 
-		Boolean parentSystem = isSystem(rootNode);
-
 		if (!StringUtils.isNull(file)) {
 			Properties properties = PropertiesUtils
 					.getProperties(file, charset);
@@ -36,8 +77,7 @@ public final class XmlPropertyUtils {
 				String name = prefix == null ? entry.getKey().toString()
 						: prefix + entry.getKey().toString();
 				Property property = new Property(name, entry.getValue()
-						.toString(), rootNode, parentSystem == null ? false
-						: parentSystem);
+						.toString(), rootNode);
 				map.put(property.getName(), property);
 			}
 		}
@@ -53,7 +93,7 @@ public final class XmlPropertyUtils {
 				continue;
 			}
 
-			Property property = new Property(nRoot, charset, parentSystem);
+			Property property = new Property(nRoot, charset);
 			String name = prefix == null ? property.getName() : prefix
 					+ property.getName();
 			if (map.containsKey(name)) {
@@ -64,8 +104,13 @@ public final class XmlPropertyUtils {
 		return map;
 	}
 
-	public static Boolean isSystem(Node node) {
-		String v = XMLUtils.getNodeAttributeValue(node, "system");
-		return StringUtils.parseBoolean(v, null);
+	public static boolean isSystem(Node node, boolean def) {
+		return StringUtils.parseBoolean(
+				XMLUtils.getNodeAttributeValue(node, "system"), def);
+	}
+
+	public static boolean isSystem(Node node) {
+		Node parent = node.getParentNode();
+		return isSystem(node, parent == null ? false : isSystem(parent));
 	}
 }

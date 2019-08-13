@@ -15,6 +15,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import scw.core.PrimitiveTypeValueFactory;
+import scw.core.ValueFactory;
 import scw.core.exception.NotSupportException;
 
 public final class XUtils {

@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.core;
 
 public interface PrimitiveTypeValueFactory<T> {
 	Byte getByte(T data);

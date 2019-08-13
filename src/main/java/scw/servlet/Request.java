@@ -3,7 +3,7 @@ package scw.servlet;
 import javax.servlet.ServletRequest;
 
 import scw.core.StringVerification;
-import scw.core.utils.ValueFactory;
+import scw.core.ValueFactory;
 import scw.logger.DebugLogger;
 import scw.logger.Logger;
 
