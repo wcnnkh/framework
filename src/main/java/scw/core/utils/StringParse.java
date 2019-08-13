@@ -328,4 +328,12 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 	public <E> E[] getArray(String text, Class<E> type) {
 		return getArray(split(text), type);
 	}
+
+	public Class<?> getClass(String data) {
+		try {
+			return Class.forName(data);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

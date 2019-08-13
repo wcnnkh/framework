@@ -453,7 +453,9 @@ public abstract class ResourceUtils {
 					inputStream = getResourceAsStream(getTestFileName(path, suffix));
 					b = inputStream != null;
 					if (b) {
-						consumer.consume(inputStream);
+						if(consumer != null){
+							consumer.consume(inputStream);
+						}
 						break;
 					}
 				} catch (Exception e) {
@@ -470,7 +472,9 @@ public abstract class ResourceUtils {
 				inputStream = getResourceAsStream(path);
 				if (inputStream != null) {
 					b = true;
-					consumer.consume(inputStream);
+					if(consumer != null){
+						consumer.consume(inputStream);
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -518,8 +522,10 @@ public abstract class ResourceUtils {
 					return false;
 				}
 
-				inputStream = jarFile.getInputStream(jarFile.getEntry(entryName));
-				consumer.consume(inputStream);
+				if(consumer != null){
+					inputStream = jarFile.getInputStream(jarFile.getEntry(entryName));
+					consumer.consume(inputStream);
+				}
 				return true;
 			} catch (Exception e) {
 				throw new RuntimeException(e);
@@ -652,6 +658,10 @@ public abstract class ResourceUtils {
 	}
 
 	private static void consumerFileInputStream(File file, Consumer<InputStream> consumer) {
+		if(consumer == null){
+			return ;
+		}
+		
 		InputStream inputStream = null;
 		try {
 			inputStream = new FileInputStream(file);

@@ -249,6 +249,8 @@ public final class XUtils {
 			return valueFactory.getBigDecimal(data);
 		} else if (BigInteger.class.isAssignableFrom(type)) {
 			return valueFactory.getBigInteger(data);
+		} else if(Class.class.isAssignableFrom(type)){
+			return valueFactory.getClass(data);
 		} else if (type.isEnum()) {
 			return valueFactory.getEnum(data, (Class<? extends Enum>) type);
 		} else if (type.isArray()) {

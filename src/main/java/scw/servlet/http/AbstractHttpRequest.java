@@ -341,6 +341,10 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper
 	public BigDecimal getBigDecimal(String name) {
 		return StringParse.DEFAULT.getBigDecimal(getString(name));
 	}
+	
+	public Class<?> getClass(String data) {
+		return StringParse.DEFAULT.getClass(data);
+	}
 
 	/**
 	 * 此方法不处理爱ValueFactory管理的其他类型
