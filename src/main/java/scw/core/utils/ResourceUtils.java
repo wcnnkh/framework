@@ -722,12 +722,7 @@ public abstract class ResourceUtils {
 			return false;
 		}
 
-		return consumterResourceBySearch(path, new Consumer<InputStream>() {
-
-			public void consume(InputStream message) throws Exception {
-				// ignore
-			}
-		});
+		return consumterResourceBySearch(path, null);
 	}
 
 	@SuppressWarnings("unchecked")
