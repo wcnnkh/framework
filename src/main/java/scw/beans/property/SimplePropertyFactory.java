@@ -13,11 +13,11 @@ import scw.core.PropertyFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.SystemPropertyUtils;
 
-public class XmlPropertyFactory2 implements PropertyFactory {
+public class SimplePropertyFactory implements PropertyFactory {
 	private Map<String, PropertyValue> propertyMap = new HashMap<String, PropertyValue>();
 	private ArrayList<Properties> propertiesList = new ArrayList<Properties>();
 
-	public XmlPropertyFactory2(NodeList nodeList) {
+	public SimplePropertyFactory(NodeList nodeList) {
 		if (nodeList == null || nodeList.getLength() == 0) {
 			return;
 		}

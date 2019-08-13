@@ -23,7 +23,7 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory {
 
 		propertyMap = new HashMap<String, String>();
 		timer = new Timer(AutoRefreshPropertyFactory.class.getName());
-		XmlPropertyFactory2 tempPropertyFactory = new XmlPropertyFactory2(
+		SimplePropertyFactory tempPropertyFactory = new SimplePropertyFactory(
 				nodeList);
 		for (Properties properties : tempPropertyFactory.getPropertiesList()) {
 			refreshProperties(properties, tempPropertyFactory);
