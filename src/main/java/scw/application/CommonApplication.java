@@ -65,10 +65,10 @@ public class CommonApplication implements Application {
 		System.setProperty("scw_default_refresh_period", timeUnit.toMillis(refreshPeriod) + "");
 	}
 	
-	//默认为10分钟
+	//默认为1分钟
 	public static long getGlobalDefaultRefreshPeriod(){
 		return StringUtils.parseLong(SystemPropertyUtils.getProperty("scw_default_refresh_period"),
-				XTime.ONE_MINUTE * 10);
+				XTime.ONE_MINUTE);
 	}
 
 	public CommonApplication(String configXml) {
