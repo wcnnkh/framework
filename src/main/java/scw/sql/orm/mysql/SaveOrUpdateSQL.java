@@ -6,7 +6,6 @@ import java.util.List;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.sql.orm.ColumnInfo;
-import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Counter;
 
@@ -19,7 +18,7 @@ public class SaveOrUpdateSQL extends MysqlOrmSql {
 	private Object[] params;
 
 	public SaveOrUpdateSQL(Object obj, TableInfo tableInfo, String tableName)
-			throws IllegalArgumentException, IllegalAccessException {
+			throws Exception {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -39,7 +38,7 @@ public class SaveOrUpdateSQL extends MysqlOrmSql {
 
 			keywordProcessing(cols, columnInfo.getName());
 			values.append("?");
-			params.add(ORMUtils.get(columnInfo.getField(), obj));
+			params.add(columnInfo.get(obj));
 		}
 
 		sb.append(INSERT_INTO_PREFIX);
@@ -53,7 +52,7 @@ public class SaveOrUpdateSQL extends MysqlOrmSql {
 		int index = 0;
 		for (i = 0; i < tableInfo.getNotPrimaryKeyColumns().length; i++) {
 			columnInfo = tableInfo.getNotPrimaryKeyColumns()[i];
-			Object v = ORMUtils.get(columnInfo.getField(), obj);
+			Object v = columnInfo.get(obj);
 			Counter counter = columnInfo.getCounter();
 			if (index++ > 0) {
 				sb.append(",");

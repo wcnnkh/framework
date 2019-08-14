@@ -6,7 +6,6 @@ import java.util.Map;
 
 import scw.core.exception.ParameterException;
 import scw.sql.orm.ColumnInfo;
-import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
 public final class InsertSQL extends MysqlOrmSql {
@@ -82,14 +81,14 @@ public final class InsertSQL extends MysqlOrmSql {
 	}
 
 	private static Object[] getParams(TableInfo tableInfo, Object obj)
-			throws IllegalArgumentException, IllegalAccessException {
+			throws Exception {
 		LinkedList<Object> list = new LinkedList<Object>();
 		for (ColumnInfo columnInfo : tableInfo.getColumns()) {
 			if (columnInfo.isAutoIncrement()) {
 				continue;
 			}
 
-			list.add(ORMUtils.get(columnInfo.getField(), obj));
+			list.add(columnInfo.get(obj));
 		}
 		return list.toArray();
 	}

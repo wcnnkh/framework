@@ -7,6 +7,7 @@ import java.util.Map;
 
 import scw.core.exception.NotSupportException;
 import scw.core.instance.support.ReflectionInstanceFactory;
+import scw.core.instance.support.ReflectionSingleInstanceFactory;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -19,6 +20,8 @@ public final class InstanceUtils {
 	public static final ReflectionInstanceFactory REFLECTION_INSTANCE_FACTORY = new ReflectionInstanceFactory();
 
 	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY;
+
+	public static final ReflectionSingleInstanceFactory SINGLE_INSTANCE_FACTORY = new ReflectionSingleInstanceFactory();
 
 	static {
 		NoArgsInstanceFactory instanceFactory = REFLECTION_INSTANCE_FACTORY
@@ -195,5 +198,9 @@ public final class InstanceUtils {
 		}
 
 		throw new NoSuchMethodException(type.getName());
+	}
+
+	public static InstanceFactory getSingleInstanceFactory() {
+		return SINGLE_INSTANCE_FACTORY;
 	}
 }

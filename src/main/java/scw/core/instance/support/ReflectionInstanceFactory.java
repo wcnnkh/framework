@@ -7,6 +7,7 @@ import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 
+@SuppressWarnings("unchecked")
 public class ReflectionInstanceFactory implements InstanceFactory {
 	public <T> T getInstance(Class<T> type) {
 		if (type == null) {
@@ -27,13 +28,13 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		}
 
 		try {
-			return Class.forName(className, false, ClassUtils.getDefaultClassLoader());
+			return Class.forName(className, false,
+					ClassUtils.getDefaultClassLoader());
 		} catch (ClassNotFoundException e) {
 		}
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	private <T> T newInstance(Constructor<?> constructor, Object... params) {
 		if (!constructor.isAccessible()) {
 			constructor.setAccessible(true);
@@ -46,12 +47,10 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name) {
 		return (T) getInstance(forName(name));
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name, Object... params) {
 		return (T) getInstance(forName(name), params);
 	}
@@ -70,7 +69,6 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		return newInstance(constructor, params);
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name, Class<?>[] parameterTypes,
 			Object... params) {
 		return (T) getInstance(forName(name), parameterTypes, params);

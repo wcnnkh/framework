@@ -31,7 +31,7 @@ public final class DefaultResultSet extends AbstractResultSet {
 
 	@SuppressWarnings("unchecked")
 	private <T> List<T> wrapper(Class<T> type, TableInfo tableInfo, String tableName,
-			Map<Class<?>, String> tableMapping) throws IllegalArgumentException, IllegalAccessException {
+			Map<Class<?>, String> tableMapping) throws Exception {
 		String tName;
 		if (!metaData.isAsSingle()) {
 			tName = tableName;
@@ -76,9 +76,7 @@ public final class DefaultResultSet extends AbstractResultSet {
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		try {
 			return wrapper(type, tableInfo, tableInfo.getDefaultName(), tableMapping);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return Collections.EMPTY_LIST;
@@ -99,9 +97,7 @@ public final class DefaultResultSet extends AbstractResultSet {
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		try {
 			return wrapper(type, tableInfo, tableName, null);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return Collections.EMPTY_LIST;
@@ -122,9 +118,7 @@ public final class DefaultResultSet extends AbstractResultSet {
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		try {
 			return wrapper(type, tableInfo, tableInfo.getDefaultName(), null);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return Collections.EMPTY_LIST;

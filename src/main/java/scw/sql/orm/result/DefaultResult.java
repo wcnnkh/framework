@@ -43,9 +43,7 @@ public final class DefaultResult extends AbstractResult {
 		String tableName = getTableName(tableInfo, tableInfo.getDefaultName(), type, tableMapping);
 		try {
 			return (T) wrapper(tableInfo, tableName, tableMapping);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -70,9 +68,7 @@ public final class DefaultResult extends AbstractResult {
 		String tName = getTableName(tableInfo, tableName, type, null);
 		try {
 			return (T) wrapper(tableInfo, tName, null);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -97,9 +93,7 @@ public final class DefaultResult extends AbstractResult {
 		String tableName = getTableName(tableInfo, tableInfo.getDefaultName(), type, null);
 		try {
 			return (T) wrapper(tableInfo, tableName, null);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;

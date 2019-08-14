@@ -26,9 +26,7 @@ public final class MysqlFormat implements SqlFormat {
 	public Sql toDeleteSql(Object obj, TableInfo tableInfo, String tableName) {
 		try {
 			return new DeleteSQL(obj, tableInfo, tableName);
-		} catch (IllegalArgumentException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}

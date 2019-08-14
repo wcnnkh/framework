@@ -29,4 +29,8 @@ public interface ColumnInfo {
 	boolean isAutoIncrement();
 	
 	CasType getCasType();
+	
+	Object get(Object bean) throws Exception;
+	
+	void set(Object bean, Object value) throws Exception;
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import scw.sql.orm.ColumnInfo;
-import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.enums.CasType;
 
@@ -14,7 +13,7 @@ public class UpdateSQL extends MysqlOrmSql {
 	private Object[] params;
 
 	public UpdateSQL(Object obj, TableInfo tableInfo, String tableName)
-			throws IllegalArgumentException, IllegalAccessException {
+			throws Exception {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException(tableName + " not found primary key");
 		}
@@ -39,7 +38,7 @@ public class UpdateSQL extends MysqlOrmSql {
 				sb.append("+1");
 			} else {
 				sb.append("=?");
-				params.add(ORMUtils.get(columnInfo.getField(), obj));
+				params.add(columnInfo.get(obj));
 			}
 		}
 
@@ -52,7 +51,7 @@ public class UpdateSQL extends MysqlOrmSql {
 
 			keywordProcessing(sb, columnInfo.getName());
 			sb.append("=?");
-			params.add(ORMUtils.get(columnInfo.getField(), obj));
+			params.add(columnInfo.get(obj));
 		}
 
 		for (i = 0; i < tableInfo.getNotPrimaryKeyColumns().length; i++) {
@@ -64,7 +63,7 @@ public class UpdateSQL extends MysqlOrmSql {
 			sb.append(AND);
 			keywordProcessing(sb, columnInfo.getName());
 			sb.append("=?");
-			params.add(ORMUtils.get(columnInfo.getField(), obj));
+			params.add(columnInfo.get(obj));
 		}
 
 		this.sql = sb.toString();

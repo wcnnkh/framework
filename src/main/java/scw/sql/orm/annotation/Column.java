@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import scw.sql.orm.ColumnConvert;
+import scw.sql.orm.DefaultColumnConvert;
 import scw.sql.orm.enums.CasType;
 
 @Target(ElementType.FIELD)
@@ -37,4 +39,6 @@ public @interface Column {
 	 * @return
 	 */
 	public CasType casType() default CasType.NOTHING;
+	
+	public Class<? extends ColumnConvert> convert() default DefaultColumnConvert.class;
 }

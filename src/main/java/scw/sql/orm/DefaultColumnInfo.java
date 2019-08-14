@@ -11,12 +11,14 @@ public final class DefaultColumnInfo implements ColumnInfo {
 	private final Field field;
 	private final Counter counter;
 	private final CasType casType;
+	private final ColumnConvert convert;
 
 	protected DefaultColumnInfo(Field field) {
 		this.counter = field.getAnnotation(Counter.class);
 		this.field = field;
 		this.name = ORMUtils.getAnnotationColumnName(field);
 		this.casType = ORMUtils.getCasType(field);
+		this.convert = ORMUtils.getConvert(field);
 	}
 
 	public String getName() {
@@ -82,5 +84,13 @@ public final class DefaultColumnInfo implements ColumnInfo {
 
 	public CasType getCasType() {
 		return casType;
+	}
+
+	public Object get(Object bean) throws Exception{
+		return convert.getter(field, bean);
+	}
+
+	public void set(Object bean, Object value) throws Exception{
+		convert.setter(field, bean, value);
 	}
 }

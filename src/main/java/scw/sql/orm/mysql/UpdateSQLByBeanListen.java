@@ -11,7 +11,6 @@ import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.sql.orm.ColumnInfo;
-import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Counter;
 import scw.sql.orm.enums.CasType;
@@ -23,7 +22,7 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 	private Object[] params;
 
 	public UpdateSQLByBeanListen(FieldSetterListen beanFieldListen, TableInfo tableInfo, String tableName)
-			throws IllegalArgumentException, IllegalAccessException {
+			throws Exception {
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -67,7 +66,7 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 				continue;
 			}
 
-			Object value = ORMUtils.get(columnInfo.getField(), beanFieldListen);
+			Object value = columnInfo.get(beanFieldListen);
 			Counter counter = columnInfo.getCounter();
 			if (counter != null && ClassUtils.isNumberType(columnInfo.getType())) {
 				Object oldValue = entry.getValue();
@@ -133,7 +132,7 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 			sb.append("`");
 			sb.append(columnInfo.getName());
 			sb.append("`=?");
-			paramList.add(ORMUtils.get(columnInfo.getField(), beanFieldListen));
+			paramList.add(columnInfo.get(beanFieldListen));
 		}
 
 		for (int i = 0; i < tableInfo.getNotPrimaryKeyColumns().length; i++) {
@@ -149,7 +148,7 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 				// 存在旧值
 				paramList.add(changeMap.get(columnInfo.getField().getName()));
 			} else {
-				paramList.add(ORMUtils.get(columnInfo.getField(), beanFieldListen));
+				paramList.add(columnInfo.get(beanFieldListen));
 			}
 		}
 		beanFieldListen.clear_field_setter_listen();// 重新开始监听

@@ -29,7 +29,7 @@ public abstract class AbstractResult implements Result {
 	}
 
 	private Object wrapperTable(TableInfo tableInfo, String tableName)
-			throws IllegalArgumentException, IllegalAccessException {
+			throws Exception {
 		Object o = tableInfo.newInstance();
 		for (ColumnInfo column : tableInfo.getColumns()) {
 			int index = metaData.getColumnIndex(column.getName(), tableName);
@@ -47,12 +47,13 @@ public abstract class AbstractResult implements Result {
 				}
 				continue;
 			}
-			ORMUtils.set(column.getField(), o, v);
+			
+			column.set(o, v);
 		}
 		return o;
 	}
 
-	private Object wrapperSingle(TableInfo tableInfo) throws IllegalArgumentException, IllegalAccessException {
+	private Object wrapperSingle(TableInfo tableInfo) throws Exception {
 		Object o = tableInfo.newInstance();
 		for (ColumnInfo column : tableInfo.getColumns()) {
 			int index = metaData.getSingleIndex(column.getName());
@@ -70,7 +71,8 @@ public abstract class AbstractResult implements Result {
 				}
 				continue;
 			}
-			ORMUtils.set(column.getField(), o, v);
+			
+			column.set(o, v);
 		}
 		return o;
 	}
@@ -103,7 +105,7 @@ public abstract class AbstractResult implements Result {
 	}
 
 	private Object wrapper(TableInfo tableInfo, String tableName)
-			throws IllegalArgumentException, IllegalAccessException {
+			throws Exception{
 		if (!metaData.isAsSingle()) {
 			return wrapperSingle(tableInfo);
 		} else {
@@ -112,14 +114,14 @@ public abstract class AbstractResult implements Result {
 	}
 
 	protected Object wrapper(TableInfo tableInfo, String tableName, Map<Class<?>, String> tableMapping)
-			throws IllegalArgumentException, IllegalAccessException {
+			throws Exception {
 		Object o = wrapper(tableInfo, tableName);
 		for (ColumnInfo column : tableInfo.getTableColumns()) {
 			TableInfo tInfo = ORMUtils.getTableInfo(column.getType());
 			String tName = getTableName(tInfo, tInfo.getDefaultName(), column.getType(), tableMapping);
 			Object v = wrapper(tInfo, tName, tableMapping);
 			if (v != null) {
-				ORMUtils.set(column.getField(), o, v);
+				column.set(o, v);
 			}
 		}
 		return o;

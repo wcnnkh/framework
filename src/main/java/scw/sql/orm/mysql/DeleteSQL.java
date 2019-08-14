@@ -5,7 +5,6 @@ import java.util.List;
 
 import scw.core.exception.ParameterException;
 import scw.sql.orm.ColumnInfo;
-import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.enums.CasType;
 
@@ -28,7 +27,7 @@ public class DeleteSQL extends MysqlOrmSql {
 	}
 
 	public DeleteSQL(Object obj, TableInfo tableInfo, String tableName)
-			throws IllegalArgumentException, IllegalAccessException {
+			throws Exception{
 		if (tableInfo.getPrimaryKeyColumns().length == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -46,7 +45,7 @@ public class DeleteSQL extends MysqlOrmSql {
 
 			keywordProcessing(sql, columnInfo.getName());
 			sql.append("=?");
-			params.add(ORMUtils.get(columnInfo.getField(), obj));
+			params.add(columnInfo.get(obj));
 		}
 
 		for (ColumnInfo columnInfo : tableInfo.getNotPrimaryKeyColumns()) {
@@ -57,7 +56,7 @@ public class DeleteSQL extends MysqlOrmSql {
 			sql.append(AND);
 			keywordProcessing(sql, columnInfo.getName());
 			sql.append("=?");
-			params.add(ORMUtils.get(columnInfo.getField(), obj));
+			params.add(columnInfo.get(obj));
 		}
 		this.sql = sql.toString();
 		this.params = params.toArray();
