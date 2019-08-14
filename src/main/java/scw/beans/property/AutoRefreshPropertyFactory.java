@@ -14,7 +14,7 @@ import scw.core.utils.SystemPropertyUtils;
 import scw.logger.LoggerUtils;
 
 public final class AutoRefreshPropertyFactory implements PropertyFactory {
-	private Map<String, String> propertyMap;
+	private volatile Map<String, String> propertyMap;
 	private PropertyFactory propertyFactory;
 
 	public AutoRefreshPropertyFactory(NodeList nodeList, Timer timer, long defaultRefreshPeriod) {
@@ -38,23 +38,28 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory {
 		}
 	}
 
-	private void refreshProperty(Property property, boolean first) {
+	private void refreshValue(Property property, String value) {
 		synchronized (propertyMap) {
-			String value = property.getValue();
-			if (!first) {
-				String oldValue = getProperty(property.getName());
-				if (!StringUtils.isAeqB(value, oldValue)) {
-					LoggerUtils.info(AutoRefreshPropertyFactory.class,
-							"Property {} changes the original value {} to {}", property.getName(), oldValue, value);
-				}
-			}
-
 			if (property.isSystem()) {
 				System.setProperty(property.getName(), value);
 				propertyMap.remove(property.getName());
 			} else {
 				propertyMap.put(property.getName(), value);
 				System.clearProperty(property.getName());
+			}
+		}
+	}
+
+	private void refreshProperty(Property property, boolean first) {
+		String value = property.getValue();
+		if (first) {
+			refreshValue(property, value);
+		} else {
+			String oldValue = getProperty(property.getName());
+			if (!StringUtils.isAeqB(value, oldValue)) {
+				LoggerUtils.info(AutoRefreshPropertyFactory.class, "Property {} changes the original value {} to {}",
+						property.getName(), oldValue, value);
+				refreshValue(property, value);
 			}
 		}
 	}
