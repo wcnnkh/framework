@@ -84,12 +84,6 @@ public class SimpleProperties extends AbstractProperties {
 			return HttpUtils.doGet(url,
 					XmlPropertyUtils.getCharsetName(getNode()));
 		}
-
-		//URL类型的默认不刷新
-		@Override
-		public boolean isRefresh() {
-			return XmlPropertyUtils.isRefresh(getNode(), false);
-		}
 	}
 
 	private static final class ValuePropertyValue extends AbstractProperty {
