@@ -47,7 +47,7 @@ public final class XmlPropertyUtils {
 			return 0;
 		}
 
-		return XmlBeanUtils.getTimeUnit(node).toMillis(StringUtils.parseLong(value));
+		return XmlBeanUtils.getTimeUnit(node).toSeconds(StringUtils.parseLong(value));
 	}
 
 	public static boolean isRefresh(Node node, boolean def){

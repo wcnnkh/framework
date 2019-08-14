@@ -33,6 +33,7 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory {
 		for (Properties properties : tempPropertyFactory.getPropertiesList()) {
 			long t = properties.getRefreshPeriod() > 0 ? properties.getRefreshPeriod() : defaultRefreshPeriod;
 			if (t > 0) {
+				t = t * 1000;
 				timer.scheduleAtFixedRate(new RefreshPropertiesTask(properties), t, t);
 			}
 		}

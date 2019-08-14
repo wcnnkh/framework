@@ -10,26 +10,25 @@ import scw.core.PropertyFactory;
 public class ValueWiredManager {
 	private ConcurrentHashMap<Object, TimerTask> taskMap = new ConcurrentHashMap<Object, TimerTask>();
 	private Timer timer;
-	private long refreshPeriod;
+	private int refreshPeriod;
 	private PropertyFactory propertyFactory;
 	private BeanFactory beanFactory;
-	private boolean forceRefresh;//是否强制刷新
 
 	public ValueWiredManager(PropertyFactory propertyFactory, BeanFactory beanFactory, Timer timer,
-			long refreshPeriod, boolean forceRefresh) {
+			int refreshPeriod) {
 		this.refreshPeriod = refreshPeriod;
 		this.timer = timer;
 		this.propertyFactory = propertyFactory;
 		this.beanFactory = beanFactory;
-		this.forceRefresh = forceRefresh;
 	}
 
 	public void write(ValueWired valueWired) throws Throwable {
 		valueWired.wired(beanFactory, propertyFactory);
-		if (forceRefresh || valueWired.isCanRefresh()) {
-			long t = valueWired.getValueAnnotation().timeUnit().toMillis(valueWired.getValueAnnotation().period());
+		if (valueWired.isCanRefresh()) {
+			long t = valueWired.getValueAnnotation().timeUnit().toSeconds(valueWired.getValueAnnotation().period());
 			t = t > 0 ? t : refreshPeriod;
 			if (t > 0) {
+				t = t * 1000;
 				ValueWiredTask valueWiredTask = new ValueWiredTask(valueWired);
 				if (taskMap.putIfAbsent(valueWired.getId(), valueWiredTask) == null)
 					timer.scheduleAtFixedRate(valueWiredTask, t, t);

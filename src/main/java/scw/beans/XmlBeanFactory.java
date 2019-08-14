@@ -26,13 +26,13 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	private final String xmlPath;
 	private ValueWiredManager valueWiredManager;
 
-	public XmlBeanFactory(PropertyFactory propertyFactory, String xmlPath, Timer timer, long defaultRefreshPeriod, boolean forceRefresh)
+	public XmlBeanFactory(PropertyFactory propertyFactory, String xmlPath, Timer timer, int period)
 			throws Exception {
 		this.xmlPath = xmlPath;
 		this.propertyFactory = propertyFactory;
 		initParameter(xmlPath);
 		register();
-		this.valueWiredManager = new ValueWiredManager(propertyFactory, this, timer, defaultRefreshPeriod, forceRefresh);
+		this.valueWiredManager = new ValueWiredManager(propertyFactory, this, timer, period);
 	}
 
 	private void register() {

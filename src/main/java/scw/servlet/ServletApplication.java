@@ -11,13 +11,17 @@ import scw.core.PropertyFactory;
 
 public class ServletApplication implements Application {
 	private final CommonApplication commonApplication;
-	
+
 	public ServletApplication(ServletConfig servletConfig) throws Throwable {
 		Timer timer = new Timer(getClass().getName());
-		long defaultRefreshPeriod = 0;
-		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(servletConfig, timer,
-				defaultRefreshPeriod);
-		this.commonApplication = new CommonApplication(propertyFactory.getConfigXml(), propertyFactory, timer, defaultRefreshPeriod);;
+		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(
+				servletConfig, timer,
+				CommonApplication.getGlobalPropertyRefreshPeriod());
+		this.commonApplication = new CommonApplication(
+				propertyFactory.getConfigXml(), propertyFactory, timer,
+				CommonApplication.getGlobalValueWiredRefreshPeriod(),
+				CommonApplication.getGlobalPropertyRefreshPeriod());
+		;
 	}
 
 	public BeanFactory getBeanFactory() {
@@ -39,6 +43,5 @@ public class ServletApplication implements Application {
 	public CommonApplication getCommonApplication() {
 		return commonApplication;
 	}
-	
-	
+
 }
