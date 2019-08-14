@@ -46,7 +46,6 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory {
 				propertyMap.put(property.getName(), value);
 				System.clearProperty(property.getName());
 			}
-			System.out.println(property.getName() + "," + property.getValue());
 		}
 	}
 
