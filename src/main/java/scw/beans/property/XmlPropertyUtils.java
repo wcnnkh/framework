@@ -50,8 +50,8 @@ public final class XmlPropertyUtils {
 		return XmlBeanUtils.getTimeUnit(node).toMillis(StringUtils.parseLong(value));
 	}
 
-	public static boolean isRefresh(Node node){
-		return XMLUtils.getBooleanValueAndParent(node, "refresh", true);
+	public static boolean isRefresh(Node node, boolean def){
+		return XMLUtils.getBooleanValueAndParent(node, "refresh", def);
 	}
 	
 	public static boolean isSystem(Node node) {

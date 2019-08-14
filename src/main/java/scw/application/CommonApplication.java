@@ -64,11 +64,24 @@ public class CommonApplication implements Application {
 	public static void setGlobalDefaultRefreshPeriod(long refreshPeriod, TimeUnit timeUnit) {
 		System.setProperty("scw_default_refresh_period", timeUnit.toMillis(refreshPeriod) + "");
 	}
-	
-	//默认为1分钟
-	public static long getGlobalDefaultRefreshPeriod(){
+
+	// 默认30秒刷新一次
+	public static long getGlobalDefaultRefreshPeriod() {
 		return StringUtils.parseLong(SystemPropertyUtils.getProperty("scw_default_refresh_period"),
-				XTime.ONE_MINUTE);
+				XTime.ONE_SECOND * 30);
+	}
+
+	/**
+	 * 全局是否自动刷新Value注解
+	 * 
+	 * @return
+	 */
+	public static boolean isGlobalValueWiredRefresh() {
+		return StringUtils.parseBoolean(SystemPropertyUtils.getProperty("scw_force_refresh_value"));
+	}
+
+	public static void setGlobalValueWiredRefresh(boolean forceRefresh) {
+		System.setProperty("scw_force_refresh_value", forceRefresh ? "1" : "0");
 	}
 
 	public CommonApplication(String configXml) {
@@ -85,7 +98,8 @@ public class CommonApplication implements Application {
 
 	private XmlBeanFactory getXmlBeanFactory() {
 		try {
-			return new XmlBeanFactory(this.propertyFactory, getConfigPath(), timer, getDefaultRefreshPeriod()) {
+			return new XmlBeanFactory(this.propertyFactory, getConfigPath(), timer, getDefaultRefreshPeriod(),
+					isGlobalValueWiredRefresh()) {
 				@Override
 				protected String getInitStaticPackage() {
 					return getStaticAnnotationPackage();

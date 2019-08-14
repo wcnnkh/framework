@@ -38,6 +38,6 @@ public abstract class AbstractProperty implements Property {
 	}
 
 	public boolean isRefresh() {
-		return XmlPropertyUtils.isRefresh(node);
+		return XmlPropertyUtils.isRefresh(node, true);
 	}
 }

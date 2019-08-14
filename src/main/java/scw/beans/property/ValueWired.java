@@ -42,7 +42,7 @@ public final class ValueWired {
 	}
 
 	public boolean isCanRefresh() {
-		return value.refresh() ? true : Modifier.isVolatile(field.getModifiers());
+		return Modifier.isVolatile(field.getModifiers());
 	}
 
 	public void wired(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Throwable {

@@ -1313,18 +1313,19 @@ public final class StringUtils {
 	}
 
 	public static boolean isAeqB(String strA, String strB) {
-		if (isNull(strA)) {
-			strA = "";
-		}
-
-		if (isNull(strB)) {
-			strB = "";
-		}
-
-		if (strA == strB || strA.equals(strB)) {
+		if(strA == strB){
 			return true;
 		}
-		return false;
+		
+		if (strA == null) {
+			return strB == null;
+		}
+
+		if (strB == null) {
+			return strA == null;
+		}
+
+		return strA.equals(strB);
 	}
 
 	public static String[] commonSplit(String str) {

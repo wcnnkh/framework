@@ -9,7 +9,9 @@ import java.util.TimerTask;
 import org.w3c.dom.NodeList;
 
 import scw.core.PropertyFactory;
+import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.logger.LoggerUtils;
 
 public final class AutoRefreshPropertyFactory implements PropertyFactory {
 	private Map<String, String> propertyMap;
@@ -36,9 +38,17 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory {
 		}
 	}
 
-	private void refreshProperty(Property property) {
+	private void refreshProperty(Property property, boolean first) {
 		synchronized (propertyMap) {
 			String value = property.getValue();
+			if (!first) {
+				String oldValue = getProperty(property.getName());
+				if (!StringUtils.isAeqB(value, oldValue)) {
+					LoggerUtils.info(AutoRefreshPropertyFactory.class,
+							"Property {} changes the original value {} to {}", property.getName(), oldValue, value);
+				}
+			}
+
 			if (property.isSystem()) {
 				System.setProperty(property.getName(), value);
 				propertyMap.remove(property.getName());
@@ -53,10 +63,10 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory {
 		Map<String, Property> map = properties.getPropertyMap();
 		for (Entry<String, Property> entry : map.entrySet()) {
 			if (first) {
-				refreshProperty(entry.getValue());
+				refreshProperty(entry.getValue(), first);
 			} else {
 				if (entry.getValue().isRefresh()) {
-					refreshProperty(entry.getValue());
+					refreshProperty(entry.getValue(), first);
 				}
 			}
 		}

@@ -13,18 +13,20 @@ public class ValueWiredManager {
 	private long refreshPeriod;
 	private PropertyFactory propertyFactory;
 	private BeanFactory beanFactory;
+	private boolean forceRefresh;//是否强制刷新
 
 	public ValueWiredManager(PropertyFactory propertyFactory, BeanFactory beanFactory, Timer timer,
-			long refreshPeriod) {
+			long refreshPeriod, boolean forceRefresh) {
 		this.refreshPeriod = refreshPeriod;
 		this.timer = timer;
 		this.propertyFactory = propertyFactory;
 		this.beanFactory = beanFactory;
+		this.forceRefresh = forceRefresh;
 	}
 
 	public void write(ValueWired valueWired) throws Throwable {
 		valueWired.wired(beanFactory, propertyFactory);
-		if (valueWired.isCanRefresh()) {
+		if (forceRefresh || valueWired.isCanRefresh()) {
 			long t = valueWired.getValueAnnotation().timeUnit().toMillis(valueWired.getValueAnnotation().period());
 			t = t > 0 ? t : refreshPeriod;
 			if (t > 0) {
