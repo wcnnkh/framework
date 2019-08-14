@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.beans.annotation.InterfaceProxy;
+import scw.beans.property.ValueWiredManager;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.PropertyFactory;
@@ -294,6 +295,8 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 		return beanDefinition;
 	}
+	
+	public abstract ValueWiredManager getValueWiredManager();
 
 	private BeanDefinition newBeanDefinition(String name) {
 		try {
@@ -314,7 +317,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			if (!ReflectUtils.isInstance(clz)) {
 				return null;
 			}
-			return new AnnotationBeanDefinition(this, getPropertyFactory(), clz, getFilterNames());
+			return new AnnotationBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz, getFilterNames());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -332,7 +335,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		init = true;
 
 		try {
-			BeanUtils.initStatic(this, getPropertyFactory(), ResourceUtils.getClassList(getInitStaticPackage()));
+			BeanUtils.initStatic(getValueWiredManager(), this, getPropertyFactory(), ResourceUtils.getClassList(getInitStaticPackage()));
 		} catch (Exception e) {
 			throw new NestedRuntimeException(e);
 		}
@@ -344,7 +347,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 
 		try {
-			BeanUtils.destroyStaticMethod(ResourceUtils.getClassList(getInitStaticPackage()));
+			BeanUtils.destroyStaticMethod(getValueWiredManager(), ResourceUtils.getClassList(getInitStaticPackage()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

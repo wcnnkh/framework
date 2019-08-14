@@ -1,5 +1,7 @@
 package scw.servlet;
 
+import java.util.Timer;
+
 import javax.servlet.ServletConfig;
 
 import scw.application.Application;
@@ -9,10 +11,13 @@ import scw.core.PropertyFactory;
 
 public class ServletApplication implements Application {
 	private final CommonApplication commonApplication;
-
+	
 	public ServletApplication(ServletConfig servletConfig) throws Throwable {
-		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(servletConfig);
-		this.commonApplication = new CommonApplication(propertyFactory.getConfigXml(), propertyFactory);
+		Timer timer = new Timer(getClass().getName());
+		long defaultRefreshPeriod = 0;
+		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(servletConfig, timer,
+				defaultRefreshPeriod);
+		this.commonApplication = new CommonApplication(propertyFactory.getConfigXml(), propertyFactory, timer, defaultRefreshPeriod);;
 	}
 
 	public BeanFactory getBeanFactory() {
@@ -34,4 +39,6 @@ public class ServletApplication implements Application {
 	public CommonApplication getCommonApplication() {
 		return commonApplication;
 	}
+	
+	
 }

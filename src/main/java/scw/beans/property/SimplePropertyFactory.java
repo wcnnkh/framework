@@ -14,7 +14,7 @@ import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.SystemPropertyUtils;
 
 public class SimplePropertyFactory implements PropertyFactory {
-	private Map<String, PropertyValue> propertyMap = new HashMap<String, PropertyValue>();
+	private Map<String, Property> propertyMap = new HashMap<String, Property>();
 	private ArrayList<Properties> propertiesList = new ArrayList<Properties>();
 
 	public SimplePropertyFactory(NodeList nodeList) {
@@ -35,8 +35,8 @@ public class SimplePropertyFactory implements PropertyFactory {
 			Properties properties = new DefaultProperties(this, node);
 			propertiesList.add(properties);
 
-			Map<String, PropertyValue> map = properties.getPropertyMap();
-			for (Entry<String, PropertyValue> entry : map.entrySet()) {
+			Map<String, Property> map = properties.getPropertyMap();
+			for (Entry<String, Property> entry : map.entrySet()) {
 				if (propertyMap.containsKey(entry.getKey())) {
 					throw new AlreadyExistsException(entry.getKey());
 				}
@@ -51,8 +51,8 @@ public class SimplePropertyFactory implements PropertyFactory {
 	}
 
 	public String getProperty(String key) {
-		PropertyValue propertyValue = propertyMap.get(key);
-		return propertyValue == null ? SystemPropertyUtils.getProperty(key)
-				: propertyValue.getValue();
+		Property property = propertyMap.get(key);
+		return property == null ? SystemPropertyUtils.getProperty(key)
+				: property.getValue();
 	}
 }

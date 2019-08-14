@@ -13,6 +13,7 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
+import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.NotFoundException;
@@ -32,9 +33,11 @@ public final class AnnotationRequestBean implements RequestBean {
 	private final FieldDefinition[] autowriteFields;
 	private Constructor<?> constructor;
 	private int parameterLength;
+	private final ValueWiredManager valueWiredManager;
 
-	public AnnotationRequestBean(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> type,
-			String[] filterNames) throws Exception {
+	public AnnotationRequestBean(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> type, String[] filterNames) throws Exception {
+		this.valueWiredManager = valueWiredManager;
 		this.beanFactory = beanFactory;
 		this.type = type;
 		this.propertyFactory = propertyFactory;
@@ -116,7 +119,7 @@ public final class AnnotationRequestBean implements RequestBean {
 
 	public void autowrite(Object bean) throws Exception {
 		for (FieldDefinition definition : autowriteFields) {
-			BeanUtils.autoWrite(type, beanFactory, propertyFactory, bean, definition);
+			BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean, definition);
 		}
 	}
 
@@ -129,6 +132,7 @@ public final class AnnotationRequestBean implements RequestBean {
 	}
 
 	public void destroy(Object bean) {
+		valueWiredManager.cancel(bean);
 		if (destroyMethods.length != 0) {
 			for (Method method : destroyMethods) {
 				try {

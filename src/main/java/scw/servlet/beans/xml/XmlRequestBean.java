@@ -11,6 +11,7 @@ import org.w3c.dom.NodeList;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
+import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanParameter;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.Destroy;
@@ -44,9 +45,11 @@ public final class XmlRequestBean implements RequestBean {
 	private XmlBeanParameter[] beanMethodParameters;
 	private Enhancer enhancer;
 	private final FieldDefinition[] autoWriteFields;
+	private final ValueWiredManager valueWiredManager;
 
-	public XmlRequestBean(BeanFactory beanFactory, PropertyFactory propertyFactory, Node beanNode,
-			String[] filterNames) throws Exception {
+	public XmlRequestBean(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Node beanNode, String[] filterNames) throws Exception {
+		this.valueWiredManager = valueWiredManager;
 		this.beanFactory = beanFactory;
 		this.propertyFactory = propertyFactory;
 		this.type = XmlBeanUtils.getClass(beanNode);
@@ -139,7 +142,7 @@ public final class XmlRequestBean implements RequestBean {
 	public void autowrite(Object bean) throws Exception {
 		if (!ArrayUtils.isEmpty(autoWriteFields)) {
 			for (FieldDefinition fieldDefinition : autoWriteFields) {
-				BeanUtils.autoWrite(type, beanFactory, propertyFactory, bean, fieldDefinition);
+				BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean, fieldDefinition);
 			}
 		}
 
@@ -155,6 +158,7 @@ public final class XmlRequestBean implements RequestBean {
 	}
 
 	public void destroy(Object bean) throws Exception {
+		valueWiredManager.cancel(bean);
 		if (!ArrayUtils.isEmpty(destroyMethods)) {
 			for (BeanMethod method : destroyMethods) {
 				method.invoke(bean, beanFactory, propertyFactory);

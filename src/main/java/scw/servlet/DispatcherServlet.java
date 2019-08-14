@@ -14,8 +14,7 @@ public class DispatcherServlet extends GenericServlet {
 	private ServletService servletService;
 
 	@Override
-	public void service(ServletRequest req, ServletResponse resp)
-			throws ServletException, IOException {
+	public void service(ServletRequest req, ServletResponse resp) throws ServletException, IOException {
 		servletService.service(req, resp);
 	}
 
@@ -27,11 +26,10 @@ public class DispatcherServlet extends GenericServlet {
 			throw new RuntimeException(e);
 		}
 		application.init();
-		this.servletService = ServletUtils.getServletService(application
-				.getBeanFactory(), application.getPropertyFactory(),
-				application.getCommonApplication().getConfigPath(), application
-						.getCommonApplication().getBeanFactory()
-						.getFilterNames());
+		this.servletService = ServletUtils.getServletService(application.getCommonApplication().getValueWiredManager(),
+				application.getBeanFactory(), application.getPropertyFactory(),
+				application.getCommonApplication().getConfigPath(),
+				application.getCommonApplication().getBeanFactory().getFilterNames());
 	}
 
 	@Override

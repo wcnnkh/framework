@@ -5,11 +5,11 @@ import org.w3c.dom.Node;
 import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 
-public abstract class AbstractPropertyValue implements PropertyValue {
+public abstract class AbstractProperty implements Property {
 	private final PropertyFactory propertyFactory;
 	private final Node node;
 
-	public AbstractPropertyValue(PropertyFactory propertyFactory, Node node) {
+	public AbstractProperty(PropertyFactory propertyFactory, Node node) {
 		this.propertyFactory = propertyFactory;
 		this.node = node;
 	}
@@ -23,12 +23,21 @@ public abstract class AbstractPropertyValue implements PropertyValue {
 	}
 
 	public String getName() {
-		String prefix = XmlPropertyUtils.getPrefix(node);
+		String prefix = null;
+		Node p = node.getParentNode();
+		if (p != null) {
+			prefix = XmlPropertyUtils.getPrefix(p);
+		}
+
 		String name = XmlPropertyUtils.getName(node);
 		return StringUtils.isEmpty(prefix) ? name : (prefix + name);
 	}
 
 	public final boolean isSystem() {
 		return XmlPropertyUtils.isSystem(node);
+	}
+
+	public boolean isRefresh() {
+		return XmlPropertyUtils.isRefresh(node);
 	}
 }

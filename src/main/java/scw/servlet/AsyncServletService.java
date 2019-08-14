@@ -10,6 +10,7 @@ import javax.servlet.ServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
+import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 
@@ -21,9 +22,9 @@ public class AsyncServletService extends DefaultServletService implements scw.co
 	 */
 	private final boolean containerThreadManager;
 
-	public AsyncServletService(BeanFactory beanFactory, PropertyFactory propertyFactory, String configPath,
+	public AsyncServletService(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory, String configPath,
 			String[] rootBeanFilters) throws Throwable {
-		super(beanFactory, propertyFactory, configPath, rootBeanFilters);
+		super(valueWiredManager, beanFactory, propertyFactory, configPath, rootBeanFilters);
 		int coreSize = StringUtils.parseInt(propertyFactory.getProperty("servlet.thread.core.size"), 16);
 		int maxSize = StringUtils.parseInt(propertyFactory.getProperty("servlet.thread.max.size"), 512);
 		this.containerThreadManager = StringUtils.parseBoolean(propertyFactory.getProperty("servlet.thread.container"));

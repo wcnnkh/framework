@@ -1,5 +1,7 @@
 package scw.servlet;
 
+import java.util.Timer;
+
 import javax.servlet.ServletConfig;
 
 import scw.beans.property.XmlPropertyFactory;
@@ -11,10 +13,10 @@ public class ServletConfigPropertyFactory implements PropertyFactory {
 	private final PropertyFactory propertyFactory;
 	private final String configXml;
 
-	public ServletConfigPropertyFactory(ServletConfig servletConfig) {
+	public ServletConfigPropertyFactory(ServletConfig servletConfig, Timer timer, long defaultRefreshPeriod) {
 		this.servletConfig = servletConfig;
 		this.configXml = getServletConfig("shuchaowen");
-		this.propertyFactory = new XmlPropertyFactory(this.configXml);
+		this.propertyFactory = new XmlPropertyFactory(this.configXml, timer, defaultRefreshPeriod);
 	}
 
 	public String getConfig(String name) {

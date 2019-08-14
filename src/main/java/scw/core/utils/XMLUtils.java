@@ -44,10 +44,8 @@ import scw.core.reflect.ReflectUtils;
 import scw.io.IOUtils;
 
 public final class XMLUtils {
-	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory
-			.newInstance();
-	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory
-			.newInstance();
+	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
+	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
 
 	static {
 		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(true);
@@ -140,13 +138,12 @@ public final class XMLUtils {
 	}
 
 	public static Document getDocument(String path) {
-		return ResourceUtils.getAndConvert(path,
-				new Converter<InputStream, Document>() {
+		return ResourceUtils.getAndConvert(path, new Converter<InputStream, Document>() {
 
-					public Document convert(InputStream inputStream) {
-						return parse(inputStream);
-					}
-				});
+			public Document convert(InputStream inputStream) {
+				return parse(inputStream);
+			}
+		});
 	}
 
 	public static Element getRootElement(String xmlPath) {
@@ -154,8 +151,7 @@ public final class XMLUtils {
 		return document.getDocumentElement();
 	}
 
-	private static MyNodeList getIncludeNodeList(
-			HashSet<String> includeHashSet, Node includeNode) {
+	private static MyNodeList getIncludeNodeList(HashSet<String> includeHashSet, Node includeNode) {
 		String file = getNodeAttributeValue(includeNode, "file");
 		if (StringUtils.isEmpty(file)) {
 			return new MyNodeList();
@@ -185,8 +181,7 @@ public final class XMLUtils {
 		return list;
 	}
 
-	private static MyNodeList converIncludeNodeList(NodeList nodeList,
-			HashSet<String> includeHashSet) {
+	private static MyNodeList converIncludeNodeList(NodeList nodeList, HashSet<String> includeHashSet) {
 		MyNodeList list = new MyNodeList();
 		if (nodeList != null) {
 			for (int i = 0, size = nodeList.getLength(); i < size; i++) {
@@ -207,8 +202,7 @@ public final class XMLUtils {
 	}
 
 	public static NodeList getChildNodes(Node node, boolean include) {
-		return include ? converIncludeNodeList(node.getChildNodes(),
-				new HashSet<String>()) : node.getChildNodes();
+		return include ? converIncludeNodeList(node.getChildNodes(), new HashSet<String>()) : node.getChildNodes();
 	}
 
 	public static String asXml(Element element) {
@@ -288,8 +282,7 @@ public final class XMLUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T getNodeAttributeValue(Class<T> basicType, Node node,
-			String name, T defaultValue) {
+	public static <T> T getNodeAttributeValue(Class<T> basicType, Node node, String name, T defaultValue) {
 		String value = getNodeAttributeValue(node, name);
 		if (value == null) {
 			return defaultValue;
@@ -298,8 +291,7 @@ public final class XMLUtils {
 		}
 	}
 
-	public static String getNodeAttributeValue(Node node, String name,
-			String defaultValue) {
+	public static String getNodeAttributeValue(Node node, String name, String defaultValue) {
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		if (namedNodeMap == null) {
 			return null;
@@ -309,8 +301,7 @@ public final class XMLUtils {
 		return n == null ? defaultValue : n.getNodeValue();
 	}
 
-	public static String getNodeAttributeValueOrNodeContent(Node node,
-			String name) {
+	public static String getNodeAttributeValueOrNodeContent(Node node, String name) {
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		if (namedNodeMap == null) {
 			return null;
@@ -336,11 +327,14 @@ public final class XMLUtils {
 		}
 	}
 
-	public static boolean getBooleanValue(Node node, String name,
-			boolean defaultValue) {
+	public static boolean getBooleanValueAndParent(Node node, String name, boolean defaultValue) {
+		Node parent = node.getParentNode();
+		return getBooleanValue(node, name, parent == null ? defaultValue : getBooleanValueAndParent(parent, name, defaultValue));
+	}
+
+	public static boolean getBooleanValue(Node node, String name, boolean defaultValue) {
 		String value = getNodeAttributeValue(node, name);
-		return StringUtils.isNull(value) ? defaultValue : Boolean
-				.parseBoolean(value);
+		return StringUtils.isNull(value) ? defaultValue : Boolean.parseBoolean(value);
 	}
 
 	public static <T> T getBean(Node node, Class<T> type) throws Exception {
@@ -371,15 +365,13 @@ public final class XMLUtils {
 				t = InstanceUtils.newInstance(type);
 			}
 
-			ReflectUtils.setFieldValue(type, field, t,
-					StringParse.defaultParse(value, field.getType()));
+			ReflectUtils.setFieldValue(type, field, t, StringParse.defaultParse(value, field.getType()));
 		}
 		return t;
 	}
 
 	public static <T> List<T> getBeanList(Node rootNode, Class<T> type)
-			throws InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (rootNode == null) {
 			return null;
 		}
@@ -434,8 +426,7 @@ public final class XMLUtils {
 		return properties;
 	}
 
-	public static String formatNodeValue(
-			final PropertyFactory propertyFactory, Node node, String value) {
+	public static String formatNodeValue(final PropertyFactory propertyFactory, Node node, String value) {
 		if (StringUtils.isEmpty(value)) {
 			return value;
 		}
@@ -446,12 +437,9 @@ public final class XMLUtils {
 
 		String replacePrefix = getNodeAttributeValue(node, "replace-prefix");
 		String replaceSuffix = getNodeAttributeValue(node, "replace-suffix");
-		replacePrefix = StringUtils.isEmpty(replacePrefix) ? "{"
-				: replacePrefix;
-		replaceSuffix = StringUtils.isEmpty(replaceSuffix) ? "}"
-				: replaceSuffix;
-		StringFormat stringFormat = new StringFormat(replacePrefix,
-				replaceSuffix) {
+		replacePrefix = StringUtils.isEmpty(replacePrefix) ? "{" : replacePrefix;
+		replaceSuffix = StringUtils.isEmpty(replaceSuffix) ? "}" : replaceSuffix;
+		StringFormat stringFormat = new StringFormat(replacePrefix, replaceSuffix) {
 
 			public String getProperty(String key) {
 				return propertyFactory.getProperty(key);
@@ -460,8 +448,7 @@ public final class XMLUtils {
 		return stringFormat.format(value);
 	}
 
-	public static String getNodeAttributeValue(
-			PropertyFactory propertyFactory, Node node, String name) {
+	public static String getNodeAttributeValue(PropertyFactory propertyFactory, Node node, String name) {
 		String value = getNodeAttributeValue(node, name);
 		if (value == null || value.length() == 0) {
 			return value;
@@ -470,8 +457,7 @@ public final class XMLUtils {
 		return formatNodeValue(propertyFactory, node, value);
 	}
 
-	public static String getNodeAttributeValueOrNodeContent(
-			PropertyFactory propertyFactory, Node node, String name) {
+	public static String getNodeAttributeValueOrNodeContent(PropertyFactory propertyFactory, Node node, String name) {
 		String value = getNodeAttributeValueOrNodeContent(node, name);
 		if (StringUtils.isEmpty(value)) {
 			return null;
@@ -480,8 +466,7 @@ public final class XMLUtils {
 		return formatNodeValue(propertyFactory, node, value);
 	}
 
-	public static String getRequireNodeAttributeValue(
-			PropertyFactory propertyFactory, Node node, String name) {
+	public static String getRequireNodeAttributeValue(PropertyFactory propertyFactory, Node node, String name) {
 		String value = getNodeAttributeValue(propertyFactory, node, name);
 		if (StringUtils.isEmpty(value)) {
 			throw new NotFoundException("not found attribute " + name);
@@ -489,29 +474,25 @@ public final class XMLUtils {
 		return value;
 	}
 
-	public static <T> T newInstanceLoadAttributeBySetter(Class<T> type,
-			final PropertyFactory propertyFactory, Node node,
-			final PropertyMapper<String> mapper) {
+	public static <T> T newInstanceLoadAttributeBySetter(Class<T> type, final PropertyFactory propertyFactory,
+			Node node, final PropertyMapper<String> mapper) {
 		Map<String, Node> map = attributeAsMap(node);
 		try {
 			T t = InstanceUtils.newInstance(type);
-			ReflectUtils.setProperties(type, t, map,
-					new PropertyMapper<Node>() {
-						public Object mapper(String name, Node value,
-								Class<?> type) throws Exception {
-							String v = formatNodeValue(propertyFactory,
-									value, value.getNodeValue());
-							if (StringUtils.isEmpty(v)) {
-								return null;
-							}
+			ReflectUtils.setProperties(type, t, map, new PropertyMapper<Node>() {
+				public Object mapper(String name, Node value, Class<?> type) throws Exception {
+					String v = formatNodeValue(propertyFactory, value, value.getNodeValue());
+					if (StringUtils.isEmpty(v)) {
+						return null;
+					}
 
-							if (Class.class.isAssignableFrom(type)) {
-								return Class.forName(v);
-							}
+					if (Class.class.isAssignableFrom(type)) {
+						return Class.forName(v);
+					}
 
-							return mapper.mapper(name, v, type);
-						}
-					});
+					return mapper.mapper(name, v, type);
+				}
+			});
 			return t;
 		} catch (Exception e) {
 			throw new RuntimeException(e);

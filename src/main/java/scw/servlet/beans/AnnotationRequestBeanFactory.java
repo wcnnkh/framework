@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
+import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.ReflectUtils;
@@ -14,12 +15,14 @@ public final class AnnotationRequestBeanFactory implements RequestBeanFactory {
 	private final BeanFactory beanFactory;
 	private final PropertyFactory propertyFactory;
 	private final String[] filterNames;
+	private final ValueWiredManager valueWiredManager;
 
-	public AnnotationRequestBeanFactory(BeanFactory beanFactory, PropertyFactory propertyFactory,
+	public AnnotationRequestBeanFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory,
 			String[] filterNames) {
 		this.beanFactory = beanFactory;
 		this.propertyFactory = propertyFactory;
 		this.filterNames = filterNames;
+		this.valueWiredManager = valueWiredManager;
 	}
 
 	public RequestBean get(String name) {
@@ -34,7 +37,7 @@ public final class AnnotationRequestBeanFactory implements RequestBeanFactory {
 					}
 
 					try {
-						bean = new AnnotationRequestBean(beanFactory, propertyFactory, ClassUtils.forName(name),
+						bean = new AnnotationRequestBean(valueWiredManager, beanFactory, propertyFactory, ClassUtils.forName(name),
 								filterNames);
 						if (beanMap.containsKey(bean.getId())) {
 							throw new AlreadyExistsException(bean.getId());

@@ -19,6 +19,8 @@ import scw.beans.annotation.Config;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Value;
+import scw.beans.property.ValueWired;
+import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanParameter;
 import scw.core.PropertyFactory;
 import scw.core.aop.Filter;
@@ -33,7 +35,6 @@ import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -83,9 +84,11 @@ public final class BeanUtils {
 		countDownLatch.await();
 	}
 
-	public synchronized static void destroyStaticMethod(Collection<Class<?>> classList) throws Exception {
+	public synchronized static void destroyStaticMethod(ValueWiredManager valueWiredManager,
+			Collection<Class<?>> classList) throws Exception {
 		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
 		for (Class<?> clz : classList) {
+			valueWiredManager.cancel(clz);
 			for (Method method : ReflectUtils.getDeclaredMethods(clz)) {
 				if (!Modifier.isStatic(method.getModifiers())) {
 					continue;
@@ -114,17 +117,17 @@ public final class BeanUtils {
 		countDownLatch.await();
 	}
 
-	public synchronized static void initStatic(BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Collection<Class<?>> classList) throws Exception {
-		initAutowriteStatic(beanFactory, propertyFactory, classList);
+	public synchronized static void initStatic(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Collection<Class<?>> classList) throws Exception {
+		initAutowriteStatic(valueWiredManager, beanFactory, propertyFactory, classList);
 		invokerInitStaticMethod(classList);
 	}
 
-	public static void autoWrite(Class<?> clz, BeanFactory beanFactory, PropertyFactory propertyFactory, Object obj,
-			FieldDefinition field) {
+	public static void autoWrite(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> clz, Object obj, FieldDefinition field) {
 		setBean(beanFactory, clz, obj, field);
 		setConfig(beanFactory, clz, obj, field);
-		setProperties(beanFactory, propertyFactory, clz, obj, field);
+		setProperties(valueWiredManager, beanFactory, propertyFactory, clz, obj, field);
 	}
 
 	/**
@@ -132,11 +135,11 @@ public final class BeanUtils {
 	 * 
 	 * @param classList
 	 */
-	private static void initAutowriteStatic(BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Collection<Class<?>> classList) throws Exception {
+	private static void initAutowriteStatic(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Collection<Class<?>> classList) throws Exception {
 		for (Class<?> clz : classList) {
 			for (FieldDefinition fieldDefinition : getAutowriteFieldDefinitionList(clz, true)) {
-				autoWrite(clz, beanFactory, propertyFactory, null, fieldDefinition);
+				autoWrite(valueWiredManager, beanFactory, propertyFactory, clz, null, fieldDefinition);
 			}
 		}
 	}
@@ -241,22 +244,21 @@ public final class BeanUtils {
 		}
 	}
 
-	private static void setProperties(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clz,
-			Object obj, FieldDefinition field) {
+	public static Object getValueTaskId(Class<?> clazz, Object obj) {
+		return obj == null ? clazz : obj;
+	}
+
+	private static void setProperties(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> clz, Object obj, FieldDefinition field) {
 		Value value = field.getAnnotation(Value.class);
 		if (value != null) {
 			staticFieldWarnLog(Value.class.getName(), clz, field);
 
-			Object val = null;
 			try {
 				existDefaultValueWarnLog(Value.class.getName(), clz, field, obj);
-
-				String v = propertyFactory.getProperty(value.value());
-				if (v != null) {
-					val = StringParse.DEFAULT.parse(v, field.getField().getType());
-					field.set(obj, val);
-				}
-			} catch (Exception e) {
+				ValueWired valueWired = new ValueWired(getValueTaskId(clz, obj), obj, field.getField(), value);
+				valueWiredManager.write(valueWired);
+			} catch (Throwable e) {
 				logger.error(e, "properties：clz={},fieldName={}", clz.getName(), field.getField().getName());
 			}
 		}

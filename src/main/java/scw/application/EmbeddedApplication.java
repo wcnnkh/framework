@@ -32,13 +32,11 @@ public class EmbeddedApplication extends CommonApplication {
 	@Override
 	public void init() {
 		super.init();
-		String embeddedName = EmbeddedUtils
-				.getEmbeddedName(getPropertyFactory());
+		String embeddedName = EmbeddedUtils.getEmbeddedName(getPropertyFactory());
 		if (StringUtils.isEmpty(embeddedName)) {
 			String name = getSupportServletEmbeddedClassName();
 			if (name == null) {
-				LoggerUtils.warn(EmbeddedApplication.class,
-						"未找到支持的embedded, 如需支持请导入对应的jar");
+				LoggerUtils.warn(EmbeddedApplication.class, "未找到支持的embedded, 如需支持请导入对应的jar");
 			} else {
 				initEmbedded(name);
 			}
@@ -48,19 +46,16 @@ public class EmbeddedApplication extends CommonApplication {
 	}
 
 	private void initEmbedded(String embeddedName) {
-		ServletService service = ServletUtils.getServletService(
-				getBeanFactory(), getPropertyFactory(), getConfigPath(),
-				getBeanFactory().getFilterNames());
+		ServletService service = ServletUtils.getServletService(getValueWiredManager(), getBeanFactory(),
+				getPropertyFactory(), getConfigPath(), getBeanFactory().getFilterNames());
 		embedded = getBeanFactory().getInstance(embeddedName);
-		embedded.init(getBeanFactory(), getPropertyFactory(),
-				new ShutdownHttpServlet(getPropertyFactory(), this),
+		embedded.init(getBeanFactory(), getPropertyFactory(), new ShutdownHttpServlet(getPropertyFactory(), this),
 				new EmbeddedServlet(service));
 	}
 
 	@Override
 	public void destroy() {
-		LoggerUtils.info(TomcatApplication.class,
-				"---------------shutdown---------------");
+		LoggerUtils.info(TomcatApplication.class, "---------------shutdown---------------");
 		if (embedded != null) {
 			embedded.destroy();
 		}
@@ -79,8 +74,7 @@ public class EmbeddedApplication extends CommonApplication {
 
 		public void run() {
 			if (!ResourceUtils.isExist(beanXml)) {
-				LoggerUtils.warn(TomcatApplication.class, "not found "
-						+ beanXml);
+				LoggerUtils.warn(TomcatApplication.class, "not found " + beanXml);
 			}
 
 			Application application;

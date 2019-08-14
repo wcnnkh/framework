@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.BeanFactory;
+import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.exception.AlreadyExistsException;
@@ -20,7 +21,7 @@ public final class XmlRequestBeanFactory implements RequestBeanFactory {
 
 	private static final String BEAN_TAG_NAME = "request:bean";
 
-	public XmlRequestBeanFactory(BeanFactory beanFactory,
+	public XmlRequestBeanFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, String configXml,
 			String[] filterNames) throws Exception {
 		if (!StringUtils.isNull(configXml)) {
@@ -28,7 +29,7 @@ public final class XmlRequestBeanFactory implements RequestBeanFactory {
 			for (int i = 0; i < nhosts.getLength(); i++) {
 				Node nRoot = nhosts.item(i);
 				if (BEAN_TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
-					XmlRequestBean bean = new XmlRequestBean(beanFactory,
+					XmlRequestBean bean = new XmlRequestBean(valueWiredManager, beanFactory,
 							propertyFactory, nRoot, filterNames);
 					if (beanMap.containsKey(bean.getId())) {
 						throw new AlreadyExistsException(bean.getId());

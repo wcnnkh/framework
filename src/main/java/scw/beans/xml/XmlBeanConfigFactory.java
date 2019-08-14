@@ -6,18 +6,18 @@ import org.w3c.dom.NodeList;
 import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
+import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 
 public class XmlBeanConfigFactory extends AbstractBeanConfigFactory {
 
-	public XmlBeanConfigFactory(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, NodeList rootNodeList,
-			String[] filterNames) throws Exception {
+	public XmlBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, NodeList rootNodeList, String[] filterNames) throws Exception {
 		for (int i = 0; i < rootNodeList.getLength(); i++) {
 			Node nRoot = rootNodeList.item(i);
 			if ("bean".equalsIgnoreCase(nRoot.getNodeName())) {
-				BeanDefinition beanDefinition = new XmlBeanDefinition(
-						beanFactory, propertyFactory, nRoot, filterNames);
+				BeanDefinition beanDefinition = new XmlBeanDefinition(valueWiredManager, beanFactory, propertyFactory,
+						nRoot, filterNames);
 				addBean(beanDefinition);
 			}
 		}

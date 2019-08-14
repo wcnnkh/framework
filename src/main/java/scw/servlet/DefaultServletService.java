@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
+import scw.beans.property.ValueWiredManager;
 import scw.beans.rpc.http.RpcService;
 import scw.core.Destroy;
 import scw.core.PropertyFactory;
@@ -32,14 +33,14 @@ public class DefaultServletService implements ServletService {
 	private final List<Filter> filters;
 	private final int warnExecuteTime;
 
-	public DefaultServletService(BeanFactory beanFactory, PropertyFactory propertyFactory, String configPath,
+	public DefaultServletService(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory, String configPath,
 			String[] rootBeanFilters) throws Throwable {
 		this.beanFactory = beanFactory;
 		this.propertyFactory = propertyFactory;
 		this.charsetName = ServletUtils.getCharsetName(propertyFactory);
 		this.warnExecuteTime = ServletUtils.getWarnExecuteTime(propertyFactory);
 
-		RequestBeanFactory requestBeanFactory = ServletUtils.getRequestBeanFactory(beanFactory, propertyFactory,
+		RequestBeanFactory requestBeanFactory = ServletUtils.getRequestBeanFactory(valueWiredManager, beanFactory, propertyFactory,
 				configPath, rootBeanFilters);
 		this.wrapperFactory = ServletUtils.getWrapperFactory(beanFactory, requestBeanFactory, propertyFactory);
 

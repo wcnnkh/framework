@@ -18,9 +18,9 @@ public class SimpleProperties extends AbstractProperties {
 		super(propertyFactory, node);
 	}
 
-	public Map<String, PropertyValue> getPropertyMap() {
+	public Map<String, Property> getPropertyMap() {
 		NodeList nodeList = getNode().getChildNodes();
-		Map<String, PropertyValue> map = new HashMap<String, PropertyValue>();
+		Map<String, Property> map = new HashMap<String, Property>();
 		if (nodeList != null) {
 			for (int i = 0, size = nodeList.getLength(); i < size; i++) {
 				Node n = nodeList.item(i);
@@ -32,19 +32,19 @@ public class SimpleProperties extends AbstractProperties {
 					continue;
 				}
 
-				PropertyValue propertyValue;
+				Property property;
 				if (!StringUtils.isEmpty(getFilePath(n))) {
-					propertyValue = new FilePropertyValue(getPropertyFactory(),
-							getNode());
+					property = new FilePropertyValue(getPropertyFactory(),
+							n);
 				} else if (!StringUtils.isEmpty(getURL(n))) {
-					propertyValue = new URLPropertyValue(getPropertyFactory(),
-							getNode());
+					property = new URLPropertyValue(getPropertyFactory(),
+							n);
 				} else {
-					propertyValue = new ValuePropertyValue(
-							getPropertyFactory(), getNode());
+					property = new ValuePropertyValue(
+							getPropertyFactory(), n);
 				}
 
-				map.put(propertyValue.getName(), propertyValue);
+				map.put(property.getName(), property);
 			}
 		}
 		return map;
@@ -58,7 +58,7 @@ public class SimpleProperties extends AbstractProperties {
 		return XMLUtils.getNodeAttributeValue(node, "url");
 	}
 
-	private static final class FilePropertyValue extends AbstractPropertyValue {
+	private static final class FilePropertyValue extends AbstractProperty {
 
 		public FilePropertyValue(PropertyFactory propertyFactory, Node node) {
 			super(propertyFactory, node);
@@ -72,7 +72,7 @@ public class SimpleProperties extends AbstractProperties {
 		}
 	}
 
-	private static final class URLPropertyValue extends AbstractPropertyValue {
+	private static final class URLPropertyValue extends AbstractProperty {
 
 		public URLPropertyValue(PropertyFactory propertyFactory, Node node) {
 			super(propertyFactory, node);
@@ -87,7 +87,7 @@ public class SimpleProperties extends AbstractProperties {
 
 	}
 
-	private static final class ValuePropertyValue extends AbstractPropertyValue {
+	private static final class ValuePropertyValue extends AbstractProperty {
 
 		public ValuePropertyValue(PropertyFactory propertyFactory, Node node) {
 			super(propertyFactory, node);

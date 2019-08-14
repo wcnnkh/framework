@@ -1,6 +1,7 @@
 package scw.beans;
 
 import scw.beans.annotation.Service;
+import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.utils.ResourceUtils;
 
@@ -11,12 +12,12 @@ import scw.core.utils.ResourceUtils;
  *
  */
 public class ServiceBeanConfigFactory extends AbstractBeanConfigFactory {
-	public ServiceBeanConfigFactory(BeanFactory beanFactory, PropertyFactory propertyFactory, String packageNames,
+	public ServiceBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory, String packageNames,
 			String[] filterNames) throws Exception {
 		for (Class<?> clz : ResourceUtils.getClassList(packageNames)) {
 			Service service = clz.getAnnotation(Service.class);
 			if (service != null) {
-				AnnotationBeanDefinition bean = new AnnotationBeanDefinition(beanFactory, propertyFactory, clz, filterNames);
+				AnnotationBeanDefinition bean = new AnnotationBeanDefinition(valueWiredManager, beanFactory, propertyFactory, clz, filterNames);
 				addBean(bean);
 			}
 		}

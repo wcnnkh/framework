@@ -1,6 +1,8 @@
 package scw.application;
 
 import java.util.Collection;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 import com.alibaba.dubbo.config.ProtocolConfig;
 
@@ -10,6 +12,7 @@ import scw.application.crontab.CrontabAnnotationUtils;
 import scw.beans.BeanUtils;
 import scw.beans.XmlBeanFactory;
 import scw.beans.async.AsyncCompleteFilter;
+import scw.beans.property.ValueWiredManager;
 import scw.beans.property.XmlPropertyFactory;
 import scw.beans.rpc.dubbo.DubboUtils;
 import scw.beans.tcc.TCCTransactionFilter;
@@ -17,6 +20,8 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
+import scw.core.utils.XTime;
 import scw.logger.LoggerFactory;
 import scw.logger.LoggerUtils;
 import scw.sql.orm.ORMUtils;
@@ -29,29 +34,58 @@ public class CommonApplication implements Application {
 	private volatile boolean start = false;
 	private final PropertyFactory propertyFactory;
 	private final String configPath;
+	private final Timer timer;
+	private final long defaultRefreshPeriod;
 
 	public String getConfigPath() {
 		return configPath;
 	}
 
-	public CommonApplication(String configXml, PropertyFactory propertyFactory) {
+	public CommonApplication(String configXml, PropertyFactory propertyFactory, Timer timer,
+			long defaultRefreshPeriod) {
+		this.timer = timer;
+		this.defaultRefreshPeriod = defaultRefreshPeriod;
 		this.configPath = configXml;
-		this.propertyFactory = propertyFactory == null ? new XmlPropertyFactory(this.configPath)
-				: propertyFactory;
+		this.propertyFactory = propertyFactory == null
+				? new XmlPropertyFactory(this.configPath, timer, defaultRefreshPeriod) : propertyFactory;
 		this.beanFactory = getXmlBeanFactory();
 		createAfter();
 	}
 
-	public CommonApplication(String configXml) {
+	public CommonApplication(String configXml, long defaultRefreshPeriod) {
+		this.defaultRefreshPeriod = defaultRefreshPeriod;
+		this.timer = new Timer(getClass().getName());
 		this.configPath = configXml;
-		this.propertyFactory = new XmlPropertyFactory(getConfigPath());
+		this.propertyFactory = new XmlPropertyFactory(getConfigPath(), timer, defaultRefreshPeriod);
 		this.beanFactory = getXmlBeanFactory();
 		createAfter();
+	}
+
+	public static void setGlobalDefaultRefreshPeriod(long refreshPeriod, TimeUnit timeUnit) {
+		System.setProperty("scw_default_refresh_period", timeUnit.toMillis(refreshPeriod) + "");
+	}
+	
+	//默认为10分钟
+	public static long getGlobalDefaultRefreshPeriod(){
+		return StringUtils.parseLong(SystemPropertyUtils.getProperty("scw_default_refresh_period"),
+				XTime.ONE_MINUTE * 10);
+	}
+
+	public CommonApplication(String configXml) {
+		this(configXml, getGlobalDefaultRefreshPeriod());
+	}
+
+	public ValueWiredManager getValueWiredManager() {
+		return getBeanFactory().getValueWiredManager();
+	}
+
+	public long getDefaultRefreshPeriod() {
+		return defaultRefreshPeriod;
 	}
 
 	private XmlBeanFactory getXmlBeanFactory() {
 		try {
-			return new XmlBeanFactory(this.propertyFactory, getConfigPath()) {
+			return new XmlBeanFactory(this.propertyFactory, getConfigPath(), timer, getDefaultRefreshPeriod()) {
 				@Override
 				protected String getInitStaticPackage() {
 					return getStaticAnnotationPackage();
@@ -126,7 +160,7 @@ public class CommonApplication implements Application {
 		String ormScanPackageName = propertyFactory.getProperty("orm.scan");
 		if (!StringUtils.isEmpty(ormScanPackageName)) {
 			ORMUtils.registerCglibProxyTableBean(ormScanPackageName);
-		}else{
+		} else {
 			ORMUtils.registerCglibProxyTableBean(getORMPackage());
 		}
 
