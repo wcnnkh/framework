@@ -24,7 +24,7 @@ public class ValueWiredManager {
 
 	public void write(ValueWired valueWired) throws Throwable {
 		valueWired.wired(beanFactory, propertyFactory);
-		if (valueWired.getValueAnnotation().refresh()) {
+		if (valueWired.isCanRefresh()) {
 			long t = valueWired.getValueAnnotation().timeUnit().toMillis(valueWired.getValueAnnotation().period());
 			t = t > 0 ? t : refreshPeriod;
 			if (t > 0) {

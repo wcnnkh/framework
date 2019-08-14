@@ -16,8 +16,15 @@ import scw.beans.property.ValueFormat;
 public @interface Value {
 	public String value();
 
-	public boolean refresh() default true;
-
+	/**
+	 * 默认的，是否刷新是由字段上是否存在volatile修饰符决定的
+	 * 
+	 * 如果设置为true，不管是否存在volatile修饰符都会更新,
+	 * 但注意这在多线程情况下可能出现多个线程拿到的内存是不一致的，推荐使用volatile修饰符
+	 * @return
+	 */
+	public boolean refresh() default false;
+	
 	/**
 	 * 刷新周期
 	 * 如果为0就走默认值
