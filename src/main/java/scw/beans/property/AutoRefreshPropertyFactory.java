@@ -57,7 +57,7 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory {
 		} else {
 			String oldValue = getProperty(property.getName());
 			if (!StringUtils.isAeqB(value, oldValue)) {
-				LoggerUtils.info(AutoRefreshPropertyFactory.class, "Property {} changes the original value {} to {}",
+				LoggerUtils.info(AutoRefreshPropertyFactory.class, "Property {} changes the \noriginal value\n{}\n----------to----------\n{}",
 						property.getName(), oldValue, value);
 				refreshValue(property, value);
 			}
