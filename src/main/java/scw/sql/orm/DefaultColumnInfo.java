@@ -63,7 +63,7 @@ public final class DefaultColumnInfo implements ColumnInfo {
 	}
 
 	public boolean isDataBaseType() {
-		return ORMUtils.isDataBaseType(field.getType());
+		return ORMUtils.isDataBaseField(field);
 	}
 
 	public Field getField() {

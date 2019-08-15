@@ -61,8 +61,7 @@ public final class ORMUtils {
 
 	public static ColumnConvert getConvert(Field field) {
 		Column column = field.getAnnotation(Column.class);
-		Class<? extends ColumnConvert> convert = column == null ? DefaultColumnConvert.class
-				: column.convert();
+		Class<? extends ColumnConvert> convert = column == null ? DefaultColumnConvert.class : column.convert();
 		return InstanceUtils.getSingleInstanceFactory().getInstance(convert);
 	}
 
@@ -81,8 +80,7 @@ public final class ORMUtils {
 			return true;
 		}
 
-		if (Modifier.isStatic(field.getModifiers())
-				|| Modifier.isFinal(field.getModifiers())
+		if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())
 				|| Modifier.isTransient(field.getModifiers())) {
 			return true;
 		}
@@ -139,8 +137,7 @@ public final class ORMUtils {
 
 	public static void registerCglibProxyTableBean(String pageName) {
 		if (!StringUtils.isEmpty(pageName)) {
-			LoggerUtils.info(ORMUtils.class, "register proxy package:{}",
-					pageName);
+			LoggerUtils.info(ORMUtils.class, "register proxy package:{}", pageName);
 		}
 
 		for (Class<?> type : ResourceUtils.getClassList(pageName)) {
@@ -164,8 +161,7 @@ public final class ORMUtils {
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-	public static Object[] getPrimaryKeys(Object bean, TableInfo tableInfo,
-			boolean parse) throws Exception {
+	public static Object[] getPrimaryKeys(Object bean, TableInfo tableInfo, boolean parse) throws Exception {
 		ColumnInfo[] cs = tableInfo.getPrimaryKeyColumns();
 		Object[] objs = new Object[cs.length];
 		for (int i = 0; i < objs.length; i++) {
@@ -178,21 +174,19 @@ public final class ORMUtils {
 		return objs;
 	}
 
+	public static boolean isDataBaseField(Field field) {
+		Column column = field.getAnnotation(Column.class);
+		return column == null ? isDataBaseField(field) : true;
+	}
+
 	public static boolean isDataBaseType(Class<?> type) {
-		return ClassUtils.isPrimitiveOrWrapper(type)
-				|| String.class.isAssignableFrom(type)
-				|| Date.class.isAssignableFrom(type)
-				|| Time.class.isAssignableFrom(type)
-				|| Timestamp.class.isAssignableFrom(type)
-				|| InputStream.class.isAssignableFrom(type)
-				|| Array.class.isAssignableFrom(type)
-				|| Blob.class.isAssignableFrom(type)
-				|| Clob.class.isAssignableFrom(type)
-				|| BigDecimal.class.isAssignableFrom(type)
-				|| Reader.class.isAssignableFrom(type)
-				|| NClob.class.isAssignableFrom(type)
-				|| URL.class.isAssignableFrom(type)
-				|| byte[].class.isAssignableFrom(type);
+		return ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
+				|| Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
+				|| Timestamp.class.isAssignableFrom(type) || InputStream.class.isAssignableFrom(type)
+				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
+				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
+				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type)
+				|| URL.class.isAssignableFrom(type) || byte[].class.isAssignableFrom(type);
 	}
 
 	public static String getDefaultTableName(Class<?> clazz) {
@@ -268,8 +262,7 @@ public final class ORMUtils {
 	}
 
 	public static boolean isAnnoataionColumnNullAble(Field field) {
-		if (field.getType().isPrimitive() || isAnnoataionPrimaryKey(field)
-				|| isIndexColumn(field)) {
+		if (field.getType().isPrimitive() || isAnnoataionPrimaryKey(field) || isIndexColumn(field)) {
 			return false;
 		}
 
@@ -282,23 +275,20 @@ public final class ORMUtils {
 		return column == null ? false : column.unique();
 	}
 
-	private static void iteratorTable(Class<?> table,
-			final IteratorCallback<Field> iteratorCallback) {
-		ReflectUtils.iteratorField(table, false, false,
-				new IteratorCallback<Field>() {
+	private static void iteratorTable(Class<?> table, final IteratorCallback<Field> iteratorCallback) {
+		ReflectUtils.iteratorField(table, false, false, new IteratorCallback<Field>() {
 
-					public boolean iteratorCallback(Field data) {
-						if (ORMUtils.ignoreField(data)) {
-							return true;
-						}
+			public boolean iteratorCallback(Field data) {
+				if (ORMUtils.ignoreField(data)) {
+					return true;
+				}
 
-						return iteratorCallback.iteratorCallback(data);
-					}
-				});
+				return iteratorCallback.iteratorCallback(data);
+			}
+		});
 	}
 
-	public static void iterator(Class<?> table,
-			IteratorCallback<Field> iteratorCallback) {
+	public static void iterator(Class<?> table, IteratorCallback<Field> iteratorCallback) {
 		Class<?> sup = table;
 		LinkedList<Class<?>> list = new LinkedList<Class<?>>();
 		while (sup != null && sup != Object.class) {
@@ -316,8 +306,7 @@ public final class ORMUtils {
 			public int compare(Class<?> table1, Class<?> table2) {
 				Table t1 = table1.getAnnotation(Table.class);
 				Table t2 = table2.getAnnotation(Table.class);
-				return CompareUtils.compare(t1 == null ? 0 : t1.sort(),
-						t2 == null ? 0 : t2.sort(), false);
+				return CompareUtils.compare(t1 == null ? 0 : t1.sort(), t2 == null ? 0 : t2.sort(), false);
 			}
 		});
 
