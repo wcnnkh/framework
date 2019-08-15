@@ -96,6 +96,10 @@ public class CreateTableSQL extends MysqlOrmSql {
 				}
 			}
 			sb.append(" ");
+			
+			if(!StringUtils.isEmpty(columnInfo.getCharsetName())){
+				sb.append("character set ").append(columnInfo.getCharsetName()).append(" ");
+			}
 
 			if (!columnInfo.isNullAble()) {
 				sb.append("not null ");

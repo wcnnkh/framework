@@ -41,4 +41,8 @@ public @interface Column {
 	public CasType casType() default CasType.NOTHING;
 	
 	public Class<? extends ColumnConvert> convert() default DefaultColumnConvert.class;
+	
+	public String[] convertArgs() default {};
+	
+	public String charsetName() default "";
 }

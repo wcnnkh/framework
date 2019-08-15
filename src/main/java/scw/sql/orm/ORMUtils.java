@@ -23,6 +23,7 @@ import scw.core.cglib.proxy.Factory;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CompareUtils;
 import scw.core.utils.FieldSetterListenUtils;
@@ -59,9 +60,21 @@ public final class ORMUtils {
 		return tableInfo;
 	}
 
+	public static String getCharsetName(Field field) {
+		Column column = field.getAnnotation(Column.class);
+		return column == null ? null : column.charsetName().trim();
+	}
+
 	public static ColumnConvert getConvert(Field field) {
 		Column column = field.getAnnotation(Column.class);
 		Class<? extends ColumnConvert> convert = column == null ? DefaultColumnConvert.class : column.convert();
+		if (column != null && !ArrayUtils.isEmpty(column.convertArgs())) {
+			Object[] args = new Object[column.convertArgs().length];
+			for (int i = 0; i < args.length; i++) {
+				args[i] = column.convertArgs()[i];
+			}
+			return InstanceUtils.getInstance(convert, args);
+		}
 		return InstanceUtils.getSingleInstanceFactory().getInstance(convert);
 	}
 

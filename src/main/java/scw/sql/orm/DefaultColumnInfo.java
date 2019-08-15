@@ -93,4 +93,8 @@ public final class DefaultColumnInfo implements ColumnInfo {
 	public void set(Object bean, Object value) throws Exception{
 		convert.setter(field, bean, value);
 	}
+
+	public String getCharsetName() {
+		return ORMUtils.getCharsetName(field);
+	}
 }
