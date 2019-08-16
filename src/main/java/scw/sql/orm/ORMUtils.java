@@ -263,7 +263,15 @@ public final class ORMUtils {
 
 	public static int getAnnotationColumnLength(Field field) {
 		Column column = field.getAnnotation(Column.class);
-		return column == null ? -1 : column.length();
+		if(column == null){
+			return -1;
+		}
+		
+		if("varchar".equals(column.type()) && column.length() == 0){
+			return 255;
+		}
+		
+		return column.length();
 	}
 
 	public static boolean isAnnoataionPrimaryKey(Field field) {
