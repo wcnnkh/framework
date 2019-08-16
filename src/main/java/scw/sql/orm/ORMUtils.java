@@ -17,8 +17,11 @@ import java.time.Year;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
+import java.util.Map.Entry;
 
 import scw.core.cglib.proxy.Factory;
 import scw.core.instance.InstanceUtils;
@@ -326,44 +329,90 @@ public final class ORMUtils {
 		return column == null ? false : column.unique();
 	}
 
-	private static void iteratorTable(Class<?> table, final IteratorCallback<Field> iteratorCallback) {
-		ReflectUtils.iteratorField(table, false, false, new IteratorCallback<Field>() {
+	private static final class TableFieldMap extends LinkedHashMap<String, Field> {
+		private static final long serialVersionUID = 1L;
+		private final int order;
 
-			public boolean iteratorCallback(Field data) {
-				if (ORMUtils.ignoreField(data)) {
+		public TableFieldMap(Class<?> table) {
+			ReflectUtils.iteratorField(table, false, false, new IteratorCallback<Field>() {
+
+				public boolean iteratorCallback(Field data) {
+					if (ORMUtils.ignoreField(data)) {
+						return true;
+					}
+
+					put(data.getName(), data);
 					return true;
 				}
+			});
+			Table t = table.getAnnotation(Table.class);
+			this.order = t == null ? 0 : t.sort();
+		}
 
-				return iteratorCallback.iteratorCallback(data);
-			}
-		});
+		public int getOrder() {
+			return order;
+		}
 	}
 
-	public static void iterator(Class<?> table, IteratorCallback<Field> iteratorCallback) {
+	public static LinkedList<Field> getFieldList(Class<?> table) {
+		List<TableFieldMap> list = new LinkedList<ORMUtils.TableFieldMap>();
 		Class<?> sup = table;
-		LinkedList<Class<?>> list = new LinkedList<Class<?>>();
 		while (sup != null && sup != Object.class) {
 			if (sup == Factory.class) {
 				sup = sup.getSuperclass();
 				continue;
 			}
 
-			list.add(sup);
+			list.add(new TableFieldMap(sup));
 			sup = sup.getSuperclass();
 		}
 
-		Collections.sort(list, new Comparator<Class<?>>() {
+		for (int i = list.size() - 1; i >= 0; i--) {
+			TableFieldMap fieldMap = list.get(i);
+			for (Entry<String, Field> entry : fieldMap.entrySet()) {
+				for (int a = list.size() - 1; a > i; a--) {
+					TableFieldMap tempFieldMap = list.get(a);
+					tempFieldMap.remove(entry.getKey());
+				}
+			}
+		}
 
-			public int compare(Class<?> table1, Class<?> table2) {
-				Table t1 = table1.getAnnotation(Table.class);
-				Table t2 = table2.getAnnotation(Table.class);
-				return CompareUtils.compare(t1 == null ? 0 : t1.sort(), t2 == null ? 0 : t2.sort(), false);
+		Collections.sort(list, new Comparator<TableFieldMap>() {
+
+			public int compare(TableFieldMap table1, TableFieldMap table2) {
+				if (table1.getOrder() == table2.getOrder()) {
+					return CompareUtils.compare(getPrimaryKeySize(table1), getPrimaryKeySize(table2), false);
+				}
+
+				return CompareUtils.compare(table1.getOrder(), table2.getOrder(), false);
 			}
 		});
-
-		ListIterator<Class<?>> iterator = list.listIterator(list.size());
+		
+		LinkedList<Field> primaryKeyList = new LinkedList<Field>();
+		LinkedList<Field> fieldList = new LinkedList<Field>();
+		ListIterator<TableFieldMap> iterator = list.listIterator(list.size());
 		while (iterator.hasPrevious()) {
-			iteratorTable(iterator.previous(), iteratorCallback);
+			TableFieldMap tableFieldMap = iterator.previous();
+			for(Entry<String, Field> entry : tableFieldMap.entrySet()){
+				Field field = entry.getValue();
+				if(isAnnoataionPrimaryKey(field)){
+					primaryKeyList.add(field);
+				}else{
+					fieldList.add(field);
+				}
+			}
 		}
+		primaryKeyList.addAll(fieldList);
+		return primaryKeyList;
+	}
+
+	private static int getPrimaryKeySize(TableFieldMap map) {
+		int i = 0;
+		for (Entry<String, Field> entry : map.entrySet()) {
+			if (isAnnoataionPrimaryKey(entry.getValue())) {
+				i++;
+			}
+		}
+		return i;
 	}
 }
