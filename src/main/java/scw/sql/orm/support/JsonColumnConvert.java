@@ -28,7 +28,6 @@ public class JsonColumnConvert implements ColumnConvert {
 			}
 
 			field.set(bean, obj);
-			;
 		}
 	}
 
