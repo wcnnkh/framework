@@ -1,6 +1,5 @@
 package scw.sql.orm.mysql;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,9 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.sql.orm.ColumnDefaultConfig;
 import scw.sql.orm.ColumnInfo;
+import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Column;
 import scw.sql.orm.annotation.Index;
@@ -21,59 +21,6 @@ import scw.sql.orm.enums.IndexOrder;
 
 public class CreateTableSQL extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
-
-	public static class DefaultColumnConfig {
-		private final String sqlType;
-		private final int len;
-
-		public DefaultColumnConfig(String sqlType, int len) {
-			this.sqlType = sqlType;
-			this.len = len;
-		}
-
-		public String getSqlType() {
-			return sqlType;
-		}
-
-		public int getLen() {
-			return len;
-		}
-	}
-
-	public DefaultColumnConfig getDefaultColumnConfig(Field field) {
-		Class<?> type = field.getType();
-		String sqlType;
-		int len;
-		if (ClassUtils.isStringType(type)) {
-			sqlType = "VARCHAR";
-			len = 255;
-		} else if (ClassUtils.isBooleanType(type)) {
-			sqlType = "BIT";
-			len = 1;
-		} else if (ClassUtils.isByteType(type)) {
-			sqlType = "TINYINT";
-			len = 2;
-		} else if (ClassUtils.isShortType(type)) {
-			sqlType = "SMALLINT";
-			len = 5;
-		} else if (ClassUtils.isIntType(type)) {
-			sqlType = "INTEGER";
-			len = 10;
-		} else if (ClassUtils.isLongType(type)) {
-			sqlType = "BIGINT";
-			len = 20;
-		} else if (ClassUtils.isFloatType(type)) {
-			sqlType = "FLOAT";
-			len = 10;
-		} else if (ClassUtils.isDoubleType(type)) {
-			sqlType = "DOUBLE";
-			len = 20;
-		} else {
-			sqlType = "TEXT";
-			len = 0;
-		}
-		return new DefaultColumnConfig(sqlType, len);
-	}
 
 	private String sql;
 
@@ -91,7 +38,7 @@ public class CreateTableSQL extends MysqlOrmSql {
 			ColumnInfo columnInfo = tableInfo.getColumns()[i];
 			int len = columnInfo.getLength();
 			String sqlType = columnInfo.getSqlTypeName();
-			DefaultColumnConfig columnConfig = getDefaultColumnConfig(columnInfo.getField());
+			ColumnDefaultConfig columnConfig = ORMUtils.getColumnDefaultConfig(columnInfo.getField());
 			if (len <= 0) {
 				len = columnConfig.getLen();
 			}

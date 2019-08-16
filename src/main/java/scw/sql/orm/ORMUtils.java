@@ -13,6 +13,7 @@ import java.sql.Date;
 import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Year;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
@@ -58,6 +59,43 @@ public final class ORMUtils {
 			}
 		}
 		return tableInfo;
+	}
+
+	public static ColumnDefaultConfig getColumnDefaultConfig(Field field) {
+		Class<?> type = field.getType();
+		if (ClassUtils.isStringType(type)) {
+			return new ColumnDefaultConfig("VARCHAR", 255);
+		} else if (ClassUtils.isBooleanType(type)) {
+			return new ColumnDefaultConfig("BIT", 1);
+		} else if (ClassUtils.isByteType(type)) {
+			return new ColumnDefaultConfig("TINYINT", 2);
+		} else if (ClassUtils.isShortType(type)) {
+			return new ColumnDefaultConfig("SMALLINT", 5);
+		} else if (ClassUtils.isIntType(type)) {
+			return new ColumnDefaultConfig("INTEGER", 10);
+		} else if (ClassUtils.isLongType(type)) {
+			return new ColumnDefaultConfig("BIGINT", 20);
+		} else if (ClassUtils.isFloatType(type)) {
+			return new ColumnDefaultConfig("FLOAT", 10);
+		} else if (ClassUtils.isDoubleType(type)) {
+			return new ColumnDefaultConfig("DOUBLE", 20);
+		} else if (Date.class.isAssignableFrom(type)) {
+			return new ColumnDefaultConfig("DATE", 0);
+		} else if (Timestamp.class.isAssignableFrom(type)) {
+			return new ColumnDefaultConfig("TIMESTAMP", 0);
+		} else if (Time.class.isAssignableFrom(type)) {
+			return new ColumnDefaultConfig("TIME", 0);
+		} else if (Year.class.isAssignableFrom(type)) {
+			return new ColumnDefaultConfig("YEAR", 0);
+		} else if (Blob.class.isAssignableFrom(type)) {
+			return new ColumnDefaultConfig("BLOB", 0);
+		} else if (Clob.class.isAssignableFrom(type)) {
+			return new ColumnDefaultConfig("CLOB", 0);
+		} else if (BigDecimal.class.isAssignableFrom(type)) {
+			return new ColumnDefaultConfig("NUMERIC", 0);
+		} else {
+			return new ColumnDefaultConfig("TEXT", 0);
+		}
 	}
 
 	public static String getCharsetName(Field field) {
