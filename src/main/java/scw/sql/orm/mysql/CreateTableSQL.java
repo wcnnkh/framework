@@ -1,5 +1,6 @@
 package scw.sql.orm.mysql;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
@@ -19,6 +21,60 @@ import scw.sql.orm.enums.IndexOrder;
 
 public class CreateTableSQL extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
+
+	public static class DefaultColumnConfig {
+		private final String sqlType;
+		private final int len;
+
+		public DefaultColumnConfig(String sqlType, int len) {
+			this.sqlType = sqlType;
+			this.len = len;
+		}
+
+		public String getSqlType() {
+			return sqlType;
+		}
+
+		public int getLen() {
+			return len;
+		}
+	}
+
+	public DefaultColumnConfig getDefaultColumnConfig(Field field) {
+		Class<?> type = field.getType();
+		String sqlType;
+		int len;
+		if (ClassUtils.isStringType(type)) {
+			sqlType = "VARCHAR";
+			len = 255;
+		} else if (ClassUtils.isBooleanType(type)) {
+			sqlType = "BIT";
+			len = 1;
+		} else if (ClassUtils.isByteType(type)) {
+			sqlType = "TINYINT";
+			len = 2;
+		} else if (ClassUtils.isShortType(type)) {
+			sqlType = "SMALLINT";
+			len = 5;
+		} else if (ClassUtils.isIntType(type)) {
+			sqlType = "INTEGER";
+			len = 10;
+		} else if (ClassUtils.isLongType(type)) {
+			sqlType = "BIGINT";
+			len = 20;
+		} else if (ClassUtils.isFloatType(type)) {
+			sqlType = "FLOAT";
+			len = 10;
+		} else if (ClassUtils.isDoubleType(type)) {
+			sqlType = "DOUBLE";
+			len = 20;
+		} else {
+			sqlType = "TEXT";
+			len = 0;
+		}
+		return new DefaultColumnConfig(sqlType, len);
+	}
+
 	private String sql;
 
 	public CreateTableSQL(TableInfo tableInfo, String tableName) {
@@ -34,70 +90,25 @@ public class CreateTableSQL extends MysqlOrmSql {
 
 			ColumnInfo columnInfo = tableInfo.getColumns()[i];
 			int len = columnInfo.getLength();
+			String sqlType = columnInfo.getSqlTypeName();
+			DefaultColumnConfig columnConfig = getDefaultColumnConfig(columnInfo.getField());
+			if (len <= 0) {
+				len = columnConfig.getLen();
+			}
+
+			if (StringUtils.isEmpty(sqlType)) {
+				sqlType = columnConfig.getSqlType();
+			}
+
 			sb.append("`").append(columnInfo.getName()).append("`");
 			sb.append(" ");
-			if ("java.lang.String".equals(columnInfo.getTypeName())) {
-				sb.append("varchar");
-				if (len > 0) {
-					sb.append("(").append(len).append(")");
-				} else {
-					sb.append("(255)");
-				}
-			} else if ("float".equals(columnInfo.getTypeName()) || "java.lang.Float".equals(columnInfo.getTypeName())) {
-				sb.append("float");
-				if (len > 0) {
-					sb.append("(").append(len).append(")");
-				} else {
-					sb.append("(10)");
-				}
-			} else if ("double".equals(columnInfo.getTypeName())
-					|| "java.lang.Double".equals(columnInfo.getTypeName())) {
-				sb.append("double");
-				if (len > 0) {
-					sb.append("(").append(len).append(")");
-				} else {
-					sb.append("(20)");
-				}
-			} else if ("long".equals(columnInfo.getTypeName()) || "java.lang.Long".equals(columnInfo.getTypeName())) {
-				sb.append("bigint");
-				if (len > 0) {
-					sb.append("(").append(len).append(")");
-				} else {
-					sb.append("(20)");
-				}
-			} else if ("int".equals(columnInfo.getTypeName()) || "java.lang.Integer".equals(columnInfo.getTypeName())) {
-				sb.append("int");
-				if (len > 0) {
-					sb.append("(").append(len).append(")");
-				} else {
-					sb.append("(10)");
-				}
-			} else if ("short".equals(columnInfo.getTypeName()) || "java.lang.Short".equals(columnInfo.getTypeName())) {
-				sb.append("SMALLINT");
-				if (len > 0) {
-					sb.append("(").append(len).append(")");
-				} else {
-					sb.append("(5)");
-				}
-			} else if ("byte".equals(columnInfo.getTypeName()) || "java.lang.Byte".equals(columnInfo.getTypeName())) {
-				sb.append("bit");
-				if (len > 0) {
-					sb.append("(").append(len).append(")");
-				} else {
-					sb.append("(1)");
-				}
-			} else if ("boolean".equals(columnInfo.getTypeName())
-					|| "java.lang.Boolean".equals(columnInfo.getTypeName())) {
-				sb.append("bit(1)");
-			} else {
-				sb.append(columnInfo.getTypeName());
-				if (len > 0) {
-					sb.append("(").append(len).append(")");
-				}
+			sb.append(sqlType);
+			if (len > 0) {
+				sb.append("(").append(len).append(")");
 			}
 			sb.append(" ");
-			
-			if(!StringUtils.isEmpty(columnInfo.getCharsetName())){
+
+			if (!StringUtils.isEmpty(columnInfo.getCharsetName())) {
 				sb.append("character set ").append(columnInfo.getCharsetName()).append(" ");
 			}
 

@@ -10,7 +10,7 @@ public interface ColumnInfo {
 
 	boolean isPrimaryKey();
 
-	String getTypeName();
+	String getSqlTypeName();
 
 	Class<?> getType();
 

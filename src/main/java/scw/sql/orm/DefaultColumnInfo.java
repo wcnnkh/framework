@@ -29,10 +29,6 @@ public final class DefaultColumnInfo implements ColumnInfo {
 		return ORMUtils.isAnnoataionPrimaryKey(field);
 	}
 
-	public String getTypeName() {
-		return ORMUtils.getAnnotationColumnTypeName(field);
-	}
-
 	public Class<?> getType() {
 		return field.getType();
 	}
@@ -86,15 +82,19 @@ public final class DefaultColumnInfo implements ColumnInfo {
 		return casType;
 	}
 
-	public Object get(Object bean) throws Exception{
+	public Object get(Object bean) throws Exception {
 		return convert.getter(field, bean);
 	}
 
-	public void set(Object bean, Object value) throws Exception{
+	public void set(Object bean, Object value) throws Exception {
 		convert.setter(field, bean, value);
 	}
 
 	public String getCharsetName() {
 		return ORMUtils.getCharsetName(field);
+	}
+
+	public String getSqlTypeName() {
+		return ORMUtils.getAnnotationColumnTypeName(field);
 	}
 }

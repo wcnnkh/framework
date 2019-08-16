@@ -253,24 +253,16 @@ public final class ORMUtils {
 	}
 
 	public static String getAnnotationColumnTypeName(Field field) {
-		String typeName = field.getType().getName();
 		Column column = field.getAnnotation(Column.class);
-		if (column != null && column.type().length() != 0) {
-			typeName = column.type();
-		}
-		return typeName;
+		return column == null ? null : column.type();
 	}
 
 	public static int getAnnotationColumnLength(Field field) {
 		Column column = field.getAnnotation(Column.class);
-		if(column == null){
+		if (column == null) {
 			return -1;
 		}
-		
-		if("varchar".equals(column.type()) && column.length() == 0){
-			return 255;
-		}
-		
+
 		return column.length();
 	}
 
