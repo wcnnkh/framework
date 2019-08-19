@@ -13,7 +13,6 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.tomcat.JarScanner;
 
-import scw.application.TomcatApplication;
 import scw.application.embedded.EmbeddedUtils;
 import scw.application.embedded.ServletEmbedded;
 import scw.beans.BeanFactory;
@@ -174,7 +173,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 				Tomcat.addServlet(context, "default",
 						"org.apache.catalina.servlets.DefaultServlet");
 				for (String pattern : patternArr) {
-					LoggerUtils.info(TomcatApplication.class,
+					LoggerUtils.info(TomcatServletEmbedded.class,
 							"source mapping [{}]", pattern);
 					addServletMapping(context, pattern, "default");
 				}

@@ -6,7 +6,7 @@ import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
 import scw.core.utils.StringParse;
 
-public class PropertyFormat implements ValueFormat {
+public class PropertyFactoryFormat implements ValueFormat {
 
 	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name) {
 		String v = propertyFactory.getProperty(name);
