@@ -77,8 +77,8 @@ public final class DubboUtils {
 			return null;
 		}
 
-		return InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory", beanFactory,
-				propertyFactory, nodeList, filterNames);
+		return InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory", beanFactory, propertyFactory,
+				nodeList, filterNames);
 	}
 
 	public static void exportService(BeanFactory beanFactory, PropertyFactory propertyFactory, NodeList nodeList) {
@@ -91,12 +91,12 @@ public final class DubboUtils {
 			return;
 		}
 
-		Thread thread = InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboServiceExortThread", propertyFactory,
+		Runnable runnable = InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboServiceExort", propertyFactory,
 				beanFactory, nodeList);
-		if (thread == null) {
+		if (runnable == null) {
 			return;
 		}
 
-		thread.start();
+		runnable.run();
 	}
 }

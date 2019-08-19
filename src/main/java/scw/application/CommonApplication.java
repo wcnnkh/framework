@@ -193,6 +193,8 @@ public class CommonApplication implements Application {
 			start = true;
 		}
 
+		beanFactory.init();
+		
 		String ormScanPackageName = propertyFactory.getProperty("orm.scan");
 		if (!StringUtils.isEmpty(ormScanPackageName)) {
 			ORMUtils.registerCglibProxyTableBean(ormScanPackageName);
@@ -200,17 +202,15 @@ public class CommonApplication implements Application {
 			ORMUtils.registerCglibProxyTableBean(getORMPackage());
 		}
 
-		beanFactory.init();
-
-		if (ResourceUtils.isExist(configPath)) {
-			DubboUtils.exportService(beanFactory, propertyFactory,
-					XmlBeanUtils.getRootNodeList(configPath));
-		}
-
 		CrontabAnnotationUtils.crontabService(
 				ResourceUtils.getClassList(getCrontabAnnotationPackage()),
 				beanFactory, getBeanFactory().getFilterNames());
 		scanningConsumer();
+		
+		if (ResourceUtils.isExist(configPath)) {
+			DubboUtils.exportService(beanFactory, propertyFactory,
+					XmlBeanUtils.getRootNodeList(configPath));
+		}
 	}
 
 	private void scanningConsumer() {

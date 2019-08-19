@@ -36,12 +36,9 @@ import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 
 public final class BeanUtils {
-	private static Logger logger = LoggerFactory.getLogger(BeanUtils.class);
-
 	private BeanUtils() {
 	};
 
@@ -217,7 +214,8 @@ public final class BeanUtils {
 						config.charset());
 				field.set(obj, value);
 			} catch (Exception e) {
-				logger.error(e, "config：clz={},fieldName={}", clz.getName(), field.getField().getName());
+				throw new RuntimeException("config：clz=" + clz.getName() + ",fieldName=" + field.getField().getName(),
+						e);
 			}
 		}
 	}
@@ -232,15 +230,15 @@ public final class BeanUtils {
 	private static void existDefaultValueWarnLog(String tag, Class<?> clz, FieldDefinition field, Object obj)
 			throws Exception {
 		if (checkExistDefaultValue(field, obj)) {
-			logger.warn(tag + " class[" + clz.getName() + "] fieldName[" + field.getField().getName()
-					+ "] existence default value");
+			LoggerUtils.warn(BeanUtils.class, tag + " class[" + clz.getName() + "] fieldName["
+					+ field.getField().getName() + "] existence default value");
 		}
 	}
 
 	private static void staticFieldWarnLog(String tag, Class<?> clz, FieldDefinition field) {
 		if (Modifier.isStatic(field.getField().getModifiers())) {
-			logger.warn(tag + " class[" + clz.getName() + "] fieldName[" + field.getField().getName()
-					+ "] is a static field");
+			LoggerUtils.warn(BeanUtils.class, tag + " class[" + clz.getName() + "] fieldName["
+					+ field.getField().getName() + "] is a static field");
 		}
 	}
 
@@ -259,7 +257,8 @@ public final class BeanUtils {
 				ValueWired valueWired = new ValueWired(getValueTaskId(clz, obj), obj, field.getField(), value);
 				valueWiredManager.write(valueWired);
 			} catch (Throwable e) {
-				logger.error(e, "properties：clz={},fieldName={}", clz.getName(), field.getField().getName());
+				throw new RuntimeException(
+						"properties：clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
 			}
 		}
 	}
@@ -278,7 +277,8 @@ public final class BeanUtils {
 				existDefaultValueWarnLog(Autowired.class.getName(), clz, field, obj);
 				field.set(obj, beanFactory.getInstance(name));
 			} catch (Exception e) {
-				logger.error(e, "autowrite：clz={},fieldName={}", clz.getName(), field.getField().getName());
+				throw new RuntimeException(
+						"autowrite：clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
 			}
 		}
 	}
