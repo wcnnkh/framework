@@ -39,12 +39,9 @@ public class CreateTableSQL extends MysqlOrmSql {
 			int len = columnInfo.getLength();
 			String sqlType = columnInfo.getSqlTypeName();
 			ColumnDefaultConfig columnConfig = ORMUtils.getColumnDefaultConfig(columnInfo.getField());
-			if (len <= 0) {
-				len = columnConfig.getLen();
-			}
-
 			if (StringUtils.isEmpty(sqlType)) {
 				sqlType = columnConfig.getSqlType();
+				len = columnConfig.getLen();
 			}
 
 			sb.append("`").append(columnInfo.getName()).append("`");
