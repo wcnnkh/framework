@@ -54,7 +54,7 @@ public class SingleExchange<T> implements Exchange<T> {
 			channel.queueDeclare(queueName, durable, exclusive, autoDelete, arguments);
 			channel.queueBind(queueName, channelFactory.getExchange(), routingKey, arguments);
 			channel.basicConsume(queueName, autoDelete,
-					new RabbitDefaultConsumer(channel, autoDelete, consumer, queueName, autoErrorAppend));
+					new RabbitDefaultConsumer(channel, autoDelete, consumer, queueName));
 		} catch (IOException e) {
 			logger.error("bind：exchange={},rotingKey={},durable={},exclusive={},autoDelete={}",
 					channelFactory.getExchangeType(), routingKey, durable, exclusive, autoDelete);
@@ -79,7 +79,7 @@ public class SingleExchange<T> implements Exchange<T> {
 	}
 
 	@AsyncComplete(service = DefaultAsyncCompleteService.class)
-	public void asyncPush(String routingKey, boolean mandatory, boolean immediate, T message) {
+	protected void asyncPush(String routingKey, boolean mandatory, boolean immediate, T message) {
 		basePush(routingKey, mandatory, immediate, message);
 	}
 
@@ -97,6 +97,14 @@ public class SingleExchange<T> implements Exchange<T> {
 	public void asyncPush(String routingKey, T message) {
 		basePush(routingKey, message);
 	}
+	
+	private void autoPush(String routingKey, boolean mandatory, boolean immediate, T message){
+		if (asyncComplete) {
+			asyncPush(routingKey, mandatory, immediate, message);
+		} else {
+			basePush(routingKey, mandatory, immediate, message);
+		}
+	}
 
 	public void push(final String routingKey, final boolean mandatory, final boolean immediate, final T message) {
 		if (TransactionManager.hasTransaction()) {
@@ -104,31 +112,27 @@ public class SingleExchange<T> implements Exchange<T> {
 				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 					@Override
 					public void complete() {
-						if (asyncComplete) {
-							asyncPush(routingKey, mandatory, immediate, message);
-						} else {
-							basePush(routingKey, mandatory, immediate, message);
-						}
+						autoPush(routingKey, mandatory, immediate, message);
 					}
 				});
 			} else {
 				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 					@Override
 					public void afterProcess() {
-						if (asyncComplete) {
-							asyncPush(routingKey, mandatory, immediate, message);
-						} else {
-							basePush(routingKey, mandatory, immediate, message);
-						}
+						autoPush(routingKey, mandatory, immediate, message);
 					}
 				});
 			}
 		} else {
-			if (asyncComplete) {
-				asyncPush(routingKey, mandatory, immediate, message);
-			} else {
-				basePush(routingKey, mandatory, immediate, message);
-			}
+			autoPush(routingKey, mandatory, immediate, message);
+		}
+	}
+	
+	private void autoPush(final String routingKey, final T message){
+		if (asyncComplete) {
+			asyncPush(routingKey, message);
+		} else {
+			basePush(routingKey, message);
 		}
 	}
 
@@ -138,47 +142,32 @@ public class SingleExchange<T> implements Exchange<T> {
 				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 					@Override
 					public void complete() {
-						if (asyncComplete) {
-							asyncPush(routingKey, message);
-						} else {
-							basePush(routingKey, message);
-						}
+						autoPush(routingKey, message);
 					}
 				});
 			} else {
 				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 					@Override
 					public void afterProcess() {
-						if (asyncComplete) {
-							asyncPush(routingKey, message);
-						} else {
-							basePush(routingKey, message);
-						}
+						autoPush(routingKey, message);
 					}
 				});
 			}
 		} else {
-			if (asyncComplete) {
-				asyncPush(routingKey, message);
-			} else {
-				basePush(routingKey, message);
-			}
+			autoPush(routingKey, message);
 		}
 	}
 
-	final class RabbitDefaultConsumer extends DefaultConsumer {
+	private final class RabbitDefaultConsumer extends DefaultConsumer {
 		private final Consumer<T> consumer;
 		private final boolean autoAck;
 		private final String name;
-		private final boolean autoErrorAppend;// 如果异常，自动添加到队列尾部
 
-		public RabbitDefaultConsumer(Channel channel, boolean autoAck, Consumer<T> consumer, String name,
-				boolean autoErrorAppend) {
+		public RabbitDefaultConsumer(Channel channel, boolean autoAck, Consumer<T> consumer, String name) {
 			super(channel);
 			this.consumer = consumer;
 			this.autoAck = autoAck;
 			this.name = name;
-			this.autoErrorAppend = autoErrorAppend;
 		}
 
 		@Override
