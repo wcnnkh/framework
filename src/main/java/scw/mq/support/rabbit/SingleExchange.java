@@ -192,17 +192,15 @@ public class SingleExchange<T> implements Exchange<T> {
 			try {
 				message = getSerializer().deserialize(body);
 				consumer.consume(message);
-				if (!autoAck) {
-					getChannel().basicAck(envelope.getDeliveryTag(), false);
-				}
 			} catch (Throwable e) {
 				logger.error(e, "消费者异常, exchange={}, routingKey={}, queueName={}", envelope.getExchange(),
 						envelope.getRoutingKey(), name);
 				if (autoErrorAppend) {
 					push(envelope.getRoutingKey(), message);
-					if (!autoAck) {
-						getChannel().basicAck(envelope.getDeliveryTag(), false);
-					}
+				}
+			}finally {
+				if (!autoAck) {
+					getChannel().basicAck(envelope.getDeliveryTag(), false);
 				}
 			}
 		}
