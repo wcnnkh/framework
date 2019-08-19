@@ -9,6 +9,11 @@ import java.lang.annotation.Target;
 import scw.beans.config.ConfigParse;
 import scw.beans.config.parse.PropertiesParse;
 
+/**
+ * 推荐使用@Value注解
+ * @author shuchaowen
+ *
+ */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
