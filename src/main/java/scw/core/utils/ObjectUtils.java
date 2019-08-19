@@ -997,4 +997,11 @@ public abstract class ObjectUtils {
 		return sb.toString();
 	}
 
+	public static boolean equals(Object a, Object b) {
+		if (a == null || b == null) {
+			return a == b;
+		}
+
+		return a.equals(b);
+	}
 }
