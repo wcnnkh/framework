@@ -15,6 +15,7 @@ import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanParameter;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.Destroy;
+import scw.core.Init;
 import scw.core.PropertyFactory;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
@@ -154,6 +155,10 @@ public final class XmlRequestBean implements RequestBean {
 			for (BeanMethod method : initMethods) {
 				method.invoke(bean, beanFactory, propertyFactory);
 			}
+		}
+		
+		if(bean instanceof Init){
+			((Init) bean).init();
 		}
 	}
 

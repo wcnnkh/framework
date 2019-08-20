@@ -14,6 +14,7 @@ import scw.beans.BeanUtils;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.property.ValueWiredManager;
+import scw.core.Init;
 import scw.core.PropertyFactory;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.NotFoundException;
@@ -128,6 +129,10 @@ public final class AnnotationRequestBean implements RequestBean {
 			for (Method method : initMethods) {
 				method.invoke(bean);
 			}
+		}
+		
+		if(bean instanceof Init){
+			((Init) bean).init();
 		}
 	}
 
