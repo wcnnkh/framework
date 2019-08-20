@@ -1,6 +1,7 @@
 package scw.net.support;
 
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.net.URLConnection;
 
 import scw.io.IOUtils;
@@ -8,8 +9,13 @@ import scw.net.DecoderFilter;
 import scw.net.DecoderFilterChain;
 
 public abstract class AbstractTextDecoderFilter implements DecoderFilter {
+	private String charsetName;
 
-	public Object decode(URLConnection urlConnection, Class<?> type, DecoderFilterChain chain) throws Exception {
+	public AbstractTextDecoderFilter(String charsetName) {
+		this.charsetName = charsetName;
+	}
+	
+	public Object decode(URLConnection urlConnection, Type type, DecoderFilterChain chain) throws Exception {
 		if (!urlConnection.getDoInput() || type == Void.class) {
 			return null;
 		}
@@ -31,9 +37,11 @@ public abstract class AbstractTextDecoderFilter implements DecoderFilter {
 		return chain.doDecode(urlConnection, type);
 	}
 
-	public abstract String getCharsetName();
+	public final String getCharsetName(){
+		return charsetName;
+	}
+	
+	protected abstract boolean isVerifyType(Type type);
 
-	protected abstract boolean isVerifyType(Class<?> type);
-
-	protected abstract Object textDecoder(String contentType, String text, Class<?> type);
+	protected abstract Object textDecoder(String contentType, String text, Type type);
 }

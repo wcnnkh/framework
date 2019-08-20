@@ -1,11 +1,9 @@
 package scw.sql.orm;
 
-import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -233,14 +231,13 @@ public final class ORMUtils {
 		return column == null ? isDataBaseType(field.getType()) : true;
 	}
 
-	public static boolean isDataBaseType(Class<?> type) {
+	private static boolean isDataBaseType(Class<?> type) {
 		return ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
 				|| Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
-				|| Timestamp.class.isAssignableFrom(type) || InputStream.class.isAssignableFrom(type)
+				|| Timestamp.class.isAssignableFrom(type)
 				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
 				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
-				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type)
-				|| URL.class.isAssignableFrom(type) || byte[].class.isAssignableFrom(type);
+				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type);
 	}
 
 	public static String getDefaultTableName(Class<?> clazz) {

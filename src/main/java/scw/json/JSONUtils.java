@@ -2,7 +2,6 @@ package scw.json;
 
 import java.lang.reflect.Type;
 
-import scw.core.exception.NotSupportException;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.logger.LoggerUtils;
@@ -22,10 +21,10 @@ public final class JSONUtils {
 		}
 
 		if (jsonSupport == null) {
-			throw new NotSupportException("not found default json parse support");
+			LoggerUtils.warn(JSONUtils.class, "not found default json parse support");
+		} else {
+			LoggerUtils.info(JSONUtils.class, "default json parse：{}", jsonSupport.getClass().getName());
 		}
-
-		LoggerUtils.info(JSONUtils.class, "default json parse：{}", jsonSupport.getClass().getName());
 		DEFAULT_JSON_SUPPORT = jsonSupport;
 	}
 
@@ -49,11 +48,10 @@ public final class JSONUtils {
 	public static <T> T parseObject(String text, Class<T> type) {
 		return DEFAULT_JSON_SUPPORT.parseObject(text, type);
 	}
-	
+
 	public static <T> T parseObject(String text, Type type) {
 		return DEFAULT_JSON_SUPPORT.parseObject(text, type);
 	}
-
 
 	public static JSONArray createJSONArray() {
 		return DEFAULT_JSON_SUPPORT.createJSONArray();
@@ -65,6 +63,7 @@ public final class JSONUtils {
 
 	/**
 	 * 是否支持fastjson
+	 * 
 	 * @return
 	 */
 	public static boolean isSupportFastJSON() {

@@ -2,17 +2,16 @@ package scw.net.support;
 
 import java.lang.reflect.Type;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.parser.Feature;
-
 import scw.core.Constants;
+import scw.json.JSONUtils;
 
-public class FastJsonDecoderFilter extends AbstractTextDecoderFilter {
-	public FastJsonDecoderFilter() {
+public class JsonDecoderFilter extends AbstractTextDecoderFilter {
+
+	public JsonDecoderFilter() {
 		this(Constants.DEFAULT_CHARSET_NAME);
 	}
 
-	public FastJsonDecoderFilter(String charsetName) {
+	public JsonDecoderFilter(String charsetName) {
 		super(charsetName);
 	}
 
@@ -23,6 +22,6 @@ public class FastJsonDecoderFilter extends AbstractTextDecoderFilter {
 
 	@Override
 	protected Object textDecoder(String contentType, String text, Type type) {
-		return JSON.parseObject(text, type, Feature.SupportNonPublicField);
+		return JSONUtils.parseObject(text, type);
 	}
 }

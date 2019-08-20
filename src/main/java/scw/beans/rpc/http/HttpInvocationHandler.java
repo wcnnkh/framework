@@ -15,8 +15,8 @@ import scw.net.DecoderFilterChain;
 import scw.net.DecoderResponse;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpRequest;
-import scw.net.support.BaseDecoderFilter;
 import scw.net.support.BeanFactoryDecoderFilterChain;
+import scw.net.support.JsonDecoderFilter;
 
 public final class HttpInvocationHandler implements InvocationHandler {
 	@Autowired
@@ -45,7 +45,7 @@ public final class HttpInvocationHandler implements InvocationHandler {
 		HttpRequest httpRequest = createHttpRequest(beanFactory, method.getDeclaringClass(), method, args);
 		Collection<String> decoderNames = getDeserializerFilters(method.getDeclaringClass(), method);
 		DecoderFilterChain chain = new BeanFactoryDecoderFilterChain(beanFactory, decoderNames);
-		DecoderResponse response = new DecoderResponse(method.getReturnType(), chain);
+		DecoderResponse response = new DecoderResponse(method.getGenericReturnType(), chain);
 		return NetworkUtils.execute(httpRequest, response);
 	}
 
@@ -86,10 +86,10 @@ public final class HttpInvocationHandler implements InvocationHandler {
 		}
 
 		deserializerFilters.addAll(defaultDeserializerFilters);
-		deserializerFilters.add(BaseDecoderFilter.class.getName());
 		if (JSONUtils.isSupportFastJSON()) {
 			deserializerFilters.add("scw.net.support.FastJsonDecoderFilter");
 		}
+		deserializerFilters.add(JsonDecoderFilter.class.getName());
 		return deserializerFilters;
 	}
 }

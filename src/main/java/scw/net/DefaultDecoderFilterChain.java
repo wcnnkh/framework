@@ -1,5 +1,6 @@
 package scw.net;
 
+import java.lang.reflect.Type;
 import java.net.URLConnection;
 import java.util.Collection;
 import java.util.Iterator;
@@ -16,7 +17,7 @@ public class DefaultDecoderFilterChain implements DecoderFilterChain {
 		}
 	}
 
-	public Object doDecode(URLConnection urlConnection, Class<?> type) throws Exception {
+	public Object doDecode(URLConnection urlConnection, Type type) throws Exception {
 		if (iterator == null) {
 			throw new NotSupportException("不支持是解码：" + type);
 		}

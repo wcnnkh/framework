@@ -1,5 +1,6 @@
 package scw.net.support;
 
+import java.lang.reflect.Type;
 import java.net.URLConnection;
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,7 +22,7 @@ public final class BeanFactoryDecoderFilterChain implements DecoderFilterChain {
 		}
 	}
 
-	public Object doDecode(URLConnection urlConnection, Class<?> type) throws Exception {
+	public Object doDecode(URLConnection urlConnection, Type type) throws Exception {
 		if (iterator == null) {
 			throw new NotFoundException("not found DeserializerFilter：" + type);
 		}
