@@ -2,9 +2,9 @@ package scw.sql.orm.support;
 
 import java.lang.reflect.Field;
 
-import scw.sql.orm.ColumnConvert;
-
 import com.alibaba.fastjson.JSON;
+
+import scw.sql.orm.ColumnConvert;
 
 public class FastJsonColumnConvert implements ColumnConvert{
 
@@ -23,7 +23,7 @@ public class FastJsonColumnConvert implements ColumnConvert{
 		}
 		
 		if(value instanceof String){
-			Object obj = JSON.parseObject((String)value, field.getType());
+			Object obj = JSON.parseObject((String)value, field.getGenericType());
 			if(obj == null){
 				return ;
 			}

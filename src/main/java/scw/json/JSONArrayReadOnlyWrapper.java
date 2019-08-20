@@ -1,5 +1,7 @@
 package scw.json;
 
+import java.lang.reflect.Type;
+
 public class JSONArrayReadOnlyWrapper implements JSONArrayReadOnly {
 	private static final long serialVersionUID = 1L;
 	private JSONArrayReadOnly jsonArrayReadOnly;
@@ -82,6 +84,10 @@ public class JSONArrayReadOnlyWrapper implements JSONArrayReadOnly {
 
 	public String toJSONString() {
 		return jsonArrayReadOnly.toJSONString();
+	}
+
+	public <T> T getObject(int index, Type type) {
+		return jsonArrayReadOnly.getObject(index, type);
 	}
 
 }

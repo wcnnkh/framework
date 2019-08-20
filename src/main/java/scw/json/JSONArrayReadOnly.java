@@ -1,6 +1,7 @@
 package scw.json;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 
 public interface JSONArrayReadOnly extends Serializable{
 	String getString(int index);
@@ -39,5 +40,7 @@ public interface JSONArrayReadOnly extends Serializable{
 
 	<T> T getObject(int index, Class<T> type);
 
+	<T> T getObject(int index, Type type);
+	
 	String toJSONString();
 }

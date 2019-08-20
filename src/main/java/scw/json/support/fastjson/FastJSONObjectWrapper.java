@@ -1,5 +1,6 @@
 package scw.json.support.fastjson;
 
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -147,6 +148,10 @@ public final class FastJSONObjectWrapper implements scw.json.JSONObject {
 
 	public Boolean getBoolean(String key) {
 		return json.getBoolean(key);
+	}
+
+	public <T> T getObject(String key, Type type) {
+		return json.getObject(key, type);
 	}
 
 }

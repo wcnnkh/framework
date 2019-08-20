@@ -1,5 +1,6 @@
 package scw.json.support.fastjson;
 
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -194,5 +195,9 @@ public final class FastJSONArrayWrapper implements scw.json.JSONArray {
 
 	public Boolean getBoolean(int index) {
 		return jsonArray.getBoolean(index);
+	}
+
+	public <T> T getObject(int index, Type type) {
+		return jsonArray.getObject(index, type);
 	}
 }

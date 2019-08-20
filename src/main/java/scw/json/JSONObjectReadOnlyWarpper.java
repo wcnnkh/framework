@@ -1,5 +1,7 @@
 package scw.json;
 
+import java.lang.reflect.Type;
+
 public class JSONObjectReadOnlyWarpper implements JSONObjectReadOnly {
 	private static final long serialVersionUID = 1L;
 	private JSONObjectReadOnly jsonObjectReadOnly;
@@ -82,5 +84,9 @@ public class JSONObjectReadOnlyWarpper implements JSONObjectReadOnly {
 
 	public String toJSONString() {
 		return jsonObjectReadOnly.toJSONString();
+	}
+
+	public <T> T getObject(String key, Type type) {
+		return jsonObjectReadOnly.getObject(key, type);
 	}
 }

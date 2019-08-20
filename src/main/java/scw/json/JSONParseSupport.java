@@ -1,5 +1,7 @@
 package scw.json;
 
+import java.lang.reflect.Type;
+
 public interface JSONParseSupport {
 	String toJSONString(Object obj);
 
@@ -8,6 +10,8 @@ public interface JSONParseSupport {
 	JSONObject parseObject(String text);
 
 	<T> T parseObject(String text, Class<T> type);
+	
+	<T> T parseObject(String text, Type type);
 
 	JSONArray createJSONArray();
 

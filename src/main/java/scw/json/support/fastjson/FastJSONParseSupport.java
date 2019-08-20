@@ -1,5 +1,7 @@
 package scw.json.support.fastjson;
 
+import java.lang.reflect.Type;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
@@ -32,5 +34,9 @@ public final class FastJSONParseSupport implements JSONParseSupport {
 
 	public JSONObject createJSONObject() {
 		return new FastJSONObjectWrapper(new com.alibaba.fastjson.JSONObject());
+	}
+
+	public <T> T parseObject(String text, Type type) {
+		return JSON.parseObject(text, type);
 	}
 }

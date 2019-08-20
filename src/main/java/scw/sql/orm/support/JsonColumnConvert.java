@@ -22,7 +22,7 @@ public class JsonColumnConvert implements ColumnConvert {
 		}
 
 		if (value instanceof String) {
-			Object obj = JSONUtils.parseObject((String) value, field.getType());
+			Object obj = JSONUtils.parseObject((String) value, field.getGenericType());
 			if (obj == null) {
 				return;
 			}
