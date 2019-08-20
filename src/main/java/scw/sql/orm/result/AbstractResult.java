@@ -117,8 +117,8 @@ public abstract class AbstractResult implements Result {
 			throws Exception {
 		Object o = wrapper(tableInfo, tableName);
 		for (ColumnInfo column : tableInfo.getTableColumns()) {
-			TableInfo tInfo = ORMUtils.getTableInfo(column.getType());
-			String tName = getTableName(tInfo, tInfo.getDefaultName(), column.getType(), tableMapping);
+			TableInfo tInfo = ORMUtils.getTableInfo(column.getField().getType());
+			String tName = getTableName(tInfo, tInfo.getDefaultName(), column.getField().getType(), tableMapping);
 			Object v = wrapper(tInfo, tName, tableMapping);
 			if (v != null) {
 				column.set(o, v);

@@ -29,14 +29,6 @@ public final class DefaultColumnInfo implements ColumnInfo {
 		return ORMUtils.isAnnoataionPrimaryKey(field);
 	}
 
-	public Class<?> getType() {
-		return field.getType();
-	}
-
-	public int getLength() {
-		return ORMUtils.getAnnotationColumnLength(field);
-	}
-
 	public boolean isNullAble() {
 		return ORMUtils.isAnnoataionColumnNullAble(field);
 	}
@@ -94,7 +86,8 @@ public final class DefaultColumnInfo implements ColumnInfo {
 		return ORMUtils.getCharsetName(field);
 	}
 
-	public String getSqlTypeName() {
-		return ORMUtils.getAnnotationColumnTypeName(field);
+	public SqlType getSqlType() {
+		return new DefaultSqlType(ORMUtils.getAnnotationColumnTypeName(field),
+				ORMUtils.getAnnotationColumnLength(field));
 	}
 }

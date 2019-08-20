@@ -9,12 +9,8 @@ public interface ColumnInfo {
 	String getName();
 
 	boolean isPrimaryKey();
-
-	String getSqlTypeName();
-
-	Class<?> getType();
-
-	int getLength();
+	
+	SqlType getSqlType();
 
 	boolean isNullAble();
 

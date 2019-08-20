@@ -68,7 +68,7 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 
 			Object value = columnInfo.get(beanFieldListen);
 			Counter counter = columnInfo.getCounter();
-			if (counter != null && ClassUtils.isNumberType(columnInfo.getType())) {
+			if (counter != null && ClassUtils.isNumberType(columnInfo.getField().getType())) {
 				Object oldValue = entry.getValue();
 				if (oldValue != null && value != null) {
 					// incr or decr

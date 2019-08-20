@@ -11,7 +11,6 @@ import java.sql.Date;
 import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.Year;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
@@ -60,43 +59,6 @@ public final class ORMUtils {
 			}
 		}
 		return tableInfo;
-	}
-
-	public static ColumnDefaultConfig getColumnDefaultConfig(Field field) {
-		Class<?> type = field.getType();
-		if (ClassUtils.isStringType(type)) {
-			return new ColumnDefaultConfig("VARCHAR", 255);
-		} else if (ClassUtils.isBooleanType(type)) {
-			return new ColumnDefaultConfig("BIT", 1);
-		} else if (ClassUtils.isByteType(type)) {
-			return new ColumnDefaultConfig("TINYINT", 2);
-		} else if (ClassUtils.isShortType(type)) {
-			return new ColumnDefaultConfig("SMALLINT", 5);
-		} else if (ClassUtils.isIntType(type)) {
-			return new ColumnDefaultConfig("INTEGER", 10);
-		} else if (ClassUtils.isLongType(type)) {
-			return new ColumnDefaultConfig("BIGINT", 20);
-		} else if (ClassUtils.isFloatType(type)) {
-			return new ColumnDefaultConfig("FLOAT", 10);
-		} else if (ClassUtils.isDoubleType(type)) {
-			return new ColumnDefaultConfig("DOUBLE", 20);
-		} else if (Date.class.isAssignableFrom(type)) {
-			return new ColumnDefaultConfig("DATE", 0);
-		} else if (Timestamp.class.isAssignableFrom(type)) {
-			return new ColumnDefaultConfig("TIMESTAMP", 0);
-		} else if (Time.class.isAssignableFrom(type)) {
-			return new ColumnDefaultConfig("TIME", 0);
-		} else if (Year.class.isAssignableFrom(type)) {
-			return new ColumnDefaultConfig("YEAR", 0);
-		} else if (Blob.class.isAssignableFrom(type)) {
-			return new ColumnDefaultConfig("BLOB", 0);
-		} else if (Clob.class.isAssignableFrom(type)) {
-			return new ColumnDefaultConfig("CLOB", 0);
-		} else if (BigDecimal.class.isAssignableFrom(type)) {
-			return new ColumnDefaultConfig("NUMERIC", 0);
-		} else {
-			return new ColumnDefaultConfig("TEXT", 0);
-		}
 	}
 
 	public static String getCharsetName(Field field) {
@@ -234,10 +196,10 @@ public final class ORMUtils {
 	private static boolean isDataBaseType(Class<?> type) {
 		return ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
 				|| Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
-				|| Timestamp.class.isAssignableFrom(type)
-				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
-				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
-				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type);
+				|| Timestamp.class.isAssignableFrom(type) || Array.class.isAssignableFrom(type)
+				|| Blob.class.isAssignableFrom(type) || Clob.class.isAssignableFrom(type)
+				|| BigDecimal.class.isAssignableFrom(type) || Reader.class.isAssignableFrom(type)
+				|| NClob.class.isAssignableFrom(type);
 	}
 
 	public static String getDefaultTableName(Class<?> clazz) {
@@ -288,6 +250,18 @@ public final class ORMUtils {
 		}
 
 		return column.casType();
+	}
+
+	public static SqlType getSqlType(Class<?> fieldType, SqlType sqlType, SqlTypeFactory sqlTypeFactory) {
+		String type = sqlType.getName();
+		SqlType tempSqlType = StringUtils.isEmpty(type) ? sqlTypeFactory.getSqlType(fieldType)
+				: sqlTypeFactory.getSqlType(type);
+		type = tempSqlType.getName();
+		long len = sqlType.getLength();
+		if (len <= 0) {
+			len = tempSqlType.getLength();
+		}
+		return new DefaultSqlType(type, len);
 	}
 
 	public static String getAnnotationColumnTypeName(Field field) {
@@ -384,17 +358,17 @@ public final class ORMUtils {
 				return CompareUtils.compare(table1.getOrder(), table2.getOrder(), false);
 			}
 		});
-		
+
 		LinkedList<Field> primaryKeyList = new LinkedList<Field>();
 		LinkedList<Field> fieldList = new LinkedList<Field>();
 		ListIterator<TableFieldMap> iterator = list.listIterator(list.size());
 		while (iterator.hasPrevious()) {
 			TableFieldMap tableFieldMap = iterator.previous();
-			for(Entry<String, Field> entry : tableFieldMap.entrySet()){
+			for (Entry<String, Field> entry : tableFieldMap.entrySet()) {
 				Field field = entry.getValue();
-				if(isAnnoataionPrimaryKey(field)){
+				if (isAnnoataionPrimaryKey(field)) {
 					primaryKeyList.add(field);
-				}else{
+				} else {
 					fieldList.add(field);
 				}
 			}

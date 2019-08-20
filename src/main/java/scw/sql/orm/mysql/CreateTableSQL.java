@@ -9,9 +9,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.utils.StringUtils;
-import scw.sql.orm.ColumnDefaultConfig;
 import scw.sql.orm.ColumnInfo;
+import scw.sql.orm.DefaultSqlTypeFactory;
 import scw.sql.orm.ORMUtils;
+import scw.sql.orm.SqlType;
+import scw.sql.orm.SqlTypeFactory;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Column;
 import scw.sql.orm.annotation.Index;
@@ -21,10 +23,13 @@ import scw.sql.orm.enums.IndexOrder;
 
 public class CreateTableSQL extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
-
 	private String sql;
 
 	public CreateTableSQL(TableInfo tableInfo, String tableName) {
+		this(tableInfo, tableName, new DefaultSqlTypeFactory());
+	}
+
+	public CreateTableSQL(TableInfo tableInfo, String tableName, SqlTypeFactory sqlTypeFactory) {
 		Table table = tableInfo.getAnnotation(Table.class);
 		StringBuilder sb = new StringBuilder();
 		sb.append("CREATE TABLE IF NOT EXISTS `").append(tableName).append("`");
@@ -36,21 +41,13 @@ public class CreateTableSQL extends MysqlOrmSql {
 			}
 
 			ColumnInfo columnInfo = tableInfo.getColumns()[i];
-			int len = columnInfo.getLength();
-			String sqlType = columnInfo.getSqlTypeName();
-			ColumnDefaultConfig columnConfig = ORMUtils.getColumnDefaultConfig(columnInfo.getField());
-			if (StringUtils.isEmpty(sqlType)) {
-				sqlType = columnConfig.getSqlType();
-				if(len <= 0){
-					len = columnConfig.getLen();
-				}
-			}
-
+			SqlType sqlType = ORMUtils.getSqlType(columnInfo.getField().getType(), columnInfo.getSqlType(),
+					sqlTypeFactory);
 			sb.append("`").append(columnInfo.getName()).append("`");
 			sb.append(" ");
-			sb.append(sqlType);
-			if (len > 0) {
-				sb.append("(").append(len).append(")");
+			sb.append(sqlType.getName());
+			if (sqlType.getLength() > 0) {
+				sb.append("(").append(sqlType.getLength()).append(")");
 			}
 			sb.append(" ");
 
