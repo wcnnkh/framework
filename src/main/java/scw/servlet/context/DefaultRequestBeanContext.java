@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import scw.core.exception.BeansException;
 import scw.servlet.Request;
-import scw.servlet.beans.Parameter;
+import scw.servlet.beans.RequestInit;
 import scw.servlet.beans.RequestBean;
 import scw.servlet.beans.RequestBeanFactory;
 
@@ -74,8 +74,8 @@ public class DefaultRequestBeanContext implements RequestBeanContext {
 				throw new BeansException(e);
 			}
 
-			if (obj instanceof Parameter) {
-				((Parameter) obj).wrapper(request);
+			if (obj instanceof RequestInit) {
+				((RequestInit) obj).init(request);
 			}
 		}
 		return obj;
