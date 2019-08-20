@@ -59,7 +59,7 @@ import scw.servlet.http.HttpWrapperFactory;
 import scw.servlet.http.filter.HttpServiceFilter;
 import scw.servlet.http.filter.NotFoundFilter;
 import scw.servlet.parameter.LastParameterFilter;
-import scw.servlet.parameter.PrimitiveOrWarpperParameterFilter;
+import scw.servlet.parameter.FirstParameterFilter;
 
 public final class ServletUtils {
 	private static final String RESTURL_PATH_PARAMETER = "_resturl_path_parameter";
@@ -379,7 +379,7 @@ public final class ServletUtils {
 					continue;
 				}
 
-				String key = prefix == null ? field.getName() : prefix + field.getName();
+				String key = StringUtils.isEmpty(prefix) ? field.getName() : prefix + field.getName();
 				if (String.class.isAssignableFrom(field.getType())
 						|| ClassUtils.isPrimitiveOrWrapper(field.getType())) {
 					// 如果是基本数据类型
@@ -592,7 +592,7 @@ public final class ServletUtils {
 		String[] lastFilters = StringUtils.commonSplit(propertyFactory.getProperty("servlet.parameter.filter.last"));
 		LinkedList<ParameterFilter> list = new LinkedList<ParameterFilter>();
 		appendParameterFilters(list, instanceFactory, firstFilters);
-		list.add(instanceFactory.getInstance(PrimitiveOrWarpperParameterFilter.class));
+		list.add(instanceFactory.getInstance(FirstParameterFilter.class));
 		Controller controller = clz.getAnnotation(Controller.class);
 		if (controller != null) {
 			for (Class<? extends ParameterFilter> clazz : controller.parameterFilter()) {

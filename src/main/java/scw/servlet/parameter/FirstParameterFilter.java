@@ -7,14 +7,20 @@ import scw.servlet.ParameterDefinition;
 import scw.servlet.ParameterFilter;
 import scw.servlet.ParameterFilterChain;
 import scw.servlet.Request;
+import scw.servlet.parameter.annotation.Parameter;
 
-public final class PrimitiveOrWarpperParameterFilter implements ParameterFilter {
+public final class FirstParameterFilter implements ParameterFilter {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object filter(Request request, ParameterDefinition parameterDefinition, ParameterFilterChain chain)
 			throws Exception {
-		Class<?> type = parameterDefinition.getType();
 		String name = parameterDefinition.getName();
+		Parameter parameter = parameterDefinition.getAnnotation(Parameter.class);
+		if(parameter != null){
+			name = parameter.value();
+		}
+		
+		Class<?> type = parameterDefinition.getType();
 		if (String.class.isAssignableFrom(type)) {
 			return request.getParameter(name);
 		} else if (int.class.isAssignableFrom(type)) {

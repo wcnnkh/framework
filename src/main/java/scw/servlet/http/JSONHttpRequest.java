@@ -33,7 +33,7 @@ public final class JSONHttpRequest extends AbstractHttpRequest {
 	}
 
 	@Override
-	public <T> T getRootObject(Class<T> type) {
+	public <T> T getObject(Class<T> type) {
 		return jsonParseSupport.parseObject(json.toJSONString(), type);
 	}
 

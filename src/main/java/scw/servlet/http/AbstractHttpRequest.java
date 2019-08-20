@@ -340,7 +340,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper impl
 		return StringParse.DEFAULT.getClass(data);
 	}
 
-	public <T> T getRootObject(Class<T> type) {
+	public <T> T getObject(Class<T> type) {
 		return ServletUtils.getRequestObjectParameterWrapper(this, type, null);
 	}
 

@@ -8,7 +8,7 @@ public interface ParameterDefinition {
 	
 	String getName();
 
-	Annotation getAnnotation(Class<? extends Annotation> type);
+	<T extends Annotation> T getAnnotation(Class<T> type);
 
 	Class<?> getType();
 

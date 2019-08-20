@@ -16,5 +16,5 @@ public interface Request extends ServletRequest, DebugLogger, StringVerification
 	
 	<T> T getBean(String name);
 	
-	<T> T getRootObject(Class<T> type);
+	<T> T getObject(Class<T> type);
 }

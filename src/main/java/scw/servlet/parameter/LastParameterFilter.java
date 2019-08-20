@@ -1,33 +1,46 @@
 package scw.servlet.parameter;
 
+import scw.core.utils.StringUtils;
 import scw.servlet.ParameterDefinition;
 import scw.servlet.ParameterFilter;
 import scw.servlet.ParameterFilterChain;
 import scw.servlet.Request;
 import scw.servlet.ServletUtils;
+import scw.servlet.parameter.annotation.Parameter;
 
 public final class LastParameterFilter implements ParameterFilter {
-	private boolean last;
 
-	public LastParameterFilter() {
-		this(true);
-	}
-
-	public LastParameterFilter(boolean last) {
-		this.last = last;
-	}
-
-	public Object filter(Request request, ParameterDefinition parameterDefinition, ParameterFilterChain chain)
+	public Object filter(Request request,
+			ParameterDefinition parameterDefinition, ParameterFilterChain chain)
 			throws Exception {
+		String name = parameterDefinition.getName();
+		Parameter parameter = parameterDefinition
+				.getAnnotation(Parameter.class);
+		if (parameter != null) {
+			name = parameter.value();
+		}
+
 		if (parameterDefinition.getType().isArray()) {
-			return request.getArray(parameterDefinition.getName(), parameterDefinition.getType().getComponentType());
+			return request.getArray(name, parameterDefinition.getType()
+					.getComponentType());
 		} else {
-			Object value = request.getObject(parameterDefinition.getName(), parameterDefinition.getType());
-			if (value == null && last) {
-				return ServletUtils.getRequestObjectParameterWrapper(request, parameterDefinition.getType(),
-						parameterDefinition.getName());
+			Object value = request.getBean(parameterDefinition.getType());
+			if (value == null) {
+				value = StringUtils.isEmpty(name) ? request
+						.getObject(parameterDefinition.getType()) : request
+						.getObject(name, parameterDefinition.getType());
 			}
-			return value == null ? chain.doFilter(request, parameterDefinition) : value;
+
+			if (value == null) {
+				value = ServletUtils.getRequestObjectParameterWrapper(request,
+						parameterDefinition.getType(), name);
+			}
+
+			if (value == null) {
+				value = chain.doFilter(request, parameterDefinition);
+			}
+
+			return value;
 		}
 	}
 }
