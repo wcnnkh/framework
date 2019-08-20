@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import scw.beans.BeanFactory;
+import scw.core.PropertyFactory;
 import scw.servlet.Action;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;
@@ -17,7 +18,8 @@ import scw.servlet.annotation.Controller;
 public final class HttpServiceFilter implements Filter {
 	private final Collection<Filter> filters;
 
-	public HttpServiceFilter(BeanFactory beanFactory, Collection<Class<?>> classes, String actionKey) {
+	public HttpServiceFilter(BeanFactory beanFactory, PropertyFactory propertyFactory, Collection<Class<?>> classes,
+			String actionKey) {
 		filters = new ArrayList<Filter>(3);
 		filters.add(beanFactory.getInstance(HeaderSpreadFilter.class));
 		filters.add(new ParameterActionServiceFilter(actionKey));
@@ -39,7 +41,7 @@ public final class HttpServiceFilter implements Filter {
 				for (Filter filter : filters) {
 					if (filter instanceof AbstractHttpServiceFilter) {
 						((AbstractHttpServiceFilter) filter).scanning(clz, method, clzController, methodController,
-								new MethodAction(beanFactory, clz, method));
+								new MethodAction(beanFactory, propertyFactory, clz, method));
 					}
 				}
 			}

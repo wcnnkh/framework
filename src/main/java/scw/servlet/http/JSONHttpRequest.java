@@ -13,21 +13,17 @@ import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.parameter.Body;
 
 public final class JSONHttpRequest extends AbstractHttpRequest {
-	private static Logger logger = LoggerFactory
-			.getLogger(JSONHttpRequest.class);
+	private static Logger logger = LoggerFactory.getLogger(JSONHttpRequest.class);
 	private JSONObject json;
 	private final JSONParseSupport jsonParseSupport;
 
-	public JSONHttpRequest(RequestBeanFactory requestBeanFactory,
-			HttpServletRequest httpServletRequest, boolean cookieValue,
-			JSONParseSupport jsonParseSupport, boolean debug)
-			throws IOException {
+	public JSONHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
+			boolean cookieValue, JSONParseSupport jsonParseSupport, boolean debug) throws IOException {
 		super(requestBeanFactory, httpServletRequest, cookieValue, debug);
 		this.jsonParseSupport = jsonParseSupport;
 		Body body = getBean(Body.class);
 		if (debug) {
-			debug("servletPath={},method={},{}", getServletPath(), getMethod(),
-					body.getBody());
+			debug("servletPath={},method={},{}", getServletPath(), getMethod(), body.getBody());
 		}
 		json = jsonParseSupport.parseObject(body.getBody());
 	}
@@ -36,28 +32,20 @@ public final class JSONHttpRequest extends AbstractHttpRequest {
 		return logger;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getBean(Class<T> type) {
-		Object bean = super.getBean(type);
-		if (bean == null && json != null) {
-			bean = jsonParseSupport.parseObject(json.toJSONString(), type);
-		}
-		return (T) bean;
+	public <T> T getRootObject(Class<T> type) {
+		return jsonParseSupport.parseObject(json.toJSONString(), type);
 	}
 
 	@Override
 	public Object getObject(String name, Class<?> type) {
-		if (json != null) {
-			if (JSONObject.class.isAssignableFrom(type)) {
-				return json.getJSONObject(name);
-			} else if (JSONArray.class.isAssignableFrom(type)) {
-				return json.getJSONArray(name);
-			} else {
-				return json.getObject(name, type);
-			}
+		if (JSONObject.class.isAssignableFrom(type)) {
+			return json.getJSONObject(name);
+		} else if (JSONArray.class.isAssignableFrom(type)) {
+			return json.getJSONArray(name);
+		} else {
+			return json.getObject(name, type);
 		}
-		return super.getObject(name, type);
 	}
 
 	@Override

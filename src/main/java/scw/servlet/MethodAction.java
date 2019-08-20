@@ -9,37 +9,25 @@ import java.util.Map;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.aop.Invoker;
+import scw.core.PropertyFactory;
 import scw.core.exception.ParameterException;
 import scw.servlet.annotation.Controller;
 import scw.servlet.annotation.Filters;
 import scw.servlet.annotation.Methods;
 
 public final class MethodAction implements Action {
-	private final ActionParameter[] parameters;
 	private final Collection<Filter> filters;
-	private final Invoker invoker;
+	private final SimpleAction action;
 
-	public MethodAction(BeanFactory beanFactory, Class<?> clz, Method method) {
-		this.parameters = ServletUtils.getActionParameter(method);
+	public MethodAction(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clz, Method method) {
 		this.filters = mergeFilter(clz, method, beanFactory);
-		this.invoker = BeanUtils.getInvoker(beanFactory, clz, method);
+		this.action = new SimpleAction(BeanUtils.getInvoker(beanFactory, clz, method),
+				ServletUtils.getParameterParseFilters(beanFactory, propertyFactory, clz, method), method);
 	}
 
 	public void doAction(Request request, Response response) throws Throwable {
-		FilterChain filterChain = new IteratorFilterChain(filters, new RealAction());
+		FilterChain filterChain = new IteratorFilterChain(filters, action);
 		filterChain.doFilter(request, response);
-	}
-
-	private final class RealAction implements Action {
-		public void doAction(Request request, Response response) throws Throwable {
-			Object[] args = new Object[parameters.length];
-			for (int i = 0; i < parameters.length; i++) {
-				args[i] = parameters[i].getParameter(request, response);
-			}
-
-			response.write(invoker.invoke(args));
-		}
 	}
 
 	private Collection<Filter> mergeFilter(Class<?> clz, Method method, BeanFactory beanFactory) {
@@ -106,6 +94,6 @@ public final class MethodAction implements Action {
 
 	@Override
 	public String toString() {
-		return invoker.toString();
+		return action.toString();
 	}
 }

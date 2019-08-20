@@ -11,9 +11,9 @@ public interface ValueFactory<T> extends PrimitiveTypeValueFactory<T> {
 	BigDecimal getBigDecimal(T data);
 
 	Class<?> getClass(T data);
-
+	
 	@SuppressWarnings("rawtypes")
-	Enum<?> getEnum(T data, Class<? extends Enum> enumType);
+	Enum getEnum(T data, Class<? extends Enum> type);
 
 	<E> E[] getArray(T text, Class<E> type);
 

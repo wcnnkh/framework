@@ -10,9 +10,6 @@ public final class Body implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String body;
 
-	protected Body() {
-	}
-
 	public Body(Request request) throws IOException {
 		this.body = IOUtils.read(request.getReader(), 0);
 	}

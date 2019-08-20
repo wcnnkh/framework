@@ -10,7 +10,11 @@ import scw.logger.Logger;
 public interface Request extends ServletRequest, DebugLogger, StringVerification, ValueFactory<String> {
 	long getCreateTime();
 
+	Logger getLogger();
+	
 	<T> T getBean(Class<T> type);
 	
-	Logger getLogger();
+	<T> T getBean(String name);
+	
+	<T> T getRootObject(Class<T> type);
 }

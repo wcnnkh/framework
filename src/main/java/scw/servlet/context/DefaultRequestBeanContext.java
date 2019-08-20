@@ -27,24 +27,20 @@ public class DefaultRequestBeanContext implements RequestBeanContext {
 		if (requestBean == null) {
 			return null;
 		}
-		return (T) getBean(requestBean, type, type.getName());
+		return (T) getBean(requestBean, type.getName());
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getBean(Class<T> type, String name) {
+	public <T> T getBean(String name) {
 		RequestBean requestBean = requestBeanFactory.get(name);
-		if (requestBean == null) {
-			requestBean = requestBeanFactory.get(type.getName());
-		}
-
 		if (requestBean == null) {
 			return null;
 		}
 
-		return (T) getBean(requestBean, type, name);
+		return (T) getBean(requestBean, name);
 	}
 
-	private Object getBean(RequestBean requestBean, Class<?> type, String name) {
+	private Object getBean(RequestBean requestBean, String name) {
 		Object obj = null;
 		if (beanMap == null) {
 			synchronized (this) {

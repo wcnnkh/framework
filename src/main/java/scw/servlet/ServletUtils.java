@@ -36,9 +36,10 @@ import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
 import scw.core.PropertyFactory;
 import scw.core.exception.AlreadyExistsException;
-import scw.core.exception.ParameterException;
+import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.Assert;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -51,11 +52,14 @@ import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.logger.LoggerUtils;
 import scw.net.ContentType;
+import scw.servlet.annotation.Controller;
 import scw.servlet.beans.CommonRequestBeanFactory;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.http.HttpWrapperFactory;
 import scw.servlet.http.filter.HttpServiceFilter;
 import scw.servlet.http.filter.NotFoundFilter;
+import scw.servlet.parameter.LastParameterFilter;
+import scw.servlet.parameter.PrimitiveOrWarpperParameterFilter;
 
 public final class ServletUtils {
 	private static final String RESTURL_PATH_PARAMETER = "_resturl_path_parameter";
@@ -157,7 +161,7 @@ public final class ServletUtils {
 	public static ServletService getServletService(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, String configPath, String[] rootBeanFilters) {
 		return getServletService(valueWiredManager, beanFactory, propertyFactory, configPath, rootBeanFilters,
-				isAsyncSupport());
+				isAsyncSupport() && StringUtils.parseBoolean(propertyFactory.getProperty("servlet.async")));
 	}
 
 	/**
@@ -355,18 +359,9 @@ public final class ServletUtils {
 	public static <T> T getRequestObjectParameterWrapper(Request request, Class<T> type, String name) {
 		try {
 			return (T) privateRequestObjectParameterWrapper(request, type,
-					StringUtils.isEmpty(name) ? null : name + ".");
+					StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name : name + "."));
 		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public static Object getParameter(Request request, String name, Class<?> type) {
-		try {
-			return XUtils.getValue(request, name, type);
-		} catch (Exception e) {
-			throw new ParameterException(e, "解析参数错误name=" + name + ",type=" + type.getName());
+			throw new RuntimeException("构造bean失败:" + type.getName(), e);
 		}
 	}
 
@@ -388,7 +383,7 @@ public final class ServletUtils {
 				if (String.class.isAssignableFrom(field.getType())
 						|| ClassUtils.isPrimitiveOrWrapper(field.getType())) {
 					// 如果是基本数据类型
-					Object v = getParameter(request, key, field.getType());
+					Object v = XUtils.getValue(request, key, field.getType());
 					if (v != null) {
 						ReflectUtils.setFieldValue(clz, field, t, v);
 					}
@@ -517,8 +512,8 @@ public final class ServletUtils {
 		actionKey = StringUtils.isEmpty(actionKey) ? "action" : actionKey;
 		String packageName = propertyFactory.getProperty("servlet.scanning");
 		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
-		return beanFactory.getInstance(HttpServiceFilter.class, beanFactory, ResourceUtils.getClassList(packageName),
-				actionKey);
+		return beanFactory.getInstance(HttpServiceFilter.class, beanFactory, propertyFactory,
+				ResourceUtils.getClassList(packageName), actionKey);
 
 	}
 
@@ -581,18 +576,40 @@ public final class ServletUtils {
 		}
 	}
 
-	public static ActionParameter[] getActionParameter(Method method) {
-		String[] tempKeys = ClassUtils.getParameterName(method);
-		Class<?>[] types = method.getParameterTypes();
-		ActionParameter[] paramInfos = new ActionParameter[types.length];
-		for (int l = 0; l < types.length; l++) {
-			paramInfos[l] = new ActionParameter(types[l], tempKeys[l]);
+	private static void appendParameterFilters(Collection<ParameterFilter> filters, InstanceFactory instanceFactory,
+			String[] filterNames) {
+		if (!ArrayUtils.isEmpty(filterNames)) {
+			for (String name : filterNames) {
+				filters.add((ParameterFilter) instanceFactory.getInstance(name));
+			}
 		}
-		return paramInfos;
 	}
 
-	public static Action crateAction(BeanFactory beanFactory, Class<?> clazz, Method method) {
-		return new MethodAction(beanFactory, clazz, method);
+	public static LinkedList<ParameterFilter> getParameterParseFilters(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Class<?> clz, Method method) {
+		String[] firstFilters = StringUtils.commonSplit(propertyFactory.getProperty("servlet.parameter.filter.first"));
+		String[] filters = StringUtils.commonSplit(propertyFactory.getProperty("servlet.parameter.filter"));
+		String[] lastFilters = StringUtils.commonSplit(propertyFactory.getProperty("servlet.parameter.filter.last"));
+		LinkedList<ParameterFilter> list = new LinkedList<ParameterFilter>();
+		appendParameterFilters(list, instanceFactory, firstFilters);
+		list.add(instanceFactory.getInstance(PrimitiveOrWarpperParameterFilter.class));
+		Controller controller = clz.getAnnotation(Controller.class);
+		if (controller != null) {
+			for (Class<? extends ParameterFilter> clazz : controller.parameterFilter()) {
+				list.add(instanceFactory.getInstance(clazz));
+			}
+		}
+
+		controller = method.getAnnotation(Controller.class);
+		if (controller != null) {
+			for (Class<? extends ParameterFilter> clazz : controller.parameterFilter()) {
+				list.add(instanceFactory.getInstance(clazz));
+			}
+		}
+		appendParameterFilters(list, instanceFactory, filters);
+		list.add(instanceFactory.getInstance(LastParameterFilter.class));
+		appendParameterFilters(list, instanceFactory, lastFilters);
+		return list;
 	}
 
 	/** ----------------------------spread---------------------------- **/
