@@ -8,7 +8,7 @@ public final class EnumUtils {
 	}
 
 	public static Enum valueOf(Class<? extends Enum> enumClass, String value) {
-		return Enum.valueOf(enumClass, value.toString());
+		return Enum.valueOf(enumClass, value);
 	}
 
 	public static Enum valueOf(Class<? extends Enum> enumClass, Field field, Object value)

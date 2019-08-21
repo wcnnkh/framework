@@ -317,13 +317,13 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 		return JSONUtils.parseObject(text, type);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes"})
 	public Enum<?> getEnum(String data, Class<? extends Enum> enumType) {
 		if (verification(data)) {
 			return null;
 		}
 
-		return Enum.valueOf(enumType, data);
+		return EnumUtils.valueOf(enumType, data);
 	}
 
 	public <E> E[] getArray(String text, Class<E> type) {
