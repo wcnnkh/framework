@@ -3,12 +3,17 @@ package scw.sql.orm;
 import java.lang.reflect.Field;
 
 import scw.core.utils.ClassUtils;
+import scw.core.utils.EnumUtils;
 import scw.core.utils.StringUtils;
 
 public class DefaultColumnConvert implements ColumnConvert {
 
 	public Object getter(Field field, Object bean) throws Exception {
 		Object value = field.get(bean);
+		if (field.getType().isEnum()) {
+			return bean == null ? null : bean.toString();
+		}
+
 		if (boolean.class == field.getType()) {
 			boolean b = value == null ? false : (Boolean) value;
 			return b ? 1 : 0;
@@ -24,6 +29,15 @@ public class DefaultColumnConvert implements ColumnConvert {
 	}
 
 	public void setter(Field field, Object bean, Object value) throws Exception {
+		if(value == null){
+			return ;
+		}
+		
+		if(field.getType().isEnum()){
+			field.set(bean, EnumUtils.valueOf(field.getType(), value.toString()));
+			return ;
+		}
+		
 		field.set(bean, parse(field.getType(), value));
 	}
 

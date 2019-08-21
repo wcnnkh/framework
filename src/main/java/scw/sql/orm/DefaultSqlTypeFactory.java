@@ -13,7 +13,7 @@ import scw.core.utils.ClassUtils;
 public class DefaultSqlTypeFactory implements SqlTypeFactory {
 	
 	public SqlType getSqlType(Class<?> type) {
-		if (ClassUtils.isStringType(type)) {
+		if (ClassUtils.isStringType(type) || type.isEnum()) {
 			return VARCHAR;
 		} else if (ClassUtils.isBooleanType(type)) {
 			return BIT;
