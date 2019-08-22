@@ -10,6 +10,11 @@ import java.util.concurrent.TimeUnit;
 import scw.beans.property.PropertyFactoryFormat;
 import scw.beans.property.ValueFormat;
 
+/**
+ * 推荐在字段添加Volatile修饰符
+ * @author shuchaowen
+ *
+ */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
@@ -26,7 +31,7 @@ public @interface Value {
 	/**
 	 * 刷新周期
 	 * 如果为0就走默认值
-	 * 
+	 * 如果小于0就不刷新
 	 * @return
 	 */
 	public long period() default 0;

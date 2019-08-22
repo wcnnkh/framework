@@ -1,7 +1,6 @@
 package scw.beans.property;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
@@ -42,7 +41,7 @@ public final class ValueWired {
 	}
 
 	public boolean isCanRefresh() {
-		return Modifier.isVolatile(field.getModifiers());
+		return value.period() >= 0;
 	}
 
 	public void wired(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Throwable {

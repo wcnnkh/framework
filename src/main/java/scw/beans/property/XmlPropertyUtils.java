@@ -47,13 +47,18 @@ public final class XmlPropertyUtils {
 			return 0;
 		}
 
-		return XmlBeanUtils.getTimeUnit(node).toSeconds(StringUtils.parseLong(value));
+		long t = StringUtils.parseLong(value);
+		if (t < 0) {
+			return -1;
+		}
+
+		return XmlBeanUtils.getTimeUnit(node).toSeconds(t);
 	}
 
-	public static boolean isRefresh(Node node, boolean def){
+	public static boolean isRefresh(Node node, boolean def) {
 		return XMLUtils.getBooleanValueAndParent(node, "refresh", def);
 	}
-	
+
 	public static boolean isSystem(Node node) {
 		return XMLUtils.getBooleanValueAndParent(node, "system", false);
 	}

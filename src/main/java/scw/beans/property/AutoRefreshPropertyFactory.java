@@ -31,7 +31,11 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory {
 
 		this.propertyFactory = tempPropertyFactory;
 		for (Properties properties : tempPropertyFactory.getPropertiesList()) {
-			long t = properties.getRefreshPeriod() > 0 ? properties.getRefreshPeriod() : defaultRefreshPeriod;
+			if (properties.getRefreshPeriod() < 0) {
+				continue;
+			}
+
+			long t = properties.getRefreshPeriod() == 0 ? defaultRefreshPeriod : properties.getRefreshPeriod();
 			if (t > 0) {
 				t = t * 1000;
 				timer.scheduleAtFixedRate(new RefreshPropertiesTask(properties), t, t);
@@ -58,8 +62,9 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory {
 		} else {
 			String oldValue = getProperty(property.getName());
 			if (!StringUtils.isAeqB(value, oldValue)) {
-				LoggerUtils.info(AutoRefreshPropertyFactory.class, "Property {} changes the \noriginal value\n{}\n----------to----------\n{}",
-						property.getName(), oldValue, value);
+				LoggerUtils.info(AutoRefreshPropertyFactory.class,
+						"Property {} changes the \noriginal value\n{}\n----------to----------\n{}", property.getName(),
+						oldValue, value);
 				refreshValue(property, value);
 			}
 		}

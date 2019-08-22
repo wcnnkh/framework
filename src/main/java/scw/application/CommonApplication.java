@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
+import com.alibaba.dubbo.config.ProtocolConfig;
+
 import scw.application.consumer.AnnotationConsumerUtils;
 import scw.application.consumer.XmlConsumerFactory;
 import scw.application.crontab.CrontabAnnotationUtils;
@@ -23,8 +25,6 @@ import scw.logger.LoggerFactory;
 import scw.logger.LoggerUtils;
 import scw.sql.orm.ORMUtils;
 import scw.transaction.TransactionFilter;
-
-import com.alibaba.dubbo.config.ProtocolConfig;
 
 public class CommonApplication implements Application {
 	public static final String DEFAULT_BEANS_PATH = "classpath:/beans.xml";
@@ -66,12 +66,6 @@ public class CommonApplication implements Application {
 		createAfter();
 	}
 
-	public static void setGlobalDefaultRefreshPeriod(long refreshPeriod,
-			TimeUnit timeUnit) {
-		System.setProperty("scw_default_refresh_period",
-				timeUnit.toMillis(refreshPeriod) + "");
-	}
-
 	/**
 	 * 配置文件全局默认的刷新时间 单位：秒
 	 * 
@@ -79,7 +73,7 @@ public class CommonApplication implements Application {
 	 */
 	public static int getGlobalPropertyRefreshPeriod() {
 		return StringUtils.parseInt(SystemPropertyUtils
-				.getProperty("scw_global_property_refresh_period"), 10);
+				.getProperty("scw_global_property_refresh_period"), (int)TimeUnit.MINUTES.toSeconds(1));
 	}
 
 	public static void setGlobalPropertyRefreshPeriod(int period) {
@@ -93,7 +87,7 @@ public class CommonApplication implements Application {
 	 */
 	public static int getGlobalValueWiredRefreshPeriod() {
 		return StringUtils.parseInt(SystemPropertyUtils
-				.getProperty("scw_global_value_wired_refresh_period"), 10);
+				.getProperty("scw_global_value_wired_refresh_period"), (int)TimeUnit.MINUTES.toSeconds(1));
 	}
 
 	public static void setGlobalValueWiredRefreshPeriod(int period) {
