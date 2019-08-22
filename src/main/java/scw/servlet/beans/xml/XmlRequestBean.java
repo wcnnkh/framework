@@ -2,6 +2,7 @@ package scw.servlet.beans.xml;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import javax.servlet.ServletRequest;
 
@@ -141,12 +142,8 @@ public final class XmlRequestBean implements RequestBean {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		if (!ArrayUtils.isEmpty(autoWriteFields)) {
-			for (FieldDefinition fieldDefinition : autoWriteFields) {
-				BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean, fieldDefinition);
-			}
-		}
-
+		BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean,
+				Arrays.asList(autoWriteFields));
 		setProperties(bean);
 	}
 
@@ -156,8 +153,8 @@ public final class XmlRequestBean implements RequestBean {
 				method.invoke(bean, beanFactory, propertyFactory);
 			}
 		}
-		
-		if(bean instanceof Init){
+
+		if (bean instanceof Init) {
 			((Init) bean).init();
 		}
 	}

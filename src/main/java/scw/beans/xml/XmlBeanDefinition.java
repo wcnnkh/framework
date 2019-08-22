@@ -2,6 +2,7 @@ package scw.beans.xml;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -164,12 +165,8 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		if (!ArrayUtils.isEmpty(autowriteFields)) {
-			for (FieldDefinition fieldDefinition : autowriteFields) {
-				BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean, fieldDefinition);
-			}
-		}
-
+		BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean,
+				Arrays.asList(autowriteFields));
 		setProperties(bean);
 	}
 
@@ -192,7 +189,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 				method.invoke(bean, beanFactory, propertyFactory);
 			}
 		}
-		
+
 		if (bean instanceof Destroy) {
 			((Destroy) bean).destroy();
 		}

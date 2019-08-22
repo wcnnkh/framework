@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletRequest;
@@ -119,9 +120,8 @@ public final class AnnotationRequestBean implements RequestBean {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		for (FieldDefinition definition : autowriteFields) {
-			BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean, definition);
-		}
+		BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean,
+				Arrays.asList(autowriteFields));
 	}
 
 	public void init(Object bean) throws Exception {
@@ -130,8 +130,8 @@ public final class AnnotationRequestBean implements RequestBean {
 				method.invoke(bean);
 			}
 		}
-		
-		if(bean instanceof Init){
+
+		if (bean instanceof Init) {
 			((Init) bean).init();
 		}
 	}

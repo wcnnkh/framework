@@ -1,14 +1,13 @@
 package scw.servlet;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-public interface ParameterDefinition {
+import scw.core.AnnotationFactory;
+
+public interface ParameterDefinition extends AnnotationFactory{
 	int getParameterCount();
 	
 	String getName();
-
-	<T extends Annotation> T getAnnotation(Class<T> type);
 
 	Class<?> getType();
 

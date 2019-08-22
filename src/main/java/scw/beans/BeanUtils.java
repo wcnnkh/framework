@@ -119,12 +119,15 @@ public final class BeanUtils {
 		initAutowriteStatic(valueWiredManager, beanFactory, propertyFactory, classList);
 		invokerInitStaticMethod(classList);
 	}
-
+	
 	public static void autoWrite(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> clz, Object obj, FieldDefinition field) {
-		setBean(beanFactory, clz, obj, field);
-		setConfig(beanFactory, clz, obj, field);
-		setProperties(valueWiredManager, beanFactory, propertyFactory, clz, obj, field);
+			PropertyFactory propertyFactory, Class<?> clz, Object obj, Collection<FieldDefinition> fields) throws Exception{
+		for(FieldDefinition field : fields){
+			setBean(beanFactory, clz, obj, field);
+			setConfig(beanFactory, clz, obj, field);
+		}
+		
+		setValue(valueWiredManager, beanFactory, propertyFactory, clz, obj, fields);
 	}
 
 	/**
@@ -135,9 +138,7 @@ public final class BeanUtils {
 	private static void initAutowriteStatic(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Collection<Class<?>> classList) throws Exception {
 		for (Class<?> clz : classList) {
-			for (FieldDefinition fieldDefinition : getAutowriteFieldDefinitionList(clz, true)) {
-				autoWrite(valueWiredManager, beanFactory, propertyFactory, clz, null, fieldDefinition);
-			}
+			autoWrite(valueWiredManager, beanFactory, propertyFactory, clz, null, getAutowriteFieldDefinitionList(clz, true));
 		}
 	}
 
@@ -246,21 +247,29 @@ public final class BeanUtils {
 		return obj == null ? clazz : obj;
 	}
 
-	private static void setProperties(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> clz, Object obj, FieldDefinition field) {
-		Value value = field.getAnnotation(Value.class);
-		if (value != null) {
-			staticFieldWarnLog(Value.class.getName(), clz, field);
+	public static void setValue(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> clz, Object obj, Collection<FieldDefinition> fieldDefinitions)
+			throws Exception {
+		if (CollectionUtils.isEmpty(fieldDefinitions)) {
+			return;
+		}
 
-			try {
-				existDefaultValueWarnLog(Value.class.getName(), clz, field, obj);
-				ValueWired valueWired = new ValueWired(getValueTaskId(clz, obj), obj, field.getField(), value);
-				valueWiredManager.write(valueWired);
-			} catch (Throwable e) {
-				throw new RuntimeException(
-						"properties：clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
+		Collection<ValueWired> valueWireds = new LinkedList<ValueWired>();
+		for (FieldDefinition field : fieldDefinitions) {
+			Value value = field.getAnnotation(Value.class);
+			if (value != null) {
+				staticFieldWarnLog(Value.class.getName(), clz, field);
+				try {
+					existDefaultValueWarnLog(Value.class.getName(), clz, field, obj);
+					ValueWired valueWired = new ValueWired(obj, field, value);
+					valueWireds.add(valueWired);
+				} catch (Throwable e) {
+					throw new RuntimeException(
+							"properties：clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
+				}
 			}
 		}
+		valueWiredManager.write(getValueTaskId(clz, obj), valueWireds);
 	}
 
 	private static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldDefinition field) {

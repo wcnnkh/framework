@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -146,9 +147,8 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		for (FieldDefinition fieldDefinition : autowriteFieldDefinition) {
-			BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean, fieldDefinition);
-		}
+		BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean,
+				Arrays.asList(autowriteFieldDefinition));
 	}
 
 	public void init(Object bean) throws Exception {

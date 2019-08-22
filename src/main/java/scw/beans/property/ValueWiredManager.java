@@ -1,48 +1,91 @@
 package scw.beans.property;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
+import scw.core.utils.CollectionUtils;
+import scw.logger.LoggerUtils;
 
 public class ValueWiredManager {
-	private ConcurrentHashMap<Object, TimerTask> taskMap = new ConcurrentHashMap<Object, TimerTask>();
+	private ConcurrentHashMap<Object, ObjectValueWired> taskMap = new ConcurrentHashMap<Object, ObjectValueWired>();
+
 	private Timer timer;
 	private int refreshPeriod;
 	private PropertyFactory propertyFactory;
 	private BeanFactory beanFactory;
 
-	public ValueWiredManager(PropertyFactory propertyFactory, BeanFactory beanFactory, Timer timer,
-			int refreshPeriod) {
+	public ValueWiredManager(PropertyFactory propertyFactory, BeanFactory beanFactory, Timer timer, int refreshPeriod) {
 		this.refreshPeriod = refreshPeriod;
 		this.timer = timer;
 		this.propertyFactory = propertyFactory;
 		this.beanFactory = beanFactory;
 	}
 
-	public void write(ValueWired valueWired) throws Throwable {
-		valueWired.wired(beanFactory, propertyFactory);
-		if (valueWired.isCanRefresh()) {
-			long t = valueWired.getValueAnnotation().timeUnit().toSeconds(valueWired.getValueAnnotation().period());
-			t = t > 0 ? t : refreshPeriod;
-			if (t > 0) {
-				t = t * 1000;
-				ValueWiredTask valueWiredTask = new ValueWiredTask(valueWired);
-				if (taskMap.putIfAbsent(valueWired.getId(), valueWiredTask) == null)
-					timer.scheduleAtFixedRate(valueWiredTask, t, t);
+	public void write(Object objectId, Collection<ValueWired> valueWireds) throws Exception {
+		if (CollectionUtils.isEmpty(valueWireds)) {
+			return;
+		}
+
+		boolean find = false;
+		for (ValueWired valueWired : valueWireds) {
+			valueWired.wired(beanFactory, propertyFactory);
+			if (!find) {
+				if (valueWired.isCanRefresh()) {
+					find = true;
+				}
 			}
+		}
+
+		if (!find) {
+			return;
+		}
+
+		ObjectValueWired valueWired = new ObjectValueWired();
+		if (taskMap.putIfAbsent(objectId, valueWired) == null) {// 不存在
+			valueWired.start(timer, valueWireds);
+		} else {
+			LoggerUtils.warn(ValueWiredManager.class, "已经存在相同的Value刷新任务了：{}", objectId);
 		}
 	}
 
 	public void cancel(Object id) {
-		TimerTask task = taskMap.remove(id);
+		ObjectValueWired task = taskMap.remove(id);
 		if (task == null) {
 			return;
 		}
 
 		task.cancel();
+	}
+
+	private final class ObjectValueWired {
+		private LinkedList<TimerTask> timerTasks = new LinkedList<TimerTask>();
+
+		public void start(Timer timer, Collection<ValueWired> valueWireds) throws Exception {
+			for (ValueWired valueWired : valueWireds) {
+				if (valueWired.isCanRefresh()) {
+					long t = valueWired.getValueAnnotation().timeUnit()
+							.toSeconds(valueWired.getValueAnnotation().period());
+					t = t > 0 ? t : refreshPeriod;
+					if (t > 0) {
+						t = t * 1000;
+						ValueWiredTask valueWiredTask = new ValueWiredTask(valueWired);
+						timerTasks.add(valueWiredTask);
+						timer.scheduleAtFixedRate(valueWiredTask, t, t);
+					}
+				}
+			}
+		}
+
+		public void cancel() {
+			for (TimerTask timerTask : timerTasks) {
+				timerTask.cancel();
+			}
+		}
 	}
 
 	private final class ValueWiredTask extends TimerTask {
