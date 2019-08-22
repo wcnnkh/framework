@@ -12,6 +12,7 @@ import scw.beans.property.ValueFormat;
 
 /**
  * 推荐在字段添加Volatile修饰符
+ * 如果字段使用final修饰则不会自动更新
  * @author shuchaowen
  *
  */
