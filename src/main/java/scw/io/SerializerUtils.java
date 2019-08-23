@@ -1,10 +1,9 @@
-package scw.io.serializer;
+package scw.io;
 
 import scw.core.Bits;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
-import scw.io.IOUtils;
-import scw.io.UnsafeByteArrayOutputStream;
+import scw.io.serializer.Serializer;
 import scw.io.serializer.support.JavaSerializer;
 import scw.logger.LoggerUtils;
 

@@ -9,8 +9,8 @@ import redis.clients.jedis.JedisPoolConfig;
 import scw.core.Constants;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
+import scw.io.SerializerUtils;
 import scw.io.serializer.Serializer;
-import scw.io.serializer.SerializerUtils;
 
 public final class RedisByJedisPool extends AbstractJedisOperations implements scw.core.Destroy {
 	private final JedisPool jedisPool;
