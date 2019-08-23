@@ -789,16 +789,20 @@ public final class ReflectUtils {
 	 * @return
 	 */
 	public static boolean isInstance(Class<?> clz, boolean checkConstructor) {
-		boolean b = !(Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers()))
-				|| !clz.isEnum() || !clz.isArray();
-		if (b && checkConstructor) {
+		if (Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers()) || clz.isEnum()
+				|| clz.isArray()) {
+			return false;
+		}
+
+		if (checkConstructor) {
 			try {
 				clz.getDeclaredConstructor();
 			} catch (NoSuchMethodException e) {
 				return false;
 			}
 		}
-		return b;
+
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
