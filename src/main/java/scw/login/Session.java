@@ -7,7 +7,8 @@ public final class Session implements Serializable {
 	private String id;
 	private String uid;
 
-	protected Session() {
+	@SuppressWarnings("unused")
+	private Session() {
 	}
 
 	protected Session(String id, String uid) {

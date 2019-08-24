@@ -10,8 +10,9 @@ import scw.servlet.Text;
 public class ServletTextResult<T> extends DefaultResult<T> implements Text {
 	private static final long serialVersionUID = 1L;
 	private String contentType;
-
-	protected ServletTextResult() {
+	
+	private ServletTextResult(){
+		super(true, 0, null, null, false);
 	}
 
 	public ServletTextResult(boolean success, int code, T data, String msg,
