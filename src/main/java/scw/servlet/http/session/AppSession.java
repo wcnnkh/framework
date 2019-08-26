@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.core.utils.StringUtils;
 import scw.login.LoginFactory;
-import scw.login.Session;
+import scw.login.UserSessionMetaData;
 import scw.servlet.http.HttpRequest;
 
 /**
@@ -18,7 +18,7 @@ public class AppSession {
 	private LoginFactory loginFactory;
 	private HttpRequest request;
 	private boolean cookie;
-	private Session session;
+	private UserSessionMetaData userSessionMetaData;
 	private String uidKey;
 	private String sidKey;
 
@@ -36,12 +36,12 @@ public class AppSession {
 
 		String sid = getString(sidKey);
 		if (!StringUtils.isNull(sid)) {
-			session = loginFactory.getSession(sid);
+			userSessionMetaData = loginFactory.getSession(sid);
 		}
 
-		if (session != null && !StringUtils.isNull(uidKey)) {
-			if (!session.getUid().equals(getString(uidKey))) {// uid不一致
-				session = null;
+		if (userSessionMetaData != null && !StringUtils.isNull(uidKey)) {
+			if (!userSessionMetaData.getUid().equals(getString(uidKey))) {// uid不一致
+				userSessionMetaData = null;
 			}
 		}
 	}
@@ -57,35 +57,35 @@ public class AppSession {
 		return v;
 	}
 
-	public Session getSession() {
-		return session;
+	public UserSessionMetaData getSession() {
+		return userSessionMetaData;
 	}
 
 	public boolean isLogin() {
-		return session != null;
+		return userSessionMetaData != null;
 	}
 
-	public Session login(String uid) {
-		session = loginFactory.login(uid);
-		return session;
+	public UserSessionMetaData login(String uid) {
+		userSessionMetaData = loginFactory.login(uid);
+		return userSessionMetaData;
 	}
 
-	public Session login(long uid) {
+	public UserSessionMetaData login(long uid) {
 		return login(uid + "");
 	}
 
-	public Session login(int uid) {
+	public UserSessionMetaData login(int uid) {
 		return login(uid + "");
 	}
 
 	public void addCookie(HttpServletResponse httpServletResponse) {
-		if (session == null) {
+		if (userSessionMetaData == null) {
 			return;
 		}
 
-		httpServletResponse.addCookie(new Cookie(sidKey, session.getId()));
+		httpServletResponse.addCookie(new Cookie(sidKey, userSessionMetaData.getId()));
 		if (!StringUtils.isNull(uidKey)) {
-			httpServletResponse.addCookie(new Cookie(uidKey, session.getUid()));
+			httpServletResponse.addCookie(new Cookie(uidKey, userSessionMetaData.getUid()));
 		}
 	}
 }

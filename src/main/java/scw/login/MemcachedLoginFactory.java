@@ -15,7 +15,7 @@ public class MemcachedLoginFactory implements LoginFactory {
 		this.exp = exp;
 	}
 
-	public Session getSession(String sessionId) {
+	public UserSessionMetaData getSession(String sessionId) {
 		if (StringUtils.isNull(sessionId)) {
 			return null;
 		}
@@ -25,10 +25,10 @@ public class MemcachedLoginFactory implements LoginFactory {
 			return null;
 		}
 
-		return new Session(sessionId, uid);
+		return new UserSessionMetaData(sessionId, uid);
 	}
 
-	public Session login(String uid) {
+	public UserSessionMetaData login(String uid) {
 		return login(uid + XUtils.getUUID(), uid);
 	}
 
@@ -52,16 +52,16 @@ public class MemcachedLoginFactory implements LoginFactory {
 		return exp;
 	}
 
-	public Session login(long uid) {
+	public UserSessionMetaData login(long uid) {
 		return login(uid + "");
 	}
 
-	public Session login(int uid) {
+	public UserSessionMetaData login(int uid) {
 		return login(uid + "");
 	}
 
-	public Session login(String sessionId, String uid) {
+	public UserSessionMetaData login(String sessionId, String uid) {
 		memcached.set(prefix + sessionId, exp, uid);
-		return new Session(sessionId, uid);
+		return new UserSessionMetaData(sessionId, uid);
 	}
 }

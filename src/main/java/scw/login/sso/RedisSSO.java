@@ -3,7 +3,7 @@ package scw.login.sso;
 import scw.core.utils.XUtils;
 import scw.data.redis.Redis;
 import scw.login.RedisLoginFactory;
-import scw.login.Session;
+import scw.login.UserSessionMetaData;
 
 public final class RedisSSO extends RedisLoginFactory implements SSO {
 	public RedisSSO(Redis redis, String prefix, int exp) {
@@ -11,11 +11,11 @@ public final class RedisSSO extends RedisLoginFactory implements SSO {
 	}
 
 	@Override
-	public Session login(String uid) {
+	public UserSessionMetaData login(String uid) {
 		return login(uid + XUtils.getUUID(), uid);
 	}
 
-	public Session getSessionByUid(String uid) {
+	public UserSessionMetaData getSessionByUid(String uid) {
 		String sid = getRedis().getStringOperations().get(getPrefix() + uid);
 		if (sid == null) {
 			return null;
@@ -40,11 +40,11 @@ public final class RedisSSO extends RedisLoginFactory implements SSO {
 		}
 	}
 
-	public Session getSessionByUid(long uid) {
+	public UserSessionMetaData getSessionByUid(long uid) {
 		return getSessionByUid(uid + "");
 	}
 
-	public Session getSessionByUid(int uid) {
+	public UserSessionMetaData getSessionByUid(int uid) {
 		return getSessionByUid(uid + "");
 	}
 
@@ -57,7 +57,7 @@ public final class RedisSSO extends RedisLoginFactory implements SSO {
 	}
 
 	@Override
-	public Session login(String sessionId, String uid) {
+	public UserSessionMetaData login(String sessionId, String uid) {
 		String oldSid = getRedis().getStringOperations().get(getPrefix() + uid);
 		if (oldSid != null) {
 			getRedis().getStringOperations().del(getPrefix() + oldSid);

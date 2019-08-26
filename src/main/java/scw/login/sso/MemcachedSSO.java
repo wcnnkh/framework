@@ -3,7 +3,7 @@ package scw.login.sso;
 import scw.core.utils.XUtils;
 import scw.data.memcached.Memcached;
 import scw.login.MemcachedLoginFactory;
-import scw.login.Session;
+import scw.login.UserSessionMetaData;
 
 public final class MemcachedSSO extends MemcachedLoginFactory implements SSO {
 
@@ -12,7 +12,7 @@ public final class MemcachedSSO extends MemcachedLoginFactory implements SSO {
 	}
 
 	@Override
-	public Session login(String uid) {
+	public UserSessionMetaData login(String uid) {
 		return login(uid + XUtils.getUUID(), uid);
 	}
 
@@ -25,7 +25,7 @@ public final class MemcachedSSO extends MemcachedLoginFactory implements SSO {
 		super.cancelLogin(sessionId);
 	}
 
-	public Session getSessionByUid(String uid) {
+	public UserSessionMetaData getSessionByUid(String uid) {
 		String sid = (String) getMemcached().get(getPrefix() + uid);
 		if (sid == null) {
 			return null;
@@ -40,11 +40,11 @@ public final class MemcachedSSO extends MemcachedLoginFactory implements SSO {
 		}
 	}
 
-	public Session getSessionByUid(long uid) {
+	public UserSessionMetaData getSessionByUid(long uid) {
 		return getSessionByUid(uid + "");
 	}
 
-	public Session getSessionByUid(int uid) {
+	public UserSessionMetaData getSessionByUid(int uid) {
 		return getSessionByUid(uid + "");
 	}
 
@@ -57,7 +57,7 @@ public final class MemcachedSSO extends MemcachedLoginFactory implements SSO {
 	}
 
 	@Override
-	public Session login(String sessionId, String uid) {
+	public UserSessionMetaData login(String sessionId, String uid) {
 		String oldSid = (String) getMemcached().get(getPrefix() + uid);
 		if (oldSid != null) {
 			getMemcached().delete(getPrefix() + oldSid);

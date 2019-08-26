@@ -1,6 +1,6 @@
 package scw.login;
 
-public abstract class AbstractSession implements Session1 {
+public abstract class AbstractSession implements Session {
 	private final long creationTime;
 	private final String id;
 	private int maxInactiveInterval;

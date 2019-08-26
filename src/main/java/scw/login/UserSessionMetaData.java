@@ -5,7 +5,7 @@ import java.io.Serializable;
 public final class UserSessionMetaData implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String id;
-	private String uid;
+	private Object uid;
 
 	@SuppressWarnings("unused")
 	private UserSessionMetaData() {
@@ -21,7 +21,7 @@ public final class UserSessionMetaData implements Serializable {
 	}
 
 	public String getUid() {
-		return uid;
+		return (String) uid;
 	}
 
 	public long getLongUid() {

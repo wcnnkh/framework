@@ -5,9 +5,9 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import scw.login.Session1;
+import scw.login.Session;
 
-public class HttpServletSession implements Session1 {
+public class HttpServletSession implements Session {
 	private final HttpServletRequest request;
 
 	public HttpServletSession(HttpServletRequest request) {

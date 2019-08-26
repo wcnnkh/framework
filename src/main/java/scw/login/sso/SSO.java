@@ -1,14 +1,14 @@
 package scw.login.sso;
 
 import scw.login.LoginFactory;
-import scw.login.Session;
+import scw.login.UserSessionMetaData;
 
 public interface SSO extends LoginFactory{
-	Session getSessionByUid(String uid);
+	UserSessionMetaData getSessionByUid(String uid);
 	
-	Session getSessionByUid(long uid);
+	UserSessionMetaData getSessionByUid(long uid);
 	
-	Session getSessionByUid(int uid);
+	UserSessionMetaData getSessionByUid(int uid);
 	
 	void cancelLoginByUid(String uid);
 	

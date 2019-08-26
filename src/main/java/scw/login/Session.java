@@ -1,34 +1,51 @@
 package scw.login;
 
-import java.io.Serializable;
+import java.util.Enumeration;
 
-public final class Session implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private String id;
-	private String uid;
+public interface Session {
 
-	@SuppressWarnings("unused")
-	private Session() {
-	}
+	/**
+	 * 创建时间
+	 * @return
+	 */
+	long getCreationTime();
 
-	protected Session(String id, String uid) {
-		this.id = id;
-		this.uid = uid;
-	}
+	String getId();
 
-	public String getId() {
-		return id;
-	}
+	/**
+	 * 最后一次获取此session的时间
+	 * @return
+	 */
+	long getLastAccessedTime();
 
-	public String getUid() {
-		return uid;
-	}
+	/**
+	 * session过期时间 单位:秒
+	 * @param maxInactiveInterval
+	 */
+	void setMaxInactiveInterval(int maxInactiveInterval);
 
-	public long getLongUid() {
-		return Long.parseLong(getUid());
-	}
+	/**
+	 * session过期时间
+	 * @return
+	 */
+	int getMaxInactiveInterval();
 
-	public int getIntegerUid() {
-		return Integer.parseInt(getUid());
-	}
+	Object getAttribute(String name);
+
+	Enumeration<String> getAttributeNames();
+
+	void setAttribute(String name, Object value);
+
+	void removeAttribute(String name);
+
+	/**
+	 * 使session失效
+	 */
+	void invalidate();
+
+	/**
+	 * 是否是新创建的session
+	 * @return
+	 */
+	boolean isNew();
 }

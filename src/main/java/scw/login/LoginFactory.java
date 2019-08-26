@@ -1,15 +1,15 @@
 package scw.login;
 
 public interface LoginFactory {
-	Session getSession(String sessionId);
+	UserSessionMetaData getSession(String sessionId);
 
-	Session login(String uid);
+	UserSessionMetaData login(String uid);
 
-	Session login(long uid);
+	UserSessionMetaData login(long uid);
 
-	Session login(int uid);
+	UserSessionMetaData login(int uid);
 
-	Session login(String sessionId, String uid);
+	UserSessionMetaData login(String sessionId, String uid);
 
 	void cancelLogin(String sessionId);
 }

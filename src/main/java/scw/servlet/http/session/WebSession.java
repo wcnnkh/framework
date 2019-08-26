@@ -3,7 +3,7 @@ package scw.servlet.http.session;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.login.LoginFactory;
-import scw.login.Session;
+import scw.login.UserSessionMetaData;
 import scw.servlet.http.HttpRequest;
 
 /**
@@ -17,9 +17,9 @@ public class WebSession extends AppSession {
 		super(request, loginFactory, uidKey, sidKey, true);
 	}
 
-	public Session login(HttpServletResponse httpServletResponse, String uid) {
-		Session session = super.login(uid);
+	public UserSessionMetaData login(HttpServletResponse httpServletResponse, String uid) {
+		UserSessionMetaData userSessionMetaData = super.login(uid);
 		addCookie(httpServletResponse);
-		return session;
+		return userSessionMetaData;
 	}
 }
