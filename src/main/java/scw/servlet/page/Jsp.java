@@ -34,8 +34,8 @@ public class Jsp extends AbstractPage {
 			request.setAttribute(entry.getKey(), entry.getValue());
 		}
 		
-		if(response.isDebugEnabled()){
-			response.debug("jsp:{}", getPage());
+		if(response.isLogEnabled()){
+			response.log("jsp:{}", getPage());
 		}
 
 		ServletUtils.jsp(request, response, getPage());

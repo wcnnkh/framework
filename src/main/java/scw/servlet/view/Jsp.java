@@ -39,8 +39,8 @@ public class Jsp extends HashMap<String, Object> implements View {
 			page = ((HttpServletRequest) request).getServletPath();
 		}
 		
-		if(response.isDebugEnabled()){
-			response.debug("jsp:{}", page);
+		if(response.isLogEnabled()){
+			response.log("jsp:{}", page);
 		}
 
 		ServletUtils.jsp(request, response, page);

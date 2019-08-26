@@ -19,8 +19,8 @@ public class Redirect implements View {
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
 		}
 
-		if (response.isDebugEnabled()) {
-			response.debug("redirect:{}", url);
+		if (response.isLogEnabled()) {
+			response.log("redirect:{}", url);
 		}
 		httpServletResponse.sendRedirect(url);
 	}

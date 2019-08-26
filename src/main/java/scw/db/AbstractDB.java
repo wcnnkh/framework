@@ -42,11 +42,10 @@ public abstract class AbstractDB extends ORMTemplate implements ConnectionFactor
 		this.debug = debug;
 	}
 
-	@Override
-	public boolean isDebugEnabled() {
+	public boolean isLogEnabled() {
 		return debug;
 	}
-
+	
 	public final boolean isInIdAppendCache() {
 		return inIdAppendCache;
 	}

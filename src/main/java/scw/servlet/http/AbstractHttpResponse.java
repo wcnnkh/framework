@@ -28,14 +28,14 @@ public abstract class AbstractHttpResponse extends HttpServletResponseWrapper im
 	public void write(Object obj) throws Exception {
 		ServletUtils.defaultResponse(httpRequest, this, jsonParseSupport, obj, jsonp);
 	}
-
-	public boolean isDebugEnabled() {
+	
+	public boolean isLogEnabled() {
 		return debug;
 	}
 
-	public void debug(String format, Object... args) {
-		if (isDebugEnabled()) {
-			getLogger().debug(format, args);
+	public void log(String format, Object... args) {
+		if (isLogEnabled()) {
+			getLogger().info(format, args);
 		}
 	}
 

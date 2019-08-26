@@ -2,11 +2,8 @@ package scw.servlet;
 
 import javax.servlet.ServletResponse;
 
-import scw.logger.DebugLogger;
-import scw.logger.Logger;
+import scw.logger.LogService;
 
-public interface Response extends ServletResponse, DebugLogger{
+public interface Response extends ServletResponse, LogService{
 	void write(Object obj) throws Exception;
-	
-	Logger getLogger();
 }

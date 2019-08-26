@@ -440,8 +440,8 @@ public final class ServletUtils {
 			}
 
 			response.getWriter().write(content);
-			if (response.isDebugEnabled()) {
-				response.debug(content);
+			if (response.isLogEnabled()) {
+				response.log(content);
 			}
 		}
 	}

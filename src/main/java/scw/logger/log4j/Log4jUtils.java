@@ -14,6 +14,7 @@ import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XMLUtils;
+import scw.logger.LoggerUtils;
 
 public final class Log4jUtils {
 	private static final String LOG4J_PATH = "scw_log4j";
@@ -86,10 +87,28 @@ public final class Log4jUtils {
 		}
 
 		if (!b) {
-			/*if(LoggerUtils.defaultConfigEnable()){
+			if(LoggerUtils.defaultConfigEnable()){
 				LoggerUtils.info(Log4jUtils.class, "init default log4j config");
+				Properties properties = new Properties();
+				properties.put("log4j.rootLogger", "INFO, stdout, logfile, warn");
+				properties.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
+				properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
+				properties.put("log4j.appender.stdout.layout.ConversionPattern", "%d %p [%c] - %m%n");
+				properties.put("log4j.appender.logfile", "org.apache.log4j.DailyRollingFileAppender");
+				properties.put("log4j.appender.logfile.File", SystemPropertyUtils.getWorkPath() + "/logs/log.log");
+				properties.put("log4j.appender.logfile.layout", "org.apache.log4j.PatternLayout");
+				properties.put("log4j.appender.logfile.DatePattern", "'.'yyyy-MM-dd");
+				properties.put("log4j.appender.logfile.layout.ConversionPattern", "%d %p [%c] - %m%n");
+				properties.put("log4j.appender.warn", "org.apache.log4j.DailyRollingFileAppender");
+				properties.put("log4j.appender.warn.Encoding", Constants.DEFAULT_CHARSET_NAME);
+				properties.put("log4j.appender.warn.Threshold", "WARN");
+				properties.put("log4j.appender.warn.File", SystemPropertyUtils.getWorkPath() + "/logs/error_warn.log");
+				properties.put("log4j.appender.warn.layout", "org.apache.log4j.PatternLayout");
+				properties.put("log4j.appender.warn.DatePattern", "'.'yyyy-MM-dd");
+				properties.put("log4j.appender.warn.layout.ConversionPattern", "%d %p [%c] - %m%n");
+				initByProperties(properties);
 				return ;
-			}*/
+			}
 			throw new NotSupportException("log4j");
 		}
 	}

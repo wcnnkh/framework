@@ -216,8 +216,8 @@ public class Page extends HashMap<String, Object> implements View {
 			break;
 		}
 
-		if (response.isDebugEnabled()) {
-			response.debug("{}:{}", pageType, realPage);
+		if (response.isLogEnabled()) {
+			response.log("{}:{}", pageType, realPage);
 		}
 	}
 }

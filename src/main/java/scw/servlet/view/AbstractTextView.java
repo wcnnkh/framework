@@ -21,8 +21,8 @@ public abstract class AbstractTextView implements View, Text {
 		}
 
 		response.getWriter().write(content);
-		if (response.isDebugEnabled()) {
-			response.debug(content);
+		if (response.isLogEnabled()) {
+			response.log(content);
 		}
 	}
 

@@ -4,14 +4,11 @@ import javax.servlet.ServletRequest;
 
 import scw.core.StringVerification;
 import scw.core.ValueFactory;
-import scw.logger.DebugLogger;
-import scw.logger.Logger;
+import scw.logger.LogService;
 
-public interface Request extends ServletRequest, DebugLogger, StringVerification, ValueFactory<String> {
+public interface Request extends ServletRequest, LogService, StringVerification, ValueFactory<String> {
 	long getCreateTime();
 
-	Logger getLogger();
-	
 	<T> T getBean(Class<T> type);
 	
 	<T> T getBean(String name);

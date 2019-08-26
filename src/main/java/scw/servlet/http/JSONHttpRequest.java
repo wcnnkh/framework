@@ -22,8 +22,8 @@ public final class JSONHttpRequest extends AbstractHttpRequest {
 		super(requestBeanFactory, httpServletRequest, cookieValue, debug);
 		this.jsonParseSupport = jsonParseSupport;
 		Body body = getBean(Body.class);
-		if (debug) {
-			debug("servletPath={},method={},{}", getServletPath(), getMethod(), body.getBody());
+		if (isLogEnabled()) {
+			log("servletPath={},method={},{}", getServletPath(), getMethod(), body.getBody());
 		}
 		json = jsonParseSupport.parseObject(body.getBody());
 	}

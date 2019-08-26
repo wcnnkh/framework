@@ -15,8 +15,8 @@ public final class FormHttpRequest extends AbstractHttpRequest {
 	public FormHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
 			boolean cookieValue, boolean debug) throws IOException {
 		super(requestBeanFactory, httpServletRequest, cookieValue, debug);
-		if (isDebugEnabled()) {
-			debug("servletPath={},method={},{}", getServletPath(), getMethod(),
+		if (isLogEnabled()) {
+			log("servletPath={},method={},{}", getServletPath(), getMethod(),
 					JSONUtils.toJSONString(getParameterMap()));
 		}
 	}

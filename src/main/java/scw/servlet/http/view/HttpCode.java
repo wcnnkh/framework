@@ -28,8 +28,8 @@ public class HttpCode implements View {
 
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-		if (response.isDebugEnabled()) {
-			response.debug("servletPath={},method={},status={},msg={}", httpServletRequest.getServletPath(),
+		if (response.isLogEnabled()) {
+			response.log("servletPath={},method={},status={},msg={}", httpServletRequest.getServletPath(),
 					httpServletRequest.getMethod(), status, msg);
 		}
 		httpServletResponse.sendError(status, msg);
