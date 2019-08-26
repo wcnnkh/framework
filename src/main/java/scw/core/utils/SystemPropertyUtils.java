@@ -137,6 +137,10 @@ public abstract class SystemPropertyUtils {
 		}
 		return v;
 	}
+	
+	public static void setProperty(String key, String value){
+		System.setProperty(key, value);
+	}
 
 	public static void setWorkPath(String path) {
 		System.setProperty(WORK_PATH_PROPERTY_NAME, path);

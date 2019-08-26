@@ -19,6 +19,7 @@ import java.util.Properties;
 
 import scw.core.Constants;
 import scw.core.Consumer;
+import scw.core.PropertyFactory;
 import scw.core.StringFormat;
 import scw.core.reflect.ReflectUtils;
 import scw.io.IOUtils;
@@ -222,6 +223,19 @@ public final class PropertiesUtils {
 				}
 			}
 		});
+		return properties;
+	}
+
+	public static Properties getProperties(String path, final String charsetName, PropertyFactory propertyFactory) {
+		Properties properties = getProperties(path, charsetName);
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			Object value = entry.getValue();
+			if (value == null) {
+				continue;
+			}
+
+			entry.setValue(FormatUtils.format(value.toString(), propertyFactory, true));
+		}
 		return properties;
 	}
 

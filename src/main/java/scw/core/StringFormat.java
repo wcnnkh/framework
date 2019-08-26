@@ -30,7 +30,7 @@ public abstract class StringFormat implements PropertyFactory {
 				String value = null;
 				while (begin < chars.length) {
 					if (suffixEq(chars, begin)) {
-						value = getProperty(new String(chars, tempBegin + prefix.length, begin - tempBegin - 1));
+						value = getProperty(new String(chars, tempBegin + prefix.length, begin - tempBegin - prefix.length));
 						begin += suffix.length;
 						break;
 					} else {

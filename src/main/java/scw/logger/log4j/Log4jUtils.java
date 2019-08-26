@@ -6,6 +6,7 @@ import java.util.Properties;
 import org.w3c.dom.Element;
 
 import scw.core.Constants;
+import scw.core.SystemPropertyFactory;
 import scw.core.exception.NotSupportException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.PropertiesUtils;
@@ -63,7 +64,7 @@ public final class Log4jUtils {
 			if (ResourceUtils.isExist("classpath:/log4j.properties")) {
 				b = true;
 				Properties properties = PropertiesUtils.getProperties("classpath:/log4j.properties",
-						Constants.DEFAULT_CHARSET_NAME);
+						Constants.DEFAULT_CHARSET_NAME, SystemPropertyFactory.INSTANCE);
 				initByProperties(properties);
 			} else if (ResourceUtils.isExist("classpath:/log4j.xml")) {
 				b = true;
@@ -74,7 +75,7 @@ public final class Log4jUtils {
 			if (ResourceUtils.isExist(path)) {
 				if (path.endsWith(".properties")) {
 					b = true;
-					Properties properties = PropertiesUtils.getProperties(path, Constants.DEFAULT_CHARSET_NAME);
+					Properties properties = PropertiesUtils.getProperties(path, Constants.DEFAULT_CHARSET_NAME, SystemPropertyFactory.INSTANCE);
 					initByProperties(properties);
 				} else if (path.endsWith(".xml")) {
 					b = true;
@@ -85,6 +86,10 @@ public final class Log4jUtils {
 		}
 
 		if (!b) {
+			/*if(LoggerUtils.defaultConfigEnable()){
+				LoggerUtils.info(Log4jUtils.class, "init default log4j config");
+				return ;
+			}*/
 			throw new NotSupportException("log4j");
 		}
 	}

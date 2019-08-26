@@ -2,6 +2,7 @@ package scw.logger;
 
 import scw.core.utils.StringAppend;
 import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XTime;
 
 public final class LoggerUtils {
@@ -74,5 +75,13 @@ public final class LoggerUtils {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static boolean defaultConfigEnable(){
+		return StringUtils.parseBoolean(SystemPropertyUtils.getProperty("scw.logger.default.config.enable"), true);
+	}
+	
+	public static void setDefaultConfigenable(boolean enable){
+		SystemPropertyUtils.setProperty("scw.logger.default.config.enable", enable + "");
 	}
 }
