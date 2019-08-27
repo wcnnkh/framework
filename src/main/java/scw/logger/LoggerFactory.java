@@ -1,18 +1,25 @@
 package scw.logger;
 
 import scw.core.instance.InstanceUtils;
+import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 
 public final class LoggerFactory {
 	private static final ILoggerFactory LOGGER_FACTORY;
 
 	private LoggerFactory() {
 	};
+	
+	private static String[] getSupperLoggerFactory(){
+		String value = SystemPropertyUtils.getProperty("scw.logger.factory");
+		return StringUtils.isEmpty(value)? new String[]{
+			"scw.logger.log4j.Log4jLoggerFactory"
+		}:StringUtils.commonSplit(value); 
+	}
 
 	static {
-		String[] supportArr = { "scw.logger.log4j.Log4jLoggerFactory" };
-
 		ILoggerFactory loggerFactory = null;
-		for (String name : supportArr) {
+		for (String name : getSupperLoggerFactory()) {
 			loggerFactory = InstanceUtils.getInstance(name);
 		}
 
