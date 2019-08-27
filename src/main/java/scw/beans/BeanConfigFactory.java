@@ -1,6 +1,9 @@
 package scw.beans;
 
+import java.util.Collection;
 import java.util.Map;
+
+import scw.core.Destroy;
 
 public interface BeanConfigFactory {
 	/**
@@ -14,4 +17,10 @@ public interface BeanConfigFactory {
 	 * @return
 	 */
 	Map<String, String> getNameMappingMap();
+	
+	/**
+	 * 容器关闭时调用
+	 * @return
+	 */
+	Collection<Destroy> getDestroys();
 }

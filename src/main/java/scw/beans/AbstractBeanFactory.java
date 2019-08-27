@@ -2,8 +2,10 @@ package scw.beans;
 
 import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,6 +26,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private volatile Map<String, Object> notFoundMap = new HashMap<String, Object>();
+	private LinkedList<Destroy> destroys = new LinkedList<Destroy>();
 
 	private boolean init = false;
 
@@ -84,6 +87,11 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 						nameMappingMap.put(key, entry.getValue());
 					}
 				}
+			}
+
+			Collection<Destroy> destroys = beanConfigFactory.getDestroys();
+			if (destroys != null) {
+				destroys.addAll(destroys);
 			}
 		}
 	}
@@ -232,6 +240,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	/**
 	 * 对静态类型的注解扫描目录
+	 * 
 	 * @return
 	 */
 	protected abstract String getInitStaticPackage();
@@ -295,7 +304,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 		return beanDefinition;
 	}
-	
+
 	public abstract ValueWiredManager getValueWiredManager();
 
 	private BeanDefinition newBeanDefinition(String name) {
@@ -317,7 +326,8 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			if (!ReflectUtils.isInstance(clz)) {
 				return null;
 			}
-			return new AnnotationBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz, getFilterNames());
+			return new AnnotationBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz,
+					getFilterNames());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -335,7 +345,8 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		init = true;
 
 		try {
-			BeanUtils.initStatic(getValueWiredManager(), this, getPropertyFactory(), ResourceUtils.getClassList(getInitStaticPackage()));
+			BeanUtils.initStatic(getValueWiredManager(), this, getPropertyFactory(),
+					ResourceUtils.getClassList(getInitStaticPackage()));
 		} catch (Exception e) {
 			throw new NestedRuntimeException(e);
 		}
@@ -371,6 +382,10 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 					e.printStackTrace();
 				}
 			}
+		}
+
+		for (Destroy destroy : destroys) {
+			destroy.destroy();
 		}
 		init = false;
 	}

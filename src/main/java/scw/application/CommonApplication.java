@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
-import com.alibaba.dubbo.config.ProtocolConfig;
-
 import scw.application.consumer.AnnotationConsumerUtils;
 import scw.application.consumer.XmlConsumerFactory;
 import scw.application.crontab.CrontabAnnotationUtils;
@@ -41,27 +39,24 @@ public class CommonApplication implements Application {
 		return configPath;
 	}
 
-	public CommonApplication(String configXml, PropertyFactory propertyFactory,
-			Timer timer, int valueRefreshPeriod, int propertyRefreshPeriod) {
+	public CommonApplication(String configXml, PropertyFactory propertyFactory, Timer timer, int valueRefreshPeriod,
+			int propertyRefreshPeriod) {
 		this.timer = timer;
 		this.valueRefreshPeriod = valueRefreshPeriod;
 		this.propertyRefreshPeriod = propertyRefreshPeriod;
 		this.configPath = configXml;
-		this.propertyFactory = propertyFactory == null ? new XmlPropertyFactory(
-				this.configPath, timer, propertyRefreshPeriod)
-				: propertyFactory;
+		this.propertyFactory = propertyFactory == null
+				? new XmlPropertyFactory(this.configPath, timer, propertyRefreshPeriod) : propertyFactory;
 		this.beanFactory = getXmlBeanFactory();
 		createAfter();
 	}
 
-	public CommonApplication(String configXml, int valueRefreshPeriod,
-			int propertyRefreshPeriod) {
+	public CommonApplication(String configXml, int valueRefreshPeriod, int propertyRefreshPeriod) {
 		this.timer = new Timer(getClass().getName());
 		this.valueRefreshPeriod = valueRefreshPeriod;
 		this.propertyRefreshPeriod = propertyRefreshPeriod;
 		this.configPath = configXml;
-		this.propertyFactory = new XmlPropertyFactory(getConfigPath(), timer,
-				propertyRefreshPeriod);
+		this.propertyFactory = new XmlPropertyFactory(getConfigPath(), timer, propertyRefreshPeriod);
 		this.beanFactory = getXmlBeanFactory();
 		createAfter();
 	}
@@ -72,8 +67,8 @@ public class CommonApplication implements Application {
 	 * @return
 	 */
 	public static int getGlobalPropertyRefreshPeriod() {
-		return StringUtils.parseInt(SystemPropertyUtils
-				.getProperty("scw_global_property_refresh_period"), (int)TimeUnit.MINUTES.toSeconds(1));
+		return StringUtils.parseInt(SystemPropertyUtils.getProperty("scw_global_property_refresh_period"),
+				(int) TimeUnit.MINUTES.toSeconds(1));
 	}
 
 	public static void setGlobalPropertyRefreshPeriod(int period) {
@@ -86,8 +81,8 @@ public class CommonApplication implements Application {
 	 * @return
 	 */
 	public static int getGlobalValueWiredRefreshPeriod() {
-		return StringUtils.parseInt(SystemPropertyUtils
-				.getProperty("scw_global_value_wired_refresh_period"), (int)TimeUnit.MINUTES.toSeconds(1));
+		return StringUtils.parseInt(SystemPropertyUtils.getProperty("scw_global_value_wired_refresh_period"),
+				(int) TimeUnit.MINUTES.toSeconds(1));
 	}
 
 	public static void setGlobalValueWiredRefreshPeriod(int period) {
@@ -95,8 +90,7 @@ public class CommonApplication implements Application {
 	}
 
 	public CommonApplication(String configXml) {
-		this(configXml, getGlobalValueWiredRefreshPeriod(),
-				getGlobalPropertyRefreshPeriod());
+		this(configXml, getGlobalValueWiredRefreshPeriod(), getGlobalPropertyRefreshPeriod());
 	}
 
 	public ValueWiredManager getValueWiredManager() {
@@ -113,8 +107,7 @@ public class CommonApplication implements Application {
 
 	private XmlBeanFactory getXmlBeanFactory() {
 		try {
-			return new XmlBeanFactory(this.propertyFactory, getConfigPath(),
-					timer, getValueRefreshPeriod()) {
+			return new XmlBeanFactory(this.propertyFactory, getConfigPath(), timer, getValueRefreshPeriod()) {
 				@Override
 				protected String getInitStaticPackage() {
 					return getStaticAnnotationPackage();
@@ -164,8 +157,7 @@ public class CommonApplication implements Application {
 	}
 
 	protected String getConsumerAnnotationPackage() {
-		String consumer = BeanUtils
-				.getConsumerAnnotationPackage(propertyFactory);
+		String consumer = BeanUtils.getConsumerAnnotationPackage(propertyFactory);
 		return consumer == null ? getAnnotationPackage() : consumer;
 	}
 
@@ -188,7 +180,7 @@ public class CommonApplication implements Application {
 		}
 
 		beanFactory.init();
-		
+
 		String ormScanPackageName = propertyFactory.getProperty("orm.scan");
 		if (!StringUtils.isEmpty(ormScanPackageName)) {
 			ORMUtils.registerCglibProxyTableBean(ormScanPackageName);
@@ -196,26 +188,21 @@ public class CommonApplication implements Application {
 			ORMUtils.registerCglibProxyTableBean(getORMPackage());
 		}
 
-		CrontabAnnotationUtils.crontabService(
-				ResourceUtils.getClassList(getCrontabAnnotationPackage()),
-				beanFactory, getBeanFactory().getFilterNames());
+		CrontabAnnotationUtils.crontabService(ResourceUtils.getClassList(getCrontabAnnotationPackage()), beanFactory,
+				getBeanFactory().getFilterNames());
 		scanningConsumer();
-		
+
 		if (ResourceUtils.isExist(configPath)) {
-			DubboUtils.exportService(beanFactory, propertyFactory,
-					XmlBeanUtils.getRootNodeList(configPath));
+			DubboUtils.exportService(beanFactory, propertyFactory, XmlBeanUtils.getRootNodeList(configPath));
 		}
 	}
 
 	private void scanningConsumer() {
-		Collection<Class<?>> classes = ResourceUtils
-				.getClassList(getConsumerAnnotationPackage());
-		AnnotationConsumerUtils.scanningAMQPConsumer(getBeanFactory(), classes,
+		Collection<Class<?>> classes = ResourceUtils.getClassList(getConsumerAnnotationPackage());
+		AnnotationConsumerUtils.scanningAMQPConsumer(getBeanFactory(), classes, getBeanFactory().getFilterNames());
+		AnnotationConsumerUtils.scanningConsumer(beanFactory,
+				new XmlConsumerFactory(beanFactory, propertyFactory, configPath), classes,
 				getBeanFactory().getFilterNames());
-		AnnotationConsumerUtils
-				.scanningConsumer(beanFactory, new XmlConsumerFactory(
-						beanFactory, propertyFactory, configPath), classes,
-						getBeanFactory().getFilterNames());
 	}
 
 	public void destroy() {
@@ -231,7 +218,7 @@ public class CommonApplication implements Application {
 			start = false;
 		}
 
-		ProtocolConfig.destroyAll();
+		DubboUtils.destoryAll();
 		beanFactory.destroy();
 		LoggerFactory.destroy();
 	}

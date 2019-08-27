@@ -1,5 +1,9 @@
 package scw.beans.rpc.dubbo;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -98,5 +102,23 @@ public final class DubboUtils {
 		}
 
 		runnable.run();
+	}
+
+	public static void destoryAll() {
+		try {
+			Class<?> clz = Class.forName("com.alibaba.dubbo.config.ProtocolConfig");
+			Method method = clz.getMethod("destroyAll");
+			if (Modifier.isStatic(method.getModifiers())) {
+				method.invoke(null);
+			}
+		} catch (ClassNotFoundException e) {
+		} catch (NoSuchMethodException e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
 	}
 }
