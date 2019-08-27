@@ -19,7 +19,7 @@ public final class Message implements StringAppend {
 		this.name = name;
 	}
 
-	public Message(Level level, String name, String msg, Object[] args,
+	public Message(Level level, String name, Object msg, Object[] args,
 			Throwable throwable, String placeholder) {
 		this.cts = System.currentTimeMillis();
 		this.level = level;

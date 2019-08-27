@@ -7,6 +7,6 @@ public final class ConsoleLoggerFactory extends AsyncLoggerFactory {
 	}
 
 	public Logger getLogger(String name) {
-		return new AsyncLogger(true, true, true, true, true, name, this);
+		return new AsyncLogger(true, true, true, name, this);
 	}
 }

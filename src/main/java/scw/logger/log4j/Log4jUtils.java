@@ -14,6 +14,7 @@ import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XMLUtils;
+import scw.logger.LoggerUtils;
 
 public final class Log4jUtils {
 	private static final String LOG4J_PATH = "scw_log4j";
@@ -75,7 +76,8 @@ public final class Log4jUtils {
 			if (ResourceUtils.isExist(path)) {
 				if (path.endsWith(".properties")) {
 					b = true;
-					Properties properties = PropertiesUtils.getProperties(path, Constants.DEFAULT_CHARSET_NAME, SystemPropertyFactory.INSTANCE);
+					Properties properties = PropertiesUtils.getProperties(path, Constants.DEFAULT_CHARSET_NAME,
+							SystemPropertyFactory.INSTANCE);
 					initByProperties(properties);
 				} else if (path.endsWith(".xml")) {
 					b = true;
@@ -86,7 +88,7 @@ public final class Log4jUtils {
 		}
 
 		if (!b) {
-			/*if(LoggerUtils.defaultConfigEnable()){
+			if (LoggerUtils.defaultConfigEnable()) {
 				LoggerUtils.info(Log4jUtils.class, "init default log4j config");
 				Properties properties = new Properties();
 				properties.put("log4j.rootLogger", "INFO, stdout, logfile, warn");
@@ -106,8 +108,8 @@ public final class Log4jUtils {
 				properties.put("log4j.appender.warn.DatePattern", "'.'yyyy-MM-dd");
 				properties.put("log4j.appender.warn.layout.ConversionPattern", "%d %p [%c] - %m%n");
 				initByProperties(properties);
-				return ;
-			}*/
+				return;
+			}
 			throw new NotSupportException("log4j");
 		}
 	}

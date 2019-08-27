@@ -5,11 +5,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import scw.core.UnsafeStringBuffer;
 
 public abstract class AsyncLoggerFactory implements ILoggerFactory, Runnable {
-	private LinkedBlockingQueue<Message> handlerQueue = new LinkedBlockingQueue<Message>();
+	private final LinkedBlockingQueue<Message> handlerQueue;
 	private final Thread thread;
-	private final UnsafeStringBuffer unsafeStringBuffer = new UnsafeStringBuffer();
+	private final UnsafeStringBuffer unsafeStringBuffer;
 
 	public AsyncLoggerFactory(String threadName) {
+		handlerQueue = new LinkedBlockingQueue<Message>();
+		unsafeStringBuffer = new UnsafeStringBuffer();
 		thread = new Thread(this, threadName);
 		thread.start();
 	}
@@ -19,7 +21,7 @@ public abstract class AsyncLoggerFactory implements ILoggerFactory, Runnable {
 	}
 
 	public Logger getLogger(String name) {
-		return new AsyncLogger(true, true, true, true, true, name, this);
+		return new AsyncLogger(true, true, true, name, this);
 	}
 
 	public void run() {
@@ -45,8 +47,7 @@ public abstract class AsyncLoggerFactory implements ILoggerFactory, Runnable {
 		return unsafeStringBuffer.toString();
 	}
 
-	public void out(UnsafeStringBuffer unsafeStringBuffer, Message message)
-			throws Exception {
+	public void out(UnsafeStringBuffer unsafeStringBuffer, Message message) throws Exception {
 		String msg = message.toString(unsafeStringBuffer);
 		switch (message.getLevel()) {
 		case ERROR:
