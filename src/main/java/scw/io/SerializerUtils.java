@@ -11,8 +11,7 @@ public final class SerializerUtils {
 	static {
 		Class<?> serializerClass = null;
 		String[] seralizerClassNames = { "scw.io.serializer.support.Hessian2Serializer",
-				"scw.io.serializer.support.DubboHessian2Serializer",
-				"scw.io.serializer.support.HessianSerializer",
+				"scw.io.serializer.support.DubboHessian2Serializer", "scw.io.serializer.support.HessianSerializer",
 				"scw.io.serializer.support.DubboHessianSerializer" };
 
 		for (String name : seralizerClassNames) {
@@ -25,7 +24,8 @@ public final class SerializerUtils {
 
 		DEFAULT_SERIALIZER = (Serializer) (serializerClass == null ? JavaSerializer.SERIALIZER
 				: InstanceUtils.getInstance(serializerClass));
-		LoggerUtils.info(SerializerUtils.class, "default serializer：" + serializerClass.getName());
+		LoggerUtils.info(SerializerUtils.class, "default serializer："
+				+ (serializerClass == null ? JavaSerializer.class.getName() : serializerClass.getName()));
 	}
 
 	/**

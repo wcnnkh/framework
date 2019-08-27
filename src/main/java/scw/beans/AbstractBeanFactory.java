@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -384,8 +385,9 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			}
 		}
 
-		for (Destroy destroy : destroys) {
-			destroy.destroy();
+		ListIterator<Destroy> iterator = destroys.listIterator(destroys.size());
+		while (iterator.hasPrevious()) {
+			iterator.previous().destroy();
 		}
 		init = false;
 	}
