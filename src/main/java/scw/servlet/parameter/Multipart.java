@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
+import scw.core.Constants;
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
 import scw.core.utils.CollectionUtils;
@@ -27,8 +29,10 @@ import scw.logger.LoggerFactory;
 public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerFactory.getLogger(Multipart.class);
+	private HttpServletRequest request;
 
 	public Multipart(HttpServletRequest request) throws IOException {
+		this.request = request;
 		RequestContext requestContext;
 		DiskFileItemFactory factory;
 		ServletFileUpload upload;
@@ -50,21 +54,25 @@ public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 
 					add(fileItem.getFieldName(), fileItem);
 					if (fileItem.isFormField()) {
-						logger.trace("form表单字段name={}, value=", fileItem.getFieldName(), fileItem.toString());
+						logger.debug("form表单字段name={}, value=",
+								fileItem.getFieldName(), fileItem.toString());
 					} else {
-						logger.trace("form表单文件[name={}, size={}, fileName={}]", fileItem.getFieldName(),
-								fileItem.getSize(), fileItem.getName());
+						logger.debug("form表单文件[name={}, size={}, fileName={}]",
+								fileItem.getFieldName(), fileItem.getSize(),
+								fileItem.getName());
 					}
 				}
 			} else {
-				logger.error("请求类型异常");
+				logger.error("请求类型异常" + request.getServletPath() + ",method="
+						+ request.getMethod());
 			}
 		} catch (Exception e) {
 			logger.error(e, "获取上传文件请求内容异常！！");
 		}
 	}
 
-	public MultiValueMap<String, FileItem> getFieldItemMap(boolean formField, boolean checkSize) {
+	public MultiValueMap<String, FileItem> getFieldItemMap(boolean formField,
+			boolean checkSize) {
 		MultiValueMap<String, FileItem> map = new LinkedMultiValueMap<String, FileItem>();
 		for (Entry<String, List<FileItem>> entry : entrySet()) {
 			List<FileItem> list = entry.getValue();
@@ -102,7 +110,63 @@ public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 		return map;
 	}
 
-	public List<FileItem> getFieldItemList(String name, boolean formField, boolean checkSize) {
+	public FileItem getFirstFileItem(boolean formField) {
+		for (List<FileItem> fileItemList : values()) {
+			for (FileItem fileItem : fileItemList) {
+				if (fileItem == null) {
+					continue;
+				}
+
+				if (formField) {
+					if (fileItem.isFormField()) {
+						return fileItem;
+					}
+				} else {
+					if (!fileItem.isFormField()) {
+						return fileItem;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 获取所有字段
+	 * 
+	 * @param formField
+	 * @param checkSize
+	 * @return
+	 */
+	public Collection<FileItem> getAllFileItemList(boolean formField,
+			boolean checkSize) {
+		LinkedList<FileItem> list = new LinkedList<FileItem>();
+		for (List<FileItem> fileItemList : values()) {
+			for (FileItem fileItem : fileItemList) {
+				if (fileItem == null) {
+					continue;
+				}
+
+				if (checkSize && fileItem.getSize() == 0) {
+					continue;
+				}
+
+				if (formField) {
+					if (fileItem.isFormField()) {
+						list.add(fileItem);
+					}
+				} else {
+					if (!fileItem.isFormField()) {
+						list.add(fileItem);
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	public List<FileItem> getFieldItemList(String name, boolean formField,
+			boolean checkSize) {
 		List<FileItem> fileItems = get(name);
 		if (CollectionUtils.isEmpty(fileItems)) {
 			return null;
@@ -141,7 +205,7 @@ public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 	}
 
 	public String getTextValue(String key) {
-		return getTextValue(key, "UTF-8");
+		return getTextValue(key, request.getCharacterEncoding());
 	}
 
 	public String getTextValue(String key, String charsetName) {
@@ -150,7 +214,10 @@ public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 			return value;
 		}
 		try {
-			return new String(charsetName.getBytes("iso-8859-1"), charsetName);
+			return new String(
+					value.getBytes("iso-8859-1"),
+					StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME
+							: charsetName);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -166,7 +233,9 @@ public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 			try {
 				fileItem.write(new File(toPath + fileItem.getName()));
 			} catch (Exception e) {
-				logger.error("保存上传的文件异常,路径" + toPath + ",文件名：" + fileItem.getName(), e);
+				logger.error(
+						"保存上传的文件异常,路径" + toPath + ",文件名：" + fileItem.getName(),
+						e);
 			}
 		}
 	}
