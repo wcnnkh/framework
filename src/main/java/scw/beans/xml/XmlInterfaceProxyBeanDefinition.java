@@ -8,7 +8,6 @@ import org.w3c.dom.Node;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
-import scw.core.exception.NotSupportException;
 import scw.core.utils.XMLUtils;
 
 public class XmlInterfaceProxyBeanDefinition extends AbstractXmlBeanDefinition {
@@ -40,8 +39,26 @@ public class XmlInterfaceProxyBeanDefinition extends AbstractXmlBeanDefinition {
 				newProxyInstance, getFilterNames());
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T create(Object... params) {
-		throw new NotSupportException("接口代理不支持的参数构造");
+		InvocationHandler invocationHandler = getBeanFactory().getInstance(
+				proxy, params);
+		Object newProxyInstance = Proxy
+				.newProxyInstance(getType().getClassLoader(),
+						new Class[] { getType() }, invocationHandler);
+		return (T) BeanUtils.proxyInterface(getBeanFactory(), getType(),
+				newProxyInstance, getFilterNames());
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T create(Class<?>[] parameterTyeps, Object... params) {
+		InvocationHandler invocationHandler = getBeanFactory().getInstance(
+				proxy, parameterTyeps, params);
+		Object newProxyInstance = Proxy
+				.newProxyInstance(getType().getClassLoader(),
+						new Class[] { getType() }, invocationHandler);
+		return (T) BeanUtils.proxyInterface(getBeanFactory(), getType(),
+				newProxyInstance, getFilterNames());
 	}
 
 }

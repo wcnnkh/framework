@@ -1,6 +1,8 @@
 package scw.beans;
 
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Timer;
 
 import org.w3c.dom.Node;
@@ -25,14 +27,19 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	private String[] filterNames;
 	private final String xmlPath;
 	private ValueWiredManager valueWiredManager;
+	private Collection<String> autoBeanServices;
 
-	public XmlBeanFactory(PropertyFactory propertyFactory, String xmlPath, Timer timer, int period)
-			throws Exception {
+	public XmlBeanFactory(PropertyFactory propertyFactory, String xmlPath,
+			Timer timer, int period) throws Exception {
 		this.xmlPath = xmlPath;
 		this.propertyFactory = propertyFactory;
 		initParameter(xmlPath);
+		this.valueWiredManager = new ValueWiredManager(propertyFactory, this,
+				timer, period);
+		this.autoBeanServices = Arrays
+				.asList(StringUtils.commonSplit(propertyFactory
+						.getProperty("beans.auto.services")));
 		register();
-		this.valueWiredManager = new ValueWiredManager(propertyFactory, this, timer, period);
 	}
 
 	private void register() {
@@ -43,8 +50,8 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	private void initParameter(String xmlPath) {
 		if (ResourceUtils.isExist(xmlPath)) {
 			Node root = XmlBeanUtils.getRootNode(xmlPath);
-			this.filterNames = StringUtils
-					.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, root, "filters"));
+			this.filterNames = StringUtils.commonSplit(XMLUtils
+					.getNodeAttributeValue(propertyFactory, root, "filters"));
 		}
 	}
 
@@ -108,20 +115,24 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		try {
 			if (ResourceUtils.isExist(xmlPath)) {
 				NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
-				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this, propertyFactory, nodeList, filterNames));
-				addBeanConfigFactory(
-						new XmlBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList, filterNames, "bean"));
-				addBeanConfigFactory(new ServiceBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
+				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this,
+						propertyFactory, nodeList, filterNames));
+				addBeanConfigFactory(new XmlBeanConfigFactory(
+						getValueWiredManager(), this, propertyFactory,
+						nodeList, filterNames, "bean"));
+				addBeanConfigFactory(new ServiceBeanConfigFactory(
+						getValueWiredManager(), this, propertyFactory,
 						getServicePackage(), filterNames));
-				
-				BeanConfigFactory dubboBeanConfigFactory = DubboUtils.getReferenceBeanConfigFactory(this,
-						propertyFactory, nodeList, filterNames);
+
+				BeanConfigFactory dubboBeanConfigFactory = DubboUtils
+						.getReferenceBeanConfigFactory(this, propertyFactory,
+								nodeList, filterNames);
 				if (dubboBeanConfigFactory != null) {
 					addBeanConfigFactory(dubboBeanConfigFactory);
 				}
 
-				addBeanConfigFactory(
-						new XmlInterfaceProxyBeanConfigFactory(this, propertyFactory, nodeList, filterNames));
+				addBeanConfigFactory(new XmlInterfaceProxyBeanConfigFactory(
+						this, propertyFactory, nodeList, filterNames));
 				super.init();
 				initMethod(nodeList);
 			} else {
@@ -132,13 +143,16 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		}
 	}
 
-	private void doInit(BeanDefinition beanDefinition, Node node, String className) throws Exception {
-		XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(beanDefinition.getType(), node);
+	private void doInit(BeanDefinition beanDefinition, Node node,
+			String className) throws Exception {
+		XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(
+				beanDefinition.getType(), node);
 		if (Modifier.isStatic(xmlBeanMethodInfo.getMethod().getModifiers())) {
 			// 静态方法
 			xmlBeanMethodInfo.invoke(null, this, propertyFactory);
 		} else {
-			xmlBeanMethodInfo.invoke(getInstance(className), this, propertyFactory);
+			xmlBeanMethodInfo.invoke(getInstance(className), this,
+					propertyFactory);
 		}
 	}
 
@@ -146,7 +160,8 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			final Node n = nodeList.item(a);
 			if ("init".equalsIgnoreCase(n.getNodeName())) {
-				final String className = XMLUtils.getRequireNodeAttributeValue(propertyFactory, n, "class");
+				final String className = XMLUtils.getRequireNodeAttributeValue(
+						propertyFactory, n, "class");
 				final BeanDefinition beanDefinition = getBeanDefinition(className);
 				if (beanDefinition == null) {
 					throw new NotFoundException(className);
@@ -180,14 +195,18 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("destroy".equalsIgnoreCase(n.getNodeName())) {
-				String className = XMLUtils.getRequireNodeAttributeValue(propertyFactory, n, "class");
+				String className = XMLUtils.getRequireNodeAttributeValue(
+						propertyFactory, n, "class");
 				BeanDefinition beanDefinition = getBeanDefinition(className);
-				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(beanDefinition.getType(), n);
-				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod().getModifiers())) {
+				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(
+						beanDefinition.getType(), n);
+				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod()
+						.getModifiers())) {
 					// 静态方法
 					xmlBeanMethodInfo.invoke(null, this, propertyFactory);
 				} else {
-					xmlBeanMethodInfo.invoke(getInstance(className), this, propertyFactory);
+					xmlBeanMethodInfo.invoke(getInstance(className), this,
+							propertyFactory);
 				}
 			}
 		}
@@ -203,7 +222,8 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	@Override
-	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(String name, Class<?>[] parameterTypes,
+			Object... params) {
 		T bean = super.getInstance(name, parameterTypes, params);
 		if (bean == null) {
 			throw new BeansException("not found [" + name + "]");
@@ -228,11 +248,17 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	@Override
 	protected String getInitStaticPackage() {
 		String init = BeanUtils.getInitStaticPackage(propertyFactory);
-		return init == null ? BeanUtils.getAnnotationPackage(propertyFactory) : init;
+		return init == null ? BeanUtils.getAnnotationPackage(propertyFactory)
+				: init;
 	}
 
 	@Override
 	public final ValueWiredManager getValueWiredManager() {
 		return valueWiredManager;
+	}
+
+	@Override
+	public Collection<String> getAutoBeanServices() {
+		return autoBeanServices;
 	}
 }

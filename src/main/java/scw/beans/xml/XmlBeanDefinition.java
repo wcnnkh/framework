@@ -46,8 +46,9 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	private final Class<?>[] constructorParameterTypes;
 	private final ValueWiredManager valueWiredManager;
 
-	public XmlBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Node beanNode, String[] filterNames) throws Exception {
+	public XmlBeanDefinition(ValueWiredManager valueWiredManager,
+			BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Node beanNode, String[] filterNames) throws Exception {
 		this.valueWiredManager = valueWiredManager;
 		this.beanFactory = beanFactory;
 		this.propertyFactory = propertyFactory;
@@ -61,9 +62,11 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		this.destroyMethods = XmlBeanUtils.getDestroyMethodList(type, nodeList);
 		this.properties = XmlBeanUtils.getBeanProperties(nodeList);
 		this.proxy = BeanUtils.checkProxy(type, this.filterNames);
-		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type, false).toArray(new FieldDefinition[0]);
+		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type,
+				false).toArray(new FieldDefinition[0]);
 
-		this.constructorParameters = XmlBeanUtils.getConstructorParameters(nodeList);
+		this.constructorParameters = XmlBeanUtils
+				.getConstructorParameters(nodeList);
 		this.constructor = getConstructor();
 		if (constructor == null) {
 			throw new NotFoundException(type.getName() + "找不到对应的构造函数");
@@ -76,7 +79,8 @@ public final class XmlBeanDefinition implements BeanDefinition {
 			return getConstructorByParameterTypes();
 		} else {
 			for (Constructor<?> constructor : type.getDeclaredConstructors()) {
-				XmlBeanParameter[] beanMethodParameters = BeanUtils.sortParameters(constructor, constructorParameters);
+				XmlBeanParameter[] beanMethodParameters = BeanUtils
+						.sortParameters(constructor, constructorParameters);
 				if (beanMethodParameters != null) {
 					this.beanMethodParameters = beanMethodParameters;
 					constructor.setAccessible(true);
@@ -87,7 +91,8 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		return null;
 	}
 
-	private Constructor<?> getConstructorByParameterTypes(Class<?>... parameterTypes) {
+	private Constructor<?> getConstructorByParameterTypes(
+			Class<?>... parameterTypes) {
 		try {
 			return type.getConstructor(parameterTypes);
 		} catch (NoSuchMethodException e) {
@@ -134,7 +139,8 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		if (ArrayUtils.isEmpty(constructorParameters)) {
 			return enhancer.create();
 		} else {
-			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertyFactory);
+			Object[] args = BeanUtils.getBeanMethodParameterArgs(
+					beanMethodParameters, beanFactory, propertyFactory);
 			return enhancer.create(constructorParameterTypes, args);
 		}
 	}
@@ -145,13 +151,14 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		}
 
 		for (XmlBeanParameter beanProperties : properties) {
-			Field field = ReflectUtils.getField(type, beanProperties.getName(), true);
+			Field field = ReflectUtils.getField(type, beanProperties.getName(),
+					true);
 			if (field == null) {
 				continue;
 			}
 
-			ReflectUtils.setFieldValue(type, field, bean,
-					beanProperties.parseValue(beanFactory, propertyFactory, field.getType()));
+			ReflectUtils.setFieldValue(type, field, bean, beanProperties
+					.parseValue(beanFactory, propertyFactory, field.getType()));
 		}
 	}
 
@@ -159,14 +166,15 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		if (ArrayUtils.isEmpty(constructorParameterTypes)) {
 			return constructor.newInstance();
 		} else {
-			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertyFactory);
+			Object[] args = BeanUtils.getBeanMethodParameterArgs(
+					beanMethodParameters, beanFactory, propertyFactory);
 			return constructor.newInstance(args);
 		}
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean,
-				Arrays.asList(autowriteFields));
+		BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory,
+				type, bean, Arrays.asList(autowriteFields));
 		setProperties(bean);
 	}
 
@@ -217,7 +225,31 @@ public final class XmlBeanDefinition implements BeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	public <T> T create(Object... params) {
-		Constructor<T> constructor = (Constructor<T>) ReflectUtils.findConstructorByParameters(getType(), true, params);
+		Constructor<T> constructor = (Constructor<T>) ReflectUtils
+				.findConstructorByParameters(getType(), false, params);
+		if (constructor == null) {
+			throw new NotFoundException(getId() + "找不到指定的构造方法");
+		}
+
+		Object bean;
+		try {
+			if (isProxy()) {
+				Enhancer enhancer = getProxyEnhancer();
+				bean = enhancer.create(constructor.getParameterTypes(), params);
+			} else {
+				bean = constructor.newInstance(params);
+			}
+
+			return (T) bean;
+		} catch (Throwable e) {
+			throw new BeansException(getId(), e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T create(Class<?>[] parameterTypes, Object... params) {
+		Constructor<?> constructor = ReflectUtils.findConstructor(getType(),
+				false, parameterTypes);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}

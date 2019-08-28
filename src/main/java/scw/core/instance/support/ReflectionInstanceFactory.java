@@ -80,11 +80,9 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 			return null;
 		}
 
-		Constructor<?> constructor = null;
-		try {
-			constructor = ReflectUtils.getConstructor(type, false,
-					parameterTypes);
-		} catch (NoSuchMethodException e) {
+		Constructor<?> constructor = ReflectUtils.getConstructor(type, false,
+				parameterTypes);
+		if (constructor == null) {
 			return null;
 		}
 		return newInstance(constructor, params);

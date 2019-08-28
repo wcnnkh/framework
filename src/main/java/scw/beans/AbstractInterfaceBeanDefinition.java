@@ -45,6 +45,10 @@ public abstract class AbstractInterfaceBeanDefinition implements BeanDefinition 
 	public <T> T create(Object... params) {
 		throw new NotSupportException(getType().getName());
 	}
+	
+	public <T> T create(Class<?>[] parameterTypes, Object... params) {
+		throw new NotSupportException(getType().getName());
+	}
 
 	public void autowrite(Object bean) throws Exception {
 		// ignore

@@ -6,7 +6,7 @@ import scw.core.PropertyFactory;
 import scw.core.utils.ResourceUtils;
 
 /**
- * 此类只要类是存在的不可能出现获取不到的情况
+ * 扫描service注解
  * 
  * @author shuchaowen
  *

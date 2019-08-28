@@ -200,4 +200,25 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 			throw new BeansException(getId(), e);
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T create(Class<?>[] parameterTypes, Object... params) {
+		Constructor<?> constructor = ReflectUtils.getConstructor(getType(), false, parameterTypes);
+		if (constructor == null) {
+			throw new NotFoundException(getId() + "找不到指定的构造方法");
+		}
+
+		Object bean;
+		try {
+			if (isProxy()) {
+				Enhancer enhancer = getProxyEnhancer();
+				bean = enhancer.create(constructor.getParameterTypes(), params);
+			} else {
+				bean = constructor.newInstance(params);
+			}
+			return (T) bean;
+		} catch (Throwable e) {
+			throw new BeansException(getId(), e);
+		}
+	}
 }

@@ -1,6 +1,8 @@
 package scw.beans;
 
-public interface BeanDefinition{
+import scw.core.InstanceDefinition;
+
+public interface BeanDefinition extends InstanceDefinition{
 	String getId();
 
 	String[] getNames();
@@ -16,8 +18,4 @@ public interface BeanDefinition{
 	void init(Object bean) throws Exception;
 
 	void destroy(Object bean) throws Exception;
-	
-	<T> T create();
-
-	<T> T create(Object... params);
 }
