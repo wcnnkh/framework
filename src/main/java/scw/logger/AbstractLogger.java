@@ -6,6 +6,10 @@ public abstract class AbstractLogger implements Logger {
 	public AbstractLogger(String placeholder) {
 		this.placeholder = placeholder;
 	}
+	
+	protected Object createMessage(Object format, Object... args) {
+		return new DefaultLoggerFormatAppend(format, getPlaceholder(), args);
+	}
 
 	public String getPlaceholder() {
 		return placeholder;

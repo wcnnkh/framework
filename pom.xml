@@ -32,6 +32,14 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.12.1</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
@@ -215,7 +223,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
@@ -225,7 +233,7 @@
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.tomcat</groupId>
-      				<artifactId>tomcat-annotations-api</artifactId>
+					<artifactId>tomcat-annotations-api</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

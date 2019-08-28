@@ -2,10 +2,10 @@ package scw.logger.log4j;
 
 import org.apache.log4j.LogManager;
 
-import scw.logger.ILoggerFactory;
+import scw.logger.AbstractILoggerFactory;
 import scw.logger.Logger;
 
-public class Log4jLoggerFactory implements ILoggerFactory {
+public class Log4jLoggerFactory extends AbstractILoggerFactory {
 
 	public Log4jLoggerFactory() {
 		Log4jUtils.defaultInit();
@@ -15,8 +15,8 @@ public class Log4jLoggerFactory implements ILoggerFactory {
 		LogManager.shutdown();
 	}
 
-	public Logger getLogger(String name) {
+	public Logger getLogger(String name, String placeholder) {
 		org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(name);
-		return new Log4jLogger(logger, null);
+		return new Log4jLogger(logger, placeholder);
 	}
 }

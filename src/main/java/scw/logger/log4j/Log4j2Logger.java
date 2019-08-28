@@ -1,15 +1,19 @@
 package scw.logger.log4j;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import scw.logger.AbstractLogger;
 
-public class Log4jLogger extends AbstractLogger {
+public class Log4j2Logger extends AbstractLogger {
 	private final Logger logger;
 
-	public Log4jLogger(Logger logger, String placeholder) {
+	public Log4j2Logger(Logger logger, String placeholder) {
 		super(placeholder);
 		this.logger = logger;
+	}
+
+	public Logger getLogger() {
+		return logger;
 	}
 
 	public String getName() {
@@ -40,12 +44,22 @@ public class Log4jLogger extends AbstractLogger {
 		logger.trace(createMessage(format, args), e);
 	}
 
+	@Override
+	public boolean isWarnEnabled() {
+		return logger.isWarnEnabled();
+	}
+
 	public void warn(Object format, Object... args) {
 		logger.warn(createMessage(format, args));
 	}
 
 	public void warn(Throwable e, Object format, Object... args) {
 		logger.warn(createMessage(format, args), e);
+	}
+
+	@Override
+	public boolean isErrorEnabled() {
+		return logger.isErrorEnabled();
 	}
 
 	public void error(Object format, Object... args) {
@@ -67,5 +81,4 @@ public class Log4jLogger extends AbstractLogger {
 	public void debug(Throwable e, Object format, Object... args) {
 		logger.debug(createMessage(format, args), e);
 	}
-
 }

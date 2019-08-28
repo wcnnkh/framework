@@ -120,6 +120,7 @@ public class EmbeddedApplication extends CommonApplication {
 
 	public synchronized static void run(final Class<?> clazz, String beanXml) {
 		Run run = new Run(clazz, beanXml);
+		run.setName("embedded-application");
 		run.setDaemon(false);
 		run.start();
 	}

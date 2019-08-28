@@ -7,7 +7,6 @@ import org.w3c.dom.Element;
 
 import scw.core.Constants;
 import scw.core.SystemPropertyFactory;
-import scw.core.exception.NotSupportException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.ResourceUtils;
@@ -108,9 +107,7 @@ public final class Log4jUtils {
 				properties.put("log4j.appender.warn.DatePattern", "'.'yyyy-MM-dd");
 				properties.put("log4j.appender.warn.layout.ConversionPattern", "%d %p [%c] - %m%n");
 				initByProperties(properties);
-				return;
 			}
-			throw new NotSupportException("log4j");
 		}
 	}
 }
