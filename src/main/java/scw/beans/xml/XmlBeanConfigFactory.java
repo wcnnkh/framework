@@ -12,10 +12,11 @@ import scw.core.PropertyFactory;
 public class XmlBeanConfigFactory extends AbstractBeanConfigFactory {
 
 	public XmlBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, NodeList rootNodeList, String[] filterNames) throws Exception {
+			PropertyFactory propertyFactory, NodeList rootNodeList, String[] filterNames, String beanTagName)
+			throws Exception {
 		for (int i = 0; i < rootNodeList.getLength(); i++) {
 			Node nRoot = rootNodeList.item(i);
-			if ("bean".equalsIgnoreCase(nRoot.getNodeName())) {
+			if (beanTagName.equalsIgnoreCase(nRoot.getNodeName())) {
 				BeanDefinition beanDefinition = new XmlBeanDefinition(valueWiredManager, beanFactory, propertyFactory,
 						nRoot, filterNames);
 				addBean(beanDefinition);

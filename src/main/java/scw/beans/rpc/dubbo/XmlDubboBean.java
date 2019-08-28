@@ -1,6 +1,6 @@
 package scw.beans.rpc.dubbo;
 
-import com.alibaba.dubbo.config.ReferenceConfig;
+import org.apache.dubbo.config.ReferenceConfig;
 
 import scw.beans.AbstractInterfaceBeanDefinition;
 import scw.beans.BeanFactory;

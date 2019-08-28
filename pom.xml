@@ -64,24 +64,44 @@
 		</dependency>
 
 		<!-- dubbo相关 -->
+		<!-- https://mvnrepository.com/artifact/org.apache.dubbo/dubbo-config-api -->
 		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>dubbo</artifactId>
-			<version>${dubbo.version}</version>
+			<groupId>org.apache.dubbo</groupId>
+			<artifactId>dubbo-config-api</artifactId>
+			<version>2.7.3</version>
 			<scope>provided</scope>
-			<optional>true</optional>
 			<exclusions>
 				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring</artifactId>
+					<groupId>org.apache.dubbo</groupId>
+					<artifactId>dubbo-registry-api</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>org.javassist</groupId>
-					<artifactId>javassist</artifactId>
+					<groupId>org.apache.dubbo</groupId>
+					<artifactId>dubbo-metadata-report-api</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>org.jboss.netty</groupId>
-					<artifactId>netty</artifactId>
+					<groupId>org.apache.dubbo</groupId>
+					<artifactId>dubbo-monitor-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.dubbo</groupId>
+					<artifactId>dubbo-remoting-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.dubbo</groupId>
+					<artifactId>dubbo-rpc-injvm</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.dubbo</groupId>
+					<artifactId>dubbo-filter-validation</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.dubbo</groupId>
+					<artifactId>dubbo-filter-cache</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.dubbo</groupId>
+					<artifactId>dubbo-rpc-rmi</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

@@ -3,6 +3,11 @@ package scw.beans.rpc.dubbo;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.dubbo.config.ApplicationConfig;
+import org.apache.dubbo.config.ProtocolConfig;
+import org.apache.dubbo.config.ReferenceConfig;
+import org.apache.dubbo.config.RegistryConfig;
+import org.apache.dubbo.config.ServiceConfig;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -16,12 +21,6 @@ import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-
-import com.alibaba.dubbo.config.ApplicationConfig;
-import com.alibaba.dubbo.config.ProtocolConfig;
-import com.alibaba.dubbo.config.ReferenceConfig;
-import com.alibaba.dubbo.config.RegistryConfig;
-import com.alibaba.dubbo.config.ServiceConfig;
 
 public final class XmlDubboUtils {
 	private XmlDubboUtils() {
@@ -225,15 +224,11 @@ public final class XmlDubboUtils {
 	public static List<ServiceConfig<?>> getServiceConfigList(
 			PropertyFactory propertyFactory, BeanFactory beanFactory,
 			Node node) {
-		ApplicationConfig applicationConfig = getApplicationConfig(
-				propertyFactory, beanFactory, node);
-
 		List<ProtocolConfig> protocolConfigs = parseProtocolConfig(
 				propertyFactory, beanFactory, node, true);
 		List<ServiceConfig<?>> serviceConfigs = parseServiceConfig(
 				propertyFactory, beanFactory, node);
 		for (ServiceConfig<?> serviceConfig : serviceConfigs) {
-			serviceConfig.setApplication(applicationConfig);
 			serviceConfig.setProtocols(protocolConfigs);
 		}
 		return serviceConfigs;

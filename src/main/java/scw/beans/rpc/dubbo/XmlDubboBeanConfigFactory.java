@@ -2,10 +2,9 @@ package scw.beans.rpc.dubbo;
 
 import java.util.List;
 
+import org.apache.dubbo.config.ReferenceConfig;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import com.alibaba.dubbo.config.ReferenceConfig;
 
 import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanFactory;

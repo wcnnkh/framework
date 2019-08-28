@@ -19,7 +19,7 @@ public final class DubboUtils {
 
 	public static boolean isSupport() {
 		try {
-			Class.forName("com.alibaba.dubbo.config.RegistryConfig");
+			Class.forName("org.apache.dubbo.config.annotation.Service");
 			return true;
 		} catch (ClassNotFoundException e) {
 			return false;

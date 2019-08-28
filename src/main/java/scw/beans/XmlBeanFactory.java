@@ -108,6 +108,12 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		try {
 			if (ResourceUtils.isExist(xmlPath)) {
 				NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
+				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this, propertyFactory, nodeList, filterNames));
+				addBeanConfigFactory(
+						new XmlBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList, filterNames, "bean"));
+				addBeanConfigFactory(new ServiceBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
+						getServicePackage(), filterNames));
+				
 				BeanConfigFactory dubboBeanConfigFactory = DubboUtils.getReferenceBeanConfigFactory(this,
 						propertyFactory, nodeList, filterNames);
 				if (dubboBeanConfigFactory != null) {
@@ -116,11 +122,6 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 
 				addBeanConfigFactory(
 						new XmlInterfaceProxyBeanConfigFactory(this, propertyFactory, nodeList, filterNames));
-				addBeanConfigFactory(new HttpRpcBeanConfigFactory(this, propertyFactory, nodeList, filterNames));
-				addBeanConfigFactory(
-						new XmlBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList, filterNames));
-				addBeanConfigFactory(new ServiceBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
-						getServicePackage(), filterNames));
 				super.init();
 				initMethod(nodeList);
 			} else {

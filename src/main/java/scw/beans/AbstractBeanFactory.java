@@ -29,8 +29,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	private volatile Map<String, Object> notFoundMap = new HashMap<String, Object>();
 	private LinkedList<Destroy> destroys = new LinkedList<Destroy>();
 
-	private boolean init = false;
-
 	public void registerNameMapping(String key, String value) {
 		if (nameMappingMap.containsKey(key)) {
 			throw new AlreadyExistsException(key);
@@ -99,9 +97,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
-		if (!init) {
-			throw new BeansException("还未初始化");
-		}
 
 		Object obj = singletonMap.get(name);
 		if (obj != null) {
@@ -145,9 +140,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name, Object... params) {
-		if (!init) {
-			throw new BeansException("还未初始化");
-		}
 
 		Object obj = singletonMap.get(name);
 		if (obj != null) {
@@ -191,10 +183,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name) {
-		if (!init) {
-			throw new BeansException("还未初始化");
-		}
-
 		Object obj = singletonMap.get(name);
 		if (obj != null) {
 			return (T) obj;
@@ -340,11 +328,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	public abstract String[] getFilterNames();
 
 	public synchronized void init() {
-		if (init) {
-			throw new BeansException("已经初始化了");
-		}
-		init = true;
-
 		try {
 			BeanUtils.initStatic(getValueWiredManager(), this, getPropertyFactory(),
 					ResourceUtils.getClassList(getInitStaticPackage()));
@@ -354,10 +337,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	public synchronized void destroy() {
-		if (!init) {
-			throw new BeansException("还未初始化");
-		}
-
 		try {
 			BeanUtils.destroyStaticMethod(getValueWiredManager(), ResourceUtils.getClassList(getInitStaticPackage()));
 		} catch (Exception e) {
@@ -389,7 +368,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		while (iterator.hasPrevious()) {
 			iterator.previous().destroy();
 		}
-		init = false;
 	}
 
 	public <T> T getInstance(Class<T> type, Object... params) {

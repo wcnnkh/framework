@@ -11,8 +11,7 @@ public final class SerializerUtils {
 	static {
 		Class<?> serializerClass = null;
 		String[] seralizerClassNames = { "scw.io.serializer.support.Hessian2Serializer",
-				"scw.io.serializer.support.DubboHessian2Serializer", "scw.io.serializer.support.HessianSerializer",
-				"scw.io.serializer.support.DubboHessianSerializer" };
+				"scw.io.serializer.support.HessianSerializer" };
 
 		for (String name : seralizerClassNames) {
 			try {
