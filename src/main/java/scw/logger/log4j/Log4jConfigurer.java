@@ -24,8 +24,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import scw.core.utils.PropertyPlaceholderHelper;
 import scw.core.utils.ResourceUtils;
-import scw.core.utils.SystemPropertyUtils;
 
 /**
  * Convenience class that features simple methods for custom log4j configuration.
@@ -66,7 +66,7 @@ public abstract class Log4jConfigurer {
 	 * @throws FileNotFoundException if the location specifies an invalid file path
 	 */
 	public static void initLogging(String location) throws FileNotFoundException {
-		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(location);
+		String resolvedLocation = PropertyPlaceholderHelper.resolvePlaceholders(location);
 		URL url = ResourceUtils.getURL(resolvedLocation);
 		if (resolvedLocation.toLowerCase().endsWith(XML_FILE_EXTENSION)) {
 			DOMConfigurator.configure(url);
@@ -96,7 +96,7 @@ public abstract class Log4jConfigurer {
 	 * @throws FileNotFoundException if the location specifies an invalid file path
 	 */
 	public static void initLogging(String location, long refreshInterval) throws FileNotFoundException {
-		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(location);
+		String resolvedLocation = PropertyPlaceholderHelper.resolvePlaceholders(location);
 		File file = ResourceUtils.getFile(resolvedLocation);
 		if (!file.exists()) {
 			throw new FileNotFoundException("Log4j config file [" + resolvedLocation + "] not found");

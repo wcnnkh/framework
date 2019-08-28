@@ -76,12 +76,12 @@ public final class LoggerUtils {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	public static boolean defaultConfigEnable(){
-		return StringUtils.parseBoolean(SystemPropertyUtils.getProperty("scw.logger.default.config.enable"), true);
+
+	public static Boolean defaultConfigEnable() {
+		return StringUtils.parseBoolean(SystemPropertyUtils.getProperty("scw.logger.default.config.enable"), null);
 	}
-	
-	public static void setDefaultConfigenable(boolean enable){
+
+	public static void setDefaultConfigenable(boolean enable) {
 		SystemPropertyUtils.setProperty("scw.logger.default.config.enable", enable + "");
 	}
 }

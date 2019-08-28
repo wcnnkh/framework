@@ -78,8 +78,8 @@ public abstract class ServletContextPropertyUtils {
 	public static String resolvePlaceholders(String text,
 			ServletContext servletContext,
 			boolean ignoreUnresolvablePlaceholders) {
-		PropertyPlaceholderHelper helper = (ignoreUnresolvablePlaceholders ? SystemPropertyUtils.nonStrictHelper
-				: SystemPropertyUtils.strictHelper);
+		PropertyPlaceholderHelper helper = (ignoreUnresolvablePlaceholders ? PropertyPlaceholderHelper.nonStrictHelper
+				: PropertyPlaceholderHelper.strictHelper);
 		return helper.replacePlaceholders(text,
 				new ServletContextPlaceholderResolver(text, servletContext));
 	}

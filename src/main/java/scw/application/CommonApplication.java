@@ -179,6 +179,13 @@ public class CommonApplication implements Application {
 			start = true;
 		}
 
+		/**
+		 * 使用容器进行初始化时，如果未找到log4j配置文件使用默认配置
+		 */
+		if (LoggerUtils.defaultConfigEnable() == null) {
+			LoggerUtils.setDefaultConfigenable(true);
+		}
+
 		beanFactory.init();
 
 		String ormScanPackageName = propertyFactory.getProperty("orm.scan");

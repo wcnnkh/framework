@@ -87,7 +87,8 @@ public final class Log4jUtils {
 		}
 
 		if (!b) {
-			if (LoggerUtils.defaultConfigEnable()) {
+			Boolean enable = LoggerUtils.defaultConfigEnable();
+			if (enable != null && enable) {
 				LoggerUtils.info(Log4jUtils.class, "init default log4j config");
 				Properties properties = new Properties();
 				properties.put("log4j.rootLogger", "INFO, stdout, logfile, warn");
