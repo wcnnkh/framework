@@ -58,57 +58,56 @@ public final class Log4jUtils {
 	}
 
 	public static void defaultInit() {
-		boolean b = false;
+		Boolean enable = LoggerUtils.defaultConfigEnable();
+		if (enable == null || !enable) {
+			return;
+		}
+
 		String path = SystemPropertyUtils.getProperty(LOG4J_PATH);
 		if (StringUtils.isEmpty(path)) {
 			if (ResourceUtils.isExist("classpath:/log4j.properties")) {
-				b = true;
 				Properties properties = PropertiesUtils.getProperties("classpath:/log4j.properties",
 						Constants.DEFAULT_CHARSET_NAME, SystemPropertyFactory.INSTANCE);
 				initByProperties(properties);
+				return;
 			} else if (ResourceUtils.isExist("classpath:/log4j.xml")) {
-				b = true;
 				Element element = XMLUtils.getRootElement("classpath:/log4j.xml");
 				initByXml(element);
+				return;
 			}
 		} else {
 			if (ResourceUtils.isExist(path)) {
 				if (path.endsWith(".properties")) {
-					b = true;
 					Properties properties = PropertiesUtils.getProperties(path, Constants.DEFAULT_CHARSET_NAME,
 							SystemPropertyFactory.INSTANCE);
 					initByProperties(properties);
+					return;
 				} else if (path.endsWith(".xml")) {
-					b = true;
 					Element element = XMLUtils.getRootElement(path);
 					initByXml(element);
+					return;
 				}
 			}
 		}
 
-		if (!b) {
-			Boolean enable = LoggerUtils.defaultConfigEnable();
-			if (enable != null && enable) {
-				LoggerUtils.info(Log4jUtils.class, "init default log4j config");
-				Properties properties = new Properties();
-				properties.put("log4j.rootLogger", "INFO, stdout, logfile, warn");
-				properties.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
-				properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
-				properties.put("log4j.appender.stdout.layout.ConversionPattern", "%d %p [%c] - %m%n");
-				properties.put("log4j.appender.logfile", "org.apache.log4j.DailyRollingFileAppender");
-				properties.put("log4j.appender.logfile.File", SystemPropertyUtils.getWorkPath() + "/logs/log.log");
-				properties.put("log4j.appender.logfile.layout", "org.apache.log4j.PatternLayout");
-				properties.put("log4j.appender.logfile.DatePattern", "'.'yyyy-MM-dd");
-				properties.put("log4j.appender.logfile.layout.ConversionPattern", "%d %p [%c] - %m%n");
-				properties.put("log4j.appender.warn", "org.apache.log4j.DailyRollingFileAppender");
-				properties.put("log4j.appender.warn.Encoding", Constants.DEFAULT_CHARSET_NAME);
-				properties.put("log4j.appender.warn.Threshold", "WARN");
-				properties.put("log4j.appender.warn.File", SystemPropertyUtils.getWorkPath() + "/logs/error_warn.log");
-				properties.put("log4j.appender.warn.layout", "org.apache.log4j.PatternLayout");
-				properties.put("log4j.appender.warn.DatePattern", "'.'yyyy-MM-dd");
-				properties.put("log4j.appender.warn.layout.ConversionPattern", "%d %p [%c] - %m%n");
-				initByProperties(properties);
-			}
-		}
+		LoggerUtils.info(Log4jUtils.class, "init default log4j config");
+		Properties properties = new Properties();
+		properties.put("log4j.rootLogger", "INFO, stdout, logfile, warn");
+		properties.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
+		properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
+		properties.put("log4j.appender.stdout.layout.ConversionPattern", "%d %p [%c] - %m%n");
+		properties.put("log4j.appender.logfile", "org.apache.log4j.DailyRollingFileAppender");
+		properties.put("log4j.appender.logfile.File", SystemPropertyUtils.getWorkPath() + "/logs/log.log");
+		properties.put("log4j.appender.logfile.layout", "org.apache.log4j.PatternLayout");
+		properties.put("log4j.appender.logfile.DatePattern", "'.'yyyy-MM-dd");
+		properties.put("log4j.appender.logfile.layout.ConversionPattern", "%d %p [%c] - %m%n");
+		properties.put("log4j.appender.warn", "org.apache.log4j.DailyRollingFileAppender");
+		properties.put("log4j.appender.warn.Encoding", Constants.DEFAULT_CHARSET_NAME);
+		properties.put("log4j.appender.warn.Threshold", "WARN");
+		properties.put("log4j.appender.warn.File", SystemPropertyUtils.getWorkPath() + "/logs/error_warn.log");
+		properties.put("log4j.appender.warn.layout", "org.apache.log4j.PatternLayout");
+		properties.put("log4j.appender.warn.DatePattern", "'.'yyyy-MM-dd");
+		properties.put("log4j.appender.warn.layout.ConversionPattern", "%d %p [%c] - %m%n");
+		initByProperties(properties);
 	}
 }
