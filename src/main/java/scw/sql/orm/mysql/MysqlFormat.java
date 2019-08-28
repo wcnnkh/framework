@@ -16,7 +16,11 @@ public final class MysqlFormat implements SqlFormat {
 	}
 
 	public Sql toSelectByIdSql(TableInfo info, String tableName, Object[] ids) {
-		return new SelectByIdSQL(info, tableName, ids);
+		try {
+			return new SelectByIdSQL(info, tableName, ids);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public Sql toInsertSql(Object obj, TableInfo tableInfo, String tableName) {

@@ -193,9 +193,9 @@ public final class ORMUtils {
 		return column == null ? isDataBaseType(field.getType()) : true;
 	}
 
-	private static boolean isDataBaseType(Class<?> type) {
+	public static boolean isDataBaseType(Class<?> type) {
 		return ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
-				|| Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
+				|| Date.class.isAssignableFrom(type) || java.util.Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
 				|| Timestamp.class.isAssignableFrom(type) || Array.class.isAssignableFrom(type)
 				|| Blob.class.isAssignableFrom(type) || Clob.class.isAssignableFrom(type)
 				|| BigDecimal.class.isAssignableFrom(type) || Reader.class.isAssignableFrom(type)

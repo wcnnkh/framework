@@ -30,5 +30,7 @@ public interface ColumnInfo {
 	
 	void set(Object bean, Object value) throws Exception;
 	
+	Object toSqlField(Object value) throws Exception;
+	
 	String getCharsetName();
 }

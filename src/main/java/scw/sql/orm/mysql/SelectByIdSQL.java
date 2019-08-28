@@ -3,6 +3,7 @@ package scw.sql.orm.mysql;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 
 public final class SelectByIdSQL extends MysqlOrmSql {
@@ -11,7 +12,7 @@ public final class SelectByIdSQL extends MysqlOrmSql {
 	private String sql;
 	private Object[] params;
 
-	public SelectByIdSQL(TableInfo info, String tableName, Object[] ids) {
+	public SelectByIdSQL(TableInfo info, String tableName, Object[] ids) throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append(info.getSource().getName());
 		sb.append(tableName);
@@ -29,7 +30,12 @@ public final class SelectByIdSQL extends MysqlOrmSql {
 				}
 			}
 		}
-		this.params = ids;
+
+		ColumnInfo[] columnInfos = info.getPrimaryKeyColumns();
+		this.params = new Object[ids == null ? 0 : ids.length];
+		for (int i = 0; i < params.length; i++) {
+			params[i] = columnInfos[i].toSqlField(ids[i]);
+		}
 	}
 
 	public String getSql() {

@@ -90,4 +90,8 @@ public final class DefaultColumnInfo implements ColumnInfo {
 		return new DefaultSqlType(ORMUtils.getAnnotationColumnTypeName(field),
 				ORMUtils.getAnnotationColumnLength(field));
 	}
+
+	public Object toSqlField(Object value) throws Exception {
+		return convert.toSqlField(field, value);
+	}
 }

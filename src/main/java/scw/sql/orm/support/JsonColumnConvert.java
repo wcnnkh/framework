@@ -3,18 +3,9 @@ package scw.sql.orm.support;
 import java.lang.reflect.Field;
 
 import scw.json.JSONUtils;
-import scw.sql.orm.ColumnConvert;
+import scw.sql.orm.DefaultColumnConvert;
 
-public class JsonColumnConvert implements ColumnConvert {
-
-	public Object getter(Field field, Object bean) throws Exception {
-		Object value = field.get(bean);
-		if (value == null) {
-			return null;
-		}
-
-		return JSONUtils.toJSONString(value);
-	}
+public class JsonColumnConvert extends DefaultColumnConvert{
 
 	public void setter(Field field, Object bean, Object value) throws Exception {
 		if (value == null) {
@@ -31,4 +22,11 @@ public class JsonColumnConvert implements ColumnConvert {
 		}
 	}
 
+	public Object toSqlField(Field field, Object value) throws Exception {
+		if(value == null){
+			return null;
+		}
+		
+		return JSONUtils.toJSONString(value);
+	}
 }
