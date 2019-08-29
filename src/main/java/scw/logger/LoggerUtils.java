@@ -84,4 +84,46 @@ public final class LoggerUtils {
 	public static void setDefaultConfigenable(boolean enable) {
 		SystemPropertyUtils.setProperty("scw.logger.default.config.enable", enable + "");
 	}
+
+	/**
+	 * 此方法获取的logger是延迟加载的
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public static Logger getLogger(Class<?> clazz) {
+		return new LazyLogger(clazz);
+	}
+
+	/**
+	 * 此方法获取的logger是延迟加载的
+	 * 
+	 * @param clazz
+	 * @param placeholder
+	 * @return
+	 */
+	public static Logger getLogger(Class<?> clazz, String placeholder) {
+		return new LazyLogger(clazz, placeholder);
+	}
+
+	/**
+	 * 此方法获取的logger是延迟加载的
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static Logger getLogger(String name) {
+		return new LazyLogger(name);
+	}
+
+	/**
+	 * 此方法获取的logger是延迟加载的
+	 * 
+	 * @param name
+	 * @param placeholder
+	 * @return
+	 */
+	public static Logger getLogger(String name, String placeholder) {
+		return new LazyLogger(name, placeholder);
+	}
 }

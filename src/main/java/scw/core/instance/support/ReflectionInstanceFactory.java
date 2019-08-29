@@ -28,8 +28,7 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		}
 
 		try {
-			return Class.forName(className, false,
-					ClassUtils.getDefaultClassLoader());
+			return Class.forName(className, false, ClassUtils.getDefaultClassLoader());
 		} catch (ClassNotFoundException e) {
 		}
 		return null;
@@ -43,7 +42,7 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		try {
 			return (T) constructor.newInstance(params);
 		} catch (Exception e) {
-			return null;
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -60,8 +59,7 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 			return null;
 		}
 
-		Constructor<?> constructor = ReflectUtils.findConstructorByParameters(
-				type, false, params);
+		Constructor<?> constructor = ReflectUtils.findConstructorByParameters(type, false, params);
 		if (constructor == null) {
 			return null;
 		}
@@ -69,19 +67,16 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		return newInstance(constructor, params);
 	}
 
-	public <T> T getInstance(String name, Class<?>[] parameterTypes,
-			Object... params) {
+	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
 		return (T) getInstance(forName(name), parameterTypes, params);
 	}
 
-	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
-			Object... params) {
+	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
 		if (type == null) {
 			return null;
 		}
 
-		Constructor<?> constructor = ReflectUtils.getConstructor(type, false,
-				parameterTypes);
+		Constructor<?> constructor = ReflectUtils.getConstructor(type, false, parameterTypes);
 		if (constructor == null) {
 			return null;
 		}

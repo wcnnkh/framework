@@ -23,6 +23,8 @@ public class XmlDubboServiceExort implements Runnable {
 
 	public void run() {
 		if (nodeList != null) {
+			XmlDubboUtils.initConfig(propertyFactory, beanFactory, nodeList);
+
 			for (int x = 0; x < nodeList.getLength(); x++) {
 				Node node = nodeList.item(x);
 				if (node == null) {

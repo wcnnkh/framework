@@ -27,11 +27,23 @@ public final class DubboUtils {
 	}
 
 	public static boolean isServiceNode(Node node) {
-		return "dubbo:service".equals(node.getNodeName());
+		return "dubbo:service".equalsIgnoreCase(node.getNodeName());
 	}
 
 	public static boolean isReferenceNode(Node node) {
-		return "dubbo:reference".equals(node.getNodeName());
+		return "dubbo:reference".equalsIgnoreCase(node.getNodeName());
+	}
+
+	public static boolean isApplicationNode(Node node) {
+		return "dubbo:application".equalsIgnoreCase(node.getNodeName());
+	}
+
+	public static boolean isMetadataReportNode(Node node) {
+		return "dubbo:metadata-report".equalsIgnoreCase(node.getNodeName());
+	}
+
+	public static boolean isConfigCenterNode(Node node) {
+		return "dubbo:config-center".equalsIgnoreCase(node.getNodeName());
 	}
 
 	public static boolean xmlExistDubboService(NodeList nodeList) {

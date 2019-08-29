@@ -16,6 +16,7 @@ public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 	public XmlDubboBeanConfigFactory(BeanFactory beanFactory, PropertyFactory propertyFactory, NodeList nodeList,
 			String[] filterNames) throws Exception {
 		if (nodeList != null) {
+			XmlDubboUtils.initConfig(propertyFactory, beanFactory, nodeList);
 			for (int x = 0; x < nodeList.getLength(); x++) {
 				Node node = nodeList.item(x);
 				if (node == null) {

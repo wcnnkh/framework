@@ -44,11 +44,21 @@ public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 		if (type == null) {
 			return null;
 		}
+		
+		Constructor<?> constructor = null;
+		try {
+			constructor = getConstructor(type);
+		} catch (Exception e1) {
+		}
+		
+		if(constructor == null){
+			return null;
+		}
 
 		try {
-			return (T) getConstructor(type).newInstance();
+			return (T) constructor.newInstance();
 		} catch (Exception e) {
-			return null;
+			throw new RuntimeException(e);
 		}
 	}
 
