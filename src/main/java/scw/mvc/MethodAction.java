@@ -10,7 +10,7 @@ import scw.core.aop.Invoker;
 import scw.core.reflect.EmptyInvocationHandler;
 import scw.core.utils.ClassUtils;
 
-public final class MethodAction implements Action {
+public final class MethodAction<T extends Channel> implements Action<T> {
 	private static final ChannelParameterDefinition CHANNEL_PARAMETER_DEFINITION = (ChannelParameterDefinition) Proxy
 			.newProxyInstance(ChannelParameterDefinition.class.getClassLoader(),
 					new Class<?>[] { ChannelParameterDefinition.class }, new EmptyInvocationHandler());
@@ -40,7 +40,7 @@ public final class MethodAction implements Action {
 		}
 	}
 
-	public void doAction(Channel channel) throws Throwable {
+	public void doAction(T channel) throws Throwable {
 		Object[] args = new Object[parameterDefinitions.length];
 		for (int i = 0; i < parameterDefinitions.length; i++) {
 			ParameterDefinition parameterDefinition = parameterDefinitions[i];

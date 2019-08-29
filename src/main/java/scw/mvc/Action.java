@@ -1,5 +1,5 @@
 package scw.mvc;
 
-public interface Action {
-	void doAction(Channel channel) throws Throwable;
+public interface Action<T extends Channel> {
+	void doAction(T channel) throws Throwable;
 }
