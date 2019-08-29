@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import scw.core.utils.CollectionUtils;
+import scw.mvc.ParameterDefinition;
 
 public class DefaultParameterParseFilterChain implements ParameterFilterChain {
 	private Iterator<ParameterFilter> iterator;

@@ -1,7 +1,7 @@
 package scw.servlet.parameter;
 
 import scw.core.utils.StringUtils;
-import scw.servlet.ParameterDefinition;
+import scw.mvc.ParameterDefinition;
 import scw.servlet.ParameterFilter;
 import scw.servlet.ParameterFilterChain;
 import scw.servlet.Request;

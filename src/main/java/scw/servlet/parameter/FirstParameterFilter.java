@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import scw.core.utils.StringUtils;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
-import scw.servlet.ParameterDefinition;
+import scw.mvc.ParameterDefinition;
 import scw.servlet.ParameterFilter;
 import scw.servlet.ParameterFilterChain;
 import scw.servlet.Request;
