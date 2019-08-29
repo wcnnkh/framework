@@ -129,13 +129,12 @@ public final class FastJSONObjectWrapper implements scw.json.JSONObject {
 		return json.keySet().iterator();
 	}
 
-	public scw.json.JSONObject put(String key, Object value) {
+	public void put(String key, Object value) {
 		json.put(key, value);
-		return this;
 	}
 
-	public Object remove(String key) {
-		return json.remove(key);
+	public void remove(String key) {
+		json.remove(key);
 	}
 
 }

@@ -3,15 +3,15 @@ package scw.json;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 
-public interface JSONArrayReadOnly extends Serializable{
+public interface JSONArrayReadOnly extends Serializable {
 	String getString(int index);
 
 	byte getByteValue(int index);
 
 	Byte getByte(int index);
-	
+
 	boolean getBooleanValue(int index);
-	
+
 	Boolean getBoolean(int index);
 
 	short getShortValue(int index);
@@ -41,12 +41,10 @@ public interface JSONArrayReadOnly extends Serializable{
 	<T> T getObject(int index, Class<T> type);
 
 	<T> T getObject(int index, Type type);
-	
+
 	String toJSONString();
-	
-    int size();
-    
-    boolean isEmpty();
-    
-    Object get(int index);
+
+	int size();
+
+	boolean isEmpty();
 }

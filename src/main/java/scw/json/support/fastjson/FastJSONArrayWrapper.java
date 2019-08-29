@@ -5,8 +5,6 @@ import java.util.Iterator;
 
 import com.alibaba.fastjson.JSON;
 
-import scw.json.JSONArray;
-
 public final class FastJSONArrayWrapper implements scw.json.JSONArray {
 	private static final long serialVersionUID = 1L;
 	private com.alibaba.fastjson.JSONArray jsonArray;
@@ -106,22 +104,16 @@ public final class FastJSONArrayWrapper implements scw.json.JSONArray {
 		return jsonArray.iterator();
 	}
 
-	public JSONArray add(Object e) {
+	public void add(Object e) {
 		jsonArray.add(e);
-		return this;
 	}
 
 	public Object get(int index) {
 		return jsonArray.get(index);
 	}
 
-	public JSONArray add(int index, Object element) {
-		jsonArray.add(index, element);
-		return this;
-	}
-
-	public Object remove(int index) {
-		return jsonArray.remove(index);
+	public void remove(int index) {
+		jsonArray.remove(index);
 	}
 
 	public boolean getBooleanValue(int index) {

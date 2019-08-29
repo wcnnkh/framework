@@ -9,14 +9,14 @@ public class JSONObjectWrapper extends JSONObjectReadOnlyWarpper implements JSON
 		this.jsonObject = jsonObject;
 	}
 
-	public JSONObject put(String key, Object value) {
-		return jsonObject.put(key, value);
+	public void put(String key, Object value) {
+		jsonObject.put(key, value);
 	}
 
-	public Object remove(String key) {
-		return jsonObject.remove(key);
+	public void remove(String key) {
+		jsonObject.remove(key);
 	}
-	
+
 	@Override
 	public String toString() {
 		return jsonObject.toJSONString();

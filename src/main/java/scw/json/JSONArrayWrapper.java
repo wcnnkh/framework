@@ -11,22 +11,16 @@ public class JSONArrayWrapper extends JSONArrayReadOnlyWrapper implements JSONAr
 		this.jsonArray = jsonArray;
 	}
 
-	public Iterator<Object> iterator() {
+	public Iterator<?> iterator() {
 		return jsonArray.iterator();
 	}
 
-	public JSONArray add(Object e) {
+	public void add(Object e) {
 		jsonArray.add(e);
-		return this;
 	}
 
-	public JSONArray add(int index, Object element) {
-		jsonArray.add(index, element);
-		return this;
-	}
-
-	public Object remove(int index) {
-		return jsonArray.remove(index);
+	public void remove(int index) {
+		jsonArray.remove(index);
 	}
 
 	@Override

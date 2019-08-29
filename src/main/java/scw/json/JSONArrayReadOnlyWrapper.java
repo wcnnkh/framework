@@ -98,10 +98,6 @@ public class JSONArrayReadOnlyWrapper implements JSONArrayReadOnly{
 		return jsonArrayReadOnly.isEmpty();
 	}
 
-	public Object get(int index) {
-		return jsonArrayReadOnly.get(index);
-	}
-
 	@Override
 	public String toString() {
 		return jsonArrayReadOnly.toString();

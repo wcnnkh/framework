@@ -1,9 +1,8 @@
 package scw.json;
 
-public interface JSONArray extends JSONArrayReadOnly, Iterable<Object> {
-	JSONArray add(int index, Object element);
+@SuppressWarnings("rawtypes")
+public interface JSONArray extends JSONArrayReadOnly, Iterable {
+	void add(Object element);
 
-	JSONArray add(Object element);
-
-	Object remove(int index);
+	void remove(int index);
 }
