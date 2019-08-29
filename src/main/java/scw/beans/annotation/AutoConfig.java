@@ -11,13 +11,6 @@ import scw.beans.auto.AutoBeanService;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AutoConfig {
 	/**
-	 * 默认的实现
-	 * 
-	 * @return
-	 */
-	public Class<?> service() default Object.class;
-
-	/**
 	 * 
 	 * 尝试寻找默认实现
 	 * 
@@ -31,4 +24,11 @@ public @interface AutoConfig {
 	 * @return
 	 */
 	public String[] autoBeanServiceNames() default {};
+	
+	/**
+	 * 默认的实现
+	 * 
+	 * @return
+	 */
+	public Class<?> service() default Object.class;
 }

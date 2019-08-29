@@ -10,7 +10,7 @@ public final class NotFoundAutoBeanService implements AutoBeanService {
 	public AutoBean doService(Class<?> clazz, BeanFactory beanFactory, PropertyFactory propertyFactory,
 			AutoBeanServiceChain serviceChain) throws Exception {
 		AutoConfig autoConfig = clazz.getAnnotation(AutoConfig.class);
-		if (autoConfig == null || autoConfig.service() == clazz) {
+		if (autoConfig == null || autoConfig.service() == Object.class || autoConfig.service() == clazz) {
 			if (!ReflectUtils.isInstance(clazz, false)) {
 				return serviceChain.service(clazz, beanFactory, propertyFactory);
 			}
@@ -18,7 +18,7 @@ public final class NotFoundAutoBeanService implements AutoBeanService {
 			return new DefaultAutoBean(beanFactory, clazz);
 		}
 
-		return AutoBeanUtils.autoBeanService(clazz, autoConfig, beanFactory, propertyFactory);
+		return AutoBeanUtils.autoBeanService(autoConfig.service(), autoConfig, beanFactory, propertyFactory);
 	}
 
 }
