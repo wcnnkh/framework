@@ -1,8 +1,6 @@
 package scw.beans;
 
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Timer;
 
 import org.w3c.dom.Node;
@@ -27,7 +25,6 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	private String[] filterNames;
 	private final String xmlPath;
 	private ValueWiredManager valueWiredManager;
-	private Collection<String> autoBeanServices;
 
 	public XmlBeanFactory(PropertyFactory propertyFactory, String xmlPath,
 			Timer timer, int period) throws Exception {
@@ -36,9 +33,6 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		initParameter(xmlPath);
 		this.valueWiredManager = new ValueWiredManager(propertyFactory, this,
 				timer, period);
-		this.autoBeanServices = Arrays
-				.asList(StringUtils.commonSplit(propertyFactory
-						.getProperty("beans.auto.services")));
 		register();
 	}
 
@@ -255,10 +249,5 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	@Override
 	public final ValueWiredManager getValueWiredManager() {
 		return valueWiredManager;
-	}
-
-	@Override
-	public Collection<String> getAutoBeanServices() {
-		return autoBeanServices;
 	}
 }

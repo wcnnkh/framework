@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,13 +12,12 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.beans.annotation.AutoConfig;
 import scw.beans.annotation.InterfaceProxy;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.AutoBeanDefinition;
 import scw.beans.auto.AutoBeanService;
-import scw.beans.auto.AutoBeanServiceChain;
 import scw.beans.auto.AutoBeanUtils;
-import scw.beans.auto.SimpleAutoBeanServiceChain;
 import scw.beans.property.ValueWiredManager;
 import scw.core.Destroy;
 import scw.core.Init;
@@ -25,8 +25,8 @@ import scw.core.PropertyFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.BeansException;
 import scw.core.exception.NestedRuntimeException;
+import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.CollectionUtils;
 import scw.core.utils.ResourceUtils;
 
 public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy {
@@ -34,6 +34,11 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private LinkedList<Destroy> destroys = new LinkedList<Destroy>();
+	private volatile HashSet<String> notFoundSet = new HashSet<String>();
+
+	protected boolean isEnableNotFoundSet() {
+		return true;
+	}
 
 	public void registerNameMapping(String key, String value) {
 		if (nameMappingMap.containsKey(key)) {
@@ -71,8 +76,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 				}
 			}
 
-			Map<String, String> nameMapping = beanConfigFactory
-					.getNameMappingMap();
+			Map<String, String> nameMapping = beanConfigFactory.getNameMappingMap();
 			if (nameMapping != null) {
 				synchronized (nameMappingMap) {
 					for (Entry<String, String> entry : nameMapping.entrySet()) {
@@ -93,8 +97,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getInstance(String name, Class<?>[] parameterTypes,
-			Object... params) {
+	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
 
 		Object obj = singletonMap.get(name);
 		if (obj != null) {
@@ -232,36 +235,39 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	 */
 	protected abstract String getInitStaticPackage();
 
-	protected boolean synchronizedBeanDefinition() {
-		return true;
-	}
+	public final BeanDefinition getBeanDefinition(String name) {
+		if (isEnableNotFoundSet()) {
+			if (notFoundSet.contains(name)) {
+				return null;
+			}
+		}
 
-	public BeanDefinition getBeanDefinition(String name) {
 		BeanDefinition beanDefinition = getBeanCache(name);
 		if (beanDefinition == null) {
-			if (synchronizedBeanDefinition()) {
-				synchronized (this) {
-					beanDefinition = getBeanCache(name);
-					if (beanDefinition == null) {
-						beanDefinition = newBeanDefinition(name);
-						if (beanDefinition != null) {
-							beanMap.put(beanDefinition.getId(), beanDefinition);
-							addBeanNameMapping(beanDefinition);
-						}
-					}
-				}
-			} else {
-				// 这样写的好处是可以提高性能，但newBeanDefinition在并发情况下可能会调用 多次
-				beanDefinition = newBeanDefinition(name);
+			boolean append = false;
+			synchronized (this) {
+				beanDefinition = getBeanCache(name);
 				if (beanDefinition == null) {
-					return null;
+					beanDefinition = newBeanDefinition(name);
+					append = true;
 				}
+			}
 
-				synchronized (this) {
-					BeanDefinition cache = getBeanCache(name);
-					if (cache == null) {
+			if (append) {
+				if (beanDefinition != null) {
+					synchronized (beanMap) {
 						beanMap.put(beanDefinition.getId(), beanDefinition);
-						addBeanNameMapping(beanDefinition);
+					}
+					addBeanNameMapping(beanDefinition);
+				}
+			}
+		}
+
+		if (beanDefinition == null) {
+			if (isEnableNotFoundSet()) {
+				if (!notFoundSet.contains(name)) {
+					synchronized (notFoundSet) {
+						notFoundSet.add(name);
 					}
 				}
 			}
@@ -279,10 +285,8 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 	}
 
-	public boolean contains(String name) {
-		boolean b = singletonMap.containsKey(name)
-				|| nameMappingMap.containsKey(name)
-				|| beanMap.containsKey(name);
+	public final boolean contains(String name) {
+		boolean b = singletonMap.containsKey(name) || nameMappingMap.containsKey(name) || beanMap.containsKey(name);
 		if (b) {
 			return b;
 		}
@@ -304,9 +308,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	public abstract ValueWiredManager getValueWiredManager();
 
-	public abstract Collection<String> getAutoBeanServices();
-
-	private BeanDefinition newBeanDefinition(String name) {
+	private final BeanDefinition newBeanDefinition(String name) {
 		String n = nameMappingMap.get(name);
 		if (n == null) {
 			n = name;
@@ -323,31 +325,36 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 
 		if (clz.isInterface()) {
-			InterfaceProxy interfaceProxy = clz
-					.getAnnotation(InterfaceProxy.class);
+			InterfaceProxy interfaceProxy = clz.getAnnotation(InterfaceProxy.class);
 			if (interfaceProxy != null) {
-				InvocationHandler invocationHandler = getInstance(interfaceProxy
-						.value());
-				return new InterfaceProxyBeanDefinition(this, clz,
-						invocationHandler, getFilterNames());
+				InvocationHandler invocationHandler = getInstance(interfaceProxy.value());
+				return new InterfaceProxyBeanDefinition(this, clz, invocationHandler, getFilterNames());
 			}
 		}
 
-		Collection<AutoBeanService> autoBeanServices = AutoBeanUtils
-				.getAutoBeanServices(this, getAutoBeanServices());
-		if (!CollectionUtils.isEmpty(autoBeanServices)) {
-			AutoBeanServiceChain serviceChain = new SimpleAutoBeanServiceChain(
-					autoBeanServices);
-			AutoBean autoBean;
-			try {
-				autoBean = serviceChain
-						.service(clz, this, getPropertyFactory());
-				if (autoBean != null) {
-					return new AutoBeanDefinition(getValueWiredManager(), this,
-							getPropertyFactory(), clz, getFilterNames(),
-							autoBean);
+		AutoConfig autoConfig = clz.getAnnotation(AutoConfig.class);
+		if (autoConfig == null || AutoBeanService.class.isAssignableFrom(clz)) {
+			if (ReflectUtils.isInstance(clz, false)) {
+				try {
+					return new AnnotationBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz,
+							getFilterNames());
+				} catch (Exception e) {
+					throw new BeansException(clz.getName(), e);
 				}
+			}
+		}
+
+		if (AutoBeanService.class.isAssignableFrom(clz)) {
+			return null;
+		}
+
+		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, autoConfig, this, getPropertyFactory());
+		if (autoBean != null) {
+			try {
+				return new AutoBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz, getFilterNames(),
+						autoBean);
 			} catch (Exception e) {
+				throw new BeansException(clz.getName(), e);
 			}
 		}
 		return null;
@@ -359,8 +366,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	public synchronized void init() {
 		try {
-			BeanUtils.initStatic(getValueWiredManager(), this,
-					getPropertyFactory(),
+			BeanUtils.initStatic(getValueWiredManager(), this, getPropertyFactory(),
 					ResourceUtils.getClassList(getInitStaticPackage()));
 		} catch (Exception e) {
 			throw new NestedRuntimeException(e);
@@ -369,8 +375,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	public synchronized void destroy() {
 		try {
-			BeanUtils.destroyStaticMethod(getValueWiredManager(),
-					ResourceUtils.getClassList(getInitStaticPackage()));
+			BeanUtils.destroyStaticMethod(getValueWiredManager(), ResourceUtils.getClassList(getInitStaticPackage()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -406,8 +411,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		return getInstance(type.getName(), params);
 	}
 
-	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
-			Object... params) {
+	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
 		return getInstance(type.getName(), parameterTypes, params);
 	}
 }

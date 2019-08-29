@@ -10,12 +10,14 @@ import java.lang.annotation.Target;
 public @interface Bean {
 	/**
 	 * 是否应该实现单例
+	 * 
 	 * @return
 	 */
 	public boolean singleton() default true;
-	
+
 	/**
 	 * 是否允许代理此类
+	 * 
 	 * @return
 	 */
 	public boolean proxy() default true;
