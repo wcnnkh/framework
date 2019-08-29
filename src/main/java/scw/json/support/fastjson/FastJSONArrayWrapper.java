@@ -1,12 +1,11 @@
 package scw.json.support.fastjson;
 
 import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 import com.alibaba.fastjson.JSON;
+
+import scw.json.JSONArray;
 
 public final class FastJSONArrayWrapper implements scw.json.JSONArray {
 	private static final long serialVersionUID = 1L;
@@ -73,10 +72,8 @@ public final class FastJSONArrayWrapper implements scw.json.JSONArray {
 	}
 
 	public scw.json.JSONObject getJSONObject(int index) {
-		com.alibaba.fastjson.JSONObject jsonObject = jsonArray
-				.getJSONObject(index);
-		return jsonObject == null ? null
-				: new FastJSONObjectWrapper(jsonObject);
+		com.alibaba.fastjson.JSONObject jsonObject = jsonArray.getJSONObject(index);
+		return jsonObject == null ? null : new FastJSONObjectWrapper(jsonObject);
 	}
 
 	public scw.json.JSONArray getJSONArray(int index) {
@@ -105,88 +102,26 @@ public final class FastJSONArrayWrapper implements scw.json.JSONArray {
 		return jsonArray.isEmpty();
 	}
 
-	public boolean contains(Object o) {
-		return jsonArray.contains(o);
-	}
-
 	public Iterator<Object> iterator() {
 		return jsonArray.iterator();
 	}
 
-	public Object[] toArray() {
-		return jsonArray.toArray();
-	}
-
-	public <T> T[] toArray(T[] a) {
-		return jsonArray.toArray(a);
-	}
-
-	public boolean add(Object e) {
-		return jsonArray.add(e);
-	}
-
-	public boolean remove(Object o) {
-		return jsonArray.remove(o);
-	}
-
-	public boolean containsAll(Collection<?> c) {
-		return jsonArray.containsAll(c);
-	}
-
-	public boolean addAll(Collection<? extends Object> c) {
-		return jsonArray.addAll(c);
-	}
-
-	public boolean addAll(int index, Collection<? extends Object> c) {
-		return jsonArray.addAll(index, c);
-	}
-
-	public boolean removeAll(Collection<?> c) {
-		return jsonArray.removeAll(c);
-	}
-
-	public boolean retainAll(Collection<?> c) {
-		return jsonArray.retainAll(c);
-	}
-
-	public void clear() {
-		jsonArray.clear();
+	public JSONArray add(Object e) {
+		jsonArray.add(e);
+		return this;
 	}
 
 	public Object get(int index) {
 		return jsonArray.get(index);
 	}
 
-	public Object set(int index, Object element) {
-		return jsonArray.set(index, element);
-	}
-
-	public void add(int index, Object element) {
+	public JSONArray add(int index, Object element) {
 		jsonArray.add(index, element);
+		return this;
 	}
 
 	public Object remove(int index) {
 		return jsonArray.remove(index);
-	}
-
-	public int indexOf(Object o) {
-		return jsonArray.indexOf(o);
-	}
-
-	public int lastIndexOf(Object o) {
-		return jsonArray.lastIndexOf(o);
-	}
-
-	public ListIterator<Object> listIterator() {
-		return jsonArray.listIterator();
-	}
-
-	public ListIterator<Object> listIterator(int index) {
-		return jsonArray.listIterator(index);
-	}
-
-	public List<Object> subList(int fromIndex, int toIndex) {
-		return jsonArray.subList(fromIndex, toIndex);
 	}
 
 	public boolean getBooleanValue(int index) {

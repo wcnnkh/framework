@@ -1313,10 +1313,10 @@ public final class StringUtils {
 	}
 
 	public static boolean isAeqB(String strA, String strB) {
-		if(strA == strB){
+		if (strA == strB) {
 			return true;
 		}
-		
+
 		if (strA == null) {
 			return strB == null;
 		}
@@ -2132,8 +2132,16 @@ public final class StringUtils {
 		return parseByte(text, 10, (byte) 0);
 	}
 
+	public static Byte parseByte(String text, Byte defaultValue) {
+		return parseByte(text, 10, defaultValue);
+	}
+
 	public static short parseShort(String text) {
 		return parseShort(text, 10, (short) 0);
+	}
+
+	public static Short parseShort(String text, Short defaultValue) {
+		return parseShort(text, 10, defaultValue);
 	}
 
 	public static Short parseShort(String text, int radix, Short defaultValue) {
@@ -2176,6 +2184,10 @@ public final class StringUtils {
 		return parseInt(text, 0);
 	}
 
+	public static Integer parseInt(String text, Integer defaultValue) {
+		return parseInt(text, 10, defaultValue);
+	}
+
 	public static Long parseLong(String text, int radix, Long defaultValue) {
 		String v = formatNumberText(text);
 		if (isEmpty(v)) {
@@ -2183,6 +2195,10 @@ public final class StringUtils {
 		}
 
 		return Long.parseLong(v, radix);
+	}
+
+	public static Long parseLong(String text, Long defaultValue) {
+		return parseLong(text, defaultValue);
 	}
 
 	public static long parseLong(String text, long defaultValue) {

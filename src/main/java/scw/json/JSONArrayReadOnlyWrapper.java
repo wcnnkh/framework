@@ -2,7 +2,7 @@ package scw.json;
 
 import java.lang.reflect.Type;
 
-public class JSONArrayReadOnlyWrapper implements JSONArrayReadOnly {
+public class JSONArrayReadOnlyWrapper implements JSONArrayReadOnly{
 	private static final long serialVersionUID = 1L;
 	private JSONArrayReadOnly jsonArrayReadOnly;
 
@@ -90,4 +90,20 @@ public class JSONArrayReadOnlyWrapper implements JSONArrayReadOnly {
 		return jsonArrayReadOnly.getObject(index, type);
 	}
 
+	public int size() {
+		return jsonArrayReadOnly.size();
+	}
+
+	public boolean isEmpty() {
+		return jsonArrayReadOnly.isEmpty();
+	}
+
+	public Object get(int index) {
+		return jsonArrayReadOnly.get(index);
+	}
+
+	@Override
+	public String toString() {
+		return jsonArrayReadOnly.toString();
+	}
 }

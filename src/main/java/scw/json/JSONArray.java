@@ -1,7 +1,9 @@
 package scw.json;
 
-import java.util.List;
+public interface JSONArray extends JSONArrayReadOnly, Iterable<Object> {
+	JSONArray add(int index, Object element);
 
-public interface JSONArray extends JSONArrayReadOnly, List<Object> {
-	
+	JSONArray add(Object element);
+
+	Object remove(int index);
 }

@@ -43,4 +43,10 @@ public interface JSONArrayReadOnly extends Serializable{
 	<T> T getObject(int index, Type type);
 	
 	String toJSONString();
+	
+    int size();
+    
+    boolean isEmpty();
+    
+    Object get(int index);
 }

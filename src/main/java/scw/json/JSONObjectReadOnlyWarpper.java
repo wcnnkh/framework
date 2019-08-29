@@ -1,6 +1,8 @@
 package scw.json;
 
 import java.lang.reflect.Type;
+import java.util.Iterator;
+import java.util.Set;
 
 public class JSONObjectReadOnlyWarpper implements JSONObjectReadOnly {
 	private static final long serialVersionUID = 1L;
@@ -88,5 +90,34 @@ public class JSONObjectReadOnlyWarpper implements JSONObjectReadOnly {
 
 	public <T> T getObject(String key, Type type) {
 		return jsonObjectReadOnly.getObject(key, type);
+	}
+
+	public int size() {
+		return jsonObjectReadOnly.size();
+	}
+
+	public boolean isEmpty() {
+		return jsonObjectReadOnly.isEmpty();
+	}
+
+	public boolean containsKey(String key) {
+		return jsonObjectReadOnly.containsKey(key);
+	}
+
+	public Object get(String key) {
+		return jsonObjectReadOnly.get(key);
+	}
+
+	public Set<String> keySet() {
+		return jsonObjectReadOnly.keySet();
+	}
+
+	public Iterator<String> keys() {
+		return jsonObjectReadOnly.keys();
+	}
+	
+	@Override
+	public String toString() {
+		return jsonObjectReadOnly.toString();
 	}
 }

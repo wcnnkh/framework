@@ -1,8 +1,7 @@
 package scw.json.support.fastjson;
 
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.Set;
 
 import com.alibaba.fastjson.JSONObject;
@@ -106,42 +105,6 @@ public final class FastJSONObjectWrapper implements scw.json.JSONObject {
 		return json.isEmpty();
 	}
 
-	public boolean containsKey(Object key) {
-		return json.containsKey(key);
-	}
-
-	public boolean containsValue(Object value) {
-		return json.containsValue(value);
-	}
-
-	public Object get(Object key) {
-		return json.get(key);
-	}
-
-	public Object put(String key, Object value) {
-		return json.put(key, value);
-	}
-
-	public Object remove(Object key) {
-		return json.remove(key);
-	}
-
-	public void putAll(Map<? extends String, ? extends Object> m) {
-		json.putAll(m);
-	}
-
-	public void clear() {
-		json.clear();
-	}
-
-	public Collection<Object> values() {
-		return json.values();
-	}
-
-	public Set<java.util.Map.Entry<String, Object>> entrySet() {
-		return json.entrySet();
-	}
-
 	public boolean getBooleanValue(String key) {
 		return json.getBooleanValue(key);
 	}
@@ -152,6 +115,27 @@ public final class FastJSONObjectWrapper implements scw.json.JSONObject {
 
 	public <T> T getObject(String key, Type type) {
 		return json.getObject(key, type);
+	}
+
+	public boolean containsKey(String key) {
+		return json.containsKey(key);
+	}
+
+	public Object get(String key) {
+		return json.get(key);
+	}
+
+	public Iterator<String> keys() {
+		return json.keySet().iterator();
+	}
+
+	public scw.json.JSONObject put(String key, Object value) {
+		json.put(key, value);
+		return this;
+	}
+
+	public Object remove(String key) {
+		return json.remove(key);
 	}
 
 }
