@@ -31,7 +31,7 @@ public final class PropertiesParse extends AbstractCharsetNameValueFormat implem
 		if (ClassUtils.isPrimitiveOrWrapper(fieldDefinition.getField().getType())
 				|| ClassUtils.isStringType(fieldDefinition.getField().getType())) {
 			String v = SystemPropertyUtils.format(properties.getProperty(fieldDefinition.getField().getName()));
-			return StringParse.DEFAULT.parse(v, fieldDefinition.getField().getType());
+			return StringParse.defaultParse(v, fieldDefinition.getField().getGenericType());
 		} else if (Properties.class.isAssignableFrom(fieldDefinition.getField().getType())) {
 			return properties;
 		} else {
@@ -60,7 +60,7 @@ public final class PropertiesParse extends AbstractCharsetNameValueFormat implem
 		Properties properties = PropertiesUtils.getProperties(name, getCharsetName());
 		if (ClassUtils.isPrimitiveOrWrapper(field.getType()) || ClassUtils.isStringType(field.getType())) {
 			String v = SystemPropertyUtils.format(properties.getProperty(field.getName()));
-			return StringParse.DEFAULT.parse(v, field.getType());
+			return StringParse.defaultParse(v, field.getGenericType());
 		} else if (Properties.class.isAssignableFrom(field.getType())) {
 			return properties;
 		} else {

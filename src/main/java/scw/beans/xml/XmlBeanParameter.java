@@ -1,6 +1,7 @@
 package scw.beans.xml;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,18 +12,17 @@ import scw.beans.BeanFactory;
 import scw.beans.EParameterType;
 import scw.core.PropertyFactory;
 import scw.core.exception.NotFoundException;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 
 public final class XmlBeanParameter implements Cloneable, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final EParameterType type;
-	private Class<?> parameterType;
+	private Type parameterType;
 	private final String name;// 可能为空
 	private final XmlValue xmlValue;
 
-	public XmlBeanParameter(EParameterType type, Class<?> parameterType, String name, String value, Node node) {
+	public XmlBeanParameter(EParameterType type, Type parameterType, String name, String value, Node node) {
 		this.type = type;
 		this.parameterType = parameterType;
 		this.name = name;
@@ -47,11 +47,11 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 		return name;
 	}
 
-	public Class<?> getParameterType() {
+	public Type getParameterType() {
 		return parameterType;
 	}
 
-	public void setParameterType(Class<?> parameterType) {
+	public void setParameterType(Type parameterType) {
 		this.parameterType = parameterType;
 	}
 
@@ -59,7 +59,7 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 		return parseValue(beanFactory, propertyFactory, this.parameterType);
 	}
 
-	public Object parseValue(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> parameterType)
+	public Object parseValue(BeanFactory beanFactory, PropertyFactory propertyFactory, Type parameterType)
 			throws Exception {
 		Object value = null;
 		switch (type) {
@@ -83,14 +83,12 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 		return value;
 	}
 
-	private Object formatStringValue(String v, Class<?> parameterType) throws ClassNotFoundException, ParseException {
+	private Object formatStringValue(String v, Type parameterType) throws ClassNotFoundException, ParseException {
 		if (v == null) {
 			return null;
 		}
 
-		if (Class.class.isAssignableFrom(parameterType)) {
-			return ClassUtils.forName(v);
-		} else if (Date.class.isAssignableFrom(parameterType)) {
+		if (Date.class == parameterType) {
 			if (StringUtils.isNumeric(v)) {
 				return new Date(Long.parseLong(v));
 			} else {
@@ -103,6 +101,6 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 				return sdf.parse(v);
 			}
 		}
-		return StringParse.DEFAULT.parse(v, parameterType);
+		return StringParse.defaultParse(v, parameterType);
 	}
 }

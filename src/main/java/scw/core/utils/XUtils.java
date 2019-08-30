@@ -1,5 +1,6 @@
 package scw.core.utils;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -183,33 +184,33 @@ public final class XUtils {
 	}
 
 	public static <T> Object getValue(PrimitiveTypeValueFactory<T> primitiveTypeValueFactory, T data, Class<?> type) {
-		if (int.class.isAssignableFrom(type)) {
+		if (int.class == type) {
 			return primitiveTypeValueFactory.getIntValue(data);
-		} else if (Integer.class.isAssignableFrom(type)) {
+		} else if (Integer.class == type) {
 			return primitiveTypeValueFactory.getInteger(data);
-		} else if (long.class.isAssignableFrom(type)) {
+		} else if (long.class == type) {
 			return primitiveTypeValueFactory.getLongValue(data);
-		} else if (Long.class.isAssignableFrom(type)) {
+		} else if (Long.class == type) {
 			return primitiveTypeValueFactory.getLong(data);
-		} else if (float.class.isAssignableFrom(type)) {
+		} else if (float.class == type) {
 			return primitiveTypeValueFactory.getFloatValue(data);
-		} else if (Float.class.isAssignableFrom(type)) {
+		} else if (Float.class == type) {
 			return primitiveTypeValueFactory.getFloat(data);
-		} else if (short.class.isAssignableFrom(type)) {
+		} else if (short.class == type) {
 			return primitiveTypeValueFactory.getShortValue(data);
-		} else if (Short.class.isAssignableFrom(type)) {
+		} else if (Short.class == type) {
 			return primitiveTypeValueFactory.getShort(data);
-		} else if (boolean.class.isAssignableFrom(type)) {
+		} else if (boolean.class == type) {
 			return primitiveTypeValueFactory.getBooleanValue(data);
-		} else if (Boolean.class.isAssignableFrom(type)) {
+		} else if (Boolean.class == type) {
 			return primitiveTypeValueFactory.getBoolean(data);
-		} else if (byte.class.isAssignableFrom(type)) {
+		} else if (byte.class == type) {
 			return primitiveTypeValueFactory.getByteValue(data);
-		} else if (Byte.class.isAssignableFrom(type)) {
+		} else if (Byte.class == type) {
 			return primitiveTypeValueFactory.getByte(data);
-		} else if (char.class.isAssignableFrom(type)) {
+		} else if (char.class == type) {
 			return primitiveTypeValueFactory.getChar(data);
-		} else if (Character.class.isAssignableFrom(type)) {
+		} else if (Character.class == type) {
 			return primitiveTypeValueFactory.getCharacter(data);
 		}
 		throw new NotSupportException("不支持的类型：" + type.getName());
@@ -217,46 +218,93 @@ public final class XUtils {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <T> Object getValue(ValueFactory<T> valueFactory, T data, Class<?> type) {
-		if (String.class.isAssignableFrom(type)) {
+		if (String.class == type) {
 			return valueFactory.getString(data);
-		} else if (int.class.isAssignableFrom(type)) {
+		} else if (int.class == type) {
 			return valueFactory.getIntValue(data);
-		} else if (Integer.class.isAssignableFrom(type)) {
+		} else if (Integer.class == type) {
 			return valueFactory.getInteger(data);
-		} else if (long.class.isAssignableFrom(type)) {
+		} else if (long.class == type) {
 			return valueFactory.getLongValue(data);
-		} else if (Long.class.isAssignableFrom(type)) {
+		} else if (Long.class == type) {
 			return valueFactory.getLong(data);
-		} else if (float.class.isAssignableFrom(type)) {
+		} else if (float.class == type) {
 			return valueFactory.getFloatValue(data);
-		} else if (Float.class.isAssignableFrom(type)) {
+		} else if (Float.class == type) {
 			return valueFactory.getFloat(data);
-		} else if (short.class.isAssignableFrom(type)) {
+		} else if (short.class == type) {
 			return valueFactory.getShortValue(data);
-		} else if (Short.class.isAssignableFrom(type)) {
+		} else if (Short.class == type) {
 			return valueFactory.getShort(data);
-		} else if (boolean.class.isAssignableFrom(type)) {
+		} else if (boolean.class == type) {
 			return valueFactory.getBooleanValue(data);
-		} else if (Boolean.class.isAssignableFrom(type)) {
+		} else if (Boolean.class == type) {
 			return valueFactory.getBoolean(data);
-		} else if (byte.class.isAssignableFrom(type)) {
+		} else if (byte.class == type) {
 			return valueFactory.getByteValue(data);
-		} else if (Byte.class.isAssignableFrom(type)) {
+		} else if (Byte.class == type) {
 			return valueFactory.getByte(data);
-		} else if (char.class.isAssignableFrom(type)) {
+		} else if (char.class == type) {
 			return valueFactory.getChar(data);
-		} else if (Character.class.isAssignableFrom(type)) {
+		} else if (Character.class == type) {
 			return valueFactory.getCharacter(data);
 		} else if (BigDecimal.class.isAssignableFrom(type)) {
 			return valueFactory.getBigDecimal(data);
 		} else if (BigInteger.class.isAssignableFrom(type)) {
 			return valueFactory.getBigInteger(data);
-		} else if(Class.class.isAssignableFrom(type)){
+		} else if (Class.class == type) {
 			return valueFactory.getClass(data);
 		} else if (type.isEnum()) {
 			return valueFactory.getEnum(data, (Class<? extends Enum>) type);
 		} else if (type.isArray()) {
 			return valueFactory.getArray(data, type.getComponentType());
+		} else {
+			return valueFactory.getObject(data, type);
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> Object getValue(ValueFactory<T> valueFactory, T data, Type type) {
+		if (type instanceof Class) {
+			return getValue(valueFactory, data, (Class) type);
+		}
+
+		if (String.class == type) {
+			return valueFactory.getString(data);
+		} else if (int.class == type) {
+			return valueFactory.getIntValue(data);
+		} else if (Integer.class == type) {
+			return valueFactory.getInteger(data);
+		} else if (long.class == type) {
+			return valueFactory.getLongValue(data);
+		} else if (Long.class == type) {
+			return valueFactory.getLong(data);
+		} else if (float.class == type) {
+			return valueFactory.getFloatValue(data);
+		} else if (Float.class == type) {
+			return valueFactory.getFloat(data);
+		} else if (short.class == type) {
+			return valueFactory.getShortValue(data);
+		} else if (Short.class == type) {
+			return valueFactory.getShort(data);
+		} else if (boolean.class == type) {
+			return valueFactory.getBooleanValue(data);
+		} else if (Boolean.class == type) {
+			return valueFactory.getBoolean(data);
+		} else if (byte.class == type) {
+			return valueFactory.getByteValue(data);
+		} else if (Byte.class == type) {
+			return valueFactory.getByte(data);
+		} else if (char.class == type) {
+			return valueFactory.getChar(data);
+		} else if (Character.class == type) {
+			return valueFactory.getCharacter(data);
+		} else if (Class.class == type) {
+			return valueFactory.getClass(data);
+		} else if (BigDecimal.class == type) {
+			return valueFactory.getBigDecimal(data);
+		} else if (BigInteger.class == type) {
+			return valueFactory.getBigInteger(data);
 		} else {
 			return valueFactory.getObject(data, type);
 		}

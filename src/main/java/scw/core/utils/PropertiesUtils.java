@@ -7,6 +7,7 @@ import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -106,13 +107,13 @@ public final class PropertiesUtils {
 
 		for (Method method : invokePublic ? instance.getClass().getMethods()
 				: instance.getClass().getDeclaredMethods()) {
-			Class<?>[] parameterTypes = method.getParameterTypes();
+			Type[] parameterTypes = method.getGenericParameterTypes();
 			if (!(parameterTypes.length == 1 && method.getName().startsWith("set"))) {
 				continue;
 			}
 
-			Class<?> parameterType = parameterTypes[0];
-			if (!(ClassUtils.isPrimitiveOrWrapper(parameterType) || ClassUtils.isStringType(parameterType))) {
+			Type parameterType = parameterTypes[0];
+			if (!(TypeUtils.isPrimitiveOrWrapper(parameterType) || parameterType == String.class)) {
 				continue;
 			}
 
@@ -168,7 +169,7 @@ public final class PropertiesUtils {
 					instance.getClass().getName(), value);
 
 			try {
-				method.invoke(instance, StringParse.DEFAULT.parse(value, parameterType));
+				method.invoke(instance, StringParse.defaultParse(value, parameterType));
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalArgumentException e) {

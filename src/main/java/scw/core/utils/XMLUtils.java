@@ -8,6 +8,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -274,15 +275,13 @@ public final class XMLUtils {
 	}
 
 	/**
-	 * @param basicType
-	 *            只能是基本数据类型，非基本数据类型只能是String
 	 * @param node
 	 * @param name
 	 * @param defaultValue
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T getNodeAttributeValue(Class<T> basicType, Node node, String name, T defaultValue) {
+	public static <T> T getNodeAttributeValue(Type basicType, Node node, String name, T defaultValue) {
 		String value = getNodeAttributeValue(node, name);
 		if (value == null) {
 			return defaultValue;
@@ -329,7 +328,8 @@ public final class XMLUtils {
 
 	public static boolean getBooleanValueAndParent(Node node, String name, boolean defaultValue) {
 		Node parent = node.getParentNode();
-		return getBooleanValue(node, name, parent == null ? defaultValue : getBooleanValueAndParent(parent, name, defaultValue));
+		return getBooleanValue(node, name,
+				parent == null ? defaultValue : getBooleanValueAndParent(parent, name, defaultValue));
 	}
 
 	public static boolean getBooleanValue(Node node, String name, boolean defaultValue) {
@@ -365,7 +365,7 @@ public final class XMLUtils {
 				t = InstanceUtils.newInstance(type);
 			}
 
-			ReflectUtils.setFieldValue(type, field, t, StringParse.defaultParse(value, field.getType()));
+			ReflectUtils.setFieldValue(type, field, t, StringParse.defaultParse(value, field.getGenericType()));
 		}
 		return t;
 	}
@@ -480,14 +480,10 @@ public final class XMLUtils {
 		try {
 			T t = InstanceUtils.newInstance(type);
 			ReflectUtils.setProperties(type, t, map, new PropertyMapper<Node>() {
-				public Object mapper(String name, Node value, Class<?> type) throws Exception {
+				public Object mapper(String name, Node value, Type type) throws Exception {
 					String v = formatNodeValue(propertyFactory, value, value.getNodeValue());
 					if (StringUtils.isEmpty(v)) {
 						return null;
-					}
-
-					if (Class.class.isAssignableFrom(type)) {
-						return Class.forName(v);
 					}
 
 					return mapper.mapper(name, v, type);

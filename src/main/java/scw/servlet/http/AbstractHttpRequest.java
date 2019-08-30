@@ -2,6 +2,7 @@ package scw.servlet.http;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
@@ -13,26 +14,24 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import scw.core.Destroy;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
+import scw.json.JSONUtils;
 import scw.servlet.ServletUtils;
 import scw.servlet.beans.RequestBeanFactory;
 import scw.servlet.context.DefaultRequestBeanContext;
 import scw.servlet.context.RequestBeanContext;
 
-public abstract class AbstractHttpRequest extends HttpServletRequestWrapper
-		implements HttpRequest, Destroy {
+public abstract class AbstractHttpRequest extends HttpServletRequestWrapper implements HttpRequest, Destroy {
 	private static final String GET_DEFAULT_CHARSET_ANME = "ISO-8859-1";
 	private final long createTime;
 	private final RequestBeanContext requestBeanContext;
 	private final boolean cookieValue;
 	private final boolean debug;
 
-	public AbstractHttpRequest(RequestBeanFactory requestBeanFactory,
-			HttpServletRequest httpServletRequest, boolean cookieValue,
-			boolean debug) throws IOException {
+	public AbstractHttpRequest(RequestBeanFactory requestBeanFactory, HttpServletRequest httpServletRequest,
+			boolean cookieValue, boolean debug) throws IOException {
 		super(httpServletRequest);
 		this.createTime = System.currentTimeMillis();
-		this.requestBeanContext = new DefaultRequestBeanContext(this,
-				requestBeanFactory);
+		this.requestBeanContext = new DefaultRequestBeanContext(this, requestBeanFactory);
 		this.cookieValue = cookieValue;
 		this.debug = debug;
 	}
@@ -70,8 +69,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper
 	public String getParameter(String name) {
 		String v = super.getParameter(name);
 		if (v == null) {
-			Map<String, String> restParameterMap = ServletUtils
-					.getRestPathParameterMap(this);
+			Map<String, String> restParameterMap = ServletUtils.getRestPathParameterMap(this);
 			if (restParameterMap != null) {
 				v = restParameterMap.get(name);
 			}
@@ -98,8 +96,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper
 		}
 
 		try {
-			return new String(value.getBytes(GET_DEFAULT_CHARSET_ANME),
-					getCharacterEncoding());
+			return new String(value.getBytes(GET_DEFAULT_CHARSET_ANME), getCharacterEncoding());
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return value;
@@ -321,7 +318,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper
 	public boolean isLogEnabled() {
 		return debug;
 	}
-	
+
 	public void log(String format, Object... args) {
 		if (isLogEnabled()) {
 			getLogger().info(format, args);
@@ -342,7 +339,7 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper
 	}
 
 	public Class<?> getClass(String data) {
-		return StringParse.DEFAULT.getClass(data);
+		return StringParse.DEFAULT.getClass(getString(data));
 	}
 
 	public <T> T getObject(Class<T> type) {
@@ -354,6 +351,15 @@ public abstract class AbstractHttpRequest extends HttpServletRequestWrapper
 	 */
 	public Object getObject(String name, Class<?> type) {
 		return ServletUtils.getRequestObjectParameterWrapper(this, type, name);
+	}
+
+	public Object getObject(String name, Type type) {
+		String content = getString(name);
+		if (StringUtils.isEmpty(content)) {
+			return null;
+		}
+
+		return JSONUtils.parseObject(content, type);
 	}
 
 	@SuppressWarnings("rawtypes")

@@ -14,7 +14,7 @@ public class PropertyFactoryFormat implements ValueFormat {
 			return null;
 		}
 
-		return StringParse.defaultParse(v, field.getType());
+		return StringParse.defaultParse(v, field.getGenericType());
 	}
 
 }

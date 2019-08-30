@@ -127,7 +127,7 @@ public final class XmlRequestBean implements RequestBean {
 			}
 
 			ReflectUtils.setFieldValue(type, field, bean,
-					beanProperties.parseValue(beanFactory, propertyFactory, field.getType()));
+					beanProperties.parseValue(beanFactory, propertyFactory, field.getGenericType()));
 		}
 	}
 

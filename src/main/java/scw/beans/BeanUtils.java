@@ -5,7 +5,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -35,6 +37,7 @@ import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerUtils;
 
@@ -119,14 +122,15 @@ public final class BeanUtils {
 		initAutowriteStatic(valueWiredManager, beanFactory, propertyFactory, classList);
 		invokerInitStaticMethod(classList);
 	}
-	
+
 	public static void autoWrite(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> clz, Object obj, Collection<FieldDefinition> fields) throws Exception{
-		for(FieldDefinition field : fields){
+			PropertyFactory propertyFactory, Class<?> clz, Object obj, Collection<FieldDefinition> fields)
+			throws Exception {
+		for (FieldDefinition field : fields) {
 			setBean(beanFactory, clz, obj, field);
 			setConfig(beanFactory, clz, obj, field);
 		}
-		
+
 		setValue(valueWiredManager, beanFactory, propertyFactory, clz, obj, fields);
 	}
 
@@ -138,14 +142,15 @@ public final class BeanUtils {
 	private static void initAutowriteStatic(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Collection<Class<?>> classList) throws Exception {
 		for (Class<?> clz : classList) {
-			autoWrite(valueWiredManager, beanFactory, propertyFactory, clz, null, getAutowriteFieldDefinitionList(clz, true));
+			autoWrite(valueWiredManager, beanFactory, propertyFactory, clz, null,
+					getAutowriteFieldDefinitionList(clz, true));
 		}
 	}
 
-	private static XmlBeanParameter[] sortParameters(String[] paramNames, Class<?>[] parameterTypes,
+	private static XmlBeanParameter[] sortParameters(String[] paramNames, Type[] parameterTypes,
 			XmlBeanParameter[] beanMethodParameters) {
 		XmlBeanParameter[] methodParameters = new XmlBeanParameter[beanMethodParameters.length];
-		Class<?>[] types = new Class<?>[methodParameters.length];
+		Type[] types = new Type[methodParameters.length];
 		for (int i = 0; i < methodParameters.length; i++) {
 			XmlBeanParameter beanMethodParameter = beanMethodParameters[i].clone();
 			if (!StringUtils.isNull(beanMethodParameter.getName())) {
@@ -165,7 +170,8 @@ public final class BeanUtils {
 				methodParameters[i].setParameterType(types[i]);
 			}
 		}
-		return ClassUtils.equals(parameterTypes, types) ? methodParameters : null;
+
+		return ObjectUtils.equals(Arrays.asList(parameterTypes), Arrays.asList(types)) ? methodParameters : null;
 	}
 
 	/**

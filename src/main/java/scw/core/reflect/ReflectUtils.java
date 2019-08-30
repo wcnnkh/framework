@@ -776,7 +776,7 @@ public final class ReflectUtils {
 	}
 
 	public static Object setFieldValueAutoType(Class<?> clz, Field field, Object obj, String value) throws Exception {
-		return setFieldValue(clz, field, obj, StringParse.DEFAULT.parse(value, field.getType()));
+		return setFieldValue(clz, field, obj, StringParse.defaultParse(value, field.getGenericType()));
 	}
 
 	/**

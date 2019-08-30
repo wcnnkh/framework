@@ -32,8 +32,7 @@ public final class ConfigUtils {
 				continue;
 			}
 
-			ReflectUtils.setFieldValue(clz, field, t, StringParse.DEFAULT
-					.parse(entry.getValue(), field.getType()));
+			ReflectUtils.setFieldValue(clz, field, t, StringParse.defaultParse(entry.getValue(), field.getGenericType()));
 		}
 		return t;
 	}

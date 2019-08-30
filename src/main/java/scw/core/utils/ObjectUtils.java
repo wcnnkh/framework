@@ -19,6 +19,7 @@ package scw.core.utils;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -1003,5 +1004,25 @@ public abstract class ObjectUtils {
 		}
 
 		return a.equals(b);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static boolean equals(Collection a, Collection b) {
+		if (a == null || b == null) {
+			return a == b;
+		}
+
+		if (a.size() != b.size()) {
+			return false;
+		}
+
+		Iterator iteratorA = a.iterator();
+		Iterator iteratorB = b.iterator();
+		while (iteratorA.hasNext() && iteratorB.hasNext()) {
+			if (!equals(iteratorA.next(), iteratorB.next())) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

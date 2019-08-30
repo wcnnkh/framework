@@ -10,8 +10,8 @@ public interface Request extends ServletRequest, LogService, StringVerification,
 	long getCreateTime();
 
 	<T> T getBean(Class<T> type);
-	
+
 	<T> T getBean(String name);
-	
+
 	<T> T getObject(Class<T> type);
 }

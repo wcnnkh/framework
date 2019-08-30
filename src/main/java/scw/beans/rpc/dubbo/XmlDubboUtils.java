@@ -1,5 +1,6 @@
 package scw.beans.rpc.dubbo;
 
+import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +35,7 @@ public final class XmlDubboUtils {
 		RegistryConfig registryConfig = XMLUtils.newInstanceLoadAttributeBySetter(RegistryConfig.class, propertyFactory,
 				node, new DubboConfigPropertyMapper(beanFactory) {
 					@Override
-					public Object mapper(String name, String value, Class<?> type) throws Exception {
+					public Object mapper(String name, String value, Type type) throws Exception {
 						if ("address".equals(name)) {
 							return null;
 						}
@@ -64,7 +65,7 @@ public final class XmlDubboUtils {
 		ProtocolConfig config = XMLUtils.newInstanceLoadAttributeBySetter(ProtocolConfig.class, propertyFactory, node,
 				new DubboConfigPropertyMapper(beanFactory) {
 					@Override
-					public Object mapper(String name, String value, Class<?> type) throws Exception {
+					public Object mapper(String name, String value, Type type) throws Exception {
 						if (root && "name".equals(name)) {
 							return null;
 						}
@@ -218,12 +219,12 @@ public final class XmlDubboUtils {
 			this.beanFactory = beanFactory;
 		}
 
-		public Object mapper(java.lang.String name, String value, Class<?> type) throws Exception {
+		public Object mapper(java.lang.String name, String value, Type type) throws Exception {
 			if (StringUtils.isEmpty(value)) {
 				return null;
 			}
 
-			if (type.getName().startsWith("org.apache.dubbo.config.") || "registry".equalsIgnoreCase(name)
+			if (type.toString().startsWith("org.apache.dubbo.config.") || "registry".equalsIgnoreCase(name)
 					|| "registries".equalsIgnoreCase(name) || "ref".equalsIgnoreCase(name)) {
 				return beanFactory.getInstance(value);
 			}

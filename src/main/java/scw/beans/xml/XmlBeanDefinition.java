@@ -158,7 +158,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 			}
 
 			ReflectUtils.setFieldValue(type, field, bean, beanProperties
-					.parseValue(beanFactory, propertyFactory, field.getType()));
+					.parseValue(beanFactory, propertyFactory, field.getGenericType()));
 		}
 	}
 

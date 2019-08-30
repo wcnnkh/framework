@@ -1,5 +1,6 @@
 package scw.application.consumer;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public class XmlConsumerFactory implements ConsumerFactory {
 									new PropertyMapper<String>() {
 
 										public Object mapper(String name,
-												String value, Class<?> type)
+												String value, Type type)
 												throws Exception {
 											if (name.equals("exchange")) {
 												return beanFactory

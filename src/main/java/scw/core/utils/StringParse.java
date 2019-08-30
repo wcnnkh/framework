@@ -1,6 +1,7 @@
 package scw.core.utils;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -71,12 +72,12 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 		return (T[]) objects;
 	}
 
-	public Object parse(String text, Class<?> type) {
-		return getObject(text, type);
+	public static Object defaultParse(String text, Class<?> type) {
+		return DEFAULT.getObject(text, type);
 	}
 
-	public static Object defaultParse(String text, Class<?> type) {
-		return DEFAULT.parse(text, type);
+	public static Object defaultParse(String text, Type type) {
+		return DEFAULT.getObject(text, type);
 	}
 
 	private static boolean verification(Verification<CharSequence> verification, CharSequence charSequence) {
@@ -299,11 +300,15 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 			return getChar(text);
 		}
 
-		if (BigInteger.class == type) {
+		if (Class.class == type) {
+			return getClass(text);
+		}
+
+		if (BigInteger.class.isAssignableFrom(type)) {
 			return getBigInteger(text);
 		}
 
-		if (BigDecimal.class == type) {
+		if (BigDecimal.class.isAssignableFrom(type)) {
 			return getBigDecimal(text);
 		}
 
@@ -317,7 +322,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 		return JSONUtils.parseObject(text, type);
 	}
 
-	@SuppressWarnings({ "rawtypes"})
+	@SuppressWarnings({ "rawtypes" })
 	public Enum<?> getEnum(String data, Class<? extends Enum> enumType) {
 		if (verification(data)) {
 			return null;
@@ -332,9 +337,93 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public Class<?> getClass(String data) {
 		try {
-			return Class.forName(data);
+			return ClassUtils.forName(data);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public Object getObject(String text, Type type) {
+		if (String.class == type) {
+			return getString(text);
+		}
+
+		if (Integer.class == type) {
+			return getInteger(text);
+		}
+
+		if (int.class == type) {
+			return getIntValue(text);
+		}
+
+		if (Long.class == type) {
+			return getLong(text);
+		}
+
+		if (long.class == type) {
+			return getLongValue(text);
+		}
+
+		if (Boolean.class == type) {
+			return getBoolean(text);
+		}
+
+		if (boolean.class == type) {
+			return getBooleanValue(text);
+		}
+
+		if (Short.class == type) {
+			return getShort(text);
+		}
+
+		if (short.class == type) {
+			return getShortValue(text);
+		}
+
+		if (Float.class == type) {
+			return getFloat(text);
+		}
+
+		if (float.class == type) {
+			return getFloatValue(text);
+		}
+
+		if (Double.class == type) {
+			return getDouble(text);
+		}
+
+		if (double.class == type) {
+			return getDoubleValue(text);
+		}
+
+		if (Byte.class == type) {
+			return getByte(text);
+		}
+
+		if (byte.class == type) {
+			return getByteValue(text);
+		}
+
+		if (Character.class == type) {
+			return getCharacter(text);
+		}
+
+		if (char.class == type) {
+			return getChar(text);
+		}
+
+		if (Class.class == type) {
+			return getClass(text);
+		}
+
+		if (BigInteger.class == type) {
+			return getBigInteger(text);
+		}
+
+		if (BigDecimal.class == type) {
+			return type;
+		}
+
+		return JSONUtils.parseObject(text, type);
 	}
 }
