@@ -48,6 +48,6 @@ public class HttpServletUserSession extends HttpServletSession implements
 
 	public void login(Object uid) {
 		HttpSession httpSession = getSession(true);
-		httpSession.setAttribute(getUidAttributeName(), uid);
+		httpSession.setAttribute(getUidAttributeName(), uid.toString());
 	}
 }
