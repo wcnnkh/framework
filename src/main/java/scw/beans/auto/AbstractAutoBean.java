@@ -1,9 +1,11 @@
 package scw.beans.auto;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.beans.annotation.Bean;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.NotFoundException;
 import scw.core.reflect.ReflectUtils;
@@ -21,6 +23,27 @@ public abstract class AbstractAutoBean implements AutoBean {
 
 	protected abstract Object[] getParameters();
 
+	protected boolean isProxy() {
+		if (Modifier.isFinal(type.getModifiers())) {
+			return false;
+		}
+
+		Bean bean = type.getAnnotation(Bean.class);
+		return bean.proxy();
+	}
+	
+	public boolean initEnable() {
+		return true;
+	}
+	
+	public boolean destroyEnable() {
+		return true;
+	}
+	
+	public boolean autowriedEnable() {
+		return true;
+	}
+
 	public Object create(AutoBeanConfig config) throws Exception {
 		Class<?>[] types = getParameterTypes();
 		Object[] parameters = getParameters();
@@ -36,7 +59,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 			throw new NotFoundException(type + "找不到指定的构造方法");
 		}
 
-		if (config.isProxy()) {
+		if (isProxy()) {
 			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory,
 					config.getFilters());
 			return enhancer.create(constructor.getParameterTypes(), params);
@@ -53,7 +76,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 			throw new NotFoundException(type + "找不到指定的构造方法");
 		}
 
-		if (config.isProxy()) {
+		if (isProxy()) {
 			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory,
 					config.getFilters());
 			return enhancer.create(constructor.getParameterTypes(), params);

@@ -17,11 +17,11 @@ public class AutoBeanDefinition implements BeanDefinition {
 	private final BeanFactory beanFactory;
 	private final Class<?> type;
 	private final String id;
-	private final NoArgumentBeanMethod[] initMethods;
-	private final NoArgumentBeanMethod[] destroyMethods;
+	private NoArgumentBeanMethod[] initMethods;
+	private  NoArgumentBeanMethod[] destroyMethods;
 	private final PropertyFactory propertyFactory;
 	private final boolean singleton;
-	private final FieldDefinition[] autowriteFieldDefinition;
+	private FieldDefinition[] autowriteFieldDefinition;
 	private final String[] names;
 	private final ValueWiredManager valueWiredManager;
 	private final AutoBean autoBean;
@@ -37,27 +37,33 @@ public class AutoBeanDefinition implements BeanDefinition {
 		this.propertyFactory = propertyFactory;
 		this.id = type.getName();
 		this.names = AnnotationBeanDefinition.getServiceNames(type);
-		this.initMethods = AnnotationBeanDefinition.getInitMethodList(type)
-				.toArray(new NoArgumentBeanMethod[0]);
-		this.destroyMethods = AnnotationBeanDefinition.getDestroyMethdoList(
-				type).toArray(new NoArgumentBeanMethod[0]);
+		this.autoBean = autoBean;
+		
+		if(autoBean.initEnable()){
+			this.initMethods = AnnotationBeanDefinition.getInitMethodList(type)
+					.toArray(new NoArgumentBeanMethod[0]);
+		}
+		
+		if(autoBean.destroyEnable()){
+			this.destroyMethods = AnnotationBeanDefinition.getDestroyMethdoList(
+					type).toArray(new NoArgumentBeanMethod[0]);
+		}
+		
 		scw.beans.annotation.Bean bean = type
 				.getAnnotation(scw.beans.annotation.Bean.class);
 		this.singleton = bean == null ? true : bean.singleton();
-		this.autowriteFieldDefinition = BeanUtils
-				.getAutowriteFieldDefinitionList(type, false).toArray(
-						new FieldDefinition[0]);
-		this.autoBeanConfig = new SimpleAutoBeanConfig(BeanUtils.checkProxy(
-				type, filterNames), filterNames);
-		this.autoBean = autoBean;
+		
+		if(autoBean.autowriedEnable()){
+			this.autowriteFieldDefinition = BeanUtils
+					.getAutowriteFieldDefinitionList(type, false).toArray(
+							new FieldDefinition[0]);
+		}
+		
+		this.autoBeanConfig = new SimpleAutoBeanConfig(filterNames);
 	}
 
 	public boolean isSingleton() {
 		return singleton;
-	}
-
-	public boolean isProxy() {
-		return autoBeanConfig.isProxy();
 	}
 
 	public String getId() {
@@ -69,11 +75,16 @@ public class AutoBeanDefinition implements BeanDefinition {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory,
-				type, bean, Arrays.asList(autowriteFieldDefinition));
+		if(autowriteFieldDefinition != null){
+			BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory,
+					type, bean, Arrays.asList(autowriteFieldDefinition));
+		}
 	}
 
 	public void init(Object bean) throws Exception {
+		if(!autoBean.initEnable()){
+			return ;
+		}
 		if (initMethods != null && initMethods.length != 0) {
 			for (NoArgumentBeanMethod method : initMethods) {
 				method.noArgumentInvoke(bean);
@@ -86,6 +97,10 @@ public class AutoBeanDefinition implements BeanDefinition {
 	}
 
 	public void destroy(Object bean) throws Exception {
+		if(!autoBean.destroyEnable()){
+			return ;
+		}
+		
 		valueWiredManager.cancel(bean);
 		if (destroyMethods != null && destroyMethods.length != 0) {
 			for (NoArgumentBeanMethod method : destroyMethods) {

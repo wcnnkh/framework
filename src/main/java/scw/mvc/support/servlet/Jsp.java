@@ -1,10 +1,14 @@
-package scw.servlet.page;
+package scw.mvc.support.servlet;
 
 import java.util.Enumeration;
 import java.util.Map;
 
-import scw.servlet.Request;
-import scw.servlet.Response;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+import scw.mvc.Channel;
+import scw.mvc.servlet.ServletChannel;
+import scw.mvc.support.AbstractPage;
 import scw.servlet.ServletUtils;
 
 public class Jsp extends AbstractPage {
@@ -16,14 +20,18 @@ public class Jsp extends AbstractPage {
 
 	public Jsp(String page) {
 		super(page);
-	}
+	}	
 
-	@SuppressWarnings("unchecked")
-	public void render(Request request, Response response) throws Exception {
+	public void reader(Channel channel) throws Throwable {
+		ServletChannel servletChannel = (ServletChannel) channel;
+		ServletRequest request = servletChannel.getRequest();
+		ServletResponse response = servletChannel.getResponse();
+		
 		if (response.getContentType() == null) {
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
 		}
 
+		@SuppressWarnings("unchecked")
 		Map<String, Object> attributeMap = (Map<String, Object>) clone();
 		Enumeration<String> enumeration = request.getAttributeNames();
 		while (enumeration.hasMoreElements()) {
@@ -34,10 +42,9 @@ public class Jsp extends AbstractPage {
 			request.setAttribute(entry.getKey(), entry.getValue());
 		}
 		
-		if(response.isLogEnabled()){
-			response.log("jsp:{}", getPage());
+		if(channel.isLogEnabled()){
+			channel.log("jsp:{}", getPage());
 		}
-
 		ServletUtils.jsp(request, response, getPage());
 	}
 }

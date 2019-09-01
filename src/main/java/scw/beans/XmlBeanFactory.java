@@ -232,11 +232,6 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		return bean;
 	}
 
-	public boolean isProxy(String name) {
-		BeanDefinition beanDefinition = getBeanDefinition(name);
-		return beanDefinition.isProxy();
-	}
-
 	@Override
 	protected String getInitStaticPackage() {
 		String init = BeanUtils.getInitStaticPackage(propertyFactory);

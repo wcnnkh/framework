@@ -1,10 +1,8 @@
-package scw.servlet.page;
+package scw.mvc.support;
 
 import java.util.HashMap;
 
-import scw.servlet.View;
-
-public abstract class AbstractPage extends HashMap<String, Object> implements Page, View {
+public abstract class AbstractPage extends HashMap<String, Object> implements Page {
 	private static final long serialVersionUID = 1L;
 	private String page;
 

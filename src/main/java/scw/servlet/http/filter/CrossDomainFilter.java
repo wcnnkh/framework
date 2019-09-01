@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.core.utils.StringUtils;
+import scw.net.http.Method;
 import scw.servlet.Filter;
 import scw.servlet.FilterChain;
 import scw.servlet.Request;
@@ -57,6 +58,11 @@ public final class CrossDomainFilter implements Filter {
 		} else {
 			crossDomainDefinition.write(httpServletResponse);
 		}
+		
+		if(Method.OPTIONS.name().equals(httpServletRequest.getMethod())){
+			return ;
+		}
+		
 		filterChain.doFilter(request, response);
 	}
 }

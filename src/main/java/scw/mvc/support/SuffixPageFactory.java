@@ -1,8 +1,9 @@
-package scw.servlet.page;
+package scw.mvc.support;
 
 import java.util.LinkedList;
 
 import scw.core.exception.NotFoundException;
+import scw.mvc.support.servlet.JspPageFactory;
 
 public class SuffixPageFactory implements PageFactory {
 	private LinkedList<SuffixPageInfo> suffixPageInfos = new LinkedList<SuffixPageInfo>();
@@ -23,10 +24,10 @@ public class SuffixPageFactory implements PageFactory {
 		}
 	}
 
-	public Page create(String page) {
+	public Page getPage(String page) {
 		for (SuffixPageInfo suffixPageInfo : suffixPageInfos) {
 			if (page.endsWith(suffixPageInfo.getSuffix())) {
-				return suffixPageInfo.getPageFactory().create(page);
+				return suffixPageInfo.getPageFactory().getPage(page);
 			}
 		}
 		throw new NotFoundException("匹配不到指定的PageFactory：" + page);

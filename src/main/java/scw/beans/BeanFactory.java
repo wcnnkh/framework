@@ -4,6 +4,4 @@ import scw.core.instance.InstanceFactory;
 
 public interface BeanFactory extends InstanceFactory {
 	boolean contains(String name);
-
-	boolean isProxy(String name);
 }

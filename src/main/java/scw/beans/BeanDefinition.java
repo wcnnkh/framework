@@ -11,8 +11,6 @@ public interface BeanDefinition extends InstanceDefinition{
 
 	boolean isSingleton();
 
-	boolean isProxy();
-	
 	void autowrite(Object bean) throws Exception;
 
 	void init(Object bean) throws Exception;

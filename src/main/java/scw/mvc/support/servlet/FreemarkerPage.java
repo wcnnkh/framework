@@ -1,13 +1,19 @@
-package scw.servlet.page;
+package scw.mvc.support.servlet;
 
 import java.util.Enumeration;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
 import scw.core.utils.StringUtils;
+import scw.mvc.Channel;
+import scw.mvc.servlet.ServletChannel;
+import scw.mvc.support.AbstractPage;
 import scw.net.ContentType;
 import scw.servlet.Request;
 import scw.servlet.Response;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 public class FreemarkerPage extends AbstractPage {
 	private static final long serialVersionUID = 1L;
@@ -37,6 +43,13 @@ public class FreemarkerPage extends AbstractPage {
 	}
 
 	public void render(Request request, Response response) throws Exception {
+		
+	}
+
+	public void reader(Channel channel) throws Throwable {
+		ServletChannel servletChannel = (ServletChannel) channel;
+		ServletRequest request = servletChannel.getRequest();
+		ServletResponse response = servletChannel.getResponse();
 		if (!StringUtils.isEmpty(getContentType())) {
 			response.setContentType(getContentType());
 		}
@@ -68,8 +81,8 @@ public class FreemarkerPage extends AbstractPage {
 		Template template = configuration.getTemplate(page, request.getCharacterEncoding());
 		template.process(this, response.getWriter());
 
-		if (response.isLogEnabled()) {
-			response.log("freemarker:{}", page);
+		if (channel.isLogEnabled()) {
+			channel.log("freemarker:{}", page);
 		}
 	}
 }
