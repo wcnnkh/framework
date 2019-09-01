@@ -2,9 +2,13 @@ package scw.servlet.http.filter;
 
 import javax.servlet.http.HttpServletResponse;
 
+import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 
 public final class CrossDomainDefinition {
+	public static final CrossDomainDefinition DEFAULT = new CrossDomainDefinition(
+			"*", "*", "*", false, -1);
+
 	public static final String ORIGIN_HEADER = "Access-Control-Allow-Origin";
 	public static final String METHODS_HEADER = "Access-Control-Allow-Methods";
 	public static final String MAX_AGE_HEADER = "Access-Control-Max-Age";
@@ -24,6 +28,23 @@ public final class CrossDomainDefinition {
 		this.methods = methods;
 		this.credentials = credentials;
 		this.maxAge = maxAge;
+	}
+
+	public CrossDomainDefinition(PropertyFactory propertyFactory) {
+		String origin = propertyFactory.getProperty("http.cross-domain.origin");
+		this.origin = StringUtils.isEmpty(origin) ? "*" : origin;
+
+		String headers = propertyFactory
+				.getProperty("http.cross-domain.headers");
+		this.headers = StringUtils.isEmpty(headers) ? "*" : headers;
+
+		String methods = propertyFactory
+				.getProperty("http.cross-domain.methods");
+		this.methods = StringUtils.isEmpty(methods) ? "*" : methods;
+		this.credentials = StringUtils.parseBoolean(propertyFactory
+				.getProperty("http.cross-domain.credentials"));
+		this.maxAge = StringUtils.parseInt(
+				propertyFactory.getProperty("http.cross-domain.maxAge"), -1);
 	}
 
 	public void write(HttpServletResponse response) {

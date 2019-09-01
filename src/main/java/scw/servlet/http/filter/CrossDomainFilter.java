@@ -22,13 +22,31 @@ import scw.servlet.ServletUtils;
  *
  */
 public final class CrossDomainFilter implements Filter {
-	public static final CrossDomainDefinition DEFAULT = new CrossDomainDefinition("*", "*", "*", false, -1);
+	public final CrossDomainDefinition defaultDefinition;
 	private Map<String, CrossDomainDefinition> crossDomainDefinitionMap = new HashMap<String, CrossDomainDefinition>();
+	
+	public CrossDomainFilter(){
+		this(false);
+	}
+	
+	public CrossDomainFilter(boolean credentials) {
+		this("*", "*", -1, "*", credentials);
+	}
 
-	public synchronized void register(String matchPath, String origin, String methods, int maxAge, String headers,
-			boolean credentials) {
-		crossDomainDefinitionMap.put(matchPath,
-				new CrossDomainDefinition(origin, headers, methods, credentials, maxAge));
+	public CrossDomainFilter(String origin, String methods, int maxAge,
+			String headers, boolean credentials) {
+		this.defaultDefinition = new CrossDomainDefinition(origin, headers,
+				methods, credentials, maxAge);
+	}
+	
+	public CrossDomainFilter(CrossDomainDefinition crossDomainDefinition){
+		this.defaultDefinition = crossDomainDefinition;
+	}
+
+	public synchronized void register(String matchPath, String origin,
+			String methods, int maxAge, String headers, boolean credentials) {
+		crossDomainDefinitionMap.put(matchPath, new CrossDomainDefinition(
+				origin, headers, methods, credentials, maxAge));
 	}
 
 	public CrossDomainDefinition getCrossDomainDefinition(String requestPath) {
@@ -36,7 +54,8 @@ public final class CrossDomainFilter implements Filter {
 			return null;
 		}
 
-		for (Entry<String, CrossDomainDefinition> entry : crossDomainDefinitionMap.entrySet()) {
+		for (Entry<String, CrossDomainDefinition> entry : crossDomainDefinitionMap
+				.entrySet()) {
 			if (StringUtils.test(requestPath, entry.getKey())) {
 				return entry.getValue();
 			}
@@ -44,7 +63,8 @@ public final class CrossDomainFilter implements Filter {
 		return null;
 	}
 
-	public void doFilter(Request request, Response response, FilterChain filterChain) throws Throwable {
+	public void doFilter(Request request, Response response,
+			FilterChain filterChain) throws Throwable {
 		if (!ServletUtils.isHttpServlet(request, response)) {
 			filterChain.doFilter(request, response);
 			return;
@@ -52,17 +72,18 @@ public final class CrossDomainFilter implements Filter {
 
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-		CrossDomainDefinition crossDomainDefinition = getCrossDomainDefinition(httpServletRequest.getServletPath());
+		CrossDomainDefinition crossDomainDefinition = getCrossDomainDefinition(httpServletRequest
+				.getServletPath());
 		if (crossDomainDefinition == null) {
-			DEFAULT.write(httpServletResponse);
+			defaultDefinition.write(httpServletResponse);
 		} else {
 			crossDomainDefinition.write(httpServletResponse);
 		}
-		
-		if(Method.OPTIONS.name().equals(httpServletRequest.getMethod())){
-			return ;
+
+		if (Method.OPTIONS.name().equals(httpServletRequest.getMethod())) {
+			return;
 		}
-		
+
 		filterChain.doFilter(request, response);
 	}
 }

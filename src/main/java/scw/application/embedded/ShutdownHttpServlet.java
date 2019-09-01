@@ -12,7 +12,7 @@ import scw.core.PropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.servlet.ServletUtils;
-import scw.servlet.http.filter.CrossDomainFilter;
+import scw.servlet.http.filter.CrossDomainDefinition;
 
 public final class ShutdownHttpServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -44,7 +44,7 @@ public final class ShutdownHttpServlet extends HttpServlet {
 
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		CrossDomainFilter.DEFAULT.write(resp);
+		CrossDomainDefinition.DEFAULT.write(resp);
 		if (!ArrayUtils.isEmpty(ips)) {
 			String requestIp = ServletUtils.getIP(req);
 			if (!checkIp(requestIp)) {
