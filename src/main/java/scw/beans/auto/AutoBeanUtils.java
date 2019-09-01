@@ -13,7 +13,7 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 
 public final class AutoBeanUtils {
-	private static final AutoBeanService DEFAULT_AUTO_BEAN_SERVICE = new NotFoundAutoBeanService();
+	private static final AutoBeanService DEFAULT_AUTO_BEAN_SERVICE = new DefaultAutoBeanService();
 	private static final LinkedList<Object> services = new LinkedList<Object>();
 
 	private AutoBeanUtils() {

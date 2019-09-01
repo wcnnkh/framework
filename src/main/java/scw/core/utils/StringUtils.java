@@ -2107,6 +2107,18 @@ public final class StringUtils {
 
 		return parseBooleanValue(text);
 	}
+	
+	public static boolean parseBoolean(Object text, boolean defaultValue){
+		if(text == null){
+			return defaultValue;
+		}
+		
+		return parseBoolean(text.toString(), defaultValue);
+	}
+	
+	public static boolean parseBoolean(Object text){
+		return parseBoolean(text, false);
+	}
 
 	public static boolean parseBoolean(String text) {
 		return parseBoolean(text, false);
