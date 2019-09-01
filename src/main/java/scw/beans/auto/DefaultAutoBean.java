@@ -1,54 +1,44 @@
 package scw.beans.auto;
 
-import java.lang.reflect.Constructor;
-
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
-import scw.core.cglib.proxy.Enhancer;
-import scw.core.exception.NotFoundException;
-import scw.core.instance.InstanceUtils;
-import scw.core.reflect.ReflectUtils;
+import scw.core.utils.ClassUtils;
 
-public class DefaultAutoBean implements AutoBean {
-	protected final BeanFactory beanFactory;
-	protected final Class<?> type;
+public class DefaultAutoBean extends AbstractAutoBean {
+	private Class<?>[] parameterTypes;
+	private Object[] parameters;
+
+	public DefaultAutoBean(BeanFactory beanFactory, Class<?> type,
+			Class<?>[] parameterTypes, Object[] parameters) {
+		super(beanFactory, type);
+		this.parameterTypes = parameterTypes;
+		this.parameters = parameters;
+	}
+
+	public DefaultAutoBean(BeanFactory beanFactory, String className,
+			Class<?>[] parameterTypes, Object[] parameters)
+			throws ClassNotFoundException {
+		this(beanFactory, ClassUtils.forName(className), parameterTypes,
+				parameters);
+	}
 
 	public DefaultAutoBean(BeanFactory beanFactory, Class<?> type) {
-		this.beanFactory = beanFactory;
-		this.type = type;
+		this(beanFactory, type, new Class<?>[0], new Object[0]);
 	}
 
-	public Object create(AutoBeanConfig config) throws Exception {
-		if (config.isProxy()) {
-			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory,
-					config.getFilters());
-			return enhancer.create();
-		} else {
-			return InstanceUtils.getInstance(type);
-		}
+	public DefaultAutoBean(BeanFactory beanFactory, String className)
+			throws ClassNotFoundException {
+		this(beanFactory, ClassUtils.forName(className), new Class<?>[0],
+				new Object[0]);
 	}
 
-	public Object create(AutoBeanConfig config, Object... params)
-			throws Exception {
-		Constructor<?> constructor = ReflectUtils.findConstructorByParameters(
-				type, true, params);
-		if (constructor == null) {
-			throw new NotFoundException(type + "找不到指定的构造方法");
-		}
-
-		if (config.isProxy()) {
-			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory,
-					config.getFilters());
-			return enhancer.create(constructor.getParameterTypes(), params);
-		} else {
-			return constructor.newInstance(params);
-		}
+	@Override
+	protected Class<?>[] getParameterTypes() {
+		return parameterTypes;
 	}
 
-	public Object create(AutoBeanConfig config, Class<?>[] parameterTypes,
-			Object... params) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	@Override
+	protected Object[] getParameters() {
+		return parameters;
 	}
 
 }
