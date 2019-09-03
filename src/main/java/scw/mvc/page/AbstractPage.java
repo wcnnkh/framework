@@ -1,4 +1,4 @@
-package scw.mvc.support;
+package scw.mvc.page;
 
 import java.util.HashMap;
 

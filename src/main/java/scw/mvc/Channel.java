@@ -6,7 +6,9 @@ import java.io.OutputStream;
 
 import scw.logger.LogService;
 
-public interface Channel extends LogService {
+public interface Channel extends LogService, AttributeManager{
+	String getController();
+	
 	long getCreateTime();
 
 	Object getParameter(ParameterDefinition parameterDefinition);
@@ -16,4 +18,6 @@ public interface Channel extends LogService {
 	OutputStream getOutputStream() throws IOException;
 
 	InputStream getInputStream() throws IOException;
+	
+	<T> T getBean(Class<T> type);
 }

@@ -14,14 +14,15 @@ public class SimpleFilterChain implements FilterChain{
 		}
 	}
 	
-	public void doFilter(Channel channel) throws Throwable {
+	public Object doFilter(Channel channel) throws Throwable {
 		if(iterator == null){
-			return ;
+			return null;
 		}
 		
 		if(iterator.hasNext()){
-			iterator.next().doFilter(channel, this);
+			return iterator.next().doFilter(channel, this);
 		}
+		return null;
 	}
 
 }

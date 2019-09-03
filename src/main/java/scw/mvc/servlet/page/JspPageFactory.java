@@ -1,7 +1,7 @@
-package scw.mvc.support.servlet;
+package scw.mvc.servlet.page;
 
-import scw.mvc.support.Page;
-import scw.mvc.support.PageFactory;
+import scw.mvc.page.Page;
+import scw.mvc.page.PageFactory;
 
 public class JspPageFactory implements PageFactory {
 	public final static JspPageFactory instance = new JspPageFactory();

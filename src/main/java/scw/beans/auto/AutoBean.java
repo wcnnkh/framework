@@ -8,6 +8,8 @@ public interface AutoBean {
 	
 	boolean autowriedEnable();
 	
+	Class<?> getTargetClass();
+	
 	Object create(AutoBeanConfig config) throws Exception;
 
 	Object create(AutoBeanConfig config, Object... params) throws Exception;

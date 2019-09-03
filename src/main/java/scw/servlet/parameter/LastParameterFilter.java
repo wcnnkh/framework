@@ -2,11 +2,11 @@ package scw.servlet.parameter;
 
 import scw.core.utils.StringUtils;
 import scw.mvc.ParameterDefinition;
+import scw.mvc.annotation.Parameter;
 import scw.servlet.ParameterFilter;
 import scw.servlet.ParameterFilterChain;
 import scw.servlet.Request;
 import scw.servlet.ServletUtils;
-import scw.servlet.parameter.annotation.Parameter;
 
 public final class LastParameterFilter implements ParameterFilter {
 

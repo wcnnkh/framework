@@ -1,12 +1,7 @@
 package scw.mvc.servlet;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import scw.mvc.ParameterChannel;
+import scw.mvc.RequestResponseModelChannel;
 
-import scw.mvc.support.ParameterChannel;
-
-public interface ServletChannel extends ParameterChannel {
-	ServletRequest getRequest();
-
-	ServletResponse getResponse();
+public interface ServletChannel<R extends ServletRequest, P extends ServletResponse> extends ParameterChannel, RequestResponseModelChannel<R, P> {
 }

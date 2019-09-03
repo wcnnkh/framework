@@ -1,14 +1,13 @@
-package scw.mvc.support.servlet;
+package scw.mvc.servlet.page;
 
 import java.util.Enumeration;
 import java.util.Map;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 import scw.mvc.Channel;
+import scw.mvc.page.AbstractPage;
 import scw.mvc.servlet.ServletChannel;
-import scw.mvc.support.AbstractPage;
+import scw.mvc.servlet.ServletRequest;
+import scw.mvc.servlet.ServletResponse;
 import scw.servlet.ServletUtils;
 
 public class Jsp extends AbstractPage {
@@ -22,10 +21,11 @@ public class Jsp extends AbstractPage {
 		super(page);
 	}	
 
+	@SuppressWarnings("rawtypes")
 	public void reader(Channel channel) throws Throwable {
-		ServletChannel servletChannel = (ServletChannel) channel;
-		ServletRequest request = servletChannel.getRequest();
-		ServletResponse response = servletChannel.getResponse();
+		ServletChannel httpChannel = (ServletChannel) channel; 
+		scw.mvc.servlet.ServletRequest request = (ServletRequest) httpChannel.getRequest();
+		scw.mvc.servlet.ServletResponse response = (ServletResponse)httpChannel.getResponse();
 		
 		if (response.getContentType() == null) {
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());

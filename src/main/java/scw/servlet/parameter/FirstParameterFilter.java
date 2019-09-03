@@ -7,12 +7,12 @@ import scw.core.utils.StringUtils;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.mvc.ParameterDefinition;
+import scw.mvc.annotation.Parameter;
+import scw.mvc.http.annotation.Json;
 import scw.servlet.ParameterFilter;
 import scw.servlet.ParameterFilterChain;
 import scw.servlet.Request;
 import scw.servlet.http.HttpRequest;
-import scw.servlet.parameter.annotation.Json;
-import scw.servlet.parameter.annotation.Parameter;
 
 public final class FirstParameterFilter implements ParameterFilter {
 	private final JSONParseSupport jsonParseSupport;

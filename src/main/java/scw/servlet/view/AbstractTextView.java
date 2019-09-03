@@ -1,10 +1,10 @@
 package scw.servlet.view;
 
 import scw.core.utils.StringUtils;
+import scw.mvc.http.Text;
 import scw.net.ContentType;
 import scw.servlet.Request;
 import scw.servlet.Response;
-import scw.servlet.Text;
 import scw.servlet.View;
 
 public abstract class AbstractTextView implements View, Text {

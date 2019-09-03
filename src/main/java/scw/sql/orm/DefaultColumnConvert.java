@@ -12,6 +12,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 import scw.core.utils.ClassUtils;
+import scw.core.utils.EnumUtils;
 import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 
@@ -100,7 +101,7 @@ public class DefaultColumnConvert implements ColumnConvert {
 				field.setShort(bean, StringUtils.parseShort((String) value));
 			}
 		} else if(type.isEnum()){
-			
+			field.set(bean, EnumUtils.valueOf(type, value.toString()));
 		} else if (String.class.isAssignableFrom(type) || Date.class.isAssignableFrom(type)
 				|| java.util.Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
 				|| Timestamp.class.isAssignableFrom(type) || Array.class.isAssignableFrom(type)

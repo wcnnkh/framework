@@ -40,5 +40,4 @@ public class DefaultAutoBean extends AbstractAutoBean {
 	protected Object[] getParameters() {
 		return parameters;
 	}
-
 }

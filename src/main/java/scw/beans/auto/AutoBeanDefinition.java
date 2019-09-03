@@ -71,7 +71,7 @@ public class AutoBeanDefinition implements BeanDefinition {
 	}
 
 	public Class<?> getType() {
-		return this.type;
+		return autoBean.getTargetClass();
 	}
 
 	public void autowrite(Object bean) throws Exception {

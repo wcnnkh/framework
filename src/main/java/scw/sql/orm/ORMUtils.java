@@ -190,7 +190,15 @@ public final class ORMUtils {
 
 	public static boolean isDataBaseField(Field field) {
 		Column column = field.getAnnotation(Column.class);
-		return column == null ? isDataBaseType(field.getType()) : true;
+		if(column != null){
+			return true;
+		}
+		
+		if(field.getType().isEnum()){
+			return true;
+		}
+		
+		return isDataBaseType(field.getType());
 	}
 
 	public static boolean isDataBaseType(Class<?> type) {

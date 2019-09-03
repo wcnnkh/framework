@@ -1,11 +1,11 @@
-package scw.mvc.support.servlet;
+package scw.mvc.page.support;
 
 import java.io.File;
 import java.io.IOException;
 
 import scw.core.Constants;
 import scw.core.utils.SystemPropertyUtils;
-import scw.mvc.support.Page;
+import scw.mvc.page.Page;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Version;

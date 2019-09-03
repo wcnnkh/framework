@@ -1,9 +1,9 @@
-package scw.mvc.support;
+package scw.mvc.page;
 
 import java.util.LinkedList;
 
 import scw.core.exception.NotFoundException;
-import scw.mvc.support.servlet.JspPageFactory;
+import scw.mvc.servlet.page.JspPageFactory;
 
 public class SuffixPageFactory implements PageFactory {
 	private LinkedList<SuffixPageInfo> suffixPageInfos = new LinkedList<SuffixPageInfo>();

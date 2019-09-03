@@ -88,7 +88,10 @@ public final class BeanUtils {
 			Collection<Class<?>> classList) throws Exception {
 		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
 		for (Class<?> clz : classList) {
-			valueWiredManager.cancel(clz);
+			if(valueWiredManager != null){
+				valueWiredManager.cancel(clz);
+			}
+			
 			for (Method method : ReflectUtils.getDeclaredMethods(clz)) {
 				if (!Modifier.isStatic(method.getModifiers())) {
 					continue;
@@ -268,14 +271,21 @@ public final class BeanUtils {
 				try {
 					existDefaultValueWarnLog(Value.class.getName(), clz, field, obj);
 					ValueWired valueWired = new ValueWired(obj, field, value);
-					valueWireds.add(valueWired);
+					if(valueWiredManager == null){
+						valueWired.wired(beanFactory, propertyFactory);
+					}else{
+						valueWireds.add(valueWired);
+					}
 				} catch (Throwable e) {
 					throw new RuntimeException(
 							"properties：clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
 				}
 			}
 		}
-		valueWiredManager.write(getValueTaskId(clz, obj), valueWireds);
+		
+		if(valueWiredManager != null){
+			valueWiredManager.write(getValueTaskId(clz, obj), valueWireds);
+		}
 	}
 
 	private static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldDefinition field) {

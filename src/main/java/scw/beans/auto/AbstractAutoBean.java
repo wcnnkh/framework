@@ -43,6 +43,10 @@ public abstract class AbstractAutoBean implements AutoBean {
 	public boolean autowriedEnable() {
 		return true;
 	}
+	
+	public Class<?> getTargetClass() {
+		return type;
+	}
 
 	public Object create(AutoBeanConfig config) throws Exception {
 		Class<?>[] types = getParameterTypes();

@@ -18,6 +18,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
+import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
@@ -26,6 +27,7 @@ import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
+@Bean(singleton=false)
 public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerFactory.getLogger(Multipart.class);

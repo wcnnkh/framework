@@ -1,0 +1,293 @@
+package scw.mvc;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Collection;
+
+import scw.beans.BeanFactory;
+import scw.core.Verification;
+import scw.core.reflect.ReflectUtils;
+import scw.core.utils.StringParse;
+import scw.core.utils.StringUtils;
+import scw.core.utils.XUtils;
+import scw.json.JSONParseSupport;
+import scw.mvc.annotation.Parameter;
+
+public abstract class AbstractParameterChannel extends AbstractChannel
+		implements ParameterChannel, Verification<String> {
+	protected final JSONParseSupport jsonParseSupport;
+
+	public AbstractParameterChannel(BeanFactory beanFactory, boolean logEnabled, Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport) {
+		super(beanFactory, logEnabled, parameterFilters);
+		this.jsonParseSupport = jsonParseSupport;
+	}
+
+	public Object getParameter(ParameterDefinition parameterDefinition) {
+		if (Channel.class.isAssignableFrom(parameterDefinition.getType())) {
+			return this;
+		}
+
+		String name = parameterDefinition.getName();
+		Parameter parameter = parameterDefinition.getAnnotation(Parameter.class);
+		if (parameter != null) {
+			name = parameter.value();
+		}
+
+		if (StringUtils.isEmpty(name)) {
+			return getObject(parameterDefinition.getGenericType());
+		}
+
+		return XUtils.getValue(this, name, parameterDefinition.getGenericType());
+	}
+
+	protected void parameterError(Exception e, String key, String v) {
+		getLogger().error("参数解析错误key={},value={}", key, v);
+	}
+
+	public boolean verification(String data) {
+		return StringUtils.isEmpty(data);
+	}
+
+	public Byte getByte(String key) {
+		String v = getString(key);
+		if (verification(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseByte(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
+	}
+
+	public byte getByteValue(String key) {
+		String v = getString(key);
+		try {
+			return StringUtils.parseByte(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
+	}
+
+	public Short getShort(String key) {
+		String v = getString(key);
+		if (verification(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseShort(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
+	}
+
+	public short getShortValue(String key) {
+		String v = getString(key);
+		try {
+			return StringUtils.parseShort(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
+	}
+
+	public Integer getInteger(String key) {
+		String v = getString(key);
+		if (verification(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseInt(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
+	}
+
+	public int getIntValue(String key) {
+		String v = getString(key);
+		try {
+			return StringUtils.parseInt(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
+	}
+
+	public Long getLong(String key) {
+		String v = getString(key);
+		if (verification(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseLong(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
+	}
+
+	public long getLongValue(String key) {
+		String v = getString(key);
+		try {
+			return StringUtils.parseLong(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
+	}
+
+	public Boolean getBoolean(String key) {
+		String v = getString(key);
+		if (verification(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseBoolean(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
+	}
+
+	public boolean getBooleanValue(String key) {
+		String v = getString(key);
+		try {
+			return StringUtils.parseBoolean(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return false;
+	}
+
+	public Float getFloat(String key) {
+		String v = getString(key);
+		if (verification(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseFloat(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
+	}
+
+	public float getFloatValue(String key) {
+		String v = getString(key);
+		try {
+			return StringUtils.parseFloat(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
+	}
+
+	public Double getDouble(String key) {
+		String v = getString(key);
+		if (verification(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseDouble(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
+	}
+
+	public double getDoubleValue(String key) {
+		String v = getString(key);
+		try {
+			return StringUtils.parseDouble(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
+	}
+
+	public char getChar(String key) {
+		String v = getString(key);
+		try {
+			return StringUtils.parseChar(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return 0;
+	}
+
+	public Character getCharacter(String key) {
+		String v = getString(key);
+		if (verification(v)) {
+			return null;
+		}
+
+		try {
+			return StringUtils.parseChar(v);
+		} catch (Exception e) {
+			parameterError(e, key, v);
+		}
+		return null;
+	}
+
+	public void log(String format, Object... args) {
+		if (isLogEnabled()) {
+			getLogger().info(format, args);
+		}
+	}
+
+	public BigInteger getBigInteger(String name) {
+		return StringParse.DEFAULT.getBigInteger(getString(name));
+	}
+
+	public BigDecimal getBigDecimal(String name) {
+		return StringParse.DEFAULT.getBigDecimal(getString(name));
+	}
+
+	public Class<?> getClass(String data) {
+		return StringParse.DEFAULT.getClass(getString(data));
+	}
+
+	public Object getObject(Class<?> type) {
+		Constructor<?> constructor = ReflectUtils.getConstructor(type, false);
+		if(constructor == null){
+			return getBean(type);
+		}
+		
+		return MVCUtils.getParameterWrapper(this, type, null);
+	}
+
+	/**
+	 * 此方法不处理爱ValueFactory管理的其他类型
+	 */
+	public Object getObject(String name, Class<?> type) {
+		return MVCUtils.getParameterWrapper(this, type, name);
+	}
+
+	public Object getObject(String name, Type type) {
+		String content = getString(name);
+		if (StringUtils.isEmpty(content)) {
+			return null;
+		}
+
+		return jsonParseSupport.parseObject(content, type);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Enum<?> getEnum(String name, Class<? extends Enum> enumType) {
+		return StringParse.DEFAULT.getEnum(getString(name), enumType);
+	}
+
+}

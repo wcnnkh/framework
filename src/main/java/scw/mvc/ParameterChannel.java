@@ -1,9 +1,8 @@
-package scw.mvc.support;
+package scw.mvc;
 
 import java.lang.reflect.Type;
 
 import scw.core.ValueFactory;
-import scw.mvc.Channel;
 
 public interface ParameterChannel extends Channel, ValueFactory<String> {
 

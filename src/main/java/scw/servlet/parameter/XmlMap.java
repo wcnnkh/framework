@@ -10,9 +10,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import scw.beans.annotation.Bean;
 import scw.core.utils.XMLUtils;
 import scw.servlet.Request;
 
+@Bean(singleton=false)
 public final class XmlMap extends LinkedHashMap<String, String> {
 	private static final long serialVersionUID = 1L;
 

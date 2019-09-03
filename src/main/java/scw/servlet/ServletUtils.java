@@ -51,6 +51,7 @@ import scw.io.serializer.Serializer;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.logger.LoggerUtils;
+import scw.mvc.http.Text;
 import scw.net.ContentType;
 import scw.servlet.annotation.Controller;
 import scw.servlet.beans.CommonRequestBeanFactory;

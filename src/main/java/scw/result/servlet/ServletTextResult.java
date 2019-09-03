@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.json.JSONUtils;
+import scw.mvc.http.Text;
 import scw.result.DefaultResult;
-import scw.servlet.Text;
 
 public class ServletTextResult<T> extends DefaultResult<T> implements Text {
 	private static final long serialVersionUID = 1L;

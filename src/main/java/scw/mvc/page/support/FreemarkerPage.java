@@ -1,19 +1,16 @@
-package scw.mvc.support.servlet;
+package scw.mvc.page.support;
 
 import java.util.Enumeration;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
-import scw.core.utils.StringUtils;
-import scw.mvc.Channel;
-import scw.mvc.servlet.ServletChannel;
-import scw.mvc.support.AbstractPage;
-import scw.net.ContentType;
-import scw.servlet.Request;
-import scw.servlet.Response;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import scw.core.utils.StringUtils;
+import scw.mvc.Channel;
+import scw.mvc.RequestResponseModelChannel;
+import scw.mvc.http.HttpRequest;
+import scw.mvc.http.HttpResponse;
+import scw.mvc.page.AbstractPage;
+import scw.net.ContentType;
 
 public class FreemarkerPage extends AbstractPage {
 	private static final long serialVersionUID = 1L;
@@ -42,39 +39,43 @@ public class FreemarkerPage extends AbstractPage {
 		this.contentType = contentType;
 	}
 
-	public void render(Request request, Response response) throws Exception {
-		
-	}
-
+	@SuppressWarnings("rawtypes")
 	public void reader(Channel channel) throws Throwable {
-		ServletChannel servletChannel = (ServletChannel) channel;
-		ServletRequest request = servletChannel.getRequest();
-		ServletResponse response = servletChannel.getResponse();
-		if (!StringUtils.isEmpty(getContentType())) {
-			response.setContentType(getContentType());
+		RequestResponseModelChannel modelChannel = (RequestResponseModelChannel) channel;
+		scw.mvc.Request request = (scw.mvc.Request) modelChannel.getRequest();
+		scw.mvc.Response response = (scw.mvc.Response) modelChannel.getResponse();
+
+		if (response instanceof HttpResponse) {
+			HttpResponse httpResponse = (HttpResponse) response;
+			if (!StringUtils.isEmpty(getContentType())) {
+				httpResponse.setContentType(getContentType());
+			}
+
+			if (httpResponse.getContentType() == null) {
+				httpResponse.setContentType(ContentType.TEXT_HTML);
+			}
 		}
 
-		if (response.getContentType() == null) {
-			response.setContentType(ContentType.TEXT_HTML);
-		}
-
-		Enumeration<String> enumeration = request.getAttributeNames();
+		Enumeration<String> enumeration = channel.getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			String key = enumeration.nextElement();
 			if (key == null || containsKey(key)) {
 				continue;
 			}
 
-			put(key, request.getAttribute(key));
+			put(key, channel.getAttribute(key));
 		}
 
-		for (Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-			String key = entry.getKey();
-			if (key == null || containsKey(key)) {
-				continue;
-			}
+		if (request instanceof HttpRequest) {
+			HttpRequest httpRequest = (HttpRequest) request;
+			for (Entry<String, String[]> entry : httpRequest.getParameterMap().entrySet()) {
+				String key = entry.getKey();
+				if (key == null || containsKey(key)) {
+					continue;
+				}
 
-			put(key, entry.getValue());
+				put(key, entry.getValue());
+			}
 		}
 
 		String page = getPage();
