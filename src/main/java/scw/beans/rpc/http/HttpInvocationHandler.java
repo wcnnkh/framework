@@ -7,8 +7,8 @@ import java.util.LinkedList;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Autowired;
-import scw.beans.annotation.HttpDecoderFilter;
-import scw.beans.annotation.HttpFactory;
+import scw.beans.rpc.http.annotation.HttpDecoderFilter;
+import scw.beans.rpc.http.annotation.HttpFactory;
 import scw.json.JSONUtils;
 import scw.net.DecoderFilter;
 import scw.net.DecoderFilterChain;

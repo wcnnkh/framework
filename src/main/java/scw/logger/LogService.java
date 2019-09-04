@@ -5,5 +5,5 @@ public interface LogService {
 
 	boolean isLogEnabled();
 
-	void log(String format, Object... args);
+	void log(Object format, Object... args);
 }

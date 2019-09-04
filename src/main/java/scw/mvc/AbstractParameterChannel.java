@@ -242,7 +242,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 		return null;
 	}
 
-	public void log(String format, Object... args) {
+	public void log(Object format, Object... args) {
 		if (isLogEnabled()) {
 			getLogger().info(format, args);
 		}

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
@@ -13,28 +14,30 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.json.JSONParseSupport;
+import scw.json.JSONUtils;
+import scw.login.Session;
 import scw.mvc.AbstractParameterChannel;
 import scw.mvc.MVCUtils;
 import scw.mvc.ParameterDefinition;
 import scw.mvc.ParameterFilter;
 import scw.mvc.View;
-import scw.mvc.http.annotation.Json;
+import scw.mvc.http.parameter.Body;
 import scw.net.ContentType;
 import scw.net.http.Cookie;
-import scw.servlet.parameter.Body;
 
-public abstract class AbstractHttpChannel<R extends HttpRequest, P extends HttpResponse>
-		extends AbstractParameterChannel implements HttpChannel<R, P> {
+public abstract class AbstractHttpChannel extends AbstractParameterChannel implements HttpChannel {
 	private static final String GET_DEFAULT_CHARSET_ANME = "ISO-8859-1";
+
 	protected static final String JSONP_CALLBACK = "callback";
 	protected static final String JSONP_RESP_PREFIX = "(";
 	protected static final String JSONP_RESP_SUFFIX = ");";
 	protected final boolean cookieValue;
-	private final R request;
-	private final P response;
+	private final HttpRequest request;
+	private final HttpResponse response;
 
-	public AbstractHttpChannel(BeanFactory beanFactory, boolean logEnabled, Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport, boolean cookieValue, R request,
-			P response) {
+	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(BeanFactory beanFactory,
+			boolean logEnabled, Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport,
+			boolean cookieValue, R request, P response) {
 		super(beanFactory, logEnabled, parameterFilters, jsonParseSupport);
 		this.cookieValue = cookieValue;
 		this.request = request;
@@ -43,31 +46,14 @@ public abstract class AbstractHttpChannel<R extends HttpRequest, P extends HttpR
 
 	@Override
 	public Object getParameter(ParameterDefinition parameterDefinition) {
-		if(HttpRequest.class.isAssignableFrom(parameterDefinition.getType())){
+		if (HttpRequest.class.isAssignableFrom(parameterDefinition.getType())) {
 			return getRequest();
-		}else if(HttpResponse.class.isAssignableFrom(parameterDefinition.getType())){
+		} else if (HttpResponse.class.isAssignableFrom(parameterDefinition.getType())) {
 			return getResponse();
+		} else if (Session.class == parameterDefinition.getType()) {
+			return getRequest().getHttpSession();
 		}
-		
-		String name = parameterDefinition.getName();
-		Json json = parameterDefinition.getAnnotation(Json.class);
-		if (json != null) {
-			name = json.value();
-			if (StringUtils.isEmpty(name)) {
-				if ((request instanceof HttpRequest)
-						&& "GET".equals(((HttpRequest) request).getMethod())) {
-					return getObject(parameterDefinition.getType());
-				} else {
-					return jsonParseSupport.parseObject(
-							getBean(Body.class).getBody(),
-							parameterDefinition.getGenericType());
-				}
-			} else {
-				return jsonParseSupport.parseObject(getString(name),
-						parameterDefinition.getGenericType());
-			}
-		}
-		
+
 		return super.getParameter(parameterDefinition);
 	}
 
@@ -124,12 +110,22 @@ public abstract class AbstractHttpChannel<R extends HttpRequest, P extends HttpR
 		return v;
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T extends HttpRequest> T getRequest() {
+		return (T) request;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends HttpResponse> T getResponse() {
+		return (T) response;
+	}
+
 	public <E> E[] getArray(String name, Class<E> type) {
 		String[] values = getRequest().getParameterValues(name);
 		return StringParse.DEFAULT.getArray(values, type);
 	}
 
-	private String getJsonpCallback() {
+	protected String getJsonpCallback() {
 		String callbackTag = getString(JSONP_CALLBACK);
 		return StringUtils.isEmpty(callbackTag) ? null : callbackTag;
 	}
@@ -139,15 +135,23 @@ public abstract class AbstractHttpChannel<R extends HttpRequest, P extends HttpR
 			return;
 		}
 
-		String callbackTag = getJsonpCallback();
-		if (callbackTag != null) {
-			getResponse().getWriter().write(JSONP_CALLBACK);
-			getResponse().getWriter().write(JSONP_RESP_PREFIX);
+		if (obj instanceof String) {
+			String redirect = MVCUtils.parseRedirect((String) obj, true);
+			if (redirect != null) {
+				getResponse().sendRedirect(redirect);
+				return ;
+			}
 		}
 
 		if (obj instanceof View) {
-			((View) obj).reader(this);
+			((View) obj).render(this);
 		} else {
+			String callbackTag = getJsonpCallback();
+			if (callbackTag != null) {
+				getResponse().getWriter().write(JSONP_CALLBACK);
+				getResponse().getWriter().write(JSONP_RESP_PREFIX);
+			}
+
 			String content;
 			if (obj instanceof Text) {
 				content = ((Text) obj).getTextContent();
@@ -167,14 +171,15 @@ public abstract class AbstractHttpChannel<R extends HttpRequest, P extends HttpR
 			}
 
 			getResponse().getWriter().write(content);
+
+			if (callbackTag != null) {
+				getResponse().setContentType(ContentType.TEXT_JAVASCRIPT);
+				getResponse().getWriter().write(JSONP_RESP_SUFFIX);
+			}
+
 			if (isLogEnabled()) {
 				log(content);
 			}
-		}
-
-		if (callbackTag != null) {
-			getResponse().setContentType(ContentType.TEXT_JAVASCRIPT);
-			getResponse().getWriter().write(JSONP_RESP_SUFFIX);
 		}
 	}
 
@@ -186,15 +191,17 @@ public abstract class AbstractHttpChannel<R extends HttpRequest, P extends HttpR
 		return getResponse().getOutputStream();
 	}
 
-	public String getController() {
-		return getRequest().getRequestPath();
+	public Object getObject(Type type) {
+		Body body = getBean(Body.class);
+		return jsonParseSupport.parseObject(body.getBody(), type);
 	}
 
-	public R getRequest() {
-		return request;
-	}
-
-	public P getResponse() {
-		return response;
+	@Override
+	public String toString() {
+		StringBuilder appendable = new StringBuilder();
+		appendable.append("path=").append(getRequest().getRequestPath());
+		appendable.append(",method=").append(getRequest().getMethod());
+		appendable.append(",").append(JSONUtils.toJSONString(getRequest().getParameterMap()));
+		return appendable.toString();
 	}
 }

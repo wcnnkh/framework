@@ -8,8 +8,8 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerUtils;
-import scw.servlet.ServletService;
-import scw.servlet.ServletUtils;
+import scw.mvc.servlet.ServletService;
+import scw.mvc.servlet.ServletUtils;
 
 public class EmbeddedApplication extends CommonApplication {
 	private ServletEmbedded embedded;
@@ -46,8 +46,8 @@ public class EmbeddedApplication extends CommonApplication {
 	}
 
 	private void initEmbedded(String embeddedName) {
-		ServletService service = ServletUtils.getServletService(getValueWiredManager(), getBeanFactory(),
-				getPropertyFactory(), getConfigPath(), getBeanFactory().getFilterNames());
+		ServletService service = ServletUtils.getServletService(getBeanFactory(),
+				getPropertyFactory());
 		embedded = getBeanFactory().getInstance(embeddedName);
 		embedded.init(getBeanFactory(), getPropertyFactory(), new ShutdownHttpServlet(getPropertyFactory(), this),
 				new EmbeddedServlet(service));

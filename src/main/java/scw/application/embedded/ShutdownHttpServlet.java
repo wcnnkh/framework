@@ -11,8 +11,9 @@ import scw.core.Destroy;
 import scw.core.PropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
-import scw.servlet.ServletUtils;
-import scw.servlet.http.filter.CrossDomainDefinition;
+import scw.mvc.MVCUtils;
+import scw.mvc.servlet.ServletUtils;
+import scw.mvc.servlet.http.MyHttpServletResponseWrapper;
 
 public final class ShutdownHttpServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -44,7 +45,8 @@ public final class ShutdownHttpServlet extends HttpServlet {
 
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		CrossDomainDefinition.DEFAULT.write(resp);
+		MVCUtils.responseCrossDomain(scw.mvc.http.filter.CrossDomainDefinition.DEFAULT,
+				new MyHttpServletResponseWrapper(resp));
 		if (!ArrayUtils.isEmpty(ips)) {
 			String requestIp = ServletUtils.getIP(req);
 			if (!checkIp(requestIp)) {

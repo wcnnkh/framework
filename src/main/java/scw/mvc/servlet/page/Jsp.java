@@ -3,12 +3,14 @@ package scw.mvc.servlet.page;
 import java.util.Enumeration;
 import java.util.Map;
 
-import scw.mvc.Channel;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+import scw.mvc.Request;
+import scw.mvc.RequestResponseModelChannel;
+import scw.mvc.Response;
 import scw.mvc.page.AbstractPage;
-import scw.mvc.servlet.ServletChannel;
-import scw.mvc.servlet.ServletRequest;
-import scw.mvc.servlet.ServletResponse;
-import scw.servlet.ServletUtils;
+import scw.mvc.servlet.ServletUtils;
 
 public class Jsp extends AbstractPage {
 	private static final long serialVersionUID = 1L;
@@ -19,14 +21,13 @@ public class Jsp extends AbstractPage {
 
 	public Jsp(String page) {
 		super(page);
-	}	
+	}
 
-	@SuppressWarnings("rawtypes")
-	public void reader(Channel channel) throws Throwable {
-		ServletChannel httpChannel = (ServletChannel) channel; 
-		scw.mvc.servlet.ServletRequest request = (ServletRequest) httpChannel.getRequest();
-		scw.mvc.servlet.ServletResponse response = (ServletResponse)httpChannel.getResponse();
-		
+	@Override
+	protected void render(RequestResponseModelChannel<? extends Request, ? extends Response> channel) throws Throwable {
+		ServletRequest request = (ServletRequest) channel.getRequest();
+		ServletResponse response = (ServletResponse) channel.getResponse();
+
 		if (response.getContentType() == null) {
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
 		}
@@ -41,8 +42,8 @@ public class Jsp extends AbstractPage {
 		for (Entry<String, Object> entry : attributeMap.entrySet()) {
 			request.setAttribute(entry.getKey(), entry.getValue());
 		}
-		
-		if(channel.isLogEnabled()){
+
+		if (channel.isLogEnabled()) {
 			channel.log("jsp:{}", getPage());
 		}
 		ServletUtils.jsp(request, response, getPage());

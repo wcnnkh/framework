@@ -6,8 +6,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.servlet.Filter;
-import scw.servlet.ParameterFilter;
+import scw.mvc.Filter;
+import scw.mvc.ParameterFilter;
+import scw.net.http.Method;
 
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -19,6 +20,13 @@ public @interface Controller {
 	 * @return
 	 */
 	public String value() default "";
+
+	/**
+	 * 请求方法类型
+	 * 只在http中有用
+	 * @return
+	 */
+	public Method[] methods() default {};
 
 	/**
 	 * filters

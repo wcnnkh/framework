@@ -19,7 +19,7 @@ public final class ThreadLocalContextManager implements ContextManager {
 			throw new NullPointerException("release context不能为空");
 		}
 
-		if (context instanceof DefaultContext) {
+		if (!(context instanceof DefaultContext)) {
 			throw new NullPointerException("上下文类型错误");
 		}
 

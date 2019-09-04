@@ -6,8 +6,8 @@ package scw.mvc;
  * @author shuchaowen
  *
  */
-public interface RequestResponseModel<R extends Request, P extends Response>{
-	R getRequest();
+public interface RequestResponseModel<R extends Request, P extends Response> {
+	<T extends R> T getRequest();
 
-	P getResponse();
+	<T extends P> T getResponse();
 }

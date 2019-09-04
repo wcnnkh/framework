@@ -3,12 +3,21 @@ package scw.mvc;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
+import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
+import scw.core.PropertyFactory;
 import scw.core.aop.Invoker;
 
-public final class MethodAction<T extends Channel> implements Action<T> {
+public final class MethodAction implements Action<Channel> {
 	private final Invoker invoker;
 	private final ParameterDefinition[] parameterDefinitions;
 	private final Collection<ParameterFilter> parameterFilters;
+
+	public MethodAction(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clz, Method method) {
+		this.invoker = BeanUtils.getInvoker(beanFactory, clz, method);
+		this.parameterFilters = MVCUtils.getParameterFilters(beanFactory, clz, method);
+		this.parameterDefinitions = MVCUtils.getParameterDefinitions(method);
+	}
 
 	public MethodAction(Invoker invoker, Collection<ParameterFilter> parameterFilters, Method method) {
 		this.invoker = invoker;
@@ -16,9 +25,13 @@ public final class MethodAction<T extends Channel> implements Action<T> {
 		this.parameterDefinitions = MVCUtils.getParameterDefinitions(method);
 	}
 
-	public void doAction(T channel) throws Throwable {
+	public Object doAction(Channel channel) throws Throwable {
 		Object[] args = MVCUtils.getParameterValues(channel, parameterDefinitions, parameterFilters);
-		Object rtn = invoker.invoke(args);
-		channel.write(rtn);
+		return invoker.invoke(args);
+	}
+
+	@Override
+	public String toString() {
+		return invoker.toString();
 	}
 }

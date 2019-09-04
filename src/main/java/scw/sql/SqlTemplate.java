@@ -189,7 +189,7 @@ public abstract class SqlTemplate implements SqlOperations, LogService {
 		}
 	}
 
-	public void log(String format, Object... args) {
+	public void log(Object format, Object... args) {
 		if (isLogEnabled()) {
 			getLogger().info(format, args);
 		}

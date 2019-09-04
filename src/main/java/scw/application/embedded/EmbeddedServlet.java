@@ -8,7 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import scw.servlet.ServletService;
+import scw.mvc.servlet.ServletService;
 
 public final class EmbeddedServlet implements Servlet {
 	private ServletService service;

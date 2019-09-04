@@ -60,4 +60,8 @@ public interface HttpRequest extends AttributeManager, Request{
      *         client
      */
     String getRemoteHost();
+    
+    String getIP();
+    
+    boolean isAjax();
 }

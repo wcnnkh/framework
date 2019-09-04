@@ -5,24 +5,29 @@ import java.util.Iterator;
 
 import scw.core.utils.CollectionUtils;
 
-public class SimpleFilterChain implements FilterChain{
+public class SimpleFilterChain implements FilterChain {
 	private Iterator<Filter> iterator;
-	
-	public SimpleFilterChain(Collection<Filter> filters){
-		if(!CollectionUtils.isEmpty(filters)){
-			this.iterator = filters.iterator();
-		}
-	}
-	
-	public Object doFilter(Channel channel) throws Throwable {
-		if(iterator == null){
-			return null;
-		}
-		
-		if(iterator.hasNext()){
-			return iterator.next().doFilter(channel, this);
-		}
-		return null;
+	private Action<Channel> action;
+
+	public SimpleFilterChain(Collection<Filter> filters) {
+		this(filters, null);
 	}
 
+	public SimpleFilterChain(Collection<Filter> filters, Action<Channel> action) {
+		if (!CollectionUtils.isEmpty(filters)) {
+			this.iterator = filters.iterator();
+		}
+		this.action = action;
+	}
+
+	public Object doFilter(Channel channel) throws Throwable {
+		if (iterator == null) {
+			return action == null ? null : action.doAction(channel);
+		}
+
+		if (iterator.hasNext()) {
+			return iterator.next().doFilter(channel, this);
+		}
+		return action == null ? null : action.doAction(channel);
+	}
 }
