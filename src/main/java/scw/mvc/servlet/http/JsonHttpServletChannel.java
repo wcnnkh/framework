@@ -3,6 +3,7 @@ package scw.mvc.servlet.http;
 import java.util.Collection;
 
 import scw.beans.BeanFactory;
+import scw.core.utils.StringUtils;
 import scw.json.JSONObjectReadOnly;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
@@ -39,7 +40,7 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	@Override
 	public String getString(String name) {
 		String value = jsonObjectReadOnly == null ? null : jsonObjectReadOnly.getString(name);
-		if (!verification(value)) {
+		if (StringUtils.isEmpty(value)) {
 			value = super.getString(name);
 		}
 		return value;

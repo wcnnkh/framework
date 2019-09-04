@@ -7,7 +7,6 @@ import java.math.BigInteger;
 import java.util.Collection;
 
 import scw.beans.BeanFactory;
-import scw.core.Verification;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
@@ -16,7 +15,7 @@ import scw.json.JSONParseSupport;
 import scw.mvc.annotation.Parameter;
 
 public abstract class AbstractParameterChannel extends AbstractChannel
-		implements ParameterChannel, Verification<String> {
+		implements ParameterChannel{
 	protected final JSONParseSupport jsonParseSupport;
 
 	public AbstractParameterChannel(BeanFactory beanFactory, boolean logEnabled,
@@ -47,13 +46,9 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 		getLogger().error("参数解析错误key={},value={}", key, v);
 	}
 
-	public boolean verification(String data) {
-		return StringUtils.isEmpty(data);
-	}
-
 	public Byte getByte(String key) {
 		String v = getString(key);
-		if (verification(v)) {
+		if(StringUtils.isEmpty(key)){
 			return null;
 		}
 
@@ -77,7 +72,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Short getShort(String key) {
 		String v = getString(key);
-		if (verification(v)) {
+		if(StringUtils.isEmpty(key)){
 			return null;
 		}
 
@@ -101,7 +96,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Integer getInteger(String key) {
 		String v = getString(key);
-		if (verification(v)) {
+		if(StringUtils.isEmpty(key)){
 			return null;
 		}
 
@@ -125,7 +120,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Long getLong(String key) {
 		String v = getString(key);
-		if (verification(v)) {
+		if(StringUtils.isEmpty(key)){
 			return null;
 		}
 
@@ -149,7 +144,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Boolean getBoolean(String key) {
 		String v = getString(key);
-		if (verification(v)) {
+		if(StringUtils.isEmpty(key)){
 			return null;
 		}
 
@@ -173,7 +168,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Float getFloat(String key) {
 		String v = getString(key);
-		if (verification(v)) {
+		if(StringUtils.isEmpty(key)){
 			return null;
 		}
 
@@ -197,7 +192,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Double getDouble(String key) {
 		String v = getString(key);
-		if (verification(v)) {
+		if(StringUtils.isEmpty(key)){
 			return null;
 		}
 
@@ -231,7 +226,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Character getCharacter(String key) {
 		String v = getString(key);
-		if (verification(v)) {
+		if(StringUtils.isEmpty(key)){
 			return null;
 		}
 
