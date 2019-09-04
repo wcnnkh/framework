@@ -11,6 +11,7 @@ import scw.mvc.ParameterFilter;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 
+@SuppressWarnings("unchecked")
 public class FormHttpServletChannel extends HttpServletChannel{
 	private static Logger logger = LoggerFactory.getLogger(FormHttpServletChannel.class);
 

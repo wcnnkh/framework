@@ -192,6 +192,10 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	}
 
 	public Object getObject(Type type) {
+		if(type instanceof Class){
+			return getObject((Class<?>)type);
+		}
+		
 		Body body = getBean(Body.class);
 		return jsonParseSupport.parseObject(body.getBody(), type);
 	}

@@ -62,6 +62,7 @@ public abstract class AbstractChannel implements Channel, Destroy {
 		}
 
 		if (beanDefinition.isSingleton()) {
+			getLogger().warn("请求参数中不应该存在一个单例对象[{}],除非你确定要使用它!", type.getName());
 			if (ReflectUtils.isInstance(beanDefinition.getType(), false)) {
 				Constructor<?> constructor = MVCUtils.getModelConstructor(beanDefinition.getType());
 				if (constructor == null) {

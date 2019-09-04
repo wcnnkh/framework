@@ -16,6 +16,7 @@ import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.servlet.ServletUtils;
 
+@SuppressWarnings("unchecked")
 public abstract class HttpServletChannel extends AbstractHttpChannel {
 
 	public HttpServletChannel(BeanFactory beanFactory, boolean logEnabled, Collection<ParameterFilter> parameterFilters,
@@ -36,13 +37,11 @@ public abstract class HttpServletChannel extends AbstractHttpChannel {
 		return super.getParameter(parameterDefinition);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public MyHttpServletRequestWrapper getRequest() {
 		return super.getRequest();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public MyHttpServletResponseWrapper getResponse() {
 		return super.getResponse();

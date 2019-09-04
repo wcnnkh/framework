@@ -11,7 +11,6 @@ import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpFilter;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
-import scw.net.http.Method;
 
 /**
  * 跨域
@@ -67,10 +66,6 @@ public final class CrossDomainFilter extends HttpFilter {
 			MVCUtils.responseCrossDomain(defaultDefinition, httpResponse);
 		} else {
 			MVCUtils.responseCrossDomain(crossDomainDefinition, httpResponse);
-		}
-
-		if (Method.OPTIONS.name().equals(httpRequest.getMethod())) {
-			return null;
 		}
 
 		return chain.doFilter(channel);
