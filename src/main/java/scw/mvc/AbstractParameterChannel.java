@@ -48,7 +48,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Byte getByte(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(key)){
+		if(StringUtils.isEmpty(v)){
 			return null;
 		}
 
@@ -72,7 +72,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Short getShort(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(key)){
+		if(StringUtils.isEmpty(v)){
 			return null;
 		}
 
@@ -96,7 +96,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Integer getInteger(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(key)){
+		if(StringUtils.isEmpty(v)){
 			return null;
 		}
 
@@ -120,7 +120,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Long getLong(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(key)){
+		if(StringUtils.isEmpty(v)){
 			return null;
 		}
 
@@ -144,7 +144,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Boolean getBoolean(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(key)){
+		if(StringUtils.isEmpty(v)){
 			return null;
 		}
 
@@ -168,7 +168,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Float getFloat(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(key)){
+		if(StringUtils.isEmpty(v)){
 			return null;
 		}
 
@@ -192,7 +192,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Double getDouble(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(key)){
+		if(StringUtils.isEmpty(v)){
 			return null;
 		}
 
@@ -226,7 +226,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Character getCharacter(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(key)){
+		if(StringUtils.isEmpty(v)){
 			return null;
 		}
 
