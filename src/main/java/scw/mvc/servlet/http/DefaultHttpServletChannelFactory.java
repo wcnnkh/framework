@@ -13,7 +13,7 @@ import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 
-public class DefaultHttpServletChannelFactory implements HttpServletChannelFactory {
+public final class DefaultHttpServletChannelFactory implements HttpServletChannelFactory {
 	private BeanFactory beanFactory;
 	private Collection<ParameterFilter> parameterFilters;
 	private boolean cookieValue;

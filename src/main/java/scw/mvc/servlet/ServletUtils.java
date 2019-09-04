@@ -117,10 +117,15 @@ public final class ServletUtils {
 
 	public static HttpServletChannelFactory getHttpServletChannelFactory(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
-		return new DefaultHttpServletChannelFactory(beanFactory, MVCUtils.isDebug(propertyFactory),
-				getParameterFilters(beanFactory, propertyFactory),
-				MVCUtils.getJsonParseSupport(beanFactory, propertyFactory),
-				MVCUtils.isSupportCookieValue(propertyFactory));
+		String factoryName = propertyFactory.getProperty("mvc.servlet.http.channel-factory");
+		if (StringUtils.isEmpty(factoryName)) {
+			return beanFactory.getInstance(DefaultHttpServletChannelFactory.class, beanFactory,
+					MVCUtils.isDebug(propertyFactory), getParameterFilters(beanFactory, propertyFactory),
+					MVCUtils.getJsonParseSupport(beanFactory, propertyFactory),
+					MVCUtils.isSupportCookieValue(propertyFactory));
+		} else {
+			return beanFactory.getInstance(factoryName);
+		}
 	}
 
 	public static Collection<Filter> getFilters(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
