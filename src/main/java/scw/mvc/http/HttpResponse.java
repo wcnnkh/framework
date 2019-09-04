@@ -8,6 +8,8 @@ import scw.net.http.Cookie;
 
 public interface HttpResponse extends Response{
     void addCookie(Cookie cookie);
+    
+    void addCookie(String name, String value);
 
     boolean containsHeader(String name);
 

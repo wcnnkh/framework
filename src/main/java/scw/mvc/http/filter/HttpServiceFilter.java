@@ -18,7 +18,7 @@ import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.servlet.FilterChainAction;
 
-public class HttpServiceFilter extends HttpFilter {
+public final class HttpServiceFilter extends HttpFilter {
 	private final Collection<Filter> filters;
 
 	public HttpServiceFilter(BeanFactory beanFactory, PropertyFactory propertyFactory, Collection<Class<?>> classes,

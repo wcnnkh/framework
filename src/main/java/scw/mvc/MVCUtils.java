@@ -48,6 +48,7 @@ import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.annotation.Controller;
+import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Model;
 import scw.mvc.annotation.Parameter;
 import scw.mvc.http.HttpRequest;
@@ -131,7 +132,7 @@ public final class MVCUtils {
 					continue;
 				}
 
-				// 宸茬粡瀛樺湪鍊间簡锛屽彲鑳芥槸閫氳繃鍏朵粬鏂瑰紡娉ㄥ叆鐨�
+				ReflectUtils.setAccessibleField(field);
 				if (!field.getType().isPrimitive() && field.get(instance) != null) {
 					continue;
 				}
@@ -630,5 +631,38 @@ public final class MVCUtils {
 			return text.substring(REDIRECT_PREFIX.length());
 		}
 		return null;
+	}
+	
+	public static LinkedList<Filter> getControllerFilter(Class<?> clazz, Method method, InstanceFactory instanceFactory){
+		Filters filters = clazz.getAnnotation(Filters.class);
+		LinkedList<Filter> list = new LinkedList<Filter>();
+		if(filters != null){
+			for(Class<? extends Filter> f : filters.value()){
+				list.add(instanceFactory.getInstance(f));
+			}
+		}
+		
+		Controller controller = clazz.getAnnotation(Controller.class);
+		if(controller != null){
+			for(Class<? extends Filter> f : controller.filters()){
+				list.add(instanceFactory.getInstance(f));
+			}
+		}
+		
+		filters = method.getAnnotation(Filters.class);
+		if(filters != null){
+			list.clear();
+			for(Class<? extends Filter> f : filters.value()){
+				list.add(instanceFactory.getInstance(f));
+			}
+		}
+		
+		controller = method.getAnnotation(Controller.class);
+		if(controller != null){
+			for(Class<? extends Filter> f : controller.filters()){
+				list.add(instanceFactory.getInstance(f));
+			}
+		}
+		return list;
 	}
 }

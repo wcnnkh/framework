@@ -10,7 +10,7 @@ public class SimpleCookie implements Cookie, Serializable {
 	private String path;
 	private boolean isSecure;
 	private String domain;
-	private int maxAge;
+	private int maxAge = -1;
 	private Date expires;
 
 	public SimpleCookie(String name, String value) {

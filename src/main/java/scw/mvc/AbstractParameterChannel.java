@@ -19,7 +19,8 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 		implements ParameterChannel, Verification<String> {
 	protected final JSONParseSupport jsonParseSupport;
 
-	public AbstractParameterChannel(BeanFactory beanFactory, boolean logEnabled, Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport) {
+	public AbstractParameterChannel(BeanFactory beanFactory, boolean logEnabled,
+			Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport) {
 		super(beanFactory, logEnabled, parameterFilters);
 		this.jsonParseSupport = jsonParseSupport;
 	}
@@ -262,10 +263,10 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Object getObject(Class<?> type) {
 		Constructor<?> constructor = ReflectUtils.getConstructor(type, false);
-		if(constructor == null){
+		if (constructor == null) {
 			return getBean(type);
 		}
-		
+
 		return MVCUtils.getParameterWrapper(this, type, null);
 	}
 
@@ -273,6 +274,11 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 	 * 此方法不处理爱ValueFactory管理的其他类型
 	 */
 	public Object getObject(String name, Class<?> type) {
+		// 不可以被实例化且不存在无参的构造方法
+		if (!ReflectUtils.isInstance(type, true)) {
+			return getBean(type);
+		}
+
 		return MVCUtils.getParameterWrapper(this, type, name);
 	}
 

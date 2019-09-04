@@ -7,7 +7,7 @@ import scw.mvc.http.HttpResponse;
 import scw.net.http.Cookie;
 
 public class MyHttpServletResponseWrapper extends HttpServletResponseWrapper
-		implements HttpServletResponse, HttpResponse{
+		implements HttpServletResponse, HttpResponse {
 
 	public MyHttpServletResponseWrapper(HttpServletResponse httpServletResponse) {
 		super(httpServletResponse);
@@ -18,14 +18,27 @@ public class MyHttpServletResponseWrapper extends HttpServletResponseWrapper
 			addCookie(((HttpServletCookie) cookie).getCookie());
 		} else {
 			javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
-			c.setMaxAge(cookie.getMaxAge());
-			c.setPath(cookie.getPath());
-			c.setDomain(cookie.getDomain());
+
+			if (cookie.getMaxAge() >= 0) {
+				c.setMaxAge(cookie.getMaxAge());
+			}
+
+			if (cookie.getPath() != null) {
+				c.setPath(cookie.getPath());
+			}
+
+			if (cookie.getDomain() != null) {
+				c.setDomain(cookie.getDomain());
+			}
 			addCookie(c);
 		}
 	}
 
 	public void setContentLength(long length) {
 		setContentLengthLong(length);
+	}
+
+	public void addCookie(String name, String value) {
+		addCookie(new javax.servlet.http.Cookie(name, value));
 	}
 }
