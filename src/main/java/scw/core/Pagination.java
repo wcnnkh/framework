@@ -67,6 +67,6 @@ public class Pagination<T> implements Serializable {
 	}
 
 	public static long getLongBegin(long page, int limit) {
-		return Math.max(1, (page - 1)) * limit;
+		return Math.max(0, (page - 1)) * limit;
 	}
 }
