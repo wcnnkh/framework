@@ -15,7 +15,6 @@ import scw.mvc.http.HttpResponse;
 import scw.mvc.http.parameter.Body;
 import scw.net.http.Method;
 
-@SuppressWarnings("unchecked")
 public class JsonHttpServletChannel extends HttpServletChannel {
 	private static Logger logger = LoggerFactory.getLogger(JsonHttpServletChannel.class);
 	private JSONObjectReadOnly jsonObjectReadOnly;
