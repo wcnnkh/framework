@@ -59,46 +59,46 @@ public class DefaultColumnConvert implements ColumnConvert {
 		if (ClassUtils.isBooleanType(type)) {
 			if (value != null) {
 				if (value instanceof Number) {
-					field.setBoolean(bean, ((Number) value).intValue() == 1);
+					field.set(bean, ((Number) value).intValue() == 1);
 				} else if (value instanceof String) {
-					field.setBoolean(bean, StringUtils.parseBoolean((String) value));
+					field.set(bean, StringUtils.parseBoolean((String) value));
 				}
 			}
 		} else if (ClassUtils.isIntType(type)) {
 			if (value instanceof Number) {
-				field.setInt(bean, ((Number) value).intValue());
+				field.set(bean, ((Number) value).intValue());
 			} else if (value instanceof String) {
-				field.setInt(bean, StringUtils.parseInt((String) value));
+				field.set(bean, StringUtils.parseInt((String) value));
 			}
 		} else if (ClassUtils.isLongType(type)) {
 			if (value instanceof Number) {
-				field.setLong(bean, ((Number) value).longValue());
+				field.set(bean, ((Number) value).longValue());
 			} else if (value instanceof String) {
-				field.setLong(bean, StringUtils.parseLong((String) value));
+				field.set(bean, StringUtils.parseLong((String) value));
 			}
 		} else if (ClassUtils.isByteType(type)) {
 			if (value instanceof Number) {
-				field.setByte(bean, ((Number) value).byteValue());
+				field.set(bean, ((Number) value).byteValue());
 			} else if (value instanceof String) {
-				field.setByte(bean, StringUtils.parseByte((String) value));
+				field.set(bean, StringUtils.parseByte((String) value));
 			}
 		} else if (ClassUtils.isFloatType(field.getType())) {
 			if (value instanceof Number) {
-				field.setFloat(bean, ((Number) value).floatValue());
+				field.set(bean, ((Number) value).floatValue());
 			} else if (value instanceof String) {
-				field.setFloat(bean, StringUtils.parseFloat((String) value));
+				field.set(bean, StringUtils.parseFloat((String) value));
 			}
 		} else if (ClassUtils.isDoubleType(field.getType())) {
 			if (value instanceof Number) {
-				field.setDouble(bean, ((Number) value).doubleValue());
+				field.set(bean, ((Number) value).doubleValue());
 			} else if (value instanceof String) {
-				field.setDouble(bean, StringUtils.parseDouble((String) value));
+				field.set(bean, StringUtils.parseDouble((String) value));
 			}
 		} else if (ClassUtils.isShortType(field.getType())) {
 			if (value instanceof Number) {
-				field.setShort(bean, ((Number) value).shortValue());
+				field.set(bean, ((Number) value).shortValue());
 			} else if (value instanceof String) {
-				field.setShort(bean, StringUtils.parseShort((String) value));
+				field.set(bean, StringUtils.parseShort((String) value));
 			}
 		} else if(type.isEnum()){
 			field.set(bean, EnumUtils.valueOf(type, value.toString()));
