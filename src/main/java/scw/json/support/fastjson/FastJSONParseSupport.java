@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.parser.Feature;
 
 import scw.json.JSONObject;
 import scw.json.JSONParseSupport;
@@ -25,7 +26,7 @@ public final class FastJSONParseSupport implements JSONParseSupport {
 	}
 
 	public <T> T parseObject(String text, Class<T> type) {
-		return JSON.parseObject(text, type);
+		return JSON.parseObject(text, type, Feature.SupportNonPublicField);
 	}
 
 	public scw.json.JSONArray createJSONArray() {
@@ -37,6 +38,6 @@ public final class FastJSONParseSupport implements JSONParseSupport {
 	}
 
 	public <T> T parseObject(String text, Type type) {
-		return JSON.parseObject(text, type);
+		return JSON.parseObject(text, type, Feature.SupportNonPublicField);
 	}
 }

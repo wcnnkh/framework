@@ -9,14 +9,13 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Autowired;
 import scw.beans.rpc.http.annotation.HttpDecoderFilter;
 import scw.beans.rpc.http.annotation.HttpFactory;
-import scw.json.JSONUtils;
 import scw.net.DecoderFilter;
 import scw.net.DecoderFilterChain;
 import scw.net.DecoderResponse;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpRequest;
 import scw.net.support.BeanFactoryDecoderFilterChain;
-import scw.net.support.JsonDecoderFilter;
+import scw.net.support.DefaultDecoderFilter;
 
 public final class HttpInvocationHandler implements InvocationHandler {
 	@Autowired
@@ -86,10 +85,7 @@ public final class HttpInvocationHandler implements InvocationHandler {
 		}
 
 		deserializerFilters.addAll(defaultDeserializerFilters);
-		if (JSONUtils.isSupportFastJSON()) {
-			deserializerFilters.add("scw.net.support.FastJsonDecoderFilter");
-		}
-		deserializerFilters.add(JsonDecoderFilter.class.getName());
+		deserializerFilters.add(DefaultDecoderFilter.class.getName());
 		return deserializerFilters;
 	}
 }

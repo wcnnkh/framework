@@ -17,7 +17,7 @@ public class DefaultDecoderFilterChain implements DecoderFilterChain {
 		}
 	}
 
-	public Object doDecode(URLConnection urlConnection, Type type) throws Exception {
+	public Object doDecode(URLConnection urlConnection, Type type) throws Throwable {
 		if (iterator == null) {
 			throw new NotSupportException("不支持是解码：" + type);
 		}

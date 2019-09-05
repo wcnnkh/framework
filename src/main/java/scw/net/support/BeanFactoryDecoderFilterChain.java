@@ -22,7 +22,7 @@ public final class BeanFactoryDecoderFilterChain implements DecoderFilterChain {
 		}
 	}
 
-	public Object doDecode(URLConnection urlConnection, Type type) throws Exception {
+	public Object doDecode(URLConnection urlConnection, Type type) throws Throwable {
 		if (iterator == null) {
 			throw new NotFoundException("not found DeserializerFilter：" + type);
 		}

@@ -60,7 +60,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T[] getArray(String[] arr, Class<?> type) {
+	public <T> T[] getArray(String[] arr, Class<T> type) {
 		if (ArrayUtils.isEmpty(arr)) {
 			return (T[]) Array.newInstance(type, 0);
 		}
@@ -73,11 +73,11 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 	}
 
 	public static Object defaultParse(String text, Class<?> type) {
-		return DEFAULT.getObject(text, type);
+		return XUtils.getValue(DEFAULT, text, type);
 	}
 
 	public static Object defaultParse(String text, Type type) {
-		return DEFAULT.getObject(text, type);
+		return XUtils.getValue(DEFAULT, text, type);
 	}
 
 	private static boolean verification(Verification<CharSequence> verification, CharSequence charSequence) {
@@ -230,95 +230,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 		return new BigDecimal(text);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object getObject(String text, Class<?> type) {
-		if (String.class == type) {
-			return getString(text);
-		}
-
-		if (Integer.class == type) {
-			return getInteger(text);
-		}
-
-		if (int.class == type) {
-			return getIntValue(text);
-		}
-
-		if (Long.class == type) {
-			return getLong(text);
-		}
-
-		if (long.class == type) {
-			return getLongValue(text);
-		}
-
-		if (Boolean.class == type) {
-			return getBoolean(text);
-		}
-
-		if (boolean.class == type) {
-			return getBooleanValue(text);
-		}
-
-		if (Short.class == type) {
-			return getShort(text);
-		}
-
-		if (short.class == type) {
-			return getShortValue(text);
-		}
-
-		if (Float.class == type) {
-			return getFloat(text);
-		}
-
-		if (float.class == type) {
-			return getFloatValue(text);
-		}
-
-		if (Double.class == type) {
-			return getDouble(text);
-		}
-
-		if (double.class == type) {
-			return getDoubleValue(text);
-		}
-
-		if (Byte.class == type) {
-			return getByte(text);
-		}
-
-		if (byte.class == type) {
-			return getByteValue(text);
-		}
-
-		if (Character.class == type) {
-			return getCharacter(text);
-		}
-
-		if (char.class == type) {
-			return getChar(text);
-		}
-
-		if (Class.class == type) {
-			return getClass(text);
-		}
-
-		if (BigInteger.class.isAssignableFrom(type)) {
-			return getBigInteger(text);
-		}
-
-		if (BigDecimal.class.isAssignableFrom(type)) {
-			return getBigDecimal(text);
-		}
-
-		if (type.isEnum()) {
-			return getEnum(text, (Class<? extends Enum>) type);
-		}
-
-		if (type.isArray()) {
-			return getArray(text, type.getComponentType());
-		}
 		return JSONUtils.parseObject(text, type);
 	}
 
@@ -344,86 +256,6 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 	}
 
 	public Object getObject(String text, Type type) {
-		if (String.class == type) {
-			return getString(text);
-		}
-
-		if (Integer.class == type) {
-			return getInteger(text);
-		}
-
-		if (int.class == type) {
-			return getIntValue(text);
-		}
-
-		if (Long.class == type) {
-			return getLong(text);
-		}
-
-		if (long.class == type) {
-			return getLongValue(text);
-		}
-
-		if (Boolean.class == type) {
-			return getBoolean(text);
-		}
-
-		if (boolean.class == type) {
-			return getBooleanValue(text);
-		}
-
-		if (Short.class == type) {
-			return getShort(text);
-		}
-
-		if (short.class == type) {
-			return getShortValue(text);
-		}
-
-		if (Float.class == type) {
-			return getFloat(text);
-		}
-
-		if (float.class == type) {
-			return getFloatValue(text);
-		}
-
-		if (Double.class == type) {
-			return getDouble(text);
-		}
-
-		if (double.class == type) {
-			return getDoubleValue(text);
-		}
-
-		if (Byte.class == type) {
-			return getByte(text);
-		}
-
-		if (byte.class == type) {
-			return getByteValue(text);
-		}
-
-		if (Character.class == type) {
-			return getCharacter(text);
-		}
-
-		if (char.class == type) {
-			return getChar(text);
-		}
-
-		if (Class.class == type) {
-			return getClass(text);
-		}
-
-		if (BigInteger.class == type) {
-			return getBigInteger(text);
-		}
-
-		if (BigDecimal.class == type) {
-			return type;
-		}
-
 		return JSONUtils.parseObject(text, type);
 	}
 }
