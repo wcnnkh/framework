@@ -34,7 +34,7 @@ public final class LazyLogger implements Logger {
 			synchronized (this) {
 				if (logger == null) {
 					try {
-						return (Logger) ReflectUtils.invokeStaticMethod("scw.logger.LoggerFactory", "getLogger",
+						logger = (Logger) ReflectUtils.invokeStaticMethod("scw.logger.LoggerFactory", "getLogger",
 								new Class<?>[] { String.class, String.class }, name, placeholder);
 					} catch (Throwable e) {
 						throw new RuntimeException(name, e);

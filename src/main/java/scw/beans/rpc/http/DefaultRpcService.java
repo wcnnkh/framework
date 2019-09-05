@@ -12,10 +12,10 @@ import scw.core.utils.XTime;
 import scw.io.Bytes;
 import scw.io.serializer.Serializer;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 
 public class DefaultRpcService implements RpcService {
-	private static Logger logger = LoggerFactory.getLogger(DefaultRpcService.class);
+	private static Logger logger = LoggerUtils.getLogger(DefaultRpcService.class);
 	private volatile Map<String, ServiceInvoker> invokerRPCMap = new HashMap<String, ServiceInvoker>();
 	private final String sign;
 	private final BeanFactory beanFactory;

@@ -8,11 +8,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 import scw.net.http.ReadOnlyCookie;
 
 public final class MemoryCookieManager implements CookieManager {
-	protected static Logger logger = LoggerFactory.getLogger(MemoryCookieManager.class);
+	protected static Logger logger = LoggerUtils.getLogger(MemoryCookieManager.class);
 	private final boolean debug;
 
 	public MemoryCookieManager(boolean debug) {

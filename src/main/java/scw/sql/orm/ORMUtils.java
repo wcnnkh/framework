@@ -151,7 +151,7 @@ public final class ORMUtils {
 
 	public static void registerCglibProxyTableBean(String pageName) {
 		if (!StringUtils.isEmpty(pageName)) {
-			LoggerUtils.info(ORMUtils.class, "register proxy package:{}", pageName);
+			LoggerUtils.getLogger(ORMUtils.class).info("register proxy package:{}", pageName);
 		}
 
 		for (Class<?> type : ResourceUtils.getClassList(pageName)) {

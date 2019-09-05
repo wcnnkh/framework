@@ -28,8 +28,7 @@ import scw.logger.LoggerUtils;
 public final class TomcatServletEmbedded implements ServletEmbedded {
 	private Tomcat tomcat;
 
-	private Tomcat createTomcat(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
+	private Tomcat createTomcat(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		Tomcat tomcat = new Tomcat();
 		int port = EmbeddedUtils.getPort(propertyFactory);
 		tomcat.setPort(port);
@@ -57,17 +56,13 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		return StringUtils.isEmpty(contextPath) ? "" : contextPath;
 	}
 
-	private JarScanner getJarScanner(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
-		return InstanceUtils.getInstance(
-				"scw.application.embedded.tomcat.Tomcat8AboveStandardJarScanner",
+	private JarScanner getJarScanner(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+		return InstanceUtils.getInstance("scw.application.embedded.tomcat.Tomcat8AboveStandardJarScanner",
 				propertyFactory);
 	}
 
-	private Context createContext(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
-		Context context = tomcat.addContext(getContextPath(propertyFactory),
-				getDocBase(propertyFactory));
+	private Context createContext(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+		Context context = tomcat.addContext(getContextPath(propertyFactory), getDocBase(propertyFactory));
 		JarScanner jarScanner = getJarScanner(beanFactory, propertyFactory);
 		if (jarScanner != null) {
 			context.setJarScanner(jarScanner);
@@ -76,15 +71,12 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	}
 
 	private boolean isVersion(String version) {
-		return StringUtils.startsWithIgnoreCase(ServerInfo.getServerNumber(),
-				version);
+		return StringUtils.startsWithIgnoreCase(ServerInfo.getServerNumber(), version);
 	}
 
-	private void configureConnector(Tomcat tomcat, int port,
-			BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	private void configureConnector(Tomcat tomcat, int port, BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		Connector connector = null;
-		String connectorName = EmbeddedUtils
-				.getTomcatConnectorName(propertyFactory);
+		String connectorName = EmbeddedUtils.getTomcatConnectorName(propertyFactory);
 		if (!StringUtils.isEmpty(connectorName)) {
 			connector = beanFactory.getInstance(connectorName);
 		} else {
@@ -115,43 +107,34 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 			ServletContainerInitializer containerInitializer = InstanceUtils
 					.getInstance("org.apache.jasper.servlet.JasperInitializer");
 			if (containerInitializer != null) {
-				context.addServletContainerInitializer(containerInitializer,
-						null);
+				context.addServletContainerInitializer(containerInitializer, null);
 			} // else Probably not Tomcat 8
 
-			Tomcat.addServlet(context, "jsp",
-					"org.apache.jasper.servlet.JspServlet");
+			Tomcat.addServlet(context, "jsp", "org.apache.jasper.servlet.JspServlet");
 			addServletMapping(context, "*.jsp", "jsp");
 			addServletMapping(context, "*.jspx", "jsp");
 		}
 	}
 
-	private void configShutdown(Context context,
-			PropertyFactory propertyFactory, Servlet destroy) {
-		String tomcatShutdownServletPath = EmbeddedUtils
-				.getShutdownPath(propertyFactory);
+	private void configShutdown(Context context, PropertyFactory propertyFactory, Servlet destroy) {
+		String tomcatShutdownServletPath = EmbeddedUtils.getShutdownPath(propertyFactory);
 		if (StringUtils.isEmpty(tomcatShutdownServletPath)) {
 			return;
 		}
 
-		String tomcatShutdownServletName = EmbeddedUtils
-				.getShutdownName(propertyFactory);
+		String tomcatShutdownServletName = EmbeddedUtils.getShutdownName(propertyFactory);
 		if (StringUtils.isEmpty(tomcatShutdownServletName)) {
 			tomcatShutdownServletName = "shutdown";
 		}
 
 		Tomcat.addServlet(context, tomcatShutdownServletName, destroy);
-		addServletMapping(context, tomcatShutdownServletPath,
-				tomcatShutdownServletName);
+		addServletMapping(context, tomcatShutdownServletPath, tomcatShutdownServletName);
 	}
 
-	private void addServletMapping(Context context, String pattern,
-			String servletName) {
-		Method method = ReflectUtils.findMethod(Context.class,
-				"addServletMappingDecoded", String.class, String.class);
+	private void addServletMapping(Context context, String pattern, String servletName) {
+		Method method = ReflectUtils.findMethod(Context.class, "addServletMappingDecoded", String.class, String.class);
 		if (method == null) {// tomcat8以下
-			method = ReflectUtils.findMethod(Context.class,
-					"addServletMapping", String.class, String.class);
+			method = ReflectUtils.findMethod(Context.class, "addServletMapping", String.class, String.class);
 		}
 		try {
 			method.invoke(context, pattern, servletName);
@@ -162,19 +145,16 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	private void configureServlet(Context context, Servlet servlet,
-			PropertyFactory propertyFactory) {
+	private void configureServlet(Context context, Servlet servlet, PropertyFactory propertyFactory) {
 		Tomcat.addServlet(context, "scw", servlet);
 		addServletMapping(context, "/", "scw");
 		String sourceMapping = EmbeddedUtils.getSource(propertyFactory);
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
-				Tomcat.addServlet(context, "default",
-						"org.apache.catalina.servlets.DefaultServlet");
+				Tomcat.addServlet(context, "default", "org.apache.catalina.servlets.DefaultServlet");
 				for (String pattern : patternArr) {
-					LoggerUtils.info(TomcatServletEmbedded.class,
-							"source mapping [{}]", pattern);
+					LoggerUtils.getLogger(TomcatServletEmbedded.class).info("source mapping [{}]", pattern);
 					addServletMapping(context, pattern, "default");
 				}
 			}
@@ -182,8 +162,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	}
 
 	private void tomcat8() throws Throwable {
-		Class<?> clz = Class
-				.forName("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory");
+		Class<?> clz = Class.forName("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory");
 		Method method = clz.getDeclaredMethod("disable");
 		method.invoke(null);
 	}
@@ -198,8 +177,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Servlet destroy, Servlet service) {
+	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory, Servlet destroy, Servlet service) {
 		try {
 			tomcat8();
 		} catch (Throwable e1) {

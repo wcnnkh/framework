@@ -15,14 +15,14 @@ import scw.core.utils.SignUtils;
 import scw.io.Bytes;
 import scw.io.serializer.Serializer;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 import scw.net.AbstractResponse;
 import scw.net.ContentType;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpRequest;
 
 public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
-	private Logger logger = LoggerFactory.getLogger(getClass());
+	private Logger logger = LoggerUtils.getLogger(getClass());
 	private final String host;
 	private final String signStr;
 	private final BeanFactory beanFactory;

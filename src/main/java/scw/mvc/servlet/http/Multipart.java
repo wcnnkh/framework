@@ -25,12 +25,12 @@ import scw.core.MultiValueMap;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 
 @Bean(singleton=false)
 public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LoggerFactory.getLogger(Multipart.class);
+	private static Logger logger = LoggerUtils.getLogger(Multipart.class);
 	private HttpServletRequest request;
 
 	public Multipart(HttpServletRequest request) throws IOException {

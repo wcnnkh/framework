@@ -15,11 +15,11 @@ import scw.core.utils.FileManager;
 import scw.core.utils.SystemPropertyUtils;
 import scw.io.FileUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 
 public class DefaultAsyncCompleteService implements AsyncCompleteService,
 		Destroy {
-	private static Logger logger = LoggerFactory
+	private static Logger logger = LoggerUtils
 			.getLogger(AsyncCompleteFilter.class);
 
 	private static ThreadLocal<Boolean> ENABLE_TAG = new ThreadLocal<Boolean>();

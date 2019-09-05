@@ -19,7 +19,7 @@ public final class AnnotationConsumerUtils {
 		for (Class<?> clz : classes) {
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Consumer.class)) {
 				Consumer c = method.getAnnotation(Consumer.class);
-				LoggerUtils.info(AmqpConsumer.class, "添加消费者： name={}, clz={}, method={}", c.name(), clz.getName(),
+				LoggerUtils.getLogger(AnnotationConsumerUtils.class).info("添加消费者： name={}, clz={}, method={}", c.name(), clz.getName(),
 						method);
 				consumerFactory.bindConsumer(c.name(),
 						new MqMethodConsumer(new MethodProxyInvoker(beanFactory, clz, method, rootFilters)));
@@ -34,7 +34,7 @@ public final class AnnotationConsumerUtils {
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, AmqpConsumer.class)) {
 				AmqpConsumer c = method.getAnnotation(AmqpConsumer.class);
 				Exchange mq = beanFactory.getInstance(c.exchangeService());
-				LoggerUtils.info(AmqpConsumer.class,
+				LoggerUtils.getLogger(AnnotationConsumerUtils.class).info(
 						"添加消费者：{}, amqp routingKey={}, queueName={}, durable={}, exclusive={}, autoDelete={}, clz={}, method={}",
 						c.routingKey(), c.queueName(), c.durable(), c.exclusive(), c.autoDelete(), clz.getName(),
 						method);

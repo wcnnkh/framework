@@ -14,10 +14,10 @@ import scw.core.reflect.SerializableMethodDefinition;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 
 public final class InvokeInfo implements Serializable {
-	private static Logger logger = LoggerFactory.getLogger(InvokeInfo.class);
+	private static Logger logger = LoggerUtils.getLogger(InvokeInfo.class);
 
 	private static final long serialVersionUID = 1L;
 	private Object tryRtnValue;

@@ -9,14 +9,14 @@ import scw.core.FieldSetterListen;
 import scw.core.exception.ParameterException;
 import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Counter;
 import scw.sql.orm.enums.CasType;
 
 public final class UpdateSQLByBeanListen extends MysqlOrmSql {
-	private static Logger logger = LoggerFactory.getLogger(UpdateSQLByBeanListen.class);
+	private static Logger logger = LoggerUtils.getLogger(UpdateSQLByBeanListen.class);
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;

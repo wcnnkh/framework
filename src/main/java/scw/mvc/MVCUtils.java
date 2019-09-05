@@ -46,7 +46,7 @@ import scw.io.serializer.Serializer;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Methods;
@@ -59,7 +59,7 @@ import scw.mvc.http.filter.HttpServiceFilter;
 import scw.net.ContentType;
 
 public final class MVCUtils {
-	private static Logger logger = LoggerFactory.getLogger(MVCUtils.class);
+	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
 
 	private MVCUtils() {
 	};

@@ -1,5 +1,7 @@
 package scw.logger;
 
+import java.lang.reflect.Method;
+
 import scw.core.utils.StringAppend;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
@@ -125,5 +127,15 @@ public final class LoggerUtils {
 	 */
 	public static Logger getLogger(String name, String placeholder) {
 		return new LazyLogger(name, placeholder);
+	}
+
+	public static void destroy() {
+		try {
+			Class<?> clazz = Class.forName("scw.logger.LoggerFactory");
+			Method method = clazz.getDeclaredMethod("destroy");
+			method.invoke(null);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 }

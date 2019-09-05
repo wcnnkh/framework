@@ -32,13 +32,13 @@ public class XmlDubboServiceExort implements Runnable {
 				}
 
 				if (DubboUtils.isServiceNode(node)) {
-					LoggerUtils.info(XmlDubboServiceExort.class, "-------开始注册dubbo服务-------");
+					LoggerUtils.getLogger(XmlDubboServiceExort.class).info("-------开始注册dubbo服务-------");
 					List<ServiceConfig<?>> serviceConfigs = XmlDubboUtils.getServiceConfigList(propertyFactory,
 							beanFactory, node);
 					for (ServiceConfig<?> serviceConfig : serviceConfigs) {
 						serviceConfig.export();
 					}
-					LoggerUtils.info(XmlDubboServiceExort.class, "-------dubbo服务注册完成-------");
+					LoggerUtils.getLogger(XmlDubboServiceExort.class).info("-------dubbo服务注册完成-------");
 				}
 			}
 		}

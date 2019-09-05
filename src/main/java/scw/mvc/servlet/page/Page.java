@@ -19,8 +19,6 @@ import freemarker.template.Version;
 import scw.core.exception.NotFoundException;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
 import scw.mvc.Channel;
 import scw.mvc.Request;
 import scw.mvc.RequestResponseModelChannel;
@@ -36,8 +34,6 @@ import scw.net.ContentType;
  *
  */
 public class Page extends AbstractPage {
-	private static Logger logger = LoggerFactory.getLogger(Page.class);
-
 	private static Map<String, PageType> suffixMap = new HashMap<String, PageType>();
 	private static final long serialVersionUID = 1L;
 	private static Configuration freemarkerConfiguration;
@@ -159,7 +155,7 @@ public class Page extends AbstractPage {
 		}
 
 		if (pageType == null) {
-			logger.error("not found page type :" + realPage);
+			channel.getLogger().error("not found page type :" + realPage);
 			return;
 		}
 

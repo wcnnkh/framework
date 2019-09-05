@@ -14,14 +14,14 @@ import scw.beans.async.DefaultAsyncCompleteService;
 import scw.core.Consumer;
 import scw.io.serializer.NoTypeSpecifiedSerializer;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 import scw.mq.amqp.AmqpQueueConfig;
 import scw.mq.amqp.Exchange;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 
 public class SingleExchange<T> implements Exchange<T> {
-	protected static Logger logger = LoggerFactory.getLogger(SingleExchange.class);
+	protected static Logger logger = LoggerUtils.getLogger(SingleExchange.class);
 	private final SingleExchangeChannelFactory channelFactory;
 	private final NoTypeSpecifiedSerializer serializer;
 	private final boolean autoErrorAppend;

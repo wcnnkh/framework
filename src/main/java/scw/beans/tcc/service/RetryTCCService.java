@@ -18,13 +18,13 @@ import scw.core.utils.FileManager;
 import scw.core.utils.SystemPropertyUtils;
 import scw.io.FileUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionException;
 import scw.transaction.TransactionManager;
 
 public final class RetryTCCService implements TCCService, scw.core.Destroy {
-	private static Logger logger = LoggerFactory
+	private static Logger logger = LoggerUtils
 			.getLogger(RetryTCCService.class);
 
 	@Autowired

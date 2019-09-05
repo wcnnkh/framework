@@ -6,13 +6,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
 public abstract class AbstractResult implements Result {
-	private static Logger logger = LoggerFactory.getLogger(Result.class);
+	private static Logger logger = LoggerUtils.getLogger(Result.class);
 	private static final long serialVersionUID = 1L;
 	protected MetaData metaData;
 	protected Object[] values;

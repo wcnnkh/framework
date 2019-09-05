@@ -4,14 +4,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Counter;
 
 public class SaveOrUpdateSQL extends MysqlOrmSql {
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LoggerFactory.getLogger(SaveOrUpdateSQL.class);
+	private static Logger logger = LoggerUtils.getLogger(SaveOrUpdateSQL.class);
 	private static final String TEMP = ") ON DUPLICATE KEY UPDATE ";
 	private static final String IF = "IF(";
 	private String sql;

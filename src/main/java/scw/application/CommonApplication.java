@@ -19,7 +19,6 @@ import scw.core.PropertyFactory;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.logger.LoggerFactory;
 import scw.logger.LoggerUtils;
 import scw.sql.orm.ORMUtils;
 import scw.transaction.TransactionFilter;
@@ -227,7 +226,7 @@ public class CommonApplication implements Application {
 
 		DubboUtils.destoryAll();
 		beanFactory.destroy();
-		LoggerFactory.destroy();
+		LoggerUtils.destroy();
 	}
 
 	public synchronized static void run(final Class<?> clazz, String beanXml) {

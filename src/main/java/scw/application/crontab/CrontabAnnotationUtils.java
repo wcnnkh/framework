@@ -13,10 +13,9 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CrontabTask;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 
 public final class CrontabAnnotationUtils {
-	private static Logger logger = LoggerFactory.getLogger(CrontabAnnotationUtils.class);
 
 	private CrontabAnnotationUtils() {
 	};
@@ -37,7 +36,7 @@ public final class CrontabAnnotationUtils {
 				CrontabRunnable crontabRun = new CrontabRunnable(c.name(), beanFactory.getInstance(c.factory()),
 						new MethodProxyInvoker(beanFactory, clz, method, filters), invokeTime);
 				crontab.crontab(c.dayOfWeek(), c.month(), c.dayOfMonth(), c.hour(), c.minute(), crontabRun);
-				logger.info("添加计划任务：{},dayOfWeek={},month={},dayOfMonth={},hour={},minute={}", c.name(), c.dayOfWeek(),
+				LoggerUtils.getLogger(CrontabAnnotationUtils.class).info("添加计划任务：{},dayOfWeek={},month={},dayOfMonth={},hour={},minute={}", c.name(), c.dayOfWeek(),
 						c.month(), c.dayOfMonth(), c.hour(), c.minute());
 			}
 		}
@@ -45,7 +44,7 @@ public final class CrontabAnnotationUtils {
 }
 
 final class CrontabRunnable implements CrontabTask {
-	private static Logger logger = LoggerFactory.getLogger(Crontab.class);
+	private static Logger logger = LoggerUtils.getLogger(Crontab.class);
 	private final String name;
 	private final Invoker invoker;
 	private final CrontabContextFactory crontabContextFactory;

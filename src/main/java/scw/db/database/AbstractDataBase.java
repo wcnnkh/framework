@@ -5,14 +5,14 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.SqlException;
 import scw.sql.SqlUtils;
 
 public abstract class AbstractDataBase implements DataBase {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private Logger logger = LoggerUtils.getLogger(this.getClass());
 	private final String username;
 	private final String password;
 	private final DataBaseType dataBaseType;

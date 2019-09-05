@@ -90,21 +90,22 @@ public final class Log4jUtils {
 			}
 		}
 
-		LoggerUtils.info(Log4jUtils.class, "init default log4j config");
+		String rootPath = SystemPropertyUtils.getWorkPath();
+		LoggerUtils.info(Log4jUtils.class, "load the default log directory: {}", rootPath);
 		Properties properties = new Properties();
 		properties.put("log4j.rootLogger", "INFO, stdout, logfile, warn");
 		properties.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
 		properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
 		properties.put("log4j.appender.stdout.layout.ConversionPattern", "%d %p [%c] - %m%n");
 		properties.put("log4j.appender.logfile", "org.apache.log4j.DailyRollingFileAppender");
-		properties.put("log4j.appender.logfile.File", SystemPropertyUtils.getWorkPath() + "/logs/log.log");
+		properties.put("log4j.appender.logfile.File", rootPath + "/logs/log.log");
 		properties.put("log4j.appender.logfile.layout", "org.apache.log4j.PatternLayout");
 		properties.put("log4j.appender.logfile.DatePattern", "'.'yyyy-MM-dd");
 		properties.put("log4j.appender.logfile.layout.ConversionPattern", "%d %p [%c] - %m%n");
 		properties.put("log4j.appender.warn", "org.apache.log4j.DailyRollingFileAppender");
 		properties.put("log4j.appender.warn.Encoding", Constants.DEFAULT_CHARSET_NAME);
 		properties.put("log4j.appender.warn.Threshold", "WARN");
-		properties.put("log4j.appender.warn.File", SystemPropertyUtils.getWorkPath() + "/logs/error_warn.log");
+		properties.put("log4j.appender.warn.File", rootPath + "/logs/error_warn.log");
 		properties.put("log4j.appender.warn.layout", "org.apache.log4j.PatternLayout");
 		properties.put("log4j.appender.warn.DatePattern", "'.'yyyy-MM-dd");
 		properties.put("log4j.appender.warn.layout.ConversionPattern", "%d %p [%c] - %m%n");

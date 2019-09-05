@@ -24,7 +24,7 @@ import java.util.Set;
 
 import scw.core.SystemPropertyPlaceholderResolver;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 
 /**
  * Utility class for working with Strings that have placeholder values in them.
@@ -40,7 +40,7 @@ import scw.logger.LoggerFactory;
  * @since 3.0
  */
 public class PropertyPlaceholderHelper {
-	private static final Logger logger = LoggerFactory.getLogger(PropertyPlaceholderHelper.class);
+	private static final Logger logger = LoggerUtils.getLogger(PropertyPlaceholderHelper.class);
 
 	private static final Map<String, String> wellKnownSimplePrefixes = new HashMap<String, String>(4);
 
