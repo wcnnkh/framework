@@ -6,7 +6,7 @@ import java.math.BigInteger;
 
 import scw.mvc.ParameterRequest;
 
-public class HttpParameterRequest extends HttpRequestWrapper implements ParameterRequest, HttpRequest {
+public class HttpParameterRequest extends HttpRequestWrapper implements ParameterRequest {
 	private final HttpChannel httpChannel;
 
 	public HttpParameterRequest(HttpRequest httpRequest, HttpChannel httpChannel) {
