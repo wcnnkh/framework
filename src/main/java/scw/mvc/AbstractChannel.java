@@ -114,7 +114,7 @@ public abstract class AbstractChannel implements Channel, Destroy {
 		return logEnabled;
 	}
 
-	public void log(String format, Object... args) {
+	public void log(Object format, Object... args) {
 		if (logEnabled) {
 			getLogger().info(format, args);
 		}

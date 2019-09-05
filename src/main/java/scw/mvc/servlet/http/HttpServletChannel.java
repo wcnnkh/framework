@@ -60,6 +60,9 @@ public abstract class HttpServletChannel extends AbstractHttpChannel {
 			if (redirect != null) {
 				redirect = ServletUtils.formatContextPathUrl(getRequest(), redirect);
 				getResponse().sendRedirect(redirect);
+				if(isLogEnabled()){
+					log("[{}]--->[{}]", obj.toString(), redirect);
+				}
 				return;
 			}
 		}
