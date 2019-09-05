@@ -32,18 +32,20 @@ public abstract class HttpServletChannel extends AbstractHttpChannel {
 			return getResponse();
 		} else if (HttpSession.class == parameterDefinition.getType()) {
 			return getRequest().getSession();
+		} else if (HttpServletParameterRequest.class == parameterDefinition.getType()) {
+			return new HttpServletParameterRequest(this, getRequest());
 		}
 
 		return super.getParameter(parameterDefinition);
 	}
 
 	@Override
-	public MyHttpServletRequestWrapper getRequest() {
+	public MyHttpServletRequest getRequest() {
 		return super.getRequest();
 	}
 
 	@Override
-	public MyHttpServletResponseWrapper getResponse() {
+	public MyHttpServletResponse getResponse() {
 		return super.getResponse();
 	}
 
@@ -58,7 +60,7 @@ public abstract class HttpServletChannel extends AbstractHttpChannel {
 			if (redirect != null) {
 				redirect = ServletUtils.formatContextPathUrl(getRequest(), redirect);
 				getResponse().sendRedirect(redirect);
-				return ;
+				return;
 			}
 		}
 

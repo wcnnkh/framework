@@ -6,10 +6,10 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import scw.mvc.http.HttpResponse;
 import scw.net.http.Cookie;
 
-public class MyHttpServletResponseWrapper extends HttpServletResponseWrapper
+public class MyHttpServletResponse extends HttpServletResponseWrapper
 		implements HttpServletResponse, HttpResponse {
 
-	public MyHttpServletResponseWrapper(HttpServletResponse httpServletResponse) {
+	public MyHttpServletResponse(HttpServletResponse httpServletResponse) {
 		super(httpServletResponse);
 	}
 

@@ -52,6 +52,8 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 			return getResponse();
 		} else if (Session.class == parameterDefinition.getType()) {
 			return getRequest().getHttpSession();
+		} else if (HttpParameterRequest.class == parameterDefinition.getType()) {
+			return new HttpParameterRequest(getRequest(), this);
 		}
 
 		return super.getParameter(parameterDefinition);
@@ -139,7 +141,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 			String redirect = MVCUtils.parseRedirect((String) obj, true);
 			if (redirect != null) {
 				getResponse().sendRedirect(redirect);
-				return ;
+				return;
 			}
 		}
 
@@ -192,10 +194,10 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	}
 
 	public Object getObject(Type type) {
-		if(type instanceof Class){
-			return getObject((Class<?>)type);
+		if (type instanceof Class) {
+			return getObject((Class<?>) type);
 		}
-		
+
 		Body body = getBean(Body.class);
 		return jsonParseSupport.parseObject(body.getBody(), type);
 	}

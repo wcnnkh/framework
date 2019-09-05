@@ -10,9 +10,9 @@ import scw.mvc.http.HttpRequest;
 import scw.mvc.servlet.ServletUtils;
 import scw.net.http.Cookie;
 
-public class MyHttpServletRequestWrapper extends HttpServletRequestWrapper implements HttpServletRequest, HttpRequest {
+public class MyHttpServletRequest extends HttpServletRequestWrapper implements HttpServletRequest, HttpRequest {
 
-	public MyHttpServletRequestWrapper(HttpServletRequest httpServletRequest) {
+	public MyHttpServletRequest(HttpServletRequest httpServletRequest) {
 		super(httpServletRequest);
 	}
 

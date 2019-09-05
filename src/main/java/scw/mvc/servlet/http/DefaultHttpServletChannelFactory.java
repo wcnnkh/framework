@@ -30,8 +30,8 @@ public final class DefaultHttpServletChannelFactory implements HttpServletChanne
 	}
 
 	public HttpChannel getHttpChannel(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-		HttpRequest httpRequest = new MyHttpServletRequestWrapper(httpServletRequest);
-		HttpResponse httpResponse = new MyHttpServletResponseWrapper(httpServletResponse);
+		HttpRequest httpRequest = new MyHttpServletRequest(httpServletRequest);
+		HttpResponse httpResponse = new MyHttpServletResponse(httpServletResponse);
 		if (MVCUtils.isJsonRequest(httpRequest)) {
 			return new JsonHttpServletChannel(beanFactory, logEnabled, parameterFilters, jsonParseSupport, cookieValue,
 					httpRequest, httpResponse);
