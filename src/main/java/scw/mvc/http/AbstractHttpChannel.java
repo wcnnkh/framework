@@ -21,11 +21,13 @@ import scw.mvc.MVCUtils;
 import scw.mvc.ParameterDefinition;
 import scw.mvc.ParameterFilter;
 import scw.mvc.View;
+import scw.mvc.http.annotation.SessionValue;
 import scw.mvc.http.parameter.Body;
 import scw.net.ContentType;
 import scw.net.http.Cookie;
 
-public abstract class AbstractHttpChannel extends AbstractParameterChannel implements HttpChannel {
+public abstract class AbstractHttpChannel extends AbstractParameterChannel
+		implements HttpChannel {
 	private static final String GET_DEFAULT_CHARSET_ANME = "ISO-8859-1";
 
 	protected static final String JSONP_CALLBACK = "callback";
@@ -35,9 +37,11 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	private final HttpRequest request;
 	private final HttpResponse response;
 
-	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(BeanFactory beanFactory,
-			boolean logEnabled, Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport,
-			boolean cookieValue, R request, P response) {
+	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(
+			BeanFactory beanFactory, boolean logEnabled,
+			Collection<ParameterFilter> parameterFilters,
+			JSONParseSupport jsonParseSupport, boolean cookieValue, R request,
+			P response) {
 		super(beanFactory, logEnabled, parameterFilters, jsonParseSupport);
 		this.cookieValue = cookieValue;
 		this.request = request;
@@ -48,12 +52,23 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	public Object getParameter(ParameterDefinition parameterDefinition) {
 		if (HttpRequest.class.isAssignableFrom(parameterDefinition.getType())) {
 			return getRequest();
-		} else if (HttpResponse.class.isAssignableFrom(parameterDefinition.getType())) {
+		} else if (HttpResponse.class.isAssignableFrom(parameterDefinition
+				.getType())) {
 			return getResponse();
 		} else if (Session.class == parameterDefinition.getType()) {
 			return getRequest().getHttpSession();
 		} else if (HttpParameterRequest.class == parameterDefinition.getType()) {
 			return new HttpParameterRequest(getRequest(), this);
+		}
+
+		SessionValue sessionValue = parameterDefinition
+				.getAnnotation(SessionValue.class);
+		if (sessionValue != null) {
+			Session session = getRequest()
+					.getHttpSession(sessionValue.create());
+			return session == null ? null : session.getAttribute(StringUtils
+					.isEmpty(sessionValue.value()) ? parameterDefinition
+					.getName() : sessionValue.value());
 		}
 
 		return super.getParameter(parameterDefinition);
@@ -81,7 +96,8 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 		}
 
 		try {
-			return new String(value.getBytes(GET_DEFAULT_CHARSET_ANME), getRequest().getCharacterEncoding());
+			return new String(value.getBytes(GET_DEFAULT_CHARSET_ANME),
+					getRequest().getCharacterEncoding());
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return value;
@@ -91,7 +107,8 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	public String getString(String name) {
 		String v = getRequest().getParameter(name);
 		if (v == null) {
-			Map<String, String> restParameterMap = MVCUtils.getRestPathParameterMap(this);
+			Map<String, String> restParameterMap = MVCUtils
+					.getRestPathParameterMap(this);
 			if (restParameterMap != null) {
 				v = restParameterMap.get(name);
 			}
@@ -158,9 +175,11 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 			if (obj instanceof Text) {
 				content = ((Text) obj).getTextContent();
 				if (JSONP_CALLBACK == null) {
-					getResponse().setContentType(((Text) obj).getTextContentType());
+					getResponse().setContentType(
+							((Text) obj).getTextContentType());
 				}
-			} else if ((obj instanceof String) || (ClassUtils.isPrimitiveOrWrapper(obj.getClass()))) {
+			} else if ((obj instanceof String)
+					|| (ClassUtils.isPrimitiveOrWrapper(obj.getClass()))) {
 				content = obj.toString();
 			} else {
 				content = jsonParseSupport.toJSONString(obj);
@@ -207,7 +226,8 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 		StringBuilder appendable = new StringBuilder();
 		appendable.append("path=").append(getRequest().getRequestPath());
 		appendable.append(",method=").append(getRequest().getMethod());
-		appendable.append(",").append(JSONUtils.toJSONString(getRequest().getParameterMap()));
+		appendable.append(",").append(
+				JSONUtils.toJSONString(getRequest().getParameterMap()));
 		return appendable.toString();
 	}
 }

@@ -13,8 +13,17 @@ public final class LoggerUtils {
 	private LoggerUtils() {
 	};
 
-	public static void loggerAppend(Appendable appendable, String time, String level, String tag,
-			StringAppend stringAppend) throws Exception {
+	public static Class<?> init() {
+		try {
+			return Class.forName("scw.logger.LoggerFactory");
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("初始化日志工厂失败", e);
+		}
+	}
+
+	public static void loggerAppend(Appendable appendable, String time,
+			String level, String tag, StringAppend stringAppend)
+			throws Exception {
 		boolean b = false;
 		if (!StringUtils.isEmpty(time)) {
 			appendable.append(time);
@@ -48,21 +57,26 @@ public final class LoggerUtils {
 		}
 	}
 
-	public static void loggerAppend(Appendable appendable, long time, String level, String tag,
-			StringAppend stringAppend) throws Exception {
-		loggerAppend(appendable, XTime.format(time, TIME_FORMAT), level, tag, stringAppend);
+	public static void loggerAppend(Appendable appendable, long time,
+			String level, String tag, StringAppend stringAppend)
+			throws Exception {
+		loggerAppend(appendable, XTime.format(time, TIME_FORMAT), level, tag,
+				stringAppend);
 	}
 
-	public static void loggerAppend(Appendable appendable, long time, String level, String tag, String placeholder,
-			String msg, Object... args) throws Exception {
-		StringAppend loggerAppend = new DefaultLoggerFormatAppend(msg, placeholder, args);
+	public static void loggerAppend(Appendable appendable, long time,
+			String level, String tag, String placeholder, String msg,
+			Object... args) throws Exception {
+		StringAppend loggerAppend = new DefaultLoggerFormatAppend(msg,
+				placeholder, args);
 		loggerAppend(appendable, time, level, tag, loggerAppend);
 	}
 
 	public static void info(Class<?> clazz, String msg, Object... args) {
 		StringBuilder sb = new StringBuilder(256);
 		try {
-			loggerAppend(sb, System.currentTimeMillis(), "INFO", clazz.getName(), null, msg, args);
+			loggerAppend(sb, System.currentTimeMillis(), "INFO",
+					clazz.getName(), null, msg, args);
 			System.out.println(sb.toString());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -72,7 +86,8 @@ public final class LoggerUtils {
 	public static void warn(Class<?> clazz, String msg, Object... args) {
 		StringBuilder sb = new StringBuilder(256);
 		try {
-			loggerAppend(sb, System.currentTimeMillis(), "WARN", clazz.getName(), null, msg, args);
+			loggerAppend(sb, System.currentTimeMillis(), "WARN",
+					clazz.getName(), null, msg, args);
 			System.err.println(sb.toString());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -80,11 +95,13 @@ public final class LoggerUtils {
 	}
 
 	public static Boolean defaultConfigEnable() {
-		return StringUtils.parseBoolean(SystemPropertyUtils.getProperty("scw.logger.default.config.enable"), null);
+		return StringUtils.parseBoolean(SystemPropertyUtils
+				.getProperty("scw.logger.default.config.enable"), null);
 	}
 
 	public static void setDefaultConfigenable(boolean enable) {
-		SystemPropertyUtils.setProperty("scw.logger.default.config.enable", enable + "");
+		SystemPropertyUtils.setProperty("scw.logger.default.config.enable",
+				enable + "");
 	}
 
 	/**
@@ -130,8 +147,8 @@ public final class LoggerUtils {
 	}
 
 	public static void destroy() {
+		Class<?> clazz = init();
 		try {
-			Class<?> clazz = Class.forName("scw.logger.LoggerFactory");
 			Method method = clazz.getDeclaredMethod("destroy");
 			method.invoke(null);
 		} catch (Throwable e) {

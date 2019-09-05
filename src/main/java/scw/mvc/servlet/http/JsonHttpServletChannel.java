@@ -15,6 +15,7 @@ import scw.mvc.http.HttpResponse;
 import scw.mvc.http.parameter.Body;
 import scw.net.http.Method;
 
+@SuppressWarnings("unchecked")
 public class JsonHttpServletChannel extends HttpServletChannel {
 	private static Logger logger = LoggerFactory.getLogger(JsonHttpServletChannel.class);
 	private JSONObjectReadOnly jsonObjectReadOnly;
@@ -59,5 +60,15 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 			appendable.append(",").append(jsonObjectReadOnly.toJSONString());
 		}
 		return appendable.toString();
+	}
+	
+	@Override
+	public MyHttpServletRequest getRequest() {
+		return super.getRequest();
+	}
+	
+	@Override
+	public MyHttpServletResponse getResponse() {
+		return super.getResponse();
 	}
 }
