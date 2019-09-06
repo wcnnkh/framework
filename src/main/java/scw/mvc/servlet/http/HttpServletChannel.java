@@ -20,8 +20,8 @@ import scw.mvc.servlet.ServletUtils;
 public abstract class HttpServletChannel extends AbstractHttpChannel {
 
 	public HttpServletChannel(BeanFactory beanFactory, boolean logEnabled, Collection<ParameterFilter> parameterFilters,
-			JSONParseSupport jsonParseSupport, boolean cookieValue, HttpRequest request, HttpResponse response) {
-		super(beanFactory, logEnabled, parameterFilters, jsonParseSupport, cookieValue, request, response);
+			JSONParseSupport jsonParseSupport, boolean cookieValue, HttpRequest request, HttpResponse response, String jsonp) {
+		super(beanFactory, logEnabled, parameterFilters, jsonParseSupport, cookieValue, request, response, jsonp);
 	}
 
 	@Override

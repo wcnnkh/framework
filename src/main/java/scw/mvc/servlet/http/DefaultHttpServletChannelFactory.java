@@ -19,14 +19,17 @@ public final class DefaultHttpServletChannelFactory implements HttpServletChanne
 	private boolean cookieValue;
 	private boolean logEnabled;
 	private JSONParseSupport jsonParseSupport;
+	private String jsonp;
 
 	public DefaultHttpServletChannelFactory(BeanFactory beanFactory, boolean logEnabled,
-			Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport, boolean cookieValue) {
+			Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport, boolean cookieValue,
+			String jsonp) {
 		this.beanFactory = beanFactory;
 		this.logEnabled = logEnabled;
 		this.parameterFilters = parameterFilters;
 		this.cookieValue = cookieValue;
 		this.jsonParseSupport = jsonParseSupport;
+		this.jsonp = jsonp;
 	}
 
 	public HttpChannel getHttpChannel(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
@@ -34,11 +37,10 @@ public final class DefaultHttpServletChannelFactory implements HttpServletChanne
 		HttpResponse httpResponse = new MyHttpServletResponse(httpServletResponse);
 		if (MVCUtils.isJsonRequest(httpRequest)) {
 			return new JsonHttpServletChannel(beanFactory, logEnabled, parameterFilters, jsonParseSupport, cookieValue,
-					httpRequest, httpResponse);
+					httpRequest, httpResponse, jsonp);
 		} else {
 			return new FormHttpServletChannel(beanFactory, logEnabled, parameterFilters, jsonParseSupport, cookieValue,
-					httpRequest, httpResponse);
-
+					httpRequest, httpResponse, jsonp);
 		}
 	}
 }

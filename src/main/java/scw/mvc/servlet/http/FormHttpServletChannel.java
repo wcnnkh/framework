@@ -17,8 +17,8 @@ public class FormHttpServletChannel extends HttpServletChannel{
 
 	public FormHttpServletChannel(BeanFactory beanFactory, boolean logEnabled,
 			Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport, boolean cookieValue,
-			HttpRequest request, HttpResponse response) {
-		super(beanFactory, logEnabled, parameterFilters, jsonParseSupport, cookieValue, request, response);
+			HttpRequest request, HttpResponse response, String jsonp) {
+		super(beanFactory, logEnabled, parameterFilters, jsonParseSupport, cookieValue, request, response, jsonp);
 		if (isLogEnabled()) {
 			log("requestPath={},method={},{}", getRequest().getRequestPath(), getRequest().getMethod(),
 					JSONUtils.toJSONString(getRequest().getParameterMap()));

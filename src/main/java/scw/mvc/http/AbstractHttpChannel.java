@@ -10,7 +10,6 @@ import java.util.Enumeration;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.json.JSONParseSupport;
@@ -20,10 +19,8 @@ import scw.mvc.AbstractParameterChannel;
 import scw.mvc.MVCUtils;
 import scw.mvc.ParameterDefinition;
 import scw.mvc.ParameterFilter;
-import scw.mvc.View;
 import scw.mvc.http.annotation.SessionValue;
 import scw.mvc.http.parameter.Body;
-import scw.net.ContentType;
 import scw.net.http.Cookie;
 
 public abstract class AbstractHttpChannel extends AbstractParameterChannel
@@ -36,16 +33,18 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel
 	protected final boolean cookieValue;
 	private final HttpRequest request;
 	private final HttpResponse response;
+	private final String jsonp;
 
 	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(
 			BeanFactory beanFactory, boolean logEnabled,
 			Collection<ParameterFilter> parameterFilters,
 			JSONParseSupport jsonParseSupport, boolean cookieValue, R request,
-			P response) {
+			P response, String jsonp) {
 		super(beanFactory, logEnabled, parameterFilters, jsonParseSupport);
 		this.cookieValue = cookieValue;
 		this.request = request;
 		this.response = response;
+		this.jsonp = jsonp;
 	}
 
 	@Override
@@ -145,63 +144,12 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel
 	}
 
 	protected String getJsonpCallback() {
-		String callbackTag = getString(JSONP_CALLBACK);
+		String callbackTag = getString(jsonp);
 		return StringUtils.isEmpty(callbackTag) ? null : callbackTag;
 	}
 
 	public void write(Object obj) throws Throwable {
-		if (obj == null) {
-			return;
-		}
-
-		if (obj instanceof String) {
-			String redirect = MVCUtils.parseRedirect((String) obj, true);
-			if (redirect != null) {
-				getResponse().sendRedirect(redirect);
-				return;
-			}
-		}
-
-		if (obj instanceof View) {
-			((View) obj).render(this);
-		} else {
-			String callbackTag = getJsonpCallback();
-			if (callbackTag != null) {
-				getResponse().setContentType(ContentType.TEXT_JAVASCRIPT);
-				getResponse().getWriter().write(JSONP_CALLBACK);
-				getResponse().getWriter().write(JSONP_RESP_PREFIX);
-			}
-
-			String content;
-			if (obj instanceof Text) {
-				content = ((Text) obj).getTextContent();
-				if (callbackTag == null) {
-					getResponse().setContentType(
-							((Text) obj).getTextContentType());
-				}
-			} else if ((obj instanceof String)
-					|| (ClassUtils.isPrimitiveOrWrapper(obj.getClass()))) {
-				content = obj.toString();
-			} else {
-				content = jsonParseSupport.toJSONString(obj);
-			}
-
-			if (callbackTag == null) {
-				if (StringUtils.isEmpty(getResponse().getContentType())) {
-					getResponse().setContentType(ContentType.TEXT_HTML);
-				}
-			}
-
-			getResponse().getWriter().write(content);
-
-			if (callbackTag != null) {
-				getResponse().getWriter().write(JSONP_RESP_SUFFIX);
-			}
-
-			if (isLogEnabled()) {
-				log(content);
-			}
-		}
+		MVCUtils.httpWrite(this, jsonp, jsonParseSupport, obj, true);
 	}
 
 	public InputStream getInputStream() throws IOException {

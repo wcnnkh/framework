@@ -119,10 +119,10 @@ public final class ServletUtils {
 			PropertyFactory propertyFactory) {
 		String factoryName = propertyFactory.getProperty("mvc.servlet.http.channel-factory");
 		if (StringUtils.isEmpty(factoryName)) {
-			return beanFactory.getInstance(DefaultHttpServletChannelFactory.class, beanFactory,
-					MVCUtils.isDebug(propertyFactory), getParameterFilters(beanFactory, propertyFactory),
+			return new DefaultHttpServletChannelFactory(beanFactory, MVCUtils.isDebug(propertyFactory),
+					getParameterFilters(beanFactory, propertyFactory),
 					MVCUtils.getJsonParseSupport(beanFactory, propertyFactory),
-					MVCUtils.isSupportCookieValue(propertyFactory));
+					MVCUtils.isSupportCookieValue(propertyFactory), MVCUtils.getJsonp(propertyFactory));
 		} else {
 			return beanFactory.getInstance(factoryName);
 		}

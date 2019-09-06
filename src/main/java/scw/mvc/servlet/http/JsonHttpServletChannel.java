@@ -22,8 +22,8 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 
 	public JsonHttpServletChannel(BeanFactory beanFactory, boolean logEnabled,
 			Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport, boolean cookieValue,
-			HttpRequest request, HttpResponse response) {
-		super(beanFactory, logEnabled, parameterFilters, jsonParseSupport, cookieValue, request, response);
+			HttpRequest request, HttpResponse response, String jsonp) {
+		super(beanFactory, logEnabled, parameterFilters, jsonParseSupport, cookieValue, request, response, jsonp);
 		if (Method.GET.name().equals(request.getMethod())) {
 			logger.warn("servletPath={},method={}不能使用JSON类型的请求", request.getRequestPath(), request.getMethod());
 		} else {

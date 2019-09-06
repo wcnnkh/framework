@@ -52,8 +52,10 @@ import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Methods;
 import scw.mvc.annotation.Model;
 import scw.mvc.annotation.Parameter;
+import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
+import scw.mvc.http.Text;
 import scw.mvc.http.filter.CrossDomainDefinition;
 import scw.mvc.http.filter.HttpServiceFilter;
 import scw.net.ContentType;
@@ -66,12 +68,14 @@ public final class MVCUtils {
 
 	private static final ContextManager MVC_CONTEXT_MANAGER = new ThreadLocalContextManager(true);
 	public static final String REDIRECT_PREFIX = "redirect:";
-	private static final String RESTURL_PATH_PARAMETER = "_resturl_path_parameter";
+	private static final String RESTURL_PATH_PARAMETER = "_scw_resturl_path_parameter";
 	public static final String ORIGIN_HEADER = "Access-Control-Allow-Origin";
 	public static final String METHODS_HEADER = "Access-Control-Allow-Methods";
 	public static final String MAX_AGE_HEADER = "Access-Control-Max-Age";
 	public static final String HEADERS_HEADER = "Access-Control-Allow-Headers";
 	public static final String CREDENTIALS_HEADER = "Access-Control-Allow-Credentials";
+	private static final String JSONP_RESP_PREFIX = "(";
+	private static final String JSONP_RESP_SUFFIX = ");";
 
 	public static Channel getContextChannel() {
 		Context context = MVC_CONTEXT_MANAGER.getCurrentContext();
@@ -632,37 +636,111 @@ public final class MVCUtils {
 		}
 		return null;
 	}
-	
-	public static LinkedList<Filter> getControllerFilter(Class<?> clazz, Method method, InstanceFactory instanceFactory){
+
+	public static LinkedList<Filter> getControllerFilter(Class<?> clazz, Method method,
+			InstanceFactory instanceFactory) {
 		Filters filters = clazz.getAnnotation(Filters.class);
 		LinkedList<Filter> list = new LinkedList<Filter>();
-		if(filters != null){
-			for(Class<? extends Filter> f : filters.value()){
+		if (filters != null) {
+			for (Class<? extends Filter> f : filters.value()) {
 				list.add(instanceFactory.getInstance(f));
 			}
 		}
-		
+
 		Controller controller = clazz.getAnnotation(Controller.class);
-		if(controller != null){
-			for(Class<? extends Filter> f : controller.filters()){
+		if (controller != null) {
+			for (Class<? extends Filter> f : controller.filters()) {
 				list.add(instanceFactory.getInstance(f));
 			}
 		}
-		
+
 		filters = method.getAnnotation(Filters.class);
-		if(filters != null){
+		if (filters != null) {
 			list.clear();
-			for(Class<? extends Filter> f : filters.value()){
+			for (Class<? extends Filter> f : filters.value()) {
 				list.add(instanceFactory.getInstance(f));
 			}
 		}
-		
+
 		controller = method.getAnnotation(Controller.class);
-		if(controller != null){
-			for(Class<? extends Filter> f : controller.filters()){
+		if (controller != null) {
+			for (Class<? extends Filter> f : controller.filters()) {
 				list.add(instanceFactory.getInstance(f));
 			}
 		}
 		return list;
+	}
+
+	public static void httpWrite(HttpChannel channel, String jsonp, JSONParseSupport jsonParseSupport, Object write,
+			boolean checkView) throws Throwable {
+		if (write == null) {
+			return;
+		}
+
+		if (checkView && (write instanceof View)) {
+			((View) write).render(channel);
+		}
+
+		String callbackTag = null;
+		if(scw.net.http.Method.GET.equals(channel.getRequest().getMethod())){
+			if (!StringUtils.isEmpty(jsonp)) {
+				callbackTag = channel.getString(jsonp);
+				if (StringUtils.isEmpty(callbackTag)) {
+					callbackTag = null;
+				}
+			}
+		}
+
+		HttpResponse httpResponse = channel.getResponse();
+		if (write instanceof String) {
+			String redirect = parseRedirect((String) write, true);
+			if (redirect != null) {
+				httpResponse.sendRedirect(redirect);
+				return;
+			}
+		}
+
+		if (callbackTag != null) {
+			httpResponse.setContentType(ContentType.TEXT_JAVASCRIPT);
+			httpResponse.getWriter().write(callbackTag);
+			httpResponse.getWriter().write(JSONP_RESP_PREFIX);
+		}
+
+		String content;
+		if (write instanceof Text) {
+			content = ((Text) write).getTextContent();
+			if (callbackTag == null) {
+				httpResponse.setContentType(((Text) write).getTextContentType());
+			}
+		} else if ((write instanceof String) || (ClassUtils.isPrimitiveOrWrapper(write.getClass()))) {
+			content = write.toString();
+		} else {
+			content = jsonParseSupport.toJSONString(write);
+		}
+
+		if (callbackTag == null) {
+			if (StringUtils.isEmpty(httpResponse.getContentType())) {
+				httpResponse.setContentType(ContentType.TEXT_HTML);
+			}
+		}
+
+		httpResponse.getWriter().write(content);
+
+		if (callbackTag != null) {
+			httpResponse.getWriter().write(JSONP_RESP_SUFFIX);
+		}
+
+		if (channel.isLogEnabled()) {
+			channel.log(content);
+		}
+	}
+
+	public static String getJsonp(PropertyFactory propertyFactory) {
+		boolean enable = StringUtils.parseBoolean(propertyFactory.getProperty("mvc.http.jsonp.enable"), true);
+		if (enable) {
+			String jsonp = propertyFactory.getProperty("mvc.http.jsonp");
+			return StringUtils.isEmpty(jsonp) ? "callback" : jsonp;
+		}
+		return null;
 	}
 }
