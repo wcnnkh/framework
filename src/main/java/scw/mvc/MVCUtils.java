@@ -679,6 +679,7 @@ public final class MVCUtils {
 
 		if (checkView && (write instanceof View)) {
 			((View) write).render(channel);
+			return ;
 		}
 
 		String callbackTag = null;
