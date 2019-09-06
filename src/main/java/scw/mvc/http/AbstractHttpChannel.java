@@ -167,6 +167,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel
 		} else {
 			String callbackTag = getJsonpCallback();
 			if (callbackTag != null) {
+				getResponse().setContentType(ContentType.TEXT_JAVASCRIPT);
 				getResponse().getWriter().write(JSONP_CALLBACK);
 				getResponse().getWriter().write(JSONP_RESP_PREFIX);
 			}
@@ -174,7 +175,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel
 			String content;
 			if (obj instanceof Text) {
 				content = ((Text) obj).getTextContent();
-				if (JSONP_CALLBACK == null) {
+				if (callbackTag == null) {
 					getResponse().setContentType(
 							((Text) obj).getTextContentType());
 				}
@@ -185,7 +186,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel
 				content = jsonParseSupport.toJSONString(obj);
 			}
 
-			if (JSONP_CALLBACK == null) {
+			if (callbackTag == null) {
 				if (StringUtils.isEmpty(getResponse().getContentType())) {
 					getResponse().setContentType(ContentType.TEXT_HTML);
 				}
@@ -194,7 +195,6 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel
 			getResponse().getWriter().write(content);
 
 			if (callbackTag != null) {
-				getResponse().setContentType(ContentType.TEXT_JAVASCRIPT);
 				getResponse().getWriter().write(JSONP_RESP_SUFFIX);
 			}
 
