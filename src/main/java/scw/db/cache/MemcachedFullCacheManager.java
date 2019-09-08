@@ -1,11 +1,10 @@
 package scw.db.cache;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.data.cas.CAS;
 import scw.data.memcached.Memcached;
+import scw.data.memcached.MemcachedUtils;
 
 public final class MemcachedFullCacheManager extends FullCacheManager {
 	private final Memcached memcached;
@@ -39,41 +38,10 @@ public final class MemcachedFullCacheManager extends FullCacheManager {
 	}
 
 	public void mapAdd(String key, String field, String value) {
-		while (casMapAdd(key, field, value)) {
-			break;
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private boolean casMapAdd(String key, String field, String value) {
-		CAS<Object> cas = memcached.getCASOperations().get(key);
-		if (cas == null) {
-			LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
-			valueMap.put(field, value);
-			return memcached.getCASOperations().cas(key, valueMap, 0, 0);
-		} else {
-			LinkedHashMap<String, String> valueMap = (LinkedHashMap<String, String>) cas.getValue();
-			valueMap.put(field, value);
-			return memcached.getCASOperations().cas(key, valueMap, 0, cas.getCas());
-		}
+		MemcachedUtils.mapPut(memcached, key, field, value);
 	}
 
 	public void mapRemove(String key, String field) {
-		while (casMapRemove(key, field)) {
-			break;
-		}
+		MemcachedUtils.mapRemove(memcached, key, field);
 	}
-
-	@SuppressWarnings("unchecked")
-	private boolean casMapRemove(String key, String field) {
-		CAS<Object> cas = memcached.get(key);
-		if (cas == null) {
-			return true;
-		}
-
-		LinkedHashMap<String, String> valueMap = (LinkedHashMap<String, String>) cas.getValue();
-		valueMap.remove(field);
-		return memcached.getCASOperations().cas(key, valueMap, 0, cas.getCas());
-	}
-
 }
