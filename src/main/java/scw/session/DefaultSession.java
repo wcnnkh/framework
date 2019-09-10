@@ -1,8 +1,8 @@
 package scw.session;
 
-import scw.mvc.AttributeManagerWrapper;
+import scw.core.AttributeManagerWrapper;
 
-public class DefaultSession extends AttributeManagerWrapper implements Session {
+public final class DefaultSession extends AttributeManagerWrapper implements Session {
 	private AbstractSessionFactory sessionFactory;
 	private SessionData sessionData;
 	private boolean create;

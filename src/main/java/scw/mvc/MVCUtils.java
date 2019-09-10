@@ -18,6 +18,7 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.rpc.http.DefaultRpcService;
 import scw.beans.rpc.http.RpcService;
+import scw.core.AttributeManager;
 import scw.core.Constants;
 import scw.core.DefaultKeyValuePair;
 import scw.core.Destroy;

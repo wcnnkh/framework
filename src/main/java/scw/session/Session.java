@@ -1,6 +1,6 @@
 package scw.session;
 
-import scw.mvc.AttributeManager;
+import scw.core.AttributeManager;
 
 public interface Session extends AttributeManager{
 

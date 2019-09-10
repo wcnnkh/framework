@@ -1,5 +1,6 @@
 package scw.mvc;
 
+import scw.core.AttributeManager;
 import scw.logger.LogService;
 
 public interface Channel extends LogService, AttributeManager{

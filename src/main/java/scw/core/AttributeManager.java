@@ -1,4 +1,4 @@
-package scw.mvc;
+package scw.core;
 
 import java.util.Enumeration;
 

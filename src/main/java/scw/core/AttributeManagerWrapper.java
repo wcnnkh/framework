@@ -1,4 +1,4 @@
-package scw.mvc;
+package scw.core;
 
 import java.util.Enumeration;
 
@@ -7,10 +7,6 @@ public class AttributeManagerWrapper implements AttributeManager {
 
 	public AttributeManagerWrapper(AttributeManager attributeManager) {
 		this.targetAttributeManager = attributeManager;
-	}
-
-	public final AttributeManager getTargetAttributeManager() {
-		return targetAttributeManager;
 	}
 
 	public Object getAttribute(String name) {
