@@ -8,7 +8,7 @@ import java.util.Map;
 
 import scw.mvc.AttributeManager;
 
-public class SessionData implements AttributeManager, Serializable {
+public final class SessionData implements AttributeManager, Serializable {
 	private static final long serialVersionUID = 1L;
 	private Map<String, Object> attributeMap;
 	private long createTime;

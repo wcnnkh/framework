@@ -1,9 +1,6 @@
-package scw.login;
+package scw.session;
 
 import scw.mvc.AttributeManagerWrapper;
-import scw.session.AbstractSessionFactory;
-import scw.session.Session;
-import scw.session.SessionData;
 
 public class DefaultSession extends AttributeManagerWrapper implements Session {
 	private AbstractSessionFactory sessionFactory;
@@ -33,7 +30,6 @@ public class DefaultSession extends AttributeManagerWrapper implements Session {
 
 	public void setMaxInactiveInterval(int maxInactiveInterval) {
 		sessionData.setMaxInactiveInterval(maxInactiveInterval);
-		sessionFactory.setMaxInactiveInterval(sessionData.getSessionId(), maxInactiveInterval);
 		sessionFactory.setSessionData(sessionData);
 	}
 
