@@ -39,7 +39,7 @@ public abstract class AbstractUserSessionFactory<T> implements UserSessionFactor
 			return null;
 		}
 
-		if (create) {
+		if (session.isNew()) {
 			addUidMapping(uid, session);
 		} else {
 			touch(uid, session);
