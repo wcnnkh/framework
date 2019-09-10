@@ -14,7 +14,6 @@ import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
-import scw.login.Session;
 import scw.mvc.AbstractParameterChannel;
 import scw.mvc.MVCUtils;
 import scw.mvc.ParameterDefinition;
@@ -22,6 +21,7 @@ import scw.mvc.ParameterFilter;
 import scw.mvc.http.annotation.SessionValue;
 import scw.mvc.http.parameter.Body;
 import scw.net.http.Cookie;
+import scw.session.Session;
 
 public abstract class AbstractHttpChannel extends AbstractParameterChannel
 		implements HttpChannel {
@@ -160,7 +160,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel
 		return getResponse().getOutputStream();
 	}
 
-	public Object getObject(Type type) {
+	public final Object getObject(Type type) {
 		if (type instanceof Class) {
 			return getObject((Class<?>) type);
 		}

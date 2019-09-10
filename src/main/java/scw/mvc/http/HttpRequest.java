@@ -3,10 +3,10 @@ package scw.mvc.http;
 import java.util.Enumeration;
 import java.util.Map;
 
-import scw.login.Session;
 import scw.mvc.AttributeManager;
 import scw.mvc.Request;
 import scw.net.http.Cookie;
+import scw.session.Session;
 
 public interface HttpRequest extends AttributeManager, Request{
 	String getMethod();

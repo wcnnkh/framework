@@ -1,8 +1,8 @@
-package scw.login;
+package scw.session;
 
-import java.util.Enumeration;
+import scw.mvc.AttributeManager;
 
-public interface Session {
+public interface Session extends AttributeManager{
 
 	/**
 	 * 创建时间
@@ -29,14 +29,6 @@ public interface Session {
 	 * @return
 	 */
 	int getMaxInactiveInterval();
-
-	Object getAttribute(String name);
-
-	Enumeration<String> getAttributeNames();
-
-	void setAttribute(String name, Object value);
-
-	void removeAttribute(String name);
 
 	/**
 	 * 使session失效

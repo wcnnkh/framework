@@ -4,7 +4,7 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpSession;
 
-import scw.login.Session;
+import scw.session.Session;
 
 public class HttpServletSession implements Session{
 	private HttpSession httpSession;

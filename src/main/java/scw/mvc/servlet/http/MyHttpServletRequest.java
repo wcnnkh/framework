@@ -4,11 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
-import scw.login.Session;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.servlet.ServletUtils;
 import scw.net.http.Cookie;
+import scw.session.Session;
 
 public class MyHttpServletRequest extends HttpServletRequestWrapper implements HttpServletRequest, HttpRequest {
 

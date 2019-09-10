@@ -1,6 +1,5 @@
 package scw.mvc;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -14,8 +13,7 @@ import scw.core.utils.XUtils;
 import scw.json.JSONParseSupport;
 import scw.mvc.annotation.Parameter;
 
-public abstract class AbstractParameterChannel extends AbstractChannel
-		implements ParameterChannel{
+public abstract class AbstractParameterChannel extends AbstractChannel implements ParameterChannel {
 	protected final JSONParseSupport jsonParseSupport;
 
 	public AbstractParameterChannel(BeanFactory beanFactory, boolean logEnabled,
@@ -48,7 +46,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Byte getByte(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(v)){
+		if (StringUtils.isEmpty(v)) {
 			return null;
 		}
 
@@ -72,7 +70,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Short getShort(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(v)){
+		if (StringUtils.isEmpty(v)) {
 			return null;
 		}
 
@@ -96,7 +94,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Integer getInteger(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(v)){
+		if (StringUtils.isEmpty(v)) {
 			return null;
 		}
 
@@ -120,7 +118,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Long getLong(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(v)){
+		if (StringUtils.isEmpty(v)) {
 			return null;
 		}
 
@@ -144,7 +142,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Boolean getBoolean(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(v)){
+		if (StringUtils.isEmpty(v)) {
 			return null;
 		}
 
@@ -168,7 +166,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Float getFloat(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(v)){
+		if (StringUtils.isEmpty(v)) {
 			return null;
 		}
 
@@ -192,7 +190,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Double getDouble(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(v)){
+		if (StringUtils.isEmpty(v)) {
 			return null;
 		}
 
@@ -226,7 +224,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 
 	public Character getCharacter(String key) {
 		String v = getString(key);
-		if(StringUtils.isEmpty(v)){
+		if (StringUtils.isEmpty(v)) {
 			return null;
 		}
 
@@ -256,24 +254,32 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 		return StringParse.DEFAULT.getClass(getString(data));
 	}
 
-	public Object getObject(Class<?> type) {
-		Constructor<?> constructor = ReflectUtils.getConstructor(type, false);
-		if (constructor == null) {
+	public final Object getObject(Class<?> type) {
+		// 不可以被实例化且不存在无参的构造方法
+		if (!ReflectUtils.isInstance(type, true)) {
 			return getBean(type);
 		}
 
+		return getObjectIsNotBean(type);
+	}
+
+	protected Object getObjectIsNotBean(Class<?> type) {
 		return MVCUtils.getParameterWrapper(this, type, null);
 	}
 
 	/**
 	 * 此方法不处理爱ValueFactory管理的其他类型
 	 */
-	public Object getObject(String name, Class<?> type) {
+	public final Object getObject(String name, Class<?> type) {
 		// 不可以被实例化且不存在无参的构造方法
 		if (!ReflectUtils.isInstance(type, true)) {
 			return getBean(type);
 		}
 
+		return getObjectIsNotBean(name, type);
+	}
+
+	protected Object getObjectIsNotBean(String name, Class<?> type) {
 		return MVCUtils.getParameterWrapper(this, type, name);
 	}
 

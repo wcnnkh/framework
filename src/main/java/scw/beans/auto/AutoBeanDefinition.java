@@ -18,7 +18,7 @@ public class AutoBeanDefinition implements BeanDefinition {
 	private final Class<?> type;
 	private final String id;
 	private NoArgumentBeanMethod[] initMethods;
-	private  NoArgumentBeanMethod[] destroyMethods;
+	private NoArgumentBeanMethod[] destroyMethods;
 	private final PropertyFactory propertyFactory;
 	private final boolean singleton;
 	private FieldDefinition[] autowriteFieldDefinition;
@@ -27,10 +27,8 @@ public class AutoBeanDefinition implements BeanDefinition {
 	private final AutoBean autoBean;
 	private final AutoBeanConfig autoBeanConfig;
 
-	public AutoBeanDefinition(ValueWiredManager valueWiredManager,
-			BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Class<?> type, String[] filterNames, AutoBean autoBean)
-			throws Exception {
+	public AutoBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> type, String[] filterNames, AutoBean autoBean) throws Exception {
 		this.valueWiredManager = valueWiredManager;
 		this.beanFactory = beanFactory;
 		this.type = type;
@@ -38,27 +36,24 @@ public class AutoBeanDefinition implements BeanDefinition {
 		this.id = type.getName();
 		this.names = AnnotationBeanDefinition.getServiceNames(type);
 		this.autoBean = autoBean;
-		
-		if(autoBean.initEnable()){
-			this.initMethods = AnnotationBeanDefinition.getInitMethodList(type)
+
+		if (autoBean.initEnable()) {
+			this.initMethods = AnnotationBeanDefinition.getInitMethodList(type).toArray(new NoArgumentBeanMethod[0]);
+		}
+
+		if (autoBean.destroyEnable()) {
+			this.destroyMethods = AnnotationBeanDefinition.getDestroyMethdoList(type)
 					.toArray(new NoArgumentBeanMethod[0]);
 		}
-		
-		if(autoBean.destroyEnable()){
-			this.destroyMethods = AnnotationBeanDefinition.getDestroyMethdoList(
-					type).toArray(new NoArgumentBeanMethod[0]);
-		}
-		
-		scw.beans.annotation.Bean bean = type
-				.getAnnotation(scw.beans.annotation.Bean.class);
+
+		scw.beans.annotation.Bean bean = type.getAnnotation(scw.beans.annotation.Bean.class);
 		this.singleton = bean == null ? true : bean.singleton();
-		
-		if(autoBean.autowriedEnable()){
-			this.autowriteFieldDefinition = BeanUtils
-					.getAutowriteFieldDefinitionList(type, false).toArray(
-							new FieldDefinition[0]);
+
+		if (autoBean.autowriedEnable()) {
+			this.autowriteFieldDefinition = BeanUtils.getAutowriteFieldDefinitionList(type, false)
+					.toArray(new FieldDefinition[0]);
 		}
-		
+
 		this.autoBeanConfig = new SimpleAutoBeanConfig(filterNames);
 	}
 
@@ -71,19 +66,19 @@ public class AutoBeanDefinition implements BeanDefinition {
 	}
 
 	public Class<?> getType() {
-		return autoBean.getTargetClass();
+		return autoBean.getTargetClass() == null ? type : autoBean.getTargetClass();
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		if(autowriteFieldDefinition != null){
-			BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory,
-					type, bean, Arrays.asList(autowriteFieldDefinition));
+		if (autowriteFieldDefinition != null) {
+			BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean,
+					Arrays.asList(autowriteFieldDefinition));
 		}
 	}
 
 	public void init(Object bean) throws Exception {
-		if(!autoBean.initEnable()){
-			return ;
+		if (!autoBean.initEnable()) {
+			return;
 		}
 		if (initMethods != null && initMethods.length != 0) {
 			for (NoArgumentBeanMethod method : initMethods) {
@@ -97,10 +92,10 @@ public class AutoBeanDefinition implements BeanDefinition {
 	}
 
 	public void destroy(Object bean) throws Exception {
-		if(!autoBean.destroyEnable()){
-			return ;
+		if (!autoBean.destroyEnable()) {
+			return;
 		}
-		
+
 		valueWiredManager.cancel(bean);
 		if (destroyMethods != null && destroyMethods.length != 0) {
 			for (NoArgumentBeanMethod method : destroyMethods) {

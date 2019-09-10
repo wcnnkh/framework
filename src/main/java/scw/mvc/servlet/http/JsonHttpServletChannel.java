@@ -1,5 +1,6 @@
 package scw.mvc.servlet.http;
 
+import java.lang.reflect.Type;
 import java.util.Collection;
 
 import scw.beans.BeanFactory;
@@ -52,6 +53,22 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	}
 
 	@Override
+	protected Object getObjectIsNotBean(Class<?> type) {
+		return jsonObjectReadOnly == null ? null
+				: jsonParseSupport.parseObject(jsonObjectReadOnly.toJSONString(), type);
+	}
+
+	@Override
+	protected Object getObjectIsNotBean(String name, Class<?> type) {
+		return jsonObjectReadOnly == null ? null : jsonObjectReadOnly.getObject(name, type);
+	}
+
+	@Override
+	public Object getObject(String name, Type type) {
+		return jsonObjectReadOnly == null ? null : jsonObjectReadOnly.getObject(name, type);
+	}
+	
+	@Override
 	public String toString() {
 		StringBuilder appendable = new StringBuilder();
 		appendable.append("requestPath=").append(getRequest().getRequestPath());
@@ -61,12 +78,12 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 		}
 		return appendable.toString();
 	}
-	
+
 	@Override
 	public MyHttpServletRequest getRequest() {
 		return super.getRequest();
 	}
-	
+
 	@Override
 	public MyHttpServletResponse getResponse() {
 		return super.getResponse();
