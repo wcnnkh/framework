@@ -10,6 +10,8 @@ public interface AutoBean {
 	
 	Class<?> getTargetClass();
 	
+	boolean isInstance();
+	
 	Object create(AutoBeanConfig config) throws Exception;
 
 	Object create(AutoBeanConfig config, Object... params) throws Exception;

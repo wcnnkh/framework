@@ -10,6 +10,12 @@ public interface BeanDefinition extends InstanceDefinition{
 	Class<?> getType();
 
 	boolean isSingleton();
+	
+	/**
+	 * 是否可以使用默认方式实例化
+	 * @return
+	 */
+	boolean isInstance();
 
 	void autowrite(Object bean) throws Exception;
 

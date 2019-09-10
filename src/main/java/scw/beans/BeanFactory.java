@@ -3,7 +3,19 @@ package scw.beans;
 import scw.core.instance.InstanceFactory;
 
 public interface BeanFactory extends InstanceFactory {
+	/**
+	 * 表示是否受BeanFactory管理,并不代表可以使用getInstance()获取到实例
+	 * @param name
+	 * @return
+	 */
 	boolean contains(String name);
+	
+	/**
+	 * 表示可以使用BeanFactory.getInstance()方式获取实例
+	 * @param name
+	 * @return
+	 */
+	boolean isInstance(String name);
 
 	/**
 	 * 获取一个bean的定义

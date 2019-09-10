@@ -9,7 +9,7 @@ import scw.mvc.http.HttpRequest;
 import scw.mvc.servlet.ServletUtils;
 import scw.net.http.Cookie;
 import scw.session.Session;
-import scw.session.servlet.HttpServletSession;
+import scw.session.mvc.http.servlet.HttpServletSession;
 
 public class MyHttpServletRequest extends HttpServletRequestWrapper implements HttpServletRequest, HttpRequest {
 

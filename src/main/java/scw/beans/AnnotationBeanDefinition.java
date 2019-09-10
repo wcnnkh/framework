@@ -37,6 +37,7 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 	private final FieldDefinition[] autowriteFieldDefinition;
 	private final String[] names;
 	private final ValueWiredManager valueWiredManager;
+	private final boolean instance;
 
 	public AnnotationBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Class<?> type, String[] filterNames) throws Exception {
@@ -54,6 +55,7 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		this.singleton = bean == null ? true : bean.singleton();
 		this.autowriteFieldDefinition = BeanUtils.getAutowriteFieldDefinitionList(type, false)
 				.toArray(new FieldDefinition[0]);
+		this.instance = ReflectUtils.isInstance(type, true);
 	}
 
 	public static List<NoArgumentBeanMethod> getInitMethodList(Class<?> type) {
@@ -220,5 +222,9 @@ public class AnnotationBeanDefinition implements BeanDefinition {
 		} catch (Throwable e) {
 			throw new BeansException(getId(), e);
 		}
+	}
+
+	public boolean isInstance() {
+		return instance;
 	}
 }

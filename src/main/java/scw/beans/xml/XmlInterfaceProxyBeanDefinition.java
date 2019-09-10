@@ -61,4 +61,8 @@ public class XmlInterfaceProxyBeanDefinition extends AbstractXmlBeanDefinition {
 				newProxyInstance, getFilterNames());
 	}
 
+	public boolean isInstance() {
+		return true;
+	}
+
 }

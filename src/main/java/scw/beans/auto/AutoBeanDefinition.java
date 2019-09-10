@@ -138,4 +138,8 @@ public class AutoBeanDefinition implements BeanDefinition {
 			throw new BeansException(getId(), e);
 		}
 	}
+
+	public boolean isInstance() {
+		return autoBean.isInstance();
+	}
 }

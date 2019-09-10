@@ -44,4 +44,8 @@ public class ReferenceAutoBean implements AutoBean {
 	public Object create(AutoBeanConfig config, Class<?>[] parameterTypes, Object... params) throws Exception {
 		return beanFactory.getInstance(reference, parameterTypes, params);
 	}
+
+	public boolean isInstance() {
+		return beanFactory.getBeanDefinition(reference).isInstance();
+	}
 }

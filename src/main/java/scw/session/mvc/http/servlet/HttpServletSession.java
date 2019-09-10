@@ -1,4 +1,4 @@
-package scw.session.servlet;
+package scw.session.mvc.http.servlet;
 
 import java.util.Enumeration;
 

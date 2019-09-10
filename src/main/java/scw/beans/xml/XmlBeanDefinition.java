@@ -268,4 +268,8 @@ public final class XmlBeanDefinition implements BeanDefinition {
 			throw new BeansException(getId(), e);
 		}
 	}
+
+	public boolean isInstance() {
+		return true;
+	}
 }

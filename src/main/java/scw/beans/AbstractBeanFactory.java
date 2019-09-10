@@ -295,6 +295,15 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		return beanDefinition != null;
 	}
 
+	public boolean isInstance(String name) {
+		BeanDefinition beanDefinition = getBeanDefinition(name);
+		if (beanDefinition == null) {
+			return false;
+		}
+
+		return beanDefinition.isInstance();
+	}
+
 	private BeanDefinition getBeanCache(String name) {
 		BeanDefinition beanDefinition = beanMap.get(name);
 		if (beanDefinition == null) {

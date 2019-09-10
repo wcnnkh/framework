@@ -41,6 +41,10 @@ public abstract class AbstractInterfaceBeanDefinition implements BeanDefinition 
 	public Class<?> getType() {
 		return interfaceClass;
 	}
+	
+	public boolean isInstance() {
+		return true;
+	}
 
 	public <T> T create(Object... params) {
 		throw new NotSupportException(getType().getName());
