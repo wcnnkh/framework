@@ -797,6 +797,10 @@ public final class ReflectUtils {
 	 * @return
 	 */
 	public static boolean isInstance(Class<?> clz, boolean checkConstructor) {
+		if(clz == null){
+			return false;
+		}
+		
 		if (Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers()) || clz.isEnum()
 				|| clz.isArray()) {
 			return false;

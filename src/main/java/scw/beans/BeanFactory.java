@@ -11,13 +11,6 @@ public interface BeanFactory extends InstanceFactory {
 	boolean contains(String name);
 	
 	/**
-	 * 表示可以使用BeanFactory.getInstance()方式获取实例
-	 * @param name
-	 * @return
-	 */
-	boolean isInstance(String name);
-
-	/**
 	 * 获取一个bean的定义
 	 * 
 	 * 如果你不知道此方法的用途请不要随便使用

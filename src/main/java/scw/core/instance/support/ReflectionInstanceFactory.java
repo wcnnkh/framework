@@ -83,4 +83,22 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		return newInstance(constructor, params);
 	}
 
+	public boolean isInstance(String name) {
+		if(name == null){
+			return false;
+		}
+		
+		Class<?> clazz = forName(name);
+		return clazz == null ? false : isInstance(clazz);
+	}
+
+	public boolean isInstance(Class<?> clazz) {
+		if(clazz == null){
+			return false;
+		}
+		
+		Constructor<?> constructor = ReflectUtils.getConstructor(clazz, false);
+		return constructor != null;
+	}
+
 }

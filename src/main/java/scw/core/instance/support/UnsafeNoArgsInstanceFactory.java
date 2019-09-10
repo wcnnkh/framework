@@ -2,6 +2,7 @@ package scw.core.instance.support;
 
 import scw.core.exception.NotSupportException;
 import scw.core.instance.NoArgsInstanceFactory;
+import scw.core.reflect.ReflectUtils;
 import scw.core.utils.UnsafeUtils;
 
 public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
@@ -26,6 +27,23 @@ public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name) {
 		return (T) getInstance(ReflectionInstanceFactory.forName(name));
+	}
+
+	public boolean isInstance(String name) {
+		Class<?> clazz = ReflectionInstanceFactory.forName(name);
+		if (clazz == null) {
+			return false;
+		}
+
+		return isInstance(clazz);
+	}
+
+	public boolean isInstance(Class<?> clazz) {
+		if(clazz == null){
+			return false;
+		}
+		
+		return ReflectUtils.isInstance(clazz, false);
 	}
 
 }

@@ -303,6 +303,10 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 		return beanDefinition.isInstance();
 	}
+	
+	public boolean isInstance(Class<?> clazz) {
+		return isInstance(clazz.getName());
+	}
 
 	private BeanDefinition getBeanCache(String name) {
 		BeanDefinition beanDefinition = beanMap.get(name);

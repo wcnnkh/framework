@@ -11,12 +11,6 @@ public interface BeanDefinition extends InstanceDefinition{
 
 	boolean isSingleton();
 	
-	/**
-	 * 是否可以使用默认方式实例化
-	 * @return
-	 */
-	boolean isInstance();
-
 	void autowrite(Object bean) throws Exception;
 
 	void init(Object bean) throws Exception;

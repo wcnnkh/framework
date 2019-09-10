@@ -44,14 +44,14 @@ public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 		if (type == null) {
 			return null;
 		}
-		
+
 		Constructor<?> constructor = null;
 		try {
 			constructor = getConstructor(type);
 		} catch (Exception e1) {
 		}
-		
-		if(constructor == null){
+
+		if (constructor == null) {
 			return null;
 		}
 
@@ -65,5 +65,24 @@ public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name) {
 		return (T) getInstance(ReflectionInstanceFactory.forName(name));
+	}
+
+	public boolean isInstance(String name) {
+		Class<?> clazz = ReflectionInstanceFactory.forName(name);
+		return clazz == null ? false : isInstance(clazz);
+	}
+
+	public boolean isInstance(Class<?> clazz) {
+		if(clazz == null){
+			return false;
+		}
+		
+		Constructor<?> constructor = null;
+		try {
+			constructor = getConstructor(clazz);
+		} catch (Exception e1) {
+		}
+
+		return constructor != null;
 	}
 }
