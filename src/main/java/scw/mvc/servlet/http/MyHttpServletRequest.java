@@ -8,8 +8,8 @@ import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.servlet.ServletUtils;
 import scw.net.http.Cookie;
-import scw.session.Session;
-import scw.session.mvc.http.servlet.HttpServletSession;
+import scw.security.session.Session;
+import scw.security.session.mvc.http.servlet.HttpServletSession;
 
 public class MyHttpServletRequest extends HttpServletRequestWrapper implements HttpServletRequest, HttpRequest {
 

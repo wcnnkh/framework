@@ -21,7 +21,7 @@ import scw.mvc.ParameterFilter;
 import scw.mvc.http.annotation.SessionValue;
 import scw.mvc.http.parameter.Body;
 import scw.net.http.Cookie;
-import scw.session.Session;
+import scw.security.session.Session;
 
 public abstract class AbstractHttpChannel extends AbstractParameterChannel
 		implements HttpChannel {

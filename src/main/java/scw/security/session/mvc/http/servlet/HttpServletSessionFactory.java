@@ -1,12 +1,12 @@
-package scw.session.mvc.http.servlet;
+package scw.security.session.mvc.http.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import scw.core.exception.NotSupportException;
 import scw.mvc.http.HttpRequest;
-import scw.session.Session;
-import scw.session.mvc.http.HttpSessionFactory;
+import scw.security.session.Session;
+import scw.security.session.mvc.http.HttpSessionFactory;
 
 public final class HttpServletSessionFactory implements HttpSessionFactory {
 

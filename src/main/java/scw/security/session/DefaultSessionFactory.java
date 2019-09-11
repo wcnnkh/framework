@@ -1,4 +1,4 @@
-package scw.session;
+package scw.security.session;
 
 import scw.data.cache.MemcachedTemporaryCache;
 import scw.data.cache.RedisTemporaryCache;

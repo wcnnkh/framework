@@ -1,8 +1,8 @@
-package scw.session.mvc.http.servlet;
+package scw.security.session.mvc.http.servlet;
 
 import javax.servlet.http.HttpSession;
 
-import scw.session.UserSession;
+import scw.security.session.UserSession;
 
 public class HttpServletUserSession<T> extends HttpServletSession implements UserSession<T> {
 	private final String uidAttributeName;

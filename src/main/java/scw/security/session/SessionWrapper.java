@@ -1,4 +1,4 @@
-package scw.session;
+package scw.security.session;
 
 import java.util.Enumeration;
 

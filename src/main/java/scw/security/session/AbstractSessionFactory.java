@@ -1,4 +1,4 @@
-package scw.session;
+package scw.security.session;
 
 public abstract class AbstractSessionFactory implements SessionFactory {
 	private int defaultMaxInactiveInterval;

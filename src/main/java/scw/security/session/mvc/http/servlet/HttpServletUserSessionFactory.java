@@ -1,12 +1,12 @@
-package scw.session.mvc.http.servlet;
+package scw.security.session.mvc.http.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import scw.core.exception.NotSupportException;
 import scw.mvc.http.HttpRequest;
-import scw.session.UserSession;
-import scw.session.mvc.http.HttpUserSessionFactory;
+import scw.security.session.UserSession;
+import scw.security.session.mvc.http.HttpUserSessionFactory;
 
 public final class HttpServletUserSessionFactory<T> implements HttpUserSessionFactory<T> {
 	private final String uidAttributeName;

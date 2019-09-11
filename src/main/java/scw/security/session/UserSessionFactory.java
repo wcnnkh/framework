@@ -1,4 +1,4 @@
-package scw.session;
+package scw.security.session;
 
 public interface UserSessionFactory<T> {
 	UserSession<T> getSession(T uid);

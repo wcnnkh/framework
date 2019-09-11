@@ -1,4 +1,4 @@
-package scw.session;
+package scw.security.session;
 
 import java.io.Serializable;
 import java.util.Collections;

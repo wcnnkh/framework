@@ -1,7 +1,7 @@
-package scw.session.mvc.http;
+package scw.security.session.mvc.http;
 
 import scw.mvc.http.HttpRequest;
-import scw.session.UserSession;
+import scw.security.session.UserSession;
 
 public interface HttpUserSessionFactory<T> {
 

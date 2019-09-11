@@ -1,4 +1,4 @@
-package scw.session;
+package scw.security.session;
 
 public final class DefaultUserSession<T> extends SessionWrapper implements UserSession<T> {
 	private T uid;

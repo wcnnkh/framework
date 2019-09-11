@@ -1,4 +1,4 @@
-package scw.session;
+package scw.security.session;
 
 public abstract class AbstractUserSessionFactory<T> implements UserSessionFactory<T> {
 	public abstract SessionFactory getSessionFactory();

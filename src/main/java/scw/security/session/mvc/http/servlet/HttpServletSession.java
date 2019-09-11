@@ -1,10 +1,10 @@
-package scw.session.mvc.http.servlet;
+package scw.security.session.mvc.http.servlet;
 
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpSession;
 
-import scw.session.Session;
+import scw.security.session.Session;
 
 public class HttpServletSession implements Session {
 	private HttpSession httpSession;

@@ -6,7 +6,7 @@ import java.util.Map;
 import scw.core.AttributeManager;
 import scw.mvc.Request;
 import scw.net.http.Cookie;
-import scw.session.Session;
+import scw.security.session.Session;
 
 public interface HttpRequest extends AttributeManager, Request{
 	String getMethod();

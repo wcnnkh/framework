@@ -9,7 +9,7 @@ import java.util.Map;
 
 import scw.core.AttributeManagerWrapper;
 import scw.net.http.Cookie;
-import scw.session.Session;
+import scw.security.session.Session;
 
 public class HttpRequestWrapper extends AttributeManagerWrapper implements HttpRequest {
 	private final HttpRequest targetHttpRequest;
