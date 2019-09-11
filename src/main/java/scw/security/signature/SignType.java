@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.security.signature;
 
 public enum SignType {
 	MD5,

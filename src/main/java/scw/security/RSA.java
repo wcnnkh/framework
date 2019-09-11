@@ -1,5 +1,5 @@
 
-package scw.core;
+package scw.security;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -11,6 +11,8 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
+
+import scw.core.Base64;
 
 public final class RSA{
 	private RSA(){};
@@ -78,7 +80,6 @@ public final class RSA{
 
         InputStream ins = new ByteArrayInputStream(Base64.decode(content));
         ByteArrayOutputStream writer = new ByteArrayOutputStream();
-        //rsa���ܵ��ֽڴ�С�����128������Ҫ���ܵ����ݣ���128λ�𿪽���
         byte[] buf = new byte[128];
         int bufl;
 

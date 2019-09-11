@@ -6,13 +6,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.core.utils.SignUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.io.Bytes;
 import scw.io.serializer.Serializer;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.security.signature.SignatureUtils;
 
 public class DefaultRpcService implements RpcService {
 	private static Logger logger = LoggerUtils.getLogger(DefaultRpcService.class);
@@ -80,7 +80,8 @@ public class DefaultRpcService implements RpcService {
 		if (t < System.currentTimeMillis() - XTime.ONE_MINUTE) {// 如果超过10秒失效
 			return false;
 		}
-		
-		return SignUtils.md5Str(Bytes.string2bytes(t + sign)).equals((String) message.getAttribute("sign"));
+
+		return (SignatureUtils.byte2hex(SignatureUtils.md5(Bytes.string2bytes(t + sign))))
+				.equals((String) message.getAttribute("sign"));
 	}
 }

@@ -11,9 +11,9 @@ import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.CrontabTask;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.timer.CrontabTask;
 
 public final class CrontabAnnotationUtils {
 
@@ -28,7 +28,7 @@ public final class CrontabAnnotationUtils {
 				if (taskNameSet.contains(c.name())) {
 					throw new AlreadyExistsException("任务：" + c.name() + "已经存在");
 				}
-				scw.core.utils.Crontab crontab = beanFactory.getInstance(scw.core.utils.Crontab.class);
+				scw.timer.Crontab crontab = beanFactory.getInstance(scw.timer.Crontab.class);
 
 				boolean invokeTime = !ArrayUtils.isEmpty(method.getParameterTypes())
 						&& method.getParameterTypes().length == 1

@@ -11,7 +11,6 @@ import scw.beans.AbstractInterfaceBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.aop.Invoker;
-import scw.core.utils.SignUtils;
 import scw.io.Bytes;
 import scw.io.serializer.Serializer;
 import scw.logger.Logger;
@@ -20,6 +19,7 @@ import scw.net.AbstractResponse;
 import scw.net.ContentType;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpRequest;
+import scw.security.signature.SignatureUtils;
 
 public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
 	private Logger logger = LoggerUtils.getLogger(getClass());
@@ -63,7 +63,8 @@ public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
 			long cts = System.currentTimeMillis();
 			final Message message = new Message(getType(), method, args);
 			message.setAttribute("t", cts);
-			message.setAttribute("sign", SignUtils.md5Str(Bytes.string2bytes(cts + signStr)));
+			message.setAttribute("sign",
+					(SignatureUtils.byte2hex(SignatureUtils.md5(Bytes.string2bytes(cts + signStr)))));
 
 			HttpRequest request = new HttpRequest(scw.net.http.Method.POST, host) {
 				@Override
