@@ -47,8 +47,8 @@ public abstract class SystemPropertyUtils {
 	public static void setProperty(String key, String value) {
 		System.setProperty(key, value);
 	}
-	
-	public static void clearProperty(String key){
+
+	public static void clearProperty(String key) {
 		System.clearProperty(key);
 	}
 
@@ -101,21 +101,11 @@ public abstract class SystemPropertyUtils {
 							if (file.getName().equals("WEB-INF")) {
 								path = file.getParent();
 							} else {
+								file = file.getParentFile();
+								file = FileUtils.searchDirectory(file,
+										"WEB-INF");
 								if (file != null) {
-									file = FileUtils.searchDirectory(file, "WEB-INF");
-									if (file != null) {
-										path = file.getParent();
-									}
-								}
-
-								if (path == null) {
-									file = file.getParentFile();
-									if (file != null) {
-										file = FileUtils.searchDirectory(file, "WEB-INF");
-										if (file != null) {
-											path = file.getParent();
-										}
-									}
+									path = file.getParent();
 								}
 							}
 						}
@@ -136,7 +126,8 @@ public abstract class SystemPropertyUtils {
 			return text;
 		}
 
-		return StringFormatSystemProperties.formatText(StringFormatSystemProperties.formatEL(text));
+		return StringFormatSystemProperties
+				.formatText(StringFormatSystemProperties.formatEL(text));
 	}
 
 	/**
@@ -167,8 +158,9 @@ public abstract class SystemPropertyUtils {
 
 	public static String getSystemOnlyId() {
 		try {
-			return scw.core.Base64.encode(
-					(getUserDir() + "&" + ResourceUtils.getClassPathURL()).getBytes(Constants.DEFAULT_CHARSET_NAME));
+			return scw.core.Base64.encode((getUserDir() + "&" + ResourceUtils
+					.getClassPathURL())
+					.getBytes(Constants.DEFAULT_CHARSET_NAME));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
