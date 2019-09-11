@@ -48,8 +48,16 @@ public abstract class SystemPropertyUtils {
 		System.setProperty(key, value);
 	}
 
-	public static void setWorkPath(String path) {
-		System.setProperty(WORK_PATH_PROPERTY_NAME, path);
+	public static void setWorkPath(String path, boolean system) {
+		if(path == null){
+			return ;
+		}
+		
+		if(system){
+			System.setProperty(WORK_PATH_PROPERTY_NAME, path);
+		}else{
+			workPath = new String(path);
+		}
 	}
 
 	private static String getDefaultWorkPath() {
@@ -86,6 +94,10 @@ public abstract class SystemPropertyUtils {
 							path = getUserDir();
 						} else {
 							file = file.getParentFile();
+							if(file != null){
+								file = file.getParentFile();
+							}
+							
 							if (file != null) {
 								file = FileUtils.searchDirectory(file, "WEB-INF");
 								if (file != null) {
