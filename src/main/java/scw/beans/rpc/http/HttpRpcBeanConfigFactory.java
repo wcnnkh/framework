@@ -5,6 +5,7 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanFactory;
+import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.utils.ResourceUtils;
@@ -16,8 +17,8 @@ import scw.io.serializer.Serializer;
 public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "http:reference";
 
-	public HttpRpcBeanConfigFactory(BeanFactory beanFactory, PropertyFactory propertyFactory, NodeList rootNodeList,
-			String[] filterNames) throws Exception {
+	public HttpRpcBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, NodeList rootNodeList, String[] filterNames) throws Exception {
 		for (int i = 0; i < rootNodeList.getLength(); i++) {
 			Node node = rootNodeList.item(i);
 			if (node == null) {
@@ -41,7 +42,8 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 						continue;
 					}
 
-					HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, address, sign, ser, filterNames);
+					HttpRpcBean httpRpcBean = new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz,
+							filterNames, address, sign, ser);
 					addBean(httpRpcBean);
 				}
 			}
@@ -69,8 +71,8 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 					myAddress = address;
 				}
 
-				HttpRpcBean httpRpcBean = new HttpRpcBean(beanFactory, clz, myAddress, mySign, ser, filterNames);
-				addBean(httpRpcBean);
+				addBean(new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz, filterNames, myAddress,
+						mySign, ser));
 			}
 		}
 	}

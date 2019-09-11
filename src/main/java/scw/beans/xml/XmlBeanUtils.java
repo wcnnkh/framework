@@ -7,8 +7,8 @@ import java.util.concurrent.TimeUnit;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.AnnotationBeanDefinition;
 import scw.beans.BeanMethod;
+import scw.beans.BeanUtils;
 import scw.beans.EParameterType;
 import scw.core.PropertyFactory;
 import scw.core.exception.BeansException;
@@ -143,14 +143,14 @@ public final class XmlBeanUtils {
 
 	public static BeanMethod[] getInitMethodList(Class<?> clz, NodeList nodeList) throws Exception {
 		List<BeanMethod> initMethodList = XmlBeanUtils.getBeanMethodList(clz, nodeList, "init");
-		initMethodList.addAll(AnnotationBeanDefinition.getInitMethodList(clz));
+		initMethodList.addAll(BeanUtils.getInitMethodList(clz));
 		return CollectionUtils.isEmpty(initMethodList) ? null
 				: initMethodList.toArray(new BeanMethod[initMethodList.size()]);
 	}
 
 	public static BeanMethod[] getDestroyMethodList(Class<?> clz, NodeList nodeList) throws Exception {
 		List<BeanMethod> list = XmlBeanUtils.getBeanMethodList(clz, nodeList, "destroy");
-		list.addAll(AnnotationBeanDefinition.getDestroyMethdoList(clz));
+		list.addAll(BeanUtils.getDestroyMethdoList(clz));
 		return CollectionUtils.isEmpty(list) ? null : list.toArray(new BeanMethod[list.size()]);
 	}
 
@@ -220,5 +220,9 @@ public final class XmlBeanUtils {
 			timeUnit = TimeUnit.valueOf(format.toUpperCase());
 		}
 		return timeUnit;
+	}
+	
+	public static String getProxyName(PropertyFactory propertyFactory, Node node){
+		return XMLUtils.getNodeAttributeValue(propertyFactory, node, "proxy");
 	}
 }

@@ -5,22 +5,20 @@ import org.apache.dubbo.config.ReferenceConfig;
 import scw.beans.AbstractInterfaceBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.beans.property.ValueWiredManager;
+import scw.core.PropertyFactory;
 
 public final class XmlDubboBean extends AbstractInterfaceBeanDefinition {
 	private final ReferenceConfig<?> referenceConfig;
-	private final BeanFactory beanFactory;
-	private final String[] filterNames;
 
-	public XmlDubboBean(BeanFactory beanFactory, Class<?> clz, ReferenceConfig<?> referenceConfig,
-			String[] filterNames) {
-		super(clz);
+	public XmlDubboBean(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Class<?> type, String[] filterNames, ReferenceConfig<?> referenceConfig) {
+		super(valueWiredManager, beanFactory, propertyFactory, type, filterNames);
 		this.referenceConfig = referenceConfig;
-		this.beanFactory = beanFactory;
-		this.filterNames = filterNames;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T create() {
-		return (T) BeanUtils.proxyInterface(beanFactory, getInterfaceClass(), referenceConfig.get(), filterNames);
+		return (T) BeanUtils.proxyInterface(beanFactory, type, referenceConfig.get(), filterNames);
 	}
 }

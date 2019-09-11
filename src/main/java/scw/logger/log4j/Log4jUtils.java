@@ -109,6 +109,9 @@ public final class Log4jUtils {
 		properties.put("log4j.appender.warn.layout", "org.apache.log4j.PatternLayout");
 		properties.put("log4j.appender.warn.DatePattern", "'.'yyyy-MM-dd");
 		properties.put("log4j.appender.warn.layout.ConversionPattern", "%d %p [%c] - %m%n");
+		
+		//过滤无用日志
+		properties.put("log4j.logger.org.apache.dubbo", "error");
 		initByProperties(properties);
 	}
 }

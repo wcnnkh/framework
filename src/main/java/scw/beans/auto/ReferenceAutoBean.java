@@ -17,16 +17,8 @@ public class ReferenceAutoBean implements AutoBean {
 		this.reference = reference;
 	}
 
-	public boolean initEnable() {
-		return false;
-	}
-
-	public boolean destroyEnable() {
-		return false;
-	}
-
-	public boolean autowriedEnable() {
-		return false;
+	public boolean isReference() {
+		return true;
 	}
 
 	public Class<?> getTargetClass() {

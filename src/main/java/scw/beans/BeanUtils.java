@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,10 +21,13 @@ import scw.beans.annotation.Bean;
 import scw.beans.annotation.Config;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
+import scw.beans.annotation.Proxy;
+import scw.beans.annotation.Service;
 import scw.beans.annotation.Value;
 import scw.beans.property.ValueWired;
 import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanParameter;
+import scw.core.Init;
 import scw.core.PropertyFactory;
 import scw.core.aop.Filter;
 import scw.core.aop.Invoker;
@@ -35,6 +39,7 @@ import scw.core.reflect.DefaultFieldDefinition;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.AnnotationUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
@@ -88,10 +93,10 @@ public final class BeanUtils {
 			Collection<Class<?>> classList) throws Exception {
 		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
 		for (Class<?> clz : classList) {
-			if(valueWiredManager != null){
+			if (valueWiredManager != null) {
 				valueWiredManager.cancel(clz);
 			}
-			
+
 			for (Method method : ReflectUtils.getDeclaredMethods(clz)) {
 				if (!Modifier.isStatic(method.getModifiers())) {
 					continue;
@@ -271,9 +276,9 @@ public final class BeanUtils {
 				try {
 					existDefaultValueWarnLog(Value.class.getName(), clz, field, obj);
 					ValueWired valueWired = new ValueWired(obj, field, value);
-					if(valueWiredManager == null){
+					if (valueWiredManager == null) {
 						valueWired.wired(beanFactory, propertyFactory);
-					}else{
+					} else {
 						valueWireds.add(valueWired);
 					}
 				} catch (Throwable e) {
@@ -282,8 +287,8 @@ public final class BeanUtils {
 				}
 			}
 		}
-		
-		if(valueWiredManager != null){
+
+		if (valueWiredManager != null) {
 			valueWiredManager.write(getValueTaskId(clz, obj), valueWireds);
 		}
 	}
@@ -308,9 +313,10 @@ public final class BeanUtils {
 		}
 	}
 
-	public static Enhancer createEnhancer(Class<?> clz, BeanFactory beanFactory, String[] filterNames) {
+	public static Enhancer createEnhancer(Class<?> clz, BeanFactory beanFactory, String[] filterNames,
+			Filter lastFilter) {
 		Enhancer enhancer = new Enhancer();
-		enhancer.setCallback(new RootFilter(beanFactory, filterNames));
+		enhancer.setCallback(new RootFilter(beanFactory, filterNames, lastFilter));
 		if (Serializable.class.isAssignableFrom(clz)) {
 			enhancer.setSerialVersionUID(1L);
 		}
@@ -325,6 +331,11 @@ public final class BeanUtils {
 
 		if (Filter.class.isAssignableFrom(type)) {
 			return false;
+		}
+		
+		Proxy proxy = type.getAnnotation(Proxy.class);
+		if(proxy != null){
+			return true;
 		}
 
 		boolean b = true;
@@ -372,7 +383,7 @@ public final class BeanUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> T proxyInterface(BeanFactory beanFactory, Class<T> interfaceClass, Object obj,
 			String[] filterNames) {
-		return (T) ProxyUtils.newProxyInstance(obj, interfaceClass, new RootFilter(beanFactory, filterNames));
+		return (T) ProxyUtils.newProxyInstance(obj, interfaceClass, new RootFilter(beanFactory, filterNames, null));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -454,6 +465,53 @@ public final class BeanUtils {
 
 	public static String getInitStaticPackage(PropertyFactory propertyFactory) {
 		return propertyFactory.getProperty("scan.static");
+	}
+	
+	public static List<NoArgumentBeanMethod> getInitMethodList(Class<?> type) {
+		List<NoArgumentBeanMethod> list = new ArrayList<NoArgumentBeanMethod>();
+		for (Method method : AnnotationUtils.getAnnoationMethods(type, true, true, InitMethod.class)) {
+			if (Modifier.isStatic(method.getModifiers())) {
+				continue;
+			}
+
+			method.setAccessible(true);
+			list.add(new NoArgumentBeanMethod(method));
+		}
+		return list;
+	}
+
+	public static List<NoArgumentBeanMethod> getDestroyMethdoList(Class<?> type) {
+		List<NoArgumentBeanMethod> list = new ArrayList<NoArgumentBeanMethod>();
+		for (Method method : AnnotationUtils.getAnnoationMethods(type, true, true, Destroy.class)) {
+			if (Modifier.isStatic(method.getModifiers())) {
+				continue;
+			}
+
+			method.setAccessible(true);
+			list.add(new NoArgumentBeanMethod(method));
+		}
+		return list;
+	}
+
+	public static String[] getServiceNames(Class<?> clz) {
+		Service service = clz.getAnnotation(Service.class);
+		if (service != null && !ArrayUtils.isEmpty(service.value())) {
+			return service.value();
+		}
+
+		HashSet<String> list = new HashSet<String>();
+		Class<?>[] clzs = clz.getInterfaces();
+		if (clzs != null) {
+			for (Class<?> i : clzs) {
+				if (i.getName().startsWith("java.") || i.getName().startsWith("javax.") || i == scw.core.Destroy.class
+						|| i == Init.class) {
+					continue;
+				}
+
+				list.add(i.getName());
+			}
+		}
+		return list.isEmpty() ? null : list.toArray(new String[list.size()]);
 	}
 }
 

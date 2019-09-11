@@ -1,6 +1,5 @@
 package scw.beans.rpc.http;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -9,6 +8,9 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Autowired;
 import scw.beans.rpc.http.annotation.HttpDecoderFilter;
 import scw.beans.rpc.http.annotation.HttpFactory;
+import scw.core.aop.Filter;
+import scw.core.aop.FilterChain;
+import scw.core.aop.Invoker;
 import scw.net.DecoderFilter;
 import scw.net.DecoderFilterChain;
 import scw.net.DecoderResponse;
@@ -17,7 +19,7 @@ import scw.net.http.HttpRequest;
 import scw.net.support.BeanFactoryDecoderFilterChain;
 import scw.net.support.DefaultDecoderFilter;
 
-public final class HttpInvocationHandler implements InvocationHandler {
+public final class HttpInvocationHandler implements Filter {
 	@Autowired
 	private BeanFactory beanFactory;
 	private final String host;
@@ -38,14 +40,6 @@ public final class HttpInvocationHandler implements InvocationHandler {
 
 	public final void setDefaultRpcRequestFactory(RequestFactory defaultRpcRequestFactory) {
 		this.defaultRpcRequestFactory = defaultRpcRequestFactory;
-	}
-
-	public Object invoke(Object proxy, final Method method, Object[] args) throws Throwable {
-		HttpRequest httpRequest = createHttpRequest(beanFactory, method.getDeclaringClass(), method, args);
-		Collection<String> decoderNames = getDeserializerFilters(method.getDeclaringClass(), method);
-		DecoderFilterChain chain = new BeanFactoryDecoderFilterChain(beanFactory, decoderNames);
-		DecoderResponse response = new DecoderResponse(method.getGenericReturnType(), chain);
-		return NetworkUtils.execute(httpRequest, response);
 	}
 
 	protected HttpRequest createHttpRequest(BeanFactory beanFactory, Class<?> clazz, Method method, Object[] args)
@@ -87,5 +81,14 @@ public final class HttpInvocationHandler implements InvocationHandler {
 		deserializerFilters.addAll(defaultDeserializerFilters);
 		deserializerFilters.add(DefaultDecoderFilter.class.getName());
 		return deserializerFilters;
+	}
+
+	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
+			throws Throwable {
+		HttpRequest httpRequest = createHttpRequest(beanFactory, method.getDeclaringClass(), method, args);
+		Collection<String> decoderNames = getDeserializerFilters(method.getDeclaringClass(), method);
+		DecoderFilterChain chain = new BeanFactoryDecoderFilterChain(beanFactory, decoderNames);
+		DecoderResponse response = new DecoderResponse(method.getGenericReturnType(), chain);
+		return NetworkUtils.execute(httpRequest, response);
 	}
 }

@@ -6,9 +6,12 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import scw.core.Destroy;
-import scw.core.exception.AlreadyExistsException;
+import scw.json.JSONUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
 public abstract class AbstractBeanConfigFactory implements BeanConfigFactory {
+	protected Logger logger = LoggerUtils.getLogger(getClass());
 	protected Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	protected Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private LinkedList<Destroy> destroys = new LinkedList<Destroy>();
@@ -16,15 +19,17 @@ public abstract class AbstractBeanConfigFactory implements BeanConfigFactory {
 	public void addBean(BeanDefinition beanDefinition) {
 		String id = beanDefinition.getId();
 		if (beanMap.containsKey(id)) {
-			throw new AlreadyExistsException(id);
+			logger.warn("Already exist id:{}, definition:{}", id, JSONUtils.toJSONString(beanDefinition));
+		} else {
+			beanMap.put(id, beanDefinition);
 		}
 
-		beanMap.put(id, beanDefinition);
 		String[] names = beanDefinition.getNames();
 		if (names != null) {
 			for (String n : names) {
 				if (nameMappingMap.containsKey(n)) {
-					throw new AlreadyExistsException(n);
+					logger.warn("Already exist name:{}, definition:{}", n, JSONUtils.toJSONString(beanDefinition));
+					continue;
 				}
 				nameMappingMap.put(n, id);
 			}

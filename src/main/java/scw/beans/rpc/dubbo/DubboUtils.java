@@ -9,6 +9,7 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.BeanConfigFactory;
 import scw.beans.BeanFactory;
+import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.logger.LoggerUtils;
@@ -82,7 +83,7 @@ public final class DubboUtils {
 		return false;
 	}
 
-	public static BeanConfigFactory getReferenceBeanConfigFactory(BeanFactory beanFactory,
+	public static BeanConfigFactory getReferenceBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, NodeList nodeList, String[] filterNames) {
 		if (!xmlExistDubboReference(nodeList)) {
 			return null;
@@ -93,7 +94,7 @@ public final class DubboUtils {
 			return null;
 		}
 
-		return InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory", beanFactory, propertyFactory,
+		return InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory", valueWiredManager, beanFactory, propertyFactory,
 				nodeList, filterNames);
 	}
 

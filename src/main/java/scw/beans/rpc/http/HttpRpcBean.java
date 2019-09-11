@@ -10,6 +10,8 @@ import java.net.URLConnection;
 import scw.beans.AbstractInterfaceBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.beans.property.ValueWiredManager;
+import scw.core.PropertyFactory;
 import scw.core.aop.Invoker;
 import scw.io.Bytes;
 import scw.io.serializer.Serializer;
@@ -25,31 +27,27 @@ public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
 	private Logger logger = LoggerUtils.getLogger(getClass());
 	private final String host;
 	private final String signStr;
-	private final BeanFactory beanFactory;
 	private final Serializer serializer;
-	private String[] filterNames;
 
-	public HttpRpcBean(BeanFactory beanFactory, Class<?> interfaceClass, String host, String signStr,
-			Serializer serializer, String[] filterNames) {
-		super(interfaceClass);
-		this.beanFactory = beanFactory;
+	public HttpRpcBean(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Class<?> type, String[] filterNames, String host, String signStr, Serializer serializer) {
+		super(valueWiredManager, beanFactory, propertyFactory, type, filterNames);
 		this.host = host;
 		this.signStr = signStr;
 		this.serializer = serializer;
-		this.filterNames = filterNames;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T create() {
-		Object newProxyInstance = Proxy.newProxyInstance(getInterfaceClass().getClassLoader(),
-				new Class[] { getInterfaceClass() }, new InvocationHandler() {
+		Object newProxyInstance = Proxy.newProxyInstance(getType().getClassLoader(), new Class[] { getType() },
+				new InvocationHandler() {
 
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 						HttpConsumerInvoker httpConsumerInvoker = new HttpConsumerInvoker(method);
 						return httpConsumerInvoker.invoke(args);
 					}
 				});
-		return (T) BeanUtils.proxyInterface(beanFactory, getInterfaceClass(), newProxyInstance, filterNames);
+		return (T) BeanUtils.proxyInterface(beanFactory, getType(), newProxyInstance, filterNames);
 	}
 
 	final class HttpConsumerInvoker implements Invoker {

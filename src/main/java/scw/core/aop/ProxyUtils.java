@@ -35,7 +35,7 @@ public final class ProxyUtils {
 		Assert.notNull(instance);
 		return isJDKProxy(instance.getClass());
 	}
-
+	
 	public static Object newProxyInstance(Object obj, Class<?> interfaceClass,
 			Filter... filters) {
 		return newProxyInstance(obj, interfaceClass, Arrays.asList(filters));

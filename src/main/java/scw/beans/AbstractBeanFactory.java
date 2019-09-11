@@ -1,6 +1,5 @@
 package scw.beans;
 
-import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,7 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.beans.annotation.AutoConfig;
-import scw.beans.annotation.InterfaceProxy;
+import scw.beans.annotation.Proxy;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.AutoBeanDefinition;
 import scw.beans.auto.AutoBeanService;
@@ -28,8 +27,12 @@ import scw.core.exception.NestedRuntimeException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ResourceUtils;
+import scw.json.JSONUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
 public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy {
+	protected Logger logger = LoggerUtils.getLogger(getClass());
 	private volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
@@ -68,7 +71,9 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 					for (Entry<String, BeanDefinition> entry : map.entrySet()) {
 						String key = entry.getKey();
 						if (beanMap.containsKey(key)) {
-							throw new AlreadyExistsException(key);
+							logger.warn("Already exist id:{}, definition:{}", key,
+									JSONUtils.toJSONString(entry.getValue()));
+							continue;
 						}
 
 						beanMap.put(key, entry.getValue());
@@ -82,7 +87,9 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 					for (Entry<String, String> entry : nameMapping.entrySet()) {
 						String key = entry.getKey();
 						if (nameMappingMap.containsKey(key)) {
-							throw new AlreadyExistsException(key);
+							logger.warn("Already exist name:{}, definition:{}", key,
+									JSONUtils.toJSONString(entry.getValue()));
+							continue;
 						}
 						nameMappingMap.put(key, entry.getValue());
 					}
@@ -303,7 +310,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 		return beanDefinition.isInstance();
 	}
-	
+
 	public boolean isInstance(Class<?> clazz) {
 		return isInstance(clazz.getName());
 	}
@@ -337,19 +344,16 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			return null;
 		}
 
-		if (clz.isInterface()) {
-			InterfaceProxy interfaceProxy = clz.getAnnotation(InterfaceProxy.class);
-			if (interfaceProxy != null) {
-				InvocationHandler invocationHandler = getInstance(interfaceProxy.value());
-				return new InterfaceProxyBeanDefinition(this, clz, invocationHandler, getFilterNames());
-			}
+		Proxy proxy = clz.getAnnotation(Proxy.class);
+		if (proxy != null) {
+			return new ProxyBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz, getFilterNames());
 		}
 
 		AutoConfig autoConfig = clz.getAnnotation(AutoConfig.class);
 		if (autoConfig == null || AutoBeanService.class.isAssignableFrom(clz)) {
 			if (ReflectUtils.isInstance(clz, false)) {
 				try {
-					return new AnnotationBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz,
+					return new CommonBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz,
 							getFilterNames());
 				} catch (Exception e) {
 					throw new BeansException(clz.getName(), e);

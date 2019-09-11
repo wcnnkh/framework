@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  */
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface InterfaceProxy {
+public @interface Proxy {
 	/**
 	 * 代理实现，请注意，此代理类必须实现filter接口
 	 * @return

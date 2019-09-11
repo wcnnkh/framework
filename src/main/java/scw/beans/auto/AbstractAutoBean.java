@@ -31,19 +31,11 @@ public abstract class AbstractAutoBean implements AutoBean {
 		Bean bean = type.getAnnotation(Bean.class);
 		return bean.proxy();
 	}
-	
-	public boolean initEnable() {
-		return true;
+
+	public boolean isReference() {
+		return false;
 	}
-	
-	public boolean destroyEnable() {
-		return true;
-	}
-	
-	public boolean autowriedEnable() {
-		return true;
-	}
-	
+
 	public Class<?> getTargetClass() {
 		return type;
 	}
@@ -51,38 +43,31 @@ public abstract class AbstractAutoBean implements AutoBean {
 	public Object create(AutoBeanConfig config) throws Exception {
 		Class<?>[] types = getParameterTypes();
 		Object[] parameters = getParameters();
-		return create(config, types == null ? new Class<?>[0] : types,
-				parameters == null ? new Object[0] : parameters);
+		return create(config, types == null ? new Class<?>[0] : types, parameters == null ? new Object[0] : parameters);
 	}
 
-	public Object create(AutoBeanConfig config, Object... params)
-			throws Exception {
-		Constructor<?> constructor = ReflectUtils.findConstructorByParameters(
-				type, false, params);
+	public Object create(AutoBeanConfig config, Object... params) throws Exception {
+		Constructor<?> constructor = ReflectUtils.findConstructorByParameters(type, false, params);
 		if (constructor == null) {
 			throw new NotFoundException(type + "找不到指定的构造方法");
 		}
 
 		if (isProxy()) {
-			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory,
-					config.getFilters());
+			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory, config.getFilters(), null);
 			return enhancer.create(constructor.getParameterTypes(), params);
 		} else {
 			return constructor.newInstance(params);
 		}
 	}
 
-	public Object create(AutoBeanConfig config, Class<?>[] parameterTypes,
-			Object... params) throws Exception {
-		Constructor<?> constructor = ReflectUtils.getConstructor(type, false,
-				parameterTypes);
+	public Object create(AutoBeanConfig config, Class<?>[] parameterTypes, Object... params) throws Exception {
+		Constructor<?> constructor = ReflectUtils.getConstructor(type, false, parameterTypes);
 		if (constructor == null) {
 			throw new NotFoundException(type + "找不到指定的构造方法");
 		}
 
 		if (isProxy()) {
-			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory,
-					config.getFilters());
+			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory, config.getFilters(), null);
 			return enhancer.create(constructor.getParameterTypes(), params);
 		} else {
 			return constructor.newInstance(params);

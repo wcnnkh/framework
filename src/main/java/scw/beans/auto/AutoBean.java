@@ -2,11 +2,7 @@ package scw.beans.auto;
 
 
 public interface AutoBean {
-	boolean initEnable();
-	
-	boolean destroyEnable();
-	
-	boolean autowriedEnable();
+	boolean isReference();
 	
 	Class<?> getTargetClass();
 	

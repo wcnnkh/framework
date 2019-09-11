@@ -12,10 +12,12 @@ import scw.core.cglib.proxy.MethodProxy;
 final class RootFilter implements Filter, MethodInterceptor {
 	private String[] filterNames;
 	private BeanFactory beanFactory;
+	private Filter lastFilter;
 
-	public RootFilter(BeanFactory beanFactory, String[] filterNames) {
+	public RootFilter(BeanFactory beanFactory, String[] filterNames, Filter lastFilter) {
 		this.filterNames = filterNames;
 		this.beanFactory = beanFactory;
+		this.lastFilter = lastFilter;
 	}
 
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
@@ -29,7 +31,7 @@ final class RootFilter implements Filter, MethodInterceptor {
 
 	private Object invoke(Invoker invoker, Object proxy, Method method, Object[] args) throws Throwable {
 		FilterChain chain = new BeanFactoryFilterChain(beanFactory,
-				BeanUtils.getBeanFilterNameList(method.getDeclaringClass(), method, filterNames));
+				BeanUtils.getBeanFilterNameList(method.getDeclaringClass(), method, filterNames), lastFilter);
 		return chain.doFilter(invoker, proxy, method, args);
 	}
 

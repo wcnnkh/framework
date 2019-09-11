@@ -8,13 +8,14 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanFactory;
+import scw.beans.property.ValueWiredManager;
 import scw.core.Destroy;
 import scw.core.PropertyFactory;
 
 public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 
-	public XmlDubboBeanConfigFactory(BeanFactory beanFactory, PropertyFactory propertyFactory, NodeList nodeList,
-			String[] filterNames) throws Exception {
+	public XmlDubboBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, NodeList nodeList, String[] filterNames) throws Exception {
 		if (nodeList != null) {
 			XmlDubboUtils.initConfig(propertyFactory, beanFactory, nodeList);
 			for (int x = 0; x < nodeList.getLength(); x++) {
@@ -30,10 +31,9 @@ public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 				List<ReferenceConfig<?>> referenceConfigs = XmlDubboUtils.getReferenceConfigList(propertyFactory,
 						beanFactory, node);
 				for (ReferenceConfig<?> referenceConfig : referenceConfigs) {
-					XmlDubboBean xmlDubboBean = new XmlDubboBean(beanFactory, referenceConfig.getInterfaceClass(),
-							referenceConfig, filterNames);
+					XmlDubboBean xmlDubboBean = new XmlDubboBean(valueWiredManager, beanFactory, propertyFactory,
+							referenceConfig.getInterfaceClass(), filterNames, referenceConfig);
 					addBean(xmlDubboBean);
-
 					addDestroy(new ReferenceConfigDestory(referenceConfig));
 				}
 			}
