@@ -23,8 +23,12 @@ import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public final class XmlBeanDefinition implements BeanDefinition {
+	private Logger logger = LoggerFactory.getLogger(XmlBeanDefinition.class);
+
 	private final BeanFactory beanFactory;
 	private final PropertyFactory propertyFactory;
 	private String[] names;
@@ -124,6 +128,10 @@ public final class XmlBeanDefinition implements BeanDefinition {
 
 	private Object createProxyInstance() throws Exception {
 		if (type.isInterface()) {
+			if (StringUtils.isEmpty(proxyName)) {
+				logger.warn("{} is an interface, but there is no proxy.", type);
+			}
+			
 			return BeanUtils.proxyInterface(beanFactory, getType(),
 					filterNames, StringUtils.isEmpty(proxyName) ? null
 							: (Filter) beanFactory.getInstance(proxyName));
