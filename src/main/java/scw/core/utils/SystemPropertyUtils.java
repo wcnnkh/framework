@@ -28,6 +28,7 @@ public abstract class SystemPropertyUtils {
 	private static final String WEB_ROOT = "web.root";
 	private static final String WORK_PATH_PROPERTY_NAME = "scw_work_path";
 	private static final String DEFAULT_WORK_PATH_DIR = "public,www";
+	private static volatile String workPath;
 
 	public static String getProperty(String key) {
 		String v = System.getProperty(key);
@@ -42,8 +43,8 @@ public abstract class SystemPropertyUtils {
 		}
 		return v;
 	}
-	
-	public static void setProperty(String key, String value){
+
+	public static void setProperty(String key, String value) {
 		System.setProperty(key, value);
 	}
 
@@ -69,32 +70,40 @@ public abstract class SystemPropertyUtils {
 	 */
 	public static String getWorkPath() {
 		String path = getProperty(WORK_PATH_PROPERTY_NAME);
-		if (path == null) {
-			URL url = ResourceUtils.getClassPathURL();
-			if (url == null) {
-				path = getDefaultWorkPath();
-			} else {
-				File file = new File(url.getPath());
-				if (file.isFile()) {
-					path = getUserDir();
-				} else {
-					file = file.getParentFile();
+		if (path != null) {
+			return path;
+		}
 
-					if (file != null) {
-						file = FileUtils.searchDirectory(file, "WEB-INF");
-						if (file != null) {
-							path = file.getParent();
+		if (workPath == null) {
+			synchronized (SystemPropertyUtils.class) {
+				if (workPath == null) {
+					URL url = ResourceUtils.getClassPathURL();
+					if (url == null) {
+						path = getDefaultWorkPath();
+					} else {
+						File file = new File(url.getPath());
+						if (file.isFile()) {
+							path = getUserDir();
+						} else {
+							file = file.getParentFile();
+							if (file != null) {
+								file = FileUtils.searchDirectory(file, "WEB-INF");
+								if (file != null) {
+									path = file.getParent();
+								}
+							}
+						}
+
+						if (path == null) {
+							path = getDefaultWorkPath();
 						}
 					}
-				}
 
-				if (path == null) {
-					path = getDefaultWorkPath();
+					workPath = path;
 				}
 			}
-			setWorkPath(path);
 		}
-		return path;
+		return workPath == null ? null : new String(workPath);
 	}
 
 	public static String format(String text) {
@@ -102,8 +111,7 @@ public abstract class SystemPropertyUtils {
 			return text;
 		}
 
-		return StringFormatSystemProperties
-				.formatText(StringFormatSystemProperties.formatEL(text));
+		return StringFormatSystemProperties.formatText(StringFormatSystemProperties.formatEL(text));
 	}
 
 	/**
@@ -134,9 +142,8 @@ public abstract class SystemPropertyUtils {
 
 	public static String getSystemOnlyId() {
 		try {
-			return scw.core.Base64.encode((getUserDir() + "&" + ResourceUtils
-					.getClassPathURL())
-					.getBytes(Constants.DEFAULT_CHARSET_NAME));
+			return scw.core.Base64.encode(
+					(getUserDir() + "&" + ResourceUtils.getClassPathURL()).getBytes(Constants.DEFAULT_CHARSET_NAME));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
