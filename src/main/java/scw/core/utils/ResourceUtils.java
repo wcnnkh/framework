@@ -394,7 +394,7 @@ public abstract class ResourceUtils {
 			return;
 		}
 
-		System.setProperty(CONFIG_SUFFIX, suffix);
+		SystemPropertyUtils.setProperty(CONFIG_SUFFIX, suffix);
 	}
 
 	private static String searchNameByJar(JarFile jarFile, String searchName) {

@@ -26,6 +26,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 import scw.core.utils.PropertyPlaceholderHelper;
 import scw.core.utils.ResourceUtils;
+import scw.core.utils.SystemPropertyUtils;
 
 /**
  * Convenience class that features simple methods for custom log4j configuration.
@@ -128,7 +129,7 @@ public abstract class Log4jConfigurer {
 	 * @see shuchaowen.spring.web.util.Log4jWebConfigurer
 	 */
 	public static void setWorkingDirSystemProperty(String key) {
-		System.setProperty(key, new File("").getAbsolutePath());
+		SystemPropertyUtils.setProperty(key, new File("").getAbsolutePath());
 	}
 
 }

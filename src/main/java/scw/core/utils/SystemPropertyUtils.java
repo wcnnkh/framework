@@ -47,15 +47,19 @@ public abstract class SystemPropertyUtils {
 	public static void setProperty(String key, String value) {
 		System.setProperty(key, value);
 	}
+	
+	public static void clearProperty(String key){
+		System.clearProperty(key);
+	}
 
 	public static void setWorkPath(String path, boolean system) {
-		if(path == null){
-			return ;
+		if (path == null) {
+			return;
 		}
-		
-		if(system){
-			System.setProperty(WORK_PATH_PROPERTY_NAME, path);
-		}else{
+
+		if (system) {
+			SystemPropertyUtils.setProperty(WORK_PATH_PROPERTY_NAME, path);
+		} else {
 			workPath = new String(path);
 		}
 	}
@@ -94,14 +98,24 @@ public abstract class SystemPropertyUtils {
 							path = getUserDir();
 						} else {
 							file = file.getParentFile();
-							if(file != null){
-								file = file.getParentFile();
-							}
-							
-							if (file != null) {
-								file = FileUtils.searchDirectory(file, "WEB-INF");
+							if (file.getName().equals("WEB-INF")) {
+								path = file.getParent();
+							} else {
 								if (file != null) {
-									path = file.getParent();
+									file = FileUtils.searchDirectory(file, "WEB-INF");
+									if (file != null) {
+										path = file.getParent();
+									}
+								}
+
+								if (path == null) {
+									file = file.getParentFile();
+									if (file != null) {
+										file = FileUtils.searchDirectory(file, "WEB-INF");
+										if (file != null) {
+											path = file.getParent();
+										}
+									}
 								}
 							}
 						}
@@ -110,7 +124,6 @@ public abstract class SystemPropertyUtils {
 							path = getDefaultWorkPath();
 						}
 					}
-
 					workPath = path;
 				}
 			}

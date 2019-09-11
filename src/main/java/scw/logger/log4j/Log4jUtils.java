@@ -22,7 +22,7 @@ public final class Log4jUtils {
 	}
 
 	public static void setLog4jPath(String path) {
-		System.setProperty(LOG4J_PATH, path);
+		SystemPropertyUtils.setProperty(LOG4J_PATH, path);
 	}
 
 	private static void initByProperties(Properties properties) {

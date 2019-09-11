@@ -37,6 +37,7 @@ import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
 import scw.core.utils.Assert;
 import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 
 /**
  * Miscellaneous utilities for web applications. Used by various framework
@@ -164,7 +165,7 @@ public final class WebUtils {
 					+ "' = [" + oldValue + "] instead of [" + root + "] - "
 					+ "Choose unique values for the 'webAppRootKey' context-param in your web.xml files!");
 		}
-		System.setProperty(key, root);
+		SystemPropertyUtils.setProperty(key, root);
 		servletContext.log("Set web app root system property: '" + key + "' = [" + root + "]");
 	}
 

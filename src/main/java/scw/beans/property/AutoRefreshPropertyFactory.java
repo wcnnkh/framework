@@ -46,11 +46,11 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory {
 	private void refreshValue(Property property, String value) {
 		synchronized (propertyMap) {
 			if (property.isSystem()) {
-				System.setProperty(property.getName(), value);
+				SystemPropertyUtils.setProperty(property.getName(), value);
 				propertyMap.remove(property.getName());
 			} else {
 				propertyMap.put(property.getName(), value);
-				System.clearProperty(property.getName());
+				SystemPropertyUtils.clearProperty(property.getName());
 			}
 		}
 	}
