@@ -1,5 +1,5 @@
 package scw.security.signature;
 
-public interface SignatureService {
-	String signature(String text) throws Exception;
+public interface SignatureService<K, V> {
+	V signature(K message) throws Exception;
 }

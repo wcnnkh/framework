@@ -28,7 +28,7 @@ public final class SignatureUtils {
 	 * @param bytes
 	 * @return
 	 */
-	public static String byte2hex(byte[] bytes) {
+	public static String byte2hex(final byte[] bytes) {
 		StringBuilder sign = new StringBuilder();
 		for (int i = 0; i < bytes.length; i++) {
 			String hex = Integer.toHexString(bytes[i] & 0xFF);

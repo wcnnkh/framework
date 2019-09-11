@@ -79,9 +79,6 @@ public abstract class SystemPropertyUtils {
 					path = getUserDir();
 				} else {
 					file = file.getParentFile();
-					if (file != null) {
-						file = file.getParentFile();
-					}
 
 					if (file != null) {
 						file = FileUtils.searchDirectory(file, "WEB-INF");

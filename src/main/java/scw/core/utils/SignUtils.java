@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Formatter;
 import java.util.Map;
 
 import javax.crypto.Mac;
@@ -14,6 +13,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import scw.core.Base64;
 import scw.core.exception.NotFoundException;
+import scw.security.signature.SignatureUtils;
 
 public final class SignUtils {
 	private SignUtils() {
@@ -44,40 +44,6 @@ public final class SignUtils {
 			}
 		}
 		return sb;
-	}
-
-	/**
-	 * 把二进制转化为十六进制
-	 * 
-	 * @param bytes
-	 * @return
-	 */
-	public static String byteToHex(final byte[] hash) {
-		Formatter formatter = new Formatter();
-		for (byte b : hash) {
-			formatter.format("%02x", b);
-		}
-		String result = formatter.toString();
-		formatter.close();
-		return result;
-	}
-
-	/**
-	 * 把二进制转化为十六进制 推荐
-	 * 
-	 * @param bytes
-	 * @return
-	 */
-	public static String byte2hex(byte[] bytes) {
-		StringBuilder sign = new StringBuilder();
-		for (int i = 0; i < bytes.length; i++) {
-			String hex = Integer.toHexString(bytes[i] & 0xFF);
-			if (hex.length() == 1) {
-				sign.append("0");
-			}
-			sign.append(hex);
-		}
-		return sign.toString();
 	}
 
 	/**
@@ -153,7 +119,7 @@ public final class SignUtils {
 	}
 
 	public static String md5Str(byte[] byteArray) {
-		return byte2hex(md5(byteArray));
+		return SignatureUtils.byte2hex(md5(byteArray));
 	}
 
 	public static String md5UpperStr(String str, String charsetName) {
@@ -188,7 +154,7 @@ public final class SignUtils {
 			MessageDigest crypt = MessageDigest.getInstance("SHA-1");
 			crypt.reset();
 			crypt.update(byteArray);
-			return byteToHex(crypt.digest());
+			return SignatureUtils.byteToHex(crypt.digest());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -200,7 +166,7 @@ public final class SignUtils {
 			MessageDigest crypt = MessageDigest.getInstance("SHA-1");
 			crypt.reset();
 			crypt.update(str.getBytes(charsetName));
-			return byteToHex(crypt.digest());
+			return SignatureUtils.byteToHex(crypt.digest());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
