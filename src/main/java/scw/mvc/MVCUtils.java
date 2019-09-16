@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
 import scw.beans.rpc.http.DefaultRpcService;
 import scw.beans.rpc.http.RpcService;
 import scw.core.AttributeManager;
@@ -60,6 +61,7 @@ import scw.mvc.http.Text;
 import scw.mvc.http.filter.CrossDomainDefinition;
 import scw.mvc.http.filter.HttpServiceFilter;
 import scw.net.ContentType;
+import scw.result.exception.ResultExceptionFilter;
 
 public final class MVCUtils {
 	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
@@ -396,21 +398,14 @@ public final class MVCUtils {
 		}
 		return list;
 	}
-
-	public static LinkedList<Filter> getFilters(InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			String key) {
-		String[] filters = StringUtils.commonSplit(propertyFactory.getProperty(key));
-		LinkedList<Filter> list = new LinkedList<Filter>();
-		if (!ArrayUtils.isEmpty(filters)) {
-			for (String name : filters) {
-				list.add((Filter) instanceFactory.getInstance(name));
-			}
-		}
-		return list;
-	}
-
+	
 	public static LinkedList<Filter> getFilters(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		LinkedList<Filter> filters = getFilters(instanceFactory, propertyFactory, "mvc.filters");
+		LinkedList<Filter> filters = new LinkedList<Filter>();
+		if(instanceFactory.isInstance(ResultExceptionFilter.class)){//异常处理
+			filters.add(instanceFactory.getInstance(ResultExceptionFilter.class));
+		}
+		
+		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, "mvc.filters");
 		filters.add(getHttpServiceFilter(instanceFactory, propertyFactory));
 		return filters;
 	}

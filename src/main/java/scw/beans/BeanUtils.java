@@ -36,6 +36,7 @@ import scw.core.aop.ProxyUtils;
 import scw.core.aop.ReflectInvoker;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
+import scw.core.instance.InstanceFactory;
 import scw.core.reflect.DefaultFieldDefinition;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
@@ -45,9 +46,11 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
 public final class BeanUtils {
+	private static Logger logger = LoggerUtils.getLogger(BeanUtils.class);
 	private BeanUtils() {
 	};
 
@@ -265,18 +268,14 @@ public final class BeanUtils {
 	private static void existDefaultValueWarnLog(String tag, Class<?> clz,
 			FieldDefinition field, Object obj) throws Exception {
 		if (checkExistDefaultValue(field, obj)) {
-			LoggerUtils.warn(BeanUtils.class, tag + " class[" + clz.getName()
-					+ "] fieldName[" + field.getField().getName()
-					+ "] existence default value");
+			logger.warn("{} class[{}] fieldName[{}] existence default value", tag, clz.getName(), field.getField().getName());
 		}
 	}
 
 	private static void staticFieldWarnLog(String tag, Class<?> clz,
 			FieldDefinition field) {
 		if (Modifier.isStatic(field.getField().getModifiers())) {
-			LoggerUtils.warn(BeanUtils.class, tag + " class[" + clz.getName()
-					+ "] fieldName[" + field.getField().getName()
-					+ "] is a static field");
+			logger.warn("{} class[{}] fieldName[{}] is a static field", tag, clz.getName(), field.getField().getName());
 		}
 	}
 
@@ -565,6 +564,21 @@ public final class BeanUtils {
 			}
 		}
 		return list.isEmpty() ? null : list.toArray(new String[list.size()]);
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static void appendBean(Collection beans, InstanceFactory instanceFactory, PropertyFactory propertyFactory, String key){
+		String[] filters = StringUtils.commonSplit(propertyFactory.getProperty(key));
+		if (!ArrayUtils.isEmpty(filters)) {
+			for (String name : filters) {
+				if(!instanceFactory.isInstance(name)){
+					logger.warn("{}无法使用默认的方式实例化，请进行配置", name);
+					continue;
+				}
+				
+				beans.add(instanceFactory.getInstance(name));
+			}
+		}
 	}
 }
 

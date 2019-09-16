@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.core.utils.StringUtils;
@@ -129,8 +130,8 @@ public final class ServletUtils {
 	}
 
 	public static Collection<Filter> getFilters(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		LinkedList<Filter> filters = MVCUtils.getFilters(instanceFactory, propertyFactory, "servlet.filters");
-		filters.addAll(MVCUtils.getFilters(instanceFactory, propertyFactory));
+		LinkedList<Filter> filters = MVCUtils.getFilters(instanceFactory, propertyFactory);
+		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, "servlet.filters");
 		return filters;
 	}
 
