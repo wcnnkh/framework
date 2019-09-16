@@ -56,10 +56,10 @@ public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 
 					add(fileItem.getFieldName(), fileItem);
 					if (fileItem.isFormField()) {
-						logger.debug("form表单字段name={}, value=",
+						logger.info("form表单字段name={}, value=",
 								fileItem.getFieldName(), fileItem.toString());
 					} else {
-						logger.debug("form表单文件[name={}, size={}, fileName={}]",
+						logger.info("form表单文件[name={}, size={}, fileName={}]",
 								fileItem.getFieldName(), fileItem.getSize(),
 								fileItem.getName());
 					}
