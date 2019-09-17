@@ -7,7 +7,7 @@ import scw.logger.Logger;
 
 public class Log4jLoggerFactory extends AbstractILoggerFactory {
 
-	public Log4jLoggerFactory() {
+	static{
 		Log4jUtils.defaultInit();
 	}
 

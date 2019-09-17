@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
 
+import scw.core.instance.InstanceException;
 import scw.core.instance.NoArgsInstanceFactory;
 
 public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
@@ -48,7 +49,10 @@ public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 		Constructor<?> constructor = null;
 		try {
 			constructor = getConstructor(type);
-		} catch (Exception e1) {
+		} catch (Exception e) {
+			if (e instanceof InstanceException) {
+				throw (InstanceException) e;
+			}
 		}
 
 		if (constructor == null) {
@@ -58,7 +62,7 @@ public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 		try {
 			return (T) constructor.newInstance();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new InstanceException(e);
 		}
 	}
 
@@ -69,20 +73,10 @@ public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 
 	public boolean isInstance(String name) {
 		Class<?> clazz = ReflectionInstanceFactory.forName(name);
-		return clazz == null ? false : isInstance(clazz);
+		return clazz != null;
 	}
 
 	public boolean isInstance(Class<?> clazz) {
-		if(clazz == null){
-			return false;
-		}
-		
-		Constructor<?> constructor = null;
-		try {
-			constructor = getConstructor(clazz);
-		} catch (Exception e1) {
-		}
-
-		return constructor != null;
+		return clazz != null;
 	}
 }

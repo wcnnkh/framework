@@ -1,8 +1,8 @@
 package scw.core.instance.support;
 
 import scw.core.exception.NotSupportException;
+import scw.core.instance.InstanceException;
 import scw.core.instance.NoArgsInstanceFactory;
-import scw.core.reflect.ReflectUtils;
 import scw.core.utils.UnsafeUtils;
 
 public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
@@ -19,8 +19,8 @@ public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
 
 		try {
 			return type.cast(UnsafeUtils.allocateInstance(type));
-		} catch (Throwable e) {
-			return null;
+		} catch (Exception e) {
+			throw new InstanceException(e);
 		}
 	}
 
@@ -35,7 +35,7 @@ public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
 			return false;
 		}
 
-		return isInstance(clazz);
+		return true;
 	}
 
 	public boolean isInstance(Class<?> clazz) {
@@ -43,7 +43,7 @@ public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
 			return false;
 		}
 		
-		return ReflectUtils.isInstance(clazz, false);
+		return true;
 	}
 
 }

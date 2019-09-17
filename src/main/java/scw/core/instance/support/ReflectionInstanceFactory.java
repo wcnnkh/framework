@@ -2,9 +2,9 @@ package scw.core.instance.support;
 
 import java.lang.reflect.Constructor;
 
+import scw.core.instance.InstanceException;
 import scw.core.instance.InstanceFactory;
 import scw.core.reflect.ReflectUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 
 @SuppressWarnings("unchecked")
@@ -28,8 +28,11 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		}
 
 		try {
-			return Class.forName(className, false, ClassUtils.getDefaultClassLoader());
-		} catch (ClassNotFoundException e) {
+			return Class.forName(className);
+		} catch (Throwable e) {
+			if (e instanceof InstanceException) {
+				throw (InstanceException) e;
+			}
 		}
 		return null;
 	}
@@ -41,8 +44,8 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 
 		try {
 			return (T) constructor.newInstance(params);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (Throwable e) {
+			throw new InstanceException(e);
 		}
 	}
 
@@ -84,19 +87,19 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 	}
 
 	public boolean isInstance(String name) {
-		if(name == null){
+		if (name == null) {
 			return false;
 		}
-		
+
 		Class<?> clazz = forName(name);
 		return clazz == null ? false : isInstance(clazz);
 	}
 
 	public boolean isInstance(Class<?> clazz) {
-		if(clazz == null){
+		if (clazz == null) {
 			return false;
 		}
-		
+
 		Constructor<?> constructor = ReflectUtils.getConstructor(clazz, false);
 		return constructor != null;
 	}
