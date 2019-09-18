@@ -1,15 +1,6 @@
 package scw.sql.orm;
 
-import java.io.Reader;
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Date;
-import java.sql.NClob;
-import java.sql.Time;
-import java.sql.Timestamp;
 
 import scw.core.utils.ClassUtils;
 import scw.core.utils.EnumUtils;
@@ -17,7 +8,7 @@ import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 
 public class DefaultColumnConvert implements ColumnConvert {
-	
+
 	public Object getter(Field field, Object bean) throws Exception {
 		return toSqlField(field, field.get(bean));
 	}
@@ -56,59 +47,57 @@ public class DefaultColumnConvert implements ColumnConvert {
 		}
 
 		Class<?> type = field.getType();
+		if (type.isInstance(value)) {
+			field.set(bean, value);
+			return;
+		}
+
 		if (ClassUtils.isBooleanType(type)) {
 			if (value != null) {
 				if (value instanceof Number) {
 					field.set(bean, ((Number) value).intValue() == 1);
-				} else if (value instanceof String) {
-					field.set(bean, StringUtils.parseBoolean((String) value));
+				} else {
+					field.set(bean, StringUtils.parseBoolean(value.toString()));
 				}
 			}
 		} else if (ClassUtils.isIntType(type)) {
 			if (value instanceof Number) {
 				field.set(bean, ((Number) value).intValue());
-			} else if (value instanceof String) {
-				field.set(bean, StringUtils.parseInt((String) value));
+			} else {
+				field.set(bean, StringUtils.parseInt(value.toString()));
 			}
 		} else if (ClassUtils.isLongType(type)) {
 			if (value instanceof Number) {
 				field.set(bean, ((Number) value).longValue());
-			} else if (value instanceof String) {
-				field.set(bean, StringUtils.parseLong((String) value));
+			} else {
+				field.set(bean, StringUtils.parseLong(value.toString()));
 			}
 		} else if (ClassUtils.isByteType(type)) {
 			if (value instanceof Number) {
 				field.set(bean, ((Number) value).byteValue());
-			} else if (value instanceof String) {
-				field.set(bean, StringUtils.parseByte((String) value));
+			} else {
+				field.set(bean, StringUtils.parseByte(value.toString()));
 			}
 		} else if (ClassUtils.isFloatType(field.getType())) {
 			if (value instanceof Number) {
 				field.set(bean, ((Number) value).floatValue());
-			} else if (value instanceof String) {
-				field.set(bean, StringUtils.parseFloat((String) value));
+			} else {
+				field.set(bean, StringUtils.parseFloat(value.toString()));
 			}
 		} else if (ClassUtils.isDoubleType(field.getType())) {
 			if (value instanceof Number) {
 				field.set(bean, ((Number) value).doubleValue());
-			} else if (value instanceof String) {
-				field.set(bean, StringUtils.parseDouble((String) value));
+			} else {
+				field.set(bean, StringUtils.parseDouble(value.toString()));
 			}
 		} else if (ClassUtils.isShortType(field.getType())) {
 			if (value instanceof Number) {
 				field.set(bean, ((Number) value).shortValue());
-			} else if (value instanceof String) {
-				field.set(bean, StringUtils.parseShort((String) value));
+			} else {
+				field.set(bean, StringUtils.parseShort(value.toString()));
 			}
-		} else if(type.isEnum()){
+		} else if (type.isEnum()) {
 			field.set(bean, EnumUtils.valueOf(type, value.toString()));
-		} else if (String.class.isAssignableFrom(type) || Date.class.isAssignableFrom(type)
-				|| java.util.Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
-				|| Timestamp.class.isAssignableFrom(type) || Array.class.isAssignableFrom(type)
-				|| Blob.class.isAssignableFrom(type) || Clob.class.isAssignableFrom(type)
-				|| BigDecimal.class.isAssignableFrom(type) || Reader.class.isAssignableFrom(type)
-				|| NClob.class.isAssignableFrom(type)) {
-			field.set(bean, value);
 		} else {
 			Object obj = JSONUtils.parseObject(value.toString(), field.getGenericType());
 			if (obj == null) {
