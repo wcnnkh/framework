@@ -22,10 +22,10 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.CompareUtils;
+import scw.core.utils.FormatUtils;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XUtils;
 
 public final class AutoBeanUtils {
@@ -39,8 +39,9 @@ public final class AutoBeanUtils {
 			AutoImpl autoConfig, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
 		LinkedList<AutoBeanService> autoBeanServices = new LinkedList<AutoBeanService>();
-		String value = SystemPropertyUtils.getProperty("beans.auto.names");
+		String value = propertyFactory.getProperty("beans.auto.names");
 		if (!StringUtils.isEmpty(value)) {
+			value = FormatUtils.format(value, propertyFactory, true);
 			String[] names = StringUtils.commonSplit(value);
 			if (!ArrayUtils.isEmpty(names)) {
 				for (String name : names) {
@@ -72,7 +73,8 @@ public final class AutoBeanUtils {
 				if (StringUtils.isEmpty(name)) {
 					continue;
 				}
-
+				
+				name = FormatUtils.format(name, propertyFactory, true);
 				autoBeanServices.add((AutoBeanService) beanFactory
 						.getInstance(name));
 			}

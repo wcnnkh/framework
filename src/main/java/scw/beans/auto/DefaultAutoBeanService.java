@@ -10,6 +10,7 @@ import scw.core.PropertyFactory;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.FormatUtils;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
@@ -75,7 +76,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 					serviceChain);
 		}
 
-		Collection<Class<?>> implList = getAutoImplClass(autoConfig, clazz);
+		Collection<Class<?>> implList = getAutoImplClass(autoConfig, clazz, propertyFactory);
 		if (CollectionUtils.isEmpty(implList)) {
 			return defaultService(clazz, beanFactory, propertyFactory,
 					serviceChain);
@@ -93,9 +94,14 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 	}
 
 	private static Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig,
-			Class<?> type) {
+			Class<?> type, PropertyFactory propertyFactory) {
 		LinkedList<Class<?>> list = new LinkedList<Class<?>>();
 		for (String name : autoConfig.implClassName()) {
+			if(StringUtils.isEmpty(name)){
+				continue;
+			}
+			
+			name = FormatUtils.format(name, propertyFactory, true);
 			Class<?> clz = null;
 			try {
 				clz = Class.forName(name);
