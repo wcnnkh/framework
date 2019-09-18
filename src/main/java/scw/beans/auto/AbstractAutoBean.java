@@ -63,7 +63,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 			try {
 				return (T) constructor.newInstance(params);
 			} catch (Exception e) {
-				throw new BeansException(type.getName());
+				throw new BeansException(type.getName(), e);
 			}
 		}
 	}
@@ -82,7 +82,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 			try {
 				return (T) constructor.newInstance(params);
 			} catch (Exception e) {
-				throw new BeansException(type.getName());
+				throw new BeansException(type.getName(), e);
 			}
 		}
 	}
