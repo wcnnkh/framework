@@ -23,14 +23,6 @@ public final class CrossDomainFilter extends HttpFilter {
 	public final CrossDomainDefinition defaultDefinition;
 	private Map<String, CrossDomainDefinition> crossDomainDefinitionMap = new HashMap<String, CrossDomainDefinition>();
 
-	public CrossDomainFilter() {
-		this(false);
-	}
-
-	public CrossDomainFilter(boolean credentials) {
-		this("*", "*", -1, "*", credentials);
-	}
-
 	public CrossDomainFilter(String origin, String methods, int maxAge, String headers, boolean credentials) {
 		this.defaultDefinition = new CrossDomainDefinition(origin, headers, methods, credentials, maxAge);
 	}

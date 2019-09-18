@@ -6,19 +6,18 @@ import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.exception.BeansException;
 
-public class AutoBeanDefinition extends AbstractBeanDefinition {
+public final class AutoBeanDefinition extends AbstractBeanDefinition {
 	private final AutoBean autoBean;
-	private final AutoBeanConfig autoBeanConfig;
 
 	public AutoBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> type, String[] filterNames, AutoBean autoBean) throws Exception {
-		super(valueWiredManager, beanFactory, propertyFactory, type, filterNames);
+			PropertyFactory propertyFactory, Class<?> type, AutoBean autoBean) throws Exception {
+		super(valueWiredManager, beanFactory, propertyFactory, type);
 		this.autoBean = autoBean;
-		this.autoBeanConfig = new SimpleAutoBeanConfig(filterNames);
+		init();
 	}
 
 	public Class<?> getType() {
-		return autoBean.getTargetClass() == null ? type : autoBean.getTargetClass();
+		return autoBean.getTargetClass() == null ? super.getType() : autoBean.getTargetClass();
 	}
 
 	public void autowrite(Object bean) throws Exception {
@@ -47,7 +46,7 @@ public class AutoBeanDefinition extends AbstractBeanDefinition {
 	@SuppressWarnings("unchecked")
 	public <T> T create() {
 		try {
-			return (T) autoBean.create(autoBeanConfig);
+			return (T) autoBean.create();
 		} catch (Exception e) {
 			throw new BeansException(getId(), e);
 		}
@@ -56,7 +55,7 @@ public class AutoBeanDefinition extends AbstractBeanDefinition {
 	@SuppressWarnings("unchecked")
 	public <T> T create(Object... params) {
 		try {
-			return (T) autoBean.create(autoBeanConfig, params);
+			return (T) autoBean.create(params);
 		} catch (Exception e) {
 			throw new BeansException(getId(), e);
 		}
@@ -65,7 +64,7 @@ public class AutoBeanDefinition extends AbstractBeanDefinition {
 	@SuppressWarnings("unchecked")
 	public <T> T create(Class<?>[] parameterTypes, Object... params) {
 		try {
-			return (T) autoBean.create(autoBeanConfig, parameterTypes, params);
+			return (T) autoBean.create(parameterTypes, params);
 		} catch (Exception e) {
 			throw new BeansException(getId(), e);
 		}

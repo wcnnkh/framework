@@ -120,4 +120,35 @@ public final class AnnotationUtils {
 		}
 		return map;
 	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Annotation> T getAnnotation(Annotation[] annotations, Class<T> type) {
+		if (annotations == null || annotations.length == 0) {
+			return null;
+		}
+
+		for (Annotation annotation : annotations) {
+			if (annotation == null) {
+				continue;
+			}
+
+			if (type.isInstance(annotation)) {
+				return (T) annotation;
+			}
+		}
+
+		return null;
+	}
+
+	public static <T extends Annotation> T getAnnotation(Annotation[][] annotations, Class<T> type, int index) {
+		if (annotations == null || annotations.length == 0) {
+			return null;
+		}
+
+		if (index >= annotations.length || index < 0) {
+			return null;
+		}
+
+		return getAnnotation(annotations[index], type);
+	}
 }

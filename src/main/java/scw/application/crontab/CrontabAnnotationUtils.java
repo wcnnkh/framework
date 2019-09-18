@@ -20,7 +20,7 @@ public final class CrontabAnnotationUtils {
 	private CrontabAnnotationUtils() {
 	};
 
-	public static void crontabService(Collection<Class<?>> classList, BeanFactory beanFactory, String[] filters) {
+	public static void crontabService(Collection<Class<?>> classList, BeanFactory beanFactory) {
 		HashSet<String> taskNameSet = new HashSet<String>();
 		for (Class<?> clz : classList) {
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Crontab.class)) {
@@ -34,7 +34,7 @@ public final class CrontabAnnotationUtils {
 						&& method.getParameterTypes().length == 1
 						&& ClassUtils.isLongType(method.getParameterTypes()[0]);
 				CrontabRunnable crontabRun = new CrontabRunnable(c.name(), beanFactory.getInstance(c.factory()),
-						new MethodProxyInvoker(beanFactory, clz, method, filters), invokeTime);
+						new MethodProxyInvoker(beanFactory, clz, method), invokeTime);
 				crontab.crontab(c.dayOfWeek(), c.month(), c.dayOfMonth(), c.hour(), c.minute(), crontabRun);
 				LoggerUtils.getLogger(CrontabAnnotationUtils.class).info("添加计划任务：{},dayOfWeek={},month={},dayOfMonth={},hour={},minute={}", c.name(), c.dayOfWeek(),
 						c.month(), c.dayOfMonth(), c.hour(), c.minute());

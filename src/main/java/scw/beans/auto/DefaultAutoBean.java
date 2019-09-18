@@ -35,8 +35,4 @@ public class DefaultAutoBean extends AbstractAutoBean {
 	protected Object[] getParameters() {
 		return parameters;
 	}
-
-	public boolean isInstance() {
-		return true;
-	}
 }

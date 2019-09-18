@@ -2,9 +2,7 @@ package scw.beans.rpc.http;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.net.URLConnection;
 
 import scw.beans.AbstractInterfaceBeanDefinition;
@@ -12,6 +10,8 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
+import scw.core.aop.Filter;
+import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
 import scw.io.Bytes;
 import scw.io.serializer.Serializer;
@@ -30,24 +30,25 @@ public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
 	private final Serializer serializer;
 
 	public HttpRpcBean(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Class<?> type, String[] filterNames, String host, String signStr, Serializer serializer) {
-		super(valueWiredManager, beanFactory, propertyFactory, type, filterNames);
+			Class<?> type, String host, String signStr, Serializer serializer) {
+		super(valueWiredManager, beanFactory, propertyFactory, type);
 		this.host = host;
 		this.signStr = signStr;
 		this.serializer = serializer;
+		init();
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T create() {
-		Object newProxyInstance = Proxy.newProxyInstance(getType().getClassLoader(), new Class[] { getType() },
-				new InvocationHandler() {
-
-					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-						HttpConsumerInvoker httpConsumerInvoker = new HttpConsumerInvoker(method);
-						return httpConsumerInvoker.invoke(args);
-					}
-				});
-		return (T) BeanUtils.proxyInterface(beanFactory, getType(), newProxyInstance, filterNames);
+		Filter filter = new Filter() {
+			
+			public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
+					throws Throwable {
+				HttpConsumerInvoker httpConsumerInvoker = new HttpConsumerInvoker(method);
+				return httpConsumerInvoker.invoke(args);
+			}
+		};
+		return (T) BeanUtils.proxyInterface(beanFactory, getType(), filter);
 	}
 
 	final class HttpConsumerInvoker implements Invoker {

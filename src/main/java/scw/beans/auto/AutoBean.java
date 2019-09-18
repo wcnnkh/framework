@@ -1,17 +1,11 @@
 package scw.beans.auto;
 
+import scw.core.InstanceDefinition;
 
-public interface AutoBean {
+public interface AutoBean extends InstanceDefinition{
 	boolean isReference();
 	
 	Class<?> getTargetClass();
 	
 	boolean isInstance();
-	
-	Object create(AutoBeanConfig config) throws Exception;
-
-	Object create(AutoBeanConfig config, Object... params) throws Exception;
-
-	Object create(AutoBeanConfig config, Class<?>[] parameterTypes,
-			Object... params) throws Exception;
 }

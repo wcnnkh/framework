@@ -1,4 +1,4 @@
-package scw.mvc.annotation;
+package scw.core.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target({ ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Parameter {
+public @interface ParameterName {
 	public String value() default "";
 }

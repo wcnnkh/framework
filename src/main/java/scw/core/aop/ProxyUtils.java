@@ -36,12 +36,12 @@ public final class ProxyUtils {
 		return isJDKProxy(instance.getClass());
 	}
 	
-	public static Object newProxyInstance(Object obj, Class<?> interfaceClass,
+	public static Object proxyInstance(Object obj, Class<?> interfaceClass,
 			Filter... filters) {
-		return newProxyInstance(obj, interfaceClass, Arrays.asList(filters));
+		return proxyInstance(obj, interfaceClass, Arrays.asList(filters));
 	}
 
-	public static Object newProxyInstance(Object obj, Class<?> interfaceClass,
+	public static Object proxyInstance(Object obj, Class<?> interfaceClass,
 			Collection<Filter> filters) {
 		return Proxy.newProxyInstance(interfaceClass.getClassLoader(),
 				new Class<?>[] { interfaceClass }, new FilterInvocationHandler(

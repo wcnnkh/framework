@@ -29,6 +29,7 @@ import scw.core.LinkedMultiValueMap;
 import scw.core.MultiValueMap;
 import scw.core.PropertyFactory;
 import scw.core.ValueFactory;
+import scw.core.annotation.ParameterName;
 import scw.core.context.Context;
 import scw.core.context.ContextManager;
 import scw.core.context.support.ThreadLocalContextManager;
@@ -53,7 +54,6 @@ import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Methods;
 import scw.mvc.annotation.Model;
-import scw.mvc.annotation.Parameter;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
@@ -145,9 +145,9 @@ public final class MVCUtils {
 				}
 
 				String fieldName = field.getName();
-				Parameter parameter = field.getAnnotation(Parameter.class);
-				if (parameter != null && StringUtils.isNotEmpty(parameter.value())) {
-					fieldName = parameter.value();
+				ParameterName parameterName = field.getAnnotation(ParameterName.class);
+				if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
+					fieldName = parameterName.value();
 				}
 
 				String key = StringUtils.isEmpty(prefix) ? fieldName : prefix + fieldName;

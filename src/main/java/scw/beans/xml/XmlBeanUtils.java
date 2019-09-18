@@ -1,6 +1,8 @@
 package scw.beans.xml;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +14,6 @@ import scw.beans.BeanUtils;
 import scw.beans.EParameterType;
 import scw.core.PropertyFactory;
 import scw.core.exception.BeansException;
-import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -186,14 +187,13 @@ public final class XmlBeanUtils {
 				: propertiesList.toArray(new XmlBeanParameter[propertiesList.size()]);
 	}
 
-	public static String[] getFilters(Node node, String[] rootFilters) {
+	public static Collection<String> getFilters(Node node) {
 		String filters = XMLUtils.getNodeAttributeValue(node, "filters");
 		if (StringUtils.isEmpty(filters)) {
-			return ArrayUtils.clone(rootFilters);
+			return null;
 		}
 
-		String[] arr = StringUtils.commonSplit(filters);
-		return ArrayUtils.merge(rootFilters, arr);
+		return Arrays.asList(StringUtils.commonSplit(filters));
 	}
 
 	public static String getClassName(Node node) {
@@ -221,8 +221,8 @@ public final class XmlBeanUtils {
 		}
 		return timeUnit;
 	}
-	
-	public static String getProxyName(PropertyFactory propertyFactory, Node node){
+
+	public static String getProxyName(PropertyFactory propertyFactory, Node node) {
 		return XMLUtils.getNodeAttributeValue(propertyFactory, node, "proxy");
 	}
 }

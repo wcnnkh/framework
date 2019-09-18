@@ -7,11 +7,10 @@ import scw.core.exception.NotSupportException;
 public abstract class AbstractInterfaceBeanDefinition extends AbstractBeanDefinition {
 
 	public AbstractInterfaceBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> type, String[] filterNames) {
-		super(valueWiredManager, beanFactory, propertyFactory, type, filterNames);
+			PropertyFactory propertyFactory, Class<?> type) {
+		super(valueWiredManager, beanFactory, propertyFactory, type);
 	}
 
-	@Override
 	public boolean isInstance() {
 		return true;
 	}

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Autowired;
 import scw.beans.annotation.TCC;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
@@ -34,10 +33,9 @@ public final class TCCTransactionFilter implements Filter {
 		return classTCC;
 	}
 
-	@Autowired
 	private BeanFactory beanFactory;
-
-	protected TCCTransactionFilter() {
+	public TCCTransactionFilter(BeanFactory beanFactory) {
+		this.beanFactory = beanFactory;
 	};
 
 	private void transaction(Class<?> interfaceClz, Class<?> belongClass, Object rtnValue, Method method, Object[] args) {

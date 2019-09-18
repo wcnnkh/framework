@@ -6,40 +6,38 @@ import scw.beans.property.ValueWiredManager;
 import scw.core.Init;
 import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
-import scw.core.reflect.ReflectUtils;
 
-public abstract class AbstractBeanDefinition implements BeanDefinition {
+public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	protected final BeanFactory beanFactory;
-	protected final Class<?> type;
+	private final Class<?> type;
 	private final String id;
-	private final NoArgumentBeanMethod[] initMethods;
-	private final NoArgumentBeanMethod[] destroyMethods;
-	private final boolean proxy;
+	private NoArgumentBeanMethod[] initMethods;
+	private NoArgumentBeanMethod[] destroyMethods;
+	private boolean proxy;
 	protected final PropertyFactory propertyFactory;
-	protected final String[] filterNames;
-	private final boolean singleton;
-	private final FieldDefinition[] autowriteFieldDefinition;
-	private final String[] names;
+	private boolean singleton;
+	private FieldDefinition[] autowriteFieldDefinition;
+	private String[] names;
 	protected final ValueWiredManager valueWiredManager;
-	private final boolean instance;
 
 	public AbstractBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> type, String[] filterNames) {
+			PropertyFactory propertyFactory, Class<?> type) {
 		this.valueWiredManager = valueWiredManager;
 		this.beanFactory = beanFactory;
 		this.type = type;
 		this.propertyFactory = propertyFactory;
 		this.id = type.getName();
-		this.names = BeanUtils.getServiceNames(type);
-		this.initMethods = BeanUtils.getInitMethodList(type).toArray(new NoArgumentBeanMethod[0]);
-		this.destroyMethods = BeanUtils.getDestroyMethdoList(type).toArray(new NoArgumentBeanMethod[0]);
-		this.filterNames = filterNames;
-		this.proxy = BeanUtils.checkProxy(type, filterNames);
-		scw.beans.annotation.Bean bean = type.getAnnotation(scw.beans.annotation.Bean.class);
+	}
+
+	public void init() {
+		this.names = BeanUtils.getServiceNames(getType());
+		this.initMethods = BeanUtils.getInitMethodList(getType()).toArray(new NoArgumentBeanMethod[0]);
+		this.destroyMethods = BeanUtils.getDestroyMethdoList(getType()).toArray(new NoArgumentBeanMethod[0]);
+		this.proxy = BeanUtils.checkProxy(getType());
+		scw.beans.annotation.Bean bean = getType().getAnnotation(scw.beans.annotation.Bean.class);
 		this.singleton = bean == null ? true : bean.singleton();
-		this.autowriteFieldDefinition = BeanUtils.getAutowriteFieldDefinitionList(type, false)
+		this.autowriteFieldDefinition = BeanUtils.getAutowriteFieldDefinitionList(getType(), false)
 				.toArray(new FieldDefinition[0]);
-		this.instance = ReflectUtils.isInstance(type, true);
 	}
 
 	public boolean isSingleton() {
@@ -59,7 +57,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean,
+		BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, getType(), bean,
 				Arrays.asList(autowriteFieldDefinition));
 	}
 
@@ -90,9 +88,5 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 
 	public String[] getNames() {
 		return names;
-	}
-
-	public boolean isInstance() {
-		return instance;
 	}
 }

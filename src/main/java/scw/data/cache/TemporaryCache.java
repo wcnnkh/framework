@@ -1,10 +1,13 @@
 package scw.data.cache;
 
+import scw.beans.annotation.AutoConfig;
+
 /**
  * 临时缓存
  * @author shuchaowen
  *
  */
+@AutoConfig(service=MemoryTemporaryCache.class)
 public interface TemporaryCache {
 	Object get(String key);
 

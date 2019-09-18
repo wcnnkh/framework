@@ -2,7 +2,6 @@ package scw.beans;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
 
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
@@ -10,14 +9,13 @@ import scw.core.aop.ProxyUtils;
 import scw.core.aop.ReflectInvoker;
 
 public final class MethodProxyInvoker implements Invoker {
-	private Collection<String> filters;
 	private final Method method;
 	private final BeanFactory beanFactory;
 	private boolean proxy;
 	private Object bean;
 	private final Invoker invoker;
 
-	public MethodProxyInvoker(BeanFactory beanFactory, Class<?> clz, Method method, String[] rootFilters) {
+	public MethodProxyInvoker(BeanFactory beanFactory, Class<?> clz, Method method) {
 		this.bean = Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(clz);
 		proxy = ProxyUtils.isProxy(bean);
 		if (proxy) {
@@ -37,7 +35,7 @@ public final class MethodProxyInvoker implements Invoker {
 			return invoker.invoke(args);
 		}
 
-		FilterChain filterChain = new BeanFactoryFilterChain(beanFactory, filters, null);
+		FilterChain filterChain = new BeanFactoryFilterChain(beanFactory, beanFactory.getRootFilterNames(), null);
 		return filterChain.doFilter(invoker, bean, method, args);
 	}
 }

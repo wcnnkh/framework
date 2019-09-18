@@ -4,13 +4,14 @@ import java.lang.reflect.Method;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.AsyncComplete;
-import scw.beans.annotation.Autowired;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
 import scw.core.aop.ProxyUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
 /**
  * 只能受BeanFactory管理
@@ -20,6 +21,7 @@ import scw.core.utils.StringUtils;
  */
 public final class AsyncCompleteFilter implements Filter {
 	private static ThreadLocal<Boolean> ENABLE_TAG = new ThreadLocal<Boolean>();
+	private static Logger logger = LoggerUtils.getLogger(AsyncCompleteFilter.class);
 
 	public static boolean isEnable() {
 		Boolean b = ENABLE_TAG.get();
@@ -30,8 +32,10 @@ public final class AsyncCompleteFilter implements Filter {
 		ENABLE_TAG.set(enable);
 	}
 
-	@Autowired
 	private BeanFactory beanFactory;
+	public AsyncCompleteFilter(BeanFactory beanFactory){
+		this.beanFactory = beanFactory;
+	}
 
 	private Object realFilter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
@@ -51,6 +55,11 @@ public final class AsyncCompleteFilter implements Filter {
 			} else {
 				beanName = ClassUtils.getUserClass(proxy).getName();
 			}
+		}
+		
+		if(!beanFactory.isInstance(beanName)){
+			logger.warn("@AsyncComplete invalid:{}", method.getName());
+			return filterChain.doFilter(invoker, proxy, method, args);
 		}
 
 		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete, method.getDeclaringClass(), beanName, method, args);

@@ -18,7 +18,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 	private static final String TAG_NAME = "http:reference";
 
 	public HttpRpcBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, NodeList rootNodeList, String[] filterNames) throws Exception {
+			PropertyFactory propertyFactory, NodeList rootNodeList) throws Exception {
 		for (int i = 0; i < rootNodeList.getLength(); i++) {
 			Node node = rootNodeList.item(i);
 			if (node == null) {
@@ -42,8 +42,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 						continue;
 					}
 
-					HttpRpcBean httpRpcBean = new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz,
-							filterNames, address, sign, ser);
+					HttpRpcBean httpRpcBean = new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz, address, sign, ser);
 					addBean(httpRpcBean);
 				}
 			}
@@ -71,7 +70,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 					myAddress = address;
 				}
 
-				addBean(new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz, filterNames, myAddress,
+				addBean(new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz, myAddress,
 						mySign, ser));
 			}
 		}

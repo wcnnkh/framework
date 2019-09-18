@@ -130,9 +130,9 @@ public class CommonApplication implements Application {
 	}
 
 	private void createAfter() {
-		this.beanFactory.addFirstFilters(AsyncCompleteFilter.class.getName());
-		this.beanFactory.addFirstFilters(TCCTransactionFilter.class.getName());
-		this.beanFactory.addFirstFilters(TransactionFilter.class.getName());
+		this.beanFactory.addFilter(AsyncCompleteFilter.class.getName());
+		this.beanFactory.addFilter(TCCTransactionFilter.class.getName());
+		this.beanFactory.addFilter(TransactionFilter.class.getName());
 	}
 
 	public final XmlBeanFactory getBeanFactory() {
@@ -206,7 +206,7 @@ public class CommonApplication implements Application {
 
 		CrontabAnnotationUtils.crontabService(
 				ResourceUtils.getClassList(getCrontabAnnotationPackage()),
-				beanFactory, getBeanFactory().getFilterNames());
+				beanFactory);
 		scanningConsumer();
 
 		if (ResourceUtils.isExist(configPath)) {
@@ -218,12 +218,10 @@ public class CommonApplication implements Application {
 	private void scanningConsumer() {
 		Collection<Class<?>> classes = ResourceUtils
 				.getClassList(getConsumerAnnotationPackage());
-		AnnotationConsumerUtils.scanningAMQPConsumer(getBeanFactory(), classes,
-				getBeanFactory().getFilterNames());
+		AnnotationConsumerUtils.scanningAMQPConsumer(getBeanFactory(), classes);
 		AnnotationConsumerUtils
 				.scanningConsumer(beanFactory, new XmlConsumerFactory(
-						beanFactory, propertyFactory, configPath), classes,
-						getBeanFactory().getFilterNames());
+						beanFactory, propertyFactory, configPath), classes);
 	}
 
 	public void destroy() {

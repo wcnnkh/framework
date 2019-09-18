@@ -12,7 +12,6 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
 import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.mvc.servlet.DefaultServletService;
 
 @Bean(proxy = false)
 public class AsyncServletService extends DefaultServletService implements scw.core.Destroy {
@@ -22,8 +21,7 @@ public class AsyncServletService extends DefaultServletService implements scw.co
 	 */
 	private final boolean containerThreadManager;
 
-	public AsyncServletService(BeanFactory beanFactory, PropertyFactory propertyFactory, String configPath,
-			String[] rootBeanFilters) throws Throwable {
+	public AsyncServletService(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Throwable {
 		super(beanFactory, propertyFactory);
 		int coreSize = StringUtils.parseInt(propertyFactory.getProperty("servlet.thread.core.size"), 16);
 		int maxSize = StringUtils.parseInt(propertyFactory.getProperty("servlet.thread.max.size"), 512);

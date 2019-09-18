@@ -309,4 +309,15 @@ public final class XUtils {
 			return valueFactory.getObject(data, type);
 		}
 	}
+
+	/**
+	 * 是否是普通类型
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isCommonType(Class<?> type) {
+		return ClassUtils.isPrimitiveOrWrapper(type) || type == String.class || type.isArray() || type.isEnum()
+				|| Class.class == type || BigDecimal.class == type || BigInteger.class == type;
+	}
 }

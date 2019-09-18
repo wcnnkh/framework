@@ -6,19 +6,19 @@ import java.math.BigInteger;
 import java.util.Collection;
 
 import scw.beans.BeanFactory;
+import scw.core.annotation.ParameterName;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
 import scw.json.JSONParseSupport;
-import scw.mvc.annotation.Parameter;
 
 public abstract class AbstractParameterChannel extends AbstractChannel implements ParameterChannel {
 	protected final JSONParseSupport jsonParseSupport;
 
-	public AbstractParameterChannel(BeanFactory beanFactory, boolean logEnabled,
+	public AbstractParameterChannel(BeanFactory beanFactory, boolean logEnable,
 			Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport) {
-		super(beanFactory, logEnabled, parameterFilters);
+		super(beanFactory, logEnable, parameterFilters);
 		this.jsonParseSupport = jsonParseSupport;
 	}
 
@@ -27,17 +27,21 @@ public abstract class AbstractParameterChannel extends AbstractChannel implement
 			return this;
 		}
 
-		String name = parameterDefinition.getName();
-		Parameter parameter = parameterDefinition.getAnnotation(Parameter.class);
-		if (parameter != null) {
-			name = parameter.value();
-		}
-
+		String name = getParameterName(parameterDefinition);
 		if (StringUtils.isEmpty(name)) {
 			return getObject(parameterDefinition.getGenericType());
 		}
 
 		return XUtils.getValue(this, name, parameterDefinition.getGenericType());
+	}
+
+	public String getParameterName(ParameterDefinition parameterDefinition) {
+		String name = parameterDefinition.getName();
+		ParameterName parameterName = parameterDefinition.getAnnotation(ParameterName.class);
+		if (parameterName != null) {
+			name = parameterName.value();
+		}
+		return name;
 	}
 
 	protected void parameterError(Exception e, String key, String v) {

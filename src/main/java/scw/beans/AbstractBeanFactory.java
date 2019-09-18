@@ -71,8 +71,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 					for (Entry<String, BeanDefinition> entry : map.entrySet()) {
 						String key = entry.getKey();
 						if (beanMap.containsKey(key)) {
-							logger.warn("Already exist id:{}, definition:{}",
-									key,
+							logger.warn("Already exist id:{}, definition:{}", key,
 									JSONUtils.toJSONString(entry.getValue()));
 							continue;
 						}
@@ -82,15 +81,13 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 				}
 			}
 
-			Map<String, String> nameMapping = beanConfigFactory
-					.getNameMappingMap();
+			Map<String, String> nameMapping = beanConfigFactory.getNameMappingMap();
 			if (nameMapping != null) {
 				synchronized (nameMappingMap) {
 					for (Entry<String, String> entry : nameMapping.entrySet()) {
 						String key = entry.getKey();
 						if (nameMappingMap.containsKey(key)) {
-							logger.warn("Already exist name:{}, definition:{}",
-									key,
+							logger.warn("Already exist name:{}, definition:{}", key,
 									JSONUtils.toJSONString(entry.getValue()));
 							continue;
 						}
@@ -107,8 +104,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getInstance(String name, Class<?>[] parameterTypes,
-			Object... params) {
+	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
 
 		Object obj = singletonMap.get(name);
 		if (obj != null) {
@@ -255,22 +251,18 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 		BeanDefinition beanDefinition = getBeanCache(name);
 		if (beanDefinition == null) {
-			boolean append = false;
 			synchronized (this) {
 				beanDefinition = getBeanCache(name);
 				if (beanDefinition == null) {
 					beanDefinition = newBeanDefinition(name);
-					append = true;
 				}
 			}
 
-			if (append) {
-				if (beanDefinition != null) {
-					synchronized (beanMap) {
-						beanMap.put(beanDefinition.getId(), beanDefinition);
-					}
-					addBeanNameMapping(beanDefinition);
+			if (beanDefinition != null) {
+				synchronized (beanMap) {
+					beanMap.put(beanDefinition.getId(), beanDefinition);
 				}
+				addBeanNameMapping(beanDefinition);
 			}
 		}
 
@@ -297,9 +289,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	public final boolean contains(String name) {
-		boolean b = singletonMap.containsKey(name)
-				|| nameMappingMap.containsKey(name)
-				|| beanMap.containsKey(name);
+		boolean b = singletonMap.containsKey(name) || nameMappingMap.containsKey(name) || beanMap.containsKey(name);
 		if (b) {
 			return b;
 		}
@@ -309,13 +299,16 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	public boolean isInstance(String name) {
+		if (singletonMap.containsKey(name)) {
+			return true;
+		}
+
 		BeanDefinition beanDefinition = getBeanDefinition(name);
 		if (beanDefinition == null) {
 			return false;
 		}
 
-		return singletonMap.containsKey(beanDefinition.getId())
-				|| beanDefinition.isInstance();
+		return singletonMap.containsKey(beanDefinition.getId()) || beanDefinition.isInstance();
 	}
 
 	public boolean isInstance(Class<?> clazz) {
@@ -353,16 +346,14 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 		Proxy proxy = clz.getAnnotation(Proxy.class);
 		if (proxy != null) {
-			return new CommonBeanDefinition(getValueWiredManager(), this,
-					getPropertyFactory(), clz, getFilterNames());
+			return new CommonBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz);
 		}
 
 		AutoConfig autoConfig = clz.getAnnotation(AutoConfig.class);
 		if (autoConfig == null || AutoBeanService.class.isAssignableFrom(clz)) {
-			if (ReflectUtils.isInstance(clz, false)) {
+			if (ReflectUtils.isInstance(clz)) {
 				try {
-					return new CommonBeanDefinition(getValueWiredManager(),
-							this, getPropertyFactory(), clz, getFilterNames());
+					return new CommonBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz);
 				} catch (Exception e) {
 					throw new BeansException(clz.getName(), e);
 				}
@@ -373,12 +364,10 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			return null;
 		}
 
-		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, autoConfig,
-				this, getPropertyFactory());
+		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, autoConfig, this, getPropertyFactory());
 		if (autoBean != null) {
 			try {
-				return new AutoBeanDefinition(getValueWiredManager(), this,
-						getPropertyFactory(), clz, getFilterNames(), autoBean);
+				return new AutoBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz, autoBean);
 			} catch (Exception e) {
 				throw new BeansException(clz.getName(), e);
 			}
@@ -388,12 +377,9 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	public abstract PropertyFactory getPropertyFactory();
 
-	public abstract String[] getFilterNames();
-
 	public synchronized void init() {
 		try {
-			BeanUtils.initStatic(getValueWiredManager(), this,
-					getPropertyFactory(),
+			BeanUtils.initStatic(getValueWiredManager(), this, getPropertyFactory(),
 					ResourceUtils.getClassList(getInitStaticPackage()));
 		} catch (Exception e) {
 			throw new NestedRuntimeException(e);
@@ -402,8 +388,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	public synchronized void destroy() {
 		try {
-			BeanUtils.destroyStaticMethod(getValueWiredManager(),
-					ResourceUtils.getClassList(getInitStaticPackage()));
+			BeanUtils.destroyStaticMethod(getValueWiredManager(), ResourceUtils.getClassList(getInitStaticPackage()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -439,8 +424,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		return getInstance(type.getName(), params);
 	}
 
-	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
-			Object... params) {
+	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
 		return getInstance(type.getName(), parameterTypes, params);
 	}
 }

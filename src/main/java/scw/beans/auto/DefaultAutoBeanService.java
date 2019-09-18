@@ -56,8 +56,8 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			if (!ReflectUtils.isInstance(clazz, false)) {
 				return serviceChain.service(clazz, beanFactory, propertyFactory);
 			}
-
-			return new DefaultAutoBean(beanFactory, clazz);
+			
+			return new SimpleAutoBean(beanFactory, clazz, propertyFactory);
 		}
 
 		return AutoBeanUtils.autoBeanService(autoConfig.service(), autoConfig, beanFactory, propertyFactory);

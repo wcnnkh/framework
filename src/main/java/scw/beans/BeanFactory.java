@@ -1,5 +1,7 @@
 package scw.beans;
 
+import java.util.Collection;
+
 import scw.core.instance.InstanceFactory;
 
 public interface BeanFactory extends InstanceFactory {
@@ -18,4 +20,6 @@ public interface BeanFactory extends InstanceFactory {
 	 * @return
 	 */
 	BeanDefinition getBeanDefinition(String name);
+	
+	Collection<String> getRootFilterNames();
 }

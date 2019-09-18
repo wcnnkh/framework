@@ -49,9 +49,9 @@ public final class ServletUtils {
 	public static ServletService getServletService(BeanFactory beanFactory, PropertyFactory propertyFactory,
 			boolean async) {
 		if (async) {
-			return beanFactory.getInstance("scw.mvc.servlet.AsyncServletService", beanFactory, propertyFactory);
+			return beanFactory.getInstance("scw.mvc.servlet.AsyncServletService");
 		} else {
-			return beanFactory.getInstance("scw.mvc.servlet.DefaultServletService", beanFactory, propertyFactory);
+			return beanFactory.getInstance("scw.mvc.servlet.DefaultServletService");
 		}
 	}
 

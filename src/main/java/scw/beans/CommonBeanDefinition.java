@@ -1,59 +1,61 @@
 package scw.beans;
 
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
 
 import scw.beans.annotation.Proxy;
+import scw.beans.auto.AutoBean;
+import scw.beans.auto.SimpleAutoBean;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.aop.Filter;
-import scw.core.aop.FilterInvocationHandler;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
-import scw.core.instance.InstanceUtils;
+import scw.core.exception.NotSupportException;
 import scw.core.reflect.ReflectUtils;
 
-public class CommonBeanDefinition extends AbstractBeanDefinition {
+public final class CommonBeanDefinition extends AbstractBeanDefinition {
+	private AutoBean autoBean;
+	private boolean instance;
 
-	public CommonBeanDefinition(ValueWiredManager valueWiredManager,
-			BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Class<?> type, String[] filterNames) {
-		super(valueWiredManager, beanFactory, propertyFactory, type,
-				filterNames);
+	public CommonBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> type) {
+		super(valueWiredManager, beanFactory, propertyFactory, type);
+		init();
+
+		if (getType().isInterface()) {
+			Proxy proxy = getType().getAnnotation(Proxy.class);
+			this.instance = proxy != null;
+		} else {
+			this.autoBean = new SimpleAutoBean(beanFactory, type, propertyFactory);
+			this.instance = autoBean != null && autoBean.isInstance();
+		}
+	}
+
+	public boolean isInstance() {
+		return instance;
 	}
 
 	protected Enhancer getProxyEnhancer() {
 		Proxy proxy = getType().getAnnotation(Proxy.class);
-		return BeanUtils.createEnhancer(
-				getType(),
-				beanFactory,
-				filterNames,
-				proxy == null ? null : (Filter) beanFactory.getInstance(proxy
-						.value()));
+		return BeanUtils.createEnhancer(getType(), beanFactory,
+				proxy == null ? null : (Filter) beanFactory.getInstance(proxy.value()));
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T create() {
+		if (!isInstance()) {
+			throw new NotSupportException(getType().toString());
+		}
+
 		if (getType().isInterface()) {
 			Proxy proxy = getType().getAnnotation(Proxy.class);
 			Filter filter = beanFactory.getInstance(proxy.value());
-			Object newProxyInstance = java.lang.reflect.Proxy.newProxyInstance(
-					getType().getClassLoader(), new Class[] { getType() },
-					new FilterInvocationHandler(Arrays.asList(filter)));
-			return (T) BeanUtils.proxyInterface(beanFactory, getType(),
-					newProxyInstance, filterNames);
+			return (T) BeanUtils.proxyInterface(beanFactory, getType(), filter);
 		}
 
-		Object bean;
 		try {
-			if (isProxy()) {
-				Enhancer enhancer = getProxyEnhancer();
-				bean = enhancer.create();
-			} else {
-				bean = InstanceUtils.getInstance(getType());
-			}
-			return (T) bean;
+			return (T) autoBean.create();
 		} catch (Exception e) {
 			throw new BeansException(getId(), e);
 		}
@@ -61,8 +63,7 @@ public class CommonBeanDefinition extends AbstractBeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	public <T> T create(Object... params) {
-		Constructor<T> constructor = (Constructor<T>) ReflectUtils
-				.findConstructorByParameters(getType(), true, params);
+		Constructor<T> constructor = (Constructor<T>) ReflectUtils.findConstructorByParameters(getType(), true, params);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}
@@ -83,8 +84,7 @@ public class CommonBeanDefinition extends AbstractBeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	public <T> T create(Class<?>[] parameterTypes, Object... params) {
-		Constructor<?> constructor = ReflectUtils.getConstructor(getType(),
-				false, parameterTypes);
+		Constructor<?> constructor = ReflectUtils.getConstructor(getType(), false, parameterTypes);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}

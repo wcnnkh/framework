@@ -21,7 +21,6 @@ import scw.beans.annotation.Bean;
 import scw.beans.annotation.Config;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
-import scw.beans.annotation.Proxy;
 import scw.beans.annotation.Service;
 import scw.beans.annotation.Value;
 import scw.beans.property.ValueWired;
@@ -339,9 +338,14 @@ public final class BeanUtils {
 			}
 		}
 	}
-
+	
 	public static Enhancer createEnhancer(Class<?> clz,
-			BeanFactory beanFactory, String[] filterNames, Filter lastFilter) {
+			BeanFactory beanFactory, Filter lastFilter){
+		return createEnhancer(clz, beanFactory, null, lastFilter);
+	}
+	
+	public static Enhancer createEnhancer(Class<?> clz,
+			BeanFactory beanFactory, Collection<String> filterNames, Filter lastFilter) {
 		Enhancer enhancer = new Enhancer();
 		enhancer.setCallback(new RootFilter(beanFactory, filterNames,
 				lastFilter));
@@ -352,7 +356,7 @@ public final class BeanUtils {
 		return enhancer;
 	}
 
-	public static boolean checkProxy(Class<?> type, String[] filterNames) {
+	public static boolean checkProxy(Class<?> type) {
 		if (Modifier.isFinal(type.getModifiers())) {// final修饰的类无法代理
 			return false;
 		}
@@ -360,18 +364,13 @@ public final class BeanUtils {
 		if (Filter.class.isAssignableFrom(type)) {
 			return false;
 		}
-
-		Proxy proxy = type.getAnnotation(Proxy.class);
-		if (proxy != null) {
-			return true;
-		}
-
-		boolean b = true;
+		
 		Bean bean = type.getAnnotation(Bean.class);
-		if (bean != null && !bean.proxy()) {
-			b = false;
+		if(bean != null){
+			return bean.proxy();
 		}
-		return b;
+		
+		return true;
 	}
 
 	public static Invoker getInvoker(BeanFactory beanFactory, Class<?> clz,
@@ -383,48 +382,19 @@ public final class BeanUtils {
 		}
 	}
 
-	public static LinkedList<String> getBeanFilterNameList(Class<?> clz,
-			Method method, String[] filterNames) {
-		// 把重复的filter过渡
-		LinkedList<String> list = new LinkedList<String>();
-		if (filterNames != null) {
-			for (String name : filterNames) {
-				list.addFirst(name);
-			}
-		}
-
-		scw.beans.annotation.BeanFilter beanFilter = method.getDeclaringClass()
-				.getAnnotation(scw.beans.annotation.BeanFilter.class);
-		if (beanFilter != null) {
-			for (Class<? extends Filter> c : beanFilter.value()) {
-				list.add(c.getName());
-			}
-		}
-
-		beanFilter = method
-				.getAnnotation(scw.beans.annotation.BeanFilter.class);
-		if (beanFilter != null) {
-			for (Class<? extends Filter> c : beanFilter.value()) {
-				list.add(c.getName());
-			}
-		}
-		return list;
-	}
-
 	public static <T> T proxyInterface(BeanFactory beanFactory,
-			Class<T> interfaceClass, String[] filterNames, Filter invocation) {
+			Class<T> interfaceClass, Filter invocation) {
+		return proxyInterface(beanFactory, interfaceClass, null, invocation);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T proxyInterface(BeanFactory beanFactory,
+			Class<T> interfaceClass, Collection<String> filterNames, Filter invocation) {
 		Object newProxyInstance = java.lang.reflect.Proxy.newProxyInstance(
 				interfaceClass.getClassLoader(),
 				new Class[] { interfaceClass }, new FilterInvocationHandler(
 						Arrays.asList(invocation)));
-		return (T) proxyInterface(beanFactory, interfaceClass,
-				newProxyInstance, filterNames);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T proxyInterface(BeanFactory beanFactory,
-			Class<T> interfaceClass, Object obj, String[] filterNames) {
-		return (T) ProxyUtils.newProxyInstance(obj, interfaceClass,
+		return (T) ProxyUtils.proxyInstance(newProxyInstance, interfaceClass,
 				new RootFilter(beanFactory, filterNames, null));
 	}
 

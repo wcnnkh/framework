@@ -84,7 +84,7 @@ public final class DubboUtils {
 	}
 
 	public static BeanConfigFactory getReferenceBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, NodeList nodeList, String[] filterNames) {
+			PropertyFactory propertyFactory, NodeList nodeList) {
 		if (!xmlExistDubboReference(nodeList)) {
 			return null;
 		}
@@ -95,7 +95,7 @@ public final class DubboUtils {
 		}
 
 		return InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory", valueWiredManager, beanFactory, propertyFactory,
-				nodeList, filterNames);
+				nodeList);
 	}
 
 	public static void exportService(BeanFactory beanFactory, PropertyFactory propertyFactory, NodeList nodeList) {

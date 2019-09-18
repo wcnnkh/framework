@@ -25,19 +25,19 @@ public class ReferenceAutoBean implements AutoBean {
 		return null;
 	}
 
-	public Object create(AutoBeanConfig config) throws Exception {
+	public boolean isInstance() {
+		return beanFactory.getBeanDefinition(reference).isInstance();
+	}
+
+	public <T> T create() {
 		return beanFactory.getInstance(reference);
 	}
 
-	public Object create(AutoBeanConfig config, Object... params) throws Exception {
+	public <T> T create(Object... params) {
 		return beanFactory.getInstance(reference, params);
 	}
 
-	public Object create(AutoBeanConfig config, Class<?>[] parameterTypes, Object... params) throws Exception {
+	public <T> T create(Class<?>[] parameterTypes, Object... params) {
 		return beanFactory.getInstance(reference, parameterTypes, params);
-	}
-
-	public boolean isInstance() {
-		return beanFactory.getBeanDefinition(reference).isInstance();
 	}
 }

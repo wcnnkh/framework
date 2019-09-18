@@ -1,6 +1,10 @@
 package scw.beans;
 
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Timer;
 
 import org.w3c.dom.Node;
@@ -21,7 +25,7 @@ import scw.core.utils.XMLUtils;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
 	private final PropertyFactory propertyFactory;
-	private String[] filterNames;
+	private LinkedList<String> filterNames = new LinkedList<String>();
 	private final String xmlPath;
 	private ValueWiredManager valueWiredManager;
 
@@ -41,8 +45,8 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	private void initParameter(String xmlPath) {
 		if (ResourceUtils.isExist(xmlPath)) {
 			Node root = XmlBeanUtils.getRootNode(xmlPath);
-			this.filterNames = StringUtils
-					.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, root, "filters"));
+			filterNames.addAll(Arrays.asList(StringUtils
+					.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, root, "filters"))));
 		}
 	}
 
@@ -59,38 +63,24 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		return propertyFactory;
 	}
 
-	public String[] getFilterNames() {
-		return filterNames;
+	public Collection<String> getRootFilterNames() {
+		return Collections.unmodifiableCollection(filterNames);
 	}
 
-	public void addFirstFilters(String filterName) {
+	public void addFirstFilter(String filterName) {
 		if (filterName == null || filterName.length() == 0) {
 			return;
 		}
-
-		if (filterNames == null || filterNames.length == 0) {
-			this.filterNames = new String[] { filterName };
-		} else {
-			String[] arr = new String[filterNames.length + 1];
-			arr[0] = filterName;
-			System.arraycopy(filterNames, 0, arr, 1, filterNames.length);
-			this.filterNames = arr;
-		}
+		
+		filterNames.addFirst(filterName);
 	}
 
-	public void addFilters(String filterName) {
+	public void addFilter(String filterName) {
 		if (filterName == null || filterName.length() == 0) {
 			return;
 		}
-
-		if (filterNames == null || filterNames.length == 0) {
-			this.filterNames = new String[] { filterName };
-		} else {
-			String[] arr = new String[filterNames.length + 1];
-			System.arraycopy(filterNames, 0, arr, 0, filterNames.length);
-			arr[filterNames.length] = filterName;
-			this.filterNames = arr;
-		}
+		
+		filterNames.add(filterName);
 	}
 
 	public String getXmlPath() {
@@ -106,14 +96,14 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		try {
 			if (ResourceUtils.isExist(xmlPath)) {
 				NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
-				addBeanConfigFactory(new XmlBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList,
-						filterNames, "bean"));
+				addBeanConfigFactory(
+						new XmlBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList, "bean"));
 				addBeanConfigFactory(new ServiceBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
-						getServicePackage(), filterNames));
-				addBeanConfigFactory(new HttpRpcBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
-						nodeList, filterNames));
-				BeanConfigFactory dubboBeanConfigFactory = DubboUtils.getReferenceBeanConfigFactory(
-						getValueWiredManager(), this, propertyFactory, nodeList, filterNames);
+						getServicePackage()));
+				addBeanConfigFactory(
+						new HttpRpcBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList));
+				BeanConfigFactory dubboBeanConfigFactory = DubboUtils
+						.getReferenceBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList);
 				if (dubboBeanConfigFactory != null) {
 					addBeanConfigFactory(dubboBeanConfigFactory);
 				}
