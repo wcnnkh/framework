@@ -1,8 +1,8 @@
 package scw.security.session;
 
-import scw.beans.annotation.AutoConfig;
+import scw.beans.annotation.AutoImpl;
 
-@AutoConfig(service=DefaultUserSessionFactory.class)
+@AutoImpl(impl=DefaultUserSessionFactory.class)
 public interface UserSessionFactory<T> {
 	UserSession<T> getSession(T uid);
 

@@ -1,8 +1,8 @@
 package scw.locks;
 
-import scw.beans.annotation.AutoConfig;
+import scw.beans.annotation.AutoImpl;
 
-@AutoConfig(service=DistributedLockFactory.class)
+@AutoImpl(impl=DistributedLockFactory.class)
 public interface LockFactory {
 	Lock getLock(String name);
 	

@@ -9,7 +9,7 @@ import scw.beans.auto.AutoBeanService;
 
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AutoConfig {
+public @interface AutoImpl {
 	/**
 	 * 
 	 * 尝试寻找默认实现
@@ -30,5 +30,11 @@ public @interface AutoConfig {
 	 * 
 	 * @return
 	 */
-	public Class<?> service() default Object.class;
+	public Class<?>[] impl() default {};
+	
+	/**
+	 * 默认的实现
+	 * @return
+	 */
+	public String[] implClassName() default {};
 }

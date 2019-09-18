@@ -1,13 +1,15 @@
 package scw.data.cache;
 
-import scw.beans.annotation.AutoConfig;
+import scw.beans.annotation.AutoImpl;
 
 /**
  * 临时缓存
+ * 
  * @author shuchaowen
  *
  */
-@AutoConfig(service=MemoryTemporaryCache.class)
+@AutoImpl(impl = { MemcachedTemporaryCache.class, RedisTemporaryCache.class,
+		MemoryTemporaryCache.class })
 public interface TemporaryCache {
 	Object get(String key);
 

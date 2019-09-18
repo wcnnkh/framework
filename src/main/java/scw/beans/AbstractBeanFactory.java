@@ -11,7 +11,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.beans.annotation.AutoConfig;
+import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.AutoBeanDefinition;
@@ -328,7 +328,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	public abstract ValueWiredManager getValueWiredManager();
 
-	private final BeanDefinition newBeanDefinition(String name) {
+	private BeanDefinition newBeanDefinition(String name) {
 		String n = nameMappingMap.get(name);
 		if (n == null) {
 			n = name;
@@ -349,7 +349,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			return new CommonBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz);
 		}
 
-		AutoConfig autoConfig = clz.getAnnotation(AutoConfig.class);
+		AutoImpl autoConfig = clz.getAnnotation(AutoImpl.class);
 		if (autoConfig == null || AutoBeanService.class.isAssignableFrom(clz)) {
 			if (ReflectUtils.isInstance(clz)) {
 				try {

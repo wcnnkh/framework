@@ -8,9 +8,10 @@ import java.util.Comparator;
 import java.util.LinkedList;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotation.AutoConfig;
+import scw.beans.annotation.AutoImpl;
 import scw.beans.auto.annotation.Auto;
 import scw.beans.auto.annotation.PropertyParameter;
+import scw.beans.auto.annotation.ResourceParameter;
 import scw.core.PropertyFactory;
 import scw.core.annotation.NotRequire;
 import scw.core.annotation.ParameterName;
@@ -21,6 +22,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.CompareUtils;
+import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
@@ -33,7 +35,8 @@ public final class AutoBeanUtils {
 	private AutoBeanUtils() {
 	};
 
-	public static Collection<AutoBeanService> getAutoBeanServices(AutoConfig autoConfig, BeanFactory beanFactory,
+	public static Collection<AutoBeanService> getAutoBeanServices(
+			AutoImpl autoConfig, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
 		LinkedList<AutoBeanService> autoBeanServices = new LinkedList<AutoBeanService>();
 		String value = SystemPropertyUtils.getProperty("beans.auto.names");
@@ -45,7 +48,8 @@ public final class AutoBeanUtils {
 						continue;
 					}
 
-					autoBeanServices.add((AutoBeanService) beanFactory.getInstance(name));
+					autoBeanServices.add((AutoBeanService) beanFactory
+							.getInstance(name));
 				}
 			}
 		}
@@ -58,7 +62,8 @@ public final class AutoBeanUtils {
 			if (service instanceof AutoBeanService) {
 				autoBeanServices.add((AutoBeanService) service);
 			} else {
-				autoBeanServices.add((AutoBeanService) beanFactory.getInstance(service.toString()));
+				autoBeanServices.add((AutoBeanService) beanFactory
+						.getInstance(service.toString()));
 			}
 		}
 
@@ -68,10 +73,12 @@ public final class AutoBeanUtils {
 					continue;
 				}
 
-				autoBeanServices.add((AutoBeanService) beanFactory.getInstance(name));
+				autoBeanServices.add((AutoBeanService) beanFactory
+						.getInstance(name));
 			}
 
-			for (Class<? extends AutoBeanService> service : autoConfig.autoBeanServices()) {
+			for (Class<? extends AutoBeanService> service : autoConfig
+					.autoBeanServices()) {
 				if (service == null) {
 					continue;
 				}
@@ -96,14 +103,16 @@ public final class AutoBeanUtils {
 		}
 	}
 
-	public static AutoBean autoBeanService(Class<?> clazz, AutoConfig autoConfig, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
-		Collection<AutoBeanService> autoBeanServices = AutoBeanUtils.getAutoBeanServices(autoConfig, beanFactory,
-				propertyFactory);
+	public static AutoBean autoBeanService(Class<?> clazz, AutoImpl autoConfig,
+			BeanFactory beanFactory, PropertyFactory propertyFactory) {
+		Collection<AutoBeanService> autoBeanServices = AutoBeanUtils
+				.getAutoBeanServices(autoConfig, beanFactory, propertyFactory);
 		if (!CollectionUtils.isEmpty(autoBeanServices)) {
-			AutoBeanServiceChain serviceChain = new SimpleAutoBeanServiceChain(autoBeanServices);
+			AutoBeanServiceChain serviceChain = new SimpleAutoBeanServiceChain(
+					autoBeanServices);
 			try {
-				return serviceChain.service(clazz, beanFactory, propertyFactory);
+				return serviceChain
+						.service(clazz, beanFactory, propertyFactory);
 			} catch (Exception e) {
 				throw new BeansException(clazz.getName(), e);
 			}
@@ -111,8 +120,8 @@ public final class AutoBeanUtils {
 		return null;
 	}
 
-	public static Constructor<?> getAutoConstructor(Class<?> type, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
+	public static Constructor<?> getAutoConstructor(Class<?> type,
+			BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		LinkedList<Constructor<?>> autoList = new LinkedList<Constructor<?>>();
 		LinkedList<Constructor<?>> defList = new LinkedList<Constructor<?>>();
 		for (Constructor<?> constructor : type.getDeclaredConstructors()) {
@@ -129,17 +138,19 @@ public final class AutoBeanUtils {
 			public int compare(Constructor<?> o1, Constructor<?> o2) {
 				Auto auto1 = o1.getAnnotation(Auto.class);
 				Auto auto2 = o2.getAnnotation(Auto.class);
-				return CompareUtils.compare(auto1 == null ? 0 : auto1.value(), auto2 == null ? 0 : auto2.value(), true);
+				return CompareUtils.compare(auto1 == null ? 0 : auto1.value(),
+						auto2 == null ? 0 : auto2.value(), true);
 			}
 		});
 
 		defList.sort(new Comparator<Constructor<?>>() {
 
 			public int compare(Constructor<?> o1, Constructor<?> o2) {
-				return CompareUtils.compare(o1.getParameterTypes().length, o2.getParameterTypes().length, true);
+				return CompareUtils.compare(o1.getParameterTypes().length,
+						o2.getParameterTypes().length, true);
 			}
 		});
-		
+
 		autoList.addAll(defList);
 
 		Class<?>[] parameterTypes = null;
@@ -155,11 +166,14 @@ public final class AutoBeanUtils {
 			Annotation[][] annotations = constructor.getParameterAnnotations();
 			String[] names = ClassUtils.getParameterName(constructor);
 			for (int i = 0; i < parameterTypes.length; i++) {
-				ParameterName parameterName = AnnotationUtils.getAnnotation(annotations, ParameterName.class, i);
-				PropertyParameter propertyParameter = AnnotationUtils.getAnnotation(annotations,
-						PropertyParameter.class, i);
-				NotRequire notRequire = AnnotationUtils.getAnnotation(annotations, NotRequire.class, i);
-				boolean require = notRequire == null ? true : !notRequire.value();
+				ParameterName parameterName = AnnotationUtils.getAnnotation(
+						annotations, ParameterName.class, i);
+				PropertyParameter propertyParameter = AnnotationUtils
+						.getAnnotation(annotations, PropertyParameter.class, i);
+				NotRequire notRequire = AnnotationUtils.getAnnotation(
+						annotations, NotRequire.class, i);
+				boolean require = notRequire == null ? true : !notRequire
+						.value();
 
 				Class<?> parameterType = parameterTypes[i];
 				// 是否是属性而不是bean
@@ -171,14 +185,36 @@ public final class AutoBeanUtils {
 				}
 
 				if (isProperty) {
-					String value = propertyFactory.getProperty(parameterName == null
-							? (StringUtils.isEmpty(packageName) ? names[i] : (packageName + "." + names[i]))
-							: parameterName.value());
+					String value = propertyFactory
+							.getProperty(parameterName == null ? (StringUtils
+									.isEmpty(packageName) ? names[i]
+									: (packageName + "." + names[i]))
+									: parameterName.value());
 					if (value == null) {
-						ParameterValue parameterValue = AnnotationUtils.getAnnotation(annotations, ParameterValue.class,
-								i);
+						ParameterValue parameterValue = AnnotationUtils
+								.getAnnotation(annotations,
+										ParameterValue.class, i);
 						if (parameterValue != null) {
 							value = parameterValue.value();
+						}
+					}
+
+					ResourceParameter resourceParameter = AnnotationUtils
+							.getAnnotation(annotations,
+									ResourceParameter.class, i);
+					if (resourceParameter != null) {
+						if (StringUtils.isEmpty(value)) {
+							boolean b = StringUtils.isEmpty(resourceParameter
+									.value()) ? false : ResourceUtils
+									.isExist(resourceParameter.value());
+							value = b ? resourceParameter.value() : null;
+						}else{
+							if(!ResourceUtils.isExist(value)){
+								boolean b = StringUtils.isEmpty(resourceParameter
+										.value()) ? false : ResourceUtils
+										.isExist(resourceParameter.value());
+								value = b? resourceParameter.value():null;
+							}
 						}
 					}
 
@@ -187,7 +223,8 @@ public final class AutoBeanUtils {
 						break;
 					}
 				} else {
-					String name = parameterName == null ? parameterTypes[i].getName() : parameterName.value();
+					String name = parameterName == null ? parameterTypes[i]
+							.getName() : parameterName.value();
 					if (StringUtils.isEmpty(name)) {
 						name = parameterTypes[i].getName();
 					}
@@ -215,8 +252,8 @@ public final class AutoBeanUtils {
 		return constructor;
 	}
 
-	public static Object[] getAutoArgs(Constructor<?> constructor, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
+	public static Object[] getAutoArgs(Constructor<?> constructor,
+			BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		Class<?>[] parameterTypes = constructor.getParameterTypes();
 		if (parameterTypes.length == 0) {
 			return new Object[0];
@@ -227,26 +264,32 @@ public final class AutoBeanUtils {
 		String[] names = ClassUtils.getParameterName(constructor);
 		Object[] args = new Object[parameterTypes.length];
 		for (int i = 0; i < parameterTypes.length; i++) {
-			ParameterName parameterName = AnnotationUtils.getAnnotation(annotations, ParameterName.class, i);
-			PropertyParameter propertyParameter = AnnotationUtils.getAnnotation(annotations, PropertyParameter.class,
-					i);
-			NotRequire notRequire = AnnotationUtils.getAnnotation(annotations, NotRequire.class, i);
+			ParameterName parameterName = AnnotationUtils.getAnnotation(
+					annotations, ParameterName.class, i);
+			PropertyParameter propertyParameter = AnnotationUtils
+					.getAnnotation(annotations, PropertyParameter.class, i);
+			NotRequire notRequire = AnnotationUtils.getAnnotation(annotations,
+					NotRequire.class, i);
 			boolean require = notRequire == null ? true : !notRequire.value();
 
 			Class<?> parameterType = parameterTypes[i];
 			// 是否是属性而不是bean
 			boolean isProperty;
 			if (propertyParameter == null) {
-				isProperty = ClassUtils.isPrimitiveOrWrapper(parameterType) || parameterType == String.class
+				isProperty = ClassUtils.isPrimitiveOrWrapper(parameterType)
+						|| parameterType == String.class
 						|| parameterType.isArray();
 			} else {
 				isProperty = propertyParameter.value();
 			}
 
 			if (isProperty) {
-				String value = propertyFactory.getProperty(parameterName == null ? names[i] : parameterName.value());
+				String value = propertyFactory
+						.getProperty(parameterName == null ? names[i]
+								: parameterName.value());
 				if (value == null) {
-					ParameterValue parameterValue = AnnotationUtils.getAnnotation(annotations, ParameterValue.class, i);
+					ParameterValue parameterValue = AnnotationUtils
+							.getAnnotation(annotations, ParameterValue.class, i);
 					if (parameterValue != null) {
 						value = parameterValue.value();
 					}
@@ -258,7 +301,8 @@ public final class AutoBeanUtils {
 
 				args[i] = StringParse.defaultParse(value, types[i]);
 			} else {
-				String name = parameterName == null ? parameterTypes[i].getName() : parameterName.value();
+				String name = parameterName == null ? parameterTypes[i]
+						.getName() : parameterName.value();
 				if (StringUtils.isEmpty(name)) {
 					name = parameterTypes[i].getName();
 				}
@@ -267,7 +311,8 @@ public final class AutoBeanUtils {
 					return null;
 				}
 
-				args[i] = beanFactory.isInstance(name) ? beanFactory.getInstance(name) : null;
+				args[i] = beanFactory.isInstance(name) ? beanFactory
+						.getInstance(name) : null;
 			}
 		}
 
