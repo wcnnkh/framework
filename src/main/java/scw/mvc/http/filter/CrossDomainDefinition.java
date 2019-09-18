@@ -4,7 +4,8 @@ import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 
 public final class CrossDomainDefinition {
-	public static final CrossDomainDefinition DEFAULT = new CrossDomainDefinition("*", "*", "*", false, -1);
+	private static String DEFAULT_HEADERS = "X-Requested-With,Content-Type,X-Forwarded-For,Cookie";
+	public static final CrossDomainDefinition DEFAULT = new CrossDomainDefinition("*", DEFAULT_HEADERS, "*", false, -1);
 
 	private final String origin;
 	private final String headers;
@@ -25,7 +26,12 @@ public final class CrossDomainDefinition {
 		this.origin = StringUtils.isEmpty(origin) ? "*" : origin;
 
 		String headers = propertyFactory.getProperty("mvc.http.cross-domain.headers");
-		this.headers = StringUtils.isEmpty(headers) ? "*" : headers;
+		this.headers = StringUtils.isEmpty(headers) ? DEFAULT_HEADERS : headers;
+
+		String appendHeaders = propertyFactory.getProperty("mvc.http.cross-domain.headers.append");
+		if (!StringUtils.isEmpty(appendHeaders)) {
+			headers = StringUtils.isEmpty(headers) ? appendHeaders : (headers + appendHeaders);
+		}
 
 		String methods = propertyFactory.getProperty("mvc.http.cross-domain.methods");
 		this.methods = StringUtils.isEmpty(methods) ? "*" : methods;

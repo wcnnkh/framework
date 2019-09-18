@@ -434,8 +434,9 @@ public final class MVCUtils {
 		return StringUtils.parseBoolean(propertyFactory.getProperty("mvc.parameter.cookie"));
 	}
 
+	//默认开启跨域
 	public static boolean isSupportCorssDomain(PropertyFactory propertyFactory) {
-		return StringUtils.parseBoolean(propertyFactory.getProperty("mvc.http.cross-domain"));
+		return StringUtils.parseBoolean(propertyFactory.getProperty("mvc.http.cross-domain"), true);
 	}
 
 	public static HttpServiceFilter getHttpServiceFilter(InstanceFactory beanFactory, PropertyFactory propertyFactory) {
