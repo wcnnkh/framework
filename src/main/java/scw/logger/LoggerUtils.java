@@ -75,7 +75,7 @@ public final class LoggerUtils {
 	public static void info(Class<?> clazz, String msg, Object... args) {
 		StringBuilder sb = new StringBuilder(256);
 		try {
-			loggerAppend(sb, System.currentTimeMillis(), "INFO",
+			loggerAppend(sb, System.currentTimeMillis(), "CONSOLE",
 					clazz.getName(), null, msg, args);
 			System.out.println(sb.toString());
 		} catch (Exception e) {
@@ -86,7 +86,7 @@ public final class LoggerUtils {
 	public static void warn(Class<?> clazz, String msg, Object... args) {
 		StringBuilder sb = new StringBuilder(256);
 		try {
-			loggerAppend(sb, System.currentTimeMillis(), "WARN",
+			loggerAppend(sb, System.currentTimeMillis(), "CONSOLE",
 					clazz.getName(), null, msg, args);
 			System.err.println(sb.toString());
 		} catch (Exception e) {
