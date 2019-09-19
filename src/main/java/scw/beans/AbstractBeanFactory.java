@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -15,22 +15,24 @@ import java.util.Map.Entry;
 
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
+import scw.beans.async.AsyncCompleteFilter;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.AutoBeanDefinition;
 import scw.beans.auto.AutoBeanUtils;
 import scw.beans.property.ValueWiredManager;
+import scw.beans.tcc.TCCTransactionFilter;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.PropertyFactory;
-import scw.core.aop.Filter;
-import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.BeansException;
 import scw.core.exception.NestedRuntimeException;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.transaction.TransactionFilter;
 
 public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy {
 	protected Logger logger = LoggerUtils.getLogger(getClass());
@@ -39,52 +41,39 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private LinkedList<Destroy> destroys = new LinkedList<Destroy>();
 	private volatile HashSet<String> notFoundSet = new HashSet<String>();
-	private LinkedHashSet<Filter> baseFilters = new LinkedHashSet<Filter>();
 	protected final PropertyFactory propertyFactory;
+	private final LinkedList<String> filterNames = new LinkedList<String>();
 
 	public AbstractBeanFactory(PropertyFactory propertyFactory) {
 		this.propertyFactory = propertyFactory;
 		singletonMap.put(PropertyFactory.class.getName(), propertyFactory);
 		singletonMap.put(BeanFactory.class.getName(), this);
+		filterNames.add(TransactionFilter.class.getName());
+		filterNames.add(TCCTransactionFilter.class.getName());
+		filterNames.add(AsyncCompleteFilter.class.getName());
+	}
+
+	protected final synchronized void addFilterName(Collection<String> names) {
+		if (CollectionUtils.isEmpty(names)) {
+			return;
+		}
+
+		filterNames.addAll(names);
+	}
+
+	public final Collection<String> getFilterNames() {
+		return Collections.unmodifiableCollection(filterNames);
 	}
 
 	public final PropertyFactory getPropertyFactory() {
 		return propertyFactory;
 	}
 
-	public Collection<Filter> getBaseFilters() {
-		return Collections.unmodifiableCollection(baseFilters);
-	}
-
-	public synchronized boolean addRootFilters(Filter filter) {
-		return baseFilters.add(filter);
-	}
-
 	protected boolean isEnableNotFoundSet() {
 		return true;
 	}
 
-	public void registerNameMapping(String key, String value) {
-		if (nameMappingMap.containsKey(key)) {
-			throw new AlreadyExistsException(key);
-		}
-
-		synchronized (nameMappingMap) {
-			nameMappingMap.put(key, value);
-		}
-	}
-
-	public void addSingleton(String id, Object singleton) {
-		if (singletonMap.containsKey(id)) {
-			throw new AlreadyExistsException(id);
-		}
-
-		synchronized (singletonMap) {
-			singletonMap.put(id, singleton);
-		}
-	}
-
-	public void addBeanConfigFactory(BeanConfigFactory beanConfigFactory) {
+	protected final void addBeanConfigFactory(BeanConfigFactory beanConfigFactory) {
 		if (beanConfigFactory != null) {
 			Map<String, BeanDefinition> map = beanConfigFactory.getBeanMap();
 			if (map != null) {
@@ -318,7 +307,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		return beanDefinition != null;
 	}
 
-	public boolean isInstance(String name) {
+	public final boolean isInstance(String name) {
 		if (singletonMap.containsKey(name)) {
 			return true;
 		}
@@ -331,7 +320,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		return singletonMap.containsKey(beanDefinition.getId()) || beanDefinition.isInstance();
 	}
 
-	public boolean isInstance(Class<?> clazz) {
+	public final boolean isInstance(Class<?> clazz) {
 		return isInstance(clazz.getName());
 	}
 
@@ -382,6 +371,15 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	public synchronized void init() {
+		Iterator<String> iterator = filterNames.iterator();
+		while (iterator.hasNext()) {
+			String name = iterator.next();
+			if (!isInstance(name)) {
+				logger.warn("Invalid filter:{}", name);
+				iterator.remove();
+			}
+		}
+
 		try {
 			BeanUtils.initStatic(getValueWiredManager(), this, getPropertyFactory(),
 					ResourceUtils.getClassList(getInitStaticPackage()));

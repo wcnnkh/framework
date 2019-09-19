@@ -2,7 +2,6 @@ package scw.beans;
 
 import java.util.Collection;
 
-import scw.core.aop.Filter;
 import scw.core.instance.InstanceFactory;
 
 public interface BeanFactory extends InstanceFactory {
@@ -24,17 +23,5 @@ public interface BeanFactory extends InstanceFactory {
 	 */
 	BeanDefinition getBeanDefinition(String name);
 
-	/**
-	 * 基础filter
-	 * 
-	 * @return
-	 */
-	Collection<Filter> getBaseFilters();
-
-	/**
-	 * 用户自定义filter
-	 * 
-	 * @return
-	 */
-	Collection<String> getUserFilterNames();
+	Collection<String> getFilterNames();
 }

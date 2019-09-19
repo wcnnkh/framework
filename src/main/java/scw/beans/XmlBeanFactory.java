@@ -2,8 +2,6 @@ package scw.beans;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Timer;
 
 import org.w3c.dom.Node;
@@ -23,26 +21,18 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
-	private Collection<String> userFilterNames;
 	private final String xmlPath;
 	private ValueWiredManager valueWiredManager;
 
 	public XmlBeanFactory(PropertyFactory propertyFactory, String xmlPath, Timer timer, int period) throws Exception {
 		super(propertyFactory);
 		this.xmlPath = xmlPath;
-		initParameter(xmlPath);
-		this.valueWiredManager = new ValueWiredManager(propertyFactory, this, timer, period);
-	}
-
-	@SuppressWarnings("unchecked")
-	private void initParameter(String xmlPath) {
 		if (ResourceUtils.isExist(xmlPath)) {
 			Node root = XmlBeanUtils.getRootNode(xmlPath);
-			this.userFilterNames = Arrays
-					.asList(StringUtils.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, root, "filters")));
-		} else {
-			this.userFilterNames = Collections.EMPTY_LIST;
+			addFilterName(Arrays
+					.asList(StringUtils.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, root, "filters"))));
 		}
+		this.valueWiredManager = new ValueWiredManager(propertyFactory, this, timer, period);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -52,10 +42,6 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 			throw new BeansException("not found [" + name + "]");
 		}
 		return (T) bean;
-	}
-
-	public Collection<String> getUserFilterNames() {
-		return Collections.unmodifiableCollection(userFilterNames);
 	}
 
 	public String getXmlPath() {

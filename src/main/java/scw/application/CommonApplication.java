@@ -9,11 +9,9 @@ import scw.application.consumer.XmlConsumerFactory;
 import scw.application.crontab.CrontabAnnotationUtils;
 import scw.beans.BeanUtils;
 import scw.beans.XmlBeanFactory;
-import scw.beans.async.AsyncCompleteFilter;
 import scw.beans.property.ValueWiredManager;
 import scw.beans.property.XmlPropertyFactory;
 import scw.beans.rpc.dubbo.DubboUtils;
-import scw.beans.tcc.TCCTransactionFilter;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.utils.ResourceUtils;
@@ -21,7 +19,6 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.logger.LoggerUtils;
 import scw.sql.orm.ORMUtils;
-import scw.transaction.TransactionFilter;
 
 public class CommonApplication implements Application {
 	public static final String DEFAULT_BEANS_PATH = "classpath:/beans.xml";
@@ -47,7 +44,6 @@ public class CommonApplication implements Application {
 		this.propertyFactory = propertyFactory == null
 				? new XmlPropertyFactory(this.configPath, timer, propertyRefreshPeriod) : propertyFactory;
 		this.beanFactory = getXmlBeanFactory();
-		createAfter();
 	}
 
 	public CommonApplication(String configXml, int valueRefreshPeriod, int propertyRefreshPeriod) {
@@ -57,7 +53,6 @@ public class CommonApplication implements Application {
 		this.configPath = configXml;
 		this.propertyFactory = new XmlPropertyFactory(getConfigPath(), timer, propertyRefreshPeriod);
 		this.beanFactory = getXmlBeanFactory();
-		createAfter();
 	}
 
 	/**
@@ -120,12 +115,6 @@ public class CommonApplication implements Application {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	private void createAfter() {
-		this.beanFactory.addRootFilters(new TransactionFilter());
-		this.beanFactory.addRootFilters(new TCCTransactionFilter(beanFactory));
-		this.beanFactory.addRootFilters(new AsyncCompleteFilter(beanFactory));
 	}
 
 	public final XmlBeanFactory getBeanFactory() {

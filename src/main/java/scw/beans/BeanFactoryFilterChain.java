@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import scw.core.aop.DefaultFilterChain;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.InstanceFactoryFilterChain;
@@ -16,7 +15,7 @@ public final class BeanFactoryFilterChain implements FilterChain {
 	public BeanFactoryFilterChain(BeanFactory beanFactory, Collection<String> filterNames, Class<?> clz, Method method,
 			Filter lastFilter) {
 		LinkedList<String> list = new LinkedList<String>();
-		list.addAll(beanFactory.getUserFilterNames());
+		list.addAll(beanFactory.getFilterNames());
 		if (filterNames != null) {
 			list.addAll(filterNames);
 		}
@@ -36,13 +35,11 @@ public final class BeanFactoryFilterChain implements FilterChain {
 			}
 		}
 
-		this.filterChain = new DefaultFilterChain(beanFactory.getBaseFilters(),
-				new InstanceFactoryFilterChain(beanFactory, list, lastFilter));
+		this.filterChain = new InstanceFactoryFilterChain(beanFactory, list, lastFilter);
 
 	}
 
 	public Object doFilter(Invoker invoker, Object proxy, Method method, Object[] args) throws Throwable {
-
 		return filterChain.doFilter(invoker, proxy, method, args);
 	}
 }
