@@ -2,48 +2,47 @@ package scw.beans;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedList;
 
+import scw.core.aop.DefaultFilterChain;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
+import scw.core.aop.InstanceFactoryFilterChain;
 import scw.core.aop.Invoker;
-import scw.core.utils.CollectionUtils;
 
 public final class BeanFactoryFilterChain implements FilterChain {
-	private Iterator<String> iterator;
-	private HashSet<Filter> cache;
-	private final BeanFactory beanFactory;
-	private Filter lastFilter;
+	private final FilterChain filterChain;
 
-	public BeanFactoryFilterChain(BeanFactory beanFactory, Collection<String> filters, Filter lastFilter) {
-		this.beanFactory = beanFactory;
-		if (!CollectionUtils.isEmpty(filters)) {
-			iterator = filters.iterator();
-			cache = new HashSet<Filter>(filters.size(), 1);
-			this.lastFilter = lastFilter;
+	public BeanFactoryFilterChain(BeanFactory beanFactory, Collection<String> filterNames, Class<?> clz, Method method,
+			Filter lastFilter) {
+		LinkedList<String> list = new LinkedList<String>();
+		list.addAll(beanFactory.getUserFilterNames());
+		if (filterNames != null) {
+			list.addAll(filterNames);
 		}
+
+		scw.beans.annotation.BeanFilter beanFilter = method.getDeclaringClass()
+				.getAnnotation(scw.beans.annotation.BeanFilter.class);
+		if (beanFilter != null) {
+			for (Class<? extends Filter> c : beanFilter.value()) {
+				list.add(c.getName());
+			}
+		}
+
+		beanFilter = method.getAnnotation(scw.beans.annotation.BeanFilter.class);
+		if (beanFilter != null) {
+			for (Class<? extends Filter> c : beanFilter.value()) {
+				list.add(c.getName());
+			}
+		}
+
+		this.filterChain = new DefaultFilterChain(beanFactory.getBaseFilters(),
+				new InstanceFactoryFilterChain(beanFactory, list, lastFilter));
+
 	}
 
 	public Object doFilter(Invoker invoker, Object proxy, Method method, Object[] args) throws Throwable {
-		if (iterator == null) {
-			return lastFilter(invoker, proxy, method, args);
-		} else if (iterator.hasNext()) {
-			Filter filter = beanFactory.getInstance(iterator.next());
-			if (cache.add(filter)) {
-				return filter.filter(invoker, proxy, method, args, this);
-			} else {
-				return doFilter(invoker, proxy, method, args);
-			}
-		} else {
-			return lastFilter(invoker, proxy, method, args);
-		}
-	}
 
-	private Object lastFilter(Invoker invoker, Object proxy, Method method, Object[] args) throws Throwable {
-		Object value = lastFilter == null ? invoker.invoke(args)
-				: lastFilter.filter(invoker, proxy, method, args, this);
-		lastFilter = null;
-		return value;
+		return filterChain.doFilter(invoker, proxy, method, args);
 	}
 }

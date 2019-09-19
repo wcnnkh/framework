@@ -14,9 +14,6 @@ import scw.core.utils.ClassUtils;
  *
  */
 public final class TransactionFilter implements Filter {
-	/**
-	 * 默认的事务定义
-	 */
 	private final TransactionDefinition transactionDefinition;
 
 	public TransactionFilter() {

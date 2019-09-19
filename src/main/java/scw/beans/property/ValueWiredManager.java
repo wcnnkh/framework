@@ -9,9 +9,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
 import scw.core.utils.CollectionUtils;
+import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
 public class ValueWiredManager {
+	private static Logger logger = LoggerUtils.getLogger(ValueWiredManager.class);
 	private ConcurrentHashMap<Object, ObjectValueWired> taskMap = new ConcurrentHashMap<Object, ObjectValueWired>();
 
 	private Timer timer;
@@ -49,7 +51,7 @@ public class ValueWiredManager {
 		if (taskMap.putIfAbsent(objectId, valueWired) == null) {// 不存在
 			valueWired.start(timer, valueWireds);
 		} else {
-			LoggerUtils.warn(ValueWiredManager.class, "已经存在相同的Value刷新任务了：{}", objectId);
+			logger.warn("已经存在相同的@Value刷新任务了：{}", objectId);
 		}
 	}
 

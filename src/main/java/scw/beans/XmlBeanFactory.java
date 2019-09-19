@@ -4,7 +4,6 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Timer;
 
 import org.w3c.dom.Node;
@@ -24,29 +23,25 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
-	private final PropertyFactory propertyFactory;
-	private LinkedList<String> filterNames = new LinkedList<String>();
+	private Collection<String> userFilterNames;
 	private final String xmlPath;
 	private ValueWiredManager valueWiredManager;
 
 	public XmlBeanFactory(PropertyFactory propertyFactory, String xmlPath, Timer timer, int period) throws Exception {
+		super(propertyFactory);
 		this.xmlPath = xmlPath;
-		this.propertyFactory = propertyFactory;
 		initParameter(xmlPath);
 		this.valueWiredManager = new ValueWiredManager(propertyFactory, this, timer, period);
-		register();
 	}
 
-	private void register() {
-		addSingleton(PropertyFactory.class.getName(), propertyFactory);
-		addSingleton(BeanFactory.class.getName(), this);
-	}
-
+	@SuppressWarnings("unchecked")
 	private void initParameter(String xmlPath) {
 		if (ResourceUtils.isExist(xmlPath)) {
 			Node root = XmlBeanUtils.getRootNode(xmlPath);
-			filterNames.addAll(Arrays.asList(StringUtils
-					.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, root, "filters"))));
+			this.userFilterNames = Arrays
+					.asList(StringUtils.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, root, "filters")));
+		} else {
+			this.userFilterNames = Collections.EMPTY_LIST;
 		}
 	}
 
@@ -59,28 +54,8 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		return (T) bean;
 	}
 
-	public final PropertyFactory getPropertyFactory() {
-		return propertyFactory;
-	}
-
-	public Collection<String> getRootFilterNames() {
-		return Collections.unmodifiableCollection(filterNames);
-	}
-
-	public void addFirstFilter(String filterName) {
-		if (filterName == null || filterName.length() == 0) {
-			return;
-		}
-		
-		filterNames.addFirst(filterName);
-	}
-
-	public void addFilter(String filterName) {
-		if (filterName == null || filterName.length() == 0) {
-			return;
-		}
-		
-		filterNames.add(filterName);
+	public Collection<String> getUserFilterNames() {
+		return Collections.unmodifiableCollection(userFilterNames);
 	}
 
 	public String getXmlPath() {

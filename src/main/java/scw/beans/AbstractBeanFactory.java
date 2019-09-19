@@ -2,9 +2,11 @@ package scw.beans;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -20,6 +22,7 @@ import scw.beans.property.ValueWiredManager;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.PropertyFactory;
+import scw.core.aop.Filter;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.BeansException;
 import scw.core.exception.NestedRuntimeException;
@@ -36,6 +39,26 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private LinkedList<Destroy> destroys = new LinkedList<Destroy>();
 	private volatile HashSet<String> notFoundSet = new HashSet<String>();
+	private LinkedHashSet<Filter> baseFilters = new LinkedHashSet<Filter>();
+	protected final PropertyFactory propertyFactory;
+
+	public AbstractBeanFactory(PropertyFactory propertyFactory) {
+		this.propertyFactory = propertyFactory;
+		singletonMap.put(PropertyFactory.class.getName(), propertyFactory);
+		singletonMap.put(BeanFactory.class.getName(), this);
+	}
+
+	public final PropertyFactory getPropertyFactory() {
+		return propertyFactory;
+	}
+
+	public Collection<Filter> getBaseFilters() {
+		return Collections.unmodifiableCollection(baseFilters);
+	}
+
+	public synchronized boolean addRootFilters(Filter filter) {
+		return baseFilters.add(filter);
+	}
 
 	protected boolean isEnableNotFoundSet() {
 		return true;
@@ -146,7 +169,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name, Object... params) {
-
 		Object obj = singletonMap.get(name);
 		if (obj != null) {
 			return (T) obj;
@@ -347,7 +369,8 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			return new CommonBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz);
 		}
 
-		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, clz.getAnnotation(AutoImpl.class), this, getPropertyFactory());
+		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, clz.getAnnotation(AutoImpl.class), this,
+				getPropertyFactory());
 		if (autoBean != null) {
 			try {
 				return new AutoBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz, autoBean);
@@ -357,8 +380,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 		return null;
 	}
-
-	public abstract PropertyFactory getPropertyFactory();
 
 	public synchronized void init() {
 		try {
