@@ -5,8 +5,10 @@ import scw.mvc.http.HttpChannel;
 import scw.security.session.Authorization;
 import scw.security.session.Session;
 import scw.security.session.UserSession;
+import scw.security.token.SimpleUserToken;
+import scw.security.token.UserToken;
 
-@Bean(singleton=false)
+@Bean(singleton = false)
 public class HttpChannelAuthorization<T> implements Authorization<T> {
 	private HttpChannel httpChannel;
 	private HttpChannelUserSessionFactory<T> httpChannelUserSessionFactory;
@@ -16,7 +18,8 @@ public class HttpChannelAuthorization<T> implements Authorization<T> {
 			HttpChannelUserSessionFactory<T> httpChannelUserSessionFactory) {
 		this.httpChannel = httpChannel;
 		this.httpChannelUserSessionFactory = httpChannelUserSessionFactory;
-		this.userSession = httpChannelUserSessionFactory.getUserSession(httpChannel);
+		this.userSession = httpChannelUserSessionFactory
+				.getUserSession(httpChannel);
 	}
 
 	public T getUid() {
@@ -27,8 +30,10 @@ public class HttpChannelAuthorization<T> implements Authorization<T> {
 		return userSession;
 	}
 
-	public void authorization(T uid) {
-		this.userSession = httpChannelUserSessionFactory.createUserSession(httpChannel, uid);
+	public UserToken<T> authorization(T uid) {
+		this.userSession = httpChannelUserSessionFactory.createUserSession(
+				httpChannel, uid);
+		return new SimpleUserToken<T>(userSession.getId(), uid);
 	}
 
 }

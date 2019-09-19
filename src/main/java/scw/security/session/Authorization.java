@@ -1,5 +1,7 @@
 package scw.security.session;
 
+import scw.security.token.UserToken;
+
 /**
  * 授权
  * @author shuchaowen
@@ -12,5 +14,5 @@ public interface Authorization<T> {
 	
 	Session getSession();
 	
-	void authorization(T uid);
+	UserToken<T> authorization(T uid);
 }
