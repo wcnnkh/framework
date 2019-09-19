@@ -1,8 +1,8 @@
 package scw.mvc.http.filter;
 
 import scw.beans.auto.annotation.Auto;
-import scw.core.annotation.NotRequire;
 import scw.core.annotation.ParameterName;
+import scw.core.annotation.ParameterValue;
 import scw.core.utils.StringUtils;
 import scw.mvc.FilterChain;
 import scw.mvc.http.HttpChannel;
@@ -20,7 +20,7 @@ public class HttpUserSessionFilter extends HttpFilter{
 	private ResultFactory resultFactory;
 	
 	@Auto
-	public HttpUserSessionFilter(HttpChannelUserSessionFactory httpChannelUserSessionFactory, @NotRequire@ParameterName("http.user.session.filter.uid.key")String uidKey, ResultFactory resultFactory){
+	public HttpUserSessionFilter(HttpChannelUserSessionFactory httpChannelUserSessionFactory, @ParameterName("http.user.session.filter.uid.key")@ParameterValue("uid")String uidKey, ResultFactory resultFactory){
 		this.httpChannelUserSessionFactory = httpChannelUserSessionFactory;
 		this.uidKey = uidKey;
 		this.resultFactory = resultFactory;
