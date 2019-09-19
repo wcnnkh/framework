@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.Arrays;
 
 import scw.core.utils.StringUtils;
@@ -18,6 +16,11 @@ import scw.mvc.http.HttpFilter;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 
+/**
+ * 并不推荐使用，只有当在条件简陋的条件下使用
+ * @author shuchaowen
+ *
+ */
 public final class ResourceServiceFilter extends HttpFilter {
 	private static Logger logger = LoggerFactory.getLogger(ResourceServiceFilter.class);
 	private final String filePath;
@@ -31,10 +34,10 @@ public final class ResourceServiceFilter extends HttpFilter {
 	}
 
 	private boolean checkPath(HttpRequest httpRequest) {
-		if(!"GET".equals(httpRequest.getMethod())){
+		if (!"GET".equals(httpRequest.getMethod())) {
 			return false;
 		}
-		
+
 		if (path == null || path.length == 0) {
 			return false;
 		}
@@ -66,16 +69,12 @@ public final class ResourceServiceFilter extends HttpFilter {
 	private void outputFile(File file, HttpResponse httpResponse) throws IOException {
 		OutputStream output = null;
 		FileInputStream fis = null;
-		FileChannel fileChannel = null;
-		MappedByteBuffer mappedByteBuffer;
 		try {
 			output = httpResponse.getOutputStream();
 			fis = new FileInputStream(file);
-			fileChannel = fis.getChannel();
-			mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
-			output.write(mappedByteBuffer.array());
+			IOUtils.write(fis, output, 1024 * 8);
 		} finally {
-			IOUtils.close(fileChannel, fis, output);
+			IOUtils.close(fis, output);
 		}
 	}
 
