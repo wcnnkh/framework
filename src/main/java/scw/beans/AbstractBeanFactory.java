@@ -259,14 +259,14 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	protected abstract String getInitStaticPackage();
 
 	public final BeanDefinition getBeanDefinition(String name) {
-		if (isEnableNotFoundSet()) {
-			if (notFoundSet.contains(name)) {
-				return null;
-			}
-		}
-
 		BeanDefinition beanDefinition = getBeanCache(name);
 		if (beanDefinition == null) {
+			if (isEnableNotFoundSet()) {
+				if (notFoundSet.contains(name)) {
+					return null;
+				}
+			}
+			
 			synchronized (this) {
 				beanDefinition = getBeanCache(name);
 				if (beanDefinition == null) {
