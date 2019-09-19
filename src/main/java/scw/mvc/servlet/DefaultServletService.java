@@ -69,14 +69,14 @@ public class DefaultServletService implements ServletService {
 	}
 
 	public void service(ServletRequest req, ServletResponse resp) {
-		if (getCharsetName() != null) {
+		if (charsetName != null) {
 			try {
-				req.setCharacterEncoding(getCharsetName());
+				req.setCharacterEncoding(charsetName);
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
 
-			resp.setCharacterEncoding(getCharsetName());
+			resp.setCharacterEncoding(charsetName);
 		}
 
 		if (req instanceof HttpServletRequest && resp instanceof HttpServletResponse) {

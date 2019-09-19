@@ -6,6 +6,8 @@ import java.util.LinkedList;
 
 import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
+import scw.core.utils.ArrayUtils;
+import scw.core.utils.StringUtils;
 import scw.mvc.Filter;
 import scw.mvc.FilterChain;
 import scw.mvc.MVCUtils;
@@ -25,13 +27,19 @@ public final class HttpServiceFilter extends HttpFilter {
 			String actionKey) {
 		filters = new LinkedList<Filter>();
 
-		filters.add(new HttpRpcServletFilter(beanFactory, propertyFactory));
+		filters.add(new RpcServletFilter(beanFactory, propertyFactory));
 		if (MVCUtils.isSupportCorssDomain(propertyFactory)) {
 			filters.add(new CrossDomainFilter(new CrossDomainDefinition(propertyFactory)));
 		}
 
+		String sourceRoot = MVCUtils.getSourceRoot(propertyFactory);
+		String[] sourcePath = MVCUtils.getSourcePath(propertyFactory);
+		if (!StringUtils.isEmpty(sourceRoot) && !ArrayUtils.isEmpty(sourcePath)) {
+			filters.add(new ResourceServiceFilter(sourceRoot, sourcePath));
+		}
+
 		filters.add(new ParameterActionServiceFilter(actionKey));
-		filters.add(new ServletPathServiceFilter());
+		filters.add(new PathServiceFilter());
 		filters.add(new RestServiceFilter());
 
 		for (Class<?> clz : classes) {

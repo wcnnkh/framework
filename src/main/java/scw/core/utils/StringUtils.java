@@ -1819,8 +1819,8 @@ public final class StringUtils {
 	}
 
 	/**
-	 * 判断字符串是否与通配符匹配 只能存在通配符\\*和? ?代表1个 *代表0个或多个
-	 * 
+	 * 判断字符串是否与通配符匹配 只能存在通配符*和? 
+	 * ?代表1个 *代表0个或多个
 	 * @param text
 	 * @param match
 	 * @return

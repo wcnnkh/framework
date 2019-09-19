@@ -15,7 +15,6 @@ import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.AutoBeanDefinition;
-import scw.beans.auto.AutoBeanService;
 import scw.beans.auto.AutoBeanUtils;
 import scw.beans.property.ValueWiredManager;
 import scw.core.Destroy;
@@ -24,7 +23,6 @@ import scw.core.PropertyFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.BeansException;
 import scw.core.exception.NestedRuntimeException;
-import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ResourceUtils;
 import scw.json.JSONUtils;
@@ -349,22 +347,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			return new CommonBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz);
 		}
 
-		AutoImpl autoConfig = clz.getAnnotation(AutoImpl.class);
-		if (autoConfig == null || AutoBeanService.class.isAssignableFrom(clz)) {
-			if (ReflectUtils.isInstance(clz)) {
-				try {
-					return new CommonBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz);
-				} catch (Exception e) {
-					throw new BeansException(clz.getName(), e);
-				}
-			}
-		}
-
-		if (AutoBeanService.class.isAssignableFrom(clz)) {
-			return null;
-		}
-
-		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, autoConfig, this, getPropertyFactory());
+		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, clz.getAnnotation(AutoImpl.class), this, getPropertyFactory());
 		if (autoBean != null) {
 			try {
 				return new AutoBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz, autoBean);

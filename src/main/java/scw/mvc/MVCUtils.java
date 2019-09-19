@@ -398,13 +398,13 @@ public final class MVCUtils {
 		}
 		return list;
 	}
-	
+
 	public static LinkedList<Filter> getFilters(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		LinkedList<Filter> filters = new LinkedList<Filter>();
-		if(instanceFactory.isInstance(ResultExceptionFilter.class)){//异常处理
+		if (instanceFactory.isInstance(ResultExceptionFilter.class)) {// 异常处理
 			filters.add(instanceFactory.getInstance(ResultExceptionFilter.class));
 		}
-		
+
 		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, "mvc.filters");
 		filters.add(getHttpServiceFilter(instanceFactory, propertyFactory));
 		return filters;
@@ -434,9 +434,22 @@ public final class MVCUtils {
 		return StringUtils.parseBoolean(propertyFactory.getProperty("mvc.parameter.cookie"));
 	}
 
-	//默认开启跨域
+	// 默认开启跨域
 	public static boolean isSupportCorssDomain(PropertyFactory propertyFactory) {
 		return StringUtils.parseBoolean(propertyFactory.getProperty("mvc.http.cross-domain"), true);
+	}
+
+	public static String getSourceRoot(PropertyFactory propertyFactory) {
+		return propertyFactory.getProperty("mvc.http.resource.root");
+	}
+
+	public static String[] getSourcePath(PropertyFactory propertyFactory) {
+		String arr = propertyFactory.getProperty("mvc.http.resource.path");
+		if (StringUtils.isEmpty(arr)) {
+			return null;
+		}
+
+		return StringUtils.commonSplit(arr);
 	}
 
 	public static HttpServiceFilter getHttpServiceFilter(InstanceFactory beanFactory, PropertyFactory propertyFactory) {
@@ -676,11 +689,11 @@ public final class MVCUtils {
 
 		if (checkView && (write instanceof View)) {
 			((View) write).render(channel);
-			return ;
+			return;
 		}
 
 		String callbackTag = null;
-		if(scw.net.http.Method.GET.equals(channel.getRequest().getMethod())){
+		if (scw.net.http.Method.GET.equals(channel.getRequest().getMethod())) {
 			if (!StringUtils.isEmpty(jsonp)) {
 				callbackTag = channel.getString(jsonp);
 				if (StringUtils.isEmpty(callbackTag)) {

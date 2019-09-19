@@ -10,11 +10,11 @@ import scw.mvc.http.HttpFilter;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 
-public final class HttpRpcServletFilter extends HttpFilter {
+public final class RpcServletFilter extends HttpFilter {
 	private final String rpcPath;
 	private final RpcService rpcService;
 
-	public HttpRpcServletFilter(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	public RpcServletFilter(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		this.rpcService = MVCUtils.getRPCService(beanFactory, propertyFactory);
 		this.rpcPath = MVCUtils.getRPCPath(propertyFactory);
 	}

@@ -40,7 +40,7 @@ public class SimpleAutoBean extends AbstractAutoBean {
 	@Override
 	protected Object[] getParameters() {
 		return autoConstructor == null ? null
-				: AutoBeanUtils.getAutoArgs(autoConstructor, beanFactory, propertyFactory);
+				: AutoBeanUtils.getAutoArgs(type, autoConstructor, beanFactory, propertyFactory);
 	}
 
 }

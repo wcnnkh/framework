@@ -50,7 +50,7 @@ public final class CommonBeanDefinition extends AbstractBeanDefinition {
 
 		if (getType().isInterface()) {
 			Proxy proxy = getType().getAnnotation(Proxy.class);
-			Filter filter = beanFactory.getInstance(proxy.value());
+			Filter filter = (Filter) (proxy == null? null:beanFactory.getInstance(proxy.value()));
 			return (T) BeanUtils.proxyInterface(beanFactory, getType(), filter);
 		}
 

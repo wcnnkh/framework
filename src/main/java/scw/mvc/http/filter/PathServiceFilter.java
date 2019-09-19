@@ -13,7 +13,7 @@ import scw.mvc.MVCUtils;
 import scw.mvc.annotation.Controller;
 import scw.mvc.http.HttpRequest;
 
-public final class ServletPathServiceFilter extends AbstractHttpServiceFilter {
+public final class PathServiceFilter extends AbstractHttpServiceFilter {
 	private final Map<String, EnumMap<scw.net.http.Method, Action<Channel>>> actionMap = new HashMap<String, EnumMap<scw.net.http.Method, Action<Channel>>>();
 
 	public Action<Channel> getAction(HttpRequest request) {
