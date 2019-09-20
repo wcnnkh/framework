@@ -9,13 +9,13 @@ import java.util.Map;
 import java.util.Set;
 
 import redis.clients.jedis.Jedis;
-import scw.data.redis.AbstractStringRedisOperations;
 import scw.data.redis.RedisUtils;
 import scw.data.redis.ResourceManager;
+import scw.data.redis.operations.AbstractStringRedisOperations;
 
 public abstract class AbstractJedisStringOperations extends AbstractStringRedisOperations
 		implements ResourceManager<Jedis> {
-
+	
 	public String get(String key) {
 		Jedis jedis = null;
 		try {
@@ -46,7 +46,7 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 		}
 	}
 
-	public void setex(String key, int seconds, String value) {
+	public void setex(String key, int  seconds, String value) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();

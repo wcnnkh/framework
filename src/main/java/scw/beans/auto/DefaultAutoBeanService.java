@@ -26,14 +26,10 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 	private AutoBean defaultService(Class<?> clazz, BeanFactory beanFactory, PropertyFactory propertyFactory,
 			AutoBeanServiceChain serviceChain) throws Exception {
 		AutoBean autoBean = null;
-		if (clazz == Memcached.class) {
-			autoBean = createMemcached(beanFactory, propertyFactory);
-		} else if (clazz == ResultFactory.class) {
+		if (clazz == ResultFactory.class) {
 			autoBean = createResultFactory(beanFactory, propertyFactory);
 		} else if (clazz == DB.class) {
 			autoBean = createDB(beanFactory, propertyFactory);
-		} else if (clazz == Redis.class) {
-			autoBean = createRedis(beanFactory, propertyFactory);
 		}
 
 		if (autoBean != null) {
@@ -82,7 +78,8 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 				return autoBean;
 			}
 		}
-		return null;
+
+		return defaultService(clazz, beanFactory, propertyFactory, serviceChain);
 	}
 
 	private static Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig, Class<?> type,
@@ -116,18 +113,6 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		}
 
 		return list;
-	}
-
-	private AutoBean createMemcached(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
-		if (ClassUtils.isExist("scw.data.memcached.x.XMemcached")) {
-			String host = propertyFactory.getProperty("memcached.hosts");
-			if (!StringUtils.isEmpty(host)) {
-				logger.info("using default memcached config:{}", host);
-				return new DefaultAutoBean(beanFactory, "scw.data.memcached.x.XMemcached",
-						new Class<?>[] { String.class }, new Object[] { host });
-			}
-		}
-		return null;
 	}
 
 	private AutoBean createResultFactory(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
@@ -174,10 +159,10 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		if (ResourceUtils.isExist(config)) {
 			Object[] args;
 			Class<?>[] types;
-			if (beanFactory.contains(Redis.class.getName())) {
+			if (beanFactory.isInstance(Redis.class.getName())) {
 				types = new Class<?>[] { Redis.class, String.class };
 				args = new Object[] { beanFactory.getInstance(Redis.class), config };
-			} else if (beanFactory.contains(Memcached.class.getName())) {
+			} else if (beanFactory.isInstance(Memcached.class.getName())) {
 				types = new Class<?>[] { Memcached.class, String.class };
 				args = new Object[] { beanFactory.getInstance(Memcached.class), config };
 			} else {
@@ -194,19 +179,6 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			}
 		}
 
-		return null;
-	}
-
-	private AutoBean createRedis(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
-		String config = "classpath:/redis.properties";
-		if (ResourceUtils.isExist(config)) {
-			Object[] args = new Object[] { config };
-			Class<?>[] types = new Class<?>[] { String.class };
-			if (ClassUtils.isExist("scw.data.redis.jedis.RedisByJedisPool")) {
-				logger.info("init scw.data.redis.jedis.RedisByJedisPool");
-				return new DefaultAutoBean(beanFactory, "scw.data.redis.jedis.RedisByJedisPool", types, args);
-			}
-		}
 		return null;
 	}
 }

@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Set;
 
 import redis.clients.jedis.JedisCluster;
-import scw.data.redis.AbstractStringRedisOperations;
 import scw.data.redis.RedisUtils;
 import scw.data.redis.ResourceManager;
+import scw.data.redis.operations.AbstractStringRedisOperations;
 
 public abstract class AbstractClusterStringOperations extends AbstractStringRedisOperations
 		implements ResourceManager<JedisCluster> {

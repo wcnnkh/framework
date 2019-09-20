@@ -6,53 +6,74 @@ import java.util.Properties;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import scw.beans.auto.annotation.ResourceParameter;
 import scw.core.Constants;
+import scw.core.annotation.NotRequire;
+import scw.core.annotation.ParameterValue;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
+import scw.data.redis.AbstractRedisWrapper;
+import scw.data.redis.Redis;
+import scw.data.redis.RedisImpl;
+import scw.data.redis.RedisOperations;
+import scw.data.redis.ResourceManager;
 import scw.io.SerializerUtils;
 import scw.io.serializer.Serializer;
 
-public final class RedisByJedisPool extends AbstractJedisOperations implements scw.core.Destroy {
+public final class RedisByJedisPool extends AbstractRedisWrapper implements ResourceManager<Jedis>, scw.core.Destroy {
 	private final JedisPool jedisPool;
 	private final String auth;
-	private final Serializer serializer;
+	private final Redis redis;
 
-	public RedisByJedisPool(String propertiesFile, Serializer serializer) {
+	public RedisByJedisPool(
+			@ResourceParameter("redis.configuration") @ParameterValue("classpath:/redis.properties") String propertiesFile,
+			Serializer serializer) {
 		JedisPoolConfig config = createConfig(propertiesFile);
 		Properties properties = PropertiesUtils.getProperties(propertiesFile, Constants.DEFAULT_CHARSET_NAME);
 		String host = PropertiesUtils.getProperty(properties, "host", "address");
 		String port = PropertiesUtils.getProperty(properties, "port");
 		this.auth = PropertiesUtils.getProperty(properties, "auth", "password", "pwd");
+		String keyPrefix = PropertiesUtils.getProperty(properties, "prefix", "keyPrefix");
+		String charsetName = PropertiesUtils.getProperty(properties, "charsetName", "charset");
+		if (StringUtils.isEmpty(charsetName)) {
+			charsetName = Constants.DEFAULT_CHARSET_NAME;
+		}
+
 		if (StringUtils.isEmpty(port)) {
 			this.jedisPool = new JedisPool(config, host);
 		} else {
 			this.jedisPool = new JedisPool(config, host, Integer.parseInt(port));
 		}
-		this.serializer = serializer;
+		this.redis = createRedis(this, keyPrefix, charsetName, serializer);
 	}
 
-	public RedisByJedisPool(String propertiesFile) {
-		this(propertiesFile, SerializerUtils.DEFAULT_SERIALIZER);
+	private static Redis createRedis(ResourceManager<Jedis> resourceManager, String keyPrefix, String charsetName,
+			Serializer serializer) {
+		RedisOperations<String, String> stringOperations = new JedisStringOperations(resourceManager);
+		RedisOperations<byte[], byte[]> binaryOperations = new JedisBinaryOperations(resourceManager);
+		return new RedisImpl(binaryOperations, stringOperations, keyPrefix, charsetName, serializer);
 	}
 
-	public static JedisPoolConfig createConfig(String propertiesFile) {
+	private static JedisPoolConfig createConfig(String propertiesFile) {
 		JedisPoolConfig config = new JedisPoolConfig();
 		PropertiesUtils.loadProperties(config, propertiesFile, Arrays.asList("maxWait,maxWaitMillis"));
 		return config;
 	}
 
-	public RedisByJedisPool() {
-		this(512, 200, true, "localhost");
+	public RedisByJedisPool(int maxTotal, int maxIdle, boolean testOnBorrow, String host) {
+		this(maxTotal, maxIdle, testOnBorrow, host, null, Constants.DEFAULT_CHARSET_NAME,
+				SerializerUtils.DEFAULT_SERIALIZER);
 	}
 
-	public RedisByJedisPool(int maxTotal, int maxIdle, boolean testOnBorrow, String host) {
+	public RedisByJedisPool(int maxTotal, int maxIdle, boolean testOnBorrow, String host, @NotRequire String keyPrefix,
+			String charsetName, Serializer serializer) {
 		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 		jedisPoolConfig.setMaxTotal(maxTotal);
 		jedisPoolConfig.setMaxIdle(maxIdle);
 		jedisPoolConfig.setTestOnBorrow(testOnBorrow);
 		this.jedisPool = new JedisPool(jedisPoolConfig, host);
 		this.auth = null;
-		this.serializer = SerializerUtils.DEFAULT_SERIALIZER;
+		this.redis = createRedis(this, keyPrefix, charsetName, serializer);
 	}
 
 	public void destroy() {
@@ -74,12 +95,7 @@ public final class RedisByJedisPool extends AbstractJedisOperations implements s
 	}
 
 	@Override
-	protected Serializer getSerializer() {
-		return serializer;
-	}
-
-	@Override
-	protected String getCharsetName() {
-		return Constants.DEFAULT_CHARSET_NAME;
+	public Redis getTargetRedis() {
+		return redis;
 	}
 }

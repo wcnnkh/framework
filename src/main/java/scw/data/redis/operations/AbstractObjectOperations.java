@@ -1,4 +1,4 @@
-package scw.data.redis;
+package scw.data.redis.operations;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +13,7 @@ import java.util.Set;
 
 import scw.core.utils.Assert;
 import scw.core.utils.CollectionUtils;
+import scw.data.redis.RedisOperations;
 import scw.io.serializer.Serializer;
 
 public abstract class AbstractObjectOperations implements RedisOperations<String, Object> {

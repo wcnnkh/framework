@@ -3,8 +3,10 @@ package scw.data.memcached;
 import java.util.Collection;
 import java.util.Map;
 
+import scw.beans.annotation.AutoImpl;
 import scw.data.cas.CASOperations;
 
+@AutoImpl(implClassName = { "scw.data.memcached.x.XMemcached" })
 public interface Memcached {
 	<T> T get(String key);
 

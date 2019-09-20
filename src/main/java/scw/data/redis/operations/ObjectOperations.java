@@ -1,26 +1,30 @@
-package scw.data.redis;
+package scw.data.redis.operations;
 
 import java.io.UnsupportedEncodingException;
 
+import scw.data.redis.RedisOperations;
 import scw.io.serializer.Serializer;
 
-final class ObjectOperations extends AbstractObjectOperations {
-	private final AbstractRedis redis;
+public final class ObjectOperations extends AbstractObjectOperations {
+	private final RedisOperations<byte[], byte[]> redisOperations;
 	private final String charsetName;
+	private final Serializer serializer;
 
-	public ObjectOperations(AbstractRedis redis, String charsetName) {
-		this.redis = redis;
+	public ObjectOperations(RedisOperations<byte[], byte[]> redisOperations, String charsetName,
+			Serializer serializer) {
+		this.redisOperations = redisOperations;
 		this.charsetName = charsetName;
+		this.serializer = serializer;
 	}
 
 	@Override
-	protected RedisOperations<byte[], byte[]> getBinaryOperations() {
-		return redis.getBinaryOperations();
+	public RedisOperations<byte[], byte[]> getBinaryOperations() {
+		return redisOperations;
 	}
 
 	@Override
 	public Serializer getSerializer() {
-		return redis.getSerializer();
+		return serializer;
 	}
 
 	@Override

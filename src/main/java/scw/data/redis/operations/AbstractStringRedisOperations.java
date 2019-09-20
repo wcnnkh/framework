@@ -1,6 +1,8 @@
-package scw.data.redis;
+package scw.data.redis.operations;
 
 import java.util.Arrays;
+
+import scw.data.redis.RedisOperations;
 
 public abstract class AbstractStringRedisOperations implements RedisOperations<String, String> {
 	

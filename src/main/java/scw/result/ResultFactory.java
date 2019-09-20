@@ -14,7 +14,7 @@ public interface ResultFactory extends SuccessResultFactory, ErrorResultFactory 
 	 * @return
 	 */
 	<T> DataResult<T> parameterError();
-	
+
 	int getDefaultErrorCode();
 
 	int getSuccessCode();

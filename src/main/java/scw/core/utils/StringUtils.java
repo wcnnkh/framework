@@ -1819,8 +1819,8 @@ public final class StringUtils {
 	}
 
 	/**
-	 * 判断字符串是否与通配符匹配 只能存在通配符*和? 
-	 * ?代表1个 *代表0个或多个
+	 * 判断字符串是否与通配符匹配 只能存在通配符*和? ?代表1个 *代表0个或多个
+	 * 
 	 * @param text
 	 * @param match
 	 * @return
@@ -2107,16 +2107,16 @@ public final class StringUtils {
 
 		return parseBooleanValue(text);
 	}
-	
-	public static boolean parseBoolean(Object text, boolean defaultValue){
-		if(text == null){
+
+	public static boolean parseBoolean(Object text, boolean defaultValue) {
+		if (text == null) {
 			return defaultValue;
 		}
-		
+
 		return parseBoolean(text.toString(), defaultValue);
 	}
-	
-	public static boolean parseBoolean(Object text){
+
+	public static boolean parseBoolean(Object text) {
 		return parseBoolean(text, false);
 	}
 
@@ -2476,6 +2476,14 @@ public final class StringUtils {
 	public static String createString(byte[] bytes, String charsetName) {
 		try {
 			return new String(bytes, charsetName);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static byte[] getBytes(String text, String charsetName) {
+		try {
+			return text.getBytes(charsetName);
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}

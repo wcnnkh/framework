@@ -1,8 +1,9 @@
-package scw.data.redis;
+package scw.data.redis.operations;
 
+import scw.data.redis.RedisOperations;
 import scw.io.serializer.Serializer;
 
-final class SpecifiedTypeOperations<T> extends AbstractSpecifiedTypeOperations<T> {
+public final class SpecifiedTypeOperations<T> extends AbstractSpecifiedTypeOperations<T> {
 	private final RedisOperations<byte[], byte[]> binaryOperations;
 	private final RedisOperations<String, String> stringOperations;
 	private final Serializer serializer;

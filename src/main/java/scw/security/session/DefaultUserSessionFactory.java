@@ -10,26 +10,23 @@ import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 
 public final class DefaultUserSessionFactory<T> extends AbstractUserSessionFactory<T> {
-	private String prefix;
 	private TemporaryCache temporaryCache;
 	private SessionFactory sessionFactory;
 
 	@Auto
 	public DefaultUserSessionFactory(
 			@ParameterName("user.session.timeout") @ParameterValue((86400 * 7) + "") int defaultMaxInactiveInterval,
-			@ParameterName("user.session.prefix") @ParameterValue("user_sid:") String prefix,
 			TemporaryCache temporaryCache) {
-		this.prefix = prefix;
-		this.sessionFactory = new DefaultSessionFactory(defaultMaxInactiveInterval, prefix, temporaryCache);
+		this.sessionFactory = new DefaultSessionFactory(defaultMaxInactiveInterval, temporaryCache);
 		this.temporaryCache = temporaryCache;
 	}
 
-	public DefaultUserSessionFactory(int defaultMaxInactiveInterval, String prefix, Memcached memcached) {
-		this(defaultMaxInactiveInterval, prefix, new MemcachedTemporaryCache(memcached));
+	public DefaultUserSessionFactory(int defaultMaxInactiveInterval, Memcached memcached) {
+		this(defaultMaxInactiveInterval, new MemcachedTemporaryCache(memcached));
 	}
 
-	public DefaultUserSessionFactory(int defaultMaxInactiveInterval, String prefix, Redis redis) {
-		this(defaultMaxInactiveInterval, prefix, new RedisTemporaryCache(redis));
+	public DefaultUserSessionFactory(int defaultMaxInactiveInterval, Redis redis) {
+		this(defaultMaxInactiveInterval, new RedisTemporaryCache(redis));
 	}
 
 	@Override
@@ -38,7 +35,7 @@ public final class DefaultUserSessionFactory<T> extends AbstractUserSessionFacto
 	}
 
 	protected String getKey(String key) {
-		return prefix == null ? key : (prefix + key);
+		return "user_sid:" + key;
 	}
 
 	@Override

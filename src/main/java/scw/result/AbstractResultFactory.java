@@ -17,7 +17,7 @@ public abstract class AbstractResultFactory implements ResultFactory {
 		if (StringUtils.isEmpty(propertiesFilePath)) {
 			return;
 		}
-
+		
 		Properties properties = PropertiesUtils.getProperties(propertiesFilePath, charsetName);
 		Map<String, String> map = PropertiesUtils.getProperties(properties);
 		if (map != null) {

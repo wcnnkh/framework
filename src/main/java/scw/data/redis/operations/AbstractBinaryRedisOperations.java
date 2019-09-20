@@ -1,6 +1,7 @@
-package scw.data.redis;
+package scw.data.redis.operations;
 
 import scw.core.exception.NotSupportException;
+import scw.data.redis.RedisOperations;
 
 public abstract class AbstractBinaryRedisOperations implements RedisOperations<byte[], byte[]> {
 

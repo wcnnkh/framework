@@ -14,4 +14,9 @@ public final class Constants {
 	 * @see Opcodes#ASM4
 	 */
 	public static final int ASM_VERSION = Opcodes.ASM5;
+
+	/**
+	 * 可用的处理器数量
+	 */
+	public static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
 }

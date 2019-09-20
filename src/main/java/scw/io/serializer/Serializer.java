@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import scw.beans.annotation.AutoImpl;
 import scw.core.exception.NotSupportException;
 
-public abstract class Serializer implements NoTypeSpecifiedSerializer,
-		SpecifiedTypeSerializer {
+@AutoImpl(implClassName = { "scw.io.serializer.support.Hessian2Serializer",
+		"scw.io.serializer.support.HessianSerializer", "scw.io.serializer.support.JavaSerializer" })
+public abstract class Serializer implements NoTypeSpecifiedSerializer, SpecifiedTypeSerializer {
 
 	public <T> T deserialize(byte[] data) {
 		throw new NotSupportException("不支持不指定类型的反序列化方式(1)");
@@ -16,7 +18,7 @@ public abstract class Serializer implements NoTypeSpecifiedSerializer,
 	public <T> T deserialize(InputStream input) throws IOException {
 		throw new NotSupportException("不支持不指定类型的反序列化方式(2)");
 	}
-	
+
 	public byte[] serialize(Object data) {
 		throw new NotSupportException("不支持不指定类型的序列化方式(1)");
 	}
@@ -29,8 +31,7 @@ public abstract class Serializer implements NoTypeSpecifiedSerializer,
 		return deserialize(data);
 	}
 
-	public <T> T deserialize(Class<T> type, InputStream input)
-			throws IOException {
+	public <T> T deserialize(Class<T> type, InputStream input) throws IOException {
 		return deserialize(input);
 	}
 
@@ -38,8 +39,7 @@ public abstract class Serializer implements NoTypeSpecifiedSerializer,
 		return serialize(data);
 	}
 
-	public <T> void serialize(OutputStream out, Class<T> type, T data)
-			throws IOException {
+	public <T> void serialize(OutputStream out, Class<T> type, T data) throws IOException {
 		serialize(out, data);
 	}
 }

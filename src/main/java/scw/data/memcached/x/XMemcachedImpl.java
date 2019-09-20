@@ -10,14 +10,21 @@ import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 import scw.data.cas.CAS;
+import scw.data.cas.CASOperations;
 import scw.data.memcached.Memcached;
 
-public abstract class AbstractXMemcached implements Memcached {
-	public abstract MemcachedClient getMemcachedClient();
+public class XMemcachedImpl implements Memcached {
+	private final MemcachedClient memcachedClient;
+	private final CASOperations casOperations;
+
+	public XMemcachedImpl(MemcachedClient memcachedClient) {
+		this.memcachedClient = memcachedClient;
+		this.casOperations = new XMemcachedCASOperations(memcachedClient);
+	}
 
 	public <T> T get(String key) {
 		try {
-			return getMemcachedClient().get(key);
+			return memcachedClient.get(key);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -30,7 +37,7 @@ public abstract class AbstractXMemcached implements Memcached {
 	public <T> CAS<T> gets(String key) {
 		GetsResponse<T> cas;
 		try {
-			cas = getMemcachedClient().gets(key);
+			cas = memcachedClient.gets(key);
 			if (cas == null) {
 				return null;
 			}
@@ -51,7 +58,7 @@ public abstract class AbstractXMemcached implements Memcached {
 		}
 
 		try {
-			return getMemcachedClient().set(key, 0, value);
+			return memcachedClient.set(key, 0, value);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -67,7 +74,7 @@ public abstract class AbstractXMemcached implements Memcached {
 		}
 
 		try {
-			return getMemcachedClient().set(key, exp, data);
+			return memcachedClient.set(key, exp, data);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -83,7 +90,7 @@ public abstract class AbstractXMemcached implements Memcached {
 		}
 
 		try {
-			return getMemcachedClient().add(key, 0, value);
+			return memcachedClient.add(key, 0, value);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -99,7 +106,7 @@ public abstract class AbstractXMemcached implements Memcached {
 		}
 
 		try {
-			return getMemcachedClient().add(key, exp, data);
+			return memcachedClient.add(key, exp, data);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -115,7 +122,7 @@ public abstract class AbstractXMemcached implements Memcached {
 		}
 
 		try {
-			return getMemcachedClient().cas(key, 0, data, cas);
+			return memcachedClient.cas(key, 0, data, cas);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -131,7 +138,7 @@ public abstract class AbstractXMemcached implements Memcached {
 		}
 
 		try {
-			return getMemcachedClient().cas(key, exp, data, cas);
+			return memcachedClient.cas(key, exp, data, cas);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -146,13 +153,13 @@ public abstract class AbstractXMemcached implements Memcached {
 		// 因为可能不支持此协议
 		Object v;
 		try {
-			v = getMemcachedClient().get(key);
+			v = memcachedClient.get(key);
 			if (v == null) {
 				return null;
 			}
 
 			if (v != null) {
-				getMemcachedClient().set(key, newExp, v);
+				memcachedClient.set(key, newExp, v);
 			}
 
 			return (T) v;
@@ -167,7 +174,7 @@ public abstract class AbstractXMemcached implements Memcached {
 
 	public boolean touch(String key, int exp) {
 		try {
-			return getMemcachedClient().touch(key, exp);
+			return memcachedClient.touch(key, exp);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -179,7 +186,7 @@ public abstract class AbstractXMemcached implements Memcached {
 
 	public <T> Map<String, T> get(Collection<String> keyCollections) {
 		try {
-			return getMemcachedClient().get(keyCollections);
+			return memcachedClient.get(keyCollections);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -191,7 +198,7 @@ public abstract class AbstractXMemcached implements Memcached {
 
 	public long incr(String key, long incr) {
 		try {
-			return getMemcachedClient().incr(key, incr);
+			return memcachedClient.incr(key, incr);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -203,7 +210,7 @@ public abstract class AbstractXMemcached implements Memcached {
 
 	public long decr(String key, long decr) {
 		try {
-			return getMemcachedClient().incr(key, decr);
+			return memcachedClient.incr(key, decr);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -215,7 +222,7 @@ public abstract class AbstractXMemcached implements Memcached {
 
 	public long incr(String key, long incr, long initValue) {
 		try {
-			return getMemcachedClient().incr(key, incr, initValue);
+			return memcachedClient.incr(key, incr, initValue);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -227,7 +234,7 @@ public abstract class AbstractXMemcached implements Memcached {
 
 	public long decr(String key, long decr, long initValue) {
 		try {
-			return getMemcachedClient().incr(key, decr, initValue);
+			return memcachedClient.incr(key, decr, initValue);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -240,7 +247,7 @@ public abstract class AbstractXMemcached implements Memcached {
 	public <T> Map<String, CAS<T>> gets(Collection<String> keyCollections) {
 		Map<String, GetsResponse<T>> map = null;
 		try {
-			map = getMemcachedClient().gets(keyCollections);
+			map = memcachedClient.gets(keyCollections);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -262,7 +269,7 @@ public abstract class AbstractXMemcached implements Memcached {
 
 	public boolean delete(String key) {
 		try {
-			return getMemcachedClient().delete(key);
+			return memcachedClient.delete(key);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -274,7 +281,7 @@ public abstract class AbstractXMemcached implements Memcached {
 
 	public boolean delete(String key, long cas, long opTimeout) {
 		try {
-			return getMemcachedClient().delete(key, cas, opTimeout);
+			return memcachedClient.delete(key, cas, opTimeout);
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -282,5 +289,13 @@ public abstract class AbstractXMemcached implements Memcached {
 		} catch (MemcachedException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		}
+	}
+
+	public boolean isExist(String key) {
+		return get(key) != null;
+	}
+
+	public CASOperations getCASOperations() {
+		return casOperations;
 	}
 }
