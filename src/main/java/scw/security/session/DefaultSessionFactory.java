@@ -23,7 +23,7 @@ public class DefaultSessionFactory extends AbstractSessionFactory {
 	}
 
 	protected String getKey(String sessionId) {
-		return "sid:" + sessionId;
+		return "session-factory:" + sessionId;
 	}
 
 	@Override
@@ -33,12 +33,12 @@ public class DefaultSessionFactory extends AbstractSessionFactory {
 
 	@Override
 	public void setSessionData(SessionData sessionData) {
-		temporaryCache.set(sessionData.getSessionId(), sessionData.getMaxInactiveInterval(), sessionData);
+		temporaryCache.set(getKey(sessionData.getSessionId()), sessionData.getMaxInactiveInterval(), sessionData);
 	}
 
 	@Override
 	public void invalidate(String sessionId) {
-		temporaryCache.delete(sessionId);
+		temporaryCache.delete(getKey(sessionId));
 	}
 
 }

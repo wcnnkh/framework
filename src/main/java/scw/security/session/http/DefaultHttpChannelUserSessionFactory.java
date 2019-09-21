@@ -16,7 +16,7 @@ public class DefaultHttpChannelUserSessionFactory<T> implements HttpChannelUserS
 	private boolean searchCookie;
 
 	@Auto
-	public DefaultHttpChannelUserSessionFactory(UserSessionFactory<T> userSessionFactory, @ParameterName("http.user.session.key")@ParameterValue("_token")String sessionIdKey,
+	public DefaultHttpChannelUserSessionFactory(UserSessionFactory<T> userSessionFactory, @ParameterName("http.user.session.key")@ParameterValue("token")String sessionIdKey,
 			@ParameterName("http.user.session.cookie")@ParameterValue("false")boolean searchCookie) {
 		this.userSessionFactory = userSessionFactory;
 		this.sessionIdKey = sessionIdKey;

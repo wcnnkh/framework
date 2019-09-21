@@ -1,4 +1,4 @@
-package scw.mvc.http.filter;
+package scw.security.session.http;
 
 import scw.beans.auto.annotation.Auto;
 import scw.core.annotation.ParameterName;
@@ -11,7 +11,6 @@ import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.result.ResultFactory;
 import scw.security.session.UserSession;
-import scw.security.session.http.HttpChannelUserSessionFactory;
 
 @SuppressWarnings("rawtypes")
 public class HttpUserSessionFilter extends HttpFilter{
@@ -45,7 +44,7 @@ public class HttpUserSessionFilter extends HttpFilter{
 				return resultFactory.authorizationFailure();
 			}
 
-			if(!uid.equals(cacheUid)){
+			if(!uid.equals(cacheUid.toString())){
 				return resultFactory.authorizationFailure();
 			}
 		}

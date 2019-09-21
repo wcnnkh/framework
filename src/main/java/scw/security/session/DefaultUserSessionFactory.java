@@ -35,7 +35,7 @@ public final class DefaultUserSessionFactory<T> extends AbstractUserSessionFacto
 	}
 
 	protected String getKey(String key) {
-		return "user_sid:" + key;
+		return "user-session-factory:" + key;
 	}
 
 	@Override
