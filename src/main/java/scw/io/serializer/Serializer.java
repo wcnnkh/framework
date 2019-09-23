@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import scw.beans.annotation.AutoImpl;
 import scw.core.exception.NotSupportException;
 
-@AutoImpl(implClassName = { "scw.io.serializer.support.Hessian2Serializer",
+@AutoImpl(className = { "scw.io.serializer.support.Hessian2Serializer",
 		"scw.io.serializer.support.HessianSerializer", "scw.io.serializer.support.JavaSerializer" })
 public abstract class Serializer implements NoTypeSpecifiedSerializer, SpecifiedTypeSerializer {
 

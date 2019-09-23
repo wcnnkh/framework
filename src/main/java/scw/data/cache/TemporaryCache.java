@@ -8,12 +8,12 @@ import scw.beans.annotation.AutoImpl;
  * @author shuchaowen
  *
  */
-@AutoImpl(impl = { MemcachedTemporaryCache.class, RedisTemporaryCache.class,
+@AutoImpl({ MemcachedTemporaryCache.class, RedisTemporaryCache.class,
 		MemoryTemporaryCache.class })
 public interface TemporaryCache {
-	Object get(String key);
+	<T> T get(String key);
 
-	Object getAndTouch(String key, int exp);
+	<T> T getAndTouch(String key, int exp);
 
 	void touch(String key, int exp);
 

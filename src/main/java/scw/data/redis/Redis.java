@@ -3,7 +3,7 @@ package scw.data.redis;
 import scw.beans.annotation.AutoImpl;
 import scw.data.cas.CASOperations;
 
-@AutoImpl(implClassName = "scw.data.redis.jedis.RedisByJedisPool")
+@AutoImpl(className = "scw.data.redis.jedis.RedisByJedisPool")
 public interface Redis {
 	RedisOperations<String, String> getStringOperations();
 

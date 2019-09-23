@@ -24,19 +24,21 @@ public final class MemoryTemporaryCache implements TemporaryCache, Destroy {
 	public MemoryTemporaryCache() {
 	}
 
-	public Object get(String key) {
+	@SuppressWarnings("unchecked")
+	public <T> T get(String key) {
 		TemporaryCacheContent content = map.get(key);
-		return content == null ? null : content.getValue();
+		return (T) (content == null ? null : content.getValue());
 	}
 
-	public Object getAndTouch(String key, int exp) {
+	@SuppressWarnings("unchecked")
+	public <T> T getAndTouch(String key, int exp) {
 		TemporaryCacheContent content = map.get(key);
 		if (content == null) {
 			return null;
 		}
 
 		content.touch(exp);
-		return content.getValue();
+		return (T) content.getValue();
 	}
 
 	public void touch(String key, int exp) {

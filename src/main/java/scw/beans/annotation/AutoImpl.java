@@ -10,31 +10,32 @@ import scw.beans.auto.AutoBeanService;
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AutoImpl {
+	
+	/**
+	 * 默认的实现
+	 * 
+	 * @return
+	 */
+	public Class<?>[] value() default {};
+	
+	/**
+	 * 默认的实现
+	 * @return
+	 */
+	public String[] className() default {};
+	
 	/**
 	 * 
 	 * 尝试寻找默认实现
 	 * 
 	 * @return
 	 */
-	public Class<? extends AutoBeanService>[] autoBeanServices() default {};
+	public Class<? extends AutoBeanService>[] service() default {};
 
 	/**
 	 * 尝试寻找默认实现
 	 * 
 	 * @return
 	 */
-	public String[] autoBeanServiceNames() default {};
-	
-	/**
-	 * 默认的实现
-	 * 
-	 * @return
-	 */
-	public Class<?>[] impl() default {};
-	
-	/**
-	 * 默认的实现
-	 * @return
-	 */
-	public String[] implClassName() default {};
+	public String[] serviceName() default {};
 }

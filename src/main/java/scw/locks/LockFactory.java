@@ -2,7 +2,7 @@ package scw.locks;
 
 import scw.beans.annotation.AutoImpl;
 
-@AutoImpl(impl = { DistributedLockFactory.class })
+@AutoImpl({ DistributedLockFactory.class })
 public interface LockFactory {
 	Lock getLock(String name);
 

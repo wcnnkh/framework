@@ -4,7 +4,7 @@ import scw.beans.annotation.AutoImpl;
 import scw.mvc.http.HttpChannel;
 import scw.security.session.UserSession;
 
-@AutoImpl(impl=DefaultHttpChannelUserSessionFactory.class)
+@AutoImpl(DefaultHttpChannelUserSessionFactory.class)
 public interface HttpChannelUserSessionFactory<T> {
 	UserSession<T> getUserSession(HttpChannel httpChannel);
 

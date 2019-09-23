@@ -68,7 +68,7 @@ public final class AutoBeanUtils {
 		}
 
 		if (autoConfig != null) {
-			for (String name : autoConfig.autoBeanServiceNames()) {
+			for (String name : autoConfig.serviceName()) {
 				if (StringUtils.isEmpty(name)) {
 					continue;
 				}
@@ -77,7 +77,7 @@ public final class AutoBeanUtils {
 				autoBeanServices.add((AutoBeanService) beanFactory.getInstance(name));
 			}
 
-			for (Class<? extends AutoBeanService> service : autoConfig.autoBeanServices()) {
+			for (Class<? extends AutoBeanService> service : autoConfig.service()) {
 				if (service == null) {
 					continue;
 				}

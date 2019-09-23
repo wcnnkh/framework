@@ -85,7 +85,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 	private static Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig, Class<?> type,
 			PropertyFactory propertyFactory) {
 		LinkedList<Class<?>> list = new LinkedList<Class<?>>();
-		for (String name : autoConfig.implClassName()) {
+		for (String name : autoConfig.className()) {
 			if (StringUtils.isEmpty(name)) {
 				continue;
 			}
@@ -106,7 +106,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			}
 		}
 
-		for (Class<?> clz : autoConfig.impl()) {
+		for (Class<?> clz : autoConfig.value()) {
 			if (type.isAssignableFrom(clz)) {
 				list.add(clz);
 			}

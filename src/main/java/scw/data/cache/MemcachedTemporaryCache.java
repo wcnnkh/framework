@@ -9,11 +9,11 @@ public final class MemcachedTemporaryCache implements TemporaryCache {
 		this.memcached = memcached;
 	}
 
-	public Object get(String key) {
+	public <T> T get(String key) {
 		return memcached.get(key);
 	}
 
-	public Object getAndTouch(String key, int exp) {
+	public <T> T getAndTouch(String key, int exp) {
 		return memcached.getAndTouch(key, exp);
 	}
 
