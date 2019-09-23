@@ -14,7 +14,7 @@
 		<jxl.version>2.4.2</jxl.version>
 		<jedis.version>2.9.0</jedis.version>
 		<xmemcached.version>2.4.4</xmemcached.version>
-		<fastjson.version>1.2.56</fastjson.version>
+		<fastjson.version>1.2.61</fastjson.version>
 		<log4j.version>1.2.17</log4j.version>
 		<amqp-client.version>5.4.3</amqp-client.version>
 		<!-- tomcat7只支持jdk1.6及以上的版本 -->
@@ -135,7 +135,6 @@
 			<artifactId>fastjson</artifactId>
 			<version>${fastjson.version}</version>
 			<scope>provided</scope>
-			<optional>true</optional>
 		</dependency>
 
 		<dependency>
