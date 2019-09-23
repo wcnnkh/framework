@@ -24,6 +24,10 @@ public final class RedisByJedisPool extends AbstractRedisWrapper implements Reso
 	private final JedisPool jedisPool;
 	private final String auth;
 	private final Redis redis;
+	
+	public RedisByJedisPool(String propertiesFile){
+		this(propertiesFile, SerializerUtils.DEFAULT_SERIALIZER);
+	}
 
 	public RedisByJedisPool(
 			@ResourceParameter("redis.configuration") @ParameterValue("classpath:/redis.properties") String propertiesFile,

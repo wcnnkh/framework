@@ -21,11 +21,11 @@ public class DefaultLoginFactory<T> extends AbstractLoginFactory<T> {
 		this.prefix = prefix;
 	}
 
-	public DefaultLoginFactory(Memcached memcached, String prefix, int exp) {
+	public DefaultLoginFactory(Memcached memcached, int exp, String prefix) {
 		this(new MemcachedTemporaryCache(memcached), exp, prefix);
 	}
 
-	public DefaultLoginFactory(Redis redis, String prefix, int exp) {
+	public DefaultLoginFactory(Redis redis, int exp, String prefix) {
 		this(new RedisTemporaryCache(redis), exp, prefix);
 	}
 
