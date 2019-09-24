@@ -1,18 +1,18 @@
-package scw.security.authority.http;
+package scw.mvc.http.authority;
 
 import java.io.Serializable;
 import java.util.List;
 
 public class SimpleTreeHttpAuthority implements TreeHttpAuthority, Serializable {
 	private static final long serialVersionUID = 1L;
-	private HttpAuthority httpAuthority;
+	private Authority httpAuthority;
 	private List<TreeHttpAuthority> subList;
 
-	public HttpAuthority getHttpAuthority() {
+	public Authority getHttpAuthority() {
 		return httpAuthority;
 	}
 
-	public void setHttpAuthority(HttpAuthority httpAuthority) {
+	public void setHttpAuthority(Authority httpAuthority) {
 		this.httpAuthority = httpAuthority;
 	}
 

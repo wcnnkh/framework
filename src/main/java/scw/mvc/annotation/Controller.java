@@ -40,4 +40,6 @@ public @interface Controller {
 	 * @return
 	 */
 	public Class<? extends ParameterFilter>[] parameterFilter() default {};
+	
+	public String name() default "";
 }

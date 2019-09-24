@@ -1,4 +1,4 @@
-package scw.security.authority.http;
+package scw.mvc.http.authority;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -16,15 +16,14 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.core.utils.XUtils;
 import scw.json.JSONUtils;
-import scw.mvc.http.HttpRequest;
 
 @Bean(proxy = false)
-public class DefaultHttpAuthorityManager extends SimplHttpAuthorityManager implements MvcHttpAuthorityManager {
-	public DefaultHttpAuthorityManager() {
+public class DefaultAuthorityManager extends SimplHttpAuthorityManager {
+	public DefaultAuthorityManager() {
 		scanAnnotation("");
 	}
 
-	public DefaultHttpAuthorityManager(@ResourceParameter("classpath:/http-authority.xml") String xml) {
+	public DefaultAuthorityManager(@ResourceParameter("classpath:/http-authority.xml") String xml) {
 		addHttpAuthority(null, 1000, xml, null);
 	}
 
@@ -41,8 +40,8 @@ public class DefaultHttpAuthorityManager extends SimplHttpAuthorityManager imple
 		// ignore
 	}
 
-	private HttpAuthority merge(String parentRequestPath, int baseId, HttpAuthority parent,
-			HttpAuthority httpAuthority) {
+	private Authority merge(String parentRequestPath, int baseId, Authority parent,
+			Authority httpAuthority) {
 		if (parent == null) {
 			return httpAuthority;
 		}
@@ -72,7 +71,7 @@ public class DefaultHttpAuthorityManager extends SimplHttpAuthorityManager imple
 		return authority;
 	}
 
-	private void addHttpAuthority(String parentRequestPath, int baseId, String xml, HttpAuthority parent) {
+	private void addHttpAuthority(String parentRequestPath, int baseId, String xml, Authority parent) {
 		if (!ResourceUtils.isExist(xml)) {
 			return;
 		}
@@ -95,7 +94,7 @@ public class DefaultHttpAuthorityManager extends SimplHttpAuthorityManager imple
 		}
 	}
 
-	private void addHttpAuthority(String parentRequestPath, int baseId, Node node, HttpAuthority parent) {
+	private void addHttpAuthority(String parentRequestPath, int baseId, Node node, Authority parent) {
 		SimpleHttpAuthority httpAuthority = convertHttpAuthority(node);
 		Map<String, String> attributeMap = httpAuthority.getAttributeMap();
 		if (attributeMap == null) {
@@ -128,9 +127,4 @@ public class DefaultHttpAuthorityManager extends SimplHttpAuthorityManager imple
 		simpleHttpAuthority.setAttributeMap(attributeMap);
 		return simpleHttpAuthority;
 	}
-
-	public HttpAuthority getHttpAuthority(HttpRequest httpRequest) {
-		return getHttpAuthority(httpRequest.getRequestPath(), httpRequest.getMethod());
-	}
-
 }

@@ -26,7 +26,8 @@ import scw.security.session.Session;
 import scw.security.session.http.HttpChannelAuthorization;
 import scw.security.session.http.HttpChannelUserSessionFactory;
 
-public abstract class AbstractHttpChannel extends AbstractParameterChannel implements HttpChannel {
+public abstract class AbstractHttpChannel extends AbstractParameterChannel
+		implements HttpChannel {
 	private static final String GET_DEFAULT_CHARSET_ANME = "ISO-8859-1";
 
 	protected static final String JSONP_CALLBACK = "callback";
@@ -36,14 +37,19 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	private final HttpRequest request;
 	private final HttpResponse response;
 	private final String jsonp;
+	private final HttpParameterRequest httpParameterRequest;
 
-	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(BeanFactory beanFactory, boolean logEnabled, Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport,
-			boolean cookieValue, R request, P response, String jsonp) {
+	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(
+			BeanFactory beanFactory, boolean logEnabled,
+			Collection<ParameterFilter> parameterFilters,
+			JSONParseSupport jsonParseSupport, boolean cookieValue, R request,
+			P response, String jsonp) {
 		super(beanFactory, logEnabled, parameterFilters, jsonParseSupport);
 		this.cookieValue = cookieValue;
 		this.request = request;
 		this.response = response;
 		this.jsonp = jsonp;
+		this.httpParameterRequest = new HttpParameterRequest(request, this);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -51,24 +57,28 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	public Object getParameter(ParameterDefinition parameterDefinition) {
 		if (HttpRequest.class.isAssignableFrom(parameterDefinition.getType())) {
 			return getRequest();
-		} else if (HttpResponse.class.isAssignableFrom(parameterDefinition.getType())) {
+		} else if (HttpResponse.class.isAssignableFrom(parameterDefinition
+				.getType())) {
 			return getResponse();
 		} else if (Session.class == parameterDefinition.getType()) {
 			return getRequest().getHttpSession();
 		} else if (HttpParameterRequest.class == parameterDefinition.getType()) {
-			return new HttpParameterRequest(getRequest(), this);
+			return getHttpParameterRequest();
 		} else if (Authorization.class == parameterDefinition.getType()) {
 			HttpChannelUserSessionFactory httpChannelUserSessionFactory = (HttpChannelUserSessionFactory) beanFactory
 					.getInstance(HttpChannelUserSessionFactory.class);
-			return new HttpChannelAuthorization(this, httpChannelUserSessionFactory);
+			return new HttpChannelAuthorization(this,
+					httpChannelUserSessionFactory);
 		}
 
-		SessionValue sessionValue = parameterDefinition.getAnnotation(SessionValue.class);
+		SessionValue sessionValue = parameterDefinition
+				.getAnnotation(SessionValue.class);
 		if (sessionValue != null) {
-			Session session = getRequest().getHttpSession(sessionValue.create());
-			return session == null ? null
-					: session.getAttribute(StringUtils.isEmpty(sessionValue.value()) ? parameterDefinition.getName()
-							: sessionValue.value());
+			Session session = getRequest()
+					.getHttpSession(sessionValue.create());
+			return session == null ? null : session.getAttribute(StringUtils
+					.isEmpty(sessionValue.value()) ? parameterDefinition
+					.getName() : sessionValue.value());
 		}
 
 		return super.getParameter(parameterDefinition);
@@ -96,7 +106,8 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 		}
 
 		try {
-			return new String(value.getBytes(GET_DEFAULT_CHARSET_ANME), getRequest().getCharacterEncoding());
+			return new String(value.getBytes(GET_DEFAULT_CHARSET_ANME),
+					getRequest().getCharacterEncoding());
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return value;
@@ -106,7 +117,8 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	public String getString(String name) {
 		String v = getRequest().getParameter(name);
 		if (v == null) {
-			Map<String, String> restParameterMap = MVCUtils.getRestPathParameterMap(this);
+			Map<String, String> restParameterMap = MVCUtils
+					.getRestPathParameterMap(this);
 			if (restParameterMap != null) {
 				v = restParameterMap.get(name);
 			}
@@ -168,12 +180,17 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 		return jsonParseSupport.parseObject(body.getBody(), type);
 	}
 
+	public HttpParameterRequest getHttpParameterRequest() {
+		return httpParameterRequest;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder appendable = new StringBuilder();
 		appendable.append("path=").append(getRequest().getRequestPath());
 		appendable.append(",method=").append(getRequest().getMethod());
-		appendable.append(",").append(JSONUtils.toJSONString(getRequest().getParameterMap()));
+		appendable.append(",").append(
+				JSONUtils.toJSONString(getRequest().getParameterMap()));
 		return appendable.toString();
 	}
 }

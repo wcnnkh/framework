@@ -1,4 +1,4 @@
-package scw.security.authority;
+package scw.mvc.http.authority;
 
 import java.util.Map;
 
@@ -10,4 +10,8 @@ public interface Authority {
 	String getName();
 
 	Map<String, String> getAttributeMap();
+	
+	String getMethod();
+
+	String getRequestPath();
 }

@@ -1,4 +1,4 @@
-package scw.security.authority.http;
+package scw.mvc.http.authority;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,14 +10,14 @@ import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
-import scw.security.authority.Authority;
+import scw.mvc.http.HttpParameterRequest;
 
-public class SimplHttpAuthorityManager implements HttpAuthorityManager {
+public class SimplHttpAuthorityManager implements AuthorityManager {
 	private Map<String, Map<String, Long>> httpAuthorityMap = new HashMap<String, Map<String, Long>>();
-	private Map<Long, HttpAuthority> authorityMap = new HashMap<Long, HttpAuthority>();
+	private Map<Long, Authority> authorityMap = new HashMap<Long, Authority>();
 	private Map<Long, List<Long>> parentMap = new HashMap<Long, List<Long>>();
 
-	public synchronized void addHttpAuthority(HttpAuthority httpAuthority) {
+	public synchronized void addHttpAuthority(Authority httpAuthority) {
 		if (authorityMap.containsKey(httpAuthority.getId())) {
 			throw new AlreadyExistsException(JSONUtils.toJSONString(httpAuthority));
 		}
@@ -46,11 +46,15 @@ public class SimplHttpAuthorityManager implements HttpAuthorityManager {
 		parentMap.put(httpAuthority.getParentId(), subList);
 	}
 
-	public HttpAuthority getHttpAuthority(long id) {
+	public Authority getHttpAuthority(long id) {
 		return authorityMap.get(id);
 	}
+	
+	public Authority getHttpAuthority(HttpParameterRequest httpRequest) {
+		return getHttpAuthority(httpRequest.getRequestPath(), httpRequest.getMethod());
+	}
 
-	public HttpAuthority getHttpAuthority(String requestPath, String method) {
+	public Authority getHttpAuthority(String requestPath, String method) {
 		Map<String, Long> map = httpAuthorityMap.get(requestPath);
 		if (map == null) {
 			return null;
@@ -64,19 +68,19 @@ public class SimplHttpAuthorityManager implements HttpAuthorityManager {
 		return getHttpAuthority(id);
 	}
 
-	public List<HttpAuthority> getList() {
-		return new ArrayList<HttpAuthority>(authorityMap.values());
+	public List<Authority> getList() {
+		return new ArrayList<Authority>(authorityMap.values());
 	}
 
-	public List<HttpAuthority> getList(long parentId) {
+	public List<Authority> getList(long parentId) {
 		List<Long> subList = parentMap.get(parentId);
 		if (subList == null) {
 			return null;
 		}
 
-		List<HttpAuthority> httpAuthorities = new ArrayList<HttpAuthority>(subList.size());
+		List<Authority> httpAuthorities = new ArrayList<Authority>(subList.size());
 		for (long id : subList) {
-			HttpAuthority httpAuthority = getHttpAuthority(id);
+			Authority httpAuthority = getHttpAuthority(id);
 			if (httpAuthority == null) {
 				continue;
 			}
@@ -84,10 +88,6 @@ public class SimplHttpAuthorityManager implements HttpAuthorityManager {
 			httpAuthorities.add(httpAuthority);
 		}
 		return httpAuthorities;
-	}
-
-	public Authority getAuthority(long id) {
-		return getHttpAuthority(id);
 	}
 
 	public List<Long> getSubList(long id) {
@@ -104,7 +104,7 @@ public class SimplHttpAuthorityManager implements HttpAuthorityManager {
 	}
 
 	public TreeHttpAuthority getTreeHttpAuthority(long id) {
-		HttpAuthority httpAuthority = getHttpAuthority(id);
+		Authority httpAuthority = getHttpAuthority(id);
 		if (httpAuthority == null) {
 			return null;
 		}
