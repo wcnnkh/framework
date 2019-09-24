@@ -63,7 +63,7 @@ public final class ConfigUtils {
 				NodeList nhosts = root.getChildNodes();
 				for (int x = 0; x < nhosts.getLength(); x++) {
 					Node nRoot = nhosts.item(x);
-					if (nRoot.getNodeName().equals(rootTag)) {
+					if (nRoot.getNodeName().equalsIgnoreCase(rootTag)) {
 						list.add(XMLUtils.xmlToMap(nRoot));
 					}
 				}
