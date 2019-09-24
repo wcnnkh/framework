@@ -4,18 +4,18 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeoutException;
 
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
-import net.rubyeye.xmemcached.exception.MemcachedException;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
 import scw.data.memcached.Memcached;
+import scw.data.memcached.MemcachedException;
 
 public class XMemcachedImpl implements Memcached {
 	private final MemcachedClient memcachedClient;
 	private final CASOperations casOperations;
+	private volatile boolean isSupportTouch = true;// 是否支持touch协议
 
 	public XMemcachedImpl(MemcachedClient memcachedClient) {
 		this.memcachedClient = memcachedClient;
@@ -25,12 +25,8 @@ public class XMemcachedImpl implements Memcached {
 	public <T> T get(String key) {
 		try {
 			return memcachedClient.get(key);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
@@ -43,12 +39,8 @@ public class XMemcachedImpl implements Memcached {
 			}
 
 			return new CAS<T>(cas.getCas(), cas.getValue());
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
@@ -59,12 +51,8 @@ public class XMemcachedImpl implements Memcached {
 
 		try {
 			return memcachedClient.set(key, 0, value);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
@@ -75,12 +63,8 @@ public class XMemcachedImpl implements Memcached {
 
 		try {
 			return memcachedClient.set(key, exp, data);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
@@ -91,12 +75,8 @@ public class XMemcachedImpl implements Memcached {
 
 		try {
 			return memcachedClient.add(key, 0, value);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
@@ -107,12 +87,8 @@ public class XMemcachedImpl implements Memcached {
 
 		try {
 			return memcachedClient.add(key, exp, data);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
@@ -123,12 +99,8 @@ public class XMemcachedImpl implements Memcached {
 
 		try {
 			return memcachedClient.cas(key, 0, data, cas);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
@@ -139,18 +111,13 @@ public class XMemcachedImpl implements Memcached {
 
 		try {
 			return memcachedClient.cas(key, exp, data, cas);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getAndTouch(String key, int newExp) {
-		// 因为可能不支持此协议
+	private <T> T privateGetAndTouch(String key, int newExp) {
 		Object v;
 		try {
 			v = memcachedClient.get(key);
@@ -163,59 +130,62 @@ public class XMemcachedImpl implements Memcached {
 			}
 
 			return (T) v;
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
+		}
+	}
+
+	public <T> T getAndTouch(String key, int newExp) {
+		if (isSupportTouch) {
+			try {
+				return memcachedClient.getAndTouch(key, newExp);
+			} catch (net.rubyeye.xmemcached.exception.MemcachedException e) {// 不支持touch协议
+				isSupportTouch = false;
+				return privateGetAndTouch(key, newExp);
+			} catch (Exception e) {
+				throw new MemcachedException(e);
+			}
+		} else {
+			return privateGetAndTouch(key, newExp);
 		}
 	}
 
 	public boolean touch(String key, int exp) {
-		try {
-			return memcachedClient.touch(key, exp);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		if (isSupportTouch) {
+			try {
+				return memcachedClient.touch(key, exp);
+			} catch (net.rubyeye.xmemcached.exception.MemcachedException e) {// 不支持touch协议
+				isSupportTouch = false;
+				getAndTouch(key, exp);
+			} catch (Exception e) {
+				throw new MemcachedException(e);
+			}
+		} else {
+			getAndTouch(key, exp);
 		}
+		return true;
 	}
 
 	public <T> Map<String, T> get(Collection<String> keyCollections) {
 		try {
 			return memcachedClient.get(keyCollections);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
 	public long incr(String key, long incr) {
 		try {
 			return memcachedClient.incr(key, incr);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
 	public long decr(String key, long decr) {
 		try {
 			return memcachedClient.incr(key, decr);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
+		} catch (Exception e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		}
 	}
@@ -223,24 +193,16 @@ public class XMemcachedImpl implements Memcached {
 	public long incr(String key, long incr, long initValue) {
 		try {
 			return memcachedClient.incr(key, incr, initValue);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
 	public long decr(String key, long decr, long initValue) {
 		try {
 			return memcachedClient.incr(key, decr, initValue);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
@@ -248,12 +210,8 @@ public class XMemcachedImpl implements Memcached {
 		Map<String, GetsResponse<T>> map = null;
 		try {
 			map = memcachedClient.gets(keyCollections);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 
 		if (map != null) {
@@ -270,24 +228,16 @@ public class XMemcachedImpl implements Memcached {
 	public boolean delete(String key) {
 		try {
 			return memcachedClient.delete(key);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
 	public boolean delete(String key, long cas, long opTimeout) {
 		try {
 			return memcachedClient.delete(key, cas, opTimeout);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
 		}
 	}
 
