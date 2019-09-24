@@ -1252,7 +1252,6 @@ public final class StringUtils {
 	}
 
 	/** ------------------传说中的分割线----------------------- **/
-	private static final String IOS_NULL = "(null)";
 	private static final char[] DEFAULT_SPLIT_CHARS = new char[] { ' ', ',', ';', '、' };
 
 	public static boolean isNull(boolean trim, String... text) {
@@ -1270,21 +1269,6 @@ public final class StringUtils {
 
 	public static boolean isNull(CharSequence text) {
 		return isEmpty(text);
-	}
-
-	/**
-	 * 在ios中由于前端未做判断导致的空 (null)
-	 * 
-	 * @param strs
-	 * @return
-	 */
-	public static boolean isNullByIOS(CharSequence... text) {
-		for (CharSequence s : text) {
-			if (s == null || s.length() == 0 || IOS_NULL.equals(s)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public static boolean trimIsNull(String... strs) {

@@ -18,6 +18,8 @@ import scw.core.exception.NotFoundException;
 import scw.core.utils.Assert;
 
 public final class SignatureUtils {
+	private static final String DEFAULT_CONCAT = "&";
+
 	private SignatureUtils() {
 	};
 
@@ -55,13 +57,17 @@ public final class SignatureUtils {
 		return sign.toString();
 	}
 
-	public static StringBuilder getShotParamsStr(Map<String, String> map) {
+	public static StringBuilder formatSortParams(Map<?, ?> map) {
+		return formatSortParams(map, DEFAULT_CONCAT);
+	}
+
+	public static StringBuilder formatSortParams(Map<?, ?> map, String concat) {
 		StringBuilder sb = new StringBuilder();
 		if (map != null) {
-			String[] keys = map.keySet().toArray(new String[0]);
+			Object[] keys = map.keySet().toArray();
 			Arrays.sort(keys);
-			String k;
-			String v;
+			Object k;
+			Object v;
 			for (int i = 0; i < keys.length; i++) {
 				k = keys[i];
 				if (k == null) {
@@ -73,9 +79,12 @@ public final class SignatureUtils {
 					continue;
 				}
 
-				if (sb.length() > 0) {
-					sb.append("&");
+				if (concat != null) {
+					if (sb.length() > 0) {
+						sb.append(concat);
+					}
 				}
+
 				sb.append(k).append("=").append(v);
 			}
 		}
