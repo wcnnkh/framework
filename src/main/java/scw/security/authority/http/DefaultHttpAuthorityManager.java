@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -78,8 +77,7 @@ public class DefaultHttpAuthorityManager extends SimplHttpAuthorityManager imple
 			return;
 		}
 
-		Document document = XMLUtils.getDocument(xml);
-		Element root = document.getDocumentElement();
+		Element root = XMLUtils.getRootElement(xml);
 		String annotation = root.getAttribute("annotation");
 		if (annotation != null) {
 			scanAnnotation(annotation);
@@ -105,7 +103,7 @@ public class DefaultHttpAuthorityManager extends SimplHttpAuthorityManager imple
 			return;
 		}
 
-		String subList = attributeMap.remove("sub-list");
+		String subList = attributeMap.remove("include");
 		httpAuthority.setAttributeMap(attributeMap);
 		if (StringUtils.isEmpty(subList)) {
 			addHttpAuthority(merge(parentRequestPath, baseId, parent, httpAuthority));
