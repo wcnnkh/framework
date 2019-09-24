@@ -4,7 +4,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import scw.core.UnsafeStringBuffer;
 
-public abstract class AsyncLoggerFactory extends AbstractILoggerFactory implements Runnable {
+public class AsyncLoggerFactory extends AbstractILoggerFactory implements Runnable {
 	private final LinkedBlockingQueue<Message> handlerQueue;
 	private final Thread thread;
 	private final UnsafeStringBuffer unsafeStringBuffer;
@@ -21,7 +21,8 @@ public abstract class AsyncLoggerFactory extends AbstractILoggerFactory implemen
 	}
 
 	public Logger getLogger(String name, String placeholder) {
-		return new AsyncLogger(true, true, true, name, this, placeholder);
+		Level level = LoggerUtils.getLoggerLevel(name);
+		return new AsyncLogger(level, name, this, placeholder);
 	}
 
 	public void run() {

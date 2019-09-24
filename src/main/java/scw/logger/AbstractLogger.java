@@ -2,11 +2,13 @@ package scw.logger;
 
 public abstract class AbstractLogger implements Logger {
 	private final String placeholder;
+	private final Level level;
 
-	public AbstractLogger(String placeholder) {
+	public AbstractLogger(Level level, String placeholder) {
+		this.level = level;
 		this.placeholder = placeholder;
 	}
-	
+
 	protected Object createMessage(Object format, Object... args) {
 		return new DefaultLoggerFormatAppend(format, getPlaceholder(), args);
 	}
@@ -24,7 +26,19 @@ public abstract class AbstractLogger implements Logger {
 	}
 
 	public boolean isWarnEnabled() {
-		return true;
+		return Level.WARN.enabled(level);
+	}
+	
+	public boolean isDebugEnabled() {
+		return Level.DEBUG.enabled(level);
+	}
+	
+	public boolean isInfoEnabled() {
+		return Level.INFO.enabled(level);
+	}
+	
+	public boolean isTraceEnabled() {
+		return Level.TRACE.enabled(level);
 	}
 
 	public void warn(Object format) {
@@ -32,7 +46,7 @@ public abstract class AbstractLogger implements Logger {
 	}
 
 	public boolean isErrorEnabled() {
-		return true;
+		return Level.ERROR.enabled(level);
 	}
 
 	public void error(Object format) {

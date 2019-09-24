@@ -1,26 +1,15 @@
 package scw.logger;
 
 public abstract class AbstractMyLogger extends AbstractLogger implements Logger {
-	private final boolean traceEnabled;
-	private final boolean debugEnabled;
-	private final boolean infoEnabled;
 	private final String name;
 
-	public AbstractMyLogger(boolean traceEnabled, boolean debugEnabled, boolean infoEnabled, String name,
-			String placeholder) {
-		super(placeholder);
-		this.traceEnabled = traceEnabled;
-		this.debugEnabled = debugEnabled;
-		this.infoEnabled = infoEnabled;
+	public AbstractMyLogger(Level level, String name, String placeholder) {
+		super(level, placeholder);
 		this.name = name;
 	}
 
-	public boolean isTraceEnabled() {
-		return traceEnabled;
-	}
-
 	public void trace(Object format, Object... args) {
-		if (!traceEnabled) {
+		if (!isTraceEnabled()) {
 			return;
 		}
 
@@ -28,19 +17,15 @@ public abstract class AbstractMyLogger extends AbstractLogger implements Logger 
 	}
 
 	public void trace(Throwable t, Object msg, Object... args) {
-		if (!traceEnabled) {
+		if (!isTraceEnabled()) {
 			return;
 		}
 
 		log(new Message(Level.TRACE, name, msg, args, t, getPlaceholder()));
 	}
 
-	public boolean isDebugEnabled() {
-		return debugEnabled;
-	}
-
 	public void debug(Object format, Object... args) {
-		if (!debugEnabled) {
+		if (!isDebugEnabled()) {
 			return;
 		}
 
@@ -48,19 +33,15 @@ public abstract class AbstractMyLogger extends AbstractLogger implements Logger 
 	}
 
 	public void debug(Throwable t, Object msg, Object... args) {
-		if (!debugEnabled) {
+		if (!isDebugEnabled()) {
 			return;
 		}
 
 		log(new Message(Level.DEBUG, name, msg, args, t, getPlaceholder()));
 	}
 
-	public boolean isInfoEnabled() {
-		return infoEnabled;
-	}
-
 	public void info(Object format, Object... args) {
-		if (!infoEnabled) {
+		if (!isInfoEnabled()) {
 			return;
 		}
 
@@ -68,7 +49,7 @@ public abstract class AbstractMyLogger extends AbstractLogger implements Logger 
 	}
 
 	public void info(Throwable e, Object msg, Object... args) {
-		if (!infoEnabled) {
+		if (!isInfoEnabled()) {
 			return;
 		}
 

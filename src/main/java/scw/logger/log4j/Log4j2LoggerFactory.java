@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import scw.core.exception.NotSupportException;
 import scw.logger.AbstractILoggerFactory;
 import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
 public class Log4j2LoggerFactory extends AbstractILoggerFactory {
 
@@ -22,7 +23,7 @@ public class Log4j2LoggerFactory extends AbstractILoggerFactory {
 
 	public Logger getLogger(String name, String placeholder) {
 		org.apache.logging.log4j.Logger logger = LogManager.getLogger(name);
-		return new Log4j2Logger(logger, placeholder);
+		return new Log4j2Logger(logger, LoggerUtils.getLoggerLevel(name), placeholder);
 	}
 
 }

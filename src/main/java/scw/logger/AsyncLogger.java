@@ -3,9 +3,8 @@ package scw.logger;
 public final class AsyncLogger extends AbstractMyLogger {
 	private final AsyncLoggerFactory asyncLoggerFactory;
 
-	public AsyncLogger(boolean traceEnabled, boolean debugEnabled, boolean infoEnabled, String name,
-			AsyncLoggerFactory asyncLoggerFactory, String placeholder) {
-		super(traceEnabled, debugEnabled, infoEnabled, name, placeholder);
+	public AsyncLogger(Level level, String name, AsyncLoggerFactory asyncLoggerFactory, String placeholder) {
+		super(level, name, placeholder);
 		this.asyncLoggerFactory = asyncLoggerFactory;
 	}
 

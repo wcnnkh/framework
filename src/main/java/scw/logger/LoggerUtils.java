@@ -1,7 +1,13 @@
 package scw.logger;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
+import scw.core.utils.PropertiesUtils;
+import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringAppend;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
@@ -9,6 +15,36 @@ import scw.core.utils.XTime;
 
 public final class LoggerUtils {
 	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";
+	private static final Map<String, Level> LOGGER_LEVEL = new HashMap<String, Level>();
+
+	static {
+		String loggerEnablePropertiePath = SystemPropertyUtils.getProperty("scw.logger.enable");
+		if (loggerEnablePropertiePath == null) {
+			loggerEnablePropertiePath = "classpath:/logger-enable.properties";
+		}
+
+		if (ResourceUtils.isExist(loggerEnablePropertiePath)) {
+			Properties properties = PropertiesUtils.getProperties(loggerEnablePropertiePath);
+			for (Entry<Object, Object> entry : properties.entrySet()) {
+				Object key = entry.getKey();
+				if (key == null) {
+					continue;
+				}
+
+				Object value = entry.getValue();
+				if (value == null) {
+					continue;
+				}
+
+				Level level = Level.valueOf(value.toString().toUpperCase());
+				if (level == null) {
+					continue;
+				}
+
+				LOGGER_LEVEL.put(key.toString(), level);
+			}
+		}
+	}
 
 	private LoggerUtils() {
 	};
@@ -21,9 +57,17 @@ public final class LoggerUtils {
 		}
 	}
 
-	public static void loggerAppend(Appendable appendable, String time,
-			String level, String tag, StringAppend stringAppend)
-			throws Exception {
+	public static void setLoggerLevel(String name, Level level) {
+		LOGGER_LEVEL.put(name, level);
+	}
+
+	public static Level getLoggerLevel(String name) {
+		Level level = LOGGER_LEVEL.get(name);
+		return level == null ? Level.TRACE : level;
+	}
+
+	public static void loggerAppend(Appendable appendable, String time, String level, String tag,
+			StringAppend stringAppend) throws Exception {
 		boolean b = false;
 		if (!StringUtils.isEmpty(time)) {
 			appendable.append(time);
@@ -57,26 +101,21 @@ public final class LoggerUtils {
 		}
 	}
 
-	public static void loggerAppend(Appendable appendable, long time,
-			String level, String tag, StringAppend stringAppend)
-			throws Exception {
-		loggerAppend(appendable, XTime.format(time, TIME_FORMAT), level, tag,
-				stringAppend);
+	public static void loggerAppend(Appendable appendable, long time, String level, String tag,
+			StringAppend stringAppend) throws Exception {
+		loggerAppend(appendable, XTime.format(time, TIME_FORMAT), level, tag, stringAppend);
 	}
 
-	public static void loggerAppend(Appendable appendable, long time,
-			String level, String tag, String placeholder, String msg,
-			Object... args) throws Exception {
-		StringAppend loggerAppend = new DefaultLoggerFormatAppend(msg,
-				placeholder, args);
+	public static void loggerAppend(Appendable appendable, long time, String level, String tag, String placeholder,
+			String msg, Object... args) throws Exception {
+		StringAppend loggerAppend = new DefaultLoggerFormatAppend(msg, placeholder, args);
 		loggerAppend(appendable, time, level, tag, loggerAppend);
 	}
 
 	public static void info(Class<?> clazz, String msg, Object... args) {
 		StringBuilder sb = new StringBuilder(256);
 		try {
-			loggerAppend(sb, System.currentTimeMillis(), "CONSOLE",
-					clazz.getName(), null, msg, args);
+			loggerAppend(sb, System.currentTimeMillis(), "CONSOLE", clazz.getName(), null, msg, args);
 			System.out.println(sb.toString());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -86,8 +125,7 @@ public final class LoggerUtils {
 	public static void warn(Class<?> clazz, String msg, Object... args) {
 		StringBuilder sb = new StringBuilder(256);
 		try {
-			loggerAppend(sb, System.currentTimeMillis(), "CONSOLE",
-					clazz.getName(), null, msg, args);
+			loggerAppend(sb, System.currentTimeMillis(), "CONSOLE", clazz.getName(), null, msg, args);
 			System.err.println(sb.toString());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -95,13 +133,11 @@ public final class LoggerUtils {
 	}
 
 	public static Boolean defaultConfigEnable() {
-		return StringUtils.parseBoolean(SystemPropertyUtils
-				.getProperty("scw.logger.default.config.enable"), null);
+		return StringUtils.parseBoolean(SystemPropertyUtils.getProperty("scw.logger.default.config.enable"), null);
 	}
 
 	public static void setDefaultConfigenable(boolean enable) {
-		SystemPropertyUtils.setProperty("scw.logger.default.config.enable",
-				enable + "");
+		SystemPropertyUtils.setProperty("scw.logger.default.config.enable", enable + "");
 	}
 
 	/**

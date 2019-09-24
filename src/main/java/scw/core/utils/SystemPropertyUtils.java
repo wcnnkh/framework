@@ -19,6 +19,9 @@ package scw.core.utils;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import scw.core.Constants;
 import scw.core.StringFormatSystemProperties;
@@ -29,9 +32,41 @@ public abstract class SystemPropertyUtils {
 	private static final String WORK_PATH_PROPERTY_NAME = "scw_work_path";
 	private static final String DEFAULT_WORK_PATH_DIR = "public,www";
 	private static volatile String workPath;
+	/**
+	 * 私有的Properties
+	 */
+	private static final ConcurrentHashMap<String, String> PRIVATE_PROPERTIES = new ConcurrentHashMap<String, String>();
+
+	static {
+		String path = getProperty("scw.properties.private");
+		if (path == null) {
+			path = "classpath:/private.properties";
+		}
+
+		if (ResourceUtils.isExist(path)) {
+			Properties properties = PropertiesUtils.getProperties(path);
+			for (Entry<Object, Object> entry : properties.entrySet()) {
+				Object key = entry.getKey();
+				if (key == null) {
+					continue;
+				}
+
+				Object value = entry.getValue();
+				if (value == null) {
+					continue;
+				}
+
+				PRIVATE_PROPERTIES.put(key.toString(), value.toString());
+			}
+		}
+	}
 
 	public static String getProperty(String key) {
-		String v = System.getProperty(key);
+		String v = getPrivateProperty(key);
+		if (v == null) {
+			v = System.getProperty(key);
+		}
+
 		if (v == null) {
 			v = System.getenv(key);
 		}
@@ -102,8 +137,7 @@ public abstract class SystemPropertyUtils {
 								path = file.getParent();
 							} else {
 								file = file.getParentFile();
-								file = FileUtils.searchDirectory(file,
-										"WEB-INF");
+								file = FileUtils.searchDirectory(file, "WEB-INF");
 								if (file != null) {
 									path = file.getParent();
 								}
@@ -126,8 +160,7 @@ public abstract class SystemPropertyUtils {
 			return text;
 		}
 
-		return StringFormatSystemProperties
-				.formatText(StringFormatSystemProperties.formatEL(text));
+		return StringFormatSystemProperties.formatText(StringFormatSystemProperties.formatEL(text));
 	}
 
 	/**
@@ -158,9 +191,8 @@ public abstract class SystemPropertyUtils {
 
 	public static String getSystemOnlyId() {
 		try {
-			return scw.core.Base64.encode((getUserDir() + "&" + ResourceUtils
-					.getClassPathURL())
-					.getBytes(Constants.DEFAULT_CHARSET_NAME));
+			return scw.core.Base64.encode(
+					(getUserDir() + "&" + ResourceUtils.getClassPathURL()).getBytes(Constants.DEFAULT_CHARSET_NAME));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
@@ -168,5 +200,13 @@ public abstract class SystemPropertyUtils {
 
 	public static String getMavenHome() {
 		return getProperty("maven.home");
+	}
+
+	public static String getPrivateProperty(String name) {
+		return PRIVATE_PROPERTIES.get(name);
+	}
+
+	public static void setPrivateProperty(String name, String value) {
+		PRIVATE_PROPERTIES.put(name, value);
 	}
 }
