@@ -20,6 +20,7 @@ import scw.core.exception.NotFoundException;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.mvc.Channel;
+import scw.mvc.MVCUtils;
 import scw.mvc.Request;
 import scw.mvc.RequestResponseModelChannel;
 import scw.mvc.Response;
@@ -187,6 +188,10 @@ public class Page extends AbstractPage {
 					Object obj = enumeration.nextElement();
 					if (obj != null) {
 						String name = obj.toString();
+						if (MVCUtils.isSystemAttribute(name)) {
+							continue;
+						}
+
 						put(name, request.getAttribute(name));
 					}
 				}
@@ -215,7 +220,7 @@ public class Page extends AbstractPage {
 	@Override
 	protected void render(RequestResponseModelChannel<? extends Request, ? extends Response> channel) throws Throwable {
 		if (channel.getRequest() instanceof ServletRequest && channel.getResponse() instanceof ServletResponse) {
-			render(channel, (ServletRequest)channel.getRequest(), (ServletResponse)channel.getResponse());
+			render(channel, (ServletRequest) channel.getRequest(), (ServletResponse) channel.getResponse());
 		}
 	}
 }

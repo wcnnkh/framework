@@ -11,8 +11,15 @@ import scw.core.utils.StringUtils;
 import scw.mvc.Filter;
 import scw.mvc.FilterChain;
 import scw.mvc.MVCUtils;
-import scw.mvc.MethodAction;
 import scw.mvc.SimpleFilterChain;
+import scw.mvc.action.ActionFilter;
+import scw.mvc.action.HttpAction;
+import scw.mvc.action.HttpActionService;
+import scw.mvc.action.HttpControllerConfig;
+import scw.mvc.action.HttpParameterActionService;
+import scw.mvc.action.HttpPathService;
+import scw.mvc.action.HttpRestService;
+import scw.mvc.action.SimpleHttpAction;
 import scw.mvc.annotation.Controller;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpFilter;
@@ -20,12 +27,13 @@ import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.servlet.FilterChainAction;
 
-public final class HttpServiceFilter extends HttpFilter {
-	private final Collection<Filter> filters;
+public class HttpActionServiceFilter extends HttpFilter {
+	private final Collection<Filter> filters = new LinkedList<Filter>();
+	private final Collection<ActionFilter> actionFilters = new LinkedList<ActionFilter>();
 
-	public HttpServiceFilter(BeanFactory beanFactory, PropertyFactory propertyFactory, Collection<Class<?>> classes,
-			String actionKey) {
-		filters = new LinkedList<Filter>();
+	public HttpActionServiceFilter(BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Collection<Class<?>> classes) {
+		actionFilters.addAll(MVCUtils.getActionFilters(beanFactory, propertyFactory));
 
 		filters.add(new RpcServletFilter(beanFactory, propertyFactory));
 		if (MVCUtils.isSupportCorssDomain(propertyFactory)) {
@@ -38,9 +46,12 @@ public final class HttpServiceFilter extends HttpFilter {
 			filters.add(new ResourceServiceFilter(sourceRoot, sourcePath));
 		}
 
-		filters.add(new ParameterActionServiceFilter(actionKey));
-		filters.add(new PathServiceFilter());
-		filters.add(new RestServiceFilter());
+		if (MVCUtils.isSupportHttpParameterAction(propertyFactory)) {
+			filters.add(new HttpParameterActionService(actionFilters, MVCUtils.getHttpParameterActionKey(propertyFactory)));
+		}
+
+		filters.add(new HttpPathService(actionFilters));
+		filters.add(new HttpRestService(actionFilters));
 
 		for (Class<?> clz : classes) {
 			Controller clzController = clz.getAnnotation(Controller.class);
@@ -55,9 +66,11 @@ public final class HttpServiceFilter extends HttpFilter {
 				}
 
 				for (Filter filter : filters) {
-					if (filter instanceof AbstractHttpServiceFilter) {
-						((AbstractHttpServiceFilter) filter).scanning(clz, method, clzController, methodController,
-								new MethodAction(beanFactory, propertyFactory, clz, method));
+					if (filter instanceof HttpActionService) {
+						HttpAction httpAction = new SimpleHttpAction(beanFactory, propertyFactory, clz, method);
+						for (HttpControllerConfig config : httpAction.getControllerConfigs()) {
+							((HttpActionService) filter).scanning(httpAction, config);
+						}
 					}
 				}
 			}
@@ -70,5 +83,4 @@ public final class HttpServiceFilter extends HttpFilter {
 		FilterChain filterChain = new SimpleFilterChain(filters, new FilterChainAction(chain));
 		return filterChain.doFilter(channel);
 	}
-
 }

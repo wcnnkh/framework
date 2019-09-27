@@ -8,7 +8,9 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +36,6 @@ import scw.core.context.Context;
 import scw.core.context.ContextManager;
 import scw.core.context.support.ThreadLocalContextManager;
 import scw.core.exception.BeansException;
-import scw.core.exception.ParameterException;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectUtils;
@@ -50,16 +51,16 @@ import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mvc.action.ActionFilter;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
-import scw.mvc.annotation.Methods;
 import scw.mvc.annotation.Model;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.http.Text;
 import scw.mvc.http.filter.CrossDomainDefinition;
-import scw.mvc.http.filter.HttpServiceFilter;
+import scw.mvc.http.filter.HttpActionServiceFilter;
 import scw.net.ContentType;
 import scw.result.exception.ResultExceptionFilter;
 
@@ -79,6 +80,7 @@ public final class MVCUtils {
 	public static final String CREDENTIALS_HEADER = "Access-Control-Allow-Credentials";
 	private static final String JSONP_RESP_PREFIX = "(";
 	private static final String JSONP_RESP_SUFFIX = ");";
+	private static final String HTTP_AUTHORITY_ATTRIBUTE_NAME = "_scw_http_authority";
 
 	public static Channel getContextChannel() {
 		Context context = MVC_CONTEXT_MANAGER.getCurrentContext();
@@ -87,6 +89,32 @@ public final class MVCUtils {
 
 	public static Context getContext() {
 		return MVC_CONTEXT_MANAGER.getCurrentContext();
+	}
+
+	public static Map<String, Object> getAttributeMap(AttributeManager attributeManager) {
+		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		Enumeration<String> enumeration = attributeManager.getAttributeNames();
+		while (enumeration.hasMoreElements()) {
+			String name = enumeration.nextElement();
+			if (name != null || isSystemAttribute(name)) {
+				continue;
+			}
+
+			Object value = attributeManager.getAttribute(name);
+			if (value == null) {
+				continue;
+			}
+			map.put(name, value);
+		}
+		return map;
+	}
+
+	public static boolean isSystemAttribute(String name) {
+		return RESTURL_PATH_PARAMETER.equals(name);
+	}
+
+	public static void setHttpAuthorityId(AttributeManager attributeManager, String id) {
+		attributeManager.setAttribute(HTTP_AUTHORITY_ATTRIBUTE_NAME, id);
 	}
 
 	public static void service(Collection<Filter> filters, Channel channel, int warnExecuteTime) throws Throwable {
@@ -293,41 +321,6 @@ public final class MVCUtils {
 		return StringUtils.startsWithIgnoreCase(request.getContentType(), contentType);
 	}
 
-	public static scw.net.http.Method[] mergeRequestType(Class<?> clz, Method method) {
-		Controller clzController = clz.getAnnotation(Controller.class);
-		Controller methodController = method.getAnnotation(Controller.class);
-		if (clzController == null || methodController == null) {
-			throw new ParameterException("方法或类上都不存在Controller注解");
-		}
-
-		Methods methods = method.getAnnotation(Methods.class);
-
-		Map<String, scw.net.http.Method> requestTypeMap = new HashMap<String, scw.net.http.Method>();
-		if (methods == null) {
-			if (clzController != null) {
-				for (scw.net.http.Method requestType : clzController.methods()) {
-					requestTypeMap.put(requestType.name(), requestType);
-				}
-			}
-		} else {
-			for (scw.net.http.Method requestType : methods.value()) {
-				requestTypeMap.put(requestType.name(), requestType);
-			}
-		}
-
-		if (methodController != null) {
-			for (scw.net.http.Method requestType : methodController.methods()) {
-				requestTypeMap.put(requestType.name(), requestType);
-			}
-		}
-
-		if (requestTypeMap.size() == 0) {
-			requestTypeMap.put(scw.net.http.Method.GET.name(), scw.net.http.Method.GET);
-		}
-
-		return requestTypeMap.values().toArray(new scw.net.http.Method[0]);
-	}
-
 	@SuppressWarnings("rawtypes")
 	public static String getExistActionErrMsg(Action action, Action oldAction) {
 		StringBuilder sb = new StringBuilder();
@@ -399,14 +392,22 @@ public final class MVCUtils {
 		return list;
 	}
 
+	public static LinkedList<ActionFilter> getActionFilters(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory) {
+		LinkedList<ActionFilter> filters = new LinkedList<ActionFilter>();
+		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, ActionFilter.class, "mvc.filters");
+		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, ActionFilter.class, "mvc.action.filters");
+		return filters;
+	}
+
 	public static LinkedList<Filter> getFilters(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		LinkedList<Filter> filters = new LinkedList<Filter>();
 		if (instanceFactory.isInstance(ResultExceptionFilter.class)) {// 异常处理
 			filters.add(instanceFactory.getInstance(ResultExceptionFilter.class));
 		}
 
-		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, "mvc.filters");
-		filters.add(getHttpServiceFilter(instanceFactory, propertyFactory));
+		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, Filter.class, "mvc.filters");
+		filters.add(getHttpActionServiceFilter(instanceFactory, propertyFactory));
 		return filters;
 	}
 
@@ -452,13 +453,17 @@ public final class MVCUtils {
 		return StringUtils.commonSplit(arr);
 	}
 
-	public static HttpServiceFilter getHttpServiceFilter(InstanceFactory beanFactory, PropertyFactory propertyFactory) {
+	public static String getHttpParameterActionKey(PropertyFactory propertyFactory) {
 		String actionKey = propertyFactory.getProperty("mvc.http.actionKey");
-		actionKey = StringUtils.isEmpty(actionKey) ? "action" : actionKey;
+		return StringUtils.isEmpty(actionKey) ? "action" : actionKey;
+	}
+
+	public static HttpActionServiceFilter getHttpActionServiceFilter(InstanceFactory beanFactory,
+			PropertyFactory propertyFactory) {
 		String packageName = propertyFactory.getProperty("mvc.http.scanning");
 		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
-		return beanFactory.getInstance(HttpServiceFilter.class, beanFactory, propertyFactory,
-				ResourceUtils.getClassList(packageName), actionKey);
+		return beanFactory.getInstance(HttpActionServiceFilter.class, beanFactory, propertyFactory,
+				ResourceUtils.getClassList(packageName));
 	}
 
 	public static JSONParseSupport getJsonParseSupport(BeanFactory beanFactory, PropertyFactory propertyFactory) {
@@ -647,35 +652,44 @@ public final class MVCUtils {
 		return null;
 	}
 
-	public static LinkedList<Filter> getControllerFilter(Class<?> clazz, Method method,
-			InstanceFactory instanceFactory) {
+	@SuppressWarnings("unchecked")
+	public static <T extends FilterInterface> LinkedList<T> getControllerFilter(Class<T> type, Class<?> clazz,
+			Method method, InstanceFactory instanceFactory) {
 		Filters filters = clazz.getAnnotation(Filters.class);
-		LinkedList<Filter> list = new LinkedList<Filter>();
+		LinkedList<T> list = new LinkedList<T>();
 		if (filters != null) {
-			for (Class<? extends Filter> f : filters.value()) {
-				list.add(instanceFactory.getInstance(f));
+			for (Class<? extends FilterInterface> f : filters.value()) {
+				if (type.isAssignableFrom(f)) {
+					list.add((T) instanceFactory.getInstance(f));
+				}
 			}
 		}
 
 		Controller controller = clazz.getAnnotation(Controller.class);
 		if (controller != null) {
-			for (Class<? extends Filter> f : controller.filters()) {
-				list.add(instanceFactory.getInstance(f));
+			for (Class<? extends FilterInterface> f : controller.filters()) {
+				if (type.isAssignableFrom(f)) {
+					list.add((T) instanceFactory.getInstance(f));
+				}
 			}
 		}
 
 		filters = method.getAnnotation(Filters.class);
 		if (filters != null) {
 			list.clear();
-			for (Class<? extends Filter> f : filters.value()) {
-				list.add(instanceFactory.getInstance(f));
+			for (Class<? extends FilterInterface> f : filters.value()) {
+				if (type.isAssignableFrom(f)) {
+					list.add((T) instanceFactory.getInstance(f));
+				}
 			}
 		}
 
 		controller = method.getAnnotation(Controller.class);
 		if (controller != null) {
-			for (Class<? extends Filter> f : controller.filters()) {
-				list.add(instanceFactory.getInstance(f));
+			for (Class<? extends FilterInterface> f : controller.filters()) {
+				if (type.isAssignableFrom(f)) {
+					list.add((T) instanceFactory.getInstance(f));
+				}
 			}
 		}
 		return list;
@@ -753,5 +767,9 @@ public final class MVCUtils {
 			return StringUtils.isEmpty(jsonp) ? "callback" : jsonp;
 		}
 		return null;
+	}
+
+	public static boolean isSupportHttpParameterAction(PropertyFactory propertyFactory) {
+		return StringUtils.parseBoolean(propertyFactory.getProperty("mvc.http.parameter.action.enable"), true);
 	}
 }

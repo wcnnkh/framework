@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.mvc.Filter;
+import scw.mvc.FilterInterface;
 import scw.mvc.ParameterFilter;
 import scw.net.http.Method;
 
@@ -33,13 +33,11 @@ public @interface Controller {
 	 * 
 	 * @return
 	 */
-	public Class<? extends Filter>[] filters() default {};
+	public Class<? extends FilterInterface>[] filters() default {};
 
 	/**
 	 * 参数解析   不处理基本数据类型及基本数据类型的包装类型、枚举、Class
 	 * @return
 	 */
 	public Class<? extends ParameterFilter>[] parameterFilter() default {};
-	
-	public String name() default "";
 }

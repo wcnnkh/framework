@@ -16,8 +16,8 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.Filter;
 import scw.mvc.MVCUtils;
+import scw.mvc.action.HttpNotFoundService;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.filter.NotFoundFilter;
 import scw.mvc.servlet.http.HttpServletChannelFactory;
 
 @Bean(proxy = false)
@@ -29,12 +29,11 @@ public class DefaultServletService implements ServletService {
 	private final Collection<Filter> filters;
 	private final int warnExecuteTime;
 
-	public DefaultServletService(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Throwable {
+	public DefaultServletService(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Throwable {
 		this.charsetName = MVCUtils.getCharsetName(propertyFactory);
 		this.warnExecuteTime = MVCUtils.getWarnExecuteTime(propertyFactory);
-		this.filters = ServletUtils.getFilters(beanFactory, propertyFactory);
-		this.filters.add(new NotFoundFilter());
+		this.filters = MVCUtils.getFilters(beanFactory, propertyFactory);
+		this.filters.add(new HttpNotFoundService());
 		this.httpServletChannelFactory = ServletUtils.getHttpServletChannelFactory(beanFactory, propertyFactory);
 	}
 

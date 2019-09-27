@@ -1,8 +1,6 @@
 package scw.mvc.servlet;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -13,13 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
-import scw.core.instance.InstanceFactory;
 import scw.core.utils.StringUtils;
-import scw.mvc.Filter;
 import scw.mvc.MVCUtils;
-import scw.mvc.ParameterFilter;
 import scw.mvc.servlet.http.DefaultHttpServletChannelFactory;
 import scw.mvc.servlet.http.HttpServletChannelFactory;
 
@@ -121,26 +115,12 @@ public final class ServletUtils {
 		String factoryName = propertyFactory.getProperty("mvc.servlet.http.channel-factory");
 		if (StringUtils.isEmpty(factoryName)) {
 			return new DefaultHttpServletChannelFactory(beanFactory, MVCUtils.isDebug(propertyFactory),
-					getParameterFilters(beanFactory, propertyFactory),
+					MVCUtils.getParameterFilters(beanFactory, propertyFactory),
 					MVCUtils.getJsonParseSupport(beanFactory, propertyFactory),
 					MVCUtils.isSupportCookieValue(propertyFactory), MVCUtils.getJsonp(propertyFactory));
 		} else {
 			return beanFactory.getInstance(factoryName);
 		}
-	}
-
-	public static Collection<Filter> getFilters(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		LinkedList<Filter> filters = MVCUtils.getFilters(instanceFactory, propertyFactory);
-		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, "servlet.filters");
-		return filters;
-	}
-
-	public static Collection<ParameterFilter> getParameterFilters(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory) {
-		LinkedList<ParameterFilter> filters = MVCUtils.getParameterFilters(instanceFactory, propertyFactory,
-				"servlet.parameter.filters");
-		filters.addAll(MVCUtils.getParameterFilters(instanceFactory, propertyFactory));
-		return filters;
 	}
 
 	public static String getIP(HttpServletRequest httpServletRequest) {

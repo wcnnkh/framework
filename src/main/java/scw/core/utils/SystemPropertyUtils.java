@@ -32,6 +32,7 @@ public abstract class SystemPropertyUtils {
 	private static final String WORK_PATH_PROPERTY_NAME = "scw_work_path";
 	private static final String DEFAULT_WORK_PATH_DIR = "public,www";
 	private static volatile String workPath;
+	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
 	/**
 	 * 私有的Properties
 	 */
@@ -80,10 +81,23 @@ public abstract class SystemPropertyUtils {
 	}
 
 	public static void setProperty(String key, String value) {
+		setProperty(key, value, true);
+	}
+
+	public static void setSystemProperty(String key, String value) {
 		System.setProperty(key, value);
 	}
 
+	public static void setProperty(String key, String value, boolean system) {
+		if (system) {
+			setSystemProperty(key, value);
+		} else {
+			setPrivateProperty(key, value);
+		}
+	}
+
 	public static void clearProperty(String key) {
+		clearPrivateProperty(key);
 		System.clearProperty(key);
 	}
 
@@ -190,23 +204,35 @@ public abstract class SystemPropertyUtils {
 	}
 
 	public static String getSystemOnlyId() {
-		try {
-			return scw.core.Base64.encode(
-					(getUserDir() + "&" + ResourceUtils.getClassPathURL()).getBytes(Constants.DEFAULT_CHARSET_NAME));
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
+		String systemOnlyId = getPrivateProperty(SYSTEM_ID_PROPERTY);
+		if (StringUtils.isEmpty(systemOnlyId)) {
+			try {
+				systemOnlyId = scw.core.Base64.encode((getUserDir() + "&" + ResourceUtils.getClassPathURL())
+						.getBytes(Constants.DEFAULT_CHARSET_NAME));
+				if(systemOnlyId.endsWith("==")){
+					systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
+				}
+			} catch (UnsupportedEncodingException e) {
+				throw new RuntimeException(e);
+			}
+			setPrivateProperty(SYSTEM_ID_PROPERTY, systemOnlyId);
 		}
+		return systemOnlyId;
 	}
 
 	public static String getMavenHome() {
 		return getProperty("maven.home");
 	}
 
-	public static String getPrivateProperty(String name) {
-		return PRIVATE_PROPERTIES.get(name);
+	public static String getPrivateProperty(String key) {
+		return PRIVATE_PROPERTIES.get(key);
 	}
 
-	public static void setPrivateProperty(String name, String value) {
-		PRIVATE_PROPERTIES.put(name, value);
+	public static void setPrivateProperty(String key, String value) {
+		PRIVATE_PROPERTIES.put(key, value);
+	}
+
+	public static void clearPrivateProperty(String key) {
+		PRIVATE_PROPERTIES.remove(key);
 	}
 }
