@@ -702,13 +702,13 @@ public final class MVCUtils {
 		return list;
 	}
 
-	public static void httpWrite(HttpChannel channel, String jsonp, JSONParseSupport jsonParseSupport, Object write,
-			boolean checkView) throws Throwable {
+	public static void httpWrite(HttpChannel channel, String jsonp, JSONParseSupport jsonParseSupport, Object write)
+			throws Throwable {
 		if (write == null) {
 			return;
 		}
 
-		if (checkView && (write instanceof View)) {
+		if (write instanceof View) {
 			((View) write).render(channel);
 			return;
 		}

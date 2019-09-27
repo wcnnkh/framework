@@ -141,7 +141,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	}
 
 	public void write(Object obj) throws Throwable {
-		MVCUtils.httpWrite(this, jsonp, jsonParseSupport, obj, true);
+		MVCUtils.httpWrite(this, jsonp, jsonParseSupport, obj);
 	}
 
 	public InputStream getInputStream() throws IOException {
