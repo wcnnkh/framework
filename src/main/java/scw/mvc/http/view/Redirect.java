@@ -13,11 +13,11 @@ public class Redirect extends HttpView {
 	}
 
 	@Override
-	public void render(HttpChannel channel, HttpRequest httpRequest,
-			HttpResponse httpResponse) throws Throwable {
+	public void render(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse) throws Throwable {
 		if (channel.isLogEnabled()) {
 			channel.log("redirect:{}", url);
 		}
 		httpResponse.sendRedirect(url);
 	}
+
 }

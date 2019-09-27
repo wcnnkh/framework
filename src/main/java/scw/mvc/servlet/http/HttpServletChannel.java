@@ -8,13 +8,11 @@ import javax.servlet.http.HttpSession;
 
 import scw.beans.BeanFactory;
 import scw.json.JSONParseSupport;
-import scw.mvc.MVCUtils;
 import scw.mvc.ParameterDefinition;
 import scw.mvc.ParameterFilter;
 import scw.mvc.http.AbstractHttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
-import scw.mvc.servlet.ServletUtils;
 
 @SuppressWarnings("unchecked")
 public abstract class HttpServletChannel extends AbstractHttpChannel {
@@ -47,26 +45,5 @@ public abstract class HttpServletChannel extends AbstractHttpChannel {
 	@Override
 	public MyHttpServletResponse getResponse() {
 		return super.getResponse();
-	}
-
-	@Override
-	public void write(Object obj) throws Throwable {
-		if (obj == null) {
-			return;
-		}
-
-		if (obj instanceof String) {
-			String redirect = MVCUtils.parseRedirect((String) obj, true);
-			if (redirect != null) {
-				redirect = ServletUtils.formatContextPathUrl(getRequest(), redirect);
-				getResponse().sendRedirect(redirect);
-				if(isLogEnabled()){
-					log("[{}]--->[{}]", obj.toString(), redirect);
-				}
-				return;
-			}
-		}
-
-		super.write(obj);
 	}
 }

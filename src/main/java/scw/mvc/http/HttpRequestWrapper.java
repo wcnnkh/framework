@@ -115,4 +115,8 @@ public class HttpRequestWrapper extends AttributeManagerWrapper implements HttpR
 		return targetHttpRequest.isAjax();
 	}
 
+	public String getContextPath() {
+		return targetHttpRequest.getContextPath();
+	}
+
 }

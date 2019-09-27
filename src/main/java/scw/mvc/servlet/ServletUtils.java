@@ -137,14 +137,4 @@ public final class ServletUtils {
 	public static boolean isAjaxRequest(HttpServletRequest request) {
 		return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
 	}
-
-	public static String formatContextPathUrl(ServletRequest servletRequest, String url) {
-		if (StringUtils.isEmpty(url)) {
-			return servletRequest.getServletContext().getContextPath();
-		} else if (url.startsWith("/")) {
-			return servletRequest.getServletContext().getContextPath() + url;
-		} else {
-			return url;
-		}
-	}
 }

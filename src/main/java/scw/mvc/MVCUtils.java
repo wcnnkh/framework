@@ -641,13 +641,20 @@ public final class MVCUtils {
 		httpResponse.setHeader(CREDENTIALS_HEADER, crossDomainDefinition.isCredentials() + "");
 	}
 
-	public static String parseRedirect(String text, boolean ignoreCase) {
+	public static String parseRedirect(HttpRequest httpRequest, String text, boolean ignoreCase) {
 		if (text == null) {
 			return null;
 		}
 
 		if (StringUtils.startsWith(text, REDIRECT_PREFIX, ignoreCase)) {
-			return text.substring(REDIRECT_PREFIX.length());
+			String url = text.substring(REDIRECT_PREFIX.length());
+			if (StringUtils.isEmpty(url) || url.equals("/")) {
+				return httpRequest.getContextPath();
+			} else if (url.startsWith("/")) {
+				return httpRequest.getContextPath() + url;
+			} else {
+				return url;
+			}
 		}
 		return null;
 	}
@@ -718,7 +725,7 @@ public final class MVCUtils {
 
 		HttpResponse httpResponse = channel.getResponse();
 		if (write instanceof String) {
-			String redirect = parseRedirect((String) write, true);
+			String redirect = parseRedirect(channel.getRequest(), (String) write, true);
 			if (redirect != null) {
 				httpResponse.sendRedirect(redirect);
 				return;

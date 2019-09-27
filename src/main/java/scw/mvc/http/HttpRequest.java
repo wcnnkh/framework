@@ -64,4 +64,6 @@ public interface HttpRequest extends AttributeManager, Request{
     String getIP();
     
     boolean isAjax();
+    
+    String getContextPath();
 }
