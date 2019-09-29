@@ -36,6 +36,7 @@ public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
 		}
 
 		Element element = XMLUtils.getRootElement(xml);
+		String prefix = XMLUtils.getNodeAttributeValue(element, "prefix");
 		NodeList nodeList = XMLUtils.getChildNodes(element, true);
 		for (int i = 0, size = nodeList.getLength(); i < size; i++) {
 			Node node = nodeList.item(i);
@@ -48,14 +49,18 @@ public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
 				continue;
 			}
 
-			addAuthority(map, defParentId);
+			addAuthority(map, defParentId, prefix);
 		}
 	}
 
-	private void addAuthority(Map<String, String> map, String defParentId) {
+	private void addAuthority(Map<String, String> map, String defParentId, String prefix) {
 		String id = map.remove("id");
 		if (id == null) {
 			throw new NullPointerException("id不能为空：" + JSONUtils.toJSONString(map));
+		}
+
+		if (StringUtils.isNotEmpty(prefix)) {
+			id = prefix + id;
 		}
 
 		String name = map.remove("name");
@@ -66,6 +71,10 @@ public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
 		String parentId = map.remove("parentId");
 		if (StringUtils.isEmpty(parentId)) {
 			parentId = defParentId;
+		} else {
+			if (StringUtils.isNotEmpty(prefix)) {
+				parentId = prefix + parentId;
+			}
 		}
 
 		String include = map.remove("include");
