@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.rpc.http.DefaultRpcService;
 import scw.beans.rpc.http.RpcService;
@@ -266,10 +265,10 @@ public final class MVCUtils {
 		return args;
 	}
 
-	public static Object getBean(BeanFactory beanFactory, BeanDefinition beanDefinition, Channel channel,
+	public static Object getBean(InstanceFactory instanceFactory, BeanDefinition beanDefinition, Channel channel,
 			Constructor<?> constructor, Collection<ParameterFilter> parameterFilters) {
 		try {
-			return beanFactory.getInstance(beanDefinition.getId(), constructor.getParameterTypes(),
+			return instanceFactory.getInstance(beanDefinition.getId(), constructor.getParameterTypes(),
 					getParameterValues(channel, getParameterDefinitions(constructor), parameterFilters));
 		} catch (Throwable e) {
 			throw new BeansException(beanDefinition.getId());
@@ -332,7 +331,7 @@ public final class MVCUtils {
 		return sb.toString();
 	}
 
-	public static RpcService getRPCService(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	public static RpcService getRPCService(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		String rpcServerBeanName = propertyFactory.getProperty("mvc.http.rpc");
 		if (StringUtils.isEmpty(rpcServerBeanName)) {
 			String sign = propertyFactory.getProperty("mvc.http.rpc-sign");
@@ -340,12 +339,12 @@ public final class MVCUtils {
 			if (enable || !StringUtils.isEmpty(sign)) {// 开启
 				logger.info("rpc签名：{}", sign);
 				String serializer = propertyFactory.getProperty("mvc.http.rpc-serializer");
-				return beanFactory.getInstance(DefaultRpcService.class, beanFactory, sign,
+				return instanceFactory.getInstance(DefaultRpcService.class, instanceFactory, sign,
 						StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
-								: (Serializer) beanFactory.getInstance(serializer));
+								: (Serializer) instanceFactory.getInstance(serializer));
 			}
 		} else {
-			return beanFactory.getInstance(rpcServerBeanName);
+			return instanceFactory.getInstance(rpcServerBeanName);
 		}
 
 		return null;
@@ -458,21 +457,21 @@ public final class MVCUtils {
 		return StringUtils.isEmpty(actionKey) ? "action" : actionKey;
 	}
 
-	public static HttpActionServiceFilter getHttpActionServiceFilter(InstanceFactory beanFactory,
+	public static HttpActionServiceFilter getHttpActionServiceFilter(InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory) {
 		String packageName = propertyFactory.getProperty("mvc.http.scanning");
 		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
-		return beanFactory.getInstance(HttpActionServiceFilter.class, beanFactory, propertyFactory,
+		return instanceFactory.getInstance(HttpActionServiceFilter.class, instanceFactory, propertyFactory,
 				ResourceUtils.getClassList(packageName));
 	}
 
-	public static JSONParseSupport getJsonParseSupport(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	public static JSONParseSupport getJsonParseSupport(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		JSONParseSupport jsonParseSupport;
 		String jsonParseSupportBeanName = propertyFactory.getProperty("mvc.json");
 		if (StringUtils.isEmpty(jsonParseSupportBeanName)) {
 			jsonParseSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
 		} else {
-			jsonParseSupport = beanFactory.getInstance(jsonParseSupportBeanName);
+			jsonParseSupport = instanceFactory.getInstance(jsonParseSupportBeanName);
 		}
 		return jsonParseSupport;
 	}

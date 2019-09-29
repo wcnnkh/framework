@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 配置文件资源
+ * 配置文件资源路径
  * @author shuchaowen
  *
  */

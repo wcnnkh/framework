@@ -31,6 +31,7 @@ import scw.core.utils.FieldSetterListenUtils;
 import scw.core.utils.IteratorCallback;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.sql.orm.annotation.Column;
 import scw.sql.orm.annotation.Index;
@@ -41,6 +42,8 @@ import scw.sql.orm.annotation.Transient;
 import scw.sql.orm.enums.CasType;
 
 public final class ORMUtils {
+	private static Logger logger = LoggerUtils.getLogger(ORMUtils.class);
+
 	private ORMUtils() {
 	};
 
@@ -151,7 +154,7 @@ public final class ORMUtils {
 
 	public static void registerCglibProxyTableBean(String pageName) {
 		if (!StringUtils.isEmpty(pageName)) {
-			LoggerUtils.getLogger(ORMUtils.class).info("register proxy package:{}", pageName);
+			logger.info("register proxy package:{}", pageName);
 		}
 
 		for (Class<?> type : ResourceUtils.getClassList(pageName)) {
@@ -190,24 +193,24 @@ public final class ORMUtils {
 
 	public static boolean isDataBaseField(Field field) {
 		Column column = field.getAnnotation(Column.class);
-		if(column != null){
+		if (column != null) {
 			return true;
 		}
-		
-		if(field.getType().isEnum()){
+
+		if (field.getType().isEnum()) {
 			return true;
 		}
-		
+
 		return isDataBaseType(field.getType());
 	}
 
 	public static boolean isDataBaseType(Class<?> type) {
 		return ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
-				|| Date.class.isAssignableFrom(type) || java.util.Date.class.isAssignableFrom(type) || Time.class.isAssignableFrom(type)
-				|| Timestamp.class.isAssignableFrom(type) || Array.class.isAssignableFrom(type)
-				|| Blob.class.isAssignableFrom(type) || Clob.class.isAssignableFrom(type)
-				|| BigDecimal.class.isAssignableFrom(type) || Reader.class.isAssignableFrom(type)
-				|| NClob.class.isAssignableFrom(type);
+				|| Date.class.isAssignableFrom(type) || java.util.Date.class.isAssignableFrom(type)
+				|| Time.class.isAssignableFrom(type) || Timestamp.class.isAssignableFrom(type)
+				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
+				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
+				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type);
 	}
 
 	public static String getDefaultTableName(Class<?> clazz) {

@@ -24,4 +24,6 @@ public interface BeanFactory extends InstanceFactory {
 	BeanDefinition getBeanDefinition(String name);
 
 	Collection<String> getFilterNames();
+
+	boolean isSingleton(String name);
 }

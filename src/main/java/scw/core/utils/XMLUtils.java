@@ -153,7 +153,7 @@ public final class XMLUtils {
 	}
 
 	private static MyNodeList getIncludeNodeList(HashSet<String> includeHashSet, Node includeNode) {
-		String file = getNodeAttributeValue(includeNode, "file");
+		String file = getNodeAttributeValueOrNodeContent(includeNode, "file");
 		if (StringUtils.isEmpty(file)) {
 			return new MyNodeList();
 		}
@@ -191,7 +191,7 @@ public final class XMLUtils {
 					continue;
 				}
 
-				if (n.getNodeName().startsWith("include")) {
+				if (n.getNodeName().equalsIgnoreCase("include")) {
 					MyNodeList n2 = getIncludeNodeList(includeHashSet, n);
 					list.addAll(converIncludeNodeList(n2, includeHashSet));
 				} else {

@@ -4,8 +4,8 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 
-import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
+import scw.core.instance.InstanceFactory;
 import scw.mvc.Action;
 import scw.mvc.Channel;
 import scw.mvc.Filter;
@@ -21,12 +21,13 @@ public class MethodAction implements FilterAction {
 	private final Class<?> clazz;
 	private final Collection<ActionFilter> actionFilters;
 
-	public MethodAction(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clazz, Method method) {
+	public MethodAction(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz,
+			Method method) {
 		this.method = method;
 		this.clazz = clazz;
-		this.action = new InvokerAction(beanFactory, propertyFactory, clazz, method);
-		this.filters = MVCUtils.getControllerFilter(Filter.class, clazz, method, beanFactory);
-		this.actionFilters = MVCUtils.getControllerFilter(ActionFilter.class, clazz, method, beanFactory);
+		this.action = new InvokerAction(instanceFactory, propertyFactory, clazz, method);
+		this.filters = MVCUtils.getControllerFilter(Filter.class, clazz, method, instanceFactory);
+		this.actionFilters = MVCUtils.getControllerFilter(ActionFilter.class, clazz, method, instanceFactory);
 	}
 
 	public Object doAction(Channel channel) throws Throwable {

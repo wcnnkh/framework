@@ -9,7 +9,7 @@ import redis.clients.jedis.JedisPoolConfig;
 import scw.beans.auto.annotation.ResourceParameter;
 import scw.core.Constants;
 import scw.core.annotation.NotRequire;
-import scw.core.annotation.ParameterValue;
+import scw.core.annotation.ParameterName;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
 import scw.data.redis.AbstractRedisWrapper;
@@ -24,13 +24,13 @@ public final class RedisByJedisPool extends AbstractRedisWrapper implements Reso
 	private final JedisPool jedisPool;
 	private final String auth;
 	private final Redis redis;
-	
-	public RedisByJedisPool(String propertiesFile){
+
+	public RedisByJedisPool(String propertiesFile) {
 		this(propertiesFile, SerializerUtils.DEFAULT_SERIALIZER);
 	}
 
 	public RedisByJedisPool(
-			@ResourceParameter("redis.configuration") @ParameterValue("classpath:/redis.properties") String propertiesFile,
+			@ParameterName("redis.configuration") @ResourceParameter("classpath:/redis.properties") String propertiesFile,
 			Serializer serializer) {
 		JedisPoolConfig config = createConfig(propertiesFile);
 		Properties properties = PropertiesUtils.getProperties(propertiesFile, Constants.DEFAULT_CHARSET_NAME);

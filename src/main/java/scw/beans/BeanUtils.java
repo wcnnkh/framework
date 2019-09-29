@@ -30,7 +30,6 @@ import scw.core.Init;
 import scw.core.PropertyFactory;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterInvocationHandler;
-import scw.core.aop.Invoker;
 import scw.core.aop.ProxyUtils;
 import scw.core.aop.ReflectInvoker;
 import scw.core.cglib.proxy.Enhancer;
@@ -346,14 +345,6 @@ public final class BeanUtils {
 		}
 
 		return true;
-	}
-
-	public static Invoker getInvoker(BeanFactory beanFactory, Class<?> clz, Method method) {
-		if (Modifier.isStatic(method.getModifiers())) {
-			return new ReflectInvoker(null, method);
-		} else {
-			return new ReflectInvoker(beanFactory.getInstance(clz), method);
-		}
 	}
 
 	public static <T> T proxyInterface(BeanFactory beanFactory, Class<T> interfaceClass, Filter invocation) {

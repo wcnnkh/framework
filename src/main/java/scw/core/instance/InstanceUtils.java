@@ -2,9 +2,12 @@ package scw.core.instance;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 
+import scw.core.aop.Invoker;
+import scw.core.aop.ReflectInvoker;
 import scw.core.exception.NotSupportException;
 import scw.core.instance.support.ReflectionInstanceFactory;
 import scw.core.instance.support.ReflectionSingleInstanceFactory;
@@ -32,25 +35,23 @@ public final class InstanceUtils {
 		}
 
 		if (instanceFactory == null) {
-			throw new NotSupportException(
-					"Instances that do not call constructors are not supported");
+			throw new NotSupportException("Instances that do not call constructors are not supported");
 		}
 
-		LoggerUtils.info(InstanceUtils.class,
-				"default not call constructors instance factory：{}",
+		LoggerUtils.info(InstanceUtils.class, "default not call constructors instance factory：{}",
 				instanceFactory.getClass().getName());
 		NO_ARGS_INSTANCE_FACTORY = instanceFactory;
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T newInstance(String name, boolean invokeConstructor) {
-		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY
-				.getInstance(name) : NO_ARGS_INSTANCE_FACTORY.getInstance(name));
+		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY.getInstance(name)
+				: NO_ARGS_INSTANCE_FACTORY.getInstance(name));
 	}
 
 	public static <T> T newInstance(Class<T> type, boolean invokeConstructor) {
-		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY
-				.getInstance(type) : NO_ARGS_INSTANCE_FACTORY.getInstance(type));
+		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY.getInstance(type)
+				: NO_ARGS_INSTANCE_FACTORY.getInstance(type));
 	}
 
 	/**
@@ -120,10 +121,8 @@ public final class InstanceUtils {
 	 * @param params
 	 * @return
 	 */
-	public static <T> T getInstance(String name, Class<?>[] parameterTypes,
-			Object... params) {
-		return REFLECTION_INSTANCE_FACTORY.getInstance(name, parameterTypes,
-				params);
+	public static <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
+		return REFLECTION_INSTANCE_FACTORY.getInstance(name, parameterTypes, params);
 	}
 
 	/**
@@ -134,10 +133,8 @@ public final class InstanceUtils {
 	 * @param params
 	 * @return
 	 */
-	public static <T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
-			Object... params) {
-		return REFLECTION_INSTANCE_FACTORY.getInstance(type, parameterTypes,
-				params);
+	public static <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
+		return REFLECTION_INSTANCE_FACTORY.getInstance(type, parameterTypes, params);
 	}
 
 	/**
@@ -150,12 +147,11 @@ public final class InstanceUtils {
 	 * @throws NoSuchMethodException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(Class<T> type, boolean isPublic,
-			Map<String, Object> parameterMap) throws NoSuchMethodException {
+	public static <T> T newInstance(Class<T> type, boolean isPublic, Map<String, Object> parameterMap)
+			throws NoSuchMethodException {
 		if (CollectionUtils.isEmpty(parameterMap)) {
 			try {
-				return ReflectUtils.getConstructor(type, isPublic)
-						.newInstance();
+				return ReflectUtils.getConstructor(type, isPublic).newInstance();
 			} catch (InstantiationException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalAccessException e) {
@@ -168,8 +164,7 @@ public final class InstanceUtils {
 		}
 
 		int size = parameterMap.size();
-		for (Constructor<?> constructor : isPublic ? type.getConstructors()
-				: type.getDeclaredConstructors()) {
+		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
 			if (size == constructor.getParameterTypes().length) {
 				String[] names = ClassUtils.getParameterName(constructor);
 				Object[] args = new Object[size];
@@ -202,5 +197,13 @@ public final class InstanceUtils {
 
 	public static InstanceFactory getSingleInstanceFactory() {
 		return SINGLE_INSTANCE_FACTORY;
+	}
+
+	public static Invoker getInvoker(InstanceFactory instanceFactory, Class<?> clz, Method method) {
+		if (Modifier.isStatic(method.getModifiers())) {
+			return new ReflectInvoker(null, method);
+		} else {
+			return new ReflectInvoker(instanceFactory.getInstance(clz), method);
+		}
 	}
 }

@@ -3,19 +3,19 @@ package scw.mvc;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.aop.Invoker;
+import scw.core.instance.InstanceFactory;
+import scw.core.instance.InstanceUtils;
 
 public class InvokerAction implements Action<Channel> {
 	private final Invoker invoker;
 	private final ParameterDefinition[] parameterDefinitions;
 	private final Collection<ParameterFilter> parameterFilters;
 
-	public InvokerAction(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clz, Method method) {
-		this.invoker = BeanUtils.getInvoker(beanFactory, clz, method);
-		this.parameterFilters = MVCUtils.getParameterFilters(beanFactory, clz, method);
+	public InvokerAction(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clz, Method method) {
+		this.invoker = InstanceUtils.getInvoker(instanceFactory, clz, method);
+		this.parameterFilters = MVCUtils.getParameterFilters(instanceFactory, clz, method);
 		this.parameterDefinitions = MVCUtils.getParameterDefinitions(method);
 	}
 

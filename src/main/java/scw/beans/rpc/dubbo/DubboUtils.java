@@ -11,6 +11,7 @@ import scw.beans.BeanConfigFactory;
 import scw.beans.BeanFactory;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
+import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 import scw.logger.LoggerUtils;
 
@@ -98,7 +99,7 @@ public final class DubboUtils {
 				nodeList);
 	}
 
-	public static void exportService(BeanFactory beanFactory, PropertyFactory propertyFactory, NodeList nodeList) {
+	public static void exportService(InstanceFactory beanFactory, PropertyFactory propertyFactory, NodeList nodeList) {
 		if (!xmlExistDubboService(nodeList)) {
 			return;
 		}

@@ -26,6 +26,8 @@ import scw.mvc.http.HttpFilter;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.servlet.FilterChainAction;
+import scw.security.authority.http.HttpAuthorityManager;
+import scw.security.authority.http.SimpleHttpAuthorityManager;
 
 public class HttpActionServiceFilter extends HttpFilter {
 	private final Collection<Filter> filters = new LinkedList<Filter>();
@@ -33,6 +35,15 @@ public class HttpActionServiceFilter extends HttpFilter {
 
 	public HttpActionServiceFilter(BeanFactory beanFactory, PropertyFactory propertyFactory,
 			Collection<Class<?>> classes) {
+		SimpleHttpAuthorityManager simpleHttpAuthorityManager = null;
+		if (beanFactory.isInstance(HttpAuthorityManager.class)
+				&& beanFactory.isSingleton(HttpAuthorityManager.class.getName())) {
+			HttpAuthorityManager httpAuthorityManager = beanFactory.getInstance(HttpAuthorityManager.class);
+			if (httpAuthorityManager instanceof SimpleHttpAuthorityManager) {
+				simpleHttpAuthorityManager = (SimpleHttpAuthorityManager) httpAuthorityManager;
+			}
+		}
+
 		actionFilters.addAll(MVCUtils.getActionFilters(beanFactory, propertyFactory));
 
 		filters.add(new RpcServletFilter(beanFactory, propertyFactory));
@@ -47,7 +58,8 @@ public class HttpActionServiceFilter extends HttpFilter {
 		}
 
 		if (MVCUtils.isSupportHttpParameterAction(propertyFactory)) {
-			filters.add(new HttpParameterActionService(actionFilters, MVCUtils.getHttpParameterActionKey(propertyFactory)));
+			filters.add(
+					new HttpParameterActionService(actionFilters, MVCUtils.getHttpParameterActionKey(propertyFactory)));
 		}
 
 		filters.add(new HttpPathService(actionFilters));
@@ -68,6 +80,10 @@ public class HttpActionServiceFilter extends HttpFilter {
 				for (Filter filter : filters) {
 					if (filter instanceof HttpActionService) {
 						HttpAction httpAction = new SimpleHttpAction(beanFactory, propertyFactory, clz, method);
+						if (simpleHttpAuthorityManager != null && httpAction.getAuthority() != null) {
+							simpleHttpAuthorityManager.addAuthroity(httpAction.getAuthority());
+						}
+
 						for (HttpControllerConfig config : httpAction.getControllerConfigs()) {
 							((HttpActionService) filter).scanning(httpAction, config);
 						}
