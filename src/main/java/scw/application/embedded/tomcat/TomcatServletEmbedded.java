@@ -7,6 +7,7 @@ import javax.servlet.ServletContainerInitializer;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.Manager;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.startup.Tomcat;
@@ -66,6 +67,11 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		JarScanner jarScanner = getJarScanner(beanFactory, propertyFactory);
 		if (jarScanner != null) {
 			context.setJarScanner(jarScanner);
+		}
+
+		String manager = propertyFactory.getProperty("servlet.context.manager");
+		if(StringUtils.isNotEmpty(manager)){
+			context.setManager((Manager)beanFactory.getInstance(manager));
 		}
 		return context;
 	}
