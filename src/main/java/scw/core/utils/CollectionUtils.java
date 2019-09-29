@@ -646,10 +646,6 @@ public abstract class CollectionUtils {
 			return Collections.EMPTY_SET;
 		}
 
-		Set<T> set = new LinkedHashSet<T>();
-		for (T v : values) {
-			set.add(v);
-		}
-		return set;
+		return new LinkedHashSet<T>(Arrays.asList(values));
 	}
 }
