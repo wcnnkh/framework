@@ -69,7 +69,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 			context.setJarScanner(jarScanner);
 		}
 
-		String manager = propertyFactory.getProperty("servlet.context.manager");
+		String manager = EmbeddedUtils.getTomcatContextManager(propertyFactory);
 		if(StringUtils.isNotEmpty(manager)){
 			context.setManager((Manager)beanFactory.getInstance(manager));
 		}

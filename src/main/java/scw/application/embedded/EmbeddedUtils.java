@@ -50,6 +50,10 @@ public final class EmbeddedUtils {
 	public static String getTomcatConnectorName(PropertyFactory propertyFactory) {
 		return propertyFactory.getProperty(getTomcatKey("connector"));
 	}
+	
+	public static String getTomcatContextManager(PropertyFactory propertyFactory){
+		return propertyFactory.getProperty(getTomcatKey("context.manager"));
+	}
 
 	private static String getShutdownProperty(PropertyFactory propertyFactory, String name) {
 		return getProperty(propertyFactory, "shutdown." + name);
