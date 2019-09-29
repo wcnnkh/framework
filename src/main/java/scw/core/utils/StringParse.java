@@ -4,6 +4,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Map;
 
 import scw.core.StringEmptyVerification;
 import scw.core.ValueFactory;
@@ -257,5 +259,28 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public Object getObject(String text, Type type) {
 		return JSONUtils.parseObject(text, type);
+	}
+
+	public static boolean isCommonType(Type type) {
+		if (TypeUtils.isPrimitiveOrWrapper(type)) {
+			return true;
+		}
+
+		if (TypeUtils.isClass(type)) {
+			return isCommonType((Class<?>) type);
+		}
+
+		try {
+			return isCommonType(ClassUtils.forName(type.toString()));
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private static boolean isCommonType(Class<?> type) {
+		return type.isArray() || type.isEnum() || Collection.class.isAssignableFrom(type)
+				|| Map.class.isAssignableFrom(type) || java.util.Date.class.isAssignableFrom(type)
+				|| BigInteger.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type);
 	}
 }

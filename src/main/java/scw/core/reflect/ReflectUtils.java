@@ -5,8 +5,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.security.AccessControlException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,9 +19,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import scw.core.PropertyFactory;
+import scw.core.Verification;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.NotFoundException;
+import scw.core.instance.InstanceFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.Assert;
 import scw.core.utils.ClassUtils;
@@ -28,11 +34,91 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.ReflectionUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
+import scw.core.utils.TypeUtils;
 import scw.logger.LoggerUtils;
 
 public final class ReflectUtils {
 	private ReflectUtils() {
 	};
+
+	public static void loadMethod(Object bean, String propertyPrefix, PropertyFactory propertyFactory,
+			final InstanceFactory instanceFactory, Set<String> ignoreNames) {
+		loadMethod(bean, Arrays.asList("set", "add"), propertyPrefix, propertyFactory, instanceFactory, ignoreNames,
+				null);
+	}
+
+	public static void loadMethod(Object bean, Collection<String> methodPrefixs, String propertyPrefix,
+			PropertyFactory propertyFactory, final InstanceFactory instanceFactory, final Set<String> ignoreName,
+			final Verification<Type> beanVerification) {
+		loadMethod(bean, methodPrefixs, propertyPrefix, propertyFactory, new PropertyMapper<String>() {
+
+			public Object mapper(String name, String value, Type type) throws Exception {
+				if (StringUtils.isEmpty(value)) {
+					return null;
+				}
+
+				if (ignoreName != null && ignoreName.contains(name)) {
+					return null;
+				}
+
+				if (StringParse.isCommonType(type)) {
+					return StringParse.defaultParse(value, type);
+				}
+
+				if (TypeUtils.isInterface(type) || TypeUtils.isAbstract(type)) {
+					String className = TypeUtils.getClassName(type);
+					return instanceFactory.isInstance(className) ? instanceFactory.getInstance(className) : null;
+				}
+
+				if (beanVerification == null) {
+					return StringParse.defaultParse(value, type);
+				}
+
+				if (beanVerification.verification(type)) {
+					String className = TypeUtils.getClassName(type);
+					return instanceFactory.isInstance(className) ? instanceFactory.getInstance(className) : null;
+				} else {
+					return StringParse.defaultParse(value, type);
+				}
+			}
+		});
+	}
+
+	public static void loadMethod(Object bean, Collection<String> methodPrefixs, String propertyPrefix,
+			PropertyFactory propertyFactory, PropertyMapper<String> propertyMapper) {
+		if (CollectionUtils.isEmpty(methodPrefixs)) {
+			return;
+		}
+
+		for (Method method : bean.getClass().getDeclaredMethods()) {
+			Type[] types = method.getGenericParameterTypes();
+			if (types.length != 1) {
+				continue;
+			}
+
+			for (String methodPrefix : methodPrefixs) {
+				if (method.getName().startsWith(methodPrefix)) {
+					String name = method.getName().substring(methodPrefix.length());
+					name = StringUtils.toLowerCase(name, 0, 1);
+					String key = StringUtils.isEmpty(propertyPrefix) ? name : (propertyPrefix + name);
+					String value = propertyFactory.getProperty(key);
+					Object v;
+					try {
+						v = propertyMapper.mapper(name, value, types[0]);
+						if (v != null) {
+							ReflectUtils.setAccessibleMethod(method);
+							method.invoke(bean, v);
+						}
+					} catch (Exception e) {
+						LoggerUtils.warn(ReflectUtils.class, "向对象{}，插入name={},value={}时异常", bean.getClass().getName(),
+								name, value);
+						e.printStackTrace();
+					}
+					break;
+				}
+			}
+		}
+	}
 
 	public static <T, V> void setProperties(Class<T> type, T bean, Map<String, V> properties,
 			PropertyMapper<V> mapper) {
@@ -734,6 +820,13 @@ public final class ReflectUtils {
 		}
 	}
 
+	public static void setAccessibleMethod(Method method) {
+		if (!method.isAccessible()
+				&& (Modifier.isPrivate(method.getModifiers()) || Modifier.isProtected(method.getModifiers()))) {
+			method.setAccessible(true);
+		}
+	}
+
 	/**
 	 * 尝试查找同类型的set方法，如果不存在则直接插入
 	 * 
@@ -797,10 +890,10 @@ public final class ReflectUtils {
 	 * @return
 	 */
 	public static boolean isInstance(Class<?> clz, boolean checkConstructor) {
-		if(clz == null){
+		if (clz == null) {
 			return false;
 		}
-		
+
 		if (Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers()) || clz.isEnum()
 				|| clz.isArray()) {
 			return false;

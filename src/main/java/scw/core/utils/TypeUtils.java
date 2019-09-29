@@ -1,6 +1,8 @@
 package scw.core.utils;
 
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.sql.Date;
 
 public final class TypeUtils {
 	private TypeUtils() {
@@ -50,5 +52,65 @@ public final class TypeUtils {
 
 	public static boolean isPrimitiveOrWrapper(Type type) {
 		return isPrimitive(type) || isPrimitiveWrapper(type);
+	}
+
+	public static boolean isDateType(Type type) {
+		return type == java.util.Date.class || type == Date.class;
+	}
+
+	public static boolean isClass(Type type) {
+		return type instanceof Class;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static boolean isArray(Type type) {
+		if (isClass(type)) {
+			return ((Class) type).isArray();
+		}
+
+		return false;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static boolean isInterface(Type type) {
+		if (isClass(type)) {
+			return ((Class) type).isInterface();
+		} else {
+			try {
+				return ClassUtils.forName(type.toString()).isInterface();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static boolean isAbstract(Type type) {
+		if (isClass(type)) {
+			return Modifier.isAbstract(((Class) type).getModifiers());
+		} else {
+			try {
+				return Modifier.isAbstract(ClassUtils.forName(type.toString()).getModifiers());
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static String getClassName(Type type) {
+		if (isClass(type)) {
+			return ((Class) type).getName();
+		} else {
+			try {
+				return ClassUtils.forName(type.toString()).getName();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return type.toString();
 	}
 }

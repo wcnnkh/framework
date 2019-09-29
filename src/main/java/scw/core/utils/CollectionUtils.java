@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -639,4 +640,16 @@ public abstract class CollectionUtils {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> Set<T> asSet(T... values) {
+		if (ArrayUtils.isEmpty(values)) {
+			return Collections.EMPTY_SET;
+		}
+
+		Set<T> set = new LinkedHashSet<T>();
+		for (T v : values) {
+			set.add(v);
+		}
+		return set;
+	}
 }
