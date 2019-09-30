@@ -218,7 +218,7 @@ public abstract class LazyCacheManager implements CacheManager {
 		return valueMap;
 	}
 
-	public boolean isExist(Class<?> type, Object... params) {
+	public boolean isExistById(Class<?> type, Object... params) {
 		LazyCacheConfig config = getCacheConfig(type);
 		if (config.isDisable()) {
 			return true;

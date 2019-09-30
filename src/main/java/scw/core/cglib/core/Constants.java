@@ -25,7 +25,7 @@ import scw.core.asm.Type;
 public interface Constants extends scw.core.asm.Opcodes {
 
     /* Indicates the ASM API version that is used throughout cglib */
-    public static final int ASM_API = AsmApi.value();
+    public static final int ASM_API = scw.core.Constants.ASM_VERSION;
 
     public static final Class[] EMPTY_CLASS_ARRAY = {};
     public static final Type[] TYPES_EMPTY = {};

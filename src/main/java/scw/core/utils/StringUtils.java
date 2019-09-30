@@ -2273,6 +2273,14 @@ public final class StringUtils {
 		return text.charAt(0);
 	}
 
+	public static String toString(Object value, Object defaultValue) {
+		if (value == null) {
+			return defaultValue == null ? null : defaultValue.toString();
+		}
+
+		return value.toString();
+	}
+
 	public static char parseChar(String text, char defaultValue) {
 		if (isEmpty(text)) {
 			return defaultValue;

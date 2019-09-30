@@ -138,6 +138,10 @@ public abstract class FullCacheManager implements CacheManager {
 		savefullKeys(tableInfo, objectKey, args);
 	}
 
+	public boolean isExistById(Class<?> type, Object... params) {
+		return getById(type, params) != null;
+	}
+
 	public <T> T getById(Class<T> type, Object... params) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
 		String objectKey = getObjectKeyById(tableInfo, params);

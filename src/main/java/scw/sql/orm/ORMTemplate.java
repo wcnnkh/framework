@@ -33,15 +33,14 @@ import scw.transaction.sql.cache.QueryCacheUtils;
 
 public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	private volatile boolean cacheEnable = QueryCacheUtils
-			.isGlobalCacheEnable();
+	private volatile boolean cacheEnable = QueryCacheUtils.isGlobalCacheEnable();
 
-	public final boolean isCacheEnable() {
+	protected final boolean isCacheEnable() {
 		return cacheEnable;
 	}
 
-	public final void setCacheEnable(boolean cacheEnable) {
-		this.cacheEnable = cacheEnable;
+	protected final void setCacheEnable(boolean sqlCacheEnable) {
+		this.cacheEnable = sqlCacheEnable;
 	}
 
 	public abstract SqlFormat getSqlFormat();
@@ -73,19 +72,16 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		}
 
 		if (tableInfo.getPrimaryKeyColumns().length != params.length) {
-			throw new NullPointerException(
-					"params length not equals primary key lenght");
+			throw new NullPointerException("params length not equals primary key lenght");
 		}
 
-		String tName = (tableName == null || tableName.length() == 0) ? tableInfo
-				.getDefaultName() : tableName;
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getDefaultName() : tableName;
 		Sql sql = getSqlFormat().toSelectByIdSql(tableInfo, tName, params);
 		ResultSet resultSet = select(sql);
 		return resultSet.getFirst().get(type, tName);
 	}
 
-	public <T> List<T> getByIdList(String tableName, Class<T> type,
-			Object... params) {
+	public <T> List<T> getByIdList(String tableName, Class<T> type, Object... params) {
 		if (type == null) {
 			throw new NullPointerException("type is null");
 		}
@@ -96,21 +92,17 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		}
 
 		if (params.length > tableInfo.getPrimaryKeyColumns().length) {
-			throw new NullPointerException(
-					"params length  greater than primary key lenght");
+			throw new NullPointerException("params length  greater than primary key lenght");
 		}
 
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo
-				.getDefaultName() : tableName;
-		ResultSet resultSet = select(getSqlFormat().toSelectByIdSql(tableInfo,
-				tName, params));
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getDefaultName() : tableName;
+		ResultSet resultSet = select(getSqlFormat().toSelectByIdSql(tableInfo, tName, params));
 		return resultSet.getList(type, tName);
 	}
 
 	public boolean save(Object bean, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean)
-				: tableName;
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
 
 		Sql sql = getSqlFormat().toInsertSql(bean, tableInfo, tName);
 		if (tableInfo.getAutoIncrement() == null) {
@@ -121,16 +113,14 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 				connection = getUserConnection();
 				boolean b = update(sql, connection) != 0;
 				if (!b) {
-					getLogger().warn("执行{{}}更新行数为0，无法获取到主键自增编号",
-							SqlUtils.getSqlId(sql));
+					getLogger().warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
 					return false;
 				}
 
-				Object lastId = query(getSqlFormat().toLastInsertIdSql(tName),
-						connection, new ResultSetMapper<Object>() {
+				Object lastId = query(getSqlFormat().toLastInsertIdSql(tName), connection,
+						new ResultSetMapper<Object>() {
 
-							public Object mapper(java.sql.ResultSet resultSet)
-									throws SQLException {
+							public Object mapper(java.sql.ResultSet resultSet) throws SQLException {
 								if (resultSet.next()) {
 									return resultSet.getObject(1);
 								}
@@ -157,8 +147,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		}
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean)
-				: tableName;
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
 		Sql sql = getSqlFormat().toUpdateSql(bean, tableInfo, tName);
 		return update(sql) != 0;
 	}
@@ -169,8 +158,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 
 	public boolean delete(Object bean, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean)
-				: tableName;
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
 		Sql sql = getSqlFormat().toDeleteSql(bean, tableInfo, tName);
 		return update(sql) != 0;
 	}
@@ -185,16 +173,14 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 			throw new ParameterException("主键数量和参数不一致:" + type.getName());
 		}
 
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo
-				.getDefaultName() : tableName;
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getDefaultName() : tableName;
 		Sql sql = getSqlFormat().toDeleteByIdSql(tableInfo, tName, params);
 		return update(sql) != 0;
 	}
 
 	public boolean saveOrUpdate(Object bean, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean)
-				: tableName;
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
 		Sql sql = getSqlFormat().toSaveOrUpdateSql(bean, tableInfo, tName);
 		return update(sql) != 0;
 	}
@@ -212,8 +198,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName,
-			Collection<K> inIds, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params) {
 		if (inIds == null || inIds.isEmpty()) {
 			return Collections.EMPTY_MAP;
 		}
@@ -229,14 +214,11 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 
 		ColumnInfo columnInfo = tableInfo.getPrimaryKeyColumns()[params.length];
 		if (params.length > tableInfo.getPrimaryKeyColumns().length - 1) {
-			throw new NullPointerException(
-					"params length  greater than primary key lenght");
+			throw new NullPointerException("params length  greater than primary key lenght");
 		}
 
-		String tName = (tableName == null || tableName.length() == 0) ? tableInfo
-				.getDefaultName() : tableName;
-		ResultSet resultSet = select(getSqlFormat().toSelectInIdSql(tableInfo,
-				tName, params, inIds));
+		String tName = (tableName == null || tableName.length() == 0) ? tableInfo.getDefaultName() : tableName;
+		ResultSet resultSet = select(getSqlFormat().toSelectInIdSql(tableInfo, tName, params, inIds));
 		List<V> list = resultSet.getList(type, tName);
 		if (list == null || list.isEmpty()) {
 			return Collections.EMPTY_MAP;
@@ -260,26 +242,22 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		return map;
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList,
-			Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList, Object... params) {
 		return getInIdList(type, null, inIdList, params);
 	}
 
 	public ResultSet select(Sql sql) {
 		if (cacheEnable && QueryCacheUtils.isGlobalCacheEnable()) {
-			return QueryCacheUtils.query(this, sql,
-					new ResultSetMapper<ResultSet>() {
+			return QueryCacheUtils.query(this, sql, new ResultSetMapper<ResultSet>() {
 
-						public ResultSet mapper(java.sql.ResultSet resultSet)
-								throws SQLException {
-							return new DefaultResultSet(resultSet);
-						}
-					});
+				public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
+					return new DefaultResultSet(resultSet);
+				}
+			});
 		} else {
 			return query(sql, new ResultSetMapper<ResultSet>() {
 
-				public ResultSet mapper(java.sql.ResultSet resultSet)
-						throws SQLException {
+				public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
 					return new DefaultResultSet(resultSet);
 				}
 			});
@@ -298,8 +276,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	public <T> T selectOne(Class<T> type, Sql sql, T defaultValue) {
 		if (type.isPrimitive()) {
 			// 如果是基本数据类型
-			Object v = selectOne(ClassUtils.resolvePrimitiveIfNecessary(type),
-					sql);
+			Object v = selectOne(ClassUtils.resolvePrimitiveIfNecessary(type), sql);
 			return (T) (v == null ? defaultValue : v);
 		} else {
 			T v = selectOne(type, sql);
@@ -333,10 +310,8 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> Pagination<List<T>> select(Class<T> type, long page, int limit,
-			Sql sql) {
-		PaginationSql paginationSql = getSqlFormat().toPaginationSql(sql, page,
-				limit);
+	public <T> Pagination<List<T>> select(Class<T> type, long page, int limit, Sql sql) {
+		PaginationSql paginationSql = getSqlFormat().toPaginationSql(sql, page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
 		if (count == null) {
 			count = 0L;
@@ -346,30 +321,25 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 			return new Pagination<List<T>>(0, limit, Collections.EMPTY_LIST);
 		}
 
-		return new Pagination<List<T>>(count, limit, select(type,
-				paginationSql.getResultSql()));
+		return new Pagination<List<T>>(count, limit, select(type, paginationSql.getResultSql()));
 	}
 
-	public <T> Pagination<List<T>> select(Class<T> type, int page, int limit,
-			Sql sql) {
+	public <T> Pagination<List<T>> select(Class<T> type, int page, int limit, Sql sql) {
 		return select(type, (long) page, limit, sql);
 	}
 
 	public Pagination<ResultSet> select(long page, int limit, Sql sql) {
-		PaginationSql paginationSql = getSqlFormat().toPaginationSql(sql, page,
-				limit);
+		PaginationSql paginationSql = getSqlFormat().toPaginationSql(sql, page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
 		if (count == null) {
 			count = 0L;
 		}
 
 		if (count == 0) {
-			return new Pagination<ResultSet>(0, limit,
-					ResultSet.EMPTY_RESULTSET);
+			return new Pagination<ResultSet>(0, limit, ResultSet.EMPTY_RESULTSET);
 		}
 
-		return new Pagination<ResultSet>(count, limit,
-				select(paginationSql.getResultSql()));
+		return new Pagination<ResultSet>(count, limit, select(paginationSql.getResultSql()));
 	}
 
 	public Pagination<ResultSet> select(int page, int limit, Sql sql) {
@@ -391,11 +361,9 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	 * @param tableClass
 	 * @param iterator
 	 */
-	public <T> void iterator(final Class<T> tableClass,
-			final IteratorCallback<T> iterator) {
+	public <T> void iterator(final Class<T> tableClass, final IteratorCallback<T> iterator) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
-		Sql sql = getSqlFormat().toSelectByIdSql(tableInfo,
-				tableInfo.getDefaultName(), null);
+		Sql sql = getSqlFormat().toSelectByIdSql(tableInfo, tableInfo.getDefaultName(), null);
 		iterator(sql, new IteratorCallback<Result>() {
 
 			public boolean iteratorCallback(Result data) {
@@ -413,18 +381,15 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	public void iterator(Sql sql, final IteratorCallback<Result> iterator) {
 		query(sql, new RowCallback() {
 
-			public boolean processRow(java.sql.ResultSet rs, int rowNum)
-					throws SQLException {
+			public boolean processRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
 				return iterator.iteratorCallback(new DefaultResult(rs));
 			}
 		});
 	}
 
-	public <T> T getMaxValue(Class<?> tableClass, String tableName,
-			String idField) {
+	public <T> T getMaxValue(Class<?> tableClass, String tableName, String idField) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(tableClass);
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo
-				.getDefaultName() : tableName;
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getDefaultName() : tableName;
 		Sql sql = getSqlFormat().toMaxIdSql(tableInfo, tName, idField);
 		return select(sql).getFirst().get(0);
 	}

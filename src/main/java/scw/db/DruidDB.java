@@ -21,7 +21,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 
 @SuppressWarnings("rawtypes")
 @Bean(proxy = false)
-public class DruidDB extends DB {
+public class DruidDB extends LazyCacheDB {
 	private DruidDataSource datasource;
 	private DataBase dataBase;
 

@@ -4,7 +4,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import scw.core.Pagination;
+import scw.core.utils.IteratorCallback;
 import scw.sql.Sql;
+import scw.sql.orm.result.Result;
 import scw.sql.orm.result.ResultSet;
 
 public interface ORMOperations {
@@ -25,6 +28,8 @@ public interface ORMOperations {
 	<T> List<T> select(Class<T> type, Sql sql);
 
 	<T> T selectOne(Class<T> type, Sql sql);
+	
+	<T> T selectOne(Class<T> type, Sql sql, T defaultValue);
 
 	boolean save(Object bean);
 
@@ -49,4 +54,22 @@ public interface ORMOperations {
 	<T> T getMaxValue(Class<?> tableClass, String tableName, String idField);
 	
 	<T> T getMaxValue(Class<?> tableClass, String idField);
+	
+	void createTable(Class<?> tableClass);
+	
+	void createTable(Class<?> tableClass, String tableName);
+	
+	void createTable(String packageName);
+	
+	<T> Pagination<List<T>> select(Class<T> type, long page, int limit, Sql sql);
+	
+	Pagination<ResultSet> select(long page, int limit, Sql sql);
+	
+	Pagination<ResultSet> select(int page, int limit, Sql sql);
+	
+	<T> Pagination<List<T>> select(Class<T> type, int page, int limit, Sql sql);
+	
+	<T> void iterator(final Class<T> tableClass, final IteratorCallback<T> iterator);
+	
+	void iterator(Sql sql, final IteratorCallback<Result> iterator);
 }

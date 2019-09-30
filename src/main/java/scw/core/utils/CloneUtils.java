@@ -26,23 +26,17 @@ public final class CloneUtils {
 		}
 	}
 
-	private static Object cloneArray(Class<?> type, Object array,
-			boolean ignoreStatic, boolean ignoreTransient,
+	private static Object cloneArray(Class<?> type, Object array, boolean ignoreStatic, boolean ignoreTransient,
 			boolean invokeCloneableMethod) throws Exception {
 		int size = Array.getLength(array);
 		Object newArr = Array.newInstance(type.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
-			Array.set(
-					newArr,
-					i,
-					autoClone(Array.get(array, i), ignoreStatic,
-							ignoreTransient, invokeCloneableMethod));
+			Array.set(newArr, i, autoClone(Array.get(array, i), ignoreStatic, ignoreTransient, invokeCloneableMethod));
 		}
 		return newArr;
 	}
 
-	private static void cloneObject(Object obj, Object source,
-			boolean ignoreStatic, boolean ignoreTransient,
+	private static void cloneObject(Object obj, Object source, boolean ignoreStatic, boolean ignoreTransient,
 			boolean invokeCloneableMethod) throws Exception {
 		Class<?> clazz = source.getClass();
 		while (clazz != null) {
@@ -51,8 +45,7 @@ public final class CloneUtils {
 					continue;
 				}
 
-				if (ignoreTransient
-						&& Modifier.isTransient(field.getModifiers())) {
+				if (ignoreTransient && Modifier.isTransient(field.getModifiers())) {
 					continue;
 				}
 
@@ -64,22 +57,18 @@ public final class CloneUtils {
 
 				if (!field.getType().isPrimitive() && !field.getType().isEnum()) {
 					if (field.getType().isArray()) {
-						v = cloneArray(field.getType(), v, ignoreStatic,
-								ignoreTransient, invokeCloneableMethod);
+						v = cloneArray(field.getType(), v, ignoreStatic, ignoreTransient, invokeCloneableMethod);
 					} else {
-						v = autoClone(v, ignoreStatic, ignoreTransient,
-								invokeCloneableMethod);
+						v = autoClone(v, ignoreStatic, ignoreTransient, invokeCloneableMethod);
 					}
 				}
-				field.set(Modifier.isStatic(field.getModifiers()) ? null
-						: source, v);
+				field.set(Modifier.isStatic(field.getModifiers()) ? null : source, v);
 			}
 			clazz = clazz.getSuperclass();
 		}
 	}
 
-	private static Object cloneObject(Class<?> type, Object obj,
-			boolean ignoreStatic, boolean ignoreTransient,
+	private static Object cloneObject(Class<?> type, Object obj, boolean ignoreStatic, boolean ignoreTransient,
 			boolean invokeCloneableMethod) throws Exception {
 		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
 			return obj;
@@ -91,14 +80,12 @@ public final class CloneUtils {
 		}
 
 		Object t = constructor.newInstance();
-		cloneObject(obj, t, ignoreStatic, ignoreTransient,
-				invokeCloneableMethod);
+		cloneObject(obj, t, ignoreStatic, ignoreTransient, invokeCloneableMethod);
 		return t;
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T> T autoClone(T obj, boolean ignoreStatic,
-			boolean ignoreTransient, boolean invokeCloneableMethod)
+	private static <T> T autoClone(T obj, boolean ignoreStatic, boolean ignoreTransient, boolean invokeCloneableMethod)
 			throws Exception {
 		if (obj == null) {
 			return null;
@@ -112,18 +99,15 @@ public final class CloneUtils {
 		if (type.isPrimitive() || type.isEnum()) {
 			return obj;
 		} else if (type.isArray()) {
-			return (T) cloneArray(type, obj, ignoreStatic, ignoreTransient,
-					invokeCloneableMethod);
+			return (T) cloneArray(type, obj, ignoreStatic, ignoreTransient, invokeCloneableMethod);
 		} else if (invokeCloneableMethod && obj instanceof Cloneable) {
 			try {
-				return (T) ReflectUtils.getMethod(type, false, "clone").invoke(
-						obj);
+				return (T) ReflectUtils.getMethod(type, false, "clone").invoke(obj);
 			} catch (NoSuchMethodException e) {
 			}
 		}
 
-		return (T) cloneObject(type, obj, ignoreStatic, ignoreTransient,
-				invokeCloneableMethod);
+		return (T) cloneObject(type, obj, ignoreStatic, ignoreTransient, invokeCloneableMethod);
 	}
 
 	/**
@@ -137,8 +121,7 @@ public final class CloneUtils {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T clone(T source, boolean ignoreStatic,
-			boolean ignoreTransient, boolean invokeCloneableMethod)
+	public static <T> T clone(T source, boolean ignoreStatic, boolean ignoreTransient, boolean invokeCloneableMethod)
 			throws Exception {
 		if (source == null) {
 			return null;
@@ -152,19 +135,52 @@ public final class CloneUtils {
 		if (type.isPrimitive() || type.isEnum()) {
 			return source;
 		} else if (type.isArray()) {
-			return (T) cloneArray(type, source, ignoreStatic, ignoreTransient,
-					invokeCloneableMethod);
+			return (T) cloneArray(type, source, ignoreStatic, ignoreTransient, invokeCloneableMethod);
 		} else if (invokeCloneableMethod && source instanceof Cloneable) {
 			try {
-				return (T) ReflectUtils.getMethod(type, false, "clone").invoke(
-						source);
+				return (T) ReflectUtils.getMethod(type, false, "clone").invoke(source);
 			} catch (NoSuchMethodException e) {
 			}
 		}
 
 		T t = InstanceUtils.newInstance(type);
-		cloneObject(source, t, ignoreStatic, ignoreTransient,
-				invokeCloneableMethod);
+		cloneObject(source, t, ignoreStatic, ignoreTransient, invokeCloneableMethod);
 		return t;
+	}
+
+	public static void copy(Object source, Object target, boolean cloneValue)
+			throws IllegalArgumentException, IllegalAccessException {
+		Class<?> clz = target.getClass();
+		while (clz != null && clz != Object.class) {
+			for (Field field : clz.getDeclaredFields()) {
+				Field sourceField = ReflectUtils.getField(source.getClass(), field.getName(), true);
+				if (sourceField == null) {
+					continue;
+				}
+
+				if (field.getGenericType() != sourceField.getGenericType()) {
+					continue;
+				}
+
+				ReflectUtils.setAccessibleField(sourceField);
+				Object value = sourceField.get(source);
+				if (value == null) {
+					continue;
+				}
+
+				ReflectUtils.setAccessibleField(field);
+				field.set(target, cloneValue ? clone(value, false) : value);
+			}
+		}
+	}
+
+	public static <T> T createAndCopy(Object source, Class<T> clazz, boolean clone) {
+		T target = InstanceUtils.getInstance(clazz);
+		try {
+			copy(source, target, clone);
+		} catch (Exception e) {
+			throw new RuntimeException("复制时发生异常");
+		}
+		return target;
 	}
 }

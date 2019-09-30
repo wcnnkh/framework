@@ -1,69 +1,31 @@
 package scw.db;
 
-import scw.core.Destroy;
-import scw.core.utils.StringUtils;
-import scw.data.memcached.Memcached;
-import scw.data.redis.Redis;
-import scw.db.async.AsyncInfo;
-import scw.db.cache.LazyCacheManager;
-import scw.db.cache.MemcachedLazyCacheManager;
-import scw.db.cache.RedisLazyCacheManager;
-import scw.mq.MQ;
-import scw.mq.support.MemcachedBlockingQueueMQ;
-import scw.mq.support.MemoryBlockingQueueMQ;
-import scw.mq.support.RedisBlockingQueueMQ;
+import java.sql.SQLException;
 
-public abstract class DB extends AbstractDB implements scw.core.Destroy {
-	private final boolean destroyMQ;
+import scw.db.async.MultipleOperation;
+import scw.db.async.OperationBean;
+import scw.sql.Sql;
+import scw.sql.SqlOperations;
+import scw.sql.orm.ORMOperations;
 
-	public DB() {
-		super(null, new MemoryBlockingQueueMQ<AsyncInfo>(true), DB.class.getName());
-		this.destroyMQ = true;
-	};
+public interface DB extends ORMOperations, SqlOperations {
+	void asyncSave(Object... objs);
 
-	public DB(Memcached memcached) {
-		this(memcached, null);
-	}
+	void asyncUpdate(Object... objs);
 
-	public DB(Redis redis) {
-		this(redis, null); 
-	}
+	void asyncDelete(Object... objs);
 
-	public DB(Memcached memcached, String queueName) {
-		this(memcached, null, queueName);
-	}
+	void asyncSaveOrUpdate(Object... objs);
 
-	public DB(Redis redis, String queueName) {
-		this(redis, null, queueName);
-	}
+	void asyncExecute(OperationBean... operationBeans);
 
-	public DB(Memcached memcached, String cacheKeyPrefix, String queueName) {
-		super(new MemcachedLazyCacheManager(memcached, cacheKeyPrefix),
-				StringUtils.isEmpty(queueName) ? new MemoryBlockingQueueMQ<AsyncInfo>(true)
-						: new MemcachedBlockingQueueMQ<AsyncInfo>(memcached, true),
-				StringUtils.isEmpty(queueName) ? DB.class.getName() : queueName);
-		this.destroyMQ = true;
-	}
+	void asyncExecute(MultipleOperation multipleOperation);
 
-	public DB(Redis redis, String cacheKeyPrefix, String queueName) {
-		super(new RedisLazyCacheManager(redis, cacheKeyPrefix),
-				StringUtils.isEmpty(queueName) ? new MemoryBlockingQueueMQ<AsyncInfo>(true)
-						: new RedisBlockingQueueMQ<AsyncInfo>(redis, true),
-				StringUtils.isEmpty(queueName) ? DB.class.getName() : queueName);
-		this.destroyMQ = true;
-	}
+	void asyncExecute(Sql... sql);
+	
+	void executeSqlByFile(String filePath);
 
-	public DB(LazyCacheManager lazyCacheManager, MQ<AsyncInfo> mq, String queueName) {
-		super(lazyCacheManager, mq, queueName);
-		this.destroyMQ = false;
-	}
+	void executeSqlByFileLine(String filePath, String ignoreStartsWith) throws SQLException;
 
-	public void destroy() {
-		if (destroyMQ) {
-			MQ<AsyncInfo> mq = getMQ();
-			if (mq != null && mq instanceof Destroy) {
-				((Destroy) mq).destroy();
-			}
-		}
-	}
+	void executeSqlsByFileLine(String filePath) throws SQLException;
 }

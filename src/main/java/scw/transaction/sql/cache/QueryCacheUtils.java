@@ -2,6 +2,8 @@ package scw.transaction.sql.cache;
 
 import java.util.List;
 
+import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowMapper;
 import scw.sql.Sql;
@@ -16,7 +18,7 @@ import scw.transaction.TransactionManager;
  *
  */
 public final class QueryCacheUtils {
-	private static volatile boolean cacheEnable = true;
+	private static volatile boolean cacheEnable = StringUtils.parseBoolean(SystemPropertyUtils.getProperty("sql.query.cache"), true);
 
 	private QueryCacheUtils() {
 	};

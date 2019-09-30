@@ -527,7 +527,6 @@ public final class ReflectUtils {
 				break;
 			}
 		}
-
 		return null;
 	}
 
