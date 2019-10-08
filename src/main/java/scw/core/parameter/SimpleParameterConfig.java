@@ -1,26 +1,22 @@
-package scw.mvc;
+package scw.core.parameter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import scw.core.utils.ArrayUtils;
 
-public class SimpleParameterDefinition implements ParameterDefinition {
+public class SimpleParameterConfig implements ParameterConfig {
 	private final String name;
 	private final Annotation[] annotations;
 	private final Class<?> type;
 	private final Type genericType;
-	private final int index;
-	private final int parameterCount;
 
-	public SimpleParameterDefinition(int parameterCount, String name, Annotation[] annotations, Class<?> type,
-			Type genericType, int index) {
+	public SimpleParameterConfig(String name, Annotation[] annotations, Class<?> type,
+			Type genericType) {
 		this.name = name;
 		this.annotations = annotations;
 		this.type = type;
 		this.genericType = genericType;
-		this.index = index;
-		this.parameterCount = parameterCount;
 	}
 
 	public String getName() {
@@ -51,13 +47,5 @@ public class SimpleParameterDefinition implements ParameterDefinition {
 
 	public Type getGenericType() {
 		return genericType;
-	}
-
-	public int getIndex() {
-		return index;
-	}
-
-	public int getParameterCount() {
-		return parameterCount;
 	}
 }

@@ -3,9 +3,9 @@ package scw.beans.tcc.service;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
-import scw.beans.BeanFactory;
 import scw.beans.tcc.InvokeInfo;
 import scw.beans.tcc.StageType;
+import scw.core.instance.InstanceFactory;
 
 public final class TransactionInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -27,9 +27,9 @@ public final class TransactionInfo implements Serializable {
 		return stageType;
 	}
 
-	public void invoke(BeanFactory beanFactory) throws NoSuchMethodException, SecurityException, IllegalAccessException,
+	public void invoke(InstanceFactory instanceFactory) throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
-		invokeInfo.invoke(stageType, beanFactory);
+		invokeInfo.invoke(stageType, instanceFactory);
 	}
 
 	public boolean hasCanInvoke() {

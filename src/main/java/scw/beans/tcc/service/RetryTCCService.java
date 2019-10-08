@@ -8,12 +8,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import scw.beans.BeanFactory;
-import scw.beans.annotation.Autowired;
 import scw.beans.annotation.InitMethod;
 import scw.beans.tcc.InvokeInfo;
 import scw.beans.tcc.StageType;
 import scw.beans.tcc.TCCService;
+import scw.core.instance.InstanceFactory;
 import scw.core.utils.FileManager;
 import scw.core.utils.SystemPropertyUtils;
 import scw.io.FileUtils;
@@ -27,19 +26,19 @@ public final class RetryTCCService implements TCCService, scw.core.Destroy {
 	private static Logger logger = LoggerUtils
 			.getLogger(RetryTCCService.class);
 
-	@Autowired
-	private BeanFactory beanFactory;
+	private InstanceFactory instanceFactory;
 	private FileManager fileManager;
 	private final int retryTime;// 秒
 	private final ScheduledExecutorService executorService = Executors
 			.newScheduledThreadPool(4);
 
-	public RetryTCCService() {
-		this(30);
+	public RetryTCCService(InstanceFactory instanceFactory) {
+		this(instanceFactory, 30);
 	}
 
-	public RetryTCCService(int retryTime) {
+	public RetryTCCService(InstanceFactory instanceFactory, int retryTime) {
 		this.retryTime = retryTime;
+		this.instanceFactory = instanceFactory;
 	}
 
 	@InitMethod
@@ -124,7 +123,7 @@ public final class RetryTCCService implements TCCService, scw.core.Destroy {
 		@Override
 		public void run() {
 			try {
-				transactionInfo.invoke(beanFactory);
+				transactionInfo.invoke(instanceFactory);
 				File file = new File(fileId);
 				if (file.exists()) {
 					file.delete();

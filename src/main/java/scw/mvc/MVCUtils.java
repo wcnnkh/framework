@@ -1,11 +1,9 @@
 package scw.mvc;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -37,6 +35,8 @@ import scw.core.context.support.ThreadLocalContextManager;
 import scw.core.exception.BeansException;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
@@ -224,41 +224,15 @@ public final class MVCUtils {
 		return constructor;
 	}
 
-	public static ParameterDefinition[] getParameterDefinitions(Method method) {
-		String[] names = ClassUtils.getParameterName(method);
-		Annotation[][] parameterAnnoatations = method.getParameterAnnotations();
-		Type[] parameterGenericTypes = method.getGenericParameterTypes();
-		Class<?>[] parameterTypes = method.getParameterTypes();
-		ParameterDefinition[] parameterDefinitions = new ParameterDefinition[names.length];
-		for (int i = 0; i < names.length; i++) {
-			parameterDefinitions[i] = new SimpleParameterDefinition(names.length, names[i], parameterAnnoatations[i],
-					parameterTypes[i], parameterGenericTypes[i], i);
-		}
-		return parameterDefinitions;
-	}
-
-	public static ParameterDefinition[] getParameterDefinitions(Constructor<?> constructor) {
-		String[] names = ClassUtils.getParameterName(constructor);
-		Annotation[][] parameterAnnoatations = constructor.getParameterAnnotations();
-		Type[] parameterGenericTypes = constructor.getGenericParameterTypes();
-		Class<?>[] parameterTypes = constructor.getParameterTypes();
-		ParameterDefinition[] parameterDefinitions = new ParameterDefinition[names.length];
-		for (int i = 0; i < names.length; i++) {
-			parameterDefinitions[i] = new SimpleParameterDefinition(names.length, names[i], parameterAnnoatations[i],
-					parameterTypes[i], parameterGenericTypes[i], i);
-		}
-		return parameterDefinitions;
-	}
-
-	public static Object[] getParameterValues(Channel channel, ParameterDefinition[] parameterDefinitions,
+	public static Object[] getParameterValues(Channel channel, ParameterConfig[] parameterDefinitions,
 			Collection<ParameterFilter> parameterFilters) throws Throwable {
 		Object[] args = new Object[parameterDefinitions.length];
 		for (int i = 0; i < parameterDefinitions.length; i++) {
-			ParameterDefinition parameterDefinition = parameterDefinitions[i];
+			ParameterConfig parameterConfig = parameterDefinitions[i];
 			ParameterFilterChain parameterFilterChain = new SimpleParameterParseFilterChain(parameterFilters);
 			Object value = parameterFilterChain.doFilter(channel, parameterDefinitions[i]);
 			if (value == null) {
-				value = channel.getParameter(parameterDefinition);
+				value = channel.getParameter(parameterConfig);
 			}
 			args[i] = value;
 		}
@@ -269,7 +243,7 @@ public final class MVCUtils {
 			Constructor<?> constructor, Collection<ParameterFilter> parameterFilters) {
 		try {
 			return instanceFactory.getInstance(beanDefinition.getId(), constructor.getParameterTypes(),
-					getParameterValues(channel, getParameterDefinitions(constructor), parameterFilters));
+					getParameterValues(channel, ParameterUtils.getParameterConfigs(constructor), parameterFilters));
 		} catch (Throwable e) {
 			throw new BeansException(beanDefinition.getId());
 		}
@@ -465,7 +439,8 @@ public final class MVCUtils {
 				ResourceUtils.getClassList(packageName));
 	}
 
-	public static JSONParseSupport getJsonParseSupport(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
+	public static JSONParseSupport getJsonParseSupport(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory) {
 		JSONParseSupport jsonParseSupport;
 		String jsonParseSupportBeanName = propertyFactory.getProperty("mvc.json");
 		if (StringUtils.isEmpty(jsonParseSupportBeanName)) {

@@ -1,12 +1,11 @@
 package scw.mvc;
 
 import scw.core.AttributeManager;
+import scw.core.parameter.ParameterFactory;
 import scw.logger.LogService;
 
-public interface Channel extends LogService, AttributeManager{
+public interface Channel extends LogService, AttributeManager, ParameterFactory{
 	long getCreateTime();
-
-	Object getParameter(ParameterDefinition parameterDefinition);
 
 	void write(Object obj) throws Throwable;
 	

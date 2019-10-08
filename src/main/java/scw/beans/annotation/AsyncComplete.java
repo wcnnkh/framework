@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
 import scw.beans.async.AsyncCompleteService;
-import scw.beans.async.DefaultAsyncCompleteService;
 
 /**
  * 此注解可以保证方法一定执行，但此方法一定返回空
@@ -42,5 +41,5 @@ public @interface AsyncComplete {
 	 * 实现方式
 	 * @return
 	 */
-	public Class<? extends AsyncCompleteService> service() default DefaultAsyncCompleteService.class;
+	public Class<? extends AsyncCompleteService> service() default AsyncCompleteService.class;
 }

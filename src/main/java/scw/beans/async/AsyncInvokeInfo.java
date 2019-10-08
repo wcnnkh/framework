@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
-import scw.beans.BeanFactory;
 import scw.beans.annotation.AsyncComplete;
+import scw.core.instance.InstanceFactory;
 import scw.core.reflect.SerializableMethodDefinition;
 
 public class AsyncInvokeInfo implements Serializable {
@@ -39,9 +39,9 @@ public class AsyncInvokeInfo implements Serializable {
 		return timeUnit;
 	}
 
-	public Object invoke(BeanFactory beanFactory) throws Throwable {
+	public Object invoke(InstanceFactory instanceFactory) throws Throwable {
 		AsyncCompleteFilter.setEnable(false);
-		Object bean = beanFactory.getInstance(beanName);
+		Object bean = instanceFactory.getInstance(beanName);
 		return methodConfig.invoke(bean, args);
 	}
 }

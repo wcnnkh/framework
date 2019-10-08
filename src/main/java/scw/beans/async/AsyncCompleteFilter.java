@@ -2,12 +2,12 @@ package scw.beans.async;
 
 import java.lang.reflect.Method;
 
-import scw.beans.BeanFactory;
 import scw.beans.annotation.AsyncComplete;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
 import scw.core.aop.ProxyUtils;
+import scw.core.instance.InstanceFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
@@ -32,9 +32,9 @@ public final class AsyncCompleteFilter implements Filter {
 		ENABLE_TAG.set(enable);
 	}
 
-	private BeanFactory beanFactory;
-	public AsyncCompleteFilter(BeanFactory beanFactory){
-		this.beanFactory = beanFactory;
+	private InstanceFactory instanceFactory;
+	public AsyncCompleteFilter(InstanceFactory instanceFactory){
+		this.instanceFactory = instanceFactory;
 	}
 
 	private Object realFilter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
@@ -57,13 +57,13 @@ public final class AsyncCompleteFilter implements Filter {
 			}
 		}
 		
-		if(!beanFactory.isInstance(beanName)){
+		if(!instanceFactory.isInstance(beanName)){
 			logger.warn("@AsyncComplete invalid:{}", method.getName());
 			return filterChain.doFilter(invoker, proxy, method, args);
 		}
 
 		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete, method.getDeclaringClass(), beanName, method, args);
-		AsyncCompleteService service = beanFactory.getInstance(asyncComplete.service());
+		AsyncCompleteService service = instanceFactory.getInstance(asyncComplete.service());
 		return service.service(info);
 	}
 

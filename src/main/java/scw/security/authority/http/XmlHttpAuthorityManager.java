@@ -7,8 +7,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.annotation.Bean;
-import scw.beans.auto.annotation.ResourceParameter;
 import scw.core.annotation.ParameterName;
+import scw.core.instance.annotation.ResourceParameter;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;

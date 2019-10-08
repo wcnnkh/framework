@@ -210,12 +210,12 @@ public final class BeanUtils {
 				beanMethodParameters);
 	}
 
-	public static Object[] getBeanMethodParameterArgs(XmlBeanParameter[] beanParameters, BeanFactory beanFactory,
+	public static Object[] getBeanMethodParameterArgs(XmlBeanParameter[] beanParameters, InstanceFactory instanceFactory,
 			scw.core.PropertyFactory propertyFactory) throws Exception {
 		Object[] args = new Object[beanParameters.length];
 		for (int i = 0; i < args.length; i++) {
 			XmlBeanParameter xmlBeanParameter = beanParameters[i];
-			args[i] = xmlBeanParameter.parseValue(beanFactory, propertyFactory);
+			args[i] = xmlBeanParameter.parseValue(instanceFactory, propertyFactory);
 		}
 		return args;
 	}
@@ -469,20 +469,28 @@ public final class BeanUtils {
 
 	public static String[] getServiceNames(Class<?> clz) {
 		Service service = clz.getAnnotation(Service.class);
-		if (service != null && !ArrayUtils.isEmpty(service.value())) {
-			return service.value();
+		HashSet<String> list = new HashSet<String>();
+		if (service != null) {
+			for (Class<?> name : service.value()) {
+				list.add(name.getName());
+			}
+
+			for (String name : service.name()) {
+				list.add(name);
+			}
 		}
 
-		HashSet<String> list = new HashSet<String>();
-		Class<?>[] clzs = clz.getInterfaces();
-		if (clzs != null) {
-			for (Class<?> i : clzs) {
-				if (i.getName().startsWith("java.") || i.getName().startsWith("javax.") || i == scw.core.Destroy.class
-						|| i == Init.class) {
-					continue;
-				}
+		if (list.isEmpty()) {
+			Class<?>[] clzs = clz.getInterfaces();
+			if (clzs != null) {
+				for (Class<?> i : clzs) {
+					if (i.getName().startsWith("java.") || i.getName().startsWith("javax.")
+							|| i == scw.core.Destroy.class || i == Init.class) {
+						continue;
+					}
 
-				list.add(i.getName());
+					list.add(i.getName());
+				}
 			}
 		}
 		return list.isEmpty() ? null : list.toArray(new String[list.size()]);

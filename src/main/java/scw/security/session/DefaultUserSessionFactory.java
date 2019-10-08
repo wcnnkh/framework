@@ -1,8 +1,8 @@
 package scw.security.session;
 
-import scw.beans.auto.annotation.Auto;
 import scw.core.annotation.ParameterName;
 import scw.core.annotation.ParameterValue;
+import scw.core.instance.annotation.Auto;
 import scw.data.cache.MemcachedTemporaryCache;
 import scw.data.cache.RedisTemporaryCache;
 import scw.data.cache.TemporaryCache;

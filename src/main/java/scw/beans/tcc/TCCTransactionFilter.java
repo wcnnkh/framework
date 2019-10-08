@@ -4,11 +4,11 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.beans.BeanFactory;
 import scw.beans.annotation.TCC;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
+import scw.core.instance.InstanceFactory;
 import scw.core.reflect.SerializableMethodDefinition;
 
 /**
@@ -33,9 +33,9 @@ public final class TCCTransactionFilter implements Filter {
 		return classTCC;
 	}
 
-	private BeanFactory beanFactory;
-	public TCCTransactionFilter(BeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
+	private InstanceFactory instanceFactory;
+	public TCCTransactionFilter(InstanceFactory instanceFactory) {
+		this.instanceFactory = instanceFactory;
 	};
 
 	private void transaction(Class<?> interfaceClz, Class<?> belongClass, Object rtnValue, Method method, Object[] args) {
@@ -56,7 +56,7 @@ public final class TCCTransactionFilter implements Filter {
 		}
 
 		SerializableMethodDefinition tryMethod = new SerializableMethodDefinition(belongClass, method);
-		TCCService tccService = beanFactory.getInstance(tcc.service());
+		TCCService tccService = instanceFactory.getInstance(tcc.service());
 		if (tccService == null) {
 			return;
 		}

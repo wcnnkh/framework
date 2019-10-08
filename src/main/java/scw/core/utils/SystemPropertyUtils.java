@@ -209,7 +209,7 @@ public abstract class SystemPropertyUtils {
 			try {
 				systemOnlyId = scw.core.Base64.encode((getUserDir() + "&" + ResourceUtils.getClassPathURL())
 						.getBytes(Constants.DEFAULT_CHARSET_NAME));
-				if(systemOnlyId.endsWith("==")){
+				if (systemOnlyId.endsWith("==")) {
 					systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
 				}
 			} catch (UnsupportedEncodingException e) {
@@ -234,5 +234,9 @@ public abstract class SystemPropertyUtils {
 
 	public static void clearPrivateProperty(String key) {
 		PRIVATE_PROPERTIES.remove(key);
+	}
+
+	public static String getTempDirectoryPath() {
+		return getProperty("java.io.tmpdir");
 	}
 }

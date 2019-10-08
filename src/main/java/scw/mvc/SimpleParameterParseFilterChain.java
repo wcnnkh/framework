@@ -3,6 +3,7 @@ package scw.mvc;
 import java.util.Collection;
 import java.util.Iterator;
 
+import scw.core.parameter.ParameterConfig;
 import scw.core.utils.CollectionUtils;
 
 public class SimpleParameterParseFilterChain implements ParameterFilterChain {
@@ -14,13 +15,13 @@ public class SimpleParameterParseFilterChain implements ParameterFilterChain {
 		}
 	}
 
-	public Object doFilter(Channel channel, ParameterDefinition parameterDefinition) throws Throwable {
+	public Object doFilter(Channel channel, ParameterConfig parameterConfig) throws Throwable {
 		if (iterator == null) {
 			return null;
 		}
 
 		if (iterator.hasNext()) {
-			return iterator.next().filter(channel, parameterDefinition, this);
+			return iterator.next().filter(channel, parameterConfig, this);
 		}
 
 		return null;

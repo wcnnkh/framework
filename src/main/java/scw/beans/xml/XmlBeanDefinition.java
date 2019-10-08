@@ -20,6 +20,8 @@ import scw.core.aop.Filter;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
+import scw.core.instance.AutoInstanceConfig;
+import scw.core.instance.InstanceConfig;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ArrayUtils;
@@ -36,22 +38,16 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	private final String id;
 	private final boolean singleton;
 	private final Collection<String> filterNames;
-	// 构造函数的参数
-	private final XmlBeanParameter[] constructorParameters;
 	private final XmlBeanParameter[] properties;
 	private final BeanMethod[] initMethods;
 	private final BeanMethod[] destroyMethods;
 	private final boolean proxy;
 
-	private XmlBeanParameter[] beanMethodParameters;
 	private final FieldDefinition[] autowriteFields;
 	private final Class<?> type;
 	private final ValueWiredManager valueWiredManager;
 	private final String proxyName;
-
-	// 如果是一个接口就是空的
-	private Constructor<?> constructor;
-	private Class<?>[] constructorParameterTypes;
+	private InstanceConfig instanceConfig;
 
 	public XmlBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Node beanNode) throws Exception {
@@ -70,31 +66,18 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		this.proxyName = XmlBeanUtils.getProxyName(propertyFactory, beanNode);
 		this.proxy = StringUtils.isEmpty(proxyName) ? BeanUtils.checkProxy(type) : true;
 		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type, false).toArray(new FieldDefinition[0]);
-		this.constructorParameters = XmlBeanUtils.getConstructorParameters(nodeList);
 
 		if (!type.isInterface()) {
-			this.constructor = getConstructor();
-			if (constructor == null) {
+			XmlBeanParameter[] constructorParameters = XmlBeanUtils.getConstructorParameters(nodeList);
+			this.instanceConfig = new XmlInstanceConfig(beanFactory, propertyFactory, type, constructorParameters);
+			if (instanceConfig.getConstructor() == null && ArrayUtils.isEmpty(constructorParameters)) {
+				instanceConfig = new AutoInstanceConfig(beanFactory, propertyFactory, type);
+			}
+
+			if (instanceConfig.getConstructor() == null) {
 				throw new NotFoundException(type.getName() + "找不到对应的构造函数");
 			}
-			this.constructorParameterTypes = constructor.getParameterTypes();
 		}
-	}
-
-	private Constructor<?> getConstructor() {
-		if (ArrayUtils.isEmpty(constructorParameters)) {
-			return ReflectUtils.getConstructor(type, false);
-		} else {
-			for (Constructor<?> constructor : type.getDeclaredConstructors()) {
-				XmlBeanParameter[] beanMethodParameters = BeanUtils.sortParameters(constructor, constructorParameters);
-				if (beanMethodParameters != null) {
-					this.beanMethodParameters = beanMethodParameters;
-					constructor.setAccessible(true);
-					return constructor;
-				}
-			}
-		}
-		return null;
 	}
 
 	public String getId() {
@@ -129,12 +112,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		}
 
 		Enhancer enhancer = getProxyEnhancer();
-		if (ArrayUtils.isEmpty(constructorParameters)) {
-			return enhancer.create();
-		} else {
-			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertyFactory);
-			return enhancer.create(constructorParameterTypes, args);
-		}
+		return enhancer.create(instanceConfig.getConstructor().getParameterTypes(), instanceConfig.getArgs());
 	}
 
 	private void setProperties(Object bean) throws Exception {
@@ -154,12 +132,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	private Object createInstance() throws Exception {
-		if (ArrayUtils.isEmpty(constructorParameterTypes)) {
-			return constructor.newInstance();
-		} else {
-			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertyFactory);
-			return constructor.newInstance(args);
-		}
+		return instanceConfig.getConstructor().newInstance(instanceConfig.getArgs());
 	}
 
 	public void autowrite(Object bean) throws Exception {

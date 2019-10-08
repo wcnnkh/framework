@@ -7,8 +7,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpSession;
 
 import scw.beans.BeanFactory;
+import scw.core.parameter.ParameterConfig;
 import scw.json.JSONParseSupport;
-import scw.mvc.ParameterDefinition;
 import scw.mvc.ParameterFilter;
 import scw.mvc.http.AbstractHttpChannel;
 import scw.mvc.http.HttpRequest;
@@ -23,18 +23,18 @@ public abstract class HttpServletChannel extends AbstractHttpChannel {
 	}
 
 	@Override
-	public Object getParameter(ParameterDefinition parameterDefinition) {
-		if (ServletRequest.class.isAssignableFrom(parameterDefinition.getType())) {
+	public Object getParameter(ParameterConfig parameterConfig) {
+		if (ServletRequest.class.isAssignableFrom(parameterConfig.getType())) {
 			return getRequest();
-		} else if (ServletResponse.class.isAssignableFrom(parameterDefinition.getType())) {
+		} else if (ServletResponse.class.isAssignableFrom(parameterConfig.getType())) {
 			return getResponse();
-		} else if (HttpSession.class == parameterDefinition.getType()) {
+		} else if (HttpSession.class == parameterConfig.getType()) {
 			return getRequest().getSession();
-		} else if (HttpServletParameterRequest.class == parameterDefinition.getType()) {
+		} else if (HttpServletParameterRequest.class == parameterConfig.getType()) {
 			return new HttpServletParameterRequest(this, getRequest());
 		}
 
-		return super.getParameter(parameterDefinition);
+		return super.getParameter(parameterConfig);
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import scw.beans.BeanFactory;
 import scw.core.annotation.ParameterName;
+import scw.core.parameter.ParameterConfig;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
@@ -22,22 +23,22 @@ public abstract class AbstractParameterChannel extends AbstractChannel implement
 		this.jsonParseSupport = jsonParseSupport;
 	}
 
-	public Object getParameter(ParameterDefinition parameterDefinition) {
-		if (Channel.class.isAssignableFrom(parameterDefinition.getType())) {
+	public Object getParameter(ParameterConfig parameterConfig) {
+		if (Channel.class.isAssignableFrom(parameterConfig.getType())) {
 			return this;
 		}
 
-		String name = getParameterName(parameterDefinition);
+		String name = getParameterName(parameterConfig);
 		if (StringUtils.isEmpty(name)) {
-			return getObject(parameterDefinition.getGenericType());
+			return getObject(parameterConfig.getGenericType());
 		}
 
-		return XUtils.getValue(this, name, parameterDefinition.getGenericType());
+		return XUtils.getValue(this, name, parameterConfig.getGenericType());
 	}
 
-	public String getParameterName(ParameterDefinition parameterDefinition) {
-		String name = parameterDefinition.getName();
-		ParameterName parameterName = parameterDefinition.getAnnotation(ParameterName.class);
+	public String getParameterName(ParameterConfig parameterConfig) {
+		String name = parameterConfig.getName();
+		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
 		if (parameterName != null) {
 			name = parameterName.value();
 		}

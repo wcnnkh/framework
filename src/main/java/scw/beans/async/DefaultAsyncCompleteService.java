@@ -2,14 +2,11 @@ package scw.beans.async;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import scw.beans.BeanFactory;
-import scw.beans.annotation.Autowired;
-import scw.beans.annotation.InitMethod;
 import scw.core.Destroy;
+import scw.core.instance.InstanceFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.FileManager;
 import scw.core.utils.SystemPropertyUtils;
@@ -17,10 +14,8 @@ import scw.io.FileUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
-public class DefaultAsyncCompleteService implements AsyncCompleteService,
-		Destroy {
-	private static Logger logger = LoggerUtils
-			.getLogger(AsyncCompleteFilter.class);
+public final class DefaultAsyncCompleteService implements AsyncCompleteService, Destroy {
+	private static Logger logger = LoggerUtils.getLogger(AsyncCompleteFilter.class);
 
 	private static ThreadLocal<Boolean> ENABLE_TAG = new ThreadLocal<Boolean>();
 
@@ -34,17 +29,21 @@ public class DefaultAsyncCompleteService implements AsyncCompleteService,
 	}
 
 	private FileManager fileManager;
-	private final ScheduledExecutorService executorService = Executors
-			.newScheduledThreadPool(4);
+	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
 
-	@Autowired
-	private BeanFactory beanFactory;
+	private InstanceFactory instanceFactory;
 
-	@InitMethod
-	private void init() throws UnsupportedEncodingException {
-		String logPath = System.getProperty("java.io.tmpdir");
-		logPath += File.separator + "AsyncComplate_"
-				+ SystemPropertyUtils.getSystemOnlyId();
+	public DefaultAsyncCompleteService(InstanceFactory instanceFactory) {
+		this(instanceFactory, SystemPropertyUtils.getTempDirectoryPath());
+	}
+
+	public DefaultAsyncCompleteService(InstanceFactory instanceFactory, String logPath) {
+		this.instanceFactory = instanceFactory;
+		init(logPath);
+	}
+
+	private void init(String logPath) {
+		logPath += File.separator + "AsyncComplate_" + SystemPropertyUtils.getSystemOnlyId();
 		logger.info("异步确认日志目录 ：{}", logPath);
 		fileManager = new FileManager(logPath);
 
@@ -57,8 +56,7 @@ public class DefaultAsyncCompleteService implements AsyncCompleteService,
 				for (File f : files) {
 					try {
 						AsyncInvokeInfo info = FileUtils.readObject(f);
-						executorService.submit(new InvokeRunnable(info, f
-								.getPath()));
+						executorService.submit(new InvokeRunnable(info, f.getPath()));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -83,9 +81,8 @@ public class DefaultAsyncCompleteService implements AsyncCompleteService,
 		public void run() {
 			Object rtn;
 			try {
-				rtn = info.invoke(beanFactory);
-				if (ClassUtils.isBooleanType(info.getMethodConfig().getMethod()
-						.getReturnType())) {
+				rtn = info.invoke(instanceFactory);
+				if (ClassUtils.isBooleanType(info.getMethodConfig().getMethod().getReturnType())) {
 					if (rtn != null && (Boolean) rtn == false) {
 						retry();
 						return;
@@ -106,8 +103,7 @@ public class DefaultAsyncCompleteService implements AsyncCompleteService,
 		}
 
 		private void retry() {
-			executorService.schedule(this, info.getDelayMillis(),
-					info.getTimeUnit());
+			executorService.schedule(this, info.getDelayMillis(), info.getTimeUnit());
 		}
 	}
 

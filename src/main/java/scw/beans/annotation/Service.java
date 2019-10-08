@@ -13,10 +13,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Service {
+	public Class<?>[] value() default {};
+	
 	/**
 	 * 别名
 	 * 
 	 * @return
 	 */
-	public String[] value() default {};
+	public String[] name() default {};
 }

@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import scw.beans.BeanFactory;
 import scw.beans.annotation.Stage;
 import scw.core.exception.NotFoundException;
+import scw.core.instance.InstanceFactory;
 import scw.core.reflect.SerializableMethodDefinition;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
@@ -108,7 +108,7 @@ public final class InvokeInfo implements Serializable {
 		return params.toArray();
 	}
 
-	private void invoke(BeanFactory beanFactory, SerializableMethodDefinition methodConfig) throws NoSuchMethodException,
+	private void invoke(InstanceFactory instanceFactory, SerializableMethodDefinition methodConfig) throws NoSuchMethodException,
 			SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (methodConfig == null) {
 			return;
@@ -130,18 +130,18 @@ public final class InvokeInfo implements Serializable {
 		logger.debug("clz={},name={}", methodConfig.getBelongClass().getName(),
 				StringUtils.isEmpty(stage.name()) ? method.getName() : stage.name());
 
-		Object obj = beanFactory.getInstance(methodConfig.getBelongClass());
+		Object obj = instanceFactory.getInstance(methodConfig.getBelongClass());
 		method.invoke(obj, params);
 	}
 
-	public void invoke(StageType stageType, BeanFactory beanFactory) throws NoSuchMethodException,
+	public void invoke(StageType stageType, InstanceFactory instanceFactory) throws NoSuchMethodException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		switch (stageType) {
 		case Confirm:
-			invoke(beanFactory, confirmMethod);
+			invoke(instanceFactory, confirmMethod);
 			break;
 		case Cancel:
-			invoke(beanFactory, cancelMethod);
+			invoke(instanceFactory, cancelMethod);
 			break;
 		default:
 			break;

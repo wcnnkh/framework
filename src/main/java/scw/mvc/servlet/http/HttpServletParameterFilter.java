@@ -3,7 +3,7 @@ package scw.mvc.servlet.http;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import scw.mvc.ParameterDefinition;
+import scw.core.parameter.ParameterConfig;
 import scw.mvc.ParameterFilterChain;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpParameterFilter;
@@ -11,15 +11,15 @@ import scw.mvc.http.HttpParameterFilter;
 public class HttpServletParameterFilter extends HttpParameterFilter {
 
 	@Override
-	public Object filter(HttpChannel httpChannel, ParameterDefinition parameterDefinition, ParameterFilterChain chain)
+	public Object filter(HttpChannel httpChannel, ParameterConfig parameterConfig, ParameterFilterChain chain)
 			throws Throwable {
-		if (ServletRequest.class.isAssignableFrom(parameterDefinition.getType())) {
+		if (ServletRequest.class.isAssignableFrom(parameterConfig.getType())) {
 			return httpChannel.getRequest();
-		} else if (ServletResponse.class.isAssignableFrom(parameterDefinition.getType())) {
+		} else if (ServletResponse.class.isAssignableFrom(parameterConfig.getType())) {
 			return httpChannel.getResponse();
 		}
 
-		return chain.doFilter(httpChannel, parameterDefinition);
+		return chain.doFilter(httpChannel, parameterConfig);
 	}
 
 }

@@ -10,13 +10,13 @@ import java.util.Enumeration;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
+import scw.core.parameter.ParameterConfig;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.mvc.AbstractParameterChannel;
 import scw.mvc.MVCUtils;
-import scw.mvc.ParameterDefinition;
 import scw.mvc.ParameterFilter;
 import scw.mvc.http.parameter.Body;
 import scw.net.http.Cookie;
@@ -50,21 +50,21 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Object getParameter(ParameterDefinition parameterDefinition) {
-		if (HttpRequest.class.isAssignableFrom(parameterDefinition.getType())) {
+	public Object getParameter(ParameterConfig parameterConfig) {
+		if (HttpRequest.class.isAssignableFrom(parameterConfig.getType())) {
 			return getRequest();
-		} else if (HttpResponse.class.isAssignableFrom(parameterDefinition.getType())) {
+		} else if (HttpResponse.class.isAssignableFrom(parameterConfig.getType())) {
 			return getResponse();
-		} else if (Session.class == parameterDefinition.getType()) {
+		} else if (Session.class == parameterConfig.getType()) {
 			return getRequest().getHttpSession();
-		} else if (HttpParameterRequest.class == parameterDefinition.getType()) {
+		} else if (HttpParameterRequest.class == parameterConfig.getType()) {
 			return getHttpParameterRequest();
-		} else if (Authorization.class == parameterDefinition.getType()) {
+		} else if (Authorization.class == parameterConfig.getType()) {
 			HttpChannelUserSessionFactory httpChannelUserSessionFactory = (HttpChannelUserSessionFactory) beanFactory
 					.getInstance(HttpChannelUserSessionFactory.class);
 			return new HttpChannelAuthorization(this, httpChannelUserSessionFactory);
 		}
-		return super.getParameter(parameterDefinition);
+		return super.getParameter(parameterConfig);
 	}
 
 	public Object getAttribute(String name) {

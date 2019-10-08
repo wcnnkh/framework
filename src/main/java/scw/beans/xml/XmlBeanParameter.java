@@ -8,10 +8,10 @@ import java.util.Date;
 
 import org.w3c.dom.Node;
 
-import scw.beans.BeanFactory;
 import scw.beans.EParameterType;
 import scw.core.PropertyFactory;
 import scw.core.exception.NotFoundException;
+import scw.core.instance.InstanceFactory;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 
@@ -55,11 +55,11 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 		this.parameterType = parameterType;
 	}
 
-	public Object parseValue(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
-		return parseValue(beanFactory, propertyFactory, this.parameterType);
+	public Object parseValue(InstanceFactory instanceFactory, PropertyFactory propertyFactory) throws Exception {
+		return parseValue(instanceFactory, propertyFactory, this.parameterType);
 	}
 
-	public Object parseValue(BeanFactory beanFactory, PropertyFactory propertyFactory, Type parameterType)
+	public Object parseValue(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Type parameterType)
 			throws Exception {
 		Object value = null;
 		switch (type) {
@@ -67,7 +67,7 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 			value = formatStringValue(xmlValue.formatValue(propertyFactory), parameterType);
 			break;
 		case ref:
-			value = beanFactory.getInstance(xmlValue.formatValue(propertyFactory));
+			value = instanceFactory.getInstance(xmlValue.formatValue(propertyFactory));
 			break;
 		case property:
 			String v = propertyFactory.getProperty(xmlValue.getValue());

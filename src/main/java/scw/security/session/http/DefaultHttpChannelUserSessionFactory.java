@@ -1,8 +1,8 @@
 package scw.security.session.http;
 
-import scw.beans.auto.annotation.Auto;
 import scw.core.annotation.ParameterName;
 import scw.core.annotation.ParameterValue;
+import scw.core.instance.annotation.Auto;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
 import scw.mvc.http.HttpChannel;

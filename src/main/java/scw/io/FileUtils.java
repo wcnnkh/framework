@@ -35,6 +35,7 @@ import java.util.zip.ZipFile;
 
 import scw.core.Base64;
 import scw.core.exception.AlreadyExistsException;
+import scw.core.utils.SystemPropertyUtils;
 
 public final class FileUtils {
 
@@ -122,7 +123,7 @@ public final class FileUtils {
 	}
 
 	public static String getTempDirectoryPath() {
-		return System.getProperty("java.io.tmpdir");
+		return SystemPropertyUtils.getProperty("java.io.tmpdir");
 	}
 
 	public static File getTempDirectory() {
@@ -130,7 +131,7 @@ public final class FileUtils {
 	}
 
 	public static String getUserDirectoryPath() {
-		return System.getProperty("user.home");
+		return SystemPropertyUtils.getProperty("user.home");
 	}
 
 	public static File getUserDirectory() {
