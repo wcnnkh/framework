@@ -1,6 +1,6 @@
 package scw.security.session;
 
-import scw.core.AttributeManager;
+import scw.core.attribute.AttributeManager;
 
 public interface Session extends AttributeManager{
 

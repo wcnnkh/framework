@@ -28,20 +28,22 @@ public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
 	private final String host;
 	private final String signStr;
 	private final Serializer serializer;
+	private final boolean responseThrowable;// 是否返回异常
 
 	public HttpRpcBean(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Class<?> type, String host, String signStr, Serializer serializer) {
+			Class<?> type, String host, String signStr, Serializer serializer, boolean responsethrowable) {
 		super(valueWiredManager, beanFactory, propertyFactory, type);
 		this.host = host;
 		this.signStr = signStr;
 		this.serializer = serializer;
+		this.responseThrowable = responsethrowable;
 		init();
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T create() {
 		Filter filter = new Filter() {
-			
+
 			public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
 					throws Throwable {
 				HttpConsumerInvoker httpConsumerInvoker = new HttpConsumerInvoker(method);
@@ -64,6 +66,7 @@ public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
 			message.setAttribute("t", cts);
 			message.setAttribute("sign",
 					(SignatureUtils.byte2hex(SignatureUtils.md5(Bytes.string2bytes(cts + signStr)))));
+			message.setAttribute("responseThrowable", responseThrowable);
 
 			HttpRequest request = new HttpRequest(scw.net.http.Method.POST, host) {
 				@Override
@@ -73,8 +76,9 @@ public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
 			};
 			request.setContentType(ContentType.APPLICATION_OCTET_STREAM);
 
+			Object responseObject = null;
 			try {
-				return NetworkUtils.execute(request, new AbstractResponse<Object>() {
+				responseObject = NetworkUtils.execute(request, new AbstractResponse<Object>() {
 
 					@Override
 					protected Object doInput(URLConnection urlConnection, InputStream is) throws Throwable {
@@ -85,6 +89,20 @@ public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
 				logger.error(message.getMessageKey());
 				throw e;
 			}
+
+			if (responseObject == null) {
+				return null;
+			}
+
+			if (responseObject instanceof HttpRcpResponse) {
+				Throwable throwable = ((HttpRcpResponse) responseObject).getThrowable();
+				if (throwable != null) {
+					logger.error(message.getMessageKey());
+					throw throwable;
+				}
+				return ((HttpRcpResponse) responseObject).getResponse();
+			}
+			return responseObject;
 		}
 	}
 }

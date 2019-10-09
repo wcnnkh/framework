@@ -300,6 +300,10 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 	}
 
+	public boolean isSingleton(Class<?> clazz) {
+		return isSingleton(clazz.getName());
+	}
+
 	public boolean isSingleton(String name) {
 		if (singletonMap.containsKey(name)) {
 			return true;

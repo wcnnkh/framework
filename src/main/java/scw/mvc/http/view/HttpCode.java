@@ -22,7 +22,7 @@ public class HttpCode extends HttpView {
 		}
 
 		if (channel.isLogEnabled()) {
-			channel.log("servletPath={},method={},status={},msg={}", httpRequest.getRequestPath(),
+			channel.log("path={},method={},status={},msg={}", httpRequest.getRequestPath(),
 					httpRequest.getMethod(), status, msg);
 		}
 		httpResponse.sendError(status, msg);

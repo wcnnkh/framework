@@ -1,8 +1,6 @@
 package scw.mvc.servlet;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Collection;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -14,26 +12,22 @@ import scw.beans.annotation.Bean;
 import scw.core.PropertyFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.mvc.Filter;
+import scw.mvc.ControllerService;
+import scw.mvc.DefaultControllerService;
 import scw.mvc.MVCUtils;
-import scw.mvc.action.HttpNotFoundService;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.servlet.http.HttpServletChannelFactory;
 
 @Bean(proxy = false)
 public class DefaultServletService implements ServletService {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
-
+	private ControllerService controllerService;
 	private final HttpServletChannelFactory httpServletChannelFactory;
 	private final String charsetName;
-	private final Collection<Filter> filters;
-	private final int warnExecuteTime;
 
 	public DefaultServletService(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Throwable {
 		this.charsetName = MVCUtils.getCharsetName(propertyFactory);
-		this.warnExecuteTime = MVCUtils.getWarnExecuteTime(propertyFactory);
-		this.filters = MVCUtils.getFilters(beanFactory, propertyFactory);
-		this.filters.add(new HttpNotFoundService());
+		this.controllerService = new DefaultControllerService(beanFactory, propertyFactory);
 		this.httpServletChannelFactory = ServletUtils.getHttpServletChannelFactory(beanFactory, propertyFactory);
 	}
 
@@ -47,24 +41,7 @@ public class DefaultServletService implements ServletService {
 			return;
 		}
 
-		try {
-			MVCUtils.service(filters, httpChannel, warnExecuteTime);
-		} catch (Throwable e) {
-			error(httpServletRequest, httpServletResponse, e);
-		}
-	}
-
-	protected void error(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Throwable e) {
-		logger.error(e, "执行servletPath={},method={}异常", httpServletRequest.getServletPath(),
-				httpServletRequest.getMethod());
-		if (!httpServletResponse.isCommitted()) {
-			try {
-				httpServletResponse.sendError(500, "system error");
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}
-
+		controllerService.service(httpChannel);
 	}
 
 	public void service(ServletRequest req, ServletResponse resp) {

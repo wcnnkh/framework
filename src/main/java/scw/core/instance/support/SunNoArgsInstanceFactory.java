@@ -79,4 +79,12 @@ public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 	public boolean isInstance(Class<?> clazz) {
 		return clazz != null;
 	}
+
+	public boolean isSingleton(String name) {
+		return false;
+	}
+
+	public boolean isSingleton(Class<?> clazz) {
+		return false;
+	}
 }

@@ -1,6 +1,6 @@
 package scw.mvc;
 
-import scw.core.AttributeManager;
+import scw.core.attribute.AttributeManager;
 import scw.core.parameter.ParameterFactory;
 import scw.logger.LogService;
 

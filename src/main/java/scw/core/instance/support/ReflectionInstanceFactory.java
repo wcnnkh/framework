@@ -104,4 +104,12 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		return constructor != null;
 	}
 
+	public boolean isSingleton(String name) {
+		return false;
+	}
+
+	public boolean isSingleton(Class<?> clazz) {
+		return false;
+	}
+
 }

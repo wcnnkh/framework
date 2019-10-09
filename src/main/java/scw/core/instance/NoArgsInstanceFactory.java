@@ -2,6 +2,20 @@ package scw.core.instance;
 
 public interface NoArgsInstanceFactory {
 	/**
+	 * 是否是单例
+	 * @param name
+	 * @return
+	 */
+	boolean isSingleton(String name);
+
+	/**
+	 * 是否是单例
+	 * @param clazz
+	 * @return
+	 */
+	boolean isSingleton(Class<?> clazz);
+	
+	/**
 	 * 执行失败返回空
 	 * 
 	 * @param type

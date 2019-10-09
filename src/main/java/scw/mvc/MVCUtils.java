@@ -18,7 +18,6 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanUtils;
 import scw.beans.rpc.http.DefaultRpcService;
 import scw.beans.rpc.http.RpcService;
-import scw.core.AttributeManager;
 import scw.core.Constants;
 import scw.core.DefaultKeyValuePair;
 import scw.core.Destroy;
@@ -29,6 +28,7 @@ import scw.core.MultiValueMap;
 import scw.core.PropertyFactory;
 import scw.core.ValueFactory;
 import scw.core.annotation.ParameterName;
+import scw.core.attribute.AttributeManager;
 import scw.core.context.Context;
 import scw.core.context.ContextManager;
 import scw.core.context.support.ThreadLocalContextManager;
@@ -51,6 +51,7 @@ import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.action.ActionFilter;
+import scw.mvc.action.HttpNotFoundService;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Model;
@@ -116,13 +117,33 @@ public final class MVCUtils {
 		attributeManager.setAttribute(HTTP_AUTHORITY_ATTRIBUTE_NAME, id);
 	}
 
-	public static void service(Collection<Filter> filters, Channel channel, int warnExecuteTime) throws Throwable {
+	public static Collection<ExceptionHandler> getExceptionHandlers(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory) {
+		LinkedList<ExceptionHandler> exceptionHandlers = new LinkedList<ExceptionHandler>();
+		BeanUtils.appendBean(exceptionHandlers, instanceFactory, propertyFactory, ExceptionHandler.class,
+				"mvc.exception.handler");
+		if (instanceFactory.isInstance(ExceptionHandler.class) && instanceFactory.isSingleton(ExceptionHandler.class)) {
+			exceptionHandlers.add(instanceFactory.getInstance(ExceptionHandler.class));
+		}
+		return exceptionHandlers;
+	}
+
+	public static void service(Collection<Filter> filters, Channel channel, int warnExecuteTime,
+			Collection<ExceptionHandler> exceptionHandlers) {
 		long t = System.currentTimeMillis();
 		FilterChain filterChain = new SimpleFilterChain(filters);
 		Context context = MVC_CONTEXT_MANAGER.createContext();
 		context.bindResource(Channel.class, channel);
 		try {
 			channel.write(filterChain.doFilter(channel));
+		} catch (Throwable e) {
+			ExceptionHandlerChain exceptionHandlerChain = new ExceptionHandlerChain(exceptionHandlers);
+			Object errorResult = exceptionHandlerChain.doHandler(channel, e);
+			try {
+				channel.write(errorResult);
+			} catch (Throwable e1) {
+				logger.error(e1, channel.toString());
+			}
 		} finally {
 			try {
 				if (channel instanceof Destroy) {
@@ -381,6 +402,7 @@ public final class MVCUtils {
 
 		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, Filter.class, "mvc.filters");
 		filters.add(getHttpActionServiceFilter(instanceFactory, propertyFactory));
+		filters.add(new HttpNotFoundService());
 		return filters;
 	}
 

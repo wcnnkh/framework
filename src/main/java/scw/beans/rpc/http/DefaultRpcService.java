@@ -38,15 +38,26 @@ public class DefaultRpcService implements RpcService {
 			throw new RuntimeException("not found service:" + message.getMessageKey());
 		}
 
-		Object obj;
+		boolean responseThrowable = StringUtils.parseBoolean(message.getAttribute("responseThrowable"));
+		HttpRcpResponse response = new HttpRcpResponse();
 		try {
-			obj = invoker.invoke(beanFactory.getInstance(message.getMethodDefinition().getBelongClass()),
-					message.getArgs());
-		} catch (IllegalArgumentException e) {
-			logger.warn("参数不一致：{}", message.getMessageKey());
-			throw e;
+			response.setResponse(invoker.invoke(beanFactory.getInstance(message.getMethodDefinition().getBelongClass()),
+					message.getArgs()));
+		} catch (Throwable e) {
+			if (e instanceof IllegalArgumentException) {
+				logger.warn("参数不一致：{}", message.getMessageKey());
+			}
+			response.setThrowable(e);
+			if (!responseThrowable) {
+				throw e;
+			}
 		}
-		serializer.serialize(os, obj);
+
+		if (responseThrowable) {
+			serializer.serialize(os, response);
+		} else if (response.getResponse() != null) {
+			serializer.serialize(os, response.getResponse());
+		}
 	}
 
 	protected ServiceInvoker getRPCInvoker(final Message message) throws NoSuchMethodException, SecurityException {

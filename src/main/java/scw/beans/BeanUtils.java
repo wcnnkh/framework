@@ -506,6 +506,11 @@ public final class BeanUtils {
 					logger.warn("{}无法使用默认的方式实例化，请进行配置", name);
 					continue;
 				}
+				
+				if(!instanceFactory.isSingleton(name)){
+					logger.warn("{}不是一个单例，请进行配置", name);
+					continue;
+				}
 
 				Object filter = instanceFactory.getInstance(name);
 				if (type.isInstance(filter)) {

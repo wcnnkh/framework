@@ -3,7 +3,7 @@ package scw.mvc.http;
 import java.util.Enumeration;
 import java.util.Map;
 
-import scw.core.AttributeManager;
+import scw.core.attribute.AttributeManager;
 import scw.mvc.Request;
 import scw.net.http.Cookie;
 import scw.security.session.Session;

@@ -7,6 +7,7 @@ import scw.core.Init;
 
 /**
  * 单例工厂
+ * 
  * @author asus1
  *
  */
@@ -73,8 +74,7 @@ public class ReflectionSingleInstanceFactory extends ReflectionInstanceFactory {
 	}
 
 	@Override
-	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
-			Object... params) {
+	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
 		Object bean = singleMap.get(type.getName());
 		if (bean == null) {
 			synchronized (singleMap) {
@@ -91,8 +91,7 @@ public class ReflectionSingleInstanceFactory extends ReflectionInstanceFactory {
 	}
 
 	@Override
-	public <T> T getInstance(String name, Class<?>[] parameterTypes,
-			Object... params) {
+	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
 		Object bean = singleMap.get(name);
 		if (bean == null) {
 			synchronized (singleMap) {
@@ -123,5 +122,13 @@ public class ReflectionSingleInstanceFactory extends ReflectionInstanceFactory {
 			}
 		}
 		return (T) bean;
+	}
+
+	public boolean isSingleton(String name) {
+		return singleMap.containsKey(name) || isInstance(name);
+	}
+
+	public boolean isSingleton(Class<?> clazz) {
+		return singleMap.containsKey(clazz.getName()) || isInstance(clazz);
 	}
 }

@@ -46,4 +46,12 @@ public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
 		return true;
 	}
 
+	public boolean isSingleton(String name) {
+		return false;
+	}
+
+	public boolean isSingleton(Class<?> clazz) {
+		return false;
+	}
+
 }

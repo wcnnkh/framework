@@ -1,6 +1,6 @@
 package scw.security.session;
 
-import scw.core.AttributeManagerWrapper;
+import scw.core.attribute.AttributeManagerWrapper;
 
 public final class DefaultSession extends AttributeManagerWrapper implements Session {
 	private AbstractSessionFactory sessionFactory;

@@ -2,14 +2,12 @@ package scw.beans.rpc.http;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
+import scw.core.attribute.SimpleAttributeManager;
 import scw.core.reflect.SerializableMethodDefinition;
 
-public final class Message implements Serializable {
+public final class Message extends SimpleAttributeManager implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private Map<String, Object> attributeMap;
 	private SerializableMethodDefinition methodDefinition;
 	private Object[] args;
 
@@ -48,28 +46,5 @@ public final class Message implements Serializable {
 			this.messageKey = getMethod().toString();
 		}
 		return messageKey;
-	}
-
-	public Object getAttribute(String name) {
-		if (attributeMap == null) {
-			return null;
-		}
-
-		return attributeMap.get(name);
-	}
-
-	public void setAttribute(String name, Object value) {
-		if (attributeMap == null) {
-			attributeMap = new HashMap<String, Object>();
-		}
-		attributeMap.put(name, value);
-	}
-
-	public Map<String, Object> getAttributeMap() {
-		return attributeMap;
-	}
-
-	public void setAttributeMap(Map<String, Object> attributeMap) {
-		this.attributeMap = attributeMap;
 	}
 }

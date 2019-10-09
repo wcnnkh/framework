@@ -33,6 +33,8 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 			String packageName = XmlBeanUtils.getPackageName(propertyFactory, node);
 			String serializer = XMLUtils.getNodeAttributeValue(propertyFactory, node, "serializer");
 			String address = XmlBeanUtils.getAddress(propertyFactory, node);
+			boolean responseThrowable = StringUtils
+					.parseBoolean(XMLUtils.getNodeAttributeValue(propertyFactory, node, "throwable"), true);
 
 			Serializer ser = StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 					: (Serializer) beanFactory.getInstance(serializer);
@@ -42,7 +44,8 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 						continue;
 					}
 
-					HttpRpcBean httpRpcBean = new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz, address, sign, ser);
+					HttpRpcBean httpRpcBean = new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz,
+							address, sign, ser, responseThrowable);
 					addBean(httpRpcBean);
 				}
 			}
@@ -70,8 +73,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 					myAddress = address;
 				}
 
-				addBean(new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz, myAddress,
-						mySign, ser));
+				addBean(new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz, myAddress, mySign, ser, responseThrowable));
 			}
 		}
 	}

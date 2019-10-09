@@ -7,7 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Map;
 
-import scw.core.AttributeManagerWrapper;
+import scw.core.attribute.AttributeManagerWrapper;
 import scw.net.http.Cookie;
 import scw.security.session.Session;
 
