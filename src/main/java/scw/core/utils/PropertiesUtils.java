@@ -1,8 +1,5 @@
 package scw.core.utils;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,16 +10,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import scw.core.Consumer;
 import scw.core.PropertyFactory;
 import scw.core.StringFormat;
 import scw.core.SystemPropertyFactory;
 import scw.core.reflect.ReflectUtils;
-import scw.io.IOUtils;
 import scw.logger.LoggerUtils;
 
 public final class PropertiesUtils {
@@ -287,35 +283,17 @@ public final class PropertiesUtils {
 		return map;
 	}
 
-	public static Properties getProperties(final String path, final String charsetName,
+	public static Properties getProperties(final String resource, final String charsetName,
 			PropertyFactory propertyFactory) {
-		final Properties properties = new Properties();
-		ResourceUtils.consumterInputStream(path, new Consumer<InputStream>() {
-
-			public void consume(InputStream inputStream) throws Exception {
-				if (path.endsWith(".xml")) {
-					properties.loadFromXML(inputStream);
-				} else {
-					if (StringUtils.isEmpty(charsetName)) {
-						properties.load(inputStream);
-					} else {
-						Method method = ReflectUtils.findMethod(Properties.class, "load", Reader.class);
-						if (method == null) {
-							LoggerUtils.warn(PropertiesUtils.class, "jdk1.6及以上的版本才支持指定字符集: {}" + path);
-							properties.load(inputStream);
-						} else {
-							InputStreamReader isr = null;
-							try {
-								isr = new InputStreamReader(inputStream, charsetName);
-								method.invoke(properties, isr);
-							} finally {
-								IOUtils.close(isr);
-							}
-						}
-					}
-				}
+		List<String> resourceNameList = ResourceUtils.getResourceNameList(resource);
+		ListIterator<String> iterator = resourceNameList.listIterator(resourceNameList.size());
+		Properties properties = new Properties();
+		while (iterator.hasPrevious()) {
+			final String name = iterator.previous();
+			if (ResourceUtils.isExist(name, false)) {
+				ResourceUtils.consumterInputStream(name, new LoadProperties(properties, name, charsetName), false);
 			}
-		});
+		}
 
 		if (propertyFactory == null) {
 			return properties;
@@ -333,13 +311,13 @@ public final class PropertiesUtils {
 	}
 
 	public static Properties getProperties(final String path) {
-		return getProperties(path, (String)null);
+		return getProperties(path, (String) null);
 	}
 
 	public static Properties getProperties(final String path, final String charsetName) {
 		return getProperties(path, charsetName, SystemPropertyFactory.INSTANCE);
 	}
-	
+
 	public static Properties getProperties(final String path, PropertyFactory propertyFactory) {
 		return getProperties(path, null, propertyFactory);
 	}

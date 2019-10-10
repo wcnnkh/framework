@@ -28,11 +28,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
@@ -425,7 +427,35 @@ public abstract class ResourceUtils {
 	 * @return
 	 */
 	public static boolean consumterResource(String resource, Consumer<InputStream> consumer) {
-		return consumterClassPathInputStream(resource, getResourceSuffix(), consumer);
+		return consumterClassPathInputStream(resource, consumer);
+	}
+
+	private static String getTestFileName(String fileName, String str) {
+		int index = fileName.lastIndexOf(".");
+		if (index == -1) {// 不存在
+			return fileName + str;
+		} else {
+			return fileName.substring(0, index) + str + fileName.substring(index);
+		}
+	}
+
+	public static List<String> getResourceNameList(String resourceName) {
+		String value = SystemPropertyUtils.getProperty(RESOURCE_SUFFIX);
+		if (value == null) {
+			value = SystemPropertyUtils.getProperty(CONFIG_SUFFIX);
+		}
+
+		if (value == null) {
+			return Arrays.asList(resourceName);
+		}
+
+		List<String> list = new LinkedList<String>();
+		String[] arr = StringUtils.commonSplit(value);
+		for (String name : arr) {
+			list.add(getTestFileName(resourceName, name));
+		}
+		list.add(resourceName);
+		return list;
 	}
 
 	public static URL getResource(String name) {
@@ -444,57 +474,31 @@ public abstract class ResourceUtils {
 		return inputStream;
 	}
 
-	private static boolean consumterClassPathInputStream(String path, String[] suffixs,
-			Consumer<InputStream> consumer) {
-		boolean b = false;
-		if (!ArrayUtils.isEmpty(suffixs)) {
-			for (String suffix : suffixs) {
-				InputStream inputStream = null;
-				try {
-					inputStream = getResourceAsStream(getTestFileName(path, suffix));
-					b = inputStream != null;
-					if (b) {
-						if(consumer != null){
-							consumer.consume(inputStream);
-						}
-						break;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					IOUtils.close(inputStream);
+	private static boolean consumterClassPathInputStream(String path, Consumer<InputStream> consumer) {
+		InputStream inputStream = null;
+		try {
+			inputStream = getResourceAsStream(path);
+			if (inputStream != null) {
+				if (consumer != null) {
+					consumer.consume(inputStream);
 				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			IOUtils.close(inputStream);
 		}
-
-		if (!b) {
-			InputStream inputStream = null;
-			try {
-				inputStream = getResourceAsStream(path);
-				if (inputStream != null) {
-					b = true;
-					if(consumer != null){
-						consumer.consume(inputStream);
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				IOUtils.close(inputStream);
-			}
-		}
-		return b;
+		return inputStream != null;
 	}
 
-	private static boolean consumterInputStream(String rootPath, String path, String[] suffixs,
-			Consumer<InputStream> consumer) {
+	private static boolean consumterInputStream(String rootPath, String path, Consumer<InputStream> consumer) {
 		File file = new File(rootPath);
 		if (!file.exists()) {
 			return false;
 		}
 
 		if (file.isFile()) {// jar
-			File configFile = searchJarClassPathConfigFile(file, "config", suffixs, path);
+			File configFile = searchJarClassPathConfigFile(file, "config", path);
 			if (configFile != null) {
 				consumerFileInputStream(configFile, consumer);
 				return true;
@@ -504,26 +508,12 @@ public abstract class ResourceUtils {
 			InputStream inputStream = null;
 			try {
 				jarFile = new JarFile(file);
-				String entryName = null;
-				if (!ArrayUtils.isEmpty(suffixs)) {
-					for (String name : suffixs) {
-						String n = getTestFileName(path, name);
-						entryName = searchNameByJar(jarFile, n);
-						if (entryName != null) {
-							break;
-						}
-					}
-				}
-
-				if (entryName == null) {
-					entryName = searchNameByJar(jarFile, path);
-				}
-
+				String entryName = searchNameByJar(jarFile, path);
 				if (entryName == null) {
 					return false;
 				}
 
-				if(consumer != null){
+				if (consumer != null) {
 					inputStream = jarFile.getInputStream(jarFile.getEntry(entryName));
 					consumer.consume(inputStream);
 				}
@@ -534,7 +524,7 @@ public abstract class ResourceUtils {
 				IOUtils.close(inputStream, jarFile);
 			}
 		} else {
-			File f = getClassPathFile(file, suffixs, path);
+			File f = searchFile(path, file);
 			if (f == null) {
 				return false;
 			}
@@ -551,13 +541,12 @@ public abstract class ResourceUtils {
 	 * @param consumer
 	 * @return
 	 */
-	public static boolean consumterResourceBySearch(String resource, Consumer<InputStream> consumer) {
+	private static boolean consumterResourceBySearch(String resource, Consumer<InputStream> consumer) {
 		if (StringUtils.isEmpty(resource)) {
 			return false;
 		}
 
 		String text = SystemPropertyUtils.format(resource);
-		String[] suffixs = getResourceSuffix();
 		// 兼容老版本
 		if (StringUtils.startsWithIgnoreCase(text, CLASSPATH_URL_PREFIX)
 				|| StringUtils.startsWithIgnoreCase(text, "{" + CLASSPATH_URL_PREFIX + "}")
@@ -574,13 +563,13 @@ public abstract class ResourceUtils {
 			boolean b = false;
 			if (!b) {
 				for (String classPath : SystemPropertyUtils.getJavaClassPathArray()) {
-					b = consumterInputStream(classPath, eqPath, suffixs, consumer);
+					b = consumterInputStream(classPath, eqPath, consumer);
 					if (b) {
 						break;
 					}
 				}
 			}
-			
+
 			if (!b) {
 				b = consumterResource(eqPath, consumer);
 			}
@@ -588,28 +577,14 @@ public abstract class ResourceUtils {
 			if (!b) {
 				URL url = getClassPathURL();
 				if (url != null) {
-					b = consumterInputStream(url.getPath(), eqPath, suffixs, consumer);
+					b = consumterInputStream(url.getPath(), eqPath, consumer);
 				}
 			}
 			return b;
 		} else {
-			File file = null;
-			if (!ArrayUtils.isEmpty(suffixs)) {
-				for (String name : suffixs) {
-					file = new File(getTestFileName(text, name));
-					if (file.exists()) {
-						break;
-					} else {
-						file = null;
-					}
-				}
-			}
-
-			if (file == null) {
-				file = new File(text);
-				if (!file.exists()) {
-					file = null;
-				}
+			File file = new File(text);
+			if (!file.exists()) {
+				file = null;
 			}
 
 			if (file == null) {
@@ -625,44 +600,38 @@ public abstract class ResourceUtils {
 	}
 
 	public static void consumterInputStream(String resource, Consumer<InputStream> consumer) {
-		boolean b = consumterResourceBySearch(resource, consumer);
-		if (!b) {
-			throw new NotFoundException(resource);
-		}
+		consumterInputStream(resource, consumer, true);
 	}
 
-	private static File searchJarClassPathConfigFile(File rootFile, String configPath, String[] suffixs, String path) {
+	public static void consumterInputStream(String resource, Consumer<InputStream> consumer, boolean multiple) {
+		if (multiple) {
+			Collection<String> resourceNames = getResourceNameList(resource);
+			for (String name : resourceNames) {
+				if (consumterResourceBySearch(name, consumer)) {
+					return;
+				}
+			}
+		} else if (consumterResourceBySearch(resource, consumer)) {
+			return;
+		}
+
+		throw new NotFoundException(resource);
+	}
+
+	private static File searchJarClassPathConfigFile(File rootFile, String configPath, String path) {
 		File file = new File(rootFile.getParent() + File.separator + configPath);
 		if (!file.exists()) {
 			return null;
 		}
 
-		return getClassPathFile(file, suffixs, path);
-	}
-
-	private static File getClassPathFile(File rootFile, String[] suffixs, String path) {
-		File f = null;
-		if (!ArrayUtils.isEmpty(suffixs)) {
-			for (String name : suffixs) {
-				f = searchFile(getTestFileName(path, name), rootFile);
-				if (f != null) {
-					break;
-				}
-			}
-		}
-
-		if (f == null) {
-			f = searchFile(path, rootFile);
-		}
-
-		return f;
+		return searchFile(path, file);
 	}
 
 	private static void consumerFileInputStream(File file, Consumer<InputStream> consumer) {
-		if(consumer == null){
-			return ;
+		if (consumer == null) {
+			return;
 		}
-		
+
 		InputStream inputStream = null;
 		try {
 			inputStream = new FileInputStream(file);
@@ -700,30 +669,26 @@ public abstract class ResourceUtils {
 		return null;
 	}
 
-	private static String[] getResourceSuffix() {
-		String value = SystemPropertyUtils.getProperty(RESOURCE_SUFFIX);
-		if (value == null) {
-			value = SystemPropertyUtils.getProperty(CONFIG_SUFFIX);
-		}
-
-		return StringUtils.isEmpty(value) ? null : StringUtils.commonSplit(value);
+	public static boolean isExist(String resource) {
+		return isExist(resource, true);
 	}
 
-	private static String getTestFileName(String fileName, String str) {
-		int index = fileName.lastIndexOf(".");
-		if (index == -1) {// 不存在
-			return fileName + str;
-		} else {
-			return fileName.substring(0, index) + str + fileName.substring(index);
-		}
-	}
-
-	public static boolean isExist(String path) {
-		if (StringUtils.isEmpty(path)) {
+	public static boolean isExist(String resource, boolean multiple) {
+		if (StringUtils.isEmpty(resource)) {
 			return false;
 		}
 
-		return consumterResourceBySearch(path, null);
+		if (multiple) {
+			Collection<String> resourceNames = getResourceNameList(resource);
+			for (String name : resourceNames) {
+				if (consumterResourceBySearch(name, null)) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return consumterResourceBySearch(resource, null);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
