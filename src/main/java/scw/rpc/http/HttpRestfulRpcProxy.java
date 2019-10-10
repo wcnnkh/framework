@@ -15,7 +15,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.io.serializer.Serializer;
 import scw.rpc.RpcConstants;
-import scw.rpc.object.ObjectRpcMessageConvert;
+import scw.rpc.support.ObjectRpcMessageConvert;
 
 public class HttpRestfulRpcProxy implements Filter, RpcConstants {
 	private static final String[] DEFAULT_SHARE_HEADERS = new String[] { HeadersConstants.CONTENT_TYPE,

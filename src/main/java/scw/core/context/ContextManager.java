@@ -1,4 +1,4 @@
-package scw.context;
+package scw.core.context;
 
 public interface ContextManager {
 	/**

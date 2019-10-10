@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import scw.beans.annotation.AutoImpl;
-import scw.rpc.object.DefaultObjectRpcService;
+import scw.rpc.support.DefaultObjectRpcService;
 
 @AutoImpl({ DefaultObjectRpcService.class })
 public interface RpcService {

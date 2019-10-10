@@ -1,10 +1,10 @@
-package scw.context.support;
+package scw.core.context.support;
 
-import scw.context.Context;
-import scw.context.ContextManager;
-import scw.context.DefaultContext;
-import scw.context.DefaultNestingContext;
-import scw.context.NestingContext;
+import scw.core.context.Context;
+import scw.core.context.ContextManager;
+import scw.core.context.DefaultContext;
+import scw.core.context.DefaultNestingContext;
+import scw.core.context.NestingContext;
 
 public final class ThreadLocalContextManager implements ContextManager {
 	private ThreadLocal<DefaultContext> local = new ThreadLocal<DefaultContext>();

@@ -1,4 +1,4 @@
-package scw.rpc.object;
+package scw.rpc.support;
 
 import java.io.InputStream;
 import java.io.OutputStream;

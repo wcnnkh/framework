@@ -7,9 +7,9 @@ import java.util.Timer;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import scw.beans.dubbo.DubboUtils;
 import scw.beans.property.ValueWiredManager;
-import scw.beans.rpc.dubbo.DubboUtils;
-import scw.beans.rpc.http.HttpRpcBeanConfigFactory;
+import scw.beans.rpc.HttpRpcBeanConfigFactory;
 import scw.beans.xml.XmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;

@@ -1,4 +1,4 @@
-package scw.beans.rpc.dubbo;
+package scw.beans.dubbo;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -95,7 +95,7 @@ public final class DubboUtils {
 			return null;
 		}
 
-		return InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboBeanConfigFactory", valueWiredManager, beanFactory, propertyFactory,
+		return InstanceUtils.getInstance("scw.beans.dubbo.XmlDubboBeanConfigFactory", valueWiredManager, beanFactory, propertyFactory,
 				nodeList);
 	}
 
@@ -109,7 +109,7 @@ public final class DubboUtils {
 			return;
 		}
 
-		Runnable runnable = InstanceUtils.getInstance("scw.beans.rpc.dubbo.XmlDubboServiceExort", propertyFactory,
+		Runnable runnable = InstanceUtils.getInstance("scw.beans.dubbo.XmlDubboServiceExort", propertyFactory,
 				beanFactory, nodeList);
 		if (runnable == null) {
 			return;

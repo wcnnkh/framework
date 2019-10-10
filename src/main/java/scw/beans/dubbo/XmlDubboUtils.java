@@ -1,4 +1,4 @@
-package scw.beans.rpc.dubbo;
+package scw.beans.dubbo;
 
 import java.lang.reflect.Type;
 import java.util.LinkedList;

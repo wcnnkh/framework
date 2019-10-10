@@ -1,4 +1,4 @@
-package scw.beans.rpc.http;
+package scw.beans.rpc;
 
 import scw.beans.AbstractInterfaceBeanDefinition;
 import scw.beans.BeanFactory;
@@ -8,8 +8,8 @@ import scw.core.PropertyFactory;
 import scw.io.serializer.Serializer;
 import scw.rpc.http.HttpRpcFactory;
 import scw.rpc.http.HttpRpcRequestFactory;
-import scw.rpc.object.HttpObjectRpcRequestFactory;
-import scw.rpc.object.ObjectRpcMessageConvert;
+import scw.rpc.support.HttpObjectRpcRequestFactory;
+import scw.rpc.support.ObjectRpcMessageConvert;
 
 public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
 	private HttpRpcFactory rpcFactory;

@@ -1,4 +1,4 @@
-package scw.beans.rpc.dubbo;
+package scw.beans.dubbo;
 
 import org.apache.dubbo.config.ReferenceConfig;
 

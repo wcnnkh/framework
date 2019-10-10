@@ -1,4 +1,4 @@
-package scw.beans.rpc.http;
+package scw.beans.rpc;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
