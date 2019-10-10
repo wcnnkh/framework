@@ -11,9 +11,10 @@ import scw.core.utils.AnnotationUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
-import scw.net.DefaultContentType;
 import scw.net.http.HttpRequest;
 import scw.net.http.HttpUtils;
+import scw.net.mime.MimeTypeConstants;
+import scw.net.mime.SimpleMimeType;
 import scw.rpc.annotation.RequestContentType;
 import scw.rpc.annotation.RequestContentType.ContentType;
 
@@ -88,10 +89,10 @@ public class HttpRestfulRpcRequestFactory implements HttpRpcRequestFactory {
 		if (requestContentType != null) {
 			if (requestContentType.value() == ContentType.FORM) {
 				httpRestfulRpcRequest.setContentType(
-						new DefaultContentType(scw.net.ContentType.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
+						new SimpleMimeType(MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
 			} else if (requestContentType.value() == ContentType.JSON) {
 				httpRestfulRpcRequest
-						.setContentType(new DefaultContentType(scw.net.ContentType.APPLICATION_JSON, charsetName));
+						.setContentType(new SimpleMimeType(MimeTypeConstants.APPLICATION_JSON, charsetName));
 			}
 		}
 		return httpRestfulRpcRequest;

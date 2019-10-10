@@ -1302,20 +1302,24 @@ public final class StringUtils {
 		return false;
 	}
 
+	public static boolean equals(String a, String b, boolean ignoreCase) {
+		if (a == null || b == null) {
+			return a == b;
+		}
+
+		if (a.length() == 0 || b.length() == 0) {
+			return a.length() == b.length();
+		}
+
+		return ignoreCase ? a.equalsIgnoreCase(b) : a.equals(b);
+	}
+
+	public static boolean equals(String a, String b) {
+		return equals(a, b, false);
+	}
+
 	public static boolean isAeqB(String strA, String strB) {
-		if (strA == strB) {
-			return true;
-		}
-
-		if (strA == null) {
-			return strB == null;
-		}
-
-		if (strB == null) {
-			return strA == null;
-		}
-
-		return strA.equals(strB);
+		return equals(strA, strA, false);
 	}
 
 	public static String[] commonSplit(String str) {
@@ -2570,7 +2574,7 @@ public final class StringUtils {
 		return out.toString(charsetName);
 	}
 
-	public static boolean constants(String text, String index, boolean ignoreCase) {
+	public static boolean contains(String text, String index, boolean ignoreCase) {
 		if (text == null || index == null) {
 			return text == index;
 		}

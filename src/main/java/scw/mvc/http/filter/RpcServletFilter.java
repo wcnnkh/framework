@@ -9,7 +9,7 @@ import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpFilter;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
-import scw.net.ContentType;
+import scw.net.mime.MimeTypeConstants;
 import scw.rpc.RpcService;
 
 public final class RpcServletFilter extends HttpFilter {
@@ -34,14 +34,14 @@ public final class RpcServletFilter extends HttpFilter {
 			return false;
 		}
 
-		return StringUtils.startsWith(request.getContentType(), ContentType.APPLICATION_OCTET_STREAM, true);
+		return StringUtils.startsWith(request.getContentType(), MimeTypeConstants.APPLICATION_OCTET_STREAM_VALUE, true);
 	}
 
 	@Override
 	public Object doFilter(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse, FilterChain chain)
 			throws Throwable {
 		if (checkRPCEnable(httpRequest)) {
-			channel.getResponse().setContentType(ContentType.APPLICATION_OCTET_STREAM);
+			channel.getResponse().setContentType(MimeTypeConstants.APPLICATION_OCTET_STREAM_VALUE);
 			rpcService.service(httpRequest.getInputStream(), httpResponse.getOutputStream());
 			return null;
 		}

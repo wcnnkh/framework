@@ -4,14 +4,15 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 
+import scw.core.Constants;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.io.serializer.Serializer;
-import scw.net.ContentType;
 import scw.net.Message;
 import scw.net.MessageConverter;
 import scw.net.MessageConverterChain;
+import scw.net.mime.MimeTypeConstants;
 
 public final class ObjectRpcMessageConvert implements MessageConverter {
 	private final Serializer serializer;
@@ -23,7 +24,7 @@ public final class ObjectRpcMessageConvert implements MessageConverter {
 	}
 
 	public Object convert(Message message, Type type, MessageConverterChain chain) throws Throwable {
-		if (StringUtils.startsWith(message.getContentType(), ContentType.APPLICATION_OCTET_STREAM, true)) {
+		if (StringUtils.contains(message.getContentType(), MimeTypeConstants.APPLICATION_OCTET_STREAM_VALUE, true)) {
 			Object object = serializer.deserialize(message.toByteArray());
 			if (object == null) {
 				return null;
@@ -42,8 +43,8 @@ public final class ObjectRpcMessageConvert implements MessageConverter {
 
 		if (TypeUtils.isAssignableFrom(type, Collection.class) || TypeUtils.isAssignableFrom(type, Map.class)
 				|| !TypeUtils.isInterface(type)) {
-			String content = message.toString(
-					StringUtils.isEmpty(message.getContentEncoding()) ? charsetName : message.getContentEncoding());
+			String content = message
+					.toString(StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME : charsetName);
 			return StringParse.defaultParse(content, type);
 		}
 

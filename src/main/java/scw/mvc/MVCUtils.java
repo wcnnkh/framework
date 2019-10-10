@@ -58,7 +58,7 @@ import scw.mvc.http.HttpResponse;
 import scw.mvc.http.Text;
 import scw.mvc.http.filter.CrossDomainDefinition;
 import scw.mvc.http.filter.HttpActionServiceFilter;
-import scw.net.ContentType;
+import scw.net.mime.MimeTypeConstants;
 import scw.result.exception.ResultExceptionFilter;
 import scw.rpc.RpcService;
 
@@ -290,19 +290,19 @@ public final class MVCUtils implements MvcConstants {
 	 * @return
 	 */
 	public static boolean isJsonRequest(HttpRequest request) {
-		return isDesignatedContentType(request, scw.net.ContentType.APPLICATION_JSON);
+		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_JSON_VALUE);
 	}
 
 	public static boolean isFormRequest(HttpRequest request) {
-		return isDesignatedContentType(request, ContentType.APPLICATION_X_WWW_FORM_URLENCODED);
+		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED_VALUE);
 	}
 
 	public static boolean isMultipartRequest(HttpRequest request) {
-		return isDesignatedContentType(request, ContentType.MULTIPART_FORM_DATA);
+		return isDesignatedContentType(request, MimeTypeConstants.MULTIPART_FORM_DATA_VALUE);
 	}
 
 	public static boolean isDesignatedContentType(HttpRequest request, String contentType) {
-		return StringUtils.startsWithIgnoreCase(request.getContentType(), contentType);
+		return StringUtils.contains(request.getContentType(), contentType, true);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -701,7 +701,7 @@ public final class MVCUtils implements MvcConstants {
 		}
 
 		if (callbackTag != null) {
-			httpResponse.setContentType(ContentType.TEXT_JAVASCRIPT);
+			httpResponse.setContentType(MimeTypeConstants.TEXT_JAVASCRIPT_VALUE);
 			httpResponse.getWriter().write(callbackTag);
 			httpResponse.getWriter().write(JSONP_RESP_PREFIX);
 		}
@@ -720,7 +720,7 @@ public final class MVCUtils implements MvcConstants {
 
 		if (callbackTag == null) {
 			if (StringUtils.isEmpty(httpResponse.getContentType())) {
-				httpResponse.setContentType(ContentType.TEXT_HTML);
+				httpResponse.setContentType(MimeTypeConstants.TEXT_HTML_VALUE);
 			}
 		}
 

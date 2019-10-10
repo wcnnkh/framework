@@ -83,7 +83,6 @@ public final class TypeUtils {
 		try {
 			return clazz.isAssignableFrom(ClassUtils.forName(type.toString()));
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 		}
 		return false;
 	}
@@ -96,7 +95,6 @@ public final class TypeUtils {
 			try {
 				return ClassUtils.forName(type.toString()).isInterface();
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 			}
 		}
 		return false;

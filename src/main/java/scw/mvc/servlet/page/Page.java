@@ -26,7 +26,7 @@ import scw.mvc.RequestResponseModelChannel;
 import scw.mvc.Response;
 import scw.mvc.page.AbstractPage;
 import scw.mvc.servlet.ServletUtils;
-import scw.net.ContentType;
+import scw.net.mime.MimeTypeConstants;
 
 /**
  * freemarker
@@ -163,7 +163,7 @@ public class Page extends AbstractPage {
 		switch (pageType) {
 		case JSP:
 			if (response.getContentType() == null) {
-				response.setContentType(ContentType.TEXT_HTML);
+				response.setContentType(MimeTypeConstants.TEXT_HTML_VALUE);
 			}
 
 			for (Entry<String, Object> entry : entrySet()) {
@@ -179,7 +179,7 @@ public class Page extends AbstractPage {
 
 			response.setCharacterEncoding(freemarker_default_encoding);
 			if (response.getContentType() == null) {
-				response.setContentType(ContentType.TEXT_HTML);
+				response.setContentType(MimeTypeConstants.TEXT_HTML_VALUE);
 			}
 
 			if (freemarkerAppendAttrs) {

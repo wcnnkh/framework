@@ -11,7 +11,7 @@ import scw.mvc.Response;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.page.AbstractPage;
-import scw.net.ContentType;
+import scw.net.mime.MimeTypeConstants;
 
 public class FreemarkerPage extends AbstractPage {
 	private static final long serialVersionUID = 1L;
@@ -52,7 +52,7 @@ public class FreemarkerPage extends AbstractPage {
 			}
 
 			if (httpResponse.getContentType() == null) {
-				httpResponse.setContentType(ContentType.TEXT_HTML);
+				httpResponse.setContentType(MimeTypeConstants.TEXT_HTML_VALUE);
 			}
 		}
 

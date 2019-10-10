@@ -71,6 +71,6 @@ public class URLConnectionMessage extends SimpleMultiValueHeadersReadOnly implem
 
 	@Override
 	public String toString() {
-		return toString(StringUtils.isEmpty(contentEncoding) ? Constants.DEFAULT_CHARSET_NAME : contentEncoding);
+		return toString(Constants.DEFAULT_CHARSET_NAME);
 	}
 }

@@ -14,11 +14,11 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 import scw.net.AbstractUrlRequest;
-import scw.net.ContentType;
 import scw.net.DefaultHttpMessageResponse;
 import scw.net.HttpMessage;
 import scw.net.NetworkUtils;
 import scw.net.RequestException;
+import scw.net.mime.MimeType;
 
 public class HttpRequest extends AbstractUrlRequest {
 	private Method method;
@@ -85,7 +85,7 @@ public class HttpRequest extends AbstractUrlRequest {
 	public Method getMethod() {
 		return method;
 	}
-	
+
 	public void setMethod(Method method) {
 		this.method = method;
 	}
@@ -98,8 +98,8 @@ public class HttpRequest extends AbstractUrlRequest {
 		this.requestProperties = requestProperties;
 	}
 
-	public void setContentType(ContentType contentType) {
-		setContentType(contentType.asString());
+	public void setContentType(MimeType mimeType) {
+		setRequestProperties("Content-Type", mimeType.toString());
 	}
 
 	public URL getURL() {

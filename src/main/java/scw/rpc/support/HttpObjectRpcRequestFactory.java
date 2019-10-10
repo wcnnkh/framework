@@ -8,8 +8,8 @@ import java.util.Map;
 import scw.core.utils.CollectionUtils;
 import scw.io.Bytes;
 import scw.io.serializer.Serializer;
-import scw.net.ContentType;
 import scw.net.http.HttpRequest;
+import scw.net.mime.MimeTypeConstants;
 import scw.rpc.http.HttpRpcRequestFactory;
 import scw.rpc.http.MvcRpcUtils;
 import scw.security.signature.SignatureUtils;
@@ -51,7 +51,7 @@ public class HttpObjectRpcRequestFactory implements HttpRpcRequestFactory {
 			request.setRequestProperties(headerMap);
 		}
 
-		request.setContentType(ContentType.APPLICATION_OCTET_STREAM);
+		request.setContentType(MimeTypeConstants.APPLICATION_OCTET_STREAM);
 		return request;
 	}
 

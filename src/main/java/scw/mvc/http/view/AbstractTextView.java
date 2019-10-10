@@ -6,7 +6,7 @@ import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.http.HttpView;
 import scw.mvc.http.Text;
-import scw.net.ContentType;
+import scw.net.mime.MimeTypeConstants;
 
 public abstract class AbstractTextView extends HttpView implements Text {
 
@@ -16,7 +16,7 @@ public abstract class AbstractTextView extends HttpView implements Text {
 		String contentType = getTextContentType();
 		if (StringUtils.isEmpty(contentType)) {
 			if (StringUtils.isEmpty(httpResponse.getContentType())) {
-				httpResponse.setContentType(ContentType.TEXT_HTML);
+				httpResponse.setContentType(MimeTypeConstants.TEXT_HTML_VALUE);
 			}
 		} else {
 			httpResponse.setContentType(contentType);

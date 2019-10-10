@@ -10,10 +10,10 @@ import java.util.Map;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
-import scw.net.ContentType;
 import scw.net.http.HttpRequest;
 import scw.net.http.HttpUtils;
 import scw.net.http.Method;
+import scw.net.mime.MimeTypeConstants;
 
 public class HttpRestfulRpcRequest extends HttpRequest {
 	private Map<String, Object> parameterMap = new HashMap<String, Object>();
@@ -60,7 +60,7 @@ public class HttpRestfulRpcRequest extends HttpRequest {
 	}
 
 	protected boolean isJsonRequest(URLConnection urlConnection) {
-		return StringUtils.constants(urlConnection.getRequestProperty("Content-Type"), ContentType.APPLICATION_JSON,
+		return StringUtils.contains(urlConnection.getRequestProperty("Content-Type"), MimeTypeConstants.APPLICATION_JSON_VALUE,
 				true);
 	}
 }
