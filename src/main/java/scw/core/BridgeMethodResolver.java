@@ -229,6 +229,4 @@ public abstract class BridgeMethodResolver {
 		return Arrays.equals(bridgeMethod.getParameterTypes(), bridgedMethod.getParameterTypes()) &&
 				bridgeMethod.getReturnType().equals(bridgedMethod.getReturnType());
 	}
-
-
 }

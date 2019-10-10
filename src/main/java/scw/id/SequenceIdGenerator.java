@@ -1,6 +1,6 @@
 package scw.id;
 
-import scw.core.utils.Assert;
+import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.data.memcached.Memcached;

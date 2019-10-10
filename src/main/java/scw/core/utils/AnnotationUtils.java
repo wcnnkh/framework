@@ -10,6 +10,12 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import scw.core.DefaultKeyValuePair;
+import scw.core.KeyValuePair;
+import scw.core.annotation.DELETE;
+import scw.core.annotation.GET;
+import scw.core.annotation.POST;
+import scw.core.annotation.PUT;
 import scw.core.reflect.ReflectUtils;
 
 public final class AnnotationUtils {
@@ -150,5 +156,46 @@ public final class AnnotationUtils {
 		}
 
 		return getAnnotation(annotations[index], type);
+	}
+
+	public static KeyValuePair<scw.net.http.Method, String> getHttpMethodAnnotation(AnnotatedElement annotatedElement) {
+		GET get = annotatedElement.getAnnotation(GET.class);
+		if (get != null) {
+			return new DefaultKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.GET, get.value());
+		}
+
+		POST post = annotatedElement.getAnnotation(POST.class);
+		if (post != null) {
+			return new DefaultKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.POST, post.value());
+		}
+
+		DELETE delete = annotatedElement.getAnnotation(DELETE.class);
+		if (delete != null) {
+			return new DefaultKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.DELETE, delete.value());
+		}
+
+		PUT put = annotatedElement.getAnnotation(PUT.class);
+		if (put != null) {
+			return new DefaultKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.PUT, put.value());
+		}
+
+		return null;
+	}
+
+	/**
+	 * 获取一个注解，后面覆盖前面
+	 * @param type
+	 * @param annotatedElements
+	 * @return
+	 */
+	public static <T extends Annotation> T getAnnotation(Class<T> type, AnnotatedElement... annotatedElements) {
+		T old = null;
+		for (AnnotatedElement annotatedElement : annotatedElements) {
+			T a = annotatedElement.getAnnotation(type);
+			if (a != null) {
+				old = a;
+			}
+		}
+		return old;
 	}
 }

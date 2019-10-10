@@ -7,7 +7,7 @@ import java.util.Collection;
 
 import scw.beans.BeanFactory;
 import scw.core.annotation.ParameterName;
-import scw.core.parameter.ParameterConfig;
+import scw.core.reflect.ParameterConfig;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;

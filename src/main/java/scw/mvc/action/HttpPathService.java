@@ -27,12 +27,12 @@ public final class HttpPathService extends HttpActionService {
 
 	@Override
 	public void scanning(HttpAction action, HttpControllerConfig httpControllerConfig) {
-		HttpRestInfo httpRestInfo = HttpRestInfo.getRestInfo(action, httpControllerConfig);
-		if (httpRestInfo == null) {
+		HttpRestfulInfo httpRestfulInfo = HttpRestfulInfo.getRestInfo(action, httpControllerConfig);
+		if (httpRestfulInfo == null) {
 			return;
 		}
 
-		if (httpRestInfo.getKeyMap().size() > 0) {
+		if (httpRestfulInfo.getKeyMap().size() > 0) {
 			return;
 		}
 

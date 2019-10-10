@@ -35,6 +35,8 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 			String address = XmlBeanUtils.getAddress(propertyFactory, node);
 			boolean responseThrowable = StringUtils
 					.parseBoolean(XMLUtils.getNodeAttributeValue(propertyFactory, node, "throwable"), true);
+			String[] shareHeaders = StringUtils
+					.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, node, "headers"));
 
 			Serializer ser = StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 					: (Serializer) beanFactory.getInstance(serializer);
@@ -45,7 +47,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 					}
 
 					HttpRpcBean httpRpcBean = new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz,
-							address, sign, ser, responseThrowable);
+							address, sign, ser, responseThrowable, shareHeaders);
 					addBean(httpRpcBean);
 				}
 			}
@@ -73,7 +75,8 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 					myAddress = address;
 				}
 
-				addBean(new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz, myAddress, mySign, ser, responseThrowable));
+				addBean(new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz, myAddress, mySign, ser,
+						responseThrowable, shareHeaders));
 			}
 		}
 	}

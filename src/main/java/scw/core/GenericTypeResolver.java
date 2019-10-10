@@ -27,8 +27,6 @@ import java.lang.reflect.WildcardType;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.core.utils.Assert;
-
 /**
  * Helper class for resolving generic types against type variables.
  *

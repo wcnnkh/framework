@@ -18,7 +18,7 @@ import scw.mvc.action.HttpActionService;
 import scw.mvc.action.HttpControllerConfig;
 import scw.mvc.action.HttpParameterActionService;
 import scw.mvc.action.HttpPathService;
-import scw.mvc.action.HttpRestService;
+import scw.mvc.action.HttpRestfulService;
 import scw.mvc.action.SimpleHttpAction;
 import scw.mvc.annotation.Controller;
 import scw.mvc.http.HttpChannel;
@@ -63,7 +63,7 @@ public class HttpActionServiceFilter extends HttpFilter {
 		}
 
 		filters.add(new HttpPathService(actionFilters));
-		filters.add(new HttpRestService(actionFilters));
+		filters.add(new HttpRestfulService(actionFilters));
 
 		for (Class<?> clz : classes) {
 			Controller clzController = clz.getAnnotation(Controller.class);

@@ -5,8 +5,8 @@ import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collection;
 
+import scw.core.Assert;
 import scw.core.cglib.proxy.Enhancer;
-import scw.core.utils.Assert;
 import scw.core.utils.ClassUtils;
 
 public final class ProxyUtils {

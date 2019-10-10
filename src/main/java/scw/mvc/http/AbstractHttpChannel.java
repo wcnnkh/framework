@@ -10,7 +10,7 @@ import java.util.Enumeration;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.core.parameter.ParameterConfig;
+import scw.core.reflect.ParameterConfig;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.json.JSONParseSupport;

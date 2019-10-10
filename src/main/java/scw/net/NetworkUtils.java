@@ -6,15 +6,19 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 
-import scw.io.ByteArray;
-
 public final class NetworkUtils {
 	private NetworkUtils() {
 	};
 
+	private static final Response<Message> MESSAGE_RESPONSE = new DefaultAutoMessageResponse();
+
 	public static <T> T execute(URLConnection urlConnection, Request request, Response<T> response) throws Throwable {
 		request.request(urlConnection);
 		return response.response(urlConnection);
+	}
+
+	public static Message execute(URLConnection urlConnection, Request request) throws Throwable {
+		return execute(urlConnection, request, MESSAGE_RESPONSE);
 	}
 
 	public static <T> T execute(URL url, Proxy proxy, Request request, Response<T> response) {
@@ -38,6 +42,10 @@ public final class NetworkUtils {
 		}
 	}
 
+	public static Message execute(URL url, Proxy proxy, Request request) {
+		return execute(url, proxy, request, MESSAGE_RESPONSE);
+	}
+
 	public static <T> T execute(String url, Proxy proxy, Request request, Response<T> response) {
 		URL u = null;
 		try {
@@ -53,11 +61,15 @@ public final class NetworkUtils {
 		return execute(u, proxy, request, response);
 	}
 
-	public static <T> T execute(AbstractUrlRequest request, Response<T> response) {
+	public static Message execute(String url, Proxy proxy, Request request) {
+		return execute(url, proxy, request, MESSAGE_RESPONSE);
+	}
+
+	public static <T> T execute(URLRequest request, Response<T> response) {
 		return execute(request.getURL(), request.getProxy(), request, response);
 	}
 
-	public static ByteArray execute(AbstractUrlRequest request) {
-		return execute(request, new ByteArrayResponse());
+	public static Message execute(URLRequest request) {
+		return execute(request, MESSAGE_RESPONSE);
 	}
 }

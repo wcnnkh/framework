@@ -2,6 +2,7 @@ package scw.core;
 
 import java.io.Serializable;
 
+import scw.core.multivalue.LinkedMultiValueMap;
 import scw.core.utils.StringUtils;
 
 public final class QueryString extends LinkedMultiValueMap<String, String> implements Serializable {

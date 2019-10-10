@@ -1,6 +1,6 @@
 package scw.mvc.http;
 
-import scw.core.parameter.ParameterConfig;
+import scw.core.reflect.ParameterConfig;
 import scw.mvc.Channel;
 import scw.mvc.ParameterFilter;
 import scw.mvc.ParameterFilterChain;

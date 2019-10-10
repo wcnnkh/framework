@@ -1,6 +1,6 @@
 package scw.mvc;
 
-import scw.core.parameter.ParameterConfig;
+import scw.core.reflect.ParameterConfig;
 
 public interface ParameterFilter {
 	Object filter(Channel channel, ParameterConfig parameterConfig, ParameterFilterChain chain)

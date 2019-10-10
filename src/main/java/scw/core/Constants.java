@@ -4,9 +4,7 @@ import scw.core.asm.Opcodes;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 
-public final class Constants {
-	private Constants() {
-	};
+public interface Constants {
 
 	public static final String DEFAULT_CHARSET_NAME = StringUtils
 			.toString(SystemPropertyUtils.getProperty("constants.charsetName"), "UTF-8");

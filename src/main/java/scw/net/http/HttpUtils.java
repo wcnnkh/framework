@@ -21,6 +21,7 @@ import scw.io.ByteArray;
 import scw.json.JSONUtils;
 import scw.net.ContentType;
 import scw.net.DefaultContentType;
+import scw.net.Message;
 import scw.net.NetworkUtils;
 
 public final class HttpUtils {
@@ -34,8 +35,16 @@ public final class HttpUtils {
 	public static String doGet(String url, String charsetName) {
 		HttpRequest request = new HttpRequest(Method.GET, url);
 		request.setContentType(new DefaultContentType(ContentType.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
-		ByteArray byteArray = NetworkUtils.execute(request);
-		return byteArray.toString(charsetName);
+		return execute(request, charsetName);
+	}
+
+	private static String execute(HttpRequest request, String charsetName) {
+		Message message = NetworkUtils.execute(request);
+		if (message == null) {
+			return null;
+		}
+
+		return StringUtils.createString(message.toByteArray(), charsetName);
 	}
 
 	public static String postJson(String url, Map<String, String> requestProperties, Object body, String charsetName) {
@@ -50,12 +59,7 @@ public final class HttpUtils {
 		HttpRequest request = new BodyRequest(Method.POST, url, new ByteArray(text, charsetName));
 		request.setContentType(new DefaultContentType(ContentType.APPLICATION_JSON, charsetName));
 		request.setRequestProperties(requestProperties);
-		ByteArray responseBody = NetworkUtils.execute(request);
-		if (responseBody == null) {
-			return null;
-		}
-
-		return responseBody.toString(charsetName);
+		return execute(request, charsetName);
 	}
 
 	public static String postJson(String url, Map<String, String> requestProperties, Object body) {
@@ -131,11 +135,7 @@ public final class HttpUtils {
 		request.setContentType(new DefaultContentType(ContentType.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
 		request.setRequestProperties(requestProperties);
 		request.addAll(parameterMap);
-		ByteArray responseBody = NetworkUtils.execute(request);
-		if (responseBody == null) {
-			return null;
-		}
-		return responseBody.toString(charsetName);
+		return execute(request, charsetName);
 	}
 
 	public static String postForm(String url, Map<String, String> requestProperties,

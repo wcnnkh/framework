@@ -29,7 +29,7 @@ package scw.net.http.ssl;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
-import scw.core.utils.Assert;
+import scw.core.Assert;
 
 /**
  * Private key details.

@@ -3,7 +3,7 @@ package scw.mvc;
 import java.util.Collection;
 import java.util.Iterator;
 
-import scw.core.parameter.ParameterConfig;
+import scw.core.reflect.ParameterConfig;
 import scw.core.utils.CollectionUtils;
 
 public class SimpleParameterParseFilterChain implements ParameterFilterChain {

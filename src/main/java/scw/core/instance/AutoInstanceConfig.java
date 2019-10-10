@@ -15,8 +15,8 @@ import scw.core.annotation.ParameterValue;
 import scw.core.instance.annotation.Auto;
 import scw.core.instance.annotation.PropertyParameter;
 import scw.core.instance.annotation.ResourceParameter;
-import scw.core.parameter.ParameterConfig;
-import scw.core.parameter.ParameterUtils;
+import scw.core.reflect.ParameterConfig;
+import scw.core.reflect.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CompareUtils;
 import scw.core.utils.ResourceUtils;
@@ -82,10 +82,14 @@ public class AutoInstanceConfig implements InstanceConfig {
 		}
 	}
 
+	protected String getDefaultName(ParameterConfig parameterConfig) {
+		return clazz.getClass().getName() + "." + parameterConfig.getName();
+	}
+
 	protected String getProperty(ParameterConfig parameterConfig) {
 		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
-		String value = propertyFactory.getProperty(parameterName == null
-				? (clazz.getClass().getName() + "." + parameterConfig.getName()) : parameterName.value());
+		String value = propertyFactory
+				.getProperty(parameterName == null ? getDefaultName(parameterConfig) : parameterName.value());
 		if (value == null) {
 			ParameterValue parameterValue = parameterConfig.getAnnotation(ParameterValue.class);
 			if (parameterValue != null) {
@@ -122,6 +126,29 @@ public class AutoInstanceConfig implements InstanceConfig {
 		}
 	}
 
+	protected String getInstanceName(ParameterConfig parameterConfig) {
+		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
+		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
+			String value = propertyFactory.getProperty(parameterName.value());
+			if (value == null) {
+				return null;
+			}
+
+			return instanceFactory.isInstance(value) ? null : value;
+		} else {
+			if (instanceFactory.isInstance(parameterConfig.getType())) {
+				return parameterConfig.getType().getName();
+			}
+
+			String name = getDefaultName(parameterConfig);
+			if (instanceFactory.isInstance(name)) {
+				return name;
+			}
+
+			return null;
+		}
+	}
+
 	public final boolean isAutoConstructor(Constructor<?> constructor) {
 		ParameterConfig[] parameterDefinitions = ParameterUtils.getParameterConfigs(constructor);
 		if (parameterDefinitions.length == 0) {
@@ -131,20 +158,19 @@ public class AutoInstanceConfig implements InstanceConfig {
 		for (int i = 0; i < parameterDefinitions.length; i++) {
 			ParameterConfig parameterConfig = parameterDefinitions[i];
 			boolean require = ParameterUtils.isRequire(parameterConfig);
+			if (!require) {
+				continue;
+			}
+
 			// 是否是属性而不是bean
 			if (isProerptyType(parameterConfig)) {
 				String value = getProperty(parameterConfig);
-				if (require && StringUtils.isEmpty(value)) {
+				if (StringUtils.isEmpty(value)) {
 					return false;
 				}
 			} else {
-				ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
-				String name = parameterName == null ? null : parameterName.value();
-				if (StringUtils.isEmpty(name)) {
-					name = parameterConfig.getType().getName();
-				}
-
-				if (require && !instanceFactory.isInstance(name)) {
+				String name = getInstanceName(parameterConfig);
+				if (name == null) {
 					return false;
 				}
 			}
@@ -177,17 +203,8 @@ public class AutoInstanceConfig implements InstanceConfig {
 
 				args[i] = XUtils.getValue(valueFactory, value, parameterConfig.getGenericType());
 			} else {
-				ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
-				String name = parameterName == null ? null : parameterName.value();
-				if (StringUtils.isEmpty(name)) {
-					name = parameterConfig.getType().getName();
-				}
-
-				if (require && !instanceFactory.isInstance(name)) {
-					return null;
-				}
-
-				args[i] = instanceFactory.isInstance(name) ? instanceFactory.getInstance(name) : null;
+				String name = getInstanceName(parameterConfig);
+				args[i] = name == null ? null : instanceFactory.getInstance(name);
 			}
 		}
 		return args;

@@ -11,7 +11,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
-import scw.core.utils.Assert;
+import scw.core.Assert;
 import scw.core.utils.StringUtils;
 
 public class DefaultSingleExchangeChannelFactory implements SingleExchangeChannelFactory {

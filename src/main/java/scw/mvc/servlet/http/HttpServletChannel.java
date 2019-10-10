@@ -7,7 +7,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpSession;
 
 import scw.beans.BeanFactory;
-import scw.core.parameter.ParameterConfig;
+import scw.core.reflect.ParameterConfig;
 import scw.json.JSONParseSupport;
 import scw.mvc.ParameterFilter;
 import scw.mvc.http.AbstractHttpChannel;

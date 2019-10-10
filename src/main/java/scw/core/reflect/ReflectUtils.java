@@ -21,17 +21,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import scw.core.Assert;
 import scw.core.PropertyFactory;
 import scw.core.Verification;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceFactory;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.Assert;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CloneUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.ReflectionUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
@@ -465,7 +464,7 @@ public final class ReflectUtils {
 						return method;
 					}
 				} else {
-					Method specificMethod = ReflectionUtils.findMethod(targetClass, method.getName(),
+					Method specificMethod = findMethod(targetClass, method.getName(),
 							method.getParameterTypes());
 					return (specificMethod != null ? specificMethod : method);
 				}

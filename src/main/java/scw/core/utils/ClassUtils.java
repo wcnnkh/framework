@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import scw.core.Assert;
 import scw.core.LocalVariableTableParameterNameDiscoverer;
 import scw.core.cglib.core.TypeUtils;
 

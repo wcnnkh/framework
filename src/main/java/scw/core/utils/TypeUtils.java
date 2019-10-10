@@ -71,6 +71,23 @@ public final class TypeUtils {
 		return false;
 	}
 
+	public static boolean isAssignableFrom(Type type, Class<?> clazz) {
+		if (type == clazz) {
+			return true;
+		}
+
+		if (type == null || clazz == null) {
+			return type == clazz;
+		}
+
+		try {
+			return clazz.isAssignableFrom(ClassUtils.forName(type.toString()));
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 	@SuppressWarnings("rawtypes")
 	public static boolean isInterface(Type type) {
 		if (isClass(type)) {

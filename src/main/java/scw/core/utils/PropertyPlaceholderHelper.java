@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import scw.core.Assert;
 import scw.core.SystemPropertyPlaceholderResolver;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;

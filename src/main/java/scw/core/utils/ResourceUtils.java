@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import scw.core.Assert;
 import scw.core.Constants;
 import scw.core.Consumer;
 import scw.core.Converter;

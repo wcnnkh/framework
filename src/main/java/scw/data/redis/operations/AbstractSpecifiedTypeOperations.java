@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import scw.core.utils.Assert;
+import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.data.redis.RedisOperations;
 import scw.io.Bytes;

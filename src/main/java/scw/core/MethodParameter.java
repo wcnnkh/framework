@@ -27,8 +27,6 @@ import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.core.utils.Assert;
-
 /**
  * Helper class that encapsulates the specification of a method parameter, i.e.
  * a Method or Constructor plus a parameter index and a nested type index for

@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import scw.core.Assert;
+
 /**
  * Simple utility class for working with the reflection API and handling
  * reflection exceptions.

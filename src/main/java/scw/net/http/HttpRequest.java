@@ -15,10 +15,13 @@ import javax.net.ssl.SSLSocketFactory;
 
 import scw.net.AbstractUrlRequest;
 import scw.net.ContentType;
+import scw.net.DefaultHttpMessageResponse;
+import scw.net.HttpMessage;
+import scw.net.NetworkUtils;
 import scw.net.RequestException;
 
 public class HttpRequest extends AbstractUrlRequest {
-	protected final Method method;
+	private Method method;
 	private Map<String, String> requestProperties;
 	private String requestUrl;
 	private SSLSocketFactory sslSocketFactory;
@@ -28,8 +31,12 @@ public class HttpRequest extends AbstractUrlRequest {
 		this.requestUrl = requestUrl;
 	}
 
-	public String getRequestAddress() {
+	public String getRequestUrl() {
 		return requestUrl;
+	}
+
+	public void setRequestUrl(String requestUrl) {
+		this.requestUrl = requestUrl;
 	}
 
 	@Override
@@ -37,7 +44,7 @@ public class HttpRequest extends AbstractUrlRequest {
 		HttpURLConnection http = (HttpURLConnection) urlConnection;
 		if (http instanceof HttpsURLConnection) {
 			SSLSocketFactory sslSocketFactory = getSslSocketFactory();
-			if(sslSocketFactory != null){
+			if (sslSocketFactory != null) {
 				HttpsURLConnection https = (HttpsURLConnection) urlConnection;
 				https.setSSLSocketFactory(sslSocketFactory);
 			}
@@ -78,6 +85,10 @@ public class HttpRequest extends AbstractUrlRequest {
 	public Method getMethod() {
 		return method;
 	}
+	
+	public void setMethod(Method method) {
+		this.method = method;
+	}
 
 	public void setContentType(String contentType) {
 		setRequestProperties("Content-Type", contentType);
@@ -86,21 +97,20 @@ public class HttpRequest extends AbstractUrlRequest {
 	public void setRequestProperties(Map<String, String> requestProperties) {
 		this.requestProperties = requestProperties;
 	}
-	
-	public void setContentType(ContentType contentType){
+
+	public void setContentType(ContentType contentType) {
 		setContentType(contentType.asString());
 	}
 
-	@Override
 	public URL getURL() {
 		try {
-			return new URL(getRequestAddress());
+			return new URL(getRequestUrl());
 		} catch (MalformedURLException e) {
-			throw new RequestException(getRequestAddress(), e);
+			throw new RequestException(getRequestUrl(), e);
 		}
 	}
 
-	public SSLSocketFactory getSslSocketFactory() {
+	public final SSLSocketFactory getSslSocketFactory() {
 		return sslSocketFactory;
 	}
 
@@ -108,9 +118,11 @@ public class HttpRequest extends AbstractUrlRequest {
 		this.sslSocketFactory = sslSocketFactory;
 	}
 
-	@Override
 	public Proxy getProxy() {
 		return null;
 	}
 
+	public HttpMessage execute() {
+		return NetworkUtils.execute(this, new DefaultHttpMessageResponse());
+	}
 }

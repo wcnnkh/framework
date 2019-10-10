@@ -16,27 +16,26 @@ import java.util.Map.Entry;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanUtils;
-import scw.beans.rpc.http.DefaultRpcService;
-import scw.beans.rpc.http.RpcService;
+import scw.context.Context;
+import scw.context.ContextManager;
+import scw.context.support.ThreadLocalContextManager;
 import scw.core.Constants;
 import scw.core.DefaultKeyValuePair;
 import scw.core.Destroy;
 import scw.core.KeyValuePair;
 import scw.core.KeyValuePairFilter;
-import scw.core.LinkedMultiValueMap;
-import scw.core.MultiValueMap;
 import scw.core.PropertyFactory;
 import scw.core.ValueFactory;
 import scw.core.annotation.ParameterName;
-import scw.core.attribute.AttributeManager;
-import scw.core.context.Context;
-import scw.core.context.ContextManager;
-import scw.core.context.support.ThreadLocalContextManager;
+import scw.core.attribute.Attributes;
 import scw.core.exception.BeansException;
+import scw.core.header.HeadersConstants;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
-import scw.core.parameter.ParameterConfig;
-import scw.core.parameter.ParameterUtils;
+import scw.core.multivalue.LinkedMultiValueMap;
+import scw.core.multivalue.MultiValueMap;
+import scw.core.reflect.ParameterConfig;
+import scw.core.reflect.ParameterUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
@@ -44,8 +43,6 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
-import scw.io.SerializerUtils;
-import scw.io.serializer.Serializer;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
@@ -63,25 +60,15 @@ import scw.mvc.http.filter.CrossDomainDefinition;
 import scw.mvc.http.filter.HttpActionServiceFilter;
 import scw.net.ContentType;
 import scw.result.exception.ResultExceptionFilter;
+import scw.rpc.RpcService;
 
-public final class MVCUtils {
+public final class MVCUtils implements MvcConstants {
 	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
 
 	private MVCUtils() {
 	};
 
 	private static final ContextManager MVC_CONTEXT_MANAGER = new ThreadLocalContextManager(true);
-	public static final String REDIRECT_PREFIX = "redirect:";
-	private static final String RESTURL_PATH_PARAMETER = "_scw_resturl_path_parameter";
-	public static final String ORIGIN_HEADER = "Access-Control-Allow-Origin";
-	public static final String METHODS_HEADER = "Access-Control-Allow-Methods";
-	public static final String MAX_AGE_HEADER = "Access-Control-Max-Age";
-	public static final String HEADERS_HEADER = "Access-Control-Allow-Headers";
-	public static final String CREDENTIALS_HEADER = "Access-Control-Allow-Credentials";
-	private static final String JSONP_RESP_PREFIX = "(";
-	private static final String JSONP_RESP_SUFFIX = ");";
-	private static final String HTTP_AUTHORITY_ATTRIBUTE_NAME = "_scw_http_authority";
-
 	public static Channel getContextChannel() {
 		Context context = MVC_CONTEXT_MANAGER.getCurrentContext();
 		return (Channel) (context == null ? null : context.getResource(Channel.class));
@@ -91,16 +78,17 @@ public final class MVCUtils {
 		return MVC_CONTEXT_MANAGER.getCurrentContext();
 	}
 
-	public static Map<String, Object> getAttributeMap(AttributeManager attributeManager) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Map<String, Object> getAttributeMap(Attributes attributes) {
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
-		Enumeration<String> enumeration = attributeManager.getAttributeNames();
+		Enumeration<String> enumeration = attributes.getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			String name = enumeration.nextElement();
 			if (name != null || isSystemAttribute(name)) {
 				continue;
 			}
 
-			Object value = attributeManager.getAttribute(name);
+			Object value = attributes.getAttribute(name);
 			if (value == null) {
 				continue;
 			}
@@ -113,8 +101,9 @@ public final class MVCUtils {
 		return RESTURL_PATH_PARAMETER.equals(name);
 	}
 
-	public static void setHttpAuthorityId(AttributeManager attributeManager, String id) {
-		attributeManager.setAttribute(HTTP_AUTHORITY_ATTRIBUTE_NAME, id);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static void setHttpAuthorityId(Attributes attributes, String id) {
+		attributes.setAttribute(HTTP_AUTHORITY_ATTRIBUTE_NAME, id);
 	}
 
 	public static Collection<ExceptionHandler> getExceptionHandlers(InstanceFactory instanceFactory,
@@ -165,7 +154,7 @@ public final class MVCUtils {
 			return (T) privateParameterWrapper(request, type,
 					StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name : name + "."));
 		} catch (Exception e) {
-			throw new RuntimeException("鏋勯�燽ean澶辫触:" + type.getName(), e);
+			throw new RuntimeException("参数错误:" + type.getName(), e);
 		}
 	}
 
@@ -174,7 +163,7 @@ public final class MVCUtils {
 			privateParameterWrapper(instance, request, type,
 					StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name : name + "."));
 		} catch (Exception e) {
-			throw new RuntimeException("鏋勯�燽ean澶辫触:" + type.getName(), e);
+			throw new RuntimeException("参数错误:" + type.getName(), e);
 		}
 	}
 
@@ -270,13 +259,14 @@ public final class MVCUtils {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static Map<String, String> getRestPathParameterMap(AttributeManager request) {
-		return (Map<String, String>) request.getAttribute(RESTURL_PATH_PARAMETER);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Map<String, String> getRestPathParameterMap(Attributes attributes) {
+		return (Map<String, String>) attributes.getAttribute(RESTURL_PATH_PARAMETER);
 	}
 
-	public static void setRestPathParameterMap(AttributeManager attributeManager, Map<String, String> parameterMap) {
-		attributeManager.setAttribute(RESTURL_PATH_PARAMETER, parameterMap);
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static void setRestPathParameterMap(Attributes attributes, Map<String, String> parameterMap) {
+		attributes.setAttribute(RESTURL_PATH_PARAMETER, parameterMap);
 	}
 
 	public static boolean isRestPathParameterMapAttributeName(String name) {
@@ -324,25 +314,6 @@ public final class MVCUtils {
 		sb.append(oldAction.toString());
 		sb.append("]");
 		return sb.toString();
-	}
-
-	public static RpcService getRPCService(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		String rpcServerBeanName = propertyFactory.getProperty("mvc.http.rpc");
-		if (StringUtils.isEmpty(rpcServerBeanName)) {
-			String sign = propertyFactory.getProperty("mvc.http.rpc-sign");
-			boolean enable = StringUtils.parseBoolean(propertyFactory.getProperty("mvc.http.rpc-enable"), false);
-			if (enable || !StringUtils.isEmpty(sign)) {// 开启
-				logger.info("rpc签名：{}", sign);
-				String serializer = propertyFactory.getProperty("mvc.http.rpc-serializer");
-				return instanceFactory.getInstance(DefaultRpcService.class, instanceFactory, sign,
-						StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
-								: (Serializer) instanceFactory.getInstance(serializer));
-			}
-		} else {
-			return instanceFactory.getInstance(rpcServerBeanName);
-		}
-
-		return null;
 	}
 
 	public static String getRPCPath(PropertyFactory propertyFactory) {
@@ -615,26 +586,27 @@ public final class MVCUtils {
 	public static void responseCrossDomain(CrossDomainDefinition crossDomainDefinition, HttpResponse httpResponse) {
 		/* 允许跨域的主机地址 */
 		if (StringUtils.isNotEmpty(crossDomainDefinition.getOrigin())) {
-			httpResponse.setHeader(ORIGIN_HEADER, crossDomainDefinition.getOrigin());
+			httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_ALLOW_ORIGIN, crossDomainDefinition.getOrigin());
 		}
 
 		/* 允许跨域的请求方法GET, POST, HEAD 等 */
 		if (StringUtils.isNotEmpty(crossDomainDefinition.getMethods())) {
-			httpResponse.setHeader(METHODS_HEADER, crossDomainDefinition.getMethods());
+			httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_ALLOW_METHODS, crossDomainDefinition.getMethods());
 		}
 
 		/* 重新预检验跨域的缓存时间 (s) */
 		if (crossDomainDefinition.getMaxAge() > 0) {
-			httpResponse.setHeader(MAX_AGE_HEADER, crossDomainDefinition.getMaxAge() + "");
+			httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_MAX_AGE, crossDomainDefinition.getMaxAge() + "");
 		}
 
 		/* 允许跨域的请求头 */
 		if (StringUtils.isNotEmpty(crossDomainDefinition.getHeaders())) {
-			httpResponse.setHeader(HEADERS_HEADER, crossDomainDefinition.getHeaders());
+			httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_ALLOW_HEADERS, crossDomainDefinition.getHeaders());
 		}
 
 		/* 是否携带cookie */
-		httpResponse.setHeader(CREDENTIALS_HEADER, crossDomainDefinition.isCredentials() + "");
+		httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_ALLOW_CREDENTIALS,
+				crossDomainDefinition.isCredentials() + "");
 	}
 
 	public static String parseRedirect(HttpRequest httpRequest, String text, boolean ignoreCase) {
@@ -774,5 +746,20 @@ public final class MVCUtils {
 
 	public static boolean isSupportHttpParameterAction(PropertyFactory propertyFactory) {
 		return StringUtils.parseBoolean(propertyFactory.getProperty("mvc.http.parameter.action.enable"), true);
+	}
+
+	public static RpcService getRpcService(PropertyFactory propertyFactory, InstanceFactory instanceFactory) {
+		String beanName = propertyFactory.getProperty(RPC_SERVICE);
+		if (StringUtils.isEmpty(beanName)) {
+			if (instanceFactory.isInstance(RpcService.class) || instanceFactory.isSingleton(RpcService.class)) {
+				return instanceFactory.getInstance(RpcService.class);
+			}
+		} else {
+			if (instanceFactory.isInstance(beanName) && instanceFactory.isSingleton(beanName)) {
+				return instanceFactory.getInstance(beanName);
+			}
+			logger.warn("RPC配置错误，无法实例化或不是一个单例: {}", beanName);
+		}
+		return null;
 	}
 }

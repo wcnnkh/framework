@@ -7,11 +7,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Map;
 
-import scw.core.attribute.AttributeManagerWrapper;
+import scw.core.attribute.AttributesWrapper;
 import scw.net.http.Cookie;
 import scw.security.session.Session;
 
-public class HttpRequestWrapper extends AttributeManagerWrapper implements HttpRequest {
+public class HttpRequestWrapper extends AttributesWrapper<Object> implements HttpRequest {
 	private final HttpRequest targetHttpRequest;
 
 	public HttpRequestWrapper(HttpRequest httpRequest) {

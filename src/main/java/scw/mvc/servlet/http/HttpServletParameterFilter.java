@@ -3,7 +3,7 @@ package scw.mvc.servlet.http;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import scw.core.parameter.ParameterConfig;
+import scw.core.reflect.ParameterConfig;
 import scw.mvc.ParameterFilterChain;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpParameterFilter;

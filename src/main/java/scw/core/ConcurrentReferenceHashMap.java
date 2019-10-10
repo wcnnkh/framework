@@ -33,7 +33,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-import scw.core.utils.Assert;
 import scw.core.utils.ObjectUtils;
 
 /**

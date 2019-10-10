@@ -1,8 +1,8 @@
 package scw.security.session;
 
-import scw.core.attribute.AttributeManager;
+import scw.core.attribute.Attributes;
 
-public interface Session extends AttributeManager{
+public interface Session extends Attributes<Object>{
 
 	/**
 	 * 创建时间

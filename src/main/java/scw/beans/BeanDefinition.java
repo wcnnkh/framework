@@ -1,6 +1,6 @@
 package scw.beans;
 
-import scw.core.InstanceDefinition;
+import scw.core.instance.InstanceDefinition;
 
 public interface BeanDefinition extends InstanceDefinition{
 	String getId();

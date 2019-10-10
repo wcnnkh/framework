@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.LinkedMultiValueMap;
-import scw.core.MultiValueMap;
+import scw.core.multivalue.LinkedMultiValueMap;
+import scw.core.multivalue.MultiValueMap;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.json.JSONUtils;
@@ -26,12 +26,12 @@ public class FormRequest extends HttpRequest {
 	}
 
 	@Override
-	public String getRequestAddress() {
-		if (method != Method.GET) {
-			return super.getRequestAddress();
+	public String getRequestUrl() {
+		if (getMethod() != Method.GET) {
+			return super.getRequestUrl();
 		}
 
-		String url = super.getRequestAddress();
+		String url = super.getRequestUrl();
 		if (url == null) {
 			return url;
 		}
@@ -79,12 +79,10 @@ public class FormRequest extends HttpRequest {
 	}
 
 	private String toString(Object value) {
-		if (value instanceof String
-				|| ClassUtils.isPrimitiveOrWrapper(value.getClass())) {
+		if (value instanceof String || ClassUtils.isPrimitiveOrWrapper(value.getClass())) {
 			return value.toString();
 		} else if (value instanceof ToParameterMap) {
-			return JSONUtils.toJSONString(HttpUtils
-					.toParameterMap((ToParameterMap) value));
+			return JSONUtils.toJSONString(HttpUtils.toParameterMap((ToParameterMap) value));
 		} else {
 			return JSONUtils.toJSONString(value);
 		}
@@ -93,8 +91,7 @@ public class FormRequest extends HttpRequest {
 	private String getParameterString() throws UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder(512);
 		boolean append = false;
-		Iterator<Entry<String, List<String>>> iterator = parameterMap
-				.entrySet().iterator();
+		Iterator<Entry<String, List<String>>> iterator = parameterMap.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, List<String>> entry = iterator.next();
 
@@ -126,8 +123,7 @@ public class FormRequest extends HttpRequest {
 	}
 
 	@Override
-	protected void doOutput(URLConnection urlConnection, OutputStream os)
-			throws Throwable {
+	protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
 		if (parameterMap != null) {
 			os.write(getParameterString().getBytes(charsetName));
 		}

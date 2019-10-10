@@ -7,8 +7,8 @@ import scw.core.PropertyFactory;
 import scw.core.aop.Invoker;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
-import scw.core.parameter.ParameterConfig;
-import scw.core.parameter.ParameterUtils;
+import scw.core.reflect.ParameterConfig;
+import scw.core.reflect.ParameterUtils;
 
 public class InvokerAction implements Action<Channel> {
 	private final Invoker invoker;

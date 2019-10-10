@@ -20,8 +20,8 @@ import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
 import scw.beans.annotation.Bean;
 import scw.core.Constants;
-import scw.core.LinkedMultiValueMap;
-import scw.core.MultiValueMap;
+import scw.core.multivalue.LinkedMultiValueMap;
+import scw.core.multivalue.MultiValueMap;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;

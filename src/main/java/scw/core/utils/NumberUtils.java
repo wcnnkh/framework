@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
+import scw.core.Assert;
 import scw.core.exception.ParameterException;
 
 /**

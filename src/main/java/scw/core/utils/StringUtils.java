@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import scw.core.Assert;
 import scw.core.StringEmptyVerification;
 import scw.core.exception.ParameterException;
 
@@ -2569,4 +2570,15 @@ public final class StringUtils {
 		return out.toString(charsetName);
 	}
 
+	public static boolean constants(String text, String index, boolean ignoreCase) {
+		if (text == null || index == null) {
+			return text == index;
+		}
+
+		if (ignoreCase) {
+			return text.toLowerCase().contains(index.toLowerCase());
+		} else {
+			return text.contains(index);
+		}
+	}
 }

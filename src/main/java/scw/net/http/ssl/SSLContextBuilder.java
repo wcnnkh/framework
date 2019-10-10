@@ -58,7 +58,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509ExtendedKeyManager;
 import javax.net.ssl.X509TrustManager;
 
-import scw.core.utils.Assert;
+import scw.core.Assert;
 
 /**
  * Builder for {@link javax.net.ssl.SSLContext} instances.
