@@ -5,8 +5,12 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import scw.core.utils.CollectionUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public final class MessageConverterChain {
+	private static Logger logger = LoggerFactory.getLogger(MessageConverterChain.class);
+	
 	private Iterator<MessageConverter> iterator;
 
 	public MessageConverterChain(Collection<MessageConverter> messageConverters) {
@@ -28,6 +32,7 @@ public final class MessageConverterChain {
 	}
 
 	private Object lastConvert(Message message, Type type) {
+		logger.warn("{}找不到指定的解析方式", type);
 		return null;
 	}
 }

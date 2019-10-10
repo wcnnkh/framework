@@ -24,7 +24,8 @@ public final class ObjectRpcMessageConvert implements MessageConverter {
 	}
 
 	public Object convert(Message message, Type type, MessageConverterChain chain) throws Throwable {
-		if (StringUtils.contains(message.getContentType(), MimeTypeConstants.APPLICATION_OCTET_STREAM_VALUE, true)) {
+		if (message.getMimeType() != null
+				&& message.getMimeType().equalsTypeAndSubtype(MimeTypeConstants.APPLICATION_OCTET_STREAM)) {
 			Object object = serializer.deserialize(message.toByteArray());
 			if (object == null) {
 				return null;

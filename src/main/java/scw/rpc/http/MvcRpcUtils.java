@@ -3,7 +3,6 @@ package scw.rpc.http;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,11 +10,15 @@ import java.util.Map;
 import scw.core.annotation.Headers;
 import scw.core.context.Context;
 import scw.core.exception.NotSupportException;
+import scw.core.header.HeadersReadOnly;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
-import scw.mvc.http.HttpChannel;
+import scw.mvc.Request;
+import scw.mvc.RequestResponseModel;
 
 public final class MvcRpcUtils {
 	private MvcRpcUtils() {
@@ -51,29 +54,38 @@ public final class MvcRpcUtils {
 		return map;
 	}
 
+	private static Map<String, String> getheaderMap(HeadersReadOnly headersReadOnly, Collection<String> headerNames) {
+		Map<String, String> map = new HashMap<String, String>();
+		for (String name : headerNames) {
+			String value = headersReadOnly.getHeader(name);
+			if (StringUtils.isEmpty(value)) {
+				continue;
+			}
+
+			map.put(name, value);
+		}
+		return map;
+	}
+
+	@SuppressWarnings("rawtypes")
 	private static Map<String, String> getHeaderMap(Collection<String> headerNames) {
+		if (CollectionUtils.isEmpty(headerNames)) {
+			return null;
+		}
+
 		Channel channel = MVCUtils.getContextChannel();
 		if (channel == null) {
 			return null;
 		}
 
-		if (channel instanceof HttpChannel) {
-			HttpChannel httpChannel = (HttpChannel) channel;
-			Map<String, String> map = new HashMap<String, String>();
-			Enumeration<String> enumeration = httpChannel.getRequest().getHeaderNames();
-			while (enumeration.hasMoreElements()) {
-				String name = enumeration.nextElement();
-				String value = httpChannel.getRequest().getHeader(name);
-				if (value == null) {
-					continue;
-				}
-
-				map.put(name, value);
+		Map<String, String> headerMap = new HashMap<String, String>(headerNames.size());
+		if (channel instanceof RequestResponseModel) {
+			Request request = ((RequestResponseModel) channel).getRequest();
+			if (request instanceof HeadersReadOnly) {
+				headerMap.putAll(getheaderMap((HeadersReadOnly) request, headerNames));
 			}
-			return map;
 		}
-
-		return null;
+		return headerMap;
 	}
 
 	public static Map<String, String> getHeaderMap(String[] shareHeaderNames, Class<?> clazz, Method method) {

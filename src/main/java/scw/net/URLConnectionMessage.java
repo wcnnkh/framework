@@ -13,16 +13,18 @@ import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
+import scw.net.mime.MimeType;
+import scw.net.mime.MimeTypeUtils;
 
 public class URLConnectionMessage extends SimpleMultiValueHeadersReadOnly implements Message, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final byte[] data;
-	private final String contentType;
 	private final String contentEncoding;
+	private final MimeType mimeType;
 
 	public URLConnectionMessage(URLConnection urlConnection) throws IOException {
 		super(urlConnection.getHeaderFields());
-		this.contentType = urlConnection.getContentType();
+		this.mimeType = MimeTypeUtils.parseFirstMimeType(urlConnection.getContentType());
 		this.contentEncoding = urlConnection.getContentEncoding();
 
 		UnsafeByteArrayOutputStream out = IOUtils.getUnsafeByteArrayOutputStream();
@@ -38,10 +40,6 @@ public class URLConnectionMessage extends SimpleMultiValueHeadersReadOnly implem
 
 	public final InputStream getInputStream() {
 		return new UnsafeByteArrayInputStream(data);
-	}
-
-	public final String getContentType() {
-		return contentType;
 	}
 
 	public final long getContentLength() {
@@ -72,5 +70,9 @@ public class URLConnectionMessage extends SimpleMultiValueHeadersReadOnly implem
 	@Override
 	public String toString() {
 		return toString(Constants.DEFAULT_CHARSET_NAME);
+	}
+
+	public MimeType getMimeType() {
+		return mimeType;
 	}
 }

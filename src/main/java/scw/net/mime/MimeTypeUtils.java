@@ -93,4 +93,22 @@ public class MimeTypeUtils implements MimeTypeConstants {
 		}
 		return list;
 	}
+
+	public static MimeType parseFirstMimeType(String mimeTypes) {
+		if (StringUtils.isEmpty(mimeTypes)) {
+			return null;
+		}
+
+		if (mimeTypes.startsWith(",")) {
+			return parseFirstMimeType(mimeTypes.substring(1));
+		}
+
+		int index = mimeTypes.indexOf(",");
+		String mimeType = index == -1 ? mimeTypes : mimeTypes.substring(0, index);
+		if (StringUtils.isEmpty(mimeType)) {
+			return null;
+		}
+
+		return parseMimeType(mimeType);
+	}
 }

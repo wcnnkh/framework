@@ -5,15 +5,14 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 
 import scw.core.header.MultiValueHeadersReadOnly;
+import scw.net.mime.MimeType;
 
 public interface Message extends MultiValueHeadersReadOnly {
 	InputStream getInputStream();
 
-	String getContentType();
+	MimeType getMimeType();
 
 	long getContentLength();
-
-	String getContentEncoding();
 
 	<T> T convert(Collection<MessageConverter> messageConverters, Type type) throws Throwable;
 

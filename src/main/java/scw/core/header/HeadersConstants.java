@@ -14,4 +14,8 @@ public interface HeadersConstants {
 	public static final String ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
 
 	public static final String ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+
+	public static final String USER_AGENT = "User-Agent";
+
+	public static final String X_REQUESTED_WITH = "X-Requested-With";
 }

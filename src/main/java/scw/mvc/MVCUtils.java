@@ -69,6 +69,7 @@ public final class MVCUtils implements MvcConstants {
 	};
 
 	private static final ContextManager MVC_CONTEXT_MANAGER = new ThreadLocalContextManager(true);
+
 	public static Channel getContextChannel() {
 		Context context = MVC_CONTEXT_MANAGER.getCurrentContext();
 		return (Channel) (context == null ? null : context.getResource(Channel.class));
@@ -280,7 +281,7 @@ public final class MVCUtils implements MvcConstants {
 	 * @return
 	 */
 	public static boolean isAjaxRequest(HttpRequest request) {
-		return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+		return "XMLHttpRequest".equals(request.getHeader(HeadersConstants.X_REQUESTED_WITH));
 	}
 
 	/**
