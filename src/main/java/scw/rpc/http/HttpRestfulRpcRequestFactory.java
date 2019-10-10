@@ -43,11 +43,7 @@ public class HttpRestfulRpcRequestFactory implements HttpRpcRequestFactory {
 	public final HttpRequest getHttpRequest(Class<?> clazz, Method method, Object[] args) throws Exception {
 		String host;
 		Host h = AnnotationUtils.getAnnotation(Host.class, clazz, method);
-		if (h == null) {
-			host = this.host;
-		}
-
-		host = h.value();
+		host = h == null? this.host:h.value();
 		if (StringUtils.isEmpty(host)) {
 			host = "http://127.0.0.1";
 		}

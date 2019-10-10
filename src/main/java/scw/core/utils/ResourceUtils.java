@@ -130,14 +130,18 @@ public abstract class ResourceUtils {
 	 * @throws FileNotFoundException
 	 *             if the resource cannot be resolved to a URL
 	 */
-	public static URL getURL(String resourceLocation) throws FileNotFoundException {
+	public static URL getURL(String resourceLocation)
+			throws FileNotFoundException {
 		Assert.notNull(resourceLocation, "Resource location must not be null");
 		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
-			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX.length());
+			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX
+					.length());
 			URL url = ClassUtils.getDefaultClassLoader().getResource(path);
 			if (url == null) {
 				String description = "class path resource [" + path + "]";
-				throw new FileNotFoundException(description + " cannot be resolved to URL because it does not exist");
+				throw new FileNotFoundException(
+						description
+								+ " cannot be resolved to URL because it does not exist");
 			}
 			return url;
 		}
@@ -149,8 +153,9 @@ public abstract class ResourceUtils {
 			try {
 				return new File(resourceLocation).toURI().toURL();
 			} catch (MalformedURLException ex2) {
-				throw new FileNotFoundException(
-						"Resource location [" + resourceLocation + "] is neither a URL not a well-formed file path");
+				throw new FileNotFoundException("Resource location ["
+						+ resourceLocation
+						+ "] is neither a URL not a well-formed file path");
 			}
 		}
 	}
@@ -170,14 +175,17 @@ public abstract class ResourceUtils {
 	 *             if the resource cannot be resolved to a file in the file
 	 *             system
 	 */
-	public static File getFile(String resourceLocation) throws FileNotFoundException {
+	public static File getFile(String resourceLocation)
+			throws FileNotFoundException {
 		Assert.notNull(resourceLocation, "Resource location must not be null");
 		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
-			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX.length());
+			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX
+					.length());
 			String description = "class path resource [" + path + "]";
 			URL url = ClassUtils.getDefaultClassLoader().getResource(path);
 			if (url == null) {
-				throw new FileNotFoundException(description + " cannot be resolved to absolute file path "
+				throw new FileNotFoundException(description
+						+ " cannot be resolved to absolute file path "
 						+ "because it does not reside in the file system");
 			}
 			return getFile(url, description);
@@ -218,11 +226,14 @@ public abstract class ResourceUtils {
 	 * @throws FileNotFoundException
 	 *             if the URL cannot be resolved to a file in the file system
 	 */
-	public static File getFile(URL resourceUrl, String description) throws FileNotFoundException {
+	public static File getFile(URL resourceUrl, String description)
+			throws FileNotFoundException {
 		Assert.notNull(resourceUrl, "Resource URL must not be null");
 		if (!URL_PROTOCOL_FILE.equals(resourceUrl.getProtocol())) {
-			throw new FileNotFoundException(description + " cannot be resolved to absolute file path "
-					+ "because it does not reside in the file system: " + resourceUrl);
+			throw new FileNotFoundException(description
+					+ " cannot be resolved to absolute file path "
+					+ "because it does not reside in the file system: "
+					+ resourceUrl);
 		}
 		try {
 			return new File(toURI(resourceUrl).getSchemeSpecificPart());
@@ -260,11 +271,14 @@ public abstract class ResourceUtils {
 	 * @throws FileNotFoundException
 	 *             if the URL cannot be resolved to a file in the file system
 	 */
-	public static File getFile(URI resourceUri, String description) throws FileNotFoundException {
+	public static File getFile(URI resourceUri, String description)
+			throws FileNotFoundException {
 		Assert.notNull(resourceUri, "Resource URI must not be null");
 		if (!URL_PROTOCOL_FILE.equals(resourceUri.getScheme())) {
-			throw new FileNotFoundException(description + " cannot be resolved to absolute file path "
-					+ "because it does not reside in the file system: " + resourceUri);
+			throw new FileNotFoundException(description
+					+ " cannot be resolved to absolute file path "
+					+ "because it does not reside in the file system: "
+					+ resourceUri);
 		}
 		return new File(resourceUri.getSchemeSpecificPart());
 	}
@@ -279,7 +293,8 @@ public abstract class ResourceUtils {
 	 */
 	public static boolean isFileURL(URL url) {
 		String protocol = url.getProtocol();
-		return (URL_PROTOCOL_FILE.equals(protocol) || protocol.startsWith(URL_PROTOCOL_VFS));
+		return (URL_PROTOCOL_FILE.equals(protocol) || protocol
+				.startsWith(URL_PROTOCOL_VFS));
 	}
 
 	/**
@@ -297,9 +312,10 @@ public abstract class ResourceUtils {
 	 */
 	public static boolean isJarURL(URL url) {
 		String protocol = url.getProtocol();
-		return (URL_PROTOCOL_JAR.equals(protocol) || URL_PROTOCOL_ZIP.equals(protocol)
-				|| URL_PROTOCOL_WSJAR.equals(protocol)
-				|| (URL_PROTOCOL_CODE_SOURCE.equals(protocol) && url.getPath().contains(JAR_URL_SEPARATOR)));
+		return (URL_PROTOCOL_JAR.equals(protocol)
+				|| URL_PROTOCOL_ZIP.equals(protocol)
+				|| URL_PROTOCOL_WSJAR.equals(protocol) || (URL_PROTOCOL_CODE_SOURCE
+				.equals(protocol) && url.getPath().contains(JAR_URL_SEPARATOR)));
 	}
 
 	/**
@@ -312,7 +328,8 @@ public abstract class ResourceUtils {
 	 * @throws MalformedURLException
 	 *             if no valid jar file URL could be extracted
 	 */
-	public static URL extractJarFileURL(URL jarUrl) throws MalformedURLException {
+	public static URL extractJarFileURL(URL jarUrl)
+			throws MalformedURLException {
 		String urlFile = jarUrl.getFile();
 		int separatorIndex = urlFile.indexOf(JAR_URL_SEPARATOR);
 		if (separatorIndex != -1) {
@@ -381,7 +398,8 @@ public abstract class ResourceUtils {
 	public static URL getClassPathURL() {
 		URL url = ResourceUtils.class.getResource("/");
 		if (url == null) {
-			ProtectionDomain protectionDomain = ResourceUtils.class.getProtectionDomain();
+			ProtectionDomain protectionDomain = ResourceUtils.class
+					.getProtectionDomain();
 			if (protectionDomain != null) {
 				CodeSource codeSource = protectionDomain.getCodeSource();
 				if (codeSource != null) {
@@ -417,25 +435,13 @@ public abstract class ResourceUtils {
 		return null;
 	}
 
-	/**
-	 * 
-	 * 此方法在jdk的getResourceAsStream基础上加上了resource-prefix环境变量检查
-	 * 如果已经明确了路径请直接调用XXX.class.getResourceAsStream(resource)
-	 * 
-	 * @param resource
-	 * @param consumer
-	 * @return
-	 */
-	public static boolean consumterResource(String resource, Consumer<InputStream> consumer) {
-		return consumterClassPathInputStream(resource, consumer);
-	}
-
 	private static String getTestFileName(String fileName, String str) {
 		int index = fileName.lastIndexOf(".");
 		if (index == -1) {// 不存在
 			return fileName + str;
 		} else {
-			return fileName.substring(0, index) + str + fileName.substring(index);
+			return fileName.substring(0, index) + str
+					+ fileName.substring(index);
 		}
 	}
 
@@ -469,12 +475,23 @@ public abstract class ResourceUtils {
 	public static InputStream getResourceAsStream(String name) {
 		InputStream inputStream = ResourceUtils.class.getResourceAsStream(name);
 		if (inputStream == null) {
-			inputStream = ClassUtils.getDefaultClassLoader().getResourceAsStream(name);
+			inputStream = ClassUtils.getDefaultClassLoader()
+					.getResourceAsStream(name);
 		}
 		return inputStream;
 	}
 
-	private static boolean consumterClassPathInputStream(String path, Consumer<InputStream> consumer) {
+	/**
+	 * 
+	 * 此方法在jdk的getResourceAsStream基础上加上了resource-prefix环境变量检查
+	 * 如果已经明确了路径请直接调用XXX.class.getResourceAsStream(resource)
+	 * 
+	 * @param resource
+	 * @param consumer
+	 * @return
+	 */
+	public static boolean consumterResourceInputStream(String path,
+			Consumer<InputStream> consumer) {
 		InputStream inputStream = null;
 		try {
 			inputStream = getResourceAsStream(path);
@@ -491,7 +508,8 @@ public abstract class ResourceUtils {
 		return inputStream != null;
 	}
 
-	private static boolean consumterInputStream(String rootPath, String path, Consumer<InputStream> consumer) {
+	private static boolean consumterInputStream(String rootPath, String path,
+			Consumer<InputStream> consumer) {
 		File file = new File(rootPath);
 		if (!file.exists()) {
 			return false;
@@ -514,7 +532,8 @@ public abstract class ResourceUtils {
 				}
 
 				if (consumer != null) {
-					inputStream = jarFile.getInputStream(jarFile.getEntry(entryName));
+					inputStream = jarFile.getInputStream(jarFile
+							.getEntry(entryName));
 					consumer.consume(inputStream);
 				}
 				return true;
@@ -541,7 +560,8 @@ public abstract class ResourceUtils {
 	 * @param consumer
 	 * @return
 	 */
-	private static boolean consumterResourceBySearch(String resource, Consumer<InputStream> consumer) {
+	private static boolean consumterResourceBySearch(String resource,
+			Consumer<InputStream> consumer) {
 		if (StringUtils.isEmpty(resource)) {
 			return false;
 		}
@@ -549,12 +569,14 @@ public abstract class ResourceUtils {
 		String text = SystemPropertyUtils.format(resource);
 		// 兼容老版本
 		if (StringUtils.startsWithIgnoreCase(text, CLASSPATH_URL_PREFIX)
-				|| StringUtils.startsWithIgnoreCase(text, "{" + CLASSPATH_URL_PREFIX + "}")
+				|| StringUtils.startsWithIgnoreCase(text, "{"
+						+ CLASSPATH_URL_PREFIX + "}")
 				|| StringUtils.startsWithIgnoreCase(text, "{classpath}")) {
 			String eqPath = text.replaceAll("\\\\", "/");
 			if (StringUtils.startsWithIgnoreCase(text, CLASSPATH_URL_PREFIX)) {
 				eqPath = eqPath.substring(CLASSPATH_URL_PREFIX.length());
-			} else if (StringUtils.startsWithIgnoreCase(text, "{" + CLASSPATH_URL_PREFIX + "}")) {
+			} else if (StringUtils.startsWithIgnoreCase(text, "{"
+					+ CLASSPATH_URL_PREFIX + "}")) {
 				eqPath = eqPath.substring(CLASSPATH_URL_PREFIX.length() + 2);
 			} else {
 				eqPath = eqPath.substring(CLASSPATH_URL_PREFIX.length() + 1);
@@ -562,7 +584,8 @@ public abstract class ResourceUtils {
 
 			boolean b = false;
 			if (!b) {
-				for (String classPath : SystemPropertyUtils.getJavaClassPathArray()) {
+				for (String classPath : SystemPropertyUtils
+						.getJavaClassPathArray()) {
 					b = consumterInputStream(classPath, eqPath, consumer);
 					if (b) {
 						break;
@@ -571,7 +594,7 @@ public abstract class ResourceUtils {
 			}
 
 			if (!b) {
-				b = consumterResource(eqPath, consumer);
+				b = consumterResourceInputStream(eqPath, consumer);
 			}
 
 			if (!b) {
@@ -588,7 +611,8 @@ public abstract class ResourceUtils {
 			}
 
 			if (file == null) {
-				if (consumterResource(text.replaceAll("\\\\", "/"), consumer)) {
+				if (consumterResourceInputStream(text.replaceAll("\\\\", "/"),
+						consumer)) {
 					return true;
 				}
 				return false;
@@ -599,11 +623,13 @@ public abstract class ResourceUtils {
 		}
 	}
 
-	public static void consumterInputStream(String resource, Consumer<InputStream> consumer) {
+	public static void consumterInputStream(String resource,
+			Consumer<InputStream> consumer) {
 		consumterInputStream(resource, consumer, true);
 	}
 
-	public static void consumterInputStream(String resource, Consumer<InputStream> consumer, boolean multiple) {
+	public static void consumterInputStream(String resource,
+			Consumer<InputStream> consumer, boolean multiple) {
 		if (multiple) {
 			Collection<String> resourceNames = getResourceNameList(resource);
 			for (String name : resourceNames) {
@@ -618,7 +644,8 @@ public abstract class ResourceUtils {
 		throw new NotFoundException(resource);
 	}
 
-	private static File searchJarClassPathConfigFile(File rootFile, String configPath, String path) {
+	private static File searchJarClassPathConfigFile(File rootFile,
+			String configPath, String path) {
 		File file = new File(rootFile.getParent() + File.separator + configPath);
 		if (!file.exists()) {
 			return null;
@@ -627,7 +654,8 @@ public abstract class ResourceUtils {
 		return searchFile(path, file);
 	}
 
-	private static void consumerFileInputStream(File file, Consumer<InputStream> consumer) {
+	private static void consumerFileInputStream(File file,
+			Consumer<InputStream> consumer) {
 		if (consumer == null) {
 			return;
 		}
@@ -691,19 +719,16 @@ public abstract class ResourceUtils {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> T getAndConvert(String path, final Converter<InputStream, T> convert) {
-		final Object[] objs = new Object[1];
-		consumterInputStream(path, new Consumer<InputStream>() {
-
-			public void consume(InputStream message) throws Exception {
-				objs[0] = convert.convert(message);
-			}
-		});
-		return (T) objs[0];
+	public static <T> T getAndConvert(String path,
+			final Converter<InputStream, T> converter) {
+		ResourceInputStreamConvertConsumer<T> inputStreamConvertConsumer = new ResourceInputStreamConvertConsumer<T>(
+				converter);
+		consumterInputStream(path, inputStreamConvertConsumer);
+		return inputStreamConvertConsumer.getValue();
 	}
 
-	private static Class<?> forFileNmae(String classFile, Verification<String> verification) {
+	private static Class<?> forFileNmae(String classFile,
+			Verification<String> verification) {
 		if (!classFile.endsWith(".class")) {
 			return null;
 		}
@@ -716,7 +741,8 @@ public abstract class ResourceUtils {
 		}
 
 		try {
-			return Class.forName(name, false, ClassUtils.getDefaultClassLoader());
+			return Class.forName(name, false,
+					ClassUtils.getDefaultClassLoader());
 		} catch (Throwable e) {
 		}
 		return null;
@@ -732,15 +758,16 @@ public abstract class ResourceUtils {
 		InputStream inputStream = null;
 		try {
 			inputStream = jarFile.getInputStream(jarEntry);
-			return formatManifestFile(inputStream, Constants.DEFAULT_CHARSET_NAME);
+			return formatManifestFile(inputStream,
+					Constants.DEFAULT_CHARSET_NAME);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return Collections.EMPTY_MAP;
 	}
 
-	private static Map<String, String> formatManifestFile(InputStream inputStream, String charsetName)
-			throws IOException {
+	private static Map<String, String> formatManifestFile(
+			InputStream inputStream, String charsetName) throws IOException {
 		Map<String, String> map = new HashMap<String, String>(8);
 		List<String> list = IOUtils.readLines(inputStream, charsetName);
 		for (String content : list) {
@@ -762,8 +789,9 @@ public abstract class ResourceUtils {
 		return map;
 	}
 
-	private static void appendJarClass(Collection<Class<?>> classList, JarFile jarFile,
-			Verification<String> jarVerification, Verification<String> verification, boolean appendManifest) {
+	private static void appendJarClass(Collection<Class<?>> classList,
+			JarFile jarFile, Verification<String> jarVerification,
+			Verification<String> verification, boolean appendManifest) {
 		Enumeration<JarEntry> enumeration = jarFile.entries();
 		while (enumeration.hasMoreElements()) {
 			JarEntry jarEntry = enumeration.nextElement();
@@ -788,15 +816,18 @@ public abstract class ResourceUtils {
 				String[] pathArray = StringUtils.split(classPath, ' ');
 				if (!ArrayUtils.isEmpty(pathArray)) {
 					for (String path : pathArray) {
-						appendClass(path, classList, jarVerification, verification, false);
+						appendClass(path, classList, jarVerification,
+								verification, false);
 					}
 				}
 			}
 		}
 	}
 
-	private static void appendDirectoryClass(String rootPackage, Collection<Class<?>> classList, File file,
-			Verification<String> jarVerification, Verification<String> verification) {
+	private static void appendDirectoryClass(String rootPackage,
+			Collection<Class<?>> classList, File file,
+			Verification<String> jarVerification,
+			Verification<String> verification) {
 		File[] files = file.listFiles();
 		if (ArrayUtils.isEmpty(files)) {
 			return;
@@ -805,30 +836,37 @@ public abstract class ResourceUtils {
 		for (File f : files) {
 			if (f.isDirectory()) {
 				appendDirectoryClass(
-						StringUtils.isEmpty(rootPackage) ? f.getName() + "." : rootPackage + f.getName() + ".",
-						classList, f, jarVerification, verification);
+						StringUtils.isEmpty(rootPackage) ? f.getName() + "."
+								: rootPackage + f.getName() + ".", classList,
+						f, jarVerification, verification);
 			} else {
 				if (f.getName().endsWith(".class")) {
-					String classFile = StringUtils.isEmpty(rootPackage) ? f.getName() : rootPackage + f.getName();
+					String classFile = StringUtils.isEmpty(rootPackage) ? f
+							.getName() : rootPackage + f.getName();
 					Class<?> clz = forFileNmae(classFile, verification);
 					if (clz != null) {
 						classList.add(clz);
 					}
 				} else if (f.getName().endsWith(".jar")) {
-					if (jarVerification == null || jarVerification.verification(f.getName())) {
-						appendJarClass(f, classList, jarVerification, verification, false);
+					if (jarVerification == null
+							|| jarVerification.verification(f.getName())) {
+						appendJarClass(f, classList, jarVerification,
+								verification, false);
 					}
 				}
 			}
 		}
 	}
 
-	private static void appendJarClass(File file, Collection<Class<?>> classList, Verification<String> jarVerification,
+	private static void appendJarClass(File file,
+			Collection<Class<?>> classList,
+			Verification<String> jarVerification,
 			Verification<String> verification, boolean appendManifest) {
 		JarFile jarFile = null;
 		try {
 			jarFile = new JarFile(file);
-			appendJarClass(classList, jarFile, jarVerification, verification, appendManifest);
+			appendJarClass(classList, jarFile, jarVerification, verification,
+					appendManifest);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -836,24 +874,30 @@ public abstract class ResourceUtils {
 		}
 	}
 
-	private static void appendClass(String path, Collection<Class<?>> list, Verification<String> jarVerification,
+	private static void appendClass(String path, Collection<Class<?>> list,
+			Verification<String> jarVerification,
 			Verification<String> verification, boolean appendManifest) {
 		File file = new File(path);
 		if (file.isFile()) {
-			if (jarVerification == null || jarVerification.verification(file.getName())) {
-				appendJarClass(file, list, jarVerification, verification, appendManifest);
+			if (jarVerification == null
+					|| jarVerification.verification(file.getName())) {
+				appendJarClass(file, list, jarVerification, verification,
+						appendManifest);
 			}
 		} else {
-			appendDirectoryClass(null, list, file, jarVerification, verification);
+			appendDirectoryClass(null, list, file, jarVerification,
+					verification);
 		}
 	}
 
-	public static Collection<Class<?>> getClassList(Verification<String> jarVerification,
+	public static Collection<Class<?>> getClassList(
+			Verification<String> jarVerification,
 			Verification<String> verification) {
 		LinkedHashSet<Class<?>> list = new LinkedHashSet<Class<?>>();
 		URL url = getClassPathURL();
 		if (url != null) {
-			appendClass(url.getPath(), list, jarVerification, verification, true);
+			appendClass(url.getPath(), list, jarVerification, verification,
+					true);
 		}
 
 		for (String name : SystemPropertyUtils.getJavaClassPathArray()) {
@@ -862,7 +906,8 @@ public abstract class ResourceUtils {
 		return list;
 	}
 
-	public static Collection<Class<?>> getClassList(Verification<String> verification) {
+	public static Collection<Class<?>> getClassList(
+			Verification<String> verification) {
 		return getClassList(new DefaultJarVerification(), verification);
 	}
 
@@ -883,54 +928,103 @@ public abstract class ResourceUtils {
 		return getClassList(new DefaultClassNameVerification());
 	}
 
-	public static class DefaultClassNameVerification implements Verification<String> {
+	public static class DefaultClassNameVerification implements
+			Verification<String> {
 		public boolean verification(String name) {
-			return !((name.startsWith("java.") || name.startsWith("javax.") || name.indexOf(".") == -1
-					|| name.startsWith("scw.") || name.startsWith("org.apache.") || name.startsWith("freemarker.")
-					|| name.startsWith("com.alibaba.") || name.startsWith("com.caucho.")
-					|| name.startsWith("redis.clients.") || name.startsWith("com.google.")
-					|| name.startsWith("net.rubyeye.") || name.startsWith("com.rabbitmq.")
-					|| name.startsWith("com.esotericsoftware.") || name.startsWith("com.zaxxer.")
-					|| name.startsWith("support.") || name.startsWith("com.oracle.") || name.startsWith("com.sun.")
-					|| name.startsWith("jdk.") || name.startsWith("org.w3c.") || name.startsWith("org.omg.")
-					|| name.startsWith("org.xml.") || name.startsWith("org.jcp.") || name.startsWith("org.ietf.")
-					|| name.startsWith("sun.") || name.startsWith("oracle.") || name.startsWith("netscape.")
-					|| name.startsWith("junit.") || name.startsWith("com.aliyun.") || name.startsWith("mozilla.")
-					|| name.startsWith("org.jdom") || name.startsWith("org.codehaus.")
-					|| name.startsWith("com.aliyuncs.") || name.startsWith("org.json") || name.startsWith("javassist.")
-					|| name.startsWith("org.jboss") || name.startsWith("org.I0Itec.") || name.startsWith("common.")
-					|| name.startsWith("jxl.") || name.startsWith("com.mysql.") || name.startsWith("google.")
-					|| name.startsWith("com.corundumstudio.") || name.startsWith("io.netty.")
-					|| name.startsWith("org.slf4j.") || name.startsWith("org.fasterxml.")
-					|| name.startsWith("com.fasterxml") || name.startsWith("org.objectweb.")
-					|| name.startsWith("lombok.") || name.startsWith("com.zwitserloot.")
-					|| name.startsWith("org.eclipse.")));
+			return !((name.startsWith("java.") || name.startsWith("javax.")
+					|| name.indexOf(".") == -1 || name.startsWith("scw.")
+					|| name.startsWith("org.apache.")
+					|| name.startsWith("freemarker.")
+					|| name.startsWith("com.alibaba.")
+					|| name.startsWith("com.caucho.")
+					|| name.startsWith("redis.clients.")
+					|| name.startsWith("com.google.")
+					|| name.startsWith("net.rubyeye.")
+					|| name.startsWith("com.rabbitmq.")
+					|| name.startsWith("com.esotericsoftware.")
+					|| name.startsWith("com.zaxxer.")
+					|| name.startsWith("support.")
+					|| name.startsWith("com.oracle.")
+					|| name.startsWith("com.sun.") || name.startsWith("jdk.")
+					|| name.startsWith("org.w3c.")
+					|| name.startsWith("org.omg.")
+					|| name.startsWith("org.xml.")
+					|| name.startsWith("org.jcp.")
+					|| name.startsWith("org.ietf.") || name.startsWith("sun.")
+					|| name.startsWith("oracle.")
+					|| name.startsWith("netscape.")
+					|| name.startsWith("junit.")
+					|| name.startsWith("com.aliyun.")
+					|| name.startsWith("mozilla.")
+					|| name.startsWith("org.jdom")
+					|| name.startsWith("org.codehaus.")
+					|| name.startsWith("com.aliyuncs.")
+					|| name.startsWith("org.json")
+					|| name.startsWith("javassist.")
+					|| name.startsWith("org.jboss")
+					|| name.startsWith("org.I0Itec.")
+					|| name.startsWith("common.") || name.startsWith("jxl.")
+					|| name.startsWith("com.mysql.")
+					|| name.startsWith("google.")
+					|| name.startsWith("com.corundumstudio.")
+					|| name.startsWith("io.netty.")
+					|| name.startsWith("org.slf4j.")
+					|| name.startsWith("org.fasterxml.")
+					|| name.startsWith("com.fasterxml")
+					|| name.startsWith("org.objectweb.")
+					|| name.startsWith("lombok.")
+					|| name.startsWith("com.zwitserloot.") || name
+						.startsWith("org.eclipse.")));
 		}
 	}
 
 	public static class DefaultJarVerification implements Verification<String> {
 
 		public boolean verification(String name) {
-			if (name.startsWith("plexus-") || name.startsWith("junit-") || name.startsWith("aliyun-")
-					|| name.startsWith("httpclient-") || name.startsWith("httpcore-") || name.startsWith("commons-")
-					|| name.startsWith("jdom-") || name.startsWith("jersey-") || name.startsWith("jettison-")
-					|| name.startsWith("stax-") || name.startsWith("jaxb-") || name.startsWith("stax-")
-					|| name.startsWith("activation-") || name.startsWith("jackson-") || name.startsWith("json-")
-					|| name.startsWith("HikariCP-") || name.startsWith("freemarker-") || name.startsWith("dubbo-")
-					|| name.startsWith("javassit-") || name.startsWith("netty-") || name.startsWith("zkclient-")
-					|| name.startsWith("zookeeper-") || name.startsWith("log4j-") || name.startsWith("jxl-")
-					|| name.startsWith("jedis-") || name.startsWith("xmemcached-") || name.startsWith("fastjson-")
-					|| name.startsWith("amqp-") || name.startsWith("druid-") || name.startsWith("mysql-")
-					|| name.startsWith("protobuf-") || name.startsWith("javax.") || name.startsWith("jstl-")
-					|| name.startsWith("jsp-") || name.startsWith("slf4j-") || name.startsWith("javassist-")
-					|| name.startsWith("tomcat-") || name.startsWith("lombok-") || name.startsWith("resources.jar")
-					|| name.startsWith("rt.jar") || name.startsWith("jsse.jar") || name.startsWith("jce.jar")
-					|| name.startsWith("charsets.jar") || name.startsWith("jfr.jar")
-					|| name.startsWith("access-bridge-") || name.startsWith("cldrdata.jar")
-					|| name.startsWith("dnsns.jar") || name.startsWith("jaccess.jar") || name.startsWith("jfxrt.jar")
-					|| name.startsWith("localedate.jar") || name.startsWith("nashorn.jar")
-					|| name.startsWith("sunec.jar") || name.startsWith("zipfs.jar") || name.startsWith("sunpkcs11.jar")
-					|| name.startsWith("sunmscapi.jar") || name.startsWith("sunjce_provider.jar")) {
+			if (name.startsWith("plexus-") || name.startsWith("junit-")
+					|| name.startsWith("aliyun-")
+					|| name.startsWith("httpclient-")
+					|| name.startsWith("httpcore-")
+					|| name.startsWith("commons-") || name.startsWith("jdom-")
+					|| name.startsWith("jersey-")
+					|| name.startsWith("jettison-") || name.startsWith("stax-")
+					|| name.startsWith("jaxb-") || name.startsWith("stax-")
+					|| name.startsWith("activation-")
+					|| name.startsWith("jackson-") || name.startsWith("json-")
+					|| name.startsWith("HikariCP-")
+					|| name.startsWith("freemarker-")
+					|| name.startsWith("dubbo-")
+					|| name.startsWith("javassit-")
+					|| name.startsWith("netty-")
+					|| name.startsWith("zkclient-")
+					|| name.startsWith("zookeeper-")
+					|| name.startsWith("log4j-") || name.startsWith("jxl-")
+					|| name.startsWith("jedis-")
+					|| name.startsWith("xmemcached-")
+					|| name.startsWith("fastjson-") || name.startsWith("amqp-")
+					|| name.startsWith("druid-") || name.startsWith("mysql-")
+					|| name.startsWith("protobuf-")
+					|| name.startsWith("javax.") || name.startsWith("jstl-")
+					|| name.startsWith("jsp-") || name.startsWith("slf4j-")
+					|| name.startsWith("javassist-")
+					|| name.startsWith("tomcat-") || name.startsWith("lombok-")
+					|| name.startsWith("resources.jar")
+					|| name.startsWith("rt.jar") || name.startsWith("jsse.jar")
+					|| name.startsWith("jce.jar")
+					|| name.startsWith("charsets.jar")
+					|| name.startsWith("jfr.jar")
+					|| name.startsWith("access-bridge-")
+					|| name.startsWith("cldrdata.jar")
+					|| name.startsWith("dnsns.jar")
+					|| name.startsWith("jaccess.jar")
+					|| name.startsWith("jfxrt.jar")
+					|| name.startsWith("localedate.jar")
+					|| name.startsWith("nashorn.jar")
+					|| name.startsWith("sunec.jar")
+					|| name.startsWith("zipfs.jar")
+					|| name.startsWith("sunpkcs11.jar")
+					|| name.startsWith("sunmscapi.jar")
+					|| name.startsWith("sunjce_provider.jar")) {
 				return false;
 			}
 			return true;
