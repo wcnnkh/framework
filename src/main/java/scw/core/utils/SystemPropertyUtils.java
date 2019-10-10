@@ -81,7 +81,7 @@ public abstract class SystemPropertyUtils {
 	}
 
 	public static void setProperty(String key, String value) {
-		setProperty(key, value, true);
+		setProperty(key, value, false);
 	}
 
 	public static void setSystemProperty(String key, String value) {
@@ -96,9 +96,13 @@ public abstract class SystemPropertyUtils {
 		}
 	}
 
+	public static void clearSystemProperty(String key) {
+		System.clearProperty(key);
+	}
+
 	public static void clearProperty(String key) {
 		clearPrivateProperty(key);
-		System.clearProperty(key);
+		clearSystemProperty(key);
 	}
 
 	public static void setWorkPath(String path, boolean system) {
@@ -107,7 +111,8 @@ public abstract class SystemPropertyUtils {
 		}
 
 		if (system) {
-			SystemPropertyUtils.setProperty(WORK_PATH_PROPERTY_NAME, path);
+			SystemPropertyUtils.setPrivateProperty(WORK_PATH_PROPERTY_NAME,
+					path);
 		} else {
 			workPath = new String(path);
 		}
@@ -151,7 +156,8 @@ public abstract class SystemPropertyUtils {
 								path = file.getParent();
 							} else {
 								file = file.getParentFile();
-								file = FileUtils.searchDirectory(file, "WEB-INF");
+								file = FileUtils.searchDirectory(file,
+										"WEB-INF");
 								if (file != null) {
 									path = file.getParent();
 								}
@@ -174,7 +180,8 @@ public abstract class SystemPropertyUtils {
 			return text;
 		}
 
-		return StringFormatSystemProperties.formatText(StringFormatSystemProperties.formatEL(text));
+		return StringFormatSystemProperties
+				.formatText(StringFormatSystemProperties.formatEL(text));
 	}
 
 	/**
@@ -207,10 +214,13 @@ public abstract class SystemPropertyUtils {
 		String systemOnlyId = getPrivateProperty(SYSTEM_ID_PROPERTY);
 		if (StringUtils.isEmpty(systemOnlyId)) {
 			try {
-				systemOnlyId = scw.core.Base64.encode((getUserDir() + "&" + ResourceUtils.getClassPathURL())
-						.getBytes(Constants.DEFAULT_CHARSET_NAME));
+				systemOnlyId = scw.core.Base64
+						.encode((getUserDir() + "&" + ResourceUtils
+								.getClassPathURL())
+								.getBytes(Constants.DEFAULT_CHARSET_NAME));
 				if (systemOnlyId.endsWith("==")) {
-					systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
+					systemOnlyId = systemOnlyId.substring(0,
+							systemOnlyId.length() - 2);
 				}
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);

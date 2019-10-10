@@ -410,12 +410,12 @@ public abstract class ResourceUtils {
 		return url;
 	}
 
-	public static void setConfigSuffix(String suffix) {
+	public static void setResourceSuffix(String suffix) {
 		if (StringUtils.isEmpty(suffix)) {
 			return;
 		}
 
-		SystemPropertyUtils.setProperty(CONFIG_SUFFIX, suffix);
+		SystemPropertyUtils.setPrivateProperty(RESOURCE_SUFFIX, suffix);
 	}
 
 	private static String searchNameByJar(JarFile jarFile, String searchName) {

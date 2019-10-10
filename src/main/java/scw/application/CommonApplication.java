@@ -66,7 +66,7 @@ public class CommonApplication implements Application {
 	}
 
 	public static void setGlobalPropertyRefreshPeriod(int period) {
-		SystemPropertyUtils.setProperty("scw_global_property_refresh_period", period + "");
+		SystemPropertyUtils.setPrivateProperty("scw_global_property_refresh_period", period + "");
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class CommonApplication implements Application {
 	}
 
 	public static void setGlobalValueWiredRefreshPeriod(int period) {
-		SystemPropertyUtils.setProperty("scw_global_value_wired_refresh_period", period + "");
+		SystemPropertyUtils.setPrivateProperty("scw_global_value_wired_refresh_period", period + "");
 	}
 
 	public CommonApplication(String configXml) {

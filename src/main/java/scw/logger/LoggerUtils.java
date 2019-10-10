@@ -137,7 +137,7 @@ public final class LoggerUtils {
 	}
 
 	public static void setDefaultConfigenable(boolean enable) {
-		SystemPropertyUtils.setProperty("scw.logger.default.config.enable", enable + "");
+		SystemPropertyUtils.setPrivateProperty("scw.logger.default.config.enable", enable + "");
 	}
 
 	/**

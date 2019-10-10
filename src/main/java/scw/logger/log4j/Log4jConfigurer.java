@@ -126,10 +126,10 @@ public abstract class Log4jConfigurer {
 	 * Log4jWebConfigurer's "webAppRootKey" support in a web environment.
 	 * @param key system property key to use, as expected in Log4j configuration
 	 * (for example: "demo.root", used as "${demo.root}/WEB-INF/demo.log")
-	 * @see shuchaowen.spring.web.util.Log4jWebConfigurer
+	 * @see scw.logger.log4j.Log4jWebConfigurer
 	 */
 	public static void setWorkingDirSystemProperty(String key) {
-		SystemPropertyUtils.setProperty(key, new File("").getAbsolutePath());
+		SystemPropertyUtils.setPrivateProperty(key, new File("").getAbsolutePath());
 	}
 
 }

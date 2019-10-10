@@ -165,7 +165,7 @@ public final class WebUtils {
 					+ "' = [" + oldValue + "] instead of [" + root + "] - "
 					+ "Choose unique values for the 'webAppRootKey' context-param in your web.xml files!");
 		}
-		SystemPropertyUtils.setProperty(key, root);
+		SystemPropertyUtils.setPrivateProperty(key, root);
 		servletContext.log("Set web app root system property: '" + key + "' = [" + root + "]");
 	}
 
