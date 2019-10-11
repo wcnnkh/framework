@@ -118,7 +118,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
-
 		Object obj = singletonMap.get(name);
 		if (obj != null) {
 			return (T) obj;

@@ -108,7 +108,6 @@ public final class TypeUtils {
 			try {
 				return Modifier.isAbstract(ClassUtils.forName(type.toString()).getModifiers());
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 			}
 		}
 		return false;
@@ -122,7 +121,6 @@ public final class TypeUtils {
 			try {
 				return ClassUtils.forName(type.toString()).getName();
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 			}
 		}
 
