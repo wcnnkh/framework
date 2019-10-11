@@ -8,7 +8,6 @@ import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
 
-import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.io.serializer.Serializer;
@@ -30,7 +29,7 @@ public class Hessian2Serializer extends Serializer {
 
 	@Override
 	public byte[] serialize(Object data) {
-		UnsafeByteArrayOutputStream out = IOUtils.getUnsafeByteArrayOutputStream();
+		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
 		try {
 			serialize(out, data);
 			return out.toByteArray();

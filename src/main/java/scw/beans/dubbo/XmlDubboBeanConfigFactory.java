@@ -9,7 +9,6 @@ import org.w3c.dom.NodeList;
 import scw.beans.AbstractBeanConfigFactory;
 import scw.beans.BeanFactory;
 import scw.beans.property.ValueWiredManager;
-import scw.core.Destroy;
 import scw.core.PropertyFactory;
 
 public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
@@ -34,13 +33,13 @@ public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 					XmlDubboBean xmlDubboBean = new XmlDubboBean(valueWiredManager, beanFactory, propertyFactory,
 							referenceConfig.getInterfaceClass(), referenceConfig);
 					addBean(xmlDubboBean);
-					addDestroy(new ReferenceConfigDestory(referenceConfig));
+					//addDestroy(new ReferenceConfigDestory(referenceConfig));
 				}
 			}
 		}
 	}
 
-	private static final class ReferenceConfigDestory implements Destroy {
+	/*private static final class ReferenceConfigDestory implements Destroy {
 		private ReferenceConfig<?> referenceConfig;
 
 		public ReferenceConfigDestory(ReferenceConfig<?> referenceConfig) {
@@ -51,5 +50,5 @@ public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 			referenceConfig.destroy();
 		}
 
-	}
+	}*/
 }

@@ -57,7 +57,7 @@ public class JavaSerializer extends Serializer {
 	}
 
 	public byte[] serialize(Object data) {
-		UnsafeByteArrayOutputStream bos = IOUtils.getUnsafeByteArrayOutputStream();
+		UnsafeByteArrayOutputStream bos = new UnsafeByteArrayOutputStream();
 		ObjectOutputStream oos = null;
 		try {
 			oos = new ObjectOutputStream(bos);

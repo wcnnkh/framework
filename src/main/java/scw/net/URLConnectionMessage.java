@@ -27,7 +27,8 @@ public class URLConnectionMessage extends SimpleMultiValueHeadersReadOnly implem
 		this.mimeType = MimeTypeUtils.parseFirstMimeType(urlConnection.getContentType());
 		this.contentEncoding = urlConnection.getContentEncoding();
 
-		UnsafeByteArrayOutputStream out = IOUtils.getUnsafeByteArrayOutputStream();
+		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream(
+				Math.max(urlConnection.getContentLength(), 1024));
 		InputStream in = null;
 		try {
 			in = urlConnection.getInputStream();

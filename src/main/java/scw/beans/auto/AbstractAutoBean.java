@@ -1,7 +1,6 @@
 package scw.beans.auto;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
@@ -51,13 +50,14 @@ public abstract class AbstractAutoBean implements AutoBean {
 			throw new NotSupportException(type.getName());
 		}
 
-		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
+		if (type.isInterface()) {
 			Filter filter = getLastFilter();
 			if (filter != null) {
 				return (T) BeanUtils.proxyInterface(beanFactory, type, filter);
 			}
 			throw new NotSupportException(type.getName());
 		}
+
 		return create(getParameterTypes(), getParameters());
 	}
 

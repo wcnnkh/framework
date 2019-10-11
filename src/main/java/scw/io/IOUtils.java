@@ -95,18 +95,6 @@ public final class IOUtils {
 	private IOUtils() {
 	}
 
-	private static final ThreadLocal<UnsafeByteArrayOutputStream> OUTPUT_LOCAL = new ThreadLocal<UnsafeByteArrayOutputStream>() {
-		protected UnsafeByteArrayOutputStream initialValue() {
-			return new UnsafeByteArrayOutputStream();
-		};
-	};
-
-	public static UnsafeByteArrayOutputStream getUnsafeByteArrayOutputStream() {
-		UnsafeByteArrayOutputStream out = OUTPUT_LOCAL.get();
-		out.reset();
-		return out;
-	}
-
 	public static InputStream limitedInputStream(final InputStream is, final int limit) throws IOException {
 		return new InputStream() {
 			private int mPosition = 0, mMark = 0, mLimit = Math.min(limit, is.available());
@@ -594,7 +582,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 */
 	public static byte[] toByteArray(InputStream input) throws IOException {
-		UnsafeByteArrayOutputStream output = getUnsafeByteArrayOutputStream();
+		UnsafeByteArrayOutputStream output = new UnsafeByteArrayOutputStream();	
 		copy(input, output);
 		return output.toByteArray();
 	}
@@ -689,7 +677,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 */
 	public static byte[] toByteArray(Reader input) throws IOException {
-		UnsafeByteArrayOutputStream output = getUnsafeByteArrayOutputStream();
+		UnsafeByteArrayOutputStream output = new UnsafeByteArrayOutputStream();
 		copy(input, output);
 		return output.toByteArray();
 	}
@@ -716,7 +704,7 @@ public final class IOUtils {
 	 * @since 1.1
 	 */
 	public static byte[] toByteArray(Reader input, String encoding) throws IOException {
-		UnsafeByteArrayOutputStream output = getUnsafeByteArrayOutputStream();
+		UnsafeByteArrayOutputStream output = new UnsafeByteArrayOutputStream();
 		copy(input, output, encoding);
 		return output.toByteArray();
 	}
@@ -2467,7 +2455,7 @@ public final class IOUtils {
 	 */
 	public static byte[] gzipCompress(byte[] data) throws IOException {
 		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(data);
-		UnsafeByteArrayOutputStream out = getUnsafeByteArrayOutputStream();
+		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
 		try {
 			gzipCompress(input, out, Math.min(data.length, DEFAULT_BUFFER_SIZE));
 			return out.toByteArray();
@@ -2504,7 +2492,7 @@ public final class IOUtils {
 	 */
 	public static byte[] gzipUnCompress(byte[] data) throws IOException {
 		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(data);
-		UnsafeByteArrayOutputStream out = getUnsafeByteArrayOutputStream();
+		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
 		try {
 			gzipUnCompress(input, out, Math.min(data.length, DEFAULT_BUFFER_SIZE));
 			return out.toByteArray();

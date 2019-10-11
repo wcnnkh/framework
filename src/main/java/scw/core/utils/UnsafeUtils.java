@@ -1,24 +1,16 @@
 package scw.core.utils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.EnumMap;
-
-import scw.core.exception.NotSupportException;
 
 public class UnsafeUtils {
-	private static final Object INVOKE_INSTANCE;
-	private static final EnumMap<MethodType, Method> METHOD_MAP = new EnumMap<MethodType, Method>(MethodType.class);
+	private static final Object UNSAFE;
 	private static final String CLASS_NAME = "sun.misc.Unsafe";
+	private static final Method ALLOCATE_INSTANCE = getMethod("allocateInstance", Class.class);
 
 	static {
-		INVOKE_INSTANCE = getInvokeInstance();
-		if (INVOKE_INSTANCE != null) {
-			try {
-				init(Class.forName(CLASS_NAME));
-			} catch (Exception e) {
-			}
-		}
+		UNSAFE = getInvokeInstance();
 	}
 
 	private static Object getInvokeInstance() {
@@ -32,43 +24,40 @@ public class UnsafeUtils {
 		}
 	}
 
-	private static void init(Class<?> clz) throws Exception {
-		METHOD_MAP.put(MethodType.allocateInstance, clz.getMethod("allocateInstance", Class.class));
-	}
-
 	private UnsafeUtils() {
 	}
 
 	public static boolean isSupport() {
-		return INVOKE_INSTANCE != null;
-	}
-
-	private enum MethodType {
-		allocateInstance,
-		;
-
-		public Object invoke(Object... args) {
-			try {
-				return METHOD_MAP.get(this).invoke(INVOKE_INSTANCE, args);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
+		return UNSAFE != null;
 	}
 
 	public static Object getUnsafe() {
-		return INVOKE_INSTANCE;
+		return UNSAFE;
 	}
 
-	public static Method getMethod(String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
+	public static Method getMethod(String methodName, Class<?>... parameterTypes) {
 		try {
 			return Class.forName(CLASS_NAME).getMethod(methodName, parameterTypes);
 		} catch (ClassNotFoundException e) {
-			throw new NotSupportException(CLASS_NAME);
+		} catch (NoSuchMethodException e) {
+		} catch (SecurityException e) {
+		}
+		return null;
+	}
+
+	public static Object invoke(Method method, Object... args) {
+		try {
+			return method.invoke(method, args);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(method.toString(), e);
+		} catch (IllegalArgumentException e) {
+			throw new RuntimeException(method.toString(), e);
+		} catch (InvocationTargetException e) {
+			throw new RuntimeException(method.toString(), e);
 		}
 	}
 
 	public static Object allocateInstance(Class<?> type) {
-		return MethodType.allocateInstance.invoke(type);
+		return invoke(ALLOCATE_INSTANCE, type);
 	}
 }

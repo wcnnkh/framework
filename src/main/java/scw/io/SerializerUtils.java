@@ -37,13 +37,18 @@ public final class SerializerUtils {
 
 	public static byte[] class2bytes(Class<?> clazz) {
 		String name = clazz.getName();
-		UnsafeByteArrayOutputStream byteArray = IOUtils.getUnsafeByteArrayOutputStream();
-		for (char c : name.toCharArray()) {
-			byte[] bs = { 0, 0 };
-			Bits.putChar(bs, 0, c);
-			byteArray.write(bs, 0, bs.length);
+		UnsafeByteArrayOutputStream byteArray = null;
+		try {
+			byteArray = new UnsafeByteArrayOutputStream();
+			for (char c : name.toCharArray()) {
+				byte[] bs = { 0, 0 };
+				Bits.putChar(bs, 0, c);
+				byteArray.write(bs, 0, bs.length);
+			}
+			return byteArray.toByteArray();
+		} finally {
+			IOUtils.close(byteArray);
 		}
-		return byteArray.toByteArray();
 	}
 
 	public static Class<?> bytes2class(byte[] bytes) throws ClassNotFoundException {

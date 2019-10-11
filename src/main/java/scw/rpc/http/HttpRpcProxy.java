@@ -10,6 +10,7 @@ import scw.core.PropertyFactory;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
+import scw.core.aop.ProxyUtils;
 import scw.core.instance.InstanceFactory;
 import scw.net.HttpMessage;
 import scw.net.MessageConverter;
@@ -67,6 +68,11 @@ public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter
 
 	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
+		Object ignoreReturn = ProxyUtils.ignoreMethod(proxy, method, args);
+		if (ignoreReturn != null) {
+			return ignoreReturn;
+		}
+
 		if (Modifier.isAbstract(method.getModifiers()) || Modifier.isInterface(method.getModifiers())) {
 			HttpRequest httpRequest = httpRpcRequestFactory.getHttpRequest(method.getDeclaringClass(), method, args);
 			HttpMessage httpMessage = httpRequest.execute();
