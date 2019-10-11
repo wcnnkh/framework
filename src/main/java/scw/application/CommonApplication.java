@@ -1,7 +1,6 @@
 package scw.application;
 
 import java.util.Collection;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
 import scw.application.consumer.AnnotationConsumerUtils;
@@ -13,6 +12,7 @@ import scw.beans.dubbo.DubboUtils;
 import scw.beans.property.ValueWiredManager;
 import scw.beans.property.XmlPropertyFactory;
 import scw.beans.xml.XmlBeanUtils;
+import scw.core.MultiPropertyFactory;
 import scw.core.PropertyFactory;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
@@ -25,34 +25,25 @@ public class CommonApplication implements Application {
 
 	private final XmlBeanFactory beanFactory;
 	private volatile boolean start = false;
-	private final PropertyFactory propertyFactory;
+	private final MultiPropertyFactory propertyFactory = new MultiPropertyFactory();
 	private final String configPath;
-	private final Timer timer;
 	private final int valueRefreshPeriod;
 	private final int propertyRefreshPeriod;
 
-	public String getConfigPath() {
-		return configPath;
-	}
-
-	public CommonApplication(String configXml, PropertyFactory propertyFactory, Timer timer, int valueRefreshPeriod,
-			int propertyRefreshPeriod) {
-		this.timer = timer;
-		this.valueRefreshPeriod = valueRefreshPeriod;
-		this.propertyRefreshPeriod = propertyRefreshPeriod;
-		this.configPath = configXml;
-		this.propertyFactory = propertyFactory == null
-				? new XmlPropertyFactory(this.configPath, timer, propertyRefreshPeriod) : propertyFactory;
-		this.beanFactory = getXmlBeanFactory();
+	public CommonApplication(String configXml) {
+		this(configXml, getGlobalValueWiredRefreshPeriod(), getGlobalPropertyRefreshPeriod());
 	}
 
 	public CommonApplication(String configXml, int valueRefreshPeriod, int propertyRefreshPeriod) {
-		this.timer = new Timer(getClass().getName());
 		this.valueRefreshPeriod = valueRefreshPeriod;
 		this.propertyRefreshPeriod = propertyRefreshPeriod;
 		this.configPath = configXml;
-		this.propertyFactory = new XmlPropertyFactory(getConfigPath(), timer, propertyRefreshPeriod);
+		propertyFactory.add(new XmlPropertyFactory(getConfigPath(), propertyRefreshPeriod));
 		this.beanFactory = getXmlBeanFactory();
+	}
+
+	public String getConfigPath() {
+		return configPath;
 	}
 
 	/**
@@ -83,10 +74,6 @@ public class CommonApplication implements Application {
 		SystemPropertyUtils.setPrivateProperty("scw_global_value_wired_refresh_period", period + "");
 	}
 
-	public CommonApplication(String configXml) {
-		this(configXml, getGlobalValueWiredRefreshPeriod(), getGlobalPropertyRefreshPeriod());
-	}
-
 	public ValueWiredManager getValueWiredManager() {
 		return getBeanFactory().getValueWiredManager();
 	}
@@ -99,9 +86,13 @@ public class CommonApplication implements Application {
 		return propertyRefreshPeriod;
 	}
 
+	public void addPropertyFactory(PropertyFactory propertyFactory) {
+		this.propertyFactory.add(propertyFactory);
+	}
+
 	private XmlBeanFactory getXmlBeanFactory() {
 		try {
-			return new XmlBeanFactory(this.propertyFactory, getConfigPath(), timer, getValueRefreshPeriod()) {
+			return new XmlBeanFactory(this.propertyFactory, getConfigPath(), getValueRefreshPeriod()) {
 				@Override
 				protected String getInitStaticPackage() {
 					return getStaticAnnotationPackage();
@@ -213,6 +204,7 @@ public class CommonApplication implements Application {
 			start = false;
 		}
 
+		propertyFactory.destroy();
 		DubboUtils.destoryAll();
 		beanFactory.destroy();
 		LoggerUtils.destroy();

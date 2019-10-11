@@ -1,7 +1,5 @@
 package scw.mvc.servlet;
 
-import java.util.Timer;
-
 import javax.servlet.ServletConfig;
 
 import scw.application.Application;
@@ -13,15 +11,9 @@ public class ServletApplication implements Application {
 	private final CommonApplication commonApplication;
 
 	public ServletApplication(ServletConfig servletConfig) throws Throwable {
-		Timer timer = new Timer(getClass().getName());
-		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(
-				servletConfig, timer,
-				CommonApplication.getGlobalPropertyRefreshPeriod());
-		this.commonApplication = new CommonApplication(
-				propertyFactory.getConfigXml(), propertyFactory, timer,
-				CommonApplication.getGlobalValueWiredRefreshPeriod(),
-				CommonApplication.getGlobalPropertyRefreshPeriod());
-		;
+		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(servletConfig);
+		this.commonApplication = new CommonApplication(propertyFactory.getConfigXml());
+		this.commonApplication.addPropertyFactory(propertyFactory);
 	}
 
 	public BeanFactory getBeanFactory() {

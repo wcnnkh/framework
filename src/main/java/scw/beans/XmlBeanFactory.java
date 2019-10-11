@@ -2,13 +2,11 @@ package scw.beans;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.Timer;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.dubbo.DubboUtils;
-import scw.beans.property.ValueWiredManager;
 import scw.beans.rpc.HttpRpcBeanConfigFactory;
 import scw.beans.xml.XmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
@@ -22,17 +20,16 @@ import scw.core.utils.XMLUtils;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
 	private final String xmlPath;
-	private ValueWiredManager valueWiredManager;
 
-	public XmlBeanFactory(PropertyFactory propertyFactory, String xmlPath, Timer timer, int period) throws Exception {
-		super(propertyFactory);
+	public XmlBeanFactory(PropertyFactory propertyFactory, String xmlPath, int defaultValueRefreshPeriod)
+			throws Exception {
+		super(propertyFactory, defaultValueRefreshPeriod);
 		this.xmlPath = xmlPath;
 		if (ResourceUtils.isExist(xmlPath)) {
 			Node root = XmlBeanUtils.getRootNode(xmlPath);
 			addFilterName(Arrays
 					.asList(StringUtils.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, root, "filters"))));
 		}
-		this.valueWiredManager = new ValueWiredManager(propertyFactory, this, timer, period);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -170,10 +167,5 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	protected String getInitStaticPackage() {
 		String init = BeanUtils.getInitStaticPackage(propertyFactory);
 		return init == null ? BeanUtils.getAnnotationPackage(propertyFactory) : init;
-	}
-
-	@Override
-	public final ValueWiredManager getValueWiredManager() {
-		return valueWiredManager;
 	}
 }

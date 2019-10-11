@@ -8,22 +8,23 @@ import java.util.TimerTask;
 
 import org.w3c.dom.NodeList;
 
+import scw.core.Destroy;
 import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.logger.LoggerUtils;
 
-public final class AutoRefreshPropertyFactory implements PropertyFactory {
+public final class AutoRefreshPropertyFactory implements PropertyFactory, Destroy {
 	private volatile Map<String, String> propertyMap;
 	private PropertyFactory propertyFactory;
+	private final Timer timer = new Timer(getClass().getName());
 
-	public AutoRefreshPropertyFactory(NodeList nodeList, Timer timer, long defaultRefreshPeriod) {
+	public AutoRefreshPropertyFactory(NodeList nodeList, long defaultRefreshPeriod) {
 		if (nodeList == null || nodeList.getLength() == 0) {
 			return;
 		}
 
 		propertyMap = new HashMap<String, String>();
-		timer = new Timer(AutoRefreshPropertyFactory.class.getName());
 		SimplePropertyFactory tempPropertyFactory = new SimplePropertyFactory(nodeList);
 		for (Properties properties : tempPropertyFactory.getPropertiesList()) {
 			refreshProperties(properties, tempPropertyFactory, true);
@@ -107,5 +108,9 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void destroy() {
+		timer.cancel();
 	}
 }

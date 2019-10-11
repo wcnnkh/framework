@@ -1,8 +1,6 @@
 package scw.beans.dubbo;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -13,9 +11,13 @@ import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.reflect.ReflectUtils;
+import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
 public final class DubboUtils {
+	private static Logger logger = LoggerUtils.getLogger(DubboUtils.class);
+
 	private DubboUtils() {
 	};
 
@@ -84,19 +86,19 @@ public final class DubboUtils {
 		return false;
 	}
 
-	public static BeanConfigFactory getReferenceBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, NodeList nodeList) {
+	public static BeanConfigFactory getReferenceBeanConfigFactory(ValueWiredManager valueWiredManager,
+			BeanFactory beanFactory, PropertyFactory propertyFactory, NodeList nodeList) {
 		if (!xmlExistDubboReference(nodeList)) {
 			return null;
 		}
 
 		if (!isSupport()) {
-			LoggerUtils.warn(DubboUtils.class, "------not support reference dubbo service------");
+			logger.warn("------not support reference dubbo service------");
 			return null;
 		}
 
-		return InstanceUtils.getInstance("scw.beans.dubbo.XmlDubboBeanConfigFactory", valueWiredManager, beanFactory, propertyFactory,
-				nodeList);
+		return InstanceUtils.getInstance("scw.beans.dubbo.XmlDubboBeanConfigFactory", valueWiredManager, beanFactory,
+				propertyFactory, nodeList);
 	}
 
 	public static void exportService(InstanceFactory beanFactory, PropertyFactory propertyFactory, NodeList nodeList) {
@@ -105,7 +107,7 @@ public final class DubboUtils {
 		}
 
 		if (!isSupport()) {
-			LoggerUtils.warn(DubboUtils.class, "------not support export dubbo service------");
+			logger.warn("------not support export dubbo service------");
 			return;
 		}
 
@@ -119,20 +121,22 @@ public final class DubboUtils {
 	}
 
 	public static void destoryAll() {
+		Class<?> dubboShutdownHook = null;
 		try {
-			Class<?> clz = Class.forName("com.alibaba.dubbo.config.ProtocolConfig");
-			Method method = clz.getMethod("destroyAll");
-			if (Modifier.isStatic(method.getModifiers())) {
-				method.invoke(null);
-			}
-		} catch (ClassNotFoundException e) {
-		} catch (NoSuchMethodException e) {
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			dubboShutdownHook = Class.forName("org.apache.dubbo.config.DubboShutdownHook");
+		} catch (ClassNotFoundException e1) {
+		}
+
+		if (dubboShutdownHook == null) {
+			return;
+		}
+
+		try {
+			Object obj = ReflectUtils.invokeStaticMethod(dubboShutdownHook, "getDubboShutdownHook", new Class[0]);
+			Method method = ReflectUtils.findMethod(dubboShutdownHook, "doDestroy");
+			method.invoke(obj);
+		} catch (Exception e) {
+			logger.error(e, "shutdown error");
 		}
 	}
 }

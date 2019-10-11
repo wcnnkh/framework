@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Timer;
 
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
@@ -45,8 +46,11 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	private volatile HashSet<String> notFoundSet = new HashSet<String>();
 	protected final PropertyFactory propertyFactory;
 	private final LinkedList<String> filterNames = new LinkedList<String>();
+	private final Timer timer = new Timer(getClass().getName());
+	private final ValueWiredManager valueWiredManager;
 
-	public AbstractBeanFactory(PropertyFactory propertyFactory) {
+	public AbstractBeanFactory(PropertyFactory propertyFactory, int defaultValueRefreshPeriod) {
+		this.valueWiredManager = new ValueWiredManager(propertyFactory, this, timer, defaultValueRefreshPeriod);
 		this.propertyFactory = propertyFactory;
 		singletonMap.put(PropertyFactory.class.getName(), propertyFactory);
 		singletonMap.put(BeanFactory.class.getName(), this);
@@ -326,6 +330,10 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		return beanDefinition != null;
 	}
 
+	public final ValueWiredManager getValueWiredManager() {
+		return valueWiredManager;
+	}
+
 	public final boolean isInstance(String name) {
 		if (singletonMap.containsKey(name)) {
 			return true;
@@ -354,8 +362,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		return beanDefinition;
 	}
 
-	public abstract ValueWiredManager getValueWiredManager();
-
 	private BeanDefinition newBeanDefinition(String name) {
 		String n = nameMappingMap.get(name);
 		if (n == null) {
@@ -374,14 +380,14 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 		Proxy proxy = clz.getAnnotation(Proxy.class);
 		if (proxy != null) {
-			return new CommonBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz);
+			return new CommonBeanDefinition(valueWiredManager, this, getPropertyFactory(), clz);
 		}
 
 		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, clz.getAnnotation(AutoImpl.class), this,
 				getPropertyFactory());
 		if (autoBean != null) {
 			try {
-				return new AutoBeanDefinition(getValueWiredManager(), this, getPropertyFactory(), clz, autoBean);
+				return new AutoBeanDefinition(valueWiredManager, this, getPropertyFactory(), clz, autoBean);
 			} catch (Exception e) {
 				throw new BeansException(clz.getName(), e);
 			}
@@ -400,7 +406,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 
 		try {
-			BeanUtils.initStatic(getValueWiredManager(), this, getPropertyFactory(),
+			BeanUtils.initStatic(valueWiredManager, this, getPropertyFactory(),
 					ResourceUtils.getClassList(getInitStaticPackage()));
 		} catch (Exception e) {
 			throw new NestedRuntimeException(e);
@@ -408,8 +414,10 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	public synchronized void destroy() {
+		timer.cancel();
+		
 		try {
-			BeanUtils.destroyStaticMethod(getValueWiredManager(), ResourceUtils.getClassList(getInitStaticPackage()));
+			BeanUtils.destroyStaticMethod(valueWiredManager, ResourceUtils.getClassList(getInitStaticPackage()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
