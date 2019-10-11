@@ -8,8 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import redis.clients.jedis.JedisCluster;
-import scw.data.redis.RedisUtils;
 import scw.data.redis.ResourceManager;
+import scw.data.redis.enums.EXPX;
+import scw.data.redis.enums.NXXX;
+import scw.data.redis.jedis.JedisUtils;
 import scw.data.redis.operations.AbstractStringRedisOperations;
 
 public abstract class AbstractClusterStringOperations extends AbstractStringRedisOperations
@@ -267,11 +269,11 @@ public abstract class AbstractClusterStringOperations extends AbstractStringRedi
 		}
 	}
 
-	public Boolean set(String key, String value, String nxxx, String expx, long time) {
+	public Boolean set(String key, String value, NXXX nxxx, EXPX expx, long time) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return RedisUtils.isOK(jedisCluster.set(key, value, nxxx, expx, time));
+			return JedisUtils.isOK(jedisCluster.set(key, value, JedisUtils.parseSetParams(nxxx, expx, time)));
 		} finally {
 			close(jedisCluster);
 		}
@@ -371,7 +373,7 @@ public abstract class AbstractClusterStringOperations extends AbstractStringRedi
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return RedisUtils.isOK(jedisCluster.hmset(key, hash));
+			return JedisUtils.isOK(jedisCluster.hmset(key, hash));
 		} finally {
 			close(jedisCluster);
 		}

@@ -1,0 +1,29 @@
+package scw.data.redis.jedis;
+
+import redis.clients.jedis.params.SetParams;
+import scw.data.redis.enums.EXPX;
+import scw.data.redis.enums.NXXX;
+
+public class JedisUtils {
+	private static final String OK = "OK";
+
+	public static boolean isOK(String value) {
+		return OK.equals(value);
+	}
+	
+	public static SetParams parseSetParams(NXXX nxxx, EXPX expx, long time){
+		SetParams setParams = new SetParams();
+		if(nxxx == NXXX.NX){
+			setParams.nx();
+		}else if(nxxx == NXXX.XX){
+			setParams.xx();
+		}
+		
+		if(expx == EXPX.EX){
+			setParams.ex((int)time);
+		}else if(expx == EXPX.PX){
+			setParams.px(time);
+		}
+		return setParams;
+	}
+}

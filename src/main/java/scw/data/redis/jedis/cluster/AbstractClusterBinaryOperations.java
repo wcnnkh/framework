@@ -8,12 +8,14 @@ import java.util.Map;
 import java.util.Set;
 
 import redis.clients.jedis.JedisCluster;
-import scw.data.redis.RedisUtils;
 import scw.data.redis.ResourceManager;
+import scw.data.redis.enums.EXPX;
+import scw.data.redis.enums.NXXX;
+import scw.data.redis.jedis.JedisUtils;
 import scw.data.redis.operations.AbstractBinaryRedisOperations;
 
-public abstract class AbstractClusterBinaryOperations extends
-		AbstractBinaryRedisOperations implements ResourceManager<JedisCluster> {
+public abstract class AbstractClusterBinaryOperations extends AbstractBinaryRedisOperations
+		implements ResourceManager<JedisCluster> {
 
 	public byte[] get(byte[] key) {
 		JedisCluster jedisCluster = null;
@@ -267,13 +269,11 @@ public abstract class AbstractClusterBinaryOperations extends
 		}
 	}
 
-	public Boolean set(byte[] key, byte[] value, byte[] nxxx, byte[] expx,
-			long time) {
+	public Boolean set(byte[] key, byte[] value, NXXX nxxx, EXPX expx, long time) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return RedisUtils.isOK(jedisCluster.set(key, value, nxxx, expx,
-					time));
+			return JedisUtils.isOK(jedisCluster.set(key, value, JedisUtils.parseSetParams(nxxx, expx, time)));
 		} finally {
 			close(jedisCluster);
 		}
@@ -373,7 +373,7 @@ public abstract class AbstractClusterBinaryOperations extends
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = getResource();
-			return RedisUtils.isOK(jedisCluster.hmset(key, hash));
+			return JedisUtils.isOK(jedisCluster.hmset(key, hash));
 		} finally {
 			close(jedisCluster);
 		}

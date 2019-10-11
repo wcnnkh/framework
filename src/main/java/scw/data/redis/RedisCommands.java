@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import scw.data.redis.enums.EXPX;
+import scw.data.redis.enums.NXXX;
+
 public interface RedisCommands<K, V> {
 
 	V get(K key);
@@ -91,20 +94,7 @@ public interface RedisCommands<K, V> {
 
 	Long zadd(K key, long score, V member);
 
-	/**
-	 * EX second ：设置键的过期时间为 second 秒。 SET key value EX second 效果等同于 SETEX key
-	 * second value 。 PX millisecond ：设置键的过期时间为 millisecond 毫秒。 SET key value PX
-	 * millisecond 效果等同于 PSETEX key millisecond value 。 NX ：只在键不存在时，才对键进行设置操作。
-	 * SET key value NX 效果等同于 SETNX key value 。 XX ：只在键已经存在时，才对键进行设置操作。
-	 * 
-	 * @param key
-	 * @param value
-	 * @param nxxx
-	 * @param expe
-	 * @param time
-	 * @return
-	 */
-	Boolean set(K key, V value, K nxxx, K expx, long time);
+	Boolean set(K key, V value, NXXX nxxx, EXPX expx, long time);
 
 	Boolean sIsMember(K key, V member);
 

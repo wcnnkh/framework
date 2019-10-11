@@ -7,7 +7,8 @@ import java.util.Map;
 
 import scw.core.utils.CollectionUtils;
 import scw.data.redis.Redis;
-import scw.data.redis.RedisUtils;
+import scw.data.redis.enums.EXPX;
+import scw.data.redis.enums.NXXX;
 
 public final class RedisFullCacheManager extends FullCacheManager {
 	private final Redis redis;
@@ -17,13 +18,13 @@ public final class RedisFullCacheManager extends FullCacheManager {
 	}
 
 	public void add(String key, Object value) {
-		redis.getObjectOperations().set(key, value, RedisUtils.NX,
-				RedisUtils.EX, 0);
+		redis.getObjectOperations().set(key, value, NXXX.NX,
+				EXPX.EX, 0);
 	}
 
 	public void set(String key, Object value) {
-		redis.getObjectOperations().set(key, value, RedisUtils.XX,
-				RedisUtils.EX, 0);
+		redis.getObjectOperations().set(key, value, NXXX.XX,
+				EXPX.EX, 0);
 	}
 
 	public void delete(String key) {

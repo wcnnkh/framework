@@ -11,6 +11,8 @@ import java.util.Set;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.data.redis.RedisOperations;
+import scw.data.redis.enums.EXPX;
+import scw.data.redis.enums.NXXX;
 
 public abstract class AbstractPrefixRedisOperationsWrapper<V> implements RedisOperations<String, V> {
 
@@ -141,7 +143,7 @@ public abstract class AbstractPrefixRedisOperationsWrapper<V> implements RedisOp
 		return getStringOperations().zadd(formatKey(key), score, member);
 	}
 
-	public Boolean set(String key, V value, String nxxx, String expx, long time) {
+	public Boolean set(String key, V value, NXXX nxxx, EXPX expx, long time) {
 		return getStringOperations().set(formatKey(key), value, nxxx, expx, time);
 	}
 

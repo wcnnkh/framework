@@ -9,8 +9,9 @@ import java.util.Map;
 import java.util.Set;
 
 import redis.clients.jedis.Jedis;
-import scw.data.redis.RedisUtils;
 import scw.data.redis.ResourceManager;
+import scw.data.redis.enums.EXPX;
+import scw.data.redis.enums.NXXX;
 import scw.data.redis.operations.AbstractBinaryRedisOperations;
 
 public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisOperations
@@ -268,11 +269,11 @@ public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisO
 		}
 	}
 
-	public Boolean set(byte[] key, byte[] value, byte[] nxxx, byte[] expx, long time) {
+	public Boolean set(byte[] key, byte[] value, NXXX nxxx, EXPX expx, long time) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return RedisUtils.isOK(jedis.set(key, value, nxxx, expx, time));
+			return JedisUtils.isOK(jedis.set(key, value, JedisUtils.parseSetParams(nxxx, expx, time)));
 		} finally {
 			close(jedis);
 		}
@@ -374,7 +375,7 @@ public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisO
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return RedisUtils.isOK(jedis.hmset(key, hash));
+			return JedisUtils.isOK(jedis.hmset(key, hash));
 		} finally {
 			close(jedis);
 		}

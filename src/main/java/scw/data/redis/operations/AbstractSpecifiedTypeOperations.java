@@ -14,6 +14,8 @@ import java.util.Set;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.data.redis.RedisOperations;
+import scw.data.redis.enums.EXPX;
+import scw.data.redis.enums.NXXX;
 import scw.io.Bytes;
 import scw.io.serializer.Serializer;
 
@@ -300,13 +302,13 @@ public abstract class AbstractSpecifiedTypeOperations<T> implements RedisOperati
 		return getBinaryOperations().zadd(Bytes.string2bytes(key), score, getSerializer().serialize(type, member));
 	}
 
-	public Boolean set(String key, T value, String nxxx, String expx, long time) {
+	public Boolean set(String key, T value, NXXX nxxx, EXPX expx, long time) {
 		if (key == null || value == null || nxxx == null || expx == null) {
 			return false;
 		}
 
 		return getBinaryOperations().set(Bytes.string2bytes(key), getSerializer().serialize(type, value),
-				Bytes.string2bytes(nxxx), Bytes.string2bytes(expx), time);
+				nxxx, expx, time);
 	}
 
 	public Boolean sIsMember(String key, T member) {

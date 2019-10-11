@@ -9,13 +9,14 @@ import java.util.Map;
 import java.util.Set;
 
 import redis.clients.jedis.Jedis;
-import scw.data.redis.RedisUtils;
 import scw.data.redis.ResourceManager;
+import scw.data.redis.enums.EXPX;
+import scw.data.redis.enums.NXXX;
 import scw.data.redis.operations.AbstractStringRedisOperations;
 
 public abstract class AbstractJedisStringOperations extends AbstractStringRedisOperations
 		implements ResourceManager<Jedis> {
-	
+
 	public String get(String key) {
 		Jedis jedis = null;
 		try {
@@ -30,7 +31,7 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			RedisUtils.isOK(jedis.set(key, value));
+			JedisUtils.isOK(jedis.set(key, value));
 		} finally {
 			close(jedis);
 		}
@@ -46,7 +47,7 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 		}
 	}
 
-	public void setex(String key, int  seconds, String value) {
+	public void setex(String key, int seconds, String value) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
@@ -268,11 +269,11 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 		}
 	}
 
-	public Boolean set(String key, String value, String nxxx, String expx, long time) {
+	public Boolean set(String key, String value, NXXX nxxx, EXPX expx, long time) {
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return RedisUtils.isOK(jedis.set(key, value, nxxx, expx, time));
+			return JedisUtils.isOK(jedis.set(key, value, JedisUtils.parseSetParams(nxxx, expx, time)));
 		} finally {
 			close(jedis);
 		}
@@ -374,7 +375,7 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 		Jedis jedis = null;
 		try {
 			jedis = getResource();
-			return RedisUtils.isOK(jedis.hmset(key, hash));
+			return JedisUtils.isOK(jedis.hmset(key, hash));
 		} finally {
 			close(jedis);
 		}
