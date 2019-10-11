@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import scw.core.IP;
 import scw.core.annotation.Headers;
 import scw.core.context.Context;
 import scw.core.exception.NotSupportException;
@@ -24,6 +25,15 @@ public final class MvcRpcUtils {
 	private MvcRpcUtils() {
 	};
 
+	private static ShareData privateGetShareData() {
+		Context context = MVCUtils.getContext();
+		if (context == null) {
+			return null;
+		}
+
+		return (ShareData) context.getResource(MvcRpcUtils.class);
+	}
+
 	public static ShareData getShareData() {
 		Context context = MVCUtils.getContext();
 		if (context == null) {
@@ -38,6 +48,27 @@ public final class MvcRpcUtils {
 		return shareData;
 	}
 
+	@SuppressWarnings("rawtypes")
+	public static String getIP() {
+		Channel channel = MVCUtils.getContextChannel();
+		if (channel == null) {
+			return null;
+		}
+
+		if (channel instanceof IP) {
+			return ((IP) channel).getIP();
+		}
+
+		if (channel instanceof RequestResponseModel) {
+			Request request = ((RequestResponseModel) channel).getRequest();
+			if (request instanceof IP) {
+				return ((IP) request).getIP();
+			}
+		}
+
+		return null;
+	}
+
 	public static Map<String, Object> getParameterMap(Method method, Object[] args, boolean appendMvcParameterMap) {
 		String[] names = ClassUtils.getParameterName(method);
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
@@ -48,8 +79,10 @@ public final class MvcRpcUtils {
 		}
 
 		if (appendMvcParameterMap) {
-			ShareData shareData = getShareData();
-			map.putAll(shareData.getParameterMap());
+			ShareData shareData = privateGetShareData();
+			if (shareData != null) {
+				map.putAll(shareData.getParameterMap());
+			}
 		}
 		return map;
 	}
@@ -105,12 +138,9 @@ public final class MvcRpcUtils {
 			}
 		}
 
-		Context context = MVCUtils.getContext();
-		if (context != null) {
-			ShareData shareData = (ShareData) context.getResource(MvcRpcUtils.class);
-			if (shareData != null) {
-				map.putAll(shareData.getHeaderMap());
-			}
+		ShareData shareData = privateGetShareData();
+		if (shareData != null) {
+			map.putAll(shareData.getHeaderMap());
 		}
 		return map;
 	}

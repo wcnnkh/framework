@@ -5,7 +5,9 @@ import java.lang.reflect.Method;
 import java.net.URLConnection;
 import java.util.Map;
 
+import scw.core.header.HeadersConstants;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
 import scw.io.Bytes;
 import scw.io.serializer.Serializer;
 import scw.net.http.HttpRequest;
@@ -32,8 +34,7 @@ public class HttpObjectRpcRequestFactory implements HttpRpcRequestFactory {
 
 	public HttpRequest getHttpRequest(Class<?> clazz, Method method, Object[] args) throws Exception {
 		long cts = System.currentTimeMillis();
-		final ObjectRpcRequestMessage objectRpcRequestMessage = new ObjectRpcRequestMessage(clazz, method,
-				args);
+		final ObjectRpcRequestMessage objectRpcRequestMessage = new ObjectRpcRequestMessage(clazz, method, args);
 		objectRpcRequestMessage.setAttribute("t", cts);
 		objectRpcRequestMessage.setAttribute("sign",
 				(SignatureUtils.byte2hex(SignatureUtils.md5(Bytes.string2bytes(cts + sign)))));
@@ -51,6 +52,10 @@ public class HttpObjectRpcRequestFactory implements HttpRpcRequestFactory {
 			request.setRequestProperties(headerMap);
 		}
 
+		String ip = MvcRpcUtils.getIP();
+		if (StringUtils.isNotEmpty(ip)) {
+			request.setRequestProperties(HeadersConstants.X_FORWARDED_FOR, ip);
+		}
 		request.setContentType(MimeTypeConstants.APPLICATION_OCTET_STREAM);
 		return request;
 	}

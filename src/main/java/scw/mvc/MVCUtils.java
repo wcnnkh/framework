@@ -394,7 +394,7 @@ public final class MVCUtils implements MvcConstants {
 	 * @return
 	 */
 	public static String getIP(HttpRequest request) {
-		String ip = request.getHeader("x-forwarded-for");
+		String ip = request.getHeader(HeadersConstants.X_FORWARDED_FOR);
 		return ip == null ? request.getRemoteAddr() : ip;
 	}
 

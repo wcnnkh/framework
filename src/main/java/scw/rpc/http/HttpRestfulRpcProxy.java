@@ -22,7 +22,7 @@ import scw.rpc.support.ObjectRpcMessageConvert;
 
 public class HttpRestfulRpcProxy implements Filter, RpcConstants {
 	private static final String[] DEFAULT_SHARE_HEADERS = new String[] { HeadersConstants.CONTENT_TYPE,
-			HeadersConstants.COOKIE };
+			HeadersConstants.COOKIE, HeadersConstants.X_FORWARDED_FOR };
 	private HttpRpcProxy httpRpcProxy;
 
 	public HttpRestfulRpcProxy(InstanceFactory instanceFactory, PropertyFactory propertyFactory,

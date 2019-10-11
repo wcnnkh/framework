@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.core.header.HeadersConstants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
@@ -23,6 +24,10 @@ public class HttpRestfulRpcRequest extends HttpRequest {
 			throws UnsupportedEncodingException {
 		super(method, requestUrl);
 		this.charsetName = charsetName;
+		String ip = MvcRpcUtils.getIP();
+		if (StringUtils.isNotEmpty(ip)) {
+			setRequestProperties(HeadersConstants.X_FORWARDED_FOR, ip);
+		}
 	}
 
 	@Override
@@ -60,7 +65,7 @@ public class HttpRestfulRpcRequest extends HttpRequest {
 	}
 
 	protected boolean isJsonRequest(URLConnection urlConnection) {
-		return StringUtils.contains(urlConnection.getRequestProperty("Content-Type"), MimeTypeConstants.APPLICATION_JSON_VALUE,
-				true);
+		return StringUtils.contains(urlConnection.getRequestProperty("Content-Type"),
+				MimeTypeConstants.APPLICATION_JSON_VALUE, true);
 	}
 }

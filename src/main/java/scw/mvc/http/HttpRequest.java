@@ -1,5 +1,6 @@
 package scw.mvc.http;
 
+import scw.core.IP;
 import scw.core.attribute.Attributes;
 import scw.core.header.MultiValueHeadersReadOnly;
 import scw.core.multivalue.MultiValueParameterFactory;
@@ -7,7 +8,7 @@ import scw.mvc.Request;
 import scw.net.http.Cookie;
 import scw.security.session.Session;
 
-public interface HttpRequest extends Attributes<Object>, MultiValueHeadersReadOnly, Request, MultiValueParameterFactory {
+public interface HttpRequest extends Attributes<Object>, MultiValueHeadersReadOnly, Request, MultiValueParameterFactory, IP {
 	String getMethod();
 
 	String getRequestPath();
@@ -45,8 +46,6 @@ public interface HttpRequest extends Attributes<Object>, MultiValueHeadersReadOn
 	 *         client
 	 */
 	String getRemoteHost();
-
-	String getIP();
 
 	boolean isAjax();
 
