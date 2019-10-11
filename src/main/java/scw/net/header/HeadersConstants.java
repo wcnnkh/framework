@@ -1,4 +1,4 @@
-package scw.core.header;
+package scw.net.header;
 
 public interface HeadersConstants {
 	public static final String CONTENT_TYPE = "Content-Type";

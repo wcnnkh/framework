@@ -2,9 +2,9 @@ package scw.mvc.http;
 
 import scw.core.IP;
 import scw.core.attribute.Attributes;
-import scw.core.header.MultiValueHeadersReadOnly;
 import scw.core.multivalue.MultiValueParameterFactory;
 import scw.mvc.Request;
+import scw.net.header.MultiValueHeadersReadOnly;
 import scw.net.http.Cookie;
 import scw.security.session.Session;
 

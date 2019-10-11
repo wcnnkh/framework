@@ -1,4 +1,4 @@
-package scw.core.header;
+package scw.net.header;
 
 import scw.core.multivalue.MultiValueMap;
 

@@ -7,10 +7,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.core.header.HeadersConstants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
+import scw.net.header.HeadersConstants;
 import scw.net.http.HttpRequest;
 import scw.net.http.HttpUtils;
 import scw.net.http.Method;

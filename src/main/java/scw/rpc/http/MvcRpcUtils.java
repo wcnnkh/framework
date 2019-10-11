@@ -11,7 +11,6 @@ import scw.core.IP;
 import scw.core.annotation.Headers;
 import scw.core.context.Context;
 import scw.core.exception.NotSupportException;
-import scw.core.header.HeadersReadOnly;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -20,6 +19,7 @@ import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
 import scw.mvc.Request;
 import scw.mvc.RequestResponseModel;
+import scw.net.header.HeadersReadOnly;
 
 public final class MvcRpcUtils {
 	private MvcRpcUtils() {

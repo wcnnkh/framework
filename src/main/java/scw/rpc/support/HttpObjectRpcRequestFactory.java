@@ -5,11 +5,11 @@ import java.lang.reflect.Method;
 import java.net.URLConnection;
 import java.util.Map;
 
-import scw.core.header.HeadersConstants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.Bytes;
 import scw.io.serializer.Serializer;
+import scw.net.header.HeadersConstants;
 import scw.net.http.HttpRequest;
 import scw.net.mime.MimeTypeConstants;
 import scw.rpc.http.HttpRpcRequestFactory;

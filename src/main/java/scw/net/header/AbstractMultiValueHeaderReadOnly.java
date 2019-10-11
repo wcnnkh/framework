@@ -1,4 +1,4 @@
-package scw.core.header;
+package scw.net.header;
 
 import java.util.Collections;
 import java.util.Enumeration;

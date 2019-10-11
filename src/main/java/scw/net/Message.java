@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
-import scw.core.header.MultiValueHeadersReadOnly;
+import scw.net.header.MultiValueHeadersReadOnly;
 import scw.net.mime.MimeType;
 
 public interface Message extends MultiValueHeadersReadOnly {

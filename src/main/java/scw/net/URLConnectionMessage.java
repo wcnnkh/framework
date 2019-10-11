@@ -8,11 +8,11 @@ import java.net.URLConnection;
 import java.util.Collection;
 
 import scw.core.Constants;
-import scw.core.header.SimpleMultiValueHeadersReadOnly;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
+import scw.net.header.SimpleMultiValueHeadersReadOnly;
 import scw.net.mime.MimeType;
 import scw.net.mime.MimeTypeUtils;
 
