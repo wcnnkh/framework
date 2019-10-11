@@ -1,5 +1,6 @@
 package scw.beans.auto;
 
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -7,6 +8,7 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.AutoImpl;
 import scw.core.Constants;
 import scw.core.PropertyFactory;
+import scw.core.annotation.Host;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -19,6 +21,7 @@ import scw.db.DB;
 import scw.logger.LazyLogger;
 import scw.logger.Logger;
 import scw.result.ResultFactory;
+import scw.rpc.http.HttpRestfulRpcProxy;
 
 public final class DefaultAutoBeanService implements AutoBeanService {
 	private static Logger logger = new LazyLogger(DefaultAutoBeanService.class);
@@ -49,6 +52,21 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 				if (ClassUtils.isExist(name) && beanFactory.isInstance(name)) {
 					logger.info("{} reference {}", clazz.getName(), name);
 					return new ReferenceAutoBean(beanFactory, name);
+				}
+			}
+		}
+
+		if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
+			// Host注解
+			Host host = clazz.getAnnotation(Host.class);
+			if (host != null) {
+				String proxyName = propertyFactory.getProperty("rpc.http.host.proxy");
+				if (StringUtils.isEmpty(proxyName)) {
+					proxyName = HttpRestfulRpcProxy.class.getName();
+				}
+
+				if (beanFactory.isInstance(proxyName)) {
+					return new ProxyAutoBean(beanFactory, clazz, proxyName);
 				}
 			}
 		}

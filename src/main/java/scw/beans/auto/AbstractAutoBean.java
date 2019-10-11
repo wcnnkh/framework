@@ -1,9 +1,11 @@
 package scw.beans.auto;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.core.aop.Filter;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
@@ -20,7 +22,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 		this.type = type;
 		this.proxy = BeanUtils.checkProxy(type);
 	}
-	
+
 	public boolean isInstance() {
 		return getParameterTypes() != null;
 	}
@@ -28,6 +30,8 @@ public abstract class AbstractAutoBean implements AutoBean {
 	protected abstract Class<?>[] getParameterTypes();
 
 	protected abstract Object[] getParameters();
+
+	protected abstract Filter getLastFilter();
 
 	protected boolean isProxy() {
 		return proxy;
@@ -41,12 +45,20 @@ public abstract class AbstractAutoBean implements AutoBean {
 		return type;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T create() {
 		if (!isInstance()) {
 			throw new NotSupportException(type.getName());
 		}
 
-		return create(getParameterTypes(),getParameters());
+		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
+			Filter filter = getLastFilter();
+			if (filter != null) {
+				return (T) BeanUtils.proxyInterface(beanFactory, type, filter);
+			}
+			throw new NotSupportException(type.getName());
+		}
+		return create(getParameterTypes(), getParameters());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -57,7 +69,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 		}
 
 		if (isProxy()) {
-			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory, null);
+			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory, getLastFilter());
 			return (T) enhancer.create(constructor.getParameterTypes(), params);
 		} else {
 			try {
@@ -76,7 +88,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 		}
 
 		if (isProxy()) {
-			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory, null);
+			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory, getLastFilter());
 			return (T) enhancer.create(constructor.getParameterTypes(), params);
 		} else {
 			try {

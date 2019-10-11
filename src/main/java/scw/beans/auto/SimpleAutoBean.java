@@ -2,6 +2,7 @@ package scw.beans.auto;
 
 import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
+import scw.core.aop.Filter;
 import scw.core.instance.AutoInstanceConfig;
 import scw.core.instance.InstanceConfig;
 import scw.logger.Logger;
@@ -40,4 +41,8 @@ public class SimpleAutoBean extends AbstractAutoBean {
 		return instanceConfig.getArgs();
 	}
 
+	@Override
+	protected Filter getLastFilter() {
+		return null;
+	}
 }
