@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -24,6 +25,7 @@ import java.util.Set;
 import scw.core.Assert;
 import scw.core.PropertyFactory;
 import scw.core.Verification;
+import scw.core.annotation.Order;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceFactory;
@@ -31,6 +33,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CloneUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.CompareUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
@@ -464,8 +467,7 @@ public final class ReflectUtils {
 						return method;
 					}
 				} else {
-					Method specificMethod = findMethod(targetClass, method.getName(),
-							method.getParameterTypes());
+					Method specificMethod = findMethod(targetClass, method.getName(), method.getParameterTypes());
 					return (specificMethod != null ? specificMethod : method);
 				}
 			} catch (AccessControlException ex) {
@@ -1284,5 +1286,43 @@ public final class ReflectUtils {
 			throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, ClassNotFoundException {
 		return invokeStaticMethod(Class.forName(className), name, parameterTypes, params);
+	}
+
+	public static <T> Collection<Constructor<?>> getConstructorOrderList(Class<?> clazz) {
+		LinkedList<Constructor<?>> autoList = new LinkedList<Constructor<?>>();
+		LinkedList<Constructor<?>> defList = new LinkedList<Constructor<?>>();
+		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+			Order order = constructor.getAnnotation(Order.class);
+			if (order == null) {
+				defList.add(constructor);
+			} else {
+				autoList.add(constructor);
+			}
+		}
+
+		autoList.sort(new Comparator<Constructor<?>>() {
+
+			public int compare(Constructor<?> o1, Constructor<?> o2) {
+				Order auto1 = o1.getAnnotation(Order.class);
+				Order auto2 = o2.getAnnotation(Order.class);
+				return CompareUtils.compare(auto1.value(), auto2.value(), true);
+			}
+		});
+
+		defList.sort(new Comparator<Constructor<?>>() {
+
+			public int compare(Constructor<?> o1, Constructor<?> o2) {
+				int v1 = o1.getParameterTypes().length;
+				int v2 = o2.getParameterTypes().length;
+
+				if (v1 == v2) {
+					return CompareUtils.compare(o1.getModifiers(), o2.getModifiers(), false);
+				}
+				return CompareUtils.compare(v1, v2, true);
+			}
+		});
+
+		autoList.addAll(defList);
+		return autoList;
 	}
 }

@@ -7,7 +7,10 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Map;
 
+import com.alibaba.druid.pool.DruidDataSource;
+
 import scw.beans.annotation.Bean;
+import scw.core.annotation.Order;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
@@ -16,8 +19,6 @@ import scw.db.async.AsyncInfo;
 import scw.db.cache.LazyCacheManager;
 import scw.db.database.DataBase;
 import scw.mq.MQ;
-
-import com.alibaba.druid.pool.DruidDataSource;
 
 @SuppressWarnings("rawtypes")
 @Bean(proxy = false)
@@ -97,6 +98,11 @@ public class DruidDB extends LazyCacheDB {
 		init(properties);
 	}
 	
+	/**
+	 * 优先使用此构造方法
+	 * @param propertiesFile
+	 */
+	@Order
 	public DruidDB(String propertiesFile) {
 		init(PropertiesUtils.getProperties(propertiesFile));
 	}

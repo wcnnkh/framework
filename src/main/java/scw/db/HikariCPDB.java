@@ -10,6 +10,7 @@ import java.util.Map;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import scw.core.annotation.Order;
 import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
@@ -105,6 +106,7 @@ public class HikariCPDB extends LazyCacheDB{
 		init(properties);
 	}
 	
+	@Order
 	public HikariCPDB(String propertiesFile) {
 		super();
 		init(PropertiesUtils.getProperties(propertiesFile));

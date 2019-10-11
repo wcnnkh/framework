@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map.Entry;
 
+import scw.core.annotation.Order;
 import scw.core.cglib.proxy.Factory;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectUtils;
@@ -327,8 +328,8 @@ public final class ORMUtils {
 					return true;
 				}
 			});
-			Table t = table.getAnnotation(Table.class);
-			this.order = t == null ? 0 : t.sort();
+			Order t = table.getAnnotation(Order.class);
+			this.order = t == null ? 0 : t.value();
 		}
 
 		public int getOrder() {

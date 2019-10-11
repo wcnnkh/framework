@@ -29,10 +29,4 @@ public @interface Table {
 	public boolean create() default true;
 
 	public String comment() default "";
-
-	/**
-	 * 出现继承时字段的顺序
-	 * @return
-	 */
-	public int sort() default 0;
 }

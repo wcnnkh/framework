@@ -4,21 +4,18 @@ import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.Map;
 
 import scw.core.PropertyFactory;
 import scw.core.ValueFactory;
 import scw.core.annotation.ParameterName;
 import scw.core.annotation.ParameterValue;
-import scw.core.instance.annotation.Auto;
 import scw.core.instance.annotation.PropertyParameter;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.reflect.ParameterConfig;
 import scw.core.reflect.ParameterUtils;
+import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.CompareUtils;
 import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
@@ -32,40 +29,8 @@ public class AutoInstanceConfig implements InstanceConfig {
 	private Constructor<?> constructor;
 	private ParameterConfig[] parameterConfigs;
 
-	private static LinkedList<Constructor<?>> getAutoConstructorList(Class<?> clazz) {
-		LinkedList<Constructor<?>> autoList = new LinkedList<Constructor<?>>();
-		LinkedList<Constructor<?>> defList = new LinkedList<Constructor<?>>();
-		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-			Auto auto = constructor.getAnnotation(Auto.class);
-			if (auto == null) {
-				defList.add(constructor);
-			} else {
-				autoList.add(constructor);
-			}
-		}
-
-		autoList.sort(new Comparator<Constructor<?>>() {
-
-			public int compare(Constructor<?> o1, Constructor<?> o2) {
-				Auto auto1 = o1.getAnnotation(Auto.class);
-				Auto auto2 = o2.getAnnotation(Auto.class);
-				return CompareUtils.compare(auto1 == null ? 0 : auto1.value(), auto2 == null ? 0 : auto2.value(), true);
-			}
-		});
-
-		defList.sort(new Comparator<Constructor<?>>() {
-
-			public int compare(Constructor<?> o1, Constructor<?> o2) {
-				return CompareUtils.compare(o1.getParameterTypes().length, o2.getParameterTypes().length, true);
-			}
-		});
-
-		autoList.addAll(defList);
-		return autoList;
-	}
-
 	public AutoInstanceConfig(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz) {
-		this(instanceFactory, propertyFactory, StringParse.DEFAULT, clazz, getAutoConstructorList(clazz));
+		this(instanceFactory, propertyFactory, StringParse.DEFAULT, clazz, ReflectUtils.getConstructorOrderList(clazz));
 	}
 
 	public AutoInstanceConfig(InstanceFactory instanceFactory, PropertyFactory propertyFactory,

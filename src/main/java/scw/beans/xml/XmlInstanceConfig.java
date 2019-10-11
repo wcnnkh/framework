@@ -22,11 +22,12 @@ public class XmlInstanceConfig implements InstanceConfig {
 		if (ArrayUtils.isEmpty(xmlBeanParameters)) {
 			this.constructor = ReflectUtils.getConstructor(clazz, false);
 		} else {
-			for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+			for (Constructor<?> constructor : ReflectUtils.getConstructorOrderList(clazz)	) {
 				XmlBeanParameter[] beanMethodParameters = BeanUtils.sortParameters(constructor, xmlBeanParameters);
 				if (beanMethodParameters != null) {
 					this.xmlBeanParameters = beanMethodParameters;
 					this.constructor = constructor;
+					break;
 				}
 			}
 		}
