@@ -132,7 +132,7 @@ public final class MVCUtils implements MvcConstants {
 			try {
 				channel.write(errorResult);
 			} catch (Throwable e1) {
-				logger.error(e1, channel.toString());
+				channel.getLogger().error(e1, channel.toString());
 			}
 		} finally {
 			try {
@@ -143,7 +143,7 @@ public final class MVCUtils implements MvcConstants {
 				MVC_CONTEXT_MANAGER.release(context);
 				t = System.currentTimeMillis() - t;
 				if (t > warnExecuteTime) {
-					logger.warn("执行{}超时，用时{}ms", channel.toString(), t);
+					channel.getLogger().warn("执行{}超时，用时{}ms", channel.toString(), t);
 				}
 			}
 		}
