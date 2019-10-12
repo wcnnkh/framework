@@ -1,21 +1,14 @@
 package scw.core.utils;
 
 import java.beans.Introspector;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -24,8 +17,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import scw.core.Assert;
 import scw.core.LocalVariableTableParameterNameDiscoverer;
@@ -118,96 +109,6 @@ public final class ClassUtils {
 
 	private ClassUtils() {
 	};
-
-	/**
-	 * String
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isStringType(Class<?> type) {
-		return String.class.isAssignableFrom(type);
-	}
-
-	/**
-	 * Character || char
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isCharType(Class<?> type) {
-		return Character.class.isAssignableFrom(type) || char.class.isAssignableFrom(type);
-	}
-
-	/**
-	 * Byte || byte
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isByteType(Class<?> type) {
-		return byte.class.isAssignableFrom(type) || Byte.class.isAssignableFrom(type);
-	}
-
-	/**
-	 * Short || short
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isShortType(Class<?> type) {
-		return short.class.isAssignableFrom(type) || Short.class.isAssignableFrom(type);
-	}
-
-	/**
-	 * Integer || int
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isIntType(Class<?> type) {
-		return int.class.isAssignableFrom(type) || Integer.class.isAssignableFrom(type);
-	}
-
-	/**
-	 * Long || long
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isLongType(Class<?> type) {
-		return long.class.isAssignableFrom(type) || Long.class.isAssignableFrom(type);
-	}
-
-	/**
-	 * Float || float
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isFloatType(Class<?> type) {
-		return float.class.isAssignableFrom(type) || Float.class.isAssignableFrom(type);
-	}
-
-	/**
-	 * Double || double
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isDoubleType(Class<?> type) {
-		return double.class.isAssignableFrom(type) || Double.class.isAssignableFrom(type);
-	}
-
-	/**
-	 * Boolean || boolean
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isBooleanType(Class<?> type) {
-		return boolean.class.isAssignableFrom(type) || Boolean.class.isAssignableFrom(type);
-	}
 
 	public static String[] getParameterName(Method method) {
 		return lvtpnd.getParameterNames(method);
@@ -1176,21 +1077,6 @@ public final class ClassUtils {
 		}
 	}
 
-	/**
-	 * 是否是数字类型，不包含char,boolean
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isNumberType(Class<?> type) {
-		if (Number.class.isAssignableFrom(type)) {
-			return true;
-		}
-
-		return isIntType(type) || isLongType(type) || isShortType(type) || isFloatType(type) || isDoubleType(type)
-				|| isByteType(type);
-	}
-
 	public static boolean equals(Class<?>[] clazzArray1, Class<?>[] clazzArray2) {
 		if (clazzArray1 == null || clazzArray1.length == 0) {
 			return clazzArray2 == null || clazzArray2.length == 0;
@@ -1225,103 +1111,6 @@ public final class ClassUtils {
 				e.printStackTrace();
 			}
 			return false;
-		}
-	}
-
-	public static Collection<Class<?>> getClasses(String packageName) {
-		HashSet<Class<?>> classes = new HashSet<Class<?>>();
-		String[] pArr = StringUtils.commonSplit(packageName);
-		if (!ArrayUtils.isEmpty(pArr)) {
-			for (String pg : pArr) {
-				appendClassesForPackage(pg, classes);
-			}
-		}
-		return classes;
-	}
-
-	private static void appendClassesForPackage(String packageName, Collection<Class<?>> clazzList) {
-		String packageDirName = packageName.replace('.', '/');
-		Enumeration<URL> dirs;
-		try {
-			dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
-			while (dirs.hasMoreElements()) {
-				URL url = dirs.nextElement();
-				String protocol = url.getProtocol();
-				if ("file".equals(protocol)) {
-					String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
-					findAndAddClassesInPackageByFile(packageName, filePath, clazzList);
-				} else if ("jar".equals(protocol)) {
-					JarFile jar;
-					try {
-						jar = ((JarURLConnection) url.openConnection()).getJarFile();
-						Enumeration<JarEntry> entries = jar.entries();
-						while (entries.hasMoreElements()) {
-							JarEntry entry = entries.nextElement();
-							String name = entry.getName();
-							if (name.charAt(0) == '/') {
-								name = name.substring(1);
-							}
-							if (name.startsWith(packageDirName)) {
-								int idx = name.lastIndexOf('/');
-								if (idx != -1) {
-									packageName = name.substring(0, idx).replace('/', '.');
-								}
-								if (idx != -1) {
-									if (name.endsWith(".class") && !entry.isDirectory()) {
-										String className = name.substring(packageName.length() + 1, name.length() - 6);
-										Class<?> clz = null;
-										try {
-											clz = Class.forName(packageName + '.' + className);
-										} catch (Throwable e) {
-										}
-
-										if (clz != null) {
-											clazzList.add(clz);
-										}
-									}
-								}
-							}
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private static void findAndAddClassesInPackageByFile(String packageName, String packagePath,
-			Collection<Class<?>> classes) {
-		File dir = new File(packagePath);
-		if (!dir.exists() || !dir.isDirectory()) {
-			return;
-		}
-		File[] dirfiles = dir.listFiles(new FileFilter() {
-			public boolean accept(File file) {
-				return (file.isDirectory()) || (file.getName().endsWith(".class"));
-			}
-		});
-		for (File file : dirfiles) {
-			if (file.isDirectory()) {
-				findAndAddClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), classes);
-			} else {
-				String className = file.getName().substring(0, file.getName().length() - 6);
-				if (packageName.startsWith(".")) {
-					packageName = packageName.substring(1);
-				}
-
-				Class<?> clz = null;
-				try {
-					clz = Class.forName(packageName + '.' + className);
-				} catch (Throwable e) {
-				}
-
-				if (clz != null) {
-					classes.add(clz);
-				}
-			}
 		}
 	}
 }

@@ -47,21 +47,21 @@ public abstract class NumberUtils {
 		Assert.notNull(number, "Number must not be null");
 		Assert.notNull(targetClass, "Target class must not be null");
 
-		if (ClassUtils.isByteType(targetClass)) {
+		if (TypeUtils.isByte(targetClass)) {
 			return number.byteValue();
-		} else if (ClassUtils.isShortType(targetClass)) {
+		} else if (TypeUtils.isShort(targetClass)) {
 			return number.shortValue();
-		} else if (ClassUtils.isIntType(targetClass)) {
+		} else if (TypeUtils.isInt(targetClass)) {
 			return number.intValue();
-		} else if (ClassUtils.isLongType(targetClass)) {
+		} else if (TypeUtils.isLong(targetClass)) {
 			return number.longValue();
-		} else if (ClassUtils.isFloatType(targetClass)) {
+		} else if (TypeUtils.isFloat(targetClass)) {
 			return number.floatValue();
-		} else if (ClassUtils.isDoubleType(targetClass)) {
+		} else if (TypeUtils.isDouble(targetClass)) {
 			return number.doubleValue();
-		} else if (ClassUtils.isBooleanType(targetClass)) {
+		} else if (TypeUtils.isBoolean(targetClass)) {
 			return number.intValue() == 1;
-		} else if (ClassUtils.isCharType(targetClass)) {
+		} else if (TypeUtils.isChar(targetClass)) {
 			return (char) number.intValue();
 		} else {
 			throw new ParameterException(targetClass.getName() + "不是一个基本数据类型");

@@ -10,7 +10,7 @@ import scw.core.aop.Invoker;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.ClassUtils;
+import scw.core.utils.TypeUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.timer.CrontabTask;
@@ -32,7 +32,7 @@ public final class CrontabAnnotationUtils {
 
 				boolean invokeTime = !ArrayUtils.isEmpty(method.getParameterTypes())
 						&& method.getParameterTypes().length == 1
-						&& ClassUtils.isLongType(method.getParameterTypes()[0]);
+						&& TypeUtils.isLong(method.getParameterTypes()[0]);
 				CrontabRunnable crontabRun = new CrontabRunnable(c.name(), beanFactory.getInstance(c.factory()),
 						new MethodProxyInvoker(beanFactory, clz, method), invokeTime);
 				crontab.crontab(c.dayOfWeek(), c.month(), c.dayOfMonth(), c.hour(), c.minute(), crontabRun);

@@ -8,8 +8,7 @@ import org.w3c.dom.Element;
 import scw.core.Constants;
 import scw.core.exception.NotSupportException;
 import scw.core.reflect.ReflectUtils;
-import scw.core.utils.PropertiesUtils;
-import scw.core.utils.ResourceUtils;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XMLUtils;
@@ -71,7 +70,7 @@ public final class Log4jUtils {
 		String path = SystemPropertyUtils.getProperty(LOG4J_PATH);
 		if (StringUtils.isEmpty(path)) {
 			if (ResourceUtils.isExist("classpath:/log4j.properties")) {
-				Properties properties = PropertiesUtils.getProperties("classpath:/log4j.properties");
+				Properties properties = ResourceUtils.getProperties("classpath:/log4j.properties");
 				initByProperties(properties);
 				return;
 			} else if (ResourceUtils.isExist("classpath:/log4j.xml")) {
@@ -82,7 +81,7 @@ public final class Log4jUtils {
 		} else {
 			if (ResourceUtils.isExist(path)) {
 				if (path.endsWith(".properties")) {
-					Properties properties = PropertiesUtils.getProperties(path);
+					Properties properties = ResourceUtils.getProperties(path);
 					initByProperties(properties);
 					return;
 				} else if (path.endsWith(".xml")) {
@@ -117,7 +116,7 @@ public final class Log4jUtils {
 		properties.put("log4j.logger.org.apache.dubbo", "error");
 		
 		if(ResourceUtils.isExist(LOG4J_APPEND_PATH)){
-			Properties append = PropertiesUtils.getProperties(LOG4J_APPEND_PATH);
+			Properties append = ResourceUtils.getProperties(LOG4J_APPEND_PATH);
 			properties.putAll(append);
 		}
 		initByProperties(properties);

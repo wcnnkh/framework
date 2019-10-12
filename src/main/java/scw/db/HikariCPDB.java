@@ -11,7 +11,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import scw.core.annotation.Order;
-import scw.core.utils.PropertiesUtils;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
@@ -79,7 +79,7 @@ public class HikariCPDB extends LazyCacheDB{
 	}
 	
 	public HikariCPDB(Memcached memcached, String propertiesFile) {
-		this(memcached, null, null, PropertiesUtils.getProperties(propertiesFile));
+		this(memcached, null, null, ResourceUtils.getProperties(propertiesFile));
 	}
 
 	public HikariCPDB(Redis redis, String cacheKeyPrefix, String queueName,
@@ -98,7 +98,7 @@ public class HikariCPDB extends LazyCacheDB{
 	}
 	
 	public HikariCPDB(Redis redis, String propertiesFile) {
-		this(redis, null, PropertiesUtils.getProperties(propertiesFile));
+		this(redis, null, ResourceUtils.getProperties(propertiesFile));
 	}
 
 	public HikariCPDB(Map properties) {
@@ -109,7 +109,7 @@ public class HikariCPDB extends LazyCacheDB{
 	@Order
 	public HikariCPDB(String propertiesFile) {
 		super();
-		init(PropertiesUtils.getProperties(propertiesFile));
+		init(ResourceUtils.getProperties(propertiesFile));
 	}
 
 	public void createDataBase() {

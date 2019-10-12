@@ -24,8 +24,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.PropertyPlaceholderHelper;
-import scw.core.utils.ResourceUtils;
 import scw.core.utils.SystemPropertyUtils;
 
 /**

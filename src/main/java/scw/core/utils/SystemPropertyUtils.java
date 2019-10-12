@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import scw.core.Constants;
 import scw.core.StringFormatSystemProperties;
+import scw.core.resource.ResourceUtils;
 import scw.io.FileUtils;
 
 public abstract class SystemPropertyUtils {
@@ -45,7 +46,7 @@ public abstract class SystemPropertyUtils {
 		}
 
 		if (ResourceUtils.isExist(path)) {
-			Properties properties = PropertiesUtils.getProperties(path);
+			Properties properties = ResourceUtils.getProperties(path);
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
 				if (key == null) {

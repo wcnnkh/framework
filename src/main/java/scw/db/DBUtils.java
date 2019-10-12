@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import scw.core.exception.NotSupportException;
-import scw.core.utils.PropertiesUtils;
+import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.db.database.DataBase;
 import scw.db.database.MysqlDataBase;
@@ -17,7 +17,7 @@ public final class DBUtils {
 
 	@SuppressWarnings("rawtypes")
 	public static void loadProperties(Object instance, Map properties){
-		PropertiesUtils.loadProperties(instance, properties,
+		ConfigUtils.loadProperties(instance, properties,
 				Arrays.asList("jdbcUrl,url,host", "username,user", "password", "minSize,initialSize,minimumIdle",
 						"maxSize,maxActive,maximumPoolSize", "driver,driverClass,driverClassName"));
 	}

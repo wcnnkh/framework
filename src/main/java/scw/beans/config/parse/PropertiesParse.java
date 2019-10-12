@@ -10,10 +10,11 @@ import scw.core.Constants;
 import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.PropertiesUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.SystemPropertyUtils;
+import scw.core.utils.TypeUtils;
 
 public final class PropertiesParse extends AbstractCharsetNameValueFormat implements ConfigParse {
 
@@ -27,9 +28,9 @@ public final class PropertiesParse extends AbstractCharsetNameValueFormat implem
 
 	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
-		Properties properties = PropertiesUtils.getProperties(filePath, charset);
+		Properties properties = ResourceUtils.getProperties(filePath, charset);
 		if (ClassUtils.isPrimitiveOrWrapper(fieldDefinition.getField().getType())
-				|| ClassUtils.isStringType(fieldDefinition.getField().getType())) {
+				|| TypeUtils.isString(fieldDefinition.getField().getType())) {
 			String v = SystemPropertyUtils.format(properties.getProperty(fieldDefinition.getField().getName()));
 			return StringParse.defaultParse(v, fieldDefinition.getField().getGenericType());
 		} else if (Properties.class.isAssignableFrom(fieldDefinition.getField().getType())) {
@@ -57,8 +58,8 @@ public final class PropertiesParse extends AbstractCharsetNameValueFormat implem
 
 	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name)
 			throws Exception {
-		Properties properties = PropertiesUtils.getProperties(name, getCharsetName());
-		if (ClassUtils.isPrimitiveOrWrapper(field.getType()) || ClassUtils.isStringType(field.getType())) {
+		Properties properties = ResourceUtils.getProperties(name, getCharsetName());
+		if (ClassUtils.isPrimitiveOrWrapper(field.getType()) || TypeUtils.isString(field.getType())) {
 			String v = SystemPropertyUtils.format(properties.getProperty(field.getName()));
 			return StringParse.defaultParse(v, field.getGenericType());
 		} else if (Properties.class.isAssignableFrom(field.getType())) {

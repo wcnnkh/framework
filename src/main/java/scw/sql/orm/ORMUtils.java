@@ -24,14 +24,15 @@ import scw.core.annotation.Order;
 import scw.core.cglib.proxy.Factory;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectUtils;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CompareUtils;
 import scw.core.utils.FieldSetterListenUtils;
 import scw.core.utils.IteratorCallback;
-import scw.core.utils.ResourceUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.TypeUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.sql.orm.annotation.Column;
@@ -117,7 +118,7 @@ public final class ORMUtils {
 			return value;
 		}
 
-		if (ClassUtils.isBooleanType(type)) {
+		if (TypeUtils.isBoolean(type)) {
 			if (value != null) {
 				if (value instanceof Number) {
 					return ((Number) value).intValue() == 1;
@@ -125,27 +126,27 @@ public final class ORMUtils {
 					return StringUtils.parseBoolean((String) value);
 				}
 			}
-		} else if (ClassUtils.isIntType(type)) {
+		} else if (TypeUtils.isInt(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).intValue();
 			}
-		} else if (ClassUtils.isLongType(type)) {
+		} else if (TypeUtils.isLong(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).longValue();
 			}
-		} else if (ClassUtils.isByteType(type)) {
+		} else if (TypeUtils.isByte(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).byteValue();
 			}
-		} else if (ClassUtils.isFloatType(type)) {
+		} else if (TypeUtils.isFloat(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).floatValue();
 			}
-		} else if (ClassUtils.isDoubleType(type)) {
+		} else if (TypeUtils.isDouble(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).doubleValue();
 			}
-		} else if (ClassUtils.isShortType(type)) {
+		} else if (TypeUtils.isShort(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).shortValue();
 			}

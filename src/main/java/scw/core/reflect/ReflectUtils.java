@@ -540,7 +540,7 @@ public final class ReflectUtils {
 					continue;
 				}
 
-				if (ClassUtils.isBooleanType(method.getReturnType())) {
+				if (TypeUtils.isBoolean(method.getReturnType())) {
 					String methodNameSuffix = fieldName;
 					if (fieldName.startsWith("is")) {
 						methodNameSuffix = fieldName.substring(2);
@@ -591,7 +591,7 @@ public final class ReflectUtils {
 				}
 
 				Method find = null;
-				if (ClassUtils.isBooleanType(method.getParameterTypes()[0])) {
+				if (TypeUtils.isBoolean(method.getParameterTypes()[0])) {
 					String methodNameSuffix = fieldName;
 					if (fieldName.startsWith("is")) {
 						methodNameSuffix = fieldName.substring(2);
@@ -637,7 +637,7 @@ public final class ReflectUtils {
 		Method getter = null;
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
-			if (ClassUtils.isBooleanType(field.getType())) {
+			if (TypeUtils.isBoolean(field.getType())) {
 				String methodNameSuffix = field.getName();
 				if (methodNameSuffix.startsWith("is")) {
 					LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
@@ -677,7 +677,7 @@ public final class ReflectUtils {
 		Method setter = null;
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
-			if (ClassUtils.isBooleanType(field.getType())) {
+			if (TypeUtils.isBoolean(field.getType())) {
 				String methodNameSuffix = field.getName();
 				if (methodNameSuffix.startsWith("is")) {
 					LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),

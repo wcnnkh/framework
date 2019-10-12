@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import scw.core.FieldSetterListen;
 import scw.core.exception.ParameterException;
-import scw.core.utils.ClassUtils;
+import scw.core.utils.TypeUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.sql.orm.ColumnInfo;
@@ -68,7 +68,7 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 
 			Object value = columnInfo.get(beanFieldListen);
 			Counter counter = columnInfo.getCounter();
-			if (counter != null && ClassUtils.isNumberType(columnInfo.getField().getType())) {
+			if (counter != null && TypeUtils.isNumber(columnInfo.getField().getType())) {
 				Object oldValue = entry.getValue();
 				if (oldValue != null && value != null) {
 					// incr or decr

@@ -11,7 +11,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 
 import scw.beans.annotation.Bean;
 import scw.core.annotation.Order;
-import scw.core.utils.PropertiesUtils;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
@@ -50,7 +50,7 @@ public class DruidDB extends LazyCacheDB {
 	}
 	
 	public DruidDB(Memcached memcached, String propertiesFile) {
-		this(memcached, null, null, PropertiesUtils.getProperties(propertiesFile));
+		this(memcached, null, null, ResourceUtils.getProperties(propertiesFile));
 	}
 
 	public DruidDB(Redis redis, String cacheKeyPrefix, String queueName, Map properties) {
@@ -68,7 +68,7 @@ public class DruidDB extends LazyCacheDB {
 	}
 	
 	public DruidDB(Redis redis, String propertiesFile) {
-		this(redis, null, PropertiesUtils.getProperties(propertiesFile));
+		this(redis, null, ResourceUtils.getProperties(propertiesFile));
 	}
 
 	private void init(Map properties) {
@@ -104,7 +104,7 @@ public class DruidDB extends LazyCacheDB {
 	 */
 	@Order
 	public DruidDB(String propertiesFile) {
-		init(PropertiesUtils.getProperties(propertiesFile));
+		init(ResourceUtils.getProperties(propertiesFile));
 	}
 
 	public Connection getConnection() throws SQLException {

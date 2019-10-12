@@ -20,7 +20,7 @@ import java.io.FileNotFoundException;
 
 import javax.servlet.ServletContext;
 
-import scw.core.utils.ResourceUtils;
+import scw.core.resource.ResourceUtils;
 import scw.logger.log4j.Log4jConfigurer;
 
 

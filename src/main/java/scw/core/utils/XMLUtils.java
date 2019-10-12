@@ -42,6 +42,7 @@ import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.PropertyMapper;
 import scw.core.reflect.ReflectUtils;
+import scw.core.resource.ResourceUtils;
 import scw.io.IOUtils;
 
 public final class XMLUtils {
@@ -139,7 +140,7 @@ public final class XMLUtils {
 	}
 
 	public static Document getDocument(String path) {
-		return ResourceUtils.getAndConvert(path, new Converter<InputStream, Document>() {
+		return ResourceUtils.getResource(path, new Converter<InputStream, Document>() {
 
 			public Document convert(InputStream inputStream) {
 				return parse(inputStream);

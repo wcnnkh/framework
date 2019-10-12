@@ -5,7 +5,7 @@ import java.util.Properties;
 import scw.beans.BeanFactory;
 import scw.core.annotation.NotRequire;
 import scw.core.annotation.ParameterName;
-import scw.core.utils.PropertiesUtils;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -18,7 +18,7 @@ public class XMemcachedConfig {
 	private String keyPrefix;
 
 	public XMemcachedConfig(BeanFactory beanFactory, @ParameterName("memcached.configuration") String configuration) {
-		Properties properties = PropertiesUtils.getProperties(configuration);
+		Properties properties = ResourceUtils.getProperties(configuration);
 		String hosts = properties.getProperty("hosts");
 		if (StringUtils.isEmpty(hosts)) {
 			this.hosts = "localhost:11211";

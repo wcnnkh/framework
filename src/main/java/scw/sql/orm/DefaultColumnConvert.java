@@ -2,9 +2,9 @@ package scw.sql.orm;
 
 import java.lang.reflect.Field;
 
-import scw.core.utils.ClassUtils;
 import scw.core.utils.EnumUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.TypeUtils;
 import scw.json.JSONUtils;
 
 public class DefaultColumnConvert implements ColumnConvert {
@@ -52,7 +52,7 @@ public class DefaultColumnConvert implements ColumnConvert {
 			return;
 		}
 
-		if (ClassUtils.isBooleanType(type)) {
+		if (TypeUtils.isBoolean(type)) {
 			if (value != null) {
 				if (value instanceof Number) {
 					field.set(bean, ((Number) value).intValue() == 1);
@@ -60,37 +60,37 @@ public class DefaultColumnConvert implements ColumnConvert {
 					field.set(bean, StringUtils.parseBoolean(value.toString()));
 				}
 			}
-		} else if (ClassUtils.isIntType(type)) {
+		} else if (TypeUtils.isInt(type)) {
 			if (value instanceof Number) {
 				field.set(bean, ((Number) value).intValue());
 			} else {
 				field.set(bean, StringUtils.parseInt(value.toString()));
 			}
-		} else if (ClassUtils.isLongType(type)) {
+		} else if (TypeUtils.isLong(type)) {
 			if (value instanceof Number) {
 				field.set(bean, ((Number) value).longValue());
 			} else {
 				field.set(bean, StringUtils.parseLong(value.toString()));
 			}
-		} else if (ClassUtils.isByteType(type)) {
+		} else if (TypeUtils.isByte(type)) {
 			if (value instanceof Number) {
 				field.set(bean, ((Number) value).byteValue());
 			} else {
 				field.set(bean, StringUtils.parseByte(value.toString()));
 			}
-		} else if (ClassUtils.isFloatType(field.getType())) {
+		} else if (TypeUtils.isFloat(field.getType())) {
 			if (value instanceof Number) {
 				field.set(bean, ((Number) value).floatValue());
 			} else {
 				field.set(bean, StringUtils.parseFloat(value.toString()));
 			}
-		} else if (ClassUtils.isDoubleType(field.getType())) {
+		} else if (TypeUtils.isDouble(field.getType())) {
 			if (value instanceof Number) {
 				field.set(bean, ((Number) value).doubleValue());
 			} else {
 				field.set(bean, StringUtils.parseDouble(value.toString()));
 			}
-		} else if (ClassUtils.isShortType(field.getType())) {
+		} else if (TypeUtils.isShort(field.getType())) {
 			if (value instanceof Number) {
 				field.set(bean, ((Number) value).shortValue());
 			} else {

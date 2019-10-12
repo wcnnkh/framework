@@ -7,9 +7,9 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import scw.core.Destroy;
 import scw.core.instance.InstanceFactory;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.FileManager;
 import scw.core.utils.SystemPropertyUtils;
+import scw.core.utils.TypeUtils;
 import scw.io.FileUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -82,7 +82,7 @@ public final class DefaultAsyncCompleteService implements AsyncCompleteService, 
 			Object rtn;
 			try {
 				rtn = info.invoke(instanceFactory);
-				if (ClassUtils.isBooleanType(info.getMethodConfig().getMethod().getReturnType())) {
+				if (TypeUtils.isBoolean(info.getMethodConfig().getMethod().getReturnType())) {
 					if (rtn != null && (Boolean) rtn == false) {
 						retry();
 						return;

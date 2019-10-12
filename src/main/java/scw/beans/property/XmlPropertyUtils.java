@@ -6,7 +6,7 @@ import org.w3c.dom.Node;
 
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.Constants;
-import scw.core.utils.PropertiesUtils;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 
@@ -34,7 +34,7 @@ public final class XmlPropertyUtils {
 			return null;
 		}
 
-		return PropertiesUtils.getProperties(file, getCharsetName(node));
+		return ResourceUtils.getProperties(file, getCharsetName(node));
 	}
 
 	public static String getCharsetName(Node node) {

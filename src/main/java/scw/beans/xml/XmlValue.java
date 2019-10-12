@@ -3,7 +3,7 @@ package scw.beans.xml;
 import org.w3c.dom.Node;
 
 import scw.core.PropertyFactory;
-import scw.core.utils.ConfigUtils;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.net.http.HttpUtils;
@@ -22,12 +22,12 @@ public class XmlValue {
 		if (!StringUtils.isNull(url)) {
 			if (url.startsWith("file://")) {
 				String path = url.substring(7);
-				value = ConfigUtils.getFileContent(path, charset);
+				value = ResourceUtils.getFileContent(path, charset);
 			} else if (url.startsWith("http://") || url.startsWith("https://")) {
 				value = HttpUtils.doGet(url);
 			} else {
 				String path = url.substring(7);
-				value = ConfigUtils.getFileContent(path, charset);
+				value = ResourceUtils.getFileContent(path, charset);
 			}
 		} else {
 			value = XMLUtils.getNodeAttributeValueOrNodeContent(node, "value");

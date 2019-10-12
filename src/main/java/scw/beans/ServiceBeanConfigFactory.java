@@ -3,7 +3,7 @@ package scw.beans;
 import scw.beans.annotation.Service;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
-import scw.core.utils.ResourceUtils;
+import scw.core.resource.ResourceUtils;
 
 /**
  * 扫描service注解

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import scw.core.Constants;
-import scw.core.utils.ConfigUtils;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.db.async.AsyncInfo;
 import scw.db.async.MultipleOperation;
@@ -198,7 +198,7 @@ public abstract class AbstractDB<C extends CacheManager> extends ORMTemplate imp
 	}
 
 	public void executeSqlByFile(String filePath) {
-		String sql = ConfigUtils.getFileContent(filePath, Constants.DEFAULT_CHARSET_NAME);
+		String sql = ResourceUtils.getFileContent(filePath, Constants.DEFAULT_CHARSET_NAME);
 		if (StringUtils.isEmpty(sql)) {
 			return;
 		}
@@ -207,7 +207,7 @@ public abstract class AbstractDB<C extends CacheManager> extends ORMTemplate imp
 	}
 
 	public void executeSqlByFileLine(String filePath, String ignoreStartsWith) throws SQLException {
-		Collection<String> sqlList = ConfigUtils.getFileContentLineList(filePath, Constants.DEFAULT_CHARSET_NAME);
+		Collection<String> sqlList = ResourceUtils.getFileContentLineList(filePath, Constants.DEFAULT_CHARSET_NAME);
 		for (String sql : sqlList) {
 			if (!StringUtils.isEmpty(ignoreStartsWith) && sql.startsWith(ignoreStartsWith)) {
 				continue;

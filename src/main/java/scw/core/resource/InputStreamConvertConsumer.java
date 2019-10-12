@@ -1,15 +1,15 @@
-package scw.core.utils;
+package scw.core.resource;
 
 import java.io.InputStream;
 
 import scw.core.Consumer;
 import scw.core.Converter;
 
-public class ResourceInputStreamConvertConsumer<T> implements Consumer<InputStream> {
+public class InputStreamConvertConsumer<T> implements Consumer<InputStream> {
 	private Converter<InputStream, T> converter;
 	private T value;
 
-	public ResourceInputStreamConvertConsumer(Converter<InputStream, T> converter) {
+	public InputStreamConvertConsumer(Converter<InputStream, T> converter) {
 		this.converter = converter;
 	}
 

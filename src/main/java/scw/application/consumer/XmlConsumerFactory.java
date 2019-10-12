@@ -13,7 +13,7 @@ import scw.core.Consumer;
 import scw.core.PropertyFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.PropertyMapper;
-import scw.core.utils.ResourceUtils;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.XMLUtils;
 import scw.logger.LoggerUtils;

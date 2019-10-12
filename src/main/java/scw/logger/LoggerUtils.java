@@ -6,8 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import scw.core.utils.PropertiesUtils;
-import scw.core.utils.ResourceUtils;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringAppend;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
@@ -24,7 +23,7 @@ public final class LoggerUtils {
 		}
 
 		if (ResourceUtils.isExist(loggerEnablePropertiePath)) {
-			Properties properties = PropertiesUtils.getProperties(loggerEnablePropertiePath);
+			Properties properties = ResourceUtils.getProperties(loggerEnablePropertiePath);
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
 				if (key == null) {

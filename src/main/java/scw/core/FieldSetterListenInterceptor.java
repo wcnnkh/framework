@@ -11,6 +11,7 @@ import scw.core.cglib.proxy.MethodInterceptor;
 import scw.core.cglib.proxy.MethodProxy;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.TypeUtils;
 
 public class FieldSetterListenInterceptor implements MethodInterceptor, FieldSetterListen, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -57,7 +58,7 @@ public class FieldSetterListenInterceptor implements MethodInterceptor, FieldSet
 			if (field == null) {
 				chars[0] = Character.toUpperCase(chars[0]);
 				field = ReflectUtils.getField(source, "is" + new String(chars), true);
-				if (field != null && ClassUtils.isBooleanType(field.getType()) && checkField(field)) {
+				if (field != null && TypeUtils.isBoolean(field.getType()) && checkField(field)) {
 					return change(obj, method, args, proxy, field);
 				}
 			} else if (checkField(field)) {

@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.exception.AlreadyExistsException;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.ResourceUtils;
 import scw.sql.Sql;
 import scw.sql.orm.annotation.Table;
 

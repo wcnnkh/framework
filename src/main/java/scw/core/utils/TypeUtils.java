@@ -4,8 +4,9 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.sql.Date;
 
-public final class TypeUtils {
-	private TypeUtils() {
+public abstract class TypeUtils {
+	public static boolean isString(Type type) {
+		return type == String.class;
 	}
 
 	public static boolean isBoolean(Type type) {
@@ -16,7 +17,7 @@ public final class TypeUtils {
 		return type == short.class || type == Short.class;
 	}
 
-	public static boolean isInteger(Type type) {
+	public static boolean isInt(Type type) {
 		return type == int.class || type == Integer.class;
 	}
 
@@ -62,6 +63,20 @@ public final class TypeUtils {
 		return type instanceof Class;
 	}
 
+	/**
+	 * 是否是数字类型，不包含char,boolean
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isNumberType(Type type) {
+		if (isInt(type) || isLong(type) || isShort(type) || isFloat(type) || isDouble(type) || isByte(type)) {
+			return true;
+		}
+
+		return isAssignableFrom(type, Number.class);
+	}
+
 	@SuppressWarnings("rawtypes")
 	public static boolean isArray(Type type) {
 		if (isClass(type)) {
@@ -81,7 +96,7 @@ public final class TypeUtils {
 		}
 
 		try {
-			return clazz.isAssignableFrom(ClassUtils.forName(type.toString()));
+			ClassUtils.isAssignable(clazz, ClassUtils.forName(type.toString()));
 		} catch (ClassNotFoundException e) {
 		}
 		return false;
@@ -125,5 +140,15 @@ public final class TypeUtils {
 		}
 
 		return type.toString();
+	}
+
+	/**
+	 * 是否是数字类型，不包含char,boolean
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isNumber(Type type) {
+		return isAssignableFrom(type, Number.class);
 	}
 }

@@ -10,7 +10,8 @@ import scw.core.Constants;
 import scw.core.annotation.NotRequire;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.ResourceParameter;
-import scw.core.utils.PropertiesUtils;
+import scw.core.resource.ResourceUtils;
+import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.data.redis.AbstractRedisWrapper;
 import scw.data.redis.Redis;
@@ -33,12 +34,12 @@ public final class RedisByJedisPool extends AbstractRedisWrapper implements Reso
 			@ParameterName("redis.configuration") @ResourceParameter("classpath:/redis.properties") String propertiesFile,
 			Serializer serializer) {
 		JedisPoolConfig config = createConfig(propertiesFile);
-		Properties properties = PropertiesUtils.getProperties(propertiesFile, Constants.DEFAULT_CHARSET_NAME);
-		String host = PropertiesUtils.getProperty(properties, "host", "address");
-		String port = PropertiesUtils.getProperty(properties, "port");
-		this.auth = PropertiesUtils.getProperty(properties, "auth", "password", "pwd");
-		String keyPrefix = PropertiesUtils.getProperty(properties, "prefix", "keyPrefix");
-		String charsetName = PropertiesUtils.getProperty(properties, "charsetName", "charset");
+		Properties properties = ResourceUtils.getProperties(propertiesFile, Constants.DEFAULT_CHARSET_NAME);
+		String host = ConfigUtils.getProperty(properties, "host", "address");
+		String port = ConfigUtils.getProperty(properties, "port");
+		this.auth = ConfigUtils.getProperty(properties, "auth", "password", "pwd");
+		String keyPrefix = ConfigUtils.getProperty(properties, "prefix", "keyPrefix");
+		String charsetName = ConfigUtils.getProperty(properties, "charsetName", "charset");
 		if (StringUtils.isEmpty(charsetName)) {
 			charsetName = Constants.DEFAULT_CHARSET_NAME;
 		}
@@ -60,7 +61,7 @@ public final class RedisByJedisPool extends AbstractRedisWrapper implements Reso
 
 	private static JedisPoolConfig createConfig(String propertiesFile) {
 		JedisPoolConfig config = new JedisPoolConfig();
-		PropertiesUtils.loadProperties(config, propertiesFile, Arrays.asList("maxWait,maxWaitMillis"));
+		ConfigUtils.loadProperties(config, propertiesFile, Arrays.asList("maxWait,maxWaitMillis"));
 		return config;
 	}
 

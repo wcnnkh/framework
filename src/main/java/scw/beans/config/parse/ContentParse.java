@@ -9,7 +9,7 @@ import scw.beans.property.AbstractCharsetNameValueFormat;
 import scw.core.Constants;
 import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
-import scw.core.utils.ConfigUtils;
+import scw.core.resource.ResourceUtils;
 
 public final class ContentParse extends AbstractCharsetNameValueFormat implements ConfigParse{
 	
@@ -22,7 +22,7 @@ public final class ContentParse extends AbstractCharsetNameValueFormat implement
 	}
 
 	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset) throws Exception{
-		List<String> list = ConfigUtils.getFileContentLineList(filePath, charset);
+		List<String> list = ResourceUtils.getFileContentLineList(filePath, charset);
 		if(String.class.isAssignableFrom(fieldDefinition.getField().getType())){
 			StringBuilder sb = new StringBuilder();
 			if(list != null){
@@ -39,7 +39,7 @@ public final class ContentParse extends AbstractCharsetNameValueFormat implement
 
 	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name)
 			throws Exception {
-		List<String> list = ConfigUtils.getFileContentLineList(name, getCharsetName());
+		List<String> list = ResourceUtils.getFileContentLineList(name, getCharsetName());
 		if(String.class.isAssignableFrom(field.getType())){
 			StringBuilder sb = new StringBuilder();
 			if(list != null){

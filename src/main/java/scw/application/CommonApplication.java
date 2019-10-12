@@ -14,7 +14,7 @@ import scw.beans.property.XmlPropertyFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.MultiPropertyFactory;
 import scw.core.PropertyFactory;
-import scw.core.utils.ResourceUtils;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.logger.LoggerUtils;

@@ -5,7 +5,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import scw.core.utils.PropertiesUtils;
+import scw.core.resource.ResourceUtils;
+import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 
 public abstract class AbstractResultFactory implements ResultFactory {
@@ -18,8 +19,8 @@ public abstract class AbstractResultFactory implements ResultFactory {
 			return;
 		}
 		
-		Properties properties = PropertiesUtils.getProperties(propertiesFilePath, charsetName);
-		Map<String, String> map = PropertiesUtils.getProperties(properties);
+		Properties properties = ResourceUtils.getProperties(propertiesFilePath, charsetName);
+		Map<String, String> map = ConfigUtils.getProperties(properties);
 		if (map != null) {
 			for (Entry<String, String> entry : map.entrySet()) {
 				int code = Integer.parseInt(entry.getKey());

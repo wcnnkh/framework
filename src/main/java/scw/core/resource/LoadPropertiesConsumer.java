@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.core.resource;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,15 +8,16 @@ import java.util.Properties;
 
 import scw.core.Consumer;
 import scw.core.reflect.ReflectUtils;
+import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.logger.LoggerUtils;
 
-public class LoadProperties implements Consumer<InputStream> {
+public class LoadPropertiesConsumer implements Consumer<InputStream> {
 	private Properties properties;
 	private String name;
 	private String charsetName;
 
-	public LoadProperties(Properties properties, String name, String charsetName) {
+	public LoadPropertiesConsumer(Properties properties, String name, String charsetName) {
 		this.properties = properties;
 		this.name = name;
 		this.charsetName = charsetName;
@@ -31,7 +32,7 @@ public class LoadProperties implements Consumer<InputStream> {
 			} else {
 				Method method = ReflectUtils.findMethod(Properties.class, "load", Reader.class);
 				if (method == null) {
-					LoggerUtils.warn(LoadProperties.class, "jdk1.6及以上的版本才支持指定字符集: {}" + name);
+					LoggerUtils.warn(LoadPropertiesConsumer.class, "jdk1.6及以上的版本才支持指定字符集: {}" + name);
 					properties.load(inputStream);
 				} else {
 					InputStreamReader isr = null;

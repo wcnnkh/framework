@@ -9,7 +9,7 @@ import org.w3c.dom.NodeList;
 import scw.beans.annotation.Bean;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.ResourceParameter;
-import scw.core.utils.ResourceUtils;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.json.JSONUtils;
