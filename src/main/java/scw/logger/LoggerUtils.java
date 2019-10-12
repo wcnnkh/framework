@@ -1,6 +1,7 @@
 package scw.logger;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,9 +18,9 @@ public final class LoggerUtils {
 	private static final Map<String, Level> LOGGER_LEVEL = new HashMap<String, Level>();
 
 	static {
-		String loggerEnablePropertiePath = SystemPropertyUtils.getProperty("scw.logger.enable");
+		String loggerEnablePropertiePath = SystemPropertyUtils.getProperty("scw.logger.level");
 		if (loggerEnablePropertiePath == null) {
-			loggerEnablePropertiePath = "classpath:/logger-enable.properties";
+			loggerEnablePropertiePath = "classpath:/logger-level.properties";
 		}
 
 		if (ResourceUtils.isExist(loggerEnablePropertiePath)) {
@@ -62,7 +63,18 @@ public final class LoggerUtils {
 
 	public static Level getLoggerLevel(String name) {
 		Level level = LOGGER_LEVEL.get(name);
+		if (level == null) {
+			for (Entry<String, Level> entry : LOGGER_LEVEL.entrySet()) {
+				if (name.startsWith(entry.getKey())) {
+					level = entry.getValue();
+				}
+			}
+		}
 		return level == null ? Level.TRACE : level;
+	}
+
+	public static Map<String, Level> getLoggerLevelConfig() {
+		return Collections.unmodifiableMap(LOGGER_LEVEL);
 	}
 
 	public static void loggerAppend(Appendable appendable, String time, String level, String tag,

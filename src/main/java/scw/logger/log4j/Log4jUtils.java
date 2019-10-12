@@ -1,6 +1,8 @@
 package scw.logger.log4j;
 
 import java.lang.reflect.Method;
+import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.w3c.dom.Element;
@@ -12,6 +14,7 @@ import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XMLUtils;
+import scw.logger.Level;
 import scw.logger.LoggerUtils;
 
 public final class Log4jUtils {
@@ -59,12 +62,12 @@ public final class Log4jUtils {
 
 	public static void defaultInit() {
 		Boolean enable = LoggerUtils.defaultConfigEnable();
-		if(enable == null){
+		if (enable == null) {
 			throw new NotSupportException("不支持log4j");
 		}
-		
-		if(!enable){
-			return ;
+
+		if (!enable) {
+			return;
 		}
 
 		String path = SystemPropertyUtils.getProperty(LOG4J_PATH);
@@ -111,14 +114,19 @@ public final class Log4jUtils {
 		properties.put("log4j.appender.warn.layout", "org.apache.log4j.PatternLayout");
 		properties.put("log4j.appender.warn.DatePattern", "'.'yyyy-MM-dd");
 		properties.put("log4j.appender.warn.layout.ConversionPattern", "%d %p [%c] - %m%n");
-		
-		//过滤无用日志
+
+		// 过滤无用日志
 		properties.put("log4j.logger.org.apache.dubbo", "error");
-		
-		if(ResourceUtils.isExist(LOG4J_APPEND_PATH)){
+
+		for (Entry<String, Level> entry : LoggerUtils.getLoggerLevelConfig().entrySet()) {
+			properties.put("log4j.logger." + entry.getKey(), entry.getValue().name().toLowerCase(Locale.ENGLISH));
+		}
+
+		if (ResourceUtils.isExist(LOG4J_APPEND_PATH)) {
 			Properties append = ResourceUtils.getProperties(LOG4J_APPEND_PATH);
 			properties.putAll(append);
 		}
+
 		initByProperties(properties);
 	}
 }
