@@ -2,12 +2,12 @@ package scw.logger.log4j;
 
 import java.lang.reflect.Method;
 import java.util.Locale;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.w3c.dom.Element;
 
 import scw.core.Constants;
+import scw.core.KeyValuePair;
 import scw.core.exception.NotSupportException;
 import scw.core.reflect.ReflectUtils;
 import scw.core.resource.ResourceUtils;
@@ -118,7 +118,7 @@ public final class Log4jUtils {
 		// 过滤无用日志
 		properties.put("log4j.logger.org.apache.dubbo", "error");
 
-		for (Entry<String, Level> entry : LoggerUtils.getLoggerLevelConfig().entrySet()) {
+		for (KeyValuePair<String, Level> entry : LoggerUtils.getLoggerLevelConfigList()) {
 			properties.put("log4j.logger." + entry.getKey(), entry.getValue().name().toLowerCase(Locale.ENGLISH));
 		}
 

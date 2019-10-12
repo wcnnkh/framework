@@ -1,12 +1,15 @@
 package scw.logger;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import scw.core.SimpleKeyValuePair;
+import scw.core.KeyValuePair;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringAppend;
 import scw.core.utils.StringUtils;
@@ -15,7 +18,7 @@ import scw.core.utils.XTime;
 
 public final class LoggerUtils {
 	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";
-	private static final Map<String, Level> LOGGER_LEVEL = new HashMap<String, Level>();
+	private static final LinkedList<KeyValuePair<String, Level>> LOGGER_LEVEL_LIST = new LinkedList<KeyValuePair<String, Level>>();
 
 	static {
 		String loggerEnablePropertiePath = SystemPropertyUtils.getProperty("scw.logger.level");
@@ -41,7 +44,7 @@ public final class LoggerUtils {
 					continue;
 				}
 
-				LOGGER_LEVEL.put(key.toString(), level);
+				LOGGER_LEVEL_LIST.add(new SimpleKeyValuePair<String, Level>(key.toString(), level));
 			}
 		}
 	}
@@ -57,24 +60,23 @@ public final class LoggerUtils {
 		}
 	}
 
-	public static void setLoggerLevel(String name, Level level) {
-		LOGGER_LEVEL.put(name, level);
-	}
-
 	public static Level getLoggerLevel(String name) {
-		Level level = LOGGER_LEVEL.get(name);
-		if (level == null) {
-			for (Entry<String, Level> entry : LOGGER_LEVEL.entrySet()) {
-				if (name.startsWith(entry.getKey())) {
-					level = entry.getValue();
-				}
+		ListIterator<KeyValuePair<String, Level>> iterator = LOGGER_LEVEL_LIST.listIterator(LOGGER_LEVEL_LIST.size());
+		while (iterator.hasPrevious()) {
+			KeyValuePair<String, Level> keyValuePair = iterator.previous();
+			if (keyValuePair == null) {
+				continue;
+			}
+
+			if (keyValuePair.getKey().startsWith(name)) {
+				return keyValuePair.getValue();
 			}
 		}
-		return level == null ? Level.TRACE : level;
+		return Level.TRACE;
 	}
 
-	public static Map<String, Level> getLoggerLevelConfig() {
-		return Collections.unmodifiableMap(LOGGER_LEVEL);
+	public static Collection<KeyValuePair<String, Level>> getLoggerLevelConfigList() {
+		return Collections.unmodifiableCollection(LOGGER_LEVEL_LIST);
 	}
 
 	public static void loggerAppend(Appendable appendable, String time, String level, String tag,

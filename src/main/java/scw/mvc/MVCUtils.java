@@ -17,7 +17,7 @@ import java.util.Map.Entry;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanUtils;
 import scw.core.Constants;
-import scw.core.DefaultKeyValuePair;
+import scw.core.SimpleKeyValuePair;
 import scw.core.Destroy;
 import scw.core.KeyValuePair;
 import scw.core.KeyValuePairFilter;
@@ -469,7 +469,7 @@ public final class MVCUtils implements MvcConstants {
 			}
 
 			KeyValuePair<String, String> keyValuePair = filter
-					.filter(new DefaultKeyValuePair<String, String>(name, values[0]));
+					.filter(new SimpleKeyValuePair<String, String>(name, values[0]));
 			if (keyValuePair == null) {
 				continue;
 			}
@@ -502,7 +502,7 @@ public final class MVCUtils implements MvcConstants {
 				map.put(name, new LinkedList<String>(Arrays.asList(values)));
 			} else {
 				KeyValuePair<String, String[]> keyValuePair = filter
-						.filter(new DefaultKeyValuePair<String, String[]>(name, values));
+						.filter(new SimpleKeyValuePair<String, String[]>(name, values));
 				if (keyValuePair == null) {
 					continue;
 				}

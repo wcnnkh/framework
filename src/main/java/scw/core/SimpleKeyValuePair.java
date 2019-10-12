@@ -2,15 +2,15 @@ package scw.core;
 
 import java.io.Serializable;
 
-public class DefaultKeyValuePair<K, V> implements Serializable, KeyValuePair<K, V> {
+public class SimpleKeyValuePair<K, V> implements Serializable, KeyValuePair<K, V> {
 	private static final long serialVersionUID = 1L;
 	private K key;
 	private V value;
 
-	public DefaultKeyValuePair() {
+	public SimpleKeyValuePair() {
 	};
 
-	public DefaultKeyValuePair(K key, V value) {
+	public SimpleKeyValuePair(K key, V value) {
 		this.key = key;
 		this.value = value;
 	}

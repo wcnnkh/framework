@@ -10,7 +10,7 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import scw.core.DefaultKeyValuePair;
+import scw.core.SimpleKeyValuePair;
 import scw.core.KeyValuePair;
 import scw.core.annotation.DELETE;
 import scw.core.annotation.GET;
@@ -161,22 +161,22 @@ public final class AnnotationUtils {
 	public static KeyValuePair<scw.net.http.Method, String> getHttpMethodAnnotation(AnnotatedElement annotatedElement) {
 		GET get = annotatedElement.getAnnotation(GET.class);
 		if (get != null) {
-			return new DefaultKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.GET, get.value());
+			return new SimpleKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.GET, get.value());
 		}
 
 		POST post = annotatedElement.getAnnotation(POST.class);
 		if (post != null) {
-			return new DefaultKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.POST, post.value());
+			return new SimpleKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.POST, post.value());
 		}
 
 		DELETE delete = annotatedElement.getAnnotation(DELETE.class);
 		if (delete != null) {
-			return new DefaultKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.DELETE, delete.value());
+			return new SimpleKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.DELETE, delete.value());
 		}
 
 		PUT put = annotatedElement.getAnnotation(PUT.class);
 		if (put != null) {
-			return new DefaultKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.PUT, put.value());
+			return new SimpleKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.PUT, put.value());
 		}
 
 		return null;

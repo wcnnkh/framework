@@ -6,7 +6,7 @@ import java.util.concurrent.TimeoutException;
 import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.ConnectionFactory;
 
-import scw.core.DefaultParameters;
+import scw.core.SimpleParameters;
 import scw.core.Destroy;
 import scw.core.Parameters;
 import scw.io.serializer.NoTypeSpecifiedSerializer;
@@ -42,7 +42,7 @@ public class ParametersSingleExchange extends SingleExchange<Parameters> impleme
 	}
 
 	public void pushArgs(String routingKey, Object... args) {
-		push(routingKey, new DefaultParameters(args));
+		push(routingKey, new SimpleParameters(args));
 	}
 
 	public void destroy() {
