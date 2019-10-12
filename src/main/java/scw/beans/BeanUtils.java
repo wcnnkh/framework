@@ -93,7 +93,7 @@ public final class BeanUtils {
 	}
 
 	public synchronized static void destroyStaticMethod(ValueWiredManager valueWiredManager,
-			Collection<Class<?>> classList) throws Exception {
+			Collection<Class<?>> classList) {
 		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
 		for (Class<?> clz : classList) {
 			if (valueWiredManager != null) {
@@ -125,13 +125,22 @@ public final class BeanUtils {
 			InitProcess process = new InitProcess(info, countDownLatch);
 			new Thread(process).start();
 		}
-		countDownLatch.await();
+		
+		try {
+			countDownLatch.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public synchronized static void initStatic(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Collection<Class<?>> classList) throws Exception {
-		initAutowriteStatic(valueWiredManager, beanFactory, propertyFactory, classList);
-		invokerInitStaticMethod(classList);
+	public static void initStatic(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Collection<Class<?>> classList) {
+		try {
+			initAutowriteStatic(valueWiredManager, beanFactory, propertyFactory, classList);
+			invokerInitStaticMethod(classList);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static void autoWrite(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
@@ -210,8 +219,8 @@ public final class BeanUtils {
 				beanMethodParameters);
 	}
 
-	public static Object[] getBeanMethodParameterArgs(XmlBeanParameter[] beanParameters, InstanceFactory instanceFactory,
-			scw.core.PropertyFactory propertyFactory) throws Exception {
+	public static Object[] getBeanMethodParameterArgs(XmlBeanParameter[] beanParameters,
+			InstanceFactory instanceFactory, scw.core.PropertyFactory propertyFactory) throws Exception {
 		Object[] args = new Object[beanParameters.length];
 		for (int i = 0; i < args.length; i++) {
 			XmlBeanParameter xmlBeanParameter = beanParameters[i];
@@ -506,8 +515,8 @@ public final class BeanUtils {
 					logger.warn("{}无法使用默认的方式实例化，请进行配置", name);
 					continue;
 				}
-				
-				if(!instanceFactory.isSingleton(name)){
+
+				if (!instanceFactory.isSingleton(name)) {
 					logger.warn("{}不是一个单例，请进行配置", name);
 					continue;
 				}

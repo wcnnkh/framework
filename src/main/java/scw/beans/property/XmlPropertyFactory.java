@@ -11,13 +11,13 @@ import scw.core.utils.SystemPropertyUtils;
 public class XmlPropertyFactory implements PropertyFactory, Destroy {
 	private AutoRefreshPropertyFactory autoRefreshPropertyFactory;
 
-	public XmlPropertyFactory(String beanXml, long defaultRefreshPeriod) {
+	public XmlPropertyFactory(String beanXml) {
 		if (!ResourceUtils.isExist(beanXml)) {
 			return;
 		}
 
 		NodeList nhosts = XmlBeanUtils.getRootNodeList(beanXml);
-		autoRefreshPropertyFactory = new AutoRefreshPropertyFactory(nhosts, defaultRefreshPeriod);
+		autoRefreshPropertyFactory = new AutoRefreshPropertyFactory(nhosts);
 	}
 
 	public String getProperty(String key) {

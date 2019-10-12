@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Timer;
 
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
@@ -24,9 +23,9 @@ import scw.beans.property.ValueWiredManager;
 import scw.beans.tcc.TCCTransactionFilter;
 import scw.core.Destroy;
 import scw.core.Init;
+import scw.core.MultiPropertyFactory;
 import scw.core.PropertyFactory;
 import scw.core.exception.BeansException;
-import scw.core.exception.NestedRuntimeException;
 import scw.core.instance.InstanceFactory;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
@@ -44,14 +43,12 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private LinkedList<Destroy> destroys = new LinkedList<Destroy>();
 	private volatile HashSet<String> notFoundSet = new HashSet<String>();
-	protected final PropertyFactory propertyFactory;
+	protected final MultiPropertyFactory propertyFactory = new MultiPropertyFactory();
 	private final LinkedList<String> filterNames = new LinkedList<String>();
-	private final Timer timer = new Timer(getClass().getName());
 	private final ValueWiredManager valueWiredManager;
 
-	public AbstractBeanFactory(PropertyFactory propertyFactory, int defaultValueRefreshPeriod) {
-		this.valueWiredManager = new ValueWiredManager(propertyFactory, this, timer, defaultValueRefreshPeriod);
-		this.propertyFactory = propertyFactory;
+	public AbstractBeanFactory() {
+		this.valueWiredManager = new ValueWiredManager(propertyFactory, this);
 		singletonMap.put(PropertyFactory.class.getName(), propertyFactory);
 		singletonMap.put(BeanFactory.class.getName(), this);
 		singletonMap.put(InstanceFactory.class.getName(), this);
@@ -256,6 +253,10 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	 * @return
 	 */
 	protected abstract String getInitStaticPackage();
+	
+	public void addPropertyFactory(PropertyFactory propertyFactory) {
+		this.propertyFactory.add(propertyFactory);
+	}
 
 	public final BeanDefinition getBeanDefinition(String name) {
 		BeanDefinition beanDefinition = getBeanCache(name);
@@ -405,22 +406,15 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			}
 		}
 
-		try {
-			BeanUtils.initStatic(valueWiredManager, this, getPropertyFactory(),
-					ResourceUtils.getClassList(getInitStaticPackage()));
-		} catch (Exception e) {
-			throw new NestedRuntimeException(e);
-		}
+		BeanUtils.initStatic(valueWiredManager, this, getPropertyFactory(),
+				ResourceUtils.getClassList(getInitStaticPackage()));
 	}
 
 	public synchronized void destroy() {
-		timer.cancel();
+		propertyFactory.destroy();
+		valueWiredManager.destroy();
 		
-		try {
-			BeanUtils.destroyStaticMethod(valueWiredManager, ResourceUtils.getClassList(getInitStaticPackage()));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		BeanUtils.destroyStaticMethod(valueWiredManager, ResourceUtils.getClassList(getInitStaticPackage()));
 
 		synchronized (singletonMap) {
 			List<String> beanKeyList = new ArrayList<String>();

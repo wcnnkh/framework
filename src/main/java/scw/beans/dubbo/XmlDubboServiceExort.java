@@ -8,9 +8,12 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
+import scw.logger.SplitLineAppend;
+import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
 public class XmlDubboServiceExort implements Runnable {
+	private static Logger logger = LoggerUtils.getLogger(XmlDubboServiceExort.class);
 	private final PropertyFactory propertyFactory;
 	private final BeanFactory beanFactory;
 	private final NodeList nodeList;
@@ -32,13 +35,13 @@ public class XmlDubboServiceExort implements Runnable {
 				}
 
 				if (DubboUtils.isServiceNode(node)) {
-					LoggerUtils.getLogger(XmlDubboServiceExort.class).info("-------开始注册dubbo服务-------");
+					logger.info(new SplitLineAppend("开始注册dubbo服务"));
 					List<ServiceConfig<?>> serviceConfigs = XmlDubboUtils.getServiceConfigList(propertyFactory,
 							beanFactory, node);
 					for (ServiceConfig<?> serviceConfig : serviceConfigs) {
 						serviceConfig.export();
 					}
-					LoggerUtils.getLogger(XmlDubboServiceExort.class).info("-------dubbo服务注册完成-------");
+					logger.info(new SplitLineAppend("dubbo服务注册完成"));
 				}
 			}
 		}

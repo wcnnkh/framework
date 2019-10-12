@@ -1,6 +1,7 @@
 package scw.beans.property;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
@@ -15,11 +16,14 @@ import scw.core.utils.SystemPropertyUtils;
 import scw.logger.LoggerUtils;
 
 public final class AutoRefreshPropertyFactory implements PropertyFactory, Destroy {
+	private static final int DEFAULT_REFRESH_PERIOD = StringUtils
+			.parseInt(SystemPropertyUtils.getProperty("property.refresh.period"), 60);
 	private volatile Map<String, String> propertyMap;
 	private PropertyFactory propertyFactory;
 	private final Timer timer = new Timer(getClass().getName());
+	private final LinkedList<TimerTask> taskList = new LinkedList<TimerTask>();
 
-	public AutoRefreshPropertyFactory(NodeList nodeList, long defaultRefreshPeriod) {
+	public AutoRefreshPropertyFactory(NodeList nodeList) {
 		if (nodeList == null || nodeList.getLength() == 0) {
 			return;
 		}
@@ -36,10 +40,12 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory, Destro
 				continue;
 			}
 
-			long t = properties.getRefreshPeriod() == 0 ? defaultRefreshPeriod : properties.getRefreshPeriod();
+			long t = properties.getRefreshPeriod() == 0 ? DEFAULT_REFRESH_PERIOD : properties.getRefreshPeriod();
 			if (t > 0) {
 				t = t * 1000;
-				timer.scheduleAtFixedRate(new RefreshPropertiesTask(properties), t, t);
+				TimerTask task = new RefreshPropertiesTask(properties);
+				timer.scheduleAtFixedRate(task, t, t);
+				taskList.add(task);
 			}
 		}
 	}
@@ -111,6 +117,9 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory, Destro
 	}
 
 	public void destroy() {
+		for (TimerTask task : taskList) {
+			task.cancel();
+		}
 		timer.cancel();
 	}
 }

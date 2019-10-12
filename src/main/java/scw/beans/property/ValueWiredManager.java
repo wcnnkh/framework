@@ -2,28 +2,30 @@ package scw.beans.property;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import scw.beans.BeanFactory;
+import scw.core.Destroy;
 import scw.core.PropertyFactory;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
-public class ValueWiredManager {
+public final class ValueWiredManager implements Destroy {
 	private static Logger logger = LoggerUtils.getLogger(ValueWiredManager.class);
+	private static final int DEFAULT_REFRESH_PERIOD = StringUtils
+			.parseInt(SystemPropertyUtils.getProperty("value.wired.refresh.period"), 60);
 	private ConcurrentHashMap<Object, ObjectValueWired> taskMap = new ConcurrentHashMap<Object, ObjectValueWired>();
-
-	private Timer timer;
-	private int refreshPeriod;
+	private Timer timer = new Timer(getClass().getName());
 	private PropertyFactory propertyFactory;
 	private BeanFactory beanFactory;
 
-	public ValueWiredManager(PropertyFactory propertyFactory, BeanFactory beanFactory, Timer timer, int refreshPeriod) {
-		this.refreshPeriod = refreshPeriod;
-		this.timer = timer;
+	public ValueWiredManager(PropertyFactory propertyFactory, BeanFactory beanFactory) {
 		this.propertyFactory = propertyFactory;
 		this.beanFactory = beanFactory;
 	}
@@ -72,7 +74,7 @@ public class ValueWiredManager {
 				if (valueWired.isCanRefresh()) {
 					long t = valueWired.getValueAnnotation().timeUnit()
 							.toSeconds(valueWired.getValueAnnotation().period());
-					t = t > 0 ? t : refreshPeriod;
+					t = t > 0 ? t : DEFAULT_REFRESH_PERIOD;
 					if (t > 0) {
 						t = t * 1000;
 						ValueWiredTask valueWiredTask = new ValueWiredTask(valueWired);
@@ -105,5 +107,12 @@ public class ValueWiredManager {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void destroy() {
+		for (Entry<Object, ObjectValueWired> entry : taskMap.entrySet()) {
+			entry.getValue().cancel();
+		}
+		timer.cancel();
 	}
 }

@@ -2,6 +2,7 @@ package scw.beans.dubbo;
 
 import java.lang.reflect.Method;
 
+import org.apache.dubbo.config.DubboShutdownHook;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -119,8 +120,8 @@ public final class DubboUtils {
 
 		runnable.run();
 	}
-
-	public static void destoryAll() {
+	
+	public static void registerDubboShutdownHook() {
 		Class<?> dubboShutdownHook = null;
 		try {
 			dubboShutdownHook = Class.forName("org.apache.dubbo.config.DubboShutdownHook");
@@ -131,9 +132,10 @@ public final class DubboUtils {
 			return;
 		}
 
+		DubboShutdownHook.getDubboShutdownHook().register();
 		try {
 			Object obj = ReflectUtils.invokeStaticMethod(dubboShutdownHook, "getDubboShutdownHook", new Class[0]);
-			Method method = ReflectUtils.findMethod(dubboShutdownHook, "doDestroy");
+			Method method = ReflectUtils.findMethod(dubboShutdownHook, "register");
 			method.invoke(obj);
 		} catch (Exception e) {
 			logger.error(e, "shutdown error");

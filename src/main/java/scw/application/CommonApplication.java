@@ -1,147 +1,62 @@
 package scw.application;
 
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
 
 import scw.application.consumer.AnnotationConsumerUtils;
 import scw.application.consumer.XmlConsumerFactory;
 import scw.application.crontab.CrontabAnnotationUtils;
 import scw.beans.BeanUtils;
 import scw.beans.XmlBeanFactory;
-import scw.beans.dubbo.DubboUtils;
-import scw.beans.property.ValueWiredManager;
-import scw.beans.property.XmlPropertyFactory;
-import scw.beans.xml.XmlBeanUtils;
-import scw.core.MultiPropertyFactory;
-import scw.core.PropertyFactory;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.logger.LoggerUtils;
 import scw.sql.orm.ORMUtils;
 
-public class CommonApplication implements Application {
+public class CommonApplication extends XmlBeanFactory implements Application {
 	public static final String DEFAULT_BEANS_PATH = "classpath:/beans.xml";
-
-	private final XmlBeanFactory beanFactory;
 	private volatile boolean start = false;
-	private final MultiPropertyFactory propertyFactory = new MultiPropertyFactory();
-	private final String configPath;
-	private final int valueRefreshPeriod;
-	private final int propertyRefreshPeriod;
 
-	public CommonApplication(String configXml) {
-		this(configXml, getGlobalValueWiredRefreshPeriod(), getGlobalPropertyRefreshPeriod());
-	}
-
-	public CommonApplication(String configXml, int valueRefreshPeriod, int propertyRefreshPeriod) {
-		this.valueRefreshPeriod = valueRefreshPeriod;
-		this.propertyRefreshPeriod = propertyRefreshPeriod;
-		this.configPath = configXml;
-		propertyFactory.add(new XmlPropertyFactory(getConfigPath(), propertyRefreshPeriod));
-		this.beanFactory = getXmlBeanFactory();
-	}
-
-	public String getConfigPath() {
-		return configPath;
-	}
-
-	/**
-	 * 配置文件全局默认的刷新时间 单位：秒
-	 * 
-	 * @return
-	 */
-	public static int getGlobalPropertyRefreshPeriod() {
-		return StringUtils.parseInt(SystemPropertyUtils.getProperty("scw_global_property_refresh_period"),
-				(int) TimeUnit.MINUTES.toSeconds(1));
-	}
-
-	public static void setGlobalPropertyRefreshPeriod(int period) {
-		SystemPropertyUtils.setPrivateProperty("scw_global_property_refresh_period", period + "");
-	}
-
-	/**
-	 * value注解全局默认的刷新时间 单位：秒
-	 * 
-	 * @return
-	 */
-	public static int getGlobalValueWiredRefreshPeriod() {
-		return StringUtils.parseInt(SystemPropertyUtils.getProperty("scw_global_value_wired_refresh_period"),
-				(int) TimeUnit.MINUTES.toSeconds(1));
-	}
-
-	public static void setGlobalValueWiredRefreshPeriod(int period) {
-		SystemPropertyUtils.setPrivateProperty("scw_global_value_wired_refresh_period", period + "");
-	}
-
-	public ValueWiredManager getValueWiredManager() {
-		return getBeanFactory().getValueWiredManager();
-	}
-
-	public int getValueRefreshPeriod() {
-		return valueRefreshPeriod;
-	}
-
-	public int getPropertyRefreshPeriod() {
-		return propertyRefreshPeriod;
-	}
-
-	public void addPropertyFactory(PropertyFactory propertyFactory) {
-		this.propertyFactory.add(propertyFactory);
-	}
-
-	private XmlBeanFactory getXmlBeanFactory() {
-		try {
-			return new XmlBeanFactory(this.propertyFactory, getConfigPath(), getValueRefreshPeriod()) {
-				@Override
-				protected String getInitStaticPackage() {
-					return getStaticAnnotationPackage();
-				}
-
-				@Override
-				protected String getServicePackage() {
-					return getServiceAnnotationPackage();
-				}
-			};
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public CommonApplication(String xmlConfigPath) {
+		super(xmlConfigPath);
 	}
 
 	public final XmlBeanFactory getBeanFactory() {
-		return beanFactory;
-	}
-
-	public final PropertyFactory getPropertyFactory() {
-		return beanFactory.getPropertyFactory();
+		return this;
 	}
 
 	protected String getAnnotationPackage() {
-		return BeanUtils.getAnnotationPackage(propertyFactory);
+		return BeanUtils.getAnnotationPackage(getPropertyFactory());
 	}
 
 	protected String getORMPackage() {
-		String orm = BeanUtils.getORMPackage(propertyFactory);
+		String orm = BeanUtils.getORMPackage(getPropertyFactory());
 		return orm == null ? getAnnotationPackage() : orm;
 	}
 
-	protected String getServiceAnnotationPackage() {
-		String service = BeanUtils.getServiceAnnotationPackage(propertyFactory);
+	@Override
+	protected String getServicePackage() {
+		String service = BeanUtils.getServiceAnnotationPackage(getPropertyFactory());
 		return service == null ? getAnnotationPackage() : service;
 	}
 
 	protected String getCrontabAnnotationPackage() {
-		String crontab = BeanUtils.getCrontabAnnotationPackage(propertyFactory);
+		String crontab = BeanUtils.getCrontabAnnotationPackage(getPropertyFactory());
 		return crontab == null ? getAnnotationPackage() : crontab;
 	}
 
 	protected String getConsumerAnnotationPackage() {
-		String consumer = BeanUtils.getConsumerAnnotationPackage(propertyFactory);
+		String consumer = BeanUtils.getConsumerAnnotationPackage(getPropertyFactory());
 		return consumer == null ? getAnnotationPackage() : consumer;
 	}
 
+	@Override
+	protected String getInitStaticPackage() {
+		String init = BeanUtils.getInitStaticPackage(getPropertyFactory());
+		return init == null ? getAnnotationPackage() : init;
+	}
+
 	protected String getStaticAnnotationPackage() {
-		String init = BeanUtils.getInitStaticPackage(propertyFactory);
+		String init = BeanUtils.getInitStaticPackage(getPropertyFactory());
 		return init == null ? getAnnotationPackage() : init;
 	}
 
@@ -167,28 +82,24 @@ public class CommonApplication implements Application {
 
 		LoggerUtils.init();
 
-		String ormScanPackageName = propertyFactory.getProperty("orm.scan");
+		String ormScanPackageName = getPropertyFactory().getProperty("orm.scan");
 		if (StringUtils.isNotEmpty(ormScanPackageName)) {
 			ORMUtils.registerCglibProxyTableBean(ormScanPackageName);
 		} else {
 			ORMUtils.registerCglibProxyTableBean(getORMPackage());
 		}
 
-		beanFactory.init();
-
-		CrontabAnnotationUtils.crontabService(ResourceUtils.getClassList(getCrontabAnnotationPackage()), beanFactory);
+		super.init();
+		CrontabAnnotationUtils.crontabService(ResourceUtils.getClassList(getCrontabAnnotationPackage()),
+				getBeanFactory());
 		scanningConsumer();
-
-		if (ResourceUtils.isExist(configPath)) {
-			DubboUtils.exportService(beanFactory, propertyFactory, XmlBeanUtils.getRootNodeList(configPath));
-		}
 	}
 
 	private void scanningConsumer() {
 		Collection<Class<?>> classes = ResourceUtils.getClassList(getConsumerAnnotationPackage());
 		AnnotationConsumerUtils.scanningAMQPConsumer(getBeanFactory(), classes);
-		AnnotationConsumerUtils.scanningConsumer(beanFactory,
-				new XmlConsumerFactory(beanFactory, propertyFactory, configPath), classes);
+		AnnotationConsumerUtils.scanningConsumer(getBeanFactory(),
+				new XmlConsumerFactory(getBeanFactory(), getPropertyFactory(), getXmlConfigPath()), classes);
 	}
 
 	public void destroy() {
@@ -204,9 +115,7 @@ public class CommonApplication implements Application {
 			start = false;
 		}
 
-		propertyFactory.destroy();
-		DubboUtils.destoryAll();
-		beanFactory.destroy();
+		super.destroy();
 		LoggerUtils.destroy();
 	}
 

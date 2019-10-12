@@ -8,6 +8,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import scw.logger.SplitLineAppend;
+import scw.logger.LoggerUtils;
+
 public class DispatcherServlet extends GenericServlet {
 	private static final long serialVersionUID = 1L;
 	private ServletApplication application;
@@ -26,6 +29,7 @@ public class DispatcherServlet extends GenericServlet {
 			throw new RuntimeException(e);
 		}
 		application.init();
+		LoggerUtils.info(DispatcherServlet.class, new SplitLineAppend("初始化servlet"));
 		this.servletService = ServletUtils.getServletService(application.getBeanFactory(),
 				application.getPropertyFactory());
 	}

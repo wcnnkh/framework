@@ -120,12 +120,12 @@ public final class LoggerUtils {
 	}
 
 	public static void loggerAppend(Appendable appendable, long time, String level, String tag, String placeholder,
-			String msg, Object... args) throws Exception {
+			Object msg, Object... args) throws Exception {
 		StringAppend loggerAppend = new DefaultLoggerFormatAppend(msg, placeholder, args);
 		loggerAppend(appendable, time, level, tag, loggerAppend);
 	}
 
-	public static void info(Class<?> clazz, String msg, Object... args) {
+	public static void info(Class<?> clazz, Object msg, Object... args) {
 		StringBuilder sb = new StringBuilder(256);
 		try {
 			loggerAppend(sb, System.currentTimeMillis(), "CONSOLE", clazz.getName(), null, msg, args);
@@ -135,7 +135,7 @@ public final class LoggerUtils {
 		}
 	}
 
-	public static void warn(Class<?> clazz, String msg, Object... args) {
+	public static void warn(Class<?> clazz, Object msg, Object... args) {
 		StringBuilder sb = new StringBuilder(256);
 		try {
 			loggerAppend(sb, System.currentTimeMillis(), "CONSOLE", clazz.getName(), null, msg, args);

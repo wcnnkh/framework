@@ -7,11 +7,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.dubbo.DubboUtils;
+import scw.beans.property.XmlPropertyFactory;
 import scw.beans.rpc.HttpRpcBeanConfigFactory;
 import scw.beans.xml.XmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.PropertyFactory;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
 import scw.core.resource.ResourceUtils;
@@ -19,14 +19,13 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
-	private final String xmlPath;
+	private final String xmlConfigPath;
 
-	public XmlBeanFactory(PropertyFactory propertyFactory, String xmlPath, int defaultValueRefreshPeriod)
-			throws Exception {
-		super(propertyFactory, defaultValueRefreshPeriod);
-		this.xmlPath = xmlPath;
-		if (ResourceUtils.isExist(xmlPath)) {
-			Node root = XmlBeanUtils.getRootNode(xmlPath);
+	public XmlBeanFactory(String xmlConfigPath) {
+		this.xmlConfigPath = xmlConfigPath;
+		if (ResourceUtils.isExist(xmlConfigPath)) {
+			Node root = XmlBeanUtils.getRootNode(xmlConfigPath);
+			propertyFactory.add(new XmlPropertyFactory(xmlConfigPath));
 			addFilterName(Arrays
 					.asList(StringUtils.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, root, "filters"))));
 		}
@@ -41,8 +40,8 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		return (T) bean;
 	}
 
-	public String getXmlPath() {
-		return xmlPath;
+	public String getXmlConfigPath() {
+		return xmlConfigPath;
 	}
 
 	protected String getServicePackage() {
@@ -52,8 +51,8 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 
 	public void init() {
 		try {
-			if (ResourceUtils.isExist(xmlPath)) {
-				NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
+			if (ResourceUtils.isExist(xmlConfigPath)) {
+				NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlConfigPath);
 				addBeanConfigFactory(
 						new XmlBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList, "bean"));
 				addBeanConfigFactory(new ServiceBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
@@ -67,6 +66,9 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 				}
 				super.init();
 				initMethod(nodeList);
+
+				DubboUtils.exportService(this, propertyFactory, nodeList);
+				DubboUtils.registerDubboShutdownHook();
 			} else {
 				super.init();
 			}
@@ -115,11 +117,11 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	private void destroyMethod() throws Exception {
-		if (!ResourceUtils.isExist(xmlPath)) {
+		if (!ResourceUtils.isExist(xmlConfigPath)) {
 			return;
 		}
 
-		NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
+		NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlConfigPath);
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("destroy".equalsIgnoreCase(n.getNodeName())) {

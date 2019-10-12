@@ -46,8 +46,7 @@ public class EmbeddedApplication extends CommonApplication {
 	}
 
 	private void initEmbedded(String embeddedName) {
-		ServletService service = ServletUtils.getServletService(getBeanFactory(),
-				getPropertyFactory());
+		ServletService service = ServletUtils.getServletService(getBeanFactory(), getPropertyFactory());
 		embedded = getBeanFactory().getInstance(embeddedName);
 		embedded.init(getBeanFactory(), getPropertyFactory(), new ShutdownHttpServlet(getPropertyFactory(), this),
 				new EmbeddedServlet(service));
@@ -115,7 +114,6 @@ public class EmbeddedApplication extends CommonApplication {
 			}
 			application.init();
 		}
-
 	}
 
 	public synchronized static void run(final Class<?> clazz, String beanXml) {
