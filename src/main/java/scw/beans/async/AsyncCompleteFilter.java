@@ -33,7 +33,8 @@ public final class AsyncCompleteFilter implements Filter {
 	}
 
 	private InstanceFactory instanceFactory;
-	public AsyncCompleteFilter(InstanceFactory instanceFactory){
+
+	public AsyncCompleteFilter(InstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
 	}
 
@@ -56,9 +57,9 @@ public final class AsyncCompleteFilter implements Filter {
 				beanName = ClassUtils.getUserClass(proxy).getName();
 			}
 		}
-		
-		if(!instanceFactory.isInstance(beanName)){
-			logger.warn("@AsyncComplete invalid:{}", method.getName());
+
+		if (!instanceFactory.isSingleton(beanName) || !instanceFactory.isInstance(beanName)) {
+			logger.warn("[{}]不支持使用@AsyncComplete注解:{}", beanName, method);
 			return filterChain.doFilter(invoker, proxy, method, args);
 		}
 

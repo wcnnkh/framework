@@ -10,6 +10,8 @@ import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
 import scw.core.instance.InstanceFactory;
 import scw.core.reflect.SerializableMethodDefinition;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
 /**
  * 只能受BeanFactory管理
@@ -18,6 +20,7 @@ import scw.core.reflect.SerializableMethodDefinition;
  *
  */
 public final class TCCTransactionFilter implements Filter {
+	private static Logger logger = LoggerUtils.getLogger(TCCTransactionFilter.class);
 	private static volatile Map<Class<?>, ClassTCC> cacheMap = new HashMap<Class<?>, ClassTCC>();
 	private static ClassTCC getClassTCC(Class<?> clz) {
 		ClassTCC classTCC = cacheMap.get(clz);
@@ -42,6 +45,11 @@ public final class TCCTransactionFilter implements Filter {
 		TCC tcc = method.getAnnotation(TCC.class);
 		if (tcc == null) {
 			return;
+		}
+		
+		if(!instanceFactory.isSingleton(interfaceClz) || !instanceFactory.isInstance(interfaceClz)){
+			logger.warn("[{}]不支持使用@TCC注解 {}", interfaceClz.getName(), method);
+			return ;
 		}
 
 		ClassTCC info = getClassTCC(interfaceClz);
