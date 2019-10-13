@@ -59,7 +59,6 @@ import scw.mvc.http.filter.CrossDomainDefinition;
 import scw.mvc.http.filter.HttpActionServiceFilter;
 import scw.net.header.HeadersConstants;
 import scw.net.mime.MimeTypeConstants;
-import scw.result.exception.ResultExceptionFilter;
 import scw.rpc.RpcService;
 
 public final class MVCUtils implements MvcConstants {
@@ -368,10 +367,6 @@ public final class MVCUtils implements MvcConstants {
 
 	public static LinkedList<Filter> getFilters(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		LinkedList<Filter> filters = new LinkedList<Filter>();
-		if (instanceFactory.isInstance(ResultExceptionFilter.class)) {// 异常处理
-			filters.add(instanceFactory.getInstance(ResultExceptionFilter.class));
-		}
-
 		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, Filter.class, "mvc.filters");
 		filters.add(getHttpActionServiceFilter(instanceFactory, propertyFactory));
 		filters.add(new HttpNotFoundService());
