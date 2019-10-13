@@ -29,7 +29,7 @@ import scw.mvc.servlet.FilterChainAction;
 import scw.security.authority.http.HttpAuthorityManager;
 import scw.security.authority.http.SimpleHttpAuthorityManager;
 
-public class HttpActionServiceFilter extends HttpFilter {
+public final class HttpActionServiceFilter extends HttpFilter {
 	private final Collection<Filter> filters = new LinkedList<Filter>();
 	private final Collection<ActionFilter> actionFilters = new LinkedList<ActionFilter>();
 
