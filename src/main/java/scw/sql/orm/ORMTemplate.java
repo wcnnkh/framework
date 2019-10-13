@@ -16,8 +16,6 @@ import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.IteratorCallback;
 import scw.core.utils.StringUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
 import scw.sql.Sql;
@@ -32,7 +30,6 @@ import scw.sql.orm.result.ResultSet;
 import scw.transaction.sql.cache.QueryCacheUtils;
 
 public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
-	private Logger logger = LoggerFactory.getLogger(getClass());
 	private volatile boolean cacheEnable = QueryCacheUtils.isGlobalCacheEnable();
 
 	protected final boolean isCacheEnable() {
@@ -44,10 +41,6 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public abstract SqlFormat getSqlFormat();
-
-	public final Logger getLogger() {
-		return logger;
-	}
 
 	public <T> T getById(Class<T> type, Object... params) {
 		return getById(null, type, params);
@@ -113,7 +106,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 				connection = getUserConnection();
 				boolean b = update(sql, connection) != 0;
 				if (!b) {
-					getLogger().warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
+					logger.warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
 					return false;
 				}
 
@@ -141,7 +134,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	public boolean update(Object bean, String tableName) {
 		if (bean instanceof FieldSetterListen) {
 			if (((FieldSetterListen) bean).get_field_setter_map() == null) {
-				getLogger().warn("更新对象[{}]不存在数据变更", bean.getClass().getName());
+				logger.warn("更新对象[{}]不存在数据变更", bean.getClass().getName());
 				return false;
 			}
 		}

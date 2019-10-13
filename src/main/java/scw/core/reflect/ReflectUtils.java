@@ -31,7 +31,6 @@ import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.CloneUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.CompareUtils;
 import scw.core.utils.StringParse;
@@ -1234,11 +1233,7 @@ public final class ReflectUtils {
 		}
 		return null;
 	}
-
-	public static Object clone(Object source, boolean ignoreTransient) {
-		return CloneUtils.clone(source, ignoreTransient);
-	}
-
+	
 	public static Field[] getDeclaredFields(Class<?> clazz) {
 		return getFields(clazz, true);
 	}

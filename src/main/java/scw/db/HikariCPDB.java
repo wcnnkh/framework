@@ -7,9 +7,6 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Map;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-
 import scw.core.annotation.Order;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
@@ -19,6 +16,9 @@ import scw.db.async.AsyncInfo;
 import scw.db.cache.LazyCacheManager;
 import scw.db.database.DataBase;
 import scw.mq.MQ;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * 只在能java8中使用 除非你在pom引入你需要的版本，并排除本项目自带的版本
@@ -44,7 +44,6 @@ public class HikariCPDB extends LazyCacheDB{
 		this.dataBase = DBUtils.automaticRecognition(
 				config.getDriverClassName(), config.getJdbcUrl(),
 				config.getUsername(), config.getPassword());
-		setDebug(StringUtils.parseBoolean(properties.get("debug")));
 		
 		dataBase.create();
 		hds = new HikariDataSource(config);

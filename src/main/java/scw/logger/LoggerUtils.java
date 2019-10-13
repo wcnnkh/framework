@@ -8,8 +8,8 @@ import java.util.ListIterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import scw.core.SimpleKeyValuePair;
 import scw.core.KeyValuePair;
+import scw.core.SimpleKeyValuePair;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringAppend;
 import scw.core.utils.StringUtils;
@@ -72,7 +72,7 @@ public final class LoggerUtils {
 				return keyValuePair.getValue();
 			}
 		}
-		return Level.TRACE;
+		return Level.INFO;
 	}
 
 	public static Collection<KeyValuePair<String, Level>> getLoggerLevelConfigList() {

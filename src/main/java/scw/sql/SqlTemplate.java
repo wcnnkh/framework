@@ -6,9 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import scw.logger.LogService;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
-public abstract class SqlTemplate implements SqlOperations, LogService {
+public abstract class SqlTemplate implements SqlOperations{
+	protected static Logger logger = LoggerFactory.getLogger(SqlTemplate.class);
 
 	public abstract Connection getUserConnection() throws SQLException;
 
@@ -24,8 +26,8 @@ public abstract class SqlTemplate implements SqlOperations, LogService {
 
 	protected boolean execute(Sql sql, Connection connection)
 			throws SQLException {
-		if (isLogEnabled()) {
-			log(SqlUtils.getSqlId(sql));
+		if(logger.isDebugEnabled()){
+			logger.debug(SqlUtils.getSqlId(sql));
 		}
 
 		PreparedStatement statement = null;
@@ -66,8 +68,8 @@ public abstract class SqlTemplate implements SqlOperations, LogService {
 
 	protected void query(Sql sql, Connection connection,
 			ResultSetCallback resultSetCallback) throws SQLException {
-		if (isLogEnabled()) {
-			log(SqlUtils.getSqlId(sql));
+		if(logger.isDebugEnabled()){
+			logger.debug(SqlUtils.getSqlId(sql));
 		}
 
 		PreparedStatement statement = null;
@@ -121,9 +123,10 @@ public abstract class SqlTemplate implements SqlOperations, LogService {
 
 	protected <T> T query(Sql sql, Connection connection,
 			ResultSetMapper<T> resultSetMapper) throws SQLException {
-		if (isLogEnabled()) {
-			log(SqlUtils.getSqlId(sql));
+		if(logger.isDebugEnabled()){
+			logger.debug(SqlUtils.getSqlId(sql));
 		}
+		
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -163,9 +166,10 @@ public abstract class SqlTemplate implements SqlOperations, LogService {
 	}
 
 	protected int update(Sql sql, Connection connection) throws SQLException {
-		if (isLogEnabled()) {
-			log(SqlUtils.getSqlId(sql));
+		if(logger.isDebugEnabled()){
+			logger.debug(SqlUtils.getSqlId(sql));
 		}
+		
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -186,12 +190,6 @@ public abstract class SqlTemplate implements SqlOperations, LogService {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
 			close(connection);
-		}
-	}
-
-	public void log(Object format, Object... args) {
-		if (isLogEnabled()) {
-			getLogger().info(format, args);
 		}
 	}
 }

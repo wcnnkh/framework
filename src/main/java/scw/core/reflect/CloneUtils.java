@@ -1,16 +1,20 @@
-package scw.core.utils;
+package scw.core.reflect;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import scw.core.Verification;
 import scw.core.instance.InstanceUtils;
-import scw.core.reflect.ReflectUtils;
 
 public final class CloneUtils {
 	private CloneUtils() {
 	};
+
+	public static <T> T clone(T source, boolean ignoreTransient) {
+		return clone(source, new IgnoreStaticFieldVerification(ignoreTransient));
+	}
 
 	/**
 	 * 必须要存在默认的构造方法
@@ -18,34 +22,37 @@ public final class CloneUtils {
 	 * @param obj
 	 * @return
 	 */
-	public static <T> T clone(T source, boolean ignoreTransient) {
+	public static <T> T clone(T source, Verification<Field> ignoreVerification) {
 		try {
-			return clone(source, true, ignoreTransient, true);
+			return clone(source, ignoreVerification, true);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private static Object cloneArray(Class<?> type, Object array, boolean ignoreStatic, boolean ignoreTransient,
+	private static Object cloneArray(Class<?> type, Object array,
+			Verification<Field> ignoreVerification,
 			boolean invokeCloneableMethod) throws Exception {
 		int size = Array.getLength(array);
 		Object newArr = Array.newInstance(type.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
-			Array.set(newArr, i, autoClone(Array.get(array, i), ignoreStatic, ignoreTransient, invokeCloneableMethod));
+			Array.set(
+					newArr,
+					i,
+					autoClone(Array.get(array, i), ignoreVerification,
+							invokeCloneableMethod));
 		}
 		return newArr;
 	}
 
-	private static void cloneObject(Object obj, Object source, boolean ignoreStatic, boolean ignoreTransient,
+	private static void cloneObject(Object obj, Object source,
+			Verification<Field> ignoreVerification,
 			boolean invokeCloneableMethod) throws Exception {
 		Class<?> clazz = source.getClass();
 		while (clazz != null) {
 			for (Field field : clazz.getDeclaredFields()) {
-				if (ignoreStatic && Modifier.isStatic(field.getModifiers())) {
-					continue;
-				}
-
-				if (ignoreTransient && Modifier.isTransient(field.getModifiers())) {
+				if (ignoreVerification != null
+						&& ignoreVerification.verification(field)) {
 					continue;
 				}
 
@@ -57,18 +64,22 @@ public final class CloneUtils {
 
 				if (!field.getType().isPrimitive() && !field.getType().isEnum()) {
 					if (field.getType().isArray()) {
-						v = cloneArray(field.getType(), v, ignoreStatic, ignoreTransient, invokeCloneableMethod);
+						v = cloneArray(field.getType(), v, ignoreVerification,
+								invokeCloneableMethod);
 					} else {
-						v = autoClone(v, ignoreStatic, ignoreTransient, invokeCloneableMethod);
+						v = autoClone(v, ignoreVerification,
+								invokeCloneableMethod);
 					}
 				}
-				field.set(Modifier.isStatic(field.getModifiers()) ? null : source, v);
+				field.set(Modifier.isStatic(field.getModifiers()) ? null
+						: source, v);
 			}
 			clazz = clazz.getSuperclass();
 		}
 	}
 
-	private static Object cloneObject(Class<?> type, Object obj, boolean ignoreStatic, boolean ignoreTransient,
+	private static Object cloneObject(Class<?> type, Object obj,
+			Verification<Field> ignoreVerification,
 			boolean invokeCloneableMethod) throws Exception {
 		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
 			return obj;
@@ -80,13 +91,14 @@ public final class CloneUtils {
 		}
 
 		Object t = constructor.newInstance();
-		cloneObject(obj, t, ignoreStatic, ignoreTransient, invokeCloneableMethod);
+		cloneObject(obj, t, ignoreVerification, invokeCloneableMethod);
 		return t;
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T> T autoClone(T obj, boolean ignoreStatic, boolean ignoreTransient, boolean invokeCloneableMethod)
-			throws Exception {
+	private static <T> T autoClone(T obj,
+			Verification<Field> ignoreVerification,
+			boolean invokeCloneableMethod) throws Exception {
 		if (obj == null) {
 			return null;
 		}
@@ -99,15 +111,18 @@ public final class CloneUtils {
 		if (type.isPrimitive() || type.isEnum()) {
 			return obj;
 		} else if (type.isArray()) {
-			return (T) cloneArray(type, obj, ignoreStatic, ignoreTransient, invokeCloneableMethod);
+			return (T) cloneArray(type, obj, ignoreVerification,
+					invokeCloneableMethod);
 		} else if (invokeCloneableMethod && obj instanceof Cloneable) {
 			try {
-				return (T) ReflectUtils.getMethod(type, false, "clone").invoke(obj);
+				return (T) ReflectUtils.getMethod(type, false, "clone").invoke(
+						obj);
 			} catch (NoSuchMethodException e) {
 			}
 		}
 
-		return (T) cloneObject(type, obj, ignoreStatic, ignoreTransient, invokeCloneableMethod);
+		return (T) cloneObject(type, obj, ignoreVerification,
+				invokeCloneableMethod);
 	}
 
 	/**
@@ -121,8 +136,8 @@ public final class CloneUtils {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T clone(T source, boolean ignoreStatic, boolean ignoreTransient, boolean invokeCloneableMethod)
-			throws Exception {
+	public static <T> T clone(T source, Verification<Field> ignoreVerification,
+			boolean invokeCloneableMethod) throws Exception {
 		if (source == null) {
 			return null;
 		}
@@ -135,25 +150,34 @@ public final class CloneUtils {
 		if (type.isPrimitive() || type.isEnum()) {
 			return source;
 		} else if (type.isArray()) {
-			return (T) cloneArray(type, source, ignoreStatic, ignoreTransient, invokeCloneableMethod);
+			return (T) cloneArray(type, source, ignoreVerification,
+					invokeCloneableMethod);
 		} else if (invokeCloneableMethod && source instanceof Cloneable) {
 			try {
-				return (T) ReflectUtils.getMethod(type, false, "clone").invoke(source);
+				return (T) ReflectUtils.getMethod(type, false, "clone").invoke(
+						source);
 			} catch (NoSuchMethodException e) {
 			}
 		}
 
 		T t = InstanceUtils.newInstance(type);
-		cloneObject(source, t, ignoreStatic, ignoreTransient, invokeCloneableMethod);
+		cloneObject(source, t, ignoreVerification, invokeCloneableMethod);
 		return t;
 	}
 
-	public static void copy(Object source, Object target, boolean cloneValue)
+	public static void copy(Object source, Object target,
+			Verification<Field> ignoreVerification, boolean clone)
 			throws IllegalArgumentException, IllegalAccessException {
 		Class<?> clz = target.getClass();
 		while (clz != null && clz != Object.class) {
 			for (Field field : clz.getDeclaredFields()) {
-				Field sourceField = ReflectUtils.getField(source.getClass(), field.getName(), true);
+				if (ignoreVerification != null
+						&& ignoreVerification.verification(field)) {
+					continue;
+				}
+
+				Field sourceField = ReflectUtils.getField(source.getClass(),
+						field.getName(), true);
 				if (sourceField == null) {
 					continue;
 				}
@@ -169,18 +193,25 @@ public final class CloneUtils {
 				}
 
 				ReflectUtils.setAccessibleField(field);
-				field.set(target, cloneValue ? clone(value, false) : value);
+				field.set(target, clone ? clone(value, ignoreVerification)
+						: value);
 			}
+			clz = clz.getSuperclass();
 		}
 	}
 
-	public static <T> T createAndCopy(Object source, Class<T> clazz, boolean clone) {
+	public static <T> T createAndCopy(Object source, Class<T> clazz,
+			Verification<Field> ignoreVerification) {
 		T target = InstanceUtils.getInstance(clazz);
 		try {
-			copy(source, target, clone);
+			copy(source, target, ignoreVerification, false);
 		} catch (Exception e) {
-			throw new RuntimeException("复制时发生异常");
+			throw new RuntimeException("复制时发生异常", e);
 		}
 		return target;
+	}
+
+	public static <T> T createAndCopy(Object source, Class<T> clazz) {
+		return createAndCopy(source, clazz, new IgnoreStaticFieldVerification(false));
 	}
 }

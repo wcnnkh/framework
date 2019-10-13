@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Map;
 
-import com.alibaba.druid.pool.DruidDataSource;
-
 import scw.beans.annotation.Bean;
 import scw.core.annotation.Order;
 import scw.core.resource.ResourceUtils;
@@ -19,6 +17,8 @@ import scw.db.async.AsyncInfo;
 import scw.db.cache.LazyCacheManager;
 import scw.db.database.DataBase;
 import scw.mq.MQ;
+
+import com.alibaba.druid.pool.DruidDataSource;
 
 @SuppressWarnings("rawtypes")
 @Bean(proxy = false)
@@ -83,7 +83,6 @@ public class DruidDB extends LazyCacheDB {
 		this.dataBase = DBUtils.automaticRecognition(datasource.getDriverClassName(), datasource.getUrl(),
 				datasource.getUsername(), datasource.getPassword());
 
-		setDebug(StringUtils.parseBoolean(properties.get("debug")));
 		dataBase.create();
 		Object createTable = properties.get("create");
 		if(createTable != null){

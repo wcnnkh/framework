@@ -21,7 +21,6 @@ public abstract class AbstractLazyCacheDB extends AbstractDB<LazyCacheManager> i
 	private final LazyCacheManager lazyCacheManager;
 	private final MQ<AsyncInfo> mq;
 	private final String queueName;
-	private boolean debug;
 	private boolean inIdAppendCache = true;// 使用inId查询结果是否添加到缓存
 
 	public AbstractLazyCacheDB(LazyCacheManager lazyCacheManager, MQ<AsyncInfo> mq, String queueName) {
@@ -29,15 +28,7 @@ public abstract class AbstractLazyCacheDB extends AbstractDB<LazyCacheManager> i
 		this.mq = mq;
 		this.queueName = queueName;
 		mq.bindConsumer(queueName, this);
-		getLogger().info("异步队列名称：{}", queueName);
-	}
-
-	protected void setDebug(boolean debug) {
-		this.debug = debug;
-	}
-
-	public boolean isLogEnabled() {
-		return debug;
+		logger.info("异步队列名称：{}", queueName);
 	}
 
 	protected final boolean isInIdAppendCache() {
