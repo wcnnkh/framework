@@ -14,7 +14,6 @@ import scw.core.instance.support.ReflectionSingleInstanceFactory;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.logger.LoggerUtils;
 
 public final class InstanceUtils {
 	private InstanceUtils() {
@@ -38,8 +37,6 @@ public final class InstanceUtils {
 			throw new NotSupportException("Instances that do not call constructors are not supported");
 		}
 
-		LoggerUtils.info(InstanceUtils.class, "default not call constructors instance factory：{}",
-				instanceFactory.getClass().getName());
 		NO_ARGS_INSTANCE_FACTORY = instanceFactory;
 	}
 

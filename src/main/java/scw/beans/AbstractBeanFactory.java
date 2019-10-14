@@ -41,7 +41,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	private volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
-	private LinkedList<Destroy> destroys = new LinkedList<Destroy>();
+	private final LinkedList<Destroy> destroys = new LinkedList<Destroy>();
 	private volatile HashSet<String> notFoundSet = new HashSet<String>();
 	protected final MultiPropertyFactory propertyFactory = new MultiPropertyFactory();
 	private final LinkedList<String> filterNames = new LinkedList<String>();

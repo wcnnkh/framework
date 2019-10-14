@@ -21,6 +21,7 @@ public final class ExceptionHandlerChain {
 	}
 
 	public Object doHandler(Channel channel, Throwable throwable) {
+		logger.error(throwable, channel.toString());
 		if (iterator == null) {
 			return lastHandler(channel, throwable);
 		}
@@ -41,7 +42,6 @@ public final class ExceptionHandlerChain {
 	}
 
 	private Object httpHandler(HttpChannel httpChannel, Throwable throwable) {
-		logger.error(throwable, httpChannel.toString());
 		return new HttpCode(500, "system error");
 	}
 }
