@@ -20,11 +20,7 @@ public class DispatcherServlet extends GenericServlet {
 
 	@Override
 	public final void init(ServletConfig servletConfig) throws ServletException {
-		try {
-			application = new ServletApplication(servletConfig);
-		} catch (Throwable e) {
-			throw new RuntimeException(e);
-		}
+		application = new ServletApplication(servletConfig);
 		application.init();
 		this.servletService = ServletUtils.getServletService(application.getBeanFactory(),
 				application.getPropertyFactory());

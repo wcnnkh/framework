@@ -10,7 +10,7 @@ import scw.core.PropertyFactory;
 public class ServletApplication implements Application {
 	private final CommonApplication commonApplication;
 
-	public ServletApplication(ServletConfig servletConfig) throws Throwable {
+	public ServletApplication(ServletConfig servletConfig) {
 		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(servletConfig);
 		this.commonApplication = new CommonApplication(propertyFactory.getConfigXml());
 		this.commonApplication.addPropertyFactory(propertyFactory);
