@@ -65,14 +65,14 @@ final class CrontabRunnable implements CrontabTask {
 			return;
 		}
 
-		logger.info("开始执行{}", name);
+		logger.debug("开始执行{}", name);
 		try {
 			if (invokeTime) {
 				invoker.invoke(executionTime);
 			} else {
 				invoker.invoke();
 			}
-			logger.info("执行{}成功", name);
+			logger.debug("执行{}成功", name);
 			context.end();
 		} catch (Throwable e) {
 			logger.error(e, "执行{}异常", name);
