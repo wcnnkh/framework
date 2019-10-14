@@ -1,6 +1,7 @@
 package scw.beans.dubbo;
 
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,8 @@ import org.w3c.dom.NodeList;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Service;
 import scw.beans.xml.XmlBeanUtils;
+import scw.core.Destroy;
+import scw.core.Init;
 import scw.core.PropertyFactory;
 import scw.core.reflect.CloneUtils;
 import scw.core.reflect.PropertyMapper;
@@ -45,7 +48,7 @@ public final class XmlDubboUtils {
 		List<RegistryConfig> list = new LinkedList<RegistryConfig>();
 		String[] addressArray = StringUtils.commonSplit(XmlBeanUtils.getAddress(propertyFactory, node));
 		for (String address : addressArray) {
-			RegistryConfig config = CloneUtils.clone(registryConfig, true);
+			RegistryConfig config = CloneUtils.copy(registryConfig, RegistryConfig.class);
 			config.setAddress(address);
 			list.add(config);
 		}
@@ -88,7 +91,6 @@ public final class XmlDubboUtils {
 			final BeanFactory beanFactory, Node node) {
 		ServiceConfig<?> serviceConfig = XMLUtils.newInstanceLoadAttributeBySetter(ServiceConfig.class, propertyFactory,
 				node, new DubboConfigPropertyMapper(beanFactory));
-
 		List<ServiceConfig<?>> serviceConfigs = new LinkedList<ServiceConfig<?>>();
 		if (serviceConfig.getInterface() != null) {
 			serviceConfigs.add(serviceConfig);
@@ -96,13 +98,18 @@ public final class XmlDubboUtils {
 
 		String packageName = XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
 		if (packageName != null) {
-			for (Class<?> clz : ResourceUtils.getClassList(packageName)) {
+			Collection<Class<?>> clazzList = ResourceUtils.getClassList(packageName);
+			for (Class<?> clz : clazzList) {
 				Service service = clz.getAnnotation(Service.class);
 				if (service != null) {
 					Object ref = beanFactory.getInstance(clz);
 					for (Class<?> i : clz.getInterfaces()) {
+						if(i == Init.class || i == Destroy.class){
+							continue;
+						}
+						
 						@SuppressWarnings("unchecked")
-						ServiceConfig<Object> config = (ServiceConfig<Object>) CloneUtils.clone(serviceConfig, true);
+						ServiceConfig<Object> config = CloneUtils.copy(serviceConfig, ServiceConfig.class);
 						config.setInterface(i);
 						config.setRef(ref);
 						serviceConfigs.add(config);
@@ -114,7 +121,7 @@ public final class XmlDubboUtils {
 		NodeList nodeList = node.getChildNodes();
 		for (int i = 0, size = nodeList.getLength(); i < size; i++) {
 			Node n = nodeList.item(i);
-			if ("service".equals(n.getNodeName())) {
+			if ("service".equalsIgnoreCase(n.getNodeName())) {
 				serviceConfigs.addAll(parseServiceConfig(propertyFactory, beanFactory, n));
 			}
 		}
@@ -125,7 +132,6 @@ public final class XmlDubboUtils {
 			final BeanFactory beanFactory, Node node) {
 		ReferenceConfig<?> config = XMLUtils.newInstanceLoadAttributeBySetter(ReferenceConfig.class, propertyFactory,
 				node, new DubboConfigPropertyMapper(beanFactory));
-
 		List<ReferenceConfig<?>> referenceConfigs = new LinkedList<ReferenceConfig<?>>();
 		if (config.getInterface() != null) {
 			referenceConfigs.add(config);
@@ -135,7 +141,7 @@ public final class XmlDubboUtils {
 		if (packageName != null) {
 			for (Class<?> clz : ResourceUtils.getClassList(packageName)) {
 				if (clz.isInterface()) {
-					ReferenceConfig<?> referenceConfig = CloneUtils.clone(config, true);
+					ReferenceConfig<?> referenceConfig = CloneUtils.copy(config, ReferenceConfig.class);
 					referenceConfig.setInterface(clz);
 					referenceConfigs.add(referenceConfig);
 				}
