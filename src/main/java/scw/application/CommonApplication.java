@@ -17,7 +17,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 	private volatile boolean start = false;
 
 	public CommonApplication(String xmlConfigPath) {
-		super(xmlConfigPath);
+		super(StringUtils.isEmpty(xmlConfigPath)? DEFAULT_BEANS_PATH:xmlConfigPath);
 	}
 
 	public final XmlBeanFactory getBeanFactory() {
