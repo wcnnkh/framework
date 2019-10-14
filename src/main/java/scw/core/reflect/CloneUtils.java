@@ -1,19 +1,24 @@
 package scw.core.reflect;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import scw.core.Verification;
+import scw.core.instance.InstanceException;
+import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 
 public final class CloneUtils {
 	private CloneUtils() {
 	};
-
+	
 	public static <T> T clone(T source, boolean ignoreTransient) {
 		return clone(source, new IgnoreStaticFieldVerification(ignoreTransient));
+	}
+
+	public static <T> T clone(T source, Verification<Field> ignoreVerification) {
+		return clone(source, ignoreVerification, InstanceUtils.REFLECTION_INSTANCE_FACTORY);
 	}
 
 	/**
@@ -22,9 +27,9 @@ public final class CloneUtils {
 	 * @param obj
 	 * @return
 	 */
-	public static <T> T clone(T source, Verification<Field> ignoreVerification) {
+	public static <T> T clone(T source, Verification<Field> ignoreVerification, InstanceFactory instanceFactory) {
 		try {
-			return clone(source, ignoreVerification, true);
+			return clone(source, ignoreVerification, true, instanceFactory);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -32,7 +37,7 @@ public final class CloneUtils {
 
 	private static Object cloneArray(Class<?> type, Object array,
 			Verification<Field> ignoreVerification,
-			boolean invokeCloneableMethod) throws Exception {
+			boolean invokeCloneableMethod, InstanceFactory instanceFactory) throws Exception {
 		int size = Array.getLength(array);
 		Object newArr = Array.newInstance(type.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
@@ -40,14 +45,14 @@ public final class CloneUtils {
 					newArr,
 					i,
 					autoClone(Array.get(array, i), ignoreVerification,
-							invokeCloneableMethod));
+							invokeCloneableMethod, instanceFactory));
 		}
 		return newArr;
 	}
 
 	private static void cloneObject(Object obj, Object source,
 			Verification<Field> ignoreVerification,
-			boolean invokeCloneableMethod) throws Exception {
+			boolean invokeCloneableMethod, InstanceFactory instanceFactory) throws Exception {
 		Class<?> clazz = source.getClass();
 		while (clazz != null) {
 			for (Field field : clazz.getDeclaredFields()) {
@@ -65,10 +70,10 @@ public final class CloneUtils {
 				if (!field.getType().isPrimitive() && !field.getType().isEnum()) {
 					if (field.getType().isArray()) {
 						v = cloneArray(field.getType(), v, ignoreVerification,
-								invokeCloneableMethod);
+								invokeCloneableMethod, instanceFactory);
 					} else {
 						v = autoClone(v, ignoreVerification,
-								invokeCloneableMethod);
+								invokeCloneableMethod, instanceFactory);
 					}
 				}
 				field.set(Modifier.isStatic(field.getModifiers()) ? null
@@ -80,25 +85,24 @@ public final class CloneUtils {
 
 	private static Object cloneObject(Class<?> type, Object obj,
 			Verification<Field> ignoreVerification,
-			boolean invokeCloneableMethod) throws Exception {
-		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
+			boolean invokeCloneableMethod, InstanceFactory instanceFactory) throws Exception {
+		if(!instanceFactory.isInstance(type)){
+			return obj;
+		}
+		
+		Object t = instanceFactory.getInstance(type);
+		if(t == null){
 			return obj;
 		}
 
-		Constructor<?> constructor = ReflectUtils.getConstructor(type, false);
-		if (constructor == null) {
-			return obj;
-		}
-
-		Object t = constructor.newInstance();
-		cloneObject(obj, t, ignoreVerification, invokeCloneableMethod);
+		cloneObject(obj, t, ignoreVerification, invokeCloneableMethod, instanceFactory);
 		return t;
 	}
 
 	@SuppressWarnings("unchecked")
 	private static <T> T autoClone(T obj,
 			Verification<Field> ignoreVerification,
-			boolean invokeCloneableMethod) throws Exception {
+			boolean invokeCloneableMethod, InstanceFactory instanceFactory) throws Exception {
 		if (obj == null) {
 			return null;
 		}
@@ -112,7 +116,7 @@ public final class CloneUtils {
 			return obj;
 		} else if (type.isArray()) {
 			return (T) cloneArray(type, obj, ignoreVerification,
-					invokeCloneableMethod);
+					invokeCloneableMethod, instanceFactory);
 		} else if (invokeCloneableMethod && obj instanceof Cloneable) {
 			try {
 				return (T) ReflectUtils.getMethod(type, false, "clone").invoke(
@@ -122,7 +126,7 @@ public final class CloneUtils {
 		}
 
 		return (T) cloneObject(type, obj, ignoreVerification,
-				invokeCloneableMethod);
+				invokeCloneableMethod, instanceFactory);
 	}
 
 	/**
@@ -137,7 +141,7 @@ public final class CloneUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T clone(T source, Verification<Field> ignoreVerification,
-			boolean invokeCloneableMethod) throws Exception {
+			boolean invokeCloneableMethod, InstanceFactory instanceFactory) throws Exception {
 		if (source == null) {
 			return null;
 		}
@@ -151,7 +155,7 @@ public final class CloneUtils {
 			return source;
 		} else if (type.isArray()) {
 			return (T) cloneArray(type, source, ignoreVerification,
-					invokeCloneableMethod);
+					invokeCloneableMethod, instanceFactory);
 		} else if (invokeCloneableMethod && source instanceof Cloneable) {
 			try {
 				return (T) ReflectUtils.getMethod(type, false, "clone").invoke(
@@ -160,8 +164,12 @@ public final class CloneUtils {
 			}
 		}
 
-		T t = InstanceUtils.newInstance(type);
-		cloneObject(source, t, ignoreVerification, invokeCloneableMethod);
+		if(!instanceFactory.isInstance(type)){
+			throw new InstanceException("无法进行实例化");
+		}
+		
+		T t = (T) instanceFactory.getInstance(type);
+		cloneObject(source, t, ignoreVerification, invokeCloneableMethod, instanceFactory);
 		return t;
 	}
 
