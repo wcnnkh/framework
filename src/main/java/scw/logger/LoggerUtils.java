@@ -19,9 +19,13 @@ import scw.core.utils.XTime;
 public final class LoggerUtils {
 	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";
 	private static final LinkedList<KeyValuePair<String, Level>> LOGGER_LEVEL_LIST = new LinkedList<KeyValuePair<String, Level>>();
+	private static final Level DEFAULT_LEVEL;
 
 	static {
-		String loggerEnablePropertiePath = SystemPropertyUtils.getProperty("scw.logger.level");
+		String levelName = SystemPropertyUtils.getProperty("scw.logger.level");
+		DEFAULT_LEVEL = StringUtils.isEmpty(levelName) ? Level.INFO : Level.valueOf(levelName);
+
+		String loggerEnablePropertiePath = SystemPropertyUtils.getProperty("scw.logger.level.config");
 		if (loggerEnablePropertiePath == null) {
 			loggerEnablePropertiePath = "classpath:/logger-level.properties";
 		}
@@ -60,6 +64,10 @@ public final class LoggerUtils {
 		}
 	}
 
+	public static Level getDefaultLoggerLevel(){
+		return DEFAULT_LEVEL;
+	}
+
 	public static Level getLoggerLevel(String name) {
 		ListIterator<KeyValuePair<String, Level>> iterator = LOGGER_LEVEL_LIST.listIterator(LOGGER_LEVEL_LIST.size());
 		while (iterator.hasPrevious()) {
@@ -72,7 +80,7 @@ public final class LoggerUtils {
 				return keyValuePair.getValue();
 			}
 		}
-		return Level.INFO;
+		return getDefaultLoggerLevel();
 	}
 
 	public static Collection<KeyValuePair<String, Level>> getLoggerLevelConfigList() {
