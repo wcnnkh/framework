@@ -12,5 +12,5 @@ public abstract class HttpExceptionHandler implements ExceptionHandler {
 		return chain.doHandler(channel, throwable);
 	}
 
-	protected abstract Object handler(HttpChannel channel, Throwable throwable, ExceptionHandler chain);
+	protected abstract Object handler(HttpChannel channel, Throwable throwable, ExceptionHandlerChain chain);
 }

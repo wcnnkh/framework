@@ -64,6 +64,7 @@ import scw.mvc.parameter.ParameterFilterChain;
 import scw.mvc.parameter.SimpleParameterParseFilterChain;
 import scw.net.header.HeadersConstants;
 import scw.net.mime.MimeTypeConstants;
+import scw.result.exception.ResultHttpExceptionHandler;
 import scw.rpc.RpcService;
 
 public final class MVCUtils implements MvcConstants {
@@ -106,11 +107,6 @@ public final class MVCUtils implements MvcConstants {
 		return RESTURL_PATH_PARAMETER.equals(name);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static void setHttpAuthorityId(Attributes attributes, String id) {
-		attributes.setAttribute(HTTP_AUTHORITY_ATTRIBUTE_NAME, id);
-	}
-
 	public static Collection<ExceptionHandler> getExceptionHandlers(InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory) {
 		LinkedList<ExceptionHandler> exceptionHandlers = new LinkedList<ExceptionHandler>();
@@ -118,6 +114,10 @@ public final class MVCUtils implements MvcConstants {
 				"mvc.exception.handler");
 		if (instanceFactory.isInstance(ExceptionHandler.class) && instanceFactory.isSingleton(ExceptionHandler.class)) {
 			exceptionHandlers.add(instanceFactory.getInstance(ExceptionHandler.class));
+		}
+		
+		if(instanceFactory.isInstance(ResultHttpExceptionHandler.class)){
+			exceptionHandlers.add(instanceFactory.getInstance(ResultHttpExceptionHandler.class));
 		}
 		return exceptionHandlers;
 	}
