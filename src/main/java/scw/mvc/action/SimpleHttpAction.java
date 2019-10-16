@@ -10,6 +10,7 @@ import java.util.Set;
 
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
+import scw.core.reflect.AnnotationFactory;
 import scw.core.utils.StringUtils;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.HttpAuthorityConfig;
@@ -18,12 +19,12 @@ import scw.mvc.annotation.Methods;
 import scw.security.authority.http.HttpAuthority;
 import scw.security.authority.http.SimpleHttpAuthority;
 
-public class SimpleHttpAction extends MethodAction implements HttpAction {
+public class SimpleHttpAction extends SimpleMethodAction implements HttpAction {
 	private Collection<HttpControllerConfig> httpControllerConfigs = new LinkedList<HttpControllerConfig>();
 	private SimpleHttpAuthority authority;
 
-	public SimpleHttpAction(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clz, Method method) {
-		super(instanceFactory, propertyFactory, clz, method);
+	public SimpleHttpAction(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clz, Method method, AnnotationFactory superAnnotationFactory) {
+		super(instanceFactory, propertyFactory, clz, method, superAnnotationFactory);
 		Controller classController = clz.getAnnotation(Controller.class);
 		Controller methodController = method.getAnnotation(Controller.class);
 		Methods methods = method.getAnnotation(Methods.class);

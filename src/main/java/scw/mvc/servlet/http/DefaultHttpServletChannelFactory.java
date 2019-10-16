@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletResponse;
 import scw.beans.BeanFactory;
 import scw.json.JSONParseSupport;
 import scw.mvc.MVCUtils;
-import scw.mvc.ParameterFilter;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
+import scw.mvc.parameter.ParameterFilter;
 
 public final class DefaultHttpServletChannelFactory implements HttpServletChannelFactory {
 	private BeanFactory beanFactory;

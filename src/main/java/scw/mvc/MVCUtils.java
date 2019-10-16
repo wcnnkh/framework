@@ -33,8 +33,8 @@ import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.multivalue.LinkedMultiValueMap;
 import scw.core.multivalue.MultiValueMap;
-import scw.core.reflect.ParameterConfig;
-import scw.core.reflect.ParameterUtils;
+import scw.core.parameter.ContainAnnotationParameterConfig;
+import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ArrayUtils;
@@ -46,8 +46,10 @@ import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mvc.action.Action;
 import scw.mvc.action.ActionFilter;
 import scw.mvc.action.HttpNotFoundService;
+import scw.mvc.action.ResponseWrapperFilter;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Model;
@@ -57,6 +59,9 @@ import scw.mvc.http.HttpResponse;
 import scw.mvc.http.Text;
 import scw.mvc.http.filter.CrossDomainDefinition;
 import scw.mvc.http.filter.HttpActionServiceFilter;
+import scw.mvc.parameter.ParameterFilter;
+import scw.mvc.parameter.ParameterFilterChain;
+import scw.mvc.parameter.SimpleParameterParseFilterChain;
 import scw.net.header.HeadersConstants;
 import scw.net.mime.MimeTypeConstants;
 import scw.rpc.RpcService;
@@ -234,15 +239,15 @@ public final class MVCUtils implements MvcConstants {
 		return constructor;
 	}
 
-	public static Object[] getParameterValues(Channel channel, ParameterConfig[] parameterDefinitions,
+	public static Object[] getParameterValues(Channel channel, ContainAnnotationParameterConfig[] parameterDefinitions,
 			Collection<ParameterFilter> parameterFilters) throws Throwable {
 		Object[] args = new Object[parameterDefinitions.length];
 		for (int i = 0; i < parameterDefinitions.length; i++) {
-			ParameterConfig parameterConfig = parameterDefinitions[i];
+			ContainAnnotationParameterConfig containAnnotationParameterConfig = parameterDefinitions[i];
 			ParameterFilterChain parameterFilterChain = new SimpleParameterParseFilterChain(parameterFilters);
 			Object value = parameterFilterChain.doFilter(channel, parameterDefinitions[i]);
 			if (value == null) {
-				value = channel.getParameter(parameterConfig);
+				value = channel.getParameter(containAnnotationParameterConfig);
 			}
 			args[i] = value;
 		}
@@ -362,6 +367,7 @@ public final class MVCUtils implements MvcConstants {
 		LinkedList<ActionFilter> filters = new LinkedList<ActionFilter>();
 		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, ActionFilter.class, "mvc.filters");
 		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, ActionFilter.class, "mvc.action.filters");
+		filters.add(new ResponseWrapperFilter(instanceFactory));
 		return filters;
 	}
 

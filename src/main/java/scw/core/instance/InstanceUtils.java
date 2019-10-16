@@ -11,8 +11,8 @@ import scw.core.aop.ReflectInvoker;
 import scw.core.exception.NotSupportException;
 import scw.core.instance.support.ReflectionInstanceFactory;
 import scw.core.instance.support.ReflectionSingleInstanceFactory;
+import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 
 public final class InstanceUtils {
@@ -163,7 +163,7 @@ public final class InstanceUtils {
 		int size = parameterMap.size();
 		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
 			if (size == constructor.getParameterTypes().length) {
-				String[] names = ClassUtils.getParameterName(constructor);
+				String[] names = ParameterUtils.getParameterName(constructor);
 				Object[] args = new Object[size];
 				boolean find = true;
 				for (int i = 0; i < names.length; i++) {

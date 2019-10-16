@@ -1,10 +1,11 @@
-package scw.mvc;
+package scw.mvc.parameter;
 
 import java.util.Collection;
 import java.util.Iterator;
 
-import scw.core.reflect.ParameterConfig;
+import scw.core.parameter.ParameterConfig;
 import scw.core.utils.CollectionUtils;
+import scw.mvc.Channel;
 
 public class SimpleParameterParseFilterChain implements ParameterFilterChain {
 	private Iterator<ParameterFilter> iterator;

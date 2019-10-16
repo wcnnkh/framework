@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.core.reflect;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -10,13 +10,13 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import scw.core.SimpleKeyValuePair;
 import scw.core.KeyValuePair;
+import scw.core.SimpleKeyValuePair;
 import scw.core.annotation.DELETE;
 import scw.core.annotation.GET;
 import scw.core.annotation.POST;
 import scw.core.annotation.PUT;
-import scw.core.reflect.ReflectUtils;
+import scw.core.utils.ArrayUtils;
 
 public final class AnnotationUtils {
 	private AnnotationUtils() {
@@ -184,6 +184,7 @@ public final class AnnotationUtils {
 
 	/**
 	 * 获取一个注解，后面覆盖前面
+	 * 
 	 * @param type
 	 * @param annotatedElements
 	 * @return
@@ -192,6 +193,24 @@ public final class AnnotationUtils {
 		T old = null;
 		for (AnnotatedElement annotatedElement : annotatedElements) {
 			T a = annotatedElement.getAnnotation(type);
+			if (a != null) {
+				old = a;
+			}
+		}
+		return old;
+	}
+
+	/**
+	 * 获取一个注解，后面覆盖前面
+	 * 
+	 * @param type
+	 * @param annotationFactories
+	 * @return
+	 */
+	public static <T extends Annotation> T getAnnotation(Class<T> type, AnnotationFactory... annotationFactories) {
+		T old = null;
+		for (AnnotationFactory annotationFactory : annotationFactories) {
+			T a = annotationFactory.getAnnotation(type);
 			if (a != null) {
 				old = a;
 			}

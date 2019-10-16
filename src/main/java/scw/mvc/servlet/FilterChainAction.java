@@ -1,8 +1,8 @@
 package scw.mvc.servlet;
 
-import scw.mvc.Action;
 import scw.mvc.Channel;
 import scw.mvc.FilterChain;
+import scw.mvc.action.Action;
 
 public final class FilterChainAction implements Action<Channel> {
 	private FilterChain filterChain;

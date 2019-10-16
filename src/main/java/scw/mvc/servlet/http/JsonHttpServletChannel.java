@@ -10,10 +10,10 @@ import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.mvc.ParameterFilter;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.http.parameter.Body;
+import scw.mvc.parameter.ParameterFilter;
 import scw.net.http.Method;
 
 @SuppressWarnings("unchecked")

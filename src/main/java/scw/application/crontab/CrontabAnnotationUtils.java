@@ -8,7 +8,7 @@ import scw.beans.BeanFactory;
 import scw.beans.MethodProxyInvoker;
 import scw.core.aop.Invoker;
 import scw.core.exception.AlreadyExistsException;
-import scw.core.utils.AnnotationUtils;
+import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.TypeUtils;
 import scw.logger.Logger;

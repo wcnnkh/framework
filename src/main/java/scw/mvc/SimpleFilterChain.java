@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import scw.core.utils.CollectionUtils;
+import scw.mvc.action.Action;
 
 public class SimpleFilterChain implements FilterChain {
 	private Iterator<Filter> iterator;

@@ -2,8 +2,6 @@ package scw.core.utils;
 
 import java.beans.Introspector;
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 
 import scw.core.Assert;
-import scw.core.LocalVariableTableParameterNameDiscoverer;
 import scw.core.cglib.core.TypeUtils;
 
 public final class ClassUtils {
@@ -46,8 +43,6 @@ public final class ClassUtils {
 
 	/** The ".class" file suffix */
 	public static final String CLASS_FILE_SUFFIX = ".class";
-
-	private static LocalVariableTableParameterNameDiscoverer lvtpnd = new LocalVariableTableParameterNameDiscoverer();
 
 	/**
 	 * Map with primitive wrapper type as key and corresponding primitive type
@@ -109,15 +104,6 @@ public final class ClassUtils {
 
 	private ClassUtils() {
 	};
-
-	public static String[] getParameterName(Method method) {
-		return lvtpnd.getParameterNames(method);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static String[] getParameterName(Constructor constructor) {
-		return lvtpnd.getParameterNames(constructor);
-	}
 
 	/**
 	 * 获取父类 不包含java.lang.Object

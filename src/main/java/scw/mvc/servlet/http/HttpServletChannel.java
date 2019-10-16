@@ -7,12 +7,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpSession;
 
 import scw.beans.BeanFactory;
-import scw.core.reflect.ParameterConfig;
+import scw.core.parameter.ParameterConfig;
 import scw.json.JSONParseSupport;
-import scw.mvc.ParameterFilter;
 import scw.mvc.http.AbstractHttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
+import scw.mvc.parameter.ParameterFilter;
 
 @SuppressWarnings("unchecked")
 public abstract class HttpServletChannel extends AbstractHttpChannel {

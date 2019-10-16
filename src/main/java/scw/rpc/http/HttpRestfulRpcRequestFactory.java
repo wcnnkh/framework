@@ -7,7 +7,7 @@ import scw.core.KeyValuePair;
 import scw.core.PropertyFactory;
 import scw.core.StringFormat;
 import scw.core.annotation.Host;
-import scw.core.utils.AnnotationUtils;
+import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;

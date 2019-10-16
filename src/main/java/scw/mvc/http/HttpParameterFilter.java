@@ -1,20 +1,20 @@
 package scw.mvc.http;
 
-import scw.core.reflect.ParameterConfig;
+import scw.core.parameter.ContainAnnotationParameterConfig;
 import scw.mvc.Channel;
-import scw.mvc.ParameterFilter;
-import scw.mvc.ParameterFilterChain;
+import scw.mvc.parameter.ParameterFilter;
+import scw.mvc.parameter.ParameterFilterChain;
 
 public abstract class HttpParameterFilter implements ParameterFilter {
 
-	public Object filter(Channel channel, ParameterConfig parameterConfig, ParameterFilterChain chain)
+	public Object filter(Channel channel, ContainAnnotationParameterConfig containAnnotationParameterConfig, ParameterFilterChain chain)
 			throws Throwable {
 		if (channel instanceof HttpChannel) {
-			return filter((HttpChannel) channel, parameterConfig, chain);
+			return filter((HttpChannel) channel, containAnnotationParameterConfig, chain);
 		}
-		return chain.doFilter(channel, parameterConfig);
+		return chain.doFilter(channel, containAnnotationParameterConfig);
 	}
 
-	public abstract Object filter(HttpChannel httpChannel, ParameterConfig parameterConfig,
+	public abstract Object filter(HttpChannel httpChannel, ContainAnnotationParameterConfig containAnnotationParameterConfig,
 			ParameterFilterChain chain) throws Throwable;
 }

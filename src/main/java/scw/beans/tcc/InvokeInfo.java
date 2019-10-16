@@ -10,8 +10,8 @@ import java.util.Map;
 import scw.beans.annotation.Stage;
 import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceFactory;
+import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.SerializableMethodDefinition;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -86,13 +86,13 @@ public final class InvokeInfo implements Serializable {
 		}
 
 		Map<String, Integer> tryNameIndexMap = new HashMap<String, Integer>();
-		String[] tryMethodParameterNames = ClassUtils.getParameterName(tryMethod.getMethod());
+		String[] tryMethodParameterNames = ParameterUtils.getParameterName(tryMethod.getMethod());
 		for (int i = 0; i < tryMethodParameterNames.length; i++) {
 			tryNameIndexMap.put(tryMethodParameterNames[i], i);
 		}
 
 		LinkedList<Object> params = new LinkedList<Object>();
-		String[] methodParameterNames = ClassUtils.getParameterName(method.getMethod());
+		String[] methodParameterNames = ParameterUtils.getParameterName(method.getMethod());
 		for (int i = 0; i < methodParameterNames.length; i++) {
 			if (i == resultSetIndex) {
 				params.add(tryRtn);

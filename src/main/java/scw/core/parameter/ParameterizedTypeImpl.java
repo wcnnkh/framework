@@ -1,4 +1,4 @@
-package scw.core;
+package scw.core.parameter;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

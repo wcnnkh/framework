@@ -29,6 +29,7 @@ import scw.core.annotation.Order;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceFactory;
+import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -305,7 +306,7 @@ public final class ReflectUtils {
 		int size = parameterMap.size();
 		for (Method method : isPublic ? type.getMethods() : type.getDeclaredMethods()) {
 			if (size == method.getParameterTypes().length) {
-				String[] names = ClassUtils.getParameterName(method);
+				String[] names = ParameterUtils.getParameterName(method);
 				Object[] args = new Object[size];
 				boolean find = true;
 				for (int i = 0; i < names.length; i++) {

@@ -1,4 +1,4 @@
-package scw.core;
+package scw.core.reflect;
 
 import java.lang.annotation.Annotation;
 

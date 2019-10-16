@@ -3,9 +3,10 @@ package scw.core.reflect;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import scw.core.parameter.ContainAnnotationParameterConfig;
 import scw.core.utils.ArrayUtils;
 
-public class SimpleParameterConfig implements ParameterConfig {
+public class SimpleParameterConfig implements ContainAnnotationParameterConfig {
 	private final String name;
 	private final Annotation[] annotations;
 	private final Class<?> type;

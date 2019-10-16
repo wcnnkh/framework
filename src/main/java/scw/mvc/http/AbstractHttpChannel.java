@@ -10,15 +10,15 @@ import java.util.Enumeration;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.core.reflect.ParameterConfig;
+import scw.core.parameter.ParameterConfig;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.mvc.AbstractParameterChannel;
 import scw.mvc.MVCUtils;
-import scw.mvc.ParameterFilter;
 import scw.mvc.http.parameter.Body;
+import scw.mvc.parameter.ParameterFilter;
 import scw.net.http.Cookie;
 import scw.security.session.Authorization;
 import scw.security.session.Session;
@@ -48,7 +48,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 		this.httpParameterRequest = new HttpParameterRequest(request, this);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Object getParameter(ParameterConfig parameterConfig) {
 		if (HttpRequest.class.isAssignableFrom(parameterConfig.getType())) {

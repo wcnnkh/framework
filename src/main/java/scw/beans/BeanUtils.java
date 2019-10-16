@@ -35,12 +35,12 @@ import scw.core.aop.ReflectInvoker;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.instance.InstanceFactory;
+import scw.core.parameter.ParameterUtils;
+import scw.core.reflect.AnnotationUtils;
 import scw.core.reflect.DefaultFieldDefinition;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
-import scw.core.utils.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
@@ -206,7 +206,7 @@ public final class BeanUtils {
 			return null;
 		}
 
-		return sortParameters(ClassUtils.getParameterName(method), method.getParameterTypes(), beanMethodParameters);
+		return sortParameters(ParameterUtils.getParameterName(method), method.getParameterTypes(), beanMethodParameters);
 	}
 
 	public static XmlBeanParameter[] sortParameters(Constructor<?> constructor,
@@ -215,7 +215,7 @@ public final class BeanUtils {
 			return null;
 		}
 
-		return sortParameters(ClassUtils.getParameterName(constructor), constructor.getParameterTypes(),
+		return sortParameters(ParameterUtils.getParameterName(constructor), constructor.getParameterTypes(),
 				beanMethodParameters);
 	}
 

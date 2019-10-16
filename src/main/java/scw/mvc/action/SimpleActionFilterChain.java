@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import scw.core.utils.CollectionUtils;
-import scw.mvc.Action;
 import scw.mvc.Channel;
 
 public class SimpleActionFilterChain implements ActionFilterChain {

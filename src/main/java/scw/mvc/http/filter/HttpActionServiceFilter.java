@@ -6,6 +6,8 @@ import java.util.LinkedList;
 
 import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
+import scw.core.reflect.AnnotationFactory;
+import scw.core.reflect.SimpleAnnotationFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.Filter;
@@ -71,6 +73,7 @@ public final class HttpActionServiceFilter extends HttpFilter {
 				continue;
 			}
 
+			AnnotationFactory clazzAnnotationFactory = new SimpleAnnotationFactory(clz);
 			for (Method method : clz.getDeclaredMethods()) {
 				Controller methodController = method.getAnnotation(Controller.class);
 				if (methodController == null) {
@@ -79,7 +82,8 @@ public final class HttpActionServiceFilter extends HttpFilter {
 
 				for (Filter filter : filters) {
 					if (filter instanceof HttpActionService) {
-						HttpAction httpAction = new SimpleHttpAction(beanFactory, propertyFactory, clz, method);
+						HttpAction httpAction = new SimpleHttpAction(beanFactory, propertyFactory, clz, method,
+								clazzAnnotationFactory);
 						if (simpleHttpAuthorityManager != null && httpAction.getAuthority() != null) {
 							simpleHttpAuthorityManager.addAuthroity(httpAction.getAuthority());
 						}

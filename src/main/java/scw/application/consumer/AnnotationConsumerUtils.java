@@ -6,7 +6,7 @@ import java.util.Collection;
 import scw.application.consumer.amqp.AmqpConsumer;
 import scw.beans.BeanFactory;
 import scw.beans.MethodProxyInvoker;
-import scw.core.utils.AnnotationUtils;
+import scw.core.reflect.AnnotationUtils;
 import scw.logger.LoggerUtils;
 import scw.mq.amqp.Exchange;
 

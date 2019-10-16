@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.core;
+package scw.core.parameter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

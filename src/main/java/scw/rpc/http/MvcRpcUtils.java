@@ -11,8 +11,8 @@ import scw.core.IP;
 import scw.core.annotation.Headers;
 import scw.core.context.Context;
 import scw.core.exception.NotSupportException;
+import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.Channel;
@@ -70,7 +70,7 @@ public final class MvcRpcUtils {
 	}
 
 	public static Map<String, Object> getParameterMap(Method method, Object[] args, boolean appendMvcParameterMap) {
-		String[] names = ClassUtils.getParameterName(method);
+		String[] names = ParameterUtils.getParameterName(method);
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
 		if (!ArrayUtils.isEmpty(names)) {
 			for (int i = 0; i < names.length; i++) {

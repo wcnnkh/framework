@@ -3,7 +3,6 @@ package scw.mvc.action;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import scw.mvc.Action;
 import scw.mvc.Channel;
 import scw.mvc.FilterChain;
 

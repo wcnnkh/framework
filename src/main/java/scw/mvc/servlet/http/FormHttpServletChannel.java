@@ -7,9 +7,9 @@ import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.mvc.ParameterFilter;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
+import scw.mvc.parameter.ParameterFilter;
 
 @SuppressWarnings("unchecked")
 public class FormHttpServletChannel extends HttpServletChannel{

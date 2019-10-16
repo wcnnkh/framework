@@ -12,6 +12,7 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.core.Destroy;
 import scw.core.reflect.ReflectUtils;
+import scw.mvc.parameter.ParameterFilter;
 
 public abstract class AbstractChannel implements Channel, Destroy {
 	private final boolean logEnabled;

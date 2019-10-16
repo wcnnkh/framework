@@ -1,6 +1,5 @@
 package scw.mvc.action;
 
-import scw.mvc.Action;
 import scw.mvc.Channel;
 import scw.mvc.FilterInterface;
 

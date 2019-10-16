@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.core;
+package scw.core.parameter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import scw.core.BridgeMethodResolver;
+import scw.core.Constants;
 import scw.core.asm.ClassReader;
 import scw.core.asm.ClassVisitor;
 import scw.core.asm.Label;
