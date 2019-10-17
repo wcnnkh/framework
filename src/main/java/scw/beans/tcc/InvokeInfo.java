@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import scw.beans.annotation.Stage;
+import scw.beans.annotation.TCCStage;
 import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceFactory;
 import scw.core.parameter.ParameterUtils;
@@ -115,20 +115,20 @@ public final class InvokeInfo implements Serializable {
 		}
 
 		Method method = methodConfig.getMethod();
-		Stage stage = method.getAnnotation(Stage.class);
-		if (stage == null) {
+		TCCStage tCCStage = method.getAnnotation(TCCStage.class);
+		if (tCCStage == null) {
 			return;
 		}
 
 		Object[] params;
-		if (stage.parameterNameMapping()) {
-			params = getNameMappingArgs(tryMethod, methodConfig, tryRtnValue, stage.tryResultSetParameterIndex(), args);
+		if (tCCStage.parameterNameMapping()) {
+			params = getNameMappingArgs(tryMethod, methodConfig, tryRtnValue, tCCStage.tryResultSetParameterIndex(), args);
 		} else {
-			params = getIndexMapppingArgs(methodConfig, tryRtnValue, stage.tryResultSetParameterIndex(), args);
+			params = getIndexMapppingArgs(methodConfig, tryRtnValue, tCCStage.tryResultSetParameterIndex(), args);
 		}
 
 		logger.debug("clz={},name={}", methodConfig.getBelongClass().getName(),
-				StringUtils.isEmpty(stage.name()) ? method.getName() : stage.name());
+				StringUtils.isEmpty(tCCStage.name()) ? method.getName() : tCCStage.name());
 
 		Object obj = instanceFactory.getInstance(methodConfig.getBelongClass());
 		method.invoke(obj, params);

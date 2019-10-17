@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.beans.annotation.Stage;
+import scw.beans.annotation.TCCStage;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.SerializableMethodDefinition;
 import scw.core.utils.StringUtils;
@@ -16,13 +16,13 @@ class ClassTCC {
 	public ClassTCC(Class<?> clz) {
 		this.clz = clz;
 		for (Method method : clz.getMethods()) {
-			Stage stage = method.getAnnotation(Stage.class);
-			if (stage != null) {
+			TCCStage tCCStage = method.getAnnotation(TCCStage.class);
+			if (tCCStage != null) {
 				if (tccMethodMap == null) {
 					tccMethodMap = new HashMap<String, SerializableMethodDefinition>();
 				}
 
-				String name = StringUtils.isEmpty(stage.name()) ? method.getName() : stage.name();
+				String name = StringUtils.isEmpty(tCCStage.name()) ? method.getName() : tCCStage.name();
 
 				if (tccMethodMap.containsKey(name)) {
 					throw new AlreadyExistsException(clz.getName() + "存在相同的TCC配置,name=" + name);

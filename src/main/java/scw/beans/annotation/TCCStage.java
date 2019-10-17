@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  */
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Stage {
+public @interface TCCStage {
 	/**
 	 * 默认为方法名
 	 * 
@@ -31,8 +31,8 @@ public @interface Stage {
 
 	/**
 	 * 将try调用后的结果插入到指定位置
-	 * 
+	 * 默认插入到第一位
 	 * @return
 	 */
-	public int tryResultSetParameterIndex() default -1;
+	public int tryResultSetParameterIndex() default 0;
 }
