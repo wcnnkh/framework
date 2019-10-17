@@ -64,7 +64,7 @@ import scw.mvc.parameter.ParameterFilterChain;
 import scw.mvc.parameter.SimpleParameterParseFilterChain;
 import scw.net.header.HeadersConstants;
 import scw.net.mime.MimeTypeConstants;
-import scw.result.exception.ResultHttpExceptionHandler;
+import scw.result.exception.ResultExceptionHandler;
 import scw.rpc.RpcService;
 
 public final class MVCUtils implements MvcConstants {
@@ -116,8 +116,8 @@ public final class MVCUtils implements MvcConstants {
 			exceptionHandlers.add(instanceFactory.getInstance(ExceptionHandler.class));
 		}
 		
-		if(instanceFactory.isInstance(ResultHttpExceptionHandler.class)){
-			exceptionHandlers.add(instanceFactory.getInstance(ResultHttpExceptionHandler.class));
+		if(instanceFactory.isInstance(ResultExceptionHandler.class)){
+			exceptionHandlers.add(instanceFactory.getInstance(ResultExceptionHandler.class));
 		}
 		return exceptionHandlers;
 	}
