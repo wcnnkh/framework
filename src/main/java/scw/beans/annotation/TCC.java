@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 import scw.beans.tcc.TCCService;
 
 /**
- * 只有在接口中定义并使用RPC调用时才有效
- * @author asus1
+ * 声明一个TCC事务
+ * @author shuchaowen
  *
  */
 @Target({ ElementType.METHOD })
