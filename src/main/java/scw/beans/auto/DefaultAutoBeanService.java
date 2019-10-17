@@ -143,7 +143,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		int defaultErrorCode = StringUtils.parseInt(propertyFactory.getProperty("result.error.code"), 1);
 		int defaultSuccessCode = StringUtils.parseInt(propertyFactory.getProperty("result.success.code"), 0);
 		int loginExpiredCode = StringUtils.parseInt(propertyFactory.getProperty("result.expired.code"), -1);
-		int parameterErrorCode = StringUtils.parseInt(propertyFactory.getProperty("result.parameter.error.code"), 1);
+		int parameterErrorCode = StringUtils.parseInt(propertyFactory.getProperty("result.parameter.error.code"), 2);
 		String contentType = propertyFactory.getProperty("result.contentType");
 		if (StringUtils.isEmpty(contentType)) {
 			contentType = "application/json";

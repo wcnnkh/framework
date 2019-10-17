@@ -1,5 +1,6 @@
 package scw.result.exception;
 
+import scw.core.exception.NestedExceptionUtils;
 import scw.core.exception.ParameterException;
 import scw.core.utils.StringUtils;
 import scw.result.ErrorCode;
@@ -15,19 +16,20 @@ public final class DefaultExceptionResultFactory implements ExceptionResultFacto
 	}
 
 	public Result error(Throwable e) {
-		if (e instanceof ParameterException) {
+		Throwable error = NestedExceptionUtils.getMostSpecificCause(e);
+		if (error instanceof ParameterException) {
 			return resultFactory.parameterError();
-		} else if (e instanceof AuthorizationFailureException) {
+		} else if (error instanceof AuthorizationFailureException) {
 			return resultFactory.authorizationFailure();
 		} else {
 			int code = resultFactory.getDefaultErrorCode();
-			if (e instanceof ErrorCode) {
-				code = ((ErrorCode) e).getErrorCode();
+			if (error instanceof ErrorCode) {
+				code = ((ErrorCode) error).getErrorCode();
 			}
 
-			String msg = e.getMessage();
-			if (e instanceof ErrorMessage) {
-				msg = ((ErrorMessage) e).getErrorMessage();
+			String msg = error.getMessage();
+			if (error instanceof ErrorMessage) {
+				msg = ((ErrorMessage) error).getErrorMessage();
 			}
 			return StringUtils.isEmpty(msg) ? resultFactory.error(code) : resultFactory.error(code, msg);
 		}
