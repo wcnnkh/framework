@@ -40,8 +40,11 @@ import scw.core.Consumer;
 import scw.core.Converter;
 import scw.core.PropertyFactory;
 import scw.core.SystemPropertyFactory;
+import scw.core.Verification;
 import scw.core.exception.NotFoundException;
+import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
@@ -504,5 +507,28 @@ public abstract class ResourceUtils implements ResourceConstants {
 				return IOUtils.readContent(inputStream, charsetName);
 			}
 		});
+	}
+
+	public static Collection<Class<?>> getInterfaceClass(String packageName, Verification<String> ignoreClassName) {
+		LinkedList<Class<?>> interfaceClassList = new LinkedList<Class<?>>();
+		Collection<Class<?>> clazzList = RESOURCE_LOOKUP.getClasses(packageName, ignoreClassName);
+		if (!CollectionUtils.isEmpty(clazzList)) {
+			for (Class<?> clazz : clazzList) {
+				if (!clazz.isInterface()) {
+					continue;
+				}
+
+				if (AnnotationUtils.isIgnore(clazz)) {
+					continue;
+				}
+
+				interfaceClassList.add(clazz);
+			}
+		}
+		return interfaceClassList;
+	}
+
+	public static Collection<Class<?>> getInterfaceClass(String packageName) {
+		return getInterfaceClass(packageName, null);
 	}
 }

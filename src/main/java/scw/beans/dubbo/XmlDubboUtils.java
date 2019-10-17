@@ -22,6 +22,7 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.PropertyFactory;
+import scw.core.reflect.AnnotationUtils;
 import scw.core.reflect.CloneUtils;
 import scw.core.reflect.PropertyMapper;
 import scw.core.resource.ResourceUtils;
@@ -104,10 +105,14 @@ public final class XmlDubboUtils {
 				if (service != null) {
 					Object ref = beanFactory.getInstance(clz);
 					for (Class<?> i : clz.getInterfaces()) {
-						if(i == Init.class || i == Destroy.class){
+						if (AnnotationUtils.isIgnore(i)) {
 							continue;
 						}
-						
+
+						if (i == Init.class || i == Destroy.class) {
+							continue;
+						}
+
 						@SuppressWarnings("unchecked")
 						ServiceConfig<Object> config = CloneUtils.copy(serviceConfig, ServiceConfig.class);
 						config.setInterface(i);
@@ -139,12 +144,10 @@ public final class XmlDubboUtils {
 
 		String packageName = XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
 		if (packageName != null) {
-			for (Class<?> clz : ResourceUtils.getClassList(packageName)) {
-				if (clz.isInterface()) {
-					ReferenceConfig<?> referenceConfig = CloneUtils.copy(config, ReferenceConfig.class);
-					referenceConfig.setInterface(clz);
-					referenceConfigs.add(referenceConfig);
-				}
+			for (Class<?> clz : ResourceUtils.getInterfaceClass(packageName)) {
+				ReferenceConfig<?> referenceConfig = CloneUtils.copy(config, ReferenceConfig.class);
+				referenceConfig.setInterface(clz);
+				referenceConfigs.add(referenceConfig);
 			}
 		}
 

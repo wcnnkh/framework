@@ -493,6 +493,10 @@ public final class BeanUtils {
 			Class<?>[] clzs = clz.getInterfaces();
 			if (clzs != null) {
 				for (Class<?> i : clzs) {
+					if(AnnotationUtils.isIgnore(i)){
+						continue;
+					}
+					
 					if (i.getName().startsWith("java.") || i.getName().startsWith("javax.")
 							|| i == scw.core.Destroy.class || i == Init.class) {
 						continue;

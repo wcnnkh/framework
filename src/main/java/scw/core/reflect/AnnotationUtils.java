@@ -14,6 +14,7 @@ import scw.core.KeyValuePair;
 import scw.core.SimpleKeyValuePair;
 import scw.core.annotation.DELETE;
 import scw.core.annotation.GET;
+import scw.core.annotation.Ignore;
 import scw.core.annotation.POST;
 import scw.core.annotation.PUT;
 import scw.core.utils.ArrayUtils;
@@ -216,5 +217,14 @@ public final class AnnotationUtils {
 			}
 		}
 		return old;
+	}
+
+	public static boolean isIgnore(AnnotatedElement... annotatedElements) {
+		Ignore ignore = getAnnotation(Ignore.class, annotatedElements);
+		if (ignore == null) {
+			return false;
+		}
+
+		return ignore.value();
 	}
 }
