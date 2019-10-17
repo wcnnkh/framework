@@ -42,7 +42,6 @@ import scw.core.PropertyFactory;
 import scw.core.SystemPropertyFactory;
 import scw.core.Verification;
 import scw.core.exception.NotFoundException;
-import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.FormatUtils;
@@ -509,16 +508,16 @@ public abstract class ResourceUtils implements ResourceConstants {
 		});
 	}
 
-	public static Collection<Class<?>> getInterfaceClass(String packageName, Verification<String> ignoreClassName) {
+	public static Collection<Class<?>> getClasses(String packageName, Verification<Class<?>> ignoreClass) {
 		LinkedList<Class<?>> interfaceClassList = new LinkedList<Class<?>>();
-		Collection<Class<?>> clazzList = RESOURCE_LOOKUP.getClasses(packageName, ignoreClassName);
+		Collection<Class<?>> clazzList = RESOURCE_LOOKUP.getClasses(packageName);
 		if (!CollectionUtils.isEmpty(clazzList)) {
 			for (Class<?> clazz : clazzList) {
-				if (!clazz.isInterface()) {
+				if (clazz == null) {
 					continue;
 				}
 
-				if (AnnotationUtils.isIgnore(clazz)) {
+				if (ignoreClass != null && ignoreClass.verification(clazz)) {
 					continue;
 				}
 
@@ -528,7 +527,8 @@ public abstract class ResourceUtils implements ResourceConstants {
 		return interfaceClassList;
 	}
 
-	public static Collection<Class<?>> getInterfaceClass(String packageName) {
-		return getInterfaceClass(packageName, null);
+	public static Collection<Class<?>> getClasses(String packageName, boolean interfaceClass,
+			boolean ignoreEmptyMethod) {
+		return getClasses(packageName, new IgnoreClassVerification(ignoreEmptyMethod, interfaceClass));
 	}
 }

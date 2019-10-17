@@ -1,9 +1,11 @@
 package scw.core;
 
+import scw.core.annotation.Ignore;
 import scw.core.asm.Opcodes;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 
+@Ignore
 public interface Constants {
 
 	public static final String DEFAULT_CHARSET_NAME = StringUtils

@@ -1,11 +1,15 @@
 package scw.core;
 
+import scw.core.annotation.Ignore;
+
 /**
  * 消费者
  * @author shuchaowen
  *
  * @param <T>
  */
+
+@Ignore
 public interface Consumer<T> {
 	/**
 	 * 消费

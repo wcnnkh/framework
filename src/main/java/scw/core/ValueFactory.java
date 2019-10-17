@@ -4,6 +4,9 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import scw.core.annotation.Ignore;
+
+@Ignore
 public interface ValueFactory<T> extends PrimitiveTypeValueFactory<T> {
 	String getString(T data);
 

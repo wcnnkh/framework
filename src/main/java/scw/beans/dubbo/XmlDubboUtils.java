@@ -19,12 +19,10 @@ import org.w3c.dom.NodeList;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Service;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.Destroy;
-import scw.core.Init;
 import scw.core.PropertyFactory;
-import scw.core.reflect.AnnotationUtils;
 import scw.core.reflect.CloneUtils;
 import scw.core.reflect.PropertyMapper;
+import scw.core.resource.IgnoreClassVerification;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
@@ -99,17 +97,14 @@ public final class XmlDubboUtils {
 
 		String packageName = XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
 		if (packageName != null) {
+			IgnoreClassVerification ignoreClassVerification = new IgnoreClassVerification(true, true);
 			Collection<Class<?>> clazzList = ResourceUtils.getClassList(packageName);
 			for (Class<?> clz : clazzList) {
 				Service service = clz.getAnnotation(Service.class);
 				if (service != null) {
 					Object ref = beanFactory.getInstance(clz);
 					for (Class<?> i : clz.getInterfaces()) {
-						if (AnnotationUtils.isIgnore(i)) {
-							continue;
-						}
-
-						if (i == Init.class || i == Destroy.class) {
+						if (ignoreClassVerification.verification(i)) {
 							continue;
 						}
 
@@ -144,7 +139,7 @@ public final class XmlDubboUtils {
 
 		String packageName = XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
 		if (packageName != null) {
-			for (Class<?> clz : ResourceUtils.getInterfaceClass(packageName)) {
+			for (Class<?> clz : ResourceUtils.getClasses(packageName, true, true)) {
 				ReferenceConfig<?> referenceConfig = CloneUtils.copy(config, ReferenceConfig.class);
 				referenceConfig.setInterface(clz);
 				referenceConfigs.add(referenceConfig);
