@@ -1,6 +1,6 @@
 package scw.result;
 
-public interface BaseResult {
+public interface BaseResult{
 	boolean isSuccess();
 	
 	String getMsg();
