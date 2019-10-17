@@ -1,6 +1,7 @@
 package scw.result.exception;
 
 import scw.core.exception.ParameterException;
+import scw.core.utils.StringUtils;
 import scw.result.Result;
 import scw.result.ResultFactory;
 
@@ -17,7 +18,8 @@ public final class DefaultExceptionResultFactory implements ExceptionResultFacto
 		} else if (e instanceof AuthorizationFailureException) {
 			return resultFactory.authorizationFailure();
 		} else {
-			return resultFactory.error();
+			String msg = e.getMessage();
+			return StringUtils.isEmpty(msg) ? resultFactory.error() : resultFactory.error(msg);
 		}
 	}
 }
