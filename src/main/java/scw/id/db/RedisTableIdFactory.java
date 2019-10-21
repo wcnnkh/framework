@@ -3,15 +3,18 @@ package scw.id.db;
 import scw.core.utils.ClassUtils;
 import scw.data.redis.Redis;
 import scw.locks.Lock;
-import scw.locks.RedisLock;
+import scw.locks.LockFactory;
+import scw.locks.RedisLockFactory;
 import scw.sql.orm.ORMOperations;
 
 public final class RedisTableIdFactory extends AbstractTableIdFactory {
 	private final Redis redis;
+	private final LockFactory lockFactory;
 
 	public RedisTableIdFactory(ORMOperations db, Redis redis) {
 		super(db);
 		this.redis = redis;
+		this.lockFactory = new RedisLockFactory(redis);
 	}
 
 	private String getCacheKey(Class<?> tableClass, String fieldName) {
@@ -28,15 +31,13 @@ public final class RedisTableIdFactory extends AbstractTableIdFactory {
 		String key = getCacheKey(tableClass, fieldName);
 		if (!redis.getStringOperations().exists(key)) {
 			// 不存在
-			Lock lock = new RedisLock(redis, key + "&lock");
+			Lock lock = lockFactory.getLock(key + "&lock");
 			try {
-				lock.lockWait();
+				lock.lock();
 				if (!redis.getStringOperations().exists(key)) {
 					long maxId = getMaxId(tableClass, fieldName);
 					return redis.getStringOperations().incr(key, 1, maxId + 1);
 				}
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
 			} finally {
 				lock.unlock();
 			}

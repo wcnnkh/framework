@@ -1,4 +1,4 @@
-package scw.locks.plugins;
+package scw.beans.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -6,18 +6,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ ElementType.METHOD })
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface LockConfig {
-	public String[] prefix() default "";
-
-	/**
-	 * 指定方法参数所在的位置并使用该值参与索引的拼接
-	 * 
-	 * @return
-	 */
-	public int[] keyIndex() default {};
+	public boolean all() default false;
 
 	public boolean isWait() default true;
 }

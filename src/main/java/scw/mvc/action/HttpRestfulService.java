@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import scw.core.exception.AlreadyExistsException;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
-import scw.net.http.Method;
 
 public final class HttpRestfulService extends HttpActionService {
 	private final Map<String, Map<String, HttpRestfulInfo>> restMap = new HashMap<String, Map<String, HttpRestfulInfo>>();
@@ -47,12 +46,7 @@ public final class HttpRestfulService extends HttpActionService {
 
 	@Override
 	public HttpAction getAction(HttpChannel channel) {
-		Method method = Method.valueOf(channel.getRequest().getMethod());
-		if (method == null) {
-			return null;
-		}
-
-		Map<String, HttpRestfulInfo> map = restMap.get(method);
+		Map<String, HttpRestfulInfo> map = restMap.get(channel.getRequest().getMethod());
 		if (map == null) {
 			return null;
 		}

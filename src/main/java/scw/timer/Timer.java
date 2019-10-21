@@ -1,16 +1,13 @@
 package scw.timer;
 
-import java.util.concurrent.TimeUnit;
+import scw.beans.annotation.AutoImpl;
+import scw.timer.support.DefaultTimer;
 
-import scw.core.Destroy;
+@AutoImpl(DefaultTimer.class)
+public interface Timer {
+	void schedule(TimerTaskConfig config);
 
-public interface Timer extends Destroy {
-	TimerTaskContext schedule(String taskId, TimerTask task, long delay, TimeUnit timeUnit,
-			TimerTaskListener timerTaskListener);
+	void scheduleAtFixedRate(TimerTaskConfig config);
 
-	TimerTaskContext schedule(String taskId, TimerTask task, long delay, long period, TimeUnit timeUnit,
-			TimerTaskListener timerTaskListener);
-
-	TimerTaskContext scheduleAtFixedRate(String taskId, TimerTask task, long delay, long period, TimeUnit timeUnit,
-			TimerTaskListener timerTaskListener);
+	void crontab(CrontabConfig config);
 }

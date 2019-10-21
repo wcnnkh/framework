@@ -4,20 +4,20 @@ import java.util.Collection;
 
 import scw.application.consumer.AnnotationConsumerUtils;
 import scw.application.consumer.XmlConsumerFactory;
-import scw.application.crontab.CrontabAnnotationUtils;
 import scw.beans.BeanUtils;
 import scw.beans.XmlBeanFactory;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerUtils;
 import scw.sql.orm.ORMUtils;
+import scw.timer.TimerAnnotationUtils;
 
 public class CommonApplication extends XmlBeanFactory implements Application {
 	public static final String DEFAULT_BEANS_PATH = "classpath:/beans.xml";
 	private volatile boolean start = false;
 
 	public CommonApplication(String xmlConfigPath) {
-		super(StringUtils.isEmpty(xmlConfigPath)? DEFAULT_BEANS_PATH:xmlConfigPath);
+		super(StringUtils.isEmpty(xmlConfigPath) ? DEFAULT_BEANS_PATH : xmlConfigPath);
 	}
 
 	public final XmlBeanFactory getBeanFactory() {
@@ -90,7 +90,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		super.init();
-		CrontabAnnotationUtils.crontabService(ResourceUtils.getClassList(getCrontabAnnotationPackage()),
+		TimerAnnotationUtils.scanningAnnotation(ResourceUtils.getClassList(getCrontabAnnotationPackage()),
 				getBeanFactory());
 		scanningConsumer();
 	}

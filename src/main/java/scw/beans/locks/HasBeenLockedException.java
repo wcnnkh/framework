@@ -1,4 +1,4 @@
-package scw.locks.plugins;
+package scw.beans.locks;
 
 /**
  * 已经被锁了

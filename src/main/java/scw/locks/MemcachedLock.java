@@ -1,6 +1,5 @@
 package scw.locks;
 
-import scw.core.utils.XUtils;
 import scw.data.cas.CAS;
 import scw.data.memcached.Memcached;
 
@@ -10,10 +9,6 @@ public final class MemcachedLock extends AbstractLock {
 	private final String id;
 	private final int timeout;
 
-	public MemcachedLock(Memcached memcached, String key) {
-		this(memcached, key, XUtils.getUUID(), 60);// 默认60秒过期
-	}
-
 	public MemcachedLock(Memcached memcached, String key, String id, int timeout) {
 		this.memcached = memcached;
 		this.key = key;
@@ -21,7 +16,7 @@ public final class MemcachedLock extends AbstractLock {
 		this.timeout = timeout;
 	}
 
-	public boolean lock() {
+	public boolean tryLock() {
 		return memcached.add(key, timeout, id);
 	}
 

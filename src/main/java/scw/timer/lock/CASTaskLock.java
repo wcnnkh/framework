@@ -4,18 +4,18 @@ import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
 import scw.locks.AbstractLock;
 
-public class CASTimerLock extends AbstractLock {
+public class CASTaskLock extends AbstractLock {
 	private final CASOperations casOperations;
 	private final long executionTime;
 	private final String taskId;
 
-	public CASTimerLock(CASOperations casOperations, String taskId, long executionTime) {
+	public CASTaskLock(CASOperations casOperations, String taskId, long executionTime) {
 		this.casOperations = casOperations;
 		this.executionTime = executionTime;
 		this.taskId = taskId;
 	}
 
-	public boolean lock() {
+	public boolean tryLock() {
 		CAS<Long> cas = casOperations.get(taskId);
 		if (cas == null) {
 			return casOperations.cas(taskId, executionTime, 0, 0);

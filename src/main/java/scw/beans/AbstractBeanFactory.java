@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -19,6 +20,7 @@ import scw.beans.async.AsyncCompleteFilter;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.AutoBeanDefinition;
 import scw.beans.auto.AutoBeanUtils;
+import scw.beans.locks.LockFilter;
 import scw.beans.property.ValueWiredManager;
 import scw.beans.tcc.TCCTransactionFilter;
 import scw.core.Destroy;
@@ -44,7 +46,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	private final LinkedList<Destroy> destroys = new LinkedList<Destroy>();
 	private volatile HashSet<String> notFoundSet = new HashSet<String>();
 	protected final MultiPropertyFactory propertyFactory = new MultiPropertyFactory();
-	private final LinkedList<String> filterNames = new LinkedList<String>();
+	private final LinkedHashSet<String> filterNames = new LinkedHashSet<String>();
 	private final ValueWiredManager valueWiredManager;
 
 	public AbstractBeanFactory() {
@@ -55,6 +57,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		filterNames.add(TransactionFilter.class.getName());
 		filterNames.add(TCCTransactionFilter.class.getName());
 		filterNames.add(AsyncCompleteFilter.class.getName());
+		filterNames.add(LockFilter.class.getName());
 	}
 
 	protected final synchronized void addFilterName(Collection<String> names) {

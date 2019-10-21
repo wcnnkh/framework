@@ -2,7 +2,6 @@ package scw.locks;
 
 import java.util.Collections;
 
-import scw.core.utils.XUtils;
 import scw.data.redis.Redis;
 import scw.data.redis.enums.EXPX;
 import scw.data.redis.enums.NXXX;
@@ -15,10 +14,6 @@ public final class RedisLock extends AbstractLock {
 	private final int timeout;
 	private final String id;
 
-	public RedisLock(Redis redis, String key) {
-		this(redis, key, XUtils.getUUID(), 30);
-	}
-
 	public RedisLock(Redis redis, String key, String id, int timeout) {
 		this.redis = redis;
 		this.key = key;
@@ -26,12 +21,13 @@ public final class RedisLock extends AbstractLock {
 		this.id = id;
 	}
 
-	public boolean lock() {
+	public boolean tryLock() {
 		return redis.getStringOperations().set(key, id, NXXX.NX, EXPX.EX, timeout);
 	}
 
 	public void unlock() {
-		Object result = redis.getStringOperations().eval(UNLOCK_SCRIPT, Collections.singletonList(key), Collections.singletonList(id));
+		Object result = redis.getStringOperations().eval(UNLOCK_SCRIPT, Collections.singletonList(key),
+				Collections.singletonList(id));
 		UNLOCK_SUCCESS_RESULT.equals(result);
 	}
 }

@@ -17,6 +17,7 @@ import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.orm.ORMTemplate;
 import scw.sql.orm.SqlFormat;
+import scw.sql.orm.annotation.Table;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 import scw.transaction.sql.ConnectionFactory;
@@ -29,6 +30,43 @@ public abstract class AbstractDB<C extends CacheManager> extends ORMTemplate imp
 	public abstract void async(AsyncInfo asyncInfo);
 
 	public abstract DataBase getDataBase();
+
+	public void createTable(Class<?> tableClass, boolean registerManager) {
+		createTable(tableClass, null, registerManager);
+	}
+
+	@Override
+	public void createTable(Class<?> tableClass, String tableName) {
+		createTable(tableClass, tableName, true);
+	}
+
+	public void createTable(Class<?> tableClass, String tableName, boolean registerManager) {
+		if (registerManager) {
+			DBManager.register(tableClass, this);
+		}
+		super.createTable(tableClass, tableName);
+	}
+
+	@Override
+	public void createTable(String packageName) {
+		createTable(packageName, true);
+	}
+
+	public void createTable(String packageName, boolean registerManager) {
+		Collection<Class<?>> list = ResourceUtils.getClassList(packageName);
+		for (Class<?> tableClass : list) {
+			Table table = tableClass.getAnnotation(Table.class);
+			if (table == null) {
+				continue;
+			}
+
+			if (registerManager) {
+				DBManager.register(tableClass, this);
+			}
+
+			createTable(tableClass, false);
+		}
+	}
 
 	@Override
 	public boolean save(Object bean, String tableName) {

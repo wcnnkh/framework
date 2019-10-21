@@ -3,15 +3,18 @@ package scw.id.db;
 import scw.core.utils.ClassUtils;
 import scw.data.memcached.Memcached;
 import scw.locks.Lock;
-import scw.locks.MemcachedLock;
+import scw.locks.LockFactory;
+import scw.locks.MemcachedLockFactory;
 import scw.sql.orm.ORMOperations;
 
 public final class MemcachedTableIdFactory extends AbstractTableIdFactory {
 	private final Memcached memcached;
+	private final LockFactory lockFactory;
 
 	public MemcachedTableIdFactory(ORMOperations db, Memcached memcached) {
 		super(db);
 		this.memcached = memcached;
+		this.lockFactory = new MemcachedLockFactory(memcached);
 	}
 
 	private String getCacheKey(Class<?> tableClass, String fieldName) {
@@ -28,16 +31,14 @@ public final class MemcachedTableIdFactory extends AbstractTableIdFactory {
 		String key = getCacheKey(tableClass, fieldName);
 		if (memcached.get(key) == null) {
 			// 不存在
-			Lock lock = new MemcachedLock(memcached, key + "&lock");
+			Lock lock = lockFactory.getLock(key + "&lock");
 			try {
-				lock.lockWait();
+				lock.lock();
 
 				if (memcached.get(key) == null) {
 					long maxId = getMaxId(tableClass, fieldName);
 					return memcached.incr(key, 1, maxId + 1);
 				}
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
 			} finally {
 				lock.unlock();
 			}

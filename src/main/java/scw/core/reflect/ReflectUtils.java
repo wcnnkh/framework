@@ -289,11 +289,11 @@ public final class ReflectUtils {
 	 * @param parameterMap
 	 * @return
 	 */
-	public static <T> Object invoke(Class<T> type, Object instance, String name, boolean isPublic,
-			Map<String, Object> parameterMap) throws NoSuchMethodException {
+	public static <T> Object invoke(Class<T> type, Object instance, String name, Map<String, Object> parameterMap)
+			throws NoSuchMethodException {
 		if (CollectionUtils.isEmpty(parameterMap)) {
 			try {
-				return getMethod(type, isPublic, name).invoke(instance);
+				return getMethod(type, name).invoke(instance);
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalArgumentException e) {
@@ -304,7 +304,7 @@ public final class ReflectUtils {
 		}
 
 		int size = parameterMap.size();
-		for (Method method : isPublic ? type.getMethods() : type.getDeclaredMethods()) {
+		for (Method method : type.getDeclaredMethods()) {
 			if (size == method.getParameterTypes().length) {
 				String[] names = ParameterUtils.getParameterName(method);
 				Object[] args = new Object[size];
@@ -335,17 +335,16 @@ public final class ReflectUtils {
 		throw new NoSuchMethodException(type.getName() + ", method=" + name);
 	}
 
-	public static Method getMethod(Class<?> clazz, boolean isPublic, String name, Class<?>... parameterTypes)
-			throws NoSuchMethodException {
+	public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
 		Method method;
-		if (isPublic) {
-			method = clazz.getMethod(name, parameterTypes);
-		} else {
+		try {
 			method = clazz.getDeclaredMethod(name, parameterTypes);
+		} catch (NoSuchMethodException e) {
+			return null;
+		}
 
-			if (!Modifier.isPublic(clazz.getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
-				method.setAccessible(true);
-			}
+		if (!Modifier.isPublic(clazz.getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
+			method.setAccessible(true);
 		}
 		return method;
 	}
@@ -1234,7 +1233,7 @@ public final class ReflectUtils {
 		}
 		return null;
 	}
-	
+
 	public static Field[] getDeclaredFields(Class<?> clazz) {
 		return getFields(clazz, true);
 	}

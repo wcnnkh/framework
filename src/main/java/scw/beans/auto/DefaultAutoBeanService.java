@@ -3,6 +3,7 @@ package scw.beans.auto;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.concurrent.Executor;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.AutoImpl;
@@ -13,6 +14,7 @@ import scw.core.reflect.ReflectUtils;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.DefaultExecutor;
 import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
@@ -33,6 +35,8 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			autoBean = createResultFactory(beanFactory, propertyFactory);
 		} else if (clazz == DB.class) {
 			autoBean = createDB(beanFactory, propertyFactory);
+		} else if (clazz == Executor.class) {
+			autoBean = new SimpleAutoBean(beanFactory, DefaultExecutor.class, propertyFactory);
 		}
 
 		if (autoBean != null) {

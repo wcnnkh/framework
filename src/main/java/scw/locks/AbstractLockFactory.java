@@ -1,14 +1,16 @@
 package scw.locks;
 
-public abstract class AbstractLockFactory implements LockFactory {
-	private final int default_timeout;
+import java.util.concurrent.TimeUnit;
 
-	public AbstractLockFactory(int default_timeout) {
-		this.default_timeout = default_timeout;
-	}
+import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
+
+public abstract class AbstractLockFactory implements LockFactory {
+	private static final long DEFAULT_TIMEOUT = StringUtils
+			.parseLong(SystemPropertyUtils.getProperty("locks.default.timeout"), 60);
 
 	public Lock getLock(String name) {
-		return getLock(name, default_timeout);
+		return getLock(name, DEFAULT_TIMEOUT, TimeUnit.SECONDS);
 	}
-	
+
 }

@@ -20,8 +20,7 @@ public final class BeanFactoryFilterChain implements FilterChain {
 			list.addAll(filterNames);
 		}
 
-		scw.beans.annotation.BeanFilter beanFilter = method.getDeclaringClass()
-				.getAnnotation(scw.beans.annotation.BeanFilter.class);
+		scw.beans.annotation.BeanFilter beanFilter = clz.getAnnotation(scw.beans.annotation.BeanFilter.class);
 		if (beanFilter != null) {
 			for (Class<? extends Filter> c : beanFilter.value()) {
 				list.add(c.getName());

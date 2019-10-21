@@ -4,15 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.exception.AlreadyExistsException;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.sql.Sql;
-import scw.sql.orm.annotation.Table;
 
 /**
  * 只用于处理默认的数据库 不再推荐使用
@@ -24,102 +23,21 @@ public final class DBManager {
 	private DBManager() {
 	};
 
-	private static final Map<String, DB> CLASS_NAME_TO_DB = new HashMap<String, DB>();
-
-	private static void createTable(DB db, Class<?> tableClass) {
-		Table table = tableClass.getAnnotation(Table.class);
-		if (table == null || table.create()) {
-			db.createTable(tableClass);
-		}
-	}
+	private static final Map<Class<?>, DB> CLASS_TO_DB = new IdentityHashMap<Class<?>, DB>();
 
 	/**
 	 * 向指定数据库中注册表
 	 * 
+	 * @param clazz
 	 * @param db
-	 *            数据库对象
-	 * @param packageName
-	 *            扫描的路径
-	 * @param create
-	 *            是否自动创建表
 	 */
-	public static void register(DB db, String packageName, boolean create) {
-		Collection<Class<?>> list = ResourceUtils.getClassList(packageName);
-		for (Class<?> tableClass : list) {
-			String name = ClassUtils.getProxyRealClassName(tableClass.getName());
-			if (CLASS_NAME_TO_DB.containsKey(name)) {
-				continue;
-			}
-
-			Table table = tableClass.getAnnotation(Table.class);
-			if (table == null) {
-				continue;
-			}
-
-			synchronized (CLASS_NAME_TO_DB) {
-				if (CLASS_NAME_TO_DB.containsKey(name)) {
-					continue;
-				}
-
-				CLASS_NAME_TO_DB.put(name, db);
-				if (create) {
-					createTable(db, tableClass);
-				}
-			}
+	public synchronized static void register(Class<?> clazz, DB db) {
+		if (CLASS_TO_DB.containsKey(clazz)) {
+			DB originDB = CLASS_TO_DB.get(clazz);
+			throw new AlreadyExistsException(clazz + "已经存在了:" + originDB.getClass().getName());
 		}
-	}
 
-	/**
-	 * 向指定数据库中注册一个表
-	 * 
-	 * @param db
-	 *            数据库对象
-	 * @param tableClass
-	 *            表所对应的类
-	 * @param create
-	 *            是否自动创建表
-	 */
-	public static void register(DB db, Class<?> tableClass, boolean create) {
-		register(db, tableClass, false, create);
-	}
-
-	/**
-	 * 向指定数据库中注册一个表
-	 * 
-	 * @param db
-	 *            数据库对象
-	 * @param tableClass
-	 *            表所对应的类
-	 * @param force
-	 *            是否强制注册
-	 * @param create
-	 *            是否自动创建表
-	 */
-	public static void register(DB db, Class<?> tableClass, boolean force, boolean create) {
-		String name = ClassUtils.getProxyRealClassName(tableClass.getName());
-		if (force) {
-			synchronized (CLASS_NAME_TO_DB) {
-				CLASS_NAME_TO_DB.put(name, db);
-				if (create) {
-					createTable(db, tableClass);
-				}
-			}
-		} else {
-			if (CLASS_NAME_TO_DB.containsKey(name)) {
-				throw new AlreadyExistsException(name + "已经存在了");
-			} else {
-				synchronized (CLASS_NAME_TO_DB) {
-					if (CLASS_NAME_TO_DB.containsKey(name)) {
-						throw new AlreadyExistsException(name + "已经存在了");
-					} else {
-						CLASS_NAME_TO_DB.put(name, db);
-						if (create) {
-							createTable(db, tableClass);
-						}
-					}
-				}
-			}
-		}
+		CLASS_TO_DB.put(clazz, db);
 	}
 
 	/**
@@ -129,10 +47,9 @@ public final class DBManager {
 	 * @return
 	 */
 	public static DB getDB(Class<?> tableClass) {
-		String name = ClassUtils.getProxyRealClassName(tableClass);
-		DB db = CLASS_NAME_TO_DB.get(name);
+		DB db = CLASS_TO_DB.get(ClassUtils.getUserClass(tableClass));
 		if (db == null) {
-			throw new NullPointerException(name + " not found db");
+			throw new NullPointerException(tableClass + " not found db");
 		}
 		return db;
 	}
@@ -193,7 +110,7 @@ public final class DBManager {
 	public static void save(Object... beans) {
 		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
 			List<Object> list = entry.getValue();
-			for(Object bean : list){
+			for (Object bean : list) {
 				entry.getKey().save(bean);
 			}
 		}
@@ -207,7 +124,7 @@ public final class DBManager {
 	public static void delete(Object... beans) {
 		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
 			List<Object> list = entry.getValue();
-			for(Object bean : list){
+			for (Object bean : list) {
 				entry.getKey().delete(bean);
 			}
 		}
@@ -216,7 +133,7 @@ public final class DBManager {
 	public static void update(Object... beans) {
 		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
 			List<Object> list = entry.getValue();
-			for(Object bean : list){
+			for (Object bean : list) {
 				entry.getKey().update(bean);
 			}
 		}
@@ -225,7 +142,7 @@ public final class DBManager {
 	public static void saveOrUpdate(Object... beans) {
 		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
 			List<Object> list = entry.getValue();
-			for(Object bean : list){
+			for (Object bean : list) {
 				entry.getKey().saveOrUpdate(bean);
 			}
 		}

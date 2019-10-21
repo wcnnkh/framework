@@ -1,13 +1,16 @@
-package scw.locks.plugins;
+package scw.beans.locks;
 
 import java.lang.reflect.Method;
 
-import com.alibaba.fastjson.JSONArray;
-
+import scw.beans.annotation.LockConfig;
+import scw.beans.annotation.LockParameter;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
-import scw.core.utils.StringUtils;
+import scw.core.parameter.ContainAnnotationParameterConfig;
+import scw.core.parameter.ParameterUtils;
+import scw.core.reflect.AnnotationUtils;
+import scw.json.JSONUtils;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
 import scw.transaction.sql.cache.QueryCacheUtils;
@@ -31,33 +34,31 @@ public final class LockFilter implements Filter {
 
 	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
-		LockConfig lockConfig = method.getAnnotation(LockConfig.class);
+		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, method.getDeclaringClass(), method);
 		if (lockConfig == null) {
 			return filterChain.doFilter(invoker, proxy, method, args);
 		}
 
 		StringBuilder sb = new StringBuilder(128);
-		if (StringUtils.isEmpty(lockConfig.prefix())) {
-			sb.append(method.toString());
-		} else {
-			sb.append(lockConfig.prefix());
-		}
-
-		if (lockConfig.keyIndex().length != 0) {
-			sb.append("#");
-			JSONArray jarr = new JSONArray();
-			for (int index : lockConfig.keyIndex()) {
-				jarr.add(args[index]);
+		sb.append(method.toString());
+		ContainAnnotationParameterConfig[] configs = ParameterUtils.getParameterConfigs(method);
+		for (int i = 0; i < configs.length; i++) {
+			ContainAnnotationParameterConfig config = configs[i];
+			LockParameter lockParameter = config.getAnnotation(LockParameter.class);
+			if (lockConfig.all() && (lockParameter != null && lockParameter.value())) {
+				sb.append(i == 0 ? "?" : "&");
+				sb.append(config.getName());
+				sb.append("=");
+				sb.append(JSONUtils.toJSONString(args[i]));
 			}
-			sb.append(jarr.toJSONString());
 		}
 
 		String lockKey = sb.toString();
 		Lock lock = lockFactory.getLock(lockKey);
 		try {
 			if (lockConfig.isWait()) {
-				lock.lockWait();
-			} else if (!lock.lock()) {
+				lock.lock();
+			} else if (!lock.tryLock()) {
 				throw new HasBeenLockedException(lockKey);
 			}
 

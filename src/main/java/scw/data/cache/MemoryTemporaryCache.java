@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import scw.core.Destroy;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.timer.RunnableTimerTask;
+import scw.timer.support.RunnableTimerTask;
 
 /**
  * 内存实现
