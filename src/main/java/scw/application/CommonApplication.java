@@ -13,7 +13,7 @@ import scw.sql.orm.ORMUtils;
 import scw.timer.TimerUtils;
 
 public class CommonApplication extends XmlBeanFactory implements Application {
-	public static final String DEFAULT_BEANS_PATH = "classpath:/beans.xml";
+	public static final String DEFAULT_BEANS_PATH = "beans.xml";
 	private volatile boolean start = false;
 
 	public CommonApplication(String xmlConfigPath) {
@@ -90,8 +90,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		super.init();
-		TimerUtils.scanningAnnotation(ResourceUtils.getClassList(getCrontabAnnotationPackage()),
-				getBeanFactory());
+		TimerUtils.scanningAnnotation(ResourceUtils.getClassList(getCrontabAnnotationPackage()), getBeanFactory());
 		scanningConsumer();
 	}
 

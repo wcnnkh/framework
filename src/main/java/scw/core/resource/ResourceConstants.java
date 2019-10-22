@@ -30,7 +30,7 @@ public interface ResourceConstants {
 
 	/** Separator between JAR URL and file path within the JAR */
 	public static final String JAR_URL_SEPARATOR = "!/";
-	
+
 	public static final String CLASS_SUFFIX = ".class";
 
 	static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";

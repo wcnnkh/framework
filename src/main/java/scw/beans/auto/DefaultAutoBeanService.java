@@ -177,7 +177,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 	}
 
 	private AutoBean createDB(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
-		String config = "classpath:/db.properties";
+		String config = "db.properties";
 		if (ResourceUtils.isExist(config)) {
 			Object[] args;
 			Class<?>[] types;
@@ -200,7 +200,6 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 				return new DefaultAutoBean(beanFactory, "scw.db.HikariCPDB", types, args);
 			}
 		}
-
 		return null;
 	}
 }

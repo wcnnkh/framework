@@ -14,6 +14,47 @@ import scw.io.IOUtils;
 public class DefaultResourceLookup extends ClassesResourceLookup {
 	private static final ClassLoaderResourceLookup classLoaderResourceLookup = new ClassLoaderResourceLookup();
 
+	private boolean lockupClassPath(String resource, Consumer<InputStream> consumer) {
+		boolean b = false;
+		if (!b) {
+			for (String classPath : SystemPropertyUtils.getJavaClassPathArray()) {
+				b = consumterInputStream(classPath, resource, consumer);
+				if (b) {
+					break;
+				}
+			}
+		}
+
+		if (!b) {
+			b = classLoaderResourceLookup.lookup(resource, consumer);
+		}
+
+		if (!b) {
+			URL url = ResourceUtils.getClassPathURL();
+			if (url != null) {
+				b = consumterInputStream(url.getPath(), resource, consumer);
+			}
+		}
+		return b;
+	}
+
+	private boolean lockupFile(String resource, Consumer<InputStream> consumer) {
+		File file = new File(resource);
+		if (!file.exists()) {
+			file = null;
+		}
+
+		if (file == null) {
+			if (classLoaderResourceLookup.lookup(resource.replaceAll("\\\\", "/"), consumer)) {
+				return true;
+			}
+			
+			return false;
+		}
+		consumerFileInputStream(file, consumer);
+		return true;
+	}
+
 	@Override
 	public boolean lookup(String resource, Consumer<InputStream> consumer) {
 		if (StringUtils.isEmpty(resource)) {
@@ -34,42 +75,20 @@ public class DefaultResourceLookup extends ClassesResourceLookup {
 				eqPath = eqPath.substring(CLASS_PATH_PREFIX_EL.length());
 			}
 
-			boolean b = false;
-			if (!b) {
-				for (String classPath : SystemPropertyUtils.getJavaClassPathArray()) {
-					b = consumterInputStream(classPath, eqPath, consumer);
-					if (b) {
-						break;
-					}
-				}
-			}
-
-			if (!b) {
-				b = classLoaderResourceLookup.lookup(eqPath, consumer);
-			}
-
-			if (!b) {
-				URL url = ResourceUtils.getClassPathURL();
-				if (url != null) {
-					b = consumterInputStream(url.getPath(), eqPath, consumer);
-				}
-			}
-			return b;
+			return lockupClassPath(eqPath, consumer);
 		} else {
-			File file = new File(text);
-			if (!file.exists()) {
-				file = null;
+			if (lockupFile(text, consumer)) {
+				return true;
 			}
 
-			if (file == null) {
-				if (classLoaderResourceLookup.lookup(text.replaceAll("\\\\", "/"), consumer)) {
-					return true;
-				}
-				return false;
+			if (lockupClassPath(text, consumer)) {
+				return true;
 			}
 
-			consumerFileInputStream(file, consumer);
-			return true;
+			if (lockupFile(SystemPropertyUtils.getWorkPath() + text, consumer)) {
+				return true;
+			}
+			return false;
 		}
 	}
 

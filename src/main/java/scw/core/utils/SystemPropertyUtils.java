@@ -28,12 +28,15 @@ import scw.core.StringFormatSystemProperties;
 import scw.core.resource.ResourceUtils;
 import scw.io.FileUtils;
 
-public abstract class SystemPropertyUtils {
-	private static final String WEB_ROOT = "web.root";
+public final class SystemPropertyUtils {
+	public static final String WEB_ROOT = "web.root";
 	private static final String WORK_PATH_PROPERTY_NAME = "scw_work_path";
 	private static final String DEFAULT_WORK_PATH_DIR = "public,www";
-	private static volatile String workPath;
 	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
+
+	private SystemPropertyUtils() {
+	};
+
 	/**
 	 * 私有的Properties
 	 */
@@ -80,7 +83,7 @@ public abstract class SystemPropertyUtils {
 		}
 		return v;
 	}
-	
+
 	public static void setProperty(String key, String value) {
 		setProperty(key, value, false);
 	}
@@ -106,17 +109,12 @@ public abstract class SystemPropertyUtils {
 		clearSystemProperty(key);
 	}
 
-	public static void setWorkPath(String path, boolean system) {
+	public static void setWorkPath(String path) {
 		if (path == null) {
 			return;
 		}
 
-		if (system) {
-			SystemPropertyUtils.setPrivateProperty(WORK_PATH_PROPERTY_NAME,
-					path);
-		} else {
-			workPath = new String(path);
-		}
+		SystemPropertyUtils.setPrivateProperty(WORK_PATH_PROPERTY_NAME, path);
 	}
 
 	private static String getDefaultWorkPath() {
@@ -141,39 +139,37 @@ public abstract class SystemPropertyUtils {
 			return path;
 		}
 
-		if (workPath == null) {
-			synchronized (SystemPropertyUtils.class) {
-				if (workPath == null) {
-					URL url = ResourceUtils.getClassPathURL();
-					if (url == null) {
-						path = getDefaultWorkPath();
+		synchronized (SystemPropertyUtils.class) {
+			path = getProperty(WORK_PATH_PROPERTY_NAME);
+			if (path == null) {
+				URL url = ResourceUtils.getClassPathURL();
+				if (url == null) {
+					path = getDefaultWorkPath();
+				} else {
+					File file = new File(url.getPath());
+					if (file.isFile()) {
+						path = getUserDir();
 					} else {
-						File file = new File(url.getPath());
-						if (file.isFile()) {
-							path = getUserDir();
+						file = file.getParentFile();
+						if (file.getName().equals("WEB-INF")) {
+							path = file.getParent();
 						} else {
 							file = file.getParentFile();
-							if (file.getName().equals("WEB-INF")) {
+							file = FileUtils.searchDirectory(file, "WEB-INF");
+							if (file != null) {
 								path = file.getParent();
-							} else {
-								file = file.getParentFile();
-								file = FileUtils.searchDirectory(file,
-										"WEB-INF");
-								if (file != null) {
-									path = file.getParent();
-								}
 							}
 						}
-
-						if (path == null) {
-							path = getDefaultWorkPath();
-						}
 					}
-					workPath = path;
+
+					if (path == null) {
+						path = getDefaultWorkPath();
+					}
 				}
+				setWorkPath(path);
 			}
 		}
-		return workPath == null ? null : new String(workPath);
+		return path;
 	}
 
 	public static String format(String text) {
@@ -181,8 +177,7 @@ public abstract class SystemPropertyUtils {
 			return text;
 		}
 
-		return StringFormatSystemProperties
-				.formatText(StringFormatSystemProperties.formatEL(text));
+		return StringFormatSystemProperties.formatText(StringFormatSystemProperties.formatEL(text));
 	}
 
 	/**
@@ -215,13 +210,10 @@ public abstract class SystemPropertyUtils {
 		String systemOnlyId = getPrivateProperty(SYSTEM_ID_PROPERTY);
 		if (StringUtils.isEmpty(systemOnlyId)) {
 			try {
-				systemOnlyId = scw.core.Base64
-						.encode((getUserDir() + "&" + ResourceUtils
-								.getClassPathURL())
-								.getBytes(Constants.DEFAULT_CHARSET_NAME));
+				systemOnlyId = scw.core.Base64.encode((getUserDir() + "&" + ResourceUtils.getClassPathURL())
+						.getBytes(Constants.DEFAULT_CHARSET_NAME));
 				if (systemOnlyId.endsWith("==")) {
-					systemOnlyId = systemOnlyId.substring(0,
-							systemOnlyId.length() - 2);
+					systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
 				}
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);
