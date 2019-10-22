@@ -55,7 +55,10 @@ import scw.io.IOUtils;
  * @author scw
  */
 public abstract class ResourceUtils implements ResourceConstants {
-	private static final ResourceLookup RESOURCE_LOOKUP = new DefaultResourceLookup();
+	public static final ResourceLookup RESOURCE_LOOKUP = new DefaultResourceLookup();
+	public static final CacheResourceLookup CACHE_RESOURCE_LOOKUP = new CacheResourceLookup(RESOURCE_LOOKUP);
+	private static final boolean CACHE_ENABLE = StringUtils
+			.parseBoolean(SystemPropertyUtils.getProperty("resource.cache.enable"));
 
 	/**
 	 * Return whether the given resource location is a URL: either a special
@@ -394,48 +397,55 @@ public abstract class ResourceUtils implements ResourceConstants {
 	}
 
 	public static void consumterInputStream(String resource, Consumer<InputStream> consumer) {
-		consumterInputStream(resource, consumer, true);
+		consumterInputStream(resource, consumer, CACHE_ENABLE);
 	}
 
-	public static void consumterInputStream(String resource, Consumer<InputStream> consumer, boolean multiple) {
-		if (multiple) {
-			Collection<String> resourceNames = getResourceNameList(resource);
-			for (String name : resourceNames) {
-				if (RESOURCE_LOOKUP.lookup(name, consumer)) {
-					return;
-				}
+	public static void consumterInputStream(String resource, Consumer<InputStream> consumer, boolean cache) {
+		Collection<String> resourceNames = getResourceNameList(resource);
+		for (String name : resourceNames) {
+			if (cache ? CACHE_RESOURCE_LOOKUP.lookup(name, consumer) : RESOURCE_LOOKUP.lookup(name, consumer)) {
+				return;
 			}
-		} else if (RESOURCE_LOOKUP.lookup(resource, consumer)) {
-			return;
 		}
-
 		throw new NotFoundException(resource);
 	}
 
 	public static boolean isExist(String resource) {
-		return isExist(resource, true);
+		return isExist(resource, CACHE_ENABLE);
 	}
 
-	public static boolean isExist(String resource, boolean multiple) {
+	public static boolean isExist(String resource, boolean cache) {
 		if (StringUtils.isEmpty(resource)) {
 			return false;
 		}
 
-		if (multiple) {
-			Collection<String> resourceNames = getResourceNameList(resource);
-			for (String name : resourceNames) {
-				if (RESOURCE_LOOKUP.lookup(name)) {
-					return true;
-				}
+		Collection<String> resourceNames = getResourceNameList(resource);
+		for (String name : resourceNames) {
+			if (cache ? CACHE_RESOURCE_LOOKUP.lookup(name) : RESOURCE_LOOKUP.lookup(name)) {
+				return true;
 			}
-			return false;
-		} else {
-			return RESOURCE_LOOKUP.lookup(resource);
 		}
+		return false;
+	}
+
+	public static <T> T getResource(String resource, final Converter<InputStream, T> converter, boolean cache) {
+		if (StringUtils.isEmpty(resource)) {
+			return null;
+		}
+
+		Collection<String> resourceNames = getResourceNameList(resource);
+		for (String name : resourceNames) {
+			T value = cache ? CACHE_RESOURCE_LOOKUP.getResource(name, converter)
+					: RESOURCE_LOOKUP.getResource(name, converter);
+			if (value != null) {
+				return value;
+			}
+		}
+		return null;
 	}
 
 	public static <T> T getResource(String resource, final Converter<InputStream, T> converter) {
-		return RESOURCE_LOOKUP.getResource(resource, converter);
+		return getResource(resource, converter, CACHE_ENABLE);
 	}
 
 	public static Collection<Class<?>> getClassList(String packagePrefix) {
@@ -448,12 +458,19 @@ public abstract class ResourceUtils implements ResourceConstants {
 
 	public static Properties getProperties(final String resource, final String charsetName,
 			PropertyFactory propertyFactory) {
+		return getProperties(resource, charsetName, propertyFactory, false);
+	}
+
+	public static Properties getProperties(final String resource, final String charsetName,
+			PropertyFactory propertyFactory, boolean cache) {
 		List<String> resourceNameList = getResourceNameList(resource);
 		ListIterator<String> iterator = resourceNameList.listIterator(resourceNameList.size());
 		Properties properties = new Properties();
 		while (iterator.hasPrevious()) {
 			final String name = iterator.previous();
-			if (isExist(name, false)) {
+			if (cache) {
+				CACHE_RESOURCE_LOOKUP.lookup(name, new LoadPropertiesConsumer(properties, name, charsetName));
+			} else {
 				RESOURCE_LOOKUP.lookup(name, new LoadPropertiesConsumer(properties, name, charsetName));
 			}
 		}
@@ -481,12 +498,16 @@ public abstract class ResourceUtils implements ResourceConstants {
 		return getProperties(path, charsetName, SystemPropertyFactory.INSTANCE);
 	}
 
+	public static Properties getProperties(final String path, final String charsetName, boolean cache) {
+		return getProperties(path, charsetName, SystemPropertyFactory.INSTANCE, cache);
+	}
+
 	public static Properties getProperties(final String path, PropertyFactory propertyFactory) {
 		return getProperties(path, null, propertyFactory);
 	}
 
 	public static List<String> getFileContentLineList(String path, final String charsetName) {
-		return ResourceUtils.getResource(path, new Converter<InputStream, List<String>>() {
+		return getResource(path, new Converter<InputStream, List<String>>() {
 
 			public List<String> convert(InputStream inputStream) {
 				try {
@@ -500,7 +521,7 @@ public abstract class ResourceUtils implements ResourceConstants {
 	}
 
 	public static String getFileContent(String path, final String charsetName) {
-		return ResourceUtils.getResource(path, new Converter<InputStream, String>() {
+		return getResource(path, new Converter<InputStream, String>() {
 
 			public String convert(InputStream inputStream) {
 				return IOUtils.readContent(inputStream, charsetName);

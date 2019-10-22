@@ -4,5 +4,5 @@ import scw.core.annotation.Ignore;
 
 @Ignore
 public interface Converter<K, V> {
-	V convert(K k);
+	V convert(K k) throws Exception;
 }
