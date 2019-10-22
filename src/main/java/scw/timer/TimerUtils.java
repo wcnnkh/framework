@@ -18,10 +18,10 @@ import scw.timer.annotation.Schedule;
 import scw.timer.support.SimpleCrontabConfig;
 import scw.timer.support.SimpleTimerTaskConfig;
 
-public final class TimerAnnotationUtils {
-	private static Logger logger = LoggerUtils.getLogger(TimerAnnotationUtils.class);
+public final class TimerUtils {
+	private static Logger logger = LoggerUtils.getLogger(TimerUtils.class);
 
-	private TimerAnnotationUtils() {
+	private TimerUtils() {
 	};
 
 	public static void scanningAnnotation(Collection<Class<?>> classList, BeanFactory beanFactory) {
@@ -74,7 +74,7 @@ public final class TimerAnnotationUtils {
 				&& TypeUtils.isLong(method.getParameterTypes()[0]);
 		CrontabRunnable crontabRun = new CrontabRunnable(new MethodProxyInvoker(beanFactory, clz, method), invokeTime);
 		timer.crontab(new SimpleCrontabConfig(crontab, crontabRun, getTaskListener(beanFactory, crontab.listener())));
-		LoggerUtils.getLogger(TimerAnnotationUtils.class).info(
+		LoggerUtils.getLogger(TimerUtils.class).info(
 				"添加计划任务：{},dayOfWeek={},month={},dayOfMonth={},hour={},minute={}", crontab.name(), crontab.dayOfWeek(),
 				crontab.month(), crontab.dayOfMonth(), crontab.hour(), crontab.minute());
 	}

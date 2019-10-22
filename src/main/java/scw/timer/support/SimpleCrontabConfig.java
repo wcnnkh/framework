@@ -1,5 +1,6 @@
 package scw.timer.support;
 
+import scw.core.utils.StringUtils;
 import scw.timer.CrontabConfig;
 import scw.timer.Task;
 import scw.timer.TaskListener;
@@ -32,23 +33,23 @@ public class SimpleCrontabConfig extends SimpleTaskConfig implements CrontabConf
 	}
 
 	public String getDayOfWeek() {
-		return dayOfWeek;
+		return StringUtils.isEmpty(dayOfWeek) ? ALL : dayOfWeek;
 	}
 
 	public String getMonth() {
-		return month;
+		return StringUtils.isEmpty(month) ? ALL : month;
 	}
 
 	public String getDayOfMonth() {
-		return dayOfMonth;
+		return StringUtils.isEmpty(dayOfMonth) ? ALL : dayOfMonth;
 	}
 
 	public String getHour() {
-		return hour;
+		return StringUtils.isEmpty(hour) ? ALL : hour;
 	}
 
 	public String getMinute() {
-		return minute;
+		return StringUtils.isEmpty(minute) ? ALL : minute;
 	}
 
 }

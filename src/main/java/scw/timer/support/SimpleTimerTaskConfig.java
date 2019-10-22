@@ -12,6 +12,11 @@ public class SimpleTimerTaskConfig extends SimpleTaskConfig implements TimerTask
 	private long period;
 	private TimeUnit timeUnit;
 
+	public SimpleTimerTaskConfig(String taskId, Task task, TaskListener taskListener, long delay, long period,
+			TimeUnit timeUnit) {
+		this(taskId, task, taskListener, new SimpleDelayed(delay, timeUnit), period, timeUnit);
+	}
+
 	public SimpleTimerTaskConfig(String taskId, Task task, TaskListener taskListener, Delayed delay, long period,
 			TimeUnit timeUnit) {
 		super(taskId, task, taskListener);

@@ -10,7 +10,7 @@ import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerUtils;
 import scw.sql.orm.ORMUtils;
-import scw.timer.TimerAnnotationUtils;
+import scw.timer.TimerUtils;
 
 public class CommonApplication extends XmlBeanFactory implements Application {
 	public static final String DEFAULT_BEANS_PATH = "classpath:/beans.xml";
@@ -90,7 +90,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		super.init();
-		TimerAnnotationUtils.scanningAnnotation(ResourceUtils.getClassList(getCrontabAnnotationPackage()),
+		TimerUtils.scanningAnnotation(ResourceUtils.getClassList(getCrontabAnnotationPackage()),
 				getBeanFactory());
 		scanningConsumer();
 	}
