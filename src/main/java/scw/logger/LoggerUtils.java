@@ -31,6 +31,7 @@ public final class LoggerUtils {
 		}
 
 		if (ResourceUtils.isExist(loggerEnablePropertiePath)) {
+			info(LoggerUtils.class, "loading " + loggerEnablePropertiePath);
 			Properties properties = ResourceUtils.getProperties(loggerEnablePropertiePath);
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
@@ -64,7 +65,7 @@ public final class LoggerUtils {
 		}
 	}
 
-	public static Level getDefaultLoggerLevel(){
+	public static Level getDefaultLoggerLevel() {
 		return DEFAULT_LEVEL;
 	}
 
@@ -76,10 +77,11 @@ public final class LoggerUtils {
 				continue;
 			}
 
-			if (keyValuePair.getKey().startsWith(name)) {
+			if (name.startsWith(keyValuePair.getKey())) {
 				return keyValuePair.getValue();
 			}
 		}
+		
 		return getDefaultLoggerLevel();
 	}
 

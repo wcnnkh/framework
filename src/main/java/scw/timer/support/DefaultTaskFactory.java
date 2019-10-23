@@ -17,8 +17,8 @@ public final class DefaultTaskFactory implements TaskFactory {
 		return taskMap.putIfAbsent(taskConfig.getTaskId(), taskConfig) == null;
 	}
 
-	public boolean unregister(String taskId) {
-		return taskMap.remove(taskId) != null;
+	public boolean unregister(TaskConfig taskConfig) {
+		return taskMap.remove(taskConfig.getTaskId()) != null;
 	}
 
 	public void iteratorRegisteredTaskConfig(IteratorCallback<TaskConfig> iteratorCallback) {

@@ -4,6 +4,7 @@ import scw.data.cas.CASOperations;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 import scw.locks.Lock;
+import scw.timer.TaskConfig;
 import scw.timer.TaskLockFactory;
 
 public class CASTaskLockFactory implements TaskLockFactory {
@@ -21,8 +22,8 @@ public class CASTaskLockFactory implements TaskLockFactory {
 		this.casOperations = casOperations;
 	}
 
-	public Lock getLock(String taskId, long executionTime) {
-		return new CASTaskLock(casOperations, taskId, executionTime);
+	public Lock getLock(TaskConfig taskConfig, long executionTime) {
+		return new CASTaskLock(casOperations, taskConfig.getTaskId(), executionTime);
 	}
 
 }

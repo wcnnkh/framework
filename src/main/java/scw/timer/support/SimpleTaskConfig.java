@@ -5,14 +5,16 @@ import scw.timer.TaskConfig;
 import scw.timer.TaskListener;
 
 public class SimpleTaskConfig implements TaskConfig {
-	private String taskId;
-	private Task task;
-	private TaskListener taskListener;
+	private final String taskId;
+	private final Task task;
+	private final TaskListener taskListener;
+	private final boolean distributed;
 
-	public SimpleTaskConfig(String taskId, Task task, TaskListener taskListener) {
+	public SimpleTaskConfig(String taskId, Task task, TaskListener taskListener, boolean distributed) {
 		this.taskId = taskId;
 		this.task = task;
 		this.taskListener = taskListener;
+		this.distributed = distributed;
 	}
 
 	public String getTaskId() {
@@ -25,6 +27,10 @@ public class SimpleTaskConfig implements TaskConfig {
 
 	public TaskListener getTaskListener() {
 		return taskListener;
+	}
+
+	public boolean isDistributed() {
+		return distributed;
 	}
 
 }

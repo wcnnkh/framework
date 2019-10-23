@@ -1,7 +1,6 @@
 package scw.logger.log4j;
 
 import java.lang.reflect.Method;
-import java.util.Locale;
 import java.util.Properties;
 
 import org.w3c.dom.Element;
@@ -98,7 +97,7 @@ public final class Log4jUtils {
 		String rootPath = SystemPropertyUtils.getWorkPath();
 		LoggerUtils.info(Log4jUtils.class, "load the default log directory: {}", rootPath);
 		Properties properties = new Properties();
-		properties.put("log4j.rootLogger",  LoggerUtils.getDefaultLoggerLevel().name() + ", stdout, logfile");
+		properties.put("log4j.rootLogger", LoggerUtils.getDefaultLoggerLevel().name() + ", stdout, logfile");
 		properties.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
 		properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
 		properties.put("log4j.appender.stdout.layout.ConversionPattern", "%d %p [%c] - %m%n");
@@ -119,10 +118,11 @@ public final class Log4jUtils {
 		properties.put("log4j.logger.org.apache.dubbo", "error");
 
 		for (KeyValuePair<String, Level> entry : LoggerUtils.getLoggerLevelConfigList()) {
-			properties.put("log4j.logger." + entry.getKey(), entry.getValue().name().toLowerCase(Locale.ENGLISH));
+			properties.put("log4j.logger." + entry.getKey(), entry.getValue().name());
 		}
 
 		if (ResourceUtils.isExist(LOG4J_APPEND_PATH)) {
+			LoggerUtils.info(Log4jUtils.class, "loading " + LOG4J_APPEND_PATH);
 			Properties append = ResourceUtils.getProperties(LOG4J_APPEND_PATH);
 			properties.putAll(append);
 		}

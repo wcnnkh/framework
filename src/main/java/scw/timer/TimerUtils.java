@@ -46,7 +46,8 @@ public final class TimerUtils {
 	private static void schedule(BeanFactory beanFactory, Class<?> clz, Method method, Timer timer, Schedule schedule) {
 		Delayed delayed = beanFactory.isInstance(schedule.delay()) ? beanFactory.getInstance(schedule.delay()) : null;
 		ScheduleTaskConfig config = new SimpleTimerTaskConfig(schedule.name(), getTask(beanFactory, clz, method),
-				getTaskListener(beanFactory, schedule.listener()), delayed, schedule.period(), schedule.timeUnit());
+				getTaskListener(beanFactory, schedule.listener()), false, delayed, schedule.period(),
+				schedule.timeUnit());
 		timer.schedule(config);
 		logger.info("添加任务：name={},delay={},period={},timeunit={}", schedule.name(), schedule.delay(), schedule.period(),
 				schedule.timeUnit());

@@ -1,7 +1,5 @@
 package scw.timer.support;
 
-import java.util.TimerTask;
-
 import scw.locks.Lock;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -10,7 +8,7 @@ import scw.timer.TaskListener;
 import scw.timer.TaskLockFactory;
 
 public class DefaultTimerTask implements scw.timer.Task {
-	private static Logger logger = LoggerUtils.getLogger(TimerTask.class);
+	private static Logger logger = LoggerUtils.getLogger(DefaultTimerTask.class);
 	private final TaskLockFactory taskLockFactory;
 	private final TaskConfig config;
 
@@ -20,7 +18,7 @@ public class DefaultTimerTask implements scw.timer.Task {
 	}
 
 	public void run(long executionTime) {
-		Lock lock = taskLockFactory.getLock(config.getTaskId(), executionTime);
+		Lock lock = taskLockFactory.getLock(config, executionTime);
 		try {
 			if (lock == null || lock.tryLock()) {
 				TaskListener taskListener = config.getTaskListener();

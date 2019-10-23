@@ -12,14 +12,14 @@ public class SimpleTimerTaskConfig extends SimpleTaskConfig implements ScheduleT
 	private long period;
 	private TimeUnit timeUnit;
 
-	public SimpleTimerTaskConfig(String taskId, Task task, TaskListener taskListener, long delay, long period,
+	public SimpleTimerTaskConfig(String taskId, Task task, TaskListener taskListener, boolean distributed, long delay, long period,
 			TimeUnit timeUnit) {
-		this(taskId, task, taskListener, new SimpleDelayed(delay, timeUnit), period, timeUnit);
+		this(taskId, task, taskListener, distributed, new SimpleDelayed(delay, timeUnit), period, timeUnit);
 	}
 
-	public SimpleTimerTaskConfig(String taskId, Task task, TaskListener taskListener, Delayed delay, long period,
+	public SimpleTimerTaskConfig(String taskId, Task task, TaskListener taskListener, boolean distributed, Delayed delay, long period,
 			TimeUnit timeUnit) {
-		super(taskId, task, taskListener);
+		super(taskId, task, taskListener, distributed);
 		this.delay = delay;
 		this.period = period;
 		this.timeUnit = timeUnit;

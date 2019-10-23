@@ -18,7 +18,7 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	public boolean isInfoEnabled() {
-		return super.isInfoEnabled() && logger.isInfoEnabled();
+		return logger.isInfoEnabled();
 	}
 
 	public void info(Object format, Object... args) {
@@ -38,7 +38,7 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	public boolean isTraceEnabled() {
-		return super.isTraceEnabled() && logger.isTraceEnabled();
+		return logger.isTraceEnabled();
 	}
 
 	public void trace(Object format, Object... args) {
@@ -90,7 +90,7 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	public boolean isDebugEnabled() {
-		return super.isDebugEnabled() && logger.isDebugEnabled();
+		return logger.isDebugEnabled();
 	}
 
 	public void debug(Object format, Object... args) {

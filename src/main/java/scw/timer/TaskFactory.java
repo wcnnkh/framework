@@ -8,6 +8,7 @@ import scw.timer.support.DefaultTaskFactory;
 public interface TaskFactory {
 	/**
 	 * 获取可用的任务
+	 * 
 	 * @param taskId
 	 * @return 为空说明任务不存在或已被取消
 	 */
@@ -15,6 +16,7 @@ public interface TaskFactory {
 
 	/**
 	 * 当添加任务时会注册
+	 * 
 	 * @param taskConfig
 	 * @return
 	 */
@@ -22,13 +24,15 @@ public interface TaskFactory {
 
 	/**
 	 * 当取消任务时会调用
+	 * 
 	 * @param taskConfig
 	 * @return
 	 */
-	boolean unregister(String taskId);
+	boolean unregister(TaskConfig taskConfig);
 
 	/**
 	 * 扫描可用于注册的新任务
+	 * 
 	 * @param iteratorCallback
 	 */
 	void iteratorRegisteredTaskConfig(IteratorCallback<TaskConfig> iteratorCallback);

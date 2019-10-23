@@ -270,7 +270,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 		}
 
 		public boolean cancel() {
-			if (taskFactory.unregister(crontabTaskConfig.getTaskId())) {
+			if (taskFactory.unregister(crontabTaskConfig)) {
 				contextMap.remove(crontabTaskConfig.getTaskId());
 				return true;
 			}
@@ -292,7 +292,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 		}
 
 		public boolean cancel() {
-			if (taskFactory.unregister(taskConfig.getTaskId())) {
+			if (taskFactory.unregister(taskConfig)) {
 				timerTask.cancel();
 				return true;
 			}

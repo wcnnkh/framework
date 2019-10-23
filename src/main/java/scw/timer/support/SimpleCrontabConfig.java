@@ -14,7 +14,7 @@ public class SimpleCrontabConfig extends SimpleTaskConfig implements CrontabTask
 	private String minute;
 
 	public SimpleCrontabConfig(Crontab crontab, Task task, TaskListener taskListener) {
-		super(crontab.name(), task, taskListener);
+		super(crontab.name(), task, taskListener, false);
 		this.dayOfWeek = crontab.dayOfWeek();
 		this.month = crontab.month();
 		this.dayOfMonth = crontab.dayOfMonth();
@@ -22,9 +22,9 @@ public class SimpleCrontabConfig extends SimpleTaskConfig implements CrontabTask
 		this.minute = crontab.minute();
 	}
 
-	public SimpleCrontabConfig(String taskId, Task task, TaskListener taskListener, String dayOfWeek, String month,
+	public SimpleCrontabConfig(String taskId, Task task, TaskListener taskListener, boolean distributed, String dayOfWeek, String month,
 			String dayOfMonth, String hour, String minute) {
-		super(taskId, task, taskListener);
+		super(taskId, task, taskListener, distributed);
 		this.dayOfWeek = dayOfWeek;
 		this.month = month;
 		this.dayOfMonth = dayOfMonth;
