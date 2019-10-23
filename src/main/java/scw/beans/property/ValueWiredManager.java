@@ -13,6 +13,7 @@ import scw.core.PropertyFactory;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.core.utils.XTime;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
@@ -28,6 +29,13 @@ public final class ValueWiredManager implements Destroy {
 	public ValueWiredManager(PropertyFactory propertyFactory, BeanFactory beanFactory) {
 		this.propertyFactory = propertyFactory;
 		this.beanFactory = beanFactory;
+		timer.schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				timer.purge();
+			}
+		}, XTime.ONE_MINUTE, XTime.ONE_MINUTE);
 	}
 
 	public void write(Object objectId, Collection<ValueWired> valueWireds) throws Exception {

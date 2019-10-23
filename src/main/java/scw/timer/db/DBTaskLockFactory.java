@@ -1,4 +1,4 @@
-package scw.timer.lock;
+package scw.timer.db;
 
 import scw.db.DB;
 import scw.locks.Lock;

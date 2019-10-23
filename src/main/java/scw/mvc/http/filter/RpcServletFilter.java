@@ -1,7 +1,7 @@
 package scw.mvc.http.filter;
 
-import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
+import scw.core.instance.InstanceFactory;
 import scw.core.utils.StringUtils;
 import scw.mvc.FilterChain;
 import scw.mvc.MVCUtils;
@@ -16,8 +16,8 @@ public final class RpcServletFilter extends HttpFilter {
 	private final String rpcPath;
 	private final RpcService rpcService;
 
-	public RpcServletFilter(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		this.rpcService = MVCUtils.getRpcService(propertyFactory, beanFactory);
+	public RpcServletFilter(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
+		this.rpcService = MVCUtils.getRpcService(propertyFactory, instanceFactory);
 		this.rpcPath = MVCUtils.getRPCPath(propertyFactory);
 	}
 

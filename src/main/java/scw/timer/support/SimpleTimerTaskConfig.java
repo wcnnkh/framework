@@ -5,9 +5,9 @@ import java.util.concurrent.TimeUnit;
 import scw.timer.Delayed;
 import scw.timer.Task;
 import scw.timer.TaskListener;
-import scw.timer.TimerTaskConfig;
+import scw.timer.ScheduleTaskConfig;
 
-public class SimpleTimerTaskConfig extends SimpleTaskConfig implements TimerTaskConfig {
+public class SimpleTimerTaskConfig extends SimpleTaskConfig implements ScheduleTaskConfig {
 	private Delayed delay;
 	private long period;
 	private TimeUnit timeUnit;

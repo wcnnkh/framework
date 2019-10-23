@@ -2,7 +2,7 @@ package scw.timer;
 
 import java.util.concurrent.TimeUnit;
 
-public interface TimerTaskConfig extends TaskConfig {
+public interface ScheduleTaskConfig extends TaskConfig {
 	long getDelay();
 
 	/**

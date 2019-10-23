@@ -2,12 +2,10 @@ package scw.timer;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.HashSet;
 
 import scw.beans.BeanFactory;
 import scw.beans.MethodProxyInvoker;
 import scw.core.aop.Invoker;
-import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.TypeUtils;
@@ -26,24 +24,14 @@ public final class TimerUtils {
 
 	public static void scanningAnnotation(Collection<Class<?>> classList, BeanFactory beanFactory) {
 		Timer timer = beanFactory.getInstance(Timer.class);
-
-		HashSet<String> taskNameSet = new HashSet<String>();
 		for (Class<?> clz : classList) {
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Schedule.class)) {
 				Schedule schedule = method.getAnnotation(Schedule.class);
-				if (taskNameSet.contains(schedule.name())) {
-					throw new AlreadyExistsException("任务：" + schedule.name() + "已经存在");
-				}
-
 				schedule(beanFactory, clz, method, timer, schedule);
 			}
 
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Crontab.class)) {
 				Crontab c = method.getAnnotation(Crontab.class);
-				if (taskNameSet.contains(c.name())) {
-					throw new AlreadyExistsException("任务：" + c.name() + "已经存在");
-				}
-
 				crontab(beanFactory, clz, method, timer, c);
 			}
 		}
@@ -57,11 +45,11 @@ public final class TimerUtils {
 
 	private static void schedule(BeanFactory beanFactory, Class<?> clz, Method method, Timer timer, Schedule schedule) {
 		Delayed delayed = beanFactory.isInstance(schedule.delay()) ? beanFactory.getInstance(schedule.delay()) : null;
-		TimerTaskConfig timerTaskConfig = new SimpleTimerTaskConfig(schedule.name(), getTask(beanFactory, clz, method),
+		ScheduleTaskConfig config = new SimpleTimerTaskConfig(schedule.name(), getTask(beanFactory, clz, method),
 				getTaskListener(beanFactory, schedule.listener()), delayed, schedule.period(), schedule.timeUnit());
-		timer.schedule(timerTaskConfig);
-		logger.info("添加定时任务：name={},delay={},period={},timeunit={}", schedule.name(), schedule.delay(),
-				schedule.period(), schedule.timeUnit());
+		timer.schedule(config);
+		logger.info("添加任务：name={},delay={},period={},timeunit={}", schedule.name(), schedule.delay(), schedule.period(),
+				schedule.timeUnit());
 	}
 
 	private static TaskListener getTaskListener(BeanFactory beanFactory,
@@ -75,8 +63,8 @@ public final class TimerUtils {
 		CrontabRunnable crontabRun = new CrontabRunnable(new MethodProxyInvoker(beanFactory, clz, method), invokeTime);
 		timer.crontab(new SimpleCrontabConfig(crontab, crontabRun, getTaskListener(beanFactory, crontab.listener())));
 		LoggerUtils.getLogger(TimerUtils.class).info(
-				"添加计划任务：{},dayOfWeek={},month={},dayOfMonth={},hour={},minute={}", crontab.name(), crontab.dayOfWeek(),
-				crontab.month(), crontab.dayOfMonth(), crontab.hour(), crontab.minute());
+				"添加任务： name={},dayOfWeek={},month={},dayOfMonth={},hour={},minute={}", crontab.name(),
+				crontab.dayOfWeek(), crontab.month(), crontab.dayOfMonth(), crontab.hour(), crontab.minute());
 	}
 }
 
@@ -89,7 +77,7 @@ final class CrontabRunnable implements Task {
 		this.invokeTime = invokeTime;
 	}
 
-	public void run(long executionTime) throws Throwable{
+	public void run(long executionTime) throws Throwable {
 		if (invokeTime) {
 			invoker.invoke(executionTime);
 		} else {

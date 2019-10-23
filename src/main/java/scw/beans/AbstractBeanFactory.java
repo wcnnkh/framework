@@ -39,7 +39,7 @@ import scw.logger.LoggerUtils;
 import scw.transaction.TransactionFilter;
 
 public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy {
-	protected Logger logger = LoggerUtils.getLogger(getClass());
+	static Logger logger = LoggerUtils.getLogger(BeanFactory.class);
 	private volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
@@ -256,7 +256,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	 * @return
 	 */
 	protected abstract String getInitStaticPackage();
-	
+
 	public void addPropertyFactory(PropertyFactory propertyFactory) {
 		this.propertyFactory.add(propertyFactory);
 	}
@@ -273,7 +273,12 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			synchronized (this) {
 				beanDefinition = getBeanCache(name);
 				if (beanDefinition == null) {
+					long t = System.currentTimeMillis();
 					beanDefinition = newBeanDefinition(name);
+					t = System.currentTimeMillis() - t;
+					if (logger.isDebugEnabled()) {
+						logger.debug("create [{}] definition use time {} ms", name, t);
+					}
 				}
 			}
 
@@ -416,7 +421,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	public synchronized void destroy() {
 		propertyFactory.destroy();
 		valueWiredManager.destroy();
-		
+
 		BeanUtils.destroyStaticMethod(valueWiredManager, ResourceUtils.getClassList(getInitStaticPackage()));
 
 		synchronized (singletonMap) {

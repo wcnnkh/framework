@@ -13,12 +13,6 @@ import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.ClassUtils;
 import scw.sql.Sql;
 
-/**
- * 只用于处理默认的数据库 不再推荐使用
- * 
- * @author shuchaowen
- *
- */
 public final class DBManager {
 	private DBManager() {
 	};

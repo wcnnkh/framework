@@ -27,7 +27,7 @@ public final class LoggerUtils {
 
 		String loggerEnablePropertiePath = SystemPropertyUtils.getProperty("scw.logger.level.config");
 		if (loggerEnablePropertiePath == null) {
-			loggerEnablePropertiePath = "classpath:/logger-level.properties";
+			loggerEnablePropertiePath = "/logger-level.properties";
 		}
 
 		if (ResourceUtils.isExist(loggerEnablePropertiePath)) {

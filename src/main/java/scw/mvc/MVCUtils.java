@@ -115,8 +115,8 @@ public final class MVCUtils implements MvcConstants {
 		if (instanceFactory.isInstance(ExceptionHandler.class) && instanceFactory.isSingleton(ExceptionHandler.class)) {
 			exceptionHandlers.add(instanceFactory.getInstance(ExceptionHandler.class));
 		}
-		
-		if(instanceFactory.isInstance(ResultExceptionHandler.class)){
+
+		if (instanceFactory.isInstance(ResultExceptionHandler.class)) {
 			exceptionHandlers.add(instanceFactory.getInstance(ResultExceptionHandler.class));
 		}
 		return exceptionHandlers;

@@ -1,4 +1,4 @@
-package scw.timer.lock;
+package scw.timer.support;
 
 import scw.locks.EmptyLock;
 import scw.locks.Lock;

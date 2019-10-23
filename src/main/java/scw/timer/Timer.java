@@ -5,9 +5,9 @@ import scw.timer.support.DefaultTimer;
 
 @AutoImpl(DefaultTimer.class)
 public interface Timer {
-	void schedule(TimerTaskConfig config);
+	TaskContext getTaskContext(String taskId);
 
-	void scheduleAtFixedRate(TimerTaskConfig config);
+	TaskContext schedule(ScheduleTaskConfig config);
 
-	void crontab(CrontabConfig config);
+	TaskContext crontab(CrontabConfig config);
 }

@@ -1,4 +1,4 @@
-package scw.timer.lock;
+package scw.timer.db;
 
 import java.io.Serializable;
 

@@ -19,7 +19,7 @@ import scw.logger.LoggerUtils;
 
 public final class Log4jUtils {
 	private static final String LOG4J_PATH = "scw_log4j";
-	private static final String LOG4J_APPEND_PATH = "classpath:/log4j-append.properties";
+	private static final String LOG4J_APPEND_PATH = "/log4j-append.properties";
 
 	private Log4jUtils() {
 	}
