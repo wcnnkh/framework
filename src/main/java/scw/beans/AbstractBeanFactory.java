@@ -275,9 +275,11 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 				if (beanDefinition == null) {
 					long t = System.currentTimeMillis();
 					beanDefinition = newBeanDefinition(name);
-					t = System.currentTimeMillis() - t;
-					if (logger.isDebugEnabled()) {
-						logger.debug("create [{}] definition use time {} ms", name, t);
+					if (beanDefinition != null) {
+						t = System.currentTimeMillis() - t;
+						if (logger.isDebugEnabled()) {
+							logger.debug("create [{}] definition use time {} ms", name, t);
+						}
 					}
 				}
 			}

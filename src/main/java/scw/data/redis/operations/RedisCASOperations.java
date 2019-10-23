@@ -15,12 +15,19 @@ import scw.data.redis.RedisOperations;
 import scw.io.serializer.Serializer;
 
 public class RedisCASOperations implements CASOperations {
+	private static final String CAS_IS_NULL = "if (cas == nil or (type(cas) == 'boolean' and cas == false)) then cas = 0 end";
+
 	private static final String CAS_KEY_PREFIX = "cas_";
-	private static final String CAS_EXP_SCRIPT = "local cas = redis.call('get', KEYS[2]) if cas == nil then cas = 0 end if KEYS[3] == cas  then redis.call('set', KEYS[1], ARGV[1], 'EX', KEYS[4]) if redis.call('exists', KEYS[2]) == 1 then redis.call('incr', KEYS[2]) else redis.call('set', KEYS[2], 1, 'EX', KEYS[4]) end return 1 else return 0 end";
-	private static final String CAS_SCRIPT = "local cas = redis.call('get', KEYS[2]) if cas == nil then cas = 0 end if KEYS[3] == cas  then redis.call('set', KEYS[1], ARGV[1]) redis.call('incr', KEYS[2]) return 1 else return 0 end";
-	private static final String CAS_DELETE = "local cas = redis.call('get', KEYS[2]) if cas == nil then cas = 0 end if ARGV[2] == cas then redis.call('del', KEYS[1]) redis.call('del', KEYS[2])  return 1 else return 0 end";
+	private static final String CAS_EXP_SCRIPT = "local cas = redis.call('get', KEYS[2]) " + CAS_IS_NULL
+			+ " if KEYS[3] == cas  then redis.call('set', KEYS[1], ARGV[1], 'EX', KEYS[4]) if redis.call('exists', KEYS[2]) == 1 then redis.call('incr', KEYS[2]) else redis.call('set', KEYS[2], 1, 'EX', KEYS[4]) end return 1 else return 0 end";
+	private static final String CAS_SCRIPT = "local cas = redis.call('get', KEYS[2]) " + CAS_IS_NULL
+			+ " if KEYS[3] == cas  then redis.call('set', KEYS[1], ARGV[1]) redis.call('incr', KEYS[2]) return 1 else return 0 end";
+	private static final String CAS_DELETE = "local cas = redis.call('get', KEYS[2]) " + CAS_IS_NULL
+			+ " if ARGV[2] == cas then redis.call('del', KEYS[1]) redis.call('del', KEYS[2])  return 1 else return 0 end";
 	private static final String DELETE = "redis.call('del', KEYS[1]) redis.call('del', KEYS[2])";
-	private static final String CAS_GET = "if redis.call('exists', KEYS[1]) == 1 then local cas = redis.call('get', KEYS[2]) if cas == nil then cas = 0 end local res = {} res[1] = redis.call('get', KEYS[1]) res[2] = cas return res else return nil end";
+	private static final String CAS_GET = "if redis.call('exists', KEYS[1]) == 1 then local cas = redis.call('get', KEYS[2]) "
+			+ CAS_IS_NULL
+			+ " local res = {} res[1] = redis.call('get', KEYS[1]) res[2] = cas return res else return nil end";
 	private static final String ADD_EXP = "if redis.call('exists', KEYS[1]) == 1 then return 0 else redis.call('set', KEYS[1], ARGV[1], 'EX', KEYS[3]) if redis.call('exists', KEYS[2]) == 1 then redis.call('incr', KEYS[2]) else redis.call('set', KEYS[2], 1, 'EX', KEYS[3]) end return 0  end";
 	private static final String ADD = "if redis.call('exists', KEYS[1]) == 1 then return 0 else redis.call('set', KEYS[1], ARGV[1]) redis.call('incr', KEYS[2], 1) return 0  end";
 	private static final String SET_EXP = "redis.call('set', KEYS[1], ARGV[1], 'EX', KEYS[3]) if redis.call('exists', KEYS[2]) == 1 then redis.call('incr', KEYS[2]) else redis.call('set', KEYS[2], 1, 'EX', KEYS[3]) end";

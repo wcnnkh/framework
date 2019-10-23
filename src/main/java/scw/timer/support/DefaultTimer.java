@@ -112,7 +112,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 	}
 
 	public TaskContext privateCrontab(CrontabTaskConfig config, boolean throwError) {
-		CrontabTaskContext context = new CrontabTaskContext(config);
+		CrontabTaskContext context = new CrontabTaskContext(config, new DefaultTimerTask(taskLockFactory, config));
 		if (contextMap.putIfAbsent(config.getTaskId(), context) != null) {
 			if (throwError) {
 				throw new AlreadyExistsException("任务已经存在:" + config.getTaskId());
@@ -234,14 +234,14 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 		private final String[] minute;
 		private final Task task;
 
-		public CrontabTaskContext(CrontabTaskConfig crontabTaskConfig) {
+		public CrontabTaskContext(CrontabTaskConfig crontabTaskConfig, Task task) {
 			this.crontabTaskConfig = crontabTaskConfig;
 			this.dayOfWeek = StringUtils.commonSplit(crontabTaskConfig.getDayOfWeek());
 			this.month = StringUtils.commonSplit(crontabTaskConfig.getMonth());
 			this.dayOfMonth = StringUtils.commonSplit(crontabTaskConfig.getDayOfMonth());
 			this.hour = StringUtils.commonSplit(crontabTaskConfig.getHour());
 			this.minute = StringUtils.commonSplit(crontabTaskConfig.getMinute());
-			this.task = crontabTaskConfig.getTask();
+			this.task = task;
 		}
 
 		public Task getTask() {
