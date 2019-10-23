@@ -9,5 +9,5 @@ public interface Timer {
 
 	TaskContext schedule(ScheduleTaskConfig config);
 
-	TaskContext crontab(CrontabConfig config);
+	TaskContext crontab(CrontabTaskConfig config);
 }

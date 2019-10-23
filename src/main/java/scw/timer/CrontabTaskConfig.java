@@ -1,6 +1,6 @@
 package scw.timer;
 
-public interface CrontabConfig extends TaskConfig {
+public interface CrontabTaskConfig extends TaskConfig {
 	public static final String ALL = "*";
 	
 	String getDayOfWeek();

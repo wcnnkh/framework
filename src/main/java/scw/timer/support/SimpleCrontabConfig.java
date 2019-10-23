@@ -1,12 +1,12 @@
 package scw.timer.support;
 
 import scw.core.utils.StringUtils;
-import scw.timer.CrontabConfig;
+import scw.timer.CrontabTaskConfig;
 import scw.timer.Task;
 import scw.timer.TaskListener;
 import scw.timer.annotation.Crontab;
 
-public class SimpleCrontabConfig extends SimpleTaskConfig implements CrontabConfig {
+public class SimpleCrontabConfig extends SimpleTaskConfig implements CrontabTaskConfig {
 	private String dayOfWeek;
 	private String month;
 	private String dayOfMonth;

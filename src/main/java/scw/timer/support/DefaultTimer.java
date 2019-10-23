@@ -15,7 +15,7 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.timer.CrontabConfig;
+import scw.timer.CrontabTaskConfig;
 import scw.timer.ScheduleTaskConfig;
 import scw.timer.Task;
 import scw.timer.TaskConfig;
@@ -77,8 +77,8 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 	public TaskContext register(TaskConfig taskConfig, boolean throwError) {
 		if (taskConfig instanceof ScheduleTaskConfig) {
 			return privateSchedule((ScheduleTaskConfig) taskConfig, throwError);
-		} else if (taskConfig instanceof CrontabConfig) {
-			return privateCrontab((CrontabConfig) taskConfig, throwError);
+		} else if (taskConfig instanceof CrontabTaskConfig) {
+			return privateCrontab((CrontabTaskConfig) taskConfig, throwError);
 		}
 		return null;
 	}
@@ -111,7 +111,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 		return privateSchedule(config, true);
 	}
 
-	public TaskContext privateCrontab(CrontabConfig config, boolean throwError) {
+	public TaskContext privateCrontab(CrontabTaskConfig config, boolean throwError) {
 		CrontabTaskContext context = new CrontabTaskContext(config);
 		if (contextMap.putIfAbsent(config.getTaskId(), context) != null) {
 			if (throwError) {
@@ -123,7 +123,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 		return context;
 	}
 
-	public TaskContext crontab(CrontabConfig config) {
+	public TaskContext crontab(CrontabTaskConfig config) {
 		if (!taskFactory.register(config)) {
 			throw new AlreadyExistsException("已经存在此任务:" + config.getTaskId());
 		}
@@ -226,7 +226,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 	}
 
 	private final class CrontabTaskContext implements TaskContext {
-		private CrontabConfig crontabConfig;
+		private CrontabTaskConfig crontabTaskConfig;
 		private final String[] dayOfWeek;
 		private final String[] month;
 		private final String[] dayOfMonth;
@@ -234,14 +234,14 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 		private final String[] minute;
 		private final Task task;
 
-		public CrontabTaskContext(CrontabConfig crontabConfig) {
-			this.crontabConfig = crontabConfig;
-			this.dayOfWeek = StringUtils.commonSplit(crontabConfig.getDayOfWeek());
-			this.month = StringUtils.commonSplit(crontabConfig.getMonth());
-			this.dayOfMonth = StringUtils.commonSplit(crontabConfig.getDayOfMonth());
-			this.hour = StringUtils.commonSplit(crontabConfig.getHour());
-			this.minute = StringUtils.commonSplit(crontabConfig.getMinute());
-			this.task = crontabConfig.getTask();
+		public CrontabTaskContext(CrontabTaskConfig crontabTaskConfig) {
+			this.crontabTaskConfig = crontabTaskConfig;
+			this.dayOfWeek = StringUtils.commonSplit(crontabTaskConfig.getDayOfWeek());
+			this.month = StringUtils.commonSplit(crontabTaskConfig.getMonth());
+			this.dayOfMonth = StringUtils.commonSplit(crontabTaskConfig.getDayOfMonth());
+			this.hour = StringUtils.commonSplit(crontabTaskConfig.getHour());
+			this.minute = StringUtils.commonSplit(crontabTaskConfig.getMinute());
+			this.task = crontabTaskConfig.getTask();
 		}
 
 		public Task getTask() {
@@ -270,15 +270,15 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 		}
 
 		public boolean cancel() {
-			if (taskFactory.unregister(crontabConfig.getTaskId())) {
-				contextMap.remove(crontabConfig.getTaskId());
+			if (taskFactory.unregister(crontabTaskConfig.getTaskId())) {
+				contextMap.remove(crontabTaskConfig.getTaskId());
 				return true;
 			}
 			return false;
 		}
 
 		public TaskConfig getTaskConfig() {
-			return crontabConfig;
+			return crontabTaskConfig;
 		}
 	}
 
