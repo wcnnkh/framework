@@ -446,10 +446,6 @@ public final class MVCUtils implements MvcConstants {
 		return jsonParseSupport;
 	}
 
-	public static boolean isDebug(PropertyFactory propertyFactory) {
-		return StringUtils.parseBoolean(propertyFactory.getProperty("mvc.debug"), false);
-	}
-
 	public static Map<String, String> getRequestFirstValueParameters(HttpRequest request,
 			KeyValuePairFilter<String, String> filter) {
 		Map<String, String[]> requestParams = request.getParameterMap();

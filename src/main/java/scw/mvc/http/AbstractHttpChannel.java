@@ -37,10 +37,9 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	private final String jsonp;
 	private final HttpParameterRequest httpParameterRequest;
 
-	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(BeanFactory beanFactory,
-			boolean logEnabled, Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport,
+	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(BeanFactory beanFactory, Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport,
 			boolean cookieValue, R request, P response, String jsonp) {
-		super(beanFactory, logEnabled, parameterFilters, jsonParseSupport);
+		super(beanFactory, parameterFilters, jsonParseSupport);
 		this.cookieValue = cookieValue;
 		this.request = request;
 		this.response = response;

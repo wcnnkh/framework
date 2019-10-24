@@ -15,15 +15,13 @@ import scw.core.reflect.ReflectUtils;
 import scw.mvc.parameter.ParameterFilter;
 
 public abstract class AbstractChannel implements Channel, Destroy {
-	private final boolean logEnabled;
 	private final long createTime;
 	private volatile Map<String, Object> beanMap;
 	protected final BeanFactory beanFactory;
 	protected final Collection<ParameterFilter> parameterFilters;
 
-	public AbstractChannel(BeanFactory beanFactory, boolean logEnabled, Collection<ParameterFilter> parameterFilters) {
+	public AbstractChannel(BeanFactory beanFactory, Collection<ParameterFilter> parameterFilters) {
 		this.createTime = System.currentTimeMillis();
-		this.logEnabled = logEnabled;
 		this.beanFactory = beanFactory;
 		this.parameterFilters = parameterFilters;
 	}
@@ -83,7 +81,7 @@ public abstract class AbstractChannel implements Channel, Destroy {
 					bean = beanMap == null ? null : beanMap.get(beanDefinition.getId());
 					if (bean == null) {
 						bean = beanFactory.getInstance(beanDefinition.getId());
-						
+
 						if (beanMap == null) {
 							beanMap = new LinkedHashMap<String, Object>(8);
 						}
@@ -112,12 +110,12 @@ public abstract class AbstractChannel implements Channel, Destroy {
 	}
 
 	public boolean isLogEnabled() {
-		return logEnabled;
+		return getLogger().isDebugEnabled();
 	}
 
 	public void log(Object format, Object... args) {
-		if (logEnabled) {
-			getLogger().info(format, args);
+		if (getLogger().isDebugEnabled()) {
+			getLogger().debug(format, args);
 		}
 	}
 

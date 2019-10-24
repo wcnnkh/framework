@@ -15,10 +15,10 @@ import scw.mvc.parameter.ParameterFilter;
 public class FormHttpServletChannel extends HttpServletChannel{
 	private static Logger logger = LoggerFactory.getLogger(FormHttpServletChannel.class);
 
-	public FormHttpServletChannel(BeanFactory beanFactory, boolean logEnabled,
+	public FormHttpServletChannel(BeanFactory beanFactory,
 			Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport, boolean cookieValue,
 			HttpRequest request, HttpResponse response, String jsonp) {
-		super(beanFactory, logEnabled, parameterFilters, jsonParseSupport, cookieValue, request, response, jsonp);
+		super(beanFactory, parameterFilters, jsonParseSupport, cookieValue, request, response, jsonp);
 		if (isLogEnabled()) {
 			log("requestPath={},method={},{}", getRequest().getRequestPath(), getRequest().getMethod(),
 					JSONUtils.toJSONString(getRequest().getParameterMap()));

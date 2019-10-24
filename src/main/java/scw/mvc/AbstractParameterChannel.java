@@ -19,9 +19,9 @@ import scw.mvc.parameter.ParameterFilter;
 public abstract class AbstractParameterChannel extends AbstractChannel implements ParameterChannel {
 	protected final JSONParseSupport jsonParseSupport;
 
-	public AbstractParameterChannel(BeanFactory beanFactory, boolean logEnable,
+	public AbstractParameterChannel(BeanFactory beanFactory,
 			Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport) {
-		super(beanFactory, logEnable, parameterFilters);
+		super(beanFactory, parameterFilters);
 		this.jsonParseSupport = jsonParseSupport;
 	}
 
