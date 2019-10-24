@@ -7,7 +7,7 @@ public final class IPUtils {
 	/**
 	 * 本地ip
 	 */
-	private static final String[] LOCAL_IP = new String[] { "127.0.0.1", "::1" };
+	private static final String[] LOCAL_IP = new String[] { "127.0.0.1", "0:0:0:0:0:0:0:1", "::1" };
 
 	public static boolean contains(String ip, String... contains) {
 		if (StringUtils.isEmpty(ip) || ArrayUtils.isEmpty(contains)) {
