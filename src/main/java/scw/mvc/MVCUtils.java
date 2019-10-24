@@ -48,8 +48,8 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionFilter;
+import scw.mvc.action.DefaultActionFilter;
 import scw.mvc.action.HttpNotFoundService;
-import scw.mvc.action.ResponseWrapperFilter;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Model;
@@ -367,7 +367,7 @@ public final class MVCUtils implements MvcConstants {
 		LinkedList<ActionFilter> filters = new LinkedList<ActionFilter>();
 		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, ActionFilter.class, "mvc.filters");
 		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, ActionFilter.class, "mvc.action.filters");
-		filters.add(new ResponseWrapperFilter(instanceFactory));
+		filters.add(new DefaultActionFilter(instanceFactory));
 		return filters;
 	}
 

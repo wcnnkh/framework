@@ -2,7 +2,7 @@ package scw.security.session.http;
 
 import scw.core.annotation.Order;
 import scw.core.annotation.ParameterName;
-import scw.core.annotation.ParameterValue;
+import scw.core.annotation.DefaultValue;
 import scw.core.utils.StringUtils;
 import scw.mvc.FilterChain;
 import scw.mvc.http.HttpChannel;
@@ -19,7 +19,7 @@ public class HttpUserSessionFilter extends HttpFilter{
 	private ResultFactory resultFactory;
 	
 	@Order
-	public HttpUserSessionFilter(HttpChannelUserSessionFactory httpChannelUserSessionFactory, @ParameterName("http.user.session.filter.uid.key")@ParameterValue("uid")String uidKey, ResultFactory resultFactory){
+	public HttpUserSessionFilter(HttpChannelUserSessionFactory httpChannelUserSessionFactory, @ParameterName("http.user.session.filter.uid.key")@DefaultValue("uid")String uidKey, ResultFactory resultFactory){
 		this.httpChannelUserSessionFactory = httpChannelUserSessionFactory;
 		this.uidKey = uidKey;
 		this.resultFactory = resultFactory;

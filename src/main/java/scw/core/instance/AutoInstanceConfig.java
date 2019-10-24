@@ -9,7 +9,7 @@ import java.util.Map;
 import scw.core.PropertyFactory;
 import scw.core.ValueFactory;
 import scw.core.annotation.ParameterName;
-import scw.core.annotation.ParameterValue;
+import scw.core.annotation.DefaultValue;
 import scw.core.instance.annotation.PropertyParameter;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.ContainAnnotationParameterConfig;
@@ -20,8 +20,11 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
 public class AutoInstanceConfig implements InstanceConfig {
+	private static Logger logger = LoggerUtils.getLogger(AutoInstanceConfig.class);
 	protected final InstanceFactory instanceFactory;
 	protected final PropertyFactory propertyFactory;
 	protected final Class<?> clazz;
@@ -53,12 +56,12 @@ public class AutoInstanceConfig implements InstanceConfig {
 
 	protected String getProperty(ContainAnnotationParameterConfig containAnnotationParameterConfig) {
 		ParameterName parameterName = containAnnotationParameterConfig.getAnnotation(ParameterName.class);
-		String value = propertyFactory
-				.getProperty(parameterName == null ? getDefaultName(containAnnotationParameterConfig) : parameterName.value());
+		String value = propertyFactory.getProperty(
+				parameterName == null ? getDefaultName(containAnnotationParameterConfig) : parameterName.value());
 		if (value == null) {
-			ParameterValue parameterValue = containAnnotationParameterConfig.getAnnotation(ParameterValue.class);
-			if (parameterValue != null) {
-				value = parameterValue.value();
+			DefaultValue defaultValue = containAnnotationParameterConfig.getAnnotation(DefaultValue.class);
+			if (defaultValue != null) {
+				value = defaultValue.value();
 			}
 		}
 
@@ -127,8 +130,13 @@ public class AutoInstanceConfig implements InstanceConfig {
 				continue;
 			}
 
+			boolean isProperty = isProerptyType(containAnnotationParameterConfig);
+			if (logger.isDebugEnabled()) {
+				logger.debug("{} parameter index {} is {}", constructor, i, isProperty ? "property" : "bean");
+			}
+
 			// 是否是属性而不是bean
-			if (isProerptyType(containAnnotationParameterConfig)) {
+			if (isProperty) {
 				String value = getProperty(containAnnotationParameterConfig);
 				if (StringUtils.isEmpty(value)) {
 					return false;

@@ -39,7 +39,7 @@ public final class HttpActionServiceFilter extends HttpFilter {
 			Collection<Class<?>> classes) {
 		SimpleHttpAuthorityManager simpleHttpAuthorityManager = null;
 		if (instanceFactory.isInstance(HttpAuthorityManager.class)
-				&& instanceFactory.isSingleton(HttpAuthorityManager.class.getName())) {
+				&& instanceFactory.isSingleton(HttpAuthorityManager.class)) {
 			HttpAuthorityManager httpAuthorityManager = instanceFactory.getInstance(HttpAuthorityManager.class);
 			if (httpAuthorityManager instanceof SimpleHttpAuthorityManager) {
 				simpleHttpAuthorityManager = (SimpleHttpAuthorityManager) httpAuthorityManager;

@@ -2,7 +2,7 @@ package scw.security.session;
 
 import scw.core.annotation.Order;
 import scw.core.annotation.ParameterName;
-import scw.core.annotation.ParameterValue;
+import scw.core.annotation.DefaultValue;
 import scw.data.cache.MemcachedTemporaryCache;
 import scw.data.cache.RedisTemporaryCache;
 import scw.data.cache.TemporaryCache;
@@ -15,7 +15,7 @@ public final class DefaultUserSessionFactory<T> extends AbstractUserSessionFacto
 
 	@Order
 	public DefaultUserSessionFactory(
-			@ParameterName("user.session.timeout") @ParameterValue((86400 * 7) + "") int defaultMaxInactiveInterval,
+			@ParameterName("user.session.timeout") @DefaultValue((86400 * 7) + "") int defaultMaxInactiveInterval,
 			TemporaryCache temporaryCache) {
 		this.sessionFactory = new DefaultSessionFactory(defaultMaxInactiveInterval, temporaryCache);
 		this.temporaryCache = temporaryCache;

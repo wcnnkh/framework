@@ -2,7 +2,7 @@ package scw.security.session.http;
 
 import scw.core.annotation.Order;
 import scw.core.annotation.ParameterName;
-import scw.core.annotation.ParameterValue;
+import scw.core.annotation.DefaultValue;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
 import scw.mvc.http.HttpChannel;
@@ -16,8 +16,8 @@ public class DefaultHttpChannelUserSessionFactory<T> implements HttpChannelUserS
 	private boolean searchCookie;
 
 	@Order
-	public DefaultHttpChannelUserSessionFactory(UserSessionFactory<T> userSessionFactory, @ParameterName("http.user.session.key")@ParameterValue("token")String sessionIdKey,
-			@ParameterName("http.user.session.cookie")@ParameterValue("false")boolean searchCookie) {
+	public DefaultHttpChannelUserSessionFactory(UserSessionFactory<T> userSessionFactory, @ParameterName("http.user.session.key")@DefaultValue("token")String sessionIdKey,
+			@ParameterName("http.user.session.cookie")@DefaultValue("false")boolean searchCookie) {
 		this.userSessionFactory = userSessionFactory;
 		this.sessionIdKey = sessionIdKey;
 		this.searchCookie = searchCookie;

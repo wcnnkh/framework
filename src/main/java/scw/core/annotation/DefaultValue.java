@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target({ ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ParameterValue {
-	public String value() default "";
+public @interface DefaultValue {
+	public String value();
 }

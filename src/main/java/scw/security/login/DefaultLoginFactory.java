@@ -3,7 +3,7 @@ package scw.security.login;
 import scw.beans.annotation.Bean;
 import scw.core.annotation.NotRequire;
 import scw.core.annotation.ParameterName;
-import scw.core.annotation.ParameterValue;
+import scw.core.annotation.DefaultValue;
 import scw.data.cache.MemcachedTemporaryCache;
 import scw.data.cache.RedisTemporaryCache;
 import scw.data.cache.TemporaryCache;
@@ -15,7 +15,7 @@ public class DefaultLoginFactory<T> extends AbstractLoginFactory<T> {
 	private final String prefix;
 
 	public DefaultLoginFactory(TemporaryCache temporaryCache,
-			@ParameterName("login-factory.exp") @ParameterValue(7 * 24 * 60 * 60 + "") int exp,
+			@ParameterName("login-factory.exp") @DefaultValue(7 * 24 * 60 * 60 + "") int exp,
 			@ParameterName("login-factory.prefix") @NotRequire String prefix) {
 		super(temporaryCache, exp);
 		this.prefix = prefix;

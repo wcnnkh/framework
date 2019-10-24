@@ -125,15 +125,18 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 
 			if (type.isAssignableFrom(clz)) {
 				list.add(clz);
+			} else {
+				logger.warn("{} not is assignable from name {}", type, clz);
 			}
 		}
 
 		for (Class<?> clz : autoConfig.value()) {
 			if (type.isAssignableFrom(clz)) {
 				list.add(clz);
+			} else {
+				logger.warn("{} not is assignable from {}", type, clz);
 			}
 		}
-
 		return list;
 	}
 
