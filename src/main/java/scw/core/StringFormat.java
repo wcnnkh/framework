@@ -3,16 +3,23 @@ package scw.core;
 import scw.core.utils.StringUtils;
 
 public abstract class StringFormat implements PropertyFactory {
-	private char[] prefix;
-	private char[] suffix;
+	private final char[] prefix;
+	private final char[] suffix;
 
 	public StringFormat(String prefix, String suffix) {
-		if (StringUtils.isNull(prefix, suffix)) {
-			throw new NullPointerException();
-		}
+		Assert.hasLength(prefix);
+		Assert.hasLength(suffix);
 
 		this.prefix = prefix.toCharArray();
 		this.suffix = suffix.toCharArray();
+	}
+
+	public char[] getPrefix() {
+		return prefix;
+	}
+
+	public char[] getSuffix() {
+		return suffix;
 	}
 
 	public final String format(final String text) {
@@ -30,7 +37,8 @@ public abstract class StringFormat implements PropertyFactory {
 				String value = null;
 				while (begin < chars.length) {
 					if (suffixEq(chars, begin)) {
-						value = getProperty(new String(chars, tempBegin + prefix.length, begin - tempBegin - prefix.length));
+						value = getProperty(
+								new String(chars, tempBegin + prefix.length, begin - tempBegin - prefix.length));
 						begin += suffix.length;
 						break;
 					} else {
