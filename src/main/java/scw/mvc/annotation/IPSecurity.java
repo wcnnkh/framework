@@ -7,6 +7,11 @@ import java.lang.annotation.Target;
 
 import scw.security.ip.IPVerification;
 
+/**
+ * 使用指定的实现对ip进行校验
+ * @author shuchaowen
+ *
+ */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface IPSecurity {
