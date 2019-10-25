@@ -5,7 +5,7 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.mvc.Channel;
 import scw.mvc.action.MethodAction;
-import scw.mvc.annotation.CountLimitSecurityConfig;
+import scw.mvc.annotation.CountLimitSecurityCount;
 import scw.mvc.annotation.CountLimitSecurityName;
 import scw.security.limit.CountLimitConfig;
 import scw.security.limit.SimpleCountLimitConfig;
@@ -26,7 +26,7 @@ public class DefaultCountLimitConfigFactory implements CountLimitConfigFactory {
 	}
 
 	public CountLimitConfig getCountLimitConfig(MethodAction action, Channel channel) {
-		CountLimitSecurityConfig config = action.getAnnotation(CountLimitSecurityConfig.class);
+		CountLimitSecurityCount config = action.getAnnotation(CountLimitSecurityCount.class);
 		CountLimitSecurityName name = action.getAnnotation(CountLimitSecurityName.class);
 		if (config == null || name == null) {
 			return null;
@@ -35,9 +35,9 @@ public class DefaultCountLimitConfigFactory implements CountLimitConfigFactory {
 		return getCountLimitConfig(name, config, action, channel);
 	}
 
-	protected CountLimitConfig getCountLimitConfig(CountLimitSecurityName name, CountLimitSecurityConfig config,
+	protected CountLimitConfig getCountLimitConfig(CountLimitSecurityName name, CountLimitSecurityCount config,
 			MethodAction action, Channel channel) {
 		return new SimpleCountLimitConfig((StringUtils.isEmpty(prefix) ? DEFAULT_PREFIX : prefix) + name.value(),
-				config.maxCount(), config.period(), config.timeUnit());
+				config.value(), config.period(), config.timeUnit());
 	}
 }

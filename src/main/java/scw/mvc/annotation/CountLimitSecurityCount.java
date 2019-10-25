@@ -7,21 +7,21 @@ import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 访问次数安全配置
+ * 默认为每分钟的调用次数限制
  * 
  * @author shuchaowen
  *
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CountLimitSecurityConfig {
-	public long maxCount();
+public @interface CountLimitSecurityCount {
+	public long value();
 
 	/**
 	 * 默认单位为分钟
 	 * @return
 	 */
-	public long period();
+	public long period() default 1;
 
 	/**
 	 * 时间单位
