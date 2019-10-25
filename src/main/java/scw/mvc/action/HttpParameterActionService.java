@@ -47,7 +47,7 @@ public final class HttpParameterActionService extends HttpActionService {
 			clzMap = new HashMap<String, Map<String, HttpAction>>();
 		}
 
-		Map<String, HttpAction> map = clzMap.get(controllerConfig.getMethodController());
+		Map<String, HttpAction> map = clzMap.get(controllerConfig.getMethod());
 		if (map == null) {
 			map = new HashMap<String, HttpAction>();
 		}

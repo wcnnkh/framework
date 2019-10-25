@@ -1,5 +1,6 @@
 package scw.mvc.action;
 
+import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
 
 public class SimpleHttpControllerConfig implements HttpControllerConfig {
@@ -16,7 +17,7 @@ public class SimpleHttpControllerConfig implements HttpControllerConfig {
 	}
 
 	public String getClassController() {
-		return classController;
+		return StringUtils.isEmpty(classController) ? "/" : classController;
 	}
 
 	public String getMethodController() {
