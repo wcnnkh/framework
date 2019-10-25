@@ -85,7 +85,7 @@ public class DefaultResourceLookup extends ClassesResourceLookup {
 				return true;
 			}
 
-			if (lockupFile(SystemPropertyUtils.getWorkPath() + text, consumer)) {
+			if (lockupFile(SystemPropertyUtils.getWorkPath() + (text.startsWith("/")? "":"/") + text, consumer)) {
 				return true;
 			}
 			return false;

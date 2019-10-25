@@ -18,10 +18,6 @@ public class FreemarkerPage extends AbstractPage {
 	private transient Configuration configuration;
 	private String contentType;
 
-	protected FreemarkerPage() {
-		super(null);
-	}
-
 	FreemarkerPage(Configuration configuration, String page) {
 		this(configuration, page, null);
 	}

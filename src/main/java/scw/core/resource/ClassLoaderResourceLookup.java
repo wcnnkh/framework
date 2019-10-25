@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import scw.core.Consumer;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 
 /**
@@ -34,9 +35,17 @@ public class ClassLoaderResourceLookup extends ClassesResourceLookup {
 	}
 
 	public static InputStream getResourceAsStream(String name) {
-		InputStream inputStream = ResourceUtils.class.getResourceAsStream(name);
+		if(StringUtils.isEmpty(name)){
+			return null;
+		}
+		
+		InputStream inputStream = ClassLoaderResourceLookup.class.getResourceAsStream(name);
 		if (inputStream == null) {
-			inputStream = ClassUtils.getDefaultClassLoader().getResourceAsStream(name);
+			try {
+				inputStream = ClassUtils.getDefaultClassLoader().getResourceAsStream(name);
+			} catch (Exception e) {
+				//ignore 在一些特殊情况下可能出现异常，忽略此异常
+			}
 		}
 		return inputStream;
 	}

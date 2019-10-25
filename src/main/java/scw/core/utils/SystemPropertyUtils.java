@@ -151,13 +151,15 @@ public final class SystemPropertyUtils {
 						path = getUserDir();
 					} else {
 						file = file.getParentFile();
-						if (file.getName().equals("WEB-INF")) {
-							path = file.getParent();
-						} else {
-							file = file.getParentFile();
-							file = FileUtils.searchDirectory(file, "WEB-INF");
-							if (file != null) {
+						if(file != null){
+							if (file.getName().equals("WEB-INF")) {
 								path = file.getParent();
+							} else {
+								file = file.getParentFile();
+								file = FileUtils.searchDirectory(file, "WEB-INF");
+								if (file != null) {
+									path = file.getParent();
+								}
 							}
 						}
 					}
