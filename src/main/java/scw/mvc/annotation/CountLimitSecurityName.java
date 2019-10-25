@@ -4,7 +4,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 访问次数安全配置
@@ -14,18 +13,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CountLimitSecurityConfig {
-	public long maxCount();
-
-	/**
-	 * 默认单位为分钟
-	 * @return
-	 */
-	public long period();
-
-	/**
-	 * 时间单位
-	 * @return
-	 */
-	public TimeUnit timeUnit() default TimeUnit.MINUTES;
+public @interface CountLimitSecurityName {
+	public String value();
 }

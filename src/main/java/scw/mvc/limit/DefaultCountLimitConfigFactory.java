@@ -6,6 +6,7 @@ import scw.core.utils.SystemPropertyUtils;
 import scw.mvc.Channel;
 import scw.mvc.action.MethodAction;
 import scw.mvc.annotation.CountLimitSecurityConfig;
+import scw.mvc.annotation.CountLimitSecurityName;
 import scw.security.limit.CountLimitConfig;
 import scw.security.limit.SimpleCountLimitConfig;
 
@@ -26,11 +27,12 @@ public class DefaultCountLimitConfigFactory implements CountLimitConfigFactory {
 
 	public CountLimitConfig getCountLimitConfig(MethodAction action, Channel channel) {
 		CountLimitSecurityConfig config = action.getAnnotation(CountLimitSecurityConfig.class);
-		if (config == null) {
+		CountLimitSecurityName name = action.getAnnotation(CountLimitSecurityName.class);
+		if (config == null || name == null) {
 			return null;
 		}
 
-		return new SimpleCountLimitConfig((StringUtils.isEmpty(prefix) ? DEFAULT_PREFIX : prefix) + config.name(),
+		return new SimpleCountLimitConfig((StringUtils.isEmpty(prefix) ? DEFAULT_PREFIX : prefix) + name.value(),
 				config.maxCount(), config.period(), config.timeUnit());
 	}
 
