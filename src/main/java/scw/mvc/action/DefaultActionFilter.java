@@ -12,9 +12,10 @@ import scw.mvc.RequestResponseModel;
 import scw.mvc.annotation.CountLimitSecurity;
 import scw.mvc.annotation.IPSecurity;
 import scw.mvc.annotation.ResponseWrapper;
+import scw.mvc.exception.CountLimitException;
+import scw.mvc.exception.IPValidationFailedException;
 import scw.mvc.limit.CountLimitConfigFactory;
 import scw.mvc.wrapper.ResponseWrapperService;
-import scw.result.exception.AuthorizationFailureException;
 import scw.security.ip.IPVerification;
 import scw.security.limit.CountLimit;
 import scw.security.limit.CountLimitConfig;
@@ -56,7 +57,7 @@ public final class DefaultActionFilter extends MethodActionFilter {
 			}
 
 			if (!b) {
-				throw new AuthorizationFailureException("ip验证失败");
+				throw new IPValidationFailedException("ip验证失败");
 			}
 		}
 
@@ -64,7 +65,7 @@ public final class DefaultActionFilter extends MethodActionFilter {
 		if (countLimitSecurity != null) {
 			boolean b = countLimitSecurity(countLimitSecurity, action, channel);
 			if (!b) {
-				throw new AuthorizationFailureException("访问过于频繁");
+				throw new CountLimitException("操作过于频繁");
 			}
 		}
 
