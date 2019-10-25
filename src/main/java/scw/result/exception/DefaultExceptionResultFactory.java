@@ -1,5 +1,6 @@
 package scw.result.exception;
 
+import scw.beans.annotation.Bean;
 import scw.core.exception.NestedExceptionUtils;
 import scw.core.exception.ParameterException;
 import scw.core.utils.StringUtils;
@@ -8,7 +9,8 @@ import scw.result.ErrorMessage;
 import scw.result.Result;
 import scw.result.ResultFactory;
 
-public final class DefaultExceptionResultFactory implements ExceptionResultFactory {
+@Bean(proxy = false)
+public class DefaultExceptionResultFactory implements ExceptionResultFactory {
 	private ResultFactory resultFactory;
 
 	public DefaultExceptionResultFactory(ResultFactory resultFactory) {
@@ -17,6 +19,10 @@ public final class DefaultExceptionResultFactory implements ExceptionResultFacto
 
 	public Result error(Throwable e) {
 		Throwable error = NestedExceptionUtils.getMostSpecificCause(e);
+		return mostSpecificCause(error);
+	}
+
+	protected Result mostSpecificCause(Throwable error) {
 		if (error instanceof ParameterException) {
 			return resultFactory.parameterError();
 		} else if (error instanceof AuthorizationFailureException) {

@@ -32,8 +32,12 @@ public class DefaultCountLimitConfigFactory implements CountLimitConfigFactory {
 			return null;
 		}
 
+		return getCountLimitConfig(name, config, action, channel);
+	}
+
+	protected CountLimitConfig getCountLimitConfig(CountLimitSecurityName name, CountLimitSecurityConfig config,
+			MethodAction action, Channel channel) {
 		return new SimpleCountLimitConfig((StringUtils.isEmpty(prefix) ? DEFAULT_PREFIX : prefix) + name.value(),
 				config.maxCount(), config.period(), config.timeUnit());
 	}
-
 }
