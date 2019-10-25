@@ -2279,11 +2279,19 @@ public final class StringUtils {
 	}
 
 	public static String toString(Object value, Object defaultValue) {
+		return toString(value, defaultValue, true);
+	}
+
+	public static String toString(Object value, Object defaultValue, boolean checkLength) {
 		if (value == null) {
 			return defaultValue == null ? null : defaultValue.toString();
 		}
 
-		return value.toString();
+		String v = value.toString();
+		if (checkLength && !StringUtils.hasLength(v)) {
+			return defaultValue.toString();
+		}
+		return v;
 	}
 
 	public static char parseChar(String text, char defaultValue) {

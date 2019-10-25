@@ -4,14 +4,22 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.concurrent.TimeUnit;
 
-import scw.mvc.wrapper.CompatibleResponseWrapperService;
-import scw.mvc.wrapper.ResponseWrapperService;
-
+/**
+ * 访问次数安全配置
+ * 
+ * @author shuchaowen
+ *
+ */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ResponseWrapper {
-	public boolean value() default true;
+public @interface CountLimitSecurityConfig {
+	public String name();
+	
+	public long maxCount();
 
-	public Class<? extends ResponseWrapperService> service() default CompatibleResponseWrapperService.class;
+	public long period();
+
+	public TimeUnit timeUnit() default TimeUnit.HOURS;
 }

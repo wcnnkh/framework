@@ -9,6 +9,12 @@ import scw.sql.SqlOperations;
 import scw.sql.orm.ORMOperations;
 
 public interface DB extends ORMOperations, SqlOperations {
+	void createTable(Class<?> tableClass, boolean registerManager);
+	
+	void createTable(Class<?> tableClass, String tableName, boolean registerManager);
+	
+	void createTable(String packageName, boolean registerManager);
+	
 	void asyncSave(Object... objs);
 
 	void asyncUpdate(Object... objs);

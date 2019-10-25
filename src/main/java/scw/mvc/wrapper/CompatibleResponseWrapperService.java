@@ -1,4 +1,4 @@
-package scw.mvc.action;
+package scw.mvc.wrapper;
 
 import scw.beans.annotation.Bean;
 import scw.core.utils.ClassUtils;

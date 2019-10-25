@@ -9,10 +9,16 @@ import scw.logger.LoggerFactory;
 import scw.mvc.Channel;
 import scw.mvc.Request;
 import scw.mvc.RequestResponseModel;
+import scw.mvc.annotation.CountLimitSecurity;
 import scw.mvc.annotation.IPSecurity;
 import scw.mvc.annotation.ResponseWrapper;
+import scw.mvc.limit.CountLimitConfigFactory;
+import scw.mvc.wrapper.ResponseWrapperService;
 import scw.result.exception.AuthorizationFailureException;
 import scw.security.ip.IPVerification;
+import scw.security.limit.CountLimit;
+import scw.security.limit.CountLimitConfig;
+import scw.security.limit.CountLimitFactory;
 
 /**
  * 默认的action-filter 实现对内置注解的支持和一些默认的实现
@@ -54,7 +60,19 @@ public final class DefaultActionFilter extends MethodActionFilter {
 			}
 		}
 
+		CountLimitSecurity countLimitSecurity = action.getAnnotation(CountLimitSecurity.class);
+		if (countLimitSecurity != null) {
+			boolean b = countLimitSecurity(countLimitSecurity, action, channel);
+			if (!b) {
+				throw new AuthorizationFailureException("访问过于频繁");
+			}
+		}
+
 		Object value = chain.doFilter(action, channel);
+		return responseSupport(action, channel, value);
+	}
+
+	private Object responseSupport(MethodAction action, Channel channel, Object value) throws Throwable {
 		if (RESPONSE_COMPATIBLE_OPEN && responseWrapperService != null) {
 			return responseWrapperService.wrapper(channel, value);
 		}
@@ -64,7 +82,38 @@ public final class DefaultActionFilter extends MethodActionFilter {
 			ResponseWrapperService responseWrapperService = instanceFactory.getInstance(responseWrapper.service());
 			return responseWrapperService.wrapper(channel, value);
 		}
+
 		return value;
+	}
+
+	private boolean countLimitSecurity(CountLimitSecurity countLimitSecurity, MethodAction action, Channel channel) {
+		boolean instance = instanceFactory.isInstance(countLimitSecurity.value());
+		if (instance) {
+			instance = instanceFactory.isInstance(countLimitSecurity.factory());
+		}
+
+		if (!instance) {
+			logger.warn("无法实例化：", countLimitSecurity.value());
+			return false;
+		}
+
+		if (instance) {
+			CountLimitConfigFactory configFactory = instanceFactory.getInstance(countLimitSecurity.value());
+			CountLimitConfig countLimitConfig = configFactory.getCountLimitConfig(action, channel);
+			if (countLimitConfig != null) {
+				CountLimitFactory countLimitFactory = instanceFactory.getInstance(CountLimitFactory.class);
+				CountLimit countLimit = countLimitFactory.getCountLimit(countLimitConfig);
+				if (countLimit != null && !countLimit.incr()) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("The number of visits has exceeded the limit, max={}, count={}",
+								countLimitConfig.getMaxCount(), countLimit.getCount());
+					}
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	private boolean verificationIP(IP ip, IPSecurity ipSecurity) {

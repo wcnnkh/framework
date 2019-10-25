@@ -5,4 +5,5 @@ import scw.core.Verification;
 
 @AutoImpl({ DefaultIPVerification.class })
 public interface IPVerification extends Verification<String> {
+	boolean verification(String ip);
 }

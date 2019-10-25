@@ -1,4 +1,4 @@
-package scw.mvc.action;
+package scw.mvc.wrapper;
 
 import scw.mvc.Channel;
 
