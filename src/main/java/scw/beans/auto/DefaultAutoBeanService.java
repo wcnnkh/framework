@@ -182,15 +182,19 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 	private AutoBean createDB(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
 		String config = "db.properties";
 		if (ResourceUtils.isExist(config)) {
-			Object[] args;
-			Class<?>[] types;
-			if (beanFactory.isInstance(Redis.class.getName())) {
-				types = new Class<?>[] { Redis.class, String.class };
-				args = new Object[] { beanFactory.getInstance(Redis.class), config };
-			} else if (beanFactory.isInstance(Memcached.class.getName())) {
-				types = new Class<?>[] { Memcached.class, String.class };
-				args = new Object[] { beanFactory.getInstance(Memcached.class), config };
-			} else {
+			Object[] args = null;
+			Class<?>[] types = null;
+			if(StringUtils.parseBoolean(propertyFactory.getProperty("db.cache.auto.enable"), true)){
+				if (beanFactory.isInstance(Redis.class.getName())) {
+					types = new Class<?>[] { Redis.class, String.class };
+					args = new Object[] { beanFactory.getInstance(Redis.class), config };
+				} else if (beanFactory.isInstance(Memcached.class.getName())) {
+					types = new Class<?>[] { Memcached.class, String.class };
+					args = new Object[] { beanFactory.getInstance(Memcached.class), config };
+				}
+			}
+			
+			if(types == null){
 				types = new Class<?>[] { String.class };
 				args = new Object[] { config };
 			}
