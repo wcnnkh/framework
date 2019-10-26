@@ -902,7 +902,7 @@ public final class Bytes {
 		UnsafeByteArrayOutputStream bos = new UnsafeByteArrayOutputStream();
 		InputStream is = new InflaterInputStream(bis);
 		try {
-			IOUtils.write(is, bos);
+			IOUtils.copy(is, bos);
 			return bos.toByteArray();
 		} finally {
 			is.close();
