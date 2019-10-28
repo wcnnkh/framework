@@ -3,8 +3,8 @@ package scw.security.ip;
 import scw.core.annotation.ParameterName;
 
 /**
- * 黑名单
- * 检查是否存在于黑名单中
+ * 黑名单 检查是否存在于黑名单中
+ * 
  * @author shuchaowen
  *
  */

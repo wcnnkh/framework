@@ -106,10 +106,6 @@ public abstract class AbstractMemcached implements Memcached {
 		return getTargetMemcached().delete(formatKey(key));
 	}
 
-	public boolean delete(String key, long cas, long opTimeout) {
-		return getTargetMemcached().delete(formatKey(key), cas, opTimeout);
-	}
-
 	public boolean isExist(String key) {
 		return getTargetMemcached().delete(formatKey(key));
 	}
@@ -119,5 +115,13 @@ public abstract class AbstractMemcached implements Memcached {
 	 */
 	public CASOperations getCASOperations() {
 		return new CASOperationsWrapper(getTargetMemcached().getCASOperations(), getKeyPrefix());
+	}
+
+	public long incr(String key, long incr, long initValue, int exp) {
+		return getTargetMemcached().incr(key, incr, initValue, exp);
+	}
+
+	public long decr(String key, long decr, long initValue, int exp) {
+		return getTargetMemcached().decr(key, decr, initValue, exp);
 	}
 }

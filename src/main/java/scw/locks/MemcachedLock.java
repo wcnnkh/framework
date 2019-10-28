@@ -23,7 +23,7 @@ public final class MemcachedLock extends AbstractLock {
 	public void unlock() {
 		CAS<String> cas = memcached.getCASOperations().get(key);
 		if (id.equals(cas.getValue())) {
-			memcached.delete(key, cas.getCas(), 1000L);
+			memcached.getCASOperations().delete(key, cas.getCas());
 		}
 	}
 }

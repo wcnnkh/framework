@@ -65,10 +65,6 @@ public final class RegexUtils {
 	 * Regex of date which pattern is "yyyy-MM-dd".
 	 */
 	private static final String REGEX_DATE = "^(?:(?!0000)[0-9]{4}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$";
-	/**
-	 * Regex of ip address.
-	 */
-	private static final String REGEX_IP = "((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?)";
 
 	// /////////////////////////////////////////////////////////////////////////
 	// The following come from http://tool.oschina.net/regex
@@ -119,10 +115,6 @@ public final class RegexUtils {
 	 */
 	public static final String REGEX_NEGATIVE_FLOAT = "^-[1-9]\\d*\\.\\d*|-0\\.\\d*[1-9]\\d*$";
 	
-	private static final String INNER_IP_PATTERN = "((192\\.168|172\\.([1][6-9]|[2]\\d|3[01]))"
-			+ "(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|"
-			+ "^(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})";
-
 	private RegexUtils() {
 	};
 
@@ -233,18 +225,6 @@ public final class RegexUtils {
 	}
 
 	/**
-	 * Return whether input matches regex of ip address.
-	 *
-	 * @param input
-	 *            The input.
-	 * @return {@code true}: yes<br>
-	 *         {@code false}: no
-	 */
-	public static boolean isIP(final CharSequence input) {
-		return isMatch(REGEX_IP, input);
-	}
-
-	/**
 	 * Return whether input matches the regex.
 	 *
 	 * @param regex
@@ -337,17 +317,5 @@ public final class RegexUtils {
 		if (input == null)
 			return "";
 		return Pattern.compile(regex).matcher(input).replaceAll(replacement);
-	}
-	
-	/**
-	 * 判断是否是内网IP
-	 * 
-	 * @param ip
-	 * @return
-	 */
-	public static boolean isInnerIP(String ip) {
-		Pattern p = Pattern.compile(INNER_IP_PATTERN);
-		Matcher matcher = p.matcher(ip);
-		return matcher.find();
 	}
 }

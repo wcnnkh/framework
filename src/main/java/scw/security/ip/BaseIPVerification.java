@@ -45,18 +45,16 @@ public class BaseIPVerification extends HashSet<String> implements IPVerificatio
 		}
 	}
 
-	public boolean verification(String data) {
-		String[] arr = StringUtils.commonSplit(data);
-		if (ArrayUtils.isEmpty(arr)) {
-			return false;
-		}
+	public boolean verification(String ip) {
+		return contains(ip) || testIp(ip);
+	}
 
-		for (String ip : arr) {
-			if (contains(ip)) {
+	protected final boolean testIp(String matchIp) {
+		for (String ip : this) {
+			if (StringUtils.test(matchIp, ip)) {
 				return true;
 			}
 		}
 		return false;
 	}
-
 }

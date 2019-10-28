@@ -233,9 +233,9 @@ public class XMemcachedImpl implements Memcached {
 		}
 	}
 
-	public boolean delete(String key, long cas, long opTimeout) {
+	public boolean delete(String key, long cas) {
 		try {
-			return memcachedClient.delete(key, cas, opTimeout);
+			return memcachedClient.delete(key, cas, memcachedClient.getOpTimeout());
 		} catch (Exception e) {
 			throw new MemcachedException(e);
 		}
@@ -247,5 +247,21 @@ public class XMemcachedImpl implements Memcached {
 
 	public CASOperations getCASOperations() {
 		return casOperations;
+	}
+
+	public long incr(String key, long incr, long initValue, int exp) {
+		try {
+			return memcachedClient.incr(key, incr, initValue, memcachedClient.getOpTimeout(), exp);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
+		}
+	}
+
+	public long decr(String key, long decr, long initValue, int exp) {
+		try {
+			return memcachedClient.decr(key, decr, initValue, memcachedClient.getOpTimeout(), exp);
+		} catch (Exception e) {
+			throw new MemcachedException(e);
+		}
 	}
 }

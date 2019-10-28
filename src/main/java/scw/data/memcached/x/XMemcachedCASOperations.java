@@ -33,7 +33,7 @@ public class XMemcachedCASOperations implements CASOperations {
 
 	public boolean delete(String key, long cas) {
 		try {
-			return memcachedClient.delete(key, cas, Long.MAX_VALUE);
+			return memcachedClient.delete(key, cas, memcachedClient.getOpTimeout());
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
