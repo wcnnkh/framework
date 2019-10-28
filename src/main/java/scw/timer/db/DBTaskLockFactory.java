@@ -23,7 +23,7 @@ public class DBTaskLockFactory implements TaskLockFactory {
 
 	protected Sql createLockSql(TaskConfig taskConfig, long executionTime) {
 		return new SimpleSql(
-				"insert into task_lock_table (taskId, lastTime) value (?, ?) on duplicate key update taskId=? and lastTime<?",
-				taskConfig.getTaskId(), executionTime, taskConfig.getTaskId(), executionTime);
+				"insert into task_lock_table (taskId, lastTime) value (?, ?) on duplicate key update lastTime=if(lastTime<?, ?, lastTime)",
+				taskConfig.getTaskId(), executionTime, executionTime, executionTime);
 	}
 }
