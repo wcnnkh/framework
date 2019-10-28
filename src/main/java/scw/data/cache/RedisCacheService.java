@@ -38,7 +38,8 @@ public class RedisCacheService implements CacheService {
 	}
 
 	public boolean add(String key, int exp, Object value) {
-		return redis.getObjectOperations().set(key, value, NXXX.NX, EXPX.EX, exp);
+		return redis.getObjectOperations().set(key, value, NXXX.NX, EXPX.EX,
+				exp);
 	}
 
 	public boolean touch(String key, int newExp) {
@@ -47,7 +48,8 @@ public class RedisCacheService implements CacheService {
 	}
 
 	public <T> Map<String, T> get(Collection<String> keyCollections) {
-		return (Map<String, T>) redis.getObjectOperations().mget(keyCollections);
+		return (Map<String, T>) redis.getObjectOperations()
+				.mget(keyCollections);
 	}
 
 	public boolean delete(String key) {
@@ -66,16 +68,20 @@ public class RedisCacheService implements CacheService {
 		return redis.getObjectOperations().incr(key, delta, initialValue);
 	}
 
+	/**
+	 * 后期改为使用脚本实现
+	 */
 	public long incr(String key, long delta, long initialValue, int exp) {
-		// TODO
 		Long ttl = redis.getObjectOperations().ttl(key);
 		if (ttl == null || ttl <= 0) {
 			ttl = (long) exp;
 		}
 
-		long v = redis.getObjectOperations().incr(key, delta, initialValue);
-		redis.getObjectOperations().expire(key, ttl.intValue());
-		return v;
+		try {
+			return redis.getObjectOperations().incr(key, delta, initialValue);
+		} finally {
+			redis.getObjectOperations().expire(key, ttl.intValue());
+		}
 	}
 
 	public long decr(String key, long delta) {
@@ -86,14 +92,19 @@ public class RedisCacheService implements CacheService {
 		return redis.getObjectOperations().decr(key, delta, initialValue);
 	}
 
+	/**
+	 * 后期改为使用脚本实现
+	 */
 	public long decr(String key, long delta, long initialValue, int exp) {
-		// TODO
 		Long ttl = redis.getObjectOperations().ttl(key);
 		if (ttl == null || ttl <= 0) {
 			ttl = (long) exp;
 		}
-		long v = redis.getObjectOperations().decr(key, delta, initialValue);
-		redis.getObjectOperations().expire(key, ttl.intValue());
-		return v;
+
+		try {
+			return redis.getObjectOperations().decr(key, delta, initialValue);
+		} finally {
+			redis.getObjectOperations().expire(key, ttl.intValue());
+		}
 	}
 }

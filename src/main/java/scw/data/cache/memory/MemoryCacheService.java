@@ -21,14 +21,18 @@ import scw.logger.LoggerFactory;
 
 @SuppressWarnings("unchecked")
 public final class MemoryCacheService implements CacheService, Destroy {
-	private static final long DEFAULT_CLEAR_PERIOD = StringUtils
-			.parseLong(SystemPropertyUtils.getProperty("memory.temporary.cache.clear.period"), XTime.ONE_MINUTE);
-	private static Logger logger = LoggerFactory.getLogger(MemoryCacheService.class);
+	private static final long DEFAULT_CLEAR_PERIOD = StringUtils.parseLong(
+			SystemPropertyUtils
+					.getProperty("memory.temporary.cache.clear.period"),
+			XTime.ONE_MINUTE);
+	private static Logger logger = LoggerFactory
+			.getLogger(MemoryCacheService.class);
 	private Timer timer = new Timer(getClass().getSimpleName());
 	private final ConcurrentHashMap<String, MemoryCache> cacheMap = new ConcurrentHashMap<String, MemoryCache>();
 
 	public MemoryCacheService() {
-		this.timer.schedule(new ClearExpireKeyTask(), DEFAULT_CLEAR_PERIOD, DEFAULT_CLEAR_PERIOD);
+		this.timer.schedule(new ClearExpireKeyTask(), DEFAULT_CLEAR_PERIOD,
+				DEFAULT_CLEAR_PERIOD);
 	}
 
 	public <T> T get(String key) {
@@ -147,12 +151,7 @@ public final class MemoryCacheService implements CacheService, Destroy {
 	}
 
 	public long incr(String key, long delta) {
-		MemoryCache memoryCache = getMemoryCache(key);
-		if (memoryCache == null) {
-			return 0;
-		}
-
-		return memoryCache.incr(delta);
+		return incr(key, delta, 0, 0);
 	}
 
 	public long incr(String key, long delta, long initialValue) {
@@ -160,29 +159,19 @@ public final class MemoryCacheService implements CacheService, Destroy {
 	}
 
 	public long incr(String key, long delta, long initialValue, int exp) {
-		MemoryCache memoryCache = new CounterMemoryCache(initialValue);
+		MemoryCache memoryCache = new CounterMemoryCache();
 		MemoryCache old = cacheMap.putIfAbsent(key, memoryCache);
-		long v;
-		if (old == null) {
-			v = memoryCache.incr(delta, initialValue - delta);
-		} else {
-			v = old.incr(delta, initialValue);
+		if (old != null) {
 			memoryCache = old;
 		}
 
-		if (exp > 0) {
-			memoryCache.setExpire(exp);
-		}
+		long v = memoryCache.incr(delta, initialValue);
+		memoryCache.setExpire(exp);
 		return v;
 	}
 
 	public long decr(String key, long delta) {
-		MemoryCache memoryCache = getMemoryCache(key);
-		if (memoryCache == null) {
-			return 0;
-		}
-
-		return memoryCache.decr(delta);
+		return decr(key, delta, 0, 0);
 	}
 
 	public long decr(String key, long delta, long initialValue) {
@@ -190,19 +179,14 @@ public final class MemoryCacheService implements CacheService, Destroy {
 	}
 
 	public long decr(String key, long delta, long initialValue, int exp) {
-		MemoryCache memoryCache = new CounterMemoryCache(initialValue);
+		MemoryCache memoryCache = new CounterMemoryCache();
 		MemoryCache old = cacheMap.putIfAbsent(key, memoryCache);
-		long v;
-		if (old == null) {
-			v = memoryCache.decr(-delta, initialValue);
-		} else {
-			v = memoryCache.decr(-delta, initialValue + delta);
+		if (old != null) {
 			memoryCache = old;
 		}
 
-		if (exp > 0) {
-			memoryCache.setExpire(exp);
-		}
+		long v = memoryCache.decr(-delta, initialValue);
+		memoryCache.setExpire(exp);
 		return v;
 	}
 
@@ -216,7 +200,8 @@ public final class MemoryCacheService implements CacheService, Destroy {
 		public void run() {
 			try {
 				long currentTime = scheduledExecutionTime();
-				Iterator<Entry<String, MemoryCache>> iterator = cacheMap.entrySet().iterator();
+				Iterator<Entry<String, MemoryCache>> iterator = cacheMap
+						.entrySet().iterator();
 				while (iterator.hasNext()) {
 					Entry<String, MemoryCache> entry = iterator.next();
 					if (entry.getValue().isExpire(currentTime)) {
