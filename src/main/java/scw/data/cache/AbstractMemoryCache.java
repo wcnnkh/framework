@@ -19,7 +19,7 @@ public abstract class AbstractMemoryCache implements MemoryCache {
 	}
 
 	public boolean isExpire(long currentTimeMillis) {
-		return exp <= 0 ? false : (currentTimeMillis - lastTouch) > exp;
+		return exp <= 0 ? false : (currentTimeMillis - lastTouch) > exp * 1000;
 	}
 
 	public boolean setIfAbsent(Object value) {

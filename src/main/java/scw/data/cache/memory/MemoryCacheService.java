@@ -162,11 +162,14 @@ public final class MemoryCacheService implements CacheService, Destroy {
 	public long incr(String key, long delta, long initialValue, int exp) {
 		MemoryCache memoryCache = new CounterMemoryCache(initialValue);
 		MemoryCache old = cacheMap.putIfAbsent(key, memoryCache);
-		if (old != null) {
+		long v;
+		if (old == null) {
+			v = memoryCache.incr(delta, initialValue - delta);
+		} else {
+			v = old.incr(delta, initialValue);
 			memoryCache = old;
 		}
 
-		long v = memoryCache.incr(delta, initialValue);
 		if (exp > 0) {
 			memoryCache.setExpire(exp);
 		}
@@ -189,11 +192,14 @@ public final class MemoryCacheService implements CacheService, Destroy {
 	public long decr(String key, long delta, long initialValue, int exp) {
 		MemoryCache memoryCache = new CounterMemoryCache(initialValue);
 		MemoryCache old = cacheMap.putIfAbsent(key, memoryCache);
-		if (old != null) {
+		long v;
+		if (old == null) {
+			v = memoryCache.decr(-delta, initialValue);
+		} else {
+			v = memoryCache.decr(-delta, initialValue + delta);
 			memoryCache = old;
 		}
 
-		long v = memoryCache.decr(-delta, initialValue);
 		if (exp > 0) {
 			memoryCache.setExpire(exp);
 		}

@@ -15,7 +15,7 @@ public class CounterMemoryCache extends AbstractMemoryCache {
 		long prev, v;
 		do {
 			prev = value.get();
-			v = isExpire(System.currentTimeMillis()) ? initialValue : prev + delta;
+			v = isExpire(System.currentTimeMillis()) ? initialValue : (prev + delta);
 		} while (!value.compareAndSet(prev, v));
 		return v;
 	}
@@ -25,7 +25,7 @@ public class CounterMemoryCache extends AbstractMemoryCache {
 	}
 
 	public Object get() {
-		return value;
+		return value.get();
 	}
 
 	public void set(Object value) {
