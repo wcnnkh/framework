@@ -1,6 +1,8 @@
-package scw.data.cache;
+package scw.data.cache.memory;
 
 import java.util.concurrent.atomic.AtomicLong;
+
+import scw.data.cache.AbstractMemoryCache;
 
 public class CounterMemoryCache extends AbstractMemoryCache {
 	private AtomicLong value;

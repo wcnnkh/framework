@@ -2,8 +2,6 @@ package scw.data.redis.jedis;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -381,28 +379,23 @@ public abstract class AbstractJedisBinaryOperations extends AbstractBinaryRedisO
 		}
 	}
 
-	public Map<byte[], byte[]> mget(Collection<byte[]> keys) {
-		if (keys == null || keys.isEmpty()) {
-			return null;
+	public long incr(byte[] key, long delta) {
+		Jedis jedis = null;
+		try {
+			jedis = getResource();
+			return jedis.incrBy(key, delta);
+		} finally {
+			close(jedis);
 		}
+	}
 
-		List<byte[]> list = mget(keys.toArray(new byte[keys.size()][]));
-		if (list == null || list.isEmpty()) {
-			return null;
+	public long decr(byte[] key, long delta) {
+		Jedis jedis = null;
+		try {
+			jedis = getResource();
+			return jedis.decrBy(key, delta);
+		} finally {
+			close(jedis);
 		}
-
-		Map<byte[], byte[]> map = new HashMap<byte[], byte[]>(keys.size(), 1);
-		Iterator<byte[]> keyIterator = keys.iterator();
-		Iterator<byte[]> valueIterator = list.iterator();
-		while (keyIterator.hasNext() && valueIterator.hasNext()) {
-			byte[] key = keyIterator.next();
-			byte[] value = valueIterator.next();
-			if (key == null || value == null) {
-				continue;
-			}
-
-			map.put(key, value);
-		}
-		return map;
 	}
 }

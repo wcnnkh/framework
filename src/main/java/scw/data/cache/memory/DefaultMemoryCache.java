@@ -1,6 +1,7 @@
-package scw.data.cache;
+package scw.data.cache.memory;
 
 import scw.core.exception.NotSupportException;
+import scw.data.cache.AbstractMemoryCache;
 
 public class DefaultMemoryCache extends AbstractMemoryCache {
 	private volatile Object value;

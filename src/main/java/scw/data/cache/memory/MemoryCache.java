@@ -1,4 +1,4 @@
-package scw.data.cache;
+package scw.data.cache.memory;
 
 public interface MemoryCache {
 	long incr(long delta);

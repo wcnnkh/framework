@@ -1,5 +1,7 @@
 package scw.data.cache;
 
+import scw.data.cache.memory.MemoryCache;
+
 public abstract class AbstractMemoryCache implements MemoryCache {
 	private volatile long lastTouch;
 	private volatile int exp;

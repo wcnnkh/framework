@@ -405,4 +405,24 @@ public abstract class AbstractJedisStringOperations extends AbstractStringRedisO
 		}
 		return map;
 	}
+
+	public long incr(String key, long delta) {
+		Jedis jedis = null;
+		try {
+			jedis = getResource();
+			return jedis.incrBy(key, delta);
+		} finally {
+			close(jedis);
+		}
+	}
+
+	public long decr(String key, long delta) {
+		Jedis jedis = null;
+		try {
+			jedis = getResource();
+			return jedis.decrBy(key, delta);
+		} finally {
+			close(jedis);
+		}
+	}
 }

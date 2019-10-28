@@ -2,16 +2,16 @@ package scw.security.login;
 
 import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
-import scw.data.cache.TemporaryCache;
+import scw.data.cache.CacheService;
 import scw.security.token.SimpleUserToken;
 import scw.security.token.UserToken;
 
 public abstract class AbstractLoginFactory<T> implements LoginFactory<T> {
-	private final TemporaryCache temporaryCache;
+	private final CacheService cacheService;
 	private final int exp;
 
-	public AbstractLoginFactory(TemporaryCache temporaryCache, int exp) {
-		this.temporaryCache = temporaryCache;
+	public AbstractLoginFactory(CacheService cacheService, int exp) {
+		this.cacheService = cacheService;
 		this.exp = exp;
 	}
 
@@ -28,11 +28,11 @@ public abstract class AbstractLoginFactory<T> implements LoginFactory<T> {
 			return null;
 		}
 
-		T uid = temporaryCache.getAndTouch(formatKey(token), exp);
+		T uid = cacheService.getAndTouch(formatKey(token), exp);
 		if (uid == null) {
 			return null;
 		}
-		temporaryCache.touch(formatKey(uid), exp);
+		cacheService.touch(formatKey(uid), exp);
 		return new SimpleUserToken<T>(token, uid);
 	}
 
@@ -41,12 +41,12 @@ public abstract class AbstractLoginFactory<T> implements LoginFactory<T> {
 			return null;
 		}
 
-		String token = temporaryCache.getAndTouch(formatKey(uid), exp);
+		String token = cacheService.getAndTouch(formatKey(uid), exp);
 		if (token == null) {
 			return null;
 		}
 
-		temporaryCache.touch(formatKey(token), exp);
+		cacheService.touch(formatKey(token), exp);
 		return new SimpleUserToken<T>(token, uid);
 	}
 
@@ -55,11 +55,11 @@ public abstract class AbstractLoginFactory<T> implements LoginFactory<T> {
 			return;
 		}
 
-		T uid = temporaryCache.get(formatKey(token));
+		T uid = cacheService.get(formatKey(token));
 		if (uid != null) {
-			temporaryCache.delete(formatKey(uid));
+			cacheService.delete(formatKey(uid));
 		}
-		temporaryCache.delete(formatKey(token));
+		cacheService.delete(formatKey(token));
 	}
 
 	public void cancelLoginByUid(T uid) {
@@ -67,11 +67,11 @@ public abstract class AbstractLoginFactory<T> implements LoginFactory<T> {
 			return;
 		}
 
-		String token = temporaryCache.get(formatKey(uid));
+		String token = cacheService.get(formatKey(uid));
 		if (token != null) {
-			temporaryCache.delete(formatKey(token));
+			cacheService.delete(formatKey(token));
 		}
-		temporaryCache.delete(formatKey(uid));
+		cacheService.delete(formatKey(uid));
 	}
 
 	public UserToken<T> login(T uid) {
@@ -79,8 +79,8 @@ public abstract class AbstractLoginFactory<T> implements LoginFactory<T> {
 	}
 
 	public UserToken<T> login(String sessionId, T uid) {
-		temporaryCache.set(formatKey(sessionId), exp, uid);
-		temporaryCache.set(formatKey(uid), exp, sessionId);
+		cacheService.set(formatKey(sessionId), exp, uid);
+		cacheService.set(formatKey(uid), exp, sessionId);
 		return new SimpleUserToken<T>(sessionId, uid);
 	}
 }

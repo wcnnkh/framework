@@ -489,4 +489,12 @@ public abstract class AbstractObjectOperations implements RedisOperations<String
 		}
 		return map;
 	}
+	
+	public long incr(String key, long delta) {
+		return getBinaryOperations().incr(string2bytes(key), delta);
+	}
+	
+	public long decr(String key, long delta) {
+		return getBinaryOperations().decr(string2bytes(key), delta);
+	}
 }

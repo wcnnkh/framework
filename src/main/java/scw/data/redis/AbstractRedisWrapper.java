@@ -17,10 +17,6 @@ public abstract class AbstractRedisWrapper implements Redis {
 		return getTargetRedis().getObjectOperations();
 	}
 
-	public <T> RedisOperations<String, T> getSpecifiedTypeOperations(Class<T> type) {
-		return getTargetRedis().getSpecifiedTypeOperations(type);
-	}
-
 	public CASOperations getCASOperations() {
 		return getTargetRedis().getCASOperations();
 	}

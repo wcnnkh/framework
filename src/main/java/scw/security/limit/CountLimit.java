@@ -4,6 +4,4 @@ public interface CountLimit {
 	boolean incr();
 	
 	long getCount();
-	
-	void reset();
 }

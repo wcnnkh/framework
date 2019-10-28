@@ -1,0 +1,99 @@
+package scw.data.cache;
+
+import java.util.Collection;
+import java.util.Map;
+
+import scw.data.redis.Redis;
+import scw.data.redis.enums.EXPX;
+import scw.data.redis.enums.NXXX;
+
+@SuppressWarnings("unchecked")
+public class RedisCacheService implements CacheService {
+	private final Redis redis;
+
+	public RedisCacheService(Redis redis) {
+		this.redis = redis;
+	}
+
+	public <T> T get(String key) {
+		return (T) redis.getObjectOperations().get(key);
+	}
+
+	public <T> T getAndTouch(String key, int newExp) {
+		return (T) redis.getObjectOperations().getAndTouch(key, newExp);
+	}
+
+	public boolean set(String key, Object value) {
+		redis.getObjectOperations().set(key, value);
+		return true;
+	}
+
+	public boolean set(String key, int exp, Object value) {
+		redis.getObjectOperations().setex(key, exp, value);
+		return true;
+	}
+
+	public boolean add(String key, Object value) {
+		return redis.getObjectOperations().set(key, value, NXXX.NX, EXPX.EX, 0);
+	}
+
+	public boolean add(String key, int exp, Object value) {
+		return redis.getObjectOperations().set(key, value, NXXX.NX, EXPX.EX, exp);
+	}
+
+	public boolean touch(String key, int newExp) {
+		Object v = redis.getObjectOperations().getAndTouch(key, newExp);
+		return v != null;
+	}
+
+	public <T> Map<String, T> get(Collection<String> keyCollections) {
+		return (Map<String, T>) redis.getObjectOperations().mget(keyCollections);
+	}
+
+	public boolean delete(String key) {
+		return redis.getObjectOperations().del(key);
+	}
+
+	public boolean isExist(String key) {
+		return redis.getObjectOperations().exists(key);
+	}
+
+	public long incr(String key, long delta) {
+		return redis.getObjectOperations().incr(key, delta);
+	}
+
+	public long incr(String key, long delta, long initialValue) {
+		return redis.getObjectOperations().incr(key, delta, initialValue);
+	}
+
+	public long incr(String key, long delta, long initialValue, int exp) {
+		// TODO
+		Long ttl = redis.getObjectOperations().ttl(key);
+		if (ttl == null || ttl <= 0) {
+			ttl = (long) exp;
+		}
+
+		long v = redis.getObjectOperations().incr(key, delta, initialValue);
+		redis.getObjectOperations().expire(key, ttl.intValue());
+		return v;
+	}
+
+	public long decr(String key, long delta) {
+		return redis.getObjectOperations().decr(key, delta);
+	}
+
+	public long decr(String key, long delta, long initialValue) {
+		return redis.getObjectOperations().decr(key, delta, initialValue);
+	}
+
+	public long decr(String key, long delta, long initialValue, int exp) {
+		// TODO
+		Long ttl = redis.getObjectOperations().ttl(key);
+		if (ttl == null || ttl <= 0) {
+			ttl = (long) exp;
+		}
+		long v = redis.getObjectOperations().decr(key, delta, initialValue);
+		redis.getObjectOperations().expire(key, ttl.intValue());
+		return v;
+	}
+}

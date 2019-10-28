@@ -3,6 +3,10 @@ package scw.data.cache;
 import java.util.Collection;
 import java.util.Map;
 
+import scw.beans.annotation.AutoImpl;
+import scw.data.cache.memory.MemoryCacheService;
+
+@AutoImpl({ RedisCacheService.class, MemcachedCacheService.class, MemoryCacheService.class })
 public interface CacheService {
 	<T> T get(String key);
 
@@ -23,7 +27,7 @@ public interface CacheService {
 	boolean delete(String key);
 
 	boolean isExist(String key);
-	
+
 	long incr(String key, long delta);
 
 	long incr(String key, long delta, long initialValue);

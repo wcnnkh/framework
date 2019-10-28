@@ -1,25 +1,25 @@
 package scw.security.session;
 
-import scw.data.cache.MemcachedTemporaryCache;
-import scw.data.cache.RedisTemporaryCache;
-import scw.data.cache.TemporaryCache;
+import scw.data.cache.CacheService;
+import scw.data.cache.MemcachedCacheService;
+import scw.data.cache.RedisCacheService;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 
 public class DefaultSessionFactory extends AbstractSessionFactory {
-	private TemporaryCache temporaryCache;
+	private CacheService cacheService;
 
-	public DefaultSessionFactory(int defaultMaxInactiveInterval, TemporaryCache temporaryCache) {
+	public DefaultSessionFactory(int defaultMaxInactiveInterval, CacheService cacheService) {
 		super(defaultMaxInactiveInterval);
-		this.temporaryCache = temporaryCache;
+		this.cacheService = cacheService;
 	}
 
 	public DefaultSessionFactory(int defaultMaxInactiveInterval, Memcached memcached) {
-		this(defaultMaxInactiveInterval, new MemcachedTemporaryCache(memcached));
+		this(defaultMaxInactiveInterval, new MemcachedCacheService(memcached));
 	}
 
 	public DefaultSessionFactory(int defaultMaxInactiveInterval, Redis redis) {
-		this(defaultMaxInactiveInterval, new RedisTemporaryCache(redis));
+		this(defaultMaxInactiveInterval, new RedisCacheService(redis));
 	}
 
 	protected String getKey(String sessionId) {
@@ -28,17 +28,17 @@ public class DefaultSessionFactory extends AbstractSessionFactory {
 
 	@Override
 	public SessionData getSessionData(String sessionId) {
-		return (SessionData) temporaryCache.get(getKey(sessionId));
+		return (SessionData) cacheService.get(getKey(sessionId));
 	}
 
 	@Override
 	public void setSessionData(SessionData sessionData) {
-		temporaryCache.set(getKey(sessionData.getSessionId()), sessionData.getMaxInactiveInterval(), sessionData);
+		cacheService.set(getKey(sessionData.getSessionId()), sessionData.getMaxInactiveInterval(), sessionData);
 	}
 
 	@Override
 	public void invalidate(String sessionId) {
-		temporaryCache.delete(getKey(sessionId));
+		cacheService.delete(getKey(sessionId));
 	}
 
 }

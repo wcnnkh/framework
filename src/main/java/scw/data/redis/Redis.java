@@ -11,7 +11,5 @@ public interface Redis {
 
 	RedisOperations<String, Object> getObjectOperations();
 
-	<T> RedisOperations<String, T> getSpecifiedTypeOperations(Class<T> type);
-
 	CASOperations getCASOperations();
 }

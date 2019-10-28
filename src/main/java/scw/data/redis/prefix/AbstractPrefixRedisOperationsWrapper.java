@@ -225,7 +225,13 @@ public abstract class AbstractPrefixRedisOperationsWrapper<V> implements RedisOp
 			}
 			return result;
 		}
-
 	}
 
+	public long decr(String key, long delta) {
+		return getStringOperations().decr(key, delta);
+	}
+
+	public long incr(String key, long delta) {
+		return getStringOperations().decr(key, delta);
+	}
 }

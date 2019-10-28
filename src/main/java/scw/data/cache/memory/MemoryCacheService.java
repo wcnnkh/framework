@@ -1,4 +1,4 @@
-package scw.data.cache;
+package scw.data.cache.memory;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +15,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XTime;
+import scw.data.cache.CacheService;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
