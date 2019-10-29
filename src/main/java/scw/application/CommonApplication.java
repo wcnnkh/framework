@@ -3,7 +3,6 @@ package scw.application;
 import java.util.Collection;
 
 import scw.application.consumer.AnnotationConsumerUtils;
-import scw.application.consumer.XmlConsumerFactory;
 import scw.beans.BeanUtils;
 import scw.beans.XmlBeanFactory;
 import scw.core.resource.ResourceUtils;
@@ -97,8 +96,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 	private void scanningConsumer() {
 		Collection<Class<?>> classes = ResourceUtils.getClassList(getConsumerAnnotationPackage());
 		AnnotationConsumerUtils.scanningAMQPConsumer(getBeanFactory(), classes);
-		AnnotationConsumerUtils.scanningConsumer(getBeanFactory(),
-				new XmlConsumerFactory(getBeanFactory(), getPropertyFactory(), getXmlConfigPath()), classes);
+		AnnotationConsumerUtils.scanningConsumer(getBeanFactory(), classes);
 	}
 
 	public void destroy() {

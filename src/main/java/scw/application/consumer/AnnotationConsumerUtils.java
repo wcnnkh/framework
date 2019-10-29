@@ -14,13 +14,13 @@ public final class AnnotationConsumerUtils {
 	private AnnotationConsumerUtils() {
 	}
 
-	public static void scanningConsumer(BeanFactory beanFactory, ConsumerFactory consumerFactory,
-			Collection<Class<?>> classes) {
+	public static void scanningConsumer(BeanFactory beanFactory, Collection<Class<?>> classes) {
 		for (Class<?> clz : classes) {
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Consumer.class)) {
 				Consumer c = method.getAnnotation(Consumer.class);
-				LoggerUtils.getLogger(AnnotationConsumerUtils.class).info("添加消费者： name={}, clz={}, method={}", c.name(), clz.getName(),
-						method);
+				ConsumerFactory consumerFactory = beanFactory.getInstance(c.factory());
+				LoggerUtils.getLogger(AnnotationConsumerUtils.class).info("添加消费者：{}, name={}, factory={}", method,
+						c.name(), c.factory());
 				consumerFactory.bindConsumer(c.name(),
 						new MqMethodConsumer(new MethodProxyInvoker(beanFactory, clz, method)));
 			}
@@ -34,9 +34,8 @@ public final class AnnotationConsumerUtils {
 				AmqpConsumer c = method.getAnnotation(AmqpConsumer.class);
 				Exchange mq = beanFactory.getInstance(c.exchangeService());
 				LoggerUtils.getLogger(AnnotationConsumerUtils.class).info(
-						"添加消费者：{}, amqp routingKey={}, queueName={}, durable={}, exclusive={}, autoDelete={}, clz={}, method={}",
-						c.routingKey(), c.queueName(), c.durable(), c.exclusive(), c.autoDelete(), clz.getName(),
-						method);
+						"添加消费者：{}, amqp routingKey={}, queueName={}, durable={}, exclusive={}, autoDelete={}", method,
+						c.routingKey(), c.queueName(), c.durable(), c.exclusive(), c.autoDelete());
 				mq.bindConsumer(c.routingKey(), c.queueName(), c.durable(), c.exclusive(), c.autoDelete(),
 						new MqMethodConsumer(new MethodProxyInvoker(beanFactory, clz, method)));
 			}

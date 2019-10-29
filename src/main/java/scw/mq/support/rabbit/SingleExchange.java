@@ -12,6 +12,8 @@ import com.rabbitmq.client.Envelope;
 import scw.beans.annotation.AsyncComplete;
 import scw.beans.async.DefaultAsyncCompleteService;
 import scw.core.Consumer;
+import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 import scw.io.serializer.NoTypeSpecifiedSerializer;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -21,6 +23,9 @@ import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 
 public class SingleExchange<T> implements Exchange<T> {
+	private static final long RETRY_TIME_CYCLE = StringUtils
+			.parseLong(SystemPropertyUtils.getProperty("rabbit.retry.time.cycle"), 1000L);
+	private static final String LOG_MESSAGE_SUFFIX = "{} milliseconds to retry";
 	protected static Logger logger = LoggerUtils.getLogger(SingleExchange.class);
 	private final SingleExchangeChannelFactory channelFactory;
 	private final NoTypeSpecifiedSerializer serializer;
@@ -55,10 +60,17 @@ public class SingleExchange<T> implements Exchange<T> {
 			channel.queueBind(queueName, channelFactory.getExchange(), routingKey, arguments);
 			channel.basicConsume(queueName, autoDelete,
 					new RabbitDefaultConsumer(channel, autoDelete, consumer, queueName));
-		} catch (IOException e) {
-			logger.error("bind：exchange={},rotingKey={},durable={},exclusive={},autoDelete={}",
-					channelFactory.getExchangeType(), routingKey, durable, exclusive, autoDelete);
-			throw new RuntimeException(e);
+		} catch (Throwable e) {
+			logger.error(e,
+					"bind：exchange={}, exchangeType={},rotingKey={},durable={},exclusive={},autoDelete={}, "
+							+ LOG_MESSAGE_SUFFIX,
+					channelFactory.getExchange(), channelFactory.getExchangeType(), routingKey, durable, exclusive,
+					autoDelete, RETRY_TIME_CYCLE);
+			try {
+				Thread.sleep(RETRY_TIME_CYCLE);
+				bindConsumer(routingKey, queueName, durable, exclusive, autoDelete, arguments, consumer);
+			} catch (InterruptedException e1) {
+			}
 		}
 	}
 
@@ -71,10 +83,14 @@ public class SingleExchange<T> implements Exchange<T> {
 		try {
 			channelFactory.getChannel(routingKey).basicPublish(channelFactory.getExchange(), routingKey, mandatory,
 					immediate, null, getSerializer().serialize(message));
-		} catch (IOException e) {
-			logger.error("push：exchange={},rotingKey={},mandatory={},immediate={}", channelFactory.getExchange(),
-					routingKey, mandatory, immediate);
-			throw new RuntimeException(e);
+		} catch (Throwable e) {
+			logger.error(e, "push：exchange={},rotingKey={},mandatory={},immediate={}, " + LOG_MESSAGE_SUFFIX,
+					channelFactory.getExchange(), routingKey, mandatory, immediate, RETRY_TIME_CYCLE);
+			try {
+				Thread.sleep(RETRY_TIME_CYCLE);
+				basePush(routingKey, mandatory, immediate, message);
+			} catch (InterruptedException e1) {
+			}
 		}
 	}
 
@@ -87,9 +103,14 @@ public class SingleExchange<T> implements Exchange<T> {
 		try {
 			channelFactory.getChannel(routingKey).basicPublish(channelFactory.getExchange(), routingKey, null,
 					getSerializer().serialize(message));
-		} catch (IOException e) {
-			logger.error("push：exchange={},rotingKey={}", channelFactory.getExchange(), routingKey);
-			throw new RuntimeException(e);
+		} catch (Throwable e) {
+			logger.error(e, "push：exchange={},rotingKey={}, " + LOG_MESSAGE_SUFFIX, channelFactory.getExchange(),
+					routingKey, RETRY_TIME_CYCLE);
+			try {
+				Thread.sleep(RETRY_TIME_CYCLE);
+				basePush(routingKey, message);
+			} catch (InterruptedException e1) {
+			}
 		}
 	}
 
@@ -97,8 +118,8 @@ public class SingleExchange<T> implements Exchange<T> {
 	public void asyncPush(String routingKey, T message) {
 		basePush(routingKey, message);
 	}
-	
-	private void autoPush(String routingKey, boolean mandatory, boolean immediate, T message){
+
+	private void autoPush(String routingKey, boolean mandatory, boolean immediate, T message) {
 		if (asyncComplete) {
 			asyncPush(routingKey, mandatory, immediate, message);
 		} else {
@@ -127,8 +148,8 @@ public class SingleExchange<T> implements Exchange<T> {
 			autoPush(routingKey, mandatory, immediate, message);
 		}
 	}
-	
-	private void autoPush(final String routingKey, final T message){
+
+	private void autoPush(final String routingKey, final T message) {
 		if (asyncComplete) {
 			asyncPush(routingKey, message);
 		} else {
@@ -185,9 +206,14 @@ public class SingleExchange<T> implements Exchange<T> {
 				logger.error(e, "消费者异常, exchange={}, routingKey={}, queueName={}", envelope.getExchange(),
 						envelope.getRoutingKey(), name);
 				if (autoErrorAppend) {
-					push(envelope.getRoutingKey(), message);
+					try {
+						Thread.sleep(RETRY_TIME_CYCLE);
+						push(envelope.getRoutingKey(), message);
+					} catch (InterruptedException e1) {
+						throw new RuntimeException(e1);
+					}
 				}
-			}finally {
+			} finally {
 				if (!autoAck) {
 					getChannel().basicAck(envelope.getDeliveryTag(), false);
 				}
