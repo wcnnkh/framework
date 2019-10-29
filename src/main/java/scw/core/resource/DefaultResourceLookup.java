@@ -119,7 +119,7 @@ public class DefaultResourceLookup extends ClassesResourceLookup {
 					consumer.consume(inputStream);
 				}
 				return true;
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				throw new RuntimeException(e);
 			} finally {
 				IOUtils.close(inputStream, jarFile);
@@ -153,7 +153,7 @@ public class DefaultResourceLookup extends ClassesResourceLookup {
 		try {
 			inputStream = new FileInputStream(file);
 			consumer.consume(inputStream);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		} finally {
 			IOUtils.close(inputStream);

@@ -45,7 +45,7 @@ public final class CacheResourceLookup implements ResourceLookup {
 		if (consumer != null) {
 			try {
 				consumer.consume(new UnsafeByteArrayInputStream(data.getData()));
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				throw new RuntimeException(resource, e);
 			}
 		}

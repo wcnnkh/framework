@@ -30,7 +30,7 @@ public abstract class DefaultTestingConsumer<T> implements TestingConsumer<T> {
 			while ((obj = (T) ois.readObject()) != null) {
 				consume(obj);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 		} finally {
 			IOUtils.close(ois, fis);

@@ -25,7 +25,7 @@ public class ClassLoaderResourceLookup extends ClassesResourceLookup {
 		if (consumer != null) {
 			try {
 				consumer.consume(inputStream);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				throw new RuntimeException(e);
 			} finally {
 				IOUtils.close(inputStream);

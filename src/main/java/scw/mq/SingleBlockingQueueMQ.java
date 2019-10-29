@@ -7,6 +7,8 @@ import scw.core.Consumer;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.data.utils.BlockingQueue;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.transaction.DefaultTransactionDefinition;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionManager;
@@ -19,6 +21,7 @@ import scw.transaction.TransactionManager;
  * @param <T>
  */
 public class SingleBlockingQueueMQ<T> implements Init, Destroy, Runnable {
+	private static Logger logger = LoggerUtils.getLogger(SingleBlockingQueueMQ.class);
 	private final BlockingQueue<T> blockingQueue;
 	private final Thread thread = new Thread(this);
 	private final boolean transaction;
@@ -36,8 +39,7 @@ public class SingleBlockingQueueMQ<T> implements Init, Destroy, Runnable {
 	 * @param blockingQueue
 	 * @param transaction
 	 */
-	public SingleBlockingQueueMQ(BlockingQueue<T> blockingQueue,
-			boolean transaction) {
+	public SingleBlockingQueueMQ(BlockingQueue<T> blockingQueue, boolean transaction) {
 		this.blockingQueue = blockingQueue;
 		this.transaction = transaction;
 	}
@@ -55,8 +57,7 @@ public class SingleBlockingQueueMQ<T> implements Init, Destroy, Runnable {
 			while (!thread.isInterrupted()) {
 				T message = blockingQueue.take();
 				if (transaction) {
-					Transaction transaction = TransactionManager
-							.getTransaction(new DefaultTransactionDefinition());
+					Transaction transaction = TransactionManager.getTransaction(new DefaultTransactionDefinition());
 					try {
 						Iterator<Consumer<T>> iterator = consumers.iterator();
 						while (iterator.hasNext()) {
@@ -64,16 +65,16 @@ public class SingleBlockingQueueMQ<T> implements Init, Destroy, Runnable {
 						}
 						TransactionManager.commit(transaction);
 					} catch (Throwable e) {
+						logger.error(e, "消费者异常");
 						TransactionManager.rollback(transaction);
-						e.printStackTrace();
 					}
 				} else {
 					Iterator<Consumer<T>> iterator = consumers.iterator();
 					while (iterator.hasNext()) {
 						try {
 							iterator.next().consume(message);
-						} catch (Exception e) {
-							e.printStackTrace();
+						} catch (Throwable e) {
+							logger.error(e, "消费者异常");
 						}
 					}
 				}

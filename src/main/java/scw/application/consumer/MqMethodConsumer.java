@@ -11,23 +11,19 @@ public class MqMethodConsumer implements scw.core.Consumer {
 		this.invoker = invoker;
 	}
 
-	public void consume(Object message) {
+	public void consume(Object message) throws Throwable {
 		if (message == null) {
 			return;
 		}
 
-		try {
-			if (message instanceof Parameters) {
-				invoker.invoke(((Parameters) message).getParameters());
+		if (message instanceof Parameters) {
+			invoker.invoke(((Parameters) message).getParameters());
+		} else {
+			if (message.getClass().isArray()) {
+				invoker.invoke((Object[]) message);
 			} else {
-				if (message.getClass().isArray()) {
-					invoker.invoke((Object[]) message);
-				} else {
-					invoker.invoke(message);
-				}
+				invoker.invoke(message);
 			}
-		} catch (Throwable e) {
-			throw new RuntimeException(e);
 		}
 	}
 }
