@@ -1,15 +1,15 @@
 package scw.id.db;
 
 import scw.core.exception.NotFoundException;
+import scw.db.DB;
 import scw.sql.orm.ColumnInfo;
-import scw.sql.orm.ORMOperations;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
 public abstract class AbstractTableIdFactory implements TableIdFactory {
-	private final ORMOperations db;
+	private final DB db;
 
-	public AbstractTableIdFactory(ORMOperations db) {
+	public AbstractTableIdFactory(DB db) {
 		this.db = db;
 	}
 

@@ -31,11 +31,12 @@ public final class JedisPoolResourceFactory implements JedisResourceFactory, Des
 
 	public JedisPoolResourceFactory(PropertyFactory propertyFactory, @ParameterName(HOST_CONFIG_KEY) String host,
 			@ParameterName(PORT_CONFIG_KEY) @NotRequire int port, @NotRequire String auth) {
-		init(propertyFactory, host, port, auth);
+		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+		init(jedisPoolConfig, propertyFactory, host, port, auth);
 	}
 
-	private void init(PropertyFactory propertyFactory, String host, int port, String auth) {
-		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+	private void init(JedisPoolConfig jedisPoolConfig, PropertyFactory propertyFactory, String host, int port,
+			String auth) {
 		if (propertyFactory != null) {
 			ConfigUtils.invokeSetterByProeprties(jedisPoolConfig, "redis.", propertyFactory);
 		}
@@ -49,16 +50,18 @@ public final class JedisPoolResourceFactory implements JedisResourceFactory, Des
 	}
 
 	@Order
-	public JedisPoolResourceFactory(
-			@ResourceParameter("redis.configuration") @DefaultValue("redis.properties") String configuration) {
+	public JedisPoolResourceFactory(@ResourceParameter(CONFIG_KEY) @DefaultValue(DEFAULT_CONFIG) String configuration) {
 		Properties properties = ResourceUtils.getProperties(configuration, Constants.DEFAULT_CHARSET_NAME);
-		PropertyFactory propertyFactory = new MapPropertyFactory(properties);
+		PropertyFactory propertyFactory = new MapPropertyFactory(properties, true);
 		String host = propertyFactory.getProperty(HOST_CONFIG_KEY);
 		if (StringUtils.isEmpty(host)) {
 			host = "127.0.0.1";
 		}
 
-		init(propertyFactory, host, StringUtils.parseInt(propertyFactory.getProperty(PORT_CONFIG_KEY)),
+		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+		//兼容老版本
+		ConfigUtils.invokeSetterByProeprties(jedisPoolConfig, null, new MapPropertyFactory(properties, false));
+		init(jedisPoolConfig, propertyFactory, host, StringUtils.parseInt(propertyFactory.getProperty(PORT_CONFIG_KEY)),
 				propertyFactory.getProperty(AUTH_CONFIG_KEY));
 	}
 

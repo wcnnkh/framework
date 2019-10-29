@@ -215,7 +215,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		if (beanDefinition == null) {
 			return null;
 		}
-
+		
 		if (beanDefinition.isSingleton()) {
 			obj = singletonMap.get(beanDefinition.getId());
 			if (obj == null) {

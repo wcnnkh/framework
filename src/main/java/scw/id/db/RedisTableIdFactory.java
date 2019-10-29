@@ -3,16 +3,16 @@ package scw.id.db;
 import scw.core.utils.ClassUtils;
 import scw.data.redis.Redis;
 import scw.data.redis.RedisUtils;
+import scw.db.DB;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
 import scw.locks.RedisLockFactory;
-import scw.sql.orm.ORMOperations;
 
 public final class RedisTableIdFactory extends AbstractTableIdFactory {
 	private final Redis redis;
 	private final LockFactory lockFactory;
 
-	public RedisTableIdFactory(ORMOperations db, Redis redis) {
+	public RedisTableIdFactory(DB db, Redis redis) {
 		super(db);
 		this.redis = redis;
 		this.lockFactory = new RedisLockFactory(redis);
