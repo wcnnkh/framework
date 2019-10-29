@@ -174,17 +174,17 @@ public class XMemcachedImpl implements Memcached {
 		}
 	}
 
-	public long incr(String key, long incr) {
+	public long incr(String key, long delta) {
 		try {
-			return memcachedClient.incr(key, incr);
+			return memcachedClient.incr(key, delta);
 		} catch (Exception e) {
 			throw new MemcachedException(e);
 		}
 	}
 
-	public long decr(String key, long decr) {
+	public long decr(String key, long delta) {
 		try {
-			return memcachedClient.incr(key, decr);
+			return memcachedClient.incr(key, delta);
 		} catch (Exception e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		}
@@ -249,17 +249,17 @@ public class XMemcachedImpl implements Memcached {
 		return casOperations;
 	}
 
-	public long incr(String key, long incr, long initValue, int exp) {
+	public long incr(String key, long delta, long initValue, int exp) {
 		try {
-			return memcachedClient.incr(key, incr, initValue, memcachedClient.getOpTimeout(), exp);
+			return memcachedClient.incr(key, delta, initValue, memcachedClient.getOpTimeout(), exp);
 		} catch (Exception e) {
 			throw new MemcachedException(e);
 		}
 	}
 
-	public long decr(String key, long decr, long initValue, int exp) {
+	public long decr(String key, long delta, long initValue, int exp) {
 		try {
-			return memcachedClient.decr(key, decr, initValue, memcachedClient.getOpTimeout(), exp);
+			return memcachedClient.decr(key, delta, initValue, memcachedClient.getOpTimeout(), exp);
 		} catch (Exception e) {
 			throw new MemcachedException(e);
 		}

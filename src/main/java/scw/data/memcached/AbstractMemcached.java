@@ -86,20 +86,20 @@ public abstract class AbstractMemcached implements Memcached {
 		return result;
 	}
 
-	public long incr(String key, long incr) {
-		return getTargetMemcached().incr(formatKey(key), incr);
+	public long incr(String key, long delta) {
+		return getTargetMemcached().incr(formatKey(key), delta);
 	}
 
-	public long incr(String key, long incr, long initValue) {
-		return getTargetMemcached().incr(formatKey(key), incr, initValue);
+	public long incr(String key, long delta, long initValue) {
+		return getTargetMemcached().incr(formatKey(key), delta, initValue);
 	}
 
-	public long decr(String key, long decr) {
-		return getTargetMemcached().decr(formatKey(key), decr);
+	public long decr(String key, long delta) {
+		return getTargetMemcached().decr(formatKey(key), delta);
 	}
 
-	public long decr(String key, long decr, long initValue) {
-		return getTargetMemcached().decr(formatKey(key), decr, initValue);
+	public long decr(String key, long delta, long initValue) {
+		return getTargetMemcached().decr(formatKey(key), delta, initValue);
 	}
 
 	public boolean delete(String key) {

@@ -11,7 +11,7 @@ import scw.result.ResultFactory;
 
 @Bean(proxy = false)
 public class DefaultExceptionResultFactory implements ExceptionResultFactory {
-	private ResultFactory resultFactory;
+	private final ResultFactory resultFactory;
 
 	public DefaultExceptionResultFactory(ResultFactory resultFactory) {
 		this.resultFactory = resultFactory;
@@ -19,7 +19,15 @@ public class DefaultExceptionResultFactory implements ExceptionResultFactory {
 
 	public Result error(Throwable e) {
 		Throwable error = NestedExceptionUtils.getMostSpecificCause(e);
+		if (isSystemError(error)) {
+			return resultFactory.error();
+		}
+
 		return mostSpecificCause(error);
+	}
+
+	public final ResultFactory getResultFactory() {
+		return resultFactory;
 	}
 
 	protected Result mostSpecificCause(Throwable error) {
@@ -39,5 +47,9 @@ public class DefaultExceptionResultFactory implements ExceptionResultFactory {
 			}
 			return StringUtils.isEmpty(msg) ? resultFactory.error(code) : resultFactory.error(code, msg);
 		}
+	}
+
+	protected boolean isSystemError(Throwable error) {
+		return error.getClass().getName().startsWith("java.") || error.getClass().getName().startsWith("javax.");
 	}
 }

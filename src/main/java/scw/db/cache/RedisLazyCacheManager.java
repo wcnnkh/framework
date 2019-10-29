@@ -32,7 +32,7 @@ public final class RedisLazyCacheManager extends LazyCacheManager {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <T> Map<String, T> mget(Class<T> type, Collection<String> keys) {
-		return (Map<String, T>) redis.getObjectOperations().mget(keys);
+		return (Map<String, T>) redis.getObjectOperations().get(keys);
 	}
 
 	@Override

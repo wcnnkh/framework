@@ -1,4 +1,4 @@
-package scw.data.redis.operations;
+package scw.data.redis;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,24 +7,25 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import scw.core.string.StringCodec;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
-import scw.data.redis.RedisOperations;
-import scw.data.redis.RedisUtils;
 import scw.io.serializer.Serializer;
 
 public class RedisCASOperations implements CASOperations {
 	private static final String CAS_IS_NULL = "if (" + RedisUtils.isNullScript("cas") + ") then cas = 0 end";
 
 	private static final String CAS_KEY_PREFIX = "cas_";
-	private static final String CAS_EXP_SCRIPT = "local cas = redis.call('get', KEYS[2]) " + CAS_IS_NULL
-			+ " if ("+RedisUtils.notNullScript("(KEYS[3] == cas)")+") then redis.call('set', KEYS[1], ARGV[1], 'EX', KEYS[4]) if redis.call('exists', KEYS[2]) == 1 then redis.call('incr', KEYS[2]) else redis.call('set', KEYS[2], 1, 'EX', KEYS[4]) end return 1 else return 0 end";
-	private static final String CAS_SCRIPT = "local cas = redis.call('get', KEYS[2]) " + CAS_IS_NULL
-			+ " if ("+RedisUtils.notNullScript("(KEYS[3] == cas)")+") then redis.call('set', KEYS[1], ARGV[1]) redis.call('incr', KEYS[2]) return 1 else return 0 end";
-	private static final String CAS_DELETE = "local cas = redis.call('get', KEYS[2]) " + CAS_IS_NULL
-			+ " if ("+RedisUtils.notNullScript("(ARGV[2] == cas)")+") then redis.call('del', KEYS[1]) redis.call('del', KEYS[2])  return 1 else return 0 end";
+	private static final String CAS_EXP_SCRIPT = "local cas = redis.call('get', KEYS[2]) " + CAS_IS_NULL + " if ("
+			+ RedisUtils.notNullScript("(KEYS[3] == cas)")
+			+ ") then redis.call('set', KEYS[1], ARGV[1], 'EX', KEYS[4]) if redis.call('exists', KEYS[2]) == 1 then redis.call('incr', KEYS[2]) else redis.call('set', KEYS[2], 1, 'EX', KEYS[4]) end return 1 else return 0 end";
+	private static final String CAS_SCRIPT = "local cas = redis.call('get', KEYS[2]) " + CAS_IS_NULL + " if ("
+			+ RedisUtils.notNullScript("(KEYS[3] == cas)")
+			+ ") then redis.call('set', KEYS[1], ARGV[1]) redis.call('incr', KEYS[2]) return 1 else return 0 end";
+	private static final String CAS_DELETE = "local cas = redis.call('get', KEYS[2]) " + CAS_IS_NULL + " if ("
+			+ RedisUtils.notNullScript("(ARGV[2] == cas)")
+			+ ") then redis.call('del', KEYS[1]) redis.call('del', KEYS[2])  return 1 else return 0 end";
 	private static final String DELETE = "redis.call('del', KEYS[1]) redis.call('del', KEYS[2])";
 	private static final String CAS_GET = "if redis.call('exists', KEYS[1]) == 1 then local cas = redis.call('get', KEYS[2]) "
 			+ CAS_IS_NULL
@@ -34,13 +35,13 @@ public class RedisCASOperations implements CASOperations {
 	private static final String SET_EXP = "redis.call('set', KEYS[1], ARGV[1], 'EX', KEYS[3]) if redis.call('exists', KEYS[2]) == 1 then redis.call('incr', KEYS[2]) else redis.call('set', KEYS[2], 1, 'EX', KEYS[3]) end";
 	private static final String SET = "redis.call('set', KEYS[1], ARGV[1]) redis.call('incr', KEYS[2], 1) end";
 	private RedisOperations<String, Object> objectOperations;
-	private String charsetName;
+	private StringCodec stringCodec;
 	private Serializer serializer;
 
-	public RedisCASOperations(RedisOperations<String, Object> objectOperations, String charsetName,
-			Serializer serializer) {
+	public RedisCASOperations(RedisOperations<String, Object> objectOperations, Serializer serializer,
+			StringCodec stringCodec) {
 		this.objectOperations = objectOperations;
-		this.charsetName = charsetName;
+		this.stringCodec = stringCodec;
 		this.serializer = serializer;
 	}
 
@@ -70,8 +71,7 @@ public class RedisCASOperations implements CASOperations {
 		}
 
 		byte[] v = (byte[]) list.get(0);
-		String cas = StringUtils.createString((byte[]) list.get(1), charsetName);
-		return new CAS<T>(Long.parseLong(cas), v == null ? null : (T) serializer.deserialize(v));
+		return new CAS<T>(Long.parseLong(stringCodec.decode((byte[]) list.get(1))), v == null ? null : (T) serializer.deserialize(v));
 	}
 
 	public void set(String key, Object value, int exp) {

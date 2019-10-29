@@ -2,6 +2,7 @@ package scw.id.db;
 
 import scw.core.utils.ClassUtils;
 import scw.data.redis.Redis;
+import scw.data.redis.RedisUtils;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
 import scw.locks.RedisLockFactory;
@@ -36,7 +37,7 @@ public final class RedisTableIdFactory extends AbstractTableIdFactory {
 				lock.lock();
 				if (!redis.getStringOperations().exists(key)) {
 					long maxId = getMaxId(tableClass, fieldName);
-					return redis.getStringOperations().incr(key, 1, maxId + 1);
+					return RedisUtils.incr(redis.getStringOperations(), key, 1, maxId + 1);
 				}
 			} finally {
 				lock.unlock();

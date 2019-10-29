@@ -8,7 +8,7 @@ import java.net.URLConnection;
 import java.util.Collection;
 
 import scw.core.Constants;
-import scw.core.utils.StringUtils;
+import scw.core.string.StringCodecUtils;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
@@ -65,7 +65,8 @@ public class URLConnectionMessage extends SimpleMultiValueHeadersReadOnly implem
 		if (data == null) {
 			return null;
 		}
-		return StringUtils.createString(data, charsetName);
+
+		return StringCodecUtils.getStringCodec(charsetName).decode(data);
 	}
 
 	@Override

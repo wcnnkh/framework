@@ -15,6 +15,7 @@ import java.util.Set;
 
 import scw.core.Constants;
 import scw.core.exception.NestedRuntimeException;
+import scw.core.string.StringCodecUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ByteArray;
@@ -44,7 +45,7 @@ public final class HttpUtils {
 			return null;
 		}
 
-		return StringUtils.createString(message.toByteArray(), charsetName);
+		return StringCodecUtils.getStringCodec(charsetName).decode(message.toByteArray());
 	}
 
 	public static String postJson(String url, Map<String, String> requestProperties, Object body, String charsetName) {

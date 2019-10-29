@@ -3,6 +3,7 @@ package scw.core.utils;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,13 +17,26 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import scw.core.Converter;
 import scw.core.PrimitiveTypeValueFactory;
+import scw.core.ResourceFactory;
 import scw.core.ValueFactory;
 import scw.core.exception.NotSupportException;
+import scw.core.reflect.ReflectUtils;
 
 public final class XUtils {
 	private XUtils() {
 	};
+
+	private static final boolean isSupportJdk6;
+
+	static {
+		isSupportJdk6 = ReflectUtils.getMethod(String.class, "getBytes", new Class<?>[] { Charset.class }) != null;
+	}
+
+	public static boolean isSupportJdk6() {
+		return isSupportJdk6;
+	}
 
 	public static boolean isWin() {
 		return System.getProperty("os.name").toLowerCase().startsWith("win");
@@ -307,6 +321,18 @@ public final class XUtils {
 			return valueFactory.getBigInteger(data);
 		} else {
 			return valueFactory.getObject(data, type);
+		}
+	}
+
+	public static <T, R> T useResource(ResourceFactory<R> resourceFactory, Converter<R, T> converter) {
+		R resource = null;
+		try {
+			resource = resourceFactory.getResource();
+			return converter.convert(resource);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			resourceFactory.release(resource);
 		}
 	}
 }

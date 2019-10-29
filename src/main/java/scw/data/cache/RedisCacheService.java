@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import scw.data.redis.Redis;
+import scw.data.redis.RedisUtils;
 import scw.data.redis.enums.EXPX;
 import scw.data.redis.enums.NXXX;
 
@@ -38,8 +39,7 @@ public class RedisCacheService implements CacheService {
 	}
 
 	public boolean add(String key, int exp, Object value) {
-		return redis.getObjectOperations().set(key, value, NXXX.NX, EXPX.EX,
-				exp);
+		return redis.getObjectOperations().set(key, value, NXXX.NX, EXPX.EX, exp);
 	}
 
 	public boolean touch(String key, int newExp) {
@@ -48,8 +48,7 @@ public class RedisCacheService implements CacheService {
 	}
 
 	public <T> Map<String, T> get(Collection<String> keyCollections) {
-		return (Map<String, T>) redis.getObjectOperations()
-				.mget(keyCollections);
+		return (Map<String, T>) redis.getObjectOperations().get(keyCollections);
 	}
 
 	public boolean delete(String key) {
@@ -65,7 +64,7 @@ public class RedisCacheService implements CacheService {
 	}
 
 	public long incr(String key, long delta, long initialValue) {
-		return redis.getObjectOperations().incr(key, delta, initialValue);
+		return RedisUtils.incr(redis.getStringOperations(), key, delta, initialValue);
 	}
 
 	/**
@@ -78,7 +77,7 @@ public class RedisCacheService implements CacheService {
 		}
 
 		try {
-			return redis.getObjectOperations().incr(key, delta, initialValue);
+			return RedisUtils.incr(redis.getStringOperations(), key, delta, initialValue);
 		} finally {
 			redis.getObjectOperations().expire(key, ttl.intValue());
 		}
@@ -89,7 +88,7 @@ public class RedisCacheService implements CacheService {
 	}
 
 	public long decr(String key, long delta, long initialValue) {
-		return redis.getObjectOperations().decr(key, delta, initialValue);
+		return RedisUtils.decr(redis.getStringOperations(), key, delta, initialValue);
 	}
 
 	/**
@@ -102,7 +101,7 @@ public class RedisCacheService implements CacheService {
 		}
 
 		try {
-			return redis.getObjectOperations().decr(key, delta, initialValue);
+			return RedisUtils.decr(redis.getStringOperations(), key, delta, initialValue);
 		} finally {
 			redis.getObjectOperations().expire(key, ttl.intValue());
 		}

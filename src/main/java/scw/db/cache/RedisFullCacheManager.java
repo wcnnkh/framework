@@ -1,8 +1,6 @@
 package scw.db.cache;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import scw.core.utils.CollectionUtils;
@@ -18,13 +16,11 @@ public final class RedisFullCacheManager extends FullCacheManager {
 	}
 
 	public void add(String key, Object value) {
-		redis.getObjectOperations().set(key, value, NXXX.NX,
-				EXPX.EX, 0);
+		redis.getObjectOperations().set(key, value, NXXX.NX, EXPX.EX, 0);
 	}
 
 	public void set(String key, Object value) {
-		redis.getObjectOperations().set(key, value, NXXX.XX,
-				EXPX.EX, 0);
+		redis.getObjectOperations().set(key, value, NXXX.XX, EXPX.EX, 0);
 	}
 
 	public void delete(String key) {
@@ -36,28 +32,13 @@ public final class RedisFullCacheManager extends FullCacheManager {
 		return (T) redis.getObjectOperations().get(key);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> Map<String, T> get(Class<T> type, Collection<String> keys) {
 		if (type == null || CollectionUtils.isEmpty(keys)) {
 			return null;
 		}
 
-		String[] keyArr = keys.toArray(new String[keys.size()]);
-		@SuppressWarnings("unchecked")
-		List<T> list = (List<T>) redis.getObjectOperations().mget(keyArr);
-		if (list == null || list.isEmpty()) {
-			return null;
-		}
-
-		Map<String, T> valueMap = new HashMap<String, T>(keyArr.length);
-		for (int i = 0; i < keyArr.length; i++) {
-			T v = list.get(i);
-			if (v == null) {
-				continue;
-			}
-
-			valueMap.put(keyArr[i], v);
-		}
-		return valueMap;
+		return (Map<String, T>) redis.getObjectOperations().get(keys);
 	}
 
 	public Map<String, String> getMap(String key) {

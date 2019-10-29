@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.CharBuffer;
@@ -2481,22 +2480,6 @@ public final class StringUtils {
 		char[] chars = text.toCharArray();
 		replace(chars, replace, newChar);
 		return new String(chars);
-	}
-
-	public static String createString(byte[] bytes, String charsetName) {
-		try {
-			return new String(bytes, charsetName);
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static byte[] getBytes(String text, String charsetName) {
-		try {
-			return text.getBytes(charsetName);
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	public static String format(String text, final Map<String, ?> valueMap) {

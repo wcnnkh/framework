@@ -198,9 +198,8 @@ public abstract class ConfigUtils {
 		invokeSetterByProeprties(instance, properties, true, true, asNameList, true);
 	}
 
-	public static void loadProperties(Object instance, String propertyPrefix, PropertyFactory propertyFactory,
-			Collection<String> asNameList) {
-		invokeSetterByProeprties(instance, propertyPrefix, propertyFactory, true, asNameList, true);
+	public static void invokeSetterByProeprties(Object instance, String propertyPrefix, PropertyFactory propertyFactory){
+		invokeSetterByProeprties(instance, propertyPrefix, propertyFactory, true, null, true);
 	}
 
 	public static void invokeSetterByProeprties(Object instance, String propertyPrefix, PropertyFactory propertyFactory,

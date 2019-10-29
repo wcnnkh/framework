@@ -8,15 +8,12 @@ import java.util.Set;
 import scw.data.redis.enums.EXPX;
 import scw.data.redis.enums.NXXX;
 
-public interface RedisOperations<K, V> {
+public interface RedisOperations<K, V> extends RedisScriptOperations<K, V> {
 	V get(K key);
 
-	List<V> mget(K... keys);
-
 	/**
-	 * 如果 key 已经持有其他值， SET 就覆写旧值，无视类型。
-	 * 对于某个原本带有生存时间（TTL）的键来说， 当 SET 命令成功在这个键上执行时，
-	 * 这个键原有的 TTL 将被清除。
+	 * 如果 key 已经持有其他值， SET 就覆写旧值，无视类型。 对于某个原本带有生存时间（TTL）的键来说， 当 SET
+	 * 命令成功在这个键上执行时， 这个键原有的 TTL 将被清除。
 	 * 
 	 * @param key
 	 * @param value
@@ -101,8 +98,6 @@ public interface RedisOperations<K, V> {
 
 	Long llen(K key);
 
-	Object eval(K script, List<K> keys, List<V> args);
-
 	Map<K, V> hgetAll(K key);
 
 	List<V> brpop(int timeout, K key);
@@ -110,20 +105,12 @@ public interface RedisOperations<K, V> {
 	List<V> blpop(int timeout, K key);
 
 	Boolean hmset(K key, Map<K, V> hash);
-	
-	long incr(K key, long delta);
-	
-	long decr(K key, long delta);
-	
-	long incr(K key, long delta, long initialValue);
 
-	long decr(K key, long delta, long initialValue);
-	
-/*	long incr(K key, long delta, long initValue, int exp);
-	
-	long decr(K key, long delta, long initValue, int exp);*/
+	long incr(K key, long delta);
+
+	long decr(K key, long delta);
 
 	V getAndTouch(K key, int newExp);
 
-	Map<K, V> mget(Collection<K> keys);
+	Map<K, V> get(Collection<K> keys);
 }
