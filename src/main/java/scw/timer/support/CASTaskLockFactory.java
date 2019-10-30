@@ -11,15 +11,11 @@ public class CASTaskLockFactory implements TaskLockFactory {
 	private CASOperations casOperations;
 
 	public CASTaskLockFactory(Memcached memcached) {
-		this(memcached.getCASOperations());
+		this.casOperations = memcached.getCASOperations();
 	}
 
 	public CASTaskLockFactory(Redis redis) {
-		this(redis.getCASOperations());
-	}
-
-	public CASTaskLockFactory(CASOperations casOperations) {
-		this.casOperations = casOperations;
+		this.casOperations = redis.getCASOperations();
 	}
 
 	public Lock getLock(TaskConfig taskConfig, long executionTime) {

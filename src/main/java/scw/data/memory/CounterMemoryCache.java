@@ -1,8 +1,6 @@
-package scw.data.cache.memory;
+package scw.data.memory;
 
 import java.util.concurrent.atomic.AtomicLong;
-
-import scw.data.cache.AbstractMemoryCache;
 
 public class CounterMemoryCache extends AbstractMemoryCache {
 	private AtomicLong value = new AtomicLong();
@@ -11,9 +9,9 @@ public class CounterMemoryCache extends AbstractMemoryCache {
 		long prev, v;
 		do {
 			prev = value.get();
-			v = isExpire(System.currentTimeMillis()) ? initialValue
-					: (prev + delta);
+			v = isExpire(System.currentTimeMillis()) ? initialValue : (prev + delta);
 		} while (!value.compareAndSet(prev, v));
+		cas.incrementAndGet();
 		return v;
 	}
 
@@ -25,8 +23,15 @@ public class CounterMemoryCache extends AbstractMemoryCache {
 		return incr(-delta, initialValue);
 	}
 
-	public Object get() {
+	@Override
+	protected Object getValue() {
 		return value.get();
+	}
+
+	@Override
+	protected boolean setValue(Object value) {
+		this.value.set((Long) value);
+		return false;
 	}
 
 	public void set(Object value) {

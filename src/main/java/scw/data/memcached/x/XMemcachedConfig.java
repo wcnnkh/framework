@@ -15,7 +15,6 @@ public class XMemcachedConfig {
 	private String hosts;
 	private Integer poolSize;
 	private MyTranscoder transcoder;
-	private String keyPrefix;
 
 	public XMemcachedConfig(BeanFactory beanFactory, @ParameterName("memcached.configuration") String configuration) {
 		Properties properties = ResourceUtils.getProperties(configuration);
@@ -25,7 +24,6 @@ public class XMemcachedConfig {
 		}
 
 		this.poolSize = StringUtils.parseInt(properties.getProperty("poolSize"), null);
-		this.keyPrefix = properties.getProperty("prefix");
 		String transcoderName = properties.getProperty("transcoder");
 		if (!StringUtils.isEmpty(transcoderName)) {
 			if (beanFactory.isInstance(transcoderName)) {
@@ -55,12 +53,10 @@ public class XMemcachedConfig {
 	 */
 	public XMemcachedConfig(@ParameterName("memcached.hosts") String hosts,
 			@ParameterName("memcached.pool.size") @NotRequire Integer poolSize,
-			@ParameterName("memcached.transcoder") @NotRequire MyTranscoder transcoder,
-			@ParameterName("memcached.key.prefix") @NotRequire String keyPrefix) {
+			@ParameterName("memcached.transcoder") @NotRequire MyTranscoder transcoder) {
 		this.hosts = hosts;
 		this.poolSize = poolSize;
 		this.transcoder = transcoder;
-		this.keyPrefix = keyPrefix;
 	}
 
 	public String getHosts() {
@@ -73,9 +69,5 @@ public class XMemcachedConfig {
 
 	public MyTranscoder getTranscoder() {
 		return transcoder;
-	}
-
-	public String getKeyPrefix() {
-		return keyPrefix;
 	}
 }

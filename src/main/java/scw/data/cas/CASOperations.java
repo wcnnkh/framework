@@ -11,6 +11,7 @@ import java.util.Map;
  * @param <K>
  * @param <V>
  */
+
 public interface CASOperations {
 	boolean cas(String key, Object value, int exp, long cas);
 

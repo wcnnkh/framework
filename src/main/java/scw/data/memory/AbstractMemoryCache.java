@@ -1,0 +1,77 @@
+package scw.data.memory;
+
+import java.util.concurrent.atomic.AtomicLong;
+
+import scw.data.cas.CAS;
+import scw.data.cas.SimpleCAS;
+import scw.io.SerializerUtils;
+
+public abstract class AbstractMemoryCache implements MemoryCache {
+	private volatile long lastTouch;
+	private volatile int exp;
+	protected AtomicLong cas = new AtomicLong();
+
+	public AbstractMemoryCache() {
+		this.lastTouch = System.currentTimeMillis();
+	}
+
+	public void setExpire(int exp) {
+		this.exp = exp;
+	}
+
+	public void touch() {
+		this.lastTouch = System.currentTimeMillis();
+	}
+
+	public boolean isExpire(long currentTimeMillis) {
+		return exp <= 0 ? false : (currentTimeMillis - lastTouch) > exp * 1000;
+	}
+
+	public boolean setIfAbsent(Object value) {
+		if (!isExpire(System.currentTimeMillis())) {
+			return false;
+		}
+
+		set(value);
+		return true;
+	}
+
+	public boolean setIfAbsent(CAS<Object> value) {
+		if (!isExpire(System.currentTimeMillis())) {
+			return false;
+		}
+
+		return set(value);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> CAS<T> get() {
+		return new SimpleCAS<T>(cas.get(), (T) getValue());
+	}
+
+	public boolean incrCasAndCompare(long cas) {
+		long c;
+		long a;
+		do {
+			a = this.cas.get();
+			c = isExpire(System.currentTimeMillis()) ? 0 : a;
+		} while (this.cas.compareAndSet(a, c + 1));
+		return c == cas;
+	}
+
+	public boolean set(CAS<? extends Object> value) {
+		if (incrCasAndCompare(value.getCas())) {
+			return setValue(SerializerUtils.clone(value.getValue()));
+		}
+		return false;
+	}
+
+	public void set(Object value) {
+		cas.incrementAndGet();
+		setValue(SerializerUtils.clone(value));
+	}
+
+	protected abstract boolean setValue(Object value);
+
+	protected abstract Object getValue();
+}

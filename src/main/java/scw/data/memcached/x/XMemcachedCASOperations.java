@@ -11,6 +11,7 @@ import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
+import scw.data.cas.SimpleCAS;
 
 public class XMemcachedCASOperations implements CASOperations {
 	private final MemcachedClient memcachedClient;
@@ -51,7 +52,7 @@ public class XMemcachedCASOperations implements CASOperations {
 				return null;
 			}
 
-			return new CAS<T>(cas.getCas(), cas.getValue());
+			return new SimpleCAS<T>(cas.getCas(), cas.getValue());
 		} catch (TimeoutException e) {
 			throw new scw.data.memcached.MemcachedException(e);
 		} catch (InterruptedException e) {
@@ -117,7 +118,7 @@ public class XMemcachedCASOperations implements CASOperations {
 			Map<String, CAS<T>> casMap = new HashMap<String, CAS<T>>();
 			for (Entry<String, GetsResponse<T>> entry : map.entrySet()) {
 				GetsResponse<T> v = entry.getValue();
-				casMap.put(entry.getKey(), new CAS<T>(v.getCas(), v.getValue()));
+				casMap.put(entry.getKey(), new SimpleCAS<T>(v.getCas(), v.getValue()));
 			}
 			return casMap;
 		}

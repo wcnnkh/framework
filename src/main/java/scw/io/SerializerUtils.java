@@ -60,4 +60,17 @@ public final class SerializerUtils {
 		return ClassUtils.forName(sb.toString());
 	}
 
+	/**
+	 * 使用序列化来实现对象拷贝
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	public static <T> T clone(T obj) {
+		if (obj == null) {
+			return null;
+		}
+
+		return DEFAULT_SERIALIZER.deserialize(DEFAULT_SERIALIZER.serialize(obj));
+	}
 }

@@ -11,23 +11,17 @@ import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import scw.core.utils.StringUtils;
 import scw.data.cas.CASOperations;
-import scw.data.cas.CASOperationsWrapper;
-import scw.data.memcached.AbstractMemcached;
+import scw.data.memcached.AbstractMemcachedWrapper;
 import scw.data.memcached.Memcached;
 import scw.io.SerializerUtils;
 
-public final class XMemcached extends AbstractMemcached implements scw.core.Destroy {
+public final class XMemcached extends AbstractMemcachedWrapper implements scw.core.Destroy {
 	private final Memcached memcached;
 	private final MemcachedClient memcachedClient;
-	private final String keyPrefix;
 	private final CASOperations casOperations;
 
 	public XMemcached(String hosts) throws IOException {
-		this(hosts, null);
-	}
-
-	public XMemcached(String hosts, String keyPrefix) throws IOException {
-		this(new XMemcachedConfig(hosts, null, new MyTranscoder(SerializerUtils.DEFAULT_SERIALIZER), keyPrefix));
+		this(new XMemcachedConfig(hosts, null, new MyTranscoder(SerializerUtils.DEFAULT_SERIALIZER)));
 	}
 
 	public XMemcached(XMemcachedConfig config) throws IOException {
@@ -56,10 +50,10 @@ public final class XMemcached extends AbstractMemcached implements scw.core.Dest
 		if (config.getPoolSize() != null) {
 			builder.setConnectionPoolSize(config.getPoolSize());
 		}
-		this.keyPrefix = config.getKeyPrefix();
+
 		this.memcachedClient = builder.build();
 		this.memcached = new XMemcachedImpl(memcachedClient);
-		this.casOperations = new CASOperationsWrapper(new XMemcachedCASOperations(memcachedClient), keyPrefix);
+		this.casOperations = new XMemcachedCASOperations(memcachedClient);
 	}
 
 	public void destroy() {
@@ -73,11 +67,6 @@ public final class XMemcached extends AbstractMemcached implements scw.core.Dest
 	@Override
 	public Memcached getTargetMemcached() {
 		return memcached;
-	}
-
-	@Override
-	public String getKeyPrefix() {
-		return keyPrefix;
 	}
 
 	@Override

@@ -1,12 +1,12 @@
 package scw.timer;
 
 import scw.beans.annotation.AutoImpl;
+import scw.locks.JdkLockFactory;
 import scw.locks.Lock;
 import scw.timer.db.DBTaskLockFactory;
 import scw.timer.support.CASTaskLockFactory;
-import scw.timer.support.EmptyTaskLockFactory;
 
-@AutoImpl({ CASTaskLockFactory.class, DBTaskLockFactory.class, EmptyTaskLockFactory.class })
+@AutoImpl({ CASTaskLockFactory.class, DBTaskLockFactory.class, JdkLockFactory.class })
 public interface TaskLockFactory {
 	Lock getLock(TaskConfig taskConfig, long executionTime);
 }

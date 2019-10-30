@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import scw.beans.annotation.AutoImpl;
-import scw.data.cache.memory.MemoryCacheService;
+import scw.data.memory.MemoryCacheService;
 
 @AutoImpl({ RedisCacheService.class, MemcachedCacheService.class, MemoryCacheService.class })
 public interface CacheService {
