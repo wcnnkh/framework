@@ -55,7 +55,10 @@ public abstract class AbstractMemoryCache implements MemoryCache {
 		do {
 			a = this.cas.get();
 			c = isExpire(System.currentTimeMillis()) ? 0 : a;
-		} while (this.cas.compareAndSet(a, c + 1));
+		} while (!this.cas.compareAndSet(a, c + 1));
+		if(c == 0){
+			touch();
+		}
 		return c == cas;
 	}
 

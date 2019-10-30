@@ -1,59 +1,273 @@
 package scw.data.memcached.x;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
-import net.rubyeye.xmemcached.MemcachedClientBuilder;
-import net.rubyeye.xmemcached.XMemcachedClientBuilder;
-import net.rubyeye.xmemcached.command.BinaryCommandFactory;
-import scw.core.utils.StringUtils;
+import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
-import scw.data.memcached.AbstractMemcachedWrapper;
+import scw.data.cas.SimpleCAS;
 import scw.data.memcached.Memcached;
-import scw.io.SerializerUtils;
 
-public final class XMemcached extends AbstractMemcachedWrapper implements scw.core.Destroy {
-	private final Memcached memcached;
+public final class XMemcached implements Memcached {
 	private final MemcachedClient memcachedClient;
 	private final CASOperations casOperations;
+	private volatile boolean isSupportTouch = true;// 是否支持touch协议
 
-	public XMemcached(String hosts) throws IOException {
-		this(new XMemcachedConfig(hosts, null, new MyTranscoder(SerializerUtils.DEFAULT_SERIALIZER)));
+	public XMemcached(XMemcachedClientConfiguration configuration) throws Exception {
+		this.memcachedClient = configuration.configuration();
+		this.casOperations = new XMemcachedCASOperations(memcachedClient);
 	}
 
-	public XMemcached(XMemcachedConfig config) throws IOException {
-		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
-		String[] arr = StringUtils.commonSplit(config.getHosts());
-		for (String a : arr) {
-			String[] vs = a.split(":");
-			String h = vs[0];
-			int port = 11211;
-			if (vs.length == 2) {
-				port = Integer.parseInt(vs[1]);
+	public XMemcached(String hosts) throws Exception {
+		this(new DefaultXMemcachedClientConfiguration(hosts));
+	}
+
+	public <T> T get(String key) {
+		try {
+			return memcachedClient.get(key);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public <T> CAS<T> gets(String key) {
+		GetsResponse<T> cas;
+		try {
+			cas = memcachedClient.gets(key);
+			if (cas == null) {
+				return null;
 			}
 
-			addresses.add(new InetSocketAddress(h, port));
+			return new SimpleCAS<T>(cas.getCas(), cas.getValue());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public boolean set(String key, Object value) {
+		if (value == null) {
+			return false;
 		}
 
-		MemcachedClientBuilder builder = new XMemcachedClientBuilder(addresses);
-		// 宕机报警
-		builder.setFailureMode(true);
-		// 使用二进制文件
-		builder.setCommandFactory(new BinaryCommandFactory());
-		if (config.getTranscoder() != null) {
-			builder.setTranscoder(config.getTranscoder());
+		try {
+			return memcachedClient.set(key, 0, value);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public boolean set(String key, int exp, Object data) {
+		if (data == null) {
+			return false;
 		}
 
-		if (config.getPoolSize() != null) {
-			builder.setConnectionPoolSize(config.getPoolSize());
+		try {
+			return memcachedClient.set(key, exp, data);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public boolean add(String key, Object value) {
+		if (value == null) {
+			return false;
 		}
 
-		this.memcachedClient = builder.build();
-		this.memcached = new XMemcachedImpl(memcachedClient);
-		this.casOperations = new XMemcachedCASOperations(memcachedClient);
+		try {
+			return memcachedClient.add(key, 0, value);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public boolean add(String key, int exp, Object data) {
+		if (data == null) {
+			return false;
+		}
+
+		try {
+			return memcachedClient.add(key, exp, data);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public boolean cas(String key, Object data, long cas) {
+		if (data == null) {
+			return false;
+		}
+
+		try {
+			return memcachedClient.cas(key, 0, data, cas);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public boolean cas(String key, int exp, Object data, long cas) {
+		if (data == null) {
+			return false;
+		}
+
+		try {
+			return memcachedClient.cas(key, exp, data, cas);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T privateGetAndTouch(String key, int newExp) {
+		Object v;
+		try {
+			v = memcachedClient.get(key);
+			if (v == null) {
+				return null;
+			}
+
+			if (v != null) {
+				memcachedClient.set(key, newExp, v);
+			}
+
+			return (T) v;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public <T> T getAndTouch(String key, int newExp) {
+		if (isSupportTouch) {
+			try {
+				return memcachedClient.getAndTouch(key, newExp);
+			} catch (net.rubyeye.xmemcached.exception.MemcachedException e) {// 不支持touch协议
+				isSupportTouch = false;
+				return privateGetAndTouch(key, newExp);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		} else {
+			return privateGetAndTouch(key, newExp);
+		}
+	}
+
+	public boolean touch(String key, int exp) {
+		if (isSupportTouch) {
+			try {
+				return memcachedClient.touch(key, exp);
+			} catch (net.rubyeye.xmemcached.exception.MemcachedException e) {// 不支持touch协议
+				isSupportTouch = false;
+				getAndTouch(key, exp);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		} else {
+			getAndTouch(key, exp);
+		}
+		return true;
+	}
+
+	public <T> Map<String, T> get(Collection<String> keyCollections) {
+		try {
+			return memcachedClient.get(keyCollections);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public long incr(String key, long delta) {
+		try {
+			return memcachedClient.incr(key, delta);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public long decr(String key, long delta) {
+		try {
+			return memcachedClient.incr(key, delta);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public long incr(String key, long delta, long initValue) {
+		try {
+			return memcachedClient.incr(key, delta, initValue);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public long decr(String key, long delta, long initValue) {
+		try {
+			return memcachedClient.incr(key, delta, initValue);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public <T> Map<String, CAS<T>> gets(Collection<String> keyCollections) {
+		Map<String, GetsResponse<T>> map = null;
+		try {
+			map = memcachedClient.gets(keyCollections);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+		if (map != null) {
+			Map<String, CAS<T>> casMap = new HashMap<String, CAS<T>>();
+			for (Entry<String, GetsResponse<T>> entry : map.entrySet()) {
+				GetsResponse<T> v = entry.getValue();
+				casMap.put(entry.getKey(), new SimpleCAS<T>(v.getCas(), v.getValue()));
+			}
+			return casMap;
+		}
+		return null;
+	}
+
+	public boolean delete(String key) {
+		try {
+			return memcachedClient.delete(key);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public boolean delete(String key, long cas) {
+		try {
+			return memcachedClient.delete(key, cas, memcachedClient.getOpTimeout());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public boolean isExist(String key) {
+		return get(key) != null;
+	}
+
+	public CASOperations getCASOperations() {
+		return casOperations;
+	}
+
+	public long incr(String key, long delta, long initValue, int exp) {
+		try {
+			return memcachedClient.incr(key, delta, initValue, memcachedClient.getOpTimeout(), exp);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public long decr(String key, long delta, long initValue, int exp) {
+		try {
+			return memcachedClient.decr(key, delta, initValue, memcachedClient.getOpTimeout(), exp);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void destroy() {
@@ -62,15 +276,5 @@ public final class XMemcached extends AbstractMemcachedWrapper implements scw.co
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public Memcached getTargetMemcached() {
-		return memcached;
-	}
-
-	@Override
-	public CASOperations getCASOperations() {
-		return casOperations;
 	}
 }

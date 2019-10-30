@@ -4,11 +4,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeoutException;
 
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
-import net.rubyeye.xmemcached.exception.MemcachedException;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
 import scw.data.cas.SimpleCAS;
@@ -23,24 +21,16 @@ public class XMemcachedCASOperations implements CASOperations {
 	public boolean cas(String key, Object value, int exp, long cas) {
 		try {
 			return memcachedClient.cas(key, exp, value, cas);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	public boolean delete(String key, long cas) {
 		try {
 			return memcachedClient.delete(key, cas, memcachedClient.getOpTimeout());
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -53,12 +43,8 @@ public class XMemcachedCASOperations implements CASOperations {
 			}
 
 			return new SimpleCAS<T>(cas.getCas(), cas.getValue());
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -69,36 +55,24 @@ public class XMemcachedCASOperations implements CASOperations {
 
 		try {
 			memcachedClient.set(key, exp, value);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	public boolean delete(String key) {
 		try {
 			return memcachedClient.delete(key);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	public boolean add(String key, Object value, int exp) {
 		try {
 			return memcachedClient.add(key, exp, value);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -106,12 +80,8 @@ public class XMemcachedCASOperations implements CASOperations {
 		Map<String, GetsResponse<T>> map = null;
 		try {
 			map = memcachedClient.gets(keys);
-		} catch (TimeoutException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (InterruptedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
-		} catch (MemcachedException e) {
-			throw new scw.data.memcached.MemcachedException(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 
 		if (map != null) {

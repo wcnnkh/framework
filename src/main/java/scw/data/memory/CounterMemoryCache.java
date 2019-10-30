@@ -11,6 +11,10 @@ public class CounterMemoryCache extends AbstractMemoryCache {
 			prev = value.get();
 			v = isExpire(System.currentTimeMillis()) ? initialValue : (prev + delta);
 		} while (!value.compareAndSet(prev, v));
+		if(v == initialValue){
+			touch();
+		}
+		
 		cas.incrementAndGet();
 		return v;
 	}

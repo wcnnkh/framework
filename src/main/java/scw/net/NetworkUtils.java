@@ -1,10 +1,15 @@
 package scw.net;
 
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+
+import scw.core.utils.StringUtils;
 
 public final class NetworkUtils {
 	private NetworkUtils() {
@@ -71,5 +76,21 @@ public final class NetworkUtils {
 
 	public static Message execute(URLRequest request) {
 		return execute(request, MESSAGE_RESPONSE);
+	}
+
+	public static List<InetSocketAddress> parseInetSocketAddressList(String address) {
+		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
+		String[] arr = StringUtils.commonSplit(address);
+		for (String a : arr) {
+			String[] vs = a.split(":");
+			String h = vs[0];
+			int port = 11211;
+			if (vs.length == 2) {
+				port = Integer.parseInt(vs[1]);
+			}
+
+			addresses.add(new InetSocketAddress(h, port));
+		}
+		return addresses;
 	}
 }

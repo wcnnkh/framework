@@ -3,8 +3,8 @@ package scw.db.cache;
 import java.util.Collection;
 import java.util.Map;
 
+import scw.data.cas.CasUtils;
 import scw.data.memcached.Memcached;
-import scw.data.memcached.MemcachedUtils;
 
 public final class MemcachedFullCacheManager extends FullCacheManager {
 	private final Memcached memcached;
@@ -38,10 +38,10 @@ public final class MemcachedFullCacheManager extends FullCacheManager {
 	}
 
 	public void mapAdd(String key, String field, String value) {
-		MemcachedUtils.mapPut(memcached, key, field, value);
+		CasUtils.mapPut(memcached.getCASOperations(), key, field, value);
 	}
 
 	public void mapRemove(String key, String field) {
-		MemcachedUtils.mapRemove(memcached, key, field);
+		CasUtils.mapRemove(memcached.getCASOperations(), key, field);
 	}
 }

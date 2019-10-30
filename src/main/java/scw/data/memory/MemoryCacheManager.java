@@ -9,19 +9,33 @@ import java.util.concurrent.ConcurrentHashMap;
 import scw.core.Destroy;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.core.utils.XTime;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public final class MemoryCacheManager implements Destroy {
+	// 单位：秒
 	private static final long DEFAULT_CLEAR_PERIOD = StringUtils
-			.parseLong(SystemPropertyUtils.getProperty("memory.temporary.cache.clear.period"), XTime.ONE_MINUTE);
+			.parseLong(SystemPropertyUtils.getProperty("memory.temporary.cache.clear.period"), 60);
 	private static Logger logger = LoggerFactory.getLogger(MemoryCacheManager.class);
-	private Timer timer = new Timer(getClass().getSimpleName());
+
 	private final ConcurrentHashMap<String, MemoryCache> cacheMap = new ConcurrentHashMap<String, MemoryCache>();
+	private Timer timer;
+	private TimerTask timerTask;
 
 	public MemoryCacheManager() {
-		this.timer.schedule(new ClearExpireKeyTask(), DEFAULT_CLEAR_PERIOD, DEFAULT_CLEAR_PERIOD);
+		this(DEFAULT_CLEAR_PERIOD);
+	}
+
+	/**
+	 * @param clearPeriodSecond
+	 *            单位：秒
+	 */
+	public MemoryCacheManager(long clearPeriodSecond) {
+		if (clearPeriodSecond > 0) {
+			this.timerTask = new ClearExpireKeyTask();
+			timer = new Timer(getClass().getSimpleName());
+			this.timer.schedule(timerTask, clearPeriodSecond * 1000L, clearPeriodSecond * 1000L);
+		}
 	}
 
 	public MemoryCache getMemoryCache(String key) {
@@ -66,7 +80,13 @@ public final class MemoryCacheManager implements Destroy {
 	}
 
 	public void destroy() {
-		timer.cancel();
+		if (timerTask != null) {
+			timerTask.cancel();
+		}
+
+		if (timer != null) {
+			timer.cancel();
+		}
 	}
 
 	private final class ClearExpireKeyTask extends TimerTask {
@@ -79,8 +99,8 @@ public final class MemoryCacheManager implements Destroy {
 				while (iterator.hasNext()) {
 					Entry<String, MemoryCache> entry = iterator.next();
 					if (entry.getValue().isExpire(currentTime)) {
-						logger.debug("Deleting expired key:{}", entry.getKey());
 						iterator.remove();
+						logger.debug("Deleting expired key:{}", entry.getKey());
 					}
 				}
 			} catch (Exception e) {

@@ -27,7 +27,7 @@ public final class DefaultCountLimit extends AbstractCountLimit {
 		if(value instanceof Number){
 			return ((Number) value).longValue();
 		}else{
-			return StringUtils.parseLong(value.toString());
+			return StringUtils.parseLong(value.toString().trim());
 		}
 	}
 }
