@@ -1,7 +1,8 @@
-package scw.application.consumer;
+package scw.mq;
 
 import scw.beans.annotation.AutoImpl;
 import scw.core.Consumer;
+import scw.mq.support.XmlConsumerFactory;
 
 @AutoImpl({ XmlConsumerFactory.class })
 public interface ConsumerFactory {

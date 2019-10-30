@@ -70,6 +70,7 @@ public class SingleExchange<T> implements Exchange<T> {
 				Thread.sleep(RETRY_TIME_CYCLE);
 				bindConsumer(routingKey, queueName, durable, exclusive, autoDelete, arguments, consumer);
 			} catch (InterruptedException e1) {
+				throw new RuntimeException(e1);
 			}
 		}
 	}
@@ -90,6 +91,7 @@ public class SingleExchange<T> implements Exchange<T> {
 				Thread.sleep(RETRY_TIME_CYCLE);
 				basePush(routingKey, mandatory, immediate, message);
 			} catch (InterruptedException e1) {
+				throw new RuntimeException(e1);
 			}
 		}
 	}
@@ -110,6 +112,7 @@ public class SingleExchange<T> implements Exchange<T> {
 				Thread.sleep(RETRY_TIME_CYCLE);
 				basePush(routingKey, message);
 			} catch (InterruptedException e1) {
+				throw new RuntimeException(e1);
 			}
 		}
 	}

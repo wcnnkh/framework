@@ -1,4 +1,4 @@
-package scw.application.consumer;
+package scw.mq.support;
 
 import scw.mq.amqp.AmqpQueueConfig;
 import scw.mq.amqp.Exchange;

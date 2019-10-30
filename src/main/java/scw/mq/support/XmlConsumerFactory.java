@@ -1,4 +1,4 @@
-package scw.application.consumer;
+package scw.mq.support;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -18,6 +18,7 @@ import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.XMLUtils;
 import scw.logger.LoggerUtils;
+import scw.mq.ConsumerFactory;
 
 public class XmlConsumerFactory implements ConsumerFactory {
 	private Map<String, AmqpConfig> amqpMap = new HashMap<String, AmqpConfig>();

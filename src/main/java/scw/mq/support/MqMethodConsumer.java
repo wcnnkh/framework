@@ -1,4 +1,4 @@
-package scw.application.consumer;
+package scw.mq.support;
 
 import scw.core.Parameters;
 import scw.core.aop.Invoker;

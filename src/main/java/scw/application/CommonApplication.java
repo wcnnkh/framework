@@ -1,13 +1,11 @@
 package scw.application;
 
-import java.util.Collection;
-
-import scw.application.consumer.AnnotationConsumerUtils;
 import scw.beans.BeanUtils;
 import scw.beans.XmlBeanFactory;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerUtils;
+import scw.mq.MQUtils;
 import scw.sql.orm.ORMUtils;
 import scw.timer.TimerUtils;
 
@@ -90,13 +88,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 
 		super.init();
 		TimerUtils.scanningAnnotation(ResourceUtils.getClassList(getCrontabAnnotationPackage()), getBeanFactory());
-		scanningConsumer();
-	}
-
-	private void scanningConsumer() {
-		Collection<Class<?>> classes = ResourceUtils.getClassList(getConsumerAnnotationPackage());
-		AnnotationConsumerUtils.scanningAMQPConsumer(getBeanFactory(), classes);
-		AnnotationConsumerUtils.scanningConsumer(getBeanFactory(), classes);
+		MQUtils.scanningAnnotation(this, ResourceUtils.getClassList(getConsumerAnnotationPackage()));
 	}
 
 	public void destroy() {

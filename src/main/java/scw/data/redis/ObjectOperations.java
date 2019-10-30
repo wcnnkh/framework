@@ -22,21 +22,37 @@ public final class ObjectOperations extends AbstractRedisOperationsWrapper<Strin
 
 	@Override
 	protected byte[] encodeKey(String key) {
+		if(key == null){
+			return null;
+		}
+		
 		return stringCodec.encode(key);
 	}
 
 	@Override
 	protected String decodeKey(byte[] key) {
+		if(key == null){
+			return null;
+		}
+		
 		return stringCodec.decode(key);
 	}
 
 	@Override
 	protected byte[] encodeValue(Object value) {
+		if(value == null){
+			return null;
+		}
+		
 		return serializer.serialize(value);
 	}
 
 	@Override
 	protected Object decodeValue(byte[] value) {
+		if(value == null){
+			return null;
+		}
+		
 		return serializer.deserialize(value);
 	}
 }
