@@ -12,7 +12,7 @@ import scw.core.annotation.DefaultValue;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.PropertyParameter;
 import scw.core.instance.annotation.ResourceParameter;
-import scw.core.parameter.ContainAnnotationParameterConfig;
+import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.resource.ResourceUtils;
@@ -32,7 +32,7 @@ public class AutoInstanceConfig implements InstanceConfig {
 	protected final Class<?> clazz;
 	protected final ValueFactory<String> valueFactory;
 	private Constructor<?> constructor;
-	private ContainAnnotationParameterConfig[] containAnnotationParameterConfigs;
+	private ParameterConfig[] parameterConfigs;
 
 	public AutoInstanceConfig(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz) {
 		this(instanceFactory, propertyFactory, StringParse.DEFAULT, clazz, ReflectUtils.getConstructorOrderList(clazz));
@@ -47,27 +47,27 @@ public class AutoInstanceConfig implements InstanceConfig {
 		for (Constructor<?> constructor : constructors) {
 			if (isAutoConstructor(constructor)) {
 				this.constructor = constructor;
-				this.containAnnotationParameterConfigs = ParameterUtils.getParameterConfigs(constructor);
+				this.parameterConfigs = ParameterUtils.getParameterConfigs(constructor);
 			}
 		}
 	}
 
-	protected String getDefaultName(ContainAnnotationParameterConfig containAnnotationParameterConfig) {
-		return clazz.getClass().getName() + "." + containAnnotationParameterConfig.getName();
+	protected String getDefaultName(ParameterConfig parameterConfig) {
+		return clazz.getClass().getName() + "." + parameterConfig.getName();
 	}
 
-	protected String getProperty(ContainAnnotationParameterConfig containAnnotationParameterConfig) {
-		ParameterName parameterName = containAnnotationParameterConfig.getAnnotation(ParameterName.class);
+	protected String getProperty(ParameterConfig parameterConfig) {
+		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
 		String value = propertyFactory.getProperty(
-				parameterName == null ? getDefaultName(containAnnotationParameterConfig) : parameterName.value());
+				parameterName == null ? getDefaultName(parameterConfig) : parameterName.value());
 		if (value == null) {
-			DefaultValue defaultValue = containAnnotationParameterConfig.getAnnotation(DefaultValue.class);
+			DefaultValue defaultValue = parameterConfig.getAnnotation(DefaultValue.class);
 			if (defaultValue != null) {
 				value = defaultValue.value();
 			}
 		}
 
-		ResourceParameter resourceParameter = containAnnotationParameterConfig.getAnnotation(ResourceParameter.class);
+		ResourceParameter resourceParameter = parameterConfig.getAnnotation(ResourceParameter.class);
 		if (resourceParameter != null) {
 			if (StringUtils.isEmpty(value)) {
 				boolean b = StringUtils.isEmpty(resourceParameter.value()) ? false
@@ -84,10 +84,10 @@ public class AutoInstanceConfig implements InstanceConfig {
 		return value;
 	}
 
-	protected boolean isProerptyType(ContainAnnotationParameterConfig containAnnotationParameterConfig) {
-		PropertyParameter propertyParameter = containAnnotationParameterConfig.getAnnotation(PropertyParameter.class);
+	protected boolean isProerptyType(ParameterConfig parameterConfig) {
+		PropertyParameter propertyParameter = parameterConfig.getAnnotation(PropertyParameter.class);
 		if (propertyParameter == null) {
-			Class<?> type = containAnnotationParameterConfig.getType();
+			Class<?> type = parameterConfig.getType();
 			return ClassUtils.isPrimitiveOrWrapper(type) || type == String.class || type.isArray() || type.isEnum()
 					|| Class.class == type || BigDecimal.class == type || BigInteger.class == type
 					|| Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type);
@@ -96,8 +96,8 @@ public class AutoInstanceConfig implements InstanceConfig {
 		}
 	}
 
-	protected String getInstanceName(ContainAnnotationParameterConfig containAnnotationParameterConfig) {
-		ParameterName parameterName = containAnnotationParameterConfig.getAnnotation(ParameterName.class);
+	protected String getInstanceName(ParameterConfig parameterConfig) {
+		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
 		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
 			String value = propertyFactory.getProperty(parameterName.value());
 			if (value == null) {
@@ -106,11 +106,11 @@ public class AutoInstanceConfig implements InstanceConfig {
 
 			return instanceFactory.isInstance(value) ? null : value;
 		} else {
-			if (instanceFactory.isInstance(containAnnotationParameterConfig.getType())) {
-				return containAnnotationParameterConfig.getType().getName();
+			if (instanceFactory.isInstance(parameterConfig.getType())) {
+				return parameterConfig.getType().getName();
 			}
 
-			String name = getDefaultName(containAnnotationParameterConfig);
+			String name = getDefaultName(parameterConfig);
 			if (instanceFactory.isInstance(name)) {
 				return name;
 			}
@@ -124,31 +124,31 @@ public class AutoInstanceConfig implements InstanceConfig {
 			System.out.println(constructor);
 		}
 		
-		ContainAnnotationParameterConfig[] parameterDefinitions = ParameterUtils.getParameterConfigs(constructor);
+		ParameterConfig[] parameterDefinitions = ParameterUtils.getParameterConfigs(constructor);
 		if (parameterDefinitions.length == 0) {
 			return true;
 		}
 
 		for (int i = 0; i < parameterDefinitions.length; i++) {
-			ContainAnnotationParameterConfig containAnnotationParameterConfig = parameterDefinitions[i];
-			boolean require = ParameterUtils.isRequire(containAnnotationParameterConfig);
+			ParameterConfig parameterConfig = parameterDefinitions[i];
+			boolean require = ParameterUtils.isRequire(parameterConfig);
 			if (!require) {
 				continue;
 			}
 
-			boolean isProperty = isProerptyType(containAnnotationParameterConfig);
+			boolean isProperty = isProerptyType(parameterConfig);
 			if (logger.isDebugEnabled()) {
 				logger.debug("{} parameter index {} is {}", constructor, i, isProperty ? "property" : "bean");
 			}
 
 			// 是否是属性而不是bean
 			if (isProperty) {
-				String value = getProperty(containAnnotationParameterConfig);
+				String value = getProperty(parameterConfig);
 				if (StringUtils.isEmpty(value)) {
 					return false;
 				}
 			} else {
-				String name = getInstanceName(containAnnotationParameterConfig);
+				String name = getInstanceName(parameterConfig);
 				if (name == null) {
 					return false;
 				}
@@ -166,23 +166,23 @@ public class AutoInstanceConfig implements InstanceConfig {
 			return null;
 		}
 
-		if (containAnnotationParameterConfigs.length == 0) {
+		if (parameterConfigs.length == 0) {
 			return new Object[0];
 		}
 
-		Object[] args = new Object[containAnnotationParameterConfigs.length];
-		for (int i = 0; i < containAnnotationParameterConfigs.length; i++) {
-			ContainAnnotationParameterConfig containAnnotationParameterConfig = containAnnotationParameterConfigs[i];
-			boolean require = ParameterUtils.isRequire(containAnnotationParameterConfig);
-			if (isProerptyType(containAnnotationParameterConfig)) {
-				String value = getProperty(containAnnotationParameterConfig);
+		Object[] args = new Object[parameterConfigs.length];
+		for (int i = 0; i < parameterConfigs.length; i++) {
+			ParameterConfig parameterConfig = parameterConfigs[i];
+			boolean require = ParameterUtils.isRequire(parameterConfig);
+			if (isProerptyType(parameterConfig)) {
+				String value = getProperty(parameterConfig);
 				if (require && StringUtils.isEmpty(value)) {
 					return null;
 				}
 
-				args[i] = XUtils.getValue(valueFactory, value, containAnnotationParameterConfig.getGenericType());
+				args[i] = XUtils.getValue(valueFactory, value, parameterConfig.getGenericType());
 			} else {
-				String name = getInstanceName(containAnnotationParameterConfig);
+				String name = getInstanceName(parameterConfig);
 				args[i] = name == null ? null : instanceFactory.getInstance(name);
 			}
 		}

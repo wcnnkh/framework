@@ -7,7 +7,7 @@ import scw.beans.annotation.LockParameter;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
-import scw.core.parameter.ContainAnnotationParameterConfig;
+import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.AnnotationUtils;
 import scw.json.JSONUtils;
@@ -41,9 +41,9 @@ public final class LockFilter implements Filter {
 
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(method.toString());
-		ContainAnnotationParameterConfig[] configs = ParameterUtils.getParameterConfigs(method);
+		ParameterConfig[] configs = ParameterUtils.getParameterConfigs(method);
 		for (int i = 0; i < configs.length; i++) {
-			ContainAnnotationParameterConfig config = configs[i];
+			ParameterConfig config = configs[i];
 			boolean b = lockConfig.all();
 			LockParameter lockParameter = config.getAnnotation(LockParameter.class);
 			if (lockParameter != null) {

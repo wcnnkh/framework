@@ -246,6 +246,10 @@ public final class XUtils {
 			return valueFactory.getFloatValue(data);
 		} else if (Float.class == type) {
 			return valueFactory.getFloat(data);
+		} else if(double.class == type){
+			return valueFactory.getDoubleValue(data);
+		} else if(Double.class == type){
+			return valueFactory.getDouble(data);
 		} else if (short.class == type) {
 			return valueFactory.getShortValue(data);
 		} else if (Short.class == type) {
@@ -293,6 +297,10 @@ public final class XUtils {
 			return valueFactory.getLongValue(data);
 		} else if (Long.class == type) {
 			return valueFactory.getLong(data);
+		} else if(double.class == type){
+			return valueFactory.getDoubleValue(data);
+		} else if(Double.class == type){
+			return valueFactory.getDouble(data);
 		} else if (float.class == type) {
 			return valueFactory.getFloatValue(data);
 		} else if (Float.class == type) {

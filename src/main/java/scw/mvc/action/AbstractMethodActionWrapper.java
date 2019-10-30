@@ -3,7 +3,7 @@ package scw.mvc.action;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import scw.core.parameter.ContainAnnotationParameterConfig;
+import scw.core.parameter.ParameterConfig;
 
 public abstract class AbstractMethodActionWrapper implements MethodAction {
 
@@ -26,7 +26,7 @@ public abstract class AbstractMethodActionWrapper implements MethodAction {
 		return getTargetMethodAction().getMethod();
 	}
 
-	public ContainAnnotationParameterConfig[] getParameterConfigs() {
+	public ParameterConfig[] getParameterConfigs() {
 		return getTargetMethodAction().getParameterConfigs();
 	}
 

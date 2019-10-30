@@ -15,12 +15,12 @@ public final class ParameterUtils {
 	private ParameterUtils() {
 	};
 
-	public static ContainAnnotationParameterConfig[] getParameterConfigs(Constructor<?> constructor) {
+	public static ParameterConfig[] getParameterConfigs(Constructor<?> constructor) {
 		String[] names = getParameterName(constructor);
 		Annotation[][] parameterAnnoatations = constructor.getParameterAnnotations();
 		Type[] parameterGenericTypes = constructor.getGenericParameterTypes();
 		Class<?>[] parameterTypes = constructor.getParameterTypes();
-		ContainAnnotationParameterConfig[] parameterDefinitions = new ContainAnnotationParameterConfig[names.length];
+		ParameterConfig[] parameterDefinitions = new ParameterConfig[names.length];
 		for (int i = 0; i < names.length; i++) {
 			parameterDefinitions[i] = new SimpleParameterConfig(names[i], parameterAnnoatations[i],
 					parameterTypes[i], parameterGenericTypes[i]);
@@ -28,12 +28,12 @@ public final class ParameterUtils {
 		return parameterDefinitions;
 	}
 
-	public static ContainAnnotationParameterConfig[] getParameterConfigs(Method method) {
+	public static ParameterConfig[] getParameterConfigs(Method method) {
 		String[] names = getParameterName(method);
 		Annotation[][] parameterAnnoatations = method.getParameterAnnotations();
 		Type[] parameterGenericTypes = method.getGenericParameterTypes();
 		Class<?>[] parameterTypes = method.getParameterTypes();
-		ContainAnnotationParameterConfig[] parameterDefinitions = new ContainAnnotationParameterConfig[names.length];
+		ParameterConfig[] parameterDefinitions = new ParameterConfig[names.length];
 		for (int i = 0; i < names.length; i++) {
 			parameterDefinitions[i] = new SimpleParameterConfig(names[i], parameterAnnoatations[i],
 					parameterTypes[i], parameterGenericTypes[i]);
@@ -41,7 +41,7 @@ public final class ParameterUtils {
 		return parameterDefinitions;
 	}
 
-	public static boolean isRequire(ContainAnnotationParameterConfig containAnnotationParameterConfig) {
+	public static boolean isRequire(ParameterConfig containAnnotationParameterConfig) {
 		Require require = containAnnotationParameterConfig.getAnnotation(Require.class);
 		if (require != null) {
 			return require.value();
@@ -55,7 +55,7 @@ public final class ParameterUtils {
 		return true;
 	}
 
-	public static String getParameterName(ContainAnnotationParameterConfig containAnnotationParameterConfig) {
+	public static String getParameterName(ParameterConfig containAnnotationParameterConfig) {
 		ParameterName parameterName = containAnnotationParameterConfig.getAnnotation(ParameterName.class);
 		if (parameterName == null) {
 			return containAnnotationParameterConfig.getName();

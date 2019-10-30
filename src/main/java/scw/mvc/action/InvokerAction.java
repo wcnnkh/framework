@@ -8,7 +8,7 @@ import scw.beans.BeanFactory;
 import scw.beans.MethodProxyInvoker;
 import scw.core.PropertyFactory;
 import scw.core.aop.Invoker;
-import scw.core.parameter.ContainAnnotationParameterConfig;
+import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.AnnotationFactory;
 import scw.core.reflect.AnnotationUtils;
@@ -19,7 +19,7 @@ import scw.mvc.parameter.ParameterFilter;
 
 public class InvokerAction implements MethodAction {
 	private final Invoker invoker;
-	private final ContainAnnotationParameterConfig[] containAnnotationParameterConfigs;
+	private final ParameterConfig[] parameterConfigs;
 	private final Collection<ParameterFilter> parameterFilters;
 	private final AnnotationFactory superAnnotationFactory;
 	private final AnnotationFactory annotationFactory;
@@ -30,7 +30,7 @@ public class InvokerAction implements MethodAction {
 			Method method, AnnotationFactory superAnnotationFactory) {
 		this.invoker = new MethodProxyInvoker(beanFactory, targetClass, method);
 		this.parameterFilters = MVCUtils.getParameterFilters(beanFactory, targetClass, method);
-		this.containAnnotationParameterConfigs = ParameterUtils.getParameterConfigs(method);
+		this.parameterConfigs = ParameterUtils.getParameterConfigs(method);
 		this.targetClass = targetClass;
 		this.method = method;
 		this.superAnnotationFactory = superAnnotationFactory;
@@ -38,7 +38,7 @@ public class InvokerAction implements MethodAction {
 	}
 
 	public Object doAction(Channel channel) throws Throwable {
-		Object[] args = MVCUtils.getParameterValues(channel, containAnnotationParameterConfigs, parameterFilters);
+		Object[] args = MVCUtils.getParameterValues(channel, parameterConfigs, parameterFilters);
 		return invoker.invoke(args);
 	}
 
@@ -59,7 +59,7 @@ public class InvokerAction implements MethodAction {
 		return method;
 	}
 
-	public ContainAnnotationParameterConfig[] getParameterConfigs() {
-		return containAnnotationParameterConfigs;
+	public ParameterConfig[] getParameterConfigs() {
+		return parameterConfigs;
 	}
 }

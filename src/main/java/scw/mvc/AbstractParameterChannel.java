@@ -8,19 +8,22 @@ import java.util.Collection;
 import scw.beans.BeanFactory;
 import scw.core.annotation.ParameterName;
 import scw.core.parameter.ParameterConfig;
-import scw.core.reflect.AnnotationFactory;
 import scw.core.reflect.ReflectUtils;
+import scw.core.utils.NumberUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
 import scw.json.JSONParseSupport;
+import scw.mvc.annotation.BigDecimalMultiply;
 import scw.mvc.parameter.ParameterFilter;
 
-public abstract class AbstractParameterChannel extends AbstractChannel implements ParameterChannel {
+public abstract class AbstractParameterChannel extends AbstractChannel
+		implements ParameterChannel {
 	protected final JSONParseSupport jsonParseSupport;
 
 	public AbstractParameterChannel(BeanFactory beanFactory,
-			Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport) {
+			Collection<ParameterFilter> parameterFilters,
+			JSONParseSupport jsonParseSupport) {
 		super(beanFactory, parameterFilters);
 		this.jsonParseSupport = jsonParseSupport;
 	}
@@ -35,16 +38,50 @@ public abstract class AbstractParameterChannel extends AbstractChannel implement
 			return getObject(parameterConfig.getGenericType());
 		}
 
+		BigDecimalMultiply bigDecimalMultiply = parameterConfig
+				.getAnnotation(BigDecimalMultiply.class);
+		if (bigDecimalMultiply != null) {
+			return bigDecimalMultiply(name, parameterConfig, bigDecimalMultiply);
+		}
+
 		return XUtils.getValue(this, name, parameterConfig.getGenericType());
+	}
+
+	public Object bigDecimalMultiply(String name,
+			ParameterConfig parameterConfig,
+			BigDecimalMultiply bigDecimalMultiply) {
+		String value = getString(name);
+		if (StringUtils.isEmpty(value)) {
+			return castBigDecimal(null, parameterConfig.getType());
+		}
+
+		BigDecimal a = new BigDecimal(value);
+		BigDecimal b = new BigDecimal(bigDecimalMultiply.value());
+		return castBigDecimal(a.multiply(b), parameterConfig.getType());
+	}
+
+	private Object castBigDecimal(BigDecimal bigDecimal, Class<?> type) {
+		if (type == BigDecimal.class) {
+			return bigDecimal;
+		}
+
+		if (type == BigInteger.class) {
+			return bigDecimal == null ? null : bigDecimal.toBigInteger();
+		}
+
+		if (bigDecimal == null) {
+			return type.isPrimitive() ? 0 : null;
+		}
+
+		return NumberUtils.converPrimitive(bigDecimal, type);
 	}
 
 	public String getParameterName(ParameterConfig parameterConfig) {
 		String name = parameterConfig.getName();
-		if (parameterConfig instanceof AnnotationFactory) {
-			ParameterName parameterName = ((AnnotationFactory) parameterConfig).getAnnotation(ParameterName.class);
-			if (parameterName != null) {
-				name = parameterName.value();
-			}
+		ParameterName parameterName = parameterConfig
+				.getAnnotation(ParameterName.class);
+		if (parameterName != null) {
+			name = parameterName.value();
 		}
 		return name;
 	}
