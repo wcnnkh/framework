@@ -7,7 +7,6 @@ import scw.core.Constants;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.AnnotationUtils;
-import scw.core.utils.ArrayUtils;
 import scw.security.limit.annotation.CountLimitParameter;
 import scw.security.limit.annotation.CountLimitSecurityCount;
 import scw.security.limit.annotation.CountLimitSecurityName;
@@ -15,15 +14,16 @@ import scw.security.limit.annotation.CountLimitSecurityName;
 @Bean(proxy = false)
 public class DefaultCountLimitConfigFactory implements CountLimitConfigFactory {
 
-	public CountLimitConfig getCountLimitConfig(Class<?> clazz, Method method, Object[] args) throws Throwable {
-		CountLimitSecurityCount countLimitSecurityCount = AnnotationUtils.getAnnotation(CountLimitSecurityCount.class,
-				clazz, method);
+	public CountLimitConfig getCountLimitConfig(Class<?> clazz, Method method,
+			Object[] args) throws Throwable {
+		CountLimitSecurityCount countLimitSecurityCount = AnnotationUtils
+				.getAnnotation(CountLimitSecurityCount.class, clazz, method);
 		if (countLimitSecurityCount == null) {
 			return null;
 		}
 
-		CountLimitSecurityName countLimitSecurityName = AnnotationUtils.getAnnotation(CountLimitSecurityName.class,
-				clazz, method);
+		CountLimitSecurityName countLimitSecurityName = AnnotationUtils
+				.getAnnotation(CountLimitSecurityName.class, clazz, method);
 		if (countLimitSecurityName == null) {
 			return null;
 		}
@@ -35,33 +35,35 @@ public class DefaultCountLimitConfigFactory implements CountLimitConfigFactory {
 
 		sb.append("mvc.limit:");
 		sb.append(countLimitSecurityName.value());
-		ParameterConfig[] parameterConfigs = ParameterUtils.getParameterConfigs(method);
-		if (ArrayUtils.isEmpty(parameterConfigs)) {
-			for (int i = 0; i < parameterConfigs.length; i++) {
-				ParameterConfig config = parameterConfigs[i];
-				boolean b = countLimitSecurityName.condition();
-				CountLimitParameter countLimitParameter = config.getAnnotation(CountLimitParameter.class);
-				if (countLimitParameter != null) {
-					b = countLimitParameter.value();
-				}
+		ParameterConfig[] parameterConfigs = ParameterUtils
+				.getParameterConfigs(method);
+		for (int i = 0; i < parameterConfigs.length; i++) {
+			ParameterConfig config = parameterConfigs[i];
+			boolean b = countLimitSecurityName.condition();
+			CountLimitParameter countLimitParameter = config
+					.getAnnotation(CountLimitParameter.class);
+			if (countLimitParameter != null) {
+				b = countLimitParameter.value();
+			}
 
-				if (b) {
-					sb.append("&");
-					sb.append(config.getName());
-					sb.append("=");
-					Object v = args[i];
-					if (v == null) {
-						sb.append(v);
-					} else {
-						sb.append((v instanceof CountLimitConfigName)
-								? ((CountLimitConfigName) v).getCountLimitConfigName() : v);
-					}
+			if (b) {
+				sb.append("&");
+				sb.append(config.getName());
+				sb.append("=");
+				Object v = args[i];
+				if (v == null) {
+					sb.append(v);
+				} else {
+					sb.append((v instanceof CountLimitConfigName) ? ((CountLimitConfigName) v)
+							.getCountLimitConfigName() : v);
 				}
 			}
 		}
 
-		return new SimpleCountLimitConfig(sb.toString(), countLimitSecurityCount.value(),
-				countLimitSecurityCount.period(), countLimitSecurityCount.timeUnit());
+		return new SimpleCountLimitConfig(sb.toString(),
+				countLimitSecurityCount.value(),
+				countLimitSecurityCount.period(),
+				countLimitSecurityCount.timeUnit());
 	}
 
 }
