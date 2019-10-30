@@ -1,11 +1,11 @@
-package scw.mvc.annotation;
+package scw.security.limit.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.mvc.limit.CountLimitConfigFactory;
+import scw.security.limit.CountLimitConfigFactory;
 import scw.security.limit.CountLimitFactory;
 
 /**

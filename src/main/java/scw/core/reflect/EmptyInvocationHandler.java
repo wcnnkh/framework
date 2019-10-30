@@ -15,8 +15,8 @@ public class EmptyInvocationHandler implements InvocationHandler, Filter{
 		return null;
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Method method,
-			Object[] args, FilterChain filterChain) throws Throwable {
+	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+			FilterChain filterChain) throws Throwable {
 		//ingore
 		return null;
 	}

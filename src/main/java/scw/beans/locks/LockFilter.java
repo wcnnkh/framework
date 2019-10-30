@@ -32,11 +32,11 @@ public final class LockFilter implements Filter {
 		this.lockFactory = lockFactory;
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
-			throws Throwable {
-		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, method.getDeclaringClass(), method);
+	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+			FilterChain filterChain) throws Throwable {
+		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, targetClass, method);
 		if (lockConfig == null) {
-			return filterChain.doFilter(invoker, proxy, method, args);
+			return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 		}
 
 		StringBuilder sb = new StringBuilder(128);
@@ -44,8 +44,13 @@ public final class LockFilter implements Filter {
 		ContainAnnotationParameterConfig[] configs = ParameterUtils.getParameterConfigs(method);
 		for (int i = 0; i < configs.length; i++) {
 			ContainAnnotationParameterConfig config = configs[i];
+			boolean b = lockConfig.all();
 			LockParameter lockParameter = config.getAnnotation(LockParameter.class);
-			if (lockConfig.all() && (lockParameter != null && lockParameter.value())) {
+			if (lockParameter != null) {
+				b = lockParameter.value();
+			}
+
+			if (b) {
 				sb.append(i == 0 ? "?" : "&");
 				sb.append(config.getName());
 				sb.append("=");
@@ -63,7 +68,7 @@ public final class LockFilter implements Filter {
 			}
 
 			QueryCacheUtils.setQueryCacheEnable(false);
-			return filterChain.doFilter(invoker, proxy, method, args);
+			return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 		} finally {
 			lock.unlock();
 		}

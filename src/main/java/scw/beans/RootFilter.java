@@ -14,11 +14,14 @@ public final class RootFilter implements Filter, MethodInterceptor {
 	private BeanFactory beanFactory;
 	private Filter lastFilter;
 	private Collection<String> filterNames;
+	private Class<?> targetClass;
 
-	public RootFilter(BeanFactory beanFactory, Collection<String> filterNames, Filter lastFilter) {
+	public RootFilter(BeanFactory beanFactory, Class<?> targetClass, Collection<String> filterNames,
+			Filter lastFilter) {
 		this.beanFactory = beanFactory;
 		this.lastFilter = lastFilter;
 		this.filterNames = filterNames;
+		this.targetClass = targetClass;
 	}
 
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
@@ -27,22 +30,23 @@ public final class RootFilter implements Filter, MethodInterceptor {
 		}
 
 		Invoker invoker = new CglibInvoker(proxy, obj);
-		return invoke(invoker, obj, method, args);
+		return invoke(invoker, obj, targetClass, method, args);
 	}
 
-	private Object invoke(Invoker invoker, Object proxy, Method method, Object[] args) throws Throwable {
+	private Object invoke(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args)
+			throws Throwable {
 		FilterChain chain = new BeanFactoryFilterChain(beanFactory, filterNames, method.getDeclaringClass(), method,
 				lastFilter);
-		return chain.doFilter(invoker, proxy, method, args);
+		return chain.doFilter(invoker, proxy, targetClass, method, args);
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
-			throws Throwable {
+	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+			FilterChain filterChain) throws Throwable {
 		if (proxy instanceof Filter) {
 			return invoker.invoke(args);
 		}
 
-		return invoke(invoker, proxy, method, args);
+		return invoke(invoker, proxy, targetClass, method, args);
 	}
 
 }

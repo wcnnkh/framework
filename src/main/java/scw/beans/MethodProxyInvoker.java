@@ -18,7 +18,8 @@ public final class MethodProxyInvoker implements Invoker {
 
 	public MethodProxyInvoker(BeanFactory beanFactory, Class<?> clz, Method method) {
 		this.bean = Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(clz);
-		proxy = ProxyUtils.isProxy(bean);
+		BeanDefinition beanDefinition = beanFactory.getBeanDefinition(clz.getName());
+		proxy = ProxyUtils.isProxy(bean) || (beanDefinition != null && beanDefinition.isProxy());
 		if (proxy) {
 			if (Modifier.isPrivate(method.getModifiers()) || Modifier.isStatic(method.getModifiers())
 					|| Modifier.isFinal(method.getModifiers()) || Modifier.isNative(method.getModifiers())) {
@@ -38,6 +39,6 @@ public final class MethodProxyInvoker implements Invoker {
 		}
 
 		FilterChain filterChain = new BeanFactoryFilterChain(beanFactory, null, clz, method, null);
-		return filterChain.doFilter(invoker, bean, method, args);
+		return filterChain.doFilter(invoker, bean, clz, method, args);
 	}
 }

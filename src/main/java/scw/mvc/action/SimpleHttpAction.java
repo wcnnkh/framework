@@ -8,8 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
-import scw.core.instance.InstanceFactory;
 import scw.core.reflect.AnnotationFactory;
 import scw.core.utils.StringUtils;
 import scw.mvc.annotation.Controller;
@@ -23,8 +23,8 @@ public class SimpleHttpAction extends SimpleMethodAction implements HttpAction {
 	private Collection<HttpControllerConfig> httpControllerConfigs = new LinkedList<HttpControllerConfig>();
 	private SimpleHttpAuthority authority;
 
-	public SimpleHttpAction(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clz, Method method, AnnotationFactory superAnnotationFactory) {
-		super(instanceFactory, propertyFactory, clz, method, superAnnotationFactory);
+	public SimpleHttpAction(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clz, Method method, AnnotationFactory superAnnotationFactory) {
+		super(beanFactory, propertyFactory, clz, method, superAnnotationFactory);
 		Controller classController = clz.getAnnotation(Controller.class);
 		Controller methodController = method.getAnnotation(Controller.class);
 		Methods methods = method.getAnnotation(Methods.class);

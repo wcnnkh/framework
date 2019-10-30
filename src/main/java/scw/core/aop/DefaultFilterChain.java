@@ -19,19 +19,19 @@ public final class DefaultFilterChain implements FilterChain {
 		this.filterChain = filterChain;
 	}
 
-	public Object doFilter(Invoker invoker, Object proxy, Method method, Object[] args) throws Throwable {
+	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args) throws Throwable {
 		if (iterator == null) {
-			return lastFilter(invoker, proxy, method, args);
+			return lastFilter(invoker, proxy, targetClass, method, args);
 		}
 
 		if (iterator.hasNext()) {
-			return iterator.next().filter(invoker, proxy, method, args, this);
+			return iterator.next().filter(invoker, proxy, targetClass, method, args, this);
 		} else {
-			return lastFilter(invoker, proxy, method, args);
+			return lastFilter(invoker, proxy, targetClass, method, args);
 		}
 	}
 
-	public Object lastFilter(Invoker invoker, Object proxy, Method method, Object[] args) throws Throwable {
-		return filterChain == null ? invoker.invoke(args) : filterChain.doFilter(invoker, proxy, method, args);
+	public Object lastFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args) throws Throwable {
+		return filterChain == null ? invoker.invoke(args) : filterChain.doFilter(invoker, proxy, targetClass, method, args);
 	}
 }

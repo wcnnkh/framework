@@ -1,4 +1,4 @@
-package scw.mvc.annotation;
+package scw.security.limit.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

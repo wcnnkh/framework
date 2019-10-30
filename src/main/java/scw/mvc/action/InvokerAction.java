@@ -4,10 +4,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
+import scw.beans.BeanFactory;
+import scw.beans.MethodProxyInvoker;
 import scw.core.PropertyFactory;
 import scw.core.aop.Invoker;
-import scw.core.instance.InstanceFactory;
-import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ContainAnnotationParameterConfig;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.AnnotationFactory;
@@ -26,10 +26,10 @@ public class InvokerAction implements MethodAction {
 	private final Class<?> targetClass;
 	private final Method method;
 
-	public InvokerAction(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> targetClass,
+	public InvokerAction(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass,
 			Method method, AnnotationFactory superAnnotationFactory) {
-		this.invoker = InstanceUtils.getInvoker(instanceFactory, targetClass, method);
-		this.parameterFilters = MVCUtils.getParameterFilters(instanceFactory, targetClass, method);
+		this.invoker = new MethodProxyInvoker(beanFactory, targetClass, method);
+		this.parameterFilters = MVCUtils.getParameterFilters(beanFactory, targetClass, method);
 		this.containAnnotationParameterConfigs = ParameterUtils.getParameterConfigs(method);
 		this.targetClass = targetClass;
 		this.method = method;
@@ -57,5 +57,9 @@ public class InvokerAction implements MethodAction {
 
 	public Method getMethod() {
 		return method;
+	}
+
+	public ContainAnnotationParameterConfig[] getParameterConfigs() {
+		return containAnnotationParameterConfigs;
 	}
 }

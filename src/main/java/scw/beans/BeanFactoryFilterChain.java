@@ -38,7 +38,7 @@ public final class BeanFactoryFilterChain implements FilterChain {
 
 	}
 
-	public Object doFilter(Invoker invoker, Object proxy, Method method, Object[] args) throws Throwable {
-		return filterChain.doFilter(invoker, proxy, method, args);
+	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args) throws Throwable {
+		return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 	}
 }

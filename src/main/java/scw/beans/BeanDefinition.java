@@ -8,6 +8,8 @@ public interface BeanDefinition extends InstanceDefinition{
 	String[] getNames();
 
 	Class<?> getType();
+	
+	boolean isProxy();
 
 	boolean isSingleton();
 	

@@ -1,4 +1,4 @@
-package scw.mvc.exception;
+package scw.security.ip;
 
 public class IPValidationFailedException extends RuntimeException {
 	private static final long serialVersionUID = 1L;

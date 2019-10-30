@@ -43,7 +43,7 @@ public final class ProxyUtils {
 
 	public static Object proxyInstance(Object obj, Class<?> interfaceClass, Collection<Filter> filters) {
 		return Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] { interfaceClass },
-				new FilterInvocationHandler(obj, filters));
+				new FilterInvocationHandler(interfaceClass, obj, filters));
 	}
 
 	public static Object newProxyInstance(Invoker invoker, Class<?> interfaceClass, Filter... filters) {
@@ -52,7 +52,7 @@ public final class ProxyUtils {
 
 	public static Object newProxyInstance(Invoker invoker, Class<?> interfaceClass, Collection<Filter> filters) {
 		return Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] { interfaceClass },
-				new InvokerFilterInvocationHandler(invoker, filters));
+				new InvokerFilterInvocationHandler(invoker, interfaceClass, filters));
 	}
 
 	public static Enhancer createEnhancer(Class<?> type, Filter... filters) {
@@ -61,7 +61,7 @@ public final class ProxyUtils {
 
 	public static Enhancer createEnhancer(Class<?> type, Collection<Filter> filters) {
 		Enhancer enhancer = new Enhancer();
-		enhancer.setCallback(new FiltersConvertCglibMethodInterceptor(filters));
+		enhancer.setCallback(new FiltersConvertCglibMethodInterceptor(type, filters));
 		if (Serializable.class.isAssignableFrom(type)) {
 			enhancer.setSerialVersionUID(1L);
 		}

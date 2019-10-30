@@ -2,6 +2,8 @@ package scw.core;
 
 import scw.core.annotation.Ignore;
 import scw.core.asm.Opcodes;
+import scw.core.string.StringCodec;
+import scw.core.string.StringCodecUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 
@@ -9,7 +11,7 @@ import scw.core.utils.SystemPropertyUtils;
 public interface Constants {
 
 	public static final String DEFAULT_CHARSET_NAME = StringUtils
-			.toString(SystemPropertyUtils.getProperty("constants.charsetName"), "UTF-8");
+			.toString(SystemPropertyUtils.getProperty("constants.default.charsetName"), "UTF-8");
 
 	/**
 	 * The ASM version used internally throughout the framework.
@@ -25,4 +27,11 @@ public interface Constants {
 	public static final int AVAILABLE_PROCESSORS = StringUtils.parseInt(
 			SystemPropertyUtils.getProperty("constants.available.processors"),
 			Runtime.getRuntime().availableProcessors());
+	
+	/**
+	 * 注意：可能为空
+	 */
+	public static final String DEFAULT_PREFIX = SystemPropertyUtils.getProperty("constants.default.prefix");
+
+	public static final StringCodec DEFAULT_STRING_CODEC = StringCodecUtils.getStringCodec(DEFAULT_CHARSET_NAME);
 }

@@ -41,18 +41,18 @@ public final class TCCTransactionFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	};
 
-	private void transaction(Class<?> interfaceClz, Class<?> belongClass, Object rtnValue, Method method, Object[] args) {
+	private void transaction(Class<?> belongClass, Object rtnValue, Method method, Object[] args) {
 		TCC tcc = method.getAnnotation(TCC.class);
 		if (tcc == null) {
 			return;
 		}
 		
-		if(!instanceFactory.isSingleton(interfaceClz) || !instanceFactory.isInstance(interfaceClz)){
-			logger.warn("[{}]不支持使用@TCC注解 {}", interfaceClz.getName(), method);
+		if(!instanceFactory.isSingleton(belongClass) || !instanceFactory.isInstance(belongClass)){
+			logger.warn("[{}]不支持使用@TCC注解 {}", belongClass.getName(), method);
 			return ;
 		}
 
-		ClassTCC info = getClassTCC(interfaceClz);
+		ClassTCC info = getClassTCC(belongClass);
 		if (info == null) {
 			return;
 		}
@@ -72,10 +72,10 @@ public final class TCCTransactionFilter implements Filter {
 		tccService.service(new InvokeInfo(rtnValue, tryMethod, confirmMethod, cancelMethod, args));
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain chain)
+	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain chain)
 			throws Throwable {
-		Object rtn = chain.doFilter(invoker, proxy, method, args);
-		transaction(method.getDeclaringClass(), method.getDeclaringClass(), rtn, method, args);
+		Object rtn = chain.doFilter(invoker, proxy, targetClass, method, args);
+		transaction(targetClass, rtn, method, args);
 		return rtn;
 	}
 

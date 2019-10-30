@@ -9,17 +9,11 @@ import scw.logger.LoggerFactory;
 import scw.mvc.Channel;
 import scw.mvc.Request;
 import scw.mvc.RequestResponseModel;
-import scw.mvc.annotation.CountLimitSecurity;
 import scw.mvc.annotation.IPSecurity;
 import scw.mvc.annotation.ResponseWrapper;
-import scw.mvc.exception.CountLimitException;
-import scw.mvc.exception.IPValidationFailedException;
-import scw.mvc.limit.CountLimitConfigFactory;
 import scw.mvc.wrapper.ResponseWrapperService;
+import scw.security.ip.IPValidationFailedException;
 import scw.security.ip.IPVerification;
-import scw.security.limit.CountLimit;
-import scw.security.limit.CountLimitConfig;
-import scw.security.limit.CountLimitFactory;
 
 /**
  * 默认的action-filter 实现对内置注解的支持和一些默认的实现
@@ -29,11 +23,12 @@ import scw.security.limit.CountLimitFactory;
  */
 public final class DefaultActionFilter extends MethodActionFilter {
 	private static Logger logger = LoggerFactory.getLogger(DefaultActionFilter.class);
+	
+	// 默认是否开启对ResultFactory的兼容
 	private static final boolean RESPONSE_COMPATIBLE_OPEN = StringUtils
 			.parseBoolean(SystemPropertyUtils.getProperty("mvc.response.compatible.result"), true);
 	private ResponseWrapperService responseWrapperService;
-	private InstanceFactory instanceFactory;
-	// 默认是否开启对ResultFactory的兼容
+	private final InstanceFactory instanceFactory;
 
 	public DefaultActionFilter(InstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
@@ -61,14 +56,6 @@ public final class DefaultActionFilter extends MethodActionFilter {
 			}
 		}
 
-		CountLimitSecurity countLimitSecurity = action.getAnnotation(CountLimitSecurity.class);
-		if (countLimitSecurity != null) {
-			boolean b = countLimitSecurity(countLimitSecurity, action, channel);
-			if (!b) {
-				throw new CountLimitException("操作过于频繁");
-			}
-		}
-
 		Object value = chain.doFilter(action, channel);
 		return responseSupport(action, channel, value);
 	}
@@ -87,36 +74,6 @@ public final class DefaultActionFilter extends MethodActionFilter {
 		return value;
 	}
 
-	private boolean countLimitSecurity(CountLimitSecurity countLimitSecurity, MethodAction action, Channel channel) {
-		boolean instance = instanceFactory.isInstance(countLimitSecurity.value());
-		if (instance) {
-			instance = instanceFactory.isInstance(countLimitSecurity.factory());
-		}
-
-		if (!instance) {
-			logger.warn("无法实例化：", countLimitSecurity.value());
-			return false;
-		}
-
-		if (instance) {
-			CountLimitConfigFactory configFactory = instanceFactory.getInstance(countLimitSecurity.value());
-			CountLimitConfig countLimitConfig = configFactory.getCountLimitConfig(action, channel);
-			if (countLimitConfig != null) {
-				CountLimitFactory countLimitFactory = instanceFactory.getInstance(CountLimitFactory.class);
-				CountLimit countLimit = countLimitFactory.getCountLimit(countLimitConfig);
-				if (countLimit != null && !countLimit.incr()) {
-					if (logger.isDebugEnabled()) {
-						logger.debug("The number of visits has exceeded the limit, max={}, count={}",
-								countLimitConfig.getMaxCount(), countLimit.getCount());
-					}
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
 	private boolean verificationIP(IP ip, IPSecurity ipSecurity) {
 		if (!instanceFactory.isInstance(ipSecurity.value())) {
 			logger.warn("无法初始化:{}", ipSecurity.value());
@@ -126,8 +83,12 @@ public final class DefaultActionFilter extends MethodActionFilter {
 		String ipValue = ip.getIP();
 		IPVerification ipVerification = instanceFactory.getInstance(ipSecurity.value());
 		boolean b = ipVerification.verification(ipValue);
-		if (logger.isDebugEnabled()) {
-			logger.debug("verification ip [{}] {}", ipValue, b ? "success" : "fail");
+		if(b){
+			if (logger.isDebugEnabled()) {
+				logger.debug("verification ip [{}] success", ipValue);
+			}
+		}else{
+			logger.warn("verification ip [{}] fail", ipValue);
 		}
 		return b;
 	}

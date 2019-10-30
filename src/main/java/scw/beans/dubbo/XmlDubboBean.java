@@ -22,6 +22,6 @@ public final class XmlDubboBean extends AbstractInterfaceBeanDefinition {
 	@SuppressWarnings("unchecked")
 	public <T> T create() {
 		return (T) ProxyUtils.proxyInstance(referenceConfig.get(), getType(),
-				new RootFilter(beanFactory, null, null));
+				new RootFilter(beanFactory, getType(), null, null));
 	}
 }

@@ -6,9 +6,7 @@ import scw.beans.annotation.AsyncComplete;
 import scw.core.aop.Filter;
 import scw.core.aop.FilterChain;
 import scw.core.aop.Invoker;
-import scw.core.aop.ProxyUtils;
 import scw.core.instance.InstanceFactory;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -38,29 +36,25 @@ public final class AsyncCompleteFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	private Object realFilter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
+	private Object realFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
 		if (!isEnable()) {
-			return filterChain.doFilter(invoker, proxy, method, args);
+			return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 		}
 
 		AsyncComplete asyncComplete = method.getAnnotation(AsyncComplete.class);
 		if (asyncComplete == null) {
-			return filterChain.doFilter(invoker, proxy, method, args);
+			return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 		}
 
 		String beanName = asyncComplete.beanName();
 		if (StringUtils.isEmpty(beanName)) {
-			if (ProxyUtils.isJDKProxy(proxy)) {
-				beanName = method.getDeclaringClass().getName();
-			} else {
-				beanName = ClassUtils.getUserClass(proxy).getName();
-			}
+			beanName = targetClass.getName();
 		}
 
 		if (!instanceFactory.isSingleton(beanName) || !instanceFactory.isInstance(beanName)) {
 			logger.warn("[{}]不支持使用@AsyncComplete注解:{}", beanName, method);
-			return filterChain.doFilter(invoker, proxy, method, args);
+			return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 		}
 
 		AsyncInvokeInfo info = new AsyncInvokeInfo(asyncComplete, method.getDeclaringClass(), beanName, method, args);
@@ -68,10 +62,10 @@ public final class AsyncCompleteFilter implements Filter {
 		return service.service(info);
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
+	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
 		try {
-			return realFilter(invoker, proxy, method, args, filterChain);
+			return realFilter(invoker, proxy, targetClass, method, args, filterChain);
 		} finally {
 			ENABLE_TAG.remove();
 		}

@@ -36,6 +36,7 @@ import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.security.limit.CountLimitFilter;
 import scw.transaction.TransactionFilter;
 
 public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy {
@@ -54,6 +55,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		singletonMap.put(PropertyFactory.class.getName(), propertyFactory);
 		singletonMap.put(BeanFactory.class.getName(), this);
 		singletonMap.put(InstanceFactory.class.getName(), this);
+		filterNames.add(CountLimitFilter.class.getName());
 		filterNames.add(TransactionFilter.class.getName());
 		filterNames.add(TCCTransactionFilter.class.getName());
 		filterNames.add(AsyncCompleteFilter.class.getName());

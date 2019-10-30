@@ -66,7 +66,7 @@ public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter
 		return converters;
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Method method, Object[] args, FilterChain filterChain)
+	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
 		Object ignoreReturn = ProxyUtils.ignoreMethod(proxy, method, args);
 		if (ignoreReturn != null) {
@@ -74,12 +74,12 @@ public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter
 		}
 
 		if (Modifier.isAbstract(method.getModifiers()) || Modifier.isInterface(method.getModifiers())) {
-			HttpRequest httpRequest = httpRpcRequestFactory.getHttpRequest(method.getDeclaringClass(), method, args);
+			HttpRequest httpRequest = httpRpcRequestFactory.getHttpRequest(targetClass, method, args);
 			HttpMessage httpMessage = httpRequest.execute();
 			return httpMessage.convert(getMessageConverters(method.getDeclaringClass(), method),
 					method.getGenericReturnType());
 		}
-		return filterChain.doFilter(invoker, proxy, method, args);
+		return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 	}
 
 }

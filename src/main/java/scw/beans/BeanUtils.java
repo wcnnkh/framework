@@ -331,7 +331,7 @@ public final class BeanUtils {
 	public static Enhancer createEnhancer(Class<?> clz, BeanFactory beanFactory, Collection<String> filterNames,
 			Filter lastFilter) {
 		Enhancer enhancer = new Enhancer();
-		enhancer.setCallback(new RootFilter(beanFactory, filterNames, lastFilter));
+		enhancer.setCallback(new RootFilter(beanFactory, clz, filterNames, lastFilter));
 		if (Serializable.class.isAssignableFrom(clz)) {
 			enhancer.setSerialVersionUID(1L);
 		}
@@ -364,9 +364,9 @@ public final class BeanUtils {
 	public static <T> T proxyInterface(BeanFactory beanFactory, Class<T> interfaceClass, Collection<String> filterNames,
 			Filter invocation) {
 		Object newProxyInstance = java.lang.reflect.Proxy.newProxyInstance(interfaceClass.getClassLoader(),
-				new Class[] { interfaceClass }, new FilterInvocationHandler(Arrays.asList(invocation)));
+				new Class[] { interfaceClass }, new FilterInvocationHandler(interfaceClass, Arrays.asList(invocation)));
 		return (T) ProxyUtils.proxyInstance(newProxyInstance, interfaceClass,
-				new RootFilter(beanFactory, filterNames, null));
+				new RootFilter(beanFactory, interfaceClass, filterNames, null));
 	}
 
 	@SuppressWarnings("unchecked")

@@ -4,8 +4,8 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
-import scw.core.instance.InstanceFactory;
 import scw.core.reflect.AnnotationFactory;
 import scw.core.reflect.SimpleAnnotationFactory;
 import scw.core.utils.ArrayUtils;
@@ -35,19 +35,19 @@ public final class HttpActionServiceFilter extends HttpFilter {
 	private final Collection<Filter> filters = new LinkedList<Filter>();
 	private final Collection<ActionFilter> actionFilters = new LinkedList<ActionFilter>();
 
-	public HttpActionServiceFilter(InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+	public HttpActionServiceFilter(BeanFactory beanFactory, PropertyFactory propertyFactory,
 			Collection<Class<?>> classes) {
 		SimpleHttpAuthorityManager simpleHttpAuthorityManager = null;
-		if (instanceFactory.isInstance(HttpAuthorityManager.class)
-				&& instanceFactory.isSingleton(HttpAuthorityManager.class)) {
-			HttpAuthorityManager httpAuthorityManager = instanceFactory.getInstance(HttpAuthorityManager.class);
+		if (beanFactory.isInstance(HttpAuthorityManager.class)
+				&& beanFactory.isSingleton(HttpAuthorityManager.class)) {
+			HttpAuthorityManager httpAuthorityManager = beanFactory.getInstance(HttpAuthorityManager.class);
 			if (httpAuthorityManager instanceof SimpleHttpAuthorityManager) {
 				simpleHttpAuthorityManager = (SimpleHttpAuthorityManager) httpAuthorityManager;
 			}
 		}
 
-		actionFilters.addAll(MVCUtils.getActionFilters(instanceFactory, propertyFactory));
-		filters.add(new RpcServletFilter(instanceFactory, propertyFactory));
+		actionFilters.addAll(MVCUtils.getActionFilters(beanFactory, propertyFactory));
+		filters.add(new RpcServletFilter(beanFactory, propertyFactory));
 		if (MVCUtils.isSupportCorssDomain(propertyFactory)) {
 			filters.add(new CrossDomainFilter(new CrossDomainDefinition(propertyFactory)));
 		}
@@ -81,7 +81,7 @@ public final class HttpActionServiceFilter extends HttpFilter {
 
 				for (Filter filter : filters) {
 					if (filter instanceof HttpActionService) {
-						HttpAction httpAction = new SimpleHttpAction(instanceFactory, propertyFactory, clz, method,
+						HttpAction httpAction = new SimpleHttpAction(beanFactory, propertyFactory, clz, method,
 								clazzAnnotationFactory);
 						if (simpleHttpAuthorityManager != null && httpAction.getAuthority() != null) {
 							simpleHttpAuthorityManager.addAuthroity(httpAction.getAuthority());
