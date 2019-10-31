@@ -15,7 +15,7 @@ import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
-import scw.mvc.AbstractParameterChannel;
+import scw.mvc.AbstractRequestResponseModelChannel;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.parameter.Body;
 import scw.mvc.parameter.ParameterFilter;
@@ -25,7 +25,8 @@ import scw.security.session.Session;
 import scw.security.session.http.HttpChannelAuthorization;
 import scw.security.session.http.HttpChannelUserSessionFactory;
 
-public abstract class AbstractHttpChannel extends AbstractParameterChannel implements HttpChannel {
+public abstract class AbstractHttpChannel extends AbstractRequestResponseModelChannel<HttpRequest, HttpResponse>
+		implements HttpChannel {
 	private static final String GET_DEFAULT_CHARSET_ANME = "ISO-8859-1";
 
 	protected static final String JSONP_CALLBACK = "callback";
@@ -37,8 +38,9 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	private final String jsonp;
 	private final HttpParameterRequest httpParameterRequest;
 
-	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(BeanFactory beanFactory, Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport,
-			boolean cookieValue, R request, P response, String jsonp) {
+	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(BeanFactory beanFactory,
+			Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport, boolean cookieValue,
+			R request, P response, String jsonp) {
 		super(beanFactory, parameterFilters, jsonParseSupport);
 		this.cookieValue = cookieValue;
 		this.request = request;

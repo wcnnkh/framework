@@ -236,17 +236,11 @@ public final class XMLUtils {
 		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node n = nodeList.item(i);
-			if (n == null) {
+			if(ignoreNode(n)){
 				continue;
 			}
-
-			String nodeName = n.getNodeName();
-			if (!checkNodeName(nodeName)) {
-				continue;
-			}
-
-			String value = n.getTextContent();
-			map.put(nodeName, value);
+			
+			map.put(n.getNodeName(), n.getTextContent());
 		}
 		return map;
 	}
@@ -343,12 +337,11 @@ public final class XMLUtils {
 		NodeList nodeList = node.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node n = nodeList.item(i);
-			String nodeName = n.getNodeName();
-			if (!checkNodeName(nodeName)) {
+			if(ignoreNode(n)){
 				continue;
 			}
-
-			Field field = ReflectUtils.getField(type, nodeName, true);
+			
+			Field field = ReflectUtils.getField(type, n.getNodeName(), true);
 			if (field == null) {
 				continue;
 			}
@@ -385,11 +378,10 @@ public final class XMLUtils {
 		List<T> list = new ArrayList<T>(nodeList.getLength());
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
-			String nodeName = node.getNodeName();
-			if (!checkNodeName(nodeName)) {
+			if(ignoreNode(node)){
 				continue;
 			}
-
+			
 			T t;
 			try {
 				t = getBean(node, type);
@@ -404,8 +396,8 @@ public final class XMLUtils {
 		return list;
 	}
 
-	public static boolean checkNodeName(String name) {
-		return !(name == null || name.length() == 0 || "#text".equals(name));
+	public static boolean ignoreNode(Node node) {
+		return node == null || StringUtils.isEmpty(node.getNodeName()) || "#text".equals(node.getNodeName());
 	}
 
 	public static Map<String, Node> attributeAsMap(Node node) {

@@ -3,17 +3,17 @@ package scw.security.login;
 import scw.beans.annotation.AutoImpl;
 import scw.security.token.UserToken;
 
-@AutoImpl(DefaultLoginFactory.class)
-public interface LoginFactory<T> {
+@AutoImpl(DefaultLoginService.class)
+public interface LoginService<T> {
 	UserToken<T> getUserToken(String token);
 
 	UserToken<T> getUserTokenByUid(T uid);
 
 	UserToken<T> login(T uid);
 
-	UserToken<T> login(String token, T uid);
+	boolean cancelLogin(String token);
 
-	void cancelLogin(String token);
-
-	void cancelLoginByUid(T uid);
+	boolean cancelLoginByUid(T uid);
+	
+	boolean verification(String token, T uid);
 }

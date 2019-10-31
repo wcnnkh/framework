@@ -14,7 +14,7 @@ import scw.beans.annotation.Bean;
 import scw.core.utils.XMLUtils;
 import scw.mvc.http.HttpRequest;
 
-@Bean(singleton=false)
+@Bean(singleton = false)
 public final class XmlMap extends LinkedHashMap<String, String> {
 	private static final long serialVersionUID = 1L;
 
@@ -31,17 +31,11 @@ public final class XmlMap extends LinkedHashMap<String, String> {
 		NodeList nodeList = element.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node n = nodeList.item(i);
-			if (n == null) {
+			if (XMLUtils.ignoreNode(n)) {
 				continue;
 			}
 
-			String nodeName = n.getNodeName();
-			if (!XMLUtils.checkNodeName(nodeName)) {
-				continue;
-			}
-
-			String value = n.getTextContent();
-			put(nodeName, value);
+			put(n.getNodeName(), n.getTextContent());
 		}
 	}
 }

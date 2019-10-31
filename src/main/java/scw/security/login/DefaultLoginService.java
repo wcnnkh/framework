@@ -11,29 +11,29 @@ import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 
 @Bean(proxy = false)
-public class DefaultLoginFactory<T> extends AbstractLoginFactory<T> {
+public class DefaultLoginService<T> extends AbstractLoginService<T> {
 	private final String prefix;
 
-	public DefaultLoginFactory(CacheService cacheService,
+	public DefaultLoginService(CacheService cacheService,
 			@ParameterName("login-factory.exp") @DefaultValue(7 * 24 * 60 * 60 + "") int exp) {
 		this(cacheService, exp, Constants.DEFAULT_PREFIX);
 	}
 
-	public DefaultLoginFactory(CacheService cacheService, int exp, String prefix) {
+	public DefaultLoginService(CacheService cacheService, int exp, String prefix) {
 		super(cacheService, exp);
 		this.prefix = prefix;
 	}
 
-	public DefaultLoginFactory(Memcached memcached, int exp, String prefix) {
+	public DefaultLoginService(Memcached memcached, int exp, String prefix) {
 		this(new MemcachedCacheService(memcached), exp, prefix);
 	}
 
-	public DefaultLoginFactory(Redis redis, int exp, String prefix) {
+	public DefaultLoginService(Redis redis, int exp, String prefix) {
 		this(new RedisCacheService(redis), exp, prefix);
 	}
 
 	@Override
-	protected String formatKey(Object key) {
-		return prefix == null ? key.toString() : (prefix.concat(key.toString()));
+	protected String formatUid(T uid) {
+		return prefix == null ? uid.toString() : (prefix.concat(uid.toString()));
 	}
 }
