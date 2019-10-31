@@ -79,6 +79,11 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 	public UserToken<T> login(T uid) {
 		Assert.notNull(uid);
 
+		String oldToken = cacheService.get(formatUid(uid));
+		if(oldToken != null){
+			cacheService.delete(oldToken);
+		}
+		
 		String token = generatorToken(uid);
 		cacheService.set(token, exp, uid);
 		cacheService.set(formatUid(uid), exp, token);
