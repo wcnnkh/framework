@@ -9,9 +9,11 @@ import scw.core.annotation.NotRequire;
 import scw.core.annotation.ParameterName;
 import scw.core.annotation.Require;
 import scw.core.reflect.SimpleParameterConfig;
+import scw.core.utils.StringUtils;
 
 public final class ParameterUtils {
 	private static LocalVariableTableParameterNameDiscoverer lvtpnd = new LocalVariableTableParameterNameDiscoverer();
+
 	private ParameterUtils() {
 	};
 
@@ -22,8 +24,8 @@ public final class ParameterUtils {
 		Class<?>[] parameterTypes = constructor.getParameterTypes();
 		ParameterConfig[] parameterDefinitions = new ParameterConfig[names.length];
 		for (int i = 0; i < names.length; i++) {
-			parameterDefinitions[i] = new SimpleParameterConfig(names[i], parameterAnnoatations[i],
-					parameterTypes[i], parameterGenericTypes[i]);
+			parameterDefinitions[i] = new SimpleParameterConfig(names[i], parameterAnnoatations[i], parameterTypes[i],
+					parameterGenericTypes[i]);
 		}
 		return parameterDefinitions;
 	}
@@ -35,8 +37,8 @@ public final class ParameterUtils {
 		Class<?>[] parameterTypes = method.getParameterTypes();
 		ParameterConfig[] parameterDefinitions = new ParameterConfig[names.length];
 		for (int i = 0; i < names.length; i++) {
-			parameterDefinitions[i] = new SimpleParameterConfig(names[i], parameterAnnoatations[i],
-					parameterTypes[i], parameterGenericTypes[i]);
+			parameterDefinitions[i] = new SimpleParameterConfig(names[i], parameterAnnoatations[i], parameterTypes[i],
+					parameterGenericTypes[i]);
 		}
 		return parameterDefinitions;
 	}
@@ -55,15 +57,14 @@ public final class ParameterUtils {
 		return true;
 	}
 
-	public static String getParameterName(ParameterConfig containAnnotationParameterConfig) {
-		ParameterName parameterName = containAnnotationParameterConfig.getAnnotation(ParameterName.class);
-		if (parameterName == null) {
-			return containAnnotationParameterConfig.getName();
+	public static String getParameterName(ParameterConfig parameterConfig) {
+		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
+		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
+			return parameterName.value();
 		}
-
-		return parameterName.value();
+		return parameterConfig.getName();
 	}
-	
+
 	public static String[] getParameterName(Method method) {
 		return lvtpnd.getParameterNames(method);
 	}

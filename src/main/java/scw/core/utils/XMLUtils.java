@@ -36,7 +36,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import scw.core.Converter;
+import scw.core.KeyValuePair;
 import scw.core.PropertyFactory;
+import scw.core.SimpleKeyValuePair;
 import scw.core.StringFormat;
 import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceUtils;
@@ -207,6 +209,100 @@ public final class XMLUtils {
 		return include ? converIncludeNodeList(node.getChildNodes(), new HashSet<String>()) : node.getChildNodes();
 	}
 
+	/**
+	 * 将xml文档解析为map
+	 * @param node
+	 * @return
+	 * @throws Exception
+	 */
+	public static Map<String, Object> toRecursionMap(Node node) throws Exception {
+		return toMap(node, new Converter<Node, KeyValuePair<String, Object>>() {
+
+			public KeyValuePair<String, Object> convert(Node n) throws Exception {
+				NodeList nodeList = n.getChildNodes();
+				Object v;
+				if (nodeList == null || nodeList.getLength() == 0) {
+					v = n.getTextContent();
+				} else {
+					List<Object> list = toList(n, new Converter<Node, Object>() {
+
+						public Object convert(Node k) throws Exception {
+							return toRecursionMap(k);
+						}
+					});
+
+					v = list == null ? n.getTextContent() : list;
+				}
+				return new SimpleKeyValuePair<String, Object>(n.getNodeName(), v);
+			}
+		});
+	}
+
+	public static List<Object> toList(Node node, Converter<Node, Object> nodeConvert) throws Exception {
+		if (ignoreNode(node)) {
+			return null;
+		}
+
+		NodeList nodeList = node.getChildNodes();
+		if (nodeList == null) {
+			return null;
+		}
+
+		int len = nodeList.getLength();
+		if (len == 0) {
+			return null;
+		}
+
+		List<Object> list = new ArrayList<Object>(len);
+		for (int i = 0; i < len; i++) {
+			Node n = nodeList.item(i);
+			if (ignoreNode(n)) {
+				continue;
+			}
+
+			Object v = nodeConvert.convert(n);
+			if (v == null) {
+				continue;
+			}
+
+			list.add(v);
+		}
+
+		return list.isEmpty() ? null : list;
+	}
+
+	public static Map<String, Object> toMap(Node node, Converter<Node, KeyValuePair<String, Object>> nodeParse)
+			throws Exception {
+		if (ignoreNode(node)) {
+			return null;
+		}
+
+		NodeList nodeList = node.getChildNodes();
+		if (nodeList == null) {
+			return null;
+		}
+
+		int len = nodeList.getLength();
+		if (len == 0) {
+			return null;
+		}
+
+		Map<String, Object> map = new LinkedHashMap<String, Object>(len);
+		for (int i = 0; i < len; i++) {
+			Node n = nodeList.item(i);
+			if (ignoreNode(node)) {
+				continue;
+			}
+
+			KeyValuePair<String, Object> keyValuePair = nodeParse.convert(n);
+			if (keyValuePair != null) {
+				map.put(keyValuePair.getKey(), keyValuePair.getValue());
+			}
+		}
+
+		return map.isEmpty() ? null : map;
+	}
+
 	public static String asXml(Element element) {
 		Transformer transformer;
 		try {
@@ -236,10 +332,10 @@ public final class XMLUtils {
 		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node n = nodeList.item(i);
-			if(ignoreNode(n)){
+			if (ignoreNode(n)) {
 				continue;
 			}
-			
+
 			map.put(n.getNodeName(), n.getTextContent());
 		}
 		return map;
@@ -281,7 +377,7 @@ public final class XMLUtils {
 		if (value == null) {
 			return defaultValue;
 		} else {
-			return (T) StringParse.defaultParse(value, basicType);
+			return (T) StringUtils.defaultAutoParse(value, basicType);
 		}
 	}
 
@@ -337,10 +433,10 @@ public final class XMLUtils {
 		NodeList nodeList = node.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node n = nodeList.item(i);
-			if(ignoreNode(n)){
+			if (ignoreNode(n)) {
 				continue;
 			}
-			
+
 			Field field = ReflectUtils.getField(type, n.getNodeName(), true);
 			if (field == null) {
 				continue;
@@ -359,7 +455,7 @@ public final class XMLUtils {
 				t = InstanceUtils.newInstance(type);
 			}
 
-			ReflectUtils.setFieldValue(type, field, t, StringParse.defaultParse(value, field.getGenericType()));
+			ReflectUtils.setFieldValue(type, field, t, StringUtils.defaultAutoParse(value, field.getGenericType()));
 		}
 		return t;
 	}
@@ -378,10 +474,10 @@ public final class XMLUtils {
 		List<T> list = new ArrayList<T>(nodeList.getLength());
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
-			if(ignoreNode(node)){
+			if (ignoreNode(node)) {
 				continue;
 			}
-			
+
 			T t;
 			try {
 				t = getBean(node, type);

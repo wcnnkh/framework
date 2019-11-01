@@ -16,7 +16,7 @@ public class ParameterException extends RuntimeException {
 		super(e);
 	}
 
-	public ParameterException(Throwable e, String message) {
+	public ParameterException(String message, Throwable e) {
 		super(message, e);
 	}
 }

@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.CharBuffer;
@@ -28,8 +30,11 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import scw.core.Assert;
+import scw.core.Callable;
 import scw.core.StringEmptyVerification;
 import scw.core.exception.ParameterException;
+import scw.json.JSONParseSupport;
+import scw.json.JSONUtils;
 
 public final class StringUtils {
 	private static final String FOLDER_SEPARATOR = "/";
@@ -2300,6 +2305,23 @@ public final class StringUtils {
 		return text.charAt(0);
 	}
 
+	public static Class<?> parseClass(String text) {
+		try {
+			return ClassUtils.forName(text);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static Enum<?> parseEnum(String text, Class<?> enumType) {
+		if (StringUtils.isEmpty(text)) {
+			return null;
+		}
+
+		return Enum.valueOf((Class<? extends Enum>) enumType, text);
+	}
+
 	public static BigInteger parseBigInteger(String text, int radix, BigInteger defaultValue) {
 		String v = formatNumberText(text);
 		if (isEmpty(v)) {
@@ -2448,6 +2470,24 @@ public final class StringUtils {
 		return values;
 	}
 
+	public static BigInteger parseBigInteger(String text) {
+		String v = StringUtils.formatNumberText(text);
+		if (StringUtils.isEmpty(v)) {
+			return null;
+		}
+
+		return new BigInteger(v);
+	}
+
+	public static BigDecimal parseBigDecimal(String text) {
+		String v = StringUtils.formatNumberText(text);
+		if (StringUtils.isEmpty(v)) {
+			return null;
+		}
+
+		return new BigDecimal(text);
+	}
+
 	public static double[] parseDoubleArray(String[] arr) {
 		if (arr == null) {
 			return null;
@@ -2458,6 +2498,141 @@ public final class StringUtils {
 			values[i] = parseDouble(arr[i]);
 		}
 		return values;
+	}
+
+	public static boolean isCommonType(Type type) {
+		if (TypeUtils.isPrimitiveOrWrapper(type)) {
+			return true;
+		}
+
+		if (TypeUtils.isClass(type)) {
+			return isCommonType((Class<?>) type);
+		}
+
+		try {
+			return isCommonType(ClassUtils.forName(type.toString()));
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private static boolean isCommonType(Class<?> type) {
+		return type.isArray() || type.isEnum() || Collection.class.isAssignableFrom(type)
+				|| Map.class.isAssignableFrom(type) || java.util.Date.class.isAssignableFrom(type)
+				|| BigInteger.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type);
+	}
+
+	public static Object parseArray(String[] array, Class<?> componentType) {
+		return parseArray(array, componentType, null, JSONUtils.DEFAULT_JSON_SUPPORT);
+	}
+
+	public static Object parseArray(String text, Class<?> componentType) {
+		return parseArray(text, componentType, JSONUtils.DEFAULT_JSON_SUPPORT);
+	}
+
+	public static Object defaultAutoParse(final String text, final Type type) {
+		return autoParse(text, type, DEFAULT_SPLIT_CHARS, JSONUtils.DEFAULT_JSON_SUPPORT);
+	}
+
+	public static Object parseArray(String text, Class<?> componentType, final JSONParseSupport jsonParseSupport) {
+		if (StringUtils.isEmpty(text)) {
+			return null;
+		}
+
+		String[] array = StringUtils.split(text, DEFAULT_SPLIT_CHARS);
+		return parseArray(array, componentType, DEFAULT_SPLIT_CHARS, JSONUtils.DEFAULT_JSON_SUPPORT);
+	}
+
+	public static Object parseArray(String[] array, Class<?> componentType, char[] splitFilter,
+			final JSONParseSupport jsonParseSupport) {
+		if (array == null) {
+			return null;
+		}
+
+		Object values = Array.newInstance(componentType, array.length);
+		for (int i = 0; i < array.length; i++) {
+			Array.set(values, i, autoParse(array[i], componentType, splitFilter, jsonParseSupport));
+		}
+		return values;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static Object autoParse(final String text, final Type type, char[] splitFilter,
+			final JSONParseSupport jsonParseSupport) {
+		if (TypeUtils.isClass(type)) {
+			return autoParse(text, (Class) type, splitFilter, new Callable<Object>() {
+
+				public Object call() {
+					return jsonParseSupport.parseObject(text, type);
+				}
+			});
+		}
+
+		return jsonParseSupport.parseObject(text, type);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static Object autoParse(String text, Class type, char[] splitFilter, Callable<Object> notFoundTypeCallable) {
+		if (String.class == type) {
+			return type;
+		} else if (int.class == type) {
+			return parseInt(text);
+		} else if (Integer.class == type) {
+			return parseInt(text, null);
+		} else if (long.class == type) {
+			return parseLong(text);
+		} else if (Long.class == type) {
+			return parseLong(text, null);
+		} else if (float.class == type) {
+			return parseFloat(text);
+		} else if (Float.class == type) {
+			return parseFloat(text, null);
+		} else if (double.class == type) {
+			return parseDouble(text);
+		} else if (Double.class == type) {
+			return parseDouble(text, null);
+		} else if (short.class == type) {
+			return parseShort(text);
+		} else if (Short.class == type) {
+			return parseShort(text, null);
+		} else if (boolean.class == type) {
+			return parseBoolean(text);
+		} else if (Boolean.class == type) {
+			return parseBoolean(text, null);
+		} else if (byte.class == type) {
+			return parseByte(text);
+		} else if (Byte.class == type) {
+			return parseByte(text, null);
+		} else if (char.class == type) {
+			return parseChar(text);
+		} else if (Character.class == type) {
+			return parseChar(text, null);
+		} else if (BigDecimal.class.isAssignableFrom(type)) {
+			return parseBigDecimal(text);
+		} else if (BigInteger.class.isAssignableFrom(type)) {
+			return parseBigInteger(text);
+		} else if (Class.class == type) {
+			return parseClass(text);
+		} else if (type.isEnum()) {
+			return parseEnum(text, type);
+		} else {
+			if (!ArrayUtils.isEmpty(splitFilter)) {
+				if (type.isArray()) {
+					String[] arr = split(text, splitFilter);
+					if (arr == null) {
+						return null;
+					}
+
+					Object values = Array.newInstance(type.getComponentType(), arr.length);
+					for (int i = 0; i < arr.length; i++) {
+						Array.set(values, i,
+								autoParse(arr[i], type.getComponentType(), splitFilter, notFoundTypeCallable));
+					}
+				}
+			}
+			return notFoundTypeCallable.call();
+		}
 	}
 
 	public static void replace(char[] chars, char replace, char newChar) {
