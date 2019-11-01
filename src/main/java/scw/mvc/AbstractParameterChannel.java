@@ -282,12 +282,6 @@ public abstract class AbstractParameterChannel extends AbstractChannel
 		return null;
 	}
 
-	public void log(Object format, Object... args) {
-		if (isLogEnabled()) {
-			getLogger().info(format, args);
-		}
-	}
-
 	public BigInteger getBigInteger(String name) {
 		return StringParse.DEFAULT.getBigInteger(getString(name));
 	}
