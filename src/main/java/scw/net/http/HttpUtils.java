@@ -55,9 +55,11 @@ public final class HttpUtils {
 				text = body.toString();
 			} else if (body instanceof ToParameterMap) {
 				text = JSONUtils.toJSONString(toParameterMap((ToParameterMap) body));
+			} else {
+				text = JSONUtils.toJSONString(body);
 			}
 		}
-		HttpRequest request = new BodyRequest(Method.POST, url, new ByteArray(text, charsetName));
+		HttpRequest request = new BodyRequest(Method.POST, url, text == null ? null : new ByteArray(text, charsetName));
 		request.setContentType(new SimpleMimeType(MimeTypeConstants.APPLICATION_JSON, charsetName));
 		request.setRequestProperties(requestProperties);
 		return execute(request, charsetName);

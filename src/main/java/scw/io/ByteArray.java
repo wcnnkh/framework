@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import scw.core.Constants;
+import scw.core.string.StringCodecUtils;
 
 /**
  * 此类非线程安全的
@@ -62,11 +63,7 @@ public class ByteArray implements Serializable {
 	}
 
 	public ByteArray(String body, String charsetName) {
-		try {
-			this.buf = body.getBytes(charsetName);
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
+		this.buf = StringCodecUtils.getStringCodec(charsetName).encode(body);
 		this.count = buf.length;
 	}
 

@@ -15,6 +15,9 @@ public class BodyRequest extends HttpRequest {
 
 	@Override
 	protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
-		body.writeTo(os);
+		if(body != null){
+			body.writeTo(os);	
+		}
+		super.doOutput(urlConnection, os);
 	}
 }
