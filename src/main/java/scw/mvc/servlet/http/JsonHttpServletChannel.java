@@ -53,7 +53,7 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	}
 
 	@Override
-	protected Object getObjectIsNotBean(Class<?> type) {
+	protected <T> T getObjectIsNotBean(Class<T> type) {
 		return jsonObjectReadOnly == null ? null
 				: jsonParseSupport.parseObject(jsonObjectReadOnly.toJSONString(), type);
 	}

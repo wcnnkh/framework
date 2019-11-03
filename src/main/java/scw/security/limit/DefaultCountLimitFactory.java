@@ -1,5 +1,7 @@
 package scw.security.limit;
 
+import java.util.concurrent.TimeUnit;
+
 import scw.data.cache.CacheService;
 import scw.data.cache.MemcachedCacheService;
 import scw.data.cache.RedisCacheService;
@@ -12,7 +14,7 @@ public final class DefaultCountLimitFactory implements CountLimitFactory {
 	public DefaultCountLimitFactory(CacheService cacheService) {
 		this.cacheService = cacheService;
 	}
-
+	
 	public DefaultCountLimitFactory(Memcached memcached) {
 		this(new MemcachedCacheService(memcached));
 	}
@@ -21,8 +23,8 @@ public final class DefaultCountLimitFactory implements CountLimitFactory {
 		this(new RedisCacheService(redis));
 	}
 
-	public CountLimit getCountLimit(CountLimitConfig countLimitConfig) {
-		return new DefaultCountLimit(countLimitConfig, cacheService);
+	public long incrAndGet(CountLimitConfig countLimitConfig) {
+		return cacheService.incr(countLimitConfig.getName(), 1, 1,
+				(int) countLimitConfig.getPeriod(TimeUnit.SECONDS));
 	}
-
 }

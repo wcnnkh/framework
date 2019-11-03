@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
@@ -17,7 +16,6 @@ import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.mvc.AbstractRequestResponseModelChannel;
 import scw.mvc.MVCUtils;
-import scw.mvc.http.parameter.Body;
 import scw.mvc.parameter.ParameterFilter;
 import scw.net.http.Cookie;
 import scw.security.session.Authorization;
@@ -151,15 +149,6 @@ public abstract class AbstractHttpChannel extends AbstractRequestResponseModelCh
 
 	public OutputStream getOutputStream() throws IOException {
 		return getResponse().getOutputStream();
-	}
-
-	public final Object getObject(Type type) {
-		if (type instanceof Class) {
-			return getObject((Class<?>) type);
-		}
-
-		Body body = getBean(Body.class);
-		return jsonParseSupport.parseObject(body.getBody(), type);
 	}
 
 	public HttpParameterRequest getHttpParameterRequest() {

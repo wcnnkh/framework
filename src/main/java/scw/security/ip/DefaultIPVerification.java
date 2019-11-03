@@ -23,7 +23,7 @@ public class DefaultIPVerification implements IPVerification {
 	 */
 	public DefaultIPVerification(@NotRequire @PropertyParameter(false) BlacklistIPVerification blacklistIPVerification,
 			@PropertyParameter(false) WhitelistIPVerification whitelistIPVerification,
-			@ParameterName(IGNORE_INNER_IP_NAME) @DefaultValue("true") boolean ignoreInnerIp) {
+			@ParameterName(IGNORE_INNER_IP_NAME) @DefaultValue("false") boolean ignoreInnerIp) {
 		this.blacklistIPVerification = blacklistIPVerification;
 		this.whitelistIPVerification = whitelistIPVerification;
 		this.ignoreInnerIp = ignoreInnerIp;
@@ -42,7 +42,7 @@ public class DefaultIPVerification implements IPVerification {
 			return false;
 		}
 
-		return blacklistIPVerification != null && whitelistIPVerification.verification(ip);
+		return whitelistIPVerification != null && whitelistIPVerification.verification(ip);
 	}
 
 	public boolean verification(String ip) {

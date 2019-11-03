@@ -62,6 +62,15 @@ public abstract class TypeUtils {
 	public static boolean isClass(Type type) {
 		return type instanceof Class;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> Class<T> toClass(Type type){
+		try {
+			return (Class<T>) ClassUtils.forName(type.toString());
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	/**
 	 * 是否是数字类型，不包含char,boolean

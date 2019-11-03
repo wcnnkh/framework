@@ -25,10 +25,10 @@ public final class CountLimitFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)
-			throws Throwable {
-		CountLimitSecurity countLimitSecurity = AnnotationUtils.getAnnotation(CountLimitSecurity.class,
-				targetClass, method);
+	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+			FilterChain filterChain) throws Throwable {
+		CountLimitSecurity countLimitSecurity = AnnotationUtils.getAnnotation(CountLimitSecurity.class, targetClass,
+				method);
 		if (countLimitSecurity == null) {
 			return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 		}
@@ -50,22 +50,17 @@ public final class CountLimitFilter implements Filter {
 		}
 
 		CountLimitFactory countLimitFactory = instanceFactory.getInstance(countLimitSecurity.factory());
-		CountLimit countLimit = countLimitFactory.getCountLimit(config);
-		if (countLimit == null) {
-			throw new NullPointerException("countLimit");
-		}
-
-		boolean b = countLimit.incr();
+		long count = countLimitFactory.incrAndGet(config);
+		boolean b = count <= config.getMaxCount();
 		if (logger.isDebugEnabled()) {
 			logger.debug("count limit key={}, method={}, max={}, count={}", config.getName(), method,
-					config.getMaxCount(), countLimit.getCount());
+					config.getMaxCount(), count);
 		}
 
 		if (b) {
 			return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 		}
-		logger.warn("Too frequent operation max={}, count={}, method={}", config.getMaxCount(), countLimit.getCount(),
-				method);
+		logger.warn("Too frequent operation max={}, count={}, method={}", config.getMaxCount(), count, method);
 		throw new CountLimitException("操作过于频繁");
 	}
 
