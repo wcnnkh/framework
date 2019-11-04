@@ -13,6 +13,8 @@ import scw.core.multivalue.MultiValueParameterFactory;
 import scw.core.parameter.ParameterConfig;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
+import scw.json.JSONArray;
+import scw.json.JSONObject;
 import scw.json.JSONParseSupport;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -52,6 +54,12 @@ public class DefaultRequestBodyParse implements RequestBodyParse {
 		if (body == null) {
 			logger.warn("无法解析：{}", channel);
 			return null;
+		}
+
+		if (JSONArray.class == parameterConfig.getType()) {
+			return jsonParseSupport.parseArray(body);
+		} else if (JSONObject.class == parameterConfig.getType()) {
+			return jsonParseSupport.parseObject(body);
 		}
 		return StringUtils.defaultAutoParse(body, parameterConfig.getGenericType(), jsonParseSupport);
 	}

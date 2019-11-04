@@ -21,9 +21,9 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	private static Logger logger = LoggerFactory.getLogger(JsonHttpServletChannel.class);
 	private JSONObjectReadOnly jsonObjectReadOnly;
 
-	public JsonHttpServletChannel(BeanFactory beanFactory,
-			Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport, boolean cookieValue,
-			HttpRequest request, HttpResponse response, String jsonp) {
+	public JsonHttpServletChannel(BeanFactory beanFactory, Collection<ParameterFilter> parameterFilters,
+			JSONParseSupport jsonParseSupport, boolean cookieValue, HttpRequest request, HttpResponse response,
+			String jsonp) {
 		super(beanFactory, parameterFilters, jsonParseSupport, cookieValue, request, response, jsonp);
 		if (Method.GET.name().equals(request.getMethod())) {
 			logger.warn("servletPath={},method={}不能使用JSON类型的请求", request.getRequestPath(), request.getMethod());
@@ -53,12 +53,6 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	}
 
 	@Override
-	protected <T> T getObjectIsNotBean(Class<T> type) {
-		return jsonObjectReadOnly == null ? null
-				: jsonParseSupport.parseObject(jsonObjectReadOnly.toJSONString(), type);
-	}
-
-	@Override
 	protected Object getObjectIsNotBean(String name, Class<?> type) {
 		return jsonObjectReadOnly == null ? null : jsonObjectReadOnly.getObject(name, type);
 	}
@@ -67,7 +61,19 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	public Object getObject(String name, Type type) {
 		return jsonObjectReadOnly == null ? null : jsonObjectReadOnly.getObject(name, type);
 	}
-	
+
+	@Override
+	public <T> T getObject(Class<T> type) {
+		return jsonObjectReadOnly == null ? null
+				: jsonParseSupport.parseObject(jsonObjectReadOnly.toJSONString(), type);
+	}
+
+	@Override
+	public <T> T getObject(Type type) {
+		return (T) (jsonObjectReadOnly == null ? null
+				: jsonParseSupport.parseObject(jsonObjectReadOnly.toJSONString(), type));
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder appendable = new StringBuilder();

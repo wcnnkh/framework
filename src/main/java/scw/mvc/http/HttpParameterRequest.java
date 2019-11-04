@@ -114,4 +114,12 @@ public class HttpParameterRequest extends HttpRequestWrapper implements Paramete
 	public Character getCharacter(String name) {
 		return httpChannel.getCharacter(name);
 	}
+
+	public <T> T getObject(Class<T> type) {
+		return httpChannel.getObject(type);
+	}
+
+	public <T> T getObject(Type type) {
+		return httpChannel.getObject(type);
+	}
 }

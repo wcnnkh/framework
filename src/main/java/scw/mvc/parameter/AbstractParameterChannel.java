@@ -6,9 +6,9 @@ import java.math.BigInteger;
 import java.util.Collection;
 
 import scw.beans.BeanFactory;
-import scw.core.annotation.ParameterName;
 import scw.core.exception.ParameterException;
 import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
@@ -42,11 +42,6 @@ public abstract class AbstractParameterChannel extends AbstractChannel implement
 			return this;
 		}
 
-		String name = getParameterName(parameterConfig);
-		if (StringUtils.isEmpty(name)) {
-			return getObject(parameterConfig.getGenericType());
-		}
-
 		RequestBody requestBody = parameterConfig.getAnnotation(RequestBody.class);
 		if (requestBody != null) {
 			RequestBodyParse requestBodyParse = getBean(requestBody.value());
@@ -63,6 +58,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel implement
 					: getBean(requestBean.value());
 		}
 
+		String name = ParameterUtils.getParameterName(parameterConfig);
 		BigDecimalMultiply bigDecimalMultiply = parameterConfig.getAnnotation(BigDecimalMultiply.class);
 		if (bigDecimalMultiply != null) {
 			return bigDecimalMultiply(name, parameterConfig, bigDecimalMultiply);
@@ -97,15 +93,6 @@ public abstract class AbstractParameterChannel extends AbstractChannel implement
 		}
 
 		return NumberUtils.converPrimitive(bigDecimal, type);
-	}
-
-	public String getParameterName(ParameterConfig parameterConfig) {
-		String name = parameterConfig.getName();
-		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
-		if (parameterName != null) {
-			name = parameterName.value();
-		}
-		return name;
 	}
 
 	protected void parameterError(Exception e, String key, String v) {
@@ -316,28 +303,6 @@ public abstract class AbstractParameterChannel extends AbstractChannel implement
 		return StringUtils.parseClass(getString(data));
 	}
 
-	public final <T> T getObject(Class<T> type) {
-		// 不可以被实例化且不存在无参的构造方法
-		if (!ReflectUtils.isInstance(type, true)) {
-			return getBean(type);
-		}
-
-		return getObjectIsNotBean(type);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T getObject(Type type) {
-		if (TypeUtils.isClass(type)) {
-			return getObject((Class<T>) type);
-		}
-
-		return (T) getObject(TypeUtils.toClass(type));
-	}
-
-	protected <T> T getObjectIsNotBean(Class<T> type) {
-		return MVCUtils.getParameterWrapper(this, type, null);
-	}
-
 	/**
 	 * 此方法不处理爱ValueFactory管理的其他类型
 	 */
@@ -365,5 +330,18 @@ public abstract class AbstractParameterChannel extends AbstractChannel implement
 	@SuppressWarnings("rawtypes")
 	public Enum<?> getEnum(String name, Class<? extends Enum> enumType) {
 		return StringUtils.parseEnum(getString(name), enumType);
+	}
+
+	public <T> T getObject(Class<T> type) {
+		return MVCUtils.getParameterWrapper(this, type, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getObject(Type type) {
+		if (TypeUtils.isClass(type)) {
+			return getObject((Class<T>) type);
+		}
+
+		return (T) getObject(TypeUtils.toClass(type));
 	}
 }

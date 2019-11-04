@@ -31,8 +31,6 @@ public abstract class HttpServletChannel extends AbstractHttpChannel {
 			return getResponse();
 		} else if (HttpSession.class == parameterConfig.getType()) {
 			return getRequest().getSession();
-		} else if (HttpServletParameterRequest.class == parameterConfig.getType()) {
-			return new HttpServletParameterRequest(this, getRequest());
 		}
 		return super.getParameter(parameterConfig);
 	}
