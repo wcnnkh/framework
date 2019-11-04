@@ -2579,7 +2579,7 @@ public final class StringUtils {
 	@SuppressWarnings("rawtypes")
 	public static Object autoParse(String text, Class type, char[] splitFilter, Callable<Object> notFoundTypeCallable) {
 		if (String.class == type) {
-			return type;
+			return text;
 		} else if (int.class == type) {
 			return parseInt(text);
 		} else if (Integer.class == type) {

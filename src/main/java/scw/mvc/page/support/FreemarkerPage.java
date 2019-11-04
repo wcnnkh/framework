@@ -9,7 +9,6 @@ import scw.mvc.Channel;
 import scw.mvc.Request;
 import scw.mvc.Response;
 import scw.mvc.http.HttpRequest;
-import scw.mvc.http.HttpResponse;
 import scw.mvc.page.AbstractPage;
 import scw.net.mime.MimeTypeConstants;
 
@@ -35,20 +34,17 @@ public class FreemarkerPage extends AbstractPage {
 	public void setContentType(String contentType) {
 		this.contentType = contentType;
 	}
-	
+
 	public void render(Channel channel) throws Throwable {
 		Request request = channel.getRequest();
 		Response response = channel.getResponse();
 
-		if (response instanceof HttpResponse) {
-			HttpResponse httpResponse = (HttpResponse) response;
-			if (!StringUtils.isEmpty(getContentType())) {
-				httpResponse.setContentType(getContentType());
-			}
+		if (!StringUtils.isEmpty(getContentType())) {
+			response.setContentType(getContentType());
+		}
 
-			if (httpResponse.getContentType() == null) {
-				httpResponse.setContentType(MimeTypeConstants.TEXT_HTML_VALUE);
-			}
+		if (response.getContentType() == null) {
+			response.setContentType(MimeTypeConstants.TEXT_HTML_VALUE);
 		}
 
 		Enumeration<String> enumeration = channel.getAttributeNames();

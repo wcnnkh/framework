@@ -19,6 +19,7 @@ import scw.mvc.parameter.AbstractParameterChannel;
 import scw.mvc.parameter.ParameterFilter;
 import scw.net.http.Cookie;
 import scw.security.session.Authorization;
+import scw.security.session.Session;
 import scw.security.session.http.HttpChannelAuthorization;
 import scw.security.session.http.HttpChannelUserSessionFactory;
 
@@ -46,7 +47,9 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Object getParameter(ParameterConfig parameterConfig) {
-		if (HttpParameterRequest.class == parameterConfig.getType()) {
+		if (Session.class == parameterConfig.getType()) {
+			return getRequest().getHttpSession();
+		} else if (HttpParameterRequest.class == parameterConfig.getType()) {
 			return getHttpParameterRequest();
 		} else if (Authorization.class == parameterConfig.getType()) {
 			HttpChannelUserSessionFactory httpChannelUserSessionFactory = getBean(HttpChannelUserSessionFactory.class);
