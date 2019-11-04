@@ -1,14 +1,12 @@
 package scw.mvc.action;
 
 import scw.core.instance.InstanceFactory;
-import scw.core.ip.IP;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.Channel;
-import scw.mvc.Request;
-import scw.mvc.RequestResponseModel;
+import scw.mvc.MVCUtils;
 import scw.mvc.annotation.IPSecurity;
 import scw.mvc.annotation.ResponseWrapper;
 import scw.mvc.wrapper.ResponseWrapperService;
@@ -23,7 +21,7 @@ import scw.security.ip.IPVerification;
  */
 public final class DefaultActionFilter extends MethodActionFilter {
 	private static Logger logger = LoggerFactory.getLogger(DefaultActionFilter.class);
-	
+
 	// 默认是否开启对ResultFactory的兼容
 	private static final boolean RESPONSE_COMPATIBLE_OPEN = StringUtils
 			.parseBoolean(SystemPropertyUtils.getProperty("mvc.response.compatible.result"), true);
@@ -36,21 +34,11 @@ public final class DefaultActionFilter extends MethodActionFilter {
 				? instanceFactory.getInstance(ResponseWrapperService.class) : null;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	protected Object filter(MethodAction action, Channel channel, ActionFilterChain chain) throws Throwable {
 		IPSecurity ipSecurity = action.getAnnotation(IPSecurity.class);
 		if (ipSecurity != null) {
-			boolean b = true;
-			if (channel instanceof IP) {
-				b = verificationIP((IP) channel, ipSecurity);
-			} else if (channel instanceof RequestResponseModel) {
-				Request request = ((RequestResponseModel) channel).getRequest();
-				if (request instanceof IP) {
-					b = verificationIP((IP) request, ipSecurity);
-				}
-			}
-
+			boolean b = verificationIP(MVCUtils.getIP(channel), ipSecurity);
 			if (!b) {
 				throw new IPValidationFailedException("ip验证失败");
 			}
@@ -74,21 +62,20 @@ public final class DefaultActionFilter extends MethodActionFilter {
 		return value;
 	}
 
-	private boolean verificationIP(IP ip, IPSecurity ipSecurity) {
+	private boolean verificationIP(String ip, IPSecurity ipSecurity) {
 		if (!instanceFactory.isInstance(ipSecurity.value())) {
 			logger.warn("无法初始化:{}", ipSecurity.value());
 			return false;
 		}
 
-		String ipValue = ip.getIP();
 		IPVerification ipVerification = instanceFactory.getInstance(ipSecurity.value());
-		boolean b = ipVerification.verification(ipValue);
-		if(b){
+		boolean b = ipVerification.verification(ip);
+		if (b) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("verification ip [{}] success", ipValue);
+				logger.debug("verification ip [{}] success", ip);
 			}
-		}else{
-			logger.warn("verification ip [{}] fail", ipValue);
+		} else {
+			logger.warn("verification ip [{}] fail", ip);
 		}
 		return b;
 	}

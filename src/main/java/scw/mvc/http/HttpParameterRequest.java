@@ -4,7 +4,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import scw.mvc.ParameterRequest;
+import scw.mvc.parameter.ParameterRequest;
 
 public class HttpParameterRequest extends HttpRequestWrapper implements ParameterRequest {
 	private final HttpChannel httpChannel;

@@ -1,22 +1,29 @@
 package scw.mvc.parameter;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import scw.beans.annotation.Bean;
 import scw.io.IOUtils;
 import scw.mvc.Request;
+import scw.mvc.http.HttpRequest;
 
-@Bean(singleton=false)
-public final class Body implements Serializable {
-	private static final long serialVersionUID = 1L;
+@Bean(singleton = false)
+public final class Body {
 	private String body;
+	private Request request;
 
-	public Body(Request request) throws IOException {
-		this.body = IOUtils.read(request.getReader(), 0);
+	public Body(HttpRequest request) throws IOException {
+		this.request = request;
 	}
 
 	public String getBody() {
+		if (body == null) {
+			try {
+				body = IOUtils.read(request.getReader(), 0);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
 		return body;
 	}
 

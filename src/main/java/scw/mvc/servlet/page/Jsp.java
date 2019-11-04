@@ -6,9 +6,7 @@ import java.util.Map;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import scw.mvc.Request;
-import scw.mvc.RequestResponseModelChannel;
-import scw.mvc.Response;
+import scw.mvc.Channel;
 import scw.mvc.page.AbstractPage;
 import scw.mvc.servlet.ServletUtils;
 
@@ -23,8 +21,7 @@ public class Jsp extends AbstractPage {
 		super(page);
 	}
 
-	@Override
-	protected void render(RequestResponseModelChannel<? extends Request, ? extends Response> channel) throws Throwable {
+	public void render(Channel channel) throws Throwable {
 		ServletRequest request = (ServletRequest) channel.getRequest();
 		ServletResponse response = (ServletResponse) channel.getResponse();
 

@@ -18,7 +18,8 @@ import scw.mvc.parameter.ParameterFilter;
 public abstract class HttpServletChannel extends AbstractHttpChannel {
 
 	public HttpServletChannel(BeanFactory beanFactory, Collection<ParameterFilter> parameterFilters,
-			JSONParseSupport jsonParseSupport, boolean cookieValue, HttpRequest request, HttpResponse response, String jsonp) {
+			JSONParseSupport jsonParseSupport, boolean cookieValue, HttpRequest request, HttpResponse response,
+			String jsonp) {
 		super(beanFactory, parameterFilters, jsonParseSupport, cookieValue, request, response, jsonp);
 	}
 
@@ -33,17 +34,16 @@ public abstract class HttpServletChannel extends AbstractHttpChannel {
 		} else if (HttpServletParameterRequest.class == parameterConfig.getType()) {
 			return new HttpServletParameterRequest(this, getRequest());
 		}
-
 		return super.getParameter(parameterConfig);
 	}
 
 	@Override
 	public MyHttpServletRequest getRequest() {
-		return super.getRequest();
+		return (MyHttpServletRequest) super.getRequest();
 	}
 
 	@Override
 	public MyHttpServletResponse getResponse() {
-		return super.getResponse();
+		return (MyHttpServletResponse) super.getResponse();
 	}
 }

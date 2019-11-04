@@ -21,9 +21,6 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
-import scw.mvc.Request;
-import scw.mvc.RequestResponseModelChannel;
-import scw.mvc.Response;
 import scw.mvc.page.AbstractPage;
 import scw.mvc.servlet.ServletUtils;
 import scw.net.mime.MimeTypeConstants;
@@ -217,8 +214,7 @@ public class Page extends AbstractPage {
 		}
 	}
 
-	@Override
-	protected void render(RequestResponseModelChannel<? extends Request, ? extends Response> channel) throws Throwable {
+	public void render(Channel channel) throws Throwable {
 		if (channel.getRequest() instanceof ServletRequest && channel.getResponse() instanceof ServletResponse) {
 			render(channel, (ServletRequest) channel.getRequest(), (ServletResponse) channel.getResponse());
 		}

@@ -6,7 +6,7 @@ import java.math.BigInteger;
 
 import javax.servlet.http.HttpServletRequest;
 
-import scw.mvc.ParameterRequest;
+import scw.mvc.parameter.ParameterRequest;
 
 public class HttpServletParameterRequest extends MyHttpServletRequest implements ParameterRequest {
 	private final HttpServletChannel httpServletChannel;

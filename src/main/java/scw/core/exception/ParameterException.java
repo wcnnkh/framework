@@ -2,6 +2,7 @@ package scw.core.exception;
 
 /**
  * 参数异常
+ * 
  * @author shuchaowen
  *
  */
@@ -18,5 +19,17 @@ public class ParameterException extends RuntimeException {
 
 	public ParameterException(String message, Throwable e) {
 		super(message, e);
+	}
+
+	public static String formatParameterErrorMessage(String parameterName) {
+		return "Parameter format error [" + parameterName + "]";
+	}
+
+	public static ParameterException createError(String parameterName) {
+		return new ParameterException(formatParameterErrorMessage(parameterName));
+	}
+
+	public static ParameterException createError(String parameterName, Throwable e) {
+		return new ParameterException(formatParameterErrorMessage(parameterName), e);
 	}
 }

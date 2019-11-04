@@ -31,6 +31,7 @@ import scw.core.context.support.ThreadLocalContextManager;
 import scw.core.exception.ParameterException;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.ip.IP;
 import scw.core.multivalue.LinkedMultiValueMap;
 import scw.core.multivalue.MultiValueMap;
 import scw.core.parameter.ParameterConfig;
@@ -301,24 +302,24 @@ public final class MVCUtils implements MvcConstants {
 	 * @param request
 	 * @return
 	 */
-	public static boolean isJsonRequest(HttpRequest request) {
+	public static boolean isJsonRequest(Request request) {
 		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_JSON_VALUE);
 	}
 
-	public static boolean isXmlRequeset(HttpRequest request) {
+	public static boolean isXmlRequeset(Request request) {
 		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_XML_VALUE)
 				|| isDesignatedContentType(request, MimeTypeConstants.TEXT_XML_VALUE);
 	}
 
-	public static boolean isFormRequest(HttpRequest request) {
+	public static boolean isFormRequest(Request request) {
 		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED_VALUE);
 	}
 
-	public static boolean isMultipartRequest(HttpRequest request) {
+	public static boolean isMultipartRequest(Request request) {
 		return isDesignatedContentType(request, MimeTypeConstants.MULTIPART_FORM_DATA_VALUE);
 	}
 
-	public static boolean isDesignatedContentType(HttpRequest request, String contentType) {
+	public static boolean isDesignatedContentType(Request request, String contentType) {
 		return StringUtils.contains(request.getContentType(), contentType, true);
 	}
 
@@ -402,6 +403,18 @@ public final class MVCUtils implements MvcConstants {
 
 	public static int getWarnExecuteTime(PropertyFactory propertyFactory) {
 		return StringUtils.parseInt(propertyFactory.getProperty("mvc.warn-execute-time"), 100);
+	}
+
+	public static String getIP(Channel channel) {
+		if (channel instanceof IP) {
+			return ((IP) channel).getIP();
+		}
+
+		if (channel.getRequest() instanceof IP) {
+			return ((IP) channel.getRequest()).getIP();
+		}
+
+		return null;
 	}
 
 	/**

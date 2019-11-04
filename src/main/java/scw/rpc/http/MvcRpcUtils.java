@@ -10,15 +10,12 @@ import java.util.Map;
 import scw.core.annotation.Headers;
 import scw.core.context.Context;
 import scw.core.exception.NotSupportException;
-import scw.core.ip.IP;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
-import scw.mvc.Request;
-import scw.mvc.RequestResponseModel;
 import scw.net.header.HeadersReadOnly;
 
 public final class MvcRpcUtils {
@@ -48,25 +45,13 @@ public final class MvcRpcUtils {
 		return shareData;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static String getIP() {
 		Channel channel = MVCUtils.getContextChannel();
 		if (channel == null) {
 			return null;
 		}
 
-		if (channel instanceof IP) {
-			return ((IP) channel).getIP();
-		}
-
-		if (channel instanceof RequestResponseModel) {
-			Request request = ((RequestResponseModel) channel).getRequest();
-			if (request instanceof IP) {
-				return ((IP) request).getIP();
-			}
-		}
-
-		return null;
+		return MVCUtils.getIP(channel);
 	}
 
 	public static Map<String, Object> getParameterMap(Method method, Object[] args, boolean appendMvcParameterMap) {
@@ -100,7 +85,6 @@ public final class MvcRpcUtils {
 		return map;
 	}
 
-	@SuppressWarnings("rawtypes")
 	private static Map<String, String> getHeaderMap(Collection<String> headerNames) {
 		if (CollectionUtils.isEmpty(headerNames)) {
 			return null;
@@ -112,11 +96,8 @@ public final class MvcRpcUtils {
 		}
 
 		Map<String, String> headerMap = new HashMap<String, String>(headerNames.size());
-		if (channel instanceof RequestResponseModel) {
-			Request request = ((RequestResponseModel) channel).getRequest();
-			if (request instanceof HeadersReadOnly) {
-				headerMap.putAll(getheaderMap((HeadersReadOnly) request, headerNames));
-			}
+		if (channel.getRequest() instanceof HeadersReadOnly) {
+			headerMap.putAll(getheaderMap((HeadersReadOnly) channel.getRequest(), headerNames));
 		}
 		return headerMap;
 	}

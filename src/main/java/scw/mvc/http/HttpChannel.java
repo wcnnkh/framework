@@ -1,7 +1,13 @@
 package scw.mvc.http;
 
-import scw.mvc.RequestResponseModelChannel;
+import scw.mvc.parameter.ParameterChannel;
 
-public interface HttpChannel extends RequestResponseModelChannel<HttpRequest, HttpResponse> {
+public interface HttpChannel extends ParameterChannel {
+	@SuppressWarnings("unchecked")
+	HttpRequest getRequest();
+
+	@SuppressWarnings("unchecked")
+	HttpResponse getResponse();
+
 	HttpParameterRequest getHttpParameterRequest();
 }

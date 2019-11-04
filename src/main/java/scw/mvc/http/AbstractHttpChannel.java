@@ -14,72 +14,61 @@ import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
-import scw.mvc.AbstractRequestResponseModelChannel;
 import scw.mvc.MVCUtils;
+import scw.mvc.parameter.AbstractParameterChannel;
 import scw.mvc.parameter.ParameterFilter;
 import scw.net.http.Cookie;
 import scw.security.session.Authorization;
-import scw.security.session.Session;
 import scw.security.session.http.HttpChannelAuthorization;
 import scw.security.session.http.HttpChannelUserSessionFactory;
 
-public abstract class AbstractHttpChannel extends AbstractRequestResponseModelChannel<HttpRequest, HttpResponse>
-		implements HttpChannel {
+public abstract class AbstractHttpChannel extends AbstractParameterChannel implements HttpChannel {
 	private static final String GET_DEFAULT_CHARSET_ANME = "ISO-8859-1";
 
 	protected static final String JSONP_CALLBACK = "callback";
 	protected static final String JSONP_RESP_PREFIX = "(";
 	protected static final String JSONP_RESP_SUFFIX = ");";
 	protected final boolean cookieValue;
-	private final HttpRequest request;
+	private final HttpParameterRequest request;
 	private final HttpResponse response;
 	private final String jsonp;
-	private final HttpParameterRequest httpParameterRequest;
 
 	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(BeanFactory beanFactory,
 			Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport, boolean cookieValue,
 			R request, P response, String jsonp) {
 		super(beanFactory, parameterFilters, jsonParseSupport);
 		this.cookieValue = cookieValue;
-		this.request = request;
+		this.request = new HttpParameterRequest(request, this);
 		this.response = response;
 		this.jsonp = jsonp;
-		this.httpParameterRequest = new HttpParameterRequest(request, this);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Object getParameter(ParameterConfig parameterConfig) {
-		if (HttpRequest.class.isAssignableFrom(parameterConfig.getType())) {
-			return getRequest();
-		} else if (HttpResponse.class.isAssignableFrom(parameterConfig.getType())) {
-			return getResponse();
-		} else if (Session.class == parameterConfig.getType()) {
-			return getRequest().getHttpSession();
-		} else if (HttpParameterRequest.class == parameterConfig.getType()) {
+		if (HttpParameterRequest.class == parameterConfig.getType()) {
 			return getHttpParameterRequest();
 		} else if (Authorization.class == parameterConfig.getType()) {
-			HttpChannelUserSessionFactory httpChannelUserSessionFactory = (HttpChannelUserSessionFactory) beanFactory
-					.getInstance(HttpChannelUserSessionFactory.class);
+			HttpChannelUserSessionFactory httpChannelUserSessionFactory = getBean(HttpChannelUserSessionFactory.class);
 			return new HttpChannelAuthorization(this, httpChannelUserSessionFactory);
 		}
 		return super.getParameter(parameterConfig);
 	}
 
 	public Object getAttribute(String name) {
-		return getRequest().getAttribute(name);
+		return request.getAttribute(name);
 	};
 
 	public void setAttribute(String name, Object o) {
-		getRequest().setAttribute(name, o);
+		request.setAttribute(name, o);
 	}
 
 	public Enumeration<String> getAttributeNames() {
-		return getRequest().getAttributeNames();
+		return request.getAttributeNames();
 	}
 
 	public void removeAttribute(String name) {
-		getRequest().removeAttribute(name);
+		request.removeAttribute(name);
 	}
 
 	public String decodeGETParameter(String value) {
@@ -88,7 +77,7 @@ public abstract class AbstractHttpChannel extends AbstractRequestResponseModelCh
 		}
 
 		try {
-			return new String(value.getBytes(GET_DEFAULT_CHARSET_ANME), getRequest().getCharacterEncoding());
+			return new String(value.getBytes(GET_DEFAULT_CHARSET_ANME), request.getCharacterEncoding());
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return value;
@@ -96,7 +85,7 @@ public abstract class AbstractHttpChannel extends AbstractRequestResponseModelCh
 	}
 
 	public String getString(String name) {
-		String v = getRequest().getParameter(name);
+		String v = request.getParameter(name);
 		if (v == null) {
 			Map<String, String> restParameterMap = MVCUtils.getRestPathParameterMap(this);
 			if (restParameterMap != null) {
@@ -106,13 +95,13 @@ public abstract class AbstractHttpChannel extends AbstractRequestResponseModelCh
 
 		if (v == null) {
 			if (cookieValue) {
-				Cookie cookie = getRequest().getCookie(name, false);
+				Cookie cookie = request.getCookie(name, false);
 				if (cookie != null) {
 					v = cookie.getValue();
 				}
 			}
 		} else {
-			if ("GET".equals(getRequest().getMethod())) {
+			if ("GET".equals(request.getMethod())) {
 				v = decodeGETParameter(v);
 			}
 		}
@@ -120,13 +109,13 @@ public abstract class AbstractHttpChannel extends AbstractRequestResponseModelCh
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends HttpRequest> T getRequest() {
-		return (T) request;
+	public HttpRequest getRequest() {
+		return request.getTargetHtpRequest();
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends HttpResponse> T getResponse() {
-		return (T) response;
+	public HttpResponse getResponse() {
+		return response;
 	}
 
 	public <E> E[] getArray(String name, Class<E> type) {
@@ -152,7 +141,7 @@ public abstract class AbstractHttpChannel extends AbstractRequestResponseModelCh
 	}
 
 	public HttpParameterRequest getHttpParameterRequest() {
-		return httpParameterRequest;
+		return request;
 	}
 
 	@Override

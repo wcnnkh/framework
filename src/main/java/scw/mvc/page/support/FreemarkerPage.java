@@ -5,8 +5,8 @@ import java.util.Enumeration;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import scw.core.utils.StringUtils;
+import scw.mvc.Channel;
 import scw.mvc.Request;
-import scw.mvc.RequestResponseModelChannel;
 import scw.mvc.Response;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
@@ -35,9 +35,8 @@ public class FreemarkerPage extends AbstractPage {
 	public void setContentType(String contentType) {
 		this.contentType = contentType;
 	}
-
-	@Override
-	protected void render(RequestResponseModelChannel<? extends Request, ? extends Response> channel) throws Throwable {
+	
+	public void render(Channel channel) throws Throwable {
 		Request request = channel.getRequest();
 		Response response = channel.getResponse();
 

@@ -2532,7 +2532,11 @@ public final class StringUtils {
 	}
 
 	public static Object defaultAutoParse(final String text, final Type type) {
-		return autoParse(text, type, DEFAULT_SPLIT_CHARS, JSONUtils.DEFAULT_JSON_SUPPORT);
+		return defaultAutoParse(text, type, JSONUtils.DEFAULT_JSON_SUPPORT);
+	}
+
+	public static Object defaultAutoParse(final String text, final Type type, JSONParseSupport jsonParseSupport) {
+		return autoParse(text, type, DEFAULT_SPLIT_CHARS, jsonParseSupport);
 	}
 
 	public static Object parseArray(String text, Class<?> componentType, final JSONParseSupport jsonParseSupport) {

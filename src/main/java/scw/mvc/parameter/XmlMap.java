@@ -1,4 +1,4 @@
-package scw.mvc.http.parameter;
+package scw.mvc.parameter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
