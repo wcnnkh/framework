@@ -18,12 +18,6 @@ import scw.mvc.http.HttpRequest;
 public final class XmlMap extends LinkedHashMap<String, String> {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * 用于序列化
-	 */
-	protected XmlMap() {
-	}
-
 	public XmlMap(HttpRequest request) throws IOException {
 		BufferedReader reader = request.getReader();
 		Document document = XMLUtils.parse(new InputSource(reader));
