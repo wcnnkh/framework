@@ -26,7 +26,7 @@ public class HttpRequest extends AbstractUrlRequest {
 	private Map<String, String> requestProperties;
 	private String requestUrl;
 	private SSLSocketFactory sslSocketFactory;
-	private UnsafeByteArrayOutputStream outputStream = new UnsafeByteArrayOutputStream();
+	private UnsafeByteArrayOutputStream outputStream;
 
 	public HttpRequest(Method method, String requestUrl) {
 		this.method = method;
@@ -40,11 +40,14 @@ public class HttpRequest extends AbstractUrlRequest {
 	public void setRequestUrl(String requestUrl) {
 		this.requestUrl = requestUrl;
 	}
-	
-	public OutputStream getOutputStream(){
+
+	public OutputStream getOutputStream() {
+		if (outputStream == null) {
+			outputStream = new UnsafeByteArrayOutputStream();
+		}
 		return outputStream;
 	}
-	
+
 	@Override
 	public void request(URLConnection urlConnection) throws Throwable {
 		HttpURLConnection http = (HttpURLConnection) urlConnection;
@@ -75,7 +78,9 @@ public class HttpRequest extends AbstractUrlRequest {
 
 	@Override
 	protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
-		outputStream.writeTo(os);
+		if (outputStream != null) {
+			outputStream.writeTo(os);
+		}
 	}
 
 	public void setRequestProperties(String key, Object value) {
