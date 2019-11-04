@@ -5,10 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public interface Request {
+	String getContentType();
+	
 	String getCharacterEncoding();
 
-    void setCharacterEncoding(String env)
-            throws java.io.UnsupportedEncodingException;
+    void setCharacterEncoding(String env);
 	
 	InputStream getInputStream() throws IOException;
 	

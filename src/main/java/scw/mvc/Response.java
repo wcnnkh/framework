@@ -5,12 +5,14 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 
 public interface Response {
-	
-    String getCharacterEncoding();
+	void setContentType(String contentType);
 
-    void setCharacterEncoding(String env)
-            throws java.io.UnsupportedEncodingException;
-	
+	String getContentType();
+
+	String getCharacterEncoding();
+
+	void setCharacterEncoding(String env);
+
 	OutputStream getOutputStream() throws IOException;
 
 	PrintWriter getWriter() throws IOException;

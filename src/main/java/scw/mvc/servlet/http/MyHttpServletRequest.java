@@ -1,5 +1,7 @@
 package scw.mvc.servlet.http;
 
+import java.io.UnsupportedEncodingException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
@@ -52,4 +54,12 @@ public class MyHttpServletRequest extends HttpServletRequestWrapper implements H
 		return MVCUtils.isAjaxRequest(this);
 	}
 
+	@Override
+	public void setCharacterEncoding(String enc) {
+		try {
+			super.setCharacterEncoding(enc);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }
