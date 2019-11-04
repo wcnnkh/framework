@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ ElementType.PARAMETER, ElementType.TYPE })
+@Target({ ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequestBean {
 	public String value() default "";
