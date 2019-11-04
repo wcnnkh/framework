@@ -26,7 +26,7 @@ public class HttpRequest extends AbstractUrlRequest {
 	private Map<String, String> requestProperties;
 	private String requestUrl;
 	private SSLSocketFactory sslSocketFactory;
-	private UnsafeByteArrayOutputStream outputStream;
+	private UnsafeByteArrayOutputStream outputStream = new UnsafeByteArrayOutputStream();
 
 	public HttpRequest(Method method, String requestUrl) {
 		this.method = method;
