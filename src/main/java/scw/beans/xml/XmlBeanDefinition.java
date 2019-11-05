@@ -13,8 +13,6 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
 import scw.beans.property.ValueWiredManager;
-import scw.core.Destroy;
-import scw.core.Init;
 import scw.core.PropertyFactory;
 import scw.core.aop.Filter;
 import scw.core.cglib.proxy.Enhancer;
@@ -26,6 +24,7 @@ import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.XUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
@@ -148,9 +147,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 			}
 		}
 
-		if (bean instanceof Init) {
-			((Init) bean).init();
-		}
+		XUtils.init(bean);
 	}
 
 	public void destroy(Object bean) throws Exception {
@@ -161,9 +158,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 			}
 		}
 
-		if (bean instanceof Destroy) {
-			((Destroy) bean).destroy();
-		}
+		XUtils.destroy(bean);
 	}
 
 	@SuppressWarnings("unchecked")

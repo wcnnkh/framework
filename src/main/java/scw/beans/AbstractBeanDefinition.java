@@ -6,6 +6,7 @@ import scw.beans.property.ValueWiredManager;
 import scw.core.Init;
 import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
+import scw.core.utils.XUtils;
 
 public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	protected final BeanFactory beanFactory;
@@ -68,9 +69,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 			}
 		}
 
-		if (bean instanceof Init) {
-			((Init) bean).init();
-		}
+		XUtils.init(bean);
 	}
 
 	public void destroy(Object bean) throws Exception {
@@ -81,9 +80,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 			}
 		}
 
-		if (bean instanceof scw.core.Destroy) {
-			((scw.core.Destroy) bean).destroy();
-		}
+		XUtils.destroy(bean);
 	}
 
 	public String[] getNames() {
