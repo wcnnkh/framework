@@ -52,7 +52,9 @@ public final class ConnectionTransactionResource extends AbstractConnectionTrans
 	public void end() {
 		if (hasConnection()) {
 			try {
-				connection.commit();
+				if (!connection.getAutoCommit()) {
+					connection.commit();
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
