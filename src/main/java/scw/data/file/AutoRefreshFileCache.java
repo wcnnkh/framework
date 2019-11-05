@@ -2,14 +2,26 @@ package scw.data.file;
 
 import java.io.File;
 
+import scw.core.Constants;
 import scw.core.Converter;
+import scw.io.SerializerUtils;
 import scw.io.serializer.NoTypeSpecifiedSerializer;
 
 public class AutoRefreshFileCache extends FileCache {
-	private final Converter<String, Object> converter;
+	private final Converter<String, ?> converter;
+	
+	public AutoRefreshFileCache(int period, Converter<String, ?> converter){
+		super(period);
+		this.converter = converter;
+	}
+	
+	public AutoRefreshFileCache(int period,
+			String cacheDirectory, Converter<String, ?> converter){
+		this(period, SerializerUtils.DEFAULT_SERIALIZER, Constants.DEFAULT_CHARSET_NAME, cacheDirectory, converter);
+	}
 
 	public AutoRefreshFileCache(int period, NoTypeSpecifiedSerializer serializer, String charsetName,
-			String cacheDirectory, Converter<String, Object> converter) {
+			String cacheDirectory, Converter<String, ?> converter) {
 		super(period, serializer, charsetName, cacheDirectory);
 		this.converter = converter;
 	}

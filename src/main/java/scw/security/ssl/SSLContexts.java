@@ -25,7 +25,7 @@
  *
  */
 
-package scw.net.http.ssl;
+package scw.security.ssl;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;

@@ -9,11 +9,14 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import scw.core.Constants;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.SystemPropertyUtils;
 import scw.data.Cache;
 import scw.io.FileUtils;
+import scw.io.SerializerUtils;
 import scw.io.serializer.NoTypeSpecifiedSerializer;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -28,7 +31,21 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 	private final String charsetName;
 	private final String cacheDirectory;
 
-	public FileCache(int exp, NoTypeSpecifiedSerializer serializer, String charsetName, String cacheDirectory) {
+	public FileCache(int exp) {
+		this.exp = exp;
+		this.serializer = SerializerUtils.DEFAULT_SERIALIZER;
+		this.charsetName = Constants.DEFAULT_CHARSET_NAME;
+		this.cacheDirectory = SystemPropertyUtils.getTempDirectoryPath()
+				+ File.separator + getClass().getName();
+	}
+
+	public FileCache(int exp, String cacheDirectory) {
+		this(exp, SerializerUtils.DEFAULT_SERIALIZER,
+				Constants.DEFAULT_CHARSET_NAME, cacheDirectory);
+	}
+
+	public FileCache(int exp, NoTypeSpecifiedSerializer serializer,
+			String charsetName, String cacheDirectory) {
 		this.exp = exp;
 		this.serializer = serializer;
 		this.charsetName = charsetName;
@@ -130,14 +147,14 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 		}
 		return file;
 	}
-	
-	protected <T> T getNotFound(String key){
+
+	protected <T> T getNotFound(String key) {
 		return null;
 	}
 
 	public <T> T get(String key) {
 		File file = getNotExpireFile(key);
-		if(file == null){
+		if (file == null) {
 			return getNotFound(key);
 		}
 
@@ -209,8 +226,8 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 	protected void expireExecute(File file, long currentTimeMillis) {
 		file.delete();
 	}
-	
-	protected void scanner(File file, long currentTimeMillis){
+
+	protected void scanner(File file, long currentTimeMillis) {
 		if (isExpire(currentTimeMillis, file)) {
 			try {
 				logger.debug("Start processing expired cache:" + file.getPath());

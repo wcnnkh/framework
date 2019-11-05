@@ -22,15 +22,39 @@ import scw.net.RequestException;
 import scw.net.mime.MimeType;
 
 public class HttpRequest extends AbstractUrlRequest {
+	private static SSLSocketFactory trustAllSSLSocketFactory;
+
+	static {
+		try {
+			trustAllSSLSocketFactory = NetworkUtils.createTrustAllSSLSocketFactory();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
 	private Method method;
 	private Map<String, String> requestProperties;
 	private String requestUrl;
 	private SSLSocketFactory sslSocketFactory;
 	private UnsafeByteArrayOutputStream outputStream;
-
+	private boolean trustAllSSL;
+	
 	public HttpRequest(Method method, String requestUrl) {
+		this(method, requestUrl, false);
+	}
+
+	public HttpRequest(Method method, String requestUrl, boolean trustAllSSL) {
 		this.method = method;
 		this.requestUrl = requestUrl;
+		this.trustAllSSL = trustAllSSL;
+	}
+
+	public boolean isTrustAllSSL() {
+		return trustAllSSL;
+	}
+
+	public void setTrustAllSSL(boolean trustAllSSL) {
+		this.trustAllSSL = trustAllSSL;
 	}
 
 	public String getRequestUrl() {
@@ -52,9 +76,13 @@ public class HttpRequest extends AbstractUrlRequest {
 	public void request(URLConnection urlConnection) throws Throwable {
 		HttpURLConnection http = (HttpURLConnection) urlConnection;
 		if (http instanceof HttpsURLConnection) {
-			SSLSocketFactory sslSocketFactory = getSslSocketFactory();
-			if (sslSocketFactory != null) {
-				HttpsURLConnection https = (HttpsURLConnection) urlConnection;
+			SSLSocketFactory sslSocketFactory = getSSLSocketFactory();
+			HttpsURLConnection https = (HttpsURLConnection) urlConnection;
+			if(sslSocketFactory == null){
+				if(isTrustAllSSL()){
+					https.setSSLSocketFactory(trustAllSSLSocketFactory);
+				}
+			}else {
 				https.setSSLSocketFactory(sslSocketFactory);
 			}
 		}
@@ -70,14 +98,16 @@ public class HttpRequest extends AbstractUrlRequest {
 
 		if (requestProperties != null) {
 			for (Entry<String, String> entry : requestProperties.entrySet()) {
-				urlConnection.setRequestProperty(entry.getKey(), entry.getValue());
+				urlConnection.setRequestProperty(entry.getKey(),
+						entry.getValue());
 			}
 		}
 		super.request(urlConnection);
 	}
 
 	@Override
-	protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
+	protected void doOutput(URLConnection urlConnection, OutputStream os)
+			throws Throwable {
 		if (outputStream != null) {
 			outputStream.writeTo(os);
 		}
@@ -122,11 +152,11 @@ public class HttpRequest extends AbstractUrlRequest {
 		}
 	}
 
-	public final SSLSocketFactory getSslSocketFactory() {
+	public final SSLSocketFactory getSSLSocketFactory() {
 		return sslSocketFactory;
 	}
 
-	public void setSslSocketFactory(SSLSocketFactory sslSocketFactory) {
+	public void setSSLSocketFactory(SSLSocketFactory sslSocketFactory) {
 		this.sslSocketFactory = sslSocketFactory;
 	}
 

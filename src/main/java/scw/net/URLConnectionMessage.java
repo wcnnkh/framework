@@ -71,6 +71,9 @@ public class URLConnectionMessage extends SimpleMultiValueHeadersReadOnly implem
 
 	@Override
 	public String toString() {
+		if(mimeType != null && mimeType.getCharsetName() != null){
+			return toString(mimeType.getCharsetName());
+		}
 		return toString(Constants.DEFAULT_CHARSET_NAME);
 	}
 

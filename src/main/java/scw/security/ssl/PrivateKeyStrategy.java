@@ -24,41 +24,25 @@
  * <http://www.apache.org/>.
  *
  */
-package scw.net.http.ssl;
+package scw.security.ssl;
 
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-
-import scw.core.Assert;
+import java.net.Socket;
+import java.util.Map;
 
 /**
- * Private key details.
+ * A strategy allowing for a choice of an alias during SSL authentication.
  *
  * @since 4.4
  */
-public final class PrivateKeyDetails {
+public interface PrivateKeyStrategy {
 
-	private final String type;
-	private final X509Certificate[] certChain;
-
-	public PrivateKeyDetails(final String type, final X509Certificate[] certChain) {
-		super();
-		Assert.notNull(type, "Private key type");
-		this.type = type;
-		this.certChain = certChain;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public X509Certificate[] getCertChain() {
-		return certChain;
-	}
-
-	@Override
-	public String toString() {
-		return type + ':' + Arrays.toString(certChain);
-	}
+    /**
+     * Determines what key material to use for SSL authentication.
+     *
+     * @param aliases available private key material
+     * @param socket socket used for the connection. Please note this parameter can be {@code null}
+     * if key material is applicable to any socket.
+     */
+    String chooseAlias(Map<String, PrivateKeyDetails> aliases, Socket socket);
 
 }

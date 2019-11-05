@@ -6,10 +6,15 @@ import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.SSLSocketFactory;
+
 import scw.core.utils.StringUtils;
+import scw.security.ssl.TrustAllManager;
 
 public final class NetworkUtils {
 	private NetworkUtils() {
@@ -17,16 +22,19 @@ public final class NetworkUtils {
 
 	private static final Response<Message> MESSAGE_RESPONSE = new DefaultAutoMessageResponse();
 
-	public static <T> T execute(URLConnection urlConnection, Request request, Response<T> response) throws Throwable {
+	public static <T> T execute(URLConnection urlConnection, Request request,
+			Response<T> response) throws Throwable {
 		request.request(urlConnection);
 		return response.response(urlConnection);
 	}
 
-	public static Message execute(URLConnection urlConnection, Request request) throws Throwable {
+	public static Message execute(URLConnection urlConnection, Request request)
+			throws Throwable {
 		return execute(urlConnection, request, MESSAGE_RESPONSE);
 	}
 
-	public static <T> T execute(URL url, Proxy proxy, Request request, Response<T> response) {
+	public static <T> T execute(URL url, Proxy proxy, Request request,
+			Response<T> response) {
 		URLConnection urlConnection = null;
 		try {
 			if (proxy == null) {
@@ -51,7 +59,8 @@ public final class NetworkUtils {
 		return execute(url, proxy, request, MESSAGE_RESPONSE);
 	}
 
-	public static <T> T execute(String url, Proxy proxy, Request request, Response<T> response) {
+	public static <T> T execute(String url, Proxy proxy, Request request,
+			Response<T> response) {
 		URL u = null;
 		try {
 			u = new URL(url);
@@ -78,7 +87,8 @@ public final class NetworkUtils {
 		return execute(request, MESSAGE_RESPONSE);
 	}
 
-	public static List<InetSocketAddress> parseInetSocketAddressList(String address) {
+	public static List<InetSocketAddress> parseInetSocketAddressList(
+			String address) {
 		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
 		String[] arr = StringUtils.commonSplit(address);
 		for (String a : arr) {
@@ -92,5 +102,22 @@ public final class NetworkUtils {
 			addresses.add(new InetSocketAddress(h, port));
 		}
 		return addresses;
+	}
+
+	/**
+	 *创建一个信任所有的
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyManagementException
+	 */
+	public static SSLSocketFactory createTrustAllSSLSocketFactory()
+			throws NoSuchAlgorithmException, KeyManagementException {
+		javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[1];
+		javax.net.ssl.TrustManager tm = new TrustAllManager();
+		trustAllCerts[0] = tm;
+		javax.net.ssl.SSLContext sc = javax.net.ssl.SSLContext
+				.getInstance("SSL");
+		sc.init(null, trustAllCerts, null);
+		return sc.getSocketFactory();
 	}
 }
