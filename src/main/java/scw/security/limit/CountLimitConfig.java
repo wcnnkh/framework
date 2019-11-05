@@ -6,6 +6,8 @@ public interface CountLimitConfig {
 	String getName();
 
 	long getMaxCount();
-
-	long getPeriod(TimeUnit timeUnit);
+	
+	long getTimeout();
+	
+	TimeUnit getTimeUnit();
 }

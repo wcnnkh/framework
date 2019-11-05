@@ -20,12 +20,12 @@ public class CacheServiceWrapper implements CacheService {
 		return cacheService.getAndTouch(key, newExp);
 	}
 
-	public boolean set(String key, Object value) {
-		return cacheService.set(key, value);
+	public void set(String key, Object value) {
+		cacheService.set(key, value);
 	}
 
-	public boolean set(String key, int exp, Object value) {
-		return cacheService.set(key, exp, value);
+	public void set(String key, int exp, Object value) {
+		cacheService.set(key, exp, value);
 	}
 
 	public boolean add(String key, Object value) {

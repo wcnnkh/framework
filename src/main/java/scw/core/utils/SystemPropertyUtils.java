@@ -244,4 +244,38 @@ public final class SystemPropertyUtils {
 	public static String getTempDirectoryPath() {
 		return getProperty("java.io.tmpdir");
 	}
+	
+	public static <T> T[] getArrayProperty(Class<T> componentType, String key, T[] defaultValue){
+		return getArrayProperty(componentType, key, defaultValue, StringUtils.DEFAULT_SPLIT_CHARS);
+	}
+	
+	public static <T> T[] getArrayProperty(Class<T> componentType, String key, T[] defaultValue, char[] splitFilter){
+		String value = getProperty(key);
+		if(StringUtils.isEmpty(value)){
+			return defaultValue;
+		}
+		
+		@SuppressWarnings("unchecked")
+		T[] array = (T[]) StringUtils.parseArray(value, componentType, splitFilter);
+		if(ArrayUtils.isEmpty(array)){
+			return defaultValue;
+		}
+		
+		return array;
+	}
+	
+	public static <T> T[] getArrayProperty(Class<T> componentType, String key, T[] defaultValue, String[] splitFilter){
+		String value = getProperty(key);
+		if(StringUtils.isEmpty(value)){
+			return defaultValue;
+		}
+		
+		@SuppressWarnings("unchecked")
+		T[] array = (T[]) StringUtils.parseArray(value, componentType, splitFilter);
+		if(ArrayUtils.isEmpty(array)){
+			return defaultValue;
+		}
+		
+		return array;
+	}
 }

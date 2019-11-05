@@ -22,8 +22,6 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.timer.Timer;
-import scw.timer.support.DefaultTimer;
 
 public class AutoInstanceConfig implements InstanceConfig {
 	private static Logger logger = LoggerUtils.getLogger(AutoInstanceConfig.class);
@@ -120,10 +118,6 @@ public class AutoInstanceConfig implements InstanceConfig {
 	}
 
 	public final boolean isAutoConstructor(Constructor<?> constructor) {
-		if(constructor.getDeclaringClass().equals(Timer.class.getName()) || constructor.getDeclaringClass().equals(DefaultTimer.class.getName())){
-			System.out.println(constructor);
-		}
-		
 		ParameterConfig[] parameterDefinitions = ParameterUtils.getParameterConfigs(constructor);
 		if (parameterDefinitions.length == 0) {
 			return true;

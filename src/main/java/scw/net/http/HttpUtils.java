@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import scw.core.Constants;
-import scw.core.exception.NestedRuntimeException;
+import scw.core.exception.NotSupportException;
 import scw.core.string.StringCodecUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -196,7 +196,7 @@ public final class HttpUtils {
 		try {
 			return URLEncoder.encode(value.toString(), charsetName);
 		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
+			throw new NotSupportException(e);
 		}
 	}
 
@@ -204,20 +204,20 @@ public final class HttpUtils {
 		return encode(value, Constants.DEFAULT_CHARSET_NAME);
 	}
 
-	public static String decode(String value, String charsetName) throws UnsupportedEncodingException {
+	public static String decode(String value, String charsetName) {
 		if (value == null) {
 			return null;
 		}
 
-		return URLDecoder.decode(value, charsetName);
-	}
-
-	public static String decode(String value) {
 		try {
-			return decode(value, Constants.DEFAULT_CHARSET_NAME);
+			return URLDecoder.decode(value, charsetName);
 		} catch (UnsupportedEncodingException e) {
-			throw new NestedRuntimeException(e);
+			throw new NotSupportException(e);
 		}
+	}
+	
+	public static String decode(String value) {
+		return decode(value, Constants.DEFAULT_CHARSET_NAME);
 	}
 
 	public static String decode(String content, String charsetName, int count) throws UnsupportedEncodingException {
@@ -232,12 +232,12 @@ public final class HttpUtils {
 		return newContent;
 	}
 
-	public static String encode(String content, String charsetName, int count) throws UnsupportedEncodingException {
-		if (count <= 0) {
-			return content;
+	public static String encode(Object content, String charsetName, int count) throws UnsupportedEncodingException {
+		if (count <= 0 || content == null) {
+			return content == null ? null : content.toString();
 		}
 
-		String newContent = content;
+		String newContent = content.toString();
 		for (int i = 0; i < count; i++) {
 			newContent = encode(newContent, charsetName);
 		}

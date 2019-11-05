@@ -184,7 +184,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		if (ResourceUtils.isExist(config)) {
 			Object[] args = null;
 			Class<?>[] types = null;
-			if(StringUtils.parseBoolean(propertyFactory.getProperty("db.cache.auto.enable"), true)){
+			if(StringUtils.parseBoolean(propertyFactory.getProperty("db.cache.enable"), false)){
 				if (beanFactory.isInstance(Redis.class.getName())) {
 					types = new Class<?>[] { Redis.class, String.class };
 					args = new Object[] { beanFactory.getInstance(Redis.class), config };

@@ -49,25 +49,17 @@ public final class XMemcached implements Memcached {
 		}
 	}
 
-	public boolean set(String key, Object value) {
-		if (value == null) {
-			return false;
-		}
-
+	public void set(String key, Object value) {
 		try {
-			return memcachedClient.set(key, 0, value);
+			memcachedClient.set(key, 0, value);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public boolean set(String key, int exp, Object data) {
-		if (data == null) {
-			return false;
-		}
-
+	public void set(String key, int exp, Object data) {
 		try {
-			return memcachedClient.set(key, exp, data);
+			memcachedClient.set(key, exp, data);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

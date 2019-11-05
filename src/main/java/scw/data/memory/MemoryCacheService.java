@@ -39,17 +39,15 @@ public final class MemoryCacheService implements CacheService {
 		return cas == null ? null : cas.getValue();
 	}
 
-	public boolean set(String key, Object value) {
+	public void set(String key, Object value) {
 		MemoryCache memoryCache = memoryCacheManager.createDefaultMemoryCache(key);
 		memoryCache.set(value);
-		return true;
 	}
 
-	public boolean set(String key, int exp, Object value) {
+	public void set(String key, int exp, Object value) {
 		MemoryCache memoryCache = memoryCacheManager.createDefaultMemoryCache(key);
 		memoryCache.set(value);
 		memoryCache.setExpire(exp);
-		return true;
 	}
 
 	public boolean add(String key, Object value) {

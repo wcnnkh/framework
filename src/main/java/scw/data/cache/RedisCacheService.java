@@ -24,14 +24,12 @@ public class RedisCacheService implements CacheService {
 		return (T) redis.getObjectOperations().getAndTouch(key, newExp);
 	}
 
-	public boolean set(String key, Object value) {
+	public void set(String key, Object value) {
 		redis.getObjectOperations().set(key, value);
-		return true;
 	}
 
-	public boolean set(String key, int exp, Object value) {
+	public void set(String key, int exp, Object value) {
 		redis.getObjectOperations().setex(key, exp, value);
-		return true;
 	}
 
 	public boolean add(String key, Object value) {

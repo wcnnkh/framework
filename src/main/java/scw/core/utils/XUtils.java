@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import scw.core.Converter;
+import scw.core.Destroy;
+import scw.core.Init;
 import scw.core.PrimitiveTypeValueFactory;
 import scw.core.ResourceFactory;
 import scw.core.ValueFactory;
@@ -341,6 +343,26 @@ public final class XUtils {
 			throw new RuntimeException(e);
 		} finally {
 			resourceFactory.release(resource);
+		}
+	}
+	
+	public static void init(Object init){
+		if(init == null){
+			return ;
+		}
+		
+		if(init instanceof Init){
+			((Init) init).init();
+		}
+	}
+	
+	public static void destroy(Object destroy){
+		if(destroy == null){
+			return ;
+		}
+		
+		if(destroy instanceof Destroy){
+			((Destroy) destroy).destroy();
 		}
 	}
 }

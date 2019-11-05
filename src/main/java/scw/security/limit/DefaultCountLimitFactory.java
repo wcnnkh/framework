@@ -14,7 +14,7 @@ public final class DefaultCountLimitFactory implements CountLimitFactory {
 	public DefaultCountLimitFactory(CacheService cacheService) {
 		this.cacheService = cacheService;
 	}
-	
+
 	public DefaultCountLimitFactory(Memcached memcached) {
 		this(new MemcachedCacheService(memcached));
 	}
@@ -23,8 +23,7 @@ public final class DefaultCountLimitFactory implements CountLimitFactory {
 		this(new RedisCacheService(redis));
 	}
 
-	public long incrAndGet(CountLimitConfig countLimitConfig) {
-		return cacheService.incr(countLimitConfig.getName(), 1, 1,
-				(int) countLimitConfig.getPeriod(TimeUnit.SECONDS));
+	public long incrAndGet(String name, long timeout, TimeUnit timeUnit) {
+		return cacheService.incr(name, 1, 1, (int) timeUnit.toSeconds(timeout));
 	}
 }

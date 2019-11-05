@@ -50,7 +50,7 @@ public final class CountLimitFilter implements Filter {
 		}
 
 		CountLimitFactory countLimitFactory = instanceFactory.getInstance(countLimitSecurity.factory());
-		long count = countLimitFactory.incrAndGet(config);
+		long count = countLimitFactory.incrAndGet(config.getName(), config.getTimeout(), config.getTimeUnit());
 		boolean b = count <= config.getMaxCount();
 		if (logger.isDebugEnabled()) {
 			logger.debug("count limit key={}, method={}, max={}, count={}", config.getName(), method,

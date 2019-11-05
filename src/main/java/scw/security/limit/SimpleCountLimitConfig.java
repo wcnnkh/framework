@@ -23,8 +23,12 @@ public final class SimpleCountLimitConfig implements CountLimitConfig {
 		return maxCount;
 	}
 
-	public long getPeriod(TimeUnit timeUnit) {
-		return timeUnit.convert(this.period, this.timeUnit);
+	public long getTimeout() {
+		return period;
+	}
+
+	public TimeUnit getTimeUnit() {
+		return timeUnit;
 	}
 
 }
