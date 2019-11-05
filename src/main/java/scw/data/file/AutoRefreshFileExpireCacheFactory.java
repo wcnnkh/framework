@@ -28,6 +28,6 @@ public class AutoRefreshFileExpireCacheFactory extends FileExpireCacheFactory {
 
 	@Override
 	protected Cache createCache(int exp) {
-		return new AutoRefreshFileCache(exp, serializer, charsetName, cacheDirectory, converter);
+		return new AutoRefreshFileCache(exp, serializer, charsetName, cacheDirectory + File.separator + exp, converter);
 	}
 }

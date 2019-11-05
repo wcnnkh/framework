@@ -13,9 +13,9 @@ public class AutoRefreshFileCache extends FileCache {
 		super(period, serializer, charsetName, cacheDirectory);
 		this.converter = converter;
 	}
-
+	
 	@Override
-	protected void expireExecute(File file) {
+	protected void expireExecute(File file, long currentTimeMillis) {
 		String key = file.getName();
 		key = decodeKey(key);
 		refresh(key);

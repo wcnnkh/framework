@@ -206,8 +206,19 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 		return map;
 	}
 
-	protected void expireExecute(File file) {
+	protected void expireExecute(File file, long currentTimeMillis) {
 		file.delete();
+	}
+	
+	protected void scanner(File file, long currentTimeMillis){
+		if (isExpire(currentTimeMillis, file)) {
+			try {
+				logger.debug("Start processing expired cache:" + file.getPath());
+				expireExecute(file, currentTimeMillis);
+			} catch (Exception e) {
+				logger.error(e, "处理[{}]异常", file.getPath());
+			}
+		}
 	}
 
 	private void sannerExpireFile(String rootPath, long currentTimeMillis) {
@@ -224,14 +235,7 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 			if (file.isDirectory()) {
 				sannerExpireFile(file.getPath(), currentTimeMillis);
 			} else {
-				if (isExpire(currentTimeMillis, file)) {
-					try {
-						logger.debug("Start processing expired cache:" + file.getPath());
-						expireExecute(file);
-					} catch (Exception e) {
-						logger.error(e, "处理[{}]异常", file.getPath());
-					}
-				}
+				scanner(file, currentTimeMillis);
 			}
 		}
 	}
