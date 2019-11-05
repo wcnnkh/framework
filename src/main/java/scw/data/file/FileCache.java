@@ -130,11 +130,15 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 		}
 		return file;
 	}
+	
+	protected <T> T getNotFound(String key){
+		return null;
+	}
 
 	public <T> T get(String key) {
 		File file = getNotExpireFile(key);
-		if (!file.exists()) {
-			return null;
+		if(file == null){
+			return getNotFound(key);
 		}
 
 		return (T) readObject(file);
@@ -143,7 +147,7 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 	public <T> T getAndTouch(String key) {
 		File file = getNotExpireFile(key);
 		if (file == null) {
-			return null;
+			return getNotFound(key);
 		}
 
 		touchFile(file);
@@ -152,13 +156,13 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 
 	public void set(String key, Object value) {
 		File file = getNotExpireFile(key);
-		writeObject(file, value, file == null);
+		writeObject(getFile(key), value, file == null);
 	}
 
 	public boolean add(String key, Object value) {
 		File file = getNotExpireFile(key);
 		if (file == null) {
-			writeObject(file, value, true);
+			writeObject(getFile(key), value, true);
 		}
 		return false;
 	}
