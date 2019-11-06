@@ -31,21 +31,18 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 	private final String charsetName;
 	private final String cacheDirectory;
 
-	public FileCache(int exp) {
+	protected FileCache(int exp) {
 		this.exp = exp;
 		this.serializer = SerializerUtils.DEFAULT_SERIALIZER;
 		this.charsetName = Constants.DEFAULT_CHARSET_NAME;
-		this.cacheDirectory = SystemPropertyUtils.getTempDirectoryPath()
-				+ File.separator + getClass().getName();
+		this.cacheDirectory = SystemPropertyUtils.getTempDirectoryPath() + File.separator + getClass().getName();
 	}
 
 	public FileCache(int exp, String cacheDirectory) {
-		this(exp, SerializerUtils.DEFAULT_SERIALIZER,
-				Constants.DEFAULT_CHARSET_NAME, cacheDirectory);
+		this(exp, SerializerUtils.DEFAULT_SERIALIZER, Constants.DEFAULT_CHARSET_NAME, cacheDirectory);
 	}
 
-	public FileCache(int exp, NoTypeSpecifiedSerializer serializer,
-			String charsetName, String cacheDirectory) {
+	public FileCache(int exp, NoTypeSpecifiedSerializer serializer, String charsetName, String cacheDirectory) {
 		this.exp = exp;
 		this.serializer = serializer;
 		this.charsetName = charsetName;
@@ -271,5 +268,9 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 		if (timer != null) {
 			timer.cancel();
 		}
+	}
+
+	public static Cache create(String cacheDirectorySuffix, int exp) {
+		return new FileCache(exp, SystemPropertyUtils.getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
 	}
 }

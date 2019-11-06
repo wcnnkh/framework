@@ -14,7 +14,7 @@ public class FileExpireCacheFactory extends AbstractExpireCacheFactory{
 	protected final String charsetName;
 	protected final String cacheDirectory;
 
-	public FileExpireCacheFactory() {
+	protected FileExpireCacheFactory() {
 		this.serializer = SerializerUtils.DEFAULT_SERIALIZER;
 		this.charsetName = Constants.DEFAULT_CHARSET_NAME;
 		this.cacheDirectory = SystemPropertyUtils.getTempDirectoryPath() + File.separator + getClass().getName();

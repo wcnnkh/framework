@@ -4,19 +4,20 @@ import java.io.File;
 
 import scw.core.Constants;
 import scw.core.Converter;
+import scw.core.utils.SystemPropertyUtils;
+import scw.data.Cache;
 import scw.io.SerializerUtils;
 import scw.io.serializer.NoTypeSpecifiedSerializer;
 
 public class AutoRefreshFileCache extends FileCache {
 	private final Converter<String, ?> converter;
-	
-	public AutoRefreshFileCache(int period, Converter<String, ?> converter){
+
+	protected AutoRefreshFileCache(int period, Converter<String, ?> converter) {
 		super(period);
 		this.converter = converter;
 	}
-	
-	public AutoRefreshFileCache(int period,
-			String cacheDirectory, Converter<String, ?> converter){
+
+	public AutoRefreshFileCache(int period, String cacheDirectory, Converter<String, ?> converter) {
 		this(period, SerializerUtils.DEFAULT_SERIALIZER, Constants.DEFAULT_CHARSET_NAME, cacheDirectory, converter);
 	}
 
@@ -25,7 +26,7 @@ public class AutoRefreshFileCache extends FileCache {
 		super(period, serializer, charsetName, cacheDirectory);
 		this.converter = converter;
 	}
-	
+
 	@Override
 	protected void expireExecute(File file, long currentTimeMillis) {
 		String key = file.getName();
@@ -59,5 +60,10 @@ public class AutoRefreshFileCache extends FileCache {
 			return file;
 		}
 		return null;
+	}
+
+	public static Cache create(String cacheDirectorySuffix, int period, Converter<String, ?> converter) {
+		return new AutoRefreshFileCache(period,
+				SystemPropertyUtils.getTempDirectoryPath() + File.separator + cacheDirectorySuffix, converter);
 	}
 }
