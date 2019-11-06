@@ -128,12 +128,12 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 		}
 	}
 
-	protected final boolean isExpire(long currentTimeMillis, File file) {
+	protected final boolean isExpire(File file) {
 		if (exp <= 0) {
 			return false;
 		}
 
-		return currentTimeMillis - file.lastModified() > exp;
+		return System.currentTimeMillis() - file.lastModified() > exp;
 	}
 
 	protected File getNotExpireFile(String key) {
@@ -142,7 +142,7 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 			return null;
 		}
 
-		if (isExpire(System.currentTimeMillis(), file)) {
+		if (isExpire(file)) {
 			return null;
 		}
 		return file;
@@ -228,7 +228,7 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 	}
 
 	protected void scanner(File file, long currentTimeMillis) {
-		if (isExpire(currentTimeMillis, file)) {
+		if (isExpire(file)) {
 			try {
 				logger.debug("Start processing expired cache:" + file.getPath());
 				expireExecute(file, currentTimeMillis);

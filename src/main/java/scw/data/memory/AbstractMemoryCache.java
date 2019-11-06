@@ -23,12 +23,12 @@ public abstract class AbstractMemoryCache implements MemoryCache {
 		this.lastTouch = System.currentTimeMillis();
 	}
 
-	public boolean isExpire(long currentTimeMillis) {
-		return exp <= 0 ? false : (currentTimeMillis - lastTouch) > exp * 1000;
+	public boolean isExpire() {
+		return exp <= 0 ? false : (System.currentTimeMillis() - lastTouch) > exp * 1000;
 	}
 
 	public boolean setIfAbsent(Object value) {
-		if (!isExpire(System.currentTimeMillis())) {
+		if (!isExpire()) {
 			return false;
 		}
 
@@ -37,7 +37,7 @@ public abstract class AbstractMemoryCache implements MemoryCache {
 	}
 
 	public boolean setIfAbsent(CAS<Object> value) {
-		if (!isExpire(System.currentTimeMillis())) {
+		if (!isExpire()) {
 			return false;
 		}
 
@@ -54,7 +54,7 @@ public abstract class AbstractMemoryCache implements MemoryCache {
 		long a;
 		do {
 			a = this.cas.get();
-			c = isExpire(System.currentTimeMillis()) ? 0 : a;
+			c = isExpire() ? 0 : a;
 		} while (!this.cas.compareAndSet(a, c + 1));
 		if(c == 0){
 			touch();

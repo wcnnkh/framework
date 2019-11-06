@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import scw.core.Destroy;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.data.cas.CAS;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
@@ -44,7 +45,7 @@ public final class MemoryCacheManager implements Destroy {
 			return null;
 		}
 
-		if (memoryCache.isExpire(System.currentTimeMillis())) {
+		if (memoryCache.isExpire()) {
 			return null;
 		}
 
@@ -94,13 +95,22 @@ public final class MemoryCacheManager implements Destroy {
 		@Override
 		public void run() {
 			try {
-				long currentTime = scheduledExecutionTime();
 				Iterator<Entry<String, MemoryCache>> iterator = cacheMap.entrySet().iterator();
 				while (iterator.hasNext()) {
 					Entry<String, MemoryCache> entry = iterator.next();
-					if (entry.getValue().isExpire(currentTime)) {
-						iterator.remove();
-						logger.debug("Deleting expired key:{}", entry.getKey());
+					MemoryCache memoryCache = entry.getValue();
+					if (memoryCache.isExpire()) {
+						CAS<?> cas = memoryCache.get();
+						long c = 0;
+						if(cas != null){
+							c = cas.getCas();
+						}
+						
+						boolean b = memoryCache.incrCasAndCompare(c);
+						if(b){
+							iterator.remove();
+							logger.debug("Deleting expired key:{}", entry.getKey());
+						}
 					}
 				}
 			} catch (Exception e) {

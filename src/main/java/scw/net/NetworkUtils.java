@@ -21,20 +21,39 @@ public final class NetworkUtils {
 	};
 
 	private static final Response<Message> MESSAGE_RESPONSE = new DefaultAutoMessageResponse();
+	/**
+	 * 一个信任所有的ssl socket factory
+	 * 注意，在初始化失败后可能为空
+	 */
+	public static final SSLSocketFactory TRUSE_ALL_SSL_SOCKET_FACTORY;
 
-	public static <T> T execute(URLConnection urlConnection, Request request,
-			Response<T> response) throws Throwable {
+	static {
+		//创建一个信任所有的
+		javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[1];
+		javax.net.ssl.TrustManager tm = new TrustAllManager();
+		trustAllCerts[0] = tm;
+		javax.net.ssl.SSLContext sc = null;
+		try {
+			sc = javax.net.ssl.SSLContext.getInstance("SSL");
+			sc.init(null, trustAllCerts, null);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (KeyManagementException e) {
+			e.printStackTrace();
+		}
+		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc.getSocketFactory();
+	}
+
+	public static <T> T execute(URLConnection urlConnection, Request request, Response<T> response) throws Throwable {
 		request.request(urlConnection);
 		return response.response(urlConnection);
 	}
 
-	public static Message execute(URLConnection urlConnection, Request request)
-			throws Throwable {
+	public static Message execute(URLConnection urlConnection, Request request) throws Throwable {
 		return execute(urlConnection, request, MESSAGE_RESPONSE);
 	}
 
-	public static <T> T execute(URL url, Proxy proxy, Request request,
-			Response<T> response) {
+	public static <T> T execute(URL url, Proxy proxy, Request request, Response<T> response) {
 		URLConnection urlConnection = null;
 		try {
 			if (proxy == null) {
@@ -59,8 +78,7 @@ public final class NetworkUtils {
 		return execute(url, proxy, request, MESSAGE_RESPONSE);
 	}
 
-	public static <T> T execute(String url, Proxy proxy, Request request,
-			Response<T> response) {
+	public static <T> T execute(String url, Proxy proxy, Request request, Response<T> response) {
 		URL u = null;
 		try {
 			u = new URL(url);
@@ -87,8 +105,7 @@ public final class NetworkUtils {
 		return execute(request, MESSAGE_RESPONSE);
 	}
 
-	public static List<InetSocketAddress> parseInetSocketAddressList(
-			String address) {
+	public static List<InetSocketAddress> parseInetSocketAddressList(String address) {
 		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
 		String[] arr = StringUtils.commonSplit(address);
 		for (String a : arr) {
@@ -102,22 +119,5 @@ public final class NetworkUtils {
 			addresses.add(new InetSocketAddress(h, port));
 		}
 		return addresses;
-	}
-
-	/**
-	 *创建一个信任所有的
-	 * @return
-	 * @throws NoSuchAlgorithmException
-	 * @throws KeyManagementException
-	 */
-	public static SSLSocketFactory createTrustAllSSLSocketFactory()
-			throws NoSuchAlgorithmException, KeyManagementException {
-		javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[1];
-		javax.net.ssl.TrustManager tm = new TrustAllManager();
-		trustAllCerts[0] = tm;
-		javax.net.ssl.SSLContext sc = javax.net.ssl.SSLContext
-				.getInstance("SSL");
-		sc.init(null, trustAllCerts, null);
-		return sc.getSocketFactory();
 	}
 }

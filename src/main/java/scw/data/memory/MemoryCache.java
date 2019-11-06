@@ -44,5 +44,5 @@ public interface MemoryCache {
 	 */
 	boolean setIfAbsent(CAS<Object> value);
 
-	boolean isExpire(long currentTimeMillis);
+	boolean isExpire();
 }
