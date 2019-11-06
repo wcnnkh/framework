@@ -46,7 +46,12 @@ public abstract class AbstractMemoryCache implements MemoryCache {
 
 	@SuppressWarnings("unchecked")
 	public <T> CAS<T> get() {
-		return new SimpleCAS<T>(cas.get(), (T) getValue());
+		Object value = getValue();
+		if(value == null){
+			return null;
+		}
+		
+		return new SimpleCAS<T>(cas.get(), (T)SerializerUtils.clone(value));
 	}
 
 	public boolean incrCasAndCompare(long cas) {
