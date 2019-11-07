@@ -16,6 +16,8 @@ import scw.core.utils.StringUtils;
 import scw.mvc.MVCUtils;
 import scw.mvc.servlet.http.DefaultHttpServletChannelFactory;
 import scw.mvc.servlet.http.HttpServletChannelFactory;
+import scw.mvc.servlet.http.MyHttpServletRequest;
+import scw.net.header.HeadersConstants;
 
 public final class ServletUtils {
 	private static boolean asyncSupport = true;// 是否支持异步处理
@@ -124,8 +126,7 @@ public final class ServletUtils {
 	}
 
 	public static String getIP(HttpServletRequest httpServletRequest) {
-		String ip = httpServletRequest.getHeader("x-forwarded-for");
-		return ip == null ? httpServletRequest.getRemoteAddr() : ip;
+		return new MyHttpServletRequest(httpServletRequest).getIP();
 	}
 
 	/**
@@ -135,6 +136,6 @@ public final class ServletUtils {
 	 * @return
 	 */
 	public static boolean isAjaxRequest(HttpServletRequest request) {
-		return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+		return "XMLHttpRequest".equals(request.getHeader(HeadersConstants.X_REQUESTED_WITH));
 	}
 }

@@ -42,6 +42,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XUtils;
 import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
@@ -64,12 +65,17 @@ import scw.mvc.parameter.ParameterFilter;
 import scw.mvc.parameter.ParameterFilterChain;
 import scw.mvc.parameter.SimpleParameterParseFilterChain;
 import scw.net.header.HeadersConstants;
+import scw.net.header.HeadersReadOnly;
 import scw.net.mime.MimeTypeConstants;
 import scw.result.exception.ResultExceptionHandler;
 import scw.rpc.RpcService;
 
 public final class MVCUtils implements MvcConstants {
 	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
+	private static final String[] IP_HEADERS = SystemPropertyUtils.getArrayProperty(String.class, "mvc.ip.headers",
+			new String[] { HeadersConstants.X_REAL_IP, HeadersConstants.X_FORWARDED_FOR });
+	//使用ip的模式  1表示使用第一个ip 2表示使用最后一个ip 其他表示原样返回
+	private static final int USE_IP_MODEL = StringUtils.parseInt(SystemPropertyUtils.getProperty("mvc.ip.model"), 1);
 
 	private MVCUtils() {
 	};
@@ -417,15 +423,58 @@ public final class MVCUtils implements MvcConstants {
 		return null;
 	}
 
+	public static String getUntreatedIp(HttpRequest httpRequest) {
+		return getUntreatedIp(httpRequest, httpRequest);
+	}
+
 	/**
-	 * 获取ip
+	 * 获取未经处理的ip
 	 * 
+	 * @param headersReadOnly
 	 * @param request
 	 * @return
 	 */
-	public static String getIP(HttpRequest request) {
-		String ip = request.getHeader(HeadersConstants.X_FORWARDED_FOR);
-		return ip == null ? request.getRemoteAddr() : ip;
+	public static String getUntreatedIp(HeadersReadOnly headersReadOnly, Request request) {
+		for (String header : IP_HEADERS) {
+			String ip = headersReadOnly.getHeader(header);
+			if (ip == null) {
+				continue;
+			}
+
+			return ip;
+		}
+		return request.getRemoteAddr();
+	}
+	
+	public static String getIP(HttpRequest httpRequest){
+		return getIP(httpRequest, httpRequest);
+	}
+
+	/**
+	 * 获取ip
+	 * 
+	 * @param headersReadOnly
+	 * @param request
+	 * @return
+	 */
+	public static String getIP(HeadersReadOnly headersReadOnly, Request request) {
+		String ip = getUntreatedIp(headersReadOnly, request);
+		if (USE_IP_MODEL == 1) {// 使用第一个
+			String[] ipArray = StringUtils.commonSplit(ip);
+			if (ArrayUtils.isEmpty(ipArray)) {
+				return null;
+			}
+
+			return ipArray[0];
+		} else if (USE_IP_MODEL == 2) {// 使用最后一个
+			String[] ipArray = StringUtils.commonSplit(ip);
+			if (ArrayUtils.isEmpty(ipArray)) {
+				return null;
+			}
+
+			return ipArray[ipArray.length - 1];
+		}
+		return ip;
 	}
 
 	public static boolean isSupportCookieValue(PropertyFactory propertyFactory) {

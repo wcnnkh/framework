@@ -41,8 +41,6 @@ public interface HttpResponse extends Response{
     
     Collection<String> getHeaderNames();
     
-    String getContentType();
-
     /**
      * Sets the length of the content body in the response In HTTP servlets,
      * this method sets the HTTP Content-Length header.
@@ -54,34 +52,6 @@ public interface HttpResponse extends Response{
      * @since Servlet 3.1
      */
     void setContentLength(long length);
-
-    /**
-     * Sets the content type of the response being sent to the client, if the
-     * response has not been committed yet. The given content type may include a
-     * character encoding specification, for example,
-     * <code>text/html;charset=UTF-8</code>. The response's character encoding
-     * is only set from the given content type if this method is called before
-     * <code>getWriter</code> is called.
-     * <p>
-     * This method may be called repeatedly to change content type and character
-     * encoding. This method has no effect if called after the response has been
-     * committed. It does not set the response's character encoding if it is
-     * called after <code>getWriter</code> has been called or after the response
-     * has been committed.
-     * <p>
-     * Containers must communicate the content type and the character encoding
-     * used for the servlet response's writer to the client if the protocol
-     * provides a way for doing so. In the case of HTTP, the
-     * <code>Content-Type</code> header is used.
-     *
-     * @param type
-     *            a <code>String</code> specifying the MIME type of the content
-     * @see #setLocale
-     * @see #setCharacterEncoding
-     * @see #getOutputStream
-     * @see #getWriter
-     */
-    void setContentType(String type);
 
     /**
      * Sets the preferred buffer size for the body of the response. The servlet

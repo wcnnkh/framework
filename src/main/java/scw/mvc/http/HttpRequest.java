@@ -19,21 +19,9 @@ public interface HttpRequest extends Attributes<Object>, MultiValueHeadersReadOn
 
 	Session getHttpSession(boolean create);
 
-	String getContentType();
-
 	long getDateHeader(String name);
 
 	int getIntHeader(String name);
-
-	/**
-	 * Returns the Internet Protocol (IP) address of the client or last proxy
-	 * that sent the request. For HTTP servlets, same as the value of the CGI
-	 * variable <code>REMOTE_ADDR</code>.
-	 *
-	 * @return a <code>String</code> containing the IP address of the client
-	 *         that sent the request
-	 */
-	String getRemoteAddr();
 
 	/**
 	 * Returns the fully qualified name of the client or the last proxy that

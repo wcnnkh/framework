@@ -23,7 +23,8 @@ public final class NetworkUtils {
 	private static final Response<Message> MESSAGE_RESPONSE = new DefaultAutoMessageResponse();
 	/**
 	 * 一个信任所有的ssl socket factory
-	 * 注意，在初始化失败后可能为空
+	 * <br/>
+	 * 注意:在初始化失败后可能为空
 	 */
 	public static final SSLSocketFactory TRUSE_ALL_SSL_SOCKET_FACTORY;
 

@@ -19,5 +19,7 @@ public interface HeadersConstants {
 
 	public static final String X_REQUESTED_WITH = "X-Requested-With";
 	
-	public static final String X_FORWARDED_FOR = "x-forwarded-for";
+	public static final String X_REAL_IP = "X-Real-Ip";
+	
+	public static final String X_FORWARDED_FOR = "X-Forwarded-For";
 }
