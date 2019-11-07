@@ -6,7 +6,7 @@ package scw.core.exception;
  * @author shuchaowen
  *
  */
-public class ParameterException extends RuntimeException {
+public class ParameterException extends NestedRuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public ParameterException(String message) {

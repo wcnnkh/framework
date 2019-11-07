@@ -1,6 +1,7 @@
 package scw.result.exception;
 
 import scw.beans.annotation.Bean;
+import scw.core.exception.NestedExceptionUtils;
 import scw.mvc.Channel;
 import scw.mvc.ExceptionHandler;
 import scw.mvc.ExceptionHandlerChain;
@@ -14,6 +15,6 @@ public class ResultExceptionHandler implements ExceptionHandler {
 	}
 
 	public Object handler(Channel channel, Throwable throwable, ExceptionHandlerChain chain) {
-		return exceptionResultFactory.error(throwable);
+		return exceptionResultFactory.error(NestedExceptionUtils.getMostSpecificCause(throwable));
 	}
 }

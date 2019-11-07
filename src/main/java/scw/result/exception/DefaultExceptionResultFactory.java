@@ -1,7 +1,6 @@
 package scw.result.exception;
 
 import scw.beans.annotation.Bean;
-import scw.core.exception.NestedExceptionUtils;
 import scw.core.exception.ParameterException;
 import scw.core.utils.StringUtils;
 import scw.result.ErrorCode;
@@ -17,20 +16,11 @@ public class DefaultExceptionResultFactory implements ExceptionResultFactory {
 		this.resultFactory = resultFactory;
 	}
 
-	public Result error(Throwable e) {
-		Throwable error = NestedExceptionUtils.getMostSpecificCause(e);
+	public Result error(Throwable error) {
 		if (isSystemError(error)) {
 			return resultFactory.error();
 		}
 
-		return mostSpecificCause(error);
-	}
-
-	public final ResultFactory getResultFactory() {
-		return resultFactory;
-	}
-
-	protected Result mostSpecificCause(Throwable error) {
 		if (error instanceof ParameterException) {
 			return resultFactory.parameterError();
 		} else if (error instanceof AuthorizationFailureException) {
@@ -47,6 +37,10 @@ public class DefaultExceptionResultFactory implements ExceptionResultFactory {
 			}
 			return StringUtils.isEmpty(msg) ? resultFactory.error(code) : resultFactory.error(code, msg);
 		}
+	}
+
+	public final ResultFactory getResultFactory() {
+		return resultFactory;
 	}
 
 	protected boolean isSystemError(Throwable error) {
