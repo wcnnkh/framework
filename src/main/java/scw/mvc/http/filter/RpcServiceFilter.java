@@ -12,11 +12,11 @@ import scw.mvc.http.HttpResponse;
 import scw.net.mime.MimeTypeConstants;
 import scw.rpc.RpcService;
 
-public final class RpcServletFilter extends HttpFilter {
+public final class RpcServiceFilter extends HttpFilter {
 	private final String rpcPath;
 	private final RpcService rpcService;
 
-	public RpcServletFilter(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
+	public RpcServiceFilter(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		this.rpcService = MVCUtils.getRpcService(propertyFactory, instanceFactory);
 		this.rpcPath = MVCUtils.getRPCPath(propertyFactory);
 	}

@@ -6,8 +6,8 @@ import scw.core.Constants;
 import scw.core.Converter;
 import scw.core.utils.SystemPropertyUtils;
 import scw.data.Cache;
-import scw.io.SerializerUtils;
 import scw.io.serializer.NoTypeSpecifiedSerializer;
+import scw.io.serializer.SerializerUtils;
 
 public class AutoRefreshFileCache extends FileCache {
 	private final Converter<String, ?> converter;

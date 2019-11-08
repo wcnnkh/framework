@@ -1,18 +1,18 @@
-package scw.io;
+package scw.io.serializer;
 
 import scw.core.Bits;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.io.serializer.Serializer;
-import scw.io.serializer.support.JavaSerializer;
+import scw.io.IOUtils;
+import scw.io.UnsafeByteArrayOutputStream;
 import scw.logger.LoggerUtils;
 
 public final class SerializerUtils {
 	static {
 		Class<?> serializerClass = null;
-		String[] seralizerClassNames = SystemPropertyUtils.getArrayProperty(String.class, "serializer.support.class", new String[] { "scw.io.serializer.support.Hessian2Serializer",
-		"scw.io.serializer.support.HessianSerializer" });
+		String[] seralizerClassNames = SystemPropertyUtils.getArrayProperty(String.class, "serializer.support.class", new String[] { "scw.io.serializer.hessian.Hessian2Serializer",
+		"scw.io.serializer.hessian.HessianSerializer" });
 
 		for (String name : seralizerClassNames) {
 			try {

@@ -1,11 +1,13 @@
 package scw.core.attribute;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class SimpleAttributes<T> implements Attributes<T> {
+public class SimpleAttributes<T> implements Attributes<T>, Serializable{
+	private static final long serialVersionUID = 1L;
 	private Map<String, T> attributeMap;
 
 	public T getAttribute(String name) {

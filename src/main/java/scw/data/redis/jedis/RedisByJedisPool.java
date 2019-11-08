@@ -5,8 +5,8 @@ import scw.data.redis.AbstractRedisWrapper;
 import scw.data.redis.Redis;
 import scw.data.redis.RedisImpl;
 import scw.data.redis.RedisOperations;
-import scw.io.SerializerUtils;
 import scw.io.serializer.Serializer;
+import scw.io.serializer.SerializerUtils;
 
 public final class RedisByJedisPool extends AbstractRedisWrapper {
 	private final Redis redis;

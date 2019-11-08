@@ -47,7 +47,7 @@ public final class HttpActionServiceFilter extends HttpFilter {
 		}
 
 		actionFilters.addAll(MVCUtils.getActionFilters(beanFactory, propertyFactory));
-		filters.add(new RpcServletFilter(beanFactory, propertyFactory));
+		filters.add(new RpcServiceFilter(beanFactory, propertyFactory));
 		if (MVCUtils.isSupportCorssDomain(propertyFactory)) {
 			filters.add(new CrossDomainFilter(new CrossDomainDefinition(propertyFactory)));
 		}

@@ -2,7 +2,7 @@ package scw.core.attribute;
 
 import java.util.Enumeration;
 
-public class AttributesWrapper<T> implements Attributes<T> {
+public class AttributesWrapper<T> implements Attributes<T>{
 	private final Attributes<T> targetAttributes;
 
 	public AttributesWrapper(Attributes<T> targetAttributes) {

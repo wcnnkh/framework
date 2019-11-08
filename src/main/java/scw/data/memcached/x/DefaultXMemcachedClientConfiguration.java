@@ -6,7 +6,7 @@ import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.transcoders.Transcoder;
 import scw.core.annotation.ParameterName;
-import scw.io.SerializerUtils;
+import scw.io.serializer.SerializerUtils;
 import scw.net.NetworkUtils;
 
 @SuppressWarnings("rawtypes")

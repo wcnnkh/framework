@@ -10,8 +10,8 @@ import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
 import scw.core.Bits;
-import scw.io.SerializerUtils;
 import scw.io.serializer.Serializer;
+import scw.io.serializer.SerializerUtils;
 
 public class ProtostuffSerializer extends Serializer {
 	private static final ThreadLocal<LinkedBuffer> bufferLocal = new ThreadLocal<LinkedBuffer>() {

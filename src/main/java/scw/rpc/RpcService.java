@@ -13,5 +13,5 @@ public interface RpcService {
 	 * 
 	 * @param serviceClass
 	 */
-	public void service(InputStream in, OutputStream os) throws Throwable;
+	public void service(InputStream in, OutputStream os);
 }

@@ -1,4 +1,4 @@
-package scw.io.serializer.support;
+package scw.io.serializer.hessian;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,19 +6,16 @@ import java.io.OutputStream;
 
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
-import com.caucho.hessian.io.SerializerFactory;
 
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.io.serializer.Serializer;
 
 public class Hessian2Serializer extends Serializer {
-	private static final SerializerFactory SERIALIZER_FACTORY = new SerializerFactory();
-	
+
 	@Override
 	public void serialize(OutputStream out, Object data) throws IOException {
-		Hessian2Output output = new Hessian2Output(out);
-		output.setSerializerFactory(SERIALIZER_FACTORY);
+		Hessian2Output output = HessianUtils.createHessian2Output(out);
 		try {
 			output.writeObject(data);
 			output.completeMessage();
@@ -63,8 +60,7 @@ public class Hessian2Serializer extends Serializer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T deserialize(InputStream input) throws IOException {
-		Hessian2Input hi = new Hessian2Input(input);
-		hi.setSerializerFactory(SERIALIZER_FACTORY);
+		Hessian2Input hi = HessianUtils.createHessian2Input(input);
 		try {
 			return (T) hi.readObject();
 		} finally {

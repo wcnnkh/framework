@@ -1,5 +1,6 @@
 package scw.rpc.support;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public final class DefaultObjectRpcService implements RpcService, RpcConstants {
 		this.serializer = serializer;
 	}
 
-	public void service(InputStream in, OutputStream os) throws Throwable {
+	public Object service(InputStream in) throws Throwable {
 		ObjectRpcRequestMessage objectRpcRequestMessage = serializer.deserialize(in);
 		if (!rpcAuthorize(objectRpcRequestMessage)) {
 			throw new RuntimeException("RPC验证失败");
@@ -42,27 +43,27 @@ public final class DefaultObjectRpcService implements RpcService, RpcConstants {
 			throw new RuntimeException("not found service:" + objectRpcRequestMessage.getMessageKey());
 		}
 
-		boolean responseThrowable = StringUtils
-				.parseBoolean(objectRpcRequestMessage.getAttribute(RPC_REQUEST_MESSAGE_RESPONSE_THROWABLE));
-		ObjectRpcResponseMessage response = new ObjectRpcResponseMessage();
 		try {
-			response.setResponse(invoker.invoke(
+			return invoker.invoke(
 					instanceFactory.getInstance(objectRpcRequestMessage.getMethodDefinition().getBelongClass()),
-					objectRpcRequestMessage.getArgs()));
-		} catch (Throwable e) {
-			if (e instanceof IllegalArgumentException) {
-				logger.warn("参数不一致：{}", objectRpcRequestMessage.getMessageKey());
-			}
-			response.setThrowable(e);
-			if (!responseThrowable) {
-				throw e;
-			}
+					objectRpcRequestMessage.getArgs());
+		} catch (IllegalArgumentException e) {
+			logger.warn("参数不一致：{}", objectRpcRequestMessage.getMessageKey());
+			throw e;
 		}
+	}
 
-		if (responseThrowable) {
-			serializer.serialize(os, response);
-		} else if (response.getResponse() != null) {
-			serializer.serialize(os, response.getResponse());
+	public void service(InputStream in, OutputStream os) {
+		ObjectRpcResponseMessage rpcResponseMessage = new ObjectRpcResponseMessage();
+		try {
+			rpcResponseMessage.setResponse(service(in));
+		} catch (Throwable e) {
+			rpcResponseMessage.setThrowable(e);
+		}
+		try {
+			serializer.serialize(os, rpcResponseMessage);
+		} catch (IOException e) {
+			logger.error(e, "rpc返回失败");
 		}
 	}
 
