@@ -1,13 +1,15 @@
 package scw.core.context;
 
 public interface Context {
-	Object getResource(Object name);
-
+	boolean isNew();
+	
+	boolean isActive();
+	
 	Object bindResource(Object name, Object value);
-
-	/**
-	 * 监听上下文生命周期
-	 * @param lifeCycle
-	 */
-	void lifeCycle(ContextLifeCycle lifeCycle);
+	
+	Object getResource(Object name);
+	
+	void addContextLifeCycle(ContextLifeCycle contextLifeCycle);
+	
+	boolean isRelease();
 }

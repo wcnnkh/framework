@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanUtils;
 import scw.core.Constants;
-import scw.core.Destroy;
 import scw.core.KeyValuePair;
 import scw.core.KeyValuePairFilter;
 import scw.core.PropertyFactory;
@@ -26,8 +25,6 @@ import scw.core.ValueFactory;
 import scw.core.annotation.ParameterName;
 import scw.core.attribute.Attributes;
 import scw.core.context.Context;
-import scw.core.context.ContextManager;
-import scw.core.context.support.ThreadLocalContextManager;
 import scw.core.exception.ParameterException;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
@@ -79,16 +76,14 @@ public final class MVCUtils implements MvcConstants {
 
 	private MVCUtils() {
 	};
-
-	private static final ContextManager MVC_CONTEXT_MANAGER = new ThreadLocalContextManager(true);
-
+	
 	public static Channel getContextChannel() {
-		Context context = MVC_CONTEXT_MANAGER.getCurrentContext();
+		Context context = getContext();
 		return (Channel) (context == null ? null : context.getResource(Channel.class));
 	}
 
 	public static Context getContext() {
-		return MVC_CONTEXT_MANAGER.getCurrentContext();
+		return ControllerService.CONTEXT_MANAGER.getContext();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -127,37 +122,6 @@ public final class MVCUtils implements MvcConstants {
 			exceptionHandlers.add(instanceFactory.getInstance(ResultExceptionHandler.class));
 		}
 		return exceptionHandlers;
-	}
-
-	public static void service(Collection<Filter> filters, Channel channel, int warnExecuteTime,
-			Collection<ExceptionHandler> exceptionHandlers) {
-		long t = System.currentTimeMillis();
-		FilterChain filterChain = new SimpleFilterChain(filters);
-		Context context = MVC_CONTEXT_MANAGER.createContext();
-		context.bindResource(Channel.class, channel);
-		try {
-			channel.write(filterChain.doFilter(channel));
-		} catch (Throwable e) {
-			ExceptionHandlerChain exceptionHandlerChain = new ExceptionHandlerChain(exceptionHandlers);
-			Object errorResult = exceptionHandlerChain.doHandler(channel, e);
-			try {
-				channel.write(errorResult);
-			} catch (Throwable e1) {
-				channel.getLogger().error(e1, channel.toString());
-			}
-		} finally {
-			try {
-				if (channel instanceof Destroy) {
-					((Destroy) channel).destroy();
-				}
-			} finally {
-				MVC_CONTEXT_MANAGER.release(context);
-				t = System.currentTimeMillis() - t;
-				if (t > warnExecuteTime) {
-					channel.getLogger().warn("执行{}超时，用时{}ms", channel.toString(), t);
-				}
-			}
-		}
 	}
 
 	@SuppressWarnings("unchecked")

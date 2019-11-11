@@ -1,21 +1,9 @@
 package scw.core.context;
 
-public interface ContextManager {
-	/**
-	 * 创建一个上下文
-	 * @return
-	 */
-	Context createContext();
-	
-	/**
-	 * 获取当前上下文
-	 * @return
-	 */
-	Context getCurrentContext();
+public interface ContextManager<T extends Context> {
+	<V> V execute(Propagation propagation, ContextExecute<V> contextExecute) throws Throwable;
 
-	/**
-	 * 回收一个上下文
-	 * @param context
-	 */
-	void release(Context context);
+	T getContext();
+	
+	void addContextLifeCycle(ContextLifeCycle contextLifeCycle);
 }
