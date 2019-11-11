@@ -1,5 +1,5 @@
 package scw.mvc;
 
-public interface Filter extends FilterInterface{
+public interface Filter {
 	Object doFilter(Channel channel, FilterChain chain) throws Throwable;
 }

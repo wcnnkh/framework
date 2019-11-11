@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.exception.AlreadyExistsException;
-
 public class DefaultContext implements Context, ContextResource {
 	private final DefaultContext parent;
 	private boolean active;
@@ -22,6 +20,11 @@ public class DefaultContext implements Context, ContextResource {
 	}
 
 	public final void addContextLifeCycle(ContextLifeCycle contextLifeCycle) {
+		if(!isNew){
+			parent.addContextLifeCycle(contextLifeCycle);
+			return ;
+		}
+		
 		if (contextLifeCycles == null) {
 			contextLifeCycles = new LinkedList<ContextLifeCycle>();
 		}
@@ -33,15 +36,15 @@ public class DefaultContext implements Context, ContextResource {
 		return parent;
 	}
 
-	public boolean isNew() {
+	public final boolean isNew() {
 		return isNew;
 	}
 
-	public void setActive(boolean active) {
+	public final void setActive(boolean active) {
 		this.active = active;
 	}
 
-	public boolean isActive() {
+	public final boolean isActive() {
 		return active;
 	}
 
@@ -49,23 +52,23 @@ public class DefaultContext implements Context, ContextResource {
 		return new HashMap<Object, Object>();
 	}
 
-	public Object bindResource(Object name, Object value) {
-		if (parent != null) {
+	public final Object bindResource(Object name, Object value) {
+		if (!isNew) {
 			return parent.bindResource(name, value);
 		}
 
 		if (resourceMap == null) {
 			createResourceMap();
 		} else if (resourceMap.containsKey(name)) {
-			throw new AlreadyExistsException("已经存在此事务资源了，不可以重复绑定：" + name);
+			throw new ContextException("上下文中已经存在此资源了，不可以重复绑定：" + name);
 		}
 
 		resourceMap.put(name, value);
 		return value;
 	}
 
-	public Object getResource(Object name) {
-		if (parent != null) {
+	public final Object getResource(Object name) {
+		if (!isNew) {
 			return parent.getResource(name);
 		}
 		return resourceMap == null ? null : resourceMap.get(name);

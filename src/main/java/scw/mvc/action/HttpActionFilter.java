@@ -1,17 +1,20 @@
 package scw.mvc.action;
 
 import scw.mvc.Channel;
+import scw.mvc.FilterChain;
 import scw.mvc.http.HttpChannel;
 
-public abstract class HttpActionFilter implements ActionFilter {
+public abstract class HttpActionFilter extends ActionFilter {
 
-	public Object filter(Action<Channel> action, Channel channel, ActionFilterChain chain) throws Throwable {
+	protected Object filter(Action<Channel> action, Channel channel,
+			FilterChain chain) throws Throwable {
 		if (channel instanceof HttpChannel && action instanceof HttpAction) {
 			return filter((HttpAction) action, (HttpChannel) channel, chain);
 		}
-		return chain.doFilter(action, channel);
+		return chain.doFilter(channel);
 	}
 
-	public abstract Object filter(HttpAction action, HttpChannel channel, ActionFilterChain chain) throws Throwable;
+	protected abstract Object filter(HttpAction action, HttpChannel channel,
+			FilterChain chain) throws Throwable;
 
 }

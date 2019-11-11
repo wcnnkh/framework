@@ -6,6 +6,7 @@ import scw.core.utils.SystemPropertyUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.Channel;
+import scw.mvc.FilterChain;
 import scw.mvc.MVCUtils;
 import scw.mvc.annotation.IPSecurity;
 import scw.mvc.annotation.ResponseWrapper;
@@ -35,7 +36,7 @@ public final class DefaultActionFilter extends MethodActionFilter {
 	}
 
 	@Override
-	protected Object filter(MethodAction action, Channel channel, ActionFilterChain chain) throws Throwable {
+	protected Object filter(MethodAction action, Channel channel, FilterChain chain) throws Throwable {
 		IPSecurity ipSecurity = action.getAnnotation(IPSecurity.class);
 		if (ipSecurity != null) {
 			boolean b = verificationIP(MVCUtils.getIP(channel), ipSecurity);
@@ -44,7 +45,7 @@ public final class DefaultActionFilter extends MethodActionFilter {
 			}
 		}
 
-		Object value = chain.doFilter(action, channel);
+		Object value = chain.doFilter(channel);
 		return responseSupport(action, channel, value);
 	}
 

@@ -1,16 +1,17 @@
 package scw.mvc.action;
 
 import scw.mvc.Channel;
+import scw.mvc.FilterChain;
 
-public abstract class MethodActionFilter implements ActionFilter {
+public abstract class MethodActionFilter extends ActionFilter {
 
-	public Object filter(Action<Channel> action, Channel channel, ActionFilterChain chain) throws Throwable {
+	protected Object filter(Action<Channel> action, Channel channel, FilterChain chain) throws Throwable {
 		if (action instanceof MethodAction) {
 			return filter((MethodAction) action, channel, chain);
 		}
-		return chain.doFilter(action, channel);
+		return chain.doFilter(channel);
 	}
 
-	protected abstract Object filter(MethodAction action, Channel channel, ActionFilterChain chain) throws Throwable;
+	protected abstract Object filter(MethodAction action, Channel channel, FilterChain chain) throws Throwable;
 
 }

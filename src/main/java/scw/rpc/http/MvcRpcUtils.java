@@ -46,7 +46,7 @@ public final class MvcRpcUtils {
 	}
 
 	public static String getIP() {
-		Channel channel = MVCUtils.getContextChannel();
+		Channel channel = MVCUtils.getCurrentChannel();
 		if (channel == null) {
 			return null;
 		}
@@ -90,7 +90,7 @@ public final class MvcRpcUtils {
 			return null;
 		}
 
-		Channel channel = MVCUtils.getContextChannel();
+		Channel channel = MVCUtils.getCurrentChannel();
 		if (channel == null) {
 			return null;
 		}

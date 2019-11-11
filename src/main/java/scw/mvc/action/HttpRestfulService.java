@@ -1,6 +1,5 @@
 package scw.mvc.action;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,10 +10,6 @@ import scw.mvc.http.HttpChannel;
 
 public final class HttpRestfulService extends HttpActionService {
 	private final Map<String, Map<String, HttpRestfulInfo>> restMap = new HashMap<String, Map<String, HttpRestfulInfo>>();
-
-	public HttpRestfulService(Collection<ActionFilter> actionFilters) {
-		super(actionFilters);
-	}
 
 	@Override
 	public void scanning(HttpAction action, HttpControllerConfig config) {

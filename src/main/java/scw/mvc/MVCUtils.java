@@ -46,8 +46,6 @@ import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.action.Action;
-import scw.mvc.action.ActionFilter;
-import scw.mvc.action.DefaultActionFilter;
 import scw.mvc.action.HttpNotFoundService;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
@@ -69,17 +67,28 @@ import scw.rpc.RpcService;
 
 public final class MVCUtils implements MvcConstants {
 	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
-	private static final String[] IP_HEADERS = SystemPropertyUtils.getArrayProperty(String.class, "mvc.ip.headers",
-			new String[] { HeadersConstants.X_REAL_IP, HeadersConstants.X_FORWARDED_FOR });
-	//使用ip的模式  1表示使用第一个ip 2表示使用最后一个ip 其他表示原样返回
-	private static final int USE_IP_MODEL = StringUtils.parseInt(SystemPropertyUtils.getProperty("mvc.ip.model"), 1);
+	private static final String[] IP_HEADERS = SystemPropertyUtils
+			.getArrayProperty(String.class, "mvc.ip.headers", new String[] {
+					HeadersConstants.X_REAL_IP,
+					HeadersConstants.X_FORWARDED_FOR });
+	// 使用ip的模式 1表示使用第一个ip 2表示使用最后一个ip 其他表示原样返回
+	private static final int USE_IP_MODEL = StringUtils.parseInt(
+			SystemPropertyUtils.getProperty("mvc.ip.model"), 1);
 
 	private MVCUtils() {
 	};
-	
-	public static Channel getContextChannel() {
+
+	public static Channel getCurrentChannel() {
 		Context context = getContext();
-		return (Channel) (context == null ? null : context.getResource(Channel.class));
+		return (Channel) (context == null ? null : context
+				.getResource(Channel.class));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Action<Channel> getCurrentAction() {
+		Context context = getContext();
+		return (Action<Channel>) (context == null ? null : context
+				.getResource(Action.class));
 	}
 
 	public static Context getContext() {
@@ -109,61 +118,75 @@ public final class MVCUtils implements MvcConstants {
 		return RESTURL_PATH_PARAMETER.equals(name);
 	}
 
-	public static Collection<ExceptionHandler> getExceptionHandlers(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory) {
+	public static Collection<ExceptionHandler> getExceptionHandlers(
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		LinkedList<ExceptionHandler> exceptionHandlers = new LinkedList<ExceptionHandler>();
-		BeanUtils.appendBean(exceptionHandlers, instanceFactory, propertyFactory, ExceptionHandler.class,
+		BeanUtils.appendBean(exceptionHandlers, instanceFactory,
+				propertyFactory, ExceptionHandler.class,
 				"mvc.exception.handler");
-		if (instanceFactory.isInstance(ExceptionHandler.class) && instanceFactory.isSingleton(ExceptionHandler.class)) {
-			exceptionHandlers.add(instanceFactory.getInstance(ExceptionHandler.class));
+		if (instanceFactory.isInstance(ExceptionHandler.class)
+				&& instanceFactory.isSingleton(ExceptionHandler.class)) {
+			exceptionHandlers.add(instanceFactory
+					.getInstance(ExceptionHandler.class));
 		}
 
 		if (instanceFactory.isInstance(ResultExceptionHandler.class)) {
-			exceptionHandlers.add(instanceFactory.getInstance(ResultExceptionHandler.class));
+			exceptionHandlers.add(instanceFactory
+					.getInstance(ResultExceptionHandler.class));
 		}
 		return exceptionHandlers;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T getParameterWrapper(ValueFactory<String> request, Class<T> type, String name) {
+	public static <T> T getParameterWrapper(ValueFactory<String> request,
+			Class<T> type, String name) {
 		try {
 			return (T) privateParameterWrapper(request, type,
-					StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name : name + "."));
+					StringUtils.isEmpty(name) ? null
+							: (name.endsWith(".") ? name : name + "."));
 		} catch (Exception e) {
 			throw new RuntimeException("参数错误:" + type.getName(), e);
 		}
 	}
 
-	public static void parameterWrapper(Object instance, ValueFactory<String> request, Class<?> type, String name) {
+	public static void parameterWrapper(Object instance,
+			ValueFactory<String> request, Class<?> type, String name) {
 		try {
 			privateParameterWrapper(instance, request, type,
-					StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name : name + "."));
+					StringUtils.isEmpty(name) ? null
+							: (name.endsWith(".") ? name : name + "."));
 		} catch (Exception e) {
 			throw new RuntimeException("参数错误:" + type.getName(), e);
 		}
 	}
 
-	private static void privateParameterWrapper(Object instance, ValueFactory<String> request, Class<?> type,
-			String prefix) throws Exception {
+	private static void privateParameterWrapper(Object instance,
+			ValueFactory<String> request, Class<?> type, String prefix)
+			throws Exception {
 		Class<?> clz = type;
 		while (clz != null && clz != Object.class) {
 			for (Field field : clz.getDeclaredFields()) {
-				if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())) {
+				if (Modifier.isStatic(field.getModifiers())
+						|| Modifier.isFinal(field.getModifiers())) {
 					continue;
 				}
 
 				ReflectUtils.setAccessibleField(field);
-				if (!field.getType().isPrimitive() && field.get(instance) != null) {
+				if (!field.getType().isPrimitive()
+						&& field.get(instance) != null) {
 					continue;
 				}
 
 				String fieldName = field.getName();
-				ParameterName parameterName = field.getAnnotation(ParameterName.class);
-				if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
+				ParameterName parameterName = field
+						.getAnnotation(ParameterName.class);
+				if (parameterName != null
+						&& StringUtils.isNotEmpty(parameterName.value())) {
 					fieldName = parameterName.value();
 				}
 
-				String key = StringUtils.isEmpty(prefix) ? fieldName : prefix + fieldName;
+				String key = StringUtils.isEmpty(prefix) ? fieldName : prefix
+						+ fieldName;
 				if (String.class.isAssignableFrom(field.getType())
 						|| ClassUtils.isPrimitiveOrWrapper(field.getType())) {
 					// 濡傛灉鏄熀鏈暟鎹被鍨�
@@ -172,16 +195,20 @@ public final class MVCUtils implements MvcConstants {
 						ReflectUtils.setFieldValue(clz, field, instance, v);
 					}
 				} else {
-					ReflectUtils.setFieldValue(clz, field, instance,
-							privateParameterWrapper(request, field.getType(), key + "."));
+					ReflectUtils.setFieldValue(
+							clz,
+							field,
+							instance,
+							privateParameterWrapper(request, field.getType(),
+									key + "."));
 				}
 			}
 			clz = clz.getSuperclass();
 		}
 	}
 
-	private static Object privateParameterWrapper(ValueFactory<String> request, Class<?> type, String prefix)
-			throws Exception {
+	private static Object privateParameterWrapper(ValueFactory<String> request,
+			Class<?> type, String prefix) throws Exception {
 		if (!ReflectUtils.isInstance(type)) {
 			return null;
 		}
@@ -210,16 +237,20 @@ public final class MVCUtils implements MvcConstants {
 		return constructor;
 	}
 
-	public static Object[] getParameterValues(Channel channel, ParameterConfig[] parameterConfigs,
-			Collection<ParameterFilter> parameterFilters) throws ParameterException {
+	public static Object[] getParameterValues(Channel channel,
+			ParameterConfig[] parameterConfigs,
+			Collection<ParameterFilter> parameterFilters)
+			throws ParameterException {
 		Object[] args = new Object[parameterConfigs.length];
 		for (int i = 0; i < parameterConfigs.length; i++) {
 			ParameterConfig parameterConfig = parameterConfigs[i];
-			ParameterFilterChain parameterFilterChain = new SimpleParameterParseFilterChain(parameterFilters);
+			ParameterFilterChain parameterFilterChain = new SimpleParameterParseFilterChain(
+					parameterFilters);
 
 			Object value;
 			try {
-				value = parameterFilterChain.doFilter(channel, parameterConfigs[i]);
+				value = parameterFilterChain.doFilter(channel,
+						parameterConfigs[i]);
 
 				if (value == null) {
 					value = channel.getParameter(parameterConfig);
@@ -229,26 +260,36 @@ public final class MVCUtils implements MvcConstants {
 					throw (ParameterException) e;
 				}
 
-				throw new ParameterException("Parameter error [" + parameterConfigs[i].getName() + "]", e);
+				throw new ParameterException("Parameter error ["
+						+ parameterConfigs[i].getName() + "]", e);
 			}
 			args[i] = value;
 		}
 		return args;
 	}
 
-	public static Object getBean(InstanceFactory instanceFactory, BeanDefinition beanDefinition, Channel channel,
-			Constructor<?> constructor, Collection<ParameterFilter> parameterFilters) {
-		return instanceFactory.getInstance(beanDefinition.getId(), constructor.getParameterTypes(),
-				getParameterValues(channel, ParameterUtils.getParameterConfigs(constructor), parameterFilters));
+	public static Object getBean(InstanceFactory instanceFactory,
+			BeanDefinition beanDefinition, Channel channel,
+			Constructor<?> constructor,
+			Collection<ParameterFilter> parameterFilters) {
+		return instanceFactory.getInstance(
+				beanDefinition.getId(),
+				constructor.getParameterTypes(),
+				getParameterValues(channel,
+						ParameterUtils.getParameterConfigs(constructor),
+						parameterFilters));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static Map<String, String> getRestPathParameterMap(Attributes attributes) {
-		return (Map<String, String>) attributes.getAttribute(RESTURL_PATH_PARAMETER);
+	public static Map<String, String> getRestPathParameterMap(
+			Attributes attributes) {
+		return (Map<String, String>) attributes
+				.getAttribute(RESTURL_PATH_PARAMETER);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static void setRestPathParameterMap(Attributes attributes, Map<String, String> parameterMap) {
+	public static void setRestPathParameterMap(Attributes attributes,
+			Map<String, String> parameterMap) {
 		attributes.setAttribute(RESTURL_PATH_PARAMETER, parameterMap);
 	}
 
@@ -263,7 +304,8 @@ public final class MVCUtils implements MvcConstants {
 	 * @return
 	 */
 	public static boolean isAjaxRequest(HttpRequest request) {
-		return "XMLHttpRequest".equals(request.getHeader(HeadersConstants.X_REQUESTED_WITH));
+		return "XMLHttpRequest".equals(request
+				.getHeader(HeadersConstants.X_REQUESTED_WITH));
 	}
 
 	/**
@@ -273,24 +315,31 @@ public final class MVCUtils implements MvcConstants {
 	 * @return
 	 */
 	public static boolean isJsonRequest(Request request) {
-		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_JSON_VALUE);
+		return isDesignatedContentType(request,
+				MimeTypeConstants.APPLICATION_JSON_VALUE);
 	}
 
 	public static boolean isXmlRequeset(Request request) {
-		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_XML_VALUE)
-				|| isDesignatedContentType(request, MimeTypeConstants.TEXT_XML_VALUE);
+		return isDesignatedContentType(request,
+				MimeTypeConstants.APPLICATION_XML_VALUE)
+				|| isDesignatedContentType(request,
+						MimeTypeConstants.TEXT_XML_VALUE);
 	}
 
 	public static boolean isFormRequest(Request request) {
-		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED_VALUE);
+		return isDesignatedContentType(request,
+				MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED_VALUE);
 	}
 
 	public static boolean isMultipartRequest(Request request) {
-		return isDesignatedContentType(request, MimeTypeConstants.MULTIPART_FORM_DATA_VALUE);
+		return isDesignatedContentType(request,
+				MimeTypeConstants.MULTIPART_FORM_DATA_VALUE);
 	}
 
-	public static boolean isDesignatedContentType(Request request, String contentType) {
-		return StringUtils.contains(request.getContentType(), contentType, true);
+	public static boolean isDesignatedContentType(Request request,
+			String contentType) {
+		return StringUtils
+				.contains(request.getContentType(), contentType, true);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -309,19 +358,21 @@ public final class MVCUtils implements MvcConstants {
 		return StringUtils.isEmpty(path) ? "/rpc" : path;
 	}
 
-	public static LinkedList<ParameterFilter> getParameterFilters(InstanceFactory instanceFactory, Class<?> clz,
-			Method method) {
+	public static LinkedList<ParameterFilter> getParameterFilters(
+			InstanceFactory instanceFactory, Class<?> clz, Method method) {
 		LinkedList<ParameterFilter> list = new LinkedList<ParameterFilter>();
 		Controller controller = clz.getAnnotation(Controller.class);
 		if (controller != null) {
-			for (Class<? extends ParameterFilter> clazz : controller.parameterFilter()) {
+			for (Class<? extends ParameterFilter> clazz : controller
+					.parameterFilter()) {
 				list.add(instanceFactory.getInstance(clazz));
 			}
 		}
 
 		controller = method.getAnnotation(Controller.class);
 		if (controller != null) {
-			for (Class<? extends ParameterFilter> clazz : controller.parameterFilter()) {
+			for (Class<? extends ParameterFilter> clazz : controller
+					.parameterFilter()) {
 				list.add(instanceFactory.getInstance(clazz));
 			}
 		}
@@ -332,14 +383,17 @@ public final class MVCUtils implements MvcConstants {
 		return list;
 	}
 
-	public static LinkedList<ParameterFilter> getParameterFilters(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory) {
-		return getParameterFilters(instanceFactory, propertyFactory, "mvc.parameter.filters");
+	public static LinkedList<ParameterFilter> getParameterFilters(
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
+		return getParameterFilters(instanceFactory, propertyFactory,
+				"mvc.parameter.filters");
 	}
 
-	public static LinkedList<ParameterFilter> getParameterFilters(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory, String key) {
-		String[] filters = StringUtils.commonSplit(propertyFactory.getProperty(key));
+	public static LinkedList<ParameterFilter> getParameterFilters(
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			String key) {
+		String[] filters = StringUtils.commonSplit(propertyFactory
+				.getProperty(key));
 		LinkedList<ParameterFilter> list = new LinkedList<ParameterFilter>();
 		if (!ArrayUtils.isEmpty(filters)) {
 			for (String name : filters) {
@@ -349,18 +403,11 @@ public final class MVCUtils implements MvcConstants {
 		return list;
 	}
 
-	public static LinkedList<ActionFilter> getActionFilters(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory) {
-		LinkedList<ActionFilter> filters = new LinkedList<ActionFilter>();
-		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, ActionFilter.class, "mvc.filters");
-		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, ActionFilter.class, "mvc.action.filters");
-		filters.add(new DefaultActionFilter(instanceFactory));
-		return filters;
-	}
-
-	public static LinkedList<Filter> getFilters(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
+	public static LinkedList<Filter> getFilters(
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		LinkedList<Filter> filters = new LinkedList<Filter>();
-		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, Filter.class, "mvc.filters");
+		BeanUtils.appendBean(filters, instanceFactory, propertyFactory,
+				Filter.class, "mvc.filters");
 		filters.add(getHttpActionServiceFilter(instanceFactory, propertyFactory));
 		filters.add(new HttpNotFoundService());
 		return filters;
@@ -368,11 +415,13 @@ public final class MVCUtils implements MvcConstants {
 
 	public static String getCharsetName(PropertyFactory propertyFactory) {
 		String charsetName = propertyFactory.getProperty("mvc.charsetName");
-		return StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME : charsetName;
+		return StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME
+				: charsetName;
 	}
 
 	public static int getWarnExecuteTime(PropertyFactory propertyFactory) {
-		return StringUtils.parseInt(propertyFactory.getProperty("mvc.warn-execute-time"), 100);
+		return StringUtils.parseInt(
+				propertyFactory.getProperty("mvc.warn-execute-time"), 100);
 	}
 
 	public static String getIP(Channel channel) {
@@ -398,7 +447,8 @@ public final class MVCUtils implements MvcConstants {
 	 * @param request
 	 * @return
 	 */
-	public static String getUntreatedIp(HeadersReadOnly headersReadOnly, Request request) {
+	public static String getUntreatedIp(HeadersReadOnly headersReadOnly,
+			Request request) {
 		for (String header : IP_HEADERS) {
 			String ip = headersReadOnly.getHeader(header);
 			if (ip == null) {
@@ -409,8 +459,8 @@ public final class MVCUtils implements MvcConstants {
 		}
 		return request.getRemoteAddr();
 	}
-	
-	public static String getIP(HttpRequest httpRequest){
+
+	public static String getIP(HttpRequest httpRequest) {
 		return getIP(httpRequest, httpRequest);
 	}
 
@@ -442,12 +492,14 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static boolean isSupportCookieValue(PropertyFactory propertyFactory) {
-		return StringUtils.parseBoolean(propertyFactory.getProperty("mvc.parameter.cookie"));
+		return StringUtils.parseBoolean(propertyFactory
+				.getProperty("mvc.parameter.cookie"));
 	}
 
 	// 默认开启跨域
 	public static boolean isSupportCorssDomain(PropertyFactory propertyFactory) {
-		return StringUtils.parseBoolean(propertyFactory.getProperty("mvc.http.cross-domain"), true);
+		return StringUtils.parseBoolean(
+				propertyFactory.getProperty("mvc.http.cross-domain"), true);
 	}
 
 	public static String getSourceRoot(PropertyFactory propertyFactory) {
@@ -463,33 +515,37 @@ public final class MVCUtils implements MvcConstants {
 		return StringUtils.commonSplit(arr);
 	}
 
-	public static String getHttpParameterActionKey(PropertyFactory propertyFactory) {
+	public static String getHttpParameterActionKey(
+			PropertyFactory propertyFactory) {
 		String actionKey = propertyFactory.getProperty("mvc.http.actionKey");
 		return StringUtils.isEmpty(actionKey) ? "action" : actionKey;
 	}
 
-	public static HttpActionServiceFilter getHttpActionServiceFilter(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory) {
+	public static HttpActionServiceFilter getHttpActionServiceFilter(
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		String packageName = propertyFactory.getProperty("mvc.http.scanning");
 		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
-		return instanceFactory.getInstance(HttpActionServiceFilter.class, instanceFactory, propertyFactory,
+		return instanceFactory.getInstance(HttpActionServiceFilter.class,
+				instanceFactory, propertyFactory,
 				ResourceUtils.getClassList(packageName));
 	}
 
-	public static JSONParseSupport getJsonParseSupport(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory) {
+	public static JSONParseSupport getJsonParseSupport(
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		JSONParseSupport jsonParseSupport;
-		String jsonParseSupportBeanName = propertyFactory.getProperty("mvc.json");
+		String jsonParseSupportBeanName = propertyFactory
+				.getProperty("mvc.json");
 		if (StringUtils.isEmpty(jsonParseSupportBeanName)) {
 			jsonParseSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
 		} else {
-			jsonParseSupport = instanceFactory.getInstance(jsonParseSupportBeanName);
+			jsonParseSupport = instanceFactory
+					.getInstance(jsonParseSupportBeanName);
 		}
 		return jsonParseSupport;
 	}
 
-	public static Map<String, String> getRequestFirstValueParameters(HttpRequest request,
-			KeyValuePairFilter<String, String> filter) {
+	public static Map<String, String> getRequestFirstValueParameters(
+			HttpRequest request, KeyValuePairFilter<String, String> filter) {
 		Map<String, String[]> requestParams = request.getParameterMap();
 		if (requestParams == null || requestParams.isEmpty()) {
 			return null;
@@ -508,7 +564,8 @@ public final class MVCUtils implements MvcConstants {
 			}
 
 			KeyValuePair<String, String> keyValuePair = filter
-					.filter(new SimpleKeyValuePair<String, String>(name, values[0]));
+					.filter(new SimpleKeyValuePair<String, String>(name,
+							values[0]));
 			if (keyValuePair == null) {
 				continue;
 			}
@@ -518,14 +575,15 @@ public final class MVCUtils implements MvcConstants {
 		return map;
 	}
 
-	public static MultiValueMap<String, String> getRequestParameters(HttpRequest request,
-			KeyValuePairFilter<String, String[]> filter) {
+	public static MultiValueMap<String, String> getRequestParameters(
+			HttpRequest request, KeyValuePairFilter<String, String[]> filter) {
 		Map<String, String[]> requestParams = request.getParameterMap();
 		if (requestParams == null || requestParams.isEmpty()) {
 			return null;
 		}
 
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>(requestParams.size(), 1);
+		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>(
+				requestParams.size(), 1);
 		for (Entry<String, String[]> entry : requestParams.entrySet()) {
 			String name = entry.getKey();
 			if (name == null) {
@@ -541,26 +599,31 @@ public final class MVCUtils implements MvcConstants {
 				map.put(name, new LinkedList<String>(Arrays.asList(values)));
 			} else {
 				KeyValuePair<String, String[]> keyValuePair = filter
-						.filter(new SimpleKeyValuePair<String, String[]>(name, values));
+						.filter(new SimpleKeyValuePair<String, String[]>(name,
+								values));
 				if (keyValuePair == null) {
 					continue;
 				}
 
-				map.put(keyValuePair.getKey(), new LinkedList<String>(Arrays.asList(keyValuePair.getValue())));
+				map.put(keyValuePair.getKey(),
+						new LinkedList<String>(Arrays.asList(keyValuePair
+								.getValue())));
 			}
 		}
 		return map;
 	}
 
-	public static Map<String, String> getRequestParameterAndAppendValues(HttpRequest request,
-			CharSequence appendValueChars, KeyValuePairFilter<String, String[]> filter) {
+	public static Map<String, String> getRequestParameterAndAppendValues(
+			HttpRequest request, CharSequence appendValueChars,
+			KeyValuePairFilter<String, String[]> filter) {
 		if (filter == null) {
 			Map<String, String[]> requestParams = request.getParameterMap();
 			if (CollectionUtils.isEmpty(requestParams)) {
 				return null;
 			}
 
-			Map<String, String> params = new HashMap<String, String>(requestParams.size(), 1);
+			Map<String, String> params = new HashMap<String, String>(
+					requestParams.size(), 1);
 			for (Entry<String, String[]> entry : requestParams.entrySet()) {
 				String name = entry.getKey();
 				if (name == null) {
@@ -588,12 +651,14 @@ public final class MVCUtils implements MvcConstants {
 			}
 			return params;
 		} else {
-			MultiValueMap<String, String> requestParams = getRequestParameters(request, filter);
+			MultiValueMap<String, String> requestParams = getRequestParameters(
+					request, filter);
 			if (CollectionUtils.isEmpty(requestParams)) {
 				return null;
 			}
 
-			Map<String, String> params = new HashMap<String, String>(requestParams.size(), 1);
+			Map<String, String> params = new HashMap<String, String>(
+					requestParams.size(), 1);
 			for (Entry<String, List<String>> entry : requestParams.entrySet()) {
 				String name = entry.getKey();
 				if (name == null) {
@@ -623,33 +688,44 @@ public final class MVCUtils implements MvcConstants {
 		}
 	}
 
-	public static void responseCrossDomain(CrossDomainDefinition crossDomainDefinition, HttpResponse httpResponse) {
+	public static void responseCrossDomain(
+			CrossDomainDefinition crossDomainDefinition,
+			HttpResponse httpResponse) {
 		/* 允许跨域的主机地址 */
 		if (StringUtils.isNotEmpty(crossDomainDefinition.getOrigin())) {
-			httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_ALLOW_ORIGIN, crossDomainDefinition.getOrigin());
+			httpResponse.setHeader(
+					HeadersConstants.ACCESS_CONTROL_ALLOW_ORIGIN,
+					crossDomainDefinition.getOrigin());
 		}
 
 		/* 允许跨域的请求方法GET, POST, HEAD 等 */
 		if (StringUtils.isNotEmpty(crossDomainDefinition.getMethods())) {
-			httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_ALLOW_METHODS, crossDomainDefinition.getMethods());
+			httpResponse.setHeader(
+					HeadersConstants.ACCESS_CONTROL_ALLOW_METHODS,
+					crossDomainDefinition.getMethods());
 		}
 
 		/* 重新预检验跨域的缓存时间 (s) */
 		if (crossDomainDefinition.getMaxAge() > 0) {
-			httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_MAX_AGE, crossDomainDefinition.getMaxAge() + "");
+			httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_MAX_AGE,
+					crossDomainDefinition.getMaxAge() + "");
 		}
 
 		/* 允许跨域的请求头 */
 		if (StringUtils.isNotEmpty(crossDomainDefinition.getHeaders())) {
-			httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_ALLOW_HEADERS, crossDomainDefinition.getHeaders());
+			httpResponse.setHeader(
+					HeadersConstants.ACCESS_CONTROL_ALLOW_HEADERS,
+					crossDomainDefinition.getHeaders());
 		}
 
 		/* 是否携带cookie */
-		httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_ALLOW_CREDENTIALS,
+		httpResponse.setHeader(
+				HeadersConstants.ACCESS_CONTROL_ALLOW_CREDENTIALS,
 				crossDomainDefinition.isCredentials() + "");
 	}
 
-	public static String parseRedirect(HttpRequest httpRequest, String text, boolean ignoreCase) {
+	public static String parseRedirect(HttpRequest httpRequest, String text,
+			boolean ignoreCase) {
 		if (text == null) {
 			return null;
 		}
@@ -667,24 +743,23 @@ public final class MVCUtils implements MvcConstants {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T extends FilterInterface> LinkedList<T> getControllerFilter(Class<T> type, Class<?> clazz,
+	public static LinkedList<Filter> getControllerFilter(Class<?> clazz,
 			Method method, InstanceFactory instanceFactory) {
 		Filters filters = clazz.getAnnotation(Filters.class);
-		LinkedList<T> list = new LinkedList<T>();
+		LinkedList<Filter> list = new LinkedList<Filter>();
 		if (filters != null) {
-			for (Class<? extends FilterInterface> f : filters.value()) {
-				if (type.isAssignableFrom(f)) {
-					list.add((T) instanceFactory.getInstance(f));
+			for (Class<? extends Filter> f : filters.value()) {
+				if (Filter.class.isAssignableFrom(f)) {
+					list.add(instanceFactory.getInstance(f));
 				}
 			}
 		}
 
 		Controller controller = clazz.getAnnotation(Controller.class);
 		if (controller != null) {
-			for (Class<? extends FilterInterface> f : controller.filters()) {
-				if (type.isAssignableFrom(f)) {
-					list.add((T) instanceFactory.getInstance(f));
+			for (Class<? extends Filter> f : controller.filters()) {
+				if (Filter.class.isAssignableFrom(f)) {
+					list.add(instanceFactory.getInstance(f));
 				}
 			}
 		}
@@ -692,26 +767,26 @@ public final class MVCUtils implements MvcConstants {
 		filters = method.getAnnotation(Filters.class);
 		if (filters != null) {
 			list.clear();
-			for (Class<? extends FilterInterface> f : filters.value()) {
-				if (type.isAssignableFrom(f)) {
-					list.add((T) instanceFactory.getInstance(f));
+			for (Class<? extends Filter> f : filters.value()) {
+				if (Filter.class.isAssignableFrom(f)) {
+					list.add(instanceFactory.getInstance(f));
 				}
 			}
 		}
 
 		controller = method.getAnnotation(Controller.class);
 		if (controller != null) {
-			for (Class<? extends FilterInterface> f : controller.filters()) {
-				if (type.isAssignableFrom(f)) {
-					list.add((T) instanceFactory.getInstance(f));
+			for (Class<? extends Filter> f : controller.filters()) {
+				if (Filter.class.isAssignableFrom(f)) {
+					list.add(instanceFactory.getInstance(f));
 				}
 			}
 		}
 		return list;
 	}
 
-	public static void httpWrite(HttpChannel channel, String jsonp, JSONParseSupport jsonParseSupport, Object write)
-			throws Throwable {
+	public static void httpWrite(HttpChannel channel, String jsonp,
+			JSONParseSupport jsonParseSupport, Object write) throws Throwable {
 		if (write == null) {
 			return;
 		}
@@ -733,7 +808,8 @@ public final class MVCUtils implements MvcConstants {
 
 		HttpResponse httpResponse = channel.getResponse();
 		if (write instanceof String) {
-			String redirect = parseRedirect(channel.getRequest(), (String) write, true);
+			String redirect = parseRedirect(channel.getRequest(),
+					(String) write, true);
 			if (redirect != null) {
 				httpResponse.sendRedirect(redirect);
 				return;
@@ -741,7 +817,8 @@ public final class MVCUtils implements MvcConstants {
 		}
 
 		if (callbackTag != null) {
-			httpResponse.setContentType(MimeTypeConstants.TEXT_JAVASCRIPT_VALUE);
+			httpResponse
+					.setContentType(MimeTypeConstants.TEXT_JAVASCRIPT_VALUE);
 			httpResponse.getWriter().write(callbackTag);
 			httpResponse.getWriter().write(JSONP_RESP_PREFIX);
 		}
@@ -750,9 +827,11 @@ public final class MVCUtils implements MvcConstants {
 		if (write instanceof Text) {
 			content = ((Text) write).getTextContent();
 			if (callbackTag == null) {
-				httpResponse.setContentType(((Text) write).getTextContentType());
+				httpResponse
+						.setContentType(((Text) write).getTextContentType());
 			}
-		} else if ((write instanceof String) || (ClassUtils.isPrimitiveOrWrapper(write.getClass()))) {
+		} else if ((write instanceof String)
+				|| (ClassUtils.isPrimitiveOrWrapper(write.getClass()))) {
 			content = write.toString();
 		} else {
 			content = jsonParseSupport.toJSONString(write);
@@ -776,7 +855,8 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static String getJsonp(PropertyFactory propertyFactory) {
-		boolean enable = StringUtils.parseBoolean(propertyFactory.getProperty("mvc.http.jsonp.enable"), true);
+		boolean enable = StringUtils.parseBoolean(
+				propertyFactory.getProperty("mvc.http.jsonp.enable"), true);
 		if (enable) {
 			String jsonp = propertyFactory.getProperty("mvc.http.jsonp");
 			return StringUtils.isEmpty(jsonp) ? "callback" : jsonp;
@@ -784,18 +864,24 @@ public final class MVCUtils implements MvcConstants {
 		return null;
 	}
 
-	public static boolean isSupportHttpParameterAction(PropertyFactory propertyFactory) {
-		return StringUtils.parseBoolean(propertyFactory.getProperty("mvc.http.parameter.action.enable"), true);
+	public static boolean isSupportHttpParameterAction(
+			PropertyFactory propertyFactory) {
+		return StringUtils
+				.parseBoolean(propertyFactory
+						.getProperty("mvc.http.parameter.action.enable"), true);
 	}
 
-	public static RpcService getRpcService(PropertyFactory propertyFactory, InstanceFactory instanceFactory) {
+	public static RpcService getRpcService(PropertyFactory propertyFactory,
+			InstanceFactory instanceFactory) {
 		String beanName = propertyFactory.getProperty(RPC_SERVICE);
 		if (StringUtils.isEmpty(beanName)) {
-			if (instanceFactory.isInstance(RpcService.class) || instanceFactory.isSingleton(RpcService.class)) {
+			if (instanceFactory.isInstance(RpcService.class)
+					|| instanceFactory.isSingleton(RpcService.class)) {
 				return instanceFactory.getInstance(RpcService.class);
 			}
 		} else {
-			if (instanceFactory.isInstance(beanName) && instanceFactory.isSingleton(beanName)) {
+			if (instanceFactory.isInstance(beanName)
+					&& instanceFactory.isSingleton(beanName)) {
 				return instanceFactory.getInstance(beanName);
 			}
 			logger.warn("RPC配置错误，无法实例化或不是一个单例: {}", beanName);

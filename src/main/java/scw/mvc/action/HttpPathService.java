@@ -1,6 +1,5 @@
 package scw.mvc.action;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,10 +9,6 @@ import scw.mvc.http.HttpChannel;
 
 public final class HttpPathService extends HttpActionService {
 	private final Map<String, Map<String, HttpAction>> actionMap = new HashMap<String, Map<String, HttpAction>>();
-
-	public HttpPathService(Collection<ActionFilter> actionFilters) {
-		super(actionFilters);
-	}
 
 	@Override
 	public HttpAction getAction(HttpChannel httpChannel) {

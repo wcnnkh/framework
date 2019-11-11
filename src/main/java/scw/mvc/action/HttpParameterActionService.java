@@ -1,6 +1,5 @@
 package scw.mvc.action;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,8 +11,7 @@ public final class HttpParameterActionService extends HttpActionService {
 	private final Map<String, Map<String, Map<String, HttpAction>>> actionMap = new HashMap<String, Map<String, Map<String, HttpAction>>>();
 	private String key;
 
-	public HttpParameterActionService(Collection<ActionFilter> actionFilters, String key) {
-		super(actionFilters);
+	public HttpParameterActionService(String key) {
 		this.key = key;
 	}
 
