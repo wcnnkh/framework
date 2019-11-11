@@ -1,5 +1,6 @@
 package scw.data.redis.jedis;
 
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.params.SetParams;
 import scw.data.redis.enums.EXPX;
 import scw.data.redis.enums.NXXX;
@@ -10,20 +11,30 @@ public class JedisUtils {
 	public static boolean isOK(String value) {
 		return OK.equals(value);
 	}
-	
-	public static SetParams parseSetParams(NXXX nxxx, EXPX expx, long time){
+
+	public static SetParams parseSetParams(NXXX nxxx, EXPX expx, long time) {
 		SetParams setParams = new SetParams();
-		if(nxxx == NXXX.NX){
+		if (nxxx == NXXX.NX) {
 			setParams.nx();
-		}else if(nxxx == NXXX.XX){
+		} else if (nxxx == NXXX.XX) {
 			setParams.xx();
 		}
-		
-		if(expx == EXPX.EX){
-			setParams.ex((int)time);
-		}else if(expx == EXPX.PX){
+
+		if (expx == EXPX.EX) {
+			setParams.ex((int) time);
+		} else if (expx == EXPX.PX) {
 			setParams.px(time);
 		}
 		return setParams;
+	}
+
+	public static void flushAll(JedisResourceFactory jedisResourceFactory) {
+		Jedis jedis = null;
+		try {
+			jedis = jedisResourceFactory.getResource();
+			jedis.flushAll();
+		} catch (Exception e) {
+			jedisResourceFactory.release(jedis);
+		}
 	}
 }

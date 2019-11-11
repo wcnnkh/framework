@@ -18,6 +18,7 @@ import scw.core.resource.ResourceUtils;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.data.redis.RedisConstants;
+import scw.data.redis.RedisUtils;
 
 /**
  * 实现自动化配置
@@ -46,6 +47,10 @@ public final class JedisPoolResourceFactory implements JedisResourceFactory, Des
 			this.jedisPool = new JedisPool(jedisPoolConfig, host);
 		} else {
 			this.jedisPool = new JedisPool(jedisPoolConfig, host, port);
+		}
+		
+		if(RedisUtils.startingFlushAll()){
+			JedisUtils.flushAll(this);
 		}
 	}
 

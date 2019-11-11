@@ -248,9 +248,9 @@ public final class XUtils {
 			return valueFactory.getFloatValue(data);
 		} else if (Float.class == type) {
 			return valueFactory.getFloat(data);
-		} else if(double.class == type){
+		} else if (double.class == type) {
 			return valueFactory.getDoubleValue(data);
-		} else if(Double.class == type){
+		} else if (Double.class == type) {
 			return valueFactory.getDouble(data);
 		} else if (short.class == type) {
 			return valueFactory.getShortValue(data);
@@ -299,9 +299,9 @@ public final class XUtils {
 			return valueFactory.getLongValue(data);
 		} else if (Long.class == type) {
 			return valueFactory.getLong(data);
-		} else if(double.class == type){
+		} else if (double.class == type) {
 			return valueFactory.getDoubleValue(data);
-		} else if(Double.class == type){
+		} else if (Double.class == type) {
 			return valueFactory.getDouble(data);
 		} else if (float.class == type) {
 			return valueFactory.getFloatValue(data);
@@ -345,24 +345,35 @@ public final class XUtils {
 			resourceFactory.release(resource);
 		}
 	}
-	
-	public static void init(Object init){
-		if(init == null){
-			return ;
+
+	public static void init(Object init) {
+		if (init == null) {
+			return;
 		}
-		
-		if(init instanceof Init){
+
+		if (init instanceof Init) {
 			((Init) init).init();
 		}
 	}
-	
-	public static void destroy(Object destroy){
-		if(destroy == null){
-			return ;
+
+	public static void destroy(Object destroy) {
+		if (destroy == null) {
+			return;
 		}
-		
-		if(destroy instanceof Destroy){
+
+		if (destroy instanceof Destroy) {
 			((Destroy) destroy).destroy();
+		}
+	}
+
+	public static <T, R> T execute(ResourceFactory<R> resourceFactory, Converter<R, T> resourceConverter)
+			throws Exception {
+		R r = null;
+		try {
+			r = resourceFactory.getResource();
+			return resourceConverter.convert(r);
+		} finally {
+			resourceFactory.release(r);
 		}
 	}
 }

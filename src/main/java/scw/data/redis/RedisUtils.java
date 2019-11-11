@@ -2,6 +2,9 @@ package scw.data.redis;
 
 import java.util.Arrays;
 
+import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
+
 public final class RedisUtils {
 	private static final String INCR_AND_INIT_SCRIPT = "if redis.call('exists', KEYS[1]) == 1 then return redis.call('incr', KEYS[1], ARGV[1]) else redis.call('set', KEYS[1], ARGV[2]) return ARGV[2] end";
 	private static final String DECR_AND_INIT_SCRIPT = "if redis.call('exists', KEYS[1]) == 1 then return redis.call('decr', KEYS[1], ARGV[1]) else redis.call('set', KEYS[1], ARGV[2]) return ARGV[2] end";
@@ -30,5 +33,9 @@ public final class RedisUtils {
 			long initialValue) {
 		return Long.parseLong((String) redisScriptOperations.eval(DECR_AND_INIT_SCRIPT, Arrays.asList(key),
 				Arrays.asList(String.valueOf(delta), String.valueOf(initialValue))));
+	}
+	
+	public static boolean startingFlushAll(){
+		return StringUtils.parseBoolean(SystemPropertyUtils.getProperty("redis.starting.flush"));
 	}
 }

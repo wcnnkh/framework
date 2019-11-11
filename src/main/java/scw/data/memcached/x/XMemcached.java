@@ -12,6 +12,7 @@ import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
 import scw.data.cas.SimpleCAS;
 import scw.data.memcached.Memcached;
+import scw.data.memcached.MemcachedUtils;
 
 public final class XMemcached implements Memcached {
 	private final MemcachedClient memcachedClient;
@@ -21,6 +22,9 @@ public final class XMemcached implements Memcached {
 	public XMemcached(XMemcachedClientConfiguration configuration) throws Exception {
 		this.memcachedClient = configuration.configuration();
 		this.casOperations = new XMemcachedCASOperations(memcachedClient);
+		if(MemcachedUtils.startingFlushAll()){
+			memcachedClient.flushAll();
+		}
 	}
 
 	public XMemcached(String hosts) throws Exception {

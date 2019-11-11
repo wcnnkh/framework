@@ -1,9 +1,12 @@
 package scw.net;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.KeyManagementException;
@@ -14,6 +17,7 @@ import java.util.List;
 import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.utils.StringUtils;
+import scw.io.IOUtils;
 import scw.security.ssl.TrustAllManager;
 
 public final class NetworkUtils {
@@ -22,14 +26,13 @@ public final class NetworkUtils {
 
 	private static final Response<Message> MESSAGE_RESPONSE = new DefaultAutoMessageResponse();
 	/**
-	 * 一个信任所有的ssl socket factory
-	 * <br/>
+	 * 一个信任所有的ssl socket factory <br/>
 	 * 注意:在初始化失败后可能为空
 	 */
 	public static final SSLSocketFactory TRUSE_ALL_SSL_SOCKET_FACTORY;
 
 	static {
-		//创建一个信任所有的
+		// 创建一个信任所有的
 		javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[1];
 		javax.net.ssl.TrustManager tm = new TrustAllManager();
 		trustAllCerts[0] = tm;
@@ -120,5 +123,48 @@ public final class NetworkUtils {
 			addresses.add(new InetSocketAddress(h, port));
 		}
 		return addresses;
+	}
+
+	public static boolean checkPortCccupied(InetAddress inetAddress, int port) {
+		Socket socket = null;
+		try {
+			socket = new Socket(inetAddress, port);
+			return true;
+		} catch (IOException e) {
+			// ignore
+		} finally {
+			IOUtils.close(false, socket);
+		}
+		return false;
+	}
+
+	/**
+	 * 检查端口号占用
+	 * 
+	 * @param host
+	 * @param port
+	 * @return
+	 */
+	public static boolean checkPortCccupied(String host, int port) {
+		Socket socket = null;
+		try {
+			socket = new Socket(host, port);
+			return true;
+		} catch (IOException e) {
+			// ignore
+		} finally {
+			IOUtils.close(false, socket);
+		}
+		return false;
+	}
+
+	/**
+	 * 检查本地端口是否被占用
+	 * 
+	 * @param port
+	 * @return
+	 */
+	public static boolean checkLocalPortCccupied(int port) {
+		return checkPortCccupied("127.0.0.1", port);
 	}
 }
