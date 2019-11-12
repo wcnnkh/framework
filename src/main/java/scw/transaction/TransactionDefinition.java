@@ -1,5 +1,7 @@
 package scw.transaction;
 
+import scw.core.context.Propagation;
+
 /**
  * 事务的定义
  * @author shuchaowen
