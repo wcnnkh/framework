@@ -7,12 +7,13 @@ import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
 import scw.core.reflect.AnnotationFactory;
 import scw.mvc.Channel;
+import scw.mvc.EmptyFilterChainAction;
 import scw.mvc.Filter;
 import scw.mvc.FilterChain;
 import scw.mvc.MVCUtils;
 import scw.mvc.SimpleFilterChain;
 
-public class SimpleMethodAction extends AbstractMethodActionWrapper implements Action<Channel> {
+public class SimpleMethodAction extends AbstractMethodActionWrapper implements Action {
 	private final InvokerAction action;
 	private final Collection<Filter> filters;
 
@@ -28,7 +29,7 @@ public class SimpleMethodAction extends AbstractMethodActionWrapper implements A
 	}
 
 	public Object doAction(Channel channel) throws Throwable {
-		FilterChain filterChain = new SimpleFilterChain(filters, action);
+		FilterChain filterChain = new SimpleFilterChain(filters, new EmptyFilterChainAction(action));
 		return filterChain.doFilter(channel);
 	}
 }

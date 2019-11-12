@@ -6,7 +6,7 @@ import scw.mvc.http.HttpChannel;
 public abstract class HttpActionService extends ActionService {
 	public abstract HttpAction getAction(HttpChannel httpChannel);
 
-	public Action<Channel> getAction(Channel channel) {
+	public Action getAction(Channel channel) {
 		if (channel instanceof HttpChannel) {
 			return getAction((HttpChannel) channel);
 		}

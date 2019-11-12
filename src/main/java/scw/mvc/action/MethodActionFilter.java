@@ -5,7 +5,7 @@ import scw.mvc.FilterChain;
 
 public abstract class MethodActionFilter extends ActionFilter {
 
-	protected Object filter(Action<Channel> action, Channel channel, FilterChain chain) throws Throwable {
+	protected Object filter(Action action, Channel channel, FilterChain chain) throws Throwable {
 		if (action instanceof MethodAction) {
 			return filter((MethodAction) action, channel, chain);
 		}

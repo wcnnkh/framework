@@ -7,7 +7,6 @@ import scw.core.Destroy;
 import scw.core.PropertyFactory;
 import scw.core.context.Context;
 import scw.core.context.ContextExecute;
-import scw.core.context.Propagation;
 
 public final class DefaultControllerService implements ControllerService {
 	private final Collection<Filter> filters;
@@ -22,7 +21,7 @@ public final class DefaultControllerService implements ControllerService {
 
 	public void service(Channel channel) {
 		try {
-			CONTEXT_MANAGER.execute(Propagation.REQUIRED, new MVCContextExecute(channel));
+			MVCUtils.execute(new MVCContextExecute(channel));
 		} catch (Throwable e) {
 			channel.getLogger().error(e, channel.toString());
 		}

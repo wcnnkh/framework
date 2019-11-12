@@ -26,20 +26,17 @@ import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpFilter;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
-import scw.mvc.servlet.FilterChainAction;
 import scw.security.authority.http.HttpAuthorityManager;
 import scw.security.authority.http.SimpleHttpAuthorityManager;
 
 public final class HttpActionServiceFilter extends HttpFilter {
 	private final Collection<Filter> filters = new LinkedList<Filter>();
 
-	public HttpActionServiceFilter(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Collection<Class<?>> classes) {
+	public HttpActionServiceFilter(BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Collection<Class<?>> classes) {
 		SimpleHttpAuthorityManager simpleHttpAuthorityManager = null;
-		if (beanFactory.isInstance(HttpAuthorityManager.class)
-				&& beanFactory.isSingleton(HttpAuthorityManager.class)) {
-			HttpAuthorityManager httpAuthorityManager = beanFactory
-					.getInstance(HttpAuthorityManager.class);
+		if (beanFactory.isInstance(HttpAuthorityManager.class) && beanFactory.isSingleton(HttpAuthorityManager.class)) {
+			HttpAuthorityManager httpAuthorityManager = beanFactory.getInstance(HttpAuthorityManager.class);
 			if (httpAuthorityManager instanceof SimpleHttpAuthorityManager) {
 				simpleHttpAuthorityManager = (SimpleHttpAuthorityManager) httpAuthorityManager;
 			}
@@ -47,8 +44,7 @@ public final class HttpActionServiceFilter extends HttpFilter {
 
 		filters.add(new RpcServiceFilter(beanFactory, propertyFactory));
 		if (MVCUtils.isSupportCorssDomain(propertyFactory)) {
-			filters.add(new CrossDomainFilter(new CrossDomainDefinition(
-					propertyFactory)));
+			filters.add(new CrossDomainFilter(new CrossDomainDefinition(propertyFactory)));
 		}
 
 		String sourceRoot = MVCUtils.getSourceRoot(propertyFactory);
@@ -58,8 +54,7 @@ public final class HttpActionServiceFilter extends HttpFilter {
 		}
 
 		if (MVCUtils.isSupportHttpParameterAction(propertyFactory)) {
-			filters.add(new HttpParameterActionService(MVCUtils
-					.getHttpParameterActionKey(propertyFactory)));
+			filters.add(new HttpParameterActionService(MVCUtils.getHttpParameterActionKey(propertyFactory)));
 		}
 
 		filters.add(new HttpPathService());
@@ -71,30 +66,23 @@ public final class HttpActionServiceFilter extends HttpFilter {
 				continue;
 			}
 
-			AnnotationFactory clazzAnnotationFactory = new SimpleAnnotationFactory(
-					clz);
+			AnnotationFactory clazzAnnotationFactory = new SimpleAnnotationFactory(clz);
 			for (Method method : clz.getDeclaredMethods()) {
-				Controller methodController = method
-						.getAnnotation(Controller.class);
+				Controller methodController = method.getAnnotation(Controller.class);
 				if (methodController == null) {
 					continue;
 				}
 
 				for (Filter filter : filters) {
 					if (filter instanceof HttpActionService) {
-						HttpAction httpAction = new SimpleHttpAction(
-								beanFactory, propertyFactory, clz, method,
+						HttpAction httpAction = new SimpleHttpAction(beanFactory, propertyFactory, clz, method,
 								clazzAnnotationFactory);
-						if (simpleHttpAuthorityManager != null
-								&& httpAction.getAuthority() != null) {
-							simpleHttpAuthorityManager.addAuthroity(httpAction
-									.getAuthority());
+						if (simpleHttpAuthorityManager != null && httpAction.getAuthority() != null) {
+							simpleHttpAuthorityManager.addAuthroity(httpAction.getAuthority());
 						}
 
-						for (HttpControllerConfig config : httpAction
-								.getControllerConfigs()) {
-							((HttpActionService) filter).scanning(httpAction,
-									config);
+						for (HttpControllerConfig config : httpAction.getControllerConfigs()) {
+							((HttpActionService) filter).scanning(httpAction, config);
 						}
 					}
 				}
@@ -103,10 +91,9 @@ public final class HttpActionServiceFilter extends HttpFilter {
 	}
 
 	@Override
-	public Object doFilter(HttpChannel channel, HttpRequest httpRequest,
-			HttpResponse httpResponse, FilterChain chain) throws Throwable {
-		FilterChain filterChain = new SimpleFilterChain(filters,
-				new FilterChainAction(chain));
+	public Object doFilter(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse, FilterChain chain)
+			throws Throwable {
+		FilterChain filterChain = new SimpleFilterChain(filters, chain);
 		return filterChain.doFilter(channel);
 	}
 }

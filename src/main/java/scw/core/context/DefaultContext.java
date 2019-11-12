@@ -56,9 +56,13 @@ public class DefaultContext implements Context, ContextResource {
 		if (!isNew) {
 			return parent.bindResource(name, value);
 		}
+		
+		if(value == this){
+			throw new ContextException("不能将当前Context绑定到resource中:" + name);
+		}
 
 		if (resourceMap == null) {
-			createResourceMap();
+			resourceMap = createResourceMap();
 		} else if (resourceMap.containsKey(name)) {
 			throw new ContextException("上下文中已经存在此资源了，不可以重复绑定：" + name);
 		}
@@ -120,7 +124,8 @@ public class DefaultContext implements Context, ContextResource {
 		if (release) {
 			throw new ContextException("Context destroyed(上下文已被销毁)");
 		}
-
+		
+		//release = true;
 		if (resourceMap != null) {
 			for (Entry<Object, Object> entry : resourceMap.entrySet()) {
 				Object resource = entry.getValue();

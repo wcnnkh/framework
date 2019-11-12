@@ -6,7 +6,7 @@ import scw.mvc.http.HttpChannel;
 
 public abstract class HttpActionFilter extends ActionFilter {
 
-	protected Object filter(Action<Channel> action, Channel channel,
+	protected Object filter(Action action, Channel channel,
 			FilterChain chain) throws Throwable {
 		if (channel instanceof HttpChannel && action instanceof HttpAction) {
 			return filter((HttpAction) action, (HttpChannel) channel, chain);
