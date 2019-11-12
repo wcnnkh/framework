@@ -9,10 +9,11 @@ import scw.result.ResultFactory;
 
 /**
  * 兼容ResultFactory
+ * 
  * @author shuchaowen
  *
  */
-@Bean(proxy=false)
+@Bean(proxy = false)
 public class CompatibleResponseWrapperService implements ResponseWrapperService {
 	private ResultFactory resultFactory;
 
@@ -21,12 +22,14 @@ public class CompatibleResponseWrapperService implements ResponseWrapperService 
 	}
 
 	public Object wrapper(Channel channel, Object value) throws Throwable {
-		if (value == null || value instanceof View || value instanceof Text || value instanceof String
-				|| ClassUtils.isPrimitiveOrWrapper(value.getClass())) {
-			return value;
+		if (value != null) {
+			if (value instanceof View || value instanceof Text || value instanceof String
+					|| ClassUtils.isPrimitiveOrWrapper(value.getClass())) {
+				return value;
+			}
 		}
 
-		return resultFactory.success(value);
+		return value == null ? resultFactory.success() : resultFactory.success(value);
 	}
 
 }

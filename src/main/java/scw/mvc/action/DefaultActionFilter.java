@@ -20,7 +20,7 @@ import scw.security.ip.IPVerification;
  * @author shuchaowen
  *
  */
-public final class DefaultActionFilter extends MethodActionFilter {
+public final class DefaultActionFilter extends ActionFilter {
 	private static Logger logger = LoggerFactory.getLogger(DefaultActionFilter.class);
 
 	// 默认是否开启对ResultFactory的兼容
@@ -31,12 +31,14 @@ public final class DefaultActionFilter extends MethodActionFilter {
 
 	public DefaultActionFilter(InstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
-		this.responseWrapperService = instanceFactory.isInstance(ResponseWrapperService.class)
-				? instanceFactory.getInstance(ResponseWrapperService.class) : null;
+		if(RESPONSE_COMPATIBLE_OPEN){
+			this.responseWrapperService = instanceFactory.isInstance(ResponseWrapperService.class)
+					? instanceFactory.getInstance(ResponseWrapperService.class) : null;
+		}
 	}
 
 	@Override
-	protected Object filter(MethodAction action, Channel channel, FilterChain chain) throws Throwable {
+	protected Object filter(Action action, Channel channel, FilterChain chain) throws Throwable {
 		IPSecurity ipSecurity = action.getAnnotation(IPSecurity.class);
 		if (ipSecurity != null) {
 			boolean b = verificationIP(MVCUtils.getIP(channel), ipSecurity);
@@ -49,7 +51,7 @@ public final class DefaultActionFilter extends MethodActionFilter {
 		return responseSupport(action, channel, value);
 	}
 
-	private Object responseSupport(MethodAction action, Channel channel, Object value) throws Throwable {
+	private Object responseSupport(Action action, Channel channel, Object value) throws Throwable {
 		if (RESPONSE_COMPATIBLE_OPEN && responseWrapperService != null) {
 			return responseWrapperService.wrapper(channel, value);
 		}

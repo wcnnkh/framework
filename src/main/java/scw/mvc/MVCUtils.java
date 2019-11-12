@@ -85,13 +85,18 @@ public final class MVCUtils implements MvcConstants {
 		return (Channel) (context == null ? null : context.getResource(Channel.class));
 	}
 
+	/**
+	 * 可能为空
+	 * 因为在只有经过ActionService后才会在上下文中保存action
+	 * @return
+	 */
 	public static Action getCurrentAction() {
 		Context context = getContext();
 		return (Action) (context == null ? null : context.getResource(Action.class));
 	}
 
 	public static <V> V execute(ContextExecute<V> execute) throws Throwable {
-		return CONTEXT_MANAGER.execute(Propagation.REQUIRES_NEW, execute);
+		return CONTEXT_MANAGER.execute(Propagation.REQUIRED, execute);
 	}
 
 	public static Context getContext() {
