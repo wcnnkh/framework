@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
@@ -32,12 +29,12 @@ public final class ControllerService {
 	private final Collection<Filter> filters;
 	private final long warnExecuteTime;
 	private final Collection<ExceptionHandler> exceptionHandlers;
-	private Map<String, CrossDomainDefinition> crossDomainDefinitionMap = new HashMap<String, CrossDomainDefinition>();
 	private CrossDomainDefinition defaultCrossDomainDefinition;// 默认的跨域方式
 	private final String rpcPath;
 	private final RpcService rpcService;
 	private final String sourceRoot;
 	private final String[] sourcePath;
+	private final CrossDomainDefinitionFactory crossDomainDefinitionFactory;
 
 	public ControllerService(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Throwable {
 		this.filters = MVCUtils.getFilters(beanFactory, propertyFactory);
@@ -50,6 +47,11 @@ public final class ControllerService {
 		if (!StringUtils.isEmpty(sourceRoot) && !ArrayUtils.isEmpty(sourcePath)) {
 			logger.info("sourceRoot:{}", sourceRoot);
 			logger.info("sourcePath:{}", Arrays.toString(sourcePath));
+		}
+
+		this.crossDomainDefinitionFactory = MVCUtils.getCrossDomainDefinitionFactory(beanFactory, propertyFactory);
+		if (MVCUtils.isSupportCorssDomain(propertyFactory)) {
+			defaultCrossDomainDefinition = new CrossDomainDefinition(propertyFactory);
 		}
 	}
 
@@ -64,13 +66,16 @@ public final class ControllerService {
 	}
 
 	public boolean defaultFilter(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse) {
-		CrossDomainDefinition crossDomainDefinition = getCrossDomainDefinition(httpRequest.getRequestPath());
-		if (crossDomainDefinition == null) {
+		if (crossDomainDefinitionFactory == null) {
 			if (defaultCrossDomainDefinition != null) {
 				MVCUtils.responseCrossDomain(defaultCrossDomainDefinition, httpResponse);
 			}
 		} else {
-			MVCUtils.responseCrossDomain(crossDomainDefinition, httpResponse);
+			CrossDomainDefinition crossDomainDefinition = crossDomainDefinitionFactory
+					.getCrossDomainDefinition(channel);
+			if (crossDomainDefinition != null) {
+				MVCUtils.responseCrossDomain(crossDomainDefinition, httpResponse);
+			}
 		}
 
 		if (checkRPCEnable(httpRequest)) {
@@ -93,15 +98,6 @@ public final class ControllerService {
 		return false;
 	}
 
-	public void register(String matchPath, String origin, String methods, int maxAge, String headers,
-			boolean credentials) {
-		register(matchPath, new CrossDomainDefinition(origin, headers, methods, credentials, maxAge));
-	}
-
-	public synchronized void register(String matchPath, CrossDomainDefinition crossDomainDefinition) {
-		crossDomainDefinitionMap.put(matchPath, crossDomainDefinition);
-	}
-
 	protected final boolean checkRPCEnable(HttpRequest request) {
 		if (rpcService == null) {
 			return false;
@@ -116,23 +112,6 @@ public final class ControllerService {
 		}
 
 		return StringUtils.startsWith(request.getContentType(), MimeTypeConstants.APPLICATION_OCTET_STREAM_VALUE, true);
-	}
-
-	private CrossDomainDefinition getCrossDomainDefinition(String requestPath) {
-		if (crossDomainDefinitionMap.isEmpty()) {
-			return null;
-		}
-
-		CrossDomainDefinition crossDomainDefinition = crossDomainDefinitionMap.get(requestPath);
-		if (crossDomainDefinition == null) {
-			for (Entry<String, CrossDomainDefinition> entry : crossDomainDefinitionMap.entrySet()) {
-				if (StringUtils.test(requestPath, entry.getKey())) {
-					crossDomainDefinition = entry.getValue();
-					break;
-				}
-			}
-		}
-		return crossDomainDefinition;
 	}
 
 	private boolean checkResourcePath(HttpRequest httpRequest) {

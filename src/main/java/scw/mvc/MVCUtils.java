@@ -56,6 +56,7 @@ import scw.mvc.http.Text;
 import scw.mvc.support.ActionFilter;
 import scw.mvc.support.ActionServiceFilter;
 import scw.mvc.support.CrossDomainDefinition;
+import scw.mvc.support.CrossDomainDefinitionFactory;
 import scw.mvc.support.HttpNotFoundFilter;
 import scw.mvc.support.MultiActionFactory;
 import scw.net.header.HeadersConstants;
@@ -805,6 +806,16 @@ public final class MVCUtils implements MvcConstants {
 			return StringUtils.isEmpty(jsonp) ? "callback" : jsonp;
 		}
 		return null;
+	}
+
+	public static CrossDomainDefinitionFactory getCrossDomainDefinitionFactory(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory) {
+		String beanName = propertyFactory.getProperty("mvc.cross-domain.factory");
+		if (StringUtils.isEmpty(beanName)) {
+			return instanceFactory.isInstance(CrossDomainDefinitionFactory.class)
+					? instanceFactory.getInstance(CrossDomainDefinitionFactory.class) : null;
+		}
+		return instanceFactory.getInstance(beanName);
 	}
 
 	public static RpcService getRpcService(PropertyFactory propertyFactory, InstanceFactory instanceFactory) {
