@@ -1,7 +1,5 @@
 package scw.mvc.servlet.http;
 
-import java.util.Collection;
-
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpSession;
@@ -12,15 +10,14 @@ import scw.json.JSONParseSupport;
 import scw.mvc.http.AbstractHttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
-import scw.mvc.parameter.ParameterFilter;
 
 @SuppressWarnings("unchecked")
 public abstract class HttpServletChannel extends AbstractHttpChannel {
 
-	public HttpServletChannel(BeanFactory beanFactory, Collection<ParameterFilter> parameterFilters,
+	public HttpServletChannel(BeanFactory beanFactory,
 			JSONParseSupport jsonParseSupport, boolean cookieValue, HttpRequest request, HttpResponse response,
 			String jsonp) {
-		super(beanFactory, parameterFilters, jsonParseSupport, cookieValue, request, response, jsonp);
+		super(beanFactory, jsonParseSupport, cookieValue, request, response, jsonp);
 	}
 
 	@Override

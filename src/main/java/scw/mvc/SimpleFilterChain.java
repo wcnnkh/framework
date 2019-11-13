@@ -1,34 +1,21 @@
 package scw.mvc;
 
 import java.util.Collection;
-import java.util.Iterator;
 
-import scw.core.utils.CollectionUtils;
-
-public class SimpleFilterChain implements FilterChain {
-	private Iterator<Filter> iterator;
-	private FilterChain chain;
+public class SimpleFilterChain extends AbstractFilterChain {
+	private final FilterChain chain;
 
 	public SimpleFilterChain(Collection<Filter> filters) {
 		this(filters, null);
 	}
 
 	public SimpleFilterChain(Collection<Filter> filters, FilterChain chain) {
-		if (!CollectionUtils.isEmpty(filters)) {
-			this.iterator = filters.iterator();
-		}
+		super(filters);
 		this.chain = chain;
 	}
 
-	public Object doFilter(Channel channel) throws Throwable {
-		if (iterator == null) {
-			return chain == null ? null : chain.doFilter(channel);
-		}
-
-		if (iterator.hasNext()) {
-			return iterator.next().doFilter(channel, this);
-		}
-
+	@Override
+	protected Object lastFilter(Channel channel) throws Throwable {
 		return chain == null ? null : chain.doFilter(channel);
 	}
 }

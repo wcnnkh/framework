@@ -5,9 +5,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.mvc.FilterChain;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpFilter;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
+import scw.mvc.support.HttpFilter;
 
 public abstract class HttpServletFilter extends HttpFilter {
 

@@ -53,8 +53,11 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	public AbstractBeanFactory() {
 		this.valueWiredManager = new ValueWiredManager(propertyFactory, this);
 		singletonMap.put(PropertyFactory.class.getName(), propertyFactory);
+		beanMap.put(PropertyFactory.class.getName(), new EmptyBeanDefinition(PropertyFactory.class, propertyFactory, null));
 		singletonMap.put(BeanFactory.class.getName(), this);
-		singletonMap.put(InstanceFactory.class.getName(), this);
+		beanMap.put(BeanFactory.class.getName(), new EmptyBeanDefinition(BeanFactory.class, this, new String[]{InstanceFactory.class.getName()}));
+		nameMappingMap.put(InstanceFactory.class.getName(), BeanFactory.class.getName());
+		
 		filterNames.add(CountLimitFilter.class.getName());
 		filterNames.add(TransactionFilter.class.getName());
 		filterNames.add(TCCTransactionFilter.class.getName());

@@ -117,7 +117,6 @@ public final class ServletUtils {
 		String factoryName = propertyFactory.getProperty("mvc.servlet.http.channel-factory");
 		if (StringUtils.isEmpty(factoryName)) {
 			return new DefaultHttpServletChannelFactory(beanFactory,
-					MVCUtils.getParameterFilters(beanFactory, propertyFactory),
 					MVCUtils.getJsonParseSupport(beanFactory, propertyFactory),
 					MVCUtils.isSupportCookieValue(propertyFactory), MVCUtils.getJsonp(propertyFactory));
 		} else {

@@ -508,10 +508,15 @@ public final class BeanUtils {
 		}
 		return list.isEmpty() ? null : list.toArray(new String[list.size()]);
 	}
+	
+	public static <T> void appendBean(Collection<T> beans, InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Class<? extends T> type, String key){
+		appendBean(beans, instanceFactory, propertyFactory, type, key, false);
+	}
 
 	@SuppressWarnings({ "unchecked" })
 	public static <T> void appendBean(Collection<T> beans, InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory, Class<T> type, String key) {
+			PropertyFactory propertyFactory, Class<? extends T> type, String key, boolean warn) {
 		String[] filters = StringUtils.commonSplit(propertyFactory.getProperty(key));
 		if (!ArrayUtils.isEmpty(filters)) {
 			for (String name : filters) {
@@ -528,6 +533,10 @@ public final class BeanUtils {
 				Object filter = instanceFactory.getInstance(name);
 				if (type.isInstance(filter)) {
 					beans.add((T) filter);
+				}else{
+					if(warn){
+						logger.warn("{}不是一个{}类型，无法使用", name, type);
+					}
 				}
 			}
 		}

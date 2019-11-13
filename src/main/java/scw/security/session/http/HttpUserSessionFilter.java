@@ -6,9 +6,9 @@ import scw.core.annotation.DefaultValue;
 import scw.core.utils.StringUtils;
 import scw.mvc.FilterChain;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpFilter;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
+import scw.mvc.support.HttpFilter;
 import scw.result.ResultFactory;
 import scw.security.session.UserSession;
 

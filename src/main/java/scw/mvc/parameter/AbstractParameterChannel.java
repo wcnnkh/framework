@@ -3,7 +3,6 @@ package scw.mvc.parameter;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collection;
 
 import scw.beans.BeanFactory;
 import scw.core.exception.ParameterException;
@@ -27,9 +26,9 @@ import scw.mvc.annotation.RequestBody;
 public abstract class AbstractParameterChannel extends AbstractChannel implements ParameterChannel {
 	protected final JSONParseSupport jsonParseSupport;
 
-	public AbstractParameterChannel(BeanFactory beanFactory, Collection<ParameterFilter> parameterFilters,
+	public AbstractParameterChannel(BeanFactory beanFactory,
 			JSONParseSupport jsonParseSupport) {
-		super(beanFactory, parameterFilters);
+		super(beanFactory);
 		this.jsonParseSupport = jsonParseSupport;
 	}
 

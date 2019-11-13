@@ -2,9 +2,9 @@ package scw.testing.http;
 
 import scw.mvc.FilterChain;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpFilter;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
+import scw.mvc.support.HttpFilter;
 import scw.testing.TestingProducer;
 
 public final class MyHttpServletTestingFilter extends HttpFilter {

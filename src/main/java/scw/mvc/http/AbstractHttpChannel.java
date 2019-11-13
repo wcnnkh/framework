@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -16,7 +15,6 @@ import scw.json.JSONParseSupport;
 import scw.json.JSONUtils;
 import scw.mvc.MVCUtils;
 import scw.mvc.parameter.AbstractParameterChannel;
-import scw.mvc.parameter.ParameterFilter;
 import scw.net.http.Cookie;
 import scw.security.session.Authorization;
 import scw.security.session.Session;
@@ -35,9 +33,9 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	private final String jsonp;
 
 	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(BeanFactory beanFactory,
-			Collection<ParameterFilter> parameterFilters, JSONParseSupport jsonParseSupport, boolean cookieValue,
+			JSONParseSupport jsonParseSupport, boolean cookieValue,
 			R request, P response, String jsonp) {
-		super(beanFactory, parameterFilters, jsonParseSupport);
+		super(beanFactory, jsonParseSupport);
 		this.cookieValue = cookieValue;
 		this.request = new HttpParameterRequest(request, this);
 		this.response = response;

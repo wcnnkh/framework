@@ -1,15 +1,19 @@
 package scw.mvc.parameter;
 
 import scw.core.parameter.ParameterConfig;
+import scw.mvc.Action;
 import scw.mvc.Channel;
+import scw.mvc.ParameterFilter;
+import scw.mvc.ParameterFilterChain;
 import scw.mvc.http.HttpChannel;
+import scw.mvc.support.HttpAction;
 
 public abstract class HttpParameterFilter implements ParameterFilter {
 
-	public Object filter(Channel channel, ParameterConfig parameterConfig, ParameterFilterChain chain)
+	public Object filter(Action action, Channel channel, ParameterConfig parameterConfig, ParameterFilterChain chain)
 			throws Throwable {
-		if (channel instanceof HttpChannel) {
-			return filter((HttpChannel) channel, parameterConfig, chain);
+		if (action instanceof HttpAction && channel instanceof HttpChannel) {
+			return filter((HttpAction) action, (HttpChannel) channel, parameterConfig, chain);
 		}
 		return chain.doFilter(channel, parameterConfig);
 	}

@@ -2,7 +2,6 @@ package scw.mvc;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -11,19 +10,17 @@ import java.util.Map;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.core.Destroy;
+import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectUtils;
-import scw.mvc.parameter.ParameterFilter;
 
 public abstract class AbstractChannel implements Channel, Destroy {
 	private final long createTime;
 	private volatile Map<String, Object> beanMap;
 	private final BeanFactory beanFactory;
-	protected final Collection<ParameterFilter> parameterFilters;
 
-	public AbstractChannel(BeanFactory beanFactory, Collection<ParameterFilter> parameterFilters) {
+	public AbstractChannel(BeanFactory beanFactory) {
 		this.createTime = System.currentTimeMillis();
 		this.beanFactory = beanFactory;
-		this.parameterFilters = parameterFilters;
 	}
 
 	public void destroy() {
@@ -57,6 +54,11 @@ public abstract class AbstractChannel implements Channel, Destroy {
 		return getBean(type.getName());
 	}
 
+	private Object getBean(BeanDefinition beanDefinition, Constructor<?> constructor) {
+		return beanFactory.getInstance(beanDefinition.getId(), constructor.getParameterTypes(),
+				MVCUtils.getParameterValues(this, ParameterUtils.getParameterConfigs(constructor)));
+	}
+
 	@SuppressWarnings("unchecked")
 	public final <T> T getBean(String name) {
 		BeanDefinition beanDefinition = beanFactory.getBeanDefinition(name);
@@ -71,7 +73,7 @@ public abstract class AbstractChannel implements Channel, Destroy {
 					return null;
 				}
 
-				return (T) MVCUtils.getBean(beanFactory, beanDefinition, this, constructor, parameterFilters);
+				return (T) getBean(beanDefinition, constructor);
 			} else {
 				return beanFactory.getInstance(beanDefinition.getId());
 			}
@@ -100,7 +102,7 @@ public abstract class AbstractChannel implements Channel, Destroy {
 				synchronized (this) {
 					bean = beanMap == null ? null : beanMap.get(beanDefinition.getId());
 					if (bean == null) {
-						bean = MVCUtils.getBean(beanFactory, beanDefinition, this, constructor, parameterFilters);
+						bean = getBean(beanDefinition, constructor);
 						if (beanMap == null) {
 							beanMap = new LinkedHashMap<String, Object>(8);
 						}

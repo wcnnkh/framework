@@ -1,7 +1,6 @@
 package scw.mvc.servlet.http;
 
 import java.lang.reflect.Type;
-import java.util.Collection;
 
 import scw.beans.BeanFactory;
 import scw.core.utils.StringUtils;
@@ -13,7 +12,6 @@ import scw.logger.LoggerFactory;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.parameter.Body;
-import scw.mvc.parameter.ParameterFilter;
 import scw.net.http.Method;
 
 @SuppressWarnings("unchecked")
@@ -21,10 +19,10 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	private static Logger logger = LoggerFactory.getLogger(JsonHttpServletChannel.class);
 	private JSONObjectReadOnly jsonObjectReadOnly;
 
-	public JsonHttpServletChannel(BeanFactory beanFactory, Collection<ParameterFilter> parameterFilters,
+	public JsonHttpServletChannel(BeanFactory beanFactory,
 			JSONParseSupport jsonParseSupport, boolean cookieValue, HttpRequest request, HttpResponse response,
 			String jsonp) {
-		super(beanFactory, parameterFilters, jsonParseSupport, cookieValue, request, response, jsonp);
+		super(beanFactory, jsonParseSupport, cookieValue, request, response, jsonp);
 		if (Method.GET.name().equals(request.getMethod())) {
 			logger.warn("servletPath={},method={}不能使用JSON类型的请求", request.getRequestPath(), request.getMethod());
 		} else {
