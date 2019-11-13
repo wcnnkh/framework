@@ -53,9 +53,9 @@ import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.http.Text;
+import scw.mvc.support.ActionFilter;
 import scw.mvc.support.ActionServiceFilter;
 import scw.mvc.support.CrossDomainDefinition;
-import scw.mvc.support.DefaultFilter;
 import scw.mvc.support.HttpNotFoundFilter;
 import scw.mvc.support.MultiActionFactory;
 import scw.net.header.HeadersConstants;
@@ -379,13 +379,13 @@ public final class MVCUtils implements MvcConstants {
 	public static LinkedList<Filter> getFilters(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		LinkedList<Filter> filters = new LinkedList<Filter>();
 		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, Filter.class, "mvc.filters");
-		filters.add(instanceFactory.getInstance(DefaultFilter.class));
 		filters.add(instanceFactory.getInstance(ActionServiceFilter.class));
 		return filters;
 	}
 
 	public static LinkedList<Filter> getActionFilter(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		LinkedList<Filter> filters = new LinkedList<Filter>();
+		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, ActionFilter.class, "mvc.filters");
 		BeanUtils.appendBean(filters, instanceFactory, propertyFactory, Filter.class, "mvc.action.filters", true);
 		return filters;
 	}

@@ -5,19 +5,21 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
-import scw.core.instance.InstanceFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.Channel;
-import scw.mvc.FilterChain;
+import scw.mvc.ExceptionHandler;
+import scw.mvc.Filter;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
@@ -25,14 +27,11 @@ import scw.mvc.http.HttpResponse;
 import scw.net.mime.MimeTypeConstants;
 import scw.rpc.RpcService;
 
-/**
- * 提供默认的filter支持
- * 
- * @author shuchaowen
- *
- */
-public final class DefaultFilter extends HttpFilter {
-	private static Logger logger = LoggerFactory.getLogger(DefaultFilter.class);
+public final class ControllerService {
+	private static Logger logger = LoggerFactory.getLogger(ControllerService.class);
+	private final Collection<Filter> filters;
+	private final long warnExecuteTime;
+	private final Collection<ExceptionHandler> exceptionHandlers;
 	private Map<String, CrossDomainDefinition> crossDomainDefinitionMap = new HashMap<String, CrossDomainDefinition>();
 	private CrossDomainDefinition defaultCrossDomainDefinition;// 默认的跨域方式
 	private final String rpcPath;
@@ -40,12 +39,11 @@ public final class DefaultFilter extends HttpFilter {
 	private final String sourceRoot;
 	private final String[] sourcePath;
 
-	public DefaultFilter(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		if (MVCUtils.isSupportCorssDomain(propertyFactory)) {
-			defaultCrossDomainDefinition = new CrossDomainDefinition(propertyFactory);
-		}
-
-		this.rpcService = MVCUtils.getRpcService(propertyFactory, instanceFactory);
+	public ControllerService(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Throwable {
+		this.filters = MVCUtils.getFilters(beanFactory, propertyFactory);
+		this.warnExecuteTime = MVCUtils.getWarnExecuteTime(propertyFactory);
+		this.exceptionHandlers = MVCUtils.getExceptionHandlers(beanFactory, propertyFactory);
+		this.rpcService = MVCUtils.getRpcService(propertyFactory, beanFactory);
 		this.rpcPath = MVCUtils.getRPCPath(propertyFactory);
 		this.sourceRoot = MVCUtils.getSourceRoot(propertyFactory);
 		this.sourcePath = MVCUtils.getSourcePath(propertyFactory);
@@ -53,6 +51,46 @@ public final class DefaultFilter extends HttpFilter {
 			logger.info("sourceRoot:{}", sourceRoot);
 			logger.info("sourcePath:{}", Arrays.toString(sourcePath));
 		}
+	}
+
+	public void service(Channel channel) {
+		if (channel instanceof HttpChannel) {
+			if (defaultFilter((HttpChannel) channel, ((HttpChannel) channel).getRequest(),
+					((HttpChannel) channel).getResponse())) {
+				return;
+			}
+		}
+		MVCUtils.service(channel, filters, warnExecuteTime, exceptionHandlers);
+	}
+
+	public boolean defaultFilter(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse) {
+		CrossDomainDefinition crossDomainDefinition = getCrossDomainDefinition(httpRequest.getRequestPath());
+		if (crossDomainDefinition == null) {
+			if (defaultCrossDomainDefinition != null) {
+				MVCUtils.responseCrossDomain(defaultCrossDomainDefinition, httpResponse);
+			}
+		} else {
+			MVCUtils.responseCrossDomain(crossDomainDefinition, httpResponse);
+		}
+
+		if (checkRPCEnable(httpRequest)) {
+			channel.getResponse().setContentType(MimeTypeConstants.APPLICATION_OCTET_STREAM_VALUE);
+			try {
+				rpcService.service(httpRequest.getInputStream(), httpResponse.getOutputStream());
+			} catch (IOException e) {
+				logger.error(e, channel.toString());
+			}
+			return true;
+		}
+
+		if (checkResourcePath(httpRequest)) {
+			File file = new File(sourceRoot + httpRequest.getRequestPath());
+			if (file != null && file.exists() && file.isFile()) {
+				outputFile(file, httpResponse);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void register(String matchPath, String origin, String methods, int maxAge, String headers,
@@ -114,47 +152,17 @@ public final class DefaultFilter extends HttpFilter {
 		return false;
 	}
 
-	private void outputFile(File file, HttpResponse httpResponse) throws IOException {
+	private void outputFile(File file, HttpResponse httpResponse) {
 		OutputStream output = null;
 		FileInputStream fis = null;
 		try {
 			output = httpResponse.getOutputStream();
 			fis = new FileInputStream(file);
 			IOUtils.write(fis, output, 1024 * 8);
+		} catch (IOException e) {
+			logger.error(e, file.getPath());
 		} finally {
 			IOUtils.close(fis, output);
 		}
-	}
-
-	@Override
-	protected Object notHttp(Channel channel, FilterChain chain) throws Throwable {
-		return chain.doFilter(channel);
-	}
-
-	@Override
-	public Object doFilter(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse, FilterChain chain)
-			throws Throwable {
-		CrossDomainDefinition crossDomainDefinition = getCrossDomainDefinition(httpRequest.getRequestPath());
-		if (crossDomainDefinition == null) {
-			if (defaultCrossDomainDefinition != null) {
-				MVCUtils.responseCrossDomain(defaultCrossDomainDefinition, httpResponse);
-			}
-		} else {
-			MVCUtils.responseCrossDomain(crossDomainDefinition, httpResponse);
-		}
-
-		if (checkRPCEnable(httpRequest)) {
-			channel.getResponse().setContentType(MimeTypeConstants.APPLICATION_OCTET_STREAM_VALUE);
-			rpcService.service(httpRequest.getInputStream(), httpResponse.getOutputStream());
-			return null;
-		}
-
-		if (checkResourcePath(httpRequest)) {
-			File file = new File(sourceRoot + httpRequest.getRequestPath());
-			if (file != null && file.exists() && file.isFile()) {
-				outputFile(file, httpResponse);
-			}
-		}
-		return chain.doFilter(channel);
 	}
 }
