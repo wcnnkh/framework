@@ -12,12 +12,14 @@ public class XmlPropertyFactory implements PropertyFactory, Destroy {
 	private AutoRefreshPropertyFactory autoRefreshPropertyFactory;
 
 	public XmlPropertyFactory(String beanXml) {
-		if (!ResourceUtils.isExist(beanXml)) {
+		this(ResourceUtils.isExist(beanXml) ? XmlBeanUtils.getRootNodeList(beanXml) : null);
+	}
+
+	public XmlPropertyFactory(NodeList nodeList) {
+		if (nodeList == null) {
 			return;
 		}
-
-		NodeList nhosts = XmlBeanUtils.getRootNodeList(beanXml);
-		autoRefreshPropertyFactory = new AutoRefreshPropertyFactory(nhosts);
+		autoRefreshPropertyFactory = new AutoRefreshPropertyFactory(nodeList);
 	}
 
 	public String getProperty(String key) {

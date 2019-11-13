@@ -19,16 +19,20 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
-	private final String xmlConfigPath;
+	private NodeList nodeList;
 
 	public XmlBeanFactory(String xmlConfigPath) {
-		this.xmlConfigPath = xmlConfigPath;
 		if (ResourceUtils.isExist(xmlConfigPath)) {
 			Node root = XmlBeanUtils.getRootNode(xmlConfigPath);
-			propertyFactory.add(new XmlPropertyFactory(xmlConfigPath));
 			addFilterName(Arrays
 					.asList(StringUtils.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, root, "filters"))));
+			this.nodeList = XMLUtils.getChildNodes(root, true);
 		}
+		propertyFactory.add(new XmlPropertyFactory(nodeList));
+	}
+
+	public final NodeList getNodeList() {
+		return nodeList;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -40,10 +44,6 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		return (T) bean;
 	}
 
-	public String getXmlConfigPath() {
-		return xmlConfigPath;
-	}
-
 	protected String getServicePackage() {
 		String p = BeanUtils.getServiceAnnotationPackage(propertyFactory);
 		return p == null ? BeanUtils.getAnnotationPackage(propertyFactory) : p;
@@ -51,8 +51,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 
 	public void init() {
 		try {
-			if (ResourceUtils.isExist(xmlConfigPath)) {
-				NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlConfigPath);
+			if (nodeList != null) {
 				addBeanConfigFactory(
 						new XmlBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList, "bean"));
 				addBeanConfigFactory(new ServiceBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
@@ -89,6 +88,10 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	private void initMethod(NodeList nodeList) throws Exception {
+		if (nodeList == null) {
+			return;
+		}
+
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			final Node n = nodeList.item(a);
 			if ("init".equalsIgnoreCase(n.getNodeName())) {
@@ -117,12 +120,11 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		}
 	}
 
-	private void destroyMethod() throws Exception {
-		if (!ResourceUtils.isExist(xmlConfigPath)) {
+	private void destroyMethod(NodeList nodeList) throws Exception {
+		if (nodeList == null) {
 			return;
 		}
 
-		NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlConfigPath);
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("destroy".equalsIgnoreCase(n.getNodeName())) {
@@ -141,7 +143,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 
 	public void destroy() {
 		try {
-			destroyMethod();
+			destroyMethod(nodeList);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
