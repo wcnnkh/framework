@@ -6,7 +6,6 @@ import scw.core.PropertyFactory;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.Action;
-import scw.mvc.ActionFactory;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
 

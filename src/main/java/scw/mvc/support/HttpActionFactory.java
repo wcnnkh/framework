@@ -1,7 +1,6 @@
 package scw.mvc.support;
 
 import scw.mvc.Action;
-import scw.mvc.ActionFactory;
 import scw.mvc.Channel;
 import scw.mvc.http.HttpChannel;
 

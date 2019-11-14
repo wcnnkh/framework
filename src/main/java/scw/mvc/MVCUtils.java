@@ -53,6 +53,7 @@ import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.http.Text;
+import scw.mvc.support.ActionFactory;
 import scw.mvc.support.ActionFilter;
 import scw.mvc.support.ActionServiceFilter;
 import scw.mvc.support.CrossDomainDefinition;
@@ -241,6 +242,8 @@ public final class MVCUtils implements MvcConstants {
 		Action action = getCurrentAction();
 		if (action != null && action instanceof AbstractAction) {
 			return ((AbstractAction) action).getArgs(parameterConfigs, channel);
+		}else{
+			logger.warn("上下文中不存在可用的Action：{}", channel.toString());
 		}
 
 		Object[] args = new Object[parameterConfigs.length];

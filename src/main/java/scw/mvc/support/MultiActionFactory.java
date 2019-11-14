@@ -3,7 +3,6 @@ package scw.mvc.support;
 import java.util.LinkedList;
 
 import scw.mvc.Action;
-import scw.mvc.ActionFactory;
 import scw.mvc.Channel;
 
 public final class MultiActionFactory extends LinkedList<ActionFactory> implements ActionFactory {

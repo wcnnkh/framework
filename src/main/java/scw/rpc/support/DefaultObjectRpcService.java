@@ -32,8 +32,7 @@ public final class DefaultObjectRpcService implements RpcService, RpcConstants {
 		this.serializer = serializer;
 	}
 
-	public Object service(InputStream in) throws Throwable {
-		ObjectRpcRequestMessage objectRpcRequestMessage = serializer.deserialize(in);
+	public Object request(ObjectRpcRequestMessage objectRpcRequestMessage) throws Throwable {
 		if (!rpcAuthorize(objectRpcRequestMessage)) {
 			throw new RuntimeException("RPC验证失败");
 		}
@@ -48,23 +47,38 @@ public final class DefaultObjectRpcService implements RpcService, RpcConstants {
 					instanceFactory.getInstance(objectRpcRequestMessage.getMethodDefinition().getBelongClass()),
 					objectRpcRequestMessage.getArgs());
 		} catch (IllegalArgumentException e) {
-			logger.warn("参数不一致：{}", objectRpcRequestMessage.getMessageKey());
+
 			throw e;
+		}
+	}
+
+	private void response(OutputStream os, ObjectRpcResponseMessage responseMessage) {
+		try {
+			serializer.serialize(os, responseMessage);
+		} catch (IOException e) {
+			logger.error(e, "rpc返回失败");
 		}
 	}
 
 	public void service(InputStream in, OutputStream os) {
 		ObjectRpcResponseMessage rpcResponseMessage = new ObjectRpcResponseMessage();
+		ObjectRpcRequestMessage objectRpcRequestMessage;
 		try {
-			rpcResponseMessage.setResponse(service(in));
+			objectRpcRequestMessage = serializer.deserialize(in);
+		} catch (IOException e1) {
+			logger.error(e1, "序列化失败");
+			rpcResponseMessage.setThrowable(e1);
+			response(os, rpcResponseMessage);
+			return;
+		}
+
+		try {
+			rpcResponseMessage.setResponse(request(objectRpcRequestMessage));
 		} catch (Throwable e) {
+			logger.error(e, objectRpcRequestMessage.getMessageKey());
 			rpcResponseMessage.setThrowable(e);
 		}
-		try {
-			serializer.serialize(os, rpcResponseMessage);
-		} catch (IOException e) {
-			logger.error(e, "rpc返回失败");
-		}
+		response(os, rpcResponseMessage);
 	}
 
 	protected ObjectServiceInvoker getRPCInvoker(final ObjectRpcRequestMessage objectRpcRequestMessage)

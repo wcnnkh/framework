@@ -11,7 +11,6 @@ import scw.core.utils.SystemPropertyUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.Action;
-import scw.mvc.ActionFactory;
 import scw.mvc.Channel;
 import scw.mvc.Filter;
 import scw.mvc.FilterChain;
