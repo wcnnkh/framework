@@ -20,6 +20,6 @@ public interface Filter {
 	 * @return
 	 * @throws Throwable
 	 */
-	Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+	Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
 			FilterChain filterChain) throws Throwable;
 }

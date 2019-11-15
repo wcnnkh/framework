@@ -18,7 +18,7 @@ import scw.transaction.TransactionManager;
  *
  */
 public final class QueryCacheUtils {
-	private static volatile boolean cacheEnable = StringUtils.parseBoolean(SystemPropertyUtils.getProperty("sql.query.cache"), true);
+	private static boolean cacheEnable = StringUtils.parseBoolean(SystemPropertyUtils.getProperty("sql.query.cache"));
 
 	private QueryCacheUtils() {
 	};
@@ -27,12 +27,9 @@ public final class QueryCacheUtils {
 		return cacheEnable;
 	}
 
-	public static void setGlobalCacheEnable(boolean enable) {
-		cacheEnable = enable;
-	}
-
 	/**
 	 * 禁用会清除事务缓存
+	 * 
 	 * @param enable
 	 */
 	public static void setQueryCacheEnable(boolean enable) {

@@ -1,8 +1,11 @@
 package scw.core.utils;
 
+import java.math.BigDecimal;
+
 public final class MathUtils {
-	private MathUtils(){};
-	
+	private MathUtils() {
+	};
+
 	/**
 	 * 求最大公约数
 	 * 
@@ -66,5 +69,28 @@ public final class MathUtils {
 				b -= a;
 		}
 		return a;
+	}
+
+	/**
+	 * 乘法
+	 * 
+	 * @param number1
+	 * @param number2
+	 * @return
+	 */
+	public static BigDecimal multiply(String number1, String number2) {
+		BigDecimal bigDecimal = new BigDecimal(number1);
+		return bigDecimal.multiply(new BigDecimal(number2));
+	}
+
+	/**
+	 * 乘法
+	 * 
+	 * @param number1
+	 * @param number2
+	 * @return
+	 */
+	public static BigDecimal multiply(double number1, double number2) {
+		return multiply(number1 + "", number2 + "");
 	}
 }

@@ -49,8 +49,8 @@ public class HttpRestfulRpcProxy implements Filter, RpcConstants {
 		this.httpRpcProxy.add(new ObjectRpcMessageConvert(serializer, cName));
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)
+	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
-		return httpRpcProxy.filter(invoker, proxy, targetClass, method, args, filterChain);
+		return httpRpcProxy.doFilter(invoker, proxy, targetClass, method, args, filterChain);
 	}
 }

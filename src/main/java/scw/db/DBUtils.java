@@ -1,22 +1,32 @@
 package scw.db;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 
+import scw.core.Constants;
 import scw.core.exception.NotSupportException;
+import scw.core.resource.ResourceUtils;
 import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 import scw.db.database.DataBase;
 import scw.db.database.MysqlDataBase;
 import scw.db.database.OracleDataBase;
 import scw.db.database.SqlServerDataBase;
+import scw.sql.SimpleSql;
+import scw.sql.Sql;
 
 public final class DBUtils {
+	private static final String IGNORE_SQL_START_WITH = StringUtils
+			.toString(SystemPropertyUtils.getProperty("db.file.sql.ignore.start.with"), "##");
+
 	private DBUtils() {
 	};
 
 	@SuppressWarnings("rawtypes")
-	public static void loadProperties(Object instance, Map properties){
+	public static void loadProperties(Object instance, Map properties) {
 		ConfigUtils.loadProperties(instance, properties,
 				Arrays.asList("jdbcUrl,url,host", "username,user", "password", "minSize,initialSize,minimumIdle",
 						"maxSize,maxActive,maximumPoolSize", "driver,driverClass,driverClassName"));
@@ -62,5 +72,25 @@ public final class DBUtils {
 		}
 
 		throw new NotSupportException("不支持的数据库类型,driver=" + driverClassName + ",url=" + url);
+	}
+
+	public static Collection<Sql> getSqlByFile(String path, boolean lines) {
+		LinkedList<Sql> list = new LinkedList<Sql>();
+		if (lines) {
+			Collection<String> sqlList = ResourceUtils.getFileContentLineList(path, Constants.DEFAULT_CHARSET_NAME);
+			for (String sql : sqlList) {
+				if (sql.startsWith(IGNORE_SQL_START_WITH)) {
+					continue;
+				}
+
+				list.add(new SimpleSql(sql));
+			}
+		} else {
+			String sql = ResourceUtils.getFileContent(path, Constants.DEFAULT_CHARSET_NAME);
+			if (!StringUtils.isEmpty(sql)) {
+				list.add(new SimpleSql(sql));
+			}
+		}
+		return list;
 	}
 }

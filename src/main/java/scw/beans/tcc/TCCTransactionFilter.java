@@ -72,7 +72,7 @@ public final class TCCTransactionFilter implements Filter {
 		tccService.service(new InvokeInfo(rtnValue, tryMethod, confirmMethod, cancelMethod, args));
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain chain)
+	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain chain)
 			throws Throwable {
 		Object rtn = chain.doFilter(invoker, proxy, targetClass, method, args);
 		transaction(targetClass, rtn, method, args);

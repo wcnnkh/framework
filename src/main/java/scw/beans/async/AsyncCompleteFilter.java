@@ -62,7 +62,7 @@ public final class AsyncCompleteFilter implements Filter {
 		return service.service(info);
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)
+	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
 		try {
 			return realFilter(invoker, proxy, targetClass, method, args, filterChain);

@@ -14,7 +14,7 @@ import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.data.Cache;
+import scw.data.ExpiredCache;
 import scw.io.FileUtils;
 import scw.io.serializer.NoTypeSpecifiedSerializer;
 import scw.io.serializer.SerializerUtils;
@@ -23,7 +23,7 @@ import scw.logger.LoggerFactory;
 import scw.net.http.HttpUtils;
 
 @SuppressWarnings("unchecked")
-public class FileCache extends TimerTask implements Cache, Init, Destroy {
+public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(FileCache.class);
 	private Timer timer;
 	private final int exp;// 0表示不过期
@@ -270,7 +270,21 @@ public class FileCache extends TimerTask implements Cache, Init, Destroy {
 		}
 	}
 
-	public static Cache create(String cacheDirectorySuffix, int exp) {
+	public static ExpiredCache create(String cacheDirectorySuffix, int exp) {
 		return new FileCache(exp, SystemPropertyUtils.getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
+	}
+
+	public void delete(Collection<String> keys) {
+		if (CollectionUtils.isEmpty(keys)) {
+			return;
+		}
+
+		for (String key : keys) {
+			delete(key);
+		}
+	}
+
+	public int getMaxExpirationDate() {
+		return exp;
 	}
 }

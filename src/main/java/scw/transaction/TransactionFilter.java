@@ -59,7 +59,7 @@ public final class TransactionFilter implements Filter {
 		return rtn;
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
 			FilterChain filterChain) throws Throwable {
 		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, targetClass, method);
 		if (tx == null) {

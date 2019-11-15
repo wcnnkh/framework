@@ -3,6 +3,10 @@ package scw.mvc.parameter;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import scw.beans.BeanFactory;
 import scw.core.exception.ParameterException;
@@ -20,14 +24,14 @@ import scw.mvc.MVCUtils;
 import scw.mvc.Request;
 import scw.mvc.Response;
 import scw.mvc.annotation.BigDecimalMultiply;
+import scw.mvc.annotation.DateFormat;
 import scw.mvc.annotation.RequestBean;
 import scw.mvc.annotation.RequestBody;
 
 public abstract class AbstractParameterChannel extends AbstractChannel implements ParameterChannel {
 	protected final JSONParseSupport jsonParseSupport;
 
-	public AbstractParameterChannel(BeanFactory beanFactory,
-			JSONParseSupport jsonParseSupport) {
+	public AbstractParameterChannel(BeanFactory beanFactory, JSONParseSupport jsonParseSupport) {
 		super(beanFactory);
 		this.jsonParseSupport = jsonParseSupport;
 	}
@@ -61,6 +65,38 @@ public abstract class AbstractParameterChannel extends AbstractChannel implement
 		BigDecimalMultiply bigDecimalMultiply = parameterConfig.getAnnotation(BigDecimalMultiply.class);
 		if (bigDecimalMultiply != null) {
 			return bigDecimalMultiply(name, parameterConfig, bigDecimalMultiply);
+		}
+
+		DateFormat dateFormat = parameterConfig.getAnnotation(DateFormat.class);
+		if (dateFormat != null) {
+			String value = getString(name);
+			if (TypeUtils.isString(parameterConfig.getType())) {
+				return StringUtils.isEmpty(value) ? value
+						: new SimpleDateFormat(dateFormat.value()).format(StringUtils.parseLong(value));
+			}
+
+			long time = 0;
+			if (StringUtils.isEmpty(value)) {
+				SimpleDateFormat format = new SimpleDateFormat(dateFormat.value());
+				try {
+					time = format.parse(value).getTime();
+				} catch (ParseException e) {
+					throw new ParameterException(value);
+				}
+			}
+
+			if (Date.class.isAssignableFrom(parameterConfig.getType())) {
+				return new Date(time);
+			} else if (TypeUtils.isLong(parameterConfig.getType())) {
+				return time;
+			} else if (TypeUtils.isInt(parameterConfig.getType())) {
+				return time / 1000;
+			} else if (Calendar.class == parameterConfig.getType()) {
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(time);
+				return calendar;
+			}
+			throw new ParameterException("not support type [" + parameterConfig.getType() + "]");
 		}
 
 		return XUtils.getValue(this, name, parameterConfig.getGenericType());

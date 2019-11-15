@@ -11,15 +11,11 @@ import scw.core.Constants;
 import scw.core.PropertyFactory;
 import scw.core.annotation.Host;
 import scw.core.reflect.ReflectUtils;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.DefaultExecutor;
 import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
-import scw.data.memcached.Memcached;
-import scw.data.redis.Redis;
-import scw.db.DB;
 import scw.logger.LazyLogger;
 import scw.logger.Logger;
 import scw.result.ResultFactory;
@@ -33,8 +29,6 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		AutoBean autoBean = null;
 		if (clazz == ResultFactory.class) {
 			autoBean = createResultFactory(beanFactory, propertyFactory);
-		} else if (clazz == DB.class) {
-			autoBean = createDB(beanFactory, propertyFactory);
 		} else if (clazz == Executor.class) {
 			autoBean = new SimpleAutoBean(beanFactory, DefaultExecutor.class, propertyFactory);
 		}
@@ -115,7 +109,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			name = FormatUtils.format(name, propertyFactory, true);
 			Class<?> clz = null;
 			try {
-				clz = Class.forName(name);
+				clz = ClassUtils.forName(name);
 			} catch (ClassNotFoundException e) {
 			}
 
@@ -177,36 +171,5 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			return new DefaultAutoBean(beanFactory, "scw.result.DefaultResultFactory", new Class<?>[] { String.class,
 					String.class, int.class, int.class, int.class, int.class, String.class, boolean.class }, args);
 		}
-	}
-
-	private AutoBean createDB(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
-		String config = "db.properties";
-		if (ResourceUtils.isExist(config)) {
-			Object[] args = null;
-			Class<?>[] types = null;
-			if(StringUtils.parseBoolean(propertyFactory.getProperty("db.cache.enable"), false)){
-				if (beanFactory.isInstance(Redis.class.getName())) {
-					types = new Class<?>[] { Redis.class, String.class };
-					args = new Object[] { beanFactory.getInstance(Redis.class), config };
-				} else if (beanFactory.isInstance(Memcached.class.getName())) {
-					types = new Class<?>[] { Memcached.class, String.class };
-					args = new Object[] { beanFactory.getInstance(Memcached.class), config };
-				}
-			}
-			
-			if(types == null){
-				types = new Class<?>[] { String.class };
-				args = new Object[] { config };
-			}
-
-			if (ClassUtils.isExist("scw.db.DruidDB")) {
-				logger.info("init scw.db.DruidDB");
-				return new DefaultAutoBean(beanFactory, "scw.db.DruidDB", types, args);
-			} else if (ClassUtils.isExist("scw.db.HikariCPDB")) {
-				logger.info("init scw.db.HikariCPDB");
-				return new DefaultAutoBean(beanFactory, "scw.db.HikariCPDB", types, args);
-			}
-		}
-		return null;
 	}
 }

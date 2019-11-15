@@ -2,37 +2,27 @@ package scw.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 
-import scw.core.Constants;
+import scw.core.Consumer;
 import scw.core.resource.ResourceUtils;
-import scw.core.utils.StringUtils;
-import scw.db.async.AsyncInfo;
-import scw.db.async.MultipleOperation;
-import scw.db.async.OperationBean;
 import scw.db.cache.CacheManager;
-import scw.db.database.DataBase;
-import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.orm.ORMTemplate;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.annotation.Table;
-import scw.transaction.DefaultTransactionLifeCycle;
-import scw.transaction.TransactionManager;
-import scw.transaction.sql.ConnectionFactory;
 import scw.transaction.sql.SqlTransactionUtils;
 
-public abstract class AbstractDB<C extends CacheManager> extends ORMTemplate implements ConnectionFactory, DB {
+public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<AsyncExecute>, DBConfig {
 
-	public abstract C getCacheManager();
-
-	public abstract void async(AsyncInfo asyncInfo);
-
-	public abstract DataBase getDataBase();
+	public abstract CacheManager getCacheManager();
 
 	public void createTable(Class<?> tableClass, boolean registerManager) {
 		createTable(tableClass, null, registerManager);
+	}
+
+	public void consume(AsyncExecute message) throws Throwable {
+		message.execute(this);
 	}
 
 	@Override
@@ -69,85 +59,6 @@ public abstract class AbstractDB<C extends CacheManager> extends ORMTemplate imp
 	}
 
 	@Override
-	public boolean save(Object bean, String tableName) {
-		boolean b = super.save(bean, tableName);
-		if (b) {
-			CacheManager cacheManager = getCacheManager();
-			if (cacheManager != null) {
-				cacheManager.save(bean);
-			}
-		}
-		return b;
-	}
-
-	@Override
-	public boolean update(Object bean, String tableName) {
-		boolean b = super.update(bean, tableName);
-		if (b) {
-			CacheManager cacheManager = getCacheManager();
-			if (cacheManager != null) {
-				cacheManager.update(bean);
-			}
-		}
-		return b;
-	}
-
-	@Override
-	public boolean delete(Object bean, String tableName) {
-		boolean b = super.delete(bean, tableName);
-		if (b) {
-			CacheManager cacheManager = getCacheManager();
-			if (cacheManager != null) {
-				cacheManager.delete(bean);
-			}
-		}
-		return b;
-	}
-
-	@Override
-	public boolean deleteById(String tableName, Class<?> type, Object... params) {
-		boolean b = super.deleteById(tableName, type, params);
-		if (b) {
-			CacheManager cacheManager = getCacheManager();
-			if (cacheManager != null) {
-				cacheManager.deleteById(type, params);
-			}
-		}
-		return b;
-	}
-
-	@Override
-	public boolean saveOrUpdate(Object bean, String tableName) {
-		boolean b = super.saveOrUpdate(bean, tableName);
-		if (b) {
-			CacheManager cacheManager = getCacheManager();
-			if (cacheManager != null) {
-				cacheManager.saveOrUpdate(bean);
-			}
-		}
-		return b;
-	}
-
-	@Override
-	public <T> T getById(String tableName, Class<T> type, Object... params) {
-		CacheManager cacheManager = getCacheManager();
-		if (cacheManager == null) {
-			return super.getById(tableName, type, params);
-		}
-
-		T t = cacheManager.getById(type, params);
-		if (t == null) {
-			if (cacheManager.isExistById(type, params)) {
-				t = super.getById(tableName, type, params);
-				if (t != null) {
-					cacheManager.save(t);
-				}
-			}
-		}
-		return t;
-	}
-
-	@Override
 	public SqlFormat getSqlFormat() {
 		return getDataBase().getDataBaseType().getSqlFormat();
 	}
@@ -157,105 +68,101 @@ public abstract class AbstractDB<C extends CacheManager> extends ORMTemplate imp
 		return SqlTransactionUtils.getTransactionConnection(this);
 	}
 
-	public void asyncSave(Object... objs) {
-		MultipleOperation multipleOperation = new MultipleOperation();
-		for (Object obj : objs) {
-			multipleOperation.save(obj);
+	public void executeSqlByFile(String filePath, boolean lines) throws SQLException {
+		Collection<Sql> sqls = DBUtils.getSqlByFile(filePath, lines);
+		for (Sql sql : sqls) {
+			execute(sql);
 		}
-		asyncExecute(multipleOperation);
 	}
 
-	public void asyncUpdate(Object... objs) {
-		MultipleOperation multipleOperation = new MultipleOperation();
-		for (Object obj : objs) {
-			multipleOperation.update(obj);
+	@Override
+	public boolean save(Object bean, String tableName) {
+		boolean b = super.save(bean, tableName);
+		if (b) {
+			getCacheManager().save(bean);
 		}
-		asyncExecute(multipleOperation);
+		return b;
+	}
+
+	@Override
+	public boolean update(Object bean, String tableName) {
+		boolean b = super.update(bean, tableName);
+		if (b) {
+			getCacheManager().update(bean);
+		}
+		return b;
+	}
+
+	@Override
+	public boolean delete(Object bean, String tableName) {
+		boolean b = super.delete(bean, tableName);
+		if (b) {
+			getCacheManager().delete(bean);
+		}
+		return b;
+	}
+
+	@Override
+	public boolean deleteById(String tableName, Class<?> type, Object... params) {
+		boolean b = super.deleteById(tableName, type, params);
+		if (b) {
+			getCacheManager().deleteById(type, params);
+		}
+		return b;
+	}
+
+	@Override
+	public boolean saveOrUpdate(Object bean, String tableName) {
+		boolean b = super.saveOrUpdate(bean, tableName);
+		if (b) {
+			getCacheManager().saveOrUpdate(bean);
+		}
+		return b;
+	}
+	
+	@Override
+	public <T> T getById(String tableName, Class<T> type, Object... params) {
+		T t = getCacheManager().getById(type, params);
+		if (t == null) {
+			if (getCacheManager().isExistById(type, params)) {
+				t = super.getById(tableName, type, params);
+				if (t != null) {
+					getCacheManager().save(t);
+				}
+			}
+		}
+		return t;
 	}
 
 	public void asyncDelete(Object... objs) {
-		MultipleOperation multipleOperation = new MultipleOperation();
-		for (Object obj : objs) {
-			multipleOperation.delete(obj);
+		TransactionAsyncExecute asyncExecute = new TransactionAsyncExecute();
+		for (Object bean : objs) {
+			asyncExecute.add(new BeanAsyncExecute(bean, OperationType.DELETE));
 		}
-		asyncExecute(multipleOperation);
+		asyncExecute(asyncExecute);
 	}
 
-	public void asyncSaveOrUpdate(Object... objs) {
-		MultipleOperation multipleOperation = new MultipleOperation();
-		for (Object obj : objs) {
-			multipleOperation.saveOrUpdate(obj);
+	public void asyncExecute(Sql... sqls) {
+		TransactionAsyncExecute asyncExecute = new TransactionAsyncExecute();
+		for (Sql sql : sqls) {
+			asyncExecute.add(new SqlAsyncExecute(sql));
 		}
-		asyncExecute(multipleOperation);
+		asyncExecute(asyncExecute);
 	}
 
-	public void asyncExecute(OperationBean... operationBeans) {
-		MultipleOperation multipleOperation = new MultipleOperation();
-		for (OperationBean bean : operationBeans) {
-			multipleOperation.add(bean);
+	public void asyncSave(Object... objs) {
+		TransactionAsyncExecute asyncExecute = new TransactionAsyncExecute();
+		for (Object bean : objs) {
+			asyncExecute.add(new BeanAsyncExecute(bean, OperationType.SAVE));
 		}
-		asyncExecute(multipleOperation);
+		asyncExecute(asyncExecute);
 	}
 
-	public final void asyncExecute(MultipleOperation multipleOperation) {
-		if (TransactionManager.hasTransaction()) {
-			AsyncInfoTransactionLifeCycle aitlc = new AsyncInfoTransactionLifeCycle((new AsyncInfo(multipleOperation)));
-			TransactionManager.transactionLifeCycle(aitlc);
-		} else {
-			async(new AsyncInfo(multipleOperation));
+	public void asyncUpdate(Object... objs) {
+		TransactionAsyncExecute asyncExecute = new TransactionAsyncExecute();
+		for (Object bean : objs) {
+			asyncExecute.add(new BeanAsyncExecute(bean, OperationType.UPDATE));
 		}
-	}
-
-	/**
-	 * 异步执行sql语句
-	 * 
-	 * @param sql
-	 */
-	public final void asyncExecute(Sql... sql) {
-		if (TransactionManager.hasTransaction()) {
-			AsyncInfoTransactionLifeCycle aitlc = new AsyncInfoTransactionLifeCycle(
-					(new AsyncInfo(Arrays.asList(sql))));
-			TransactionManager.transactionLifeCycle(aitlc);
-		} else {
-			async(new AsyncInfo(Arrays.asList(sql)));
-		}
-	}
-
-	private final class AsyncInfoTransactionLifeCycle extends DefaultTransactionLifeCycle {
-		private final AsyncInfo asyncInfo;
-
-		public AsyncInfoTransactionLifeCycle(AsyncInfo asyncInfo) {
-			this.asyncInfo = asyncInfo;
-		}
-
-		@Override
-		public void afterProcess() {
-			async(asyncInfo);
-			super.afterProcess();
-		}
-	}
-
-	public void executeSqlByFile(String filePath) {
-		String sql = ResourceUtils.getFileContent(filePath, Constants.DEFAULT_CHARSET_NAME);
-		if (StringUtils.isEmpty(sql)) {
-			return;
-		}
-
-		execute(new SimpleSql(sql));
-	}
-
-	public void executeSqlByFileLine(String filePath, String ignoreStartsWith) throws SQLException {
-		Collection<String> sqlList = ResourceUtils.getFileContentLineList(filePath, Constants.DEFAULT_CHARSET_NAME);
-		for (String sql : sqlList) {
-			if (!StringUtils.isEmpty(ignoreStartsWith) && sql.startsWith(ignoreStartsWith)) {
-				continue;
-			}
-
-			execute(new SimpleSql(sql));
-		}
-	}
-
-	public void executeSqlsByFileLine(String filePath) throws SQLException {
-		executeSqlByFileLine(filePath, "##");
+		asyncExecute(asyncExecute);
 	}
 }

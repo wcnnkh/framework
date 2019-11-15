@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
+import scw.core.utils.CollectionUtils;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
 import scw.data.cas.SimpleCAS;
@@ -22,7 +23,7 @@ public final class XMemcached implements Memcached {
 	public XMemcached(XMemcachedClientConfiguration configuration) throws Exception {
 		this.memcachedClient = configuration.configuration();
 		this.casOperations = new XMemcachedCASOperations(memcachedClient);
-		if(MemcachedUtils.startingFlushAll()){
+		if (MemcachedUtils.startingFlushAll()) {
 			memcachedClient.flushAll();
 		}
 	}
@@ -271,6 +272,16 @@ public final class XMemcached implements Memcached {
 			memcachedClient.shutdown();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void delete(Collection<String> keys) {
+		if (CollectionUtils.isEmpty(keys)) {
+			return;
+		}
+
+		for (String key : keys) {
+			delete(key);
 		}
 	}
 }

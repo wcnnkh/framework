@@ -40,7 +40,7 @@ public final class RootFilter implements Filter, MethodInterceptor {
 		return chain.doFilter(invoker, proxy, targetClass, method, args);
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
 			FilterChain filterChain) throws Throwable {
 		if (proxy instanceof Filter) {
 			return invoker.invoke(args);

@@ -25,7 +25,7 @@ public final class DefaultFilterChain implements FilterChain {
 		}
 
 		if (iterator.hasNext()) {
-			return iterator.next().filter(invoker, proxy, targetClass, method, args, this);
+			return iterator.next().doFilter(invoker, proxy, targetClass, method, args, this);
 		} else {
 			return lastFilter(invoker, proxy, targetClass, method, args);
 		}

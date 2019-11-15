@@ -12,6 +12,6 @@ public interface CacheManager {
 	void saveOrUpdate(Object bean);
 
 	<T> T getById(Class<T> type, Object... params);
-	
-	boolean isExistById(Class<?> type, Object ...params);
+
+	boolean isExistById(Class<?> type, Object... params);
 }

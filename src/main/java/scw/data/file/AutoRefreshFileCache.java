@@ -5,7 +5,7 @@ import java.io.File;
 import scw.core.Constants;
 import scw.core.Converter;
 import scw.core.utils.SystemPropertyUtils;
-import scw.data.Cache;
+import scw.data.ExpiredCache;
 import scw.io.serializer.NoTypeSpecifiedSerializer;
 import scw.io.serializer.SerializerUtils;
 
@@ -62,7 +62,7 @@ public class AutoRefreshFileCache extends FileCache {
 		return null;
 	}
 
-	public static Cache create(String cacheDirectorySuffix, int period, Converter<String, ?> converter) {
+	public static ExpiredCache create(String cacheDirectorySuffix, int period, Converter<String, ?> converter) {
 		return new AutoRefreshFileCache(period,
 				SystemPropertyUtils.getTempDirectoryPath() + File.separator + cacheDirectorySuffix, converter);
 	}

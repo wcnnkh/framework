@@ -2441,15 +2441,15 @@ public final class StringUtils {
 	public static Object parseArray(String text, Class<?> componentType) {
 		return parseArray(text, componentType, DEFAULT_SPLIT_CHARS);
 	}
-	
+
 	public static Object parseArray(String text, Class<?> componentType, String[] splitFilter) {
 		return parseArray(text, componentType, splitFilter, JSONUtils.DEFAULT_JSON_SUPPORT);
 	}
-	
+
 	public static Object parseArray(String text, Class<?> componentType, char[] splitFilter) {
 		return parseArray(text, componentType, splitFilter, JSONUtils.DEFAULT_JSON_SUPPORT);
 	}
-	
+
 	public static Object parseArray(String text, Class<?> componentType, String[] splitFilter,
 			final JSONParseSupport jsonParseSupport) {
 		if (text == null) {
@@ -2764,5 +2764,34 @@ public final class StringUtils {
 		} else {
 			return text.contains(index);
 		}
+	}
+
+	/**
+	 * 对字符串进行转义
+	 * 
+	 * @param text
+	 * @param chars
+	 *            要转义的字符
+	 * @return
+	 */
+	public static String transferredMeaning(String text, char... chars) {
+		if (isEmpty(text)) {
+			return text;
+		}
+
+		int len = text.length();
+		char[] values = new char[len * 2];
+		int vIndex = 0;
+		for (int index = 0; index < len; index++) {
+			char v = text.charAt(index);
+			for (char c : chars) {
+				if (c == v) {
+					values[vIndex++] = '\\';
+					break;
+				}
+			}
+			values[vIndex++] = v;
+		}
+		return new String(values, 0, vIndex);
 	}
 }

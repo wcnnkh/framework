@@ -4,9 +4,9 @@ import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.core.annotation.DefaultValue;
 import scw.core.annotation.ParameterName;
-import scw.data.cache.CacheService;
-import scw.data.cache.MemcachedCacheService;
-import scw.data.cache.RedisCacheService;
+import scw.data.MemcachedDataTemplete;
+import scw.data.RedisDataTemplete;
+import scw.data.TemporaryCache;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 
@@ -14,22 +14,22 @@ import scw.data.redis.Redis;
 public class DefaultLoginService<T> extends AbstractLoginService<T> {
 	private final String prefix;
 
-	public DefaultLoginService(CacheService cacheService,
+	public DefaultLoginService(TemporaryCache temporaryCache,
 			@ParameterName("login-factory.exp") @DefaultValue(7 * 24 * 60 * 60 + "") int exp) {
-		this(cacheService, exp, Constants.DEFAULT_PREFIX);
+		this(temporaryCache, exp, Constants.DEFAULT_PREFIX);
 	}
 
-	public DefaultLoginService(CacheService cacheService, int exp, String prefix) {
-		super(cacheService, exp);
+	public DefaultLoginService(TemporaryCache temporaryCache, int exp, String prefix) {
+		super(temporaryCache, exp);
 		this.prefix = prefix;
 	}
 
 	public DefaultLoginService(Memcached memcached, int exp, String prefix) {
-		this(new MemcachedCacheService(memcached), exp, prefix);
+		this(new MemcachedDataTemplete(memcached), exp, prefix);
 	}
 
 	public DefaultLoginService(Redis redis, int exp, String prefix) {
-		this(new RedisCacheService(redis), exp, prefix);
+		this(new RedisDataTemplete(redis), exp, prefix);
 	}
 
 	@Override

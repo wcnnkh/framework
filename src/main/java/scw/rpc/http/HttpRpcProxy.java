@@ -66,7 +66,7 @@ public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter
 		return converters;
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)
+	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)
 			throws Throwable {
 		Object ignoreReturn = ProxyUtils.ignoreMethod(proxy, method, args);
 		if (ignoreReturn != null) {

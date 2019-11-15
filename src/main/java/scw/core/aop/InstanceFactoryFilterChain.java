@@ -26,7 +26,7 @@ public final class InstanceFactoryFilterChain implements FilterChain {
 			return lastFilter(invoker, proxy, targetClass, method, args);
 		} else if (iterator.hasNext()) {
 			Filter filter = instanceFactory.getInstance(iterator.next());
-			return filter.filter(invoker, proxy, targetClass, method, args, this);
+			return filter.doFilter(invoker, proxy, targetClass, method, args, this);
 		} else {
 			return lastFilter(invoker, proxy, targetClass, method, args);
 		}
@@ -34,7 +34,7 @@ public final class InstanceFactoryFilterChain implements FilterChain {
 
 	private Object lastFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args) throws Throwable {
 		Object value = lastFilter == null ? invoker.invoke(args)
-				: lastFilter.filter(invoker, proxy, targetClass, method, args, this);
+				: lastFilter.doFilter(invoker, proxy, targetClass, method, args, this);
 		lastFilter = null;
 		return value;
 	}

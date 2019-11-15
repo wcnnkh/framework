@@ -8,11 +8,13 @@ import scw.core.utils.CollectionUtils;
 
 public class DefaultParameterFilterChain implements ParameterFilterChain {
 	private Iterator<ParameterFilter> iterator;
+	private ParameterFilterChain chain;
 
-	public DefaultParameterFilterChain(Collection<ParameterFilter> collection) {
-		if (!CollectionUtils.isEmpty(collection)) {
-			iterator = collection.iterator();
+	public DefaultParameterFilterChain(Collection<ParameterFilter> filters, ParameterFilterChain chain) {
+		if (!CollectionUtils.isEmpty(filters)) {
+			iterator = filters.iterator();
 		}
+		this.chain = chain;
 	}
 
 	public Object doFilter(Channel channel, ParameterConfig parameterConfig) throws Throwable {
@@ -21,13 +23,13 @@ public class DefaultParameterFilterChain implements ParameterFilterChain {
 		}
 
 		if (iterator.hasNext()) {
-			return iterator.next().filter(channel, parameterConfig, this);
+			return iterator.next().doFilter(channel, parameterConfig, this);
 		}
 
 		return lastFilter(channel, parameterConfig);
 	}
-	
-	protected Object lastFilter(Channel channel, ParameterConfig parameterConfig) throws Throwable{
-		return null;
+
+	private Object lastFilter(Channel channel, ParameterConfig parameterConfig) throws Throwable {
+		return chain == null ? channel.getParameter(parameterConfig) : chain.doFilter(channel, parameterConfig);
 	}
 }

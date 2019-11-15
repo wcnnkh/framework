@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.utils.XTime;
-import scw.sql.orm.ColumnInfo;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 import scw.transaction.DefaultTransactionLifeCycle;
@@ -14,7 +13,6 @@ import scw.transaction.TransactionManager;
 
 public abstract class LazyCacheManager implements CacheManager {
 	private static final String KEY = "key:";
-	private static final String DEFAULT_CONNECTOR = "|";
 	private static final LazyCacheConfig DEFAULT_CONFIG = new LazyCacheConfig((int) (XTime.ONE_DAY * 2 / 1000), false,
 			false);
 	private static volatile Map<Class<?>, LazyCacheConfig> configMap = new HashMap<Class<?>, LazyCacheConfig>();
@@ -36,16 +34,6 @@ public abstract class LazyCacheManager implements CacheManager {
 			}
 		}
 		return config;
-	}
-
-	private final String keyPrefix;
-
-	public LazyCacheManager(String keyPrefix) {
-		this.keyPrefix = keyPrefix;
-	}
-
-	public final String getKeyPrefix() {
-		return keyPrefix;
 	}
 
 	protected abstract void set(String key, int exp, Object value);
@@ -195,7 +183,7 @@ public abstract class LazyCacheManager implements CacheManager {
 			return null;
 		}
 
-		String key = getObjectKeyById(tableInfo.getPrimaryKeyColumns().length, type, params);
+		String key = getObjectKeyById(type, params);
 		Map<String, K> keyMap = new HashMap<String, K>(inIds.size(), 1);
 		for (K k : inIds) {
 			keyMap.put(appendObjectKey(key, k), k);
@@ -230,61 +218,17 @@ public abstract class LazyCacheManager implements CacheManager {
 	}
 
 	protected String getObjectKey(TableInfo tableInfo, Object bean) {
-		ColumnInfo[] cs = tableInfo.getPrimaryKeyColumns();
-		StringBuilder sb = new StringBuilder(128);
-		if (keyPrefix != null) {
-			sb.append(keyPrefix);
-		}
-		sb.append(tableInfo.getSource().getName());
-		sb.append(DEFAULT_CONNECTOR).append(cs.length);
-		Object v;
-		String value;
-		try {
-			for (int i = 0; i < cs.length; i++) {
-				sb.append(DEFAULT_CONNECTOR);
-				v = cs[i].getField().get(bean);
-				value = v == null ? null : v.toString();
-				sb.append(value == null ? 0 : value.length());
-				sb.append(DEFAULT_CONNECTOR);
-				sb.append(value);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return sb.toString();
+		return ORMUtils.getObjectKey(tableInfo, bean);
 	}
 
 	protected String getObjectKeyById(Class<?> clazz, Object... params) {
-		return getObjectKeyById(params.length, clazz, params);
-	}
-
-	protected String getObjectKeyById(int parameterLen, Class<?> clazz, Object... params) {
-		StringBuilder sb = new StringBuilder(128);
-		if (keyPrefix != null) {
-			sb.append(keyPrefix);
-		}
-		sb.append(clazz.getName());
-		sb.append(DEFAULT_CONNECTOR).append(parameterLen);
-		for (int i = 0; i < params.length; i++) {
-			sb.append(DEFAULT_CONNECTOR);
-			Object v = params[i];
-			String value = v == null ? null : v.toString();
-			sb.append(value == null ? 0 : value.length());
-			sb.append(DEFAULT_CONNECTOR);
-			sb.append(value);
-		}
-		return sb.toString();
+		return ORMUtils.getObjectKeyById(clazz, params);
 	}
 
 	protected String appendObjectKey(String key, Object value) {
-		String v = value == null ? null : value.toString();
-		int len = v == null ? 0 : v.length();
-		StringBuilder sb = new StringBuilder(key.length() + len + 10);
+		StringBuilder sb = new StringBuilder();
 		sb.append(key);
-		sb.append(DEFAULT_CONNECTOR);
-		sb.append(len);
-		sb.append(DEFAULT_CONNECTOR);
-		sb.append(v);
+		ORMUtils.appendObjectKey(sb, value);
 		return sb.toString();
 	}
 }

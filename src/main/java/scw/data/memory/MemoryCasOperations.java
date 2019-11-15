@@ -11,40 +11,40 @@ import scw.data.cas.CASOperations;
 import scw.data.cas.SimpleCAS;
 
 public class MemoryCasOperations implements CASOperations {
-	private final MemoryCacheManager memoryCacheManager;
+	private final MemoryDataManager memoryDataManager;
 
-	public MemoryCasOperations(MemoryCacheManager memoryCacheManager) {
-		this.memoryCacheManager = memoryCacheManager;
+	public MemoryCasOperations(MemoryDataManager memoryDataManager) {
+		this.memoryDataManager = memoryDataManager;
 	}
 
 	public boolean cas(String key, Object value, int exp, long cas) {
-		MemoryCache memoryCache = memoryCacheManager.createDefaultMemoryCache(key);
-		if (memoryCache.set(new SimpleCAS<Object>(cas, value))) {
-			memoryCache.setExpire(exp);
+		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
+		if (memoryData.set(new SimpleCAS<Object>(cas, value))) {
+			memoryData.setExpire(exp);
 			return true;
 		}
 		return false;
 	}
 
 	public <T> CAS<T> get(String key) {
-		MemoryCache memoryCache = memoryCacheManager.getMemoryCache(key);
-		if (memoryCache == null) {
+		MemoryData memoryData = memoryDataManager.getMemoryCache(key);
+		if (memoryData == null) {
 			return null;
 		}
 
-		return memoryCache.get();
+		return memoryData.get();
 	}
 
 	public void set(String key, Object value, int exp) {
-		MemoryCache memoryCache = memoryCacheManager.createDefaultMemoryCache(key);
-		memoryCache.set(value);
-		memoryCache.setExpire(exp);
+		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
+		memoryData.set(value);
+		memoryData.setExpire(exp);
 	}
 
 	public boolean add(String key, Object value, int exp) {
-		MemoryCache memoryCache = memoryCacheManager.createDefaultMemoryCache(key);
-		if (memoryCache.setIfAbsent(value)) {
-			memoryCache.setExpire(exp);
+		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
+		if (memoryData.setIfAbsent(value)) {
+			memoryData.setExpire(exp);
 			return true;
 		}
 		return false;
@@ -69,11 +69,11 @@ public class MemoryCasOperations implements CASOperations {
 	}
 
 	public boolean delete(String key, long cas) {
-		return memoryCacheManager.delete(key, cas);
+		return memoryDataManager.delete(key, cas);
 	}
 
 	public boolean delete(String key) {
-		return memoryCacheManager.delete(key);
+		return memoryDataManager.delete(key);
 	}
 
 }

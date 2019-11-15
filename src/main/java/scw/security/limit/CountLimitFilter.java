@@ -25,7 +25,7 @@ public final class CountLimitFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
 			FilterChain filterChain) throws Throwable {
 		CountLimitSecurity countLimitSecurity = AnnotationUtils.getAnnotation(CountLimitSecurity.class, targetClass,
 				method);

@@ -73,7 +73,7 @@ public final class MVCUtils implements MvcConstants {
 	// 使用ip的模式 1表示使用第一个ip 2表示使用最后一个ip 其他表示原样返回
 	private static final int USE_IP_MODEL = StringUtils.parseInt(SystemPropertyUtils.getProperty("mvc.ip.model"), 1);
 	private static final ContextManager<? extends Context> CONTEXT_MANAGER = new DefaultThreadLocalContextManager();
-
+	
 	private MVCUtils() {
 	};
 
@@ -242,39 +242,28 @@ public final class MVCUtils implements MvcConstants {
 		Action action = getCurrentAction();
 		if (action != null && action instanceof AbstractAction) {
 			return ((AbstractAction) action).getArgs(parameterConfigs, channel);
-		}else{
-			logger.warn("上下文中不存在可用的Action：{}", channel.toString());
 		}
+		return getParameterValues(channel, parameterConfigs, null, null);
+	}
 
-		Object[] args = new Object[parameterConfigs.length];
-		for (int i = 0; i < args.length; i++) {
-			args[i] = channel.getParameter(parameterConfigs[i]);
+	public static Object getParameterValue(Channel channel, ParameterConfig parameterConfig,
+			Collection<ParameterFilter> parameterFilters, ParameterFilterChain chain) {
+		ParameterFilterChain parameterFilterChain = new DefaultParameterFilterChain(parameterFilters, chain);
+		try {
+			return parameterFilterChain.doFilter(channel, parameterConfig);
+		} catch (Throwable e) {
+			if (ParameterException.class.isInstance(e)) {
+				throw (ParameterException) e;
+			}
+			throw new ParameterException("Parameter error [" + parameterConfig.getName() + "]", e);
 		}
-		return args;
 	}
 
 	public static Object[] getParameterValues(Channel channel, ParameterConfig[] parameterConfigs,
-			Collection<ParameterFilter> parameterFilters) throws ParameterException {
+			Collection<ParameterFilter> parameterFilters, ParameterFilterChain chain) throws ParameterException {
 		Object[] args = new Object[parameterConfigs.length];
 		for (int i = 0; i < parameterConfigs.length; i++) {
-			ParameterConfig parameterConfig = parameterConfigs[i];
-			ParameterFilterChain parameterFilterChain = new DefaultParameterFilterChain(parameterFilters);
-
-			Object value;
-			try {
-				value = parameterFilterChain.doFilter(channel, parameterConfigs[i]);
-
-				if (value == null) {
-					value = channel.getParameter(parameterConfig);
-				}
-			} catch (Throwable e) {
-				if (ParameterException.class.isInstance(e)) {
-					throw (ParameterException) e;
-				}
-
-				throw new ParameterException("Parameter error [" + parameterConfigs[i].getName() + "]", e);
-			}
-			args[i] = value;
+			args[i] = getParameterValue(channel, parameterConfigs[i], parameterFilters, chain);
 		}
 		return args;
 	}
@@ -370,13 +359,9 @@ public final class MVCUtils implements MvcConstants {
 
 	public static LinkedList<ParameterFilter> getParameterFilters(InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory) {
-		String[] filters = StringUtils.commonSplit(propertyFactory.getProperty("mvc.parameter.filters"));
 		LinkedList<ParameterFilter> list = new LinkedList<ParameterFilter>();
-		if (!ArrayUtils.isEmpty(filters)) {
-			for (String name : filters) {
-				list.add((ParameterFilter) instanceFactory.getInstance(name));
-			}
-		}
+		BeanUtils.appendBean(list, instanceFactory, propertyFactory, ParameterFilter.class,
+				"mvc.parameter.filter");
 		return list;
 	}
 

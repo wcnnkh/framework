@@ -4,15 +4,15 @@ import scw.core.Assert;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
-import scw.data.cache.CacheService;
+import scw.data.TemporaryCache;
 import scw.security.token.SimpleUserToken;
 import scw.security.token.UserToken;
 
 public abstract class AbstractLoginService<T> implements LoginService<T> {
-	private final CacheService cacheService;
+	private final TemporaryCache cacheService;
 	private final int exp;
 
-	public AbstractLoginService(CacheService cacheService, int exp) {
+	public AbstractLoginService(TemporaryCache cacheService, int exp) {
 		this.cacheService = cacheService;
 		this.exp = exp;
 	}

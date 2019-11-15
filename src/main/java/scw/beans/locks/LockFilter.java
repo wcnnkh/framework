@@ -32,7 +32,7 @@ public final class LockFilter implements Filter {
 		this.lockFactory = lockFactory;
 	}
 
-	public Object filter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
 			FilterChain filterChain) throws Throwable {
 		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, targetClass, method);
 		if (lockConfig == null) {

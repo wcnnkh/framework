@@ -27,19 +27,8 @@ import scw.sql.orm.result.DefaultResult;
 import scw.sql.orm.result.DefaultResultSet;
 import scw.sql.orm.result.Result;
 import scw.sql.orm.result.ResultSet;
-import scw.transaction.sql.cache.QueryCacheUtils;
 
 public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
-	private volatile boolean cacheEnable = QueryCacheUtils.isGlobalCacheEnable();
-
-	protected final boolean isCacheEnable() {
-		return cacheEnable;
-	}
-
-	protected final void setCacheEnable(boolean sqlCacheEnable) {
-		this.cacheEnable = sqlCacheEnable;
-	}
-
 	public abstract SqlFormat getSqlFormat();
 
 	public <T> T getById(Class<T> type, Object... params) {
@@ -240,21 +229,12 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public ResultSet select(Sql sql) {
-		if (cacheEnable && QueryCacheUtils.isGlobalCacheEnable()) {
-			return QueryCacheUtils.query(this, sql, new ResultSetMapper<ResultSet>() {
+		return query(sql, new ResultSetMapper<ResultSet>() {
 
-				public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
-					return new DefaultResultSet(resultSet);
-				}
-			});
-		} else {
-			return query(sql, new ResultSetMapper<ResultSet>() {
-
-				public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
-					return new DefaultResultSet(resultSet);
-				}
-			});
-		}
+			public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
+				return new DefaultResultSet(resultSet);
+			}
+		});
 	}
 
 	public <T> List<T> select(Class<T> type, Sql sql) {

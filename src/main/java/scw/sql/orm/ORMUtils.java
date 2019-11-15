@@ -1,5 +1,6 @@
 package scw.sql.orm;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -11,6 +12,7 @@ import java.sql.Date;
 import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
@@ -18,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.annotation.Order;
@@ -32,6 +35,7 @@ import scw.core.utils.CompareUtils;
 import scw.core.utils.FieldSetterListenUtils;
 import scw.core.utils.IteratorCallback;
 import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.TypeUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -45,6 +49,8 @@ import scw.sql.orm.enums.CasType;
 
 public final class ORMUtils {
 	private static Logger logger = LoggerUtils.getLogger(ORMUtils.class);
+	private static final char DEFAULT_CONNECTOR_CHARACTER = StringUtils
+			.parseChar(SystemPropertyUtils.getProperty("orm.object.id.connector.character"), ':');
 
 	private ORMUtils() {
 	};
@@ -199,7 +205,8 @@ public final class ORMUtils {
 			return true;
 		}
 
-		if (field.getType().isEnum()) {
+		if (Class.class.isAssignableFrom(field.getType()) || field.getType().isEnum() || field.getType().isArray()
+				|| Map.class.isAssignableFrom(field.getType()) || Collection.class.isAssignableFrom(field.getType())) {
 			return true;
 		}
 
@@ -398,5 +405,42 @@ public final class ORMUtils {
 			}
 		}
 		return i;
+	}
+
+	/**
+	 * @param tableInfo
+	 * @param bean
+	 */
+	public static String getObjectKey(TableInfo tableInfo, Object bean) {
+		ColumnInfo[] cs = tableInfo.getPrimaryKeyColumns();
+		StringBuilder sb = new StringBuilder(128);
+		sb.append(tableInfo.getSource().getName());
+		try {
+			for (int i = 0; i < cs.length; i++) {
+				appendObjectKey(sb, cs[i].getField().get(bean));
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return sb.toString();
+	}
+
+	public static String getObjectKeyById(Class<?> clazz, Object... params) {
+		StringBuilder sb = new StringBuilder(128);
+		sb.append(clazz.getName());
+		for (int i = 0; i < params.length; i++) {
+			appendObjectKey(sb, params[i]);
+		}
+		return sb.toString();
+	}
+
+	public static void appendObjectKey(Appendable appendable, Object value) {
+		try {
+			appendable.append(DEFAULT_CONNECTOR_CHARACTER);
+			appendable.append(StringUtils.transferredMeaning(value == null ? null : value.toString(),
+					DEFAULT_CONNECTOR_CHARACTER));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

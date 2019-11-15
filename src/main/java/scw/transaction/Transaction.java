@@ -1,6 +1,9 @@
 package scw.transaction;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -14,7 +17,7 @@ public final class Transaction {
 	private final boolean newTransaction;
 	private final TransactionDefinition transactionDefinition;
 
-	private Map<Object, TransactionResource> resourceMap;
+	private Map<Object, Object> resourceMap;
 	private TransactionLifeCycleCollection tlcc;
 	private Savepoint savepoint;
 	private boolean complete;
@@ -58,7 +61,7 @@ public final class Transaction {
 		tlcc.add(tlc);
 	}
 
-	public TransactionResource getResource(Object name) {
+	public Object getResource(Object name) {
 		checkStatus();
 
 		if (!newTransaction) {
@@ -68,7 +71,7 @@ public final class Transaction {
 		return resourceMap == null ? null : resourceMap.get(name);
 	}
 
-	public void bindResource(Object name, TransactionResource resource) {
+	public void bindResource(Object name, Object resource) {
 		checkStatus();
 
 		if (!newTransaction) {
@@ -77,7 +80,7 @@ public final class Transaction {
 		}
 
 		if (resourceMap == null) {
-			resourceMap = new HashMap<Object, TransactionResource>(4, 1);
+			resourceMap = new HashMap<Object, Object>(8, 1);
 		} else {
 			if (resourceMap.containsKey(name)) {
 				throw new AlreadyExistsException("已经存在此事务资源了，不可以重复绑定：" + name);
@@ -93,17 +96,29 @@ public final class Transaction {
 
 	private TransactionSynchronizationLifeCycle tslc;
 
+	@SuppressWarnings("unchecked")
+	private Collection<TransactionResource> getTransactionResources() {
+		if (resourceMap == null) {
+			return Collections.EMPTY_LIST;
+		}
+
+		LinkedList<TransactionResource> resources = new LinkedList<TransactionResource>();
+		for (Entry<Object, Object> entry : resourceMap.entrySet()) {
+			Object resource = entry.getValue();
+			if (resource instanceof TransactionResource) {
+				resources.add((TransactionResource) resource);
+			}
+		}
+		return resources;
+	}
+
 	private void init() {
 		if (tslc != null) {
 			return;
 		}
 
 		TransactionSynchronizationCollection stsc = new TransactionSynchronizationCollection();
-		if (resourceMap != null) {
-			for (Entry<Object, TransactionResource> entry : resourceMap.entrySet()) {
-				stsc.add(new TransactionResourceSynchronization(entry.getValue()));
-			}
-		}
+		stsc.addAll(getTransactionResources());
 		tslc = new TransactionSynchronizationLifeCycle(stsc, tlcc);
 	}
 
@@ -185,7 +200,7 @@ public final class Transaction {
 			return null;
 		}
 
-		return new MultipleSavepoint(resourceMap.values());
+		return new MultipleSavepoint(getTransactionResources());
 	}
 
 	public boolean hasSavepoint() {
