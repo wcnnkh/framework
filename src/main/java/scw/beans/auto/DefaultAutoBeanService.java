@@ -18,6 +18,7 @@ import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LazyLogger;
 import scw.logger.Logger;
+import scw.mvc.MVCUtils;
 import scw.result.ResultFactory;
 import scw.rpc.http.HttpRestfulRpcProxy;
 
@@ -40,14 +41,14 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		// 未注解service时接口默认实现
 		if (clazz.isInterface()) {
 			String name = clazz.getName() + "Impl";
-			if (ClassUtils.isExist(name) && beanFactory.isInstance(name)) {
+			if (ClassUtils.isAvailable(name) && beanFactory.isInstance(name)) {
 				logger.info("{} reference {}", clazz.getName(), name);
 				return new ReferenceAutoBean(beanFactory, name);
 			} else {
 				int index = clazz.getName().lastIndexOf(".");
 				name = index == -1 ? (clazz.getName() + "Impl")
 						: (clazz.getName().substring(0, index) + ".impl." + clazz.getSimpleName() + "Impl");
-				if (ClassUtils.isExist(name) && beanFactory.isInstance(name)) {
+				if (ClassUtils.isAvailable(name) && beanFactory.isInstance(name)) {
 					logger.info("{} reference {}", clazz.getName(), name);
 					return new ReferenceAutoBean(beanFactory, name);
 				}
@@ -107,10 +108,15 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			}
 
 			name = FormatUtils.format(name, propertyFactory, true);
+			if(!ClassUtils.isAvailable(name)){
+				continue;
+			}
+			
 			Class<?> clz = null;
 			try {
-				clz = ClassUtils.forName(name);
+				clz = Class.forName(name);
 			} catch (ClassNotFoundException e) {
+			} catch (NoClassDefFoundError e) {
 			}
 
 			if (clz == null) {
@@ -152,7 +158,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 
 		boolean defaultRollbackOnly = StringUtils.parseBoolean(propertyFactory.getProperty("result.rollbackOnly"),
 				true);
-		if (ClassUtils.isExist("javax.servlet.Servlet")) {
+		if (MVCUtils.isSupperServlet()) {
 			Object[] args = new Object[] { resultPropertiesFile, charsetName, defaultErrorCode, defaultSuccessCode,
 					loginExpiredCode, parameterErrorCode, contentType, defaultRollbackOnly };
 			logger.info(

@@ -5,17 +5,24 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import scw.core.Consumer;
+import scw.core.Init;
 import scw.core.resource.ResourceUtils;
-import scw.db.cache.CacheManager;
+import scw.core.utils.StringUtils;
 import scw.sql.Sql;
 import scw.sql.orm.ORMTemplate;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.annotation.Table;
 import scw.transaction.sql.SqlTransactionUtils;
 
-public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<AsyncExecute>, DBConfig {
+public abstract class AbstractDB extends ORMTemplate implements DB,
+		Consumer<AsyncExecute>, DBConfig, Init {
 
-	public abstract CacheManager getCacheManager();
+	public void init() {
+		if (StringUtils.isNotEmpty(getSannerTablePackage())) {
+			createTable(getSannerTablePackage());
+		}
+		getAsyncQueue().addConsumer(this);
+	}
 
 	public void createTable(Class<?> tableClass, boolean registerManager) {
 		createTable(tableClass, null, registerManager);
@@ -30,7 +37,8 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 		createTable(tableClass, tableName, true);
 	}
 
-	public void createTable(Class<?> tableClass, String tableName, boolean registerManager) {
+	public void createTable(Class<?> tableClass, String tableName,
+			boolean registerManager) {
 		if (registerManager) {
 			DBManager.register(tableClass, this);
 		}
@@ -68,7 +76,8 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 		return SqlTransactionUtils.getTransactionConnection(this);
 	}
 
-	public void executeSqlByFile(String filePath, boolean lines) throws SQLException {
+	public void executeSqlByFile(String filePath, boolean lines)
+			throws SQLException {
 		Collection<Sql> sqls = DBUtils.getSqlByFile(filePath, lines);
 		for (Sql sql : sqls) {
 			execute(sql);
@@ -119,7 +128,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 		}
 		return b;
 	}
-	
+
 	@Override
 	public <T> T getById(String tableName, Class<T> type, Object... params) {
 		T t = getCacheManager().getById(type, params);
@@ -164,5 +173,9 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 			asyncExecute.add(new BeanAsyncExecute(bean, OperationType.UPDATE));
 		}
 		asyncExecute(asyncExecute);
+	}
+
+	public void asyncExecute(AsyncExecute asyncExecute) {
+		getAsyncQueue().push(asyncExecute);
 	}
 }

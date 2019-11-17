@@ -65,6 +65,6 @@ public final class JSONUtils {
 	 * @return
 	 */
 	public static boolean isSupportFastJSON() {
-		return ClassUtils.isExist("scw.json.support.fastjson.FastJSONParseSupport");
+		return ClassUtils.isAvailable("scw.json.support.fastjson.FastJSONParseSupport");
 	}
 }

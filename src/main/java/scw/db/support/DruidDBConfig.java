@@ -1,56 +1,64 @@
 package scw.db.support;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Enumeration;
 import java.util.Map;
 
-import com.alibaba.druid.pool.DruidDataSource;
+import scw.core.instance.annotation.ResourceParameter;
+import scw.core.resource.ResourceUtils;
+import scw.core.utils.XUtils;
+import scw.data.TransactionContextCache;
+import scw.data.memcached.Memcached;
+import scw.data.redis.Redis;
+import scw.db.AsyncExecute;
+import scw.db.cache.CacheManager;
+import scw.db.cache.DefaultCacheManager;
+import scw.mq.queue.MemoryQueue;
+import scw.mq.queue.Queue;
 
-import scw.core.Destroy;
-import scw.db.DBConfig;
-import scw.db.DBUtils;
-import scw.db.database.DataBase;
+@SuppressWarnings("rawtypes")
+public final class DruidDBConfig extends AbstractDruidDBConfig {
+	private CacheManager cacheManager;
+	private Queue<AsyncExecute> asyncQueue;
 
-public final class DruidDBConfig implements DBConfig, Destroy {
-	private DruidDataSource datasource;
-	private DataBase dataBase;
-
-	@SuppressWarnings("rawtypes")
-	public DruidDBConfig(Map properties) {
-		datasource = new DruidDataSource();
-		DBUtils.loadProperties(datasource, properties);
-		if (!datasource.isPoolPreparedStatements()) {// 如果配置文件中没有开启psCache
-			datasource.setMaxPoolPreparedStatementPerConnectionSize(20);
-		}
-
-		datasource.setRemoveAbandoned(false);
-
-		this.dataBase = DBUtils.automaticRecognition(datasource.getDriverClassName(), datasource.getUrl(),
-				datasource.getUsername(), datasource.getPassword());
-
-		dataBase.create();
+	public DruidDBConfig(@ResourceParameter(DEFAULT_CONFIG) String properties) {
+		super(ResourceUtils.getProperties(properties));
+		this.cacheManager = new DefaultCacheManager(
+				new TransactionContextCache());
+		this.asyncQueue = new MemoryQueue<AsyncExecute>();
 	}
 
-	public Connection getConnection() throws SQLException {
-		return datasource.getConnection();
+	public DruidDBConfig(@ResourceParameter(DEFAULT_CONFIG) String properties,
+			Memcached memcached) {
+		this(ResourceUtils.getProperties(properties), memcached);
 	}
 
+	public DruidDBConfig(@ResourceParameter(DEFAULT_CONFIG) String properties,
+			Redis redis) {
+		this(ResourceUtils.getProperties(properties), redis);
+	}
+
+	public DruidDBConfig(Map properties, Memcached memcached) {
+		super(properties);
+		this.cacheManager = createCacheManager(properties, memcached);
+		this.asyncQueue = createAsyncQueue(properties, memcached);
+	}
+
+	public DruidDBConfig(Map properties, Redis redis) {
+		super(properties);
+		this.cacheManager = createCacheManager(properties, redis);
+		this.asyncQueue = createAsyncQueue(properties, redis);
+	}
+
+	public Queue<AsyncExecute> getAsyncQueue() {
+		return asyncQueue;
+	}
+
+	public CacheManager getCacheManager() {
+		return cacheManager;
+	}
+
+	@Override
 	public void destroy() {
-		datasource.close();
-		Enumeration<Driver> drivers = DriverManager.getDrivers();
-		while (drivers.hasMoreElements()) {
-			try {
-				DriverManager.deregisterDriver(drivers.nextElement());
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public DataBase getDataBase() {
-		return dataBase;
+		XUtils.destroy(asyncQueue);
+		super.destroy();
 	}
 }

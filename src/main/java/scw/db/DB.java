@@ -7,11 +7,12 @@ import scw.sql.Sql;
 import scw.sql.SqlOperations;
 import scw.sql.orm.ORMOperations;
 
-@AutoImpl(className = { "scw.db.support.DruidDB", "scw.db.support.HikariCPDB" })
+@AutoImpl(className = {"scw.db.DefaultDB"})
 public interface DB extends ORMOperations, SqlOperations {
 	void createTable(Class<?> tableClass, boolean registerManager);
 
-	void createTable(Class<?> tableClass, String tableName, boolean registerManager);
+	void createTable(Class<?> tableClass, String tableName,
+			boolean registerManager);
 
 	void createTable(String packageName, boolean registerManager);
 

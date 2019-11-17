@@ -1,54 +1,62 @@
 package scw.db.support;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Enumeration;
 import java.util.Map;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import scw.core.instance.annotation.ResourceParameter;
+import scw.core.resource.ResourceUtils;
+import scw.core.utils.XUtils;
+import scw.data.TransactionContextCache;
+import scw.data.memcached.Memcached;
+import scw.data.redis.Redis;
+import scw.db.AsyncExecute;
+import scw.db.cache.CacheManager;
+import scw.db.cache.DefaultCacheManager;
+import scw.mq.queue.MemoryQueue;
+import scw.mq.queue.Queue;
 
-import scw.core.Destroy;
-import scw.db.DBConfig;
-import scw.db.DBUtils;
-import scw.db.database.DataBase;
+public final class HikariCPDBConfig extends AbstractHikariCPDBConfig {
+	private CacheManager cacheManger;
+	private Queue<AsyncExecute> asyncQueue;
+	
+	public HikariCPDBConfig(@ResourceParameter(DEFAULT_CONFIG) String properties) {
+		super(ResourceUtils.getProperties(properties));
+		this.cacheManger = new DefaultCacheManager(new TransactionContextCache());
+		this.asyncQueue = new MemoryQueue<AsyncExecute>();
+	}
 
-public final class HikariCPDBConfig implements DBConfig, Destroy {
-	private HikariDataSource hds;
-	private DataBase dataBase;
+	public HikariCPDBConfig(@ResourceParameter(DEFAULT_CONFIG) String properties, Memcached memcached) {
+		this(ResourceUtils.getProperties(properties), memcached);
+	}
+
+	public HikariCPDBConfig(@ResourceParameter(DEFAULT_CONFIG) String properties, Redis redis) {
+		this(ResourceUtils.getProperties(properties), redis);
+	}
 
 	@SuppressWarnings("rawtypes")
-	public HikariCPDBConfig(Map properties) {
-		HikariConfig config = new HikariConfig();
-		DBUtils.loadProperties(config, properties);
-
-		this.dataBase = DBUtils.automaticRecognition(config.getDriverClassName(), config.getJdbcUrl(),
-				config.getUsername(), config.getPassword());
-
-		dataBase.create();
-		hds = new HikariDataSource(config);
+	public HikariCPDBConfig(Map properties, Memcached memcached) {
+		super(properties);
+		this.cacheManger = createCacheManager(properties, memcached);
+		this.asyncQueue = createAsyncQueue(properties, memcached);
 	}
 
-	public Connection getConnection() throws SQLException {
-		return hds.getConnection();
+	@SuppressWarnings("rawtypes")
+	public HikariCPDBConfig(Map properties, Redis redis) {
+		super(properties);
+		this.cacheManger = createCacheManager(properties, redis);
+		this.asyncQueue = createAsyncQueue(properties, redis);
 	}
 
+	public Queue<AsyncExecute> getAsyncQueue() {
+		return asyncQueue;
+	}
+
+	public CacheManager getCacheManager() {
+		return cacheManger;
+	}
+
+	@Override
 	public void destroy() {
-		hds.close();
-		Enumeration<Driver> drivers = DriverManager.getDrivers();
-		while (drivers.hasMoreElements()) {
-			try {
-				DriverManager.deregisterDriver(drivers.nextElement());
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+		XUtils.destroy(asyncQueue);
+		super.destroy();
 	}
-
-	public DataBase getDataBase() {
-		return dataBase;
-	}
-
 }

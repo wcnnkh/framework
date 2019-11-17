@@ -22,7 +22,7 @@ public class EmbeddedApplication extends CommonApplication {
 		String[] classNames = new String[] { "scw.application.embedded.tomcat.TomcatServletEmbedded", };
 
 		for (String name : classNames) {
-			if (ClassUtils.isExist(name)) {
+			if (ClassUtils.isAvailable(name)) {
 				return name;
 			}
 		}

@@ -6,26 +6,26 @@ import scw.data.redis.Redis;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
-public final class DefaultQueue<E> extends AbstractQueue<E> implements Runnable, Destroy {
-	private static Logger logger = LoggerUtils.getLogger(DefaultQueue.class);
+public final class MemoryQueue<E> extends AbstractQueue<E> implements Runnable, Destroy {
+	private static Logger logger = LoggerUtils.getLogger(MemoryQueue.class);
 	private BlockingQueue<E> blockingQueue;
 	private Thread thread;
 
-	public DefaultQueue() {
-		this(new DefaultBlockingQueue<E>());
+	public MemoryQueue() {
+		this(new LinkedBlockingQueue<E>());
 	}
 
-	public DefaultQueue(BlockingQueue<E> blockingQueue) {
+	public MemoryQueue(BlockingQueue<E> blockingQueue) {
 		this.blockingQueue = blockingQueue;
 		this.thread = new Thread(this, getClass().getName());
 		thread.start();
 	}
 
-	public DefaultQueue(Memcached memcached, String queueKey) {
+	public MemoryQueue(Memcached memcached, String queueKey) {
 		this(new MemcachedBlockingQueue<E>(memcached, queueKey));
 	}
 
-	public DefaultQueue(Redis redis, String queueKey) {
+	public MemoryQueue(Redis redis, String queueKey) {
 		this(new RedisBlockingQueue<E>(redis, queueKey));
 	}
 
