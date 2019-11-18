@@ -3,6 +3,7 @@ package scw.beans.xml;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -187,10 +188,11 @@ public final class XmlBeanUtils {
 				: propertiesList.toArray(new XmlBeanParameter[propertiesList.size()]);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static Collection<String> getFilters(Node node) {
 		String filters = XMLUtils.getNodeAttributeValue(node, "filters");
 		if (StringUtils.isEmpty(filters)) {
-			return null;
+			return Collections.EMPTY_LIST;
 		}
 
 		return Arrays.asList(StringUtils.commonSplit(filters));
@@ -220,9 +222,5 @@ public final class XmlBeanUtils {
 			timeUnit = TimeUnit.valueOf(format.toUpperCase());
 		}
 		return timeUnit;
-	}
-
-	public static String getProxyName(PropertyFactory propertyFactory, Node node) {
-		return XMLUtils.getNodeAttributeValue(propertyFactory, node, "proxy");
 	}
 }

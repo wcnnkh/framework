@@ -57,8 +57,8 @@ public class AutoInstanceConfig implements InstanceConfig {
 
 	protected String getProperty(ParameterConfig parameterConfig) {
 		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
-		String value = propertyFactory.getProperty(
-				parameterName == null ? getDefaultName(parameterConfig) : parameterName.value());
+		String value = propertyFactory
+				.getProperty(parameterName == null ? getDefaultName(parameterConfig) : parameterName.value());
 		if (value == null) {
 			DefaultValue defaultValue = parameterConfig.getAnnotation(DefaultValue.class);
 			if (defaultValue != null) {
@@ -66,17 +66,11 @@ public class AutoInstanceConfig implements InstanceConfig {
 			}
 		}
 
-		ResourceParameter resourceParameter = parameterConfig.getAnnotation(ResourceParameter.class);
-		if (resourceParameter != null) {
-			if (StringUtils.isEmpty(value)) {
-				boolean b = StringUtils.isEmpty(resourceParameter.value()) ? false
-						: ResourceUtils.isExist(resourceParameter.value());
-				value = b ? resourceParameter.value() : null;
-			} else {
+		if (StringUtils.isEmpty(value)) {
+			ResourceParameter resourceParameter = parameterConfig.getAnnotation(ResourceParameter.class);
+			if (resourceParameter != null) {
 				if (!ResourceUtils.isExist(value)) {
-					boolean b = StringUtils.isEmpty(resourceParameter.value()) ? false
-							: ResourceUtils.isExist(resourceParameter.value());
-					value = b ? resourceParameter.value() : null;
+					return null;
 				}
 			}
 		}
@@ -145,12 +139,13 @@ public class AutoInstanceConfig implements InstanceConfig {
 					b = false;
 				}
 			}
-			
+
 			if (logger.isDebugEnabled()) {
-				logger.debug("{} parameter index {} is {} matching:{}", constructor, i, isProperty ? "property" : "bean", b? "success":"fail");
+				logger.debug("{} parameter index {} is {} matching:{}", constructor, i,
+						isProperty ? "property" : "bean", b ? "success" : "fail");
 			}
-			
-			if(!b){
+
+			if (!b) {
 				return false;
 			}
 		}

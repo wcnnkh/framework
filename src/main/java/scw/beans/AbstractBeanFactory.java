@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.beans.annotation.AutoImpl;
-import scw.beans.annotation.Proxy;
 import scw.beans.async.AsyncCompleteFilter;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.AutoBeanDefinition;
@@ -27,6 +26,7 @@ import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.MultiPropertyFactory;
 import scw.core.PropertyFactory;
+import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.BeansException;
 import scw.core.instance.InstanceFactory;
 import scw.core.resource.ResourceUtils;
@@ -53,11 +53,13 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	public AbstractBeanFactory() {
 		this.valueWiredManager = new ValueWiredManager(propertyFactory, this);
 		singletonMap.put(PropertyFactory.class.getName(), propertyFactory);
-		beanMap.put(PropertyFactory.class.getName(), new EmptyBeanDefinition(PropertyFactory.class, propertyFactory, null));
+		beanMap.put(PropertyFactory.class.getName(),
+				new EmptyBeanDefinition(PropertyFactory.class, propertyFactory, null));
 		singletonMap.put(BeanFactory.class.getName(), this);
-		beanMap.put(BeanFactory.class.getName(), new EmptyBeanDefinition(BeanFactory.class, this, new String[]{InstanceFactory.class.getName()}));
+		beanMap.put(BeanFactory.class.getName(),
+				new EmptyBeanDefinition(BeanFactory.class, this, new String[] { InstanceFactory.class.getName() }));
 		nameMappingMap.put(InstanceFactory.class.getName(), BeanFactory.class.getName());
-		
+
 		filterNames.add(CountLimitFilter.class.getName());
 		filterNames.add(TransactionFilter.class.getName());
 		filterNames.add(TCCTransactionFilter.class.getName());
@@ -220,7 +222,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		if (beanDefinition == null) {
 			return null;
 		}
-		
+
 		if (beanDefinition.isSingleton()) {
 			obj = singletonMap.get(beanDefinition.getId());
 			if (obj == null) {
@@ -294,7 +296,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 				synchronized (beanMap) {
 					beanMap.put(beanDefinition.getId(), beanDefinition);
 				}
-				addBeanNameMapping(beanDefinition);
+				addBeanNameMapping(beanDefinition.getNames(), beanDefinition.getId());
 			}
 		}
 
@@ -310,11 +312,15 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		return beanDefinition;
 	}
 
-	private void addBeanNameMapping(BeanDefinition beanDefinition) {
-		if (beanDefinition.getNames() != null) {
-			synchronized (beanDefinition) {
-				for (String n : beanDefinition.getNames()) {
-					nameMappingMap.put(n, beanDefinition.getId());
+	protected void addBeanNameMapping(String[] names, String id) {
+		if (names != null) {
+			synchronized (nameMappingMap) {
+				for (String n : names) {
+					if (nameMappingMap.containsKey(n)) {
+						throw new AlreadyExistsException(
+								"存在相同的名称映射:" + n + ", oldId=" + nameMappingMap.get(n) + ",newId=" + id);
+					}
+					nameMappingMap.put(n, id);
 				}
 			}
 		}
@@ -393,11 +399,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 		if (clz == null) {
 			return null;
-		}
-
-		Proxy proxy = clz.getAnnotation(Proxy.class);
-		if (proxy != null) {
-			return new CommonBeanDefinition(valueWiredManager, this, getPropertyFactory(), clz);
 		}
 
 		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, clz.getAnnotation(AutoImpl.class), this,

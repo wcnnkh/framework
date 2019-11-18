@@ -1,7 +1,8 @@
 package scw.beans.auto;
 
+import java.util.Collection;
+
 import scw.beans.BeanFactory;
-import scw.core.aop.Filter;
 import scw.core.utils.ClassUtils;
 
 public class DefaultAutoBean extends AbstractAutoBean {
@@ -36,9 +37,9 @@ public class DefaultAutoBean extends AbstractAutoBean {
 	protected Object[] getParameters() {
 		return parameters;
 	}
-
+	
 	@Override
-	protected Filter getLastFilter() {
+	protected Collection<String> getFilterNames() {
 		return null;
 	}
 }

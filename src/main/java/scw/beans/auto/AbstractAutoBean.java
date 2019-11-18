@@ -1,15 +1,16 @@
 package scw.beans.auto;
 
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.aop.Filter;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
 import scw.core.exception.NotSupportException;
 import scw.core.reflect.ReflectUtils;
+import scw.core.utils.CollectionUtils;
 
 public abstract class AbstractAutoBean implements AutoBean {
 	protected final BeanFactory beanFactory;
@@ -30,7 +31,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 
 	protected abstract Object[] getParameters();
 
-	protected abstract Filter getLastFilter();
+	protected abstract Collection<String> getFilterNames();
 
 	protected boolean isProxy() {
 		return proxy;
@@ -51,9 +52,8 @@ public abstract class AbstractAutoBean implements AutoBean {
 		}
 
 		if (type.isInterface()) {
-			Filter filter = getLastFilter();
-			if (filter != null) {
-				return (T) BeanUtils.proxyInterface(beanFactory, type, filter);
+			if (!CollectionUtils.isEmpty(getFilterNames())) {
+				return (T) BeanUtils.proxyInterface(beanFactory, type, getFilterNames(), null);
 			}
 			throw new NotSupportException(type.getName());
 		}
@@ -69,7 +69,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 		}
 
 		if (isProxy()) {
-			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory, getLastFilter());
+			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory, getFilterNames());
 			return (T) enhancer.create(constructor.getParameterTypes(), params);
 		} else {
 			try {
@@ -88,7 +88,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 		}
 
 		if (isProxy()) {
-			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory, getLastFilter());
+			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory, getFilterNames());
 			return (T) enhancer.create(constructor.getParameterTypes(), params);
 		} else {
 			try {

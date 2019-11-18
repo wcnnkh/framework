@@ -1,7 +1,7 @@
 package scw.mq.support;
 
+import scw.aop.Invoker;
 import scw.core.Parameters;
-import scw.core.aop.Invoker;
 
 @SuppressWarnings("rawtypes")
 public class MqMethodConsumer implements scw.core.Consumer {

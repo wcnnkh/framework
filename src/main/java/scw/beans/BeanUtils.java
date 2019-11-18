@@ -16,6 +16,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import scw.aop.Filter;
+import scw.aop.FilterInvocationHandler;
+import scw.aop.ProxyUtils;
+import scw.aop.ReflectInvoker;
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Config;
@@ -28,10 +32,6 @@ import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanParameter;
 import scw.core.Init;
 import scw.core.PropertyFactory;
-import scw.core.aop.Filter;
-import scw.core.aop.FilterInvocationHandler;
-import scw.core.aop.ProxyUtils;
-import scw.core.aop.ReflectInvoker;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.instance.InstanceFactory;
@@ -125,7 +125,7 @@ public final class BeanUtils {
 			InitProcess process = new InitProcess(info, countDownLatch);
 			new Thread(process).start();
 		}
-		
+
 		try {
 			countDownLatch.await();
 		} catch (InterruptedException e) {
@@ -206,7 +206,8 @@ public final class BeanUtils {
 			return null;
 		}
 
-		return sortParameters(ParameterUtils.getParameterName(method), method.getParameterTypes(), beanMethodParameters);
+		return sortParameters(ParameterUtils.getParameterName(method), method.getParameterTypes(),
+				beanMethodParameters);
 	}
 
 	public static XmlBeanParameter[] sortParameters(Constructor<?> constructor,
@@ -324,14 +325,9 @@ public final class BeanUtils {
 		}
 	}
 
-	public static Enhancer createEnhancer(Class<?> clz, BeanFactory beanFactory, Filter lastFilter) {
-		return createEnhancer(clz, beanFactory, null, lastFilter);
-	}
-
-	public static Enhancer createEnhancer(Class<?> clz, BeanFactory beanFactory, Collection<String> filterNames,
-			Filter lastFilter) {
+	public static Enhancer createEnhancer(Class<?> clz, BeanFactory beanFactory, Collection<String> filterNames) {
 		Enhancer enhancer = new Enhancer();
-		enhancer.setCallback(new RootFilter(beanFactory, clz, filterNames, lastFilter));
+		enhancer.setCallback(new RootFilter(beanFactory, clz, filterNames));
 		if (Serializable.class.isAssignableFrom(clz)) {
 			enhancer.setSerialVersionUID(1L);
 		}
@@ -355,18 +351,13 @@ public final class BeanUtils {
 
 		return true;
 	}
-
-	public static <T> T proxyInterface(BeanFactory beanFactory, Class<T> interfaceClass, Filter invocation) {
-		return proxyInterface(beanFactory, interfaceClass, null, invocation);
-	}
-
+	
 	@SuppressWarnings("unchecked")
-	public static <T> T proxyInterface(BeanFactory beanFactory, Class<T> interfaceClass, Collection<String> filterNames,
-			Filter invocation) {
+	public static <T> T proxyInterface(BeanFactory beanFactory, Class<T> interfaceClass, Collection<String> filterNames, Collection<Filter> filters) {
 		Object newProxyInstance = java.lang.reflect.Proxy.newProxyInstance(interfaceClass.getClassLoader(),
-				new Class[] { interfaceClass }, new FilterInvocationHandler(interfaceClass, Arrays.asList(invocation)));
+				new Class[] { interfaceClass }, new FilterInvocationHandler(interfaceClass, filters));
 		return (T) ProxyUtils.proxyInstance(newProxyInstance, interfaceClass,
-				new RootFilter(beanFactory, interfaceClass, filterNames, null));
+				new RootFilter(beanFactory, interfaceClass, filterNames));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -493,10 +484,10 @@ public final class BeanUtils {
 			Class<?>[] clzs = clz.getInterfaces();
 			if (clzs != null) {
 				for (Class<?> i : clzs) {
-					if(AnnotationUtils.isIgnore(i)){
+					if (AnnotationUtils.isIgnore(i)) {
 						continue;
 					}
-					
+
 					if (i.getName().startsWith("java.") || i.getName().startsWith("javax.")
 							|| i == scw.core.Destroy.class || i == Init.class) {
 						continue;
@@ -508,9 +499,9 @@ public final class BeanUtils {
 		}
 		return list.isEmpty() ? null : list.toArray(new String[list.size()]);
 	}
-	
+
 	public static <T> void appendBean(Collection<T> beans, InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory, Class<? extends T> type, String key){
+			PropertyFactory propertyFactory, Class<? extends T> type, String key) {
 		appendBean(beans, instanceFactory, propertyFactory, type, key, false);
 	}
 
@@ -533,8 +524,8 @@ public final class BeanUtils {
 				Object filter = instanceFactory.getInstance(name);
 				if (type.isInstance(filter)) {
 					beans.add((T) filter);
-				}else{
-					if(warn){
+				} else {
+					if (warn) {
 						logger.warn("{}不是一个{}类型，无法使用", name, type);
 					}
 				}

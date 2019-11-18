@@ -1,6 +1,6 @@
 package scw.beans;
 
-import scw.core.aop.ProxyUtils;
+import scw.aop.ProxyUtils;
 
 public final class EmptyBeanDefinition implements BeanDefinition {
 	private Object instance;

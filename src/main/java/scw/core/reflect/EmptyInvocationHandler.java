@@ -3,9 +3,9 @@ package scw.core.reflect;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import scw.core.aop.Filter;
-import scw.core.aop.FilterChain;
-import scw.core.aop.Invoker;
+import scw.aop.Filter;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
 
 public class EmptyInvocationHandler implements InvocationHandler, Filter{
 

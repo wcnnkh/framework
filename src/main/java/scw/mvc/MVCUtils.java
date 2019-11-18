@@ -58,12 +58,12 @@ import scw.mvc.support.ActionFilter;
 import scw.mvc.support.ActionServiceFilter;
 import scw.mvc.support.CrossDomainDefinition;
 import scw.mvc.support.CrossDomainDefinitionFactory;
+import scw.mvc.support.DefaultExceptionHandler;
 import scw.mvc.support.HttpNotFoundFilter;
 import scw.mvc.support.MultiActionFactory;
 import scw.net.header.HeadersConstants;
 import scw.net.header.HeadersReadOnly;
 import scw.net.mime.MimeTypeConstants;
-import scw.result.exception.ResultExceptionHandler;
 import scw.rpc.RpcService;
 
 public final class MVCUtils implements MvcConstants {
@@ -74,7 +74,7 @@ public final class MVCUtils implements MvcConstants {
 	private static final int USE_IP_MODEL = StringUtils.parseInt(SystemPropertyUtils.getProperty("mvc.ip.model"), 1);
 	private static final ContextManager<? extends Context> CONTEXT_MANAGER = new DefaultThreadLocalContextManager();
 	private static final boolean SUPPORT_SERVLET = ClassUtils.isAvailable("javax.servlet.Servlet");
-	
+
 	private MVCUtils() {
 	};
 
@@ -147,8 +147,8 @@ public final class MVCUtils implements MvcConstants {
 			exceptionHandlers.add(instanceFactory.getInstance(ExceptionHandler.class));
 		}
 
-		if (instanceFactory.isInstance(ResultExceptionHandler.class)) {
-			exceptionHandlers.add(instanceFactory.getInstance(ResultExceptionHandler.class));
+		if (instanceFactory.isInstance(DefaultExceptionHandler.class)) {
+			exceptionHandlers.add(instanceFactory.getInstance(DefaultExceptionHandler.class));
 		}
 		return exceptionHandlers;
 	}
@@ -361,8 +361,7 @@ public final class MVCUtils implements MvcConstants {
 	public static LinkedList<ParameterFilter> getParameterFilters(InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory) {
 		LinkedList<ParameterFilter> list = new LinkedList<ParameterFilter>();
-		BeanUtils.appendBean(list, instanceFactory, propertyFactory, ParameterFilter.class,
-				"mvc.parameter.filter");
+		BeanUtils.appendBean(list, instanceFactory, propertyFactory, ParameterFilter.class, "mvc.parameter.filter");
 		return list;
 	}
 
@@ -821,12 +820,13 @@ public final class MVCUtils implements MvcConstants {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * 是否支持servlet
+	 * 
 	 * @return
 	 */
-	public static boolean isSupperServlet(){
+	public static boolean isSupperServlet() {
 		return SUPPORT_SERVLET;
 	}
 }

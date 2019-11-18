@@ -27,4 +27,8 @@ public abstract class AbstractInterfaceBeanDefinition extends AbstractBeanDefini
 	public <T> T create(Class<?>[] parameterTypes, Object... params) {
 		throw new NotSupportException(getType().getName());
 	}
+
+	public String[] getNames() {
+		return null;
+	}
 }

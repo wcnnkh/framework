@@ -1,5 +1,9 @@
 package scw.rpc.http;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+import scw.aop.Filter;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
@@ -16,7 +20,8 @@ public class HttpRpcFactory extends HttpRpcProxy implements RpcFactory {
 	}
 
 	public <T> T getProxy(Class<T> clazz) {
-		return (T) BeanUtils.proxyInterface(beanFactory, clazz, this);
+		Collection<Filter> filters = Arrays.asList((Filter) this);
+		return (T) BeanUtils.proxyInterface(beanFactory, clazz, null, filters);
 	}
 
 }

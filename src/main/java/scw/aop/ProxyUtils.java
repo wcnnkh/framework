@@ -1,4 +1,4 @@
-package scw.core.aop;
+package scw.aop;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;

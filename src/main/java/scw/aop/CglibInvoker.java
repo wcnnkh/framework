@@ -1,4 +1,4 @@
-package scw.core.aop;
+package scw.aop;
 
 import scw.core.cglib.proxy.MethodProxy;
 

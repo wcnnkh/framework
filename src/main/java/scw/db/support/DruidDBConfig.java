@@ -2,6 +2,7 @@ package scw.db.support;
 
 import java.util.Map;
 
+import scw.core.annotation.DefaultValue;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.XUtils;
@@ -19,23 +20,23 @@ public final class DruidDBConfig extends AbstractDruidDBConfig {
 	private CacheManager cacheManager;
 	private Queue<AsyncExecute> asyncQueue;
 
-	public DruidDBConfig(@ResourceParameter(DEFAULT_CONFIG) String properties) {
+	public DruidDBConfig(@ResourceParameter@DefaultValue(DEFAULT_CONFIG) String properties) {
 		super(ResourceUtils.getProperties(properties));
 		this.cacheManager = new DefaultCacheManager();
 		this.asyncQueue = new MemoryQueue<AsyncExecute>();
 	}
 
-	public DruidDBConfig(@ResourceParameter(DEFAULT_CONFIG) String properties, Cache cache) {
+	public DruidDBConfig(@ResourceParameter@DefaultValue(DEFAULT_CONFIG) String properties, Cache cache) {
 		super(ResourceUtils.getProperties(properties));
 		this.cacheManager = new DefaultCacheManager(cache, true, null);
 		this.asyncQueue = new MemoryQueue<AsyncExecute>();
 	}
 
-	public DruidDBConfig(@ResourceParameter(DEFAULT_CONFIG) String properties, Memcached memcached) {
+	public DruidDBConfig(@ResourceParameter@DefaultValue(DEFAULT_CONFIG) String properties, Memcached memcached) {
 		this(ResourceUtils.getProperties(properties), memcached);
 	}
 
-	public DruidDBConfig(@ResourceParameter(DEFAULT_CONFIG) String properties, Redis redis) {
+	public DruidDBConfig(@ResourceParameter@DefaultValue(DEFAULT_CONFIG) String properties, Redis redis) {
 		this(ResourceUtils.getProperties(properties), redis);
 	}
 

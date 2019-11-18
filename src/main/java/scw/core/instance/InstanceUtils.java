@@ -6,8 +6,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 
-import scw.core.aop.Invoker;
-import scw.core.aop.ReflectInvoker;
+import scw.aop.Invoker;
+import scw.aop.ReflectInvoker;
 import scw.core.exception.NotSupportException;
 import scw.core.instance.support.ReflectionInstanceFactory;
 import scw.core.instance.support.ReflectionSingleInstanceFactory;

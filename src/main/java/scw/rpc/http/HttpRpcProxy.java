@@ -5,12 +5,12 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import scw.aop.Filter;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
+import scw.aop.ProxyUtils;
 import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
-import scw.core.aop.Filter;
-import scw.core.aop.FilterChain;
-import scw.core.aop.Invoker;
-import scw.core.aop.ProxyUtils;
 import scw.core.instance.InstanceFactory;
 import scw.net.HttpMessage;
 import scw.net.MessageConverter;

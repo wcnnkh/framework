@@ -211,6 +211,7 @@ public final class XMLUtils {
 
 	/**
 	 * 将xml文档解析为map
+	 * 
 	 * @param node
 	 * @return
 	 * @throws Exception
@@ -552,6 +553,15 @@ public final class XMLUtils {
 			return null;
 		}
 
+		return formatNodeValue(propertyFactory, node, value);
+	}
+
+	public static String getRequireNodeAttributeValueOrNodeContent(PropertyFactory propertyFactory, Node node,
+			String name) {
+		String value = getNodeAttributeValueOrNodeContent(node, name);
+		if (StringUtils.isEmpty(value)) {
+			throw new NotFoundException("not found attribute " + name);
+		}
 		return formatNodeValue(propertyFactory, node, value);
 	}
 

@@ -103,6 +103,10 @@ public final class DubboUtils {
 	}
 
 	public static void exportService(InstanceFactory beanFactory, PropertyFactory propertyFactory, NodeList nodeList) {
+		if(nodeList == null){
+			return ;
+		}
+		
 		if (!xmlExistDubboService(nodeList)) {
 			return;
 		}

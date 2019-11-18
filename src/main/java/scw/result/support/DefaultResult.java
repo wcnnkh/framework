@@ -1,24 +1,34 @@
-package scw.result.servlet;
+package scw.result.support;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import scw.json.JSONUtils;
 import scw.mvc.http.Text;
-import scw.result.DefaultResult;
+import scw.result.DataResult;
 
-public class ServletTextResult<T> extends DefaultResult<T> implements Text {
+public class DefaultResult<T> extends DefaultBaseDataResult<T> implements DataResult<T>, Serializable, Text {
 	private static final long serialVersionUID = 1L;
+	private int code;
 	private String contentType;
-	
-	private ServletTextResult(){
-		super(true, 0, null, null, false);
+
+	public DefaultResult(boolean success, int code, T data, String msg, String contentType) {
+		super(success, msg, data);
+		this.code = code;
+		this.contentType = contentType;
 	}
 
-	public ServletTextResult(boolean success, int code, T data, String msg,
-			String contentType, boolean rollbackOnly) {
-		super(success, code, data, msg, rollbackOnly);
-		this.contentType = contentType;
+	public int getCode() {
+		return code;
+	}
+
+	public boolean isRollbackOnly() {
+		return isError();
+	}
+
+	public boolean isError() {
+		return !isSuccess();
 	}
 
 	public String getTextContent() {

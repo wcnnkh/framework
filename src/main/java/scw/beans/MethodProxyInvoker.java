@@ -3,10 +3,10 @@ package scw.beans;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import scw.core.aop.FilterChain;
-import scw.core.aop.Invoker;
-import scw.core.aop.ProxyUtils;
-import scw.core.aop.ReflectInvoker;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
+import scw.aop.ProxyUtils;
+import scw.aop.ReflectInvoker;
 
 public final class MethodProxyInvoker implements Invoker {
 	private final Method method;
@@ -38,7 +38,7 @@ public final class MethodProxyInvoker implements Invoker {
 			return invoker.invoke(args);
 		}
 
-		FilterChain filterChain = new BeanFactoryFilterChain(beanFactory, null, clz, method, null);
+		FilterChain filterChain = new BeanFactoryFilterChain(beanFactory, null, clz, method);
 		return filterChain.doFilter(invoker, bean, clz, method, args);
 	}
 }

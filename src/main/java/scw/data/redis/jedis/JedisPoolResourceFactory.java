@@ -48,14 +48,15 @@ public final class JedisPoolResourceFactory implements JedisResourceFactory, Des
 		} else {
 			this.jedisPool = new JedisPool(jedisPoolConfig, host, port);
 		}
-		
-		if(RedisUtils.startingFlushAll()){
+
+		if (RedisUtils.startingFlushAll()) {
 			JedisUtils.flushAll(this);
 		}
 	}
 
 	@Order
-	public JedisPoolResourceFactory(@ResourceParameter(CONFIG_KEY) @DefaultValue(DEFAULT_CONFIG) String configuration) {
+	public JedisPoolResourceFactory(
+			@ParameterName(CONFIG_KEY) @ResourceParameter @DefaultValue(DEFAULT_CONFIG) String configuration) {
 		Properties properties = ResourceUtils.getProperties(configuration, Constants.DEFAULT_CHARSET_NAME);
 		PropertyFactory propertyFactory = new MapPropertyFactory(properties, true);
 		String host = propertyFactory.getProperty(HOST_CONFIG_KEY);
@@ -64,7 +65,7 @@ public final class JedisPoolResourceFactory implements JedisResourceFactory, Des
 		}
 
 		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-		//兼容老版本
+		// 兼容老版本
 		ConfigUtils.invokeSetterByProeprties(jedisPoolConfig, null, new MapPropertyFactory(properties, false));
 		init(jedisPoolConfig, propertyFactory, host, StringUtils.parseInt(propertyFactory.getProperty(PORT_CONFIG_KEY)),
 				propertyFactory.getProperty(AUTH_CONFIG_KEY));

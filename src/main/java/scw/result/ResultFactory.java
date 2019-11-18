@@ -1,6 +1,10 @@
 package scw.result;
 
-public interface ResultFactory extends SuccessResultFactory, ErrorResultFactory {
+import scw.beans.annotation.AutoImpl;
+import scw.result.support.DefaultResultFactory;
+
+@AutoImpl({DefaultResultFactory.class})
+public interface ResultFactory {
 	/**
 	 * 授权失败
 	 * 
@@ -14,6 +18,20 @@ public interface ResultFactory extends SuccessResultFactory, ErrorResultFactory 
 	 * @return
 	 */
 	<T> DataResult<T> parameterError();
+
+	<T> DataResult<T> error(int code, String msg);
+
+	<T> DataResult<T> error(int code);
+
+	<T> DataResult<T> error();
+
+	<T> DataResult<T> error(String msg);
+
+	<T> DataResult<T> error(Result result);
+
+	<T> DataResult<T> success();
+
+	<T> DataResult<T> success(T data);
 
 	int getDefaultErrorCode();
 

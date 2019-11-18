@@ -5,6 +5,7 @@ import java.util.Collection;
 import scw.core.context.Context;
 import scw.core.context.ContextExecute;
 import scw.core.utils.XUtils;
+import scw.mvc.support.DefaultExceptionHandlerChain;
 
 public class MvcExecute extends AbstractFilterChain implements ContextExecute<Void> {
 	private final Channel channel;
@@ -43,7 +44,7 @@ public class MvcExecute extends AbstractFilterChain implements ContextExecute<Vo
 	}
 
 	private Object error(Channel channel, Throwable e) {
-		ExceptionHandlerChain exceptionHandlerChain = new ExceptionHandlerChain(exceptionHandlers);
+		ExceptionHandlerChain exceptionHandlerChain = new DefaultExceptionHandlerChain(exceptionHandlers);
 		return exceptionHandlerChain.doHandler(channel, e);
 	}
 

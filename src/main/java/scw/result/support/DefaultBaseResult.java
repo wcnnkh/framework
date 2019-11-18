@@ -1,4 +1,6 @@
-package scw.result;
+package scw.result.support;
+
+import scw.result.BaseResult;
 
 public class DefaultBaseResult implements BaseResult{
 	private boolean success;

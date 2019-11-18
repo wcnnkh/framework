@@ -2,11 +2,11 @@ package scw.beans.locks;
 
 import java.lang.reflect.Method;
 
+import scw.aop.Filter;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
 import scw.beans.annotation.LockConfig;
 import scw.beans.annotation.LockParameter;
-import scw.core.aop.Filter;
-import scw.core.aop.FilterChain;
-import scw.core.aop.Invoker;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.AnnotationUtils;

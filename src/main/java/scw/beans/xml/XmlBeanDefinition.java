@@ -14,7 +14,6 @@ import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
-import scw.core.aop.Filter;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
@@ -23,7 +22,7 @@ import scw.core.instance.InstanceConfig;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.StringUtils;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.XUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -45,7 +44,6 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	private final FieldDefinition[] autowriteFields;
 	private final Class<?> type;
 	private final ValueWiredManager valueWiredManager;
-	private final String proxyName;
 	private InstanceConfig instanceConfig;
 
 	public XmlBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
@@ -58,12 +56,12 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		this.id = XmlBeanUtils.getId(beanNode);
 		this.singleton = XmlBeanUtils.isSingleton(beanNode);
 		this.filterNames = XmlBeanUtils.getFilters(beanNode);
+		this.proxy = CollectionUtils.isEmpty(filterNames) ? BeanUtils.checkProxy(type) : true;
+
 		NodeList nodeList = beanNode.getChildNodes();
 		this.initMethods = XmlBeanUtils.getInitMethodList(type, nodeList);
 		this.destroyMethods = XmlBeanUtils.getDestroyMethodList(type, nodeList);
 		this.properties = XmlBeanUtils.getBeanProperties(nodeList);
-		this.proxyName = XmlBeanUtils.getProxyName(propertyFactory, beanNode);
-		this.proxy = StringUtils.isEmpty(proxyName) ? BeanUtils.checkProxy(type) : true;
 		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type, false).toArray(new FieldDefinition[0]);
 
 		if (!type.isInterface()) {
@@ -96,18 +94,15 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	private Enhancer getProxyEnhancer() {
-		return BeanUtils.createEnhancer(type, beanFactory, filterNames,
-				StringUtils.isEmpty(proxyName) ? null : (Filter) beanFactory.getInstance(proxyName));
+		return BeanUtils.createEnhancer(type, beanFactory, filterNames);
 	}
 
 	private Object createProxyInstance() throws Exception {
-		if (type.isInterface()) {
-			if (StringUtils.isEmpty(proxyName)) {
+		if (getType().isInterface()) {
+			if (CollectionUtils.isEmpty(filterNames)) {
 				logger.warn("{} is an interface, but there is no proxy.", type);
 			}
-
-			return BeanUtils.proxyInterface(beanFactory, getType(), filterNames,
-					StringUtils.isEmpty(proxyName) ? null : (Filter) beanFactory.getInstance(proxyName));
+			return BeanUtils.proxyInterface(beanFactory, getType(), filterNames, null);
 		}
 
 		Enhancer enhancer = getProxyEnhancer();

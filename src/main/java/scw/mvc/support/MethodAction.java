@@ -4,10 +4,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
+import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.MethodProxyInvoker;
 import scw.core.PropertyFactory;
-import scw.core.aop.Invoker;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.AnnotationFactory;

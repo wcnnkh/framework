@@ -3,9 +3,9 @@ package scw.timer;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
+import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.MethodProxyInvoker;
-import scw.core.aop.Invoker;
 import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.TypeUtils;

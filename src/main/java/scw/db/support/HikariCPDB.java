@@ -2,6 +2,7 @@ package scw.db.support;
 
 import scw.beans.annotation.Bean;
 import scw.core.Destroy;
+import scw.core.annotation.DefaultValue;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.utils.XUtils;
 import scw.data.memcached.Memcached;
@@ -18,16 +19,16 @@ import scw.db.DefaultDB;
 public class HikariCPDB extends DefaultDB implements DBConfigConstants, Destroy {
 
 	public HikariCPDB(Redis redis,
-			@ResourceParameter(DEFAULT_CONFIG) String propertiesFile) {
+			@ResourceParameter@DefaultValue(DEFAULT_CONFIG) String propertiesFile) {
 		super(new HikariCPDBConfig(propertiesFile, redis));
 	}
 
 	public HikariCPDB(Memcached memcached,
-			@ResourceParameter(DEFAULT_CONFIG) String propertiesFile) {
+			@ResourceParameter@DefaultValue(DEFAULT_CONFIG) String propertiesFile) {
 		super(new HikariCPDBConfig(propertiesFile, memcached));
 	}
 
-	public HikariCPDB(@ResourceParameter(DEFAULT_CONFIG) String propertiesFile) {
+	public HikariCPDB(@ResourceParameter@DefaultValue(DEFAULT_CONFIG) String propertiesFile) {
 		super(new HikariCPDBConfig(propertiesFile));
 	}
 

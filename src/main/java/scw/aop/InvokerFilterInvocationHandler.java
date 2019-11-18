@@ -1,4 +1,4 @@
-package scw.core.aop;
+package scw.aop;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

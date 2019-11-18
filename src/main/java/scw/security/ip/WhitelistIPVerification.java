@@ -1,5 +1,6 @@
 package scw.security.ip;
 
+import scw.core.annotation.DefaultValue;
 import scw.core.instance.annotation.ResourceParameter;
 
 /**
@@ -13,7 +14,7 @@ import scw.core.instance.annotation.ResourceParameter;
 public final class WhitelistIPVerification extends BaseIPVerification {
 	private static final long serialVersionUID = 1L;
 
-	public WhitelistIPVerification(@ResourceParameter("ip-whitelist") String sourceFile) {
+	public WhitelistIPVerification(@ResourceParameter@DefaultValue("ip-whitelist") String sourceFile) {
 		appendIPFile(sourceFile);
 	}
 

@@ -2,34 +2,32 @@ package scw.beans;
 
 import java.lang.reflect.Constructor;
 
-import scw.beans.annotation.Proxy;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.SimpleAutoBean;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
-import scw.core.aop.Filter;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
 import scw.core.exception.NotSupportException;
 import scw.core.reflect.ReflectUtils;
 
-public final class CommonBeanDefinition extends AbstractBeanDefinition {
+public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 	private AutoBean autoBean;
-	private boolean instance;
+	private boolean instance = true;
+	private String[] names;
 
-	public CommonBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+	public ServiceBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Class<?> type) {
 		super(valueWiredManager, beanFactory, propertyFactory, type);
 		init();
-
-		if (getType().isInterface()) {
-			Proxy proxy = getType().getAnnotation(Proxy.class);
-			this.instance = proxy != null;
+		if (type.isInterface()) {
+			this.instance = true;
 		} else {
 			this.autoBean = new SimpleAutoBean(beanFactory, type, propertyFactory);
-			this.instance = autoBean != null && autoBean.isInstance();
+			this.instance = autoBean.isInstance();
 		}
+		this.names = BeanUtils.getServiceNames(getType());
 	}
 
 	public boolean isInstance() {
@@ -37,9 +35,7 @@ public final class CommonBeanDefinition extends AbstractBeanDefinition {
 	}
 
 	protected Enhancer getProxyEnhancer() {
-		Proxy proxy = getType().getAnnotation(Proxy.class);
-		return BeanUtils.createEnhancer(getType(), beanFactory,
-				proxy == null ? null : (Filter) beanFactory.getInstance(proxy.value()));
+		return BeanUtils.createEnhancer(getType(), beanFactory, null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -49,9 +45,7 @@ public final class CommonBeanDefinition extends AbstractBeanDefinition {
 		}
 
 		if (getType().isInterface()) {
-			Proxy proxy = getType().getAnnotation(Proxy.class);
-			Filter filter = (Filter) (proxy == null? null:beanFactory.getInstance(proxy.value()));
-			return (T) BeanUtils.proxyInterface(beanFactory, getType(), filter);
+			return (T) BeanUtils.proxyInterface(beanFactory, getType(), null, null);
 		}
 
 		try {
@@ -101,5 +95,9 @@ public final class CommonBeanDefinition extends AbstractBeanDefinition {
 		} catch (Throwable e) {
 			throw new BeansException(getId(), e);
 		}
+	}
+
+	public String[] getNames() {
+		return names;
 	}
 }

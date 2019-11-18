@@ -1,7 +1,9 @@
 package scw.beans.auto;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import scw.beans.BeanFactory;
-import scw.core.aop.Filter;
 
 public class ProxyAutoBean extends AbstractAutoBean {
 	private String proxyName;
@@ -20,9 +22,9 @@ public class ProxyAutoBean extends AbstractAutoBean {
 	protected Object[] getParameters() {
 		return new Object[0];
 	}
-
+	
 	@Override
-	protected Filter getLastFilter() {
-		return (Filter) (beanFactory.isInstance(proxyName) ? beanFactory.getInstance(proxyName) : null);
+	protected Collection<String> getFilterNames() {
+		return Arrays.asList(proxyName);
 	}
 }

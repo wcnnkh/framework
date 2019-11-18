@@ -73,4 +73,8 @@ public final class AutoBeanDefinition extends AbstractBeanDefinition {
 	public boolean isInstance() {
 		return autoBean.isInstance();
 	}
+
+	public String[] getNames() {
+		return null;
+	}
 }

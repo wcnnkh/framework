@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.annotation.Bean;
+import scw.core.annotation.DefaultValue;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.resource.ResourceUtils;
@@ -21,7 +22,7 @@ public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
 	private static Logger logger = LoggerFactory.getLogger(XmlHttpAuthorityManager.class);
 
 	public XmlHttpAuthorityManager(
-			@ParameterName("xml.http.authority") @ResourceParameter("classpath:/http-authority.xml") String xml) {
+			@ParameterName("xml.http.authority") @ResourceParameter@DefaultValue("classpath:/http-authority.xml") String xml) {
 		this(xml, null);
 	}
 

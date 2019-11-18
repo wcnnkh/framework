@@ -3,23 +3,20 @@ package scw.beans;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import scw.core.aop.CglibInvoker;
-import scw.core.aop.Filter;
-import scw.core.aop.FilterChain;
-import scw.core.aop.Invoker;
+import scw.aop.CglibInvoker;
+import scw.aop.Filter;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
 import scw.core.cglib.proxy.MethodInterceptor;
 import scw.core.cglib.proxy.MethodProxy;
 
 public final class RootFilter implements Filter, MethodInterceptor {
 	private BeanFactory beanFactory;
-	private Filter lastFilter;
 	private Collection<String> filterNames;
 	private Class<?> targetClass;
 
-	public RootFilter(BeanFactory beanFactory, Class<?> targetClass, Collection<String> filterNames,
-			Filter lastFilter) {
+	public RootFilter(BeanFactory beanFactory, Class<?> targetClass, Collection<String> filterNames) {
 		this.beanFactory = beanFactory;
-		this.lastFilter = lastFilter;
 		this.filterNames = filterNames;
 		this.targetClass = targetClass;
 	}
@@ -35,8 +32,7 @@ public final class RootFilter implements Filter, MethodInterceptor {
 
 	private Object invoke(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args)
 			throws Throwable {
-		FilterChain chain = new BeanFactoryFilterChain(beanFactory, filterNames, method.getDeclaringClass(), method,
-				lastFilter);
+		FilterChain chain = new BeanFactoryFilterChain(beanFactory, filterNames, method.getDeclaringClass(), method);
 		return chain.doFilter(invoker, proxy, targetClass, method, args);
 	}
 

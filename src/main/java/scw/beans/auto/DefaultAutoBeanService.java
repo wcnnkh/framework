@@ -7,7 +7,6 @@ import java.util.concurrent.Executor;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.AutoImpl;
-import scw.core.Constants;
 import scw.core.PropertyFactory;
 import scw.core.annotation.Host;
 import scw.core.reflect.ReflectUtils;
@@ -18,8 +17,6 @@ import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LazyLogger;
 import scw.logger.Logger;
-import scw.mvc.MVCUtils;
-import scw.result.ResultFactory;
 import scw.rpc.http.HttpRestfulRpcProxy;
 
 public final class DefaultAutoBeanService implements AutoBeanService {
@@ -28,9 +25,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 	private AutoBean defaultService(Class<?> clazz, BeanFactory beanFactory, PropertyFactory propertyFactory,
 			AutoBeanServiceChain serviceChain) throws Exception {
 		AutoBean autoBean = null;
-		if (clazz == ResultFactory.class) {
-			autoBean = createResultFactory(beanFactory, propertyFactory);
-		} else if (clazz == Executor.class) {
+		if (clazz == Executor.class) {
 			autoBean = new SimpleAutoBean(beanFactory, DefaultExecutor.class, propertyFactory);
 		}
 
@@ -108,10 +103,10 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			}
 
 			name = FormatUtils.format(name, propertyFactory, true);
-			if(!ClassUtils.isAvailable(name)){
+			if (!ClassUtils.isAvailable(name)) {
 				continue;
 			}
-			
+
 			Class<?> clz = null;
 			try {
 				clz = Class.forName(name);
@@ -138,44 +133,5 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			}
 		}
 		return list;
-	}
-
-	private AutoBean createResultFactory(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
-		String resultPropertiesFile = propertyFactory.getProperty("result.config");
-		String charsetName = propertyFactory.getProperty("result.charset");
-		if (StringUtils.isEmpty(charsetName)) {
-			charsetName = Constants.DEFAULT_CHARSET_NAME;
-		}
-
-		int defaultErrorCode = StringUtils.parseInt(propertyFactory.getProperty("result.error.code"), 1);
-		int defaultSuccessCode = StringUtils.parseInt(propertyFactory.getProperty("result.success.code"), 0);
-		int loginExpiredCode = StringUtils.parseInt(propertyFactory.getProperty("result.expired.code"), -1);
-		int parameterErrorCode = StringUtils.parseInt(propertyFactory.getProperty("result.parameter.error.code"), 2);
-		String contentType = propertyFactory.getProperty("result.contentType");
-		if (StringUtils.isEmpty(contentType)) {
-			contentType = "application/json";
-		}
-
-		boolean defaultRollbackOnly = StringUtils.parseBoolean(propertyFactory.getProperty("result.rollbackOnly"),
-				true);
-		if (MVCUtils.isSupperServlet()) {
-			Object[] args = new Object[] { resultPropertiesFile, charsetName, defaultErrorCode, defaultSuccessCode,
-					loginExpiredCode, parameterErrorCode, contentType, defaultRollbackOnly };
-			logger.info(
-					"ServletResultFactory: propertiesFile={}, charsetName={}, defaultErrorCode={}, defaultSuccessCode={}, loginExpiredcode={}, parameterErrorCode={}, contentType={}, defaultRollbackOnly={}",
-					args);
-			return new DefaultAutoBean(beanFactory, "scw.result.servlet.ServletResultFactory",
-					new Class<?>[] { String.class, String.class, int.class, int.class, int.class, int.class,
-							String.class, boolean.class },
-					args);
-		} else {
-			Object[] args = new Object[] { resultPropertiesFile, charsetName, defaultErrorCode, defaultSuccessCode,
-					loginExpiredCode, parameterErrorCode, defaultRollbackOnly };
-			logger.info(
-					"DefaultResultFactory: propertiesFile={}, charsetName={}, defaultErrorCode={}, defaultSuccessCode={}, loginExpiredcode={}, parameterErrorCode={}, defaultRollbackOnly={}",
-					args);
-			return new DefaultAutoBean(beanFactory, "scw.result.DefaultResultFactory", new Class<?>[] { String.class,
-					String.class, int.class, int.class, int.class, int.class, String.class, boolean.class }, args);
-		}
 	}
 }

@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.core.aop.Filter;
+import scw.aop.Filter;
 
 /**
  * 
@@ -19,4 +19,6 @@ import scw.core.aop.Filter;
 @Inherited
 public @interface BeanFilter {
 	public Class<? extends Filter>[] value();
+	
+	public String[] names() default {};
 }

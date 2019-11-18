@@ -2,7 +2,7 @@ package scw.mvc;
 
 import java.util.Collection;
 
-import scw.core.aop.Invoker;
+import scw.aop.Invoker;
 import scw.core.parameter.ParameterConfig;
 
 public abstract class AbstractAction implements Action, FilterChain {

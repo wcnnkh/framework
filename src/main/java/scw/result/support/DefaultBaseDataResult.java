@@ -1,4 +1,6 @@
-package scw.result;
+package scw.result.support;
+
+import scw.result.BaseDataResult;
 
 public class DefaultBaseDataResult<T> extends DefaultBaseResult implements
 		BaseDataResult<T> {

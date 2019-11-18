@@ -1,6 +1,7 @@
 package scw.beans;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import scw.beans.property.ValueWiredManager;
 import scw.core.Init;
@@ -18,8 +19,8 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	protected final PropertyFactory propertyFactory;
 	private boolean singleton;
 	private FieldDefinition[] autowriteFieldDefinition;
-	private String[] names;
 	protected final ValueWiredManager valueWiredManager;
+	protected final LinkedList<String> filterList = new LinkedList<String>();
 
 	public AbstractBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Class<?> type) {
@@ -31,7 +32,6 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	}
 
 	public void init() {
-		this.names = BeanUtils.getServiceNames(getType());
 		this.initMethods = BeanUtils.getInitMethodList(getType()).toArray(new NoArgumentBeanMethod[0]);
 		this.destroyMethods = BeanUtils.getDestroyMethdoList(getType()).toArray(new NoArgumentBeanMethod[0]);
 		this.proxy = BeanUtils.checkProxy(getType());
@@ -81,9 +81,5 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 		}
 
 		XUtils.destroy(bean);
-	}
-
-	public String[] getNames() {
-		return names;
 	}
 }
