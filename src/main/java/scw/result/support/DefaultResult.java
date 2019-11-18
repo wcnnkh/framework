@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.json.JSONUtils;
-import scw.mvc.http.Text;
+import scw.mvc.Text;
 import scw.result.DataResult;
 
 public class DefaultResult<T> extends DefaultBaseDataResult<T> implements DataResult<T>, Serializable, Text {

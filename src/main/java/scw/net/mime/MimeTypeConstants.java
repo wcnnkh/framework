@@ -42,9 +42,19 @@ public interface MimeTypeConstants {
 	public static final MimeType APPLICATION_JSON = new SimpleMimeType("application", "json");
 
 	/**
-	 * A String equivalent of {@link MimeTypeUtils#APPLICATION_JSON}.
+	 * A String equivalent of {@link MimeTypeConstants#APPLICATION_JSON}.
 	 */
 	public static final String APPLICATION_JSON_VALUE = "application/json";
+
+	/**
+	 * JSON规范类型为{@link MimeTypeConstants#APPLICATION_JSON}
+	 */
+	public static final MimeType TEXT_JSON = new SimpleMimeType("text", "json");
+	
+	/**
+	 * JSON规范类型为{@link MimeTypeConstants#APPLICATION_JSON}
+	 */
+	public static final String TEXT_JSON_VALUE = "text/json";
 
 	/**
 	 * Public constant mime type for {@code application/octet-stream}.

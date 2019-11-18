@@ -1,7 +1,6 @@
 package scw.beans;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 
 import scw.beans.property.ValueWiredManager;
 import scw.core.Init;
@@ -20,10 +19,10 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	private boolean singleton;
 	private FieldDefinition[] autowriteFieldDefinition;
 	protected final ValueWiredManager valueWiredManager;
-	protected final LinkedList<String> filterList = new LinkedList<String>();
 
-	public AbstractBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> type) {
+	public AbstractBeanDefinition(ValueWiredManager valueWiredManager,
+			BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Class<?> type) {
 		this.valueWiredManager = valueWiredManager;
 		this.beanFactory = beanFactory;
 		this.type = type;
@@ -32,13 +31,17 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	}
 
 	public void init() {
-		this.initMethods = BeanUtils.getInitMethodList(getType()).toArray(new NoArgumentBeanMethod[0]);
-		this.destroyMethods = BeanUtils.getDestroyMethdoList(getType()).toArray(new NoArgumentBeanMethod[0]);
+		this.initMethods = BeanUtils.getInitMethodList(getType()).toArray(
+				new NoArgumentBeanMethod[0]);
+		this.destroyMethods = BeanUtils.getDestroyMethdoList(getType())
+				.toArray(new NoArgumentBeanMethod[0]);
 		this.proxy = BeanUtils.checkProxy(getType());
-		scw.beans.annotation.Bean bean = getType().getAnnotation(scw.beans.annotation.Bean.class);
+		scw.beans.annotation.Bean bean = getType().getAnnotation(
+				scw.beans.annotation.Bean.class);
 		this.singleton = bean == null ? true : bean.singleton();
-		this.autowriteFieldDefinition = BeanUtils.getAutowriteFieldDefinitionList(getType(), false)
-				.toArray(new FieldDefinition[0]);
+		this.autowriteFieldDefinition = BeanUtils
+				.getAutowriteFieldDefinitionList(getType(), false).toArray(
+						new FieldDefinition[0]);
 	}
 
 	public boolean isSingleton() {
@@ -58,8 +61,8 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	}
 
 	public void autowrite(Object bean) throws Exception {
-		BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, getType(), bean,
-				Arrays.asList(autowriteFieldDefinition));
+		BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory,
+				getType(), bean, Arrays.asList(autowriteFieldDefinition));
 	}
 
 	public void init(Object bean) throws Exception {

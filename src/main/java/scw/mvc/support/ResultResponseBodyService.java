@@ -2,8 +2,8 @@ package scw.mvc.support;
 
 import scw.core.utils.ClassUtils;
 import scw.mvc.Channel;
+import scw.mvc.Text;
 import scw.mvc.View;
-import scw.mvc.http.Text;
 import scw.result.ResultFactory;
 
 /**

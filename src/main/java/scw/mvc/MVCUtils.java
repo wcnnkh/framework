@@ -52,7 +52,6 @@ import scw.mvc.annotation.Model;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
-import scw.mvc.http.Text;
 import scw.mvc.support.ActionFactory;
 import scw.mvc.support.ActionFilter;
 import scw.mvc.support.ActionServiceFilter;
@@ -300,7 +299,7 @@ public final class MVCUtils implements MvcConstants {
 	 * @return
 	 */
 	public static boolean isJsonRequest(Request request) {
-		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_JSON_VALUE);
+		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_JSON_VALUE) || isDesignatedContentType(request, MimeTypeConstants.TEXT_JSON_VALUE);
 	}
 
 	public static boolean isXmlRequeset(Request request) {

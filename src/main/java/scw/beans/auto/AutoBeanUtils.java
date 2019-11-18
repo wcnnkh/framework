@@ -3,8 +3,10 @@ package scw.beans.auto;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import scw.aop.Filter;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.AutoImpl;
+import scw.beans.annotation.Proxy;
 import scw.core.PropertyFactory;
 import scw.core.exception.BeansException;
 import scw.core.utils.ArrayUtils;
@@ -97,5 +99,22 @@ public final class AutoBeanUtils {
 			}
 		}
 		return null;
+	}
+	
+	public static LinkedList<String> getProxyNames(Proxy proxy) {
+		LinkedList<String> list = new LinkedList<String>();
+		if (proxy == null) {
+			return list;
+		}
+
+		for (String name : proxy.names()) {
+			list.add(name);
+		}
+
+		for (Class<? extends Filter> c : proxy.value()) {
+			list.add(c.getName());
+		}
+
+		return list;
 	}
 }

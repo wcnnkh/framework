@@ -1,16 +1,17 @@
 package scw.beans.auto;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import scw.beans.BeanFactory;
 
 public class ProxyAutoBean extends AbstractAutoBean {
-	private String proxyName;
+	private Collection<String> proxyNames;
 
-	public ProxyAutoBean(BeanFactory beanFactory, Class<?> type, String proxyName) {
+	public ProxyAutoBean(BeanFactory beanFactory, Class<?> type,
+			Collection<String> proxyNames) {
 		super(beanFactory, type);
-		this.proxyName = proxyName;
+		this.proxyNames = proxyNames;
 	}
 
 	@Override
@@ -22,9 +23,10 @@ public class ProxyAutoBean extends AbstractAutoBean {
 	protected Object[] getParameters() {
 		return new Object[0];
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Collection<String> getFilterNames() {
-		return Arrays.asList(proxyName);
+		return proxyNames == null ? Collections.EMPTY_LIST : proxyNames;
 	}
 }

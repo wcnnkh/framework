@@ -1,11 +1,11 @@
 package scw.mvc.http.view;
 
 import scw.core.utils.StringUtils;
+import scw.mvc.Text;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.http.HttpView;
-import scw.mvc.http.Text;
 import scw.net.mime.MimeTypeConstants;
 
 public abstract class AbstractTextView extends HttpView implements Text {
