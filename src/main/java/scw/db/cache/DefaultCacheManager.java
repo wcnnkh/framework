@@ -7,7 +7,7 @@ import scw.data.WrapperCache;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
-public class DefaultCacheManager extends AbstractCacheManager<Cache> {
+public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	private final Cache cache;
 
 	/**
@@ -23,7 +23,7 @@ public class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	}
 
 	public DefaultCacheManager() {
-		this.cache = TransactionContextCache.getInstance();
+		this.cache = new TransactionContextCache(this);
 	}
 
 	public void save(Object bean) {

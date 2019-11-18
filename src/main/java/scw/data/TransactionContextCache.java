@@ -14,12 +14,17 @@ import scw.transaction.TransactionManager;
  */
 @SuppressWarnings("unchecked")
 public final class TransactionContextCache extends AbstractMapCache implements Cache {
-	public static final TransactionContextCache TRANSACTION_CONTEXT_CACHE = new TransactionContextCache();
+	private final Object name;
 	
-	private TransactionContextCache(){};
+	public TransactionContextCache(Object name){
+		this.name = name;
+	};
 	
-	public static Cache getInstance() {
-		return TRANSACTION_CONTEXT_CACHE;
+	public void clear(){
+		Map<String, Object> map = getMap();
+		if(map != null){
+			map.clear();
+		}
 	}
 	
 	public Map<String, Object> getMap() {
@@ -28,7 +33,7 @@ public final class TransactionContextCache extends AbstractMapCache implements C
 			return null;
 		}
 
-		return (Map<String, Object>) transaction.getResource(TransactionContextCache.class);
+		return (Map<String, Object>) transaction.getResource(name);
 	}
 
 	@Override
@@ -39,7 +44,7 @@ public final class TransactionContextCache extends AbstractMapCache implements C
 		}
 
 		Map<String, Object> map = new HashMap<String, Object>(8);
-		transaction.bindResource(TransactionContextCache.class, map);
+		transaction.bindResource(name, map);
 		return map;
 	}
 }
