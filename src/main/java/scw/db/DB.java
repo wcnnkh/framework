@@ -3,12 +3,15 @@ package scw.db;
 import java.sql.SQLException;
 
 import scw.beans.annotation.AutoImpl;
+import scw.db.cache.CacheManager;
 import scw.sql.Sql;
 import scw.sql.SqlOperations;
 import scw.sql.orm.ORMOperations;
 
 @AutoImpl(className = {"scw.db.DefaultDB"})
 public interface DB extends ORMOperations, SqlOperations {
+	CacheManager getCacheManager();
+	
 	void createTable(Class<?> tableClass, boolean registerManager);
 
 	void createTable(Class<?> tableClass, String tableName,
