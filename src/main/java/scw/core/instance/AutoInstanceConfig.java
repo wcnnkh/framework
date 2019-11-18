@@ -46,6 +46,7 @@ public class AutoInstanceConfig implements InstanceConfig {
 			if (isAutoConstructor(constructor)) {
 				this.constructor = constructor;
 				this.parameterConfigs = ParameterUtils.getParameterConfigs(constructor);
+				break;
 			}
 		}
 	}
@@ -131,21 +132,26 @@ public class AutoInstanceConfig implements InstanceConfig {
 			}
 
 			boolean isProperty = isProerptyType(parameterConfig);
-			if (logger.isDebugEnabled()) {
-				logger.debug("{} parameter index {} is {}", constructor, i, isProperty ? "property" : "bean");
-			}
-
 			// 是否是属性而不是bean
+			boolean b = true;
 			if (isProperty) {
 				String value = getProperty(parameterConfig);
 				if (StringUtils.isEmpty(value)) {
-					return false;
+					b = false;
 				}
 			} else {
 				String name = getInstanceName(parameterConfig);
 				if (name == null) {
-					return false;
+					b = false;
 				}
+			}
+			
+			if (logger.isDebugEnabled()) {
+				logger.debug("{} parameter index {} is {} matching:{}", constructor, i, isProperty ? "property" : "bean", b? "success":"fail");
+			}
+			
+			if(!b){
+				return false;
 			}
 		}
 		return true;

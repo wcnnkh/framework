@@ -1,5 +1,8 @@
 package scw.db.cache;
 
+import java.util.Collection;
+import java.util.Map;
+
 public interface CacheManager {
 	void save(Object bean);
 
@@ -12,6 +15,14 @@ public interface CacheManager {
 	void saveOrUpdate(Object bean);
 
 	<T> T getById(Class<T> type, Object... params);
-
-	boolean isExistById(Class<?> type, Object... params);
+	
+	<K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params);
+	
+	/**
+	 * 是否应该从数据库查找
+	 * @param type
+	 * @param params
+	 * @return
+	 */
+	boolean isSearchDB(Class<?> type, Object... params);
 }

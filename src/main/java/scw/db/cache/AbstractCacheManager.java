@@ -1,82 +1,64 @@
 package scw.db.cache;
 
-import scw.core.utils.ArrayUtils;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import scw.data.Cache;
 import scw.sql.orm.ORMUtils;
 import scw.sql.orm.TableInfo;
 
-public abstract class AbstractCacheManager implements CacheManager {
-	public abstract Cache getCache();
+public abstract class AbstractCacheManager<C extends Cache> implements CacheManager {
+	public abstract C getCache();
 
-	public abstract String formatKey(String key);
-
-	public void save(Object bean) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		if (tableInfo == null || tableInfo.getPrimaryKeyColumns().length == 0) {
-			return;
-		}
-
-		getCache().add(ORMUtils.getObjectKey(tableInfo, bean), bean);
-	}
-
-	public void update(Object bean) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		if (tableInfo == null || tableInfo.getPrimaryKeyColumns().length == 0) {
-			return;
-		}
-
-		getCache().set(formatKey(ORMUtils.getObjectKey(tableInfo, bean)), bean);
-	}
-
-	public void delete(Object bean) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		if (tableInfo == null || tableInfo.getPrimaryKeyColumns().length == 0) {
-			return;
-		}
-
-		getCache().delete(formatKey(ORMUtils.getObjectKey(tableInfo, bean)));
-	}
-
-	public void deleteById(Class<?> type, Object... params) {
-		if (ArrayUtils.isEmpty(params)) {
-			return;
-		}
-
+	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(type);
-		if (tableInfo == null || tableInfo.getPrimaryKeyColumns().length != params.length) {
-			return;
-		}
-
-		getCache().delete(formatKey(ORMUtils.getObjectKeyById(tableInfo.getSource(), params)));
-	}
-
-	public void saveOrUpdate(Object bean) {
-		update(bean);
-	}
-
-	public <T> T getById(Class<T> type, Object... params) {
-		if (ArrayUtils.isEmpty(params)) {
+		if (params.length != tableInfo.getPrimaryKeyColumns().length - 1) {
 			return null;
 		}
 
-		TableInfo tableInfo = ORMUtils.getTableInfo(type);
-		if (tableInfo == null || tableInfo.getPrimaryKeyColumns().length != params.length) {
+		String key = ORMUtils.getObjectKeyById(type, params);
+		Map<String, K> keyMap = new HashMap<String, K>(inIds.size(), 1);
+		for (K k : inIds) {
+			keyMap.put(appendObjectKey(key, k), k);
+		}
+
+		Map<String, V> map = getCache().get(keyMap.keySet());
+		if (map == null || map.isEmpty()) {
 			return null;
 		}
 
-		return getCache().get(formatKey(ORMUtils.getObjectKeyById(type, params)));
+		Map<K, V> valueMap = new HashMap<K, V>(map.size(), 1);
+		for (Entry<String, V> entry : map.entrySet()) {
+			K k = keyMap.get(entry.getKey());
+			if (k == null) {
+				continue;
+			}
+
+			valueMap.put(k, entry.getValue());
+		}
+
+		for (Entry<String, K> entry : keyMap.entrySet()) {
+			if (valueMap.containsKey(entry.getValue())) {
+				continue;
+			}
+
+			if (getCache().isExist(entry.getKey())) {
+				valueMap.put(entry.getValue(), null);
+			}
+		}
+		return valueMap;
 	}
 
-	public boolean isExistById(Class<?> type, Object... params) {
-		if (ArrayUtils.isEmpty(params)) {
-			return false;
-		}
+	protected final String appendObjectKey(String key, Object value) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(key);
+		ORMUtils.appendObjectKey(sb, value);
+		return sb.toString();
+	}
 
-		TableInfo tableInfo = ORMUtils.getTableInfo(type);
-		if (tableInfo == null || tableInfo.getPrimaryKeyColumns().length != params.length) {
-			return false;
-		}
-
-		return getCache().isExist(formatKey(ORMUtils.getObjectKeyById(type, params)));
+	public boolean isSearchDB(Class<?> type, Object... params) {
+		return true;
 	}
 }

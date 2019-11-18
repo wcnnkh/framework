@@ -2,20 +2,25 @@ package scw.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import scw.core.Consumer;
 import scw.core.Init;
 import scw.core.resource.ResourceUtils;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.io.serializer.SerializerUtils;
 import scw.sql.Sql;
 import scw.sql.orm.ORMTemplate;
 import scw.sql.orm.SqlFormat;
 import scw.sql.orm.annotation.Table;
 import scw.transaction.sql.SqlTransactionUtils;
 
-public abstract class AbstractDB extends ORMTemplate implements DB,
-		Consumer<AsyncExecute>, DBConfig, Init {
+public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<AsyncExecute>, DBConfig, Init {
 
 	public void init() {
 		if (StringUtils.isNotEmpty(getSannerTablePackage())) {
@@ -37,8 +42,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 		createTable(tableClass, tableName, true);
 	}
 
-	public void createTable(Class<?> tableClass, String tableName,
-			boolean registerManager) {
+	public void createTable(Class<?> tableClass, String tableName, boolean registerManager) {
 		if (registerManager) {
 			DBManager.register(tableClass, this);
 		}
@@ -76,8 +80,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 		return SqlTransactionUtils.getTransactionConnection(this);
 	}
 
-	public void executeSqlByFile(String filePath, boolean lines)
-			throws SQLException {
+	public void executeSqlByFile(String filePath, boolean lines) throws SQLException {
 		Collection<Sql> sqls = DBUtils.getSqlByFile(filePath, lines);
 		for (Sql sql : sqls) {
 			execute(sql);
@@ -133,7 +136,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 	public <T> T getById(String tableName, Class<T> type, Object... params) {
 		T t = getCacheManager().getById(type, params);
 		if (t == null) {
-			if (getCacheManager().isExistById(type, params)) {
+			if (getCacheManager().isSearchDB(type, params)) {
 				t = super.getById(tableName, type, params);
 				if (t != null) {
 					getCacheManager().save(t);
@@ -143,7 +146,55 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 		return t;
 	}
 
-	public void asyncDelete(Object... objs) {
+	@Override
+	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params) {
+		if (inIds == null || inIds.isEmpty()) {
+			return null;
+		}
+
+		Map<K, V> map = getCacheManager().getInIdList(type, inIds, params);
+		if (CollectionUtils.isEmpty(map)) {
+			Map<K, V> valueMap = super.getInIdList(type, tableName, inIds, params);
+			if (!CollectionUtils.isEmpty(valueMap)) {
+				for (Entry<K, V> entry : valueMap.entrySet()) {
+					getCacheManager().save(entry.getValue());
+				}
+			}
+			return valueMap;
+		}
+
+		if (map.size() == inIds.size()) {
+			return map;
+		}
+
+		List<K> notFoundList = new ArrayList<K>(inIds.size());
+		for (K k : inIds) {
+			if (k == null) {
+				continue;
+			}
+
+			if (map.containsKey(k)) {
+				continue;
+			}
+
+			notFoundList.add(k);
+		}
+
+		if (!CollectionUtils.isEmpty(notFoundList)) {
+			Map<K, V> dbMap = super.getInIdList(type, tableName, notFoundList, params);
+			if (dbMap == null || dbMap.isEmpty()) {
+				return map;
+			}
+
+			for (Entry<K, V> entry : dbMap.entrySet()) {
+				getCacheManager().save(entry.getValue());
+			}
+			map.putAll(dbMap);
+		}
+		return map;
+	}
+
+	public final void asyncDelete(Object... objs) {
 		TransactionAsyncExecute asyncExecute = new TransactionAsyncExecute();
 		for (Object bean : objs) {
 			asyncExecute.add(new BeanAsyncExecute(bean, OperationType.DELETE));
@@ -151,7 +202,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 		asyncExecute(asyncExecute);
 	}
 
-	public void asyncExecute(Sql... sqls) {
+	public final void asyncExecute(Sql... sqls) {
 		TransactionAsyncExecute asyncExecute = new TransactionAsyncExecute();
 		for (Sql sql : sqls) {
 			asyncExecute.add(new SqlAsyncExecute(sql));
@@ -159,7 +210,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 		asyncExecute(asyncExecute);
 	}
 
-	public void asyncSave(Object... objs) {
+	public final void asyncSave(Object... objs) {
 		TransactionAsyncExecute asyncExecute = new TransactionAsyncExecute();
 		for (Object bean : objs) {
 			asyncExecute.add(new BeanAsyncExecute(bean, OperationType.SAVE));
@@ -167,7 +218,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 		asyncExecute(asyncExecute);
 	}
 
-	public void asyncUpdate(Object... objs) {
+	public final void asyncUpdate(Object... objs) {
 		TransactionAsyncExecute asyncExecute = new TransactionAsyncExecute();
 		for (Object bean : objs) {
 			asyncExecute.add(new BeanAsyncExecute(bean, OperationType.UPDATE));
@@ -175,7 +226,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 		asyncExecute(asyncExecute);
 	}
 
-	public void asyncExecute(AsyncExecute asyncExecute) {
-		getAsyncQueue().push(asyncExecute);
+	public final void asyncExecute(AsyncExecute asyncExecute) {
+		getAsyncQueue().push(SerializerUtils.clone(asyncExecute));
 	}
 }

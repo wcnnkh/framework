@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LazyCache {
-	public boolean disable() default false;
+public @interface TemporaryCacheEnable {
+	public boolean value() default true;
 
 	public boolean keys() default false;
 

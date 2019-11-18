@@ -11,18 +11,17 @@ import scw.data.redis.Redis;
 import scw.db.AsyncExecute;
 import scw.db.DBConfig;
 import scw.db.cache.CacheManager;
-import scw.db.cache.DefaultCacheManager;
+import scw.db.cache.TemporaryCacheManager;
 import scw.mq.queue.MemoryQueue;
 import scw.mq.queue.Queue;
 
 @SuppressWarnings("rawtypes")
-public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants{
+public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants {
 	private String sannerTablePackage;
 
 	public AbstractDBConfig(Map properties) {
 		if (properties != null) {
-			this.sannerTablePackage = StringUtils.toString(
-					properties.get("create"),
+			this.sannerTablePackage = StringUtils.toString(properties.get("create"),
 					SystemPropertyUtils.getProperty("db.table.scanner"));
 		}
 	}
@@ -31,32 +30,24 @@ public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants{
 		return sannerTablePackage;
 	}
 
-	public static CacheManager createCacheManager(Map properties,
-			Memcached memcached) {
-		String cachePrefix = StringUtils.toString(
-				properties.get("cache.prefix"), Constants.DEFAULT_PREFIX);
-		return new DefaultCacheManager(memcached, cachePrefix);
+	public static CacheManager createCacheManager(Map properties, Memcached memcached) {
+		String cachePrefix = StringUtils.toString(properties.get("cache.prefix"), Constants.DEFAULT_PREFIX);
+		return new TemporaryCacheManager(memcached, true, cachePrefix);
 	}
 
 	public static CacheManager createCacheManager(Map properties, Redis redis) {
-		String cachePrefix = StringUtils.toString(
-				properties.get("cache.prefix"), Constants.DEFAULT_PREFIX);
-		return new DefaultCacheManager(new RedisDataTemplete(redis),
-				cachePrefix);
+		String cachePrefix = StringUtils.toString(properties.get("cache.prefix"), Constants.DEFAULT_PREFIX);
+		return new TemporaryCacheManager(new RedisDataTemplete(redis), true, cachePrefix);
 	}
 
-	public static Queue<AsyncExecute> createAsyncQueue(Map properties,
-			Memcached memcached) {
-		String queueName = StringUtils.toString(properties.get("async.name"),
-				null);
+	public static Queue<AsyncExecute> createAsyncQueue(Map properties, Memcached memcached) {
+		String queueName = StringUtils.toString(properties.get("async.name"), null);
 		return StringUtils.isEmpty(queueName) ? new MemoryQueue<AsyncExecute>()
 				: new MemoryQueue<AsyncExecute>(memcached, queueName);
 	}
 
-	public static Queue<AsyncExecute> createAsyncQueue(Map properties,
-			Redis redis) {
-		String queueName = StringUtils.toString(properties.get("async.name"),
-				null);
+	public static Queue<AsyncExecute> createAsyncQueue(Map properties, Redis redis) {
+		String queueName = StringUtils.toString(properties.get("async.name"), null);
 		return StringUtils.isEmpty(queueName) ? new MemoryQueue<AsyncExecute>()
 				: new MemoryQueue<AsyncExecute>(redis, queueName);
 	}

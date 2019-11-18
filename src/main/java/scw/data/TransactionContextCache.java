@@ -15,11 +15,13 @@ import scw.transaction.TransactionManager;
 @SuppressWarnings("unchecked")
 public final class TransactionContextCache extends AbstractMapCache implements Cache {
 	public static final TransactionContextCache TRANSACTION_CONTEXT_CACHE = new TransactionContextCache();
-
+	
+	private TransactionContextCache(){};
+	
 	public static Cache getInstance() {
 		return TRANSACTION_CONTEXT_CACHE;
 	}
-
+	
 	public Map<String, Object> getMap() {
 		Transaction transaction = TransactionManager.getCurrentTransaction();
 		if (transaction == null) {

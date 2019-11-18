@@ -138,7 +138,7 @@ public abstract class FullCacheManager implements CacheManager {
 		savefullKeys(tableInfo, objectKey, args);
 	}
 
-	public boolean isExistById(Class<?> type, Object... params) {
+	public boolean isSearchDB(Class<?> type, Object... params) {
 		return getById(type, params) != null;
 	}
 

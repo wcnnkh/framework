@@ -13,7 +13,6 @@ import scw.core.reflect.AnnotationUtils;
 import scw.json.JSONUtils;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
-import scw.transaction.sql.cache.QueryCacheUtils;
 
 /**
  * 实现方法级别的分布式锁
@@ -67,7 +66,6 @@ public final class LockFilter implements Filter {
 				throw new HasBeenLockedException(lockKey);
 			}
 
-			QueryCacheUtils.setQueryCacheEnable(false);
 			return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 		} finally {
 			lock.unlock();
