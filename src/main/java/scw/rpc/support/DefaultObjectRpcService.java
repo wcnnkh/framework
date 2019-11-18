@@ -71,7 +71,11 @@ public final class DefaultObjectRpcService implements RpcService, RpcConstants {
 			response(os, rpcResponseMessage);
 			return;
 		}
-
+		
+		if(logger.isDebugEnabled()){
+			logger.debug(objectRpcRequestMessage.getMessageKey());
+		}
+		
 		try {
 			rpcResponseMessage.setResponse(request(objectRpcRequestMessage));
 		} catch (Throwable e) {

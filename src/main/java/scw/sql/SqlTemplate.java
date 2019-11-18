@@ -4,12 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-public abstract class SqlTemplate implements SqlOperations{
+public abstract class SqlTemplate implements SqlOperations {
 	protected static Logger logger = LoggerFactory.getLogger(SqlTemplate.class);
 
 	public abstract Connection getUserConnection() throws SQLException;
@@ -24,9 +25,8 @@ public abstract class SqlTemplate implements SqlOperations{
 		}
 	}
 
-	protected boolean execute(Sql sql, Connection connection)
-			throws SQLException {
-		if(logger.isDebugEnabled()){
+	protected boolean execute(Sql sql, Connection connection) throws SQLException {
+		if (logger.isDebugEnabled()) {
 			logger.debug(SqlUtils.getSqlId(sql));
 		}
 
@@ -53,8 +53,7 @@ public abstract class SqlTemplate implements SqlOperations{
 		}
 	}
 
-	private void query(PreparedStatement statement,
-			ResultSetCallback resultSetCallback) throws SQLException {
+	private void query(PreparedStatement statement, ResultSetCallback resultSetCallback) throws SQLException {
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery();
@@ -66,9 +65,8 @@ public abstract class SqlTemplate implements SqlOperations{
 		}
 	}
 
-	protected void query(Sql sql, Connection connection,
-			ResultSetCallback resultSetCallback) throws SQLException {
-		if(logger.isDebugEnabled()){
+	protected void query(Sql sql, Connection connection, ResultSetCallback resultSetCallback) throws SQLException {
+		if (logger.isDebugEnabled()) {
 			logger.debug(SqlUtils.getSqlId(sql));
 		}
 
@@ -83,8 +81,7 @@ public abstract class SqlTemplate implements SqlOperations{
 		}
 	}
 
-	public void query(Sql sql, ResultSetCallback resultSetCallback)
-			throws SqlException {
+	public void query(Sql sql, ResultSetCallback resultSetCallback) throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
@@ -108,8 +105,7 @@ public abstract class SqlTemplate implements SqlOperations{
 		}
 	}
 
-	private <T> T query(PreparedStatement statement,
-			ResultSetMapper<T> resultSetMapper) throws SQLException {
+	private <T> T query(PreparedStatement statement, ResultSetMapper<T> resultSetMapper) throws SQLException {
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery();
@@ -121,12 +117,11 @@ public abstract class SqlTemplate implements SqlOperations{
 		}
 	}
 
-	protected <T> T query(Sql sql, Connection connection,
-			ResultSetMapper<T> resultSetMapper) throws SQLException {
-		if(logger.isDebugEnabled()){
+	protected <T> T query(Sql sql, Connection connection, ResultSetMapper<T> resultSetMapper) throws SQLException {
+		if (logger.isDebugEnabled()) {
 			logger.debug(SqlUtils.getSqlId(sql));
 		}
-		
+
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -138,8 +133,7 @@ public abstract class SqlTemplate implements SqlOperations{
 		}
 	}
 
-	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper)
-			throws SqlException {
+	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper) throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
@@ -151,13 +145,11 @@ public abstract class SqlTemplate implements SqlOperations{
 		}
 	}
 
-	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper)
-			throws SqlException {
+	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper) throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
-			return query(sql, connection, new DefaultResultSetMapper<T>(
-					rowMapper));
+			return query(sql, connection, new DefaultResultSetMapper<T>(rowMapper));
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {
@@ -166,10 +158,10 @@ public abstract class SqlTemplate implements SqlOperations{
 	}
 
 	protected int update(Sql sql, Connection connection) throws SQLException {
-		if(logger.isDebugEnabled()){
+		if (logger.isDebugEnabled()) {
 			logger.debug(SqlUtils.getSqlId(sql));
 		}
-		
+
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -188,6 +180,72 @@ public abstract class SqlTemplate implements SqlOperations{
 			return update(sql, connection);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
+		} finally {
+			close(connection);
+		}
+	}
+
+	protected int[] batch(Connection connection, Collection<String> sqls) throws SQLException {
+		PreparedStatement preparedStatement = null;
+		String currentSql = null;
+		try {
+			for (String sql : sqls) {
+				currentSql = sql;
+				if (preparedStatement == null) {
+					preparedStatement = connection.prepareStatement(sql);
+				} else {
+					preparedStatement.addBatch(sql);
+				}
+			}
+			return preparedStatement.executeBatch();
+		} catch (SQLException e) {
+			throw currentSql == null ? e : new SQLException(currentSql, e);
+		} finally {
+			if (preparedStatement != null) {
+				preparedStatement.clearBatch();
+				preparedStatement.close();
+			}
+		}
+	}
+
+	public int[] batch(Collection<String> sqls) throws SqlException {
+		Connection connection = null;
+		try {
+			connection = getUserConnection();
+			return batch(connection, sqls);
+		} catch (SQLException e) {
+			throw new SqlException(e);
+		} finally {
+			close(connection);
+		}
+	}
+
+	protected int[] batch(Connection connection, String sql, Collection<Object[]> batchArgs) throws SQLException {
+		PreparedStatement preparedStatement = null;
+		try {
+			preparedStatement = connection.prepareStatement(sql);
+			for (Object[] args : batchArgs) {
+				SqlUtils.setSqlParams(preparedStatement, args);
+				preparedStatement.addBatch();
+			}
+			return preparedStatement.executeBatch();
+		} catch (SQLException e) {
+			throw new SQLException(sql, e);
+		} finally {
+			if (preparedStatement != null) {
+				preparedStatement.clearBatch();
+				preparedStatement.close();
+			}
+		}
+	}
+
+	public int[] batch(String sql, Collection<Object[]> batchArgs) throws SqlException {
+		Connection connection = null;
+		try {
+			connection = getUserConnection();
+			return batch(connection, sql, batchArgs);
+		} catch (SQLException e) {
+			throw new SqlException(e);
 		} finally {
 			close(connection);
 		}
