@@ -65,8 +65,8 @@ public class AutoInstanceConfig implements InstanceConfig {
 				value = defaultValue.value();
 			}
 		}
-
-		if (StringUtils.isEmpty(value)) {
+		
+		if(value != null){
 			ResourceParameter resourceParameter = parameterConfig.getAnnotation(ResourceParameter.class);
 			if (resourceParameter != null) {
 				if (!ResourceUtils.isExist(value)) {

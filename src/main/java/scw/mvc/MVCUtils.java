@@ -49,6 +49,9 @@ import scw.logger.LoggerUtils;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Model;
+import scw.mvc.exception.ActionAppendExceptionHandler;
+import scw.mvc.exception.DefaultExceptionHandler;
+import scw.mvc.exception.ErrorAppendExceptionHandler;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
@@ -57,7 +60,6 @@ import scw.mvc.support.ActionFilter;
 import scw.mvc.support.ActionServiceFilter;
 import scw.mvc.support.CrossDomainDefinition;
 import scw.mvc.support.CrossDomainDefinitionFactory;
-import scw.mvc.support.DefaultExceptionHandler;
 import scw.mvc.support.HttpNotFoundFilter;
 import scw.mvc.support.MultiActionFactory;
 import scw.net.header.HeadersConstants;
@@ -146,6 +148,8 @@ public final class MVCUtils implements MvcConstants {
 			exceptionHandlers.add(instanceFactory.getInstance(ExceptionHandler.class));
 		}
 
+		exceptionHandlers.add(instanceFactory.getInstance(ActionAppendExceptionHandler.class));
+		exceptionHandlers.add(instanceFactory.getInstance(ErrorAppendExceptionHandler.class));
 		if (instanceFactory.isInstance(DefaultExceptionHandler.class)) {
 			exceptionHandlers.add(instanceFactory.getInstance(DefaultExceptionHandler.class));
 		}
@@ -299,7 +303,8 @@ public final class MVCUtils implements MvcConstants {
 	 * @return
 	 */
 	public static boolean isJsonRequest(Request request) {
-		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_JSON_VALUE) || isDesignatedContentType(request, MimeTypeConstants.TEXT_JSON_VALUE);
+		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_JSON_VALUE)
+				|| isDesignatedContentType(request, MimeTypeConstants.TEXT_JSON_VALUE);
 	}
 
 	public static boolean isXmlRequeset(Request request) {

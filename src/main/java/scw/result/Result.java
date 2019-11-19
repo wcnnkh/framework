@@ -1,9 +1,11 @@
 package scw.result;
 
-import scw.transaction.RollbackOnlyResult;
-
-public interface Result extends RollbackOnlyResult, BaseResult {
+public interface Result {
 	boolean isError();
 
 	int getCode();
+
+	boolean isSuccess();
+
+	String getMsg();
 }

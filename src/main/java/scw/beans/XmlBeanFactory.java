@@ -49,8 +49,28 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		return p == null ? BeanUtils.getAnnotationPackage(propertyFactory) : p;
 	}
 
+	private void appendNameMapping(NodeList nodeList) {
+		if (nodeList == null) {
+			return;
+		}
+
+		for (int i = 0, len = nodeList.getLength(); i < len; i++) {
+			Node node = nodeList.item(i);
+			if (node == null) {
+				continue;
+			}
+
+			if ("mapping".equalsIgnoreCase(node.getNodeName())) {
+				addBeanNameMapping(
+						StringUtils.commonSplit(XMLUtils.getRequireNodeAttributeValue(propertyFactory, node, "name")),
+						XMLUtils.getRequireNodeAttributeValueOrNodeContent(propertyFactory, node, "id"));
+			}
+		}
+	}
+
 	public void init() {
 		try {
+			appendNameMapping(nodeList);
 			if (nodeList != null) {
 				addBeanConfigFactory(
 						new XmlBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList, "bean"));

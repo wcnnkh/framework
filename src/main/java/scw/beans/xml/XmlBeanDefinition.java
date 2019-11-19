@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -12,6 +13,8 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
+import scw.beans.annotation.Proxy;
+import scw.beans.auto.AutoBeanUtils;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.cglib.proxy.Enhancer;
@@ -55,7 +58,12 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		this.names = XmlBeanUtils.getNames(beanNode);
 		this.id = XmlBeanUtils.getId(beanNode);
 		this.singleton = XmlBeanUtils.isSingleton(beanNode);
-		this.filterNames = XmlBeanUtils.getFilters(beanNode);
+		this.filterNames = new LinkedList<String>(XmlBeanUtils.getFilters(beanNode));
+		Proxy proxy = type.getAnnotation(Proxy.class);
+		if(proxy != null){
+			filterNames.addAll(AutoBeanUtils.getProxyNames(proxy));
+		}
+		
 		this.proxy = CollectionUtils.isEmpty(filterNames) ? BeanUtils.checkProxy(type) : true;
 
 		NodeList nodeList = beanNode.getChildNodes();
@@ -63,8 +71,8 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		this.destroyMethods = XmlBeanUtils.getDestroyMethodList(type, nodeList);
 		this.properties = XmlBeanUtils.getBeanProperties(nodeList);
 		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type, false).toArray(new FieldDefinition[0]);
-
-		if (!type.isInterface()) {
+		
+		if (!type.isInterface()) {//可能只是映射
 			XmlBeanParameter[] constructorParameters = XmlBeanUtils.getConstructorParameters(nodeList);
 			this.instanceConfig = new XmlInstanceConfig(beanFactory, propertyFactory, type, constructorParameters);
 			if (instanceConfig.getConstructor() == null && ArrayUtils.isEmpty(constructorParameters)) {

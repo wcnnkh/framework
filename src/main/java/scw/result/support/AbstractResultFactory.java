@@ -54,10 +54,18 @@ public abstract class AbstractResultFactory implements ResultFactory {
 
 	public <T> DataResult<T> success(T data) {
 		int code = getSuccessCode();
-		return new DefaultResult<T>(true, code, data, getMsg(code), contentType);
+		return new DefaultDataResult<T>(true, code, data, getMsg(code), contentType, false);
+	}
+
+	public <T> DataResult<T> error(int code, String msg, T data, boolean rollback) {
+		return new DefaultDataResult<T>(false, code, data, msg, contentType, rollback);
+	}
+
+	public <T> DataResult<T> error(String msg, T data, boolean rollback) {
+		return error(getDefaultErrorCode(), msg, data, rollback);
 	}
 
 	public <T> DataResult<T> error(int code, String msg) {
-		return new DefaultResult<T>(false, code, null, msg, contentType);
+		return error(code, msg, null, true);
 	}
 }

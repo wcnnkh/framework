@@ -1,4 +1,4 @@
-package scw.result;
+package scw.mvc.exception;
 
 public interface ErrorCode {
 	int getErrorCode();

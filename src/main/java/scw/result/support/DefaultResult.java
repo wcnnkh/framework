@@ -6,36 +6,49 @@ import java.util.Map;
 
 import scw.json.JSONUtils;
 import scw.mvc.Text;
-import scw.result.DataResult;
+import scw.result.Result;
+import scw.transaction.RollbackOnlyResult;
 
-public class DefaultResult<T> extends DefaultBaseDataResult<T> implements DataResult<T>, Serializable, Text {
+public class DefaultResult implements Result, RollbackOnlyResult, Text, Serializable {
 	private static final long serialVersionUID = 1L;
+	private boolean success;
 	private int code;
+	private String msg;
+	private boolean rollbackOnly;
 	private String contentType;
 
-	public DefaultResult(boolean success, int code, T data, String msg, String contentType) {
-		super(success, msg, data);
+	public DefaultResult(boolean success, int code, String msg, boolean rollbackOnly, String contentType) {
+		this.success = success;
 		this.code = code;
+		this.msg = msg;
+		this.rollbackOnly = rollbackOnly;
 		this.contentType = contentType;
-	}
-
-	public int getCode() {
-		return code;
-	}
-
-	public boolean isRollbackOnly() {
-		return isError();
 	}
 
 	public boolean isError() {
 		return !isSuccess();
 	}
 
+	public int getCode() {
+		return code;
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public String getMsg() {
+		return msg;
+	}
+
+	public boolean isRollbackOnly() {
+		return rollbackOnly;
+	}
+
 	public String getTextContent() {
 		Map<String, Object> map = new HashMap<String, Object>(4, 1);
 		map.put("success", isSuccess());
 		map.put("code", getCode());
-		map.put("data", getData());
 		map.put("msg", getMsg());
 		return JSONUtils.toJSONString(map);
 	}

@@ -1,12 +1,10 @@
-package scw.mvc.support;
+package scw.mvc.exception;
 
 import scw.core.exception.ParameterException;
 import scw.core.utils.StringUtils;
 import scw.mvc.Channel;
 import scw.mvc.ExceptionHandler;
 import scw.mvc.ExceptionHandlerChain;
-import scw.result.ErrorCode;
-import scw.result.ErrorMessage;
 import scw.result.ResultFactory;
 import scw.security.authority.AuthorizationFailureException;
 
@@ -23,20 +21,24 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 		this.resultFactory = resultFactory;
 	}
 
-	public Object handler(Channel channel, Throwable throwable, ExceptionHandlerChain chain) {
-		if (throwable instanceof ParameterException) {
+	public Object handler(Channel channel, Throwable error, ExceptionHandlerChain chain) {
+		if (error.getClass().getName().startsWith("java.") || error.getClass().getName().startsWith("javax.")) {
+			return resultFactory.error();
+		}
+
+		if (error instanceof ParameterException) {
 			return resultFactory.parameterError();
-		} else if (throwable instanceof AuthorizationFailureException) {
+		} else if (error instanceof AuthorizationFailureException) {
 			return resultFactory.authorizationFailure();
-		} else if (throwable instanceof ErrorCode || throwable instanceof ErrorMessage) {
+		} else if (error instanceof ErrorCode || error instanceof ErrorMessage) {
 			Integer code = null;
-			if (throwable instanceof ErrorCode) {
-				code = ((ErrorCode) throwable).getErrorCode();
+			if (error instanceof ErrorCode) {
+				code = ((ErrorCode) error).getErrorCode();
 			}
 
-			String msg = throwable.getMessage();
-			if (throwable instanceof ErrorMessage) {
-				msg = ((ErrorMessage) throwable).getErrorMessage();
+			String msg = error.getMessage();
+			if (error instanceof ErrorMessage) {
+				msg = ((ErrorMessage) error).getErrorMessage();
 			}
 
 			if (code == null) {
@@ -45,6 +47,6 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 				return StringUtils.isEmpty(msg) ? resultFactory.error(code) : resultFactory.error(code, msg);
 			}
 		}
-		return resultFactory.error();
+		return resultFactory.error(error.getMessage());
 	}
 }
