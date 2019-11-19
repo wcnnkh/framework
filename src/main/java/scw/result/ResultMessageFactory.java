@@ -1,4 +1,4 @@
-package scw.result.support;
+package scw.result;
 
 public interface ResultMessageFactory {
 	String getMessage(int code);

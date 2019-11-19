@@ -3,6 +3,7 @@ package scw.result.support;
 import scw.result.DataResult;
 import scw.result.Result;
 import scw.result.ResultFactory;
+import scw.result.ResultMessageFactory;
 
 public abstract class AbstractResultFactory implements ResultFactory {
 	private String contentType;

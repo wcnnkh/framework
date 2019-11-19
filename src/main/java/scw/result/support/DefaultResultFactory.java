@@ -5,6 +5,7 @@ import scw.core.annotation.DefaultValue;
 import scw.core.annotation.NotRequire;
 import scw.core.annotation.ParameterName;
 import scw.net.mime.MimeTypeConstants;
+import scw.result.ResultMessageFactory;
 
 @Bean(proxy = false)
 public class DefaultResultFactory extends AbstractResultFactory {
