@@ -1,23 +1,36 @@
 package scw.core.utils;
 
 import java.beans.Introspector;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Proxy;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import scw.core.Assert;
+import scw.core.Verification;
 import scw.core.cglib.core.TypeUtils;
+import scw.core.resource.ResourceUtils;
+import scw.io.IOUtils;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -62,15 +75,13 @@ public final class ClassUtils {
 	 * Map with primitive type name as key and corresponding primitive type as
 	 * value, for example: "int" -> "int.class".
 	 */
-	private static final Map<String, Class<?>> primitiveTypeNameMap = new HashMap<String, Class<?>>(
-			32);
+	private static final Map<String, Class<?>> primitiveTypeNameMap = new HashMap<String, Class<?>>(32);
 
 	/**
 	 * Map with common "java.lang" class name as key and corresponding Class as
 	 * value. Primarily for efficient deserialization of remote invocations.
 	 */
-	private static final Map<String, Class<?>> commonClassCache = new HashMap<String, Class<?>>(
-			32);
+	private static final Map<String, Class<?>> commonClassCache = new HashMap<String, Class<?>>(32);
 
 	static {
 		primitiveWrapperTypeMap.put(Boolean.class, boolean.class);
@@ -82,31 +93,26 @@ public final class ClassUtils {
 		primitiveWrapperTypeMap.put(Long.class, long.class);
 		primitiveWrapperTypeMap.put(Short.class, short.class);
 
-		for (Map.Entry<Class<?>, Class<?>> entry : primitiveWrapperTypeMap
-				.entrySet()) {
+		for (Map.Entry<Class<?>, Class<?>> entry : primitiveWrapperTypeMap.entrySet()) {
 			primitiveTypeToWrapperMap.put(entry.getValue(), entry.getKey());
 			registerCommonClasses(entry.getKey());
 		}
 
 		Set<Class<?>> primitiveTypes = new HashSet<Class<?>>(32);
 		primitiveTypes.addAll(primitiveWrapperTypeMap.values());
-		primitiveTypes.addAll(Arrays.asList(new Class<?>[] { boolean[].class,
-				byte[].class, char[].class, double[].class, float[].class,
-				int[].class, long[].class, short[].class }));
+		primitiveTypes.addAll(Arrays.asList(new Class<?>[] { boolean[].class, byte[].class, char[].class,
+				double[].class, float[].class, int[].class, long[].class, short[].class }));
 		primitiveTypes.add(void.class);
 		for (Class<?> primitiveType : primitiveTypes) {
 			primitiveTypeNameMap.put(primitiveType.getName(), primitiveType);
 		}
 
-		registerCommonClasses(Boolean[].class, Byte[].class, Character[].class,
-				Double[].class, Float[].class, Integer[].class, Long[].class,
-				Short[].class);
-		registerCommonClasses(Number.class, Number[].class, String.class,
-				String[].class, Object.class, Object[].class, Class.class,
-				Class[].class);
-		registerCommonClasses(Throwable.class, Exception.class,
-				RuntimeException.class, Error.class, StackTraceElement.class,
-				StackTraceElement[].class);
+		registerCommonClasses(Boolean[].class, Byte[].class, Character[].class, Double[].class, Float[].class,
+				Integer[].class, Long[].class, Short[].class);
+		registerCommonClasses(Number.class, Number[].class, String.class, String[].class, Object.class, Object[].class,
+				Class.class, Class[].class);
+		registerCommonClasses(Throwable.class, Exception.class, RuntimeException.class, Error.class,
+				StackTraceElement.class, StackTraceElement[].class);
 	}
 
 	private ClassUtils() {
@@ -120,8 +126,7 @@ public final class ClassUtils {
 	 */
 	public static Class<?> getSuperClass(Class<?> clz) {
 		Class<?> superClz = clz.getSuperclass();
-		if (superClz == null
-				|| Object.class.getName().equals(superClz.getName())) {
+		if (superClz == null || Object.class.getName().equals(superClz.getName())) {
 			return null;
 		}
 		return superClz;
@@ -235,13 +240,10 @@ public final class ClassUtils {
 	 * @return the original thread context ClassLoader, or {@code null} if not
 	 *         overridden
 	 */
-	public static ClassLoader overrideThreadContextClassLoader(
-			ClassLoader classLoaderToUse) {
+	public static ClassLoader overrideThreadContextClassLoader(ClassLoader classLoaderToUse) {
 		Thread currentThread = Thread.currentThread();
-		ClassLoader threadContextClassLoader = currentThread
-				.getContextClassLoader();
-		if (classLoaderToUse != null
-				&& !classLoaderToUse.equals(threadContextClassLoader)) {
+		ClassLoader threadContextClassLoader = currentThread.getContextClassLoader();
+		if (classLoaderToUse != null && !classLoaderToUse.equals(threadContextClassLoader)) {
 			currentThread.setContextClassLoader(classLoaderToUse);
 			return threadContextClassLoader;
 		} else {
@@ -253,8 +255,7 @@ public final class ClassUtils {
 		return forName(name, getDefaultClassLoader());
 	}
 
-	public static Class<?>[] forName(String... className)
-			throws ClassNotFoundException {
+	public static Class<?>[] forName(String... className) throws ClassNotFoundException {
 		Class<?>[] types = new Class<?>[className.length];
 		for (int i = 0; i < types.length; i++) {
 			types[i] = forName(className[i]);
@@ -281,8 +282,7 @@ public final class ClassUtils {
 	 *             if the class file could not be loaded
 	 * @see Class#forName(String, boolean, ClassLoader)
 	 */
-	public static Class<?> forName(String name, ClassLoader classLoader)
-			throws ClassNotFoundException {
+	public static Class<?> forName(String name, ClassLoader classLoader) throws ClassNotFoundException {
 		Assert.notNull(name, "Name must not be null");
 
 		Class<?> clazz = resolvePrimitiveClassName(name);
@@ -295,16 +295,14 @@ public final class ClassUtils {
 
 		// "java.lang.String[]" style arrays
 		if (name.endsWith(ARRAY_SUFFIX)) {
-			String elementClassName = name.substring(0, name.length()
-					- ARRAY_SUFFIX.length());
+			String elementClassName = name.substring(0, name.length() - ARRAY_SUFFIX.length());
 			Class<?> elementClass = forName(elementClassName, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
 		// "[Ljava.lang.String;" style arrays
 		if (name.startsWith(NON_PRIMITIVE_ARRAY_PREFIX) && name.endsWith(";")) {
-			String elementName = name.substring(
-					NON_PRIMITIVE_ARRAY_PREFIX.length(), name.length() - 1);
+			String elementName = name.substring(NON_PRIMITIVE_ARRAY_PREFIX.length(), name.length() - 1);
 			Class<?> elementClass = forName(elementName, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
@@ -317,13 +315,11 @@ public final class ClassUtils {
 		}
 
 		if (name.startsWith(TYPE_CLASS_PREFIX)) {
-			return forName(name.substring(TYPE_CLASS_PREFIX.length()),
-					classLoader);
+			return forName(name.substring(TYPE_CLASS_PREFIX.length()), classLoader);
 		}
 
 		if (name.startsWith(TYPE_INTERFACE_PREFIX)) {
-			return forName(name.substring(TYPE_INTERFACE_PREFIX.length()),
-					classLoader);
+			return forName(name.substring(TYPE_INTERFACE_PREFIX.length()), classLoader);
 		}
 
 		ClassLoader classLoaderToUse = classLoader;
@@ -335,8 +331,7 @@ public final class ClassUtils {
 		} catch (ClassNotFoundException ex) {
 			int lastDotIndex = name.lastIndexOf('.');
 			if (lastDotIndex != -1) {
-				String innerClassName = name.substring(0, lastDotIndex) + '$'
-						+ name.substring(lastDotIndex + 1);
+				String innerClassName = name.substring(0, lastDotIndex) + '$' + name.substring(lastDotIndex + 1);
 				// try {
 				return classLoaderToUse.loadClass(innerClassName);
 				// } catch (ClassNotFoundException ex2) {
@@ -366,17 +361,14 @@ public final class ClassUtils {
 	 *             could not be found or the class file could not be loaded)
 	 * @see #forName(String, ClassLoader)
 	 */
-	public static Class<?> resolveClassName(String className,
-			ClassLoader classLoader) throws IllegalArgumentException {
+	public static Class<?> resolveClassName(String className, ClassLoader classLoader) throws IllegalArgumentException {
 		try {
 			return forName(className, classLoader);
 		} catch (ClassNotFoundException ex) {
-			throw new IllegalArgumentException("Cannot find class ["
-					+ className + "]", ex);
+			throw new IllegalArgumentException("Cannot find class [" + className + "]", ex);
 		} catch (LinkageError ex) {
-			throw new IllegalArgumentException("Error loading class ["
-					+ className
-					+ "]: problem with class file or dependent class.", ex);
+			throw new IllegalArgumentException(
+					"Error loading class [" + className + "]: problem with class file or dependent class.", ex);
 		}
 	}
 
@@ -547,8 +539,7 @@ public final class ClassUtils {
 	public static String getShortNameAsProperty(Class<?> clazz) {
 		String shortName = ClassUtils.getShortName(clazz);
 		int dotIndex = shortName.lastIndexOf('.');
-		shortName = (dotIndex != -1 ? shortName.substring(dotIndex + 1)
-				: shortName);
+		shortName = (dotIndex != -1 ? shortName.substring(dotIndex + 1) : shortName);
 		return Introspector.decapitalize(shortName);
 	}
 
@@ -593,8 +584,7 @@ public final class ClassUtils {
 	public static String getPackageName(String fqClassName) {
 		Assert.notNull(fqClassName, "Class name must not be null");
 		int lastDotIndex = fqClassName.lastIndexOf(PACKAGE_SEPARATOR);
-		return (lastDotIndex != -1 ? fqClassName.substring(0, lastDotIndex)
-				: "");
+		return (lastDotIndex != -1 ? fqClassName.substring(0, lastDotIndex) : "");
 	}
 
 	/**
@@ -673,9 +663,8 @@ public final class ClassUtils {
 	 *            the type name to match
 	 */
 	public static boolean matchesTypeName(Class<?> clazz, String typeName) {
-		return (typeName != null && (typeName.equals(clazz.getName())
-				|| typeName.equals(clazz.getSimpleName()) || (clazz.isArray() && typeName
-				.equals(getQualifiedNameForArray(clazz)))));
+		return (typeName != null && (typeName.equals(clazz.getName()) || typeName.equals(clazz.getSimpleName())
+				|| (clazz.isArray() && typeName.equals(getQualifiedNameForArray(clazz)))));
 	}
 
 	/**
@@ -742,8 +731,7 @@ public final class ClassUtils {
 	 */
 	public static Class<?> resolvePrimitiveIfNecessary(Class<?> clazz) {
 		Assert.notNull(clazz, "Class must not be null");
-		return (clazz.isPrimitive() && clazz != void.class ? primitiveTypeToWrapperMap
-				.get(clazz) : clazz);
+		return (clazz.isPrimitive() && clazz != void.class ? primitiveTypeToWrapperMap.get(clazz) : clazz);
 	}
 
 	/**
@@ -772,8 +760,7 @@ public final class ClassUtils {
 			}
 		} else {
 			Class resolvedWrapper = primitiveTypeToWrapperMap.get(rhsType);
-			if (resolvedWrapper != null
-					&& lhsType.isAssignableFrom(resolvedWrapper)) {
+			if (resolvedWrapper != null && lhsType.isAssignableFrom(resolvedWrapper)) {
 				return true;
 			}
 		}
@@ -793,8 +780,7 @@ public final class ClassUtils {
 	 */
 	public static boolean isAssignableValue(Class<?> type, Object value) {
 		Assert.notNull(type, "Type must not be null");
-		return (value != null ? isAssignable(type, value.getClass()) : !type
-				.isPrimitive());
+		return (value != null ? isAssignable(type, value.getClass()) : !type.isPrimitive());
 	}
 
 	/**
@@ -843,8 +829,7 @@ public final class ClassUtils {
 	 * @see ClassLoader#getResource
 	 * @see Class#getResource
 	 */
-	public static String addResourcePathToPackagePath(Class<?> clazz,
-			String resourceName) {
+	public static String addResourcePathToPackagePath(Class<?> clazz, String resourceName) {
 		Assert.notNull(resourceName, "Resource name must not be null");
 		if (!resourceName.startsWith("/")) {
 			return classPackageAsResourcePath(clazz) + "/" + resourceName;
@@ -985,8 +970,7 @@ public final class ClassUtils {
 	 * @return all interfaces that the given object implements as array
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Class<?>[] getAllInterfacesForClass(Class<?> clazz,
-			ClassLoader classLoader) {
+	public static Class<?>[] getAllInterfacesForClass(Class<?> clazz, ClassLoader classLoader) {
 		Set<Class> ifcs = getAllInterfacesForClassAsSet(clazz, classLoader);
 		return ifcs.toArray(new Class[ifcs.size()]);
 	}
@@ -1034,8 +1018,7 @@ public final class ClassUtils {
 	 * @return all interfaces that the given object implements as Set
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Set<Class> getAllInterfacesForClassAsSet(Class clazz,
-			ClassLoader classLoader) {
+	public static Set<Class> getAllInterfacesForClassAsSet(Class clazz, ClassLoader classLoader) {
 		Assert.notNull(clazz, "Class must not be null");
 		if (clazz.isInterface() && isVisible(clazz, classLoader)) {
 			return Collections.singleton(clazz);
@@ -1044,8 +1027,7 @@ public final class ClassUtils {
 		while (clazz != null) {
 			Class<?>[] ifcs = clazz.getInterfaces();
 			for (Class<?> ifc : ifcs) {
-				interfaces.addAll(getAllInterfacesForClassAsSet(ifc,
-						classLoader));
+				interfaces.addAll(getAllInterfacesForClassAsSet(ifc, classLoader));
 			}
 			clazz = clazz.getSuperclass();
 		}
@@ -1065,8 +1047,7 @@ public final class ClassUtils {
 	 * @return the merged interface as Class
 	 * @see java.lang.reflect.Proxy#getProxyClass
 	 */
-	public static Class<?> createCompositeInterface(Class<?>[] interfaces,
-			ClassLoader classLoader) {
+	public static Class<?> createCompositeInterface(Class<?>[] interfaces, ClassLoader classLoader) {
 		Assert.notEmpty(interfaces, "Interfaces must not be empty");
 		Assert.notNull(classLoader, "ClassLoader must not be null");
 		return Proxy.getProxyClass(classLoader, interfaces);
@@ -1118,6 +1099,7 @@ public final class ClassUtils {
 
 	/**
 	 * 判断一个class是否可用
+	 * 
 	 * @param className
 	 * @return
 	 */
@@ -1127,6 +1109,7 @@ public final class ClassUtils {
 
 	/**
 	 * 判断一个class是否可用
+	 * 
 	 * @param className
 	 * @param printStackTrace
 	 * @return
@@ -1146,4 +1129,249 @@ public final class ClassUtils {
 		}
 		return false;
 	}
+
+	/************************************ 扫描类工具 *****************************************/
+	public static Collection<Class<?>> getClassList(String packageName, IgnoreClassVerification ignoreClass) {
+		LinkedList<Class<?>> interfaceClassList = new LinkedList<Class<?>>();
+		Collection<Class<?>> clazzList = getClassList(packageName);
+		if (!CollectionUtils.isEmpty(clazzList)) {
+			for (Class<?> clazz : clazzList) {
+				if (clazz == null) {
+					continue;
+				}
+
+				if (ignoreClass != null && ignoreClass.verification(clazz)) {
+					continue;
+				}
+
+				interfaceClassList.add(clazz);
+			}
+		}
+		return interfaceClassList;
+	}
+
+	public static Collection<Class<?>> getClassList(String packageName, boolean interfaceClass,
+			boolean ignoreEmptyMethod) {
+		return getClassList(packageName, new IgnoreClassVerification(ignoreEmptyMethod, interfaceClass));
+	}
+
+	private static final Verification<String> IGNORE_JAR_VERIFICATION = new IgnoreJarVerification();
+	private static final Verification<String> IGNORE_CLASS_NAME_VERIFICATION = new IgnoreClassNameVerification();
+
+	public static Collection<Class<?>> getClassList() {
+		return getClassList(IGNORE_JAR_VERIFICATION, IGNORE_CLASS_NAME_VERIFICATION);
+	}
+
+	public static Collection<Class<?>> getClassList(String resource) {
+		return getClassList(resource, (Verification<String>) null);
+	}
+
+	public static Collection<Class<?>> getClassList(Verification<String> jarVerification,
+			Verification<String> classNameVerification) {
+		LinkedHashSet<Class<?>> list = new LinkedHashSet<Class<?>>();
+		URL url = ResourceUtils.getClassPathURL();
+		if (url != null) {
+			appendClass(url.getPath(), list, jarVerification, classNameVerification, true);
+		}
+
+		for (String name : SystemPropertyUtils.getJavaClassPathArray()) {
+			appendClass(name, list, jarVerification, classNameVerification, true);
+		}
+		return list;
+	}
+
+	public static Collection<Class<?>> getClassList(String resource, Verification<String> classNameVerification) {
+		if (StringUtils.isEmpty(resource)) {
+			return getClassList(IGNORE_JAR_VERIFICATION, classNameVerification);
+		}
+
+		final String[] arr = StringUtils.commonSplit(resource);
+		if (ArrayUtils.isEmpty(arr)) {
+			return getClassList(IGNORE_JAR_VERIFICATION, classNameVerification);
+		}
+
+		HashSet<Class<?>> classes = new HashSet<Class<?>>();
+		for (String pg : arr) {
+			appendClassesByClassLoader(pg, classes, classNameVerification);
+		}
+		return classes;
+	}
+
+	private static void findAndAddClassesInPackageByFile(String packageName, String packagePath,
+			Collection<Class<?>> classes) {
+		File dir = new File(packagePath);
+		if (!dir.exists() || !dir.isDirectory()) {
+			return;
+		}
+		File[] dirfiles = dir.listFiles(new FileFilter() {
+			public boolean accept(File file) {
+				return (file.isDirectory()) || (file.getName().endsWith(CLASS_FILE_SUFFIX));
+			}
+		});
+		for (File file : dirfiles) {
+			if (file.isDirectory()) {
+				findAndAddClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), classes);
+			} else {
+				String className = file.getName().substring(0, file.getName().length() - 6);
+				if (packageName.startsWith(".")) {
+					packageName = packageName.substring(1);
+				}
+
+				Class<?> clz = null;
+				try {
+					clz = Class.forName(packageName + '.' + className);
+				} catch (Throwable e) {
+				}
+
+				if (clz != null) {
+					classes.add(clz);
+				}
+			}
+		}
+	}
+
+	private static void appendJarClass(Collection<Class<?>> classList, JarFile jarFile,
+			Verification<String> jarVerification, Verification<String> verification, boolean appendManifest) {
+		Enumeration<JarEntry> enumeration = jarFile.entries();
+		while (enumeration.hasMoreElements()) {
+			JarEntry jarEntry = enumeration.nextElement();
+			if (jarEntry == null) {
+				continue;
+			}
+
+			String name = jarEntry.getName();
+			if (name.endsWith(CLASS_FILE_SUFFIX)) {
+				// class
+				Class<?> clz = forFileName(name, verification);
+				if (clz != null) {
+					classList.add(clz);
+				}
+			}
+		}
+
+		if (appendManifest) {
+			for (String path : JarUtils.getgetManifestClassPaths(jarFile)) {
+				appendClass(path, classList, jarVerification, verification, false);
+			}
+		}
+	}
+
+	private static void appendDirectoryClass(String rootPackage, Collection<Class<?>> classList, File file,
+			Verification<String> jarVerification, Verification<String> verification) {
+		File[] files = file.listFiles();
+		if (ArrayUtils.isEmpty(files)) {
+			return;
+		}
+
+		for (File f : files) {
+			if (f.isDirectory()) {
+				appendDirectoryClass(
+						StringUtils.isEmpty(rootPackage) ? f.getName() + "." : rootPackage + f.getName() + ".",
+						classList, f, jarVerification, verification);
+			} else {
+				if (f.getName().endsWith(".class")) {
+					String classFile = StringUtils.isEmpty(rootPackage) ? f.getName() : rootPackage + f.getName();
+					Class<?> clz = forFileName(classFile, verification);
+					if (clz != null) {
+						classList.add(clz);
+					}
+				} else if (f.getName().endsWith(".jar")) {
+					if (jarVerification == null || jarVerification.verification(f.getName())) {
+						appendJarClass(f, classList, jarVerification, verification, false);
+					}
+				}
+			}
+		}
+	}
+
+	private static void appendJarClass(File file, Collection<Class<?>> classList, Verification<String> jarVerification,
+			Verification<String> verification, boolean appendManifest) {
+		JarFile jarFile = null;
+		try {
+			jarFile = new JarFile(file);
+			appendJarClass(classList, jarFile, jarVerification, verification, appendManifest);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			IOUtils.close(jarFile);
+		}
+	}
+
+	private static void appendClass(String path, Collection<Class<?>> list, Verification<String> jarVerification,
+			Verification<String> verification, boolean appendManifest) {
+		File file = new File(path);
+		if (file.isFile()) {
+			if (jarVerification == null || jarVerification.verification(file.getName())) {
+				appendJarClass(file, list, jarVerification, verification, appendManifest);
+			}
+		} else {
+			appendDirectoryClass(null, list, file, jarVerification, verification);
+		}
+	}
+
+	private static Class<?> forFileName(String classFile, Verification<String> verification) {
+		if (!classFile.endsWith(CLASS_FILE_SUFFIX)) {
+			return null;
+		}
+
+		String name = classFile.substring(0, classFile.length() - 6);
+		name = name.replaceAll("\\\\", ".");
+		name = name.replaceAll("/", ".");
+		if (verification != null && !verification.verification(name)) {
+			return null;
+		}
+
+		try {
+			return Class.forName(name, false, ClassUtils.getDefaultClassLoader());
+		} catch (Throwable e) {
+		}
+		return null;
+	}
+
+	private static void appendClassesByClassLoader(String packageName, Collection<Class<?>> clazzList,
+			Verification<String> classNameVerification) {
+		String packageDirName = packageName.replace('.', '/');
+		Enumeration<URL> dirs;
+		try {
+			dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
+			while (dirs.hasMoreElements()) {
+				URL url = dirs.nextElement();
+				String protocol = url.getProtocol();
+				if ("file".equals(protocol)) {
+					String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
+					findAndAddClassesInPackageByFile(packageName, filePath, clazzList);
+				} else if ("jar".equals(protocol)) {
+					JarFile jar;
+					try {
+						jar = ((JarURLConnection) url.openConnection()).getJarFile();
+						Enumeration<JarEntry> entries = jar.entries();
+						while (entries.hasMoreElements()) {
+							JarEntry entry = entries.nextElement();
+							if (entry.isDirectory()) {
+								continue;
+							}
+
+							String name = entry.getName();
+							if (name.charAt(0) == '/') {
+								name = name.substring(1);
+							}
+							if (name.startsWith(packageDirName)) {
+								Class<?> clazz = forFileName(name, classNameVerification);
+								if (clazz != null) {
+									clazzList.add(clazz);
+								}
+							}
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/************************************ 扫描类工具 *****************************************/
+
 }

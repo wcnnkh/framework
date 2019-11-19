@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 
 import scw.core.Consumer;
 import scw.core.Init;
-import scw.core.resource.ResourceUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.serializer.SerializerUtils;
@@ -55,14 +55,14 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 	}
 
 	public void createTable(String packageName, boolean registerManager) {
-		Collection<Class<?>> list = ResourceUtils.getClassList(packageName);
+		Collection<Class<?>> list = ClassUtils.getClassList(packageName);
 		for (Class<?> tableClass : list) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {
 				continue;
 			}
 
-			if (registerManager) {
+			if (registerManager) {	
 				DBManager.register(tableClass, this);
 			}
 

@@ -22,8 +22,8 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.reflect.CloneUtils;
 import scw.core.reflect.PropertyMapper;
-import scw.core.resource.IgnoreClassVerification;
-import scw.core.resource.ResourceUtils;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.IgnoreClassVerification;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
@@ -98,7 +98,7 @@ public final class XmlDubboUtils {
 		String packageName = XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
 		if (packageName != null) {
 			IgnoreClassVerification ignoreClassVerification = new IgnoreClassVerification(true, true);
-			Collection<Class<?>> clazzList = ResourceUtils.getClassList(packageName);
+			Collection<Class<?>> clazzList = ClassUtils.getClassList(packageName);
 			for (Class<?> clz : clazzList) {
 				Service service = clz.getAnnotation(Service.class);
 				if (service != null) {
@@ -139,7 +139,7 @@ public final class XmlDubboUtils {
 
 		String packageName = XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
 		if (packageName != null) {
-			for (Class<?> clz : ResourceUtils.getClasses(packageName, true, true)) {
+			for (Class<?> clz : ClassUtils.getClassList(packageName, true, true)) {
 				ReferenceConfig<?> referenceConfig = CloneUtils.copy(config, ReferenceConfig.class);
 				referenceConfig.setInterface(clz);
 				referenceConfigs.add(referenceConfig);

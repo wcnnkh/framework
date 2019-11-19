@@ -28,7 +28,6 @@ import scw.core.cglib.proxy.Factory;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.AnnotationUtils;
 import scw.core.reflect.ReflectUtils;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CompareUtils;
@@ -165,7 +164,7 @@ public final class ORMUtils {
 			logger.info("register proxy package:{}", pageName);
 		}
 
-		for (Class<?> type : ResourceUtils.getClassList(pageName)) {
+		for (Class<?> type : ClassUtils.getClassList(pageName)) {
 			Table table = type.getAnnotation(Table.class);
 			if (table == null) {
 				continue;

@@ -3,6 +3,7 @@ package scw.application;
 import scw.beans.BeanUtils;
 import scw.beans.XmlBeanFactory;
 import scw.core.resource.ResourceUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerUtils;
 import scw.mq.MQUtils;
@@ -87,8 +88,8 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		super.init();
-		TimerUtils.scanningAnnotation(ResourceUtils.getClassList(getCrontabAnnotationPackage()), getBeanFactory());
-		MQUtils.scanningAnnotation(this, ResourceUtils.getClassList(getConsumerAnnotationPackage()));
+		TimerUtils.scanningAnnotation(ClassUtils.getClassList(getCrontabAnnotationPackage()), getBeanFactory());
+		MQUtils.scanningAnnotation(this, ClassUtils.getClassList(getConsumerAnnotationPackage()));
 	}
 
 	public void destroy() {

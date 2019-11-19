@@ -1,4 +1,4 @@
-package scw.core.resource;
+package scw.core.utils;
 
 import scw.core.Verification;
 

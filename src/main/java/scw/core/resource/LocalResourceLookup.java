@@ -7,55 +7,25 @@ import java.net.URL;
 import java.util.jar.JarFile;
 
 import scw.core.Consumer;
+import scw.core.utils.ClassUtils;
+import scw.core.utils.JarUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.io.IOUtils;
 
-public class DefaultResourceLookup extends ClassesResourceLookup {
-	private static final ClassLoaderResourceLookup classLoaderResourceLookup = new ClassLoaderResourceLookup();
+/**
+ * 本地资源处理
+ * 
+ * @author shuchaowen
+ *
+ */
+public final class LocalResourceLookup implements ResourceLookup {
+	/** Pseudo URL prefix for loading from the class path: "classpath:" */
+	private static final String CLASSPATH_URL_PREFIX = "classpath:";
+	private static final String CONFIG_NAME = "config";
+	private static final String CLASS_PATH_PREFIX_EL = "{classpath}";
+	private static final String CLASS_PATH_PREFIX_EL_2 = "{" + CLASSPATH_URL_PREFIX + "}";
 
-	private boolean lockupClassPath(String resource, Consumer<InputStream> consumer) {
-		boolean b = false;
-		if (!b) {
-			for (String classPath : SystemPropertyUtils.getJavaClassPathArray()) {
-				b = consumterInputStream(classPath, resource, consumer);
-				if (b) {
-					break;
-				}
-			}
-		}
-
-		if (!b) {
-			b = classLoaderResourceLookup.lookup(resource, consumer);
-		}
-
-		if (!b) {
-			URL url = ResourceUtils.getClassPathURL();
-			if (url != null) {
-				b = consumterInputStream(url.getPath(), resource, consumer);
-			}
-		}
-		return b;
-	}
-
-	private boolean lockupFile(String resource, Consumer<InputStream> consumer) {
-		File file = new File(resource);
-		if (!file.exists()) {
-			file = null;
-		}
-
-		if (file == null) {
-			if (classLoaderResourceLookup.lookup(resource.replaceAll("\\\\", "/"), consumer)) {
-				return true;
-			}
-			
-			return false;
-		}
-		consumerFileInputStream(file, consumer);
-		return true;
-	}
-
-	@Override
 	public boolean lookup(String resource, Consumer<InputStream> consumer) {
 		if (StringUtils.isEmpty(resource)) {
 			return false;
@@ -85,11 +55,52 @@ public class DefaultResourceLookup extends ClassesResourceLookup {
 				return true;
 			}
 
-			if (lockupFile(SystemPropertyUtils.getWorkPath() + (text.startsWith("/")? "":"/") + text, consumer)) {
+			if (lockupFile(SystemPropertyUtils.getWorkPath() + (text.startsWith("/") ? "" : "/") + text, consumer)) {
 				return true;
 			}
 			return false;
 		}
+	}
+
+	private boolean lockupClassPath(String resource, Consumer<InputStream> consumer) {
+		boolean b = false;
+		if (!b) {
+			for (String classPath : SystemPropertyUtils.getJavaClassPathArray()) {
+				b = consumterInputStream(classPath, resource, consumer);
+				if (b) {
+					break;
+				}
+			}
+		}
+
+		if (!b) {
+			b = lookupClassLoader(resource, consumer);
+		}
+
+		if (!b) {
+			URL url = ResourceUtils.getClassPathURL();
+			if (url != null) {
+				b = consumterInputStream(url.getPath(), resource, consumer);
+			}
+		}
+		return b;
+	}
+
+	private boolean lockupFile(String resource, Consumer<InputStream> consumer) {
+		File file = new File(resource);
+		if (!file.exists()) {
+			file = null;
+		}
+
+		if (file == null) {
+			if (lookupClassLoader(resource.replaceAll("\\\\", "/"), consumer)) {
+				return true;
+			}
+
+			return false;
+		}
+		consumerFileInputStream(file, consumer);
+		return true;
 	}
 
 	private static boolean consumterInputStream(String rootPath, String path, Consumer<InputStream> consumer) {
@@ -186,4 +197,37 @@ public class DefaultResourceLookup extends ClassesResourceLookup {
 		return null;
 	}
 
+	private boolean lookupClassLoader(String resource, Consumer<InputStream> consumer) {
+		InputStream inputStream = getResourceAsStream(resource);
+		if (inputStream == null) {
+			return false;
+		}
+
+		if (consumer != null) {
+			try {
+				consumer.consume(inputStream);
+			} catch (Throwable e) {
+				throw new RuntimeException(e);
+			} finally {
+				IOUtils.close(inputStream);
+			}
+		}
+		return true;
+	}
+
+	private static InputStream getResourceAsStream(String name) {
+		if (StringUtils.isEmpty(name)) {
+			return null;
+		}
+
+		InputStream inputStream = LocalResourceLookup.class.getResourceAsStream(name);
+		if (inputStream == null) {
+			try {
+				inputStream = ClassUtils.getDefaultClassLoader().getResourceAsStream(name);
+			} catch (Exception e) {
+				// ignore 在一些特殊情况下可能出现异常，忽略此异常
+			}
+		}
+		return inputStream;
+	}
 }

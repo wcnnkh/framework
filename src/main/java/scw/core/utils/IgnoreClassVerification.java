@@ -1,4 +1,4 @@
-package scw.core.resource;
+package scw.core.utils;
 
 import scw.core.Verification;
 import scw.core.reflect.AnnotationUtils;
@@ -10,6 +10,14 @@ public class IgnoreClassVerification implements Verification<Class<?>> {
 	public IgnoreClassVerification(boolean ignoreEmptyMethod, boolean interfaceClass) {
 		this.ignoreEmptyMethod = ignoreEmptyMethod;
 		this.interfaceClass = interfaceClass;
+	}
+
+	public boolean isIgnoreEmptyMethod() {
+		return ignoreEmptyMethod;
+	}
+
+	public boolean isInterfaceClass() {
+		return interfaceClass;
 	}
 
 	public boolean verification(Class<?> data) {

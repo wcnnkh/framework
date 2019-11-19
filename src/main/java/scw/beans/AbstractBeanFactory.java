@@ -29,7 +29,6 @@ import scw.core.PropertyFactory;
 import scw.core.exception.AlreadyExistsException;
 import scw.core.exception.BeansException;
 import scw.core.instance.InstanceFactory;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -424,14 +423,14 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 
 		BeanUtils.initStatic(valueWiredManager, this, getPropertyFactory(),
-				ResourceUtils.getClassList(getInitStaticPackage()));
+				ClassUtils.getClassList(getInitStaticPackage()));
 	}
 
 	public synchronized void destroy() {
 		propertyFactory.destroy();
 		valueWiredManager.destroy();
 
-		BeanUtils.destroyStaticMethod(valueWiredManager, ResourceUtils.getClassList(getInitStaticPackage()));
+		BeanUtils.destroyStaticMethod(valueWiredManager, ClassUtils.getClassList(getInitStaticPackage()));
 
 		synchronized (singletonMap) {
 			List<String> beanKeyList = new ArrayList<String>();

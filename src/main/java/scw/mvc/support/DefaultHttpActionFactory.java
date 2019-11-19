@@ -3,7 +3,7 @@ package scw.mvc.support;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
-import scw.core.resource.ResourceUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.Action;
 import scw.mvc.Channel;
@@ -22,7 +22,7 @@ public final class DefaultHttpActionFactory implements ActionFactory {
 		multiHttpActionFactory.getFactoryList().add(new HttpRestfulActionFactory());
 		String packageName = propertyFactory.getProperty("mvc.http.scanning");
 		packageName = StringUtils.isEmpty(packageName) ? "" : packageName;
-		multiHttpActionFactory.init(beanFactory, propertyFactory, ResourceUtils.getClassList(packageName));
+		multiHttpActionFactory.init(beanFactory, propertyFactory, ClassUtils.getClassList(packageName));
 		this.actionFactory = multiHttpActionFactory;
 	}
 

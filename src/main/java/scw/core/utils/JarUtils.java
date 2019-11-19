@@ -1,4 +1,4 @@
-package scw.core.resource;
+package scw.core.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
