@@ -1,14 +1,15 @@
 package scw.timer;
 
 import java.lang.reflect.Method;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 
 import scw.aop.Invoker;
 import scw.beans.BeanFactory;
 import scw.beans.MethodProxyInvoker;
 import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.TypeUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.timer.annotation.Crontab;
@@ -38,9 +39,8 @@ public final class TimerUtils {
 	}
 
 	private static Task getTask(BeanFactory beanFactory, Class<?> clz, Method method) {
-		boolean invokeTime = !ArrayUtils.isEmpty(method.getParameterTypes()) && method.getParameterTypes().length == 1
-				&& TypeUtils.isLong(method.getParameterTypes()[0]);
-		return new CrontabRunnable(new MethodProxyInvoker(beanFactory, clz, method), invokeTime);
+		Class<?> parameterType = ArrayUtils.isEmpty(method.getParameterTypes()) ? null : method.getParameterTypes()[0];
+		return new CrontabRunnable(new MethodProxyInvoker(beanFactory, clz, method), parameterType);
 	}
 
 	private static void schedule(BeanFactory beanFactory, Class<?> clz, Method method, Timer timer, Schedule schedule) {
@@ -59,10 +59,8 @@ public final class TimerUtils {
 	}
 
 	private static void crontab(BeanFactory beanFactory, Class<?> clz, Method method, Timer timer, Crontab crontab) {
-		boolean invokeTime = !ArrayUtils.isEmpty(method.getParameterTypes()) && method.getParameterTypes().length == 1
-				&& TypeUtils.isLong(method.getParameterTypes()[0]);
-		CrontabRunnable crontabRun = new CrontabRunnable(new MethodProxyInvoker(beanFactory, clz, method), invokeTime);
-		timer.crontab(new SimpleCrontabConfig(crontab, crontabRun, getTaskListener(beanFactory, crontab.listener())));
+		timer.crontab(new SimpleCrontabConfig(crontab, getTask(beanFactory, clz, method),
+				getTaskListener(beanFactory, crontab.listener())));
 		LoggerUtils.getLogger(TimerUtils.class).info(
 				"添加任务： name={},dayOfWeek={},month={},dayOfMonth={},hour={},minute={}", crontab.name(),
 				crontab.dayOfWeek(), crontab.month(), crontab.dayOfMonth(), crontab.hour(), crontab.minute());
@@ -71,18 +69,26 @@ public final class TimerUtils {
 
 final class CrontabRunnable implements Task {
 	private final Invoker invoker;
-	private final boolean invokeTime;
+	private final Class<?> parameterType;
 
-	public CrontabRunnable(Invoker invoker, boolean invokeTime) {
+	public CrontabRunnable(Invoker invoker, Class<?> parameterType) {
 		this.invoker = invoker;
-		this.invokeTime = invokeTime;
+		this.parameterType = parameterType;
 	}
 
 	public void run(long executionTime) throws Throwable {
-		if (invokeTime) {
-			invoker.invoke(executionTime);
-		} else {
+		if (parameterType == null) {
 			invoker.invoke();
+		} else {
+			Object value = executionTime;
+			if (parameterType == Calendar.class) {
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(executionTime);
+				value = calendar;
+			} else if (parameterType == Date.class) {
+				value = new Date(executionTime);
+			}
+			invoker.invoke(value);
 		}
 	}
 }
