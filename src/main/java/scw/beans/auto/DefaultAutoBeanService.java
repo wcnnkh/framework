@@ -102,6 +102,6 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 
 	private AutoBean createExecutorServiceAutoBean(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		return new SingleInstanceAutoBean(beanFactory, ThreadPoolExecutor.class,
-				ExecutorUtils.newThreadPoolExecutor(true));
+				ExecutorUtils.newExecutorService(true));
 	}
 }

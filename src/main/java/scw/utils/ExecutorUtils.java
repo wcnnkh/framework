@@ -22,26 +22,25 @@ public final class ExecutorUtils {
 	private ExecutorUtils() {
 	};
 
-	@SuppressWarnings("unchecked")
-	public static <T extends ExecutorService> T porxyDestroy(
-			ExecutorServiceDestroyProxyInvocationHandler<T> invocationHandler) {
-		return (T) Proxy.newProxyInstance(ExecutorServiceDestroyProxy.class.getClassLoader(),
+	public static ExecutorService porxyDestroy(
+			ExecutorServiceDestroyProxyInvocationHandler<? extends ExecutorService> invocationHandler) {
+		return (ExecutorService) Proxy.newProxyInstance(ExecutorServiceDestroyProxy.class.getClassLoader(),
 				new Class<?>[] { ExecutorServiceDestroyProxy.class }, invocationHandler);
 	}
 
-	public static ThreadPoolExecutor porxyDestroy(ThreadPoolExecutor threadPoolExecutor, boolean shutdownNow) {
+	public static ExecutorService porxyDestroy(ThreadPoolExecutor threadPoolExecutor, boolean shutdownNow) {
 		return porxyDestroy(new ThreadPoolExecutorDestroyProxy(threadPoolExecutor, shutdownNow));
 	}
 
-	public static ThreadPoolExecutor newThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime,
+	public static ExecutorService newExecutorService(int corePoolSize, int maximumPoolSize, long keepAliveTime,
 			TimeUnit timeUnit, boolean proxyDestroy) {
 		ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime,
 				timeUnit, new SynchronousQueue<Runnable>());
 		return proxyDestroy ? porxyDestroy(threadPoolExecutor, true) : threadPoolExecutor;
 	}
 
-	public static ThreadPoolExecutor newThreadPoolExecutor(boolean proxyDestroy) {
-		return newThreadPoolExecutor(DEFAULT_CORE_POOL_SIZE, DEFAULT_MAXMUM_POOL_SIZE, DEFAULT_KEEP_ALIVE_TIME,
+	public static ExecutorService newExecutorService(boolean proxyDestroy) {
+		return newExecutorService(DEFAULT_CORE_POOL_SIZE, DEFAULT_MAXMUM_POOL_SIZE, DEFAULT_KEEP_ALIVE_TIME,
 				DEFAULT_TIME_UNIT, proxyDestroy);
 	}
 

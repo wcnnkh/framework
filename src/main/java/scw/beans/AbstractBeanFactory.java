@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
 
 import scw.beans.annotation.AutoImpl;
 import scw.beans.async.AsyncCompleteFilter;
@@ -38,7 +37,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.security.limit.CountLimitFilter;
 import scw.transaction.TransactionFilter;
-import scw.utils.ExecutorUtils;
 
 public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy {
 	static Logger logger = LoggerUtils.getLogger(BeanFactory.class);
@@ -55,7 +53,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		this.valueWiredManager = new ValueWiredManager(propertyFactory, this);
 		appendSingleByPropertyFactory();
 		appendSingleByBeanFactory();
-		appendSingleByExecutorService();
 
 		appendRootFilters();
 	}
@@ -71,13 +68,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		beanMap.put(BeanFactory.class.getName(), new EmptyBeanDefinition(BeanFactory.class, this,
 				new String[] { InstanceFactory.class.getName() }, false));
 		nameMappingMap.put(InstanceFactory.class.getName(), BeanFactory.class.getName());
-	}
-
-	private void appendSingleByExecutorService() {
-		ExecutorService executorService = ExecutorUtils.newThreadPoolExecutor(true);
-		singletonMap.put(ExecutorService.class.getName(), executorService);
-		beanMap.put(ExecutorService.class.getName(),
-				new EmptyBeanDefinition(ExecutorService.class, executorService, null, true));
 	}
 
 	private void appendRootFilters() {
