@@ -10,13 +10,17 @@ import scw.beans.annotation.Proxy;
 import scw.core.PropertyFactory;
 import scw.core.exception.BeansException;
 import scw.core.utils.ArrayUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
 public final class AutoBeanUtils {
 	private static final AutoBeanService DEFAULT_AUTO_BEAN_SERVICE = new DefaultAutoBeanService();
 	private static final LinkedList<Object> services = new LinkedList<Object>();
+	private static Logger logger = LoggerUtils.getLogger(AutoBeanUtils.class);
 
 	private AutoBeanUtils() {
 	};
@@ -100,7 +104,7 @@ public final class AutoBeanUtils {
 		}
 		return null;
 	}
-	
+
 	public static LinkedList<String> getProxyNames(Proxy proxy) {
 		LinkedList<String> list = new LinkedList<String>();
 		if (proxy == null) {
@@ -115,6 +119,47 @@ public final class AutoBeanUtils {
 			list.add(c.getName());
 		}
 
+		return list;
+	}
+
+	public static Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig, Class<?> type,
+			PropertyFactory propertyFactory) {
+		LinkedList<Class<?>> list = new LinkedList<Class<?>>();
+		for (String name : autoConfig.className()) {
+			if (StringUtils.isEmpty(name)) {
+				continue;
+			}
+
+			name = FormatUtils.format(name, propertyFactory, true);
+			if (!ClassUtils.isAvailable(name)) {
+				continue;
+			}
+
+			Class<?> clz = null;
+			try {
+				clz = Class.forName(name);
+			} catch (ClassNotFoundException e) {
+			} catch (NoClassDefFoundError e) {
+			}
+
+			if (clz == null) {
+				continue;
+			}
+
+			if (type.isAssignableFrom(clz)) {
+				list.add(clz);
+			} else {
+				logger.warn("{} not is assignable from name {}", type, clz);
+			}
+		}
+
+		for (Class<?> clz : autoConfig.value()) {
+			if (type.isAssignableFrom(clz)) {
+				list.add(clz);
+			} else {
+				logger.warn("{} not is assignable from {}", type, clz);
+			}
+		}
 		return list;
 	}
 }

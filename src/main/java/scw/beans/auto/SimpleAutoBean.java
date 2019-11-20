@@ -9,7 +9,7 @@ import scw.core.instance.InstanceConfig;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
-public class SimpleAutoBean extends AbstractAutoBean {
+public class SimpleAutoBean extends AbstractSimpleAutoBean {
 	private static Logger logger = LoggerUtils.getLogger(SimpleAutoBean.class);
 	private InstanceConfig instanceConfig;
 

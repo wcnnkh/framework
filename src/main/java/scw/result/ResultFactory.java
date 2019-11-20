@@ -19,10 +19,8 @@ public interface ResultFactory {
 	 */
 	<T> DataResult<T> parameterError();
 
-	@Deprecated
 	<T> DataResult<T> error(int code, String msg, T data, boolean rollback);
 
-	@Deprecated
 	<T> DataResult<T> error(String msg, T data, boolean rollback);
 	
 	<T> DataResult<T> error(int code, String msg);

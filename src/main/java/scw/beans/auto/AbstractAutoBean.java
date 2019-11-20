@@ -8,9 +8,7 @@ import scw.beans.BeanUtils;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
-import scw.core.exception.NotSupportException;
 import scw.core.reflect.ReflectUtils;
-import scw.core.utils.CollectionUtils;
 
 public abstract class AbstractAutoBean implements AutoBean {
 	protected final BeanFactory beanFactory;
@@ -22,14 +20,6 @@ public abstract class AbstractAutoBean implements AutoBean {
 		this.type = type;
 		this.proxy = BeanUtils.checkProxy(type);
 	}
-
-	public boolean isInstance() {
-		return getParameterTypes() != null;
-	}
-
-	protected abstract Class<?>[] getParameterTypes();
-
-	protected abstract Object[] getParameters();
 
 	protected abstract Collection<String> getFilterNames();
 
@@ -43,22 +33,6 @@ public abstract class AbstractAutoBean implements AutoBean {
 
 	public Class<?> getTargetClass() {
 		return type;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T create() {
-		if (!isInstance()) {
-			throw new NotSupportException(type.getName());
-		}
-
-		if (type.isInterface()) {
-			if (!CollectionUtils.isEmpty(getFilterNames())) {
-				return (T) BeanUtils.proxyInterface(beanFactory, type, getFilterNames(), null);
-			}
-			throw new NotSupportException(type.getName());
-		}
-
-		return create(getParameterTypes(), getParameters());
 	}
 
 	@SuppressWarnings("unchecked")

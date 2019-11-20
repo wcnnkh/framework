@@ -1,16 +1,19 @@
 package scw.beans;
 
 import scw.aop.ProxyUtils;
+import scw.core.utils.XUtils;
 
 public final class EmptyBeanDefinition implements BeanDefinition {
 	private Object instance;
 	private Class<?> type;
 	private String[] names;
+	private boolean destroy;
 
-	public EmptyBeanDefinition(Class<?> type, Object instance, String[] names) {
+	public EmptyBeanDefinition(Class<?> type, Object instance, String[] names, boolean destroy) {
 		this.type = type;
 		this.instance = instance;
 		this.names = names;
+		this.destroy = destroy;
 	}
 
 	public boolean isInstance() {
@@ -57,6 +60,9 @@ public final class EmptyBeanDefinition implements BeanDefinition {
 	}
 
 	public void destroy(Object bean) throws Exception {
+		if (destroy) {
+			XUtils.destroy(bean);
+		}
 	}
 
 }

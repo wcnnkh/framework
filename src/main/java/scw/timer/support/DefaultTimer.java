@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 import scw.core.Destroy;
 import scw.core.exception.AlreadyExistsException;
@@ -34,13 +34,13 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 	private final ConcurrentHashMap<String, TaskContext> contextMap = new ConcurrentHashMap<String, TaskContext>();
 	private final TaskLockFactory taskLockFactory;
 	private final java.util.Timer timer;
-	private final Executor executor;
+	private final ExecutorService executorService;
 	private final TaskFactory taskFactory;
 
-	public DefaultTimer(TaskLockFactory taskLockFactory, Executor executor, TaskFactory taskFactory) {
+	public DefaultTimer(TaskLockFactory taskLockFactory, ExecutorService executorService, TaskFactory taskFactory) {
 		this.taskLockFactory = taskLockFactory;
 		this.timer = createTimer();
-		this.executor = executor;
+		this.executorService = executorService;
 		this.taskFactory = taskFactory;
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.MINUTE, 1);
@@ -147,7 +147,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 
 		@Override
 		public void run() {
-			executor.execute(new CrontabRun(scheduledExecutionTime()));
+			executorService.execute(new CrontabRun(scheduledExecutionTime()));
 		}
 	}
 
@@ -160,7 +160,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 
 		@Override
 		public void run() {
-			executor.execute(new TaskInvoker(scheduledExecutionTime(), task));
+			executorService.execute(new TaskInvoker(scheduledExecutionTime(), task));
 		}
 	}
 
@@ -197,7 +197,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 				TaskContext context = entry.getValue();
 				if (context instanceof CrontabTaskContext) {
 					if (((CrontabTaskContext) context).checkTime(calendar)) {
-						executor.execute(new TaskInvoker(cts, ((CrontabTaskContext) context).getTask()));
+						executorService.execute(new TaskInvoker(cts, ((CrontabTaskContext) context).getTask()));
 					}
 				}
 			}

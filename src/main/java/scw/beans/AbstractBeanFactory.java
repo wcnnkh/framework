@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
 
 import scw.beans.annotation.AutoImpl;
 import scw.beans.async.AsyncCompleteFilter;
@@ -37,6 +38,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.security.limit.CountLimitFilter;
 import scw.transaction.TransactionFilter;
+import scw.utils.ExecutorUtils;
 
 public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy {
 	static Logger logger = LoggerUtils.getLogger(BeanFactory.class);
@@ -51,14 +53,34 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	public AbstractBeanFactory() {
 		this.valueWiredManager = new ValueWiredManager(propertyFactory, this);
+		appendSingleByPropertyFactory();
+		appendSingleByBeanFactory();
+		appendSingleByExecutorService();
+
+		appendRootFilters();
+	}
+
+	private void appendSingleByPropertyFactory() {
 		singletonMap.put(PropertyFactory.class.getName(), propertyFactory);
 		beanMap.put(PropertyFactory.class.getName(),
-				new EmptyBeanDefinition(PropertyFactory.class, propertyFactory, null));
-		singletonMap.put(BeanFactory.class.getName(), this);
-		beanMap.put(BeanFactory.class.getName(),
-				new EmptyBeanDefinition(BeanFactory.class, this, new String[] { InstanceFactory.class.getName() }));
-		nameMappingMap.put(InstanceFactory.class.getName(), BeanFactory.class.getName());
+				new EmptyBeanDefinition(PropertyFactory.class, propertyFactory, null, false));
+	}
 
+	private void appendSingleByBeanFactory() {
+		singletonMap.put(BeanFactory.class.getName(), this);
+		beanMap.put(BeanFactory.class.getName(), new EmptyBeanDefinition(BeanFactory.class, this,
+				new String[] { InstanceFactory.class.getName() }, false));
+		nameMappingMap.put(InstanceFactory.class.getName(), BeanFactory.class.getName());
+	}
+
+	private void appendSingleByExecutorService() {
+		ExecutorService executorService = ExecutorUtils.newThreadPoolExecutor(true);
+		singletonMap.put(ExecutorService.class.getName(), executorService);
+		beanMap.put(ExecutorService.class.getName(),
+				new EmptyBeanDefinition(ExecutorService.class, executorService, null, true));
+	}
+
+	private void appendRootFilters() {
 		filterNames.add(CountLimitFilter.class.getName());
 		filterNames.add(TransactionFilter.class.getName());
 		filterNames.add(TCCTransactionFilter.class.getName());
@@ -427,8 +449,8 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	public synchronized void destroy() {
-		propertyFactory.destroy();
 		valueWiredManager.destroy();
+		propertyFactory.destroy();
 
 		BeanUtils.destroyStaticMethod(valueWiredManager, ClassUtils.getClassList(getInitStaticPackage()));
 

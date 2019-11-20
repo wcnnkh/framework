@@ -5,7 +5,7 @@ import java.util.Collections;
 
 import scw.beans.BeanFactory;
 
-public class ProxyAutoBean extends AbstractAutoBean {
+public class ProxyAutoBean extends AbstractSimpleAutoBean {
 	private Collection<String> proxyNames;
 
 	public ProxyAutoBean(BeanFactory beanFactory, Class<?> type,

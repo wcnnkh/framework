@@ -5,7 +5,7 @@ import java.util.Collection;
 import scw.beans.BeanFactory;
 import scw.core.utils.ClassUtils;
 
-public class DefaultAutoBean extends AbstractAutoBean {
+public class DefaultAutoBean extends AbstractSimpleAutoBean {
 	private Class<?>[] parameterTypes;
 	private Object[] parameters;
 
