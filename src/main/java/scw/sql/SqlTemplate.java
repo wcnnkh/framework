@@ -41,11 +41,11 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
-	public void execute(Sql sql) throws SqlException {
+	public boolean execute(Sql sql) throws SqlException {
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
-			execute(sql, connection);
+			return execute(sql, connection);
 		} catch (SQLException e) {
 			throw new SqlException(SqlUtils.getSqlId(sql), e);
 		} finally {

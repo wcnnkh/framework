@@ -81,6 +81,18 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		return resultSet.getList(type, tName);
 	}
 
+	public Object getAutoIncrementLastId(Connection connection, String tableName) throws SQLException {
+		return query(getSqlFormat().toLastInsertIdSql(tableName), connection, new ResultSetMapper<Object>() {
+
+			public Object mapper(java.sql.ResultSet resultSet) throws SQLException {
+				if (resultSet.next()) {
+					return resultSet.getObject(1);
+				}
+				return null;
+			}
+		});
+	}
+
 	public boolean save(Object bean, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
 		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
@@ -98,18 +110,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 					return false;
 				}
 
-				Object lastId = query(getSqlFormat().toLastInsertIdSql(tName), connection,
-						new ResultSetMapper<Object>() {
-
-							public Object mapper(java.sql.ResultSet resultSet) throws SQLException {
-								if (resultSet.next()) {
-									return resultSet.getObject(1);
-								}
-								return null;
-							}
-						});
-
-				tableInfo.getAutoIncrement().set(bean, lastId);
+				tableInfo.getAutoIncrement().set(bean, getAutoIncrementLastId(connection, tName));
 				return true;
 			} catch (Exception e) {
 				throw new RuntimeException(e);
@@ -159,13 +160,6 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		return update(sql) != 0;
 	}
 
-	public boolean saveOrUpdate(Object bean, String tableName) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
-		Sql sql = getSqlFormat().toSaveOrUpdateSql(bean, tableInfo, tName);
-		return update(sql) != 0;
-	}
-
 	public boolean save(Object bean) {
 		return save(bean, null);
 	}
@@ -176,6 +170,34 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 
 	public boolean saveOrUpdate(Object bean) {
 		return saveOrUpdate(bean, null);
+	}
+
+	public boolean saveOrUpdate(Object bean, String tableName) {
+		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
+		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
+		Sql sql = getSqlFormat().toSaveOrUpdateSql(bean, tableInfo, tName);
+		if (tableInfo.getAutoIncrement() == null) {
+			return update(sql) != 0;
+		} else {
+			Connection connection = null;
+			try {
+				connection = getUserConnection();
+				int updateCount = update(sql, connection);
+				if (updateCount == 0) {
+					logger.warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
+					return false;
+				}
+
+				if (updateCount == 1) {// 插入
+					tableInfo.getAutoIncrement().set(bean, getAutoIncrementLastId(connection, tName));
+				}
+				return true;
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			} finally {
+				close(connection);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
