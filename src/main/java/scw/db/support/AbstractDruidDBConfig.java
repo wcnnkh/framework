@@ -1,17 +1,14 @@
 package scw.db.support;
 
 import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Enumeration;
 import java.util.Map;
+
+import com.alibaba.druid.pool.DruidDataSource;
 
 import scw.core.Destroy;
 import scw.db.DBUtils;
 import scw.db.database.DataBase;
-
-import com.alibaba.druid.pool.DruidDataSource;
 
 public abstract class AbstractDruidDBConfig extends AbstractDBConfig implements Destroy {
 	private DruidDataSource datasource;
@@ -47,13 +44,5 @@ public abstract class AbstractDruidDBConfig extends AbstractDBConfig implements 
 
 	public void destroy() {
 		datasource.close();
-		Enumeration<Driver> drivers = DriverManager.getDrivers();
-		while (drivers.hasMoreElements()) {
-			try {
-				DriverManager.deregisterDriver(drivers.nextElement());
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 }
