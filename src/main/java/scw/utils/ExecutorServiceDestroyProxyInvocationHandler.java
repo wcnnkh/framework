@@ -19,7 +19,7 @@ public abstract class ExecutorServiceDestroyProxyInvocationHandler<T extends Exe
 	}
 
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		if (args.length == 0) {
+		if (args == null || args.length == 0) {
 			if (method.getName().equals("getTargetExecutorService")) {
 				return executorService;
 			} else if (method.getName().equals("destroy")) {
