@@ -5,70 +5,14 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import scw.core.PropertyFactory;
 import scw.core.StringFormat;
-import scw.core.lazy.LazyFactory;
-import scw.core.lazy.UnsafeMapLazyFactory;
 
 public final class FormatUtils {
 	private FormatUtils() {
 	};
-
-	private static final ThreadLocal<LocalFormat> LOCAL = new ThreadLocal<LocalFormat>() {
-		protected LocalFormat initialValue() {
-			return new LocalFormat();
-		};
-	};
-
-	public static LocalFormat getLocalFormat() {
-		return LOCAL.get();
-	}
-
-	public static class LocalFormat {
-		private LazyFactory<String, LazyFactory<Locale, SimpleDateFormat>> simpleDateFormatMap = new UnsafeMapLazyFactory<String, LazyFactory<Locale, SimpleDateFormat>>() {
-			public Map<String, LazyFactory<Locale, SimpleDateFormat>> createMap() {
-				return new HashMap<String, LazyFactory<Locale, SimpleDateFormat>>(8);
-			};
-
-			public LazyFactory<Locale, SimpleDateFormat> createValue(final String pattern) {
-
-				return new UnsafeMapLazyFactory<Locale, SimpleDateFormat>() {
-
-					public Map<Locale, SimpleDateFormat> createMap() {
-						return new HashMap<Locale, SimpleDateFormat>(4);
-					};
-
-					public SimpleDateFormat createValue(Locale locale) {
-						return new SimpleDateFormat(pattern, locale);
-					}
-				};
-			}
-		};
-
-		public SimpleDateFormat getSimpleDateFormat(String pattern, Locale locale) {
-			return simpleDateFormatMap.get(pattern).get(locale);
-		}
-
-		public SimpleDateFormat getSimpleDateFormat(String pattern) {
-			return getSimpleDateFormat(pattern, Locale.getDefault(Locale.Category.FORMAT));
-		}
-
-		private LazyFactory<String, DecimalFormat> decimalFormatMap = new UnsafeMapLazyFactory<String, DecimalFormat>() {
-
-			public DecimalFormat createValue(String key) {
-				return new DecimalFormat(key);
-			}
-		};
-
-		public DecimalFormat getDecimalFormat(String pattern) {
-			return decimalFormatMap.get(pattern);
-		}
-	}
-
 	private static final String DEFAULT_PLACEHOLDER = "{}";
 
 	public static String formatPlaceholder(Object text, String placeholder, Object... args) {
@@ -150,15 +94,15 @@ public final class FormatUtils {
 		for (int i = 0; i < len; i++) {
 			charBuffer.put("0");
 		}
-		return getLocalFormat().getDecimalFormat(new String(charBuffer.array())).format(number);
+		return new DecimalFormat(new String(charBuffer.array())).format(number);
 	}
 
 	public static Date getDate(String date, String formatter) throws ParseException {
-		return getLocalFormat().getSimpleDateFormat(formatter).parse(date);
+		return new SimpleDateFormat(formatter).parse(date);
 	}
 
 	public static String dateFormat(Date date, String formatter) {
-		return getLocalFormat().getSimpleDateFormat(formatter).format(date);
+		return new SimpleDateFormat(formatter).format(date);
 	}
 
 	public static String format(String text, final PropertyFactory propertyFactory, boolean supportEL) {

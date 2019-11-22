@@ -1,6 +1,7 @@
 package scw.beans;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -48,8 +49,7 @@ public abstract class AbstractBeanConfigFactory implements BeanConfigFactory {
 		return nameMappingMap;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Collection<Destroy> getDestroys() {
-		return (Collection<Destroy>) destroys.clone();
+		return Collections.unmodifiableCollection(destroys);
 	}
 }

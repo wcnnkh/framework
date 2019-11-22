@@ -1,8 +1,13 @@
 package scw.db.support;
 
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.Map;
 
 import scw.core.Constants;
+import scw.core.Destroy;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.data.RedisDataTemplete;
@@ -16,7 +21,7 @@ import scw.mq.queue.MemoryQueue;
 import scw.mq.queue.Queue;
 
 @SuppressWarnings("rawtypes")
-public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants {
+public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants, Destroy {
 	private String sannerTablePackage;
 
 	public AbstractDBConfig(Map properties) {
@@ -50,5 +55,16 @@ public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants {
 		String queueName = StringUtils.toString(properties.get("async.name"), null);
 		return StringUtils.isEmpty(queueName) ? new MemoryQueue<AsyncExecute>()
 				: new MemoryQueue<AsyncExecute>(redis, queueName);
+	}
+	
+	public void destroy() {
+		Enumeration<Driver> drivers = DriverManager.getDrivers();
+		while (drivers.hasMoreElements()) {
+			try {
+				DriverManager.deregisterDriver(drivers.nextElement());
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

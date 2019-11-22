@@ -11,12 +11,11 @@ import scw.core.Destroy;
 import scw.db.DBUtils;
 import scw.db.database.DataBase;
 
-public abstract class AbstractHikariCPDBConfig extends AbstractDBConfig
-		implements Destroy {
+public abstract class AbstractHikariCPDBConfig extends AbstractDBConfig implements Destroy {
 	private HikariDataSource hds;
 	private DataBase dataBase;
-	
-	static{
+
+	static {
 		HikariConfig.class.getName();
 	}
 
@@ -26,8 +25,7 @@ public abstract class AbstractHikariCPDBConfig extends AbstractDBConfig
 		HikariConfig config = new HikariConfig();
 		DBUtils.loadProperties(config, properties);
 
-		this.dataBase = DBUtils.automaticRecognition(
-				config.getDriverClassName(), config.getJdbcUrl(),
+		this.dataBase = DBUtils.automaticRecognition(config.getDriverClassName(), config.getJdbcUrl(),
 				config.getUsername(), config.getPassword());
 		dataBase.create();
 		hds = new HikariDataSource(config);
@@ -43,5 +41,6 @@ public abstract class AbstractHikariCPDBConfig extends AbstractDBConfig
 
 	public void destroy() {
 		hds.close();
+		super.destroy();
 	}
 }

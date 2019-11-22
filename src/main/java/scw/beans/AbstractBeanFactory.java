@@ -131,10 +131,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 				}
 			}
 
-			Collection<Destroy> destroys = beanConfigFactory.getDestroys();
-			if (destroys != null) {
-				destroys.addAll(destroys);
-			}
+			destroys.addAll(beanConfigFactory.getDestroys());
 		}
 	}
 

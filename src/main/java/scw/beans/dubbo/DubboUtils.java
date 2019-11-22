@@ -1,8 +1,5 @@
 package scw.beans.dubbo;
 
-import java.lang.reflect.Method;
-
-import org.apache.dubbo.config.DubboShutdownHook;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -12,7 +9,7 @@ import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
-import scw.core.reflect.ReflectUtils;
+import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
@@ -23,12 +20,7 @@ public final class DubboUtils {
 	};
 
 	public static boolean isSupport() {
-		try {
-			Class.forName("org.apache.dubbo.config.annotation.Service");
-			return true;
-		} catch (ClassNotFoundException e) {
-			return false;
-		}
+		return ClassUtils.isAvailable("org.apache.dubbo.config.annotation.Service");
 	}
 
 	public static boolean isServiceNode(Node node) {
@@ -103,10 +95,10 @@ public final class DubboUtils {
 	}
 
 	public static void exportService(InstanceFactory beanFactory, PropertyFactory propertyFactory, NodeList nodeList) {
-		if(nodeList == null){
-			return ;
+		if (nodeList == null) {
+			return;
 		}
-		
+
 		if (!xmlExistDubboService(nodeList)) {
 			return;
 		}
@@ -123,26 +115,5 @@ public final class DubboUtils {
 		}
 
 		runnable.run();
-	}
-	
-	public static void registerDubboShutdownHook() {
-		Class<?> dubboShutdownHook = null;
-		try {
-			dubboShutdownHook = Class.forName("org.apache.dubbo.config.DubboShutdownHook");
-		} catch (ClassNotFoundException e1) {
-		}
-
-		if (dubboShutdownHook == null) {
-			return;
-		}
-
-		DubboShutdownHook.getDubboShutdownHook().register();
-		try {
-			Object obj = ReflectUtils.invokeStaticMethod(dubboShutdownHook, "getDubboShutdownHook", new Class[0]);
-			Method method = ReflectUtils.findMethod(dubboShutdownHook, "register");
-			method.invoke(obj);
-		} catch (Exception e) {
-			logger.error(e, "shutdown error");
-		}
 	}
 }
