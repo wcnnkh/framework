@@ -1,5 +1,7 @@
 package scw.beans.dubbo;
 
+import java.lang.reflect.Method;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -9,6 +11,7 @@ import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.reflect.ReflectUtils;
 import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -115,5 +118,25 @@ public final class DubboUtils {
 		}
 
 		runnable.run();
+	}
+	
+	public static void registerDubboShutdownHook() {
+		Class<?> dubboShutdownHook = null;
+		try {
+			dubboShutdownHook = Class.forName("org.apache.dubbo.config.DubboShutdownHook");
+		} catch (ClassNotFoundException e1) {
+		}
+
+		if (dubboShutdownHook == null) {
+			return;
+		}
+
+		try {
+			Object obj = ReflectUtils.invokeStaticMethod(dubboShutdownHook, "getDubboShutdownHook", new Class[0]);
+			Method method = ReflectUtils.findMethod(dubboShutdownHook, "register");
+			method.invoke(obj);
+		} catch (Exception e) {
+			logger.error(e, "shutdown error");
+		}
 	}
 }

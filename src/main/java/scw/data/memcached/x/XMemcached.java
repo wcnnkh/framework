@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
+import scw.core.Destroy;
 import scw.core.utils.CollectionUtils;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
@@ -15,7 +16,7 @@ import scw.data.cas.SimpleCAS;
 import scw.data.memcached.Memcached;
 import scw.data.memcached.MemcachedUtils;
 
-public final class XMemcached implements Memcached {
+public final class XMemcached implements Memcached, Destroy{
 	private final MemcachedClient memcachedClient;
 	private final CASOperations casOperations;
 	private volatile boolean isSupportTouch = true;// 是否支持touch协议

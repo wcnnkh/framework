@@ -44,6 +44,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
@@ -351,9 +352,10 @@ public final class BeanUtils {
 
 		return true;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static <T> T proxyInterface(BeanFactory beanFactory, Class<T> interfaceClass, Collection<String> filterNames, Collection<Filter> filters) {
+	public static <T> T proxyInterface(BeanFactory beanFactory, Class<T> interfaceClass, Collection<String> filterNames,
+			Collection<Filter> filters) {
 		Object newProxyInstance = java.lang.reflect.Proxy.newProxyInstance(interfaceClass.getClassLoader(),
 				new Class[] { interfaceClass }, new FilterInvocationHandler(interfaceClass, filters));
 		return (T) ProxyUtils.proxyInstance(newProxyInstance, interfaceClass,
@@ -418,27 +420,27 @@ public final class BeanUtils {
 	}
 
 	public static String getAnnotationPackage(PropertyFactory propertyFactory) {
-		return propertyFactory.getProperty("scan.package");
+		return getPackageName(propertyFactory, "scan.package");
 	}
 
 	public static String getORMPackage(PropertyFactory propertyFactory) {
-		return propertyFactory.getProperty("scan.orm");
+		return getPackageName(propertyFactory, "scan.orm");
 	}
 
 	public static String getServiceAnnotationPackage(PropertyFactory propertyFactory) {
-		return propertyFactory.getProperty("scan.service");
+		return getPackageName(propertyFactory, "scan.service");
 	}
 
 	public static String getCrontabAnnotationPackage(PropertyFactory propertyFactory) {
-		return propertyFactory.getProperty("scan.crontab");
+		return getPackageName(propertyFactory, "scan.crontab");
 	}
 
 	public static String getConsumerAnnotationPackage(PropertyFactory propertyFactory) {
-		return propertyFactory.getProperty("scan.consumer");
+		return getPackageName(propertyFactory, "scan.consumer");
 	}
 
 	public static String getInitStaticPackage(PropertyFactory propertyFactory) {
-		return propertyFactory.getProperty("scan.static");
+		return getPackageName(propertyFactory, "scan.static");
 	}
 
 	public static List<NoArgumentBeanMethod> getInitMethodList(Class<?> type) {
@@ -530,6 +532,37 @@ public final class BeanUtils {
 					}
 				}
 			}
+		}
+	}
+
+	public static String getPackageName(PropertyFactory propertyFactory, String configName) {
+		return StringUtils.toString(propertyFactory.getProperty(configName), getRootPackage());
+	}
+
+	public static String getRootPackage() {
+		return SystemPropertyUtils.getProperty("scw.root.package");
+	}
+
+	public static void setRootPackage(String packageName) {
+		SystemPropertyUtils.setPrivateProperty("scw.root.package", packageName);
+	}
+
+	public static String parseRootPackage(Class<?> clazz) {
+		String[] arr = StringUtils.split(clazz.getName(), '.');
+		if (arr.length < 2) {
+			return null;
+		} else if (arr.length == 2) {
+			return arr[0];
+		} else {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < 2; i++) {
+				if (i != 0) {
+					sb.append(".");
+				}
+				sb.append(arr[i]);
+			}
+
+			return sb.toString();
 		}
 	}
 }

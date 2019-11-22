@@ -44,6 +44,5 @@ public abstract class AbstractDruidDBConfig extends AbstractDBConfig implements 
 
 	public void destroy() {
 		datasource.close();
-		super.destroy();
 	}
 }

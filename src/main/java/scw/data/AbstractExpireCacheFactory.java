@@ -16,6 +16,7 @@ public abstract class AbstractExpireCacheFactory implements ExpiredCacheFactory,
 		ExpiredCache cache = cacheMap.putIfAbsent(exp, create);
 		if (cache == null) {
 			XUtils.init(create);
+			XUtils.start(create);
 			cache = create;
 		}
 		return cache;

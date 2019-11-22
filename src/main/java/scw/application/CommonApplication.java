@@ -5,6 +5,7 @@ import scw.beans.XmlBeanFactory;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.db.DBUtils;
 import scw.logger.LoggerUtils;
 import scw.mq.MQUtils;
 import scw.sql.orm.ORMUtils;
@@ -22,40 +23,30 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		return this;
 	}
 
-	protected String getAnnotationPackage() {
-		return BeanUtils.getAnnotationPackage(getPropertyFactory());
-	}
-
 	protected String getORMPackage() {
-		String orm = BeanUtils.getORMPackage(getPropertyFactory());
-		return orm == null ? getAnnotationPackage() : orm;
+		return BeanUtils.getORMPackage(getPropertyFactory());
 	}
 
 	@Override
 	protected String getServicePackage() {
-		String service = BeanUtils.getServiceAnnotationPackage(getPropertyFactory());
-		return service == null ? getAnnotationPackage() : service;
+		return BeanUtils.getServiceAnnotationPackage(getPropertyFactory());
 	}
 
 	protected String getCrontabAnnotationPackage() {
-		String crontab = BeanUtils.getCrontabAnnotationPackage(getPropertyFactory());
-		return crontab == null ? getAnnotationPackage() : crontab;
+		return BeanUtils.getCrontabAnnotationPackage(getPropertyFactory());
 	}
 
 	protected String getConsumerAnnotationPackage() {
-		String consumer = BeanUtils.getConsumerAnnotationPackage(getPropertyFactory());
-		return consumer == null ? getAnnotationPackage() : consumer;
+		return BeanUtils.getConsumerAnnotationPackage(getPropertyFactory());
 	}
 
 	@Override
 	protected String getInitStaticPackage() {
-		String init = BeanUtils.getInitStaticPackage(getPropertyFactory());
-		return init == null ? getAnnotationPackage() : init;
+		return BeanUtils.getInitStaticPackage(getPropertyFactory());
 	}
 
 	protected String getStaticAnnotationPackage() {
-		String init = BeanUtils.getInitStaticPackage(getPropertyFactory());
-		return init == null ? getAnnotationPackage() : init;
+		return BeanUtils.getInitStaticPackage(getPropertyFactory());
 	}
 
 	public void init() {
@@ -106,6 +97,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		super.destroy();
+		DBUtils.deregisterDriver();
 		LoggerUtils.destroy();
 	}
 
@@ -114,41 +106,9 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 			LoggerUtils.warn(TomcatApplication.class, "not found " + beanXml);
 		}
 
-		CommonApplication application;
-		if (clazz == null) {
-			application = new CommonApplication(beanXml);
-		} else {
-			application = new CommonApplication(beanXml) {
-				@Override
-				protected String getAnnotationPackage() {
-					String[] arr = StringUtils.split(clazz.getName(), '.');
-					if (arr.length < 2) {
-						return super.getAnnotationPackage();
-					} else if (arr.length == 2) {
-						String p = super.getAnnotationPackage();
-						if (StringUtils.isEmpty(p)) {
-							return arr[0];
-						} else {
-							return p + "," + arr[0];
-						}
-					} else {
-						StringBuilder sb = new StringBuilder();
-						for (int i = 0; i < 2; i++) {
-							if (i != 0) {
-								sb.append(".");
-							}
-							sb.append(arr[i]);
-						}
-
-						String p = super.getAnnotationPackage();
-						if (StringUtils.isEmpty(p)) {
-							return sb.toString();
-						} else {
-							return p + "," + sb.toString();
-						}
-					}
-				}
-			};
+		CommonApplication application = new CommonApplication(beanXml);
+		if (clazz != null) {
+			BeanUtils.setRootPackage(BeanUtils.parseRootPackage(clazz));
 		}
 		application.init();
 	}

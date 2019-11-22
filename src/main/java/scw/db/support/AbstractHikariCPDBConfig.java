@@ -41,6 +41,5 @@ public abstract class AbstractHikariCPDBConfig extends AbstractDBConfig implemen
 
 	public void destroy() {
 		hds.close();
-		super.destroy();
 	}
 }

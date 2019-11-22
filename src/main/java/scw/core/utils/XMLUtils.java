@@ -304,7 +304,7 @@ public final class XMLUtils {
 		return map.isEmpty() ? null : map;
 	}
 
-	public static String asXml(Element element) {
+	public static String toString(Node node) {
 		Transformer transformer;
 		try {
 			transformer = TRANSFORMER_FACTORY.newTransformer();
@@ -315,7 +315,7 @@ public final class XMLUtils {
 
 		StringWriter sw = new StringWriter();
 		StreamResult result = new StreamResult(sw);
-		DOMSource domSource = new DOMSource(element);
+		DOMSource domSource = new DOMSource(node);
 		String content = null;
 		try {
 			transformer.transform(domSource, result);
@@ -405,7 +405,7 @@ public final class XMLUtils {
 	public static String getRequireNodeAttributeValue(Node node, String name) {
 		String value = getNodeAttributeValue(node, name);
 		if (StringUtils.isNull(value)) {
-			throw new NotFoundException("not found attribute " + name);
+			throw new NotFoundException("not found attribute [" + name + "], " + toString(node));
 		}
 		return value;
 	}
@@ -413,7 +413,7 @@ public final class XMLUtils {
 	public static void requireAttribute(Node node, String... name) {
 		for (String n : name) {
 			if (StringUtils.isNull(XMLUtils.getNodeAttributeValue(node, n))) {
-				throw new NotFoundException("not found attribute " + n);
+				throw new NotFoundException("not found attribute [" + n + "], " + toString(node));
 			}
 		}
 	}

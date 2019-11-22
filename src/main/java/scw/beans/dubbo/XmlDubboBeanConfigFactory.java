@@ -49,5 +49,5 @@ public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory {
 		public void destroy() {
 			referenceConfig.destroy();
 		}
-	}*/
+	}*/	
 }

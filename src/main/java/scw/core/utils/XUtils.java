@@ -22,6 +22,7 @@ import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.PrimitiveTypeValueFactory;
 import scw.core.ResourceFactory;
+import scw.core.Start;
 import scw.core.ValueFactory;
 import scw.core.exception.NotSupportException;
 import scw.core.reflect.ReflectUtils;
@@ -343,6 +344,16 @@ public final class XUtils {
 			throw new RuntimeException(e);
 		} finally {
 			resourceFactory.release(resource);
+		}
+	}
+	
+	public static void start(Object start){
+		if(start == null){
+			return ;
+		}
+		
+		if(start instanceof Start){
+			((Start) start).start();
 		}
 	}
 

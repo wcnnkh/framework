@@ -1,7 +1,11 @@
 package scw.db;
 
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -92,5 +96,18 @@ public final class DBUtils {
 			}
 		}
 		return list;
+	}
+
+	public static void deregisterDriver() {
+		Enumeration<Driver> drivers = DriverManager.getDrivers();
+		if (drivers != null) {
+			while (drivers.hasMoreElements()) {
+				try {
+					DriverManager.deregisterDriver(drivers.nextElement());
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }

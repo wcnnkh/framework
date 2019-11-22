@@ -4,6 +4,7 @@ import scw.application.embedded.EmbeddedServlet;
 import scw.application.embedded.EmbeddedUtils;
 import scw.application.embedded.ServletEmbedded;
 import scw.application.embedded.ShutdownHttpServlet;
+import scw.beans.BeanUtils;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
@@ -76,41 +77,9 @@ public class EmbeddedApplication extends CommonApplication {
 				LoggerUtils.warn(TomcatApplication.class, "not found " + beanXml);
 			}
 
-			Application application;
-			if (clazz == null) {
-				application = new EmbeddedApplication(beanXml);
-			} else {
-				application = new EmbeddedApplication(beanXml) {
-					@Override
-					protected String getAnnotationPackage() {
-						String[] arr = StringUtils.split(clazz.getName(), '.');
-						if (arr.length < 2) {
-							return super.getAnnotationPackage();
-						} else if (arr.length == 2) {
-							String p = super.getAnnotationPackage();
-							if (StringUtils.isEmpty(p)) {
-								return arr[0];
-							} else {
-								return p + "," + arr[0];
-							}
-						} else {
-							StringBuilder sb = new StringBuilder();
-							for (int i = 0; i < 2; i++) {
-								if (i != 0) {
-									sb.append(".");
-								}
-								sb.append(arr[i]);
-							}
-
-							String p = super.getAnnotationPackage();
-							if (StringUtils.isEmpty(p)) {
-								return sb.toString();
-							} else {
-								return p + "," + sb.toString();
-							}
-						}
-					}
-				};
+			Application application = new EmbeddedApplication(beanXml);
+			if (clazz != null) {
+				BeanUtils.setRootPackage(BeanUtils.parseRootPackage(clazz));
 			}
 			application.init();
 		}

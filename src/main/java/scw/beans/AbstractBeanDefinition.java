@@ -73,6 +73,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 		}
 
 		XUtils.init(bean);
+		XUtils.start(bean);
 	}
 
 	public void destroy(Object bean) throws Exception {
