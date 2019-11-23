@@ -9,11 +9,13 @@ import java.util.Calendar;
 import java.util.Date;
 
 import scw.beans.BeanFactory;
+import scw.core.annotation.DefaultValue;
 import scw.core.exception.ParameterException;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectUtils;
 import scw.core.utils.NumberUtils;
+import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
@@ -69,37 +71,48 @@ public abstract class AbstractParameterChannel extends AbstractChannel implement
 
 		DateFormat dateFormat = parameterConfig.getAnnotation(DateFormat.class);
 		if (dateFormat != null) {
-			String value = getString(name);
-			if (TypeUtils.isString(parameterConfig.getType())) {
-				return StringUtils.isEmpty(value) ? value
-						: new SimpleDateFormat(dateFormat.value()).format(StringUtils.parseLong(value));
-			}
-
-			long time = 0;
-			if (StringUtils.isEmpty(value)) {
-				SimpleDateFormat format = new SimpleDateFormat(dateFormat.value());
-				try {
-					time = format.parse(value).getTime();
-				} catch (ParseException e) {
-					throw new ParameterException(value);
-				}
-			}
-
-			if (Date.class.isAssignableFrom(parameterConfig.getType())) {
-				return new Date(time);
-			} else if (TypeUtils.isLong(parameterConfig.getType())) {
-				return time;
-			} else if (TypeUtils.isInt(parameterConfig.getType())) {
-				return time / 1000;
-			} else if (Calendar.class == parameterConfig.getType()) {
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTimeInMillis(time);
-				return calendar;
-			}
-			throw new ParameterException("not support type [" + parameterConfig.getType() + "]");
+			return dateFormat(dateFormat, parameterConfig, name);
 		}
 
-		return XUtils.getValue(this, name, parameterConfig.getGenericType());
+		Object value = XUtils.getValue(this, name, parameterConfig.getGenericType());
+		if(value == null){
+			DefaultValue defaultValue = parameterConfig.getAnnotation(DefaultValue.class);
+			if(defaultValue != null){
+				return StringParse.defaultParse(defaultValue.value(), parameterConfig.getGenericType());
+			}
+		}
+		return value;
+	}
+	
+	public Object dateFormat(DateFormat dateFormat, ParameterConfig parameterConfig, String name){
+		String value = getString(name);
+		if (TypeUtils.isString(parameterConfig.getType())) {
+			return StringUtils.isEmpty(value) ? value
+					: new SimpleDateFormat(dateFormat.value()).format(StringUtils.parseLong(value));
+		}
+
+		long time = 0;
+		if (StringUtils.isEmpty(value)) {
+			SimpleDateFormat format = new SimpleDateFormat(dateFormat.value());
+			try {
+				time = format.parse(value).getTime();
+			} catch (ParseException e) {
+				throw new ParameterException(value);
+			}
+		}
+
+		if (Date.class.isAssignableFrom(parameterConfig.getType())) {
+			return new Date(time);
+		} else if (TypeUtils.isLong(parameterConfig.getType())) {
+			return time;
+		} else if (TypeUtils.isInt(parameterConfig.getType())) {
+			return time / 1000;
+		} else if (Calendar.class == parameterConfig.getType()) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(time);
+			return calendar;
+		}
+		throw new ParameterException("not support type [" + parameterConfig.getType() + "]");
 	}
 
 	public Object bigDecimalMultiply(String name, ParameterConfig parameterConfig,

@@ -1156,6 +1156,10 @@ public final class ClassUtils {
 	}
 
 	private static final Verification<String> IGNORE_JAR_VERIFICATION = new IgnoreJarVerification();
+	/**
+	 * 常见的第三方包忽略
+	 */
+	public static final IgnoreCommonThirdPartiesClassNameVerification IGNORE_COMMON_THIRD_PARTIES_CLASS_NAME_VERIFICATION = new IgnoreCommonThirdPartiesClassNameVerification();
 	private static final Verification<String> IGNORE_CLASS_NAME_VERIFICATION = new IgnoreClassNameVerification();
 
 	public static Collection<Class<?>> getClassList() {
