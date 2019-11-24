@@ -37,7 +37,9 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 	}
 
 	public Object handler(Channel channel, Throwable error, ExceptionHandlerChain chain) {
-		if (error instanceof ParameterException) {
+		if(error instanceof NullPointerException || error instanceof RuntimeException){
+			return resultFactory.error(error.getMessage());
+		}else if (error instanceof ParameterException) {
 			return resultFactory.parameterError();
 		} else if (error instanceof AuthorizationFailureException) {
 			return resultFactory.authorizationFailure();
