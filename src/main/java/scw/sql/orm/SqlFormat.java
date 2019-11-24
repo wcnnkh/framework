@@ -32,12 +32,6 @@ public interface SqlFormat {
 	 */
 	Sql toCopyTableStructureSql(String newTableName, String oldTableName);
 
-	Sql toIncrByIdSql(String fieldName, double limit, Double maxValue, String tableName, TableInfo tableInfo,
-			Object... params);
-
-	Sql toDecrByIdSql(String fieldName, double limit, Double minValue, String tableName, TableInfo tableInfo,
-			Object... params);
-
 	Sql toLastInsertIdSql(String tableName);
 
 	Sql toMaxIdSql(TableInfo tableInfo, String tableName, String idField);

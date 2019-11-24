@@ -7,17 +7,22 @@ import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.aop.ProxyUtils;
 import scw.aop.ReflectInvoker;
+import scw.core.reflect.ReflectUtils;
 
 public final class MethodProxyInvoker implements Invoker {
 	private final Method method;
 	private final BeanFactory beanFactory;
+	private final Class<?> clz;
+	private final Object bean;
+
 	private boolean proxy;
-	private Object bean;
-	private final Invoker invoker;
-	private Class<?> clz;
 
 	public MethodProxyInvoker(BeanFactory beanFactory, Class<?> clz, Method method) {
-		this.bean = Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(clz);
+		this.beanFactory = beanFactory;
+		this.clz = clz;
+		this.method = method;
+		ReflectUtils.setAccessibleMethod(method);
+		this.bean = beanFactory.isSingleton(clz) ? getBean() : null;
 		BeanDefinition beanDefinition = beanFactory.getBeanDefinition(clz.getName());
 		proxy = ProxyUtils.isProxy(bean) || (beanDefinition != null && beanDefinition.isProxy());
 		if (proxy) {
@@ -26,19 +31,22 @@ public final class MethodProxyInvoker implements Invoker {
 				proxy = false;
 			}
 		}
+	}
 
-		this.clz = clz;
-		invoker = new ReflectInvoker(bean, method);
-		this.beanFactory = beanFactory;
-		this.method = method;
+	private Object getBean() {
+		if (Modifier.isStatic(method.getModifiers())) {
+			return null;
+		}
+		return bean == null ? beanFactory.getInstance(clz) : bean;
 	}
 
 	public Object invoke(Object... args) throws Throwable {
+		Object bean = getBean();
 		if (proxy) {
-			return invoker.invoke(args);
+			return method.invoke(bean, args);
 		}
 
 		FilterChain filterChain = new BeanFactoryFilterChain(beanFactory, null, clz, method);
-		return filterChain.doFilter(invoker, bean, clz, method, args);
+		return filterChain.doFilter(new ReflectInvoker(bean, method), bean, clz, method, args);
 	}
 }

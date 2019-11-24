@@ -17,9 +17,8 @@ import scw.security.authority.AuthorizationFailureException;
  *
  */
 public final class DefaultExceptionHandler implements ExceptionHandler {
-	private static final String[] SYSTEM_ERROR_PACKAGE_PREFIX = SystemPropertyUtils
-			.getArrayProperty(String.class, "mvc.system.error.package.prefix",
-					new String[] { "java.", "javax."});
+	private static final String[] SYSTEM_ERROR_PACKAGE_PREFIX = SystemPropertyUtils.getArrayProperty(String.class,
+			"mvc.system.error.package.prefix", new String[] { "java.", "javax." });
 
 	private ResultFactory resultFactory;
 
@@ -37,12 +36,7 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 		return !ClassUtils.IGNORE_COMMON_THIRD_PARTIES_CLASS_NAME_VERIFICATION.verification(name);
 	}
 
-	public Object handler(Channel channel, Throwable error,
-			ExceptionHandlerChain chain) {
-		if (isSystemError(channel, error)) {
-			return resultFactory.error();
-		}
-
+	public Object handler(Channel channel, Throwable error, ExceptionHandlerChain chain) {
 		if (error instanceof ParameterException) {
 			return resultFactory.parameterError();
 		} else if (error instanceof AuthorizationFailureException) {
@@ -59,13 +53,11 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 			}
 
 			if (code == null) {
-				return StringUtils.isEmpty(msg) ? resultFactory.error()
-						: resultFactory.error(msg);
+				return StringUtils.isEmpty(msg) ? resultFactory.error() : resultFactory.error(msg);
 			} else {
-				return StringUtils.isEmpty(msg) ? resultFactory.error(code)
-						: resultFactory.error(code, msg);
+				return StringUtils.isEmpty(msg) ? resultFactory.error(code) : resultFactory.error(code, msg);
 			}
 		}
-		return resultFactory.error(error.getMessage());
+		return isSystemError(channel, error) ? resultFactory.error() : resultFactory.error(error.getMessage());
 	}
 }

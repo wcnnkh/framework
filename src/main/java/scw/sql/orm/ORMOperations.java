@@ -19,8 +19,21 @@ public interface ORMOperations {
 
 	<T> List<T> getByIdList(String tableName, Class<T> type, Object... params);
 
+	/**
+	 * @param type
+	 * @param tableName
+	 * @param inIds
+	 * @param params
+	 * @return 不会为空
+	 */
 	<K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params);
 
+	/**
+	 * @param type
+	 * @param inIdList
+	 * @param params
+	 * @return 不会为空
+	 */
 	<K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList, Object... params);
 
 	ResultSet select(Sql sql);

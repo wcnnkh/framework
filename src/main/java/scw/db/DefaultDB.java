@@ -2,11 +2,13 @@ package scw.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 
 import scw.beans.annotation.Bean;
 import scw.db.cache.CacheManager;
 import scw.db.database.DataBase;
 import scw.mq.queue.Queue;
+import scw.sql.orm.ORMFilter;
 
 @Bean(proxy = false)
 public class DefaultDB extends AbstractDB {
@@ -38,5 +40,9 @@ public class DefaultDB extends AbstractDB {
 
 	public final CacheManager getCacheManager() {
 		return dbConfig.getCacheManager();
+	}
+
+	public Collection<ORMFilter> getORMFilter() {
+		return dbConfig.getORMFilter();
 	}
 }

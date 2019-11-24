@@ -16,6 +16,7 @@ import java.util.List;
 
 import javax.net.ssl.SSLSocketFactory;
 
+import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.security.ssl.TrustAllManager;
@@ -58,6 +59,10 @@ public final class NetworkUtils {
 	}
 
 	public static <T> T execute(URL url, Proxy proxy, Request request, Response<T> response) {
+		Assert.argumentNotNull(url, "url");
+		Assert.argumentNotNull(url, "request");
+		Assert.argumentNotNull(url, "response");
+		
 		URLConnection urlConnection = null;
 		try {
 			if (proxy == null) {
@@ -68,7 +73,7 @@ public final class NetworkUtils {
 
 			return execute(urlConnection, request, response);
 		} catch (Throwable e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(url.toString(), e);
 		} finally {
 			if (urlConnection != null) {
 				if (urlConnection instanceof HttpURLConnection) {

@@ -5,12 +5,13 @@ import java.lang.reflect.Method;
 public interface Filter {
 	/**
 	 * AOP拦截器
+	 * 
 	 * @param invoker
 	 *            调用本身
 	 * @param proxy
 	 *            代理后的对象
 	 * @param targetClass
-	 *            原始类
+	 *            如果代理的是静态方法值是空 原始类
 	 * @param method
 	 *            当前方法
 	 * @param args

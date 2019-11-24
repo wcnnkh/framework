@@ -2,6 +2,8 @@ package scw.aop;
 
 import java.lang.reflect.Method;
 
+import scw.core.reflect.ReflectUtils;
+
 public final class ReflectInvoker implements Invoker {
 	private final Object obj;
 	private final Method method;
@@ -9,7 +11,7 @@ public final class ReflectInvoker implements Invoker {
 	public ReflectInvoker(Object obj, Method method) {
 		this.obj = obj;
 		this.method = method;
-		method.setAccessible(true);
+		ReflectUtils.setAccessibleMethod(method);
 	}
 
 	public Object invoke(Object... args) throws Throwable {

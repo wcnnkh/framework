@@ -1,5 +1,7 @@
 package scw.db;
 
+import scw.sql.orm.enums.OperationType;
+
 public final class BeanAsyncExecute implements AsyncExecute {
 	private static final long serialVersionUID = 1L;
 	private final Object bean;

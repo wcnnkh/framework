@@ -53,7 +53,7 @@ public class SaveOrUpdateSQL extends MysqlOrmSql {
 		for (i = 0; i < tableInfo.getNotPrimaryKeyColumns().length; i++) {
 			columnInfo = tableInfo.getNotPrimaryKeyColumns()[i];
 			Object v = columnInfo.get(obj);
-			Counter counter = columnInfo.getCounter();
+			Counter counter = columnInfo.getAnnotation(Counter.class);
 			if (index++ > 0) {
 				sb.append(",");
 			}

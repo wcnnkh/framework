@@ -127,7 +127,7 @@ public final class AnnotationUtils {
 		}
 		return map;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public static <T extends Annotation> T getAnnotation(Annotation[] annotations, Class<T> type) {
 		if (annotations == null || annotations.length == 0) {

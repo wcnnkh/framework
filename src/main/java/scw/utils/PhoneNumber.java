@@ -1,7 +1,7 @@
 package scw.utils;
 
 /**
- * 一个电话号码的定义
+ * 电话号码的定义
  * @author shuchaowen
  *
  */

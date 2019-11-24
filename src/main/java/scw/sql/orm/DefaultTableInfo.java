@@ -1,6 +1,5 @@
 package scw.sql.orm;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,13 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.instance.InstanceUtils;
-import scw.core.utils.FieldSetterListenUtils;
-import scw.sql.orm.annotation.Table;
-
-final class DefaultTableInfo implements TableInfo {
-	private final String name;
-	private final Class<?> source;
+public final class DefaultTableInfo extends AbstractTableInfo {
 	private final Map<String, ColumnInfo> columnMap;// 所有的
 	// 数据库字段名到字段的映射
 	private final Map<String, String> fieldToColumn;// 所有的
@@ -25,17 +18,12 @@ final class DefaultTableInfo implements TableInfo {
 	private final ColumnInfo[] notPrimaryKeyColumns;
 	private final ColumnInfo[] tableColumns;
 	private ColumnInfo autoIncrement;
-	private final boolean table;
 
 	public DefaultTableInfo(Class<?> clz) {
-		this.source = clz;
-		this.name = ORMUtils.getAnnotationTableName(source);
-		Table table = source.getAnnotation(Table.class);
-		this.table = table != null;
-
+		super(clz);
 		final Map<String, ColumnInfo> tempColumnMap = new LinkedHashMap<String, ColumnInfo>();
 		final Map<String, String> tempFieldToColumn = new LinkedHashMap<String, String>();
-		for (Field field : ORMUtils.getFieldList(source)) {
+		for (Field field : ORMUtils.getFieldList(getSource())) {
 			ColumnInfo columnInfo = new DefaultColumnInfo(field);
 			tempColumnMap.remove(columnInfo.getName());
 			tempColumnMap.put(columnInfo.getName(), columnInfo);
@@ -63,7 +51,7 @@ final class DefaultTableInfo implements TableInfo {
 
 				if (columnInfo.isAutoIncrement()) {
 					if (autoIncrement != null) {
-						throw new RuntimeException(source.getName() + "存在多个@AutoIncrement字段");
+						throw new RuntimeException(getSource().getName() + "存在多个@AutoIncrement字段");
 					}
 
 					autoIncrement = columnInfo;
@@ -83,25 +71,18 @@ final class DefaultTableInfo implements TableInfo {
 		this.tableColumns = tableColumnList.toArray(new ColumnInfo[tableColumnList.size()]);
 	}
 
-	public String getDefaultName() {
-		return name;
-	}
-
 	public ColumnInfo getColumnInfo(String fieldName) {
 		ColumnInfo columnInfo = columnMap.get(fieldName);
 		if (columnInfo == null) {
 			String v = fieldToColumn.get(fieldName);
 			if (v == null) {
-				throw new NullPointerException("not found table[" + this.name + "] fieldName[" + fieldName + "]");
+				throw new NullPointerException(
+						"not found table[" + getDefaultName() + "] fieldName[" + fieldName + "]");
 			}
 
 			columnInfo = columnMap.get(v);
 		}
 		return columnInfo;
-	}
-
-	public Map<String, String> getFieldToColumn() {
-		return fieldToColumn;
 	}
 
 	public ColumnInfo[] getColumns() {
@@ -116,10 +97,6 @@ final class DefaultTableInfo implements TableInfo {
 		return notPrimaryKeyColumns;
 	}
 
-	public boolean isTable() {
-		return table;
-	}
-
 	/*
 	 * 这些字段都是实体类，并且对应着表
 	 * 
@@ -129,36 +106,7 @@ final class DefaultTableInfo implements TableInfo {
 		return tableColumns;
 	}
 
-	public Class<?> getSource() {
-		return source;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T newInstance() {
-		if (table) {
-			try {
-				return (T) FieldSetterListenUtils.newFieldSetterListenInstance(source);
-			} catch (Throwable e) {
-				return InstanceUtils.newInstance(source);
-			}
-		} else {
-			return InstanceUtils.newInstance(source);
-		}
-	}
-
 	public ColumnInfo getAutoIncrement() {
 		return autoIncrement;
-	}
-
-	public <T extends Annotation> T getAnnotation(Class<T> type) {
-		return source.getAnnotation(type);
-	}
-
-	public String getName(Object bean) {
-		if (bean instanceof TableName) {
-			return ((TableName) bean).tableName();
-		}
-
-		return name;
 	}
 }

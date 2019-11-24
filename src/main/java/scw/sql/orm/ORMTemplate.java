@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import scw.sql.Sql;
 import scw.sql.SqlTemplate;
 import scw.sql.SqlUtils;
 import scw.sql.orm.annotation.Table;
+import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.mysql.MysqlSelect;
 import scw.sql.orm.result.DefaultResult;
 import scw.sql.orm.result.DefaultResultSet;
@@ -29,6 +31,8 @@ import scw.sql.orm.result.ResultSet;
 
 public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	public abstract SqlFormat getSqlFormat();
+
+	public abstract Collection<ORMFilter> getORMFilter();
 
 	public <T> T getById(Class<T> type, Object... params) {
 		return getById(null, type, params);
@@ -93,31 +97,55 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		});
 	}
 
-	public boolean save(Object bean, String tableName) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
-
-		Sql sql = getSqlFormat().toInsertSql(bean, tableInfo, tName);
-		if (tableInfo.getAutoIncrement() == null) {
-			return update(sql) != 0;
-		} else {
-			Connection connection = null;
+	protected boolean orm(OperationType operationType, TableInfo tableInfo, Object bean, String tableName) {
+		Collection<ORMFilter> ormFilters = getORMFilter();
+		if (ormFilters != null) {
+			Iterator<ORMFilter> iterator = ormFilters.iterator();
 			try {
-				connection = getUserConnection();
-				boolean b = update(sql, connection) != 0;
-				if (!b) {
-					logger.warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
-					return false;
+				while (iterator.hasNext()) {
+					if (!iterator.next().doFilter(operationType, this, tableInfo, tableName, bean)) {
+						break;
+					}
 				}
-
-				tableInfo.getAutoIncrement().set(bean, getAutoIncrementLastId(connection, tName));
-				return true;
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			} finally {
-				close(connection);
+			} catch (Throwable e) {
+				throw new ORMException(operationType.name(), e);
 			}
 		}
+
+		Sql sql = ORMUtils.toSql(operationType, getSqlFormat(), tableInfo, bean, tableName);
+		Connection connection = null;
+		try {
+			connection = getUserConnection();
+			return ormExecute(operationType, tableInfo, bean, tableName, sql, connection);
+		} catch (Throwable e) {
+			throw new ORMException(SqlUtils.getSqlId(sql), e);
+		} finally {
+			close(connection);
+		}
+	}
+
+	protected boolean ormExecute(OperationType operationType, TableInfo tableInfo, Object bean, String tableName,
+			Sql sql, Connection connection) throws Throwable {
+		int count = update(sql, connection);
+		if (tableInfo.getAutoIncrement() != null) {
+			if (operationType == OperationType.SAVE || operationType == OperationType.SAVE_OR_UPDATE) {
+				if (count == 0) {
+					logger.warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
+				} else if (count == 1) {
+					tableInfo.getAutoIncrement().set(bean, getAutoIncrementLastId(connection, tableName));
+				}
+			}
+		}
+		return count != 0;
+	}
+
+	public boolean save(Object bean, String tableName) {
+		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
+		return orm(OperationType.SAVE, tableInfo, bean, getTableName(tableInfo, tableName, bean));
+	}
+
+	protected String getTableName(TableInfo tableInfo, String tableName, Object bean) {
+		return StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
 	}
 
 	public boolean update(Object bean, String tableName) {
@@ -129,9 +157,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		}
 
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
-		Sql sql = getSqlFormat().toUpdateSql(bean, tableInfo, tName);
-		return update(sql) != 0;
+		return orm(OperationType.UPDATE, tableInfo, bean, getTableName(tableInfo, tableName, bean));
 	}
 
 	public boolean delete(Object bean) {
@@ -140,9 +166,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 
 	public boolean delete(Object bean, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
-		Sql sql = getSqlFormat().toDeleteSql(bean, tableInfo, tName);
-		return update(sql) != 0;
+		return orm(OperationType.DELETE, tableInfo, bean, getTableName(tableInfo, tableName, bean));
 	}
 
 	public boolean deleteById(Class<?> type, Object... params) {
@@ -174,30 +198,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 
 	public boolean saveOrUpdate(Object bean, String tableName) {
 		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		String tName = StringUtils.isEmpty(tableName) ? tableInfo.getName(bean) : tableName;
-		Sql sql = getSqlFormat().toSaveOrUpdateSql(bean, tableInfo, tName);
-		if (tableInfo.getAutoIncrement() == null) {
-			return update(sql) != 0;
-		} else {
-			Connection connection = null;
-			try {
-				connection = getUserConnection();
-				int updateCount = update(sql, connection);
-				if (updateCount == 0) {
-					logger.warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
-					return false;
-				}
-
-				if (updateCount == 1) {// 插入
-					tableInfo.getAutoIncrement().set(bean, getAutoIncrementLastId(connection, tName));
-				}
-				return true;
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			} finally {
-				close(connection);
-			}
-		}
+		return orm(OperationType.SAVE_OR_UPDATE, tableInfo, bean, getTableName(tableInfo, tableName, bean));
 	}
 
 	@SuppressWarnings("unchecked")

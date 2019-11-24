@@ -1,14 +1,13 @@
 package scw.result.support;
 
-import scw.result.Result;
-
 /**
  * 简单的结果处理 code=0表示成功
  * 
  * @author shuchaowen
  *
  */
-public final class SimpleResult implements Result {
+public final class SimpleResult extends AbstractResult {
+	private static final long serialVersionUID = 1L;
 	private int code;
 	private String msg;
 
@@ -37,10 +36,6 @@ public final class SimpleResult implements Result {
 	public SimpleResult(int code, String msg) {
 		this.code = code;
 		this.msg = msg;
-	}
-
-	public boolean isError() {
-		return code != 0;
 	}
 
 	public int getCode() {

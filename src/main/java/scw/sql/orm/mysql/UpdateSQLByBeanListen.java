@@ -44,7 +44,7 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 			if (columnInfo.getCasType() != CasType.AUTO_INCREMENT) {
 				continue;
 			}
-
+				
 			if (changeMap.containsKey(columnInfo.getField().getName())) {
 				continue;
 			}
@@ -67,7 +67,7 @@ public final class UpdateSQLByBeanListen extends MysqlOrmSql {
 			}
 
 			Object value = columnInfo.get(beanFieldListen);
-			Counter counter = columnInfo.getCounter();
+			Counter counter = columnInfo.getAnnotation(Counter.class);
 			if (counter != null && TypeUtils.isNumber(columnInfo.getField().getType())) {
 				Object oldValue = entry.getValue();
 				if (oldValue != null && value != null) {

@@ -80,8 +80,7 @@ public final class InsertSQL extends MysqlOrmSql {
 		return sql.toString();
 	}
 
-	private static Object[] getParams(TableInfo tableInfo, Object obj)
-			throws Exception {
+	private static Object[] getParams(TableInfo tableInfo, Object obj) throws Exception {
 		LinkedList<Object> list = new LinkedList<Object>();
 		for (ColumnInfo columnInfo : tableInfo.getColumns()) {
 			if (columnInfo.isAutoIncrement()) {

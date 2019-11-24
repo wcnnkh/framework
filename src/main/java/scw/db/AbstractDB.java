@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,7 +18,9 @@ import scw.io.serializer.SerializerUtils;
 import scw.sql.Sql;
 import scw.sql.orm.ORMTemplate;
 import scw.sql.orm.SqlFormat;
+import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Table;
+import scw.sql.orm.enums.OperationType;
 import scw.transaction.sql.SqlTransactionUtils;
 
 public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<AsyncExecute>, DBConfig, Init {
@@ -62,7 +65,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 				continue;
 			}
 
-			if (registerManager) {	
+			if (registerManager) {
 				DBManager.register(tableClass, this);
 			}
 
@@ -146,10 +149,11 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 		return t;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params) {
 		if (inIds == null || inIds.isEmpty()) {
-			return null;
+			return Collections.EMPTY_MAP;
 		}
 
 		Map<K, V> map = getCacheManager().getInIdList(type, inIds, params);
@@ -228,5 +232,10 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 
 	public final void asyncExecute(AsyncExecute asyncExecute) {
 		getAsyncQueue().push(SerializerUtils.clone(asyncExecute));
+	}
+
+	@Override
+	protected boolean orm(OperationType operationType, TableInfo tableInfo, Object bean, String tableName) {
+		return super.orm(operationType, tableInfo, bean, tableName);
 	}
 }

@@ -99,16 +99,6 @@ public final class MysqlFormat implements SqlFormat {
 		return new SimpleSql(sb.toString());
 	}
 
-	public Sql toIncrByIdSql(String fieldName, double limit, Double maxValue, String tableName, TableInfo tableInfo,
-			Object... params) {
-		return new IncrByIdSQL(tableInfo, tableName, params, fieldName, limit, maxValue);
-	}
-
-	public Sql toDecrByIdSql(String fieldName, double limit, Double minValue, String tableName, TableInfo tableInfo,
-			Object... params) {
-		return new DecrByIdSQL(tableInfo, tableName, params, fieldName, limit, minValue);
-	}
-
 	private static final String LAST_INSERT_ID_SQL = "select last_insert_id()";
 
 	public Sql toLastInsertIdSql(String tableName) {

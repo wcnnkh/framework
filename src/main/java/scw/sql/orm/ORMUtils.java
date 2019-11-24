@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 
 import scw.core.annotation.Order;
 import scw.core.cglib.proxy.Factory;
+import scw.core.exception.NotSupportException;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.AnnotationUtils;
 import scw.core.reflect.ReflectUtils;
@@ -38,6 +39,7 @@ import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.TypeUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.sql.Sql;
 import scw.sql.orm.annotation.Column;
 import scw.sql.orm.annotation.Index;
 import scw.sql.orm.annotation.NotColumn;
@@ -45,6 +47,7 @@ import scw.sql.orm.annotation.PrimaryKey;
 import scw.sql.orm.annotation.Table;
 import scw.sql.orm.annotation.Transient;
 import scw.sql.orm.enums.CasType;
+import scw.sql.orm.enums.OperationType;
 
 public final class ORMUtils {
 	private static Logger logger = LoggerUtils.getLogger(ORMUtils.class);
@@ -440,6 +443,22 @@ public final class ORMUtils {
 					DEFAULT_CONNECTOR_CHARACTER));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	public static Sql toSql(OperationType operationType, SqlFormat sqlFormat, TableInfo tableInfo, Object bean,
+			String tableName) {
+		switch (operationType) {
+		case SAVE:
+			return sqlFormat.toInsertSql(bean, tableInfo, tableName);
+		case DELETE:
+			return sqlFormat.toDeleteSql(bean, tableInfo, tableName);
+		case SAVE_OR_UPDATE:
+			return sqlFormat.toSaveOrUpdateSql(bean, tableInfo, tableName);
+		case UPDATE:
+			return sqlFormat.toUpdateSql(bean, tableInfo, tableName);
+		default:
+			throw new NotSupportException(operationType.name());
 		}
 	}
 }

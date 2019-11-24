@@ -1,5 +1,6 @@
 package scw.db.support;
 
+import java.util.Collection;
 import java.util.Map;
 
 import scw.core.Constants;
@@ -14,6 +15,7 @@ import scw.db.cache.CacheManager;
 import scw.db.cache.TemporaryCacheManager;
 import scw.mq.queue.MemoryQueue;
 import scw.mq.queue.Queue;
+import scw.sql.orm.ORMFilter;
 
 @SuppressWarnings("rawtypes")
 public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants {
@@ -28,6 +30,10 @@ public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants {
 
 	public String getSannerTablePackage() {
 		return sannerTablePackage;
+	}
+
+	public Collection<ORMFilter> getORMFilter() {
+		return null;
 	}
 
 	public static CacheManager createCacheManager(Map properties, Memcached memcached) {
