@@ -3,32 +3,28 @@ package scw.orm;
 import java.util.Collection;
 import java.util.Iterator;
 
-import scw.core.reflect.FieldDefinition;
 import scw.core.utils.CollectionUtils;
 
 public class DefaultGetterFilterChain implements GetterFilterChain {
 	private Iterator<GetterFilter> iterator;
 	private GetterFilterChain chain;
 
-	public DefaultGetterFilterChain(Collection<GetterFilter> filters,
-			GetterFilterChain chain) {
+	public DefaultGetterFilterChain(Collection<GetterFilter> filters, GetterFilterChain chain) {
 		if (!CollectionUtils.isEmpty(filters)) {
 			this.iterator = filters.iterator();
 		}
 		this.chain = chain;
 	}
 
-	public Object getter(FieldDefinition fieldDefinition, Object bean)
-			throws Throwable {
-		GetterFilter getterFilter = getNext(fieldDefinition, bean);
+	public Object getter(FieldDefinitionContext context, Object bean) throws Exception {
+		GetterFilter getterFilter = getNext(context, bean);
 		if (getterFilter == null) {
-			return chain == null ? fieldDefinition.get(bean) : chain.getter(
-					fieldDefinition, bean);
+			return chain == null ? context.getFieldDefinition().get(bean) : chain.getter(context, bean);
 		}
-		return getterFilter.getter(fieldDefinition, bean, this);
+		return getterFilter.getter(context, bean, this);
 	}
 
-	protected GetterFilter getNext(FieldDefinition fieldDefinition, Object bean) {
+	protected GetterFilter getNext(FieldDefinitionContext context, Object bean) {
 		if (iterator == null) {
 			return null;
 		}

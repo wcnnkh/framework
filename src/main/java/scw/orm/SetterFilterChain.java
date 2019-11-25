@@ -1,8 +1,5 @@
 package scw.orm;
 
-import scw.core.reflect.FieldDefinition;
-
 public interface SetterFilterChain {
-	void setter(FieldDefinition fieldDefinition, Object bean, Object value)
-			throws Throwable;
+	void setter(FieldDefinitionContext context, Object bean, Object value) throws Exception;
 }

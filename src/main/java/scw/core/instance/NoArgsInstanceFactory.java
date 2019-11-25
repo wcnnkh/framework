@@ -15,7 +15,7 @@ public interface NoArgsInstanceFactory {
 	 */
 	boolean isSingleton(Class<?> clazz);
 	
-	<T> T getInstance(Class<T> type);
+	<T> T getInstance(Class<T> clazz);
 
 	<T> T getInstance(String name);
 

@@ -632,86 +632,67 @@ public final class ReflectUtils {
 		return methods == null ? null : methods[0];
 	}
 
-	public static Method getGetterMethod(Class<?> clazz, Field field, boolean sup) {
+	public static Method getGetterMethod(Class<?> clazz, Field field) {
 		Method getter = null;
 		Class<?> clz = clazz;
-		while (clz != null && clz != Object.class) {
-			if (TypeUtils.isBoolean(field.getType())) {
-				String methodNameSuffix = field.getName();
-				if (methodNameSuffix.startsWith("is")) {
-					LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
-							methodNameSuffix);
-					methodNameSuffix = methodNameSuffix.substring(2);
-				}
+		if (TypeUtils.isBoolean(field.getType())) {
+			String methodNameSuffix = field.getName();
+			if (methodNameSuffix.startsWith("is")) {
+				LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
+						methodNameSuffix);
+				methodNameSuffix = methodNameSuffix.substring(2);
+			}
+			try {
+				getter = clz.getDeclaredMethod("is" + StringUtils.toUpperCase(methodNameSuffix, 0, 1));
+			} catch (NoSuchMethodException e1) {
 				try {
-					getter = clz.getDeclaredMethod("is" + StringUtils.toUpperCase(methodNameSuffix, 0, 1));
-				} catch (NoSuchMethodException e1) {
-					try {
-						getter = clz.getDeclaredMethod("is" + StringUtils.toUpperCase(field.getName(), 0, 1));
-					} catch (NoSuchMethodException e) {
-					}
-				}
-			} else {
-				try {
-					getter = clz.getDeclaredMethod("get" + StringUtils.toUpperCase(field.getName(), 0, 1));
+					getter = clz.getDeclaredMethod("is" + StringUtils.toUpperCase(field.getName(), 0, 1));
 				} catch (NoSuchMethodException e) {
 				}
 			}
-
-			if (getter != null) {
-				getter.setAccessible(true);
-				break;
+		} else {
+			try {
+				getter = clz.getDeclaredMethod("get" + StringUtils.toUpperCase(field.getName(), 0, 1));
+			} catch (NoSuchMethodException e) {
 			}
+		}
 
-			if (sup) {
-				clz = clz.getSuperclass();
-			} else {
-				break;
-			}
+		if (getter != null) {
+			getter.setAccessible(true);
 		}
 		return getter;
 	}
 
-	public static Method getSetterMethod(Class<?> clazz, Field field, boolean sup) {
+	public static Method getSetterMethod(Class<?> clazz, Field field) {
 		Method setter = null;
 		Class<?> clz = clazz;
-		while (clz != null && clz != Object.class) {
-			if (TypeUtils.isBoolean(field.getType())) {
-				String methodNameSuffix = field.getName();
-				if (methodNameSuffix.startsWith("is")) {
-					LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
-							methodNameSuffix);
-					methodNameSuffix = methodNameSuffix.substring(2);
-				}
+		if (TypeUtils.isBoolean(field.getType())) {
+			String methodNameSuffix = field.getName();
+			if (methodNameSuffix.startsWith("is")) {
+				LoggerUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
+						methodNameSuffix);
+				methodNameSuffix = methodNameSuffix.substring(2);
+			}
 
-				try {
-					setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(methodNameSuffix, 0, 1),
-							field.getType());
-				} catch (NoSuchMethodException e1) {
-					try {
-						setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(field.getName(), 0, 1),
-								field.getType());
-					} catch (NoSuchMethodException e) {
-					}
-				}
-			} else {
+			try {
+				setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(methodNameSuffix, 0, 1),
+						field.getType());
+			} catch (NoSuchMethodException e1) {
 				try {
 					setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(field.getName(), 0, 1),
 							field.getType());
 				} catch (NoSuchMethodException e) {
 				}
 			}
-
-			if (setter != null) {
-				setter.setAccessible(true);
-				break;
+		} else {
+			try {
+				setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(field.getName(), 0, 1), field.getType());
+			} catch (NoSuchMethodException e) {
 			}
+		}
 
-			if (sup) {
-				clz = clz.getSuperclass();
-			} else {
-				break;
-			}
+		if (setter != null) {
+			setter.setAccessible(true);
 		}
 		return setter;
 	}
@@ -826,6 +807,13 @@ public final class ReflectUtils {
 		}
 	}
 
+	public static void setAccessibleConstructor(Constructor<?> constructor) {
+		if (!constructor.isAccessible() && (Modifier.isPrivate(constructor.getModifiers())
+				|| Modifier.isProtected(constructor.getModifiers()))) {
+			constructor.setAccessible(true);
+		}
+	}
+
 	/**
 	 * 尝试查找同类型的set方法，如果不存在则直接插入
 	 * 
@@ -837,7 +825,7 @@ public final class ReflectUtils {
 	 * @throws Exception
 	 */
 	public static Object setFieldValue(Class<?> clz, Field field, Object obj, Object value) throws Exception {
-		Method method = getSetterMethod(clz, field, true);
+		Method method = getSetterMethod(clz, field);
 		try {
 			if (method == null) {
 				setAccessibleField(field);
@@ -853,7 +841,7 @@ public final class ReflectUtils {
 	}
 
 	public static Object getFieldValue(Class<?> clz, Object obj, Field field) throws Exception {
-		Method method = getGetterMethod(clz, field, true);
+		Method method = getGetterMethod(clz, field);
 		try {
 			if (method == null) {
 				setAccessibleField(field);

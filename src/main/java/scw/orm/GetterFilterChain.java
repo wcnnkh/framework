@@ -1,8 +1,6 @@
 package scw.orm;
 
-import scw.core.reflect.FieldDefinition;
-
 public interface GetterFilterChain {
-	Object getter(FieldDefinition fieldDefinition, Object bean)
-			throws Throwable;
+	Object getter(FieldDefinitionContext context, Object bean)
+			throws Exception;
 }

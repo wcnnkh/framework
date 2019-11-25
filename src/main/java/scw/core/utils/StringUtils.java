@@ -2794,4 +2794,28 @@ public final class StringUtils {
 		}
 		return new String(values, 0, vIndex);
 	}
+
+	/**
+	 * 驼峰命名大写替换
+	 * 
+	 * @param humpNaming
+	 * @param replacement
+	 * @return
+	 */
+	public static String humpNamingReplacement(String humpNaming, String replacement) {
+		int len = humpNaming.length();
+		StringBuilder sb = new StringBuilder(len * 2);
+		for (int i = 0; i < len; i++) {
+			char c = humpNaming.charAt(i);
+			if (Character.isUpperCase(c)) {// 如果是大写的
+				if (i != 0) {
+					sb.append(replacement);
+				}
+				sb.append(Character.toLowerCase(c));
+			} else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
+	}
 }

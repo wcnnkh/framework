@@ -403,14 +403,14 @@ public final class BeanUtils {
 				field.setAccessible(true);
 				if (isStatic) {
 					if (Modifier.isStatic(field.getModifiers())) {
-						list.add(new DefaultFieldDefinition(clz, field, false, false, true, true));
+						list.add(new DefaultFieldDefinition(clz, field, false, false, true));
 					}
 				} else {
 					if (Modifier.isStatic(field.getModifiers())) {
 						continue;
 					}
 
-					list.add(new DefaultFieldDefinition(clz, field, false, false, true, true));
+					list.add(new DefaultFieldDefinition(clz, field, false, false, true));
 				}
 			}
 
