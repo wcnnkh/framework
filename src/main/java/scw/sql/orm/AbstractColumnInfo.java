@@ -5,6 +5,8 @@ import java.lang.reflect.Field;
 
 import scw.core.reflect.AnnotationFactory;
 import scw.core.reflect.SimpleAnnotationFactory;
+import scw.orm.sql.dialect.DefaultSqlType;
+import scw.orm.sql.dialect.SqlType;
 import scw.sql.orm.annotation.AutoIncrement;
 import scw.sql.orm.enums.CasType;
 

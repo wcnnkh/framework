@@ -1,4 +1,4 @@
-package scw.sql.orm;
+package scw.orm.sql.dialect;
 
 public interface SqlTypeFactory {
 	public static final SqlType VARCHAR = new DefaultSqlType("VARCHAR", 255);

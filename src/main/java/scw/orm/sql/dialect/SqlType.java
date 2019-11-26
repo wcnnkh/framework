@@ -1,4 +1,4 @@
-package scw.sql.orm;
+package scw.orm.sql.dialect;
 
 public interface SqlType{
 	String getName();

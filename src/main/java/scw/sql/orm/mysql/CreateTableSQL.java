@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.utils.StringUtils;
+import scw.orm.sql.dialect.DefaultSqlTypeFactory;
+import scw.orm.sql.dialect.SqlType;
+import scw.orm.sql.dialect.SqlTypeFactory;
 import scw.sql.orm.ColumnInfo;
-import scw.sql.orm.DefaultSqlTypeFactory;
 import scw.sql.orm.ORMUtils;
-import scw.sql.orm.SqlType;
-import scw.sql.orm.SqlTypeFactory;
 import scw.sql.orm.TableInfo;
 import scw.sql.orm.annotation.Column;
 import scw.sql.orm.annotation.Index;

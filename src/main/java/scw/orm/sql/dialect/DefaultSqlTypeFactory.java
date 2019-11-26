@@ -1,4 +1,4 @@
-package scw.sql.orm;
+package scw.orm.sql.dialect;
 
 import java.math.BigDecimal;
 import java.sql.Blob;

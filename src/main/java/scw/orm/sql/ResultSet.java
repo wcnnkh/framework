@@ -6,6 +6,7 @@ import java.util.List;
 import scw.orm.MappingOperations;
 
 public interface ResultSet extends Serializable, Iterable<Result> {
+	public static final EmptyResultSet EMPTY_RESULT_SET = new EmptyResultSet();
 	/**
 	 * 返回全部数据
 	 * 

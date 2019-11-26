@@ -1,4 +1,4 @@
-package scw.sql.orm.oracle;
+package scw.orm.sql.dialect.oracle;
 
 import scw.sql.Sql;
 
