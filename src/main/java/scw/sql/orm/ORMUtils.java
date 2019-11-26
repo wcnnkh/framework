@@ -279,7 +279,7 @@ public final class ORMUtils {
 		SqlType tempSqlType = StringUtils.isEmpty(type) ? sqlTypeFactory.getSqlType(fieldType)
 				: sqlTypeFactory.getSqlType(type);
 		type = tempSqlType.getName();
-		long len = sqlType.getLength();
+		int len = sqlType.getLength();
 		if (len <= 0) {
 			len = tempSqlType.getLength();
 		}

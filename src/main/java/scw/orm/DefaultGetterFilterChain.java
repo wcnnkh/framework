@@ -16,15 +16,15 @@ public class DefaultGetterFilterChain implements GetterFilterChain {
 		this.chain = chain;
 	}
 
-	public Object getter(FieldDefinitionContext context, Object bean) throws Exception {
-		GetterFilter getterFilter = getNext(context, bean);
+	public Object getter(MappingContext context, Getter getter) throws Exception {
+		GetterFilter getterFilter = getNext(context, getter);
 		if (getterFilter == null) {
-			return chain == null ? context.getFieldDefinition().get(bean) : chain.getter(context, bean);
+			return chain == null ? getter.getter(context) : chain.getter(context, getter);
 		}
-		return getterFilter.getter(context, bean, this);
+		return getterFilter.getter(context, getter, this);
 	}
 
-	protected GetterFilter getNext(FieldDefinitionContext context, Object bean) {
+	protected GetterFilter getNext(MappingContext context, Getter getter) {
 		if (iterator == null) {
 			return null;
 		}

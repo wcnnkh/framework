@@ -2,11 +2,10 @@ package scw.orm.sql;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
-public interface ResultSet extends Serializable, Iterable<Result>, scw.core.Cloneable{
-	public static final ResultSet EMPTY_RESULTSET = new EmptyResultSet();
+import scw.orm.MappingOperations;
 
+public interface ResultSet extends Serializable, Iterable<Result> {
 	/**
 	 * 返回全部数据
 	 * 
@@ -14,24 +13,11 @@ public interface ResultSet extends Serializable, Iterable<Result>, scw.core.Clon
 	 */
 	List<Object[]> getList();
 
-	<T> List<T> getList(Class<T> type, Map<Class<?>, String> tableMapping);
+	<T> List<T> getList(MappingOperations mappingOperations, Class<T> clazz, TableNameMapping tableNameMapping);
 
-	/**
-	 * 一般用于分表对象
-	 * 
-	 * @param type
-	 * @param tableName
-	 * @return
-	 */
-	<T> List<T> getList(Class<T> type, String tableName);
+	<T> List<T> getList(SqlMappingOperations mappingOperations, Class<T> clazz, String tableName);
 
-	/**
-	 * 在查询结果没有重复列名的情况下，此方法可以满足所有需求
-	 * 
-	 * @param type
-	 * @return
-	 */
-	<T> List<T> getList(Class<T> type);
+	<T> List<T> getList(SqlMappingOperations mappingOperations, Class<T> clazz);
 
 	int size();
 

@@ -22,8 +22,4 @@ public class DefaultFieldDefinitionFactory extends AbstractFieldDefinitionFactor
 		}
 		return map;
 	}
-
-	public FieldDefinition getFieldDefinition(Class<?> clazz, String name) {
-		return getFieldDefinitionMap(clazz).get(name);
-	}
 }

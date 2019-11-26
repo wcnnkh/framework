@@ -16,7 +16,7 @@ public class DefaultSetterFilterChain implements SetterFilterChain {
 		this.chain = chain;
 	}
 
-	public void setter(FieldDefinitionContext context, Object bean, Object value) throws Exception {
+	public void setter(MappingContext context, Object bean, Object value) throws Exception {
 		SetterFilter setterFilter = getNext(context, bean, value);
 		if (setterFilter == null) {
 			if (chain == null) {
@@ -29,7 +29,7 @@ public class DefaultSetterFilterChain implements SetterFilterChain {
 		setterFilter.setter(context, bean, value, this);
 	}
 
-	protected SetterFilter getNext(FieldDefinitionContext context, Object bean, Object value) {
+	protected SetterFilter getNext(MappingContext context, Object bean, Object value) {
 		if (iterator == null) {
 			return null;
 		}

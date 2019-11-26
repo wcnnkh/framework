@@ -5,9 +5,9 @@ import java.io.Serializable;
 public class DefaultSqlType implements SqlType, Serializable{
 	private static final long serialVersionUID = 1L;
 	private final String name;
-	private final long length;
+	private final int length;
 
-	public DefaultSqlType(String name, long length) {
+	public DefaultSqlType(String name, int length) {
 		this.name = name;
 		this.length = length;
 	}
@@ -16,7 +16,7 @@ public class DefaultSqlType implements SqlType, Serializable{
 		return name;
 	}
 
-	public long getLength() {
+	public int getLength() {
 		return length;
 	}
 

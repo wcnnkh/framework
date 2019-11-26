@@ -3,7 +3,7 @@ package scw.orm.sql;
 import java.util.Collections;
 import java.util.Map;
 
-import scw.orm.ORMOperations;
+import scw.orm.MappingOperations;
 
 public final class EmptyResult implements Result {
 	private static final long serialVersionUID = 1L;
@@ -31,14 +31,26 @@ public final class EmptyResult implements Result {
 
 	@Override
 	public Object clone() {
-		return EMPTY_RESULT;
+		return this;
 	}
 
-	public <T> T get(ORMOperations ormOperations, Class<T> clazz, TableNameFactory tableNameFactory) {
+	public <T> T get(SqlMappingOperations mappingOperations, Class<T> clazz, String tableName) {
 		return null;
 	}
 
-	public <T> T get(ORMOperations ormOperations, Class<T> clazz) {
+	public <T> T get(SqlMappingOperations mappingOperations, Class<T> clazz) {
+		return null;
+	}
+
+	public Map<String, Object> getTableValueMap(String tableName) {
+		return null;
+	}
+
+	public <T> T get(MappingOperations mappingOperations, Class<T> clazz, TableNameMapping tableNameMapping) {
+		return null;
+	}
+
+	public <T> T get(Class<T> type, int index) {
 		return null;
 	}
 }

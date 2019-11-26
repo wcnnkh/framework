@@ -7,5 +7,5 @@ public interface SqlType{
 	 * 如果长度是0就不处理
 	 * @return
 	 */
-	long getLength();
+	int getLength();
 }

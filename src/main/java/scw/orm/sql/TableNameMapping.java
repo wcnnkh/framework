@@ -5,6 +5,6 @@ package scw.orm.sql;
  * @author shuchaowen
  *
  */
-public interface TableNameFactory {
+public interface TableNameMapping {
 	String getTableName(Class<?> clazz);
 }

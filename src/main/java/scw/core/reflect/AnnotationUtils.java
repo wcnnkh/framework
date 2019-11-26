@@ -87,6 +87,10 @@ public final class AnnotationUtils {
 		return accessibleObject.getAnnotation(Deprecated.class) != null;
 	}
 
+	public static boolean isDeprecated(AnnotationFactory annotationFactory) {
+		return annotationFactory.getAnnotation(Deprecated.class) != null;
+	}
+
 	public static LinkedList<Field> getAnnotationFieldList(Class<?> clazz, boolean isDeclared, boolean sup,
 			Class<? extends Annotation> annotationClass) {
 		Class<?> clz = clazz;
@@ -127,7 +131,7 @@ public final class AnnotationUtils {
 		}
 		return map;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T extends Annotation> T getAnnotation(Annotation[] annotations, Class<T> type) {
 		if (annotations == null || annotations.length == 0) {
