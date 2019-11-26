@@ -9,7 +9,7 @@ public interface MappingOperations {
 
 	Object getter(MappingContext context, Getter getter) throws Exception;
 
-	<T> T create(MappingContext superContext, Class<T> clazz, ValueMapping valueMapping) throws Exception;
+	<T> T create(MappingContext superContext, Class<T> clazz, Setter valueMapping) throws Exception;
 
 	void iterator(MappingContext superContext, Class<?> clazz, IteratorMapping iterator) throws Exception;
 }

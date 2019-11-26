@@ -11,6 +11,7 @@ import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -193,6 +194,24 @@ public final class SqlORMUtils {
 			}
 		});
 		return fieldDefinitions;
+	}
+	
+	/**
+	 * @param mappingOperations
+	 * @param clazz
+	 * @param useFieldName 是否使用原始的字段名
+	 * @return
+	 * @throws Exception
+	 */
+	public static Map<String, MappingContext> getTableFieldContextMap(MappingOperations mappingOperations, Class<?> clazz, final boolean useFieldName) throws Exception{
+		final Map<String, MappingContext> map = new LinkedHashMap<String, MappingContext>();
+		iteratorTableFieldDefinition(mappingOperations, clazz, new IteratorMapping() {
+
+			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
+				map.put(useFieldName? context.getFieldDefinition().getField().getName():context.getFieldDefinition().getName(), context);
+			}
+		});
+		return map;
 	}
 
 	public static LinkedList<MappingContext> getTableFieldContexts(MappingOperations mappingOperations, Class<?> clazz)

@@ -38,12 +38,12 @@ public class DefaultMappingOperations implements MappingOperations {
 	}
 
 	private <T> void process(Class<T> declaringClass, MappingContext superContext, Class<?> clazz, T bean,
-			ValueMapping valueMapping) throws Exception {
+			Setter valueMapping) throws Exception {
 		Map<String, FieldDefinition> map = fieldDefinitionFactory.getFieldDefinitionMap(clazz);
 		while (map != null) {
 			for (Entry<String, FieldDefinition> entry : map.entrySet()) {
 				MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
-				valueMapping.iterator(context, bean, this);
+				valueMapping.setter(context, bean, this);
 			}
 
 			Class<?> superClazz = clazz.getSuperclass();
@@ -53,7 +53,7 @@ public class DefaultMappingOperations implements MappingOperations {
 		}
 	}
 
-	public <T> T create(MappingContext superContext, Class<T> clazz, ValueMapping valueMapping) throws Exception {
+	public <T> T create(MappingContext superContext, Class<T> clazz, Setter valueMapping) throws Exception {
 		if (!instanceFactory.isInstance(clazz)) {
 			throw new CannotInstantiateException("无法实例化：" + clazz);
 		}
@@ -83,18 +83,6 @@ public class DefaultMappingOperations implements MappingOperations {
 	}
 
 	public Object getter(MappingContext context, Object bean) throws Exception {
-		return getter(context, new DefaultGetter(bean));
-	}
-
-	static final class DefaultGetter implements Getter {
-		private Object bean;
-
-		public DefaultGetter(Object bean) {
-			this.bean = bean;
-		}
-
-		public Object getter(MappingContext context) throws Exception {
-			return context.getFieldDefinition().get(bean);
-		}
+		return getter(context, new FieldGetter(bean));
 	}
 }

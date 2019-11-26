@@ -1,9 +1,7 @@
 package scw.mvc.exception;
 
 import scw.core.exception.ParameterException;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.mvc.Channel;
 import scw.mvc.ExceptionHandler;
 import scw.mvc.ExceptionHandlerChain;
@@ -17,26 +15,14 @@ import scw.security.authority.AuthorizationFailureException;
  *
  */
 public final class DefaultExceptionHandler implements ExceptionHandler {
-	private static final String[] SYSTEM_ERROR_PACKAGE_PREFIX = SystemPropertyUtils.getArrayProperty(String.class,
-			"mvc.system.error.package.prefix", new String[] { "java.", "javax." });
-
 	private ResultFactory resultFactory;
 
 	public DefaultExceptionHandler(ResultFactory resultFactory) {
 		this.resultFactory = resultFactory;
 	}
 
-	public boolean isSystemError(Channel channel, Throwable error) {
-		String name = error.getClass().getName();
-		for (String prefix : SYSTEM_ERROR_PACKAGE_PREFIX) {
-			if (name.startsWith(prefix)) {
-				return true;
-			}
-		}
-		return !ClassUtils.IGNORE_COMMON_THIRD_PARTIES_CLASS_NAME_VERIFICATION.verification(name);
-	}
-
-	public Object handler(Channel channel, Throwable error, ExceptionHandlerChain chain) {
+	public Object handler(Channel channel, Throwable error,
+			ExceptionHandlerChain chain) {
 		if (error instanceof RuntimeException) {
 			return resultFactory.error(error.getMessage());
 		} else if (error instanceof ParameterException) {
@@ -55,9 +41,11 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 			}
 
 			if (code == null) {
-				return StringUtils.isEmpty(msg) ? resultFactory.error() : resultFactory.error(msg);
+				return StringUtils.isEmpty(msg) ? resultFactory.error()
+						: resultFactory.error(msg);
 			} else {
-				return StringUtils.isEmpty(msg) ? resultFactory.error(code) : resultFactory.error(code, msg);
+				return StringUtils.isEmpty(msg) ? resultFactory.error(code)
+						: resultFactory.error(code, msg);
 			}
 		}
 		return resultFactory.error();
