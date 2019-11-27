@@ -6,10 +6,10 @@ import java.util.Iterator;
 import scw.core.utils.CollectionUtils;
 
 public class DefaultGetterFilterChain implements GetterFilterChain {
-	private Iterator<GetterFilter> iterator;
+	private Iterator<? extends GetterFilter> iterator;
 	private GetterFilterChain chain;
 
-	public DefaultGetterFilterChain(Collection<GetterFilter> filters, GetterFilterChain chain) {
+	public DefaultGetterFilterChain(Collection<? extends GetterFilter> filters, GetterFilterChain chain) {
 		if (!CollectionUtils.isEmpty(filters)) {
 			this.iterator = filters.iterator();
 		}

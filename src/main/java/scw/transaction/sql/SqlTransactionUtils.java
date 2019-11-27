@@ -4,6 +4,7 @@ import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionManager;

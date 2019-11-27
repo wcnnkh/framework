@@ -22,7 +22,7 @@ public final class ResultSetValueIndexMapping implements ValueIndexMapping {
 		indexMap = new HashMap<String, Map<String, Integer>>(4);
 		singleIndexMap = new HashMap<String, Integer>();
 		this.columnCount = resultSetMetaData.getColumnCount();
-		for (int i = 0; i < columnCount; i++) {
+		for (int i = 1; i <= columnCount; i++) {
 			String labelName = resultSetMetaData.getColumnLabel(i);
 			if (!single) {
 				if (singleIndexMap.containsKey(labelName)) {
@@ -43,7 +43,7 @@ public final class ResultSetValueIndexMapping implements ValueIndexMapping {
 			if (map.containsKey(tableName)) {
 				throw new AlreadyExistsException(tableName + " field name [" + labelName + "]");
 			}
-			map.put(labelName, i);
+			map.put(labelName, i - 1);
 		}
 	}
 
@@ -65,5 +65,15 @@ public final class ResultSetValueIndexMapping implements ValueIndexMapping {
 
 	public int getColumnCount() {
 		return columnCount;
+	}
+
+	public int getIndex(String tableName, String name) {
+		Map<String, Integer> map = indexMap.get(tableName);
+		if (map == null) {
+			return -1;
+		}
+
+		Integer index = map.get(name);
+		return index == null ? -1 : index;
 	}
 }

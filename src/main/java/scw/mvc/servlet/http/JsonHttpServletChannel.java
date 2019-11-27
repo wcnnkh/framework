@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 import scw.beans.BeanFactory;
 import scw.core.utils.StringUtils;
 import scw.json.JSONObjectReadOnly;
-import scw.json.JSONParseSupport;
+import scw.json.JsonSupport;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -20,7 +20,7 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	private JSONObjectReadOnly jsonObjectReadOnly;
 
 	public JsonHttpServletChannel(BeanFactory beanFactory,
-			JSONParseSupport jsonParseSupport, boolean cookieValue, HttpRequest request, HttpResponse response,
+			JsonSupport jsonParseSupport, boolean cookieValue, HttpRequest request, HttpResponse response,
 			String jsonp) {
 		super(beanFactory, jsonParseSupport, cookieValue, request, response, jsonp);
 		if (Method.GET.name().equals(request.getMethod())) {

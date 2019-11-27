@@ -34,7 +34,7 @@ import scw.core.Callable;
 import scw.core.StringEmptyVerification;
 import scw.core.exception.NotSupportException;
 import scw.core.exception.ParameterException;
-import scw.json.JSONParseSupport;
+import scw.json.JsonSupport;
 import scw.json.JSONUtils;
 
 public final class StringUtils {
@@ -2434,7 +2434,7 @@ public final class StringUtils {
 		return defaultAutoParse(text, type, JSONUtils.DEFAULT_JSON_SUPPORT);
 	}
 
-	public static Object defaultAutoParse(final String text, final Type type, JSONParseSupport jsonParseSupport) {
+	public static Object defaultAutoParse(final String text, final Type type, JsonSupport jsonParseSupport) {
 		return autoParse(text, type, DEFAULT_SPLIT_CHARS, jsonParseSupport);
 	}
 
@@ -2451,7 +2451,7 @@ public final class StringUtils {
 	}
 
 	public static Object parseArray(String text, Class<?> componentType, String[] splitFilter,
-			final JSONParseSupport jsonParseSupport) {
+			final JsonSupport jsonParseSupport) {
 		if (text == null) {
 			return null;
 		}
@@ -2465,7 +2465,7 @@ public final class StringUtils {
 	}
 
 	public static Object parseArray(String text, Class<?> componentType, char[] splitFilter,
-			final JSONParseSupport jsonParseSupport) {
+			final JsonSupport jsonParseSupport) {
 		if (text == null) {
 			return null;
 		}
@@ -2508,7 +2508,7 @@ public final class StringUtils {
 
 	@SuppressWarnings("rawtypes")
 	public static Object autoParse(final String text, final Type type, char[] splitFilter,
-			final JSONParseSupport jsonParseSupport) {
+			final JsonSupport jsonParseSupport) {
 		if (TypeUtils.isClass(type)) {
 			return autoParse(text, (Class) type, splitFilter, new Callable<Object>() {
 
@@ -2523,7 +2523,7 @@ public final class StringUtils {
 
 	@SuppressWarnings("rawtypes")
 	public static Object autoParse(final String text, final Type type, String[] splitFilter,
-			final JSONParseSupport jsonParseSupport) {
+			final JsonSupport jsonParseSupport) {
 		if (TypeUtils.isClass(type)) {
 			return autoParse(text, (Class) type, splitFilter, new Callable<Object>() {
 

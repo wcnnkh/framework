@@ -10,30 +10,44 @@ import java.sql.Date;
 import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
+import scw.core.exception.NotSupportException;
 import scw.core.reflect.AnnotationUtils;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.CollectionUtils;
+import scw.core.utils.FieldSetterListenUtils;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.orm.IteratorMapping;
 import scw.orm.MappingContext;
 import scw.orm.MappingOperations;
+import scw.orm.sql.annotation.AutoIncrement;
+import scw.orm.sql.annotation.Column;
+import scw.orm.sql.annotation.Index;
+import scw.orm.sql.annotation.NotColumn;
+import scw.orm.sql.annotation.PrimaryKey;
+import scw.orm.sql.annotation.Table;
+import scw.orm.sql.annotation.Transient;
 import scw.orm.sql.dialect.DefaultSqlType;
+import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.dialect.SqlType;
 import scw.orm.sql.dialect.SqlTypeFactory;
-import scw.sql.orm.annotation.AutoIncrement;
-import scw.sql.orm.annotation.Column;
-import scw.sql.orm.annotation.Index;
-import scw.sql.orm.annotation.NotColumn;
-import scw.sql.orm.annotation.PrimaryKey;
-import scw.sql.orm.annotation.Transient;
-import scw.sql.orm.enums.CasType;
+import scw.orm.sql.enums.CasType;
+import scw.orm.sql.enums.OperationType;
+import scw.sql.Sql;
 
 public final class SqlORMUtils {
+	private static Logger logger = LoggerUtils.getLogger(SqlORMUtils.class);
+
 	private SqlORMUtils() {
 	};
 
@@ -136,36 +150,6 @@ public final class SqlORMUtils {
 		return column == null ? false : column.unique();
 	}
 
-	public static TableFieldContext getTableFieldContext(MappingOperations mappingOperations, Class<?> clazz)
-			throws Exception {
-		return getTableFieldContext(mappingOperations, clazz, true);
-	}
-
-	public static TableFieldContext getTableFieldContext(MappingOperations mappingOperations, Class<?> clazz,
-			final boolean useFieldName) throws Exception {
-		final LinkedList<MappingContext> primaryKeys = new LinkedList<MappingContext>();
-		final LinkedList<MappingContext> notPrimaryKeys = new LinkedList<MappingContext>();
-		final Map<String, MappingContext> contextMap = new HashMap<String, MappingContext>();
-		mappingOperations.iterator(null, clazz, new IteratorMapping() {
-
-			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
-				if (!isDataBaseField(context.getFieldDefinition())) {
-					return;
-				}
-
-				if (isPrimaryKey(context.getFieldDefinition())) {
-					primaryKeys.add(context);
-				} else {
-					notPrimaryKeys.add(context);
-				}
-
-				contextMap.put(useFieldName ? context.getFieldDefinition().getField().getName()
-						: context.getFieldDefinition().getName(), context);
-			}
-		});
-		return new TableFieldContext(primaryKeys, notPrimaryKeys, contextMap);
-	}
-
 	public static CasType getCasType(FieldDefinition fieldDefinition) {
 		if (isPrimaryKey(fieldDefinition)) {
 			return CasType.NOTHING;
@@ -176,5 +160,84 @@ public final class SqlORMUtils {
 			return CasType.NOTHING;
 		}
 		return column.casType();
+	}
+
+	/**
+	 * 获取主键数据
+	 * 
+	 * @param bean
+	 * @param tableInfo
+	 * @return
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
+	public static <T> LinkedList<Object> getPrimaryKeys(MappingOperations mappingOperations, Class<? extends T> clazz,
+			final T bean) throws Exception {
+		final LinkedList<Object> keys = new LinkedList<Object>();
+		mappingOperations.iterator(null, clazz, new IteratorMapping() {
+
+			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
+				if (isPrimaryKey(context.getFieldDefinition())) {
+					keys.add(mappingOperations.getter(context, bean));
+				}
+			}
+		});
+		return keys;
+	}
+
+	public static Sql toSql(OperationType operationType, SqlMappingOperations sqlMappingOperations,
+			SqlDialect sqlDialect, Class<?> clazz, Object bean, String tableName) {
+		switch (operationType) {
+		case SAVE:
+			return sqlDialect.toInsertSql(sqlMappingOperations, bean, clazz, tableName);
+		case DELETE:
+			return sqlDialect.toDeleteSql(sqlMappingOperations, bean, clazz, tableName);
+		case SAVE_OR_UPDATE:
+			return sqlDialect.toSaveOrUpdateSql(sqlMappingOperations, bean, clazz, tableName);
+		case UPDATE:
+			return sqlDialect.toUpdateSql(sqlMappingOperations, bean, clazz, tableName);
+		default:
+			throw new NotSupportException(operationType.name());
+		}
+	}
+
+	public static void registerCglibProxyTableBean(String pageName) {
+		if (!StringUtils.isEmpty(pageName)) {
+			logger.info("register proxy package:{}", pageName);
+		}
+
+		for (Class<?> type : ClassUtils.getClassList(pageName)) {
+			Table table = type.getAnnotation(Table.class);
+			if (table == null) {
+				continue;
+			}
+
+			FieldSetterListenUtils.createFieldSetterListenProxyClass(type);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <K> Map<String, K> getInIdKeyMap(SqlMappingOperations sqlMappingOperations, Class<?> clazz,
+			Collection<K> inIds, Object[] params) {
+		if (CollectionUtils.isEmpty(inIds)) {
+			return Collections.EMPTY_MAP;
+		}
+
+		Map<String, K> keyMap = new HashMap<String, K>();
+		Iterator<K> valueIterator = inIds.iterator();
+
+		while (valueIterator.hasNext()) {
+			K k = valueIterator.next();
+			Object[] ids;
+			if (params == null || params.length == 0) {
+				ids = new Object[] { k };
+			} else {
+				ids = new Object[params.length];
+				System.arraycopy(params, 0, ids, 0, params.length);
+				ids[ids.length - 1] = valueIterator.next();
+			}
+			keyMap.put(sqlMappingOperations.getObjectKeyById(clazz, Arrays.asList(ids)), k);
+		}
+		return keyMap;
 	}
 }

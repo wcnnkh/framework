@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.json.support.MyGsonJSONParseSupport;
+import scw.json.support.GsonSupport;
 import scw.logger.LoggerUtils;
 
 public final class JSONUtils {
@@ -15,11 +15,12 @@ public final class JSONUtils {
 	/**
 	 * 默认的json序列化工具
 	 */
-	public static final JSONParseSupport DEFAULT_JSON_SUPPORT;
+	public static final JsonSupport DEFAULT_JSON_SUPPORT;
 
 	static {
-		JSONParseSupport jsonSupport = null;
-		String[] supportClass = SystemPropertyUtils.getArrayProperty(String.class, "json.support.class", new String[]{"scw.json.support.fastjson.FastJSONParseSupport"});
+		JsonSupport jsonSupport = null;
+		String[] supportClass = SystemPropertyUtils.getArrayProperty(String.class, "json.support.class",
+				new String[] { "scw.json.support.fastjson.FastJsonSupport" });
 		for (String name : supportClass) {
 			jsonSupport = InstanceUtils.getInstance(name);
 			if (jsonSupport != null) {
@@ -27,7 +28,7 @@ public final class JSONUtils {
 			}
 		}
 
-		DEFAULT_JSON_SUPPORT = jsonSupport == null ? new MyGsonJSONParseSupport() : jsonSupport;
+		DEFAULT_JSON_SUPPORT = jsonSupport == null ? new GsonSupport() : jsonSupport;
 		LoggerUtils.info(JSONUtils.class, "default json parse：{}", DEFAULT_JSON_SUPPORT.getClass().getName());
 	}
 
@@ -49,14 +50,6 @@ public final class JSONUtils {
 
 	public static <T> T parseObject(String text, Type type) {
 		return DEFAULT_JSON_SUPPORT.parseObject(text, type);
-	}
-
-	public static JSONArray createJSONArray() {
-		return DEFAULT_JSON_SUPPORT.createJSONArray();
-	}
-
-	public static JSONObject createJSONObject() {
-		return DEFAULT_JSON_SUPPORT.createJSONObject();
 	}
 
 	/**

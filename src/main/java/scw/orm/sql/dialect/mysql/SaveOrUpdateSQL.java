@@ -8,10 +8,9 @@ import scw.core.reflect.FieldDefinition;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;
-import scw.orm.MappingOperations;
-import scw.orm.sql.SqlORMUtils;
-import scw.orm.sql.TableFieldContext;
-import scw.sql.orm.annotation.Counter;
+import scw.orm.sql.SqlMappingOperations;
+import scw.orm.sql.TableMappingContext;
+import scw.orm.sql.annotation.Counter;
 
 public class SaveOrUpdateSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
@@ -21,9 +20,9 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public SaveOrUpdateSQL(MappingOperations mappingOperations, Class<?> clazz, Object obj, String tableName)
+	public SaveOrUpdateSQL(SqlMappingOperations mappingOperations, Class<?> clazz, Object obj, String tableName)
 			throws Exception {
-		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
+		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}

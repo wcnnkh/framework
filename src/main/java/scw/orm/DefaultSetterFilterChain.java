@@ -6,10 +6,10 @@ import java.util.Iterator;
 import scw.core.utils.CollectionUtils;
 
 public class DefaultSetterFilterChain implements SetterFilterChain {
-	private Iterator<SetterFilter> iterator;
+	private Iterator<? extends SetterFilter> iterator;
 	private SetterFilterChain chain;
 
-	public DefaultSetterFilterChain(Collection<SetterFilter> filters, SetterFilterChain chain) {
+	public DefaultSetterFilterChain(Collection<? extends SetterFilter> filters, SetterFilterChain chain) {
 		if (!CollectionUtils.isEmpty(filters)) {
 			this.iterator = filters.iterator();
 		}

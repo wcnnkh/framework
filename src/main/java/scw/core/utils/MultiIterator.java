@@ -15,7 +15,7 @@ public class MultiIterator<E> implements Iterator<E> {
 	private Iterator<Iterator<? extends E>> iteratorIterator;
 	private Iterator<? extends E> iterator;
 
-	public MultiIterator(Iterator<? extends E>... iterators) {
+	public MultiIterator(Iterator<? extends E> ...iterators) {
 		this(Arrays.asList(iterators));
 	}
 
@@ -24,7 +24,7 @@ public class MultiIterator<E> implements Iterator<E> {
 			this.iteratorIterator = iterators.iterator();
 		}
 	}
-
+	
 	public boolean hasNext() {
 		if (iteratorIterator == null) {
 			return false;

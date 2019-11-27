@@ -2,7 +2,7 @@ package scw.timer.db;
 
 import java.io.Serializable;
 
-import scw.sql.orm.annotation.Table;
+import scw.orm.sql.annotation.Table;
 
 //TODO 未完成
 @Table

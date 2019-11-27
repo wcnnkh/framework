@@ -13,4 +13,6 @@ public interface ValueIndexMapping extends Serializable {
 	Map<String, Integer> getSingleIndexMap();
 
 	Map<String, Integer> getIndexMap(String tableName);
+	
+	int getIndex(String tableName, String name);
 }

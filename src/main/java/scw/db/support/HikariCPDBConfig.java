@@ -21,13 +21,13 @@ public final class HikariCPDBConfig extends AbstractHikariCPDBConfig {
 
 	public HikariCPDBConfig(@ResourceParameter @DefaultValue(DEFAULT_CONFIG) String properties) {
 		super(ResourceUtils.getProperties(properties));
-		this.cacheManager = new DefaultCacheManager();
+		this.cacheManager = new DefaultCacheManager(getSqlMappingOperations());
 		this.asyncQueue = new MemoryQueue<AsyncExecute>();
 	}
 
 	public HikariCPDBConfig(@ResourceParameter @DefaultValue(DEFAULT_CONFIG) String properties, Cache cache) {
 		super(ResourceUtils.getProperties(properties));
-		this.cacheManager = new DefaultCacheManager(cache, true, null);
+		this.cacheManager = new DefaultCacheManager(getSqlMappingOperations(), cache, true, null);
 		this.asyncQueue = new MemoryQueue<AsyncExecute>();
 	}
 
@@ -42,14 +42,14 @@ public final class HikariCPDBConfig extends AbstractHikariCPDBConfig {
 	@SuppressWarnings("rawtypes")
 	public HikariCPDBConfig(Map properties, Memcached memcached) {
 		super(properties);
-		this.cacheManager = createCacheManager(properties, memcached);
+		this.cacheManager = createCacheManager(properties, memcached, getSqlMappingOperations());
 		this.asyncQueue = createAsyncQueue(properties, memcached);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public HikariCPDBConfig(Map properties, Redis redis) {
 		super(properties);
-		this.cacheManager = createCacheManager(properties, redis);
+		this.cacheManager = createCacheManager(properties, redis, getSqlMappingOperations());
 		this.asyncQueue = createAsyncQueue(properties, redis);
 	}
 

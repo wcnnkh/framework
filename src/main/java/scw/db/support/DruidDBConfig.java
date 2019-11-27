@@ -20,35 +20,35 @@ public final class DruidDBConfig extends AbstractDruidDBConfig {
 	private CacheManager cacheManager;
 	private Queue<AsyncExecute> asyncQueue;
 
-	public DruidDBConfig(@ResourceParameter@DefaultValue(DEFAULT_CONFIG) String properties) {
+	public DruidDBConfig(@ResourceParameter @DefaultValue(DEFAULT_CONFIG) String properties) {
 		super(ResourceUtils.getProperties(properties));
-		this.cacheManager = new DefaultCacheManager();
+		this.cacheManager = new DefaultCacheManager(getSqlMappingOperations());
 		this.asyncQueue = new MemoryQueue<AsyncExecute>();
 	}
 
-	public DruidDBConfig(@ResourceParameter@DefaultValue(DEFAULT_CONFIG) String properties, Cache cache) {
+	public DruidDBConfig(@ResourceParameter @DefaultValue(DEFAULT_CONFIG) String properties, Cache cache) {
 		super(ResourceUtils.getProperties(properties));
-		this.cacheManager = new DefaultCacheManager(cache, true, null);
+		this.cacheManager = new DefaultCacheManager(getSqlMappingOperations(), cache, true, null);
 		this.asyncQueue = new MemoryQueue<AsyncExecute>();
 	}
 
-	public DruidDBConfig(@ResourceParameter@DefaultValue(DEFAULT_CONFIG) String properties, Memcached memcached) {
+	public DruidDBConfig(@ResourceParameter @DefaultValue(DEFAULT_CONFIG) String properties, Memcached memcached) {
 		this(ResourceUtils.getProperties(properties), memcached);
 	}
 
-	public DruidDBConfig(@ResourceParameter@DefaultValue(DEFAULT_CONFIG) String properties, Redis redis) {
+	public DruidDBConfig(@ResourceParameter @DefaultValue(DEFAULT_CONFIG) String properties, Redis redis) {
 		this(ResourceUtils.getProperties(properties), redis);
 	}
 
 	public DruidDBConfig(Map properties, Memcached memcached) {
 		super(properties);
-		this.cacheManager = createCacheManager(properties, memcached);
+		this.cacheManager = createCacheManager(properties, memcached, getSqlMappingOperations());
 		this.asyncQueue = createAsyncQueue(properties, memcached);
 	}
 
 	public DruidDBConfig(Map properties, Redis redis) {
 		super(properties);
-		this.cacheManager = createCacheManager(properties, redis);
+		this.cacheManager = createCacheManager(properties, redis, getSqlMappingOperations());
 		this.asyncQueue = createAsyncQueue(properties, redis);
 	}
 

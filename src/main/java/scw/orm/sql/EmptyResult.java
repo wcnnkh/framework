@@ -3,8 +3,6 @@ package scw.orm.sql;
 import java.util.Collections;
 import java.util.Map;
 
-import scw.orm.MappingOperations;
-
 public final class EmptyResult implements Result {
 	private static final long serialVersionUID = 1L;
 
@@ -46,7 +44,7 @@ public final class EmptyResult implements Result {
 		return null;
 	}
 
-	public <T> T get(MappingOperations mappingOperations, Class<T> clazz, TableNameMapping tableNameMapping) {
+	public <T> T get(SqlMappingOperations mappingOperations, Class<T> clazz, TableNameMapping tableNameMapping) {
 		return null;
 	}
 

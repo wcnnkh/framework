@@ -2,7 +2,7 @@ package scw.orm.sql;
 
 import scw.core.instance.SimpleCacheNoArgsInstanceFactory;
 import scw.core.utils.FieldSetterListenUtils;
-import scw.sql.orm.annotation.Table;
+import scw.orm.sql.annotation.Table;
 
 public final class TableInstanceFactory extends SimpleCacheNoArgsInstanceFactory {
 	@SuppressWarnings("unchecked")

@@ -42,7 +42,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XUtils;
-import scw.json.JSONParseSupport;
+import scw.json.JsonSupport;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -493,9 +493,9 @@ public final class MVCUtils implements MvcConstants {
 		return StringUtils.isEmpty(actionKey) ? "action" : actionKey;
 	}
 
-	public static JSONParseSupport getJsonParseSupport(InstanceFactory instanceFactory,
+	public static JsonSupport getJsonParseSupport(InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory) {
-		JSONParseSupport jsonParseSupport;
+		JsonSupport jsonParseSupport;
 		String jsonParseSupportBeanName = propertyFactory.getProperty("mvc.json");
 		if (StringUtils.isEmpty(jsonParseSupportBeanName)) {
 			jsonParseSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
@@ -726,7 +726,7 @@ public final class MVCUtils implements MvcConstants {
 		return list;
 	}
 
-	public static void httpWrite(HttpChannel channel, String jsonp, JSONParseSupport jsonParseSupport, Object write)
+	public static void httpWrite(HttpChannel channel, String jsonp, JsonSupport jsonParseSupport, Object write)
 			throws Throwable {
 		if (write == null) {
 			return;

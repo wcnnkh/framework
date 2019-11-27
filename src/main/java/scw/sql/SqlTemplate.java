@@ -157,6 +157,16 @@ public abstract class SqlTemplate implements SqlOperations {
 		}
 	}
 
+	public List<Object[]> query(Sql sql) throws SqlException {
+		return query(sql, new RowMapper<Object[]>() {
+
+			public Object[] mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return SqlUtils.getRowValues(rs, rs.getMetaData().getColumnCount());
+			}
+
+		});
+	}
+
 	protected int update(Sql sql, Connection connection) throws SQLException {
 		if (logger.isDebugEnabled()) {
 			logger.debug(SqlUtils.getSqlId(sql));

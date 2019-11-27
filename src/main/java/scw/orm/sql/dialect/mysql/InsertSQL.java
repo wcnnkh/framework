@@ -1,11 +1,13 @@
 package scw.orm.sql.dialect.mysql;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import scw.orm.MappingContext;
-import scw.orm.MappingOperations;
+import scw.orm.sql.SqlMappingOperations;
 import scw.orm.sql.SqlORMUtils;
-import scw.orm.sql.TableFieldContext;
+import scw.orm.sql.TableMappingContext;
 
 public final class InsertSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
@@ -13,14 +15,13 @@ public final class InsertSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public InsertSQL(MappingOperations mappingOperations, Class<?> clazz, String tableName, Object obj)
+	public InsertSQL(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName, Object obj)
 			throws Exception {
-		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
+		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
-		this.params = new Object[tableFieldContext.size()];
-		int index = 0;
+		List<Object> params = new ArrayList<Object>();
 		Iterator<MappingContext> iterator = tableFieldContext.iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
@@ -28,14 +29,14 @@ public final class InsertSQL extends MysqlDialectSql {
 				continue;
 			}
 
-			if (index++ > 0) {
+			if (cols.length() > 0) {
 				cols.append(",");
 				values.append(",");
 			}
 
 			keywordProcessing(cols, context.getFieldDefinition().getName());
 			values.append("?");
-			params[index++] = mappingOperations.getter(context, obj);
+			params.add(mappingOperations.getter(context, obj));
 		}
 		sql.append(INSERT_INTO_PREFIX);
 		keywordProcessing(sql, tableName);
@@ -44,6 +45,8 @@ public final class InsertSQL extends MysqlDialectSql {
 		sql.append(VALUES);
 		sql.append(values);
 		sql.append(")");
+		this.sql = sql.toString();
+		this.params = params.toArray();
 	}
 
 	public String getSql() {

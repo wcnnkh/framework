@@ -11,41 +11,36 @@ import java.util.Map.Entry;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.StringUtils;
 import scw.orm.MappingContext;
-import scw.orm.MappingOperations;
+import scw.orm.sql.SqlMappingOperations;
 import scw.orm.sql.SqlORMUtils;
-import scw.orm.sql.TableFieldContext;
+import scw.orm.sql.TableMappingContext;
+import scw.orm.sql.annotation.Column;
+import scw.orm.sql.annotation.Index;
+import scw.orm.sql.annotation.Table;
 import scw.orm.sql.dialect.DefaultSqlTypeFactory;
 import scw.orm.sql.dialect.SqlType;
 import scw.orm.sql.dialect.SqlTypeFactory;
-import scw.sql.orm.annotation.Column;
-import scw.sql.orm.annotation.Index;
-import scw.sql.orm.annotation.Table;
-import scw.sql.orm.enums.IndexMethod;
-import scw.sql.orm.enums.IndexOrder;
+import scw.orm.sql.enums.IndexMethod;
+import scw.orm.sql.enums.IndexOrder;
 
 public class CreateTableSql extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 
-	public CreateTableSql(MappingOperations mappingOperations, Class<?> clazz, String tableName) throws Exception {
+	public CreateTableSql(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName) {
 		this(mappingOperations, clazz, tableName, new DefaultSqlTypeFactory());
 	}
 
-	public CreateTableSql(MappingOperations mappingOperations, Class<?> clazz, String tableName,
-			final SqlTypeFactory sqlTypeFactory) throws Exception {
-		final StringBuilder sql = new StringBuilder();
-		sql.append("CREATE TABLE IF NOT EXISTS `").append(tableName).append("`");
-		sql.append(" (");
+	public CreateTableSql(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName,
+			final SqlTypeFactory sqlTypeFactory) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("CREATE TABLE IF NOT EXISTS `").append(tableName).append("`");
+		sb.append(" (");
 
-		final StringBuilder sb = new StringBuilder();
-		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
+		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		Iterator<MappingContext> iterator = tableFieldContext.iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			if (sb.length() != 0) {
-				sb.append(",");
-			}
-
 			FieldDefinition fieldDefinition = context.getFieldDefinition();
 			SqlType sqlType = SqlORMUtils.getSqlType(fieldDefinition, sqlTypeFactory);
 			sb.append("`").append(fieldDefinition.getName()).append("`");
@@ -72,13 +67,17 @@ public class CreateTableSql extends MysqlDialectSql {
 			if (SqlORMUtils.isAutoIncrement(fieldDefinition)) {
 				sb.append(" AUTO_INCREMENT");
 			}
+
+			if (iterator.hasNext()) {
+				sb.append(",");
+			}
 		}
 
 		iterator = tableFieldContext.iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			if (!SqlORMUtils.isUnique(context.getFieldDefinition())) {
-				return;
+				continue;
 			}
 
 			sb.append(",");
@@ -94,7 +93,7 @@ public class CreateTableSql extends MysqlDialectSql {
 			MappingContext context = iterator.next();
 			Index index = context.getFieldDefinition().getAnnotation(Index.class);
 			if (index == null) {
-				return;
+				continue;
 			}
 
 			if (!indexConfigMap.containsKey(index.name())) {
@@ -140,7 +139,7 @@ public class CreateTableSql extends MysqlDialectSql {
 					sb.append(" ").append(indexInfo.getIndex().order().name());
 				}
 
-				if (iterator.hasNext()) {
+				if (indexIterator.hasNext()) {
 					sb.append(",");
 				}
 			}
@@ -157,7 +156,6 @@ public class CreateTableSql extends MysqlDialectSql {
 			primaryKeySql.append("`");
 			primaryKeySql.append(context.getFieldDefinition().getName());
 			primaryKeySql.append("`");
-
 		}
 
 		if (primaryKeySql.length() > 0) {
@@ -167,9 +165,7 @@ public class CreateTableSql extends MysqlDialectSql {
 			sb.append(")");
 		}
 
-		sb.append(primaryKeySql);
 		sb.append(")");
-
 		Table table = clazz.getAnnotation(Table.class);
 		if (table != null) {
 			sb.append(" ENGINE=").append(table.engine());
@@ -180,10 +176,8 @@ public class CreateTableSql extends MysqlDialectSql {
 
 		if (table != null && !StringUtils.isEmpty(table.comment())) {
 			sb.append(" comment=\'").append(table.comment()).append("\'");
-
 		}
-		sql.append(sb);
-		this.sql = sql.toString();
+		this.sql = sb.toString();
 	}
 
 	public String getSql() {

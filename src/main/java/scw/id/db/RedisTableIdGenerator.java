@@ -65,7 +65,7 @@ public final class RedisTableIdGenerator implements IdGenerator<Long> {
 					if (db == null) {
 						db = DBManager.getDB(tableClass);
 					}
-					Long maxId = db.getMaxValue(tableClass, fieldName);
+					Long maxId = db.getMaxValue(Long.class, tableClass, fieldName);
 					maxId = maxId == null ? 0 : maxId;
 					idGenerator = new RedisIdGenerator(redis, key, maxId);
 				}

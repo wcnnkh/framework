@@ -3,8 +3,6 @@ package scw.orm.sql;
 import java.io.Serializable;
 import java.util.List;
 
-import scw.orm.MappingOperations;
-
 public interface ResultSet extends Serializable, Iterable<Result> {
 	public static final EmptyResultSet EMPTY_RESULT_SET = new EmptyResultSet();
 	/**
@@ -14,7 +12,7 @@ public interface ResultSet extends Serializable, Iterable<Result> {
 	 */
 	List<Object[]> getList();
 
-	<T> List<T> getList(MappingOperations mappingOperations, Class<T> clazz, TableNameMapping tableNameMapping);
+	<T> List<T> getList(SqlMappingOperations mappingOperations, Class<T> clazz, TableNameMapping tableNameMapping);
 
 	<T> List<T> getList(SqlMappingOperations mappingOperations, Class<T> clazz, String tableName);
 

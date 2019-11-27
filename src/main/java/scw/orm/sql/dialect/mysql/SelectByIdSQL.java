@@ -1,14 +1,14 @@
 package scw.orm.sql.dialect.mysql;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import scw.orm.MappingContext;
-import scw.orm.MappingOperations;
 import scw.orm.SimpleGetter;
-import scw.orm.sql.SqlORMUtils;
-import scw.orm.sql.TableFieldContext;
+import scw.orm.sql.SqlMappingOperations;
+import scw.orm.sql.TableMappingContext;
 
 public final class SelectByIdSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
@@ -16,13 +16,13 @@ public final class SelectByIdSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public SelectByIdSQL(MappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] ids)
+	public SelectByIdSQL(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName, Collection<Object> ids)
 			throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append(clazz.getName());
 		sb.append(tableName);
 		sb.append("&");
-		sb.append(ids == null ? 0 : ids.length);
+		sb.append(ids.size());
 
 		String id = sb.toString();
 		this.sql = sqlCache.get(id);
@@ -36,15 +36,18 @@ public final class SelectByIdSQL extends MysqlDialectSql {
 			}
 		}
 
-		int i = 0;
-		this.params = new Object[ids == null ? 0 : ids.length];
-		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
-		Iterator<MappingContext> iterator = tableFieldContext.getPrimaryKeys().iterator();
-		while (iterator.hasNext()) {
-			MappingContext context = iterator.next();
-			params[i] = mappingOperations.getter(context, new SimpleGetter(ids[i]));
-			i++;
+		this.params = new Object[ids.size()];
+		if (params.length > 0) {
+			TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
+			Iterator<MappingContext> iterator = tableFieldContext.getPrimaryKeys().iterator();
+			Iterator<Object> valueIterator = ids.iterator();
+			int i = 0;
+			while (iterator.hasNext() && valueIterator.hasNext()) {
+				MappingContext context = iterator.next();
+				params[i++] = mappingOperations.getter(context, new SimpleGetter(valueIterator.next()));
+			}
 		}
+
 	}
 
 	public String getSql() {
@@ -55,28 +58,29 @@ public final class SelectByIdSQL extends MysqlDialectSql {
 		return params;
 	}
 
-	private String getSql(MappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] ids)
+	private String getSql(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName, Collection<Object> ids)
 			throws Exception {
-		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
+		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		StringBuilder sb = new StringBuilder();
 		sb.append(SELECT_ALL_PREFIX);
 		keywordProcessing(sb, tableName);
 		Iterator<MappingContext> iterator = tableFieldContext.getPrimaryKeys().iterator();
-		while (iterator.hasNext()) {
-			MappingContext context = iterator.next();
+		Iterator<Object> valueIterator = ids.iterator();
+		if (iterator.hasNext() && valueIterator.hasNext()) {
 			sb.append(UpdateSQL.WHERE);
-			for (int i = 0; i < ids.length; i++) {
-				if (i != 0) {
-					sb.append(AND);
-				}
+		}
 
-				keywordProcessing(sb, context.getFieldDefinition().getName());
-				sb.append("=?");
+		while (iterator.hasNext() && valueIterator.hasNext()) {
+			MappingContext context = iterator.next();
+			keywordProcessing(sb, context.getFieldDefinition().getName());
+			sb.append("=?");
+			if (iterator.hasNext() && valueIterator.hasNext()) {
+				sb.append(AND);
 			}
-
-			if (ids.length == tableFieldContext.getPrimaryKeys().size()) {
-				sb.append(" limit 0,1");
-			}
+		}
+		
+		if (ids.size() == tableFieldContext.getPrimaryKeys().size()) {
+			sb.append(" limit 0,1");
 		}
 		return sb.toString();
 	}

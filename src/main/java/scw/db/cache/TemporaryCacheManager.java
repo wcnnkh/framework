@@ -1,15 +1,17 @@
 package scw.db.cache;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import scw.core.utils.ArrayUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.XTime;
 import scw.data.TemporaryCache;
 import scw.data.WrapperTemporaryCache;
-import scw.sql.orm.ORMUtils;
-import scw.sql.orm.TableInfo;
+import scw.orm.sql.SqlMappingOperations;
+import scw.orm.sql.TableMappingContext;
 
 public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> {
 	private static final String KEY = "key:";
@@ -37,19 +39,27 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 	}
 
 	private final TemporaryCache cache;
+	private final SqlMappingOperations sqlMappingOperations;
 
-	public TemporaryCacheManager(TemporaryCache cache, boolean transaction, String keyPrefix) {
+	public TemporaryCacheManager(SqlMappingOperations sqlMappingOperations, TemporaryCache cache, boolean transaction,
+			String keyPrefix) {
 		this.cache = new WrapperTemporaryCache(cache, transaction, keyPrefix);
+		this.sqlMappingOperations = sqlMappingOperations;
+	}
+
+	@Override
+	public SqlMappingOperations getSqlMappingOperations() {
+		return sqlMappingOperations;
 	}
 
 	public void save(Object bean) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		TemporaryCacheConfig config = getCacheConfig(tableInfo.getSource());
+		Class<?> clazz = ClassUtils.getUserClass(bean);
+		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
 		}
 
-		String objectKey = ORMUtils.getObjectKey(tableInfo, bean);
+		String objectKey = sqlMappingOperations.getObjectKey(clazz, bean);
 		cache.set(objectKey, config.getExp(), bean);
 		if (config.isKeys()) {
 			cache.add(KEY + objectKey, "");
@@ -57,23 +67,23 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 	}
 
 	public void update(Object bean) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		TemporaryCacheConfig config = getCacheConfig(tableInfo.getSource());
+		Class<?> clazz = ClassUtils.getUserClass(bean);
+		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
 		}
 
-		cache.set(ORMUtils.getObjectKey(tableInfo, bean), config.getExp(), bean);
+		cache.set(sqlMappingOperations.getObjectKey(clazz, bean), config.getExp(), bean);
 	}
 
 	public void delete(Object bean) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		TemporaryCacheConfig config = getCacheConfig(tableInfo.getSource());
+		Class<?> clazz = ClassUtils.getUserClass(bean);
+		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
 		}
 
-		final String objectKey = ORMUtils.getObjectKey(tableInfo, bean);
+		String objectKey = sqlMappingOperations.getObjectKey(clazz, bean);
 		if (config.isKeys()) {
 			cache.delete(KEY + objectKey);
 		}
@@ -86,7 +96,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 			return;
 		}
 
-		final String objectKey = ORMUtils.getObjectKeyById(type, params);
+		String objectKey = sqlMappingOperations.getObjectKeyById(type, Arrays.asList(params));
 		if (config.isKeys()) {
 			cache.delete(KEY + objectKey);
 		}
@@ -94,13 +104,13 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 	}
 
 	public void saveOrUpdate(Object bean) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		TemporaryCacheConfig config = getCacheConfig(tableInfo.getSource());
+		Class<?> clazz = ClassUtils.getUserClass(bean);
+		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
 		}
 
-		final String objectKey = ORMUtils.getObjectKey(tableInfo, bean);
+		String objectKey = sqlMappingOperations.getObjectKey(clazz, bean);
 		cache.set(objectKey, config.getExp(), bean);
 		if (config.isKeys()) {
 			cache.set(KEY + objectKey, "");
@@ -113,7 +123,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 			return null;
 		}
 
-		return cache.getAndTouch(ORMUtils.getObjectKeyById(type, params), config.getExp());
+		return cache.getAndTouch(sqlMappingOperations.getObjectKeyById(type, Arrays.asList(params)), config.getExp());
 	}
 
 	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {
@@ -138,12 +148,12 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 
 		TemporaryCacheConfig config = getCacheConfig(type);
 		if (config.isEnable() && config.isKeys()) {
-			TableInfo tableInfo = ORMUtils.getTableInfo(type);
-			if (tableInfo == null || tableInfo.getPrimaryKeyColumns().length != params.length) {
-				return false;
+			TableMappingContext tableFieldContext = sqlMappingOperations.getTableMappingContext(type);
+			if (tableFieldContext.getPrimaryKeys().size() != params.length) {
+				return true;
 			}
-			
-			String key = ORMUtils.getObjectKeyById(type, params);
+
+			String key = sqlMappingOperations.getObjectKeyById(type, Arrays.asList(params));
 			return getCache().isExist(KEY + key);
 		}
 		return true;

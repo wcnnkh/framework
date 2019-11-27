@@ -12,12 +12,12 @@ import scw.core.utils.TypeUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;
-import scw.orm.MappingOperations;
 import scw.orm.SimpleGetter;
+import scw.orm.sql.SqlMappingOperations;
 import scw.orm.sql.SqlORMUtils;
-import scw.orm.sql.TableFieldContext;
-import scw.sql.orm.annotation.Counter;
-import scw.sql.orm.enums.CasType;
+import scw.orm.sql.TableMappingContext;
+import scw.orm.sql.annotation.Counter;
+import scw.orm.sql.enums.CasType;
 
 public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 	private static Logger logger = LoggerUtils.getLogger(UpdateSQLByBeanListen.class);
@@ -25,9 +25,9 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanListen(MappingOperations mappingOperations, Class<?> clazz, FieldSetterListen beanFieldListen,
-			String tableName) throws Exception {
-		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
+	public UpdateSQLByBeanListen(SqlMappingOperations mappingOperations, Class<?> clazz,
+			FieldSetterListen beanFieldListen, String tableName) throws Exception {
+		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NotFoundException("not found primary key");
 		}
@@ -130,7 +130,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 
 		sb.append(WHERE);
 
-		iterator = tableFieldContext.getNotPrimaryKeys().iterator();
+		iterator = tableFieldContext.getPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			keywordProcessing(sb, context.getFieldDefinition().getName());

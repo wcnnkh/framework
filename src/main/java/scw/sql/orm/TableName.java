@@ -1,5 +1,5 @@
 package scw.sql.orm;
 
 public interface TableName {
-	String tableName();
+	String getTableName();
 }

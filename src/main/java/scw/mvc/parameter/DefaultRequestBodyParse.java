@@ -15,7 +15,7 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.json.JSONArray;
 import scw.json.JSONObject;
-import scw.json.JSONParseSupport;
+import scw.json.JsonSupport;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.Channel;
@@ -25,7 +25,7 @@ import scw.mvc.MVCUtils;
 public class DefaultRequestBodyParse implements RequestBodyParse {
 	private static Logger logger = LoggerFactory.getLogger(DefaultRequestBodyParse.class);
 
-	public Object requestBodyParse(Channel channel, JSONParseSupport jsonParseSupport, ParameterConfig parameterConfig)
+	public Object requestBodyParse(Channel channel, JsonSupport jsonParseSupport, ParameterConfig parameterConfig)
 			throws Exception {
 		String body = null;
 		if (MVCUtils.isJsonRequest(channel.getRequest())) {

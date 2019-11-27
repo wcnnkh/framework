@@ -6,9 +6,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import scw.orm.MappingContext;
-import scw.orm.MappingOperations;
-import scw.orm.sql.SqlORMUtils;
-import scw.orm.sql.TableFieldContext;
+import scw.orm.sql.SqlMappingOperations;
+import scw.orm.sql.TableMappingContext;
 
 public final class SelectInIdSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
@@ -17,7 +16,7 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public SelectInIdSQL(MappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] ids,
+	public SelectInIdSQL(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] ids,
 			Collection<?> inIds) throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append(clazz.getName());
@@ -56,9 +55,9 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 		return params;
 	}
 
-	private String getSql(MappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] ids,
+	private String getSql(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] ids,
 			Collection<?> inIdList) throws Exception {
-		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
+		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		StringBuilder sb = new StringBuilder();
 		if (ids.length > 0) {
 			Iterator<MappingContext> iterator = tableFieldContext.getPrimaryKeys().iterator();
@@ -78,7 +77,7 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 				sb.append(AND);
 			}
 
-			keywordProcessing(sb, tableFieldContext.getPrimaryKeys().getLast().getFieldDefinition().getName());
+			keywordProcessing(sb, tableFieldContext.getPrimaryKeys().get(ids.length).getFieldDefinition().getName());
 			sb.append(IN);
 			for (int i = 0; i < inIdList.size(); i++) {
 				if (i != 0) {

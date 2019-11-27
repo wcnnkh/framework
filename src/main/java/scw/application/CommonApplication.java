@@ -8,7 +8,7 @@ import scw.core.utils.StringUtils;
 import scw.db.DBUtils;
 import scw.logger.LoggerUtils;
 import scw.mq.MQUtils;
-import scw.sql.orm.ORMUtils;
+import scw.orm.sql.SqlORMUtils;
 import scw.timer.TimerUtils;
 
 public class CommonApplication extends XmlBeanFactory implements Application {
@@ -73,9 +73,9 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 
 		String ormScanPackageName = getPropertyFactory().getProperty("orm.scan");
 		if (StringUtils.isNotEmpty(ormScanPackageName)) {
-			ORMUtils.registerCglibProxyTableBean(ormScanPackageName);
+			SqlORMUtils.registerCglibProxyTableBean(ormScanPackageName);
 		} else {
-			ORMUtils.registerCglibProxyTableBean(getORMPackage());
+			SqlORMUtils.registerCglibProxyTableBean(getORMPackage());
 		}
 
 		super.init();

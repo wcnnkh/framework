@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.orm.MappingOperations;
+import scw.sql.SqlUtils;
 
 public class DefaultResultSetMapping implements ResultSet {
 	private static final long serialVersionUID = 1L;
@@ -26,11 +26,7 @@ public class DefaultResultSetMapping implements ResultSet {
 				dataList = new LinkedList<Object[]>();
 			}
 
-			Object[] values = new Object[valueIndexMapping.getColumnCount()];
-			for (int i = 1; i <= values.length; i++) {
-				values[i - 1] = resultSet.getObject(i);
-			}
-			dataList.add(values);
+			dataList.add(SqlUtils.getRowValues(resultSet, valueIndexMapping.getColumnCount()));
 		}
 	}
 
@@ -51,8 +47,9 @@ public class DefaultResultSetMapping implements ResultSet {
 		return new ArrayList<Object[]>(dataList);
 	}
 
-	public <T> List<T> getList(MappingOperations mappingOperations, Class<T> clazz, TableNameMapping tableNameMapping) {
-		if (dataList == null) {
+	public <T> List<T> getList(SqlMappingOperations mappingOperations, Class<T> clazz,
+			TableNameMapping tableNameMapping) {
+		if (isEmpty()) {
 			return null;
 		}
 
@@ -65,11 +62,11 @@ public class DefaultResultSetMapping implements ResultSet {
 	}
 
 	public <T> List<T> getList(SqlMappingOperations mappingOperations, Class<T> clazz, String tableName) {
-		if (dataList == null) {
+		if (isEmpty()) {
 			return null;
 		}
 
-		TableNameMapping tableNameMapping = new SingleTableNameMapping(clazz, tableName, mappingOperations);
+		TableNameMapping tableNameMapping = new SingleTableNameMapping(clazz, tableName);
 		List<T> list = new ArrayList<T>(dataList.size());
 		for (Object[] values : dataList) {
 			Result result = createResult(values);
@@ -92,7 +89,7 @@ public class DefaultResultSetMapping implements ResultSet {
 	}
 
 	protected Result createResult(Object[] values) {
-		return createResult(values);
+		return new DefaultResultMapping(valueIndexMapping, values);
 	}
 
 	public final int size() {
@@ -116,7 +113,7 @@ public class DefaultResultSetMapping implements ResultSet {
 	}
 
 	public final boolean isEmpty() {
-		return dataList == null || dataList.isEmpty() || valueIndexMapping == null;
+		return valueIndexMapping == null || dataList == null || dataList.isEmpty();
 	}
 
 	public final Iterator<Result> iterator() {

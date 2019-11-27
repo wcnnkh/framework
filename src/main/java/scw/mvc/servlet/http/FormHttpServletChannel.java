@@ -1,7 +1,7 @@
 package scw.mvc.servlet.http;
 
 import scw.beans.BeanFactory;
-import scw.json.JSONParseSupport;
+import scw.json.JsonSupport;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -12,7 +12,7 @@ import scw.mvc.http.HttpResponse;
 public class FormHttpServletChannel extends HttpServletChannel {
 	private static Logger logger = LoggerFactory.getLogger(FormHttpServletChannel.class);
 
-	public FormHttpServletChannel(BeanFactory beanFactory, JSONParseSupport jsonParseSupport, boolean cookieValue, HttpRequest request,
+	public FormHttpServletChannel(BeanFactory beanFactory, JsonSupport jsonParseSupport, boolean cookieValue, HttpRequest request,
 			HttpResponse response, String jsonp) {
 		super(beanFactory, jsonParseSupport, cookieValue, request, response, jsonp);
 		if (isLogEnabled()) {

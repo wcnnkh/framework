@@ -11,9 +11,10 @@ import java.util.Map.Entry;
 
 import scw.core.Pagination;
 import scw.core.exception.ParameterException;
+import scw.orm.MappingContext;
+import scw.orm.sql.ResultSet;
+import scw.orm.sql.dialect.mysql.MysqlDialectSql;
 import scw.sql.Sql;
-import scw.sql.orm.mysql.MysqlOrmSql;
-import scw.sql.orm.result.ResultSet;
 
 /**
  * 暂不支持分表
@@ -21,7 +22,8 @@ import scw.sql.orm.result.ResultSet;
  * @author shuchaowen
  *
  */
-public abstract class Select extends MysqlOrmSql {
+@Deprecated
+public abstract class Select extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
 	private Map<String, String> associationWhereMap;
 	private HashSet<String> selectTableSet;
@@ -65,7 +67,7 @@ public abstract class Select extends MysqlOrmSql {
 	}
 
 	public String getTableName(Class<?> tableClass) {
-		return ORMUtils.getTableInfo(tableClass).getDefaultName();
+		return orm.getSqlMappingOperations().getTableName(tableClass);
 	}
 
 	protected void addSelectTable(String tableName) {
@@ -144,19 +146,23 @@ public abstract class Select extends MysqlOrmSql {
 			associationWhereMap = new HashMap<String, String>();
 		}
 
-		TableInfo t1 = ORMUtils.getTableInfo(tableClass1);
-		TableInfo t2 = ORMUtils.getTableInfo(tableClass2);
+		Collection<MappingContext> t1 = orm.getSqlMappingOperations().getPrimaryKeys(tableClass1);
+		Collection<MappingContext> t2 = orm.getSqlMappingOperations().getPrimaryKeys(tableClass2);
 		String tName1 = getTableName(tableClass1);
 		String tName2 = getTableName(tableClass2);
 		if (table2Columns == null || table2Columns.length == 0) {
-			if (t1.getPrimaryKeyColumns().length != t2.getPrimaryKeyColumns().length) {
+			if (t1.size() != t2.size()) {
 				// 两张表的主键数量不一致
 				throw new ParameterException("primary key count atypism");
 			}
 
-			for (int i = 0; i < t1.getPrimaryKeyColumns().length; i++) {
-				String n1 = getSqlName(tName1, t1.getPrimaryKeyColumns()[i].getName());
-				String n2 = getSqlName(tName2, t2.getPrimaryKeyColumns()[i].getName());
+			Iterator<MappingContext> iterator1 = t1.iterator();
+			Iterator<MappingContext> iterator2 = t2.iterator();
+			while (iterator1.hasNext() && iterator2.hasNext()) {
+				MappingContext c1 = iterator1.next();
+				MappingContext c2 = iterator2.next();
+				String n1 = getSqlName(tName1, c1.getFieldDefinition().getName());
+				String n2 = getSqlName(tName2, c2.getFieldDefinition().getName());
 				if (checkWhere(associationWhereMap, n1, n2)) {
 					continue;
 				}
@@ -164,19 +170,24 @@ public abstract class Select extends MysqlOrmSql {
 				associationWhereMap.put(n1, n2);
 			}
 		} else {
-			if (table2Columns.length != t1.getPrimaryKeyColumns().length) {
+			if (table2Columns.length != t1.size()) {
 				// 指明的外键和主键数量不一致
 				throw new ParameterException("primary key count atypism");
 			}
 
-			for (int i = 0; i < table2Columns.length; i++) {
-				String n1 = getSqlName(tName2, t2.getColumnInfo(table2Columns[i]).getName());
-				String n2 = getSqlName(tName1, t1.getPrimaryKeyColumns()[i].getName());
-				if (checkWhere(associationWhereMap, n1, n2)) {
-					continue;
+			Iterator<MappingContext> iterator1 = t1.iterator();
+			Iterator<MappingContext> iterator2 = t2.iterator();
+			while (iterator1.hasNext() && iterator2.hasNext())
+				for (int i = 0; i < table2Columns.length; i++) {
+					MappingContext c1 = iterator1.next();
+					MappingContext c2 = iterator2.next();
+					String n1 = getSqlName(tName2, c2.getFieldDefinition().getName());
+					String n2 = getSqlName(tName1, c1.getFieldDefinition().getName());
+					if (checkWhere(associationWhereMap, n1, n2)) {
+						continue;
+					}
+					associationWhereMap.put(n1, n2);
 				}
-				associationWhereMap.put(n1, n2);
-			}
 		}
 
 		if (selectTableSet == null) {
@@ -245,19 +256,19 @@ public abstract class Select extends MysqlOrmSql {
 	public abstract long count();
 
 	public <T> T getFirst(Class<T> type) {
-		return getResultSet().getFirst().get(type);
+		return getResultSet().getFirst().get(orm.getSqlMappingOperations(), type);
 	}
 
 	public abstract ResultSet getResultSet();
 
 	public <T> List<T> getList(Class<T> type) {
-		return getResultSet().getList(type);
+		return getResultSet().getList(orm.getSqlMappingOperations(), type);
 	}
 
 	public abstract ResultSet getResultSet(long begin, int limit);
 
 	public <T> List<T> getList(Class<T> type, long begin, int limit) {
-		return getResultSet(begin, limit).getList(type);
+		return getResultSet(begin, limit).getList(orm.getSqlMappingOperations(), type);
 	}
 
 	public Pagination<ResultSet> getResultSetPagination(long page, int limit) {

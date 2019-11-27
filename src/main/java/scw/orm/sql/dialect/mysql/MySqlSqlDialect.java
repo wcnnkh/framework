@@ -1,58 +1,93 @@
 package scw.orm.sql.dialect.mysql;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import scw.core.FieldSetterListen;
 import scw.core.Pagination;
-import scw.orm.MappingOperations;
+import scw.orm.sql.SqlMappingOperations;
 import scw.orm.sql.dialect.PaginationSql;
 import scw.orm.sql.dialect.SqlDialect;
+import scw.orm.sql.dialect.SqlDialectException;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 
 public class MySqlSqlDialect implements SqlDialect {
-	private MappingOperations mappingOperations;
-
-	public MySqlSqlDialect(MappingOperations mappingOperations) {
-		this.mappingOperations = mappingOperations;
+	public Sql toCreateTableSql(SqlMappingOperations sqlMappingOperations, Class<?> clazz, String tableName)
+			throws SqlDialectException {
+		return new CreateTableSql(sqlMappingOperations, clazz, tableName);
 	}
 
-	public Sql toCreateTableSql(Class<?> clazz, String tableName) throws Exception {
-		return new CreateTableSql(mappingOperations, clazz, tableName);
+	public Sql toInsertSql(SqlMappingOperations sqlMappingOperations, Object obj, Class<?> clazz, String tableName)
+			throws SqlDialectException {
+		try {
+			return new InsertSQL(sqlMappingOperations, clazz, tableName, obj);
+		} catch (Exception e) {
+			throw new SqlDialectException(clazz.getName(), e);
+		}
 	}
 
-	public Sql toInsertSql(Object obj, Class<?> clazz, String tableName) throws Exception {
-		return new InsertSQL(mappingOperations, clazz, tableName, obj);
+	public Sql toUpdateSql(SqlMappingOperations sqlMappingOperations, Object obj, Class<?> clazz, String tableName)
+			throws SqlDialectException {
+		try {
+			return (obj instanceof FieldSetterListen)
+					? new UpdateSQLByBeanListen(sqlMappingOperations, clazz, (FieldSetterListen) obj, tableName)
+					: new UpdateSQL(sqlMappingOperations, clazz, obj, tableName);
+		} catch (Exception e) {
+			throw new SqlDialectException(clazz.getName(), e);
+		}
 	}
 
-	public Sql toUpdateSql(Object obj, Class<?> clazz, String tableName) throws Exception {
-		return (obj instanceof FieldSetterListen)
-				? new UpdateSQLByBeanListen(mappingOperations, clazz, (FieldSetterListen) obj, tableName)
-				: new UpdateSQL(mappingOperations, clazz, obj, tableName);
+	public Sql toSaveOrUpdateSql(SqlMappingOperations sqlMappingOperations, Object obj, Class<?> clazz,
+			String tableName) throws SqlDialectException {
+		try {
+			return new SaveOrUpdateSQL(sqlMappingOperations, clazz, obj, tableName);
+		} catch (Exception e) {
+			throw new SqlDialectException(clazz.getName(), e);
+		}
 	}
 
-	public Sql toSaveOrUpdateSql(Object obj, Class<?> clazz, String tableName) throws Exception {
-		return new SaveOrUpdateSQL(mappingOperations, clazz, obj, tableName);
+	public Sql toDeleteSql(SqlMappingOperations sqlMappingOperations, Object obj, Class<?> clazz, String tableName)
+			throws SqlDialectException {
+		try {
+			return new DeleteSQL(sqlMappingOperations, clazz, obj, tableName);
+		} catch (Exception e) {
+			throw new SqlDialectException(clazz.getName(), e);
+		}
 	}
 
-	public Sql toDeleteSql(Object obj, Class<?> clazz, String tableName) throws Exception {
-		return new DeleteSQL(mappingOperations, clazz, obj, tableName);
+	public Sql toDeleteByIdSql(SqlMappingOperations sqlMappingOperations, Class<?> clazz, String tableName,
+			Object[] parimayKeys) throws SqlDialectException {
+		try {
+			return new DeleteByIdSql(sqlMappingOperations, clazz, tableName, parimayKeys);
+		} catch (Exception e) {
+			throw new SqlDialectException(clazz.getName(), e);
+		}
 	}
 
-	public Sql toDeleteByIdSql(Class<?> clazz, String tableName, Object[] parimayKeys) throws Exception {
-		return new DeleteByIdSql(mappingOperations, clazz, tableName, parimayKeys);
+	@SuppressWarnings("unchecked")
+	public Sql toSelectByIdSql(SqlMappingOperations sqlMappingOperations, Class<?> clazz, String tableName,
+			Object[] params) throws SqlDialectException {
+		try {
+			return new SelectByIdSQL(sqlMappingOperations, clazz, tableName,
+					params == null ? Collections.EMPTY_LIST : Arrays.asList(params));
+		} catch (Exception e) {
+			throw new SqlDialectException(clazz.getName(), e);
+		}
 	}
 
-	public Sql toSelectByIdSql(Class<?> clazz, String tableName, Object[] params) throws Exception {
-		return new SelectByIdSQL(mappingOperations, clazz, tableName, params);
+	public Sql toSelectInIdSql(SqlMappingOperations sqlMappingOperations, Class<?> clazz, String tableName,
+			Object[] params, Collection<?> inIdList) throws SqlDialectException {
+		try {
+			return new SelectInIdSQL(sqlMappingOperations, clazz, tableName, params, inIdList);
+		} catch (Exception e) {
+			throw new SqlDialectException(clazz.getName(), e);
+		}
 	}
 
-	public Sql toSelectInIdSql(Class<?> clazz, String tableName, Object[] params, Collection<?> inIdList)
-			throws Exception {
-		return new SelectInIdSQL(mappingOperations, clazz, tableName, params, inIdList);
-	}
-
-	public PaginationSql toPaginationSql(Sql sql, long page, int limit) throws Exception {
+	public PaginationSql toPaginationSql(SqlMappingOperations sqlMappingOperations, Sql sql, long page, int limit)
+			throws SqlDialectException {
 		String str = sql.getSql();
 		int fromIndex = str.indexOf(" from ");// ignore select
 		if (fromIndex == -1) {
@@ -81,7 +116,8 @@ public class MySqlSqlDialect implements SqlDialect {
 		return new PaginationSql(countSql, new SimpleSql(sb.toString(), sql.getParams()));
 	}
 
-	public Sql toCopyTableStructureSql(String newTableName, String oldTableName) throws Exception {
+	public Sql toCopyTableStructureSql(SqlMappingOperations sqlMappingOperations, String newTableName,
+			String oldTableName) throws SqlDialectException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("CREATE TABLE IF NOT EXISTS `").append(newTableName).append("`");
 		sb.append(" like `").append(oldTableName).append("`");
@@ -90,12 +126,18 @@ public class MySqlSqlDialect implements SqlDialect {
 
 	private static final String LAST_INSERT_ID_SQL = "select last_insert_id()";
 
-	public Sql toLastInsertIdSql(String tableName) throws Exception {
+	public Sql toLastInsertIdSql(SqlMappingOperations sqlMappingOperations, String tableName)
+			throws SqlDialectException {
 		return new SimpleSql(LAST_INSERT_ID_SQL);
 	}
 
-	public Sql toMaxIdSql(Class<?> clazz, String tableName, String idField) throws Exception {
-		return new MaxIdSql(mappingOperations, clazz, tableName, idField);
+	public Sql toMaxIdSql(SqlMappingOperations sqlMappingOperations, Class<?> clazz, String tableName, String idField)
+			throws SqlDialectException {
+		try {
+			return new MaxIdSql(sqlMappingOperations, clazz, tableName, idField);
+		} catch (Exception e) {
+			throw new SqlDialectException(clazz.getName(), e);
+		}
 	}
 
 }

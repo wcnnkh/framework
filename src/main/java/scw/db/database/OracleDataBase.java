@@ -1,22 +1,21 @@
 package scw.db.database;
 
 import scw.core.exception.NotFoundException;
-import scw.core.utils.StringUtils;
+import scw.orm.sql.dialect.mysql.MySqlSqlDialect;
 
 /**
- * Oracle8/8i/9i数据库（thin模式） 
+ * Oracle8/8i/9i数据库（thin模式）
+ * 
  * @author shuchaowen
  *
  */
 public class OracleDataBase extends AbstractDataBase {
 	private String database;
 	private String connectionUrl;
-	private final String driverClass;
-	
+
 	public OracleDataBase(String driverClass, String url, String username, String password) {
-		super(username, password, DataBaseType.Oracle);
-		this.driverClass = driverClass;
-		
+		super(username, password, driverClass, new MySqlSqlDialect());
+
 		int databaseBeginIndex = url.indexOf("@");
 		if (databaseBeginIndex == -1) {
 			throw new NotFoundException("无法解析数据库名称：" + url);
@@ -58,9 +57,5 @@ public class OracleDataBase extends AbstractDataBase {
 
 	public String getConnectionURL() {
 		return connectionUrl;
-	}
-
-	public String getDriverClassName() {
-		return StringUtils.isEmpty(driverClass) ? getDataBaseType().getDriverClassName() : driverClass;
 	}
 }

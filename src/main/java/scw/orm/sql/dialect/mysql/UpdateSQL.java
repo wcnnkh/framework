@@ -5,19 +5,19 @@ import java.util.Iterator;
 import java.util.List;
 
 import scw.orm.MappingContext;
-import scw.orm.MappingOperations;
+import scw.orm.sql.SqlMappingOperations;
 import scw.orm.sql.SqlORMUtils;
-import scw.orm.sql.TableFieldContext;
-import scw.sql.orm.enums.CasType;
+import scw.orm.sql.TableMappingContext;
+import scw.orm.sql.enums.CasType;
 
 public class UpdateSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQL(MappingOperations mappingOperations, Class<?> clazz, Object obj, String tableName)
+	public UpdateSQL(SqlMappingOperations mappingOperations, Class<?> clazz, Object obj, String tableName)
 			throws Exception {
-		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
+		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException(tableName + " not found primary key");
 		}

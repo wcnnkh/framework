@@ -4,18 +4,18 @@ import java.util.Iterator;
 
 import scw.core.exception.ParameterException;
 import scw.orm.MappingContext;
-import scw.orm.MappingOperations;
-import scw.orm.sql.SqlORMUtils;
-import scw.orm.sql.TableFieldContext;
+import scw.orm.SimpleGetter;
+import scw.orm.sql.SqlMappingOperations;
+import scw.orm.sql.TableMappingContext;
 
 public class DeleteByIdSql extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 
-	public DeleteByIdSql(MappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] parimayKeys)
+	public DeleteByIdSql(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] parimayKeys)
 			throws Exception {
-		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
+		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -24,18 +24,20 @@ public class DeleteByIdSql extends MysqlDialectSql {
 			throw new ParameterException("主键数量不一致:" + tableName);
 		}
 
-		this.params = parimayKeys;
-
 		StringBuilder sql = new StringBuilder();
 		sql.append(DELETE_PREFIX);
 		keywordProcessing(sql, tableName);
 		sql.append(WHERE);
 
+		int i = 0;
+		this.params = new Object[parimayKeys == null ? 0 : parimayKeys.length];
 		Iterator<MappingContext> iterator = tableFieldContext.getPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			keywordProcessing(sql, context.getFieldDefinition().getName());
 			sql.append("=?");
+			params[i] = mappingOperations.getter(context, new SimpleGetter(parimayKeys[i]));
+			i++;
 		}
 		this.sql = sql.toString();
 	}

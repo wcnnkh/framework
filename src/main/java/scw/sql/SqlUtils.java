@@ -160,4 +160,12 @@ public final class SqlUtils {
 			}
 		}
 	}
+
+	public static Object[] getRowValues(ResultSet resultSet, int size) throws SQLException {
+		Object[] values = new Object[size];
+		for (int i = 1; i <= size; i++) {
+			values[i - 1] = resultSet.getObject(i);
+		}
+		return values;
+	}
 }

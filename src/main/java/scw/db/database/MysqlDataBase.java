@@ -2,17 +2,16 @@ package scw.db.database;
 
 import scw.core.exception.NotFoundException;
 import scw.core.utils.StringUtils;
+import scw.orm.sql.dialect.mysql.MySqlSqlDialect;
 
 public class MysqlDataBase extends AbstractDataBase {
 	private String database;
 	private String connectionUrl;
-	private String driverClass;
 	private String charsetName = "utf8";
 	private String collate = "utf8_general_ci";
 
 	public MysqlDataBase(String driverClass, String url, String username, String password) {
-		super(username, password, DataBaseType.MySQL);
-		this.driverClass = driverClass;
+		super(username, password, driverClass, new MySqlSqlDialect());
 
 		int databaseBeginIndex = url.indexOf("//");
 		if (databaseBeginIndex == -1) {
@@ -47,7 +46,7 @@ public class MysqlDataBase extends AbstractDataBase {
 	public String getConnectionURL() {
 		return connectionUrl;
 	}
-	
+
 	@Override
 	public String getCreateSql(String database) {
 		StringBuilder sb = new StringBuilder();
@@ -61,9 +60,5 @@ public class MysqlDataBase extends AbstractDataBase {
 		}
 
 		return sb.toString();
-	}
-
-	public String getDriverClassName() {
-		return StringUtils.isEmpty(driverClass) ? getDataBaseType().getDriverClassName() : driverClass;
 	}
 }

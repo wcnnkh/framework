@@ -11,7 +11,7 @@ import scw.beans.BeanFactory;
 import scw.core.parameter.ParameterConfig;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
-import scw.json.JSONParseSupport;
+import scw.json.JsonSupport;
 import scw.json.JSONUtils;
 import scw.mvc.MVCUtils;
 import scw.mvc.parameter.AbstractParameterChannel;
@@ -33,7 +33,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	private final String jsonp;
 
 	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(BeanFactory beanFactory,
-			JSONParseSupport jsonParseSupport, boolean cookieValue,
+			JsonSupport jsonParseSupport, boolean cookieValue,
 			R request, P response, String jsonp) {
 		super(beanFactory, jsonParseSupport);
 		this.cookieValue = cookieValue;

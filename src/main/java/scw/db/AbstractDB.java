@@ -15,15 +15,19 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.serializer.SerializerUtils;
+import scw.orm.sql.annotation.Table;
+import scw.orm.sql.dialect.SqlDialect;
+import scw.orm.sql.enums.OperationType;
 import scw.sql.Sql;
 import scw.sql.orm.ORMTemplate;
-import scw.sql.orm.SqlFormat;
-import scw.sql.orm.TableInfo;
-import scw.sql.orm.annotation.Table;
-import scw.sql.orm.enums.OperationType;
 import scw.transaction.sql.SqlTransactionUtils;
 
 public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<AsyncExecute>, DBConfig, Init {
+
+	@Override
+	public SqlDialect getSqlDialect() {
+		return getDataBase().getSqlDialect();
+	}
 
 	public void init() {
 		if (StringUtils.isNotEmpty(getSannerTablePackage())) {
@@ -71,11 +75,6 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 
 			createTable(tableClass, false);
 		}
-	}
-
-	@Override
-	public SqlFormat getSqlFormat() {
-		return getDataBase().getDataBaseType().getSqlFormat();
 	}
 
 	@Override
@@ -232,10 +231,5 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 
 	public final void asyncExecute(AsyncExecute asyncExecute) {
 		getAsyncQueue().push(SerializerUtils.clone(asyncExecute));
-	}
-
-	@Override
-	protected boolean orm(OperationType operationType, TableInfo tableInfo, Object bean, String tableName) {
-		return super.orm(operationType, tableInfo, bean, tableName);
 	}
 }

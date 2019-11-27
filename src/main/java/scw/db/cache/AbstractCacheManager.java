@@ -6,24 +6,28 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.data.Cache;
-import scw.sql.orm.ORMUtils;
-import scw.sql.orm.TableInfo;
+import scw.orm.sql.SqlMappingOperations;
+import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.TableMappingContext;
 
 public abstract class AbstractCacheManager<C extends Cache> implements CacheManager {
 	public abstract C getCache();
 
+	public abstract SqlMappingOperations getSqlMappingOperations();
+
 	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(type);
-		if (params.length != tableInfo.getPrimaryKeyColumns().length - 1) {
+		TableMappingContext tableFieldContext;
+		try {
+			tableFieldContext = getSqlMappingOperations().getTableMappingContext(type);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+		if (params.length != tableFieldContext.getPrimaryKeys().size() - 1) {
 			return null;
 		}
 
-		String key = ORMUtils.getObjectKeyById(type, params);
-		Map<String, K> keyMap = new HashMap<String, K>(inIds.size(), 1);
-		for (K k : inIds) {
-			keyMap.put(appendObjectKey(key, k), k);
-		}
-
+		Map<String, K> keyMap = SqlORMUtils.getInIdKeyMap(getSqlMappingOperations(), type, inIds, params);
 		Map<String, V> map = getCache().get(keyMap.keySet());
 		if (map == null || map.isEmpty()) {
 			return null;
@@ -49,13 +53,6 @@ public abstract class AbstractCacheManager<C extends Cache> implements CacheMana
 			}
 		}
 		return valueMap;
-	}
-
-	protected final String appendObjectKey(String key, Object value) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(key);
-		ORMUtils.appendObjectKey(sb, value);
-		return sb.toString();
 	}
 
 	public boolean isSearchDB(Class<?> type, Object... params) {

@@ -1,14 +1,17 @@
 package scw.db.cache;
 
+import java.util.Arrays;
+
 import scw.core.utils.ArrayUtils;
+import scw.core.utils.ClassUtils;
 import scw.data.Cache;
 import scw.data.TransactionContextCache;
 import scw.data.WrapperCache;
-import scw.sql.orm.ORMUtils;
-import scw.sql.orm.TableInfo;
+import scw.orm.sql.SqlMappingOperations;
 
 public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	private final Cache cache;
+	private final SqlMappingOperations sqlMappingOperations;
 
 	/**
 	 * 过期时间由cache实现
@@ -18,30 +21,28 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	 *            是否开启事务， 如果开启在处理失败后会删除key
 	 * @param keyPrefix
 	 */
-	public DefaultCacheManager(Cache cache, boolean transaction, String keyPrefix) {
+	public DefaultCacheManager(SqlMappingOperations sqlMappingOperations, Cache cache, boolean transaction,
+			String keyPrefix) {
 		this.cache = new WrapperCache(cache, transaction, keyPrefix);
+		this.sqlMappingOperations = sqlMappingOperations;
 	}
 
-	public DefaultCacheManager() {
+	public DefaultCacheManager(SqlMappingOperations sqlMappingOperations) {
 		this.cache = new TransactionContextCache(this);
+		this.sqlMappingOperations = sqlMappingOperations;
+	}
+
+	@Override
+	public SqlMappingOperations getSqlMappingOperations() {
+		return sqlMappingOperations;
 	}
 
 	public void save(Object bean) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		if (tableInfo == null || tableInfo.getPrimaryKeyColumns().length == 0) {
-			return;
-		}
-
-		cache.add(ORMUtils.getObjectKey(tableInfo, bean), bean);
+		cache.add(sqlMappingOperations.getObjectKey(ClassUtils.getUserClass(bean), bean), bean);
 	}
 
 	public void update(Object bean) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		if (tableInfo == null || tableInfo.getPrimaryKeyColumns().length == 0) {
-			return;
-		}
-
-		cache.set(ORMUtils.getObjectKey(tableInfo, bean), bean);
+		cache.set(sqlMappingOperations.getObjectKey(ClassUtils.getUserClass(bean), bean), bean);
 	}
 
 	public void saveOrUpdate(Object bean) {
@@ -53,12 +54,7 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 			return null;
 		}
 
-		TableInfo tableInfo = ORMUtils.getTableInfo(type);
-		if (tableInfo == null || tableInfo.getPrimaryKeyColumns().length != params.length) {
-			return null;
-		}
-
-		return cache.get(ORMUtils.getObjectKeyById(type, params));
+		return cache.get(sqlMappingOperations.getObjectKeyById(type, Arrays.asList(params)));
 	}
 
 	@Override
@@ -71,20 +67,10 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 			return;
 		}
 
-		TableInfo tableInfo = ORMUtils.getTableInfo(type);
-		if (tableInfo == null || tableInfo.getPrimaryKeyColumns().length != params.length) {
-			return;
-		}
-
-		getCache().delete(ORMUtils.getObjectKeyById(tableInfo.getSource(), params));
+		getCache().delete(sqlMappingOperations.getObjectKeyById(type, Arrays.asList(params)));
 	}
 
 	public void delete(Object bean) {
-		TableInfo tableInfo = ORMUtils.getTableInfo(bean.getClass());
-		if (tableInfo == null || tableInfo.getPrimaryKeyColumns().length == 0) {
-			return;
-		}
-
-		getCache().delete(ORMUtils.getObjectKey(tableInfo, bean));
+		getCache().delete(sqlMappingOperations.getObjectKey(ClassUtils.getUserClass(bean), bean));
 	}
 }

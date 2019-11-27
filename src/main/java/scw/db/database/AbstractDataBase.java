@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.orm.sql.dialect.SqlDialect;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.SqlException;
@@ -15,12 +16,14 @@ public abstract class AbstractDataBase implements DataBase {
 	private Logger logger = LoggerUtils.getLogger(this.getClass());
 	private final String username;
 	private final String password;
-	private final DataBaseType dataBaseType;
+	private final String driverClass;
+	private final SqlDialect sqlDialect;
 
-	public AbstractDataBase(String username, String password, DataBaseType dataBaseType) {
+	public AbstractDataBase(String username, String password, String driverClass, SqlDialect sqlDialect) {
 		this.username = username;
 		this.password = password;
-		this.dataBaseType = dataBaseType;
+		this.driverClass = driverClass;
+		this.sqlDialect = sqlDialect;
 	}
 
 	public String getUsername() {
@@ -31,8 +34,8 @@ public abstract class AbstractDataBase implements DataBase {
 		return password;
 	}
 
-	public DataBaseType getDataBaseType() {
-		return dataBaseType;
+	public SqlDialect getSqlDialect() {
+		return sqlDialect;
 	}
 
 	public String getCreateSql(String database) {
@@ -76,5 +79,9 @@ public abstract class AbstractDataBase implements DataBase {
 				}
 			}
 		}
+	}
+
+	public String getDriverClassName() {
+		return driverClass;
 	}
 }

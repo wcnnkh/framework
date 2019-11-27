@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import scw.orm.MappingOperations;
-
 public final class EmptyResultSet implements ResultSet {
 	private static final long serialVersionUID = 1L;
 
@@ -18,7 +16,7 @@ public final class EmptyResultSet implements ResultSet {
 		return Collections.EMPTY_LIST;
 	}
 
-	public <T> List<T> getList(MappingOperations mappingOperations,
+	public <T> List<T> getList(SqlMappingOperations mappingOperations,
 			Class<T> clazz, TableNameMapping tableNameMapping) {
 		return null;
 	}

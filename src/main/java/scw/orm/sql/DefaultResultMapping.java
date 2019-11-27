@@ -1,13 +1,15 @@
 package scw.orm.sql;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
-import scw.orm.MappingOperations;
 import scw.orm.ORMException;
+import scw.sql.SqlUtils;
 
 public class DefaultResultMapping implements Result {
 	private static final long serialVersionUID = 1L;
@@ -19,21 +21,30 @@ public class DefaultResultMapping implements Result {
 		this.values = values;
 	}
 
+	public DefaultResultMapping(ResultSet resultSet) throws SQLException {
+		this.valueIndexMapping = new ResultSetValueIndexMapping(resultSet.getMetaData());
+		this.values = SqlUtils.getRowValues(resultSet, valueIndexMapping.getColumnCount());
+	}
+
 	public final ValueIndexMapping getValueIndexMapping() {
 		return valueIndexMapping;
 	}
 
-	public <T> T get(MappingOperations mappingOperations, Class<T> clazz, TableNameMapping tableNameMapping) {
+	public <T> T get(SqlMappingOperations mappingOperations, Class<T> clazz, TableNameMapping tableNameMapping) {
+		if (isEmpty()) {
+			return null;
+		}
+
 		try {
 			return mappingOperations.create(null, clazz,
-					new DefaultTableSetterMapping(valueIndexMapping, values, tableNameMapping));
+					new DefaultTableSetterMapping(mappingOperations, valueIndexMapping, values, tableNameMapping));
 		} catch (Exception e) {
 			throw new ORMException(clazz.getName(), e);
 		}
 	}
 
 	public <T> T get(SqlMappingOperations mappingOperations, Class<T> clazz, String tableName) {
-		return get(mappingOperations, clazz, new SingleTableNameMapping(clazz, tableName, mappingOperations));
+		return get(mappingOperations, clazz, new SingleTableNameMapping(clazz, tableName));
 	}
 
 	public <T> T get(SqlMappingOperations mappingOperations, Class<T> clazz) {

@@ -44,7 +44,7 @@ public final class TableIntegerIdGenerator implements IdGenerator<Integer> {
 						db = DBManager.getDB(tableClass);
 					}
 
-					Integer maxId = db.getMaxValue(tableClass, fieldName);
+					Integer maxId = db.getMaxValue(Integer.class, tableClass, fieldName);
 					maxId = maxId == null ? 0 : maxId;
 					idGenerator = new IntegerIdGenerator(serverId, maxServerId, maxId);
 				}
