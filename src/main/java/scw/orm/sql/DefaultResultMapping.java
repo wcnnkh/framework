@@ -30,9 +30,18 @@ public class DefaultResultMapping implements Result {
 		return valueIndexMapping;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T get(SqlMappingOperations mappingOperations, Class<T> clazz, TableNameMapping tableNameMapping) {
 		if (isEmpty()) {
 			return null;
+		}
+
+		if (TypeUtils.isPrimitiveOrWrapper(clazz)) {
+			return get(clazz, 0);
+		}
+
+		if (clazz.isArray()) {
+			return (T) getValues();
 		}
 
 		try {

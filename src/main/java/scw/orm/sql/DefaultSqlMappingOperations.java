@@ -14,7 +14,6 @@ import scw.core.reflect.FieldDefinition;
 import scw.core.utils.IteratorCallback;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.orm.DefaultFieldDefinitionFactory;
 import scw.orm.DefaultMappingOperations;
 import scw.orm.FieldDefinitionFactory;
 import scw.orm.GetterFilter;
@@ -33,7 +32,7 @@ public class DefaultSqlMappingOperations extends DefaultMappingOperations implem
 
 	public DefaultSqlMappingOperations(Collection<? extends SetterFilter> setterFilters,
 			Collection<? extends GetterFilter> getterFilters) {
-		this(new DefaultFieldDefinitionFactory(), setterFilters, getterFilters, new TableInstanceFactory());
+		this(new TableFieldDefinitionFactory(), setterFilters, getterFilters, new TableInstanceFactory());
 	}
 
 	public DefaultSqlMappingOperations(FieldDefinitionFactory fieldDefinitionFactory,

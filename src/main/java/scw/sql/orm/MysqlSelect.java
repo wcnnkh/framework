@@ -210,7 +210,7 @@ public final class MysqlSelect extends Select {
 	public long count() {
 		Sql sql = toSQL("count(*)", false);
 		ResultSet resultSet = orm.select(sql);
-		Long count = resultSet.getFirst().get(orm.getSqlMappingOperations(), Long.class);
+		Long count = resultSet.getFirst().get(0);
 		return count == null ? 0 : count;
 	}
 

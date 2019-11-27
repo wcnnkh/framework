@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 
 import scw.orm.annotation.ColumnName;
 
-public final class DefaultFieldDefinition extends AbstractFieldDefinition {
+public class DefaultFieldDefinition extends AbstractFieldDefinition {
 	private final String name;
 
 	public DefaultFieldDefinition(Class<?> clazz, Field field, boolean getter, boolean setter) {
