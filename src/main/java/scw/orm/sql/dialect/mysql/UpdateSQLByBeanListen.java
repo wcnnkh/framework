@@ -1,5 +1,6 @@
 package scw.orm.sql.dialect.mysql;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,22 +15,20 @@ import scw.orm.MappingContext;
 import scw.orm.MappingOperations;
 import scw.orm.SimpleGetter;
 import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.TableFieldContext;
 import scw.sql.orm.annotation.Counter;
 import scw.sql.orm.enums.CasType;
 
 public final class UpdateSQLByBeanListen extends MysqlDialectSql {
-	private static Logger logger = LoggerUtils
-			.getLogger(UpdateSQLByBeanListen.class);
+	private static Logger logger = LoggerUtils.getLogger(UpdateSQLByBeanListen.class);
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanListen(MappingOperations mappingOperations,
-			Class<?> clazz, FieldSetterListen beanFieldListen, String tableName)
-			throws Exception {
-		LinkedList<MappingContext> primaryKeys = SqlORMUtils
-				.getPrimaryKeyFieldContexts(mappingOperations, clazz);
-		if (primaryKeys.size() == 0) {
+	public UpdateSQLByBeanListen(MappingOperations mappingOperations, Class<?> clazz, FieldSetterListen beanFieldListen,
+			String tableName) throws Exception {
+		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
+		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NotFoundException("not found primary key");
 		}
 
@@ -45,20 +44,15 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 
 		int index = 0;
 		StringBuilder where = null;
-		Map<String, MappingContext> contextMap = SqlORMUtils
-				.getTableFieldContextMap(mappingOperations, clazz, true);
 		List<Object> paramList = new LinkedList<Object>();
-		for (Entry<String, MappingContext> entry : contextMap.entrySet()) {
-			MappingContext context = entry.getValue();
-			if (SqlORMUtils.isPrimaryKey(entry.getValue().getFieldDefinition())) {
-				continue;
-			}
-
+		Iterator<MappingContext> iterator = tableFieldContext.getNotPrimaryKeys().iterator();
+		while (iterator.hasNext()) {
+			MappingContext context = iterator.next();
 			if (SqlORMUtils.getCasType(context.getFieldDefinition()) != CasType.AUTO_INCREMENT) {
 				continue;
 			}
 
-			if (changeMap.containsKey(entry.getKey())) {
+			if (changeMap.containsKey(context.getFieldDefinition().getField().getName())) {
 				continue;
 			}
 
@@ -73,17 +67,14 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 		}
 
 		for (Entry<String, Object> entry : changeMap.entrySet()) {
-			MappingContext context = contextMap.get(entry.getKey());
+			MappingContext context = tableFieldContext.getMappingContext(entry.getKey());
 			if (SqlORMUtils.isPrimaryKey(context.getFieldDefinition())) {
 				continue;
 			}
 
 			Object value = mappingOperations.getter(context, beanFieldListen);
-			Counter counter = context.getFieldDefinition().getAnnotation(
-					Counter.class);
-			if (counter != null
-					&& TypeUtils.isNumber(context.getFieldDefinition()
-							.getField().getType())) {
+			Counter counter = context.getFieldDefinition().getAnnotation(Counter.class);
+			if (counter != null && TypeUtils.isNumber(context.getFieldDefinition().getField().getType())) {
 				Object oldValue = entry.getValue();
 				if (oldValue != null && value != null) {
 					// incr or decr
@@ -95,12 +86,10 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 					}
 
 					double change = newV - oldV;
-					keywordProcessing(sb, context.getFieldDefinition()
-							.getName());
+					keywordProcessing(sb, context.getFieldDefinition().getName());
 					sb.append("=");
 
-					keywordProcessing(sb, context.getFieldDefinition()
-							.getName());
+					keywordProcessing(sb, context.getFieldDefinition().getName());
 					sb.append(change > 0 ? "+" : "-");
 					sb.append(Math.abs(change));
 
@@ -113,24 +102,20 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 					if (change == 0) {
 						where.append("1 != 1");
 					} else {
-						keywordProcessing(where, context.getFieldDefinition()
-								.getName());
+						keywordProcessing(where, context.getFieldDefinition().getName());
 						where.append(change > 0 ? "+" : "-");
 						where.append(Math.abs(change));
 						where.append(">=").append(counter.min());
 						where.append(AND);
-						keywordProcessing(where, context.getFieldDefinition()
-								.getName());
+						keywordProcessing(where, context.getFieldDefinition().getName());
 						where.append(change > 0 ? "+" : "-");
 						where.append(Math.abs(change));
 						where.append("<=").append(counter.max());
 					}
 					continue;
 				} else {
-					logger.warn(
-							"{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}",
-							clazz.getName(), context.getFieldDefinition()
-									.getName(), oldValue, value);
+					logger.warn("{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}", clazz.getName(),
+							context.getFieldDefinition().getName(), oldValue, value);
 				}
 			}
 
@@ -144,30 +129,21 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 		}
 
 		sb.append(WHERE);
-		int i = 0;
-		for (Entry<String, MappingContext> entry : contextMap.entrySet()) {
-			MappingContext context = entry.getValue();
-			if (!SqlORMUtils
-					.isPrimaryKey(entry.getValue().getFieldDefinition())) {
-				continue;
-			}
 
-			if (i > 0) {
-				sb.append(AND);
-			}
-			i++;
-
+		iterator = tableFieldContext.getNotPrimaryKeys().iterator();
+		while (iterator.hasNext()) {
+			MappingContext context = iterator.next();
 			keywordProcessing(sb, context.getFieldDefinition().getName());
 			sb.append("=?");
 			paramList.add(mappingOperations.getter(context, beanFieldListen));
+			if (iterator.hasNext()) {
+				sb.append(AND);
+			}
 		}
 
-		for (Entry<String, MappingContext> entry : contextMap.entrySet()) {
-			MappingContext context = entry.getValue();
-			if (SqlORMUtils.isPrimaryKey(entry.getValue().getFieldDefinition())) {
-				continue;
-			}
-
+		iterator = tableFieldContext.getNotPrimaryKeys().iterator();
+		while (iterator.hasNext()) {
+			MappingContext context = iterator.next();
 			if (SqlORMUtils.getCasType(context.getFieldDefinition()) == CasType.NOTHING) {
 				continue;
 			}
@@ -176,10 +152,10 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 			keywordProcessing(sb, context.getFieldDefinition().getName());
 			sb.append("=?");
 			Object value;
-			if (changeMap.containsKey(entry.getKey())) {
+			if (changeMap.containsKey(context.getFieldDefinition().getField().getName())) {
 				// 存在旧值
-				value = mappingOperations.getter(context, new SimpleGetter(
-						changeMap.get(entry.getKey())));
+				value = mappingOperations.getter(context,
+						new SimpleGetter(changeMap.get(context.getFieldDefinition().getField().getName())));
 			} else {
 				value = mappingOperations.getter(context, beanFieldListen);
 			}

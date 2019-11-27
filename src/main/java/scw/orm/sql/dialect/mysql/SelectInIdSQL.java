@@ -3,12 +3,12 @@ package scw.orm.sql.dialect.mysql;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 
 import scw.orm.MappingContext;
 import scw.orm.MappingOperations;
 import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.TableFieldContext;
 
 public final class SelectInIdSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
@@ -58,10 +58,10 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 
 	private String getSql(MappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] ids,
 			Collection<?> inIdList) throws Exception {
+		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
 		StringBuilder sb = new StringBuilder();
-		LinkedList<MappingContext> primaryKeys = SqlORMUtils.getPrimaryKeyFieldContexts(mappingOperations, clazz);
 		if (ids.length > 0) {
-			Iterator<MappingContext> iterator = primaryKeys.iterator();
+			Iterator<MappingContext> iterator = tableFieldContext.getPrimaryKeys().iterator();
 			while (iterator.hasNext()) {
 				if (sb.length() != 0) {
 					sb.append(AND);
@@ -78,7 +78,7 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 				sb.append(AND);
 			}
 
-			keywordProcessing(sb, primaryKeys.getLast().getFieldDefinition().getName());
+			keywordProcessing(sb, tableFieldContext.getPrimaryKeys().getLast().getFieldDefinition().getName());
 			sb.append(IN);
 			for (int i = 0; i < inIdList.size(); i++) {
 				if (i != 0) {

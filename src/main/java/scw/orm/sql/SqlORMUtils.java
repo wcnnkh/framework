@@ -11,7 +11,7 @@ import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -101,54 +101,6 @@ public final class SqlORMUtils {
 		return false;
 	}
 
-	public static void iteratorTableFieldDefinition(MappingOperations mappingOperations, Class<?> clazz,
-			final IteratorMapping iterator) throws Exception {
-		mappingOperations.iterator(null, clazz, new IteratorMapping() {
-
-			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
-				if (!isDataBaseField(context.getFieldDefinition())) {
-					return;
-				}
-
-				iterator.iterator(context, mappingOperations);
-			}
-		});
-	}
-
-	public static void iteratorPrimaryKeyFieldDefinition(MappingOperations mappingOperations, Class<?> clazz,
-			final IteratorMapping iterator) throws Exception {
-		mappingOperations.iterator(null, clazz, new IteratorMapping() {
-
-			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
-				if (!isDataBaseField(context.getFieldDefinition())) {
-					return;
-				}
-
-				if (isPrimaryKey(context.getFieldDefinition())) {
-					iterator.iterator(context, mappingOperations);
-				}
-			}
-		});
-	}
-
-	public static void iteratorNotPrimaryKeyFieldDefinition(MappingOperations mappingOperations, Class<?> clazz,
-			final IteratorMapping iterator) throws Exception {
-		mappingOperations.iterator(null, clazz, new IteratorMapping() {
-
-			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
-				if (!isDataBaseField(context.getFieldDefinition())) {
-					return;
-				}
-
-				if (isPrimaryKey(context.getFieldDefinition())) {
-					return;
-				}
-
-				iterator.iterator(context, mappingOperations);
-			}
-		});
-	}
-
 	public static String getCharsetName(FieldDefinition fieldDefinition) {
 		Column column = fieldDefinition.getAnnotation(Column.class);
 		return column == null ? null : column.charsetName().trim();
@@ -184,58 +136,34 @@ public final class SqlORMUtils {
 		return column == null ? false : column.unique();
 	}
 
-	public static LinkedList<MappingContext> getPrimaryKeyFieldContexts(MappingOperations mappingOperations,
-			Class<?> clazz) throws Exception {
-		final LinkedList<MappingContext> fieldDefinitions = new LinkedList<MappingContext>();
-		iteratorPrimaryKeyFieldDefinition(mappingOperations, clazz, new IteratorMapping() {
-
-			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
-				fieldDefinitions.add(context);
-			}
-		});
-		return fieldDefinitions;
-	}
-	
-	/**
-	 * @param mappingOperations
-	 * @param clazz
-	 * @param useFieldName 是否使用原始的字段名
-	 * @return
-	 * @throws Exception
-	 */
-	public static Map<String, MappingContext> getTableFieldContextMap(MappingOperations mappingOperations, Class<?> clazz, final boolean useFieldName) throws Exception{
-		final Map<String, MappingContext> map = new LinkedHashMap<String, MappingContext>();
-		iteratorTableFieldDefinition(mappingOperations, clazz, new IteratorMapping() {
-
-			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
-				map.put(useFieldName? context.getFieldDefinition().getField().getName():context.getFieldDefinition().getName(), context);
-			}
-		});
-		return map;
-	}
-
-	public static LinkedList<MappingContext> getTableFieldContexts(MappingOperations mappingOperations, Class<?> clazz)
+	public static TableFieldContext getTableFieldContext(MappingOperations mappingOperations, Class<?> clazz)
 			throws Exception {
-		final LinkedList<MappingContext> fieldDefinitions = new LinkedList<MappingContext>();
-		iteratorTableFieldDefinition(mappingOperations, clazz, new IteratorMapping() {
-
-			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
-				fieldDefinitions.add(context);
-			}
-		});
-		return fieldDefinitions;
+		return getTableFieldContext(mappingOperations, clazz, true);
 	}
 
-	public static LinkedList<MappingContext> getNotPrimaryKeyFieldContexts(MappingOperations mappingOperations,
-			Class<?> clazz) throws Exception {
-		final LinkedList<MappingContext> fieldDefinitions = new LinkedList<MappingContext>();
-		iteratorNotPrimaryKeyFieldDefinition(mappingOperations, clazz, new IteratorMapping() {
+	public static TableFieldContext getTableFieldContext(MappingOperations mappingOperations, Class<?> clazz,
+			final boolean useFieldName) throws Exception {
+		final LinkedList<MappingContext> primaryKeys = new LinkedList<MappingContext>();
+		final LinkedList<MappingContext> notPrimaryKeys = new LinkedList<MappingContext>();
+		final Map<String, MappingContext> contextMap = new HashMap<String, MappingContext>();
+		mappingOperations.iterator(null, clazz, new IteratorMapping() {
 
 			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
-				fieldDefinitions.add(context);
+				if (!isDataBaseField(context.getFieldDefinition())) {
+					return;
+				}
+
+				if (isPrimaryKey(context.getFieldDefinition())) {
+					primaryKeys.add(context);
+				} else {
+					notPrimaryKeys.add(context);
+				}
+
+				contextMap.put(useFieldName ? context.getFieldDefinition().getField().getName()
+						: context.getFieldDefinition().getName(), context);
 			}
 		});
-		return fieldDefinitions;
+		return new TableFieldContext(primaryKeys, notPrimaryKeys, contextMap);
 	}
 
 	public static CasType getCasType(FieldDefinition fieldDefinition) {

@@ -2,12 +2,12 @@ package scw.orm.sql.dialect.mysql;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import scw.orm.MappingContext;
 import scw.orm.MappingOperations;
 import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.TableFieldContext;
 import scw.sql.orm.enums.CasType;
 
 public class UpdateSQL extends MysqlDialectSql {
@@ -17,8 +17,8 @@ public class UpdateSQL extends MysqlDialectSql {
 
 	public UpdateSQL(MappingOperations mappingOperations, Class<?> clazz, Object obj, String tableName)
 			throws Exception {
-		LinkedList<MappingContext> primaryKeys = SqlORMUtils.getPrimaryKeyFieldContexts(mappingOperations, clazz);
-		if (primaryKeys.size() == 0) {
+		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
+		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException(tableName + " not found primary key");
 		}
 
@@ -26,9 +26,8 @@ public class UpdateSQL extends MysqlDialectSql {
 		sb.append(UPDATE_PREFIX);
 		keywordProcessing(sb, tableName);
 		sb.append(SET);
-		LinkedList<MappingContext> notPrimaryKeys = SqlORMUtils.getNotPrimaryKeyFieldContexts(mappingOperations, clazz);
-		List<Object> params = new ArrayList<Object>(notPrimaryKeys.size());
-		Iterator<MappingContext> iterator = notPrimaryKeys.iterator();
+		List<Object> params = new ArrayList<Object>(tableFieldContext.getNotPrimaryKeys().size());
+		Iterator<MappingContext> iterator = tableFieldContext.getNotPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			keywordProcessing(sb, context.getFieldDefinition().getName());
@@ -47,7 +46,7 @@ public class UpdateSQL extends MysqlDialectSql {
 		}
 
 		sb.append(WHERE);
-		iterator = primaryKeys.iterator();
+		iterator = tableFieldContext.getPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			keywordProcessing(sb, context.getFieldDefinition().getName());
@@ -58,7 +57,7 @@ public class UpdateSQL extends MysqlDialectSql {
 			}
 		}
 
-		iterator = notPrimaryKeys.iterator();
+		iterator = tableFieldContext.getNotPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			if (SqlORMUtils.getCasType(context.getFieldDefinition()) == CasType.NOTHING) {

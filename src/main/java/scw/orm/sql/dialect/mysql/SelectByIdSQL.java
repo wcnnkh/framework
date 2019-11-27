@@ -1,6 +1,5 @@
 package scw.orm.sql.dialect.mysql;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -9,6 +8,7 @@ import scw.orm.MappingContext;
 import scw.orm.MappingOperations;
 import scw.orm.SimpleGetter;
 import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.TableFieldContext;
 
 public final class SelectByIdSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
@@ -38,7 +38,8 @@ public final class SelectByIdSQL extends MysqlDialectSql {
 
 		int i = 0;
 		this.params = new Object[ids == null ? 0 : ids.length];
-		Iterator<MappingContext> iterator = SqlORMUtils.getPrimaryKeyFieldContexts(mappingOperations, clazz).iterator();
+		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
+		Iterator<MappingContext> iterator = tableFieldContext.getPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			params[i] = mappingOperations.getter(context, new SimpleGetter(ids[i]));
@@ -56,11 +57,11 @@ public final class SelectByIdSQL extends MysqlDialectSql {
 
 	private String getSql(MappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] ids)
 			throws Exception {
+		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
 		StringBuilder sb = new StringBuilder();
 		sb.append(SELECT_ALL_PREFIX);
 		keywordProcessing(sb, tableName);
-		Collection<MappingContext> fields = SqlORMUtils.getPrimaryKeyFieldContexts(mappingOperations, clazz);
-		Iterator<MappingContext> iterator = fields.iterator();
+		Iterator<MappingContext> iterator = tableFieldContext.getPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			sb.append(UpdateSQL.WHERE);
@@ -73,7 +74,7 @@ public final class SelectByIdSQL extends MysqlDialectSql {
 				sb.append("=?");
 			}
 
-			if (ids.length == fields.size()) {
+			if (ids.length == tableFieldContext.getPrimaryKeys().size()) {
 				sb.append(" limit 0,1");
 			}
 		}

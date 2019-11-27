@@ -1,6 +1,5 @@
 package scw.orm.sql.dialect.mysql;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +10,7 @@ import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;
 import scw.orm.MappingOperations;
 import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.TableFieldContext;
 import scw.sql.orm.annotation.Counter;
 
 public class SaveOrUpdateSQL extends MysqlDialectSql {
@@ -23,8 +23,8 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 
 	public SaveOrUpdateSQL(MappingOperations mappingOperations, Class<?> clazz, Object obj, String tableName)
 			throws Exception {
-		Collection<MappingContext> primaryKeys = SqlORMUtils.getPrimaryKeyFieldContexts(mappingOperations, clazz);
-		if (primaryKeys.size() == 0) {
+		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
+		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
@@ -32,7 +32,7 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		List<Object> params = new LinkedList<Object>();
-		Iterator<MappingContext> iterator = SqlORMUtils.getTableFieldContexts(mappingOperations, clazz).iterator();
+		Iterator<MappingContext> iterator = tableFieldContext.iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			keywordProcessing(cols, context.getFieldDefinition().getName());
@@ -53,7 +53,7 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 		sb.append(values);
 		sb.append(TEMP);
 
-		iterator = SqlORMUtils.getNotPrimaryKeyFieldContexts(mappingOperations, clazz).iterator();
+		iterator = tableFieldContext.getNotPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			Object v = mappingOperations.getter(context, obj);

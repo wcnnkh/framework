@@ -4,13 +4,13 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;
 
-public final class DefaultTableValueMapping extends AbstractValueMapping {
-	private static Logger logger = LoggerUtils.getLogger(DefaultTableValueMapping.class);
+public final class DefaultTableSetterMapping extends AbstractSetterMapping {
+	private static Logger logger = LoggerUtils.getLogger(DefaultTableSetterMapping.class);
 	private ValueIndexMapping valueIndexMapping;
 	private Object[] values;
 	private TableNameMapping tableNameMapping;
 
-	public DefaultTableValueMapping(ValueIndexMapping valueIndexMapping, Object[] values,
+	public DefaultTableSetterMapping(ValueIndexMapping valueIndexMapping, Object[] values,
 			TableNameMapping tableNameMapping) {
 		this.valueIndexMapping = valueIndexMapping;
 		this.values = values;

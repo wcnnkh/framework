@@ -16,20 +16,20 @@ public class DefaultSetterFilterChain implements SetterFilterChain {
 		this.chain = chain;
 	}
 
-	public void setter(MappingContext context, Object bean, Object value) throws Exception {
-		SetterFilter setterFilter = getNext(context, bean, value);
+	public void setter(MappingContext context, Setter setter, Object value) throws Exception {
+		SetterFilter setterFilter = getNext(context, setter, value);
 		if (setterFilter == null) {
 			if (chain == null) {
-				context.getFieldDefinition().set(bean, value);
+				setter.setter(context, value);
 			} else {
-				chain.setter(context, bean, value);
+				chain.setter(context, setter, value);
 			}
 			return;
 		}
-		setterFilter.setter(context, bean, value, this);
+		setterFilter.setter(context, setter, value, this);
 	}
 
-	protected SetterFilter getNext(MappingContext context, Object bean, Object value) {
+	protected SetterFilter getNext(MappingContext context, Setter setter, Object value) {
 		if (iterator == null) {
 			return null;
 		}

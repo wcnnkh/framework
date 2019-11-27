@@ -10,10 +10,10 @@ import java.util.Map.Entry;
 
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.StringUtils;
-import scw.orm.IteratorMapping;
 import scw.orm.MappingContext;
 import scw.orm.MappingOperations;
 import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.TableFieldContext;
 import scw.orm.sql.dialect.DefaultSqlTypeFactory;
 import scw.orm.sql.dialect.SqlType;
 import scw.orm.sql.dialect.SqlTypeFactory;
@@ -38,78 +38,76 @@ public class CreateTableSql extends MysqlDialectSql {
 		sql.append(" (");
 
 		final StringBuilder sb = new StringBuilder();
-		SqlORMUtils.iteratorTableFieldDefinition(mappingOperations, clazz, new IteratorMapping() {
-
-			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
-				if (sb.length() != 0) {
-					sb.append(",");
-				}
-
-				FieldDefinition fieldDefinition = context.getFieldDefinition();
-				SqlType sqlType = SqlORMUtils.getSqlType(fieldDefinition, sqlTypeFactory);
-				sb.append("`").append(fieldDefinition.getName()).append("`");
-				sb.append(" ");
-				sb.append(sqlType.getName());
-				if (sqlType.getLength() > 0) {
-					sb.append("(").append(sqlType.getLength()).append(")");
-				}
-				sb.append(" ");
-
-				if (!StringUtils.isEmpty(SqlORMUtils.getCharsetName(fieldDefinition))) {
-					sb.append("character set ").append(SqlORMUtils.getCharsetName(fieldDefinition)).append(" ");
-				}
-
-				if (!SqlORMUtils.isNullAble(fieldDefinition)) {
-					sb.append("not null ");
-				}
-
-				Column column = fieldDefinition.getAnnotation(Column.class);
-				if (column != null && !StringUtils.isEmpty(column.comment())) {
-					sb.append(" comment \'").append(column.comment()).append("\'");
-				}
-
-				if (SqlORMUtils.isAutoIncrement(fieldDefinition)) {
-					sb.append(" AUTO_INCREMENT");
-				}
-			}
-		});
-
-		SqlORMUtils.iteratorTableFieldDefinition(mappingOperations, clazz, new IteratorMapping() {
-
-			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
-				if (!SqlORMUtils.isUnique(context.getFieldDefinition())) {
-					return;
-				}
-
+		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
+		Iterator<MappingContext> iterator = tableFieldContext.iterator();
+		while (iterator.hasNext()) {
+			MappingContext context = iterator.next();
+			if (sb.length() != 0) {
 				sb.append(",");
-				sb.append("UNIQUE (");
-				sb.append("`").append(context.getFieldDefinition().getName()).append("`");
-				sb.append(")");
 			}
-		});
+
+			FieldDefinition fieldDefinition = context.getFieldDefinition();
+			SqlType sqlType = SqlORMUtils.getSqlType(fieldDefinition, sqlTypeFactory);
+			sb.append("`").append(fieldDefinition.getName()).append("`");
+			sb.append(" ");
+			sb.append(sqlType.getName());
+			if (sqlType.getLength() > 0) {
+				sb.append("(").append(sqlType.getLength()).append(")");
+			}
+			sb.append(" ");
+
+			if (!StringUtils.isEmpty(SqlORMUtils.getCharsetName(fieldDefinition))) {
+				sb.append("character set ").append(SqlORMUtils.getCharsetName(fieldDefinition)).append(" ");
+			}
+
+			if (!SqlORMUtils.isNullAble(fieldDefinition)) {
+				sb.append("not null ");
+			}
+
+			Column column = fieldDefinition.getAnnotation(Column.class);
+			if (column != null && !StringUtils.isEmpty(column.comment())) {
+				sb.append(" comment \'").append(column.comment()).append("\'");
+			}
+
+			if (SqlORMUtils.isAutoIncrement(fieldDefinition)) {
+				sb.append(" AUTO_INCREMENT");
+			}
+		}
+
+		iterator = tableFieldContext.iterator();
+		while (iterator.hasNext()) {
+			MappingContext context = iterator.next();
+			if (!SqlORMUtils.isUnique(context.getFieldDefinition())) {
+				return;
+			}
+
+			sb.append(",");
+			sb.append("UNIQUE (");
+			sb.append("`").append(context.getFieldDefinition().getName()).append("`");
+			sb.append(")");
+		}
 
 		final Map<String, List<IndexInfo>> indexMap = new LinkedHashMap<String, List<IndexInfo>>();
 		final Map<String, Index> indexConfigMap = new HashMap<String, Index>();
-		SqlORMUtils.iteratorTableFieldDefinition(mappingOperations, clazz, new IteratorMapping() {
-
-			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
-				Index index = context.getFieldDefinition().getAnnotation(Index.class);
-				if (index == null) {
-					return;
-				}
-
-				if (!indexConfigMap.containsKey(index.name())) {
-					indexConfigMap.put(index.name(), index);
-				}
-
-				List<IndexInfo> indexList = indexMap.get(index.name());
-				if (indexList == null) {
-					indexList = new ArrayList<IndexInfo>();
-					indexMap.put(index.name(), indexList);
-				}
-				indexList.add(new IndexInfo(context.getFieldDefinition().getName(), index));
+		iterator = tableFieldContext.iterator();
+		while (iterator.hasNext()) {
+			MappingContext context = iterator.next();
+			Index index = context.getFieldDefinition().getAnnotation(Index.class);
+			if (index == null) {
+				return;
 			}
-		});
+
+			if (!indexConfigMap.containsKey(index.name())) {
+				indexConfigMap.put(index.name(), index);
+			}
+
+			List<IndexInfo> indexList = indexMap.get(index.name());
+			if (indexList == null) {
+				indexList = new ArrayList<IndexInfo>();
+				indexMap.put(index.name(), indexList);
+			}
+			indexList.add(new IndexInfo(context.getFieldDefinition().getName(), index));
+		}
 
 		for (Entry<String, List<IndexInfo>> entry : indexMap.entrySet()) {
 			sb.append(",");
@@ -128,9 +126,9 @@ public class CreateTableSql extends MysqlDialectSql {
 			}
 
 			sb.append(" (");
-			Iterator<IndexInfo> iterator = entry.getValue().iterator();
-			while (iterator.hasNext()) {
-				IndexInfo indexInfo = iterator.next();
+			Iterator<IndexInfo> indexIterator = entry.getValue().iterator();
+			while (indexIterator.hasNext()) {
+				IndexInfo indexInfo = indexIterator.next();
 				sb.append(indexInfo.getColumn());
 				if (indexInfo.getIndex().length() != -1) {
 					sb.append("(");
@@ -149,19 +147,18 @@ public class CreateTableSql extends MysqlDialectSql {
 			sb.append(")");
 		}
 
-		final StringBuilder primaryKeySql = new StringBuilder();
-		SqlORMUtils.iteratorPrimaryKeyFieldDefinition(mappingOperations, clazz, new IteratorMapping() {
-
-			public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
-				if (primaryKeySql.length() > 0) {
-					primaryKeySql.append(",");
-				}
-				primaryKeySql.append("`");
-				primaryKeySql.append(context.getFieldDefinition().getName());
-				primaryKeySql.append("`");
-
+		StringBuilder primaryKeySql = new StringBuilder();
+		iterator = tableFieldContext.getPrimaryKeys().iterator();
+		while (iterator.hasNext()) {
+			MappingContext context = iterator.next();
+			if (primaryKeySql.length() > 0) {
+				primaryKeySql.append(",");
 			}
-		});
+			primaryKeySql.append("`");
+			primaryKeySql.append(context.getFieldDefinition().getName());
+			primaryKeySql.append("`");
+
+		}
 
 		if (primaryKeySql.length() > 0) {
 			sb.append(",");

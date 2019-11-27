@@ -2,6 +2,7 @@ package scw.sql.orm;
 
 import java.util.Collection;
 
+import scw.orm.sql.dialect.PaginationSql;
 import scw.sql.Sql;
 
 public interface SqlFormat {

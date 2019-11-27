@@ -2,9 +2,9 @@ package scw.orm.sql;
 
 import scw.orm.MappingContext;
 import scw.orm.MappingOperations;
-import scw.orm.Setter;
+import scw.orm.SetterMapping;
 
-public abstract class AbstractValueMapping implements Setter {
+public abstract class AbstractSetterMapping implements SetterMapping {
 	public void setter(MappingContext context, Object bean, MappingOperations ormOperations) throws Exception {
 		if (SqlORMUtils.ignoreField(context.getFieldDefinition())) {
 			return;

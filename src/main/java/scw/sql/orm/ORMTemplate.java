@@ -16,6 +16,7 @@ import scw.core.exception.ParameterException;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.IteratorCallback;
 import scw.core.utils.StringUtils;
+import scw.orm.sql.dialect.PaginationSql;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
 import scw.sql.Sql;

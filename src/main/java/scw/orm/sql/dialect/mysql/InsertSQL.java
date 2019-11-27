@@ -1,11 +1,11 @@
 package scw.orm.sql.dialect.mysql;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 import scw.orm.MappingContext;
 import scw.orm.MappingOperations;
 import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.TableFieldContext;
 
 public final class InsertSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
@@ -15,13 +15,13 @@ public final class InsertSQL extends MysqlDialectSql {
 
 	public InsertSQL(MappingOperations mappingOperations, Class<?> clazz, String tableName, Object obj)
 			throws Exception {
-		Collection<MappingContext> fields = SqlORMUtils.getTableFieldContexts(mappingOperations, clazz);
+		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
-		this.params = new Object[fields.size()];
+		this.params = new Object[tableFieldContext.size()];
 		int index = 0;
-		Iterator<MappingContext> iterator = fields.iterator();
+		Iterator<MappingContext> iterator = tableFieldContext.iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			if (SqlORMUtils.isAutoIncrement(context.getFieldDefinition())) {

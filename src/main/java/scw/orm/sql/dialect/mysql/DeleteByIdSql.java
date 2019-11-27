@@ -1,57 +1,43 @@
 package scw.orm.sql.dialect.mysql;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
+import scw.core.exception.ParameterException;
 import scw.orm.MappingContext;
 import scw.orm.MappingOperations;
 import scw.orm.sql.SqlORMUtils;
 import scw.orm.sql.TableFieldContext;
-import scw.sql.orm.enums.CasType;
 
-public class DeleteSQL extends MysqlDialectSql {
+public class DeleteByIdSql extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 
-	public <T> DeleteSQL(MappingOperations mappingOperations, Class<? extends T> clazz, T obj, String tableName)
+	public DeleteByIdSql(MappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] parimayKeys)
 			throws Exception {
 		TableFieldContext tableFieldContext = SqlORMUtils.getTableFieldContext(mappingOperations, clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
-		List<Object> params = new ArrayList<Object>(tableFieldContext.getPrimaryKeys().size());
+		if (tableFieldContext.getPrimaryKeys().size() != parimayKeys.length) {
+			throw new ParameterException("主键数量不一致:" + tableName);
+		}
+
+		this.params = parimayKeys;
+
 		StringBuilder sql = new StringBuilder();
 		sql.append(DELETE_PREFIX);
 		keywordProcessing(sql, tableName);
 		sql.append(WHERE);
+
 		Iterator<MappingContext> iterator = tableFieldContext.getPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			keywordProcessing(sql, context.getFieldDefinition().getName());
 			sql.append("=?");
-			params.add(mappingOperations.getter(context, obj));
-			if (iterator.hasNext()) {
-				sql.append(AND);
-			}
-		}
-
-		iterator = tableFieldContext.getNotPrimaryKeys().iterator();
-		while (iterator.hasNext()) {
-			MappingContext context = iterator.next();
-			if (SqlORMUtils.getCasType(context.getFieldDefinition()) == CasType.NOTHING) {
-				continue;
-			}
-
-			sql.append(AND);
-			keywordProcessing(sql, context.getFieldDefinition().getName());
-			sql.append("=?");
-			params.add(mappingOperations.getter(context, obj));
 		}
 		this.sql = sql.toString();
-		this.params = params.toArray();
 	}
 
 	public String getSql() {

@@ -26,7 +26,7 @@ public class DefaultResultMapping implements Result {
 	public <T> T get(MappingOperations mappingOperations, Class<T> clazz, TableNameMapping tableNameMapping) {
 		try {
 			return mappingOperations.create(null, clazz,
-					new DefaultTableValueMapping(valueIndexMapping, values, tableNameMapping));
+					new DefaultTableSetterMapping(valueIndexMapping, values, tableNameMapping));
 		} catch (Exception e) {
 			throw new ORMException(clazz.getName(), e);
 		}
