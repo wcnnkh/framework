@@ -4,16 +4,24 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 
 import scw.aop.Invoker;
 import scw.aop.ReflectInvoker;
+import scw.core.PropertyFactory;
+import scw.core.SystemPropertyFactory;
 import scw.core.exception.NotSupportException;
 import scw.core.instance.support.ReflectionInstanceFactory;
 import scw.core.instance.support.ReflectionSingleInstanceFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
+import scw.logger.LoggerUtils;
 
 public final class InstanceUtils {
 	private InstanceUtils() {
@@ -34,7 +42,8 @@ public final class InstanceUtils {
 		}
 
 		if (instanceFactory == null) {
-			throw new NotSupportException("Instances that do not call constructors are not supported");
+			throw new NotSupportException(
+					"Instances that do not call constructors are not supported");
 		}
 
 		NO_ARGS_INSTANCE_FACTORY = instanceFactory;
@@ -42,13 +51,13 @@ public final class InstanceUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T newInstance(String name, boolean invokeConstructor) {
-		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY.getInstance(name)
-				: NO_ARGS_INSTANCE_FACTORY.getInstance(name));
+		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY
+				.getInstance(name) : NO_ARGS_INSTANCE_FACTORY.getInstance(name));
 	}
 
 	public static <T> T newInstance(Class<T> type, boolean invokeConstructor) {
-		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY.getInstance(type)
-				: NO_ARGS_INSTANCE_FACTORY.getInstance(type));
+		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY
+				.getInstance(type) : NO_ARGS_INSTANCE_FACTORY.getInstance(type));
 	}
 
 	/**
@@ -118,8 +127,10 @@ public final class InstanceUtils {
 	 * @param params
 	 * @return
 	 */
-	public static <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
-		return REFLECTION_INSTANCE_FACTORY.getInstance(name, parameterTypes, params);
+	public static <T> T getInstance(String name, Class<?>[] parameterTypes,
+			Object... params) {
+		return REFLECTION_INSTANCE_FACTORY.getInstance(name, parameterTypes,
+				params);
 	}
 
 	/**
@@ -130,8 +141,10 @@ public final class InstanceUtils {
 	 * @param params
 	 * @return
 	 */
-	public static <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
-		return REFLECTION_INSTANCE_FACTORY.getInstance(type, parameterTypes, params);
+	public static <T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
+			Object... params) {
+		return REFLECTION_INSTANCE_FACTORY.getInstance(type, parameterTypes,
+				params);
 	}
 
 	/**
@@ -144,11 +157,12 @@ public final class InstanceUtils {
 	 * @throws NoSuchMethodException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(Class<T> type, boolean isPublic, Map<String, Object> parameterMap)
-			throws NoSuchMethodException {
+	public static <T> T newInstance(Class<T> type, boolean isPublic,
+			Map<String, Object> parameterMap) throws NoSuchMethodException {
 		if (CollectionUtils.isEmpty(parameterMap)) {
 			try {
-				return ReflectUtils.getConstructor(type, isPublic).newInstance();
+				return ReflectUtils.getConstructor(type, isPublic)
+						.newInstance();
 			} catch (InstantiationException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalAccessException e) {
@@ -161,7 +175,8 @@ public final class InstanceUtils {
 		}
 
 		int size = parameterMap.size();
-		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
+		for (Constructor<?> constructor : isPublic ? type.getConstructors()
+				: type.getDeclaredConstructors()) {
 			if (size == constructor.getParameterTypes().length) {
 				String[] names = ParameterUtils.getParameterName(constructor);
 				Object[] args = new Object[size];
@@ -196,11 +211,103 @@ public final class InstanceUtils {
 		return SINGLE_INSTANCE_FACTORY;
 	}
 
-	public static Invoker getInvoker(InstanceFactory instanceFactory, Class<?> clz, Method method) {
+	public static Invoker getInvoker(InstanceFactory instanceFactory,
+			Class<?> clz, Method method) {
 		if (Modifier.isStatic(method.getModifiers())) {
 			return new ReflectInvoker(null, method);
 		} else {
 			return new ReflectInvoker(instanceFactory.getInstance(clz), method);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T autoNewInstance(Class<T> clazz,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory)
+			throws Exception {
+		InstanceConfig instanceConfig = new AutoInstanceConfig(instanceFactory,
+				propertyFactory, clazz);
+		if (instanceConfig.getConstructor() == null) {
+			return null;
+		}
+
+		return (T) instanceConfig.getConstructor().newInstance(
+				instanceConfig.getArgs());
+	}
+
+	public static <T> T autoNewInstance(Class<T> clazz,
+			InstanceFactory instanceFactory) throws Exception {
+		return autoNewInstance(clazz, instanceFactory,
+				SystemPropertyFactory.INSTANCE);
+	}
+
+	public static <T> T autoNewInstance(Class<T> clazz) throws Exception {
+		return autoNewInstance(clazz, REFLECTION_INSTANCE_FACTORY);
+	}
+
+	public static <T> T autoNewInstanceBySystemProperty(Class<T> clazz,
+			String key, T defaultValue) {
+		String name = SystemPropertyUtils.getProperty(key);
+		if (StringUtils.isEmpty(name)) {
+			return defaultValue;
+		}
+		Class<?> clz;
+		try {
+			clz = ClassUtils.forName(name);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return defaultValue;
+		}
+
+		if (clz.isAssignableFrom(clazz)) {
+			LoggerUtils.warn(InstanceUtils.class,
+					"{} not is assignable from {}", clz, clazz);
+			return defaultValue;
+		}
+
+		Object bean;
+		try {
+			bean = autoNewInstance(clz);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return defaultValue;
+		}
+
+		return clazz.cast(bean);
+	}
+
+	public static <T> Collection<T> autoNewInstanceBySystemProperty(
+			Class<T> clazz, String key, Collection<T> defaultValues) {
+		String names = SystemPropertyUtils.getProperty(key);
+		if (StringUtils.isEmpty(names)) {
+			return defaultValues;
+		}
+
+		LinkedList<T> list = new LinkedList<T>();
+		for (String name : StringUtils.commonSplit(names)) {
+			Class<?> clz;
+			try {
+				clz = ClassUtils.forName(name);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+				continue;
+			}
+
+			if (clz.isAssignableFrom(clazz)) {
+				LoggerUtils.warn(InstanceUtils.class,
+						"{} not is assignable from {}", clz, clazz);
+				continue;
+			}
+
+			Object bean;
+			try {
+				bean = autoNewInstance(clz);
+			} catch (Exception e) {
+				e.printStackTrace();
+				continue;
+			}
+
+			list.add(clazz.cast(bean));
+		}
+		return list.isEmpty() ? defaultValues : list;
 	}
 }

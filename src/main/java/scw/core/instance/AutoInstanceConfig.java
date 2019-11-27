@@ -24,7 +24,8 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
 public class AutoInstanceConfig implements InstanceConfig {
-	private static Logger logger = LoggerUtils.getLogger(AutoInstanceConfig.class);
+	private static Logger logger = LoggerUtils
+			.getLogger(AutoInstanceConfig.class);
 	protected final InstanceFactory instanceFactory;
 	protected final PropertyFactory propertyFactory;
 	protected final Class<?> clazz;
@@ -32,12 +33,15 @@ public class AutoInstanceConfig implements InstanceConfig {
 	private Constructor<?> constructor;
 	private ParameterConfig[] parameterConfigs;
 
-	public AutoInstanceConfig(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz) {
-		this(instanceFactory, propertyFactory, StringParse.DEFAULT, clazz, ReflectUtils.getConstructorOrderList(clazz));
+	public AutoInstanceConfig(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Class<?> clazz) {
+		this(instanceFactory, propertyFactory, StringParse.DEFAULT, clazz,
+				ReflectUtils.getConstructorOrderList(clazz));
 	}
 
-	public AutoInstanceConfig(InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			ValueFactory<String> valueFactory, Class<?> clazz, Collection<Constructor<?>> constructors) {
+	public AutoInstanceConfig(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, ValueFactory<String> valueFactory,
+			Class<?> clazz, Collection<Constructor<?>> constructors) {
 		this.propertyFactory = propertyFactory;
 		this.instanceFactory = instanceFactory;
 		this.clazz = clazz;
@@ -45,7 +49,8 @@ public class AutoInstanceConfig implements InstanceConfig {
 		for (Constructor<?> constructor : constructors) {
 			if (isAutoConstructor(constructor)) {
 				this.constructor = constructor;
-				this.parameterConfigs = ParameterUtils.getParameterConfigs(constructor);
+				this.parameterConfigs = ParameterUtils
+						.getParameterConfigs(constructor);
 				break;
 			}
 		}
@@ -56,18 +61,22 @@ public class AutoInstanceConfig implements InstanceConfig {
 	}
 
 	protected String getProperty(ParameterConfig parameterConfig) {
-		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
+		ParameterName parameterName = parameterConfig
+				.getAnnotation(ParameterName.class);
 		String value = propertyFactory
-				.getProperty(parameterName == null ? getDefaultName(parameterConfig) : parameterName.value());
+				.getProperty(parameterName == null ? getDefaultName(parameterConfig)
+						: parameterName.value());
 		if (value == null) {
-			DefaultValue defaultValue = parameterConfig.getAnnotation(DefaultValue.class);
+			DefaultValue defaultValue = parameterConfig
+					.getAnnotation(DefaultValue.class);
 			if (defaultValue != null) {
 				value = defaultValue.value();
 			}
 		}
-		
-		if(value != null){
-			ResourceParameter resourceParameter = parameterConfig.getAnnotation(ResourceParameter.class);
+
+		if (value != null) {
+			ResourceParameter resourceParameter = parameterConfig
+					.getAnnotation(ResourceParameter.class);
 			if (resourceParameter != null) {
 				if (!ResourceUtils.isExist(value)) {
 					return null;
@@ -78,20 +87,26 @@ public class AutoInstanceConfig implements InstanceConfig {
 	}
 
 	protected boolean isProerptyType(ParameterConfig parameterConfig) {
-		PropertyParameter propertyParameter = parameterConfig.getAnnotation(PropertyParameter.class);
+		PropertyParameter propertyParameter = parameterConfig
+				.getAnnotation(PropertyParameter.class);
 		if (propertyParameter == null) {
 			Class<?> type = parameterConfig.getType();
-			return ClassUtils.isPrimitiveOrWrapper(type) || type == String.class || type.isArray() || type.isEnum()
-					|| Class.class == type || BigDecimal.class == type || BigInteger.class == type
-					|| Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type);
+			return ClassUtils.isPrimitiveOrWrapper(type)
+					|| type == String.class || type.isArray() || type.isEnum()
+					|| Class.class == type || BigDecimal.class == type
+					|| BigInteger.class == type
+					|| Collection.class.isAssignableFrom(type)
+					|| Map.class.isAssignableFrom(type);
 		} else {
 			return propertyParameter.value();
 		}
 	}
 
 	protected String getInstanceName(ParameterConfig parameterConfig) {
-		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
-		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
+		ParameterName parameterName = parameterConfig
+				.getAnnotation(ParameterName.class);
+		if (parameterName != null
+				&& StringUtils.isNotEmpty(parameterName.value())) {
 			String value = propertyFactory.getProperty(parameterName.value());
 			if (value == null) {
 				return null;
@@ -113,7 +128,8 @@ public class AutoInstanceConfig implements InstanceConfig {
 	}
 
 	public final boolean isAutoConstructor(Constructor<?> constructor) {
-		ParameterConfig[] parameterDefinitions = ParameterUtils.getParameterConfigs(constructor);
+		ParameterConfig[] parameterDefinitions = ParameterUtils
+				.getParameterConfigs(constructor);
 		if (parameterDefinitions.length == 0) {
 			return true;
 		}
@@ -134,15 +150,21 @@ public class AutoInstanceConfig implements InstanceConfig {
 					b = false;
 				}
 			} else {
-				String name = getInstanceName(parameterConfig);
-				if (name == null) {
-					b = false;
+				if (parameterConfig.getType() == InstanceFactory.class
+						|| parameterConfig.getType() == PropertyFactory.class) {
+					b = true;
+				}else{
+					String name = getInstanceName(parameterConfig);
+					if (name == null) {
+						b = false;
+					}
 				}
 			}
 
 			if (logger.isDebugEnabled()) {
-				logger.debug("{} parameter index {} is {} matching:{}", constructor, i,
-						isProperty ? "property" : "bean", b ? "success" : "fail");
+				logger.debug("{} parameter index {} is {} matching:{}",
+						constructor, i, isProperty ? "property" : "bean",
+						b ? "success" : "fail");
 			}
 
 			if (!b) {
@@ -175,10 +197,22 @@ public class AutoInstanceConfig implements InstanceConfig {
 					return null;
 				}
 
-				args[i] = XUtils.getValue(valueFactory, value, parameterConfig.getGenericType());
+				args[i] = XUtils.getValue(valueFactory, value,
+						parameterConfig.getGenericType());
 			} else {
+				if (parameterConfig.getType() == InstanceConfig.class) {
+					args[i] = instanceFactory;
+					continue;
+				}
+
+				if (parameterConfig.getType() == PropertyFactory.class) {
+					args[i] = propertyFactory;
+					continue;
+				}
+
 				String name = getInstanceName(parameterConfig);
-				args[i] = name == null ? null : instanceFactory.getInstance(name);
+				args[i] = name == null ? null : instanceFactory
+						.getInstance(name);
 			}
 		}
 		return args;

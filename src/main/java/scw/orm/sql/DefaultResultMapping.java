@@ -43,7 +43,7 @@ public class DefaultResultMapping implements Result {
 		if (clazz.isArray()) {
 			return (T) getValues();
 		}
-
+		
 		try {
 			return mappingOperations.create(null, clazz,
 					new DefaultTableSetterMapping(mappingOperations, valueIndexMapping, values, tableNameMapping));
