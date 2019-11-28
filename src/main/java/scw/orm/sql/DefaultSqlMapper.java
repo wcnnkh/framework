@@ -34,7 +34,7 @@ public class DefaultSqlMapper extends AbstractSqlMappingOperations implements Sq
 	}
 
 	public <T> T newInstance(Class<T> type) {
-		if (noArgsInstanceFactory.isInstance(type)) {
+		if (!noArgsInstanceFactory.isInstance(type)) {
 			throw new CannotInstantiateException("Cannot instantiate [" + type.getName() + "]");
 		}
 		return noArgsInstanceFactory.getInstance(type);
