@@ -18,7 +18,7 @@ public class DefaultResultSetMapping extends AbstractResultSet {
 		super(resultSet);
 	}
 
-	protected ResultMapping createResult(Object[] values) {
+	protected ResultMapping createResultMapping(Object[] values) {
 		return new DefaultResultMapping(valueIndexMapping, values);
 	}
 }

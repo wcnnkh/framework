@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import scw.core.exception.AlreadyExistsException;
+import scw.core.exception.NotSupportException;
 
 public final class ResultSetValueIndexMapping implements ValueIndexMapping {
 	private static final long serialVersionUID = 1L;
@@ -14,7 +15,7 @@ public final class ResultSetValueIndexMapping implements ValueIndexMapping {
 	 * 如果查询结果中未出现重名
 	 */
 	private HashMap<String, Integer> singleIndexMap;
-	private boolean single;// 查询结果中是否存在重复的名字
+	private boolean existDuplicateField;// 查询结果中是否存在重复的名字
 	private HashMap<String, Map<String, Integer>> indexMap;;
 	private int columnCount;
 
@@ -24,12 +25,12 @@ public final class ResultSetValueIndexMapping implements ValueIndexMapping {
 		this.columnCount = resultSetMetaData.getColumnCount();
 		for (int i = 1; i <= columnCount; i++) {
 			String labelName = resultSetMetaData.getColumnLabel(i);
-			if (!single) {
+			if (!existDuplicateField) {
 				if (singleIndexMap.containsKey(labelName)) {
 					singleIndexMap = null;
-					single = true;
+					existDuplicateField = true;
 				} else {
-					singleIndexMap.put(labelName, i);
+					singleIndexMap.put(labelName, i - 1);
 				}
 			}
 
@@ -47,8 +48,8 @@ public final class ResultSetValueIndexMapping implements ValueIndexMapping {
 		}
 	}
 
-	public boolean isSingle() {
-		return single;
+	public boolean isExistDuplicateField() {
+		return existDuplicateField;
 	}
 
 	public Map<String, Integer> getSingleIndexMap() {
@@ -74,6 +75,15 @@ public final class ResultSetValueIndexMapping implements ValueIndexMapping {
 		}
 
 		Integer index = map.get(name);
+		return index == null ? -1 : index;
+	}
+
+	public int getSingleIndex(String name) {
+		if (isExistDuplicateField()) {
+			throw new NotSupportException("存在重复的字段，不能使用此方法");
+		}
+
+		Integer index = singleIndexMap.get(name);
 		return index == null ? -1 : index;
 	}
 }

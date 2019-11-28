@@ -54,7 +54,7 @@ public abstract class AbstractResultSet implements ResultSet {
 
 		List<T> list = new ArrayList<T>(dataList.size());
 		for (Object[] values : dataList) {
-			ResultMapping resultMapping = createResult(values);
+			ResultMapping resultMapping = createResultMapping(values);
 			list.add(resultMapping.get(clazz, tableNameMapping));
 		}
 		return list;
@@ -68,7 +68,7 @@ public abstract class AbstractResultSet implements ResultSet {
 		return getList(clazz, (String) null);
 	}
 
-	protected abstract ResultMapping createResult(Object[] values);
+	protected abstract ResultMapping createResultMapping(Object[] values);
 
 	public final int size() {
 		return dataList == null ? 0 : dataList.size();
@@ -79,7 +79,7 @@ public abstract class AbstractResultSet implements ResultSet {
 			return ResultMapping.EMPTY_RESULT;
 		}
 
-		return createResult(dataList.getFirst());
+		return createResultMapping(dataList.getFirst());
 	}
 
 	public final ResultMapping getLast() {
@@ -87,7 +87,7 @@ public abstract class AbstractResultSet implements ResultSet {
 			return ResultMapping.EMPTY_RESULT;
 		}
 
-		return createResult(dataList.getLast());
+		return createResultMapping(dataList.getLast());
 	}
 
 	public final boolean isEmpty() {
@@ -110,7 +110,7 @@ public abstract class AbstractResultSet implements ResultSet {
 		}
 
 		public ResultMapping next() {
-			return createResult(iterator.next());
+			return createResultMapping(iterator.next());
 		}
 	}
 }

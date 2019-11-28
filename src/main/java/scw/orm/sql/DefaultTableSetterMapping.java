@@ -31,9 +31,10 @@ public final class DefaultTableSetterMapping extends AbstractSetterMapping {
 	}
 
 	protected Object getValue(MappingContext context, SqlMapper sqlMapper) {
-		String columnName = context.getColumn().getName();
-		int index = valueIndexMapping.isSingle() ? valueIndexMapping.getSingleIndexMap().get(columnName)
-				: valueIndexMapping.getIndex(getTableName(context.getDeclaringClass(), sqlMapper), columnName);
+		int index = valueIndexMapping.isExistDuplicateField()
+				? valueIndexMapping.getIndex(getTableName(context.getDeclaringClass(), sqlMapper),
+						context.getColumn().getName())
+				: valueIndexMapping.getSingleIndex(context.getColumn().getName());
 		if (index == -1) {
 			if (!sqlMapper.isNullAble(context)) {
 				logger.warn("{} [{}] not found for ResultSet, context-class [{}]",

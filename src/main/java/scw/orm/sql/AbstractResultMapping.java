@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.utils.TypeUtils;
+import scw.json.JSONUtils;
 import scw.sql.SqlUtils;
 
 public abstract class AbstractResultMapping implements ResultMapping {
@@ -29,6 +30,11 @@ public abstract class AbstractResultMapping implements ResultMapping {
 	public <T> T get(Class<T> clazz, TableNameMapping tableNameMapping) {
 		if (isEmpty()) {
 			return null;
+		}
+		
+		if(clazz.getName().contains("AdminUser")){
+			System.out.println(JSONUtils.toJSONString(valueIndexMapping));
+			System.out.println(JSONUtils.toJSONString(values));
 		}
 
 		if (TypeUtils.isPrimitiveOrWrapper(clazz)) {
