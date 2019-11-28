@@ -18,11 +18,8 @@ import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.FieldSetterListenUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
 import scw.orm.ColumnFactory;
 import scw.orm.Filter;
 import scw.orm.sql.DefaultSqlMapper;
@@ -32,14 +29,12 @@ import scw.orm.sql.TableColumnFactory;
 import scw.orm.sql.TableInstanceFactory;
 import scw.orm.sql.TableNameMapping;
 import scw.orm.sql.annotation.Index;
-import scw.orm.sql.annotation.Table;
 import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.enums.OperationType;
 import scw.sql.Sql;
 
 @SuppressWarnings("unchecked")
 public final class SqlORMUtils {
-	private static Logger logger = LoggerUtils.getLogger(SqlORMUtils.class);
 	private static final SqlMapper SQL_MAPPER;
 
 	private SqlORMUtils() {
@@ -98,21 +93,6 @@ public final class SqlORMUtils {
 			return sqlDialect.toUpdateSql(bean, clazz, tableName);
 		default:
 			throw new NotSupportException(operationType.name());
-		}
-	}
-
-	public static void registerCglibProxyTableBean(String pageName) {
-		if (!StringUtils.isEmpty(pageName)) {
-			logger.info("register proxy package:{}", pageName);
-		}
-
-		for (Class<?> type : ClassUtils.getClassList(pageName)) {
-			Table table = type.getAnnotation(Table.class);
-			if (table == null) {
-				continue;
-			}
-
-			FieldSetterListenUtils.createFieldSetterListenProxyClass(type);
 		}
 	}
 }
