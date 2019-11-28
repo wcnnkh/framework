@@ -1,19 +1,11 @@
-package scw.orm.sql.support;
+package scw.orm.sql.dialect;
 
 import scw.core.Pagination;
 import scw.core.utils.StringUtils;
-import scw.orm.sql.SqlMapper;
-import scw.orm.sql.dialect.PaginationSql;
-import scw.orm.sql.dialect.SqlDialect;
-import scw.orm.sql.dialect.SqlDialectException;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
-import scw.sql.orm.TableName;
 
 public abstract class AbstractSqlDialect implements SqlDialect {
-	public SqlMapper getSqlMapper() {
-		return SqlORMUtils.getSqlMapper();
-	}
 
 	public PaginationSql toPaginationSql(Sql sql, long page, int limit) throws SqlDialectException {
 		String str = sql.getSql();

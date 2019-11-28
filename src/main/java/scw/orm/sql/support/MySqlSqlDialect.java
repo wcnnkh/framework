@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 import scw.core.FieldSetterListen;
+import scw.orm.sql.SqlMapper;
+import scw.orm.sql.dialect.AbstractSqlDialect;
 import scw.orm.sql.dialect.SqlDialectException;
 import scw.orm.sql.dialect.mysql.CreateTableSql;
 import scw.orm.sql.dialect.mysql.DeleteByIdSql;
@@ -20,6 +22,10 @@ import scw.sql.SimpleSql;
 import scw.sql.Sql;
 
 public class MySqlSqlDialect extends AbstractSqlDialect {
+	public SqlMapper getSqlMapper() {
+		return SqlORMUtils.getSqlMapper();
+	}
+	
 	public Sql toCreateTableSql(Class<?> clazz, String tableName) throws SqlDialectException {
 		return new CreateTableSql(getSqlMapper(), clazz, tableName);
 	}
