@@ -1,6 +1,5 @@
 package scw.orm;
 
-public interface SetterMapping {
-	void setter(MappingContext context, Object bean, MappingOperations ormOperations)
-			throws Exception;
+public interface SetterMapping<M extends Mapper> {
+	void setter(MappingContext context, Object bean, M ormOperations) throws Exception;
 }

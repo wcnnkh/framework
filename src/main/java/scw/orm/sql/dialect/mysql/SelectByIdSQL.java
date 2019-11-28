@@ -7,7 +7,7 @@ import java.util.Map;
 
 import scw.orm.MappingContext;
 import scw.orm.SimpleGetter;
-import scw.orm.sql.SqlMappingOperations;
+import scw.orm.sql.SqlMapper;
 import scw.orm.sql.TableMappingContext;
 
 public final class SelectByIdSQL extends MysqlDialectSql {
@@ -16,7 +16,7 @@ public final class SelectByIdSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public SelectByIdSQL(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName, Collection<Object> ids)
+	public SelectByIdSQL(SqlMapper mappingOperations, Class<?> clazz, String tableName, Collection<Object> ids)
 			throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append(clazz.getName());
@@ -58,7 +58,7 @@ public final class SelectByIdSQL extends MysqlDialectSql {
 		return params;
 	}
 
-	private String getSql(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName, Collection<Object> ids)
+	private String getSql(SqlMapper mappingOperations, Class<?> clazz, String tableName, Collection<Object> ids)
 			throws Exception {
 		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		StringBuilder sb = new StringBuilder();

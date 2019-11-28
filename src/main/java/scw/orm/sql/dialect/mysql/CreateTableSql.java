@@ -11,8 +11,7 @@ import java.util.Map.Entry;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.StringUtils;
 import scw.orm.MappingContext;
-import scw.orm.sql.SqlMappingOperations;
-import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.SqlMapper;
 import scw.orm.sql.TableMappingContext;
 import scw.orm.sql.annotation.Column;
 import scw.orm.sql.annotation.Index;
@@ -22,16 +21,17 @@ import scw.orm.sql.dialect.SqlType;
 import scw.orm.sql.dialect.SqlTypeFactory;
 import scw.orm.sql.enums.IndexMethod;
 import scw.orm.sql.enums.IndexOrder;
+import scw.orm.sql.support.SqlORMUtils;
 
 public class CreateTableSql extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 
-	public CreateTableSql(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName) {
+	public CreateTableSql(SqlMapper mappingOperations, Class<?> clazz, String tableName) {
 		this(mappingOperations, clazz, tableName, new DefaultSqlTypeFactory());
 	}
 
-	public CreateTableSql(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName,
+	public CreateTableSql(SqlMapper mappingOperations, Class<?> clazz, String tableName,
 			final SqlTypeFactory sqlTypeFactory) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("CREATE TABLE IF NOT EXISTS `").append(tableName).append("`");
@@ -51,11 +51,11 @@ public class CreateTableSql extends MysqlDialectSql {
 			}
 			sb.append(" ");
 
-			if (!StringUtils.isEmpty(SqlORMUtils.getCharsetName(fieldDefinition))) {
-				sb.append("character set ").append(SqlORMUtils.getCharsetName(fieldDefinition)).append(" ");
+			if (!StringUtils.isEmpty(mappingOperations.getCharsetName(context))) {
+				sb.append("character set ").append(mappingOperations.getCharsetName(context)).append(" ");
 			}
 
-			if (!SqlORMUtils.isNullAble(fieldDefinition)) {
+			if (!mappingOperations.isNullAble(context)) {
 				sb.append("not null ");
 			}
 
@@ -64,7 +64,7 @@ public class CreateTableSql extends MysqlDialectSql {
 				sb.append(" comment \'").append(column.comment()).append("\'");
 			}
 
-			if (SqlORMUtils.isAutoIncrement(fieldDefinition)) {
+			if (mappingOperations.isAutoIncrement(context)) {
 				sb.append(" AUTO_INCREMENT");
 			}
 
@@ -76,7 +76,7 @@ public class CreateTableSql extends MysqlDialectSql {
 		iterator = tableFieldContext.iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			if (!SqlORMUtils.isUnique(context.getFieldDefinition())) {
+			if (!mappingOperations.isUnique(context)) {
 				continue;
 			}
 

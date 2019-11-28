@@ -2,7 +2,7 @@ package scw.db.database;
 
 import scw.core.exception.NotFoundException;
 import scw.core.utils.StringUtils;
-import scw.orm.sql.dialect.mysql.MySqlSqlDialect;
+import scw.orm.sql.support.MySqlSqlDialect;
 
 public class MysqlDataBase extends AbstractDataBase {
 	private String database;

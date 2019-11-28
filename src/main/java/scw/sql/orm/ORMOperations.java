@@ -6,14 +6,14 @@ import java.util.Map;
 
 import scw.core.Pagination;
 import scw.core.utils.IteratorCallback;
-import scw.orm.sql.Result;
+import scw.orm.sql.ResultMapping;
 import scw.orm.sql.ResultSet;
-import scw.orm.sql.SqlMappingOperations;
+import scw.orm.sql.dialect.SqlDialect;
 import scw.sql.Sql;
 
 public interface ORMOperations {
-	SqlMappingOperations getSqlMappingOperations();
-
+	SqlDialect getSqlDialect();
+	
 	<T> T getById(Class<T> type, Object... params);
 
 	<T> T getById(String tableName, Class<T> type, Object... params);
@@ -87,7 +87,7 @@ public interface ORMOperations {
 
 	<T> void iterator(final Class<T> tableClass, final IteratorCallback<T> iterator);
 
-	void iterator(Sql sql, final IteratorCallback<Result> iterator);
+	void iterator(Sql sql, final IteratorCallback<ResultMapping> iterator);
 
 	<T> void iterator(Sql sql, Class<T> type, IteratorCallback<T> iterator);
 }

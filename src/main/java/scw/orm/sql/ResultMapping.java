@@ -3,14 +3,14 @@ package scw.orm.sql;
 import java.io.Serializable;
 import java.util.Map;
 
-public interface Result extends Serializable {
+public interface ResultMapping extends Serializable {
 	public static final EmptyResult EMPTY_RESULT = new EmptyResult();
 
-	<T> T get(SqlMappingOperations mappingOperations, Class<T> clazz, TableNameMapping tableNameMapping);
+	<T> T get(Class<T> clazz, TableNameMapping tableNameMapping);
 
-	<T> T get(SqlMappingOperations mappingOperations, Class<T> clazz, String tableName);
+	<T> T get(Class<T> clazz, String tableName);
 
-	<T> T get(SqlMappingOperations mappingOperations, Class<T> clazz);
+	<T> T get(Class<T> clazz);
 
 	Map<String, Object> getTableValueMap(String tableName);
 

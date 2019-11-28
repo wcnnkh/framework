@@ -14,6 +14,7 @@ import scw.db.cache.CacheManager;
 import scw.db.cache.DefaultCacheManager;
 import scw.mq.queue.MemoryQueue;
 import scw.mq.queue.Queue;
+import scw.orm.sql.support.SqlORMUtils;
 
 public final class HikariCPDBConfig extends AbstractHikariCPDBConfig {
 	private CacheManager cacheManager;
@@ -21,13 +22,13 @@ public final class HikariCPDBConfig extends AbstractHikariCPDBConfig {
 
 	public HikariCPDBConfig(@ResourceParameter @DefaultValue(DEFAULT_CONFIG) String properties) {
 		super(ResourceUtils.getProperties(properties));
-		this.cacheManager = new DefaultCacheManager(getSqlMappingOperations());
+		this.cacheManager = new DefaultCacheManager();
 		this.asyncQueue = new MemoryQueue<AsyncExecute>();
 	}
 
 	public HikariCPDBConfig(@ResourceParameter @DefaultValue(DEFAULT_CONFIG) String properties, Cache cache) {
 		super(ResourceUtils.getProperties(properties));
-		this.cacheManager = new DefaultCacheManager(getSqlMappingOperations(), cache, true, null);
+		this.cacheManager = new DefaultCacheManager(cache, true, null);
 		this.asyncQueue = new MemoryQueue<AsyncExecute>();
 	}
 
@@ -42,14 +43,14 @@ public final class HikariCPDBConfig extends AbstractHikariCPDBConfig {
 	@SuppressWarnings("rawtypes")
 	public HikariCPDBConfig(Map properties, Memcached memcached) {
 		super(properties);
-		this.cacheManager = createCacheManager(properties, memcached, getSqlMappingOperations());
+		this.cacheManager = createCacheManager(properties, memcached, SqlORMUtils.getSqlMapper());
 		this.asyncQueue = createAsyncQueue(properties, memcached);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public HikariCPDBConfig(Map properties, Redis redis) {
 		super(properties);
-		this.cacheManager = createCacheManager(properties, redis, getSqlMappingOperations());
+		this.cacheManager = createCacheManager(properties, redis, SqlORMUtils.getSqlMapper());
 		this.asyncQueue = createAsyncQueue(properties, redis);
 	}
 

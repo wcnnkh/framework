@@ -13,8 +13,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;
 import scw.orm.SimpleGetter;
-import scw.orm.sql.SqlMappingOperations;
-import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.SqlMapper;
 import scw.orm.sql.TableMappingContext;
 import scw.orm.sql.annotation.Counter;
 import scw.orm.sql.enums.CasType;
@@ -25,7 +24,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanListen(SqlMappingOperations mappingOperations, Class<?> clazz,
+	public UpdateSQLByBeanListen(SqlMapper mappingOperations, Class<?> clazz,
 			FieldSetterListen beanFieldListen, String tableName) throws Exception {
 		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
@@ -48,7 +47,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 		Iterator<MappingContext> iterator = tableFieldContext.getNotPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			if (SqlORMUtils.getCasType(context.getFieldDefinition()) != CasType.AUTO_INCREMENT) {
+			if (mappingOperations.getCasType(context) != CasType.AUTO_INCREMENT) {
 				continue;
 			}
 
@@ -68,7 +67,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 
 		for (Entry<String, Object> entry : changeMap.entrySet()) {
 			MappingContext context = tableFieldContext.getMappingContext(entry.getKey());
-			if (SqlORMUtils.isPrimaryKey(context.getFieldDefinition())) {
+			if (mappingOperations.isPrimaryKey(context)) {
 				continue;
 			}
 
@@ -144,7 +143,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 		iterator = tableFieldContext.getNotPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			if (SqlORMUtils.getCasType(context.getFieldDefinition()) == CasType.NOTHING) {
+			if (mappingOperations.getCasType(context) == CasType.NOTHING) {
 				continue;
 			}
 
@@ -177,10 +176,6 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 
 	public Object[] getParams() {
 		return params;
-	}
-
-	public boolean isStoredProcedure() {
-		return false;
 	}
 
 	public static double getNumberValue(Object value) {

@@ -7,7 +7,7 @@ import java.util.List;
 public final class EmptyResultSet implements ResultSet {
 	private static final long serialVersionUID = 1L;
 
-	public Iterator<Result> iterator() {
+	public Iterator<ResultMapping> iterator() {
 		return Collections.emptyIterator();
 	}
 
@@ -16,18 +16,15 @@ public final class EmptyResultSet implements ResultSet {
 		return Collections.EMPTY_LIST;
 	}
 
-	public <T> List<T> getList(SqlMappingOperations mappingOperations,
-			Class<T> clazz, TableNameMapping tableNameMapping) {
+	public <T> List<T> getList(Class<T> clazz, TableNameMapping tableNameMapping) {
 		return null;
 	}
 
-	public <T> List<T> getList(SqlMappingOperations mappingOperations,
-			Class<T> clazz, String tableName) {
+	public <T> List<T> getList(Class<T> clazz, String tableName) {
 		return null;
 	}
 
-	public <T> List<T> getList(SqlMappingOperations mappingOperations,
-			Class<T> clazz) {
+	public <T> List<T> getList(Class<T> clazz) {
 		return null;
 	}
 
@@ -35,16 +32,29 @@ public final class EmptyResultSet implements ResultSet {
 		return 0;
 	}
 
-	public Result getFirst() {
+	public ResultMapping getFirst() {
 		return null;
 	}
 
-	public Result getLast() {
+	public ResultMapping getLast() {
 		return null;
 	}
 
 	public boolean isEmpty() {
 		return true;
+	}
+
+	public <T> List<T> getList(SqlMapper sqlMapper, Class<T> clazz,
+			TableNameMapping tableNameMapping) {
+		return null;
+	}
+
+	public <T> List<T> getList(SqlMapper sqlMapper, Class<T> clazz, String tableName) {
+		return null;
+	}
+
+	public <T> List<T> getList(SqlMapper sqlMapper, Class<T> clazz) {
+		return null;
 	}
 
 }

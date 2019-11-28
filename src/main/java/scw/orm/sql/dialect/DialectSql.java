@@ -14,7 +14,7 @@ public abstract class DialectSql implements Sql {
 	protected static final String AND = " and ";
 	protected static final String OR = " or ";
 
-	public boolean isStoredProcedure() {
+	public final boolean isStoredProcedure() {
 		return false;
 	}
 

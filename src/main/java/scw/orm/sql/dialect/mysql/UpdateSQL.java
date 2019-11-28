@@ -5,8 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import scw.orm.MappingContext;
-import scw.orm.sql.SqlMappingOperations;
-import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.SqlMapper;
 import scw.orm.sql.TableMappingContext;
 import scw.orm.sql.enums.CasType;
 
@@ -15,7 +14,7 @@ public class UpdateSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQL(SqlMappingOperations mappingOperations, Class<?> clazz, Object obj, String tableName)
+	public UpdateSQL(SqlMapper mappingOperations, Class<?> clazz, Object obj, String tableName)
 			throws Exception {
 		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
@@ -31,7 +30,7 @@ public class UpdateSQL extends MysqlDialectSql {
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			keywordProcessing(sb, context.getFieldDefinition().getName());
-			if (SqlORMUtils.getCasType(context.getFieldDefinition()) == CasType.AUTO_INCREMENT) {
+			if (mappingOperations.getCasType(context) == CasType.AUTO_INCREMENT) {
 				sb.append("=");
 				keywordProcessing(sb, context.getFieldDefinition().getName());
 				sb.append("+1");
@@ -60,7 +59,7 @@ public class UpdateSQL extends MysqlDialectSql {
 		iterator = tableFieldContext.getNotPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			if (SqlORMUtils.getCasType(context.getFieldDefinition()) == CasType.NOTHING) {
+			if (mappingOperations.getCasType(context) == CasType.NOTHING) {
 				continue;
 			}
 

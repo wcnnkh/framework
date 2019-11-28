@@ -6,41 +6,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.instance.CannotInstantiateException;
-import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.IteratorCallback;
 
-public class DefaultMappingOperations implements MappingOperations {
-	private final FieldDefinitionFactory fieldDefinitionFactory;
-	private final Collection<? extends SetterFilter> setterFilters;
-	private final Collection<? extends GetterFilter> getterFilters;
-	private final NoArgsInstanceFactory instanceFactory;
+public abstract class AbstractMappingOperations implements Mapper {
 
-	public DefaultMappingOperations(FieldDefinitionFactory fieldDefinitionFactory,
-			Collection<? extends SetterFilter> setterFilters, Collection<? extends GetterFilter> getterFilters,
-			NoArgsInstanceFactory instanceFactory) {
-		this.fieldDefinitionFactory = fieldDefinitionFactory;
-		this.setterFilters = setterFilters;
-		this.getterFilters = getterFilters;
-		this.instanceFactory = instanceFactory;
-	}
+	public abstract Collection<? extends SetterFilter> getSetterFilters();
 
-	public final FieldDefinitionFactory getFieldDefinitionFactory() {
-		return fieldDefinitionFactory;
-	}
+	public abstract Collection<? extends GetterFilter> getGetterFilters();
 
 	public void setter(MappingContext context, Object bean, Object value) throws Exception {
 		setter(context, new FieldSetter(bean), value);
 	}
 
 	public void setter(MappingContext context, Setter setter, Object value) throws Exception {
-		SetterFilterChain filterChain = new DefaultSetterFilterChain(setterFilters, null);
+		SetterFilterChain filterChain = new DefaultSetterFilterChain(getSetterFilters(), null);
 		filterChain.setter(context, setter, value);
 	}
 
 	public Object getter(MappingContext context, Getter getter) throws Exception {
-		GetterFilterChain filterChain = new DefaultGetterFilterChain(getterFilters, null);
+		GetterFilterChain filterChain = new DefaultGetterFilterChain(getGetterFilters(), null);
 		return filterChain.getter(context, getter);
 	}
 
@@ -48,9 +33,10 @@ public class DefaultMappingOperations implements MappingOperations {
 		return getter(context, new FieldGetter(bean));
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected <T> void create(Class<T> declaringClass, MappingContext superContext, Class<?> clazz, T bean,
 			SetterMapping setterMapping) throws Exception {
-		Map<String, FieldDefinition> map = fieldDefinitionFactory.getFieldDefinitionMap(clazz);
+		Map<String, FieldDefinition> map = getFieldDefinitionFactory().getFieldDefinitionMap(clazz);
 		for (Entry<String, FieldDefinition> entry : map.entrySet()) {
 			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
 			setterMapping.setter(context, bean, this);
@@ -62,27 +48,22 @@ public class DefaultMappingOperations implements MappingOperations {
 		}
 	}
 
-	public <T> T create(MappingContext superContext, Class<T> clazz, SetterMapping setterMapping) throws Exception {
+	public <T> T create(MappingContext superContext, Class<T> clazz,
+			SetterMapping<? extends Mapper> setterMapping) throws Exception {
 		T bean = newInstance(clazz);
 		create(clazz, superContext, clazz, bean, setterMapping);
 		return bean;
 	}
 
-	public void iterator(MappingContext superContext, Class<?> clazz, IteratorMapping iterator) throws Exception {
+	public void iterator(MappingContext superContext, Class<?> clazz,
+			IteratorMapping<? extends Mapper> iterator) throws Exception {
 		iterator(clazz, superContext, clazz, iterator);
 	}
 
-	public <T> T newInstance(Class<T> clazz) {
-		if (!instanceFactory.isInstance(clazz)) {
-			throw new CannotInstantiateException("无法实例化：" + clazz);
-		}
-
-		return instanceFactory.getInstance(clazz);
-	}
-
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void iterator(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
 			IteratorMapping iterator) throws Exception {
-		Map<String, FieldDefinition> map = fieldDefinitionFactory.getFieldDefinitionMap(clazz);
+		Map<String, FieldDefinition> map = getFieldDefinitionFactory().getFieldDefinitionMap(clazz);
 		for (Entry<String, FieldDefinition> entry : map.entrySet()) {
 			iterator.iterator(new MappingContext(superContext, entry.getValue(), declaringClass), this);
 		}
@@ -95,7 +76,7 @@ public class DefaultMappingOperations implements MappingOperations {
 
 	protected void appendMappingContexts(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
 			List<MappingContext> list, IteratorCallback<MappingContext> filter) {
-		Map<String, FieldDefinition> map = fieldDefinitionFactory.getFieldDefinitionMap(clazz);
+		Map<String, FieldDefinition> map = getFieldDefinitionFactory().getFieldDefinitionMap(clazz);
 		for (Entry<String, FieldDefinition> entry : map.entrySet()) {
 			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
 			if (filter == null || filter.iteratorCallback(context)) {

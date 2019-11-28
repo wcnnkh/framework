@@ -10,6 +10,7 @@ import scw.core.utils.CollectionUtils;
 import scw.orm.MappingContext;
 import scw.orm.sql.ResultSet;
 import scw.orm.sql.TableMappingContext;
+import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.dialect.mysql.UpdateSQL;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
@@ -24,8 +25,8 @@ public final class MysqlSelect extends Select {
 	private List<Object> paramList;
 	private StringBuilder orderBySql;
 
-	public MysqlSelect(ORMOperations db) {
-		super(db);
+	public MysqlSelect(ORMOperations db, SqlDialect sqlDialect) {
+		super(db, sqlDialect);
 	}
 
 	private void checkWhereInit() {
@@ -46,11 +47,12 @@ public final class MysqlSelect extends Select {
 
 	@Override
 	public Select whereAndValue(Class<?> tableClass, String name, Object value) {
-		if (!orm.getSqlMappingOperations().isTable(tableClass)) {
+		if (!sqlDialect.getSqlMapper().isTable(tableClass)) {
 			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
-		TableMappingContext tableMappingContext = orm.getSqlMappingOperations().getTableMappingContext(tableClass);
+		TableMappingContext tableMappingContext = sqlDialect.getSqlMapper()
+				.getTableMappingContext(tableClass);
 		String tableName = getTableName(tableClass);
 		checkWhereInit();
 		if (whereSql.length() != 0) {
@@ -68,7 +70,7 @@ public final class MysqlSelect extends Select {
 
 	@Override
 	public Select whereOrValue(Class<?> tableClass, String name, Object value) {
-		if (!orm.getSqlMappingOperations().isTable(tableClass)) {
+		if (!sqlDialect.getSqlMapper().isTable(tableClass)) {
 			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
@@ -78,7 +80,7 @@ public final class MysqlSelect extends Select {
 			whereSql.append(UpdateSQL.OR);
 		}
 
-		keywordProcessing(whereSql, tableName, orm.getSqlMappingOperations().getTableMappingContext(tableClass)
+		keywordProcessing(whereSql, tableName, sqlDialect.getSqlMapper().getTableMappingContext(tableClass)
 				.getMappingContext(name).getFieldDefinition().getName());
 		whereSql.append("=?");
 		paramList.add(value);
@@ -92,7 +94,7 @@ public final class MysqlSelect extends Select {
 			throw new NullPointerException();
 		}
 
-		if (!orm.getSqlMappingOperations().isTable(tableClass)) {
+		if (!sqlDialect.getSqlMapper().isTable(tableClass)) {
 			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
@@ -102,7 +104,7 @@ public final class MysqlSelect extends Select {
 			whereSql.append(" and ");
 		}
 
-		keywordProcessing(whereSql, tableName, orm.getSqlMappingOperations().getTableMappingContext(tableClass)
+		keywordProcessing(whereSql, tableName, sqlDialect.getSqlMapper().getTableMappingContext(tableClass)
 				.getMappingContext(name).getFieldDefinition().getName());
 		whereSql.append(" in(");
 		Iterator<?> iterator = values.iterator();
@@ -119,7 +121,7 @@ public final class MysqlSelect extends Select {
 	}
 
 	public MappingContext getMappingContext(Class<?> tableClass, String name) {
-		return orm.getSqlMappingOperations().getTableMappingContext(tableClass).getMappingContext(name);
+		return sqlDialect.getSqlMapper().getTableMappingContext(tableClass).getMappingContext(name);
 	}
 
 	@Override
@@ -128,7 +130,7 @@ public final class MysqlSelect extends Select {
 			throw new NullPointerException();
 		}
 
-		if (!orm.getSqlMappingOperations().isTable(tableClass)) {
+		if (!sqlDialect.getSqlMapper().isTable(tableClass)) {
 			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
@@ -159,7 +161,7 @@ public final class MysqlSelect extends Select {
 			throw new NullPointerException();
 		}
 
-		if (!orm.getSqlMappingOperations().isTable(tableClass)) {
+		if (!sqlDialect.getSqlMapper().isTable(tableClass)) {
 			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
@@ -186,7 +188,7 @@ public final class MysqlSelect extends Select {
 			throw new NullPointerException();
 		}
 
-		if (!orm.getSqlMappingOperations().isTable(tableClass)) {
+		if (!sqlDialect.getSqlMapper().isTable(tableClass)) {
 			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 

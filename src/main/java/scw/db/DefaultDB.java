@@ -7,7 +7,6 @@ import scw.beans.annotation.Bean;
 import scw.db.cache.CacheManager;
 import scw.db.database.DataBase;
 import scw.mq.queue.Queue;
-import scw.orm.sql.SqlMappingOperations;
 
 @Bean(proxy = false)
 public class DefaultDB extends AbstractDB {
@@ -39,9 +38,5 @@ public class DefaultDB extends AbstractDB {
 
 	public final CacheManager getCacheManager() {
 		return dbConfig.getCacheManager();
-	}
-
-	public SqlMappingOperations getSqlMappingOperations() {
-		return dbConfig.getSqlMappingOperations();
 	}
 }

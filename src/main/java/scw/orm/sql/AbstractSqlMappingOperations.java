@@ -1,64 +1,47 @@
 package scw.orm.sql;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.instance.NoArgsInstanceFactory;
+import scw.core.reflect.AnnotationUtils;
 import scw.core.reflect.FieldDefinition;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.IteratorCallback;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.orm.DefaultMappingOperations;
-import scw.orm.FieldDefinitionFactory;
-import scw.orm.GetterFilter;
+import scw.orm.AbstractMappingOperations;
 import scw.orm.IteratorMapping;
 import scw.orm.MappingContext;
-import scw.orm.MappingOperations;
-import scw.orm.SetterFilter;
 import scw.orm.SimpleGetter;
+import scw.orm.sql.annotation.AutoIncrement;
 import scw.orm.sql.annotation.Column;
 import scw.orm.sql.annotation.Index;
+import scw.orm.sql.annotation.NotColumn;
+import scw.orm.sql.annotation.PrimaryKey;
 import scw.orm.sql.annotation.Table;
+import scw.orm.sql.annotation.Transient;
+import scw.orm.sql.enums.CasType;
+import scw.orm.sql.support.SqlORMUtils;
 
-public class DefaultSqlMappingOperations extends DefaultMappingOperations implements SqlMappingOperations {
-	private static final char DEFAULT_CONNECTOR_CHARACTER = StringUtils
+public abstract class AbstractSqlMappingOperations extends AbstractMappingOperations implements SqlMapper {
+	static final char DEFAULT_CONNECTOR_CHARACTER = StringUtils
 			.parseChar(SystemPropertyUtils.getProperty("orm.object.id.connector.character"), ':');
-
-	public DefaultSqlMappingOperations(Collection<? extends SetterFilter> setterFilters,
-			Collection<? extends GetterFilter> getterFilters) {
-		this(new TableFieldDefinitionFactory(), setterFilters, getterFilters, new TableInstanceFactory());
-	}
-
-	public DefaultSqlMappingOperations(FieldDefinitionFactory fieldDefinitionFactory,
-			Collection<? extends SetterFilter> setterFilters, Collection<? extends GetterFilter> getterFilters,
-			NoArgsInstanceFactory instanceFactory) {
-		super(fieldDefinitionFactory, setterFilters, getterFilters, instanceFactory);
-	}
-
-	public String getTableName(Class<?> clazz) {
-		Table table = clazz.getAnnotation(Table.class);
-		if (table == null) {
-			return StringUtils.humpNamingReplacement(clazz.getSimpleName(), "_");
-		}
-
-		if (StringUtils.isEmpty(table.name())) {
-			return StringUtils.humpNamingReplacement(clazz.getSimpleName(), "_");
-		}
-
-		return table.name();
-	}
 
 	public Collection<MappingContext> getPrimaryKeys(MappingContext supperContext, Class<?> clazz) {
 		return getMappingContexts(supperContext, clazz, new IteratorCallback<MappingContext>() {
 
 			public boolean iteratorCallback(MappingContext data) {
-				return SqlORMUtils.isPrimaryKey(data.getFieldDefinition());
+				return isPrimaryKey(data);
 			}
 		});
 	}
@@ -67,8 +50,7 @@ public class DefaultSqlMappingOperations extends DefaultMappingOperations implem
 		return getMappingContexts(supperContext, clazz, new IteratorCallback<MappingContext>() {
 
 			public boolean iteratorCallback(MappingContext data) {
-				return !SqlORMUtils.isPrimaryKey(data.getFieldDefinition())
-						&& SqlORMUtils.isDataBaseField(data.getFieldDefinition());
+				return !isPrimaryKey(data) && isDataBaseMappingContext(data);
 			}
 		});
 	}
@@ -77,7 +59,7 @@ public class DefaultSqlMappingOperations extends DefaultMappingOperations implem
 		return getMappingContexts(supperContext, clazz, new IteratorCallback<MappingContext>() {
 
 			public boolean iteratorCallback(MappingContext data) {
-				return SqlORMUtils.isDataBaseField(data.getFieldDefinition());
+				return isDataBaseMappingContext(data);
 			}
 		});
 	}
@@ -92,7 +74,7 @@ public class DefaultSqlMappingOperations extends DefaultMappingOperations implem
 				continue;
 			}
 
-			if (isPrmaryKey(context)) {
+			if (isPrimaryKey(context)) {
 				primaryKeys.add(context);
 			} else {
 				notPrimaryKeys.add(context);
@@ -119,11 +101,22 @@ public class DefaultSqlMappingOperations extends DefaultMappingOperations implem
 	}
 
 	public boolean isDataBaseMappingContext(MappingContext mappingContext) {
-		return SqlORMUtils.isDataBaseField(mappingContext.getFieldDefinition());
+		Column column = mappingContext.getFieldDefinition().getAnnotation(Column.class);
+		if (column != null) {
+			return true;
+		}
+
+		Class<?> type = mappingContext.getFieldDefinition().getField().getType();
+		if (Class.class.isAssignableFrom(type) || type.isEnum() || type.isArray() || Map.class.isAssignableFrom(type)
+				|| Collection.class.isAssignableFrom(type)) {
+			return true;
+		}
+
+		return SqlORMUtils.isDataBaseType(type);
 	}
 
-	public boolean isPrmaryKey(MappingContext mappingContext) {
-		return SqlORMUtils.isPrimaryKey(mappingContext.getFieldDefinition());
+	public boolean isPrimaryKey(MappingContext mappingContext) {
+		return mappingContext.getFieldDefinition().getAnnotation(PrimaryKey.class) != null;
 	}
 
 	public Collection<MappingContext> getPrimaryKeys(Class<?> clazz) {
@@ -152,10 +145,10 @@ public class DefaultSqlMappingOperations extends DefaultMappingOperations implem
 		final StringBuilder sb = new StringBuilder(128);
 		sb.append(clazz.getName());
 		try {
-			iterator(null, clazz, new IteratorMapping() {
+			iterator(null, clazz, new IteratorMapping<SqlMapper>() {
 
-				public void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception {
-					if (isPrmaryKey(context)) {
+				public void iterator(MappingContext context, SqlMapper mappingOperations) throws Exception {
+					if (isPrimaryKey(context)) {
 						appendObjectKeyByValue(sb, getter(context, bean));
 					}
 				}
@@ -181,6 +174,30 @@ public class DefaultSqlMappingOperations extends DefaultMappingOperations implem
 		return sb.toString();
 	}
 
+	@SuppressWarnings("unchecked")
+	public <K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<K> inIds, Object[] params) {
+		if (CollectionUtils.isEmpty(inIds)) {
+			return Collections.EMPTY_MAP;
+		}
+
+		Map<String, K> keyMap = new HashMap<String, K>();
+		Iterator<K> valueIterator = inIds.iterator();
+
+		while (valueIterator.hasNext()) {
+			K k = valueIterator.next();
+			Object[] ids;
+			if (params == null || params.length == 0) {
+				ids = new Object[] { k };
+			} else {
+				ids = new Object[params.length];
+				System.arraycopy(params, 0, ids, 0, params.length);
+				ids[ids.length - 1] = valueIterator.next();
+			}
+			keyMap.put(getObjectKeyById(clazz, Arrays.asList(ids)), k);
+		}
+		return keyMap;
+	}
+
 	public boolean isTable(Class<?> clazz) {
 		return clazz.getAnnotation(Table.class) != null;
 	}
@@ -190,12 +207,60 @@ public class DefaultSqlMappingOperations extends DefaultMappingOperations implem
 	}
 
 	public boolean isNullAble(MappingContext context) {
-		if (context.getFieldDefinition().getField().getType().isPrimitive() || isPrmaryKey(context)
+		if (context.getFieldDefinition().getField().getType().isPrimitive() || isPrimaryKey(context)
 				|| isIndexColumn(context.getFieldDefinition())) {
 			return false;
 		}
 
 		Column column = context.getFieldDefinition().getAnnotation(Column.class);
 		return column == null ? true : column.nullAble();
+	}
+
+	public boolean isIgnore(MappingContext context) {
+		if (AnnotationUtils.isDeprecated(context.getFieldDefinition())) {
+			return true;
+		}
+
+		NotColumn exclude = context.getFieldDefinition().getAnnotation(NotColumn.class);
+		if (exclude != null) {
+			return true;
+		}
+
+		Transient tr = context.getFieldDefinition().getAnnotation(Transient.class);
+		if (tr != null) {
+			return true;
+		}
+
+		if (Modifier.isStatic(context.getFieldDefinition().getField().getModifiers())
+				|| Modifier.isTransient(context.getFieldDefinition().getField().getModifiers())) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isAutoIncrement(MappingContext context) {
+		return context.getFieldDefinition().getAnnotation(AutoIncrement.class) != null;
+	}
+
+	public String getCharsetName(MappingContext context) {
+		Column column = context.getFieldDefinition().getAnnotation(Column.class);
+		return column == null ? null : column.charsetName().trim();
+	}
+
+	public boolean isUnique(MappingContext context) {
+		Column column = context.getFieldDefinition().getAnnotation(Column.class);
+		return column == null ? false : column.unique();
+	}
+
+	public CasType getCasType(MappingContext context) {
+		if (isPrimaryKey(context)) {
+			return CasType.NOTHING;
+		}
+
+		Column column = context.getFieldDefinition().getAnnotation(Column.class);
+		if (column == null) {
+			return CasType.NOTHING;
+		}
+		return column.casType();
 	}
 }

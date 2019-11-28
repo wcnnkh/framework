@@ -1,21 +1,21 @@
 package scw.orm.sql;
 
 import scw.orm.MappingContext;
-import scw.orm.MappingOperations;
 import scw.orm.SetterMapping;
 
-public abstract class AbstractSetterMapping implements SetterMapping {
-	public void setter(MappingContext context, Object bean, MappingOperations ormOperations) throws Exception {
-		if (SqlORMUtils.ignoreField(context.getFieldDefinition())) {
+public abstract class AbstractSetterMapping implements SetterMapping<SqlMapper> {
+
+	public void setter(MappingContext context, Object bean, SqlMapper mappingOperations) throws Exception {
+		if (mappingOperations.isIgnore(context)) {
 			return;
 		}
 
-		if (SqlORMUtils.isDataBaseField(context.getFieldDefinition())) {
-			ormOperations.setter(context, bean, getValue(context));
+		if (mappingOperations.isDataBaseMappingContext(context)) {
+			mappingOperations.setter(context, bean, getValue(context, mappingOperations));
 		} else {
-			ormOperations.create(context, context.getFieldDefinition().getField().getType(), this);
+			mappingOperations.create(context, context.getFieldDefinition().getField().getType(), this);
 		}
 	}
 
-	protected abstract Object getValue(MappingContext context);
+	protected abstract Object getValue(MappingContext context, SqlMapper mappingOperations);
 }

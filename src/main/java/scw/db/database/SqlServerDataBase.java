@@ -3,7 +3,7 @@ package scw.db.database;
 import scw.core.QueryString;
 import scw.core.exception.NotFoundException;
 import scw.core.utils.StringUtils;
-import scw.orm.sql.dialect.mysql.MySqlSqlDialect;
+import scw.orm.sql.support.MySqlSqlDialect;
 
 /**
  * Sql Server7.0/2000数据库

@@ -12,7 +12,6 @@ import scw.orm.GetterFilterChain;
 import scw.orm.MappingContext;
 import scw.orm.Setter;
 import scw.orm.SetterFilterChain;
-import scw.orm.sql.SqlORMUtils;
 
 public class DefaultSqlFilter implements Filter {
 	public Object toSqlField(Field field, Object value) throws Exception {

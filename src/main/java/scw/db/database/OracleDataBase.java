@@ -1,7 +1,7 @@
 package scw.db.database;
 
 import scw.core.exception.NotFoundException;
-import scw.orm.sql.dialect.mysql.MySqlSqlDialect;
+import scw.orm.sql.support.MySqlSqlDialect;
 
 /**
  * Oracle8/8i/9i数据库（thin模式）

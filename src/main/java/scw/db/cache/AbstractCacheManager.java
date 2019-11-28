@@ -6,28 +6,25 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.data.Cache;
-import scw.orm.sql.SqlMappingOperations;
-import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.SqlMapper;
 import scw.orm.sql.TableMappingContext;
+import scw.orm.sql.support.SqlORMUtils;
 
 public abstract class AbstractCacheManager<C extends Cache> implements CacheManager {
 	public abstract C getCache();
 
-	public abstract SqlMappingOperations getSqlMappingOperations();
+	public SqlMapper getSqlMapper() {
+		return SqlORMUtils.getSqlMapper();
+	}
 
 	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {
-		TableMappingContext tableFieldContext;
-		try {
-			tableFieldContext = getSqlMappingOperations().getTableMappingContext(type);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		TableMappingContext tableFieldContext = getSqlMapper().getTableMappingContext(type);
 
 		if (params.length != tableFieldContext.getPrimaryKeys().size() - 1) {
 			return null;
 		}
 
-		Map<String, K> keyMap = SqlORMUtils.getInIdKeyMap(getSqlMappingOperations(), type, inIds, params);
+		Map<String, K> keyMap = getSqlMapper().getInIdKeyMap(type, inIds, params);
 		Map<String, V> map = getCache().get(keyMap.keySet());
 		if (map == null || map.isEmpty()) {
 			return null;

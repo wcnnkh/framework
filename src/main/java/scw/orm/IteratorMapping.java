@@ -1,5 +1,5 @@
 package scw.orm;
 
-public interface IteratorMapping {
-	void iterator(MappingContext context, MappingOperations mappingOperations) throws Exception;
+public interface IteratorMapping<M extends Mapper> {
+	void iterator(MappingContext context, M mappingOperations) throws Exception;
 }

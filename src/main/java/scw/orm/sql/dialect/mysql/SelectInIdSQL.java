@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import scw.orm.MappingContext;
-import scw.orm.sql.SqlMappingOperations;
+import scw.orm.sql.SqlMapper;
 import scw.orm.sql.TableMappingContext;
 
 public final class SelectInIdSQL extends MysqlDialectSql {
@@ -16,7 +16,7 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public SelectInIdSQL(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] ids,
+	public SelectInIdSQL(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object[] ids,
 			Collection<?> inIds) throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append(clazz.getName());
@@ -55,8 +55,8 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 		return params;
 	}
 
-	private String getSql(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] ids,
-			Collection<?> inIdList) throws Exception {
+	private String getSql(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object[] ids, Collection<?> inIdList)
+			throws Exception {
 		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		StringBuilder sb = new StringBuilder();
 		if (ids.length > 0) {
@@ -94,9 +94,5 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 		keywordProcessing(sb, tableName);
 		sb.append(WHERE).append(where);
 		return sb.toString();
-	}
-
-	public boolean isStoredProcedure() {
-		return false;
 	}
 }

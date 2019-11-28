@@ -5,8 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import scw.orm.MappingContext;
-import scw.orm.sql.SqlMappingOperations;
-import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.SqlMapper;
 import scw.orm.sql.TableMappingContext;
 
 public final class InsertSQL extends MysqlDialectSql {
@@ -15,7 +14,7 @@ public final class InsertSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public InsertSQL(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName, Object obj)
+	public InsertSQL(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object obj)
 			throws Exception {
 		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		StringBuilder cols = new StringBuilder();
@@ -25,7 +24,7 @@ public final class InsertSQL extends MysqlDialectSql {
 		Iterator<MappingContext> iterator = tableFieldContext.iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			if (SqlORMUtils.isAutoIncrement(context.getFieldDefinition())) {
+			if (mappingOperations.isAutoIncrement(context)) {
 				continue;
 			}
 

@@ -24,7 +24,6 @@ import scw.transaction.sql.SqlTransactionUtils;
 
 public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<AsyncExecute>, DBConfig, Init {
 
-	@Override
 	public SqlDialect getSqlDialect() {
 		return getDataBase().getSqlDialect();
 	}

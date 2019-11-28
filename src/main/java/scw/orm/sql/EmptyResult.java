@@ -3,7 +3,7 @@ package scw.orm.sql;
 import java.util.Collections;
 import java.util.Map;
 
-public final class EmptyResult implements Result {
+public final class EmptyResult implements ResultMapping {
 	private static final long serialVersionUID = 1L;
 
 	public Object[] getValues() {
@@ -32,11 +32,11 @@ public final class EmptyResult implements Result {
 		return this;
 	}
 
-	public <T> T get(SqlMappingOperations mappingOperations, Class<T> clazz, String tableName) {
+	public <T> T get(Class<T> clazz, String tableName) {
 		return null;
 	}
 
-	public <T> T get(SqlMappingOperations mappingOperations, Class<T> clazz) {
+	public <T> T get(Class<T> clazz) {
 		return null;
 	}
 
@@ -44,11 +44,23 @@ public final class EmptyResult implements Result {
 		return null;
 	}
 
-	public <T> T get(SqlMappingOperations mappingOperations, Class<T> clazz, TableNameMapping tableNameMapping) {
+	public <T> T get(Class<T> clazz, TableNameMapping tableNameMapping) {
 		return null;
 	}
 
 	public <T> T get(Class<T> type, int index) {
+		return null;
+	}
+
+	public <T> T get(SqlMapper sqlMapper, Class<T> clazz, TableNameMapping tableNameMapping) {
+		return null;
+	}
+
+	public <T> T get(SqlMapper sqlMapper, Class<T> clazz, String tableName) {
+		return null;
+	}
+
+	public <T> T get(SqlMapper sqlMapper, Class<T> clazz) {
 		return null;
 	}
 }

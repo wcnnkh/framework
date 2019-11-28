@@ -1,11 +1,13 @@
 package scw.orm.sql;
 
 import java.util.Collection;
+import java.util.Map;
 
 import scw.orm.MappingContext;
-import scw.orm.MappingOperations;
+import scw.orm.Mapper;
+import scw.orm.sql.enums.CasType;
 
-public interface SqlMappingOperations extends MappingOperations, TableNameMapping {
+public interface SqlMapper extends Mapper, TableNameMapping {
 	Collection<MappingContext> getPrimaryKeys(MappingContext supperContext, Class<?> clazz);
 
 	Collection<MappingContext> getPrimaryKeys(Class<?> clazz);
@@ -24,13 +26,25 @@ public interface SqlMappingOperations extends MappingOperations, TableNameMappin
 
 	boolean isDataBaseMappingContext(MappingContext mappingContext);
 
-	boolean isPrmaryKey(MappingContext mappingContext);
+	boolean isPrimaryKey(MappingContext mappingContext);
 
 	<T> String getObjectKey(Class<? extends T> clazz, T bean);
 
 	String getObjectKeyById(Class<?> clazz, Collection<Object> ids);
-	
+
 	boolean isTable(Class<?> clazz);
-	
+
 	boolean isNullAble(MappingContext context);
+
+	<K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<K> inIds, Object[] params);
+
+	boolean isIgnore(MappingContext context);
+
+	boolean isAutoIncrement(MappingContext context);
+
+	String getCharsetName(MappingContext context);
+
+	boolean isUnique(MappingContext context);
+
+	CasType getCasType(MappingContext context);
 }

@@ -13,6 +13,7 @@ import scw.core.Pagination;
 import scw.core.exception.ParameterException;
 import scw.orm.MappingContext;
 import scw.orm.sql.ResultSet;
+import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.dialect.mysql.MysqlDialectSql;
 import scw.sql.Sql;
 
@@ -28,9 +29,11 @@ public abstract class Select extends MysqlDialectSql {
 	private Map<String, String> associationWhereMap;
 	private HashSet<String> selectTableSet;
 	protected ORMOperations orm;
+	protected SqlDialect sqlDialect;
 
-	public Select(ORMOperations orm) {
+	public Select(ORMOperations orm, SqlDialect sqlDialect) {
 		this.orm = orm;
+		this.sqlDialect = sqlDialect;
 	}
 
 	public Select from(Class<?> tableClass) {
@@ -67,7 +70,7 @@ public abstract class Select extends MysqlDialectSql {
 	}
 
 	public String getTableName(Class<?> tableClass) {
-		return orm.getSqlMappingOperations().getTableName(tableClass);
+		return sqlDialect.getSqlMapper().getTableName(tableClass);
 	}
 
 	protected void addSelectTable(String tableName) {
@@ -146,8 +149,8 @@ public abstract class Select extends MysqlDialectSql {
 			associationWhereMap = new HashMap<String, String>();
 		}
 
-		Collection<MappingContext> t1 = orm.getSqlMappingOperations().getPrimaryKeys(tableClass1);
-		Collection<MappingContext> t2 = orm.getSqlMappingOperations().getPrimaryKeys(tableClass2);
+		Collection<MappingContext> t1 = sqlDialect.getSqlMapper().getPrimaryKeys(tableClass1);
+		Collection<MappingContext> t2 = sqlDialect.getSqlMapper().getPrimaryKeys(tableClass2);
 		String tName1 = getTableName(tableClass1);
 		String tName2 = getTableName(tableClass2);
 		if (table2Columns == null || table2Columns.length == 0) {
@@ -256,19 +259,19 @@ public abstract class Select extends MysqlDialectSql {
 	public abstract long count();
 
 	public <T> T getFirst(Class<T> type) {
-		return getResultSet().getFirst().get(orm.getSqlMappingOperations(), type);
+		return getResultSet().getFirst().get(type);
 	}
 
 	public abstract ResultSet getResultSet();
 
 	public <T> List<T> getList(Class<T> type) {
-		return getResultSet().getList(orm.getSqlMappingOperations(), type);
+		return getResultSet().getList(type);
 	}
 
 	public abstract ResultSet getResultSet(long begin, int limit);
 
 	public <T> List<T> getList(Class<T> type, long begin, int limit) {
-		return getResultSet(begin, limit).getList(orm.getSqlMappingOperations(), type);
+		return getResultSet(begin, limit).getList(type);
 	}
 
 	public Pagination<ResultSet> getResultSetPagination(long page, int limit) {

@@ -9,17 +9,17 @@ import java.util.List;
 
 import scw.sql.SqlUtils;
 
-public class DefaultResultSetMapping implements ResultSet {
+public abstract class AbstractResultSet implements ResultSet {
 	private static final long serialVersionUID = 1L;
 	protected ValueIndexMapping valueIndexMapping;
 	protected LinkedList<Object[]> dataList;
 
-	public DefaultResultSetMapping(ValueIndexMapping valueIndexMapping, LinkedList<Object[]> dataList) {
+	public AbstractResultSet(ValueIndexMapping valueIndexMapping, LinkedList<Object[]> dataList) {
 		this.valueIndexMapping = valueIndexMapping;
 		this.dataList = dataList;
 	}
 
-	public DefaultResultSetMapping(java.sql.ResultSet resultSet) throws SQLException {
+	public AbstractResultSet(java.sql.ResultSet resultSet) throws SQLException {
 		while (resultSet.next()) {
 			if (valueIndexMapping == null) {// 第一次
 				valueIndexMapping = new ResultSetValueIndexMapping(resultSet.getMetaData());
@@ -47,66 +47,44 @@ public class DefaultResultSetMapping implements ResultSet {
 		return new ArrayList<Object[]>(dataList);
 	}
 
-	public <T> List<T> getList(SqlMappingOperations mappingOperations, Class<T> clazz,
-			TableNameMapping tableNameMapping) {
+	public <T> List<T> getList(Class<T> clazz, TableNameMapping tableNameMapping) {
 		if (isEmpty()) {
 			return null;
 		}
 
 		List<T> list = new ArrayList<T>(dataList.size());
 		for (Object[] values : dataList) {
-			Result result = createResult(values);
-			list.add(result.get(mappingOperations, clazz, tableNameMapping));
+			ResultMapping resultMapping = createResult(values);
+			list.add(resultMapping.get(clazz, tableNameMapping));
 		}
 		return list;
 	}
 
-	public <T> List<T> getList(SqlMappingOperations mappingOperations, Class<T> clazz, String tableName) {
-		if (isEmpty()) {
-			return null;
-		}
-
-		TableNameMapping tableNameMapping = new SingleTableNameMapping(clazz, tableName);
-		List<T> list = new ArrayList<T>(dataList.size());
-		for (Object[] values : dataList) {
-			Result result = createResult(values);
-			list.add(result.get(mappingOperations, clazz, tableNameMapping));
-		}
-		return list;
+	public <T> List<T> getList(Class<T> clazz, String tableName) {
+		return getList(clazz, new SingleTableNameMapping(clazz, tableName));
 	}
 
-	public <T> List<T> getList(SqlMappingOperations mappingOperations, Class<T> clazz) {
-		if (dataList == null) {
-			return null;
-		}
-
-		List<T> list = new ArrayList<T>(dataList.size());
-		for (Object[] values : dataList) {
-			Result result = createResult(values);
-			list.add(result.get(mappingOperations, clazz));
-		}
-		return list;
+	public <T> List<T> getList(Class<T> clazz) {
+		return getList(clazz, (String) null);
 	}
 
-	protected Result createResult(Object[] values) {
-		return new DefaultResultMapping(valueIndexMapping, values);
-	}
+	protected abstract ResultMapping createResult(Object[] values);
 
 	public final int size() {
 		return dataList == null ? 0 : dataList.size();
 	}
 
-	public final Result getFirst() {
+	public final ResultMapping getFirst() {
 		if (isEmpty()) {
-			return Result.EMPTY_RESULT;
+			return ResultMapping.EMPTY_RESULT;
 		}
 
 		return createResult(dataList.getFirst());
 	}
 
-	public final Result getLast() {
+	public final ResultMapping getLast() {
 		if (isEmpty()) {
-			return Result.EMPTY_RESULT;
+			return ResultMapping.EMPTY_RESULT;
 		}
 
 		return createResult(dataList.getLast());
@@ -116,11 +94,11 @@ public class DefaultResultSetMapping implements ResultSet {
 		return valueIndexMapping == null || dataList == null || dataList.isEmpty();
 	}
 
-	public final Iterator<Result> iterator() {
+	public final Iterator<ResultMapping> iterator() {
 		return new ResultIterator();
 	}
 
-	final class ResultIterator implements Iterator<Result> {
+	final class ResultIterator implements Iterator<ResultMapping> {
 		private Iterator<Object[]> iterator;
 
 		public ResultIterator() {
@@ -131,7 +109,7 @@ public class DefaultResultSetMapping implements ResultSet {
 			return iterator.hasNext();
 		}
 
-		public Result next() {
+		public ResultMapping next() {
 			return createResult(iterator.next());
 		}
 	}

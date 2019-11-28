@@ -10,7 +10,7 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.XTime;
 import scw.data.TemporaryCache;
 import scw.data.WrapperTemporaryCache;
-import scw.orm.sql.SqlMappingOperations;
+import scw.orm.sql.SqlMapper;
 import scw.orm.sql.TableMappingContext;
 
 public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> {
@@ -39,17 +39,17 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 	}
 
 	private final TemporaryCache cache;
-	private final SqlMappingOperations sqlMappingOperations;
+	private final SqlMapper sqlMapper;
 
-	public TemporaryCacheManager(SqlMappingOperations sqlMappingOperations, TemporaryCache cache, boolean transaction,
+	public TemporaryCacheManager(SqlMapper sqlMapper, TemporaryCache cache, boolean transaction,
 			String keyPrefix) {
 		this.cache = new WrapperTemporaryCache(cache, transaction, keyPrefix);
-		this.sqlMappingOperations = sqlMappingOperations;
+		this.sqlMapper = sqlMapper;
 	}
 
 	@Override
-	public SqlMappingOperations getSqlMappingOperations() {
-		return sqlMappingOperations;
+	public SqlMapper getSqlMapper() {
+		return sqlMapper;
 	}
 
 	public void save(Object bean) {
@@ -59,7 +59,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 			return;
 		}
 
-		String objectKey = sqlMappingOperations.getObjectKey(clazz, bean);
+		String objectKey = sqlMapper.getObjectKey(clazz, bean);
 		cache.set(objectKey, config.getExp(), bean);
 		if (config.isKeys()) {
 			cache.add(KEY + objectKey, "");
@@ -73,7 +73,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 			return;
 		}
 
-		cache.set(sqlMappingOperations.getObjectKey(clazz, bean), config.getExp(), bean);
+		cache.set(sqlMapper.getObjectKey(clazz, bean), config.getExp(), bean);
 	}
 
 	public void delete(Object bean) {
@@ -83,7 +83,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 			return;
 		}
 
-		String objectKey = sqlMappingOperations.getObjectKey(clazz, bean);
+		String objectKey = sqlMapper.getObjectKey(clazz, bean);
 		if (config.isKeys()) {
 			cache.delete(KEY + objectKey);
 		}
@@ -96,7 +96,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 			return;
 		}
 
-		String objectKey = sqlMappingOperations.getObjectKeyById(type, Arrays.asList(params));
+		String objectKey = sqlMapper.getObjectKeyById(type, Arrays.asList(params));
 		if (config.isKeys()) {
 			cache.delete(KEY + objectKey);
 		}
@@ -110,7 +110,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 			return;
 		}
 
-		String objectKey = sqlMappingOperations.getObjectKey(clazz, bean);
+		String objectKey = sqlMapper.getObjectKey(clazz, bean);
 		cache.set(objectKey, config.getExp(), bean);
 		if (config.isKeys()) {
 			cache.set(KEY + objectKey, "");
@@ -123,7 +123,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 			return null;
 		}
 
-		return cache.getAndTouch(sqlMappingOperations.getObjectKeyById(type, Arrays.asList(params)), config.getExp());
+		return cache.getAndTouch(sqlMapper.getObjectKeyById(type, Arrays.asList(params)), config.getExp());
 	}
 
 	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {
@@ -148,12 +148,12 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 
 		TemporaryCacheConfig config = getCacheConfig(type);
 		if (config.isEnable() && config.isKeys()) {
-			TableMappingContext tableFieldContext = sqlMappingOperations.getTableMappingContext(type);
+			TableMappingContext tableFieldContext = sqlMapper.getTableMappingContext(type);
 			if (tableFieldContext.getPrimaryKeys().size() != params.length) {
 				return true;
 			}
 
-			String key = sqlMappingOperations.getObjectKeyById(type, Arrays.asList(params));
+			String key = sqlMapper.getObjectKeyById(type, Arrays.asList(params));
 			return getCache().isExist(KEY + key);
 		}
 		return true;

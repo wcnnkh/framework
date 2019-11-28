@@ -2,36 +2,34 @@ package scw.orm.sql.dialect;
 
 import java.util.Collection;
 
-import scw.orm.sql.SqlMappingOperations;
+import scw.orm.sql.SqlMapper;
 import scw.sql.Sql;
 
 public interface SqlDialect {
-	Sql toCreateTableSql(SqlMappingOperations sqlMappingOperations, Class<?> clazz, String tableName)
+	SqlMapper getSqlMapper();
+	
+	String getTableName(Class<?> clazz, String tableName);
+	
+	String getTableName(Class<?> clazz, Object obj, String tableName);
+
+	Sql toCreateTableSql(Class<?> clazz, String tableName) throws SqlDialectException;
+
+	Sql toInsertSql(Object obj, Class<?> clazz, String tableName) throws SqlDialectException;
+
+	Sql toUpdateSql(Object obj, Class<?> clazz, String tableName) throws SqlDialectException;
+
+	Sql toSaveOrUpdateSql(Object obj, Class<?> clazz, String tableName) throws SqlDialectException;
+
+	Sql toDeleteSql(Object obj, Class<?> clazz, String tableName) throws SqlDialectException;
+
+	Sql toDeleteByIdSql(Class<?> clazz, String tableName, Object[] parimayKeys) throws SqlDialectException;
+
+	Sql toSelectByIdSql(Class<?> clazz, String tableName, Object[] ids) throws SqlDialectException;
+
+	Sql toSelectInIdSql(Class<?> clazz, String tableName, Object[] ids, Collection<?> inIdList)
 			throws SqlDialectException;
 
-	Sql toInsertSql(SqlMappingOperations sqlMappingOperations, Object obj, Class<?> clazz, String tableName)
-			throws SqlDialectException;
-
-	Sql toUpdateSql(SqlMappingOperations sqlMappingOperations, Object obj, Class<?> clazz, String tableName)
-			throws SqlDialectException;
-
-	Sql toSaveOrUpdateSql(SqlMappingOperations sqlMappingOperations, Object obj, Class<?> clazz, String tableName)
-			throws SqlDialectException;
-
-	Sql toDeleteSql(SqlMappingOperations sqlMappingOperations, Object obj, Class<?> clazz, String tableName)
-			throws SqlDialectException;
-
-	Sql toDeleteByIdSql(SqlMappingOperations sqlMappingOperations, Class<?> clazz, String tableName,
-			Object[] parimayKeys) throws SqlDialectException;
-
-	Sql toSelectByIdSql(SqlMappingOperations sqlMappingOperations, Class<?> clazz, String tableName, Object[] ids)
-			throws SqlDialectException;
-
-	Sql toSelectInIdSql(SqlMappingOperations sqlMappingOperations, Class<?> clazz, String tableName, Object[] ids,
-			Collection<?> inIdList) throws SqlDialectException;
-
-	PaginationSql toPaginationSql(SqlMappingOperations sqlMappingOperations, Sql sql, long page, int limit)
-			throws SqlDialectException;
+	PaginationSql toPaginationSql(Sql sql, long page, int limit) throws SqlDialectException;
 
 	/**
 	 * 复制表结构
@@ -40,11 +38,9 @@ public interface SqlDialect {
 	 * @param oldTableName
 	 * @return
 	 */
-	Sql toCopyTableStructureSql(SqlMappingOperations sqlMappingOperations, String newTableName, String oldTableName)
-			throws SqlDialectException;
+	Sql toCopyTableStructureSql(String newTableName, String oldTableName) throws SqlDialectException;
 
-	Sql toLastInsertIdSql(SqlMappingOperations sqlMappingOperations, String tableName) throws SqlDialectException;
+	Sql toLastInsertIdSql(String tableName) throws SqlDialectException;
 
-	Sql toMaxIdSql(SqlMappingOperations sqlMappingOperations, Class<?> clazz, String tableName, String idField)
-			throws SqlDialectException;
+	Sql toMaxIdSql(Class<?> clazz, String tableName, String idField) throws SqlDialectException;
 }

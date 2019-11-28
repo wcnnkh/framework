@@ -5,7 +5,7 @@ import java.util.Iterator;
 import scw.core.exception.ParameterException;
 import scw.orm.MappingContext;
 import scw.orm.SimpleGetter;
-import scw.orm.sql.SqlMappingOperations;
+import scw.orm.sql.SqlMapper;
 import scw.orm.sql.TableMappingContext;
 
 public class DeleteByIdSql extends MysqlDialectSql {
@@ -13,7 +13,7 @@ public class DeleteByIdSql extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public DeleteByIdSql(SqlMappingOperations mappingOperations, Class<?> clazz, String tableName, Object[] parimayKeys)
+	public DeleteByIdSql(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object[] parimayKeys)
 			throws Exception {
 		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
