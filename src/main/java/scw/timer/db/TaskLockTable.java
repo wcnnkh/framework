@@ -2,7 +2,7 @@ package scw.timer.db;
 
 import java.io.Serializable;
 
-import scw.orm.sql.annotation.PrimaryKey;
+import scw.orm.annotation.PrimaryKey;
 import scw.orm.sql.annotation.Table;
 
 @Table

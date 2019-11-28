@@ -1,15 +1,27 @@
 package scw.orm;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.reflect.FieldDefinition;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.IteratorCallback;
+import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
+import scw.orm.annotation.PrimaryKey;
+import scw.orm.sql.SqlMapper;
 
 public abstract class AbstractMappingOperations implements Mapper {
+	static final char DEFAULT_CONNECTOR_CHARACTER = StringUtils
+			.parseChar(SystemPropertyUtils.getProperty("orm.primary.key.connector.character"), ':');
 
 	public abstract Collection<? extends SetterFilter> getSetterFilters();
 
@@ -48,15 +60,15 @@ public abstract class AbstractMappingOperations implements Mapper {
 		}
 	}
 
-	public <T> T create(MappingContext superContext, Class<T> clazz,
-			SetterMapping<? extends Mapper> setterMapping) throws Exception {
+	public <T> T create(MappingContext superContext, Class<T> clazz, SetterMapping<? extends Mapper> setterMapping)
+			throws Exception {
 		T bean = newInstance(clazz);
 		create(clazz, superContext, clazz, bean, setterMapping);
 		return bean;
 	}
 
-	public void iterator(MappingContext superContext, Class<?> clazz,
-			IteratorMapping<? extends Mapper> iterator) throws Exception {
+	public void iterator(MappingContext superContext, Class<?> clazz, IteratorMapping<? extends Mapper> iterator)
+			throws Exception {
 		iterator(clazz, superContext, clazz, iterator);
 	}
 
@@ -99,5 +111,85 @@ public abstract class AbstractMappingOperations implements Mapper {
 
 	public Collection<MappingContext> getMappingContexts(Class<?> clazz, IteratorCallback<MappingContext> filter) {
 		return getMappingContexts(null, clazz, filter);
+	}
+
+	public boolean isPrimaryKey(MappingContext mappingContext) {
+		return mappingContext.getFieldDefinition().getAnnotation(PrimaryKey.class) != null;
+	}
+
+	public Collection<MappingContext> getPrimaryKeys(MappingContext supperContext, Class<?> clazz) {
+		return getMappingContexts(supperContext, clazz, new IteratorCallback<MappingContext>() {
+
+			public boolean iteratorCallback(MappingContext data) {
+				return isPrimaryKey(data);
+			}
+		});
+	}
+
+	public Collection<MappingContext> getPrimaryKeys(Class<?> clazz) {
+		return getPrimaryKeys(null, clazz);
+	}
+
+	protected void appendObjectKeyByValue(Appendable appendable, Object value) throws IOException {
+		appendable.append(DEFAULT_CONNECTOR_CHARACTER);
+		appendable.append(
+				StringUtils.transferredMeaning(value == null ? null : value.toString(), DEFAULT_CONNECTOR_CHARACTER));
+	}
+
+	public <T> String getObjectKey(Class<? extends T> clazz, final T bean) {
+		final StringBuilder sb = new StringBuilder(128);
+		sb.append(clazz.getName());
+		try {
+			iterator(null, clazz, new IteratorMapping<SqlMapper>() {
+
+				public void iterator(MappingContext context, SqlMapper mappingOperations) throws Exception {
+					if (isPrimaryKey(context)) {
+						appendObjectKeyByValue(sb, getter(context, bean));
+					}
+				}
+			});
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return sb.toString();
+	}
+
+	public String getObjectKeyById(Class<?> clazz, Collection<Object> primaryKeys) {
+		StringBuilder sb = new StringBuilder(128);
+		sb.append(clazz.getName());
+		Iterator<MappingContext> iterator = getPrimaryKeys(clazz).iterator();
+		Iterator<Object> valueIterator = primaryKeys.iterator();
+		while (iterator.hasNext() && valueIterator.hasNext()) {
+			try {
+				appendObjectKeyByValue(sb, getter(iterator.next(), new SimpleGetter(valueIterator.next())));
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return sb.toString();
+	}
+
+	@SuppressWarnings("unchecked")
+	public <K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<K> lastPrimaryKeys, Object[] primaryKeys) {
+		if (CollectionUtils.isEmpty(lastPrimaryKeys)) {
+			return Collections.EMPTY_MAP;
+		}
+
+		Map<String, K> keyMap = new HashMap<String, K>();
+		Iterator<K> valueIterator = lastPrimaryKeys.iterator();
+
+		while (valueIterator.hasNext()) {
+			K k = valueIterator.next();
+			Object[] ids;
+			if (primaryKeys == null || primaryKeys.length == 0) {
+				ids = new Object[] { k };
+			} else {
+				ids = new Object[primaryKeys.length];
+				System.arraycopy(primaryKeys, 0, ids, 0, primaryKeys.length);
+				ids[ids.length - 1] = valueIterator.next();
+			}
+			keyMap.put(getObjectKeyById(clazz, Arrays.asList(ids)), k);
+		}
+		return keyMap;
 	}
 }

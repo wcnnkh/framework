@@ -1,6 +1,7 @@
 package scw.orm;
 
 import java.util.Collection;
+import java.util.Map;
 
 import scw.core.utils.IteratorCallback;
 
@@ -27,4 +28,16 @@ public interface Mapper {
 
 	Collection<MappingContext> getMappingContexts(MappingContext superContext, Class<?> clazz,
 			IteratorCallback<MappingContext> filter);
+
+	boolean isPrimaryKey(MappingContext mappingContext);
+
+	Collection<MappingContext> getPrimaryKeys(MappingContext supperContext, Class<?> clazz);
+
+	Collection<MappingContext> getPrimaryKeys(Class<?> clazz);
+
+	<T> String getObjectKey(Class<? extends T> clazz, T bean);
+
+	String getObjectKeyById(Class<?> clazz, Collection<Object> primaryKeys);
+
+	<K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<K> lastPrimaryKeys, Object[] primaryKeys);
 }

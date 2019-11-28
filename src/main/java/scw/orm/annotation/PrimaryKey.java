@@ -1,4 +1,4 @@
-package scw.orm.sql.annotation;
+package scw.orm.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 默认为主键
+ * 主键
  * @author shuchaowen
  *
  */
