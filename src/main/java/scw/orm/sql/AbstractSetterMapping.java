@@ -13,7 +13,7 @@ public abstract class AbstractSetterMapping implements SetterMapping<SqlMapper> 
 		if (mappingOperations.isDataBaseMappingContext(context)) {
 			mappingOperations.setter(context, bean, getValue(context, mappingOperations));
 		} else {
-			mappingOperations.create(context, context.getFieldDefinition().getField().getType(), this);
+			mappingOperations.create(context, context.getColumn().getField().getType(), this);
 		}
 	}
 

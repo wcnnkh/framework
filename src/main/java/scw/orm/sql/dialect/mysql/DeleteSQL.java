@@ -29,7 +29,7 @@ public class DeleteSQL extends MysqlDialectSql {
 		Iterator<MappingContext> iterator = tableFieldContext.getPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			keywordProcessing(sql, context.getFieldDefinition().getName());
+			keywordProcessing(sql, context.getColumn().getName());
 			sql.append("=?");
 			params.add(mappingOperations.getter(context, obj));
 			if (iterator.hasNext()) {
@@ -45,7 +45,7 @@ public class DeleteSQL extends MysqlDialectSql {
 			}
 
 			sql.append(AND);
-			keywordProcessing(sql, context.getFieldDefinition().getName());
+			keywordProcessing(sql, context.getColumn().getName());
 			sql.append("=?");
 			params.add(mappingOperations.getter(context, obj));
 		}

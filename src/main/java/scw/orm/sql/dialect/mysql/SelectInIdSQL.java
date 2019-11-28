@@ -55,8 +55,8 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 		return params;
 	}
 
-	private String getSql(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object[] ids, Collection<?> inIdList)
-			throws Exception {
+	private String getSql(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object[] ids,
+			Collection<?> inIdList) throws Exception {
 		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		StringBuilder sb = new StringBuilder();
 		if (ids.length > 0) {
@@ -67,7 +67,7 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 				}
 
 				MappingContext context = iterator.next();
-				keywordProcessing(sb, context.getFieldDefinition().getName());
+				keywordProcessing(sb, context.getColumn().getName());
 				sb.append("=?");
 			}
 		}
@@ -77,7 +77,7 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 				sb.append(AND);
 			}
 
-			keywordProcessing(sb, tableFieldContext.getPrimaryKeys().get(ids.length).getFieldDefinition().getName());
+			keywordProcessing(sb, tableFieldContext.getPrimaryKeys().get(ids.length).getColumn().getName());
 			sb.append(IN);
 			for (int i = 0; i < inIdList.size(); i++) {
 				if (i != 0) {

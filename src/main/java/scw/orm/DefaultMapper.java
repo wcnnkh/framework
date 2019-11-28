@@ -1,20 +1,20 @@
 package scw.orm;
 
 import java.util.Collection;
+import java.util.Map;
 
 import scw.core.instance.CannotInstantiateException;
 import scw.core.instance.NoArgsInstanceFactory;
 
 public class DefaultMapper extends AbstractMappingOperations {
-	private final FieldDefinitionFactory fieldDefinitionFactory;
+	private final ColumnFactory columnFactory;
 	private final Collection<? extends SetterFilter> setterFilters;
 	private final Collection<? extends GetterFilter> getterFilters;
 	private final NoArgsInstanceFactory instanceFactory;
 
-	public DefaultMapper(FieldDefinitionFactory fieldDefinitionFactory,
-			Collection<? extends SetterFilter> setterFilters, Collection<? extends GetterFilter> getterFilters,
-			NoArgsInstanceFactory instanceFactory) {
-		this.fieldDefinitionFactory = fieldDefinitionFactory;
+	public DefaultMapper(ColumnFactory columnFactory, Collection<? extends SetterFilter> setterFilters,
+			Collection<? extends GetterFilter> getterFilters, NoArgsInstanceFactory instanceFactory) {
+		this.columnFactory = columnFactory;
 		this.setterFilters = setterFilters;
 		this.getterFilters = getterFilters;
 		this.instanceFactory = instanceFactory;
@@ -28,8 +28,8 @@ public class DefaultMapper extends AbstractMappingOperations {
 		return instanceFactory.getInstance(clazz);
 	}
 
-	public FieldDefinitionFactory getFieldDefinitionFactory() {
-		return fieldDefinitionFactory;
+	public Map<String, Column> getColumnMap(Class<?> clazz) {
+		return columnFactory.getColumnMap(clazz);
 	}
 
 	@Override

@@ -23,21 +23,17 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.orm.FieldDefinitionFactory;
+import scw.orm.ColumnFactory;
 import scw.orm.Filter;
 import scw.orm.sql.DefaultSqlMapper;
 import scw.orm.sql.DefaultTableNameMapping;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.TableFieldDefinitionFactory;
+import scw.orm.sql.TableColumnFactory;
 import scw.orm.sql.TableInstanceFactory;
 import scw.orm.sql.TableNameMapping;
-import scw.orm.sql.annotation.Column;
 import scw.orm.sql.annotation.Index;
 import scw.orm.sql.annotation.Table;
-import scw.orm.sql.dialect.DefaultSqlType;
 import scw.orm.sql.dialect.SqlDialect;
-import scw.orm.sql.dialect.SqlType;
-import scw.orm.sql.dialect.SqlTypeFactory;
 import scw.orm.sql.enums.OperationType;
 import scw.sql.Sql;
 
@@ -56,15 +52,13 @@ public final class SqlORMUtils {
 			filters.addAll(InstanceUtils.autoNewInstancesBySystemProperty(Filter.class, "orm.sql.filters",
 					Collections.EMPTY_LIST));
 			filters.add(new DefaultSqlFilter());
-			FieldDefinitionFactory fieldDefinitionFactory = InstanceUtils.autoNewInstanceBySystemProperty(
-					FieldDefinitionFactory.class, "orm.sql.field.definition.factory",
-					new TableFieldDefinitionFactory());
+			ColumnFactory columnFactory = InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class,
+					"orm.sql.column.factory", new TableColumnFactory());
 			NoArgsInstanceFactory noArgsInstanceFactory = InstanceUtils.autoNewInstanceBySystemProperty(
 					NoArgsInstanceFactory.class, "orm.sql.table.instance.factory", new TableInstanceFactory());
 			TableNameMapping tableNameMapping = InstanceUtils.autoNewInstanceBySystemProperty(TableNameMapping.class,
 					"orm.sql.table.name.mapping", new DefaultTableNameMapping());
-			SQL_MAPPER = new DefaultSqlMapper(tableNameMapping, fieldDefinitionFactory, filters,
-					noArgsInstanceFactory);
+			SQL_MAPPER = new DefaultSqlMapper(tableNameMapping, columnFactory, filters, noArgsInstanceFactory);
 		} else {
 			try {
 				SQL_MAPPER = InstanceUtils.autoNewInstance(sqlMappingOperationsName);
@@ -73,6 +67,7 @@ public final class SqlORMUtils {
 			}
 		}
 	}
+
 	public static final SqlMapper getSqlMapper() {
 		return SQL_MAPPER;
 	}
@@ -88,27 +83,6 @@ public final class SqlORMUtils {
 				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
 				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
 				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type);
-	}
-
-	public static SqlType getSqlType(FieldDefinition fieldDefinition, SqlTypeFactory sqlTypeFactory) {
-		String type = null;
-		Column column = fieldDefinition.getAnnotation(Column.class);
-		if (column != null) {
-			type = column.type();
-		}
-
-		SqlType tempSqlType = StringUtils.isEmpty(type)
-				? sqlTypeFactory.getSqlType(fieldDefinition.getField().getType()) : sqlTypeFactory.getSqlType(type);
-		type = tempSqlType.getName();
-
-		int len = -1;
-		if (column != null) {
-			len = column.length();
-		}
-		if (len <= 0) {
-			len = tempSqlType.getLength();
-		}
-		return new DefaultSqlType(type, len);
 	}
 
 	public static Sql toSql(OperationType operationType, SqlDialect sqlDialect, Class<?> clazz, Object bean,

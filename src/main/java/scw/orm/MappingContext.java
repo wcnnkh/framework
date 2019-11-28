@@ -1,16 +1,13 @@
 package scw.orm;
 
-import scw.core.reflect.FieldDefinition;
-
 public final class MappingContext {
 	private final MappingContext superContext;
-	private final FieldDefinition fieldDefinition;
+	private final Column column;
 	private final Class<?> declaringClass;
 
-	public MappingContext(MappingContext superContext, FieldDefinition fieldDefinition,
-			Class<?> declaringClass) {
+	public MappingContext(MappingContext superContext, Column column, Class<?> declaringClass) {
 		this.superContext = superContext;
-		this.fieldDefinition = fieldDefinition;
+		this.column = column;
 		this.declaringClass = declaringClass;
 	}
 
@@ -18,8 +15,8 @@ public final class MappingContext {
 		return superContext;
 	}
 
-	public FieldDefinition getFieldDefinition() {
-		return fieldDefinition;
+	public Column getColumn() {
+		return column;
 	}
 
 	public Class<?> getDeclaringClass() {

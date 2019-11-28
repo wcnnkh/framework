@@ -11,8 +11,5 @@ public interface FieldDefinition extends AnnotationFactory {
 
 	Class<?> getDeclaringClass();
 
-	/**
-	 * @return
-	 */
 	String getName();
 }

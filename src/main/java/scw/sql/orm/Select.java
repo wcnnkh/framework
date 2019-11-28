@@ -164,8 +164,8 @@ public abstract class Select extends MysqlDialectSql {
 			while (iterator1.hasNext() && iterator2.hasNext()) {
 				MappingContext c1 = iterator1.next();
 				MappingContext c2 = iterator2.next();
-				String n1 = getSqlName(tName1, c1.getFieldDefinition().getName());
-				String n2 = getSqlName(tName2, c2.getFieldDefinition().getName());
+				String n1 = getSqlName(tName1, c1.getColumn().getName());
+				String n2 = getSqlName(tName2, c2.getColumn().getName());
 				if (checkWhere(associationWhereMap, n1, n2)) {
 					continue;
 				}
@@ -184,8 +184,8 @@ public abstract class Select extends MysqlDialectSql {
 				for (int i = 0; i < table2Columns.length; i++) {
 					MappingContext c1 = iterator1.next();
 					MappingContext c2 = iterator2.next();
-					String n1 = getSqlName(tName2, c2.getFieldDefinition().getName());
-					String n2 = getSqlName(tName1, c1.getFieldDefinition().getName());
+					String n1 = getSqlName(tName2, c2.getColumn().getName());
+					String n2 = getSqlName(tName1, c1.getColumn().getName());
 					if (checkWhere(associationWhereMap, n1, n2)) {
 						continue;
 					}

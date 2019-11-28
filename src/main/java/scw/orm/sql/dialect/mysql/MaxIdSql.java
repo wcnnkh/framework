@@ -13,7 +13,7 @@ public class MaxIdSql extends MysqlDialectSql {
 		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		String columnName;
 		MappingContext context = tableFieldContext.getMappingContext(idField);
-		columnName = context == null ? idField : context.getFieldDefinition().getName();
+		columnName = context == null ? idField : context.getColumn().getName();
 		StringBuilder sb = new StringBuilder();
 		sb.append("select ");
 		keywordProcessing(sb, columnName);

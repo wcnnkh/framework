@@ -5,18 +5,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import scw.core.reflect.AnnotationFactory;
-import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectUtils;
 import scw.core.reflect.SimpleAnnotationFactory;
 
-public abstract class AbstractFieldDefinition implements FieldDefinition {
+public abstract class AbstractColumn implements Column {
 	private final Field field;
 	private final AnnotationFactory annotationFactory;
 	private final Method getter;
 	private final Method setter;
 	private final Class<?> clazz;
 
-	public AbstractFieldDefinition(Class<?> clazz, Field field, boolean getter, boolean setter) {
+	public AbstractColumn(Class<?> clazz, Field field, boolean getter, boolean setter) {
 		this.clazz = clazz;
 		this.field = field;
 		this.annotationFactory = new SimpleAnnotationFactory(field);

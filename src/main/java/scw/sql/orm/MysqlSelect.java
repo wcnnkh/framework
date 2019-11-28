@@ -51,16 +51,14 @@ public final class MysqlSelect extends Select {
 			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
-		TableMappingContext tableMappingContext = sqlDialect.getSqlMapper()
-				.getTableMappingContext(tableClass);
+		TableMappingContext tableMappingContext = sqlDialect.getSqlMapper().getTableMappingContext(tableClass);
 		String tableName = getTableName(tableClass);
 		checkWhereInit();
 		if (whereSql.length() != 0) {
 			whereSql.append(UpdateSQL.AND);
 		}
 
-		keywordProcessing(whereSql, tableName,
-				tableMappingContext.getMappingContext(name).getFieldDefinition().getName());
+		keywordProcessing(whereSql, tableName, tableMappingContext.getMappingContext(name).getColumn().getName());
 		whereSql.append("=?");
 		paramList.add(value);
 
@@ -81,7 +79,7 @@ public final class MysqlSelect extends Select {
 		}
 
 		keywordProcessing(whereSql, tableName, sqlDialect.getSqlMapper().getTableMappingContext(tableClass)
-				.getMappingContext(name).getFieldDefinition().getName());
+				.getMappingContext(name).getColumn().getName());
 		whereSql.append("=?");
 		paramList.add(value);
 		addSelectTable(tableName);
@@ -105,7 +103,7 @@ public final class MysqlSelect extends Select {
 		}
 
 		keywordProcessing(whereSql, tableName, sqlDialect.getSqlMapper().getTableMappingContext(tableClass)
-				.getMappingContext(name).getFieldDefinition().getName());
+				.getMappingContext(name).getColumn().getName());
 		whereSql.append(" in(");
 		Iterator<?> iterator = values.iterator();
 		while (iterator.hasNext()) {
@@ -140,7 +138,7 @@ public final class MysqlSelect extends Select {
 			whereSql.append(" or ");
 		}
 
-		keywordProcessing(whereSql, tableName, getMappingContext(tableClass, name).getFieldDefinition().getName());
+		keywordProcessing(whereSql, tableName, getMappingContext(tableClass, name).getColumn().getName());
 		whereSql.append(" in(");
 		Iterator<?> iterator = values.iterator();
 		while (iterator.hasNext()) {
@@ -171,7 +169,7 @@ public final class MysqlSelect extends Select {
 		Iterator<String> iterator = nameList.iterator();
 		while (iterator.hasNext()) {
 			keywordProcessing(orderBySql, tableName,
-					getMappingContext(tableClass, iterator.next()).getFieldDefinition().getName());
+					getMappingContext(tableClass, iterator.next()).getColumn().getName());
 			if (iterator.hasNext()) {
 				orderBySql.append(",");
 			}
@@ -197,7 +195,7 @@ public final class MysqlSelect extends Select {
 		Iterator<String> iterator = nameList.iterator();
 		while (iterator.hasNext()) {
 			keywordProcessing(orderBySql, tableName,
-					getMappingContext(tableClass, iterator.next()).getFieldDefinition().getName());
+					getMappingContext(tableClass, iterator.next()).getColumn().getName());
 			if (iterator.hasNext()) {
 				orderBySql.append(",");
 			}

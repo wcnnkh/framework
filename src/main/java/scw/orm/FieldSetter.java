@@ -8,7 +8,7 @@ public final class FieldSetter implements Setter {
 	}
 
 	public void setter(MappingContext context, Object value) throws Exception {
-		context.getFieldDefinition().set(object, value);
+		context.getColumn().set(object, value);
 	}
 
 	public Object getObject() {

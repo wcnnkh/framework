@@ -34,7 +34,7 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 		Iterator<MappingContext> iterator = tableFieldContext.iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			keywordProcessing(cols, context.getFieldDefinition().getName());
+			keywordProcessing(cols, context.getColumn().getName());
 			values.append("?");
 			params.add(mappingOperations.getter(context, obj));
 
@@ -56,7 +56,7 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			Object v = mappingOperations.getter(context, obj);
-			FieldDefinition fieldDefinition = context.getFieldDefinition();
+			FieldDefinition fieldDefinition = context.getColumn();
 			Counter counter = fieldDefinition.getAnnotation(Counter.class);
 			if (counter == null) {
 				keywordProcessing(sb, fieldDefinition.getName());

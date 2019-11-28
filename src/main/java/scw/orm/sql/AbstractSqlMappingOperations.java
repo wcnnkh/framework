@@ -44,8 +44,8 @@ public abstract class AbstractSqlMappingOperations extends AbstractMappingOperat
 	protected void appendTableMappingContext(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
 			Collection<MappingContext> primaryKeys, Collection<MappingContext> notPrimaryKeys,
 			Map<String, MappingContext> contextMap, boolean useFieldName) {
-		Map<String, FieldDefinition> map = getFieldDefinitionFactory().getFieldDefinitionMap(clazz);
-		for (Entry<String, FieldDefinition> entry : map.entrySet()) {
+		Map<String, scw.orm.Column> map = getColumnMap(clazz);
+		for (Entry<String, scw.orm.Column> entry : map.entrySet()) {
 			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
 			if (!isDataBaseMappingContext(context)) {
 				continue;
@@ -56,8 +56,8 @@ public abstract class AbstractSqlMappingOperations extends AbstractMappingOperat
 			} else {
 				notPrimaryKeys.add(context);
 			}
-			contextMap.put(useFieldName ? context.getFieldDefinition().getField().getName()
-					: context.getFieldDefinition().getName(), context);
+			contextMap.put(useFieldName ? context.getColumn().getField().getName() : context.getColumn().getName(),
+					context);
 		}
 
 		Class<?> superClazz = clazz.getSuperclass();
@@ -78,12 +78,12 @@ public abstract class AbstractSqlMappingOperations extends AbstractMappingOperat
 	}
 
 	public boolean isDataBaseMappingContext(MappingContext mappingContext) {
-		Column column = mappingContext.getFieldDefinition().getAnnotation(Column.class);
+		Column column = mappingContext.getColumn().getAnnotation(Column.class);
 		if (column != null) {
 			return true;
 		}
 
-		Class<?> type = mappingContext.getFieldDefinition().getField().getType();
+		Class<?> type = mappingContext.getColumn().getField().getType();
 		if (Class.class.isAssignableFrom(type) || type.isEnum() || type.isArray() || Map.class.isAssignableFrom(type)
 				|| Collection.class.isAssignableFrom(type)) {
 			return true;
@@ -113,48 +113,48 @@ public abstract class AbstractSqlMappingOperations extends AbstractMappingOperat
 	}
 
 	public boolean isNullAble(MappingContext context) {
-		if (context.getFieldDefinition().getField().getType().isPrimitive() || isPrimaryKey(context)
-				|| isIndexColumn(context.getFieldDefinition())) {
+		if (context.getColumn().getField().getType().isPrimitive() || isPrimaryKey(context)
+				|| isIndexColumn(context.getColumn())) {
 			return false;
 		}
 
-		Column column = context.getFieldDefinition().getAnnotation(Column.class);
+		Column column = context.getColumn().getAnnotation(Column.class);
 		return column == null ? true : column.nullAble();
 	}
 
 	public boolean isIgnore(MappingContext context) {
-		if (AnnotationUtils.isDeprecated(context.getFieldDefinition())) {
+		if (AnnotationUtils.isDeprecated(context.getColumn())) {
 			return true;
 		}
 
-		NotColumn exclude = context.getFieldDefinition().getAnnotation(NotColumn.class);
+		NotColumn exclude = context.getColumn().getAnnotation(NotColumn.class);
 		if (exclude != null) {
 			return true;
 		}
 
-		Transient tr = context.getFieldDefinition().getAnnotation(Transient.class);
+		Transient tr = context.getColumn().getAnnotation(Transient.class);
 		if (tr != null) {
 			return true;
 		}
 
-		if (Modifier.isStatic(context.getFieldDefinition().getField().getModifiers())
-				|| Modifier.isTransient(context.getFieldDefinition().getField().getModifiers())) {
+		if (Modifier.isStatic(context.getColumn().getField().getModifiers())
+				|| Modifier.isTransient(context.getColumn().getField().getModifiers())) {
 			return true;
 		}
 		return false;
 	}
 
 	public boolean isAutoIncrement(MappingContext context) {
-		return context.getFieldDefinition().getAnnotation(AutoIncrement.class) != null;
+		return context.getColumn().getAnnotation(AutoIncrement.class) != null;
 	}
 
 	public String getCharsetName(MappingContext context) {
-		Column column = context.getFieldDefinition().getAnnotation(Column.class);
+		Column column = context.getColumn().getAnnotation(Column.class);
 		return column == null ? null : column.charsetName().trim();
 	}
 
 	public boolean isUnique(MappingContext context) {
-		Column column = context.getFieldDefinition().getAnnotation(Column.class);
+		Column column = context.getColumn().getAnnotation(Column.class);
 		return column == null ? false : column.unique();
 	}
 
@@ -163,7 +163,7 @@ public abstract class AbstractSqlMappingOperations extends AbstractMappingOperat
 			return CasType.NOTHING;
 		}
 
-		Column column = context.getFieldDefinition().getAnnotation(Column.class);
+		Column column = context.getColumn().getAnnotation(Column.class);
 		if (column == null) {
 			return CasType.NOTHING;
 		}

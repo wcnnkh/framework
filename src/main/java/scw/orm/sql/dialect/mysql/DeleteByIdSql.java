@@ -34,7 +34,7 @@ public class DeleteByIdSql extends MysqlDialectSql {
 		Iterator<MappingContext> iterator = tableFieldContext.getPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			keywordProcessing(sql, context.getFieldDefinition().getName());
+			keywordProcessing(sql, context.getColumn().getName());
 			sql.append("=?");
 			params[i] = mappingOperations.getter(context, new SimpleGetter(parimayKeys[i]));
 			i++;

@@ -14,8 +14,7 @@ public class UpdateSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQL(SqlMapper mappingOperations, Class<?> clazz, Object obj, String tableName)
-			throws Exception {
+	public UpdateSQL(SqlMapper mappingOperations, Class<?> clazz, Object obj, String tableName) throws Exception {
 		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException(tableName + " not found primary key");
@@ -29,10 +28,10 @@ public class UpdateSQL extends MysqlDialectSql {
 		Iterator<MappingContext> iterator = tableFieldContext.getNotPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			keywordProcessing(sb, context.getFieldDefinition().getName());
+			keywordProcessing(sb, context.getColumn().getName());
 			if (mappingOperations.getCasType(context) == CasType.AUTO_INCREMENT) {
 				sb.append("=");
-				keywordProcessing(sb, context.getFieldDefinition().getName());
+				keywordProcessing(sb, context.getColumn().getName());
 				sb.append("+1");
 			} else {
 				sb.append("=?");
@@ -48,7 +47,7 @@ public class UpdateSQL extends MysqlDialectSql {
 		iterator = tableFieldContext.getPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			keywordProcessing(sb, context.getFieldDefinition().getName());
+			keywordProcessing(sb, context.getColumn().getName());
 			sb.append("=?");
 			params.add(mappingOperations.getter(context, obj));
 			if (iterator.hasNext()) {
@@ -64,7 +63,7 @@ public class UpdateSQL extends MysqlDialectSql {
 			}
 
 			sb.append(AND);
-			keywordProcessing(sb, context.getFieldDefinition().getName());
+			keywordProcessing(sb, context.getColumn().getName());
 			sb.append("=?");
 			params.add(mappingOperations.getter(context, obj));
 		}

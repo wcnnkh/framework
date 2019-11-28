@@ -43,7 +43,7 @@ public class DefaultSqlFilter implements Filter {
 	}
 
 	public Object getter(MappingContext context, Getter getter, GetterFilterChain chain) throws Exception {
-		return toSqlField(context.getFieldDefinition().getField(), getter.getter(context));
+		return toSqlField(context.getColumn().getField(), getter.getter(context));
 	}
 
 	public void setter(MappingContext context, Setter setter, Object value, SetterFilterChain chain) throws Exception {
@@ -51,7 +51,7 @@ public class DefaultSqlFilter implements Filter {
 			return;
 		}
 
-		Field field = context.getFieldDefinition().getField();
+		Field field = context.getColumn().getField();
 		Class<?> type = field.getType();
 		if (type.isInstance(value)) {
 			setter.setter(context, value);

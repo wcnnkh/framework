@@ -3,14 +3,14 @@ package scw.orm.sql;
 import java.lang.reflect.Field;
 
 import scw.core.utils.StringUtils;
-import scw.orm.AbstractFieldDefinition;
+import scw.orm.AbstractColumn;
 import scw.orm.annotation.ColumnName;
 import scw.orm.sql.annotation.Column;
 
-public class TableFieldDefinitaion extends AbstractFieldDefinition {
+public class TableColumn extends AbstractColumn {
 	private String name;
 
-	public TableFieldDefinitaion(Class<?> clazz, Field field) {
+	public TableColumn(Class<?> clazz, Field field) {
 		super(clazz, field, false, false);
 		Column column = getAnnotation(Column.class);
 		if (column != null) {

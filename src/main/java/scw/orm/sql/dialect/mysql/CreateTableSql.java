@@ -16,12 +16,12 @@ import scw.orm.sql.TableMappingContext;
 import scw.orm.sql.annotation.Column;
 import scw.orm.sql.annotation.Index;
 import scw.orm.sql.annotation.Table;
+import scw.orm.sql.dialect.DefaultSqlType;
 import scw.orm.sql.dialect.DefaultSqlTypeFactory;
 import scw.orm.sql.dialect.SqlType;
 import scw.orm.sql.dialect.SqlTypeFactory;
 import scw.orm.sql.enums.IndexMethod;
 import scw.orm.sql.enums.IndexOrder;
-import scw.orm.sql.support.SqlORMUtils;
 
 public class CreateTableSql extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
@@ -41,8 +41,8 @@ public class CreateTableSql extends MysqlDialectSql {
 		Iterator<MappingContext> iterator = tableFieldContext.iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			FieldDefinition fieldDefinition = context.getFieldDefinition();
-			SqlType sqlType = SqlORMUtils.getSqlType(fieldDefinition, sqlTypeFactory);
+			FieldDefinition fieldDefinition = context.getColumn();
+			SqlType sqlType = getSqlType(fieldDefinition, sqlTypeFactory);
 			sb.append("`").append(fieldDefinition.getName()).append("`");
 			sb.append(" ");
 			sb.append(sqlType.getName());
@@ -82,7 +82,7 @@ public class CreateTableSql extends MysqlDialectSql {
 
 			sb.append(",");
 			sb.append("UNIQUE (");
-			sb.append("`").append(context.getFieldDefinition().getName()).append("`");
+			sb.append("`").append(context.getColumn().getName()).append("`");
 			sb.append(")");
 		}
 
@@ -91,7 +91,7 @@ public class CreateTableSql extends MysqlDialectSql {
 		iterator = tableFieldContext.iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			Index index = context.getFieldDefinition().getAnnotation(Index.class);
+			Index index = context.getColumn().getAnnotation(Index.class);
 			if (index == null) {
 				continue;
 			}
@@ -105,7 +105,7 @@ public class CreateTableSql extends MysqlDialectSql {
 				indexList = new ArrayList<IndexInfo>();
 				indexMap.put(index.name(), indexList);
 			}
-			indexList.add(new IndexInfo(context.getFieldDefinition().getName(), index));
+			indexList.add(new IndexInfo(context.getColumn().getName(), index));
 		}
 
 		for (Entry<String, List<IndexInfo>> entry : indexMap.entrySet()) {
@@ -154,7 +154,7 @@ public class CreateTableSql extends MysqlDialectSql {
 				primaryKeySql.append(",");
 			}
 			primaryKeySql.append("`");
-			primaryKeySql.append(context.getFieldDefinition().getName());
+			primaryKeySql.append(context.getColumn().getName());
 			primaryKeySql.append("`");
 		}
 
@@ -178,6 +178,27 @@ public class CreateTableSql extends MysqlDialectSql {
 			sb.append(" comment=\'").append(table.comment()).append("\'");
 		}
 		this.sql = sb.toString();
+	}
+
+	private static SqlType getSqlType(FieldDefinition fieldDefinition, SqlTypeFactory sqlTypeFactory) {
+		String type = null;
+		Column column = fieldDefinition.getAnnotation(Column.class);
+		if (column != null) {
+			type = column.type();
+		}
+
+		SqlType tempSqlType = StringUtils.isEmpty(type)
+				? sqlTypeFactory.getSqlType(fieldDefinition.getField().getType()) : sqlTypeFactory.getSqlType(type);
+		type = tempSqlType.getName();
+
+		int len = -1;
+		if (column != null) {
+			len = column.length();
+		}
+		if (len <= 0) {
+			len = tempSqlType.getLength();
+		}
+		return new DefaultSqlType(type, len);
 	}
 
 	public String getSql() {

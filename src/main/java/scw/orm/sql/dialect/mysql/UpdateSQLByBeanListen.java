@@ -51,7 +51,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 				continue;
 			}
 
-			if (changeMap.containsKey(context.getFieldDefinition().getField().getName())) {
+			if (changeMap.containsKey(context.getColumn().getField().getName())) {
 				continue;
 			}
 
@@ -59,9 +59,9 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 				sb.append(",");
 			}
 
-			keywordProcessing(sb, context.getFieldDefinition().getName());
+			keywordProcessing(sb, context.getColumn().getName());
 			sb.append("=");
-			keywordProcessing(sb, context.getFieldDefinition().getName());
+			keywordProcessing(sb, context.getColumn().getName());
 			sb.append("+1");
 		}
 
@@ -72,8 +72,8 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 			}
 
 			Object value = mappingOperations.getter(context, beanFieldListen);
-			Counter counter = context.getFieldDefinition().getAnnotation(Counter.class);
-			if (counter != null && TypeUtils.isNumber(context.getFieldDefinition().getField().getType())) {
+			Counter counter = context.getColumn().getAnnotation(Counter.class);
+			if (counter != null && TypeUtils.isNumber(context.getColumn().getField().getType())) {
 				Object oldValue = entry.getValue();
 				if (oldValue != null && value != null) {
 					// incr or decr
@@ -85,10 +85,10 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 					}
 
 					double change = newV - oldV;
-					keywordProcessing(sb, context.getFieldDefinition().getName());
+					keywordProcessing(sb, context.getColumn().getName());
 					sb.append("=");
 
-					keywordProcessing(sb, context.getFieldDefinition().getName());
+					keywordProcessing(sb, context.getColumn().getName());
 					sb.append(change > 0 ? "+" : "-");
 					sb.append(Math.abs(change));
 
@@ -101,12 +101,12 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 					if (change == 0) {
 						where.append("1 != 1");
 					} else {
-						keywordProcessing(where, context.getFieldDefinition().getName());
+						keywordProcessing(where, context.getColumn().getName());
 						where.append(change > 0 ? "+" : "-");
 						where.append(Math.abs(change));
 						where.append(">=").append(counter.min());
 						where.append(AND);
-						keywordProcessing(where, context.getFieldDefinition().getName());
+						keywordProcessing(where, context.getColumn().getName());
 						where.append(change > 0 ? "+" : "-");
 						where.append(Math.abs(change));
 						where.append("<=").append(counter.max());
@@ -114,7 +114,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 					continue;
 				} else {
 					logger.warn("{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}", clazz.getName(),
-							context.getFieldDefinition().getName(), oldValue, value);
+							context.getColumn().getName(), oldValue, value);
 				}
 			}
 
@@ -122,7 +122,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 				sb.append(",");
 			}
 
-			keywordProcessing(sb, context.getFieldDefinition().getName());
+			keywordProcessing(sb, context.getColumn().getName());
 			sb.append("=?");
 			paramList.add(value);
 		}
@@ -132,7 +132,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 		iterator = tableFieldContext.getPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			keywordProcessing(sb, context.getFieldDefinition().getName());
+			keywordProcessing(sb, context.getColumn().getName());
 			sb.append("=?");
 			paramList.add(mappingOperations.getter(context, beanFieldListen));
 			if (iterator.hasNext()) {
@@ -148,13 +148,13 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 			}
 
 			sb.append(AND);
-			keywordProcessing(sb, context.getFieldDefinition().getName());
+			keywordProcessing(sb, context.getColumn().getName());
 			sb.append("=?");
 			Object value;
-			if (changeMap.containsKey(context.getFieldDefinition().getField().getName())) {
+			if (changeMap.containsKey(context.getColumn().getField().getName())) {
 				// 存在旧值
 				value = mappingOperations.getter(context,
-						new SimpleGetter(changeMap.get(context.getFieldDefinition().getField().getName())));
+						new SimpleGetter(changeMap.get(context.getColumn().getField().getName())));
 			} else {
 				value = mappingOperations.getter(context, beanFieldListen);
 			}

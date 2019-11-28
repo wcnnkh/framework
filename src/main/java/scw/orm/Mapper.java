@@ -5,8 +5,7 @@ import java.util.Map;
 
 import scw.core.utils.IteratorCallback;
 
-public interface Mapper {
-	FieldDefinitionFactory getFieldDefinitionFactory();
+public interface Mapper extends ColumnFactory {
 
 	void setter(MappingContext context, Object bean, Object value) throws Exception;
 

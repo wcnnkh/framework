@@ -1,24 +1,26 @@
 package scw.orm.sql;
 
 import java.util.Collection;
+import java.util.Map;
 
 import scw.core.instance.CannotInstantiateException;
 import scw.core.instance.NoArgsInstanceFactory;
-import scw.orm.FieldDefinitionFactory;
+import scw.orm.Column;
+import scw.orm.ColumnFactory;
 import scw.orm.Filter;
 import scw.orm.GetterFilter;
 import scw.orm.SetterFilter;
 
 public class DefaultSqlMapper extends AbstractSqlMappingOperations implements SqlMapper {
 	private TableNameMapping tableNameMapping;
-	private FieldDefinitionFactory fieldDefinitionFactory;
+	private ColumnFactory columnFactory;
 	private Collection<? extends Filter> filters;
 	private NoArgsInstanceFactory noArgsInstanceFactory;
 
-	public DefaultSqlMapper(TableNameMapping tableNameMapping, FieldDefinitionFactory fieldDefinitionFactory,
+	public DefaultSqlMapper(TableNameMapping tableNameMapping, ColumnFactory columnFactory,
 			Collection<? extends Filter> filters, NoArgsInstanceFactory noArgsInstanceFactory) {
 		this.tableNameMapping = tableNameMapping;
-		this.fieldDefinitionFactory = fieldDefinitionFactory;
+		this.columnFactory = columnFactory;
 		this.filters = filters;
 		this.noArgsInstanceFactory = noArgsInstanceFactory;
 	}
@@ -27,8 +29,8 @@ public class DefaultSqlMapper extends AbstractSqlMappingOperations implements Sq
 		return tableNameMapping.getTableName(clazz);
 	}
 
-	public FieldDefinitionFactory getFieldDefinitionFactory() {
-		return fieldDefinitionFactory;
+	public Map<String, Column> getColumnMap(Class<?> clazz) {
+		return columnFactory.getColumnMap(clazz);
 	}
 
 	public <T> T newInstance(Class<T> type) {

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.reflect.FieldDefinition;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.IteratorCallback;
 import scw.core.utils.StringUtils;
@@ -48,8 +47,8 @@ public abstract class AbstractMappingOperations implements Mapper {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected <T> void create(Class<T> declaringClass, MappingContext superContext, Class<?> clazz, T bean,
 			SetterMapping setterMapping) throws Exception {
-		Map<String, FieldDefinition> map = getFieldDefinitionFactory().getFieldDefinitionMap(clazz);
-		for (Entry<String, FieldDefinition> entry : map.entrySet()) {
+		Map<String, Column> map = getColumnMap(clazz);
+		for (Entry<String, Column> entry : map.entrySet()) {
 			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
 			setterMapping.setter(context, bean, this);
 		}
@@ -75,8 +74,8 @@ public abstract class AbstractMappingOperations implements Mapper {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void iterator(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
 			IteratorMapping iterator) throws Exception {
-		Map<String, FieldDefinition> map = getFieldDefinitionFactory().getFieldDefinitionMap(clazz);
-		for (Entry<String, FieldDefinition> entry : map.entrySet()) {
+		Map<String, Column> map = getColumnMap(clazz);
+		for (Entry<String, Column> entry : map.entrySet()) {
 			iterator.iterator(new MappingContext(superContext, entry.getValue(), declaringClass), this);
 		}
 
@@ -88,8 +87,8 @@ public abstract class AbstractMappingOperations implements Mapper {
 
 	protected void appendMappingContexts(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
 			List<MappingContext> list, IteratorCallback<MappingContext> filter) {
-		Map<String, FieldDefinition> map = getFieldDefinitionFactory().getFieldDefinitionMap(clazz);
-		for (Entry<String, FieldDefinition> entry : map.entrySet()) {
+		Map<String, Column> map = getColumnMap(clazz);
+		for (Entry<String, Column> entry : map.entrySet()) {
 			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
 			if (filter == null || filter.iteratorCallback(context)) {
 				list.add(context);
@@ -114,7 +113,7 @@ public abstract class AbstractMappingOperations implements Mapper {
 	}
 
 	public boolean isPrimaryKey(MappingContext mappingContext) {
-		return mappingContext.getFieldDefinition().getAnnotation(PrimaryKey.class) != null;
+		return mappingContext.getColumn().getAnnotation(PrimaryKey.class) != null;
 	}
 
 	public Collection<MappingContext> getPrimaryKeys(MappingContext supperContext, Class<?> clazz) {

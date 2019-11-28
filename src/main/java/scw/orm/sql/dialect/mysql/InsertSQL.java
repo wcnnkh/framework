@@ -33,7 +33,7 @@ public final class InsertSQL extends MysqlDialectSql {
 				values.append(",");
 			}
 
-			keywordProcessing(cols, context.getFieldDefinition().getName());
+			keywordProcessing(cols, context.getColumn().getName());
 			values.append("?");
 			params.add(mappingOperations.getter(context, obj));
 		}

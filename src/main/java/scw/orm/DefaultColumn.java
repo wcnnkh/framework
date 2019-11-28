@@ -4,10 +4,10 @@ import java.lang.reflect.Field;
 
 import scw.orm.annotation.ColumnName;
 
-public class DefaultFieldDefinition extends AbstractFieldDefinition {
+public class DefaultColumn extends AbstractColumn {
 	private final String name;
 
-	public DefaultFieldDefinition(Class<?> clazz, Field field, boolean getter, boolean setter) {
+	public DefaultColumn(Class<?> clazz, Field field, boolean getter, boolean setter) {
 		super(clazz, field, getter, setter);
 		ColumnName columnName = getAnnotation(ColumnName.class);
 		this.name = columnName == null ? field.getName() : columnName.value();
