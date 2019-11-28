@@ -72,6 +72,7 @@ public final class SelectByIdSQL extends MysqlDialectSql {
 
 		while (iterator.hasNext() && valueIterator.hasNext()) {
 			MappingContext context = iterator.next();
+			valueIterator.next();
 			keywordProcessing(sb, context.getColumn().getName());
 			sb.append("=?");
 			if (iterator.hasNext() && valueIterator.hasNext()) {
