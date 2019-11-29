@@ -22,7 +22,7 @@ public final class ContentParse extends AbstractCharsetNameValueFormat implement
 	}
 
 	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset) throws Exception{
-		List<String> list = ResourceUtils.getFileContentLineList(filePath, charset);
+		List<String> list = ResourceUtils.getResourceOperations().getFileContentLineList(filePath, charset);
 		if(String.class.isAssignableFrom(fieldDefinition.getField().getType())){
 			StringBuilder sb = new StringBuilder();
 			if(list != null){
@@ -39,7 +39,7 @@ public final class ContentParse extends AbstractCharsetNameValueFormat implement
 
 	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name)
 			throws Exception {
-		List<String> list = ResourceUtils.getFileContentLineList(name, getCharsetName());
+		List<String> list = ResourceUtils.getResourceOperations().getFileContentLineList(name, getCharsetName());
 		if(String.class.isAssignableFrom(field.getType())){
 			StringBuilder sb = new StringBuilder();
 			if(list != null){

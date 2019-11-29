@@ -34,7 +34,7 @@ public final class XmlPropertyUtils {
 			return null;
 		}
 
-		return ResourceUtils.getProperties(file, getCharsetName(node));
+		return ResourceUtils.getResourceOperations().getProperties(file, getCharsetName(node));
 	}
 
 	public static String getCharsetName(Node node) {

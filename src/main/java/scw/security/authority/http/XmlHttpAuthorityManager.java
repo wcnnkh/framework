@@ -31,7 +31,7 @@ public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
 	}
 
 	private void addByXml(String xml, String defParentId) {
-		if (!ResourceUtils.isExist(xml)) {
+		if (!ResourceUtils.getResourceOperations().isExist(xml)) {
 			logger.warn("not found:{}", xml);
 			return;
 		}

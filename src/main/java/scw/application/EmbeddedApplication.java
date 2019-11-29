@@ -73,7 +73,7 @@ public class EmbeddedApplication extends CommonApplication {
 		}
 
 		public void run() {
-			if (!ResourceUtils.isExist(beanXml)) {
+			if (!ResourceUtils.getResourceOperations().isExist(beanXml)) {
 				LoggerUtils.warn(TomcatApplication.class, "not found " + beanXml);
 			}
 

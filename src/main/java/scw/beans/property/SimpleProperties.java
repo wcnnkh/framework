@@ -67,7 +67,7 @@ public class SimpleProperties extends AbstractProperties {
 		public String getValue() {
 			String path = XMLUtils.formatNodeValue(getPropertyFactory(),
 					getNode(), getFilePath(getNode()));
-			return ResourceUtils.getFileContent(path,
+			return ResourceUtils.getResourceOperations().getFileContent(path,
 					XmlPropertyUtils.getCharsetName(getNode()));
 		}
 	}

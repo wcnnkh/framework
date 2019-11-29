@@ -45,7 +45,7 @@ public abstract class ConfigUtils {
 	}
 
 	public static List<Map<String, String>> getDefaultXmlContent(String path, final String rootTag) {
-		return ResourceUtils.getResource(path, new Converter<InputStream, List<Map<String, String>>>() {
+		return ResourceUtils.getResourceOperations().getResource(path, new Converter<InputStream, List<Map<String, String>>>() {
 
 			public List<Map<String, String>> convert(InputStream inputStream) {
 				return getDefaultXmlContent(inputStream, rootTag);
@@ -80,7 +80,7 @@ public abstract class ConfigUtils {
 	}
 
 	public static <T> List<T> xmlToList(final Class<T> type, String path) {
-		return ResourceUtils.getResource(path, new Converter<InputStream, List<T>>() {
+		return ResourceUtils.getResourceOperations().getResource(path, new Converter<InputStream, List<T>>() {
 
 			public List<T> convert(InputStream inputStream) {
 				return xmlToList(type, inputStream);
@@ -103,7 +103,7 @@ public abstract class ConfigUtils {
 	}
 
 	public static <K, V> Map<K, V> xmlToMap(final Class<V> valueType, String path) {
-		return ResourceUtils.getResource(path, new Converter<InputStream, Map<K, V>>() {
+		return ResourceUtils.getResourceOperations().getResource(path, new Converter<InputStream, Map<K, V>>() {
 
 			public Map<K, V> convert(InputStream inputStream) {
 				return xmlToMap(valueType, inputStream);
@@ -189,7 +189,7 @@ public abstract class ConfigUtils {
 	}
 
 	public static void loadProperties(Object instance, String propertiesFile, Collection<String> asNameList) {
-		loadProperties(instance, ResourceUtils.getProperties(propertiesFile), asNameList);
+		loadProperties(instance, ResourceUtils.getResourceOperations().getProperties(propertiesFile), asNameList);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -197,7 +197,8 @@ public abstract class ConfigUtils {
 		invokeSetterByProeprties(instance, properties, true, true, asNameList, true);
 	}
 
-	public static void invokeSetterByProeprties(Object instance, String propertyPrefix, PropertyFactory propertyFactory){
+	public static void invokeSetterByProeprties(Object instance, String propertyPrefix,
+			PropertyFactory propertyFactory) {
 		invokeSetterByProeprties(instance, propertyPrefix, propertyFactory, true, null, true);
 	}
 

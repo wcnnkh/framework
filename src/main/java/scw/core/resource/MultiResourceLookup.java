@@ -1,6 +1,7 @@
 package scw.core.resource;
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.LinkedList;
 
 import scw.core.Consumer;
@@ -17,7 +18,11 @@ public final class MultiResourceLookup implements ResourceLookup {
 		return false;
 	}
 
-	public void addResourceLookup(ResourceLookup resourceLookup) {
+	public void add(ResourceLookup resourceLookup) {
 		resourceLookups.add(resourceLookup);
+	}
+	
+	public void addAll(Collection<ResourceLookup> resourceLookups){
+		resourceLookups.addAll(resourceLookups);
 	}
 }

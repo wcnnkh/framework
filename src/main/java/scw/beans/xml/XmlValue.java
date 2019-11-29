@@ -22,12 +22,12 @@ public class XmlValue {
 		if (!StringUtils.isNull(url)) {
 			if (url.startsWith("file://")) {
 				String path = url.substring(7);
-				value = ResourceUtils.getFileContent(path, charset);
+				value = ResourceUtils.getResourceOperations().getFileContent(path, charset);
 			} else if (url.startsWith("http://") || url.startsWith("https://")) {
 				value = HttpUtils.doGet(url);
 			} else {
 				String path = url.substring(7);
-				value = ResourceUtils.getFileContent(path, charset);
+				value = ResourceUtils.getResourceOperations().getFileContent(path, charset);
 			}
 		} else {
 			value = XMLUtils.getNodeAttributeValueOrNodeContent(node, "value");

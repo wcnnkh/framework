@@ -102,7 +102,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 	}
 
 	public synchronized static void run(final Class<?> clazz, String beanXml) {
-		if (!ResourceUtils.isExist(beanXml)) {
+		if (!ResourceUtils.getResourceOperations().isExist(beanXml)) {
 			LoggerUtils.warn(TomcatApplication.class, "not found " + beanXml);
 		}
 

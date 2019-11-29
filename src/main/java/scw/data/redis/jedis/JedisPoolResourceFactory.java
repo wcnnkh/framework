@@ -57,7 +57,7 @@ public final class JedisPoolResourceFactory implements JedisResourceFactory, Des
 	@Order
 	public JedisPoolResourceFactory(
 			@ParameterName(CONFIG_KEY) @ResourceParameter @DefaultValue(DEFAULT_CONFIG) String configuration) {
-		Properties properties = ResourceUtils.getProperties(configuration, Constants.DEFAULT_CHARSET_NAME);
+		Properties properties = ResourceUtils.getResourceOperations().getProperties(configuration, Constants.DEFAULT_CHARSET_NAME);
 		PropertyFactory propertyFactory = new MapPropertyFactory(properties, true);
 		String host = propertyFactory.getProperty(HOST_CONFIG_KEY);
 		if (StringUtils.isEmpty(host)) {

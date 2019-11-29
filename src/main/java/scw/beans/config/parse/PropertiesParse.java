@@ -28,7 +28,7 @@ public final class PropertiesParse extends AbstractCharsetNameValueFormat implem
 
 	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
-		Properties properties = ResourceUtils.getProperties(filePath, charset);
+		Properties properties = ResourceUtils.getResourceOperations().getProperties(filePath, charset);
 		if (ClassUtils.isPrimitiveOrWrapper(fieldDefinition.getField().getType())
 				|| TypeUtils.isString(fieldDefinition.getField().getType())) {
 			String v = SystemPropertyUtils.format(properties.getProperty(fieldDefinition.getField().getName()));
@@ -58,7 +58,7 @@ public final class PropertiesParse extends AbstractCharsetNameValueFormat implem
 
 	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name)
 			throws Exception {
-		Properties properties = ResourceUtils.getProperties(name, getCharsetName());
+		Properties properties = ResourceUtils.getResourceOperations().getProperties(name, getCharsetName());
 		if (ClassUtils.isPrimitiveOrWrapper(field.getType()) || TypeUtils.isString(field.getType())) {
 			String v = SystemPropertyUtils.format(properties.getProperty(field.getName()));
 			return StringParse.defaultParse(v, field.getGenericType());

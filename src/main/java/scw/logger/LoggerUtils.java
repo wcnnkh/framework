@@ -30,9 +30,9 @@ public final class LoggerUtils {
 			loggerEnablePropertiePath = "/logger-level.properties";
 		}
 
-		if (ResourceUtils.isExist(loggerEnablePropertiePath)) {
+		if (ResourceUtils.getResourceOperations().isExist(loggerEnablePropertiePath)) {
 			info(LoggerUtils.class, "loading " + loggerEnablePropertiePath);
-			Properties properties = ResourceUtils.getProperties(loggerEnablePropertiePath);
+			Properties properties = ResourceUtils.getResourceOperations().getProperties(loggerEnablePropertiePath);
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
 				if (key == null) {

@@ -78,7 +78,7 @@ public class AutoInstanceConfig implements InstanceConfig {
 			ResourceParameter resourceParameter = parameterConfig
 					.getAnnotation(ResourceParameter.class);
 			if (resourceParameter != null) {
-				if (!ResourceUtils.isExist(value)) {
+				if (!ResourceUtils.getResourceOperations().isExist(value)) {
 					return null;
 				}
 			}

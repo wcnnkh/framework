@@ -31,7 +31,7 @@ public final class JsonParse extends AbstractCharsetNameValueFormat implements C
 
 	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
-		String content = ResourceUtils.getFileContent(filePath, charset);
+		String content = ResourceUtils.getResourceOperations().getFileContent(filePath, charset);
 		if (JSONObject.class.isAssignableFrom(fieldDefinition.getField().getType())) {
 			return JSONUtils.parseObject(content);
 		} else if (JSONArray.class.isAssignableFrom(fieldDefinition.getField().getType())) {
@@ -45,7 +45,7 @@ public final class JsonParse extends AbstractCharsetNameValueFormat implements C
 
 	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name)
 			throws Exception {
-		String content = ResourceUtils.getFileContent(name, getCharsetName());
+		String content = ResourceUtils.getResourceOperations().getFileContent(name, getCharsetName());
 		if (JSONObject.class.isAssignableFrom(field.getType())) {
 			return JSONUtils.parseObject(content);
 		} else if (JSONArray.class.isAssignableFrom(field.getType())) {

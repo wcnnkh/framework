@@ -22,7 +22,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	private NodeList nodeList;
 
 	public XmlBeanFactory(String xmlConfigPath) {
-		if (ResourceUtils.isExist(xmlConfigPath)) {
+		if (ResourceUtils.getResourceOperations().isExist(xmlConfigPath)) {
 			Node root = XmlBeanUtils.getRootNode(xmlConfigPath);
 			addFilterName(Arrays
 					.asList(StringUtils.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, root, "filters"))));

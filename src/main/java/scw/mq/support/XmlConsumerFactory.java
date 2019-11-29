@@ -25,7 +25,7 @@ public class XmlConsumerFactory implements ConsumerFactory {
 
 	public XmlConsumerFactory(final BeanFactory beanFactory, PropertyFactory propertyFactory,
 			@DefaultValue("consumer.xml") String xmlPath) {
-		if (ResourceUtils.isExist(xmlPath)) {
+		if (ResourceUtils.getResourceOperations().isExist(xmlPath)) {
 			NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
 			for (int i = 0, size = nodeList.getLength(); i < size; i++) {
 				Node node = nodeList.item(i);

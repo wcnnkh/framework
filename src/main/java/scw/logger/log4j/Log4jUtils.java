@@ -71,19 +71,19 @@ public final class Log4jUtils {
 
 		String path = SystemPropertyUtils.getProperty(LOG4J_PATH);
 		if (StringUtils.isEmpty(path)) {
-			if (ResourceUtils.isExist("classpath:/log4j.properties")) {
-				Properties properties = ResourceUtils.getProperties("classpath:/log4j.properties");
+			if (ResourceUtils.getResourceOperations().isExist("classpath:/log4j.properties")) {
+				Properties properties = ResourceUtils.getResourceOperations().getProperties("classpath:/log4j.properties");
 				initByProperties(properties);
 				return;
-			} else if (ResourceUtils.isExist("classpath:/log4j.xml")) {
+			} else if (ResourceUtils.getResourceOperations().isExist("classpath:/log4j.xml")) {
 				Element element = XMLUtils.getRootElement("classpath:/log4j.xml");
 				initByXml(element);
 				return;
 			}
 		} else {
-			if (ResourceUtils.isExist(path)) {
+			if (ResourceUtils.getResourceOperations().isExist(path)) {
 				if (path.endsWith(".properties")) {
-					Properties properties = ResourceUtils.getProperties(path);
+					Properties properties = ResourceUtils.getResourceOperations().getProperties(path);
 					initByProperties(properties);
 					return;
 				} else if (path.endsWith(".xml")) {
@@ -121,9 +121,9 @@ public final class Log4jUtils {
 			properties.put("log4j.logger." + entry.getKey(), entry.getValue().name());
 		}
 
-		if (ResourceUtils.isExist(LOG4J_APPEND_PATH)) {
+		if (ResourceUtils.getResourceOperations().isExist(LOG4J_APPEND_PATH)) {
 			LoggerUtils.info(Log4jUtils.class, "loading " + LOG4J_APPEND_PATH);
-			Properties append = ResourceUtils.getProperties(LOG4J_APPEND_PATH);
+			Properties append = ResourceUtils.getResourceOperations().getProperties(LOG4J_APPEND_PATH);
 			properties.putAll(append);
 		}
 

@@ -12,16 +12,16 @@ import scw.data.redis.Redis;
 public final class DruidDBConfig extends AbstractDruidDBConfig {
 
 	public DruidDBConfig(@ResourceParameter @DefaultValue(DEFAULT_CONFIG) String properties) {
-		super(ResourceUtils.getProperties(properties));
-		initByMemory(ResourceUtils.getProperties(properties));
+		super(ResourceUtils.getResourceOperations().getProperties(properties));
+		initByMemory(ResourceUtils.getResourceOperations().getProperties(properties));
 	}
 
 	public DruidDBConfig(@ResourceParameter @DefaultValue(DEFAULT_CONFIG) String properties, Memcached memcached) {
-		this(ResourceUtils.getProperties(properties), memcached);
+		this(ResourceUtils.getResourceOperations().getProperties(properties), memcached);
 	}
 
 	public DruidDBConfig(@ResourceParameter @DefaultValue(DEFAULT_CONFIG) String properties, Redis redis) {
-		this(ResourceUtils.getProperties(properties), redis);
+		this(ResourceUtils.getResourceOperations().getProperties(properties), redis);
 	}
 
 	public DruidDBConfig(Map properties, Memcached memcached) {

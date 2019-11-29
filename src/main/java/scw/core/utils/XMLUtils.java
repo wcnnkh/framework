@@ -142,7 +142,7 @@ public final class XMLUtils {
 	}
 
 	public static Document getDocument(String path) {
-		return ResourceUtils.getResource(path, new Converter<InputStream, Document>() {
+		return ResourceUtils.getResourceOperations().getResource(path, new Converter<InputStream, Document>() {
 
 			public Document convert(InputStream inputStream) {
 				return parse(inputStream);

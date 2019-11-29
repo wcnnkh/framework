@@ -18,7 +18,7 @@ public final class PropertiesXMemcachedClientConfiguration implements XMemcached
 
 	public PropertiesXMemcachedClientConfiguration(InstanceFactory instanceFactory,
 			@ResourceParameter @DefaultValue("memcached.properties") String configurationFile) {
-		this(instanceFactory, ResourceUtils.getProperties(configurationFile));
+		this(instanceFactory, ResourceUtils.getResourceOperations().getProperties(configurationFile));
 	}
 
 	@SuppressWarnings("rawtypes")

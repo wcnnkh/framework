@@ -25,7 +25,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import scw.core.Constants;
 import scw.core.StringFormatSystemProperties;
+import scw.core.resource.LocalResourceLookup;
+import scw.core.resource.ResourceOperations;
 import scw.core.resource.ResourceUtils;
+import scw.core.resource.SystemPropertyMultiSuffixResourceOperations;
 import scw.io.FileUtils;
 
 public final class SystemPropertyUtils {
@@ -45,11 +48,13 @@ public final class SystemPropertyUtils {
 	static {
 		String path = getProperty("scw.properties.private");
 		if (path == null) {
-			path = "classpath:/private.properties";
+			path = "/private.properties";
 		}
 
-		if (ResourceUtils.isExist(path)) {
-			Properties properties = ResourceUtils.getProperties(path);
+		ResourceOperations resourceOperations = new SystemPropertyMultiSuffixResourceOperations(
+				new LocalResourceLookup());
+		if (resourceOperations.isExist(path)) {
+			Properties properties = resourceOperations.getProperties(path);
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
 				if (key == null) {
@@ -151,7 +156,7 @@ public final class SystemPropertyUtils {
 						path = getUserDir();
 					} else {
 						file = file.getParentFile();
-						if(file != null){
+						if (file != null) {
 							if (file.getName().equals("WEB-INF")) {
 								path = file.getParent();
 							} else {
@@ -244,38 +249,38 @@ public final class SystemPropertyUtils {
 	public static String getTempDirectoryPath() {
 		return getProperty("java.io.tmpdir");
 	}
-	
-	public static <T> T[] getArrayProperty(Class<T> componentType, String key, T[] defaultValue){
+
+	public static <T> T[] getArrayProperty(Class<T> componentType, String key, T[] defaultValue) {
 		return getArrayProperty(componentType, key, defaultValue, StringUtils.DEFAULT_SPLIT_CHARS);
 	}
-	
-	public static <T> T[] getArrayProperty(Class<T> componentType, String key, T[] defaultValue, char[] splitFilter){
+
+	public static <T> T[] getArrayProperty(Class<T> componentType, String key, T[] defaultValue, char[] splitFilter) {
 		String value = getProperty(key);
-		if(StringUtils.isEmpty(value)){
+		if (StringUtils.isEmpty(value)) {
 			return defaultValue;
 		}
-		
+
 		@SuppressWarnings("unchecked")
 		T[] array = (T[]) StringUtils.parseArray(value, componentType, splitFilter);
-		if(ArrayUtils.isEmpty(array)){
+		if (ArrayUtils.isEmpty(array)) {
 			return defaultValue;
 		}
-		
+
 		return array;
 	}
-	
-	public static <T> T[] getArrayProperty(Class<T> componentType, String key, T[] defaultValue, String[] splitFilter){
+
+	public static <T> T[] getArrayProperty(Class<T> componentType, String key, T[] defaultValue, String[] splitFilter) {
 		String value = getProperty(key);
-		if(StringUtils.isEmpty(value)){
+		if (StringUtils.isEmpty(value)) {
 			return defaultValue;
 		}
-		
+
 		@SuppressWarnings("unchecked")
 		T[] array = (T[]) StringUtils.parseArray(value, componentType, splitFilter);
-		if(ArrayUtils.isEmpty(array)){
+		if (ArrayUtils.isEmpty(array)) {
 			return defaultValue;
 		}
-		
+
 		return array;
 	}
 }
