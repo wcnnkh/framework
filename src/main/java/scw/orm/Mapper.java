@@ -1,13 +1,9 @@
 package scw.orm;
 
-import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map;
 
-import scw.core.annotation.Ignore;
-import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.IteratorCallback;
-import scw.orm.annotation.NotColumn;
 
 public interface Mapper extends ColumnFactory {
 
@@ -43,6 +39,6 @@ public interface Mapper extends ColumnFactory {
 	String getObjectKeyById(Class<?> clazz, Collection<Object> primaryKeys);
 
 	<K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<K> lastPrimaryKeys, Object[] primaryKeys);
-	
+
 	boolean isIgnore(MappingContext context);
 }
