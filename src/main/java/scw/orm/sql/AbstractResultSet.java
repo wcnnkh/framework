@@ -47,9 +47,10 @@ public abstract class AbstractResultSet implements ResultSet {
 		return new ArrayList<Object[]>(dataList);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> List<T> getList(Class<T> clazz, TableNameMapping tableNameMapping) {
 		if (isEmpty()) {
-			return null;
+			return Collections.EMPTY_LIST;
 		}
 
 		List<T> list = new ArrayList<T>(dataList.size());
