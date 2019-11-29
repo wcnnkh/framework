@@ -54,7 +54,6 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 	}
 
 	public String getTableName(Class<?> clazz, String tableName) {
-		return (tableName == null || tableName.length() == 0) ? getSqlMapper().getTableName(clazz)
-				: tableName;
+		return (tableName == null || tableName.length() == 0) ? getSqlMapper().getTableName(clazz) : tableName;
 	}
 }

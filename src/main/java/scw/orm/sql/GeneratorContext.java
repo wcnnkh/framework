@@ -10,16 +10,16 @@ public final class GeneratorContext extends SimpleAttributes<Object, Object> {
 	private final ORMOperations ormOperations;
 	private final OperationType operationType;
 	private final Object bean;
-	private final String tableName;
 	private final SqlMapper sqlMapper;
+	private final String tableName;// ORM 入参，并非实际表名
 
-	protected GeneratorContext(ORMOperations ormOperations, OperationType operationType, Object bean, String tableName,
-			SqlMapper sqlMapper) {
+	protected GeneratorContext(ORMOperations ormOperations, OperationType operationType, Object bean,
+			SqlMapper sqlMapper, String tableName) {
 		this.ormOperations = ormOperations;
 		this.operationType = operationType;
 		this.bean = bean;
-		this.tableName = tableName;
 		this.sqlMapper = sqlMapper;
+		this.tableName = tableName;
 	}
 
 	public final MappingContext getMappingContext() {
@@ -38,15 +38,20 @@ public final class GeneratorContext extends SimpleAttributes<Object, Object> {
 		return bean;
 	}
 
-	public final String getTableName() {
-		return tableName;
-	}
-
 	protected final void setMappingContext(MappingContext mappingContext) {
 		this.mappingContext = mappingContext;
 	}
 
 	public final SqlMapper getSqlMapper() {
 		return sqlMapper;
+	}
+
+	/**
+	 * 入参，并非实际表名
+	 * 
+	 * @return
+	 */
+	public final String getTableName() {
+		return tableName;
 	}
 }

@@ -51,7 +51,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 			throw new NullPointerException("type is null");
 		}
 
-		String tName = StringUtils.isEmpty(tableName) ? getSqlMapper().getTableName(type) : tableName;
+		String tName = getSqlDialect().getTableName(type, tableName);
 		ResultSet resultSet = select(getSqlDialect().toSelectByIdSql(type, tName, params));
 		return resultSet.getFirst().get(type, tName);
 	}
@@ -61,7 +61,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 			throw new NullPointerException("type is null");
 		}
 
-		String tName = StringUtils.isEmpty(tableName) ? getSqlMapper().getTableName(type) : tableName;
+		String tName = getSqlDialect().getTableName(type, tableName);
 		ResultSet resultSet = select(getSqlDialect().toSelectByIdSql(type, tName, params));
 		return resultSet.getList(type, tName);
 	}
@@ -78,10 +78,9 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		});
 	}
 
-	protected void generator(final OperationType operationType, final Class<?> clazz, final Object bean,
-			final String tableName) {
-		final GeneratorContext generatorContext = new GeneratorContext(this, operationType, bean, tableName,
-				getSqlDialect().getSqlMapper());
+	protected void generator(OperationType operationType, Class<?> clazz, Object bean, String tableName) {
+		final GeneratorContext generatorContext = new GeneratorContext(this, operationType, bean,
+				getSqlDialect().getSqlMapper(), tableName);
 		try {
 			getSqlMapper().iterator(null, clazz, new IteratorMapping<SqlMapper>() {
 
@@ -102,11 +101,12 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 
 	protected boolean orm(OperationType operationType, Class<?> clazz, Object bean, String tableName) {
 		generator(operationType, clazz, bean, tableName);
-		Sql sql = SqlORMUtils.toSql(operationType, getSqlDialect(), clazz, bean, tableName);
+		String tName = getSqlDialect().getTableName(clazz, bean, tableName);
+		Sql sql = SqlORMUtils.toSql(operationType, getSqlDialect(), clazz, bean, tName);
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
-			return ormExecute(operationType, clazz, bean, tableName, sql, connection);
+			return ormExecute(operationType, clazz, bean, tName, sql, connection);
 		} catch (Throwable e) {
 			throw new ORMException(SqlUtils.getSqlId(sql), e);
 		} finally {
@@ -157,7 +157,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 
 	public boolean delete(Object bean, String tableName) {
 		Class<?> userClass = ClassUtils.getUserClass(bean);
-		return orm(OperationType.DELETE, userClass, bean, getSqlDialect().getTableName(userClass, bean, tableName));
+		return orm(OperationType.DELETE, userClass, bean, tableName);
 	}
 
 	public boolean deleteById(Class<?> type, Object... params) {
@@ -202,7 +202,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 			throw new NullPointerException("params length  greater than primary key lenght");
 		}
 
-		String tName = (tableName == null || tableName.length() == 0) ? getSqlMapper().getTableName(type) : tableName;
+		String tName = getSqlDialect().getTableName(type, tableName);
 		Sql sql = getSqlDialect().toSelectInIdSql(type, tName, params, inIds);
 		ResultSet resultSet = select(sql);
 		List<V> list = resultSet.getList(type, tName);

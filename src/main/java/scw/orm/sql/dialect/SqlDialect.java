@@ -7,9 +7,9 @@ import scw.sql.Sql;
 
 public interface SqlDialect {
 	SqlMapper getSqlMapper();
-	
+
 	String getTableName(Class<?> clazz, String tableName);
-	
+
 	String getTableName(Class<?> clazz, Object obj, String tableName);
 
 	Sql toCreateTableSql(Class<?> clazz, String tableName) throws SqlDialectException;
