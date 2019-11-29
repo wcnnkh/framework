@@ -11,7 +11,7 @@ import scw.core.reflect.ReflectUtils;
 public abstract class AbstractColumnFactory implements ColumnFactory {
 
 	protected Column analysisField(Class<?> clazz, Field field) {
-		return new DefaultColumn(clazz, field, false, false);
+		return new DefaultColumn(clazz, field);
 	}
 
 	protected LinkedHashMap<String, Column> analysisClass(Class<?> clazz) {

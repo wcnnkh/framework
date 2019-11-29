@@ -7,11 +7,10 @@ import java.util.Map;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import scw.core.Destroy;
 import scw.db.DBUtils;
 import scw.db.database.DataBase;
 
-public abstract class AbstractHikariCPDBConfig extends AbstractDBConfig implements Destroy {
+public abstract class AbstractHikariCPDBConfig extends AbstractDBConfig {
 	private HikariDataSource hds;
 	private DataBase dataBase;
 
@@ -41,5 +40,6 @@ public abstract class AbstractHikariCPDBConfig extends AbstractDBConfig implemen
 
 	public void destroy() {
 		hds.close();
+		super.destroy();
 	}
 }

@@ -2,7 +2,7 @@ package scw.security.session;
 
 import scw.core.attribute.AttributesWrapper;
 
-public final class DefaultSession extends AttributesWrapper<Object> implements Session {
+public final class DefaultSession extends AttributesWrapper<String, Object> implements Session {
 	private AbstractSessionFactory sessionFactory;
 	private SessionData sessionData;
 	private boolean create;

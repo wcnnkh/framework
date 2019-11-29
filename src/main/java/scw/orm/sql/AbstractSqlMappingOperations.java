@@ -1,6 +1,5 @@
 package scw.orm.sql;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -8,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.reflect.AnnotationUtils;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.IteratorCallback;
 import scw.orm.AbstractMappingOperations;
@@ -16,9 +14,7 @@ import scw.orm.MappingContext;
 import scw.orm.sql.annotation.AutoIncrement;
 import scw.orm.sql.annotation.Column;
 import scw.orm.sql.annotation.Index;
-import scw.orm.sql.annotation.NotColumn;
 import scw.orm.sql.annotation.Table;
-import scw.orm.sql.annotation.Transient;
 import scw.orm.sql.enums.CasType;
 import scw.orm.sql.support.SqlORMUtils;
 
@@ -120,28 +116,6 @@ public abstract class AbstractSqlMappingOperations extends AbstractMappingOperat
 
 		Column column = context.getColumn().getAnnotation(Column.class);
 		return column == null ? true : column.nullAble();
-	}
-
-	public boolean isIgnore(MappingContext context) {
-		if (AnnotationUtils.isDeprecated(context.getColumn())) {
-			return true;
-		}
-
-		NotColumn exclude = context.getColumn().getAnnotation(NotColumn.class);
-		if (exclude != null) {
-			return true;
-		}
-
-		Transient tr = context.getColumn().getAnnotation(Transient.class);
-		if (tr != null) {
-			return true;
-		}
-
-		if (Modifier.isStatic(context.getColumn().getField().getModifiers())
-				|| Modifier.isTransient(context.getColumn().getField().getModifiers())) {
-			return true;
-		}
-		return false;
 	}
 
 	public boolean isAutoIncrement(MappingContext context) {

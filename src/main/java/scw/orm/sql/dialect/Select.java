@@ -1,4 +1,4 @@
-package scw.sql.orm;
+package scw.orm.sql.dialect;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,8 +12,8 @@ import java.util.Map.Entry;
 import scw.core.Pagination;
 import scw.core.exception.ParameterException;
 import scw.orm.MappingContext;
+import scw.orm.sql.ORMOperations;
 import scw.orm.sql.ResultSet;
-import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.dialect.mysql.MysqlDialectSql;
 import scw.sql.Sql;
 

@@ -25,8 +25,6 @@ public interface SqlMapper extends Mapper, TableNameMapping {
 
 	boolean isNullAble(MappingContext context);
 
-	boolean isIgnore(MappingContext context);
-
 	boolean isAutoIncrement(MappingContext context);
 
 	String getCharsetName(MappingContext context);

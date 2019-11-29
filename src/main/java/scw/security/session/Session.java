@@ -2,7 +2,7 @@ package scw.security.session;
 
 import scw.core.attribute.Attributes;
 
-public interface Session extends Attributes<Object>{
+public interface Session extends Attributes<String, Object>{
 
 	/**
 	 * 创建时间

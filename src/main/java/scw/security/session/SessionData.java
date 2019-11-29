@@ -8,7 +8,7 @@ import java.util.Map;
 
 import scw.core.attribute.Attributes;
 
-public final class SessionData implements Attributes<Object>, Serializable {
+public final class SessionData implements Attributes<String, Object>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private Map<String, Object> attributeMap;
 	private long createTime;

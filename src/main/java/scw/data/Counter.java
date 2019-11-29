@@ -6,6 +6,8 @@ package scw.data;
  *
  */
 public interface Counter {
+	boolean isExist(String key);
+	
 	long incr(String key, long delta);
 
 	long incr(String key, long delta, long initialValue);

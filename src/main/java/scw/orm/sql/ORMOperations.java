@@ -1,4 +1,4 @@
-package scw.sql.orm;
+package scw.orm.sql;
 
 import java.util.Collection;
 import java.util.List;
@@ -6,8 +6,6 @@ import java.util.Map;
 
 import scw.core.Pagination;
 import scw.core.utils.IteratorCallback;
-import scw.orm.sql.ResultMapping;
-import scw.orm.sql.ResultSet;
 import scw.orm.sql.dialect.SqlDialect;
 import scw.sql.Sql;
 

@@ -6,25 +6,25 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class SimpleAttributes<T> implements Attributes<T>, Serializable{
+public class SimpleAttributes<K, V> implements Attributes<K, V>, Serializable {
 	private static final long serialVersionUID = 1L;
-	private Map<String, T> attributeMap;
+	private Map<K, V> attributeMap;
 
-	public T getAttribute(String name) {
+	public V getAttribute(K name) {
 		return attributeMap == null ? null : attributeMap.get(name);
 	}
 
-	protected Map<String, T> createAttributeMap() {
-		return new LinkedHashMap<String, T>();
+	protected Map<K, V> createAttributeMap() {
+		return new LinkedHashMap<K, V>();
 	}
 
 	@SuppressWarnings("unchecked")
-	public Enumeration<String> getAttributeNames() {
-		return (Enumeration<String>) (attributeMap == null ? Collections.emptyEnumeration()
+	public Enumeration<K> getAttributeNames() {
+		return (Enumeration<K>) (attributeMap == null ? Collections.emptyEnumeration()
 				: Collections.enumeration(attributeMap.keySet()));
 	}
 
-	public void setAttribute(String name, T o) {
+	public void setAttribute(K name, V o) {
 		if (attributeMap == null) {
 			attributeMap = createAttributeMap();
 		}
@@ -32,7 +32,7 @@ public class SimpleAttributes<T> implements Attributes<T>, Serializable{
 		attributeMap.put(name, o);
 	}
 
-	public void removeAttribute(String name) {
+	public void removeAttribute(K name) {
 		if (attributeMap == null) {
 			return;
 		}

@@ -1,4 +1,4 @@
-package scw.sql.orm;
+package scw.orm.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,14 +16,14 @@ import scw.core.utils.StringUtils;
 import scw.orm.IteratorMapping;
 import scw.orm.MappingContext;
 import scw.orm.ORMException;
-import scw.orm.sql.ResultMapping;
-import scw.orm.sql.ResultSet;
-import scw.orm.sql.SqlMapper;
+import scw.orm.sql.annotation.Generator;
 import scw.orm.sql.annotation.Table;
+import scw.orm.sql.dialect.MysqlSelect;
 import scw.orm.sql.dialect.PaginationSql;
+import scw.orm.sql.dialect.Select;
 import scw.orm.sql.enums.OperationType;
 import scw.orm.sql.support.DefaultResultMapping;
-import scw.orm.sql.support.DefaultResultSetMapping;
+import scw.orm.sql.support.DefaultResultSet;
 import scw.orm.sql.support.SqlORMUtils;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
@@ -32,6 +32,8 @@ import scw.sql.SqlTemplate;
 import scw.sql.SqlUtils;
 
 public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
+	public abstract GeneratorService getGeneratorService();
+
 	public SqlMapper getSqlMapper() {
 		return getSqlDialect().getSqlMapper();
 	}
@@ -76,7 +78,30 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		});
 	}
 
+	protected void generator(final OperationType operationType, final Class<?> clazz, final Object bean,
+			final String tableName) {
+		final GeneratorContext generatorContext = new GeneratorContext(this, operationType, bean, tableName,
+				getSqlDialect().getSqlMapper());
+		try {
+			getSqlMapper().iterator(null, clazz, new IteratorMapping<SqlMapper>() {
+
+				public void iterator(MappingContext context, SqlMapper sqlMapper) throws Exception {
+					Generator generator = context.getColumn().getAnnotation(Generator.class);
+					if (generator == null) {
+						return;
+					}
+
+					generatorContext.setMappingContext(context);
+					getGeneratorService().process(generatorContext);
+				}
+			});
+		} catch (Exception e) {
+			throw new ORMException("generator [" + clazz + "]", e);
+		}
+	}
+
 	protected boolean orm(OperationType operationType, Class<?> clazz, Object bean, String tableName) {
+		generator(operationType, clazz, bean, tableName);
 		Sql sql = SqlORMUtils.toSql(operationType, getSqlDialect(), clazz, bean, tableName);
 		Connection connection = null;
 		try {
@@ -177,8 +202,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 			throw new NullPointerException("params length  greater than primary key lenght");
 		}
 
-		String tName = (tableName == null || tableName.length() == 0) ? getSqlMapper().getTableName(type)
-				: tableName;
+		String tName = (tableName == null || tableName.length() == 0) ? getSqlMapper().getTableName(type) : tableName;
 		Sql sql = getSqlDialect().toSelectInIdSql(type, tName, params, inIds);
 		ResultSet resultSet = select(sql);
 		List<V> list = resultSet.getList(type, tName);
@@ -203,7 +227,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		return query(sql, new ResultSetMapper<ResultSet>() {
 
 			public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
-				return new DefaultResultSetMapping(resultSet);
+				return new DefaultResultSet(resultSet);
 			}
 		});
 	}

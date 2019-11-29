@@ -11,7 +11,7 @@ public class TableColumn extends AbstractColumn {
 	private String name;
 
 	public TableColumn(Class<?> clazz, Field field) {
-		super(clazz, field, false, false);
+		super(clazz, field, true, true);
 		Column column = getAnnotation(Column.class);
 		if (column != null) {
 			this.name = column.name();

@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import scw.core.attribute.SimpleAttributes;
 import scw.core.reflect.SerializableMethodDefinition;
 
-public final class ObjectRpcRequestMessage extends SimpleAttributes<Object> implements Serializable {
+public final class ObjectRpcRequestMessage extends SimpleAttributes<String, Object> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private SerializableMethodDefinition methodDefinition;
 	private Object[] args;

@@ -2,26 +2,26 @@ package scw.core.attribute;
 
 import java.util.Enumeration;
 
-public class AttributesWrapper<T> implements Attributes<T>{
-	private final Attributes<T> targetAttributes;
+public class AttributesWrapper<K, V> implements Attributes<K, V>{
+	private final Attributes<K, V> targetAttributes;
 
-	public AttributesWrapper(Attributes<T> targetAttributes) {
+	public AttributesWrapper(Attributes<K, V> targetAttributes) {
 		this.targetAttributes = targetAttributes;
 	}
 
-	public T getAttribute(String name) {
+	public V getAttribute(K name) {
 		return targetAttributes.getAttribute(name);
 	}
 
-	public Enumeration<String> getAttributeNames() {
+	public Enumeration<K> getAttributeNames() {
 		return targetAttributes.getAttributeNames();
 	}
 
-	public void setAttribute(String name, T o) {
+	public void setAttribute(K name, V o) {
 		targetAttributes.setAttribute(name, o);
 	}
 
-	public void removeAttribute(String name) {
+	public void removeAttribute(K name) {
 		targetAttributes.removeAttribute(name);
 	}
 

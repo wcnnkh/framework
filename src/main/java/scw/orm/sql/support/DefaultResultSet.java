@@ -7,14 +7,14 @@ import scw.orm.sql.AbstractResultSet;
 import scw.orm.sql.ResultMapping;
 import scw.orm.sql.ValueIndexMapping;
 
-public class DefaultResultSetMapping extends AbstractResultSet {
+public class DefaultResultSet extends AbstractResultSet {
 	private static final long serialVersionUID = 1L;
 
-	public DefaultResultSetMapping(ValueIndexMapping valueIndexMapping, LinkedList<Object[]> dataList) {
+	public DefaultResultSet(ValueIndexMapping valueIndexMapping, LinkedList<Object[]> dataList) {
 		super(valueIndexMapping, dataList);
 	}
 
-	public DefaultResultSetMapping(java.sql.ResultSet resultSet) throws SQLException {
+	public DefaultResultSet(java.sql.ResultSet resultSet) throws SQLException {
 		super(resultSet);
 	}
 

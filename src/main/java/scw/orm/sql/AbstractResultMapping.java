@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.core.FieldSetterListen;
 import scw.core.utils.TypeUtils;
 import scw.sql.SqlUtils;
 
@@ -42,7 +43,12 @@ public abstract class AbstractResultMapping implements ResultMapping {
 			}
 			return (T) array;
 		}
-		return mapping(clazz, tableNameMapping);
+
+		T v = mapping(clazz, tableNameMapping);
+		if (v instanceof FieldSetterListen) {
+			((FieldSetterListen) v).clear_field_setter_listen();
+		}
+		return v;
 	}
 
 	protected abstract <T> T mapping(Class<T> clazz, TableNameMapping tableNameMapping);

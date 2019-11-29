@@ -1,7 +1,7 @@
 package scw.core.attribute;
 
-public interface Attributes<T> extends AttributesReadOnly<T> {
-	void setAttribute(String name, T o);
+public interface Attributes<K, V> extends AttributesReadOnly<K, V> {
+	void setAttribute(K name, V o);
 
-	void removeAttribute(String name);
+	void removeAttribute(K name);
 }

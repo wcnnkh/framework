@@ -5,7 +5,7 @@ import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterFactory;
 import scw.logger.LogService;
 
-public interface Channel extends LogService, Attributes<Object>, ParameterFactory<ParameterConfig>{
+public interface Channel extends LogService, Attributes<String, Object>, ParameterFactory<ParameterConfig>{
 	long getCreateTime();
 
 	void write(Object obj) throws Throwable;

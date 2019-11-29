@@ -10,7 +10,7 @@ import scw.core.attribute.AttributesWrapper;
 import scw.net.http.Cookie;
 import scw.security.session.Session;
 
-public class HttpRequestWrapper extends AttributesWrapper<Object> implements HttpRequest {
+public class HttpRequestWrapper extends AttributesWrapper<String, Object> implements HttpRequest {
 	private final HttpRequest targetHttpRequest;
 
 	public HttpRequestWrapper(HttpRequest httpRequest) {

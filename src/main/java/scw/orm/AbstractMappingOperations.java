@@ -1,6 +1,7 @@
 package scw.orm;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,10 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.core.annotation.Ignore;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.IteratorCallback;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.orm.annotation.NotColumn;
 import scw.orm.annotation.PrimaryKey;
 import scw.orm.sql.SqlMapper;
 
@@ -50,6 +53,10 @@ public abstract class AbstractMappingOperations implements Mapper {
 		Map<String, Column> map = getColumnMap(clazz);
 		for (Entry<String, Column> entry : map.entrySet()) {
 			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
+			if (isIgnore(context)) {
+				continue;
+			}
+
 			setterMapping.setter(context, bean, this);
 		}
 
@@ -76,7 +83,12 @@ public abstract class AbstractMappingOperations implements Mapper {
 			IteratorMapping iterator) throws Exception {
 		Map<String, Column> map = getColumnMap(clazz);
 		for (Entry<String, Column> entry : map.entrySet()) {
-			iterator.iterator(new MappingContext(superContext, entry.getValue(), declaringClass), this);
+			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
+			if (isIgnore(context)) {
+				continue;
+			}
+
+			iterator.iterator(context, this);
 		}
 
 		Class<?> superClazz = clazz.getSuperclass();
@@ -90,6 +102,10 @@ public abstract class AbstractMappingOperations implements Mapper {
 		Map<String, Column> map = getColumnMap(clazz);
 		for (Entry<String, Column> entry : map.entrySet()) {
 			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
+			if (isIgnore(context)) {
+				continue;
+			}
+
 			if (filter == null || filter.iteratorCallback(context)) {
 				list.add(context);
 			}
@@ -190,5 +206,22 @@ public abstract class AbstractMappingOperations implements Mapper {
 			keyMap.put(getObjectKeyById(clazz, Arrays.asList(ids)), k);
 		}
 		return keyMap;
+	}
+
+	public boolean isIgnore(MappingContext context) {
+		if (Modifier.isStatic(context.getColumn().getField().getModifiers())) {
+			return true;
+		}
+
+		Ignore ignore = context.getColumn().getAnnotation(Ignore.class);
+		if (ignore != null) {
+			return true;
+		}
+
+		NotColumn exclude = context.getColumn().getAnnotation(NotColumn.class);
+		if (exclude != null) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -6,15 +6,14 @@ import java.util.Map;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
-import scw.core.Destroy;
 import scw.db.DBUtils;
 import scw.db.database.DataBase;
 
-public abstract class AbstractDruidDBConfig extends AbstractDBConfig implements Destroy {
+public abstract class AbstractDruidDBConfig extends AbstractDBConfig {
 	private DruidDataSource datasource;
 	private DataBase dataBase;
-	
-	static{
+
+	static {
 		DruidDataSource.class.getName();
 	}
 
@@ -28,8 +27,7 @@ public abstract class AbstractDruidDBConfig extends AbstractDBConfig implements 
 		}
 
 		datasource.setRemoveAbandoned(false);
-		this.dataBase = DBUtils.automaticRecognition(
-				datasource.getDriverClassName(), datasource.getUrl(),
+		this.dataBase = DBUtils.automaticRecognition(datasource.getDriverClassName(), datasource.getUrl(),
 				datasource.getUsername(), datasource.getPassword());
 		dataBase.create();
 	}
@@ -44,5 +42,6 @@ public abstract class AbstractDruidDBConfig extends AbstractDBConfig implements 
 
 	public void destroy() {
 		datasource.close();
+		super.destroy();
 	}
 }

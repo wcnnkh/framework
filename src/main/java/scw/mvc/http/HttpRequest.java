@@ -8,7 +8,7 @@ import scw.net.header.MultiValueHeadersReadOnly;
 import scw.net.http.Cookie;
 import scw.security.session.Session;
 
-public interface HttpRequest extends Attributes<Object>, MultiValueHeadersReadOnly, Request, MultiValueParameterFactory, IP {
+public interface HttpRequest extends Attributes<String, Object>, MultiValueHeadersReadOnly, Request, MultiValueParameterFactory, IP {
 	String getMethod();
 
 	String getRequestPath();
