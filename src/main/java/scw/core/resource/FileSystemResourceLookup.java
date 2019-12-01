@@ -8,15 +8,32 @@ import scw.core.Consumer;
 import scw.io.IOUtils;
 
 public class FileSystemResourceLookup implements ResourceLookup {
-	public static final FileSystemResourceLookup FILE_SYSTEM_RESOURCE_LOOKUP = new FileSystemResourceLookup();
+	private String rootPath;
+	private boolean search;
+
+	public FileSystemResourceLookup(String rootPath, boolean search) {
+		this.rootPath = rootPath;
+		this.search = search;
+	}
 
 	public boolean lookup(String resource, Consumer<InputStream> consumer) {
 		if (resource == null) {
 			return false;
 		}
 
-		File file = new File(resource);
-		if (!file.exists()) {
+		File file = null;
+		if (search) {
+			File rootFile = new File(rootPath == null ? "" : rootPath);
+			if (rootFile == null || !rootFile.exists()) {
+				return false;
+			}
+
+			file = searchFile(resource, rootFile);
+		} else {
+			file = new File(rootPath + File.separator + resource);
+		}
+
+		if (file == null || !file.exists()) {
 			return false;
 		}
 
@@ -34,4 +51,29 @@ public class FileSystemResourceLookup implements ResourceLookup {
 		return true;
 	}
 
+	private static File searchFile(String path, File rootFile) {
+		if (!rootFile.exists()) {
+			return null;
+		}
+
+		File[] files = rootFile.listFiles();
+		if (files == null) {
+			return null;
+		}
+
+		for (File file : files) {
+			if (file.isFile()) {
+				String p = file.getPath().replaceAll("\\\\", "/");
+				if (p.endsWith(path.replaceAll("\\\\", "/"))) {
+					return file;
+				}
+			} else {
+				File f = searchFile(path, file);
+				if (f != null) {
+					return f;
+				}
+			}
+		}
+		return null;
+	}
 }
