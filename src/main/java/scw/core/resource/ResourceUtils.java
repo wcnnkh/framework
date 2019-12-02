@@ -37,7 +37,7 @@ public final class ResourceUtils {
 	private static final ResourceOperations RESOURCE_OPERATIONS;
 
 	static {
-		RESOURCE_LOOKUP.add(new LocalResourceLookup(false));
+		RESOURCE_LOOKUP.add(new DefaultResourceLookup());
 		RESOURCE_OPERATIONS = new SystemPropertyMultiSuffixResourceOperations(RESOURCE_LOOKUP);
 	}
 
