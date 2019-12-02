@@ -1,12 +1,12 @@
 package scw.mvc.http;
 
-import scw.core.attribute.Attributes;
-import scw.core.ip.IP;
 import scw.core.multivalue.MultiValueParameterFactory;
 import scw.mvc.Request;
 import scw.net.header.MultiValueHeadersReadOnly;
 import scw.net.http.Cookie;
 import scw.security.session.Session;
+import scw.util.attribute.Attributes;
+import scw.util.ip.IP;
 
 public interface HttpRequest extends Attributes<String, Object>, MultiValueHeadersReadOnly, Request, MultiValueParameterFactory, IP {
 	String getMethod();

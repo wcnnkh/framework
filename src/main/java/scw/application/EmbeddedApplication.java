@@ -7,8 +7,8 @@ import scw.application.embedded.ShutdownHttpServlet;
 import scw.beans.BeanUtils;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
-import scw.logger.LoggerUtils;
 import scw.mvc.servlet.ServletService;
 import scw.mvc.servlet.ServletUtils;
 
@@ -37,7 +37,7 @@ public class EmbeddedApplication extends CommonApplication {
 		if (StringUtils.isEmpty(embeddedName)) {
 			String name = getSupportServletEmbeddedClassName();
 			if (name == null) {
-				LoggerUtils.warn(EmbeddedApplication.class, "未找到支持的embedded, 如需支持请导入对应的jar");
+				FormatUtils.warn(EmbeddedApplication.class, "未找到支持的embedded, 如需支持请导入对应的jar");
 			} else {
 				initEmbedded(name);
 			}
@@ -55,7 +55,7 @@ public class EmbeddedApplication extends CommonApplication {
 
 	@Override
 	public void destroy() {
-		LoggerUtils.info(TomcatApplication.class, "---------------shutdown---------------");
+		FormatUtils.info(TomcatApplication.class, "---------------shutdown---------------");
 		if (embedded != null) {
 			embedded.destroy();
 		}
@@ -74,7 +74,7 @@ public class EmbeddedApplication extends CommonApplication {
 
 		public void run() {
 			if (!ResourceUtils.getResourceOperations().isExist(beanXml)) {
-				LoggerUtils.warn(TomcatApplication.class, "not found " + beanXml);
+				FormatUtils.warn(TomcatApplication.class, "not found " + beanXml);
 			}
 
 			Application application = new EmbeddedApplication(beanXml);

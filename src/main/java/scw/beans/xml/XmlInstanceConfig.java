@@ -6,7 +6,7 @@ import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceConfig;
 import scw.core.instance.InstanceFactory;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 
 public class XmlInstanceConfig implements InstanceConfig {
@@ -20,9 +20,9 @@ public class XmlInstanceConfig implements InstanceConfig {
 		this.instanceFactory = instanceFactory;
 		this.propertyFactory = propertyFactory;
 		if (ArrayUtils.isEmpty(xmlBeanParameters)) {
-			this.constructor = ReflectUtils.getConstructor(clazz, false);
+			this.constructor = ReflectionUtils.getConstructor(clazz, false);
 		} else {
-			for (Constructor<?> constructor : ReflectUtils.getConstructorOrderList(clazz)	) {
+			for (Constructor<?> constructor : ReflectionUtils.getConstructorOrderList(clazz)	) {
 				XmlBeanParameter[] beanMethodParameters = BeanUtils.sortParameters(constructor, xmlBeanParameters);
 				if (beanMethodParameters != null) {
 					this.xmlBeanParameters = beanMethodParameters;

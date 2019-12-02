@@ -8,7 +8,7 @@ import scw.beans.BeanUtils;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.exception.BeansException;
 import scw.core.exception.NotFoundException;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 
 public abstract class AbstractAutoBean implements AutoBean {
 	protected final BeanFactory beanFactory;
@@ -37,7 +37,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 
 	@SuppressWarnings("unchecked")
 	public <T> T create(Object... params) {
-		Constructor<?> constructor = ReflectUtils.findConstructorByParameters(type, false, params);
+		Constructor<?> constructor = ReflectionUtils.findConstructorByParameters(type, false, params);
 		if (constructor == null) {
 			throw new NotFoundException(type + "找不到指定的构造方法");
 		}
@@ -56,7 +56,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 
 	@SuppressWarnings("unchecked")
 	public <T> T create(Class<?>[] parameterTypes, Object... params) {
-		Constructor<?> constructor = ReflectUtils.getConstructor(type, false, parameterTypes);
+		Constructor<?> constructor = ReflectionUtils.getConstructor(type, false, parameterTypes);
 		if (constructor == null) {
 			throw new NotFoundException(type + "找不到指定的构造方法");
 		}

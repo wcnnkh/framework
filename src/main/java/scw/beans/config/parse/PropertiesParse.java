@@ -9,7 +9,7 @@ import scw.beans.property.AbstractCharsetNameValueFormat;
 import scw.core.Constants;
 import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParse;
@@ -40,13 +40,13 @@ public final class PropertiesParse extends AbstractCharsetNameValueFormat implem
 			try {
 				Object obj = fieldType.newInstance();
 				for (Object key : properties.keySet()) {
-					Field field = ReflectUtils.getField(fieldType, key.toString(), true);
+					Field field = ReflectionUtils.getField(fieldType, key.toString(), true);
 					if (field == null) {
 						continue;
 					}
 
 					String value = SystemPropertyUtils.format(properties.getProperty(key.toString()));
-					ReflectUtils.setFieldValueAutoType(fieldType, field, obj, value);
+					ReflectionUtils.setFieldValueAutoType(fieldType, field, obj, value);
 				}
 				return obj;
 			} catch (Exception e) {
@@ -68,13 +68,13 @@ public final class PropertiesParse extends AbstractCharsetNameValueFormat implem
 			Class<?> fieldType = field.getType();
 			Object obj = fieldType.newInstance();
 			for (Object key : properties.keySet()) {
-				Field f = ReflectUtils.getField(fieldType, key.toString(), true);
+				Field f = ReflectionUtils.getField(fieldType, key.toString(), true);
 				if (f == null) {
 					continue;
 				}
 
 				String value = SystemPropertyUtils.format(properties.getProperty(key.toString()));
-				ReflectUtils.setFieldValueAutoType(fieldType, f, obj, value);
+				ReflectionUtils.setFieldValueAutoType(fieldType, f, obj, value);
 			}
 			return obj;
 		}

@@ -11,9 +11,13 @@ import scw.core.PropertyFactory;
 import scw.core.StringFormat;
 
 public final class FormatUtils {
+	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";
+
 	private FormatUtils() {
 	};
-	private static final String DEFAULT_PLACEHOLDER = "{}";
+
+	private static final String DEFAULT_PLACEHOLDER = StringUtils
+			.toString(SystemPropertyUtils.getProperty("scw.format.placeholder"), "{}");
 
 	public static String formatPlaceholder(Object text, String placeholder, Object... args) {
 		StringBuilder sb = new StringBuilder();
@@ -145,4 +149,69 @@ public final class FormatUtils {
 		return format(text, propertyMap, false);
 	}
 
+	public static void loggerAppend(Appendable appendable, String time, String level, String tag,
+			StringAppend stringAppend) throws Exception {
+		boolean b = false;
+		if (!StringUtils.isEmpty(time)) {
+			appendable.append(time);
+			b = true;
+		}
+
+		if (!StringUtils.isEmpty(level)) {
+			if (b) {
+				appendable.append(" ");
+			}
+			b = true;
+			appendable.append(level);
+		}
+
+		if (!StringUtils.isEmpty(tag)) {
+			if (b) {
+				appendable.append(" ");
+			}
+			b = true;
+			appendable.append("[");
+			appendable.append(tag);
+			appendable.append("]");
+		}
+
+		if (stringAppend != null) {
+			if (b) {
+				appendable.append(" - ");
+			}
+			b = true;
+			stringAppend.appendTo(appendable);
+		}
+	}
+
+	public static void loggerAppend(Appendable appendable, long time, String level, String tag,
+			StringAppend stringAppend) throws Exception {
+		loggerAppend(appendable, XTime.format(time, TIME_FORMAT), level, tag, stringAppend);
+	}
+
+	public static void loggerAppend(Appendable appendable, long time, String level, String tag, String placeholder,
+			Object msg, Object... args) throws Exception {
+		StringAppend loggerAppend = new PlaceholderFormatAppend(msg, placeholder, args);
+		loggerAppend(appendable, time, level, tag, loggerAppend);
+	}
+
+	public static void info(Class<?> clazz, Object msg, Object... args) {
+		StringBuilder sb = new StringBuilder(256);
+		try {
+			FormatUtils.loggerAppend(sb, System.currentTimeMillis(), "CONSOLE", clazz.getName(), null, msg, args);
+			System.out.println(sb.toString());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static void warn(Class<?> clazz, Object msg, Object... args) {
+		StringBuilder sb = new StringBuilder(256);
+		try {
+			FormatUtils.loggerAppend(sb, System.currentTimeMillis(), "CONSOLE", clazz.getName(), null, msg, args);
+			System.err.println(sb.toString());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

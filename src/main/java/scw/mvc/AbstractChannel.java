@@ -11,7 +11,7 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.core.Destroy;
 import scw.core.parameter.ParameterUtils;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 
 public abstract class AbstractChannel implements Channel, Destroy {
 	private final long createTime;
@@ -67,7 +67,7 @@ public abstract class AbstractChannel implements Channel, Destroy {
 		}
 
 		if (beanDefinition.isSingleton()) {
-			if (ReflectUtils.isInstance(beanDefinition.getType(), false)) {
+			if (ReflectionUtils.isInstance(beanDefinition.getType(), false)) {
 				Constructor<?> constructor = MVCUtils.getModelConstructor(beanDefinition.getType());
 				if (constructor == null) {
 					return null;
@@ -81,7 +81,7 @@ public abstract class AbstractChannel implements Channel, Destroy {
 
 		Object bean = beanMap == null ? null : beanMap.get(beanDefinition.getId());
 		if (bean == null) {
-			if (!ReflectUtils.isInstance(beanDefinition.getType(), false)) {
+			if (!ReflectionUtils.isInstance(beanDefinition.getType(), false)) {
 				synchronized (this) {
 					bean = beanMap == null ? null : beanMap.get(beanDefinition.getId());
 					if (bean == null) {

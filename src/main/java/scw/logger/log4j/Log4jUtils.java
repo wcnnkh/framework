@@ -6,15 +6,17 @@ import java.util.Properties;
 import org.w3c.dom.Element;
 
 import scw.core.Constants;
-import scw.core.KeyValuePair;
 import scw.core.exception.NotSupportException;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.resource.ResourceUtils;
+import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XMLUtils;
 import scw.logger.Level;
+import scw.logger.LoggerLevelUtils;
 import scw.logger.LoggerUtils;
+import scw.util.KeyValuePair;
 
 public final class Log4jUtils {
 	private static final String LOG4J_PATH = "scw_log4j";
@@ -32,7 +34,7 @@ public final class Log4jUtils {
 			return;
 		}
 
-		Method method = ReflectUtils.findMethod("org.apache.log4j.PropertyConfigurator", "configure", Properties.class);
+		Method method = ReflectionUtils.getMethod("org.apache.log4j.PropertyConfigurator", "configure", Properties.class);
 		if (method == null) {
 			return;
 		}
@@ -48,7 +50,7 @@ public final class Log4jUtils {
 			return;
 		}
 
-		Method method = ReflectUtils.findMethod("org.apache.log4j.xml.DOMConfigurator", "configure", Element.class);
+		Method method = ReflectionUtils.getMethod("org.apache.log4j.xml.DOMConfigurator", "configure", Element.class);
 		if (method == null) {
 			return;
 		}
@@ -95,9 +97,9 @@ public final class Log4jUtils {
 		}
 
 		String rootPath = SystemPropertyUtils.getWorkPath();
-		LoggerUtils.info(Log4jUtils.class, "load the default log directory: {}", rootPath);
+		FormatUtils.info(Log4jUtils.class, "load the default log directory: {}", rootPath);
 		Properties properties = new Properties();
-		properties.put("log4j.rootLogger", LoggerUtils.getDefaultLoggerLevel().name() + ", stdout, logfile");
+		properties.put("log4j.rootLogger", LoggerLevelUtils.getDefaultLevel().name() + ", stdout, logfile");
 		properties.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
 		properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
 		properties.put("log4j.appender.stdout.layout.ConversionPattern", "%d %p [%c] - %m%n");
@@ -117,12 +119,12 @@ public final class Log4jUtils {
 		// 过滤无用日志
 		properties.put("log4j.logger.org.apache.dubbo", "error");
 
-		for (KeyValuePair<String, Level> entry : LoggerUtils.getLoggerLevelConfigList()) {
+		for (KeyValuePair<String, Level> entry : LoggerLevelUtils.getLevelConfigList()) {
 			properties.put("log4j.logger." + entry.getKey(), entry.getValue().name());
 		}
 
 		if (ResourceUtils.getResourceOperations().isExist(LOG4J_APPEND_PATH)) {
-			LoggerUtils.info(Log4jUtils.class, "loading " + LOG4J_APPEND_PATH);
+			FormatUtils.info(Log4jUtils.class, "loading " + LOG4J_APPEND_PATH);
 			Properties append = ResourceUtils.getResourceOperations().getProperties(LOG4J_APPEND_PATH);
 			properties.putAll(append);
 		}

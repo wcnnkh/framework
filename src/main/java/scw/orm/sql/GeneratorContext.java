@@ -1,8 +1,8 @@
 package scw.orm.sql;
 
-import scw.core.attribute.SimpleAttributes;
 import scw.orm.MappingContext;
 import scw.orm.sql.enums.OperationType;
+import scw.util.attribute.SimpleAttributes;
 
 @SuppressWarnings("serial")
 public final class GeneratorContext extends SimpleAttributes<Object, Object> {

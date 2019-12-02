@@ -39,7 +39,7 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.AnnotationUtils;
 import scw.core.reflect.DefaultFieldDefinition;
 import scw.core.reflect.FieldDefinition;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
@@ -64,7 +64,7 @@ public final class BeanUtils {
 	private static void invokerInitStaticMethod(Collection<Class<?>> classList) throws Exception {
 		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
 		for (Class<?> clz : classList) {
-			for (Method method : ReflectUtils.getDeclaredMethods(clz)) {
+			for (Method method : ReflectionUtils.getDeclaredMethods(clz)) {
 				if (!Modifier.isStatic(method.getModifiers())) {
 					continue;
 				}
@@ -101,7 +101,7 @@ public final class BeanUtils {
 				valueWiredManager.cancel(clz);
 			}
 
-			for (Method method : ReflectUtils.getDeclaredMethods(clz)) {
+			for (Method method : ReflectionUtils.getDeclaredMethods(clz)) {
 				if (!Modifier.isStatic(method.getModifiers())) {
 					continue;
 				}
@@ -388,7 +388,7 @@ public final class BeanUtils {
 		Class<?> clz = clazz;
 		LinkedList<FieldDefinition> list = new LinkedList<FieldDefinition>();
 		while (clz != null && clz != Object.class) {
-			for (final Field field : ReflectUtils.getDeclaredFields(clz)) {
+			for (final Field field : ReflectionUtils.getDeclaredFields(clz)) {
 				if (AnnotationUtils.isDeprecated(field)) {
 					continue;
 				}

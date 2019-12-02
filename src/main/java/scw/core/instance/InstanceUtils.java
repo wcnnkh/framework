@@ -16,12 +16,12 @@ import scw.core.exception.NotSupportException;
 import scw.core.instance.support.ReflectionInstanceFactory;
 import scw.core.instance.support.ReflectionSingleInstanceFactory;
 import scw.core.parameter.ParameterUtils;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.logger.LoggerUtils;
 
 public final class InstanceUtils {
 	private InstanceUtils() {
@@ -156,7 +156,7 @@ public final class InstanceUtils {
 			throws NoSuchMethodException {
 		if (CollectionUtils.isEmpty(parameterMap)) {
 			try {
-				return ReflectUtils.getConstructor(type, isPublic).newInstance();
+				return ReflectionUtils.getConstructor(type, isPublic).newInstance();
 			} catch (InstantiationException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalAccessException e) {
@@ -250,7 +250,7 @@ public final class InstanceUtils {
 		}
 
 		if (clz.isAssignableFrom(clazz)) {
-			LoggerUtils.warn(InstanceUtils.class, "{} not is assignable from {}", clz, clazz);
+			FormatUtils.warn(InstanceUtils.class, "{} not is assignable from {}", clz, clazz);
 			return defaultValue;
 		}
 
@@ -283,7 +283,7 @@ public final class InstanceUtils {
 			}
 
 			if (clz.isAssignableFrom(clazz)) {
-				LoggerUtils.warn(InstanceUtils.class, "{} not is assignable from {}", clz, clazz);
+				FormatUtils.warn(InstanceUtils.class, "{} not is assignable from {}", clz, clazz);
 				continue;
 			}
 

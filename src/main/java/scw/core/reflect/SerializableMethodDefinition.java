@@ -30,7 +30,7 @@ public final class SerializableMethodDefinition implements Serializable, MethodD
 		if (method == null) {
 			synchronized (this) {
 				if (method == null) {
-					this.method = ReflectUtils.getMethod(belongClass, methodName, parameterTypes);
+					this.method = ReflectionUtils.getMethod(belongClass, methodName, parameterTypes);
 				}
 			}
 		}

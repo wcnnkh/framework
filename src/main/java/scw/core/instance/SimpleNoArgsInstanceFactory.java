@@ -2,7 +2,7 @@ package scw.core.instance;
 
 import java.lang.reflect.Constructor;
 
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 
 public class SimpleNoArgsInstanceFactory implements NoArgsInstanceFactory {
@@ -19,7 +19,7 @@ public class SimpleNoArgsInstanceFactory implements NoArgsInstanceFactory {
 		Constructor<T> constructor = null;
 		try {
 			constructor = clazz.getConstructor();
-			ReflectUtils.setAccessibleConstructor(constructor);
+			ReflectionUtils.setAccessibleConstructor(constructor);
 		} catch (NoSuchMethodException e) {
 		}
 		return constructor;

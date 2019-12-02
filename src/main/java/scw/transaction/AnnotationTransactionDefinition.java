@@ -1,6 +1,6 @@
 package scw.transaction;
 
-import scw.core.context.Propagation;
+import scw.context.Propagation;
 
 final class AnnotationTransactionDefinition implements TransactionDefinition {
 	private final Transactional tx;

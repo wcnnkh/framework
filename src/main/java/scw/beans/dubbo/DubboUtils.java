@@ -11,7 +11,7 @@ import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -119,7 +119,7 @@ public final class DubboUtils {
 
 		runnable.run();
 	}
-	
+
 	public static void registerDubboShutdownHook() {
 		Class<?> dubboShutdownHook = null;
 		try {
@@ -132,8 +132,8 @@ public final class DubboUtils {
 		}
 
 		try {
-			Object obj = ReflectUtils.invokeStaticMethod(dubboShutdownHook, "getDubboShutdownHook", new Class[0]);
-			Method method = ReflectUtils.findMethod(dubboShutdownHook, "register");
+			Object obj = ReflectionUtils.invokeStaticMethod(dubboShutdownHook, "getDubboShutdownHook", new Class[0]);
+			Method method = ReflectionUtils.findMethod(dubboShutdownHook, "register");
 			method.invoke(obj);
 		} catch (Exception e) {
 			logger.error(e, "shutdown error");

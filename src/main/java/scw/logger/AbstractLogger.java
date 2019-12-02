@@ -1,5 +1,7 @@
 package scw.logger;
 
+import scw.core.utils.PlaceholderFormatAppend;
+
 public abstract class AbstractLogger implements Logger {
 	private final String placeholder;
 	private final Level level;
@@ -10,7 +12,7 @@ public abstract class AbstractLogger implements Logger {
 	}
 
 	protected Object createMessage(Object format, Object... args) {
-		return new DefaultLoggerFormatAppend(format, getPlaceholder(), args);
+		return new PlaceholderFormatAppend(format, getPlaceholder(), args);
 	}
 
 	public String getPlaceholder() {

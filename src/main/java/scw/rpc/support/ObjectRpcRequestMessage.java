@@ -3,8 +3,8 @@ package scw.rpc.support;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-import scw.core.attribute.SimpleAttributes;
 import scw.core.reflect.SerializableMethodDefinition;
+import scw.util.attribute.SimpleAttributes;
 
 public final class ObjectRpcRequestMessage extends SimpleAttributes<String, Object> implements Serializable {
 	private static final long serialVersionUID = 1L;

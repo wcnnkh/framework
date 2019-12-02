@@ -25,7 +25,10 @@ import scw.core.ResourceFactory;
 import scw.core.Start;
 import scw.core.ValueFactory;
 import scw.core.exception.NotSupportException;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
+import scw.core.resource.DefaultResourceLookup;
+import scw.core.resource.ResourceOperations;
+import scw.core.resource.SystemPropertyMultiSuffixResourceOperations;
 
 public final class XUtils {
 	private XUtils() {
@@ -34,7 +37,7 @@ public final class XUtils {
 	private static final boolean isSupportJdk6;
 
 	static {
-		isSupportJdk6 = ReflectUtils.getMethod(String.class, "getBytes", new Class<?>[] { Charset.class }) != null;
+		isSupportJdk6 = ReflectionUtils.getMethod(String.class, "getBytes", new Class<?>[] { Charset.class }) != null;
 	}
 
 	public static boolean isSupportJdk6() {
@@ -346,13 +349,13 @@ public final class XUtils {
 			resourceFactory.release(resource);
 		}
 	}
-	
-	public static void start(Object start){
-		if(start == null){
-			return ;
+
+	public static void start(Object start) {
+		if (start == null) {
+			return;
 		}
-		
-		if(start instanceof Start){
+
+		if (start instanceof Start) {
 			((Start) start).start();
 		}
 	}
@@ -386,5 +389,13 @@ public final class XUtils {
 		} finally {
 			resourceFactory.release(r);
 		}
+	}
+
+	/**
+	 * 获取无任何class loader依赖的资源操作
+	 * @return
+	 */
+	public static ResourceOperations getSystemResourceOperations() {
+		return new SystemPropertyMultiSuffixResourceOperations(new DefaultResourceLookup());
 	}
 }

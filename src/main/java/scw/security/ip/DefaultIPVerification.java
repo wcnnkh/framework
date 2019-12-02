@@ -4,9 +4,9 @@ import scw.core.annotation.DefaultValue;
 import scw.core.annotation.NotRequire;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.PropertyParameter;
-import scw.core.ip.IPUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
+import scw.util.ip.IPUtils;
 
 public class DefaultIPVerification implements IPVerification {
 	private final BlacklistIPVerification blacklistIPVerification;

@@ -6,9 +6,9 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Map;
 
-import scw.core.attribute.AttributesWrapper;
 import scw.net.http.Cookie;
 import scw.security.session.Session;
+import scw.util.attribute.AttributesWrapper;
 
 public class HttpRequestWrapper extends AttributesWrapper<String, Object> implements HttpRequest {
 	private final HttpRequest targetHttpRequest;

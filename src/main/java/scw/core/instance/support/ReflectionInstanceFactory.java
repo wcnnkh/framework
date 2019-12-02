@@ -4,7 +4,7 @@ import java.lang.reflect.Constructor;
 
 import scw.core.instance.InstanceException;
 import scw.core.instance.InstanceFactory;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.StringUtils;
 
 @SuppressWarnings("unchecked")
@@ -14,7 +14,7 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 			return null;
 		}
 
-		Constructor<?> constructor = ReflectUtils.getConstructor(type, false);
+		Constructor<?> constructor = ReflectionUtils.getConstructor(type, false);
 		if (constructor == null) {
 			return null;
 		}
@@ -62,7 +62,7 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 			return null;
 		}
 
-		Constructor<?> constructor = ReflectUtils.findConstructorByParameters(type, false, params);
+		Constructor<?> constructor = ReflectionUtils.findConstructorByParameters(type, false, params);
 		if (constructor == null) {
 			return null;
 		}
@@ -79,7 +79,7 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 			return null;
 		}
 
-		Constructor<?> constructor = ReflectUtils.getConstructor(type, false, parameterTypes);
+		Constructor<?> constructor = ReflectionUtils.getConstructor(type, false, parameterTypes);
 		if (constructor == null) {
 			return null;
 		}
@@ -100,7 +100,7 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 			return false;
 		}
 
-		Constructor<?> constructor = ReflectUtils.getConstructor(clazz, false);
+		Constructor<?> constructor = ReflectionUtils.getConstructor(clazz, false);
 		return constructor != null;
 	}
 

@@ -5,6 +5,6 @@ public interface RedisConstants {
 	static final String PORT_CONFIG_KEY = "redis.port";
 	static final String AUTH_CONFIG_KEY = "redis.auth";
 	static final String CONFIG_KEY = "redis.configuration";
-	static final String DEFAULT_CONFIG = "redis.properties";
+	static final String DEFAULT_CONFIG = "/redis/redis.properties";
 	static final String STARTING_FLUSH_ALL_KEY = "redis.starting.flush";
 }

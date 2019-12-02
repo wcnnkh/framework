@@ -1,6 +1,6 @@
 package scw.transaction;
 
-import scw.core.context.Propagation;
+import scw.context.Propagation;
 
 /**
  * 事务的定义

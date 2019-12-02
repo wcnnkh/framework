@@ -7,10 +7,10 @@ import java.lang.reflect.Method;
 import java.util.Properties;
 
 import scw.core.Consumer;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
+import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
-import scw.logger.LoggerUtils;
 
 public class LoadPropertiesConsumer implements Consumer<InputStream> {
 	private Properties properties;
@@ -30,9 +30,9 @@ public class LoadPropertiesConsumer implements Consumer<InputStream> {
 			if (StringUtils.isEmpty(charsetName)) {
 				properties.load(inputStream);
 			} else {
-				Method method = ReflectUtils.findMethod(Properties.class, "load", Reader.class);
+				Method method = ReflectionUtils.getMethod(Properties.class, "load", Reader.class);
 				if (method == null) {
-					LoggerUtils.warn(LoadPropertiesConsumer.class, "jdk1.6及以上的版本才支持指定字符集: {}" + name);
+					FormatUtils.warn(LoadPropertiesConsumer.class, "jdk1.6及以上的版本才支持指定字符集: {}" + name);
 					properties.load(inputStream);
 				} else {
 					InputStreamReader isr = null;

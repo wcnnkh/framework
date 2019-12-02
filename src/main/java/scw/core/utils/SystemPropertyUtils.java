@@ -25,16 +25,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import scw.core.Constants;
 import scw.core.StringFormatSystemProperties;
-import scw.core.resource.LocalResourceLookup;
-import scw.core.resource.ResourceOperations;
 import scw.core.resource.ResourceUtils;
-import scw.core.resource.SystemPropertyMultiSuffixResourceOperations;
 import scw.io.FileUtils;
 
 public final class SystemPropertyUtils {
-	public static final String WEB_ROOT = "web.root";
-	private static final String WORK_PATH_PROPERTY_NAME = "scw_work_path";
-	private static final String DEFAULT_WORK_PATH_DIR = "public,www";
+	private static final String WEB_ROOT = "web.root";
 	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
 
 	private SystemPropertyUtils() {
@@ -51,10 +46,8 @@ public final class SystemPropertyUtils {
 			path = "/private.properties";
 		}
 
-		ResourceOperations resourceOperations = new SystemPropertyMultiSuffixResourceOperations(
-				new LocalResourceLookup());
-		if (resourceOperations.isExist(path)) {
-			Properties properties = resourceOperations.getProperties(path);
+		if (XUtils.getSystemResourceOperations().isExist(path)) {
+			Properties properties = XUtils.getSystemResourceOperations().getProperties(path);
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
 				if (key == null) {
@@ -71,7 +64,7 @@ public final class SystemPropertyUtils {
 		}
 	}
 
-	public static String getProperty(String key) {
+	private static String getSystemProperty(String key) {
 		String v = getPrivateProperty(key);
 		if (v == null) {
 			v = System.getProperty(key);
@@ -81,6 +74,11 @@ public final class SystemPropertyUtils {
 			v = System.getenv(key);
 		}
 
+		return v;
+	}
+
+	public static String getProperty(String key) {
+		String v = getSystemProperty(key);
 		if (v == null) {
 			if (WEB_ROOT.equalsIgnoreCase(key)) {
 				return getWorkPath();
@@ -119,62 +117,43 @@ public final class SystemPropertyUtils {
 			return;
 		}
 
-		SystemPropertyUtils.setPrivateProperty(WORK_PATH_PROPERTY_NAME, path);
+		SystemPropertyUtils.setPrivateProperty(WEB_ROOT, path);
 	}
 
-	private static String getDefaultWorkPath() {
-		for (String name : StringUtils.commonSplit(DEFAULT_WORK_PATH_DIR)) {
-			File file = new File(getUserDir() + File.separator + name);
-			if (file.exists()) {
-				return file.getPath();
-			}
-		}
-
-		return getUserDir();
-	}
-
-	/**
-	 * 如果返回空就说明不存在WEB-INF目录
-	 * 
-	 * @return
-	 */
 	public static String getWorkPath() {
-		String path = getProperty(WORK_PATH_PROPERTY_NAME);
+		String path = getSystemProperty(WEB_ROOT);
 		if (path != null) {
 			return path;
 		}
 
-		synchronized (SystemPropertyUtils.class) {
-			path = getProperty(WORK_PATH_PROPERTY_NAME);
-			if (path == null) {
-				URL url = ResourceUtils.getClassPathURL();
-				if (url == null) {
-					path = getDefaultWorkPath();
+		if (path == null) {
+			URL url = ResourceUtils.getClassPathURL();
+			if (url == null) {
+				path = getUserDir();
+			} else {
+				File file = new File(url.getPath());
+				if (file.isFile()) {
+					path = getUserDir();
 				} else {
-					File file = new File(url.getPath());
-					if (file.isFile()) {
-						path = getUserDir();
-					} else {
-						file = file.getParentFile();
-						if (file != null) {
-							if (file.getName().equals("WEB-INF")) {
+					file = file.getParentFile();
+					if (file != null) {
+						if (file.getName().equals("WEB-INF")) {
+							path = file.getParent();
+						} else {
+							file = file.getParentFile();
+							file = FileUtils.searchDirectory(file, "WEB-INF");
+							if (file != null) {
 								path = file.getParent();
-							} else {
-								file = file.getParentFile();
-								file = FileUtils.searchDirectory(file, "WEB-INF");
-								if (file != null) {
-									path = file.getParent();
-								}
 							}
 						}
 					}
-
-					if (path == null) {
-						path = getDefaultWorkPath();
-					}
 				}
-				setWorkPath(path);
+
+				if (path == null) {
+					path = getUserDir();
+				}
 			}
+			setWorkPath(path);
 		}
 		return path;
 	}

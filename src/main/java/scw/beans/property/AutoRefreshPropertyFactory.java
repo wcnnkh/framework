@@ -11,9 +11,9 @@ import org.w3c.dom.NodeList;
 
 import scw.core.Destroy;
 import scw.core.PropertyFactory;
+import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.logger.LoggerUtils;
 
 public final class AutoRefreshPropertyFactory implements PropertyFactory, Destroy {
 	private static final int DEFAULT_REFRESH_PERIOD = StringUtils
@@ -69,7 +69,7 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory, Destro
 		} else {
 			String oldValue = getProperty(property.getName());
 			if (!StringUtils.isAeqB(value, oldValue)) {
-				LoggerUtils.info(AutoRefreshPropertyFactory.class,
+				FormatUtils.info(AutoRefreshPropertyFactory.class,
 						"Property {} changes the \noriginal value\n{}\n----------to----------\n{}", property.getName(),
 						oldValue, value);
 				refreshValue(property, value);

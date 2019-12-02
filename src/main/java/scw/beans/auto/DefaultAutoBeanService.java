@@ -11,17 +11,17 @@ import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
 import scw.core.PropertyFactory;
 import scw.core.annotation.Host;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.logger.LazyLogger;
 import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.rpc.http.HttpRestfulRpcProxy;
-import scw.utils.ExecutorUtils;
+import scw.util.ExecutorUtils;
 
 public final class DefaultAutoBeanService implements AutoBeanService {
-	private static Logger logger = new LazyLogger(DefaultAutoBeanService.class);
+	private static Logger logger = LoggerUtils.getLogger(DefaultAutoBeanService.class);
 
 	private AutoBean defaultService(Class<?> clazz, BeanFactory beanFactory, PropertyFactory propertyFactory,
 			AutoBeanServiceChain serviceChain) throws Exception {
@@ -71,7 +71,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			}
 		}
 
-		if (!ReflectUtils.isInstance(clazz, false)) {
+		if (!ReflectionUtils.isInstance(clazz, false)) {
 			return serviceChain.service(clazz, beanFactory, propertyFactory);
 		}
 

@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import scw.core.exception.AlreadyExistsException;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 
 public abstract class AbstractColumnFactory implements ColumnFactory {
 
@@ -21,7 +21,7 @@ public abstract class AbstractColumnFactory implements ColumnFactory {
 				continue;
 			}
 
-			ReflectUtils.setAccessibleField(field);
+			ReflectionUtils.setAccessibleField(field);
 			Column column = analysisField(clazz, field);
 			if (map.containsKey(column.getName())) {
 				throw new AlreadyExistsException("Class " + clazz.getName() + " column " + column.getName());

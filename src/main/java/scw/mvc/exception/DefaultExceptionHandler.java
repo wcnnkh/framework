@@ -21,32 +21,20 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 		this.resultFactory = resultFactory;
 	}
 
-	public Object handler(Channel channel, Throwable error,
-			ExceptionHandlerChain chain) {
+	public Object handler(Channel channel, Throwable error, ExceptionHandlerChain chain) {
 		if (error.getClass() == RuntimeException.class) {
 			return resultFactory.error(error.getMessage());
 		} else if (error instanceof ParameterException) {
 			return resultFactory.parameterError();
 		} else if (error instanceof AuthorizationFailureException) {
 			return resultFactory.authorizationFailure();
-		} else if (error instanceof ErrorCode || error instanceof ErrorMessage) {
-			Integer code = null;
-			if (error instanceof ErrorCode) {
-				code = ((ErrorCode) error).getErrorCode();
-			}
-
+		} else if (error instanceof ErrorMessage) {
 			String msg = error.getMessage();
 			if (error instanceof ErrorMessage) {
 				msg = ((ErrorMessage) error).getErrorMessage();
 			}
 
-			if (code == null) {
-				return StringUtils.isEmpty(msg) ? resultFactory.error()
-						: resultFactory.error(msg);
-			} else {
-				return StringUtils.isEmpty(msg) ? resultFactory.error(code)
-						: resultFactory.error(code, msg);
-			}
+			return StringUtils.isEmpty(msg) ? resultFactory.error() : resultFactory.error(msg);
 		}
 		return resultFactory.error();
 	}

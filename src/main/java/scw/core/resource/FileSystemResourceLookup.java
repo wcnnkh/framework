@@ -3,6 +3,8 @@ package scw.core.resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.LinkedList;
+import java.util.List;
 
 import scw.core.Consumer;
 import scw.io.IOUtils;
@@ -10,6 +12,10 @@ import scw.io.IOUtils;
 public class FileSystemResourceLookup implements ResourceLookup {
 	private String rootPath;
 	private boolean search;
+
+	public FileSystemResourceLookup(boolean search) {
+		this(null, search);
+	}
 
 	public FileSystemResourceLookup(String rootPath, boolean search) {
 		this.rootPath = rootPath;
@@ -23,14 +29,9 @@ public class FileSystemResourceLookup implements ResourceLookup {
 
 		File file = null;
 		if (search) {
-			File rootFile = new File(rootPath == null ? "" : rootPath);
-			if (rootFile == null || !rootFile.exists()) {
-				return false;
-			}
-
-			file = searchFile(resource, rootFile);
+			file = searchFile(resource, new File(rootPath == null ? "" : rootPath));
 		} else {
-			file = new File(rootPath + File.separator + resource);
+			file = new File((rootPath == null ? "":rootPath) + File.separator + resource);
 		}
 
 		if (file == null || !file.exists()) {
@@ -52,7 +53,7 @@ public class FileSystemResourceLookup implements ResourceLookup {
 	}
 
 	private static File searchFile(String path, File rootFile) {
-		if (!rootFile.exists()) {
+		if (!rootFile.exists() || !rootFile.isDirectory()) {
 			return null;
 		}
 
@@ -61,17 +62,22 @@ public class FileSystemResourceLookup implements ResourceLookup {
 			return null;
 		}
 
+		List<File> directoryList = new LinkedList<File>();
 		for (File file : files) {
-			if (file.isFile()) {
+			if (file.isDirectory()) {
+				directoryList.add(file);
+			} else {
 				String p = file.getPath().replaceAll("\\\\", "/");
 				if (p.endsWith(path.replaceAll("\\\\", "/"))) {
 					return file;
 				}
-			} else {
-				File f = searchFile(path, file);
-				if (f != null) {
-					return f;
-				}
+			}
+		}
+
+		for (File directory : directoryList) {
+			File f = searchFile(path, directory);
+			if (f != null) {
+				return f;
 			}
 		}
 		return null;

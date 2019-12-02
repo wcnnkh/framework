@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import scw.core.reflect.AnnotationFactory;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.reflect.SimpleAnnotationFactory;
 
 public abstract class AbstractColumn implements Column {
@@ -19,8 +19,8 @@ public abstract class AbstractColumn implements Column {
 		this.clazz = clazz;
 		this.field = field;
 		this.annotationFactory = new SimpleAnnotationFactory(field);
-		this.getter = getter ? ReflectUtils.getGetterMethod(clazz, field) : null;
-		this.setter = setter ? ReflectUtils.getSetterMethod(clazz, field) : null;
+		this.getter = getter ? ReflectionUtils.getGetterMethod(clazz, field) : null;
+		this.setter = setter ? ReflectionUtils.getSetterMethod(clazz, field) : null;
 	}
 
 	public final <T extends Annotation> T getAnnotation(Class<T> type) {

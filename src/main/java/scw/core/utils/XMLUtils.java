@@ -36,16 +36,16 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import scw.core.Converter;
-import scw.core.KeyValuePair;
 import scw.core.PropertyFactory;
-import scw.core.SimpleKeyValuePair;
 import scw.core.StringFormat;
 import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.PropertyMapper;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.resource.ResourceUtils;
 import scw.io.IOUtils;
+import scw.util.KeyValuePair;
+import scw.util.SimpleKeyValuePair;
 
 public final class XMLUtils {
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
@@ -141,13 +141,19 @@ public final class XMLUtils {
 		return parse(new InputSource(new StringReader(text)));
 	}
 
-	public static Document getDocument(String path) {
-		return ResourceUtils.getResourceOperations().getResource(path, new Converter<InputStream, Document>() {
+	public static Document getDocument(String path) throws NotFoundException{
+		Document document = ResourceUtils.getResourceOperations().getResource(path,
+				new Converter<InputStream, Document>() {
 
-			public Document convert(InputStream inputStream) {
-				return parse(inputStream);
-			}
-		});
+					public Document convert(InputStream inputStream) {
+						return parse(inputStream);
+					}
+				});
+
+		if (document == null) {
+			throw new NotFoundException(path);
+		}
+		return document;
 	}
 
 	public static Element getRootElement(String xmlPath) {
@@ -206,6 +212,10 @@ public final class XMLUtils {
 	}
 
 	public static NodeList getChildNodes(Node node, boolean include) {
+		if (node == null) {
+			return null;
+		}
+
 		return include ? converIncludeNodeList(node.getChildNodes(), new HashSet<String>()) : node.getChildNodes();
 	}
 
@@ -383,6 +393,10 @@ public final class XMLUtils {
 	}
 
 	public static String getNodeAttributeValue(Node node, String name, String defaultValue) {
+		if (node == null) {
+			return null;
+		}
+
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		if (namedNodeMap == null) {
 			return null;
@@ -438,7 +452,7 @@ public final class XMLUtils {
 				continue;
 			}
 
-			Field field = ReflectUtils.getField(type, n.getNodeName(), true);
+			Field field = ReflectionUtils.getField(type, n.getNodeName(), true);
 			if (field == null) {
 				continue;
 			}
@@ -456,7 +470,7 @@ public final class XMLUtils {
 				t = InstanceUtils.newInstance(type);
 			}
 
-			ReflectUtils.setFieldValue(type, field, t, StringUtils.defaultAutoParse(value, field.getGenericType()));
+			ReflectionUtils.setFieldValue(type, field, t, StringUtils.defaultAutoParse(value, field.getGenericType()));
 		}
 		return t;
 	}
@@ -578,7 +592,7 @@ public final class XMLUtils {
 		Map<String, Node> map = attributeAsMap(node);
 		try {
 			T t = InstanceUtils.newInstance(type);
-			ReflectUtils.setProperties(type, t, map, new PropertyMapper<Node>() {
+			ReflectionUtils.setProperties(type, t, map, new PropertyMapper<Node>() {
 				public Object mapper(String name, Node value, Type type) throws Exception {
 					String v = formatNodeValue(propertyFactory, value, value.getNodeValue());
 					if (StringUtils.isEmpty(v)) {

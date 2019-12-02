@@ -25,8 +25,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.ReflectionUtils;
 
 /**
  * Helper for resolving synthetic {@link Method#isBridge bridge Methods} to the

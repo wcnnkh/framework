@@ -4,9 +4,9 @@ import java.lang.reflect.Type;
 
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.FormatUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.json.support.GsonSupport;
-import scw.logger.LoggerUtils;
 
 public final class JSONUtils {
 	private JSONUtils() {
@@ -29,7 +29,7 @@ public final class JSONUtils {
 		}
 
 		DEFAULT_JSON_SUPPORT = jsonSupport == null ? new GsonSupport() : jsonSupport;
-		LoggerUtils.info(JSONUtils.class, "default json parse：{}", DEFAULT_JSON_SUPPORT.getClass().getName());
+		FormatUtils.info(JSONUtils.class, "default json parse：{}", DEFAULT_JSON_SUPPORT.getClass().getName());
 	}
 
 	public static String toJSONString(Object obj) {

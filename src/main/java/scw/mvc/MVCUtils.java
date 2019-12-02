@@ -16,34 +16,30 @@ import java.util.Map.Entry;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.context.Context;
+import scw.context.ContextManager;
+import scw.context.DefaultThreadLocalContextManager;
+import scw.context.Propagation;
 import scw.core.Constants;
-import scw.core.KeyValuePair;
 import scw.core.KeyValuePairFilter;
 import scw.core.PropertyFactory;
-import scw.core.SimpleKeyValuePair;
 import scw.core.ValueFactory;
 import scw.core.annotation.ParameterName;
-import scw.core.attribute.Attributes;
-import scw.core.context.Context;
-import scw.core.context.ContextManager;
-import scw.core.context.DefaultThreadLocalContextManager;
-import scw.core.context.Propagation;
 import scw.core.exception.ParameterException;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
-import scw.core.ip.IP;
 import scw.core.multivalue.LinkedMultiValueMap;
 import scw.core.multivalue.MultiValueMap;
 import scw.core.parameter.ParameterConfig;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XUtils;
-import scw.json.JsonSupport;
 import scw.json.JSONUtils;
+import scw.json.JsonSupport;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.annotation.Controller;
@@ -66,6 +62,10 @@ import scw.net.header.HeadersConstants;
 import scw.net.header.HeadersReadOnly;
 import scw.net.mime.MimeTypeConstants;
 import scw.rpc.RpcService;
+import scw.util.KeyValuePair;
+import scw.util.SimpleKeyValuePair;
+import scw.util.attribute.Attributes;
+import scw.util.ip.IP;
 
 public final class MVCUtils implements MvcConstants {
 	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
@@ -184,7 +184,7 @@ public final class MVCUtils implements MvcConstants {
 					continue;
 				}
 
-				ReflectUtils.setAccessibleField(field);
+				ReflectionUtils.setAccessibleField(field);
 				if (!field.getType().isPrimitive() && field.get(instance) != null) {
 					continue;
 				}
@@ -201,10 +201,10 @@ public final class MVCUtils implements MvcConstants {
 					// 濡傛灉鏄熀鏈暟鎹被鍨�
 					Object v = XUtils.getValue(request, key, field.getType());
 					if (v != null) {
-						ReflectUtils.setFieldValue(clz, field, instance, v);
+						ReflectionUtils.setFieldValue(clz, field, instance, v);
 					}
 				} else {
-					ReflectUtils.setFieldValue(clz, field, instance,
+					ReflectionUtils.setFieldValue(clz, field, instance,
 							privateParameterWrapper(request, field.getType(), key + "."));
 				}
 			}
@@ -214,7 +214,7 @@ public final class MVCUtils implements MvcConstants {
 
 	private static Object privateParameterWrapper(ValueFactory<String> request, Class<?> type, String prefix)
 			throws Exception {
-		if (!ReflectUtils.isInstance(type)) {
+		if (!ReflectionUtils.isInstance(type)) {
 			return null;
 		}
 

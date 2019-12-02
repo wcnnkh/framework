@@ -14,7 +14,7 @@ import scw.core.instance.annotation.PropertyParameter;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParse;
@@ -36,7 +36,7 @@ public class AutoInstanceConfig implements InstanceConfig {
 	public AutoInstanceConfig(InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Class<?> clazz) {
 		this(instanceFactory, propertyFactory, StringParse.DEFAULT, clazz,
-				ReflectUtils.getConstructorOrderList(clazz));
+				ReflectionUtils.getConstructorOrderList(clazz));
 	}
 
 	public AutoInstanceConfig(InstanceFactory instanceFactory,

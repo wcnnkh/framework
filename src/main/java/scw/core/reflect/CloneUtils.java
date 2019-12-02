@@ -18,9 +18,9 @@ public final class CloneUtils {
 	private static void setter(boolean invokeSetter, Class<?> clazz, Field field, Object target, Object value)
 			throws Exception {
 		if (invokeSetter) {
-			ReflectUtils.setFieldValue(clazz, field, Modifier.isStatic(field.getModifiers()) ? null : target, value);
+			ReflectionUtils.setFieldValue(clazz, field, Modifier.isStatic(field.getModifiers()) ? null : target, value);
 		} else {
-			ReflectUtils.setAccessibleField(field);
+			ReflectionUtils.setAccessibleField(field);
 			field.set(Modifier.isStatic(field.getModifiers()) ? null : target, value);
 		}
 	}
@@ -129,7 +129,7 @@ public final class CloneUtils {
 		} else if (type.isArray()) {
 			return (T) cloneArray(type, obj, ignoreVerification, invokeCloneableMethod, instanceFactory, invokeSetter);
 		} else if (invokeCloneableMethod && obj instanceof Cloneable) {
-			Method method = ReflectUtils.getMethod(type, "clone");
+			Method method = ReflectionUtils.getMethod(type, "clone");
 			if (method != null) {
 				return (T) method.invoke(obj);
 			}
@@ -165,7 +165,7 @@ public final class CloneUtils {
 			return (T) cloneArray(type, source, ignoreVerification, invokeCloneableMethod, instanceFactory,
 					invokeSetter);
 		} else if (invokeCloneableMethod && source instanceof Cloneable) {
-			Method method = ReflectUtils.getMethod(type, "clone");
+			Method method = ReflectionUtils.getMethod(type, "clone");
 			if (method != null) {
 				return (T) method.invoke(source);
 			}
@@ -189,7 +189,7 @@ public final class CloneUtils {
 					continue;
 				}
 
-				Field sourceField = ReflectUtils.getField(source.getClass(), field.getName(), true);
+				Field sourceField = ReflectionUtils.getField(source.getClass(), field.getName(), true);
 				if (sourceField == null) {
 					continue;
 				}
@@ -198,7 +198,7 @@ public final class CloneUtils {
 					continue;
 				}
 
-				ReflectUtils.setAccessibleField(sourceField);
+				ReflectionUtils.setAccessibleField(sourceField);
 				Object value = sourceField.get(source);
 				if (value == null) {
 					continue;

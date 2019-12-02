@@ -8,7 +8,6 @@ import java.lang.reflect.Type;
 import scw.core.annotation.NotRequire;
 import scw.core.annotation.ParameterName;
 import scw.core.annotation.Require;
-import scw.core.reflect.SimpleParameterConfig;
 import scw.core.utils.StringUtils;
 
 public final class ParameterUtils {

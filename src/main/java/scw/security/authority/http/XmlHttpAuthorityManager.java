@@ -39,6 +39,10 @@ public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
 		Element element = XMLUtils.getRootElement(xml);
 		String prefix = XMLUtils.getNodeAttributeValue(element, "prefix");
 		NodeList nodeList = XMLUtils.getChildNodes(element, true);
+		if(nodeList == null){
+			return ;
+		}
+		
 		for (int i = 0, size = nodeList.getLength(); i < size; i++) {
 			Node node = nodeList.item(i);
 			if (node == null) {

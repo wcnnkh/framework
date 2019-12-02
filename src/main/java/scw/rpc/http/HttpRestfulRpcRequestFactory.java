@@ -3,7 +3,6 @@ package scw.rpc.http;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import scw.core.KeyValuePair;
 import scw.core.PropertyFactory;
 import scw.core.StringFormat;
 import scw.core.annotation.Host;
@@ -17,6 +16,7 @@ import scw.net.mime.MimeTypeConstants;
 import scw.net.mime.SimpleMimeType;
 import scw.rpc.annotation.RequestContentType;
 import scw.rpc.annotation.RequestContentType.ContentType;
+import scw.util.KeyValuePair;
 
 public class HttpRestfulRpcRequestFactory implements HttpRpcRequestFactory {
 	private String charsetName;

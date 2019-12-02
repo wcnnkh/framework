@@ -17,10 +17,13 @@ import scw.core.reflect.PropertyMapper;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.XMLUtils;
+import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mq.ConsumerFactory;
 
 public class XmlConsumerFactory implements ConsumerFactory {
+	private static Logger logger = LoggerUtils.getConsoleLogger(XmlConsumerFactory.class);
+
 	private Map<String, AmqpConfig> amqpMap = new HashMap<String, AmqpConfig>();
 
 	public XmlConsumerFactory(final BeanFactory beanFactory, PropertyFactory propertyFactory,
@@ -66,7 +69,7 @@ public class XmlConsumerFactory implements ConsumerFactory {
 	@SuppressWarnings("unchecked")
 	public void bindConsumer(String name, Consumer<?> consumer) {
 		if (!exists(name)) {
-			LoggerUtils.warn(getClass(), "无法绑定{}消费者", name);
+			logger.warn("无法绑定{}消费者", name);
 		}
 
 		if (amqpMap.containsKey(name)) {

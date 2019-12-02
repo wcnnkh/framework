@@ -13,7 +13,7 @@ import scw.core.annotation.DefaultValue;
 import scw.core.exception.ParameterException;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.NumberUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
@@ -356,7 +356,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel implement
 	 */
 	public final Object getObject(String name, Class<?> type) {
 		// 不可以被实例化且不存在无参的构造方法
-		if (!ReflectUtils.isInstance(type, true)) {
+		if (!ReflectionUtils.isInstance(type, true)) {
 			return getBean(type);
 		}
 

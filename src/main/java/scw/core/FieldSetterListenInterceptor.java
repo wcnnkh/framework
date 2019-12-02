@@ -9,7 +9,7 @@ import java.util.Map;
 
 import scw.core.cglib.proxy.MethodInterceptor;
 import scw.core.cglib.proxy.MethodProxy;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.TypeUtils;
 
@@ -46,7 +46,7 @@ public class FieldSetterListenInterceptor implements MethodInterceptor, FieldSet
 
 		FieldSetter fieldSetter = method.getAnnotation(FieldSetter.class);
 		if (fieldSetter != null) {
-			Field field = ReflectUtils.getField(source, fieldSetter.value(), true);
+			Field field = ReflectionUtils.getField(source, fieldSetter.value(), true);
 			if (field != null && checkField(field)) {
 				return change(obj, method, args, proxy, field);
 			}
@@ -54,10 +54,10 @@ public class FieldSetterListenInterceptor implements MethodInterceptor, FieldSet
 			char[] chars = new char[method.getName().length() - 3];
 			chars[0] = Character.toLowerCase(method.getName().charAt(3));
 			method.getName().getChars(4, method.getName().length(), chars, 1);
-			Field field = ReflectUtils.getField(source, new String(chars), true);
+			Field field = ReflectionUtils.getField(source, new String(chars), true);
 			if (field == null) {
 				chars[0] = Character.toUpperCase(chars[0]);
-				field = ReflectUtils.getField(source, "is" + new String(chars), true);
+				field = ReflectionUtils.getField(source, "is" + new String(chars), true);
 				if (field != null && TypeUtils.isBoolean(field.getType()) && checkField(field)) {
 					return change(obj, method, args, proxy, field);
 				}

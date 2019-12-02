@@ -23,34 +23,37 @@ import org.w3c.dom.NodeList;
 import scw.core.Converter;
 import scw.core.PropertyFactory;
 import scw.core.StringFormat;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.resource.ResourceUtils;
+import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
 public abstract class ConfigUtils {
+	private static Logger logger = LoggerUtils.getConsoleLogger(ConfigUtils.class);
 	private static final String LOG_MESSAGE = "Property {} on target {} set value {}";
 
 	public static <T> T parseObject(Map<String, String> map, Class<T> clz) throws Exception {
 		T t = clz.newInstance();
 		for (Entry<String, String> entry : map.entrySet()) {
-			Field field = ReflectUtils.getField(clz, entry.getKey(), true);
+			Field field = ReflectionUtils.getField(clz, entry.getKey(), true);
 			if (field == null) {
 				continue;
 			}
 
-			ReflectUtils.setFieldValue(clz, field, t,
+			ReflectionUtils.setFieldValue(clz, field, t,
 					StringParse.defaultParse(entry.getValue(), field.getGenericType()));
 		}
 		return t;
 	}
 
 	public static List<Map<String, String>> getDefaultXmlContent(String path, final String rootTag) {
-		return ResourceUtils.getResourceOperations().getResource(path, new Converter<InputStream, List<Map<String, String>>>() {
+		return ResourceUtils.getResourceOperations().getResource(path,
+				new Converter<InputStream, List<Map<String, String>>>() {
 
-			public List<Map<String, String>> convert(InputStream inputStream) {
-				return getDefaultXmlContent(inputStream, rootTag);
-			}
-		});
+					public List<Map<String, String>> convert(InputStream inputStream) {
+						return getDefaultXmlContent(inputStream, rootTag);
+					}
+				});
 	}
 
 	public static List<Map<String, String>> getDefaultXmlContent(InputStream inputStream, String rootTag) {
@@ -153,14 +156,14 @@ public abstract class ConfigUtils {
 		try {
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				String key = stringFormat.format(entry.getKey().toString());
-				Field field = ReflectUtils.getField(obj.getClass(), key, true);
+				Field field = ReflectionUtils.getField(obj.getClass(), key, true);
 				if (field == null) {
 					continue;
 				}
 
 				String value = entry.getValue() == null ? null : entry.getValue().toString();
 				value = stringFormat.format(value);
-				ReflectUtils.setFieldValueAutoType(obj.getClass(), field, obj, value);
+				ReflectionUtils.setFieldValueAutoType(obj.getClass(), field, obj, value);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -267,9 +270,7 @@ public abstract class ConfigUtils {
 			}
 
 			method.setAccessible(false);
-
-			LoggerUtils.info(ConfigUtils.class, "Property {} on target {} set value {}", name,
-					instance.getClass().getName(), value);
+			logger.info("Property {} on target {} set value {}", name, instance.getClass().getName(), value);
 
 			try {
 				method.invoke(instance, StringParse.defaultParse(value, parameterType));
@@ -373,7 +374,7 @@ public abstract class ConfigUtils {
 
 			method.setAccessible(false);
 
-			LoggerUtils.info(ConfigUtils.class, LOG_MESSAGE, name, instance.getClass().getName(), value);
+			logger.info(LOG_MESSAGE, name, instance.getClass().getName(), value);
 
 			try {
 				method.invoke(instance, StringParse.defaultParse(value, parameterType));

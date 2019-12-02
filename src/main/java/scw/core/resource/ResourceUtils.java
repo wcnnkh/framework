@@ -44,12 +44,15 @@ public final class ResourceUtils {
 		MultiResourceLookup multiResourceLookup = new MultiResourceLookup();
 		multiResourceLookup.addAll(InstanceUtils.autoNewInstancesBySystemProperty(ResourceLookup.class,
 				"resource.lookup", Collections.EMPTY_LIST));
-		multiResourceLookup.add(new LocalResourceLookup());
+		multiResourceLookup.add(new DefaultResourceLookup());
 		RESOURCE_LOOKUP = StringUtils.parseBoolean(SystemPropertyUtils.getProperty("resource.cache.enable"))
 				? new CacheResourceLookup(multiResourceLookup) : multiResourceLookup;
 		RESOURCE_OPERATIONS = new SystemPropertyMultiSuffixResourceOperations(RESOURCE_LOOKUP);
 	}
 
+	/**
+	 * @return 结果可能为空
+	 */
 	public static URL getClassPathURL() {
 		URL url = ResourceUtils.class.getResource("/");
 		if (url == null) {

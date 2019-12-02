@@ -18,7 +18,7 @@ import scw.application.embedded.ServletEmbedded;
 import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceUtils;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -69,7 +69,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 			context.setJarScanner(jarScanner);
 		}
 
-		ReflectUtils.loadMethod(context, "tomcat.context.", propertyFactory, beanFactory,
+		ReflectionUtils.loadMethod(context, "tomcat.context.", propertyFactory, beanFactory,
 				CollectionUtils.asSet("jarScanner", "docBase", "path"));
 		return context;
 	}
@@ -136,9 +136,9 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	}
 
 	private void addServletMapping(Context context, String pattern, String servletName) {
-		Method method = ReflectUtils.findMethod(Context.class, "addServletMappingDecoded", String.class, String.class);
+		Method method = ReflectionUtils.getMethod(Context.class, "addServletMappingDecoded", String.class, String.class);
 		if (method == null) {// tomcat8以下
-			method = ReflectUtils.findMethod(Context.class, "addServletMapping", String.class, String.class);
+			method = ReflectionUtils.getMethod(Context.class, "addServletMapping", String.class, String.class);
 		}
 		try {
 			method.invoke(context, pattern, servletName);

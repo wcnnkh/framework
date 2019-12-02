@@ -1,6 +1,7 @@
 package scw.logger;
 
 import scw.core.instance.InstanceUtils;
+import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 
@@ -26,8 +27,8 @@ public final class LoggerFactory {
 			}
 		}
 
-		LOGGER_FACTORY = loggerFactory == null ? new ConsoleLoggerFactory() : loggerFactory;
-		LoggerUtils.info(LoggerFactory.class, "Init shuchaowen-logger [{}]", LOGGER_FACTORY.getClass().getName());
+		LOGGER_FACTORY = loggerFactory == null ? new AsyncConsoleLoggerFactory() : loggerFactory;
+		FormatUtils.info(LoggerFactory.class, "Init shuchaowen-logger [{}]", LOGGER_FACTORY.getClass().getName());
 	}
 
 	public static Logger getLogger(String name) {
@@ -47,8 +48,7 @@ public final class LoggerFactory {
 	}
 
 	/**
-	 * 建议使用LoggerUtils.destroy()
-	 * 此方法调用会初始化logger
+	 * 建议使用LoggerUtils.destroy() 此方法调用会初始化logger
 	 */
 	public static void destroy() {
 		getILoggerFactory().destroy();

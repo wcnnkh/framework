@@ -36,9 +36,10 @@ public abstract class AbstractResourceOperations implements ResourceOperations {
 		return getProperties(path, null, propertyFactory);
 	}
 
-	public Properties getProperties(String resource, String charsetName, PropertyFactory propertyFactory) {
+	public Properties getProperties(ResourceLookup resourceLookup, String resource, String charsetName,
+			PropertyFactory propertyFactory) {
 		Properties properties = new Properties();
-		lookup(resource, new LoadPropertiesConsumer(properties, resource, charsetName));
+		resourceLookup.lookup(resource, new LoadPropertiesConsumer(properties, resource, charsetName));
 		if (propertyFactory == null) {
 			return properties;
 		}
@@ -52,6 +53,10 @@ public abstract class AbstractResourceOperations implements ResourceOperations {
 			entry.setValue(FormatUtils.format(value.toString(), propertyFactory, true));
 		}
 		return properties;
+	}
+
+	public Properties getProperties(String resource, String charsetName, PropertyFactory propertyFactory) {
+		return getProperties(this, resource, charsetName, propertyFactory);
 	}
 
 	public final List<String> getFileContentLineList(String path, final String charsetName) {

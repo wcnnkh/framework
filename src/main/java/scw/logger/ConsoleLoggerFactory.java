@@ -1,8 +1,18 @@
 package scw.logger;
 
-public final class ConsoleLoggerFactory extends AsyncLoggerFactory {
+import scw.core.UnsafeStringBuffer;
 
-	public ConsoleLoggerFactory() {
-		super("scw-logger");
+public class ConsoleLoggerFactory extends AbstractMyLoggerFactory {
+
+	public void destroy() {
+	}
+
+	@Override
+	public void log(Message message) {
+		try {
+			console(new UnsafeStringBuffer(), message);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -7,7 +7,7 @@ import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.aop.ProxyUtils;
 import scw.aop.ReflectInvoker;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 
 public final class MethodProxyInvoker implements Invoker {
 	private final Method method;
@@ -21,7 +21,7 @@ public final class MethodProxyInvoker implements Invoker {
 		this.beanFactory = beanFactory;
 		this.clz = clz;
 		this.method = method;
-		ReflectUtils.setAccessibleMethod(method);
+		ReflectionUtils.setAccessibleMethod(method);
 		this.bean = beanFactory.isSingleton(clz) ? getBean() : null;
 		BeanDefinition beanDefinition = beanFactory.getBeanDefinition(clz.getName());
 		proxy = ProxyUtils.isProxy(bean) || (beanDefinition != null && beanDefinition.isProxy());

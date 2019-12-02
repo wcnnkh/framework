@@ -4,6 +4,7 @@ import scw.beans.BeanUtils;
 import scw.beans.XmlBeanFactory;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.db.DBUtils;
 import scw.logger.LoggerUtils;
@@ -103,7 +104,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 
 	public synchronized static void run(final Class<?> clazz, String beanXml) {
 		if (!ResourceUtils.getResourceOperations().isExist(beanXml)) {
-			LoggerUtils.warn(TomcatApplication.class, "not found " + beanXml);
+			FormatUtils.warn(TomcatApplication.class, "not found " + beanXml);
 		}
 
 		CommonApplication application = new CommonApplication(beanXml);

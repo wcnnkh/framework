@@ -3,8 +3,8 @@ package scw.mvc.support;
 import java.util.Collection;
 
 import scw.beans.BeanFactory;
+import scw.context.Context;
 import scw.core.PropertyFactory;
-import scw.core.context.Context;
 import scw.core.instance.InstanceFactory;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;

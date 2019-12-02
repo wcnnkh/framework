@@ -3,16 +3,17 @@ package scw.io.serializer;
 import scw.core.Bits;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.FormatUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayOutputStream;
-import scw.logger.LoggerUtils;
 
 public final class SerializerUtils {
 	static {
 		Class<?> serializerClass = null;
-		String[] seralizerClassNames = SystemPropertyUtils.getArrayProperty(String.class, "serializer.support.class", new String[] { "scw.io.serializer.hessian.Hessian2Serializer",
-		"scw.io.serializer.hessian.HessianSerializer" });
+		String[] seralizerClassNames = SystemPropertyUtils.getArrayProperty(String.class, "serializer.support.class",
+				new String[] { "scw.io.serializer.hessian.Hessian2Serializer",
+						"scw.io.serializer.hessian.HessianSerializer" });
 
 		for (String name : seralizerClassNames) {
 			try {
@@ -24,7 +25,7 @@ public final class SerializerUtils {
 
 		DEFAULT_SERIALIZER = (Serializer) (serializerClass == null ? JavaSerializer.SERIALIZER
 				: InstanceUtils.getInstance(serializerClass));
-		LoggerUtils.info(SerializerUtils.class, "default serializer："
+		FormatUtils.info(SerializerUtils.class, "default serializer："
 				+ (serializerClass == null ? JavaSerializer.class.getName() : serializerClass.getName()));
 	}
 

@@ -6,7 +6,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.core.attribute.Attributes;
+import scw.util.attribute.Attributes;
 
 public final class SessionData implements Attributes<String, Object>, Serializable {
 	private static final long serialVersionUID = 1L;

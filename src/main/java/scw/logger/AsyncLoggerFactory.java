@@ -4,7 +4,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import scw.core.UnsafeStringBuffer;
 
-public class AsyncLoggerFactory extends AbstractILoggerFactory implements Runnable {
+public class AsyncLoggerFactory extends AbstractMyLoggerFactory implements Runnable {
 	private final LinkedBlockingQueue<Message> handlerQueue;
 	private final Thread thread;
 	private final UnsafeStringBuffer unsafeStringBuffer;
@@ -20,11 +20,6 @@ public class AsyncLoggerFactory extends AbstractILoggerFactory implements Runnab
 		handlerQueue.offer(message);
 	}
 
-	public Logger getLogger(String name, String placeholder) {
-		Level level = LoggerUtils.getLoggerLevel(name);
-		return new AsyncLogger(level, name, this, placeholder);
-	}
-
 	public void run() {
 		try {
 			while (!thread.isInterrupted()) {
@@ -34,7 +29,7 @@ public class AsyncLoggerFactory extends AbstractILoggerFactory implements Runnab
 				}
 
 				try {
-					out(unsafeStringBuffer, message);
+					console(unsafeStringBuffer, message);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -46,23 +41,6 @@ public class AsyncLoggerFactory extends AbstractILoggerFactory implements Runnab
 	protected String getMessage(Message message) throws Exception {
 		message.appendTo(unsafeStringBuffer);
 		return unsafeStringBuffer.toString();
-	}
-
-	public void out(UnsafeStringBuffer unsafeStringBuffer, Message message) throws Exception {
-		String msg = message.toString(unsafeStringBuffer);
-		switch (message.getLevel()) {
-		case ERROR:
-		case WARN:
-			System.err.println(msg);
-			break;
-		default:
-			System.out.println(msg);
-			break;
-		}
-
-		if (message.getThrowable() != null) {
-			message.getThrowable().printStackTrace();
-		}
 	}
 
 	public void destroy() {

@@ -31,7 +31,7 @@ public abstract class AbstractMultiResourceOperations extends AbstractResourceOp
 		Properties properties = new Properties();
 		while (iterator.hasPrevious()) {
 			String name = iterator.previous();
-			Properties p = super.getProperties(name, charsetName, propertyFactory);
+			Properties p = getProperties(getTargetResourceLookup(), name, charsetName, propertyFactory);
 			properties.putAll(p);
 		}
 		return properties;

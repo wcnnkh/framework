@@ -1,9 +1,9 @@
 package scw.mvc;
 
-import scw.core.attribute.Attributes;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterFactory;
 import scw.logger.LogService;
+import scw.util.attribute.Attributes;
 
 public interface Channel extends LogService, Attributes<String, Object>, ParameterFactory<ParameterConfig>{
 	long getCreateTime();

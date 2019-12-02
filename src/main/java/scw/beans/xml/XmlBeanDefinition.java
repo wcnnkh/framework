@@ -23,7 +23,7 @@ import scw.core.exception.NotFoundException;
 import scw.core.instance.AutoInstanceConfig;
 import scw.core.instance.InstanceConfig;
 import scw.core.reflect.FieldDefinition;
-import scw.core.reflect.ReflectUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.XUtils;
@@ -123,12 +123,12 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		}
 
 		for (XmlBeanParameter beanProperties : properties) {
-			Field field = ReflectUtils.getField(type, beanProperties.getName(), true);
+			Field field = ReflectionUtils.getField(type, beanProperties.getName(), true);
 			if (field == null) {
 				continue;
 			}
 
-			ReflectUtils.setFieldValue(type, field, bean,
+			ReflectionUtils.setFieldValue(type, field, bean,
 					beanProperties.parseValue(beanFactory, propertyFactory, field.getGenericType()));
 		}
 	}
@@ -187,7 +187,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	public final <T> T create(Object... params) {
-		Constructor<T> constructor = (Constructor<T>) ReflectUtils.findConstructorByParameters(getType(), false,
+		Constructor<T> constructor = (Constructor<T>) ReflectionUtils.findConstructorByParameters(getType(), false,
 				params);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
@@ -210,7 +210,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	public final <T> T create(Class<?>[] parameterTypes, Object... params) {
-		Constructor<?> constructor = ReflectUtils.findConstructor(getType(), false, parameterTypes);
+		Constructor<?> constructor = ReflectionUtils.findConstructor(getType(), false, parameterTypes);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}

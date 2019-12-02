@@ -29,8 +29,8 @@ public final class DefaultFieldDefinition implements FieldDefinition {
 	public DefaultFieldDefinition(Class<?> clz, Field field, boolean getter, boolean setter, boolean annotationCache) {
 		this.clz = clz;
 		this.field = field;
-		this.getter = getter ? ReflectUtils.getGetterMethod(clz, field) : null;
-		this.setter = setter ? ReflectUtils.getSetterMethod(clz, field) : null;
+		this.getter = getter ? ReflectionUtils.getGetterMethod(clz, field) : null;
+		this.setter = setter ? ReflectionUtils.getSetterMethod(clz, field) : null;
 
 		this.annotationCache = annotationCache;
 		if (annotationCache) {
