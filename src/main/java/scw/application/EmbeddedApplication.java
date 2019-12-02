@@ -79,7 +79,7 @@ public class EmbeddedApplication extends CommonApplication {
 
 			Application application = new EmbeddedApplication(beanXml);
 			if (clazz != null) {
-				BeanUtils.setRootPackage(BeanUtils.parseRootPackage(clazz));
+				ApplicationConfigUtils.setRootPackage(BeanUtils.parseRootPackage(clazz));
 			}
 			application.init();
 		}

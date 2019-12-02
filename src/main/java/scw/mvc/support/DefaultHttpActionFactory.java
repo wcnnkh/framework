@@ -1,5 +1,6 @@
 package scw.mvc.support;
 
+import scw.application.ApplicationConfigUtils;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
@@ -20,7 +21,7 @@ public final class DefaultHttpActionFactory implements ActionFactory {
 		multiHttpActionFactory.getFactoryList().add(new HttpPathActionFactory());
 		multiHttpActionFactory.getFactoryList().add(new HttpRestfulActionFactory());
 		multiHttpActionFactory.init(beanFactory, propertyFactory,
-				ClassUtils.getClassList(BeanUtils.getPackageName(propertyFactory, "mvc.http.scanning")));
+				ClassUtils.getClassList(ApplicationConfigUtils.getPackageName(propertyFactory, "mvc.http.scanning")));
 		this.actionFactory = multiHttpActionFactory;
 	}
 

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import scw.application.ApplicationConfigUtils;
 import scw.beans.dubbo.DubboUtils;
 import scw.beans.property.XmlPropertyFactory;
 import scw.beans.rpc.HttpRpcBeanConfigFactory;
@@ -45,8 +46,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	protected String getServicePackage() {
-		String p = BeanUtils.getServiceAnnotationPackage(propertyFactory);
-		return p == null ? BeanUtils.getAnnotationPackage(propertyFactory) : p;
+		return ApplicationConfigUtils.getServiceAnnotationPackage(propertyFactory);
 	}
 
 	private void appendNameMapping(NodeList nodeList) {
@@ -188,7 +188,6 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 
 	@Override
 	protected String getInitStaticPackage() {
-		String init = BeanUtils.getInitStaticPackage(propertyFactory);
-		return init == null ? BeanUtils.getAnnotationPackage(propertyFactory) : init;
+		return ApplicationConfigUtils.getInitStaticPackage(propertyFactory);
 	}
 }

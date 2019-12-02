@@ -25,29 +25,33 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 	}
 
 	protected String getORMPackage() {
-		return BeanUtils.getORMPackage(getPropertyFactory());
+		return ApplicationConfigUtils.getORMPackage(getPropertyFactory());
 	}
 
 	@Override
 	protected String getServicePackage() {
-		return BeanUtils.getServiceAnnotationPackage(getPropertyFactory());
+		return ApplicationConfigUtils.getServiceAnnotationPackage(getPropertyFactory());
 	}
 
 	protected String getCrontabAnnotationPackage() {
-		return BeanUtils.getCrontabAnnotationPackage(getPropertyFactory());
+		return ApplicationConfigUtils.getCrontabAnnotationPackage(getPropertyFactory());
 	}
 
 	protected String getConsumerAnnotationPackage() {
-		return BeanUtils.getConsumerAnnotationPackage(getPropertyFactory());
+		return ApplicationConfigUtils.getConsumerAnnotationPackage(getPropertyFactory());
+	}
+
+	protected String getMQAnnotationPackage() {
+		return ApplicationConfigUtils.getMQAnnotationPackage(getPropertyFactory());
 	}
 
 	@Override
 	protected String getInitStaticPackage() {
-		return BeanUtils.getInitStaticPackage(getPropertyFactory());
+		return ApplicationConfigUtils.getInitStaticPackage(getPropertyFactory());
 	}
 
 	protected String getStaticAnnotationPackage() {
-		return BeanUtils.getInitStaticPackage(getPropertyFactory());
+		return ApplicationConfigUtils.getInitStaticPackage(getPropertyFactory());
 	}
 
 	public void init() {
@@ -109,7 +113,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 
 		CommonApplication application = new CommonApplication(beanXml);
 		if (clazz != null) {
-			BeanUtils.setRootPackage(BeanUtils.parseRootPackage(clazz));
+			ApplicationConfigUtils.setRootPackage(BeanUtils.parseRootPackage(clazz));
 		}
 		application.init();
 	}
