@@ -20,33 +20,24 @@ import java.io.InputStream;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
-import java.util.Collections;
 
 import scw.core.Converter;
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 
 /**
  * 资源工具
  * 
  * @author scw
  */
-@SuppressWarnings("unchecked")
 public final class ResourceUtils {
 	private ResourceUtils() {
 	};
 
-	private static final ResourceLookup RESOURCE_LOOKUP;
+	private static final MultiResourceLookup RESOURCE_LOOKUP = new MultiResourceLookup();
 	private static final ResourceOperations RESOURCE_OPERATIONS;
 
 	static {
-		MultiResourceLookup multiResourceLookup = new MultiResourceLookup();
-		multiResourceLookup.addAll(InstanceUtils.autoNewInstancesBySystemProperty(ResourceLookup.class,
-				"resource.lookup", Collections.EMPTY_LIST));
-		multiResourceLookup.add(new DefaultResourceLookup());
-		RESOURCE_LOOKUP = StringUtils.parseBoolean(SystemPropertyUtils.getProperty("resource.cache.enable"))
-				? new CacheResourceLookup(multiResourceLookup) : multiResourceLookup;
+		RESOURCE_LOOKUP.add(new LocalResourceLookup(false));
 		RESOURCE_OPERATIONS = new SystemPropertyMultiSuffixResourceOperations(RESOURCE_LOOKUP);
 	}
 
@@ -71,7 +62,7 @@ public final class ResourceUtils {
 		return RESOURCE_OPERATIONS;
 	}
 
-	public static final ResourceLookup getResourceLookup() {
+	public static final MultiResourceLookup getResourceLookup() {
 		return RESOURCE_LOOKUP;
 	}
 

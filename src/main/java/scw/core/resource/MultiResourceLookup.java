@@ -18,11 +18,15 @@ public final class MultiResourceLookup implements ResourceLookup {
 		return false;
 	}
 
-	public void add(ResourceLookup resourceLookup) {
+	public synchronized void addFirst(ResourceLookup resourceLookup) {
+		resourceLookups.addFirst(resourceLookup);
+	}
+
+	public synchronized void add(ResourceLookup resourceLookup) {
 		resourceLookups.add(resourceLookup);
 	}
-	
-	public void addAll(Collection<ResourceLookup> resourceLookups){
-		resourceLookups.addAll(resourceLookups);
+
+	public synchronized void addAll(Collection<ResourceLookup> resourceLookups) {
+		this.resourceLookups.addAll(resourceLookups);
 	}
 }

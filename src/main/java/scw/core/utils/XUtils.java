@@ -26,9 +26,6 @@ import scw.core.Start;
 import scw.core.ValueFactory;
 import scw.core.exception.NotSupportException;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.resource.DefaultResourceLookup;
-import scw.core.resource.ResourceOperations;
-import scw.core.resource.SystemPropertyMultiSuffixResourceOperations;
 
 public final class XUtils {
 	private XUtils() {
@@ -389,13 +386,5 @@ public final class XUtils {
 		} finally {
 			resourceFactory.release(r);
 		}
-	}
-
-	/**
-	 * 获取无任何class loader依赖的资源操作
-	 * @return
-	 */
-	public static ResourceOperations getSystemResourceOperations() {
-		return new SystemPropertyMultiSuffixResourceOperations(new DefaultResourceLookup());
 	}
 }

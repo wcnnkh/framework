@@ -25,7 +25,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import scw.core.Constants;
 import scw.core.StringFormatSystemProperties;
+import scw.core.resource.DefaultResourceLookup;
+import scw.core.resource.ResourceOperations;
 import scw.core.resource.ResourceUtils;
+import scw.core.resource.SystemPropertyMultiSuffixResourceOperations;
 import scw.io.FileUtils;
 
 public final class SystemPropertyUtils {
@@ -46,8 +49,8 @@ public final class SystemPropertyUtils {
 			path = "/private.properties";
 		}
 
-		if (XUtils.getSystemResourceOperations().isExist(path)) {
-			Properties properties = XUtils.getSystemResourceOperations().getProperties(path);
+		if (getSystemResourceOperations().isExist(path)) {
+			Properties properties = getSystemResourceOperations().getProperties(path);
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
 				if (key == null) {
@@ -62,6 +65,20 @@ public final class SystemPropertyUtils {
 				PRIVATE_PROPERTIES.put(key.toString(), value.toString());
 			}
 		}
+	}
+
+	/**
+	 * 获取无任何class loader依赖的资源操作
+	 * 
+	 * @return
+	 */
+	private static ResourceOperations getSystemResourceOperations() {
+		return new SystemPropertyMultiSuffixResourceOperations(new DefaultResourceLookup()) {
+			@Override
+			protected String getProperty(String key) {
+				return getSystemProperty(key);
+			}
+		};
 	}
 
 	private static String getSystemProperty(String key) {

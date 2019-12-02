@@ -1,6 +1,7 @@
 package scw.core.resource;
 
 import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 
 public class SystemPropertyMultiSuffixResourceOperations extends AbstractMultiSuffixResourceOperations {
 	private static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
@@ -19,12 +20,8 @@ public class SystemPropertyMultiSuffixResourceOperations extends AbstractMultiSu
 		super(resourceLookup);
 	}
 
-	private String getProperty(String key) {
-		String v = System.getProperty(key);
-		if (v == null) {
-			v = System.getenv(key);
-		}
-		return v;
+	protected String getProperty(String key) {
+		return SystemPropertyUtils.getProperty(key);
 	}
 
 	@Override
