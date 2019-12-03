@@ -6,10 +6,15 @@ import scw.core.Consumer;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 
-public final class DefaultResourceLookup extends ClassLoaderResourceLookup {
+public final class DefaultResourceLookup extends LocalResourceLookup {
 	/** Pseudo URL prefix for loading from the class path: "classpath:" */
 	private static final String CLASSPATH_URL_PREFIX = "classpath:";
 	private static final String CLASS_PATH_PREFIX_EL = "{classpath}";
+
+	public DefaultResourceLookup(String classLoaderResourceRoot, boolean classLoaderResourceAuto, String workPath,
+			boolean search) {
+		super(classLoaderResourceRoot, classLoaderResourceAuto, workPath, search);
+	}
 
 	public boolean lookup(String resource, Consumer<InputStream> consumer) {
 		if (StringUtils.isEmpty(resource)) {
@@ -25,10 +30,10 @@ public final class DefaultResourceLookup extends ClassLoaderResourceLookup {
 			} else {
 				eqPath = eqPath.substring(CLASS_PATH_PREFIX_EL.length());
 			}
-			return new LocalResourceLookup(false).lookup(eqPath, consumer);
+			return super.lookup(eqPath, consumer);
 		}
 
-		if (new LocalResourceLookup(false).lookup(text, consumer)) {
+		if (super.lookup(text, consumer)) {
 			return true;
 		}
 

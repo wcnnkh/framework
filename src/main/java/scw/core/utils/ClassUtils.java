@@ -29,7 +29,6 @@ import java.util.jar.JarFile;
 import scw.core.Assert;
 import scw.core.Verification;
 import scw.core.cglib.core.TypeUtils;
-import scw.core.resource.ResourceUtils;
 import scw.io.IOUtils;
 
 public final class ClassUtils {
@@ -1173,7 +1172,7 @@ public final class ClassUtils {
 	public static Collection<Class<?>> getClassList(Verification<String> jarVerification,
 			Verification<String> classNameVerification) {
 		LinkedHashSet<Class<?>> list = new LinkedHashSet<Class<?>>();
-		URL url = ResourceUtils.getClassPathURL();
+		URL url = SystemUtils.getClassPathURL();
 		if (url != null) {
 			appendClass(url.getPath(), list, jarVerification, classNameVerification, true);
 		}

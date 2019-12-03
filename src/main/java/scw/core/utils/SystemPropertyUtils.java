@@ -27,13 +27,13 @@ import scw.core.Constants;
 import scw.core.StringFormatSystemProperties;
 import scw.core.resource.DefaultResourceLookup;
 import scw.core.resource.ResourceOperations;
-import scw.core.resource.ResourceUtils;
 import scw.core.resource.SystemPropertyMultiSuffixResourceOperations;
 import scw.io.FileUtils;
 
 public final class SystemPropertyUtils {
 	private static final String WEB_ROOT = "web.root";
 	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
+	private static final String CLASS_LOADER_RESOURCE_PREFIX = "class.loader.resource.prefix";
 
 	private SystemPropertyUtils() {
 	};
@@ -67,13 +67,21 @@ public final class SystemPropertyUtils {
 		}
 	}
 
+	public static String getResourcePrefix(boolean system) {
+		return SystemUtils.isJar()
+				? (StringUtils.toString(system ? SystemUtils.getProperty(CLASS_LOADER_RESOURCE_PREFIX)
+						: getProperty(CLASS_LOADER_RESOURCE_PREFIX), "/resources/"))
+				: null;
+	}
+
 	/**
 	 * 获取无任何class loader依赖的资源操作
 	 * 
 	 * @return
 	 */
 	private static ResourceOperations getSystemResourceOperations() {
-		return new SystemPropertyMultiSuffixResourceOperations(new DefaultResourceLookup()) {
+		return new SystemPropertyMultiSuffixResourceOperations(
+				new DefaultResourceLookup(getResourcePrefix(true), SystemUtils.isJar(), getWorkPath(), false)) {
 			@Override
 			protected String getProperty(String key) {
 				return getSystemProperty(key);
@@ -81,7 +89,7 @@ public final class SystemPropertyUtils {
 		};
 	}
 
-	private static String getSystemProperty(String key) {
+	public static String getSystemProperty(String key) {
 		String v = getPrivateProperty(key);
 		if (v == null) {
 			v = System.getProperty(key);
@@ -144,7 +152,7 @@ public final class SystemPropertyUtils {
 		}
 
 		if (path == null) {
-			URL url = ResourceUtils.getClassPathURL();
+			URL url = SystemUtils.getClassPathURL();
 			if (url == null) {
 				path = getUserDir();
 			} else {
@@ -213,8 +221,8 @@ public final class SystemPropertyUtils {
 		String systemOnlyId = getPrivateProperty(SYSTEM_ID_PROPERTY);
 		if (StringUtils.isEmpty(systemOnlyId)) {
 			try {
-				systemOnlyId = scw.core.Base64.encode((getUserDir() + "&" + ResourceUtils.getClassPathURL())
-						.getBytes(Constants.DEFAULT_CHARSET_NAME));
+				systemOnlyId = scw.core.Base64.encode((getUserDir() + (SystemUtils.getClassPathURL() == null ? ""
+						: ("&" + SystemUtils.getClassPathURL().getPath()))).getBytes(Constants.DEFAULT_CHARSET_NAME));
 				if (systemOnlyId.endsWith("==")) {
 					systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
 				}

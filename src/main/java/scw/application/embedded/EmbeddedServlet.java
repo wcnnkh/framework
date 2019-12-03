@@ -18,7 +18,6 @@ public final class EmbeddedServlet implements Servlet {
 	}
 
 	public void init(ServletConfig config) throws ServletException {
-		System.out.println(config.getServletContext().getRealPath("/"));
 	}
 
 	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {

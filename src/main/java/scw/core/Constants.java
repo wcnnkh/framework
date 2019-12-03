@@ -6,6 +6,7 @@ import scw.core.string.StringCodec;
 import scw.core.string.StringCodecUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.core.utils.SystemUtils;
 
 @Ignore
 public interface Constants {
@@ -25,9 +26,8 @@ public interface Constants {
 	 * 可用的处理器数量
 	 */
 	public static final int AVAILABLE_PROCESSORS = StringUtils.parseInt(
-			SystemPropertyUtils.getProperty("constants.available.processors"),
-			Runtime.getRuntime().availableProcessors());
-	
+			SystemPropertyUtils.getProperty("constants.available.processors"), SystemUtils.getAvailableProcessors());
+
 	/**
 	 * 注意：可能为空
 	 */
