@@ -12,6 +12,7 @@ import scw.core.Consumer;
  */
 public class LocalResourceLookup extends ClassLoaderResourceLookup {
 	private FileSystemResourceLookup fileSystemResourceLookup;
+	private String workPath;
 
 	/**
 	 * @param search
@@ -21,6 +22,7 @@ public class LocalResourceLookup extends ClassLoaderResourceLookup {
 			boolean search) {
 		super(classLoaderResourceRoot, classLoaderResourceAuto);
 		this.fileSystemResourceLookup = new FileSystemResourceLookup(workPath, search);
+		this.workPath = workPath;
 	}
 
 	public boolean lookup(String resource, Consumer<InputStream> consumer) {
@@ -28,5 +30,9 @@ public class LocalResourceLookup extends ClassLoaderResourceLookup {
 			return true;
 		}
 		return super.lookup(resource, consumer);
+	}
+
+	public final String getWorkPath() {
+		return workPath;
 	}
 }

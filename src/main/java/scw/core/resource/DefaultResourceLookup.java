@@ -37,7 +37,7 @@ public final class DefaultResourceLookup extends LocalResourceLookup {
 			return true;
 		}
 
-		if (text.startsWith(SystemPropertyUtils.getWorkPath())) {
+		if (text.startsWith(getWorkPath())) {
 			return new FileSystemResourceLookup(false).lookup(text, consumer);
 		}
 		return false;
