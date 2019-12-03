@@ -9,7 +9,8 @@ import scw.orm.sql.annotation.Index;
 import scw.orm.sql.annotation.Table;
 import scw.orm.sql.enums.CasType;
 
-public abstract class AbstractSqlMapper extends AbstractMapper implements SqlMapper {
+public abstract class AbstractSqlMapper extends AbstractMapper implements
+		SqlMapper {
 	public boolean isTable(Class<?> clazz) {
 		return clazz.getAnnotation(Table.class) != null;
 	}
@@ -18,9 +19,12 @@ public abstract class AbstractSqlMapper extends AbstractMapper implements SqlMap
 		return fieldDefinition.getAnnotation(Index.class) != null;
 	}
 
-	public boolean isNullAble(MappingContext context) {
-		if (context.getColumn().getField().getType().isPrimitive() || isPrimaryKey(context)
-				|| isIndexColumn(context.getColumn())) {
+	public boolean isNullable(MappingContext context) {
+		if (!super.isNullable(context)) {
+			return false;
+		}
+
+		if (isPrimaryKey(context) || isIndexColumn(context.getColumn())) {
 			return false;
 		}
 
@@ -56,6 +60,7 @@ public abstract class AbstractSqlMapper extends AbstractMapper implements SqlMap
 
 	@Override
 	public boolean isEntity(MappingContext context) {
-		return context.getColumn().getDeclaringClass().getAnnotation(Table.class) != null || super.isEntity(context);
+		return isTable(context.getColumn().getField().getType())
+				|| super.isEntity(context);
 	}
 }

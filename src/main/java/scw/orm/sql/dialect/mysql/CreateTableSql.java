@@ -55,7 +55,7 @@ public class CreateTableSql extends MysqlDialectSql {
 				sb.append("character set ").append(mappingOperations.getCharsetName(context)).append(" ");
 			}
 
-			if (!mappingOperations.isNullAble(context)) {
+			if (!mappingOperations.isNullable(context)) {
 				sb.append("not null ");
 			}
 

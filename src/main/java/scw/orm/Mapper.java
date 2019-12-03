@@ -28,6 +28,8 @@ public interface Mapper extends ColumnFactory {
 	boolean isIgnore(MappingContext context);
 
 	boolean isEntity(MappingContext context);
+	
+	boolean isNullable(MappingContext context);
 
 	Collection<MappingContext> getPrimaryKeys(MappingContext supperContext, Class<?> clazz);
 

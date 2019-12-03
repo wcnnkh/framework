@@ -36,7 +36,7 @@ public final class DefaultTableSetterMapping extends AbstractSetterMapping {
 						context.getColumn().getName())
 				: valueIndexMapping.getSingleIndex(context.getColumn().getName());
 		if (index == -1) {
-			if (!sqlMapper.isNullAble(context)) {
+			if (!sqlMapper.isNullable(context)) {
 				logger.warn("{} [{}] not found for ResultSet, context-class [{}]",
 						context.getColumn().getDeclaringClass().getName(), context.getColumn().getName(),
 						context.getDeclaringClass());
@@ -46,7 +46,7 @@ public final class DefaultTableSetterMapping extends AbstractSetterMapping {
 
 		Object v = values[index];
 		if (v == null) {
-			if (!sqlMapper.isNullAble(context)) {
+			if (!sqlMapper.isNullable(context)) {
 				logger.warn("{} [{}] not is null, context-class [{}]",
 						context.getColumn().getDeclaringClass().getName(), context.getColumn().getName(),
 						context.getDeclaringClass());

@@ -7,8 +7,6 @@ import scw.orm.sql.enums.CasType;
 public interface SqlMapper extends Mapper, TableNameMapping {
 	boolean isTable(Class<?> clazz);
 
-	boolean isNullAble(MappingContext context);
-
 	boolean isAutoIncrement(MappingContext context);
 
 	String getCharsetName(MappingContext context);
