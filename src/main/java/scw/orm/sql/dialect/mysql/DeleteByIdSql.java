@@ -4,9 +4,9 @@ import java.util.Iterator;
 
 import scw.lang.ParameterException;
 import scw.orm.MappingContext;
+import scw.orm.ObjectRelationalMapping;
 import scw.orm.SimpleGetter;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.TableMappingContext;
 
 public class DeleteByIdSql extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
@@ -15,7 +15,7 @@ public class DeleteByIdSql extends MysqlDialectSql {
 
 	public DeleteByIdSql(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object[] parimayKeys)
 			throws Exception {
-		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
+		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}

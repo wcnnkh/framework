@@ -11,8 +11,8 @@ import scw.beans.BeanFactory;
 import scw.core.parameter.ParameterConfig;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
-import scw.json.JsonSupport;
 import scw.json.JSONUtils;
+import scw.json.JsonSupport;
 import scw.mvc.MVCUtils;
 import scw.mvc.parameter.AbstractParameterChannel;
 import scw.net.http.Cookie;
@@ -20,6 +20,8 @@ import scw.security.session.Authorization;
 import scw.security.session.Session;
 import scw.security.session.http.HttpChannelAuthorization;
 import scw.security.session.http.HttpChannelUserSessionFactory;
+import scw.util.ip.IP;
+import scw.util.ip.SimpleIP;
 
 public abstract class AbstractHttpChannel extends AbstractParameterChannel implements HttpChannel {
 	private static final String GET_DEFAULT_CHARSET_ANME = "ISO-8859-1";
@@ -52,6 +54,8 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 		} else if (Authorization.class == parameterConfig.getType()) {
 			HttpChannelUserSessionFactory httpChannelUserSessionFactory = getBean(HttpChannelUserSessionFactory.class);
 			return new HttpChannelAuthorization(this, httpChannelUserSessionFactory);
+		}else if(IP.class == parameterConfig.getType()){
+			return new SimpleIP(request.getIP());
 		}
 		return super.getParameter(parameterConfig);
 	}

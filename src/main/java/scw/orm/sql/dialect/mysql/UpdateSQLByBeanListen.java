@@ -12,9 +12,9 @@ import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;
+import scw.orm.ObjectRelationalMapping;
 import scw.orm.SimpleGetter;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.TableMappingContext;
 import scw.orm.sql.annotation.Counter;
 import scw.orm.sql.enums.CasType;
 
@@ -26,7 +26,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 
 	public UpdateSQLByBeanListen(SqlMapper mappingOperations, Class<?> clazz,
 			FieldSetterListen beanFieldListen, String tableName) throws Exception {
-		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
+		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NotFoundException("not found primary key");
 		}

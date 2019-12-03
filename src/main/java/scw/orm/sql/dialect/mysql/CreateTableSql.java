@@ -11,8 +11,8 @@ import java.util.Map.Entry;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.StringUtils;
 import scw.orm.MappingContext;
+import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.TableMappingContext;
 import scw.orm.sql.annotation.Column;
 import scw.orm.sql.annotation.Index;
 import scw.orm.sql.annotation.Table;
@@ -37,7 +37,7 @@ public class CreateTableSql extends MysqlDialectSql {
 		sb.append("CREATE TABLE IF NOT EXISTS `").append(tableName).append("`");
 		sb.append(" (");
 
-		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
+		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		Iterator<MappingContext> iterator = tableFieldContext.iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();

@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import scw.orm.MappingContext;
+import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.TableMappingContext;
 
 public final class SelectInIdSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
@@ -57,7 +57,7 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 
 	private String getSql(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object[] ids,
 			Collection<?> inIdList) throws Exception {
-		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
+		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		StringBuilder sb = new StringBuilder();
 		if (ids.length > 0) {
 			Iterator<MappingContext> iterator = tableFieldContext.getPrimaryKeys().iterator();

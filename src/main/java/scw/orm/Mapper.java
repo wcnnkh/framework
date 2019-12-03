@@ -23,12 +23,11 @@ public interface Mapper extends ColumnFactory {
 	void iterator(MappingContext superContext, Class<?> clazz, IteratorMapping<? extends Mapper> iterator)
 			throws Exception;
 
-	Collection<MappingContext> getMappingContexts(Class<?> clazz, IteratorCallback<MappingContext> filter);
-
-	Collection<MappingContext> getMappingContexts(MappingContext superContext, Class<?> clazz,
-			IteratorCallback<MappingContext> filter);
-
 	boolean isPrimaryKey(MappingContext mappingContext);
+	
+	boolean isIgnore(MappingContext context);
+
+	boolean isEntity(MappingContext context);
 
 	Collection<MappingContext> getPrimaryKeys(MappingContext supperContext, Class<?> clazz);
 
@@ -40,7 +39,16 @@ public interface Mapper extends ColumnFactory {
 
 	<K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<K> lastPrimaryKeys, Object[] primaryKeys);
 
-	boolean isIgnore(MappingContext context);
-	
-	boolean isEntity(MappingContext context);
+	Collection<MappingContext> getNotPrimaryKeys(MappingContext supperContext, Class<?> clazz);
+
+	Collection<MappingContext> getNotPrimaryKeys(Class<?> clazz);
+
+	Collection<MappingContext> getMappingContexts(Class<?> clazz, IteratorCallback<MappingContext> filter);
+
+	Collection<MappingContext> getMappingContexts(MappingContext superContext, Class<?> clazz,
+			IteratorCallback<MappingContext> filter);
+
+	ObjectRelationalMapping getObjectRelationalMapping(MappingContext superContext, Class<?> clazz);
+
+	ObjectRelationalMapping getObjectRelationalMapping(Class<?> clazz);
 }

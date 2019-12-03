@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import scw.orm.MappingContext;
+import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.TableMappingContext;
 import scw.orm.sql.enums.CasType;
 
 public class DeleteSQL extends MysqlDialectSql {
@@ -16,7 +16,7 @@ public class DeleteSQL extends MysqlDialectSql {
 
 	public <T> DeleteSQL(SqlMapper mappingOperations, Class<? extends T> clazz, T obj, String tableName)
 			throws Exception {
-		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
+		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}

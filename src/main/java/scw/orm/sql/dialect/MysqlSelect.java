@@ -8,9 +8,9 @@ import java.util.List;
 import scw.core.utils.CollectionUtils;
 import scw.lang.ParameterException;
 import scw.orm.MappingContext;
+import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.ORMOperations;
 import scw.orm.sql.ResultSet;
-import scw.orm.sql.TableMappingContext;
 import scw.orm.sql.dialect.mysql.UpdateSQL;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
@@ -51,7 +51,7 @@ public final class MysqlSelect extends Select {
 			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
-		TableMappingContext tableMappingContext = sqlDialect.getSqlMapper().getTableMappingContext(tableClass);
+		ObjectRelationalMapping tableMappingContext = sqlDialect.getSqlMapper().getObjectRelationalMapping(tableClass);
 		String tableName = getTableName(tableClass);
 		checkWhereInit();
 		if (whereSql.length() != 0) {
@@ -78,7 +78,7 @@ public final class MysqlSelect extends Select {
 			whereSql.append(UpdateSQL.OR);
 		}
 
-		keywordProcessing(whereSql, tableName, sqlDialect.getSqlMapper().getTableMappingContext(tableClass)
+		keywordProcessing(whereSql, tableName, sqlDialect.getSqlMapper().getObjectRelationalMapping(tableClass)
 				.getMappingContext(name).getColumn().getName());
 		whereSql.append("=?");
 		paramList.add(value);
@@ -102,7 +102,7 @@ public final class MysqlSelect extends Select {
 			whereSql.append(" and ");
 		}
 
-		keywordProcessing(whereSql, tableName, sqlDialect.getSqlMapper().getTableMappingContext(tableClass)
+		keywordProcessing(whereSql, tableName, sqlDialect.getSqlMapper().getObjectRelationalMapping(tableClass)
 				.getMappingContext(name).getColumn().getName());
 		whereSql.append(" in(");
 		Iterator<?> iterator = values.iterator();
@@ -119,7 +119,7 @@ public final class MysqlSelect extends Select {
 	}
 
 	public MappingContext getMappingContext(Class<?> tableClass, String name) {
-		return sqlDialect.getSqlMapper().getTableMappingContext(tableClass).getMappingContext(name);
+		return sqlDialect.getSqlMapper().getObjectRelationalMapping(tableClass).getMappingContext(name);
 	}
 
 	@Override

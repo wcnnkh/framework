@@ -2,11 +2,13 @@ package scw.orm;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +60,11 @@ public abstract class AbstractMapper implements Mapper {
 				continue;
 			}
 
-			setterMapping.setter(context, bean, this);
+			if (isEntity(context)) {
+				setter(context, bean, create(context, context.getColumn().getDeclaringClass(), setterMapping));
+			} else {
+				setterMapping.setter(context, bean, this);
+			}
 		}
 
 		Class<?> superClazz = clazz.getSuperclass();
@@ -225,8 +231,63 @@ public abstract class AbstractMapper implements Mapper {
 		}
 		return false;
 	}
-	
+
 	public boolean isEntity(MappingContext context) {
-		return context.getColumn().getDeclaringClass().getAnnotation(Entity.class) != null;
+		return context.getColumn().getAnnotation(Entity.class) != null
+				|| context.getColumn().getDeclaringClass().getAnnotation(Entity.class) != null;
+	}
+
+	public Collection<MappingContext> getNotPrimaryKeys(MappingContext supperContext, Class<?> clazz) {
+		return getMappingContexts(supperContext, clazz, new IteratorCallback<MappingContext>() {
+
+			public boolean iteratorCallback(MappingContext data) {
+				return !isPrimaryKey(data) && !isEntity(data);
+			}
+		});
+	}
+
+	public Collection<MappingContext> getNotPrimaryKeys(Class<?> clazz) {
+		return getNotPrimaryKeys(null, clazz);
+	}
+
+	public ObjectRelationalMapping getObjectRelationalMapping(Class<?> clazz) {
+		return getObjectRelationalMapping(null, clazz);
+	}
+
+	public ObjectRelationalMapping getObjectRelationalMapping(MappingContext superContext, Class<?> clazz) {
+		List<MappingContext> primaryKeys = new ArrayList<MappingContext>(4);
+		List<MappingContext> notPrimaryKeys = new ArrayList<MappingContext>(8);
+		List<MappingContext> entitys = new ArrayList<MappingContext>(4);
+		Map<String, MappingContext> contextMap = new LinkedHashMap<String, MappingContext>();
+		appendObjectRelationalMapping(clazz, superContext, clazz, primaryKeys, notPrimaryKeys, entitys, contextMap);
+		return new DefaultObjectRelationalMapping(primaryKeys, notPrimaryKeys, entitys, contextMap);
+	}
+
+	protected void appendObjectRelationalMapping(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
+			Collection<MappingContext> primaryKeys, Collection<MappingContext> notPrimaryKeys,
+			Collection<MappingContext> entitys, Map<String, MappingContext> contextMap) {
+		Map<String, scw.orm.Column> map = getColumnMap(clazz);
+		for (Entry<String, scw.orm.Column> entry : map.entrySet()) {
+			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
+			if (isIgnore(context)) {
+				continue;
+			}
+
+			if (isEntity(context)) {
+				entitys.add(context);
+			} else if (isPrimaryKey(context)) {
+				primaryKeys.add(context);
+			} else {
+				notPrimaryKeys.add(context);
+			}
+
+			contextMap.put(context.getColumn().getName(), context);
+		}
+
+		Class<?> superClazz = clazz.getSuperclass();
+		if (superClazz != null && superClazz != Object.class) {
+			appendObjectRelationalMapping(declaringClass, superContext, superClazz, primaryKeys, notPrimaryKeys,
+					entitys, contextMap);
+		}
 	}
 }

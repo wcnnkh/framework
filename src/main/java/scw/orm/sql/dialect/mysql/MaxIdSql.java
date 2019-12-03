@@ -1,8 +1,8 @@
 package scw.orm.sql.dialect.mysql;
 
 import scw.orm.MappingContext;
+import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.TableMappingContext;
 
 public class MaxIdSql extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
@@ -10,7 +10,7 @@ public class MaxIdSql extends MysqlDialectSql {
 
 	public MaxIdSql(SqlMapper mappingOperations, Class<?> clazz, String tableName, String idField)
 			throws Exception {
-		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
+		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		String columnName;
 		MappingContext context = tableFieldContext.getMappingContext(idField);
 		columnName = context == null ? idField : context.getColumn().getName();

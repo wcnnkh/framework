@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import scw.orm.MappingContext;
+import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.TableMappingContext;
 
 public final class InsertSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
@@ -16,7 +16,7 @@ public final class InsertSQL extends MysqlDialectSql {
 
 	public InsertSQL(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object obj)
 			throws Exception {
-		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
+		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();

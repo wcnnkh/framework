@@ -8,8 +8,8 @@ import scw.core.reflect.FieldDefinition;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;
+import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.TableMappingContext;
 import scw.orm.sql.annotation.Counter;
 
 public class SaveOrUpdateSQL extends MysqlDialectSql {
@@ -22,7 +22,7 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 
 	public SaveOrUpdateSQL(SqlMapper mappingOperations, Class<?> clazz, Object obj, String tableName)
 			throws Exception {
-		TableMappingContext tableFieldContext = mappingOperations.getTableMappingContext(clazz);
+		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}

@@ -7,10 +7,11 @@ import java.lang.annotation.Target;
 
 /**
  * 标识这是一个类
+ * 
  * @author shuchaowen
  *
  */
-@Target(ElementType.TYPE)
+@Target({ ElementType.TYPE, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Entity {
 }

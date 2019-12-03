@@ -10,8 +10,8 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.XTime;
 import scw.data.TemporaryCache;
 import scw.data.WrapperTemporaryCache;
+import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.TableMappingContext;
 
 public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> {
 	private static final String KEY = "key:";
@@ -41,8 +41,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 	private final TemporaryCache cache;
 	private final SqlMapper sqlMapper;
 
-	public TemporaryCacheManager(SqlMapper sqlMapper, TemporaryCache cache, boolean transaction,
-			String keyPrefix) {
+	public TemporaryCacheManager(SqlMapper sqlMapper, TemporaryCache cache, boolean transaction, String keyPrefix) {
 		this.cache = new WrapperTemporaryCache(cache, transaction, keyPrefix);
 		this.sqlMapper = sqlMapper;
 	}
@@ -148,7 +147,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 
 		TemporaryCacheConfig config = getCacheConfig(type);
 		if (config.isEnable() && config.isKeys()) {
-			TableMappingContext tableFieldContext = sqlMapper.getTableMappingContext(type);
+			ObjectRelationalMapping tableFieldContext = sqlMapper.getObjectRelationalMapping(type);
 			if (tableFieldContext.getPrimaryKeys().size() != params.length) {
 				return true;
 			}
