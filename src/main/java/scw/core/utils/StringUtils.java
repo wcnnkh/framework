@@ -32,9 +32,9 @@ import java.util.zip.GZIPOutputStream;
 import scw.core.Assert;
 import scw.core.Callable;
 import scw.core.StringEmptyVerification;
-import scw.core.exception.NotSupportException;
-import scw.core.exception.ParameterException;
 import scw.json.JsonSupport;
+import scw.lang.NotSupportException;
+import scw.lang.ParameterException;
 import scw.json.JSONUtils;
 
 public final class StringUtils {

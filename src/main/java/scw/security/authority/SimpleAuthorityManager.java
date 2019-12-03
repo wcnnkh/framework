@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.CollectionUtils;
 import scw.json.JSONUtils;
+import scw.lang.AlreadyExistsException;
 
 public class SimpleAuthorityManager<T extends Authority> implements AuthorityManager<T> {
 	public Map<String, T> authorityMap = new HashMap<String, T>();

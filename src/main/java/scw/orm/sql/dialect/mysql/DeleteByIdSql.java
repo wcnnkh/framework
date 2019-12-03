@@ -2,7 +2,7 @@ package scw.orm.sql.dialect.mysql;
 
 import java.util.Iterator;
 
-import scw.core.exception.ParameterException;
+import scw.lang.ParameterException;
 import scw.orm.MappingContext;
 import scw.orm.SimpleGetter;
 import scw.orm.sql.SqlMapper;

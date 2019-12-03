@@ -10,8 +10,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.core.PropertyFactory;
-import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.SystemPropertyUtils;
+import scw.lang.AlreadyExistsException;
 
 public class SimplePropertyFactory implements PropertyFactory {
 	private Map<String, Property> propertyMap = new HashMap<String, Property>();

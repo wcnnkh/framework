@@ -12,7 +12,6 @@ import scw.aop.Invoker;
 import scw.aop.ReflectInvoker;
 import scw.core.PropertyFactory;
 import scw.core.SystemPropertyFactory;
-import scw.core.exception.NotSupportException;
 import scw.core.instance.support.ReflectionInstanceFactory;
 import scw.core.instance.support.ReflectionSingleInstanceFactory;
 import scw.core.parameter.ParameterUtils;
@@ -22,6 +21,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.lang.NotSupportException;
 
 public final class InstanceUtils {
 	private InstanceUtils() {

@@ -6,10 +6,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import scw.core.Verification;
-import scw.core.exception.NotSupportException;
 import scw.core.instance.InstanceException;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
+import scw.lang.NotSupportException;
 
 public final class CloneUtils {
 	private CloneUtils() {

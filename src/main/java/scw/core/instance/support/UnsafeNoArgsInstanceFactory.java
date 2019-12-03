@@ -1,9 +1,9 @@
 package scw.core.instance.support;
 
-import scw.core.exception.NotSupportException;
 import scw.core.instance.InstanceException;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.utils.UnsafeUtils;
+import scw.lang.NotSupportException;
 
 public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
 	static {

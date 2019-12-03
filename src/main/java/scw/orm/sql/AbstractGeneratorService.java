@@ -1,8 +1,8 @@
 package scw.orm.sql;
 
-import scw.core.exception.NotSupportException;
 import scw.core.utils.XUtils;
 import scw.id.SequenceId;
+import scw.lang.NotSupportException;
 import scw.orm.sql.annotation.CreateTime;
 import scw.orm.sql.annotation.UUID;
 import scw.orm.sql.annotation.UpdateTime;

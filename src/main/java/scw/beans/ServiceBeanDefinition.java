@@ -7,10 +7,10 @@ import scw.beans.auto.SimpleAutoBean;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.cglib.proxy.Enhancer;
-import scw.core.exception.BeansException;
-import scw.core.exception.NotFoundException;
-import scw.core.exception.NotSupportException;
 import scw.core.reflect.ReflectionUtils;
+import scw.lang.BeansException;
+import scw.lang.NotFoundException;
+import scw.lang.NotSupportException;
 
 public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 	private AutoBean autoBean;

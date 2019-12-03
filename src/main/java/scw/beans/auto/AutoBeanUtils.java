@@ -8,12 +8,12 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
 import scw.core.PropertyFactory;
-import scw.core.exception.BeansException;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
+import scw.lang.BeansException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 

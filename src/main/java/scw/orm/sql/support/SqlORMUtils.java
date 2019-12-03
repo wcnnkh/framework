@@ -13,13 +13,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import scw.core.exception.NotSupportException;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.lang.NotSupportException;
 import scw.orm.ColumnFactory;
 import scw.orm.Filter;
 import scw.orm.sql.DefaultSqlMapper;

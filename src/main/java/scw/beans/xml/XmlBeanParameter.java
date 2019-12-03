@@ -10,10 +10,10 @@ import org.w3c.dom.Node;
 
 import scw.beans.EParameterType;
 import scw.core.PropertyFactory;
-import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceFactory;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
+import scw.lang.NotFoundException;
 
 public final class XmlBeanParameter implements Cloneable, Serializable {
 	private static final long serialVersionUID = 1L;

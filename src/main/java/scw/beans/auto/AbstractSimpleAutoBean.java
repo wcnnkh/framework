@@ -2,8 +2,8 @@ package scw.beans.auto;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.exception.NotSupportException;
 import scw.core.utils.CollectionUtils;
+import scw.lang.NotSupportException;
 
 public abstract class AbstractSimpleAutoBean extends AbstractAutoBean {
 

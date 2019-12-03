@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import scw.core.exception.ParameterException;
 import scw.core.utils.CollectionUtils;
+import scw.lang.ParameterException;
 import scw.orm.MappingContext;
 import scw.orm.sql.ORMOperations;
 import scw.orm.sql.ResultSet;

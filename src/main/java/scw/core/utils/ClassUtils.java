@@ -27,6 +27,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import scw.core.Assert;
+import scw.core.Constants;
 import scw.core.Verification;
 import scw.core.cglib.core.TypeUtils;
 import scw.io.IOUtils;
@@ -1331,44 +1332,54 @@ public final class ClassUtils {
 		return null;
 	}
 
+	private static void appendClassesByURL(String packageName, String packageDirName, Collection<Class<?>> clazzList,
+			Verification<String> classNameVerification, URL url) throws IOException {
+		String protocol = url.getProtocol();
+		if ("file".equals(protocol)) {
+			String filePath = URLDecoder.decode(url.getFile(), Constants.DEFAULT_CHARSET_NAME);
+			findAndAddClassesInPackageByFile(packageName, filePath, clazzList);
+		} else if ("jar".equals(protocol)) {
+			JarFile jar = ((JarURLConnection) url.openConnection()).getJarFile();
+			Enumeration<JarEntry> entries = jar.entries();
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				if (entry.isDirectory()) {
+					continue;
+				}
+
+				String name = entry.getName();
+				if (name.charAt(0) == '/') {
+					name = name.substring(1);
+				}
+				if (name.startsWith(packageDirName)) {
+					Class<?> clazz = forFileName(name, classNameVerification);
+					if (clazz != null) {
+						clazzList.add(clazz);
+					}
+				}
+			}
+		}
+	}
+
 	private static void appendClassesByClassLoader(String packageName, Collection<Class<?>> clazzList,
 			Verification<String> classNameVerification) {
 		String packageDirName = packageName.replace('.', '/');
 		Enumeration<URL> dirs;
 		try {
-			dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
+			dirs = getDefaultClassLoader().getResources(packageDirName);
 			while (dirs.hasMoreElements()) {
 				URL url = dirs.nextElement();
-				String protocol = url.getProtocol();
-				if ("file".equals(protocol)) {
-					String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
-					findAndAddClassesInPackageByFile(packageName, filePath, clazzList);
-				} else if ("jar".equals(protocol)) {
-					JarFile jar;
-					try {
-						jar = ((JarURLConnection) url.openConnection()).getJarFile();
-						Enumeration<JarEntry> entries = jar.entries();
-						while (entries.hasMoreElements()) {
-							JarEntry entry = entries.nextElement();
-							if (entry.isDirectory()) {
-								continue;
-							}
+				appendClassesByURL(packageName, packageDirName, clazzList, classNameVerification, url);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-							String name = entry.getName();
-							if (name.charAt(0) == '/') {
-								name = name.substring(1);
-							}
-							if (name.startsWith(packageDirName)) {
-								Class<?> clazz = forFileName(name, classNameVerification);
-								if (clazz != null) {
-									clazzList.add(clazz);
-								}
-							}
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+		try {
+			dirs = ClassLoader.getSystemResources(packageDirName);
+			while (dirs.hasMoreElements()) {
+				URL url = dirs.nextElement();
+				appendClassesByURL(packageName, packageDirName, clazzList, classNameVerification, url);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

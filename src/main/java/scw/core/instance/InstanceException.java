@@ -1,6 +1,6 @@
 package scw.core.instance;
 
-import scw.core.exception.NestedRuntimeException;
+import scw.lang.NestedRuntimeException;
 
 /**
  * 只有此异常会被抛出

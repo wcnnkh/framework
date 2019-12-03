@@ -38,12 +38,12 @@ import org.xml.sax.SAXException;
 import scw.core.Converter;
 import scw.core.PropertyFactory;
 import scw.core.StringFormat;
-import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.PropertyMapper;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.resource.ResourceUtils;
 import scw.io.IOUtils;
+import scw.lang.NotFoundException;
 import scw.util.KeyValuePair;
 import scw.util.SimpleKeyValuePair;
 

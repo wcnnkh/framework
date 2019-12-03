@@ -3,9 +3,9 @@ package scw.security.authority.http;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
+import scw.lang.AlreadyExistsException;
 import scw.security.authority.SimpleAuthorityManager;
 
 public class SimpleHttpAuthorityManager extends SimpleAuthorityManager<HttpAuthority> implements HttpAuthorityManager {

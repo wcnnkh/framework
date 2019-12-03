@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.core.exception.NotSupportException;
+import scw.lang.NotSupportException;
 import scw.net.http.entity.parameter.AbstractMultipartParameter;
 
 public class MultipartRequest extends HttpRequest {

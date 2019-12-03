@@ -1,4 +1,4 @@
-package scw.core.exception;
+package scw.lang;
 
 public class NestedRuntimeException extends RuntimeException {
 

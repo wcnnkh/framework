@@ -1,4 +1,4 @@
-package scw.core.exception;
+package scw.lang;
 
 /**
  * 参数异常

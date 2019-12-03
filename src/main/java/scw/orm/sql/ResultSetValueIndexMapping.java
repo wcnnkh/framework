@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.core.exception.AlreadyExistsException;
-import scw.core.exception.NotSupportException;
+import scw.lang.AlreadyExistsException;
+import scw.lang.NotSupportException;
 
 public final class ResultSetValueIndexMapping implements ValueIndexMapping {
 	private static final long serialVersionUID = 1L;

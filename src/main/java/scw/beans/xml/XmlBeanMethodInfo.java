@@ -9,7 +9,7 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
-import scw.core.exception.BeansException;
+import scw.lang.BeansException;
 
 public class XmlBeanMethodInfo implements BeanMethod {
 	private Method method;

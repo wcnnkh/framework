@@ -24,8 +24,8 @@ import scw.core.PrimitiveTypeValueFactory;
 import scw.core.ResourceFactory;
 import scw.core.Start;
 import scw.core.ValueFactory;
-import scw.core.exception.NotSupportException;
 import scw.core.reflect.ReflectionUtils;
+import scw.lang.NotSupportException;
 
 public final class XUtils {
 	private XUtils() {

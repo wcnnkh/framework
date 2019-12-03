@@ -46,8 +46,6 @@ import scw.core.PropertyFactory;
 import scw.core.Verification;
 import scw.core.annotation.Order;
 import scw.core.cglib.core.ReflectUtils;
-import scw.core.exception.AlreadyExistsException;
-import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ArrayUtils;
@@ -58,6 +56,8 @@ import scw.core.utils.FormatUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
+import scw.lang.AlreadyExistsException;
+import scw.lang.NotFoundException;
 
 /**
  * Simple utility class for working with the reflection API and handling

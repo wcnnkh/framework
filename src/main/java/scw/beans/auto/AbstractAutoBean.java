@@ -6,9 +6,9 @@ import java.util.Collection;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.cglib.proxy.Enhancer;
-import scw.core.exception.BeansException;
-import scw.core.exception.NotFoundException;
 import scw.core.reflect.ReflectionUtils;
+import scw.lang.BeansException;
+import scw.lang.NotFoundException;
 
 public abstract class AbstractAutoBean implements AutoBean {
 	protected final BeanFactory beanFactory;

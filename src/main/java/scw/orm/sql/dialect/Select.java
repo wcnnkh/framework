@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.Pagination;
-import scw.core.exception.ParameterException;
+import scw.lang.ParameterException;
 import scw.orm.MappingContext;
 import scw.orm.sql.ORMOperations;
 import scw.orm.sql.ResultSet;

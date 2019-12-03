@@ -1,6 +1,6 @@
 package scw.data.memory;
 
-import scw.core.exception.NotSupportException;
+import scw.lang.NotSupportException;
 
 public class DefaultMemoryData extends AbstractMemoryData {
 	private volatile Object value;

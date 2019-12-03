@@ -18,9 +18,7 @@ public class LocalResourceLookup extends ClassLoaderResourceLookup {
 	 * @param search
 	 *            是否搜索
 	 */
-	public LocalResourceLookup(String classLoaderResourceRoot, boolean classLoaderResourceAuto, String workPath,
-			boolean search) {
-		super(classLoaderResourceRoot, classLoaderResourceAuto);
+	public LocalResourceLookup(String workPath, boolean search) {
 		this.fileSystemResourceLookup = new FileSystemResourceLookup(workPath, search);
 		this.workPath = workPath;
 	}

@@ -1,6 +1,6 @@
 package scw.db.database;
 
-import scw.core.exception.NotFoundException;
+import scw.lang.NotFoundException;
 import scw.orm.sql.support.MySqlSqlDialect;
 
 /**

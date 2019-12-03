@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import scw.beans.annotation.AutoImpl;
-import scw.core.exception.NotSupportException;
+import scw.lang.NotSupportException;
 
 @AutoImpl(className = { "scw.io.serializer.hessian.Hessian2Serializer",
 		"scw.io.serializer.hessian.HessianSerializer", "scw.io.serializer.hessian.JavaSerializer" })

@@ -2,7 +2,7 @@ package scw.mvc.page;
 
 import java.util.LinkedList;
 
-import scw.core.exception.NotFoundException;
+import scw.lang.NotFoundException;
 import scw.mvc.servlet.page.JspPageFactory;
 
 public class SuffixPageFactory implements PageFactory {

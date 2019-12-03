@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.core.exception;
+package scw.lang;
 
 /**
  * Helper class for implementing exception classes which are capable of holding

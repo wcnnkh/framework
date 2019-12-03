@@ -33,7 +33,6 @@ import scw.io.FileUtils;
 public final class SystemPropertyUtils {
 	private static final String WEB_ROOT = "web.root";
 	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
-	private static final String CLASS_LOADER_RESOURCE_PREFIX = "class.loader.resource.prefix";
 
 	private SystemPropertyUtils() {
 	};
@@ -67,21 +66,13 @@ public final class SystemPropertyUtils {
 		}
 	}
 
-	public static String getResourcePrefix(boolean system) {
-		return SystemUtils.isJar()
-				? (StringUtils.toString(system ? SystemUtils.getProperty(CLASS_LOADER_RESOURCE_PREFIX)
-						: getProperty(CLASS_LOADER_RESOURCE_PREFIX), "/resources/"))
-				: null;
-	}
-
 	/**
 	 * 获取无任何class loader依赖的资源操作
 	 * 
 	 * @return
 	 */
 	private static ResourceOperations getSystemResourceOperations() {
-		return new SystemPropertyMultiSuffixResourceOperations(
-				new DefaultResourceLookup(getResourcePrefix(true), SystemUtils.isJar(), getWorkPath(), false)) {
+		return new SystemPropertyMultiSuffixResourceOperations(new DefaultResourceLookup(getWorkPath(), false)) {
 			@Override
 			protected String getProperty(String key) {
 				return getSystemProperty(key);

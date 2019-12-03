@@ -35,9 +35,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import scw.core.Base64;
-import scw.core.exception.AlreadyExistsException;
 import scw.core.utils.SystemPropertyUtils;
 import scw.io.serializer.SerializerUtils;
+import scw.lang.AlreadyExistsException;
 
 public final class FileUtils {
 

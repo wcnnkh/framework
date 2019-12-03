@@ -33,7 +33,6 @@ import scw.beans.xml.XmlBeanParameter;
 import scw.core.Init;
 import scw.core.PropertyFactory;
 import scw.core.cglib.proxy.Enhancer;
-import scw.core.exception.BeansException;
 import scw.core.instance.InstanceFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.AnnotationUtils;
@@ -44,6 +43,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
+import scw.lang.BeansException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 

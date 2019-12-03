@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.exception.AlreadyExistsException;
+import scw.lang.AlreadyExistsException;
 import scw.transaction.savepoint.MultipleSavepoint;
 import scw.transaction.savepoint.Savepoint;
 

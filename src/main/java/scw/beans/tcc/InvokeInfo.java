@@ -8,11 +8,11 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import scw.beans.annotation.TCCStage;
-import scw.core.exception.NotFoundException;
 import scw.core.instance.InstanceFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.SerializableMethodDefinition;
 import scw.core.utils.StringUtils;
+import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 

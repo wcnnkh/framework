@@ -10,9 +10,9 @@ import scw.core.Consumer;
 import scw.core.Converter;
 import scw.core.PropertyFactory;
 import scw.core.SystemPropertyFactory;
-import scw.core.exception.NotFoundException;
 import scw.core.utils.FormatUtils;
 import scw.io.IOUtils;
+import scw.lang.NotFoundException;
 
 public abstract class AbstractResourceOperations implements ResourceOperations {
 

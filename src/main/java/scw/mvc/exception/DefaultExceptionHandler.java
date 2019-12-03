@@ -1,7 +1,7 @@
 package scw.mvc.exception;
 
-import scw.core.exception.ParameterException;
 import scw.core.utils.StringUtils;
+import scw.lang.ParameterException;
 import scw.mvc.Channel;
 import scw.mvc.ExceptionHandler;
 import scw.mvc.ExceptionHandlerChain;

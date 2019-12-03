@@ -23,7 +23,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 
 import scw.core.Assert;
-import scw.core.exception.ParameterException;
+import scw.lang.ParameterException;
 
 /**
  * Miscellaneous utility methods for number conversion and parsing. Mainly for

@@ -1,6 +1,6 @@
 package scw.mvc.http;
 
-import scw.core.exception.NotSupportException;
+import scw.lang.NotSupportException;
 import scw.mvc.Channel;
 import scw.mvc.View;
 

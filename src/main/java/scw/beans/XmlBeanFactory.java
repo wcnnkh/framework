@@ -13,11 +13,11 @@ import scw.beans.rpc.HttpRpcBeanConfigFactory;
 import scw.beans.xml.XmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.exception.BeansException;
-import scw.core.exception.NotFoundException;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
+import scw.lang.BeansException;
+import scw.lang.NotFoundException;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
 	private NodeList nodeList;

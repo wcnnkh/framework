@@ -10,7 +10,6 @@ import java.util.Date;
 
 import scw.beans.BeanFactory;
 import scw.core.annotation.DefaultValue;
-import scw.core.exception.ParameterException;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
@@ -20,6 +19,7 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
 import scw.json.JsonSupport;
+import scw.lang.ParameterException;
 import scw.mvc.AbstractChannel;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;

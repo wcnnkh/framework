@@ -18,8 +18,6 @@ import scw.beans.auto.AutoBeanUtils;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.cglib.proxy.Enhancer;
-import scw.core.exception.BeansException;
-import scw.core.exception.NotFoundException;
 import scw.core.instance.AutoInstanceConfig;
 import scw.core.instance.InstanceConfig;
 import scw.core.reflect.FieldDefinition;
@@ -27,6 +25,8 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.XUtils;
+import scw.lang.BeansException;
+import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 

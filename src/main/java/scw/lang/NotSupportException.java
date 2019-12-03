@@ -1,4 +1,4 @@
-package scw.core.exception;
+package scw.lang;
 
 public class NotSupportException extends RuntimeException{
 	private static final long serialVersionUID = 5341163945147654715L;

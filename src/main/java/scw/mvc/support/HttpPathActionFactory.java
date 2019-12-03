@@ -3,7 +3,7 @@ package scw.mvc.support;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.core.exception.AlreadyExistsException;
+import scw.lang.AlreadyExistsException;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
 

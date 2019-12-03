@@ -1,4 +1,4 @@
-package scw.core.exception;
+package scw.lang;
 
 public class AlreadyExistsException extends RuntimeException{
 	private static final long serialVersionUID = 1L;

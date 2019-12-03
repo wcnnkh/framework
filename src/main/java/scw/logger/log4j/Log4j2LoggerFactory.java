@@ -2,7 +2,7 @@ package scw.logger.log4j;
 
 import org.apache.logging.log4j.LogManager;
 
-import scw.core.exception.NotSupportException;
+import scw.lang.NotSupportException;
 import scw.logger.AbstractILoggerFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerLevelUtils;

@@ -6,13 +6,13 @@ import java.util.Properties;
 import org.w3c.dom.Element;
 
 import scw.core.Constants;
-import scw.core.exception.NotSupportException;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XMLUtils;
+import scw.lang.NotSupportException;
 import scw.logger.Level;
 import scw.logger.LoggerLevelUtils;
 import scw.logger.LoggerUtils;

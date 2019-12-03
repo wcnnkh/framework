@@ -1,6 +1,6 @@
 package scw.mvc.support;
 
-import scw.core.exception.NotSupportException;
+import scw.lang.NotSupportException;
 import scw.mvc.Channel;
 import scw.mvc.Filter;
 import scw.mvc.FilterChain;

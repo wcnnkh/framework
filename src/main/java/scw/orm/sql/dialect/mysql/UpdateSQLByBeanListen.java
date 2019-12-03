@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.FieldSetterListen;
-import scw.core.exception.NotFoundException;
 import scw.core.utils.TypeUtils;
+import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;

@@ -14,12 +14,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import scw.core.Constants;
-import scw.core.exception.NotSupportException;
 import scw.core.string.StringCodecUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ByteArray;
 import scw.json.JSONUtils;
+import scw.lang.NotSupportException;
 import scw.net.Message;
 import scw.net.NetworkUtils;
 import scw.net.mime.MimeTypeConstants;

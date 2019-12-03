@@ -11,9 +11,9 @@ public final class DefaultResourceLookup extends LocalResourceLookup {
 	private static final String CLASSPATH_URL_PREFIX = "classpath:";
 	private static final String CLASS_PATH_PREFIX_EL = "{classpath}";
 
-	public DefaultResourceLookup(String classLoaderResourceRoot, boolean classLoaderResourceAuto, String workPath,
+	public DefaultResourceLookup(String workPath,
 			boolean search) {
-		super(classLoaderResourceRoot, classLoaderResourceAuto, workPath, search);
+		super(workPath, search);
 	}
 
 	public boolean lookup(String resource, Consumer<InputStream> consumer) {

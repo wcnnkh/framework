@@ -2,7 +2,7 @@ package scw.beans;
 
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
-import scw.core.exception.NotSupportException;
+import scw.lang.NotSupportException;
 
 public abstract class AbstractInterfaceBeanDefinition extends AbstractBeanDefinition {
 

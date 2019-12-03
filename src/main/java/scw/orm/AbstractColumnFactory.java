@@ -5,8 +5,8 @@ import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.core.exception.AlreadyExistsException;
 import scw.core.reflect.ReflectionUtils;
+import scw.lang.AlreadyExistsException;
 
 public abstract class AbstractColumnFactory implements ColumnFactory {
 
