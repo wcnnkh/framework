@@ -11,7 +11,7 @@ import scw.orm.Filter;
 import scw.orm.GetterFilter;
 import scw.orm.SetterFilter;
 
-public class DefaultSqlMapper extends AbstractSqlMappingOperations implements SqlMapper {
+public class DefaultSqlMapper extends AbstractSqlMapper implements SqlMapper {
 	private TableNameMapping tableNameMapping;
 	private ColumnFactory columnFactory;
 	private Collection<? extends Filter> filters;

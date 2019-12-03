@@ -43,7 +43,6 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
-import scw.lang.BeansException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 

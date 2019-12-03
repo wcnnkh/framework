@@ -2,9 +2,9 @@ package scw.beans.auto;
 
 import scw.beans.AbstractBeanDefinition;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
-import scw.lang.BeansException;
 
 public final class AutoBeanDefinition extends AbstractBeanDefinition {
 	private final AutoBean autoBean;

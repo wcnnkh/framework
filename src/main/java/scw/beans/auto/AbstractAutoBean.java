@@ -5,9 +5,10 @@ import java.util.Collection;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.beans.BeansException;
 import scw.core.cglib.proxy.Enhancer;
 import scw.core.reflect.ReflectionUtils;
-import scw.lang.BeansException;
+import scw.core.utils.ClassUtils;
 import scw.lang.NotFoundException;
 
 public abstract class AbstractAutoBean implements AutoBean {
@@ -66,7 +67,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 			return (T) enhancer.create(constructor.getParameterTypes(), params);
 		} else {
 			try {
-				return (T) constructor.newInstance(params);
+				return (T) constructor.newInstance(ClassUtils.cast(constructor.getParameterTypes(), params));
 			} catch (Exception e) {
 				throw new BeansException(type.getName(), e);
 			}

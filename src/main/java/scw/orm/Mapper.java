@@ -41,4 +41,6 @@ public interface Mapper extends ColumnFactory {
 	<K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<K> lastPrimaryKeys, Object[] primaryKeys);
 
 	boolean isIgnore(MappingContext context);
+	
+	boolean isEntity(MappingContext context);
 }

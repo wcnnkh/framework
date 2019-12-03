@@ -8,8 +8,8 @@ import org.w3c.dom.Node;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
+import scw.beans.BeansException;
 import scw.core.PropertyFactory;
-import scw.lang.BeansException;
 
 public class XmlBeanMethodInfo implements BeanMethod {
 	private Method method;

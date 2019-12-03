@@ -17,11 +17,12 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.IteratorCallback;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.orm.annotation.Entity;
 import scw.orm.annotation.NotColumn;
 import scw.orm.annotation.PrimaryKey;
 import scw.orm.sql.SqlMapper;
 
-public abstract class AbstractMappingOperations implements Mapper {
+public abstract class AbstractMapper implements Mapper {
 	static final char DEFAULT_CONNECTOR_CHARACTER = StringUtils
 			.parseChar(SystemPropertyUtils.getProperty("orm.primary.key.connector.character"), ':');
 
@@ -223,5 +224,9 @@ public abstract class AbstractMappingOperations implements Mapper {
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean isEntity(MappingContext context) {
+		return context.getColumn().getDeclaringClass().getAnnotation(Entity.class) != null;
 	}
 }

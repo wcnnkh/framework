@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.IteratorCallback;
-import scw.orm.AbstractMappingOperations;
+import scw.orm.AbstractMapper;
 import scw.orm.MappingContext;
 import scw.orm.sql.annotation.AutoIncrement;
 import scw.orm.sql.annotation.Column;
@@ -18,7 +18,7 @@ import scw.orm.sql.annotation.Table;
 import scw.orm.sql.enums.CasType;
 import scw.orm.sql.support.SqlORMUtils;
 
-public abstract class AbstractSqlMappingOperations extends AbstractMappingOperations implements SqlMapper {
+public abstract class AbstractSqlMapper extends AbstractMapper implements SqlMapper {
 	public Collection<MappingContext> getNotPrimaryKeys(MappingContext supperContext, Class<?> clazz) {
 		return getMappingContexts(supperContext, clazz, new IteratorCallback<MappingContext>() {
 

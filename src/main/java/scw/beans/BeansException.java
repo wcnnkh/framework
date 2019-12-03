@@ -1,4 +1,4 @@
-package scw.lang;
+package scw.beans;
 
 public class BeansException extends RuntimeException{
 	private static final long serialVersionUID = 1L;

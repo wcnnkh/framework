@@ -12,13 +12,13 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
+import scw.beans.BeansException;
 import scw.beans.EParameterType;
 import scw.core.PropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-import scw.lang.BeansException;
 
 public final class XmlBeanUtils {
 	private XmlBeanUtils() {

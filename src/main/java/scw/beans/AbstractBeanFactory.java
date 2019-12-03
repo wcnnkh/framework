@@ -32,7 +32,6 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
-import scw.lang.BeansException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.security.limit.CountLimitFilter;
@@ -237,13 +236,14 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 				synchronized (singletonMap) {
 					obj = singletonMap.get(beanDefinition.getId());
 					if (obj == null) {
-						obj = beanDefinition.create();
-						singletonMap.put(beanDefinition.getId(), obj);
 						try {
+							obj = beanDefinition.create();
+							singletonMap.put(beanDefinition.getId(), obj);
 							beanDefinition.autowrite(obj);
 							beanDefinition.init(obj);
 						} catch (Exception e) {
-							throw new BeansException(beanDefinition.getId(), e);
+							e.printStackTrace();
+							throw new BeansException(beanDefinition.getId());
 						}
 					}
 				}

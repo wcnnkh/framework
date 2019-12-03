@@ -1388,4 +1388,33 @@ public final class ClassUtils {
 
 	/************************************ 扫描类工具 *****************************************/
 
+	public static Object[] cast(Class<?>[] types, Object[] args) {
+		if (types == null || args == null) {
+			throw new IllegalArgumentException("参数不能为空");
+		}
+
+		if (types.length != args.length) {
+			throw new IllegalArgumentException("参数长度不一致");
+		}
+
+		if (types.length == 0) {
+			return new Object[0];
+		}
+
+		Object[] values = new Object[args.length];
+		for (int i = 0; i < values.length; i++) {
+			if (args[i] == null) {
+				values[i] = null;
+				continue;
+			}
+
+			if (isPrimitiveOrWrapper(types[i])) {
+				values[i] = args[i];
+				continue;
+			}
+
+			values[i] = types[i].cast(args[i]);
+		}
+		return values;
+	}
 }

@@ -16,9 +16,9 @@ public class ClassLoaderResourceLookup implements ResourceLookup {
 		}
 
 		String rs = (resource.startsWith("/") ? resource.substring(1) : resource);
-		InputStream inputStream = getInputStream(DEFAULT_PREFIX + rs);
+		InputStream inputStream = getInputStream(rs);
 		if (inputStream == null) {
-			inputStream = getInputStream(rs);
+			inputStream = getInputStream(DEFAULT_PREFIX + rs);
 		}
 
 		if (inputStream == null) {

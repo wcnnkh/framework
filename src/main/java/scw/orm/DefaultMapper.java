@@ -6,7 +6,7 @@ import java.util.Map;
 import scw.core.instance.CannotInstantiateException;
 import scw.core.instance.NoArgsInstanceFactory;
 
-public class DefaultMapper extends AbstractMappingOperations {
+public class DefaultMapper extends AbstractMapper {
 	private final ColumnFactory columnFactory;
 	private final Collection<? extends SetterFilter> setterFilters;
 	private final Collection<? extends GetterFilter> getterFilters;
