@@ -1280,13 +1280,7 @@ public final class ClassUtils {
 				continue;
 			}
 
-			try {
-				values[i] = types[i].cast(args[i]);
-			} catch (ClassCastException e) {
-				System.out.println(types[i].getClassLoader().equals(args[i].getClass().getClass()) + ","
-						+ types[i].getClassLoader() + "," + args[i].getClass().getClassLoader());
-				throw e;
-			}
+			values[i] = types[i].cast(args[i]);
 		}
 		return values;
 	}
