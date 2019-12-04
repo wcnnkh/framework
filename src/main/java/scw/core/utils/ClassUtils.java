@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,9 +27,8 @@ import java.util.jar.JarFile;
 
 import scw.core.Assert;
 import scw.core.Constants;
-import scw.core.Verification;
 import scw.core.cglib.core.TypeUtils;
-import scw.io.IOUtils;
+import scw.io.FileUtils;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -1131,72 +1129,61 @@ public final class ClassUtils {
 	}
 
 	/************************************ 扫描类工具 *****************************************/
-	public static Collection<Class<?>> getClassList(String packageName, IgnoreClassVerification ignoreClass) {
-		LinkedList<Class<?>> interfaceClassList = new LinkedList<Class<?>>();
-		Collection<Class<?>> clazzList = getClassList(packageName);
-		if (!CollectionUtils.isEmpty(clazzList)) {
-			for (Class<?> clazz : clazzList) {
-				if (clazz == null) {
-					continue;
-				}
 
-				if (ignoreClass != null && ignoreClass.verification(clazz)) {
-					continue;
-				}
-
-				interfaceClassList.add(clazz);
-			}
-		}
-		return interfaceClassList;
-	}
-
-	public static Collection<Class<?>> getClassList(String packageName, boolean interfaceClass,
-			boolean ignoreEmptyMethod) {
-		return getClassList(packageName, new IgnoreClassVerification(ignoreEmptyMethod, interfaceClass));
-	}
-
-	private static final Verification<String> IGNORE_JAR_VERIFICATION = new IgnoreJarVerification();
 	/**
-	 * 常见的第三方包忽略
+	 * 获取一个目录下的class
+	 * 
+	 * @param directorey
+	 * @param prefix
+	 * @return
 	 */
-	public static final IgnoreCommonThirdPartiesClassNameVerification IGNORE_COMMON_THIRD_PARTIES_CLASS_NAME_VERIFICATION = new IgnoreCommonThirdPartiesClassNameVerification();
-	private static final Verification<String> IGNORE_CLASS_NAME_VERIFICATION = new IgnoreClassNameVerification();
-
-	public static Collection<Class<?>> getClassList() {
-		return getClassList(IGNORE_JAR_VERIFICATION, IGNORE_CLASS_NAME_VERIFICATION);
-	}
-
-	public static Collection<Class<?>> getClassList(String resource) {
-		return getClassList(resource, (Verification<String>) null);
-	}
-
-	public static Collection<Class<?>> getClassList(Verification<String> jarVerification,
-			Verification<String> classNameVerification) {
+	private static Collection<Class<?>> getDirectoryClassList(String directorey) {
 		LinkedHashSet<Class<?>> list = new LinkedHashSet<Class<?>>();
-		URL url = SystemUtils.getClassPathURL();
-		if (url != null) {
-			appendClass(url.getPath(), list, jarVerification, classNameVerification, true);
+		File file = FileUtils.searchDirectory(new File(directorey), "classes");
+		if (file == null) {
+			return list;
 		}
 
-		for (String name : SystemPropertyUtils.getJavaClassPathArray()) {
-			appendClass(name, list, jarVerification, classNameVerification, true);
-		}
+		appendDirectoryClass(null, file, list);
 		return list;
 	}
 
-	public static Collection<Class<?>> getClassList(String resource, Verification<String> classNameVerification) {
+	private static void appendDirectoryClass(String rootPackage, File file, Collection<Class<?>> classList) {
+		File[] files = file.listFiles();
+		if (ArrayUtils.isEmpty(files)) {
+			return;
+		}
+
+		for (File f : files) {
+			if (f.isDirectory()) {
+				appendDirectoryClass(
+						StringUtils.isEmpty(rootPackage) ? f.getName() + "." : rootPackage + f.getName() + ".", f,
+						classList);
+			} else {
+				if (f.getName().endsWith(".class")) {
+					String classFile = StringUtils.isEmpty(rootPackage) ? f.getName() : rootPackage + f.getName();
+					Class<?> clz = forFileName(classFile);
+					if (clz != null) {
+						classList.add(clz);
+					}
+				}
+			}
+		}
+	}
+
+	public static Collection<Class<?>> getClassList(String resource) {
 		if (StringUtils.isEmpty(resource)) {
-			return getClassList(IGNORE_JAR_VERIFICATION, classNameVerification);
+			return getDirectoryClassList(SystemPropertyUtils.getWorkPath());
 		}
 
-		final String[] arr = StringUtils.commonSplit(resource);
+		String[] arr = StringUtils.commonSplit(resource);
 		if (ArrayUtils.isEmpty(arr)) {
-			return getClassList(IGNORE_JAR_VERIFICATION, classNameVerification);
+			return getDirectoryClassList(SystemPropertyUtils.getWorkPath());
 		}
 
-		HashSet<Class<?>> classes = new HashSet<Class<?>>();
+		LinkedHashSet<Class<?>> classes = new LinkedHashSet<Class<?>>();
 		for (String pg : arr) {
-			appendClassesByClassLoader(pg, classes, classNameVerification);
+			appendClassesByClassLoader(pg, classes);
 		}
 		return classes;
 	}
@@ -1234,86 +1221,7 @@ public final class ClassUtils {
 		}
 	}
 
-	private static void appendJarClass(Collection<Class<?>> classList, JarFile jarFile,
-			Verification<String> jarVerification, Verification<String> verification, boolean appendManifest) {
-		Enumeration<JarEntry> enumeration = jarFile.entries();
-		while (enumeration.hasMoreElements()) {
-			JarEntry jarEntry = enumeration.nextElement();
-			if (jarEntry == null) {
-				continue;
-			}
-
-			String name = jarEntry.getName();
-			if (name.endsWith(CLASS_FILE_SUFFIX)) {
-				// class
-				Class<?> clz = forFileName(name, verification);
-				if (clz != null) {
-					classList.add(clz);
-				}
-			}
-		}
-
-		if (appendManifest) {
-			for (String path : JarUtils.getgetManifestClassPaths(jarFile)) {
-				appendClass(path, classList, jarVerification, verification, false);
-			}
-		}
-	}
-
-	private static void appendDirectoryClass(String rootPackage, Collection<Class<?>> classList, File file,
-			Verification<String> jarVerification, Verification<String> verification) {
-		File[] files = file.listFiles();
-		if (ArrayUtils.isEmpty(files)) {
-			return;
-		}
-
-		for (File f : files) {
-			if (f.isDirectory()) {
-				appendDirectoryClass(
-						StringUtils.isEmpty(rootPackage) ? f.getName() + "." : rootPackage + f.getName() + ".",
-						classList, f, jarVerification, verification);
-			} else {
-				if (f.getName().endsWith(".class")) {
-					String classFile = StringUtils.isEmpty(rootPackage) ? f.getName() : rootPackage + f.getName();
-					Class<?> clz = forFileName(classFile, verification);
-					if (clz != null) {
-						classList.add(clz);
-					}
-				} else if (f.getName().endsWith(".jar")) {
-					if (jarVerification == null || jarVerification.verification(f.getName())) {
-						appendJarClass(f, classList, jarVerification, verification, false);
-					}
-				}
-			}
-		}
-	}
-
-	private static void appendJarClass(File file, Collection<Class<?>> classList, Verification<String> jarVerification,
-			Verification<String> verification, boolean appendManifest) {
-		JarFile jarFile = null;
-		try {
-			jarFile = new JarFile(file);
-			appendJarClass(classList, jarFile, jarVerification, verification, appendManifest);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			IOUtils.close(jarFile);
-		}
-	}
-
-	private static void appendClass(String path, Collection<Class<?>> list, Verification<String> jarVerification,
-			Verification<String> verification, boolean appendManifest) {
-		File file = new File(path);
-		if (file.isFile()) {
-			if (jarVerification == null || jarVerification.verification(file.getName())) {
-				appendJarClass(file, list, jarVerification, verification, appendManifest);
-			}
-		} else {
-			appendDirectoryClass(null, list, file, jarVerification, verification);
-		}
-	}
-
-	private static Class<?> forFileName(String classFile, Verification<String> verification) {
+	private static Class<?> forFileName(String classFile) {
 		if (!classFile.endsWith(CLASS_FILE_SUFFIX)) {
 			return null;
 		}
@@ -1321,10 +1229,6 @@ public final class ClassUtils {
 		String name = classFile.substring(0, classFile.length() - 6);
 		name = name.replaceAll("\\\\", ".");
 		name = name.replaceAll("/", ".");
-		if (verification != null && !verification.verification(name)) {
-			return null;
-		}
-
 		try {
 			return Class.forName(name, false, ClassUtils.getDefaultClassLoader());
 		} catch (Throwable e) {
@@ -1332,8 +1236,8 @@ public final class ClassUtils {
 		return null;
 	}
 
-	private static void appendClassesByURL(String packageName, String packageDirName, Collection<Class<?>> clazzList,
-			Verification<String> classNameVerification, URL url) throws IOException {
+	private static void appendClassesByURL(String packageName, String packageDirName, URL url,
+			Collection<Class<?>> clazzList) throws IOException {
 		String protocol = url.getProtocol();
 		if ("file".equals(protocol)) {
 			String filePath = URLDecoder.decode(url.getFile(), Constants.DEFAULT_CHARSET_NAME);
@@ -1352,7 +1256,7 @@ public final class ClassUtils {
 					name = name.substring(1);
 				}
 				if (name.startsWith(packageDirName)) {
-					Class<?> clazz = forFileName(name, classNameVerification);
+					Class<?> clazz = forFileName(name);
 					if (clazz != null) {
 						clazzList.add(clazz);
 					}
@@ -1361,15 +1265,14 @@ public final class ClassUtils {
 		}
 	}
 
-	private static void appendClassesByClassLoader(String packageName, Collection<Class<?>> clazzList,
-			Verification<String> classNameVerification) {
+	private static void appendClassesByClassLoader(String packageName, Collection<Class<?>> clazzList) {
 		String packageDirName = packageName.replace('.', '/');
 		Enumeration<URL> dirs;
 		try {
 			dirs = getDefaultClassLoader().getResources(packageDirName);
 			while (dirs.hasMoreElements()) {
 				URL url = dirs.nextElement();
-				appendClassesByURL(packageName, packageDirName, clazzList, classNameVerification, url);
+				appendClassesByURL(packageName, packageDirName, url, clazzList);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1379,7 +1282,7 @@ public final class ClassUtils {
 			dirs = ClassLoader.getSystemResources(packageDirName);
 			while (dirs.hasMoreElements()) {
 				URL url = dirs.nextElement();
-				appendClassesByURL(packageName, packageDirName, clazzList, classNameVerification, url);
+				appendClassesByURL(packageName, packageDirName, url, clazzList);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -1,6 +1,6 @@
 package scw.core;
 
-import scw.core.annotation.Ignore;
+import scw.lang.Ignore;
 
 /**
  * 生产者

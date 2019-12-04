@@ -8,6 +8,7 @@ import scw.beans.BeanFactory;
 import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertyFactory;
+import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
@@ -41,7 +42,11 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 			Serializer ser = StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 					: (Serializer) beanFactory.getInstance(serializer);
 			if (!StringUtils.isNull(packageName)) {
-				for (Class<?> clz : ClassUtils.getClassList(packageName, true, true)) {
+				for (Class<?> clz : ClassUtils.getClassList(packageName)) {
+					if(!clz.isInterface() || AnnotationUtils.isIgnore(clz)){
+						continue;
+					}
+					
 					HttpRpcBean httpRpcBean = new HttpRpcBean(valueWiredManager, beanFactory, propertyFactory, clz,
 							address, sign, ser, responseThrowable, shareHeaders);
 					addBean(httpRpcBean);

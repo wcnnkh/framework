@@ -1,12 +1,12 @@
 package scw.core;
 
-import scw.core.annotation.Ignore;
 import scw.core.asm.Opcodes;
 import scw.core.string.StringCodec;
 import scw.core.string.StringCodecUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.SystemUtils;
+import scw.lang.Ignore;
 
 @Ignore
 public interface Constants {

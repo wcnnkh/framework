@@ -20,6 +20,7 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Service;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertyFactory;
+import scw.core.reflect.AnnotationUtils;
 import scw.core.reflect.CloneUtils;
 import scw.core.reflect.PropertyMapper;
 import scw.core.utils.ClassUtils;
@@ -139,7 +140,11 @@ public final class XmlDubboUtils {
 
 		String packageName = XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
 		if (packageName != null) {
-			for (Class<?> clz : ClassUtils.getClassList(packageName, true, true)) {
+			for (Class<?> clz : ClassUtils.getClassList(packageName)) {
+				if (!clz.isInterface() || AnnotationUtils.isIgnore(clz)) {
+					continue;
+				}
+
 				ReferenceConfig<?> referenceConfig = CloneUtils.copy(config, ReferenceConfig.class);
 				referenceConfig.setInterface(clz);
 				referenceConfigs.add(referenceConfig);

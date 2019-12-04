@@ -78,28 +78,19 @@ public class EmbeddedApplication extends CommonApplication {
 			}
 
 			Application application = new EmbeddedApplication(beanXml);
-			if (clazz != null) {
-				ApplicationConfigUtils.setRootPackage(BeanUtils.parseRootPackage(clazz));
-			}
+			ApplicationConfigUtils.setRootPackage(BeanUtils.parseRootPackage(clazz));
 			application.init();
 		}
 	}
 
-	public synchronized static void run(final Class<?> clazz, String beanXml) {
+	public synchronized static void run(Class<?> clazz, String beanXml) {
 		Run run = new Run(clazz, beanXml);
-		run.setName(clazz == null ? "embedded-application" : clazz.getName());
+		run.setName(clazz.getName());
 		run.setDaemon(false);
 		run.start();
 	}
 
 	public static void run(Class<?> clazz) {
 		run(clazz, DEFAULT_BEANS_PATH);
-	}
-
-	/**
-	 * 推荐使用run(java.lang.Class clazz)方法
-	 */
-	public static void run() {
-		run(null);
 	}
 }

@@ -187,8 +187,8 @@ public final class SystemPropertyUtils {
 		String systemOnlyId = getPrivateProperty(SYSTEM_ID_PROPERTY);
 		if (StringUtils.isEmpty(systemOnlyId)) {
 			try {
-				systemOnlyId = scw.core.Base64.encode((getUserDir() + (SystemUtils.getClassPathURL() == null ? ""
-						: ("&" + SystemUtils.getClassPathURL().getPath()))).getBytes(Constants.DEFAULT_CHARSET_NAME));
+				systemOnlyId = scw.core.Base64
+						.encode((getUserDir() + "&" + getWorkPath()).getBytes(Constants.DEFAULT_CHARSET_NAME));
 				if (systemOnlyId.endsWith("==")) {
 					systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
 				}

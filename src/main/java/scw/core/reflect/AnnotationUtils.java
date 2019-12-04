@@ -12,10 +12,10 @@ import java.util.Map;
 
 import scw.core.annotation.DELETE;
 import scw.core.annotation.GET;
-import scw.core.annotation.Ignore;
 import scw.core.annotation.POST;
 import scw.core.annotation.PUT;
 import scw.core.utils.ArrayUtils;
+import scw.lang.Ignore;
 import scw.util.KeyValuePair;
 import scw.util.SimpleKeyValuePair;
 

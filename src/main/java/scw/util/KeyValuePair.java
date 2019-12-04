@@ -1,6 +1,6 @@
 package scw.util;
 
-import scw.core.annotation.Ignore;
+import scw.lang.Ignore;
 
 @Ignore
 public interface KeyValuePair<K, V> {

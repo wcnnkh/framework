@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.annotation.Ignore;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.IteratorCallback;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.lang.Ignore;
 import scw.lang.Nullable;
 import scw.orm.annotation.Entity;
 import scw.orm.annotation.NotColumn;
