@@ -65,11 +65,11 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	private Context createContext(BeanFactory beanFactory, PropertyFactory propertyFactory, ClassLoader classLoader) {
 		Context context = tomcat.addContext(getContextPath(propertyFactory), getDocBase(propertyFactory));
 		context.setParentClassLoader(classLoader);
-		/*JarScanner jarScanner = getJarScanner(beanFactory, propertyFactory);
+		JarScanner jarScanner = getJarScanner(beanFactory, propertyFactory);
 		if (jarScanner != null) {
 			context.setJarScanner(jarScanner);
 		}
-*/
+
 		ReflectionUtils.loadMethod(context, "tomcat.context.", propertyFactory, beanFactory,
 				CollectionUtils.asSet("jarScanner", "docBase", "path"));
 		return context;
@@ -193,7 +193,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 			tomcat8();
 		} catch (Throwable e1) {
 		}
-		
+
 		this.tomcat = createTomcat(beanFactory, propertyFactory);
 		Context context = createContext(beanFactory, propertyFactory, mainClass.getClassLoader());
 		configureLifecycleListener(context);
