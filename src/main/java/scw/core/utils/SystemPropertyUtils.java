@@ -32,6 +32,7 @@ import scw.io.FileUtils;
 public final class SystemPropertyUtils {
 	private static final String WEB_ROOT = "web.root";
 	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
+	private static final String CLASSES_DIRECTORY = "classes.directory";
 
 	private SystemPropertyUtils() {
 	};
@@ -77,6 +78,50 @@ public final class SystemPropertyUtils {
 				return getSystemProperty(key);
 			}
 		};
+	}
+
+	public static String getClassesDirectory() {
+		String path = getProperty(CLASSES_DIRECTORY);
+		if (path != null) {
+			return path;
+		}
+
+		File file = new File(getWorkPath());
+		if (!file.exists() || !file.isDirectory()) {
+			return null;
+		}
+
+		File webInf = null;
+		File[] files = file.listFiles();
+		if (files != null) {
+			for (File f : files) {
+				if (f.isDirectory() && f.equals("WEB-INF")) {
+					webInf = f;
+				}
+			}
+		}
+
+		if (webInf == null) {
+			return null;
+		}
+
+		files = webInf.listFiles();
+		if (files != null) {
+			for (File f : files) {
+				if (f.isDirectory() && f.equals("classes")) {
+					setClassesDirectory(f.getPath());
+				}
+			}
+		}
+		return getProperty(CLASSES_DIRECTORY);
+	}
+
+	public static void setClassesDirectory(String directory) {
+		if (StringUtils.isEmpty(directory)) {
+			return;
+		}
+
+		setPrivateProperty(CLASSES_DIRECTORY, directory);
 	}
 
 	public static String getSystemProperty(String key) {

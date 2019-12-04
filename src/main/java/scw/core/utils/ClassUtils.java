@@ -28,7 +28,6 @@ import java.util.jar.JarFile;
 import scw.core.Assert;
 import scw.core.Constants;
 import scw.core.cglib.core.TypeUtils;
-import scw.io.FileUtils;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -1137,14 +1136,13 @@ public final class ClassUtils {
 	 * @param prefix
 	 * @return
 	 */
-	private static Collection<Class<?>> getDirectoryClassList(String directorey) {
+	private static Collection<Class<?>> getClassesDirectoryList() {
 		LinkedHashSet<Class<?>> list = new LinkedHashSet<Class<?>>();
-		File file = FileUtils.searchDirectory(new File(directorey), "classes");
-		if (file == null) {
+		String path = SystemPropertyUtils.getClassesDirectory();
+		if (path == null) {
 			return list;
 		}
-
-		appendDirectoryClass(null, file, list);
+		appendDirectoryClass(null, new File(path), list);
 		return list;
 	}
 
@@ -1173,12 +1171,12 @@ public final class ClassUtils {
 
 	public static Collection<Class<?>> getClassList(String resource) {
 		if (StringUtils.isEmpty(resource)) {
-			return getDirectoryClassList(SystemPropertyUtils.getWorkPath());
+			return getClassesDirectoryList();
 		}
 
 		String[] arr = StringUtils.commonSplit(resource);
 		if (ArrayUtils.isEmpty(arr)) {
-			return getDirectoryClassList(SystemPropertyUtils.getWorkPath());
+			return getClassesDirectoryList();
 		}
 
 		LinkedHashSet<Class<?>> classes = new LinkedHashSet<Class<?>>();
