@@ -95,7 +95,7 @@ public final class SystemPropertyUtils {
 		File[] files = file.listFiles();
 		if (files != null) {
 			for (File f : files) {
-				if (f.isDirectory() && f.equals("WEB-INF")) {
+				if (f.isDirectory() && f.getName().equals("WEB-INF")) {
 					webInf = f;
 				}
 			}
@@ -108,7 +108,7 @@ public final class SystemPropertyUtils {
 		files = webInf.listFiles();
 		if (files != null) {
 			for (File f : files) {
-				if (f.isDirectory() && f.equals("classes")) {
+				if (f.isDirectory() && f.getName().equals("classes")) {
 					setClassesDirectory(f.getPath());
 				}
 			}
