@@ -18,7 +18,6 @@ package scw.core.utils;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -143,32 +142,8 @@ public final class SystemPropertyUtils {
 		}
 
 		if (path == null) {
-			URL url = SystemUtils.getClassPathURL();
-			if (url == null) {
-				path = getUserDir();
-			} else {
-				File file = new File(url.getPath());
-				if (file.isFile()) {
-					path = getUserDir();
-				} else {
-					file = file.getParentFile();
-					if (file != null) {
-						if (file.getName().equals("WEB-INF")) {
-							path = file.getParent();
-						} else {
-							file = file.getParentFile();
-							file = FileUtils.searchDirectory(file, "WEB-INF");
-							if (file != null) {
-								path = file.getParent();
-							}
-						}
-					}
-				}
-
-				if (path == null) {
-					path = getUserDir();
-				}
-			}
+			File file = FileUtils.searchDirectory(new File(getUserDir()), "WEB-INF");
+			path = file == null ? getUserDir() : file.getParent();
 			setWorkPath(path);
 		}
 		return path;
