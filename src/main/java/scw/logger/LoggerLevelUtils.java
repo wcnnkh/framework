@@ -28,7 +28,7 @@ public class LoggerLevelUtils {
 		}
 
 		if (ResourceUtils.getResourceOperations().isExist(loggerEnablePropertiePath)) {
-			FormatUtils.info(LoggerUtils.class, "loading " + loggerEnablePropertiePath);
+			FormatUtils.info(LoggerLevelUtils.class, "loading " + loggerEnablePropertiePath);
 			Properties properties = ResourceUtils.getResourceOperations().getProperties(loggerEnablePropertiePath);
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
