@@ -225,7 +225,7 @@ public final class InstanceUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T autoNewInstance(String name) throws Exception {
-		return (T) autoNewInstance(ClassUtils.forName(name));
+		return (T) autoNewInstance(ClassUtils.forName(name, ClassUtils.getDefaultClassLoader()));
 	}
 
 	public static <T> T autoNewInstance(Class<T> clazz, InstanceFactory instanceFactory) throws Exception {
@@ -243,7 +243,7 @@ public final class InstanceUtils {
 		}
 		Class<?> clz;
 		try {
-			clz = ClassUtils.forName(name);
+			clz = ClassUtils.forName(name, ClassUtils.getDefaultClassLoader());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			return defaultValue;
@@ -276,7 +276,7 @@ public final class InstanceUtils {
 		for (String name : StringUtils.commonSplit(names)) {
 			Class<?> clz;
 			try {
-				clz = ClassUtils.forName(name);
+				clz = ClassUtils.forName(name, ClassUtils.getDefaultClassLoader());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 				continue;

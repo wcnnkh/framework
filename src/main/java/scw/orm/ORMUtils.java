@@ -18,7 +18,7 @@ public final class ORMUtils {
 			logger.info("register proxy package:{}", pageName);
 		}
 
-		for (Class<?> type : ClassUtils.getClassList(pageName)) {
+		for (Class<?> type : ClassUtils.getClassList(pageName, ClassUtils.getDefaultClassLoader())) {
 			Table table = type.getAnnotation(Table.class);
 			if (table == null) {
 				continue;

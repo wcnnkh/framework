@@ -9,7 +9,7 @@ public class SimpleNoArgsInstanceFactory implements NoArgsInstanceFactory {
 
 	protected Class<?> forName(String name) {
 		try {
-			return ClassUtils.forName(name);
+			return ClassUtils.forName(name, ClassUtils.getDefaultClassLoader());
 		} catch (ClassNotFoundException e) {
 		}
 		return null;

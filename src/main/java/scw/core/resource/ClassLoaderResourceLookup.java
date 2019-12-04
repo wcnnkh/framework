@@ -38,13 +38,9 @@ public class ClassLoaderResourceLookup implements ResourceLookup {
 	}
 
 	private static InputStream getInputStream(String resource) {
-		InputStream inputStream = ClassLoaderResourceLookup.class.getResourceAsStream(resource);
+		InputStream inputStream = ClassUtils.getDefaultClassLoader().getResourceAsStream(resource);
 		if (inputStream == null) {
-			inputStream = ClassUtils.getDefaultClassLoader().getResourceAsStream(resource);
-		}
-
-		if (inputStream == null) {
-			inputStream = ClassLoader.getSystemResourceAsStream(resource);
+			inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(resource);
 		}
 		return inputStream;
 	}

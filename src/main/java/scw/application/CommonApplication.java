@@ -84,8 +84,11 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		super.init();
-		TimerUtils.scanningAnnotation(ClassUtils.getClassList(getCrontabAnnotationPackage()), getBeanFactory());
-		MQUtils.scanningAnnotation(this, ClassUtils.getClassList(getConsumerAnnotationPackage()));
+		TimerUtils.scanningAnnotation(
+				ClassUtils.getClassList(getCrontabAnnotationPackage(), ClassUtils.getDefaultClassLoader()),
+				getBeanFactory());
+		MQUtils.scanningAnnotation(this,
+				ClassUtils.getClassList(getConsumerAnnotationPackage(), ClassUtils.getDefaultClassLoader()));
 	}
 
 	public void destroy() {

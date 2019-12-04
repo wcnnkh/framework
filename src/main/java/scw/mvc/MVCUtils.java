@@ -74,7 +74,7 @@ public final class MVCUtils implements MvcConstants {
 	// 使用ip的模式 1表示使用第一个ip 2表示使用最后一个ip 其他表示原样返回
 	private static final int USE_IP_MODEL = StringUtils.parseInt(SystemPropertyUtils.getProperty("mvc.ip.model"), 1);
 	private static final ContextManager<? extends Context> CONTEXT_MANAGER = new DefaultThreadLocalContextManager();
-	private static final boolean SUPPORT_SERVLET = ClassUtils.isAvailable("javax.servlet.Servlet");
+	private static final boolean SUPPORT_SERVLET = ClassUtils.isPresent("javax.servlet.Servlet");
 
 	private MVCUtils() {
 	};

@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import scw.core.instance.InstanceException;
 import scw.core.instance.InstanceFactory;
 import scw.core.reflect.ReflectionUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 
 @SuppressWarnings("unchecked")
@@ -28,7 +29,7 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		}
 
 		try {
-			return Class.forName(className);
+			return ClassUtils.forName(className);
 		} catch (Throwable e) {
 			if (e instanceof InstanceException) {
 				throw (InstanceException) e;

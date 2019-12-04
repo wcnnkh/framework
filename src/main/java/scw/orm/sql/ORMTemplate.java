@@ -261,7 +261,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public void createTable(String packageName) {
-		Collection<Class<?>> list = ClassUtils.getClassList(packageName);
+		Collection<Class<?>> list = ClassUtils.getClassList(packageName, ClassUtils.getDefaultClassLoader());
 		for (Class<?> tableClass : list) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {

@@ -66,7 +66,7 @@ public abstract class TypeUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> Class<T> toClass(Type type){
 		try {
-			return (Class<T>) ClassUtils.forName(type.toString());
+			return (Class<T>) ClassUtils.forName(type.toString(), ClassUtils.getDefaultClassLoader());
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
@@ -105,7 +105,7 @@ public abstract class TypeUtils {
 		}
 
 		try {
-			ClassUtils.isAssignable(clazz, ClassUtils.forName(type.toString()));
+			ClassUtils.isAssignable(clazz, ClassUtils.forName(type.toString(), ClassUtils.getDefaultClassLoader()));
 		} catch (ClassNotFoundException e) {
 		}
 		return false;
@@ -117,7 +117,7 @@ public abstract class TypeUtils {
 			return ((Class) type).isInterface();
 		} else {
 			try {
-				return ClassUtils.forName(type.toString()).isInterface();
+				return ClassUtils.forName(type.toString(), ClassUtils.getDefaultClassLoader()).isInterface();
 			} catch (ClassNotFoundException e) {
 			}
 		}
@@ -130,7 +130,7 @@ public abstract class TypeUtils {
 			return Modifier.isAbstract(((Class) type).getModifiers());
 		} else {
 			try {
-				return Modifier.isAbstract(ClassUtils.forName(type.toString()).getModifiers());
+				return Modifier.isAbstract(ClassUtils.forName(type.toString(), ClassUtils.getDefaultClassLoader()).getModifiers());
 			} catch (ClassNotFoundException e) {
 			}
 		}
@@ -143,7 +143,7 @@ public abstract class TypeUtils {
 			return ((Class) type).getName();
 		} else {
 			try {
-				return ClassUtils.forName(type.toString()).getName();
+				return ClassUtils.forName(type.toString(), ClassUtils.getDefaultClassLoader()).getName();
 			} catch (ClassNotFoundException e) {
 			}
 		}

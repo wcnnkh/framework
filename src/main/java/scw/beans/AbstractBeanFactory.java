@@ -401,7 +401,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 		Class<?> clz = null;
 		try {
-			clz = Class.forName(n, false, ClassUtils.getDefaultClassLoader());
+			clz = ClassUtils.forName(n);
 		} catch (Throwable e) {
 		}
 

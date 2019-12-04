@@ -19,6 +19,7 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import scw.core.utils.ClassUtils;
 import scw.json.gson.JsonIOException;
 
 /**
@@ -67,7 +68,7 @@ final class UnsafeReflectionAccessor extends ReflectionAccessor {
 
   private static Object getUnsafeInstance() {
     try {
-      unsafeClass = Class.forName("sun.misc.Unsafe");
+      unsafeClass = ClassUtils.forName("sun.misc.Unsafe");
       Field unsafeField = unsafeClass.getDeclaredField("theUnsafe");
       unsafeField.setAccessible(true);
       return unsafeField.get(null);

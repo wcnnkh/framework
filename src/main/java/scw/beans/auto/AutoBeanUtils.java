@@ -131,13 +131,13 @@ public final class AutoBeanUtils {
 			}
 
 			name = FormatUtils.format(name, propertyFactory, true);
-			if (!ClassUtils.isAvailable(name)) {
+			if (!ClassUtils.isPresent(name)) {
 				continue;
 			}
 
 			Class<?> clz = null;
 			try {
-				clz = Class.forName(name);
+				clz = ClassUtils.forName(name);
 			} catch (ClassNotFoundException e) {
 			} catch (NoClassDefFoundError e) {
 			}

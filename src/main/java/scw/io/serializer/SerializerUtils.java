@@ -17,7 +17,7 @@ public final class SerializerUtils {
 
 		for (String name : seralizerClassNames) {
 			try {
-				serializerClass = Class.forName(name);
+				serializerClass = ClassUtils.forName(name);
 				break;
 			} catch (Throwable e) {
 			}
@@ -59,7 +59,7 @@ public final class SerializerUtils {
 			char c = Bits.getChar(bytes, i);
 			sb.append(c);
 		}
-		return ClassUtils.forName(sb.toString());
+		return ClassUtils.forName(sb.toString(), ClassUtils.getDefaultClassLoader());
 	}
 
 	/**

@@ -22,6 +22,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import scw.core.utils.ClassUtils;
+
 /**
  * Do sneaky things to allocate objects without invoking their constructors.
  *
@@ -37,7 +39,7 @@ public abstract class UnsafeAllocator {
     //   public Object allocateInstance(Class<?> type);
     // }
     try {
-      Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+      Class<?> unsafeClass = ClassUtils.forName("sun.misc.Unsafe");
       Field f = unsafeClass.getDeclaredField("theUnsafe");
       f.setAccessible(true);
       final Object unsafe = f.get(null);

@@ -32,10 +32,10 @@ import java.util.zip.GZIPOutputStream;
 import scw.core.Assert;
 import scw.core.Callable;
 import scw.core.StringEmptyVerification;
+import scw.json.JSONUtils;
 import scw.json.JsonSupport;
 import scw.lang.NotSupportException;
 import scw.lang.ParameterException;
-import scw.json.JSONUtils;
 
 public final class StringUtils {
 	private static final String FOLDER_SEPARATOR = "/";
@@ -2286,7 +2286,7 @@ public final class StringUtils {
 
 	public static Class<?> parseClass(String text) {
 		try {
-			return ClassUtils.forName(text);
+			return ClassUtils.forName(text, ClassUtils.getDefaultClassLoader());
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
@@ -2417,7 +2417,7 @@ public final class StringUtils {
 		}
 
 		try {
-			return isCommonType(ClassUtils.forName(type.toString()));
+			return isCommonType(ClassUtils.forName(type.toString(), ClassUtils.getDefaultClassLoader()));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}

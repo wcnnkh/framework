@@ -23,7 +23,7 @@ public final class DubboUtils {
 	};
 
 	public static boolean isSupport() {
-		return ClassUtils.isAvailable("org.apache.dubbo.config.annotation.Service");
+		return ClassUtils.isPresent("org.apache.dubbo.config.annotation.Service");
 	}
 
 	public static boolean isServiceNode(Node node) {
@@ -123,7 +123,7 @@ public final class DubboUtils {
 	public static void registerDubboShutdownHook() {
 		Class<?> dubboShutdownHook = null;
 		try {
-			dubboShutdownHook = Class.forName("org.apache.dubbo.config.DubboShutdownHook");
+			dubboShutdownHook = ClassUtils.forName("org.apache.dubbo.config.DubboShutdownHook");
 		} catch (ClassNotFoundException e1) {
 		}
 

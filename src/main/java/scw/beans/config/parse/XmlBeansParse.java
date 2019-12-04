@@ -8,6 +8,7 @@ import scw.beans.property.AbstractCharsetNameValueFormat;
 import scw.core.Constants;
 import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.ConfigUtils;
 
 /**
@@ -31,7 +32,7 @@ public final class XmlBeansParse extends AbstractCharsetNameValueFormat implemen
 		String type = fieldDefinition.getField().getGenericType().toString();
 		type = type.substring(type.indexOf("<") + 1, type.indexOf(">"));
 		try {
-			Class<?> toClz = Class.forName(type);
+			Class<?> toClz = ClassUtils.forName(type);
 			return ConfigUtils.xmlToList(toClz, filePath);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -43,7 +44,7 @@ public final class XmlBeansParse extends AbstractCharsetNameValueFormat implemen
 			throws Exception {
 		String type = field.getGenericType().toString();
 		type = type.substring(type.indexOf("<") + 1, type.indexOf(">"));
-		Class<?> toClz = Class.forName(type);
+		Class<?> toClz = ClassUtils.forName(type);
 		return ConfigUtils.xmlToList(toClz, name);
 	}
 }

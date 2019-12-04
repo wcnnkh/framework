@@ -65,7 +65,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory {
 					continue;
 				}
 
-				Class<?> clz = Class.forName(className);
+				Class<?> clz = ClassUtils.forName(className);
 				String mySign = XMLUtils.getNodeAttributeValue(propertyFactory, node, "sign");
 				if (StringUtils.isNull(mySign)) {
 					mySign = sign;

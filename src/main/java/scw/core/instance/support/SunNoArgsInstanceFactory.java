@@ -6,6 +6,7 @@ import java.util.IdentityHashMap;
 
 import scw.core.instance.InstanceException;
 import scw.core.instance.NoArgsInstanceFactory;
+import scw.core.utils.ClassUtils;
 
 public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 	private static final Constructor<?> CONSTRUCTOR;
@@ -16,7 +17,7 @@ public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 	static {
 		try {
 			CONSTRUCTOR = Object.class.getConstructor();
-			Class<?> clz = Class.forName("sun.reflect.ReflectionFactory");
+			Class<?> clz = ClassUtils.forName("sun.reflect.ReflectionFactory");
 			Method method = clz.getMethod("getReflectionFactory");
 			INVOKE_INSTANCE = method.invoke(null);
 			METHOD = clz.getMethod("newConstructorForSerialization", Class.class, Constructor.class);

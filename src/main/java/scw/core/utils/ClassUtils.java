@@ -220,8 +220,8 @@ public final class ClassUtils {
 			// Cannot access thread context ClassLoader - falling back to system
 			// class loader...
 		}
+
 		if (cl == null) {
-			// No thread context class loader -> use class loader of this class.
 			cl = ClassUtils.class.getClassLoader();
 		}
 		return cl;
@@ -248,38 +248,28 @@ public final class ClassUtils {
 		}
 	}
 
-	public static Class<?> forName(String name) throws ClassNotFoundException {
-		return forName(name, getDefaultClassLoader());
+	public static Class<?>[] forNames(String... classNames) throws ClassNotFoundException {
+		return forNames(getDefaultClassLoader(), classNames);
 	}
 
-	public static Class<?>[] forName(String... className) throws ClassNotFoundException {
+	public static Class<?>[] forNames(ClassLoader classLoader, String... className) throws ClassNotFoundException {
 		Class<?>[] types = new Class<?>[className.length];
 		for (int i = 0; i < types.length; i++) {
-			types[i] = forName(className[i]);
+			types[i] = forName(className[i], classLoader);
 		}
 		return types;
 	}
 
-	/**
-	 * Replacement for {@code Class.forName()} that also returns Class instances
-	 * for primitives (e.g."int") and array class names (e.g. "String[]").
-	 * Furthermore, it is also capable of resolving inner class names in Java
-	 * source style (e.g. "java.lang.Thread.State" instead of
-	 * "java.lang.Thread$State").
-	 * 
-	 * @param name
-	 *            the name of the Class
-	 * @param classLoader
-	 *            the class loader to use (may be {@code null}, which indicates
-	 *            the default class loader)
-	 * @return Class instance for the supplied name
-	 * @throws ClassNotFoundException
-	 *             if the class was not found
-	 * @throws LinkageError
-	 *             if the class file could not be loaded
-	 * @see Class#forName(String, boolean, ClassLoader)
-	 */
+	public static Class<?> forName(String name) throws ClassNotFoundException {
+		return forName(name, getDefaultClassLoader());
+	}
+
 	public static Class<?> forName(String name, ClassLoader classLoader) throws ClassNotFoundException {
+		return forName(name, false, classLoader);
+	}
+
+	public static Class<?> forName(String name, boolean initialize, ClassLoader classLoader)
+			throws ClassNotFoundException {
 		Assert.notNull(name, "Name must not be null");
 
 		Class<?> clazz = resolvePrimitiveClassName(name);
@@ -293,30 +283,30 @@ public final class ClassUtils {
 		// "java.lang.String[]" style arrays
 		if (name.endsWith(ARRAY_SUFFIX)) {
 			String elementClassName = name.substring(0, name.length() - ARRAY_SUFFIX.length());
-			Class<?> elementClass = forName(elementClassName, classLoader);
+			Class<?> elementClass = forName(elementClassName, initialize, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
 		// "[Ljava.lang.String;" style arrays
 		if (name.startsWith(NON_PRIMITIVE_ARRAY_PREFIX) && name.endsWith(";")) {
 			String elementName = name.substring(NON_PRIMITIVE_ARRAY_PREFIX.length(), name.length() - 1);
-			Class<?> elementClass = forName(elementName, classLoader);
+			Class<?> elementClass = forName(elementName, initialize, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
 		// "[[I" or "[[Ljava.lang.String;" style arrays
 		if (name.startsWith(INTERNAL_ARRAY_PREFIX)) {
 			String elementName = name.substring(INTERNAL_ARRAY_PREFIX.length());
-			Class<?> elementClass = forName(elementName, classLoader);
+			Class<?> elementClass = forName(elementName, initialize, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
 		if (name.startsWith(TYPE_CLASS_PREFIX)) {
-			return forName(name.substring(TYPE_CLASS_PREFIX.length()), classLoader);
+			return forName(name.substring(TYPE_CLASS_PREFIX.length()), initialize, classLoader);
 		}
 
 		if (name.startsWith(TYPE_INTERFACE_PREFIX)) {
-			return forName(name.substring(TYPE_INTERFACE_PREFIX.length()), classLoader);
+			return forName(name.substring(TYPE_INTERFACE_PREFIX.length()), initialize, classLoader);
 		}
 
 		ClassLoader classLoaderToUse = classLoader;
@@ -324,18 +314,27 @@ public final class ClassUtils {
 			classLoaderToUse = getDefaultClassLoader();
 		}
 		try {
-			return classLoaderToUse.loadClass(name);
+			return forName0(name, initialize, classLoaderToUse);
 		} catch (ClassNotFoundException ex) {
 			int lastDotIndex = name.lastIndexOf('.');
 			if (lastDotIndex != -1) {
 				String innerClassName = name.substring(0, lastDotIndex) + '$' + name.substring(lastDotIndex + 1);
 				// try {
-				return classLoaderToUse.loadClass(innerClassName);
+				return forName0(innerClassName, initialize, classLoaderToUse);
 				// } catch (ClassNotFoundException ex2) {
 				// swallow - let original exception get through
 				// }
 			}
 			throw ex;
+		}
+	}
+
+	private static Class<?> forName0(String name, boolean initialize, ClassLoader classLoader)
+			throws ClassNotFoundException {
+		if (initialize) {
+			return Class.forName(name, true, classLoader);
+		} else {
+			return classLoader.loadClass(name);
 		}
 	}
 
@@ -394,17 +393,11 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Determine whether the {@link Class} identified by the supplied name is
-	 * present and can be loaded. Will return {@code false} if either the class
-	 * or one of its dependencies is not present or cannot be loaded.
+	 * 使用当前线程的加载器来判断是否存在此类
 	 * 
 	 * @param className
-	 *            the name of the class to check
-	 * @return whether the specified class is present
-	 * @deprecated as of Spring 2.5, in favor of
-	 *             {@link #isPresent(String, ClassLoader)}
+	 * @return
 	 */
-	@Deprecated
 	public static boolean isPresent(String className) {
 		return isPresent(className, getDefaultClassLoader());
 	}
@@ -423,7 +416,7 @@ public final class ClassUtils {
 	 */
 	public static boolean isPresent(String className, ClassLoader classLoader) {
 		try {
-			forName(className, classLoader);
+			forName(className, true, classLoader);
 			return true;
 		} catch (Throwable ex) {
 			// Class or one of its dependencies is not present...
@@ -1094,39 +1087,6 @@ public final class ClassUtils {
 		return true;
 	}
 
-	/**
-	 * 判断一个class是否可用
-	 * 
-	 * @param className
-	 * @return
-	 */
-	public static boolean isAvailable(String className) {
-		return isAvailable(className, false);
-	}
-
-	/**
-	 * 判断一个class是否可用
-	 * 
-	 * @param className
-	 * @param printStackTrace
-	 * @return
-	 */
-	public static boolean isAvailable(String className, boolean printStackTrace) {
-		try {
-			Class.forName(className);
-			return true;
-		} catch (ClassNotFoundException e) {
-			if (printStackTrace) {
-				e.printStackTrace();
-			}
-		} catch (NoClassDefFoundError e) {
-			if (printStackTrace) {
-				e.printStackTrace();
-			}
-		}
-		return false;
-	}
-
 	/************************************ 扫描类工具 *****************************************/
 
 	/**
@@ -1136,17 +1096,18 @@ public final class ClassUtils {
 	 * @param prefix
 	 * @return
 	 */
-	private static Collection<Class<?>> getClassesDirectoryList() {
+	private static Collection<Class<?>> getClassesDirectoryList(ClassLoader classLoader) {
 		LinkedHashSet<Class<?>> list = new LinkedHashSet<Class<?>>();
 		String path = SystemPropertyUtils.getClassesDirectory();
 		if (path == null) {
 			return list;
 		}
-		appendDirectoryClass(null, new File(path), list);
+		appendDirectoryClass(null, new File(path), list, classLoader);
 		return list;
 	}
 
-	private static void appendDirectoryClass(String rootPackage, File file, Collection<Class<?>> classList) {
+	private static void appendDirectoryClass(String rootPackage, File file, Collection<Class<?>> classList,
+			ClassLoader classLoader) {
 		File[] files = file.listFiles();
 		if (ArrayUtils.isEmpty(files)) {
 			return;
@@ -1156,11 +1117,11 @@ public final class ClassUtils {
 			if (f.isDirectory()) {
 				appendDirectoryClass(
 						StringUtils.isEmpty(rootPackage) ? f.getName() + "." : rootPackage + f.getName() + ".", f,
-						classList);
+						classList, classLoader);
 			} else {
 				if (f.getName().endsWith(".class")) {
 					String classFile = StringUtils.isEmpty(rootPackage) ? f.getName() : rootPackage + f.getName();
-					Class<?> clz = forFileName(classFile);
+					Class<?> clz = forFileName(classFile, classLoader);
 					if (clz != null) {
 						classList.add(clz);
 					}
@@ -1169,25 +1130,35 @@ public final class ClassUtils {
 		}
 	}
 
+	/**
+	 * 使用当前线程的类加载器
+	 * 
+	 * @param resource
+	 * @return
+	 */
 	public static Collection<Class<?>> getClassList(String resource) {
+		return getClassList(resource, getDefaultClassLoader());
+	}
+
+	public static Collection<Class<?>> getClassList(String resource, ClassLoader classLoader) {
 		if (StringUtils.isEmpty(resource)) {
-			return getClassesDirectoryList();
+			return getClassesDirectoryList(classLoader);
 		}
 
 		String[] arr = StringUtils.commonSplit(resource);
 		if (ArrayUtils.isEmpty(arr)) {
-			return getClassesDirectoryList();
+			return getClassesDirectoryList(classLoader);
 		}
 
 		LinkedHashSet<Class<?>> classes = new LinkedHashSet<Class<?>>();
 		for (String pg : arr) {
-			appendClassesByClassLoader(pg, classes);
+			appendClassesByClassLoader(pg, classes, classLoader);
 		}
 		return classes;
 	}
 
 	private static void findAndAddClassesInPackageByFile(String packageName, String packagePath,
-			Collection<Class<?>> classes) {
+			Collection<Class<?>> classes, ClassLoader classLoader) {
 		File dir = new File(packagePath);
 		if (!dir.exists() || !dir.isDirectory()) {
 			return;
@@ -1199,27 +1170,21 @@ public final class ClassUtils {
 		});
 		for (File file : dirfiles) {
 			if (file.isDirectory()) {
-				findAndAddClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), classes);
+				findAndAddClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), classes,
+						classLoader);
 			} else {
-				String className = file.getName().substring(0, file.getName().length() - 6);
 				if (packageName.startsWith(".")) {
 					packageName = packageName.substring(1);
 				}
-
-				Class<?> clz = null;
-				try {
-					clz = Class.forName(packageName + '.' + className);
-				} catch (Throwable e) {
-				}
-
-				if (clz != null) {
-					classes.add(clz);
+				Class<?> clazz = forFileName(packageName + "." + file.getName(), classLoader);
+				if (clazz != null) {
+					classes.add(clazz);
 				}
 			}
 		}
 	}
 
-	private static Class<?> forFileName(String classFile) {
+	private static Class<?> forFileName(String classFile, ClassLoader classLoader) {
 		if (!classFile.endsWith(CLASS_FILE_SUFFIX)) {
 			return null;
 		}
@@ -1228,18 +1193,18 @@ public final class ClassUtils {
 		name = name.replaceAll("\\\\", ".");
 		name = name.replaceAll("/", ".");
 		try {
-			return Class.forName(name, false, ClassUtils.getDefaultClassLoader());
+			return forName(name, classLoader);
 		} catch (Throwable e) {
 		}
 		return null;
 	}
 
 	private static void appendClassesByURL(String packageName, String packageDirName, URL url,
-			Collection<Class<?>> clazzList) throws IOException {
+			Collection<Class<?>> clazzList, ClassLoader classLoader) throws IOException {
 		String protocol = url.getProtocol();
 		if ("file".equals(protocol)) {
 			String filePath = URLDecoder.decode(url.getFile(), Constants.DEFAULT_CHARSET_NAME);
-			findAndAddClassesInPackageByFile(packageName, filePath, clazzList);
+			findAndAddClassesInPackageByFile(packageName, filePath, clazzList, classLoader);
 		} else if ("jar".equals(protocol)) {
 			JarFile jar = ((JarURLConnection) url.openConnection()).getJarFile();
 			Enumeration<JarEntry> entries = jar.entries();
@@ -1254,7 +1219,7 @@ public final class ClassUtils {
 					name = name.substring(1);
 				}
 				if (name.startsWith(packageDirName)) {
-					Class<?> clazz = forFileName(name);
+					Class<?> clazz = forFileName(name, classLoader);
 					if (clazz != null) {
 						clazzList.add(clazz);
 					}
@@ -1263,24 +1228,25 @@ public final class ClassUtils {
 		}
 	}
 
-	private static void appendClassesByClassLoader(String packageName, Collection<Class<?>> clazzList) {
+	private static void appendClassesByClassLoader(String packageName, Collection<Class<?>> clazzList,
+			ClassLoader classLoader) {
 		String packageDirName = packageName.replace('.', '/');
 		Enumeration<URL> dirs;
 		try {
-			dirs = getDefaultClassLoader().getResources(packageDirName);
+			dirs = classLoader.getResources(packageDirName);
 			while (dirs.hasMoreElements()) {
 				URL url = dirs.nextElement();
-				appendClassesByURL(packageName, packageDirName, url, clazzList);
+				appendClassesByURL(packageName, packageDirName, url, clazzList, classLoader);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		try {
-			dirs = ClassLoader.getSystemResources(packageDirName);
+			dirs = ClassLoader.getSystemClassLoader().getResources(packageDirName);
 			while (dirs.hasMoreElements()) {
 				URL url = dirs.nextElement();
-				appendClassesByURL(packageName, packageDirName, url, clazzList);
+				appendClassesByURL(packageName, packageDirName, url, clazzList, classLoader);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1314,7 +1280,13 @@ public final class ClassUtils {
 				continue;
 			}
 
-			values[i] = types[i].cast(args[i]);
+			try {
+				values[i] = types[i].cast(args[i]);
+			} catch (ClassCastException e) {
+				System.out.println(types[i].getClassLoader().equals(args[i].getClass().getClass()) + ","
+						+ types[i].getClassLoader() + "," + args[i].getClass().getClassLoader());
+				throw e;
+			}
 		}
 		return values;
 	}

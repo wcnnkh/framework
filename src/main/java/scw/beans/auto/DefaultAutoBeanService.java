@@ -37,14 +37,14 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		// 未注解service时接口默认实现
 		if (clazz.isInterface()) {
 			String name = clazz.getName() + "Impl";
-			if (ClassUtils.isAvailable(name) && beanFactory.isInstance(name)) {
+			if (ClassUtils.isPresent(name) && beanFactory.isInstance(name)) {
 				logger.info("{} reference {}", clazz.getName(), name);
 				return new ReferenceAutoBean(beanFactory, name);
 			} else {
 				int index = clazz.getName().lastIndexOf(".");
 				name = index == -1 ? (clazz.getName() + "Impl")
 						: (clazz.getName().substring(0, index) + ".impl." + clazz.getSimpleName() + "Impl");
-				if (ClassUtils.isAvailable(name) && beanFactory.isInstance(name)) {
+				if (ClassUtils.isPresent(name) && beanFactory.isInstance(name)) {
 					logger.info("{} reference {}", clazz.getName(), name);
 					return new ReferenceAutoBean(beanFactory, name);
 				}

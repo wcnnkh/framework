@@ -271,7 +271,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 		}
 
 		try {
-			return isCommonType(ClassUtils.forName(type.toString()));
+			return isCommonType(ClassUtils.forName(type.toString(), ClassUtils.getDefaultClassLoader()));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}

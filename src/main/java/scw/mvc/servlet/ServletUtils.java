@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.MVCUtils;
 import scw.mvc.servlet.http.DefaultHttpServletChannelFactory;
@@ -24,7 +25,7 @@ public final class ServletUtils {
 
 	static {
 		try {
-			Class.forName("javax.servlet.AsyncContext");
+			ClassUtils.forName("javax.servlet.AsyncContext");
 		} catch (Throwable e) {
 			asyncSupport = false;// 不支持
 		}

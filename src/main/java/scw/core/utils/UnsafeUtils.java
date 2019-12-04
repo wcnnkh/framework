@@ -15,7 +15,7 @@ public class UnsafeUtils {
 
 	private static Object getInvokeInstance() {
 		try {
-			Class<?> clz = Class.forName(CLASS_NAME);
+			Class<?> clz = ClassUtils.forName(CLASS_NAME);
 			Field f = clz.getDeclaredField("theUnsafe");
 			f.setAccessible(true);
 			return f.get(null);
@@ -37,7 +37,7 @@ public class UnsafeUtils {
 
 	public static Method getMethod(String methodName, Class<?>... parameterTypes) {
 		try {
-			return Class.forName(CLASS_NAME).getMethod(methodName, parameterTypes);
+			return ClassUtils.forName(CLASS_NAME).getMethod(methodName, parameterTypes);
 		} catch (ClassNotFoundException e) {
 		} catch (NoSuchMethodException e) {
 		} catch (SecurityException e) {

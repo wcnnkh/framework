@@ -209,7 +209,7 @@ public final class XmlBeanUtils {
 
 	public static Class<?> getClass(Node node) {
 		try {
-			return Class.forName(getClassName(node));
+			return ClassUtils.forName(getClassName(node));
 		} catch (ClassNotFoundException e) {
 			throw new BeansException(e);
 		}

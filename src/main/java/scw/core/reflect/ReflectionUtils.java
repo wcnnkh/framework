@@ -983,17 +983,19 @@ public abstract class ReflectionUtils {
 
 	public static Constructor<?> getConstructor(String className, boolean isPublic, Class<?>... parameterTypes)
 			throws ClassNotFoundException {
-		return getConstructor(Class.forName(className), isPublic, parameterTypes);
+		return getConstructor(ClassUtils.forName(className), isPublic, parameterTypes);
 	}
 
 	public static <T> Constructor<T> getConstructor(Class<T> type, boolean isPublic, String... parameterTypeNames)
 			throws ClassNotFoundException {
-		return getConstructor(type, isPublic, ClassUtils.forName(parameterTypeNames));
+		return getConstructor(type, isPublic,
+				ClassUtils.forNames(ClassUtils.getDefaultClassLoader(), parameterTypeNames));
 	}
 
 	public static Constructor<?> getConstructor(String className, boolean isPublic, String... parameterTypes)
 			throws ClassNotFoundException, NoSuchMethodException {
-		return getConstructor(Class.forName(className), isPublic, ClassUtils.forName(className));
+		return getConstructor(ClassUtils.forName(className), isPublic,
+				ClassUtils.forName(className, ClassUtils.getDefaultClassLoader()));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1115,7 +1117,7 @@ public abstract class ReflectionUtils {
 	public static Method getMethod(String className, String methodName, Class<?>... parameterTypes) {
 		Class<?> clz = null;
 		try {
-			clz = Class.forName(className);
+			clz = ClassUtils.forName(className);
 		} catch (Throwable e) {
 		}
 
@@ -2031,7 +2033,7 @@ public abstract class ReflectionUtils {
 	public static Object invokeStaticMethod(String className, String name, Class<?>[] parameterTypes, Object... params)
 			throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, ClassNotFoundException {
-		return invokeStaticMethod(Class.forName(className), name, parameterTypes, params);
+		return invokeStaticMethod(ClassUtils.forName(className), name, parameterTypes, params);
 	}
 
 	public static <T> Collection<Constructor<?>> getConstructorOrderList(Class<?> clazz) {

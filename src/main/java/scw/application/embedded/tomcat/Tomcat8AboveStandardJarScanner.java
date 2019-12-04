@@ -22,6 +22,7 @@ public class Tomcat8AboveStandardJarScanner extends StandardJarScanner {
 	@Override
 	public void scan(JarScanType scanType, ServletContext context,
 			JarScannerCallback callback) {
+		System.out.println("scanType:" + scanType.name());
 		super.scan(scanType, context, callback);
 	}
 }

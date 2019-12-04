@@ -14,16 +14,18 @@ import scw.mvc.servlet.ServletUtils;
 
 public class EmbeddedApplication extends CommonApplication {
 	private ServletEmbedded embedded;
+	private Class<?> mainClass;
 
-	public EmbeddedApplication(String configXml) {
+	public EmbeddedApplication(String configXml, Class<?> mainClass) {
 		super(configXml);
+		this.mainClass = mainClass;
 	}
 
 	private String getSupportServletEmbeddedClassName() {
 		String[] classNames = new String[] { "scw.application.embedded.tomcat.TomcatServletEmbedded", };
 
 		for (String name : classNames) {
-			if (ClassUtils.isAvailable(name)) {
+			if (ClassUtils.isPresent(name, mainClass.getClassLoader())) {
 				return name;
 			}
 		}
@@ -50,7 +52,7 @@ public class EmbeddedApplication extends CommonApplication {
 		ServletService service = ServletUtils.getServletService(getBeanFactory(), getPropertyFactory());
 		embedded = getBeanFactory().getInstance(embeddedName);
 		embedded.init(getBeanFactory(), getPropertyFactory(), new ShutdownHttpServlet(getPropertyFactory(), this),
-				new EmbeddedServlet(service));
+				new EmbeddedServlet(service), mainClass);
 	}
 
 	@Override
@@ -64,12 +66,12 @@ public class EmbeddedApplication extends CommonApplication {
 	}
 
 	private static class Run extends Thread {
-		private Class<?> clazz;
 		private String beanXml;
+		private Class<?> mainClass;
 
-		public Run(Class<?> clazz, String beanXml) {
-			this.clazz = clazz;
+		public Run(String beanXml, Class<?> mainClass) {
 			this.beanXml = beanXml;
+			this.mainClass = mainClass;
 		}
 
 		public void run() {
@@ -77,15 +79,17 @@ public class EmbeddedApplication extends CommonApplication {
 				FormatUtils.warn(TomcatApplication.class, "not found " + beanXml);
 			}
 
-			Application application = new EmbeddedApplication(beanXml);
-			ApplicationConfigUtils.setRootPackage(BeanUtils.parseRootPackage(clazz));
+			Application application = new EmbeddedApplication(beanXml, mainClass);
 			application.init();
 		}
 	}
 
-	public synchronized static void run(Class<?> clazz, String beanXml) {
-		Run run = new Run(clazz, beanXml);
-		run.setName(clazz.getName());
+	public synchronized static void run(Class<?> mainClass, String beanXml) {
+		ApplicationConfigUtils.setRootPackage(BeanUtils.parseRootPackage(mainClass));
+
+		Run run = new Run(beanXml, mainClass);
+		run.setContextClassLoader(mainClass.getClassLoader());
+		run.setName(mainClass.getName());
 		run.setDaemon(false);
 		run.start();
 	}
