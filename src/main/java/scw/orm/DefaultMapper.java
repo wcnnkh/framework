@@ -20,6 +20,11 @@ public class DefaultMapper extends AbstractMapper {
 		this.instanceFactory = instanceFactory;
 	}
 
+	@Override
+	public char getPrimaryKeyConnectorCharacter() {
+		return ORMUtils.PRIMARY_KEY_CONNECTOR_CHARACTER;
+	}
+
 	public <T> T newInstance(Class<T> clazz) {
 		if (!instanceFactory.isInstance(clazz)) {
 			throw new CannotInstantiateException("无法实例化：" + clazz);

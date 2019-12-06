@@ -8,19 +8,19 @@ import scw.core.reflect.AnnotationFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.reflect.SimpleAnnotationFactory;
 
-public abstract class AbstractColumn implements Column {
+public class FieldColumn implements Column {
 	private final Field field;
 	private final AnnotationFactory annotationFactory;
-	private final Method getter;
-	private final Method setter;
+	private final Method getterMethod;
+	private final Method setterMethod;
 	private final Class<?> clazz;
 
-	public AbstractColumn(Class<?> clazz, Field field, boolean getter, boolean setter) {
+	public FieldColumn(Class<?> clazz, Field field) {
 		this.clazz = clazz;
 		this.field = field;
 		this.annotationFactory = new SimpleAnnotationFactory(field);
-		this.getter = getter ? ReflectionUtils.getGetterMethod(clazz, field) : null;
-		this.setter = setter ? ReflectionUtils.getSetterMethod(clazz, field) : null;
+		this.getterMethod = ReflectionUtils.getGetterMethod(clazz, field);
+		this.setterMethod = ReflectionUtils.getSetterMethod(clazz, field);
 	}
 
 	public final <T extends Annotation> T getAnnotation(Class<T> type) {
@@ -32,18 +32,30 @@ public abstract class AbstractColumn implements Column {
 	}
 
 	public final Object get(Object obj) throws Exception {
-		return getter == null ? field.get(obj) : getter.invoke(obj);
+		return getterMethod == null ? field.get(obj) : getterMethod.invoke(obj);
 	}
 
 	public final void set(Object obj, Object value) throws Exception {
-		if (setter == null) {
+		if (setterMethod == null) {
 			field.set(obj, value);
 		} else {
-			setter.invoke(obj, value);
+			setterMethod.invoke(obj, value);
 		}
 	}
 
 	public Class<?> getDeclaringClass() {
 		return clazz;
+	}
+
+	public String getName() {
+		return field.getName();
+	}
+
+	public Method getGetterMethod() {
+		return getterMethod;
+	}
+
+	public Method getSetterMethod() {
+		return setterMethod;
 	}
 }

@@ -70,19 +70,16 @@ public final class ResourceUtils {
 	/** Special separator between WAR URL and jar part on Tomcat. */
 	public static final String WAR_URL_SEPARATOR = "*/";
 
-	private static final MultiResourceLookup RESOURCE_LOOKUP = new MultiResourceLookup();
-	private static final ResourceOperations RESOURCE_OPERATIONS;
-
-	static {
-		RESOURCE_LOOKUP.add(new DefaultResourceLookup(SystemPropertyUtils.getWorkPath(), false));
-		RESOURCE_OPERATIONS = new SystemPropertyMultiSuffixResourceOperations(RESOURCE_LOOKUP);
-	}
+	private static final ResourceLookup RESOURCE_LOOKUP = new DefaultResourceLookup(SystemPropertyUtils.getWorkPath(),
+			false);
+	private static final ResourceOperations RESOURCE_OPERATIONS = new SystemPropertyMultiSuffixResourceOperations(
+			RESOURCE_LOOKUP);
 
 	public static final ResourceOperations getResourceOperations() {
 		return RESOURCE_OPERATIONS;
 	}
 
-	public static final MultiResourceLookup getResourceLookup() {
+	public static final ResourceLookup getResourceLookup() {
 		return RESOURCE_LOOKUP;
 	}
 

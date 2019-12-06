@@ -24,7 +24,7 @@ public final class DefaultObjectRelationalMapping implements ObjectRelationalMap
 	}
 
 	public Iterator<MappingContext> iterator() {
-		return new MultiIterator<MappingContext>(primaryKeys.iterator(), notPrimaryKeys.iterator());
+		return new MultiIterator<MappingContext>(primaryKeys.iterator(), notPrimaryKeys.iterator(), entitys.iterator());
 	}
 
 	public List<MappingContext> getPrimaryKeys() {
@@ -41,6 +41,10 @@ public final class DefaultObjectRelationalMapping implements ObjectRelationalMap
 
 	public MappingContext getMappingContext(String columnName) {
 		return contextMap.get(columnName);
+	}
+
+	public Iterator<MappingContext> iteratorPrimaryKeyAndNotPrimaryKey() {
+		return new MultiIterator<MappingContext>(primaryKeys.iterator(), notPrimaryKeys.iterator());
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import scw.core.reflect.FieldDefinition;
+import scw.core.utils.MultiIterator;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;
@@ -20,8 +21,7 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public SaveOrUpdateSQL(SqlMapper mappingOperations, Class<?> clazz, Object obj, String tableName)
-			throws Exception {
+	public SaveOrUpdateSQL(SqlMapper mappingOperations, Class<?> clazz, Object obj, String tableName) throws Exception {
 		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException("not found primary key");
@@ -31,7 +31,9 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		List<Object> params = new LinkedList<Object>();
-		Iterator<MappingContext> iterator = tableFieldContext.iterator();
+		@SuppressWarnings("unchecked")
+		Iterator<MappingContext> iterator = new MultiIterator<MappingContext>(
+				tableFieldContext.getPrimaryKeys().iterator(), tableFieldContext.getNotPrimaryKeys().iterator());
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			keywordProcessing(cols, context.getColumn().getName());

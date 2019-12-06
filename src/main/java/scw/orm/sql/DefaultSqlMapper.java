@@ -9,6 +9,7 @@ import scw.orm.Column;
 import scw.orm.ColumnFactory;
 import scw.orm.Filter;
 import scw.orm.GetterFilter;
+import scw.orm.ORMUtils;
 import scw.orm.SetterFilter;
 
 public class DefaultSqlMapper extends AbstractSqlMapper implements SqlMapper {
@@ -23,6 +24,11 @@ public class DefaultSqlMapper extends AbstractSqlMapper implements SqlMapper {
 		this.columnFactory = columnFactory;
 		this.filters = filters;
 		this.noArgsInstanceFactory = noArgsInstanceFactory;
+	}
+
+	@Override
+	public char getPrimaryKeyConnectorCharacter() {
+		return ORMUtils.PRIMARY_KEY_CONNECTOR_CHARACTER;
 	}
 
 	public String getTableName(Class<?> clazz) {

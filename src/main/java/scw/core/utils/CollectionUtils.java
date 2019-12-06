@@ -532,6 +532,15 @@ public abstract class CollectionUtils {
 			return Collections.EMPTY_SET;
 		}
 
-		return new LinkedHashSet<T>(Arrays.asList(values));
+		return asSet(Arrays.asList(values));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <E> Set<E> asSet(Collection<E> collection) {
+		if (CollectionUtils.isEmpty(collection)) {
+			return Collections.EMPTY_SET;
+		}
+
+		return Collections.unmodifiableSet(new LinkedHashSet<E>(collection));
 	}
 }

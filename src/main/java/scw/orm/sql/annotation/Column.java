@@ -38,7 +38,5 @@ public @interface Column {
 	 */
 	public CasType casType() default CasType.NOTHING;
 	
-	public String[] convertArgs() default {};
-	
 	public String charsetName() default "";
 }

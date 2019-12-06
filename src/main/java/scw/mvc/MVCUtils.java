@@ -10,7 +10,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -21,7 +20,6 @@ import scw.context.ContextManager;
 import scw.context.DefaultThreadLocalContextManager;
 import scw.context.Propagation;
 import scw.core.Constants;
-import scw.core.KeyValuePairFilter;
 import scw.core.PropertyFactory;
 import scw.core.ValueFactory;
 import scw.core.annotation.ParameterName;
@@ -62,8 +60,6 @@ import scw.net.header.HeadersConstants;
 import scw.net.header.HeadersReadOnly;
 import scw.net.mime.MimeTypeConstants;
 import scw.rpc.RpcService;
-import scw.util.KeyValuePair;
-import scw.util.SimpleKeyValuePair;
 import scw.util.attribute.Attributes;
 import scw.util.ip.IP;
 
@@ -493,8 +489,7 @@ public final class MVCUtils implements MvcConstants {
 		return StringUtils.isEmpty(actionKey) ? "action" : actionKey;
 	}
 
-	public static JsonSupport getJsonParseSupport(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory) {
+	public static JsonSupport getJsonParseSupport(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		JsonSupport jsonParseSupport;
 		String jsonParseSupportBeanName = propertyFactory.getProperty("mvc.json");
 		if (StringUtils.isEmpty(jsonParseSupportBeanName)) {
@@ -505,38 +500,7 @@ public final class MVCUtils implements MvcConstants {
 		return jsonParseSupport;
 	}
 
-	public static Map<String, String> getRequestFirstValueParameters(HttpRequest request,
-			KeyValuePairFilter<String, String> filter) {
-		Map<String, String[]> requestParams = request.getParameterMap();
-		if (requestParams == null || requestParams.isEmpty()) {
-			return null;
-		}
-
-		Map<String, String> map = new HashMap<String, String>();
-		for (Entry<String, String[]> entry : requestParams.entrySet()) {
-			String name = entry.getKey();
-			if (name == null) {
-				continue;
-			}
-
-			String[] values = entry.getValue();
-			if (values == null || values.length == 0) {
-				continue;
-			}
-
-			KeyValuePair<String, String> keyValuePair = filter
-					.filter(new SimpleKeyValuePair<String, String>(name, values[0]));
-			if (keyValuePair == null) {
-				continue;
-			}
-
-			map.put(keyValuePair.getKey(), keyValuePair.getValue());
-		}
-		return map;
-	}
-
-	public static MultiValueMap<String, String> getRequestParameters(HttpRequest request,
-			KeyValuePairFilter<String, String[]> filter) {
+	public static MultiValueMap<String, String> getRequestParameters(HttpRequest request) {
 		Map<String, String[]> requestParams = request.getParameterMap();
 		if (requestParams == null || requestParams.isEmpty()) {
 			return null;
@@ -554,90 +518,45 @@ public final class MVCUtils implements MvcConstants {
 				continue;
 			}
 
-			if (filter == null) {
-				map.put(name, new LinkedList<String>(Arrays.asList(values)));
-			} else {
-				KeyValuePair<String, String[]> keyValuePair = filter
-						.filter(new SimpleKeyValuePair<String, String[]>(name, values));
-				if (keyValuePair == null) {
-					continue;
-				}
-
-				map.put(keyValuePair.getKey(), new LinkedList<String>(Arrays.asList(keyValuePair.getValue())));
-			}
+			map.put(name, new LinkedList<String>(Arrays.asList(values)));
 		}
 		return map;
 	}
 
 	public static Map<String, String> getRequestParameterAndAppendValues(HttpRequest request,
-			CharSequence appendValueChars, KeyValuePairFilter<String, String[]> filter) {
-		if (filter == null) {
-			Map<String, String[]> requestParams = request.getParameterMap();
-			if (CollectionUtils.isEmpty(requestParams)) {
-				return null;
-			}
-
-			Map<String, String> params = new HashMap<String, String>(requestParams.size(), 1);
-			for (Entry<String, String[]> entry : requestParams.entrySet()) {
-				String name = entry.getKey();
-				if (name == null) {
-					continue;
-				}
-
-				String[] values = entry.getValue();
-				if (values == null || values.length == 0) {
-					continue;
-				}
-
-				if (appendValueChars == null) {
-					params.put(name, values[0]);
-				} else {
-					StringBuilder sb = new StringBuilder();
-					for (String value : values) {
-						if (sb.length() != 0) {
-							sb.append(appendValueChars);
-						}
-
-						sb.append(value);
-					}
-					params.put(name, sb.toString());
-				}
-			}
-			return params;
-		} else {
-			MultiValueMap<String, String> requestParams = getRequestParameters(request, filter);
-			if (CollectionUtils.isEmpty(requestParams)) {
-				return null;
-			}
-
-			Map<String, String> params = new HashMap<String, String>(requestParams.size(), 1);
-			for (Entry<String, List<String>> entry : requestParams.entrySet()) {
-				String name = entry.getKey();
-				if (name == null) {
-					continue;
-				}
-
-				List<String> values = entry.getValue();
-				if (CollectionUtils.isEmpty(values)) {
-					continue;
-				}
-
-				if (appendValueChars == null) {
-					params.put(name, requestParams.getFirst(name));
-				} else {
-					StringBuilder sb = new StringBuilder();
-					for (String value : values) {
-						if (sb.length() != 0) {
-							sb.append(appendValueChars);
-						}
-
-						sb.append(value);
-					}
-					params.put(name, sb.toString());
-				}
-			}
-			return params;
+			CharSequence appendValueChars) {
+		Map<String, String[]> requestParams = request.getParameterMap();
+		if (CollectionUtils.isEmpty(requestParams)) {
+			return null;
 		}
+
+		Map<String, String> params = new HashMap<String, String>(requestParams.size(), 1);
+		for (Entry<String, String[]> entry : requestParams.entrySet()) {
+			String name = entry.getKey();
+			if (name == null) {
+				continue;
+			}
+
+			String[] values = entry.getValue();
+			if (values == null || values.length == 0) {
+				continue;
+			}
+
+			if (appendValueChars == null) {
+				params.put(name, values[0]);
+			} else {
+				StringBuilder sb = new StringBuilder();
+				for (String value : values) {
+					if (sb.length() != 0) {
+						sb.append(appendValueChars);
+					}
+
+					sb.append(value);
+				}
+				params.put(name, sb.toString());
+			}
+		}
+		return params;
 	}
 
 	public static void responseCrossDomain(CrossDomainDefinition crossDomainDefinition, HttpResponse httpResponse) {

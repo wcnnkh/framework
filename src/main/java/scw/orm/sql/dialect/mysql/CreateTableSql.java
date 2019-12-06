@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.reflect.FieldDefinition;
+import scw.core.utils.MultiIterator;
 import scw.core.utils.StringUtils;
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
@@ -31,6 +32,7 @@ public class CreateTableSql extends MysqlDialectSql {
 		this(mappingOperations, clazz, tableName, new DefaultSqlTypeFactory());
 	}
 
+	@SuppressWarnings("unchecked")
 	public CreateTableSql(SqlMapper mappingOperations, Class<?> clazz, String tableName,
 			final SqlTypeFactory sqlTypeFactory) {
 		StringBuilder sb = new StringBuilder();
@@ -38,7 +40,7 @@ public class CreateTableSql extends MysqlDialectSql {
 		sb.append(" (");
 
 		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
-		Iterator<MappingContext> iterator = tableFieldContext.iterator();
+		Iterator<MappingContext> iterator = tableFieldContext.iteratorPrimaryKeyAndNotPrimaryKey();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			FieldDefinition fieldDefinition = context.getColumn();
@@ -73,7 +75,8 @@ public class CreateTableSql extends MysqlDialectSql {
 			}
 		}
 
-		iterator = tableFieldContext.iterator();
+		iterator = new MultiIterator<MappingContext>(tableFieldContext.getPrimaryKeys().iterator(),
+				tableFieldContext.getNotPrimaryKeys().iterator());
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			if (!mappingOperations.isUnique(context)) {
@@ -88,7 +91,8 @@ public class CreateTableSql extends MysqlDialectSql {
 
 		final Map<String, List<IndexInfo>> indexMap = new LinkedHashMap<String, List<IndexInfo>>();
 		final Map<String, Index> indexConfigMap = new HashMap<String, Index>();
-		iterator = tableFieldContext.iterator();
+		iterator = new MultiIterator<MappingContext>(tableFieldContext.getPrimaryKeys().iterator(),
+				tableFieldContext.getNotPrimaryKeys().iterator());
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			Index index = context.getColumn().getAnnotation(Index.class);
