@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface ObjectOperations {
 	/**
-	 * 移出指定字段
+	 * 移除指定字段
 	 * 
 	 * @param obj
 	 * @param excludeNames
@@ -26,7 +26,7 @@ public interface ObjectOperations {
 	Map<String, Object> getObjectColumnValueMap(Object obj);
 
 	/**
-	 * 移出指定字段
+	 * 移除指定字段
 	 * 
 	 * @param objs
 	 * @param excludeNames
