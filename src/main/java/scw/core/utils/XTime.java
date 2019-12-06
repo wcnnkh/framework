@@ -10,6 +10,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import scw.util.CalendarUtils;
+
 public final class XTime {
 	private XTime() {
 	};
@@ -55,25 +57,7 @@ public final class XTime {
 	 * @return
 	 */
 	public static long getTodayBeginTime() {
-		return getTodayBeginTime(0).getTimeInMillis();
-	}
-
-	/**
-	 * 获取一天凌晨时间
-	 * 
-	 * @param timeInMillis
-	 * @return
-	 */
-	public static Calendar getTodayBeginTime(long timeInMillis) {
-		Calendar calendar = Calendar.getInstance();
-		if (timeInMillis != 0) {
-			calendar.setTimeInMillis(timeInMillis);
-		}
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		return calendar;
+		return CalendarUtils.getDayBeginCalendar(0).getTimeInMillis();
 	}
 
 	/**
@@ -591,50 +575,6 @@ public final class XTime {
 			ex.printStackTrace();
 		}
 		return days;
-	}
-
-	/**
-	 * 获取月初时间
-	 * 
-	 * @param timeInMillis
-	 * @return
-	 */
-	public static Calendar getMonthBeginTime(long timeInMillis) {
-		Calendar calendar = Calendar.getInstance();
-		if (timeInMillis != 0) {
-			calendar.setTimeInMillis(timeInMillis);
-		}
-
-		calendar.set(Calendar.DAY_OF_MONTH, 1);
-		calendar.set(Calendar.HOUR, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		return calendar;
-	}
-
-	/**
-	 * 获取月未时间
-	 * 
-	 * @param timeInMillis
-	 * @return
-	 */
-	public static Calendar getMonthEndTime(long timeInMillis) {
-		Calendar calendar = Calendar.getInstance();
-		if (timeInMillis != 0) {
-			calendar.setTimeInMillis(timeInMillis);
-		}
-
-		calendar.set(Calendar.DAY_OF_MONTH,
-				calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-		calendar.set(Calendar.HOUR, calendar.getActualMaximum(Calendar.HOUR));
-		calendar.set(Calendar.MINUTE,
-				calendar.getActualMaximum(Calendar.MINUTE));
-		calendar.set(Calendar.SECOND,
-				calendar.getActualMaximum(Calendar.SECOND));
-		calendar.set(Calendar.MILLISECOND,
-				calendar.getActualMaximum(Calendar.MILLISECOND));
-		return calendar;
 	}
 
 	/**
