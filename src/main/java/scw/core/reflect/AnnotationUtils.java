@@ -16,6 +16,7 @@ import scw.core.annotation.POST;
 import scw.core.annotation.PUT;
 import scw.core.utils.ArrayUtils;
 import scw.lang.Ignore;
+import scw.lang.Nullable;
 import scw.util.KeyValuePair;
 import scw.util.SimpleKeyValuePair;
 
@@ -23,8 +24,8 @@ public final class AnnotationUtils {
 	private AnnotationUtils() {
 	};
 
-	public static Method[] getAnnoationMethods(Class<?> type, boolean useSuper, boolean useInterface,
-			Class<? extends Annotation> annotationClass) {
+	public static Method[] getAnnoationMethods(Class<?> type, boolean useSuper,
+			boolean useInterface, Class<? extends Annotation> annotationClass) {
 		Map<String, Method> map = new HashMap<String, Method>();
 		Class<?> clz = type;
 		while (clz != null) {
@@ -42,7 +43,8 @@ public final class AnnotationUtils {
 		return map.values().toArray(new Method[map.size()]);
 	}
 
-	private static void appendAnnoationInterfaceMethod(Map<String, Method> methodMap, Class<?> type,
+	private static void appendAnnoationInterfaceMethod(
+			Map<String, Method> methodMap, Class<?> type,
 			Class<? extends Annotation> annotationClass) {
 		Class<?>[] interfaces = type.getInterfaces();
 		if (interfaces == null || interfaces.length == 0) {
@@ -55,8 +57,8 @@ public final class AnnotationUtils {
 		}
 	}
 
-	private static void appendAnnoationMethod(Map<String, Method> methodMap, Class<?> type,
-			Class<? extends Annotation> annotationClass) {
+	private static void appendAnnoationMethod(Map<String, Method> methodMap,
+			Class<?> type, Class<? extends Annotation> annotationClass) {
 		for (Method method : ReflectionUtils.getDeclaredMethods(type)) {
 			if (isDeprecated(method)) {
 				continue;
@@ -91,7 +93,8 @@ public final class AnnotationUtils {
 		return annotationFactory.getAnnotation(Deprecated.class) != null;
 	}
 
-	public static LinkedList<Field> getAnnotationFieldList(Class<?> clazz, boolean isDeclared, boolean sup,
+	public static LinkedList<Field> getAnnotationFieldList(Class<?> clazz,
+			boolean isDeclared, boolean sup,
 			Class<? extends Annotation> annotationClass) {
 		Class<?> clz = clazz;
 		LinkedList<Field> fieldList = new LinkedList<Field>();
@@ -133,7 +136,8 @@ public final class AnnotationUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Annotation> T getAnnotation(Annotation[] annotations, Class<T> type) {
+	public static <T extends Annotation> T getAnnotation(
+			Annotation[] annotations, Class<T> type) {
 		if (annotations == null || annotations.length == 0) {
 			return null;
 		}
@@ -151,7 +155,8 @@ public final class AnnotationUtils {
 		return null;
 	}
 
-	public static <T extends Annotation> T getAnnotation(Annotation[][] annotations, Class<T> type, int index) {
+	public static <T extends Annotation> T getAnnotation(
+			Annotation[][] annotations, Class<T> type, int index) {
 		if (annotations == null || annotations.length == 0) {
 			return null;
 		}
@@ -163,25 +168,30 @@ public final class AnnotationUtils {
 		return getAnnotation(annotations[index], type);
 	}
 
-	public static KeyValuePair<scw.net.http.Method, String> getHttpMethodAnnotation(AnnotatedElement annotatedElement) {
+	public static KeyValuePair<scw.net.http.Method, String> getHttpMethodAnnotation(
+			AnnotatedElement annotatedElement) {
 		GET get = annotatedElement.getAnnotation(GET.class);
 		if (get != null) {
-			return new SimpleKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.GET, get.value());
+			return new SimpleKeyValuePair<scw.net.http.Method, String>(
+					scw.net.http.Method.GET, get.value());
 		}
 
 		POST post = annotatedElement.getAnnotation(POST.class);
 		if (post != null) {
-			return new SimpleKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.POST, post.value());
+			return new SimpleKeyValuePair<scw.net.http.Method, String>(
+					scw.net.http.Method.POST, post.value());
 		}
 
 		DELETE delete = annotatedElement.getAnnotation(DELETE.class);
 		if (delete != null) {
-			return new SimpleKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.DELETE, delete.value());
+			return new SimpleKeyValuePair<scw.net.http.Method, String>(
+					scw.net.http.Method.DELETE, delete.value());
 		}
 
 		PUT put = annotatedElement.getAnnotation(PUT.class);
 		if (put != null) {
-			return new SimpleKeyValuePair<scw.net.http.Method, String>(scw.net.http.Method.PUT, put.value());
+			return new SimpleKeyValuePair<scw.net.http.Method, String>(
+					scw.net.http.Method.PUT, put.value());
 		}
 
 		return null;
@@ -194,7 +204,8 @@ public final class AnnotationUtils {
 	 * @param annotatedElements
 	 * @return
 	 */
-	public static <T extends Annotation> T getAnnotation(Class<T> type, AnnotatedElement... annotatedElements) {
+	public static <T extends Annotation> T getAnnotation(Class<T> type,
+			AnnotatedElement... annotatedElements) {
 		T old = null;
 		for (AnnotatedElement annotatedElement : annotatedElements) {
 			T a = annotatedElement.getAnnotation(type);
@@ -212,7 +223,8 @@ public final class AnnotationUtils {
 	 * @param annotationFactories
 	 * @return
 	 */
-	public static <T extends Annotation> T getAnnotation(Class<T> type, AnnotationFactory... annotationFactories) {
+	public static <T extends Annotation> T getAnnotation(Class<T> type,
+			AnnotationFactory... annotationFactories) {
 		T old = null;
 		for (AnnotationFactory annotationFactory : annotationFactories) {
 			T a = annotationFactory.getAnnotation(type);
@@ -230,5 +242,19 @@ public final class AnnotationUtils {
 		}
 
 		return ignore.value();
+	}
+
+	/**
+	 * 是否可以为空
+	 * @param annotationFactory
+	 * @return
+	 */
+	public static boolean isNullable(AnnotationFactory annotationFactory) {
+		Nullable nullable = annotationFactory.getAnnotation(Nullable.class);
+		if (nullable == null) {
+			return false;
+		}
+
+		return nullable.value();
 	}
 }

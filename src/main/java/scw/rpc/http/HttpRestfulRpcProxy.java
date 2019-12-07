@@ -10,12 +10,12 @@ import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.core.Constants;
 import scw.core.PropertyFactory;
-import scw.core.annotation.NotRequire;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.InstanceFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.io.serializer.Serializer;
+import scw.lang.Nullable;
 import scw.net.header.HeadersConstants;
 import scw.rpc.RpcConstants;
 import scw.rpc.support.ObjectRpcMessageConvert;
@@ -26,10 +26,10 @@ public class HttpRestfulRpcProxy implements Filter, RpcConstants {
 	private HttpRpcProxy httpRpcProxy;
 
 	public HttpRestfulRpcProxy(InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			@NotRequire String host, Serializer serializer,
-			@ParameterName(RPC_HTTP_CHARSET_NAME) @NotRequire String charsetName,
-			@ParameterName(RPC_HTTP_MVC_SHARE_HEADERS) @NotRequire String[] shareHeaders,
-			@ParameterName(RPC_HTTP_MVC_SHARE_APPEND_HEADERS) @NotRequire String[] appendShareHeaders) {
+			@Nullable String host, Serializer serializer,
+			@ParameterName(RPC_HTTP_CHARSET_NAME) @Nullable String charsetName,
+			@ParameterName(RPC_HTTP_MVC_SHARE_HEADERS) @Nullable String[] shareHeaders,
+			@ParameterName(RPC_HTTP_MVC_SHARE_APPEND_HEADERS) @Nullable String[] appendShareHeaders) {
 		String cName = StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME : charsetName;
 
 		Set<String> shareHeaderSet = new HashSet<String>();

@@ -5,9 +5,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import scw.core.annotation.NotRequire;
 import scw.core.annotation.ParameterName;
-import scw.core.annotation.Require;
 import scw.core.utils.StringUtils;
 
 public final class ParameterUtils {
@@ -41,21 +39,7 @@ public final class ParameterUtils {
 		}
 		return parameterDefinitions;
 	}
-
-	public static boolean isRequire(ParameterConfig containAnnotationParameterConfig) {
-		Require require = containAnnotationParameterConfig.getAnnotation(Require.class);
-		if (require != null) {
-			return require.value();
-		}
-
-		NotRequire notRequire = containAnnotationParameterConfig.getAnnotation(NotRequire.class);
-		if (notRequire != null) {
-			return !notRequire.value();
-		}
-
-		return true;
-	}
-
+	
 	public static String getParameterName(ParameterConfig parameterConfig) {
 		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
 		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {

@@ -14,6 +14,7 @@ import scw.core.instance.annotation.PropertyParameter;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
+import scw.core.reflect.AnnotationUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
@@ -136,7 +137,7 @@ public class AutoInstanceConfig implements InstanceConfig {
 
 		for (int i = 0; i < parameterDefinitions.length; i++) {
 			ParameterConfig parameterConfig = parameterDefinitions[i];
-			boolean require = ParameterUtils.isRequire(parameterConfig);
+			boolean require = !AnnotationUtils.isNullable(parameterConfig);
 			if (!require) {
 				continue;
 			}
@@ -190,7 +191,7 @@ public class AutoInstanceConfig implements InstanceConfig {
 		Object[] args = new Object[parameterConfigs.length];
 		for (int i = 0; i < parameterConfigs.length; i++) {
 			ParameterConfig parameterConfig = parameterConfigs[i];
-			boolean require = ParameterUtils.isRequire(parameterConfig);
+			boolean require = !AnnotationUtils.isNullable(parameterConfig);
 			if (isProerptyType(parameterConfig)) {
 				String value = getProperty(parameterConfig);
 				if (require && StringUtils.isEmpty(value)) {

@@ -1,11 +1,11 @@
 package scw.security.ip;
 
 import scw.core.annotation.DefaultValue;
-import scw.core.annotation.NotRequire;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.PropertyParameter;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
+import scw.lang.Nullable;
 import scw.util.ip.IPUtils;
 
 public class DefaultIPVerification implements IPVerification {
@@ -21,7 +21,7 @@ public class DefaultIPVerification implements IPVerification {
 	 * @param ignoreInnerIp
 	 *            是否不检查内网ip
 	 */
-	public DefaultIPVerification(@NotRequire @PropertyParameter(false) BlacklistIPVerification blacklistIPVerification,
+	public DefaultIPVerification(@Nullable @PropertyParameter(false) BlacklistIPVerification blacklistIPVerification,
 			@PropertyParameter(false) WhitelistIPVerification whitelistIPVerification,
 			@ParameterName(IGNORE_INNER_IP_NAME) @DefaultValue("true") boolean ignoreInnerIp) {
 		this.blacklistIPVerification = blacklistIPVerification;

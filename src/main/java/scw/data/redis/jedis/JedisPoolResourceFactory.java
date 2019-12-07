@@ -10,7 +10,6 @@ import scw.core.Destroy;
 import scw.core.MapPropertyFactory;
 import scw.core.PropertyFactory;
 import scw.core.annotation.DefaultValue;
-import scw.core.annotation.NotRequire;
 import scw.core.annotation.Order;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.ResourceParameter;
@@ -19,6 +18,7 @@ import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.data.redis.RedisConstants;
 import scw.data.redis.RedisUtils;
+import scw.lang.Nullable;
 
 /**
  * 实现自动化配置
@@ -26,20 +26,24 @@ import scw.data.redis.RedisUtils;
  * @author shuchaowen
  *
  */
-public final class JedisPoolResourceFactory implements JedisResourceFactory, Destroy, RedisConstants {
+public final class JedisPoolResourceFactory implements JedisResourceFactory,
+		Destroy, RedisConstants {
 	private JedisPool jedisPool;
 	private String auth;
 
-	public JedisPoolResourceFactory(PropertyFactory propertyFactory, @ParameterName(HOST_CONFIG_KEY) String host,
-			@ParameterName(PORT_CONFIG_KEY) @NotRequire int port, @NotRequire String auth) {
+	public JedisPoolResourceFactory(PropertyFactory propertyFactory,
+			@ParameterName(HOST_CONFIG_KEY) String host,
+			@ParameterName(PORT_CONFIG_KEY) @Nullable int port,
+			@Nullable String auth) {
 		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 		init(jedisPoolConfig, propertyFactory, host, port, auth);
 	}
 
-	private void init(JedisPoolConfig jedisPoolConfig, PropertyFactory propertyFactory, String host, int port,
-			String auth) {
+	private void init(JedisPoolConfig jedisPoolConfig,
+			PropertyFactory propertyFactory, String host, int port, String auth) {
 		if (propertyFactory != null) {
-			ConfigUtils.invokeSetterByProeprties(jedisPoolConfig, "redis.", propertyFactory);
+			ConfigUtils.invokeSetterByProeprties(jedisPoolConfig, "redis.",
+					propertyFactory);
 		}
 
 		this.auth = auth;
@@ -57,8 +61,10 @@ public final class JedisPoolResourceFactory implements JedisResourceFactory, Des
 	@Order
 	public JedisPoolResourceFactory(
 			@ParameterName(CONFIG_KEY) @ResourceParameter @DefaultValue(DEFAULT_CONFIG) String configuration) {
-		Properties properties = ResourceUtils.getResourceOperations().getProperties(configuration, Constants.DEFAULT_CHARSET_NAME);
-		PropertyFactory propertyFactory = new MapPropertyFactory(properties, true);
+		Properties properties = ResourceUtils.getResourceOperations()
+				.getProperties(configuration, Constants.DEFAULT_CHARSET_NAME);
+		PropertyFactory propertyFactory = new MapPropertyFactory(properties,
+				true);
 		String host = propertyFactory.getProperty(HOST_CONFIG_KEY);
 		if (StringUtils.isEmpty(host)) {
 			host = "127.0.0.1";
@@ -66,8 +72,11 @@ public final class JedisPoolResourceFactory implements JedisResourceFactory, Des
 
 		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 		// 兼容老版本
-		ConfigUtils.invokeSetterByProeprties(jedisPoolConfig, null, new MapPropertyFactory(properties, false));
-		init(jedisPoolConfig, propertyFactory, host, StringUtils.parseInt(propertyFactory.getProperty(PORT_CONFIG_KEY)),
+		ConfigUtils.invokeSetterByProeprties(jedisPoolConfig, null,
+				new MapPropertyFactory(properties, false));
+		init(jedisPoolConfig, propertyFactory, host,
+				StringUtils.parseInt(propertyFactory
+						.getProperty(PORT_CONFIG_KEY)),
 				propertyFactory.getProperty(AUTH_CONFIG_KEY));
 	}
 
