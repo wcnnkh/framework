@@ -13,10 +13,10 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
-import scw.orm.SimpleGetter;
 import scw.orm.sql.SqlMapper;
 import scw.orm.sql.annotation.Counter;
 import scw.orm.sql.enums.CasType;
+import scw.orm.support.SimpleGetter;
 
 public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 	private static Logger logger = LoggerUtils.getLogger(UpdateSQLByBeanListen.class);

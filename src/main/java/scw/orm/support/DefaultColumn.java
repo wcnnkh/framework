@@ -1,8 +1,9 @@
-package scw.orm;
+package scw.orm.support;
 
 import java.lang.reflect.Field;
 
 import scw.core.utils.StringUtils;
+import scw.orm.FieldColumn;
 
 public class DefaultColumn extends FieldColumn {
 	private String name;

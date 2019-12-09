@@ -135,6 +135,28 @@ public final class AnnotationUtils {
 		return map;
 	}
 
+	public static <T extends Annotation> T getAnnotation(Class<T> type,
+			AnnotatedElement annotatedElement,
+			AnnotationFactory annotationFactory) {
+		T t = annotatedElement.getAnnotation(type);
+		T t2 = annotationFactory.getAnnotation(type);
+		if (t2 != null) {
+			t = t2;
+		}
+		return t;
+	}
+
+	public static <T extends Annotation> T getAnnotation(Class<T> type,
+			AnnotationFactory annotationFactory,
+			AnnotatedElement annotatedElement) {
+		T t = annotationFactory.getAnnotation(type);
+		T t2 = annotatedElement.getAnnotation(type);
+		if (t2 != null) {
+			t = t2;
+		}
+		return t;
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T extends Annotation> T getAnnotation(
 			Annotation[] annotations, Class<T> type) {
@@ -246,6 +268,7 @@ public final class AnnotationUtils {
 
 	/**
 	 * 是否可以为空
+	 * 
 	 * @param annotationFactory
 	 * @return
 	 */

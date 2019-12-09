@@ -1,4 +1,4 @@
-package scw.orm;
+package scw.orm.support;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import scw.core.utils.MultiIterator;
+import scw.orm.MappingContext;
+import scw.orm.ObjectRelationalMapping;
 
 @SuppressWarnings("unchecked")
 public final class DefaultObjectRelationalMapping implements ObjectRelationalMapping {

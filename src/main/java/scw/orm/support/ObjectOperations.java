@@ -54,4 +54,8 @@ public interface ObjectOperations {
 	<K, V> Map<K, ? extends V> toMap(Collection<? extends V> objs, String name);
 
 	<K, V> Map<K, ? extends V> toMap(Collection<? extends V> objs);
+	
+	void verify(Object obj);
+	
+	void verify(Collection<Object> objs);
 }

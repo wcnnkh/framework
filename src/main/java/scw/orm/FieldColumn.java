@@ -8,19 +8,19 @@ import scw.core.reflect.AnnotationFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.reflect.SimpleAnnotationFactory;
 
-public class FieldColumn implements Column {
+public class FieldColumn extends AbstractColumn {
 	private final Field field;
 	private final AnnotationFactory annotationFactory;
-	private final Method getterMethod;
-	private final Method setterMethod;
+	private final Method getter;
+	private final Method setter;
 	private final Class<?> clazz;
 
 	public FieldColumn(Class<?> clazz, Field field) {
 		this.clazz = clazz;
 		this.field = field;
 		this.annotationFactory = new SimpleAnnotationFactory(field);
-		this.getterMethod = ReflectionUtils.getGetterMethod(clazz, field);
-		this.setterMethod = ReflectionUtils.getSetterMethod(clazz, field);
+		this.getter = ReflectionUtils.getGetterMethod(clazz, field);
+		this.setter = ReflectionUtils.getSetterMethod(clazz, field);
 	}
 
 	public final <T extends Annotation> T getAnnotation(Class<T> type) {
@@ -31,18 +31,6 @@ public class FieldColumn implements Column {
 		return field;
 	}
 
-	public final Object get(Object obj) throws Exception {
-		return getterMethod == null ? field.get(obj) : getterMethod.invoke(obj);
-	}
-
-	public final void set(Object obj, Object value) throws Exception {
-		if (setterMethod == null) {
-			field.set(obj, value);
-		} else {
-			setterMethod.invoke(obj, value);
-		}
-	}
-
 	public Class<?> getDeclaringClass() {
 		return clazz;
 	}
@@ -51,11 +39,11 @@ public class FieldColumn implements Column {
 		return field.getName();
 	}
 
-	public Method getGetterMethod() {
-		return getterMethod;
+	public Method getGetter() {
+		return getter;
 	}
 
-	public Method getSetterMethod() {
-		return setterMethod;
+	public Method getSetter() {
+		return setter;
 	}
 }

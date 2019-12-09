@@ -7,21 +7,20 @@ import scw.core.utils.IteratorCallback;
 
 public interface Mapper extends ColumnFactory {
 
-	void setter(MappingContext context, Object bean, Object value) throws Exception;
+	void setter(MappingContext context, Object bean, Object value) throws ORMException;
 
-	void setter(MappingContext context, Setter setter, Object value) throws Exception;
+	void setter(MappingContext context, Setter setter, Object value) throws ORMException;
 
-	Object getter(MappingContext context, Object bean) throws Exception;
+	Object getter(MappingContext context, Object bean) throws ORMException;
 
-	Object getter(MappingContext context, Getter getter) throws Exception;
+	Object getter(MappingContext context, Getter getter) throws ORMException;
 
-	<T> T newInstance(Class<T> type);
+	<T> T newInstance(Class<T> type) throws ORMException;
 
 	<T> T create(MappingContext superContext, Class<T> clazz, SetterMapping<? extends Mapper> setterMapping)
-			throws Exception;
+			throws ORMException;
 
-	void iterator(MappingContext superContext, Class<?> clazz, IteratorMapping<? extends Mapper> iterator)
-			throws Exception;
+	void iterator(MappingContext superContext, Class<?> clazz, IteratorMapping<? extends Mapper> iterator);
 
 	boolean isPrimaryKey(MappingContext mappingContext);
 	
@@ -35,11 +34,11 @@ public interface Mapper extends ColumnFactory {
 
 	Collection<MappingContext> getPrimaryKeys(Class<?> clazz);
 
-	<T> String getObjectKey(Class<? extends T> clazz, T bean);
+	<T> String getObjectKey(Class<? extends T> clazz, T bean) throws ORMException;
 
-	String getObjectKeyById(Class<?> clazz, Collection<Object> primaryKeys);
+	String getObjectKeyById(Class<?> clazz, Collection<Object> primaryKeys) throws ORMException;
 
-	<K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<K> lastPrimaryKeys, Object[] primaryKeys);
+	<K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<K> lastPrimaryKeys, Object[] primaryKeys) throws ORMException;
 
 	Collection<MappingContext> getNotPrimaryKeys(MappingContext supperContext, Class<?> clazz);
 

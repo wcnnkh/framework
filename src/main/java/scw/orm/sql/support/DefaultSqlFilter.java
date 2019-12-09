@@ -14,7 +14,7 @@ import scw.orm.Setter;
 import scw.orm.SetterFilterChain;
 
 public class DefaultSqlFilter implements Filter {
-	public Object toSqlField(Field field, Object value) throws Exception {
+	public Object toSqlField(Field field, Object value) {
 		if (field.getType().isEnum()) {
 			return value == null ? null : value.toString();
 		}
@@ -42,11 +42,14 @@ public class DefaultSqlFilter implements Filter {
 		}
 	}
 
-	public Object getter(MappingContext context, Getter getter, GetterFilterChain chain) throws Exception {
-		return toSqlField(context.getColumn().getField(), getter.getter(context));
+	public Object getter(MappingContext context, Getter getter,
+			GetterFilterChain chain) {
+		return toSqlField(context.getColumn().getField(),
+				getter.getter(context));
 	}
 
-	public void setter(MappingContext context, Setter setter, Object value, SetterFilterChain chain) throws Exception {
+	public void setter(MappingContext context, Setter setter, Object value,
+			SetterFilterChain chain) {
 		if (value == null) {
 			return;
 		}
@@ -63,7 +66,8 @@ public class DefaultSqlFilter implements Filter {
 				if (value instanceof Number) {
 					setter.setter(context, ((Number) value).intValue() == 1);
 				} else {
-					setter.setter(context, StringUtils.parseBoolean(value.toString()));
+					setter.setter(context,
+							StringUtils.parseBoolean(value.toString()));
 				}
 			}
 		} else if (TypeUtils.isInt(type)) {
@@ -94,7 +98,8 @@ public class DefaultSqlFilter implements Filter {
 			if (value instanceof Number) {
 				setter.setter(context, ((Number) value).doubleValue());
 			} else {
-				setter.setter(context, StringUtils.parseDouble(value.toString()));
+				setter.setter(context,
+						StringUtils.parseDouble(value.toString()));
 			}
 		} else if (TypeUtils.isShort(field.getType())) {
 			if (value instanceof Number) {
@@ -105,7 +110,8 @@ public class DefaultSqlFilter implements Filter {
 		} else if (type.isEnum()) {
 			setter.setter(context, EnumUtils.valueOf(type, value.toString()));
 		} else {
-			Object obj = JSONUtils.parseObject(value.toString(), field.getGenericType());
+			Object obj = JSONUtils.parseObject(value.toString(),
+					field.getGenericType());
 			if (obj == null) {
 				return;
 			}

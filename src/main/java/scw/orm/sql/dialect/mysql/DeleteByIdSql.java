@@ -5,8 +5,8 @@ import java.util.Iterator;
 import scw.lang.ParameterException;
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
-import scw.orm.SimpleGetter;
 import scw.orm.sql.SqlMapper;
+import scw.orm.support.SimpleGetter;
 
 public class DeleteByIdSql extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;

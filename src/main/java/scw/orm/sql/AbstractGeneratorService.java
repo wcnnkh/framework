@@ -3,6 +3,7 @@ package scw.orm.sql;
 import scw.core.utils.XUtils;
 import scw.id.SequenceId;
 import scw.lang.NotSupportException;
+import scw.orm.ORMException;
 import scw.orm.sql.annotation.CreateTime;
 import scw.orm.sql.annotation.UUID;
 import scw.orm.sql.annotation.UpdateTime;
@@ -10,7 +11,7 @@ import scw.orm.sql.enums.OperationType;
 
 public abstract class AbstractGeneratorService implements GeneratorService {
 
-	public void process(GeneratorContext generatorContext) throws Exception {
+	public void process(GeneratorContext generatorContext) throws ORMException {
 		if (generatorContext.getOperationType() == OperationType.DELETE) {
 			return;
 		}

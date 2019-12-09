@@ -1,9 +1,14 @@
-package scw.orm;
+package scw.orm.support;
 
 import java.util.Collection;
 import java.util.Iterator;
 
 import scw.core.utils.CollectionUtils;
+import scw.orm.MappingContext;
+import scw.orm.ORMException;
+import scw.orm.Setter;
+import scw.orm.SetterFilter;
+import scw.orm.SetterFilterChain;
 
 public class DefaultSetterFilterChain implements SetterFilterChain {
 	private Iterator<? extends SetterFilter> iterator;
@@ -16,7 +21,7 @@ public class DefaultSetterFilterChain implements SetterFilterChain {
 		this.chain = chain;
 	}
 
-	public void setter(MappingContext context, Setter setter, Object value) throws Exception {
+	public void setter(MappingContext context, Setter setter, Object value) throws ORMException {
 		SetterFilter setterFilter = getNext(context, setter, value);
 		if (setterFilter == null) {
 			if (chain == null) {

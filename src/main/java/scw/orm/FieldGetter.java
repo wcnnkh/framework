@@ -7,7 +7,7 @@ public final class FieldGetter implements Getter {
 		this.object = object;
 	}
 
-	public Object getter(MappingContext context) throws Exception {
+	public Object getter(MappingContext context) throws ORMException {
 		return context.getColumn().get(object);
 	}
 

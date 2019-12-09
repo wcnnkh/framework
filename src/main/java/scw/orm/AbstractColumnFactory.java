@@ -7,6 +7,7 @@ import java.util.Map;
 
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.AlreadyExistsException;
+import scw.orm.support.DefaultColumn;
 
 public abstract class AbstractColumnFactory implements ColumnFactory {
 

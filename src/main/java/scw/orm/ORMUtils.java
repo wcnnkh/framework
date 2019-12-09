@@ -14,7 +14,9 @@ import scw.core.utils.SystemPropertyUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.sql.annotation.Table;
+import scw.orm.support.DefaultMapper;
 import scw.orm.support.DefaultObjectOperations;
+import scw.orm.support.NoCacheColumnFactory;
 import scw.orm.support.ObjectOperations;
 
 @SuppressWarnings("unchecked")

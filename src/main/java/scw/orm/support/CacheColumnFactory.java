@@ -1,8 +1,11 @@
-package scw.orm;
+package scw.orm.support;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import scw.orm.AbstractColumnFactory;
+import scw.orm.Column;
 
 public class CacheColumnFactory extends AbstractColumnFactory {
 	private volatile Map<Class<?>, Map<String, Column>> fieldDefinitionMap = new HashMap<Class<?>, Map<String, Column>>();

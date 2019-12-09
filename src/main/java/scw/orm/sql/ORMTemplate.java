@@ -84,7 +84,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		try {
 			getSqlMapper().iterator(null, clazz, new IteratorMapping<SqlMapper>() {
 
-				public void iterator(MappingContext context, SqlMapper sqlMapper) throws Exception {
+				public void iterator(MappingContext context, SqlMapper sqlMapper) throws ORMException {
 					Generator generator = context.getColumn().getAnnotation(Generator.class);
 					if (generator == null) {
 						return;
@@ -119,13 +119,17 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		final int count = update(sql, connection);
 		getSqlMapper().iterator(null, clazz, new IteratorMapping<SqlMapper>() {
 
-			public void iterator(MappingContext context, SqlMapper mappingOperations) throws Exception {
+			public void iterator(MappingContext context, SqlMapper mappingOperations) throws ORMException {
 				if (mappingOperations.isAutoIncrement(context)) {
 					if (operationType == OperationType.SAVE || operationType == OperationType.SAVE_OR_UPDATE) {
 						if (count == 0) {
 							logger.warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
 						} else if (count == 1) {
-							mappingOperations.setter(context, bean, getAutoIncrementLastId(connection, tableName));
+							try {
+								mappingOperations.setter(context, bean, getAutoIncrementLastId(connection, tableName));
+							} catch (SQLException e) {
+								throw new ORMException(context.getColumn().getName(), e);
+							}
 						}
 					}
 				}

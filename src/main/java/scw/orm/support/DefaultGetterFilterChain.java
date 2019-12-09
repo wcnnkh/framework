@@ -1,9 +1,14 @@
-package scw.orm;
+package scw.orm.support;
 
 import java.util.Collection;
 import java.util.Iterator;
 
 import scw.core.utils.CollectionUtils;
+import scw.orm.Getter;
+import scw.orm.GetterFilter;
+import scw.orm.GetterFilterChain;
+import scw.orm.MappingContext;
+import scw.orm.ORMException;
 
 public class DefaultGetterFilterChain implements GetterFilterChain {
 	private Iterator<? extends GetterFilter> iterator;
@@ -16,7 +21,7 @@ public class DefaultGetterFilterChain implements GetterFilterChain {
 		this.chain = chain;
 	}
 
-	public Object getter(MappingContext context, Getter getter) throws Exception {
+	public Object getter(MappingContext context, Getter getter) throws ORMException {
 		GetterFilter getterFilter = getNext(context, getter);
 		if (getterFilter == null) {
 			return chain == null ? getter.getter(context) : chain.getter(context, getter);

@@ -1,6 +1,9 @@
-package scw.orm;
+package scw.orm.support;
 
 import java.util.Map;
+
+import scw.orm.AbstractColumnFactory;
+import scw.orm.Column;
 
 public class NoCacheColumnFactory extends AbstractColumnFactory {
 

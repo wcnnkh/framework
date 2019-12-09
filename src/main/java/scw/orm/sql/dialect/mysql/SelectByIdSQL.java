@@ -7,8 +7,8 @@ import java.util.Map;
 
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
-import scw.orm.SimpleGetter;
 import scw.orm.sql.SqlMapper;
+import scw.orm.support.SimpleGetter;
 
 public final class SelectByIdSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;

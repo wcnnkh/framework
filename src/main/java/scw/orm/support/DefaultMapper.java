@@ -1,10 +1,16 @@
-package scw.orm;
+package scw.orm.support;
 
 import java.util.Collection;
 import java.util.Map;
 
 import scw.core.instance.CannotInstantiateException;
 import scw.core.instance.NoArgsInstanceFactory;
+import scw.orm.AbstractMapper;
+import scw.orm.Column;
+import scw.orm.ColumnFactory;
+import scw.orm.GetterFilter;
+import scw.orm.ORMUtils;
+import scw.orm.SetterFilter;
 
 public class DefaultMapper extends AbstractMapper {
 	private final ColumnFactory columnFactory;
