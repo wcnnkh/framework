@@ -7,42 +7,22 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
 
-import scw.core.StringEmptyVerification;
 import scw.core.ValueFactory;
-import scw.core.Verification;
 import scw.json.JSONUtils;
 
-public class StringParse implements Verification<CharSequence>, ValueFactory<String> {
+public class StringParse implements ValueFactory<String> {
 	public static final StringParse DEFAULT = new StringParse();
 
-	private final StringEmptyVerification verification;
 	private final int numberRadix;
 	private final char[] splitArray;
 
 	public StringParse() {
-		this(null, 10);
+		this(10);
 	}
 
-	public StringParse(StringEmptyVerification verification, int numberRadix, char... splitArray) {
-		this.verification = verification;
+	public StringParse(int numberRadix, char... splitArray) {
 		this.numberRadix = numberRadix;
 		this.splitArray = splitArray;
-	}
-
-	public boolean verification(CharSequence text) {
-		return verification(verification, text);
-	}
-
-	public boolean verificationNumberText(String text) {
-		if (StringUtils.isEmpty(text)) {
-			return true;
-		}
-
-		return verification(text);
-	}
-
-	public final StringEmptyVerification getVerification() {
-		return verification;
 	}
 
 	public final int getNumberRadix() {
@@ -82,17 +62,9 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 		return XUtils.getValue(DEFAULT, text, type);
 	}
 
-	private static boolean verification(Verification<CharSequence> verification, CharSequence charSequence) {
-		if (verification == null) {
-			return StringEmptyVerification.INSTANCE.verification(charSequence);
-		} else {
-			return verification.verification(charSequence);
-		}
-	}
-
 	public Byte getByte(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return null;
 		}
 		return Byte.parseByte(text, numberRadix);
@@ -100,7 +72,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public byte getByteValue(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return 0;
 		}
 		return Byte.parseByte(text, numberRadix);
@@ -108,7 +80,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public Short getShort(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return null;
 		}
 		return Short.parseShort(text, numberRadix);
@@ -116,7 +88,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public short getShortValue(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return 0;
 		}
 		return Short.parseShort(text, numberRadix);
@@ -124,7 +96,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public Integer getInteger(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return null;
 		}
 
@@ -133,7 +105,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public int getIntValue(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return 0;
 		}
 
@@ -142,7 +114,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public Long getLong(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return null;
 		}
 		return Long.parseLong(text, numberRadix);
@@ -150,7 +122,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public long getLongValue(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return 0;
 		}
 		return Long.parseLong(text, numberRadix);
@@ -166,7 +138,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public Float getFloat(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return null;
 		}
 		return Float.parseFloat(text);
@@ -174,7 +146,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public float getFloatValue(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return 0f;
 		}
 		return Float.parseFloat(text);
@@ -182,7 +154,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public Double getDouble(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return null;
 		}
 		return Double.parseDouble(text);
@@ -190,21 +162,21 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public double getDoubleValue(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return 0;
 		}
 		return Double.parseDouble(text);
 	}
 
 	public char getChar(String data) {
-		if (verificationNumberText(data)) {
+		if (StringUtils.isEmpty(data)) {
 			return (char) 0;
 		}
 		return data.charAt(0);
 	}
 
 	public Character getCharacter(String data) {
-		if (verificationNumberText(data)) {
+		if (StringUtils.isEmpty(data)) {
 			return null;
 		}
 		return data.charAt(0);
@@ -216,7 +188,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public BigInteger getBigInteger(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return null;
 		}
 
@@ -225,7 +197,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	public BigDecimal getBigDecimal(String data) {
 		String text = StringUtils.formatNumberText(data);
-		if (verificationNumberText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return null;
 		}
 
@@ -238,7 +210,7 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 
 	@SuppressWarnings({ "rawtypes" })
 	public Enum<?> getEnum(String data, Class<? extends Enum> enumType) {
-		if (verification(data)) {
+		if (StringUtils.isEmpty(data)) {
 			return null;
 		}
 
@@ -271,7 +243,8 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 		}
 
 		try {
-			return isCommonType(ClassUtils.forName(type.toString(), ClassUtils.getDefaultClassLoader()));
+			return isCommonType(ClassUtils.forName(type.toString(),
+					ClassUtils.getDefaultClassLoader()));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -279,8 +252,11 @@ public class StringParse implements Verification<CharSequence>, ValueFactory<Str
 	}
 
 	private static boolean isCommonType(Class<?> type) {
-		return type.isArray() || type.isEnum() || Collection.class.isAssignableFrom(type)
-				|| Map.class.isAssignableFrom(type) || java.util.Date.class.isAssignableFrom(type)
-				|| BigInteger.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type);
+		return type.isArray() || type.isEnum()
+				|| Collection.class.isAssignableFrom(type)
+				|| Map.class.isAssignableFrom(type)
+				|| java.util.Date.class.isAssignableFrom(type)
+				|| BigInteger.class.isAssignableFrom(type)
+				|| BigDecimal.class.isAssignableFrom(type);
 	}
 }
