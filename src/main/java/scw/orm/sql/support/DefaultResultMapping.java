@@ -5,7 +5,6 @@ import java.sql.SQLException;
 
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
-import scw.orm.ORMException;
 import scw.orm.sql.AbstractResultMapping;
 import scw.orm.sql.DefaultTableSetterMapping;
 import scw.orm.sql.TableNameMapping;
@@ -24,12 +23,8 @@ public class DefaultResultMapping extends AbstractResultMapping {
 
 	@Override
 	protected <T> T mapping(Class<T> clazz, TableNameMapping tableNameMapping) {
-		try {
-			return SqlORMUtils.getSqlMapper().create(null, clazz,
-					new DefaultTableSetterMapping(valueIndexMapping, values, tableNameMapping));
-		} catch (Exception e) {
-			throw new ORMException(clazz.getName(), e);
-		}
+		return SqlORMUtils.getSqlMapper().create(null, clazz,
+				new DefaultTableSetterMapping(valueIndexMapping, values, tableNameMapping));
 	}
 
 	@SuppressWarnings("unchecked")

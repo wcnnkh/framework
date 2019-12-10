@@ -14,8 +14,7 @@ public class DeleteSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public <T> DeleteSQL(SqlMapper mappingOperations, Class<? extends T> clazz, T obj, String tableName)
-			throws Exception {
+	public <T> DeleteSQL(SqlMapper mappingOperations, Class<? extends T> clazz, T obj, String tableName) {
 		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException("not found primary key");

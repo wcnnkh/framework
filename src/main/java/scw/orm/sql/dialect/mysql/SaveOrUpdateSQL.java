@@ -21,7 +21,7 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public SaveOrUpdateSQL(SqlMapper mappingOperations, Class<?> clazz, Object obj, String tableName) throws Exception {
+	public SaveOrUpdateSQL(SqlMapper mappingOperations, Class<?> clazz, Object obj, String tableName) {
 		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException("not found primary key");

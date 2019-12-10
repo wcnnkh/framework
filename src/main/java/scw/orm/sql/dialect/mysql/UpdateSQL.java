@@ -14,7 +14,7 @@ public class UpdateSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQL(SqlMapper mappingOperations, Class<?> clazz, Object obj, String tableName) throws Exception {
+	public UpdateSQL(SqlMapper mappingOperations, Class<?> clazz, Object obj, String tableName) {
 		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException(tableName + " not found primary key");

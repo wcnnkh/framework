@@ -8,8 +8,7 @@ public class MaxIdSql extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 
-	public MaxIdSql(SqlMapper mappingOperations, Class<?> clazz, String tableName, String idField)
-			throws Exception {
+	public MaxIdSql(SqlMapper mappingOperations, Class<?> clazz, String tableName, String idField) {
 		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		String columnName;
 		MappingContext context = tableFieldContext.getMappingContext(idField);

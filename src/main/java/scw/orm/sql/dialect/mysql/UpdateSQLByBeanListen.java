@@ -24,8 +24,8 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanListen(SqlMapper mappingOperations, Class<?> clazz,
-			FieldSetterListen beanFieldListen, String tableName) throws Exception {
+	public UpdateSQLByBeanListen(SqlMapper mappingOperations, Class<?> clazz, FieldSetterListen beanFieldListen,
+			String tableName) {
 		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NotFoundException("not found primary key");

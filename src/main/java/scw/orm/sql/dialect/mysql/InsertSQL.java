@@ -15,7 +15,7 @@ public final class InsertSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public InsertSQL(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object obj) throws Exception {
+	public InsertSQL(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object obj) {
 		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();

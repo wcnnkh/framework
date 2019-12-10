@@ -25,7 +25,7 @@ public class MySqlSqlDialect extends AbstractSqlDialect {
 	public SqlMapper getSqlMapper() {
 		return SqlORMUtils.getSqlMapper();
 	}
-	
+
 	public Sql toCreateTableSql(Class<?> clazz, String tableName) throws SqlDialectException {
 		return new CreateTableSql(getSqlMapper(), clazz, tableName);
 	}
@@ -39,56 +39,32 @@ public class MySqlSqlDialect extends AbstractSqlDialect {
 	}
 
 	public Sql toUpdateSql(Object obj, Class<?> clazz, String tableName) throws SqlDialectException {
-		try {
-			return (obj instanceof FieldSetterListen)
-					? new UpdateSQLByBeanListen(getSqlMapper(), clazz, (FieldSetterListen) obj, tableName)
-					: new UpdateSQL(getSqlMapper(), clazz, obj, tableName);
-		} catch (Exception e) {
-			throw new SqlDialectException(clazz.getName(), e);
-		}
+		return (obj instanceof FieldSetterListen)
+				? new UpdateSQLByBeanListen(getSqlMapper(), clazz, (FieldSetterListen) obj, tableName)
+				: new UpdateSQL(getSqlMapper(), clazz, obj, tableName);
 	}
 
 	public Sql toSaveOrUpdateSql(Object obj, Class<?> clazz, String tableName) throws SqlDialectException {
-		try {
-			return new SaveOrUpdateSQL(getSqlMapper(), clazz, obj, tableName);
-		} catch (Exception e) {
-			throw new SqlDialectException(clazz.getName(), e);
-		}
+		return new SaveOrUpdateSQL(getSqlMapper(), clazz, obj, tableName);
 	}
 
 	public Sql toDeleteSql(Object obj, Class<?> clazz, String tableName) throws SqlDialectException {
-		try {
-			return new DeleteSQL(getSqlMapper(), clazz, obj, tableName);
-		} catch (Exception e) {
-			throw new SqlDialectException(clazz.getName(), e);
-		}
+		return new DeleteSQL(getSqlMapper(), clazz, obj, tableName);
 	}
 
 	public Sql toDeleteByIdSql(Class<?> clazz, String tableName, Object[] parimayKeys) throws SqlDialectException {
-		try {
-			return new DeleteByIdSql(getSqlMapper(), clazz, tableName, parimayKeys);
-		} catch (Exception e) {
-			throw new SqlDialectException(clazz.getName(), e);
-		}
+		return new DeleteByIdSql(getSqlMapper(), clazz, tableName, parimayKeys);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Sql toSelectByIdSql(Class<?> clazz, String tableName, Object[] params) throws SqlDialectException {
-		try {
-			return new SelectByIdSQL(getSqlMapper(), clazz, tableName,
-					params == null ? Collections.EMPTY_LIST : Arrays.asList(params));
-		} catch (Exception e) {
-			throw new SqlDialectException(clazz.getName(), e);
-		}
+		return new SelectByIdSQL(getSqlMapper(), clazz, tableName,
+				params == null ? Collections.EMPTY_LIST : Arrays.asList(params));
 	}
 
 	public Sql toSelectInIdSql(Class<?> clazz, String tableName, Object[] params, Collection<?> inIdList)
 			throws SqlDialectException {
-		try {
-			return new SelectInIdSQL(getSqlMapper(), clazz, tableName, params, inIdList);
-		} catch (Exception e) {
-			throw new SqlDialectException(clazz.getName(), e);
-		}
+		return new SelectInIdSQL(getSqlMapper(), clazz, tableName, params, inIdList);
 	}
 
 	private static final String LAST_INSERT_ID_SQL = "select last_insert_id()";
@@ -98,11 +74,7 @@ public class MySqlSqlDialect extends AbstractSqlDialect {
 	}
 
 	public Sql toMaxIdSql(Class<?> clazz, String tableName, String idField) throws SqlDialectException {
-		try {
-			return new MaxIdSql(getSqlMapper(), clazz, tableName, idField);
-		} catch (Exception e) {
-			throw new SqlDialectException(clazz.getName(), e);
-		}
+		return new MaxIdSql(getSqlMapper(), clazz, tableName, idField);
 	}
 
 }

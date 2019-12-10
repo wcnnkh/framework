@@ -81,22 +81,18 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	protected void generator(OperationType operationType, Class<?> clazz, Object bean, String tableName) {
 		final GeneratorContext generatorContext = new GeneratorContext(this, operationType, bean,
 				getSqlDialect().getSqlMapper(), tableName);
-		try {
-			getSqlMapper().iterator(null, clazz, new IteratorMapping<SqlMapper>() {
+		getSqlMapper().iterator(null, clazz, new IteratorMapping<SqlMapper>() {
 
-				public void iterator(MappingContext context, SqlMapper sqlMapper) throws ORMException {
-					Generator generator = context.getColumn().getAnnotation(Generator.class);
-					if (generator == null) {
-						return;
-					}
-
-					generatorContext.setMappingContext(context);
-					getGeneratorService().process(generatorContext);
+			public void iterator(MappingContext context, SqlMapper sqlMapper) throws ORMException {
+				Generator generator = context.getColumn().getAnnotation(Generator.class);
+				if (generator == null) {
+					return;
 				}
-			});
-		} catch (Exception e) {
-			throw new ORMException("generator [" + clazz + "]", e);
-		}
+
+				generatorContext.setMappingContext(context);
+				getGeneratorService().process(generatorContext);
+			}
+		});
 	}
 
 	protected boolean orm(OperationType operationType, Class<?> clazz, Object bean, String tableName) {

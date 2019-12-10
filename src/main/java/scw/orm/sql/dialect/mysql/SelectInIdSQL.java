@@ -17,7 +17,7 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 	private Object[] params;
 
 	public SelectInIdSQL(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object[] ids,
-			Collection<?> inIds) throws Exception {
+			Collection<?> inIds){
 		StringBuilder sb = new StringBuilder();
 		sb.append(clazz.getName());
 		sb.append(tableName);
@@ -56,7 +56,7 @@ public final class SelectInIdSQL extends MysqlDialectSql {
 	}
 
 	private String getSql(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object[] ids,
-			Collection<?> inIdList) throws Exception {
+			Collection<?> inIdList){
 		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		StringBuilder sb = new StringBuilder();
 		if (ids.length > 0) {

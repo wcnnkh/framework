@@ -13,8 +13,7 @@ public class DeleteByIdSql extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public DeleteByIdSql(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object[] parimayKeys)
-			throws Exception {
+	public DeleteByIdSql(SqlMapper mappingOperations, Class<?> clazz, String tableName, Object[] parimayKeys) {
 		ObjectRelationalMapping tableFieldContext = mappingOperations.getObjectRelationalMapping(clazz);
 		if (tableFieldContext.getPrimaryKeys().size() == 0) {
 			throw new NullPointerException("not found primary key");
