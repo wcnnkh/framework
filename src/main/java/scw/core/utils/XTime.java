@@ -43,12 +43,8 @@ public final class XTime {
 	 *            ,时间格式 yyyy-MM-dd hh:mm:ss
 	 * @return
 	 */
-	public static long getTime(String timeStr, String format) {//
-		try {
-			return FormatUtils.getDate(timeStr, format).getTime();
-		} catch (Exception ex) {
-		}
-		return 0L;
+	public static long getTime(String timeStr, String format) throws FormatterException{//
+		return FormatUtils.getDate(timeStr, format).getTime();
 	}
 
 	/**

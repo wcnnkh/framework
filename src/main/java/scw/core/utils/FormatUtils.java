@@ -101,8 +101,12 @@ public final class FormatUtils {
 		return new DecimalFormat(new String(charBuffer.array())).format(number);
 	}
 
-	public static Date getDate(String date, String formatter) throws ParseException {
-		return new SimpleDateFormat(formatter).parse(date);
+	public static Date getDate(String date, String formatter) throws FormatterException{
+		try {
+			return new SimpleDateFormat(formatter).parse(date);
+		} catch (ParseException e) {
+			throw new FormatterException("time=" + date + ", formatter=" + formatter, e);
+		}
 	}
 
 	public static String dateFormat(Date date, String formatter) {
