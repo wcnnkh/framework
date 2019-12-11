@@ -80,6 +80,6 @@ public final class EmbeddedUtils {
 	}
 
 	public static boolean tomcatScanTld(PropertyFactory propertyFactory) {
-		return StringUtils.parseBoolean(getTomcatKey("scan.tld"));
+		return StringUtils.parseBoolean(propertyFactory.getProperty(getTomcatKey("scan.tld")));
 	}
 }
