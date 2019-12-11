@@ -8,6 +8,7 @@ import scw.aop.Invoker;
 import scw.aop.ProxyUtils;
 import scw.aop.ReflectInvoker;
 import scw.core.reflect.ReflectionUtils;
+import scw.lang.NestedExceptionUtils;
 
 public final class MethodProxyInvoker implements Invoker {
 	private final Method method;
@@ -43,7 +44,11 @@ public final class MethodProxyInvoker implements Invoker {
 	public Object invoke(Object... args) throws Throwable {
 		Object bean = getBean();
 		if (proxy) {
-			return method.invoke(bean, args);
+			try {
+				return method.invoke(bean, args);
+			} catch (Throwable e) {
+				throw NestedExceptionUtils.excludeInvalidNestedExcpetion(e);
+			}
 		}
 
 		FilterChain filterChain = new BeanFactoryFilterChain(beanFactory, null, clz, method);

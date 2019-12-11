@@ -3,20 +3,26 @@ package scw.orm;
 import java.lang.reflect.Type;
 
 public abstract class AbstractColumn implements Column {
+
 	public Object get(Object obj) throws ORMException {
+		// 默认不调用get方法
 		try {
-			if (getGetter() == null) {
+			if (getField() != null) {
 				return getField().get(obj);
 			} else {
 				return getGetter().invoke(obj);
 			}
 		} catch (Exception e) {
-			throw new ORMException("[ORM get failed] - column [" + getName()
-					+ "]", e);
+			throw createGetterExcpetion(e, obj);
 		}
 	}
 
+	protected RuntimeException createGetterExcpetion(Throwable e, Object obj) {
+		return new ORMException("[ORM getter failed] - column [" + getName() + "]", e);
+	}
+
 	public void set(Object obj, Object value) throws ORMException {
+		// 如果存在set方法，调用setter方法
 		try {
 			if (getSetter() == null) {
 				getField().set(obj, value);
@@ -24,9 +30,12 @@ public abstract class AbstractColumn implements Column {
 				getSetter().invoke(obj, value);
 			}
 		} catch (Exception e) {
-			throw new ORMException("[ORM set failed] - column [" + getName()
-					+ "]", e);
+			throw createSetterException(e, obj, value);
 		}
+	}
+
+	protected RuntimeException createSetterException(Throwable e, Object obj, Object value) {
+		return new ORMException("[ORM setter failed] - column [" + getName() + "]", e);
 	}
 
 	public Type getGenericType() {

@@ -4,20 +4,12 @@ import java.util.Collection;
 
 import scw.context.Context;
 import scw.context.ContextExecute;
-import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XUtils;
-import scw.lang.NestedExceptionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.exception.DefaultExceptionHandlerChain;
 
 public class MvcExecute extends AbstractFilterChain implements ContextExecute<Void> {
-	/**
-	 * 是否使用父级异常，默认使用
-	 */
-	private static final boolean MOST_SPECIFIC_CAUSE = StringUtils
-			.parseBoolean(SystemPropertyUtils.getProperty("mvc.most.specific.cause"), true);
 	private static Logger logger = LoggerFactory.getLogger(ExceptionHandlerChain.class);
 	private final Channel channel;
 	private final long warnExecuteTime;
@@ -55,10 +47,9 @@ public class MvcExecute extends AbstractFilterChain implements ContextExecute<Vo
 	}
 
 	private Object error(Channel channel, Throwable e) {
-		Throwable error = MOST_SPECIFIC_CAUSE ? NestedExceptionUtils.getMostSpecificCause(e) : e;
-		logger.error(error, channel.toString());
+		logger.error(e, channel.toString());
 		ExceptionHandlerChain exceptionHandlerChain = new DefaultExceptionHandlerChain(exceptionHandlers, null);
-		return exceptionHandlerChain.doHandler(channel, error);
+		return exceptionHandlerChain.doHandler(channel, e);
 	}
 
 	@Override

@@ -22,10 +22,10 @@ import scw.core.utils.SystemPropertyUtils;
 import scw.lang.NotSupportException;
 import scw.orm.ColumnFactory;
 import scw.orm.Filter;
+import scw.orm.ORMUtils;
 import scw.orm.sql.DefaultSqlMapper;
 import scw.orm.sql.DefaultTableNameMapping;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.TableColumnFactory;
 import scw.orm.sql.TableInstanceFactory;
 import scw.orm.sql.TableNameMapping;
 import scw.orm.sql.annotation.Index;
@@ -47,13 +47,14 @@ public final class SqlORMUtils {
 			filters.addAll(InstanceUtils.autoNewInstancesBySystemProperty(Filter.class, "orm.sql.filters",
 					Collections.EMPTY_LIST));
 			filters.add(new DefaultSqlFilter());
-			ColumnFactory columnFactory = InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class,
-					"orm.sql.column.factory", new TableColumnFactory());
 			NoArgsInstanceFactory noArgsInstanceFactory = InstanceUtils.autoNewInstanceBySystemProperty(
 					NoArgsInstanceFactory.class, "orm.sql.table.instance.factory", new TableInstanceFactory());
 			TableNameMapping tableNameMapping = InstanceUtils.autoNewInstanceBySystemProperty(TableNameMapping.class,
 					"orm.sql.table.name.mapping", new DefaultTableNameMapping());
-			SQL_MAPPER = new DefaultSqlMapper(tableNameMapping, columnFactory, filters, noArgsInstanceFactory);
+			SQL_MAPPER = new DefaultSqlMapper(tableNameMapping,
+					InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class, "orm.sql.column.factory",
+							ORMUtils.getColumnFactory()),
+					filters, noArgsInstanceFactory);
 		} else {
 			try {
 				SQL_MAPPER = InstanceUtils.autoNewInstance(sqlMappingOperationsName);

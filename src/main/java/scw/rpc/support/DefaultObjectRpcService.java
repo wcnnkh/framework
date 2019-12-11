@@ -12,6 +12,7 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.io.Bytes;
 import scw.io.serializer.Serializer;
+import scw.lang.NestedExceptionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.rpc.RpcConstants;
@@ -46,9 +47,8 @@ public final class DefaultObjectRpcService implements RpcService, RpcConstants {
 			return invoker.invoke(
 					instanceFactory.getInstance(objectRpcRequestMessage.getMethodDefinition().getBelongClass()),
 					objectRpcRequestMessage.getArgs());
-		} catch (IllegalArgumentException e) {
-
-			throw e;
+		} catch (Throwable e) {
+			throw NestedExceptionUtils.excludeInvalidNestedExcpetion(e);
 		}
 	}
 
@@ -71,11 +71,11 @@ public final class DefaultObjectRpcService implements RpcService, RpcConstants {
 			response(os, rpcResponseMessage);
 			return;
 		}
-		
-		if(logger.isDebugEnabled()){
+
+		if (logger.isDebugEnabled()) {
 			logger.debug(objectRpcRequestMessage.getMessageKey());
 		}
-		
+
 		try {
 			rpcResponseMessage.setResponse(request(objectRpcRequestMessage));
 		} catch (Throwable e) {

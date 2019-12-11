@@ -16,6 +16,8 @@
 
 package scw.lang;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Helper class for implementing exception classes which are capable of holding
  * nested exceptions. Necessary because we can't share a base class among
@@ -90,6 +92,20 @@ public abstract class NestedExceptionUtils {
 	public static Throwable getMostSpecificCause(Throwable original) {
 		Throwable rootCause = getRootCause(original);
 		return (rootCause != null ? rootCause : original);
+	}
+
+	/**
+	 * 排除无效的嵌套异常
+	 * 
+	 * @param original
+	 * @return
+	 */
+	public static Throwable excludeInvalidNestedExcpetion(Throwable original) {
+		Throwable cause = original;
+		if (original instanceof InvocationTargetException) {// 排除反射异常
+			cause = ((InvocationTargetException) cause).getTargetException();
+		}
+		return cause == null ? original : cause;
 	}
 
 }
