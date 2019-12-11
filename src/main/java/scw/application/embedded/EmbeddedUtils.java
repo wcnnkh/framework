@@ -38,8 +38,8 @@ public final class EmbeddedUtils {
 	public static String getContextPath(PropertyFactory propertyFactory) {
 		return getProperty(propertyFactory, "contextPath");
 	}
-	
-	public static String getSource(PropertyFactory propertyFactory){
+
+	public static String getSource(PropertyFactory propertyFactory) {
 		return getProperty(propertyFactory, "source");
 	}
 
@@ -50,8 +50,8 @@ public final class EmbeddedUtils {
 	public static String getTomcatConnectorName(PropertyFactory propertyFactory) {
 		return propertyFactory.getProperty(getTomcatKey("connector"));
 	}
-	
-	public static String getTomcatContextManager(PropertyFactory propertyFactory){
+
+	public static String getTomcatContextManager(PropertyFactory propertyFactory) {
 		return propertyFactory.getProperty(getTomcatKey("context.manager"));
 	}
 
@@ -66,16 +66,20 @@ public final class EmbeddedUtils {
 	public static String getShutdownName(PropertyFactory propertyFactory) {
 		return getShutdownProperty(propertyFactory, "name");
 	}
-	
-	public static String getShutdownIp(PropertyFactory propertyFactory){
+
+	public static String getShutdownIp(PropertyFactory propertyFactory) {
 		return getShutdownProperty(propertyFactory, "ip");
 	}
-	
-	public static String getShutdownUserName(PropertyFactory propertyFactory){
+
+	public static String getShutdownUserName(PropertyFactory propertyFactory) {
 		return getShutdownProperty(propertyFactory, "username");
 	}
-	
-	public static String getShutdownPassword(PropertyFactory propertyFactory){
+
+	public static String getShutdownPassword(PropertyFactory propertyFactory) {
 		return getShutdownProperty(propertyFactory, "password");
+	}
+
+	public static boolean tomcatScanTld(PropertyFactory propertyFactory) {
+		return StringUtils.parseBoolean(getTomcatKey("scan.tld"));
 	}
 }
