@@ -216,7 +216,7 @@ public abstract class AbstractMapper implements Mapper {
 			} else {
 				ids = new Object[primaryKeys.length];
 				System.arraycopy(primaryKeys, 0, ids, 0, primaryKeys.length);
-				ids[ids.length - 1] = valueIterator.next();
+				ids[ids.length - 1] = k;
 			}
 			keyMap.put(getObjectKeyById(clazz, Arrays.asList(ids)), k);
 		}
