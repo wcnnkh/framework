@@ -62,9 +62,9 @@ public class MySqlSqlDialect extends AbstractSqlDialect {
 				params == null ? Collections.EMPTY_LIST : Arrays.asList(params));
 	}
 
-	public Sql toSelectInIdSql(Class<?> clazz, String tableName, Object[] params, Collection<?> inIdList)
+	public Sql toSelectInIdSql(Class<?> clazz, String tableName, Object[] ids, Collection<?> inIdList)
 			throws SqlDialectException {
-		return new SelectInIdSQL(getSqlMapper(), clazz, tableName, params, inIdList);
+		return new SelectInIdSQL(getSqlMapper(), clazz, tableName, ids, inIdList);
 	}
 
 	private static final String LAST_INSERT_ID_SQL = "select last_insert_id()";

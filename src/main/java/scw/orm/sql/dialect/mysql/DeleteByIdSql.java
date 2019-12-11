@@ -37,6 +37,9 @@ public class DeleteByIdSql extends MysqlDialectSql {
 			sql.append("=?");
 			params[i] = mappingOperations.getter(context, new SimpleGetter(parimayKeys[i]));
 			i++;
+			if (iterator.hasNext()) {
+				sql.append(AND);
+			}
 		}
 		this.sql = sql.toString();
 	}

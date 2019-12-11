@@ -11,7 +11,7 @@ import scw.sql.Sql;
 
 public interface ORMOperations {
 	SqlDialect getSqlDialect();
-	
+
 	<T> T getById(Class<T> type, Object... params);
 
 	<T> T getById(String tableName, Class<T> type, Object... params);
@@ -23,19 +23,19 @@ public interface ORMOperations {
 	/**
 	 * @param type
 	 * @param tableName
-	 * @param inIds
-	 * @param params
+	 * @param inPrimaryKeys
+	 * @param primaryKeys
 	 * @return 不会为空
 	 */
-	<K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params);
+	<K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inPrimaryKeys, Object... primaryKeys);
 
 	/**
 	 * @param type
-	 * @param inIdList
-	 * @param params
+	 * @param inPrimaryKeys
+	 * @param primaryKeys
 	 * @return 不会为空
 	 */
-	<K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList, Object... params);
+	<K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inPrimaryKeys, Object... primaryKeys);
 
 	ResultSet select(Sql sql);
 

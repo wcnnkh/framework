@@ -26,7 +26,7 @@ public interface SqlDialect {
 
 	Sql toSelectByIdSql(Class<?> clazz, String tableName, Object[] ids) throws SqlDialectException;
 
-	Sql toSelectInIdSql(Class<?> clazz, String tableName, Object[] ids, Collection<?> inIdList)
+	Sql toSelectInIdSql(Class<?> clazz, String tableName, Object[] primaryKeys, Collection<?> inPrimaryKeys)
 			throws SqlDialectException;
 
 	PaginationSql toPaginationSql(Sql sql, long page, int limit) throws SqlDialectException;

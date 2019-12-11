@@ -11,6 +11,7 @@ import java.util.Map;
 import scw.core.FieldSetterListen;
 import scw.core.Pagination;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.IteratorCallback;
 import scw.core.utils.StringUtils;
 import scw.orm.IteratorMapping;
@@ -189,8 +190,9 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params) {
-		if (inIds == null || inIds.isEmpty()) {
+	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inPrimaryKeys,
+			Object... primaryKeys) {
+		if (CollectionUtils.isEmpty(inPrimaryKeys)) {
 			return Collections.EMPTY_MAP;
 		}
 
@@ -198,19 +200,19 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 			throw new NullPointerException("type is null");
 		}
 
-		if (params.length > getSqlMapper().getPrimaryKeys(type).size() - 1) {
-			throw new NullPointerException("params length  greater than primary key lenght");
+		if (primaryKeys != null && primaryKeys.length > getSqlMapper().getPrimaryKeys(type).size() - 1) {
+			throw new NullPointerException("primaryKeys length  greater than primary key lenght");
 		}
 
 		String tName = getSqlDialect().getTableName(type, tableName);
-		Sql sql = getSqlDialect().toSelectInIdSql(type, tName, params, inIds);
+		Sql sql = getSqlDialect().toSelectInIdSql(type, tName, primaryKeys, inPrimaryKeys);
 		ResultSet resultSet = select(sql);
 		List<V> list = resultSet.getList(type, tName);
 		if (list == null || list.isEmpty()) {
 			return Collections.EMPTY_MAP;
 		}
 
-		Map<String, K> keyMap = getSqlMapper().getInIdKeyMap(type, inIds, params);
+		Map<String, K> keyMap = getSqlMapper().getInIdKeyMap(type, inPrimaryKeys, primaryKeys);
 		Map<K, V> map = new HashMap<K, V>();
 		for (V v : list) {
 			String key = getSqlMapper().getObjectKey(type, v);
