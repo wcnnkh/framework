@@ -41,7 +41,7 @@ public final class ResultSetValueIndexMapping implements ValueIndexMapping {
 				indexMap.put(tableName, map);
 			}
 
-			if (map.containsKey(tableName)) {
+			if (map.containsKey(labelName)) {
 				throw new AlreadyExistsException(tableName + " field name [" + labelName + "]");
 			}
 			map.put(labelName, i - 1);
