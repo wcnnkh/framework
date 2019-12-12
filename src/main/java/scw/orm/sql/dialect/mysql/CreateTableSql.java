@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.reflect.FieldDefinition;
 import scw.core.utils.MultiIterator;
 import scw.core.utils.StringUtils;
 import scw.orm.MappingContext;
@@ -43,9 +42,9 @@ public class CreateTableSql extends MysqlDialectSql {
 		Iterator<MappingContext> iterator = tableFieldContext.iteratorPrimaryKeyAndNotPrimaryKey();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			FieldDefinition fieldDefinition = context.getColumn();
-			SqlType sqlType = getSqlType(fieldDefinition, sqlTypeFactory);
-			sb.append("`").append(fieldDefinition.getName()).append("`");
+			scw.orm.Column col = context.getColumn();
+			SqlType sqlType = getSqlType(col, sqlTypeFactory);
+			sb.append("`").append(col.getName()).append("`");
 			sb.append(" ");
 			sb.append(sqlType.getName());
 			if (sqlType.getLength() > 0) {
@@ -61,7 +60,7 @@ public class CreateTableSql extends MysqlDialectSql {
 				sb.append("not null ");
 			}
 
-			Column column = fieldDefinition.getAnnotation(Column.class);
+			Column column = col.getAnnotation(Column.class);
 			if (column != null && !StringUtils.isEmpty(column.comment())) {
 				sb.append(" comment \'").append(column.comment()).append("\'");
 			}
@@ -184,15 +183,15 @@ public class CreateTableSql extends MysqlDialectSql {
 		this.sql = sb.toString();
 	}
 
-	private static SqlType getSqlType(FieldDefinition fieldDefinition, SqlTypeFactory sqlTypeFactory) {
+	private static SqlType getSqlType(scw.orm.Column col, SqlTypeFactory sqlTypeFactory) {
 		String type = null;
-		Column column = fieldDefinition.getAnnotation(Column.class);
+		Column column = col.getAnnotation(Column.class);
 		if (column != null) {
 			type = column.type();
 		}
 
-		SqlType tempSqlType = StringUtils.isEmpty(type)
-				? sqlTypeFactory.getSqlType(fieldDefinition.getField().getType()) : sqlTypeFactory.getSqlType(type);
+		SqlType tempSqlType = StringUtils.isEmpty(type) ? sqlTypeFactory.getSqlType(col.getType())
+				: sqlTypeFactory.getSqlType(type);
 		type = tempSqlType.getName();
 
 		int len = -1;

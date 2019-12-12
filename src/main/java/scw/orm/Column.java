@@ -1,19 +1,18 @@
 package scw.orm;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import scw.core.reflect.FieldDefinition;
+import scw.core.reflect.AnnotationFactory;
 
-public interface Column extends FieldDefinition {
-	Method getGetter();
-
-	Method getSetter();
-
+public interface Column extends AnnotationFactory {
 	Class<?> getType();
 
 	Type getGenericType();
-	
+
+	Class<?> getDeclaringClass();
+
+	String getName();
+
 	Object get(Object obj) throws ORMException;
 
 	void set(Object obj, Object value) throws ORMException;

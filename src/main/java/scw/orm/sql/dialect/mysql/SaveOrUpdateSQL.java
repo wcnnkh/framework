@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.core.reflect.FieldDefinition;
 import scw.core.utils.MultiIterator;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -58,35 +57,35 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
 			Object v = mappingOperations.getter(context, obj);
-			FieldDefinition fieldDefinition = context.getColumn();
-			Counter counter = fieldDefinition.getAnnotation(Counter.class);
+			scw.orm.Column col = context.getColumn();
+			Counter counter = col.getAnnotation(Counter.class);
 			if (counter == null) {
-				keywordProcessing(sb, fieldDefinition.getName());
+				keywordProcessing(sb, col.getName());
 				sb.append("=?");
 				params.add(v);
 			} else {
 				if (v == null) {
-					logger.warn("{}中计数器字段{}的值为空", clazz.getName(), fieldDefinition.getName());
-					keywordProcessing(sb, fieldDefinition.getName());
+					logger.warn("{}中计数器字段{}的值为空", clazz.getName(), col.getName());
+					keywordProcessing(sb, col.getName());
 					sb.append("=?");
 					params.add(v);
 				} else {
-					keywordProcessing(sb, fieldDefinition.getName());
+					keywordProcessing(sb, col.getName());
 					sb.append("=");
 					sb.append(IF);
-					keywordProcessing(sb, fieldDefinition.getName());
+					keywordProcessing(sb, col.getName());
 					sb.append("+").append(v);
 					sb.append(">=").append(counter.min());
 					sb.append(AND);
-					keywordProcessing(sb, fieldDefinition.getName());
+					keywordProcessing(sb, col.getName());
 					sb.append("+").append(v);
 					sb.append("<=").append(counter.max());
 					sb.append(",");
-					keywordProcessing(sb, fieldDefinition.getName());
+					keywordProcessing(sb, col.getName());
 					sb.append("+?");
 					params.add(v);
 					sb.append(",");
-					keywordProcessing(sb, fieldDefinition.getName());
+					keywordProcessing(sb, col.getName());
 					sb.append(")");
 				}
 			}

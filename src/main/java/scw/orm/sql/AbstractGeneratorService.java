@@ -48,19 +48,21 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 		}
 
 		// 如果是String走uuid流程
-		if (String.class == generatorContext.getMappingContext().getColumn().getField().getType()) {
+		if (String.class == generatorContext.getMappingContext().getColumn().getType()) {
 			generatorContext.getSqlMapper().setter(generatorContext.getMappingContext(), generatorContext.getBean(),
 					getUUID(generatorContext));
 			return;
 		}
 
-		if (Number.class.isAssignableFrom(generatorContext.getMappingContext().getColumn().getField().getType())) {
+		if (Number.class.isAssignableFrom(generatorContext.getMappingContext().getColumn().getType())
+				|| generatorContext.getMappingContext().getColumn().getType().isPrimitive()) {
 			generatorContext.getSqlMapper().setter(generatorContext.getMappingContext(), generatorContext.getBean(),
 					generateNumber(generatorContext));
+			return;
 		}
 		throw new NotSupportException(
 				"不支持的生成方式clazz=" + generatorContext.getMappingContext().getDeclaringClass().getName() + ", field="
-						+ generatorContext.getMappingContext().getColumn().getField().getName());
+						+ generatorContext.getMappingContext().getColumn().getName());
 	}
 
 	public final SequenceId getSequenceId(GeneratorContext generatorContext) {

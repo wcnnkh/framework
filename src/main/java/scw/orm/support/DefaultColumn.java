@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import scw.core.reflect.AnnotationFactory;
 import scw.core.reflect.SimpleAnnotationFactory;
 import scw.core.utils.StringUtils;
-import scw.orm.FieldColumn;
 
 public class DefaultColumn extends FieldColumn {
 	private String name;

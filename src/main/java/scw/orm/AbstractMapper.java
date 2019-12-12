@@ -1,7 +1,6 @@
 package scw.orm;
 
 import java.io.IOException;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -224,10 +223,6 @@ public abstract class AbstractMapper implements Mapper {
 	}
 
 	public boolean isIgnore(MappingContext context) {
-		if (Modifier.isStatic(context.getColumn().getField().getModifiers())) {
-			return true;
-		}
-
 		Ignore ignore = context.getColumn().getAnnotation(Ignore.class);
 		if (ignore != null) {
 			return true;
@@ -242,7 +237,7 @@ public abstract class AbstractMapper implements Mapper {
 
 	public boolean isEntity(MappingContext context) {
 		return context.getColumn().getAnnotation(Entity.class) != null
-				|| context.getColumn().getField().getType().getAnnotation(Entity.class) != null;
+				|| context.getColumn().getType().getAnnotation(Entity.class) != null;
 	}
 
 	public Collection<MappingContext> getNotPrimaryKeys(MappingContext supperContext, Class<?> clazz) {
@@ -300,7 +295,7 @@ public abstract class AbstractMapper implements Mapper {
 	}
 
 	public boolean isNullable(MappingContext context) {
-		if (context.getColumn().getField().getType().isPrimitive()) {
+		if (context.getColumn().getType().isPrimitive()) {
 			return false;
 		}
 

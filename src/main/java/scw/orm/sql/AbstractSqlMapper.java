@@ -1,6 +1,5 @@
 package scw.orm.sql;
 
-import scw.core.reflect.FieldDefinition;
 import scw.orm.AbstractMapper;
 import scw.orm.MappingContext;
 import scw.orm.sql.annotation.AutoIncrement;
@@ -9,14 +8,13 @@ import scw.orm.sql.annotation.Index;
 import scw.orm.sql.annotation.Table;
 import scw.orm.sql.enums.CasType;
 
-public abstract class AbstractSqlMapper extends AbstractMapper implements
-		SqlMapper {
+public abstract class AbstractSqlMapper extends AbstractMapper implements SqlMapper {
 	public boolean isTable(Class<?> clazz) {
 		return clazz.getAnnotation(Table.class) != null;
 	}
 
-	public boolean isIndexColumn(FieldDefinition fieldDefinition) {
-		return fieldDefinition.getAnnotation(Index.class) != null;
+	public boolean isIndexColumn(MappingContext context) {
+		return context.getColumn().getAnnotation(Index.class) != null;
 	}
 
 	public boolean isNullable(MappingContext context) {
@@ -24,7 +22,7 @@ public abstract class AbstractSqlMapper extends AbstractMapper implements
 			return false;
 		}
 
-		if (isPrimaryKey(context) || isIndexColumn(context.getColumn())) {
+		if (isPrimaryKey(context) || isIndexColumn(context)) {
 			return false;
 		}
 
@@ -60,7 +58,6 @@ public abstract class AbstractSqlMapper extends AbstractMapper implements
 
 	@Override
 	public boolean isEntity(MappingContext context) {
-		return isTable(context.getColumn().getField().getType())
-				|| super.isEntity(context);
+		return isTable(context.getColumn().getType()) || super.isEntity(context);
 	}
 }
