@@ -31,7 +31,7 @@ public class JdkProxyAdapter extends AbsttractProxyAdapter {
 		return new JdkProxy(clazz, getInterfaces(clazz, interfaces),
 				new FiltersInvocationHandler(clazz, filters, filterChain));
 	}
-
+	
 	private static final class FiltersInvocationHandler implements InvocationHandler {
 		private final Collection<? extends Filter> filters;
 		private final Class<?> targetClass;

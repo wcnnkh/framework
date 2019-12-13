@@ -24,21 +24,12 @@ public class NestedRuntimeException extends RuntimeException {
 		super(msg);
 	}
 
-	/**
-	 * Construct a {@code NestedRuntimeException} with the specified detail
-	 * message and nested exception.
-	 * 
-	 * @param msg
-	 *            the detail message
-	 * @param cause
-	 *            the nested exception
-	 */
-	public NestedRuntimeException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
-
 	public NestedRuntimeException(Throwable cause) {
 		super(cause);
+	}
+
+	public NestedRuntimeException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 	/**

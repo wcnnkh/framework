@@ -1,13 +1,11 @@
 package scw.core.instance;
 
-import scw.lang.NestedRuntimeException;
-
 /**
  * 只有此异常会被抛出
  * @author shuchaowen
  *
  */
-public class InstanceException extends NestedRuntimeException{
+public class InstanceException extends RuntimeException{
 	private static final long serialVersionUID = 1L;
 	
 	public InstanceException(String msg) {
