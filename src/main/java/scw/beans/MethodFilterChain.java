@@ -10,41 +10,39 @@ import scw.aop.FilterChain;
 import scw.aop.InstanceFactoryFilterChain;
 import scw.aop.Invoker;
 
-public final class BeanFactoryFilterChain implements FilterChain {
+public final class MethodFilterChain implements FilterChain {
 	private final FilterChain filterChain;
 
-	public BeanFactoryFilterChain(BeanFactory beanFactory, Collection<String> filterNames, Class<?> clz, Method method,
+	public MethodFilterChain(BeanFactory beanFactory, Class<?> clz, Method method, Collection<String> filterNames,
 			Collection<Filter> filters) {
 		LinkedList<String> list = new LinkedList<String>();
 		list.addAll(beanFactory.getFilterNames());
+		scw.beans.annotation.Filters annotationFilters = clz.getAnnotation(scw.beans.annotation.Filters.class);
+		if (annotationFilters != null) {
+			for (String n : annotationFilters.names()) {
+				list.add(n);
+			}
+
+			for (Class<? extends Filter> c : annotationFilters.value()) {
+				list.add(c.getName());
+			}
+		}
+
+		annotationFilters = method.getAnnotation(scw.beans.annotation.Filters.class);
+		if (annotationFilters != null) {
+			for (String n : annotationFilters.names()) {
+				list.add(n);
+			}
+
+			for (Class<? extends Filter> c : annotationFilters.value()) {
+				list.add(c.getName());
+			}
+		}
+
 		if (filterNames != null) {
 			list.addAll(filterNames);
 		}
-
-		scw.beans.annotation.BeanFilter beanFilter = clz.getAnnotation(scw.beans.annotation.BeanFilter.class);
-		if (beanFilter != null) {
-			for (String n : beanFilter.names()) {
-				list.add(n);
-			}
-
-			for (Class<? extends Filter> c : beanFilter.value()) {
-				list.add(c.getName());
-			}
-		}
-
-		beanFilter = method.getAnnotation(scw.beans.annotation.BeanFilter.class);
-		if (beanFilter != null) {
-			for (String n : beanFilter.names()) {
-				list.add(n);
-			}
-
-			for (Class<? extends Filter> c : beanFilter.value()) {
-				list.add(c.getName());
-			}
-		}
-
 		this.filterChain = new InstanceFactoryFilterChain(beanFactory, list, new DefaultFilterChain(filters));
-
 	}
 
 	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args)

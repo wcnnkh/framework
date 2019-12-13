@@ -23,13 +23,13 @@ public class JdkProxyAdapter extends AbsttractProxyAdapter {
 	}
 
 	public Class<?> getClass(Class<?> clazz, Class<?>[] interfaces) {
-		return java.lang.reflect.Proxy.getProxyClass(clazz.getClassLoader(),
-				interfaces == null ? new Class<?>[0] : interfaces);
+		return java.lang.reflect.Proxy.getProxyClass(clazz.getClassLoader(), getInterfaces(clazz, interfaces));
 	}
 
 	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Collection<? extends Filter> filters,
 			FilterChain filterChain) {
-		return new JdkProxy(clazz, interfaces, new FiltersInvocationHandler(clazz, filters, filterChain));
+		return new JdkProxy(clazz, getInterfaces(clazz, interfaces),
+				new FiltersInvocationHandler(clazz, filters, filterChain));
 	}
 
 	private static final class FiltersInvocationHandler implements InvocationHandler {

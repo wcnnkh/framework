@@ -15,18 +15,13 @@ public final class RootFilter implements Filter {
 	/**
 	 * @param beanFactory
 	 * @param filterNames
-	 * @param filters 在filerNames之后执行
+	 * @param filters
+	 *            在filerNames之后执行
 	 */
 	public RootFilter(BeanFactory beanFactory, Collection<String> filterNames, Collection<Filter> filters) {
 		this.beanFactory = beanFactory;
 		this.filterNames = filterNames;
 		this.filters = filters;
-	}
-
-	private Object invoke(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args)
-			throws Throwable {
-		FilterChain chain = new BeanFactoryFilterChain(beanFactory, filterNames, targetClass, method, filters);
-		return chain.doFilter(invoker, proxy, targetClass, method, args);
 	}
 
 	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
@@ -35,7 +30,8 @@ public final class RootFilter implements Filter {
 			return invoker.invoke(args);
 		}
 
-		return invoke(invoker, proxy, targetClass, method, args);
+		FilterChain chain = new MethodFilterChain(beanFactory, targetClass, method, filterNames, filters);
+		return chain.doFilter(invoker, proxy, targetClass, method, args);
 	}
 
 }

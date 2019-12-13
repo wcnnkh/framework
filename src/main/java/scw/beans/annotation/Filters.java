@@ -17,7 +17,7 @@ import scw.aop.Filter;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface BeanFilter {
+public @interface Filters {
 	public Class<? extends Filter>[] value();
 	
 	public String[] names() default {};

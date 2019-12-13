@@ -58,7 +58,7 @@ public final class AutoProxyMethodInvoker implements Invoker {
 			}
 		}
 
-		FilterChain filterChain = new BeanFactoryFilterChain(beanFactory, null, clz, method, null);
+		FilterChain filterChain = new MethodFilterChain(beanFactory, clz, method, null, null);
 		return filterChain.doFilter(new ReflectInvoker(bean, method), bean, clz, method, args);
 	}
 }

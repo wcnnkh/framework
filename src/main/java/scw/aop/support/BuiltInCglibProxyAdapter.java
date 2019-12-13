@@ -26,12 +26,12 @@ public class BuiltInCglibProxyAdapter extends AbsttractProxyAdapter {
 	}
 
 	public Class<?> getClass(Class<?> clazz, Class<?>[] interfaces) {
-		return BuiltInCglibProxy.createEnhancer(clazz, interfaces).createClass();
+		return BuiltInCglibProxy.createEnhancer(clazz, getInterfaces(clazz, interfaces)).createClass();
 	}
 
 	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Collection<? extends Filter> filters,
 			FilterChain filterChain) {
-		return new BuiltInCglibProxy(clazz, interfaces,
+		return new BuiltInCglibProxy(clazz, getInterfaces(clazz, interfaces),
 				new FiltersConvertCglibMethodInterceptor(clazz, filters, filterChain));
 	}
 

@@ -341,13 +341,13 @@ public final class BeanUtils {
 
 	public static Proxy createProxy(BeanFactory beanFactory, Class<?> clazz, Collection<String> filterNames,
 			Collection<Filter> filters) {
-		return ProxyUtils.getProxyAdapter().proxy(clazz, clazz.isInterface() ? new Class<?>[] { clazz } : null,
+		return ProxyUtils.getProxyAdapter().proxy(clazz, null,
 				Arrays.asList(new RootFilter(beanFactory, filterNames, filters)));
 	}
 
 	public static Proxy createProxy(BeanFactory beanFactory, Class<?> clazz, Object service,
 			Collection<String> filterNames, Collection<Filter> filters) {
-		return ProxyUtils.proxyInstance(clazz, service, clazz.isInterface() ? new Class<?>[] { clazz } : null,
+		return ProxyUtils.proxyInstance(clazz, service, null,
 				Arrays.asList(new RootFilter(beanFactory, filterNames, filters)));
 	}
 
