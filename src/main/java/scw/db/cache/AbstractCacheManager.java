@@ -1,7 +1,7 @@
 package scw.db.cache;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -27,7 +27,7 @@ public abstract class AbstractCacheManager<C extends Cache> implements CacheMana
 			return null;
 		}
 
-		Map<K, V> valueMap = new HashMap<K, V>(map.size(), 1);
+		Map<K, V> valueMap = new LinkedHashMap<K, V>(map.size(), 1);
 		for (Entry<String, V> entry : map.entrySet()) {
 			K k = keyMap.get(entry.getKey());
 			if (k == null) {

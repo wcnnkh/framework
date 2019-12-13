@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -204,7 +203,7 @@ public abstract class AbstractMapper implements Mapper {
 			return Collections.EMPTY_MAP;
 		}
 
-		Map<String, K> keyMap = new HashMap<String, K>();
+		Map<String, K> keyMap = new LinkedHashMap<String, K>();
 		Iterator<K> valueIterator = lastPrimaryKeys.iterator();
 
 		while (valueIterator.hasNext()) {
