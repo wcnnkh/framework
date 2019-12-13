@@ -10,7 +10,7 @@ public interface IteratorCallback<T> {
 	/**
 	 * 迭代器回调
 	 * @param data 迭代数据
-	 * @return
+	 * @return 是否继续迭代
 	 */
 	boolean iteratorCallback(T data);
 }

@@ -18,6 +18,8 @@ import scw.mvc.MVCUtils;
 import scw.mvc.SimpleFilterChain;
 import scw.mvc.annotation.IPSecurity;
 import scw.mvc.annotation.ResponseBody;
+import scw.mvc.annotation.ResultFactory;
+import scw.result.Result;
 import scw.security.ip.IPValidationFailedException;
 import scw.security.ip.IPVerification;
 
@@ -103,9 +105,21 @@ public final class ActionServiceFilter implements Filter {
 		}
 
 		ResponseBody responseBody = action.getAnnotation(ResponseBody.class);
-		if (responseBody != null && responseBody.value()) {
-			ResponseBodyService responseBodyService = instanceFactory.getInstance(responseBody.service());
-			return responseBodyService.responseBody(channel, value);
+		if (responseBody != null && responseBody.enable()) {
+			if (instanceFactory.isInstance(responseBody.value())) {
+				return instanceFactory.getInstance(responseBody.value()).responseBody(channel, value);
+			} else {
+				logger.error("response body not create service:{}, action:{}", responseBody.value(),
+						channel.toString());
+			}
+		}
+
+		ResultFactory resultFactory = action.getAnnotation(ResultFactory.class);
+		if (resultFactory != null && resultFactory.enable()) {
+			if (value != null && value instanceof Result) {
+				return value;
+			}
+			return instanceFactory.getInstance(resultFactory.value()).success(value);
 		}
 
 		return value;

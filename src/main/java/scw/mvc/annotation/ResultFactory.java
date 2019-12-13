@@ -5,12 +5,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.mvc.support.ResponseBodyService;
-
+/**
+ * 为了兼容ResultFactory
+ * @author shuchaowen
+ *
+ */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ResponseBody {
-	public boolean enable() default true;
+public @interface ResultFactory {
+	public Class<? extends scw.result.ResultFactory> value() default scw.result.ResultFactory.class;
 
-	public Class<? extends ResponseBodyService> value() default ResponseBodyService.class;
+	public boolean enable() default true;
 }
