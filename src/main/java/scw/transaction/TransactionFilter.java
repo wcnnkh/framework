@@ -6,6 +6,8 @@ import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.core.reflect.AnnotationUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
 /**
  * 必须要在BeanFactory中管理
@@ -14,6 +16,7 @@ import scw.core.reflect.AnnotationUtils;
  *
  */
 public final class TransactionFilter implements Filter {
+	private static Logger logger = LoggerUtils.getLogger(TransactionFilter.class);
 	private final TransactionDefinition transactionDefinition;
 
 	public TransactionFilter() {
@@ -54,6 +57,9 @@ public final class TransactionFilter implements Filter {
 			RollbackOnlyResult result = (RollbackOnlyResult) rtn;
 			if (result.isRollbackOnly()) {
 				TransactionManager.setRollbackOnly();
+				if (logger.isDebugEnabled()) {
+					logger.debug("rollback only in {}", method);
+				}
 			}
 		}
 		return rtn;

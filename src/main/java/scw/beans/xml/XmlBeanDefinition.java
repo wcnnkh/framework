@@ -18,7 +18,6 @@ import scw.beans.annotation.Proxy;
 import scw.beans.auto.AutoBeanUtils;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
-import scw.core.cglib.proxy.Enhancer;
 import scw.core.instance.AutoInstanceConfig;
 import scw.core.instance.InstanceConfig;
 import scw.core.reflect.FieldDefinition;
@@ -60,10 +59,10 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		this.singleton = XmlBeanUtils.isSingleton(beanNode);
 		this.filterNames = new LinkedList<String>(XmlBeanUtils.getFilters(beanNode));
 		Proxy proxy = type.getAnnotation(Proxy.class);
-		if(proxy != null){
+		if (proxy != null) {
 			filterNames.addAll(AutoBeanUtils.getProxyNames(proxy));
 		}
-		
+
 		this.proxy = CollectionUtils.isEmpty(filterNames) ? BeanUtils.checkProxy(type) : true;
 
 		NodeList nodeList = beanNode.getChildNodes();
@@ -71,8 +70,8 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		this.destroyMethods = XmlBeanUtils.getDestroyMethodList(type, nodeList);
 		this.properties = XmlBeanUtils.getBeanProperties(nodeList);
 		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type, false).toArray(new FieldDefinition[0]);
-		
-		if (!type.isInterface()) {//可能只是映射
+
+		if (!type.isInterface()) {// 可能只是映射
 			XmlBeanParameter[] constructorParameters = XmlBeanUtils.getConstructorParameters(nodeList);
 			this.instanceConfig = new XmlInstanceConfig(beanFactory, propertyFactory, type, constructorParameters);
 			if (instanceConfig.getConstructor() == null && ArrayUtils.isEmpty(constructorParameters)) {
@@ -101,8 +100,8 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		return this.proxy;
 	}
 
-	private Enhancer getProxyEnhancer() {
-		return BeanUtils.createEnhancer(type, beanFactory, filterNames);
+	private scw.aop.Proxy getProxy() {
+		return BeanUtils.createProxy(beanFactory, type, filterNames, null);
 	}
 
 	private Object createProxyInstance() throws Exception {
@@ -110,11 +109,11 @@ public final class XmlBeanDefinition implements BeanDefinition {
 			if (CollectionUtils.isEmpty(filterNames)) {
 				logger.warn("{} is an interface, but there is no proxy.", type);
 			}
-			return BeanUtils.proxyInterface(beanFactory, getType(), filterNames, null);
+			return getProxy().create();
 		}
 
-		Enhancer enhancer = getProxyEnhancer();
-		return enhancer.create(instanceConfig.getConstructor().getParameterTypes(), instanceConfig.getArgs());
+		scw.aop.Proxy proxy = getProxy();
+		return proxy.create(instanceConfig.getConstructor().getParameterTypes(), instanceConfig.getArgs());
 	}
 
 	private void setProperties(Object bean) throws Exception {
@@ -196,8 +195,8 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		Object bean;
 		try {
 			if (isProxy()) {
-				Enhancer enhancer = getProxyEnhancer();
-				bean = enhancer.create(constructor.getParameterTypes(), params);
+				scw.aop.Proxy proxy = getProxy();
+				bean = proxy.create(constructor.getParameterTypes(), params);
 			} else {
 				bean = constructor.newInstance(params);
 			}
@@ -218,8 +217,8 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		Object bean;
 		try {
 			if (isProxy()) {
-				Enhancer enhancer = getProxyEnhancer();
-				bean = enhancer.create(constructor.getParameterTypes(), params);
+				scw.aop.Proxy proxy = getProxy();
+				bean = proxy.create(constructor.getParameterTypes(), params);
 			} else {
 				bean = constructor.newInstance(params);
 			}

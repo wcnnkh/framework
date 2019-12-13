@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import scw.aop.Invoker;
 import scw.beans.BeanFactory;
-import scw.beans.MethodProxyInvoker;
+import scw.beans.AutoProxyMethodInvoker;
 import scw.core.PropertyFactory;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
@@ -30,7 +30,7 @@ public class MethodAction extends AbstractAction {
 
 	public MethodAction(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass, Method method,
 			AnnotationFactory superAnnotationFactory) {
-		this.invoker = new MethodProxyInvoker(beanFactory, targetClass, method);
+		this.invoker = new AutoProxyMethodInvoker(beanFactory, targetClass, method);
 		this.parameterFilters = MVCUtils.getParameterFilters(beanFactory, propertyFactory);
 		parameterFilters.addAll(MVCUtils.getParameterFilters(beanFactory, targetClass, method));
 		this.parameterConfigs = ParameterUtils.getParameterConfigs(method);

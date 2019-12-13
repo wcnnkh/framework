@@ -2,7 +2,6 @@ package scw.orm.sql;
 
 import scw.core.utils.XUtils;
 import scw.id.SequenceId;
-import scw.lang.NotSupportException;
 import scw.orm.ORMException;
 import scw.orm.sql.annotation.CreateTime;
 import scw.orm.sql.annotation.UUID;
@@ -11,12 +10,32 @@ import scw.orm.sql.enums.OperationType;
 
 public abstract class AbstractGeneratorService implements GeneratorService {
 
+	protected boolean isGenerator(GeneratorContext generatorContext) {
+		Object v = generatorContext.getMappingContext().getColumn().get(generatorContext.getBean());
+		if (v != null) {// 已经存在值了
+			if (generatorContext.getMappingContext().getColumn().getType().isPrimitive()) {
+				return (Integer) v == 0;
+			} else if (v instanceof Number) {
+				if (((Number) v).intValue() == 0) {
+					return true;
+				}
+			}
+			return false;
+		}
+		return true;
+	}
+
 	public void process(GeneratorContext generatorContext) throws ORMException {
 		if (generatorContext.getOperationType() == OperationType.DELETE) {
 			return;
 		}
 
-		if (generatorContext.getOperationType() != OperationType.UPDATE) {
+		if (generatorContext.getOperationType() == OperationType.SAVE
+				|| generatorContext.getOperationType() == OperationType.SAVE_OR_UPDATE) {
+			if (generatorContext.getOperationType() == OperationType.SAVE_OR_UPDATE && !isGenerator(generatorContext)) {
+				return;
+			}
+
 			scw.orm.sql.annotation.SequenceId sequenceId = generatorContext.getMappingContext().getColumn()
 					.getAnnotation(scw.orm.sql.annotation.SequenceId.class);
 			if (sequenceId != null) {
@@ -38,6 +57,20 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 						getUUID(generatorContext));
 				return;
 			}
+
+			// 如果是String走uuid流程
+			if (String.class == generatorContext.getMappingContext().getColumn().getType()) {
+				generatorContext.getSqlMapper().setter(generatorContext.getMappingContext(), generatorContext.getBean(),
+						getUUID(generatorContext));
+				return;
+			}
+
+			if (Number.class.isAssignableFrom(generatorContext.getMappingContext().getColumn().getType())
+					|| generatorContext.getMappingContext().getColumn().getType().isPrimitive()) {
+				generatorContext.getSqlMapper().setter(generatorContext.getMappingContext(), generatorContext.getBean(),
+						generateNumber(generatorContext));
+				return;
+			}
 		}
 
 		UpdateTime updateTime = generatorContext.getMappingContext().getColumn().getAnnotation(UpdateTime.class);
@@ -46,23 +79,6 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 					getUUID(generatorContext));
 			return;
 		}
-
-		// 如果是String走uuid流程
-		if (String.class == generatorContext.getMappingContext().getColumn().getType()) {
-			generatorContext.getSqlMapper().setter(generatorContext.getMappingContext(), generatorContext.getBean(),
-					getUUID(generatorContext));
-			return;
-		}
-
-		if (Number.class.isAssignableFrom(generatorContext.getMappingContext().getColumn().getType())
-				|| generatorContext.getMappingContext().getColumn().getType().isPrimitive()) {
-			generatorContext.getSqlMapper().setter(generatorContext.getMappingContext(), generatorContext.getBean(),
-					generateNumber(generatorContext));
-			return;
-		}
-		throw new NotSupportException(
-				"不支持的生成方式clazz=" + generatorContext.getMappingContext().getDeclaringClass().getName() + ", field="
-						+ generatorContext.getMappingContext().getColumn().getName());
 	}
 
 	public final SequenceId getSequenceId(GeneratorContext generatorContext) {

@@ -46,7 +46,7 @@ public final class EmptyBeanDefinition implements BeanDefinition {
 	}
 
 	public boolean isProxy() {
-		return ProxyUtils.isProxy(instance);
+		return ProxyUtils.getProxyAdapter().isProxy(instance.getClass());
 	}
 
 	public boolean isSingleton() {

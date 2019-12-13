@@ -2,19 +2,38 @@ package scw.aop;
 
 import java.util.Collection;
 
-import scw.core.instance.InstanceFactory;
-
-//TODO 未完成
+/**
+ * 代理桥接器
+ * 
+ * @author shuchaowen
+ *
+ */
 public interface ProxyAdapter {
+	/**
+	 * 是否支持代理
+	 * 
+	 * @param clazz
+	 * @return
+	 */
 	boolean isSupport(Class<?> clazz);
 
-	<T> T proxy(Class<T> clazz, Collection<Class<?>> interfaceClass, Collection<Filter> filters);
+	Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Collection<? extends Filter> filters);
 
-	<T> T proxy(Class<? extends T> clazz, T bean, Collection<Class<?>> interfaceClass, Collection<Filter> filters);
+	Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Collection<? extends Filter> filters, FilterChain filterChain);
 
-	<T> T proxy(Class<? extends T> clazz, Collection<Class<?>> interfaceClass, InstanceFactory instanceFactory,
-			Collection<String> filters);
+	/**
+	 * 获取代理类
+	 * 
+	 * @param interfaceClass
+	 * @return
+	 */
+	Class<?> getClass(Class<?> clazz, Class<?>[] interfaces);
 
-	<T> T proxy(Class<? extends T> clazz, T bean, Collection<Class<?>> interfaceClass, InstanceFactory instanceFactory,
-			Collection<String> filters);
+	/**
+	 * 是否是代理类
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	boolean isProxy(Class<?> clazz);
 }

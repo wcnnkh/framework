@@ -2,11 +2,11 @@ package scw.beans;
 
 import java.lang.reflect.Constructor;
 
+import scw.aop.Proxy;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.SimpleAutoBean;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
-import scw.core.cglib.proxy.Enhancer;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NotFoundException;
 import scw.lang.NotSupportException;
@@ -33,8 +33,8 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 		return instance;
 	}
 
-	protected Enhancer getProxyEnhancer() {
-		return BeanUtils.createEnhancer(getType(), beanFactory, null);
+	protected Proxy getProxy() {
+		return BeanUtils.createProxy(beanFactory, getType(), null, null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -44,7 +44,7 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 		}
 
 		if (getType().isInterface()) {
-			return (T) BeanUtils.proxyInterface(beanFactory, getType(), null, null);
+			return (T) getProxy().create();
 		}
 
 		try {
@@ -56,7 +56,8 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	public <T> T create(Object... params) {
-		Constructor<T> constructor = (Constructor<T>) ReflectionUtils.findConstructorByParameters(getType(), true, params);
+		Constructor<T> constructor = (Constructor<T>) ReflectionUtils.findConstructorByParameters(getType(), true,
+				params);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}
@@ -64,8 +65,7 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 		Object bean;
 		try {
 			if (isProxy()) {
-				Enhancer enhancer = getProxyEnhancer();
-				bean = enhancer.create(constructor.getParameterTypes(), params);
+				return (T) getProxy().create(constructor.getParameterTypes(), params);
 			} else {
 				bean = constructor.newInstance(params);
 			}
@@ -85,8 +85,7 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 		Object bean;
 		try {
 			if (isProxy()) {
-				Enhancer enhancer = getProxyEnhancer();
-				bean = enhancer.create(constructor.getParameterTypes(), params);
+				return (T) getProxy().create(constructor.getParameterTypes(), params);
 			} else {
 				bean = constructor.newInstance(params);
 			}

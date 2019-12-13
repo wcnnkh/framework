@@ -1,7 +1,6 @@
 package scw.rpc.http;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 import scw.aop.Filter;
 import scw.beans.BeanFactory;
@@ -19,9 +18,9 @@ public class HttpRpcFactory extends HttpRpcProxy implements RpcFactory {
 		this.beanFactory = beanFactory;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T getProxy(Class<T> clazz) {
-		Collection<Filter> filters = Arrays.asList((Filter) this);
-		return (T) BeanUtils.proxyInterface(beanFactory, clazz, null, filters);
+		return (T) BeanUtils.createProxy(beanFactory, clazz, null, Arrays.asList((Filter) this)).create();
 	}
 
 }

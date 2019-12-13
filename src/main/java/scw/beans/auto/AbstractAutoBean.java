@@ -6,7 +6,6 @@ import java.util.Collection;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.BeansException;
-import scw.core.cglib.proxy.Enhancer;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.lang.NotFoundException;
@@ -44,8 +43,8 @@ public abstract class AbstractAutoBean implements AutoBean {
 		}
 
 		if (isProxy()) {
-			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory, getFilterNames());
-			return (T) enhancer.create(constructor.getParameterTypes(), params);
+			return (T) BeanUtils.createProxy(beanFactory, type, getFilterNames(), null)
+					.create(constructor.getParameterTypes(), params);
 		} else {
 			try {
 				return (T) constructor.newInstance(params);
@@ -63,8 +62,8 @@ public abstract class AbstractAutoBean implements AutoBean {
 		}
 
 		if (isProxy()) {
-			Enhancer enhancer = BeanUtils.createEnhancer(type, beanFactory, getFilterNames());
-			return (T) enhancer.create(constructor.getParameterTypes(), params);
+			return (T) BeanUtils.createProxy(beanFactory, type, getFilterNames(), null)
+					.create(constructor.getParameterTypes(), params);
 		} else {
 			try {
 				return (T) constructor.newInstance(ClassUtils.cast(constructor.getParameterTypes(), params));

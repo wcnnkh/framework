@@ -1,6 +1,5 @@
 package scw.beans;
 
-import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import scw.aop.Filter;
-import scw.aop.FilterInvocationHandler;
+import scw.aop.Proxy;
 import scw.aop.ProxyUtils;
 import scw.aop.ReflectInvoker;
 import scw.beans.annotation.Autowired;
@@ -32,7 +31,6 @@ import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanParameter;
 import scw.core.Init;
 import scw.core.PropertyFactory;
-import scw.core.cglib.proxy.Enhancer;
 import scw.core.instance.InstanceFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.AnnotationUtils;
@@ -324,16 +322,6 @@ public final class BeanUtils {
 		}
 	}
 
-	public static Enhancer createEnhancer(Class<?> clz, BeanFactory beanFactory, Collection<String> filterNames) {
-		Enhancer enhancer = new Enhancer();
-		enhancer.setCallback(new RootFilter(beanFactory, clz, filterNames));
-		if (Serializable.class.isAssignableFrom(clz)) {
-			enhancer.setSerialVersionUID(1L);
-		}
-		enhancer.setSuperclass(clz);
-		return enhancer;
-	}
-
 	public static boolean checkProxy(Class<?> type) {
 		if (Modifier.isFinal(type.getModifiers())) {// final修饰的类无法代理
 			return false;
@@ -351,13 +339,16 @@ public final class BeanUtils {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> T proxyInterface(BeanFactory beanFactory, Class<T> interfaceClass, Collection<String> filterNames,
+	public static Proxy createProxy(BeanFactory beanFactory, Class<?> clazz, Collection<String> filterNames,
 			Collection<Filter> filters) {
-		Object newProxyInstance = java.lang.reflect.Proxy.newProxyInstance(interfaceClass.getClassLoader(),
-				new Class[] { interfaceClass }, new FilterInvocationHandler(interfaceClass, filters));
-		return (T) ProxyUtils.proxyInstance(newProxyInstance, interfaceClass,
-				new RootFilter(beanFactory, interfaceClass, filterNames));
+		return ProxyUtils.getProxyAdapter().proxy(clazz, clazz.isInterface() ? new Class<?>[] { clazz } : null,
+				Arrays.asList(new RootFilter(beanFactory, filterNames, filters)));
+	}
+
+	public static Proxy createProxy(BeanFactory beanFactory, Class<?> clazz, Object service,
+			Collection<String> filterNames, Collection<Filter> filters) {
+		return ProxyUtils.proxyInstance(clazz, service, clazz.isInterface() ? new Class<?>[] { clazz } : null,
+				Arrays.asList(new RootFilter(beanFactory, filterNames, filters)));
 	}
 
 	@SuppressWarnings("unchecked")

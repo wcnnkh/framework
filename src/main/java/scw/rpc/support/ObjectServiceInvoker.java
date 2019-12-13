@@ -3,6 +3,7 @@ package scw.rpc.support;
 import java.lang.reflect.Method;
 
 import scw.core.utils.NumberUtils;
+import scw.lang.NestedExceptionUtils;
 
 final class ObjectServiceInvoker {
 	private Method method;
@@ -13,10 +14,10 @@ final class ObjectServiceInvoker {
 
 	@SuppressWarnings("unchecked")
 	public Object invoke(Object bean, Object... args) throws Throwable {
-		if(args == null || args.length == 0){
+		if (args == null || args.length == 0) {
 			return method.invoke(bean, args);
 		}
-		
+
 		Object[] values = new Object[args.length];
 		Class<?>[] types = method.getParameterTypes();
 		for (int i = 0; i < values.length; i++) {
@@ -38,7 +39,12 @@ final class ObjectServiceInvoker {
 				values[i] = v;
 			}
 		}
-		return method.invoke(bean, values);
+
+		try {
+			return method.invoke(bean, values);
+		} catch (Throwable e) {
+			throw NestedExceptionUtils.excludeInvalidNestedExcpetion(e);
+		}
 	}
 
 }

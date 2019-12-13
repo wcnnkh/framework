@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 import scw.beans.BeanFactory;
-import scw.beans.MethodProxyInvoker;
+import scw.beans.AutoProxyMethodInvoker;
 import scw.core.reflect.AnnotationUtils;
 import scw.logger.LoggerUtils;
 import scw.mq.amqp.Exchange;
@@ -29,7 +29,7 @@ public final class MQUtils {
 			ConsumerFactory consumerFactory = beanFactory.getInstance(c.factory());
 			LoggerUtils.getLogger(MQUtils.class).info("添加消费者：{}, name={}, factory={}", method, c.name(), c.factory());
 			consumerFactory.bindConsumer(c.name(),
-					new MqMethodConsumer(new MethodProxyInvoker(beanFactory, clz, method)));
+					new MqMethodConsumer(new AutoProxyMethodInvoker(beanFactory, clz, method)));
 		}
 	}
 
@@ -42,7 +42,7 @@ public final class MQUtils {
 					"添加消费者：{}, amqp routingKey={}, queueName={}, durable={}, exclusive={}, autoDelete={}", method,
 					c.routingKey(), c.queueName(), c.durable(), c.exclusive(), c.autoDelete());
 			mq.bindConsumer(c.routingKey(), c.queueName(), c.durable(), c.exclusive(), c.autoDelete(),
-					new MqMethodConsumer(new MethodProxyInvoker(beanFactory, clz, method)));
+					new MqMethodConsumer(new AutoProxyMethodInvoker(beanFactory, clz, method)));
 		}
 	}
 }

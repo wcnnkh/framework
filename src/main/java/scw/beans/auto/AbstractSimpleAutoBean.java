@@ -27,7 +27,7 @@ public abstract class AbstractSimpleAutoBean extends AbstractAutoBean {
 
 		if (type.isInterface()) {
 			if (!CollectionUtils.isEmpty(getFilterNames())) {
-				return (T) BeanUtils.proxyInterface(beanFactory, type, getFilterNames(), null);
+				return (T) BeanUtils.createProxy(beanFactory, type, getFilterNames(), null).create();
 			}
 			throw new NotSupportException(type.getName());
 		}

@@ -9,12 +9,12 @@ public class CounterMemoryData extends AbstractMemoryData {
 		long prev, v;
 		do {
 			prev = value.get();
-			v = isExpire() ? initialValue : (prev + delta);
+			v = (isExpire() || prev == 0) ? initialValue : (prev + delta);
 		} while (!value.compareAndSet(prev, v));
-		if(v == initialValue){
+		if (v == initialValue) {
 			touch();
 		}
-		
+
 		cas.incrementAndGet();
 		return v;
 	}

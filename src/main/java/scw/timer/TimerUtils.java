@@ -7,7 +7,7 @@ import java.util.Date;
 
 import scw.aop.Invoker;
 import scw.beans.BeanFactory;
-import scw.beans.MethodProxyInvoker;
+import scw.beans.AutoProxyMethodInvoker;
 import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.logger.Logger;
@@ -40,7 +40,7 @@ public final class TimerUtils {
 
 	private static Task getTask(BeanFactory beanFactory, Class<?> clz, Method method) {
 		Class<?> parameterType = ArrayUtils.isEmpty(method.getParameterTypes()) ? null : method.getParameterTypes()[0];
-		return new CrontabRunnable(new MethodProxyInvoker(beanFactory, clz, method), parameterType);
+		return new CrontabRunnable(new AutoProxyMethodInvoker(beanFactory, clz, method), parameterType);
 	}
 
 	private static void schedule(BeanFactory beanFactory, Class<?> clz, Method method, Timer timer, Schedule schedule) {

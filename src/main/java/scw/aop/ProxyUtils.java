@@ -1,72 +1,31 @@
 package scw.aop;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
-import scw.core.Assert;
-import scw.core.cglib.proxy.Enhancer;
-import scw.core.utils.ClassUtils;
+import scw.aop.support.BuiltInCglibProxyAdapter;
+import scw.aop.support.JdkProxyAdapter;
+import scw.core.instance.InstanceUtils;
 
 public final class ProxyUtils {
-	private static final String JDK_PROXY_CLASS_NAME = "com.sun.proxy.$Proxy";
+	private static final MultipleProxyAdapter PROXY_ADAPTER = new MultipleProxyAdapter();
+
+	static {
+		@SuppressWarnings("unchecked")
+		Collection<ProxyAdapter> proxyAdapters = InstanceUtils.autoNewInstancesBySystemProperty(ProxyAdapter.class,
+				"aop.proxy.adapter", Collections.EMPTY_LIST);
+		PROXY_ADAPTER.addAll(proxyAdapters);
+		PROXY_ADAPTER.add(new JdkProxyAdapter());
+		PROXY_ADAPTER.add(new BuiltInCglibProxyAdapter());
+	}
 
 	private ProxyUtils() {
 	};
 
-	public static boolean isJDKProxy(Class<?> clazz) {
-		return clazz.getName().startsWith(JDK_PROXY_CLASS_NAME);
-	}
-
-	public static boolean isProxy(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-
-		if (ClassUtils.isCglibProxy(obj)) {
-			return true;
-		}
-
-		return isJDKProxy(obj);
-	}
-
-	public static boolean isJDKProxy(Object instance) {
-		Assert.notNull(instance);
-		return isJDKProxy(instance.getClass());
-	}
-
-	public static Object proxyInstance(Object obj, Class<?> interfaceClass, Filter... filters) {
-		return proxyInstance(obj, interfaceClass, Arrays.asList(filters));
-	}
-
-	public static Object proxyInstance(Object obj, Class<?> interfaceClass, Collection<Filter> filters) {
-		return Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] { interfaceClass },
-				new FilterInvocationHandler(interfaceClass, obj, filters));
-	}
-
-	public static Object newProxyInstance(Invoker invoker, Class<?> interfaceClass, Filter... filters) {
-		return newProxyInstance(invoker, interfaceClass, Arrays.asList(filters));
-	}
-
-	public static Object newProxyInstance(Invoker invoker, Class<?> interfaceClass, Collection<Filter> filters) {
-		return Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] { interfaceClass },
-				new InvokerFilterInvocationHandler(invoker, interfaceClass, filters));
-	}
-
-	public static Enhancer createEnhancer(Class<?> type, Filter... filters) {
-		return createEnhancer(type, Arrays.asList(filters));
-	}
-
-	public static Enhancer createEnhancer(Class<?> type, Collection<Filter> filters) {
-		Enhancer enhancer = new Enhancer();
-		enhancer.setCallback(new FiltersConvertCglibMethodInterceptor(type, filters));
-		if (Serializable.class.isAssignableFrom(type)) {
-			enhancer.setSerialVersionUID(1L);
-		}
-		enhancer.setSuperclass(type);
-		return enhancer;
+	public static ProxyAdapter getProxyAdapter() {
+		return PROXY_ADAPTER;
 	}
 
 	private static int ignoreHashCode(Object obj) {
@@ -79,6 +38,7 @@ public final class ProxyUtils {
 
 	/**
 	 * 如果返回空说明此方法不能忽略
+	 * 
 	 * @param obj
 	 * @param method
 	 * @param args
@@ -96,7 +56,51 @@ public final class ProxyUtils {
 		if (args != null && args.length == 1 && method.getName().equals("equals")) {
 			return obj == args[0];
 		}
-
 		return null;
+	}
+
+	/**
+	 * 代理一个实例
+	 * 
+	 * @param clazz
+	 * @param instance
+	 * @param interfaces
+	 * @param filters
+	 * @return
+	 */
+	public static Proxy proxyInstance(Class<?> clazz, Object instance, Class<?>[] interfaces,
+			Collection<? extends Filter> filters) {
+		return proxyInstance(clazz, instance, interfaces, filters, null);
+	}
+
+	/**
+	 * 代理一个实例
+	 * 
+	 * @param clazz
+	 * @param instance
+	 * @param interfaces
+	 * @param filters
+	 * @param filterChain
+	 * @return
+	 */
+	public static Proxy proxyInstance(Class<?> clazz, Object instance, Class<?>[] interfaces,
+			Collection<? extends Filter> filters, FilterChain filterChain) {
+		return getProxyAdapter().proxy(clazz, interfaces, Arrays.asList(new InstanceFilter(instance)),
+				new DefaultFilterChain(filters, filterChain));
+	}
+
+	private static final class InstanceFilter implements Filter {
+		private final Object instnace;
+
+		public InstanceFilter(Object instance) {
+			this.instnace = instance;
+		}
+
+		public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+				FilterChain filterChain) throws Throwable {
+			return filterChain.doFilter(
+					instnace == null ? new EmptyInvoker(method) : new ReflectInvoker(instnace, method), proxy,
+					targetClass, method, args);
+		}
 	}
 }

@@ -12,7 +12,6 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.io.Bytes;
 import scw.io.serializer.Serializer;
-import scw.lang.NestedExceptionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.rpc.RpcConstants;
@@ -43,13 +42,9 @@ public final class DefaultObjectRpcService implements RpcService, RpcConstants {
 			throw new RuntimeException("not found service:" + objectRpcRequestMessage.getMessageKey());
 		}
 
-		try {
-			return invoker.invoke(
-					instanceFactory.getInstance(objectRpcRequestMessage.getMethodDefinition().getBelongClass()),
-					objectRpcRequestMessage.getArgs());
-		} catch (Throwable e) {
-			throw NestedExceptionUtils.excludeInvalidNestedExcpetion(e);
-		}
+		return invoker.invoke(
+				instanceFactory.getInstance(objectRpcRequestMessage.getMethodDefinition().getBelongClass()),
+				objectRpcRequestMessage.getArgs());
 	}
 
 	private void response(OutputStream os, ObjectRpcResponseMessage responseMessage) {

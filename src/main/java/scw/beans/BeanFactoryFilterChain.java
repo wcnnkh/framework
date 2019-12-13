@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import scw.aop.DefaultFilterChain;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.InstanceFactoryFilterChain;
@@ -12,8 +13,8 @@ import scw.aop.Invoker;
 public final class BeanFactoryFilterChain implements FilterChain {
 	private final FilterChain filterChain;
 
-	public BeanFactoryFilterChain(BeanFactory beanFactory, Collection<String> filterNames, Class<?> clz,
-			Method method) {
+	public BeanFactoryFilterChain(BeanFactory beanFactory, Collection<String> filterNames, Class<?> clz, Method method,
+			Collection<Filter> filters) {
 		LinkedList<String> list = new LinkedList<String>();
 		list.addAll(beanFactory.getFilterNames());
 		if (filterNames != null) {
@@ -42,7 +43,7 @@ public final class BeanFactoryFilterChain implements FilterChain {
 			}
 		}
 
-		this.filterChain = new InstanceFactoryFilterChain(beanFactory, list, null);
+		this.filterChain = new InstanceFactoryFilterChain(beanFactory, list, new DefaultFilterChain(filters));
 
 	}
 

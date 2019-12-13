@@ -5,13 +5,13 @@ import java.util.Collection;
 import java.util.Iterator;
 
 public final class DefaultFilterChain extends AbstractFilterChain {
-	private Iterator<Filter> iterator;
+	private Iterator<? extends Filter> iterator;
 
-	public DefaultFilterChain(Collection<Filter> filters) {
+	public DefaultFilterChain(Collection<? extends Filter> filters) {
 		this(filters, null);
 	}
 
-	public DefaultFilterChain(Collection<Filter> filters, FilterChain chain) {
+	public DefaultFilterChain(Collection<? extends Filter> filters, FilterChain chain) {
 		super(chain);
 		if (filters != null && !filters.isEmpty()) {
 			iterator = filters.iterator();

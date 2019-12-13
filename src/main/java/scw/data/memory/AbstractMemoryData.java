@@ -47,11 +47,11 @@ public abstract class AbstractMemoryData implements MemoryData {
 	@SuppressWarnings("unchecked")
 	public <T> CAS<T> get() {
 		Object value = getValue();
-		if(value == null){
+		if (value == null) {
 			return null;
 		}
-		
-		return new SimpleCAS<T>(cas.get(), (T)SerializerUtils.clone(value));
+
+		return new SimpleCAS<T>(cas.get(), (T) SerializerUtils.clone(value));
 	}
 
 	public boolean incrCasAndCompare(long cas) {
@@ -61,7 +61,7 @@ public abstract class AbstractMemoryData implements MemoryData {
 			a = this.cas.get();
 			c = isExpire() ? 0 : a;
 		} while (!this.cas.compareAndSet(a, c + 1));
-		if(c == 0){
+		if (c == 0) {
 			touch();
 		}
 		return c == cas;

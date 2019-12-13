@@ -27,6 +27,7 @@ public class DefaultGeneratorService extends AbstractGeneratorService {
 			sb.append(Constants.DEFAULT_PREFIX);
 		}
 
+		sb.append("generator:");
 		sb.append(generatorContext.getMappingContext().getDeclaringClass().getName());
 		sb.append("&");
 		sb.append(generatorContext.getMappingContext().getColumn().getName());

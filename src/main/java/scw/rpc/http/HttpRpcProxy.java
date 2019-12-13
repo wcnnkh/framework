@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
-import scw.aop.ProxyUtils;
 import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
@@ -66,13 +65,8 @@ public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter
 		return converters;
 	}
 
-	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)
-			throws Throwable {
-		Object ignoreReturn = ProxyUtils.ignoreMethod(proxy, method, args);
-		if (ignoreReturn != null) {
-			return ignoreReturn;
-		}
-
+	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+			FilterChain filterChain) throws Throwable {
 		if (Modifier.isAbstract(method.getModifiers()) || Modifier.isInterface(method.getModifiers())) {
 			HttpRequest httpRequest = httpRpcRequestFactory.getHttpRequest(targetClass, method, args);
 			HttpMessage httpMessage = httpRequest.execute();

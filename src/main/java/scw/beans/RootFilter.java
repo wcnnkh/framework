@@ -3,36 +3,29 @@ package scw.beans;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import scw.aop.CglibInvoker;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
-import scw.core.cglib.proxy.MethodInterceptor;
-import scw.core.cglib.proxy.MethodProxy;
 
-public final class RootFilter implements Filter, MethodInterceptor {
-	private BeanFactory beanFactory;
-	private Collection<String> filterNames;
-	private Class<?> targetClass;
+public final class RootFilter implements Filter {
+	private final BeanFactory beanFactory;
+	private final Collection<String> filterNames;
+	private final Collection<Filter> filters;
 
-	public RootFilter(BeanFactory beanFactory, Class<?> targetClass, Collection<String> filterNames) {
+	/**
+	 * @param beanFactory
+	 * @param filterNames
+	 * @param filters 在filerNames之后执行
+	 */
+	public RootFilter(BeanFactory beanFactory, Collection<String> filterNames, Collection<Filter> filters) {
 		this.beanFactory = beanFactory;
 		this.filterNames = filterNames;
-		this.targetClass = targetClass;
-	}
-
-	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		if (obj instanceof Filter) {
-			return proxy.invokeSuper(obj, args);
-		}
-
-		Invoker invoker = new CglibInvoker(proxy, obj);
-		return invoke(invoker, obj, targetClass, method, args);
+		this.filters = filters;
 	}
 
 	private Object invoke(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args)
 			throws Throwable {
-		FilterChain chain = new BeanFactoryFilterChain(beanFactory, filterNames, method.getDeclaringClass(), method);
+		FilterChain chain = new BeanFactoryFilterChain(beanFactory, filterNames, targetClass, method, filters);
 		return chain.doFilter(invoker, proxy, targetClass, method, args);
 	}
 
