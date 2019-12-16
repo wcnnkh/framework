@@ -16,4 +16,6 @@ public interface Column extends AnnotationFactory {
 	Object get(Object obj) throws ORMException;
 
 	void set(Object obj, Object value) throws ORMException;
+
+	String getDescription();
 }

@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
+import scw.lang.Description;
 import scw.orm.Column;
 import scw.orm.ORMException;
 
@@ -56,5 +57,10 @@ public class FieldColumn implements Column {
 
 	public Class<?> getDeclaringClass() {
 		return clazz;
+	}
+
+	public String getDescription() {
+		Description description = getAnnotation(Description.class);
+		return description == null ? null : description.value();
 	}
 }

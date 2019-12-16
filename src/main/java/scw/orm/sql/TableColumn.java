@@ -21,4 +21,14 @@ public class TableColumn extends DefaultColumn {
 	public String getName() {
 		return name == null ? super.getName() : name;
 	}
+
+	@Override
+	public String getDescription() {
+		String describe = null;
+		Column column = getAnnotation(Column.class);
+		if (column != null) {
+			describe = column.comment();
+		}
+		return StringUtils.isEmpty(describe) ? super.getDescription() : describe;
+	}
 }

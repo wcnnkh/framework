@@ -60,9 +60,8 @@ public class CreateTableSql extends MysqlDialectSql {
 				sb.append("not null ");
 			}
 
-			Column column = col.getAnnotation(Column.class);
-			if (column != null && !StringUtils.isEmpty(column.comment())) {
-				sb.append(" comment \'").append(column.comment()).append("\'");
+			if (StringUtils.isNotEmpty(col.getDescription())) {
+				sb.append(" comment \'").append(col.getDescription()).append("\'");
 			}
 
 			if (mappingOperations.isAutoIncrement(context)) {

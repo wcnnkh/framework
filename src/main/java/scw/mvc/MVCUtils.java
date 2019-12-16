@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.application.ApplicationConfigUtils;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.context.Context;
@@ -751,5 +752,9 @@ public final class MVCUtils implements MvcConstants {
 	 */
 	public static boolean isSupperServlet() {
 		return SUPPORT_SERVLET;
+	}
+
+	public static String getAnnotationScannPackage(PropertyFactory propertyFactory) {
+		return ApplicationConfigUtils.getPackageName(propertyFactory, "mvc.annotation.scann");
 	}
 }
