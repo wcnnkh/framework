@@ -3,10 +3,9 @@ package scw.mvc.servlet.http;
 import java.lang.reflect.Type;
 
 import scw.beans.BeanFactory;
-import scw.core.utils.StringUtils;
-import scw.json.JSONObjectReadOnly;
-import scw.json.JsonSupport;
-import scw.json.JSONUtils;
+import scw.json.JsonObject;
+import scw.json.JsonElement;
+import scw.json.JSONSupport;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.http.HttpRequest;
@@ -17,11 +16,10 @@ import scw.net.http.Method;
 @SuppressWarnings("unchecked")
 public class JsonHttpServletChannel extends HttpServletChannel {
 	private static Logger logger = LoggerFactory.getLogger(JsonHttpServletChannel.class);
-	private JSONObjectReadOnly jsonObjectReadOnly;
+	private JsonObject jsonObject;
 
-	public JsonHttpServletChannel(BeanFactory beanFactory,
-			JsonSupport jsonParseSupport, boolean cookieValue, HttpRequest request, HttpResponse response,
-			String jsonp) {
+	public JsonHttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport, boolean cookieValue,
+			HttpRequest request, HttpResponse response, String jsonp) {
 		super(beanFactory, jsonParseSupport, cookieValue, request, response, jsonp);
 		if (Method.GET.name().equals(request.getMethod())) {
 			logger.warn("servletPath={},method={}不能使用JSON类型的请求", request.getRequestPath(), request.getMethod());
@@ -32,18 +30,15 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 			}
 
 			if (content != null) {
-				this.jsonObjectReadOnly = JSONUtils.parseObject(content);
+				this.jsonObject = jsonParseSupport.parseObject(content);
 			}
 		}
 	}
 
 	@Override
 	public String getString(String name) {
-		String value = jsonObjectReadOnly == null ? null : jsonObjectReadOnly.getString(name);
-		if (StringUtils.isEmpty(value)) {
-			value = super.getString(name);
-		}
-		return value;
+		JsonElement jsonElement = jsonObject.get(name);
+		return jsonElement == null ? null : jsonElement.parseString();
 	}
 
 	public Logger getLogger() {
@@ -52,24 +47,22 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 
 	@Override
 	protected Object getObjectIsNotBean(String name, Class<?> type) {
-		return jsonObjectReadOnly == null ? null : jsonObjectReadOnly.getObject(name, type);
+		return jsonObject == null ? null : jsonObject.getObject(name, type);
 	}
 
 	@Override
 	public Object getObject(String name, Type type) {
-		return jsonObjectReadOnly == null ? null : jsonObjectReadOnly.getObject(name, type);
+		return jsonObject == null ? null : jsonObject.getObject(name, type);
 	}
 
 	@Override
 	public <T> T getObject(Class<T> type) {
-		return jsonObjectReadOnly == null ? null
-				: jsonParseSupport.parseObject(jsonObjectReadOnly.toJSONString(), type);
+		return jsonObject == null ? null : jsonParseSupport.parseObject(jsonObject.toJsonString(), type);
 	}
 
 	@Override
 	public <T> T getObject(Type type) {
-		return (T) (jsonObjectReadOnly == null ? null
-				: jsonParseSupport.parseObject(jsonObjectReadOnly.toJSONString(), type));
+		return (T) (jsonObject == null ? null : jsonParseSupport.parseObject(jsonObject.toJsonString(), type));
 	}
 
 	@Override
@@ -77,8 +70,8 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 		StringBuilder appendable = new StringBuilder();
 		appendable.append("requestPath=").append(getRequest().getRequestPath());
 		appendable.append(",method=").append(getRequest().getMethod());
-		if (jsonObjectReadOnly != null) {
-			appendable.append(",").append(jsonObjectReadOnly.toJSONString());
+		if (jsonObject != null) {
+			appendable.append(",").append(jsonObject.toJsonString());
 		}
 		return appendable.toString();
 	}

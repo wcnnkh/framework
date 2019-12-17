@@ -6,7 +6,7 @@ import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.FormatUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.json.support.GsonSupport;
+import scw.json.support.BuiltinGsonSupport;
 
 public final class JSONUtils {
 	private JSONUtils() {
@@ -15,20 +15,20 @@ public final class JSONUtils {
 	/**
 	 * 默认的json序列化工具
 	 */
-	public static final JsonSupport DEFAULT_JSON_SUPPORT;
+	public static final JSONSupport DEFAULT_JSON_SUPPORT;
 
 	static {
-		JsonSupport jsonSupport = null;
+		JSONSupport jSONSupport = null;
 		String[] supportClass = SystemPropertyUtils.getArrayProperty(String.class, "json.support.class",
-				new String[] { "scw.json.support.fastjson.FastJsonSupport" });
+				new String[] { "scw.json.support.FastJsonSupport" });
 		for (String name : supportClass) {
-			jsonSupport = InstanceUtils.getInstance(name);
-			if (jsonSupport != null) {
+			jSONSupport = InstanceUtils.getInstance(name);
+			if (jSONSupport != null) {
 				break;
 			}
 		}
 
-		DEFAULT_JSON_SUPPORT = jsonSupport == null ? new GsonSupport() : jsonSupport;
+		DEFAULT_JSON_SUPPORT = jSONSupport == null ? new BuiltinGsonSupport() : jSONSupport;
 		FormatUtils.info(JSONUtils.class, "default json parse：{}", DEFAULT_JSON_SUPPORT.getClass().getName());
 	}
 
@@ -36,11 +36,11 @@ public final class JSONUtils {
 		return DEFAULT_JSON_SUPPORT.toJSONString(obj);
 	}
 
-	public static JSONObject parseObject(String text) {
+	public static JsonObject parseObject(String text) {
 		return DEFAULT_JSON_SUPPORT.parseObject(text);
 	}
 
-	public static JSONArray parseArray(String text) {
+	public static JsonArray parseArray(String text) {
 		return DEFAULT_JSON_SUPPORT.parseArray(text);
 	}
 
@@ -58,6 +58,6 @@ public final class JSONUtils {
 	 * @return
 	 */
 	public static boolean isSupportFastJSON() {
-		return ClassUtils.isPresent("scw.json.support.fastjson.FastJSONParseSupport");
+		return ClassUtils.isPresent("scw.json.support.FastJsonSupport");
 	}
 }

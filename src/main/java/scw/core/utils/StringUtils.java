@@ -32,7 +32,7 @@ import java.util.zip.GZIPOutputStream;
 import scw.core.Assert;
 import scw.core.Callable;
 import scw.json.JSONUtils;
-import scw.json.JsonSupport;
+import scw.json.JSONSupport;
 import scw.lang.NotSupportException;
 import scw.lang.ParameterException;
 
@@ -2465,7 +2465,7 @@ public final class StringUtils {
 	}
 
 	public static Object defaultAutoParse(final String text, final Type type,
-			JsonSupport jsonParseSupport) {
+			JSONSupport jsonParseSupport) {
 		return autoParse(text, type, DEFAULT_SPLIT_CHARS, jsonParseSupport);
 	}
 
@@ -2486,7 +2486,7 @@ public final class StringUtils {
 	}
 
 	public static Object parseArray(String text, Class<?> componentType,
-			String[] splitFilter, final JsonSupport jsonParseSupport) {
+			String[] splitFilter, final JSONSupport jsonParseSupport) {
 		if (text == null) {
 			return null;
 		}
@@ -2504,7 +2504,7 @@ public final class StringUtils {
 	}
 
 	public static Object parseArray(String text, Class<?> componentType,
-			char[] splitFilter, final JsonSupport jsonParseSupport) {
+			char[] splitFilter, final JSONSupport jsonParseSupport) {
 		if (text == null) {
 			return null;
 		}
@@ -2559,7 +2559,7 @@ public final class StringUtils {
 
 	@SuppressWarnings("rawtypes")
 	public static Object autoParse(final String text, final Type type,
-			char[] splitFilter, final JsonSupport jsonParseSupport) {
+			char[] splitFilter, final JSONSupport jsonParseSupport) {
 		if (TypeUtils.isClass(type)) {
 			return autoParse(text, (Class) type, splitFilter,
 					new Callable<Object>() {
@@ -2575,7 +2575,7 @@ public final class StringUtils {
 
 	@SuppressWarnings("rawtypes")
 	public static Object autoParse(final String text, final Type type,
-			String[] splitFilter, final JsonSupport jsonParseSupport) {
+			String[] splitFilter, final JSONSupport jsonParseSupport) {
 		if (TypeUtils.isClass(type)) {
 			return autoParse(text, (Class) type, splitFilter,
 					new Callable<Object>() {

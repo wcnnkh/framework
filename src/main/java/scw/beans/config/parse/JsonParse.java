@@ -9,8 +9,8 @@ import scw.core.Constants;
 import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
 import scw.core.resource.ResourceUtils;
-import scw.json.JSONArray;
-import scw.json.JSONObject;
+import scw.json.JsonArray;
+import scw.json.JsonObject;
 import scw.json.JSONUtils;
 
 /**
@@ -32,9 +32,9 @@ public final class JsonParse extends AbstractCharsetNameValueFormat implements C
 	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
 		String content = ResourceUtils.getResourceOperations().getFileContent(filePath, charset);
-		if (JSONObject.class.isAssignableFrom(fieldDefinition.getField().getType())) {
+		if (JsonObject.class.isAssignableFrom(fieldDefinition.getField().getType())) {
 			return JSONUtils.parseObject(content);
-		} else if (JSONArray.class.isAssignableFrom(fieldDefinition.getField().getType())) {
+		} else if (JsonArray.class.isAssignableFrom(fieldDefinition.getField().getType())) {
 			return JSONUtils.parseArray(content);
 		} else if (String.class.isAssignableFrom(fieldDefinition.getField().getType())) {
 			return content;
@@ -46,9 +46,9 @@ public final class JsonParse extends AbstractCharsetNameValueFormat implements C
 	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name)
 			throws Exception {
 		String content = ResourceUtils.getResourceOperations().getFileContent(name, getCharsetName());
-		if (JSONObject.class.isAssignableFrom(field.getType())) {
+		if (JsonObject.class.isAssignableFrom(field.getType())) {
 			return JSONUtils.parseObject(content);
-		} else if (JSONArray.class.isAssignableFrom(field.getType())) {
+		} else if (JsonArray.class.isAssignableFrom(field.getType())) {
 			return JSONUtils.parseArray(content);
 		} else if (String.class.isAssignableFrom(field.getType())) {
 			return content;

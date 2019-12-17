@@ -2,12 +2,12 @@ package scw.json;
 
 import java.lang.reflect.Type;
 
-public interface JsonSupport {
+public interface JSONSupport {
 	String toJSONString(Object obj);
 
-	JSONArray parseArray(String text);
+	JsonArray parseArray(String text);
 	
-	JSONObject parseObject(String text);
+	JsonObject parseObject(String text);
 
 	<T> T parseObject(String text, Class<T> type);
 	

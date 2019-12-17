@@ -1,13 +1,13 @@
-package scw.json.support.fastjson;
+package scw.json.support;
 
 import com.alibaba.fastjson.serializer.PropertyFilter;
 
 import scw.core.cglib.proxy.Factory;
 
-public class BaseProperyFilter implements PropertyFilter {
-	public static final BaseProperyFilter BASE_PROPERY_FILTER = new BaseProperyFilter();
+public class FastJSONBaseProperyFilter implements PropertyFilter {
+	public static final FastJSONBaseProperyFilter BASE_PROPERY_FILTER = new FastJSONBaseProperyFilter();
 
-	private BaseProperyFilter() {
+	private FastJSONBaseProperyFilter() {
 	};
 
 	public boolean apply(Object object, String name, Object value) {

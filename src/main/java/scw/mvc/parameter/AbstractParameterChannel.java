@@ -18,7 +18,7 @@ import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
-import scw.json.JsonSupport;
+import scw.json.JSONSupport;
 import scw.lang.ParameterException;
 import scw.mvc.AbstractChannel;
 import scw.mvc.Channel;
@@ -31,9 +31,9 @@ import scw.mvc.annotation.RequestBean;
 import scw.mvc.annotation.RequestBody;
 
 public abstract class AbstractParameterChannel extends AbstractChannel implements ParameterChannel {
-	protected final JsonSupport jsonParseSupport;
+	protected final JSONSupport jsonParseSupport;
 
-	public AbstractParameterChannel(BeanFactory beanFactory, JsonSupport jsonParseSupport) {
+	public AbstractParameterChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport) {
 		super(beanFactory);
 		this.jsonParseSupport = jsonParseSupport;
 	}

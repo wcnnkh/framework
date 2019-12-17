@@ -6,7 +6,7 @@ import javax.servlet.http.HttpSession;
 
 import scw.beans.BeanFactory;
 import scw.core.parameter.ParameterConfig;
-import scw.json.JsonSupport;
+import scw.json.JSONSupport;
 import scw.mvc.http.AbstractHttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
@@ -15,7 +15,7 @@ import scw.mvc.http.HttpResponse;
 public abstract class HttpServletChannel extends AbstractHttpChannel {
 
 	public HttpServletChannel(BeanFactory beanFactory,
-			JsonSupport jsonParseSupport, boolean cookieValue, HttpRequest request, HttpResponse response,
+			JSONSupport jsonParseSupport, boolean cookieValue, HttpRequest request, HttpResponse response,
 			String jsonp) {
 		super(beanFactory, jsonParseSupport, cookieValue, request, response, jsonp);
 	}

@@ -83,11 +83,11 @@ public class DefaultObjectOperations implements ObjectOperations {
 				effectiveNames);
 	}
 
-	public Map<String, Object> getObjectColumnValueMap(Object obj) {
+	public Map<String, Object> getColumnValueMap(Object obj) {
 		return getColumnValueMapExcludeName(obj, Collections.EMPTY_LIST);
 	}
 
-	public List<Map<String, Object>> getColumnValueMapExcludeNameByList(Collection<?> objs,
+	public List<Map<String, Object>> getColumnValueListMapExcludeName(Collection<?> objs,
 			Collection<String> excludeNames) {
 		if (CollectionUtils.isEmpty(objs)) {
 			return Collections.EMPTY_LIST;
@@ -108,7 +108,7 @@ public class DefaultObjectOperations implements ObjectOperations {
 		return list;
 	}
 
-	public List<Map<String, Object>> getColumnValueMapEffectiveNameByList(Collection<?> objs,
+	public List<Map<String, Object>> getColumnValueListMapEffectiveName(Collection<?> objs,
 			Collection<String> effectiveNames) {
 		if (CollectionUtils.isEmpty(objs)) {
 			return Collections.EMPTY_LIST;
@@ -128,8 +128,8 @@ public class DefaultObjectOperations implements ObjectOperations {
 		return list;
 	}
 
-	public List<Map<String, Object>> getColumnValueMapEffectiveNameByList(Collection<?> objs) {
-		return getColumnValueMapExcludeNameByList(objs, Collections.EMPTY_LIST);
+	public List<Map<String, Object>> getColumnValueListMap(Collection<?> objs) {
+		return getColumnValueListMapExcludeName(objs, Collections.EMPTY_LIST);
 	}
 
 	public <E> E getColumnValue(Object obj, MappingContext context) {
@@ -214,7 +214,7 @@ public class DefaultObjectOperations implements ObjectOperations {
 		return null;
 	}
 
-	public <E> List<E> getColumnValueList(Collection<?> objs) {
+	public <E> List<E> getColumnValueListByFirstPrimary(Collection<?> objs) {
 		MappingContext mappingContext = getFirstMappingContext(objs);
 		if (mappingContext == null) {
 			return Collections.EMPTY_LIST;
@@ -259,7 +259,7 @@ public class DefaultObjectOperations implements ObjectOperations {
 		return toMap(objs, context);
 	}
 
-	public <K, V> Map<K, ? extends V> toMap(Collection<? extends V> objs) {
+	public <K, V> Map<K, ? extends V> toMapByFirstPrimary(Collection<? extends V> objs) {
 		MappingContext mappingContext = getFirstMappingContext(objs);
 		if (mappingContext == null) {
 			return Collections.EMPTY_MAP;

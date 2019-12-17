@@ -23,7 +23,7 @@ public interface ObjectOperations {
 	 */
 	Map<String, Object> getColumnValueMapEffectiveName(Object obj, Collection<String> effectiveNames);
 
-	Map<String, Object> getObjectColumnValueMap(Object obj);
+	Map<String, Object> getColumnValueMap(Object obj);
 
 	/**
 	 * 移除指定字段
@@ -32,8 +32,7 @@ public interface ObjectOperations {
 	 * @param excludeNames
 	 * @return
 	 */
-	List<Map<String, Object>> getColumnValueMapExcludeNameByList(Collection<?> objs,
-			Collection<String> excludeNames);
+	List<Map<String, Object>> getColumnValueListMapExcludeName(Collection<?> objs, Collection<String> excludeNames);
 
 	/**
 	 * 保留指定字段
@@ -42,20 +41,19 @@ public interface ObjectOperations {
 	 * @param effectiveNames
 	 * @return
 	 */
-	List<Map<String, Object>> getColumnValueMapEffectiveNameByList(Collection<?> objs,
-			Collection<String> effectiveNames);
+	List<Map<String, Object>> getColumnValueListMapEffectiveName(Collection<?> objs, Collection<String> effectiveNames);
 
-	List<Map<String, Object>> getColumnValueMapEffectiveNameByList(Collection<?> objs);
+	List<Map<String, Object>> getColumnValueListMap(Collection<?> objs);
 
 	<E> List<E> getColumnValueList(Collection<?> objs, String name);
 
-	<E> List<E> getColumnValueList(Collection<?> objs);
+	<E> List<E> getColumnValueListByFirstPrimary(Collection<?> objs);
 
 	<K, V> Map<K, ? extends V> toMap(Collection<? extends V> objs, String name);
 
-	<K, V> Map<K, ? extends V> toMap(Collection<? extends V> objs);
-	
+	<K, V> Map<K, ? extends V> toMapByFirstPrimary(Collection<? extends V> objs);
+
 	void verify(Object obj);
-	
+
 	void verify(Collection<Object> objs);
 }
