@@ -8,7 +8,7 @@ import scw.json.JSONSupport;
 import scw.json.gson.Gson;
 import scw.json.gson.JsonElement;
 
-public class BuiltinGsonSupport implements JSONSupport {
+public final class BuiltinGsonSupport implements JSONSupport {
 	private static final Gson GSON = new Gson();
 
 	public String toJSONString(Object obj) {

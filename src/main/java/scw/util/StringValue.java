@@ -10,7 +10,7 @@ public class StringValue extends AbstractValue implements Serializable {
 		this.value = value;
 	}
 
-	public String parseString() {
+	public String getAsString() {
 		return value;
 	}
 }

@@ -2,13 +2,13 @@ package scw.json.support;
 
 import java.lang.reflect.Type;
 
+import scw.json.AbstractJsonElement;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
 import scw.json.gson.Gson;
 import scw.json.gson.JsonElement;
-import scw.util.AbstractValue;
 
-public class BuiltInGsonElement extends AbstractValue implements scw.json.JsonElement {
+public final class BuiltInGsonElement extends AbstractJsonElement {
 	private JsonElement jsonElement;
 	private Gson gson;
 
@@ -17,25 +17,25 @@ public class BuiltInGsonElement extends AbstractValue implements scw.json.JsonEl
 		this.gson = gson;
 	}
 
-	public String parseString() {
+	public String getAsString() {
 		return jsonElement.toString();
 	}
 
 	@Override
-	protected <T> T notSupportParse(Class<? extends T> type) {
+	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
 		return gson.fromJson(jsonElement, type);
 	}
 
 	@Override
-	protected <T> T notSupportParse(Type type) {
+	protected <T> T getAsObjectNotSupport(Type type) {
 		return gson.fromJson(jsonElement, type);
 	}
 
-	public JsonArray parseJsonArray() {
+	public JsonArray getAsJsonArray() {
 		return new BuiltInGsonJsonArray(jsonElement.getAsJsonArray(), gson);
 	}
 
-	public JsonObject parseJsonObject() {
+	public JsonObject getAsJsonObject() {
 		return new BuiltInGsonJsonObject(jsonElement.getAsJsonObject(), gson);
 	}
 }

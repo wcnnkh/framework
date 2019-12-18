@@ -1,16 +1,14 @@
 package scw.json.support;
 
-import java.lang.reflect.Type;
 import java.util.Iterator;
 
 import scw.core.Converter;
 import scw.core.utils.IteratorConvert;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
-import scw.json.JsonObject;
 import scw.json.gson.Gson;
 
-public class BuiltInGsonJsonArray implements scw.json.JsonArray {
+public final class BuiltInGsonJsonArray extends JsonArray {
 	private scw.json.gson.JsonArray jsonArray;
 	private Gson gson;
 
@@ -28,19 +26,9 @@ public class BuiltInGsonJsonArray implements scw.json.JsonArray {
 				});
 	}
 
-	public JsonElement get(int index) {
+	public JsonElement get(Integer index) {
 		scw.json.gson.JsonElement element = jsonArray.get(index);
 		return element == null ? null : new BuiltInGsonElement(element, gson);
-	}
-
-	public JsonObject getJsonObject(int index) {
-		JsonElement element = get(index);
-		return element == null ? null : element.parseJsonObject();
-	}
-
-	public JsonArray getJsonArray(int index) {
-		JsonElement element = get(index);
-		return element == null ? null : element.parseJsonArray();
 	}
 
 	public void add(Object value) {
@@ -56,30 +44,5 @@ public class BuiltInGsonJsonArray implements scw.json.JsonArray {
 
 	public String toJsonString() {
 		return jsonArray.toString();
-	}
-
-	@Override
-	public String toString() {
-		return toJsonString();
-	}
-
-	public <T> T getObject(int index, Class<? extends T> type) {
-		JsonElement jsonElement = get(index);
-		return jsonElement == null ? null : jsonElement.parseObject(type);
-	}
-
-	public Object getObject(int index, Type type) {
-		JsonElement jsonElement = get(index);
-		return jsonElement == null ? null : jsonElement.parseObject(type);
-	}
-
-	public String getString(int index) {
-		JsonElement jsonElement = get(index);
-		return jsonElement == null ? null : jsonElement.parseString();
-	}
-
-	public Byte getByte(int index) {
-		JsonElement jsonElement = get(index);
-		return jsonElement == null ? null : jsonElement.parseByte();
 	}
 }

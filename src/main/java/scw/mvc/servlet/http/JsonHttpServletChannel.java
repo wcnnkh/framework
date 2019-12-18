@@ -3,9 +3,8 @@ package scw.mvc.servlet.http;
 import java.lang.reflect.Type;
 
 import scw.beans.BeanFactory;
-import scw.json.JsonObject;
-import scw.json.JsonElement;
 import scw.json.JSONSupport;
+import scw.json.JsonObject;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.http.HttpRequest;
@@ -37,8 +36,7 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 
 	@Override
 	public String getString(String name) {
-		JsonElement jsonElement = jsonObject.get(name);
-		return jsonElement == null ? null : jsonElement.parseString();
+		return jsonObject == null ? null : jsonObject.getString(name);
 	}
 
 	public Logger getLogger() {

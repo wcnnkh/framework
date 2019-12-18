@@ -9,120 +9,125 @@ import scw.lang.NestedRuntimeException;
 import scw.lang.NotSupportException;
 
 public abstract class AbstractValue implements Value {
-	@SuppressWarnings("unchecked")
-	public <T> T parseObject(Class<? extends T> type) {
-		Object v = null;
-		if (String.class == type) {
-			v = parseString();
-		} else if (int.class == type) {
-			v = parseIntValue();
-		} else if (Integer.class == type) {
-			v = parseInteger();
-		} else if (long.class == type) {
-			v = parseLongValue();
-		} else if (Long.class == type) {
-			v = parseLong();
-		} else if (float.class == type) {
-			v = parseFloatValue();
-		} else if (Float.class == type) {
-			v = parseFloat();
-		} else if (double.class == type) {
-			v = parseDoubleValue();
-		} else if (Double.class == type) {
-			v = parseDouble();
-		} else if (short.class == type) {
-			v = parseShortValue();
-		} else if (Short.class == type) {
-			v = parseShort();
-		} else if (boolean.class == type) {
-			v = parseBooleanValue();
-		} else if (Boolean.class == type) {
-			v = parseBoolean();
-		} else if (byte.class == type) {
-			v = parseByteValue();
-		} else if (Byte.class == type) {
-			v = parseByte();
-		} else if (char.class == type) {
-			v = parseChar();
-		} else if (Character.class == type) {
-			v = parseCharacter();
-		} else if (BigDecimal.class.isAssignableFrom(type)) {
-			v = parseBigDecimal();
-		} else if (BigInteger.class.isAssignableFrom(type)) {
-			v = parseBigInteger();
-		} else if (Number.class.isAssignableFrom(type)) {
-			v = parseNumber();
-		} else if (Class.class == type) {
-			v = parseClass();
-		} else if (type.isEnum()) {
-			v = parseEnum(type);
-		} else {
-			v = notSupportParse(type);
-		}
-		return (T) v;
+
+	public Value getDefaultValue() {
+		return DefaultValueDefinition.DEFAULT_VALUE_DEFINITION;
 	}
 
-	protected <T> T notSupportParse(Class<? extends T> type) {
+	@SuppressWarnings("unchecked")
+	public <T> T getAsObject(Class<? extends T> type) {
+		Object v = null;
+		if (String.class == type) {
+			v = getAsString();
+		} else if (int.class == type) {
+			v = getAsIntValue();
+		} else if (Integer.class == type) {
+			v = getAsInteger();
+		} else if (long.class == type) {
+			v = getAsLongValue();
+		} else if (Long.class == type) {
+			v = getAsLong();
+		} else if (float.class == type) {
+			v = getAsFloatValue();
+		} else if (Float.class == type) {
+			v = getAsFloat();
+		} else if (double.class == type) {
+			v = getAsDoubleValue();
+		} else if (Double.class == type) {
+			v = getAsDouble();
+		} else if (short.class == type) {
+			v = getAsShortValue();
+		} else if (Short.class == type) {
+			v = getAsShort();
+		} else if (boolean.class == type) {
+			v = getAsBooleanValue();
+		} else if (Boolean.class == type) {
+			v = getAsBoolean();
+		} else if (byte.class == type) {
+			v = getAsByteValue();
+		} else if (Byte.class == type) {
+			v = getAsByte();
+		} else if (char.class == type) {
+			v = getAsChar();
+		} else if (Character.class == type) {
+			v = getAsCharacter();
+		} else if (BigDecimal.class.isAssignableFrom(type)) {
+			v = getAsBigDecimal();
+		} else if (BigInteger.class.isAssignableFrom(type)) {
+			v = getAsBigInteger();
+		} else if (Number.class.isAssignableFrom(type)) {
+			v = getAsNumber();
+		} else if (Class.class == type) {
+			v = getAsClass();
+		} else if (type.isEnum()) {
+			v = getAsEnum(type);
+		} else {
+			v = getAsObjectNotSupport(type);
+		}
+		return (T) (v == null ? getDefaultValue().getAsObject(type) : v);
+	}
+
+	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
 		throw new NotSupportException(type.toString());
 	}
 
-	protected <T> T notSupportParse(Type type) {
+	protected <T> T getAsObjectNotSupport(Type type) {
 		throw new NotSupportException(type.toString());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Object parseObject(Type type) {
+	public Object getAsObject(Type type) {
 		if (type instanceof Class) {
-			return parseObject((Class) type);
+			return getAsObject((Class) type);
 		}
 
 		Object v = null;
 		if (String.class == type) {
-			v = parseString();
+			v = getAsString();
 		} else if (int.class == type) {
-			v = parseIntValue();
+			v = getAsIntValue();
 		} else if (Integer.class == type) {
-			v = parseInteger();
+			v = getAsInteger();
 		} else if (long.class == type) {
-			v = parseLongValue();
+			v = getAsLongValue();
 		} else if (Long.class == type) {
-			v = parseLong();
+			v = getAsLong();
 		} else if (float.class == type) {
-			v = parseFloatValue();
+			v = getAsFloatValue();
 		} else if (Float.class == type) {
-			v = parseFloat();
+			v = getAsFloat();
 		} else if (double.class == type) {
-			v = parseDoubleValue();
+			v = getAsDoubleValue();
 		} else if (Double.class == type) {
-			v = parseDouble();
+			v = getAsDouble();
 		} else if (short.class == type) {
-			v = parseShortValue();
+			v = getAsShortValue();
 		} else if (Short.class == type) {
-			v = parseShort();
+			v = getAsShort();
 		} else if (boolean.class == type) {
-			v = parseBooleanValue();
+			v = getAsBooleanValue();
 		} else if (Boolean.class == type) {
-			v = parseBoolean();
+			v = getAsBoolean();
 		} else if (byte.class == type) {
-			v = parseByteValue();
+			v = getAsByteValue();
 		} else if (Byte.class == type) {
-			v = parseByte();
+			v = getAsByte();
 		} else if (char.class == type) {
-			v = parseChar();
+			v = getAsChar();
 		} else if (Character.class == type) {
-			v = parseCharacter();
+			v = getAsCharacter();
 		} else if (BigDecimal.class == type) {
-			v = parseBigDecimal();
+			v = getAsBigDecimal();
 		} else if (BigInteger.class == type) {
-			v = parseBigInteger();
+			v = getAsBigInteger();
 		} else if (Number.class == type) {
-			v = parseNumber();
+			v = getAsNumber();
 		} else if (Class.class == type) {
-			v = parseClass();
+			v = getAsClass();
 		} else {
-			v = notSupportParse(type);
+			v = getAsObjectNotSupport(type);
 		}
-		return v;
+		return v == null ? getDefaultValue().getAsObject(type) : v;
 	}
 
 	public boolean isEmpty(String value) {
@@ -156,70 +161,67 @@ public abstract class AbstractValue implements Value {
 		return pos == 0 ? null : new String(chars, 0, pos);
 	}
 
-	protected Number getDefaultNumberValue() {
-		return 0;
-	}
-
-	public Byte parseByte() {
-		String v = formatNumberText(parseString());
+	public Byte getAsByte() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return null;
+			return getDefaultValue().getAsByte();
 		}
 		return Byte.parseByte(v, getNumberRadix());
 	}
 
-	public byte parseByteValue() {
-		String v = formatNumberText(parseString());
+	public byte getAsByteValue() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return getDefaultNumberValue().byteValue();
+			return getDefaultValue().getAsByteValue();
 		}
+
 		return Byte.parseByte(v, getNumberRadix());
 	}
 
-	public Short parseShort() {
-		String v = formatNumberText(parseString());
+	public Short getAsShort() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return null;
+			return getDefaultValue().getAsShort();
 		}
 		return Short.parseShort(v, getNumberRadix());
 	}
 
-	public short parseShortValue() {
-		String v = formatNumberText(parseString());
+	public short getAsShortValue() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return getDefaultNumberValue().shortValue();
+			return getDefaultValue().getAsShortValue();
 		}
 		return Short.parseShort(v, getNumberRadix());
 	}
 
-	public Integer parseInteger() {
-		String v = formatNumberText(parseString());
+	public Integer getAsInteger() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return null;
+			return getDefaultValue().getAsInteger();
 		}
 		return Integer.parseInt(v, getNumberRadix());
 	}
 
-	public int parseIntValue() {
-		String v = formatNumberText(parseString());
+	public int getAsIntValue() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return getDefaultNumberValue().intValue();
+			return getDefaultValue().getAsIntValue();
 		}
 		return Integer.parseInt(v, getNumberRadix());
 	}
 
-	public Long parseLong() {
-		String v = formatNumberText(parseString());
+	public Long getAsLong() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return null;
+			return getDefaultValue().getAsLong();
 		}
 		return Long.parseLong(v, getNumberRadix());
 	}
 
-	public long parseLongValue() {
-		String v = formatNumberText(parseString());
+	public long getAsLongValue() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return getDefaultNumberValue().longValue();
+			return getDefaultValue().getAsLongValue();
 		}
 		return Long.parseLong(v, getNumberRadix());
 	}
@@ -229,110 +231,114 @@ public abstract class AbstractValue implements Value {
 				|| "T".equalsIgnoreCase(value);
 	}
 
-	public Boolean parseBoolean() {
-		String v = parseString();
+	public Boolean getAsBoolean() {
+		String v = getAsString();
 		if (isEmpty(v)) {
-			return null;
+			return getDefaultValue().getAsBoolean();
 		}
 		return parseBooleanValue(v);
 	}
 
-	public boolean parseBooleanValue() {
-		String v = parseString();
+	public boolean getAsBooleanValue() {
+		String v = getAsString();
 		if (isEmpty(v)) {
-			return false;
+			return getDefaultValue().getAsBooleanValue();
 		}
-
 		return parseBooleanValue(v);
 	}
 
-	public Float parseFloat() {
-		String v = formatNumberText(parseString());
+	public Float getAsFloat() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return null;
+			return getDefaultValue().getAsFloat();
 		}
 		return Float.parseFloat(v);
 	}
 
-	public float parseFloatValue() {
-		String v = formatNumberText(parseString());
+	public float getAsFloatValue() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return getDefaultNumberValue().floatValue();
+			return getDefaultValue().getAsFloatValue();
 		}
 		return Float.parseFloat(v);
 	}
 
-	public Double parseDouble() {
-		String v = formatNumberText(parseString());
+	public Double getAsDouble() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return null;
+			return getDefaultValue().getAsDouble();
 		}
 		return Double.parseDouble(v);
 	}
 
-	public double parseDoubleValue() {
-		String v = formatNumberText(parseString());
+	public double getAsDoubleValue() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return getDefaultNumberValue().doubleValue();
+			return getDefaultValue().getAsDoubleValue();
 		}
 		return Double.parseDouble(v);
 	}
 
-	public char getDefaultCharValue() {
-		return 0;
-	}
-
-	public char parseChar() {
-		String v = parseString();
+	public char getAsChar() {
+		String v = getAsString();
 		if (isEmpty(v)) {
-			return getDefaultCharValue();
+			return getDefaultValue().getAsChar();
 		}
 		return v.charAt(0);
 	}
 
-	public Character parseCharacter() {
-		String v = parseString();
+	public Character getAsCharacter() {
+		String v = getAsString();
 		if (isEmpty(v)) {
-			return null;
+			return getDefaultValue().getAsCharacter();
 		}
 
 		return v.charAt(0);
 	}
 
-	public BigInteger parseBigInteger() {
-		String v = formatNumberText(parseString());
+	public BigInteger getAsBigInteger() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return null;
+			return getDefaultValue().getAsBigInteger();
 		}
 		return new BigInteger(v, getNumberRadix());
 	}
 
-	public BigDecimal parseBigDecimal() {
-		String v = formatNumberText(parseString());
+	public BigDecimal getAsBigDecimal() {
+		String v = formatNumberText(getAsString());
 		if (isEmpty(v)) {
-			return null;
+			return getDefaultValue().getAsBigDecimal();
 		}
 		return new BigDecimal(v);
 	}
 
-	public Class<?> parseClass() {
+	public Class<?> getAsClass() {
+		String v = getAsString();
+		if (isEmpty(v)) {
+			return getDefaultValue().getAsClass();
+		}
+
 		try {
-			return ClassUtils.forName(parseString());
+			return ClassUtils.forName(v);
 		} catch (ClassNotFoundException e) {
 			throw new NestedRuntimeException(e);
 		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Enum<?> parseEnum(Class<?> enumType) {
-		String v = parseString();
+	public Enum<?> getAsEnum(Class<?> enumType) {
+		String v = getAsString();
 		if (isEmpty(v)) {
-			return null;
+			return getDefaultValue().getAsEnum(enumType);
 		}
 		return Enum.valueOf((Class<? extends Enum>) enumType, v);
 	}
 
-	public Number parseNumber() {
-		return parseBigDecimal();
+	public Number getAsNumber() {
+		String v = formatNumberText(getAsString());
+		if (isEmpty(v)) {
+			return getDefaultValue().getAsNumber();
+		}
+		return new BigDecimal(v);
 	}
 }

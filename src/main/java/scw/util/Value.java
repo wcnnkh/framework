@@ -5,51 +5,51 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public interface Value {
-	<T> T parseObject(Class<? extends T> type);
+	<T> T getAsObject(Class<? extends T> type);
 
-	Object parseObject(Type type);
+	Object getAsObject(Type type);
 
-	String parseString();
+	String getAsString();
 
-	Byte parseByte();
+	Byte getAsByte();
 
-	byte parseByteValue();
+	byte getAsByteValue();
 
-	Short parseShort();
+	Short getAsShort();
 
-	short parseShortValue();
+	short getAsShortValue();
 
-	Integer parseInteger();
+	Integer getAsInteger();
 
-	int parseIntValue();
+	int getAsIntValue();
 
-	Long parseLong();
+	Long getAsLong();
 
-	long parseLongValue();
+	long getAsLongValue();
 
-	Boolean parseBoolean();
+	Boolean getAsBoolean();
 
-	boolean parseBooleanValue();
+	boolean getAsBooleanValue();
 
-	Float parseFloat();
+	Float getAsFloat();
 
-	float parseFloatValue();
+	float getAsFloatValue();
 
-	Double parseDouble();
+	Double getAsDouble();
 
-	double parseDoubleValue();
+	double getAsDoubleValue();
 
-	char parseChar();
+	char getAsChar();
 
-	Character parseCharacter();
+	Character getAsCharacter();
 
-	BigInteger parseBigInteger();
+	BigInteger getAsBigInteger();
 
-	BigDecimal parseBigDecimal();
+	BigDecimal getAsBigDecimal();
 
-	Number parseNumber();
+	Number getAsNumber();
 
-	Class<?> parseClass();
+	Class<?> getAsClass();
 
-	Enum<?> parseEnum(Class<?> enumType);
+	Enum<?> getAsEnum(Class<?> enumType);
 }

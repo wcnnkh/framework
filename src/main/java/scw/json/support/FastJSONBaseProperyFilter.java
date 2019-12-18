@@ -4,7 +4,7 @@ import com.alibaba.fastjson.serializer.PropertyFilter;
 
 import scw.core.cglib.proxy.Factory;
 
-public class FastJSONBaseProperyFilter implements PropertyFilter {
+public final class FastJSONBaseProperyFilter implements PropertyFilter {
 	public static final FastJSONBaseProperyFilter BASE_PROPERY_FILTER = new FastJSONBaseProperyFilter();
 
 	private FastJSONBaseProperyFilter() {
