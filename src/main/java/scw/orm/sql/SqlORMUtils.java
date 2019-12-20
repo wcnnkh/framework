@@ -1,4 +1,4 @@
-package scw.orm.sql.support;
+package scw.orm.sql;
 
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -23,14 +23,10 @@ import scw.lang.NotSupportException;
 import scw.orm.ColumnFactory;
 import scw.orm.Filter;
 import scw.orm.ORMUtils;
-import scw.orm.sql.DefaultSqlMapper;
-import scw.orm.sql.DefaultTableNameMapping;
-import scw.orm.sql.SqlMapper;
-import scw.orm.sql.TableInstanceFactory;
-import scw.orm.sql.TableNameMapping;
 import scw.orm.sql.annotation.Index;
 import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.enums.OperationType;
+import scw.orm.sql.support.DefaultSqlFilter;
 import scw.sql.Sql;
 
 @SuppressWarnings("unchecked")

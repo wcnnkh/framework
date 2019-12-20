@@ -4,6 +4,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
+import scw.core.reflect.AnnotationFactory;
+import scw.core.reflect.SimpleAnnotationFactory;
+import scw.core.utils.StringUtils;
 import scw.lang.Description;
 import scw.orm.Column;
 import scw.orm.ORMException;
@@ -11,10 +14,17 @@ import scw.orm.ORMException;
 public class FieldColumn implements Column {
 	private Field field;
 	private Class<?> clazz;
+	private String name;
+	private AnnotationFactory annotationFactory;
 
 	public FieldColumn(Class<?> clazz, Field field) {
 		this.clazz = clazz;
 		this.field = field;
+		this.annotationFactory = new SimpleAnnotationFactory(field);
+		scw.orm.annotation.ColumnName columnName = getAnnotation(scw.orm.annotation.ColumnName.class);
+		if (columnName != null && !StringUtils.isEmpty(columnName.value())) {
+			this.name = columnName.value();
+		}
 	}
 
 	public final Field getField() {
@@ -22,7 +32,7 @@ public class FieldColumn implements Column {
 	}
 
 	public <T extends Annotation> T getAnnotation(Class<T> type) {
-		return field.getAnnotation(type);
+		return annotationFactory.getAnnotation(type);
 	}
 
 	public Object get(Object obj) throws ORMException {
@@ -52,7 +62,7 @@ public class FieldColumn implements Column {
 	}
 
 	public String getName() {
-		return field.getName();
+		return name == null ? field.getName() : name;
 	}
 
 	public Class<?> getDeclaringClass() {

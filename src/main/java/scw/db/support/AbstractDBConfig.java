@@ -21,12 +21,12 @@ import scw.mq.queue.MemoryQueue;
 import scw.mq.queue.Queue;
 import scw.orm.sql.GeneratorService;
 import scw.orm.sql.SqlMapper;
+import scw.orm.sql.SqlORMUtils;
 import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.support.MemcachedGeneratorService;
 import scw.orm.sql.support.MemoryGeneratorService;
 import scw.orm.sql.support.MySqlSqlDialect;
 import scw.orm.sql.support.RedisGeneratorService;
-import scw.orm.sql.support.SqlORMUtils;
 
 @SuppressWarnings("rawtypes")
 public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants, Destroy {

@@ -1,23 +1,27 @@
 package scw.orm.support;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.orm.AbstractColumnFactory;
 import scw.orm.Column;
+import scw.orm.ColumnFactory;
 
-public class CacheColumnFactory extends AbstractColumnFactory {
-	private volatile Map<Class<?>, Map<String, Column>> fieldDefinitionMap = new HashMap<Class<?>, Map<String, Column>>();
+public final class CacheColumnFactory implements ColumnFactory {
+	private Map<Class<?>, Map<String, Column>> cacheMap = new HashMap<Class<?>, Map<String, Column>>();
+	private ColumnFactory targetColumnFactory;
+
+	public CacheColumnFactory(ColumnFactory columnFactory) {
+		this.targetColumnFactory = columnFactory;
+	}
 
 	public Map<String, Column> getColumnMap(Class<?> clazz) {
-		Map<String, Column> map = fieldDefinitionMap.get(clazz);
+		Map<String, Column> map = cacheMap.get(clazz);
 		if (map == null) {
-			synchronized (fieldDefinitionMap) {
-				map = fieldDefinitionMap.get(clazz);
+			synchronized (cacheMap) {
+				map = cacheMap.get(clazz);
 				if (map == null) {
-					map = Collections.unmodifiableMap(analysisClass(clazz));
-					fieldDefinitionMap.put(clazz, map);
+					map = targetColumnFactory.getColumnMap(clazz);
+					cacheMap.put(clazz, map);
 				}
 			}
 		}

@@ -1,12 +1,12 @@
-package scw.orm.sql;
+package scw.orm.sql.support;
 
 import java.lang.reflect.Field;
 
 import scw.core.utils.StringUtils;
 import scw.orm.sql.annotation.Column;
-import scw.orm.support.DefaultColumn;
+import scw.orm.support.FieldColumn;
 
-public class TableColumn extends DefaultColumn {
+public class TableColumn extends FieldColumn {
 	private String name;
 
 	public TableColumn(Class<?> clazz, Field field) {

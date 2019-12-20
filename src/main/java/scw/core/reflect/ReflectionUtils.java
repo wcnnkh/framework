@@ -217,6 +217,39 @@ public abstract class ReflectionUtils {
 		return null;
 	}
 
+	public static Method findMethod(Class<?> clazz, String name, Object... args) {
+		Assert.notNull(clazz, "Class must not be null");
+		Assert.notNull(name, "Method name must not be null");
+		Class<?> searchType = clazz;
+		while (searchType != null) {
+			for (Method method : (searchType.isInterface() ? searchType.getMethods()
+					: searchType.getDeclaredMethods())) {
+				if (!method.getName().equals(name)) {
+					continue;
+				}
+
+				Class<?>[] parameterTypes = method.getParameterTypes();
+				if (parameterTypes.length != args.length) {
+					continue;
+				}
+
+				boolean b = true;
+				for (int i = 0; i < parameterTypes.length; i++) {
+					if (!ClassUtils.isAssignableValue(parameterTypes[i], args[i])) {
+						b = false;
+						break;
+					}
+				}
+
+				if (b) {
+					return method;
+				}
+			}
+			searchType = searchType.getSuperclass();
+		}
+		return null;
+	}
+
 	/**
 	 * Invoke the specified {@link Method} against the supplied target object
 	 * with no arguments. The target object can be {@code null} when invoking a

@@ -7,6 +7,7 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.orm.sql.AbstractResultMapping;
 import scw.orm.sql.DefaultTableSetterMapping;
+import scw.orm.sql.SqlORMUtils;
 import scw.orm.sql.TableNameMapping;
 import scw.orm.sql.ValueIndexMapping;
 

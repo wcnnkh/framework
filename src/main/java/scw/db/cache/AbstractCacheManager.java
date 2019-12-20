@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import scw.data.Cache;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.support.SqlORMUtils;
+import scw.orm.sql.SqlORMUtils;
 
 public abstract class AbstractCacheManager<C extends Cache> implements CacheManager {
 	public abstract C getCache();

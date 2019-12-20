@@ -1,11 +1,11 @@
-package scw.orm.sql;
+package scw.orm.sql.support;
 
 import java.lang.reflect.Field;
 
 import scw.orm.Column;
-import scw.orm.support.CacheColumnFactory;
+import scw.orm.support.FieldColumnFactory;
 
-public class TableColumnFactory extends CacheColumnFactory {
+public class TableColumnFactory extends FieldColumnFactory {
 	@Override
 	protected Column analysisField(Class<?> clazz, Field field) {
 		return new TableColumn(clazz, field);

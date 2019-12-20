@@ -13,8 +13,9 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.orm.sql.TableColumnFactory;
 import scw.orm.sql.annotation.Table;
+import scw.orm.sql.support.TableColumnFactory;
+import scw.orm.support.CacheColumnFactory;
 import scw.orm.support.DefaultMapper;
 import scw.orm.support.DefaultObjectOperations;
 import scw.orm.support.ObjectOperations;
@@ -32,8 +33,8 @@ public final class ORMUtils {
 	private static final ObjectOperations OBJECT_OPERATIONS;
 
 	static {
-		COLUMN_FACTORY = InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class, "orm.column.factory",
-				new TableColumnFactory());
+		COLUMN_FACTORY = new CacheColumnFactory(InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class,
+				"orm.column.factory", new TableColumnFactory()));
 		Collection<Filter> filters = new LinkedList<Filter>();
 		filters.addAll(
 				InstanceUtils.autoNewInstancesBySystemProperty(Filter.class, "orm.filters", Collections.EMPTY_LIST));
