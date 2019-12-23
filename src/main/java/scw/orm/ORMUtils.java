@@ -34,12 +34,13 @@ public final class ORMUtils {
 	private static final Mapper MAPPER;
 
 	static {
-		COLUMN_FACTORY = (InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class, "orm.column.factory",
-				new CacheColumnFactory(new MethodColumnFactory(
-						Arrays.asList(SystemPropertyUtils.getArrayProperty(String.class, "orm.method.column.getter",
-								new String[] { "get", "is" })),
-						Arrays.asList(SystemPropertyUtils.getArrayProperty(String.class, "orm.method.column.setter",
-								new String[] { "set" }))))));
+		COLUMN_FACTORY = new CacheColumnFactory(
+				InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class, "orm.column.factory",
+						new MethodColumnFactory(
+								Arrays.asList(SystemPropertyUtils.getArrayProperty(String.class,
+										"orm.method.column.getter", new String[] { "get", "is" })),
+								Arrays.asList(SystemPropertyUtils.getArrayProperty(String.class,
+										"orm.method.column.setter", new String[] { "set" })))));
 
 		Collection<Filter> filters = new LinkedList<Filter>();
 		filters.addAll(
