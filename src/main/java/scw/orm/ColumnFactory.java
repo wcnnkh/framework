@@ -3,5 +3,5 @@ package scw.orm;
 import java.util.Map;
 
 public interface ColumnFactory {
-	Map<String, Column> getColumnMap(Class<?> clazz);
+	Map<String, ? extends Column> getColumnMap(Class<?> clazz);
 }

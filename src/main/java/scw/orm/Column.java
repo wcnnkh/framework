@@ -13,7 +13,21 @@ public interface Column extends AnnotationFactory {
 
 	String getName();
 
+	/**
+	 * 是否支持获取数据
+	 * 
+	 * @return
+	 */
+	boolean isSupportGet();
+
 	Object get(Object obj) throws ORMException;
+
+	/**
+	 * 是否支持插入数据
+	 * 
+	 * @return
+	 */
+	boolean isSupportSet();
 
 	void set(Object obj, Object value) throws ORMException;
 

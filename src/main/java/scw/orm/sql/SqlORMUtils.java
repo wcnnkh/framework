@@ -22,11 +22,12 @@ import scw.core.utils.SystemPropertyUtils;
 import scw.lang.NotSupportException;
 import scw.orm.ColumnFactory;
 import scw.orm.Filter;
-import scw.orm.ORMUtils;
 import scw.orm.sql.annotation.Index;
 import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.enums.OperationType;
 import scw.orm.sql.support.DefaultSqlFilter;
+import scw.orm.sql.support.TableColumnFactory;
+import scw.orm.support.CacheColumnFactory;
 import scw.sql.Sql;
 
 @SuppressWarnings("unchecked")
@@ -47,9 +48,9 @@ public final class SqlORMUtils {
 					NoArgsInstanceFactory.class, "orm.sql.table.instance.factory", new TableInstanceFactory());
 			TableNameMapping tableNameMapping = InstanceUtils.autoNewInstanceBySystemProperty(TableNameMapping.class,
 					"orm.sql.table.name.mapping", new DefaultTableNameMapping());
-			SQL_MAPPER = new DefaultSqlMapper(tableNameMapping,
-					InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class, "orm.sql.column.factory",
-							ORMUtils.getColumnFactory()),
+			SQL_MAPPER = new DefaultSqlMapper(
+					tableNameMapping, InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class,
+							"orm.sql.column.factory", new CacheColumnFactory(new TableColumnFactory())),
 					filters, noArgsInstanceFactory);
 		} else {
 			try {

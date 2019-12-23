@@ -4,14 +4,13 @@ import java.lang.reflect.Field;
 
 import scw.core.utils.StringUtils;
 import scw.orm.sql.annotation.Column;
-import scw.orm.support.FieldColumn;
+import scw.orm.support.DefaultFieldColumn;
 
-public class TableColumn extends FieldColumn {
+public class TableColumn extends DefaultFieldColumn {
 	private String name;
 
 	public TableColumn(Class<?> clazz, Field field) {
-		super(clazz, field);
-
+		super(clazz, field, false, false);
 		Column column = getAnnotation(Column.class);
 		if (column != null && !StringUtils.isEmpty(column.name())) {
 			this.name = column.name();

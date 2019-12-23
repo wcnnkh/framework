@@ -1,5 +1,6 @@
 package scw.orm.sql.dialect.mysql;
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,12 +12,12 @@ import scw.core.utils.TypeUtils;
 import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.orm.FieldColumn;
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
 import scw.orm.sql.annotation.Counter;
 import scw.orm.sql.enums.CasType;
-import scw.orm.support.FieldColumn;
 import scw.orm.support.SimpleGetter;
 
 public final class UpdateSQLByBeanListen extends MysqlDialectSql {
@@ -53,7 +54,13 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 				continue;
 			}
 
-			if (changeMap.containsKey(column.getField().getName())) {
+			Field field = column.getField();
+			if (field == null) {
+				logger.warn("不支持的字段:{}", column.getName());
+				continue;
+			}
+
+			if (changeMap.containsKey(field.getName())) {
 				continue;
 			}
 
@@ -74,9 +81,15 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 			}
 
 			FieldColumn column = (FieldColumn) context.getColumn();
+			Field field = column.getField();
+			if (field == null) {
+				logger.warn("不支持的字段：{}", column.getName());
+				continue;
+			}
+
 			Object value = mappingOperations.getter(context, beanFieldListen);
 			Counter counter = context.getColumn().getAnnotation(Counter.class);
-			if (counter != null && TypeUtils.isNumber(column.getField().getType())) {
+			if (counter != null && TypeUtils.isNumber(field.getType())) {
 				Object oldValue = entry.getValue();
 				if (oldValue != null && value != null) {
 					// incr or decr
@@ -151,6 +164,12 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 			}
 
 			FieldColumn column = (FieldColumn) context.getColumn();
+			Field field = column.getField();
+			if (field == null) {
+				logger.warn("不支持的字段:{}", column.getName());
+				continue;
+			}
+
 			sb.append(AND);
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");

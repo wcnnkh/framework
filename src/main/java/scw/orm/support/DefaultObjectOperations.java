@@ -35,8 +35,12 @@ public class DefaultObjectOperations implements ObjectOperations {
 			return null;
 		}
 
-		final Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		for (MappingContext mappingContext : objectRelationalMapping) {
+			if (!mappingContext.getColumn().isSupportGet()) {
+				continue;
+			}
+
 			if (excludeNames.contains(mappingContext.getColumn().getName())) {
 				continue;
 			}
@@ -52,11 +56,15 @@ public class DefaultObjectOperations implements ObjectOperations {
 			return null;
 		}
 
-		final Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		Iterator<String> iterator = effectiveNames.iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = objectRelationalMapping.getMappingContext(iterator.next());
 			if (context == null) {
+				continue;
+			}
+
+			if (!context.getColumn().isSupportGet()) {
 				continue;
 			}
 
@@ -270,6 +278,10 @@ public class DefaultObjectOperations implements ObjectOperations {
 
 	protected void verify(ObjectRelationalMapping objectRelationalMapping, Object obj) {
 		for (MappingContext mappingContext : objectRelationalMapping) {
+			if (!mappingContext.getColumn().isSupportGet()) {
+				continue;
+			}
+
 			if (mapper.isEntity(mappingContext)) {
 				verify(mappingContext.getColumn().get(obj));
 			} else {

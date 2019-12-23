@@ -757,6 +757,25 @@ public final class ClassUtils {
 		return false;
 	}
 
+	public static boolean isAssignable(Collection<Class<?>> lhsTypes, Collection<Class<?>> rhsTypes) {
+		if (CollectionUtils.isEmpty(lhsTypes)) {
+			return CollectionUtils.isEmpty(rhsTypes);
+		}
+
+		if (lhsTypes.size() != (CollectionUtils.isEmpty(rhsTypes) ? 0 : rhsTypes.size())) {
+			return false;
+		}
+
+		Iterator<Class<?>> lhsIterator = lhsTypes.iterator();
+		Iterator<Class<?>> rhsIterator = rhsTypes.iterator();
+		while (lhsIterator.hasNext() && rhsIterator.hasNext()) {
+			if (!isAssignable(lhsIterator.next(), rhsIterator.next())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/**
 	 * Determine if the given type is assignable from the given value, assuming
 	 * setting by reflection. Considers primitive wrapper classes as assignable
@@ -771,6 +790,25 @@ public final class ClassUtils {
 	public static boolean isAssignableValue(Class<?> type, Object value) {
 		Assert.notNull(type, "Type must not be null");
 		return (value != null ? isAssignable(type, value.getClass()) : !type.isPrimitive());
+	}
+
+	public static boolean isAssignableValue(Collection<Class<?>> types, Collection<Object> values) {
+		if (CollectionUtils.isEmpty(types)) {
+			return CollectionUtils.isEmpty(values);
+		}
+
+		if (types.size() != (CollectionUtils.isEmpty(values) ? 0 : values.size())) {
+			return false;
+		}
+
+		Iterator<Class<?>> typeIterator = types.iterator();
+		Iterator<Object> valueIterator = values.iterator();
+		while (typeIterator.hasNext() && valueIterator.hasNext()) {
+			if (!isAssignableValue(typeIterator.next(), valueIterator.next())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

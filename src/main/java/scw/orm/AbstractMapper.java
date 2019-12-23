@@ -55,8 +55,8 @@ public abstract class AbstractMapper implements Mapper {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected <T> void create(Class<T> declaringClass, MappingContext superContext, Class<?> clazz, T bean,
 			SetterMapping setterMapping) throws ORMException {
-		Map<String, Column> map = getColumnMap(clazz);
-		for (Entry<String, Column> entry : map.entrySet()) {
+		Map<String, ? extends Column> map = getColumnMap(clazz);
+		for (Entry<String, ? extends Column> entry : map.entrySet()) {
 			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
 			if (isIgnore(context)) {
 				continue;
@@ -90,8 +90,8 @@ public abstract class AbstractMapper implements Mapper {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void iterator(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
 			IteratorMapping iterator) throws ORMException {
-		Map<String, Column> map = getColumnMap(clazz);
-		for (Entry<String, Column> entry : map.entrySet()) {
+		Map<String, ? extends Column> map = getColumnMap(clazz);
+		for (Entry<String, ? extends Column> entry : map.entrySet()) {
 			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
 			if (isIgnore(context)) {
 				continue;
@@ -108,8 +108,8 @@ public abstract class AbstractMapper implements Mapper {
 
 	protected void appendMappingContexts(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
 			List<MappingContext> list, IteratorCallback<MappingContext> filter) {
-		Map<String, Column> map = getColumnMap(clazz);
-		for (Entry<String, Column> entry : map.entrySet()) {
+		Map<String, ? extends Column> map = getColumnMap(clazz);
+		for (Entry<String, ? extends Column> entry : map.entrySet()) {
 			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
 			if (isIgnore(context)) {
 				continue;
@@ -268,8 +268,8 @@ public abstract class AbstractMapper implements Mapper {
 	protected void appendObjectRelationalMapping(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
 			Collection<MappingContext> primaryKeys, Collection<MappingContext> notPrimaryKeys,
 			Collection<MappingContext> entitys, Map<String, MappingContext> contextMap) {
-		Map<String, scw.orm.Column> map = getColumnMap(clazz);
-		for (Entry<String, scw.orm.Column> entry : map.entrySet()) {
+		Map<String, ? extends scw.orm.Column> map = getColumnMap(clazz);
+		for (Entry<String, ? extends scw.orm.Column> entry : map.entrySet()) {
 			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
 			if (isIgnore(context)) {
 				continue;

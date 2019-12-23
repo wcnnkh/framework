@@ -1,5 +1,6 @@
 package scw.orm;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -14,10 +15,9 @@ import scw.core.utils.SystemPropertyUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.sql.annotation.Table;
-import scw.orm.sql.support.TableColumnFactory;
-import scw.orm.support.CacheColumnFactory;
 import scw.orm.support.DefaultMapper;
 import scw.orm.support.DefaultObjectOperations;
+import scw.orm.support.MethodColumnFactory;
 import scw.orm.support.ObjectOperations;
 
 @SuppressWarnings("unchecked")
@@ -28,32 +28,27 @@ public final class ORMUtils {
 	 */
 	public static final char PRIMARY_KEY_CONNECTOR_CHARACTER = StringUtils
 			.parseChar(SystemPropertyUtils.getProperty("orm.primary.key.connector.character"), ':');
-	private static final ColumnFactory COLUMN_FACTORY;
-	private static final Mapper MAPPER;
 	private static final ObjectOperations OBJECT_OPERATIONS;
 
 	static {
-		COLUMN_FACTORY = new CacheColumnFactory(InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class,
-				"orm.column.factory", new TableColumnFactory()));
 		Collection<Filter> filters = new LinkedList<Filter>();
 		filters.addAll(
 				InstanceUtils.autoNewInstancesBySystemProperty(Filter.class, "orm.filters", Collections.EMPTY_LIST));
 		NoArgsInstanceFactory noArgsInstanceFactory = InstanceUtils.autoNewInstanceBySystemProperty(
 				NoArgsInstanceFactory.class, "orm.instance.factory", new SimpleNoArgsInstanceFactory());
-		MAPPER = new DefaultMapper(COLUMN_FACTORY, filters, filters, noArgsInstanceFactory);
-		OBJECT_OPERATIONS = new DefaultObjectOperations(MAPPER);
+		ColumnFactory columnFactory = InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class,
+				"orm.column.factory",
+				new MethodColumnFactory(
+						Arrays.asList(SystemPropertyUtils.getArrayProperty(String.class, "orm.method.column.getter",
+								new String[] { "get", "is" })),
+						Arrays.asList(SystemPropertyUtils.getArrayProperty(String.class, "orm.method.column.setter",
+								new String[] { "set" }))));
+		OBJECT_OPERATIONS = new DefaultObjectOperations(
+				new DefaultMapper(columnFactory, filters, filters, noArgsInstanceFactory));
 	}
 
 	private ORMUtils() {
 	};
-
-	public static ColumnFactory getColumnFactory() {
-		return COLUMN_FACTORY;
-	}
-
-	public static Mapper getMapper() {
-		return MAPPER;
-	}
 
 	public static void registerCglibProxyTableBean(String pageName) {
 		if (!StringUtils.isEmpty(pageName)) {

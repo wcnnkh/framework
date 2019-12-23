@@ -13,7 +13,7 @@ import scw.orm.ColumnFactory;
 public abstract class FieldColumnFactory implements ColumnFactory {
 
 	protected Column analysisField(Class<?> clazz, Field field) {
-		return new FieldColumn(clazz, field);
+		return new DefaultFieldColumn(clazz, field, false, true);
 	}
 
 	public Map<String, Column> getColumnMap(Class<?> clazz) {

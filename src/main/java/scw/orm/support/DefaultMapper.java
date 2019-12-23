@@ -39,7 +39,7 @@ public class DefaultMapper extends AbstractMapper {
 		return instanceFactory.getInstance(clazz);
 	}
 
-	public Map<String, Column> getColumnMap(Class<?> clazz) {
+	public Map<String, ? extends Column> getColumnMap(Class<?> clazz) {
 		return columnFactory.getColumnMap(clazz);
 	}
 
