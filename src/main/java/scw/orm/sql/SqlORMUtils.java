@@ -48,9 +48,9 @@ public final class SqlORMUtils {
 					NoArgsInstanceFactory.class, "orm.sql.table.instance.factory", new TableInstanceFactory());
 			TableNameMapping tableNameMapping = InstanceUtils.autoNewInstanceBySystemProperty(TableNameMapping.class,
 					"orm.sql.table.name.mapping", new DefaultTableNameMapping());
-			SQL_MAPPER = new DefaultSqlMapper(
-					tableNameMapping, InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class,
-							"orm.sql.column.factory", new CacheColumnFactory(new TableColumnFactory())),
+			SQL_MAPPER = new DefaultSqlMapper(tableNameMapping,
+					new CacheColumnFactory(InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class,
+							"orm.sql.column.factory", new TableColumnFactory())),
 					filters, noArgsInstanceFactory);
 		} else {
 			try {

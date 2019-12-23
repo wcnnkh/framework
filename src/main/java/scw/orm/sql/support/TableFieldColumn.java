@@ -6,10 +6,10 @@ import scw.core.utils.StringUtils;
 import scw.orm.sql.annotation.Column;
 import scw.orm.support.DefaultFieldColumn;
 
-public class TableColumn extends DefaultFieldColumn {
+public class TableFieldColumn extends DefaultFieldColumn {
 	private String name;
 
-	public TableColumn(Class<?> clazz, Field field) {
+	public TableFieldColumn(Class<?> clazz, Field field) {
 		super(clazz, field, false, false);
 		Column column = getAnnotation(Column.class);
 		if (column != null && !StringUtils.isEmpty(column.name())) {

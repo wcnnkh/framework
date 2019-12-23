@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import scw.core.Assert;
-import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.StringUtils;
 import scw.orm.ColumnFactory;
 import scw.orm.MethodColumn;
@@ -35,6 +34,22 @@ public class MethodColumnFactory implements ColumnFactory {
 
 	public Map<String, MethodColumn> getColumnMap(Class<?> clazz) {
 		Map<String, MethodColumn> map = new LinkedHashMap<String, MethodColumn>();
+		for (Field field : clazz.getDeclaredFields()) {
+			if (Modifier.isStatic(field.getModifiers())) {
+				continue;
+			}
+
+			if (map.containsKey(field.getName())) {
+				continue;
+			}
+
+			String methodNameSuffix = StringUtils.toLowerCase(field.getName(), 0, 1);
+			map.put(field.getName(),
+					createColumn(clazz, getMethod(clazz, getterMethodPrefix, methodNameSuffix, new Class<?>[0]),
+							getMethod(clazz, setterMethodPrefix, methodNameSuffix, new Class<?>[0]), field,
+							field.getName()));
+		}
+
 		for (Method method : clazz.getDeclaredMethods()) {
 			if (Modifier.isStatic(method.getModifiers())) {
 				continue;
@@ -76,25 +91,12 @@ public class MethodColumnFactory implements ColumnFactory {
 						}
 
 						map.put(fieldName,
-								createColumn(clazz, getMethod(clazz, getterMethodPrefix, name, new Class<?>[] {}),
-										method, getField(clazz, fieldName), fieldName));
+								createColumn(clazz, getMethod(clazz, getterMethodPrefix, name, new Class<?>[0]), method,
+										getField(clazz, fieldName), fieldName));
 						break;
 					}
 				}
 			}
-		}
-
-		for (Field field : clazz.getDeclaredFields()) {
-			if (Modifier.isStatic(field.getModifiers())) {
-				continue;
-			}
-
-			if (map.containsKey(field.getName())) {
-				continue;
-			}
-
-			map.put(field.getName(), createColumn(clazz, ReflectionUtils.getGetterMethod(clazz, field),
-					ReflectionUtils.getSetterMethod(clazz, field), field, field.getName()));
 		}
 		return map;
 	}

@@ -27,6 +27,7 @@ public class DefaultMethodColumn extends AbstractColumn implements MethodColumn 
 		super(declaringClass);
 		this.getter = getter;
 		this.setter = setter;
+		this.field = field;
 		this.name = name;
 		LinkedList<AnnotationFactory> annotationFactories = new LinkedList<AnnotationFactory>();
 		if (field != null) {

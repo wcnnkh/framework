@@ -8,6 +8,6 @@ import scw.orm.support.FieldColumnFactory;
 public class TableColumnFactory extends FieldColumnFactory {
 	@Override
 	protected Column analysisField(Class<?> clazz, Field field) {
-		return new TableColumn(clazz, field);
+		return new TableFieldColumn(clazz, field);
 	}
 }
