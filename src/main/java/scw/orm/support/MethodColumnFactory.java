@@ -40,6 +40,10 @@ public class MethodColumnFactory implements ColumnFactory {
 				continue;
 			}
 
+			if (Modifier.isPrivate(method.getModifiers())) {
+				continue;
+			}
+
 			Class<?>[] parameterTypes = method.getParameterTypes();
 			if (parameterTypes == null || parameterTypes.length == 0) {
 				for (String prefix : getterMethodPrefix) {
@@ -103,6 +107,10 @@ public class MethodColumnFactory implements ColumnFactory {
 			Class<?>[] parameterTypes) {
 		for (Method method : clazz.getDeclaredMethods()) {
 			if (Modifier.isStatic(method.getModifiers())) {
+				continue;
+			}
+
+			if (Modifier.isPrivate(method.getModifiers())) {
 				continue;
 			}
 

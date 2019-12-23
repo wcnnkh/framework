@@ -1448,8 +1448,13 @@ public abstract class ReflectionUtils {
 		}
 
 		if (getter != null) {
+			if (Modifier.isPrivate(getter.getModifiers())) {
+				return null;
+			}
+
 			getter.setAccessible(true);
 		}
+
 		return getter;
 	}
 
@@ -1482,6 +1487,9 @@ public abstract class ReflectionUtils {
 		}
 
 		if (setter != null) {
+			if (Modifier.isPrivate(setter.getModifiers())) {
+				return null;
+			}
 			setter.setAccessible(true);
 		}
 		return setter;
