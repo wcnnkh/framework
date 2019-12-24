@@ -8,6 +8,7 @@ import org.w3c.dom.NodeList;
 
 import scw.application.ApplicationConfigUtils;
 import scw.beans.dubbo.DubboUtils;
+import scw.beans.method.MethodBeanConfigFactory;
 import scw.beans.property.XmlPropertyFactory;
 import scw.beans.rpc.HttpRpcBeanConfigFactory;
 import scw.beans.xml.XmlBeanConfigFactory;
@@ -48,6 +49,10 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		return ApplicationConfigUtils.getServiceAnnotationPackage(propertyFactory);
 	}
 
+	protected String getBeanAnnotationPackage() {
+		return ApplicationConfigUtils.getBeanAnnotationPackage(propertyFactory);
+	}
+
 	private void appendNameMapping(NodeList nodeList) {
 		if (nodeList == null) {
 			return;
@@ -77,6 +82,8 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 						getServicePackage()));
 				addBeanConfigFactory(
 						new HttpRpcBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList));
+				addBeanConfigFactory(new MethodBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
+						getBeanAnnotationPackage()));
 				BeanConfigFactory dubboBeanConfigFactory = DubboUtils
 						.getReferenceBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList);
 				if (dubboBeanConfigFactory != null) {

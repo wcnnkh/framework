@@ -14,9 +14,9 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	private final String id;
 	private NoArgumentBeanMethod[] initMethods;
 	private NoArgumentBeanMethod[] destroyMethods;
-	private boolean proxy;
+	protected boolean proxy;
 	protected final PropertyFactory propertyFactory;
-	private boolean singleton;
+	protected boolean singleton;
 	private FieldDefinition[] autowriteFieldDefinition;
 	protected final ValueWiredManager valueWiredManager;
 

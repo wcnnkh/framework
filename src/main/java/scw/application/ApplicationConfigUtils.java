@@ -16,6 +16,10 @@ public final class ApplicationConfigUtils {
 		return getPackageName(propertyFactory, "scan.service");
 	}
 
+	public static String getBeanAnnotationPackage(PropertyFactory propertyFactory) {
+		return getPackageName(propertyFactory, "scan.bean");
+	}
+
 	public static String getCrontabAnnotationPackage(PropertyFactory propertyFactory) {
 		return getPackageName(propertyFactory, "scan.crontab");
 	}
