@@ -50,7 +50,7 @@ public class BuiltInCglibProxyAdapter extends AbsttractProxyAdapter {
 		}
 
 		public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-			Object ignoreReturn = ProxyUtils.ignoreMethod(proxy, method, args);
+			Object ignoreReturn = ProxyUtils.ignoreMethod(obj, method, args);
 			if (ignoreReturn != null) {
 				return ignoreReturn;
 			}

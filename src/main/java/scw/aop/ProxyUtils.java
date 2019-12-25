@@ -1,8 +1,6 @@
 package scw.aop;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,8 +9,6 @@ import java.util.Collections;
 import scw.aop.support.BuiltInCglibProxyAdapter;
 import scw.aop.support.JdkProxyAdapter;
 import scw.core.instance.InstanceUtils;
-import scw.core.reflect.ReflectionUtils;
-import scw.lang.NestedRuntimeException;
 
 public final class ProxyUtils {
 	private static final MultipleProxyAdapter PROXY_ADAPTER = new MultipleProxyAdapter();
@@ -107,29 +103,6 @@ public final class ProxyUtils {
 			return filterChain.doFilter(
 					instnace == null ? new EmptyInvoker(method) : new ReflectInvoker(instnace, method), proxy,
 					targetClass, method, args);
-		}
-	}
-
-	public static InvocationHandler getJdkInvocationHandler(Object proxy) {
-		Class<?> clazz = proxy.getClass().getSuperclass();
-		if (clazz == null || clazz == Object.class) {
-			return null;
-		}
-
-		Field field;
-		try {
-			field = clazz.getDeclaredField("h");
-		} catch (NoSuchFieldException e) {
-			return null;
-		}
-
-		ReflectionUtils.setAccessibleField(field);
-		try {
-			return (InvocationHandler) field.get(proxy);
-		} catch (IllegalArgumentException e) {
-			throw new NestedRuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new NestedRuntimeException(e);
 		}
 	}
 }
