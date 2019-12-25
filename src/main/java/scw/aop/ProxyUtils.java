@@ -1,5 +1,6 @@
 package scw.aop;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -93,7 +94,8 @@ public final class ProxyUtils {
 				new DefaultFilterChain(filters, filterChain));
 	}
 
-	private static final class InstanceFilter implements Filter {
+	private static final class InstanceFilter implements Filter, Serializable{
+		private static final long serialVersionUID = 1L;
 		private final Object instnace;
 
 		public InstanceFilter(Object instance) {

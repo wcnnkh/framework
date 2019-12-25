@@ -1,5 +1,6 @@
 package scw.aop.support;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -32,7 +33,8 @@ public class JdkProxyAdapter extends AbsttractProxyAdapter {
 				new FiltersInvocationHandler(clazz, filters, filterChain));
 	}
 	
-	private static final class FiltersInvocationHandler implements InvocationHandler {
+	private static final class FiltersInvocationHandler implements InvocationHandler, Serializable{
+		private static final long serialVersionUID = 1L;
 		private final Collection<? extends Filter> filters;
 		private final Class<?> targetClass;
 		private final FilterChain filterChain;
@@ -53,5 +55,9 @@ public class JdkProxyAdapter extends AbsttractProxyAdapter {
 			FilterChain filterChain = new DefaultFilterChain(filters, this.filterChain);
 			return filterChain.doFilter(new EmptyInvoker(method), proxy, targetClass, method, args);
 		}
+	}
+
+	public Class<?> getUserClass(Class<?> clazz) {
+		return clazz.getInterfaces()[0];
 	}
 }

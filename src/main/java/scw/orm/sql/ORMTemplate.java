@@ -2,9 +2,13 @@ package scw.orm.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,12 +21,14 @@ import scw.core.utils.StringUtils;
 import scw.orm.IteratorMapping;
 import scw.orm.MappingContext;
 import scw.orm.ORMException;
+import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.annotation.Generator;
 import scw.orm.sql.annotation.Table;
 import scw.orm.sql.dialect.MysqlSelect;
 import scw.orm.sql.dialect.PaginationSql;
 import scw.orm.sql.dialect.Select;
 import scw.orm.sql.enums.OperationType;
+import scw.orm.sql.enums.TableStructureResultField;
 import scw.orm.sql.support.DefaultResultMapping;
 import scw.orm.sql.support.DefaultResultSet;
 import scw.sql.ResultSetMapper;
@@ -368,5 +374,54 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	@Deprecated
 	public Select createSelect() {
 		return new MysqlSelect(this, getSqlDialect());
+	}
+
+	public TableChange getTableChange(Class<?> tableClass) {
+		return getTableChange(tableClass, null);
+	}
+
+	public TableChange getTableChange(Class<?> tableClass, String tableName) {
+		String tName = getSqlDialect().getTableName(tableClass, tableName);
+		Sql sql = getSqlDialect().toTableStructureSql(tableClass, tName, Arrays.asList(TableStructureResultField.NAME));
+		List<String[]> list = select(String[].class, sql);
+		HashSet<String> hashSet = new HashSet<String>();
+		ObjectRelationalMapping mapping = getSqlMapper().getObjectRelationalMapping(tableClass);
+		List<String> deleteList = new LinkedList<String>();
+		for (String[] names : list) {
+			String name = names[0];
+			hashSet.add(name);
+			if (mapping.getMappingContext(name) == null) {// 在现在的表结构中不存在，应该删除
+				deleteList.add(name);
+			}
+		}
+
+		List<MappingContext> addList = new LinkedList<MappingContext>();
+		Iterator<MappingContext> iterator = mapping.iteratorPrimaryKeyAndNotPrimaryKey();
+		while (iterator.hasNext()) {
+			MappingContext mappingContext = iterator.next();
+			if (!hashSet.contains(mappingContext.getColumn().getName())) {// 在已有的数据库中不存在，应该添加
+				addList.add(mappingContext);
+			}
+		}
+
+		return new SimpleTableChange(deleteList, addList);
+	}
+
+	private static final class SimpleTableChange implements TableChange {
+		private Collection<String> deleteNames;
+		private Collection<MappingContext> addMappingContexts;
+
+		public SimpleTableChange(Collection<String> deleteNames, Collection<MappingContext> addMappingContexts) {
+			this.deleteNames = deleteNames;
+			this.addMappingContexts = addMappingContexts;
+		}
+
+		public Collection<String> getDeleteNames() {
+			return deleteNames;
+		}
+
+		public Collection<MappingContext> getAddMappingContexts() {
+			return addMappingContexts;
+		}
 	}
 }

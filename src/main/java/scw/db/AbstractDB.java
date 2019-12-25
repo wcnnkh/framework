@@ -3,8 +3,10 @@ package scw.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,7 +17,9 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.serializer.SerializerUtils;
+import scw.orm.MappingContext;
 import scw.orm.sql.ORMTemplate;
+import scw.orm.sql.TableChange;
 import scw.orm.sql.annotation.Table;
 import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.enums.OperationType;
@@ -23,7 +27,7 @@ import scw.sql.Sql;
 import scw.transaction.sql.SqlTransactionUtils;
 
 public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<AsyncExecute>, DBConfig, Init {
-	
+
 	public SqlDialect getSqlDialect() {
 		return getDataBase().getSqlDialect();
 	}
@@ -73,6 +77,28 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 			}
 
 			createTable(tableClass, false);
+
+			// 检查表变更
+			checkTableChange(tableClass);
+		}
+	}
+
+	// 检查表变更
+	protected void checkTableChange(Class<?> tableClass) {
+		TableChange tableChange = getTableChange(tableClass);
+		List<String> addList = new LinkedList<String>();
+		if (CollectionUtils.isEmpty(tableChange.getAddMappingContexts())) {
+			for (MappingContext mappingContext : tableChange.getAddMappingContexts()) {
+				addList.add(mappingContext.getColumn().getName());
+			}
+		}
+
+		if (!CollectionUtils.isEmpty(tableChange.getDeleteNames()) || !CollectionUtils.isEmpty(addList)) {
+			// 如果存在字段变量
+			if(logger.isWarnEnabled()){
+				logger.warn("{}存在字段变更addList={}, deleteList={}", tableClass.getName(), Arrays.toString(addList.toArray()),
+						Arrays.toString(tableChange.getDeleteNames().toArray()));
+			}
 		}
 	}
 

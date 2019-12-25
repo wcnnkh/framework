@@ -3,8 +3,10 @@ package scw.orm.sql.support;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 
 import scw.core.FieldSetterListen;
+import scw.core.utils.CollectionUtils;
 import scw.orm.sql.SqlMapper;
 import scw.orm.sql.SqlORMUtils;
 import scw.orm.sql.dialect.AbstractSqlDialect;
@@ -19,6 +21,7 @@ import scw.orm.sql.dialect.mysql.SelectByIdSQL;
 import scw.orm.sql.dialect.mysql.SelectInIdSQL;
 import scw.orm.sql.dialect.mysql.UpdateSQL;
 import scw.orm.sql.dialect.mysql.UpdateSQLByBeanListen;
+import scw.orm.sql.enums.TableStructureResultField;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 
@@ -78,4 +81,35 @@ public class MySqlSqlDialect extends AbstractSqlDialect {
 		return new MaxIdSql(getSqlMapper(), clazz, tableName, idField);
 	}
 
+	protected String getTableStructureField(TableStructureResultField field) {
+		switch (field) {
+		case NAME:
+			return "COLUMN_NAME";
+		default:
+			return null;
+		}
+	}
+
+	public Sql toTableStructureSql(Class<?> clazz, String tableName, Collection<TableStructureResultField> fields) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("select ");
+		if (CollectionUtils.isEmpty(fields)) {
+			sb.append("*");
+		} else {
+			Iterator<TableStructureResultField> iterator = fields.iterator();
+			while (iterator.hasNext()) {
+				String name = getTableStructureField(iterator.next());
+				if (name == null) {
+					continue;
+				}
+
+				sb.append(name);
+				if (iterator.hasNext()) {
+					sb.append(",");
+				}
+			}
+		}
+		sb.append(" from INFORMATION_SCHEMA.COLUMNS where table_name=?");
+		return new SimpleSql(sb.toString(), tableName);
+	}
 }

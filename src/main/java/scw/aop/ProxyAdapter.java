@@ -10,7 +10,7 @@ import java.util.Collection;
  */
 public interface ProxyAdapter {
 	/**
-	 * 是否支持代理
+	 * 是否支持代理(桥接器)
 	 * 
 	 * @param clazz
 	 * @return
@@ -36,4 +36,12 @@ public interface ProxyAdapter {
 	 * @return
 	 */
 	boolean isProxy(Class<?> clazz);
+
+	/**
+	 * 获取未被代理的原始类型
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	Class<?> getUserClass(Class<?> clazz);
 }

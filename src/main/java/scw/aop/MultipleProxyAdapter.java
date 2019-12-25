@@ -37,11 +37,11 @@ public class MultipleProxyAdapter extends LinkedList<ProxyAdapter> implements Pr
 
 	public boolean isProxy(Class<?> clazz) {
 		for (ProxyAdapter proxyAdapter : this) {
-			if (proxyAdapter.isSupport(clazz)) {
-				return proxyAdapter.isProxy(clazz);
+			if (proxyAdapter.isProxy(clazz)) {
+				return true;
 			}
 		}
-		throw new NotSupportException(clazz.getName());
+		return false;
 	}
 
 	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Collection<? extends Filter> filters,
@@ -52,5 +52,14 @@ public class MultipleProxyAdapter extends LinkedList<ProxyAdapter> implements Pr
 			}
 		}
 		throw new NotSupportException(clazz.getName());
+	}
+
+	public Class<?> getUserClass(Class<?> proxyClass) {
+		for (ProxyAdapter proxyAdapter : this) {
+			if (proxyAdapter.isProxy(proxyClass)) {
+				return proxyAdapter.getUserClass(proxyClass);
+			}
+		}
+		return proxyClass;
 	}
 }

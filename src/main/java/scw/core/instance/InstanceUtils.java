@@ -2,7 +2,6 @@ package scw.core.instance;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -10,8 +9,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import scw.aop.Invoker;
-import scw.aop.ReflectInvoker;
 import scw.core.PropertyFactory;
 import scw.core.SystemPropertyFactory;
 import scw.core.annotation.DefaultValue;
@@ -217,14 +214,6 @@ public final class InstanceUtils {
 
 	public static InstanceFactory getSingleInstanceFactory() {
 		return SINGLE_INSTANCE_FACTORY;
-	}
-
-	public static Invoker getInvoker(InstanceFactory instanceFactory, Class<?> clz, Method method) {
-		if (Modifier.isStatic(method.getModifiers())) {
-			return new ReflectInvoker(null, method);
-		} else {
-			return new ReflectInvoker(instanceFactory.getInstance(clz), method);
-		}
 	}
 
 	@SuppressWarnings("unchecked")

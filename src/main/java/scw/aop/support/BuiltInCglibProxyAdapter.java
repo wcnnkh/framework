@@ -1,5 +1,6 @@
 package scw.aop.support;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -35,7 +36,8 @@ public class BuiltInCglibProxyAdapter extends AbsttractProxyAdapter {
 				new FiltersConvertCglibMethodInterceptor(clazz, filters, filterChain));
 	}
 
-	private static final class FiltersConvertCglibMethodInterceptor implements MethodInterceptor {
+	private static final class FiltersConvertCglibMethodInterceptor implements MethodInterceptor, Serializable {
+		private static final long serialVersionUID = 1L;
 		private final Collection<? extends Filter> filters;
 		private final Class<?> targetClass;
 		private final FilterChain filterChain;
@@ -74,5 +76,13 @@ public class BuiltInCglibProxyAdapter extends AbsttractProxyAdapter {
 				throw NestedExceptionUtils.excludeInvalidNestedExcpetion(e);
 			}
 		}
+	}
+
+	public Class<?> getUserClass(Class<?> clazz) {
+		Class<?> clz = clazz.getSuperclass();
+		if (clz == null || clz == Object.class) {
+			return clazz;
+		}
+		return clz;
 	}
 }

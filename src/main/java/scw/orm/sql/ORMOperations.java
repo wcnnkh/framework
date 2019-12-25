@@ -88,4 +88,8 @@ public interface ORMOperations {
 	void iterator(Sql sql, final IteratorCallback<ResultMapping> iterator);
 
 	<T> void iterator(Sql sql, Class<T> type, IteratorCallback<T> iterator);
+
+	TableChange getTableChange(Class<?> tableClass);
+
+	TableChange getTableChange(Class<?> tableClass, String tableName);
 }

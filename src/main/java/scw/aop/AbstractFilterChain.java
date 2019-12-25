@@ -2,7 +2,7 @@ package scw.aop;
 
 import java.lang.reflect.Method;
 
-public abstract class AbstractFilterChain implements FilterChain {
+public abstract class AbstractFilterChain implements FilterChain{
 	private final FilterChain chain;
 
 	public AbstractFilterChain(FilterChain chain) {
