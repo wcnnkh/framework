@@ -12,6 +12,8 @@ import scw.beans.BeanFactory;
 import scw.core.Destroy;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
+import scw.json.JSONUtils;
+import scw.result.Result;
 
 public abstract class AbstractChannel implements Channel, Destroy {
 	private final long createTime;
@@ -126,5 +128,11 @@ public abstract class AbstractChannel implements Channel, Destroy {
 
 	public long getCreateTime() {
 		return createTime;
+	}
+
+	public void write(Object obj) throws Throwable {
+		if (obj != null && getLogger().isWarnEnabled() && obj instanceof Result && ((Result) obj).isError()) {
+			getLogger().warn("fail:{}, result={}", this.toString(), JSONUtils.toJSONString(obj));
+		}
 	}
 }

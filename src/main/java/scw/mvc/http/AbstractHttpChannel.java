@@ -11,8 +11,8 @@ import scw.beans.BeanFactory;
 import scw.core.parameter.ParameterConfig;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
-import scw.json.JSONUtils;
 import scw.json.JSONSupport;
+import scw.json.JSONUtils;
 import scw.mvc.MVCUtils;
 import scw.mvc.parameter.AbstractParameterChannel;
 import scw.net.http.Cookie;
@@ -35,8 +35,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	private final String jsonp;
 
 	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(BeanFactory beanFactory,
-			JSONSupport jsonParseSupport, boolean cookieValue,
-			R request, P response, String jsonp) {
+			JSONSupport jsonParseSupport, boolean cookieValue, R request, P response, String jsonp) {
 		super(beanFactory, jsonParseSupport);
 		this.cookieValue = cookieValue;
 		this.request = new HttpParameterRequest(request, this);
@@ -54,7 +53,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 		} else if (Authorization.class == parameterConfig.getType()) {
 			HttpChannelUserSessionFactory httpChannelUserSessionFactory = getBean(HttpChannelUserSessionFactory.class);
 			return new HttpChannelAuthorization(this, httpChannelUserSessionFactory);
-		}else if(IP.class == parameterConfig.getType()){
+		} else if (IP.class == parameterConfig.getType()) {
 			return new SimpleIP(request.getIP());
 		}
 		return super.getParameter(parameterConfig);
@@ -135,6 +134,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 
 	public void write(Object obj) throws Throwable {
 		MVCUtils.httpWrite(this, jsonp, jsonParseSupport, obj);
+		super.write(obj);
 	}
 
 	public InputStream getInputStream() throws IOException {
