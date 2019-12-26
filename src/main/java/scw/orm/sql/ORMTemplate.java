@@ -382,7 +382,8 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 
 	public TableChange getTableChange(Class<?> tableClass, String tableName) {
 		String tName = getSqlDialect().getTableName(tableClass, tableName);
-		Sql sql = getSqlDialect().toTableStructureSql(tableClass, tName, Arrays.asList(TableStructureResultField.NAME));
+		Sql sql = getSqlDialect().toTableStructureSql(tableClass, tName,
+				Arrays.asList(TableStructureResultField.NAME));
 		List<String[]> list = select(String[].class, sql);
 		HashSet<String> hashSet = new HashSet<String>();
 		ObjectRelationalMapping mapping = getSqlMapper().getObjectRelationalMapping(tableClass);

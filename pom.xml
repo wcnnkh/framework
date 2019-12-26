@@ -108,6 +108,12 @@
 			<artifactId>jedis</artifactId>
 			<version>${jedis.version}</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.googlecode.xmemcached/xmemcached -->
@@ -246,7 +252,7 @@
 			</exclusions>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<!-- java编译插件 -->

@@ -45,5 +45,6 @@ public interface SqlDialect {
 
 	Sql toMaxIdSql(Class<?> clazz, String tableName, String idField) throws SqlDialectException;
 
-	Sql toTableStructureSql(Class<?> clazz, String tableName, Collection<TableStructureResultField> fields);
+	Sql toTableStructureSql(Class<?> clazz, String tableName,
+			Collection<TableStructureResultField> fields);
 }

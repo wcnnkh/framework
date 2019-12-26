@@ -90,7 +90,8 @@ public class MySqlSqlDialect extends AbstractSqlDialect {
 		}
 	}
 
-	public Sql toTableStructureSql(Class<?> clazz, String tableName, Collection<TableStructureResultField> fields) {
+	public Sql toTableStructureSql(Class<?> clazz, String tableName,
+			Collection<TableStructureResultField> fields) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select ");
 		if (CollectionUtils.isEmpty(fields)) {
@@ -109,7 +110,7 @@ public class MySqlSqlDialect extends AbstractSqlDialect {
 				}
 			}
 		}
-		sb.append(" from INFORMATION_SCHEMA.COLUMNS where table_name=?");
-		return new SimpleSql(sb.toString(), tableName);
+		sb.append(" from INFORMATION_SCHEMA.COLUMNS where table_schema=database() and table_name=?");
+		return new SimpleSql(sb.toString(), getTableName(clazz, tableName));
 	}
 }

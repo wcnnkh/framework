@@ -118,6 +118,10 @@ public final class Log4jUtils {
 
 		// 过滤无用日志
 		properties.put("log4j.logger.org.apache.dubbo", "error");
+		properties.put("log4j.logger.org.apache.curator", "warn");
+		properties.put("log4j.logger.net.rubyeye.xmemcached", "warn");
+		properties.put("log4j.logger.org.apache.zookeeper", "warn");
+		properties.put("log4j.logger.com.alibaba.druid", "warn");
 
 		for (KeyValuePair<String, Level> entry : LoggerLevelUtils.getLevelConfigList()) {
 			properties.put("log4j.logger." + entry.getKey(), entry.getValue().name());

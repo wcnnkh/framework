@@ -8,7 +8,7 @@ import scw.beans.property.AbstractCharsetNameValueFormat;
 import scw.core.Constants;
 import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
-import scw.core.utils.ConfigUtils;
+import scw.util.ConfigUtils;
 
 public final class XmlToListMapParse extends AbstractCharsetNameValueFormat implements ConfigParse {
 	public XmlToListMapParse() {

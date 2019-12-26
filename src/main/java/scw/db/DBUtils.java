@@ -11,7 +11,6 @@ import java.util.Map;
 
 import scw.core.Constants;
 import scw.core.resource.ResourceUtils;
-import scw.core.utils.ConfigUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.db.database.DataBase;
@@ -21,6 +20,7 @@ import scw.db.database.SqlServerDataBase;
 import scw.lang.NotSupportException;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
+import scw.util.ConfigUtils;
 
 public final class DBUtils {
 	private static final String IGNORE_SQL_START_WITH = StringUtils

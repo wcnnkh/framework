@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.util;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -25,11 +25,18 @@ import scw.core.PropertyFactory;
 import scw.core.StringFormat;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.resource.ResourceUtils;
+import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringParse;
+import scw.core.utils.StringUtils;
+import scw.core.utils.TypeUtils;
+import scw.core.utils.XMLUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
-public abstract class ConfigUtils {
-	private static Logger logger = LoggerUtils.getConsoleLogger(ConfigUtils.class);
+public final class ConfigUtils {
+	private ConfigUtils(){};
+	
+	private static Logger logger = LoggerUtils.getLogger(ConfigUtils.class);
 	private static final String LOG_MESSAGE = "Property {} on target {} set value {}";
 
 	public static <T> T parseObject(Map<String, String> map, Class<T> clz) throws Exception {
