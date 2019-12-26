@@ -34,7 +34,8 @@ public final class Log4jUtils {
 			return;
 		}
 
-		Method method = ReflectionUtils.getMethod("org.apache.log4j.PropertyConfigurator", "configure", Properties.class);
+		Method method = ReflectionUtils.getMethod("org.apache.log4j.PropertyConfigurator", "configure",
+				Properties.class);
 		if (method == null) {
 			return;
 		}
@@ -74,7 +75,8 @@ public final class Log4jUtils {
 		String path = SystemPropertyUtils.getProperty(LOG4J_PATH);
 		if (StringUtils.isEmpty(path)) {
 			if (ResourceUtils.getResourceOperations().isExist("classpath:/log4j.properties")) {
-				Properties properties = ResourceUtils.getResourceOperations().getProperties("classpath:/log4j.properties");
+				Properties properties = ResourceUtils.getResourceOperations()
+						.getProperties("classpath:/log4j.properties");
 				initByProperties(properties);
 				return;
 			} else if (ResourceUtils.getResourceOperations().isExist("classpath:/log4j.xml")) {
@@ -99,10 +101,18 @@ public final class Log4jUtils {
 		String rootPath = SystemPropertyUtils.getWorkPath();
 		FormatUtils.info(Log4jUtils.class, "load the default log directory: {}", rootPath);
 		Properties properties = new Properties();
-		properties.put("log4j.rootLogger", LoggerLevelUtils.getDefaultLevel().name() + ", stdout, logfile, warn");
+		properties.put("log4j.rootLogger", LoggerLevelUtils.getDefaultLevel().name() + ", stdout, max-warn, logfile, warn");
+		properties.put("log4j.appender.max-warn", "scw.logger.log4j.MaxWarnConsoleApperder");
+		properties.put("log4j.appender.max-warn.layout.ConversionPattern", "%d %p [%c] - %m%n");
+		properties.put("log4j.appender.max-warn.layout", "org.apache.log4j.PatternLayout");
+		properties.put("log4j.appender.max-warn.Target", "System.out");
+		
 		properties.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
 		properties.put("log4j.appender.stdout.layout.ConversionPattern", "%d %p [%c] - %m%n");
 		properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
+		properties.put("log4j.appender.stdout.Threshold", "WARN");
+		properties.put("log4j.appender.stdout.Target", "System.err");
+		
 		properties.put("log4j.appender.logfile", "org.apache.log4j.DailyRollingFileAppender");
 		properties.put("log4j.appender.logfile.File", rootPath + "/logs/log.log");
 		properties.put("log4j.appender.logfile.layout", "org.apache.log4j.PatternLayout");
