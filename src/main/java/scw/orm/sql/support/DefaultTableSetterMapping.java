@@ -1,9 +1,13 @@
-package scw.orm.sql;
+package scw.orm.sql.support;
 
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;
+import scw.orm.sql.AbstractSetterMapping;
+import scw.orm.sql.SqlMapper;
+import scw.orm.sql.TableNameMapping;
+import scw.orm.sql.ValueIndexMapping;
 
 public final class DefaultTableSetterMapping extends AbstractSetterMapping {
 	private static Logger logger = LoggerUtils.getLogger(DefaultTableSetterMapping.class);

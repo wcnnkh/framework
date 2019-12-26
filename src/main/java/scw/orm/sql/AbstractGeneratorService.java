@@ -7,6 +7,7 @@ import scw.orm.sql.annotation.CreateTime;
 import scw.orm.sql.annotation.UUID;
 import scw.orm.sql.annotation.UpdateTime;
 import scw.orm.sql.enums.OperationType;
+import scw.orm.sql.support.GeneratorContext;
 
 public abstract class AbstractGeneratorService implements GeneratorService {
 

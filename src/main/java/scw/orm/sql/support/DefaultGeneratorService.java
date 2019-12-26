@@ -7,7 +7,6 @@ import scw.id.SequenceId;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
 import scw.orm.sql.AbstractGeneratorService;
-import scw.orm.sql.GeneratorContext;
 
 public class DefaultGeneratorService extends AbstractGeneratorService {
 	private final IdGenerator<SequenceId> sequeueIdGenerator;

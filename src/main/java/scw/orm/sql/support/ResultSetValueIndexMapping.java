@@ -1,4 +1,4 @@
-package scw.orm.sql;
+package scw.orm.sql.support;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -8,6 +8,7 @@ import java.util.Map;
 
 import scw.lang.AlreadyExistsException;
 import scw.lang.NotSupportException;
+import scw.orm.sql.ValueIndexMapping;
 
 public final class ResultSetValueIndexMapping implements ValueIndexMapping {
 	private static final long serialVersionUID = 1L;

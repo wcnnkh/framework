@@ -1,4 +1,4 @@
-package scw.orm.sql;
+package scw.orm.sql.support;
 
 import java.util.Collection;
 import java.util.Map;
@@ -11,6 +11,9 @@ import scw.orm.Filter;
 import scw.orm.GetterFilter;
 import scw.orm.ORMUtils;
 import scw.orm.SetterFilter;
+import scw.orm.sql.AbstractSqlMapper;
+import scw.orm.sql.SqlMapper;
+import scw.orm.sql.TableNameMapping;
 
 public class DefaultSqlMapper extends AbstractSqlMapper implements SqlMapper {
 	private TableNameMapping tableNameMapping;

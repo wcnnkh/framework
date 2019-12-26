@@ -1,6 +1,7 @@
-package scw.orm.sql;
+package scw.orm.sql.support;
 
 import scw.core.utils.StringUtils;
+import scw.orm.sql.TableNameMapping;
 import scw.orm.sql.annotation.Table;
 
 public class DefaultTableNameMapping implements TableNameMapping {

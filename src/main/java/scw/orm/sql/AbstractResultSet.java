@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import scw.orm.sql.support.ResultSetValueIndexMapping;
 import scw.sql.SqlUtils;
 
 public abstract class AbstractResultSet implements ResultSet {

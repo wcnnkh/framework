@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import scw.core.FieldSetterListen;
 import scw.core.utils.TypeUtils;
+import scw.orm.sql.support.ResultSetValueIndexMapping;
 import scw.sql.SqlUtils;
 
 public abstract class AbstractResultMapping implements ResultMapping {

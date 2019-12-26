@@ -1,4 +1,4 @@
-package scw.orm.sql;
+package scw.orm.sql.support;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,6 +22,13 @@ import scw.orm.IteratorMapping;
 import scw.orm.MappingContext;
 import scw.orm.ORMException;
 import scw.orm.ObjectRelationalMapping;
+import scw.orm.sql.GeneratorService;
+import scw.orm.sql.ORMOperations;
+import scw.orm.sql.ResultMapping;
+import scw.orm.sql.ResultSet;
+import scw.orm.sql.SqlMapper;
+import scw.orm.sql.SqlORMUtils;
+import scw.orm.sql.TableChange;
 import scw.orm.sql.annotation.Generator;
 import scw.orm.sql.annotation.Table;
 import scw.orm.sql.dialect.MysqlSelect;
@@ -29,8 +36,6 @@ import scw.orm.sql.dialect.PaginationSql;
 import scw.orm.sql.dialect.Select;
 import scw.orm.sql.enums.OperationType;
 import scw.orm.sql.enums.TableStructureResultField;
-import scw.orm.sql.support.DefaultResultMapping;
-import scw.orm.sql.support.DefaultResultSet;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
 import scw.sql.Sql;
@@ -406,23 +411,5 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		}
 
 		return new SimpleTableChange(deleteList, addList);
-	}
-
-	private static final class SimpleTableChange implements TableChange {
-		private Collection<String> deleteNames;
-		private Collection<MappingContext> addMappingContexts;
-
-		public SimpleTableChange(Collection<String> deleteNames, Collection<MappingContext> addMappingContexts) {
-			this.deleteNames = deleteNames;
-			this.addMappingContexts = addMappingContexts;
-		}
-
-		public Collection<String> getDeleteNames() {
-			return deleteNames;
-		}
-
-		public Collection<MappingContext> getAddMappingContexts() {
-			return addMappingContexts;
-		}
 	}
 }

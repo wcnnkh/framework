@@ -26,6 +26,8 @@ import scw.orm.sql.annotation.Index;
 import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.enums.OperationType;
 import scw.orm.sql.support.DefaultSqlFilter;
+import scw.orm.sql.support.DefaultSqlMapper;
+import scw.orm.sql.support.DefaultTableNameMapping;
 import scw.orm.sql.support.TableColumnFactory;
 import scw.orm.support.CacheColumnFactory;
 import scw.sql.Sql;
