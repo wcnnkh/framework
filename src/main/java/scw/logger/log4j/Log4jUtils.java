@@ -99,10 +99,10 @@ public final class Log4jUtils {
 		String rootPath = SystemPropertyUtils.getWorkPath();
 		FormatUtils.info(Log4jUtils.class, "load the default log directory: {}", rootPath);
 		Properties properties = new Properties();
-		properties.put("log4j.rootLogger", LoggerLevelUtils.getDefaultLevel().name() + ", stdout, logfile");
+		properties.put("log4j.rootLogger", LoggerLevelUtils.getDefaultLevel().name() + ", stdout, logfile, warn");
 		properties.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
-		properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
 		properties.put("log4j.appender.stdout.layout.ConversionPattern", "%d %p [%c] - %m%n");
+		properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
 		properties.put("log4j.appender.logfile", "org.apache.log4j.DailyRollingFileAppender");
 		properties.put("log4j.appender.logfile.File", rootPath + "/logs/log.log");
 		properties.put("log4j.appender.logfile.layout", "org.apache.log4j.PatternLayout");

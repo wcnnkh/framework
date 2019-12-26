@@ -96,7 +96,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 		if (!CollectionUtils.isEmpty(tableChange.getDeleteNames()) || !CollectionUtils.isEmpty(addList)) {
 			// 如果存在字段变量
 			if(logger.isWarnEnabled()){
-				logger.warn("{}存在字段变更addList={}, deleteList={}", tableClass.getName(), Arrays.toString(addList.toArray()),
+				logger.warn("存在字段变更class={}, addList={}, deleteList={}", tableClass.getName(), Arrays.toString(addList.toArray()),
 						Arrays.toString(tableChange.getDeleteNames().toArray()));
 			}
 		}
