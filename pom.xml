@@ -19,7 +19,7 @@
 		<amqp-client.version>5.7.3</amqp-client.version>
 		<!-- tomcat7只支持jdk1.6及以上的版本 -->
 		<!-- tomcat8只支持jdk1.7及以上的版本 -->
-		<tomcat.version>8.5.43</tomcat.version>
+		<tomcat.version>8.5.50</tomcat.version>
 	</properties>
 
 	<dependencies>
