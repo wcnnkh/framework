@@ -376,7 +376,7 @@ public final class InstanceUtils {
 
 		for (int i = 0; i < parameterConfigs.length; i++) {
 			ParameterConfig parameterConfig = parameterConfigs[i];
-			boolean require = !AnnotationUtils.isNullable(parameterConfig);
+			boolean require = !AnnotationUtils.isNullable(parameterConfig, false);
 			if (!require) {
 				continue;
 			}
@@ -422,7 +422,7 @@ public final class InstanceUtils {
 		Object[] args = new Object[parameterConfigs.length];
 		for (int i = 0; i < parameterConfigs.length; i++) {
 			ParameterConfig parameterConfig = parameterConfigs[i];
-			boolean require = !AnnotationUtils.isNullable(parameterConfig);
+			boolean require = !AnnotationUtils.isNullable(parameterConfig, false);
 			if (isProerptyType(parameterConfig)) {
 				String value = getProperty(propertyFactory, valueFactory, clazz, parameterConfig);
 				if (require && StringUtils.isEmpty(value)) {

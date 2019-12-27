@@ -55,23 +55,22 @@ public abstract class AbstractMapper implements Mapper {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected <T> void create(Class<T> declaringClass, MappingContext superContext, Class<?> clazz, T bean,
 			SetterMapping setterMapping) throws ORMException {
-		Map<String, ? extends Column> map = getColumnMap(clazz);
-		for (Entry<String, ? extends Column> entry : map.entrySet()) {
-			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
-			if (isIgnore(context)) {
-				continue;
-			}
+		Class<?> clz = clazz;
+		while (clz != null && clz != Object.class) {
+			Map<String, ? extends Column> map = getColumnMap(clz);
+			for (Entry<String, ? extends Column> entry : map.entrySet()) {
+				MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
+				if (isIgnore(context)) {
+					continue;
+				}
 
-			if (isEntity(context)) {
-				setter(context, bean, create(context, context.getColumn().getDeclaringClass(), setterMapping));
-			} else {
-				setterMapping.setter(context, bean, this);
+				if (isEntity(context)) {
+					setter(context, bean, create(context, context.getColumn().getDeclaringClass(), setterMapping));
+				} else {
+					setterMapping.setter(context, bean, this);
+				}
 			}
-		}
-
-		Class<?> superClazz = clazz.getSuperclass();
-		if (superClazz != null && superClazz != Object.class) {
-			create(declaringClass, superContext, superClazz, bean, setterMapping);
+			clz = clz.getSuperclass();
 		}
 	}
 
@@ -90,39 +89,37 @@ public abstract class AbstractMapper implements Mapper {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void iterator(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
 			IteratorMapping iterator) throws ORMException {
-		Map<String, ? extends Column> map = getColumnMap(clazz);
-		for (Entry<String, ? extends Column> entry : map.entrySet()) {
-			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
-			if (isIgnore(context)) {
-				continue;
+		Class<?> clz = clazz;
+		while (clz != null && clz != Object.class) {
+			Map<String, ? extends Column> map = getColumnMap(clz);
+			for (Entry<String, ? extends Column> entry : map.entrySet()) {
+				MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
+				if (isIgnore(context)) {
+					continue;
+				}
+
+				iterator.iterator(context, this);
 			}
-
-			iterator.iterator(context, this);
-		}
-
-		Class<?> superClazz = clazz.getSuperclass();
-		if (superClazz != null && superClazz != Object.class) {
-			iterator(declaringClass, superContext, superClazz, iterator);
+			clz = clz.getSuperclass();
 		}
 	}
 
 	protected void appendMappingContexts(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
 			List<MappingContext> list, IteratorCallback<MappingContext> filter) {
-		Map<String, ? extends Column> map = getColumnMap(clazz);
-		for (Entry<String, ? extends Column> entry : map.entrySet()) {
-			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
-			if (isIgnore(context)) {
-				continue;
-			}
+		Class<?> clz = clazz;
+		while (clz != null && clz != Object.class) {
+			Map<String, ? extends Column> map = getColumnMap(clz);
+			for (Entry<String, ? extends Column> entry : map.entrySet()) {
+				MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
+				if (isIgnore(context)) {
+					continue;
+				}
 
-			if (filter == null || filter.iteratorCallback(context)) {
-				list.add(context);
+				if (filter == null || filter.iteratorCallback(context)) {
+					list.add(context);
+				}
 			}
-		}
-
-		Class<?> superClazz = clazz.getSuperclass();
-		if (superClazz != null && superClazz != Object.class) {
-			appendMappingContexts(declaringClass, superContext, superClazz, list, filter);
+			clz = clz.getSuperclass();
 		}
 	}
 
@@ -268,28 +265,27 @@ public abstract class AbstractMapper implements Mapper {
 	protected void appendObjectRelationalMapping(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
 			Collection<MappingContext> primaryKeys, Collection<MappingContext> notPrimaryKeys,
 			Collection<MappingContext> entitys, Map<String, MappingContext> contextMap) {
-		Map<String, ? extends scw.orm.Column> map = getColumnMap(clazz);
-		for (Entry<String, ? extends scw.orm.Column> entry : map.entrySet()) {
-			MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
-			if (isIgnore(context)) {
-				continue;
+		Class<?> clz = clazz;
+		while (clz != null && clz != Object.class) {
+			Map<String, ? extends scw.orm.Column> map = getColumnMap(clz);
+			for (Entry<String, ? extends scw.orm.Column> entry : map.entrySet()) {
+				MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
+				if (isIgnore(context)) {
+					continue;
+				}
+
+				if (isEntity(context)) {
+					entitys.add(context);
+				} else if (isPrimaryKey(context)) {
+					primaryKeys.add(context);
+				} else {
+					notPrimaryKeys.add(context);
+				}
+
+				contextMap.put(context.getColumn().getName(), context);
 			}
 
-			if (isEntity(context)) {
-				entitys.add(context);
-			} else if (isPrimaryKey(context)) {
-				primaryKeys.add(context);
-			} else {
-				notPrimaryKeys.add(context);
-			}
-
-			contextMap.put(context.getColumn().getName(), context);
-		}
-
-		Class<?> superClazz = clazz.getSuperclass();
-		if (superClazz != null && superClazz != Object.class) {
-			appendObjectRelationalMapping(declaringClass, superContext, superClazz, primaryKeys, notPrimaryKeys,
-					entitys, contextMap);
+			clz = clazz.getSuperclass();
 		}
 	}
 

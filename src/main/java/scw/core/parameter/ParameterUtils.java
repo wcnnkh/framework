@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import scw.core.annotation.ParameterName;
+import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.StringUtils;
 
 public final class ParameterUtils {
@@ -39,7 +40,7 @@ public final class ParameterUtils {
 		}
 		return parameterDefinitions;
 	}
-	
+
 	public static String getParameterName(ParameterConfig parameterConfig) {
 		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
 		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
@@ -55,5 +56,13 @@ public final class ParameterUtils {
 	@SuppressWarnings("rawtypes")
 	public static String[] getParameterName(Constructor constructor) {
 		return lvtpnd.getParameterNames(constructor);
+	}
+
+	public static boolean isNullAble(ParameterConfig parameterConfig) {
+		if (parameterConfig.getType().isPrimitive()) {
+			return false;
+		}
+
+		return AnnotationUtils.isNullable(parameterConfig, true);
 	}
 }
