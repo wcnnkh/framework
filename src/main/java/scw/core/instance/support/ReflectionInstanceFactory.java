@@ -29,7 +29,7 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		}
 
 		try {
-			return ClassUtils.forName(className);
+			return ClassUtils.forName(className, true, ClassUtils.getDefaultClassLoader());
 		} catch (Throwable e) {
 			if (e instanceof InstanceException) {
 				throw (InstanceException) e;
