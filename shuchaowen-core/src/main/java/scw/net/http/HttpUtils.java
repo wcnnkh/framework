@@ -1,22 +1,18 @@
 package scw.net.http;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import scw.core.Constants;
 import scw.core.string.StringCodecUtils;
-import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.TypeUtils;
+import scw.core.utils.XUtils;
 import scw.io.ByteArray;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportException;
@@ -24,6 +20,7 @@ import scw.net.Message;
 import scw.net.NetworkUtils;
 import scw.net.mime.MimeTypeConstants;
 import scw.net.mime.SimpleMimeType;
+import scw.util.ToMap;
 
 public final class HttpUtils {
 	private HttpUtils() {
@@ -48,17 +45,22 @@ public final class HttpUtils {
 		return StringCodecUtils.getStringCodec(charsetName).decode(message.toByteArray());
 	}
 
-	public static String postJson(String url, Map<String, String> requestProperties, Object body, String charsetName) {
-		String text = null;
-		if (body != null) {
-			if (body instanceof String) {
-				text = body.toString();
-			} else if (body instanceof ToParameterMap) {
-				text = JSONUtils.toJSONString(toParameterMap((ToParameterMap) body));
-			} else {
-				text = JSONUtils.toJSONString(body);
-			}
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static String toJsonString(Object body) {
+		if (body == null) {
+			return null;
 		}
+		if (body instanceof String || TypeUtils.isPrimitiveOrWrapper(body.getClass())) {
+			return body.toString();
+		} else if (body instanceof ToMap) {
+			return JSONUtils.toJSONString(XUtils.toMap((ToMap) body));
+		} else {
+			return JSONUtils.toJSONString(body);
+		}
+	}
+
+	public static String postJson(String url, Map<String, String> requestProperties, Object body, String charsetName) {
+		String text = toJsonString(body);
 		HttpRequest request = new BodyRequest(Method.POST, url, text == null ? null : new ByteArray(text, charsetName));
 		request.setContentType(new SimpleMimeType(MimeTypeConstants.APPLICATION_JSON, charsetName));
 		request.setRequestProperties(requestProperties);
@@ -67,69 +69,6 @@ public final class HttpUtils {
 
 	public static String postJson(String url, Map<String, String> requestProperties, Object body) {
 		return postJson(url, requestProperties, body, Constants.DEFAULT_CHARSET_NAME);
-	}
-
-	public static Map<String, Object> toParameterMap(ToParameterMap toRequestParameterMap) {
-		if (toRequestParameterMap == null) {
-			return null;
-		}
-
-		Map<String, Object> map = toRequestParameterMap.toRequestParameterMap();
-		if (CollectionUtils.isEmpty(map)) {
-			return null;
-		}
-
-		for (Entry<String, Object> entry : map.entrySet()) {
-			entry.setValue(toParameterMapTransformation(entry.getValue()));
-		}
-		return map;
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static Object toParameterMapTransformation(Object value) {
-		if (value == null) {
-			return value;
-		}
-
-		if (value instanceof ToParameterMap) {
-			return toParameterMap((ToParameterMap) value);
-		} else if (value instanceof Collection) {
-			Collection list = (Collection) value;
-			if (CollectionUtils.isEmpty(list)) {
-				return value;
-			}
-
-			List<Object> newList = new ArrayList<Object>(list.size());
-			for (Object v : list) {
-				Object tmp = toParameterMapTransformation(v);
-				if (tmp == null) {
-					continue;
-				}
-				newList.add(tmp);
-			}
-			return newList;
-		} else if (value instanceof Map) {
-			Map map = (Map) value;
-			if (CollectionUtils.isEmpty(map)) {
-				return value;
-			}
-
-			Set<Map.Entry> set = map.entrySet();
-			for (Map.Entry entry : set) {
-				entry.setValue(toParameterMapTransformation(entry.getValue()));
-			}
-		} else if (value.getClass().isArray()) {
-			int len = Array.getLength(value);
-			if (len == 0) {
-				return value;
-			}
-
-			for (int i = 0; i < len; i++) {
-				Object v = Array.get(value, i);
-				Array.set(value, i, toParameterMapTransformation(v));
-			}
-		}
-		return value;
 	}
 
 	public static String postForm(String url, Map<String, String> requestProperties, Map<String, ?> parameterMap,
@@ -142,8 +81,8 @@ public final class HttpUtils {
 	}
 
 	public static String postForm(String url, Map<String, String> requestProperties,
-			ToParameterMap toRequestParameterMap, String charsetName) {
-		return postForm(url, requestProperties, toParameterMap(toRequestParameterMap), charsetName);
+			ToMap<String, ?> toRequestParameterMap, String charsetName) {
+		return postForm(url, requestProperties, XUtils.toMap(toRequestParameterMap), charsetName);
 	}
 
 	public static String postForm(String url, Map<String, String> requestProperties, Map<String, ?> parameterMap) {
@@ -215,7 +154,7 @@ public final class HttpUtils {
 			throw new NotSupportException(e);
 		}
 	}
-	
+
 	public static String decode(String value) {
 		return decode(value, Constants.DEFAULT_CHARSET_NAME);
 	}

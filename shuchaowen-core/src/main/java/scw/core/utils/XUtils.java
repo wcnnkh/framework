@@ -1,5 +1,6 @@
 package scw.core.utils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -7,7 +8,11 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -26,6 +31,7 @@ import scw.core.Start;
 import scw.core.ValueFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NotSupportException;
+import scw.util.ToMap;
 
 public final class XUtils {
 	private XUtils() {
@@ -386,5 +392,74 @@ public final class XUtils {
 		} finally {
 			resourceFactory.release(r);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <K> Map<K, Object> toMap(ToMap<? extends K, ?> toMap) {
+		if (toMap == null) {
+			return null;
+		}
+
+		Map<? extends K, ?> map = toMap.toMap();
+		if (map == null) {
+			return null;
+		}
+
+		if (map.isEmpty()) {
+			return Collections.EMPTY_MAP;
+		}
+
+		Map<K, Object> valueMap = new LinkedHashMap<K, Object>();
+		for (Entry<? extends K, ?> entry : map.entrySet()) {
+			valueMap.put(entry.getKey(), toParameterMapTransformation(entry.getValue()));
+		}
+		return valueMap;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static Object toParameterMapTransformation(Object value) {
+		if (value == null) {
+			return value;
+		}
+
+		if (value instanceof ToMap) {
+			return toMap((ToMap) value);
+		} else if (value instanceof Collection) {
+			Collection list = (Collection) value;
+			if (CollectionUtils.isEmpty(list)) {
+				return value;
+			}
+
+			List<Object> newList = new ArrayList<Object>(list.size());
+			for (Object v : list) {
+				Object tmp = toParameterMapTransformation(v);
+				if (tmp == null) {
+					continue;
+				}
+				newList.add(tmp);
+			}
+			return newList;
+		} else if (value instanceof Map) {
+			Map map = (Map) value;
+			if (CollectionUtils.isEmpty(map)) {
+				return value;
+			}
+
+			Set<Map.Entry> set = map.entrySet();
+			for (Map.Entry entry : set) {
+				entry.setValue(toParameterMapTransformation(entry.getValue()));
+			}
+		} else if (value.getClass().isArray()) {
+			int len = Array.getLength(value);
+			if (len == 0) {
+				return value;
+			}
+
+			for (int i = 0; i < len; i++) {
+				Object v = Array.get(value, i);
+				Array.set(value, i, toParameterMapTransformation(v));
+			}
+		}
+		return value;
 	}
 }

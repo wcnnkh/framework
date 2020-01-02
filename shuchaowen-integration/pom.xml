@@ -10,16 +10,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- 注意，此版本号需要jdk1.8以上的版本 -->
-		<dubbo.version>2.7.4.1</dubbo.version>
-		<zookeeper.version>3.4.14</zookeeper.version>
-		<zkclient.version>0.1</zkclient.version>
-		<jxl.version>2.4.2</jxl.version>
-		<netty-socketio.version>1.7.17</netty-socketio.version>
-		<curator-recipes.version>4.2.0</curator-recipes.version>
-		<jstl.version>1.2</jstl.version>
-		<aliyun-sdk-oss.version>3.1.0</aliyun-sdk-oss.version>
-		<guava.version>25.0-jre</guava.version>
 		<mysql-connector-java.version>8.0.16</mysql-connector-java.version>
 	</properties>
 
@@ -37,62 +27,12 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.30</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.aliyun.oss</groupId>
-			<artifactId>aliyun-sdk-oss</artifactId>
-			<version>${aliyun-sdk-oss.version}</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>com.sun.jersey</groupId>
-					<artifactId>jersey-json</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jdom</groupId>
-					<artifactId>jdom</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.aliyun</groupId>
-					<artifactId>aliyun-java-sdk-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.aliyun</groupId>
-					<artifactId>aliyun-java-sdk-ram</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.aliyun</groupId>
-					<artifactId>aliyun-java-sdk-sts</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.aliyun</groupId>
-					<artifactId>aliyun-java-sdk-ecs</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.httpcomponents</groupId>
-					<artifactId>httpclient</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
 		</dependency>
 
 		<!-- dubbo相关 -->
 		<dependency>
 			<groupId>org.apache.dubbo</groupId>
 			<artifactId>dubbo</artifactId>
-			<version>${dubbo.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>
@@ -113,7 +53,6 @@
 		<dependency>
 			<groupId>org.apache.curator</groupId>
 			<artifactId>curator-recipes</artifactId>
-			<version>${curator-recipes.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.zookeeper</groupId>
@@ -138,7 +77,6 @@
 		<dependency>
 			<groupId>org.apache.zookeeper</groupId>
 			<artifactId>zookeeper</artifactId>
-			<version>${zookeeper.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
@@ -163,7 +101,6 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>${guava.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.google.errorprone</groupId>
@@ -192,7 +129,6 @@
 		<dependency>
 			<groupId>jexcelapi</groupId>
 			<artifactId>jxl</artifactId>
-			<version>${jxl.version}</version>
 		</dependency>
 
 		<dependency>
@@ -240,7 +176,6 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
-			<version>${jstl.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
@@ -253,7 +188,6 @@
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
-			<version>${tomcat.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.tomcat.embed</groupId>
@@ -266,7 +200,6 @@
 		<dependency>
 			<groupId>com.corundumstudio.socketio</groupId>
 			<artifactId>netty-socketio</artifactId>
-			<version>${netty-socketio.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>io.netty</groupId>

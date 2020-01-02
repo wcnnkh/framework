@@ -11,9 +11,7 @@ import java.util.Map.Entry;
 
 import scw.core.multivalue.LinkedMultiValueMap;
 import scw.core.multivalue.MultiValueMap;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.json.JSONUtils;
 import scw.net.RequestException;
 
 public class FormRequest extends HttpRequest {
@@ -56,7 +54,7 @@ public class FormRequest extends HttpRequest {
 			parameterMap = new LinkedMultiValueMap<String, String>();
 		}
 
-		parameterMap.add(key, toString(value));
+		parameterMap.add(key, HttpUtils.toJsonString(value));
 	}
 
 	public void addAll(Map<String, ?> map) {
@@ -67,24 +65,14 @@ public class FormRequest extends HttpRequest {
 		if (parameterMap == null) {
 			parameterMap = new LinkedMultiValueMap<String, String>();
 		}
-
+	
 		for (Entry<String, ?> entry : map.entrySet()) {
 			Object v = entry.getValue();
 			if (v == null) {
 				continue;
 			}
 
-			parameterMap.add(entry.getKey(), toString(v));
-		}
-	}
-
-	private String toString(Object value) {
-		if (value instanceof String || ClassUtils.isPrimitiveOrWrapper(value.getClass())) {
-			return value.toString();
-		} else if (value instanceof ToParameterMap) {
-			return JSONUtils.toJSONString(HttpUtils.toParameterMap((ToParameterMap) value));
-		} else {
-			return JSONUtils.toJSONString(value);
+			parameterMap.add(entry.getKey(), HttpUtils.toJsonString(v));
 		}
 	}
 
