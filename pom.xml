@@ -168,6 +168,5 @@
 		<module>shuchaowen-core</module>
 		<module>shuchaowen-oas</module>
 		<module>shuchaowen-integration</module>
-		<module>shuchaowen-app</module>
 	</modules>
 </project>
