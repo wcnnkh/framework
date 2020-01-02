@@ -52,14 +52,15 @@ public abstract class AbstractMapper implements Mapper {
 		return getter(context, new FieldGetter(bean));
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected <T> void create(Class<T> declaringClass, MappingContext superContext, Class<?> clazz, T bean,
-			SetterMapping setterMapping) throws ORMException {
+	@SuppressWarnings("unchecked")
+	public <T, M extends Mapper> T create(MappingContext superContext, Class<T> clazz, SetterMapping<M> setterMapping)
+			throws ORMException {
+		T bean = newInstance(clazz);
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
 			Map<String, ? extends Column> map = getColumnMap(clz);
 			for (Entry<String, ? extends Column> entry : map.entrySet()) {
-				MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
+				MappingContext context = new MappingContext(superContext, entry.getValue(), clazz);
 				if (isIgnore(context)) {
 					continue;
 				}
@@ -67,50 +68,39 @@ public abstract class AbstractMapper implements Mapper {
 				if (isEntity(context)) {
 					setter(context, bean, create(context, context.getColumn().getDeclaringClass(), setterMapping));
 				} else {
-					setterMapping.setter(context, bean, this);
+					setterMapping.setter(context, bean, (M) this);
 				}
 			}
 			clz = clz.getSuperclass();
 		}
-	}
-
-	public <T> T create(MappingContext superContext, Class<T> clazz, SetterMapping<? extends Mapper> setterMapping)
-			throws ORMException {
-		T bean = newInstance(clazz);
-		create(clazz, superContext, clazz, bean, setterMapping);
 		return bean;
 	}
 
-	public void iterator(MappingContext superContext, Class<?> clazz, IteratorMapping<? extends Mapper> iterator)
-			throws ORMException {
-		iterator(clazz, superContext, clazz, iterator);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected void iterator(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
-			IteratorMapping iterator) throws ORMException {
+	@SuppressWarnings("unchecked")
+	public <M extends Mapper> void iterator(MappingContext superContext, Class<?> clazz, IteratorMapping<M> iterator) {
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
 			Map<String, ? extends Column> map = getColumnMap(clz);
 			for (Entry<String, ? extends Column> entry : map.entrySet()) {
-				MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
+				MappingContext context = new MappingContext(superContext, entry.getValue(), clazz);
 				if (isIgnore(context)) {
 					continue;
 				}
 
-				iterator.iterator(context, this);
+				iterator.iterator(context, (M) this);
 			}
 			clz = clz.getSuperclass();
 		}
 	}
 
-	protected void appendMappingContexts(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
-			List<MappingContext> list, IteratorCallback<MappingContext> filter) {
+	public Collection<MappingContext> getMappingContexts(MappingContext superContext, Class<?> clazz,
+			IteratorCallback<MappingContext> filter) {
+		LinkedList<MappingContext> list = new LinkedList<MappingContext>();
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
 			Map<String, ? extends Column> map = getColumnMap(clz);
 			for (Entry<String, ? extends Column> entry : map.entrySet()) {
-				MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
+				MappingContext context = new MappingContext(superContext, entry.getValue(), clazz);
 				if (isIgnore(context)) {
 					continue;
 				}
@@ -121,12 +111,6 @@ public abstract class AbstractMapper implements Mapper {
 			}
 			clz = clz.getSuperclass();
 		}
-	}
-
-	public Collection<MappingContext> getMappingContexts(MappingContext superContext, Class<?> clazz,
-			IteratorCallback<MappingContext> filter) {
-		LinkedList<MappingContext> list = new LinkedList<MappingContext>();
-		appendMappingContexts(clazz, superContext, clazz, list, filter);
 		return list;
 	}
 
@@ -258,18 +242,11 @@ public abstract class AbstractMapper implements Mapper {
 		List<MappingContext> notPrimaryKeys = new ArrayList<MappingContext>(8);
 		List<MappingContext> entitys = new ArrayList<MappingContext>(4);
 		Map<String, MappingContext> contextMap = new LinkedHashMap<String, MappingContext>();
-		appendObjectRelationalMapping(clazz, superContext, clazz, primaryKeys, notPrimaryKeys, entitys, contextMap);
-		return new DefaultObjectRelationalMapping(primaryKeys, notPrimaryKeys, entitys, contextMap);
-	}
-
-	protected void appendObjectRelationalMapping(Class<?> declaringClass, MappingContext superContext, Class<?> clazz,
-			Collection<MappingContext> primaryKeys, Collection<MappingContext> notPrimaryKeys,
-			Collection<MappingContext> entitys, Map<String, MappingContext> contextMap) {
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
 			Map<String, ? extends scw.orm.Column> map = getColumnMap(clz);
 			for (Entry<String, ? extends scw.orm.Column> entry : map.entrySet()) {
-				MappingContext context = new MappingContext(superContext, entry.getValue(), declaringClass);
+				MappingContext context = new MappingContext(superContext, entry.getValue(), clazz);
 				if (isIgnore(context)) {
 					continue;
 				}
@@ -285,8 +262,9 @@ public abstract class AbstractMapper implements Mapper {
 				contextMap.put(context.getColumn().getName(), context);
 			}
 
-			clz = clazz.getSuperclass();
+			clz = clz.getSuperclass();
 		}
+		return new DefaultObjectRelationalMapping(primaryKeys, notPrimaryKeys, entitys, contextMap);
 	}
 
 	public boolean isNullable(MappingContext context) {

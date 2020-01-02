@@ -17,17 +17,17 @@ public interface Mapper extends ColumnFactory {
 
 	<T> T newInstance(Class<T> type) throws ORMException;
 
-	<T> T create(MappingContext superContext, Class<T> clazz, SetterMapping<? extends Mapper> setterMapping)
+	<T, M extends Mapper> T create(MappingContext superContext, Class<T> clazz, SetterMapping<M> setterMapping)
 			throws ORMException;
 
-	void iterator(MappingContext superContext, Class<?> clazz, IteratorMapping<? extends Mapper> iterator);
+	<M extends Mapper> void iterator(MappingContext superContext, Class<?> clazz, IteratorMapping<M> iterator);
 
 	boolean isPrimaryKey(MappingContext mappingContext);
-	
+
 	boolean isIgnore(MappingContext context);
 
 	boolean isEntity(MappingContext context);
-	
+
 	boolean isNullable(MappingContext context);
 
 	Collection<MappingContext> getPrimaryKeys(MappingContext supperContext, Class<?> clazz);
@@ -38,7 +38,8 @@ public interface Mapper extends ColumnFactory {
 
 	String getObjectKeyById(Class<?> clazz, Collection<Object> primaryKeys) throws ORMException;
 
-	<K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<K> lastPrimaryKeys, Object[] primaryKeys) throws ORMException;
+	<K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<K> lastPrimaryKeys, Object[] primaryKeys)
+			throws ORMException;
 
 	Collection<MappingContext> getNotPrimaryKeys(MappingContext supperContext, Class<?> clazz);
 
