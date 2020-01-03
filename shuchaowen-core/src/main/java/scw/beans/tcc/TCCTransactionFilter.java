@@ -7,6 +7,7 @@ import java.util.Map;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.beans.annotation.Configuration;
 import scw.beans.annotation.TCC;
 import scw.core.instance.InstanceFactory;
 import scw.core.reflect.SerializableMethodDefinition;
@@ -19,6 +20,7 @@ import scw.logger.LoggerUtils;
  * @author shuchaowen
  *
  */
+@Configuration
 public final class TCCTransactionFilter implements Filter {
 	private static Logger logger = LoggerUtils.getLogger(TCCTransactionFilter.class);
 	private static volatile Map<Class<?>, ClassTCC> cacheMap = new HashMap<Class<?>, ClassTCC>();

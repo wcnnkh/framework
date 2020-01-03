@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.beans.annotation.Configuration;
 import scw.core.reflect.AnnotationUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -15,6 +16,7 @@ import scw.logger.LoggerUtils;
  * @author shuchaowen
  *
  */
+@Configuration
 public final class TransactionFilter implements Filter {
 	private static Logger logger = LoggerUtils.getLogger(TransactionFilter.class);
 	private final TransactionDefinition transactionDefinition;

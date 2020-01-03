@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.beans.annotation.Configuration;
 import scw.core.instance.InstanceFactory;
 import scw.core.reflect.AnnotationUtils;
 import scw.logger.Logger;
@@ -17,6 +18,7 @@ import scw.security.limit.annotation.CountLimitSecurity;
  * @author shuchaowen
  *
  */
+@Configuration
 public final class CountLimitFilter implements Filter {
 	private static Logger logger = LoggerUtils.getLogger(CountLimitFilter.class);
 	private final InstanceFactory instanceFactory;

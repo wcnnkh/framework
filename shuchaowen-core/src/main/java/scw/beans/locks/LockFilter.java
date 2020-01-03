@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.beans.annotation.Configuration;
 import scw.beans.annotation.LockConfig;
 import scw.beans.annotation.LockParameter;
 import scw.core.parameter.ParameterConfig;
@@ -20,6 +21,7 @@ import scw.locks.LockFactory;
  * @author shuchaowen
  *
  */
+@Configuration
 public final class LockFilter implements Filter {
 	private LockFactory lockFactory;
 

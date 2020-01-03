@@ -22,6 +22,7 @@ import scw.aop.ReflectInvoker;
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Config;
+import scw.beans.annotation.Configuration;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Service;
@@ -38,6 +39,7 @@ import scw.core.reflect.DefaultFieldDefinition;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
@@ -49,6 +51,25 @@ public final class BeanUtils {
 
 	private BeanUtils() {
 	};
+
+	@SuppressWarnings("unchecked")
+	public static <T> Collection<Class<? extends T>> getConfigurationClassList(Class<? extends T> type,
+			String packageNames) {
+		List<Class<? extends T>> list = new LinkedList<Class<? extends T>>();
+		for (Class<?> clazz : ClassUtils.getClassList(packageNames)) {
+			Configuration configuration = clazz.getAnnotation(Configuration.class);
+			if (configuration == null) {
+				continue;
+			}
+
+			if (!type.isAssignableFrom(clazz)) {
+				continue;
+			}
+
+			list.add((Class<T>) clazz);
+		}
+		return list;
+	}
 
 	/**
 	 * 调用init方法

@@ -14,14 +14,13 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.aop.Filter;
+import scw.application.ApplicationConfigUtils;
 import scw.beans.annotation.AutoImpl;
-import scw.beans.async.AsyncCompleteFilter;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.AutoBeanDefinition;
 import scw.beans.auto.AutoBeanUtils;
-import scw.beans.locks.LockFilter;
 import scw.beans.property.ValueWiredManager;
-import scw.beans.tcc.TCCTransactionFilter;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.MultiPropertyFactory;
@@ -34,8 +33,6 @@ import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.security.limit.CountLimitFilter;
-import scw.transaction.TransactionFilter;
 
 public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy {
 	static Logger logger = LoggerUtils.getLogger(BeanFactory.class);
@@ -52,8 +49,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		this.valueWiredManager = new ValueWiredManager(propertyFactory, this);
 		appendSingleByPropertyFactory();
 		appendSingleByBeanFactory();
-
-		appendRootFilters();
 	}
 
 	private void appendSingleByPropertyFactory() {
@@ -67,14 +62,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		beanMap.put(BeanFactory.class.getName(), new EmptyBeanDefinition(BeanFactory.class, this,
 				new String[] { InstanceFactory.class.getName() }, false));
 		nameMappingMap.put(InstanceFactory.class.getName(), BeanFactory.class.getName());
-	}
-
-	private void appendRootFilters() {
-		filterNames.add(CountLimitFilter.class.getName());
-		filterNames.add(TransactionFilter.class.getName());
-		filterNames.add(TCCTransactionFilter.class.getName());
-		filterNames.add(AsyncCompleteFilter.class.getName());
-		filterNames.add(LockFilter.class.getName());
 	}
 
 	protected final synchronized void addFilterName(Collection<String> names) {
@@ -422,12 +409,23 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	public synchronized void init() {
+		for (Class<? extends Filter> clazz : BeanUtils.getConfigurationClassList(Filter.class, "scw")) {
+			filterNames.add(clazz.getName());
+		}
+
+		for (Class<? extends Filter> clazz : BeanUtils.getConfigurationClassList(Filter.class,
+				ApplicationConfigUtils.getAnnotationPackage(propertyFactory))) {
+			filterNames.add(clazz.getName());
+		}
+		
 		Iterator<String> iterator = filterNames.iterator();
 		while (iterator.hasNext()) {
 			String name = iterator.next();
 			if (!isInstance(name)) {
 				logger.warn("Invalid filter:{}", name);
 				iterator.remove();
+			} else {
+				logger.debug("use root filter:{}", name);
 			}
 		}
 

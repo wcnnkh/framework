@@ -6,6 +6,7 @@ import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.beans.annotation.AsyncComplete;
+import scw.beans.annotation.Configuration;
 import scw.core.instance.InstanceFactory;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
@@ -17,6 +18,7 @@ import scw.logger.LoggerUtils;
  * @author shuchaowen
  *
  */
+@Configuration
 public final class AsyncCompleteFilter implements Filter {
 	private static ThreadLocal<Boolean> ENABLE_TAG = new ThreadLocal<Boolean>();
 	private static Logger logger = LoggerUtils.getLogger(AsyncCompleteFilter.class);
