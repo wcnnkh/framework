@@ -1,6 +1,6 @@
 package scw.core;
 
-import scw.core.asm.Opcodes;
+import scw.asm.Opcodes;
 import scw.core.string.StringCodec;
 import scw.core.string.StringCodecUtils;
 import scw.core.utils.StringUtils;

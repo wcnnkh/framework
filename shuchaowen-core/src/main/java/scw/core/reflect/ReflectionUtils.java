@@ -36,11 +36,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import scw.cglib.core.ReflectUtils;
 import scw.core.Assert;
 import scw.core.PropertyFactory;
 import scw.core.Verification;
 import scw.core.annotation.Order;
-import scw.core.cglib.core.ReflectUtils;
 import scw.core.instance.InstanceFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;

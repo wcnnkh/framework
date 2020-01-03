@@ -25,9 +25,9 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import scw.cglib.core.TypeUtils;
 import scw.core.Assert;
 import scw.core.Constants;
-import scw.core.cglib.core.TypeUtils;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */

@@ -3,8 +3,8 @@ package scw.aop.support;
 import java.io.Serializable;
 
 import scw.aop.Proxy;
-import scw.core.cglib.proxy.Enhancer;
-import scw.core.cglib.proxy.MethodInterceptor;
+import scw.cglib.proxy.Enhancer;
+import scw.cglib.proxy.MethodInterceptor;
 
 public class BuiltInCglibProxy implements Proxy {
 	private Enhancer enhancer;

@@ -7,8 +7,8 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.core.cglib.proxy.MethodInterceptor;
-import scw.core.cglib.proxy.MethodProxy;
+import scw.cglib.proxy.MethodInterceptor;
+import scw.cglib.proxy.MethodProxy;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.TypeUtils;

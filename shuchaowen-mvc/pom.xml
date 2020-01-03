@@ -16,10 +16,14 @@
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-security</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-freemarker</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-result</artifactId>
 		</dependency>
 
 		<dependency>

@@ -12,9 +12,9 @@ import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.aop.Proxy;
 import scw.aop.ProxyUtils;
-import scw.core.cglib.proxy.Enhancer;
-import scw.core.cglib.proxy.MethodInterceptor;
-import scw.core.cglib.proxy.MethodProxy;
+import scw.cglib.proxy.Enhancer;
+import scw.cglib.proxy.MethodInterceptor;
+import scw.cglib.proxy.MethodProxy;
 import scw.lang.NestedExceptionUtils;
 
 public class BuiltInCglibProxyAdapter extends AbsttractProxyAdapter {

@@ -25,14 +25,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import scw.asm.ClassReader;
+import scw.asm.ClassVisitor;
+import scw.asm.Label;
+import scw.asm.MethodVisitor;
+import scw.asm.Opcodes;
+import scw.asm.Type;
 import scw.core.BridgeMethodResolver;
 import scw.core.Constants;
-import scw.core.asm.ClassReader;
-import scw.core.asm.ClassVisitor;
-import scw.core.asm.Label;
-import scw.core.asm.MethodVisitor;
-import scw.core.asm.Opcodes;
-import scw.core.asm.Type;
 import scw.core.utils.ClassUtils;
 
 /**
