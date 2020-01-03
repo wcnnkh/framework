@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>shuchaowen</groupId>
+		<artifactId>shuchaowen</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>shuchaowen-db</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-orm</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-mq</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-data</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<scope>provided</scope>
+			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.16</version>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+</project>

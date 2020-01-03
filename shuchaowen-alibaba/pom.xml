@@ -10,7 +10,18 @@
 	<dependencies>
 		<dependency>
 			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-core</artifactId>
+			<artifactId>shuchaowen-data</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-mvc</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-security</artifactId>
 		</dependency>
 
 		<dependency>

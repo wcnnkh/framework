@@ -1,11 +1,11 @@
 package scw.beans;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -40,6 +40,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private final LinkedList<Destroy> destroys = new LinkedList<Destroy>();
+	private final LinkedList<Init> inits = new LinkedList<Init>();
 	private volatile HashSet<String> notFoundSet = new HashSet<String>();
 	protected final MultiPropertyFactory propertyFactory = new MultiPropertyFactory();
 	private final LinkedHashSet<String> filterNames = new LinkedHashSet<String>();
@@ -118,6 +119,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			}
 
 			destroys.addAll(beanConfigFactory.getDestroys());
+			inits.addAll(beanConfigFactory.getInits());
 		}
 	}
 
@@ -409,28 +411,33 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	public synchronized void init() {
-		for (Class<? extends Filter> clazz : BeanUtils.getConfigurationClassList(Filter.class, "scw")) {
-			filterNames.add(clazz.getName());
+		for (Class<? extends SimpleBeanConfigFactory> clazz : BeanUtils.getConfigurationClassList(
+				SimpleBeanConfigFactory.class,
+				Arrays.asList("scw", ApplicationConfigUtils.getAnnotationPackage(propertyFactory)))) {
+			if (!isInstance(clazz)) {
+				continue;
+			}
+
+			SimpleBeanConfigFactory simpleBeanConfigFactory = getInstance(clazz);
+			simpleBeanConfigFactory.init(getValueWiredManager(), this, propertyFactory);
+			addBeanConfigFactory(simpleBeanConfigFactory);
 		}
 
 		for (Class<? extends Filter> clazz : BeanUtils.getConfigurationClassList(Filter.class,
-				ApplicationConfigUtils.getAnnotationPackage(propertyFactory))) {
-			filterNames.add(clazz.getName());
-		}
-		
-		Iterator<String> iterator = filterNames.iterator();
-		while (iterator.hasNext()) {
-			String name = iterator.next();
-			if (!isInstance(name)) {
-				logger.warn("Invalid filter:{}", name);
-				iterator.remove();
-			} else {
-				logger.debug("use root filter:{}", name);
+				Arrays.asList("scw", ApplicationConfigUtils.getAnnotationPackage(propertyFactory)))) {
+			if (!isInstance(clazz)) {
+				continue;
 			}
+
+			filterNames.add(clazz.getName());
 		}
 
 		BeanUtils.initStatic(valueWiredManager, this, getPropertyFactory(),
 				ClassUtils.getClassList(getInitStaticPackage()));
+		for (Init init : inits) {
+			init.init();
+		}
+		inits.clear();
 	}
 
 	public synchronized void destroy() {

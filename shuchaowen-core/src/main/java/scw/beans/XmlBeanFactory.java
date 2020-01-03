@@ -7,10 +7,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.application.ApplicationConfigUtils;
-import scw.beans.dubbo.DubboUtils;
 import scw.beans.method.MethodBeanConfigFactory;
 import scw.beans.property.XmlPropertyFactory;
-import scw.beans.rpc.HttpRpcBeanConfigFactory;
+import scw.beans.xml.DefaultXmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
@@ -76,25 +75,23 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		try {
 			appendNameMapping(nodeList);
 			if (nodeList != null) {
-				addBeanConfigFactory(
-						new XmlBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList, "bean"));
+				addBeanConfigFactory(new DefaultXmlBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
+						nodeList, "bean"));
 				addBeanConfigFactory(new ServiceBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
 						getServicePackage()));
-				addBeanConfigFactory(
-						new HttpRpcBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList));
 				addBeanConfigFactory(new MethodBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
 						getBeanAnnotationPackage()));
-				BeanConfigFactory dubboBeanConfigFactory = DubboUtils
-						.getReferenceBeanConfigFactory(getValueWiredManager(), this, propertyFactory, nodeList);
-				if (dubboBeanConfigFactory != null) {
-					addBeanConfigFactory(dubboBeanConfigFactory);
+				for (Class<? extends XmlBeanConfigFactory> clazz : BeanUtils.getConfigurationClassList(
+						XmlBeanConfigFactory.class,
+						Arrays.asList("scw", ApplicationConfigUtils.getAnnotationPackage(propertyFactory)))) {
+					XmlBeanConfigFactory xmlBeanConfigFactory = getInstance(clazz);
+					xmlBeanConfigFactory.init(getValueWiredManager(), this, propertyFactory, nodeList);
+					addBeanConfigFactory(xmlBeanConfigFactory);
 				}
 			}
 
 			super.init();
 			initMethod(nodeList);
-			DubboUtils.exportService(this, propertyFactory, nodeList);
-			DubboUtils.registerDubboShutdownHook();
 		} catch (Exception e) {
 			logger.error(e, "初始化异常");
 			throw new BeansException();

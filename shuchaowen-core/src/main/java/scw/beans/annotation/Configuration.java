@@ -14,4 +14,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Configuration {
+	// 要排除的
+	public Class<?>[] excludes() default {};
+
+	public int order() default 0;
 }

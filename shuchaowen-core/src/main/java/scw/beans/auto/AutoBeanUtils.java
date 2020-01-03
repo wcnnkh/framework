@@ -95,7 +95,7 @@ public final class AutoBeanUtils {
 		Collection<AutoBeanService> autoBeanServices = AutoBeanUtils.getAutoBeanServices(autoConfig, beanFactory,
 				propertyFactory);
 		if (!CollectionUtils.isEmpty(autoBeanServices)) {
-			AutoBeanServiceChain serviceChain = new SimpleAutoBeanServiceChain(autoBeanServices);
+			AutoBeanServiceChain serviceChain = new SimpleAutoBeanServiceChain(autoBeanServices, null);
 			try {
 				return serviceChain.service(clazz, beanFactory, propertyFactory);
 			} catch (Exception e) {

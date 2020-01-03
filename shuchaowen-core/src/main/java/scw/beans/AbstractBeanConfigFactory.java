@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import scw.core.Destroy;
+import scw.core.Init;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -16,6 +17,7 @@ public abstract class AbstractBeanConfigFactory implements BeanConfigFactory {
 	protected Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	protected Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private LinkedList<Destroy> destroys = new LinkedList<Destroy>();
+	private LinkedList<Init> inits = new LinkedList<Init>();
 
 	public void addBean(BeanDefinition beanDefinition) {
 		String id = beanDefinition.getId();
@@ -41,6 +43,10 @@ public abstract class AbstractBeanConfigFactory implements BeanConfigFactory {
 		destroys.add(destroy);
 	}
 
+	public void addInit(Init init) {
+		inits.add(init);
+	}
+
 	public Map<String, BeanDefinition> getBeanMap() {
 		return beanMap;
 	}
@@ -51,5 +57,9 @@ public abstract class AbstractBeanConfigFactory implements BeanConfigFactory {
 
 	public Collection<Destroy> getDestroys() {
 		return Collections.unmodifiableCollection(destroys);
+	}
+
+	public Collection<Init> getInits() {
+		return Collections.unmodifiableCollection(inits);
 	}
 }

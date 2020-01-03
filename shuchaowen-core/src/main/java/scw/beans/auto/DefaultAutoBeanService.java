@@ -3,25 +3,33 @@ package scw.beans.auto;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
 import scw.core.PropertyFactory;
-import scw.core.annotation.Host;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.rpc.http.HttpRestfulRpcProxy;
 import scw.util.ExecutorUtils;
 
 public final class DefaultAutoBeanService implements AutoBeanService {
 	private static Logger logger = LoggerUtils.getLogger(DefaultAutoBeanService.class);
+	private Collection<Class<? extends AutoBeanService>> autoBeanServiceClassList;
+
+	public DefaultAutoBeanService() {
+		this(BeanUtils.getConfigurationClassList(AutoBeanService.class, Arrays.asList("scw")));
+	}
+
+	public DefaultAutoBeanService(Collection<Class<? extends AutoBeanService>> autoBeanServiceClassList) {
+		this.autoBeanServiceClassList = autoBeanServiceClassList;
+	}
 
 	private AutoBean defaultService(Class<?> clazz, BeanFactory beanFactory, PropertyFactory propertyFactory,
 			AutoBeanServiceChain serviceChain) throws Exception {
@@ -52,19 +60,6 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		}
 
 		if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
-			// Host注解
-			Host host = clazz.getAnnotation(Host.class);
-			if (host != null) {
-				String proxyName = propertyFactory.getProperty("rpc.http.host.proxy");
-				if (StringUtils.isEmpty(proxyName)) {
-					proxyName = HttpRestfulRpcProxy.class.getName();
-				}
-
-				if (beanFactory.isInstance(proxyName)) {
-					return new ProxyAutoBean(beanFactory, clazz, Arrays.asList(proxyName));
-				}
-			}
-
 			Proxy proxy = clazz.getAnnotation(Proxy.class);
 			if (proxy != null) {
 				return new ProxyAutoBean(beanFactory, clazz, AutoBeanUtils.getProxyNames(proxy));
@@ -72,7 +67,9 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		}
 
 		if (!ReflectionUtils.isInstance(clazz, false)) {
-			return serviceChain.service(clazz, beanFactory, propertyFactory);
+			AutoBeanServiceChain autoBeanServiceChain = new NextAutoBeanServiceChain(autoBeanServiceClassList,
+					serviceChain);
+			return autoBeanServiceChain.service(clazz, beanFactory, propertyFactory);
 		}
 
 		return new SimpleAutoBean(beanFactory, clazz, propertyFactory);
@@ -104,4 +101,30 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		return new SingleInstanceAutoBean(beanFactory, ThreadPoolExecutor.class,
 				ExecutorUtils.newExecutorService(true));
 	}
+
+	private static class NextAutoBeanServiceChain extends AbstractAutoBeanServiceChain {
+		private Iterator<Class<? extends AutoBeanService>> iterator;
+
+		public NextAutoBeanServiceChain(Collection<Class<? extends AutoBeanService>> collection,
+				AutoBeanServiceChain chain) {
+			super(chain);
+			if (!CollectionUtils.isEmpty(collection)) {
+				this.iterator = collection.iterator();
+			}
+		}
+
+		@Override
+		protected AutoBeanService getNext(Class<?> clazz, BeanFactory beanFactory, PropertyFactory propertyFactory) {
+			if (iterator == null) {
+				return null;
+			}
+
+			if (iterator.hasNext()) {
+				return beanFactory.getInstance(iterator.next());
+			}
+
+			return null;
+		}
+	}
+
 }

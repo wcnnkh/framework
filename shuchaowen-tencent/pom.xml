@@ -11,5 +11,21 @@
   		<groupId>shuchaowen</groupId>
   		<artifactId>shuchaowen-core</artifactId>
   	</dependency>
+  	<dependency>
+  		<groupId>shuchaowen</groupId>
+  		<artifactId>shuchaowen-locks</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>shuchaowen</groupId>
+  		<artifactId>shuchaowen-orm</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>shuchaowen</groupId>
+  		<artifactId>shuchaowen-data</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>shuchaowen</groupId>
+  		<artifactId>shuchaowen-security</artifactId>
+  	</dependency>
   </dependencies>
 </project>

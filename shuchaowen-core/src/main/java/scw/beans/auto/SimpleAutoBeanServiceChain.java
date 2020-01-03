@@ -7,27 +7,26 @@ import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
 import scw.core.utils.CollectionUtils;
 
-public class SimpleAutoBeanServiceChain implements AutoBeanServiceChain {
+public class SimpleAutoBeanServiceChain extends AbstractAutoBeanServiceChain {
 	private Iterator<AutoBeanService> iterator;
 
-	public SimpleAutoBeanServiceChain(
-			Collection<AutoBeanService> autoBeanServices) {
+	public SimpleAutoBeanServiceChain(Collection<AutoBeanService> autoBeanServices, AutoBeanServiceChain chain) {
+		super(chain);
 		if (!CollectionUtils.isEmpty(autoBeanServices)) {
 			iterator = autoBeanServices.iterator();
 		}
 	}
 
-	public AutoBean service(Class<?> clazz, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception{
+	@Override
+	protected AutoBeanService getNext(Class<?> clazz, BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		if (iterator == null) {
 			return null;
 		}
 
 		if (iterator.hasNext()) {
-			return iterator.next().doService(clazz, beanFactory,
-					propertyFactory, this);
+			return iterator.next();
 		}
+
 		return null;
 	}
-
 }

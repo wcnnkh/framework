@@ -3,14 +3,9 @@ package scw.application;
 import scw.beans.BeanUtils;
 import scw.beans.XmlBeanFactory;
 import scw.core.resource.ResourceUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
-import scw.db.DBUtils;
 import scw.logger.LoggerUtils;
-import scw.mq.MQUtils;
-import scw.orm.ORMUtils;
-import scw.timer.TimerUtils;
 
 public class CommonApplication extends XmlBeanFactory implements Application {
 	public static final String DEFAULT_BEANS_PATH = "beans.xml";
@@ -24,25 +19,9 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		return this;
 	}
 
-	protected String getORMPackage() {
-		return ApplicationConfigUtils.getORMPackage(getPropertyFactory());
-	}
-
 	@Override
 	protected String getServicePackage() {
 		return ApplicationConfigUtils.getServiceAnnotationPackage(getPropertyFactory());
-	}
-
-	protected String getCrontabAnnotationPackage() {
-		return ApplicationConfigUtils.getCrontabAnnotationPackage(getPropertyFactory());
-	}
-
-	protected String getConsumerAnnotationPackage() {
-		return ApplicationConfigUtils.getConsumerAnnotationPackage(getPropertyFactory());
-	}
-
-	protected String getMQAnnotationPackage() {
-		return ApplicationConfigUtils.getMQAnnotationPackage(getPropertyFactory());
 	}
 
 	@Override
@@ -75,20 +54,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		LoggerUtils.init();
-
-		String ormScanPackageName = getPropertyFactory().getProperty("orm.scan");
-		if (StringUtils.isNotEmpty(ormScanPackageName)) {
-			ORMUtils.registerCglibProxyTableBean(ormScanPackageName);
-		} else {
-			ORMUtils.registerCglibProxyTableBean(getORMPackage());
-		}
-
 		super.init();
-		TimerUtils.scanningAnnotation(
-				ClassUtils.getClassList(getCrontabAnnotationPackage(), ClassUtils.getDefaultClassLoader()),
-				getBeanFactory());
-		MQUtils.scanningAnnotation(this,
-				ClassUtils.getClassList(getConsumerAnnotationPackage(), ClassUtils.getDefaultClassLoader()));
 	}
 
 	public void destroy() {
@@ -105,7 +71,6 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		super.destroy();
-		DBUtils.deregisterDriver();
 		LoggerUtils.destroy();
 	}
 

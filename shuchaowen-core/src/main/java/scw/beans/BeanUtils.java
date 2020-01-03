@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -41,6 +42,7 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.CompareUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
@@ -54,20 +56,43 @@ public final class BeanUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T> Collection<Class<? extends T>> getConfigurationClassList(Class<? extends T> type,
-			String packageNames) {
-		List<Class<? extends T>> list = new LinkedList<Class<? extends T>>();
-		for (Class<?> clazz : ClassUtils.getClassList(packageNames)) {
-			Configuration configuration = clazz.getAnnotation(Configuration.class);
-			if (configuration == null) {
-				continue;
-			}
+			Collection<String> packageNames) {
+		HashSet<Class<? extends T>> set = new HashSet<Class<? extends T>>();
+		for (String packageName : packageNames) {
+			for (Class<?> clazz : ClassUtils.getClassList(packageName)) {
+				Configuration configuration = clazz.getAnnotation(Configuration.class);
+				if (configuration == null) {
+					continue;
+				}
 
-			if (!type.isAssignableFrom(clazz)) {
-				continue;
-			}
+				if (!type.isAssignableFrom(clazz)) {
+					continue;
+				}
 
-			list.add((Class<T>) clazz);
+				set.add((Class<T>) clazz);
+			}
 		}
+
+		Comparator<Class<? extends T>> comparator = new Comparator<Class<? extends T>>() {
+
+			public int compare(Class<? extends T> o1, Class<? extends T> o2) {
+				Configuration c1 = o1.getAnnotation(Configuration.class);
+				Configuration c2 = o2.getAnnotation(Configuration.class);
+				return CompareUtils.compare(c1.order(), c2.order(), true);
+			}
+		};
+
+		List<Class<? extends T>> list = new ArrayList<Class<? extends T>>(set);
+		Collections.sort(list, comparator);
+		for (Class<? extends T> clazz : list) {
+			Configuration c = clazz.getAnnotation(Configuration.class);
+			for (Class<?> e : c.excludes()) {
+				set.remove(e);
+			}
+		}
+
+		list = new ArrayList<Class<? extends T>>(set);
+		Collections.sort(list, comparator);
 		return list;
 	}
 

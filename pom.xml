@@ -45,7 +45,85 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-orm</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-dubbo</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-websocket</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-security</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-timer</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-mvc</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-data</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-generator</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-kdniao</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-locks</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-testing</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-tcc</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-mq</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-db</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 
@@ -54,67 +132,67 @@
 				<artifactId>shuchaowen-integration</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-alibaba</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-apple</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-excel</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-freemarker</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-mail</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-oas</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-tencent</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-upload</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-zookeeper</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-testing</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-embed</artifactId>
@@ -348,5 +426,17 @@
 		<module>shuchaowen-zookeeper</module>
 		<module>shuchaowen-testing</module>
 		<module>shuchaowen-embed</module>
+		<module>shuchaowen-dubbo</module>
+		<module>shuchaowen-tcc</module>
+		<module>shuchaowen-locks</module>
+		<module>shuchaowen-timer</module>
+		<module>shuchaowen-orm</module>
+		<module>shuchaowen-generator</module>
+		<module>shuchaowen-db</module>
+		<module>shuchaowen-mq</module>
+		<module>shuchaowen-data</module>
+		<module>shuchaowen-security</module>
+		<module>shuchaowen-mvc</module>
+		<module>shuchaowen-websocket</module>
 	</modules>
 </project>
