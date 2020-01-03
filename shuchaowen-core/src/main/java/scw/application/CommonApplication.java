@@ -111,7 +111,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 
 	public synchronized static void run(final Class<?> clazz, String beanXml) {
 		if (!ResourceUtils.getResourceOperations().isExist(beanXml)) {
-			FormatUtils.warn(TomcatApplication.class, "not found " + beanXml);
+			FormatUtils.warn(CommonApplication.class, "not found " + beanXml);
 		}
 
 		CommonApplication application = new CommonApplication(beanXml);

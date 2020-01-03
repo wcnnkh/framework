@@ -1,14 +1,17 @@
-package scw.application;
+package scw.embed;
 
-import scw.application.embedded.EmbeddedServlet;
-import scw.application.embedded.EmbeddedUtils;
-import scw.application.embedded.ServletEmbedded;
-import scw.application.embedded.ShutdownHttpServlet;
+import scw.application.Application;
+import scw.application.ApplicationConfigUtils;
+import scw.application.CommonApplication;
 import scw.beans.BeanUtils;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
+import scw.embed.EmbeddedServlet;
+import scw.embed.EmbeddedUtils;
+import scw.embed.ServletEmbedded;
+import scw.embed.ShutdownHttpServlet;
 import scw.mvc.servlet.ServletService;
 import scw.mvc.servlet.ServletUtils;
 

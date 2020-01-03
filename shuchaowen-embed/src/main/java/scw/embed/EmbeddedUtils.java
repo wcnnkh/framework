@@ -1,4 +1,4 @@
-package scw.application.embedded;
+package scw.embed;
 
 import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;

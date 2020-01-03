@@ -1,4 +1,4 @@
-package scw.application.embedded.tomcat;
+package scw.embed.tomcat;
 
 import javax.servlet.ServletContext;
 
@@ -6,8 +6,8 @@ import org.apache.tomcat.JarScanType;
 import org.apache.tomcat.JarScannerCallback;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 
-import scw.application.embedded.EmbeddedUtils;
 import scw.core.PropertyFactory;
+import scw.embed.EmbeddedUtils;
 
 /**
  * tomcat8以上

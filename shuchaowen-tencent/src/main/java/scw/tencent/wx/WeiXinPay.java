@@ -31,8 +31,8 @@ import scw.net.http.HttpRequest;
 import scw.net.http.Method;
 import scw.net.mime.MimeTypeConstants;
 import scw.net.mime.SimpleMimeType;
+import scw.net.ssl.SSLContexts;
 import scw.security.signature.SignatureUtils;
-import scw.security.ssl.SSLContexts;
 import scw.tencent.wx.pay.UnifiedOrderResponse;
 
 public final class WeiXinPay {

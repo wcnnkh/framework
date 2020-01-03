@@ -1,4 +1,4 @@
-package scw.security.ssl;
+package scw.net.ssl;
 
 //信任所有
 public class TrustAllManager implements javax.net.ssl.TrustManager,

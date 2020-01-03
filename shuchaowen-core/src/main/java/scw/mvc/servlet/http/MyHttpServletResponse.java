@@ -34,10 +34,6 @@ public class MyHttpServletResponse extends HttpServletResponseWrapper implements
 		}
 	}
 
-	public void setContentLength(long length) {
-		setContentLengthLong(length);
-	}
-
 	public void addCookie(String name, String value) {
 		addCookie(new javax.servlet.http.Cookie(name, value));
 	}
@@ -51,5 +47,9 @@ public class MyHttpServletResponse extends HttpServletResponseWrapper implements
 			setCharacterEncoding(mimeType.getCharsetName());
 		}
 		setContentType(mimeType.toString());
+	}
+
+	public void setContentLength(long length) {
+		super.setContentLength((int) length);
 	}
 }

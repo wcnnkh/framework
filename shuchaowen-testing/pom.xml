@@ -5,6 +5,11 @@
     <artifactId>shuchaowen</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <groupId>shuchaowen-mvc</groupId>
-  <artifactId>shuchaowen-mvc</artifactId>
+  <artifactId>shuchaowen-testing</artifactId>
+  <dependencies>
+  	<dependency>
+  		<groupId>shuchaowen</groupId>
+  		<artifactId>shuchaowen-core</artifactId>
+  	</dependency>
+  </dependencies>
 </project>

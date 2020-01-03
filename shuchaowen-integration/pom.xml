@@ -178,22 +178,9 @@
 			<artifactId>jstl</artifactId>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
 		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-core</artifactId>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper -->
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-jasper</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.tomcat.embed</groupId>
-					<artifactId>tomcat-embed-core</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-embed</artifactId>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.corundumstudio.socketio/netty-socketio -->

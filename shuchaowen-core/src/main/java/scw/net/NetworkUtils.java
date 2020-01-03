@@ -19,7 +19,7 @@ import javax.net.ssl.SSLSocketFactory;
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
-import scw.security.ssl.TrustAllManager;
+import scw.net.ssl.TrustAllManager;
 
 public final class NetworkUtils {
 	private NetworkUtils() {

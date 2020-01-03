@@ -25,7 +25,7 @@
  *
  */
 
-package scw.security.ssl;
+package scw.net.ssl;
 
 import java.io.File;
 import java.io.FileInputStream;

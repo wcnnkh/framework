@@ -1,4 +1,4 @@
-package scw.application.embedded.tomcat;
+package scw.embed.tomcat;
 
 import java.lang.reflect.Method;
 
@@ -13,8 +13,6 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.tomcat.JarScanner;
 
-import scw.application.embedded.EmbeddedUtils;
-import scw.application.embedded.ServletEmbedded;
 import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceUtils;
@@ -24,6 +22,8 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.embed.EmbeddedUtils;
+import scw.embed.ServletEmbedded;
 import scw.logger.LoggerUtils;
 
 public final class TomcatServletEmbedded implements ServletEmbedded {

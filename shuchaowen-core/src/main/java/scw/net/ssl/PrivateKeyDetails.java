@@ -24,7 +24,7 @@
  * <http://www.apache.org/>.
  *
  */
-package scw.security.ssl;
+package scw.net.ssl;
 
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
