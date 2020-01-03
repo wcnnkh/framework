@@ -7,11 +7,11 @@ import scw.json.JsonObject;
 import scw.json.gson.Gson;
 
 public final class BuiltInGsonJsonObject extends JsonObject {
-	private scw.json.gson.JsonObject jsonObject;
+	private scw.json.gson.GsonJsonObject gsonJsonObject;
 	private Gson gson;
 
-	public BuiltInGsonJsonObject(scw.json.gson.JsonObject jsonObject, Gson gson) {
-		this.jsonObject = jsonObject;
+	public BuiltInGsonJsonObject(scw.json.gson.GsonJsonObject gsonJsonObject, Gson gson) {
+		this.gsonJsonObject = gsonJsonObject;
 		this.gson = gson;
 	}
 
@@ -20,28 +20,28 @@ public final class BuiltInGsonJsonObject extends JsonObject {
 			return;
 		}
 
-		jsonObject.add(key, gson.toJsonTree(value));
+		gsonJsonObject.add(key, gson.toJsonTree(value));
 	}
 
 	public JsonElement get(String key) {
-		scw.json.gson.JsonElement jsonElement = jsonObject.get(key);
-		return jsonElement == null ? null : new BuiltInGsonElement(jsonElement, gson);
+		scw.json.gson.GsonJsonElement gsonJsonElement = gsonJsonObject.get(key);
+		return gsonJsonElement == null ? null : new BuiltInGsonElement(gsonJsonElement, gson);
 	}
 
 	public Collection<String> keys() {
-		return jsonObject.keySet();
+		return gsonJsonObject.keySet();
 	}
 
 	public boolean containsKey(String key) {
-		return jsonObject.has(key);
+		return gsonJsonObject.has(key);
 	}
 
 	public String toJsonString() {
-		return jsonObject.toString();
+		return gsonJsonObject.toString();
 	}
 
 	@Override
 	public int size() {
-		return jsonObject.size();
+		return gsonJsonObject.size();
 	}
 }

@@ -22,7 +22,7 @@ import java.lang.reflect.Type;
 import scw.json.gson.Gson;
 import scw.json.gson.JsonDeserializationContext;
 import scw.json.gson.JsonDeserializer;
-import scw.json.gson.JsonElement;
+import scw.json.gson.GsonJsonElement;
 import scw.json.gson.JsonParseException;
 import scw.json.gson.JsonSerializationContext;
 import scw.json.gson.JsonSerializer;
@@ -63,7 +63,7 @@ public final class TreeTypeAdapter<T> extends TypeAdapter<T> {
     if (deserializer == null) {
       return delegate().read(in);
     }
-    JsonElement value = Streams.parse(in);
+    GsonJsonElement value = Streams.parse(in);
     if (value.isJsonNull()) {
       return null;
     }
@@ -79,7 +79,7 @@ public final class TreeTypeAdapter<T> extends TypeAdapter<T> {
       out.nullValue();
       return;
     }
-    JsonElement tree = serializer.serialize(value, typeToken.getType(), context);
+    GsonJsonElement tree = serializer.serialize(value, typeToken.getType(), context);
     Streams.write(tree, out);
   }
 
@@ -151,14 +151,14 @@ public final class TreeTypeAdapter<T> extends TypeAdapter<T> {
   }
 
   private final class GsonContextImpl implements JsonSerializationContext, JsonDeserializationContext {
-    public JsonElement serialize(Object src) {
+    public GsonJsonElement serialize(Object src) {
       return gson.toJsonTree(src);
     }
-    public JsonElement serialize(Object src, Type typeOfSrc) {
+    public GsonJsonElement serialize(Object src, Type typeOfSrc) {
       return gson.toJsonTree(src, typeOfSrc);
     }
     @SuppressWarnings("unchecked")
-    public <R> R deserialize(JsonElement json, Type typeOfT) throws JsonParseException {
+    public <R> R deserialize(GsonJsonElement json, Type typeOfT) throws JsonParseException {
       return (R) gson.fromJson(json, typeOfT);
     }
   };

@@ -23,25 +23,25 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A class representing an array type in Json. An array is a list of {@link JsonElement}s each of
+ * A class representing an array type in Json. An array is a list of {@link GsonJsonElement}s each of
  * which can be of a different type. This is an ordered list, meaning that the order in which
  * elements are added is preserved.
  *
  * @author Inderjeet Singh
  * @author Joel Leitch
  */
-public final class JsonArray extends JsonElement implements Iterable<JsonElement> {
-  private final List<JsonElement> elements;
+public final class GsonJsonArray extends GsonJsonElement implements Iterable<GsonJsonElement> {
+  private final List<GsonJsonElement> elements;
 
   /**
    * Creates an empty JsonArray.
    */
-  public JsonArray() {
-    elements = new ArrayList<JsonElement>();
+  public GsonJsonArray() {
+    elements = new ArrayList<GsonJsonElement>();
   }
   
-  public JsonArray(int capacity) {
-    elements = new ArrayList<JsonElement>(capacity);
+  public GsonJsonArray(int capacity) {
+    elements = new ArrayList<GsonJsonElement>(capacity);
   }
 
   /**
@@ -49,15 +49,15 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    * @since 2.8.2
    */
   @Override
-  public JsonArray deepCopy() {
+  public GsonJsonArray deepCopy() {
     if (!elements.isEmpty()) {
-      JsonArray result = new JsonArray(elements.size());
-      for (JsonElement element : elements) {
+      GsonJsonArray result = new GsonJsonArray(elements.size());
+      for (GsonJsonElement element : elements) {
         result.add(element.deepCopy());
       }
       return result;
     }
-    return new JsonArray();
+    return new GsonJsonArray();
   }
 
   /**
@@ -101,7 +101,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    *
    * @param element the element that needs to be added to the array.
    */
-  public void add(JsonElement element) {
+  public void add(GsonJsonElement element) {
     if (element == null) {
       element = JsonNull.INSTANCE;
     }
@@ -113,7 +113,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    *
    * @param array the array whose elements need to be added to the array.
    */
-  public void addAll(JsonArray array) {
+  public void addAll(GsonJsonArray array) {
     elements.addAll(array.elements);
   }
 
@@ -125,7 +125,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    * @return the element previously at the specified position
    * @throws IndexOutOfBoundsException if the specified index is outside the array bounds
    */
-  public JsonElement set(int index, JsonElement element) {
+  public GsonJsonElement set(int index, GsonJsonElement element) {
     return elements.set(index, element);
   }
 
@@ -136,7 +136,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    * @return true if this array contained the specified element, false otherwise
    * @since 2.3
    */
-  public boolean remove(JsonElement element) {
+  public boolean remove(GsonJsonElement element) {
     return elements.remove(element);
   }
 
@@ -149,7 +149,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    * @throws IndexOutOfBoundsException if the specified index is outside the array bounds
    * @since 2.3
    */
-  public JsonElement remove(int index) {
+  public GsonJsonElement remove(int index) {
     return elements.remove(index);
   }
 
@@ -159,7 +159,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    * @param element whose presence in this array is to be tested
    * @since 2.3
    */
-  public boolean contains(JsonElement element) {
+  public boolean contains(GsonJsonElement element) {
     return elements.contains(element);
   }
 
@@ -178,7 +178,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    *
    * @return an iterator to navigate the elements of the array.
    */
-  public Iterator<JsonElement> iterator() {
+  public Iterator<GsonJsonElement> iterator() {
     return elements.iterator();
   }
 
@@ -190,7 +190,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
    * @throws IndexOutOfBoundsException if i is negative or greater than or equal to the
    * {@link #size()} of the array.
    */
-  public JsonElement get(int i) {
+  public GsonJsonElement get(int i) {
     return elements.get(i);
   }
 
@@ -374,7 +374,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
 
   @Override
   public boolean equals(Object o) {
-    return (o == this) || (o instanceof JsonArray && ((JsonArray) o).elements.equals(elements));
+    return (o == this) || (o instanceof GsonJsonArray && ((GsonJsonArray) o).elements.equals(elements));
   }
 
   @Override

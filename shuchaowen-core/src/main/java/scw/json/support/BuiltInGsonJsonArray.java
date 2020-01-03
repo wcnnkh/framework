@@ -9,25 +9,25 @@ import scw.json.JsonElement;
 import scw.json.gson.Gson;
 
 public final class BuiltInGsonJsonArray extends JsonArray {
-	private scw.json.gson.JsonArray jsonArray;
+	private scw.json.gson.GsonJsonArray gsonJsonArray;
 	private Gson gson;
 
-	public BuiltInGsonJsonArray(scw.json.gson.JsonArray jsonArray, Gson gson) {
-		this.jsonArray = jsonArray;
+	public BuiltInGsonJsonArray(scw.json.gson.GsonJsonArray gsonJsonArray, Gson gson) {
+		this.gsonJsonArray = gsonJsonArray;
 	}
 
 	public Iterator<scw.json.JsonElement> iterator() {
-		return new IteratorConvert<scw.json.gson.JsonElement, JsonElement>(jsonArray.iterator(),
-				new Converter<scw.json.gson.JsonElement, JsonElement>() {
+		return new IteratorConvert<scw.json.gson.GsonJsonElement, JsonElement>(gsonJsonArray.iterator(),
+				new Converter<scw.json.gson.GsonJsonElement, JsonElement>() {
 
-					public JsonElement convert(scw.json.gson.JsonElement k) throws Exception {
+					public JsonElement convert(scw.json.gson.GsonJsonElement k) throws Exception {
 						return new BuiltInGsonElement(k, gson);
 					}
 				});
 	}
 
 	public JsonElement get(Integer index) {
-		scw.json.gson.JsonElement element = jsonArray.get(index);
+		scw.json.gson.GsonJsonElement element = gsonJsonArray.get(index);
 		return element == null ? null : new BuiltInGsonElement(element, gson);
 	}
 
@@ -35,14 +35,14 @@ public final class BuiltInGsonJsonArray extends JsonArray {
 		if (value == null) {
 			return;
 		}
-		jsonArray.add(gson.toJsonTree(value));
+		gsonJsonArray.add(gson.toJsonTree(value));
 	}
 
 	public int size() {
-		return jsonArray.size();
+		return gsonJsonArray.size();
 	}
 
 	public String toJsonString() {
-		return jsonArray.toString();
+		return gsonJsonArray.toString();
 	}
 }

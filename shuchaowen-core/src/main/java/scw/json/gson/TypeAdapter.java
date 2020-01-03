@@ -129,7 +129,7 @@ public abstract class TypeAdapter<T> {
 
   /**
    * Converts {@code value} to a JSON document and writes it to {@code out}.
-   * Unlike Gson's similar {@link Gson#toJson(JsonElement, Appendable) toJson}
+   * Unlike Gson's similar {@link Gson#toJson(GsonJsonElement, Appendable) toJson}
    * method, this write is strict. Create a {@link
    * JsonWriter#setLenient(boolean) lenient} {@code JsonWriter} and call
    * {@link #write(scw.json.gson.stream.JsonWriter, Object)} for lenient
@@ -229,7 +229,7 @@ public abstract class TypeAdapter<T> {
    * @return the converted JSON tree. May be {@link JsonNull}.
    * @since 2.2
    */
-  public final JsonElement toJsonTree(T value) {
+  public final GsonJsonElement toJsonTree(T value) {
     try {
       JsonTreeWriter jsonWriter = new JsonTreeWriter();
       write(jsonWriter, value);
@@ -280,7 +280,7 @@ public abstract class TypeAdapter<T> {
    * @param jsonTree the Java object to convert. May be {@link JsonNull}.
    * @since 2.2
    */
-  public final T fromJsonTree(JsonElement jsonTree) {
+  public final T fromJsonTree(GsonJsonElement jsonTree) {
     try {
       JsonReader jsonReader = new JsonTreeReader(jsonTree);
       return read(jsonReader);

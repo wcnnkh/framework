@@ -21,10 +21,10 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import scw.json.gson.JsonArray;
-import scw.json.gson.JsonElement;
+import scw.json.gson.GsonJsonArray;
+import scw.json.gson.GsonJsonElement;
 import scw.json.gson.JsonNull;
-import scw.json.gson.JsonObject;
+import scw.json.gson.GsonJsonObject;
 import scw.json.gson.JsonPrimitive;
 import scw.json.gson.stream.JsonWriter;
 
@@ -47,13 +47,13 @@ public final class JsonTreeWriter extends JsonWriter {
   private static final JsonPrimitive SENTINEL_CLOSED = new JsonPrimitive("closed");
 
   /** The JsonElements and JsonArrays under modification, outermost to innermost. */
-  private final List<JsonElement> stack = new ArrayList<JsonElement>();
+  private final List<GsonJsonElement> stack = new ArrayList<GsonJsonElement>();
 
   /** The name for the next JSON object value. If non-null, the top of the stack is a JsonObject. */
   private String pendingName;
 
   /** the JSON element constructed by this writer. */
-  private JsonElement product = JsonNull.INSTANCE; // TODO: is this really what we want?;
+  private GsonJsonElement product = JsonNull.INSTANCE; // TODO: is this really what we want?;
 
   public JsonTreeWriter() {
     super(UNWRITABLE_WRITER);
@@ -62,30 +62,30 @@ public final class JsonTreeWriter extends JsonWriter {
   /**
    * Returns the top level object produced by this writer.
    */
-  public JsonElement get() {
+  public GsonJsonElement get() {
     if (!stack.isEmpty()) {
       throw new IllegalStateException("Expected one JSON element but was " + stack);
     }
     return product;
   }
 
-  private JsonElement peek() {
+  private GsonJsonElement peek() {
     return stack.get(stack.size() - 1);
   }
 
-  private void put(JsonElement value) {
+  private void put(GsonJsonElement value) {
     if (pendingName != null) {
       if (!value.isJsonNull() || getSerializeNulls()) {
-        JsonObject object = (JsonObject) peek();
+        GsonJsonObject object = (GsonJsonObject) peek();
         object.add(pendingName, value);
       }
       pendingName = null;
     } else if (stack.isEmpty()) {
       product = value;
     } else {
-      JsonElement element = peek();
-      if (element instanceof JsonArray) {
-        ((JsonArray) element).add(value);
+      GsonJsonElement element = peek();
+      if (element instanceof GsonJsonArray) {
+        ((GsonJsonArray) element).add(value);
       } else {
         throw new IllegalStateException();
       }
@@ -93,7 +93,7 @@ public final class JsonTreeWriter extends JsonWriter {
   }
 
   @Override public JsonWriter beginArray() throws IOException {
-    JsonArray array = new JsonArray();
+    GsonJsonArray array = new GsonJsonArray();
     put(array);
     stack.add(array);
     return this;
@@ -103,8 +103,8 @@ public final class JsonTreeWriter extends JsonWriter {
     if (stack.isEmpty() || pendingName != null) {
       throw new IllegalStateException();
     }
-    JsonElement element = peek();
-    if (element instanceof JsonArray) {
+    GsonJsonElement element = peek();
+    if (element instanceof GsonJsonArray) {
       stack.remove(stack.size() - 1);
       return this;
     }
@@ -112,7 +112,7 @@ public final class JsonTreeWriter extends JsonWriter {
   }
 
   @Override public JsonWriter beginObject() throws IOException {
-    JsonObject object = new JsonObject();
+    GsonJsonObject object = new GsonJsonObject();
     put(object);
     stack.add(object);
     return this;
@@ -122,8 +122,8 @@ public final class JsonTreeWriter extends JsonWriter {
     if (stack.isEmpty() || pendingName != null) {
       throw new IllegalStateException();
     }
-    JsonElement element = peek();
-    if (element instanceof JsonObject) {
+    GsonJsonElement element = peek();
+    if (element instanceof GsonJsonObject) {
       stack.remove(stack.size() - 1);
       return this;
     }
@@ -134,8 +134,8 @@ public final class JsonTreeWriter extends JsonWriter {
     if (stack.isEmpty() || pendingName != null) {
       throw new IllegalStateException();
     }
-    JsonElement element = peek();
-    if (element instanceof JsonObject) {
+    GsonJsonElement element = peek();
+    if (element instanceof GsonJsonObject) {
       pendingName = name;
       return this;
     }

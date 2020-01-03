@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import scw.json.gson.Gson;
-import scw.json.gson.JsonElement;
+import scw.json.gson.GsonJsonElement;
 import scw.json.gson.JsonPrimitive;
 import scw.json.gson.JsonSyntaxException;
 import scw.json.gson.TypeAdapter;
@@ -213,11 +213,11 @@ public final class MapTypeAdapterFactory implements TypeAdapterFactory {
       }
 
       boolean hasComplexKeys = false;
-      List<JsonElement> keys = new ArrayList<JsonElement>(map.size());
+      List<GsonJsonElement> keys = new ArrayList<GsonJsonElement>(map.size());
 
       List<V> values = new ArrayList<V>(map.size());
       for (Map.Entry<K, V> entry : map.entrySet()) {
-        JsonElement keyElement = keyTypeAdapter.toJsonTree(entry.getKey());
+        GsonJsonElement keyElement = keyTypeAdapter.toJsonTree(entry.getKey());
         keys.add(keyElement);
         values.add(entry.getValue());
         hasComplexKeys |= keyElement.isJsonArray() || keyElement.isJsonObject();
@@ -235,7 +235,7 @@ public final class MapTypeAdapterFactory implements TypeAdapterFactory {
       } else {
         out.beginObject();
         for (int i = 0, size = keys.size(); i < size; i++) {
-          JsonElement keyElement = keys.get(i);
+          GsonJsonElement keyElement = keys.get(i);
           out.name(keyToString(keyElement));
           valueTypeAdapter.write(out, values.get(i));
         }
@@ -243,7 +243,7 @@ public final class MapTypeAdapterFactory implements TypeAdapterFactory {
       }
     }
 
-    private String keyToString(JsonElement keyElement) {
+    private String keyToString(GsonJsonElement keyElement) {
       if (keyElement.isJsonPrimitive()) {
         JsonPrimitive primitive = keyElement.getAsJsonPrimitive();
         if (primitive.isNumber()) {

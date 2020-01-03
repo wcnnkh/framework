@@ -25,7 +25,7 @@ import scw.json.gson.stream.JsonToken;
 import scw.json.gson.stream.MalformedJsonException;
 
 /**
- * A parser to parse Json into a parse tree of {@link JsonElement}s
+ * A parser to parse Json into a parse tree of {@link GsonJsonElement}s
  *
  * @author Inderjeet Singh
  * @author Joel Leitch
@@ -37,11 +37,11 @@ public final class JsonParser {
    * Parses the specified JSON string into a parse tree
    *
    * @param json JSON text
-   * @return a parse tree of {@link JsonElement}s corresponding to the specified JSON
+   * @return a parse tree of {@link GsonJsonElement}s corresponding to the specified JSON
    * @throws JsonParseException if the specified text is not valid JSON
    * @since 1.3
    */
-  public JsonElement parse(String json) throws JsonSyntaxException {
+  public GsonJsonElement parse(String json) throws JsonSyntaxException {
     return parse(new StringReader(json));
   }
 
@@ -49,14 +49,14 @@ public final class JsonParser {
    * Parses the specified JSON string into a parse tree
    *
    * @param json JSON text
-   * @return a parse tree of {@link JsonElement}s corresponding to the specified JSON
+   * @return a parse tree of {@link GsonJsonElement}s corresponding to the specified JSON
    * @throws JsonParseException if the specified text is not valid JSON
    * @since 1.3
    */
-  public JsonElement parse(Reader json) throws JsonIOException, JsonSyntaxException {
+  public GsonJsonElement parse(Reader json) throws JsonIOException, JsonSyntaxException {
     try {
       JsonReader jsonReader = new JsonReader(json);
-      JsonElement element = parse(jsonReader);
+      GsonJsonElement element = parse(jsonReader);
       if (!element.isJsonNull() && jsonReader.peek() != JsonToken.END_DOCUMENT) {
         throw new JsonSyntaxException("Did not consume the entire document.");
       }
@@ -77,7 +77,7 @@ public final class JsonParser {
    *     text is not valid JSON
    * @since 1.6
    */
-  public JsonElement parse(JsonReader json) throws JsonIOException, JsonSyntaxException {
+  public GsonJsonElement parse(JsonReader json) throws JsonIOException, JsonSyntaxException {
     boolean lenient = json.isLenient();
     json.setLenient(true);
     try {

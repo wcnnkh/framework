@@ -23,24 +23,24 @@ import scw.json.gson.internal.LinkedTreeMap;
 
 /**
  * A class representing an object type in Json. An object consists of name-value pairs where names
- * are strings, and values are any other type of {@link JsonElement}. This allows for a creating a
+ * are strings, and values are any other type of {@link GsonJsonElement}. This allows for a creating a
  * tree of JsonElements. The member elements of this object are maintained in order they were added.
  *
  * @author Inderjeet Singh
  * @author Joel Leitch
  */
-public final class JsonObject extends JsonElement {
-  private final LinkedTreeMap<String, JsonElement> members =
-      new LinkedTreeMap<String, JsonElement>();
+public final class GsonJsonObject extends GsonJsonElement {
+  private final LinkedTreeMap<String, GsonJsonElement> members =
+      new LinkedTreeMap<String, GsonJsonElement>();
 
   /**
    * Creates a deep copy of this element and all its children
    * @since 2.8.2
    */
   @Override
-  public JsonObject deepCopy() {
-    JsonObject result = new JsonObject();
-    for (Map.Entry<String, JsonElement> entry : members.entrySet()) {
+  public GsonJsonObject deepCopy() {
+    GsonJsonObject result = new GsonJsonObject();
+    for (Map.Entry<String, GsonJsonElement> entry : members.entrySet()) {
       result.add(entry.getKey(), entry.getValue().deepCopy());
     }
     return result;
@@ -54,7 +54,7 @@ public final class JsonObject extends JsonElement {
    * @param property name of the member.
    * @param value the member object.
    */
-  public void add(String property, JsonElement value) {
+  public void add(String property, GsonJsonElement value) {
     if (value == null) {
       value = JsonNull.INSTANCE;
     }
@@ -62,13 +62,13 @@ public final class JsonObject extends JsonElement {
   }
 
   /**
-   * Removes the {@code property} from this {@link JsonObject}.
+   * Removes the {@code property} from this {@link GsonJsonObject}.
    *
    * @param property name of the member that should be removed.
-   * @return the {@link JsonElement} object that is being removed.
+   * @return the {@link GsonJsonElement} object that is being removed.
    * @since 1.3
    */
-  public JsonElement remove(String property) {
+  public GsonJsonElement remove(String property) {
     return members.remove(property);
   }
 
@@ -117,12 +117,12 @@ public final class JsonObject extends JsonElement {
   }
 
   /**
-   * Creates the proper {@link JsonElement} object from the given {@code value} object.
+   * Creates the proper {@link GsonJsonElement} object from the given {@code value} object.
    *
-   * @param value the object to generate the {@link JsonElement} for
+   * @param value the object to generate the {@link GsonJsonElement} for
    * @return a {@link JsonPrimitive} if the {@code value} is not null, otherwise a {@link JsonNull}
    */
-  private JsonElement createJsonElement(Object value) {
+  private GsonJsonElement createJsonElement(Object value) {
     return value == null ? JsonNull.INSTANCE : new JsonPrimitive(value);
   }
 
@@ -132,7 +132,7 @@ public final class JsonObject extends JsonElement {
    *
    * @return a set of members of this object.
    */
-  public Set<Map.Entry<String, JsonElement>> entrySet() {
+  public Set<Map.Entry<String, GsonJsonElement>> entrySet() {
     return members.entrySet();
   }
 
@@ -171,7 +171,7 @@ public final class JsonObject extends JsonElement {
    * @param memberName name of the member that is being requested.
    * @return the member matching the name. Null if no such member exists.
    */
-  public JsonElement get(String memberName) {
+  public GsonJsonElement get(String memberName) {
     return members.get(memberName);
   }
 
@@ -191,8 +191,8 @@ public final class JsonObject extends JsonElement {
    * @param memberName name of the member being requested.
    * @return the JsonArray corresponding to the specified member.
    */
-  public JsonArray getAsJsonArray(String memberName) {
-    return (JsonArray) members.get(memberName);
+  public GsonJsonArray getAsJsonArray(String memberName) {
+    return (GsonJsonArray) members.get(memberName);
   }
 
   /**
@@ -201,14 +201,14 @@ public final class JsonObject extends JsonElement {
    * @param memberName name of the member being requested.
    * @return the JsonObject corresponding to the specified member.
    */
-  public JsonObject getAsJsonObject(String memberName) {
-    return (JsonObject) members.get(memberName);
+  public GsonJsonObject getAsJsonObject(String memberName) {
+    return (GsonJsonObject) members.get(memberName);
   }
 
   @Override
   public boolean equals(Object o) {
-    return (o == this) || (o instanceof JsonObject
-        && ((JsonObject) o).members.equals(members));
+    return (o == this) || (o instanceof GsonJsonObject
+        && ((GsonJsonObject) o).members.equals(members));
   }
 
   @Override

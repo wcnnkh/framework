@@ -205,7 +205,7 @@ public final class GsonBuilder {
    * For this case, assume that a type adapter is registered to serialize and
    * deserialize some {@code Point} class, which contains an x and y coordinate,
    * to/from the JSON Primitive string value {@code "(x,y)"}. The Java map would
-   * then be serialized as a {@link JsonObject}.
+   * then be serialized as a {@link GsonJsonObject}.
    *
    * <p>Below is an example:
    * <pre>  {@code

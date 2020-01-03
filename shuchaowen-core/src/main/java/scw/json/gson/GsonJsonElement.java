@@ -25,36 +25,36 @@ import scw.json.gson.internal.Streams;
 import scw.json.gson.stream.JsonWriter;
 
 /**
- * A class representing an element of Json. It could either be a {@link JsonObject}, a
- * {@link JsonArray}, a {@link JsonPrimitive} or a {@link JsonNull}.
+ * A class representing an element of Json. It could either be a {@link GsonJsonObject}, a
+ * {@link GsonJsonArray}, a {@link JsonPrimitive} or a {@link JsonNull}.
  *
  * @author Inderjeet Singh
  * @author Joel Leitch
  */
-public abstract class JsonElement {
+public abstract class GsonJsonElement {
   /**
    * Returns a deep copy of this element. Immutable elements like primitives
    * and nulls are not copied.
    * @since 2.8.2
    */
-  public abstract JsonElement deepCopy();
+  public abstract GsonJsonElement deepCopy();
 
   /**
    * provides check for verifying if this element is an array or not.
    *
-   * @return true if this element is of type {@link JsonArray}, false otherwise.
+   * @return true if this element is of type {@link GsonJsonArray}, false otherwise.
    */
   public boolean isJsonArray() {
-    return this instanceof JsonArray;
+    return this instanceof GsonJsonArray;
   }
 
   /**
    * provides check for verifying if this element is a Json object or not.
    *
-   * @return true if this element is of type {@link JsonObject}, false otherwise.
+   * @return true if this element is of type {@link GsonJsonObject}, false otherwise.
    */
   public boolean isJsonObject() {
-    return this instanceof JsonObject;
+    return this instanceof GsonJsonObject;
   }
 
   /**
@@ -77,33 +77,33 @@ public abstract class JsonElement {
   }
 
   /**
-   * convenience method to get this element as a {@link JsonObject}. If the element is of some
+   * convenience method to get this element as a {@link GsonJsonObject}. If the element is of some
    * other type, a {@link IllegalStateException} will result. Hence it is best to use this method
    * after ensuring that this element is of the desired type by calling {@link #isJsonObject()}
    * first.
    *
-   * @return get this element as a {@link JsonObject}.
+   * @return get this element as a {@link GsonJsonObject}.
    * @throws IllegalStateException if the element is of another type.
    */
-  public JsonObject getAsJsonObject() {
+  public GsonJsonObject getAsJsonObject() {
     if (isJsonObject()) {
-      return (JsonObject) this;
+      return (GsonJsonObject) this;
     }
     throw new IllegalStateException("Not a JSON Object: " + this);
   }
 
   /**
-   * convenience method to get this element as a {@link JsonArray}. If the element is of some
+   * convenience method to get this element as a {@link GsonJsonArray}. If the element is of some
    * other type, a {@link IllegalStateException} will result. Hence it is best to use this method
    * after ensuring that this element is of the desired type by calling {@link #isJsonArray()}
    * first.
    *
-   * @return get this element as a {@link JsonArray}.
+   * @return get this element as a {@link GsonJsonArray}.
    * @throws IllegalStateException if the element is of another type.
    */
-  public JsonArray getAsJsonArray() {
+  public GsonJsonArray getAsJsonArray() {
     if (isJsonArray()) {
-      return (JsonArray) this;
+      return (GsonJsonArray) this;
     }
     throw new IllegalStateException("Not a JSON Array: " + this);
   }
@@ -147,7 +147,7 @@ public abstract class JsonElement {
    * @return get this element as a primitive boolean value.
    * @throws ClassCastException if the element is of not a {@link JsonPrimitive} and is not a valid
    * boolean value.
-   * @throws IllegalStateException if the element is of the type {@link JsonArray} but contains
+   * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
    */
   public boolean getAsBoolean() {
@@ -160,7 +160,7 @@ public abstract class JsonElement {
    * @return get this element as a {@link Boolean} value.
    * @throws ClassCastException if the element is of not a {@link JsonPrimitive} and is not a valid
    * boolean value.
-   * @throws IllegalStateException if the element is of the type {@link JsonArray} but contains
+   * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
    */
   Boolean getAsBooleanWrapper() {
@@ -173,7 +173,7 @@ public abstract class JsonElement {
    * @return get this element as a {@link Number}.
    * @throws ClassCastException if the element is of not a {@link JsonPrimitive} and is not a valid
    * number.
-   * @throws IllegalStateException if the element is of the type {@link JsonArray} but contains
+   * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
    */
   public Number getAsNumber() {
@@ -186,7 +186,7 @@ public abstract class JsonElement {
    * @return get this element as a string value.
    * @throws ClassCastException if the element is of not a {@link JsonPrimitive} and is not a valid
    * string value.
-   * @throws IllegalStateException if the element is of the type {@link JsonArray} but contains
+   * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
    */
   public String getAsString() {
@@ -199,7 +199,7 @@ public abstract class JsonElement {
    * @return get this element as a primitive double value.
    * @throws ClassCastException if the element is of not a {@link JsonPrimitive} and is not a valid
    * double value.
-   * @throws IllegalStateException if the element is of the type {@link JsonArray} but contains
+   * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
    */
   public double getAsDouble() {
@@ -212,7 +212,7 @@ public abstract class JsonElement {
    * @return get this element as a primitive float value.
    * @throws ClassCastException if the element is of not a {@link JsonPrimitive} and is not a valid
    * float value.
-   * @throws IllegalStateException if the element is of the type {@link JsonArray} but contains
+   * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
    */
   public float getAsFloat() {
@@ -225,7 +225,7 @@ public abstract class JsonElement {
    * @return get this element as a primitive long value.
    * @throws ClassCastException if the element is of not a {@link JsonPrimitive} and is not a valid
    * long value.
-   * @throws IllegalStateException if the element is of the type {@link JsonArray} but contains
+   * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
    */
   public long getAsLong() {
@@ -238,7 +238,7 @@ public abstract class JsonElement {
    * @return get this element as a primitive integer value.
    * @throws ClassCastException if the element is of not a {@link JsonPrimitive} and is not a valid
    * integer value.
-   * @throws IllegalStateException if the element is of the type {@link JsonArray} but contains
+   * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
    */
   public int getAsInt() {
@@ -251,7 +251,7 @@ public abstract class JsonElement {
    * @return get this element as a primitive byte value.
    * @throws ClassCastException if the element is of not a {@link JsonPrimitive} and is not a valid
    * byte value.
-   * @throws IllegalStateException if the element is of the type {@link JsonArray} but contains
+   * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
    * @since 1.3
    */
@@ -265,7 +265,7 @@ public abstract class JsonElement {
    * @return get this element as a primitive char value.
    * @throws ClassCastException if the element is of not a {@link JsonPrimitive} and is not a valid
    * char value.
-   * @throws IllegalStateException if the element is of the type {@link JsonArray} but contains
+   * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
    * @since 1.3
    */
@@ -279,7 +279,7 @@ public abstract class JsonElement {
    * @return get this element as a {@link BigDecimal}.
    * @throws ClassCastException if the element is of not a {@link JsonPrimitive}.
    * * @throws NumberFormatException if the element is not a valid {@link BigDecimal}.
-   * @throws IllegalStateException if the element is of the type {@link JsonArray} but contains
+   * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
    * @since 1.2
    */
@@ -293,7 +293,7 @@ public abstract class JsonElement {
    * @return get this element as a {@link BigInteger}.
    * @throws ClassCastException if the element is of not a {@link JsonPrimitive}.
    * @throws NumberFormatException if the element is not a valid {@link BigInteger}.
-   * @throws IllegalStateException if the element is of the type {@link JsonArray} but contains
+   * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
    * @since 1.2
    */
@@ -307,7 +307,7 @@ public abstract class JsonElement {
    * @return get this element as a primitive short value.
    * @throws ClassCastException if the element is of not a {@link JsonPrimitive} and is not a valid
    * short value.
-   * @throws IllegalStateException if the element is of the type {@link JsonArray} but contains
+   * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
    */
   public short getAsShort() {

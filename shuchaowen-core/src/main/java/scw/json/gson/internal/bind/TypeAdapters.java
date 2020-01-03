@@ -41,11 +41,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import scw.json.gson.Gson;
-import scw.json.gson.JsonArray;
-import scw.json.gson.JsonElement;
+import scw.json.gson.GsonJsonArray;
+import scw.json.gson.GsonJsonElement;
 import scw.json.gson.JsonIOException;
 import scw.json.gson.JsonNull;
-import scw.json.gson.JsonObject;
+import scw.json.gson.GsonJsonObject;
 import scw.json.gson.JsonPrimitive;
 import scw.json.gson.JsonSyntaxException;
 import scw.json.gson.TypeAdapter;
@@ -695,8 +695,8 @@ public final class TypeAdapters {
 
   public static final TypeAdapterFactory LOCALE_FACTORY = newFactory(Locale.class, LOCALE);
 
-  public static final TypeAdapter<JsonElement> JSON_ELEMENT = new TypeAdapter<JsonElement>() {
-    @Override public JsonElement read(JsonReader in) throws IOException {
+  public static final TypeAdapter<GsonJsonElement> JSON_ELEMENT = new TypeAdapter<GsonJsonElement>() {
+    @Override public GsonJsonElement read(JsonReader in) throws IOException {
       switch (in.peek()) {
       case STRING:
         return new JsonPrimitive(in.nextString());
@@ -709,7 +709,7 @@ public final class TypeAdapters {
         in.nextNull();
         return JsonNull.INSTANCE;
       case BEGIN_ARRAY:
-        JsonArray array = new JsonArray();
+        GsonJsonArray array = new GsonJsonArray();
         in.beginArray();
         while (in.hasNext()) {
           array.add(read(in));
@@ -717,7 +717,7 @@ public final class TypeAdapters {
         in.endArray();
         return array;
       case BEGIN_OBJECT:
-        JsonObject object = new JsonObject();
+        GsonJsonObject object = new GsonJsonObject();
         in.beginObject();
         while (in.hasNext()) {
           object.add(in.nextName(), read(in));
@@ -733,7 +733,7 @@ public final class TypeAdapters {
       }
     }
 
-    @Override public void write(JsonWriter out, JsonElement value) throws IOException {
+    @Override public void write(JsonWriter out, GsonJsonElement value) throws IOException {
       if (value == null || value.isJsonNull()) {
         out.nullValue();
       } else if (value.isJsonPrimitive()) {
@@ -748,14 +748,14 @@ public final class TypeAdapters {
 
       } else if (value.isJsonArray()) {
         out.beginArray();
-        for (JsonElement e : value.getAsJsonArray()) {
+        for (GsonJsonElement e : value.getAsJsonArray()) {
           write(out, e);
         }
         out.endArray();
 
       } else if (value.isJsonObject()) {
         out.beginObject();
-        for (Map.Entry<String, JsonElement> e : value.getAsJsonObject().entrySet()) {
+        for (Map.Entry<String, GsonJsonElement> e : value.getAsJsonObject().entrySet()) {
           out.name(e.getKey());
           write(out, e.getValue());
         }
@@ -768,7 +768,7 @@ public final class TypeAdapters {
   };
 
   public static final TypeAdapterFactory JSON_ELEMENT_FACTORY
-      = newTypeHierarchyFactory(JsonElement.class, JSON_ELEMENT);
+      = newTypeHierarchyFactory(GsonJsonElement.class, JSON_ELEMENT);
 
   private static final class EnumTypeAdapter<T extends Enum<T>> extends TypeAdapter<T> {
     private final Map<String, T> nameToConstant = new HashMap<String, T>();

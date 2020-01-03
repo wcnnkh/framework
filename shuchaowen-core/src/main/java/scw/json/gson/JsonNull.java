@@ -23,7 +23,7 @@ package scw.json.gson;
  * @author Joel Leitch
  * @since 1.2
  */
-public final class JsonNull extends JsonElement {
+public final class JsonNull extends GsonJsonElement {
   /**
    * singleton for JsonNull
    *

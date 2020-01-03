@@ -612,7 +612,7 @@ public final class Gson {
 
 	/**
 	 * This method serializes the specified object into its equivalent
-	 * representation as a tree of {@link JsonElement}s. This method should be
+	 * representation as a tree of {@link GsonJsonElement}s. This method should be
 	 * used when the specified object is not a generic type. This method uses
 	 * {@link Class#getClass()} to get the type for the specified object, but
 	 * the {@code getClass()} loses the generic type information because of the
@@ -627,7 +627,7 @@ public final class Gson {
 	 * @return Json representation of {@code src}.
 	 * @since 1.4
 	 */
-	public JsonElement toJsonTree(Object src) {
+	public GsonJsonElement toJsonTree(Object src) {
 		if (src == null) {
 			return JsonNull.INSTANCE;
 		}
@@ -637,7 +637,7 @@ public final class Gson {
 	/**
 	 * This method serializes the specified object, including those of generic
 	 * types, into its equivalent representation as a tree of
-	 * {@link JsonElement}s. This method must be used if the specified object is
+	 * {@link GsonJsonElement}s. This method must be used if the specified object is
 	 * a generic type. For non-generic objects, use {@link #toJsonTree(Object)}
 	 * instead.
 	 *
@@ -657,7 +657,7 @@ public final class Gson {
 	 * @return Json representation of {@code src}
 	 * @since 1.4
 	 */
-	public JsonElement toJsonTree(Object src, Type typeOfSrc) {
+	public GsonJsonElement toJsonTree(Object src, Type typeOfSrc) {
 		JsonTreeWriter writer = new JsonTreeWriter();
 		toJson(src, typeOfSrc, writer);
 		return writer.get();
@@ -809,35 +809,35 @@ public final class Gson {
 	}
 
 	/**
-	 * Converts a tree of {@link JsonElement}s into its equivalent JSON
+	 * Converts a tree of {@link GsonJsonElement}s into its equivalent JSON
 	 * representation.
 	 *
-	 * @param jsonElement
-	 *            root of a tree of {@link JsonElement}s
+	 * @param gsonJsonElement
+	 *            root of a tree of {@link GsonJsonElement}s
 	 * @return JSON String representation of the tree
 	 * @since 1.4
 	 */
-	public String toJson(JsonElement jsonElement) {
+	public String toJson(GsonJsonElement gsonJsonElement) {
 		StringWriter writer = new StringWriter();
-		toJson(jsonElement, writer);
+		toJson(gsonJsonElement, writer);
 		return writer.toString();
 	}
 
 	/**
-	 * Writes out the equivalent JSON for a tree of {@link JsonElement}s.
+	 * Writes out the equivalent JSON for a tree of {@link GsonJsonElement}s.
 	 *
-	 * @param jsonElement
-	 *            root of a tree of {@link JsonElement}s
+	 * @param gsonJsonElement
+	 *            root of a tree of {@link GsonJsonElement}s
 	 * @param writer
 	 *            Writer to which the Json representation needs to be written
 	 * @throws JsonIOException
 	 *             if there was a problem writing to the writer
 	 * @since 1.4
 	 */
-	public void toJson(JsonElement jsonElement, Appendable writer) throws JsonIOException {
+	public void toJson(GsonJsonElement gsonJsonElement, Appendable writer) throws JsonIOException {
 		try {
 			JsonWriter jsonWriter = newJsonWriter(Streams.writerForAppendable(writer));
-			toJson(jsonElement, jsonWriter);
+			toJson(gsonJsonElement, jsonWriter);
 		} catch (IOException e) {
 			throw new JsonIOException(e);
 		}
@@ -875,7 +875,7 @@ public final class Gson {
 	 * @throws JsonIOException
 	 *             if there was a problem writing to the writer
 	 */
-	public void toJson(JsonElement jsonElement, JsonWriter writer) throws JsonIOException {
+	public void toJson(GsonJsonElement gsonJsonElement, JsonWriter writer) throws JsonIOException {
 		boolean oldLenient = writer.isLenient();
 		writer.setLenient(true);
 		boolean oldHtmlSafe = writer.isHtmlSafe();
@@ -883,7 +883,7 @@ public final class Gson {
 		boolean oldSerializeNulls = writer.getSerializeNulls();
 		writer.setSerializeNulls(serializeNulls);
 		try {
-			Streams.write(jsonElement, writer);
+			Streams.write(gsonJsonElement, writer);
 		} catch (IOException e) {
 			throw new JsonIOException(e);
 		} catch (AssertionError e) {
@@ -1106,12 +1106,12 @@ public final class Gson {
 	 * that this method works fine if the any of the fields of the specified
 	 * object are generics, just the object itself should not be a generic type.
 	 * For the cases when the object is of generic type, invoke
-	 * {@link #fromJson(JsonElement, Type)}.
+	 * {@link #fromJson(GsonJsonElement, Type)}.
 	 * 
 	 * @param <T>
 	 *            the type of the desired object
 	 * @param json
-	 *            the root of the parse tree of {@link JsonElement}s from which
+	 *            the root of the parse tree of {@link GsonJsonElement}s from which
 	 *            the object is to be deserialized
 	 * @param classOfT
 	 *            The class of T
@@ -1122,7 +1122,7 @@ public final class Gson {
 	 *             typeOfT
 	 * @since 1.3
 	 */
-	public <T> T fromJson(JsonElement json, Class<T> classOfT) throws JsonSyntaxException {
+	public <T> T fromJson(GsonJsonElement json, Class<T> classOfT) throws JsonSyntaxException {
 		Object object = fromJson(json, (Type) classOfT);
 		return Primitives.wrap(classOfT).cast(object);
 	}
@@ -1131,12 +1131,12 @@ public final class Gson {
 	 * This method deserializes the Json read from the specified parse tree into
 	 * an object of the specified type. This method is useful if the specified
 	 * object is a generic type. For non-generic objects, use
-	 * {@link #fromJson(JsonElement, Class)} instead.
+	 * {@link #fromJson(GsonJsonElement, Class)} instead.
 	 *
 	 * @param <T>
 	 *            the type of the desired object
 	 * @param json
-	 *            the root of the parse tree of {@link JsonElement}s from which
+	 *            the root of the parse tree of {@link GsonJsonElement}s from which
 	 *            the object is to be deserialized
 	 * @param typeOfT
 	 *            The specific genericized type of src. You can obtain this type
@@ -1157,7 +1157,7 @@ public final class Gson {
 	 * @since 1.3
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T fromJson(JsonElement json, Type typeOfT) throws JsonSyntaxException {
+	public <T> T fromJson(GsonJsonElement json, Type typeOfT) throws JsonSyntaxException {
 		if (json == null) {
 			return null;
 		}

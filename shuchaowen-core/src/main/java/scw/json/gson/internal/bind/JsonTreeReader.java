@@ -21,10 +21,10 @@ import java.io.Reader;
 import java.util.Iterator;
 import java.util.Map;
 
-import scw.json.gson.JsonArray;
-import scw.json.gson.JsonElement;
+import scw.json.gson.GsonJsonArray;
+import scw.json.gson.GsonJsonElement;
 import scw.json.gson.JsonNull;
-import scw.json.gson.JsonObject;
+import scw.json.gson.GsonJsonObject;
 import scw.json.gson.JsonPrimitive;
 import scw.json.gson.stream.JsonReader;
 import scw.json.gson.stream.JsonToken;
@@ -68,7 +68,7 @@ public final class JsonTreeReader extends JsonReader {
 	private String[] pathNames = new String[32];
 	private int[] pathIndices = new int[32];
 
-	public JsonTreeReader(JsonElement element) {
+	public JsonTreeReader(GsonJsonElement element) {
 		super(UNREADABLE_READER);
 		push(element);
 	}
@@ -76,7 +76,7 @@ public final class JsonTreeReader extends JsonReader {
 	@Override
 	public void beginArray() throws IOException {
 		expect(JsonToken.BEGIN_ARRAY);
-		JsonArray array = (JsonArray) peekStack();
+		GsonJsonArray array = (GsonJsonArray) peekStack();
 		push(array.iterator());
 		pathIndices[stackSize - 1] = 0;
 	}
@@ -94,7 +94,7 @@ public final class JsonTreeReader extends JsonReader {
 	@Override
 	public void beginObject() throws IOException {
 		expect(JsonToken.BEGIN_OBJECT);
-		JsonObject object = (JsonObject) peekStack();
+		GsonJsonObject object = (GsonJsonObject) peekStack();
 		push(object.entrySet().iterator());
 	}
 
@@ -122,7 +122,7 @@ public final class JsonTreeReader extends JsonReader {
 
 		Object o = peekStack();
 		if (o instanceof Iterator) {
-			boolean isObject = stack[stackSize - 2] instanceof JsonObject;
+			boolean isObject = stack[stackSize - 2] instanceof GsonJsonObject;
 			Iterator<?> iterator = (Iterator<?>) o;
 			if (iterator.hasNext()) {
 				if (isObject) {
@@ -134,9 +134,9 @@ public final class JsonTreeReader extends JsonReader {
 			} else {
 				return isObject ? JsonToken.END_OBJECT : JsonToken.END_ARRAY;
 			}
-		} else if (o instanceof JsonObject) {
+		} else if (o instanceof GsonJsonObject) {
 			return JsonToken.BEGIN_OBJECT;
-		} else if (o instanceof JsonArray) {
+		} else if (o instanceof GsonJsonArray) {
 			return JsonToken.BEGIN_ARRAY;
 		} else if (o instanceof JsonPrimitive) {
 			JsonPrimitive primitive = (JsonPrimitive) o;
@@ -316,11 +316,11 @@ public final class JsonTreeReader extends JsonReader {
 	public String getPath() {
 		StringBuilder result = new StringBuilder().append('$');
 		for (int i = 0; i < stackSize; i++) {
-			if (stack[i] instanceof JsonArray) {
+			if (stack[i] instanceof GsonJsonArray) {
 				if (stack[++i] instanceof Iterator) {
 					result.append('[').append(pathIndices[i]).append(']');
 				}
-			} else if (stack[i] instanceof JsonObject) {
+			} else if (stack[i] instanceof GsonJsonObject) {
 				if (stack[++i] instanceof Iterator) {
 					result.append('.');
 					if (pathNames[i] != null) {

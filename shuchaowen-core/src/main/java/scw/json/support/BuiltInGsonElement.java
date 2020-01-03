@@ -6,36 +6,36 @@ import scw.json.AbstractJsonElement;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
 import scw.json.gson.Gson;
-import scw.json.gson.JsonElement;
+import scw.json.gson.GsonJsonElement;
 
 public final class BuiltInGsonElement extends AbstractJsonElement {
-	private JsonElement jsonElement;
+	private GsonJsonElement gsonJsonElement;
 	private Gson gson;
 
-	public BuiltInGsonElement(JsonElement jsonElement, Gson gson) {
-		this.jsonElement = jsonElement;
+	public BuiltInGsonElement(GsonJsonElement gsonJsonElement, Gson gson) {
+		this.gsonJsonElement = gsonJsonElement;
 		this.gson = gson;
 	}
 
 	public String getAsString() {
-		return jsonElement.toString();
+		return gsonJsonElement.toString();
 	}
 
 	@Override
 	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
-		return gson.fromJson(jsonElement, type);
+		return gson.fromJson(gsonJsonElement, type);
 	}
 
 	@Override
 	protected <T> T getAsObjectNotSupport(Type type) {
-		return gson.fromJson(jsonElement, type);
+		return gson.fromJson(gsonJsonElement, type);
 	}
 
 	public JsonArray getAsJsonArray() {
-		return new BuiltInGsonJsonArray(jsonElement.getAsJsonArray(), gson);
+		return new BuiltInGsonJsonArray(gsonJsonElement.getAsJsonArray(), gson);
 	}
 
 	public JsonObject getAsJsonObject() {
-		return new BuiltInGsonJsonObject(jsonElement.getAsJsonObject(), gson);
+		return new BuiltInGsonJsonObject(gsonJsonElement.getAsJsonObject(), gson);
 	}
 }

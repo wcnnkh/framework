@@ -6,7 +6,7 @@ import scw.json.JsonArray;
 import scw.json.JsonObject;
 import scw.json.JSONSupport;
 import scw.json.gson.Gson;
-import scw.json.gson.JsonElement;
+import scw.json.gson.GsonJsonElement;
 
 public final class BuiltinGsonSupport implements JSONSupport {
 	private static final Gson GSON = new Gson();
@@ -16,13 +16,13 @@ public final class BuiltinGsonSupport implements JSONSupport {
 	}
 
 	public JsonArray parseArray(String text) {
-		JsonElement jsonElement = GSON.toJsonTree(text);
-		return new BuiltInGsonJsonArray(jsonElement.getAsJsonArray(), GSON);
+		GsonJsonElement gsonJsonElement = GSON.toJsonTree(text);
+		return new BuiltInGsonJsonArray(gsonJsonElement.getAsJsonArray(), GSON);
 	}
 
 	public JsonObject parseObject(String text) {
-		JsonElement jsonElement = GSON.toJsonTree(text);
-		return new BuiltInGsonJsonObject(jsonElement.getAsJsonObject(), GSON);
+		GsonJsonElement gsonJsonElement = GSON.toJsonTree(text);
+		return new BuiltInGsonJsonObject(gsonJsonElement.getAsJsonObject(), GSON);
 	}
 
 	public <T> T parseObject(String text, Class<T> type) {

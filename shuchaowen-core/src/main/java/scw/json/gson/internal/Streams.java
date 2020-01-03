@@ -20,7 +20,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.Writer;
 
-import scw.json.gson.JsonElement;
+import scw.json.gson.GsonJsonElement;
 import scw.json.gson.JsonIOException;
 import scw.json.gson.JsonNull;
 import scw.json.gson.JsonParseException;
@@ -41,7 +41,7 @@ public final class Streams {
   /**
    * Takes a reader in any state and returns the next value as a JsonElement.
    */
-  public static JsonElement parse(JsonReader reader) throws JsonParseException {
+  public static GsonJsonElement parse(JsonReader reader) throws JsonParseException {
     boolean isEmpty = true;
     try {
       reader.peek();
@@ -69,7 +69,7 @@ public final class Streams {
   /**
    * Writes the JSON element to the writer, recursively.
    */
-  public static void write(JsonElement element, JsonWriter writer) throws IOException {
+  public static void write(GsonJsonElement element, JsonWriter writer) throws IOException {
     TypeAdapters.JSON_ELEMENT.write(writer, element);
   }
 

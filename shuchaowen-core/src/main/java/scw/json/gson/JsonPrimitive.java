@@ -30,7 +30,7 @@ import scw.json.gson.internal.LazilyParsedNumber;
  * @author Inderjeet Singh
  * @author Joel Leitch
  */
-public final class JsonPrimitive extends JsonElement {
+public final class JsonPrimitive extends GsonJsonElement {
 
   private static final Class<?>[] PRIMITIVE_TYPES = { int.class, long.class, short.class,
       float.class, double.class, byte.class, boolean.class, char.class, Integer.class, Long.class,
