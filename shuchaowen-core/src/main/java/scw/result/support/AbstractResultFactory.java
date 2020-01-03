@@ -1,17 +1,18 @@
 package scw.result.support;
 
+import scw.net.mime.MimeType;
 import scw.result.DataResult;
 import scw.result.Result;
 import scw.result.ResultFactory;
 import scw.result.ResultMessageFactory;
 
 public abstract class AbstractResultFactory implements ResultFactory {
-	private String contentType;
+	private MimeType mimeType;
 	private ResultMessageFactory resultMessageFactory;
 
-	public AbstractResultFactory(ResultMessageFactory resultMessageFactory, String contentType) {
+	public AbstractResultFactory(ResultMessageFactory resultMessageFactory, MimeType mimeType) {
 		this.resultMessageFactory = resultMessageFactory;
-		this.contentType = contentType;
+		this.mimeType = mimeType;
 	}
 
 	public String getMsg(int code) {
@@ -55,11 +56,11 @@ public abstract class AbstractResultFactory implements ResultFactory {
 
 	public <T> DataResult<T> success(T data) {
 		int code = getSuccessCode();
-		return new DefaultDataResult<T>(true, code, data, getMsg(code), contentType, false);
+		return new DefaultDataResult<T>(true, code, data, getMsg(code), mimeType, false);
 	}
 
 	public <T> DataResult<T> error(int code, String msg, T data, boolean rollback) {
-		return new DefaultDataResult<T>(false, code, data, msg, contentType, rollback);
+		return new DefaultDataResult<T>(false, code, data, msg, mimeType, rollback);
 	}
 
 	public <T> DataResult<T> error(String msg, T data, boolean rollback) {

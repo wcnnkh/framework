@@ -4,49 +4,47 @@ import java.util.Enumeration;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import scw.core.utils.StringUtils;
 import scw.mvc.Channel;
 import scw.mvc.Request;
 import scw.mvc.Response;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.page.AbstractPage;
+import scw.net.mime.MimeType;
 import scw.net.mime.MimeTypeConstants;
 
 public class FreemarkerPage extends AbstractPage {
 	private static final long serialVersionUID = 1L;
 	private transient Configuration configuration;
-	private String contentType;
+	private MimeType mimeType;
 
 	FreemarkerPage(Configuration configuration, String page) {
 		this(configuration, page, null);
 	}
 
-	public FreemarkerPage(Configuration configuration, String page, String contentType) {
+	public FreemarkerPage(Configuration configuration, String page, MimeType mimeType) {
 		super(page);
 		this.configuration = configuration;
-		this.contentType = contentType;
+		this.mimeType = mimeType;
+	}
+	
+	public MimeType getMimeType() {
+		return mimeType;
 	}
 
-	public String getContentType() {
-		return contentType;
-	}
-
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
+	public void setMimeType(MimeType mimeType) {
+		this.mimeType = mimeType;
 	}
 
 	public void render(Channel channel) throws Throwable {
 		Request request = channel.getRequest();
 		Response response = channel.getResponse();
 
-		if (!StringUtils.isEmpty(getContentType())) {
-			response.setContentType(getContentType());
+		if(getMimeType() != null){
+			response.setMimeType(getMimeType());
+		}else{
+			response.setMimeType(MimeTypeConstants.TEXT_HTML);
 		}
-
-		if (response.getContentType() == null) {
-			response.setContentType(MimeTypeConstants.TEXT_HTML_VALUE);
-		}
-
+		
 		Enumeration<String> enumeration = channel.getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			String key = enumeration.nextElement();

@@ -36,8 +36,8 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XUtils;
-import scw.json.JSONUtils;
 import scw.json.JSONSupport;
+import scw.json.JSONUtils;
 import scw.lang.ParameterException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -57,8 +57,10 @@ import scw.mvc.support.CrossDomainDefinition;
 import scw.mvc.support.CrossDomainDefinitionFactory;
 import scw.mvc.support.HttpNotFoundFilter;
 import scw.mvc.support.MultiActionFactory;
+import scw.net.Text;
 import scw.net.header.HeadersConstants;
 import scw.net.header.HeadersReadOnly;
+import scw.net.mime.MimeType;
 import scw.net.mime.MimeTypeConstants;
 import scw.rpc.RpcService;
 import scw.util.attribute.Attributes;
@@ -677,7 +679,7 @@ public final class MVCUtils implements MvcConstants {
 		}
 
 		if (callbackTag != null) {
-			httpResponse.setContentType(MimeTypeConstants.TEXT_JAVASCRIPT_VALUE);
+			httpResponse.setMimeType(MimeTypeConstants.TEXT_JAVASCRIPT);
 			httpResponse.getWriter().write(callbackTag);
 			httpResponse.getWriter().write(JSONP_RESP_PREFIX);
 		}
@@ -686,7 +688,10 @@ public final class MVCUtils implements MvcConstants {
 		if (write instanceof Text) {
 			content = ((Text) write).getTextContent();
 			if (callbackTag == null) {
-				httpResponse.setContentType(((Text) write).getTextContentType());
+				MimeType mimeType = ((Text) write).getMimeType();
+				if(mimeType != null){
+					httpResponse.setMimeType(mimeType);
+				}
 			}
 		} else if ((write instanceof String) || (ClassUtils.isPrimitiveOrWrapper(write.getClass()))) {
 			content = write.toString();
@@ -696,7 +701,7 @@ public final class MVCUtils implements MvcConstants {
 
 		if (callbackTag == null) {
 			if (StringUtils.isEmpty(httpResponse.getContentType())) {
-				httpResponse.setContentType(MimeTypeConstants.TEXT_HTML_VALUE);
+				httpResponse.setMimeType(MimeTypeConstants.TEXT_HTML);
 			}
 		}
 

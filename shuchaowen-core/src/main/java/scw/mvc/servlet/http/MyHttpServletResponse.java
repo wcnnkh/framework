@@ -5,9 +5,9 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import scw.mvc.http.HttpResponse;
 import scw.net.http.Cookie;
+import scw.net.mime.MimeType;
 
-public class MyHttpServletResponse extends HttpServletResponseWrapper
-		implements HttpServletResponse, HttpResponse {
+public class MyHttpServletResponse extends HttpServletResponseWrapper implements HttpServletResponse, HttpResponse {
 
 	public MyHttpServletResponse(HttpServletResponse httpServletResponse) {
 		super(httpServletResponse);
@@ -40,5 +40,16 @@ public class MyHttpServletResponse extends HttpServletResponseWrapper
 
 	public void addCookie(String name, String value) {
 		addCookie(new javax.servlet.http.Cookie(name, value));
+	}
+
+	public void setMimeType(MimeType mimeType) {
+		if (mimeType == null) {
+			return;
+		}
+
+		if (mimeType.getCharsetName() != null) {
+			setCharacterEncoding(mimeType.getCharsetName());
+		}
+		setContentType(mimeType.toString());
 	}
 }

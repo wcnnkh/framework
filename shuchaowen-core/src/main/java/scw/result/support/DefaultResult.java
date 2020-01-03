@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.json.JSONUtils;
-import scw.mvc.Text;
+import scw.net.Text;
+import scw.net.mime.MimeType;
 import scw.result.Result;
 import scw.transaction.RollbackOnlyResult;
 
@@ -15,14 +16,14 @@ public class DefaultResult implements Result, RollbackOnlyResult, Text, Serializ
 	private int code;
 	private String msg;
 	private boolean rollbackOnly;
-	private String contentType;
+	private MimeType mimeType;
 
-	public DefaultResult(boolean success, int code, String msg, boolean rollbackOnly, String contentType) {
+	public DefaultResult(boolean success, int code, String msg, boolean rollbackOnly, MimeType mimeType) {
 		this.success = success;
 		this.code = code;
 		this.msg = msg;
 		this.rollbackOnly = rollbackOnly;
-		this.contentType = contentType;
+		this.mimeType = mimeType;
 	}
 
 	public boolean isError() {
@@ -53,7 +54,7 @@ public class DefaultResult implements Result, RollbackOnlyResult, Text, Serializ
 		return JSONUtils.toJSONString(map);
 	}
 
-	public String getTextContentType() {
-		return contentType;
+	public MimeType getMimeType() {
+		return mimeType;
 	}
 }

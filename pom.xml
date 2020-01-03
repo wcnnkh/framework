@@ -283,5 +283,6 @@
 		<module>shuchaowen-tencent</module>
 		<module>shuchaowen-apple</module>
 		<module>shuchaowen-zookeeper</module>
+		<module>shuchaowen-mvc</module>
 	</modules>
 </project>

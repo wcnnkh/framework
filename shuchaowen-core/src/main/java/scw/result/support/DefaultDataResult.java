@@ -4,14 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.json.JSONUtils;
+import scw.net.mime.MimeType;
 import scw.result.DataResult;
 
 public class DefaultDataResult<T> extends DefaultResult implements DataResult<T> {
 	private static final long serialVersionUID = 1L;
 	private T data;
 
-	public DefaultDataResult(boolean success, int code, T data, String msg, String contentType, boolean rollbackOnly) {
-		super(success, code, msg, rollbackOnly, contentType);
+	public DefaultDataResult(boolean success, int code, T data, String msg, MimeType mimeType, boolean rollbackOnly) {
+		super(success, code, msg, rollbackOnly, mimeType);
 		this.data = data;
 	}
 

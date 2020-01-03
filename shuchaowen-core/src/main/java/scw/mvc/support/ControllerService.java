@@ -79,7 +79,7 @@ public final class ControllerService {
 		}
 
 		if (checkRPCEnable(httpRequest)) {
-			channel.getResponse().setContentType(MimeTypeConstants.APPLICATION_OCTET_STREAM_VALUE);
+			channel.getResponse().setMimeType(MimeTypeConstants.APPLICATION_OCTET_STREAM);
 			try {
 				rpcService.service(httpRequest.getInputStream(), httpResponse.getOutputStream());
 			} catch (IOException e) {

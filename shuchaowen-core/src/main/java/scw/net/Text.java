@@ -1,4 +1,6 @@
-package scw.mvc;
+package scw.net;
+
+import scw.net.mime.MimeType;
 
 /**
  * 对于文本的定义，这里只是一个定义，不做具体实现
@@ -16,5 +18,5 @@ public interface Text {
 	 * 数据类型
 	 * @return
 	 */
-	String getTextContentType();
+	MimeType getMimeType();
 }
