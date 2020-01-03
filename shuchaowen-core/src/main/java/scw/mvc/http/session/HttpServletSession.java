@@ -1,4 +1,4 @@
-package scw.security.session.http;
+package scw.mvc.http.session;
 
 import java.util.Enumeration;
 

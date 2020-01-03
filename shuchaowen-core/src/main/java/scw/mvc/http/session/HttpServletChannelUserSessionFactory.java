@@ -1,4 +1,4 @@
-package scw.security.session.http;
+package scw.mvc.http.session;
 
 import javax.servlet.http.HttpSession;
 

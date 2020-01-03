@@ -1,4 +1,4 @@
-package scw.security.session.http;
+package scw.mvc.http.session;
 
 import scw.beans.annotation.AutoImpl;
 import scw.mvc.http.HttpChannel;

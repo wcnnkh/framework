@@ -1,4 +1,4 @@
-package scw.security.session.http;
+package scw.mvc.http.session;
 
 import scw.core.annotation.DefaultValue;
 import scw.core.annotation.Order;

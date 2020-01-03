@@ -14,12 +14,12 @@ import scw.core.utils.StringUtils;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.mvc.MVCUtils;
+import scw.mvc.http.session.HttpChannelAuthorization;
+import scw.mvc.http.session.HttpChannelUserSessionFactory;
 import scw.mvc.parameter.AbstractParameterChannel;
 import scw.net.http.Cookie;
 import scw.security.session.Authorization;
 import scw.security.session.Session;
-import scw.security.session.http.HttpChannelAuthorization;
-import scw.security.session.http.HttpChannelUserSessionFactory;
 import scw.util.ip.IP;
 import scw.util.ip.SimpleIP;
 
