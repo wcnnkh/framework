@@ -58,7 +58,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	}
 
 	private JarScanner getJarScanner(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		return InstanceUtils.getInstance("scw.application.embedded.tomcat.Tomcat8AboveStandardJarScanner",
+		return InstanceUtils.getInstance("scw.embed.tomcat.Tomcat8AboveStandardJarScanner",
 				propertyFactory);
 	}
 
