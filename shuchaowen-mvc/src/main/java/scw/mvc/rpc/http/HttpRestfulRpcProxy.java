@@ -14,11 +14,11 @@ import scw.core.annotation.ParameterName;
 import scw.core.instance.InstanceFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
-import scw.io.serializer.Serializer;
 import scw.lang.Nullable;
 import scw.mvc.rpc.RpcConstants;
 import scw.mvc.rpc.support.ObjectRpcMessageConvert;
 import scw.net.header.HeadersConstants;
+import scw.serializer.Serializer;
 
 public class HttpRestfulRpcProxy implements Filter, RpcConstants {
 	private static final String[] DEFAULT_SHARE_HEADERS = new String[] { HeadersConstants.CONTENT_TYPE,

@@ -16,13 +16,13 @@ import scw.core.Init;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.io.serializer.SerializerUtils;
 import scw.orm.MappingContext;
 import scw.orm.sql.TableChange;
 import scw.orm.sql.annotation.Table;
 import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.enums.OperationType;
 import scw.orm.sql.support.ORMTemplate;
+import scw.serializer.SerializerUtils;
 import scw.sql.Sql;
 import scw.transaction.sql.SqlTransactionUtils;
 

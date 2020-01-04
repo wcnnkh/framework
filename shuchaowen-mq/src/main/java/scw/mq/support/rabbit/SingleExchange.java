@@ -4,23 +4,23 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import com.rabbitmq.client.AMQP.BasicProperties;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
-
-import scw.beans.annotation.AsyncComplete;
-import scw.beans.async.DefaultAsyncCompleteService;
+import scw.async.beans.DefaultAsyncCompleteService;
+import scw.async.beans.annotation.AsyncComplete;
 import scw.core.Consumer;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.io.serializer.NoTypeSpecifiedSerializer;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mq.amqp.AmqpQueueConfig;
 import scw.mq.amqp.Exchange;
+import scw.serializer.NoTypeSpecifiedSerializer;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
+
+import com.rabbitmq.client.AMQP.BasicProperties;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
 
 public class SingleExchange<T> implements Exchange<T> {
 	private static final long RETRY_TIME_CYCLE = StringUtils

@@ -25,6 +25,11 @@
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-result</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-serializer</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>commons-fileupload</groupId>

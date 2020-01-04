@@ -36,7 +36,6 @@ import java.util.zip.ZipFile;
 
 import scw.core.Base64;
 import scw.core.utils.SystemPropertyUtils;
-import scw.io.serializer.SerializerUtils;
 import scw.lang.AlreadyExistsException;
 
 public final class FileUtils {
@@ -2839,30 +2838,6 @@ public final class FileUtils {
 			throw new RuntimeException(e);
 		} finally {
 			IOUtils.close(fileInputStream);
-		}
-	}
-
-	public static <T> T readObject(File file) throws IOException {
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(file);
-			return SerializerUtils.DEFAULT_SERIALIZER.deserialize(fis);
-		} finally {
-			if (fis != null) {
-				fis.close();
-			}
-		}
-	}
-
-	public static void writeObject(File file, Object obj) throws IOException {
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(file);
-			SerializerUtils.DEFAULT_SERIALIZER.serialize(fos, obj);
-		} finally {
-			if (fos != null) {
-				fos.close();
-			}
 		}
 	}
 

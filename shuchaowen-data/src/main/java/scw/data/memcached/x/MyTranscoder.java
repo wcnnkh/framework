@@ -2,7 +2,7 @@ package scw.data.memcached.x;
 
 import net.rubyeye.xmemcached.transcoders.SerializingTranscoder;
 import scw.core.annotation.ParameterName;
-import scw.io.serializer.Serializer;
+import scw.serializer.Serializer;
 
 public class MyTranscoder extends SerializingTranscoder {
 	private static final String SERIALIZER_NAME = "memcached.serializer";

@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import scw.core.utils.CollectionUtils;
-import scw.io.serializer.SerializerUtils;
+import scw.serializer.SerializerUtils;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractMapCache implements Cache {

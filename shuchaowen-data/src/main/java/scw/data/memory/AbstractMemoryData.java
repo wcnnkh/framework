@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import scw.data.cas.CAS;
 import scw.data.cas.SimpleCAS;
-import scw.io.serializer.SerializerUtils;
+import scw.serializer.SerializerUtils;
 
 public abstract class AbstractMemoryData implements MemoryData {
 	private volatile long lastTouch;

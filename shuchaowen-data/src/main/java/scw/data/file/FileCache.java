@@ -16,11 +16,11 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.data.ExpiredCache;
 import scw.io.FileUtils;
-import scw.io.serializer.NoTypeSpecifiedSerializer;
-import scw.io.serializer.SerializerUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.http.HttpUtils;
+import scw.serializer.NoTypeSpecifiedSerializer;
+import scw.serializer.SerializerUtils;
 
 @SuppressWarnings("unchecked")
 public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy {

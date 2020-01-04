@@ -12,7 +12,7 @@ import scw.core.utils.CollectionUtils;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
 import scw.data.cas.SimpleCAS;
-import scw.io.serializer.Serializer;
+import scw.serializer.Serializer;
 
 public class RedisCASOperations implements CASOperations {
 	private static final String CAS_IS_NULL = "if (" + RedisUtils.isNullScript("cas") + ") then cas = 0 end";

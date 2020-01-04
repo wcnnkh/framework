@@ -11,12 +11,12 @@ import scw.core.instance.InstanceFactory;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.io.Bytes;
-import scw.io.serializer.Serializer;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.rpc.RpcConstants;
 import scw.mvc.rpc.RpcService;
 import scw.security.signature.SignatureUtils;
+import scw.serializer.Serializer;
 
 public final class DefaultObjectRpcService implements RpcService, RpcConstants {
 	private static Logger logger = LoggerUtils.getLogger(DefaultObjectRpcService.class);

@@ -7,8 +7,8 @@ import scw.core.Converter;
 import scw.core.utils.SystemPropertyUtils;
 import scw.data.ExpiredCache;
 import scw.data.ExpiredCacheFactory;
-import scw.io.serializer.NoTypeSpecifiedSerializer;
-import scw.io.serializer.SerializerUtils;
+import scw.serializer.NoTypeSpecifiedSerializer;
+import scw.serializer.SerializerUtils;
 
 public class AutoRefreshFileExpiredCacheFactory extends FileExpiredCacheFactory {
 	private final Converter<String, ?> converter;

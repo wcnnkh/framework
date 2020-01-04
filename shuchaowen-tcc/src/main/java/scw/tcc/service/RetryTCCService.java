@@ -10,11 +10,11 @@ import java.util.concurrent.TimeUnit;
 
 import scw.beans.annotation.InitMethod;
 import scw.core.instance.InstanceFactory;
-import scw.core.utils.FileManager;
 import scw.core.utils.SystemPropertyUtils;
-import scw.io.FileUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.serializer.FileManager;
+import scw.serializer.SerializerUtils;
 import scw.tcc.InvokeInfo;
 import scw.tcc.StageType;
 import scw.tcc.TCCService;
@@ -23,8 +23,7 @@ import scw.transaction.TransactionException;
 import scw.transaction.TransactionManager;
 
 public final class RetryTCCService implements TCCService, scw.core.Destroy {
-	private static Logger logger = LoggerUtils
-			.getLogger(RetryTCCService.class);
+	private static Logger logger = LoggerUtils.getLogger(RetryTCCService.class);
 
 	private InstanceFactory instanceFactory;
 	private FileManager fileManager;
@@ -57,7 +56,7 @@ public final class RetryTCCService implements TCCService, scw.core.Destroy {
 			if (files != null) {
 				for (File f : files) {
 					try {
-						TransactionInfo info = FileUtils.readObject(f);
+						TransactionInfo info = SerializerUtils.readObject(f);
 						new RetryInvoker(info, retryTime, f.getPath()).start();
 					} catch (IOException e) {
 						e.printStackTrace();

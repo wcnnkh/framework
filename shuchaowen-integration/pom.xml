@@ -23,6 +23,12 @@
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-timer</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-async</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>shuchaowen</groupId>

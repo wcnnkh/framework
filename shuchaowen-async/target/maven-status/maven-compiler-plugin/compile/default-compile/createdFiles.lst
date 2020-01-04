@@ -1,0 +1,6 @@
+scw\async\beans\DefaultAsyncCompleteService.class
+scw\async\beans\AsyncCompleteFilter.class
+scw\async\beans\AsyncInvokeInfo.class
+scw\async\beans\annotation\AsyncComplete.class
+scw\async\beans\DefaultAsyncCompleteService$InvokeRunnable.class
+scw\async\beans\AsyncCompleteService.class

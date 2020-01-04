@@ -8,11 +8,11 @@ import scw.core.Constants;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
-import scw.io.serializer.Serializer;
 import scw.net.Message;
 import scw.net.MessageConverter;
 import scw.net.MessageConverterChain;
 import scw.net.mime.MimeTypeConstants;
+import scw.serializer.Serializer;
 
 public final class ObjectRpcMessageConvert implements MessageConverter {
 	private final Serializer serializer;

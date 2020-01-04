@@ -14,8 +14,8 @@ import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-import scw.io.serializer.Serializer;
-import scw.io.serializer.SerializerUtils;
+import scw.serializer.Serializer;
+import scw.serializer.SerializerUtils;
 
 @Configuration
 public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory implements XmlBeanConfigFactory {
