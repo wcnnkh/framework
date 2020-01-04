@@ -16,14 +16,16 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 	private boolean instance = true;
 	private String[] names;
 
-	public ServiceBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> type) {
+	public ServiceBeanDefinition(ValueWiredManager valueWiredManager,
+			BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Class<?> type) {
 		super(valueWiredManager, beanFactory, propertyFactory, type);
 		init();
 		if (type.isInterface()) {
 			this.instance = true;
 		} else {
-			this.autoBean = new SimpleAutoBean(beanFactory, type, propertyFactory);
+			this.autoBean = new SimpleAutoBean(beanFactory, type,
+					propertyFactory);
 			this.instance = autoBean.isInstance();
 		}
 		this.names = BeanUtils.getServiceNames(getType());
@@ -35,6 +37,22 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 
 	protected Proxy getProxy() {
 		return BeanUtils.createProxy(beanFactory, getType(), null, null);
+	}
+
+	@Override
+	public void init(Object bean) throws Exception {
+		if (autoBean != null) {
+			autoBean.init(bean);
+		}
+		super.init(bean);
+	}
+
+	@Override
+	public void destroy(Object bean) throws Exception {
+		if (autoBean != null) {
+			autoBean.destroy(bean);
+		}
+		super.destroy(bean);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -56,8 +74,8 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	public <T> T create(Object... params) {
-		Constructor<T> constructor = (Constructor<T>) ReflectionUtils.findConstructorByParameters(getType(), true,
-				params);
+		Constructor<T> constructor = (Constructor<T>) ReflectionUtils
+				.findConstructorByParameters(getType(), true, params);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}
@@ -65,7 +83,8 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 		Object bean;
 		try {
 			if (isProxy()) {
-				return (T) getProxy().create(constructor.getParameterTypes(), params);
+				return (T) getProxy().create(constructor.getParameterTypes(),
+						params);
 			} else {
 				bean = constructor.newInstance(params);
 			}
@@ -77,7 +96,8 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	public <T> T create(Class<?>[] parameterTypes, Object... params) {
-		Constructor<?> constructor = ReflectionUtils.getConstructor(getType(), false, parameterTypes);
+		Constructor<?> constructor = ReflectionUtils.getConstructor(getType(),
+				false, parameterTypes);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}
@@ -85,7 +105,8 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 		Object bean;
 		try {
 			if (isProxy()) {
-				return (T) getProxy().create(constructor.getParameterTypes(), params);
+				return (T) getProxy().create(constructor.getParameterTypes(),
+						params);
 			} else {
 				bean = constructor.newInstance(params);
 			}

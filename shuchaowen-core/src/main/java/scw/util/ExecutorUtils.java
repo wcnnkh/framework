@@ -2,7 +2,7 @@ package scw.util;
 
 import java.lang.reflect.Proxy;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +35,7 @@ public final class ExecutorUtils {
 	public static ExecutorService newExecutorService(int corePoolSize, int maximumPoolSize, long keepAliveTime,
 			TimeUnit timeUnit, boolean proxyDestroy) {
 		ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime,
-				timeUnit, new SynchronousQueue<Runnable>());
+				timeUnit, new LinkedBlockingQueue<Runnable>());
 		return proxyDestroy ? porxyDestroy(threadPoolExecutor, true) : threadPoolExecutor;
 	}
 

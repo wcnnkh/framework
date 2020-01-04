@@ -5,7 +5,7 @@ import java.util.Collections;
 
 import scw.beans.BeanFactory;
 
-public final class SingleInstanceAutoBean extends AbstractAutoBean {
+public class SingleInstanceAutoBean extends AbstractAutoBean {
 	private Object instance;
 
 	public SingleInstanceAutoBean(BeanFactory beanFactory, Class<?> type, Object instance) {

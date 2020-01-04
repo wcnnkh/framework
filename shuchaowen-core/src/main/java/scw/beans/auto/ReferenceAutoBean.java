@@ -40,4 +40,10 @@ public class ReferenceAutoBean implements AutoBean {
 	public <T> T create(Class<?>[] parameterTypes, Object... params) {
 		return beanFactory.getInstance(reference, parameterTypes, params);
 	}
+
+	public void init(Object bean) {
+	}
+
+	public void destroy(Object bean) {
+	}
 }

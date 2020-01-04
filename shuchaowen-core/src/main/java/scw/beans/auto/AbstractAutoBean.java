@@ -26,6 +26,12 @@ public abstract class AbstractAutoBean implements AutoBean {
 	protected boolean isProxy() {
 		return proxy;
 	}
+	
+	public void init(Object bean) {
+	}
+	
+	public void destroy(Object bean) {
+	}
 
 	public boolean isReference() {
 		return false;

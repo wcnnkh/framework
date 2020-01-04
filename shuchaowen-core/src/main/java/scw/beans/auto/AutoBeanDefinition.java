@@ -32,6 +32,7 @@ public final class AutoBeanDefinition extends AbstractBeanDefinition {
 			return;
 		}
 
+		autoBean.init(bean);
 		super.init(bean);
 	}
 
@@ -39,7 +40,8 @@ public final class AutoBeanDefinition extends AbstractBeanDefinition {
 		if (autoBean.isReference()) {
 			return;
 		}
-
+		
+		autoBean.destroy(bean);
 		super.destroy(bean);
 	}
 
