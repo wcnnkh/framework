@@ -7,8 +7,6 @@ public interface AutoBean extends InstanceDefinition{
 	
 	Class<?> getTargetClass();
 	
-	boolean isInstance();
-	
 	void init(Object bean);
 	
 	void destroy(Object bean);
