@@ -3,13 +3,13 @@ package scw.beans.xml;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.AbstractBeanConfigFactory;
+import scw.beans.AbstractBeanConfiguration;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 
-public class DefaultXmlBeanConfigFactory extends AbstractBeanConfigFactory {
+public class DefaultXmlBeanConfigFactory extends AbstractBeanConfiguration {
 
 	public DefaultXmlBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, NodeList rootNodeList, String beanTagName)

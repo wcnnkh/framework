@@ -7,10 +7,10 @@ import java.util.Date;
 
 import scw.aop.Invoker;
 import scw.application.ApplicationConfigUtils;
-import scw.beans.AbstractBeanConfigFactory;
+import scw.beans.AbstractBeanConfiguration;
 import scw.beans.AutoProxyMethodInvoker;
 import scw.beans.BeanFactory;
-import scw.beans.SimpleBeanConfigFactory;
+import scw.beans.SimpleBeanConfiguration;
 import scw.beans.annotation.Configuration;
 import scw.beans.property.ValueWiredManager;
 import scw.core.Init;
@@ -26,7 +26,7 @@ import scw.timer.support.SimpleCrontabConfig;
 import scw.timer.support.SimpleTimerTaskConfig;
 
 @Configuration
-public class TimerBeanConfigFactory extends AbstractBeanConfigFactory implements SimpleBeanConfigFactory {
+public class TimerBeanConfigFactory extends AbstractBeanConfiguration implements SimpleBeanConfiguration {
 	private static Logger logger = LoggerUtils.getLogger(TimerBeanConfigFactory.class);
 
 	public void init(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory) {

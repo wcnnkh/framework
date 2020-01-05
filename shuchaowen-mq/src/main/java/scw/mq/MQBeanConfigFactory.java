@@ -3,10 +3,10 @@ package scw.mq;
 import java.lang.reflect.Method;
 
 import scw.application.ApplicationConfigUtils;
-import scw.beans.AbstractBeanConfigFactory;
+import scw.beans.AbstractBeanConfiguration;
 import scw.beans.AutoProxyMethodInvoker;
 import scw.beans.BeanFactory;
-import scw.beans.SimpleBeanConfigFactory;
+import scw.beans.SimpleBeanConfiguration;
 import scw.beans.annotation.Configuration;
 import scw.beans.property.ValueWiredManager;
 import scw.core.Init;
@@ -21,7 +21,7 @@ import scw.mq.annotation.Consumer;
 import scw.mq.support.MqMethodConsumer;
 
 @Configuration
-public class MQBeanConfigFactory extends AbstractBeanConfigFactory implements SimpleBeanConfigFactory {
+public class MQBeanConfigFactory extends AbstractBeanConfiguration implements SimpleBeanConfiguration {
 	private static Logger logger = LoggerUtils.getLogger(MQBeanConfigFactory.class);
 
 	public void init(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory) {

@@ -12,7 +12,7 @@ import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
-public abstract class AbstractBeanConfigFactory implements BeanConfigFactory {
+public abstract class AbstractBeanConfiguration implements BeanConfiguration {
 	protected Logger logger = LoggerUtils.getLogger(getClass());
 	protected Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	protected Map<String, String> nameMappingMap = new HashMap<String, String>();

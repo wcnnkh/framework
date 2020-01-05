@@ -10,7 +10,7 @@ import scw.application.ApplicationConfigUtils;
 import scw.beans.method.MethodBeanConfigFactory;
 import scw.beans.property.XmlPropertyFactory;
 import scw.beans.xml.DefaultXmlBeanConfigFactory;
-import scw.beans.xml.XmlBeanConfigFactory;
+import scw.beans.xml.XmlBeanConfiguration;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.resource.ResourceUtils;
@@ -75,18 +75,18 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		try {
 			appendNameMapping(nodeList);
 			if (nodeList != null) {
-				addBeanConfigFactory(new DefaultXmlBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
+				addBeanConfiguration(new DefaultXmlBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
 						nodeList, "bean"));
-				addBeanConfigFactory(new ServiceBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
+				addBeanConfiguration(new ServiceBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
 						getServicePackage()));
-				addBeanConfigFactory(new MethodBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
+				addBeanConfiguration(new MethodBeanConfigFactory(getValueWiredManager(), this, propertyFactory,
 						getBeanAnnotationPackage()));
-				for (Class<? extends XmlBeanConfigFactory> clazz : BeanUtils.getConfigurationClassList(
-						XmlBeanConfigFactory.class,
+				for (Class<? extends XmlBeanConfiguration> clazz : BeanUtils.getConfigurationClassList(
+						XmlBeanConfiguration.class,
 						Arrays.asList("scw", ApplicationConfigUtils.getAnnotationPackage(propertyFactory)))) {
-					XmlBeanConfigFactory xmlBeanConfigFactory = getInstance(clazz);
+					XmlBeanConfiguration xmlBeanConfigFactory = getInstance(clazz);
 					xmlBeanConfigFactory.init(getValueWiredManager(), this, propertyFactory, nodeList);
-					addBeanConfigFactory(xmlBeanConfigFactory);
+					addBeanConfiguration(xmlBeanConfigFactory);
 				}
 			}
 

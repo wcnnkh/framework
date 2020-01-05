@@ -6,15 +6,15 @@ import org.apache.dubbo.config.ReferenceConfig;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.AbstractBeanConfigFactory;
+import scw.beans.AbstractBeanConfiguration;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Configuration;
 import scw.beans.property.ValueWiredManager;
-import scw.beans.xml.XmlBeanConfigFactory;
+import scw.beans.xml.XmlBeanConfiguration;
 import scw.core.PropertyFactory;
 
 @Configuration
-public class XmlDubboBeanConfigFactory extends AbstractBeanConfigFactory implements XmlBeanConfigFactory {
+public class XmlDubboBeanConfigFactory extends AbstractBeanConfiguration implements XmlBeanConfiguration {
 
 	public void init(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory,
 			NodeList nodeList) throws Exception {

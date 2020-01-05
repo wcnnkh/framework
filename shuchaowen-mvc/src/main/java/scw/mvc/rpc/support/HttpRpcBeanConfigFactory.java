@@ -3,11 +3,11 @@ package scw.mvc.rpc.support;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.AbstractBeanConfigFactory;
+import scw.beans.AbstractBeanConfiguration;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Configuration;
 import scw.beans.property.ValueWiredManager;
-import scw.beans.xml.XmlBeanConfigFactory;
+import scw.beans.xml.XmlBeanConfiguration;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.reflect.AnnotationUtils;
@@ -18,7 +18,7 @@ import scw.serializer.Serializer;
 import scw.serializer.SerializerUtils;
 
 @Configuration
-public final class HttpRpcBeanConfigFactory extends AbstractBeanConfigFactory implements XmlBeanConfigFactory {
+public final class HttpRpcBeanConfigFactory extends AbstractBeanConfiguration implements XmlBeanConfiguration {
 	private static final String TAG_NAME = "http:reference";
 
 	public void init(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory,

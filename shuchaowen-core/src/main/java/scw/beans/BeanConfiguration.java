@@ -6,7 +6,7 @@ import java.util.Map;
 import scw.core.Destroy;
 import scw.core.Init;
 
-public interface BeanConfigFactory {
+public interface BeanConfiguration {
 	/**
 	 * ID对应的bean
 	 * 

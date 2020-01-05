@@ -5,11 +5,6 @@ import java.lang.reflect.Method;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.BeanConfigFactory;
-import scw.beans.BeanFactory;
-import scw.beans.property.ValueWiredManager;
-import scw.core.PropertyFactory;
-import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
@@ -79,21 +74,6 @@ public final class DubboUtils {
 			}
 		}
 		return false;
-	}
-
-	public static BeanConfigFactory getReferenceBeanConfigFactory(ValueWiredManager valueWiredManager,
-			BeanFactory beanFactory, PropertyFactory propertyFactory, NodeList nodeList) {
-		if (!xmlExistDubboReference(nodeList)) {
-			return null;
-		}
-
-		if (!isSupport()) {
-			logger.warn("------not support reference dubbo service------");
-			return null;
-		}
-
-		return InstanceUtils.getInstance("scw.beans.dubbo.XmlDubboBeanConfigFactory", valueWiredManager, beanFactory,
-				propertyFactory, nodeList);
 	}
 
 	public static void registerDubboShutdownHook() {

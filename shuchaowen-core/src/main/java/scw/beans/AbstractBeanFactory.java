@@ -54,15 +54,18 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	private void appendSingleByPropertyFactory() {
 		singletonMap.put(PropertyFactory.class.getName(), propertyFactory);
-		beanMap.put(PropertyFactory.class.getName(),
-				new EmptyBeanDefinition(PropertyFactory.class, propertyFactory, null, false));
+		beanMap.put(PropertyFactory.class.getName(), new EmptyBeanDefinition(
+				PropertyFactory.class, propertyFactory, null, false));
 	}
 
 	private void appendSingleByBeanFactory() {
 		singletonMap.put(BeanFactory.class.getName(), this);
-		beanMap.put(BeanFactory.class.getName(), new EmptyBeanDefinition(BeanFactory.class, this,
-				new String[] { InstanceFactory.class.getName() }, false));
-		nameMappingMap.put(InstanceFactory.class.getName(), BeanFactory.class.getName());
+		beanMap.put(
+				BeanFactory.class.getName(),
+				new EmptyBeanDefinition(BeanFactory.class, this,
+						new String[] { InstanceFactory.class.getName() }, false));
+		nameMappingMap.put(InstanceFactory.class.getName(),
+				BeanFactory.class.getName());
 	}
 
 	protected final synchronized void addFilterName(Collection<String> names) {
@@ -82,49 +85,54 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	protected boolean isEnableNotFoundSet() {
-		return StringUtils.parseBoolean(propertyFactory.getProperty("beans.notfound"), true);
+		return StringUtils.parseBoolean(
+				propertyFactory.getProperty("beans.notfound"), true);
 	}
 
-	protected final void addBeanConfigFactory(BeanConfigFactory beanConfigFactory) {
-		if (beanConfigFactory != null) {
-			Map<String, BeanDefinition> map = beanConfigFactory.getBeanMap();
-			if (map != null) {
-				synchronized (beanMap) {
-					for (Entry<String, BeanDefinition> entry : map.entrySet()) {
-						String key = entry.getKey();
-						if (beanMap.containsKey(key)) {
-							logger.warn("Already exist id:{}, definition:{}", key,
-									JSONUtils.toJSONString(entry.getValue()));
-							continue;
-						}
-
-						beanMap.put(key, entry.getValue());
-					}
-				}
-			}
-
-			Map<String, String> nameMapping = beanConfigFactory.getNameMappingMap();
-			if (nameMapping != null) {
-				synchronized (nameMappingMap) {
-					for (Entry<String, String> entry : nameMapping.entrySet()) {
-						String key = entry.getKey();
-						if (nameMappingMap.containsKey(key)) {
-							logger.warn("Already exist name:{}, definition:{}", key,
-									JSONUtils.toJSONString(entry.getValue()));
-							continue;
-						}
-						nameMappingMap.put(key, entry.getValue());
-					}
-				}
-			}
-
-			destroys.addAll(beanConfigFactory.getDestroys());
-			inits.addAll(beanConfigFactory.getInits());
+	protected final void addBeanConfiguration(
+			BeanConfiguration beanConfiguration) {
+		if (beanConfiguration == null) {
+			return;
 		}
+
+		Map<String, BeanDefinition> map = beanConfiguration.getBeanMap();
+		if (map != null) {
+			synchronized (beanMap) {
+				for (Entry<String, BeanDefinition> entry : map.entrySet()) {
+					String key = entry.getKey();
+					if (beanMap.containsKey(key)) {
+						logger.warn("Already exist id:{}, definition:{}", key,
+								JSONUtils.toJSONString(entry.getValue()));
+						continue;
+					}
+
+					beanMap.put(key, entry.getValue());
+				}
+			}
+		}
+
+		Map<String, String> nameMapping = beanConfiguration.getNameMappingMap();
+		if (nameMapping != null) {
+			synchronized (nameMappingMap) {
+				for (Entry<String, String> entry : nameMapping.entrySet()) {
+					String key = entry.getKey();
+					if (nameMappingMap.containsKey(key)) {
+						logger.warn("Already exist name:{}, definition:{}",
+								key, JSONUtils.toJSONString(entry.getValue()));
+						continue;
+					}
+					nameMappingMap.put(key, entry.getValue());
+				}
+			}
+		}
+
+		destroys.addAll(beanConfiguration.getDestroys());
+		inits.addAll(beanConfiguration.getInits());
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(String name, Class<?>[] parameterTypes,
+			Object... params) {
 		Object obj = singletonMap.get(name);
 		if (obj != null) {
 			return (T) obj;
@@ -282,8 +290,10 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 					if (beanDefinition != null) {
 						t = System.currentTimeMillis() - t;
 						if (logger.isDebugEnabled()) {
-							logger.debug("create [{}] definition isInstance={} isSingletion={} use time {} ms", name,
-									beanDefinition.isInstance(), beanDefinition.isSingleton(), t);
+							logger.debug(
+									"create [{}] definition isInstance={} isSingletion={} use time {} ms",
+									name, beanDefinition.isInstance(),
+									beanDefinition.isSingleton(), t);
 						}
 					}
 				}
@@ -293,7 +303,8 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 				synchronized (beanMap) {
 					beanMap.put(beanDefinition.getId(), beanDefinition);
 				}
-				addBeanNameMapping(beanDefinition.getNames(), beanDefinition.getId());
+				addBeanNameMapping(beanDefinition.getNames(),
+						beanDefinition.getId());
 			}
 		}
 
@@ -314,8 +325,9 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			synchronized (nameMappingMap) {
 				for (String n : names) {
 					if (nameMappingMap.containsKey(n)) {
-						throw new AlreadyExistsException(
-								"存在相同的名称映射:" + n + ", oldId=" + nameMappingMap.get(n) + ",newId=" + id);
+						throw new AlreadyExistsException("存在相同的名称映射:" + n
+								+ ", oldId=" + nameMappingMap.get(n)
+								+ ",newId=" + id);
 					}
 					nameMappingMap.put(n, id);
 				}
@@ -341,7 +353,9 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	public final boolean contains(String name) {
-		boolean b = singletonMap.containsKey(name) || nameMappingMap.containsKey(name) || beanMap.containsKey(name);
+		boolean b = singletonMap.containsKey(name)
+				|| nameMappingMap.containsKey(name)
+				|| beanMap.containsKey(name);
 		if (b) {
 			return b;
 		}
@@ -364,7 +378,8 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			return false;
 		}
 
-		return singletonMap.containsKey(beanDefinition.getId()) || beanDefinition.isInstance();
+		return singletonMap.containsKey(beanDefinition.getId())
+				|| beanDefinition.isInstance();
 	}
 
 	public final boolean isInstance(Class<?> clazz) {
@@ -398,11 +413,12 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			return null;
 		}
 
-		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, clz.getAnnotation(AutoImpl.class), this,
-				getPropertyFactory());
+		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz,
+				clz.getAnnotation(AutoImpl.class), this, getPropertyFactory());
 		if (autoBean != null) {
 			try {
-				return new AutoBeanDefinition(valueWiredManager, this, getPropertyFactory(), clz, autoBean);
+				return new AutoBeanDefinition(valueWiredManager, this,
+						getPropertyFactory(), clz, autoBean);
 			} catch (Exception e) {
 				throw new BeansException(clz.getName(), e);
 			}
@@ -411,20 +427,24 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	public synchronized void init() {
-		for (Class<? extends SimpleBeanConfigFactory> clazz : BeanUtils.getConfigurationClassList(
-				SimpleBeanConfigFactory.class,
-				Arrays.asList("scw", ApplicationConfigUtils.getAnnotationPackage(propertyFactory)))) {
+		for (Class<? extends SimpleBeanConfiguration> clazz : BeanUtils
+				.getConfigurationClassList(SimpleBeanConfiguration.class,
+						Arrays.asList("scw", ApplicationConfigUtils
+								.getAnnotationPackage(propertyFactory)))) {
 			if (!isInstance(clazz)) {
 				continue;
 			}
 
-			SimpleBeanConfigFactory simpleBeanConfigFactory = getInstance(clazz);
-			simpleBeanConfigFactory.init(getValueWiredManager(), this, propertyFactory);
-			addBeanConfigFactory(simpleBeanConfigFactory);
+			SimpleBeanConfiguration simpleBeanConfigFactory = getInstance(clazz);
+			simpleBeanConfigFactory.init(getValueWiredManager(), this,
+					propertyFactory);
+			addBeanConfiguration(simpleBeanConfigFactory);
 		}
 
-		for (Class<? extends Filter> clazz : BeanUtils.getConfigurationClassList(Filter.class,
-				Arrays.asList("scw", ApplicationConfigUtils.getAnnotationPackage(propertyFactory)))) {
+		for (Class<? extends Filter> clazz : BeanUtils
+				.getConfigurationClassList(Filter.class, Arrays.asList("scw",
+						ApplicationConfigUtils
+								.getAnnotationPackage(propertyFactory)))) {
 			if (!isInstance(clazz)) {
 				continue;
 			}
@@ -444,7 +464,8 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		valueWiredManager.destroy();
 		propertyFactory.destroy();
 
-		BeanUtils.destroyStaticMethod(valueWiredManager, ClassUtils.getClassList(getInitStaticPackage()));
+		BeanUtils.destroyStaticMethod(valueWiredManager,
+				ClassUtils.getClassList(getInitStaticPackage()));
 
 		synchronized (singletonMap) {
 			List<String> beanKeyList = new ArrayList<String>();
@@ -477,7 +498,8 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		return getInstance(type.getName(), params);
 	}
 
-	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
+			Object... params) {
 		return getInstance(type.getName(), parameterTypes, params);
 	}
 }

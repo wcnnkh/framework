@@ -11,7 +11,7 @@ import scw.core.utils.ClassUtils;
  * @author shuchaowen
  *
  */
-public class ServiceBeanConfigFactory extends AbstractBeanConfigFactory {
+public class ServiceBeanConfigFactory extends AbstractBeanConfiguration {
 	public ServiceBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory, String packageNames) throws Exception {
 		for (Class<?> clz : ClassUtils.getClassList(packageNames)) {
 			Service service = clz.getAnnotation(Service.class);

@@ -2,7 +2,7 @@ package scw.beans.method;
 
 import java.lang.reflect.Method;
 
-import scw.beans.AbstractBeanConfigFactory;
+import scw.beans.AbstractBeanConfiguration;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
@@ -11,7 +11,7 @@ import scw.core.PropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.util.StringParseValueFactory;
 
-public class MethodBeanConfigFactory extends AbstractBeanConfigFactory {
+public class MethodBeanConfigFactory extends AbstractBeanConfiguration {
 	public MethodBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, String packageNames) throws Exception {
 		for (Class<?> clz : ClassUtils.getClassList(packageNames)) {
