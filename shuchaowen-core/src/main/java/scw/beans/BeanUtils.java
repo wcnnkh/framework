@@ -20,6 +20,7 @@ import scw.aop.Filter;
 import scw.aop.Proxy;
 import scw.aop.ProxyUtils;
 import scw.aop.ReflectInvoker;
+import scw.application.ApplicationConfigUtils;
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Config;
@@ -54,13 +55,26 @@ public final class BeanUtils {
 	private BeanUtils() {
 	};
 
+	public static List<BeanConfiguration> getBeanConfigurationClassList(
+			BeanFactory beanFactory, PropertyFactory propertyFactory) {
+		List<BeanConfiguration> list = new LinkedList<BeanConfiguration>();
+		for (Class<? extends BeanConfiguration> clazz : BeanUtils
+				.getConfigurationClassList(BeanConfiguration.class, Arrays
+						.asList("scw", ApplicationConfigUtils
+								.getAnnotationPackage(propertyFactory)))) {
+			list.add(beanFactory.getInstance(clazz));
+		}
+		return list;
+	}
+
 	@SuppressWarnings("unchecked")
-	public static <T> Collection<Class<? extends T>> getConfigurationClassList(Class<? extends T> type,
-			Collection<String> packageNames) {
+	public static <T> Collection<Class<? extends T>> getConfigurationClassList(
+			Class<? extends T> type, Collection<String> packageNames) {
 		HashSet<Class<? extends T>> set = new HashSet<Class<? extends T>>();
 		for (String packageName : packageNames) {
 			for (Class<?> clazz : ClassUtils.getClassList(packageName)) {
-				Configuration configuration = clazz.getAnnotation(Configuration.class);
+				Configuration configuration = clazz
+						.getAnnotation(Configuration.class);
 				if (configuration == null) {
 					continue;
 				}
@@ -103,7 +117,8 @@ public final class BeanUtils {
 	 * @param classList
 	 * @throws Exception
 	 */
-	private static void invokerInitStaticMethod(Collection<Class<?>> classList) throws Exception {
+	private static void invokerInitStaticMethod(Collection<Class<?>> classList)
+			throws Exception {
 		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
 		for (Class<?> clz : classList) {
 			for (Method method : ReflectionUtils.getDeclaredMethods(clz)) {
@@ -117,7 +132,8 @@ public final class BeanUtils {
 				}
 
 				if (method.getParameterTypes().length != 0) {
-					throw new BeansException("ClassName=" + clz.getName() + ",MethodName=" + method.getName()
+					throw new BeansException("ClassName=" + clz.getName()
+							+ ",MethodName=" + method.getName()
 							+ "There must be no parameter.");
 				}
 
@@ -135,8 +151,8 @@ public final class BeanUtils {
 		countDownLatch.await();
 	}
 
-	public synchronized static void destroyStaticMethod(ValueWiredManager valueWiredManager,
-			Collection<Class<?>> classList) {
+	public synchronized static void destroyStaticMethod(
+			ValueWiredManager valueWiredManager, Collection<Class<?>> classList) {
 		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
 		for (Class<?> clz : classList) {
 			if (valueWiredManager != null) {
@@ -154,7 +170,8 @@ public final class BeanUtils {
 				}
 
 				if (method.getParameterTypes().length != 0) {
-					throw new RuntimeException("ClassName=" + clz.getName() + ",MethodName=" + method.getName()
+					throw new RuntimeException("ClassName=" + clz.getName()
+							+ ",MethodName=" + method.getName()
 							+ "There must be no parameter.");
 				}
 
@@ -176,25 +193,29 @@ public final class BeanUtils {
 		}
 	}
 
-	public static void initStatic(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Collection<Class<?>> classList) {
+	public static void initStatic(ValueWiredManager valueWiredManager,
+			BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Collection<Class<?>> classList) {
 		try {
-			initAutowriteStatic(valueWiredManager, beanFactory, propertyFactory, classList);
+			initAutowriteStatic(valueWiredManager, beanFactory,
+					propertyFactory, classList);
 			invokerInitStaticMethod(classList);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public static void autoWrite(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> clz, Object obj, Collection<FieldDefinition> fields)
+	public static void autoWrite(ValueWiredManager valueWiredManager,
+			BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Class<?> clz, Object obj, Collection<FieldDefinition> fields)
 			throws Exception {
 		for (FieldDefinition field : fields) {
 			setBean(beanFactory, clz, obj, field);
 			setConfig(beanFactory, clz, obj, field);
 		}
 
-		setValue(valueWiredManager, beanFactory, propertyFactory, clz, obj, fields);
+		setValue(valueWiredManager, beanFactory, propertyFactory, clz, obj,
+				fields);
 	}
 
 	/**
@@ -202,20 +223,23 @@ public final class BeanUtils {
 	 * 
 	 * @param classList
 	 */
-	private static void initAutowriteStatic(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Collection<Class<?>> classList) throws Exception {
+	private static void initAutowriteStatic(
+			ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Collection<Class<?>> classList)
+			throws Exception {
 		for (Class<?> clz : classList) {
-			autoWrite(valueWiredManager, beanFactory, propertyFactory, clz, null,
-					getAutowriteFieldDefinitionList(clz, true));
+			autoWrite(valueWiredManager, beanFactory, propertyFactory, clz,
+					null, getAutowriteFieldDefinitionList(clz, true));
 		}
 	}
 
-	private static XmlBeanParameter[] sortParameters(String[] paramNames, Type[] parameterTypes,
-			XmlBeanParameter[] beanMethodParameters) {
+	private static XmlBeanParameter[] sortParameters(String[] paramNames,
+			Type[] parameterTypes, XmlBeanParameter[] beanMethodParameters) {
 		XmlBeanParameter[] methodParameters = new XmlBeanParameter[beanMethodParameters.length];
 		Type[] types = new Type[methodParameters.length];
 		for (int i = 0; i < methodParameters.length; i++) {
-			XmlBeanParameter beanMethodParameter = beanMethodParameters[i].clone();
+			XmlBeanParameter beanMethodParameter = beanMethodParameters[i]
+					.clone();
 			if (!StringUtils.isNull(beanMethodParameter.getName())) {
 				for (int a = 0; a < paramNames.length; a++) {
 					if (paramNames[a].equals(beanMethodParameter.getName())) {
@@ -234,7 +258,8 @@ public final class BeanUtils {
 			}
 		}
 
-		return ObjectUtils.equals(Arrays.asList(parameterTypes), Arrays.asList(types)) ? methodParameters : null;
+		return ObjectUtils.equals(Arrays.asList(parameterTypes),
+				Arrays.asList(types)) ? methodParameters : null;
 	}
 
 	/**
@@ -244,13 +269,14 @@ public final class BeanUtils {
 	 * @param beanMethodParameters
 	 * @return
 	 */
-	public static XmlBeanParameter[] sortParameters(Method method, XmlBeanParameter[] beanMethodParameters) {
+	public static XmlBeanParameter[] sortParameters(Method method,
+			XmlBeanParameter[] beanMethodParameters) {
 		if (method.getParameterTypes().length != beanMethodParameters.length) {
 			return null;
 		}
 
-		return sortParameters(ParameterUtils.getParameterName(method), method.getParameterTypes(),
-				beanMethodParameters);
+		return sortParameters(ParameterUtils.getParameterName(method),
+				method.getParameterTypes(), beanMethodParameters);
 	}
 
 	public static XmlBeanParameter[] sortParameters(Constructor<?> constructor,
@@ -259,56 +285,63 @@ public final class BeanUtils {
 			return null;
 		}
 
-		return sortParameters(ParameterUtils.getParameterName(constructor), constructor.getParameterTypes(),
-				beanMethodParameters);
+		return sortParameters(ParameterUtils.getParameterName(constructor),
+				constructor.getParameterTypes(), beanMethodParameters);
 	}
 
-	public static Object[] getBeanMethodParameterArgs(XmlBeanParameter[] beanParameters,
-			InstanceFactory instanceFactory, scw.core.PropertyFactory propertyFactory) throws Exception {
+	public static Object[] getBeanMethodParameterArgs(
+			XmlBeanParameter[] beanParameters, InstanceFactory instanceFactory,
+			scw.core.PropertyFactory propertyFactory) throws Exception {
 		Object[] args = new Object[beanParameters.length];
 		for (int i = 0; i < args.length; i++) {
 			XmlBeanParameter xmlBeanParameter = beanParameters[i];
-			args[i] = xmlBeanParameter.parseValue(instanceFactory, propertyFactory);
+			args[i] = xmlBeanParameter.parseValue(instanceFactory,
+					propertyFactory);
 		}
 		return args;
 	}
 
-	private static void setConfig(BeanFactory beanFactory, Class<?> clz, Object obj, FieldDefinition field) {
+	private static void setConfig(BeanFactory beanFactory, Class<?> clz,
+			Object obj, FieldDefinition field) {
 		Config config = field.getAnnotation(Config.class);
 		if (config != null) {
 			staticFieldWarnLog(Config.class.getName(), clz, field);
 			Object value = null;
 			try {
-				existDefaultValueWarnLog(Config.class.getName(), clz, field, obj);
+				existDefaultValueWarnLog(Config.class.getName(), clz, field,
+						obj);
 
-				value = beanFactory.getInstance(config.parse()).parse(beanFactory, field, config.value(),
-						config.charset());
+				value = beanFactory.getInstance(config.parse()).parse(
+						beanFactory, field, config.value(), config.charset());
 				field.set(obj, value);
 			} catch (Exception e) {
-				throw new RuntimeException("config：clz=" + clz.getName() + ",fieldName=" + field.getField().getName(),
-						e);
+				throw new RuntimeException("config：clz=" + clz.getName()
+						+ ",fieldName=" + field.getField().getName(), e);
 			}
 		}
 	}
 
-	private static boolean checkExistDefaultValue(FieldDefinition field, Object obj) throws Exception {
+	private static boolean checkExistDefaultValue(FieldDefinition field,
+			Object obj) throws Exception {
 		if (field.getField().getType().isPrimitive()) {// 值类型一定是有默认值的,所以不用判断直接所回false
 			return false;
 		}
 		return field.get(obj) != null;
 	}
 
-	private static void existDefaultValueWarnLog(String tag, Class<?> clz, FieldDefinition field, Object obj)
-			throws Exception {
+	private static void existDefaultValueWarnLog(String tag, Class<?> clz,
+			FieldDefinition field, Object obj) throws Exception {
 		if (checkExistDefaultValue(field, obj)) {
-			logger.warn("{} class[{}] fieldName[{}] existence default value", tag, clz.getName(),
-					field.getField().getName());
+			logger.warn("{} class[{}] fieldName[{}] existence default value",
+					tag, clz.getName(), field.getField().getName());
 		}
 	}
 
-	private static void staticFieldWarnLog(String tag, Class<?> clz, FieldDefinition field) {
+	private static void staticFieldWarnLog(String tag, Class<?> clz,
+			FieldDefinition field) {
 		if (Modifier.isStatic(field.getField().getModifiers())) {
-			logger.warn("{} class[{}] fieldName[{}] is a static field", tag, clz.getName(), field.getField().getName());
+			logger.warn("{} class[{}] fieldName[{}] is a static field", tag,
+					clz.getName(), field.getField().getName());
 		}
 	}
 
@@ -316,9 +349,10 @@ public final class BeanUtils {
 		return obj == null ? clazz : obj;
 	}
 
-	public static void setValue(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> clz, Object obj, Collection<FieldDefinition> fieldDefinitions)
-			throws Exception {
+	public static void setValue(ValueWiredManager valueWiredManager,
+			BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Class<?> clz, Object obj,
+			Collection<FieldDefinition> fieldDefinitions) throws Exception {
 		if (CollectionUtils.isEmpty(fieldDefinitions)) {
 			return;
 		}
@@ -329,7 +363,8 @@ public final class BeanUtils {
 			if (value != null) {
 				staticFieldWarnLog(Value.class.getName(), clz, field);
 				try {
-					existDefaultValueWarnLog(Value.class.getName(), clz, field, obj);
+					existDefaultValueWarnLog(Value.class.getName(), clz, field,
+							obj);
 					ValueWired valueWired = new ValueWired(obj, field, value);
 					if (valueWiredManager == null) {
 						valueWired.wired(beanFactory, propertyFactory);
@@ -337,8 +372,9 @@ public final class BeanUtils {
 						valueWireds.add(valueWired);
 					}
 				} catch (Throwable e) {
-					throw new RuntimeException(
-							"properties：clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
+					throw new RuntimeException("properties：clz="
+							+ clz.getName() + ",fieldName="
+							+ field.getField().getName(), e);
 				}
 			}
 		}
@@ -348,7 +384,8 @@ public final class BeanUtils {
 		}
 	}
 
-	private static void setBean(BeanFactory beanFactory, Class<?> clz, Object obj, FieldDefinition field) {
+	private static void setBean(BeanFactory beanFactory, Class<?> clz,
+			Object obj, FieldDefinition field) {
 		Autowired s = field.getAnnotation(Autowired.class);
 		if (s != null) {
 			staticFieldWarnLog(Autowired.class.getName(), clz, field);
@@ -359,11 +396,12 @@ public final class BeanUtils {
 			}
 
 			try {
-				existDefaultValueWarnLog(Autowired.class.getName(), clz, field, obj);
+				existDefaultValueWarnLog(Autowired.class.getName(), clz, field,
+						obj);
 				field.set(obj, beanFactory.getInstance(name));
 			} catch (Exception e) {
-				throw new RuntimeException(
-						"autowrite：clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
+				throw new RuntimeException("autowrite：clz=" + clz.getName()
+						+ ",fieldName=" + field.getField().getName(), e);
 			}
 		}
 	}
@@ -385,20 +423,25 @@ public final class BeanUtils {
 		return true;
 	}
 
-	public static Proxy createProxy(BeanFactory beanFactory, Class<?> clazz, Collection<String> filterNames,
-			Collection<Filter> filters) {
-		return ProxyUtils.getProxyAdapter().proxy(clazz, null,
-				Arrays.asList(new RootFilter(beanFactory, filterNames, filters)));
+	public static Proxy createProxy(BeanFactory beanFactory, Class<?> clazz,
+			Collection<String> filterNames, Collection<Filter> filters) {
+		return ProxyUtils.getProxyAdapter()
+				.proxy(clazz,
+						null,
+						Arrays.asList(new RootFilter(beanFactory, filterNames,
+								filters)));
 	}
 
-	public static Proxy createProxy(BeanFactory beanFactory, Class<?> clazz, Object service,
-			Collection<String> filterNames, Collection<Filter> filters) {
-		return ProxyUtils.proxyInstance(clazz, service, null,
-				Arrays.asList(new RootFilter(beanFactory, filterNames, filters)));
+	public static Proxy createProxy(BeanFactory beanFactory, Class<?> clazz,
+			Object service, Collection<String> filterNames,
+			Collection<Filter> filters) {
+		return ProxyUtils.proxyInstance(clazz, service, null, Arrays
+				.asList(new RootFilter(beanFactory, filterNames, filters)));
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> List<T> getBeanList(BeanFactory beanFactory, Collection<String> beanNameList) {
+	public static <T> List<T> getBeanList(BeanFactory beanFactory,
+			Collection<String> beanNameList) {
 		if (CollectionUtils.isEmpty(beanNameList)) {
 			return Collections.EMPTY_LIST;
 		}
@@ -419,7 +462,8 @@ public final class BeanUtils {
 		return new ArrayList<T>(set);
 	}
 
-	public static LinkedList<FieldDefinition> getAutowriteFieldDefinitionList(Class<?> clazz, boolean isStatic) {
+	public static LinkedList<FieldDefinition> getAutowriteFieldDefinitionList(
+			Class<?> clazz, boolean isStatic) {
 		Class<?> clz = clazz;
 		LinkedList<FieldDefinition> list = new LinkedList<FieldDefinition>();
 		while (clz != null && clz != Object.class) {
@@ -438,14 +482,16 @@ public final class BeanUtils {
 				field.setAccessible(true);
 				if (isStatic) {
 					if (Modifier.isStatic(field.getModifiers())) {
-						list.add(new DefaultFieldDefinition(clz, field, false, false, true));
+						list.add(new DefaultFieldDefinition(clz, field, false,
+								false, true));
 					}
 				} else {
 					if (Modifier.isStatic(field.getModifiers())) {
 						continue;
 					}
 
-					list.add(new DefaultFieldDefinition(clz, field, false, false, true));
+					list.add(new DefaultFieldDefinition(clz, field, false,
+							false, true));
 				}
 			}
 
@@ -456,7 +502,8 @@ public final class BeanUtils {
 
 	public static List<NoArgumentBeanMethod> getInitMethodList(Class<?> type) {
 		List<NoArgumentBeanMethod> list = new ArrayList<NoArgumentBeanMethod>();
-		for (Method method : AnnotationUtils.getAnnoationMethods(type, true, true, InitMethod.class)) {
+		for (Method method : AnnotationUtils.getAnnoationMethods(type, true,
+				true, InitMethod.class)) {
 			if (Modifier.isStatic(method.getModifiers())) {
 				continue;
 			}
@@ -469,7 +516,8 @@ public final class BeanUtils {
 
 	public static List<NoArgumentBeanMethod> getDestroyMethdoList(Class<?> type) {
 		List<NoArgumentBeanMethod> list = new ArrayList<NoArgumentBeanMethod>();
-		for (Method method : AnnotationUtils.getAnnoationMethods(type, true, true, Destroy.class)) {
+		for (Method method : AnnotationUtils.getAnnoationMethods(type, true,
+				true, Destroy.class)) {
 			if (Modifier.isStatic(method.getModifiers())) {
 				continue;
 			}
@@ -501,7 +549,8 @@ public final class BeanUtils {
 						continue;
 					}
 
-					if (i.getName().startsWith("java.") || i.getName().startsWith("javax.")
+					if (i.getName().startsWith("java.")
+							|| i.getName().startsWith("javax.")
 							|| i == scw.core.Destroy.class || i == Init.class) {
 						continue;
 					}
@@ -513,15 +562,18 @@ public final class BeanUtils {
 		return list.isEmpty() ? null : list.toArray(new String[list.size()]);
 	}
 
-	public static <T> void appendBean(Collection<T> beans, InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory, Class<? extends T> type, String key) {
+	public static <T> void appendBean(Collection<T> beans,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Class<? extends T> type, String key) {
 		appendBean(beans, instanceFactory, propertyFactory, type, key, false);
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	public static <T> void appendBean(Collection<T> beans, InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory, Class<? extends T> type, String key, boolean warn) {
-		String[] filters = StringUtils.commonSplit(propertyFactory.getProperty(key));
+	public static <T> void appendBean(Collection<T> beans,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Class<? extends T> type, String key, boolean warn) {
+		String[] filters = StringUtils.commonSplit(propertyFactory
+				.getProperty(key));
 		if (!ArrayUtils.isEmpty(filters)) {
 			for (String name : filters) {
 				if (!instanceFactory.isInstance(name)) {

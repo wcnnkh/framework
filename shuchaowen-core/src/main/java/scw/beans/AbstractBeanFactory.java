@@ -425,22 +425,8 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 		return null;
 	}
-
+	
 	public synchronized void init() {
-		for (Class<? extends SimpleBeanConfiguration> clazz : BeanUtils
-				.getConfigurationClassList(SimpleBeanConfiguration.class,
-						Arrays.asList("scw", ApplicationConfigUtils
-								.getAnnotationPackage(propertyFactory)))) {
-			if (!isInstance(clazz)) {
-				continue;
-			}
-
-			SimpleBeanConfiguration simpleBeanConfigFactory = getInstance(clazz);
-			simpleBeanConfigFactory.init(getValueWiredManager(), this,
-					propertyFactory);
-			addBeanConfiguration(simpleBeanConfigFactory);
-		}
-
 		for (Class<? extends Filter> clazz : BeanUtils
 				.getConfigurationClassList(Filter.class, Arrays.asList("scw",
 						ApplicationConfigUtils
