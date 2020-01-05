@@ -52,9 +52,13 @@ public class SimpleMimeType extends AbstractMimeType implements Serializable {
 		TOKEN.andNot(separators);
 	}
 
-	private final String type;
-	private final String subtype;
-	private final Map<String, String> parameters;
+	private String type;
+	private String subtype;
+	private Map<String, String> parameters;
+	
+	//用于序列化
+	@SuppressWarnings("unused")
+	private SimpleMimeType(){};
 
 	public SimpleMimeType(String type) {
 		this(type, WILDCARD_TYPE);
