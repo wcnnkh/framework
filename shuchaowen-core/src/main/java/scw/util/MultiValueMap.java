@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.core.multivalue;
+package scw.util;
 
 import java.util.List;
 import java.util.Map;

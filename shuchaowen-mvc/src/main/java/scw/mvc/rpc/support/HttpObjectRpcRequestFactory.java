@@ -12,9 +12,9 @@ import scw.mvc.rpc.http.HttpRpcRequestFactory;
 import scw.mvc.rpc.http.MvcRpcUtils;
 import scw.net.header.HeadersConstants;
 import scw.net.http.HttpRequest;
-import scw.net.mime.MimeTypeConstants;
 import scw.security.signature.SignatureUtils;
 import scw.serializer.Serializer;
+import scw.util.MimeTypeConstants;
 
 public class HttpObjectRpcRequestFactory implements HttpRpcRequestFactory {
 	private boolean responseThrowable;

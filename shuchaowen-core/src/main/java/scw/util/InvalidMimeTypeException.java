@@ -1,4 +1,4 @@
-package scw.net.mime;
+package scw.util;
 
 public class InvalidMimeTypeException extends IllegalArgumentException {
 	private static final long serialVersionUID = 1L;

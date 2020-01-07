@@ -9,8 +9,8 @@ import scw.mvc.Request;
 import scw.mvc.Response;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.page.AbstractPage;
-import scw.net.mime.MimeType;
-import scw.net.mime.MimeTypeConstants;
+import scw.util.MimeType;
+import scw.util.MimeTypeConstants;
 
 public class FreemarkerPage extends AbstractPage {
 	private static final long serialVersionUID = 1L;

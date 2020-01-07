@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.multivalue.LinkedMultiValueMap;
-import scw.core.multivalue.MultiValueMap;
 import scw.core.utils.CollectionUtils;
 import scw.net.RequestException;
+import scw.util.LinkedMultiValueMap;
+import scw.util.MultiValueMap;
 
 public class FormRequest extends HttpRequest {
 	private MultiValueMap<String, String> parameterMap;

@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.json.JSONUtils;
-import scw.net.mime.MimeType;
 import scw.result.DataResult;
+import scw.util.MimeType;
 
 public class DefaultDataResult<T> extends DefaultResult implements DataResult<T> {
 	private static final long serialVersionUID = 1L;

@@ -14,7 +14,7 @@ import scw.net.header.HeadersConstants;
 import scw.net.http.HttpRequest;
 import scw.net.http.HttpUtils;
 import scw.net.http.Method;
-import scw.net.mime.MimeTypeConstants;
+import scw.util.MimeTypeConstants;
 
 public class HttpRestfulRpcRequest extends HttpRequest {
 	private Map<String, Object> parameterMap = new HashMap<String, Object>();

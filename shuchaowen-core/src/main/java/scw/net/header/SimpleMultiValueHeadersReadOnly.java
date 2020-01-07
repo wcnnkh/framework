@@ -3,8 +3,8 @@ package scw.net.header;
 import java.util.List;
 import java.util.Map;
 
-import scw.core.multivalue.MultiValueMap;
-import scw.core.multivalue.MultiValueMapWrapper;
+import scw.util.MultiValueMap;
+import scw.util.MultiValueMapWrapper;
 
 public class SimpleMultiValueHeadersReadOnly extends AbstractMultiValueHeaderReadOnly {
 	private final MultiValueMap<String, String> headerMap;

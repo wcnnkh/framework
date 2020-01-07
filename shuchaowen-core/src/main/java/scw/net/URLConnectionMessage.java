@@ -13,8 +13,8 @@ import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.net.header.SimpleMultiValueHeadersReadOnly;
-import scw.net.mime.MimeType;
-import scw.net.mime.MimeTypeUtils;
+import scw.util.MimeType;
+import scw.util.MimeTypeUtils;
 
 public class URLConnectionMessage extends SimpleMultiValueHeadersReadOnly implements Message, Serializable {
 	private static final long serialVersionUID = 1L;

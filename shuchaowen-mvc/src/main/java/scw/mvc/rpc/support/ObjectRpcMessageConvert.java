@@ -11,8 +11,8 @@ import scw.core.utils.TypeUtils;
 import scw.net.Message;
 import scw.net.MessageConverter;
 import scw.net.MessageConverterChain;
-import scw.net.mime.MimeTypeConstants;
 import scw.serializer.Serializer;
+import scw.util.MimeTypeConstants;
 
 public final class ObjectRpcMessageConvert implements MessageConverter {
 	private final Serializer serializer;

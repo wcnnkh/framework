@@ -14,9 +14,9 @@ import scw.mvc.rpc.annotation.RequestContentType;
 import scw.mvc.rpc.annotation.RequestContentType.ContentType;
 import scw.net.http.HttpRequest;
 import scw.net.http.HttpUtils;
-import scw.net.mime.MimeTypeConstants;
-import scw.net.mime.SimpleMimeType;
 import scw.util.KeyValuePair;
+import scw.util.MimeTypeConstants;
+import scw.util.SimpleMimeType;
 
 public class HttpRestfulRpcRequestFactory implements HttpRpcRequestFactory {
 	private String charsetName;

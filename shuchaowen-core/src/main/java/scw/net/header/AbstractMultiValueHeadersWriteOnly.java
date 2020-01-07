@@ -1,6 +1,6 @@
 package scw.net.header;
 
-import scw.core.multivalue.MultiValueMap;
+import scw.util.MultiValueMap;
 
 public abstract class AbstractMultiValueHeadersWriteOnly implements MultiValueHeadersWriteOnly {
 

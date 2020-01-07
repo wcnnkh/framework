@@ -1,4 +1,4 @@
-package scw.core.multivalue;
+package scw.util;
 
 import java.util.List;
 import java.util.Map;

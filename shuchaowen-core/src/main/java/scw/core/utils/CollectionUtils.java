@@ -30,8 +30,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import scw.core.Assert;
-import scw.core.multivalue.MultiValueMap;
-import scw.core.multivalue.MultiValueMapWrapper;
+import scw.util.MultiValueMap;
+import scw.util.MultiValueMapWrapper;
 
 public abstract class CollectionUtils {
 	/**

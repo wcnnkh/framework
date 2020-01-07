@@ -29,11 +29,11 @@ import scw.net.NetworkUtils;
 import scw.net.http.BodyRequest;
 import scw.net.http.HttpRequest;
 import scw.net.http.Method;
-import scw.net.mime.MimeTypeConstants;
-import scw.net.mime.SimpleMimeType;
 import scw.net.ssl.SSLContexts;
 import scw.security.signature.SignatureUtils;
 import scw.tencent.wx.pay.UnifiedOrderResponse;
+import scw.util.MimeTypeConstants;
+import scw.util.SimpleMimeType;
 
 public final class WeiXinPay {
 	private static Logger logger = LoggerFactory.getLogger(WeiXinPay.class);

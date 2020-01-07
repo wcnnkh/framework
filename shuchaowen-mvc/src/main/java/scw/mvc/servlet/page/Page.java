@@ -23,7 +23,7 @@ import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
 import scw.mvc.page.AbstractPage;
 import scw.mvc.servlet.ServletUtils;
-import scw.net.mime.MimeTypeConstants;
+import scw.util.MimeTypeConstants;
 
 /**
  * freemarker

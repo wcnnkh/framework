@@ -18,8 +18,8 @@ import scw.json.JSONUtils;
 import scw.lang.NotSupportException;
 import scw.net.Message;
 import scw.net.NetworkUtils;
-import scw.net.mime.MimeTypeConstants;
-import scw.net.mime.SimpleMimeType;
+import scw.util.MimeTypeConstants;
+import scw.util.SimpleMimeType;
 import scw.util.ToMap;
 
 public final class HttpUtils {

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-import scw.core.multivalue.MultiValueMap;
+import scw.util.MultiValueMap;
 
 public abstract class AbstractMultiValueHeaderReadOnly implements MultiValueHeadersReadOnly {
 	protected abstract MultiValueMap<String, String> getHeaderMap();

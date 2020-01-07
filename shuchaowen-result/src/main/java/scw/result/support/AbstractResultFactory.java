@@ -1,10 +1,10 @@
 package scw.result.support;
 
-import scw.net.mime.MimeType;
 import scw.result.DataResult;
 import scw.result.Result;
 import scw.result.ResultFactory;
 import scw.result.ResultMessageFactory;
+import scw.util.MimeType;
 
 public abstract class AbstractResultFactory implements ResultFactory {
 	private MimeType mimeType;

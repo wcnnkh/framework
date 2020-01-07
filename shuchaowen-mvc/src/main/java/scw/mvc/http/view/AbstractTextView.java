@@ -5,8 +5,8 @@ import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.http.HttpView;
 import scw.net.Text;
-import scw.net.mime.MimeType;
-import scw.net.mime.MimeTypeConstants;
+import scw.util.MimeType;
+import scw.util.MimeTypeConstants;
 
 public abstract class AbstractTextView extends HttpView implements Text {
 

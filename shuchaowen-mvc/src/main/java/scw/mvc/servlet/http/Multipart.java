@@ -20,12 +20,12 @@ import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
 import scw.beans.annotation.Bean;
 import scw.core.Constants;
-import scw.core.multivalue.LinkedMultiValueMap;
-import scw.core.multivalue.MultiValueMap;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.LinkedMultiValueMap;
+import scw.util.MultiValueMap;
 
 @Bean(singleton=false)
 public final class Multipart extends LinkedMultiValueMap<String, FileItem> {

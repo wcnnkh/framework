@@ -16,7 +16,7 @@ import scw.net.Response;
 import scw.net.http.FormRequest;
 import scw.net.http.HttpRequest;
 import scw.net.http.Method;
-import scw.net.mime.MimeTypeConstants;
+import scw.util.MimeTypeConstants;
 
 public abstract class AbstractHttpClient implements HttpClient {
 	private static final String SET_COOKIE = "Set-Cookie";

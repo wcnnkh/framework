@@ -1,4 +1,4 @@
-package scw.core.multivalue;
+package scw.util;
 
 import java.io.Serializable;
 import java.util.Collection;

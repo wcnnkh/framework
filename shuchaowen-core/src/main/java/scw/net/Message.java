@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 
 import scw.net.header.MultiValueHeadersReadOnly;
-import scw.net.mime.MimeType;
+import scw.util.MimeType;
 
 public interface Message extends MultiValueHeadersReadOnly {
 	InputStream getInputStream();

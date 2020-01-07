@@ -9,7 +9,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import scw.beans.annotation.Bean;
-import scw.core.multivalue.MultiValueParameterFactory;
 import scw.core.parameter.ParameterConfig;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
@@ -20,6 +19,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
+import scw.util.MultiValueParameterFactory;
 
 @Bean(proxy = false)
 public class DefaultRequestBodyParse implements RequestBodyParse {

@@ -1,4 +1,4 @@
-package scw.net.mime;
+package scw.util;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

@@ -1,4 +1,4 @@
-package scw.core.multivalue;
+package scw.util;
 
 import java.util.Enumeration;
 import java.util.Map;

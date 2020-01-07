@@ -19,7 +19,7 @@ import scw.net.DefaultHttpMessageResponse;
 import scw.net.HttpMessage;
 import scw.net.NetworkUtils;
 import scw.net.RequestException;
-import scw.net.mime.MimeType;
+import scw.util.MimeType;
 
 public class HttpRequest extends AbstractUrlRequest {
 	private Method method;

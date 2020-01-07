@@ -1,10 +1,10 @@
 package scw.mvc.http;
 
-import scw.core.multivalue.MultiValueParameterFactory;
 import scw.mvc.Request;
 import scw.net.header.MultiValueHeadersReadOnly;
 import scw.net.http.Cookie;
 import scw.security.session.Session;
+import scw.util.MultiValueParameterFactory;
 import scw.util.attribute.Attributes;
 import scw.util.ip.IP;
 

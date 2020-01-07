@@ -2,8 +2,8 @@ package scw.core;
 
 import java.io.Serializable;
 
-import scw.core.multivalue.LinkedMultiValueMap;
 import scw.core.utils.StringUtils;
+import scw.util.LinkedMultiValueMap;
 
 public final class QueryString extends LinkedMultiValueMap<String, String> implements Serializable {
 	private static final long serialVersionUID = 1L;
