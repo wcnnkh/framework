@@ -9,6 +9,7 @@ import java.util.Map;
 
 import scw.core.ValueFactory;
 import scw.json.JSONUtils;
+import scw.util.EnumUtils;
 
 public class StringParse implements ValueFactory<String> {
 	public static final StringParse DEFAULT = new StringParse();

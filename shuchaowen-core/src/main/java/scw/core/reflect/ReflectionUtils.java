@@ -46,10 +46,10 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.CompareUtils;
-import scw.core.utils.FormatUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
+import scw.util.FormatUtils;
 
 /**
  * Simple utility class for working with the reflection API and handling

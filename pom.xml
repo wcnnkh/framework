@@ -453,5 +453,6 @@
 		<module>shuchaowen-result</module>
 		<module>shuchaowen-serializer</module>
 		<module>shuchaowen-async</module>
+		<module>shuchaowen-http</module>
 	</modules>
 </project>

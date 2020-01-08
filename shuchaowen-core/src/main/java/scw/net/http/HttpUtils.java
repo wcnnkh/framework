@@ -18,8 +18,8 @@ import scw.json.JSONUtils;
 import scw.lang.NotSupportException;
 import scw.net.Message;
 import scw.net.NetworkUtils;
+import scw.util.MimeType;
 import scw.util.MimeTypeConstants;
-import scw.util.SimpleMimeType;
 import scw.util.ToMap;
 
 public final class HttpUtils {
@@ -32,7 +32,7 @@ public final class HttpUtils {
 
 	public static String doGet(String url, String charsetName) {
 		HttpRequest request = new HttpRequest(Method.GET, url);
-		request.setContentType(new SimpleMimeType(MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
+		request.setContentType(new MimeType(MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
 		return execute(request, charsetName);
 	}
 
@@ -62,7 +62,7 @@ public final class HttpUtils {
 	public static String postJson(String url, Map<String, String> requestProperties, Object body, String charsetName) {
 		String text = toJsonString(body);
 		HttpRequest request = new BodyRequest(Method.POST, url, text == null ? null : new ByteArray(text, charsetName));
-		request.setContentType(new SimpleMimeType(MimeTypeConstants.APPLICATION_JSON, charsetName));
+		request.setContentType(new MimeType(MimeTypeConstants.APPLICATION_JSON, charsetName));
 		request.setRequestProperties(requestProperties);
 		return execute(request, charsetName);
 	}
@@ -74,7 +74,7 @@ public final class HttpUtils {
 	public static String postForm(String url, Map<String, String> requestProperties, Map<String, ?> parameterMap,
 			String charsetName) {
 		FormRequest request = new FormRequest(Method.POST, url, charsetName);
-		request.setContentType(new SimpleMimeType(MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
+		request.setContentType(new MimeType(MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
 		request.setRequestProperties(requestProperties);
 		request.addAll(parameterMap);
 		return execute(request, charsetName);

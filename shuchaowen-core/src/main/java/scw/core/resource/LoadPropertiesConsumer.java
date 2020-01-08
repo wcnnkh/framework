@@ -8,9 +8,9 @@ import java.util.Properties;
 
 import scw.core.Consumer;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
+import scw.util.FormatUtils;
 
 public class LoadPropertiesConsumer implements Consumer<InputStream> {
 	private Properties properties;

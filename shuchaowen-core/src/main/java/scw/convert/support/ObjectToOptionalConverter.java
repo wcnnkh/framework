@@ -1,0 +1,95 @@
+/*
+ * Copyright 2002-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package scw.convert.support;
+
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.Set;
+
+import scw.convert.ConversionService;
+import scw.convert.TypeDescriptor;
+import scw.convert.converter.ConditionalGenericConverter;
+
+/**
+ * Convert an Object to {@code java.util.Optional<T>} if necessary using the
+ * {@code ConversionService} to convert the source Object to the generic type
+ * of Optional when known.
+ *
+ * @author Rossen Stoyanchev
+ * @author Juergen Hoeller
+ * @since 4.1
+ */
+final class ObjectToOptionalConverter implements ConditionalGenericConverter {
+
+	private final ConversionService conversionService;
+
+
+	public ObjectToOptionalConverter(ConversionService conversionService) {
+		this.conversionService = conversionService;
+	}
+
+
+	public Set<ConvertiblePair> getConvertibleTypes() {
+		Set<ConvertiblePair> convertibleTypes = new LinkedHashSet<ConvertiblePair>(4);
+		convertibleTypes.add(new ConvertiblePair(Collection.class, Optional.class));
+		convertibleTypes.add(new ConvertiblePair(Object[].class, Optional.class));
+		convertibleTypes.add(new ConvertiblePair(Object.class, Optional.class));
+		return convertibleTypes;
+	}
+
+	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (targetType.getResolvableType() != null) {
+			return this.conversionService.canConvert(sourceType, new GenericTypeDescriptor(targetType));
+		}
+		else {
+			return true;
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (source == null) {
+			return Optional.empty();
+		}
+		else if (source instanceof Optional) {
+			return source;
+		}
+		else if (targetType.getResolvableType() != null) {
+			Object target = this.conversionService.convert(source, sourceType, new GenericTypeDescriptor(targetType));
+			if (target == null || (target.getClass().isArray() && Array.getLength(target) == 0) ||
+						(target instanceof Collection && ((Collection) target).isEmpty())) {
+				return Optional.empty();
+			}
+			return Optional.of(target);
+		}
+		else {
+			return Optional.of(source);
+		}
+	}
+
+
+	@SuppressWarnings("serial")
+	private static class GenericTypeDescriptor extends TypeDescriptor {
+
+		public GenericTypeDescriptor(TypeDescriptor typeDescriptor) {
+			super(typeDescriptor.getResolvableType().getGeneric(), null, typeDescriptor.getAnnotations());
+		}
+	}
+
+}

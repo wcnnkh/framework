@@ -24,12 +24,12 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.lang.NotSupportException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.FormatUtils;
 import scw.util.Value;
 import scw.util.ValueFactory;
 

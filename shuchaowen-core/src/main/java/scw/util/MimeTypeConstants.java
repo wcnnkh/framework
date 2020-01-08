@@ -29,7 +29,7 @@ public interface MimeTypeConstants {
 	 * Public constant mime type that includes all media ranges (i.e.
 	 * "&#42;/&#42;").
 	 */
-	public static final MimeType ALL = new SimpleMimeType("*", "*");
+	public static final MimeType ALL = new MimeType("*", "*");
 
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#ALL}.
@@ -39,7 +39,7 @@ public interface MimeTypeConstants {
 	/**
 	 * Public constant mime type for {@code application/json}.
 	 */
-	public static final MimeType APPLICATION_JSON = new SimpleMimeType("application", "json");
+	public static final MimeType APPLICATION_JSON = new MimeType("application", "json");
 
 	/**
 	 * A String equivalent of {@link MimeTypeConstants#APPLICATION_JSON}.
@@ -49,7 +49,7 @@ public interface MimeTypeConstants {
 	/**
 	 * JSON规范类型为{@link MimeTypeConstants#APPLICATION_JSON}
 	 */
-	public static final MimeType TEXT_JSON = new SimpleMimeType("text", "json");
+	public static final MimeType TEXT_JSON = new MimeType("text", "json");
 	
 	/**
 	 * JSON规范类型为{@link MimeTypeConstants#APPLICATION_JSON}
@@ -59,7 +59,7 @@ public interface MimeTypeConstants {
 	/**
 	 * Public constant mime type for {@code application/octet-stream}.
 	 */
-	public static final MimeType APPLICATION_OCTET_STREAM = new SimpleMimeType("application", "octet-stream");
+	public static final MimeType APPLICATION_OCTET_STREAM = new MimeType("application", "octet-stream");
 
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#APPLICATION_OCTET_STREAM}.
@@ -69,7 +69,7 @@ public interface MimeTypeConstants {
 	/**
 	 * Public constant mime type for {@code application/xml}.
 	 */
-	public static final MimeType APPLICATION_XML = new SimpleMimeType("application", "xml");
+	public static final MimeType APPLICATION_XML = new MimeType("application", "xml");
 
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#APPLICATION_XML}.
@@ -79,7 +79,7 @@ public interface MimeTypeConstants {
 	/**
 	 * Public constant mime type for {@code image/gif}.
 	 */
-	public static final MimeType IMAGE_GIF = new SimpleMimeType("image", "gif");
+	public static final MimeType IMAGE_GIF = new MimeType("image", "gif");
 
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#IMAGE_GIF}.
@@ -89,7 +89,7 @@ public interface MimeTypeConstants {
 	/**
 	 * Public constant mime type for {@code image/jpeg}.
 	 */
-	public static final MimeType IMAGE_JPEG = new SimpleMimeType("image", "jpeg");
+	public static final MimeType IMAGE_JPEG = new MimeType("image", "jpeg");
 
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#IMAGE_JPEG}.
@@ -99,7 +99,7 @@ public interface MimeTypeConstants {
 	/**
 	 * Public constant mime type for {@code image/png}.
 	 */
-	public static final MimeType IMAGE_PNG = new SimpleMimeType("image", "png");
+	public static final MimeType IMAGE_PNG = new MimeType("image", "png");
 
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#IMAGE_PNG}.
@@ -109,7 +109,7 @@ public interface MimeTypeConstants {
 	/**
 	 * Public constant mime type for {@code text/html}.
 	 */
-	public static final MimeType TEXT_HTML = new SimpleMimeType("text", "html");
+	public static final MimeType TEXT_HTML = new MimeType("text", "html");
 
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#TEXT_HTML}.
@@ -119,7 +119,7 @@ public interface MimeTypeConstants {
 	/**
 	 * Public constant mime type for {@code text/plain}.
 	 */
-	public static final MimeType TEXT_PLAIN = new SimpleMimeType("text", "plain");
+	public static final MimeType TEXT_PLAIN = new MimeType("text", "plain");
 
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#TEXT_PLAIN}.
@@ -129,23 +129,23 @@ public interface MimeTypeConstants {
 	/**
 	 * Public constant mime type for {@code text/xml}.
 	 */
-	public static final MimeType TEXT_XML = new SimpleMimeType("text", "xml");
+	public static final MimeType TEXT_XML = new MimeType("text", "xml");
 
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#TEXT_XML}.
 	 */
 	public static final String TEXT_XML_VALUE = "text/xml";
 
-	public static final MimeType APPLICATION_X_WWW_FORM_URLENCODED = new SimpleMimeType("application",
+	public static final MimeType APPLICATION_X_WWW_FORM_URLENCODED = new MimeType("application",
 			"x-www-form-urlencoded");
 
 	public static final String APPLICATION_X_WWW_FORM_URLENCODED_VALUE = "application/x-www-form-urlencoded";
 
-	public static final MimeType MULTIPART_FORM_DATA = new SimpleMimeType("multipart", "form-data");
+	public static final MimeType MULTIPART_FORM_DATA = new MimeType("multipart", "form-data");
 
 	public static final String MULTIPART_FORM_DATA_VALUE = "multipart/form-data";
 
-	public static final MimeType TEXT_JAVASCRIPT = new SimpleMimeType("text", "javascript");
+	public static final MimeType TEXT_JAVASCRIPT = new MimeType("text", "javascript");
 
 	public static final String TEXT_JAVASCRIPT_VALUE = "text/javascript";
 }

@@ -1,7 +1,7 @@
 package scw.core.utils;
 
-import scw.core.utils.FormatUtils;
 import scw.core.utils.StringAppend;
+import scw.util.FormatUtils;
 
 public final class PlaceholderFormatAppend implements StringAppend {
 	private final Object msg;
