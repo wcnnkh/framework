@@ -1,7 +1,6 @@
 package scw.mvc.page.support;
 
 import java.util.Enumeration;
-import java.util.Map.Entry;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;

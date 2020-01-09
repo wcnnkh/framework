@@ -25,6 +25,7 @@ import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.util.LinkedCaseInsensitiveMap;
 import scw.util.MultiValueMap;
+import scw.util.MultiValueMapWrapper;
 
 /**
  * A data structure representing HTTP request or response headers, mapping
@@ -508,14 +509,14 @@ public class HttpHeaders implements MultiValueMap<String, String>, Serializable 
 	 * Private constructor that can create read-only {@code HttpHeader}
 	 * instances.
 	 */
+	@SuppressWarnings("unchecked")
 	private HttpHeaders(Map<String, List<String>> headers, boolean readOnly) {
 		if (readOnly) {
-			Map<String, List<String>> map = new LinkedCaseInsensitiveMap<List<String>>(headers.size(), Locale.ENGLISH);
-			for (Entry<String, List<String>> entry : headers.entrySet()) {
-				List<String> values = Collections.unmodifiableList(entry.getValue());
-				map.put(entry.getKey(), values);
+			if (headers == null) {
+				this.headers = Collections.EMPTY_MAP;
+			} else {
+				this.headers = Collections.unmodifiableMap(new MultiValueMapWrapper<String, String>(headers));
 			}
-			this.headers = Collections.unmodifiableMap(map);
 		} else {
 			this.headers = headers;
 		}
