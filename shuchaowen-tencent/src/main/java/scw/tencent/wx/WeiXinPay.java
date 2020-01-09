@@ -32,8 +32,8 @@ import scw.net.http.Method;
 import scw.net.ssl.SSLContexts;
 import scw.security.signature.SignatureUtils;
 import scw.tencent.wx.pay.UnifiedOrderResponse;
-import scw.util.MimeTypeConstants;
-import scw.util.SimpleMimeType;
+import scw.util.MimeType;
+import scw.util.MimeTypeUtils;
 
 public final class WeiXinPay {
 	private static Logger logger = LoggerFactory.getLogger(WeiXinPay.class);
@@ -363,7 +363,7 @@ public final class WeiXinPay {
 		logger.debug("微信支付请求xml内容:{}", content);
 
 		HttpRequest request = new BodyRequest(Method.POST, url, new ByteArray(content, charsetName));
-		request.setContentType(new SimpleMimeType(MimeTypeConstants.APPLICATION_XML, charsetName));
+		request.setContentType(new MimeType(MimeTypeUtils.APPLICATION_XML, charsetName));
 		if (isCertTrustFile) {
 			request.setSSLSocketFactory(getSSLSocketFactory());
 		}

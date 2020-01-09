@@ -12,7 +12,7 @@ import scw.net.Message;
 import scw.net.MessageConverter;
 import scw.net.MessageConverterChain;
 import scw.serializer.Serializer;
-import scw.util.MimeTypeConstants;
+import scw.util.MimeTypeUtils;
 
 public final class ObjectRpcMessageConvert implements MessageConverter {
 	private final Serializer serializer;
@@ -25,7 +25,7 @@ public final class ObjectRpcMessageConvert implements MessageConverter {
 
 	public Object convert(Message message, Type type, MessageConverterChain chain) throws Throwable {
 		if (message.getMimeType() != null
-				&& message.getMimeType().equalsTypeAndSubtype(MimeTypeConstants.APPLICATION_OCTET_STREAM)) {
+				&& message.getMimeType().equalsTypeAndSubtype(MimeTypeUtils.APPLICATION_OCTET_STREAM)) {
 			Object object = serializer.deserialize(message.toByteArray());
 			if (object == null) {
 				return null;

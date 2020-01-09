@@ -6,7 +6,7 @@ import scw.core.annotation.ParameterName;
 import scw.lang.Nullable;
 import scw.result.ResultMessageFactory;
 import scw.util.MimeType;
-import scw.util.MimeTypeConstants;
+import scw.util.MimeTypeUtils;
 
 @Bean(proxy = false)
 public class DefaultResultFactory extends AbstractResultFactory {
@@ -21,7 +21,7 @@ public class DefaultResultFactory extends AbstractResultFactory {
 			@ParameterName("result.authoriaztion.fail.code") @DefaultValue("-1") int authorizationFailureCode,
 			@ParameterName("result.parameter.error.code") @DefaultValue("2") int parameterErrorCode) {
 		this(resultMessageFactory, defaultErrorCode, successCode, authorizationFailureCode, parameterErrorCode,
-				MimeTypeConstants.APPLICATION_JSON);
+				MimeTypeUtils.APPLICATION_JSON);
 	}
 
 	public DefaultResultFactory(ResultMessageFactory resultMessageFactory, int defaultErrorCode, int successCode,

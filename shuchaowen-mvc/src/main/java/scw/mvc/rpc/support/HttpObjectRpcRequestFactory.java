@@ -14,7 +14,7 @@ import scw.net.header.HeadersConstants;
 import scw.net.http.HttpRequest;
 import scw.security.signature.SignatureUtils;
 import scw.serializer.Serializer;
-import scw.util.MimeTypeConstants;
+import scw.util.MimeTypeUtils;
 
 public class HttpObjectRpcRequestFactory implements HttpRpcRequestFactory {
 	private boolean responseThrowable;
@@ -56,7 +56,7 @@ public class HttpObjectRpcRequestFactory implements HttpRpcRequestFactory {
 		if (StringUtils.isNotEmpty(ip)) {
 			request.setRequestProperties(HeadersConstants.X_FORWARDED_FOR, ip);
 		}
-		request.setContentType(MimeTypeConstants.APPLICATION_OCTET_STREAM);
+		request.setContentType(MimeTypeUtils.APPLICATION_OCTET_STREAM);
 		return request;
 	}
 

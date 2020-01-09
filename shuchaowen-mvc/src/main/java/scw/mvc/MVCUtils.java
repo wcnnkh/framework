@@ -61,7 +61,7 @@ import scw.net.header.HeadersConstants;
 import scw.net.header.HeadersReadOnly;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MimeType;
-import scw.util.MimeTypeConstants;
+import scw.util.MimeTypeUtils;
 import scw.util.MultiValueMap;
 import scw.util.attribute.Attributes;
 import scw.util.ip.IP;
@@ -302,21 +302,21 @@ public final class MVCUtils implements MvcConstants {
 	 * @return
 	 */
 	public static boolean isJsonRequest(Request request) {
-		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_JSON_VALUE)
-				|| isDesignatedContentType(request, MimeTypeConstants.TEXT_JSON_VALUE);
+		return isDesignatedContentType(request, MimeTypeUtils.APPLICATION_JSON_VALUE)
+				|| isDesignatedContentType(request, MimeTypeUtils.TEXT_JSON_VALUE);
 	}
 
 	public static boolean isXmlRequeset(Request request) {
-		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_XML_VALUE)
-				|| isDesignatedContentType(request, MimeTypeConstants.TEXT_XML_VALUE);
+		return isDesignatedContentType(request, MimeTypeUtils.APPLICATION_XML_VALUE)
+				|| isDesignatedContentType(request, MimeTypeUtils.TEXT_XML_VALUE);
 	}
 
 	public static boolean isFormRequest(Request request) {
-		return isDesignatedContentType(request, MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED_VALUE);
+		return isDesignatedContentType(request, MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED_VALUE);
 	}
 
 	public static boolean isMultipartRequest(Request request) {
-		return isDesignatedContentType(request, MimeTypeConstants.MULTIPART_FORM_DATA_VALUE);
+		return isDesignatedContentType(request, MimeTypeUtils.MULTIPART_FORM_DATA_VALUE);
 	}
 
 	public static boolean isDesignatedContentType(Request request, String contentType) {
@@ -679,7 +679,7 @@ public final class MVCUtils implements MvcConstants {
 		}
 
 		if (callbackTag != null) {
-			httpResponse.setMimeType(MimeTypeConstants.TEXT_JAVASCRIPT);
+			httpResponse.setMimeType(MimeTypeUtils.TEXT_JAVASCRIPT);
 			httpResponse.getWriter().write(callbackTag);
 			httpResponse.getWriter().write(JSONP_RESP_PREFIX);
 		}
@@ -701,7 +701,7 @@ public final class MVCUtils implements MvcConstants {
 
 		if (callbackTag == null) {
 			if (StringUtils.isEmpty(httpResponse.getContentType())) {
-				httpResponse.setMimeType(MimeTypeConstants.TEXT_HTML);
+				httpResponse.setMimeType(MimeTypeUtils.TEXT_HTML);
 			}
 		}
 

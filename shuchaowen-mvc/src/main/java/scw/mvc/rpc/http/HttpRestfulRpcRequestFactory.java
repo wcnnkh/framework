@@ -15,8 +15,8 @@ import scw.mvc.rpc.annotation.RequestContentType.ContentType;
 import scw.net.http.HttpRequest;
 import scw.net.http.HttpUtils;
 import scw.util.KeyValuePair;
-import scw.util.MimeTypeConstants;
-import scw.util.SimpleMimeType;
+import scw.util.MimeType;
+import scw.util.MimeTypeUtils;
 
 public class HttpRestfulRpcRequestFactory implements HttpRpcRequestFactory {
 	private String charsetName;
@@ -85,10 +85,10 @@ public class HttpRestfulRpcRequestFactory implements HttpRpcRequestFactory {
 		if (requestContentType != null) {
 			if (requestContentType.value() == ContentType.FORM) {
 				httpRestfulRpcRequest.setContentType(
-						new SimpleMimeType(MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
+						new MimeType(MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
 			} else if (requestContentType.value() == ContentType.JSON) {
 				httpRestfulRpcRequest
-						.setContentType(new SimpleMimeType(MimeTypeConstants.APPLICATION_JSON, charsetName));
+						.setContentType(new MimeType(MimeTypeUtils.APPLICATION_JSON, charsetName));
 			}
 		}
 		return httpRestfulRpcRequest;

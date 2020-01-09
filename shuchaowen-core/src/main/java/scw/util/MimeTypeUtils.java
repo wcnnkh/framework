@@ -15,6 +15,7 @@ import java.util.Random;
 
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
+import scw.util.MimeType.SpecificityComparator;
 
 public final class MimeTypeUtils {
 	private static final byte[] BOUNDARY_CHARS = new byte[] { '-', '_', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -44,35 +45,33 @@ public final class MimeTypeUtils {
 
 	/**
 	 * Public constant mime type for {@code application/atom+xml}.
-	 * 
-	 * @deprecated as of 4.3.6, in favor of {@code MediaType} constants
 	 */
-	@Deprecated
 	public static final MimeType APPLICATION_ATOM_XML;
 
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#APPLICATION_ATOM_XML}.
-	 * 
-	 * @deprecated as of 4.3.6, in favor of {@code MediaType} constants
 	 */
-	@Deprecated
 	public static final String APPLICATION_ATOM_XML_VALUE = "application/atom+xml";
 
 	/**
 	 * Public constant mime type for {@code application/x-www-form-urlencoded}.
-	 * 
-	 * @deprecated as of 4.3.6, in favor of {@code MediaType} constants
 	 */
-	@Deprecated
 	public static final MimeType APPLICATION_FORM_URLENCODED;
 
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#APPLICATION_FORM_URLENCODED}.
-	 * 
-	 * @deprecated as of 4.3.6, in favor of {@code MediaType} constants
 	 */
-	@Deprecated
 	public static final String APPLICATION_FORM_URLENCODED_VALUE = "application/x-www-form-urlencoded";
+
+	/**
+	 * JSON规范类型为{@link MimeTypeUtils#APPLICATION_JSON}
+	 */
+	public static final MimeType TEXT_JSON = new MimeType("text", "json");
+
+	/**
+	 * JSON规范类型为{@link MimeTypeUtils#APPLICATION_JSON_VALUE}
+	 */
+	public static final String TEXT_JSON_VALUE = "text/json";
 
 	/**
 	 * Public constant mime type for {@code application/json}.
@@ -96,18 +95,12 @@ public final class MimeTypeUtils {
 
 	/**
 	 * Public constant mime type for {@code application/xhtml+xml}.
-	 * 
-	 * @deprecated as of 4.3.6, in favor of {@code MediaType} constants
 	 */
-	@Deprecated
 	public static final MimeType APPLICATION_XHTML_XML;
 
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#APPLICATION_XHTML_XML}.
-	 * 
-	 * @deprecated as of 4.3.6, in favor of {@code MediaType} constants
 	 */
-	@Deprecated
 	public static final String APPLICATION_XHTML_XML_VALUE = "application/xhtml+xml";
 
 	/**
@@ -152,18 +145,12 @@ public final class MimeTypeUtils {
 
 	/**
 	 * Public constant mime type for {@code multipart/form-data}.
-	 * 
-	 * @deprecated as of 4.3.6, in favor of {@code MediaType} constants
 	 */
-	@Deprecated
 	public static final MimeType MULTIPART_FORM_DATA;
 
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#MULTIPART_FORM_DATA}.
-	 * 
-	 * @deprecated as of 4.3.6, in favor of {@code MediaType} constants
 	 */
-	@Deprecated
 	public static final String MULTIPART_FORM_DATA_VALUE = "multipart/form-data";
 
 	/**
@@ -195,6 +182,15 @@ public final class MimeTypeUtils {
 	 * A String equivalent of {@link MimeTypeUtils#TEXT_XML}.
 	 */
 	public static final String TEXT_XML_VALUE = "text/xml";
+
+	public static final MimeType APPLICATION_X_WWW_FORM_URLENCODED = new MimeType("application",
+			"x-www-form-urlencoded");
+
+	public static final String APPLICATION_X_WWW_FORM_URLENCODED_VALUE = "application/x-www-form-urlencoded";
+
+	public static final MimeType TEXT_JAVASCRIPT = new MimeType("text", "javascript");
+
+	public static final String TEXT_JAVASCRIPT_VALUE = "text/javascript";
 
 	static {
 		ALL = MimeType.valueOf(ALL_VALUE);

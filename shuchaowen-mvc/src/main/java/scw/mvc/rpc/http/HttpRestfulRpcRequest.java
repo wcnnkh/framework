@@ -14,7 +14,7 @@ import scw.net.header.HeadersConstants;
 import scw.net.http.HttpRequest;
 import scw.net.http.HttpUtils;
 import scw.net.http.Method;
-import scw.util.MimeTypeConstants;
+import scw.util.MimeTypeUtils;
 
 public class HttpRestfulRpcRequest extends HttpRequest {
 	private Map<String, Object> parameterMap = new HashMap<String, Object>();
@@ -66,6 +66,6 @@ public class HttpRestfulRpcRequest extends HttpRequest {
 
 	protected boolean isJsonRequest(URLConnection urlConnection) {
 		return StringUtils.contains(urlConnection.getRequestProperty("Content-Type"),
-				MimeTypeConstants.APPLICATION_JSON_VALUE, true);
+				MimeTypeUtils.APPLICATION_JSON_VALUE, true);
 	}
 }

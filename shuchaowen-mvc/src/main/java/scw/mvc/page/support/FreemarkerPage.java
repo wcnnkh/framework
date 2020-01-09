@@ -1,6 +1,7 @@
 package scw.mvc.page.support;
 
 import java.util.Enumeration;
+import java.util.Map.Entry;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -10,7 +11,7 @@ import scw.mvc.Response;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.page.AbstractPage;
 import scw.util.MimeType;
-import scw.util.MimeTypeConstants;
+import scw.util.MimeTypeUtils;
 
 public class FreemarkerPage extends AbstractPage {
 	private static final long serialVersionUID = 1L;
@@ -42,7 +43,7 @@ public class FreemarkerPage extends AbstractPage {
 		if(getMimeType() != null){
 			response.setMimeType(getMimeType());
 		}else{
-			response.setMimeType(MimeTypeConstants.TEXT_HTML);
+			response.setMimeType(MimeTypeUtils.TEXT_HTML);
 		}
 		
 		Enumeration<String> enumeration = channel.getAttributeNames();

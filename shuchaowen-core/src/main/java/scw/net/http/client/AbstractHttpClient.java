@@ -16,7 +16,7 @@ import scw.net.Response;
 import scw.net.http.FormRequest;
 import scw.net.http.HttpRequest;
 import scw.net.http.Method;
-import scw.util.MimeTypeConstants;
+import scw.util.MimeTypeUtils;
 
 public abstract class AbstractHttpClient implements HttpClient {
 	private static final String SET_COOKIE = "Set-Cookie";
@@ -65,7 +65,7 @@ public abstract class AbstractHttpClient implements HttpClient {
 
 	public String doGet(String url) {
 		HttpRequest httpRequest = new HttpRequest(Method.GET, url);
-		httpRequest.setContentType(MimeTypeConstants.APPLICATION_X_WWW_FORM_URLENCODED.toString());
+		httpRequest.setContentType(MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED.toString());
 		ByteArray byteArray = invoke(httpRequest, new ByteArrayResponse());
 		return byteArray.toString(getCharsetName());
 	}

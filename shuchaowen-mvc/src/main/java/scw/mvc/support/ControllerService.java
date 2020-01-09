@@ -22,7 +22,7 @@ import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.rpc.RpcService;
-import scw.util.MimeTypeConstants;
+import scw.util.MimeTypeUtils;
 
 public final class ControllerService {
 	private static Logger logger = LoggerFactory.getLogger(ControllerService.class);
@@ -79,7 +79,7 @@ public final class ControllerService {
 		}
 
 		if (checkRPCEnable(httpRequest)) {
-			channel.getResponse().setMimeType(MimeTypeConstants.APPLICATION_OCTET_STREAM);
+			channel.getResponse().setMimeType(MimeTypeUtils.APPLICATION_OCTET_STREAM);
 			try {
 				rpcService.service(httpRequest.getInputStream(), httpResponse.getOutputStream());
 			} catch (IOException e) {
@@ -111,7 +111,7 @@ public final class ControllerService {
 			return false;
 		}
 
-		return StringUtils.startsWith(request.getContentType(), MimeTypeConstants.APPLICATION_OCTET_STREAM_VALUE, true);
+		return StringUtils.startsWith(request.getContentType(), MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE, true);
 	}
 
 	private boolean checkResourcePath(HttpRequest httpRequest) {
