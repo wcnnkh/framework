@@ -20,38 +20,21 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import scw.core.utils.ClassUtils;
 import scw.http.HttpInputMessage;
 import scw.http.HttpOutputMessage;
 import scw.http.MediaType;
 import scw.io.ByteArrayResource;
 import scw.io.InputStreamResource;
 import scw.io.Resource;
+import scw.util.MimeType;
+import scw.util.FileMimeTypeUitls;
 import scw.util.StreamUtils;
 
-/**
- * Implementation of {@link HttpMessageConverter} that can read/write {@link Resource Resources}
- * and supports byte range requests.
- *
- * <p>By default, this converter can read all media types. The Java Activation Framework (JAF) -
- * if available - is used to determine the {@code Content-Type} of written resources.
- * If JAF is not available, {@code application/octet-stream} is used.
- *
- * @author Arjen Poutsma
- * @author Juergen Hoeller
- * @author Kazuki Shimizu
- * @since 3.0.2
- */
 public class ResourceHttpMessageConverter extends AbstractHttpMessageConverter<Resource> {
-
-	private static final boolean jafPresent = ClassUtils.isPresent(
-			"javax.activation.FileTypeMap", ResourceHttpMessageConverter.class.getClassLoader());
-
 
 	public ResourceHttpMessageConverter() {
 		super(MediaType.ALL);
 	}
-
 
 	@Override
 	protected boolean supports(Class<?> clazz) {
@@ -64,30 +47,29 @@ public class ResourceHttpMessageConverter extends AbstractHttpMessageConverter<R
 
 		if (InputStreamResource.class == clazz) {
 			return new InputStreamResource(inputMessage.getBody());
-		}
-		else if (clazz.isAssignableFrom(ByteArrayResource.class)) {
+		} else if (clazz.isAssignableFrom(ByteArrayResource.class)) {
 			byte[] body = StreamUtils.copyToByteArray(inputMessage.getBody());
 			return new ByteArrayResource(body);
-		}
-		else {
+		} else {
 			throw new IllegalStateException("Unsupported resource class: " + clazz);
 		}
 	}
 
 	@Override
 	protected MediaType getDefaultContentType(Resource resource) {
-		if (jafPresent) {
-			return ActivationMediaTypeFactory.getMediaType(resource);
-		}
-		else {
+		MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
+		if (mimeType == null) {
 			return MediaType.APPLICATION_OCTET_STREAM;
 		}
+		return new MediaType(mimeType);
 	}
 
 	@Override
 	protected Long getContentLength(Resource resource, MediaType contentType) throws IOException {
-		// Don't try to determine contentLength on InputStreamResource - cannot be read afterwards...
-		// Note: custom InputStreamResource subclasses could provide a pre-calculated content length!
+		// Don't try to determine contentLength on InputStreamResource - cannot
+		// be read afterwards...
+		// Note: custom InputStreamResource subclasses could provide a
+		// pre-calculated content length!
 		if (InputStreamResource.class == resource.getClass()) {
 			return null;
 		}
@@ -108,20 +90,16 @@ public class ResourceHttpMessageConverter extends AbstractHttpMessageConverter<R
 			InputStream in = resource.getInputStream();
 			try {
 				StreamUtils.copy(in, outputMessage.getBody());
-			}
-			catch (NullPointerException ex) {
+			} catch (NullPointerException ex) {
 				// ignore, see SPR-13620
-			}
-			finally {
+			} finally {
 				try {
 					in.close();
-				}
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 					// ignore, see SPR-12999
 				}
 			}
-		}
-		catch (FileNotFoundException ex) {
+		} catch (FileNotFoundException ex) {
 			// ignore, see SPR-12999
 		}
 	}

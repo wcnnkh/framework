@@ -17,13 +17,11 @@
 package scw.http;
 
 /**
- * Represents the base interface for HTTP request and response messages.
- * Consists of {@link HttpHeaders}, retrievable via {@link #getHeaders()}.
+ * 表示HTTP请求和响应消息的基本接口
+ * @author shuchaowen
  *
- * @author Arjen Poutsma
- * @since 3.0
  */
-public interface HttpMessage {
+interface HttpMessage {
 
 	/**
 	 * Return the headers of this message.

@@ -25,7 +25,7 @@ public final class MimeTypeUtils {
 
 	private static final Random RND = new SecureRandom();
 
-	private static Charset US_ASCII = Charset.forName("US-ASCII");
+	public static Charset US_ASCII = Charset.forName("US-ASCII");
 
 	/**
 	 * Comparator used by {@link #sortBySpecificity(List)}.

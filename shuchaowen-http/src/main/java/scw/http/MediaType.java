@@ -273,6 +273,10 @@ public class MediaType extends MimeType implements Serializable {
 	public MediaType(String type) {
 		super(type);
 	}
+	
+	public MediaType(MimeType mimeType){
+		this(mimeType.getType(), mimeType.getSubtype(), mimeType.getParameters());
+	}
 
 	/**
 	 * Create a new {@code MediaType} for the given primary type and subtype.
