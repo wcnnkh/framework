@@ -193,10 +193,6 @@ abstract class SerializableTypeWrapper {
 		Object getSource();
 	}
 
-
-	/**
-	 * Base implementation of {@link TypeProvider} with a {@code null} source.
-	 */
 	@SuppressWarnings("serial")
 	private static abstract class SimpleTypeProvider implements TypeProvider {
 
@@ -334,6 +330,7 @@ abstract class SerializableTypeWrapper {
 			return this.methodParameter;
 		}
 
+		//在进行反序列化时使用反射获取方法
 		private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
 			inputStream.defaultReadObject();
 			try {
@@ -394,6 +391,7 @@ abstract class SerializableTypeWrapper {
 			return null;
 		}
 
+		//在进行反序列化时使用反射获取方法
 		private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
 			inputStream.defaultReadObject();
 			this.method = ReflectionUtils.findMethod(this.declaringClass, this.methodName);

@@ -55,7 +55,7 @@ import scw.util.PathMatcher;
 /**
  * A {@link ResourcePatternResolver} implementation that is able to resolve a
  * specified resource location path into one or more matching Resources. The
- * source path may be a simple path which has a one-to-one mapping to a target
+ * source path may be a simple path which has a one-t o-one mapping to a target
  * {@link org.springframework.core.io.Resource}, or alternatively may contain
  * the special "{@code classpath*:}" prefix and/or internal Ant-style regular
  * expressions (matched using Spring's

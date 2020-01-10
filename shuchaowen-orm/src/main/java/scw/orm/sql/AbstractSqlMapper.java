@@ -1,7 +1,6 @@
 package scw.orm.sql;
 
 import scw.orm.AbstractMapper;
-import scw.orm.FieldColumn;
 import scw.orm.MappingContext;
 import scw.orm.sql.annotation.AutoIncrement;
 import scw.orm.sql.annotation.Column;
@@ -64,11 +63,7 @@ public abstract class AbstractSqlMapper extends AbstractMapper implements SqlMap
 
 	@Override
 	public boolean isIgnore(MappingContext context) {
-		if (!(context.getColumn() instanceof FieldColumn)) {
-			return true;
-		}
-
-		if (((FieldColumn) context.getColumn()).getField() == null) {
+		if (context.getColumn().getField() == null) {
 			return true;
 		}
 		return super.isIgnore(context);

@@ -1,5 +1,6 @@
 package scw.orm;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
 import scw.core.reflect.AnnotationFactory;
@@ -32,4 +33,6 @@ public interface Column extends AnnotationFactory {
 	void set(Object obj, Object value) throws ORMException;
 
 	String getDescription();
+	
+	Field getField();
 }

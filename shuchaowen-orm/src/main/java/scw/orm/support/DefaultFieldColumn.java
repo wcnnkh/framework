@@ -12,10 +12,10 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.reflect.SimpleAnnotationFactory;
 import scw.core.utils.StringUtils;
 import scw.orm.AbstractColumn;
-import scw.orm.FieldColumn;
+import scw.orm.Column;
 import scw.orm.ORMException;
 
-public class DefaultFieldColumn extends AbstractColumn implements FieldColumn {
+public class DefaultFieldColumn extends AbstractColumn implements Column {
 	private Field field;
 	private String name;
 	private AnnotationFactory annotationFactory;

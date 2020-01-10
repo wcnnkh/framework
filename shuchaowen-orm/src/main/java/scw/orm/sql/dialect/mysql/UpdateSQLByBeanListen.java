@@ -12,7 +12,7 @@ import scw.core.utils.TypeUtils;
 import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.orm.FieldColumn;
+import scw.orm.Column;
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
@@ -49,7 +49,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 		Iterator<MappingContext> iterator = tableFieldContext.getNotPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			FieldColumn column = (FieldColumn) context.getColumn();
+			Column column = context.getColumn();
 			if (mappingOperations.getCasType(context) != CasType.AUTO_INCREMENT) {
 				continue;
 			}
@@ -80,7 +80,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 				continue;
 			}
 
-			FieldColumn column = (FieldColumn) context.getColumn();
+			Column column = context.getColumn();
 			Field field = column.getField();
 			if (field == null) {
 				logger.warn("不支持的字段：{}", column.getName());
@@ -163,7 +163,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 				continue;
 			}
 
-			FieldColumn column = (FieldColumn) context.getColumn();
+			Column column = context.getColumn();
 			Field field = column.getField();
 			if (field == null) {
 				logger.warn("不支持的字段:{}", column.getName());
