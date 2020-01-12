@@ -15,7 +15,6 @@ import scw.http.HttpEntity;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
 import scw.http.ResponseEntity;
-import scw.http.client.support.InterceptingAsyncHttpAccessor;
 import scw.http.converter.HttpMessageConverter;
 import scw.http.util.AbstractUriTemplateHandler;
 import scw.http.util.UriTemplateHandler;
@@ -94,7 +93,7 @@ public class AsyncRestTemplate extends InterceptingAsyncHttpAccessor implements 
 	/**
 	 * Set the error handler.
 	 * <p>By default, AsyncRestTemplate uses a
-	 * {@link org.springframework.web.client.DefaultResponseErrorHandler}.
+	 * {@link scw.http.client.springframework.web.client.DefaultResponseErrorHandler}.
 	 */
 	public void setErrorHandler(ResponseErrorHandler errorHandler) {
 		this.syncTemplate.setErrorHandler(errorHandler);

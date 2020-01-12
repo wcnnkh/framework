@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package scw.http.client.support;
+package scw.http.client;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import scw.core.utils.CollectionUtils;
-import scw.http.client.AsyncClientHttpRequestFactory;
-import scw.http.client.AsyncClientHttpRequestInterceptor;
-import scw.http.client.InterceptingAsyncClientHttpRequestFactory;
 
 /**
  * The HTTP accessor that extends the base {@link AsyncHttpAccessor} with

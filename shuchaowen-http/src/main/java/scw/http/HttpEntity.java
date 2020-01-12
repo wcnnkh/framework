@@ -25,7 +25,7 @@ import scw.util.MultiValueMap;
  *
  * <p>
  * Typically used in combination with the
- * {@link org.springframework.web.client.RestTemplate}, like so:
+ * {@link scw.http.client.springframework.web.client.RestTemplate}, like so:
  * 
  * <pre class="code">
  * HttpHeaders headers = new HttpHeaders();
@@ -56,7 +56,7 @@ import scw.util.MultiValueMap;
  * @author Arjen Poutsma
  * @author Juergen Hoeller
  * @since 3.0.2
- * @see org.springframework.web.client.RestTemplate
+ * @see scw.http.client.springframework.web.client.RestTemplate
  * @see #getBody()
  * @see #getHeaders()
  */

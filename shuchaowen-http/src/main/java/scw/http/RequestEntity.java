@@ -31,7 +31,7 @@ import scw.util.MultiValueMap;
  *
  * <p>
  * In {@code RestTemplate}, this class is used as parameter in
- * {@link org.springframework.web.client.RestTemplate#exchange(RequestEntity, Class)
+ * {@link scw.http.client.springframework.web.client.RestTemplate#exchange(RequestEntity, Class)
  * exchange()}:
  * 
  * <pre class="code">

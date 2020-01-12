@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.http.client.support;
+package scw.http.client;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -22,9 +22,6 @@ import java.nio.charset.Charset;
 import scw.core.Assert;
 import scw.core.Base64;
 import scw.http.HttpRequest;
-import scw.http.client.ClientHttpRequestExecution;
-import scw.http.client.ClientHttpRequestInterceptor;
-import scw.http.client.ClientHttpResponse;
 
 /**
  * {@link ClientHttpRequestInterceptor} to apply a BASIC authorization header.

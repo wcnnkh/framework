@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package scw.http.client.support;
+package scw.http.client;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import scw.core.utils.CollectionUtils;
-import scw.http.client.ClientHttpRequestFactory;
-import scw.http.client.ClientHttpRequestInterceptor;
-import scw.http.client.InterceptingClientHttpRequestFactory;
 
 /**
- * Base class for {@link org.springframework.web.client.RestTemplate} and other HTTP accessing gateway helpers, adding
+ * Base class for {@link scw.http.client.springframework.web.client.RestTemplate} and other HTTP accessing gateway helpers, adding
  * interceptor-related properties to {@link HttpAccessor}'s common properties.
  *
- * <p>Not intended to be used directly. See {@link org.springframework.web.client.RestTemplate}.
+ * <p>Not intended to be used directly. See {@link scw.http.client.springframework.web.client.RestTemplate}.
  *
  * @author Arjen Poutsma
  */

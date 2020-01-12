@@ -19,13 +19,12 @@ package scw.http.client;
 import java.io.IOException;
 
 import scw.http.HttpRequest;
-import scw.http.client.support.InterceptingAsyncHttpAccessor;
 import scw.util.concurrent.ListenableFuture;
 
 /**
  * Intercepts client-side HTTP requests. Implementations of this interface can be
- * {@linkplain org.springframework.web.client.AsyncRestTemplate#setInterceptors registered}
- * with the {@link org.springframework.web.client.AsyncRestTemplate} as to modify
+ * {@linkplain scw.http.client.springframework.web.client.AsyncRestTemplate#setInterceptors registered}
+ * with the {@link scw.http.client.springframework.web.client.AsyncRestTemplate} as to modify
  * the outgoing {@link HttpRequest} and/or register to modify the incoming
  * {@link ClientHttpResponse} with help of a
  * {@link org.springframework.util.concurrent.ListenableFutureAdapter}.
@@ -35,7 +34,7 @@ import scw.util.concurrent.ListenableFuture;
  * @author Jakub Narloch
  * @author Rossen Stoyanchev
  * @since 4.3
- * @see org.springframework.web.client.AsyncRestTemplate
+ * @see scw.http.client.springframework.web.client.AsyncRestTemplate
  * @see InterceptingAsyncHttpAccessor
  */
 public interface AsyncClientHttpRequestInterceptor {
@@ -47,7 +46,7 @@ public interface AsyncClientHttpRequestInterceptor {
 	 * <p>An implementation might follow this pattern:
 	 * <ol>
 	 * <li>Examine the {@linkplain HttpRequest request} and body</li>
-	 * <li>Optionally {@linkplain org.springframework.http.client.support.HttpRequestWrapper
+	 * <li>Optionally {@linkplain scw.http.client.springframework.http.client.support.HttpRequestWrapper
 	 * wrap} the request to filter HTTP attributes.</li>
 	 * <li>Optionally modify the body of the request.</li>
 	 * <li>One of the following:

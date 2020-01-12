@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package scw.http.client.support;
+package scw.http.client;
 
 import java.io.IOException;
 import java.net.URI;
 
 import scw.core.Assert;
 import scw.http.HttpMethod;
-import scw.http.client.AsyncClientHttpRequest;
-import scw.http.client.AsyncClientHttpRequestFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 /**
- * Base class for {@link org.springframework.web.client.AsyncRestTemplate}
+ * Base class for {@link scw.http.client.springframework.web.client.AsyncRestTemplate}
  * and other HTTP accessing gateway helpers, defining common properties
  * such as the {@link AsyncClientHttpRequestFactory} to operate on.
  *
  * <p>Not intended to be used directly. See
- * {@link org.springframework.web.client.AsyncRestTemplate}.
+ * {@link scw.http.client.springframework.web.client.AsyncRestTemplate}.
  *
  * @author Arjen Poutsma
  * @since 4.0
- * @see org.springframework.web.client.AsyncRestTemplate
+ * @see scw.http.client.springframework.web.client.AsyncRestTemplate
  */
 public class AsyncHttpAccessor {
 	/** Logger available to subclasses. */

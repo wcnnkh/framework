@@ -20,12 +20,12 @@ import scw.http.HttpMethod;
 import scw.http.MediaType;
 import scw.http.RequestEntity;
 import scw.http.ResponseEntity;
-import scw.http.client.support.InterceptingHttpAccessor;
 import scw.http.converter.ByteArrayHttpMessageConverter;
 import scw.http.converter.GenericHttpMessageConverter;
 import scw.http.converter.HttpMessageConverter;
 import scw.http.converter.ResourceHttpMessageConverter;
 import scw.http.converter.StringHttpMessageConverter;
+import scw.http.converter.json.JsonHttpMessageConverter;
 import scw.http.converter.xml.SourceHttpMessageConverter;
 import scw.http.util.AbstractUriTemplateHandler;
 import scw.http.util.DefaultUriTemplateHandler;
@@ -50,6 +50,7 @@ public class RestTemplate extends InterceptingHttpAccessor implements RestOperat
 		this.messageConverters.add(new StringHttpMessageConverter());
 		this.messageConverters.add(new ResourceHttpMessageConverter());
 		this.messageConverters.add(new SourceHttpMessageConverter<Source>());
+		this.messageConverters.add(new JsonHttpMessageConverter());
 	}
 
 	/**

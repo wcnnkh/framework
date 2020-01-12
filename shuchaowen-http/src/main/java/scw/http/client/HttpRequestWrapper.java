@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.http.client.support;
+package scw.http.client;
 
 import java.net.URI;
 
