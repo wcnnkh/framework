@@ -9,6 +9,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +33,8 @@ import java.util.zip.GZIPOutputStream;
 
 import scw.core.Assert;
 import scw.core.Callable;
+import scw.core.string.StringCodecUtils;
+import scw.io.UnsafeByteArrayOutputStream;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportException;
@@ -195,8 +198,7 @@ public final class StringUtils {
 		while (sb.length() > 0 && Character.isWhitespace(sb.charAt(0))) {
 			sb.deleteCharAt(0);
 		}
-		while (sb.length() > 0
-				&& Character.isWhitespace(sb.charAt(sb.length() - 1))) {
+		while (sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
 			sb.deleteCharAt(sb.length() - 1);
 		}
 		return sb.toString();
@@ -259,8 +261,7 @@ public final class StringUtils {
 			return str;
 		}
 		StringBuilder sb = new StringBuilder(str);
-		while (sb.length() > 0
-				&& Character.isWhitespace(sb.charAt(sb.length() - 1))) {
+		while (sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
 			sb.deleteCharAt(sb.length() - 1);
 		}
 		return sb.toString();
@@ -297,14 +298,12 @@ public final class StringUtils {
 	 *            the trailing character to be trimmed
 	 * @return the trimmed String
 	 */
-	public static String trimTrailingCharacter(String str,
-			char trailingCharacter) {
+	public static String trimTrailingCharacter(String str, char trailingCharacter) {
 		if (!hasLength(str)) {
 			return str;
 		}
 		StringBuilder sb = new StringBuilder(str);
-		while (sb.length() > 0
-				&& sb.charAt(sb.length() - 1) == trailingCharacter) {
+		while (sb.length() > 0 && sb.charAt(sb.length() - 1) == trailingCharacter) {
 			sb.deleteCharAt(sb.length() - 1);
 		}
 		return sb.toString();
@@ -356,8 +355,7 @@ public final class StringUtils {
 			return false;
 		}
 
-		String lcStr = str.substring(str.length() - suffix.length())
-				.toLowerCase();
+		String lcStr = str.substring(str.length() - suffix.length()).toLowerCase();
 		String lcSuffix = suffix.toLowerCase();
 		return lcStr.equals(lcSuffix);
 	}
@@ -373,8 +371,7 @@ public final class StringUtils {
 	 * @param substring
 	 *            the substring to match at the given index
 	 */
-	public static boolean substringMatch(CharSequence str, int index,
-			CharSequence substring) {
+	public static boolean substringMatch(CharSequence str, int index, CharSequence substring) {
 		for (int j = 0; j < substring.length(); j++) {
 			int i = index + j;
 			if (i >= str.length() || str.charAt(i) != substring.charAt(j)) {
@@ -393,8 +390,7 @@ public final class StringUtils {
 	 *            string to search for. Return 0 if this is null.
 	 */
 	public static int countOccurrencesOf(String str, String sub) {
-		if (str == null || sub == null || str.length() == 0
-				|| sub.length() == 0) {
+		if (str == null || sub == null || str.length() == 0 || sub.length() == 0) {
 			return 0;
 		}
 		int count = 0;
@@ -419,10 +415,8 @@ public final class StringUtils {
 	 *            String to insert
 	 * @return a String with the replacements
 	 */
-	public static String replace(String inString, String oldPattern,
-			String newPattern) {
-		if (!hasLength(inString) || !hasLength(oldPattern)
-				|| newPattern == null) {
+	public static String replace(String inString, String oldPattern, String newPattern) {
+		if (!hasLength(inString) || !hasLength(oldPattern) || newPattern == null) {
 			return inString;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -528,8 +522,7 @@ public final class StringUtils {
 	 *            the separator
 	 */
 	public static String unqualify(String qualifiedName, char separator) {
-		return qualifiedName
-				.substring(qualifiedName.lastIndexOf(separator) + 1);
+		return qualifiedName.substring(qualifiedName.lastIndexOf(separator) + 1);
 	}
 
 	/**
@@ -556,8 +549,7 @@ public final class StringUtils {
 		return changeFirstCharacterCase(str, false);
 	}
 
-	private static String changeFirstCharacterCase(String str,
-			boolean capitalize) {
+	private static String changeFirstCharacterCase(String str, boolean capitalize) {
 		if (str == null || str.length() == 0) {
 			return str;
 		}
@@ -584,8 +576,7 @@ public final class StringUtils {
 			return null;
 		}
 		int separatorIndex = path.lastIndexOf(FOLDER_SEPARATOR);
-		return (separatorIndex != -1 ? path.substring(separatorIndex + 1)
-				: path);
+		return (separatorIndex != -1 ? path.substring(separatorIndex + 1) : path);
 	}
 
 	/**
@@ -674,8 +665,7 @@ public final class StringUtils {
 		if (path == null) {
 			return null;
 		}
-		String pathToUse = replace(path, WINDOWS_FOLDER_SEPARATOR,
-				FOLDER_SEPARATOR);
+		String pathToUse = replace(path, WINDOWS_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
 
 		// Strip prefix from path to analyze, to not treat it as part of the
 		// first path element. This is necessary to correctly parse paths like
@@ -692,8 +682,7 @@ public final class StringUtils {
 			pathToUse = pathToUse.substring(1);
 		}
 
-		String[] pathArray = delimitedListToStringArray(pathToUse,
-				FOLDER_SEPARATOR);
+		String[] pathArray = delimitedListToStringArray(pathToUse, FOLDER_SEPARATOR);
 		List<String> pathElements = new LinkedList<String>();
 		int tops = 0;
 
@@ -721,8 +710,7 @@ public final class StringUtils {
 			pathElements.add(0, TOP_PATH);
 		}
 
-		return prefix
-				+ collectionToDelimitedString(pathElements, FOLDER_SEPARATOR);
+		return prefix + collectionToDelimitedString(pathElements, FOLDER_SEPARATOR);
 	}
 
 	/**
@@ -761,26 +749,22 @@ public final class StringUtils {
 			// There is definitely a variant, and it is everything after the
 			// country
 			// code sans the separator between the country code and the variant.
-			int endIndexOfCountryCode = localeString.lastIndexOf(country)
-					+ country.length();
+			int endIndexOfCountryCode = localeString.lastIndexOf(country) + country.length();
 			// Strip off any leading '_' and whitespace, what's left is the
 			// variant.
-			variant = trimLeadingWhitespace(localeString
-					.substring(endIndexOfCountryCode));
+			variant = trimLeadingWhitespace(localeString.substring(endIndexOfCountryCode));
 			if (variant.startsWith("_")) {
 				variant = trimLeadingCharacter(variant, '_');
 			}
 		}
-		return (language.length() > 0 ? new Locale(language, country, variant)
-				: null);
+		return (language.length() > 0 ? new Locale(language, country, variant) : null);
 	}
 
 	private static void validateLocalePart(String localePart) {
 		for (int i = 0; i < localePart.length(); i++) {
 			char ch = localePart.charAt(i);
 			if (ch != '_' && ch != ' ' && !Character.isLetterOrDigit(ch)) {
-				throw new IllegalArgumentException("Locale part \""
-						+ localePart + "\" contains invalid characters");
+				throw new IllegalArgumentException("Locale part \"" + localePart + "\" contains invalid characters");
 			}
 		}
 	}
@@ -794,9 +778,7 @@ public final class StringUtils {
 	 * @return the RFC 3066 compliant language tag as String
 	 */
 	public static String toLanguageTag(Locale locale) {
-		return locale.getLanguage()
-				+ (hasText(locale.getCountry()) ? "-" + locale.getCountry()
-						: "");
+		return locale.getLanguage() + (hasText(locale.getCountry()) ? "-" + locale.getCountry() : "");
 	}
 
 	// ---------------------------------------------------------------------
@@ -836,8 +818,7 @@ public final class StringUtils {
 	 * @return the new array ({@code null} if both given arrays were
 	 *         {@code null})
 	 */
-	public static String[] concatenateStringArrays(String[] array1,
-			String[] array2) {
+	public static String[] concatenateStringArrays(String[] array1, String[] array2) {
 		if (ObjectUtils.isEmpty(array1)) {
 			return array2;
 		}
@@ -985,8 +966,7 @@ public final class StringUtils {
 	 * @return a {@code Properties} instance representing the array contents, or
 	 *         {@code null} if the array to process was null or empty
 	 */
-	public static Properties splitArrayElementsIntoProperties(String[] array,
-			String delimiter) {
+	public static Properties splitArrayElementsIntoProperties(String[] array, String delimiter) {
 		return splitArrayElementsIntoProperties(array, delimiter, null);
 	}
 
@@ -1010,8 +990,7 @@ public final class StringUtils {
 	 * @return a {@code Properties} instance representing the array contents, or
 	 *         {@code null} if the array to process was {@code null} or empty
 	 */
-	public static Properties splitArrayElementsIntoProperties(String[] array,
-			String delimiter, String charsToDelete) {
+	public static Properties splitArrayElementsIntoProperties(String[] array, String delimiter, String charsToDelete) {
 
 		if (ObjectUtils.isEmpty(array)) {
 			return null;
@@ -1025,8 +1004,7 @@ public final class StringUtils {
 			if (splittedElement == null) {
 				continue;
 			}
-			result.setProperty(splittedElement[0].trim(),
-					splittedElement[1].trim());
+			result.setProperty(splittedElement[0].trim(), splittedElement[1].trim());
 		}
 		return result;
 	}
@@ -1079,8 +1057,8 @@ public final class StringUtils {
 	 * @see String#trim()
 	 * @see #delimitedListToStringArray
 	 */
-	public static String[] tokenizeToStringArray(String str, String delimiters,
-			boolean trimTokens, boolean ignoreEmptyTokens) {
+	public static String[] tokenizeToStringArray(String str, String delimiters, boolean trimTokens,
+			boolean ignoreEmptyTokens) {
 
 		if (str == null) {
 			return null;
@@ -1115,8 +1093,7 @@ public final class StringUtils {
 	 * @return an array of the tokens in the list
 	 * @see #tokenizeToStringArray
 	 */
-	public static String[] delimitedListToStringArray(String str,
-			String delimiter) {
+	public static String[] delimitedListToStringArray(String str, String delimiter) {
 		return delimitedListToStringArray(str, delimiter, null);
 	}
 
@@ -1140,8 +1117,7 @@ public final class StringUtils {
 	 * @return an array of the tokens in the list
 	 * @see #tokenizeToStringArray
 	 */
-	public static String[] delimitedListToStringArray(String str,
-			String delimiter, String charsToDelete) {
+	public static String[] delimitedListToStringArray(String str, String delimiter, String charsToDelete) {
 		if (str == null) {
 			return new String[0];
 		}
@@ -1210,8 +1186,7 @@ public final class StringUtils {
 	 *            the String to end each element with
 	 * @return the delimited String
 	 */
-	public static String collectionToDelimitedString(Collection<?> coll,
-			String delim, String prefix, String suffix) {
+	public static String collectionToDelimitedString(Collection<?> coll, String delim, String prefix, String suffix) {
 		if (CollectionUtils.isEmpty(coll)) {
 			return "";
 		}
@@ -1236,8 +1211,7 @@ public final class StringUtils {
 	 *            the delimiter to use (probably a ",")
 	 * @return the delimited String
 	 */
-	public static String collectionToDelimitedString(Collection<?> coll,
-			String delim) {
+	public static String collectionToDelimitedString(Collection<?> coll, String delim) {
 		return collectionToDelimitedString(coll, delim, "", "");
 	}
 
@@ -1293,8 +1267,7 @@ public final class StringUtils {
 	}
 
 	/** ------------------传说中的分割线----------------------- **/
-	public static final char[] DEFAULT_SPLIT_CHARS = new char[] { ' ', ',',
-			';', '、' };
+	public static final char[] DEFAULT_SPLIT_CHARS = new char[] { ' ', ',', ';', '、' };
 
 	public static boolean isNull(String... text) {
 		return isEmpty(text);
@@ -1381,14 +1354,12 @@ public final class StringUtils {
 		}
 	}
 
-	public static <T> List<T> splitList(Class<T> type, String strs,
-			String filter) {
+	public static <T> List<T> splitList(Class<T> type, String strs, String filter) {
 		return splitList(type, strs, filter, true);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> List<T> splitList(Class<T> type, String strs,
-			String filter, boolean isTrim) {
+	public static <T> List<T> splitList(Class<T> type, String strs, String filter, boolean isTrim) {
 		Assert.notNull(type);
 		Assert.notNull(filter);
 
@@ -1833,8 +1804,7 @@ public final class StringUtils {
 		for (int i = 0; i < len; i++) {
 			charBuffer.put("0");
 		}
-		DecimalFormat decimalFormat = new DecimalFormat(new String(
-				charBuffer.array()));
+		DecimalFormat decimalFormat = new DecimalFormat(new String(charBuffer.array()));
 		return decimalFormat.format(number);
 	}
 
@@ -1908,8 +1878,7 @@ public final class StringUtils {
 		return true;
 	}
 
-	public static boolean test(String text, String match, char matchChar,
-			boolean multiple) {
+	public static boolean test(String text, String match, char matchChar, boolean multiple) {
 		if (match.indexOf(matchChar) == -1) {
 			return text.equals(match);
 		}
@@ -1973,8 +1942,7 @@ public final class StringUtils {
 		return split(str, true, filters);
 	}
 
-	public static String[] split(String str, boolean ignoreNull,
-			char... filters) {
+	public static String[] split(String str, boolean ignoreNull, char... filters) {
 		if (isEmpty(str)) {
 			return new String[0];
 		}
@@ -2011,8 +1979,7 @@ public final class StringUtils {
 		return list.toArray(new String[list.size()]);
 	}
 
-	public static String[] split(String str, boolean ignoreNull,
-			String... filters) {
+	public static String[] split(String str, boolean ignoreNull, String... filters) {
 		if (isEmpty(str)) {
 			return new String[0];
 		}
@@ -2097,8 +2064,8 @@ public final class StringUtils {
 	}
 
 	private static boolean parseBooleanValue(String text) {
-		return "1".equals(text) || "true".equalsIgnoreCase(text)
-				|| "yes".equalsIgnoreCase(text) || "T".equalsIgnoreCase(text);
+		return "1".equals(text) || "true".equalsIgnoreCase(text) || "yes".equalsIgnoreCase(text)
+				|| "T".equalsIgnoreCase(text);
 	}
 
 	public static boolean parseBoolean(String text, boolean defaultValue) {
@@ -2289,8 +2256,7 @@ public final class StringUtils {
 		return toString(value, defaultValue, true);
 	}
 
-	public static String toString(Object value, Object defaultValue,
-			boolean checkLength) {
+	public static String toString(Object value, Object defaultValue, boolean checkLength) {
 		if (value == null) {
 			return defaultValue == null ? null : defaultValue.toString();
 		}
@@ -2326,8 +2292,7 @@ public final class StringUtils {
 		return Enum.valueOf((Class<? extends Enum>) enumType, text);
 	}
 
-	public static BigInteger parseBigInteger(String text, int radix,
-			BigInteger defaultValue) {
+	public static BigInteger parseBigInteger(String text, int radix, BigInteger defaultValue) {
 		String v = formatNumberText(text);
 		if (isEmpty(v)) {
 			return defaultValue;
@@ -2336,8 +2301,7 @@ public final class StringUtils {
 		return new BigInteger(v, radix);
 	}
 
-	public static BigDecimal parseBigDecimal(String text,
-			BigDecimal defaultValue) {
+	public static BigDecimal parseBigDecimal(String text, BigDecimal defaultValue) {
 		String v = formatNumberText(text);
 		if (StringUtils.isEmpty(v)) {
 			return defaultValue;
@@ -2394,8 +2358,7 @@ public final class StringUtils {
 							value = (value << 4) + 10 + aChar - 'A';
 							break;
 						default:
-							throw new IllegalArgumentException(
-									"Malformed   \\uxxxx   encoding.");
+							throw new IllegalArgumentException("Malformed   \\uxxxx   encoding.");
 						}
 					}
 					outBuffer.append((char) value);
@@ -2445,8 +2408,7 @@ public final class StringUtils {
 		}
 
 		try {
-			return isCommonType(ClassUtils.forName(type.toString(),
-					ClassUtils.getDefaultClassLoader()));
+			return isCommonType(ClassUtils.forName(type.toString(), ClassUtils.getDefaultClassLoader()));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -2454,20 +2416,16 @@ public final class StringUtils {
 	}
 
 	private static boolean isCommonType(Class<?> type) {
-		return type.isArray() || type.isEnum()
-				|| Collection.class.isAssignableFrom(type)
-				|| Map.class.isAssignableFrom(type)
-				|| java.util.Date.class.isAssignableFrom(type)
-				|| BigInteger.class.isAssignableFrom(type)
-				|| BigDecimal.class.isAssignableFrom(type);
+		return type.isArray() || type.isEnum() || Collection.class.isAssignableFrom(type)
+				|| Map.class.isAssignableFrom(type) || java.util.Date.class.isAssignableFrom(type)
+				|| BigInteger.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type);
 	}
 
 	public static Object defaultAutoParse(final String text, final Type type) {
 		return defaultAutoParse(text, type, JSONUtils.DEFAULT_JSON_SUPPORT);
 	}
 
-	public static Object defaultAutoParse(final String text, final Type type,
-			JSONSupport jsonParseSupport) {
+	public static Object defaultAutoParse(final String text, final Type type, JSONSupport jsonParseSupport) {
 		return autoParse(text, type, DEFAULT_SPLIT_CHARS, jsonParseSupport);
 	}
 
@@ -2475,20 +2433,16 @@ public final class StringUtils {
 		return parseArray(text, componentType, DEFAULT_SPLIT_CHARS);
 	}
 
-	public static Object parseArray(String text, Class<?> componentType,
-			String[] splitFilter) {
-		return parseArray(text, componentType, splitFilter,
-				JSONUtils.DEFAULT_JSON_SUPPORT);
+	public static Object parseArray(String text, Class<?> componentType, String[] splitFilter) {
+		return parseArray(text, componentType, splitFilter, JSONUtils.DEFAULT_JSON_SUPPORT);
 	}
 
-	public static Object parseArray(String text, Class<?> componentType,
-			char[] splitFilter) {
-		return parseArray(text, componentType, splitFilter,
-				JSONUtils.DEFAULT_JSON_SUPPORT);
+	public static Object parseArray(String text, Class<?> componentType, char[] splitFilter) {
+		return parseArray(text, componentType, splitFilter, JSONUtils.DEFAULT_JSON_SUPPORT);
 	}
 
-	public static Object parseArray(String text, Class<?> componentType,
-			String[] splitFilter, final JSONSupport jsonParseSupport) {
+	public static Object parseArray(String text, Class<?> componentType, String[] splitFilter,
+			final JSONSupport jsonParseSupport) {
 		if (text == null) {
 			return null;
 		}
@@ -2496,17 +2450,13 @@ public final class StringUtils {
 		String[] array = StringUtils.split(text, splitFilter);
 		Object values = Array.newInstance(componentType, array.length);
 		for (int i = 0; i < array.length; i++) {
-			Array.set(
-					values,
-					i,
-					autoParse(array[i], componentType, splitFilter,
-							jsonParseSupport));
+			Array.set(values, i, autoParse(array[i], componentType, splitFilter, jsonParseSupport));
 		}
 		return values;
 	}
 
-	public static Object parseArray(String text, Class<?> componentType,
-			char[] splitFilter, final JSONSupport jsonParseSupport) {
+	public static Object parseArray(String text, Class<?> componentType, char[] splitFilter,
+			final JSONSupport jsonParseSupport) {
 		if (text == null) {
 			return null;
 		}
@@ -2514,86 +2464,71 @@ public final class StringUtils {
 		String[] array = StringUtils.split(text, splitFilter);
 		Object values = Array.newInstance(componentType, array.length);
 		for (int i = 0; i < array.length; i++) {
-			Array.set(
-					values,
-					i,
-					autoParse(array[i], componentType, splitFilter,
-							jsonParseSupport));
+			Array.set(values, i, autoParse(array[i], componentType, splitFilter, jsonParseSupport));
 		}
 		return values;
 	}
 
-	public static Object parseArray(String text, Class<?> componentType,
-			String[] splitFilter, Callable<Object> notFoundTypeCallable) {
-		if (StringUtils.isEmpty(text)) {
-			return null;
-		}
-
-		String[] array = StringUtils.split(text, splitFilter);
-		Object values = Array.newInstance(componentType, array.length);
-		for (int i = 0; i < array.length; i++) {
-			Array.set(
-					values,
-					i,
-					autoParse(text, componentType, splitFilter,
-							notFoundTypeCallable));
-		}
-		return values;
-	}
-
-	public static Object parseArray(String text, Class<?> componentType,
-			char[] splitFilter, Callable<Object> notFoundTypeCallable) {
-		if (StringUtils.isEmpty(text)) {
-			return null;
-		}
-
-		String[] array = StringUtils.split(text, splitFilter);
-		Object values = Array.newInstance(componentType, array.length);
-		for (int i = 0; i < array.length; i++) {
-			Array.set(
-					values,
-					i,
-					autoParse(text, componentType, splitFilter,
-							notFoundTypeCallable));
-		}
-		return values;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static Object autoParse(final String text, final Type type,
-			char[] splitFilter, final JSONSupport jsonParseSupport) {
-		if (TypeUtils.isClass(type)) {
-			return autoParse(text, (Class) type, splitFilter,
-					new Callable<Object>() {
-
-						public Object call() {
-							return jsonParseSupport.parseObject(text, type);
-						}
-					});
-		}
-
-		return jsonParseSupport.parseObject(text, type);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static Object autoParse(final String text, final Type type,
-			String[] splitFilter, final JSONSupport jsonParseSupport) {
-		if (TypeUtils.isClass(type)) {
-			return autoParse(text, (Class) type, splitFilter,
-					new Callable<Object>() {
-
-						public Object call() {
-							return jsonParseSupport.parseObject(text, type);
-						}
-					});
-		}
-
-		return jsonParseSupport.parseObject(text, type);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static Object autoParse(String text, Class type,
+	public static Object parseArray(String text, Class<?> componentType, String[] splitFilter,
 			Callable<Object> notFoundTypeCallable) {
+		if (StringUtils.isEmpty(text)) {
+			return null;
+		}
+
+		String[] array = StringUtils.split(text, splitFilter);
+		Object values = Array.newInstance(componentType, array.length);
+		for (int i = 0; i < array.length; i++) {
+			Array.set(values, i, autoParse(text, componentType, splitFilter, notFoundTypeCallable));
+		}
+		return values;
+	}
+
+	public static Object parseArray(String text, Class<?> componentType, char[] splitFilter,
+			Callable<Object> notFoundTypeCallable) {
+		if (StringUtils.isEmpty(text)) {
+			return null;
+		}
+
+		String[] array = StringUtils.split(text, splitFilter);
+		Object values = Array.newInstance(componentType, array.length);
+		for (int i = 0; i < array.length; i++) {
+			Array.set(values, i, autoParse(text, componentType, splitFilter, notFoundTypeCallable));
+		}
+		return values;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static Object autoParse(final String text, final Type type, char[] splitFilter,
+			final JSONSupport jsonParseSupport) {
+		if (TypeUtils.isClass(type)) {
+			return autoParse(text, (Class) type, splitFilter, new Callable<Object>() {
+
+				public Object call() {
+					return jsonParseSupport.parseObject(text, type);
+				}
+			});
+		}
+
+		return jsonParseSupport.parseObject(text, type);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static Object autoParse(final String text, final Type type, String[] splitFilter,
+			final JSONSupport jsonParseSupport) {
+		if (TypeUtils.isClass(type)) {
+			return autoParse(text, (Class) type, splitFilter, new Callable<Object>() {
+
+				public Object call() {
+					return jsonParseSupport.parseObject(text, type);
+				}
+			});
+		}
+
+		return jsonParseSupport.parseObject(text, type);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static Object autoParse(String text, Class type, Callable<Object> notFoundTypeCallable) {
 		if (String.class == type) {
 			return text;
 		} else if (int.class == type) {
@@ -2646,8 +2581,7 @@ public final class StringUtils {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static Object autoParse(final String text, final Class type,
-			final String[] splitFilter,
+	public static Object autoParse(final String text, final Class type, final String[] splitFilter,
 			final Callable<Object> notFoundTypeCallable) {
 		return autoParse(text, type, new Callable<Object>() {
 
@@ -2659,14 +2593,10 @@ public final class StringUtils {
 							return null;
 						}
 
-						Object values = Array.newInstance(
-								type.getComponentType(), arr.length);
+						Object values = Array.newInstance(type.getComponentType(), arr.length);
 						for (int i = 0; i < arr.length; i++) {
-							Array.set(
-									values,
-									i,
-									autoParse(arr[i], type.getComponentType(),
-											splitFilter, notFoundTypeCallable));
+							Array.set(values, i,
+									autoParse(arr[i], type.getComponentType(), splitFilter, notFoundTypeCallable));
 						}
 					}
 				}
@@ -2681,8 +2611,7 @@ public final class StringUtils {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static Object autoParse(final String text, final Class type,
-			final char[] splitFilter,
+	public static Object autoParse(final String text, final Class type, final char[] splitFilter,
 			final Callable<Object> notFoundTypeCallable) {
 		return autoParse(text, type, new Callable<Object>() {
 
@@ -2694,14 +2623,10 @@ public final class StringUtils {
 							return null;
 						}
 
-						Object values = Array.newInstance(
-								type.getComponentType(), arr.length);
+						Object values = Array.newInstance(type.getComponentType(), arr.length);
 						for (int i = 0; i < arr.length; i++) {
-							Array.set(
-									values,
-									i,
-									autoParse(arr[i], type.getComponentType(),
-											splitFilter, notFoundTypeCallable));
+							Array.set(values, i,
+									autoParse(arr[i], type.getComponentType(), splitFilter, notFoundTypeCallable));
 						}
 					}
 				}
@@ -2745,13 +2670,11 @@ public final class StringUtils {
 		return FormatUtils.formatPlaceholder(text, null, args);
 	}
 
-	public static boolean startsWith(String text, String prefix,
-			boolean ignoreCase) {
+	public static boolean startsWith(String text, String prefix, boolean ignoreCase) {
 		return startsWith(text, prefix, 0, ignoreCase);
 	}
 
-	public static boolean startsWith(String text, String prefix, int toOffset,
-			boolean ignoreCase) {
+	public static boolean startsWith(String text, String prefix, int toOffset, boolean ignoreCase) {
 		if (ignoreCase) {
 			int to = toOffset;
 			int po = 0;
@@ -2761,8 +2684,7 @@ public final class StringUtils {
 				return false;
 			}
 			while (--pc >= 0) {
-				if (Character.toLowerCase(text.charAt(to++)) != Character
-						.toLowerCase(prefix.charAt(po++))) {
+				if (Character.toLowerCase(text.charAt(to++)) != Character.toLowerCase(prefix.charAt(po++))) {
 					return false;
 				}
 			}
@@ -2780,8 +2702,7 @@ public final class StringUtils {
 	 * @return 返回压缩后的字符串
 	 * @throws IOException
 	 */
-	public static String compress(String str, String charsetName)
-			throws IOException {
+	public static String compress(String str, String charsetName) throws IOException {
 		if (null == str || str.length() <= 0) {
 			return str;
 		}
@@ -2804,16 +2725,14 @@ public final class StringUtils {
 	 * @return 返回解压缩后的字符串
 	 * @throws IOException
 	 */
-	public static String unCompress(String str, String charsetName)
-			throws IOException {
+	public static String unCompress(String str, String charsetName) throws IOException {
 		if (null == str || str.length() <= 0) {
 			return str;
 		}
 		// 创建一个新的 byte 数组输出流
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		// 创建一个 ByteArrayInputStream，使用 buf 作为其缓冲区数组
-		ByteArrayInputStream in = new ByteArrayInputStream(
-				str.getBytes(charsetName));
+		ByteArrayInputStream in = new ByteArrayInputStream(str.getBytes(charsetName));
 		// 使用默认缓冲区大小创建新的输入流
 		GZIPInputStream gzip = new GZIPInputStream(in);
 		byte[] buffer = new byte[256];
@@ -2874,8 +2793,7 @@ public final class StringUtils {
 	 * @param replacement
 	 * @return
 	 */
-	public static String humpNamingReplacement(String humpNaming,
-			String replacement) {
+	public static String humpNamingReplacement(String humpNaming, String replacement) {
 		int len = humpNaming.length();
 		StringBuilder sb = new StringBuilder(len * 2);
 		for (int i = 0; i < len; i++) {
@@ -2891,13 +2809,18 @@ public final class StringUtils {
 		}
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Parse the given {@code timeZoneString} value into a {@link TimeZone}.
-	 * @param timeZoneString the time zone {@code String}, following {@link TimeZone#getTimeZone(String)}
-	 * but throwing {@link IllegalArgumentException} in case of an invalid time zone specification
+	 * 
+	 * @param timeZoneString
+	 *            the time zone {@code String}, following
+	 *            {@link TimeZone#getTimeZone(String)} but throwing
+	 *            {@link IllegalArgumentException} in case of an invalid time
+	 *            zone specification
 	 * @return a corresponding {@link TimeZone} instance
-	 * @throws IllegalArgumentException in case of an invalid time zone specification
+	 * @throws IllegalArgumentException
+	 *             in case of an invalid time zone specification
 	 */
 	public static TimeZone parseTimeZoneString(String timeZoneString) {
 		TimeZone timeZone = TimeZone.getTimeZone(timeZoneString);
@@ -2906,5 +2829,38 @@ public final class StringUtils {
 			throw new IllegalArgumentException("Invalid time zone specification '" + timeZoneString + "'");
 		}
 		return timeZone;
+	}
+
+	public static String uriDecode(String source, Charset charset) {
+		int length = source.length();
+		if (length == 0) {
+			return source;
+		}
+		Assert.notNull(charset, "Charset must not be null");
+		@SuppressWarnings("resource")
+		UnsafeByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(length);
+		boolean changed = false;
+		for (int i = 0; i < length; i++) {
+			int ch = source.charAt(i);
+			if (ch == '%') {
+				if (i + 2 < length) {
+					char hex1 = source.charAt(i + 1);
+					char hex2 = source.charAt(i + 2);
+					int u = Character.digit(hex1, 16);
+					int l = Character.digit(hex2, 16);
+					if (u == -1 || l == -1) {
+						throw new IllegalArgumentException("Invalid encoded sequence \"" + source.substring(i) + "\"");
+					}
+					bos.write((char) ((u << 4) + l));
+					i += 2;
+					changed = true;
+				} else {
+					throw new IllegalArgumentException("Invalid encoded sequence \"" + source.substring(i) + "\"");
+				}
+			} else {
+				bos.write(ch);
+			}
+		}
+		return (changed ? StringCodecUtils.getStringCodec(charset).decode(bos.toByteArray()) : source);
 	}
 }
