@@ -165,7 +165,6 @@ public class AsyncRestTemplate extends InterceptingAsyncHttpAccessor implements 
 	// GET
 	public <T> ListenableFuture<ResponseEntity<T>> getForEntity(String url, Class<T> responseType, Object... uriVariables)
 			throws RestClientException {
-
 		AsyncRequestCallback requestCallback = acceptHeaderRequestCallback(responseType);
 		ResponseExtractor<ResponseEntity<T>> responseExtractor = responseEntityExtractor(responseType);
 		return execute(url, HttpMethod.GET, requestCallback, responseExtractor, uriVariables);
@@ -173,7 +172,6 @@ public class AsyncRestTemplate extends InterceptingAsyncHttpAccessor implements 
 
 	public <T> ListenableFuture<ResponseEntity<T>> getForEntity(String url, Class<T> responseType,
 			Map<String, ?> uriVariables) throws RestClientException {
-
 		AsyncRequestCallback requestCallback = acceptHeaderRequestCallback(responseType);
 		ResponseExtractor<ResponseEntity<T>> responseExtractor = responseEntityExtractor(responseType);
 		return execute(url, HttpMethod.GET, requestCallback, responseExtractor, uriVariables);
@@ -206,7 +204,6 @@ public class AsyncRestTemplate extends InterceptingAsyncHttpAccessor implements 
 	// POST
 	public ListenableFuture<URI> postForLocation(String url, HttpEntity<?> request, Object... uriVars)
 			throws RestClientException {
-
 		AsyncRequestCallback callback = httpEntityCallback(request);
 		ResponseExtractor<HttpHeaders> extractor = headersExtractor();
 		ListenableFuture<HttpHeaders> future = execute(url, HttpMethod.POST, callback, extractor, uriVars);
@@ -215,7 +212,6 @@ public class AsyncRestTemplate extends InterceptingAsyncHttpAccessor implements 
 
 	public ListenableFuture<URI> postForLocation(String url, HttpEntity<?> request, Map<String, ?> uriVars)
 			throws RestClientException {
-
 		AsyncRequestCallback callback = httpEntityCallback(request);
 		ResponseExtractor<HttpHeaders> extractor = headersExtractor();
 		ListenableFuture<HttpHeaders> future = execute(url, HttpMethod.POST, callback, extractor, uriVars);
@@ -240,7 +236,6 @@ public class AsyncRestTemplate extends InterceptingAsyncHttpAccessor implements 
 
 	public <T> ListenableFuture<ResponseEntity<T>> postForEntity(String url, HttpEntity<?> request,
 			Class<T> responseType, Object... uriVariables) throws RestClientException {
-
 		AsyncRequestCallback requestCallback = httpEntityCallback(request, responseType);
 		ResponseExtractor<ResponseEntity<T>> responseExtractor = responseEntityExtractor(responseType);
 		return execute(url, HttpMethod.POST, requestCallback, responseExtractor, uriVariables);
@@ -248,7 +243,6 @@ public class AsyncRestTemplate extends InterceptingAsyncHttpAccessor implements 
 	
 	public <T> ListenableFuture<ResponseEntity<T>> postForEntity(String url, HttpEntity<?> request,
 			Class<T> responseType, Map<String, ?> uriVariables) throws RestClientException {
-
 		AsyncRequestCallback requestCallback = httpEntityCallback(request, responseType);
 		ResponseExtractor<ResponseEntity<T>> responseExtractor = responseEntityExtractor(responseType);
 		return execute(url, HttpMethod.POST, requestCallback, responseExtractor, uriVariables);
@@ -256,7 +250,6 @@ public class AsyncRestTemplate extends InterceptingAsyncHttpAccessor implements 
 
 	public <T> ListenableFuture<ResponseEntity<T>> postForEntity(URI url, HttpEntity<?> request, Class<T> responseType)
 			throws RestClientException {
-
 		AsyncRequestCallback requestCallback = httpEntityCallback(request, responseType);
 		ResponseExtractor<ResponseEntity<T>> responseExtractor = responseEntityExtractor(responseType);
 		return execute(url, HttpMethod.POST, requestCallback, responseExtractor);

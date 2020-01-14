@@ -13,10 +13,11 @@ import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.net.header.SimpleMultiValueHeadersReadOnly;
-import scw.util.MimeType;
-import scw.util.MimeTypeUtils;
+import scw.net.message.InputMessage;
+import scw.net.message.converter.MessageConverter;
+import scw.net.message.converter.MessageConverterChain;
 
-public class URLConnectionMessage extends SimpleMultiValueHeadersReadOnly implements Message, Serializable {
+public class URLConnectionMessage extends SimpleMultiValueHeadersReadOnly implements InputMessage, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final byte[] data;
 	private final String contentEncoding;

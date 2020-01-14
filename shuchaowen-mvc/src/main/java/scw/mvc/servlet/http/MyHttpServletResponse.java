@@ -4,8 +4,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 import scw.mvc.http.HttpResponse;
+import scw.net.MimeType;
 import scw.net.http.Cookie;
-import scw.util.MimeType;
 
 public class MyHttpServletResponse extends HttpServletResponseWrapper implements HttpServletResponse, HttpResponse {
 

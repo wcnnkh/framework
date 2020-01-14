@@ -26,7 +26,7 @@ import scw.http.MediaType;
 import scw.io.ByteArrayResource;
 import scw.io.InputStreamResource;
 import scw.io.Resource;
-import scw.util.MimeType;
+import scw.net.MimeType;
 import scw.util.FileMimeTypeUitls;
 import scw.util.StreamUtils;
 

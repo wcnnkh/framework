@@ -1,4 +1,4 @@
-package scw.util;
+package scw.net;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
+import scw.util.LinkedCaseInsensitiveMap;
 
 public class MimeType implements Comparable<MimeType>, Serializable {
 

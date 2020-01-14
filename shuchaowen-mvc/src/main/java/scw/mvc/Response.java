@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import scw.util.MimeType;
+import scw.net.MimeType;
 
 public interface Response {
 	void setContentType(String contentType);

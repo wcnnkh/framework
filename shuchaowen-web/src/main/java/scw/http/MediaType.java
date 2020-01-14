@@ -13,9 +13,9 @@ import java.util.Map;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 import scw.util.InvalidMimeTypeException;
-import scw.util.MimeType;
-import scw.util.MimeTypeUtils;
 import scw.util.comparator.CompoundComparator;
 
 public class MediaType extends MimeType implements Serializable {

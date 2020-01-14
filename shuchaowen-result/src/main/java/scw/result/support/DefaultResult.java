@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.json.JSONUtils;
+import scw.net.MimeType;
 import scw.net.Text;
 import scw.result.Result;
 import scw.transaction.RollbackOnlyResult;
-import scw.util.MimeType;
 
 public class DefaultResult implements Result, RollbackOnlyResult, Text, Serializable {
 	private static final long serialVersionUID = 1L;

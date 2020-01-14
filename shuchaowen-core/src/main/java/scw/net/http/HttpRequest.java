@@ -16,10 +16,10 @@ import javax.net.ssl.SSLSocketFactory;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.net.AbstractUrlRequest;
 import scw.net.DefaultHttpMessageResponse;
-import scw.net.HttpMessage;
+import scw.net.MimeType;
 import scw.net.NetworkUtils;
 import scw.net.RequestException;
-import scw.util.MimeType;
+import scw.net.message.HttpInputMessage;
 
 public class HttpRequest extends AbstractUrlRequest {
 	private Method method;
@@ -137,7 +137,7 @@ public class HttpRequest extends AbstractUrlRequest {
 		return null;
 	}
 
-	public HttpMessage execute() {
+	public HttpInputMessage execute() {
 		return NetworkUtils.execute(this, new DefaultHttpMessageResponse());
 	}
 }

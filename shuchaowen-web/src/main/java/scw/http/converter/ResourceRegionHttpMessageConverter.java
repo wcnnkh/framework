@@ -30,7 +30,7 @@ import scw.http.HttpInputMessage;
 import scw.http.HttpOutputMessage;
 import scw.http.MediaType;
 import scw.io.support.ResourceRegion;
-import scw.util.MimeTypeUtils;
+import scw.net.MimeTypeUtils;
 import scw.util.StreamUtils;
 
 /**

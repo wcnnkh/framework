@@ -24,16 +24,16 @@ import scw.lang.ParameterException;
 import scw.lang.SignatureException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.Message;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 import scw.net.NetworkUtils;
 import scw.net.http.BodyRequest;
 import scw.net.http.HttpRequest;
 import scw.net.http.Method;
+import scw.net.message.InputMessage;
 import scw.net.ssl.SSLContexts;
 import scw.security.signature.SignatureUtils;
 import scw.tencent.wx.pay.UnifiedOrderResponse;
-import scw.util.MimeType;
-import scw.util.MimeTypeUtils;
 
 public final class WeiXinPay {
 	private static Logger logger = LoggerFactory.getLogger(WeiXinPay.class);
@@ -368,7 +368,7 @@ public final class WeiXinPay {
 			request.setSSLSocketFactory(getSSLSocketFactory());
 		}
 
-		Message response = NetworkUtils.execute(request);
+		InputMessage response = NetworkUtils.execute(request);
 		if (response == null) {
 			throw new RuntimeException("请求：" + url + "失败");
 		}

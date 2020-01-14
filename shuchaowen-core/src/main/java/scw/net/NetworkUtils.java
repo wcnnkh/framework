@@ -19,13 +19,14 @@ import javax.net.ssl.SSLSocketFactory;
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
+import scw.net.message.InputMessage;
 import scw.net.ssl.TrustAllManager;
 
 public final class NetworkUtils {
 	private NetworkUtils() {
 	};
 
-	private static final Response<Message> MESSAGE_RESPONSE = new DefaultAutoMessageResponse();
+	private static final ResponseCallback<InputMessage> MESSAGE_RESPONSE = new DefaultAutoMessageResponse();
 	/**
 	 * 一个信任所有的ssl socket factory <br/>
 	 * 注意:在初始化失败后可能为空
@@ -49,16 +50,16 @@ public final class NetworkUtils {
 		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc.getSocketFactory();
 	}
 
-	public static <T> T execute(URLConnection urlConnection, Request request, Response<T> response) throws Throwable {
-		request.request(urlConnection);
+	public static <T> T execute(URLConnection urlConnection, RequestCallback requestCallback, ResponseCallback<T> response) throws Throwable {
+		requestCallback.request(urlConnection);
 		return response.response(urlConnection);
 	}
 
-	public static Message execute(URLConnection urlConnection, Request request) throws Throwable {
-		return execute(urlConnection, request, MESSAGE_RESPONSE);
+	public static InputMessage execute(URLConnection urlConnection, RequestCallback requestCallback) throws Throwable {
+		return execute(urlConnection, requestCallback, MESSAGE_RESPONSE);
 	}
 
-	public static <T> T execute(URL url, Proxy proxy, Request request, Response<T> response) {
+	public static <T> T execute(URL url, Proxy proxy, RequestCallback requestCallback, ResponseCallback<T> response) {
 		Assert.argumentNotNull(url, "url");
 		Assert.argumentNotNull(url, "request");
 		Assert.argumentNotNull(url, "response");
@@ -71,7 +72,7 @@ public final class NetworkUtils {
 				urlConnection = url.openConnection(proxy);
 			}
 
-			return execute(urlConnection, request, response);
+			return execute(urlConnection, requestCallback, response);
 		} catch (Throwable e) {
 			throw new RuntimeException(url.toString(), e);
 		} finally {
@@ -83,11 +84,11 @@ public final class NetworkUtils {
 		}
 	}
 
-	public static Message execute(URL url, Proxy proxy, Request request) {
-		return execute(url, proxy, request, MESSAGE_RESPONSE);
+	public static InputMessage execute(URL url, Proxy proxy, RequestCallback requestCallback) {
+		return execute(url, proxy, requestCallback, MESSAGE_RESPONSE);
 	}
 
-	public static <T> T execute(String url, Proxy proxy, Request request, Response<T> response) {
+	public static <T> T execute(String url, Proxy proxy, RequestCallback requestCallback, ResponseCallback<T> response) {
 		URL u = null;
 		try {
 			u = new URL(url);
@@ -99,18 +100,18 @@ public final class NetworkUtils {
 			throw new NullPointerException(url);
 		}
 
-		return execute(u, proxy, request, response);
+		return execute(u, proxy, requestCallback, response);
 	}
 
-	public static Message execute(String url, Proxy proxy, Request request) {
-		return execute(url, proxy, request, MESSAGE_RESPONSE);
+	public static InputMessage execute(String url, Proxy proxy, RequestCallback requestCallback) {
+		return execute(url, proxy, requestCallback, MESSAGE_RESPONSE);
 	}
 
-	public static <T> T execute(URLRequest request, Response<T> response) {
+	public static <T> T execute(URLRequest request, ResponseCallback<T> response) {
 		return execute(request.getURL(), request.getProxy(), request, response);
 	}
 
-	public static Message execute(URLRequest request) {
+	public static InputMessage execute(URLRequest request) {
 		return execute(request, MESSAGE_RESPONSE);
 	}
 

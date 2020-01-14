@@ -2,9 +2,11 @@ package scw.net;
 
 import java.net.URLConnection;
 
-public final class DefaultMessageResponse implements Response<Message> {
+import scw.net.message.InputMessage;
 
-	public Message response(URLConnection urlConnection) throws Throwable {
+public final class DefaultMessageResponse implements ResponseCallback<InputMessage> {
+
+	public InputMessage response(URLConnection urlConnection) throws Throwable {
 		return new URLConnectionMessage(urlConnection);
 	}
 }

@@ -12,6 +12,8 @@ import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.lang.Nullable;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 
 public class FileMimeTypeUitls {
 	private static final MultiValueMap<String, MimeType> fileExtensionToMediaTypes = parseMimeTypes();

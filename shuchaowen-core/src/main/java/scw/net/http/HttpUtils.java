@@ -16,10 +16,10 @@ import scw.core.utils.XUtils;
 import scw.io.ByteArray;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportException;
-import scw.net.Message;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 import scw.net.NetworkUtils;
-import scw.util.MimeType;
-import scw.util.MimeTypeUtils;
+import scw.net.message.InputMessage;
 import scw.util.ToMap;
 
 public final class HttpUtils {
@@ -37,12 +37,12 @@ public final class HttpUtils {
 	}
 
 	private static String execute(HttpRequest request, String charsetName) {
-		Message message = NetworkUtils.execute(request);
-		if (message == null) {
+		InputMessage inputMessage = NetworkUtils.execute(request);
+		if (inputMessage == null) {
 			return null;
 		}
 
-		return StringCodecUtils.getStringCodec(charsetName).decode(message.toByteArray());
+		return StringCodecUtils.getStringCodec(charsetName).decode(inputMessage.toByteArray());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

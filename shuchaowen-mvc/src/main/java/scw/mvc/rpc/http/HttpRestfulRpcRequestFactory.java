@@ -12,11 +12,11 @@ import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.rpc.annotation.RequestContentType;
 import scw.mvc.rpc.annotation.RequestContentType.ContentType;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 import scw.net.http.HttpRequest;
 import scw.net.http.HttpUtils;
 import scw.util.KeyValuePair;
-import scw.util.MimeType;
-import scw.util.MimeTypeUtils;
 
 public class HttpRestfulRpcRequestFactory implements HttpRpcRequestFactory {
 	private String charsetName;

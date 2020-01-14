@@ -4,9 +4,9 @@ import scw.beans.annotation.Bean;
 import scw.core.annotation.DefaultValue;
 import scw.core.annotation.ParameterName;
 import scw.lang.Nullable;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 import scw.result.ResultMessageFactory;
-import scw.util.MimeType;
-import scw.util.MimeTypeUtils;
 
 @Bean(proxy = false)
 public class DefaultResultFactory extends AbstractResultFactory {

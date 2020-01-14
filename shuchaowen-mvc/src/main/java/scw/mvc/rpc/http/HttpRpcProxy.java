@@ -12,9 +12,9 @@ import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.mvc.rpc.annotation.MessageConvert;
-import scw.net.HttpMessage;
-import scw.net.MessageConverter;
 import scw.net.http.HttpRequest;
+import scw.net.message.HttpInputMessage;
+import scw.net.message.converter.MessageConverter;
 
 public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter {
 	private static final long serialVersionUID = 1L;
@@ -69,8 +69,8 @@ public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter
 			FilterChain filterChain) throws Throwable {
 		if (Modifier.isAbstract(method.getModifiers()) || Modifier.isInterface(method.getModifiers())) {
 			HttpRequest httpRequest = httpRpcRequestFactory.getHttpRequest(targetClass, method, args);
-			HttpMessage httpMessage = httpRequest.execute();
-			return httpMessage.convert(getMessageConverters(method.getDeclaringClass(), method),
+			HttpInputMessage httpInputMessage = httpRequest.execute();
+			return httpInputMessage.convert(getMessageConverters(method.getDeclaringClass(), method),
 					method.getGenericReturnType());
 		}
 		return filterChain.doFilter(invoker, proxy, targetClass, method, args);

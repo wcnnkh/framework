@@ -10,11 +10,11 @@ import scw.core.utils.StringUtils;
 import scw.io.Bytes;
 import scw.mvc.rpc.http.HttpRpcRequestFactory;
 import scw.mvc.rpc.http.MvcRpcUtils;
+import scw.net.MimeTypeUtils;
 import scw.net.header.HeadersConstants;
 import scw.net.http.HttpRequest;
 import scw.security.signature.SignatureUtils;
 import scw.serializer.Serializer;
-import scw.util.MimeTypeUtils;
 
 public class HttpObjectRpcRequestFactory implements HttpRpcRequestFactory {
 	private boolean responseThrowable;

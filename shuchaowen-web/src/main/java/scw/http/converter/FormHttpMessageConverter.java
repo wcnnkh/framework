@@ -39,8 +39,8 @@ import scw.http.HttpOutputMessage;
 import scw.http.MediaType;
 import scw.http.StreamingHttpOutputMessage;
 import scw.io.Resource;
+import scw.net.MimeTypeUtils;
 import scw.util.LinkedMultiValueMap;
-import scw.util.MimeTypeUtils;
 import scw.util.MultiValueMap;
 import scw.util.StreamUtils;
 

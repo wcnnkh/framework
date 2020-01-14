@@ -1,4 +1,4 @@
-package scw.util;
+package scw.net;
 
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
@@ -14,8 +14,10 @@ import java.util.Map;
 import java.util.Random;
 
 import scw.core.Assert;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.util.MimeType.SpecificityComparator;
+import scw.net.MimeType.SpecificityComparator;
+import scw.util.InvalidMimeTypeException;
 
 public final class MimeTypeUtils {
 	private static final byte[] BOUNDARY_CHARS = new byte[] { '-', '_', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -378,6 +380,20 @@ public final class MimeTypeUtils {
 			boundary[i] = BOUNDARY_CHARS[RND.nextInt(BOUNDARY_CHARS.length)];
 		}
 		return boundary;
+	}
+
+	public static List<MimeType> parseMimeTypes(List<String> mimeTypes) {
+		if (CollectionUtils.isEmpty(mimeTypes)) {
+			return Collections.<MimeType>emptyList();
+		} else if (mimeTypes.size() == 1) {
+			return parseMimeTypes(mimeTypes.get(0));
+		} else {
+			List<MimeType> result = new ArrayList<MimeType>(8);
+			for (String mediaType : mimeTypes) {
+				result.addAll(parseMimeTypes(mediaType));
+			}
+			return result;
+		}
 	}
 
 	/**

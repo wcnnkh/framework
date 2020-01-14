@@ -37,7 +37,6 @@ import scw.util.task.AsyncListenableTaskExecutor;
  * @see HttpComponentsClientHttpRequestFactory
  */
 public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory, AsyncClientHttpRequestFactory {
-
 	private static final int DEFAULT_CHUNK_SIZE = 4096;
 
 
@@ -148,10 +147,6 @@ public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory,
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * <p>Setting the {@link #setTaskExecutor taskExecutor} property is required before calling this method.
-	 */
 	public AsyncClientHttpRequest createAsyncRequest(URI uri, HttpMethod httpMethod) throws IOException {
 		Assert.state(this.taskExecutor != null, "Asynchronous execution requires TaskExecutor to be set");
 
@@ -168,15 +163,6 @@ public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory,
 		}
 	}
 
-	/**
-	 * Opens and returns a connection to the given URL.
-	 * <p>The default implementation uses the given {@linkplain #setProxy(java.net.Proxy) proxy} -
-	 * if any - to open a connection.
-	 * @param url the URL to open a connection to
-	 * @param proxy the proxy to use, may be {@code null}
-	 * @return the opened connection
-	 * @throws IOException in case of I/O errors
-	 */
 	protected HttpURLConnection openConnection(URL url, Proxy proxy) throws IOException {
 		URLConnection urlConnection = (proxy != null ? url.openConnection(proxy) : url.openConnection());
 		if (!HttpURLConnection.class.isInstance(urlConnection)) {
@@ -185,13 +171,6 @@ public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory,
 		return (HttpURLConnection) urlConnection;
 	}
 
-	/**
-	 * Template method for preparing the given {@link HttpURLConnection}.
-	 * <p>The default implementation prepares the connection for input and output, and sets the HTTP method.
-	 * @param connection the connection to prepare
-	 * @param httpMethod the HTTP request method ({@code GET}, {@code POST}, etc.)
-	 * @throws IOException in case of I/O errors
-	 */
 	protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
 		if (this.connectTimeout >= 0) {
 			connection.setConnectTimeout(this.connectTimeout);

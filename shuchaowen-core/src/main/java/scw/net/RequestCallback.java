@@ -2,7 +2,7 @@ package scw.net;
 
 import java.net.URLConnection;
 
-public interface Request {
+public interface RequestCallback {
 	
 	void request(URLConnection urlConnection) throws Throwable;
 	

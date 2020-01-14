@@ -6,7 +6,7 @@ import java.net.URLConnection;
 import scw.io.ByteArray;
 import scw.io.IOUtils;
 
-public final class ByteArrayResponse extends AbstractResponse<ByteArray> {
+public final class ByteArrayResponseCallback extends AbstractResponseCallback<ByteArray> {
 
 	@Override
 	protected ByteArray doInput(URLConnection urlConnection, InputStream is) throws Throwable {

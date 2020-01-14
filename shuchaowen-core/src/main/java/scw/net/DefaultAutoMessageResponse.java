@@ -3,11 +3,14 @@ package scw.net;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
 
-public final class DefaultAutoMessageResponse implements Response<Message> {
+import scw.net.message.HttpURLConnectionInputMessage;
+import scw.net.message.InputMessage;
 
-	public Message response(URLConnection urlConnection) throws Throwable {
+public final class DefaultAutoMessageResponse implements ResponseCallback<InputMessage> {
+
+	public InputMessage response(URLConnection urlConnection) throws Throwable {
 		if (urlConnection instanceof HttpURLConnection) {
-			return new HttpURLConnectionMessage((HttpURLConnection) urlConnection);
+			return new HttpURLConnectionInputMessage((HttpURLConnection) urlConnection);
 		}
 
 		return new URLConnectionMessage(urlConnection);
