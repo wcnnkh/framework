@@ -1,4 +1,4 @@
-package scw.net;
+package scw.net.mime;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;

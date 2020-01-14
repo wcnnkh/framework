@@ -1,6 +1,7 @@
 package scw.net;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -12,6 +13,7 @@ import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -20,13 +22,24 @@ import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.net.message.InputMessage;
+import scw.net.message.OutputMessage;
+import scw.net.message.URLConnectionMessage;
+import scw.net.message.converter.DefaultMessageConverterChain;
+import scw.net.message.converter.MessageConverter;
+import scw.net.message.converter.MessageConverterChain;
+import scw.net.mime.MimeType;
 import scw.net.ssl.TrustAllManager;
 
 public final class NetworkUtils {
 	private NetworkUtils() {
 	};
 
-	private static final ResponseCallback<InputMessage> MESSAGE_RESPONSE = new DefaultAutoMessageResponse();
+	private static final ResponseCallback<InputMessage> MESSAGE_RESPONSE = new ResponseCallback<InputMessage>() {
+
+		public InputMessage response(URLConnection urlConnection) throws Throwable {
+			return new URLConnectionMessage(urlConnection);
+		}
+	};
 	/**
 	 * 一个信任所有的ssl socket factory <br/>
 	 * 注意:在初始化失败后可能为空
@@ -50,7 +63,8 @@ public final class NetworkUtils {
 		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc.getSocketFactory();
 	}
 
-	public static <T> T execute(URLConnection urlConnection, RequestCallback requestCallback, ResponseCallback<T> response) throws Throwable {
+	public static <T> T execute(URLConnection urlConnection, RequestCallback requestCallback,
+			ResponseCallback<T> response) throws Throwable {
 		requestCallback.request(urlConnection);
 		return response.response(urlConnection);
 	}
@@ -63,7 +77,7 @@ public final class NetworkUtils {
 		Assert.argumentNotNull(url, "url");
 		Assert.argumentNotNull(url, "request");
 		Assert.argumentNotNull(url, "response");
-		
+
 		URLConnection urlConnection = null;
 		try {
 			if (proxy == null) {
@@ -88,7 +102,8 @@ public final class NetworkUtils {
 		return execute(url, proxy, requestCallback, MESSAGE_RESPONSE);
 	}
 
-	public static <T> T execute(String url, Proxy proxy, RequestCallback requestCallback, ResponseCallback<T> response) {
+	public static <T> T execute(String url, Proxy proxy, RequestCallback requestCallback,
+			ResponseCallback<T> response) {
 		URL u = null;
 		try {
 			u = new URL(url);
@@ -172,5 +187,17 @@ public final class NetworkUtils {
 	 */
 	public static boolean checkLocalPortCccupied(int port) {
 		return checkPortCccupied("127.0.0.1", port);
+	}
+
+	public static Object read(Type type, InputMessage inputMessage, Collection<MessageConverter> messageConverters)
+			throws IOException {
+		MessageConverterChain chain = new DefaultMessageConverterChain(messageConverters, null);
+		return chain.read(type, inputMessage);
+	}
+
+	public static void write(Object body, MimeType contentType, OutputMessage outputMessage,
+			Collection<MessageConverter> messageConverters) throws IOException {
+		MessageConverterChain chain = new DefaultMessageConverterChain(messageConverters, null);
+		chain.write(body, contentType, outputMessage);
 	}
 }

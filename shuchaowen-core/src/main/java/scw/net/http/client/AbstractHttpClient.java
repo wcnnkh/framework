@@ -11,18 +11,18 @@ import scw.core.utils.StringUtils;
 import scw.io.ByteArray;
 import scw.net.AbstractResponseCallback;
 import scw.net.ByteArrayResponseCallback;
-import scw.net.MimeTypeUtils;
 import scw.net.NetworkUtils;
 import scw.net.ResponseCallback;
-import scw.net.http.FormRequest;
-import scw.net.http.HttpRequest;
+import scw.net.http.ClientHttpFormRequest;
+import scw.net.http.SimpleClientHttpRequest;
 import scw.net.http.Method;
+import scw.net.mime.MimeTypeUtils;
 
 public abstract class AbstractHttpClient implements HttpClient {
 	private static final String SET_COOKIE = "Set-Cookie";
 	private static final String COOKIE = "cookie";
 
-	public <T> T invoke(final HttpRequest request, final AbstractResponseCallback<T> response) {
+	public <T> T invoke(final SimpleClientHttpRequest request, final AbstractResponseCallback<T> response) {
 		requestFilter(request);
 		return NetworkUtils.execute(request, new ResponseCallback<T>() {
 
@@ -39,7 +39,7 @@ public abstract class AbstractHttpClient implements HttpClient {
 
 	protected abstract CookieManager getCookieManager();
 
-	protected void requestFilter(HttpRequest request) {
+	protected void requestFilter(SimpleClientHttpRequest request) {
 		CookieManager cookieManager = getCookieManager();
 		if (cookieManager != null) {
 			String cookies = cookieManager.getCookie(request.getURL());
@@ -64,14 +64,14 @@ public abstract class AbstractHttpClient implements HttpClient {
 	}
 
 	public String doGet(String url) {
-		HttpRequest httpRequest = new HttpRequest(Method.GET, url);
-		httpRequest.setContentType(MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED.toString());
-		ByteArray byteArray = invoke(httpRequest, new ByteArrayResponseCallback());
+		SimpleClientHttpRequest simpleClientHttpRequest = new SimpleClientHttpRequest(Method.GET, url);
+		simpleClientHttpRequest.setContentType(MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED.toString());
+		ByteArray byteArray = invoke(simpleClientHttpRequest, new ByteArrayResponseCallback());
 		return byteArray.toString(getCharsetName());
 	}
 
 	public String doPost(String url, Map<String, ?> parameterMap) {
-		FormRequest request = new FormRequest(Method.POST, url, getCharsetName());
+		ClientHttpFormRequest request = new ClientHttpFormRequest(Method.POST, url, getCharsetName());
 		request.addAll(parameterMap);
 		ByteArray byteArray = invoke(request, new ByteArrayResponseCallback());
 		return byteArray.toString(getCharsetName());

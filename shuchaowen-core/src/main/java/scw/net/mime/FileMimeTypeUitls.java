@@ -1,4 +1,4 @@
-package scw.util;
+package scw.net.mime;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -12,14 +12,14 @@ import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.lang.Nullable;
-import scw.net.MimeType;
-import scw.net.MimeTypeUtils;
+import scw.util.LinkedMultiValueMap;
+import scw.util.MultiValueMap;
 
 public class FileMimeTypeUitls {
 	private static final MultiValueMap<String, MimeType> fileExtensionToMediaTypes = parseMimeTypes();
 
 	private static MultiValueMap<String, MimeType> parseMimeTypes() {
-		String mimeTypesFileName = "/scw/util/mime.types";
+		String mimeTypesFileName = "/scw/net/mime/mime.types";
 		InputStream is = MimeTypeUtils.class.getResourceAsStream(mimeTypesFileName);
 		if (is == null) {
 			return new LinkedMultiValueMap<String, MimeType>();

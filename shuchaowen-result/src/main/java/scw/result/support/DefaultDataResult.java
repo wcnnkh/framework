@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.json.JSONUtils;
-import scw.net.MimeType;
+import scw.net.mime.MimeType;
 import scw.result.DataResult;
 
 public class DefaultDataResult<T> extends DefaultResult implements DataResult<T> {

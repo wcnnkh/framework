@@ -1,23 +1,25 @@
 package scw.net.message;
 
 import java.io.InputStream;
-import java.lang.reflect.Type;
-import java.util.Collection;
 
-import scw.net.MimeType;
-import scw.net.header.MultiValueHeadersReadOnly;
-import scw.net.message.converter.MessageConverter;
-
-public interface InputMessage extends MultiValueHeadersReadOnly {
+public interface InputMessage extends Message {
 	InputStream getInputStream();
-
-	MimeType getMimeType();
-
-	long getContentLength();
-
-	<T> T convert(Collection<MessageConverter> messageConverters, Type type) throws Throwable;
 
 	byte[] toByteArray();
 
+	/**
+	 * 使用指定的字符集转换为字符串
+	 * 
+	 * @param charsetName
+	 * @return
+	 */
 	String toString(String charsetName);
+
+	/**
+	 * 使用默认的字符集转换成字符串
+	 * 
+	 * @return
+	 */
+	@Override
+	String toString();
 }

@@ -10,9 +10,9 @@ import scw.core.utils.StringUtils;
 import scw.io.Bytes;
 import scw.mvc.rpc.http.HttpRpcRequestFactory;
 import scw.mvc.rpc.http.MvcRpcUtils;
-import scw.net.MimeTypeUtils;
 import scw.net.header.HeadersConstants;
-import scw.net.http.HttpRequest;
+import scw.net.http.SimpleClientHttpRequest;
+import scw.net.mime.MimeTypeUtils;
 import scw.security.signature.SignatureUtils;
 import scw.serializer.Serializer;
 
@@ -32,7 +32,7 @@ public class HttpObjectRpcRequestFactory implements HttpRpcRequestFactory {
 		this.shareHeaders = shareHeaders;
 	}
 
-	public HttpRequest getHttpRequest(Class<?> clazz, Method method, Object[] args) throws Exception {
+	public SimpleClientHttpRequest getHttpRequest(Class<?> clazz, Method method, Object[] args) throws Exception {
 		long cts = System.currentTimeMillis();
 		final ObjectRpcRequestMessage objectRpcRequestMessage = new ObjectRpcRequestMessage(clazz, method, args);
 		objectRpcRequestMessage.setAttribute("t", cts);
@@ -40,7 +40,7 @@ public class HttpObjectRpcRequestFactory implements HttpRpcRequestFactory {
 				(SignatureUtils.byte2hex(SignatureUtils.md5(Bytes.string2bytes(cts + sign)))));
 		objectRpcRequestMessage.setAttribute("responseThrowable", responseThrowable);
 
-		HttpRequest request = new HttpRequest(scw.net.http.Method.POST, host) {
+		SimpleClientHttpRequest request = new SimpleClientHttpRequest(scw.net.http.Method.POST, host) {
 			@Override
 			protected void doOutput(URLConnection urlConnection, OutputStream os) throws Throwable {
 				serializer.serialize(os, objectRpcRequestMessage);

@@ -12,8 +12,9 @@ import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.mvc.rpc.annotation.MessageConvert;
-import scw.net.http.HttpRequest;
-import scw.net.message.HttpInputMessage;
+import scw.net.NetworkUtils;
+import scw.net.http.ClientHttpResponse;
+import scw.net.http.SimpleClientHttpRequest;
 import scw.net.message.converter.MessageConverter;
 
 public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter {
@@ -68,10 +69,11 @@ public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter
 	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
 			FilterChain filterChain) throws Throwable {
 		if (Modifier.isAbstract(method.getModifiers()) || Modifier.isInterface(method.getModifiers())) {
-			HttpRequest httpRequest = httpRpcRequestFactory.getHttpRequest(targetClass, method, args);
-			HttpInputMessage httpInputMessage = httpRequest.execute();
-			return httpInputMessage.convert(getMessageConverters(method.getDeclaringClass(), method),
-					method.getGenericReturnType());
+			SimpleClientHttpRequest simpleClientHttpRequest = httpRpcRequestFactory.getHttpRequest(targetClass, method,
+					args);
+			ClientHttpResponse httpInputMessage = simpleClientHttpRequest.execute();
+			return NetworkUtils.read(method.getGenericReturnType(), httpInputMessage,
+					getMessageConverters(method.getDeclaringClass(), method));
 		}
 		return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 	}

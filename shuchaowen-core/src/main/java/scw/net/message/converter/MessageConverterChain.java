@@ -1,39 +1,14 @@
 package scw.net.message.converter;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Iterator;
 
-import scw.core.utils.CollectionUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
 import scw.net.message.InputMessage;
+import scw.net.message.OutputMessage;
+import scw.net.mime.MimeType;
 
-public final class MessageConverterChain {
-	private static Logger logger = LoggerFactory.getLogger(MessageConverterChain.class);
-	
-	private Iterator<MessageConverter> iterator;
+public interface MessageConverterChain {
+	Object read(Type type, InputMessage inputMessage) throws IOException;
 
-	public MessageConverterChain(Collection<MessageConverter> messageConverters) {
-		if (!CollectionUtils.isEmpty(messageConverters)) {
-			this.iterator = messageConverters.iterator();
-		}
-	}
-
-	public Object doConvert(InputMessage inputMessage, Type type) throws Throwable {
-		if (iterator == null) {
-			return lastConvert(inputMessage, type);
-		}
-
-		if (iterator.hasNext()) {
-			return iterator.next().convert(inputMessage, type, this);
-		} else {
-			return lastConvert(inputMessage, type);
-		}
-	}
-
-	private Object lastConvert(InputMessage inputMessage, Type type) {
-		logger.warn("{}找不到指定的解析方式", type);
-		return null;
-	}
+	void write(Object body, MimeType contentType, OutputMessage outputMessage) throws IOException;
 }

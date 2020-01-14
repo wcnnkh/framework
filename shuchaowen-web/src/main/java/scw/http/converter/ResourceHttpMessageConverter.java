@@ -26,8 +26,8 @@ import scw.http.MediaType;
 import scw.io.ByteArrayResource;
 import scw.io.InputStreamResource;
 import scw.io.Resource;
-import scw.net.MimeType;
-import scw.util.FileMimeTypeUitls;
+import scw.net.mime.FileMimeTypeUitls;
+import scw.net.mime.MimeType;
 import scw.util.StreamUtils;
 
 public class ResourceHttpMessageConverter extends AbstractHttpMessageConverter<Resource> {

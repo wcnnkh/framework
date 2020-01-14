@@ -22,7 +22,7 @@ import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.rpc.RpcService;
-import scw.net.MimeTypeUtils;
+import scw.net.mime.MimeTypeUtils;
 
 public final class ControllerService {
 	private static Logger logger = LoggerFactory.getLogger(ControllerService.class);

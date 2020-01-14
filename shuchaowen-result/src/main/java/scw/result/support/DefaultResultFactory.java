@@ -4,8 +4,8 @@ import scw.beans.annotation.Bean;
 import scw.core.annotation.DefaultValue;
 import scw.core.annotation.ParameterName;
 import scw.lang.Nullable;
-import scw.net.MimeType;
-import scw.net.MimeTypeUtils;
+import scw.net.mime.MimeType;
+import scw.net.mime.MimeTypeUtils;
 import scw.result.ResultMessageFactory;
 
 @Bean(proxy = false)

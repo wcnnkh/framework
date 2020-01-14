@@ -11,14 +11,14 @@ import java.util.List;
 import scw.lang.NotSupportException;
 import scw.net.http.entity.parameter.AbstractMultipartParameter;
 
-public class MultipartRequest extends HttpRequest {
+public class ClientHttpMultipartRequest extends SimpleClientHttpRequest {
 	public static final String DEFAULT_BOUNDARY = "----WebKitFormBoundaryKSD2ndz6G9RPNjx0";
 
 	private final String charsetName;
 	private final String boundary;
 	private List<AbstractMultipartParameter> parameters;
 
-	public MultipartRequest(Method method, String url, String charsetName, String boundary) {
+	public ClientHttpMultipartRequest(Method method, String url, String charsetName, String boundary) {
 		super(method, url);
 		if (method == Method.GET) {
 			throw new NotSupportException("发送文件不支持" + method + "请求");

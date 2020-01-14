@@ -14,11 +14,11 @@ import scw.net.RequestException;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 
-public class FormRequest extends HttpRequest {
+public class ClientHttpFormRequest extends SimpleClientHttpRequest {
 	private MultiValueMap<String, String> parameterMap;
 	private final String charsetName;
 
-	public FormRequest(Method method, String url, String charsetName) {
+	public ClientHttpFormRequest(Method method, String url, String charsetName) {
 		super(method, url);
 		this.charsetName = charsetName;
 	}

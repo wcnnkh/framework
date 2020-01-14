@@ -24,13 +24,13 @@ import scw.lang.ParameterException;
 import scw.lang.SignatureException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.MimeType;
-import scw.net.MimeTypeUtils;
 import scw.net.NetworkUtils;
 import scw.net.http.BodyRequest;
-import scw.net.http.HttpRequest;
+import scw.net.http.SimpleClientHttpRequest;
 import scw.net.http.Method;
 import scw.net.message.InputMessage;
+import scw.net.mime.MimeType;
+import scw.net.mime.MimeTypeUtils;
 import scw.net.ssl.SSLContexts;
 import scw.security.signature.SignatureUtils;
 import scw.tencent.wx.pay.UnifiedOrderResponse;
@@ -362,7 +362,7 @@ public final class WeiXinPay {
 		
 		logger.debug("微信支付请求xml内容:{}", content);
 
-		HttpRequest request = new BodyRequest(Method.POST, url, new ByteArray(content, charsetName));
+		SimpleClientHttpRequest request = new BodyRequest(Method.POST, url, new ByteArray(content, charsetName));
 		request.setContentType(new MimeType(MimeTypeUtils.APPLICATION_XML, charsetName));
 		if (isCertTrustFile) {
 			request.setSSLSocketFactory(getSSLSocketFactory());

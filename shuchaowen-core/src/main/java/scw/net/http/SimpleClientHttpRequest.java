@@ -1,5 +1,6 @@
 package scw.net.http;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -13,22 +14,25 @@ import java.util.Map.Entry;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
+import scw.core.utils.StringUtils;
 import scw.io.UnsafeByteArrayOutputStream;
+import scw.lang.NotSupportException;
 import scw.net.AbstractUrlRequest;
-import scw.net.DefaultHttpMessageResponse;
-import scw.net.MimeType;
 import scw.net.NetworkUtils;
 import scw.net.RequestException;
-import scw.net.message.HttpInputMessage;
+import scw.net.ResponseCallback;
+import scw.net.message.URLConnectionMessage;
+import scw.net.mime.MimeType;
+import scw.net.mime.MimeTypeUtils;
 
-public class HttpRequest extends AbstractUrlRequest {
+public class SimpleClientHttpRequest extends AbstractUrlRequest implements ClientHttpRequest {
 	private Method method;
 	private Map<String, String> requestProperties;
 	private String requestUrl;
 	private SSLSocketFactory sslSocketFactory;
 	private UnsafeByteArrayOutputStream outputStream;
 
-	public HttpRequest(Method method, String requestUrl) {
+	public SimpleClientHttpRequest(Method method, String requestUrl) {
 		this.method = method;
 		this.requestUrl = requestUrl;
 	}
@@ -137,7 +141,54 @@ public class HttpRequest extends AbstractUrlRequest {
 		return null;
 	}
 
-	public HttpInputMessage execute() {
-		return NetworkUtils.execute(this, new DefaultHttpMessageResponse());
+	public SimpleClientHttpResponse execute() {
+		return NetworkUtils.execute(this, new ResponseCallback<SimpleClientHttpResponse>() {
+
+			public SimpleClientHttpResponse response(URLConnection urlConnection) throws Throwable {
+				if (urlConnection instanceof HttpURLConnection) {
+					return new SimpleClientHttpResponse((HttpURLConnection) urlConnection);
+				}
+				throw new NotSupportException(urlConnection.toString());
+			}
+		});
+	}
+
+	private static class SimpleClientHttpResponse extends URLConnectionMessage implements ClientHttpResponse {
+		private static final long serialVersionUID = 1L;
+		private final int responseCoce;
+		private final String responseMessage;
+
+		public SimpleClientHttpResponse(HttpURLConnection httpURLConnection) throws IOException {
+			super(httpURLConnection);
+			this.responseCoce = httpURLConnection.getResponseCode();
+			this.responseMessage = httpURLConnection.getResponseMessage();
+		}
+
+		public void close() throws IOException {
+			// IGNORE
+		}
+
+		public int getResponseCode() {
+			return responseCoce;
+		}
+
+		public String getResponseMessage() {
+			return responseMessage;
+		}
+
+	}
+
+	public void setContentLength(long contentLength) {
+		requestProperties.put("content-length", contentLength + "");
+	}
+
+	public MimeType getContentType() {
+		String contentType = requestProperties.get("Content-Type");
+		return StringUtils.hasLength(contentType) ? MimeTypeUtils.parseMimeType(contentType) : null;
+	}
+
+	public long getContentLength() {
+		String length = requestProperties.get("content-length");
+		return StringUtils.hasLength(length) ? StringUtils.parseLong(length) : -1;
 	}
 }

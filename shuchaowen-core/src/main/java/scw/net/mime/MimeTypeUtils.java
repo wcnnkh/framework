@@ -1,4 +1,4 @@
-package scw.net;
+package scw.net.mime;
 
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
@@ -16,7 +16,7 @@ import java.util.Random;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.net.MimeType.SpecificityComparator;
+import scw.net.mime.MimeType.SpecificityComparator;
 import scw.util.InvalidMimeTypeException;
 
 public final class MimeTypeUtils {

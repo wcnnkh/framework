@@ -12,10 +12,10 @@ import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.rpc.annotation.RequestContentType;
 import scw.mvc.rpc.annotation.RequestContentType.ContentType;
-import scw.net.MimeType;
-import scw.net.MimeTypeUtils;
-import scw.net.http.HttpRequest;
+import scw.net.http.SimpleClientHttpRequest;
 import scw.net.http.HttpUtils;
+import scw.net.mime.MimeType;
+import scw.net.mime.MimeTypeUtils;
 import scw.util.KeyValuePair;
 
 public class HttpRestfulRpcRequestFactory implements HttpRpcRequestFactory {
@@ -40,7 +40,7 @@ public class HttpRestfulRpcRequestFactory implements HttpRpcRequestFactory {
 		this.charsetName = charsetName;
 	}
 
-	public final HttpRequest getHttpRequest(Class<?> clazz, Method method, Object[] args) throws Exception {
+	public final SimpleClientHttpRequest getHttpRequest(Class<?> clazz, Method method, Object[] args) throws Exception {
 		String host;
 		Host h = AnnotationUtils.getAnnotation(Host.class, clazz, method);
 		host = h == null? this.host:h.value();

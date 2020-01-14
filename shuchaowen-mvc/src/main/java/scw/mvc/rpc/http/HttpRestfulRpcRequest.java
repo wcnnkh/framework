@@ -10,13 +10,13 @@ import java.util.Map;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
-import scw.net.MimeTypeUtils;
 import scw.net.header.HeadersConstants;
-import scw.net.http.HttpRequest;
+import scw.net.http.SimpleClientHttpRequest;
 import scw.net.http.HttpUtils;
 import scw.net.http.Method;
+import scw.net.mime.MimeTypeUtils;
 
-public class HttpRestfulRpcRequest extends HttpRequest {
+public class HttpRestfulRpcRequest extends SimpleClientHttpRequest {
 	private Map<String, Object> parameterMap = new HashMap<String, Object>();
 	private String charsetName;
 

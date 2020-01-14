@@ -6,7 +6,7 @@ import java.io.IOException;
 import scw.core.Constants;
 import scw.core.utils.SystemPropertyUtils;
 import scw.mvc.page.Page;
-import scw.net.MimeType;
+import scw.net.mime.MimeType;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Version;

@@ -5,7 +5,7 @@ import java.net.URLConnection;
 
 import scw.io.ByteArray;
 
-public class BodyRequest extends HttpRequest {
+public class BodyRequest extends SimpleClientHttpRequest {
 	private final ByteArray body;
 
 	public BodyRequest(Method method, String url, ByteArray body) {
