@@ -10,15 +10,23 @@ import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.net.mime.MimeType;
 import scw.net.mime.MimeTypeUtils;
+import scw.util.MultiValueMap;
+import scw.util.MultiValueMapWrapper;
 
-public class CacheURLConnectionInputMessage extends AbstractInputMessage implements Serializable {
+public class CacheURLConnectionInputMessage extends AbstractInputMessage
+		implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private byte[] data;
 	private final String defaultCharsetName;
 	private final MimeType contentType;
+	private final MultiValueMap<String, String> headers;
 
-	public CacheURLConnectionInputMessage(URLConnection urlConnection) throws IOException {
-		this.contentType = MimeTypeUtils.parseMimeType(urlConnection.getContentType());
+	public CacheURLConnectionInputMessage(URLConnection urlConnection)
+			throws IOException {
+		this.headers = new MultiValueMapWrapper<String, String>(
+				urlConnection.getHeaderFields());
+		this.contentType = MimeTypeUtils.parseMimeType(urlConnection
+				.getContentType());
 		this.defaultCharsetName = urlConnection.getContentEncoding();
 
 		if (urlConnection.getDoInput()) {
@@ -33,6 +41,10 @@ public class CacheURLConnectionInputMessage extends AbstractInputMessage impleme
 				IOUtils.close(out, in);
 			}
 		}
+	}
+
+	public MultiValueMap<String, String> getHeaders() {
+		return headers;
 	}
 
 	public final InputStream getBody() {

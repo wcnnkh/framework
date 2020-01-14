@@ -13,13 +13,17 @@ import scw.logger.LoggerUtils;
 import scw.net.URLConnectionClientRequest;
 import scw.net.message.CacheURLConnectionInputMessage;
 
-public class URLConnectionClientHttpRequest extends URLConnectionClientRequest implements ClientHttpRequest {
-	private static Logger logger = LoggerUtils.getLogger(URLConnectionClientHttpRequest.class);
+public class URLConnectionClientHttpRequest extends URLConnectionClientRequest
+		implements ClientHttpRequest {
+	private static Logger logger = LoggerUtils
+			.getLogger(URLConnectionClientHttpRequest.class);
 	private Proxy proxy;
 	private HttpURLConnection httpURLConnection;
 
-	public URLConnectionClientHttpRequest(URL url, Proxy proxy, Method method) throws IOException {
-		this.httpURLConnection = (HttpURLConnection) (proxy == null ? url.openConnection() : url.openConnection(proxy));
+	public URLConnectionClientHttpRequest(URL url, Proxy proxy, Method method)
+			throws IOException {
+		this.httpURLConnection = (HttpURLConnection) (proxy == null ? url
+				.openConnection() : url.openConnection(proxy));
 		this.proxy = proxy;
 		httpURLConnection.setRequestMethod(method.name());
 		setConnectTimeout(getConnectTimeout());
@@ -48,7 +52,8 @@ public class URLConnectionClientHttpRequest extends URLConnectionClientRequest i
 
 	public SSLSocketFactory getSSLSocketFactory() {
 		if (httpURLConnection instanceof HttpsURLConnection) {
-			return ((HttpsURLConnection) httpURLConnection).getSSLSocketFactory();
+			return ((HttpsURLConnection) httpURLConnection)
+					.getSSLSocketFactory();
 		}
 		return null;
 	}
@@ -56,30 +61,33 @@ public class URLConnectionClientHttpRequest extends URLConnectionClientRequest i
 	public void setSSLSocketFactory(SSLSocketFactory sslSocketFactory) {
 		if (!(httpURLConnection instanceof HttpsURLConnection)) {
 			if (logger.isWarnEnabled()) {
-				logger.warn("无法设置SSLSocketFactory, 这不是一个https请求:{}", httpURLConnection.getURL());
+				logger.warn("无法设置SSLSocketFactory, 这不是一个https请求:{}",
+						httpURLConnection.getURL());
 			}
 			return;
 		}
 
-		((HttpsURLConnection) httpURLConnection).setSSLSocketFactory(sslSocketFactory);
+		((HttpsURLConnection) httpURLConnection)
+				.setSSLSocketFactory(sslSocketFactory);
 	}
 
-	public CacheHttpURLConnectionClientResponse execute() throws IOException {
+	public CacheURLConnectionClientHttpResponse execute() throws IOException {
 		try {
 			getUrlConnection().connect();
-			return new CacheHttpURLConnectionClientResponse(getUrlConnection());
+			return new CacheURLConnectionClientHttpResponse(getUrlConnection());
 		} finally {
 			getUrlConnection().disconnect();
 		}
 	};
 
-	public static class CacheHttpURLConnectionClientResponse extends CacheURLConnectionInputMessage
-			implements ClientHttpResponse {
+	public static class CacheURLConnectionClientHttpResponse extends
+			CacheURLConnectionInputMessage implements ClientHttpResponse {
 		private static final long serialVersionUID = 1L;
 		private String responseMessage;
 		private int responseCode;
 
-		public CacheHttpURLConnectionClientResponse(HttpURLConnection httpURLConnection) throws IOException {
+		public CacheURLConnectionClientHttpResponse(
+				HttpURLConnection httpURLConnection) throws IOException {
 			super(httpURLConnection);
 			this.responseMessage = httpURLConnection.getResponseMessage();
 			this.responseCode = httpURLConnection.getResponseCode();
@@ -96,6 +104,5 @@ public class URLConnectionClientHttpRequest extends URLConnectionClientRequest i
 		public String getResponseMessage() {
 			return responseMessage;
 		}
-
 	}
 }

@@ -1,17 +1,16 @@
 package scw.net.http;
 
+import java.io.IOException;
 import java.net.Proxy;
 
 import scw.net.mime.MimeType;
 
 public interface HttpClient {
-	ClientHttpRequest create(String url, Proxy proxy, Method method);
+	ClientHttpRequest create(String url, Proxy proxy, Method method) throws IOException;
 
-	String doGet(String url);
+	String doGet(String url) throws IOException;
 
-	String doGet(String url, String charsetName);
+	String doGet(String url, String charsetName) throws IOException;
 
-	String doPost(String url, String charsetName, byte[] body, MimeType contentType);
-	
-	
+	ClientHttpResponse doPost(String url, byte[] body, MimeType contentType) throws IOException;
 }
