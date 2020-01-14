@@ -3,7 +3,7 @@ package scw.net;
 import java.net.Proxy;
 import java.net.URL;
 
-public interface URLRequest extends RequestCallback {
+public interface URLRequestCallback extends URLConnectionRequestCallback {
 	URL getURL();
 
 	Proxy getProxy();

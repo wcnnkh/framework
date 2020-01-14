@@ -1,5 +1,6 @@
 package scw.net.message;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 import scw.net.mime.MimeType;
@@ -9,5 +10,5 @@ public interface OutputMessage extends Message {
 
 	void setContentLength(long contentLength);
 
-	OutputStream getOutputStream();
+	OutputStream getBody() throws IOException;
 }

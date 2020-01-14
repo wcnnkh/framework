@@ -11,29 +11,31 @@ import scw.io.UnsafeByteArrayOutputStream;
 import scw.net.mime.MimeType;
 import scw.net.mime.MimeTypeUtils;
 
-public class URLConnectionMessage extends AbstractInputMessage implements Serializable {
+public class CacheURLConnectionInputMessage extends AbstractInputMessage implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private final byte[] data;
+	private byte[] data;
 	private final String defaultCharsetName;
 	private final MimeType contentType;
 
-	public URLConnectionMessage(URLConnection urlConnection) throws IOException {
+	public CacheURLConnectionInputMessage(URLConnection urlConnection) throws IOException {
 		this.contentType = MimeTypeUtils.parseMimeType(urlConnection.getContentType());
 		this.defaultCharsetName = urlConnection.getContentEncoding();
 
-		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream(
-				Math.max(urlConnection.getContentLength(), 1024));
-		InputStream in = null;
-		try {
-			in = urlConnection.getInputStream();
-			IOUtils.write(in, out, 2048);
-			data = out.toByteArray();
-		} finally {
-			IOUtils.close(out, in);
+		if (urlConnection.getDoInput()) {
+			UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream(
+					Math.max(urlConnection.getContentLength(), 1024));
+			InputStream in = null;
+			try {
+				in = urlConnection.getInputStream();
+				IOUtils.write(in, out, 2048);
+				data = out.toByteArray();
+			} finally {
+				IOUtils.close(out, in);
+			}
 		}
 	}
 
-	public final InputStream getInputStream() {
+	public final InputStream getBody() {
 		return new UnsafeByteArrayInputStream(data);
 	}
 

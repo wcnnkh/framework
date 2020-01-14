@@ -23,7 +23,7 @@ import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
-import scw.net.message.URLConnectionMessage;
+import scw.net.message.CacheURLConnectionInputMessage;
 import scw.net.message.converter.DefaultMessageConverterChain;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MessageConverterChain;
@@ -34,10 +34,10 @@ public final class NetworkUtils {
 	private NetworkUtils() {
 	};
 
-	private static final ResponseCallback<InputMessage> MESSAGE_RESPONSE = new ResponseCallback<InputMessage>() {
+	private static final URLConnectionResponseCallback<InputMessage> MESSAGE_RESPONSE = new URLConnectionResponseCallback<InputMessage>() {
 
 		public InputMessage response(URLConnection urlConnection) throws Throwable {
-			return new URLConnectionMessage(urlConnection);
+			return new CacheURLConnectionInputMessage(urlConnection);
 		}
 	};
 	/**
@@ -63,17 +63,17 @@ public final class NetworkUtils {
 		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc.getSocketFactory();
 	}
 
-	public static <T> T execute(URLConnection urlConnection, RequestCallback requestCallback,
-			ResponseCallback<T> response) throws Throwable {
-		requestCallback.request(urlConnection);
+	public static <T> T execute(URLConnection urlConnection, URLConnectionRequestCallback uRLConnectionRequestCallback,
+			URLConnectionResponseCallback<T> response) throws Throwable {
+		uRLConnectionRequestCallback.request(urlConnection);
 		return response.response(urlConnection);
 	}
 
-	public static InputMessage execute(URLConnection urlConnection, RequestCallback requestCallback) throws Throwable {
-		return execute(urlConnection, requestCallback, MESSAGE_RESPONSE);
+	public static InputMessage execute(URLConnection urlConnection, URLConnectionRequestCallback uRLConnectionRequestCallback) throws Throwable {
+		return execute(urlConnection, uRLConnectionRequestCallback, MESSAGE_RESPONSE);
 	}
 
-	public static <T> T execute(URL url, Proxy proxy, RequestCallback requestCallback, ResponseCallback<T> response) {
+	public static <T> T execute(URL url, Proxy proxy, URLConnectionRequestCallback uRLConnectionRequestCallback, URLConnectionResponseCallback<T> response) {
 		Assert.argumentNotNull(url, "url");
 		Assert.argumentNotNull(url, "request");
 		Assert.argumentNotNull(url, "response");
@@ -86,7 +86,7 @@ public final class NetworkUtils {
 				urlConnection = url.openConnection(proxy);
 			}
 
-			return execute(urlConnection, requestCallback, response);
+			return execute(urlConnection, uRLConnectionRequestCallback, response);
 		} catch (Throwable e) {
 			throw new RuntimeException(url.toString(), e);
 		} finally {
@@ -98,12 +98,12 @@ public final class NetworkUtils {
 		}
 	}
 
-	public static InputMessage execute(URL url, Proxy proxy, RequestCallback requestCallback) {
-		return execute(url, proxy, requestCallback, MESSAGE_RESPONSE);
+	public static InputMessage execute(URL url, Proxy proxy, URLConnectionRequestCallback uRLConnectionRequestCallback) {
+		return execute(url, proxy, uRLConnectionRequestCallback, MESSAGE_RESPONSE);
 	}
 
-	public static <T> T execute(String url, Proxy proxy, RequestCallback requestCallback,
-			ResponseCallback<T> response) {
+	public static <T> T execute(String url, Proxy proxy, URLConnectionRequestCallback uRLConnectionRequestCallback,
+			URLConnectionResponseCallback<T> response) {
 		URL u = null;
 		try {
 			u = new URL(url);
@@ -115,18 +115,18 @@ public final class NetworkUtils {
 			throw new NullPointerException(url);
 		}
 
-		return execute(u, proxy, requestCallback, response);
+		return execute(u, proxy, uRLConnectionRequestCallback, response);
 	}
 
-	public static InputMessage execute(String url, Proxy proxy, RequestCallback requestCallback) {
-		return execute(url, proxy, requestCallback, MESSAGE_RESPONSE);
+	public static InputMessage execute(String url, Proxy proxy, URLConnectionRequestCallback uRLConnectionRequestCallback) {
+		return execute(url, proxy, uRLConnectionRequestCallback, MESSAGE_RESPONSE);
 	}
 
-	public static <T> T execute(URLRequest request, ResponseCallback<T> response) {
+	public static <T> T execute(URLRequestCallback request, URLConnectionResponseCallback<T> response) {
 		return execute(request.getURL(), request.getProxy(), request, response);
 	}
 
-	public static InputMessage execute(URLRequest request) {
+	public static InputMessage execute(URLRequestCallback request) {
 		return execute(request, MESSAGE_RESPONSE);
 	}
 

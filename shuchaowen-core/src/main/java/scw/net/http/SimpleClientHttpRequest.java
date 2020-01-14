@@ -17,15 +17,16 @@ import javax.net.ssl.SSLSocketFactory;
 import scw.core.utils.StringUtils;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.lang.NotSupportException;
-import scw.net.AbstractUrlRequest;
+import scw.net.AbstractUrlRequestCallback;
 import scw.net.NetworkUtils;
 import scw.net.RequestException;
-import scw.net.ResponseCallback;
-import scw.net.message.URLConnectionMessage;
+import scw.net.URLConnectionResponseCallback;
+import scw.net.URLRequestCallback;
+import scw.net.message.CacheURLConnectionInputMessage;
 import scw.net.mime.MimeType;
 import scw.net.mime.MimeTypeUtils;
 
-public class SimpleClientHttpRequest extends AbstractUrlRequest implements ClientHttpRequest {
+public class SimpleClientHttpRequest extends AbstractUrlRequestCallback implements URLRequestCallback, ClientHttpRequest {
 	private Method method;
 	private Map<String, String> requestProperties;
 	private String requestUrl;
@@ -45,7 +46,7 @@ public class SimpleClientHttpRequest extends AbstractUrlRequest implements Clien
 		this.requestUrl = requestUrl;
 	}
 
-	public OutputStream getOutputStream() {
+	public OutputStream getBody() {
 		if (outputStream == null) {
 			outputStream = new UnsafeByteArrayOutputStream();
 		}
@@ -142,7 +143,7 @@ public class SimpleClientHttpRequest extends AbstractUrlRequest implements Clien
 	}
 
 	public SimpleClientHttpResponse execute() {
-		return NetworkUtils.execute(this, new ResponseCallback<SimpleClientHttpResponse>() {
+		return NetworkUtils.execute(this, new URLConnectionResponseCallback<SimpleClientHttpResponse>() {
 
 			public SimpleClientHttpResponse response(URLConnection urlConnection) throws Throwable {
 				if (urlConnection instanceof HttpURLConnection) {
@@ -153,7 +154,7 @@ public class SimpleClientHttpRequest extends AbstractUrlRequest implements Clien
 		});
 	}
 
-	private static class SimpleClientHttpResponse extends URLConnectionMessage implements ClientHttpResponse {
+	private static class SimpleClientHttpResponse extends CacheURLConnectionInputMessage implements ClientHttpResponse {
 		private static final long serialVersionUID = 1L;
 		private final int responseCoce;
 		private final String responseMessage;

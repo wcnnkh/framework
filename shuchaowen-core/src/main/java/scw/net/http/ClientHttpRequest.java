@@ -1,9 +1,11 @@
 package scw.net.http;
 
-import scw.net.message.OutputMessage;
+import java.io.IOException;
 
-public interface ClientHttpRequest extends OutputMessage {
+import scw.net.ClientRequest;
+
+public interface ClientHttpRequest extends ClientRequest {
 	Method getMethod();
 
-	ClientHttpResponse execute();
+	ClientHttpResponse execute() throws IOException;
 }

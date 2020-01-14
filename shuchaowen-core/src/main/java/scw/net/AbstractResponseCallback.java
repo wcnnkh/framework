@@ -3,7 +3,7 @@ package scw.net;
 import java.io.InputStream;
 import java.net.URLConnection;
 
-public abstract class AbstractResponseCallback<T> implements ResponseCallback<T> {
+public abstract class AbstractResponseCallback<T> implements URLConnectionResponseCallback<T> {
 
 	public T response(URLConnection urlConnection) throws Throwable {
 		if (urlConnection.getDoInput()) {

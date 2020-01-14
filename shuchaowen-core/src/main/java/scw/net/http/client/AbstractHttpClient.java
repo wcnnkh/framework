@@ -12,7 +12,7 @@ import scw.io.ByteArray;
 import scw.net.AbstractResponseCallback;
 import scw.net.ByteArrayResponseCallback;
 import scw.net.NetworkUtils;
-import scw.net.ResponseCallback;
+import scw.net.URLConnectionResponseCallback;
 import scw.net.http.ClientHttpFormRequest;
 import scw.net.http.SimpleClientHttpRequest;
 import scw.net.http.Method;
@@ -24,7 +24,7 @@ public abstract class AbstractHttpClient implements HttpClient {
 
 	public <T> T invoke(final SimpleClientHttpRequest request, final AbstractResponseCallback<T> response) {
 		requestFilter(request);
-		return NetworkUtils.execute(request, new ResponseCallback<T>() {
+		return NetworkUtils.execute(request, new URLConnectionResponseCallback<T>() {
 
 			public T response(URLConnection urlConnection) throws Throwable {
 				HttpURLConnection res = (HttpURLConnection) urlConnection;
