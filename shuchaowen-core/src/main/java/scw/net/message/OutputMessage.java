@@ -3,7 +3,7 @@ package scw.net.message;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import scw.net.mime.MimeType;
+import scw.net.MimeType;
 
 public interface OutputMessage extends Message {
 	void setContentType(MimeType contentType);

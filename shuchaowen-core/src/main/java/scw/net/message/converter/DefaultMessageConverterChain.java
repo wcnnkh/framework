@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import scw.core.utils.CollectionUtils;
+import scw.net.MimeType;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
-import scw.net.mime.MimeType;
 
 public final class DefaultMessageConverterChain extends AbstractMessageConverterChain {
 	private Iterator<MessageConverter> iterator;

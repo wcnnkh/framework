@@ -6,10 +6,10 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Type;
 
 import scw.lang.NestedRuntimeException;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
-import scw.net.mime.MimeType;
-import scw.net.mime.MimeTypeUtils;
 
 public class ObjectMessageConverter extends AbstractMessageConverter {
 	private SupportMimeTypes<MimeType> supports = new SupportMimeTypes<MimeType>();

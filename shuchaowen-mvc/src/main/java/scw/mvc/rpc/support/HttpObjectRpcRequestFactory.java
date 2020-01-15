@@ -9,10 +9,10 @@ import scw.core.utils.StringUtils;
 import scw.io.Bytes;
 import scw.mvc.rpc.http.HttpRpcRequestFactory;
 import scw.mvc.rpc.http.MvcRpcUtils;
+import scw.net.MimeTypeUtils;
 import scw.net.header.HeadersConstants;
 import scw.net.http.client.ClientHttpRequest;
 import scw.net.http.client.accessor.HttpAccessor;
-import scw.net.mime.MimeTypeUtils;
 import scw.security.signature.SignatureUtils;
 import scw.serializer.Serializer;
 

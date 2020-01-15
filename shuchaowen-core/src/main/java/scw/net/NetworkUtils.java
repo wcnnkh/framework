@@ -20,7 +20,6 @@ import scw.net.message.OutputMessage;
 import scw.net.message.converter.DefaultMessageConverterChain;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MessageConverterChain;
-import scw.net.mime.MimeType;
 import scw.net.ssl.TrustAllManager;
 
 public final class NetworkUtils {

@@ -1,6 +1,6 @@
 package scw.net.message;
 
-import scw.net.mime.MimeType;
+import scw.net.MimeType;
 
 public abstract class AbstractOutputMessage extends AbstractMessage implements OutputMessage {
 

@@ -5,15 +5,17 @@ import java.io.IOException;
 import scw.core.Constants;
 import scw.core.string.StringCodecUtils;
 import scw.io.IOUtils;
-import scw.net.mime.MimeType;
+import scw.net.MimeType;
 
-public abstract class AbstractInputMessage extends AbstractMessage implements InputMessage {
+public abstract class AbstractInputMessage extends AbstractMessage implements
+		InputMessage {
 
 	public byte[] toByteArray() throws IOException {
 		return IOUtils.toByteArray(getBody());
 	}
 
-	public String convertToString(String charsetName) throws IOException, MessageConvetException {
+	public String convertToString(String charsetName) throws IOException,
+			MessageConvetException {
 		byte[] data = toByteArray();
 		if (data == null) {
 			return null;
@@ -27,6 +29,10 @@ public abstract class AbstractInputMessage extends AbstractMessage implements In
 	}
 
 	public String convertToString() throws IOException, MessageConvetException {
+		return convertToString(getCharsetName());
+	}
+
+	public String getCharsetName() {
 		String charsetName = null;
 		MimeType mimeType = getContentType();
 		if (mimeType != null) {
@@ -40,6 +46,6 @@ public abstract class AbstractInputMessage extends AbstractMessage implements In
 		if (charsetName == null) {
 			charsetName = Constants.DEFAULT_CHARSET_NAME;
 		}
-		return convertToString(charsetName);
+		return charsetName;
 	}
 }

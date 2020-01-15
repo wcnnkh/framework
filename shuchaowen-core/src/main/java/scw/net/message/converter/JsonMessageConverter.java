@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 
 import scw.json.JSONUtils;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
-import scw.net.mime.MimeType;
-import scw.net.mime.MimeTypeUtils;
 
 public class JsonMessageConverter extends AbstractTextMessageConverter {
 	private SupportMimeTypes<MimeType> supportMimeTypes = new SupportMimeTypes<MimeType>();

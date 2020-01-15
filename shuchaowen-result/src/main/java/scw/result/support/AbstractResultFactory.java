@@ -1,6 +1,6 @@
 package scw.result.support;
 
-import scw.net.mime.MimeType;
+import scw.net.MimeType;
 import scw.result.DataResult;
 import scw.result.Result;
 import scw.result.ResultFactory;

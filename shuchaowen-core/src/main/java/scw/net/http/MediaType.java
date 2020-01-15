@@ -13,8 +13,8 @@ import java.util.Map;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.net.mime.MimeType;
-import scw.net.mime.MimeTypeUtils;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 import scw.util.InvalidMimeTypeException;
 import scw.util.comparator.CompoundComparator;
 
@@ -259,6 +259,11 @@ public class MediaType extends MimeType implements Serializable {
 		TEXT_XML = valueOf(TEXT_XML_VALUE);
 	}
 
+	// 用于序列化
+	protected MediaType() {
+		super();
+	}
+
 	/**
 	 * Create a new {@code MediaType} for the given primary type.
 	 * <p>
@@ -275,7 +280,8 @@ public class MediaType extends MimeType implements Serializable {
 	}
 
 	public MediaType(MimeType mimeType) {
-		this(mimeType.getType(), mimeType.getSubtype(), mimeType.getParameters());
+		this(mimeType.getType(), mimeType.getSubtype(), mimeType
+				.getParameters());
 	}
 
 	/**
@@ -291,7 +297,7 @@ public class MediaType extends MimeType implements Serializable {
 	 *             if any of the parameters contain illegal characters
 	 */
 	public MediaType(String type, String subtype) {
-		super(type, subtype, Collections.<String, String>emptyMap());
+		super(type, subtype, Collections.<String, String> emptyMap());
 	}
 
 	/**
@@ -325,7 +331,8 @@ public class MediaType extends MimeType implements Serializable {
 	 *             if any of the parameters contain illegal characters
 	 */
 	public MediaType(String type, String subtype, double qualityValue) {
-		this(type, subtype, Collections.singletonMap(PARAM_QUALITY_FACTOR, Double.toString(qualityValue)));
+		this(type, subtype, Collections.singletonMap(PARAM_QUALITY_FACTOR,
+				Double.toString(qualityValue)));
 	}
 
 	/**
@@ -386,7 +393,8 @@ public class MediaType extends MimeType implements Serializable {
 		if (PARAM_QUALITY_FACTOR.equals(attribute)) {
 			value = unquote(value);
 			double d = Double.parseDouble(value);
-			Assert.isTrue(d >= 0D && d <= 1D, "Invalid quality value \"" + value + "\": should be between 0.0 and 1.0");
+			Assert.isTrue(d >= 0D && d <= 1D, "Invalid quality value \""
+					+ value + "\": should be between 0.0 and 1.0");
 		}
 	}
 
@@ -398,7 +406,8 @@ public class MediaType extends MimeType implements Serializable {
 	 */
 	public double getQualityValue() {
 		String qualityFactor = getParameter(PARAM_QUALITY_FACTOR);
-		return (qualityFactor != null ? Double.parseDouble(unquote(qualityFactor)) : 1D);
+		return (qualityFactor != null ? Double
+				.parseDouble(unquote(qualityFactor)) : 1D);
 	}
 
 	/**
@@ -451,8 +460,10 @@ public class MediaType extends MimeType implements Serializable {
 		if (!mediaType.getParameters().containsKey(PARAM_QUALITY_FACTOR)) {
 			return this;
 		}
-		Map<String, String> params = new LinkedHashMap<String, String>(getParameters());
-		params.put(PARAM_QUALITY_FACTOR, mediaType.getParameters().get(PARAM_QUALITY_FACTOR));
+		Map<String, String> params = new LinkedHashMap<String, String>(
+				getParameters());
+		params.put(PARAM_QUALITY_FACTOR,
+				mediaType.getParameters().get(PARAM_QUALITY_FACTOR));
 		return new MediaType(this, params);
 	}
 
@@ -466,7 +477,8 @@ public class MediaType extends MimeType implements Serializable {
 		if (!getParameters().containsKey(PARAM_QUALITY_FACTOR)) {
 			return this;
 		}
-		Map<String, String> params = new LinkedHashMap<String, String>(getParameters());
+		Map<String, String> params = new LinkedHashMap<String, String>(
+				getParameters());
 		params.remove(PARAM_QUALITY_FACTOR);
 		return new MediaType(this, params);
 	}
@@ -503,7 +515,8 @@ public class MediaType extends MimeType implements Serializable {
 			throw new InvalidMediaTypeException(ex);
 		}
 		try {
-			return new MediaType(type.getType(), type.getSubtype(), type.getParameters());
+			return new MediaType(type.getType(), type.getSubtype(),
+					type.getParameters());
 		} catch (IllegalArgumentException ex) {
 			throw new InvalidMediaTypeException(mediaType, ex.getMessage());
 		}
@@ -548,7 +561,7 @@ public class MediaType extends MimeType implements Serializable {
 	 */
 	public static List<MediaType> parseMediaTypes(List<String> mediaTypes) {
 		if (CollectionUtils.isEmpty(mediaTypes)) {
-			return Collections.<MediaType>emptyList();
+			return Collections.<MediaType> emptyList();
 		} else if (mediaTypes.size() == 1) {
 			return parseMediaTypes(mediaTypes.get(0));
 		} else {
@@ -589,8 +602,8 @@ public class MediaType extends MimeType implements Serializable {
 	 * subtype}, then the media type without the wildcard is sorted before the
 	 * other.</li>
 	 * <li>if the two media types have different {@linkplain #getSubtype()
-	 * subtypes}, then they are considered equal and remain their current
-	 * order.</li>
+	 * subtypes}, then they are considered equal and remain their current order.
+	 * </li>
 	 * <li>if the two media types have different {@linkplain #getQualityValue()
 	 * quality value}, then the media type with the highest quality value is
 	 * ordered before the other.</li>
@@ -634,8 +647,8 @@ public class MediaType extends MimeType implements Serializable {
 	 * subtype}, then the media type without the wildcard is sorted before the
 	 * other.</li>
 	 * <li>if the two media types have different {@linkplain #getSubtype()
-	 * subtypes}, then they are considered equal and remain their current
-	 * order.</li>
+	 * subtypes}, then they are considered equal and remain their current order.
+	 * </li>
 	 * <li>if the two media types have a different amount of
 	 * {@linkplain #getParameter(String) parameters}, then the media type with
 	 * the most parameters is ordered before the other.</li>
@@ -662,7 +675,8 @@ public class MediaType extends MimeType implements Serializable {
 	public static void sortBySpecificityAndQuality(List<MediaType> mediaTypes) {
 		Assert.notNull(mediaTypes, "'mediaTypes' must not be null");
 		if (mediaTypes.size() > 1) {
-			Collections.sort(mediaTypes, new CompoundComparator<MediaType>(MediaType.SPECIFICITY_COMPARATOR,
+			Collections.sort(mediaTypes, new CompoundComparator<MediaType>(
+					MediaType.SPECIFICITY_COMPARATOR,
 					MediaType.QUALITY_VALUE_COMPARATOR));
 		}
 	}
@@ -678,36 +692,42 @@ public class MediaType extends MimeType implements Serializable {
 			int qualityComparison = Double.compare(quality2, quality1);
 			if (qualityComparison != 0) {
 				return qualityComparison; // audio/*;q=0.7 < audio/*;q=0.3
-			} else if (mediaType1.isWildcardType() && !mediaType2.isWildcardType()) { // */*
-																						// <
-																						// audio/*
+			} else if (mediaType1.isWildcardType()
+					&& !mediaType2.isWildcardType()) { // */*
+														// <
+														// audio/*
 				return 1;
-			} else if (mediaType2.isWildcardType() && !mediaType1.isWildcardType()) { // audio/*
-																						// >
-																						// */*
+			} else if (mediaType2.isWildcardType()
+					&& !mediaType1.isWildcardType()) { // audio/*
+														// >
+														// */*
 				return -1;
 			} else if (!mediaType1.getType().equals(mediaType2.getType())) { // audio/basic
 																				// ==
 																				// text/html
 				return 0;
 			} else { // mediaType1.getType().equals(mediaType2.getType())
-				if (mediaType1.isWildcardSubtype() && !mediaType2.isWildcardSubtype()) { // audio/*
-																							// <
-																							// audio/basic
+				if (mediaType1.isWildcardSubtype()
+						&& !mediaType2.isWildcardSubtype()) { // audio/*
+																// <
+																// audio/basic
 					return 1;
-				} else if (mediaType2.isWildcardSubtype() && !mediaType1.isWildcardSubtype()) { // audio/basic
-																								// >
-																								// audio/*
+				} else if (mediaType2.isWildcardSubtype()
+						&& !mediaType1.isWildcardSubtype()) { // audio/basic
+																// >
+																// audio/*
 					return -1;
-				} else if (!mediaType1.getSubtype().equals(mediaType2.getSubtype())) { // audio/basic
-																						// ==
-																						// audio/wave
+				} else if (!mediaType1.getSubtype().equals(
+						mediaType2.getSubtype())) { // audio/basic
+													// ==
+													// audio/wave
 					return 0;
 				} else {
 					int paramsSize1 = mediaType1.getParameters().size();
 					int paramsSize2 = mediaType2.getParameters().size();
 					// audio/basic;level=1 < audio/basic
-					return (paramsSize2 < paramsSize1 ? -1 : (paramsSize2 == paramsSize1 ? 0 : 1));
+					return (paramsSize2 < paramsSize1 ? -1
+							: (paramsSize2 == paramsSize1 ? 0 : 1));
 				}
 			}
 		}
@@ -719,7 +739,8 @@ public class MediaType extends MimeType implements Serializable {
 	public static final Comparator<MediaType> SPECIFICITY_COMPARATOR = new SpecificityComparator<MediaType>() {
 
 		@Override
-		protected int compareParameters(MediaType mediaType1, MediaType mediaType2) {
+		protected int compareParameters(MediaType mediaType1,
+				MediaType mediaType2) {
 			double quality1 = mediaType1.getQualityValue();
 			double quality2 = mediaType2.getQualityValue();
 			int qualityComparison = Double.compare(quality2, quality1);

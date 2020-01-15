@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 
 import scw.lang.NotSupportException;
+import scw.net.MimeType;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
-import scw.net.mime.MimeType;
 
 public abstract class AbstractMessageConverterChain implements MessageConverterChain {
 	private MessageConverterChain chain;

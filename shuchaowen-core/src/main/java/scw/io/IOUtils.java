@@ -2519,7 +2519,7 @@ public final class IOUtils {
 	 * @throws IOException
 	 */
 	public static byte[] gzipCompress(byte[] data) throws IOException {
-		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(data);
+		ByteArrayInputStream input = new ByteArrayInputStream(data);
 		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
 		try {
 			gzipCompress(input, out, Math.min(data.length, DEFAULT_BUFFER_SIZE));
@@ -2557,7 +2557,7 @@ public final class IOUtils {
 	 * @throws IOException
 	 */
 	public static byte[] gzipUnCompress(byte[] data) throws IOException {
-		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(data);
+		ByteArrayInputStream input = new ByteArrayInputStream(data);
 		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
 		try {
 			gzipUnCompress(input, out,

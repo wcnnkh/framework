@@ -13,8 +13,8 @@ import java.util.Map;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.net.mime.MimeType;
-import scw.net.mime.MimeTypeUtils;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 import scw.util.InvalidMimeTypeException;
 import scw.util.comparator.CompoundComparator;
 

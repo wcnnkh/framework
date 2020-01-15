@@ -2,8 +2,8 @@ package scw.net.message.converter;
 
 import java.util.LinkedList;
 
-import scw.net.mime.MimeType;
-import scw.net.mime.MimeTypeUtils;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 
 public class SupportMimeTypes<T extends MimeType> extends LinkedList<T> {
 	private static final long serialVersionUID = 1L;

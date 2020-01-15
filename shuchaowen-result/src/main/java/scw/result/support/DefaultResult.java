@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.json.JSONUtils;
+import scw.net.MimeType;
 import scw.net.Text;
-import scw.net.mime.MimeType;
 import scw.result.Result;
 import scw.transaction.RollbackOnlyResult;
 

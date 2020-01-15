@@ -13,11 +13,11 @@ import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.rpc.annotation.RequestContentType;
 import scw.mvc.rpc.annotation.RequestContentType.ContentType;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 import scw.net.http.HttpUtils;
 import scw.net.http.client.ClientHttpRequest;
 import scw.net.http.client.accessor.HttpAccessor;
-import scw.net.mime.MimeType;
-import scw.net.mime.MimeTypeUtils;
 import scw.util.KeyValuePair;
 
 public class HttpRestfulRpcRequestFactory extends HttpAccessor implements HttpRpcRequestFactory {

@@ -1,8 +1,8 @@
 package scw.net.message;
 
 import scw.core.utils.StringUtils;
-import scw.net.mime.MimeType;
-import scw.net.mime.MimeTypeUtils;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 
 public abstract class AbstractMessage implements Message {
 

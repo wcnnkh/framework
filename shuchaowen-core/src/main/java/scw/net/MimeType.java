@@ -1,4 +1,4 @@
-package scw.net.mime;
+package scw.net;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -68,6 +68,13 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 
 	private final Map<String, String> parameters;
 
+	// 用于序列化
+	protected MimeType() {
+		this.type = null;
+		this.subtype = null;
+		this.parameters = null;
+	};
+
 	/**
 	 * Create a new {@code MimeType} for the given primary type.
 	 * <p>
@@ -96,7 +103,7 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 	 *             if any of the parameters contains illegal characters
 	 */
 	public MimeType(String type, String subtype) {
-		this(type, subtype, Collections.<String, String>emptyMap());
+		this(type, subtype, Collections.<String, String> emptyMap());
 	}
 
 	/**
@@ -113,7 +120,8 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 	 *             if any of the parameters contains illegal characters
 	 */
 	public MimeType(String type, String subtype, Charset charset) {
-		this(type, subtype, Collections.singletonMap(PARAM_CHARSET, charset.name()));
+		this(type, subtype, Collections.singletonMap(PARAM_CHARSET,
+				charset.name()));
 	}
 
 	/**
@@ -129,11 +137,13 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 	 * @since 4.3
 	 */
 	public MimeType(MimeType other, Charset charset) {
-		this(other.getType(), other.getSubtype(), addCharsetParameter(charset.name(), other.getParameters()));
+		this(other.getType(), other.getSubtype(), addCharsetParameter(
+				charset.name(), other.getParameters()));
 	}
 
 	public MimeType(MimeType other, String charsetName) {
-		this(other.getType(), other.getSubtype(), addCharsetParameter(charsetName, other.getParameters()));
+		this(other.getType(), other.getSubtype(), addCharsetParameter(
+				charsetName, other.getParameters()));
 	}
 
 	/**
@@ -172,7 +182,8 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 		this.type = type.toLowerCase(Locale.ENGLISH);
 		this.subtype = subtype.toLowerCase(Locale.ENGLISH);
 		if (!CollectionUtils.isEmpty(parameters)) {
-			Map<String, String> map = new LinkedCaseInsensitiveMap<String>(parameters.size(), Locale.ENGLISH);
+			Map<String, String> map = new LinkedCaseInsensitiveMap<String>(
+					parameters.size(), Locale.ENGLISH);
 			for (Map.Entry<String, String> entry : parameters.entrySet()) {
 				String attribute = entry.getKey();
 				String value = entry.getValue();
@@ -198,7 +209,8 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 		for (int i = 0; i < token.length(); i++) {
 			char ch = token.charAt(i);
 			if (!TOKEN.get(ch)) {
-				throw new IllegalArgumentException("Invalid token character '" + ch + "' in token \"" + token + "\"");
+				throw new IllegalArgumentException("Invalid token character '"
+						+ ch + "' in token \"" + token + "\"");
 			}
 		}
 	}
@@ -219,7 +231,8 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 		if (s.length() < 2) {
 			return false;
 		} else {
-			return ((s.startsWith("\"") && s.endsWith("\"")) || (s.startsWith("'") && s.endsWith("'")));
+			return ((s.startsWith("\"") && s.endsWith("\"")) || (s
+					.startsWith("'") && s.endsWith("'")));
 		}
 	}
 
@@ -246,14 +259,16 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 	 * @return whether the subtype is a wildcard
 	 */
 	public boolean isWildcardSubtype() {
-		return WILDCARD_TYPE.equals(getSubtype()) || getSubtype().startsWith("*+");
+		return WILDCARD_TYPE.equals(getSubtype())
+				|| getSubtype().startsWith("*+");
 	}
 
 	public boolean equalsTypeAndSubtype(MimeType other) {
 		if (other == null) {
 			return false;
 		}
-		return getType().equalsIgnoreCase(other.getType()) && getSubtype().equalsIgnoreCase(other.getSubtype());
+		return getType().equalsIgnoreCase(other.getType())
+				&& getSubtype().equalsIgnoreCase(other.getSubtype());
 	}
 
 	/**
@@ -348,10 +363,14 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 					// application/*+xml includes application/soap+xml
 					int otherPlusIdx = other.getSubtype().indexOf('+');
 					if (otherPlusIdx != -1) {
-						String thisSubtypeNoSuffix = getSubtype().substring(0, thisPlusIdx);
-						String thisSubtypeSuffix = getSubtype().substring(thisPlusIdx + 1);
-						String otherSubtypeSuffix = other.getSubtype().substring(otherPlusIdx + 1);
-						if (thisSubtypeSuffix.equals(otherSubtypeSuffix) && WILDCARD_TYPE.equals(thisSubtypeNoSuffix)) {
+						String thisSubtypeNoSuffix = getSubtype().substring(0,
+								thisPlusIdx);
+						String thisSubtypeSuffix = getSubtype().substring(
+								thisPlusIdx + 1);
+						String otherSubtypeSuffix = other.getSubtype()
+								.substring(otherPlusIdx + 1);
+						if (thisSubtypeSuffix.equals(otherSubtypeSuffix)
+								&& WILDCARD_TYPE.equals(thisSubtypeNoSuffix)) {
 							return true;
 						}
 					}
@@ -390,12 +409,17 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 				if (thisPlusIdx == -1 && otherPlusIdx == -1) {
 					return true;
 				} else if (thisPlusIdx != -1 && otherPlusIdx != -1) {
-					String thisSubtypeNoSuffix = getSubtype().substring(0, thisPlusIdx);
-					String otherSubtypeNoSuffix = other.getSubtype().substring(0, otherPlusIdx);
-					String thisSubtypeSuffix = getSubtype().substring(thisPlusIdx + 1);
-					String otherSubtypeSuffix = other.getSubtype().substring(otherPlusIdx + 1);
-					if (thisSubtypeSuffix.equals(otherSubtypeSuffix) && (WILDCARD_TYPE.equals(thisSubtypeNoSuffix)
-							|| WILDCARD_TYPE.equals(otherSubtypeNoSuffix))) {
+					String thisSubtypeNoSuffix = getSubtype().substring(0,
+							thisPlusIdx);
+					String otherSubtypeNoSuffix = other.getSubtype().substring(
+							0, otherPlusIdx);
+					String thisSubtypeSuffix = getSubtype().substring(
+							thisPlusIdx + 1);
+					String otherSubtypeSuffix = other.getSubtype().substring(
+							otherPlusIdx + 1);
+					if (thisSubtypeSuffix.equals(otherSubtypeSuffix)
+							&& (WILDCARD_TYPE.equals(thisSubtypeNoSuffix) || WILDCARD_TYPE
+									.equals(otherSubtypeNoSuffix))) {
 						return true;
 					}
 				}
@@ -413,8 +437,8 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 			return false;
 		}
 		MimeType otherType = (MimeType) other;
-		return (this.type.equalsIgnoreCase(otherType.type) && this.subtype.equalsIgnoreCase(otherType.subtype)
-				&& parametersAreEqual(otherType));
+		return (this.type.equalsIgnoreCase(otherType.type)
+				&& this.subtype.equalsIgnoreCase(otherType.subtype) && parametersAreEqual(otherType));
 	}
 
 	/**
@@ -434,10 +458,12 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 				return false;
 			}
 			if (PARAM_CHARSET.equals(key)) {
-				if (!ObjectUtils.nullSafeEquals(getCharset(), other.getCharset())) {
+				if (!ObjectUtils.nullSafeEquals(getCharset(),
+						other.getCharset())) {
 					return false;
 				}
-			} else if (!ObjectUtils.nullSafeEquals(this.parameters.get(key), other.parameters.get(key))) {
+			} else if (!ObjectUtils.nullSafeEquals(this.parameters.get(key),
+					other.parameters.get(key))) {
 				return false;
 			}
 		}
@@ -497,9 +523,11 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 			return comp;
 		}
 
-		TreeSet<String> thisAttributes = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+		TreeSet<String> thisAttributes = new TreeSet<String>(
+				String.CASE_INSENSITIVE_ORDER);
 		thisAttributes.addAll(getParameters().keySet());
-		TreeSet<String> otherAttributes = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+		TreeSet<String> otherAttributes = new TreeSet<String>(
+				String.CASE_INSENSITIVE_ORDER);
 		otherAttributes.addAll(other.getParameters().keySet());
 		Iterator<String> thisAttributesIterator = thisAttributes.iterator();
 		Iterator<String> otherAttributesIterator = otherAttributes.iterator();
@@ -553,39 +581,45 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 		return MimeTypeUtils.parseMimeType(value);
 	}
 
-	private static Map<String, String> addCharsetParameter(String charsetName, Map<String, String> parameters) {
+	private static Map<String, String> addCharsetParameter(String charsetName,
+			Map<String, String> parameters) {
 		Map<String, String> map = new LinkedHashMap<String, String>(parameters);
 		map.put(PARAM_CHARSET, charsetName);
 		return map;
 	}
 
-	public static class SpecificityComparator<T extends MimeType> implements Comparator<T> {
+	public static class SpecificityComparator<T extends MimeType> implements
+			Comparator<T> {
 
 		public int compare(T mimeType1, T mimeType2) {
 			if (mimeType1.isWildcardType() && !mimeType2.isWildcardType()) { // */*
 																				// <
 																				// audio/*
 				return 1;
-			} else if (mimeType2.isWildcardType() && !mimeType1.isWildcardType()) { // audio/*
-																					// >
-																					// */*
+			} else if (mimeType2.isWildcardType()
+					&& !mimeType1.isWildcardType()) { // audio/*
+														// >
+														// */*
 				return -1;
 			} else if (!mimeType1.getType().equals(mimeType2.getType())) { // audio/basic
 																			// ==
 																			// text/html
 				return 0;
 			} else { // mediaType1.getType().equals(mediaType2.getType())
-				if (mimeType1.isWildcardSubtype() && !mimeType2.isWildcardSubtype()) { // audio/*
-																						// <
-																						// audio/basic
+				if (mimeType1.isWildcardSubtype()
+						&& !mimeType2.isWildcardSubtype()) { // audio/*
+																// <
+																// audio/basic
 					return 1;
-				} else if (mimeType2.isWildcardSubtype() && !mimeType1.isWildcardSubtype()) { // audio/basic
-																								// >
-																								// audio/*
+				} else if (mimeType2.isWildcardSubtype()
+						&& !mimeType1.isWildcardSubtype()) { // audio/basic
+																// >
+																// audio/*
 					return -1;
-				} else if (!mimeType1.getSubtype().equals(mimeType2.getSubtype())) { // audio/basic
-																						// ==
-																						// audio/wave
+				} else if (!mimeType1.getSubtype().equals(
+						mimeType2.getSubtype())) { // audio/basic
+													// ==
+													// audio/wave
 					return 0;
 				} else { // mediaType2.getSubtype().equals(mediaType2.getSubtype())
 					return compareParameters(mimeType1, mimeType2);
@@ -596,9 +630,10 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 		protected int compareParameters(T mimeType1, T mimeType2) {
 			int paramsSize1 = mimeType1.getParameters().size();
 			int paramsSize2 = mimeType2.getParameters().size();
-			return (paramsSize2 < paramsSize1 ? -1 : (paramsSize2 == paramsSize1 ? 0 : 1)); // audio/basic;level=1
-																							// <
-																							// audio/basic
+			return (paramsSize2 < paramsSize1 ? -1
+					: (paramsSize2 == paramsSize1 ? 0 : 1)); // audio/basic;level=1
+																// <
+																// audio/basic
 		}
 	}
 

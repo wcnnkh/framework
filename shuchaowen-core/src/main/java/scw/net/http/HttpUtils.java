@@ -22,12 +22,12 @@ import scw.core.utils.XUtils;
 import scw.io.IOUtils;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportException;
+import scw.net.MimeTypeUtils;
 import scw.net.RequestException;
 import scw.net.http.client.ClientHttpRequest;
 import scw.net.http.client.ClientHttpRequestFactory;
 import scw.net.http.client.ClientHttpResponse;
 import scw.net.http.client.SimpleClientHttpRequestFactory;
-import scw.net.mime.MimeTypeUtils;
 import scw.util.ToMap;
 
 public final class HttpUtils {

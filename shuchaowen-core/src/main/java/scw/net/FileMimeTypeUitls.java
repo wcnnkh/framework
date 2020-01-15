@@ -1,4 +1,4 @@
-package scw.net.mime;
+package scw.net;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
