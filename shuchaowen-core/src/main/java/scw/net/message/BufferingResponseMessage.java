@@ -2,10 +2,12 @@ package scw.net.message;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 
 import scw.io.UnsafeByteArrayInputStream;
 
-public class BufferingResponseMessage extends AbstractInputMessage {
+public class BufferingResponseMessage extends AbstractInputMessage implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private final byte[] body;
 	private final Headers headers;
 

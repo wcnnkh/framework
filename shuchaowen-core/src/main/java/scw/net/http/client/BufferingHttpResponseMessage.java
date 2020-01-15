@@ -5,6 +5,7 @@ import scw.net.http.HttpStatus;
 import scw.net.message.BufferingResponseMessage;
 
 public class BufferingHttpResponseMessage extends BufferingResponseMessage {
+	private static final long serialVersionUID = 1L;
 	private int statuCode;
 	private String statusText;
 
