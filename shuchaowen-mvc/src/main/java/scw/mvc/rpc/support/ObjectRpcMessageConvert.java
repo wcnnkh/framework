@@ -35,7 +35,7 @@ public final class ObjectRpcMessageConvert implements MessageConverter {
 		if (TypeUtils.isAssignableFrom(type, Collection.class) || TypeUtils.isAssignableFrom(type, Map.class)
 				|| !TypeUtils.isInterface(type)) {
 			String content = inputMessage
-					.toString(StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME : charsetName);
+					.convertToString(StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME : charsetName);
 			return StringParse.defaultParse(content, type);
 		}
 

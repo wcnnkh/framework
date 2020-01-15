@@ -1,6 +1,7 @@
 package scw.mvc.rpc.http;
 
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.Map;
 
 import scw.core.PropertyFactory;
@@ -12,13 +13,14 @@ import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.rpc.annotation.RequestContentType;
 import scw.mvc.rpc.annotation.RequestContentType.ContentType;
-import scw.net.http.SimpleClientHttpRequest;
 import scw.net.http.HttpUtils;
+import scw.net.http.client.ClientHttpRequest;
+import scw.net.http.client.accessor.HttpAccessor;
 import scw.net.mime.MimeType;
 import scw.net.mime.MimeTypeUtils;
 import scw.util.KeyValuePair;
 
-public class HttpRestfulRpcRequestFactory implements HttpRpcRequestFactory {
+public class HttpRestfulRpcRequestFactory extends HttpAccessor implements HttpRpcRequestFactory {
 	private String charsetName;
 	private String host;
 	private PropertyFactory propertyFactory;
@@ -40,10 +42,10 @@ public class HttpRestfulRpcRequestFactory implements HttpRpcRequestFactory {
 		this.charsetName = charsetName;
 	}
 
-	public final SimpleClientHttpRequest getHttpRequest(Class<?> clazz, Method method, Object[] args) throws Exception {
+	public final ClientHttpRequest getHttpRequest(Class<?> clazz, Method method, Object[] args) throws Exception {
 		String host;
 		Host h = AnnotationUtils.getAnnotation(Host.class, clazz, method);
-		host = h == null? this.host:h.value();
+		host = h == null ? this.host : h.value();
 		if (StringUtils.isEmpty(host)) {
 			host = "http://127.0.0.1";
 		}
@@ -75,22 +77,21 @@ public class HttpRestfulRpcRequestFactory implements HttpRpcRequestFactory {
 		host = httpMethod == scw.net.http.Method.GET ? HttpUtils.appendParameters(host, parameterMap, charsetName)
 				: host;
 
-		HttpRestfulRpcRequest httpRestfulRpcRequest = new HttpRestfulRpcRequest(httpMethod, host, charsetName);
-		Map<String, String> headerMap = MvcRpcUtils.getHeaderMap(shareHeaders, clazz, method);
-		if (!CollectionUtils.isEmpty(headerMap)) {
-			httpRestfulRpcRequest.setRequestProperties(headerMap);
-		}
-
+		ClientHttpRequest clientHttpRequest = createRequest(new URI(host), httpMethod);
 		RequestContentType requestContentType = AnnotationUtils.getAnnotation(RequestContentType.class, clazz, method);
 		if (requestContentType != null) {
 			if (requestContentType.value() == ContentType.FORM) {
-				httpRestfulRpcRequest.setContentType(
-						new MimeType(MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
+				clientHttpRequest
+						.setContentType(new MimeType(MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
 			} else if (requestContentType.value() == ContentType.JSON) {
-				httpRestfulRpcRequest
-						.setContentType(new MimeType(MimeTypeUtils.APPLICATION_JSON, charsetName));
+				clientHttpRequest.setContentType(new MimeType(MimeTypeUtils.APPLICATION_JSON, charsetName));
 			}
 		}
-		return httpRestfulRpcRequest;
+
+		Map<String, String> headerMap = MvcRpcUtils.getHeaderMap(shareHeaders, clazz, method);
+		if (!CollectionUtils.isEmpty(headerMap)) {
+			clientHttpRequest.getHeaders().setAll(headerMap);
+		}
+		return clientHttpRequest;
 	}
 }

@@ -240,7 +240,7 @@ public final class InstanceUtils {
 		return autoNewInstance(clazz, REFLECTION_INSTANCE_FACTORY);
 	}
 
-	public static <T> T autoNewInstanceBySystemProperty(Class<T> clazz, String key, T defaultValue) {
+	public static <T> T autoNewInstanceBySystemProperty(Class<? extends T> clazz, String key, T defaultValue) {
 		String name = SystemPropertyUtils.getProperty(key);
 		if (StringUtils.isEmpty(name)) {
 			return defaultValue;

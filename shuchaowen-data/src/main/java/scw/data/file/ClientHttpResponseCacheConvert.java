@@ -1,13 +1,17 @@
 package scw.data.file;
 
-import scw.core.Converter;
-import scw.net.http.ClientHttpResponse;
-import scw.net.http.Method;
-import scw.net.http.SimpleClientHttpRequest;
+import java.net.URI;
 
-public class ClientHttpResponseCacheConvert implements Converter<String, ClientHttpResponse> {
+import scw.core.Converter;
+import scw.net.http.Method;
+import scw.net.http.client.ClientHttpRequest;
+import scw.net.http.client.ClientHttpResponse;
+import scw.net.http.client.accessor.HttpAccessor;
+
+public class ClientHttpResponseCacheConvert extends HttpAccessor implements Converter<String, ClientHttpResponse> {
+
 	public ClientHttpResponse convert(String url) throws Exception {
-		SimpleClientHttpRequest simpleClientHttpRequest = new SimpleClientHttpRequest(Method.GET, url);
-		return simpleClientHttpRequest.execute();
+		ClientHttpRequest clientHttpRequest = createRequest(new URI(url), Method.GET);
+		return clientHttpRequest.execute();
 	}
 }

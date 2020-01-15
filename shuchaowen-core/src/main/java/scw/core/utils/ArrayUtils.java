@@ -1,7 +1,10 @@
 package scw.core.utils;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public final class ArrayUtils {
 	private ArrayUtils() {
@@ -47,6 +50,24 @@ public final class ArrayUtils {
 
 		T[] arr = (T[]) Array.newInstance(type, collection.size());
 		return collection.toArray(arr);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> toList(Object array) {
+		if (array == null) {
+			return Collections.emptyList();
+		}
+
+		int len = Array.getLength(array);
+		if (len == 0) {
+			return Collections.emptyList();
+		}
+
+		List<T> list = new ArrayList<T>(len);
+		for (int i = 0; i < len; i++) {
+			list.add((T) Array.get(array, i));
+		}
+		return list;
 	}
 
 	@SuppressWarnings("unchecked")

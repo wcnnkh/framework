@@ -1,10 +1,10 @@
-package scw.http.client;
+package scw.net.http.client;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import scw.http.HttpHeaders;
+import scw.net.http.HttpHeaders;
 
 abstract class AbstractBufferingClientHttpRequest extends AbstractClientHttpRequest {
 	private ByteArrayOutputStream bufferedOutput = new ByteArrayOutputStream(1024);
@@ -25,14 +25,6 @@ abstract class AbstractBufferingClientHttpRequest extends AbstractClientHttpRequ
 		return result;
 	}
 
-	/**
-	 * Abstract template method that writes the given headers and content to the HTTP request.
-	 * @param headers the HTTP headers
-	 * @param bufferedOutput the body content
-	 * @return the response object for the executed request
-	 */
 	protected abstract ClientHttpResponse executeInternal(HttpHeaders headers, byte[] bufferedOutput)
 			throws IOException;
-
-
 }

@@ -3,6 +3,8 @@ package scw.net.http;
 import java.io.IOException;
 import java.net.Proxy;
 
+import scw.net.http.client.ClientHttpRequest;
+import scw.net.http.client.ClientHttpResponse;
 import scw.net.mime.MimeType;
 
 public interface HttpClient {

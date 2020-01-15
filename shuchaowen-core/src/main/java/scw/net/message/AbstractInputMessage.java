@@ -1,12 +1,22 @@
 package scw.net.message;
 
+import java.io.IOException;
+
 import scw.core.Constants;
 import scw.core.string.StringCodecUtils;
+import scw.io.IOUtils;
 import scw.net.mime.MimeType;
 
-public abstract class AbstractInputMessage implements InputMessage {
+public abstract class AbstractInputMessage extends AbstractMessage implements InputMessage {
+	public byte[] toByteArray() {
+		try {
+			return IOUtils.toByteArray(getBody());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-	public String toString(String charsetName) {
+	public String convertToString(String charsetName) {
 		byte[] data = toByteArray();
 		if (data == null) {
 			return null;
@@ -15,10 +25,11 @@ public abstract class AbstractInputMessage implements InputMessage {
 		return StringCodecUtils.getStringCodec(charsetName).decode(data);
 	}
 
-	protected abstract String getDefaultCharsetName();
+	protected String getDefaultCharsetName() {
+		return Constants.DEFAULT_CHARSET_NAME;
+	}
 
-	@Override
-	public String toString() {
+	public String convertToString() {
 		String charsetName = null;
 		MimeType mimeType = getContentType();
 		if (mimeType != null) {
@@ -32,6 +43,6 @@ public abstract class AbstractInputMessage implements InputMessage {
 		if (charsetName == null) {
 			charsetName = Constants.DEFAULT_CHARSET_NAME;
 		}
-		return toString(charsetName);
+		return convertToString(charsetName);
 	}
 }

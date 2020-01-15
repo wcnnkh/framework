@@ -1,24 +1,32 @@
 package scw.net.http;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.Constants;
 import scw.core.string.StringCodecUtils;
+import scw.core.utils.ArrayUtils;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
-import scw.io.ByteArray;
+import scw.io.IOUtils;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportException;
-import scw.net.NetworkUtils;
-import scw.net.message.InputMessage;
-import scw.net.mime.MimeType;
+import scw.net.RequestException;
+import scw.net.http.client.ClientHttpRequest;
+import scw.net.http.client.ClientHttpRequestFactory;
+import scw.net.http.client.ClientHttpResponse;
+import scw.net.http.client.SimpleClientHttpRequestFactory;
 import scw.net.mime.MimeTypeUtils;
 import scw.util.ToMap;
 
@@ -26,23 +34,44 @@ public final class HttpUtils {
 	private HttpUtils() {
 	};
 
+	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = new SimpleClientHttpRequestFactory();
+
+	public static ClientHttpRequestFactory getClientHttpRequestFactory() {
+		return CLIENT_HTTP_REQUEST_FACTORY;
+	}
+
 	public static String doGet(String url) {
 		return doGet(url, Constants.DEFAULT_CHARSET_NAME);
 	}
 
-	public static String doGet(String url, String charsetName) {
-		SimpleClientHttpRequest request = new SimpleClientHttpRequest(Method.GET, url);
-		request.setContentType(new MimeType(MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
-		return execute(request, charsetName);
-	}
-
-	private static String execute(SimpleClientHttpRequest request, String charsetName) {
-		InputMessage inputMessage = NetworkUtils.execute(request);
-		if (inputMessage == null) {
-			return null;
+	public static ClientHttpRequest createRequest(String url, Method httpMethod, MediaType contentType,
+			ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
+		URI uri;
+		try {
+			uri = new URI(url);
+		} catch (URISyntaxException e) {
+			throw new IllegalStateException("Could not get HttpURLConnection URI: " + e.getMessage(), e);
 		}
 
-		return StringCodecUtils.getStringCodec(charsetName).decode(inputMessage.toByteArray());
+		ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, httpMethod);
+		request.setContentType(contentType);
+		return request;
+	}
+
+	public static String doGet(String url, String charsetName) {
+		ClientHttpRequest request;
+		ClientHttpResponse response = null;
+		try {
+			request = createRequest(url, Method.GET,
+					new MediaType(MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED, charsetName),
+					getClientHttpRequestFactory());
+			response = request.execute();
+			return response.convertToString(charsetName);
+		} catch (IOException e) {
+			throw new RequestException(e);
+		} finally {
+			IOUtils.close(response);
+		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -61,10 +90,21 @@ public final class HttpUtils {
 
 	public static String postJson(String url, Map<String, String> requestProperties, Object body, String charsetName) {
 		String text = toJsonString(body);
-		SimpleClientHttpRequest request = new BodyRequest(Method.POST, url, text == null ? null : new ByteArray(text, charsetName));
-		request.setContentType(new MimeType(MimeTypeUtils.APPLICATION_JSON, charsetName));
-		request.setRequestProperties(requestProperties);
-		return execute(request, charsetName);
+		ClientHttpRequest request;
+		ClientHttpResponse response = null;
+		try {
+			request = createRequest(url, Method.POST, new MediaType(MimeTypeUtils.APPLICATION_JSON, charsetName),
+					getClientHttpRequestFactory());
+			if (StringUtils.isNotEmpty(text)) {
+				IOUtils.write(StringCodecUtils.getStringCodec(charsetName).encode(text), request.getBody());
+			}
+			response = request.execute();
+			return response.convertToString(charsetName);
+		} catch (IOException e) {
+			throw new RequestException(e);
+		} finally {
+			IOUtils.close(response);
+		}
 	}
 
 	public static String postJson(String url, Map<String, String> requestProperties, Object body) {
@@ -73,11 +113,24 @@ public final class HttpUtils {
 
 	public static String postForm(String url, Map<String, String> requestProperties, Map<String, ?> parameterMap,
 			String charsetName) {
-		ClientHttpFormRequest request = new ClientHttpFormRequest(Method.POST, url, charsetName);
-		request.setContentType(new MimeType(MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
-		request.setRequestProperties(requestProperties);
-		request.addAll(parameterMap);
-		return execute(request, charsetName);
+		ClientHttpRequest request;
+		ClientHttpResponse response = null;
+		try {
+			String body = toFormBody(parameterMap, charsetName);
+			request = createRequest(url, Method.POST,
+					new MediaType(MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED, charsetName),
+					getClientHttpRequestFactory());
+			request.getHeaders().setAll(requestProperties);
+			if (StringUtils.isNotEmpty(body)) {
+				IOUtils.write(StringCodecUtils.getStringCodec(charsetName).encode(body), request.getBody());
+			}
+			response = request.execute();
+			return response.convertToString(charsetName);
+		} catch (IOException e) {
+			throw new RequestException(e);
+		} finally {
+			IOUtils.close(response);
+		}
 	}
 
 	public static String postForm(String url, Map<String, String> requestProperties,
@@ -89,7 +142,70 @@ public final class HttpUtils {
 		return postForm(url, requestProperties, parameterMap, Constants.DEFAULT_CHARSET_NAME);
 	}
 
-	public static String appendParameters(String url, Map<String, Object> paramMap, String charsetName)
+	public static String toFormBody(String key, Collection<?> values, String charsetName)
+			throws UnsupportedEncodingException {
+		if (StringUtils.isEmpty(key) || CollectionUtils.isEmpty(values)) {
+			return null;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		for (Object value : values) {
+			if (value == null) {
+				continue;
+			}
+
+			if (sb.length() > 0) {
+				sb.append("&");
+			}
+
+			sb.append(key);
+			sb.append("=");
+			if (StringUtils.isEmpty(charsetName)) {
+				sb.append(URLEncoder.encode(value.toString(), charsetName));
+			} else {
+				sb.append(value.toString());
+			}
+		}
+		return sb.toString();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static String toFormBody(Map<String, ?> parameterMap, String charsetName)
+			throws UnsupportedEncodingException {
+		if (CollectionUtils.isEmpty(parameterMap)) {
+			return null;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		for (Entry<String, ?> entry : parameterMap.entrySet()) {
+			Object value = entry.getValue();
+			if (value == null) {
+				continue;
+			}
+
+			String text;
+			if (value instanceof Collection) {
+				text = toFormBody(entry.getKey(), (Collection) value, charsetName);
+			} else if (value.getClass().isArray()) {
+				text = toFormBody(entry.getKey(), ArrayUtils.toList(value), charsetName);
+			} else {
+				text = toFormBody(entry.getKey(), Arrays.asList(value), charsetName);
+			}
+
+			if (text == null) {
+				continue;
+			}
+
+			if (sb.length() != 0) {
+				sb.append("&");
+			}
+
+			sb.append(text);
+		}
+		return sb.toString();
+	}
+
+	public static String appendParameters(String url, Map<String, ?> paramMap, String charsetName)
 			throws UnsupportedEncodingException {
 		if (paramMap == null || paramMap.isEmpty()) {
 			return url;
@@ -105,24 +221,9 @@ public final class HttpUtils {
 			}
 		}
 
-		Iterator<Entry<String, Object>> iterator = paramMap.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Entry<String, Object> entry = iterator.next();
-			if (StringUtils.isNull(entry.getKey()) || entry.getValue() == null) {
-				continue;
-			}
-
-			sb.append(entry.getKey());
-			sb.append("=");
-			if (StringUtils.isEmpty(charsetName)) {
-				sb.append(URLEncoder.encode(entry.getValue().toString(), charsetName));
-			} else {
-				sb.append(entry.getValue());
-			}
-
-			if (iterator.hasNext()) {
-				sb.append("&");
-			}
+		String text = toFormBody(paramMap, charsetName);
+		if (text != null) {
+			sb.append(text);
 		}
 		return sb.toString();
 	}

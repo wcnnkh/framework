@@ -1,5 +1,6 @@
 package scw.tencent.wx;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,19 +18,20 @@ import scw.core.resource.ResourceUtils;
 import scw.core.utils.RandomUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-import scw.io.ByteArray;
+import scw.io.IOUtils;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportException;
 import scw.lang.ParameterException;
 import scw.lang.SignatureException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.NetworkUtils;
-import scw.net.http.BodyRequest;
-import scw.net.http.SimpleClientHttpRequest;
+import scw.net.RequestException;
+import scw.net.http.HttpUtils;
+import scw.net.http.MediaType;
 import scw.net.http.Method;
-import scw.net.message.InputMessage;
-import scw.net.mime.MimeType;
+import scw.net.http.client.ClientHttpRequest;
+import scw.net.http.client.ClientHttpResponse;
+import scw.net.http.client.SimpleClientHttpRequestFactory;
 import scw.net.mime.MimeTypeUtils;
 import scw.net.ssl.SSLContexts;
 import scw.security.signature.SignatureUtils;
@@ -359,21 +361,32 @@ public final class WeiXinPay {
 		c.setTextContent(sign);
 		element.appendChild(c);
 		final String content = XMLUtils.toString(element);
-		
+
 		logger.debug("微信支付请求xml内容:{}", content);
 
-		SimpleClientHttpRequest request = new BodyRequest(Method.POST, url, new ByteArray(content, charsetName));
-		request.setContentType(new MimeType(MimeTypeUtils.APPLICATION_XML, charsetName));
+		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
 		if (isCertTrustFile) {
-			request.setSSLSocketFactory(getSSLSocketFactory());
+			clientHttpRequestFactory.setSSLSocketFactory(getSSLSocketFactory());
 		}
 
-		InputMessage response = NetworkUtils.execute(request);
-		if (response == null) {
-			throw new RuntimeException("请求：" + url + "失败");
+		ClientHttpRequest request;
+		ClientHttpResponse response = null;
+		String res = null;
+		try {
+			request = HttpUtils.createRequest(url, Method.POST,
+					new MediaType(MimeTypeUtils.APPLICATION_XML, charsetName), clientHttpRequestFactory);
+			IOUtils.write(content, request.getBody(), charsetName);
+			response = request.execute();
+			if (response.getStatusCode().isError()) {
+				throw new RuntimeException("请求：" + url + "失败");
+			}
+			res = response.convertToString(charsetName);
+		} catch (IOException e) {
+			throw new RequestException(url, e);
+		} finally {
+			IOUtils.close(response);
 		}
 
-		String res = response.toString(charsetName);
 		if (res == null) {
 			throw new RuntimeException("请求：" + url + "失败");
 		}

@@ -12,9 +12,10 @@ import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.mvc.rpc.annotation.MessageConvert;
+import scw.mvc.rpc.support.ObjectRpcResponseMessage;
 import scw.net.NetworkUtils;
-import scw.net.http.ClientHttpResponse;
-import scw.net.http.SimpleClientHttpRequest;
+import scw.net.http.client.ClientHttpRequest;
+import scw.net.http.client.ClientHttpResponse;
 import scw.net.message.converter.MessageConverter;
 
 public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter {
@@ -69,11 +70,18 @@ public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter
 	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
 			FilterChain filterChain) throws Throwable {
 		if (Modifier.isAbstract(method.getModifiers()) || Modifier.isInterface(method.getModifiers())) {
-			SimpleClientHttpRequest simpleClientHttpRequest = httpRpcRequestFactory.getHttpRequest(targetClass, method,
-					args);
-			ClientHttpResponse httpInputMessage = simpleClientHttpRequest.execute();
-			return NetworkUtils.read(method.getGenericReturnType(), httpInputMessage,
+			ClientHttpRequest request = httpRpcRequestFactory.getHttpRequest(targetClass, method, args);
+			ClientHttpResponse httpInputMessage = request.execute();
+			Object obj = NetworkUtils.read(method.getGenericReturnType(), httpInputMessage,
 					getMessageConverters(method.getDeclaringClass(), method));
+			if (obj instanceof ObjectRpcResponseMessage) {
+				if (((ObjectRpcResponseMessage) obj).getThrowable() != null) {
+					throw ((ObjectRpcResponseMessage) obj).getThrowable();
+				}
+				return ((ObjectRpcResponseMessage) obj).getResponse();
+			} else {
+				return obj;
+			}
 		}
 		return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 	}
