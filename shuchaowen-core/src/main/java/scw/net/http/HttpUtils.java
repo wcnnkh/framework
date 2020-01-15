@@ -43,7 +43,7 @@ public final class HttpUtils {
 	public static String doGet(String url) {
 		return doGet(url, Constants.DEFAULT_CHARSET_NAME);
 	}
-
+	
 	public static ClientHttpRequest createRequest(String url, Method httpMethod, MediaType contentType,
 			ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
 		URI uri;

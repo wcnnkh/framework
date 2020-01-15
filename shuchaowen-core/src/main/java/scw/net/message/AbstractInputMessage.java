@@ -8,15 +8,12 @@ import scw.io.IOUtils;
 import scw.net.mime.MimeType;
 
 public abstract class AbstractInputMessage extends AbstractMessage implements InputMessage {
-	public byte[] toByteArray() {
-		try {
-			return IOUtils.toByteArray(getBody());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+
+	public byte[] toByteArray() throws IOException {
+		return IOUtils.toByteArray(getBody());
 	}
 
-	public String convertToString(String charsetName) {
+	public String convertToString(String charsetName) throws IOException, MessageConvetException {
 		byte[] data = toByteArray();
 		if (data == null) {
 			return null;
@@ -29,7 +26,7 @@ public abstract class AbstractInputMessage extends AbstractMessage implements In
 		return Constants.DEFAULT_CHARSET_NAME;
 	}
 
-	public String convertToString() {
+	public String convertToString() throws IOException, MessageConvetException {
 		String charsetName = null;
 		MimeType mimeType = getContentType();
 		if (mimeType != null) {

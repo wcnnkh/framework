@@ -14,12 +14,12 @@ public interface InputMessage extends Message {
 	 * @param charsetName
 	 * @return
 	 */
-	String convertToString(String charsetName) throws IOException;
+	String convertToString(String charsetName) throws IOException, MessageConvetException;
 
 	/**
 	 * 使用默认的字符集转换成字符串
 	 * 
 	 * @return
 	 */
-	String convertToString() throws IOException;
+	String convertToString() throws IOException, MessageConvetException;
 }
