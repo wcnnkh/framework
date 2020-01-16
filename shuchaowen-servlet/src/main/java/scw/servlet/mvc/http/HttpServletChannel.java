@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import scw.beans.BeanFactory;
 import scw.core.parameter.ParameterConfig;
 import scw.json.JSONSupport;
+import scw.mvc.AsyncControl;
 import scw.mvc.http.AbstractHttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
@@ -39,5 +40,13 @@ public abstract class HttpServletChannel extends AbstractHttpChannel {
 	@Override
 	public MyHttpServletResponse getResponse() {
 		return (MyHttpServletResponse) super.getResponse();
+	}
+
+	public boolean isSupportAsyncControl() {
+		return getRequest().getHttpServletRequest().isAsyncSupported();
+	}
+
+	public AsyncControl getAsyncControl() {
+		return new HttpServletAsyncControl(getRequest(), getResponse());
 	}
 }

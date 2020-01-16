@@ -7,9 +7,9 @@ import scw.net.message.InputMessage;
 
 public interface Request extends InputMessage {
 	String getControllerPath();
-	
+
 	String getContextPath();
-	
+
 	String getCharacterEncoding();
 
 	void setCharacterEncoding(String env);
