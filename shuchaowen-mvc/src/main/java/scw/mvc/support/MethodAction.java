@@ -5,13 +5,13 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 import scw.aop.Invoker;
-import scw.beans.BeanFactory;
 import scw.beans.AutoProxyMethodInvoker;
+import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
+import scw.core.annotation.AnnotationFactory;
+import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
-import scw.core.reflect.AnnotationFactory;
-import scw.core.reflect.AnnotationUtils;
 import scw.core.reflect.SimpleAnnotationFactory;
 import scw.mvc.AbstractAction;
 import scw.mvc.Filter;

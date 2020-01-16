@@ -6,6 +6,7 @@ import scw.core.Constants;
 import scw.core.string.StringCodecUtils;
 import scw.io.IOUtils;
 import scw.net.MimeType;
+import scw.net.message.converter.MessageConvertException;
 
 public abstract class AbstractInputMessage extends AbstractMessage implements InputMessage {
 
@@ -13,7 +14,7 @@ public abstract class AbstractInputMessage extends AbstractMessage implements In
 		return IOUtils.toByteArray(getBody());
 	}
 
-	public String convertToString(String charsetName) throws IOException, MessageConvetException {
+	public String convertToString(String charsetName) throws IOException, MessageConvertException {
 		byte[] data = toByteArray();
 		if (data == null) {
 			return null;
@@ -26,7 +27,7 @@ public abstract class AbstractInputMessage extends AbstractMessage implements In
 		return Constants.DEFAULT_CHARSET_NAME;
 	}
 
-	public String convertToString() throws IOException, MessageConvetException {
+	public String convertToString() throws IOException, MessageConvertException {
 		return convertToString(getCharsetName());
 	}
 

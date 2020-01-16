@@ -4,9 +4,9 @@ import java.lang.reflect.Type;
 
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.FormatUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.json.support.BuiltinGsonSupport;
+import scw.util.FormatUtils;
 
 public final class JSONUtils {
 	private JSONUtils() {

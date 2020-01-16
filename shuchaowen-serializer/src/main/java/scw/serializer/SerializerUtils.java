@@ -8,10 +8,10 @@ import java.io.IOException;
 import scw.core.Bits;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.FormatUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayOutputStream;
+import scw.util.FormatUtils;
 
 public final class SerializerUtils {
 	static {

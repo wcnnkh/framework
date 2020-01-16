@@ -11,6 +11,7 @@ import java.util.Map;
 
 import scw.core.PropertyFactory;
 import scw.core.SystemPropertyFactory;
+import scw.core.annotation.AnnotationUtils;
 import scw.core.annotation.DefaultValue;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.PropertyParameter;
@@ -19,7 +20,6 @@ import scw.core.instance.support.ReflectionInstanceFactory;
 import scw.core.instance.support.ReflectionSingleInstanceFactory;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
-import scw.core.reflect.AnnotationUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;

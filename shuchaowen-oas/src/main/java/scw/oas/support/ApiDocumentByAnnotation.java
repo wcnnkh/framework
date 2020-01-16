@@ -4,9 +4,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
-import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;

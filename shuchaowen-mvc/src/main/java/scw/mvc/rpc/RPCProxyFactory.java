@@ -1,5 +1,5 @@
 package scw.mvc.rpc;
 
-public interface RpcFactory {
+public interface RPCProxyFactory {
 	<T> T getProxy(Class<T> clazz);
 }

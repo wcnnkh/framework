@@ -5,8 +5,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
+import scw.core.annotation.AnnotationUtils;
 import scw.core.annotation.ParameterName;
-import scw.core.reflect.AnnotationUtils;
 import scw.core.utils.StringUtils;
 
 public final class ParameterUtils {

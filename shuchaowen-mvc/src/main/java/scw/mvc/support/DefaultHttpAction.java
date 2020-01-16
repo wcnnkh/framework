@@ -10,7 +10,7 @@ import java.util.Set;
 
 import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
-import scw.core.reflect.AnnotationFactory;
+import scw.core.annotation.AnnotationFactory;
 import scw.core.utils.StringUtils;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.HttpAuthorityConfig;

@@ -5,8 +5,8 @@ import java.util.Collection;
 
 import scw.beans.BeanFactory;
 import scw.core.PropertyFactory;
+import scw.core.annotation.AnnotationFactory;
 import scw.core.instance.InstanceFactory;
-import scw.core.reflect.AnnotationFactory;
 import scw.core.reflect.SimpleAnnotationFactory;
 import scw.mvc.annotation.Controller;
 import scw.security.authority.SimpleAuthorityManager;

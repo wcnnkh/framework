@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import scw.core.string.StringCodecUtils;
 import scw.io.UnsafeByteArrayInputStream;
+import scw.net.message.converter.MessageConvertException;
 
 public class SerialzerableInputMessage extends AbstractInputMessage implements
 		Serializable {
@@ -35,7 +36,7 @@ public class SerialzerableInputMessage extends AbstractInputMessage implements
 
 	@Override
 	public String convertToString(String charsetName)
-			throws MessageConvetException {
+			throws MessageConvertException {
 		byte[] data = toByteArray();
 		if (data == null) {
 			return null;

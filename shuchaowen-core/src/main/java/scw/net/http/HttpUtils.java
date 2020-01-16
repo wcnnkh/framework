@@ -63,6 +63,7 @@ public final class HttpUtils {
 		if (body == null) {
 			return null;
 		}
+		
 		if (body instanceof String || TypeUtils.isPrimitiveOrWrapper(body.getClass())) {
 			return body.toString();
 		} else if (body instanceof ToMap) {

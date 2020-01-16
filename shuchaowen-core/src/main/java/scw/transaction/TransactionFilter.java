@@ -6,7 +6,7 @@ import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.beans.annotation.Configuration;
-import scw.core.reflect.AnnotationUtils;
+import scw.core.annotation.AnnotationUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 

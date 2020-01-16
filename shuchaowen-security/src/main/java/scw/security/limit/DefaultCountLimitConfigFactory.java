@@ -4,9 +4,9 @@ import java.lang.reflect.Method;
 
 import scw.beans.annotation.Bean;
 import scw.core.Constants;
+import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
-import scw.core.reflect.AnnotationUtils;
 import scw.security.limit.annotation.CountLimitParameter;
 import scw.security.limit.annotation.CountLimitSecurityCount;
 import scw.security.limit.annotation.CountLimitSecurityName;

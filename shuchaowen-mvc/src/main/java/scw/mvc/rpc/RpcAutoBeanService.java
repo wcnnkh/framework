@@ -9,8 +9,8 @@ import scw.beans.auto.AutoBeanService;
 import scw.beans.auto.AutoBeanServiceChain;
 import scw.beans.auto.ProxyAutoBean;
 import scw.core.PropertyFactory;
-import scw.core.annotation.Host;
 import scw.core.utils.StringUtils;
+import scw.mvc.rpc.annotation.Host;
 import scw.mvc.rpc.http.HttpRestfulRpcProxy;
 
 @Configuration

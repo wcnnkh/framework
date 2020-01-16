@@ -10,6 +10,7 @@ import scw.core.Assert;
 import scw.core.Constants;
 import scw.core.string.StringCodecUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.MimeTypeUtils;
@@ -21,6 +22,8 @@ import scw.net.http.client.exception.HttpClientException;
 import scw.net.http.client.exception.HttpClientResourceAccessException;
 
 public abstract class AbstractHttpClient implements HttpClient {
+	static final String DEFAULT_CHARSET_NAME = StringUtils.toString(SystemPropertyUtils.getProperty("scw.http.client.default.charset.name"), Constants.DEFAULT_CHARSET_NAME);
+	
 	protected Logger logger = LoggerUtils.getLogger(getClass());
 	private ClientHttpInputMessageErrorHandler clientHttpInputMessageErrorHandler = new DefaultClientHttpInputMessageErrorHandler();
 
@@ -137,7 +140,7 @@ public abstract class AbstractHttpClient implements HttpClient {
 	}
 
 	public String getDefaultCharsetName() {
-		return Constants.DEFAULT_CHARSET_NAME;
+		return DEFAULT_CHARSET_NAME;
 	}
 
 	public final String post(String url, String body, MediaType contentType) throws HttpClientException {

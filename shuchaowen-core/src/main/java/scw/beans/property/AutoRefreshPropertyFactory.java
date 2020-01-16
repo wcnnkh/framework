@@ -11,9 +11,9 @@ import org.w3c.dom.NodeList;
 
 import scw.core.Destroy;
 import scw.core.PropertyFactory;
-import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.util.FormatUtils;
 
 public final class AutoRefreshPropertyFactory implements PropertyFactory, Destroy {
 	private static final int DEFAULT_REFRESH_PERIOD = StringUtils

@@ -3,7 +3,7 @@ package scw.orm;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
-import scw.core.reflect.AnnotationFactory;
+import scw.core.annotation.AnnotationFactory;
 
 public interface Column extends AnnotationFactory {
 	Class<?> getType();

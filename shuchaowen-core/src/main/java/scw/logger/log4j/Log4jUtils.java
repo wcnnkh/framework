@@ -8,7 +8,6 @@ import org.w3c.dom.Element;
 import scw.core.Constants;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.resource.ResourceUtils;
-import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XMLUtils;
@@ -16,6 +15,7 @@ import scw.lang.NotSupportException;
 import scw.logger.Level;
 import scw.logger.LoggerLevelUtils;
 import scw.logger.LoggerUtils;
+import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 
 public final class Log4jUtils {

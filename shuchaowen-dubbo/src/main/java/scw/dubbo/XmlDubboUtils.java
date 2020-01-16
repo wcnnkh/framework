@@ -20,7 +20,7 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Service;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertyFactory;
-import scw.core.reflect.AnnotationUtils;
+import scw.core.annotation.AnnotationUtils;
 import scw.core.reflect.CloneUtils;
 import scw.core.reflect.PropertyMapper;
 import scw.core.utils.ClassUtils;

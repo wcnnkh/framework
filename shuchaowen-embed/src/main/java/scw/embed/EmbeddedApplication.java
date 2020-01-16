@@ -6,10 +6,10 @@ import scw.application.CommonApplication;
 import scw.beans.BeanUtils;
 import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.servlet.ServletUtils;
 import scw.servlet.mvc.ServletService;
+import scw.util.FormatUtils;
 
 public class EmbeddedApplication extends CommonApplication {
 	private ServletEmbedded embedded;

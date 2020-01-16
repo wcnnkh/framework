@@ -1,9 +1,9 @@
 package scw.logger;
 
 import scw.core.instance.InstanceUtils;
-import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.util.FormatUtils;
 
 public final class LoggerFactory {
 	private static final ILoggerFactory LOGGER_FACTORY;

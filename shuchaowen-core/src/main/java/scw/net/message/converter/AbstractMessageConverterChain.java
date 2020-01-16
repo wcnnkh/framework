@@ -16,7 +16,7 @@ public abstract class AbstractMessageConverterChain implements MessageConverterC
 	}
 
 	public Object read(Type type, InputMessage inputMessage) throws IOException {
-		MessageConverter converter = getNextReadMessageConveter(type, inputMessage);
+		MessageConverter converter = getNextReadMessageConverter(type, inputMessage);
 		if (converter == null) {
 			if (chain == null) {
 				return notSupportRead(type, inputMessage);
@@ -28,7 +28,7 @@ public abstract class AbstractMessageConverterChain implements MessageConverterC
 		}
 	}
 
-	protected abstract MessageConverter getNextReadMessageConveter(Type type, InputMessage inputMessage)
+	protected abstract MessageConverter getNextReadMessageConverter(Type type, InputMessage inputMessage)
 			throws IOException;
 
 	protected Object notSupportRead(Type type, InputMessage inputMessage) throws IOException {

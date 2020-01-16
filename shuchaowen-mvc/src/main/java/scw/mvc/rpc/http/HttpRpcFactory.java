@@ -6,9 +6,9 @@ import scw.aop.Filter;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
-import scw.mvc.rpc.RpcFactory;
+import scw.mvc.rpc.RPCProxyFactory;
 
-public class HttpRpcFactory extends HttpRpcProxy implements RpcFactory {
+public class HttpRpcFactory extends HttpRpcProxy implements RPCProxyFactory {
 	private static final long serialVersionUID = 1L;
 	private final BeanFactory beanFactory;
 

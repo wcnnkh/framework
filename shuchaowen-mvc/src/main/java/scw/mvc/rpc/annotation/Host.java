@@ -1,4 +1,4 @@
-package scw.core.annotation;
+package scw.mvc.rpc.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

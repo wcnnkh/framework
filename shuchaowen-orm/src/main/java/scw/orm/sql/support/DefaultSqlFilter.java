@@ -1,6 +1,5 @@
 package scw.orm.sql.support;
 
-import scw.core.utils.EnumUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.json.JSONUtils;
@@ -12,6 +11,7 @@ import scw.orm.MappingContext;
 import scw.orm.Setter;
 import scw.orm.SetterFilterChain;
 import scw.orm.sql.SqlORMUtils;
+import scw.util.EnumUtils;
 
 public class DefaultSqlFilter implements Filter {
 	public Object toSqlField(Column column, Object value) {

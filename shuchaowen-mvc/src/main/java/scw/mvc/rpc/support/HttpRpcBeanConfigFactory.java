@@ -10,7 +10,7 @@ import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanConfiguration;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.PropertyFactory;
-import scw.core.reflect.AnnotationUtils;
+import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;

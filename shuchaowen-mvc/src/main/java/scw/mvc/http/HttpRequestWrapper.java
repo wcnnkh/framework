@@ -11,7 +11,7 @@ import scw.net.http.Cookie;
 import scw.net.http.HttpHeaders;
 import scw.net.http.MediaType;
 import scw.net.http.Method;
-import scw.net.message.MessageConvetException;
+import scw.net.message.converter.MessageConvertException;
 import scw.security.session.Session;
 import scw.util.attribute.AttributesWrapper;
 
@@ -131,11 +131,11 @@ public class HttpRequestWrapper extends AttributesWrapper<String, Object> implem
 		return targetHttpRequest.toByteArray();
 	}
 
-	public String convertToString(String charsetName) throws IOException, MessageConvetException {
+	public String convertToString(String charsetName) throws IOException, MessageConvertException {
 		return targetHttpRequest.convertToString(charsetName);
 	}
 
-	public String convertToString() throws IOException, MessageConvetException {
+	public String convertToString() throws IOException, MessageConvertException {
 		return targetHttpRequest.convertToString();
 	}
 

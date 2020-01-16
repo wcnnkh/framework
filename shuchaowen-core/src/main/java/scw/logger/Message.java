@@ -1,9 +1,9 @@
 package scw.logger;
 
 import scw.core.UnsafeStringBuffer;
-import scw.core.utils.FormatUtils;
 import scw.core.utils.PlaceholderFormatAppend;
 import scw.core.utils.StringAppend;
+import scw.util.FormatUtils;
 
 public final class Message implements StringAppend {
 	private final long cts;

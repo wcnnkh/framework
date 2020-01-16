@@ -8,7 +8,9 @@ import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 
 public interface MessageConverter {
-	Object read(Type type, InputMessage inputMessage, MessageConverterChain chain) throws IOException;
+	Object read(Type type, InputMessage inputMessage, MessageConverterChain chain)
+			throws IOException, MessageConvertException;
 
-	void write(Object body, MimeType contentType, OutputMessage outputMessage, MessageConverterChain chain) throws IOException;
+	void write(Object body, MimeType contentType, OutputMessage outputMessage, MessageConverterChain chain)
+			throws IOException, MessageConvertException;
 }

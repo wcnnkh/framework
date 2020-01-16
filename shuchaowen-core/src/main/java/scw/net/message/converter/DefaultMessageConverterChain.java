@@ -11,9 +11,10 @@ import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 
 public final class DefaultMessageConverterChain extends AbstractMessageConverterChain {
-	private Iterator<MessageConverter> iterator;
+	private Iterator<? extends MessageConverter> iterator;
 
-	public DefaultMessageConverterChain(Collection<MessageConverter> messageConverters, MessageConverterChain chain) {
+	public DefaultMessageConverterChain(Collection<? extends MessageConverter> messageConverters,
+			MessageConverterChain chain) {
 		super(chain);
 		if (!CollectionUtils.isEmpty(messageConverters)) {
 			this.iterator = messageConverters.iterator();
@@ -21,7 +22,7 @@ public final class DefaultMessageConverterChain extends AbstractMessageConverter
 	}
 
 	@Override
-	protected MessageConverter getNextReadMessageConveter(Type type, InputMessage inputMessage) throws IOException {
+	protected MessageConverter getNextReadMessageConverter(Type type, InputMessage inputMessage) throws IOException {
 		if (iterator == null) {
 			return null;
 		}
@@ -46,4 +47,5 @@ public final class DefaultMessageConverterChain extends AbstractMessageConverter
 
 		return null;
 	}
+
 }

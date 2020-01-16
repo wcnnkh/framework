@@ -1,7 +1,7 @@
 package scw.core.utils;
 
 import scw.core.Verification;
-import scw.core.reflect.AnnotationUtils;
+import scw.core.annotation.AnnotationUtils;
 
 public class IgnoreClassVerification implements Verification<Class<?>> {
 	private final boolean ignoreEmptyMethod;

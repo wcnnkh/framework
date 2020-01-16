@@ -6,11 +6,10 @@ import java.util.Map;
 
 import scw.core.PropertyFactory;
 import scw.core.StringFormat;
-import scw.core.annotation.Host;
-import scw.core.reflect.AnnotationUtils;
+import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
+import scw.mvc.rpc.annotation.Host;
 import scw.mvc.rpc.annotation.RequestContentType;
 import scw.mvc.rpc.annotation.RequestContentType.ContentType;
 import scw.net.MimeType;
@@ -18,6 +17,7 @@ import scw.net.MimeTypeUtils;
 import scw.net.http.HttpUtils;
 import scw.net.http.client.ClientHttpRequest;
 import scw.net.http.client.accessor.HttpAccessor;
+import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 
 public class HttpRestfulRpcRequestFactory extends HttpAccessor implements HttpRpcRequestFactory {

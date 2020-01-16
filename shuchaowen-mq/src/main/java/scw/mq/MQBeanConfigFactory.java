@@ -11,7 +11,7 @@ import scw.beans.annotation.Configuration;
 import scw.beans.property.ValueWiredManager;
 import scw.core.Init;
 import scw.core.PropertyFactory;
-import scw.core.reflect.AnnotationUtils;
+import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;

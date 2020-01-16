@@ -8,9 +8,9 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import scw.core.resource.ResourceUtils;
-import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 import scw.util.SimpleKeyValuePair;
 

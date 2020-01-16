@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
-import scw.core.reflect.AnnotationFactory;
+import scw.core.annotation.AnnotationFactory;
 import scw.core.reflect.MultipleAnnotationFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.reflect.SimpleAnnotationFactory;
