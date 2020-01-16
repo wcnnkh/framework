@@ -34,7 +34,6 @@
 		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-rpc</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
