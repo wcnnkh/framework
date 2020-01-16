@@ -34,4 +34,9 @@ public class ObjectRequestMessage extends SimpleAttributes<String, Object> imple
 	public Object invoke(Object instance) throws Throwable {
 		return getMethodHolder().invoke(instance, args);
 	}
+	
+	@Override
+	public String toString() {
+		return methodHolder.toString();
+	}
 }
