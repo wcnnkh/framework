@@ -18,12 +18,12 @@ public final class HttpServletChannelUserSessionFactory<T> implements HttpChanne
 
 	public UserSession<T> getUserSession(HttpChannel httpChannel) {
 		if (!(httpChannel instanceof HttpServletChannel)) {
-			logger.warn("{} not a HttpServletRequest", httpChannel.getRequest().getRequestPath());
+			logger.warn("{} not a HttpServletRequest", httpChannel.getRequest().getControllerPath());
 			return null;
 		}
 
 		HttpServletChannel httpServletChannel = (HttpServletChannel) httpChannel;
-		HttpSession httpSession = httpServletChannel.getRequest().getSession();
+		HttpSession httpSession = httpServletChannel.getRequest().getHttpServletRequest().getSession();
 		if (httpSession == null) {
 			return null;
 		}
@@ -33,12 +33,12 @@ public final class HttpServletChannelUserSessionFactory<T> implements HttpChanne
 
 	public UserSession<T> createUserSession(HttpChannel httpChannel, T uid) {
 		if (!(httpChannel instanceof HttpServletChannel)) {
-			logger.warn("{} not a HttpServletRequest", httpChannel.getRequest().getRequestPath());
+			logger.warn("{} not a HttpServletRequest", httpChannel.getRequest().getControllerPath());
 			return null;
 		}
 
 		HttpServletChannel httpServletChannel = (HttpServletChannel) httpChannel;
-		HttpSession httpSession = httpServletChannel.getRequest().getSession(true);
+		HttpSession httpSession = httpServletChannel.getRequest().getHttpServletRequest().getSession(true);
 		if (httpSession == null) {
 			return null;
 		}

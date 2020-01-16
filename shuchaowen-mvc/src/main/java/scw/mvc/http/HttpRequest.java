@@ -1,27 +1,20 @@
 package scw.mvc.http;
 
-import scw.mvc.Request;
-import scw.net.header.MultiValueHeadersReadOnly;
 import scw.net.http.Cookie;
 import scw.security.session.Session;
 import scw.util.MultiValueParameterFactory;
 import scw.util.attribute.Attributes;
 import scw.util.ip.IP;
 
-public interface HttpRequest extends Attributes<String, Object>, MultiValueHeadersReadOnly, Request, MultiValueParameterFactory, IP {
-	String getMethod();
-
-	String getRequestPath();
+public interface HttpRequest
+		extends Attributes<String, Object>, scw.net.http.HttpRequest, scw.mvc.Request, MultiValueParameterFactory, IP {
+	String getRawMethod();
 
 	Cookie getCookie(String name, boolean ignoreCase);
 
 	Session getHttpSession();
 
 	Session getHttpSession(boolean create);
-
-	long getDateHeader(String name);
-
-	int getIntHeader(String name);
 
 	/**
 	 * Returns the fully qualified name of the client or the last proxy that
@@ -36,6 +29,4 @@ public interface HttpRequest extends Attributes<String, Object>, MultiValueHeade
 	String getRemoteHost();
 
 	boolean isAjax();
-
-	String getContextPath();
 }

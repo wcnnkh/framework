@@ -14,20 +14,19 @@ import scw.mvc.http.HttpResponse;
 @SuppressWarnings("unchecked")
 public abstract class HttpServletChannel extends AbstractHttpChannel {
 
-	public HttpServletChannel(BeanFactory beanFactory,
-			JSONSupport jsonParseSupport, boolean cookieValue, HttpRequest request, HttpResponse response,
-			String jsonp) {
+	public HttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport, boolean cookieValue,
+			HttpRequest request, HttpResponse response, String jsonp) {
 		super(beanFactory, jsonParseSupport, cookieValue, request, response, jsonp);
 	}
 
 	@Override
 	public Object getParameter(ParameterConfig parameterConfig) {
 		if (ServletRequest.class.isAssignableFrom(parameterConfig.getType())) {
-			return getRequest();
+			return getRequest().getHttpServletRequest();
 		} else if (ServletResponse.class.isAssignableFrom(parameterConfig.getType())) {
 			return getResponse();
 		} else if (HttpSession.class == parameterConfig.getType()) {
-			return getRequest().getSession();
+			return getRequest().getHttpServletRequest().getSession();
 		}
 		return super.getParameter(parameterConfig);
 	}

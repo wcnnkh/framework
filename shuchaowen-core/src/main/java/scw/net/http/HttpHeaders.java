@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
 
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
 import scw.net.message.Headers;
 
 /**
@@ -491,6 +493,8 @@ public class HttpHeaders extends Headers {
 	 */
 	private static final String[] DATE_FORMATS = new String[] { "EEE, dd MMM yyyy HH:mm:ss zzz",
 			"EEE, dd-MMM-yy HH:mm:ss zzz", "EEE MMM dd HH:mm:ss yyyy" };
+
+	public static final String X_REQUESTED_WITH = "X-Requested-With";
 
 	public HttpHeaders() {
 		super(false);
@@ -1377,6 +1381,44 @@ public class HttpHeaders extends Headers {
 			singleValueMap.put(entry.getKey(), entry.getValue().get(0));
 		}
 		return singleValueMap;
+	}
+
+	public boolean isAjax() {
+		return "XMLHttpRequest".equals(getFirst(X_REQUESTED_WITH));
+	}
+
+	public boolean isFormContentType() {
+		return isCompatibleWithContentType(MediaType.APPLICATION_FORM_URLENCODED);
+	}
+
+	public boolean isJsonContentType() {
+		return isCompatibleWithContentType(MediaType.APPLICATION_JSON, MimeTypeUtils.TEXT_JSON);
+	}
+
+	public boolean isXmlContentType() {
+		return isCompatibleWithContentType(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
+	}
+
+	public boolean isMultipartFormContentType() {
+		return isCompatibleWithContentType(MediaType.MULTIPART_FORM_DATA);
+	}
+
+	public boolean isCompatibleWithContentType(MimeType... contentTypes) {
+		if (contentTypes == null) {
+			return false;
+		}
+
+		MediaType contentType = getContentType();
+		if (contentType == null) {
+			return false;
+		}
+
+		for (MimeType type : contentTypes) {
+			if (contentType.isCompatibleWith(type)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

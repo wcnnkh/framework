@@ -138,7 +138,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	}
 
 	public InputStream getInputStream() throws IOException {
-		return getRequest().getInputStream();
+		return getRequest().getBody();
 	}
 
 	public OutputStream getOutputStream() throws IOException {
@@ -152,7 +152,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	@Override
 	public String toString() {
 		StringBuilder appendable = new StringBuilder();
-		appendable.append("path=").append(getRequest().getRequestPath());
+		appendable.append("path=").append(getRequest().getControllerPath());
 		appendable.append(",method=").append(getRequest().getMethod());
 		appendable.append(",").append(JSONUtils.toJSONString(getRequest().getParameterMap()));
 		return appendable.toString();

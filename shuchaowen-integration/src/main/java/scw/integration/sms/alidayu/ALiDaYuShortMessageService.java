@@ -77,13 +77,11 @@ public final class ALiDaYuShortMessageService implements ShortMessageService<ALi
 
 		map.put("rec_num", phones);
 		map.put("sign", getSign(map));
-		String content = HttpUtils.postForm(host, null, map);
+		String content = HttpUtils.getHttpClient().postForFrom(host, map);
 		logger.debug(content);
-
 		if (content == null) {
 			return null;
 		}
-
 		return new ALiDaYuResult(content);
 	}
 

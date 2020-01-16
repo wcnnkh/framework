@@ -81,7 +81,7 @@ public final class ControllerService {
 		if (checkRPCEnable(httpRequest)) {
 			channel.getResponse().setMimeType(MimeTypeUtils.APPLICATION_OCTET_STREAM);
 			try {
-				rpcService.service(httpRequest.getInputStream(), httpResponse.getOutputStream());
+				rpcService.service(httpRequest.getBody(), httpResponse.getOutputStream());
 			} catch (IOException e) {
 				logger.error(e, channel.toString());
 			}
@@ -89,7 +89,7 @@ public final class ControllerService {
 		}
 
 		if (checkResourcePath(httpRequest)) {
-			File file = new File(sourceRoot + httpRequest.getRequestPath());
+			File file = new File(sourceRoot + httpRequest.getControllerPath());
 			if (file != null && file.exists() && file.isFile()) {
 				outputFile(file, httpResponse);
 				return true;
@@ -107,11 +107,11 @@ public final class ControllerService {
 			return false;
 		}
 
-		if (!request.getRequestPath().equals(rpcPath)) {
+		if (!request.getControllerPath().equals(rpcPath)) {
 			return false;
 		}
 
-		return StringUtils.startsWith(request.getContentType(), MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE, true);
+		return StringUtils.startsWith(request.getRawContentType(), MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE, true);
 	}
 
 	private boolean checkResourcePath(HttpRequest httpRequest) {
@@ -124,7 +124,7 @@ public final class ControllerService {
 		}
 
 		for (String p : sourcePath) {
-			if (p.equals(sourcePath) || StringUtils.test(httpRequest.getRequestPath(), p)) {
+			if (p.equals(sourcePath) || StringUtils.test(httpRequest.getControllerPath(), p)) {
 				return true;
 			}
 		}

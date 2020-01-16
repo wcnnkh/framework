@@ -12,7 +12,7 @@ public final class HttpPathActionFactory extends HttpActionFactory {
 
 	@Override
 	public HttpAction getAction(HttpChannel httpChannel) {
-		Map<String, HttpAction> map = actionMap.get(httpChannel.getRequest().getRequestPath());
+		Map<String, HttpAction> map = actionMap.get(httpChannel.getRequest().getControllerPath());
 		if (map == null) {
 			return null;
 		}

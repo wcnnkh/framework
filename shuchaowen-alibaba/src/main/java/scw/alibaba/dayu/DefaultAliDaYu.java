@@ -56,8 +56,7 @@ public final class DefaultAliDaYu implements AliDaYu {
 		map.put("sms_param", sms_param);
 		map.put("rec_num", toPhones);
 		map.put("sign", getSign(map));
-		String content = HttpUtils.postForm(host, null, map);
-		;
+		String content = HttpUtils.getHttpClient().postForFrom(host, map);
 		logger.info(content);
 		return resultFactory.success(content);
 	}

@@ -3,10 +3,15 @@ package scw.mvc.http;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Enumeration;
 import java.util.Map;
 
 import scw.net.http.Cookie;
+import scw.net.http.HttpHeaders;
+import scw.net.http.MediaType;
+import scw.net.http.Method;
+import scw.net.message.MessageConvetException;
 import scw.security.session.Session;
 import scw.util.attribute.AttributesWrapper;
 
@@ -26,48 +31,28 @@ public class HttpRequestWrapper extends AttributesWrapper<String, Object> implem
 		return targetHttpRequest.getCharacterEncoding();
 	}
 
-	public void setCharacterEncoding(String env){
+	public void setCharacterEncoding(String env) {
 		targetHttpRequest.setCharacterEncoding(env);
 	}
 
-	public InputStream getInputStream() throws IOException {
-		return targetHttpRequest.getInputStream();
+	public InputStream getBody() throws IOException {
+		return targetHttpRequest.getBody();
 	}
 
 	public BufferedReader getReader() throws IOException {
 		return targetHttpRequest.getReader();
 	}
 
-	public String getMethod() {
-		return targetHttpRequest.getMethod();
+	public String getRawMethod() {
+		return targetHttpRequest.getRawMethod();
 	}
 
-	public String getRequestPath() {
-		return targetHttpRequest.getRequestPath();
+	public Method getMethod() {
+		return targetHttpRequest.getMethod();
 	}
 
 	public Cookie getCookie(String name, boolean ignoreCase) {
 		return targetHttpRequest.getCookie(name, ignoreCase);
-	}
-
-	public long getDateHeader(String name) {
-		return targetHttpRequest.getDateHeader(name);
-	}
-
-	public String getHeader(String name) {
-		return targetHttpRequest.getHeader(name);
-	}
-
-	public Enumeration<String> getHeaders(String name) {
-		return targetHttpRequest.getHeaders(name);
-	}
-
-	public Enumeration<String> getHeaderNames() {
-		return targetHttpRequest.getHeaderNames();
-	}
-
-	public int getIntHeader(String name) {
-		return targetHttpRequest.getIntHeader(name);
 	}
 
 	public Session getHttpSession() {
@@ -78,7 +63,7 @@ public class HttpRequestWrapper extends AttributesWrapper<String, Object> implem
 		return targetHttpRequest.getHttpSession(create);
 	}
 
-	public String getContentType() {
+	public MediaType getContentType() {
 		return targetHttpRequest.getContentType();
 	}
 
@@ -118,4 +103,47 @@ public class HttpRequestWrapper extends AttributesWrapper<String, Object> implem
 		return targetHttpRequest.getContextPath();
 	}
 
+	public HttpHeaders getHeaders() {
+		return targetHttpRequest.getHeaders();
+	}
+
+	public URI getURI() {
+		return targetHttpRequest.getURI();
+	}
+
+	public String getHeader(String name) {
+		return targetHttpRequest.getHeader(name);
+	}
+
+	public Enumeration<String> getHeaderNames() {
+		return targetHttpRequest.getHeaderNames();
+	}
+
+	public Enumeration<String> getHeaders(String name) {
+		return targetHttpRequest.getHeaders(name);
+	}
+
+	public long getContentLength() {
+		return targetHttpRequest.getContentLength();
+	}
+
+	public byte[] toByteArray() throws IOException {
+		return targetHttpRequest.toByteArray();
+	}
+
+	public String convertToString(String charsetName) throws IOException, MessageConvetException {
+		return targetHttpRequest.convertToString(charsetName);
+	}
+
+	public String convertToString() throws IOException, MessageConvetException {
+		return targetHttpRequest.convertToString();
+	}
+
+	public String getControllerPath() {
+		return targetHttpRequest.getControllerPath();
+	}
+
+	public String getRawContentType() {
+		return targetHttpRequest.getRawContentType();
+	}
 }

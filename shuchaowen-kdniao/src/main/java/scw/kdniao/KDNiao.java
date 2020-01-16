@@ -26,8 +26,7 @@ public class KDNiao {
 	private final boolean sandbox;
 	private final boolean https;
 
-	public KDNiao(String businessId, String apiKey, boolean sandbox,
-			boolean https) {
+	public KDNiao(String businessId, String apiKey, boolean sandbox, boolean https) {
 		this.businessId = businessId;
 		this.apiKey = apiKey;
 		this.sandbox = sandbox;
@@ -38,8 +37,7 @@ public class KDNiao {
 		this(businessId, apiKey, false, true);
 	}
 
-	public synchronized void addDataSignUrlNotEncodeRequestTypeSet(
-			String requestType) {
+	public synchronized void addDataSignUrlNotEncodeRequestTypeSet(String requestType) {
 		if (dataSignUrlNotEncodeRequestTypeSet == null) {
 			dataSignUrlNotEncodeRequestTypeSet = new HashSet<String>();
 		}
@@ -82,23 +80,19 @@ public class KDNiao {
 	 * @param businessParameterMap
 	 * @return
 	 */
-	public String doRequest(String requestUrl, String requestType,
-			Map<String, ?> businessParameterMap) {
+	public String doRequest(String requestUrl, String requestType, Map<String, ?> businessParameterMap) {
 		String requestData = JSONUtils.toJSONString(businessParameterMap);
-		Map<String, String> parameterMap = new LinkedHashMap<String, String>(8,
-				1);
-		parameterMap.put("RequestData",
-				HttpUtils.encode(requestData, CHARSET_NAME));
+		Map<String, String> parameterMap = new LinkedHashMap<String, String>(8, 1);
+		parameterMap.put("RequestData", HttpUtils.encode(requestData, CHARSET_NAME));
 		parameterMap.put("EBusinessID", businessId);
 		parameterMap.put("RequestType", requestType);
-		String dataSign = SignatureUtils.sign(requestData + apiKey,
-				CHARSET_NAME, SignType.MD5, SignType.BASE64);
+		String dataSign = SignatureUtils.sign(requestData + apiKey, CHARSET_NAME, SignType.MD5, SignType.BASE64);
 		if (dataSignIsUrlEncodeByRequestType(requestType)) {
 			dataSign = HttpUtils.encode(dataSign, CHARSET_NAME);
 		}
 		parameterMap.put("DataSign", dataSign);
 		parameterMap.put("DataType", "2");
-		return HttpUtils.postForm(requestUrl, null, parameterMap, CHARSET_NAME);
+		return HttpUtils.getHttpClient().postForFrom(requestUrl, parameterMap, CHARSET_NAME);
 	}
 
 	/**
@@ -112,8 +106,7 @@ public class KDNiao {
 	 *            物流单号
 	 * @return
 	 */
-	public EbusinessOrderHandleResponse businessOrderHandle(String orderCode,
-			String shipperCode, String logisticCode) {
+	public EbusinessOrderHandleResponse businessOrderHandle(String orderCode, String shipperCode, String logisticCode) {
 		Map<String, String> map = new LinkedHashMap<String, String>(4, 1);
 		map.put("OrderCode", orderCode);
 		map.put("ShipperCode", shipperCode);
@@ -137,10 +130,8 @@ public class KDNiao {
 	}
 
 	public String distRequest(String requestType, ToParameterMap paramsMap) {
-		return doRequest(
-				isSandbox() ? "http://sandboxapi.kdniao.com:8080/kdniaosandbox/gateway/exterfaceInvoke.json"
-						: "http://api.kdniao.com/api/dist", requestType,
-				XUtils.toMap(paramsMap));
+		return doRequest(isSandbox() ? "http://sandboxapi.kdniao.com:8080/kdniaosandbox/gateway/exterfaceInvoke.json"
+				: "http://api.kdniao.com/api/dist", requestType, XUtils.toMap(paramsMap));
 	}
 
 	public SubscribeResponse subscribe(SubscribeRequestParameter parameter) {

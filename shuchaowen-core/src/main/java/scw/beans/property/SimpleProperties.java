@@ -34,14 +34,11 @@ public class SimpleProperties extends AbstractProperties {
 
 				Property property;
 				if (!StringUtils.isEmpty(getFilePath(n))) {
-					property = new FilePropertyValue(getPropertyFactory(),
-							n);
+					property = new FilePropertyValue(getPropertyFactory(), n);
 				} else if (!StringUtils.isEmpty(getURL(n))) {
-					property = new URLPropertyValue(getPropertyFactory(),
-							n);
+					property = new URLPropertyValue(getPropertyFactory(), n);
 				} else {
-					property = new ValuePropertyValue(
-							getPropertyFactory(), n);
+					property = new ValuePropertyValue(getPropertyFactory(), n);
 				}
 
 				map.put(property.getName(), property);
@@ -65,8 +62,7 @@ public class SimpleProperties extends AbstractProperties {
 		}
 
 		public String getValue() {
-			String path = XMLUtils.formatNodeValue(getPropertyFactory(),
-					getNode(), getFilePath(getNode()));
+			String path = XMLUtils.formatNodeValue(getPropertyFactory(), getNode(), getFilePath(getNode()));
 			return ResourceUtils.getResourceOperations().getFileContent(path,
 					XmlPropertyUtils.getCharsetName(getNode()));
 		}
@@ -79,10 +75,8 @@ public class SimpleProperties extends AbstractProperties {
 		}
 
 		public String getValue() {
-			String url = XMLUtils.formatNodeValue(getPropertyFactory(),
-					getNode(), getURL(getNode()));
-			return HttpUtils.doGet(url,
-					XmlPropertyUtils.getCharsetName(getNode()));
+			String url = XMLUtils.formatNodeValue(getPropertyFactory(), getNode(), getURL(getNode()));
+			return HttpUtils.getHttpClient().get(url, XmlPropertyUtils.getCharsetName(getNode()));
 		}
 	}
 
@@ -93,8 +87,7 @@ public class SimpleProperties extends AbstractProperties {
 		}
 
 		public String getValue() {
-			return XMLUtils.getNodeAttributeValueOrNodeContent(
-					getPropertyFactory(), getNode(), "value");
+			return XMLUtils.getNodeAttributeValueOrNodeContent(getPropertyFactory(), getNode(), "value");
 		}
 	}
 }

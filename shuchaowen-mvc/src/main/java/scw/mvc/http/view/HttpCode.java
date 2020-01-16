@@ -15,15 +15,14 @@ public class HttpCode extends HttpView {
 	}
 
 	@Override
-	public void render(HttpChannel channel, HttpRequest httpRequest,
-			HttpResponse httpResponse) throws Throwable {
+	public void render(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse) throws Throwable {
 		if (httpResponse.getContentType() == null) {
 			httpResponse.setContentType("text/html;charset=" + httpResponse.getCharacterEncoding());
 		}
 
 		if (channel.isLogEnabled()) {
-			channel.log("path={},method={},status={},msg={}", httpRequest.getRequestPath(),
-					httpRequest.getMethod(), status, msg);
+			channel.log("path={},method={},status={},msg={}", httpRequest.getControllerPath(), httpRequest.getMethod(),
+					status, msg);
 		}
 		httpResponse.sendError(status, msg);
 	}

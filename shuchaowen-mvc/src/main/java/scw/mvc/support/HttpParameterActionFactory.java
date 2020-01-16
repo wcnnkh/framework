@@ -21,7 +21,7 @@ public final class HttpParameterActionFactory extends HttpActionFactory {
 			return null;
 		}
 
-		Map<String, Map<String, HttpAction>> map = actionMap.get(httpChannel.getRequest().getRequestPath());
+		Map<String, Map<String, HttpAction>> map = actionMap.get(httpChannel.getRequest().getControllerPath());
 		if (map == null) {
 			return null;
 		}

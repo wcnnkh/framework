@@ -47,12 +47,6 @@
 				<artifactId>shuchaowen-serializer</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
-			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-web</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
@@ -466,6 +460,5 @@
 		<module>shuchaowen-serializer</module>
 		<module>shuchaowen-async</module>
 		<module>shuchaowen-rpc</module>
-		<module>shuchaowen-web</module>
 	</modules>
 </project>

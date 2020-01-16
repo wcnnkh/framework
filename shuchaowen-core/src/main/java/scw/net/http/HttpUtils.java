@@ -13,37 +13,31 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.Constants;
-import scw.core.string.StringCodecUtils;
+import scw.core.instance.InstanceUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
-import scw.io.IOUtils;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportException;
-import scw.net.MimeTypeUtils;
-import scw.net.RequestException;
 import scw.net.http.client.ClientHttpRequest;
 import scw.net.http.client.ClientHttpRequestFactory;
-import scw.net.http.client.ClientHttpResponse;
-import scw.net.http.client.SimpleClientHttpRequestFactory;
+import scw.net.http.client.HttpClient;
+import scw.net.http.client.SimpleHttpClient;
 import scw.util.ToMap;
 
 public final class HttpUtils {
 	private HttpUtils() {
 	};
 
-	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = new SimpleClientHttpRequestFactory();
+	private static final HttpClient HTTP_CLIENT = InstanceUtils.autoNewInstanceBySystemProperty(HttpClient.class,
+			"scw.http.client", new SimpleHttpClient());
 
-	public static ClientHttpRequestFactory getClientHttpRequestFactory() {
-		return CLIENT_HTTP_REQUEST_FACTORY;
+	public static HttpClient getHttpClient() {
+		return HTTP_CLIENT;
 	}
 
-	public static String doGet(String url) {
-		return doGet(url, Constants.DEFAULT_CHARSET_NAME);
-	}
-	
 	public static ClientHttpRequest createRequest(String url, Method httpMethod, MediaType contentType,
 			ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
 		URI uri;
@@ -58,22 +52,6 @@ public final class HttpUtils {
 		return request;
 	}
 
-	public static String doGet(String url, String charsetName) {
-		ClientHttpRequest request;
-		ClientHttpResponse response = null;
-		try {
-			request = createRequest(url, Method.GET,
-					new MediaType(MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED, charsetName),
-					getClientHttpRequestFactory());
-			response = request.execute();
-			return response.convertToString(charsetName);
-		} catch (IOException e) {
-			throw new RequestException(e);
-		} finally {
-			IOUtils.close(response);
-		}
-	}
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static String toJsonString(Object body) {
 		if (body == null) {
@@ -86,60 +64,6 @@ public final class HttpUtils {
 		} else {
 			return JSONUtils.toJSONString(body);
 		}
-	}
-
-	public static String postJson(String url, Map<String, String> requestProperties, Object body, String charsetName) {
-		String text = toJsonString(body);
-		ClientHttpRequest request;
-		ClientHttpResponse response = null;
-		try {
-			request = createRequest(url, Method.POST, new MediaType(MimeTypeUtils.APPLICATION_JSON, charsetName),
-					getClientHttpRequestFactory());
-			if (StringUtils.isNotEmpty(text)) {
-				IOUtils.write(StringCodecUtils.getStringCodec(charsetName).encode(text), request.getBody());
-			}
-			response = request.execute();
-			return response.convertToString(charsetName);
-		} catch (IOException e) {
-			throw new RequestException(e);
-		} finally {
-			IOUtils.close(response);
-		}
-	}
-
-	public static String postJson(String url, Map<String, String> requestProperties, Object body) {
-		return postJson(url, requestProperties, body, Constants.DEFAULT_CHARSET_NAME);
-	}
-
-	public static String postForm(String url, Map<String, String> requestProperties, Map<String, ?> parameterMap,
-			String charsetName) {
-		ClientHttpRequest request;
-		ClientHttpResponse response = null;
-		try {
-			String body = toFormBody(parameterMap, charsetName);
-			request = createRequest(url, Method.POST,
-					new MediaType(MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED, charsetName),
-					getClientHttpRequestFactory());
-			request.getHeaders().setAll(requestProperties);
-			if (StringUtils.isNotEmpty(body)) {
-				IOUtils.write(StringCodecUtils.getStringCodec(charsetName).encode(body), request.getBody());
-			}
-			response = request.execute();
-			return response.convertToString(charsetName);
-		} catch (IOException e) {
-			throw new RequestException(e);
-		} finally {
-			IOUtils.close(response);
-		}
-	}
-
-	public static String postForm(String url, Map<String, String> requestProperties,
-			ToMap<String, ?> toRequestParameterMap, String charsetName) {
-		return postForm(url, requestProperties, XUtils.toMap(toRequestParameterMap), charsetName);
-	}
-
-	public static String postForm(String url, Map<String, String> requestProperties, Map<String, ?> parameterMap) {
-		return postForm(url, requestProperties, parameterMap, Constants.DEFAULT_CHARSET_NAME);
 	}
 
 	public static String toFormBody(String key, Collection<?> values, String charsetName)

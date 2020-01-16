@@ -46,7 +46,7 @@ public final class HttpRestfulActionFactory extends HttpActionFactory {
 			return null;
 		}
 
-		String[] pathArr = channel.getRequest().getRequestPath().split("/");
+		String[] pathArr = channel.getRequest().getControllerPath().split("/");
 		for (Entry<String, HttpRestfulInfo> entry : map.entrySet()) {
 			HttpRestfulInfo restUrl = entry.getValue();
 			if (pathArr.length != restUrl.getRegArr().length) {

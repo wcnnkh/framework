@@ -2,19 +2,20 @@ package scw.mvc;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 
-public interface Request{
-	String getContentType();
+import scw.net.message.InputMessage;
+
+public interface Request extends InputMessage {
+	String getControllerPath();
+	
+	String getContextPath();
 	
 	String getCharacterEncoding();
 
-    void setCharacterEncoding(String env);
-	
-	InputStream getInputStream() throws IOException;
-	
+	void setCharacterEncoding(String env);
+
 	BufferedReader getReader() throws IOException;
-	
+
 	/**
 	 * Returns the Internet Protocol (IP) address of the client or last proxy
 	 * that sent the request. For HTTP servlets, same as the value of the CGI

@@ -60,7 +60,6 @@ import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.Text;
 import scw.net.header.HeadersConstants;
-import scw.net.header.HeadersReadOnly;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.attribute.Attributes;
@@ -69,7 +68,7 @@ import scw.util.ip.IP;
 public final class MVCUtils implements MvcConstants {
 	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
 	private static final String[] IP_HEADERS = SystemPropertyUtils.getArrayProperty(String.class, "mvc.ip.headers",
-			new String[] { HeadersConstants.X_REAL_IP, HeadersConstants.X_FORWARDED_FOR });
+			new String[] { "X-Real-Ip", "X-Forwarded-For" });
 	// 使用ip的模式 1表示使用第一个ip 2表示使用最后一个ip 其他表示原样返回
 	private static final int USE_IP_MODEL = StringUtils.parseInt(SystemPropertyUtils.getProperty("mvc.ip.model"), 1);
 	private static final ContextManager<? extends Context> CONTEXT_MANAGER = new DefaultThreadLocalContextManager();
@@ -320,7 +319,7 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static boolean isDesignatedContentType(Request request, String contentType) {
-		return StringUtils.contains(request.getContentType(), contentType, true);
+		return StringUtils.contains(request.getRawContentType(), contentType, true);
 	}
 
 	public static String getExistActionErrMsg(Action action, Action oldAction) {
@@ -411,10 +410,6 @@ public final class MVCUtils implements MvcConstants {
 		return null;
 	}
 
-	public static String getUntreatedIp(HttpRequest httpRequest) {
-		return getUntreatedIp(httpRequest, httpRequest);
-	}
-
 	/**
 	 * 获取未经处理的ip
 	 * 
@@ -422,31 +417,20 @@ public final class MVCUtils implements MvcConstants {
 	 * @param request
 	 * @return
 	 */
-	public static String getUntreatedIp(HeadersReadOnly headersReadOnly, Request request) {
+	public static String getUntreatedIp(HttpRequest httpRequest) {
 		for (String header : IP_HEADERS) {
-			String ip = headersReadOnly.getHeader(header);
+			String ip = httpRequest.getHeader(header);
 			if (ip == null) {
 				continue;
 			}
 
 			return ip;
 		}
-		return request.getRemoteAddr();
+		return httpRequest.getRemoteAddr();
 	}
 
 	public static String getIP(HttpRequest httpRequest) {
-		return getIP(httpRequest, httpRequest);
-	}
-
-	/**
-	 * 获取ip
-	 * 
-	 * @param headersReadOnly
-	 * @param request
-	 * @return
-	 */
-	public static String getIP(HeadersReadOnly headersReadOnly, Request request) {
-		String ip = getUntreatedIp(headersReadOnly, request);
+		String ip = getUntreatedIp(httpRequest);
 		if (USE_IP_MODEL == 1) {// 使用第一个
 			String[] ipArray = StringUtils.commonSplit(ip);
 			if (ArrayUtils.isEmpty(ipArray)) {
@@ -689,7 +673,7 @@ public final class MVCUtils implements MvcConstants {
 			content = ((Text) write).getTextContent();
 			if (callbackTag == null) {
 				MimeType mimeType = ((Text) write).getMimeType();
-				if(mimeType != null){
+				if (mimeType != null) {
 					httpResponse.setMimeType(mimeType);
 				}
 			}

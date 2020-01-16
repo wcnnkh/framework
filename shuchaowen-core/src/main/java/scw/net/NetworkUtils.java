@@ -5,6 +5,8 @@ import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -118,5 +120,13 @@ public final class NetworkUtils {
 			Collection<MessageConverter> messageConverters) throws IOException {
 		MessageConverterChain chain = new DefaultMessageConverterChain(messageConverters, null);
 		chain.write(body, contentType, outputMessage);
+	}
+
+	public static URI toURI(String uri) {
+		try {
+			return new URI(uri);
+		} catch (URISyntaxException e) {
+			throw new IllegalStateException("Failed to URI", e);
+		}
 	}
 }

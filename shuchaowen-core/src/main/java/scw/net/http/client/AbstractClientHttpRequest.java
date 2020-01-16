@@ -25,8 +25,9 @@ public abstract class AbstractClientHttpRequest extends AbstractOutputMessage im
 		return getBodyInternal(this.headers);
 	}
 
-	public void setContentType(MediaType contentType) {
-		getHeaders().setContentType(contentType);
+	@Override
+	public MediaType getContentType() {
+		return getHeaders().getContentType();
 	}
 	
 	public final ClientHttpResponse execute() throws IOException {

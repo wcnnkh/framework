@@ -29,9 +29,9 @@ public final class SimpleHttpTestingRequestMessage implements Serializable, Http
 			header.put(name, request.getHeader(name));
 		}
 
-		this.method = request.getMethod();
-		this.path = request.getRequestPath();
-		this.body = IOUtils.read(request.getInputStream(), 1024, 0);
+		this.method = request.getRawMethod();
+		this.path = request.getControllerPath();
+		this.body = IOUtils.read(request.getBody(), 1024, 0);
 	}
 
 	public Map<String, String> getHeader() {
