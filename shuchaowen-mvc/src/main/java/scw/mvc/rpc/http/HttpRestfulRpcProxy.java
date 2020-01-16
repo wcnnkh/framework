@@ -17,12 +17,12 @@ import scw.core.utils.StringUtils;
 import scw.lang.Nullable;
 import scw.mvc.rpc.RpcConstants;
 import scw.mvc.rpc.support.ObjectRpcMessageConvert;
-import scw.net.header.HeadersConstants;
+import scw.net.http.HttpHeaders;
 import scw.serializer.Serializer;
 
 public class HttpRestfulRpcProxy implements Filter, RpcConstants {
-	private static final String[] DEFAULT_SHARE_HEADERS = new String[] { HeadersConstants.CONTENT_TYPE,
-			HeadersConstants.COOKIE, HeadersConstants.X_FORWARDED_FOR };
+	private static final String[] DEFAULT_SHARE_HEADERS = new String[] { HttpHeaders.CONTENT_TYPE,
+			HttpHeaders.COOKIE, HttpHeaders.X_FORWARDED_FOR };
 	private HttpRpcProxy httpRpcProxy;
 
 	public HttpRestfulRpcProxy(InstanceFactory instanceFactory, PropertyFactory propertyFactory,

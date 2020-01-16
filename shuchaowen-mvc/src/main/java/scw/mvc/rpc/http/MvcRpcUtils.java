@@ -16,7 +16,7 @@ import scw.core.utils.StringUtils;
 import scw.lang.NotSupportException;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
-import scw.net.header.HeadersReadOnly;
+import scw.net.message.Message;
 
 public final class MvcRpcUtils {
 	private MvcRpcUtils() {
@@ -72,10 +72,10 @@ public final class MvcRpcUtils {
 		return map;
 	}
 
-	private static Map<String, String> getheaderMap(HeadersReadOnly headersReadOnly, Collection<String> headerNames) {
+	private static Map<String, String> getMessageHeaderMap(Message message, Collection<String> headerNames) {
 		Map<String, String> map = new HashMap<String, String>();
 		for (String name : headerNames) {
-			String value = headersReadOnly.getHeader(name);
+			String value = message.getHeader(name);
 			if (StringUtils.isEmpty(value)) {
 				continue;
 			}
@@ -96,8 +96,8 @@ public final class MvcRpcUtils {
 		}
 
 		Map<String, String> headerMap = new HashMap<String, String>(headerNames.size());
-		if (channel.getRequest() instanceof HeadersReadOnly) {
-			headerMap.putAll(getheaderMap((HeadersReadOnly) channel.getRequest(), headerNames));
+		if (channel.getRequest() instanceof Message) {
+			headerMap.putAll(getMessageHeaderMap((Message) channel.getRequest(), headerNames));
 		}
 		return headerMap;
 	}

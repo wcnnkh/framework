@@ -18,7 +18,7 @@ import scw.mvc.MVCUtils;
 import scw.mvc.servlet.http.DefaultHttpServletChannelFactory;
 import scw.mvc.servlet.http.HttpServletChannelFactory;
 import scw.mvc.servlet.http.MyHttpServletRequest;
-import scw.net.header.HeadersConstants;
+import scw.net.http.HttpHeaders;
 
 public final class ServletUtils {
 	private static boolean asyncSupport = true;// 是否支持异步处理
@@ -136,6 +136,6 @@ public final class ServletUtils {
 	 * @return
 	 */
 	public static boolean isAjaxRequest(HttpServletRequest request) {
-		return "XMLHttpRequest".equals(request.getHeader(HeadersConstants.X_REQUESTED_WITH));
+		return "XMLHttpRequest".equals(request.getHeader(HttpHeaders.X_REQUESTED_WITH));
 	}
 }

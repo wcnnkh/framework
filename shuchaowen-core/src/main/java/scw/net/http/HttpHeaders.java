@@ -495,6 +495,10 @@ public class HttpHeaders extends Headers {
 			"EEE, dd-MMM-yy HH:mm:ss zzz", "EEE MMM dd HH:mm:ss yyyy" };
 
 	public static final String X_REQUESTED_WITH = "X-Requested-With";
+	
+	public static final String X_REAL_IP = "X-Real-Ip";
+	
+	public static final String X_FORWARDED_FOR = "X-Forwarded-For";
 
 	public HttpHeaders() {
 		super(false);

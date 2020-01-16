@@ -59,7 +59,7 @@ import scw.mvc.support.MultiActionFactory;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.Text;
-import scw.net.header.HeadersConstants;
+import scw.net.http.HttpHeaders;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.attribute.Attributes;
@@ -291,7 +291,7 @@ public final class MVCUtils implements MvcConstants {
 	 * @return
 	 */
 	public static boolean isAjaxRequest(HttpRequest request) {
-		return "XMLHttpRequest".equals(request.getHeader(HeadersConstants.X_REQUESTED_WITH));
+		return "XMLHttpRequest".equals(request.getHeader(HttpHeaders.X_REQUESTED_WITH));
 	}
 
 	/**
@@ -549,26 +549,26 @@ public final class MVCUtils implements MvcConstants {
 	public static void responseCrossDomain(CrossDomainDefinition crossDomainDefinition, HttpResponse httpResponse) {
 		/* 允许跨域的主机地址 */
 		if (StringUtils.isNotEmpty(crossDomainDefinition.getOrigin())) {
-			httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_ALLOW_ORIGIN, crossDomainDefinition.getOrigin());
+			httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, crossDomainDefinition.getOrigin());
 		}
 
 		/* 允许跨域的请求方法GET, POST, HEAD 等 */
 		if (StringUtils.isNotEmpty(crossDomainDefinition.getMethods())) {
-			httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_ALLOW_METHODS, crossDomainDefinition.getMethods());
+			httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, crossDomainDefinition.getMethods());
 		}
 
 		/* 重新预检验跨域的缓存时间 (s) */
 		if (crossDomainDefinition.getMaxAge() > 0) {
-			httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_MAX_AGE, crossDomainDefinition.getMaxAge() + "");
+			httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_MAX_AGE, crossDomainDefinition.getMaxAge() + "");
 		}
 
 		/* 允许跨域的请求头 */
 		if (StringUtils.isNotEmpty(crossDomainDefinition.getHeaders())) {
-			httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_ALLOW_HEADERS, crossDomainDefinition.getHeaders());
+			httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, crossDomainDefinition.getHeaders());
 		}
 
 		/* 是否携带cookie */
-		httpResponse.setHeader(HeadersConstants.ACCESS_CONTROL_ALLOW_CREDENTIALS,
+		httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
 				crossDomainDefinition.isCredentials() + "");
 	}
 

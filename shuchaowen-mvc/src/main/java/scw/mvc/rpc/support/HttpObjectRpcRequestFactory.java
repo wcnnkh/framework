@@ -10,7 +10,7 @@ import scw.io.Bytes;
 import scw.mvc.rpc.http.HttpRpcRequestFactory;
 import scw.mvc.rpc.http.MvcRpcUtils;
 import scw.net.MimeTypeUtils;
-import scw.net.header.HeadersConstants;
+import scw.net.http.HttpHeaders;
 import scw.net.http.client.ClientHttpRequest;
 import scw.net.http.client.accessor.HttpAccessor;
 import scw.security.signature.SignatureUtils;
@@ -48,7 +48,7 @@ public class HttpObjectRpcRequestFactory extends HttpAccessor implements HttpRpc
 
 		String ip = MvcRpcUtils.getIP();
 		if (StringUtils.isNotEmpty(ip)) {
-			request.getHeaders().set(HeadersConstants.X_FORWARDED_FOR, ip);
+			request.getHeaders().set(HttpHeaders.X_FORWARDED_FOR, ip);
 		}
 		request.setContentType(MimeTypeUtils.APPLICATION_OCTET_STREAM);
 		return request;
