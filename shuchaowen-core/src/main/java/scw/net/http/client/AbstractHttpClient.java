@@ -8,9 +8,9 @@ import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.Assert;
 import scw.core.Constants;
-import scw.core.string.StringCodecUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.lang.StringCodecUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.MimeTypeUtils;
@@ -47,7 +47,7 @@ public abstract class AbstractHttpClient implements HttpClient {
 
 	public final String get(String url, String charsetName, SSLSocketFactory sslSocketFactory)
 			throws HttpClientException {
-		SerialzerableClientHttpInputMessage message = execute(url, Method.GET, null,
+		SerializableClientHttpInputMessage message = execute(url, Method.GET, null,
 				new MediaType(MediaType.APPLICATION_FORM_URLENCODED, charsetName), null, sslSocketFactory);
 		try {
 			handleResponse(url, Method.GET, message);
@@ -57,16 +57,16 @@ public abstract class AbstractHttpClient implements HttpClient {
 		return message.convertToString(charsetName);
 	}
 
-	public SerialzerableClientHttpInputMessage getToSerialzerableInputMessage(String url) throws HttpClientException {
-		return getToSerialzerableInputMessage(url, null);
+	public SerializableClientHttpInputMessage getToSerializableInputMessage(String url) throws HttpClientException {
+		return getToSerializableInputMessage(url, null);
 	}
 
-	public final SerialzerableClientHttpInputMessage getToSerialzerableInputMessage(String url, HttpHeaders httpHeaders)
+	public final SerializableClientHttpInputMessage getToSerializableInputMessage(String url, HttpHeaders httpHeaders)
 			throws HttpClientException {
-		return getToSerialzerableInputMessage(url, httpHeaders, null);
+		return getToSerializableInputMessage(url, httpHeaders, null);
 	}
 
-	public final SerialzerableClientHttpInputMessage getToSerialzerableInputMessage(String url, HttpHeaders httpHeaders,
+	public final SerializableClientHttpInputMessage getToSerializableInputMessage(String url, HttpHeaders httpHeaders,
 			SSLSocketFactory sslSocketFactory) throws HttpClientException {
 		return execute(url, Method.GET, null, MediaType.APPLICATION_FORM_URLENCODED, httpHeaders, sslSocketFactory);
 	}
@@ -159,7 +159,7 @@ public abstract class AbstractHttpClient implements HttpClient {
 
 	public final String post(String url, String body, String charsetName, MediaType contentType,
 			HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory) throws HttpClientException {
-		SerialzerableClientHttpInputMessage message = postToSerialzerableInputMessage(url,
+		SerializableClientHttpInputMessage message = postToSerializableInputMessage(url,
 				StringUtils.isEmpty(body) ? null : StringCodecUtils.getStringCodec(charsetName).encode(body),
 				new MediaType(contentType, charsetName), httpHeaders, sslSocketFactory);
 		try {
@@ -170,28 +170,28 @@ public abstract class AbstractHttpClient implements HttpClient {
 		return message.convertToString(charsetName);
 	}
 
-	public final SerialzerableClientHttpInputMessage postToSerialzerableInputMessage(String url, byte[] body,
+	public final SerializableClientHttpInputMessage postToSerializableInputMessage(String url, byte[] body,
 			MediaType contentType) throws HttpClientException {
-		return postToSerialzerableInputMessage(url, body, contentType, null);
+		return postToSerializableInputMessage(url, body, contentType, null);
 	}
 
-	public final SerialzerableClientHttpInputMessage postToSerialzerableInputMessage(String url, byte[] body,
+	public final SerializableClientHttpInputMessage postToSerializableInputMessage(String url, byte[] body,
 			MediaType contentType, HttpHeaders httpHeaders) throws HttpClientException {
-		return postToSerialzerableInputMessage(url, body, contentType, httpHeaders, null);
+		return postToSerializableInputMessage(url, body, contentType, httpHeaders, null);
 	}
 
-	public final SerialzerableClientHttpInputMessage postToSerialzerableInputMessage(String url, byte[] body,
+	public final SerializableClientHttpInputMessage postToSerializableInputMessage(String url, byte[] body,
 			MediaType contentType, HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory)
 			throws HttpClientException {
 		return execute(url, Method.POST, body, contentType, httpHeaders, sslSocketFactory);
 	}
 
-	public final SerialzerableClientHttpInputMessage execute(String url, Method method, byte[] body,
+	public final SerializableClientHttpInputMessage execute(String url, Method method, byte[] body,
 			MediaType contentType) throws HttpClientException {
 		return execute(url, method, body, contentType, null);
 	}
 
-	public final SerialzerableClientHttpInputMessage execute(String url, Method method, byte[] body,
+	public final SerializableClientHttpInputMessage execute(String url, Method method, byte[] body,
 			MediaType contentType, HttpHeaders httpHeaders) throws HttpClientException {
 		return execute(url, method, body, contentType, httpHeaders, null);
 	}

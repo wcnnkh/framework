@@ -9,7 +9,7 @@ import java.util.Map;
 
 import scw.core.instance.InstanceFactory;
 import scw.core.parameter.ParameterUtils;
-import scw.core.reflect.SerializableMethodDefinition;
+import scw.core.reflect.SerializableMethodHolder;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
 import scw.logger.Logger;
@@ -21,9 +21,9 @@ public final class InvokeInfo implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private Object tryRtnValue;
-	private SerializableMethodDefinition tryMethod;
-	private SerializableMethodDefinition confirmMethod;
-	private SerializableMethodDefinition cancelMethod;
+	private SerializableMethodHolder tryMethod;
+	private SerializableMethodHolder confirmMethod;
+	private SerializableMethodHolder cancelMethod;
 	private Object[] args;
 
 	/**
@@ -32,8 +32,8 @@ public final class InvokeInfo implements Serializable {
 	protected InvokeInfo() {
 	}
 
-	protected InvokeInfo(Object tryRtnValue, SerializableMethodDefinition tryMethod, SerializableMethodDefinition confirmMethod,
-			SerializableMethodDefinition cancelMethod, Object[] args) {
+	protected InvokeInfo(Object tryRtnValue, SerializableMethodHolder tryMethod, SerializableMethodHolder confirmMethod,
+			SerializableMethodHolder cancelMethod, Object[] args) {
 		this.tryRtnValue = tryRtnValue;
 		this.tryMethod = tryMethod;
 		this.confirmMethod = confirmMethod;
@@ -41,14 +41,14 @@ public final class InvokeInfo implements Serializable {
 		this.args = args;
 	}
 
-	private static Object[] getIndexMapppingArgs(SerializableMethodDefinition method, Object tryRtn, int resultSetIndex,
+	private static Object[] getIndexMapppingArgs(SerializableMethodHolder method, Object tryRtn, int resultSetIndex,
 			Object[] args) {
 		if (resultSetIndex >= 0) {
-			if (method.getParameterCount() - 1 > (args == null? 0:args.length)) {
+			if (method.getParameterCount() - 1 > (args == null ? 0 : args.length)) {
 				throw new IndexOutOfBoundsException();
 			}
 		} else {
-			if (method.getParameterCount() - 1 > (args == null? 0:args.length)) {
+			if (method.getParameterCount() - 1 > (args == null ? 0 : args.length)) {
 				throw new IndexOutOfBoundsException();
 			}
 		}
@@ -69,7 +69,7 @@ public final class InvokeInfo implements Serializable {
 		return params.toArray();
 	}
 
-	private static Object[] getNameMappingArgs(SerializableMethodDefinition tryMethod, SerializableMethodDefinition method, Object tryRtn,
+	private static Object[] getNameMappingArgs(SerializableMethodHolder tryMethod, SerializableMethodHolder method, Object tryRtn,
 			int resultSetIndex, Object[] args) throws NoSuchMethodException {
 		if (resultSetIndex >= 0) {
 			if (method.getParameterCount() > args.length) {
@@ -108,7 +108,7 @@ public final class InvokeInfo implements Serializable {
 		return params.toArray();
 	}
 
-	private void invoke(InstanceFactory instanceFactory, SerializableMethodDefinition methodConfig) throws NoSuchMethodException,
+	private void invoke(InstanceFactory instanceFactory, SerializableMethodHolder methodConfig) throws NoSuchMethodException,
 			SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (methodConfig == null) {
 			return;
@@ -122,7 +122,8 @@ public final class InvokeInfo implements Serializable {
 
 		Object[] params;
 		if (tCCStage.parameterNameMapping()) {
-			params = getNameMappingArgs(tryMethod, methodConfig, tryRtnValue, tCCStage.tryResultSetParameterIndex(), args);
+			params = getNameMappingArgs(tryMethod, methodConfig, tryRtnValue, tCCStage.tryResultSetParameterIndex(),
+					args);
 		} else {
 			params = getIndexMapppingArgs(methodConfig, tryRtnValue, tCCStage.tryResultSetParameterIndex(), args);
 		}
@@ -134,8 +135,8 @@ public final class InvokeInfo implements Serializable {
 		method.invoke(obj, params);
 	}
 
-	public void invoke(StageType stageType, InstanceFactory instanceFactory) throws NoSuchMethodException,
-			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public void invoke(StageType stageType, InstanceFactory instanceFactory)
+			throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		switch (stageType) {
 		case Confirm:
 			invoke(instanceFactory, confirmMethod);

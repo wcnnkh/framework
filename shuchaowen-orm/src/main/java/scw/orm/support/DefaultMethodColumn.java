@@ -7,9 +7,9 @@ import java.lang.reflect.Type;
 import java.util.LinkedList;
 
 import scw.core.annotation.AnnotationFactory;
-import scw.core.reflect.MultipleAnnotationFactory;
+import scw.core.annotation.MultipleAnnotationFactory;
+import scw.core.annotation.SimpleAnnotationFactory;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.reflect.SimpleAnnotationFactory;
 import scw.core.utils.StringUtils;
 import scw.lang.NotSupportException;
 import scw.orm.AbstractColumn;

@@ -1,10 +1,10 @@
 package scw.data.redis.jedis;
 
-import scw.core.string.StringCodec;
 import scw.data.redis.AbstractRedisWrapper;
 import scw.data.redis.Redis;
 import scw.data.redis.RedisImpl;
 import scw.data.redis.RedisOperations;
+import scw.lang.StringCodec;
 import scw.serializer.Serializer;
 import scw.serializer.SerializerUtils;
 

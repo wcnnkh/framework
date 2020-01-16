@@ -34,7 +34,7 @@ public class SimpleHttpClient extends AbstractHttpClient {
 		this.readTimeout = readTimeout;
 	}
 
-	public SerialzerableClientHttpInputMessage execute(String url, Method method, byte[] body, MediaType contentType,
+	public SerializableClientHttpInputMessage execute(String url, Method method, byte[] body, MediaType contentType,
 			HttpHeaders headers, SSLSocketFactory sslSocketFactory) throws HttpClientException {
 		Assert.notNull(url, "'url' must not be null");
 		Assert.notNull(method, "'method' must not be null");
@@ -66,7 +66,7 @@ public class SimpleHttpClient extends AbstractHttpClient {
 				IOUtils.write(body, request.getBody());
 			}
 			response = request.execute();
-			return new SerialzerableClientHttpInputMessage(response);
+			return new SerializableClientHttpInputMessage(response);
 		} catch (IOException ex) {
 			throw createHttpClientResourceAccessException(ex, url, method);
 		} finally {

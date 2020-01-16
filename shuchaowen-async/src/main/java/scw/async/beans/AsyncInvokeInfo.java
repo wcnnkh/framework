@@ -6,11 +6,11 @@ import java.util.concurrent.TimeUnit;
 
 import scw.async.beans.annotation.AsyncComplete;
 import scw.core.instance.InstanceFactory;
-import scw.core.reflect.SerializableMethodDefinition;
+import scw.core.reflect.SerializableMethodHolder;
 
 public class AsyncInvokeInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private SerializableMethodDefinition methodConfig;
+	private SerializableMethodHolder methodConfig;
 	private long delayMillis;
 	private TimeUnit timeUnit;
 	private Object[] args;
@@ -21,13 +21,13 @@ public class AsyncInvokeInfo implements Serializable {
 
 	public AsyncInvokeInfo(AsyncComplete asyncComplete, Class<?> clz, String beanName, Method method, Object[] args) {
 		this.delayMillis = asyncComplete.delayMillis();
-		this.methodConfig = new SerializableMethodDefinition(clz, method);
+		this.methodConfig = new SerializableMethodHolder(clz, method);
 		this.timeUnit = asyncComplete.timeUnit();
 		this.args = args;
 		this.beanName = beanName;
 	}
 
-	public SerializableMethodDefinition getMethodConfig() {
+	public SerializableMethodHolder getMethodConfig() {
 		return methodConfig;
 	}
 

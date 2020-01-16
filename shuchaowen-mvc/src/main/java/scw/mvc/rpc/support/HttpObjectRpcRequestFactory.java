@@ -13,6 +13,7 @@ import scw.net.MimeTypeUtils;
 import scw.net.http.HttpHeaders;
 import scw.net.http.client.ClientHttpRequest;
 import scw.net.http.client.accessor.HttpAccessor;
+import scw.rcp.object.ObjectRequestMessage;
 import scw.security.signature.SignatureUtils;
 import scw.serializer.Serializer;
 
@@ -34,13 +35,13 @@ public class HttpObjectRpcRequestFactory extends HttpAccessor implements HttpRpc
 
 	public ClientHttpRequest getHttpRequest(Class<?> clazz, Method method, Object[] args) throws Exception {
 		long cts = System.currentTimeMillis();
-		final ObjectRpcRequestMessage objectRpcRequestMessage = new ObjectRpcRequestMessage(clazz, method, args);
-		objectRpcRequestMessage.setAttribute("t", cts);
-		objectRpcRequestMessage.setAttribute("sign",
+		final ObjectRequestMessage requestMessage = new ObjectRequestMessage(clazz, method, args);
+		requestMessage.setAttribute("t", cts);
+		requestMessage.setAttribute("sign",
 				(SignatureUtils.byte2hex(SignatureUtils.md5(Bytes.string2bytes(cts + sign)))));
-		objectRpcRequestMessage.setAttribute("responseThrowable", responseThrowable);
+		requestMessage.setAttribute("responseThrowable", responseThrowable);
 		ClientHttpRequest request = createRequest(new URI(host), scw.net.http.Method.POST);
-		serializer.serialize(request.getBody(), objectRpcRequestMessage);
+		serializer.serialize(request.getBody(), requestMessage);
 		Map<String, String> headerMap = MvcRpcUtils.getHeaderMap(shareHeaders, clazz, method);
 		if (!CollectionUtils.isEmpty(headerMap)) {
 			request.getHeaders().setAll(headerMap);

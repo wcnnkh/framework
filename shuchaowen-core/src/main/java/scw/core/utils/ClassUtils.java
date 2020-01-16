@@ -653,6 +653,10 @@ public final class ClassUtils {
 	}
 
 	public static Class<?>[] forNames(ClassLoader classLoader, String... className) throws ClassNotFoundException {
+		if (ArrayUtils.isEmpty(className)) {
+			return new Class<?>[0];
+		}
+
 		Class<?>[] types = new Class<?>[className.length];
 		for (int i = 0; i < types.length; i++) {
 			types[i] = forName(className[i], classLoader);

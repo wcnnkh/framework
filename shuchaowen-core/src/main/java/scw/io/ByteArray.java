@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import scw.core.Constants;
-import scw.core.string.StringCodecUtils;
+import scw.lang.StringCodecUtils;
 
 /**
  * 此类非线程安全的

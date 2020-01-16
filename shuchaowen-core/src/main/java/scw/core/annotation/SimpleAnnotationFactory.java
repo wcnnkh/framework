@@ -1,4 +1,4 @@
-package scw.core.reflect;
+package scw.core.annotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 
-import scw.core.annotation.AnnotationFactory;
 import scw.core.utils.CollectionUtils;
 
 public class SimpleAnnotationFactory implements AnnotationFactory {

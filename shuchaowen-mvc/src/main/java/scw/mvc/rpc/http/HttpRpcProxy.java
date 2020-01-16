@@ -12,11 +12,11 @@ import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.mvc.rpc.annotation.MessageConvert;
-import scw.mvc.rpc.support.ObjectRpcResponseMessage;
 import scw.net.NetworkUtils;
 import scw.net.http.client.ClientHttpRequest;
 import scw.net.http.client.ClientHttpResponse;
 import scw.net.message.converter.MessageConverter;
+import scw.rcp.object.ObjectResponseMessage;
 
 public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter {
 	private static final long serialVersionUID = 1L;
@@ -74,11 +74,11 @@ public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter
 			ClientHttpResponse httpInputMessage = request.execute();
 			Object obj = NetworkUtils.read(method.getGenericReturnType(), httpInputMessage,
 					getMessageConverters(method.getDeclaringClass(), method));
-			if (obj instanceof ObjectRpcResponseMessage) {
-				if (((ObjectRpcResponseMessage) obj).getThrowable() != null) {
-					throw ((ObjectRpcResponseMessage) obj).getThrowable();
+			if (obj instanceof ObjectResponseMessage) {
+				if (((ObjectResponseMessage) obj).getError() != null) {
+					throw ((ObjectResponseMessage) obj).getError();
 				}
-				return ((ObjectRpcResponseMessage) obj).getResponse();
+				return ((ObjectResponseMessage) obj).getResponse();
 			} else {
 				return obj;
 			}

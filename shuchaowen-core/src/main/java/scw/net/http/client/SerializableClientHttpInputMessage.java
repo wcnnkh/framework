@@ -6,15 +6,15 @@ import scw.io.IOUtils;
 import scw.net.http.HttpHeaders;
 import scw.net.http.HttpStatus;
 import scw.net.http.MediaType;
-import scw.net.message.SerialzerableInputMessage;
+import scw.net.message.SerializableInputMessage;
 
-public class SerialzerableClientHttpInputMessage extends
-		SerialzerableInputMessage implements ClientHttpInputMessage {
+public class SerializableClientHttpInputMessage extends
+		SerializableInputMessage implements ClientHttpInputMessage {
 	private static final long serialVersionUID = 1L;
 	private int rawStatusCode;
 	private String statusText;
 
-	public SerialzerableClientHttpInputMessage(
+	public SerializableClientHttpInputMessage(
 			ClientHttpResponse clientHttpResponse) throws IOException {
 		super(IOUtils.toByteArray(clientHttpResponse.getBody()),
 				clientHttpResponse.getHeaders());

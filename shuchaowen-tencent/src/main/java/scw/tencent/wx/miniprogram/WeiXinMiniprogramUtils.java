@@ -13,8 +13,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import scw.core.Base64;
-import scw.core.string.StringCodecUtils;
 import scw.json.JsonObject;
+import scw.lang.StringCodecUtils;
 import scw.tencent.wx.BaseResponse;
 import scw.tencent.wx.WeiXinUtils;
 

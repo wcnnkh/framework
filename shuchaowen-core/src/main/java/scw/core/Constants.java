@@ -25,11 +25,11 @@ import java.util.Set;
 
 import scw.asm.Opcodes;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.string.StringCodec;
-import scw.core.string.StringCodecUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.SystemUtils;
+import scw.lang.StringCodec;
+import scw.lang.StringCodecUtils;
 
 /**
  * This class can be used to parse other classes containing constant definitions

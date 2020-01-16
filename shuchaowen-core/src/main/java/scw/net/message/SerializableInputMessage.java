@@ -2,17 +2,17 @@ package scw.net.message;
 
 import java.io.Serializable;
 
-import scw.core.string.StringCodecUtils;
 import scw.io.UnsafeByteArrayInputStream;
+import scw.lang.StringCodecUtils;
 import scw.net.message.converter.MessageConvertException;
 
-public class SerialzerableInputMessage extends AbstractInputMessage implements
+public class SerializableInputMessage extends AbstractInputMessage implements
 		Serializable {
 	private static final long serialVersionUID = 1L;
 	private final byte[] body;
 	private final Headers headers;
 
-	public SerialzerableInputMessage(byte[] body, Headers headers) {
+	public SerializableInputMessage(byte[] body, Headers headers) {
 		this.body = body;
 		this.headers = headers;
 		headers.readyOnly();

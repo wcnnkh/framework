@@ -3,8 +3,8 @@ package scw.net.message;
 import java.io.IOException;
 
 import scw.core.Constants;
-import scw.core.string.StringCodecUtils;
 import scw.io.IOUtils;
+import scw.lang.StringCodecUtils;
 import scw.net.MimeType;
 import scw.net.message.converter.MessageConvertException;
 

@@ -1,9 +1,8 @@
-package scw.core.reflect;
+package scw.core.annotation;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 
-import scw.core.annotation.AnnotationFactory;
 import scw.core.utils.CollectionUtils;
 
 public class MultipleAnnotationFactory implements AnnotationFactory {

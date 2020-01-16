@@ -4,13 +4,13 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.core.reflect.SerializableMethodDefinition;
+import scw.core.reflect.SerializableMethodHolder;
 import scw.core.utils.StringUtils;
 import scw.lang.AlreadyExistsException;
 import scw.tcc.annotation.TCCStage;
 
 class ClassTCC {
-	private Map<String, SerializableMethodDefinition> tccMethodMap;
+	private Map<String, SerializableMethodHolder> tccMethodMap;
 	private final Class<?> clz;
 
 	public ClassTCC(Class<?> clz) {
@@ -19,7 +19,7 @@ class ClassTCC {
 			TCCStage tCCStage = method.getAnnotation(TCCStage.class);
 			if (tCCStage != null) {
 				if (tccMethodMap == null) {
-					tccMethodMap = new HashMap<String, SerializableMethodDefinition>();
+					tccMethodMap = new HashMap<String, SerializableMethodHolder>();
 				}
 
 				String name = StringUtils.isEmpty(tCCStage.name()) ? method.getName() : tCCStage.name();
@@ -28,7 +28,7 @@ class ClassTCC {
 					throw new AlreadyExistsException(clz.getName() + "存在相同的TCC配置,name=" + name);
 				}
 
-				tccMethodMap.put(name, new SerializableMethodDefinition(clz, method));
+				tccMethodMap.put(name, new SerializableMethodHolder(clz, method));
 			}
 		}
 	}
@@ -37,7 +37,7 @@ class ClassTCC {
 		return clz;
 	}
 
-	public SerializableMethodDefinition getMethodDefinition(String name) {
+	public SerializableMethodHolder getMethodDefinition(String name) {
 		return tccMethodMap == null ? null : tccMethodMap.get(name);
 	}
 }

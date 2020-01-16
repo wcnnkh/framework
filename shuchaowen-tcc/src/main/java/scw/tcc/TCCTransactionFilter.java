@@ -9,7 +9,7 @@ import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.beans.annotation.Configuration;
 import scw.core.instance.InstanceFactory;
-import scw.core.reflect.SerializableMethodDefinition;
+import scw.core.reflect.SerializableMethodHolder;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.tcc.annotation.TCC;
@@ -59,13 +59,13 @@ public final class TCCTransactionFilter implements Filter {
 			return;
 		}
 
-		SerializableMethodDefinition confirmMethod = info.getMethodDefinition(tcc.confirm());
-		SerializableMethodDefinition cancelMethod = info.getMethodDefinition(tcc.cancel());
+		SerializableMethodHolder confirmMethod = info.getMethodDefinition(tcc.confirm());
+		SerializableMethodHolder cancelMethod = info.getMethodDefinition(tcc.cancel());
 		if (confirmMethod == null && cancelMethod == null) {
 			return;
 		}
 
-		SerializableMethodDefinition tryMethod = new SerializableMethodDefinition(belongClass, method);
+		SerializableMethodHolder tryMethod = new SerializableMethodHolder(belongClass, method);
 		TCCService tccService = instanceFactory.getInstance(tcc.service());
 		if (tccService == null) {
 			return;

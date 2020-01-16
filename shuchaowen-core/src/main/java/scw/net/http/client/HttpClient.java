@@ -18,12 +18,12 @@ public interface HttpClient {
 
 	String get(String url, String charsetName, SSLSocketFactory sslSocketFactory) throws HttpClientException;
 
-	SerialzerableClientHttpInputMessage getToSerialzerableInputMessage(String url) throws HttpClientException;
+	SerializableClientHttpInputMessage getToSerializableInputMessage(String url) throws HttpClientException;
 
-	SerialzerableClientHttpInputMessage getToSerialzerableInputMessage(String url, HttpHeaders httpHeaders)
+	SerializableClientHttpInputMessage getToSerializableInputMessage(String url, HttpHeaders httpHeaders)
 			throws HttpClientException;
 
-	SerialzerableClientHttpInputMessage getToSerialzerableInputMessage(String url, HttpHeaders httpHeaders,
+	SerializableClientHttpInputMessage getToSerializableInputMessage(String url, HttpHeaders httpHeaders,
 			SSLSocketFactory sslSocketFactory) throws HttpClientException;
 
 	String postForJson(String url, String json) throws HttpClientException;
@@ -64,21 +64,21 @@ public interface HttpClient {
 	String post(String url, String body, String charsetName, MediaType contentType, HttpHeaders httpHeaders,
 			SSLSocketFactory sslSocketFactory) throws HttpClientException;
 
-	SerialzerableClientHttpInputMessage postToSerialzerableInputMessage(String url, byte[] body, MediaType contentType)
+	SerializableClientHttpInputMessage postToSerializableInputMessage(String url, byte[] body, MediaType contentType)
 			throws HttpClientException;
 
-	SerialzerableClientHttpInputMessage postToSerialzerableInputMessage(String url, byte[] body, MediaType contentType,
+	SerializableClientHttpInputMessage postToSerializableInputMessage(String url, byte[] body, MediaType contentType,
 			HttpHeaders httpHeaders) throws HttpClientException;
 
-	SerialzerableClientHttpInputMessage postToSerialzerableInputMessage(String url, byte[] body, MediaType contentType,
+	SerializableClientHttpInputMessage postToSerializableInputMessage(String url, byte[] body, MediaType contentType,
 			HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory) throws HttpClientException;
 
-	SerialzerableClientHttpInputMessage execute(String url, Method method, byte[] body, MediaType contentType)
+	SerializableClientHttpInputMessage execute(String url, Method method, byte[] body, MediaType contentType)
 			throws HttpClientException;
 
-	SerialzerableClientHttpInputMessage execute(String url, Method method, byte[] body, MediaType contentType,
+	SerializableClientHttpInputMessage execute(String url, Method method, byte[] body, MediaType contentType,
 			HttpHeaders httpHeaders) throws HttpClientException;
 
-	SerialzerableClientHttpInputMessage execute(String url, Method method, byte[] body, MediaType contentType,
+	SerializableClientHttpInputMessage execute(String url, Method method, byte[] body, MediaType contentType,
 			HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory) throws HttpClientException;
 }

@@ -1,4 +1,4 @@
-package scw.core.string;
+package scw.lang;
 
 import java.nio.charset.Charset;
 

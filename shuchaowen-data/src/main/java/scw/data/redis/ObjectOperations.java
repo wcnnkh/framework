@@ -1,6 +1,6 @@
 package scw.data.redis;
 
-import scw.core.string.StringCodec;
+import scw.lang.StringCodec;
 import scw.serializer.Serializer;
 
 public final class ObjectOperations extends AbstractRedisOperationsWrapper<String, byte[], Object, byte[]> {

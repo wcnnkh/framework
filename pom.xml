@@ -47,12 +47,12 @@
 				<artifactId>shuchaowen-serializer</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
-			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-async</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-async</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
@@ -207,6 +207,12 @@
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-testing</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-rpc</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 

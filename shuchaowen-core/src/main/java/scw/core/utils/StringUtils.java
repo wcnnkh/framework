@@ -33,12 +33,12 @@ import java.util.zip.GZIPOutputStream;
 
 import scw.core.Assert;
 import scw.core.Callable;
-import scw.core.string.StringCodecUtils;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportException;
 import scw.lang.ParameterException;
+import scw.lang.StringCodecUtils;
 import scw.util.FormatUtils;
 
 public final class StringUtils {

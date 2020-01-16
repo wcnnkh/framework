@@ -1,7 +1,7 @@
 package scw.data.redis.jedis;
 
 import redis.clients.jedis.util.SafeEncoder;
-import scw.core.string.StringCodec;
+import scw.lang.StringCodec;
 
 public final class DefaultJedisStringCodec implements StringCodec {
 
