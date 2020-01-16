@@ -14,8 +14,8 @@ public final class StringCodecUtils {
 
 	private static StringCodec createStringCodec(String charsetName) {
 		return (StringCodec) (XUtils.isSupportJdk6()
-				? InstanceUtils.getInstance("scw.core.string.Jdk6StringCodec", charsetName)
-				: InstanceUtils.getInstance("scw.core.string.Jdk5StringCodec", charsetName));
+				? InstanceUtils.getInstance("scw.lang.Jdk6StringCodec", charsetName)
+				: InstanceUtils.getInstance("scw.lang.Jdk5StringCodec", charsetName));
 	}
 
 	public static StringCodec getStringCodec(String charsetName) {
