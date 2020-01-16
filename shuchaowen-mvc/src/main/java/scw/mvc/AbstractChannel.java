@@ -131,8 +131,8 @@ public abstract class AbstractChannel implements Channel, Destroy {
 	}
 
 	public void write(Object obj) throws Throwable {
-		if (obj != null && getLogger().isWarnEnabled() && obj instanceof Result && ((Result) obj).isError()) {
-			getLogger().warn("fail:{}, result={}", this.toString(), JSONUtils.toJSONString(obj));
+		if (obj != null && getLogger().isErrorEnabled() && obj instanceof Result && ((Result) obj).isError()) {
+			getLogger().error("fail:{}, result={}", this.toString(), JSONUtils.toJSONString(obj));
 		}
 	}
 }
