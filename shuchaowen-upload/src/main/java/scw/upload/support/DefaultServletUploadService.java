@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 
 import scw.io.IOUtils;
-import scw.mvc.servlet.http.Multipart;
+import scw.servlet.mvc.http.Multipart;
 import scw.upload.DefaultUploadService;
 import scw.upload.UploadException;
 import scw.upload.UploadResult;

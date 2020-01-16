@@ -1,14 +1,16 @@
 package scw.mvc.support;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 import scw.lang.AlreadyExistsException;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
+import scw.net.http.Method;
 
 public final class HttpParameterActionFactory extends HttpActionFactory {
-	private final Map<String, Map<String, Map<String, HttpAction>>> actionMap = new HashMap<String, Map<String, Map<String, HttpAction>>>();
+	private final Map<String, EnumMap<Method, Map<String, HttpAction>>> actionMap = new HashMap<String, EnumMap<Method, Map<String, HttpAction>>>();
 	private String key;
 
 	public HttpParameterActionFactory(String key) {
@@ -21,7 +23,7 @@ public final class HttpParameterActionFactory extends HttpActionFactory {
 			return null;
 		}
 
-		Map<String, Map<String, HttpAction>> map = actionMap.get(httpChannel.getRequest().getControllerPath());
+		Map<Method, Map<String, HttpAction>> map = actionMap.get(httpChannel.getRequest().getControllerPath());
 		if (map == null) {
 			return null;
 		}
@@ -40,12 +42,12 @@ public final class HttpParameterActionFactory extends HttpActionFactory {
 
 	@Override
 	public void scanning(HttpAction action, HttpControllerConfig controllerConfig) {
-		Map<String, Map<String, HttpAction>> clzMap = actionMap.get(controllerConfig.getClassController());
+		EnumMap<Method, Map<String, HttpAction>> clzMap = actionMap.get(controllerConfig.getClassController());
 		if (clzMap == null) {
-			clzMap = new HashMap<String, Map<String, HttpAction>>();
+			clzMap = new EnumMap<Method, Map<String, HttpAction>>(Method.class);
 		}
 
-		Map<String, HttpAction> map = clzMap.get(controllerConfig.getMethod());
+		Map<String, HttpAction> map = clzMap.get(controllerConfig.getHttpMethod());
 		if (map == null) {
 			map = new HashMap<String, HttpAction>();
 		}
@@ -56,7 +58,7 @@ public final class HttpParameterActionFactory extends HttpActionFactory {
 		}
 
 		map.put(controllerConfig.getMethodController(), action);
-		clzMap.put(controllerConfig.getMethod(), map);
+		clzMap.put(controllerConfig.getHttpMethod(), map);
 		actionMap.put(controllerConfig.getClassController(), clzMap);
 	}
 }

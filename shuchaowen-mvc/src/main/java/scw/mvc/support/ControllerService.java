@@ -23,6 +23,7 @@ import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.rpc.RpcService;
 import scw.net.MimeTypeUtils;
+import scw.net.http.Method;
 
 public final class ControllerService {
 	private static Logger logger = LoggerFactory.getLogger(ControllerService.class);
@@ -103,7 +104,7 @@ public final class ControllerService {
 			return false;
 		}
 
-		if (!"POST".equals(request.getMethod())) {
+		if (Method.POST != request.getMethod()) {
 			return false;
 		}
 
@@ -115,7 +116,7 @@ public final class ControllerService {
 	}
 
 	private boolean checkResourcePath(HttpRequest httpRequest) {
-		if (!"GET".equals(httpRequest.getMethod())) {
+		if (Method.GET != httpRequest.getMethod()) {
 			return false;
 		}
 

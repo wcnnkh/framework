@@ -26,6 +26,11 @@
 		
 		<dependency>
 			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-servlet</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-async</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>

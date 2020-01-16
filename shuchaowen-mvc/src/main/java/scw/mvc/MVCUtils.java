@@ -644,7 +644,7 @@ public final class MVCUtils implements MvcConstants {
 		}
 
 		String callbackTag = null;
-		if (scw.net.http.Method.GET.equals(channel.getRequest().getMethod())) {
+		if (scw.net.http.Method.GET == channel.getRequest().getMethod()) {
 			if (!StringUtils.isEmpty(jsonp)) {
 				callbackTag = channel.getString(jsonp);
 				if (StringUtils.isEmpty(callbackTag)) {

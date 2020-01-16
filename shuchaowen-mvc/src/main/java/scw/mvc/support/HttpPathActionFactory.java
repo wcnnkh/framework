@@ -1,18 +1,20 @@
 package scw.mvc.support;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 import scw.lang.AlreadyExistsException;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
+import scw.net.http.Method;
 
 public final class HttpPathActionFactory extends HttpActionFactory {
-	private final Map<String, Map<String, HttpAction>> actionMap = new HashMap<String, Map<String, HttpAction>>();
+	private final Map<String, EnumMap<Method, HttpAction>> actionMap = new HashMap<String, EnumMap<Method, HttpAction>>();
 
 	@Override
 	public HttpAction getAction(HttpChannel httpChannel) {
-		Map<String, HttpAction> map = actionMap.get(httpChannel.getRequest().getControllerPath());
+		Map<Method, HttpAction> map = actionMap.get(httpChannel.getRequest().getControllerPath());
 		if (map == null) {
 			return null;
 		}
@@ -31,16 +33,16 @@ public final class HttpPathActionFactory extends HttpActionFactory {
 			return;
 		}
 
-		Map<String, HttpAction> map = actionMap.get(httpControllerConfig.getController());
+		EnumMap<Method, HttpAction> map = actionMap.get(httpControllerConfig.getController());
 		if (map == null) {
-			map = new HashMap<String, HttpAction>();
+			map = new EnumMap<Method, HttpAction>(Method.class);
 		}
 
-		if (map.containsKey(httpControllerConfig.getMethod())) {
+		if (map.containsKey(httpControllerConfig.getHttpMethod())) {
 			throw new AlreadyExistsException(
-					MVCUtils.getExistActionErrMsg(action, map.get(httpControllerConfig.getMethod())));
+					MVCUtils.getExistActionErrMsg(action, map.get(httpControllerConfig.getHttpMethod())));
 		}
-		map.put(httpControllerConfig.getMethod(), action);
+		map.put(httpControllerConfig.getHttpMethod(), action);
 		actionMap.put(httpControllerConfig.getController(), map);
 	}
 }

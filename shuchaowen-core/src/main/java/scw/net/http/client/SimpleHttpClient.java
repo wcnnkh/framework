@@ -9,13 +9,14 @@ import javax.net.ssl.SSLSocketFactory;
 import scw.core.Assert;
 import scw.io.IOUtils;
 import scw.net.http.HttpHeaders;
+import scw.net.http.HttpUtils;
 import scw.net.http.MediaType;
 import scw.net.http.Method;
 import scw.net.http.client.exception.HttpClientException;
 
 public class SimpleHttpClient extends AbstractHttpClient {
-	private int connectTimeout = 10000;
-	private int readTimeout = 10000;
+	private int connectTimeout = HttpUtils.DEFAULT_CONNECT_TIMEOUT;
+	private int readTimeout = HttpUtils.DEFAULT_READ_TIMEOUT;
 
 	public int getConnectTimeout() {
 		return connectTimeout;
@@ -33,18 +34,15 @@ public class SimpleHttpClient extends AbstractHttpClient {
 		this.readTimeout = readTimeout;
 	}
 
-	public SerialzerableClientHttpInputMessage execute(String url,
-			Method method, byte[] body, MediaType contentType,
-			HttpHeaders headers, SSLSocketFactory sslSocketFactory)
-			throws HttpClientException {
+	public SerialzerableClientHttpInputMessage execute(String url, Method method, byte[] body, MediaType contentType,
+			HttpHeaders headers, SSLSocketFactory sslSocketFactory) throws HttpClientException {
 		Assert.notNull(url, "'url' must not be null");
 		Assert.notNull(method, "'method' must not be null");
 		URI uri;
 		try {
 			uri = new URI(url);
 		} catch (URISyntaxException e) {
-			throw new HttpClientException(
-					"Could not get HttpURLConnection URI: " + e.getMessage(), e);
+			throw new HttpClientException("Could not get HttpURLConnection URI: " + e.getMessage(), e);
 		}
 
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
@@ -56,8 +54,7 @@ public class SimpleHttpClient extends AbstractHttpClient {
 		clientHttpRequestFactory.setReadTimeout(getReadTimeout());
 		ClientHttpResponse response = null;
 		try {
-			ClientHttpRequest request = clientHttpRequestFactory.createRequest(
-					uri, method);
+			ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, method);
 			if (headers != null) {
 				request.getHeaders().putAll(headers);
 			}

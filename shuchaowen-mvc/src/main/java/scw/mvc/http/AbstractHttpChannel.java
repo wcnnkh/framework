@@ -18,6 +18,7 @@ import scw.mvc.http.session.HttpChannelAuthorization;
 import scw.mvc.http.session.HttpChannelUserSessionFactory;
 import scw.mvc.parameter.AbstractParameterChannel;
 import scw.net.http.Cookie;
+import scw.net.http.Method;
 import scw.security.session.Authorization;
 import scw.security.session.Session;
 import scw.util.ip.IP;
@@ -105,7 +106,7 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 				}
 			}
 		} else {
-			if ("GET".equals(request.getMethod())) {
+			if (Method.GET == request.getMethod()) {
 				v = decodeGETParameter(v);
 			}
 		}

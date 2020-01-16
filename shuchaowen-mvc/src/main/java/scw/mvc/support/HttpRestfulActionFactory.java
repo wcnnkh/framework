@@ -1,5 +1,6 @@
 package scw.mvc.support;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -7,9 +8,11 @@ import java.util.Map.Entry;
 import scw.lang.AlreadyExistsException;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
+import scw.net.http.Method;
 
 public final class HttpRestfulActionFactory extends HttpActionFactory {
-	private final Map<String, Map<String, HttpRestfulInfo>> restMap = new HashMap<String, Map<String, HttpRestfulInfo>>();
+	private final EnumMap<Method, Map<String, HttpRestfulInfo>> restMap = new EnumMap<Method, Map<String, HttpRestfulInfo>>(
+			Method.class);
 
 	@Override
 	public void scanning(HttpAction action, HttpControllerConfig config) {
@@ -25,7 +28,7 @@ public final class HttpRestfulActionFactory extends HttpActionFactory {
 		/**
 		 * resturl
 		 */
-		Map<String, HttpRestfulInfo> map = restMap.get(config.getMethod());
+		Map<String, HttpRestfulInfo> map = restMap.get(config.getHttpMethod());
 		if (map == null) {
 			map = new HashMap<String, HttpRestfulInfo>();
 		}
@@ -36,7 +39,7 @@ public final class HttpRestfulActionFactory extends HttpActionFactory {
 		}
 
 		map.put(restUrlInfo.getUrl(), restUrlInfo);
-		restMap.put(config.getMethod(), map);
+		restMap.put(config.getHttpMethod(), map);
 	}
 
 	@Override

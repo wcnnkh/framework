@@ -22,7 +22,6 @@ import scw.security.authority.http.SimpleHttpAuthority;
 public class DefaultHttpAction extends MethodAction implements HttpAction {
 	private Collection<HttpControllerConfig> httpControllerConfigs = new LinkedList<HttpControllerConfig>();
 	private SimpleHttpAuthority authority;
-	
 
 	public DefaultHttpAction(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clz, Method method,
 			AnnotationFactory superAnnotationFactory) {
@@ -30,30 +29,30 @@ public class DefaultHttpAction extends MethodAction implements HttpAction {
 		Controller classController = clz.getAnnotation(Controller.class);
 		Controller methodController = method.getAnnotation(Controller.class);
 		Methods methods = method.getAnnotation(Methods.class);
-		Set<String> methodSet = new HashSet<String>();
+		Set<scw.net.http.Method> methodSet = new HashSet<scw.net.http.Method>();
 		if (methods == null) {
 			if (classController != null) {
 				for (scw.net.http.Method requestType : classController.methods()) {
-					methodSet.add(requestType.name());
+					methodSet.add(requestType);
 				}
 			}
 		} else {
 			for (scw.net.http.Method requestType : methods.value()) {
-				methodSet.add(requestType.name());
+				methodSet.add(requestType);
 			}
 		}
 
 		if (methodController != null) {
 			for (scw.net.http.Method requestType : methodController.methods()) {
-				methodSet.add(requestType.name());
+				methodSet.add(requestType);
 			}
 		}
 
 		if (methodSet.isEmpty()) {
-			methodSet.add(scw.net.http.Method.GET.name());
+			methodSet.add(scw.net.http.Method.GET);
 		}
 
-		for (String httpMethod : methodSet) {
+		for (scw.net.http.Method httpMethod : methodSet) {
 			httpControllerConfigs
 					.add(new SimpleHttpControllerConfig(classController.value(), methodController.value(), httpMethod));
 		}
@@ -77,7 +76,7 @@ public class DefaultHttpAction extends MethodAction implements HttpAction {
 				authority = new SimpleHttpAuthority();
 				authority.setId(httpAuthorityConfig.id());
 				authority.setParentId(parentId);
-				authority.setMethod(httpControllerConfig.getMethod());
+				authority.setHttpMethod(httpControllerConfig.getHttpMethod());
 				authority.setPath(httpControllerConfig.getController());
 				authority.setName(httpAuthorityConfig.name());
 			}

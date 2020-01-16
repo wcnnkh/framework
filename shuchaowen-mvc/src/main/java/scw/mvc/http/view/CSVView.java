@@ -2,8 +2,6 @@ package scw.mvc.http.view;
 
 import java.util.LinkedList;
 
-import javax.servlet.http.HttpServletResponse;
-
 import scw.core.utils.CSVUtils;
 import scw.mvc.Channel;
 import scw.mvc.http.HttpChannel;
@@ -52,10 +50,8 @@ public final class CSVView extends LinkedList<Object[]> implements scw.mvc.View 
 
 	public void render(HttpRequest request, HttpResponse response) throws Exception {
 		response.setContentType("text/csv");
-		if (response instanceof HttpServletResponse) {
-			((HttpServletResponse) response).setHeader("Content-Disposition",
-					"attachment;filename=" + fileNameConver(getFileName()) + ".csv");
-		}
+		response.setHeader("Content-Disposition",
+				"attachment;filename=" + fileNameConver(getFileName()) + ".csv");
 		CSVUtils.write(response.getWriter(), getSplit(), isRemoveLineBreaks(), this);
 	}
 

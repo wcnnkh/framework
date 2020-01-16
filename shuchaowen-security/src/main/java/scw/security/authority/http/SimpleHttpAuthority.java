@@ -1,13 +1,12 @@
 package scw.security.authority.http;
 
-import scw.core.utils.StringUtils;
 import scw.net.http.Method;
 import scw.security.authority.SimpleAuthority;
 
 public class SimpleHttpAuthority extends SimpleAuthority implements HttpAuthority {
 	private static final long serialVersionUID = 1L;
 	private String path;
-	private String method;
+	private Method httpMethod;
 
 	public String getPath() {
 		return path;
@@ -17,11 +16,11 @@ public class SimpleHttpAuthority extends SimpleAuthority implements HttpAuthorit
 		this.path = path;
 	}
 
-	public String getMethod() {
-		return StringUtils.isEmpty(method) ? Method.GET.name() : method;
+	public Method getHttpMethod() {
+		return httpMethod == null ? Method.GET : httpMethod;
 	}
 
-	public void setMethod(String method) {
-		this.method = method;
+	public void setHttpMethod(Method httpMethod) {
+		this.httpMethod = httpMethod;
 	}
 }

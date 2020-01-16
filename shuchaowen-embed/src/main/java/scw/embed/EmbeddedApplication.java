@@ -8,12 +8,8 @@ import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.FormatUtils;
 import scw.core.utils.StringUtils;
-import scw.embed.EmbeddedServlet;
-import scw.embed.EmbeddedUtils;
-import scw.embed.ServletEmbedded;
-import scw.embed.ShutdownHttpServlet;
-import scw.mvc.servlet.ServletService;
-import scw.mvc.servlet.ServletUtils;
+import scw.servlet.ServletUtils;
+import scw.servlet.mvc.ServletService;
 
 public class EmbeddedApplication extends CommonApplication {
 	private ServletEmbedded embedded;

@@ -11,6 +11,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 import scw.net.NetworkUtils;
+import scw.net.http.HttpUtils;
 import scw.net.http.Method;
 
 public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory {
@@ -22,9 +23,9 @@ public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory 
 
 	private int chunkSize = DEFAULT_CHUNK_SIZE;
 
-	private int connectTimeout = -1;
+	private int connectTimeout = HttpUtils.DEFAULT_CONNECT_TIMEOUT;
 
-	private int readTimeout = -1;
+	private int readTimeout = HttpUtils.DEFAULT_READ_TIMEOUT;
 
 	private boolean outputStreaming = true;
 
@@ -49,7 +50,8 @@ public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory 
 	 * PUT, it is recommended to change this property to {@code false}, so as
 	 * not to run out of memory. This will result in a {@link ClientHttpRequest}
 	 * that either streams directly to the underlying {@link HttpURLConnection}
-	 * (if the {@link scw.net.http.springframework.http.HttpHeaders#getContentLength()
+	 * (if the
+	 * {@link scw.net.http.springframework.http.HttpHeaders#getContentLength()
 	 * Content-Length} is known in advance), or that will use "Chunked transfer
 	 * encoding" (if the {@code Content-Length} is not known in advance).
 	 * 

@@ -16,13 +16,14 @@ import scw.core.utils.XMLUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.net.http.Method;
 
 @Bean(proxy = false)
 public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
 	private static Logger logger = LoggerFactory.getLogger(XmlHttpAuthorityManager.class);
 
 	public XmlHttpAuthorityManager(
-			@ParameterName("xml.http.authority") @ResourceParameter@DefaultValue("classpath:/http-authority.xml") String xml) {
+			@ParameterName("xml.http.authority") @ResourceParameter @DefaultValue("classpath:/http-authority.xml") String xml) {
 		this(xml, null);
 	}
 
@@ -39,10 +40,10 @@ public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
 		Element element = XMLUtils.getRootElement(xml);
 		String prefix = XMLUtils.getNodeAttributeValue(element, "prefix");
 		NodeList nodeList = XMLUtils.getChildNodes(element, true);
-		if(nodeList == null){
-			return ;
+		if (nodeList == null) {
+			return;
 		}
-		
+
 		for (int i = 0, size = nodeList.getLength(); i < size; i++) {
 			Node node = nodeList.item(i);
 			if (node == null) {
@@ -95,7 +96,7 @@ public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
 		simpleAuthority.setParentId(parentId);
 		simpleAuthority.setName(name);
 		simpleAuthority.setPath(path);
-		simpleAuthority.setMethod(method);
+		simpleAuthority.setHttpMethod(Method.resolve(method));
 		simpleAuthority.setAttributeMap(map);
 		addAuthroity(simpleAuthority);
 	}

@@ -10,7 +10,7 @@ public final class HttpNotFoundFilter extends HttpFilter {
 	@Override
 	public Object doFilter(HttpChannel channel, HttpRequest httpRequest,
 			HttpResponse httpResponse, FilterChain chain) throws Throwable {
-		if (Method.OPTIONS.name().equals(httpRequest.getMethod())) {
+		if (Method.OPTIONS == httpRequest.getMethod()) {
 			return chain.doFilter(channel);
 		}
 

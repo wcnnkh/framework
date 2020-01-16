@@ -12,8 +12,8 @@ import scw.core.PropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.MVCUtils;
-import scw.mvc.servlet.ServletUtils;
-import scw.mvc.servlet.http.MyHttpServletResponse;
+import scw.servlet.ServletUtils;
+import scw.servlet.mvc.http.MyHttpServletResponse;
 
 public final class ShutdownHttpServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;

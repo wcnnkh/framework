@@ -12,7 +12,13 @@
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-core</artifactId>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-servlet</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-mvc</artifactId>

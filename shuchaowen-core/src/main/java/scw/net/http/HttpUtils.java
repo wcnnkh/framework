@@ -17,6 +17,7 @@ import scw.core.instance.InstanceUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
 import scw.json.JSONUtils;
@@ -31,6 +32,11 @@ public final class HttpUtils {
 	private HttpUtils() {
 	};
 
+	public static final int DEFAULT_CONNECT_TIMEOUT = StringUtils
+			.parseInt(SystemPropertyUtils.getProperty("scw.http.client.connect.timeout"), 10000);
+	public static final int DEFAULT_READ_TIMEOUT = StringUtils
+			.parseInt(SystemPropertyUtils.getProperty("scw.http.client.read.timeout"), 10000);
+	
 	private static final HttpClient HTTP_CLIENT = InstanceUtils.autoNewInstanceBySystemProperty(HttpClient.class,
 			"scw.http.client", new SimpleHttpClient());
 
