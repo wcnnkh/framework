@@ -16,8 +16,8 @@ import scw.core.instance.annotation.ResourceParameter;
 import scw.core.utils.StringUtils;
 import scw.data.redis.RedisConstants;
 import scw.data.redis.RedisUtils;
+import scw.io.resource.ResourceUtils;
 import scw.lang.Nullable;
-import scw.resource.ResourceUtils;
 import scw.util.ConfigUtils;
 
 /**

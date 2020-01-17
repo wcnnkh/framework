@@ -7,9 +7,9 @@ import scw.core.Constants;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.io.resource.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.resource.ResourceUtils;
 
 public class BaseIPVerification extends HashSet<String> implements IPVerification {
 	private static final long serialVersionUID = 1L;

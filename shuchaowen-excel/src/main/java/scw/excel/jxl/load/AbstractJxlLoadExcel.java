@@ -6,9 +6,9 @@ import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 import scw.core.Consumer;
+import scw.io.resource.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.resource.ResourceUtils;
 
 public abstract class AbstractJxlLoadExcel<T> extends AbstractLoadRow<T>
 		implements Runnable, LoadRow {

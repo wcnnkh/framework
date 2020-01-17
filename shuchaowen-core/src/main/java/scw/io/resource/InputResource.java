@@ -1,15 +1,10 @@
-package scw.resource;
+package scw.io.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 import scw.lang.NotFoundException;
 
-public interface Resource {
-	boolean isExist();
-
+public interface InputResource extends Resource{
 	InputStream getInputStream() throws IOException, NotFoundException;
-
-	URI getURI() throws IOException;
 }

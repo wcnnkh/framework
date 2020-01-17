@@ -9,7 +9,7 @@ import scw.beans.property.AbstractCharsetNameValueFormat;
 import scw.core.Constants;
 import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
-import scw.resource.ResourceUtils;
+import scw.io.resource.ResourceUtils;
 
 public final class ContentParse extends AbstractCharsetNameValueFormat implements ConfigParse{
 	

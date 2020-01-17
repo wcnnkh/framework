@@ -11,7 +11,7 @@ import scw.core.Constants;
 import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.resource.ResourceUtils;
+import scw.io.resource.ResourceUtils;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 import scw.util.SimpleKeyValuePair;

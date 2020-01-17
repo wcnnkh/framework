@@ -11,10 +11,10 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
 
 import scw.core.Constants;
 import scw.core.utils.SystemPropertyUtils;
+import scw.io.resource.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.NetworkUtils;
-import scw.resource.ResourceUtils;
 
 public final class ZookeeperUtils {
 	private static Logger logger = LoggerUtils.getLogger(ZookeeperUtils.class);

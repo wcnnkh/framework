@@ -6,7 +6,7 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.core.Destroy;
 import scw.core.PropertyFactory;
 import scw.core.utils.SystemPropertyUtils;
-import scw.resource.ResourceUtils;
+import scw.io.resource.ResourceUtils;
 
 public class XmlPropertyFactory implements PropertyFactory, Destroy {
 	private AutoRefreshPropertyFactory autoRefreshPropertyFactory;

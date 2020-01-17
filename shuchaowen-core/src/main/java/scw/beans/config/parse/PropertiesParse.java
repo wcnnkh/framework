@@ -14,7 +14,7 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.TypeUtils;
-import scw.resource.ResourceUtils;
+import scw.io.resource.ResourceUtils;
 
 public final class PropertiesParse extends AbstractCharsetNameValueFormat implements ConfigParse {
 

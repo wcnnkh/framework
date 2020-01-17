@@ -15,8 +15,8 @@ import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
+import scw.io.resource.ResourceUtils;
 import scw.lang.NotFoundException;
-import scw.resource.ResourceUtils;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
 	private NodeList nodeList;

@@ -6,7 +6,7 @@ import scw.core.annotation.DefaultValue;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
-import scw.resource.ResourceUtils;
+import scw.io.resource.ResourceUtils;
 
 @SuppressWarnings("rawtypes")
 public final class DruidDBConfig extends AbstractDruidDBConfig {

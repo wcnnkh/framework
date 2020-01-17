@@ -17,7 +17,7 @@
 package scw.io.support;
 
 import scw.io.ResourceLoader;
-import scw.resource.ResourceUtils;
+import scw.io.resource.ResourceUtils;
 
 /**
  * Utility class for determining whether a given URL is a resource

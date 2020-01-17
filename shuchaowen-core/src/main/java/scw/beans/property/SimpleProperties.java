@@ -9,8 +9,8 @@ import org.w3c.dom.NodeList;
 import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
+import scw.io.resource.ResourceUtils;
 import scw.net.http.HttpUtils;
-import scw.resource.ResourceUtils;
 
 public class SimpleProperties extends AbstractProperties {
 

@@ -8,9 +8,9 @@ import scw.core.annotation.DefaultValue;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.utils.StringUtils;
+import scw.io.resource.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.resource.ResourceUtils;
 
 public final class PropertiesXMemcachedClientConfiguration implements XMemcachedClientConfiguration {
 	private static Logger logger = LoggerUtils.getLogger(PropertiesXMemcachedClientConfiguration.class);

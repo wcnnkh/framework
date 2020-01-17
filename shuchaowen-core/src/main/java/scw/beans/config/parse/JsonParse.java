@@ -8,9 +8,9 @@ import scw.beans.property.AbstractCharsetNameValueFormat;
 import scw.core.Constants;
 import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
+import scw.io.resource.ResourceUtils;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
-import scw.resource.ResourceUtils;
 import scw.json.JSONUtils;
 
 /**

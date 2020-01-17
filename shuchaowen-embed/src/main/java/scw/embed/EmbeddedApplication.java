@@ -6,7 +6,7 @@ import scw.application.CommonApplication;
 import scw.beans.BeanUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.resource.ResourceUtils;
+import scw.io.resource.ResourceUtils;
 import scw.servlet.ServletUtils;
 import scw.servlet.mvc.ServletService;
 import scw.util.FormatUtils;

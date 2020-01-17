@@ -46,9 +46,9 @@ import scw.io.Resource;
 import scw.io.ResourceLoader;
 import scw.io.UrlResource;
 import scw.io.VfsResource;
+import scw.io.resource.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.resource.ResourceUtils;
 import scw.util.AntPathMatcher;
 import scw.util.PathMatcher;
 

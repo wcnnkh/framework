@@ -1,4 +1,4 @@
-package scw.resource;
+package scw.io.resource;
 
 import java.util.Arrays;
 import java.util.LinkedList;

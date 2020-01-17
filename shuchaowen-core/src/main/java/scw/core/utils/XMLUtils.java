@@ -42,8 +42,8 @@ import scw.core.instance.InstanceUtils;
 import scw.core.reflect.PropertyMapper;
 import scw.core.reflect.ReflectionUtils;
 import scw.io.IOUtils;
+import scw.io.resource.ResourceUtils;
 import scw.lang.NotFoundException;
-import scw.resource.ResourceUtils;
 import scw.util.KeyValuePair;
 import scw.util.SimpleKeyValuePair;
 

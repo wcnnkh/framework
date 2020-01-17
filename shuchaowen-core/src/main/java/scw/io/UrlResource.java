@@ -28,7 +28,7 @@ import java.net.URLConnection;
 
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
-import scw.resource.ResourceUtils;
+import scw.io.resource.ResourceUtils;
 
 /**
  * {@link Resource} implementation for {@code java.net.URL} locators.

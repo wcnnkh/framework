@@ -6,7 +6,7 @@ import scw.core.annotation.DefaultValue;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
-import scw.resource.ResourceUtils;
+import scw.io.resource.ResourceUtils;
 
 public final class HikariCPDBConfig extends AbstractHikariCPDBConfig {
 	public HikariCPDBConfig(@ResourceParameter @DefaultValue(DEFAULT_CONFIG) String properties) {

@@ -25,9 +25,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import scw.core.Constants;
 import scw.core.StringFormatSystemProperties;
 import scw.io.FileUtils;
-import scw.resource.DefaultResourceLookup;
-import scw.resource.ResourceOperations;
-import scw.resource.SystemPropertyMultiSuffixResourceOperations;
+import scw.io.resource.DefaultResourceLookup;
+import scw.io.resource.ResourceOperations;
+import scw.io.resource.SystemPropertyMultiSuffixResourceOperations;
 
 public final class SystemPropertyUtils {
 	private static final String WEB_ROOT = "web.root";

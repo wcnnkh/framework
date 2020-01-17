@@ -10,7 +10,7 @@ import jxl.read.biff.BiffException;
 import scw.core.Consumer;
 import scw.excel.ReadExcelSupport;
 import scw.excel.RowCallback;
-import scw.resource.ResourceUtils;
+import scw.io.resource.ResourceUtils;
 
 public class JxlReadExcelSupport implements ReadExcelSupport {
 

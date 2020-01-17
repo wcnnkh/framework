@@ -8,7 +8,7 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.core.Constants;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-import scw.resource.ResourceUtils;
+import scw.io.resource.ResourceUtils;
 
 public final class XmlPropertyUtils {
 	private XmlPropertyUtils() {

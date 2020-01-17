@@ -24,7 +24,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
-import scw.resource.ResourceUtils;
+import scw.io.resource.ResourceUtils;
 
 /**
  * Abstract base class for resources which resolve URLs into File references,

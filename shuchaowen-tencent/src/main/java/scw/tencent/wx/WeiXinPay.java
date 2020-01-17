@@ -18,6 +18,7 @@ import scw.core.utils.RandomUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.io.IOUtils;
+import scw.io.resource.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportException;
 import scw.lang.ParameterException;
@@ -33,7 +34,6 @@ import scw.net.http.client.ClientHttpRequest;
 import scw.net.http.client.ClientHttpResponse;
 import scw.net.http.client.SimpleClientHttpRequestFactory;
 import scw.net.ssl.SSLContexts;
-import scw.resource.ResourceUtils;
 import scw.security.signature.SignatureUtils;
 import scw.tencent.wx.pay.UnifiedOrderResponse;
 
