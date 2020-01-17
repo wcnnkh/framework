@@ -19,11 +19,11 @@ import java.lang.reflect.Method;
 
 import scw.asm.Type;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.ReflectUtils;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 import scw.cglib.transform.ClassEmitterTransformer;
 
 /**
@@ -34,19 +34,19 @@ public class AddStaticInitTransformer extends ClassEmitterTransformer {
 
     public AddStaticInitTransformer(Method classInit) {
         info = ReflectUtils.getMethodInfo(classInit);
-        if (!TypeUtils.isStatic(info.getModifiers())) {
+        if (!CGLIBTypeUtils.isStatic(info.getModifiers())) {
             throw new IllegalArgumentException(classInit + " is not static");
         }
         Type[] types = info.getSignature().getArgumentTypes();
         if (types.length != 1 ||
-            !types[0].equals(Constants.TYPE_CLASS) ||
+            !types[0].equals(CGLIBConstants.TYPE_CLASS) ||
             !info.getSignature().getReturnType().equals(Type.VOID_TYPE)) {
             throw new IllegalArgumentException(classInit + " illegal signature");
         }
     }
 
     protected void init() {
-        if (!TypeUtils.isInterface(getAccess())) {
+        if (!CGLIBTypeUtils.isInterface(getAccess())) {
             CodeEmitter e = getStaticHook();
             EmitUtils.load_class_this(e);
             e.invoke(info);

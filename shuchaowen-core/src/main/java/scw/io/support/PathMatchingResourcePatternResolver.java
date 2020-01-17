@@ -38,7 +38,6 @@ import java.util.zip.ZipException;
 
 import scw.core.Assert;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.DefaultResourceLoader;
@@ -49,6 +48,7 @@ import scw.io.UrlResource;
 import scw.io.VfsResource;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.resource.ResourceUtils;
 import scw.util.AntPathMatcher;
 import scw.util.PathMatcher;
 

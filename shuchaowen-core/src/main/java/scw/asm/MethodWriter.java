@@ -594,7 +594,7 @@ final class MethodWriter extends MethodVisitor {
       final int compute) {
     super(Opcodes.ASM7);
     this.symbolTable = symbolTable;
-    this.accessFlags = "<init>".equals(name) ? access | Constants.ACC_CONSTRUCTOR : access;
+    this.accessFlags = "<init>".equals(name) ? access | ASMConstants.ACC_CONSTRUCTOR : access;
     this.nameIndex = symbolTable.addConstantUtf8(name);
     this.name = name;
     this.descriptorIndex = symbolTable.addConstantUtf8(descriptor);
@@ -907,13 +907,13 @@ final class MethodWriter extends MethodVisitor {
     if (var < 4 && opcode != Opcodes.RET) {
       int optimizedOpcode;
       if (opcode < Opcodes.ISTORE) {
-        optimizedOpcode = Constants.ILOAD_0 + ((opcode - Opcodes.ILOAD) << 2) + var;
+        optimizedOpcode = ASMConstants.ILOAD_0 + ((opcode - Opcodes.ILOAD) << 2) + var;
       } else {
-        optimizedOpcode = Constants.ISTORE_0 + ((opcode - Opcodes.ISTORE) << 2) + var;
+        optimizedOpcode = ASMConstants.ISTORE_0 + ((opcode - Opcodes.ISTORE) << 2) + var;
       }
       code.putByte(optimizedOpcode);
     } else if (var >= 256) {
-      code.putByte(Constants.WIDE).put12(opcode, var);
+      code.putByte(ASMConstants.WIDE).put12(opcode, var);
     } else {
       code.put11(opcode, var);
     }
@@ -1092,7 +1092,7 @@ final class MethodWriter extends MethodVisitor {
     // Add the instruction to the bytecode of the method.
     // Compute the 'base' opcode, i.e. GOTO or JSR if opcode is GOTO_W or JSR_W, otherwise opcode.
     int baseOpcode =
-        opcode >= Constants.GOTO_W ? opcode - Constants.WIDE_JUMP_OPCODE_DELTA : opcode;
+        opcode >= ASMConstants.GOTO_W ? opcode - ASMConstants.WIDE_JUMP_OPCODE_DELTA : opcode;
     boolean nextInsnIsJumpTarget = false;
     if ((label.flags & Label.FLAG_RESOLVED) != 0
         && label.bytecodeOffset - code.length < Short.MIN_VALUE) {
@@ -1101,9 +1101,9 @@ final class MethodWriter extends MethodVisitor {
       // IFNOTxxx is the "opposite" opcode of IFxxx (e.g. IFNE for IFEQ) and where <L> designates
       // the instruction just after the GOTO_W.
       if (baseOpcode == Opcodes.GOTO) {
-        code.putByte(Constants.GOTO_W);
+        code.putByte(ASMConstants.GOTO_W);
       } else if (baseOpcode == Opcodes.JSR) {
-        code.putByte(Constants.JSR_W);
+        code.putByte(ASMConstants.JSR_W);
       } else {
         // Put the "opposite" opcode of baseOpcode. This can be done by flipping the least
         // significant bit for IFNULL and IFNONNULL, and similarly for IFEQ ... IF_ACMPEQ (with a
@@ -1116,7 +1116,7 @@ final class MethodWriter extends MethodVisitor {
         // specific instructions. To not miss this additional frame, we need to use an ASM_GOTO_W
         // here, which has the unfortunate effect of forcing this additional round trip (which in
         // some case would not have been really necessary, but we can't know this at this point).
-        code.putByte(Constants.ASM_GOTO_W);
+        code.putByte(ASMConstants.ASM_GOTO_W);
         hasAsmInstructions = true;
         // The instruction after the GOTO_W becomes the target of the IFNOT instruction.
         nextInsnIsJumpTarget = true;
@@ -1283,9 +1283,9 @@ final class MethodWriter extends MethodVisitor {
                 && ((firstDescriptorChar = constantSymbol.value.charAt(0)) == 'J'
                     || firstDescriptorChar == 'D'));
     if (isLongOrDouble) {
-      code.put12(Constants.LDC2_W, constantIndex);
+      code.put12(ASMConstants.LDC2_W, constantIndex);
     } else if (constantIndex >= 256) {
-      code.put12(Constants.LDC_W, constantIndex);
+      code.put12(ASMConstants.LDC_W, constantIndex);
     } else {
       code.put11(Opcodes.LDC, constantIndex);
     }
@@ -1308,7 +1308,7 @@ final class MethodWriter extends MethodVisitor {
     lastBytecodeOffset = code.length;
     // Add the instruction to the bytecode of the method.
     if ((var > 255) || (increment > 127) || (increment < -128)) {
-      code.putByte(Constants.WIDE).put12(Opcodes.IINC, var).putShort(increment);
+      code.putByte(ASMConstants.WIDE).put12(Opcodes.IINC, var).putShort(increment);
     } else {
       code.putByte(Opcodes.IINC).put11(var, increment);
     }
@@ -2083,40 +2083,40 @@ final class MethodWriter extends MethodVisitor {
         throw new MethodTooLargeException(
             symbolTable.getClassName(), name, descriptor, code.length);
       }
-      symbolTable.addConstantUtf8(Constants.CODE);
+      symbolTable.addConstantUtf8(ASMConstants.CODE);
       // The Code attribute has 6 header bytes, plus 2, 2, 4 and 2 bytes respectively for max_stack,
       // max_locals, code_length and attributes_count, plus the bytecode and the exception table.
       size += 16 + code.length + Handler.getExceptionTableSize(firstHandler);
       if (stackMapTableEntries != null) {
         boolean useStackMapTable = symbolTable.getMajorVersion() >= Opcodes.V1_6;
-        symbolTable.addConstantUtf8(useStackMapTable ? Constants.STACK_MAP_TABLE : "StackMap");
+        symbolTable.addConstantUtf8(useStackMapTable ? ASMConstants.STACK_MAP_TABLE : "StackMap");
         // 6 header bytes and 2 bytes for number_of_entries.
         size += 8 + stackMapTableEntries.length;
       }
       if (lineNumberTable != null) {
-        symbolTable.addConstantUtf8(Constants.LINE_NUMBER_TABLE);
+        symbolTable.addConstantUtf8(ASMConstants.LINE_NUMBER_TABLE);
         // 6 header bytes and 2 bytes for line_number_table_length.
         size += 8 + lineNumberTable.length;
       }
       if (localVariableTable != null) {
-        symbolTable.addConstantUtf8(Constants.LOCAL_VARIABLE_TABLE);
+        symbolTable.addConstantUtf8(ASMConstants.LOCAL_VARIABLE_TABLE);
         // 6 header bytes and 2 bytes for local_variable_table_length.
         size += 8 + localVariableTable.length;
       }
       if (localVariableTypeTable != null) {
-        symbolTable.addConstantUtf8(Constants.LOCAL_VARIABLE_TYPE_TABLE);
+        symbolTable.addConstantUtf8(ASMConstants.LOCAL_VARIABLE_TYPE_TABLE);
         // 6 header bytes and 2 bytes for local_variable_type_table_length.
         size += 8 + localVariableTypeTable.length;
       }
       if (lastCodeRuntimeVisibleTypeAnnotation != null) {
         size +=
             lastCodeRuntimeVisibleTypeAnnotation.computeAnnotationsSize(
-                Constants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS);
+                ASMConstants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS);
       }
       if (lastCodeRuntimeInvisibleTypeAnnotation != null) {
         size +=
             lastCodeRuntimeInvisibleTypeAnnotation.computeAnnotationsSize(
-                Constants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS);
+                ASMConstants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS);
       }
       if (firstCodeAttribute != null) {
         size +=
@@ -2125,7 +2125,7 @@ final class MethodWriter extends MethodVisitor {
       }
     }
     if (numberOfExceptions > 0) {
-      symbolTable.addConstantUtf8(Constants.EXCEPTIONS);
+      symbolTable.addConstantUtf8(ASMConstants.EXCEPTIONS);
       size += 8 + 2 * numberOfExceptions;
     }
     size += Attribute.computeAttributesSize(symbolTable, accessFlags, signatureIndex);
@@ -2138,7 +2138,7 @@ final class MethodWriter extends MethodVisitor {
     if (lastRuntimeVisibleParameterAnnotations != null) {
       size +=
           AnnotationWriter.computeParameterAnnotationsSize(
-              Constants.RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS,
+              ASMConstants.RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS,
               lastRuntimeVisibleParameterAnnotations,
               visibleAnnotableParameterCount == 0
                   ? lastRuntimeVisibleParameterAnnotations.length
@@ -2147,18 +2147,18 @@ final class MethodWriter extends MethodVisitor {
     if (lastRuntimeInvisibleParameterAnnotations != null) {
       size +=
           AnnotationWriter.computeParameterAnnotationsSize(
-              Constants.RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS,
+              ASMConstants.RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS,
               lastRuntimeInvisibleParameterAnnotations,
               invisibleAnnotableParameterCount == 0
                   ? lastRuntimeInvisibleParameterAnnotations.length
                   : invisibleAnnotableParameterCount);
     }
     if (defaultValue != null) {
-      symbolTable.addConstantUtf8(Constants.ANNOTATION_DEFAULT);
+      symbolTable.addConstantUtf8(ASMConstants.ANNOTATION_DEFAULT);
       size += 6 + defaultValue.length;
     }
     if (parameters != null) {
-      symbolTable.addConstantUtf8(Constants.METHOD_PARAMETERS);
+      symbolTable.addConstantUtf8(ASMConstants.METHOD_PARAMETERS);
       // 6 header bytes and 1 byte for parameters_count.
       size += 7 + parameters.length;
     }
@@ -2257,13 +2257,13 @@ final class MethodWriter extends MethodVisitor {
       if (lastCodeRuntimeVisibleTypeAnnotation != null) {
         size +=
             lastCodeRuntimeVisibleTypeAnnotation.computeAnnotationsSize(
-                Constants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS);
+                ASMConstants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS);
         ++codeAttributeCount;
       }
       if (lastCodeRuntimeInvisibleTypeAnnotation != null) {
         size +=
             lastCodeRuntimeInvisibleTypeAnnotation.computeAnnotationsSize(
-                Constants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS);
+                ASMConstants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS);
         ++codeAttributeCount;
       }
       if (firstCodeAttribute != null) {
@@ -2273,7 +2273,7 @@ final class MethodWriter extends MethodVisitor {
         codeAttributeCount += firstCodeAttribute.getAttributeCount();
       }
       output
-          .putShort(symbolTable.addConstantUtf8(Constants.CODE))
+          .putShort(symbolTable.addConstantUtf8(ASMConstants.CODE))
           .putInt(size)
           .putShort(maxStack)
           .putShort(maxLocals)
@@ -2286,39 +2286,39 @@ final class MethodWriter extends MethodVisitor {
         output
             .putShort(
                 symbolTable.addConstantUtf8(
-                    useStackMapTable ? Constants.STACK_MAP_TABLE : "StackMap"))
+                    useStackMapTable ? ASMConstants.STACK_MAP_TABLE : "StackMap"))
             .putInt(2 + stackMapTableEntries.length)
             .putShort(stackMapTableNumberOfEntries)
             .putByteArray(stackMapTableEntries.data, 0, stackMapTableEntries.length);
       }
       if (lineNumberTable != null) {
         output
-            .putShort(symbolTable.addConstantUtf8(Constants.LINE_NUMBER_TABLE))
+            .putShort(symbolTable.addConstantUtf8(ASMConstants.LINE_NUMBER_TABLE))
             .putInt(2 + lineNumberTable.length)
             .putShort(lineNumberTableLength)
             .putByteArray(lineNumberTable.data, 0, lineNumberTable.length);
       }
       if (localVariableTable != null) {
         output
-            .putShort(symbolTable.addConstantUtf8(Constants.LOCAL_VARIABLE_TABLE))
+            .putShort(symbolTable.addConstantUtf8(ASMConstants.LOCAL_VARIABLE_TABLE))
             .putInt(2 + localVariableTable.length)
             .putShort(localVariableTableLength)
             .putByteArray(localVariableTable.data, 0, localVariableTable.length);
       }
       if (localVariableTypeTable != null) {
         output
-            .putShort(symbolTable.addConstantUtf8(Constants.LOCAL_VARIABLE_TYPE_TABLE))
+            .putShort(symbolTable.addConstantUtf8(ASMConstants.LOCAL_VARIABLE_TYPE_TABLE))
             .putInt(2 + localVariableTypeTable.length)
             .putShort(localVariableTypeTableLength)
             .putByteArray(localVariableTypeTable.data, 0, localVariableTypeTable.length);
       }
       if (lastCodeRuntimeVisibleTypeAnnotation != null) {
         lastCodeRuntimeVisibleTypeAnnotation.putAnnotations(
-            symbolTable.addConstantUtf8(Constants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS), output);
+            symbolTable.addConstantUtf8(ASMConstants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS), output);
       }
       if (lastCodeRuntimeInvisibleTypeAnnotation != null) {
         lastCodeRuntimeInvisibleTypeAnnotation.putAnnotations(
-            symbolTable.addConstantUtf8(Constants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS), output);
+            symbolTable.addConstantUtf8(ASMConstants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS), output);
       }
       if (firstCodeAttribute != null) {
         firstCodeAttribute.putAttributes(
@@ -2327,7 +2327,7 @@ final class MethodWriter extends MethodVisitor {
     }
     if (numberOfExceptions > 0) {
       output
-          .putShort(symbolTable.addConstantUtf8(Constants.EXCEPTIONS))
+          .putShort(symbolTable.addConstantUtf8(ASMConstants.EXCEPTIONS))
           .putInt(2 + 2 * numberOfExceptions)
           .putShort(numberOfExceptions);
       for (int exceptionIndex : exceptionIndexTable) {
@@ -2344,7 +2344,7 @@ final class MethodWriter extends MethodVisitor {
         output);
     if (lastRuntimeVisibleParameterAnnotations != null) {
       AnnotationWriter.putParameterAnnotations(
-          symbolTable.addConstantUtf8(Constants.RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS),
+          symbolTable.addConstantUtf8(ASMConstants.RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS),
           lastRuntimeVisibleParameterAnnotations,
           visibleAnnotableParameterCount == 0
               ? lastRuntimeVisibleParameterAnnotations.length
@@ -2353,7 +2353,7 @@ final class MethodWriter extends MethodVisitor {
     }
     if (lastRuntimeInvisibleParameterAnnotations != null) {
       AnnotationWriter.putParameterAnnotations(
-          symbolTable.addConstantUtf8(Constants.RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS),
+          symbolTable.addConstantUtf8(ASMConstants.RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS),
           lastRuntimeInvisibleParameterAnnotations,
           invisibleAnnotableParameterCount == 0
               ? lastRuntimeInvisibleParameterAnnotations.length
@@ -2362,13 +2362,13 @@ final class MethodWriter extends MethodVisitor {
     }
     if (defaultValue != null) {
       output
-          .putShort(symbolTable.addConstantUtf8(Constants.ANNOTATION_DEFAULT))
+          .putShort(symbolTable.addConstantUtf8(ASMConstants.ANNOTATION_DEFAULT))
           .putInt(defaultValue.length)
           .putByteArray(defaultValue.data, 0, defaultValue.length);
     }
     if (parameters != null) {
       output
-          .putShort(symbolTable.addConstantUtf8(Constants.METHOD_PARAMETERS))
+          .putShort(symbolTable.addConstantUtf8(ASMConstants.METHOD_PARAMETERS))
           .putInt(1 + parameters.length)
           .putByte(parametersCount)
           .putByteArray(parameters.data, 0, parameters.length);

@@ -23,13 +23,13 @@ import scw.asm.ClassVisitor;
 import scw.asm.Type;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.MethodWrapper;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 
 /**
  * @author Chris Nokleberg
@@ -40,27 +40,27 @@ import scw.cglib.core.TypeUtils;
 class MixinEmitter extends ClassEmitter {
     private static final String FIELD_NAME = "CGLIB$DELEGATES";
     private static final Signature CSTRUCT_OBJECT_ARRAY =
-      TypeUtils.parseConstructor("Object[]");
+      CGLIBTypeUtils.parseConstructor("Object[]");
     private static final Type MIXIN =
-      TypeUtils.parseType(Mixin.class.getName());
+      CGLIBTypeUtils.parseType(Mixin.class.getName());
     private static final Signature NEW_INSTANCE =
-      new Signature("newInstance", MIXIN, new Type[]{ Constants.TYPE_OBJECT_ARRAY });
+      new Signature("newInstance", MIXIN, new Type[]{ CGLIBConstants.TYPE_OBJECT_ARRAY });
 
 	public MixinEmitter(ClassVisitor v, String className, Class[] classes, int[] route) {
         super(v);
 
-        begin_class(Constants.V1_2,
-                    Constants.ACC_PUBLIC,
+        begin_class(CGLIBConstants.V1_2,
+                    CGLIBConstants.ACC_PUBLIC,
                     className,
                     MIXIN,
-                    TypeUtils.getTypes(getInterfaces(classes)),
-                    Constants.SOURCE_FILE);
+                    CGLIBTypeUtils.getTypes(getInterfaces(classes)),
+                    CGLIBConstants.SOURCE_FILE);
         EmitUtils.null_constructor(this);
         EmitUtils.factory_method(this, NEW_INSTANCE);
 
-        declare_field(Constants.ACC_PRIVATE, FIELD_NAME, Constants.TYPE_OBJECT_ARRAY, null);
+        declare_field(CGLIBConstants.ACC_PRIVATE, FIELD_NAME, CGLIBConstants.TYPE_OBJECT_ARRAY, null);
 
-        CodeEmitter e = begin_method(Constants.ACC_PUBLIC, CSTRUCT_OBJECT_ARRAY, null);
+        CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, CSTRUCT_OBJECT_ARRAY, null);
         e.load_this();
         e.super_invoke_constructor();
         e.load_this();
@@ -75,9 +75,9 @@ class MixinEmitter extends ClassEmitter {
             for (int j = 0; j < methods.length; j++) {
                 if (unique.add(MethodWrapper.create(methods[j]))) {
                     MethodInfo method = ReflectUtils.getMethodInfo(methods[j]);
-                    int modifiers = Constants.ACC_PUBLIC;
-                    if ((method.getModifiers() & Constants.ACC_VARARGS) == Constants.ACC_VARARGS) {
-                        modifiers |= Constants.ACC_VARARGS;
+                    int modifiers = CGLIBConstants.ACC_PUBLIC;
+                    if ((method.getModifiers() & CGLIBConstants.ACC_VARARGS) == CGLIBConstants.ACC_VARARGS) {
+                        modifiers |= CGLIBConstants.ACC_VARARGS;
                     }
                     e = EmitUtils.begin_method(this, method, modifiers);
                     e.load_this();

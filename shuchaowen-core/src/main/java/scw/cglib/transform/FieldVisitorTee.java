@@ -19,13 +19,13 @@ import scw.asm.AnnotationVisitor;
 import scw.asm.Attribute;
 import scw.asm.FieldVisitor;
 import scw.asm.TypePath;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 
 public class FieldVisitorTee extends FieldVisitor {
     private FieldVisitor fv1, fv2;
     
     public FieldVisitorTee(FieldVisitor fv1, FieldVisitor fv2) {
-	super(Constants.ASM_API);
+	super(CGLIBConstants.ASM_API);
 	this.fv1 = fv1;
         this.fv2 = fv2;
     }

@@ -29,8 +29,8 @@ import java.util.Map;
  */
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class CollectionUtils {
-    private CollectionUtils() { }
+public class CGLIBCollectionUtils {
+    private CGLIBCollectionUtils() { }
 
     public static Map bucket(Collection c, Transformer t) {
         Map buckets = new HashMap();

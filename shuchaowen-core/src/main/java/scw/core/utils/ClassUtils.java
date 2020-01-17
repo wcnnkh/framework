@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 import scw.core.Assert;
 import scw.core.Constants;
 import scw.core.reflect.ReflectionUtils;
@@ -1138,7 +1138,7 @@ public final class ClassUtils {
 	 * @param rhsType
 	 *            the value type that should be assigned to the target type
 	 * @return if the target type is assignable from the value type
-	 * @see TypeUtils#isAssignable
+	 * @see CGLIBTypeUtils#isAssignable
 	 */
 	@SuppressWarnings("rawtypes")
 	public static boolean isAssignable(Class<?> lhsType, Class<?> rhsType) {

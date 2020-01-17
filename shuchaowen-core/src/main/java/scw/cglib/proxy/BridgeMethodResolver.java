@@ -27,7 +27,7 @@ import scw.asm.ClassReader;
 import scw.asm.ClassVisitor;
 import scw.asm.MethodVisitor;
 import scw.asm.Opcodes;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.Signature;
 
 /**
@@ -81,7 +81,7 @@ class BridgeMethodResolver {
         private Signature currentMethod = null;
 
         BridgedFinder(Set eligibleMethods, Map resolved) {
-            super(Constants.ASM_API);
+            super(CGLIBConstants.ASM_API);
             this.resolved = resolved;
             this.eligibleMethods = eligibleMethods;
         }
@@ -95,7 +95,7 @@ class BridgeMethodResolver {
             Signature sig = new Signature(name, desc);
             if (eligibleMethods.remove(sig)) {
                 currentMethod = sig;
-                return new MethodVisitor(Constants.ASM_API) {
+                return new MethodVisitor(CGLIBConstants.ASM_API) {
 					public void visitMethodInsn(int opcode, String owner, String name,
                                                 String desc, boolean itf) {
                         if (opcode == Opcodes.INVOKESPECIAL && currentMethod != null) {

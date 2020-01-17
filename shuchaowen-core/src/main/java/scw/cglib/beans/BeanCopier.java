@@ -26,7 +26,7 @@ import scw.asm.Type;
 import scw.cglib.core.AbstractClassGenerator;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.Converter;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.KeyFactory;
@@ -34,7 +34,7 @@ import scw.cglib.core.Local;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 
 /**
  * @author Chris Nokleberg
@@ -45,13 +45,13 @@ abstract public class BeanCopier
     private static final BeanCopierKey KEY_FACTORY =
       (BeanCopierKey)KeyFactory.create(BeanCopierKey.class);
     private static final Type CONVERTER =
-      TypeUtils.parseType(Converter.class.getName());
+      CGLIBTypeUtils.parseType(Converter.class.getName());
     private static final Type BEAN_COPIER =
-      TypeUtils.parseType(BeanCopier.class.getName());
+      CGLIBTypeUtils.parseType(BeanCopier.class.getName());
     private static final Signature COPY =
-      new Signature("copy", Type.VOID_TYPE, new Type[]{ Constants.TYPE_OBJECT, Constants.TYPE_OBJECT, CONVERTER });
+      new Signature("copy", Type.VOID_TYPE, new Type[]{ CGLIBConstants.TYPE_OBJECT, CGLIBConstants.TYPE_OBJECT, CONVERTER });
     private static final Signature CONVERT =
-      TypeUtils.parseSignature("Object convert(Object, Class, Object)");
+      CGLIBTypeUtils.parseSignature("Object convert(Object, Class, Object)");
     
     interface BeanCopierKey {
         public Object newInstance(String source, String target, boolean useConverter);
@@ -113,15 +113,15 @@ abstract public class BeanCopier
             Type sourceType = Type.getType(source);
             Type targetType = Type.getType(target);
             ClassEmitter ce = new ClassEmitter(v);
-            ce.begin_class(Constants.V1_2,
-                           Constants.ACC_PUBLIC,
+            ce.begin_class(CGLIBConstants.V1_2,
+                           CGLIBConstants.ACC_PUBLIC,
                            getClassName(),
                            BEAN_COPIER,
                            null,
-                           Constants.SOURCE_FILE);
+                           CGLIBConstants.SOURCE_FILE);
 
             EmitUtils.null_constructor(ce);
-            CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC, COPY, null);
+            CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, COPY, null);
             PropertyDescriptor[] getters = ReflectUtils.getBeanGetters(source);
             PropertyDescriptor[] setters = ReflectUtils.getBeanSetters(target);
 

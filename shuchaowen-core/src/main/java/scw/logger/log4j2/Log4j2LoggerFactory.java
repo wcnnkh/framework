@@ -1,4 +1,4 @@
-package scw.logger.log4j;
+package scw.logger.log4j2;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -25,5 +25,4 @@ public class Log4j2LoggerFactory extends AbstractILoggerFactory {
 		org.apache.logging.log4j.Logger logger = LogManager.getLogger(name);
 		return new Log4j2Logger(logger, LoggerLevelUtils.getLevel(name), placeholder);
 	}
-
 }

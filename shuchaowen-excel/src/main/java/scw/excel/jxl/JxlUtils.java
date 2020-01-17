@@ -19,10 +19,10 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import scw.core.Consumer;
-import scw.core.resource.ResourceUtils;
 import scw.excel.RowCallback;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.resource.ResourceUtils;
 
 public final class JxlUtils {
 	private JxlUtils() {

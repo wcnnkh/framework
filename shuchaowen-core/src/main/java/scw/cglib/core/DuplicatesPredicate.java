@@ -124,7 +124,7 @@ public class DuplicatesPredicate implements Predicate {
     private Map methods = new HashMap();
 
     UnnecessaryBridgeFinder(Set rejected) {
-      super(Constants.ASM_API);
+      super(CGLIBConstants.ASM_API);
       this.rejected = rejected;
     }
 
@@ -146,7 +146,7 @@ public class DuplicatesPredicate implements Predicate {
       final Method currentMethod = (Method) methods.remove(sig);
       if (currentMethod != null) {
         currentMethodSig = sig;
-        return new MethodVisitor(Constants.ASM_API) {
+        return new MethodVisitor(CGLIBConstants.ASM_API) {
           public void visitMethodInsn(
               int opcode, String owner, String name, String desc, boolean itf) {
             if (opcode == Opcodes.INVOKESPECIAL && currentMethodSig != null) {

@@ -25,11 +25,11 @@ import java.util.Map;
 import scw.asm.Type;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class TypeUtils {
+public class CGLIBTypeUtils {
     private static final Map transforms = new HashMap();
     private static final Map rtransforms = new HashMap();
 
-    private TypeUtils() {
+    private CGLIBTypeUtils() {
     }
 
     static {
@@ -43,7 +43,7 @@ public class TypeUtils {
         transforms.put("short", "S");
         transforms.put("boolean", "Z");
 
-        CollectionUtils.reverse(transforms, rtransforms);
+        CGLIBCollectionUtils.reverse(transforms, rtransforms);
     }
 
     public static Type getType(String className) {
@@ -51,39 +51,39 @@ public class TypeUtils {
     }
 
     public static boolean isFinal(int access) {
-        return (Constants.ACC_FINAL & access) != 0;
+        return (CGLIBConstants.ACC_FINAL & access) != 0;
     }
 
     public static boolean isStatic(int access) {
-        return (Constants.ACC_STATIC & access) != 0;
+        return (CGLIBConstants.ACC_STATIC & access) != 0;
     }
 
     public static boolean isProtected(int access) {
-        return (Constants.ACC_PROTECTED & access) != 0;
+        return (CGLIBConstants.ACC_PROTECTED & access) != 0;
     }
 
     public static boolean isPublic(int access) {
-        return (Constants.ACC_PUBLIC & access) != 0;
+        return (CGLIBConstants.ACC_PUBLIC & access) != 0;
     }
 
     public static boolean isAbstract(int access) {
-        return (Constants.ACC_ABSTRACT & access) != 0;
+        return (CGLIBConstants.ACC_ABSTRACT & access) != 0;
     }
     
     public static boolean isInterface(int access) {
-        return (Constants.ACC_INTERFACE & access) != 0;
+        return (CGLIBConstants.ACC_INTERFACE & access) != 0;
     }
 
     public static boolean isPrivate(int access) {
-        return (Constants.ACC_PRIVATE & access) != 0;
+        return (CGLIBConstants.ACC_PRIVATE & access) != 0;
     }
     
     public static boolean isSynthetic(int access) {
-        return (Constants.ACC_SYNTHETIC & access) != 0;
+        return (CGLIBConstants.ACC_SYNTHETIC & access) != 0;
     }
     
     public static boolean isBridge(int access) {
-    	return (Constants.ACC_BRIDGE & access) != 0;
+    	return (CGLIBConstants.ACC_BRIDGE & access) != 0;
     }
     
     // getPackage returns null on JDK 1.2
@@ -208,7 +208,7 @@ public class TypeUtils {
         }
         sb.append(")");
         sb.append("V");
-        return new Signature(Constants.CONSTRUCTOR_NAME, sb.toString());
+        return new Signature(CGLIBConstants.CONSTRUCTOR_NAME, sb.toString());
     }
 
     public static Signature parseConstructor(String sig) {
@@ -253,42 +253,42 @@ public class TypeUtils {
     public static Type getBoxedType(Type type) {
         switch (type.getSort()) {
         case Type.CHAR:
-            return Constants.TYPE_CHARACTER;
+            return CGLIBConstants.TYPE_CHARACTER;
         case Type.BOOLEAN:
-            return Constants.TYPE_BOOLEAN;
+            return CGLIBConstants.TYPE_BOOLEAN;
         case Type.DOUBLE:
-            return Constants.TYPE_DOUBLE;
+            return CGLIBConstants.TYPE_DOUBLE;
         case Type.FLOAT:
-            return Constants.TYPE_FLOAT;
+            return CGLIBConstants.TYPE_FLOAT;
         case Type.LONG:
-            return Constants.TYPE_LONG;
+            return CGLIBConstants.TYPE_LONG;
         case Type.INT:
-            return Constants.TYPE_INTEGER;
+            return CGLIBConstants.TYPE_INTEGER;
         case Type.SHORT:
-            return Constants.TYPE_SHORT;
+            return CGLIBConstants.TYPE_SHORT;
         case Type.BYTE:
-            return Constants.TYPE_BYTE;
+            return CGLIBConstants.TYPE_BYTE;
         default:
             return type;
         }
     }
 
     public static Type getUnboxedType(Type type) {
-        if (Constants.TYPE_INTEGER.equals(type)) {
+        if (CGLIBConstants.TYPE_INTEGER.equals(type)) {
             return Type.INT_TYPE;
-        } else if (Constants.TYPE_BOOLEAN.equals(type)) {
+        } else if (CGLIBConstants.TYPE_BOOLEAN.equals(type)) {
             return Type.BOOLEAN_TYPE;
-        } else if (Constants.TYPE_DOUBLE.equals(type)) {
+        } else if (CGLIBConstants.TYPE_DOUBLE.equals(type)) {
             return Type.DOUBLE_TYPE;
-        } else if (Constants.TYPE_LONG.equals(type)) {
+        } else if (CGLIBConstants.TYPE_LONG.equals(type)) {
             return Type.LONG_TYPE;
-        } else if (Constants.TYPE_CHARACTER.equals(type)) {
+        } else if (CGLIBConstants.TYPE_CHARACTER.equals(type)) {
             return Type.CHAR_TYPE;
-        } else if (Constants.TYPE_BYTE.equals(type)) {
+        } else if (CGLIBConstants.TYPE_BYTE.equals(type)) {
             return Type.BYTE_TYPE;
-        } else if (Constants.TYPE_FLOAT.equals(type)) {
+        } else if (CGLIBConstants.TYPE_FLOAT.equals(type)) {
             return Type.FLOAT_TYPE;
-        } else if (Constants.TYPE_SHORT.equals(type)) {
+        } else if (CGLIBConstants.TYPE_SHORT.equals(type)) {
             return Type.SHORT_TYPE;
         } else {
             return type;
@@ -325,7 +325,7 @@ public class TypeUtils {
     }
 
     public static boolean isConstructor(MethodInfo method) {
-        return method.getSignature().getName().equals(Constants.CONSTRUCTOR_NAME);
+        return method.getSignature().getName().equals(CGLIBConstants.CONSTRUCTOR_NAME);
     }
 
     public static Type[] getTypes(Class[] classes) {
@@ -341,22 +341,22 @@ public class TypeUtils {
 
     public static int ICONST(int value) {
         switch (value) {
-        case -1: return Constants.ICONST_M1;
-        case 0: return Constants.ICONST_0;
-        case 1: return Constants.ICONST_1;
-        case 2: return Constants.ICONST_2;
-        case 3: return Constants.ICONST_3;
-        case 4: return Constants.ICONST_4;
-        case 5: return Constants.ICONST_5;
+        case -1: return CGLIBConstants.ICONST_M1;
+        case 0: return CGLIBConstants.ICONST_0;
+        case 1: return CGLIBConstants.ICONST_1;
+        case 2: return CGLIBConstants.ICONST_2;
+        case 3: return CGLIBConstants.ICONST_3;
+        case 4: return CGLIBConstants.ICONST_4;
+        case 5: return CGLIBConstants.ICONST_5;
         }
         return -1; // error
     }
 
     public static int LCONST(long value) {
         if (value == 0L) {
-            return Constants.LCONST_0;
+            return CGLIBConstants.LCONST_0;
         } else if (value == 1L) {
-            return Constants.LCONST_1;
+            return CGLIBConstants.LCONST_1;
         } else {
             return -1; // error
         }
@@ -364,11 +364,11 @@ public class TypeUtils {
 
     public static int FCONST(float value) {
         if (value == 0f) {
-            return Constants.FCONST_0;
+            return CGLIBConstants.FCONST_0;
         } else if (value == 1f) {
-            return Constants.FCONST_1;
+            return CGLIBConstants.FCONST_1;
         } else if (value == 2f) {
-            return Constants.FCONST_2;
+            return CGLIBConstants.FCONST_2;
         } else {
             return -1; // error
         }
@@ -376,9 +376,9 @@ public class TypeUtils {
 
     public static int DCONST(double value) {
         if (value == 0d) {
-            return Constants.DCONST_0;
+            return CGLIBConstants.DCONST_0;
         } else if (value == 1d) {
-            return Constants.DCONST_1;
+            return CGLIBConstants.DCONST_1;
         } else {
             return -1; // error
         }
@@ -387,21 +387,21 @@ public class TypeUtils {
     public static int NEWARRAY(Type type) {
         switch (type.getSort()) {
         case Type.BYTE:
-            return Constants.T_BYTE;
+            return CGLIBConstants.T_BYTE;
         case Type.CHAR:
-            return Constants.T_CHAR;
+            return CGLIBConstants.T_CHAR;
         case Type.DOUBLE:
-            return Constants.T_DOUBLE;
+            return CGLIBConstants.T_DOUBLE;
         case Type.FLOAT:
-            return Constants.T_FLOAT;
+            return CGLIBConstants.T_FLOAT;
         case Type.INT:
-            return Constants.T_INT;
+            return CGLIBConstants.T_INT;
         case Type.LONG:
-            return Constants.T_LONG;
+            return CGLIBConstants.T_LONG;
         case Type.SHORT:
-            return Constants.T_SHORT;
+            return CGLIBConstants.T_SHORT;
         case Type.BOOLEAN:
-            return Constants.T_BOOLEAN;
+            return CGLIBConstants.T_BOOLEAN;
         default:
             return -1; // error
         }

@@ -23,7 +23,7 @@ import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 
 @SuppressWarnings({"rawtypes"})
 class DispatcherGenerator implements CallbackGenerator {
@@ -33,13 +33,13 @@ class DispatcherGenerator implements CallbackGenerator {
       new DispatcherGenerator(true);
 
     private static final Type DISPATCHER =
-      TypeUtils.parseType(Dispatcher.class.getName());
+      CGLIBTypeUtils.parseType(Dispatcher.class.getName());
     private static final Type PROXY_REF_DISPATCHER =
-      TypeUtils.parseType(ProxyRefDispatcher.class.getName());
+      CGLIBTypeUtils.parseType(ProxyRefDispatcher.class.getName());
     private static final Signature LOAD_OBJECT =
-      TypeUtils.parseSignature("Object loadObject()");
+      CGLIBTypeUtils.parseSignature("Object loadObject()");
     private static final Signature PROXY_REF_LOAD_OBJECT =
-      TypeUtils.parseSignature("Object loadObject(Object)");
+      CGLIBTypeUtils.parseSignature("Object loadObject(Object)");
 
     private boolean proxyRef;
 
@@ -50,7 +50,7 @@ class DispatcherGenerator implements CallbackGenerator {
     public void generate(ClassEmitter ce, Context context, List methods) {
         for (Iterator it = methods.iterator(); it.hasNext();) {
             MethodInfo method = (MethodInfo)it.next();
-            if (!TypeUtils.isProtected(method.getModifiers())) {
+            if (!CGLIBTypeUtils.isProtected(method.getModifiers())) {
                 CodeEmitter e = context.beginMethod(ce, method);
                 context.emitCallback(e, context.getIndex(method));
                 if (proxyRef) {

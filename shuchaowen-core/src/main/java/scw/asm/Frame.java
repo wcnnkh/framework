@@ -398,7 +398,7 @@ class Frame {
     inputStack = new int[0];
     int inputLocalIndex = 0;
     if ((access & Opcodes.ACC_STATIC) == 0) {
-      if ((access & Constants.ACC_CONSTRUCTOR) == 0) {
+      if ((access & ASMConstants.ACC_CONSTRUCTOR) == 0) {
         inputLocals[inputLocalIndex++] =
             REFERENCE_KIND | symbolTable.addType(symbolTable.getClassName());
       } else {

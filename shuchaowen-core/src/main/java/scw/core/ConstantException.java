@@ -22,7 +22,7 @@ package scw.core;
  *
  * @author Rod Johnson
  * @since 28.04.2003
- * @see org.springframework.core.Constants
+ * @see org.CGLIBConstants.core.Constants
  */
 @SuppressWarnings("serial")
 public class ConstantException extends IllegalArgumentException {

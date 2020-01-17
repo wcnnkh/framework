@@ -23,7 +23,7 @@ import java.security.ProtectionDomain;
 import scw.asm.ClassVisitor;
 import scw.asm.Type;
 import scw.cglib.core.AbstractClassGenerator;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
 
@@ -98,7 +98,7 @@ abstract public class FastClass
     }
 
     public Object newInstance() throws InvocationTargetException {
-        return newInstance(getIndex(Constants.EMPTY_CLASS_ARRAY), null);
+        return newInstance(getIndex(CGLIBConstants.EMPTY_CLASS_ARRAY), null);
     }
 
     public Object newInstance(Class[] parameterTypes, Object[] args) throws InvocationTargetException {

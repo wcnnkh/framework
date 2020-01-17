@@ -18,7 +18,7 @@ package scw.cglib.transform.impl;
 import scw.cglib.core.ClassGenerator;
 import scw.cglib.core.DefaultGeneratorStrategy;
 import scw.cglib.core.GeneratorStrategy;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 import scw.cglib.transform.ClassTransformer;
 import scw.cglib.transform.MethodFilter;
 import scw.cglib.transform.MethodFilterTransformer;
@@ -50,7 +50,7 @@ public class UndeclaredThrowableStrategy extends DefaultGeneratorStrategy {
     
     private static final MethodFilter TRANSFORM_FILTER = new MethodFilter() {
         public boolean accept(int access, String name, String desc, String signature, String[] exceptions) {
-            return !TypeUtils.isPrivate(access) && name.indexOf('$') < 0;
+            return !CGLIBTypeUtils.isPrivate(access) && name.indexOf('$') < 0;
         }
     };
 

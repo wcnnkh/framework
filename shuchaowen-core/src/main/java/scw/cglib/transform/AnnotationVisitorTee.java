@@ -16,7 +16,7 @@
 package scw.cglib.transform;
 
 import scw.asm.AnnotationVisitor;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 
 public class AnnotationVisitorTee extends AnnotationVisitor {
     private AnnotationVisitor av1, av2;
@@ -30,7 +30,7 @@ public class AnnotationVisitorTee extends AnnotationVisitor {
     }
 
     public AnnotationVisitorTee(AnnotationVisitor av1, AnnotationVisitor av2) {
-	super(Constants.ASM_API);
+	super(CGLIBConstants.ASM_API);
         this.av1 = av1;
         this.av2 = av2;
     }

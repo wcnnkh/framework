@@ -7,15 +7,30 @@ import java.util.ListIterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import scw.core.resource.ResourceUtils;
+import scw.core.Constants;
+import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.resource.ResourceUtils;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 import scw.util.SimpleKeyValuePair;
 
 public class LoggerLevelUtils {
 	private static final LinkedList<KeyValuePair<String, Level>> LOGGER_LEVEL_LIST = new LinkedList<KeyValuePair<String, Level>>();
+	public static final PropertyFactory PROPERTY_FACTORY = new PropertyFactory() {
+
+		public String getProperty(String key) {
+			String value = null;
+			if (key.equalsIgnoreCase("default.logger.level")) {
+				value = LoggerLevelUtils.getDefaultLevel().name();
+			} else if (key.equalsIgnoreCase("logger.rootPath")) {
+				value = SystemPropertyUtils.getWorkPath();
+			}
+			return value == null ? Constants.PROPERTY_FACTORY.getProperty(key) : value;
+		}
+	};
+
 	private static final Level DEFAULT_LEVEL;
 
 	static {

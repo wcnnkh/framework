@@ -21,14 +21,14 @@ import scw.asm.Handle;
 import scw.asm.Label;
 import scw.asm.MethodVisitor;
 import scw.asm.TypePath;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 
 public class MethodVisitorTee extends MethodVisitor {
     private final MethodVisitor mv1;
     private final MethodVisitor mv2;
     
     public MethodVisitorTee(MethodVisitor mv1, MethodVisitor mv2) {
-	super(Constants.ASM_API);
+	super(CGLIBConstants.ASM_API);
 	this.mv1 = mv1;
         this.mv2 = mv2;
     }

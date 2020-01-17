@@ -373,22 +373,22 @@ final class AnnotationWriter extends AnnotationVisitor {
     if (lastRuntimeVisibleAnnotation != null) {
       size +=
           lastRuntimeVisibleAnnotation.computeAnnotationsSize(
-              Constants.RUNTIME_VISIBLE_ANNOTATIONS);
+              ASMConstants.RUNTIME_VISIBLE_ANNOTATIONS);
     }
     if (lastRuntimeInvisibleAnnotation != null) {
       size +=
           lastRuntimeInvisibleAnnotation.computeAnnotationsSize(
-              Constants.RUNTIME_INVISIBLE_ANNOTATIONS);
+              ASMConstants.RUNTIME_INVISIBLE_ANNOTATIONS);
     }
     if (lastRuntimeVisibleTypeAnnotation != null) {
       size +=
           lastRuntimeVisibleTypeAnnotation.computeAnnotationsSize(
-              Constants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS);
+              ASMConstants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS);
     }
     if (lastRuntimeInvisibleTypeAnnotation != null) {
       size +=
           lastRuntimeInvisibleTypeAnnotation.computeAnnotationsSize(
-              Constants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS);
+              ASMConstants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS);
     }
     return size;
   }
@@ -454,19 +454,19 @@ final class AnnotationWriter extends AnnotationVisitor {
       final ByteVector output) {
     if (lastRuntimeVisibleAnnotation != null) {
       lastRuntimeVisibleAnnotation.putAnnotations(
-          symbolTable.addConstantUtf8(Constants.RUNTIME_VISIBLE_ANNOTATIONS), output);
+          symbolTable.addConstantUtf8(ASMConstants.RUNTIME_VISIBLE_ANNOTATIONS), output);
     }
     if (lastRuntimeInvisibleAnnotation != null) {
       lastRuntimeInvisibleAnnotation.putAnnotations(
-          symbolTable.addConstantUtf8(Constants.RUNTIME_INVISIBLE_ANNOTATIONS), output);
+          symbolTable.addConstantUtf8(ASMConstants.RUNTIME_INVISIBLE_ANNOTATIONS), output);
     }
     if (lastRuntimeVisibleTypeAnnotation != null) {
       lastRuntimeVisibleTypeAnnotation.putAnnotations(
-          symbolTable.addConstantUtf8(Constants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS), output);
+          symbolTable.addConstantUtf8(ASMConstants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS), output);
     }
     if (lastRuntimeInvisibleTypeAnnotation != null) {
       lastRuntimeInvisibleTypeAnnotation.putAnnotations(
-          symbolTable.addConstantUtf8(Constants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS), output);
+          symbolTable.addConstantUtf8(ASMConstants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS), output);
     }
   }
 

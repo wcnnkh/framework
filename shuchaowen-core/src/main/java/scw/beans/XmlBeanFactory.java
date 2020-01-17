@@ -13,10 +13,10 @@ import scw.beans.xml.DefaultXmlBeanConfigFactory;
 import scw.beans.xml.XmlBeanConfiguration;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.lang.NotFoundException;
+import scw.resource.ResourceUtils;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
 	private NodeList nodeList;

@@ -555,44 +555,44 @@ public class ClassReader {
 			// The tests are sorted in decreasing frequency order (based on
 			// frequencies observed on
 			// typical classes).
-			if (Constants.SOURCE_FILE.equals(attributeName)) {
+			if (ASMConstants.SOURCE_FILE.equals(attributeName)) {
 				sourceFile = readUTF8(currentAttributeOffset, charBuffer);
-			} else if (Constants.INNER_CLASSES.equals(attributeName)) {
+			} else if (ASMConstants.INNER_CLASSES.equals(attributeName)) {
 				innerClassesOffset = currentAttributeOffset;
-			} else if (Constants.ENCLOSING_METHOD.equals(attributeName)) {
+			} else if (ASMConstants.ENCLOSING_METHOD.equals(attributeName)) {
 				enclosingMethodOffset = currentAttributeOffset;
-			} else if (Constants.NEST_HOST.equals(attributeName)) {
+			} else if (ASMConstants.NEST_HOST.equals(attributeName)) {
 				nestHostClass = readClass(currentAttributeOffset, charBuffer);
-			} else if (Constants.NEST_MEMBERS.equals(attributeName)) {
+			} else if (ASMConstants.NEST_MEMBERS.equals(attributeName)) {
 				nestMembersOffset = currentAttributeOffset;
-			} else if (Constants.SIGNATURE.equals(attributeName)) {
+			} else if (ASMConstants.SIGNATURE.equals(attributeName)) {
 				signature = readUTF8(currentAttributeOffset, charBuffer);
-			} else if (Constants.RUNTIME_VISIBLE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_VISIBLE_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeVisibleAnnotationsOffset = currentAttributeOffset;
-			} else if (Constants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeVisibleTypeAnnotationsOffset = currentAttributeOffset;
-			} else if (Constants.DEPRECATED.equals(attributeName)) {
+			} else if (ASMConstants.DEPRECATED.equals(attributeName)) {
 				accessFlags |= Opcodes.ACC_DEPRECATED;
-			} else if (Constants.SYNTHETIC.equals(attributeName)) {
+			} else if (ASMConstants.SYNTHETIC.equals(attributeName)) {
 				accessFlags |= Opcodes.ACC_SYNTHETIC;
-			} else if (Constants.SOURCE_DEBUG_EXTENSION.equals(attributeName)) {
+			} else if (ASMConstants.SOURCE_DEBUG_EXTENSION.equals(attributeName)) {
 				sourceDebugExtension = readUtf(currentAttributeOffset,
 						attributeLength, new char[attributeLength]);
-			} else if (Constants.RUNTIME_INVISIBLE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_INVISIBLE_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeInvisibleAnnotationsOffset = currentAttributeOffset;
-			} else if (Constants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeInvisibleTypeAnnotationsOffset = currentAttributeOffset;
-			} else if (Constants.MODULE.equals(attributeName)) {
+			} else if (ASMConstants.MODULE.equals(attributeName)) {
 				moduleOffset = currentAttributeOffset;
-			} else if (Constants.MODULE_MAIN_CLASS.equals(attributeName)) {
+			} else if (ASMConstants.MODULE_MAIN_CLASS.equals(attributeName)) {
 				moduleMainClass = readClass(currentAttributeOffset, charBuffer);
-			} else if (Constants.MODULE_PACKAGES.equals(attributeName)) {
+			} else if (ASMConstants.MODULE_PACKAGES.equals(attributeName)) {
 				modulePackagesOffset = currentAttributeOffset;
-			} else if (!Constants.BOOTSTRAP_METHODS.equals(attributeName)) {
+			} else if (!ASMConstants.BOOTSTRAP_METHODS.equals(attributeName)) {
 				// The BootstrapMethods attribute is read in the constructor.
 				Attribute attribute = readAttribute(attributePrototypes,
 						attributeName, currentAttributeOffset, attributeLength,
@@ -978,26 +978,26 @@ public class ClassReader {
 			// The tests are sorted in decreasing frequency order (based on
 			// frequencies observed on
 			// typical classes).
-			if (Constants.CONSTANT_VALUE.equals(attributeName)) {
+			if (ASMConstants.CONSTANT_VALUE.equals(attributeName)) {
 				int constantvalueIndex = readUnsignedShort(currentOffset);
 				constantValue = constantvalueIndex == 0 ? null : readConst(
 						constantvalueIndex, charBuffer);
-			} else if (Constants.SIGNATURE.equals(attributeName)) {
+			} else if (ASMConstants.SIGNATURE.equals(attributeName)) {
 				signature = readUTF8(currentOffset, charBuffer);
-			} else if (Constants.DEPRECATED.equals(attributeName)) {
+			} else if (ASMConstants.DEPRECATED.equals(attributeName)) {
 				accessFlags |= Opcodes.ACC_DEPRECATED;
-			} else if (Constants.SYNTHETIC.equals(attributeName)) {
+			} else if (ASMConstants.SYNTHETIC.equals(attributeName)) {
 				accessFlags |= Opcodes.ACC_SYNTHETIC;
-			} else if (Constants.RUNTIME_VISIBLE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_VISIBLE_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeVisibleAnnotationsOffset = currentOffset;
-			} else if (Constants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeVisibleTypeAnnotationsOffset = currentOffset;
-			} else if (Constants.RUNTIME_INVISIBLE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_INVISIBLE_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeInvisibleAnnotationsOffset = currentOffset;
-			} else if (Constants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeInvisibleTypeAnnotationsOffset = currentOffset;
 			} else {
@@ -1194,11 +1194,11 @@ public class ClassReader {
 			// The tests are sorted in decreasing frequency order (based on
 			// frequencies observed on
 			// typical classes).
-			if (Constants.CODE.equals(attributeName)) {
+			if (ASMConstants.CODE.equals(attributeName)) {
 				if ((context.parsingOptions & SKIP_CODE) == 0) {
 					codeOffset = currentOffset;
 				}
-			} else if (Constants.EXCEPTIONS.equals(attributeName)) {
+			} else if (ASMConstants.EXCEPTIONS.equals(attributeName)) {
 				exceptionsOffset = currentOffset;
 				exceptions = new String[readUnsignedShort(exceptionsOffset)];
 				int currentExceptionOffset = exceptionsOffset + 2;
@@ -1207,34 +1207,34 @@ public class ClassReader {
 							charBuffer);
 					currentExceptionOffset += 2;
 				}
-			} else if (Constants.SIGNATURE.equals(attributeName)) {
+			} else if (ASMConstants.SIGNATURE.equals(attributeName)) {
 				signatureIndex = readUnsignedShort(currentOffset);
-			} else if (Constants.DEPRECATED.equals(attributeName)) {
+			} else if (ASMConstants.DEPRECATED.equals(attributeName)) {
 				context.currentMethodAccessFlags |= Opcodes.ACC_DEPRECATED;
-			} else if (Constants.RUNTIME_VISIBLE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_VISIBLE_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeVisibleAnnotationsOffset = currentOffset;
-			} else if (Constants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeVisibleTypeAnnotationsOffset = currentOffset;
-			} else if (Constants.ANNOTATION_DEFAULT.equals(attributeName)) {
+			} else if (ASMConstants.ANNOTATION_DEFAULT.equals(attributeName)) {
 				annotationDefaultOffset = currentOffset;
-			} else if (Constants.SYNTHETIC.equals(attributeName)) {
+			} else if (ASMConstants.SYNTHETIC.equals(attributeName)) {
 				synthetic = true;
 				context.currentMethodAccessFlags |= Opcodes.ACC_SYNTHETIC;
-			} else if (Constants.RUNTIME_INVISIBLE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_INVISIBLE_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeInvisibleAnnotationsOffset = currentOffset;
-			} else if (Constants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeInvisibleTypeAnnotationsOffset = currentOffset;
-			} else if (Constants.RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeVisibleParameterAnnotationsOffset = currentOffset;
-			} else if (Constants.RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS
 					.equals(attributeName)) {
 				runtimeInvisibleParameterAnnotationsOffset = currentOffset;
-			} else if (Constants.METHOD_PARAMETERS.equals(attributeName)) {
+			} else if (ASMConstants.METHOD_PARAMETERS.equals(attributeName)) {
 				methodParametersOffset = currentOffset;
 			} else {
 				Attribute attribute = readAttribute(
@@ -1462,228 +1462,228 @@ public class ClassReader {
 			final int bytecodeOffset = currentOffset - bytecodeStartOffset;
 			final int opcode = classBuffer[currentOffset] & 0xFF;
 			switch (opcode) {
-			case Constants.NOP:
-			case Constants.ACONST_NULL:
-			case Constants.ICONST_M1:
-			case Constants.ICONST_0:
-			case Constants.ICONST_1:
-			case Constants.ICONST_2:
-			case Constants.ICONST_3:
-			case Constants.ICONST_4:
-			case Constants.ICONST_5:
-			case Constants.LCONST_0:
-			case Constants.LCONST_1:
-			case Constants.FCONST_0:
-			case Constants.FCONST_1:
-			case Constants.FCONST_2:
-			case Constants.DCONST_0:
-			case Constants.DCONST_1:
-			case Constants.IALOAD:
-			case Constants.LALOAD:
-			case Constants.FALOAD:
-			case Constants.DALOAD:
-			case Constants.AALOAD:
-			case Constants.BALOAD:
-			case Constants.CALOAD:
-			case Constants.SALOAD:
-			case Constants.IASTORE:
-			case Constants.LASTORE:
-			case Constants.FASTORE:
-			case Constants.DASTORE:
-			case Constants.AASTORE:
-			case Constants.BASTORE:
-			case Constants.CASTORE:
-			case Constants.SASTORE:
-			case Constants.POP:
-			case Constants.POP2:
-			case Constants.DUP:
-			case Constants.DUP_X1:
-			case Constants.DUP_X2:
-			case Constants.DUP2:
-			case Constants.DUP2_X1:
-			case Constants.DUP2_X2:
-			case Constants.SWAP:
-			case Constants.IADD:
-			case Constants.LADD:
-			case Constants.FADD:
-			case Constants.DADD:
-			case Constants.ISUB:
-			case Constants.LSUB:
-			case Constants.FSUB:
-			case Constants.DSUB:
-			case Constants.IMUL:
-			case Constants.LMUL:
-			case Constants.FMUL:
-			case Constants.DMUL:
-			case Constants.IDIV:
-			case Constants.LDIV:
-			case Constants.FDIV:
-			case Constants.DDIV:
-			case Constants.IREM:
-			case Constants.LREM:
-			case Constants.FREM:
-			case Constants.DREM:
-			case Constants.INEG:
-			case Constants.LNEG:
-			case Constants.FNEG:
-			case Constants.DNEG:
-			case Constants.ISHL:
-			case Constants.LSHL:
-			case Constants.ISHR:
-			case Constants.LSHR:
-			case Constants.IUSHR:
-			case Constants.LUSHR:
-			case Constants.IAND:
-			case Constants.LAND:
-			case Constants.IOR:
-			case Constants.LOR:
-			case Constants.IXOR:
-			case Constants.LXOR:
-			case Constants.I2L:
-			case Constants.I2F:
-			case Constants.I2D:
-			case Constants.L2I:
-			case Constants.L2F:
-			case Constants.L2D:
-			case Constants.F2I:
-			case Constants.F2L:
-			case Constants.F2D:
-			case Constants.D2I:
-			case Constants.D2L:
-			case Constants.D2F:
-			case Constants.I2B:
-			case Constants.I2C:
-			case Constants.I2S:
-			case Constants.LCMP:
-			case Constants.FCMPL:
-			case Constants.FCMPG:
-			case Constants.DCMPL:
-			case Constants.DCMPG:
-			case Constants.IRETURN:
-			case Constants.LRETURN:
-			case Constants.FRETURN:
-			case Constants.DRETURN:
-			case Constants.ARETURN:
-			case Constants.RETURN:
-			case Constants.ARRAYLENGTH:
-			case Constants.ATHROW:
-			case Constants.MONITORENTER:
-			case Constants.MONITOREXIT:
-			case Constants.ILOAD_0:
-			case Constants.ILOAD_1:
-			case Constants.ILOAD_2:
-			case Constants.ILOAD_3:
-			case Constants.LLOAD_0:
-			case Constants.LLOAD_1:
-			case Constants.LLOAD_2:
-			case Constants.LLOAD_3:
-			case Constants.FLOAD_0:
-			case Constants.FLOAD_1:
-			case Constants.FLOAD_2:
-			case Constants.FLOAD_3:
-			case Constants.DLOAD_0:
-			case Constants.DLOAD_1:
-			case Constants.DLOAD_2:
-			case Constants.DLOAD_3:
-			case Constants.ALOAD_0:
-			case Constants.ALOAD_1:
-			case Constants.ALOAD_2:
-			case Constants.ALOAD_3:
-			case Constants.ISTORE_0:
-			case Constants.ISTORE_1:
-			case Constants.ISTORE_2:
-			case Constants.ISTORE_3:
-			case Constants.LSTORE_0:
-			case Constants.LSTORE_1:
-			case Constants.LSTORE_2:
-			case Constants.LSTORE_3:
-			case Constants.FSTORE_0:
-			case Constants.FSTORE_1:
-			case Constants.FSTORE_2:
-			case Constants.FSTORE_3:
-			case Constants.DSTORE_0:
-			case Constants.DSTORE_1:
-			case Constants.DSTORE_2:
-			case Constants.DSTORE_3:
-			case Constants.ASTORE_0:
-			case Constants.ASTORE_1:
-			case Constants.ASTORE_2:
-			case Constants.ASTORE_3:
+			case ASMConstants.NOP:
+			case ASMConstants.ACONST_NULL:
+			case ASMConstants.ICONST_M1:
+			case ASMConstants.ICONST_0:
+			case ASMConstants.ICONST_1:
+			case ASMConstants.ICONST_2:
+			case ASMConstants.ICONST_3:
+			case ASMConstants.ICONST_4:
+			case ASMConstants.ICONST_5:
+			case ASMConstants.LCONST_0:
+			case ASMConstants.LCONST_1:
+			case ASMConstants.FCONST_0:
+			case ASMConstants.FCONST_1:
+			case ASMConstants.FCONST_2:
+			case ASMConstants.DCONST_0:
+			case ASMConstants.DCONST_1:
+			case ASMConstants.IALOAD:
+			case ASMConstants.LALOAD:
+			case ASMConstants.FALOAD:
+			case ASMConstants.DALOAD:
+			case ASMConstants.AALOAD:
+			case ASMConstants.BALOAD:
+			case ASMConstants.CALOAD:
+			case ASMConstants.SALOAD:
+			case ASMConstants.IASTORE:
+			case ASMConstants.LASTORE:
+			case ASMConstants.FASTORE:
+			case ASMConstants.DASTORE:
+			case ASMConstants.AASTORE:
+			case ASMConstants.BASTORE:
+			case ASMConstants.CASTORE:
+			case ASMConstants.SASTORE:
+			case ASMConstants.POP:
+			case ASMConstants.POP2:
+			case ASMConstants.DUP:
+			case ASMConstants.DUP_X1:
+			case ASMConstants.DUP_X2:
+			case ASMConstants.DUP2:
+			case ASMConstants.DUP2_X1:
+			case ASMConstants.DUP2_X2:
+			case ASMConstants.SWAP:
+			case ASMConstants.IADD:
+			case ASMConstants.LADD:
+			case ASMConstants.FADD:
+			case ASMConstants.DADD:
+			case ASMConstants.ISUB:
+			case ASMConstants.LSUB:
+			case ASMConstants.FSUB:
+			case ASMConstants.DSUB:
+			case ASMConstants.IMUL:
+			case ASMConstants.LMUL:
+			case ASMConstants.FMUL:
+			case ASMConstants.DMUL:
+			case ASMConstants.IDIV:
+			case ASMConstants.LDIV:
+			case ASMConstants.FDIV:
+			case ASMConstants.DDIV:
+			case ASMConstants.IREM:
+			case ASMConstants.LREM:
+			case ASMConstants.FREM:
+			case ASMConstants.DREM:
+			case ASMConstants.INEG:
+			case ASMConstants.LNEG:
+			case ASMConstants.FNEG:
+			case ASMConstants.DNEG:
+			case ASMConstants.ISHL:
+			case ASMConstants.LSHL:
+			case ASMConstants.ISHR:
+			case ASMConstants.LSHR:
+			case ASMConstants.IUSHR:
+			case ASMConstants.LUSHR:
+			case ASMConstants.IAND:
+			case ASMConstants.LAND:
+			case ASMConstants.IOR:
+			case ASMConstants.LOR:
+			case ASMConstants.IXOR:
+			case ASMConstants.LXOR:
+			case ASMConstants.I2L:
+			case ASMConstants.I2F:
+			case ASMConstants.I2D:
+			case ASMConstants.L2I:
+			case ASMConstants.L2F:
+			case ASMConstants.L2D:
+			case ASMConstants.F2I:
+			case ASMConstants.F2L:
+			case ASMConstants.F2D:
+			case ASMConstants.D2I:
+			case ASMConstants.D2L:
+			case ASMConstants.D2F:
+			case ASMConstants.I2B:
+			case ASMConstants.I2C:
+			case ASMConstants.I2S:
+			case ASMConstants.LCMP:
+			case ASMConstants.FCMPL:
+			case ASMConstants.FCMPG:
+			case ASMConstants.DCMPL:
+			case ASMConstants.DCMPG:
+			case ASMConstants.IRETURN:
+			case ASMConstants.LRETURN:
+			case ASMConstants.FRETURN:
+			case ASMConstants.DRETURN:
+			case ASMConstants.ARETURN:
+			case ASMConstants.RETURN:
+			case ASMConstants.ARRAYLENGTH:
+			case ASMConstants.ATHROW:
+			case ASMConstants.MONITORENTER:
+			case ASMConstants.MONITOREXIT:
+			case ASMConstants.ILOAD_0:
+			case ASMConstants.ILOAD_1:
+			case ASMConstants.ILOAD_2:
+			case ASMConstants.ILOAD_3:
+			case ASMConstants.LLOAD_0:
+			case ASMConstants.LLOAD_1:
+			case ASMConstants.LLOAD_2:
+			case ASMConstants.LLOAD_3:
+			case ASMConstants.FLOAD_0:
+			case ASMConstants.FLOAD_1:
+			case ASMConstants.FLOAD_2:
+			case ASMConstants.FLOAD_3:
+			case ASMConstants.DLOAD_0:
+			case ASMConstants.DLOAD_1:
+			case ASMConstants.DLOAD_2:
+			case ASMConstants.DLOAD_3:
+			case ASMConstants.ALOAD_0:
+			case ASMConstants.ALOAD_1:
+			case ASMConstants.ALOAD_2:
+			case ASMConstants.ALOAD_3:
+			case ASMConstants.ISTORE_0:
+			case ASMConstants.ISTORE_1:
+			case ASMConstants.ISTORE_2:
+			case ASMConstants.ISTORE_3:
+			case ASMConstants.LSTORE_0:
+			case ASMConstants.LSTORE_1:
+			case ASMConstants.LSTORE_2:
+			case ASMConstants.LSTORE_3:
+			case ASMConstants.FSTORE_0:
+			case ASMConstants.FSTORE_1:
+			case ASMConstants.FSTORE_2:
+			case ASMConstants.FSTORE_3:
+			case ASMConstants.DSTORE_0:
+			case ASMConstants.DSTORE_1:
+			case ASMConstants.DSTORE_2:
+			case ASMConstants.DSTORE_3:
+			case ASMConstants.ASTORE_0:
+			case ASMConstants.ASTORE_1:
+			case ASMConstants.ASTORE_2:
+			case ASMConstants.ASTORE_3:
 				currentOffset += 1;
 				break;
-			case Constants.IFEQ:
-			case Constants.IFNE:
-			case Constants.IFLT:
-			case Constants.IFGE:
-			case Constants.IFGT:
-			case Constants.IFLE:
-			case Constants.IF_ICMPEQ:
-			case Constants.IF_ICMPNE:
-			case Constants.IF_ICMPLT:
-			case Constants.IF_ICMPGE:
-			case Constants.IF_ICMPGT:
-			case Constants.IF_ICMPLE:
-			case Constants.IF_ACMPEQ:
-			case Constants.IF_ACMPNE:
-			case Constants.GOTO:
-			case Constants.JSR:
-			case Constants.IFNULL:
-			case Constants.IFNONNULL:
+			case ASMConstants.IFEQ:
+			case ASMConstants.IFNE:
+			case ASMConstants.IFLT:
+			case ASMConstants.IFGE:
+			case ASMConstants.IFGT:
+			case ASMConstants.IFLE:
+			case ASMConstants.IF_ICMPEQ:
+			case ASMConstants.IF_ICMPNE:
+			case ASMConstants.IF_ICMPLT:
+			case ASMConstants.IF_ICMPGE:
+			case ASMConstants.IF_ICMPGT:
+			case ASMConstants.IF_ICMPLE:
+			case ASMConstants.IF_ACMPEQ:
+			case ASMConstants.IF_ACMPNE:
+			case ASMConstants.GOTO:
+			case ASMConstants.JSR:
+			case ASMConstants.IFNULL:
+			case ASMConstants.IFNONNULL:
 				createLabel(bytecodeOffset + readShort(currentOffset + 1),
 						labels);
 				currentOffset += 3;
 				break;
-			case Constants.ASM_IFEQ:
-			case Constants.ASM_IFNE:
-			case Constants.ASM_IFLT:
-			case Constants.ASM_IFGE:
-			case Constants.ASM_IFGT:
-			case Constants.ASM_IFLE:
-			case Constants.ASM_IF_ICMPEQ:
-			case Constants.ASM_IF_ICMPNE:
-			case Constants.ASM_IF_ICMPLT:
-			case Constants.ASM_IF_ICMPGE:
-			case Constants.ASM_IF_ICMPGT:
-			case Constants.ASM_IF_ICMPLE:
-			case Constants.ASM_IF_ACMPEQ:
-			case Constants.ASM_IF_ACMPNE:
-			case Constants.ASM_GOTO:
-			case Constants.ASM_JSR:
-			case Constants.ASM_IFNULL:
-			case Constants.ASM_IFNONNULL:
+			case ASMConstants.ASM_IFEQ:
+			case ASMConstants.ASM_IFNE:
+			case ASMConstants.ASM_IFLT:
+			case ASMConstants.ASM_IFGE:
+			case ASMConstants.ASM_IFGT:
+			case ASMConstants.ASM_IFLE:
+			case ASMConstants.ASM_IF_ICMPEQ:
+			case ASMConstants.ASM_IF_ICMPNE:
+			case ASMConstants.ASM_IF_ICMPLT:
+			case ASMConstants.ASM_IF_ICMPGE:
+			case ASMConstants.ASM_IF_ICMPGT:
+			case ASMConstants.ASM_IF_ICMPLE:
+			case ASMConstants.ASM_IF_ACMPEQ:
+			case ASMConstants.ASM_IF_ACMPNE:
+			case ASMConstants.ASM_GOTO:
+			case ASMConstants.ASM_JSR:
+			case ASMConstants.ASM_IFNULL:
+			case ASMConstants.ASM_IFNONNULL:
 				createLabel(bytecodeOffset
 						+ readUnsignedShort(currentOffset + 1), labels);
 				currentOffset += 3;
 				break;
-			case Constants.GOTO_W:
-			case Constants.JSR_W:
-			case Constants.ASM_GOTO_W:
+			case ASMConstants.GOTO_W:
+			case ASMConstants.JSR_W:
+			case ASMConstants.ASM_GOTO_W:
 				createLabel(bytecodeOffset + readInt(currentOffset + 1), labels);
 				currentOffset += 5;
 				break;
-			case Constants.WIDE:
+			case ASMConstants.WIDE:
 				switch (classBuffer[currentOffset + 1] & 0xFF) {
-				case Constants.ILOAD:
-				case Constants.FLOAD:
-				case Constants.ALOAD:
-				case Constants.LLOAD:
-				case Constants.DLOAD:
-				case Constants.ISTORE:
-				case Constants.FSTORE:
-				case Constants.ASTORE:
-				case Constants.LSTORE:
-				case Constants.DSTORE:
-				case Constants.RET:
+				case ASMConstants.ILOAD:
+				case ASMConstants.FLOAD:
+				case ASMConstants.ALOAD:
+				case ASMConstants.LLOAD:
+				case ASMConstants.DLOAD:
+				case ASMConstants.ISTORE:
+				case ASMConstants.FSTORE:
+				case ASMConstants.ASTORE:
+				case ASMConstants.LSTORE:
+				case ASMConstants.DSTORE:
+				case ASMConstants.RET:
 					currentOffset += 4;
 					break;
-				case Constants.IINC:
+				case ASMConstants.IINC:
 					currentOffset += 6;
 					break;
 				default:
 					throw new IllegalArgumentException();
 				}
 				break;
-			case Constants.TABLESWITCH:
+			case ASMConstants.TABLESWITCH:
 				// Skip 0 to 3 padding bytes.
 				currentOffset += 4 - (bytecodeOffset & 3);
 				// Read the default label and the number of table entries.
@@ -1697,7 +1697,7 @@ public class ClassReader {
 					currentOffset += 4;
 				}
 				break;
-			case Constants.LOOKUPSWITCH:
+			case ASMConstants.LOOKUPSWITCH:
 				// Skip 0 to 3 padding bytes.
 				currentOffset += 4 - (bytecodeOffset & 3);
 				// Read the default label and the number of switch cases.
@@ -1711,44 +1711,44 @@ public class ClassReader {
 					currentOffset += 8;
 				}
 				break;
-			case Constants.ILOAD:
-			case Constants.LLOAD:
-			case Constants.FLOAD:
-			case Constants.DLOAD:
-			case Constants.ALOAD:
-			case Constants.ISTORE:
-			case Constants.LSTORE:
-			case Constants.FSTORE:
-			case Constants.DSTORE:
-			case Constants.ASTORE:
-			case Constants.RET:
-			case Constants.BIPUSH:
-			case Constants.NEWARRAY:
-			case Constants.LDC:
+			case ASMConstants.ILOAD:
+			case ASMConstants.LLOAD:
+			case ASMConstants.FLOAD:
+			case ASMConstants.DLOAD:
+			case ASMConstants.ALOAD:
+			case ASMConstants.ISTORE:
+			case ASMConstants.LSTORE:
+			case ASMConstants.FSTORE:
+			case ASMConstants.DSTORE:
+			case ASMConstants.ASTORE:
+			case ASMConstants.RET:
+			case ASMConstants.BIPUSH:
+			case ASMConstants.NEWARRAY:
+			case ASMConstants.LDC:
 				currentOffset += 2;
 				break;
-			case Constants.SIPUSH:
-			case Constants.LDC_W:
-			case Constants.LDC2_W:
-			case Constants.GETSTATIC:
-			case Constants.PUTSTATIC:
-			case Constants.GETFIELD:
-			case Constants.PUTFIELD:
-			case Constants.INVOKEVIRTUAL:
-			case Constants.INVOKESPECIAL:
-			case Constants.INVOKESTATIC:
-			case Constants.NEW:
-			case Constants.ANEWARRAY:
-			case Constants.CHECKCAST:
-			case Constants.INSTANCEOF:
-			case Constants.IINC:
+			case ASMConstants.SIPUSH:
+			case ASMConstants.LDC_W:
+			case ASMConstants.LDC2_W:
+			case ASMConstants.GETSTATIC:
+			case ASMConstants.PUTSTATIC:
+			case ASMConstants.GETFIELD:
+			case ASMConstants.PUTFIELD:
+			case ASMConstants.INVOKEVIRTUAL:
+			case ASMConstants.INVOKESPECIAL:
+			case ASMConstants.INVOKESTATIC:
+			case ASMConstants.NEW:
+			case ASMConstants.ANEWARRAY:
+			case ASMConstants.CHECKCAST:
+			case ASMConstants.INSTANCEOF:
+			case ASMConstants.IINC:
 				currentOffset += 3;
 				break;
-			case Constants.INVOKEINTERFACE:
-			case Constants.INVOKEDYNAMIC:
+			case ASMConstants.INVOKEINTERFACE:
+			case ASMConstants.INVOKEDYNAMIC:
 				currentOffset += 5;
 				break;
-			case Constants.MULTIANEWARRAY:
+			case ASMConstants.MULTIANEWARRAY:
 				currentOffset += 4;
 				break;
 			default:
@@ -1817,7 +1817,7 @@ public class ClassReader {
 			String attributeName = readUTF8(currentOffset, charBuffer);
 			int attributeLength = readInt(currentOffset + 2);
 			currentOffset += 6;
-			if (Constants.LOCAL_VARIABLE_TABLE.equals(attributeName)) {
+			if (ASMConstants.LOCAL_VARIABLE_TABLE.equals(attributeName)) {
 				if ((context.parsingOptions & SKIP_DEBUG) == 0) {
 					localVariableTableOffset = currentOffset;
 					// Parse the attribute to find the corresponding (debug
@@ -1835,14 +1835,14 @@ public class ClassReader {
 						currentLocalVariableTableOffset += 10;
 					}
 				}
-			} else if (Constants.LOCAL_VARIABLE_TYPE_TABLE
+			} else if (ASMConstants.LOCAL_VARIABLE_TYPE_TABLE
 					.equals(attributeName)) {
 				localVariableTypeTableOffset = currentOffset;
 				// Here we do not extract the labels corresponding to the
 				// attribute content. We assume they
 				// are the same or a subset of those of the LocalVariableTable
 				// attribute.
-			} else if (Constants.LINE_NUMBER_TABLE.equals(attributeName)) {
+			} else if (ASMConstants.LINE_NUMBER_TABLE.equals(attributeName)) {
 				if ((context.parsingOptions & SKIP_DEBUG) == 0) {
 					// Parse the attribute to find the corresponding (debug
 					// only) labels.
@@ -1857,7 +1857,7 @@ public class ClassReader {
 						labels[startPc].addLineNumber(lineNumber);
 					}
 				}
-			} else if (Constants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS
 					.equals(attributeName)) {
 				visibleTypeAnnotationOffsets = readTypeAnnotations(
 						methodVisitor, context, currentOffset, /* visible = */
@@ -1874,14 +1874,14 @@ public class ClassReader {
 				// extracted one annotation at a
 				// time. This assumes that type annotations are ordered by
 				// increasing bytecode offset.
-			} else if (Constants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS
+			} else if (ASMConstants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS
 					.equals(attributeName)) {
 				invisibleTypeAnnotationOffsets = readTypeAnnotations(
 						methodVisitor, context, currentOffset, /* visible = */
 						false);
 				// Same comment as above for the RuntimeVisibleTypeAnnotations
 				// attribute.
-			} else if (Constants.STACK_MAP_TABLE.equals(attributeName)) {
+			} else if (ASMConstants.STACK_MAP_TABLE.equals(attributeName)) {
 				if ((context.parsingOptions & SKIP_FRAMES) == 0) {
 					stackMapFrameOffset = currentOffset + 2;
 					stackMapTableEndOffset = currentOffset + attributeLength;
@@ -2015,7 +2015,7 @@ public class ClassReader {
 		// opcode, or 0 if goto_w and jsr_w must be left unchanged (i.e. when
 		// expanding ASM specific
 		// instructions).
-		final int wideJumpOpcodeDelta = (context.parsingOptions & EXPAND_ASM_INSNS) == 0 ? Constants.WIDE_JUMP_OPCODE_DELTA
+		final int wideJumpOpcodeDelta = (context.parsingOptions & EXPAND_ASM_INSNS) == 0 ? ASMConstants.WIDE_JUMP_OPCODE_DELTA
 				: 0;
 
 		currentOffset = bytecodeStartOffset;
@@ -2071,7 +2071,7 @@ public class ClassReader {
 			// computed in MethodWriter.
 			if (insertFrame) {
 				if ((context.parsingOptions & EXPAND_FRAMES) != 0) {
-					methodVisitor.visitFrame(Constants.F_INSERT, 0, null, 0,
+					methodVisitor.visitFrame(ASMConstants.F_INSERT, 0, null, 0,
 							null);
 				}
 				insertFrame = false;
@@ -2080,214 +2080,214 @@ public class ClassReader {
 			// Visit the instruction at this bytecode offset.
 			int opcode = classBuffer[currentOffset] & 0xFF;
 			switch (opcode) {
-			case Constants.NOP:
-			case Constants.ACONST_NULL:
-			case Constants.ICONST_M1:
-			case Constants.ICONST_0:
-			case Constants.ICONST_1:
-			case Constants.ICONST_2:
-			case Constants.ICONST_3:
-			case Constants.ICONST_4:
-			case Constants.ICONST_5:
-			case Constants.LCONST_0:
-			case Constants.LCONST_1:
-			case Constants.FCONST_0:
-			case Constants.FCONST_1:
-			case Constants.FCONST_2:
-			case Constants.DCONST_0:
-			case Constants.DCONST_1:
-			case Constants.IALOAD:
-			case Constants.LALOAD:
-			case Constants.FALOAD:
-			case Constants.DALOAD:
-			case Constants.AALOAD:
-			case Constants.BALOAD:
-			case Constants.CALOAD:
-			case Constants.SALOAD:
-			case Constants.IASTORE:
-			case Constants.LASTORE:
-			case Constants.FASTORE:
-			case Constants.DASTORE:
-			case Constants.AASTORE:
-			case Constants.BASTORE:
-			case Constants.CASTORE:
-			case Constants.SASTORE:
-			case Constants.POP:
-			case Constants.POP2:
-			case Constants.DUP:
-			case Constants.DUP_X1:
-			case Constants.DUP_X2:
-			case Constants.DUP2:
-			case Constants.DUP2_X1:
-			case Constants.DUP2_X2:
-			case Constants.SWAP:
-			case Constants.IADD:
-			case Constants.LADD:
-			case Constants.FADD:
-			case Constants.DADD:
-			case Constants.ISUB:
-			case Constants.LSUB:
-			case Constants.FSUB:
-			case Constants.DSUB:
-			case Constants.IMUL:
-			case Constants.LMUL:
-			case Constants.FMUL:
-			case Constants.DMUL:
-			case Constants.IDIV:
-			case Constants.LDIV:
-			case Constants.FDIV:
-			case Constants.DDIV:
-			case Constants.IREM:
-			case Constants.LREM:
-			case Constants.FREM:
-			case Constants.DREM:
-			case Constants.INEG:
-			case Constants.LNEG:
-			case Constants.FNEG:
-			case Constants.DNEG:
-			case Constants.ISHL:
-			case Constants.LSHL:
-			case Constants.ISHR:
-			case Constants.LSHR:
-			case Constants.IUSHR:
-			case Constants.LUSHR:
-			case Constants.IAND:
-			case Constants.LAND:
-			case Constants.IOR:
-			case Constants.LOR:
-			case Constants.IXOR:
-			case Constants.LXOR:
-			case Constants.I2L:
-			case Constants.I2F:
-			case Constants.I2D:
-			case Constants.L2I:
-			case Constants.L2F:
-			case Constants.L2D:
-			case Constants.F2I:
-			case Constants.F2L:
-			case Constants.F2D:
-			case Constants.D2I:
-			case Constants.D2L:
-			case Constants.D2F:
-			case Constants.I2B:
-			case Constants.I2C:
-			case Constants.I2S:
-			case Constants.LCMP:
-			case Constants.FCMPL:
-			case Constants.FCMPG:
-			case Constants.DCMPL:
-			case Constants.DCMPG:
-			case Constants.IRETURN:
-			case Constants.LRETURN:
-			case Constants.FRETURN:
-			case Constants.DRETURN:
-			case Constants.ARETURN:
-			case Constants.RETURN:
-			case Constants.ARRAYLENGTH:
-			case Constants.ATHROW:
-			case Constants.MONITORENTER:
-			case Constants.MONITOREXIT:
+			case ASMConstants.NOP:
+			case ASMConstants.ACONST_NULL:
+			case ASMConstants.ICONST_M1:
+			case ASMConstants.ICONST_0:
+			case ASMConstants.ICONST_1:
+			case ASMConstants.ICONST_2:
+			case ASMConstants.ICONST_3:
+			case ASMConstants.ICONST_4:
+			case ASMConstants.ICONST_5:
+			case ASMConstants.LCONST_0:
+			case ASMConstants.LCONST_1:
+			case ASMConstants.FCONST_0:
+			case ASMConstants.FCONST_1:
+			case ASMConstants.FCONST_2:
+			case ASMConstants.DCONST_0:
+			case ASMConstants.DCONST_1:
+			case ASMConstants.IALOAD:
+			case ASMConstants.LALOAD:
+			case ASMConstants.FALOAD:
+			case ASMConstants.DALOAD:
+			case ASMConstants.AALOAD:
+			case ASMConstants.BALOAD:
+			case ASMConstants.CALOAD:
+			case ASMConstants.SALOAD:
+			case ASMConstants.IASTORE:
+			case ASMConstants.LASTORE:
+			case ASMConstants.FASTORE:
+			case ASMConstants.DASTORE:
+			case ASMConstants.AASTORE:
+			case ASMConstants.BASTORE:
+			case ASMConstants.CASTORE:
+			case ASMConstants.SASTORE:
+			case ASMConstants.POP:
+			case ASMConstants.POP2:
+			case ASMConstants.DUP:
+			case ASMConstants.DUP_X1:
+			case ASMConstants.DUP_X2:
+			case ASMConstants.DUP2:
+			case ASMConstants.DUP2_X1:
+			case ASMConstants.DUP2_X2:
+			case ASMConstants.SWAP:
+			case ASMConstants.IADD:
+			case ASMConstants.LADD:
+			case ASMConstants.FADD:
+			case ASMConstants.DADD:
+			case ASMConstants.ISUB:
+			case ASMConstants.LSUB:
+			case ASMConstants.FSUB:
+			case ASMConstants.DSUB:
+			case ASMConstants.IMUL:
+			case ASMConstants.LMUL:
+			case ASMConstants.FMUL:
+			case ASMConstants.DMUL:
+			case ASMConstants.IDIV:
+			case ASMConstants.LDIV:
+			case ASMConstants.FDIV:
+			case ASMConstants.DDIV:
+			case ASMConstants.IREM:
+			case ASMConstants.LREM:
+			case ASMConstants.FREM:
+			case ASMConstants.DREM:
+			case ASMConstants.INEG:
+			case ASMConstants.LNEG:
+			case ASMConstants.FNEG:
+			case ASMConstants.DNEG:
+			case ASMConstants.ISHL:
+			case ASMConstants.LSHL:
+			case ASMConstants.ISHR:
+			case ASMConstants.LSHR:
+			case ASMConstants.IUSHR:
+			case ASMConstants.LUSHR:
+			case ASMConstants.IAND:
+			case ASMConstants.LAND:
+			case ASMConstants.IOR:
+			case ASMConstants.LOR:
+			case ASMConstants.IXOR:
+			case ASMConstants.LXOR:
+			case ASMConstants.I2L:
+			case ASMConstants.I2F:
+			case ASMConstants.I2D:
+			case ASMConstants.L2I:
+			case ASMConstants.L2F:
+			case ASMConstants.L2D:
+			case ASMConstants.F2I:
+			case ASMConstants.F2L:
+			case ASMConstants.F2D:
+			case ASMConstants.D2I:
+			case ASMConstants.D2L:
+			case ASMConstants.D2F:
+			case ASMConstants.I2B:
+			case ASMConstants.I2C:
+			case ASMConstants.I2S:
+			case ASMConstants.LCMP:
+			case ASMConstants.FCMPL:
+			case ASMConstants.FCMPG:
+			case ASMConstants.DCMPL:
+			case ASMConstants.DCMPG:
+			case ASMConstants.IRETURN:
+			case ASMConstants.LRETURN:
+			case ASMConstants.FRETURN:
+			case ASMConstants.DRETURN:
+			case ASMConstants.ARETURN:
+			case ASMConstants.RETURN:
+			case ASMConstants.ARRAYLENGTH:
+			case ASMConstants.ATHROW:
+			case ASMConstants.MONITORENTER:
+			case ASMConstants.MONITOREXIT:
 				methodVisitor.visitInsn(opcode);
 				currentOffset += 1;
 				break;
-			case Constants.ILOAD_0:
-			case Constants.ILOAD_1:
-			case Constants.ILOAD_2:
-			case Constants.ILOAD_3:
-			case Constants.LLOAD_0:
-			case Constants.LLOAD_1:
-			case Constants.LLOAD_2:
-			case Constants.LLOAD_3:
-			case Constants.FLOAD_0:
-			case Constants.FLOAD_1:
-			case Constants.FLOAD_2:
-			case Constants.FLOAD_3:
-			case Constants.DLOAD_0:
-			case Constants.DLOAD_1:
-			case Constants.DLOAD_2:
-			case Constants.DLOAD_3:
-			case Constants.ALOAD_0:
-			case Constants.ALOAD_1:
-			case Constants.ALOAD_2:
-			case Constants.ALOAD_3:
-				opcode -= Constants.ILOAD_0;
+			case ASMConstants.ILOAD_0:
+			case ASMConstants.ILOAD_1:
+			case ASMConstants.ILOAD_2:
+			case ASMConstants.ILOAD_3:
+			case ASMConstants.LLOAD_0:
+			case ASMConstants.LLOAD_1:
+			case ASMConstants.LLOAD_2:
+			case ASMConstants.LLOAD_3:
+			case ASMConstants.FLOAD_0:
+			case ASMConstants.FLOAD_1:
+			case ASMConstants.FLOAD_2:
+			case ASMConstants.FLOAD_3:
+			case ASMConstants.DLOAD_0:
+			case ASMConstants.DLOAD_1:
+			case ASMConstants.DLOAD_2:
+			case ASMConstants.DLOAD_3:
+			case ASMConstants.ALOAD_0:
+			case ASMConstants.ALOAD_1:
+			case ASMConstants.ALOAD_2:
+			case ASMConstants.ALOAD_3:
+				opcode -= ASMConstants.ILOAD_0;
 				methodVisitor.visitVarInsn(Opcodes.ILOAD + (opcode >> 2),
 						opcode & 0x3);
 				currentOffset += 1;
 				break;
-			case Constants.ISTORE_0:
-			case Constants.ISTORE_1:
-			case Constants.ISTORE_2:
-			case Constants.ISTORE_3:
-			case Constants.LSTORE_0:
-			case Constants.LSTORE_1:
-			case Constants.LSTORE_2:
-			case Constants.LSTORE_3:
-			case Constants.FSTORE_0:
-			case Constants.FSTORE_1:
-			case Constants.FSTORE_2:
-			case Constants.FSTORE_3:
-			case Constants.DSTORE_0:
-			case Constants.DSTORE_1:
-			case Constants.DSTORE_2:
-			case Constants.DSTORE_3:
-			case Constants.ASTORE_0:
-			case Constants.ASTORE_1:
-			case Constants.ASTORE_2:
-			case Constants.ASTORE_3:
-				opcode -= Constants.ISTORE_0;
+			case ASMConstants.ISTORE_0:
+			case ASMConstants.ISTORE_1:
+			case ASMConstants.ISTORE_2:
+			case ASMConstants.ISTORE_3:
+			case ASMConstants.LSTORE_0:
+			case ASMConstants.LSTORE_1:
+			case ASMConstants.LSTORE_2:
+			case ASMConstants.LSTORE_3:
+			case ASMConstants.FSTORE_0:
+			case ASMConstants.FSTORE_1:
+			case ASMConstants.FSTORE_2:
+			case ASMConstants.FSTORE_3:
+			case ASMConstants.DSTORE_0:
+			case ASMConstants.DSTORE_1:
+			case ASMConstants.DSTORE_2:
+			case ASMConstants.DSTORE_3:
+			case ASMConstants.ASTORE_0:
+			case ASMConstants.ASTORE_1:
+			case ASMConstants.ASTORE_2:
+			case ASMConstants.ASTORE_3:
+				opcode -= ASMConstants.ISTORE_0;
 				methodVisitor.visitVarInsn(Opcodes.ISTORE + (opcode >> 2),
 						opcode & 0x3);
 				currentOffset += 1;
 				break;
-			case Constants.IFEQ:
-			case Constants.IFNE:
-			case Constants.IFLT:
-			case Constants.IFGE:
-			case Constants.IFGT:
-			case Constants.IFLE:
-			case Constants.IF_ICMPEQ:
-			case Constants.IF_ICMPNE:
-			case Constants.IF_ICMPLT:
-			case Constants.IF_ICMPGE:
-			case Constants.IF_ICMPGT:
-			case Constants.IF_ICMPLE:
-			case Constants.IF_ACMPEQ:
-			case Constants.IF_ACMPNE:
-			case Constants.GOTO:
-			case Constants.JSR:
-			case Constants.IFNULL:
-			case Constants.IFNONNULL:
+			case ASMConstants.IFEQ:
+			case ASMConstants.IFNE:
+			case ASMConstants.IFLT:
+			case ASMConstants.IFGE:
+			case ASMConstants.IFGT:
+			case ASMConstants.IFLE:
+			case ASMConstants.IF_ICMPEQ:
+			case ASMConstants.IF_ICMPNE:
+			case ASMConstants.IF_ICMPLT:
+			case ASMConstants.IF_ICMPGE:
+			case ASMConstants.IF_ICMPGT:
+			case ASMConstants.IF_ICMPLE:
+			case ASMConstants.IF_ACMPEQ:
+			case ASMConstants.IF_ACMPNE:
+			case ASMConstants.GOTO:
+			case ASMConstants.JSR:
+			case ASMConstants.IFNULL:
+			case ASMConstants.IFNONNULL:
 				methodVisitor.visitJumpInsn(opcode,
 						labels[currentBytecodeOffset
 								+ readShort(currentOffset + 1)]);
 				currentOffset += 3;
 				break;
-			case Constants.GOTO_W:
-			case Constants.JSR_W:
+			case ASMConstants.GOTO_W:
+			case ASMConstants.JSR_W:
 				methodVisitor.visitJumpInsn(opcode - wideJumpOpcodeDelta,
 						labels[currentBytecodeOffset
 								+ readInt(currentOffset + 1)]);
 				currentOffset += 5;
 				break;
-			case Constants.ASM_IFEQ:
-			case Constants.ASM_IFNE:
-			case Constants.ASM_IFLT:
-			case Constants.ASM_IFGE:
-			case Constants.ASM_IFGT:
-			case Constants.ASM_IFLE:
-			case Constants.ASM_IF_ICMPEQ:
-			case Constants.ASM_IF_ICMPNE:
-			case Constants.ASM_IF_ICMPLT:
-			case Constants.ASM_IF_ICMPGE:
-			case Constants.ASM_IF_ICMPGT:
-			case Constants.ASM_IF_ICMPLE:
-			case Constants.ASM_IF_ACMPEQ:
-			case Constants.ASM_IF_ACMPNE:
-			case Constants.ASM_GOTO:
-			case Constants.ASM_JSR:
-			case Constants.ASM_IFNULL:
-			case Constants.ASM_IFNONNULL: {
+			case ASMConstants.ASM_IFEQ:
+			case ASMConstants.ASM_IFNE:
+			case ASMConstants.ASM_IFLT:
+			case ASMConstants.ASM_IFGE:
+			case ASMConstants.ASM_IFGT:
+			case ASMConstants.ASM_IFLE:
+			case ASMConstants.ASM_IF_ICMPEQ:
+			case ASMConstants.ASM_IF_ICMPNE:
+			case ASMConstants.ASM_IF_ICMPLT:
+			case ASMConstants.ASM_IF_ICMPGE:
+			case ASMConstants.ASM_IF_ICMPGT:
+			case ASMConstants.ASM_IF_ICMPLE:
+			case ASMConstants.ASM_IF_ACMPEQ:
+			case ASMConstants.ASM_IF_ACMPNE:
+			case ASMConstants.ASM_GOTO:
+			case ASMConstants.ASM_JSR:
+			case ASMConstants.ASM_IFNULL:
+			case ASMConstants.ASM_IFNONNULL: {
 				// A forward jump with an offset > 32767. In this case we
 				// automatically replace ASM_GOTO
 				// with GOTO_W, ASM_JSR with JSR_W and ASM_IFxxx <l> with
@@ -2298,15 +2298,15 @@ public class ClassReader {
 				// First, change the ASM specific opcodes ASM_IFEQ ... ASM_JSR,
 				// ASM_IFNULL and
 				// ASM_IFNONNULL to IFEQ ... JSR, IFNULL and IFNONNULL.
-				opcode = opcode < Constants.ASM_IFNULL ? opcode
-						- Constants.ASM_OPCODE_DELTA : opcode
-						- Constants.ASM_IFNULL_OPCODE_DELTA;
+				opcode = opcode < ASMConstants.ASM_IFNULL ? opcode
+						- ASMConstants.ASM_OPCODE_DELTA : opcode
+						- ASMConstants.ASM_IFNULL_OPCODE_DELTA;
 				Label target = labels[currentBytecodeOffset
 						+ readUnsignedShort(currentOffset + 1)];
 				if (opcode == Opcodes.GOTO || opcode == Opcodes.JSR) {
 					// Replace GOTO with GOTO_W and JSR with JSR_W.
 					methodVisitor.visitJumpInsn(opcode
-							+ Constants.WIDE_JUMP_OPCODE_DELTA, target);
+							+ ASMConstants.WIDE_JUMP_OPCODE_DELTA, target);
 				} else {
 					// Compute the "opposite" of opcode. This can be done by
 					// flipping the least
@@ -2317,7 +2317,7 @@ public class ClassReader {
 							: opcode ^ 1;
 					Label endif = createLabel(currentBytecodeOffset + 3, labels);
 					methodVisitor.visitJumpInsn(opcode, endif);
-					methodVisitor.visitJumpInsn(Constants.GOTO_W, target);
+					methodVisitor.visitJumpInsn(ASMConstants.GOTO_W, target);
 					// endif designates the instruction just after GOTO_W, and
 					// is visited as part of the
 					// next instruction. Since it is a jump target, we need to
@@ -2327,9 +2327,9 @@ public class ClassReader {
 				currentOffset += 3;
 				break;
 			}
-			case Constants.ASM_GOTO_W:
+			case ASMConstants.ASM_GOTO_W:
 				// Replace ASM_GOTO_W with GOTO_W.
-				methodVisitor.visitJumpInsn(Constants.GOTO_W,
+				methodVisitor.visitJumpInsn(ASMConstants.GOTO_W,
 						labels[currentBytecodeOffset
 								+ readInt(currentOffset + 1)]);
 				// The instruction just after is a jump target (because
@@ -2340,7 +2340,7 @@ public class ClassReader {
 				insertFrame = true;
 				currentOffset += 5;
 				break;
-			case Constants.WIDE:
+			case ASMConstants.WIDE:
 				opcode = classBuffer[currentOffset + 1] & 0xFF;
 				if (opcode == Opcodes.IINC) {
 					methodVisitor.visitIincInsn(
@@ -2353,7 +2353,7 @@ public class ClassReader {
 					currentOffset += 4;
 				}
 				break;
-			case Constants.TABLESWITCH: {
+			case ASMConstants.TABLESWITCH: {
 				// Skip 0 to 3 padding bytes.
 				currentOffset += 4 - (currentBytecodeOffset & 3);
 				// Read the instruction.
@@ -2372,7 +2372,7 @@ public class ClassReader {
 						table);
 				break;
 			}
-			case Constants.LOOKUPSWITCH: {
+			case ASMConstants.LOOKUPSWITCH: {
 				// Skip 0 to 3 padding bytes.
 				currentOffset += 4 - (currentBytecodeOffset & 3);
 				// Read the instruction.
@@ -2391,51 +2391,51 @@ public class ClassReader {
 				methodVisitor.visitLookupSwitchInsn(defaultLabel, keys, values);
 				break;
 			}
-			case Constants.ILOAD:
-			case Constants.LLOAD:
-			case Constants.FLOAD:
-			case Constants.DLOAD:
-			case Constants.ALOAD:
-			case Constants.ISTORE:
-			case Constants.LSTORE:
-			case Constants.FSTORE:
-			case Constants.DSTORE:
-			case Constants.ASTORE:
-			case Constants.RET:
+			case ASMConstants.ILOAD:
+			case ASMConstants.LLOAD:
+			case ASMConstants.FLOAD:
+			case ASMConstants.DLOAD:
+			case ASMConstants.ALOAD:
+			case ASMConstants.ISTORE:
+			case ASMConstants.LSTORE:
+			case ASMConstants.FSTORE:
+			case ASMConstants.DSTORE:
+			case ASMConstants.ASTORE:
+			case ASMConstants.RET:
 				methodVisitor.visitVarInsn(opcode,
 						classBuffer[currentOffset + 1] & 0xFF);
 				currentOffset += 2;
 				break;
-			case Constants.BIPUSH:
-			case Constants.NEWARRAY:
+			case ASMConstants.BIPUSH:
+			case ASMConstants.NEWARRAY:
 				methodVisitor.visitIntInsn(opcode,
 						classBuffer[currentOffset + 1]);
 				currentOffset += 2;
 				break;
-			case Constants.SIPUSH:
+			case ASMConstants.SIPUSH:
 				methodVisitor
 						.visitIntInsn(opcode, readShort(currentOffset + 1));
 				currentOffset += 3;
 				break;
-			case Constants.LDC:
+			case ASMConstants.LDC:
 				methodVisitor.visitLdcInsn(readConst(
 						classBuffer[currentOffset + 1] & 0xFF, charBuffer));
 				currentOffset += 2;
 				break;
-			case Constants.LDC_W:
-			case Constants.LDC2_W:
+			case ASMConstants.LDC_W:
+			case ASMConstants.LDC2_W:
 				methodVisitor.visitLdcInsn(readConst(
 						readUnsignedShort(currentOffset + 1), charBuffer));
 				currentOffset += 3;
 				break;
-			case Constants.GETSTATIC:
-			case Constants.PUTSTATIC:
-			case Constants.GETFIELD:
-			case Constants.PUTFIELD:
-			case Constants.INVOKEVIRTUAL:
-			case Constants.INVOKESPECIAL:
-			case Constants.INVOKESTATIC:
-			case Constants.INVOKEINTERFACE: {
+			case ASMConstants.GETSTATIC:
+			case ASMConstants.PUTSTATIC:
+			case ASMConstants.GETFIELD:
+			case ASMConstants.PUTFIELD:
+			case ASMConstants.INVOKEVIRTUAL:
+			case ASMConstants.INVOKESPECIAL:
+			case ASMConstants.INVOKESTATIC:
+			case ASMConstants.INVOKEINTERFACE: {
 				int cpInfoOffset = cpInfoOffsets[readUnsignedShort(currentOffset + 1)];
 				int nameAndTypeCpInfoOffset = cpInfoOffsets[readUnsignedShort(cpInfoOffset + 2)];
 				String owner = readClass(cpInfoOffset, charBuffer);
@@ -2457,7 +2457,7 @@ public class ClassReader {
 				}
 				break;
 			}
-			case Constants.INVOKEDYNAMIC: {
+			case ASMConstants.INVOKEDYNAMIC: {
 				int cpInfoOffset = cpInfoOffsets[readUnsignedShort(currentOffset + 1)];
 				int nameAndTypeCpInfoOffset = cpInfoOffsets[readUnsignedShort(cpInfoOffset + 2)];
 				String name = readUTF8(nameAndTypeCpInfoOffset, charBuffer);
@@ -2479,21 +2479,21 @@ public class ClassReader {
 				currentOffset += 5;
 				break;
 			}
-			case Constants.NEW:
-			case Constants.ANEWARRAY:
-			case Constants.CHECKCAST:
-			case Constants.INSTANCEOF:
+			case ASMConstants.NEW:
+			case ASMConstants.ANEWARRAY:
+			case ASMConstants.CHECKCAST:
+			case ASMConstants.INSTANCEOF:
 				methodVisitor.visitTypeInsn(opcode,
 						readClass(currentOffset + 1, charBuffer));
 				currentOffset += 3;
 				break;
-			case Constants.IINC:
+			case ASMConstants.IINC:
 				methodVisitor.visitIincInsn(
 						classBuffer[currentOffset + 1] & 0xFF,
 						classBuffer[currentOffset + 2]);
 				currentOffset += 3;
 				break;
-			case Constants.MULTIANEWARRAY:
+			case ASMConstants.MULTIANEWARRAY:
 				methodVisitor.visitMultiANewArrayInsn(
 						readClass(currentOffset + 1, charBuffer),
 						classBuffer[currentOffset + 3] & 0xFF);
@@ -3569,7 +3569,7 @@ public class ClassReader {
 			String attributeName = readUTF8(currentAttributeOffset, charBuffer);
 			int attributeLength = readInt(currentAttributeOffset + 2);
 			currentAttributeOffset += 6;
-			if (Constants.BOOTSTRAP_METHODS.equals(attributeName)) {
+			if (ASMConstants.BOOTSTRAP_METHODS.equals(attributeName)) {
 				// Read the num_bootstrap_methods field and create an array of
 				// this size.
 				currentBootstrapMethodOffsets = new int[readUnsignedShort(currentAttributeOffset)];

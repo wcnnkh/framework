@@ -24,12 +24,12 @@ import scw.asm.Type;
 import scw.cglib.core.AbstractClassGenerator;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 /**
  * @author Chris Nokleberg
  */
@@ -38,9 +38,9 @@ import scw.cglib.core.TypeUtils;
 public class ImmutableBean
 {
     private static final Type ILLEGAL_STATE_EXCEPTION =
-      TypeUtils.parseType("IllegalStateException");
+      CGLIBTypeUtils.parseType("IllegalStateException");
     private static final Signature CSTRUCT_OBJECT =
-      TypeUtils.parseConstructor("Object");
+      CGLIBTypeUtils.parseConstructor("Object");
     private static final Class[] OBJECT_CLASSES = { Object.class };
     private static final String FIELD_NAME = "CGLIB$RWBean";
 
@@ -84,16 +84,16 @@ public class ImmutableBean
         public void generateClass(ClassVisitor v) {
             Type targetType = Type.getType(target);
             ClassEmitter ce = new ClassEmitter(v);
-            ce.begin_class(Constants.V1_2,
-                           Constants.ACC_PUBLIC,
+            ce.begin_class(CGLIBConstants.V1_2,
+                           CGLIBConstants.ACC_PUBLIC,
                            getClassName(),
                            targetType,
                            null,
-                           Constants.SOURCE_FILE);
+                           CGLIBConstants.SOURCE_FILE);
 
-            ce.declare_field(Constants.ACC_FINAL | Constants.ACC_PRIVATE, FIELD_NAME, targetType, null);
+            ce.declare_field(CGLIBConstants.ACC_FINAL | CGLIBConstants.ACC_PRIVATE, FIELD_NAME, targetType, null);
 
-            CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC, CSTRUCT_OBJECT, null);
+            CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, CSTRUCT_OBJECT, null);
             e.load_this();
             e.super_invoke_constructor();
             e.load_this();
@@ -109,7 +109,7 @@ public class ImmutableBean
 
             for (int i = 0; i < getters.length; i++) {
                 MethodInfo getter = ReflectUtils.getMethodInfo(getters[i]);
-                e = EmitUtils.begin_method(ce, getter, Constants.ACC_PUBLIC);
+                e = EmitUtils.begin_method(ce, getter, CGLIBConstants.ACC_PUBLIC);
                 e.load_this();
                 e.getfield(FIELD_NAME);
                 e.invoke(getter);
@@ -119,7 +119,7 @@ public class ImmutableBean
 
             for (int i = 0; i < setters.length; i++) {
                 MethodInfo setter = ReflectUtils.getMethodInfo(setters[i]);
-                e = EmitUtils.begin_method(ce, setter, Constants.ACC_PUBLIC);
+                e = EmitUtils.begin_method(ce, setter, CGLIBConstants.ACC_PUBLIC);
                 e.throw_exception(ILLEGAL_STATE_EXCEPTION, "Bean is immutable");
                 e.end_method();
             }

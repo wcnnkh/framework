@@ -23,13 +23,13 @@ import scw.asm.Type;
 import scw.cglib.core.AbstractClassGenerator;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.KeyFactory;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 
 // TODO: don't require exact match for return type
 
@@ -161,9 +161,9 @@ abstract public class MethodDelegate {
     public static class Generator extends AbstractClassGenerator {
         private static final Source SOURCE = new Source(MethodDelegate.class.getName());
         private static final Type METHOD_DELEGATE =
-          TypeUtils.parseType(MethodDelegate.class.getName());
+          CGLIBTypeUtils.parseType(MethodDelegate.class.getName());
         private static final Signature NEW_INSTANCE =
-          new Signature("newInstance", METHOD_DELEGATE, new Type[]{ Constants.TYPE_OBJECT });
+          new Signature("newInstance", METHOD_DELEGATE, new Type[]{ CGLIBConstants.TYPE_OBJECT });
 
         private Object target;
         private Class targetClass;
@@ -222,31 +222,31 @@ abstract public class MethodDelegate {
 
             MethodInfo methodInfo = ReflectUtils.getMethodInfo(method);
 
-            boolean isStatic = TypeUtils.isStatic(methodInfo.getModifiers());
+            boolean isStatic = CGLIBTypeUtils.isStatic(methodInfo.getModifiers());
             if ((target == null) ^ isStatic) {
                 throw new IllegalArgumentException("Static method " + (isStatic ? "not " : "") + "expected");
             }
 
             ClassEmitter ce = new ClassEmitter(v);
             CodeEmitter e;
-            ce.begin_class(Constants.V1_2,
-                           Constants.ACC_PUBLIC,
+            ce.begin_class(CGLIBConstants.V1_2,
+                           CGLIBConstants.ACC_PUBLIC,
                            getClassName(),
                            METHOD_DELEGATE,
                            new Type[]{ Type.getType(iface) },
-                           Constants.SOURCE_FILE);
-            ce.declare_field(Constants.PRIVATE_FINAL_STATIC, "eqMethod", Constants.TYPE_STRING, null);
+                           CGLIBConstants.SOURCE_FILE);
+            ce.declare_field(CGLIBConstants.PRIVATE_FINAL_STATIC, "eqMethod", CGLIBConstants.TYPE_STRING, null);
             EmitUtils.null_constructor(ce);
 
             // generate proxied method
             MethodInfo proxied = ReflectUtils.getMethodInfo(iface.getDeclaredMethods()[0]);
-            int modifiers = Constants.ACC_PUBLIC;
-            if ((proxied.getModifiers() & Constants.ACC_VARARGS) == Constants.ACC_VARARGS) {
-                modifiers |= Constants.ACC_VARARGS;
+            int modifiers = CGLIBConstants.ACC_PUBLIC;
+            if ((proxied.getModifiers() & CGLIBConstants.ACC_VARARGS) == CGLIBConstants.ACC_VARARGS) {
+                modifiers |= CGLIBConstants.ACC_VARARGS;
             }
             e = EmitUtils.begin_method(ce, proxied, modifiers);
             e.load_this();
-            e.super_getfield("target", Constants.TYPE_OBJECT);
+            e.super_getfield("target", CGLIBConstants.TYPE_OBJECT);
             e.checkcast(methodInfo.getClassInfo().getType());
             e.load_args();
             e.invoke(methodInfo);
@@ -254,15 +254,15 @@ abstract public class MethodDelegate {
             e.end_method();
 
             // newInstance
-            e = ce.begin_method(Constants.ACC_PUBLIC, NEW_INSTANCE, null);
+            e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, NEW_INSTANCE, null);
             e.new_instance_this();
             e.dup();
             e.dup2();
             e.invoke_constructor_this();
             e.getfield("eqMethod");
-            e.super_putfield("eqMethod", Constants.TYPE_STRING);
+            e.super_putfield("eqMethod", CGLIBConstants.TYPE_STRING);
             e.load_arg(0);
-            e.super_putfield("target", Constants.TYPE_OBJECT);
+            e.super_putfield("target", CGLIBConstants.TYPE_OBJECT);
             e.return_value();
             e.end_method();
 

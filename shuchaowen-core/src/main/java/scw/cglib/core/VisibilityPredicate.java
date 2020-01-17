@@ -31,7 +31,7 @@ public class VisibilityPredicate implements Predicate {
         // same package is not ok for the bootstrap loaded classes.  In all other cases we are 
         // generating classes in the same classloader
         this.samePackageOk = source.getClassLoader() != null;
-        pkg = TypeUtils.getPackageName(Type.getType(source));
+        pkg = CGLIBTypeUtils.getPackageName(Type.getType(source));
     }
 
     public boolean evaluate(Object arg) {
@@ -48,7 +48,7 @@ public class VisibilityPredicate implements Predicate {
             // protected/package private if the member is in the same package as the source class 
             // and we are generating into the same classloader.
             return samePackageOk 
-                && pkg.equals(TypeUtils.getPackageName(Type.getType(member.getDeclaringClass())));
+                && pkg.equals(CGLIBTypeUtils.getPackageName(Type.getType(member.getDeclaringClass())));
         }
     }
 }

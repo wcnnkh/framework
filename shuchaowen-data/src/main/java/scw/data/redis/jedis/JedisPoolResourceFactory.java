@@ -13,11 +13,11 @@ import scw.core.annotation.DefaultValue;
 import scw.core.annotation.Order;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.ResourceParameter;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.data.redis.RedisConstants;
 import scw.data.redis.RedisUtils;
 import scw.lang.Nullable;
+import scw.resource.ResourceUtils;
 import scw.util.ConfigUtils;
 
 /**

@@ -2,9 +2,9 @@ package scw.application;
 
 import scw.beans.BeanUtils;
 import scw.beans.XmlBeanFactory;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerUtils;
+import scw.resource.ResourceUtils;
 import scw.util.FormatUtils;
 
 public class CommonApplication extends XmlBeanFactory implements Application {

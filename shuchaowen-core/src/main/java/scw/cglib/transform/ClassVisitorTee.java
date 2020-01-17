@@ -21,13 +21,13 @@ import scw.asm.ClassVisitor;
 import scw.asm.FieldVisitor;
 import scw.asm.MethodVisitor;
 import scw.asm.TypePath;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 
 public class ClassVisitorTee extends ClassVisitor {
     private ClassVisitor cv1, cv2;
     
     public ClassVisitorTee(ClassVisitor cv1, ClassVisitor cv2) {
-	super(Constants.ASM_API);
+	super(CGLIBConstants.ASM_API);
 	this.cv1 = cv1;
         this.cv2 = cv2;
     }

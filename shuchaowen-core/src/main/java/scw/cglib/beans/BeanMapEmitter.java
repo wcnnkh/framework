@@ -25,39 +25,39 @@ import scw.asm.Label;
 import scw.asm.Type;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.ObjectSwitchCallback;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 class BeanMapEmitter extends ClassEmitter {
     private static final Type BEAN_MAP =
-      TypeUtils.parseType(BeanMap.class.getName());
+      CGLIBTypeUtils.parseType(BeanMap.class.getName());
     private static final Type FIXED_KEY_SET =
-      TypeUtils.parseType(FixedKeySet.class.getName());
+      CGLIBTypeUtils.parseType(FixedKeySet.class.getName());
     private static final Signature CSTRUCT_OBJECT =
-      TypeUtils.parseConstructor("Object");
+      CGLIBTypeUtils.parseConstructor("Object");
     private static final Signature CSTRUCT_STRING_ARRAY =
-      TypeUtils.parseConstructor("String[]");
+      CGLIBTypeUtils.parseConstructor("String[]");
     private static final Signature BEAN_MAP_GET =
-      TypeUtils.parseSignature("Object get(Object, Object)");
+      CGLIBTypeUtils.parseSignature("Object get(Object, Object)");
     private static final Signature BEAN_MAP_PUT =
-      TypeUtils.parseSignature("Object put(Object, Object, Object)");
+      CGLIBTypeUtils.parseSignature("Object put(Object, Object, Object)");
     private static final Signature KEY_SET =
-      TypeUtils.parseSignature("java.util.Set keySet()");
+      CGLIBTypeUtils.parseSignature("java.util.Set keySet()");
     private static final Signature NEW_INSTANCE =
-      new Signature("newInstance", BEAN_MAP, new Type[]{ Constants.TYPE_OBJECT });
+      new Signature("newInstance", BEAN_MAP, new Type[]{ CGLIBConstants.TYPE_OBJECT });
     private static final Signature GET_PROPERTY_TYPE =
-      TypeUtils.parseSignature("Class getPropertyType(String)");
+      CGLIBTypeUtils.parseSignature("Class getPropertyType(String)");
 
     public BeanMapEmitter(ClassVisitor v, String className, Class type, int require) {
         super(v);
 
-        begin_class(Constants.V1_2, Constants.ACC_PUBLIC, className, BEAN_MAP, null, Constants.SOURCE_FILE);
+        begin_class(CGLIBConstants.V1_2, CGLIBConstants.ACC_PUBLIC, className, BEAN_MAP, null, CGLIBConstants.SOURCE_FILE);
         EmitUtils.null_constructor(this);
         EmitUtils.factory_method(this, NEW_INSTANCE);
         generateConstructor();
@@ -101,7 +101,7 @@ class BeanMapEmitter extends ClassEmitter {
     }
 
     private void generateConstructor() {
-        CodeEmitter e = begin_method(Constants.ACC_PUBLIC, CSTRUCT_OBJECT, null);
+        CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, CSTRUCT_OBJECT, null);
         e.load_this();
         e.load_arg(0);
         e.super_invoke_constructor(CSTRUCT_OBJECT);
@@ -110,12 +110,12 @@ class BeanMapEmitter extends ClassEmitter {
     }
         
     private void generateGet(Class type, final Map getters) {
-        final CodeEmitter e = begin_method(Constants.ACC_PUBLIC, BEAN_MAP_GET, null);
+        final CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, BEAN_MAP_GET, null);
         e.load_arg(0);
         e.checkcast(Type.getType(type));
         e.load_arg(1);
-        e.checkcast(Constants.TYPE_STRING);
-        EmitUtils.string_switch(e, getNames(getters), Constants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
+        e.checkcast(CGLIBConstants.TYPE_STRING);
+        EmitUtils.string_switch(e, getNames(getters), CGLIBConstants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
             public void processCase(Object key, Label end) {
                 PropertyDescriptor pd = (PropertyDescriptor)getters.get(key);
                 MethodInfo method = ReflectUtils.getMethodInfo(pd.getReadMethod());
@@ -132,12 +132,12 @@ class BeanMapEmitter extends ClassEmitter {
     }
 
     private void generatePut(Class type, final Map setters) {
-        final CodeEmitter e = begin_method(Constants.ACC_PUBLIC, BEAN_MAP_PUT, null);
+        final CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, BEAN_MAP_PUT, null);
         e.load_arg(0);
         e.checkcast(Type.getType(type));
         e.load_arg(1);
-        e.checkcast(Constants.TYPE_STRING);
-        EmitUtils.string_switch(e, getNames(setters), Constants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
+        e.checkcast(CGLIBConstants.TYPE_STRING);
+        EmitUtils.string_switch(e, getNames(setters), CGLIBConstants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
             public void processCase(Object key, Label end) {
                 PropertyDescriptor pd = (PropertyDescriptor)setters.get(key);
                 if (pd.getReadMethod() == null) {
@@ -166,7 +166,7 @@ class BeanMapEmitter extends ClassEmitter {
             
     private void generateKeySet(String[] allNames) {
         // static initializer
-        declare_field(Constants.ACC_STATIC | Constants.ACC_PRIVATE, "keys", FIXED_KEY_SET, null);
+        declare_field(CGLIBConstants.ACC_STATIC | CGLIBConstants.ACC_PRIVATE, "keys", FIXED_KEY_SET, null);
 
         CodeEmitter e = begin_static();
         e.new_instance(FIXED_KEY_SET);
@@ -178,7 +178,7 @@ class BeanMapEmitter extends ClassEmitter {
         e.end_method();
 
         // keySet
-        e = begin_method(Constants.ACC_PUBLIC, KEY_SET, null);
+        e = begin_method(CGLIBConstants.ACC_PUBLIC, KEY_SET, null);
         e.load_this();
         e.getfield("keys");
         e.return_value();
@@ -186,9 +186,9 @@ class BeanMapEmitter extends ClassEmitter {
     }
 
     private void generateGetPropertyType(final Map allProps, String[] allNames) {
-        final CodeEmitter e = begin_method(Constants.ACC_PUBLIC, GET_PROPERTY_TYPE, null);
+        final CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, GET_PROPERTY_TYPE, null);
         e.load_arg(0);
-        EmitUtils.string_switch(e, allNames, Constants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
+        EmitUtils.string_switch(e, allNames, CGLIBConstants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
             public void processCase(Object key, Label end) {
                 PropertyDescriptor pd = (PropertyDescriptor)allProps.get(key);
                 EmitUtils.load_class(e, Type.getType(pd.getPropertyType()));

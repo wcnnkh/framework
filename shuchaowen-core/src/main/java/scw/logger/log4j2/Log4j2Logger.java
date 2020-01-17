@@ -1,4 +1,4 @@
-package scw.logger.log4j;
+package scw.logger.log4j2;
 
 import org.apache.logging.log4j.Logger;
 

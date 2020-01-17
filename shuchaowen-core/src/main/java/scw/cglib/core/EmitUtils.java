@@ -34,48 +34,48 @@ import scw.cglib.core.internal.CustomizerRegistry;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class EmitUtils {
     private static final Signature CSTRUCT_NULL =
-      TypeUtils.parseConstructor("");
+      CGLIBTypeUtils.parseConstructor("");
     private static final Signature CSTRUCT_THROWABLE =
-      TypeUtils.parseConstructor("Throwable");
+      CGLIBTypeUtils.parseConstructor("Throwable");
 
     private static final Signature GET_NAME =
-      TypeUtils.parseSignature("String getName()");
+      CGLIBTypeUtils.parseSignature("String getName()");
     private static final Signature HASH_CODE =
-      TypeUtils.parseSignature("int hashCode()");
+      CGLIBTypeUtils.parseSignature("int hashCode()");
     private static final Signature EQUALS =
-      TypeUtils.parseSignature("boolean equals(Object)");
+      CGLIBTypeUtils.parseSignature("boolean equals(Object)");
     private static final Signature STRING_LENGTH =
-      TypeUtils.parseSignature("int length()");
+      CGLIBTypeUtils.parseSignature("int length()");
     private static final Signature STRING_CHAR_AT =
-      TypeUtils.parseSignature("char charAt(int)");
+      CGLIBTypeUtils.parseSignature("char charAt(int)");
     private static final Signature FOR_NAME =
-      TypeUtils.parseSignature("Class forName(String)");
+      CGLIBTypeUtils.parseSignature("Class forName(String)");
     private static final Signature DOUBLE_TO_LONG_BITS =
-      TypeUtils.parseSignature("long doubleToLongBits(double)");
+      CGLIBTypeUtils.parseSignature("long doubleToLongBits(double)");
     private static final Signature FLOAT_TO_INT_BITS =
-      TypeUtils.parseSignature("int floatToIntBits(float)");
+      CGLIBTypeUtils.parseSignature("int floatToIntBits(float)");
     private static final Signature TO_STRING =
-      TypeUtils.parseSignature("String toString()");
+      CGLIBTypeUtils.parseSignature("String toString()");
     private static final Signature APPEND_STRING =
-      TypeUtils.parseSignature("StringBuffer append(String)");
+      CGLIBTypeUtils.parseSignature("StringBuffer append(String)");
     private static final Signature APPEND_INT =
-      TypeUtils.parseSignature("StringBuffer append(int)");
+      CGLIBTypeUtils.parseSignature("StringBuffer append(int)");
     private static final Signature APPEND_DOUBLE =
-      TypeUtils.parseSignature("StringBuffer append(double)");
+      CGLIBTypeUtils.parseSignature("StringBuffer append(double)");
     private static final Signature APPEND_FLOAT =
-      TypeUtils.parseSignature("StringBuffer append(float)");
+      CGLIBTypeUtils.parseSignature("StringBuffer append(float)");
     private static final Signature APPEND_CHAR =
-      TypeUtils.parseSignature("StringBuffer append(char)");
+      CGLIBTypeUtils.parseSignature("StringBuffer append(char)");
     private static final Signature APPEND_LONG =
-      TypeUtils.parseSignature("StringBuffer append(long)");
+      CGLIBTypeUtils.parseSignature("StringBuffer append(long)");
     private static final Signature APPEND_BOOLEAN =
-      TypeUtils.parseSignature("StringBuffer append(boolean)");
+      CGLIBTypeUtils.parseSignature("StringBuffer append(boolean)");
     private static final Signature LENGTH =
-      TypeUtils.parseSignature("int length()");
+      CGLIBTypeUtils.parseSignature("int length()");
     private static final Signature SET_LENGTH =
-      TypeUtils.parseSignature("void setLength(int)");
+      CGLIBTypeUtils.parseSignature("void setLength(int)");
     private static final Signature GET_DECLARED_METHOD =
-      TypeUtils.parseSignature("java.lang.reflect.Method getDeclaredMethod(String, Class[])");
+      CGLIBTypeUtils.parseSignature("java.lang.reflect.Method getDeclaredMethod(String, Class[])");
      
     
 
@@ -85,17 +85,17 @@ public class EmitUtils {
     }
 
     public static void factory_method(ClassEmitter ce, Signature sig) {
-        CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC, sig, null);
+        CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, sig, null);
         e.new_instance_this();
         e.dup();
         e.load_args();
-        e.invoke_constructor_this(TypeUtils.parseConstructor(sig.getArgumentTypes()));
+        e.invoke_constructor_this(CGLIBTypeUtils.parseConstructor(sig.getArgumentTypes()));
         e.return_value();
         e.end_method();
     }
 
     public static void null_constructor(ClassEmitter ce) {
-        CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC, CSTRUCT_NULL, null);
+        CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, CSTRUCT_NULL, null);
         e.load_this();
         e.super_invoke_constructor();
         e.return_value();
@@ -110,7 +110,7 @@ public class EmitUtils {
      * @param callback the callback triggered for each element
      */
     public static void process_array(CodeEmitter e, Type type, ProcessArrayCallback callback) {
-        Type componentType = TypeUtils.getComponentType(type);
+        Type componentType = CGLIBTypeUtils.getComponentType(type);
         Local array = e.make_local();
         Local loopvar = e.make_local(Type.INT_TYPE);
         Label loopbody = e.make_label();
@@ -142,7 +142,7 @@ public class EmitUtils {
      * @param callback the callback triggered for each pair of elements
      */
     public static void process_arrays(CodeEmitter e, Type type, ProcessArrayCallback callback) {
-        Type componentType = TypeUtils.getComponentType(type);
+        Type componentType = CGLIBTypeUtils.getComponentType(type);
         Local array1 = e.make_local();
         Local array2 = e.make_local();
         Local loopvar = e.make_local(Type.INT_TYPE);
@@ -174,13 +174,13 @@ public class EmitUtils {
     public static void string_switch(CodeEmitter e, String[] strings, int switchStyle, ObjectSwitchCallback callback) {
         try {
             switch (switchStyle) {
-            case Constants.SWITCH_STYLE_TRIE:
+            case CGLIBConstants.SWITCH_STYLE_TRIE:
                 string_switch_trie(e, strings, callback);
                 break;
-            case Constants.SWITCH_STYLE_HASH:
+            case CGLIBConstants.SWITCH_STYLE_HASH:
                 string_switch_hash(e, strings, callback, false);
                 break;
-            case Constants.SWITCH_STYLE_HASHONLY:
+            case CGLIBConstants.SWITCH_STYLE_HASHONLY:
                 string_switch_hash(e, strings, callback, true);
                 break;
             default:
@@ -200,13 +200,13 @@ public class EmitUtils {
                                            final ObjectSwitchCallback callback) throws Exception {
         final Label def = e.make_label();
         final Label end = e.make_label();
-        final Map buckets = CollectionUtils.bucket(Arrays.asList(strings), new Transformer() {
+        final Map buckets = CGLIBCollectionUtils.bucket(Arrays.asList(strings), new Transformer() {
             public Object transform(Object value) {
                 return new Integer(((String)value).length());
             }
         });
         e.dup();
-        e.invoke_virtual(Constants.TYPE_STRING, STRING_LENGTH);
+        e.invoke_virtual(CGLIBConstants.TYPE_STRING, STRING_LENGTH);
         e.process_switch(getSwitchKeys(buckets), new ProcessSwitchCallback() {
                 public void processCase(int key, Label ignore_end) throws Exception {
                     List bucket = (List)buckets.get(new Integer(key));
@@ -229,14 +229,14 @@ public class EmitUtils {
                                            final Label end,
                                            final int index) throws Exception {
         final int len = ((String)strings.get(0)).length();
-        final Map buckets = CollectionUtils.bucket(strings, new Transformer() {
+        final Map buckets = CGLIBCollectionUtils.bucket(strings, new Transformer() {
             public Object transform(Object value) {
                 return new Integer(((String)value).charAt(index));
             }
         });
         e.dup();
         e.push(index);
-        e.invoke_virtual(Constants.TYPE_STRING, STRING_CHAR_AT);
+        e.invoke_virtual(CGLIBConstants.TYPE_STRING, STRING_CHAR_AT);
         e.process_switch(getSwitchKeys(buckets), new ProcessSwitchCallback() {
                 public void processCase(int key, Label ignore_end) throws Exception {
                     List bucket = (List)buckets.get(new Integer(key));
@@ -267,7 +267,7 @@ public class EmitUtils {
                                            final String[] strings,
                                            final ObjectSwitchCallback callback,
                                            final boolean skipEquals) throws Exception {
-        final Map buckets = CollectionUtils.bucket(Arrays.asList(strings), new Transformer() {
+        final Map buckets = CGLIBCollectionUtils.bucket(Arrays.asList(strings), new Transformer() {
             public Object transform(Object value) {
                 return new Integer(value.hashCode());
             }
@@ -275,7 +275,7 @@ public class EmitUtils {
         final Label def = e.make_label();
         final Label end = e.make_label();
         e.dup();
-        e.invoke_virtual(Constants.TYPE_OBJECT, HASH_CODE);
+        e.invoke_virtual(CGLIBConstants.TYPE_OBJECT, HASH_CODE);
         e.process_switch(getSwitchKeys(buckets), new ProcessSwitchCallback() {
             public void processCase(int key, Label ignore_end) throws Exception {
                 List bucket = (List)buckets.get(new Integer(key));
@@ -294,7 +294,7 @@ public class EmitUtils {
                             e.dup();
                         }
                         e.push(string);
-                        e.invoke_virtual(Constants.TYPE_OBJECT, EQUALS);
+                        e.invoke_virtual(CGLIBConstants.TYPE_OBJECT, EQUALS);
                         if (it.hasNext()) {
                             e.if_jump(CodeEmitter.EQ, next = e.make_label());
                             e.pop();
@@ -319,11 +319,11 @@ public class EmitUtils {
     }
     
     public static void load_class(CodeEmitter e, Type type) {
-        if (TypeUtils.isPrimitive(type)) {
+        if (CGLIBTypeUtils.isPrimitive(type)) {
             if (type == Type.VOID_TYPE) {
                 throw new IllegalArgumentException("cannot load void type");
             }
-            e.getstatic(TypeUtils.getBoxedType(type), "TYPE", Constants.TYPE_CLASS);
+            e.getstatic(CGLIBTypeUtils.getBoxedType(type), "TYPE", CGLIBConstants.TYPE_CLASS);
         } else {
             load_class_helper(e, type);
         }
@@ -332,20 +332,20 @@ public class EmitUtils {
     private static void load_class_helper(CodeEmitter e, final Type type) {
         if (e.isStaticHook()) {
             // have to fall back on non-optimized load
-            e.push(TypeUtils.emulateClassGetName(type));
-            e.invoke_static(Constants.TYPE_CLASS, FOR_NAME);
+            e.push(CGLIBTypeUtils.emulateClassGetName(type));
+            e.invoke_static(CGLIBConstants.TYPE_CLASS, FOR_NAME);
         } else {
             ClassEmitter ce = e.getClassEmitter();
-            String typeName = TypeUtils.emulateClassGetName(type);
+            String typeName = CGLIBTypeUtils.emulateClassGetName(type);
 
             // TODO: can end up with duplicated field names when using chained transformers; incorporate static hook # somehow
-            String fieldName = "CGLIB$load_class$" + TypeUtils.escapeType(typeName);
+            String fieldName = "CGLIB$load_class$" + CGLIBTypeUtils.escapeType(typeName);
             if (!ce.isFieldDeclared(fieldName)) {
-                ce.declare_field(Constants.PRIVATE_FINAL_STATIC, fieldName, Constants.TYPE_CLASS, null);
+                ce.declare_field(CGLIBConstants.PRIVATE_FINAL_STATIC, fieldName, CGLIBConstants.TYPE_CLASS, null);
                 CodeEmitter hook = ce.getStaticHook();
                 hook.push(typeName);
-                hook.invoke_static(Constants.TYPE_CLASS, FOR_NAME);
-                hook.putstatic(ce.getClassType(), fieldName, Constants.TYPE_CLASS);
+                hook.invoke_static(CGLIBConstants.TYPE_CLASS, FOR_NAME);
+                hook.putstatic(ce.getClassType(), fieldName, CGLIBConstants.TYPE_CLASS);
             }
             e.getfield(fieldName);
         }
@@ -382,15 +382,15 @@ public class EmitUtils {
             } else if (obj instanceof Class) {
                 load_class(e, Type.getType((Class)obj));
             } else if (obj instanceof BigInteger) {
-                e.new_instance(Constants.TYPE_BIG_INTEGER);
+                e.new_instance(CGLIBConstants.TYPE_BIG_INTEGER);
                 e.dup();
                 e.push(obj.toString());
-                e.invoke_constructor(Constants.TYPE_BIG_INTEGER);
+                e.invoke_constructor(CGLIBConstants.TYPE_BIG_INTEGER);
             } else if (obj instanceof BigDecimal) {
-                e.new_instance(Constants.TYPE_BIG_DECIMAL);
+                e.new_instance(CGLIBConstants.TYPE_BIG_DECIMAL);
                 e.dup();
                 e.push(obj.toString());
-                e.invoke_constructor(Constants.TYPE_BIG_DECIMAL);
+                e.invoke_constructor(CGLIBConstants.TYPE_BIG_DECIMAL);
             } else {
                 throw new IllegalArgumentException("unknown type: " + obj.getClass());
             }
@@ -406,14 +406,14 @@ public class EmitUtils {
     }
     
     public static void hash_code(CodeEmitter e, Type type, int multiplier, final CustomizerRegistry registry) {
-        if (TypeUtils.isArray(type)) {
+        if (CGLIBTypeUtils.isArray(type)) {
             hash_array(e, type, multiplier, registry);
         } else {
             e.swap(Type.INT_TYPE, type);
             e.push(multiplier);
             e.math(CodeEmitter.MUL, Type.INT_TYPE);
             e.swap(type, Type.INT_TYPE);
-            if (TypeUtils.isPrimitive(type)) {
+            if (CGLIBTypeUtils.isPrimitive(type)) {
                 hash_primitive(e, type);
             } else {
                 hash_object(e, type, registry);
@@ -455,7 +455,7 @@ public class EmitUtils {
             for (Customizer customizer : registry.get(Customizer.class)) {
                 customizer.customize(e, type);
             }
-            e.invoke_virtual(Constants.TYPE_OBJECT, HASH_CODE);
+            e.invoke_virtual(CGLIBConstants.TYPE_OBJECT, HASH_CODE);
         }
         e.goTo(end);
         e.mark(skip);
@@ -473,11 +473,11 @@ public class EmitUtils {
             break;
         case Type.FLOAT:
             // Float.floatToIntBits(f)
-            e.invoke_static(Constants.TYPE_FLOAT, FLOAT_TO_INT_BITS);
+            e.invoke_static(CGLIBConstants.TYPE_FLOAT, FLOAT_TO_INT_BITS);
             break;
         case Type.DOUBLE:
             // Double.doubleToLongBits(f), hash_code(Long.TYPE)
-            e.invoke_static(Constants.TYPE_DOUBLE, DOUBLE_TO_LONG_BITS);
+            e.invoke_static(CGLIBConstants.TYPE_DOUBLE, DOUBLE_TO_LONG_BITS);
             // fall through
         case Type.LONG:
             hash_long(e);
@@ -525,12 +525,12 @@ public class EmitUtils {
                                           Label notEquals,
                                           CustomizerRegistry registry,
                                           ProcessArrayCallback callback) {
-        if (TypeUtils.isPrimitive(type)) {
+        if (CGLIBTypeUtils.isPrimitive(type)) {
             e.if_cmp(type, CodeEmitter.NE, notEquals);
         } else {
             Label end = e.make_label();
             nullcmp(e, notEquals, end);
-            if (TypeUtils.isArray(type)) {
+            if (CGLIBTypeUtils.isArray(type)) {
                 Label checkContents = e.make_label();
                 e.dup2();
                 e.arraylength();
@@ -552,7 +552,7 @@ public class EmitUtils {
                         customizer.customize(e, type);
                     }
                 }
-                e.invoke_virtual(Constants.TYPE_OBJECT, EQUALS);
+                e.invoke_virtual(CGLIBConstants.TYPE_OBJECT, EQUALS);
                 e.if_jump(CodeEmitter.EQ, notEquals);
             }
             e.mark(end);
@@ -621,7 +621,7 @@ public class EmitUtils {
             public void processElement(Type type) {
                 append_string_helper(e, type, d, registry, this);
                 e.push(d.inside);
-                e.invoke_virtual(Constants.TYPE_STRING_BUFFER, APPEND_STRING);
+                e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, APPEND_STRING);
             }
         };
         append_string_helper(e, type, d, registry, callback);
@@ -634,43 +634,43 @@ public class EmitUtils {
                                              ProcessArrayCallback callback) {
         Label skip = e.make_label();
         Label end = e.make_label();
-        if (TypeUtils.isPrimitive(type)) {
+        if (CGLIBTypeUtils.isPrimitive(type)) {
             switch (type.getSort()) {
             case Type.INT:
             case Type.SHORT:
             case Type.BYTE:
-                e.invoke_virtual(Constants.TYPE_STRING_BUFFER, APPEND_INT);
+                e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, APPEND_INT);
                 break;
             case Type.DOUBLE:
-                e.invoke_virtual(Constants.TYPE_STRING_BUFFER, APPEND_DOUBLE);
+                e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, APPEND_DOUBLE);
                 break;
             case Type.FLOAT:
-                e.invoke_virtual(Constants.TYPE_STRING_BUFFER, APPEND_FLOAT);
+                e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, APPEND_FLOAT);
                 break;
             case Type.LONG:
-                e.invoke_virtual(Constants.TYPE_STRING_BUFFER, APPEND_LONG);
+                e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, APPEND_LONG);
                 break;
             case Type.BOOLEAN:
-                e.invoke_virtual(Constants.TYPE_STRING_BUFFER, APPEND_BOOLEAN);
+                e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, APPEND_BOOLEAN);
                 break;
             case Type.CHAR:
-                e.invoke_virtual(Constants.TYPE_STRING_BUFFER, APPEND_CHAR);
+                e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, APPEND_CHAR);
                 break;
             }
-        } else if (TypeUtils.isArray(type)) {
+        } else if (CGLIBTypeUtils.isArray(type)) {
             e.dup();
             e.ifnull(skip);
             e.swap();
             if (delims != null && delims.before != null && !"".equals(delims.before)) {
                 e.push(delims.before);
-                e.invoke_virtual(Constants.TYPE_STRING_BUFFER, APPEND_STRING);
+                e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, APPEND_STRING);
                 e.swap();
             }
             EmitUtils.process_array(e, type, callback);
             shrinkStringBuffer(e, 2);
             if (delims != null && delims.after != null && !"".equals(delims.after)) {
                 e.push(delims.after);
-                e.invoke_virtual(Constants.TYPE_STRING_BUFFER, APPEND_STRING);
+                e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, APPEND_STRING);
             }
         } else {
             e.dup();
@@ -678,24 +678,24 @@ public class EmitUtils {
             for (Customizer customizer : registry.get(Customizer.class)) {
                 customizer.customize(e, type);
             }
-            e.invoke_virtual(Constants.TYPE_OBJECT, TO_STRING);
-            e.invoke_virtual(Constants.TYPE_STRING_BUFFER, APPEND_STRING);
+            e.invoke_virtual(CGLIBConstants.TYPE_OBJECT, TO_STRING);
+            e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, APPEND_STRING);
         }
         e.goTo(end);
         e.mark(skip);
         e.pop();
         e.push("null");
-        e.invoke_virtual(Constants.TYPE_STRING_BUFFER, APPEND_STRING);
+        e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, APPEND_STRING);
         e.mark(end);
     }
 
     private static void shrinkStringBuffer(CodeEmitter e, int amt) {
         e.dup();
         e.dup();
-        e.invoke_virtual(Constants.TYPE_STRING_BUFFER, LENGTH);
+        e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, LENGTH);
         e.push(amt);
         e.math(CodeEmitter.SUB, Type.INT_TYPE);
-        e.invoke_virtual(Constants.TYPE_STRING_BUFFER, SET_LENGTH);
+        e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, SET_LENGTH);
     }
 
     public static class ArrayDelimiters {
@@ -714,7 +714,7 @@ public class EmitUtils {
         load_class(e, method.getClassInfo().getType());
         e.push(method.getSignature().getName());
         push_object(e, method.getSignature().getArgumentTypes());
-        e.invoke_virtual(Constants.TYPE_CLASS, GET_DECLARED_METHOD);
+        e.invoke_virtual(CGLIBConstants.TYPE_CLASS, GET_DECLARED_METHOD);
     }
 
     private interface ParameterTyper {
@@ -752,13 +752,13 @@ public class EmitUtils {
             final Label end = e.make_label();
             if (useName) {
                 e.swap();
-                final Map buckets = CollectionUtils.bucket(members, new Transformer() {
+                final Map buckets = CGLIBCollectionUtils.bucket(members, new Transformer() {
                         public Object transform(Object value) {
                             return ((MethodInfo)value).getSignature().getName();
                         }
                     });
                 String[] names = (String[])buckets.keySet().toArray(new String[buckets.size()]);
-                EmitUtils.string_switch(e, names, Constants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
+                EmitUtils.string_switch(e, names, CGLIBConstants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
                         public void processCase(Object key, Label dontUseEnd) throws Exception {
                             member_helper_size(e, (List)buckets.get(key), callback, cached, def, end);
                         }
@@ -788,7 +788,7 @@ public class EmitUtils {
                                            final ParameterTyper typer,
                                            final Label def,
                                            final Label end) throws Exception {
-        final Map buckets = CollectionUtils.bucket(members, new Transformer() {
+        final Map buckets = CGLIBCollectionUtils.bucket(members, new Transformer() {
             public Object transform(Object value) {
                 return new Integer(typer.getParameterTypes((MethodInfo)value).length);
             }
@@ -821,9 +821,9 @@ public class EmitUtils {
                 if (checked == null || !checked.get(i)) {
                     e.dup();
                     e.aaload(i);
-                    e.invoke_virtual(Constants.TYPE_CLASS, GET_NAME);
-                    e.push(TypeUtils.emulateClassGetName(types[i]));
-                    e.invoke_virtual(Constants.TYPE_OBJECT, EQUALS);
+                    e.invoke_virtual(CGLIBConstants.TYPE_CLASS, GET_NAME);
+                    e.push(CGLIBTypeUtils.emulateClassGetName(types[i]));
+                    e.invoke_virtual(CGLIBConstants.TYPE_OBJECT, EQUALS);
                     e.if_jump(CodeEmitter.EQ, def);
                 }
             }
@@ -836,9 +836,9 @@ public class EmitUtils {
             int index = -1;
             for (int i = 0; i < example.length; i++) {
                 final int j = i;
-                Map test = CollectionUtils.bucket(members, new Transformer() {
+                Map test = CGLIBCollectionUtils.bucket(members, new Transformer() {
                     public Object transform(Object value) {
-                        return TypeUtils.emulateClassGetName(typer.getParameterTypes((MethodInfo)value)[j]);
+                        return CGLIBTypeUtils.emulateClassGetName(typer.getParameterTypes((MethodInfo)value)[j]);
                     }
                 });
                 if (buckets == null || test.size() > buckets.size()) {
@@ -855,11 +855,11 @@ public class EmitUtils {
 
                 e.dup();
                 e.aaload(index);
-                e.invoke_virtual(Constants.TYPE_CLASS, GET_NAME);
+                e.invoke_virtual(CGLIBConstants.TYPE_CLASS, GET_NAME);
 
                 final Map fbuckets = buckets;
                 String[] names = (String[])buckets.keySet().toArray(new String[buckets.size()]);
-                EmitUtils.string_switch(e, names, Constants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
+                EmitUtils.string_switch(e, names, CGLIBConstants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
                     public void processCase(Object key, Label dontUseEnd) throws Exception {
                         member_helper_type(e, (List)fbuckets.get(key), callback, typer, def, end, checked);
                     }
@@ -873,7 +873,7 @@ public class EmitUtils {
 
     public static void wrap_throwable(Block block, Type wrapper) {
         CodeEmitter e = block.getCodeEmitter();
-        e.catch_exception(block, Constants.TYPE_THROWABLE);
+        e.catch_exception(block, CGLIBConstants.TYPE_THROWABLE);
         e.new_instance(wrapper);
         e.dup_x1();
         e.swap();
@@ -884,25 +884,25 @@ public class EmitUtils {
     public static void add_properties(ClassEmitter ce, String[] names, Type[] types) {
         for (int i = 0; i < names.length; i++) {
             String fieldName = "$cglib_prop_" + names[i];
-            ce.declare_field(Constants.ACC_PRIVATE, fieldName, types[i], null);
+            ce.declare_field(CGLIBConstants.ACC_PRIVATE, fieldName, types[i], null);
             EmitUtils.add_property(ce, names[i], types[i], fieldName);
         }
     }
 
     public static void add_property(ClassEmitter ce, String name, Type type, String fieldName) {
-        String property = TypeUtils.upperFirst(name);
+        String property = CGLIBTypeUtils.upperFirst(name);
         CodeEmitter e;
-        e = ce.begin_method(Constants.ACC_PUBLIC,
+        e = ce.begin_method(CGLIBConstants.ACC_PUBLIC,
                             new Signature("get" + property,
                                           type,
-                                          Constants.TYPES_EMPTY),
+                                          CGLIBConstants.TYPES_EMPTY),
                             null);
         e.load_this();
         e.getfield(fieldName);
         e.return_value();
         e.end_method();
 
-        e = ce.begin_method(Constants.ACC_PUBLIC,
+        e = ce.begin_method(CGLIBConstants.ACC_PUBLIC,
                             new Signature("set" + property,
                                           Type.VOID_TYPE,
                                           new Type[]{ type }),
@@ -928,16 +928,16 @@ public class EmitUtils {
     public static void wrap_undeclared_throwable(CodeEmitter e, Block handler, Type[] exceptions, Type wrapper) {
         Set set = (exceptions == null) ? Collections.EMPTY_SET : new HashSet(Arrays.asList(exceptions));
 
-        if (set.contains(Constants.TYPE_THROWABLE))
+        if (set.contains(CGLIBConstants.TYPE_THROWABLE))
             return;
 
         boolean needThrow = exceptions != null;
-        if (!set.contains(Constants.TYPE_RUNTIME_EXCEPTION)) {
-            e.catch_exception(handler, Constants.TYPE_RUNTIME_EXCEPTION);
+        if (!set.contains(CGLIBConstants.TYPE_RUNTIME_EXCEPTION)) {
+            e.catch_exception(handler, CGLIBConstants.TYPE_RUNTIME_EXCEPTION);
             needThrow = true;
         }
-        if (!set.contains(Constants.TYPE_ERROR)) {
-            e.catch_exception(handler, Constants.TYPE_ERROR);
+        if (!set.contains(CGLIBConstants.TYPE_ERROR)) {
+            e.catch_exception(handler, CGLIBConstants.TYPE_ERROR);
             needThrow = true;
         }
         if (exceptions != null) {
@@ -949,7 +949,7 @@ public class EmitUtils {
             e.athrow();
         }
         // e -> eo -> oeo -> ooe -> o
-        e.catch_exception(handler, Constants.TYPE_THROWABLE);
+        e.catch_exception(handler, CGLIBConstants.TYPE_THROWABLE);
         e.new_instance(wrapper);
         e.dup_x1();
         e.swap();

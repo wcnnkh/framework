@@ -16,11 +16,11 @@
 package scw.cglib.transform;
 
 import scw.asm.ClassVisitor;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 
 abstract public class AbstractClassTransformer extends ClassTransformer {
     protected AbstractClassTransformer() {
-        super(Constants.ASM_API);
+        super(CGLIBConstants.ASM_API);
     }
 
     public void setTarget(ClassVisitor target) {

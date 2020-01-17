@@ -23,15 +23,15 @@ import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 
 @SuppressWarnings({"rawtypes"})
 class FixedValueGenerator implements CallbackGenerator {
     public static final FixedValueGenerator INSTANCE = new FixedValueGenerator();
     private static final Type FIXED_VALUE =
-      TypeUtils.parseType(FixedValue.class.getName());
+      CGLIBTypeUtils.parseType(FixedValue.class.getName());
     private static final Signature LOAD_OBJECT =
-      TypeUtils.parseSignature("Object loadObject()");
+      CGLIBTypeUtils.parseSignature("Object loadObject()");
 
     public void generate(ClassEmitter ce, Context context, List methods) {
         for (Iterator it = methods.iterator(); it.hasNext();) {

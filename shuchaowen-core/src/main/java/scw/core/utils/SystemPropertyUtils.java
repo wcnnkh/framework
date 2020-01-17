@@ -24,10 +24,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import scw.core.Constants;
 import scw.core.StringFormatSystemProperties;
-import scw.core.resource.DefaultResourceLookup;
-import scw.core.resource.ResourceOperations;
-import scw.core.resource.SystemPropertyMultiSuffixResourceOperations;
 import scw.io.FileUtils;
+import scw.resource.DefaultResourceLookup;
+import scw.resource.ResourceOperations;
+import scw.resource.SystemPropertyMultiSuffixResourceOperations;
 
 public final class SystemPropertyUtils {
 	private static final String WEB_ROOT = "web.root";

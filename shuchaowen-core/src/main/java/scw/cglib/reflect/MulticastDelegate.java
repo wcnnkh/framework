@@ -25,14 +25,14 @@ import scw.asm.Type;
 import scw.cglib.core.AbstractClassGenerator;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.Local;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.ProcessArrayCallback;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 abstract public class MulticastDelegate implements Cloneable {
@@ -79,13 +79,13 @@ abstract public class MulticastDelegate implements Cloneable {
     public static class Generator extends AbstractClassGenerator {
         private static final Source SOURCE = new Source(MulticastDelegate.class.getName());
         private static final Type MULTICAST_DELEGATE =
-          TypeUtils.parseType(MulticastDelegate.class.getName());
+          CGLIBTypeUtils.parseType(MulticastDelegate.class.getName());
         private static final Signature NEW_INSTANCE =
           new Signature("newInstance", MULTICAST_DELEGATE, new Type[0]);
         private static final Signature ADD_DELEGATE =
-          new Signature("add", MULTICAST_DELEGATE, new Type[]{ Constants.TYPE_OBJECT });
+          new Signature("add", MULTICAST_DELEGATE, new Type[]{ CGLIBConstants.TYPE_OBJECT });
         private static final Signature ADD_HELPER =
-          new Signature("addHelper", MULTICAST_DELEGATE, new Type[]{ Constants.TYPE_OBJECT });
+          new Signature("addHelper", MULTICAST_DELEGATE, new Type[]{ CGLIBConstants.TYPE_OBJECT });
 
         private Class iface;
 
@@ -114,19 +114,19 @@ abstract public class MulticastDelegate implements Cloneable {
             final MethodInfo method = ReflectUtils.getMethodInfo(ReflectUtils.findInterfaceMethod(iface));
 
             ClassEmitter ce = new ClassEmitter(cv);
-            ce.begin_class(Constants.V1_2,
-                           Constants.ACC_PUBLIC,
+            ce.begin_class(CGLIBConstants.V1_2,
+                           CGLIBConstants.ACC_PUBLIC,
                            getClassName(),
                            MULTICAST_DELEGATE,
                            new Type[]{ Type.getType(iface) },
-                           Constants.SOURCE_FILE);
+                           CGLIBConstants.SOURCE_FILE);
             EmitUtils.null_constructor(ce);
 
             // generate proxied method
             emitProxy(ce, method);
 
             // newInstance
-            CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC, NEW_INSTANCE, null);
+            CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, NEW_INSTANCE, null);
             e.new_instance_this();
             e.dup();
             e.invoke_constructor_this();
@@ -134,7 +134,7 @@ abstract public class MulticastDelegate implements Cloneable {
             e.end_method();
 
             // add
-            e = ce.begin_method(Constants.ACC_PUBLIC, ADD_DELEGATE, null);
+            e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, ADD_DELEGATE, null);
             e.load_this();
             e.load_arg(0);
             e.checkcast(Type.getType(iface));
@@ -146,9 +146,9 @@ abstract public class MulticastDelegate implements Cloneable {
         }
 
         private void emitProxy(ClassEmitter ce, final MethodInfo method) {
-            int modifiers = Constants.ACC_PUBLIC;
-            if ((method.getModifiers() & Constants.ACC_VARARGS) == Constants.ACC_VARARGS) {
-                modifiers |= Constants.ACC_VARARGS;
+            int modifiers = CGLIBConstants.ACC_PUBLIC;
+            if ((method.getModifiers() & CGLIBConstants.ACC_VARARGS) == CGLIBConstants.ACC_VARARGS) {
+                modifiers |= CGLIBConstants.ACC_VARARGS;
             }
             final CodeEmitter e = EmitUtils.begin_method(ce, method, modifiers);
             Type returnType = method.getSignature().getReturnType();
@@ -160,9 +160,9 @@ abstract public class MulticastDelegate implements Cloneable {
                 e.store_local(result);
             }
             e.load_this();
-            e.super_getfield("targets", Constants.TYPE_OBJECT_ARRAY);
+            e.super_getfield("targets", CGLIBConstants.TYPE_OBJECT_ARRAY);
             final Local result2 = result;
-            EmitUtils.process_array(e, Constants.TYPE_OBJECT_ARRAY, new ProcessArrayCallback() {
+            EmitUtils.process_array(e, CGLIBConstants.TYPE_OBJECT_ARRAY, new ProcessArrayCallback() {
                 public void processElement(Type type) {
                     e.checkcast(Type.getType(iface));
                     e.load_args();

@@ -28,39 +28,39 @@ import scw.asm.Type;
  */
 public class CodeEmitter extends LocalVariablesSorter {
     private static final Signature BOOLEAN_VALUE =
-      TypeUtils.parseSignature("boolean booleanValue()");
+      CGLIBTypeUtils.parseSignature("boolean booleanValue()");
     private static final Signature CHAR_VALUE =
-      TypeUtils.parseSignature("char charValue()");
+      CGLIBTypeUtils.parseSignature("char charValue()");
     private static final Signature LONG_VALUE =
-      TypeUtils.parseSignature("long longValue()");
+      CGLIBTypeUtils.parseSignature("long longValue()");
     private static final Signature DOUBLE_VALUE =
-      TypeUtils.parseSignature("double doubleValue()");
+      CGLIBTypeUtils.parseSignature("double doubleValue()");
     private static final Signature FLOAT_VALUE =
-      TypeUtils.parseSignature("float floatValue()");
+      CGLIBTypeUtils.parseSignature("float floatValue()");
     private static final Signature INT_VALUE =
-      TypeUtils.parseSignature("int intValue()");
+      CGLIBTypeUtils.parseSignature("int intValue()");
     private static final Signature CSTRUCT_NULL =
-      TypeUtils.parseConstructor("");
+      CGLIBTypeUtils.parseConstructor("");
     private static final Signature CSTRUCT_STRING =
-      TypeUtils.parseConstructor("String");
+      CGLIBTypeUtils.parseConstructor("String");
 
-    public static final int ADD = Constants.IADD;
-    public static final int MUL = Constants.IMUL;
-    public static final int XOR = Constants.IXOR;
-    public static final int USHR = Constants.IUSHR;
-    public static final int SUB = Constants.ISUB;
-    public static final int DIV = Constants.IDIV;
-    public static final int NEG = Constants.INEG;
-    public static final int REM = Constants.IREM;
-    public static final int AND = Constants.IAND;
-    public static final int OR = Constants.IOR;
+    public static final int ADD = CGLIBConstants.IADD;
+    public static final int MUL = CGLIBConstants.IMUL;
+    public static final int XOR = CGLIBConstants.IXOR;
+    public static final int USHR = CGLIBConstants.IUSHR;
+    public static final int SUB = CGLIBConstants.ISUB;
+    public static final int DIV = CGLIBConstants.IDIV;
+    public static final int NEG = CGLIBConstants.INEG;
+    public static final int REM = CGLIBConstants.IREM;
+    public static final int AND = CGLIBConstants.IAND;
+    public static final int OR = CGLIBConstants.IOR;
 
-    public static final int GT = Constants.IFGT;
-    public static final int LT = Constants.IFLT;
-    public static final int GE = Constants.IFGE;
-    public static final int LE = Constants.IFLE;
-    public static final int NE = Constants.IFNE;
-    public static final int EQ = Constants.IFEQ;
+    public static final int GT = CGLIBConstants.IFGT;
+    public static final int LT = CGLIBConstants.IFLT;
+    public static final int GE = CGLIBConstants.IFGE;
+    public static final int LE = CGLIBConstants.IFLE;
+    public static final int NE = CGLIBConstants.IFNE;
+    public static final int EQ = CGLIBConstants.IFEQ;
 
     private ClassEmitter ce;
     private State state;
@@ -80,7 +80,7 @@ public class CodeEmitter extends LocalVariablesSorter {
             this.access = access;
             this.sig = sig;
             this.exceptionTypes = exceptionTypes;
-            localOffset = TypeUtils.isStatic(access) ? 0 : 1;
+            localOffset = CGLIBTypeUtils.isStatic(access) ? 0 : 1;
             argumentTypes = sig.getArgumentTypes();
         }
 
@@ -157,9 +157,9 @@ public class CodeEmitter extends LocalVariablesSorter {
                               exception.getInternalName());
     }
 
-    public void goTo(Label label) { mv.visitJumpInsn(Constants.GOTO, label); }
-    public void ifnull(Label label) { mv.visitJumpInsn(Constants.IFNULL, label); }
-    public void ifnonnull(Label label) { mv.visitJumpInsn(Constants.IFNONNULL, label); }
+    public void goTo(Label label) { mv.visitJumpInsn(CGLIBConstants.GOTO, label); }
+    public void ifnull(Label label) { mv.visitJumpInsn(CGLIBConstants.IFNULL, label); }
+    public void ifnonnull(Label label) { mv.visitJumpInsn(CGLIBConstants.IFNONNULL, label); }
 
     public void if_jump(int mode, Label label) {
         mv.visitJumpInsn(mode, label);
@@ -178,33 +178,33 @@ public class CodeEmitter extends LocalVariablesSorter {
         }
         switch (type.getSort()) {
         case Type.LONG:
-            mv.visitInsn(Constants.LCMP);
+            mv.visitInsn(CGLIBConstants.LCMP);
             break;
         case Type.DOUBLE:
-            mv.visitInsn(Constants.DCMPG);
+            mv.visitInsn(CGLIBConstants.DCMPG);
             break;
         case Type.FLOAT:
-            mv.visitInsn(Constants.FCMPG);
+            mv.visitInsn(CGLIBConstants.FCMPG);
             break;
         case Type.ARRAY:
         case Type.OBJECT:
             switch (mode) {
             case EQ:
-                mv.visitJumpInsn(Constants.IF_ACMPEQ, label);
+                mv.visitJumpInsn(CGLIBConstants.IF_ACMPEQ, label);
                 return;
             case NE:
-                mv.visitJumpInsn(Constants.IF_ACMPNE, label);
+                mv.visitJumpInsn(CGLIBConstants.IF_ACMPNE, label);
                 return;
             }
             throw new IllegalArgumentException("Bad comparison for type " + type);
         default:
             switch (mode) {
-            case EQ: intOp = Constants.IF_ICMPEQ; break;
-            case NE: intOp = Constants.IF_ICMPNE; break;
+            case EQ: intOp = CGLIBConstants.IF_ICMPEQ; break;
+            case NE: intOp = CGLIBConstants.IF_ICMPNE; break;
             case GE: swap(); /* fall through */
-            case LT: intOp = Constants.IF_ICMPLT; break;
+            case LT: intOp = CGLIBConstants.IF_ICMPLT; break;
             case LE: swap(); /* fall through */
-            case GT: intOp = Constants.IF_ICMPGT; break;
+            case GT: intOp = CGLIBConstants.IF_ICMPGT; break;
             }
             mv.visitJumpInsn(intOp, label);
             return;
@@ -212,16 +212,16 @@ public class CodeEmitter extends LocalVariablesSorter {
         if_jump(jumpmode, label);
     }
 
-    public void pop() { mv.visitInsn(Constants.POP); }
-    public void pop2() { mv.visitInsn(Constants.POP2); }
-    public void dup() { mv.visitInsn(Constants.DUP); }
-    public void dup2() { mv.visitInsn(Constants.DUP2); }
-    public void dup_x1() { mv.visitInsn(Constants.DUP_X1); }
-    public void dup_x2() { mv.visitInsn(Constants.DUP_X2); }
-    public void dup2_x1() { mv.visitInsn(Constants.DUP2_X1); }
-    public void dup2_x2() { mv.visitInsn(Constants.DUP2_X2); }
-    public void swap() { mv.visitInsn(Constants.SWAP); }
-    public void aconst_null() { mv.visitInsn(Constants.ACONST_NULL); }
+    public void pop() { mv.visitInsn(CGLIBConstants.POP); }
+    public void pop2() { mv.visitInsn(CGLIBConstants.POP2); }
+    public void dup() { mv.visitInsn(CGLIBConstants.DUP); }
+    public void dup2() { mv.visitInsn(CGLIBConstants.DUP2); }
+    public void dup_x1() { mv.visitInsn(CGLIBConstants.DUP_X1); }
+    public void dup_x2() { mv.visitInsn(CGLIBConstants.DUP_X2); }
+    public void dup2_x1() { mv.visitInsn(CGLIBConstants.DUP2_X1); }
+    public void dup2_x2() { mv.visitInsn(CGLIBConstants.DUP2_X2); }
+    public void swap() { mv.visitInsn(CGLIBConstants.SWAP); }
+    public void aconst_null() { mv.visitInsn(CGLIBConstants.ACONST_NULL); }
 
     public void swap(Type prev, Type type) {
         if (type.getSize() == 1) {
@@ -242,13 +242,13 @@ public class CodeEmitter extends LocalVariablesSorter {
         }
     }
 
-    public void monitorenter() { mv.visitInsn(Constants.MONITORENTER); }
-    public void monitorexit() { mv.visitInsn(Constants.MONITOREXIT); }
+    public void monitorenter() { mv.visitInsn(CGLIBConstants.MONITORENTER); }
+    public void monitorexit() { mv.visitInsn(CGLIBConstants.MONITOREXIT); }
 
     public void math(int op, Type type) { mv.visitInsn(type.getOpcode(op)); }
 
-    public void array_load(Type type) { mv.visitInsn(type.getOpcode(Constants.IALOAD)); }
-    public void array_store(Type type) { mv.visitInsn(type.getOpcode(Constants.IASTORE)); }
+    public void array_load(Type type) { mv.visitInsn(type.getOpcode(CGLIBConstants.IALOAD)); }
+    public void array_store(Type type) { mv.visitInsn(type.getOpcode(CGLIBConstants.IASTORE)); }
 
     /**
      * Casts from one primitive numeric type to another
@@ -257,44 +257,44 @@ public class CodeEmitter extends LocalVariablesSorter {
         if (from != to) {
             if (from == Type.DOUBLE_TYPE) {
                 if (to == Type.FLOAT_TYPE) {
-                    mv.visitInsn(Constants.D2F);
+                    mv.visitInsn(CGLIBConstants.D2F);
                 } else if (to == Type.LONG_TYPE) {
-                    mv.visitInsn(Constants.D2L);
+                    mv.visitInsn(CGLIBConstants.D2L);
                 } else {
-                    mv.visitInsn(Constants.D2I);
+                    mv.visitInsn(CGLIBConstants.D2I);
                     cast_numeric(Type.INT_TYPE, to);
                 }
             } else if (from == Type.FLOAT_TYPE) {
                 if (to == Type.DOUBLE_TYPE) {
-                    mv.visitInsn(Constants.F2D);
+                    mv.visitInsn(CGLIBConstants.F2D);
                 } else if (to == Type.LONG_TYPE) {
-                    mv.visitInsn(Constants.F2L);
+                    mv.visitInsn(CGLIBConstants.F2L);
                 } else {
-                    mv.visitInsn(Constants.F2I);
+                    mv.visitInsn(CGLIBConstants.F2I);
                     cast_numeric(Type.INT_TYPE, to);
                 }
             } else if (from == Type.LONG_TYPE) {
                 if (to == Type.DOUBLE_TYPE) {
-                    mv.visitInsn(Constants.L2D);
+                    mv.visitInsn(CGLIBConstants.L2D);
                 } else if (to == Type.FLOAT_TYPE) {
-                    mv.visitInsn(Constants.L2F);
+                    mv.visitInsn(CGLIBConstants.L2F);
                 } else {
-                    mv.visitInsn(Constants.L2I);
+                    mv.visitInsn(CGLIBConstants.L2I);
                     cast_numeric(Type.INT_TYPE, to);
                 }
             } else {
                 if (to == Type.BYTE_TYPE) {
-                    mv.visitInsn(Constants.I2B);
+                    mv.visitInsn(CGLIBConstants.I2B);
                 } else if (to == Type.CHAR_TYPE) {
-                    mv.visitInsn(Constants.I2C);
+                    mv.visitInsn(CGLIBConstants.I2C);
                 } else if (to == Type.DOUBLE_TYPE) {
-                    mv.visitInsn(Constants.I2D);
+                    mv.visitInsn(CGLIBConstants.I2D);
                 } else if (to == Type.FLOAT_TYPE) {
-                    mv.visitInsn(Constants.I2F);
+                    mv.visitInsn(CGLIBConstants.I2F);
                 } else if (to == Type.LONG_TYPE) {
-                    mv.visitInsn(Constants.I2L);
+                    mv.visitInsn(CGLIBConstants.I2L);
                 } else if (to == Type.SHORT_TYPE) {
-                    mv.visitInsn(Constants.I2S);
+                    mv.visitInsn(CGLIBConstants.I2S);
                 }
             }
         }
@@ -304,11 +304,11 @@ public class CodeEmitter extends LocalVariablesSorter {
         if (i < -1) {
             mv.visitLdcInsn(new Integer(i));
         } else if (i <= 5) {
-            mv.visitInsn(TypeUtils.ICONST(i));
+            mv.visitInsn(CGLIBTypeUtils.ICONST(i));
         } else if (i <= Byte.MAX_VALUE) {
-            mv.visitIntInsn(Constants.BIPUSH, i);
+            mv.visitIntInsn(CGLIBConstants.BIPUSH, i);
         } else if (i <= Short.MAX_VALUE) {
-            mv.visitIntInsn(Constants.SIPUSH, i);
+            mv.visitIntInsn(CGLIBConstants.SIPUSH, i);
         } else {
             mv.visitLdcInsn(new Integer(i));
         }
@@ -316,7 +316,7 @@ public class CodeEmitter extends LocalVariablesSorter {
     
     public void push(long value) {
         if (value == 0L || value == 1L) {
-            mv.visitInsn(TypeUtils.LCONST(value));
+            mv.visitInsn(CGLIBTypeUtils.LCONST(value));
         } else {
             mv.visitLdcInsn(new Long(value));
         }
@@ -324,14 +324,14 @@ public class CodeEmitter extends LocalVariablesSorter {
     
     public void push(float value) {
         if (value == 0f || value == 1f || value == 2f) {
-            mv.visitInsn(TypeUtils.FCONST(value));
+            mv.visitInsn(CGLIBTypeUtils.FCONST(value));
         } else {
             mv.visitLdcInsn(new Float(value));
         }
     }
     public void push(double value) {
         if (value == 0d || value == 1d) {
-            mv.visitInsn(TypeUtils.DCONST(value));
+            mv.visitInsn(CGLIBTypeUtils.DCONST(value));
         } else {
             mv.visitLdcInsn(new Double(value));
         }
@@ -342,26 +342,26 @@ public class CodeEmitter extends LocalVariablesSorter {
     }
 
     public void newarray() {
-        newarray(Constants.TYPE_OBJECT);
+        newarray(CGLIBConstants.TYPE_OBJECT);
     }
 
     public void newarray(Type type) {
-        if (TypeUtils.isPrimitive(type)) {
-            mv.visitIntInsn(Constants.NEWARRAY, TypeUtils.NEWARRAY(type));
+        if (CGLIBTypeUtils.isPrimitive(type)) {
+            mv.visitIntInsn(CGLIBConstants.NEWARRAY, CGLIBTypeUtils.NEWARRAY(type));
         } else {
-            emit_type(Constants.ANEWARRAY, type);
+            emit_type(CGLIBConstants.ANEWARRAY, type);
         }
     }
     
     public void arraylength() {
-        mv.visitInsn(Constants.ARRAYLENGTH);
+        mv.visitInsn(CGLIBConstants.ARRAYLENGTH);
     }
     
     public void load_this() {
-        if (TypeUtils.isStatic(state.access)) {
+        if (CGLIBTypeUtils.isStatic(state.access)) {
             throw new IllegalStateException("no 'this' pointer within static method");
         }
-        mv.visitVarInsn(Constants.ALOAD, 0);
+        mv.visitVarInsn(CGLIBConstants.ALOAD, 0);
     }
     
     /**
@@ -400,12 +400,12 @@ public class CodeEmitter extends LocalVariablesSorter {
 
     private void load_local(Type t, int pos) {
         // TODO: make t == null ok?
-        mv.visitVarInsn(t.getOpcode(Constants.ILOAD), pos);
+        mv.visitVarInsn(t.getOpcode(CGLIBConstants.ILOAD), pos);
     }
 
     private void store_local(Type t, int pos) {
         // TODO: make t == null ok?
-        mv.visitVarInsn(t.getOpcode(Constants.ISTORE), pos);
+        mv.visitVarInsn(t.getOpcode(CGLIBConstants.ISTORE), pos);
     }
     
     public void iinc(Local local, int amount) {
@@ -421,51 +421,51 @@ public class CodeEmitter extends LocalVariablesSorter {
     }
 
     public void return_value() {
-        mv.visitInsn(state.sig.getReturnType().getOpcode(Constants.IRETURN));
+        mv.visitInsn(state.sig.getReturnType().getOpcode(CGLIBConstants.IRETURN));
     }
 
     public void getfield(String name) {
         ClassEmitter.FieldInfo info = ce.getFieldInfo(name);
-        int opcode = TypeUtils.isStatic(info.access) ? Constants.GETSTATIC : Constants.GETFIELD;
+        int opcode = CGLIBTypeUtils.isStatic(info.access) ? CGLIBConstants.GETSTATIC : CGLIBConstants.GETFIELD;
         emit_field(opcode, ce.getClassType(), name, info.type);
     }
     
     public void putfield(String name) {
         ClassEmitter.FieldInfo info = ce.getFieldInfo(name);
-        int opcode = TypeUtils.isStatic(info.access) ? Constants.PUTSTATIC : Constants.PUTFIELD;
+        int opcode = CGLIBTypeUtils.isStatic(info.access) ? CGLIBConstants.PUTSTATIC : CGLIBConstants.PUTFIELD;
         emit_field(opcode, ce.getClassType(), name, info.type);
     }
 
     public void super_getfield(String name, Type type) {
-        emit_field(Constants.GETFIELD, ce.getSuperType(), name, type);
+        emit_field(CGLIBConstants.GETFIELD, ce.getSuperType(), name, type);
     }
     
     public void super_putfield(String name, Type type) {
-        emit_field(Constants.PUTFIELD, ce.getSuperType(), name, type);
+        emit_field(CGLIBConstants.PUTFIELD, ce.getSuperType(), name, type);
     }
 
     public void super_getstatic(String name, Type type) {
-        emit_field(Constants.GETSTATIC, ce.getSuperType(), name, type);
+        emit_field(CGLIBConstants.GETSTATIC, ce.getSuperType(), name, type);
     }
     
     public void super_putstatic(String name, Type type) {
-        emit_field(Constants.PUTSTATIC, ce.getSuperType(), name, type);
+        emit_field(CGLIBConstants.PUTSTATIC, ce.getSuperType(), name, type);
     }
 
     public void getfield(Type owner, String name, Type type) {
-        emit_field(Constants.GETFIELD, owner, name, type);
+        emit_field(CGLIBConstants.GETFIELD, owner, name, type);
     }
     
     public void putfield(Type owner, String name, Type type) {
-        emit_field(Constants.PUTFIELD, owner, name, type);
+        emit_field(CGLIBConstants.PUTFIELD, owner, name, type);
     }
 
     public void getstatic(Type owner, String name, Type type) {
-        emit_field(Constants.GETSTATIC, owner, name, type);
+        emit_field(CGLIBConstants.GETSTATIC, owner, name, type);
     }
     
     public void putstatic(Type owner, String name, Type type) {
-        emit_field(Constants.PUTSTATIC, owner, name, type);
+        emit_field(CGLIBConstants.PUTSTATIC, owner, name, type);
     }
 
     // package-protected for EmitUtils, try to fix
@@ -481,7 +481,7 @@ public class CodeEmitter extends LocalVariablesSorter {
     }
 
     public void super_invoke(Signature sig) {
-        emit_invoke(Constants.INVOKESPECIAL, ce.getSuperType(), sig);
+        emit_invoke(CGLIBConstants.INVOKESPECIAL, ce.getSuperType(), sig);
     }
 
     public void invoke_constructor(Type type) {
@@ -497,9 +497,9 @@ public class CodeEmitter extends LocalVariablesSorter {
     }
 
     private void emit_invoke(int opcode, Type type, Signature sig) {
-        if (sig.getName().equals(Constants.CONSTRUCTOR_NAME) &&
-            ((opcode == Constants.INVOKEVIRTUAL) ||
-             (opcode == Constants.INVOKESTATIC))) {
+        if (sig.getName().equals(CGLIBConstants.CONSTRUCTOR_NAME) &&
+            ((opcode == CGLIBConstants.INVOKEVIRTUAL) ||
+             (opcode == CGLIBConstants.INVOKESTATIC))) {
             // TODO: error
         }
         mv.visitMethodInsn(opcode,
@@ -510,15 +510,15 @@ public class CodeEmitter extends LocalVariablesSorter {
     }
     
     public void invoke_interface(Type owner, Signature sig) {
-        emit_invoke(Constants.INVOKEINTERFACE, owner, sig);
+        emit_invoke(CGLIBConstants.INVOKEINTERFACE, owner, sig);
     }
 
     public void invoke_virtual(Type owner, Signature sig) {
-        emit_invoke(Constants.INVOKEVIRTUAL, owner, sig);
+        emit_invoke(CGLIBConstants.INVOKEVIRTUAL, owner, sig);
     }
 
     public void invoke_static(Type owner, Signature sig) {
-        emit_invoke(Constants.INVOKESTATIC, owner, sig);
+        emit_invoke(CGLIBConstants.INVOKESTATIC, owner, sig);
     }
 
     public void invoke_virtual_this(Signature sig) {
@@ -530,7 +530,7 @@ public class CodeEmitter extends LocalVariablesSorter {
     }
 
     public void invoke_constructor(Type type, Signature sig) {
-        emit_invoke(Constants.INVOKESPECIAL, type, sig);
+        emit_invoke(CGLIBConstants.INVOKESPECIAL, type, sig);
     }
 
     public void invoke_constructor_this(Signature sig) {
@@ -546,12 +546,12 @@ public class CodeEmitter extends LocalVariablesSorter {
     }
 
     public void new_instance(Type type) {
-        emit_type(Constants.NEW, type);
+        emit_type(CGLIBConstants.NEW, type);
     }
 
     private void emit_type(int opcode, Type type) {
         String desc;
-        if (TypeUtils.isArray(type)) {
+        if (CGLIBTypeUtils.isArray(type)) {
             desc = type.getDescriptor();
         } else {
             desc = type.getInternalName();
@@ -564,16 +564,16 @@ public class CodeEmitter extends LocalVariablesSorter {
         aaload();
     }
 
-    public void aaload() { mv.visitInsn(Constants.AALOAD); }
-    public void aastore() { mv.visitInsn(Constants.AASTORE); }
-    public void athrow() { mv.visitInsn(Constants.ATHROW); }
+    public void aaload() { mv.visitInsn(CGLIBConstants.AALOAD); }
+    public void aastore() { mv.visitInsn(CGLIBConstants.AASTORE); }
+    public void athrow() { mv.visitInsn(CGLIBConstants.ATHROW); }
 
     public Label make_label() {
         return new Label();
     }
     
     public Local make_local() {
-        return make_local(Constants.TYPE_OBJECT);
+        return make_local(CGLIBConstants.TYPE_OBJECT);
     }
     
     public Local make_local(Type type) {
@@ -585,13 +585,13 @@ public class CodeEmitter extends LocalVariablesSorter {
     }
     
     public void checkcast(Type type) {
-        if (!type.equals(Constants.TYPE_OBJECT)) {
-            emit_type(Constants.CHECKCAST, type);
+        if (!type.equals(CGLIBConstants.TYPE_OBJECT)) {
+            emit_type(CGLIBConstants.CHECKCAST, type);
         }
     }
 
     public void instance_of(Type type) {
-        emit_type(Constants.INSTANCEOF, type);
+        emit_type(CGLIBConstants.INSTANCEOF, type);
     }
     
     public void instance_of_this() {
@@ -707,11 +707,11 @@ public class CodeEmitter extends LocalVariablesSorter {
      * @param type the class indicating the current type of the top stack value
      */
     public void box(Type type) {
-        if (TypeUtils.isPrimitive(type)) {
+        if (CGLIBTypeUtils.isPrimitive(type)) {
             if (type == Type.VOID_TYPE) {
                 aconst_null();
             } else {
-                Type boxed = TypeUtils.getBoxedType(type);
+                Type boxed = CGLIBTypeUtils.getBoxedType(type);
                 new_instance(boxed);
                 if (type.getSize() == 2) {
                     // Pp -> Ppo -> oPpo -> ooPpo -> ooPp -> o
@@ -723,7 +723,7 @@ public class CodeEmitter extends LocalVariablesSorter {
                     dup_x1();
                     swap();
                 }
-                invoke_constructor(boxed, new Signature(Constants.CONSTRUCTOR_NAME, Type.VOID_TYPE, new Type[]{ type }));
+                invoke_constructor(boxed, new Signature(CGLIBConstants.CONSTRUCTOR_NAME, Type.VOID_TYPE, new Type[]{ type }));
             }
         }
     }
@@ -736,17 +736,17 @@ public class CodeEmitter extends LocalVariablesSorter {
      * @return true if the value was unboxed
      */
     public void unbox(Type type) {
-        Type t = Constants.TYPE_NUMBER;
+        Type t = CGLIBConstants.TYPE_NUMBER;
         Signature sig = null;
         switch (type.getSort()) {
         case Type.VOID:
             return;
         case Type.CHAR:
-            t = Constants.TYPE_CHARACTER;
+            t = CGLIBConstants.TYPE_CHARACTER;
             sig = CHAR_VALUE;
             break;
         case Type.BOOLEAN:
-            t = Constants.TYPE_BOOLEAN;
+            t = CGLIBConstants.TYPE_BOOLEAN;
             sig = BOOLEAN_VALUE;
             break;
         case Type.DOUBLE:
@@ -798,7 +798,7 @@ public class CodeEmitter extends LocalVariablesSorter {
      * Pushes a zero onto the stack if the argument is a primitive class, or a null otherwise.
      */
     public void zero_or_null(Type type) {
-        if (TypeUtils.isPrimitive(type)) {
+        if (CGLIBTypeUtils.isPrimitive(type)) {
             switch (type.getSort()) {
             case Type.DOUBLE:
                 push(0d);
@@ -824,7 +824,7 @@ public class CodeEmitter extends LocalVariablesSorter {
      * unboxed primitive value becomes zero.
      */
     public void unbox_or_zero(Type type) {
-        if (TypeUtils.isPrimitive(type)) {
+        if (CGLIBTypeUtils.isPrimitive(type)) {
             if (type != Type.VOID_TYPE) {
                 Label nonNull = make_label();
                 Label end = make_label();
@@ -843,7 +843,7 @@ public class CodeEmitter extends LocalVariablesSorter {
     }
 
     public void visitMaxs(int maxStack, int maxLocals) {
-        if (!TypeUtils.isAbstract(state.access)) {
+        if (!CGLIBTypeUtils.isAbstract(state.access)) {
             mv.visitMaxs(0, 0);
         }
     }
@@ -852,11 +852,11 @@ public class CodeEmitter extends LocalVariablesSorter {
         ClassInfo classInfo = method.getClassInfo();
         Type type = classInfo.getType();
         Signature sig = method.getSignature();
-        if (sig.getName().equals(Constants.CONSTRUCTOR_NAME)) {
+        if (sig.getName().equals(CGLIBConstants.CONSTRUCTOR_NAME)) {
             invoke_constructor(type, sig);
-        } else if (TypeUtils.isInterface(classInfo.getModifiers())) {
+        } else if (CGLIBTypeUtils.isInterface(classInfo.getModifiers())) {
             invoke_interface(type, sig);
-        } else if (TypeUtils.isStatic(method.getModifiers())) {
+        } else if (CGLIBTypeUtils.isStatic(method.getModifiers())) {
             invoke_static(type, sig);
         } else {
             invoke_virtual(virtualType, sig);

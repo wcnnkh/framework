@@ -8,9 +8,9 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import scw.core.Consumer;
-import scw.core.resource.ResourceUtils;
 import scw.excel.ReadExcelSupport;
 import scw.excel.RowCallback;
+import scw.resource.ResourceUtils;
 
 public class JxlReadExcelSupport implements ReadExcelSupport {
 

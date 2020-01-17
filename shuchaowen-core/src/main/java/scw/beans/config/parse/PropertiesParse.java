@@ -10,11 +10,11 @@ import scw.core.Constants;
 import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.TypeUtils;
+import scw.resource.ResourceUtils;
 
 public final class PropertiesParse extends AbstractCharsetNameValueFormat implements ConfigParse {
 

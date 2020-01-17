@@ -26,9 +26,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import scw.core.Assert;
-import scw.core.resource.ResourceUtils;
 import scw.lang.NestedIOException;
 import scw.lang.NotSupportException;
+import scw.resource.ResourceUtils;
 
 /**
  * Convenience base class for {@link Resource} implementations,

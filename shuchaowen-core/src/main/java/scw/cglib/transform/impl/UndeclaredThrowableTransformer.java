@@ -20,10 +20,10 @@ import java.lang.reflect.Constructor;
 import scw.asm.Type;
 import scw.cglib.core.Block;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 import scw.cglib.transform.ClassEmitterTransformer;
 
 @SuppressWarnings({"rawtypes"})
@@ -47,7 +47,7 @@ public class UndeclaredThrowableTransformer extends ClassEmitterTransformer {
 
     public CodeEmitter begin_method(int access, final Signature sig, final Type[] exceptions) {
         CodeEmitter e = super.begin_method(access, sig, exceptions);
-        if (TypeUtils.isAbstract(access) || sig.equals(Constants.SIG_STATIC)) {
+        if (CGLIBTypeUtils.isAbstract(access) || sig.equals(CGLIBConstants.SIG_STATIC)) {
             return e;
         }
         return new CodeEmitter(e) {

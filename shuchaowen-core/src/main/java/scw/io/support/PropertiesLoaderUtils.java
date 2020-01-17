@@ -25,9 +25,9 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import scw.core.Assert;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.ClassUtils;
 import scw.io.Resource;
+import scw.resource.ResourceUtils;
 import scw.util.DefaultPropertiesPersister;
 import scw.util.PropertiesPersister;
 

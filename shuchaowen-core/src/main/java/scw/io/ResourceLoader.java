@@ -16,7 +16,7 @@
 
 package scw.io;
 
-import scw.core.resource.ResourceUtils;
+import scw.resource.ResourceUtils;
 
 public interface ResourceLoader {
 

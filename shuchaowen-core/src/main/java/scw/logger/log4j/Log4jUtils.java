@@ -5,9 +5,7 @@ import java.util.Properties;
 
 import org.w3c.dom.Element;
 
-import scw.core.Constants;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XMLUtils;
@@ -15,6 +13,7 @@ import scw.lang.NotSupportException;
 import scw.logger.Level;
 import scw.logger.LoggerLevelUtils;
 import scw.logger.LoggerUtils;
+import scw.resource.ResourceUtils;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 
@@ -100,39 +99,8 @@ public final class Log4jUtils {
 
 		String rootPath = SystemPropertyUtils.getWorkPath();
 		FormatUtils.info(Log4jUtils.class, "load the default log directory: {}", rootPath);
-		Properties properties = new Properties();
-		properties.put("log4j.rootLogger", LoggerLevelUtils.getDefaultLevel().name() + ", stdout, max-warn, logfile, warn");
-		properties.put("log4j.appender.max-warn", "scw.logger.log4j.MaxWarnConsoleApperder");
-		properties.put("log4j.appender.max-warn.layout.ConversionPattern", "%d %p [%c] - %m%n");
-		properties.put("log4j.appender.max-warn.layout", "org.apache.log4j.PatternLayout");
-		properties.put("log4j.appender.max-warn.Target", "System.out");
-		
-		properties.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
-		properties.put("log4j.appender.stdout.layout.ConversionPattern", "%d %p [%c] - %m%n");
-		properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
-		properties.put("log4j.appender.stdout.Threshold", "WARN");
-		properties.put("log4j.appender.stdout.Target", "System.err");
-		
-		properties.put("log4j.appender.logfile", "org.apache.log4j.DailyRollingFileAppender");
-		properties.put("log4j.appender.logfile.File", rootPath + "/logs/log.log");
-		properties.put("log4j.appender.logfile.layout", "org.apache.log4j.PatternLayout");
-		properties.put("log4j.appender.logfile.DatePattern", "'.'yyyy-MM-dd");
-		properties.put("log4j.appender.logfile.layout.ConversionPattern", "%d %p [%c] - %m%n");
-		properties.put("log4j.appender.warn", "org.apache.log4j.DailyRollingFileAppender");
-		properties.put("log4j.appender.warn.Encoding", Constants.DEFAULT_CHARSET_NAME);
-		properties.put("log4j.appender.warn.Threshold", "WARN");
-		properties.put("log4j.appender.warn.File", rootPath + "/logs/error_warn.log");
-		properties.put("log4j.appender.warn.layout", "org.apache.log4j.PatternLayout");
-		properties.put("log4j.appender.warn.DatePattern", "'.'yyyy-MM-dd");
-		properties.put("log4j.appender.warn.layout.ConversionPattern", "%d %p [%c] - %m%n");
-
-		// 过滤无用日志
-		properties.put("log4j.logger.org.apache.dubbo", "error");
-		properties.put("log4j.logger.org.apache.curator", "warn");
-		properties.put("log4j.logger.net.rubyeye.xmemcached", "warn");
-		properties.put("log4j.logger.org.apache.zookeeper", "warn");
-		properties.put("log4j.logger.com.alibaba.druid", "warn");
-
+		Properties properties = ResourceUtils.getResourceOperations().getProperties(
+				"classpath:/scw/logger/log4j/default-log4j.properties", LoggerLevelUtils.PROPERTY_FACTORY);
 		for (KeyValuePair<String, Level> entry : LoggerLevelUtils.getLevelConfigList()) {
 			properties.put("log4j.logger." + entry.getKey(), entry.getValue().name());
 		}

@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 
 import scw.asm.Type;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
@@ -36,7 +36,7 @@ public class AddInitTransformer extends ClassEmitterTransformer {
         
         Type[] types = info.getSignature().getArgumentTypes();
         if (types.length != 1 ||
-        !types[0].equals(Constants.TYPE_OBJECT) ||
+        !types[0].equals(CGLIBConstants.TYPE_OBJECT) ||
         !info.getSignature().getReturnType().equals(Type.VOID_TYPE)) {
             throw new IllegalArgumentException(method + " illegal signature");
         }
@@ -44,10 +44,10 @@ public class AddInitTransformer extends ClassEmitterTransformer {
     
     public CodeEmitter begin_method(int access, Signature sig, Type[] exceptions) {
         final CodeEmitter emitter = super.begin_method(access, sig, exceptions);
-        if (sig.getName().equals(Constants.CONSTRUCTOR_NAME)) {
+        if (sig.getName().equals(CGLIBConstants.CONSTRUCTOR_NAME)) {
             return new CodeEmitter(emitter) {
                 public void visitInsn(int opcode) {
-                    if (opcode == Constants.RETURN) {
+                    if (opcode == CGLIBConstants.RETURN) {
                         load_this();
                         invoke(info);
                     }

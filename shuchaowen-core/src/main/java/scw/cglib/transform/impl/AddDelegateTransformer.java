@@ -21,10 +21,10 @@ import java.lang.reflect.Modifier;
 import scw.asm.Type;
 import scw.cglib.core.CodeEmitter;
 import scw.cglib.core.CodeGenerationException;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 import scw.cglib.transform.ClassEmitterTransformer;
 
 /**
@@ -34,7 +34,7 @@ import scw.cglib.transform.ClassEmitterTransformer;
 public class AddDelegateTransformer extends ClassEmitterTransformer {
     private static final String DELEGATE = "$CGLIB_DELEGATE";
     private static final Signature CSTRUCT_OBJECT =
-      TypeUtils.parseSignature("void <init>(Object)");
+      CGLIBTypeUtils.parseSignature("void <init>(Object)");
     
     private Class[] delegateIf;
     private Class delegateImpl;
@@ -54,12 +54,12 @@ public class AddDelegateTransformer extends ClassEmitterTransformer {
     
     public void begin_class(int version, int access, String className, Type superType, Type[] interfaces, String sourceFile) {
         
-        if(!TypeUtils.isInterface(access)){
+        if(!CGLIBTypeUtils.isInterface(access)){
             
-        Type[] all = TypeUtils.add(interfaces, TypeUtils.getTypes(delegateIf));
+        Type[] all = CGLIBTypeUtils.add(interfaces, CGLIBTypeUtils.getTypes(delegateIf));
         super.begin_class(version, access, className, superType, all, sourceFile);
         
-        declare_field(Constants.ACC_PRIVATE | Constants.ACC_TRANSIENT,
+        declare_field(CGLIBConstants.ACC_PRIVATE | CGLIBConstants.ACC_TRANSIENT,
                       DELEGATE,
                       delegateType,
                       null);
@@ -78,12 +78,12 @@ public class AddDelegateTransformer extends ClassEmitterTransformer {
 
     public CodeEmitter begin_method(int access, Signature sig, Type[] exceptions) {
         final CodeEmitter e = super.begin_method(access, sig, exceptions);
-        if (sig.getName().equals(Constants.CONSTRUCTOR_NAME)) {
+        if (sig.getName().equals(CGLIBConstants.CONSTRUCTOR_NAME)) {
             return new CodeEmitter(e) {
                 private boolean transformInit = true;
                 public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
                     super.visitMethodInsn(opcode, owner, name, desc, itf);
-                    if (transformInit && opcode == Constants.INVOKESPECIAL) {
+                    if (transformInit && opcode == CGLIBConstants.INVOKESPECIAL) {
                         load_this();
                         new_instance(delegateType);
                         dup();
@@ -110,8 +110,8 @@ public class AddDelegateTransformer extends ClassEmitterTransformer {
         }
 
         final Signature sig = ReflectUtils.getSignature(m);
-        Type[] exceptions = TypeUtils.getTypes(m.getExceptionTypes());
-        CodeEmitter e = super.begin_method(Constants.ACC_PUBLIC, sig, exceptions);
+        Type[] exceptions = CGLIBTypeUtils.getTypes(m.getExceptionTypes());
+        CodeEmitter e = super.begin_method(CGLIBConstants.ACC_PUBLIC, sig, exceptions);
         e.load_this();
         e.getfield(DELEGATE);
         e.load_args();

@@ -19,7 +19,7 @@ import java.util.Map;
 
 import scw.asm.Type;
 import scw.cglib.core.EmitUtils;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 import scw.cglib.transform.ClassEmitterTransformer;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -42,7 +42,7 @@ public class AddPropertyTransformer extends ClassEmitterTransformer {
     }
 
     public void end_class() {
-        if (!TypeUtils.isAbstract(getAccess())) {
+        if (!CGLIBTypeUtils.isAbstract(getAccess())) {
             EmitUtils.add_properties(this, names, types);
         }
         super.end_class();

@@ -17,9 +17,9 @@ package scw.cglib.transform.impl;
 
 import scw.asm.Type;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 import scw.cglib.transform.ClassEmitterTransformer;
 
 public class AccessFieldTransformer extends ClassEmitterTransformer {
@@ -36,20 +36,20 @@ public class AccessFieldTransformer extends ClassEmitterTransformer {
     public void declare_field(int access, final String name, Type type, Object value) {
         super.declare_field(access, name, type, value);
 
-        String property = TypeUtils.upperFirst(callback.getPropertyName(getClassType(), name));
+        String property = CGLIBTypeUtils.upperFirst(callback.getPropertyName(getClassType(), name));
         if (property != null) {
             CodeEmitter e;
-            e = begin_method(Constants.ACC_PUBLIC,
+            e = begin_method(CGLIBConstants.ACC_PUBLIC,
                              new Signature("get" + property,
                                            type,
-                                           Constants.TYPES_EMPTY),
+                                           CGLIBConstants.TYPES_EMPTY),
                              null);
             e.load_this();
             e.getfield(name);
             e.return_value();
             e.end_method();
 
-            e = begin_method(Constants.ACC_PUBLIC,
+            e = begin_method(CGLIBConstants.ACC_PUBLIC,
                              new Signature("set" + property,
                                            Type.VOID_TYPE,
                                            new Type[]{ type }),

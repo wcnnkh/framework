@@ -24,11 +24,11 @@ import scw.asm.Type;
 import scw.cglib.core.AbstractClassGenerator;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.KeyFactory;
 import scw.cglib.core.ReflectUtils;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 
 /**
  * @author Chris Nokleberg
@@ -57,7 +57,7 @@ abstract public class ConstructorDelegate {
     public static class Generator extends AbstractClassGenerator {
         private static final Source SOURCE = new Source(ConstructorDelegate.class.getName());
         private static final Type CONSTRUCTOR_DELEGATE =
-          TypeUtils.parseType(ConstructorDelegate.class.getName());
+          CGLIBTypeUtils.parseType(ConstructorDelegate.class.getName());
 
         private Class iface;
         private Class targetClass;
@@ -103,15 +103,15 @@ abstract public class ConstructorDelegate {
             }
 
             ClassEmitter ce = new ClassEmitter(v);
-            ce.begin_class(Constants.V1_2,
-                           Constants.ACC_PUBLIC,
+            ce.begin_class(CGLIBConstants.V1_2,
+                           CGLIBConstants.ACC_PUBLIC,
                            getClassName(),
                            CONSTRUCTOR_DELEGATE,
                            new Type[]{ Type.getType(iface) },
-                           Constants.SOURCE_FILE);
+                           CGLIBConstants.SOURCE_FILE);
             Type declaring = Type.getType(constructor.getDeclaringClass());
             EmitUtils.null_constructor(ce);
-            CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC,
+            CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC,
                                             ReflectUtils.getSignature(newInstance),
                                             ReflectUtils.getExceptionTypes(newInstance));
             e.new_instance(declaring);

@@ -246,7 +246,7 @@ final class SymbolTable {
     int currentAttributeOffset = classReader.getFirstAttributeOffset();
     for (int i = classReader.readUnsignedShort(currentAttributeOffset - 2); i > 0; --i) {
       String attributeName = classReader.readUTF8(currentAttributeOffset, charBuffer);
-      if (Constants.BOOTSTRAP_METHODS.equals(attributeName)) {
+      if (ASMConstants.BOOTSTRAP_METHODS.equals(attributeName)) {
         bootstrapMethodCount = classReader.readUnsignedShort(currentAttributeOffset + 6);
         break;
       }
@@ -356,7 +356,7 @@ final class SymbolTable {
    */
   int computeBootstrapMethodsSize() {
     if (bootstrapMethods != null) {
-      addConstantUtf8(Constants.BOOTSTRAP_METHODS);
+      addConstantUtf8(ASMConstants.BOOTSTRAP_METHODS);
       return 8 + bootstrapMethods.length;
     } else {
       return 0;
@@ -372,7 +372,7 @@ final class SymbolTable {
   void putBootstrapMethods(final ByteVector output) {
     if (bootstrapMethods != null) {
       output
-          .putShort(addConstantUtf8(Constants.BOOTSTRAP_METHODS))
+          .putShort(addConstantUtf8(ASMConstants.BOOTSTRAP_METHODS))
           .putInt(bootstrapMethods.length + 2)
           .putShort(bootstrapMethodCount)
           .putByteArray(bootstrapMethods.data, 0, bootstrapMethods.length);

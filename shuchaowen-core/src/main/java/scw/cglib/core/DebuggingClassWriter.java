@@ -51,7 +51,7 @@ public class DebuggingClassWriter extends ClassVisitor {
     }
     
     public DebuggingClassWriter(int flags) {
-	super(Constants.ASM_API, new ClassWriter(flags));
+	super(CGLIBConstants.ASM_API, new ClassWriter(flags));
     }
 
     public void visit(int version,

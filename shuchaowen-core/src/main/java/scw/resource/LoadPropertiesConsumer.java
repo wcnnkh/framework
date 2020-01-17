@@ -1,4 +1,4 @@
-package scw.core.resource;
+package scw.resource;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

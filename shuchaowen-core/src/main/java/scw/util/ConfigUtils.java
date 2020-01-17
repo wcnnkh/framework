@@ -24,7 +24,6 @@ import scw.core.Converter;
 import scw.core.PropertyFactory;
 import scw.core.StringFormat;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
@@ -32,6 +31,7 @@ import scw.core.utils.TypeUtils;
 import scw.core.utils.XMLUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.resource.ResourceUtils;
 
 public final class ConfigUtils {
 	private ConfigUtils(){};

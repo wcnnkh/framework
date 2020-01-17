@@ -43,7 +43,7 @@ public class ClassEmitter extends ClassTransformer {
     }
 
     public ClassEmitter() {
-        super(Constants.ASM_API);
+        super(CGLIBConstants.ASM_API);
     }
 
     public void setTarget(ClassVisitor cv) {
@@ -70,7 +70,7 @@ public class ClassEmitter extends ClassTransformer {
                 return classType;
             }
             public Type getSuperType() {
-                return (superType != null) ? superType : Constants.TYPE_OBJECT;
+                return (superType != null) ? superType : CGLIBConstants.TYPE_OBJECT;
             }
             public Type[] getInterfaces() {
                 return interfaces;
@@ -84,19 +84,19 @@ public class ClassEmitter extends ClassTransformer {
                  classInfo.getType().getInternalName(),
                  null,
                  classInfo.getSuperType().getInternalName(),
-                 TypeUtils.toInternalNames(interfaces));
+                 CGLIBTypeUtils.toInternalNames(interfaces));
         if (source != null)
             cv.visitSource(source, null);
         init();
     }
 
     public CodeEmitter getStaticHook() {
-         if (TypeUtils.isInterface(getAccess())) {
+         if (CGLIBTypeUtils.isInterface(getAccess())) {
              throw new IllegalStateException("static hook is invalid for this class");
          }
          if (staticHook == null) {
              staticHookSig = new Signature("CGLIB$STATICHOOK" + getNextHook(), "()V");
-             staticHook = begin_method(Constants.ACC_STATIC,
+             staticHook = begin_method(CGLIBConstants.ACC_STATIC,
                                        staticHookSig,
                                        null);
              if (staticInit != null) {
@@ -129,7 +129,7 @@ public class ClassEmitter extends ClassTransformer {
         if (staticInit != null) {
             staticHook.return_value();
             staticHook.end_method();
-            rawStaticInit.visitInsn(Constants.RETURN);
+            rawStaticInit.visitInsn(CGLIBConstants.RETURN);
             rawStaticInit.visitMaxs(0, 0);
             staticInit = staticHook = null;
             staticHookSig = null;
@@ -144,15 +144,15 @@ public class ClassEmitter extends ClassTransformer {
                                          sig.getName(),
                                          sig.getDescriptor(),
                                          null,
-                                         TypeUtils.toInternalNames(exceptions));
-        if (sig.equals(Constants.SIG_STATIC) && !TypeUtils.isInterface(getAccess())) {
+                                         CGLIBTypeUtils.toInternalNames(exceptions));
+        if (sig.equals(CGLIBConstants.SIG_STATIC) && !CGLIBTypeUtils.isInterface(getAccess())) {
             rawStaticInit = v;
-            MethodVisitor wrapped = new MethodVisitor(Constants.ASM_API, v) {
+            MethodVisitor wrapped = new MethodVisitor(CGLIBConstants.ASM_API, v) {
                 public void visitMaxs(int maxStack, int maxLocals) {
                     // ignore
                 }
                 public void visitInsn(int insn) {
-                    if (insn != Constants.RETURN) {
+                    if (insn != CGLIBConstants.RETURN) {
                         super.visitInsn(insn);
                     }
                 }
@@ -177,7 +177,7 @@ public class ClassEmitter extends ClassTransformer {
     }
 
     public CodeEmitter begin_static() {
-        return begin_method(Constants.ACC_STATIC, Constants.SIG_STATIC, null);
+        return begin_method(CGLIBConstants.ACC_STATIC, CGLIBConstants.SIG_STATIC, null);
     }
 
     public void declare_field(int access, String name, Type type, Object value) {
@@ -251,8 +251,8 @@ public class ClassEmitter extends ClassTransformer {
         begin_class(version,
                     access,
                     name.replace('/', '.'),
-                    TypeUtils.fromInternalName(superName),
-                    TypeUtils.fromInternalNames(interfaces),
+                    CGLIBTypeUtils.fromInternalName(superName),
+                    CGLIBTypeUtils.fromInternalNames(interfaces),
                     null); // TODO
     }
     
@@ -276,6 +276,6 @@ public class ClassEmitter extends ClassTransformer {
                                      String[] exceptions) {
         return begin_method(access,
                             new Signature(name, desc),
-                            TypeUtils.fromInternalNames(exceptions));        
+                            CGLIBTypeUtils.fromInternalNames(exceptions));        
     }
 }

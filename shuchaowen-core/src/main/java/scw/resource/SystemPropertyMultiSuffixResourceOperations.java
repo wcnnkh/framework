@@ -1,4 +1,4 @@
-package scw.core.resource;
+package scw.resource;
 
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;

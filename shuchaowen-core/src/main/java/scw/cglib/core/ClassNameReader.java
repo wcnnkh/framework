@@ -40,7 +40,7 @@ public class ClassNameReader {
     public static String[] getClassInfo(ClassReader r) {
         final List array = new ArrayList();
         try {
-            r.accept(new ClassVisitor(Constants.ASM_API, null) {
+            r.accept(new ClassVisitor(CGLIBConstants.ASM_API, null) {
                 public void visit(int version,
                                   int access,
                                   String name,

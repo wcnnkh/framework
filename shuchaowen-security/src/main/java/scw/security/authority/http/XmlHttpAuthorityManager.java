@@ -10,13 +10,13 @@ import scw.beans.annotation.Bean;
 import scw.core.annotation.DefaultValue;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.ResourceParameter;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.http.Method;
+import scw.resource.ResourceUtils;
 
 @Bean(proxy = false)
 public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {

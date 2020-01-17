@@ -24,25 +24,25 @@ import scw.asm.Label;
 import scw.asm.Type;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 class LazyLoaderGenerator implements CallbackGenerator {
     public static final LazyLoaderGenerator INSTANCE = new LazyLoaderGenerator();
 
     private static final Signature LOAD_OBJECT = 
-      TypeUtils.parseSignature("Object loadObject()");
+      CGLIBTypeUtils.parseSignature("Object loadObject()");
     private static final Type LAZY_LOADER =
-      TypeUtils.parseType(LazyLoader.class.getName());
+      CGLIBTypeUtils.parseType(LazyLoader.class.getName());
 
     public void generate(ClassEmitter ce, Context context, List methods) {
         Set indexes = new HashSet();
         for (Iterator it = methods.iterator(); it.hasNext();) {
             MethodInfo method = (MethodInfo)it.next();
-            if (TypeUtils.isProtected(method.getModifiers())) {
+            if (CGLIBTypeUtils.isProtected(method.getModifiers())) {
                 // ignore protected methods
             } else {
                 int index = context.getIndex(method);
@@ -63,11 +63,11 @@ class LazyLoaderGenerator implements CallbackGenerator {
             int index = ((Integer)it.next()).intValue();
 
             String delegate = "CGLIB$LAZY_LOADER_" + index;
-            ce.declare_field(Constants.ACC_PRIVATE, delegate, Constants.TYPE_OBJECT, null);
+            ce.declare_field(CGLIBConstants.ACC_PRIVATE, delegate, CGLIBConstants.TYPE_OBJECT, null);
 
-            CodeEmitter e = ce.begin_method(Constants.ACC_PRIVATE |
-                                            Constants.ACC_SYNCHRONIZED |
-                                            Constants.ACC_FINAL,
+            CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PRIVATE |
+                                            CGLIBConstants.ACC_SYNCHRONIZED |
+                                            CGLIBConstants.ACC_FINAL,
                                             loadMethod(index),
                                             null);
             e.load_this();
@@ -90,8 +90,8 @@ class LazyLoaderGenerator implements CallbackGenerator {
 
     private Signature loadMethod(int index) {
         return new Signature("CGLIB$LOAD_PRIVATE_" + index,
-                             Constants.TYPE_OBJECT,
-                             Constants.TYPES_EMPTY);
+                             CGLIBConstants.TYPE_OBJECT,
+                             CGLIBConstants.TYPES_EMPTY);
     }
 
     public void generateStatic(CodeEmitter e, Context context, List methods) { }

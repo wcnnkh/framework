@@ -463,10 +463,10 @@ public class Label {
           int opcode = code[sourceInsnBytecodeOffset] & 0xFF;
           if (opcode < Opcodes.IFNULL) {
             // Change IFEQ ... JSR to ASM_IFEQ ... ASM_JSR.
-            code[sourceInsnBytecodeOffset] = (byte) (opcode + Constants.ASM_OPCODE_DELTA);
+            code[sourceInsnBytecodeOffset] = (byte) (opcode + ASMConstants.ASM_OPCODE_DELTA);
           } else {
             // Change IFNULL and IFNONNULL to ASM_IFNULL and ASM_IFNONNULL.
-            code[sourceInsnBytecodeOffset] = (byte) (opcode + Constants.ASM_IFNULL_OPCODE_DELTA);
+            code[sourceInsnBytecodeOffset] = (byte) (opcode + ASMConstants.ASM_IFNULL_OPCODE_DELTA);
           }
           hasAsmInstructions = true;
         }

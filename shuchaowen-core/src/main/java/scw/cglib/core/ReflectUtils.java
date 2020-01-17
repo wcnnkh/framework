@@ -167,9 +167,9 @@ public class ReflectUtils {
 
     public static Type[] getExceptionTypes(Member member) {
         if (member instanceof Method) {
-            return TypeUtils.getTypes(((Method)member).getExceptionTypes());
+            return CGLIBTypeUtils.getTypes(((Method)member).getExceptionTypes());
         } else if (member instanceof Constructor) {
-            return TypeUtils.getTypes(((Constructor)member).getExceptionTypes());
+            return CGLIBTypeUtils.getTypes(((Constructor)member).getExceptionTypes());
         } else {
             throw new IllegalArgumentException("Cannot get exception types of a field");
         }
@@ -179,8 +179,8 @@ public class ReflectUtils {
         if (member instanceof Method) {
             return new Signature(member.getName(), Type.getMethodDescriptor((Method)member));
         } else if (member instanceof Constructor) {
-            Type[] types = TypeUtils.getTypes(((Constructor)member).getParameterTypes());
-            return new Signature(Constants.CONSTRUCTOR_NAME,
+            Type[] types = CGLIBTypeUtils.getTypes(((Constructor)member).getParameterTypes());
+            return new Signature(CGLIBConstants.CONSTRUCTOR_NAME,
                                  Type.getMethodDescriptor(Type.VOID_TYPE, types));
                 
         } else {
@@ -290,7 +290,7 @@ public class ReflectUtils {
         
         
     public static Object newInstance(Class type) {
-        return newInstance(type, Constants.EMPTY_CLASS_ARRAY, null);
+        return newInstance(type, CGLIBConstants.EMPTY_CLASS_ARRAY, null);
     }
         
     public static Object newInstance(Class type, Class[] parameterTypes, Object[] args) {
@@ -533,7 +533,7 @@ public class ReflectUtils {
                 return sc;
             }
             public Type[] getInterfaces() {
-                return TypeUtils.getTypes(clazz.getInterfaces());
+                return CGLIBTypeUtils.getTypes(clazz.getInterfaces());
             }
             public int getModifiers() {
                 return clazz.getModifiers();

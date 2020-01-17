@@ -24,7 +24,7 @@ import scw.asm.ClassVisitor;
 import scw.asm.Type;
 import scw.cglib.core.AbstractClassGenerator;
 import scw.cglib.core.ClassEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
 
@@ -109,16 +109,16 @@ public class InterfaceMaker extends AbstractClassGenerator
 
     public void generateClass(ClassVisitor v) throws Exception {
         ClassEmitter ce = new ClassEmitter(v);
-        ce.begin_class(Constants.V1_2,
-                       Constants.ACC_PUBLIC | Constants.ACC_INTERFACE,
+        ce.begin_class(CGLIBConstants.V1_2,
+                       CGLIBConstants.ACC_PUBLIC | CGLIBConstants.ACC_INTERFACE,
                        getClassName(),
                        null,
                        null,
-                       Constants.SOURCE_FILE);
+                       CGLIBConstants.SOURCE_FILE);
         for (Iterator it = signatures.keySet().iterator(); it.hasNext();) {
             Signature sig = (Signature)it.next();
             Type[] exceptions = (Type[])signatures.get(sig);
-            ce.begin_method(Constants.ACC_PUBLIC | Constants.ACC_ABSTRACT,
+            ce.begin_method(CGLIBConstants.ACC_PUBLIC | CGLIBConstants.ACC_ABSTRACT,
                             sig,
                             exceptions).end_method();
         }

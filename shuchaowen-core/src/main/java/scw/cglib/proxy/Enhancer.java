@@ -37,8 +37,8 @@ import scw.cglib.core.AbstractClassGenerator;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
 import scw.cglib.core.CodeGenerationException;
-import scw.cglib.core.CollectionUtils;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBCollectionUtils;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.DuplicatesPredicate;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.KeyFactory;
@@ -52,7 +52,7 @@ import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.RejectModifierPredicate;
 import scw.cglib.core.Signature;
 import scw.cglib.core.Transformer;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 import scw.cglib.core.VisibilityPredicate;
 import scw.cglib.core.WeakCacheKey;
 
@@ -121,35 +121,35 @@ public class Enhancer extends AbstractClassGenerator
     private static final String CALLBACK_FILTER_FIELD = "CGLIB$CALLBACK_FILTER";
 
     private static final Type OBJECT_TYPE =
-      TypeUtils.parseType("Object");
+      CGLIBTypeUtils.parseType("Object");
     private static final Type FACTORY =
-      TypeUtils.parseType(Factory.class.getName());
+      CGLIBTypeUtils.parseType(Factory.class.getName());
     private static final Type ILLEGAL_STATE_EXCEPTION =
-      TypeUtils.parseType("IllegalStateException");
+      CGLIBTypeUtils.parseType("IllegalStateException");
     private static final Type ILLEGAL_ARGUMENT_EXCEPTION =
-      TypeUtils.parseType("IllegalArgumentException");
+      CGLIBTypeUtils.parseType("IllegalArgumentException");
     private static final Type THREAD_LOCAL =
-      TypeUtils.parseType("ThreadLocal");
+      CGLIBTypeUtils.parseType("ThreadLocal");
     private static final Type CALLBACK =
-      TypeUtils.parseType(Callback.class.getName());
+      CGLIBTypeUtils.parseType(Callback.class.getName());
     private static final Type CALLBACK_ARRAY =
       Type.getType(Callback[].class);
     private static final Signature CSTRUCT_NULL =
-      TypeUtils.parseConstructor("");
+      CGLIBTypeUtils.parseConstructor("");
     private static final Signature SET_THREAD_CALLBACKS =
       new Signature(SET_THREAD_CALLBACKS_NAME, Type.VOID_TYPE, new Type[]{ CALLBACK_ARRAY });
     private static final Signature SET_STATIC_CALLBACKS =
       new Signature(SET_STATIC_CALLBACKS_NAME, Type.VOID_TYPE, new Type[]{ CALLBACK_ARRAY });
     private static final Signature NEW_INSTANCE =
-      new Signature("newInstance", Constants.TYPE_OBJECT, new Type[]{ CALLBACK_ARRAY });
+      new Signature("newInstance", CGLIBConstants.TYPE_OBJECT, new Type[]{ CALLBACK_ARRAY });
     private static final Signature MULTIARG_NEW_INSTANCE =
-      new Signature("newInstance", Constants.TYPE_OBJECT, new Type[]{
-          Constants.TYPE_CLASS_ARRAY,
-          Constants.TYPE_OBJECT_ARRAY,
+      new Signature("newInstance", CGLIBConstants.TYPE_OBJECT, new Type[]{
+          CGLIBConstants.TYPE_CLASS_ARRAY,
+          CGLIBConstants.TYPE_OBJECT_ARRAY,
           CALLBACK_ARRAY,
       });
     private static final Signature SINGLE_NEW_INSTANCE =
-      new Signature("newInstance", Constants.TYPE_OBJECT, new Type[]{ CALLBACK });
+      new Signature("newInstance", CGLIBConstants.TYPE_OBJECT, new Type[]{ CALLBACK });
     private static final Signature SET_CALLBACK =
       new Signature("setCallback", Type.VOID_TYPE, new Type[]{ Type.INT_TYPE, CALLBACK });
     private static final Signature GET_CALLBACK =
@@ -159,11 +159,11 @@ public class Enhancer extends AbstractClassGenerator
     private static final Signature GET_CALLBACKS =
       new Signature("getCallbacks", CALLBACK_ARRAY, new Type[0]);
     private static final Signature THREAD_LOCAL_GET =
-      TypeUtils.parseSignature("Object get()");
+      CGLIBTypeUtils.parseSignature("Object get()");
     private static final Signature THREAD_LOCAL_SET =
-      TypeUtils.parseSignature("void set(Object)");
+      CGLIBTypeUtils.parseSignature("void set(Object)");
     private static final Signature BIND_CALLBACKS =
-      TypeUtils.parseSignature("void CGLIB$BIND_CALLBACKS(Object)");
+      CGLIBTypeUtils.parseSignature("void CGLIB$BIND_CALLBACKS(Object)");
 
     private EnhancerFactoryData currentData;
     private Object currentKey;
@@ -582,16 +582,16 @@ public class Enhancer extends AbstractClassGenerator
             }
             methods.addAll(interfaceMethods);
         }
-        CollectionUtils.filter(methods, new RejectModifierPredicate(Constants.ACC_STATIC));
-        CollectionUtils.filter(methods, new VisibilityPredicate(superclass, true));
-        CollectionUtils.filter(methods, new DuplicatesPredicate(methods));
-        CollectionUtils.filter(methods, new RejectModifierPredicate(Constants.ACC_FINAL));
+        CGLIBCollectionUtils.filter(methods, new RejectModifierPredicate(CGLIBConstants.ACC_STATIC));
+        CGLIBCollectionUtils.filter(methods, new VisibilityPredicate(superclass, true));
+        CGLIBCollectionUtils.filter(methods, new DuplicatesPredicate(methods));
+        CGLIBCollectionUtils.filter(methods, new RejectModifierPredicate(CGLIBConstants.ACC_FINAL));
     }
 
     public void generateClass(ClassVisitor v) throws Exception {
         Class sc = (superclass == null) ? Object.class : superclass;
 
-        if (TypeUtils.isFinal(sc.getModifiers()))
+        if (CGLIBTypeUtils.isFinal(sc.getModifiers()))
             throw new IllegalArgumentException("Cannot subclass final class " + sc.getName());
         List constructors = new ArrayList(Arrays.asList(sc.getDeclaredConstructors()));
         filterConstructors(sc, constructors);
@@ -604,16 +604,16 @@ public class Enhancer extends AbstractClassGenerator
         final Set forcePublic = new HashSet();
         getMethods(sc, interfaces, actualMethods, interfaceMethods, forcePublic);
 
-        List methods = CollectionUtils.transform(actualMethods, new Transformer() {
+        List methods = CGLIBCollectionUtils.transform(actualMethods, new Transformer() {
             public Object transform(Object value) {
                 Method method = (Method)value;
-                int modifiers = Constants.ACC_FINAL
+                int modifiers = CGLIBConstants.ACC_FINAL
                     | (method.getModifiers()
-                       & ~Constants.ACC_ABSTRACT
-                       & ~Constants.ACC_NATIVE
-                       & ~Constants.ACC_SYNCHRONIZED);
+                       & ~CGLIBConstants.ACC_ABSTRACT
+                       & ~CGLIBConstants.ACC_NATIVE
+                       & ~CGLIBConstants.ACC_SYNCHRONIZED);
                 if (forcePublic.contains(MethodWrapper.create(method))) {
-                    modifiers = (modifiers & ~Constants.ACC_PROTECTED) | Constants.ACC_PUBLIC;
+                    modifiers = (modifiers & ~CGLIBConstants.ACC_PROTECTED) | CGLIBConstants.ACC_PUBLIC;
                 }
                 return ReflectUtils.getMethodInfo(method, modifiers);
             }
@@ -621,40 +621,40 @@ public class Enhancer extends AbstractClassGenerator
 
         ClassEmitter e = new ClassEmitter(v);
         if (currentData == null) {
-        e.begin_class(Constants.V1_2,
-                      Constants.ACC_PUBLIC,
+        e.begin_class(CGLIBConstants.V1_2,
+                      CGLIBConstants.ACC_PUBLIC,
                       getClassName(),
                       Type.getType(sc),
                       (useFactory ?
-                       TypeUtils.add(TypeUtils.getTypes(interfaces), FACTORY) :
-                       TypeUtils.getTypes(interfaces)),
-                      Constants.SOURCE_FILE);
+                       CGLIBTypeUtils.add(CGLIBTypeUtils.getTypes(interfaces), FACTORY) :
+                       CGLIBTypeUtils.getTypes(interfaces)),
+                      CGLIBConstants.SOURCE_FILE);
         } else {
-            e.begin_class(Constants.V1_2,
-                    Constants.ACC_PUBLIC,
+            e.begin_class(CGLIBConstants.V1_2,
+                    CGLIBConstants.ACC_PUBLIC,
                     getClassName(),
                     null,
                     new Type[]{FACTORY},
-                    Constants.SOURCE_FILE);
+                    CGLIBConstants.SOURCE_FILE);
         }
-        List constructorInfo = CollectionUtils.transform(constructors, MethodInfoTransformer.getInstance());
+        List constructorInfo = CGLIBCollectionUtils.transform(constructors, MethodInfoTransformer.getInstance());
 
-        e.declare_field(Constants.ACC_PRIVATE, BOUND_FIELD, Type.BOOLEAN_TYPE, null);
-        e.declare_field(Constants.ACC_PUBLIC | Constants.ACC_STATIC, FACTORY_DATA_FIELD, OBJECT_TYPE, null);
+        e.declare_field(CGLIBConstants.ACC_PRIVATE, BOUND_FIELD, Type.BOOLEAN_TYPE, null);
+        e.declare_field(CGLIBConstants.ACC_PUBLIC | CGLIBConstants.ACC_STATIC, FACTORY_DATA_FIELD, OBJECT_TYPE, null);
         if (!interceptDuringConstruction) {
-            e.declare_field(Constants.ACC_PRIVATE, CONSTRUCTED_FIELD, Type.BOOLEAN_TYPE, null);
+            e.declare_field(CGLIBConstants.ACC_PRIVATE, CONSTRUCTED_FIELD, Type.BOOLEAN_TYPE, null);
         }
-        e.declare_field(Constants.PRIVATE_FINAL_STATIC, THREAD_CALLBACKS_FIELD, THREAD_LOCAL, null);
-        e.declare_field(Constants.PRIVATE_FINAL_STATIC, STATIC_CALLBACKS_FIELD, CALLBACK_ARRAY, null);
+        e.declare_field(CGLIBConstants.PRIVATE_FINAL_STATIC, THREAD_CALLBACKS_FIELD, THREAD_LOCAL, null);
+        e.declare_field(CGLIBConstants.PRIVATE_FINAL_STATIC, STATIC_CALLBACKS_FIELD, CALLBACK_ARRAY, null);
         if (serialVersionUID != null) {
-            e.declare_field(Constants.PRIVATE_FINAL_STATIC, Constants.SUID_FIELD_NAME, Type.LONG_TYPE, serialVersionUID);
+            e.declare_field(CGLIBConstants.PRIVATE_FINAL_STATIC, CGLIBConstants.SUID_FIELD_NAME, Type.LONG_TYPE, serialVersionUID);
         }
 
         for (int i = 0; i < callbackTypes.length; i++) {
-            e.declare_field(Constants.ACC_PRIVATE, getCallbackField(i), callbackTypes[i], null);
+            e.declare_field(CGLIBConstants.ACC_PRIVATE, getCallbackField(i), callbackTypes[i], null);
         }
         // This is declared private to avoid "public field" pollution
-        e.declare_field(Constants.ACC_PRIVATE | Constants.ACC_STATIC, CALLBACK_FILTER_FIELD, OBJECT_TYPE, null);
+        e.declare_field(CGLIBConstants.ACC_PRIVATE | CGLIBConstants.ACC_STATIC, CALLBACK_FILTER_FIELD, OBJECT_TYPE, null);
 
         if (currentData == null) {
             emitMethods(e, methods, actualMethods);
@@ -691,7 +691,7 @@ public class Enhancer extends AbstractClassGenerator
      * @throws IllegalArgumentException if there are no non-private constructors
      */
     protected void filterConstructors(Class sc, List constructors) {
-        CollectionUtils.filter(constructors, new VisibilityPredicate(sc, true));
+        CGLIBCollectionUtils.filter(constructors, new VisibilityPredicate(sc, true));
         if (constructors.size() == 0)
             throw new IllegalArgumentException("No visible constructors in " + sc);
     }
@@ -724,7 +724,7 @@ public class Enhancer extends AbstractClassGenerator
         Class[] argumentTypes = this.argumentTypes;
         Object[] arguments = this.arguments;
         if (argumentTypes == null) {
-            argumentTypes = Constants.EMPTY_CLASS_ARRAY;
+            argumentTypes = CGLIBConstants.EMPTY_CLASS_ARRAY;
             arguments = null;
         }
         return data.newInstance(argumentTypes, arguments, callbacks);
@@ -734,7 +734,7 @@ public class Enhancer extends AbstractClassGenerator
     protected Object wrapCachedClass(Class klass) {
         Class[] argumentTypes = this.argumentTypes;
         if (argumentTypes == null) {
-            argumentTypes = Constants.EMPTY_CLASS_ARRAY;
+            argumentTypes = CGLIBConstants.EMPTY_CLASS_ARRAY;
         }
         EnhancerFactoryData factoryData = new EnhancerFactoryData(klass, argumentTypes, classOnly);
         Field factoryDataField = null;
@@ -923,7 +923,7 @@ public class Enhancer extends AbstractClassGenerator
             throw new IllegalStateException("Object should have default constructor ", e);
         }
         MethodInfo constructor = (MethodInfo) MethodInfoTransformer.getInstance().transform(declaredConstructor);
-        CodeEmitter e = EmitUtils.begin_method(ce, constructor, Constants.ACC_PUBLIC);
+        CodeEmitter e = EmitUtils.begin_method(ce, constructor, CGLIBConstants.ACC_PUBLIC);
         e.load_this();
         e.dup();
         Signature sig = constructor.getSignature();
@@ -939,7 +939,7 @@ public class Enhancer extends AbstractClassGenerator
             if (currentData != null && !"()V".equals(constructor.getSignature().getDescriptor())) {
                 continue;
             }
-            CodeEmitter e = EmitUtils.begin_method(ce, constructor, Constants.ACC_PUBLIC);
+            CodeEmitter e = EmitUtils.begin_method(ce, constructor, CGLIBConstants.ACC_PUBLIC);
             e.load_this();
             e.dup();
             e.load_args();
@@ -970,7 +970,7 @@ public class Enhancer extends AbstractClassGenerator
     }
 
     private void emitGetCallback(ClassEmitter ce, int[] keys) {
-        final CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC, GET_CALLBACK, null);
+        final CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, GET_CALLBACK, null);
         e.load_this();
         e.invoke_static_this(BIND_CALLBACKS);
         e.load_this();
@@ -990,7 +990,7 @@ public class Enhancer extends AbstractClassGenerator
     }
 
     private void emitSetCallback(ClassEmitter ce, int[] keys) {
-        final CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC, SET_CALLBACK, null);
+        final CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, SET_CALLBACK, null);
         e.load_arg(0);
         e.process_switch(keys, new ProcessSwitchCallback() {
             public void processCase(int key, Label end) {
@@ -1009,7 +1009,7 @@ public class Enhancer extends AbstractClassGenerator
     }
 
     private void emitSetCallbacks(ClassEmitter ce) {
-        CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC, SET_CALLBACKS, null);
+        CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, SET_CALLBACKS, null);
         e.load_this();
         e.load_arg(0);
         for (int i = 0; i < callbackTypes.length; i++) {
@@ -1023,7 +1023,7 @@ public class Enhancer extends AbstractClassGenerator
     }
 
     private void emitGetCallbacks(ClassEmitter ce) {
-        CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC, GET_CALLBACKS, null);
+        CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, GET_CALLBACKS, null);
         e.load_this();
         e.invoke_static_this(BIND_CALLBACKS);
         e.load_this();
@@ -1041,7 +1041,7 @@ public class Enhancer extends AbstractClassGenerator
     }
 
     private void emitNewInstanceCallbacks(ClassEmitter ce) {
-        CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC, NEW_INSTANCE, null);
+        CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, NEW_INSTANCE, null);
         Type thisType = getThisType(e);
         e.load_arg(0);
         e.invoke_static(thisType, SET_THREAD_CALLBACKS);
@@ -1068,7 +1068,7 @@ public class Enhancer extends AbstractClassGenerator
     }
     
     private void emitNewInstanceCallback(ClassEmitter ce) {
-        CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC, SINGLE_NEW_INSTANCE, null);
+        CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, SINGLE_NEW_INSTANCE, null);
         switch (callbackTypes.length) {
         case 0:
             // TODO: make sure Callback is null
@@ -1090,7 +1090,7 @@ public class Enhancer extends AbstractClassGenerator
     }
 
     private void emitNewInstanceMultiarg(ClassEmitter ce, List constructors) {
-        final CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC, MULTIARG_NEW_INSTANCE, null);
+        final CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, MULTIARG_NEW_INSTANCE, null);
         final Type thisType = getThisType(e);
         e.load_arg(2);
         e.invoke_static(thisType, SET_THREAD_CALLBACKS);
@@ -1126,7 +1126,7 @@ public class Enhancer extends AbstractClassGenerator
         Map groups = new HashMap();
         final Map indexes = new HashMap();
         final Map originalModifiers = new HashMap();
-        final Map positions = CollectionUtils.getIndexMap(methods);
+        final Map positions = CGLIBCollectionUtils.getIndexMap(methods);
         final Map declToBridge = new HashMap();
 
         Iterator it1 = methods.iterator();
@@ -1149,7 +1149,7 @@ public class Enhancer extends AbstractClassGenerator
             
             // Optimization: build up a map of Class -> bridge methods in class
             // so that we can look up all the bridge methods in one pass for a class.
-            if (TypeUtils.isBridge(actualMethod.getModifiers())) {
+            if (CGLIBTypeUtils.isBridge(actualMethod.getModifiers())) {
             	Set bridges = (Set)declToBridge.get(actualMethod.getDeclaringClass());
             	if (bridges == null) {
             	    bridges = new HashSet();
@@ -1225,7 +1225,7 @@ public class Enhancer extends AbstractClassGenerator
 			public CodeEmitter beginMethod(ClassEmitter ce, MethodInfo method) {
                 CodeEmitter e = EmitUtils.begin_method(ce, method);
                 if (!interceptDuringConstruction &&
-                    !TypeUtils.isAbstract(method.getModifiers())) {
+                    !CGLIBTypeUtils.isAbstract(method.getModifiers())) {
                     Label constructed = e.make_label();
                     e.load_this();
                     e.getfield(CONSTRUCTED_FIELD);
@@ -1261,7 +1261,7 @@ public class Enhancer extends AbstractClassGenerator
     }
 
     private void emitSetThreadCallbacks(ClassEmitter ce) {
-        CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC | Constants.ACC_STATIC,
+        CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC | CGLIBConstants.ACC_STATIC,
                                         SET_THREAD_CALLBACKS,
                                         null);
         e.getfield(THREAD_CALLBACKS_FIELD);
@@ -1272,7 +1272,7 @@ public class Enhancer extends AbstractClassGenerator
     }
 
     private void emitSetStaticCallbacks(ClassEmitter ce) {
-        CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC | Constants.ACC_STATIC,
+        CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC | CGLIBConstants.ACC_STATIC,
                                         SET_STATIC_CALLBACKS,
                                         null);
         e.load_arg(0);
@@ -1296,7 +1296,7 @@ public class Enhancer extends AbstractClassGenerator
     }
 
     private void emitBindCallbacks(ClassEmitter ce) {
-        CodeEmitter e = ce.begin_method(Constants.PRIVATE_FINAL_STATIC,
+        CodeEmitter e = ce.begin_method(CGLIBConstants.PRIVATE_FINAL_STATIC,
                                         BIND_CALLBACKS,
                                         null);
         Local me = e.make_local();

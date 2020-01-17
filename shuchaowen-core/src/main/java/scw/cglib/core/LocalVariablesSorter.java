@@ -63,7 +63,7 @@ public class LocalVariablesSorter extends MethodVisitor {
         final String desc,
         final MethodVisitor mv)
     {
-        super(Constants.ASM_API, mv);
+        super(CGLIBConstants.ASM_API, mv);
         state = new State();
         Type[] args = Type.getArgumentTypes(desc);
         state.nextLocal = ((Opcodes.ACC_STATIC & access) != 0) ? 0 : 1;
@@ -74,7 +74,7 @@ public class LocalVariablesSorter extends MethodVisitor {
     }
 
     public LocalVariablesSorter(LocalVariablesSorter lvs) {
-        super(Constants.ASM_API, lvs.mv);
+        super(CGLIBConstants.ASM_API, lvs.mv);
         state = lvs.state;
         firstLocal = lvs.firstLocal;
     }

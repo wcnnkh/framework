@@ -23,11 +23,11 @@ import scw.asm.Type;
 import scw.cglib.core.Block;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 
 @SuppressWarnings({"rawtypes"})
 class InvocationHandlerGenerator
@@ -36,19 +36,19 @@ implements CallbackGenerator
     public static final InvocationHandlerGenerator INSTANCE = new InvocationHandlerGenerator();
 
     private static final Type INVOCATION_HANDLER =
-      TypeUtils.parseType(InvocationHandler.class.getName());
+      CGLIBTypeUtils.parseType(InvocationHandler.class.getName());
     private static final Type UNDECLARED_THROWABLE_EXCEPTION =
-      TypeUtils.parseType(UndeclaredThrowableException.class.getName());
+      CGLIBTypeUtils.parseType(UndeclaredThrowableException.class.getName());
     private static final Type METHOD =
-      TypeUtils.parseType(Method.class.getName());
+      CGLIBTypeUtils.parseType(Method.class.getName());
     private static final Signature INVOKE =
-      TypeUtils.parseSignature("Object invoke(Object, java.lang.reflect.Method, Object[])");
+      CGLIBTypeUtils.parseSignature("Object invoke(Object, java.lang.reflect.Method, Object[])");
 
     public void generate(ClassEmitter ce, Context context, List methods) {
         for (Iterator it = methods.iterator(); it.hasNext();) {
             MethodInfo method = (MethodInfo)it.next();
             Signature impl = context.getImplSignature(method);
-            ce.declare_field(Constants.PRIVATE_FINAL_STATIC, impl.getName(), METHOD, null);
+            ce.declare_field(CGLIBConstants.PRIVATE_FINAL_STATIC, impl.getName(), METHOD, null);
 
             CodeEmitter e = context.beginMethod(ce, method);
             Block handler = e.begin_block();

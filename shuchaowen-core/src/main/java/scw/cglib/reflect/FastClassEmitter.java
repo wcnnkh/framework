@@ -29,8 +29,8 @@ import scw.asm.Type;
 import scw.cglib.core.Block;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.CollectionUtils;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBCollectionUtils;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.DuplicatesPredicate;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.MethodInfo;
@@ -40,45 +40,45 @@ import scw.cglib.core.ProcessSwitchCallback;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
 import scw.cglib.core.Transformer;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 import scw.cglib.core.VisibilityPredicate;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 class FastClassEmitter extends ClassEmitter {
     private static final Signature CSTRUCT_CLASS =
-      TypeUtils.parseConstructor("Class");
+      CGLIBTypeUtils.parseConstructor("Class");
     private static final Signature METHOD_GET_INDEX =
-      TypeUtils.parseSignature("int getIndex(String, Class[])");
+      CGLIBTypeUtils.parseSignature("int getIndex(String, Class[])");
     private static final Signature SIGNATURE_GET_INDEX =
-      new Signature("getIndex", Type.INT_TYPE, new Type[]{ Constants.TYPE_SIGNATURE });
+      new Signature("getIndex", Type.INT_TYPE, new Type[]{ CGLIBConstants.TYPE_SIGNATURE });
     private static final Signature TO_STRING =
-      TypeUtils.parseSignature("String toString()");
+      CGLIBTypeUtils.parseSignature("String toString()");
     private static final Signature CONSTRUCTOR_GET_INDEX =
-      TypeUtils.parseSignature("int getIndex(Class[])");
+      CGLIBTypeUtils.parseSignature("int getIndex(Class[])");
     private static final Signature INVOKE =
-      TypeUtils.parseSignature("Object invoke(int, Object, Object[])");
+      CGLIBTypeUtils.parseSignature("Object invoke(int, Object, Object[])");
     private static final Signature NEW_INSTANCE =
-      TypeUtils.parseSignature("Object newInstance(int, Object[])");
+      CGLIBTypeUtils.parseSignature("Object newInstance(int, Object[])");
     private static final Signature GET_MAX_INDEX =
-      TypeUtils.parseSignature("int getMaxIndex()");
+      CGLIBTypeUtils.parseSignature("int getMaxIndex()");
     private static final Signature GET_SIGNATURE_WITHOUT_RETURN_TYPE =
-      TypeUtils.parseSignature("String getSignatureWithoutReturnType(String, Class[])");
+      CGLIBTypeUtils.parseSignature("String getSignatureWithoutReturnType(String, Class[])");
     private static final Type FAST_CLASS =
-      TypeUtils.parseType(FastClass.class.getName());
+      CGLIBTypeUtils.parseType(FastClass.class.getName());
     private static final Type ILLEGAL_ARGUMENT_EXCEPTION =
-      TypeUtils.parseType("IllegalArgumentException");
+      CGLIBTypeUtils.parseType("IllegalArgumentException");
     private static final Type INVOCATION_TARGET_EXCEPTION =
-      TypeUtils.parseType("java.lang.reflect.InvocationTargetException");
+      CGLIBTypeUtils.parseType("java.lang.reflect.InvocationTargetException");
     private static final Type[] INVOCATION_TARGET_EXCEPTION_ARRAY = { INVOCATION_TARGET_EXCEPTION };
     
     public FastClassEmitter(ClassVisitor v, String className, Class type) {
         super(v);
 
         Type base = Type.getType(type);
-        begin_class(Constants.V1_2, Constants.ACC_PUBLIC, className, FAST_CLASS, null, Constants.SOURCE_FILE);
+        begin_class(CGLIBConstants.V1_2, CGLIBConstants.ACC_PUBLIC, className, FAST_CLASS, null, CGLIBConstants.SOURCE_FILE);
 
         // constructor
-        CodeEmitter e = begin_method(Constants.ACC_PUBLIC, CSTRUCT_CLASS, null);
+        CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, CSTRUCT_CLASS, null);
         e.load_this();
         e.load_args();
         e.super_invoke_constructor(CSTRUCT_CLASS);
@@ -87,10 +87,10 @@ class FastClassEmitter extends ClassEmitter {
 
         VisibilityPredicate vp = new VisibilityPredicate(type, false);
         List methods = ReflectUtils.addAllMethods(type, new ArrayList());
-        CollectionUtils.filter(methods, vp);
-        CollectionUtils.filter(methods, new DuplicatesPredicate());
+        CGLIBCollectionUtils.filter(methods, vp);
+        CGLIBCollectionUtils.filter(methods, new DuplicatesPredicate());
         List constructors = new ArrayList(Arrays.asList(type.getDeclaredConstructors()));
-        CollectionUtils.filter(constructors, vp);
+        CGLIBCollectionUtils.filter(constructors, vp);
         
         // getIndex(String)
         emitIndexBySignature(methods);
@@ -99,14 +99,14 @@ class FastClassEmitter extends ClassEmitter {
         emitIndexByClassArray(methods);
         
         // getIndex(Class[])
-        e = begin_method(Constants.ACC_PUBLIC, CONSTRUCTOR_GET_INDEX, null);
+        e = begin_method(CGLIBConstants.ACC_PUBLIC, CONSTRUCTOR_GET_INDEX, null);
         e.load_args();
-        List info = CollectionUtils.transform(constructors, MethodInfoTransformer.getInstance());
+        List info = CGLIBCollectionUtils.transform(constructors, MethodInfoTransformer.getInstance());
         EmitUtils.constructor_switch(e, info, new GetIndexCallback(e, info));
         e.end_method();
 
         // invoke(int, Object, Object[])
-        e = begin_method(Constants.ACC_PUBLIC, INVOKE, INVOCATION_TARGET_EXCEPTION_ARRAY);
+        e = begin_method(CGLIBConstants.ACC_PUBLIC, INVOKE, INVOCATION_TARGET_EXCEPTION_ARRAY);
         e.load_arg(1);
         e.checkcast(base);
         e.load_arg(0);
@@ -114,7 +114,7 @@ class FastClassEmitter extends ClassEmitter {
         e.end_method();
 
         // newInstance(int, Object[])
-        e = begin_method(Constants.ACC_PUBLIC, NEW_INSTANCE, INVOCATION_TARGET_EXCEPTION_ARRAY);
+        e = begin_method(CGLIBConstants.ACC_PUBLIC, NEW_INSTANCE, INVOCATION_TARGET_EXCEPTION_ARRAY);
         e.new_instance(base);
         e.dup();
         e.load_arg(0);
@@ -122,7 +122,7 @@ class FastClassEmitter extends ClassEmitter {
         e.end_method();
 
         // getMaxIndex()
-        e = begin_method(Constants.ACC_PUBLIC, GET_MAX_INDEX, null);
+        e = begin_method(CGLIBConstants.ACC_PUBLIC, GET_MAX_INDEX, null);
         e.push(methods.size() - 1);
         e.return_value();
         e.end_method();
@@ -132,24 +132,24 @@ class FastClassEmitter extends ClassEmitter {
 
     // TODO: support constructor indices ("<init>")
     private void emitIndexBySignature(List methods) {
-        CodeEmitter e = begin_method(Constants.ACC_PUBLIC, SIGNATURE_GET_INDEX, null);
-        List signatures = CollectionUtils.transform(methods, new Transformer() {
+        CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, SIGNATURE_GET_INDEX, null);
+        List signatures = CGLIBCollectionUtils.transform(methods, new Transformer() {
             public Object transform(Object obj) {
                 return ReflectUtils.getSignature((Method)obj).toString();
             }
         });
         e.load_arg(0);
-        e.invoke_virtual(Constants.TYPE_OBJECT, TO_STRING);
+        e.invoke_virtual(CGLIBConstants.TYPE_OBJECT, TO_STRING);
         signatureSwitchHelper(e, signatures);
         e.end_method();
     }
 
     private static final int TOO_MANY_METHODS = 100; // TODO
     private void emitIndexByClassArray(List methods) {
-        CodeEmitter e = begin_method(Constants.ACC_PUBLIC, METHOD_GET_INDEX, null);
+        CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, METHOD_GET_INDEX, null);
         if (methods.size() > TOO_MANY_METHODS) {
             // hack for big classes
-            List signatures = CollectionUtils.transform(methods, new Transformer() {
+            List signatures = CGLIBCollectionUtils.transform(methods, new Transformer() {
                 public Object transform(Object obj) {
                     String s = ReflectUtils.getSignature((Method)obj).toString();
                     return s.substring(0, s.lastIndexOf(')') + 1);
@@ -160,7 +160,7 @@ class FastClassEmitter extends ClassEmitter {
             signatureSwitchHelper(e, signatures);
         } else {
             e.load_args();
-            List info = CollectionUtils.transform(methods, MethodInfoTransformer.getInstance());
+            List info = CGLIBCollectionUtils.transform(methods, MethodInfoTransformer.getInstance());
             EmitUtils.method_switch(e, info, new GetIndexCallback(e, info));
         }
         e.end_method();
@@ -180,12 +180,12 @@ class FastClassEmitter extends ClassEmitter {
         };
         EmitUtils.string_switch(e,
                                 (String[])signatures.toArray(new String[signatures.size()]),
-                                Constants.SWITCH_STYLE_HASH,
+                                CGLIBConstants.SWITCH_STYLE_HASH,
                                 callback);
     }
 
     private static void invokeSwitchHelper(final CodeEmitter e, List members, final int arg, final Type base) {
-        final List info = CollectionUtils.transform(members, MethodInfoTransformer.getInstance());        
+        final List info = CGLIBCollectionUtils.transform(members, MethodInfoTransformer.getInstance());        
         final Label illegalArg = e.make_label();
         Block block = e.begin_block();
         e.process_switch(getIntRange(info.size()), new ProcessSwitchCallback() {
@@ -200,7 +200,7 @@ class FastClassEmitter extends ClassEmitter {
                 // TODO: change method lookup process so MethodInfo will already reference base
                 // instead of superclass when superclass method is inaccessible
                 e.invoke(method, base);
-                if (!TypeUtils.isConstructor(method)) {
+                if (!CGLIBTypeUtils.isConstructor(method)) {
                     e.box(method.getSignature().getReturnType());
                 }
                 e.return_value();

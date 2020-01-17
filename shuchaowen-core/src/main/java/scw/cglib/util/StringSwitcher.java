@@ -24,22 +24,22 @@ import scw.asm.Type;
 import scw.cglib.core.AbstractClassGenerator;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.KeyFactory;
 import scw.cglib.core.ObjectSwitchCallback;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 
 /**
  * This class implements a simple String->int mapping for a fixed set of keys.
  */
 @SuppressWarnings({ "rawtypes" })
 abstract public class StringSwitcher {
-	private static final Type STRING_SWITCHER = TypeUtils
+	private static final Type STRING_SWITCHER = CGLIBTypeUtils
 			.parseType(StringSwitcher.class.getName());
-	private static final Signature INT_VALUE = TypeUtils
+	private static final Signature INT_VALUE = CGLIBTypeUtils
 			.parseSignature("int intValue(String)");
 	private static final StringSwitcherKey KEY_FACTORY = (StringSwitcherKey) KeyFactory
 			.create(StringSwitcherKey.class);
@@ -152,16 +152,16 @@ abstract public class StringSwitcher {
 
 		public void generateClass(ClassVisitor v) throws Exception {
 			ClassEmitter ce = new ClassEmitter(v);
-			ce.begin_class(Constants.V1_2, Constants.ACC_PUBLIC,
+			ce.begin_class(CGLIBConstants.V1_2, CGLIBConstants.ACC_PUBLIC,
 					getClassName(), STRING_SWITCHER, null,
-					Constants.SOURCE_FILE);
+					CGLIBConstants.SOURCE_FILE);
 			EmitUtils.null_constructor(ce);
-			final CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC,
+			final CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC,
 					INT_VALUE, null);
 			e.load_arg(0);
 			final List stringList = Arrays.asList(strings);
-			int style = fixedInput ? Constants.SWITCH_STYLE_HASHONLY
-					: Constants.SWITCH_STYLE_HASH;
+			int style = fixedInput ? CGLIBConstants.SWITCH_STYLE_HASHONLY
+					: CGLIBConstants.SWITCH_STYLE_HASH;
 			EmitUtils.string_switch(e, strings, style,
 					new ObjectSwitchCallback() {
 						public void processCase(Object key, Label end) {

@@ -14,7 +14,6 @@ import org.w3c.dom.Element;
 
 import scw.core.Constants;
 import scw.core.Converter;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.RandomUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
@@ -34,6 +33,7 @@ import scw.net.http.client.ClientHttpRequest;
 import scw.net.http.client.ClientHttpResponse;
 import scw.net.http.client.SimpleClientHttpRequestFactory;
 import scw.net.ssl.SSLContexts;
+import scw.resource.ResourceUtils;
 import scw.security.signature.SignatureUtils;
 import scw.tencent.wx.pay.UnifiedOrderResponse;
 

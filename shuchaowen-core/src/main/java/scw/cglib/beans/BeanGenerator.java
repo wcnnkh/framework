@@ -25,7 +25,7 @@ import scw.asm.ClassVisitor;
 import scw.asm.Type;
 import scw.cglib.core.AbstractClassGenerator;
 import scw.cglib.core.ClassEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.KeyFactory;
 import scw.cglib.core.ReflectUtils;
@@ -111,10 +111,10 @@ public class BeanGenerator extends AbstractClassGenerator
             types[i] = (Type)props.get(names[i]);
         }
         ClassEmitter ce = new ClassEmitter(v);
-        ce.begin_class(Constants.V1_2,
-                       Constants.ACC_PUBLIC,
+        ce.begin_class(CGLIBConstants.V1_2,
+                       CGLIBConstants.ACC_PUBLIC,
                        getClassName(),
-                       superclass != null ? Type.getType(superclass) : Constants.TYPE_OBJECT,
+                       superclass != null ? Type.getType(superclass) : CGLIBConstants.TYPE_OBJECT,
                        null,
                        null);
         EmitUtils.null_constructor(ce);

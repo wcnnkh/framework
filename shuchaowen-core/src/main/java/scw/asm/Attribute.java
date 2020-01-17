@@ -246,18 +246,18 @@ public class Attribute {
     if ((accessFlags & Opcodes.ACC_SYNTHETIC) != 0
         && symbolTable.getMajorVersion() < Opcodes.V1_5) {
       // Synthetic attributes always use 6 bytes.
-      symbolTable.addConstantUtf8(Constants.SYNTHETIC);
+      symbolTable.addConstantUtf8(ASMConstants.SYNTHETIC);
       size += 6;
     }
     if (signatureIndex != 0) {
       // Signature attributes always use 8 bytes.
-      symbolTable.addConstantUtf8(Constants.SIGNATURE);
+      symbolTable.addConstantUtf8(ASMConstants.SIGNATURE);
       size += 8;
     }
     // ACC_DEPRECATED is ASM specific, the ClassFile format uses a Deprecated attribute instead.
     if ((accessFlags & Opcodes.ACC_DEPRECATED) != 0) {
       // Deprecated attributes always use 6 bytes.
-      symbolTable.addConstantUtf8(Constants.DEPRECATED);
+      symbolTable.addConstantUtf8(ASMConstants.DEPRECATED);
       size += 6;
     }
     return size;
@@ -334,16 +334,16 @@ public class Attribute {
     // Before Java 1.5, synthetic fields are represented with a Synthetic attribute.
     if ((accessFlags & Opcodes.ACC_SYNTHETIC) != 0
         && symbolTable.getMajorVersion() < Opcodes.V1_5) {
-      output.putShort(symbolTable.addConstantUtf8(Constants.SYNTHETIC)).putInt(0);
+      output.putShort(symbolTable.addConstantUtf8(ASMConstants.SYNTHETIC)).putInt(0);
     }
     if (signatureIndex != 0) {
       output
-          .putShort(symbolTable.addConstantUtf8(Constants.SIGNATURE))
+          .putShort(symbolTable.addConstantUtf8(ASMConstants.SIGNATURE))
           .putInt(2)
           .putShort(signatureIndex);
     }
     if ((accessFlags & Opcodes.ACC_DEPRECATED) != 0) {
-      output.putShort(symbolTable.addConstantUtf8(Constants.DEPRECATED)).putInt(0);
+      output.putShort(symbolTable.addConstantUtf8(ASMConstants.DEPRECATED)).putInt(0);
     }
   }
 

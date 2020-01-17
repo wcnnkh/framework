@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import scw.asm.ClassVisitor;
-import scw.cglib.core.CollectionUtils;
+import scw.cglib.core.CGLIBCollectionUtils;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.RejectModifierPredicate;
 
@@ -48,7 +48,7 @@ class MixinEverythingEmitter extends MixinEmitter {
 
     protected Method[] getMethods(Class type) {
         List methods = new ArrayList(Arrays.asList(type.getMethods()));
-        CollectionUtils.filter(methods, new RejectModifierPredicate(Modifier.FINAL | Modifier.STATIC));
+        CGLIBCollectionUtils.filter(methods, new RejectModifierPredicate(Modifier.FINAL | Modifier.STATIC));
         return (Method[])methods.toArray(new Method[methods.size()]);
     }
 }

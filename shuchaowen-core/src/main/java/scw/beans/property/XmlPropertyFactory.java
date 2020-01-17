@@ -5,8 +5,8 @@ import org.w3c.dom.NodeList;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.Destroy;
 import scw.core.PropertyFactory;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.SystemPropertyUtils;
+import scw.resource.ResourceUtils;
 
 public class XmlPropertyFactory implements PropertyFactory, Destroy {
 	private AutoRefreshPropertyFactory autoRefreshPropertyFactory;

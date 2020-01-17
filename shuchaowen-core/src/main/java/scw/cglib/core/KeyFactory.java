@@ -58,21 +58,21 @@ import scw.cglib.core.internal.CustomizerRegistry;
 @SuppressWarnings({"rawtypes", "static-access"})
 abstract public class KeyFactory {
     private static final Signature GET_NAME =
-      TypeUtils.parseSignature("String getName()");
+      CGLIBTypeUtils.parseSignature("String getName()");
     private static final Signature GET_CLASS =
-      TypeUtils.parseSignature("Class getClass()");
+      CGLIBTypeUtils.parseSignature("Class getClass()");
     private static final Signature HASH_CODE =
-      TypeUtils.parseSignature("int hashCode()");
+      CGLIBTypeUtils.parseSignature("int hashCode()");
     private static final Signature EQUALS =
-      TypeUtils.parseSignature("boolean equals(Object)");
+      CGLIBTypeUtils.parseSignature("boolean equals(Object)");
     private static final Signature TO_STRING =
-      TypeUtils.parseSignature("String toString()");
+      CGLIBTypeUtils.parseSignature("String toString()");
     private static final Signature APPEND_STRING =
-      TypeUtils.parseSignature("StringBuffer append(String)");
+      CGLIBTypeUtils.parseSignature("StringBuffer append(String)");
     private static final Type KEY_FACTORY =
-      TypeUtils.parseType(KeyFactory.class.getName());
+      CGLIBTypeUtils.parseType(KeyFactory.class.getName());
     private static final Signature GET_SORT =
-      TypeUtils.parseSignature("int getSort()");
+      CGLIBTypeUtils.parseSignature("int getSort()");
 
     //generated numbers: 
     private final static int PRIMES[] = {
@@ -93,22 +93,22 @@ abstract public class KeyFactory {
 
     public static final Customizer CLASS_BY_NAME = new Customizer() {
         public void customize(CodeEmitter e, Type type) {
-            if (type.equals(Constants.TYPE_CLASS)) {
-                e.invoke_virtual(Constants.TYPE_CLASS, GET_NAME);
+            if (type.equals(CGLIBConstants.TYPE_CLASS)) {
+                e.invoke_virtual(CGLIBConstants.TYPE_CLASS, GET_NAME);
             }
         }
     };
 
     public static final FieldTypeCustomizer STORE_CLASS_AS_STRING = new FieldTypeCustomizer() {
         public void customize(CodeEmitter e, int index, Type type) {
-            if (type.equals(Constants.TYPE_CLASS)) {
-                e.invoke_virtual(Constants.TYPE_CLASS, GET_NAME);
+            if (type.equals(CGLIBConstants.TYPE_CLASS)) {
+                e.invoke_virtual(CGLIBConstants.TYPE_CLASS, GET_NAME);
             }
         }
 
         public Type getOutType(int index, Type type) {
-            if (type.equals(Constants.TYPE_CLASS)) {
-                return Constants.TYPE_STRING;
+            if (type.equals(CGLIBConstants.TYPE_CLASS)) {
+                return CGLIBConstants.TYPE_STRING;
             }
             return type;
         }
@@ -120,7 +120,7 @@ abstract public class KeyFactory {
      */
     public static final HashCodeCustomizer HASH_ASM_TYPE = new HashCodeCustomizer() {
         public boolean customize(CodeEmitter e, Type type) {
-            if (Constants.TYPE_TYPE.equals(type)) {
+            if (CGLIBConstants.TYPE_TYPE.equals(type)) {
                 e.invoke_virtual(type, GET_SORT);
                 return true;
             }
@@ -135,7 +135,7 @@ abstract public class KeyFactory {
     @Deprecated
     public static final Customizer OBJECT_BY_CLASS = new Customizer() {
         public void customize(CodeEmitter e, Type type) {
-            e.invoke_virtual(Constants.TYPE_OBJECT, GET_CLASS);
+            e.invoke_virtual(CGLIBConstants.TYPE_OBJECT, GET_CLASS);
         }
     };
 
@@ -246,19 +246,19 @@ abstract public class KeyFactory {
                 throw new IllegalArgumentException("newInstance method must return Object");
             }
 
-            Type[] parameterTypes = TypeUtils.getTypes(newInstance.getParameterTypes());
-            ce.begin_class(Constants.V1_2,
-                           Constants.ACC_PUBLIC,
+            Type[] parameterTypes = CGLIBTypeUtils.getTypes(newInstance.getParameterTypes());
+            ce.begin_class(CGLIBConstants.V1_2,
+                           CGLIBConstants.ACC_PUBLIC,
                            getClassName(),
                            KEY_FACTORY,
                            new Type[]{ Type.getType(keyInterface) },
-                           Constants.SOURCE_FILE);
+                           CGLIBConstants.SOURCE_FILE);
             EmitUtils.null_constructor(ce);
             EmitUtils.factory_method(ce, ReflectUtils.getSignature(newInstance));
 
             int seed = 0;
-            CodeEmitter e = ce.begin_method(Constants.ACC_PUBLIC,
-                                            TypeUtils.parseConstructor(parameterTypes),
+            CodeEmitter e = ce.begin_method(CGLIBConstants.ACC_PUBLIC,
+                                            CGLIBTypeUtils.parseConstructor(parameterTypes),
                                             null);
             e.load_this();
             e.super_invoke_constructor();
@@ -271,7 +271,7 @@ abstract public class KeyFactory {
                     fieldType = customizer.getOutType(i, fieldType);
                 }
                 seed += fieldType.hashCode();
-                ce.declare_field(Constants.ACC_PRIVATE | Constants.ACC_FINAL,
+                ce.declare_field(CGLIBConstants.ACC_PRIVATE | CGLIBConstants.ACC_FINAL,
                                  getFieldName(i),
                                  fieldType,
                                  null);
@@ -286,7 +286,7 @@ abstract public class KeyFactory {
             e.end_method();
             
             // hash code
-            e = ce.begin_method(Constants.ACC_PUBLIC, HASH_CODE, null);
+            e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, HASH_CODE, null);
             int hc = (constant != 0) ? constant : PRIMES[(int)(Math.abs(seed) % PRIMES.length)];
             int hm = (multiplier != 0) ? multiplier : PRIMES[(int)(Math.abs(seed * 13) % PRIMES.length)];
             e.push(hc);
@@ -299,7 +299,7 @@ abstract public class KeyFactory {
             e.end_method();
 
             // equals
-            e = ce.begin_method(Constants.ACC_PUBLIC, EQUALS, null);
+            e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, EQUALS, null);
             Label fail = e.make_label();
             e.load_arg(0);
             e.instance_of_this();
@@ -320,20 +320,20 @@ abstract public class KeyFactory {
             e.end_method();
 
             // toString
-            e = ce.begin_method(Constants.ACC_PUBLIC, TO_STRING, null);
-            e.new_instance(Constants.TYPE_STRING_BUFFER);
+            e = ce.begin_method(CGLIBConstants.ACC_PUBLIC, TO_STRING, null);
+            e.new_instance(CGLIBConstants.TYPE_STRING_BUFFER);
             e.dup();
-            e.invoke_constructor(Constants.TYPE_STRING_BUFFER);
+            e.invoke_constructor(CGLIBConstants.TYPE_STRING_BUFFER);
             for (int i = 0; i < parameterTypes.length; i++) {
                 if (i > 0) {
                     e.push(", ");
-                    e.invoke_virtual(Constants.TYPE_STRING_BUFFER, APPEND_STRING);
+                    e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, APPEND_STRING);
                 }
                 e.load_this();
                 e.getfield(getFieldName(i));
                 EmitUtils.append_string(e, parameterTypes[i], EmitUtils.DEFAULT_DELIMITERS, customizers);
             }
-            e.invoke_virtual(Constants.TYPE_STRING_BUFFER, TO_STRING);
+            e.invoke_virtual(CGLIBConstants.TYPE_STRING_BUFFER, TO_STRING);
             e.return_value();
             e.end_method();
 

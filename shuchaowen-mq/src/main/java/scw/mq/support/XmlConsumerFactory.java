@@ -13,13 +13,13 @@ import scw.core.Consumer;
 import scw.core.PropertyFactory;
 import scw.core.annotation.DefaultValue;
 import scw.core.reflect.PropertyMapper;
-import scw.core.resource.ResourceUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.XMLUtils;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mq.ConsumerFactory;
+import scw.resource.ResourceUtils;
 
 public class XmlConsumerFactory implements ConsumerFactory {
 	private static Logger logger = LoggerUtils.getConsoleLogger(XmlConsumerFactory.class);

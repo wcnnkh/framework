@@ -16,13 +16,13 @@
 package scw.cglib.transform;
 
 import scw.asm.ClassVisitor;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 
 public class ClassTransformerTee extends ClassTransformer {
     private ClassVisitor branch;
     
     public ClassTransformerTee(ClassVisitor branch) {
-        super(Constants.ASM_API);
+        super(CGLIBConstants.ASM_API);
         this.branch = branch;
     }
     

@@ -19,25 +19,25 @@ import scw.asm.ClassVisitor;
 import scw.asm.Type;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.Local;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 
 class ParallelSorterEmitter extends ClassEmitter {
     private static final Type PARALLEL_SORTER =
-      TypeUtils.parseType(ParallelSorter.class.getName());
+      CGLIBTypeUtils.parseType(ParallelSorter.class.getName());
     private static final Signature CSTRUCT_OBJECT_ARRAY =
-      TypeUtils.parseConstructor("Object[]");
+      CGLIBTypeUtils.parseConstructor("Object[]");
     private static final Signature NEW_INSTANCE =
-      new Signature("newInstance", PARALLEL_SORTER, new Type[]{ Constants.TYPE_OBJECT_ARRAY });
+      new Signature("newInstance", PARALLEL_SORTER, new Type[]{ CGLIBConstants.TYPE_OBJECT_ARRAY });
     private static final Signature SWAP =
-      TypeUtils.parseSignature("void swap(int, int)");
+      CGLIBTypeUtils.parseSignature("void swap(int, int)");
 
     public ParallelSorterEmitter(ClassVisitor v, String className, Object[] arrays) {
         super(v);
-        begin_class(Constants.V1_2, Constants.ACC_PUBLIC, className, PARALLEL_SORTER, null, Constants.SOURCE_FILE);
+        begin_class(CGLIBConstants.V1_2, CGLIBConstants.ACC_PUBLIC, className, PARALLEL_SORTER, null, CGLIBConstants.SOURCE_FILE);
         EmitUtils.null_constructor(this);
         EmitUtils.factory_method(this, NEW_INSTANCE);
         generateConstructor(arrays);
@@ -50,15 +50,15 @@ class ParallelSorterEmitter extends ClassEmitter {
     }
 
     private void generateConstructor(Object[] arrays) {
-        CodeEmitter e = begin_method(Constants.ACC_PUBLIC, CSTRUCT_OBJECT_ARRAY, null);
+        CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, CSTRUCT_OBJECT_ARRAY, null);
         e.load_this();
         e.super_invoke_constructor();
         e.load_this();
         e.load_arg(0);
-        e.super_putfield("a", Constants.TYPE_OBJECT_ARRAY);
+        e.super_putfield("a", CGLIBConstants.TYPE_OBJECT_ARRAY);
         for (int i = 0; i < arrays.length; i++) {
             Type type = Type.getType(arrays[i].getClass());
-            declare_field(Constants.ACC_PRIVATE, getFieldName(i), type, null);
+            declare_field(CGLIBConstants.ACC_PRIVATE, getFieldName(i), type, null);
             e.load_this();
             e.load_arg(0);
             e.push(i);
@@ -71,10 +71,10 @@ class ParallelSorterEmitter extends ClassEmitter {
     }
 
     private void generateSwap(final Object[] arrays) {
-        CodeEmitter e = begin_method(Constants.ACC_PUBLIC, SWAP, null);
+        CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, SWAP, null);
         for (int i = 0; i < arrays.length; i++) {
             Type type = Type.getType(arrays[i].getClass());
-            Type component = TypeUtils.getComponentType(type);
+            Type component = CGLIBTypeUtils.getComponentType(type);
             Local T = e.make_local(type);
 
             e.load_this();

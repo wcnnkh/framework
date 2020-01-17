@@ -194,7 +194,7 @@ final class FieldWriter extends FieldVisitor {
     // For ease of reference, we use here the same attribute order as in Section 4.7 of the JVMS.
     if (constantValueIndex != 0) {
       // ConstantValue attributes always use 8 bytes.
-      symbolTable.addConstantUtf8(Constants.CONSTANT_VALUE);
+      symbolTable.addConstantUtf8(ASMConstants.CONSTANT_VALUE);
       size += 8;
     }
     size += Attribute.computeAttributesSize(symbolTable, accessFlags, signatureIndex);
@@ -256,7 +256,7 @@ final class FieldWriter extends FieldVisitor {
     // For ease of reference, we use here the same attribute order as in Section 4.7 of the JVMS.
     if (constantValueIndex != 0) {
       output
-          .putShort(symbolTable.addConstantUtf8(Constants.CONSTANT_VALUE))
+          .putShort(symbolTable.addConstantUtf8(ASMConstants.CONSTANT_VALUE))
           .putInt(2)
           .putShort(constantValueIndex);
     }

@@ -23,26 +23,26 @@ import scw.asm.Type;
 import scw.cglib.core.Block;
 import scw.cglib.core.ClassEmitter;
 import scw.cglib.core.CodeEmitter;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.Local;
 import scw.cglib.core.MethodInfo;
 import scw.cglib.core.ReflectUtils;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 
 @SuppressWarnings({"rawtypes"})
 class BulkBeanEmitter extends ClassEmitter {
     private static final Signature GET_PROPERTY_VALUES =
-      TypeUtils.parseSignature("void getPropertyValues(Object, Object[])");
+      CGLIBTypeUtils.parseSignature("void getPropertyValues(Object, Object[])");
     private static final Signature SET_PROPERTY_VALUES =
-      TypeUtils.parseSignature("void setPropertyValues(Object, Object[])");
+      CGLIBTypeUtils.parseSignature("void setPropertyValues(Object, Object[])");
     private static final Signature CSTRUCT_EXCEPTION =
-      TypeUtils.parseConstructor("Throwable, int");
+      CGLIBTypeUtils.parseConstructor("Throwable, int");
     private static final Type BULK_BEAN =
-      TypeUtils.parseType(BulkBean.class.getName());
+      CGLIBTypeUtils.parseType(BulkBean.class.getName());
     private static final Type BULK_BEAN_EXCEPTION =
-      TypeUtils.parseType(BulkBeanException.class.getName());
+      CGLIBTypeUtils.parseType(BulkBeanException.class.getName());
         
     public BulkBeanEmitter(ClassVisitor v,
                            String className,
@@ -56,7 +56,7 @@ class BulkBeanEmitter extends ClassEmitter {
         Method[] setters = new Method[setterNames.length];
         validate(target, getterNames, setterNames, types, getters, setters);
 
-        begin_class(Constants.V1_2, Constants.ACC_PUBLIC, className, BULK_BEAN, null, Constants.SOURCE_FILE);
+        begin_class(CGLIBConstants.V1_2, CGLIBConstants.ACC_PUBLIC, className, BULK_BEAN, null, CGLIBConstants.SOURCE_FILE);
         EmitUtils.null_constructor(this);
         generateGet(target, getters);
         generateSet(target, setters);
@@ -64,7 +64,7 @@ class BulkBeanEmitter extends ClassEmitter {
     }
 
     private void generateGet(final Class target, final Method[] getters) {
-        CodeEmitter e = begin_method(Constants.ACC_PUBLIC, GET_PROPERTY_VALUES, null);
+        CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, GET_PROPERTY_VALUES, null);
         if (getters.length >= 0) {
             e.load_arg(0);
             e.checkcast(Type.getType(target));
@@ -88,7 +88,7 @@ class BulkBeanEmitter extends ClassEmitter {
 
     private void generateSet(final Class target, final Method[] setters) {
         // setPropertyValues
-        CodeEmitter e = begin_method(Constants.ACC_PUBLIC, SET_PROPERTY_VALUES, null);
+        CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, SET_PROPERTY_VALUES, null);
         if (setters.length > 0) {
             Local index = e.make_local(Type.INT_TYPE);
             e.push(0);
@@ -114,7 +114,7 @@ class BulkBeanEmitter extends ClassEmitter {
             }
             handler.end();
             e.return_value();
-            e.catch_exception(handler, Constants.TYPE_THROWABLE);
+            e.catch_exception(handler, CGLIBConstants.TYPE_THROWABLE);
             e.new_instance(BULK_BEAN_EXCEPTION);
             e.dup_x1();
             e.swap();

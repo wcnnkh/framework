@@ -22,12 +22,12 @@ import scw.asm.Label;
 import scw.asm.Type;
 import scw.cglib.core.CodeEmitter;
 import scw.cglib.core.CodeGenerationException;
-import scw.cglib.core.Constants;
+import scw.cglib.core.CGLIBConstants;
 import scw.cglib.core.EmitUtils;
 import scw.cglib.core.ObjectSwitchCallback;
 import scw.cglib.core.ProcessSwitchCallback;
 import scw.cglib.core.Signature;
-import scw.cglib.core.TypeUtils;
+import scw.cglib.core.CGLIBTypeUtils;
 import scw.cglib.transform.ClassEmitterTransformer;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -37,28 +37,28 @@ public class FieldProviderTransformer extends ClassEmitterTransformer {
     private static final String FIELD_TYPES = "CGLIB$FIELD_TYPES";
     
     private static final Type FIELD_PROVIDER =
-      TypeUtils.parseType(FieldProvider.class.getName());
+      CGLIBTypeUtils.parseType(FieldProvider.class.getName());
     private static final Type ILLEGAL_ARGUMENT_EXCEPTION =
-      TypeUtils.parseType("IllegalArgumentException");
+      CGLIBTypeUtils.parseType("IllegalArgumentException");
     private static final Signature PROVIDER_GET =
-      TypeUtils.parseSignature("Object getField(String)");
+      CGLIBTypeUtils.parseSignature("Object getField(String)");
     private static final Signature PROVIDER_SET =
-      TypeUtils.parseSignature("void setField(String, Object)");
+      CGLIBTypeUtils.parseSignature("void setField(String, Object)");
     private static final Signature PROVIDER_SET_BY_INDEX =
-      TypeUtils.parseSignature("void setField(int, Object)");
+      CGLIBTypeUtils.parseSignature("void setField(int, Object)");
     private static final Signature PROVIDER_GET_BY_INDEX =
-      TypeUtils.parseSignature("Object getField(int)");
+      CGLIBTypeUtils.parseSignature("Object getField(int)");
     private static final Signature PROVIDER_GET_TYPES =
-      TypeUtils.parseSignature("Class[] getFieldTypes()");
+      CGLIBTypeUtils.parseSignature("Class[] getFieldTypes()");
     private static final Signature PROVIDER_GET_NAMES =
-      TypeUtils.parseSignature("String[] getFieldNames()");
+      CGLIBTypeUtils.parseSignature("String[] getFieldNames()");
     
     private int access;
     private Map fields;
     
     public void begin_class(int version, int access, String className, Type superType, Type[] interfaces, String sourceFile) {
-        if (!TypeUtils.isAbstract(access)) {
-            interfaces = TypeUtils.add(interfaces, FIELD_PROVIDER);
+        if (!CGLIBTypeUtils.isAbstract(access)) {
+            interfaces = CGLIBTypeUtils.add(interfaces, FIELD_PROVIDER);
         }
         this.access = access;
         fields = new HashMap();
@@ -68,13 +68,13 @@ public class FieldProviderTransformer extends ClassEmitterTransformer {
     public void declare_field(int access, String name, Type type, Object value) {
         super.declare_field(access, name, type, value);
         
-        if (!TypeUtils.isStatic(access)) {
+        if (!CGLIBTypeUtils.isStatic(access)) {
             fields.put(name, type);
         }
     }
 
     public void end_class() {
-        if (!TypeUtils.isInterface(access)) {  
+        if (!CGLIBTypeUtils.isInterface(access)) {  
             try {
                 generate();
             } catch (RuntimeException e) {
@@ -94,8 +94,8 @@ public class FieldProviderTransformer extends ClassEmitterTransformer {
             indexes[i] = i;
         }
         
-        super.declare_field(Constants.PRIVATE_FINAL_STATIC, FIELD_NAMES, Constants.TYPE_STRING_ARRAY, null);
-        super.declare_field(Constants.PRIVATE_FINAL_STATIC, FIELD_TYPES, Constants.TYPE_CLASS_ARRAY, null);
+        super.declare_field(CGLIBConstants.PRIVATE_FINAL_STATIC, FIELD_NAMES, CGLIBConstants.TYPE_STRING_ARRAY, null);
+        super.declare_field(CGLIBConstants.PRIVATE_FINAL_STATIC, FIELD_TYPES, CGLIBConstants.TYPE_CLASS_ARRAY, null);
 
         // use separate methods here because each process switch inner class needs a final CodeEmitter
         initFieldProvider(names);
@@ -110,10 +110,10 @@ public class FieldProviderTransformer extends ClassEmitterTransformer {
     private void initFieldProvider(String[] names) {
         CodeEmitter e = getStaticHook();
         EmitUtils.push_object(e, names);
-        e.putstatic(getClassType(), FIELD_NAMES, Constants.TYPE_STRING_ARRAY);
+        e.putstatic(getClassType(), FIELD_NAMES, CGLIBConstants.TYPE_STRING_ARRAY);
         
         e.push(names.length);
-        e.newarray(Constants.TYPE_CLASS);
+        e.newarray(CGLIBConstants.TYPE_CLASS);
         e.dup();
         for(int i = 0; i < names.length; i++ ){ 
             e.dup();
@@ -122,25 +122,25 @@ public class FieldProviderTransformer extends ClassEmitterTransformer {
             EmitUtils.load_class(e, type);
             e.aastore();
         }
-        e.putstatic(getClassType(), FIELD_TYPES, Constants.TYPE_CLASS_ARRAY);
+        e.putstatic(getClassType(), FIELD_TYPES, CGLIBConstants.TYPE_CLASS_ARRAY);
     }
 
     private void getNames() {
-        CodeEmitter e = super.begin_method(Constants.ACC_PUBLIC, PROVIDER_GET_NAMES, null);
-        e.getstatic(getClassType(), FIELD_NAMES, Constants.TYPE_STRING_ARRAY);
+        CodeEmitter e = super.begin_method(CGLIBConstants.ACC_PUBLIC, PROVIDER_GET_NAMES, null);
+        e.getstatic(getClassType(), FIELD_NAMES, CGLIBConstants.TYPE_STRING_ARRAY);
         e.return_value();
         e.end_method();
     }
 
     private void getTypes() {
-        CodeEmitter e = super.begin_method(Constants.ACC_PUBLIC, PROVIDER_GET_TYPES, null);
-        e.getstatic(getClassType(), FIELD_TYPES, Constants.TYPE_CLASS_ARRAY);
+        CodeEmitter e = super.begin_method(CGLIBConstants.ACC_PUBLIC, PROVIDER_GET_TYPES, null);
+        e.getstatic(getClassType(), FIELD_TYPES, CGLIBConstants.TYPE_CLASS_ARRAY);
         e.return_value();
         e.end_method();
     }
 
     private void setByIndex(final String[] names, final int[] indexes) throws Exception {
-        final CodeEmitter e = super.begin_method(Constants.ACC_PUBLIC, PROVIDER_SET_BY_INDEX, null);
+        final CodeEmitter e = super.begin_method(CGLIBConstants.ACC_PUBLIC, PROVIDER_SET_BY_INDEX, null);
         e.load_this();
         e.load_arg(1);
         e.load_arg(0);
@@ -159,7 +159,7 @@ public class FieldProviderTransformer extends ClassEmitterTransformer {
     }
 
     private void getByIndex(final String[] names, final int[] indexes) throws Exception {
-        final CodeEmitter e = super.begin_method(Constants.ACC_PUBLIC, PROVIDER_GET_BY_INDEX, null);
+        final CodeEmitter e = super.begin_method(CGLIBConstants.ACC_PUBLIC, PROVIDER_GET_BY_INDEX, null);
         e.load_this();
         e.load_arg(0);
         e.process_switch(indexes, new ProcessSwitchCallback() {
@@ -179,10 +179,10 @@ public class FieldProviderTransformer extends ClassEmitterTransformer {
     // TODO: if this is used to enhance class files SWITCH_STYLE_TRIE should be used
     // to avoid JVM hashcode implementation incompatibilities
     private void getField(String[] names) throws Exception {
-        final CodeEmitter e = begin_method(Constants.ACC_PUBLIC, PROVIDER_GET, null);
+        final CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, PROVIDER_GET, null);
         e.load_this();
         e.load_arg(0);
-        EmitUtils.string_switch(e, names, Constants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
+        EmitUtils.string_switch(e, names, CGLIBConstants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
             public void processCase(Object key, Label end) {
                 Type type = (Type)fields.get(key);
                 e.getfield((String)key);
@@ -197,11 +197,11 @@ public class FieldProviderTransformer extends ClassEmitterTransformer {
     }
 
     private void setField(String[] names) throws Exception {
-        final CodeEmitter e = begin_method(Constants.ACC_PUBLIC, PROVIDER_SET, null);
+        final CodeEmitter e = begin_method(CGLIBConstants.ACC_PUBLIC, PROVIDER_SET, null);
         e.load_this();
         e.load_arg(1);
         e.load_arg(0);
-        EmitUtils.string_switch(e, names, Constants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
+        EmitUtils.string_switch(e, names, CGLIBConstants.SWITCH_STYLE_HASH, new ObjectSwitchCallback() {
             public void processCase(Object key, Label end) {
                 Type type = (Type)fields.get(key);
                 e.unbox(type);
