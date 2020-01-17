@@ -297,7 +297,7 @@ public class DefaultObjectOperations implements ObjectOperations {
 
 	@SuppressWarnings("rawtypes")
 	public void verify(Object obj) {
-		Assert.argumentNotNull(obj, "obj");
+		Assert.isRequiredArgument(obj != null, "obj");
 
 		if (obj instanceof Collection) {
 			Assert.notEmpty((Collection) obj);

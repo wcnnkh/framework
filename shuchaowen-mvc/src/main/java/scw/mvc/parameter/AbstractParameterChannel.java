@@ -53,7 +53,7 @@ public abstract class AbstractParameterChannel extends AbstractChannel implement
 			try {
 				return requestBodyParse.requestBodyParse(this, jsonParseSupport, parameterConfig);
 			} catch (Exception e) {
-				throw ParameterException.createError(parameterConfig.getName());
+				throw ParameterException.createError(parameterConfig.getName(), e);
 			}
 		}
 

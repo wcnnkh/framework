@@ -154,8 +154,12 @@ public abstract class Assert {
 		}
 	}
 
-	public static void argumentNotNull(Object object, String name) {
-		notNull(object, "[Assertion failed] - [" + name + "] argument is required; it must not be null");
+	/**
+	 * @param expression false的情况下会抛出异常
+	 * @param name
+	 */
+	public static void isRequiredArgument(boolean expression, String name) {
+		isTrue(expression, "[Assertion failed] - [" + name + "] argument is required");
 	}
 
 	/**
