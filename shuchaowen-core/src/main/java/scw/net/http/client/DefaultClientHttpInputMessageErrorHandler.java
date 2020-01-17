@@ -3,13 +3,13 @@ package scw.net.http.client;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import scw.io.FileCopyUtils;
 import scw.net.http.HttpHeaders;
 import scw.net.http.HttpStatus;
 import scw.net.http.MediaType;
 import scw.net.http.client.exception.HttpClientErrorException;
 import scw.net.http.client.exception.HttpServerErrorException;
 import scw.net.http.client.exception.UnknownHttpStatusCodeException;
-import scw.util.FileCopyUtils;
 
 public class DefaultClientHttpInputMessageErrorHandler implements
 		ClientHttpInputMessageErrorHandler {

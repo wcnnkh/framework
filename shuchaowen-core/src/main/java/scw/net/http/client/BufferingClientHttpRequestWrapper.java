@@ -19,9 +19,9 @@ package scw.net.http.client;
 import java.io.IOException;
 import java.net.URI;
 
+import scw.io.StreamUtils;
 import scw.net.http.HttpHeaders;
 import scw.net.http.Method;
-import scw.util.StreamUtils;
 
 /**
  * Simple implementation of {@link ClientHttpRequest} that wraps another

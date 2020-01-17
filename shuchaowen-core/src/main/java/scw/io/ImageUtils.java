@@ -1,4 +1,4 @@
-package scw.util;
+package scw.io;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -16,8 +16,6 @@ import java.awt.image.ImageFilter;
 import java.io.File;
 
 import javax.imageio.ImageIO;
-
-import scw.io.FileUtils;
 
 public final class ImageUtils {
 	private ImageUtils(){};

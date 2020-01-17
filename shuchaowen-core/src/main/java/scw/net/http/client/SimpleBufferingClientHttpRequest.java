@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 import scw.core.utils.StringUtils;
+import scw.io.FileCopyUtils;
 import scw.net.http.HttpHeaders;
 import scw.net.http.Method;
-import scw.util.FileCopyUtils;
 
 final class SimpleBufferingClientHttpRequest extends AbstractBufferingClientHttpRequest {
 	

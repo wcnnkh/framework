@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.util;
+package scw.io;
 
 import java.io.IOException;
 import java.io.InputStream;

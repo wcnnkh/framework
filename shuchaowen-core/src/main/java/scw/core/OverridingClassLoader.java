@@ -19,7 +19,7 @@ package scw.core;
 import java.io.IOException;
 import java.io.InputStream;
 
-import scw.util.FileCopyUtils;
+import scw.io.FileCopyUtils;
 
 /**
  * {@code ClassLoader} that does <i>not</i> always delegate to the parent loader

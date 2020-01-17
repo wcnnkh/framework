@@ -22,9 +22,9 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import scw.io.StreamUtils;
 import scw.net.http.HttpHeaders;
 import scw.net.http.Method;
-import scw.util.StreamUtils;
 
 final class SimpleStreamingClientHttpRequest extends AbstractClientHttpRequest {
 

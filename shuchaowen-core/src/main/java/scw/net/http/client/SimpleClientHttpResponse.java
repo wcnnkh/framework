@@ -21,8 +21,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import scw.core.utils.StringUtils;
+import scw.io.StreamUtils;
 import scw.net.http.HttpHeaders;
-import scw.util.StreamUtils;
 
 final class SimpleClientHttpResponse extends AbstractClientHttpResponse {
 
