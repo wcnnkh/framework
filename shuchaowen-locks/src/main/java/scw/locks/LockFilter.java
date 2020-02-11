@@ -6,12 +6,12 @@ import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.beans.annotation.Configuration;
-import scw.beans.annotation.LockConfig;
-import scw.beans.annotation.LockParameter;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
 import scw.json.JSONUtils;
+import scw.locks.annotation.LockConfig;
+import scw.locks.annotation.LockParameter;
 
 /**
  * 实现方法级别的分布式锁
