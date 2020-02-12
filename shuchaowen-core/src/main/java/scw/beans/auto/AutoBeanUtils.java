@@ -18,14 +18,13 @@ import scw.logger.LoggerUtils;
 import scw.util.FormatUtils;
 
 public final class AutoBeanUtils {
-	private static final AutoBeanService DEFAULT_AUTO_BEAN_SERVICE = new DefaultAutoBeanService();
-	private static final LinkedList<Object> services = new LinkedList<Object>();
 	private static Logger logger = LoggerUtils.getLogger(AutoBeanUtils.class);
 
 	private AutoBeanUtils() {
 	};
 
-	private static Collection<AutoBeanService> getAutoBeanServices(AutoImpl autoConfig, BeanFactory beanFactory,
+	private static Collection<AutoBeanService> getAutoBeanServices(
+			AutoImpl autoConfig, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
 		LinkedList<AutoBeanService> autoBeanServices = new LinkedList<AutoBeanService>();
 		String value = propertyFactory.getProperty("beans.auto.names");
@@ -38,20 +37,9 @@ public final class AutoBeanUtils {
 						continue;
 					}
 
-					autoBeanServices.add((AutoBeanService) beanFactory.getInstance(name));
+					autoBeanServices.add((AutoBeanService) beanFactory
+							.getInstance(name));
 				}
-			}
-		}
-
-		for (Object service : services) {
-			if (service == null) {
-				continue;
-			}
-
-			if (service instanceof AutoBeanService) {
-				autoBeanServices.add((AutoBeanService) service);
-			} else {
-				autoBeanServices.add((AutoBeanService) beanFactory.getInstance(service.toString()));
 			}
 		}
 
@@ -62,10 +50,12 @@ public final class AutoBeanUtils {
 				}
 
 				name = FormatUtils.format(name, propertyFactory, true);
-				autoBeanServices.add((AutoBeanService) beanFactory.getInstance(name));
+				autoBeanServices.add((AutoBeanService) beanFactory
+						.getInstance(name));
 			}
 
-			for (Class<? extends AutoBeanService> service : autoConfig.service()) {
+			for (Class<? extends AutoBeanService> service : autoConfig
+					.service()) {
 				if (service == null) {
 					continue;
 				}
@@ -74,30 +64,20 @@ public final class AutoBeanUtils {
 			}
 		}
 
-		autoBeanServices.add(DEFAULT_AUTO_BEAN_SERVICE);
+		autoBeanServices.add(new DefaultAutoBeanService());
 		return autoBeanServices;
 	}
 
-	public static void addAutoBeanService(String name) {
-		synchronized (services) {
-			services.add(name);
-		}
-	}
-
-	public static void addAutoBeanService(AutoBeanService autoBeanService) {
-		synchronized (services) {
-			services.add(autoBeanService);
-		}
-	}
-
-	public static AutoBean autoBeanService(Class<?> clazz, AutoImpl autoConfig, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
-		Collection<AutoBeanService> autoBeanServices = AutoBeanUtils.getAutoBeanServices(autoConfig, beanFactory,
-				propertyFactory);
+	public static AutoBean autoBeanService(Class<?> clazz, AutoImpl autoConfig,
+			BeanFactory beanFactory, PropertyFactory propertyFactory) {
+		Collection<AutoBeanService> autoBeanServices = AutoBeanUtils
+				.getAutoBeanServices(autoConfig, beanFactory, propertyFactory);
 		if (!CollectionUtils.isEmpty(autoBeanServices)) {
-			AutoBeanServiceChain serviceChain = new SimpleAutoBeanServiceChain(autoBeanServices, null);
+			AutoBeanServiceChain serviceChain = new SimpleAutoBeanServiceChain(
+					autoBeanServices, null);
 			try {
-				return serviceChain.service(clazz, beanFactory, propertyFactory);
+				return serviceChain
+						.service(clazz, beanFactory, propertyFactory);
 			} catch (Exception e) {
 				throw new BeansException(clazz.getName(), e);
 			}
@@ -122,8 +102,8 @@ public final class AutoBeanUtils {
 		return list;
 	}
 
-	public static Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig, Class<?> type,
-			PropertyFactory propertyFactory) {
+	public static Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig,
+			Class<?> type, PropertyFactory propertyFactory) {
 		LinkedList<Class<?>> list = new LinkedList<Class<?>>();
 		for (String name : autoConfig.className()) {
 			if (StringUtils.isEmpty(name)) {

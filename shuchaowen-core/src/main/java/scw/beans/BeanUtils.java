@@ -10,10 +10,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import scw.aop.Filter;
@@ -48,30 +50,23 @@ import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.ConcurrentReferenceHashMap;
 
 public final class BeanUtils {
 	private static Logger logger = LoggerUtils.getLogger(BeanUtils.class);
 
-	private BeanUtils() {
-	};
+	private static Map<Class<?>, Map<String, List<Class<?>>>> configurationCache = new ConcurrentReferenceHashMap<Class<?>, Map<String, List<Class<?>>>>();
 
-	public static List<BeanConfiguration> getBeanConfigurationClassList(
-			BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		List<BeanConfiguration> list = new LinkedList<BeanConfiguration>();
-		for (Class<? extends BeanConfiguration> clazz : BeanUtils
-				.getConfigurationClassList(BeanConfiguration.class, Arrays
-						.asList("scw", ApplicationConfigUtils
-								.getAnnotationPackage(propertyFactory)))) {
-			list.add(beanFactory.getInstance(clazz));
+	private static List<Class<?>> getConfigurationClassListInternal(Class<?> type,
+			String packageName) {
+		Map<String, List<Class<?>>> map = configurationCache.get(type);
+		if (map == null) {
+			map = new HashMap<String, List<Class<?>>>();
 		}
-		return list;
-	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> Collection<Class<? extends T>> getConfigurationClassList(
-			Class<? extends T> type, Collection<String> packageNames) {
-		HashSet<Class<? extends T>> set = new HashSet<Class<? extends T>>();
-		for (String packageName : packageNames) {
+		List<Class<?>> list = map.get(packageName);
+		if (list == null) {
+			list = new ArrayList<Class<?>>();
 			for (Class<?> clazz : ClassUtils.getClassList(packageName)) {
 				Configuration configuration = clazz
 						.getAnnotation(Configuration.class);
@@ -83,6 +78,56 @@ public final class BeanUtils {
 					continue;
 				}
 
+				list.add(clazz);
+			}
+			map.put(packageName, list);
+			configurationCache.putIfAbsent(type, map);
+		}
+		return list;
+	}
+
+	private BeanUtils() {
+	};
+
+	public static <T> List<Class<T>> getConfigurationClassList(
+			Class<? extends T> type, Collection<Class<?>> excludeTypes,
+			PropertyFactory propertyFactory) {
+		return BeanUtils.getConfigurationClassList(type, excludeTypes, Arrays
+				.asList("scw", ApplicationConfigUtils
+						.getAnnotationPackage(propertyFactory)));
+	}
+
+	public static <T> List<T> getConfigurationList(Class<? extends T> type,
+			Collection<Class<?>> excludeTypes, InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory) {
+		List<T> list = new LinkedList<T>();
+		for (Class<T> clazz : getConfigurationClassList(type, excludeTypes,
+				propertyFactory)) {
+			list.add(instanceFactory.getInstance(clazz));
+		}
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> List<Class<T>> getConfigurationClassList(
+			Class<? extends T> type, Collection<Class<?>> excludeTypes,
+			Collection<String> packageNames) {
+		HashSet<Class<T>> set = new HashSet<Class<T>>();
+		for (String packageName : packageNames) {
+			for (Class<?> clazz : getConfigurationClassListInternal(type, packageName)) {
+				Configuration configuration = clazz
+						.getAnnotation(Configuration.class);
+				if (configuration == null) {
+					continue;
+				}
+
+				if (!CollectionUtils.isEmpty(excludeTypes)) {
+					for (Class<?> excludeType : excludeTypes) {
+						if (excludeType.isAssignableFrom(clazz)) {
+							continue;
+						}
+					}
+				}
 				set.add((Class<T>) clazz);
 			}
 		}
@@ -96,7 +141,7 @@ public final class BeanUtils {
 			}
 		};
 
-		List<Class<? extends T>> list = new ArrayList<Class<? extends T>>(set);
+		List<Class<T>> list = new ArrayList<Class<T>>(set);
 		Collections.sort(list, comparator);
 		for (Class<? extends T> clazz : list) {
 			Configuration c = clazz.getAnnotation(Configuration.class);
@@ -105,7 +150,7 @@ public final class BeanUtils {
 			}
 		}
 
-		list = new ArrayList<Class<? extends T>>(set);
+		list = new ArrayList<Class<T>>(set);
 		Collections.sort(list, comparator);
 		return list;
 	}
@@ -565,13 +610,14 @@ public final class BeanUtils {
 	public static <T> void appendBean(Collection<T> beans,
 			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
 			Class<? extends T> type, String key) {
-		appendBean(beans, instanceFactory, propertyFactory, type, key, false);
+		appendBean(beans, instanceFactory, propertyFactory, type, null, key);
 	}
 
 	@SuppressWarnings({ "unchecked" })
 	public static <T> void appendBean(Collection<T> beans,
 			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			Class<? extends T> type, String key, boolean warn) {
+			Class<? extends T> type, Collection<Class<?>> excludeTypes,
+			String key) {
 		String[] filters = StringUtils.commonSplit(propertyFactory
 				.getProperty(key));
 		if (!ArrayUtils.isEmpty(filters)) {
@@ -587,12 +633,20 @@ public final class BeanUtils {
 				}
 
 				Object filter = instanceFactory.getInstance(name);
+				if (!CollectionUtils.isEmpty(excludeTypes)) {
+					for (Class<?> excludeType : excludeTypes) {
+						if (excludeType.isInstance(filter)) {
+							logger.debug("{}已被排除, excludeTypes={}", name,
+									Arrays.toString(excludeTypes.toArray()));
+							continue;
+						}
+					}
+				}
+
 				if (type.isInstance(filter)) {
 					beans.add((T) filter);
 				} else {
-					if (warn) {
-						logger.warn("{}不是一个{}类型，无法使用", name, type);
-					}
+					logger.warn("{}不是一个{}类型，无法使用", name, type);
 				}
 			}
 		}

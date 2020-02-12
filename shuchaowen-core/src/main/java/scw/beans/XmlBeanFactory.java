@@ -88,7 +88,8 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 						getValueWiredManager(), this, propertyFactory,
 						getBeanAnnotationPackage()));
 				for (BeanConfiguration beanConfiguration : BeanUtils
-						.getBeanConfigurationClassList(this, propertyFactory)) {
+						.getConfigurationList(BeanConfiguration.class, null,
+								this, propertyFactory)) {
 					if (beanConfiguration instanceof XmlBeanConfiguration) {
 						((XmlBeanConfiguration) beanConfiguration).init(
 								getValueWiredManager(), this, propertyFactory,

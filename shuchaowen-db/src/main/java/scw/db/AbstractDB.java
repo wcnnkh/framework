@@ -26,7 +26,8 @@ import scw.serializer.SerializerUtils;
 import scw.sql.Sql;
 import scw.transaction.sql.SqlTransactionUtils;
 
-public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<AsyncExecute>, DBConfig, Init {
+public abstract class AbstractDB extends ORMTemplate implements DB,
+		Consumer<AsyncExecute>, DBConfig, Init {
 
 	public SqlDialect getSqlDialect() {
 		return getDataBase().getSqlDialect();
@@ -52,11 +53,15 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 		createTable(tableClass, tableName, true);
 	}
 
-	public void createTable(Class<?> tableClass, String tableName, boolean registerManager) {
+	public void createTable(Class<?> tableClass, String tableName,
+			boolean registerManager) {
 		if (registerManager) {
 			DBManager.register(tableClass, this);
 		}
+		
 		super.createTable(tableClass, tableName);
+		// 检查表变更
+		checkTableChange(tableClass);
 	}
 
 	@Override
@@ -65,7 +70,8 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 	}
 
 	public void createTable(String packageName, boolean registerManager) {
-		Collection<Class<?>> list = ClassUtils.getClassList(packageName, ClassUtils.getDefaultClassLoader());
+		Collection<Class<?>> list = ClassUtils.getClassList(packageName,
+				ClassUtils.getDefaultClassLoader());
 		for (Class<?> tableClass : list) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {
@@ -77,9 +83,6 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 			}
 
 			createTable(tableClass, false);
-
-			// 检查表变更
-			checkTableChange(tableClass);
 		}
 	}
 
@@ -88,15 +91,19 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 		TableChange tableChange = getTableChange(tableClass);
 		List<String> addList = new LinkedList<String>();
 		if (!CollectionUtils.isEmpty(tableChange.getAddMappingContexts())) {
-			for (MappingContext mappingContext : tableChange.getAddMappingContexts()) {
+			for (MappingContext mappingContext : tableChange
+					.getAddMappingContexts()) {
 				addList.add(mappingContext.getColumn().getName());
 			}
 		}
 
-		if (!CollectionUtils.isEmpty(tableChange.getDeleteNames()) || !CollectionUtils.isEmpty(addList)) {
+		if (!CollectionUtils.isEmpty(tableChange.getDeleteNames())
+				|| !CollectionUtils.isEmpty(addList)) {
 			// 如果存在字段变量
-			if(logger.isWarnEnabled()){
-				logger.warn("存在字段变更class={}, addList={}, deleteList={}", tableClass.getName(), Arrays.toString(addList.toArray()),
+			if (logger.isWarnEnabled()) {
+				logger.warn("存在字段变更class={}, addList={}, deleteList={}",
+						tableClass.getName(),
+						Arrays.toString(addList.toArray()),
 						Arrays.toString(tableChange.getDeleteNames().toArray()));
 			}
 		}
@@ -107,7 +114,8 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 		return SqlTransactionUtils.getTransactionConnection(this);
 	}
 
-	public void executeSqlByFile(String filePath, boolean lines) throws SQLException {
+	public void executeSqlByFile(String filePath, boolean lines)
+			throws SQLException {
 		Collection<Sql> sqls = DBUtils.getSqlByFile(filePath, lines);
 		for (Sql sql : sqls) {
 			execute(sql);
@@ -175,14 +183,16 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inIds, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName,
+			Collection<K> inIds, Object... params) {
 		if (inIds == null || inIds.isEmpty()) {
 			return Collections.EMPTY_MAP;
 		}
 
 		Map<K, V> map = getCacheManager().getInIdList(type, inIds, params);
 		if (CollectionUtils.isEmpty(map)) {
-			Map<K, V> valueMap = super.getInIdList(type, tableName, inIds, params);
+			Map<K, V> valueMap = super.getInIdList(type, tableName, inIds,
+					params);
 			if (!CollectionUtils.isEmpty(valueMap)) {
 				for (Entry<K, V> entry : valueMap.entrySet()) {
 					getCacheManager().save(entry.getValue());
@@ -209,7 +219,8 @@ public abstract class AbstractDB extends ORMTemplate implements DB, Consumer<Asy
 		}
 
 		if (!CollectionUtils.isEmpty(notFoundList)) {
-			Map<K, V> dbMap = super.getInIdList(type, tableName, notFoundList, params);
+			Map<K, V> dbMap = super.getInIdList(type, tableName, notFoundList,
+					params);
 			if (dbMap == null || dbMap.isEmpty()) {
 				return map;
 			}

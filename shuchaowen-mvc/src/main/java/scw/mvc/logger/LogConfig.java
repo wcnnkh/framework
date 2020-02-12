@@ -1,12 +1,14 @@
-package scw.orm.sql.annotation;
+package scw.mvc.logger;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.FIELD)
+@Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SequenceId {
-	public String[] createTime() default {};
+public @interface LogConfig {
+	public boolean enable() default true;
+
+	public boolean response() default false;
 }

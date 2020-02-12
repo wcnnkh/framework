@@ -1,7 +1,6 @@
 package scw.beans;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,7 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.aop.Filter;
-import scw.application.ApplicationConfigUtils;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.AutoBeanDefinition;
@@ -413,9 +411,14 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			return null;
 		}
 
+		long t = System.currentTimeMillis();
 		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz,
 				clz.getAnnotation(AutoImpl.class), this, getPropertyFactory());
 		if (autoBean != null) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("find [{}] use time {}ms", clz,
+						System.currentTimeMillis() - t);
+			}
 			try {
 				return new AutoBeanDefinition(valueWiredManager, this,
 						getPropertyFactory(), clz, autoBean);
@@ -425,12 +428,10 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 		return null;
 	}
-	
+
 	public synchronized void init() {
 		for (Class<? extends Filter> clazz : BeanUtils
-				.getConfigurationClassList(Filter.class, Arrays.asList("scw",
-						ApplicationConfigUtils
-								.getAnnotationPackage(propertyFactory)))) {
+				.getConfigurationClassList(Filter.class, null, propertyFactory)) {
 			if (!isInstance(clazz)) {
 				continue;
 			}

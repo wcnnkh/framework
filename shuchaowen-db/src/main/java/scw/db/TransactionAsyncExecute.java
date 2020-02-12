@@ -18,6 +18,7 @@ public final class TransactionAsyncExecute extends LinkedList<AsyncExecute> impl
 			TransactionManager.commit(transaction);
 		} catch (Throwable e) {
 			TransactionManager.rollback(transaction);
+			e.printStackTrace();
 		}
 	}
 }

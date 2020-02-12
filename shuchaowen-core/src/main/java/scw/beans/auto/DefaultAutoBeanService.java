@@ -1,7 +1,6 @@
 package scw.beans.auto;
 
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
@@ -20,22 +19,16 @@ import scw.logger.LoggerUtils;
 import scw.util.ExecutorUtils;
 
 public final class DefaultAutoBeanService implements AutoBeanService {
-	private static Logger logger = LoggerUtils.getLogger(DefaultAutoBeanService.class);
-	private Collection<Class<? extends AutoBeanService>> autoBeanServiceClassList;
+	private static Logger logger = LoggerUtils
+			.getLogger(DefaultAutoBeanService.class);
 
-	public DefaultAutoBeanService() {
-		this(BeanUtils.getConfigurationClassList(AutoBeanService.class, Arrays.asList("scw")));
-	}
-
-	public DefaultAutoBeanService(Collection<Class<? extends AutoBeanService>> autoBeanServiceClassList) {
-		this.autoBeanServiceClassList = autoBeanServiceClassList;
-	}
-
-	private AutoBean defaultService(Class<?> clazz, BeanFactory beanFactory, PropertyFactory propertyFactory,
-			AutoBeanServiceChain serviceChain) throws Exception {
+	private AutoBean defaultService(Class<?> clazz, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, AutoBeanServiceChain serviceChain)
+			throws Exception {
 		AutoBean autoBean = null;
 		if (clazz == ExecutorService.class) {
-			autoBean = createExecutorServiceAutoBean(beanFactory, propertyFactory);
+			autoBean = createExecutorServiceAutoBean(beanFactory,
+					propertyFactory);
 		}
 
 		if (autoBean != null) {
@@ -50,8 +43,10 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 				return new ReferenceAutoBean(beanFactory, name);
 			} else {
 				int index = clazz.getName().lastIndexOf(".");
-				name = index == -1 ? (clazz.getName() + "Impl")
-						: (clazz.getName().substring(0, index) + ".impl." + clazz.getSimpleName() + "Impl");
+				name = index == -1 ? (clazz.getName() + "Impl") : (clazz
+						.getName().substring(0, index)
+						+ ".impl."
+						+ clazz.getSimpleName() + "Impl");
 				if (ClassUtils.isPresent(name) && beanFactory.isInstance(name)) {
 					logger.info("{} reference {}", clazz.getName(), name);
 					return new ReferenceAutoBean(beanFactory, name);
@@ -62,33 +57,41 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
 			Proxy proxy = clazz.getAnnotation(Proxy.class);
 			if (proxy != null) {
-				return new ProxyAutoBean(beanFactory, clazz, AutoBeanUtils.getProxyNames(proxy));
+				return new ProxyAutoBean(beanFactory, clazz,
+						AutoBeanUtils.getProxyNames(proxy));
 			}
 		}
 
 		if (!ReflectionUtils.isInstance(clazz, false)) {
-			AutoBeanServiceChain autoBeanServiceChain = new NextAutoBeanServiceChain(autoBeanServiceClassList,
-					serviceChain);
-			return autoBeanServiceChain.service(clazz, beanFactory, propertyFactory);
+			AutoBeanServiceChain autoBeanServiceChain = new NextAutoBeanServiceChain(
+					BeanUtils.getConfigurationClassList(AutoBeanService.class,
+							null, propertyFactory), serviceChain);
+			return autoBeanServiceChain.service(clazz, beanFactory,
+					propertyFactory);
 		}
 
 		return new SimpleAutoBean(beanFactory, clazz, propertyFactory);
 	}
 
-	public AutoBean doService(Class<?> clazz, BeanFactory beanFactory, PropertyFactory propertyFactory,
-			AutoBeanServiceChain serviceChain) throws Exception {
+	public AutoBean doService(Class<?> clazz, BeanFactory beanFactory,
+			PropertyFactory propertyFactory, AutoBeanServiceChain serviceChain)
+			throws Exception {
 		AutoImpl autoConfig = clazz.getAnnotation(AutoImpl.class);
 		if (autoConfig == null) {
-			return defaultService(clazz, beanFactory, propertyFactory, serviceChain);
+			return defaultService(clazz, beanFactory, propertyFactory,
+					serviceChain);
 		}
 
-		Collection<Class<?>> implList = AutoBeanUtils.getAutoImplClass(autoConfig, clazz, propertyFactory);
+		Collection<Class<?>> implList = AutoBeanUtils.getAutoImplClass(
+				autoConfig, clazz, propertyFactory);
 		if (CollectionUtils.isEmpty(implList)) {
-			return defaultService(clazz, beanFactory, propertyFactory, serviceChain);
+			return defaultService(clazz, beanFactory, propertyFactory,
+					serviceChain);
 		}
 
 		for (Class<?> clz : implList) {
-			AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, autoConfig, beanFactory, propertyFactory);
+			AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, autoConfig,
+					beanFactory, propertyFactory);
 			if (autoBean != null && autoBean.isInstance()) {
 				return autoBean;
 			}
@@ -97,15 +100,19 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		return defaultService(clazz, beanFactory, propertyFactory, serviceChain);
 	}
 
-	private AutoBean createExecutorServiceAutoBean(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		return new SingleInstanceAutoBean(beanFactory, ThreadPoolExecutor.class,
+	private AutoBean createExecutorServiceAutoBean(BeanFactory beanFactory,
+			PropertyFactory propertyFactory) {
+		return new SingleInstanceAutoBean(beanFactory,
+				ThreadPoolExecutor.class,
 				ExecutorUtils.newExecutorService(true));
 	}
 
-	private static class NextAutoBeanServiceChain extends AbstractAutoBeanServiceChain {
-		private Iterator<Class<? extends AutoBeanService>> iterator;
+	private static class NextAutoBeanServiceChain extends
+			AbstractAutoBeanServiceChain {
+		private Iterator<Class<AutoBeanService>> iterator;
 
-		public NextAutoBeanServiceChain(Collection<Class<? extends AutoBeanService>> collection,
+		public NextAutoBeanServiceChain(
+				Collection<Class<AutoBeanService>> collection,
 				AutoBeanServiceChain chain) {
 			super(chain);
 			if (!CollectionUtils.isEmpty(collection)) {
@@ -114,7 +121,8 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		}
 
 		@Override
-		protected AutoBeanService getNext(Class<?> clazz, BeanFactory beanFactory, PropertyFactory propertyFactory) {
+		protected AutoBeanService getNext(Class<?> clazz,
+				BeanFactory beanFactory, PropertyFactory propertyFactory) {
 			if (iterator == null) {
 				return null;
 			}

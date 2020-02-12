@@ -14,7 +14,8 @@ public final class DefaultHttpActionFactory implements ActionFactory {
 	public DefaultHttpActionFactory(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		DefaultMultiHttpActionFactory multiHttpActionFactory = new DefaultMultiHttpActionFactory(beanFactory);
 		BeanUtils.appendBean(multiHttpActionFactory.getFactoryList(), beanFactory, propertyFactory,
-				HttpActionFactory.class, "mvc.http.action.factory", true);
+				HttpActionFactory.class, "mvc.http.action.factory");
+		multiHttpActionFactory.getFactoryList().addAll(BeanUtils.getConfigurationList(HttpActionFactory.class, null, beanFactory, propertyFactory));
 		multiHttpActionFactory.getFactoryList()
 				.add(new HttpParameterActionFactory(MVCUtils.getHttpParameterActionKey(propertyFactory)));
 		multiHttpActionFactory.getFactoryList().add(new HttpPathActionFactory());
