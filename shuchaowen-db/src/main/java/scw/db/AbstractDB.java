@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.aop.ProxyUtils;
+import scw.beans.BeanDefinition;
+import scw.beans.BeanFactory;
+import scw.beans.annotation.Autowired;
 import scw.core.Consumer;
 import scw.core.Init;
 import scw.core.utils.ClassUtils;
@@ -28,6 +32,8 @@ import scw.transaction.sql.SqlTransactionUtils;
 
 public abstract class AbstractDB extends ORMTemplate implements DB,
 		Consumer<AsyncExecute>, DBConfig, Init {
+	@Autowired
+	private BeanFactory beanFactory;
 
 	public SqlDialect getSqlDialect() {
 		return getDataBase().getSqlDialect();
@@ -45,6 +51,13 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 	}
 
 	public void consume(AsyncExecute message) throws Throwable {
+		if(beanFactory != null){
+			Class<?> clazz = ProxyUtils.getProxyAdapter().getUserClass(message.getClass());
+			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(clazz.getName());
+			if(beanDefinition != null){
+				beanDefinition.init(message);
+			}
+		}
 		message.execute(this);
 	}
 

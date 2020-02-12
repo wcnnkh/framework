@@ -13,8 +13,6 @@ public interface BeanDefinition extends InstanceDefinition{
 
 	boolean isSingleton();
 	
-	void autowrite(Object bean) throws Exception;
-
 	void init(Object bean) throws Exception;
 
 	void destroy(Object bean) throws Exception;

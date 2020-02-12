@@ -136,13 +136,11 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		return instanceConfig.getConstructor().newInstance(instanceConfig.getArgs());
 	}
 
-	public void autowrite(Object bean) throws Exception {
-		BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory, type, bean,
+	public void init(Object bean) throws Exception {
+		BeanUtils.autowired(valueWiredManager, beanFactory, propertyFactory, type, bean,
 				Arrays.asList(autowriteFields));
 		setProperties(bean);
-	}
-
-	public void init(Object bean) throws Exception {
+		
 		if (!ArrayUtils.isEmpty(initMethods)) {
 			for (BeanMethod method : initMethods) {
 				method.invoke(bean, beanFactory, propertyFactory);

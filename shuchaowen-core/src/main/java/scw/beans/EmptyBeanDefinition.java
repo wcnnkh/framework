@@ -53,9 +53,6 @@ public final class EmptyBeanDefinition implements BeanDefinition {
 		return true;
 	}
 
-	public void autowrite(Object bean) throws Exception {
-	}
-
 	public void init(Object bean) throws Exception {
 	}
 

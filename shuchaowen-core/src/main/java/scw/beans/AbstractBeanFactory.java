@@ -150,7 +150,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 						obj = beanDefinition.create(parameterTypes, params);
 						singletonMap.put(beanDefinition.getId(), obj);
 						try {
-							beanDefinition.autowrite(obj);
 							beanDefinition.init(obj);
 						} catch (Exception e) {
 							throw new BeansException(beanDefinition.getId(), e);
@@ -162,7 +161,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		} else {
 			obj = beanDefinition.create(parameterTypes, params);
 			try {
-				beanDefinition.autowrite(obj);
 				beanDefinition.init(obj);
 			} catch (Exception e) {
 				throw new BeansException(e);
@@ -192,7 +190,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 						obj = beanDefinition.create(params);
 						singletonMap.put(beanDefinition.getId(), obj);
 						try {
-							beanDefinition.autowrite(obj);
 							beanDefinition.init(obj);
 						} catch (Exception e) {
 							throw new BeansException(beanDefinition.getId(), e);
@@ -204,7 +201,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		} else {
 			obj = beanDefinition.create(params);
 			try {
-				beanDefinition.autowrite(obj);
 				beanDefinition.init(obj);
 			} catch (Exception e) {
 				throw new BeansException(e);
@@ -234,7 +230,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 						try {
 							obj = beanDefinition.create();
 							singletonMap.put(beanDefinition.getId(), obj);
-							beanDefinition.autowrite(obj);
 							beanDefinition.init(obj);
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -247,7 +242,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		} else {
 			obj = beanDefinition.create();
 			try {
-				beanDefinition.autowrite(obj);
 				beanDefinition.init(obj);
 			} catch (Exception e) {
 				throw new BeansException(e);

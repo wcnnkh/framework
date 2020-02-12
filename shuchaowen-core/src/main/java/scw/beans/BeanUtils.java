@@ -242,7 +242,7 @@ public final class BeanUtils {
 			BeanFactory beanFactory, PropertyFactory propertyFactory,
 			Collection<Class<?>> classList) {
 		try {
-			initAutowriteStatic(valueWiredManager, beanFactory,
+			initAutowiredStatic(valueWiredManager, beanFactory,
 					propertyFactory, classList);
 			invokerInitStaticMethod(classList);
 		} catch (Exception e) {
@@ -250,7 +250,7 @@ public final class BeanUtils {
 		}
 	}
 
-	public static void autoWrite(ValueWiredManager valueWiredManager,
+	public static void autowired(ValueWiredManager valueWiredManager,
 			BeanFactory beanFactory, PropertyFactory propertyFactory,
 			Class<?> clz, Object obj, Collection<FieldDefinition> fields)
 			throws Exception {
@@ -268,12 +268,12 @@ public final class BeanUtils {
 	 * 
 	 * @param classList
 	 */
-	private static void initAutowriteStatic(
+	private static void initAutowiredStatic(
 			ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Collection<Class<?>> classList)
 			throws Exception {
 		for (Class<?> clz : classList) {
-			autoWrite(valueWiredManager, beanFactory, propertyFactory, clz,
+			autowired(valueWiredManager, beanFactory, propertyFactory, clz,
 					null, getAutowriteFieldDefinitionList(clz, true));
 		}
 	}

@@ -60,12 +60,10 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 		return this.type;
 	}
 
-	public void autowrite(Object bean) throws Exception {
-		BeanUtils.autoWrite(valueWiredManager, beanFactory, propertyFactory,
-				getType(), bean, Arrays.asList(autowriteFieldDefinition));
-	}
-
 	public void init(Object bean) throws Exception {
+		BeanUtils.autowired(valueWiredManager, beanFactory, propertyFactory,
+				getType(), bean, Arrays.asList(autowriteFieldDefinition));
+		
 		if (initMethods != null && initMethods.length != 0) {
 			for (NoArgumentBeanMethod method : initMethods) {
 				method.noArgumentInvoke(bean);

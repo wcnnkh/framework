@@ -20,20 +20,14 @@ public final class AutoBeanDefinition extends AbstractBeanDefinition {
 		return autoBean.getTargetClass() == null ? super.getType() : autoBean.getTargetClass();
 	}
 
-	public void autowrite(Object bean) throws Exception {
-		if (autoBean.isReference()) {
-			return;
-		}
-		super.autowrite(bean);
-	}
-
 	public void init(Object bean) throws Exception {
 		if (autoBean.isReference()) {
 			return;
 		}
-
-		autoBean.init(bean);
 		super.init(bean);
+		if(autoBean != null){
+			autoBean.init(bean);
+		}
 	}
 
 	public void destroy(Object bean) throws Exception {
@@ -41,7 +35,6 @@ public final class AutoBeanDefinition extends AbstractBeanDefinition {
 			return;
 		}
 		
-		autoBean.destroy(bean);
 		super.destroy(bean);
 	}
 
