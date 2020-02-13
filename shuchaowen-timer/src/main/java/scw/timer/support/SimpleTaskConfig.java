@@ -8,13 +8,11 @@ public class SimpleTaskConfig implements TaskConfig {
 	private final String taskId;
 	private final Task task;
 	private final TaskListener taskListener;
-	private final boolean distributed;
 
-	public SimpleTaskConfig(String taskId, Task task, TaskListener taskListener, boolean distributed) {
+	public SimpleTaskConfig(String taskId, Task task, TaskListener taskListener) {
 		this.taskId = taskId;
 		this.task = task;
 		this.taskListener = taskListener;
-		this.distributed = distributed;
 	}
 
 	public String getTaskId() {
@@ -28,9 +26,4 @@ public class SimpleTaskConfig implements TaskConfig {
 	public TaskListener getTaskListener() {
 		return taskListener;
 	}
-
-	public boolean isDistributed() {
-		return distributed;
-	}
-
 }

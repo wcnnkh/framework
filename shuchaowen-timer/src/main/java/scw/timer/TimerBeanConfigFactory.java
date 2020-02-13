@@ -18,8 +18,6 @@ import scw.core.PropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
 import scw.timer.annotation.Crontab;
 import scw.timer.annotation.Schedule;
 import scw.timer.support.SimpleCrontabConfig;
@@ -27,8 +25,6 @@ import scw.timer.support.SimpleTimerTaskConfig;
 
 @Configuration
 public class TimerBeanConfigFactory extends AbstractBeanConfiguration implements SimpleBeanConfiguration {
-	private static Logger logger = LoggerUtils.getLogger(TimerBeanConfigFactory.class);
-
 	public void init(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		addInit(new SannTimer(beanFactory, propertyFactory));
 	}
@@ -74,11 +70,9 @@ public class TimerBeanConfigFactory extends AbstractBeanConfiguration implements
 			Delayed delayed = beanFactory.isInstance(schedule.delay()) ? beanFactory.getInstance(schedule.delay())
 					: null;
 			ScheduleTaskConfig config = new SimpleTimerTaskConfig(schedule.name(), getTask(beanFactory, clz, method),
-					getTaskListener(beanFactory, schedule.listener()), false, delayed, schedule.period(),
+					getTaskListener(beanFactory, schedule.listener()), delayed, schedule.period(),
 					schedule.timeUnit());
 			timer.schedule(config);
-			logger.info("添加任务：name={},delay={},period={},timeunit={}", schedule.name(), schedule.delay(),
-					schedule.period(), schedule.timeUnit());
 		}
 
 		private static TaskListener getTaskListener(BeanFactory beanFactory,
@@ -90,8 +84,6 @@ public class TimerBeanConfigFactory extends AbstractBeanConfiguration implements
 				Crontab crontab) {
 			timer.crontab(new SimpleCrontabConfig(crontab, getTask(beanFactory, clz, method),
 					getTaskListener(beanFactory, crontab.listener())));
-			logger.info("添加任务： name={},dayOfWeek={},month={},dayOfMonth={},hour={},minute={}", crontab.name(),
-					crontab.dayOfWeek(), crontab.month(), crontab.dayOfMonth(), crontab.hour(), crontab.minute());
 		}
 	}
 

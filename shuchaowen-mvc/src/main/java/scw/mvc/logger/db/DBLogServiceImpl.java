@@ -15,28 +15,33 @@ import scw.mvc.logger.LogService;
 import scw.sql.SimpleSql;
 import scw.sql.SqlUtils;
 import scw.sql.WhereSql;
-import scw.timer.annotation.Crontab;
+import scw.timer.CrontabTaskConfig;
+import scw.timer.Task;
+import scw.timer.Timer;
+import scw.timer.support.SimpleCrontabConfig;
 
-public class DBLogServiceImpl implements LogService {
+public class DBLogServiceImpl implements LogService, Task {
 	private static final long LOG_EXPIRATION_TIME = StringUtils.parseInt(
 			SystemPropertyUtils.getProperty("mvc.logger.expire.time"), 7)
 			* XTime.ONE_DAY;// 默认保存7天日志
 
 	private DB db;
 
-	public DBLogServiceImpl(DB db) {
+	public DBLogServiceImpl(DB db, Timer timer) {
 		this.db = db;
 		db.createTable(LogTable.class);
+		CrontabTaskConfig config = new SimpleCrontabConfig("清理网络请求过期日志", this,
+				null, null, null, null, "0", "0");
+		timer.crontab(config);
 	}
 
-	@Crontab(minute = "0", hour = "0", name = "清理网络请求过期日志")
-	private void cleanLog(long time) {
+	public void run(long executionTime) throws Throwable {
 		if (LOG_EXPIRATION_TIME <= 0) {
 			return;
 		}
 
 		db.execute(new SimpleSql("delete from log_table where createTime<?",
-				time - LOG_EXPIRATION_TIME));
+				executionTime - LOG_EXPIRATION_TIME));
 	}
 
 	public void addLog(Log log) {

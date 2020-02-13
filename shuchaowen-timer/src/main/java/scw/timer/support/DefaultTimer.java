@@ -83,7 +83,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 		return null;
 	}
 
-	public TaskContext privateSchedule(ScheduleTaskConfig config, boolean throwError) {
+	private TaskContext privateSchedule(ScheduleTaskConfig config, boolean throwError) {
 		DefaultTimerTask defaultTimerTask = new DefaultTimerTask(taskLockFactory, config);
 		java.util.TimerTask timerTask = new DefaultTimerTaskWrapper(defaultTimerTask);
 		TaskContext context = new SimpleTaskContext(timerTask, config);
@@ -108,10 +108,12 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 			throw new AlreadyExistsException("已经存在此任务:" + config.getTaskId());
 		}
 
+		logger.info("添加任务：name={},delay={},period={},timeunit={}", config.getTaskId(), config.getDelay(),
+				config.getPeriod(), config.getTimeUnit());
 		return privateSchedule(config, true);
 	}
 
-	public TaskContext privateCrontab(CrontabTaskConfig config, boolean throwError) {
+	private TaskContext privateCrontab(CrontabTaskConfig config, boolean throwError) {
 		CrontabTaskContext context = new CrontabTaskContext(config, new DefaultTimerTask(taskLockFactory, config));
 		if (contextMap.putIfAbsent(config.getTaskId(), context) != null) {
 			if (throwError) {
@@ -128,6 +130,8 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 			throw new AlreadyExistsException("已经存在此任务:" + config.getTaskId());
 		}
 
+		logger.info("添加任务： name={},dayOfWeek={},month={},dayOfMonth={},hour={},minute={}", config.getTaskId(),
+				config.getDayOfWeek(), config.getMonth(), config.getDayOfMonth(), config.getHour(), config.getMinute());
 		return privateCrontab(config, true);
 	}
 
