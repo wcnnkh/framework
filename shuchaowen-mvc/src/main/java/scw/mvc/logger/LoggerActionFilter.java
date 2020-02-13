@@ -22,12 +22,12 @@ public final class LoggerActionFilter extends ActionFilter {
 			.getLogger(LoggerActionFilter.class);
 	private static final boolean LOGGER_ENABLE = StringUtils.parseBoolean(SystemPropertyUtils.getProperty("mvc.logger.enable"), true);
 
-	private LogService<?> logService;
+	private LogService logService;
 	private ParameterConfig identificationParameterConfig;
 
 	public LoggerActionFilter(
 			@ParameterName("mvc.logger.identification") @DefaultValue("uid") String identificationKey,
-			LogService<?> logService) {
+			LogService logService) {
 		if (StringUtils.isNotEmpty(identificationKey)) {
 			this.identificationParameterConfig = new SimpleParameterConfig(
 					identificationKey, null, String.class, String.class);

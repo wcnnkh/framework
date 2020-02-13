@@ -17,7 +17,7 @@ import scw.sql.SqlUtils;
 import scw.sql.WhereSql;
 import scw.timer.annotation.Crontab;
 
-public class DBLogServiceImpl implements LogService<Log> {
+public class DBLogServiceImpl implements LogService {
 	private static final long LOG_EXPIRATION_TIME = StringUtils.parseInt(
 			SystemPropertyUtils.getProperty("mvc.logger.expire.time"), 7)
 			* XTime.ONE_DAY;// 默认保存7天日志
