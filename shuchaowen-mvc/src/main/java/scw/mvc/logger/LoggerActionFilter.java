@@ -6,6 +6,7 @@ import scw.core.annotation.ParameterName;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.SimpleParameterConfig;
 import scw.core.utils.StringUtils;
+import scw.core.utils.SystemPropertyUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -19,6 +20,7 @@ import scw.mvc.support.ActionFilter;
 public final class LoggerActionFilter extends ActionFilter {
 	private static Logger logger = LoggerUtils
 			.getLogger(LoggerActionFilter.class);
+	private static final boolean LOGGER_ENABLE = StringUtils.parseBoolean(SystemPropertyUtils.getProperty("mvc.logger.enable"), true);
 
 	private LogService<?> logService;
 	private ParameterConfig identificationParameterConfig;
@@ -36,6 +38,10 @@ public final class LoggerActionFilter extends ActionFilter {
 	@Override
 	protected Object doFilter(Action action, Channel channel, FilterChain chain)
 			throws Throwable {
+		if(!LOGGER_ENABLE){
+			return chain.doFilter(channel);
+		}
+		
 		LogConfig logConfig = action.getAnnotation(LogConfig.class);
 		if (logConfig != null && !logConfig.enable()) {
 			return chain.doFilter(channel);
