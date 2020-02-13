@@ -29,6 +29,7 @@ public class LogTable implements Serializable{
 	@Column(type="text")
 	private String responseBody;
 	private String errorMessage;
+	@Generator
 	@CreateTime
 	private long createTime;
 	public String getLogId() {
