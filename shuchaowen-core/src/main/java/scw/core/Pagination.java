@@ -1,6 +1,8 @@
 package scw.core;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 可用于分页
@@ -68,5 +70,10 @@ public class Pagination<T> implements Serializable {
 
 	public static long getLongBegin(long page, int limit) {
 		return Math.max(0, (page - 1)) * limit;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> Pagination<List<T>> createEmptyListPagination(int limit){
+		return new Pagination<List<T>>(0, limit, (List<T>)Collections.EMPTY_LIST);
 	}
 }

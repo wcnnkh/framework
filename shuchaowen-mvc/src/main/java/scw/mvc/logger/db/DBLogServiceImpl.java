@@ -1,9 +1,11 @@
 package scw.mvc.logger.db;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import scw.core.Pagination;
 import scw.core.reflect.CloneUtils;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XTime;
@@ -15,10 +17,13 @@ import scw.sql.SqlUtils;
 import scw.sql.WhereSql;
 import scw.timer.annotation.Crontab;
 
-public class DBLogServiceImpl implements LogService<LogTable> {
-	private static final long LOG_EXPIRATION_TIME = StringUtils.parseInt(SystemPropertyUtils.getProperty("mvc.logger.expire.time"), 7) * XTime.ONE_DAY;// 默认保存7天日志
-	
+public class DBLogServiceImpl implements LogService<Log> {
+	private static final long LOG_EXPIRATION_TIME = StringUtils.parseInt(
+			SystemPropertyUtils.getProperty("mvc.logger.expire.time"), 7)
+			* XTime.ONE_DAY;// 默认保存7天日志
+
 	private DB db;
+
 	public DBLogServiceImpl(DB db) {
 		this.db = db;
 		db.createTable(LogTable.class);
@@ -26,10 +31,10 @@ public class DBLogServiceImpl implements LogService<LogTable> {
 
 	@Crontab(minute = "0", hour = "0", name = "清理网络请求过期日志")
 	private void cleanLog(long time) {
-		if(LOG_EXPIRATION_TIME <=0){
-			return ;
+		if (LOG_EXPIRATION_TIME <= 0) {
+			return;
 		}
-		
+
 		db.execute(new SimpleSql("delete from log_table where createTime<?",
 				time - LOG_EXPIRATION_TIME));
 	}
@@ -39,7 +44,7 @@ public class DBLogServiceImpl implements LogService<LogTable> {
 		db.asyncSave(logTable);
 	}
 
-	public Pagination<List<LogTable>> getPagination(String identification,
+	public Pagination<List<Log>> getPagination(String identification,
 			String controller, String httpMethod, String requestContentType,
 			String requestBody, String responseContentType,
 			String responseBody, long page, int limit) {
@@ -74,8 +79,19 @@ public class DBLogServiceImpl implements LogService<LogTable> {
 			sql.and("responseBody like ?", SqlUtils.toLikeValue(responseBody));
 		}
 
-		return db.select(LogTable.class, page, limit, sql.assembleSql(
-				"select * from log_table", "order by createTime desc"));
+		Pagination<List<LogTable>> pagination = db.select(LogTable.class, page,
+				limit, sql.assembleSql("select * from log_table",
+						"order by createTime desc"));
+		if (CollectionUtils.isEmpty(pagination.getData())) {
+			return Pagination.createEmptyListPagination(limit);
+		}
+
+		List<Log> list = new ArrayList<Log>();
+		for (LogTable logTable : pagination.getData()) {
+			list.add(CloneUtils.copy(logTable, Log.class));
+		}
+		return new Pagination<List<Log>>(pagination.getTotalCount(),
+				pagination.getLimit(), list);
 	}
 
 }
