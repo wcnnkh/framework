@@ -6,7 +6,7 @@ import scw.mvc.Channel;
 import scw.mvc.ParameterFilter;
 import scw.mvc.ParameterFilterChain;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.support.HttpAction;
+import scw.mvc.support.action.HttpAction;
 
 public abstract class HttpParameterFilter implements ParameterFilter {
 

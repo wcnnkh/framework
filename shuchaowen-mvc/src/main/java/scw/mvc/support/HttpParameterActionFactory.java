@@ -7,6 +7,8 @@ import java.util.Map;
 import scw.lang.AlreadyExistsException;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
+import scw.mvc.support.action.AnnotationAction;
+import scw.mvc.support.action.HttpAction;
 import scw.net.http.Method;
 
 public final class HttpParameterActionFactory extends HttpActionFactory {
@@ -23,12 +25,14 @@ public final class HttpParameterActionFactory extends HttpActionFactory {
 			return null;
 		}
 
-		Map<Method, Map<String, HttpAction>> map = actionMap.get(httpChannel.getRequest().getControllerPath());
+		Map<Method, Map<String, HttpAction>> map = actionMap.get(httpChannel
+				.getRequest().getControllerPath());
 		if (map == null) {
 			return null;
 		}
 
-		Map<String, HttpAction> methodMap = map.get(httpChannel.getRequest().getMethod());
+		Map<String, HttpAction> methodMap = map.get(httpChannel.getRequest()
+				.getMethod());
 		if (methodMap == null) {
 			return null;
 		}
@@ -41,24 +45,34 @@ public final class HttpParameterActionFactory extends HttpActionFactory {
 	}
 
 	@Override
-	public void scanning(HttpAction action, HttpControllerConfig controllerConfig) {
-		EnumMap<Method, Map<String, HttpAction>> clzMap = actionMap.get(controllerConfig.getClassController());
-		if (clzMap == null) {
-			clzMap = new EnumMap<Method, Map<String, HttpAction>>(Method.class);
+	public void scanning(HttpAction action) {
+		if (!(action instanceof AnnotationAction)) {
+			return;
 		}
 
-		Map<String, HttpAction> map = clzMap.get(controllerConfig.getHttpMethod());
-		if (map == null) {
-			map = new HashMap<String, HttpAction>();
-		}
+		AnnotationAction annotationAction = (AnnotationAction) action;
+		for (Method method : action.getHttpMethods()) {
+			EnumMap<Method, Map<String, HttpAction>> clzMap = actionMap
+					.get(annotationAction.getClassController());
+			if (clzMap == null) {
+				clzMap = new EnumMap<Method, Map<String, HttpAction>>(
+						Method.class);
+			}
 
-		if (map.containsKey(controllerConfig.getMethodController())) {
-			throw new AlreadyExistsException(
-					MVCUtils.getExistActionErrMsg(action, map.get(controllerConfig.getMethodController())));
-		}
+			Map<String, HttpAction> map = clzMap.get(method);
+			if (map == null) {
+				map = new HashMap<String, HttpAction>();
+			}
 
-		map.put(controllerConfig.getMethodController(), action);
-		clzMap.put(controllerConfig.getHttpMethod(), map);
-		actionMap.put(controllerConfig.getClassController(), clzMap);
+			if (map.containsKey(annotationAction.getMethodController())) {
+				throw new AlreadyExistsException(MVCUtils.getExistActionErrMsg(
+						action,
+						map.get(annotationAction.getMethodController())));
+			}
+
+			map.put(annotationAction.getMethodController(), action);
+			clzMap.put(method, map);
+			actionMap.put(annotationAction.getClassController(), clzMap);
+		}
 	}
 }

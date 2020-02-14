@@ -5,6 +5,7 @@ import scw.mvc.Action;
 import scw.mvc.Channel;
 import scw.mvc.FilterChain;
 import scw.mvc.http.HttpChannel;
+import scw.mvc.support.action.HttpAction;
 
 public abstract class HttpActionFilter extends ActionFilter {
 

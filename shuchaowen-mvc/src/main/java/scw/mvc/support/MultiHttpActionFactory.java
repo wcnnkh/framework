@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import scw.mvc.Action;
 import scw.mvc.http.HttpChannel;
+import scw.mvc.support.action.HttpAction;
 
 public class MultiHttpActionFactory extends HttpActionFactory {
 	private final LinkedList<HttpActionFactory> factoryList = new LinkedList<HttpActionFactory>();
@@ -28,13 +29,13 @@ public class MultiHttpActionFactory extends HttpActionFactory {
 	}
 
 	@Override
-	public void scanning(HttpAction httpAction, HttpControllerConfig httpControllerConfig) {
+	public void scanning(HttpAction httpAction) {
 		for (HttpActionFactory httpActionFactory : factoryList) {
 			if (httpActionFactory == null) {
 				continue;
 			}
 
-			httpActionFactory.scanning(httpAction, httpControllerConfig);
+			httpActionFactory.scanning(httpAction);
 		}
 	}
 }

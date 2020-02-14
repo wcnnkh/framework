@@ -7,6 +7,7 @@ import java.util.Map;
 import scw.lang.AlreadyExistsException;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
+import scw.mvc.support.action.HttpAction;
 import scw.net.http.Method;
 
 public final class HttpPathActionFactory extends HttpActionFactory {
@@ -14,7 +15,8 @@ public final class HttpPathActionFactory extends HttpActionFactory {
 
 	@Override
 	public HttpAction getAction(HttpChannel httpChannel) {
-		Map<Method, HttpAction> map = actionMap.get(httpChannel.getRequest().getControllerPath());
+		Map<Method, HttpAction> map = actionMap.get(httpChannel.getRequest()
+				.getControllerPath());
 		if (map == null) {
 			return null;
 		}
@@ -23,8 +25,8 @@ public final class HttpPathActionFactory extends HttpActionFactory {
 	}
 
 	@Override
-	public void scanning(HttpAction action, HttpControllerConfig httpControllerConfig) {
-		HttpRestfulInfo httpRestfulInfo = HttpRestfulInfo.getRestInfo(action, httpControllerConfig);
+	public void scanning(HttpAction action) {
+		HttpRestfulInfo httpRestfulInfo = HttpRestfulInfo.getRestInfo(action);
 		if (httpRestfulInfo == null) {
 			return;
 		}
@@ -33,16 +35,18 @@ public final class HttpPathActionFactory extends HttpActionFactory {
 			return;
 		}
 
-		EnumMap<Method, HttpAction> map = actionMap.get(httpControllerConfig.getController());
+		EnumMap<Method, HttpAction> map = actionMap.get(action.getController());
 		if (map == null) {
 			map = new EnumMap<Method, HttpAction>(Method.class);
 		}
 
-		if (map.containsKey(httpControllerConfig.getHttpMethod())) {
-			throw new AlreadyExistsException(
-					MVCUtils.getExistActionErrMsg(action, map.get(httpControllerConfig.getHttpMethod())));
+		for (Method method : action.getHttpMethods()) {
+			if (map.containsKey(method)) {
+				throw new AlreadyExistsException(MVCUtils.getExistActionErrMsg(
+						action, map.get(method)));
+			}
+			map.put(method, action);
+			actionMap.put(action.getController(), map);
 		}
-		map.put(httpControllerConfig.getHttpMethod(), action);
-		actionMap.put(httpControllerConfig.getController(), map);
 	}
 }

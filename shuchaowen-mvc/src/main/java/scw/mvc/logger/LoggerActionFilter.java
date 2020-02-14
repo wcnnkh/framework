@@ -1,10 +1,6 @@
 package scw.mvc.logger;
 
 import scw.beans.annotation.Configuration;
-import scw.core.annotation.DefaultValue;
-import scw.core.annotation.ParameterName;
-import scw.core.parameter.ParameterConfig;
-import scw.core.parameter.SimpleParameterConfig;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.json.JSONUtils;
@@ -20,42 +16,35 @@ import scw.mvc.support.ActionFilter;
 public final class LoggerActionFilter extends ActionFilter {
 	private static Logger logger = LoggerUtils
 			.getLogger(LoggerActionFilter.class);
-	private static final boolean LOGGER_ENABLE = StringUtils.parseBoolean(SystemPropertyUtils.getProperty("mvc.logger.enable"), true);
+	private static final boolean LOGGER_ENABLE = StringUtils.parseBoolean(
+			SystemPropertyUtils.getProperty("mvc.logger.enable"), true);
 
 	private LogService logService;
-	private ParameterConfig identificationParameterConfig;
+	private IdentificationService identificationService;
 
-	public LoggerActionFilter(
-			@ParameterName("mvc.logger.identification") @DefaultValue("uid") String identificationKey,
+	public LoggerActionFilter(IdentificationService identificationService,
 			LogService logService) {
-		if (StringUtils.isNotEmpty(identificationKey)) {
-			this.identificationParameterConfig = new SimpleParameterConfig(
-					identificationKey, null, String.class, String.class);
-		}
+		this.identificationService = identificationService;
 		this.logService = logService;
 	}
 
 	@Override
 	protected Object doFilter(Action action, Channel channel, FilterChain chain)
 			throws Throwable {
-		if(!LOGGER_ENABLE){
+		if (!LOGGER_ENABLE) {
 			return chain.doFilter(channel);
 		}
-		
+
 		LogConfig logConfig = action.getAnnotation(LogConfig.class);
 		if (logConfig != null && !logConfig.enable()) {
 			return chain.doFilter(channel);
 		}
 
-		String identification = null;
-		if (identificationParameterConfig != null) {
-			identification = (String) channel
-					.getParameter(identificationParameterConfig);
-		}
-
+		String identification = identificationService.getIdentification(action, channel);
 		Log log = new Log();
 		log.setIdentification(identification);
-		log.setController(channel.getRequest().getControllerPath());
+		log.setController(action.getController());
+		log.setRequestController(channel.getRequest().getControllerPath());
 		if (channel.getRequest() instanceof HttpRequest) {
 			log.setHttpMethod(((HttpRequest) channel.getRequest())
 					.getRawMethod());

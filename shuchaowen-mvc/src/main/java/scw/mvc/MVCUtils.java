@@ -56,6 +56,7 @@ import scw.mvc.support.CrossDomainDefinition;
 import scw.mvc.support.CrossDomainDefinitionFactory;
 import scw.mvc.support.HttpNotFoundFilter;
 import scw.mvc.support.MultiActionFactory;
+import scw.mvc.support.action.AbstractAction;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.Text;

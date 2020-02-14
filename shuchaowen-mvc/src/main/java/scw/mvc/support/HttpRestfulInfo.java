@@ -3,6 +3,8 @@ package scw.mvc.support;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.mvc.support.action.HttpAction;
+
 final class HttpRestfulInfo {
 	private String url;
 	private Map<Integer, String> keyMap;
@@ -41,10 +43,10 @@ final class HttpRestfulInfo {
 		this.action = action;
 	}
 
-	public static HttpRestfulInfo getRestInfo(HttpAction action, HttpControllerConfig config) {
-		String[] requestPathArr = config.getController().split("/");
+	public static HttpRestfulInfo getRestInfo(HttpAction action) {
+		String[] requestPathArr = action.getController().split("/");
 		Map<Integer, String> resultKeyMap = new HashMap<Integer, String>(4);
-		StringBuilder newRequestPath = new StringBuilder(config.getController().length());
+		StringBuilder newRequestPath = new StringBuilder(action.getController().length());
 		for (int i = 0; i < requestPathArr.length; i++) {
 			String str = requestPathArr[i];
 			if (str.startsWith("{") && str.endsWith("}")) {
@@ -59,7 +61,7 @@ final class HttpRestfulInfo {
 			}
 		}
 
-		if (config.getController().endsWith("/")) {
+		if (action.getController().endsWith("/")) {
 			newRequestPath.append("/");
 		}
 

@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import scw.lang.AlreadyExistsException;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
+import scw.mvc.support.action.HttpAction;
 import scw.net.http.Method;
 
 public final class HttpRestfulActionFactory extends HttpActionFactory {
@@ -15,8 +16,8 @@ public final class HttpRestfulActionFactory extends HttpActionFactory {
 			Method.class);
 
 	@Override
-	public void scanning(HttpAction action, HttpControllerConfig config) {
-		HttpRestfulInfo restUrlInfo = HttpRestfulInfo.getRestInfo(action, config);
+	public void scanning(HttpAction action) {
+		HttpRestfulInfo restUrlInfo = HttpRestfulInfo.getRestInfo(action);
 		if (restUrlInfo == null) {
 			return;
 		}
@@ -28,18 +29,20 @@ public final class HttpRestfulActionFactory extends HttpActionFactory {
 		/**
 		 * resturl
 		 */
-		Map<String, HttpRestfulInfo> map = restMap.get(config.getHttpMethod());
-		if (map == null) {
-			map = new HashMap<String, HttpRestfulInfo>();
-		}
+		for(Method method : action.getHttpMethods()){
+			Map<String, HttpRestfulInfo> map = restMap.get(method);
+			if (map == null) {
+				map = new HashMap<String, HttpRestfulInfo>();
+			}
 
-		if (map.containsKey(restUrlInfo.getUrl())) {
-			throw new AlreadyExistsException(
-					MVCUtils.getExistActionErrMsg(restUrlInfo.getAction(), map.get(restUrlInfo.getUrl()).getAction()));
-		}
+			if (map.containsKey(restUrlInfo.getUrl())) {
+				throw new AlreadyExistsException(
+						MVCUtils.getExistActionErrMsg(restUrlInfo.getAction(), map.get(restUrlInfo.getUrl()).getAction()));
+			}
 
-		map.put(restUrlInfo.getUrl(), restUrlInfo);
-		restMap.put(config.getHttpMethod(), map);
+			map.put(restUrlInfo.getUrl(), restUrlInfo);
+			restMap.put(method, map);
+		}
 	}
 
 	@Override

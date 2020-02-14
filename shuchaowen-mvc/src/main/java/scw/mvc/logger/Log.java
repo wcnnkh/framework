@@ -6,6 +6,7 @@ public class Log implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String identification;
 	private String controller;
+	private String requestController;
 	private String httpMethod;
 	private String requestContentType;
 	private String requestBody;
@@ -28,6 +29,14 @@ public class Log implements Serializable {
 
 	public void setController(String controller) {
 		this.controller = controller;
+	}
+
+	public String getRequestController() {
+		return requestController;
+	}
+
+	public void setRequestController(String requestController) {
+		this.requestController = requestController;
 	}
 
 	public String getHttpMethod() {

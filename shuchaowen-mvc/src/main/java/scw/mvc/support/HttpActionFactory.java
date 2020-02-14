@@ -3,6 +3,7 @@ package scw.mvc.support;
 import scw.mvc.Action;
 import scw.mvc.Channel;
 import scw.mvc.http.HttpChannel;
+import scw.mvc.support.action.HttpAction;
 
 public abstract class HttpActionFactory implements ActionFactory {
 
@@ -15,5 +16,5 @@ public abstract class HttpActionFactory implements ActionFactory {
 
 	protected abstract Action getAction(HttpChannel httpChannel);
 
-	public abstract void scanning(HttpAction httpAction, HttpControllerConfig httpControllerConfig);
+	public abstract void scanning(HttpAction httpAction);
 }

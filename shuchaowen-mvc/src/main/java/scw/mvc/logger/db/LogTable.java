@@ -19,8 +19,10 @@ public class LogTable implements Serializable{
 	@SequenceId
 	private String logId;
 	private String identification;
-	@Column(length=1000)
+	@Column(length=1000, nullAble=false)
 	private String controller;
+	@Column(length=1000, nullAble=false)
+	private String requestController;
 	private String httpMethod;
 	private String requestContentType;
 	@Column(type="text")
@@ -91,5 +93,11 @@ public class LogTable implements Serializable{
 	}
 	public void setCreateTime(long createTime) {
 		this.createTime = createTime;
+	}
+	public String getRequestController() {
+		return requestController;
+	}
+	public void setRequestController(String requestController) {
+		this.requestController = requestController;
 	}
 }

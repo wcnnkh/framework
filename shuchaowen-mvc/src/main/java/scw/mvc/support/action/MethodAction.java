@@ -1,4 +1,4 @@
-package scw.mvc.support;
+package scw.mvc.support.action;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -13,12 +13,11 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.annotation.SimpleAnnotationFactory;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
-import scw.mvc.AbstractAction;
 import scw.mvc.Filter;
 import scw.mvc.MVCUtils;
 import scw.mvc.ParameterFilter;
 
-public class MethodAction extends AbstractAction {
+public abstract class MethodAction extends AbstractAction {
 	private final Invoker invoker;
 	private final ParameterConfig[] parameterConfigs;
 	private final Collection<ParameterFilter> parameterFilters;
@@ -28,22 +27,28 @@ public class MethodAction extends AbstractAction {
 	private final Method method;
 	private final Collection<Filter> filters;
 
-	public MethodAction(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass, Method method,
-			AnnotationFactory superAnnotationFactory) {
-		this.invoker = new AutoProxyMethodInvoker(beanFactory, targetClass, method);
-		this.parameterFilters = MVCUtils.getParameterFilters(beanFactory, propertyFactory);
-		parameterFilters.addAll(MVCUtils.getParameterFilters(beanFactory, targetClass, method));
+	public MethodAction(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> targetClass,
+			Method method, AnnotationFactory superAnnotationFactory) {
+		this.invoker = new AutoProxyMethodInvoker(beanFactory, targetClass,
+				method);
+		this.parameterFilters = MVCUtils.getParameterFilters(beanFactory,
+				propertyFactory);
+		parameterFilters.addAll(MVCUtils.getParameterFilters(beanFactory,
+				targetClass, method));
 		this.parameterConfigs = ParameterUtils.getParameterConfigs(method);
 		this.targetClass = targetClass;
 		this.method = method;
 		this.superAnnotationFactory = superAnnotationFactory;
 		this.annotationFactory = new SimpleAnnotationFactory(method);
 		this.filters = MVCUtils.getActionFilter(beanFactory, propertyFactory);
-		filters.addAll(MVCUtils.getControllerFilter(targetClass, method, beanFactory));
+		filters.addAll(MVCUtils.getControllerFilter(targetClass, method,
+				beanFactory));
 	}
 
 	public <T extends Annotation> T getAnnotation(Class<T> type) {
-		return AnnotationUtils.getAnnotation(type, superAnnotationFactory, annotationFactory);
+		return AnnotationUtils.getAnnotation(type, superAnnotationFactory,
+				annotationFactory);
 	}
 
 	public Class<?> getTargetClass() {
