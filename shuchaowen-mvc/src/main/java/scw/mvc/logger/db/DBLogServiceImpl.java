@@ -15,6 +15,7 @@ import scw.mvc.logger.Log;
 import scw.mvc.logger.LogQuery;
 import scw.mvc.logger.LogService;
 import scw.sql.SimpleSql;
+import scw.sql.Sql;
 import scw.sql.SqlUtils;
 import scw.sql.WhereSql;
 import scw.timer.CrontabTaskConfig;
@@ -71,6 +72,15 @@ public class DBLogServiceImpl implements LogService, Task {
 				sql.and("l.httpMethod=?", logQuery.getHttpMethod().name());
 			}
 			
+			//这样的sql语句性能很差，不推荐使用属性查找
+			if(!CollectionUtils.isEmpty(logQuery.getAttributeMap())){
+				WhereSql attrSql = new WhereSql();
+				attrSql.in("a.name", logQuery.getAttributeMap().keySet());
+				attrSql.in("a.value", logQuery.getAttributeMap().values());
+				Sql attr = attrSql.assembleSql("select DISTINCT(a.logId) from log_attribute_table", null);
+				sql.and("l.logId in (" + attr.getSql() + ")", attr.getParams());
+			}
+			
 			if (StringUtils.isNotEmpty(logQuery.getController())) {
 				sql.and("l.controller like ?",
 						SqlUtils.toLikeValue(logQuery.getController()));
@@ -92,14 +102,14 @@ public class DBLogServiceImpl implements LogService, Task {
 			}
 
 			if (StringUtils.isNotEmpty(logQuery.getResponseBody())) {
-				sql.and("responseBody l.like ?",
+				sql.and("l.responseBody l.like ?",
 						SqlUtils.toLikeValue(logQuery.getResponseBody()));
 			}
 		}
 
 		Pagination<List<LogTable>> pagination = db.select(LogTable.class, page,
 				limit, sql.assembleSql("select * from log_table as l",
-						"order by .createTime desc"));
+						"order by l.createTime desc"));
 		if (CollectionUtils.isEmpty(pagination.getData())) {
 			return Pagination.createEmptyListPagination(limit);
 		}
