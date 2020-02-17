@@ -1,5 +1,7 @@
 package scw.mvc.logger;
 
+import java.util.Map;
+
 import scw.beans.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
@@ -20,11 +22,11 @@ public final class LoggerActionFilter extends ActionFilter {
 			SystemPropertyUtils.getProperty("mvc.logger.enable"), true);
 
 	private LogService logService;
-	private IdentificationService identificationService;
+	private LoggerActionService loggerService;
 
-	public LoggerActionFilter(IdentificationService identificationService,
+	public LoggerActionFilter(LoggerActionService loggerService,
 			LogService logService) {
-		this.identificationService = identificationService;
+		this.loggerService = loggerService;
 		this.logService = logService;
 	}
 
@@ -40,28 +42,49 @@ public final class LoggerActionFilter extends ActionFilter {
 			return chain.doFilter(channel);
 		}
 
-		String identification = identificationService.getIdentification(action, channel);
+		Log log = null;
+		try {
+			log = logger(action, channel, logConfig);
+		} catch (Exception e) {
+			logger.error(e, "create log error: {}", channel.toString());
+		}
+
+		try {
+			Object response = chain.doFilter(channel);
+			if (log != null) {
+				loggerResponse(logConfig, log, response);
+			}
+			return response;
+		} catch (Throwable e) {
+			if (log != null) {
+				log.setErrorMessage(e.getMessage());
+			}
+			throw e;
+		} finally {
+			if (log != null) {
+				log.setExecuteTime(System.currentTimeMillis()
+						- channel.getCreateTime());
+				logService.addLog(log);
+			}
+		}
+	}
+
+	protected Log logger(Action action, Channel channel, LogConfig logConfig)
+			throws Exception {
+		Map<String, String> attributeMap = loggerService.getAttributeMap(
+				action, channel);
 		Log log = new Log();
-		log.setIdentification(identification);
+		log.setAttributeMap(attributeMap);
 		log.setController(action.getController());
+		log.setIdentification(loggerService.getIdentification(action, channel));
 		log.setRequestController(channel.getRequest().getControllerPath());
 		if (channel.getRequest() instanceof HttpRequest) {
-			log.setHttpMethod(((HttpRequest) channel.getRequest())
-					.getRawMethod());
+			log.setHttpMethod(((HttpRequest) channel.getRequest()).getMethod());
 		}
 
 		log.setRequestContentType(channel.getRequest().getRawContentType());
 		log.setRequestBody(channel.toString());
-		try {
-			Object response = chain.doFilter(channel);
-			loggerResponse(logConfig, log, response);
-			return response;
-		} catch (Throwable e) {
-			log.setErrorMessage(e.getMessage());
-			throw e;
-		} finally {
-			logService.addLog(log);
-		}
+		return log;
 	}
 
 	private void loggerResponse(LogConfig logConfig, Log log, Object response) {
@@ -72,12 +95,8 @@ public final class LoggerActionFilter extends ActionFilter {
 						.toJSONString(response));
 			}
 		} catch (Throwable e) {
-			if (logger.isErrorEnabled()) {
-				logger.error(e, "logger response error:{}",
-						JSONUtils.toJSONString(log));
-			} else {
-				e.printStackTrace();
-			}
+			logger.error(e, "logger response error:{}",
+					JSONUtils.toJSONString(log));
 		}
 	}
 }

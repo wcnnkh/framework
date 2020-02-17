@@ -1,8 +1,10 @@
 package scw.mvc.logger.db;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import scw.db.cache.TemporaryCacheEnable;
+import scw.net.http.Method;
 import scw.orm.annotation.PrimaryKey;
 import scw.orm.sql.annotation.Column;
 import scw.orm.sql.annotation.CreateTime;
@@ -23,7 +25,7 @@ public class LogTable implements Serializable{
 	private String controller;
 	@Column(length=1000, nullAble=false)
 	private String requestController;
-	private String httpMethod;
+	private Method httpMethod;
 	private String requestContentType;
 	@Column(type="text")
 	private String requestBody;
@@ -34,6 +36,9 @@ public class LogTable implements Serializable{
 	@Generator
 	@CreateTime
 	private long createTime;
+	private long executeTime;
+	@Column(length=5000)
+	private Map<String, String> attributeMap;
 	public String getLogId() {
 		return logId;
 	}
@@ -52,10 +57,10 @@ public class LogTable implements Serializable{
 	public void setController(String controller) {
 		this.controller = controller;
 	}
-	public String getHttpMethod() {
+	public Method getHttpMethod() {
 		return httpMethod;
 	}
-	public void setHttpMethod(String httpMethod) {
+	public void setHttpMethod(Method httpMethod) {
 		this.httpMethod = httpMethod;
 	}
 	public String getRequestContentType() {
@@ -99,5 +104,17 @@ public class LogTable implements Serializable{
 	}
 	public void setRequestController(String requestController) {
 		this.requestController = requestController;
+	}
+	public long getExecuteTime() {
+		return executeTime;
+	}
+	public void setExecuteTime(long executeTime) {
+		this.executeTime = executeTime;
+	}
+	public Map<String, String> getAttributeMap() {
+		return attributeMap;
+	}
+	public void setAttributeMap(Map<String, String> attributeMap) {
+		this.attributeMap = attributeMap;
 	}
 }

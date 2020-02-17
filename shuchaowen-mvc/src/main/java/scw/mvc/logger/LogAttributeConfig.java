@@ -7,8 +7,8 @@ import java.lang.annotation.Target;
 
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LogConfig {
-	public boolean enable() default true;
-
-	public boolean response() default false;
+public @interface LogAttributeConfig {
+	public String[] value() default {};
+	
+	public boolean ip() default false;
 }

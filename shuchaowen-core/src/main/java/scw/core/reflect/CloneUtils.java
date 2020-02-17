@@ -194,16 +194,12 @@ public final class CloneUtils {
 					continue;
 				}
 
-				if (field.getGenericType() != sourceField.getGenericType()) {
-					continue;
-				}
-
 				ReflectionUtils.setAccessibleField(sourceField);
 				Object value = sourceField.get(source);
 				if (value == null) {
 					continue;
 				}
-
+				
 				if (clone) {
 					value = clone(value, ignoreVerification, instanceFactory, invokeSetter);
 				}

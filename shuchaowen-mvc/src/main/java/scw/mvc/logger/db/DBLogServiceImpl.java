@@ -1,6 +1,7 @@
 package scw.mvc.logger.db;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import scw.core.Pagination;
@@ -11,6 +12,7 @@ import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XTime;
 import scw.db.DB;
 import scw.mvc.logger.Log;
+import scw.mvc.logger.LogQuery;
 import scw.mvc.logger.LogService;
 import scw.sql.SimpleSql;
 import scw.sql.SqlUtils;
@@ -30,6 +32,7 @@ public class DBLogServiceImpl implements LogService, Task {
 	public DBLogServiceImpl(DB db, Timer timer) {
 		this.db = db;
 		db.createTable(LogTable.class);
+		db.createTable(LogAttributeTable.class);
 		CrontabTaskConfig config = new SimpleCrontabConfig("清理网络请求过期日志", this,
 				null, null, null, null, "0", "0");
 		timer.crontab(config);
@@ -40,53 +43,63 @@ public class DBLogServiceImpl implements LogService, Task {
 			return;
 		}
 
-		db.execute(new SimpleSql("delete from log_table where createTime<?",
+		db.execute(new SimpleSql(
+				"delete from log_table as l, log_attribute_table as a where l.logId=a.logId and l.createTime<?",
 				executionTime - LOG_EXPIRATION_TIME));
 	}
 
 	public void addLog(Log log) {
-		LogTable logTable = CloneUtils.copy(log, LogTable.class);
-		db.asyncSave(logTable);
+		db.asyncExecute(new LogAsyncSave(log));
 	}
 
-	public Pagination<List<Log>> getPagination(String identification,
-			String controller, String httpMethod, String requestContentType,
-			String requestBody, String responseContentType,
-			String responseBody, long page, int limit) {
+	public Collection<String> getAttributeNames() {
+		// 为了方便没有再去建立一个属性名称表
+		return db.select(String.class, new SimpleSql(
+				"select * from log_attribute_table group by name"));
+	}
+
+	public Pagination<List<Log>> getPagination(LogQuery logQuery, long page,
+			int limit) {
 		WhereSql sql = new WhereSql();
-		if (StringUtils.hasText(identification)) {
-			sql.and("identification=?", identification);
-		}
+		if (logQuery != null) {
+			if(StringUtils.isNotEmpty(logQuery.getIdentification())){
+				sql.and("l.identification=?",
+						logQuery.getIdentification());
+			}
+			
+			if (logQuery.getHttpMethod() != null) {
+				sql.and("l.httpMethod=?", logQuery.getHttpMethod().name());
+			}
+			
+			if (StringUtils.isNotEmpty(logQuery.getController())) {
+				sql.and("l.controller like ?",
+						SqlUtils.toLikeValue(logQuery.getController()));
+			}
 
-		if (StringUtils.isNotEmpty(controller)) {
-			sql.and("controller like ?", SqlUtils.toLikeValue(controller));
-		}
+			if (StringUtils.isNotEmpty(logQuery.getRequestContentType())) {
+				sql.and("l.requestContentType like ?",
+						SqlUtils.toLikeValue(logQuery.getRequestContentType()));
+			}
 
-		if (StringUtils.hasText(httpMethod)) {
-			sql.and("httpMethod=?", httpMethod);
-		}
+			if (StringUtils.isNotEmpty(logQuery.getRequestBody())) {
+				sql.and("l.requestBody like ?",
+						SqlUtils.toLikeValue(logQuery.getRequestBody()));
+			}
 
-		if (StringUtils.isNotEmpty(requestContentType)) {
-			sql.and("requestContentType like ?",
-					SqlUtils.toLikeValue(requestContentType));
-		}
+			if (StringUtils.isNotEmpty(logQuery.getResponseContentType())) {
+				sql.and("l.responseContentType like ?",
+						SqlUtils.toLikeValue(logQuery.getResponseContentType()));
+			}
 
-		if (StringUtils.isNotEmpty(requestBody)) {
-			sql.and("requestBody like ?", SqlUtils.toLikeValue(requestBody));
-		}
-
-		if (StringUtils.isNotEmpty(responseContentType)) {
-			sql.and("responseContentType like ?",
-					SqlUtils.toLikeValue(responseContentType));
-		}
-
-		if (StringUtils.isNotEmpty(responseBody)) {
-			sql.and("responseBody like ?", SqlUtils.toLikeValue(responseBody));
+			if (StringUtils.isNotEmpty(logQuery.getResponseBody())) {
+				sql.and("responseBody l.like ?",
+						SqlUtils.toLikeValue(logQuery.getResponseBody()));
+			}
 		}
 
 		Pagination<List<LogTable>> pagination = db.select(LogTable.class, page,
-				limit, sql.assembleSql("select * from log_table",
-						"order by createTime desc"));
+				limit, sql.assembleSql("select * from log_table as l",
+						"order by .createTime desc"));
 		if (CollectionUtils.isEmpty(pagination.getData())) {
 			return Pagination.createEmptyListPagination(limit);
 		}

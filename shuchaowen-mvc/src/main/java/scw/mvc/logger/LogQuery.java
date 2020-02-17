@@ -5,7 +5,7 @@ import java.util.Map;
 
 import scw.net.http.Method;
 
-public class Log implements Serializable {
+public class LogQuery implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String identification;
 	private Map<String, String> attributeMap;
@@ -16,9 +16,6 @@ public class Log implements Serializable {
 	private String requestBody;
 	private String responseContentType;
 	private String responseBody;
-	private String errorMessage;
-	private long createTime;
-	private long executeTime;
 
 	public String getIdentification() {
 		return identification;
@@ -90,29 +87,5 @@ public class Log implements Serializable {
 
 	public void setResponseBody(String responseBody) {
 		this.responseBody = responseBody;
-	}
-
-	public long getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(long createTime) {
-		this.createTime = createTime;
-	}
-
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
-
-	public long getExecuteTime() {
-		return executeTime;
-	}
-
-	public void setExecuteTime(long executeTime) {
-		this.executeTime = executeTime;
 	}
 }
