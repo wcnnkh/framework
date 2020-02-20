@@ -11,6 +11,8 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XTime;
 import scw.db.DB;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.mvc.logger.Log;
 import scw.mvc.logger.LogQuery;
 import scw.mvc.logger.LogService;
@@ -24,9 +26,9 @@ import scw.timer.Timer;
 import scw.timer.support.SimpleCrontabConfig;
 
 public class DBLogServiceImpl implements LogService, Task {
-	private static final long LOG_EXPIRATION_TIME = StringUtils.parseInt(
-			SystemPropertyUtils.getProperty("mvc.logger.expire.time"), 7)
-			* XTime.ONE_DAY;// 默认保存7天日志
+	private static Logger logger = LoggerUtils.getLogger(DBLogServiceImpl.class);
+	private static final int LOG_EXPIRATION_TIME = StringUtils.parseInt(
+			SystemPropertyUtils.getProperty("mvc.logger.expire.time"), 90);// 默认保存90天日志
 
 	private DB db;
 
@@ -37,6 +39,9 @@ public class DBLogServiceImpl implements LogService, Task {
 		CrontabTaskConfig config = new SimpleCrontabConfig("清理网络请求过期日志", this,
 				null, null, null, null, "0", "0");
 		timer.crontab(config);
+		if(logger.isDebugEnabled()){
+			logger.debug("网络请求日志过期时间为：{}天", LOG_EXPIRATION_TIME);	
+		}
 	}
 
 	public void run(long executionTime) throws Throwable {
@@ -46,7 +51,7 @@ public class DBLogServiceImpl implements LogService, Task {
 
 		db.execute(new SimpleSql(
 				"delete from log_table as l, log_attribute_table as a where l.logId=a.logId and l.createTime<?",
-				executionTime - LOG_EXPIRATION_TIME));
+				executionTime - LOG_EXPIRATION_TIME * XTime.ONE_DAY));
 	}
 
 	public void addLog(Log log) {
