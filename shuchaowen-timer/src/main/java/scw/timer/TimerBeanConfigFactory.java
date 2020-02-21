@@ -40,7 +40,7 @@ public class TimerBeanConfigFactory extends AbstractBeanConfiguration implements
 
 		public void init() {
 			scanningAnnotation(
-					ClassUtils.getClassList(ApplicationConfigUtils.getCrontabAnnotationPackage(propertyFactory)),
+					ClassUtils.getClassSet(ApplicationConfigUtils.getCrontabAnnotationPackage(propertyFactory)),
 					beanFactory);
 		}
 

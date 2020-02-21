@@ -45,7 +45,7 @@ public final class HttpRpcBeanConfigFactory extends AbstractBeanConfiguration im
 			Serializer ser = StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 					: (Serializer) beanFactory.getInstance(serializer);
 			if (!StringUtils.isNull(packageName)) {
-				for (Class<?> clz : ClassUtils.getClassList(packageName)) {
+				for (Class<?> clz : ClassUtils.getClassSet(packageName)) {
 					if (!clz.isInterface() || AnnotationUtils.isIgnore(clz)) {
 						continue;
 					}

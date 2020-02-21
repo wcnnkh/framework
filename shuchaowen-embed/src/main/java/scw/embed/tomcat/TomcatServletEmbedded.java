@@ -1,7 +1,11 @@
 package scw.embed.tomcat;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
+import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
 
@@ -12,8 +16,11 @@ import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.tomcat.JarScanner;
+import org.apache.tomcat.util.descriptor.web.FilterDef;
+import org.apache.tomcat.util.descriptor.web.FilterMap;
 
 import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
 import scw.core.PropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectionUtils;
@@ -23,13 +30,22 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
 import scw.embed.EmbeddedUtils;
-import scw.embed.ServletEmbedded;
+import scw.embed.servlet.FilterConfiguration;
+import scw.embed.servlet.ServletContainerInitializerConfiguration;
+import scw.embed.servlet.ServletEmbedded;
+import scw.embed.servlet.support.RootServletContainerInitializerConfiguration;
+import scw.embed.servlet.support.ServletRootFilterConfiguration;
+import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.servlet.MultiFilter;
 
 public final class TomcatServletEmbedded implements ServletEmbedded {
+	private static Logger logger = LoggerUtils
+			.getLogger(TomcatServletEmbedded.class);
 	private Tomcat tomcat;
 
-	private Tomcat createTomcat(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	private Tomcat createTomcat(BeanFactory beanFactory,
+			PropertyFactory propertyFactory) {
 		Tomcat tomcat = new Tomcat();
 		int port = EmbeddedUtils.getPort(propertyFactory);
 		tomcat.setPort(port);
@@ -57,31 +73,99 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		return StringUtils.isEmpty(contextPath) ? "" : contextPath;
 	}
 
-	private JarScanner getJarScanner(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		return InstanceUtils.getInstance("scw.embed.tomcat.Tomcat8AboveStandardJarScanner",
+	private JarScanner getJarScanner(BeanFactory beanFactory,
+			PropertyFactory propertyFactory) {
+		return InstanceUtils.getInstance(
+				"scw.embed.tomcat.Tomcat8AboveStandardJarScanner",
 				propertyFactory);
 	}
 
-	private Context createContext(BeanFactory beanFactory, PropertyFactory propertyFactory, ClassLoader classLoader) {
-		Context context = tomcat.addContext(getContextPath(propertyFactory), getDocBase(propertyFactory));
+	private Context createContext(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, ClassLoader classLoader) {
+		Context context = tomcat.addContext(getContextPath(propertyFactory),
+				getDocBase(propertyFactory));
 		context.setParentClassLoader(classLoader);
 		JarScanner jarScanner = getJarScanner(beanFactory, propertyFactory);
 		if (jarScanner != null) {
 			context.setJarScanner(jarScanner);
 		}
 
-		ReflectionUtils.loadMethod(context, "tomcat.context.", propertyFactory, beanFactory,
-				CollectionUtils.asSet("jarScanner", "docBase", "path"));
+		addServletContainerInitializer(context, new RootServletContainerInitializerConfiguration(beanFactory, propertyFactory));
+		for (ServletContainerInitializerConfiguration configuration : BeanUtils
+				.getConfigurationList(
+						ServletContainerInitializerConfiguration.class, null,
+						beanFactory, propertyFactory)) {
+			addServletContainerInitializer(context, configuration);
+		}
+
+		addFilter(context, new ServletRootFilterConfiguration(beanFactory, propertyFactory));
+		for (FilterConfiguration filterConfiguration : BeanUtils
+				.getConfigurationList(FilterConfiguration.class, null,
+						beanFactory, propertyFactory)) {
+			addFilter(context, filterConfiguration);
+		}
 		return context;
 	}
 
-	private boolean isVersion(String version) {
-		return StringUtils.startsWithIgnoreCase(ServerInfo.getServerNumber(), version);
+	@SuppressWarnings("unchecked")
+	private void addServletContainerInitializer(Context context,
+			ServletContainerInitializerConfiguration configuration) {
+		Collection<? extends ServletContainerInitializer> initializers = configuration
+				.getServletContainerInitializers();
+		if (CollectionUtils.isEmpty(initializers)) {
+			return;
+		}
+
+		Set<Class<?>> classSet = configuration.getClassSet();
+		classSet = classSet == null ? Collections.EMPTY_SET : classSet;
+		for (ServletContainerInitializer initializer : initializers) {
+			if (logger.isDebugEnabled()) {
+				logger.debug(
+						"add ServletContainerInitializer: {} by config: {}",
+						initializer.getClass().getName(), configuration
+								.getClass().getName());
+			}
+
+			context.addServletContainerInitializer(initializer, classSet);
+		}
 	}
 
-	private void configureConnector(Tomcat tomcat, int port, BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	private void addFilter(Context context,
+			FilterConfiguration filterConfiguration) {
+		Collection<? extends Filter> filters = filterConfiguration.getFilters();
+		if (CollectionUtils.isEmpty(filters)) {
+			return;
+		}
+
+		FilterDef filterDef = new FilterDef();
+		MultiFilter multiFilter = new MultiFilter();
+		for (Filter filter : filters) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("add Filter: {}", filter.getClass().getName());
+			}
+			multiFilter.add(filter);
+		}
+		filterDef.setFilter(multiFilter);
+		filterDef.setFilterName(filterConfiguration.getName());
+		context.addFilterDef(filterDef);
+
+		FilterMap filterMap = new FilterMap();
+		filterMap.setFilterName(filterConfiguration.getName());
+		for (String url : filterConfiguration.getURLPatterns()) {
+			filterMap.addURLPattern(url);
+		}
+	}
+
+	private boolean isVersion(String version) {
+		return StringUtils.startsWithIgnoreCase(ServerInfo.getServerNumber(),
+				version);
+	}
+
+	private void configureConnector(Tomcat tomcat, int port,
+			BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		Connector connector = null;
-		String connectorName = EmbeddedUtils.getTomcatConnectorName(propertyFactory);
+		String connectorName = EmbeddedUtils
+				.getTomcatConnectorName(propertyFactory);
 		if (!StringUtils.isEmpty(connectorName)) {
 			connector = beanFactory.getInstance(connectorName);
 		} else {
@@ -112,35 +196,43 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 			ServletContainerInitializer containerInitializer = InstanceUtils
 					.getInstance("org.apache.jasper.servlet.JasperInitializer");
 			if (containerInitializer != null) {
-				context.addServletContainerInitializer(containerInitializer, null);
+				context.addServletContainerInitializer(containerInitializer,
+						null);
 			} // else Probably not Tomcat 8
 
-			Tomcat.addServlet(context, "jsp", "org.apache.jasper.servlet.JspServlet");
+			Tomcat.addServlet(context, "jsp",
+					"org.apache.jasper.servlet.JspServlet");
 			addServletMapping(context, "*.jsp", "jsp");
 			addServletMapping(context, "*.jspx", "jsp");
 		}
 	}
 
-	private void configShutdown(Context context, PropertyFactory propertyFactory, Servlet destroy) {
-		String tomcatShutdownServletPath = EmbeddedUtils.getShutdownPath(propertyFactory);
+	private void configShutdown(Context context,
+			PropertyFactory propertyFactory, Servlet destroy) {
+		String tomcatShutdownServletPath = EmbeddedUtils
+				.getShutdownPath(propertyFactory);
 		if (StringUtils.isEmpty(tomcatShutdownServletPath)) {
 			return;
 		}
 
-		String tomcatShutdownServletName = EmbeddedUtils.getShutdownName(propertyFactory);
+		String tomcatShutdownServletName = EmbeddedUtils
+				.getShutdownName(propertyFactory);
 		if (StringUtils.isEmpty(tomcatShutdownServletName)) {
 			tomcatShutdownServletName = "shutdown";
 		}
 
 		Tomcat.addServlet(context, tomcatShutdownServletName, destroy);
-		addServletMapping(context, tomcatShutdownServletPath, tomcatShutdownServletName);
+		addServletMapping(context, tomcatShutdownServletPath,
+				tomcatShutdownServletName);
 	}
 
-	private void addServletMapping(Context context, String pattern, String servletName) {
-		Method method = ReflectionUtils.getMethod(Context.class, "addServletMappingDecoded", String.class,
-				String.class);
+	private void addServletMapping(Context context, String pattern,
+			String servletName) {
+		Method method = ReflectionUtils.getMethod(Context.class,
+				"addServletMappingDecoded", String.class, String.class);
 		if (method == null) {// tomcat8以下
-			method = ReflectionUtils.getMethod(Context.class, "addServletMapping", String.class, String.class);
+			method = ReflectionUtils.getMethod(Context.class,
+					"addServletMapping", String.class, String.class);
 		}
 		try {
 			method.invoke(context, pattern, servletName);
@@ -151,16 +243,19 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	private void configureServlet(Context context, Servlet servlet, PropertyFactory propertyFactory) {
+	private void configureServlet(Context context, Servlet servlet,
+			PropertyFactory propertyFactory) {
 		Tomcat.addServlet(context, "scw", servlet);
 		addServletMapping(context, "/", "scw");
 		String sourceMapping = EmbeddedUtils.getSource(propertyFactory);
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
-				Tomcat.addServlet(context, "default", "org.apache.catalina.servlets.DefaultServlet");
+				Tomcat.addServlet(context, "default",
+						"org.apache.catalina.servlets.DefaultServlet");
 				for (String pattern : patternArr) {
-					LoggerUtils.getLogger(TomcatServletEmbedded.class).info("source mapping [{}]", pattern);
+					LoggerUtils.getLogger(TomcatServletEmbedded.class).info(
+							"source mapping [{}]", pattern);
 					addServletMapping(context, pattern, "default");
 				}
 			}
@@ -169,9 +264,14 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 
 	private void tomcat8() throws Throwable {
 		ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
-		if (ClassUtils.isPresent("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory", classLoader)) {
-			Class<?> clz = ClassUtils.forName("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
-					classLoader);
+		if (ClassUtils
+				.isPresent(
+						"org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
+						classLoader)) {
+			Class<?> clz = ClassUtils
+					.forName(
+							"org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
+							classLoader);
 			Method method = clz.getDeclaredMethod("disable");
 			method.invoke(null);
 		}
@@ -187,15 +287,16 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory, Servlet destroy, Servlet service,
-			Class<?> mainClass) {
+	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Servlet destroy, Servlet service, Class<?> mainClass) {
 		try {
 			tomcat8();
 		} catch (Throwable e1) {
 		}
 
 		this.tomcat = createTomcat(beanFactory, propertyFactory);
-		Context context = createContext(beanFactory, propertyFactory, mainClass.getClassLoader());
+		Context context = createContext(beanFactory, propertyFactory,
+				mainClass.getClassLoader());
 		configureLifecycleListener(context);
 		configureJSP(context, propertyFactory);
 		configureServlet(context, service, propertyFactory);

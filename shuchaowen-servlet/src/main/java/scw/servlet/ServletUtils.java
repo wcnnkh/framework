@@ -139,4 +139,14 @@ public final class ServletUtils {
 	public static boolean isAjaxRequest(HttpServletRequest request) {
 		return "XMLHttpRequest".equals(request.getHeader(HttpHeaders.X_REQUESTED_WITH));
 	}
+	
+	/**
+	 * 判断是不是一个weboskcet请求
+	 * @param httpServletRequest
+	 * @return
+	 */
+	public static boolean isWebSocketRequest(HttpServletRequest httpServletRequest){
+		String value = httpServletRequest.getHeader(HttpHeaders.UPGRADE);
+		return StringUtils.equals(value, "websocket", true);
+	}
 }

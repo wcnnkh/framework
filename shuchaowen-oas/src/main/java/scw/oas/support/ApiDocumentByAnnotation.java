@@ -25,7 +25,7 @@ public class ApiDocumentByAnnotation extends SimpleApiDocument {
 
 	public ApiDocumentByAnnotation scann(String packageName, Mapper mapper) {
 		List<ApiInfo> list = new ArrayList<ApiInfo>();
-		for (Class<?> clazz : ClassUtils.getClassList(packageName)) {
+		for (Class<?> clazz : ClassUtils.getClassSet(packageName)) {
 			list.addAll(getApiInfoList(clazz, mapper));
 		}
 		setApiInfoList(list);

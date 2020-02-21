@@ -1,4 +1,4 @@
-package scw.embed;
+package scw.embed.servlet;
 
 import java.io.IOException;
 
@@ -11,6 +11,7 @@ import scw.core.Destroy;
 import scw.core.PropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
+import scw.embed.EmbeddedUtils;
 import scw.mvc.MVCUtils;
 import scw.servlet.ServletUtils;
 import scw.servlet.mvc.http.MyHttpServletResponse;

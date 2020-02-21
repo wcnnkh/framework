@@ -16,6 +16,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import scw.aop.Filter;
@@ -55,26 +56,31 @@ import scw.util.ConcurrentReferenceHashMap;
 public final class BeanUtils {
 	private static Logger logger = LoggerUtils.getLogger(BeanUtils.class);
 
-	private static Map<Class<?>, Map<String, List<Class<?>>>> configurationCache = new ConcurrentReferenceHashMap<Class<?>, Map<String, List<Class<?>>>>();
+	private static Map<Class<?>, Map<String, Set<Class<?>>>> configurationCache = new ConcurrentReferenceHashMap<Class<?>, Map<String, Set<Class<?>>>>();
 
-	private static List<Class<?>> getConfigurationClassListInternal(Class<?> type,
+	private static Set<Class<?>> getConfigurationClassListInternal(Class<?> type,
 			String packageName) {
-		Map<String, List<Class<?>>> map = configurationCache.get(type);
+		Map<String, Set<Class<?>>> map = configurationCache.get(type);
 		if (map == null) {
-			map = new HashMap<String, List<Class<?>>>();
+			map = new HashMap<String, Set<Class<?>>>();
 		}
 
-		List<Class<?>> list = map.get(packageName);
+		Set<Class<?>> list = map.get(packageName);
 		if (list == null) {
-			list = new ArrayList<Class<?>>();
-			for (Class<?> clazz : ClassUtils.getClassList(packageName)) {
+			list = new HashSet<Class<?>>();
+			for (Class<?> clazz : ClassUtils.getClassSet(packageName)) {
 				Configuration configuration = clazz
 						.getAnnotation(Configuration.class);
 				if (configuration == null) {
 					continue;
 				}
-
+				
 				if (!type.isAssignableFrom(clazz)) {
+					continue;
+				}
+				
+				if(!ClassUtils.isPresent(clazz.getName())){
+					logger.debug("not support class:{}", clazz.getName());
 					continue;
 				}
 
@@ -92,7 +98,7 @@ public final class BeanUtils {
 	public static <T> List<Class<T>> getConfigurationClassList(
 			Class<? extends T> type, Collection<Class<?>> excludeTypes,
 			PropertyFactory propertyFactory) {
-		return BeanUtils.getConfigurationClassList(type, excludeTypes, Arrays
+		return getConfigurationClassList(type, excludeTypes, Arrays
 				.asList("scw", ApplicationConfigUtils
 						.getAnnotationPackage(propertyFactory)));
 	}
@@ -100,7 +106,7 @@ public final class BeanUtils {
 	public static <T> List<T> getConfigurationList(Class<? extends T> type,
 			Collection<Class<?>> excludeTypes, InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory) {
-		List<T> list = new LinkedList<T>();
+		List<T> list = new ArrayList<T>();
 		for (Class<T> clazz : getConfigurationClassList(type, excludeTypes,
 				propertyFactory)) {
 			list.add(instanceFactory.getInstance(clazz));
@@ -131,18 +137,8 @@ public final class BeanUtils {
 				set.add((Class<T>) clazz);
 			}
 		}
-
-		Comparator<Class<? extends T>> comparator = new Comparator<Class<? extends T>>() {
-
-			public int compare(Class<? extends T> o1, Class<? extends T> o2) {
-				Configuration c1 = o1.getAnnotation(Configuration.class);
-				Configuration c2 = o2.getAnnotation(Configuration.class);
-				return CompareUtils.compare(c1.order(), c2.order(), true);
-			}
-		};
-
+		
 		List<Class<T>> list = new ArrayList<Class<T>>(set);
-		Collections.sort(list, comparator);
 		for (Class<? extends T> clazz : list) {
 			Configuration c = clazz.getAnnotation(Configuration.class);
 			for (Class<?> e : c.excludes()) {
@@ -151,6 +147,14 @@ public final class BeanUtils {
 		}
 
 		list = new ArrayList<Class<T>>(set);
+		Comparator<Class<? extends T>> comparator = new Comparator<Class<? extends T>>() {
+
+			public int compare(Class<? extends T> o1, Class<? extends T> o2) {
+				Configuration c1 = o1.getAnnotation(Configuration.class);
+				Configuration c2 = o2.getAnnotation(Configuration.class);
+				return CompareUtils.compare(c1.order(), c2.order(), true);
+			}
+		};
 		Collections.sort(list, comparator);
 		return list;
 	}

@@ -21,7 +21,7 @@ public final class DefaultHttpActionFactory implements ActionFactory {
 		multiHttpActionFactory.getFactoryList().add(new HttpPathActionFactory());
 		multiHttpActionFactory.getFactoryList().add(new HttpRestfulActionFactory());
 		multiHttpActionFactory.init(beanFactory, propertyFactory, ClassUtils
-				.getClassList(MVCUtils.getAnnotationScannPackage(propertyFactory), ClassUtils.getDefaultClassLoader()));
+				.getClassSet(MVCUtils.getAnnotationScannPackage(propertyFactory)));
 		this.actionFactory = multiHttpActionFactory;
 	}
 

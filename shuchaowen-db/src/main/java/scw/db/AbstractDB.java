@@ -83,8 +83,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 	}
 
 	public void createTable(String packageName, boolean registerManager) {
-		Collection<Class<?>> list = ClassUtils.getClassList(packageName,
-				ClassUtils.getDefaultClassLoader());
+		Collection<Class<?>> list = ClassUtils.getClassSet(packageName);
 		for (Class<?> tableClass : list) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {

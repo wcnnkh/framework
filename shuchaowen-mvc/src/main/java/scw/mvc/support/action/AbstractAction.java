@@ -18,6 +18,8 @@ public abstract class AbstractAction implements Action, FilterChain {
 	public abstract Collection<Filter> getFilters();
 
 	public abstract Collection<ParameterFilter> getParameterFilters();
+	
+	public abstract ParameterConfig[] getParameterConfigs();
 
 	public Object[] getArgs(ParameterConfig[] parameterConfigs, Channel channel) {
 		return MVCUtils.getParameterValues(channel, parameterConfigs, getParameterFilters(), null);

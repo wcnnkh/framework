@@ -7,30 +7,75 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
+import scw.application.CommonApplication;
+import scw.core.utils.SystemPropertyUtils;
 import scw.servlet.ServletUtils;
 
 public class DispatcherServlet extends GenericServlet {
 	private static final long serialVersionUID = 1L;
-	private ServletApplication application;
+	private CommonApplication commonApplication;
 	private ServletService servletService;
+	private boolean reference = false;
+
+	public CommonApplication getCommonApplication() {
+		return commonApplication;
+	}
+
+	public void setCommonApplication(CommonApplication commonApplication) {
+		this.reference = true;
+		this.commonApplication = commonApplication;
+	}
+
+	public ServletService getServletService() {
+		return servletService;
+	}
+
+	public void setServletService(ServletService servletService) {
+		this.servletService = servletService;
+	}
 
 	@Override
-	public void service(ServletRequest req, ServletResponse resp) throws ServletException, IOException {
-		servletService.service(req, resp);
+	public void service(ServletRequest req, ServletResponse resp)
+			throws ServletException, IOException {
+		if (req instanceof HttpServletRequest) {
+			if (ServletUtils.isWebSocketRequest((HttpServletRequest) req)) {
+				return;
+			}
+		}
+		getServletService().service(req, resp);
 	}
 
 	@Override
 	public final void init(ServletConfig servletConfig) throws ServletException {
-		application = new ServletApplication(servletConfig);
-		application.init();
-		this.servletService = ServletUtils.getServletService(application.getBeanFactory(),
-				application.getPropertyFactory());
+		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(
+				servletConfig);
+		if (getCommonApplication() == null) {
+			SystemPropertyUtils.setWorkPath(servletConfig.getServletContext()
+					.getRealPath("/"));
+			this.commonApplication = new CommonApplication(
+					propertyFactory.getConfigXml());
+		}
+
+		getCommonApplication().addPropertyFactory(propertyFactory);
+
+		if (!reference) {
+			getCommonApplication().init();
+		}
+
+		if (getServletService() == null) {
+			this.servletService = ServletUtils.getServletService(
+					getCommonApplication().getBeanFactory(),
+					getCommonApplication().getPropertyFactory());
+		}
 	}
 
 	@Override
 	public void destroy() {
-		application.destroy();
+		if (!reference && getCommonApplication() != null) {
+			getCommonApplication().destroy();
+		}
 		super.destroy();
 	}
 }

@@ -99,7 +99,7 @@ public final class XmlDubboUtils {
 		String packageName = XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
 		if (packageName != null) {
 			IgnoreClassVerification ignoreClassVerification = new IgnoreClassVerification(true, true);
-			Collection<Class<?>> clazzList = ClassUtils.getClassList(packageName);
+			Collection<Class<?>> clazzList = ClassUtils.getClassSet(packageName);
 			for (Class<?> clz : clazzList) {
 				Service service = clz.getAnnotation(Service.class);
 				if (service != null) {
@@ -140,7 +140,7 @@ public final class XmlDubboUtils {
 
 		String packageName = XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
 		if (packageName != null) {
-			for (Class<?> clz : ClassUtils.getClassList(packageName)) {
+			for (Class<?> clz : ClassUtils.getClassSet(packageName)) {
 				if (!clz.isInterface() || AnnotationUtils.isIgnore(clz)) {
 					continue;
 				}

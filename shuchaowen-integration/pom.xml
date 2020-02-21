@@ -110,12 +110,6 @@
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-mq</artifactId>
 		</dependency>
-			
-		<dependency>
-			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-websocket</artifactId>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
 
 </project>

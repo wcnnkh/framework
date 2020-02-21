@@ -34,7 +34,6 @@ import scw.core.Constants;
 import scw.core.reflect.ReflectionUtils;
 
 public final class ClassUtils {
-
 	/** Suffix for array class names: "[]" */
 	public static final String ARRAY_SUFFIX = "[]";
 
@@ -1538,18 +1537,18 @@ public final class ClassUtils {
 	 * @param prefix
 	 * @return
 	 */
-	private static Collection<Class<?>> getClassesDirectoryList(ClassLoader classLoader) {
+	private static Set<Class<?>> getClassesDirectoryList(ClassLoader classLoader, boolean initialize) {
 		LinkedHashSet<Class<?>> list = new LinkedHashSet<Class<?>>();
 		String path = SystemPropertyUtils.getClassesDirectory();
 		if (path == null) {
 			return list;
 		}
-		appendDirectoryClass(null, new File(path), list, classLoader);
+		appendDirectoryClass(null, new File(path), list, classLoader, initialize);
 		return list;
 	}
 
 	private static void appendDirectoryClass(String rootPackage, File file, Collection<Class<?>> classList,
-			ClassLoader classLoader) {
+			ClassLoader classLoader, boolean initialize) {
 		File[] files = file.listFiles();
 		if (ArrayUtils.isEmpty(files)) {
 			return;
@@ -1559,11 +1558,11 @@ public final class ClassUtils {
 			if (f.isDirectory()) {
 				appendDirectoryClass(
 						StringUtils.isEmpty(rootPackage) ? f.getName() + "." : rootPackage + f.getName() + ".", f,
-						classList, classLoader);
+						classList, classLoader, initialize);
 			} else {
 				if (f.getName().endsWith(".class")) {
 					String classFile = StringUtils.isEmpty(rootPackage) ? f.getName() : rootPackage + f.getName();
-					Class<?> clz = forFileName(classFile, classLoader);
+					Class<?> clz = forFileName(classFile, classLoader, initialize);
 					if (clz != null) {
 						classList.add(clz);
 					}
@@ -1571,36 +1570,46 @@ public final class ClassUtils {
 			}
 		}
 	}
-
-	/**
-	 * 使用当前线程的类加载器
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	public static Collection<Class<?>> getClassList(String resource) {
-		return getClassList(resource, getDefaultClassLoader());
+	
+	public static Set<Class<?>> getClassSet(String resource) {
+		return getClassSet(resource, getDefaultClassLoader(), false);
+	}
+	
+	public static Set<Class<?>> getClassSet(String ...resources) {
+		Set<Class<?>> set = new LinkedHashSet<Class<?>>();
+		for(String resource : resources){
+			set.addAll(getClassSet(resource));
+		}
+		return set;
 	}
 
-	public static Collection<Class<?>> getClassList(String resource, ClassLoader classLoader) {
+	public static Set<Class<?>> getClassSet(String resource, boolean initialize) {
+		return getClassSet(resource, getDefaultClassLoader(), initialize);
+	}
+	
+	public static Set<Class<?>> getClassSet(String resource, ClassLoader classLoader) {
+		return getClassSet(resource, classLoader, false);
+	}
+
+	public static Set<Class<?>> getClassSet(String resource, ClassLoader classLoader, boolean initialize) {
 		if (StringUtils.isEmpty(resource)) {
-			return getClassesDirectoryList(classLoader);
+			return getClassesDirectoryList(classLoader, initialize);
 		}
 
 		String[] arr = StringUtils.commonSplit(resource);
 		if (ArrayUtils.isEmpty(arr)) {
-			return getClassesDirectoryList(classLoader);
+			return getClassesDirectoryList(classLoader, initialize);
 		}
 
 		LinkedHashSet<Class<?>> classes = new LinkedHashSet<Class<?>>();
 		for (String pg : arr) {
-			appendClassesByClassLoader(pg, classes, classLoader);
+			appendClassesByClassLoader(pg, classes, classLoader, initialize);
 		}
 		return classes;
 	}
 
 	private static void findAndAddClassesInPackageByFile(String packageName, String packagePath,
-			Collection<Class<?>> classes, ClassLoader classLoader) {
+			Collection<Class<?>> classes, ClassLoader classLoader, boolean initialize) {
 		File dir = new File(packagePath);
 		if (!dir.exists() || !dir.isDirectory()) {
 			return;
@@ -1613,12 +1622,12 @@ public final class ClassUtils {
 		for (File file : dirfiles) {
 			if (file.isDirectory()) {
 				findAndAddClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), classes,
-						classLoader);
+						classLoader, initialize);
 			} else {
 				if (packageName.startsWith(".")) {
 					packageName = packageName.substring(1);
 				}
-				Class<?> clazz = forFileName(packageName + "." + file.getName(), classLoader);
+				Class<?> clazz = forFileName(packageName + "." + file.getName(), classLoader, initialize);
 				if (clazz != null) {
 					classes.add(clazz);
 				}
@@ -1626,7 +1635,7 @@ public final class ClassUtils {
 		}
 	}
 
-	private static Class<?> forFileName(String classFile, ClassLoader classLoader) {
+	private static Class<?> forFileName(String classFile, ClassLoader classLoader, boolean initialize) {
 		if (!classFile.endsWith(CLASS_FILE_SUFFIX)) {
 			return null;
 		}
@@ -1635,18 +1644,18 @@ public final class ClassUtils {
 		name = name.replaceAll("\\\\", ".");
 		name = name.replaceAll("/", ".");
 		try {
-			return forName(name, classLoader);
+			return forName(name, initialize, classLoader);
 		} catch (Throwable e) {
 		}
 		return null;
 	}
 
 	private static void appendClassesByURL(String packageName, String packageDirName, URL url,
-			Collection<Class<?>> clazzList, ClassLoader classLoader) throws IOException {
+			Collection<Class<?>> clazzList, ClassLoader classLoader, boolean initialize) throws IOException {
 		String protocol = url.getProtocol();
 		if ("file".equals(protocol)) {
 			String filePath = URLDecoder.decode(url.getFile(), Constants.DEFAULT_CHARSET_NAME);
-			findAndAddClassesInPackageByFile(packageName, filePath, clazzList, classLoader);
+			findAndAddClassesInPackageByFile(packageName, filePath, clazzList, classLoader, initialize);
 		} else if ("jar".equals(protocol)) {
 			JarFile jar = ((JarURLConnection) url.openConnection()).getJarFile();
 			Enumeration<JarEntry> entries = jar.entries();
@@ -1661,7 +1670,7 @@ public final class ClassUtils {
 					name = name.substring(1);
 				}
 				if (name.startsWith(packageDirName)) {
-					Class<?> clazz = forFileName(name, classLoader);
+					Class<?> clazz = forFileName(name, classLoader, initialize);
 					if (clazz != null) {
 						clazzList.add(clazz);
 					}
@@ -1671,14 +1680,14 @@ public final class ClassUtils {
 	}
 
 	private static void appendClassesByClassLoader(String packageName, Collection<Class<?>> clazzList,
-			ClassLoader classLoader) {
+			ClassLoader classLoader, boolean initialize) {
 		String packageDirName = packageName.replace('.', '/');
 		Enumeration<URL> dirs;
 		try {
 			dirs = classLoader.getResources(packageDirName);
 			while (dirs.hasMoreElements()) {
 				URL url = dirs.nextElement();
-				appendClassesByURL(packageName, packageDirName, url, clazzList, classLoader);
+				appendClassesByURL(packageName, packageDirName, url, clazzList, classLoader, initialize);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1688,7 +1697,7 @@ public final class ClassUtils {
 			dirs = ClassLoader.getSystemClassLoader().getResources(packageDirName);
 			while (dirs.hasMoreElements()) {
 				URL url = dirs.nextElement();
-				appendClassesByURL(packageName, packageDirName, url, clazzList, classLoader);
+				appendClassesByURL(packageName, packageDirName, url, clazzList, classLoader, initialize);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

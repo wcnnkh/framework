@@ -39,7 +39,7 @@ public class MQBeanConfigFactory extends AbstractBeanConfiguration implements Si
 
 		public void init() {
 			for (Class<?> clazz : ClassUtils
-					.getClassList(ApplicationConfigUtils.getMQAnnotationPackage(propertyFactory))) {
+					.getClassSet(ApplicationConfigUtils.getMQAnnotationPackage(propertyFactory))) {
 				scanningConsumer(beanFactory, clazz);
 				scanningAMQPConsumer(beanFactory, clazz);
 			}

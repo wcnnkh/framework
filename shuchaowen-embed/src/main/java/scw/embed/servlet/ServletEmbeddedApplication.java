@@ -1,4 +1,4 @@
-package scw.embed;
+package scw.embed.servlet;
 
 import scw.application.Application;
 import scw.application.ApplicationConfigUtils;
@@ -6,16 +6,18 @@ import scw.application.CommonApplication;
 import scw.beans.BeanUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.embed.EmbeddedUtils;
+import scw.embed.tomcat.TomcatApplication;
 import scw.io.resource.ResourceUtils;
 import scw.servlet.ServletUtils;
-import scw.servlet.mvc.ServletService;
+import scw.servlet.mvc.DispatcherServlet;
 import scw.util.FormatUtils;
 
-public class EmbeddedApplication extends CommonApplication {
+public class ServletEmbeddedApplication extends CommonApplication {
 	private ServletEmbedded embedded;
 	private Class<?> mainClass;
 
-	public EmbeddedApplication(String configXml, Class<?> mainClass) {
+	public ServletEmbeddedApplication(String configXml, Class<?> mainClass) {
 		super(configXml);
 		this.mainClass = mainClass;
 	}
@@ -38,7 +40,7 @@ public class EmbeddedApplication extends CommonApplication {
 		if (StringUtils.isEmpty(embeddedName)) {
 			String name = getSupportServletEmbeddedClassName();
 			if (name == null) {
-				FormatUtils.warn(EmbeddedApplication.class, "未找到支持的embedded, 如需支持请导入对应的jar");
+				FormatUtils.warn(ServletEmbeddedApplication.class, "未找到支持的embedded, 如需支持请导入对应的jar");
 			} else {
 				initEmbedded(name);
 			}
@@ -48,10 +50,14 @@ public class EmbeddedApplication extends CommonApplication {
 	}
 
 	private void initEmbedded(String embeddedName) {
-		ServletService service = ServletUtils.getServletService(getBeanFactory(), getPropertyFactory());
 		embedded = getBeanFactory().getInstance(embeddedName);
+		DispatcherServlet dispatcherServlet = new DispatcherServlet();
+		dispatcherServlet.setCommonApplication(this);
+		if(StringUtils.parseBoolean(getPropertyFactory().getProperty("servlet.service.startup"), true)){
+			dispatcherServlet.setServletService(ServletUtils.getServletService(getBeanFactory(), getPropertyFactory()));
+		}
 		embedded.init(getBeanFactory(), getPropertyFactory(), new ShutdownHttpServlet(getPropertyFactory(), this),
-				new EmbeddedServlet(service), mainClass);
+				dispatcherServlet, mainClass);
 	}
 
 	@Override
@@ -78,7 +84,7 @@ public class EmbeddedApplication extends CommonApplication {
 				FormatUtils.warn(TomcatApplication.class, "not found " + beanXml);
 			}
 
-			Application application = new EmbeddedApplication(beanXml, mainClass);
+			Application application = new ServletEmbeddedApplication(beanXml, mainClass);
 			application.init();
 		}
 	}

@@ -1,4 +1,4 @@
-package scw.embed;
+package scw.embed.servlet;
 
 import javax.servlet.Servlet;
 

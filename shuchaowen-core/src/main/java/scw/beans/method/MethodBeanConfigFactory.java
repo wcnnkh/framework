@@ -14,7 +14,7 @@ import scw.util.StringParseValueFactory;
 public class MethodBeanConfigFactory extends AbstractBeanConfiguration {
 	public MethodBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, String packageNames) throws Exception {
-		for (Class<?> clz : ClassUtils.getClassList(packageNames)) {
+		for (Class<?> clz : ClassUtils.getClassSet(packageNames)) {
 			for (Method method : clz.getDeclaredMethods()) {
 				Bean bean = method.getAnnotation(Bean.class);
 				if (bean == null) {
