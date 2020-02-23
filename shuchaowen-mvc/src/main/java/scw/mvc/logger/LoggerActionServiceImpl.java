@@ -21,7 +21,7 @@ public class LoggerActionServiceImpl implements LoggerActionService{
 	private boolean ipEnable;
 
 	public LoggerActionServiceImpl(
-			@ParameterName("mvc.logger.identification") @DefaultValue("uid") String identificationKey, boolean ipEnable) {
+			@ParameterName("mvc.logger.identification") @DefaultValue("uid") String identificationKey, @ParameterName("mvc.logger.ip")@DefaultValue("false") boolean ipEnable) {
 		if (StringUtils.isNotEmpty(identificationKey)) {
 			this.identificationParameterConfig = new SimpleParameterConfig(
 					identificationKey, null, String.class, String.class);
