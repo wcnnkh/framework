@@ -48,6 +48,16 @@ public abstract class AbstractWebSocketSession implements WebSocketSession {
 	public void sendBinary(ByteBuffer fragment, boolean last) throws Exception {
 		throw new NotSupportException(fragment.toString());
 	}
+	
+	public void sendObject(Object data) throws Exception {
+		if (data instanceof String) {
+			sendText((String) data);
+		} else if (data instanceof ByteBuffer) {
+			sendBinary((ByteBuffer) data);
+		} else {
+			throw new NotSupportException(data.toString());
+		}
+	}
 
 	public void sendObject(Object fragment, boolean last) throws Exception {
 		if (fragment instanceof String) {
