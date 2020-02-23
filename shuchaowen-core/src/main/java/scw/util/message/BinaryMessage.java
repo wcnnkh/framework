@@ -1,8 +1,10 @@
-package scw.message;
+package scw.util.message;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-public class BinaryMessage extends AbstractMessage<ByteBuffer> {
+public class BinaryMessage extends AbstractMessage<ByteBuffer> implements Serializable{
+	private static final long serialVersionUID = 1L;
 
 	public BinaryMessage(ByteBuffer payload) {
 		super(payload);

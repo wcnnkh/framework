@@ -3,10 +3,12 @@ package scw.mvc.logger;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.core.Callable;
 import scw.core.annotation.DefaultValue;
 import scw.core.annotation.ParameterName;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.SimpleParameterConfig;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.Action;
 import scw.mvc.Channel;
@@ -14,41 +16,43 @@ import scw.mvc.Request;
 import scw.mvc.http.HttpRequest;
 
 public class LoggerActionServiceImpl implements LoggerActionService{
+	private static final Callable<HashMap<String, String>> ATTRIBUTE_MAP_CALLABLE = CollectionUtils.hashMapCallable(8);
 	private ParameterConfig identificationParameterConfig;
+	private boolean ipEnable;
 
 	public LoggerActionServiceImpl(
-			@ParameterName("mvc.logger.identification") @DefaultValue("uid") String identificationKey) {
+			@ParameterName("mvc.logger.identification") @DefaultValue("uid") String identificationKey, boolean ipEnable) {
 		if (StringUtils.isNotEmpty(identificationKey)) {
 			this.identificationParameterConfig = new SimpleParameterConfig(
 					identificationKey, null, String.class, String.class);
 		}
+		this.ipEnable = ipEnable;
 	}
 
 	public String getIdentification(Action action, Channel channel) {
+		if(identificationParameterConfig == null){
+			return null;
+		}
 		return (String) channel.getParameter(identificationParameterConfig);
 	}
 
 	public Map<String, String> getAttributeMap(Action action, Channel channel) {
+		Map<String, String> map = null;
 		LogAttributeConfig logConfig = action.getAnnotation(LogAttributeConfig.class);
-		Map<String, String> map = new HashMap<String, String>(8);
+		if(ipEnable || (logConfig != null && logConfig.ip())){
+			CollectionUtils.put(map, "ip", getIp(action, channel), ATTRIBUTE_MAP_CALLABLE);
+		}
+		
 		if(logConfig != null){
-			if(logConfig.ip()){
-				map.put("ip", getIp(action, channel));
-			}
-			
 			for(String name : logConfig.value()){
 				String value = getAttirubteValue(channel, name);
 				if(value == null){
 					continue;
 				}
 				
-				map.put(name, value);
+				CollectionUtils.put(map, name, value, ATTRIBUTE_MAP_CALLABLE);
 			}
 		}
-		
-		//测试
-		map.put("ip", getIp(action, channel));
-		map.put("ip2", getIp(action, channel));
 		return map;
 	}
 	

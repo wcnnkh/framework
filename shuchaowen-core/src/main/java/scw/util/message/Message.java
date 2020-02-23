@@ -1,4 +1,4 @@
-package scw.message;
+package scw.util.message;
 
 /**
  * 对于一个消息的定义

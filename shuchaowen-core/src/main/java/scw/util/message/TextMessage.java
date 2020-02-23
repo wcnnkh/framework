@@ -1,6 +1,10 @@
-package scw.message;
+package scw.util.message;
 
-public class TextMessage extends AbstractMessage<String>{
+import java.io.Serializable;
+
+
+public class TextMessage extends AbstractMessage<String> implements Serializable{
+	private static final long serialVersionUID = 1L;
 
 	TextMessage(String payload) {
 		super(payload);
