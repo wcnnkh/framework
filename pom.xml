@@ -31,7 +31,7 @@
 		<jstl.version>1.2</jstl.version>
 		<guava.version>25.0-jre</guava.version>
 		<mysql-connector-java.version>8.0.16</mysql-connector-java.version>
-		<netty-version>4.1.25.Final</netty-version>
+		<netty-version>4.1.45.Final</netty-version>
 	</properties>
 
 	<dependencyManagement>
