@@ -38,8 +38,17 @@ public class LoggerActionServiceImpl implements LoggerActionService{
 
 	public Map<String, String> getAttributeMap(Action action, Channel channel) {
 		Map<String, String> map = null;
+		appendAnnotationAttributeMap(map, action, channel);
+		return map;
+	}
+	
+	protected final void appendAnnotationAttributeMap(Map<String, String> map, Action action, Channel channel){
 		LogAttributeConfig logConfig = action.getAnnotation(LogAttributeConfig.class);
-		if(ipEnable || (logConfig != null && logConfig.ip())){
+		if(ipEnable){
+			if(logConfig == null || logConfig.ip()){
+				CollectionUtils.put(map, "ip", getIp(action, channel), ATTRIBUTE_MAP_CALLABLE);
+			}
+		}else if(logConfig != null && logConfig.ip()){
 			CollectionUtils.put(map, "ip", getIp(action, channel), ATTRIBUTE_MAP_CALLABLE);
 		}
 		
@@ -53,7 +62,6 @@ public class LoggerActionServiceImpl implements LoggerActionService{
 				CollectionUtils.put(map, name, value, ATTRIBUTE_MAP_CALLABLE);
 			}
 		}
-		return map;
 	}
 	
 	protected String getAttirubteValue(Channel channel, String name){
