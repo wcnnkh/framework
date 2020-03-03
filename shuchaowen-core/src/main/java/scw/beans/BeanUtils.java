@@ -117,6 +117,11 @@ public final class BeanUtils {
 		List<T> list = new ArrayList<T>();
 		for (Class<T> clazz : getConfigurationClassList(type, excludeTypes,
 				propertyFactory)) {
+			if(!instanceFactory.isInstance(clazz)){
+				logger.debug("not create instance:{}", clazz);
+				continue;
+			}
+			
 			list.add(instanceFactory.getInstance(clazz));
 		}
 		return list;

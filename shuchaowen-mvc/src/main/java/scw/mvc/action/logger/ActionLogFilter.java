@@ -22,11 +22,11 @@ public final class ActionLogFilter implements Filter {
 			SystemPropertyUtils.getProperty("mvc.logger.enable"), true);
 
 	private ActionLogService logService;
-	private ActionLogFactory loggerService;
+	private ActionLogFactory actionLogFactory;
 
-	public ActionLogFilter(ActionLogFactory loggerService,
+	public ActionLogFilter(ActionLogFactory actionLogFactory,
 			ActionLogService logService) {
-		this.loggerService = loggerService;
+		this.actionLogFactory = actionLogFactory;
 		this.logService = logService;
 	}
 	
@@ -70,12 +70,12 @@ public final class ActionLogFilter implements Filter {
 
 	protected ActionLog logger(Action action, Channel channel, ActionLogConfig logConfig)
 			throws Exception {
-		Map<String, String> attributeMap = loggerService.getAttributeMap(
+		Map<String, String> attributeMap = actionLogFactory.getAttributeMap(
 				action, channel);
 		ActionLog log = new ActionLog();
 		log.setAttributeMap(attributeMap);
 		log.setController(action.getController());
-		log.setIdentification(loggerService.getIdentification(action, channel));
+		log.setIdentification(actionLogFactory.getIdentification(action, channel));
 		log.setRequestController(channel.getRequest().getControllerPath());
 		if (channel.getRequest() instanceof HttpRequest) {
 			log.setHttpMethod(((HttpRequest) channel.getRequest()).getMethod());
