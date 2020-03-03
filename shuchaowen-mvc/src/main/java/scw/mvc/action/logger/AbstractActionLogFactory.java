@@ -55,7 +55,7 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 		}
 
 		if (error != null) {
-			log.setErrorMessage(error.getMessage());
+			log.setErrorMessage(error.toString());
 		}
 
 		log.setExecuteTime(System.currentTimeMillis() - channel.getCreateTime());
