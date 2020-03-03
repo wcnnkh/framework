@@ -13,9 +13,10 @@ import scw.core.utils.StringUtils;
 import scw.mvc.Channel;
 import scw.mvc.Request;
 import scw.mvc.action.Action;
+import scw.mvc.action.logger.annotation.ActionLogAttributeConfig;
 import scw.mvc.http.HttpRequest;
 
-public class DefaultActionLogFactory implements ActionLogFactory{
+public class DefaultActionLogFactory extends AbstractActionLogFactory{
 	private static final Callable<HashMap<String, String>> ATTRIBUTE_MAP_CALLABLE = CollectionUtils.hashMapCallable(8);
 	private ParameterConfig identificationParameterConfig;
 	private boolean ipEnable;
