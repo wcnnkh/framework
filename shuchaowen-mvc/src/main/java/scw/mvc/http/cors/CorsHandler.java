@@ -5,8 +5,8 @@ import scw.beans.annotation.Configuration;
 import scw.core.PropertyFactory;
 import scw.mvc.MVCUtils;
 import scw.mvc.handler.HandlerChain;
+import scw.mvc.handler.HttpHandler;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpHandler;
 
 @Configuration(order=CorsHandler.ORDER)
 public final class CorsHandler extends HttpHandler{
