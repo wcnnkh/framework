@@ -26,22 +26,16 @@ import scw.util.ip.SimpleIP;
 
 public abstract class AbstractHttpChannel extends AbstractParameterChannel implements HttpChannel {
 	private static final String GET_DEFAULT_CHARSET_ANME = "ISO-8859-1";
-
-	protected static final String JSONP_CALLBACK = "callback";
-	protected static final String JSONP_RESP_PREFIX = "(";
-	protected static final String JSONP_RESP_SUFFIX = ");";
 	protected final boolean cookieValue;
 	private final HttpParameterRequest request;
 	private final HttpResponse response;
-	private final String jsonp;
 
 	public <R extends HttpRequest, P extends HttpResponse> AbstractHttpChannel(BeanFactory beanFactory,
-			JSONSupport jsonParseSupport, boolean cookieValue, R request, P response, String jsonp) {
+			JSONSupport jsonParseSupport, boolean cookieValue, R request, P response) {
 		super(beanFactory, jsonParseSupport);
 		this.cookieValue = cookieValue;
 		this.request = new HttpParameterRequest(request, this);
 		this.response = response;
-		this.jsonp = jsonp;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -126,16 +120,6 @@ public abstract class AbstractHttpChannel extends AbstractParameterChannel imple
 	public <E> E[] getArray(String name, Class<E> type) {
 		String[] values = getRequest().getParameterValues(name);
 		return StringParse.DEFAULT.getArray(values, type);
-	}
-
-	protected String getJsonpCallback() {
-		String callbackTag = getString(jsonp);
-		return StringUtils.isEmpty(callbackTag) ? null : callbackTag;
-	}
-
-	public void write(Object obj) throws Throwable {
-		MVCUtils.httpWrite(this, jsonp, jsonParseSupport, obj);
-		super.write(obj);
 	}
 
 	public InputStream getInputStream() throws IOException {

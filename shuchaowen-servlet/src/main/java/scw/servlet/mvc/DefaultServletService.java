@@ -14,21 +14,24 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.support.ControllerService;
-import scw.servlet.ServletUtils;
+import scw.mvc.service.ChannelService;
 import scw.servlet.mvc.http.HttpServletChannelFactory;
 
 @Bean(proxy = false)
 public class DefaultServletService implements ServletService {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
-	private final ControllerService controllerService;
+	private final ChannelService channelService;
 	private final HttpServletChannelFactory httpServletChannelFactory;
 	private final String charsetName;
 
-	public DefaultServletService(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Throwable {
-		this.charsetName = MVCUtils.getCharsetName(propertyFactory);
-		this.controllerService = new ControllerService(beanFactory, propertyFactory);
-		this.httpServletChannelFactory = ServletUtils.getHttpServletChannelFactory(beanFactory, propertyFactory);
+	public DefaultServletService(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+		this(beanFactory.getInstance(HttpServletChannelFactory.class), MVCUtils.getCharsetName(propertyFactory), beanFactory.getInstance(ChannelService.class));
+	}
+	
+	public DefaultServletService(HttpServletChannelFactory httpServletChannelFactory, String charsetName, ChannelService channelService){
+		this.httpServletChannelFactory = httpServletChannelFactory;
+		this.charsetName = charsetName;
+		this.channelService = channelService;
 	}
 
 	public final String getCharsetName() {
@@ -53,7 +56,7 @@ public class DefaultServletService implements ServletService {
 				return;
 			}
 
-			controllerService.service(httpChannel);
+			channelService.doHandler(httpChannel);
 		}
 	}
 }

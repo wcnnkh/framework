@@ -6,8 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.mvc.Filter;
-import scw.mvc.ParameterFilter;
+import scw.mvc.action.filter.Filter;
+import scw.mvc.parameter.ParameterFilter;
 import scw.net.http.Method;
 
 @Target({ ElementType.TYPE, ElementType.METHOD })

@@ -9,37 +9,43 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Bean;
 import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
+import scw.mvc.service.ChannelService;
+import scw.servlet.mvc.http.HttpServletChannelFactory;
 
-@Bean(proxy = false)
 public class AsyncServletService extends DefaultServletService implements scw.core.Destroy {
-	private ThreadPoolExecutor executor;
-	/**
-	 * 把线程交给servlet容器来管理
-	 */
-	private final boolean containerThreadManager;
-
-	public AsyncServletService(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Throwable {
+	private final ThreadPoolExecutor threadPoolExecutor;
+	
+	public AsyncServletService(BeanFactory beanFactory, PropertyFactory propertyFactory){
 		super(beanFactory, propertyFactory);
-		int coreSize = StringUtils.parseInt(propertyFactory.getProperty("servlet.thread.core.size"), 16);
-		int maxSize = StringUtils.parseInt(propertyFactory.getProperty("servlet.thread.max.size"), 512);
-		this.containerThreadManager = StringUtils.parseBoolean(propertyFactory.getProperty("servlet.thread.container"));
-		if (!containerThreadManager) {
-			executor = new ThreadPoolExecutor(coreSize, maxSize, 10, TimeUnit.MINUTES,
+		this.threadPoolExecutor = getThreadPoolExecutor(beanFactory, propertyFactory);
+	}
+
+	public AsyncServletService(HttpServletChannelFactory httpServletChannelFactory, String charsetName, ChannelService channelService, ThreadPoolExecutor threadPoolExecutor){
+		super(httpServletChannelFactory, charsetName, channelService);
+		this.threadPoolExecutor = threadPoolExecutor;
+	}
+	
+	private static ThreadPoolExecutor getThreadPoolExecutor(BeanFactory beanFactory, PropertyFactory propertyFactory){
+		ThreadPoolExecutor threadPoolExecutor = null;
+		if(!StringUtils.parseBoolean(propertyFactory.getProperty("servlet.thread.container"))){
+			int coreSize = StringUtils.parseInt(propertyFactory.getProperty("servlet.thread.core.size"), 16);
+			int maxSize = StringUtils.parseInt(propertyFactory.getProperty("servlet.thread.max.size"), 512);
+			threadPoolExecutor = new ThreadPoolExecutor(coreSize, maxSize, 10, TimeUnit.MINUTES,
 					new LinkedBlockingQueue<Runnable>());
 		}
+		return threadPoolExecutor;
 	}
 
 	@Override
 	public void service(ServletRequest req, ServletResponse resp) {
 		if (req.isAsyncSupported() && !req.isAsyncStarted()) {
 			Execute command = new Execute(req, resp);
-			if (containerThreadManager) {
+			if (threadPoolExecutor == null) {
 				command.defaultExecute();
 			} else {
-				executor.execute(command);
+				threadPoolExecutor.execute(command);
 			}
 			return;
 		}
@@ -71,8 +77,8 @@ public class AsyncServletService extends DefaultServletService implements scw.co
 	}
 
 	public void destroy() {
-		if (executor != null) {
-			executor.shutdownNow();
+		if (threadPoolExecutor != null) {
+			threadPoolExecutor.shutdownNow();
 		}
 	}
 

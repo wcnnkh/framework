@@ -16,10 +16,6 @@ import java.util.Map.Entry;
 import scw.application.ApplicationConfigUtils;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.context.Context;
-import scw.context.ContextManager;
-import scw.context.DefaultThreadLocalContextManager;
-import scw.context.Propagation;
 import scw.core.Constants;
 import scw.core.PropertyFactory;
 import scw.core.ValueFactory;
@@ -39,27 +35,25 @@ import scw.json.JSONUtils;
 import scw.lang.ParameterException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mvc.action.AbstractAction;
+import scw.mvc.action.Action;
+import scw.mvc.action.ActionFactory;
+import scw.mvc.action.MultiActionFactory;
+import scw.mvc.action.filter.Filter;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Model;
-import scw.mvc.exception.ActionAppendExceptionHandler;
-import scw.mvc.exception.DefaultExceptionHandler;
-import scw.mvc.exception.ErrorAppendExceptionHandler;
-import scw.mvc.http.HttpChannel;
+import scw.mvc.context.ContextManager;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
+import scw.mvc.http.cors.CorsConfig;
+import scw.mvc.http.cors.CorsConfigFactory;
+import scw.mvc.http.cors.DefaultCorsConfigFactory;
+import scw.mvc.parameter.DefaultParameterFilterChain;
+import scw.mvc.parameter.ParameterFilter;
+import scw.mvc.parameter.ParameterFilterChain;
 import scw.mvc.rpc.RpcService;
-import scw.mvc.support.ActionFactory;
-import scw.mvc.support.ActionFilter;
-import scw.mvc.support.ActionServiceFilter;
-import scw.mvc.support.CrossDomainDefinition;
-import scw.mvc.support.CrossDomainDefinitionFactory;
-import scw.mvc.support.HttpNotFoundFilter;
-import scw.mvc.support.MultiActionFactory;
-import scw.mvc.support.action.AbstractAction;
-import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import scw.net.Text;
 import scw.net.http.HttpHeaders;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
@@ -68,45 +62,21 @@ import scw.util.ip.IP;
 
 public final class MVCUtils implements MvcConstants {
 	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
+	public static final String REDIRECT_PREFIX = "redirect:";
+	public static final String JSONP_RESP_PREFIX = "(";
+	public static final String JSONP_RESP_SUFFIX = ");";
+	
 	private static final String[] IP_HEADERS = SystemPropertyUtils
 			.getArrayProperty(String.class, "mvc.ip.headers", new String[] {
 					"X-Real-Ip", "X-Forwarded-For" });
 	// 使用ip的模式 1表示使用第一个ip 2表示使用最后一个ip 其他表示原样返回
 	private static final int USE_IP_MODEL = StringUtils.parseInt(
 			SystemPropertyUtils.getProperty("mvc.ip.model"), 1);
-	private static final ContextManager<? extends Context> CONTEXT_MANAGER = new DefaultThreadLocalContextManager();
 	private static final boolean SUPPORT_SERVLET = ClassUtils
 			.isPresent("javax.servlet.Servlet");
 
 	private MVCUtils() {
 	};
-
-	public static void service(Channel channel, Collection<Filter> filters,
-			long warnExecuteTime, Collection<ExceptionHandler> exceptionHandlers) {
-		MvcExecute execute = new MvcExecute(channel, filters, warnExecuteTime,
-				exceptionHandlers);
-		try {
-			CONTEXT_MANAGER.execute(Propagation.REQUIRES_NEW, execute);
-		} catch (Throwable e) {
-			logger.error(e, channel.toString());
-		}
-	}
-
-	public static Action getCurrentAction() {
-		Context context = getContext();
-		return (Action) (context == null ? null : context
-				.getResource(Action.class));
-	}
-
-	public static Channel getCurrentChannel() {
-		Context context = getContext();
-		return (Channel) (context == null ? null : context
-				.getResource(Channel.class));
-	}
-
-	public static Context getContext() {
-		return CONTEXT_MANAGER.getContext();
-	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Map<String, Object> getAttributeMap(Attributes attributes) {
@@ -143,29 +113,6 @@ public final class MVCUtils implements MvcConstants {
 
 		multiActionFactory.add(beanFactory.getInstance(ActionFactory.class));
 		return multiActionFactory;
-	}
-
-	public static Collection<ExceptionHandler> getExceptionHandlers(
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		LinkedList<ExceptionHandler> exceptionHandlers = new LinkedList<ExceptionHandler>();
-		BeanUtils.appendBean(exceptionHandlers, instanceFactory,
-				propertyFactory, ExceptionHandler.class,
-				"mvc.exception.handler");
-		if (instanceFactory.isInstance(ExceptionHandler.class)
-				&& instanceFactory.isSingleton(ExceptionHandler.class)) {
-			exceptionHandlers.add(instanceFactory
-					.getInstance(ExceptionHandler.class));
-		}
-
-		exceptionHandlers.add(instanceFactory
-				.getInstance(ActionAppendExceptionHandler.class));
-		exceptionHandlers.add(instanceFactory
-				.getInstance(ErrorAppendExceptionHandler.class));
-		if (instanceFactory.isInstance(DefaultExceptionHandler.class)) {
-			exceptionHandlers.add(instanceFactory
-					.getInstance(DefaultExceptionHandler.class));
-		}
-		return exceptionHandlers;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -270,7 +217,7 @@ public final class MVCUtils implements MvcConstants {
 
 	public static Object[] getParameterValues(Channel channel,
 			ParameterConfig[] parameterConfigs) {
-		Action action = getCurrentAction();
+		Action action = ContextManager.getCurrentAction();
 		if (action != null && action instanceof AbstractAction) {
 			return ((AbstractAction) action).getArgs(parameterConfigs, channel);
 		}
@@ -420,43 +367,10 @@ public final class MVCUtils implements MvcConstants {
 		return list;
 	}
 
-	public static LinkedList<Filter> getFilters(
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		LinkedList<Filter> filters = new LinkedList<Filter>();
-		BeanUtils.appendBean(filters, instanceFactory, propertyFactory,
-				Filter.class, "mvc.filters");
-		filters.add(instanceFactory.getInstance(ActionServiceFilter.class));
-		return filters;
-	}
-
-	public static LinkedList<Filter> getActionFilter(
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		LinkedList<Filter> filters = new LinkedList<Filter>();
-		BeanUtils.appendBean(filters, instanceFactory, propertyFactory,
-				Filter.class, "mvc.action.filters");
-		filters.addAll(BeanUtils.getConfigurationList(ActionFilter.class, null,
-				instanceFactory, propertyFactory));
-		return filters;
-	}
-
-	public static LinkedList<Filter> getNotFoundFilters(
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		LinkedList<Filter> filters = new LinkedList<Filter>();
-		BeanUtils.appendBean(filters, instanceFactory, propertyFactory,
-				Filter.class, "mvc.notfound.filters");
-		filters.add(instanceFactory.getInstance(HttpNotFoundFilter.class));
-		return filters;
-	}
-
 	public static String getCharsetName(PropertyFactory propertyFactory) {
 		String charsetName = propertyFactory.getProperty("mvc.charsetName");
 		return StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME
 				: charsetName;
-	}
-
-	public static long getWarnExecuteTime(PropertyFactory propertyFactory) {
-		return StringUtils.parseLong(
-				propertyFactory.getProperty("mvc.warn-execute-time"), 100);
 	}
 
 	public static String getIP(Channel channel) {
@@ -510,11 +424,6 @@ public final class MVCUtils implements MvcConstants {
 		return ip;
 	}
 
-	public static boolean isSupportCookieValue(PropertyFactory propertyFactory) {
-		return StringUtils.parseBoolean(propertyFactory
-				.getProperty("mvc.parameter.cookie"));
-	}
-
 	// 默认开启跨域
 	public static boolean isSupportCorssDomain(PropertyFactory propertyFactory) {
 		return StringUtils.parseBoolean(
@@ -525,7 +434,7 @@ public final class MVCUtils implements MvcConstants {
 		return propertyFactory.getProperty("mvc.http.resource.root");
 	}
 
-	public static String[] getSourcePath(PropertyFactory propertyFactory) {
+	public static String[] getResourcePaths(PropertyFactory propertyFactory) {
 		String arr = propertyFactory.getProperty("mvc.http.resource.path");
 		if (StringUtils.isEmpty(arr)) {
 			return null;
@@ -538,20 +447,6 @@ public final class MVCUtils implements MvcConstants {
 			PropertyFactory propertyFactory) {
 		String actionKey = propertyFactory.getProperty("mvc.http.actionKey");
 		return StringUtils.isEmpty(actionKey) ? "action" : actionKey;
-	}
-
-	public static JSONSupport getJsonParseSupport(
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		JSONSupport jsonParseSupport;
-		String jsonParseSupportBeanName = propertyFactory
-				.getProperty("mvc.json");
-		if (StringUtils.isEmpty(jsonParseSupportBeanName)) {
-			jsonParseSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
-		} else {
-			jsonParseSupport = instanceFactory
-					.getInstance(jsonParseSupportBeanName);
-		}
-		return jsonParseSupport;
 	}
 
 	public static MultiValueMap<String, String> getRequestParameters(
@@ -616,36 +511,35 @@ public final class MVCUtils implements MvcConstants {
 		return params;
 	}
 
-	public static void responseCrossDomain(
-			CrossDomainDefinition crossDomainDefinition,
+	public static void responseCrossDomain(CorsConfig config,
 			HttpResponse httpResponse) {
 		/* 允许跨域的主机地址 */
-		if (StringUtils.isNotEmpty(crossDomainDefinition.getOrigin())) {
+		if (StringUtils.isNotEmpty(config.getOrigin())) {
 			httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
-					crossDomainDefinition.getOrigin());
+					config.getOrigin());
 		}
 
 		/* 允许跨域的请求方法GET, POST, HEAD 等 */
-		if (StringUtils.isNotEmpty(crossDomainDefinition.getMethods())) {
+		if (StringUtils.isNotEmpty(config.getMethods())) {
 			httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS,
-					crossDomainDefinition.getMethods());
+					config.getMethods());
 		}
 
 		/* 重新预检验跨域的缓存时间 (s) */
-		if (crossDomainDefinition.getMaxAge() > 0) {
+		if (config.getMaxAge() > 0) {
 			httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_MAX_AGE,
-					crossDomainDefinition.getMaxAge() + "");
+					config.getMaxAge() + "");
 		}
 
 		/* 允许跨域的请求头 */
-		if (StringUtils.isNotEmpty(crossDomainDefinition.getHeaders())) {
+		if (StringUtils.isNotEmpty(config.getHeaders())) {
 			httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
-					crossDomainDefinition.getHeaders());
+					config.getHeaders());
 		}
 
 		/* 是否携带cookie */
 		httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
-				crossDomainDefinition.isCredentials() + "");
+				config.isCredentials() + "");
 	}
 
 	public static String parseRedirect(HttpRequest httpRequest, String text,
@@ -709,94 +603,14 @@ public final class MVCUtils implements MvcConstants {
 		return list;
 	}
 
-	public static void httpWrite(HttpChannel channel, String jsonp,
-			JSONSupport jsonParseSupport, Object write) throws Throwable {
-		if (write == null) {
-			return;
-		}
-
-		if (write instanceof View) {
-			((View) write).render(channel);
-			return;
-		}
-
-		String callbackTag = null;
-		if (scw.net.http.Method.GET == channel.getRequest().getMethod()) {
-			if (!StringUtils.isEmpty(jsonp)) {
-				callbackTag = channel.getString(jsonp);
-				if (StringUtils.isEmpty(callbackTag)) {
-					callbackTag = null;
-				}
-			}
-		}
-
-		HttpResponse httpResponse = channel.getResponse();
-		if (write instanceof String) {
-			String redirect = parseRedirect(channel.getRequest(),
-					(String) write, true);
-			if (redirect != null) {
-				httpResponse.sendRedirect(redirect);
-				return;
-			}
-		}
-
-		if (callbackTag != null) {
-			httpResponse.setMimeType(MimeTypeUtils.TEXT_JAVASCRIPT);
-			httpResponse.getWriter().write(callbackTag);
-			httpResponse.getWriter().write(JSONP_RESP_PREFIX);
-		}
-
-		String content;
-		if (write instanceof Text) {
-			content = ((Text) write).getTextContent();
-			if (callbackTag == null) {
-				MimeType mimeType = ((Text) write).getMimeType();
-				if (mimeType != null) {
-					httpResponse.setMimeType(mimeType);
-				}
-			}
-		} else if ((write instanceof String)
-				|| (ClassUtils.isPrimitiveOrWrapper(write.getClass()))) {
-			content = write.toString();
-		} else {
-			content = jsonParseSupport.toJSONString(write);
-		}
-
-		if (callbackTag == null) {
-			if (StringUtils.isEmpty(httpResponse.getContentType())) {
-				httpResponse.setMimeType(MimeTypeUtils.TEXT_HTML);
-			}
-		}
-
-		httpResponse.getWriter().write(content);
-
-		if (callbackTag != null) {
-			httpResponse.getWriter().write(JSONP_RESP_SUFFIX);
-		}
-
-		if (channel.isLogEnabled()) {
-			channel.log(content);
-		}
-	}
-
-	public static String getJsonp(PropertyFactory propertyFactory) {
-		boolean enable = StringUtils.parseBoolean(
-				propertyFactory.getProperty("mvc.http.jsonp.enable"), true);
-		if (enable) {
-			String jsonp = propertyFactory.getProperty("mvc.http.jsonp");
-			return StringUtils.isEmpty(jsonp) ? "callback" : jsonp;
-		}
-		return null;
-	}
-
-	public static CrossDomainDefinitionFactory getCrossDomainDefinitionFactory(
+	public static CorsConfigFactory getCorsConfigFactory(
 			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		String beanName = propertyFactory
 				.getProperty("mvc.cross-domain.factory");
 		if (StringUtils.isEmpty(beanName)) {
-			return instanceFactory
-					.isInstance(CrossDomainDefinitionFactory.class) ? instanceFactory
-					.getInstance(CrossDomainDefinitionFactory.class) : null;
+			return instanceFactory.isInstance(CorsConfigFactory.class) ? instanceFactory
+					.getInstance(CorsConfigFactory.class)
+					: new DefaultCorsConfigFactory(propertyFactory);
 		}
 		return instanceFactory.getInstance(beanName);
 	}
@@ -832,5 +646,34 @@ public final class MVCUtils implements MvcConstants {
 			PropertyFactory propertyFactory) {
 		return ApplicationConfigUtils.getPackageName(propertyFactory,
 				"mvc.annotation.scann");
+	}
+	
+	public static boolean isSupportCookieValue(PropertyFactory propertyFactory) {
+		return StringUtils.parseBoolean(propertyFactory
+				.getProperty("mvc.parameter.cookie"));
+	}
+	
+	public static JSONSupport getJsonSupport(
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
+		JSONSupport jsonSupport;
+		String jsonSupportBeanName = propertyFactory
+				.getProperty("mvc.json");
+		if (StringUtils.isEmpty(jsonSupportBeanName)) {
+			jsonSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
+		} else {
+			jsonSupport = instanceFactory
+					.getInstance(jsonSupportBeanName);
+		}
+		return jsonSupport;
+	}
+
+	public static String getJsonp(PropertyFactory propertyFactory) {
+		boolean enable = StringUtils.parseBoolean(
+				propertyFactory.getProperty("mvc.http.jsonp.enable"), true);
+		if (enable) {
+			String jsonp = propertyFactory.getProperty("mvc.http.jsonp");
+			return StringUtils.isEmpty(jsonp) ? "callback" : jsonp;
+		}
+		return null;
 	}
 }

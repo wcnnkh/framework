@@ -35,6 +35,14 @@ public class DispatcherServlet extends GenericServlet {
 	public void setServletService(ServletService servletService) {
 		this.servletService = servletService;
 	}
+	
+	public void setDefaultServletService(boolean force){
+		if(getServletService() == null || force){
+			if(getCommonApplication() != null){
+				setServletService(getCommonApplication().getInstance(ServletService.class));
+			}
+		}
+	}
 
 	@Override
 	public void service(ServletRequest req, ServletResponse resp)
@@ -63,12 +71,8 @@ public class DispatcherServlet extends GenericServlet {
 		if (!reference) {
 			getCommonApplication().init();
 		}
-
-		if (getServletService() == null) {
-			this.servletService = ServletUtils.getServletService(
-					getCommonApplication().getBeanFactory(),
-					getCommonApplication().getPropertyFactory());
-		}
+		
+		setDefaultServletService(false);
 	}
 
 	@Override

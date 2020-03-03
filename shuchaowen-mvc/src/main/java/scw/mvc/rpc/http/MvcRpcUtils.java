@@ -16,6 +16,7 @@ import scw.core.utils.StringUtils;
 import scw.lang.NotSupportException;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
+import scw.mvc.context.ContextManager;
 import scw.net.message.Message;
 
 public final class MvcRpcUtils {
@@ -23,7 +24,7 @@ public final class MvcRpcUtils {
 	};
 
 	private static ShareData privateGetShareData() {
-		Context context = MVCUtils.getContext();
+		Context context = ContextManager.getInstance().getContext();
 		if (context == null) {
 			return null;
 		}
@@ -32,7 +33,7 @@ public final class MvcRpcUtils {
 	}
 
 	public static ShareData getShareData() {
-		Context context = MVCUtils.getContext();
+		Context context = ContextManager.getInstance().getContext();
 		if (context == null) {
 			throw new NotSupportException("不存在MVC的上下文");
 		}
@@ -46,7 +47,7 @@ public final class MvcRpcUtils {
 	}
 
 	public static String getIP() {
-		Channel channel = MVCUtils.getCurrentChannel();
+		Channel channel = ContextManager.getCurrentChannel();
 		if (channel == null) {
 			return null;
 		}
@@ -90,7 +91,7 @@ public final class MvcRpcUtils {
 			return null;
 		}
 
-		Channel channel = MVCUtils.getCurrentChannel();
+		Channel channel = ContextManager.getCurrentChannel();
 		if (channel == null) {
 			return null;
 		}

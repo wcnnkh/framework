@@ -46,7 +46,7 @@ public final class ShutdownHttpServlet extends HttpServlet {
 
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		MVCUtils.responseCrossDomain(scw.mvc.support.CrossDomainDefinition.DEFAULT,
+		MVCUtils.responseCrossDomain(scw.mvc.http.cors.CorsConfig.DEFAULT,
 				new MyHttpServletResponse(resp));
 		if (!ArrayUtils.isEmpty(ips)) {
 			String requestIp = ServletUtils.getIP(req);

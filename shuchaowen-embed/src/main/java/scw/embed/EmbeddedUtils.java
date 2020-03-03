@@ -39,7 +39,7 @@ public final class EmbeddedUtils {
 		return getProperty(propertyFactory, "contextPath");
 	}
 
-	public static String getSource(PropertyFactory propertyFactory) {
+	public static String getDefaultServletMapping(PropertyFactory propertyFactory) {
 		return getProperty(propertyFactory, "source");
 	}
 

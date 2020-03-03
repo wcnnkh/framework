@@ -58,8 +58,8 @@ public final class BeanUtils {
 
 	private static Map<Class<?>, Map<String, Set<Class<?>>>> configurationCache = new ConcurrentReferenceHashMap<Class<?>, Map<String, Set<Class<?>>>>();
 
-	private static Set<Class<?>> getConfigurationClassListInternal(Class<?> type,
-			String packageName) {
+	private static Set<Class<?>> getConfigurationClassListInternal(
+			Class<?> type, String packageName) {
 		Map<String, Set<Class<?>>> map = configurationCache.get(type);
 		if (map == null) {
 			map = new HashMap<String, Set<Class<?>>>();
@@ -74,12 +74,12 @@ public final class BeanUtils {
 				if (configuration == null) {
 					continue;
 				}
-				
+
 				if (!type.isAssignableFrom(clazz)) {
 					continue;
 				}
-				
-				if(!ClassUtils.isPresent(clazz.getName())){
+
+				if (!ClassUtils.isPresent(clazz.getName())) {
 					logger.debug("not support class:{}", clazz.getName());
 					continue;
 				}
@@ -95,16 +95,24 @@ public final class BeanUtils {
 	private BeanUtils() {
 	};
 
+	@SuppressWarnings("rawtypes")
 	public static <T> List<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, Collection<Class<?>> excludeTypes,
+			Class<? extends T> type, Collection<Class> excludeTypes,
 			PropertyFactory propertyFactory) {
-		return getConfigurationClassList(type, excludeTypes, Arrays
-				.asList("scw", ApplicationConfigUtils
-						.getAnnotationPackage(propertyFactory)));
+		return getConfigurationClassList(type, excludeTypes, Arrays.asList(
+				"scw",
+				ApplicationConfigUtils.getAnnotationPackage(propertyFactory)));
 	}
 
+	@SuppressWarnings("rawtypes")
+	public static <T> List<Class<T>> getConfigurationClassList(
+			Class<? extends T> type, PropertyFactory propertyFactory, Class ...excludeTypes) {
+		return getConfigurationClassList(type, Arrays.asList(excludeTypes), propertyFactory);
+	}
+
+	@SuppressWarnings("rawtypes")
 	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			Collection<Class<?>> excludeTypes, InstanceFactory instanceFactory,
+			Collection<Class> excludeTypes, InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory) {
 		List<T> list = new ArrayList<T>();
 		for (Class<T> clazz : getConfigurationClassList(type, excludeTypes,
@@ -114,13 +122,22 @@ public final class BeanUtils {
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
+	public static <T> List<T> getConfigurationList(Class<? extends T> type,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Class... excludeTypes) {
+		return getConfigurationList(type, Arrays.asList(excludeTypes),
+				instanceFactory, propertyFactory);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <T> List<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, Collection<Class<?>> excludeTypes,
+			Class<? extends T> type, Collection<Class> excludeTypes,
 			Collection<String> packageNames) {
 		HashSet<Class<T>> set = new HashSet<Class<T>>();
 		for (String packageName : packageNames) {
-			for (Class<?> clazz : getConfigurationClassListInternal(type, packageName)) {
+			for (Class<?> clazz : getConfigurationClassListInternal(type,
+					packageName)) {
 				Configuration configuration = clazz
 						.getAnnotation(Configuration.class);
 				if (configuration == null) {
@@ -137,11 +154,14 @@ public final class BeanUtils {
 				set.add((Class<T>) clazz);
 			}
 		}
-		
+
 		List<Class<T>> list = new ArrayList<Class<T>>(set);
 		for (Class<? extends T> clazz : list) {
 			Configuration c = clazz.getAnnotation(Configuration.class);
 			for (Class<?> e : c.excludes()) {
+				if(e == clazz){
+					continue;
+				}
 				set.remove(e);
 			}
 		}

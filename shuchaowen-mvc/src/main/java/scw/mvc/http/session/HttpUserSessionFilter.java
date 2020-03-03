@@ -4,16 +4,14 @@ import scw.core.annotation.DefaultValue;
 import scw.core.annotation.Order;
 import scw.core.annotation.ParameterName;
 import scw.core.utils.StringUtils;
-import scw.mvc.FilterChain;
+import scw.mvc.action.filter.FilterChain;
+import scw.mvc.action.http.HttpAction;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpRequest;
-import scw.mvc.http.HttpResponse;
-import scw.mvc.support.HttpFilter;
 import scw.result.ResultFactory;
 import scw.security.session.UserSession;
 
 @SuppressWarnings("rawtypes")
-public class HttpUserSessionFilter extends HttpFilter{
+public class HttpUserSessionFilter extends scw.mvc.action.http.HttpFilter	{
 	private HttpChannelUserSessionFactory httpChannelUserSessionFactory;
 	private String uidKey;
 	private ResultFactory resultFactory;
@@ -26,8 +24,8 @@ public class HttpUserSessionFilter extends HttpFilter{
 	}
 	
 	@Override
-	public Object doFilter(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse, FilterChain chain)
-			throws Throwable {
+	protected Object doHttpFilter(HttpChannel channel, HttpAction action,
+			FilterChain chain) throws Throwable {
 		UserSession userSession = httpChannelUserSessionFactory.getUserSession(channel);
 		if(userSession == null){
 			return resultFactory.authorizationFailure();
@@ -49,7 +47,7 @@ public class HttpUserSessionFilter extends HttpFilter{
 			}
 		}
 		
-		return chain.doFilter(channel);
+		return chain.doFilter(channel, action);
 	}
 
 }

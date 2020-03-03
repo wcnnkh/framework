@@ -247,7 +247,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 			PropertyFactory propertyFactory) {
 		Tomcat.addServlet(context, "scw", servlet);
 		addServletMapping(context, "/", "scw");
-		String sourceMapping = EmbeddedUtils.getSource(propertyFactory);
+		String sourceMapping = EmbeddedUtils.getDefaultServletMapping(propertyFactory);
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
@@ -255,7 +255,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 						"org.apache.catalina.servlets.DefaultServlet");
 				for (String pattern : patternArr) {
 					LoggerUtils.getLogger(TomcatServletEmbedded.class).info(
-							"source mapping [{}]", pattern);
+							"default mapping [{}]", pattern);
 					addServletMapping(context, pattern, "default");
 				}
 			}

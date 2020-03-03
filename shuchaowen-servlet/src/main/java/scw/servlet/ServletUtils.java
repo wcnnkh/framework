@@ -10,15 +10,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.beans.BeanFactory;
-import scw.core.PropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.mvc.MVCUtils;
 import scw.net.http.HttpHeaders;
-import scw.servlet.mvc.ServletService;
-import scw.servlet.mvc.http.DefaultHttpServletChannelFactory;
-import scw.servlet.mvc.http.HttpServletChannelFactory;
 import scw.servlet.mvc.http.MyHttpServletRequest;
 
 public final class ServletUtils {
@@ -42,20 +36,6 @@ public final class ServletUtils {
 	 */
 	public static boolean isAsyncSupport() {
 		return asyncSupport;
-	}
-
-	public static ServletService getServletService(BeanFactory beanFactory, PropertyFactory propertyFactory,
-			boolean async) {
-		if (async) {
-			return beanFactory.getInstance("scw.servlet.mvc.AsyncServletService");
-		} else {
-			return beanFactory.getInstance("scw.servlet.mvc.DefaultServletService");
-		}
-	}
-
-	public static ServletService getServletService(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		return getServletService(beanFactory, propertyFactory,
-				isAsyncSupport() && StringUtils.parseBoolean(propertyFactory.getProperty("servlet.async")));
 	}
 
 	/**
@@ -112,18 +92,6 @@ public final class ServletUtils {
 			throws ServletException, IOException {
 		RequestDispatcher dispatcher = request.getRequestDispatcher(page);
 		dispatcher.forward(request, response);
-	}
-
-	public static HttpServletChannelFactory getHttpServletChannelFactory(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
-		String factoryName = propertyFactory.getProperty("mvc.servlet.http.channel-factory");
-		if (StringUtils.isEmpty(factoryName)) {
-			return new DefaultHttpServletChannelFactory(beanFactory,
-					MVCUtils.getJsonParseSupport(beanFactory, propertyFactory),
-					MVCUtils.isSupportCookieValue(propertyFactory), MVCUtils.getJsonp(propertyFactory));
-		} else {
-			return beanFactory.getInstance(factoryName);
-		}
 	}
 
 	public static String getIP(HttpServletRequest httpServletRequest) {

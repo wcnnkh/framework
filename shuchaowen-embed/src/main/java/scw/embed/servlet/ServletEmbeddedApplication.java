@@ -9,7 +9,6 @@ import scw.core.utils.StringUtils;
 import scw.embed.EmbeddedUtils;
 import scw.embed.tomcat.TomcatApplication;
 import scw.io.resource.ResourceUtils;
-import scw.servlet.ServletUtils;
 import scw.servlet.mvc.DispatcherServlet;
 import scw.util.FormatUtils;
 
@@ -54,7 +53,7 @@ public class ServletEmbeddedApplication extends CommonApplication {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
 		dispatcherServlet.setCommonApplication(this);
 		if(StringUtils.parseBoolean(getPropertyFactory().getProperty("servlet.service.startup"), true)){
-			dispatcherServlet.setServletService(ServletUtils.getServletService(getBeanFactory(), getPropertyFactory()));
+			dispatcherServlet.setDefaultServletService(false);
 		}
 		embedded.init(getBeanFactory(), getPropertyFactory(), new ShutdownHttpServlet(getPropertyFactory(), this),
 				dispatcherServlet, mainClass);

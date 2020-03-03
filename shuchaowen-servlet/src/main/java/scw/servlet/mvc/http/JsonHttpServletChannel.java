@@ -18,8 +18,8 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	private JsonObject jsonObject;
 
 	public JsonHttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport, boolean cookieValue,
-			HttpRequest request, HttpResponse response, String jsonp) {
-		super(beanFactory, jsonParseSupport, cookieValue, request, response, jsonp);
+			HttpRequest request, HttpResponse response) {
+		super(beanFactory, jsonParseSupport, cookieValue, request, response);
 		if (Method.GET.name().equals(request.getMethod())) {
 			logger.warn("servletPath={},method={}不能使用JSON类型的请求", request.getControllerPath(), request.getMethod());
 		} else {

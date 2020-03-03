@@ -3,24 +3,23 @@ package scw.servlet.mvc.http;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.mvc.FilterChain;
+import scw.mvc.action.filter.FilterChain;
+import scw.mvc.action.http.HttpAction;
+import scw.mvc.action.http.HttpFilter;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpRequest;
-import scw.mvc.http.HttpResponse;
-import scw.mvc.support.HttpFilter;
 
 public abstract class HttpServletFilter extends HttpFilter {
 
 	@Override
-	public Object doFilter(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse, FilterChain chain)
-			throws Throwable {
-		if (httpRequest instanceof HttpServletRequest && httpResponse instanceof HttpServletResponse) {
-			return doFilter(channel, (HttpServletRequest) httpRequest, (HttpServletResponse) httpResponse, chain);
+	protected Object doHttpFilter(HttpChannel channel, HttpAction action,
+			FilterChain chain) throws Throwable {
+		if(channel instanceof HttpServletChannel){
+			HttpServletChannel httpServletChannel = (HttpServletChannel)channel;
+			return doHttpServletFilter(httpServletChannel, httpServletChannel.getRequest().getHttpServletRequest(), httpServletChannel.getResponse(), action, chain);
 		}
-
-		return chain.doFilter(channel);
+		
+		return chain.doFilter(channel, action);
 	}
-
-	public abstract Object doFilter(HttpChannel channel, HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse, FilterChain chain) throws Throwable;
+	
+	protected abstract Object doHttpServletFilter(HttpServletChannel channel, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, HttpAction action, FilterChain chain) throws Throwable;
 }

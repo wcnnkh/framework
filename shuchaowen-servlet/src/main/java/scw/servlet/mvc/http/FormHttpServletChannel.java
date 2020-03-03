@@ -14,8 +14,8 @@ public class FormHttpServletChannel extends HttpServletChannel {
 	private static Logger logger = LoggerFactory.getLogger(FormHttpServletChannel.class);
 
 	public FormHttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport, boolean cookieValue,
-			HttpRequest request, HttpResponse response, String jsonp) {
-		super(beanFactory, jsonParseSupport, cookieValue, request, response, jsonp);
+			HttpRequest request, HttpResponse response) {
+		super(beanFactory, jsonParseSupport, cookieValue, request, response);
 		if (isLogEnabled()) {
 			log("requestPath={},method={},{}", getRequest().getRequestPath(), getRequest().getMethod(),
 					JSONUtils.toJSONString(getRequest().getParameterMap()));
