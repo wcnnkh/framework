@@ -1,15 +1,15 @@
-package scw.excel.servlet;
+package scw.office.excel.servlet;
 
 import java.util.Arrays;
 
 import scw.db.DB;
-import scw.excel.jxl.export.JxlExport;
-import scw.excel.jxl.export.SimpleExportRowImpl;
-import scw.excel.jxl.export.SqlExportRow;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.http.HttpView;
+import scw.office.excel.jxl.export.JxlExport;
+import scw.office.excel.jxl.export.SimpleExportRowImpl;
+import scw.office.excel.jxl.export.SqlExportRow;
 import scw.sql.Sql;
 
 public class JxlExcelView extends HttpView {

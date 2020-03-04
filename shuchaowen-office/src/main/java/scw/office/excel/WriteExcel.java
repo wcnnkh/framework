@@ -1,4 +1,4 @@
-package scw.excel;
+package scw.office.excel;
 
 import scw.core.Destroy;
 

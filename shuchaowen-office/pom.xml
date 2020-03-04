@@ -6,7 +6,7 @@
 		<artifactId>shuchaowen</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>shuchaowen-excel</artifactId>
+	<artifactId>shuchaowen-office</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>shuchaowen</groupId>
@@ -16,17 +16,18 @@
 			<groupId>jexcelapi</groupId>
 			<artifactId>jxl</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-db</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-mvc</artifactId>

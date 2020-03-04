@@ -1,4 +1,4 @@
-package scw.excel.jxl.export;
+package scw.office.excel.jxl.export;
 
 import scw.orm.sql.ResultMapping;
 

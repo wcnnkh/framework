@@ -1,4 +1,4 @@
-package scw.excel.jxl;
+package scw.office.excel.jxl;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,10 +19,10 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import scw.core.Consumer;
-import scw.excel.RowCallback;
 import scw.io.resource.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.office.excel.RowCallback;
 
 public final class JxlUtils {
 	private JxlUtils() {

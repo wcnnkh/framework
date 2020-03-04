@@ -1,4 +1,4 @@
-package scw.excel.jxl.load;
+package scw.office.excel.jxl.load;
 
 import java.io.InputStream;
 

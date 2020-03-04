@@ -161,10 +161,10 @@
 				<artifactId>shuchaowen-apple</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-
+			
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-excel</artifactId>
+				<artifactId>shuchaowen-office</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 
@@ -470,7 +470,6 @@
 		<module>shuchaowen-mail</module>
 		<module>shuchaowen-kdniao</module>
 		<module>shuchaowen-upload</module>
-		<module>shuchaowen-excel</module>
 		<module>shuchaowen-freemarker</module>
 		<module>shuchaowen-tencent</module>
 		<module>shuchaowen-apple</module>
@@ -494,5 +493,6 @@
 		<module>shuchaowen-async</module>
 		<module>shuchaowen-rpc</module>
 		<module>shuchaowen-servlet</module>
+		<module>shuchaowen-office</module>
 	</modules>
 </project>

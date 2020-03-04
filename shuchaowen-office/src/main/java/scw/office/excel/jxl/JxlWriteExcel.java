@@ -1,4 +1,4 @@
-package scw.excel.jxl;
+package scw.office.excel.jxl;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,7 +9,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
-import scw.excel.WriteExcel;
+import scw.office.excel.WriteExcel;
 
 public class JxlWriteExcel implements WriteExcel {
 	private WritableWorkbook workbook;

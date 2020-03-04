@@ -1,14 +1,14 @@
-package scw.excel.servlet;
+package scw.office.excel.servlet;
 
 import java.util.List;
 
-import scw.excel.jxl.export.JxlExport;
 import scw.mvc.Request;
 import scw.mvc.Response;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.http.HttpView;
+import scw.office.excel.jxl.export.JxlExport;
 
 public class JxlListToExcelView extends HttpView {
 	private String fileName;

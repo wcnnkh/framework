@@ -1,4 +1,4 @@
-package scw.excel.jxl;
+package scw.office.excel.jxl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,9 +8,9 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import scw.core.Consumer;
-import scw.excel.ReadExcelSupport;
-import scw.excel.RowCallback;
 import scw.io.resource.ResourceUtils;
+import scw.office.excel.ReadExcelSupport;
+import scw.office.excel.RowCallback;
 
 public class JxlReadExcelSupport implements ReadExcelSupport {
 

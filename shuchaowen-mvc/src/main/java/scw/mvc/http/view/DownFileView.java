@@ -3,6 +3,7 @@ package scw.mvc.http.view;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 
 import scw.io.IOUtils;
@@ -35,8 +36,7 @@ public final class DownFileView extends HttpView {
 		}
 
 		httpResponse.setContentType(Files.probeContentType(file.toPath()));
-		httpResponse.setHeader("Content-Disposition",
-				"attachment;filename=" + new String(file.getName().getBytes(), "IOS-8859-1"));
+		setResponseFileDisposition(file.getName(), httpResponse);
 		httpResponse.setBufferSize(buffSize);
 
 		FileInputStream fis = null;
@@ -48,5 +48,10 @@ public final class DownFileView extends HttpView {
 		} finally {
 			IOUtils.close(fis, os);
 		}
+	}
+	
+	public static void setResponseFileDisposition(String fileName, HttpResponse httpResponse) throws UnsupportedEncodingException{
+		fileName = new String(fileName.getBytes(), "iso-8859-1");
+		httpResponse.setHeader("Content-Disposition", "attachment;filename=" + fileName);
 	}
 }
