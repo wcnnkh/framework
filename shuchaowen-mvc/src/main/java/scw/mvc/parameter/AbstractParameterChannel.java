@@ -92,12 +92,12 @@ public abstract class AbstractParameterChannel extends AbstractChannel implement
 		}
 
 		long time = 0;
-		if (StringUtils.isEmpty(value)) {
+		if (StringUtils.isNotEmpty(value)) {
 			SimpleDateFormat format = new SimpleDateFormat(dateFormat.value());
 			try {
 				time = format.parse(value).getTime();
 			} catch (ParseException e) {
-				throw new ParameterException(value);
+				getLogger().error("{} format error value:{}", dateFormat.value(), value);
 			}
 		}
 
