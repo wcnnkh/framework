@@ -51,13 +51,8 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 		readyOnly();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	protected Map<String, List<String>> getTargetMap() {
-		return (Map<String, List<String>>) (headers == null ? Collections.emptyMap() : headers);
-	}
-
-	protected void setTargetMap(Map<String, List<String>> targetMap) {
-		this.headers = targetMap;
+	protected final Map<String, List<String>> getTargetMap() {
+		return headers;
 	}
 }
