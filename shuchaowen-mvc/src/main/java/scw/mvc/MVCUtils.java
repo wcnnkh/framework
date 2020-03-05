@@ -1,9 +1,6 @@
 package scw.mvc;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -18,11 +15,8 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.Constants;
 import scw.core.PropertyFactory;
-import scw.core.annotation.ParameterName;
 import scw.core.instance.InstanceFactory;
-import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterConfig;
-import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -40,7 +34,6 @@ import scw.mvc.action.MultiActionFactory;
 import scw.mvc.action.filter.Filter;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
-import scw.mvc.annotation.Model;
 import scw.mvc.context.ContextManager;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
@@ -57,8 +50,6 @@ import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.attribute.Attributes;
 import scw.util.ip.IP;
-import scw.util.value.Value;
-import scw.util.value.ValueFactory;
 
 public final class MVCUtils implements MvcConstants {
 	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
@@ -113,106 +104,6 @@ public final class MVCUtils implements MvcConstants {
 
 		multiActionFactory.add(beanFactory.getInstance(ActionFactory.class));
 		return multiActionFactory;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T getParameterWrapper(ValueFactory<String, Value> request,
-			Class<T> type, String name) {
-		try {
-			return (T) privateParameterWrapper(request, type,
-					StringUtils.isEmpty(name) ? null
-							: (name.endsWith(".") ? name : name + "."));
-		} catch (Exception e) {
-			throw new RuntimeException("参数错误:" + type.getName(), e);
-		}
-	}
-
-	public static void parameterWrapper(Object instance,
-			ValueFactory<String, Value> request, Class<?> type, String name) {
-		try {
-			privateParameterWrapper(instance, request, type,
-					StringUtils.isEmpty(name) ? null
-							: (name.endsWith(".") ? name : name + "."));
-		} catch (Exception e) {
-			throw new RuntimeException("参数错误:" + type.getName(), e);
-		}
-	}
-
-	private static void privateParameterWrapper(Object instance,
-			ValueFactory<String, Value> request, Class<?> type, String prefix)
-			throws Exception {
-		Class<?> clz = type;
-		while (clz != null && clz != Object.class) {
-			for (Field field : clz.getDeclaredFields()) {
-				if (Modifier.isStatic(field.getModifiers())
-						|| Modifier.isFinal(field.getModifiers())) {
-					continue;
-				}
-
-				ReflectionUtils.setAccessibleField(field);
-				if (!field.getType().isPrimitive()
-						&& field.get(instance) != null) {
-					continue;
-				}
-				
-				String fieldName = field.getName();
-				ParameterName parameterName = field
-						.getAnnotation(ParameterName.class);
-				if (parameterName != null
-						&& StringUtils.isNotEmpty(parameterName.value())) {
-					fieldName = parameterName.value();
-				}
-
-				String key = StringUtils.isEmpty(prefix) ? fieldName : prefix
-						+ fieldName;
-				if (String.class.isAssignableFrom(field.getType())
-						|| ClassUtils.isPrimitiveOrWrapper(field.getType())) {
-					// 濡傛灉鏄熀鏈暟鎹被鍨�
-					Object v = request.getObject(key, field.getType());
-					if (v != null) {
-						ReflectionUtils.setFieldValue(clz, field, instance, v);
-					}
-				} else {
-					ReflectionUtils.setFieldValue(
-							clz,
-							field,
-							instance,
-							privateParameterWrapper(request, field.getType(),
-									key + "."));
-				}
-			}
-			clz = clz.getSuperclass();
-		}
-	}
-
-	private static Object privateParameterWrapper(ValueFactory<String, Value> request,
-			Class<?> type, String prefix) throws Exception {
-		if (!ReflectionUtils.isInstance(type)) {
-			return null;
-		}
-
-		Object t = InstanceUtils.newInstance(type);
-		privateParameterWrapper(t, request, type, prefix);
-		return t;
-	}
-
-	public static Constructor<?> getModelConstructor(Class<?> type) {
-		Constructor<?>[] constructors = type.getDeclaredConstructors();
-		Constructor<?> constructor = null;
-		if (constructors.length == 1) {
-			constructor = constructors[0];
-		} else {
-			for (int i = 0; i < constructors.length; i++) {
-				constructor = constructors[i];
-				Model model = constructor.getAnnotation(Model.class);
-				if (model == null) {
-					continue;
-				}
-
-				break;
-			}
-		}
-		return constructor;
 	}
 
 	public static Object[] getParameterValues(Channel channel,

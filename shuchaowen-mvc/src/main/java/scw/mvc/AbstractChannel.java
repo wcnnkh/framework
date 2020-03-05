@@ -33,6 +33,7 @@ import scw.json.JSONSupport;
 import scw.lang.ParameterException;
 import scw.mvc.annotation.BigDecimalMultiply;
 import scw.mvc.annotation.DateFormat;
+import scw.mvc.annotation.Model;
 import scw.mvc.annotation.RequestBean;
 import scw.mvc.annotation.RequestBody;
 import scw.mvc.parameter.RequestBodyParse;
@@ -92,6 +93,7 @@ public abstract class AbstractChannel extends
 	}
 
 	public void destroy() {
+		attributeMap = null;
 		if (beanMap == null) {
 			return;
 		}
@@ -130,6 +132,25 @@ public abstract class AbstractChannel extends
 				MVCUtils.getParameterValues(this,
 						ParameterUtils.getParameterConfigs(constructor)));
 	}
+	
+	protected Constructor<?> getModelConstructor(Class<?> type) {
+		Constructor<?>[] constructors = type.getDeclaredConstructors();
+		Constructor<?> constructor = null;
+		if (constructors.length == 1) {
+			constructor = constructors[0];
+		} else {
+			for (int i = 0; i < constructors.length; i++) {
+				constructor = constructors[i];
+				Model model = constructor.getAnnotation(Model.class);
+				if (model == null) {
+					continue;
+				}
+
+				break;
+			}
+		}
+		return constructor;
+	}
 
 	@SuppressWarnings("unchecked")
 	public final <T> T getBean(String name) {
@@ -140,8 +161,7 @@ public abstract class AbstractChannel extends
 
 		if (beanDefinition.isSingleton()) {
 			if (ReflectionUtils.isInstance(beanDefinition.getType(), false)) {
-				Constructor<?> constructor = MVCUtils
-						.getModelConstructor(beanDefinition.getType());
+				Constructor<?> constructor = getModelConstructor(beanDefinition.getType());
 				if (constructor == null) {
 					return null;
 				}
@@ -169,8 +189,7 @@ public abstract class AbstractChannel extends
 					}
 				}
 			} else {
-				Constructor<?> constructor = MVCUtils
-						.getModelConstructor(beanDefinition.getType());
+				Constructor<?> constructor = getModelConstructor(beanDefinition.getType());
 				if (constructor == null) {
 					return null;
 				}

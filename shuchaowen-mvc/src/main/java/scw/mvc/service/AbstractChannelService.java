@@ -1,5 +1,6 @@
 package scw.mvc.service;
 
+import scw.core.utils.XUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.Channel;
@@ -19,15 +20,23 @@ public abstract class AbstractChannelService implements ChannelService {
 		} catch (Throwable e) {
 			doError(channel, e);
 		}finally{
-			long millisecond = channel.getCreateTime() - System.currentTimeMillis();
-			if(millisecond > getWarnExecuteMillisecond()){
-				executeOvertime(channel, millisecond);
-			}else{
-				if(logger.isTraceEnabled()){
-					logger.trace("execute：{}, use time:{}ms", channel.toString(), millisecond);
+			try {
+				long millisecond = System.currentTimeMillis() - channel.getCreateTime();
+				if(millisecond > getWarnExecuteMillisecond()){
+					executeOvertime(channel, millisecond);
+				}else{
+					if(logger.isTraceEnabled()){
+						logger.trace("execute：{}, use time:{}ms", channel.toString(), millisecond);
+					}
 				}
+			} finally{
+				destroyChannel(channel);
 			}
 		}
+	}
+	
+	protected void destroyChannel(Channel channel){
+		XUtils.destroy(channel);
 	}
 
 	protected void doError(Channel channel, Throwable error){
