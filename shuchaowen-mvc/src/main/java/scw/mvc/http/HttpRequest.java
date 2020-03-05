@@ -3,11 +3,9 @@ package scw.mvc.http;
 import scw.net.http.Cookie;
 import scw.security.session.Session;
 import scw.util.MultiValueParameterFactory;
-import scw.util.attribute.Attributes;
 import scw.util.ip.IP;
 
-public interface HttpRequest
-		extends Attributes<String, Object>, scw.net.http.HttpRequest, scw.mvc.Request, MultiValueParameterFactory, IP {
+public interface HttpRequest extends scw.net.http.HttpRequest, scw.mvc.Request, MultiValueParameterFactory, IP {
 	String getRawMethod();
 
 	Cookie getCookie(String name, boolean ignoreCase);

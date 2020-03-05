@@ -7,9 +7,9 @@ import scw.core.PropertyFactory;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
-import scw.util.StringParseValueFactory;
-import scw.util.Value;
-import scw.util.ValueFactory;
+import scw.util.value.StringParseValueFactory;
+import scw.util.value.Value;
+import scw.util.value.ValueFactory;
 
 public class AutoInstanceConfig implements InstanceConfig {
 	protected final InstanceFactory instanceFactory;

@@ -9,7 +9,7 @@ import scw.beans.annotation.Bean;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 import scw.core.utils.ClassUtils;
-import scw.util.StringParseValueFactory;
+import scw.util.value.StringParseValueFactory;
 
 public class MethodBeanConfigFactory extends AbstractBeanConfiguration {
 	public MethodBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,

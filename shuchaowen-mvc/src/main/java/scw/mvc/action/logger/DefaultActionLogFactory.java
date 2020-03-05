@@ -7,7 +7,7 @@ import scw.core.Callable;
 import scw.core.annotation.DefaultValue;
 import scw.core.annotation.ParameterName;
 import scw.core.parameter.ParameterConfig;
-import scw.core.parameter.SimpleParameterConfig;
+import scw.core.parameter.DefaultParameterConfig;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.Channel;
@@ -24,7 +24,7 @@ public class DefaultActionLogFactory extends AbstractActionLogFactory{
 	public DefaultActionLogFactory(
 			@ParameterName("mvc.logger.identification") @DefaultValue("uid") String identificationKey, @ParameterName("mvc.logger.ip")@DefaultValue("false") boolean ipEnable) {
 		if (StringUtils.isNotEmpty(identificationKey)) {
-			this.identificationParameterConfig = new SimpleParameterConfig(
+			this.identificationParameterConfig = new DefaultParameterConfig(
 					identificationKey, null, String.class, String.class);
 		}
 		this.ipEnable = ipEnable;
@@ -66,7 +66,7 @@ public class DefaultActionLogFactory extends AbstractActionLogFactory{
 	}
 	
 	protected String getAttirubteValue(Channel channel, String name){
-		return (String) channel.getParameter( new SimpleParameterConfig(
+		return (String) channel.getParameter( new DefaultParameterConfig(
 				name, null, String.class, String.class));
 	}
 	

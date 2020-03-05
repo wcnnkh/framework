@@ -6,7 +6,7 @@ import scw.data.TemporaryCache;
 import scw.integration.sms.ShortMessageService;
 import scw.integration.verification.AbstractVerificationCodeService;
 import scw.integration.verification.VerificationCodeException;
-import scw.util.PhoneNumber;
+import scw.util.phone.PhoneNumber;
 
 public class SmsVerificationCodeService<M> extends AbstractVerificationCodeService<PhoneNumber> {
 	private MessageFactory<M, PhoneNumber> messageFactory;

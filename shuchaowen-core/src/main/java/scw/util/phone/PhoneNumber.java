@@ -1,4 +1,4 @@
-package scw.util;
+package scw.util.phone;
 
 /**
  * 电话号码的定义

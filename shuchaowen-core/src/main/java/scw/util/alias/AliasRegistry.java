@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.core;
+package scw.util.alias;
 
 /**
  * Common interface for managing aliases. Serves as super-interface for

@@ -2,7 +2,7 @@ package scw.integration.sms;
 
 import java.util.Collection;
 
-import scw.util.PhoneNumber;
+import scw.util.phone.PhoneNumber;
 
 /**
  * 短讯服务

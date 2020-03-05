@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 import scw.lang.NotSupportException;
 
-public class MultiplePageFactory extends LinkedList<PageFactoryAdapter> implements PageFactory {
+public class MultiPageFactory extends LinkedList<PageFactoryAdapter> implements PageFactory {
 	private static final long serialVersionUID = 1L;
 
 	public Page getPage(String page) {
@@ -13,6 +13,6 @@ public class MultiplePageFactory extends LinkedList<PageFactoryAdapter> implemen
 				return adapter.getPage(page);
 			}
 		}
-		throw new NotSupportException(page);
+		throw new NotSupportException("not support adapter:" + page);
 	}
 }

@@ -15,7 +15,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.http.HttpUtils;
 import scw.security.signature.SignatureUtils;
-import scw.util.PhoneNumber;
+import scw.util.phone.PhoneNumber;
 
 public final class ALiDaYuShortMessageService implements ShortMessageService<ALiDaYuMessage, ALiDaYuResult> {
 	private static Logger logger = LoggerFactory.getLogger(ALiDaYuShortMessageService.class);

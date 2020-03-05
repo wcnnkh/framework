@@ -16,8 +16,8 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.lang.NotSupportException;
-import scw.util.Value;
-import scw.util.ValueFactory;
+import scw.util.value.Value;
+import scw.util.value.ValueFactory;
 
 @SuppressWarnings("unchecked")
 public class MethodBeanDefinition extends AbstractBeanDefinition {

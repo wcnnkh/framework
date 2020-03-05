@@ -1,6 +1,6 @@
 package scw.json;
 
-import scw.util.DefaultValueDefinition;
+import scw.util.value.DefaultValueDefinition;
 
 public class DefaultJsonElementValue extends DefaultValueDefinition implements JsonElement {
 	public static final DefaultJsonElementValue DEFAULT_JSON_ELEMENT_VALUE = new DefaultJsonElementValue();

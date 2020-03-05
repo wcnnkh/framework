@@ -7,10 +7,9 @@ import scw.json.JSONSupport;
 import scw.json.JsonObject;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.mvc.http.HttpRequest;
-import scw.mvc.http.HttpResponse;
 import scw.mvc.parameter.Body;
 import scw.net.http.Method;
+import scw.util.value.Value;
 
 @SuppressWarnings("unchecked")
 public class JsonHttpServletChannel extends HttpServletChannel {
@@ -18,7 +17,7 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	private JsonObject jsonObject;
 
 	public JsonHttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport, boolean cookieValue,
-			HttpRequest request, HttpResponse response) {
+			MyHttpServletRequest request, MyHttpServletResponse response) {
 		super(beanFactory, jsonParseSupport, cookieValue, request, response);
 		if (Method.GET.name().equals(request.getMethod())) {
 			logger.warn("servletPath={},method={}不能使用JSON类型的请求", request.getControllerPath(), request.getMethod());
@@ -42,6 +41,11 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	public Logger getLogger() {
 		return logger;
 	}
+	
+	@Override
+	public Value get(String key) {
+		return jsonObject == null? null:jsonObject.get(key);
+	}
 
 	@Override
 	protected Object getObjectIsNotBean(String name, Class<?> type) {
@@ -51,16 +55,6 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	@Override
 	public Object getObject(String name, Type type) {
 		return jsonObject == null ? null : jsonObject.getObject(name, type);
-	}
-
-	@Override
-	public <T> T getObject(Class<T> type) {
-		return jsonObject == null ? null : jsonParseSupport.parseObject(jsonObject.toJsonString(), type);
-	}
-
-	@Override
-	public <T> T getObject(Type type) {
-		return (T) (jsonObject == null ? null : jsonParseSupport.parseObject(jsonObject.toJsonString(), type));
 	}
 
 	@Override
@@ -82,5 +76,10 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	@Override
 	public MyHttpServletResponse getResponse() {
 		return super.getResponse();
+	}
+
+	@Override
+	public String[] getStringArray(String key) {
+		return jsonObject == null? null:jsonObject.getObject(key, String[].class);
 	}
 }

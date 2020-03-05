@@ -1,4 +1,5 @@
-package scw.util;
+package scw.util.value;
+
 
 public class StringParseValueFactory extends AbstractValueFactory<String, Value> {
 	public static final StringParseValueFactory STRING_PARSE_VALUE_FACTORY = new StringParseValueFactory();

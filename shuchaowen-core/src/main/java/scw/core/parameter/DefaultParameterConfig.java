@@ -3,15 +3,17 @@ package scw.core.parameter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import scw.core.annotation.ParameterName;
 import scw.core.utils.ArrayUtils;
+import scw.core.utils.StringUtils;
 
-public class SimpleParameterConfig implements ParameterConfig {
+public class DefaultParameterConfig implements ParameterConfig {
 	private final String name;
 	private final Annotation[] annotations;
 	private final Class<?> type;
 	private final Type genericType;
 
-	public SimpleParameterConfig(String name, Annotation[] annotations, Class<?> type,
+	public DefaultParameterConfig(String name, Annotation[] annotations, Class<?> type,
 			Type genericType) {
 		this.name = name;
 		this.annotations = annotations;
@@ -20,6 +22,11 @@ public class SimpleParameterConfig implements ParameterConfig {
 	}
 
 	public String getName() {
+		ParameterName parameterName = getAnnotation(ParameterName.class);
+		if (parameterName != null
+				&& StringUtils.isNotEmpty(parameterName.value())) {
+			return parameterName.value();
+		}
 		return name;
 	}
 

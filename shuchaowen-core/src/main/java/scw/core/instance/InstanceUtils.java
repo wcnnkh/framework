@@ -30,8 +30,8 @@ import scw.lang.NotSupportException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.FormatUtils;
-import scw.util.Value;
-import scw.util.ValueFactory;
+import scw.util.value.Value;
+import scw.util.value.ValueFactory;
 
 public final class InstanceUtils {
 	private static Logger logger = LoggerUtils.getLogger(InstanceUtils.class);

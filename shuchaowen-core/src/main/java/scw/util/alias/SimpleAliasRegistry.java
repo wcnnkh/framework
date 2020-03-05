@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.core;
+package scw.util.alias;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.util.StringValueResolver;
 

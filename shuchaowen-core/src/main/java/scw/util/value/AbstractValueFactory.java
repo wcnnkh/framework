@@ -1,4 +1,4 @@
-package scw.util;
+package scw.util.value;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -118,12 +118,74 @@ public abstract class AbstractValueFactory<K, V extends Value> implements ValueF
 		return value == null ? getDefaultValue().getAsEnum(enumType) : value.getAsEnum(enumType);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T getObject(K key, Class<? extends T> type) {
+		Object value;
+		if (String.class == type) {
+			value = getString(key);
+		} else if (int.class == type) {
+			value = getIntValue(key);
+		} else if (Integer.class == type) {
+			value = getInteger(key);
+		} else if (long.class == type) {
+			value = getLongValue(key);
+		} else if (Long.class == type) {
+			value = getLong(key);
+		} else if (float.class == type) {
+			value = getFloatValue(key);
+		} else if (Float.class == type) {
+			value = getFloat(key);
+		} else if (double.class == type) {
+			value = getDoubleValue(key);
+		} else if (Double.class == type) {
+			value = getDouble(key);
+		} else if (short.class == type) {
+			value = getShortValue(key);
+		} else if (Short.class == type) {
+			value = getShort(key);
+		} else if (boolean.class == type) {
+			value = getBooleanValue(key);
+		} else if (Boolean.class == type) {
+			value = getBoolean(key);
+		} else if (byte.class == type) {
+			value = getByteValue(key);
+		} else if (Byte.class == type) {
+			value = getByte(key);
+		} else if (char.class == type) {
+			value = getChar(key);
+		} else if (Character.class == type) {
+			value = getCharacter(key);
+		} else if (BigDecimal.class.isAssignableFrom(type)) {
+			value = getBigDecimal(key);
+		} else if (BigInteger.class.isAssignableFrom(type)) {
+			value = getBigInteger(key);
+		} else if (Number.class.isAssignableFrom(type)) {
+			value = getNumber(key);
+		} else if (Class.class == type) {
+			value = getClass(key);
+		} else if (type.isEnum()) {
+			value = getEnum(key, type);
+		} else {
+			value = getObjectSupport(key, type);
+		}
+		return (T) value;
+	}
+	
+	protected Object getObjectSupport(K key, Class<?> type){
 		Value value = get(key);
 		return value == null ? getDefaultValue().getAsObject(type) : value.getAsObject(type);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object getObject(K key, Type type) {
+		if (type instanceof Class) {
+			return getObject(key, (Class) type);
+		}
+		
+		return getObjectSupport(key, type);
+	}
+	
+	protected Object getObjectSupport(K key, Type type){
 		Value value = get(key);
 		return value == null ? getDefaultValue().getAsObject(type) : value.getAsObject(type);
 	}

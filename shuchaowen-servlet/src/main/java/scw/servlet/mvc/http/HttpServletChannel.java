@@ -1,5 +1,7 @@
 package scw.servlet.mvc.http;
 
+import java.util.Enumeration;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpSession;
@@ -9,27 +11,53 @@ import scw.core.parameter.ParameterConfig;
 import scw.json.JSONSupport;
 import scw.mvc.AsyncControl;
 import scw.mvc.http.AbstractHttpChannel;
-import scw.mvc.http.HttpRequest;
-import scw.mvc.http.HttpResponse;
 
 @SuppressWarnings("unchecked")
 public abstract class HttpServletChannel extends AbstractHttpChannel {
-
+	
 	public HttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport, boolean cookieValue,
-			HttpRequest request, HttpResponse response) {
+			MyHttpServletRequest request, MyHttpServletResponse response) {
 		super(beanFactory, jsonParseSupport, cookieValue, request, response);
 	}
 
 	@Override
 	public Object getParameter(ParameterConfig parameterConfig) {
 		if (ServletRequest.class.isAssignableFrom(parameterConfig.getType())) {
-			return getRequest().getHttpServletRequest();
+			return getServletRequest();
 		} else if (ServletResponse.class.isAssignableFrom(parameterConfig.getType())) {
-			return getResponse();
+			return getServletResponse();
 		} else if (HttpSession.class == parameterConfig.getType()) {
 			return getRequest().getHttpServletRequest().getSession();
 		}
 		return super.getParameter(parameterConfig);
+	}
+	
+	public ServletRequest getServletRequest(){
+		return getRequest().getHttpServletRequest();
+	}
+	
+	public ServletResponse getServletResponse(){
+		return getResponse();
+	}
+	
+	@Override
+	public Object getAttribute(String name) {
+		return getServletRequest().getAttribute(name);
+	}
+	
+	@Override
+	public Enumeration<String> getAttributeNames() {
+		return getServletRequest().getAttributeNames();
+	}
+
+	@Override
+	public void setAttribute(String name, Object o) {
+		getServletRequest().setAttribute(name, o);
+	}
+	
+	@Override
+	public void removeAttribute(String name) {
+		getServletRequest().removeAttribute(name);
 	}
 
 	@Override

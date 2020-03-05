@@ -5,7 +5,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import scw.util.PhoneNumber;
+import scw.util.phone.PhoneNumber;
 
 public final class DefaultAsyncShortMessageService<M, V> implements AsyncShortMessageService<M, V> {
 	private final ShortMessageService<M, V> shortMessageService;

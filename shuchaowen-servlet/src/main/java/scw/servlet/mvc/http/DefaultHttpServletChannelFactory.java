@@ -7,8 +7,6 @@ import scw.beans.BeanFactory;
 import scw.json.JSONSupport;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpRequest;
-import scw.mvc.http.HttpResponse;
 
 public class DefaultHttpServletChannelFactory implements HttpServletChannelFactory {
 	private BeanFactory beanFactory;
@@ -23,8 +21,8 @@ public class DefaultHttpServletChannelFactory implements HttpServletChannelFacto
 	}
 
 	public HttpChannel getHttpChannel(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-		HttpRequest httpRequest = new MyHttpServletRequest(httpServletRequest);
-		HttpResponse httpResponse = new MyHttpServletResponse(httpServletResponse);
+		MyHttpServletRequest httpRequest = new MyHttpServletRequest(httpServletRequest);
+		MyHttpServletResponse httpResponse = new MyHttpServletResponse(httpServletResponse);
 		if (MVCUtils.isJsonRequest(httpRequest)) {
 			return new JsonHttpServletChannel(beanFactory, jsonSupport, cookieValue, httpRequest, httpResponse);
 		} else {

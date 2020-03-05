@@ -13,13 +13,11 @@ import scw.net.http.MediaType;
 import scw.net.http.Method;
 import scw.net.message.converter.MessageConvertException;
 import scw.security.session.Session;
-import scw.util.attribute.AttributesWrapper;
 
-public class HttpRequestWrapper extends AttributesWrapper<String, Object> implements HttpRequest {
+public class HttpRequestWrapper implements HttpRequest {
 	private final HttpRequest targetHttpRequest;
 
 	public HttpRequestWrapper(HttpRequest httpRequest) {
-		super(httpRequest);
 		this.targetHttpRequest = httpRequest;
 	}
 

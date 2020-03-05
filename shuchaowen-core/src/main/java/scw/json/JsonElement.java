@@ -1,6 +1,6 @@
 package scw.json;
 
-import scw.util.Value;
+import scw.util.value.Value;
 
 public interface JsonElement extends Value {
 	JsonArray getAsJsonArray();

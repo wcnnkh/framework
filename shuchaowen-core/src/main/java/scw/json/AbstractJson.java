@@ -1,6 +1,6 @@
 package scw.json;
 
-import scw.util.AbstractValueFactory;
+import scw.util.value.AbstractValueFactory;
 
 public abstract class AbstractJson<K> extends AbstractValueFactory<K, JsonElement> {
 

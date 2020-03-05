@@ -2,7 +2,7 @@ package scw.mvc.action.logger;
 
 import java.util.Map;
 
-import scw.core.parameter.SimpleParameterConfig;
+import scw.core.parameter.DefaultParameterConfig;
 import scw.json.JSONUtils;
 import scw.mvc.Channel;
 import scw.mvc.Request;
@@ -17,7 +17,7 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 			Channel channel);
 
 	protected String getAttirubteValue(Channel channel, String name) {
-		return (String) channel.getParameter(new SimpleParameterConfig(name,
+		return (String) channel.getParameter(new DefaultParameterConfig(name,
 				null, String.class, String.class));
 	}
 

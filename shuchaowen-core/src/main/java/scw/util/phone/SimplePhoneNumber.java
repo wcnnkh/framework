@@ -1,4 +1,4 @@
-package scw.util;
+package scw.util.phone;
 
 public class SimplePhoneNumber extends AbstractPhoneNumber {
 	private static final long serialVersionUID = 1L;

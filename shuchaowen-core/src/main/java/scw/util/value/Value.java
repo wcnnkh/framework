@@ -1,4 +1,4 @@
-package scw.util;
+package scw.util.value;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;

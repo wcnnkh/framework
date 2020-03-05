@@ -18,7 +18,6 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.Constants;
 import scw.core.PropertyFactory;
-import scw.core.ValueFactory;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
@@ -29,7 +28,6 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemPropertyUtils;
-import scw.core.utils.XUtils;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.ParameterException;
@@ -59,6 +57,8 @@ import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.attribute.Attributes;
 import scw.util.ip.IP;
+import scw.util.value.Value;
+import scw.util.value.ValueFactory;
 
 public final class MVCUtils implements MvcConstants {
 	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
@@ -116,7 +116,7 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T getParameterWrapper(ValueFactory<String> request,
+	public static <T> T getParameterWrapper(ValueFactory<String, Value> request,
 			Class<T> type, String name) {
 		try {
 			return (T) privateParameterWrapper(request, type,
@@ -128,7 +128,7 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static void parameterWrapper(Object instance,
-			ValueFactory<String> request, Class<?> type, String name) {
+			ValueFactory<String, Value> request, Class<?> type, String name) {
 		try {
 			privateParameterWrapper(instance, request, type,
 					StringUtils.isEmpty(name) ? null
@@ -139,7 +139,7 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	private static void privateParameterWrapper(Object instance,
-			ValueFactory<String> request, Class<?> type, String prefix)
+			ValueFactory<String, Value> request, Class<?> type, String prefix)
 			throws Exception {
 		Class<?> clz = type;
 		while (clz != null && clz != Object.class) {
@@ -154,7 +154,7 @@ public final class MVCUtils implements MvcConstants {
 						&& field.get(instance) != null) {
 					continue;
 				}
-
+				
 				String fieldName = field.getName();
 				ParameterName parameterName = field
 						.getAnnotation(ParameterName.class);
@@ -168,7 +168,7 @@ public final class MVCUtils implements MvcConstants {
 				if (String.class.isAssignableFrom(field.getType())
 						|| ClassUtils.isPrimitiveOrWrapper(field.getType())) {
 					// 濡傛灉鏄熀鏈暟鎹被鍨�
-					Object v = XUtils.getValue(request, key, field.getType());
+					Object v = request.getObject(key, field.getType());
 					if (v != null) {
 						ReflectionUtils.setFieldValue(clz, field, instance, v);
 					}
@@ -185,7 +185,7 @@ public final class MVCUtils implements MvcConstants {
 		}
 	}
 
-	private static Object privateParameterWrapper(ValueFactory<String> request,
+	private static Object privateParameterWrapper(ValueFactory<String, Value> request,
 			Class<?> type, String prefix) throws Exception {
 		if (!ReflectionUtils.isInstance(type)) {
 			return null;

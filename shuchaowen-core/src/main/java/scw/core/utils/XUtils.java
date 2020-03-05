@@ -1,9 +1,6 @@
 package scw.core.utils;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,12 +22,9 @@ import java.util.concurrent.TimeoutException;
 import scw.core.Converter;
 import scw.core.Destroy;
 import scw.core.Init;
-import scw.core.PrimitiveTypeValueFactory;
 import scw.core.ResourceFactory;
 import scw.core.Start;
-import scw.core.ValueFactory;
 import scw.core.reflect.ReflectionUtils;
-import scw.lang.NotSupportException;
 import scw.util.ToMap;
 
 public final class XUtils {
@@ -204,141 +198,6 @@ public final class XUtils {
 			throws InterruptedException, ExecutionException {
 		Collection<Future<V>> collection = submit(executorService, callables);
 		return getAndAwait(collection);
-	}
-
-	public static <T> Object getValue(PrimitiveTypeValueFactory<T> primitiveTypeValueFactory, T data, Class<?> type) {
-		if (int.class == type) {
-			return primitiveTypeValueFactory.getIntValue(data);
-		} else if (Integer.class == type) {
-			return primitiveTypeValueFactory.getInteger(data);
-		} else if (long.class == type) {
-			return primitiveTypeValueFactory.getLongValue(data);
-		} else if (Long.class == type) {
-			return primitiveTypeValueFactory.getLong(data);
-		} else if (float.class == type) {
-			return primitiveTypeValueFactory.getFloatValue(data);
-		} else if (Float.class == type) {
-			return primitiveTypeValueFactory.getFloat(data);
-		} else if (short.class == type) {
-			return primitiveTypeValueFactory.getShortValue(data);
-		} else if (Short.class == type) {
-			return primitiveTypeValueFactory.getShort(data);
-		} else if (boolean.class == type) {
-			return primitiveTypeValueFactory.getBooleanValue(data);
-		} else if (Boolean.class == type) {
-			return primitiveTypeValueFactory.getBoolean(data);
-		} else if (byte.class == type) {
-			return primitiveTypeValueFactory.getByteValue(data);
-		} else if (Byte.class == type) {
-			return primitiveTypeValueFactory.getByte(data);
-		} else if (char.class == type) {
-			return primitiveTypeValueFactory.getChar(data);
-		} else if (Character.class == type) {
-			return primitiveTypeValueFactory.getCharacter(data);
-		}
-		throw new NotSupportException("不支持的类型：" + type.getName());
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <T> Object getValue(ValueFactory<T> valueFactory, T data, Class<?> type) {
-		if (String.class == type) {
-			return valueFactory.getString(data);
-		} else if (int.class == type) {
-			return valueFactory.getIntValue(data);
-		} else if (Integer.class == type) {
-			return valueFactory.getInteger(data);
-		} else if (long.class == type) {
-			return valueFactory.getLongValue(data);
-		} else if (Long.class == type) {
-			return valueFactory.getLong(data);
-		} else if (float.class == type) {
-			return valueFactory.getFloatValue(data);
-		} else if (Float.class == type) {
-			return valueFactory.getFloat(data);
-		} else if (double.class == type) {
-			return valueFactory.getDoubleValue(data);
-		} else if (Double.class == type) {
-			return valueFactory.getDouble(data);
-		} else if (short.class == type) {
-			return valueFactory.getShortValue(data);
-		} else if (Short.class == type) {
-			return valueFactory.getShort(data);
-		} else if (boolean.class == type) {
-			return valueFactory.getBooleanValue(data);
-		} else if (Boolean.class == type) {
-			return valueFactory.getBoolean(data);
-		} else if (byte.class == type) {
-			return valueFactory.getByteValue(data);
-		} else if (Byte.class == type) {
-			return valueFactory.getByte(data);
-		} else if (char.class == type) {
-			return valueFactory.getChar(data);
-		} else if (Character.class == type) {
-			return valueFactory.getCharacter(data);
-		} else if (BigDecimal.class.isAssignableFrom(type)) {
-			return valueFactory.getBigDecimal(data);
-		} else if (BigInteger.class.isAssignableFrom(type)) {
-			return valueFactory.getBigInteger(data);
-		} else if (Class.class == type) {
-			return valueFactory.getClass(data);
-		} else if (type.isEnum()) {
-			return valueFactory.getEnum(data, (Class<? extends Enum>) type);
-		} else if (type.isArray()) {
-			return valueFactory.getArray(data, type.getComponentType());
-		} else {
-			return valueFactory.getObject(data, type);
-		}
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static <T> Object getValue(ValueFactory<T> valueFactory, T data, Type type) {
-		if (type instanceof Class) {
-			return getValue(valueFactory, data, (Class) type);
-		}
-
-		if (String.class == type) {
-			return valueFactory.getString(data);
-		} else if (int.class == type) {
-			return valueFactory.getIntValue(data);
-		} else if (Integer.class == type) {
-			return valueFactory.getInteger(data);
-		} else if (long.class == type) {
-			return valueFactory.getLongValue(data);
-		} else if (Long.class == type) {
-			return valueFactory.getLong(data);
-		} else if (double.class == type) {
-			return valueFactory.getDoubleValue(data);
-		} else if (Double.class == type) {
-			return valueFactory.getDouble(data);
-		} else if (float.class == type) {
-			return valueFactory.getFloatValue(data);
-		} else if (Float.class == type) {
-			return valueFactory.getFloat(data);
-		} else if (short.class == type) {
-			return valueFactory.getShortValue(data);
-		} else if (Short.class == type) {
-			return valueFactory.getShort(data);
-		} else if (boolean.class == type) {
-			return valueFactory.getBooleanValue(data);
-		} else if (Boolean.class == type) {
-			return valueFactory.getBoolean(data);
-		} else if (byte.class == type) {
-			return valueFactory.getByteValue(data);
-		} else if (Byte.class == type) {
-			return valueFactory.getByte(data);
-		} else if (char.class == type) {
-			return valueFactory.getChar(data);
-		} else if (Character.class == type) {
-			return valueFactory.getCharacter(data);
-		} else if (Class.class == type) {
-			return valueFactory.getClass(data);
-		} else if (BigDecimal.class == type) {
-			return valueFactory.getBigDecimal(data);
-		} else if (BigInteger.class == type) {
-			return valueFactory.getBigInteger(data);
-		} else {
-			return valueFactory.getObject(data, type);
-		}
 	}
 
 	public static <T, R> T useResource(ResourceFactory<R> resourceFactory, Converter<R, T> converter) {
