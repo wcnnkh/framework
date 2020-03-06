@@ -26,7 +26,7 @@ import scw.net.MimeTypeUtils;
 import scw.servlet.ServletUtils;
 
 /**
- * freemarker
+ * 不再推荐使用，下个版本弃用
  * 
  * @author shuchaowen
  *
