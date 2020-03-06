@@ -1,4 +1,4 @@
-package scw.servlet.mvc.page;
+package scw.integration.mvc;
 
 public enum PageType {
 	JSP,

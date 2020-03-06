@@ -1,4 +1,4 @@
-package scw.servlet.mvc.page;
+package scw.integration.mvc;
 
 import java.io.File;
 import java.io.IOException;

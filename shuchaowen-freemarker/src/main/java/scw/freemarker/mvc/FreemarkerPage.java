@@ -1,4 +1,4 @@
-package scw.mvc.page.support;
+package scw.freemarker.mvc;
 
 import java.util.Enumeration;
 

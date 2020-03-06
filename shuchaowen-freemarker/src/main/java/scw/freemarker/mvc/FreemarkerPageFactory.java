@@ -1,17 +1,16 @@
-package scw.mvc.page.support;
+package scw.freemarker.mvc;
 
 import java.io.File;
 import java.io.IOException;
 
 import scw.core.Constants;
 import scw.core.utils.SystemPropertyUtils;
-import scw.mvc.page.Page;
 import scw.net.MimeType;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Version;
 
-public class FreemarkerPageFactory {
+public class FreemarkerPageFactory extends AbstractFreemarkerPageFactory{
 	private final Configuration configuration;
 	private final MimeType mimeType;
 
@@ -57,9 +56,4 @@ public class FreemarkerPageFactory {
 	public MimeType getMimeType() {
 		return mimeType;
 	}
-
-	public Page create(String page) {
-		return new FreemarkerPage(getConfiguration(), page, getMimeType());
-	}
-
 }
