@@ -51,10 +51,10 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	protected Object getObjectIsNotBean(String name, Class<?> type) {
 		return jsonObject == null ? null : jsonObject.getObject(name, type);
 	}
-
+	
 	@Override
-	public Object getObject(String name, Type type) {
-		return jsonObject == null ? null : jsonObject.getObject(name, type);
+	protected Object getObjectSupport(String key, Type type) {
+		return jsonObject == null ? null : jsonObject.getObject(key, type);
 	}
 
 	@Override

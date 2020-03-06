@@ -1,23 +1,18 @@
 package scw.mvc;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
-import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.core.Destroy;
 import scw.core.annotation.DefaultValue;
@@ -29,13 +24,15 @@ import scw.core.utils.NumberUtils;
 import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
+import scw.core.utils.XUtils;
 import scw.json.JSONSupport;
 import scw.lang.ParameterException;
 import scw.mvc.annotation.BigDecimalMultiply;
 import scw.mvc.annotation.DateFormat;
-import scw.mvc.annotation.Model;
 import scw.mvc.annotation.RequestBean;
 import scw.mvc.annotation.RequestBody;
+import scw.mvc.beans.ChannelBeanFactory;
+import scw.mvc.beans.DefaultChannelBeanFactory;
 import scw.mvc.parameter.RequestBodyParse;
 import scw.util.value.AbstractValueFactory;
 import scw.util.value.DefaultValueDefinition;
@@ -45,14 +42,13 @@ import scw.util.value.Value;
 public abstract class AbstractChannel extends
 		AbstractValueFactory<String, Value> implements Channel, Destroy {
 	private final long createTime;
-	private volatile Map<String, Object> beanMap;
-	private final BeanFactory beanFactory;
 	private final JSONSupport jsonSupport;
+	private final ChannelBeanFactory channelBeanFactory;
 
 	public AbstractChannel(BeanFactory beanFactory, JSONSupport jsonSupport) {
 		this.createTime = System.currentTimeMillis();
-		this.beanFactory = beanFactory;
 		this.jsonSupport = jsonSupport;
+		this.channelBeanFactory = new DefaultChannelBeanFactory(beanFactory, this);
 	}
 
 	private Map<String, Object> attributeMap;
@@ -94,120 +90,15 @@ public abstract class AbstractChannel extends
 
 	public void destroy() {
 		attributeMap = null;
-		if (beanMap == null) {
-			return;
-		}
-
-		List<String> idList = new ArrayList<String>(beanMap.keySet());
-		ListIterator<String> iterator = idList.listIterator(idList.size());
-		while (iterator.hasPrevious()) {
-			String name = iterator.previous();
-			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(name);
-			if (beanDefinition == null) {
-				continue;
-			}
-
-			Object bean = beanMap.get(name);
-			if (bean == null) {
-				continue;
-			}
-
-			try {
-				beanDefinition.destroy(bean);
-			} catch (Exception e) {
-				getLogger().error(e, "销毁bean异常：" + name);
-			}
-		}
+		XUtils.destroy(channelBeanFactory);
 	}
 
 	public final <T> T getBean(Class<T> type) {
-		return getBean(type.getName());
+		return channelBeanFactory.getBean(type);
 	}
 
-	private Object getBean(BeanDefinition beanDefinition,
-			Constructor<?> constructor) {
-		return beanFactory.getInstance(
-				beanDefinition.getId(),
-				constructor.getParameterTypes(),
-				MVCUtils.getParameterValues(this,
-						ParameterUtils.getParameterConfigs(constructor)));
-	}
-	
-	protected Constructor<?> getModelConstructor(Class<?> type) {
-		Constructor<?>[] constructors = type.getDeclaredConstructors();
-		Constructor<?> constructor = null;
-		if (constructors.length == 1) {
-			constructor = constructors[0];
-		} else {
-			for (int i = 0; i < constructors.length; i++) {
-				constructor = constructors[i];
-				Model model = constructor.getAnnotation(Model.class);
-				if (model == null) {
-					continue;
-				}
-
-				break;
-			}
-		}
-		return constructor;
-	}
-
-	@SuppressWarnings("unchecked")
 	public final <T> T getBean(String name) {
-		BeanDefinition beanDefinition = beanFactory.getBeanDefinition(name);
-		if (beanDefinition == null) {
-			return null;
-		}
-
-		if (beanDefinition.isSingleton()) {
-			if (ReflectionUtils.isInstance(beanDefinition.getType(), false)) {
-				Constructor<?> constructor = getModelConstructor(beanDefinition.getType());
-				if (constructor == null) {
-					return null;
-				}
-
-				return (T) getBean(beanDefinition, constructor);
-			} else {
-				return beanFactory.getInstance(beanDefinition.getId());
-			}
-		}
-
-		Object bean = beanMap == null ? null : beanMap.get(beanDefinition
-				.getId());
-		if (bean == null) {
-			if (!ReflectionUtils.isInstance(beanDefinition.getType(), false)) {
-				synchronized (this) {
-					bean = beanMap == null ? null : beanMap.get(beanDefinition
-							.getId());
-					if (bean == null) {
-						bean = beanFactory.getInstance(beanDefinition.getId());
-
-						if (beanMap == null) {
-							beanMap = new LinkedHashMap<String, Object>(8);
-						}
-						beanMap.put(beanDefinition.getId(), bean);
-					}
-				}
-			} else {
-				Constructor<?> constructor = getModelConstructor(beanDefinition.getType());
-				if (constructor == null) {
-					return null;
-				}
-
-				synchronized (this) {
-					bean = beanMap == null ? null : beanMap.get(beanDefinition
-							.getId());
-					if (bean == null) {
-						bean = getBean(beanDefinition, constructor);
-						if (beanMap == null) {
-							beanMap = new LinkedHashMap<String, Object>(8);
-						}
-						beanMap.put(beanDefinition.getId(), bean);
-					}
-				}
-			}
-		}
-		return (T) bean;
+		return channelBeanFactory.getBean(name);
 	}
 
 	public boolean isLogEnabled() {
@@ -258,6 +149,11 @@ public abstract class AbstractChannel extends
 		}
 		return (E[]) array;
 	}
+	
+	@Override
+	public final <T> T getObject(String key, Class<? extends T> type) {
+		return super.getObject(key, type);
+	}
 
 	@Override
 	protected Object getObjectSupport(String key, Class<?> type) {
@@ -281,14 +177,14 @@ public abstract class AbstractChannel extends
 		}
 	}
 	
-	// 一般情况下建议重写止方法，因为默认的实现不支持泛型
-	public Object getObject(String name, Type type) {
+	public final Object getObject(String name, Type type) {
 		return super.getObject(name, type);
 	}
 	
+	// 一般情况下建议重写止方法，因为默认的实现不支持泛型
 	@Override
 	protected Object getObjectSupport(String key, Type type) {
-		return getObjectIsNotBean(key, TypeUtils.toClass(type));
+		return getObjectSupport(key, TypeUtils.toClass(type));
 	}
 
 	public Object getParameter(ParameterConfig parameterConfig) {

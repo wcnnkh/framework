@@ -5,7 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR })
+/**
+ * 当一个类中存在多个构造方法时指定使用的构造方法
+ * @author asus1
+ *
+ */
+@Target({ElementType.CONSTRUCTOR })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Model {
+public @interface ChannelConstructor {
 }
