@@ -10,12 +10,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
@@ -51,43 +49,30 @@ import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.util.ConcurrentReferenceHashMap;
 
 public final class BeanUtils {
 	private static Logger logger = LoggerUtils.getLogger(BeanUtils.class);
 
-	private static Map<Class<?>, Map<String, Set<Class<?>>>> configurationCache = new ConcurrentReferenceHashMap<Class<?>, Map<String, Set<Class<?>>>>();
-
 	private static Set<Class<?>> getConfigurationClassListInternal(
 			Class<?> type, String packageName) {
-		Map<String, Set<Class<?>>> map = configurationCache.get(type);
-		if (map == null) {
-			map = new HashMap<String, Set<Class<?>>>();
-		}
-
-		Set<Class<?>> list = map.get(packageName);
-		if (list == null) {
-			list = new HashSet<Class<?>>();
-			for (Class<?> clazz : ClassUtils.getClassSet(packageName)) {
-				Configuration configuration = clazz
-						.getAnnotation(Configuration.class);
-				if (configuration == null) {
-					continue;
-				}
-
-				if (!type.isAssignableFrom(clazz)) {
-					continue;
-				}
-
-				if (!ClassUtils.isPresent(clazz.getName())) {
-					logger.debug("not support class:{}", clazz.getName());
-					continue;
-				}
-
-				list.add(clazz);
+		Set<Class<?>> list = new HashSet<Class<?>>();
+		for (Class<?> clazz : ClassUtils.getClassSet(packageName)) {
+			Configuration configuration = clazz
+					.getAnnotation(Configuration.class);
+			if (configuration == null) {
+				continue;
 			}
-			map.put(packageName, list);
-			configurationCache.putIfAbsent(type, map);
+
+			if (!type.isAssignableFrom(clazz)) {
+				continue;
+			}
+
+			if (!ClassUtils.isPresent(clazz.getName())) {
+				logger.debug("not support class:{}", clazz.getName());
+				continue;
+			}
+
+			list.add(clazz);
 		}
 		return list;
 	}
@@ -106,8 +91,10 @@ public final class BeanUtils {
 
 	@SuppressWarnings("rawtypes")
 	public static <T> List<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, PropertyFactory propertyFactory, Class ...excludeTypes) {
-		return getConfigurationClassList(type, Arrays.asList(excludeTypes), propertyFactory);
+			Class<? extends T> type, PropertyFactory propertyFactory,
+			Class... excludeTypes) {
+		return getConfigurationClassList(type, Arrays.asList(excludeTypes),
+				propertyFactory);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -117,11 +104,11 @@ public final class BeanUtils {
 		List<T> list = new ArrayList<T>();
 		for (Class<T> clazz : getConfigurationClassList(type, excludeTypes,
 				propertyFactory)) {
-			if(!instanceFactory.isInstance(clazz)){
+			if (!instanceFactory.isInstance(clazz)) {
 				logger.debug("not create instance:{}", clazz);
 				continue;
 			}
-			
+
 			list.add(instanceFactory.getInstance(clazz));
 		}
 		return list;
@@ -164,7 +151,7 @@ public final class BeanUtils {
 		for (Class<? extends T> clazz : list) {
 			Configuration c = clazz.getAnnotation(Configuration.class);
 			for (Class<?> e : c.excludes()) {
-				if(e == clazz){
+				if (e == clazz) {
 					continue;
 				}
 				set.remove(e);

@@ -7,9 +7,9 @@ public interface InstanceDefinition {
 	 */
 	boolean isInstance();
 	
-	<T> T create();
+	<T> T create() throws Exception;
 
-	<T> T create(Object... params);
+	<T> T create(Object... params) throws Exception;
 
-	<T> T create(Class<?>[] parameterTypes, Object... params);
+	<T> T create(Class<?>[] parameterTypes, Object... params) throws Exception;
 }

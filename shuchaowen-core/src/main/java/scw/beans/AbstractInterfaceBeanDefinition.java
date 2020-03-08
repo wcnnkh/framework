@@ -20,11 +20,11 @@ public abstract class AbstractInterfaceBeanDefinition extends AbstractBeanDefini
 		return true;
 	}
 
-	public <T> T create(Object... params) {
+	public <T> T create(Object... params) throws Exception{
 		throw new NotSupportException(getType().getName());
 	}
 
-	public <T> T create(Class<?>[] parameterTypes, Object... params) {
+	public <T> T create(Class<?>[] parameterTypes, Object... params) throws Exception{
 		throw new NotSupportException(getType().getName());
 	}
 

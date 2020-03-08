@@ -1,22 +1,15 @@
 package scw.core.utils;
 
 import java.beans.Introspector;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -25,12 +18,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import scw.cglib.core.CGLIBTypeUtils;
 import scw.core.Assert;
-import scw.core.Constants;
 import scw.core.reflect.ReflectionUtils;
 
 public final class ClassUtils {
@@ -82,6 +72,8 @@ public final class ClassUtils {
 	 */
 	private static final Map<String, Class<?>> commonClassCache = new HashMap<String, Class<?>>(32);
 
+	private static final ScanningPackage SCANNING_PACKAGE = SystemPropertyUtils.isBoolean("scw.scanning.cache", true)? new CacheScanningPackage():new ScanningPackage();
+	
 	static {
 		primitiveWrapperTypeMap.put(Boolean.class, boolean.class);
 		primitiveWrapperTypeMap.put(Byte.class, byte.class);
@@ -1527,49 +1519,6 @@ public final class ClassUtils {
 		}
 		return true;
 	}
-
-	/************************************ 扫描类工具 *****************************************/
-
-	/**
-	 * 获取一个目录下的class
-	 * 
-	 * @param directorey
-	 * @param prefix
-	 * @return
-	 */
-	private static Set<Class<?>> getClassesDirectoryList(ClassLoader classLoader, boolean initialize) {
-		LinkedHashSet<Class<?>> list = new LinkedHashSet<Class<?>>();
-		String path = SystemPropertyUtils.getClassesDirectory();
-		if (path == null) {
-			return list;
-		}
-		appendDirectoryClass(null, new File(path), list, classLoader, initialize);
-		return list;
-	}
-
-	private static void appendDirectoryClass(String rootPackage, File file, Collection<Class<?>> classList,
-			ClassLoader classLoader, boolean initialize) {
-		File[] files = file.listFiles();
-		if (ArrayUtils.isEmpty(files)) {
-			return;
-		}
-
-		for (File f : files) {
-			if (f.isDirectory()) {
-				appendDirectoryClass(
-						StringUtils.isEmpty(rootPackage) ? f.getName() + "." : rootPackage + f.getName() + ".", f,
-						classList, classLoader, initialize);
-			} else {
-				if (f.getName().endsWith(".class")) {
-					String classFile = StringUtils.isEmpty(rootPackage) ? f.getName() : rootPackage + f.getName();
-					Class<?> clz = forFileName(classFile, classLoader, initialize);
-					if (clz != null) {
-						classList.add(clz);
-					}
-				}
-			}
-		}
-	}
 	
 	public static Set<Class<?>> getClassSet(String resource) {
 		return getClassSet(resource, getDefaultClassLoader(), false);
@@ -1592,119 +1541,17 @@ public final class ClassUtils {
 	}
 
 	public static Set<Class<?>> getClassSet(String resource, ClassLoader classLoader, boolean initialize) {
-		if (StringUtils.isEmpty(resource)) {
-			return getClassesDirectoryList(classLoader, initialize);
-		}
-
 		String[] arr = StringUtils.commonSplit(resource);
 		if (ArrayUtils.isEmpty(arr)) {
-			return getClassesDirectoryList(classLoader, initialize);
+			return SCANNING_PACKAGE.getClassList(resource, classLoader, initialize);
 		}
 
 		LinkedHashSet<Class<?>> classes = new LinkedHashSet<Class<?>>();
 		for (String pg : arr) {
-			appendClassesByClassLoader(pg, classes, classLoader, initialize);
+			classes.addAll(SCANNING_PACKAGE.getClassList(pg, classLoader, initialize));
 		}
 		return classes;
 	}
-
-	private static void findAndAddClassesInPackageByFile(String packageName, String packagePath,
-			Collection<Class<?>> classes, ClassLoader classLoader, boolean initialize) {
-		File dir = new File(packagePath);
-		if (!dir.exists() || !dir.isDirectory()) {
-			return;
-		}
-		File[] dirfiles = dir.listFiles(new FileFilter() {
-			public boolean accept(File file) {
-				return (file.isDirectory()) || (file.getName().endsWith(CLASS_FILE_SUFFIX));
-			}
-		});
-		for (File file : dirfiles) {
-			if (file.isDirectory()) {
-				findAndAddClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), classes,
-						classLoader, initialize);
-			} else {
-				if (packageName.startsWith(".")) {
-					packageName = packageName.substring(1);
-				}
-				Class<?> clazz = forFileName(packageName + "." + file.getName(), classLoader, initialize);
-				if (clazz != null) {
-					classes.add(clazz);
-				}
-			}
-		}
-	}
-
-	private static Class<?> forFileName(String classFile, ClassLoader classLoader, boolean initialize) {
-		if (!classFile.endsWith(CLASS_FILE_SUFFIX)) {
-			return null;
-		}
-
-		String name = classFile.substring(0, classFile.length() - 6);
-		name = name.replaceAll("\\\\", ".");
-		name = name.replaceAll("/", ".");
-		try {
-			return forName(name, initialize, classLoader);
-		} catch (Throwable e) {
-		}
-		return null;
-	}
-
-	private static void appendClassesByURL(String packageName, String packageDirName, URL url,
-			Collection<Class<?>> clazzList, ClassLoader classLoader, boolean initialize) throws IOException {
-		String protocol = url.getProtocol();
-		if ("file".equals(protocol)) {
-			String filePath = URLDecoder.decode(url.getFile(), Constants.DEFAULT_CHARSET_NAME);
-			findAndAddClassesInPackageByFile(packageName, filePath, clazzList, classLoader, initialize);
-		} else if ("jar".equals(protocol)) {
-			JarFile jar = ((JarURLConnection) url.openConnection()).getJarFile();
-			Enumeration<JarEntry> entries = jar.entries();
-			while (entries.hasMoreElements()) {
-				JarEntry entry = entries.nextElement();
-				if (entry.isDirectory()) {
-					continue;
-				}
-
-				String name = entry.getName();
-				if (name.charAt(0) == '/') {
-					name = name.substring(1);
-				}
-				if (name.startsWith(packageDirName)) {
-					Class<?> clazz = forFileName(name, classLoader, initialize);
-					if (clazz != null) {
-						clazzList.add(clazz);
-					}
-				}
-			}
-		}
-	}
-
-	private static void appendClassesByClassLoader(String packageName, Collection<Class<?>> clazzList,
-			ClassLoader classLoader, boolean initialize) {
-		String packageDirName = packageName.replace('.', '/');
-		Enumeration<URL> dirs;
-		try {
-			dirs = classLoader.getResources(packageDirName);
-			while (dirs.hasMoreElements()) {
-				URL url = dirs.nextElement();
-				appendClassesByURL(packageName, packageDirName, url, clazzList, classLoader, initialize);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			dirs = ClassLoader.getSystemClassLoader().getResources(packageDirName);
-			while (dirs.hasMoreElements()) {
-				URL url = dirs.nextElement();
-				appendClassesByURL(packageName, packageDirName, url, clazzList, classLoader, initialize);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/************************************ 扫描类工具 *****************************************/
 
 	public static Object[] cast(Class<?>[] types, Object[] args) {
 		if (types == null || args == null) {

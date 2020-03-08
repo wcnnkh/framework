@@ -2,22 +2,23 @@ package scw.beans.auto;
 
 import scw.beans.AbstractBeanDefinition;
 import scw.beans.BeanFactory;
-import scw.beans.BeansException;
 import scw.beans.property.ValueWiredManager;
 import scw.core.PropertyFactory;
 
 public final class AutoBeanDefinition extends AbstractBeanDefinition {
 	private final AutoBean autoBean;
 
-	public AutoBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> type, AutoBean autoBean) throws Exception {
+	public AutoBeanDefinition(ValueWiredManager valueWiredManager,
+			BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Class<?> type, AutoBean autoBean) throws Exception {
 		super(valueWiredManager, beanFactory, propertyFactory, type);
 		this.autoBean = autoBean;
 		init();
 	}
 
 	public Class<?> getType() {
-		return autoBean.getTargetClass() == null ? super.getType() : autoBean.getTargetClass();
+		return autoBean.getTargetClass() == null ? super.getType() : autoBean
+				.getTargetClass();
 	}
 
 	public void init(Object bean) throws Exception {
@@ -25,7 +26,7 @@ public final class AutoBeanDefinition extends AbstractBeanDefinition {
 			return;
 		}
 		super.init(bean);
-		if(autoBean != null){
+		if (autoBean != null) {
 			autoBean.init(bean);
 		}
 	}
@@ -34,35 +35,24 @@ public final class AutoBeanDefinition extends AbstractBeanDefinition {
 		if (autoBean.isReference()) {
 			return;
 		}
-		
+
 		super.destroy(bean);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T create() {
-		try {
-			return (T) autoBean.create();
-		} catch (Exception e) {
-			throw new BeansException(getId(), e);
-		}
+	public <T> T create() throws Exception {
+		return (T) autoBean.create();
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T create(Object... params) {
-		try {
-			return (T) autoBean.create(params);
-		} catch (Exception e) {
-			throw new BeansException(getId(), e);
-		}
+	public <T> T create(Object... params) throws Exception {
+		return (T) autoBean.create(params);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T create(Class<?>[] parameterTypes, Object... params) {
-		try {
-			return (T) autoBean.create(parameterTypes, params);
-		} catch (Exception e) {
-			throw new BeansException(getId(), e);
-		}
+	public <T> T create(Class<?>[] parameterTypes, Object... params)
+			throws Exception {
+		return (T) autoBean.create(parameterTypes, params);
 	}
 
 	public boolean isInstance() {

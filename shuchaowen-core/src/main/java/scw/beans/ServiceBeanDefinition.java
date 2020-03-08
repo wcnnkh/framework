@@ -56,7 +56,7 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T create() {
+	public <T> T create() throws Exception {
 		if (!isInstance()) {
 			throw new NotSupportException(getType().toString());
 		}
@@ -65,15 +65,11 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 			return (T) getProxy().create();
 		}
 
-		try {
-			return (T) autoBean.create();
-		} catch (Exception e) {
-			throw new BeansException(getId(), e);
-		}
+		return (T) autoBean.create();
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T create(Object... params) {
+	public <T> T create(Object... params) throws Exception {
 		Constructor<T> constructor = (Constructor<T>) ReflectionUtils
 				.findConstructorByParameters(getType(), true, params);
 		if (constructor == null) {
@@ -81,21 +77,18 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 		}
 
 		Object bean;
-		try {
-			if (isProxy()) {
-				return (T) getProxy().create(constructor.getParameterTypes(),
-						params);
-			} else {
-				bean = constructor.newInstance(params);
-			}
-			return (T) bean;
-		} catch (Throwable e) {
-			throw new BeansException(getId(), e);
+		if (isProxy()) {
+			return (T) getProxy().create(constructor.getParameterTypes(),
+					params);
+		} else {
+			bean = constructor.newInstance(params);
 		}
+		return (T) bean;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T create(Class<?>[] parameterTypes, Object... params) {
+	public <T> T create(Class<?>[] parameterTypes, Object... params)
+			throws Exception {
 		Constructor<?> constructor = ReflectionUtils.getConstructor(getType(),
 				false, parameterTypes);
 		if (constructor == null) {
@@ -103,17 +96,13 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 		}
 
 		Object bean;
-		try {
-			if (isProxy()) {
-				return (T) getProxy().create(constructor.getParameterTypes(),
-						params);
-			} else {
-				bean = constructor.newInstance(params);
-			}
-			return (T) bean;
-		} catch (Throwable e) {
-			throw new BeansException(getId(), e);
+		if (isProxy()) {
+			return (T) getProxy().create(constructor.getParameterTypes(),
+					params);
+		} else {
+			bean = constructor.newInstance(params);
 		}
+		return (T) bean;
 	}
 
 	public String[] getNames() {

@@ -379,4 +379,8 @@ public final class SystemPropertyUtils {
 
 		return array;
 	}
+	
+	public static boolean isBoolean(String key, boolean defaultValue){
+		return StringUtils.parseBoolean(getProperty(key), defaultValue);
+	}
 }

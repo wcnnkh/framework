@@ -34,7 +34,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
 public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy {
-	static Logger logger = LoggerUtils.getLogger(BeanFactory.class);
+	protected static Logger logger = LoggerUtils.getLogger(BeanFactory.class);
 	private volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
@@ -128,6 +128,31 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		destroys.addAll(beanConfiguration.getDestroys());
 		inits.addAll(beanConfiguration.getInits());
 	}
+	
+	private Object createInstance(BeanDefinition beanDefinition, Class<?>[] parameterTypes,
+			Object... params){
+		long t = System.currentTimeMillis();
+		Object obj;
+		try {
+			obj = beanDefinition.create(parameterTypes, params);
+			if(beanDefinition.isInstance()){
+				singletonMap.put(beanDefinition.getId(), obj);
+			}
+			beanDefinition.init(obj);
+			loggerCreateInstanceTime(t, beanDefinition, obj);
+		} catch (Exception e) {
+			throw new BeansException(beanDefinition.getId(), e);
+		}
+		return obj;
+	}
+	
+	private void loggerCreateInstanceTime(long createTime, BeanDefinition beanDefinition, Object instance){
+		if(logger.isTraceEnabled()){
+			logger.trace("create id [{}] instance [{}] use time:{}ms",
+					beanDefinition.getId(), instance.getClass().getName(),
+					System.currentTimeMillis() - createTime);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name, Class<?>[] parameterTypes,
@@ -148,26 +173,31 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 				synchronized (singletonMap) {
 					obj = singletonMap.get(beanDefinition.getId());
 					if (obj == null) {
-						obj = beanDefinition.create(parameterTypes, params);
-						singletonMap.put(beanDefinition.getId(), obj);
-						try {
-							beanDefinition.init(obj);
-						} catch (Exception e) {
-							throw new BeansException(beanDefinition.getId(), e);
-						}
+						obj = createInstance(beanDefinition, parameterTypes, params);
 					}
 				}
 			}
-			return (T) obj;
 		} else {
-			obj = beanDefinition.create(parameterTypes, params);
-			try {
-				beanDefinition.init(obj);
-			} catch (Exception e) {
-				throw new BeansException(e);
-			}
-			return (T) obj;
+			obj = createInstance(beanDefinition, parameterTypes, params);
 		}
+		return (T) obj;
+	}
+
+	private Object createInstance(BeanDefinition beanDefinition,
+			Object... params) {
+		long t = System.currentTimeMillis();
+		Object obj;
+		try {
+			obj = beanDefinition.create(params);
+			if (beanDefinition.isInstance()) {
+				singletonMap.put(beanDefinition.getId(), obj);
+			}
+			beanDefinition.init(obj);
+			loggerCreateInstanceTime(t, beanDefinition, obj);
+		} catch (Exception e) {
+			throw new BeansException(beanDefinition.getId(), e);
+		}
+		return obj;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -188,26 +218,30 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 				synchronized (singletonMap) {
 					obj = singletonMap.get(beanDefinition.getId());
 					if (obj == null) {
-						obj = beanDefinition.create(params);
-						singletonMap.put(beanDefinition.getId(), obj);
-						try {
-							beanDefinition.init(obj);
-						} catch (Exception e) {
-							throw new BeansException(beanDefinition.getId(), e);
-						}
+						obj = createInstance(beanDefinition, params);
 					}
 				}
 			}
-			return (T) obj;
 		} else {
-			obj = beanDefinition.create(params);
-			try {
-				beanDefinition.init(obj);
-			} catch (Exception e) {
-				throw new BeansException(e);
-			}
-			return (T) obj;
+			obj = createInstance(beanDefinition, params);
 		}
+		return (T) obj;
+	}
+
+	private Object createInstance(BeanDefinition beanDefinition) {
+		long t = System.currentTimeMillis();
+		Object obj;
+		try {
+			obj = beanDefinition.create();
+			if (beanDefinition.isSingleton()) {
+				singletonMap.put(beanDefinition.getId(), obj);
+			}
+			beanDefinition.init(obj);
+			loggerCreateInstanceTime(t, beanDefinition, obj);
+		} catch (Exception e) {
+			throw new BeansException(beanDefinition.getId(), e);
+		}
+		return obj;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -228,27 +262,14 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 				synchronized (singletonMap) {
 					obj = singletonMap.get(beanDefinition.getId());
 					if (obj == null) {
-						try {
-							obj = beanDefinition.create();
-							singletonMap.put(beanDefinition.getId(), obj);
-							beanDefinition.init(obj);
-						} catch (Exception e) {
-							e.printStackTrace();
-							throw new BeansException(beanDefinition.getId());
-						}
+						obj = createInstance(beanDefinition);
 					}
 				}
 			}
-			return (T) obj;
 		} else {
-			obj = beanDefinition.create();
-			try {
-				beanDefinition.init(obj);
-			} catch (Exception e) {
-				throw new BeansException(e);
-			}
-			return (T) obj;
+			obj = createInstance(beanDefinition);
 		}
+		return (T) obj;
 	}
 
 	public <T> T getInstance(Class<T> type) {
@@ -433,12 +454,14 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 			filterNames.add(clazz.getName());
 		}
-		
-		for(Init init : BeanUtils.getConfigurationList(Init.class, null, this, propertyFactory)){
+
+		for (Init init : BeanUtils.getConfigurationList(Init.class, null, this,
+				propertyFactory)) {
 			init.init();
 		}
-		
-		for(Start start : BeanUtils.getConfigurationList(Start.class, null, this, propertyFactory)){
+
+		for (Start start : BeanUtils.getConfigurationList(Start.class, null,
+				this, propertyFactory)) {
 			start.start();
 		}
 
@@ -453,8 +476,9 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	public synchronized void destroy() {
 		valueWiredManager.destroy();
 		propertyFactory.destroy();
-		
-		for(Destroy destroy : BeanUtils.getConfigurationList(Destroy.class, null, this, propertyFactory)){
+
+		for (Destroy destroy : BeanUtils.getConfigurationList(Destroy.class,
+				null, this, propertyFactory)) {
 			destroy.destroy();
 		}
 

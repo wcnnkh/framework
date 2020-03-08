@@ -20,7 +20,7 @@ public abstract class AbstractSimpleAutoBean extends AbstractAutoBean {
 	protected abstract Object[] getParameters();
 
 	@SuppressWarnings("unchecked")
-	public <T> T create() {
+	public <T> T create() throws Exception{
 		if (!isInstance()) {
 			throw new NotSupportException(type.getName());
 		}

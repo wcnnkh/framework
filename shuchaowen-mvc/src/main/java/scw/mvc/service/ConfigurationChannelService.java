@@ -27,8 +27,9 @@ public final class ConfigurationChannelService extends
 
 	private static HandlerChain getHandlerChain(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
-		return new DefaultHandlerChain(
+		HandlerChain chain =  new DefaultHandlerChain(
 				getHandlers(beanFactory, propertyFactory), null);
+		return chain;
 	}
 
 	private static long getWarnExecuteTime(PropertyFactory propertyFactory) {

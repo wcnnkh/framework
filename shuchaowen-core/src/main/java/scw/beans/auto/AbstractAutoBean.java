@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.beans.BeansException;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.lang.NotFoundException;
@@ -26,11 +25,11 @@ public abstract class AbstractAutoBean implements AutoBean {
 	protected boolean isProxy() {
 		return proxy;
 	}
-	
-	public void init(Object bean) {
+
+	public void init(Object bean) throws Exception{
 	}
-	
-	public void destroy(Object bean) {
+
+	public void destroy(Object bean) throws Exception{
 	}
 
 	public boolean isReference() {
@@ -42,40 +41,38 @@ public abstract class AbstractAutoBean implements AutoBean {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T create(Object... params) {
-		Constructor<?> constructor = ReflectionUtils.findConstructorByParameters(type, false, params);
+	public <T> T create(Object... params) throws Exception{
+		Constructor<?> constructor = ReflectionUtils
+				.findConstructorByParameters(type, false, params);
 		if (constructor == null) {
 			throw new NotFoundException(type + "找不到指定的构造方法");
 		}
 
 		if (isProxy()) {
-			return (T) BeanUtils.createProxy(beanFactory, type, getFilterNames(), null)
-					.create(constructor.getParameterTypes(), params);
+			return (T) BeanUtils.createProxy(beanFactory, type,
+					getFilterNames(), null).create(
+					constructor.getParameterTypes(), params);
 		} else {
-			try {
-				return (T) constructor.newInstance(params);
-			} catch (Exception e) {
-				throw new BeansException(type.getName(), e);
-			}
+			return (T) constructor.newInstance(params);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T create(Class<?>[] parameterTypes, Object... params) {
-		Constructor<?> constructor = ReflectionUtils.getConstructor(type, false, parameterTypes);
+	public <T> T create(Class<?>[] parameterTypes, Object... params)
+			throws Exception {
+		Constructor<?> constructor = ReflectionUtils.getConstructor(type,
+				false, parameterTypes);
 		if (constructor == null) {
 			throw new NotFoundException(type + "找不到指定的构造方法");
 		}
 
 		if (isProxy()) {
-			return (T) BeanUtils.createProxy(beanFactory, type, getFilterNames(), null)
-					.create(constructor.getParameterTypes(), params);
+			return (T) BeanUtils.createProxy(beanFactory, type,
+					getFilterNames(), null).create(
+					constructor.getParameterTypes(), params);
 		} else {
-			try {
-				return (T) constructor.newInstance(ClassUtils.cast(constructor.getParameterTypes(), params));
-			} catch (Exception e) {
-				throw new BeansException(type.getName(), e);
-			}
+			return (T) constructor.newInstance(ClassUtils.cast(
+					constructor.getParameterTypes(), params));
 		}
 	}
 }
