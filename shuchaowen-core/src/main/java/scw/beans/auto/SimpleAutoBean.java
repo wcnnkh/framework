@@ -17,13 +17,8 @@ public class SimpleAutoBean extends AbstractSimpleAutoBean {
 		super(beanFactory, type);
 		this.instanceConfig = new AutoInstanceConfig(beanFactory, propertyFactory, type);
 		if (instanceConfig.getConstructor() != null) {
-			// 默认的构造方法不显示日志
-			if (instanceConfig.getConstructor().getParameterTypes().length != 0) {
-				logger.info(instanceConfig.getConstructor());
-			} else {
-				if (logger.isDebugEnabled()) {
-					logger.debug(instanceConfig.getConstructor());
-				}
+			if (logger.isDebugEnabled()) {
+				logger.debug(instanceConfig.getConstructor());
 			}
 		}
 	}

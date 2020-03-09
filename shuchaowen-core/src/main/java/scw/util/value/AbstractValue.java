@@ -85,7 +85,7 @@ public abstract class AbstractValue implements Value {
 		return v == null ? getDefaultValue().getAsObject(type) : v;
 	}
 
-	public boolean isEmpty(String value) {
+	protected boolean isEmpty(String value) {
 		return value == null || value.length() == 0;
 	}
 
@@ -181,7 +181,7 @@ public abstract class AbstractValue implements Value {
 		return Long.parseLong(v, getNumberRadix());
 	}
 
-	public boolean parseBooleanValue(String value) {
+	protected boolean parseBooleanValue(String value) {
 		return "1".equals(value) || "true".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value)
 				|| "T".equalsIgnoreCase(value);
 	}

@@ -32,25 +32,27 @@ public class StringValue extends AbstractValue implements Serializable {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public <E> E[] getAsArray(Class<? extends E> componentType){
+		String[] values = split(getAsString());
+		if(values == null){
+			return null;
+		}
+		
+		Object array = Array.newInstance(componentType, value.length());
+		for(int i=0; i<values.length; i++){
+			Value value = parseValue(values[i]);
+			if(value != null){
+				Array.set(array, i, value.getAsObject(componentType));
+			}
+		}
+		return (E[]) array;
+	}
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getAsObject(Class<? extends T> type) {
-		if(isSupportArray()){
-			if(type.isArray()){
-				String[] values = split(getAsString());
-				if(values == null){
-					return null;
-				}
-				
-				Class<?> componentType = type.getComponentType();
-				Object array = Array.newInstance(componentType, value.length());
-				for(int i=0; i<values.length; i++){
-					Value value = parseValue(values[i]);
-					if(value != null){
-						Array.set(array, i, value.getAsObject(componentType));
-					}
-				}
-				return (T) array;
-			}
+		if(isSupportArray() && type.isArray()){
+			return (T) getAsArray(type.getComponentType());
 		}
 		return super.getAsObject(type);
 	}

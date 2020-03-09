@@ -65,12 +65,6 @@
 			<artifactId>fastjson</artifactId>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-embed</artifactId>

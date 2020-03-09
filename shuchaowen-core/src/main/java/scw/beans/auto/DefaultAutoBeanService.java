@@ -3,6 +3,7 @@ package scw.beans.auto;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -34,7 +35,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		if (autoBean != null) {
 			return autoBean;
 		}
-
+		
 		// 未注解service时接口默认实现
 		if (clazz.isInterface()) {
 			String name = clazz.getName() + "Impl";
@@ -78,6 +79,11 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			throws Exception {
 		AutoImpl autoConfig = clazz.getAnnotation(AutoImpl.class);
 		if (autoConfig == null) {
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			List<Class<?>> impls = BeanUtils.getConfigurationClassList((Class)clazz, propertyFactory);
+			if(!CollectionUtils.isEmpty(impls)){
+				return defaultService(impls.get(0), beanFactory, propertyFactory, serviceChain);
+			}
 			return defaultService(clazz, beanFactory, propertyFactory,
 					serviceChain);
 		}
@@ -96,7 +102,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 				return autoBean;
 			}
 		}
-
+		
 		return defaultService(clazz, beanFactory, propertyFactory, serviceChain);
 	}
 

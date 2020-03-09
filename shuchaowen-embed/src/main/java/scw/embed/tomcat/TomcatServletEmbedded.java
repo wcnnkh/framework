@@ -73,21 +73,14 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		return StringUtils.isEmpty(contextPath) ? "" : contextPath;
 	}
 
-	private JarScanner getJarScanner(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
-		return InstanceUtils.getInstance(
-				"scw.embed.tomcat.Tomcat8AboveStandardJarScanner",
-				propertyFactory);
-	}
-
 	private Context createContext(BeanFactory beanFactory,
 			PropertyFactory propertyFactory, ClassLoader classLoader) {
 		Context context = tomcat.addContext(getContextPath(propertyFactory),
 				getDocBase(propertyFactory));
 		context.setParentClassLoader(classLoader);
-		JarScanner jarScanner = getJarScanner(beanFactory, propertyFactory);
-		if (jarScanner != null) {
-			context.setJarScanner(jarScanner);
+		
+		if(beanFactory.isInstance(JarScanner.class)){
+			context.setJarScanner(beanFactory.getInstance(JarScanner.class));
 		}
 
 		addServletContainerInitializer(context, new RootServletContainerInitializerConfiguration(beanFactory, propertyFactory));
