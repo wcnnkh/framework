@@ -1582,4 +1582,32 @@ public final class ClassUtils {
 		}
 		return values;
 	}
+	
+	/**
+	 * 获取所有父包名
+	 * @param packageName
+	 * @return
+	 */
+	public static String[] getParentPackageNames(String packageName){
+		if(!StringUtils.hasText(packageName)){
+			return new String[0];
+		}
+		
+		String[] packageNameArray = StringUtils.split(packageName, '.');
+		String[] array = new String[packageNameArray.length - 1];
+		StringBuilder sb = new StringBuilder();
+		for(int i=0, len = packageNameArray.length; i <len ; i++){
+			if(i != 0){
+				sb.append(".");
+			}
+			
+			if(i == len - 1){
+				break;
+			}
+			
+			sb.append(packageNameArray[i]);
+			array[i] = sb.toString();
+		}
+		return array;
+	}
 }
