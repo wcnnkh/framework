@@ -34,6 +34,7 @@ import scw.orm.sql.annotation.Table;
 import scw.orm.sql.dialect.MysqlSelect;
 import scw.orm.sql.dialect.PaginationSql;
 import scw.orm.sql.dialect.Select;
+import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.enums.OperationType;
 import scw.orm.sql.enums.TableStructureResultField;
 import scw.sql.ResultSetMapper;
@@ -44,6 +45,8 @@ import scw.sql.SqlUtils;
 
 public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	public abstract GeneratorService getGeneratorService();
+	
+	public abstract SqlDialect getSqlDialect();
 
 	public SqlMapper getSqlMapper() {
 		return getSqlDialect().getSqlMapper();

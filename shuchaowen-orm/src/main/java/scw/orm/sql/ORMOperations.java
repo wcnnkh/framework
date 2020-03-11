@@ -6,12 +6,9 @@ import java.util.Map;
 
 import scw.core.Pagination;
 import scw.core.utils.IteratorCallback;
-import scw.orm.sql.dialect.SqlDialect;
 import scw.sql.Sql;
 
 public interface ORMOperations {
-	SqlDialect getSqlDialect();
-
 	<T> T getById(Class<T> type, Object... params);
 
 	<T> T getById(String tableName, Class<T> type, Object... params);
