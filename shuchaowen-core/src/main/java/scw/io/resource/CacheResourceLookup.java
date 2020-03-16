@@ -1,15 +1,15 @@
 package scw.io.resource;
 
 import java.io.InputStream;
-import java.util.concurrent.ConcurrentHashMap;
 
 import scw.core.Consumer;
 import scw.core.Converter;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
+import scw.util.ConcurrentReferenceHashMap;
 
 final class CacheResourceLookup implements ResourceLookup {
-	private final ConcurrentHashMap<String, ResourceData> resourceMap = new ConcurrentHashMap<String, ResourceData>();
+	private final ConcurrentReferenceHashMap<String, ResourceData> resourceMap = new ConcurrentReferenceHashMap<String, ResourceData>();
 	private final ResourceLookup resourceLookup;
 
 	public CacheResourceLookup(ResourceLookup resourceLookup) {
