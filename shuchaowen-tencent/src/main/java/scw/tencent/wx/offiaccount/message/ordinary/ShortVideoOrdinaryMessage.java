@@ -1,6 +1,7 @@
-package scw.tencent.wx.offiaccount;
+package scw.tencent.wx.offiaccount.message.ordinary;
 
-public class VideoMessage extends Message{
+
+public class ShortVideoOrdinaryMessage extends OrdinaryMessage{
 	private static final long serialVersionUID = 1L;
 	private String mediaId;//视频消息媒体id，可以调用获取临时素材接口拉取数据。
 	private String thumbMediaId;//视频消息缩略图的媒体id，可以调用多媒体文件下载接口拉取数据。

@@ -1,11 +1,14 @@
-package scw.tencent.wx.offiaccount;
+package scw.tencent.wx.offiaccount.message.reply;
 
-public class TextMessage extends Message{
+
+public class TextReplyMessage extends ReplyMessage{
 	private static final long serialVersionUID = 1L;
-	private String content;//文本消息内容
+	private String content;
+	
 	public String getContent() {
 		return content;
 	}
+	
 	public void setContent(String content) {
 		this.content = content;
 	}

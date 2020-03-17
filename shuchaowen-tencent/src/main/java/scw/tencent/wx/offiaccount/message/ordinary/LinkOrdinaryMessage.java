@@ -1,6 +1,7 @@
-package scw.tencent.wx.offiaccount;
+package scw.tencent.wx.offiaccount.message.ordinary;
 
-public class LinkMessage extends Message{
+
+public class LinkOrdinaryMessage extends OrdinaryMessage{
 	private static final long serialVersionUID = 1L;
 	private String title;//消息标题
 	private String description;//消息描述

@@ -1,6 +1,7 @@
-package scw.tencent.wx.offiaccount;
+package scw.tencent.wx.offiaccount.message.ordinary;
 
-public class ImageMessage extends Message{
+
+public class ImageOrdinaryMessage extends OrdinaryMessage{
 	private static final long serialVersionUID = 1L;
 	private String picUrl;//图片链接（由系统生成）
 	private String mediaId;//图片消息媒体id，可以调用获取临时素材接口拉取数据。
