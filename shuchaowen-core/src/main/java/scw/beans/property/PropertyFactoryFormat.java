@@ -3,9 +3,11 @@ package scw.beans.property;
 import java.lang.reflect.Field;
 
 import scw.beans.BeanFactory;
+import scw.beans.annotation.Configuration;
 import scw.core.PropertyFactory;
 import scw.core.utils.StringParse;
 
+@Configuration
 public class PropertyFactoryFormat implements ValueFormat {
 
 	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name) {

@@ -7,7 +7,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
-import scw.beans.property.PropertyFactoryFormat;
 import scw.beans.property.ValueFormat;
 
 /**
@@ -26,8 +25,7 @@ public @interface Value {
 	 * format和formatName至少要存在一个，formatName优化级高
 	 * @return
 	 */
-	public Class<? extends ValueFormat> format() default PropertyFactoryFormat.class;
-	public String formatName() default "";
+	public Class<? extends ValueFormat> format() default ValueFormat.class;
 
 	/**
 	 * 刷新周期

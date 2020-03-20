@@ -6,7 +6,6 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
 import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
-import scw.core.utils.StringUtils;
 
 public final class ValueWired {
 	private final Object obj;
@@ -34,9 +33,7 @@ public final class ValueWired {
 	}
 
 	public void wired(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
-		String valueFormat = StringUtils.isEmpty(getValueAnnotation().formatName())
-				? getValueAnnotation().format().getName() : getValueAnnotation().formatName();
-		Object v = ((ValueFormat) beanFactory.getInstance(valueFormat)).format(beanFactory, propertyFactory, fieldDefinition.getField(),
+		Object v = beanFactory.getInstance(value.format()).format(beanFactory, propertyFactory, fieldDefinition.getField(),
 				value.value());
 		if (v != null) {
 			fieldDefinition.set(obj, v);
