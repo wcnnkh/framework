@@ -1,9 +1,8 @@
 package scw.core;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
-public class MultiPropertyFactory extends LinkedList<PropertyFactory> implements PropertyFactory, Destroy {
+public class MultiPropertyFactory extends LinkedList<PropertyFactory> implements PropertyFactory {
 	private static final long serialVersionUID = 1L;
 
 	public String getProperty(String key) {
@@ -14,15 +13,5 @@ public class MultiPropertyFactory extends LinkedList<PropertyFactory> implements
 			}
 		}
 		return null;
-	}
-
-	public void destroy() {
-		Iterator<PropertyFactory> iterator = this.iterator();
-		while (iterator.hasNext()) {
-			PropertyFactory propertyFactory = iterator.next();
-			if (propertyFactory instanceof Destroy) {
-				((Destroy) propertyFactory).destroy();
-			}
-		}
 	}
 }

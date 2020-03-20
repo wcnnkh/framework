@@ -23,7 +23,6 @@ import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.MultiPropertyFactory;
 import scw.core.PropertyFactory;
-import scw.core.Start;
 import scw.core.instance.InstanceFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -454,19 +453,8 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 			filterNames.add(clazz.getName());
 		}
-
-		for (Init init : BeanUtils.getConfigurationList(Init.class, null, this,
-				propertyFactory)) {
-			init.init();
-		}
-
-		for (Start start : BeanUtils.getConfigurationList(Start.class, null,
-				this, propertyFactory)) {
-			start.start();
-		}
-
-		BeanUtils.initStatic(valueWiredManager, this, getPropertyFactory(),
-				ClassUtils.getClassSet(getInitStaticPackage()));
+		
+		propertyFactory.addAll(BeanUtils.getConfigurationList(PropertyFactory.class, this, propertyFactory));
 		for (Init init : inits) {
 			init.init();
 		}
@@ -475,15 +463,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	public synchronized void destroy() {
 		valueWiredManager.destroy();
-		propertyFactory.destroy();
-
-		for (Destroy destroy : BeanUtils.getConfigurationList(Destroy.class,
-				null, this, propertyFactory)) {
-			destroy.destroy();
-		}
-
-		BeanUtils.destroyStaticMethod(valueWiredManager,
-				ClassUtils.getClassSet(getInitStaticPackage()));
 
 		synchronized (singletonMap) {
 			List<String> beanKeyList = new ArrayList<String>();

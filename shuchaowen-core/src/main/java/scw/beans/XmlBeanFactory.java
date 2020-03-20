@@ -20,6 +20,7 @@ import scw.lang.NotFoundException;
 
 public class XmlBeanFactory extends AbstractBeanFactory {
 	private NodeList nodeList;
+	private XmlPropertyFactory xmlPropertyFactory;
 
 	public XmlBeanFactory(String xmlConfigPath) {
 		if (ResourceUtils.getResourceOperations().isExist(xmlConfigPath)) {
@@ -28,7 +29,8 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 					.getNodeAttributeValue(propertyFactory, root, "filters"))));
 			this.nodeList = XMLUtils.getChildNodes(root, true);
 		}
-		propertyFactory.add(new XmlPropertyFactory(nodeList));
+		this.xmlPropertyFactory = new XmlPropertyFactory(nodeList);
+		propertyFactory.add(xmlPropertyFactory);
 	}
 
 	public final NodeList getNodeList() {
@@ -188,6 +190,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		xmlPropertyFactory.destroy();
 		super.destroy();
 	}
 

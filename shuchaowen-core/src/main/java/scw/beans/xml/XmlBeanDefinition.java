@@ -71,8 +71,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		this.initMethods = XmlBeanUtils.getInitMethodList(type, nodeList);
 		this.destroyMethods = XmlBeanUtils.getDestroyMethodList(type, nodeList);
 		this.properties = XmlBeanUtils.getBeanProperties(nodeList);
-		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type,
-				false).toArray(new FieldDefinition[0]);
+		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type).toArray(new FieldDefinition[0]);
 
 		if (!type.isInterface()) {// 可能只是映射
 			XmlBeanParameter[] constructorParameters = XmlBeanUtils

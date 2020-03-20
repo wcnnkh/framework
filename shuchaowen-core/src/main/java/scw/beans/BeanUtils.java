@@ -15,12 +15,10 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 
 import scw.aop.Filter;
 import scw.aop.Proxy;
 import scw.aop.ProxyUtils;
-import scw.aop.ReflectInvoker;
 import scw.application.ApplicationConfigUtils;
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.Bean;
@@ -171,101 +169,6 @@ public final class BeanUtils {
 		return list;
 	}
 
-	/**
-	 * 调用init方法
-	 * 
-	 * @param beanFactory
-	 * @param classList
-	 * @throws Exception
-	 */
-	private static void invokerInitStaticMethod(Collection<Class<?>> classList)
-			throws Exception {
-		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
-		for (Class<?> clz : classList) {
-			for (Method method : ReflectionUtils.getDeclaredMethods(clz)) {
-				if (!Modifier.isStatic(method.getModifiers())) {
-					continue;
-				}
-
-				InitMethod initMethod = method.getAnnotation(InitMethod.class);
-				if (initMethod == null) {
-					continue;
-				}
-
-				if (method.getParameterTypes().length != 0) {
-					throw new BeansException("ClassName=" + clz.getName()
-							+ ",MethodName=" + method.getName()
-							+ "There must be no parameter.");
-				}
-
-				ReflectInvoker invoke = new ReflectInvoker(null, method);
-				list.add(invoke);
-			}
-		}
-
-		// 调用指定注解的方法
-		CountDownLatch countDownLatch = new CountDownLatch(list.size());
-		for (ReflectInvoker info : list) {
-			InitProcess process = new InitProcess(info, countDownLatch);
-			new Thread(process).start();
-		}
-		countDownLatch.await();
-	}
-
-	public synchronized static void destroyStaticMethod(
-			ValueWiredManager valueWiredManager, Collection<Class<?>> classList) {
-		List<ReflectInvoker> list = new ArrayList<ReflectInvoker>();
-		for (Class<?> clz : classList) {
-			if (valueWiredManager != null) {
-				valueWiredManager.cancel(clz);
-			}
-
-			for (Method method : ReflectionUtils.getDeclaredMethods(clz)) {
-				if (!Modifier.isStatic(method.getModifiers())) {
-					continue;
-				}
-
-				Destroy destroy = method.getAnnotation(Destroy.class);
-				if (destroy == null) {
-					continue;
-				}
-
-				if (method.getParameterTypes().length != 0) {
-					throw new RuntimeException("ClassName=" + clz.getName()
-							+ ",MethodName=" + method.getName()
-							+ "There must be no parameter.");
-				}
-
-				ReflectInvoker invoke = new ReflectInvoker(null, method);
-				list.add(invoke);
-			}
-		}
-
-		CountDownLatch countDownLatch = new CountDownLatch(list.size());
-		for (ReflectInvoker info : list) {
-			InitProcess process = new InitProcess(info, countDownLatch);
-			new Thread(process).start();
-		}
-
-		try {
-			countDownLatch.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void initStatic(ValueWiredManager valueWiredManager,
-			BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Collection<Class<?>> classList) {
-		try {
-			initAutowiredStatic(valueWiredManager, beanFactory,
-					propertyFactory, classList);
-			invokerInitStaticMethod(classList);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	public static void autowired(ValueWiredManager valueWiredManager,
 			BeanFactory beanFactory, PropertyFactory propertyFactory,
 			Class<?> clz, Object obj, Collection<FieldDefinition> fields)
@@ -277,21 +180,6 @@ public final class BeanUtils {
 
 		setValue(valueWiredManager, beanFactory, propertyFactory, clz, obj,
 				fields);
-	}
-
-	/**
-	 * 过滤非静态方法和非静态字段
-	 * 
-	 * @param classList
-	 */
-	private static void initAutowiredStatic(
-			ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Collection<Class<?>> classList)
-			throws Exception {
-		for (Class<?> clz : classList) {
-			autowired(valueWiredManager, beanFactory, propertyFactory, clz,
-					null, getAutowriteFieldDefinitionList(clz, true));
-		}
 	}
 
 	private static XmlBeanParameter[] sortParameters(String[] paramNames,
@@ -524,7 +412,7 @@ public final class BeanUtils {
 	}
 
 	public static LinkedList<FieldDefinition> getAutowriteFieldDefinitionList(
-			Class<?> clazz, boolean isStatic) {
+			Class<?> clazz) {
 		Class<?> clz = clazz;
 		LinkedList<FieldDefinition> list = new LinkedList<FieldDefinition>();
 		while (clz != null && clz != Object.class) {
@@ -541,19 +429,14 @@ public final class BeanUtils {
 				}
 
 				field.setAccessible(true);
-				if (isStatic) {
-					if (Modifier.isStatic(field.getModifiers())) {
-						list.add(new DefaultFieldDefinition(clz, field, false,
-								false, true));
-					}
-				} else {
-					if (Modifier.isStatic(field.getModifiers())) {
-						continue;
-					}
-
-					list.add(new DefaultFieldDefinition(clz, field, false,
-							false, true));
+				if (Modifier.isStatic(field.getModifiers())) {
+					logger.warn("static field not support annotation:{}",
+							field.toString());
+					continue;
 				}
+
+				list.add(new DefaultFieldDefinition(clz, field, false, false,
+						true));
 			}
 
 			clz = clz.getSuperclass();
@@ -685,24 +568,5 @@ public final class BeanUtils {
 
 			return sb.toString();
 		}
-	}
-}
-
-class InitProcess implements Runnable {
-	private ReflectInvoker invoke;
-	private CountDownLatch countDown;
-
-	public InitProcess(ReflectInvoker invoke, CountDownLatch countDownLatch) {
-		this.invoke = invoke;
-		this.countDown = countDownLatch;
-	}
-
-	public void run() {
-		try {
-			invoke.invoke();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-		countDown.countDown();
 	}
 }

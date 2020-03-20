@@ -40,7 +40,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 				scw.beans.annotation.Bean.class);
 		this.singleton = bean == null ? true : bean.singleton();
 		this.autowriteFieldDefinition = BeanUtils
-				.getAutowriteFieldDefinitionList(getType(), false).toArray(
+				.getAutowriteFieldDefinitionList(getType()).toArray(
 						new FieldDefinition[0]);
 	}
 
