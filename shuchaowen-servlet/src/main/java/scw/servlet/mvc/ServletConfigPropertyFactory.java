@@ -1,21 +1,29 @@
 package scw.servlet.mvc;
 
+import java.util.Enumeration;
+
 import javax.servlet.ServletConfig;
 
-import scw.core.PropertyFactory;
+import scw.util.value.property.StringValuePropertyFactory;
 
-public class ServletConfigPropertyFactory implements PropertyFactory {
+public class ServletConfigPropertyFactory extends StringValuePropertyFactory {
 	private final ServletConfig servletConfig;
 
 	public ServletConfigPropertyFactory(ServletConfig servletConfig) {
 		this.servletConfig = servletConfig;
 	}
-
-	public String getProperty(String key) {
+	
+	@Override
+	protected String getValue(String key) {
 		return servletConfig.getInitParameter(key);
 	}
 
 	public String getConfigXml() {
-		return getProperty("shuchaowen");
+		//兼容老版本
+		return getString("shuchaowen");
+	}
+
+	public Enumeration<String> enumerationKeys() {
+		return servletConfig.getInitParameterNames();
 	}
 }

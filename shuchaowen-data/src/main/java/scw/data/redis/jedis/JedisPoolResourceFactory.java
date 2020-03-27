@@ -7,8 +7,6 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import scw.core.Constants;
 import scw.core.Destroy;
-import scw.core.MapPropertyFactory;
-import scw.core.PropertyFactory;
 import scw.core.annotation.DefaultValue;
 import scw.core.annotation.Order;
 import scw.core.annotation.ParameterName;
@@ -19,6 +17,8 @@ import scw.data.redis.RedisUtils;
 import scw.io.resource.ResourceUtils;
 import scw.lang.Nullable;
 import scw.util.ConfigUtils;
+import scw.util.value.property.PropertiesPropertyFactory;
+import scw.util.value.property.PropertyFactory;
 
 /**
  * 实现自动化配置
@@ -63,9 +63,9 @@ public final class JedisPoolResourceFactory implements JedisResourceFactory,
 			@ParameterName(CONFIG_KEY) @ResourceParameter @DefaultValue(DEFAULT_CONFIG) String configuration) {
 		Properties properties = ResourceUtils.getResourceOperations()
 				.getProperties(configuration, Constants.DEFAULT_CHARSET_NAME);
-		PropertyFactory propertyFactory = new MapPropertyFactory(properties,
-				true);
-		String host = propertyFactory.getProperty(HOST_CONFIG_KEY);
+		PropertyFactory propertyFactory = new PropertiesPropertyFactory(
+				properties);
+		String host = propertyFactory.getString(HOST_CONFIG_KEY);
 		if (StringUtils.isEmpty(host)) {
 			host = "127.0.0.1";
 		}
@@ -73,11 +73,10 @@ public final class JedisPoolResourceFactory implements JedisResourceFactory,
 		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 		// 兼容老版本
 		ConfigUtils.invokeSetterByProeprties(jedisPoolConfig, null,
-				new MapPropertyFactory(properties, false));
+				propertyFactory);
 		init(jedisPoolConfig, propertyFactory, host,
-				StringUtils.parseInt(propertyFactory
-						.getProperty(PORT_CONFIG_KEY)),
-				propertyFactory.getProperty(AUTH_CONFIG_KEY));
+				propertyFactory.getIntValue(PORT_CONFIG_KEY),
+				propertyFactory.getString(AUTH_CONFIG_KEY));
 	}
 
 	public void destroy() {

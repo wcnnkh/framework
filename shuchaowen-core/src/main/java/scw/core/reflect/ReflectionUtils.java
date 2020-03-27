@@ -38,7 +38,6 @@ import java.util.regex.Pattern;
 
 import scw.cglib.core.ReflectUtils;
 import scw.core.Assert;
-import scw.core.PropertyFactory;
 import scw.core.Verification;
 import scw.core.annotation.Order;
 import scw.core.instance.InstanceFactory;
@@ -46,10 +45,12 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.CompareUtils;
-import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.util.FormatUtils;
+import scw.util.value.Value;
+import scw.util.value.ValueUtils;
+import scw.util.value.property.PropertyFactory;
 
 /**
  * Simple utility class for working with the reflection API and handling
@@ -854,10 +855,10 @@ public abstract class ReflectionUtils {
 	public static void loadMethod(Object bean, Collection<String> methodPrefixs, String propertyPrefix,
 			PropertyFactory propertyFactory, final InstanceFactory instanceFactory, final Set<String> ignoreName,
 			final Verification<Type> beanVerification) {
-		loadMethod(bean, methodPrefixs, propertyPrefix, propertyFactory, new PropertyMapper<String>() {
+		loadMethod(bean, methodPrefixs, propertyPrefix, propertyFactory, new PropertyMapper<Value>() {
 
-			public Object mapper(String name, String value, Type type) throws Exception {
-				if (StringUtils.isEmpty(value)) {
+			public Object mapper(String name, Value value, Type type) throws Exception {
+				if (StringUtils.isEmpty(value.getAsString())) {
 					return null;
 				}
 
@@ -865,8 +866,8 @@ public abstract class ReflectionUtils {
 					return null;
 				}
 
-				if (StringParse.isCommonType(type)) {
-					return StringParse.defaultParse(value, type);
+				if (ValueUtils.isCommonType(type)) {
+					return value.getAsObject(type);
 				}
 
 				if (TypeUtils.isInterface(type) || TypeUtils.isAbstract(type)) {
@@ -875,21 +876,21 @@ public abstract class ReflectionUtils {
 				}
 
 				if (beanVerification == null) {
-					return StringParse.defaultParse(value, type);
+					return value.getAsObject(type);
 				}
-
+	
 				if (beanVerification.verification(type)) {
 					String className = TypeUtils.getClassName(type);
 					return instanceFactory.isInstance(className) ? instanceFactory.getInstance(className) : null;
 				} else {
-					return StringParse.defaultParse(value, type);
+					return value.getAsObject(type);
 				}
 			}
 		});
 	}
 
 	public static void loadMethod(Object bean, Collection<String> methodPrefixs, String propertyPrefix,
-			PropertyFactory propertyFactory, PropertyMapper<String> propertyMapper) {
+			PropertyFactory propertyFactory, PropertyMapper<Value> propertyMapper) {
 		if (CollectionUtils.isEmpty(methodPrefixs)) {
 			return;
 		}
@@ -905,7 +906,10 @@ public abstract class ReflectionUtils {
 					String name = method.getName().substring(methodPrefix.length());
 					name = StringUtils.toLowerCase(name, 0, 1);
 					String key = StringUtils.isEmpty(propertyPrefix) ? name : (propertyPrefix + name);
-					String value = propertyFactory.getProperty(key);
+					Value value = propertyFactory.get(key);
+					if(value == null){
+						continue;
+					}
 					Object v;
 					try {
 						v = propertyMapper.mapper(name, value, types[0]);
@@ -1558,7 +1562,7 @@ public abstract class ReflectionUtils {
 	}
 
 	public static Object setFieldValueAutoType(Class<?> clz, Field field, Object obj, String value) throws Exception {
-		return setFieldValue(clz, field, obj, StringParse.defaultParse(value, field.getGenericType()));
+		return setFieldValue(clz, field, obj, ValueUtils.parse(value, field.getGenericType()));
 	}
 
 	/**

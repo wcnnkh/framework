@@ -10,7 +10,6 @@ import scw.beans.SimpleBeanConfiguration;
 import scw.beans.annotation.Configuration;
 import scw.beans.property.ValueWiredManager;
 import scw.core.Init;
-import scw.core.PropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
@@ -19,6 +18,7 @@ import scw.mq.amqp.Exchange;
 import scw.mq.annotation.AmqpConsumer;
 import scw.mq.annotation.Consumer;
 import scw.mq.support.MqMethodConsumer;
+import scw.util.value.property.PropertyFactory;
 
 @Configuration
 public class MQBeanConfigFactory extends AbstractBeanConfiguration implements SimpleBeanConfiguration {

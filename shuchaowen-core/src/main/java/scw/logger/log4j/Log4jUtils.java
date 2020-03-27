@@ -5,9 +5,9 @@ import java.util.Properties;
 
 import org.w3c.dom.Element;
 
+import scw.core.GlobalPropertyFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XMLUtils;
 import scw.io.resource.ResourceUtils;
 import scw.lang.NotSupportException;
@@ -25,7 +25,7 @@ public final class Log4jUtils {
 	}
 
 	public static void setLog4jPath(String path) {
-		SystemPropertyUtils.setPrivateProperty(LOG4J_PATH, path);
+		GlobalPropertyFactory.getInstance().put(LOG4J_PATH, path);
 	}
 
 	private static void initByProperties(Properties properties) {
@@ -71,7 +71,7 @@ public final class Log4jUtils {
 			return;
 		}
 
-		String path = SystemPropertyUtils.getProperty(LOG4J_PATH);
+		String path = GlobalPropertyFactory.getInstance().getString(LOG4J_PATH);
 		if (StringUtils.isEmpty(path)) {
 			if (ResourceUtils.getResourceOperations().isExist("classpath:/log4j.properties")) {
 				Properties properties = ResourceUtils.getResourceOperations()
@@ -97,7 +97,7 @@ public final class Log4jUtils {
 			}
 		}
 
-		String rootPath = SystemPropertyUtils.getWorkPath();
+		String rootPath = GlobalPropertyFactory.getInstance().getWorkPath();
 		FormatUtils.info(Log4jUtils.class, "load the default log directory: {}", rootPath);
 		Properties properties = ResourceUtils.getResourceOperations().getProperties(
 				"classpath:/scw/logger/log4j/default-log4j.properties", LoggerLevelUtils.PROPERTY_FACTORY);

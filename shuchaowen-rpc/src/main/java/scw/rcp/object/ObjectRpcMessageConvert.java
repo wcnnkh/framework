@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import scw.core.Constants;
-import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.net.MimeType;
@@ -16,6 +15,7 @@ import scw.net.message.OutputMessage;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MessageConverterChain;
 import scw.serializer.Serializer;
+import scw.util.value.ValueUtils;
 
 public final class ObjectRpcMessageConvert implements MessageConverter {
 	private final Serializer serializer;
@@ -36,7 +36,7 @@ public final class ObjectRpcMessageConvert implements MessageConverter {
 				|| !TypeUtils.isInterface(type)) {
 			String content = inputMessage
 					.convertToString(StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME : charsetName);
-			return StringParse.defaultParse(content, type);
+			return ValueUtils.parse(content, type);
 		}
 
 		return chain.read(type, inputMessage);

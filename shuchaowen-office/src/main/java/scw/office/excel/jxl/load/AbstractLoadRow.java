@@ -7,9 +7,9 @@ import java.util.Map.Entry;
 
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.lang.AlreadyExistsException;
+import scw.util.value.ValueUtils;
 
 public abstract class AbstractLoadRow<T> implements LoadRow {
 	private final int nameMappingIndex;
@@ -80,7 +80,7 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 	}
 
 	public Object format(String name, String value, Type type) {
-		return StringParse.defaultParse(value, type);
+		return ValueUtils.parse(value, type);
 	}
 
 	public abstract void load(T row);

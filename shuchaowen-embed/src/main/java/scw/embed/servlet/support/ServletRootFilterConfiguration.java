@@ -8,8 +8,8 @@ import javax.servlet.Filter;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.PropertyFactory;
 import scw.embed.servlet.FilterConfiguration;
+import scw.util.value.property.PropertyFactory;
 
 public class ServletRootFilterConfiguration implements FilterConfiguration {
 	private List<Filter> filters;

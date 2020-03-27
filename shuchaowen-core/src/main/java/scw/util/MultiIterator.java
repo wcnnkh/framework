@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.util;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,7 +11,7 @@ import java.util.Iterator;
  *
  * @param <E>
  */
-public class MultiIterator<E> implements Iterator<E> {
+public final class MultiIterator<E> implements Iterator<E> {
 	private Iterator<Iterator<? extends E>> iteratorIterator;
 	private Iterator<? extends E> iterator;
 

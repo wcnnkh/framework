@@ -2,7 +2,6 @@ package scw.mvc.resource;
 
 import java.util.Arrays;
 
-import scw.core.PropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
@@ -11,6 +10,7 @@ import scw.mvc.MVCUtils;
 import scw.mvc.Request;
 import scw.mvc.http.HttpRequest;
 import scw.net.http.Method;
+import scw.util.value.property.PropertyFactory;
 
 public class DefaultResourceFactory implements ResourceFactory {
 	private static Logger logger = LoggerUtils.getLogger(DefaultResourceFactory.class);

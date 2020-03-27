@@ -9,18 +9,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import scw.beans.BeanFactory;
 import scw.core.Destroy;
-import scw.core.PropertyFactory;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XTime;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.value.property.PropertyFactory;
 
 public final class ValueWiredManager implements Destroy {
 	private static Logger logger = LoggerUtils.getLogger(ValueWiredManager.class);
-	private static final int DEFAULT_REFRESH_PERIOD = StringUtils
-			.parseInt(SystemPropertyUtils.getProperty("value.wired.refresh.period"), 60);
+	private static final int DEFAULT_REFRESH_PERIOD = GlobalPropertyFactory.getInstance().getValue("value.wired.refresh.period", Integer.class, 60);
 	private ConcurrentHashMap<Object, ObjectValueWired> taskMap = new ConcurrentHashMap<Object, ObjectValueWired>();
 	private Timer timer = new Timer(getClass().getName());
 	private PropertyFactory propertyFactory;

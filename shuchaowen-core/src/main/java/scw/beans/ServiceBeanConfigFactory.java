@@ -2,8 +2,8 @@ package scw.beans;
 
 import scw.beans.annotation.Service;
 import scw.beans.property.ValueWiredManager;
-import scw.core.PropertyFactory;
 import scw.core.utils.ClassUtils;
+import scw.util.value.property.PropertyFactory;
 
 /**
  * 扫描service注解

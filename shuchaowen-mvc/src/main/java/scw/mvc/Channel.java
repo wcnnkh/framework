@@ -5,10 +5,9 @@ import scw.core.parameter.ParameterFactory;
 import scw.logger.LogService;
 import scw.mvc.beans.ChannelBeanFactory;
 import scw.util.attribute.Attributes;
-import scw.util.value.Value;
 import scw.util.value.ValueFactory;
 
-public interface Channel extends LogService, Attributes<String, Object>, ParameterFactory<ParameterConfig>, ValueFactory<String, Value>, ChannelBeanFactory {
+public interface Channel extends LogService, Attributes<String, Object>, ParameterFactory<ParameterConfig>, ValueFactory<String>, ChannelBeanFactory {
 	long getCreateTime();
 
 	<T extends Request> T getRequest();

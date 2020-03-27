@@ -4,7 +4,7 @@ import java.io.File;
 
 import scw.core.Constants;
 import scw.core.Converter;
-import scw.core.utils.SystemPropertyUtils;
+import scw.core.GlobalPropertyFactory;
 import scw.data.ExpiredCache;
 import scw.data.ExpiredCacheFactory;
 import scw.serializer.NoTypeSpecifiedSerializer;
@@ -34,6 +34,6 @@ public class AutoRefreshFileExpiredCacheFactory extends FileExpiredCacheFactory 
 	}
 	
 	public static ExpiredCacheFactory create(String cacheDirectorySuffix, Converter<String, ?> converter){
-		return new AutoRefreshFileExpiredCacheFactory(SystemPropertyUtils.getTempDirectoryPath() + File.separator + cacheDirectorySuffix, converter);
+		return new AutoRefreshFileExpiredCacheFactory(GlobalPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix, converter);
 	}
 }

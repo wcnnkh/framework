@@ -13,12 +13,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.lang.NotSupportException;
 import scw.orm.ColumnFactory;
 import scw.orm.Filter;
@@ -40,7 +40,7 @@ public final class SqlORMUtils {
 	};
 
 	static {
-		String sqlMappingOperationsName = SystemPropertyUtils.getProperty("orm.sql.mapper");
+		String sqlMappingOperationsName = GlobalPropertyFactory.getInstance().getString("orm.sql.mapper");
 		if (StringUtils.isEmpty(sqlMappingOperationsName)) {
 			Collection<Filter> filters = new LinkedList<Filter>();
 			filters.addAll(InstanceUtils.autoNewInstancesBySystemProperty(Filter.class, "orm.sql.filters",

@@ -10,9 +10,9 @@ import org.apache.tomcat.websocket.server.WsSci;
 
 import scw.application.ApplicationConfigUtils;
 import scw.beans.annotation.Configuration;
-import scw.core.PropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
+import scw.util.value.property.PropertyFactory;
 
 @Configuration
 public class WsServletContainerInitializerConfiguration implements ServletContainerInitializerConfiguration{

@@ -5,8 +5,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import scw.beans.annotation.Bean;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XTime;
 import scw.io.IOUtils;
 
@@ -16,8 +16,8 @@ public class DefaultUploadService implements UploadService {
 	private String rootUrl;
 
 	public DefaultUploadService(String rootPath, String rootUrl) {
-		this.rootPath = StringUtils.isEmpty(rootPath) ? SystemPropertyUtils.getWorkPath()
-				: SystemPropertyUtils.format(rootPath);
+		this.rootPath = StringUtils.isEmpty(rootPath) ? GlobalPropertyFactory.getInstance().getWorkPath()
+				: GlobalPropertyFactory.getInstance().format(rootPath, true);
 		this.rootUrl = rootUrl == null ? "" : rootUrl;
 	}
 

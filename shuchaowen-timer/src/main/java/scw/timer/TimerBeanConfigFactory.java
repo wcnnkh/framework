@@ -14,7 +14,6 @@ import scw.beans.SimpleBeanConfiguration;
 import scw.beans.annotation.Configuration;
 import scw.beans.property.ValueWiredManager;
 import scw.core.Init;
-import scw.core.PropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
@@ -22,6 +21,7 @@ import scw.timer.annotation.Crontab;
 import scw.timer.annotation.Schedule;
 import scw.timer.support.SimpleCrontabConfig;
 import scw.timer.support.SimpleTimerTaskConfig;
+import scw.util.value.property.PropertyFactory;
 
 @Configuration
 public class TimerBeanConfigFactory extends AbstractBeanConfiguration implements SimpleBeanConfiguration {

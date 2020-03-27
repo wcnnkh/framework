@@ -8,36 +8,38 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import scw.core.Constants;
-import scw.core.PropertyFactory;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.io.resource.ResourceUtils;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 import scw.util.SimpleKeyValuePair;
+import scw.util.value.StringValue;
+import scw.util.value.property.NotSupportEnumerationPropertyFactory;
+import scw.util.value.property.PropertyFactory;
 
 public class LoggerLevelUtils {
 	private static final LinkedList<KeyValuePair<String, Level>> LOGGER_LEVEL_LIST = new LinkedList<KeyValuePair<String, Level>>();
-	public static final PropertyFactory PROPERTY_FACTORY = new PropertyFactory() {
+	public static final PropertyFactory PROPERTY_FACTORY = new NotSupportEnumerationPropertyFactory() {
 
-		public String getProperty(String key) {
+		public scw.util.value.Value get(String key) {
 			String value = null;
 			if (key.equalsIgnoreCase("default.logger.level")) {
 				value = LoggerLevelUtils.getDefaultLevel().name();
 			} else if (key.equalsIgnoreCase("logger.rootPath")) {
-				value = SystemPropertyUtils.getWorkPath();
+				value = GlobalPropertyFactory.getInstance().getWorkPath();
 			}
-			return value == null ? Constants.PROPERTY_FACTORY.getProperty(key) : value;
-		}
+			return value == null ? Constants.PROPERTY_FACTORY.get(key) : new StringValue(value);
+		};
 	};
 
 	private static final Level DEFAULT_LEVEL;
 
 	static {
-		String levelName = SystemPropertyUtils.getProperty("scw.logger.level");
+		String levelName = GlobalPropertyFactory.getInstance().getString("scw.logger.level");
 		DEFAULT_LEVEL = StringUtils.isEmpty(levelName) ? Level.INFO : Level.valueOf(levelName);
 
-		String loggerEnablePropertiePath = SystemPropertyUtils.getProperty("scw.logger.level.config");
+		String loggerEnablePropertiePath = GlobalPropertyFactory.getInstance().getString("scw.logger.level.config");
 		if (loggerEnablePropertiePath == null) {
 			loggerEnablePropertiePath = "/logger-level.properties";
 		}

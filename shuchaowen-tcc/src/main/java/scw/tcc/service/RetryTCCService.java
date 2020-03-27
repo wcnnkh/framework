@@ -9,8 +9,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import scw.beans.annotation.InitMethod;
+import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceFactory;
-import scw.core.utils.SystemPropertyUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.serializer.FileManager;
@@ -44,7 +44,7 @@ public final class RetryTCCService implements TCCService, scw.core.Destroy {
 	public void init() throws UnsupportedEncodingException {
 		String logPath = System.getProperty("java.io.tmpdir");
 		logPath += File.separator + "TCC_"
-				+ SystemPropertyUtils.getSystemOnlyId();
+				+ GlobalPropertyFactory.getInstance().getSystemOnlyId();
 		fileManager = new FileManager(logPath);
 		logger.debug("logPath=" + logPath);
 

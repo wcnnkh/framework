@@ -1,8 +1,8 @@
 package scw.logger;
 
+import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.util.FormatUtils;
 
 public final class LoggerFactory {
@@ -12,7 +12,7 @@ public final class LoggerFactory {
 	};
 
 	private static String[] getSupperLoggerFactory() {
-		String value = SystemPropertyUtils.getProperty("scw.logger.factory");
+		String value = GlobalPropertyFactory.getInstance().getString("scw.logger.factory");
 		return StringUtils.isEmpty(value)
 				? new String[] { "scw.logger.log4j.Log4jLoggerFactory", "scw.logger.log4j2.Log4j2LoggerFactory" }
 				: StringUtils.commonSplit(value);

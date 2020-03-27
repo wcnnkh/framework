@@ -11,9 +11,9 @@ import java.net.URLConnection;
 
 import scw.core.Assert;
 import scw.core.Converter;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.lang.Nullable;
 
 /**
@@ -70,10 +70,10 @@ public final class ResourceUtils {
 	/** Special separator between WAR URL and jar part on Tomcat. */
 	public static final String WAR_URL_SEPARATOR = "*/";
 
-	private static final ResourceLookup RESOURCE_LOOKUP = new DefaultResourceLookup(SystemPropertyUtils.getWorkPath(),
-			false);
-	private static final ResourceOperations RESOURCE_OPERATIONS = new SystemPropertyMultiSuffixResourceOperations(
-			RESOURCE_LOOKUP);
+	private static final ResourceLookup RESOURCE_LOOKUP = new DefaultResourceLookup(GlobalPropertyFactory.getInstance().getWorkPath(),
+			false, GlobalPropertyFactory.getInstance());
+	private static final ResourceOperations RESOURCE_OPERATIONS = new PropertyFactoryMultiSuffixResourceOperations(
+			RESOURCE_LOOKUP, GlobalPropertyFactory.getInstance());
 
 	public static final ResourceOperations getResourceOperations() {
 		return RESOURCE_OPERATIONS;

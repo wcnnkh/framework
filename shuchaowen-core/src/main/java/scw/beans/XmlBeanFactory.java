@@ -107,8 +107,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 			super.init();
 			initMethod(nodeList);
 		} catch (Exception e) {
-			logger.error(e, "初始化异常");
-			throw new BeansException();
+			throw new BeansException("初始化异常", e);
 		}
 	}
 

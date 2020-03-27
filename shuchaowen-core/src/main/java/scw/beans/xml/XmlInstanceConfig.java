@@ -3,11 +3,11 @@ package scw.beans.xml;
 import java.lang.reflect.Constructor;
 
 import scw.beans.BeanUtils;
-import scw.core.PropertyFactory;
 import scw.core.instance.InstanceConfig;
 import scw.core.instance.InstanceFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
+import scw.util.value.property.PropertyFactory;
 
 public class XmlInstanceConfig implements InstanceConfig {
 	private InstanceFactory instanceFactory;

@@ -5,7 +5,7 @@ import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.PropertyFactory;
+import scw.util.value.property.PropertyFactory;
 
 
 public final class ConfigurationActionExceptionHandlerChain extends DefaultActionExceptionHandlerChain{

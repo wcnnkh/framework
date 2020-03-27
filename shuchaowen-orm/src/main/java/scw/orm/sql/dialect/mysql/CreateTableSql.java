@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.utils.MultiIterator;
 import scw.core.utils.StringUtils;
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
@@ -22,6 +21,7 @@ import scw.orm.sql.dialect.SqlType;
 import scw.orm.sql.dialect.SqlTypeFactory;
 import scw.orm.sql.enums.IndexMethod;
 import scw.orm.sql.enums.IndexOrder;
+import scw.util.MultiIterator;
 
 public class CreateTableSql extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;

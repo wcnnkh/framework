@@ -1,12 +1,11 @@
 package scw.data.memcached;
 
-import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
+import scw.core.GlobalPropertyFactory;
 
 public final class MemcachedUtils {
 	private MemcachedUtils(){};
 	
 	public static boolean startingFlushAll(){
-		return StringUtils.parseBoolean(SystemPropertyUtils.getProperty("memcached.starting.flush"));
+		return GlobalPropertyFactory.getInstance().getBooleanValue("memcached.starting.flush");
 	}
 }

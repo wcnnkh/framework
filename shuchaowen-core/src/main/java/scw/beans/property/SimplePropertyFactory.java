@@ -9,11 +9,13 @@ import java.util.Map.Entry;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.core.PropertyFactory;
-import scw.core.utils.SystemPropertyUtils;
 import scw.lang.AlreadyExistsException;
+import scw.util.value.DefaultValueDefinition;
+import scw.util.value.StringValue;
+import scw.util.value.Value;
+import scw.util.value.property.AbstractMapPropertyFactory;
 
-public class SimplePropertyFactory implements PropertyFactory {
+public class SimplePropertyFactory extends AbstractMapPropertyFactory<Property>  {
 	private Map<String, Property> propertyMap = new HashMap<String, Property>();
 	private ArrayList<Properties> propertiesList = new ArrayList<Properties>();
 
@@ -50,9 +52,13 @@ public class SimplePropertyFactory implements PropertyFactory {
 		return propertiesList;
 	}
 
-	public String getProperty(String key) {
-		Property property = propertyMap.get(key);
-		return property == null ? SystemPropertyUtils.getProperty(key)
-				: property.getValue();
+	@Override
+	protected Map<String, Property> getMap() {
+		return propertyMap;
+	}
+
+	@Override
+	protected Value createValue(Property value) {
+		return new StringValue(value.getValue(), DefaultValueDefinition.DEFAULT_VALUE_DEFINITION);
 	}
 }

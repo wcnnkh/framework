@@ -608,5 +608,4 @@ public abstract class CollectionUtils {
 			}
 		};
 	}
-
 }

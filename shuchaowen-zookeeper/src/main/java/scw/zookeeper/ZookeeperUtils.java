@@ -10,7 +10,7 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
 
 import scw.core.Constants;
-import scw.core.utils.SystemPropertyUtils;
+import scw.core.GlobalPropertyFactory;
 import scw.io.resource.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -42,12 +42,12 @@ public final class ZookeeperUtils {
 		}
 
 		Properties properties = new Properties();
-		File file = new File(SystemPropertyUtils.getWorkPath() + File.separator + "zk_data");
+		File file = new File(GlobalPropertyFactory.getInstance().getWorkPath() + File.separator + "zk_data");
 		if (!file.exists()) {
 			file.mkdir();
 		}
 		properties.setProperty("dataDir", file.getPath());
-		file = new File(SystemPropertyUtils.getWorkPath() + File.separator + "zk_logs");
+		file = new File(GlobalPropertyFactory.getInstance().getWorkPath() + File.separator + "zk_logs");
 		if (!file.exists()) {
 			file.mkdir();
 		}

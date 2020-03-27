@@ -7,24 +7,21 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-import scw.core.PropertyFactory;
 import scw.core.StringFormat;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.FormatterException;
 import scw.core.utils.PlaceholderFormatAppend;
 import scw.core.utils.StringAppend;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XTime;
+import scw.util.value.property.PropertyFactory;
 
 public final class FormatUtils {
 	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";
-
+	private static final String DEFAULT_PLACEHOLDER = "{}";
+	
 	private FormatUtils() {
 	};
-
-	private static final String DEFAULT_PLACEHOLDER = StringUtils
-			.toString(SystemPropertyUtils.getProperty("scw.format.placeholder"), "{}");
 
 	public static String formatPlaceholder(Object text, String placeholder, Object... args) {
 		StringBuilder sb = new StringBuilder();
@@ -119,45 +116,37 @@ public final class FormatUtils {
 	public static String dateFormat(Date date, String formatter) {
 		return new SimpleDateFormat(formatter).format(date);
 	}
-
-	public static String format(String text, final PropertyFactory propertyFactory, boolean supportEL) {
+	
+	public static String formatEL(String text, PropertyFactory propertyFactory){
+		return StringFormat.format(text, "${", "}", propertyFactory);
+	}
+	
+	public static String formatEL(String text, Map<?, ?> map){
+		return StringFormat.format(text, "${", "}", map);
+	}
+	
+	public static String format(String text, PropertyFactory propertyFactory){
+		return StringFormat.format(text, "{", "}", propertyFactory);
+	}
+	
+	public static String format(String text, Map<?, ?> map){
+		return StringFormat.format(text, "{", "}", map);
+	}
+	
+	public static String format(String text, PropertyFactory propertyFactory, boolean supportEL) {
 		String newText = text;
 		if (supportEL) {
-			StringFormat stringFormat = new StringFormat("${", "}") {
-
-				public String getProperty(String key) {
-					return propertyFactory.getProperty(key);
-				}
-			};
-
-			newText = stringFormat.format(newText);
+			newText = formatEL(newText, propertyFactory);
 		}
-
-		StringFormat stringFormat = new StringFormat("{", "}") {
-
-			public String getProperty(String key) {
-				return propertyFactory.getProperty(key);
-			}
-		};
-		return stringFormat.format(newText);
+		return format(newText, propertyFactory);
 	}
-
-	public static String format(String text, PropertyFactory propertyFactory) {
-		return format(text, propertyFactory, false);
-	}
-
-	public static String format(String text, final Map<?, ?> propertyMap, boolean supportEL) {
-		return format(text, new PropertyFactory() {
-
-			public String getProperty(String key) {
-				Object value = propertyMap.get(key);
-				return value == null ? null : value.toString();
-			}
-		}, supportEL);
-	}
-
-	public static String format(String text, final Map<?, ?> propertyMap) {
-		return format(text, propertyMap, false);
+	
+	public static String format(String text, Map<?, ?> map, boolean supportEL) {
+		String newText = text;
+		if (supportEL) {
+			newText = formatEL(newText, map);
+		}
+		return newText = format(newText, map);
 	}
 
 	public static void loggerAppend(Appendable appendable, String time, String level, String tag,

@@ -72,7 +72,7 @@ public final class ClassUtils {
 	 */
 	private static final Map<String, Class<?>> commonClassCache = new HashMap<String, Class<?>>(32);
 
-	private static final ScanningPackage SCANNING_PACKAGE = SystemPropertyUtils.isBoolean("scw.scanning.cache", true)? new CacheScanningPackage():new ScanningPackage();
+	private static final ScanningPackage SCANNING_PACKAGE = new CacheScanningPackage();
 	
 	static {
 		primitiveWrapperTypeMap.put(Boolean.class, boolean.class);

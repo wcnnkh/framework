@@ -16,7 +16,6 @@ import scw.beans.BeanUtils;
 import scw.beans.annotation.Proxy;
 import scw.beans.auto.AutoBeanUtils;
 import scw.beans.property.ValueWiredManager;
-import scw.core.PropertyFactory;
 import scw.core.instance.AutoInstanceConfig;
 import scw.core.instance.InstanceConfig;
 import scw.core.reflect.FieldDefinition;
@@ -27,6 +26,7 @@ import scw.core.utils.XUtils;
 import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.util.value.property.PropertyFactory;
 
 public final class XmlBeanDefinition implements BeanDefinition {
 	private Logger logger = LoggerFactory.getLogger(XmlBeanDefinition.class);

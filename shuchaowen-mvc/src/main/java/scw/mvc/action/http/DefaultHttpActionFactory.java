@@ -2,12 +2,12 @@ package scw.mvc.action.http;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.PropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionFactory;
+import scw.util.value.property.PropertyFactory;
 
 public final class DefaultHttpActionFactory implements ActionFactory {
 	private ActionFactory actionFactory;

@@ -7,8 +7,8 @@ import org.apache.tomcat.JarScannerCallback;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 
 import scw.beans.annotation.Configuration;
-import scw.core.PropertyFactory;
 import scw.embed.EmbeddedUtils;
+import scw.util.value.property.PropertyFactory;
 
 /**
  * tomcat8以上

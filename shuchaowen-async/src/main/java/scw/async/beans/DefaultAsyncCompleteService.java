@@ -6,8 +6,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import scw.core.Destroy;
+import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceFactory;
-import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.TypeUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -37,7 +37,7 @@ public final class DefaultAsyncCompleteService implements AsyncCompleteService,
 	private InstanceFactory instanceFactory;
 
 	public DefaultAsyncCompleteService(InstanceFactory instanceFactory) {
-		this(instanceFactory, SystemPropertyUtils.getTempDirectoryPath());
+		this(instanceFactory, GlobalPropertyFactory.getInstance().getTempDirectoryPath());
 	}
 
 	public DefaultAsyncCompleteService(InstanceFactory instanceFactory,
@@ -48,7 +48,7 @@ public final class DefaultAsyncCompleteService implements AsyncCompleteService,
 
 	private void init(String logPath) {
 		logPath += File.separator + "AsyncComplate_"
-				+ SystemPropertyUtils.getSystemOnlyId();
+				+ GlobalPropertyFactory.getInstance().getSystemOnlyId();
 		logger.info("异步确认日志目录 ：{}", logPath);
 		fileManager = new FileManager(logPath);
 

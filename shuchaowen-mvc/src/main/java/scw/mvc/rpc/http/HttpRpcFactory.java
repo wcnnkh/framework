@@ -5,8 +5,8 @@ import java.util.Arrays;
 import scw.aop.Filter;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.PropertyFactory;
 import scw.mvc.rpc.RPCProxyFactory;
+import scw.util.value.property.PropertyFactory;
 
 public class HttpRpcFactory extends HttpRpcProxy implements RPCProxyFactory {
 	private static final long serialVersionUID = 1L;

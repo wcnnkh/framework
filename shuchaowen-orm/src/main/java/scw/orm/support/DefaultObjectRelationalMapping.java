@@ -5,9 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import scw.core.utils.MultiIterator;
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
+import scw.util.MultiIterator;
 
 @SuppressWarnings("unchecked")
 public final class DefaultObjectRelationalMapping implements ObjectRelationalMapping {

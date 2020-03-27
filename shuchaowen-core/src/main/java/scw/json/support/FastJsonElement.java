@@ -2,18 +2,20 @@ package scw.json.support;
 
 import java.lang.reflect.Type;
 
+import scw.json.AbstractJsonElement;
+import scw.json.JsonArray;
+import scw.json.JsonObject;
+import scw.util.value.Value;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONAware;
 import com.alibaba.fastjson.parser.Feature;
 
-import scw.json.AbstractJsonElement;
-import scw.json.JsonArray;
-import scw.json.JsonObject;
-
 public final class FastJsonElement extends AbstractJsonElement implements JSONAware {
 	private String text;
 
-	public FastJsonElement(String text) {
+	public FastJsonElement(String text, Value defaultValue) {
+		super(defaultValue);
 		this.text = text;
 	}
 

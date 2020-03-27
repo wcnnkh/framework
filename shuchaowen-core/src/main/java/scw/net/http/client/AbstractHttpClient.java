@@ -8,8 +8,8 @@ import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.Assert;
 import scw.core.Constants;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.lang.StringCodecUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -22,7 +22,7 @@ import scw.net.http.client.exception.HttpClientException;
 import scw.net.http.client.exception.HttpClientResourceAccessException;
 
 public abstract class AbstractHttpClient implements HttpClient {
-	static final String DEFAULT_CHARSET_NAME = StringUtils.toString(SystemPropertyUtils.getProperty("scw.http.client.default.charset.name"), Constants.DEFAULT_CHARSET_NAME);
+	static final String DEFAULT_CHARSET_NAME = StringUtils.toString(GlobalPropertyFactory.getInstance().getString("scw.http.client.default.charset.name"), Constants.DEFAULT_CHARSET_NAME);
 	
 	protected Logger logger = LoggerUtils.getLogger(getClass());
 	private ClientHttpInputMessageErrorHandler clientHttpInputMessageErrorHandler = new DefaultClientHttpInputMessageErrorHandler();

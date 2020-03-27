@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.SimpleNoArgsInstanceFactory;
@@ -28,7 +29,7 @@ public final class ORMUtils {
 	 * 默认对象主键的连接符
 	 */
 	public static final char PRIMARY_KEY_CONNECTOR_CHARACTER = StringUtils
-			.parseChar(SystemPropertyUtils.getProperty("orm.primary.key.connector.character"), ':');
+			.parseChar(GlobalPropertyFactory.getInstance().getString("orm.primary.key.connector.character"), ':');
 	private static final ObjectOperations OBJECT_OPERATIONS;
 	private static final ColumnFactory COLUMN_FACTORY;
 	private static final Mapper MAPPER;

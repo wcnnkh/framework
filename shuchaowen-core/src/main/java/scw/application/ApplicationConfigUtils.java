@@ -1,8 +1,8 @@
 package scw.application;
 
-import scw.core.PropertyFactory;
-import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
+import scw.core.GlobalPropertyFactory;
+import scw.util.value.Value;
+import scw.util.value.property.PropertyFactory;
 
 public final class ApplicationConfigUtils {
 	private ApplicationConfigUtils() {
@@ -41,14 +41,15 @@ public final class ApplicationConfigUtils {
 	}
 
 	public static String getPackageName(PropertyFactory propertyFactory, String configName) {
-		return StringUtils.toString(propertyFactory.getProperty(configName), getRootPackage());
+		Value value = propertyFactory.get(configName);
+		return value == null? getRootPackage():value.getAsString();
 	}
 
 	public static String getRootPackage() {
-		return SystemPropertyUtils.getProperty("scw.root.package");
+		return GlobalPropertyFactory.getInstance().getString("scw.root.package");
 	}
 
 	public static void setRootPackage(String packageName) {
-		SystemPropertyUtils.setPrivateProperty("scw.root.package", packageName);
+		GlobalPropertyFactory.getInstance().put("scw.root.package", packageName);
 	}
 }

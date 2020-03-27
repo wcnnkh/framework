@@ -7,16 +7,14 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import scw.core.Destroy;
-import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
+import scw.core.GlobalPropertyFactory;
 import scw.data.cas.CAS;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public final class MemoryDataManager implements Destroy {
 	// 单位：秒
-	private static final long DEFAULT_CLEAR_PERIOD = StringUtils
-			.parseLong(SystemPropertyUtils.getProperty("memory.temporary.cache.clear.period"), 60);
+	private static final long DEFAULT_CLEAR_PERIOD = GlobalPropertyFactory.getInstance().getValue("memory.temporary.cache.clear.period", Long.class, 60L);
 	private static Logger logger = LoggerFactory.getLogger(MemoryDataManager.class);
 
 	private final ConcurrentHashMap<String, MemoryData> cacheMap = new ConcurrentHashMap<String, MemoryData>();

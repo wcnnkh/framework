@@ -21,7 +21,6 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.NumberUtils;
-import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
@@ -38,9 +37,10 @@ import scw.util.value.AbstractValueFactory;
 import scw.util.value.DefaultValueDefinition;
 import scw.util.value.StringValue;
 import scw.util.value.Value;
+import scw.util.value.ValueUtils;
 
 public abstract class AbstractChannel extends
-		AbstractValueFactory<String, Value> implements Channel, Destroy {
+		AbstractValueFactory<String> implements Channel, Destroy {
 	private final long createTime;
 	private final JSONSupport jsonSupport;
 	private final ChannelBeanFactory channelBeanFactory;
@@ -116,10 +116,10 @@ public abstract class AbstractChannel extends
 	}
 
 	protected Value parseValue(String value) {
-		return new StringValue(value);
+		return new StringValue(value, getDefaultValue());
 	}
 
-	public Value getDefaultValue() {
+	protected Value getDefaultValue() {
 		return DefaultValueDefinition.DEFAULT_VALUE_DEFINITION;
 	};
 
@@ -238,7 +238,7 @@ public abstract class AbstractChannel extends
 									.getType()) : parameterConfig
 							.getGenericType());
 			if (value == null) {
-				return StringParse.defaultParse(defaultValue.value(),
+				return ValueUtils.parse(defaultValue.value(),
 						parameterConfig.getGenericType());
 			}
 			return value;
@@ -308,5 +308,10 @@ public abstract class AbstractChannel extends
 		}
 
 		return NumberUtils.converPrimitive(bigDecimal, type);
+	}
+	
+	@Override
+	protected Value getDefaultValue(String key) {
+		return DefaultValueDefinition.DEFAULT_VALUE_DEFINITION;
 	}
 }

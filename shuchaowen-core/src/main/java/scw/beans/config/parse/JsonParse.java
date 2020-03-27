@@ -6,12 +6,12 @@ import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.beans.property.AbstractCharsetNameValueFormat;
 import scw.core.Constants;
-import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
 import scw.io.resource.ResourceUtils;
+import scw.json.JSONUtils;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
-import scw.json.JSONUtils;
+import scw.util.value.property.PropertyFactory;
 
 /**
  * 将内容解析为json
@@ -29,7 +29,7 @@ public final class JsonParse extends AbstractCharsetNameValueFormat implements C
 		super(charsetName);
 	}
 
-	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset)
+	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
 		String content = ResourceUtils.getResourceOperations().getFileContent(filePath, charset);
 		if (JsonObject.class.isAssignableFrom(fieldDefinition.getField().getType())) {

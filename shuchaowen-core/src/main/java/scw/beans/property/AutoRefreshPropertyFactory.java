@@ -1,5 +1,7 @@
 package scw.beans.property;
 
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -10,14 +12,15 @@ import java.util.TimerTask;
 import org.w3c.dom.NodeList;
 
 import scw.core.Destroy;
-import scw.core.PropertyFactory;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.util.FormatUtils;
+import scw.util.value.property.PropertyFactory;
+import scw.util.value.property.StringValuePropertyFactory;
 
-public final class AutoRefreshPropertyFactory implements PropertyFactory, Destroy {
+public final class AutoRefreshPropertyFactory extends StringValuePropertyFactory implements Destroy {
 	private static final int DEFAULT_REFRESH_PERIOD = StringUtils
-			.parseInt(SystemPropertyUtils.getProperty("property.refresh.period"), 60);
+			.parseInt(GlobalPropertyFactory.getInstance().getString("property.refresh.period"), 60);
 	private volatile Map<String, String> propertyMap;
 	private PropertyFactory propertyFactory;
 	private final Timer timer = new Timer(getClass().getName());
@@ -53,11 +56,11 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory, Destro
 	private void refreshValue(Property property, String value) {
 		synchronized (propertyMap) {
 			if (property.isSystem()) {
-				SystemPropertyUtils.setSystemProperty(property.getName(), value);
+				GlobalPropertyFactory.getInstance().put(property.getName(), value);
 				propertyMap.remove(property.getName());
 			} else {
 				propertyMap.put(property.getName(), value);
-				SystemPropertyUtils.clearSystemProperty(property.getName());
+				GlobalPropertyFactory.getInstance().remove(property.getValue());
 			}
 		}
 	}
@@ -67,7 +70,7 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory, Destro
 		if (first) {
 			refreshValue(property, value);
 		} else {
-			String oldValue = getProperty(property.getName());
+			String oldValue = getString(property.getName());
 			if (!StringUtils.isAeqB(value, oldValue)) {
 				FormatUtils.info(AutoRefreshPropertyFactory.class,
 						"Property {} changes the \noriginal value\n{}\n----------to----------\n{}", property.getName(),
@@ -90,13 +93,12 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory, Destro
 		}
 	}
 
-	public String getProperty(String key) {
+	public String getValue(String key) {
 		if (propertyMap == null || propertyMap.isEmpty()) {
-			return SystemPropertyUtils.getProperty(key);
+			return null;
 		}
 
-		String value = propertyMap.get(key);
-		return value == null ? SystemPropertyUtils.getProperty(key) : value;
+		return propertyMap.get(key);
 	}
 
 	private final class RefreshPropertiesTask extends TimerTask {
@@ -121,5 +123,9 @@ public final class AutoRefreshPropertyFactory implements PropertyFactory, Destro
 			task.cancel();
 		}
 		timer.cancel();
+	}
+
+	public Enumeration<String> enumerationKeys() {
+		return Collections.enumeration(propertyMap.keySet());
 	}
 }

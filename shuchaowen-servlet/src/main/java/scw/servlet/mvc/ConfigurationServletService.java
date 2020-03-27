@@ -4,15 +4,14 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import scw.beans.BeanFactory;
-import scw.core.PropertyFactory;
-import scw.core.utils.StringUtils;
 import scw.servlet.ServletUtils;
+import scw.util.value.property.PropertyFactory;
 
 public final class ConfigurationServletService implements ServletService{
 	private final ServletService service;
 	
 	public ConfigurationServletService(BeanFactory beanFactory, PropertyFactory propertyFactory){
-		this.service = getServletService(beanFactory, propertyFactory, ServletUtils.isAsyncSupport() && StringUtils.parseBoolean(propertyFactory.getProperty("servlet.async")));
+		this.service = getServletService(beanFactory, propertyFactory, ServletUtils.isAsyncSupport() && propertyFactory.getBooleanValue("servlet.async"));
 	}
 	
 	public void service(ServletRequest servletRequest,

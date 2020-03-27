@@ -1,8 +1,8 @@
 package scw.beans;
 
 import scw.beans.property.ValueWiredManager;
-import scw.core.PropertyFactory;
 import scw.lang.NotSupportException;
+import scw.util.value.property.PropertyFactory;
 
 public abstract class AbstractInterfaceBeanDefinition extends AbstractBeanDefinition {
 

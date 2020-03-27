@@ -7,7 +7,7 @@ import scw.beans.AbstractBeanConfiguration;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.property.ValueWiredManager;
-import scw.core.PropertyFactory;
+import scw.util.value.property.PropertyFactory;
 
 public class DefaultXmlBeanConfigFactory extends AbstractBeanConfiguration {
 

@@ -63,4 +63,8 @@ public final class EmptyResult implements ResultMapping {
 	public <T> T get(SqlMapper sqlMapper, Class<T> clazz) {
 		return null;
 	}
+
+	public long getRowNum() {
+		return 0;
+	}
 }

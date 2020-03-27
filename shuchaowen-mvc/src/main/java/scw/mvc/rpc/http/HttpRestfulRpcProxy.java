@@ -9,7 +9,6 @@ import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.core.Constants;
-import scw.core.PropertyFactory;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.InstanceFactory;
 import scw.core.utils.ArrayUtils;
@@ -19,6 +18,7 @@ import scw.mvc.rpc.RpcConstants;
 import scw.mvc.rpc.support.ObjectRpcMessageConvert;
 import scw.net.http.HttpHeaders;
 import scw.serializer.Serializer;
+import scw.util.value.property.PropertyFactory;
 
 public class HttpRestfulRpcProxy implements Filter, RpcConstants {
 	private static final String[] DEFAULT_SHARE_HEADERS = new String[] { HttpHeaders.CONTENT_TYPE,

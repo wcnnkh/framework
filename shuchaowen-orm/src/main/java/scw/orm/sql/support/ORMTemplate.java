@@ -17,6 +17,7 @@ import scw.core.Pagination;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.IteratorCallback;
+import scw.core.utils.IteratorCallback.Row;
 import scw.core.utils.StringUtils;
 import scw.orm.IteratorMapping;
 import scw.orm.MappingContext;
@@ -366,6 +367,45 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 
 			public boolean processRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
 				return iterator.iteratorCallback(new DefaultResultMapping(rs));
+			}
+		});
+	}
+	
+	public <T> void query(final Class<T> tableClass, final IteratorCallback<Row<T>> iterator) {
+		Sql sql = getSqlDialect().toSelectByIdSql(tableClass, getSqlMapper().getTableName(tableClass), null);
+		query(sql, new IteratorCallback<Row<ResultMapping>>() {
+
+			public boolean iteratorCallback(Row<ResultMapping> row) {
+				T t = row.getValue().get(tableClass);
+				if (t == null) {
+					return true;
+				}
+
+				return iterator.iteratorCallback(new Row<T>(row.getIndex(), t));
+			}
+		});
+	}
+	
+	public <T> void query(Sql sql, final Class<T> type,
+			final IteratorCallback<Row<T>> iterator) {
+		query(sql, new IteratorCallback<Row<ResultMapping>>() {
+
+			public boolean iteratorCallback(Row<ResultMapping> row) {
+				T t = row.getValue().get(type);
+				if (t == null) {
+					return true;
+				}
+
+				return iterator.iteratorCallback(new Row<T>(row.getIndex(), t));
+			}
+		});
+	}
+	
+	public void query(Sql sql, final IteratorCallback<Row<ResultMapping>> iterator) {
+		query(sql, new RowCallback() {
+
+			public boolean processRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
+				return iterator.iteratorCallback(new Row<ResultMapping>(rowNum, new DefaultResultMapping(rs)));
 			}
 		});
 	}

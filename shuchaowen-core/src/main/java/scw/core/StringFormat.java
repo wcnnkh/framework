@@ -1,8 +1,11 @@
 package scw.core;
 
-import scw.core.utils.StringUtils;
+import java.util.Map;
 
-public abstract class StringFormat implements PropertyFactory {
+import scw.core.utils.StringUtils;
+import scw.util.value.property.PropertyFactory;
+
+public abstract class StringFormat {
 	private final char[] prefix;
 	private final char[] suffix;
 
@@ -37,8 +40,9 @@ public abstract class StringFormat implements PropertyFactory {
 				String value = null;
 				while (begin < chars.length) {
 					if (suffixEq(chars, begin)) {
-						value = getProperty(
-								new String(chars, tempBegin + prefix.length, begin - tempBegin - prefix.length));
+						value = getValue(new String(chars, tempBegin
+								+ prefix.length, begin - tempBegin
+								- prefix.length));
 						begin += suffix.length;
 						break;
 					} else {
@@ -77,5 +81,63 @@ public abstract class StringFormat implements PropertyFactory {
 			}
 		}
 		return true;
+	}
+
+	public static String format(String text, String prefix, String suffix,
+			PropertyFactory propertyFactory) {
+		if(StringUtils.isEmpty(text)){
+			return text;
+		}
+		
+		return new StringFormat.PropertyFactoryStringFormat(prefix, suffix,
+				propertyFactory).format(text);
+	}
+	
+	public static String format(String text, String prefix, String suffix, Map<?, ?> map){
+		if(StringUtils.isEmpty(text)){
+			return text;
+		}
+		
+		return new StringFormat.MapStringFormat(prefix, suffix, map).format(text);
+	}
+
+	protected abstract String getValue(String key);
+
+	public static class PropertyFactoryStringFormat extends StringFormat {
+		private PropertyFactory propertyFactory;
+
+		public PropertyFactoryStringFormat(String prefix, String suffix,
+				PropertyFactory propertyFactory) {
+			super(prefix, suffix);
+			this.propertyFactory = propertyFactory;
+		}
+
+		@Override
+		protected String getValue(String key) {
+			if (propertyFactory == null) {
+				return null;
+			}
+			
+			return propertyFactory.getString(key);
+		}
+	}
+
+	public static class MapStringFormat extends StringFormat {
+		private Map<?, ?> map;
+
+		public MapStringFormat(String prefix, String suffix, Map<?, ?> map) {
+			super(prefix, suffix);
+			this.map = map;
+		}
+
+		@Override
+		protected String getValue(String key) {
+			if (map == null) {
+				return null;
+			}
+
+			Object v = map.get(map);
+			return v == null ? null : v.toString();
+		}
 	}
 }

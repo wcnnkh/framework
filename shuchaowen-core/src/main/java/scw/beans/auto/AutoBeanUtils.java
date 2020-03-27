@@ -8,14 +8,13 @@ import scw.beans.BeanFactory;
 import scw.beans.BeansException;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
-import scw.core.PropertyFactory;
-import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.FormatUtils;
+import scw.util.value.property.PropertyFactory;
 
 public final class AutoBeanUtils {
 	private static Logger logger = LoggerUtils.getLogger(AutoBeanUtils.class);
@@ -27,22 +26,6 @@ public final class AutoBeanUtils {
 			AutoImpl autoConfig, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
 		LinkedList<AutoBeanService> autoBeanServices = new LinkedList<AutoBeanService>();
-		String value = propertyFactory.getProperty("beans.auto.names");
-		if (!StringUtils.isEmpty(value)) {
-			value = FormatUtils.format(value, propertyFactory, true);
-			String[] names = StringUtils.commonSplit(value);
-			if (!ArrayUtils.isEmpty(names)) {
-				for (String name : names) {
-					if (StringUtils.isEmpty(name)) {
-						continue;
-					}
-
-					autoBeanServices.add((AutoBeanService) beanFactory
-							.getInstance(name));
-				}
-			}
-		}
-
 		if (autoConfig != null) {
 			for (String name : autoConfig.serviceName()) {
 				if (StringUtils.isEmpty(name)) {

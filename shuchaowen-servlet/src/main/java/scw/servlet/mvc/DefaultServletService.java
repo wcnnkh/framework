@@ -9,13 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
-import scw.core.PropertyFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.service.ChannelService;
 import scw.servlet.mvc.http.HttpServletChannelFactory;
+import scw.util.value.property.PropertyFactory;
 
 @Bean(proxy = false)
 public class DefaultServletService implements ServletService {

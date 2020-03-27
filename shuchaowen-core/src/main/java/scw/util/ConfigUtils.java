@@ -21,17 +21,18 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.core.Converter;
-import scw.core.PropertyFactory;
 import scw.core.StringFormat;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.core.utils.XMLUtils;
 import scw.io.resource.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.value.Value;
+import scw.util.value.ValueUtils;
+import scw.util.value.property.PropertyFactory;
 
 public final class ConfigUtils {
 	private ConfigUtils(){};
@@ -44,11 +45,11 @@ public final class ConfigUtils {
 		for (Entry<String, String> entry : map.entrySet()) {
 			Field field = ReflectionUtils.getField(clz, entry.getKey(), true);
 			if (field == null) {
-				continue;
+				continue;	
 			}
 
 			ReflectionUtils.setFieldValue(clz, field, t,
-					StringParse.defaultParse(entry.getValue(), field.getGenericType()));
+					ValueUtils.parse(entry.getValue(), field.getGenericType()));
 		}
 		return t;
 	}
@@ -238,8 +239,7 @@ public final class ConfigUtils {
 				name = name.substring(0, 1).toLowerCase() + name.substring(1);
 			}
 
-			String value = propertyFactory
-					.getProperty(StringUtils.isEmpty(propertyPrefix) ? name : (propertyPrefix + name));
+			Value value = propertyFactory.get(StringUtils.isEmpty(propertyPrefix) ? name : (propertyPrefix + name));
 			if (value == null && nameList != null) {
 				Iterator<String> iterator = nameList.iterator();
 				while (iterator.hasNext()) {
@@ -254,7 +254,7 @@ public final class ConfigUtils {
 						if (asName.equals(name)) {
 							for (String n : names) {
 								value = propertyFactory
-										.getProperty(StringUtils.isEmpty(propertyPrefix) ? n : (propertyPrefix + n));
+										.get(StringUtils.isEmpty(propertyPrefix) ? n : (propertyPrefix + n));
 								if (value != null) {
 									break;
 								}
@@ -280,7 +280,7 @@ public final class ConfigUtils {
 			logger.info("Property {} on target {} set value {}", name, instance.getClass().getName(), value);
 
 			try {
-				method.invoke(instance, StringParse.defaultParse(value, parameterType));
+				method.invoke(instance, value.getAsObject(parameterType));
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalArgumentException e) {
@@ -384,7 +384,7 @@ public final class ConfigUtils {
 			logger.info(LOG_MESSAGE, name, instance.getClass().getName(), value);
 
 			try {
-				method.invoke(instance, StringParse.defaultParse(value, parameterType));
+				method.invoke(instance, ValueUtils.parse(value, parameterType));
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalArgumentException e) {

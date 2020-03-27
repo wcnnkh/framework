@@ -1,13 +1,14 @@
 package scw.io.resource;
 
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
+import scw.util.value.property.PropertyFactory;
 
-public class SystemPropertyMultiSuffixResourceOperations extends AbstractMultiSuffixResourceOperations {
+public class PropertyFactoryMultiSuffixResourceOperations extends AbstractMultiSuffixResourceOperations {
 	private static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
 	private static final String RESOURCE_SUFFIX = "scw_res_suffix";
 	private static volatile String defaultSuffixs;
-
+	private PropertyFactory propertyFactory;
+	
 	public static void setResourceSuffix(String suffix) {
 		if (StringUtils.isEmpty(suffix)) {
 			return;
@@ -16,12 +17,13 @@ public class SystemPropertyMultiSuffixResourceOperations extends AbstractMultiSu
 		defaultSuffixs = new String(suffix);
 	}
 
-	public SystemPropertyMultiSuffixResourceOperations(ResourceLookup resourceLookup) {
+	public PropertyFactoryMultiSuffixResourceOperations(ResourceLookup resourceLookup, PropertyFactory propertyFactory) {
 		super(resourceLookup);
+		this.propertyFactory = propertyFactory;
 	}
 
 	protected String getProperty(String key) {
-		return SystemPropertyUtils.getProperty(key);
+		return propertyFactory.getString(key);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import scw.core.Pagination;
 import scw.core.utils.IteratorCallback;
+import scw.core.utils.IteratorCallback.Row;
 import scw.sql.Sql;
 
 public interface ORMOperations {
@@ -80,11 +81,17 @@ public interface ORMOperations {
 
 	<T> Pagination<List<T>> select(Class<T> type, int page, int limit, Sql sql);
 
-	<T> void iterator(final Class<T> tableClass, final IteratorCallback<T> iterator);
+	<T> void iterator(Class<T> tableClass, IteratorCallback<T> iterator);
 
-	void iterator(Sql sql, final IteratorCallback<ResultMapping> iterator);
+	void iterator(Sql sql, IteratorCallback<ResultMapping> iterator);
 
 	<T> void iterator(Sql sql, Class<T> type, IteratorCallback<T> iterator);
+	
+	<T> void query(Class<T> tableClass, IteratorCallback<Row<T>> iterator);
+
+	void query(Sql sql, IteratorCallback<Row<ResultMapping>> iterator);
+
+	<T> void query(Sql sql, Class<T> type, IteratorCallback<Row<T>> iterator);
 
 	TableChange getTableChange(Class<?> tableClass);
 

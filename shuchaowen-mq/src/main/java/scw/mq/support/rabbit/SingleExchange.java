@@ -7,8 +7,7 @@ import java.util.concurrent.TimeoutException;
 import scw.async.beans.DefaultAsyncCompleteService;
 import scw.async.beans.annotation.AsyncComplete;
 import scw.core.Consumer;
-import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
+import scw.core.GlobalPropertyFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mq.amqp.AmqpQueueConfig;
@@ -23,8 +22,7 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
 public class SingleExchange<T> implements Exchange<T> {
-	private static final long RETRY_TIME_CYCLE = StringUtils
-			.parseLong(SystemPropertyUtils.getProperty("rabbit.retry.time.cycle"), 1000L);
+	private static final long RETRY_TIME_CYCLE = GlobalPropertyFactory.getInstance().getValue("rabbit.retry.time.cycle", Long.class, 1000L);
 	private static final String LOG_MESSAGE_SUFFIX = "{} milliseconds to retry";
 	protected static Logger logger = LoggerUtils.getLogger(SingleExchange.class);
 	private final SingleExchangeChannelFactory channelFactory;

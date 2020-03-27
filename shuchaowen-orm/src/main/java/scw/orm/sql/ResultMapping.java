@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface ResultMapping extends Serializable {
 	public static final EmptyResult EMPTY_RESULT = new EmptyResult();
-
+	
 	<T> T get(Class<T> clazz, TableNameMapping tableNameMapping);
 
 	<T> T get(Class<T> clazz, String tableName);

@@ -3,7 +3,7 @@ package scw.application;
 import scw.beans.BeanFactory;
 import scw.core.Destroy;
 import scw.core.Init;
-import scw.core.PropertyFactory;
+import scw.util.value.property.PropertyFactory;
 
 public interface Application extends Init, Destroy{
 	/**

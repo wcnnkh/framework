@@ -3,13 +3,13 @@ package scw.json.support;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONAware;
-import com.alibaba.fastjson.JSONObject;
-
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONAware;
+import com.alibaba.fastjson.JSONObject;
 
 public final class FastJsonObject extends JsonObject implements JSONAware {
 	private JSONObject jsonObject;
@@ -34,7 +34,7 @@ public final class FastJsonObject extends JsonObject implements JSONAware {
 
 	public JsonElement get(String key) {
 		String text = jsonObject.getString(key);
-		return text == null ? null : new FastJsonElement(text);
+		return text == null ? null : new FastJsonElement(text, getDefaultValue(key));
 	}
 
 	public Collection<String> keys() {

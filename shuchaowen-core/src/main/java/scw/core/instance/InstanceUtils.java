@@ -3,14 +3,11 @@ package scw.core.instance;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import scw.core.PropertyFactory;
-import scw.core.SystemPropertyFactory;
+import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.annotation.DefaultValue;
 import scw.core.annotation.ParameterName;
@@ -24,14 +21,15 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.io.resource.ResourceUtils;
 import scw.lang.NotSupportException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.FormatUtils;
+import scw.util.value.StringValue;
 import scw.util.value.Value;
-import scw.util.value.ValueFactory;
+import scw.util.value.ValueUtils;
+import scw.util.value.property.PropertyFactory;
 
 public final class InstanceUtils {
 	private static Logger logger = LoggerUtils.getLogger(InstanceUtils.class);
@@ -54,7 +52,8 @@ public final class InstanceUtils {
 		}
 
 		if (instanceFactory == null) {
-			throw new NotSupportException("Instances that do not call constructors are not supported");
+			throw new NotSupportException(
+					"Instances that do not call constructors are not supported");
 		}
 
 		NO_ARGS_INSTANCE_FACTORY = instanceFactory;
@@ -62,13 +61,13 @@ public final class InstanceUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T newInstance(String name, boolean invokeConstructor) {
-		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY.getInstance(name)
-				: NO_ARGS_INSTANCE_FACTORY.getInstance(name));
+		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY
+				.getInstance(name) : NO_ARGS_INSTANCE_FACTORY.getInstance(name));
 	}
 
 	public static <T> T newInstance(Class<T> type, boolean invokeConstructor) {
-		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY.getInstance(type)
-				: NO_ARGS_INSTANCE_FACTORY.getInstance(type));
+		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY
+				.getInstance(type) : NO_ARGS_INSTANCE_FACTORY.getInstance(type));
 	}
 
 	/**
@@ -138,8 +137,10 @@ public final class InstanceUtils {
 	 * @param params
 	 * @return
 	 */
-	public static <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
-		return REFLECTION_INSTANCE_FACTORY.getInstance(name, parameterTypes, params);
+	public static <T> T getInstance(String name, Class<?>[] parameterTypes,
+			Object... params) {
+		return REFLECTION_INSTANCE_FACTORY.getInstance(name, parameterTypes,
+				params);
 	}
 
 	/**
@@ -150,8 +151,10 @@ public final class InstanceUtils {
 	 * @param params
 	 * @return
 	 */
-	public static <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
-		return REFLECTION_INSTANCE_FACTORY.getInstance(type, parameterTypes, params);
+	public static <T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
+			Object... params) {
+		return REFLECTION_INSTANCE_FACTORY.getInstance(type, parameterTypes,
+				params);
 	}
 
 	/**
@@ -164,11 +167,12 @@ public final class InstanceUtils {
 	 * @throws NoSuchMethodException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(Class<T> type, boolean isPublic, Map<String, Object> parameterMap)
-			throws NoSuchMethodException {
+	public static <T> T newInstance(Class<T> type, boolean isPublic,
+			Map<String, Object> parameterMap) throws NoSuchMethodException {
 		if (CollectionUtils.isEmpty(parameterMap)) {
 			try {
-				return ReflectionUtils.getConstructor(type, isPublic).newInstance();
+				return ReflectionUtils.getConstructor(type, isPublic)
+						.newInstance();
 			} catch (InstantiationException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalAccessException e) {
@@ -181,7 +185,8 @@ public final class InstanceUtils {
 		}
 
 		int size = parameterMap.size();
-		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
+		for (Constructor<?> constructor : isPublic ? type.getConstructors()
+				: type.getDeclaredConstructors()) {
 			if (size == constructor.getParameterTypes().length) {
 				String[] names = ParameterUtils.getParameterName(constructor);
 				Object[] args = new Object[size];
@@ -217,31 +222,38 @@ public final class InstanceUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T autoNewInstance(Class<T> clazz, InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory) throws Exception {
-		InstanceConfig instanceConfig = new AutoInstanceConfig(instanceFactory, propertyFactory, clazz);
+	public static <T> T autoNewInstance(Class<T> clazz,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory)
+			throws Exception {
+		InstanceConfig instanceConfig = new AutoInstanceConfig(instanceFactory,
+				propertyFactory, clazz);
 		if (instanceConfig.getConstructor() == null) {
 			return null;
 		}
 
-		return (T) instanceConfig.getConstructor().newInstance(instanceConfig.getArgs());
+		return (T) instanceConfig.getConstructor().newInstance(
+				instanceConfig.getArgs());
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T autoNewInstance(String name) throws Exception {
-		return (T) autoNewInstance(ClassUtils.forName(name, ClassUtils.getDefaultClassLoader()));
+		return (T) autoNewInstance(ClassUtils.forName(name,
+				ClassUtils.getDefaultClassLoader()));
 	}
 
-	public static <T> T autoNewInstance(Class<T> clazz, InstanceFactory instanceFactory) throws Exception {
-		return autoNewInstance(clazz, instanceFactory, SystemPropertyFactory.INSTANCE);
+	public static <T> T autoNewInstance(Class<T> clazz,
+			InstanceFactory instanceFactory) throws Exception {
+		return autoNewInstance(clazz, instanceFactory,
+				GlobalPropertyFactory.getInstance());
 	}
 
 	public static <T> T autoNewInstance(Class<T> clazz) throws Exception {
 		return autoNewInstance(clazz, REFLECTION_INSTANCE_FACTORY);
 	}
 
-	public static <T> T autoNewInstanceBySystemProperty(Class<? extends T> clazz, String key, T defaultValue) {
-		String name = SystemPropertyUtils.getProperty(key);
+	public static <T> T autoNewInstanceBySystemProperty(
+			Class<? extends T> clazz, String key, T defaultValue) {
+		String name = GlobalPropertyFactory.getInstance().getString(key);
 		if (StringUtils.isEmpty(name)) {
 			return defaultValue;
 		}
@@ -254,7 +266,8 @@ public final class InstanceUtils {
 		}
 
 		if (clz.isAssignableFrom(clazz)) {
-			FormatUtils.warn(InstanceUtils.class, "{} not is assignable from {}", clz, clazz);
+			FormatUtils.warn(InstanceUtils.class,
+					"{} not is assignable from {}", clz, clazz);
 			return defaultValue;
 		}
 
@@ -269,9 +282,9 @@ public final class InstanceUtils {
 		return clazz.cast(bean);
 	}
 
-	public static <T> Collection<? extends T> autoNewInstancesBySystemProperty(Class<T> clazz, String key,
-			Collection<? extends T> defaultValues) {
-		String names = SystemPropertyUtils.getProperty(key);
+	public static <T> Collection<? extends T> autoNewInstancesBySystemProperty(
+			Class<T> clazz, String key, Collection<? extends T> defaultValues) {
+		String names = GlobalPropertyFactory.getInstance().getString(key);
 		if (StringUtils.isEmpty(names)) {
 			return defaultValues;
 		}
@@ -280,14 +293,16 @@ public final class InstanceUtils {
 		for (String name : StringUtils.commonSplit(names)) {
 			Class<?> clz;
 			try {
-				clz = ClassUtils.forName(name, ClassUtils.getDefaultClassLoader());
+				clz = ClassUtils.forName(name,
+						ClassUtils.getDefaultClassLoader());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 				continue;
 			}
 
 			if (clz.isAssignableFrom(clazz)) {
-				FormatUtils.warn(InstanceUtils.class, "{} not is assignable from {}", clz, clazz);
+				FormatUtils.warn(InstanceUtils.class,
+						"{} not is assignable from {}", clz, clazz);
 				continue;
 			}
 
@@ -305,37 +320,44 @@ public final class InstanceUtils {
 	}
 
 	private static boolean isProerptyType(ParameterConfig parameterConfig) {
-		PropertyParameter propertyParameter = parameterConfig.getAnnotation(PropertyParameter.class);
+		PropertyParameter propertyParameter = parameterConfig
+				.getAnnotation(PropertyParameter.class);
 		if (propertyParameter == null) {
 			Class<?> type = parameterConfig.getType();
-			return ClassUtils.isPrimitiveOrWrapper(type) || type == String.class || type.isArray() || type.isEnum()
-					|| Class.class == type || BigDecimal.class == type || BigInteger.class == type
-					|| Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type);
+			return ValueUtils.isCommonType(type) || type.isArray()
+					|| Collection.class.isAssignableFrom(type)
+					|| Map.class.isAssignableFrom(type);
 		} else {
 			return propertyParameter.value();
 		}
 	}
 
-	private static String getDefaultName(Class<?> clazz, ParameterConfig parameterConfig) {
+	private static String getDefaultName(Class<?> clazz,
+			ParameterConfig parameterConfig) {
 		return clazz.getClass().getName() + "." + parameterConfig.getName();
 	}
 
-	private static String getProperty(PropertyFactory propertyFactory,
-			ValueFactory<String, ? extends Value> valueFactory, Class<?> clazz, ParameterConfig parameterConfig) {
-		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
-		String value = propertyFactory
-				.getProperty(parameterName == null ? getDefaultName(clazz, parameterConfig) : parameterName.value());
+	private static Value getProperty(PropertyFactory propertyFactory,
+			Class<?> clazz, ParameterConfig parameterConfig) {
+		ParameterName parameterName = parameterConfig
+				.getAnnotation(ParameterName.class);
+		Value value = propertyFactory
+				.get(parameterName == null ? getDefaultName(clazz,
+						parameterConfig) : parameterName.value());
 		if (value == null) {
-			DefaultValue defaultValue = parameterConfig.getAnnotation(DefaultValue.class);
+			DefaultValue defaultValue = parameterConfig
+					.getAnnotation(DefaultValue.class);
 			if (defaultValue != null) {
-				value = defaultValue.value();
+				value = new StringValue(defaultValue.value());
 			}
 		}
 
 		if (value != null) {
-			ResourceParameter resourceParameter = parameterConfig.getAnnotation(ResourceParameter.class);
+			ResourceParameter resourceParameter = parameterConfig
+					.getAnnotation(ResourceParameter.class);
 			if (resourceParameter != null) {
-				if (!ResourceUtils.getResourceOperations().isExist(value)) {
+				if (!ResourceUtils.getResourceOperations().isExist(
+						value.getAsString())) {
 					return null;
 				}
 			}
@@ -343,16 +365,20 @@ public final class InstanceUtils {
 		return value;
 	}
 
-	private static String getInstanceName(InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			Class<?> clazz, ParameterConfig parameterConfig) {
-		ParameterName parameterName = parameterConfig.getAnnotation(ParameterName.class);
-		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
-			String value = propertyFactory.getProperty(parameterName.value());
+	private static String getInstanceName(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Class<?> clazz,
+			ParameterConfig parameterConfig) {
+		ParameterName parameterName = parameterConfig
+				.getAnnotation(ParameterName.class);
+		if (parameterName != null
+				&& StringUtils.isNotEmpty(parameterName.value())) {
+			Value value = propertyFactory.get(parameterName.value());
 			if (value == null) {
 				return null;
 			}
 
-			return instanceFactory.isInstance(value) ? null : value;
+			return instanceFactory.isInstance(value.getAsString()) ? null
+					: value.getAsString();
 		} else {
 			if (instanceFactory.isInstance(parameterConfig.getType())) {
 				return parameterConfig.getType().getName();
@@ -367,16 +393,17 @@ public final class InstanceUtils {
 		}
 	}
 
-	public static boolean isAuto(InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			ValueFactory<String, ? extends Value> valueFactory, Class<?> clazz, ParameterConfig[] parameterConfigs,
-			Object logFirstParameter) {
+	public static boolean isAuto(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Class<?> clazz,
+			ParameterConfig[] parameterConfigs, Object logFirstParameter) {
 		if (parameterConfigs.length == 0) {
 			return true;
 		}
 
 		for (int i = 0; i < parameterConfigs.length; i++) {
 			ParameterConfig parameterConfig = parameterConfigs[i];
-			boolean require = !AnnotationUtils.isNullable(parameterConfig, false);
+			boolean require = !AnnotationUtils.isNullable(parameterConfig,
+					false);
 			if (!require) {
 				continue;
 			}
@@ -385,8 +412,9 @@ public final class InstanceUtils {
 			// 是否是属性而不是bean
 			boolean b = true;
 			if (isProperty) {
-				String value = getProperty(propertyFactory, valueFactory, clazz, parameterConfig);
-				if (StringUtils.isEmpty(value)) {
+				Value value = getProperty(propertyFactory, clazz,
+						parameterConfig);
+				if (value == null) {
 					b = false;
 				}
 			} else {
@@ -394,7 +422,8 @@ public final class InstanceUtils {
 						|| parameterConfig.getType() == PropertyFactory.class) {
 					b = true;
 				} else {
-					String name = getInstanceName(instanceFactory, propertyFactory, clazz, parameterConfig);
+					String name = getInstanceName(instanceFactory,
+							propertyFactory, clazz, parameterConfig);
 					if (name == null) {
 						b = false;
 					}
@@ -402,8 +431,9 @@ public final class InstanceUtils {
 			}
 
 			if (logger.isDebugEnabled()) {
-				logger.debug("{} parameter index {} is {} matching:{}", logFirstParameter, i,
-						isProperty ? "property" : "bean", b ? "success" : "fail");
+				logger.debug("{} parameter index {} is {} matching:{}",
+						logFirstParameter, i, isProperty ? "property" : "bean",
+						b ? "success" : "fail");
 			}
 
 			if (!b) {
@@ -413,8 +443,9 @@ public final class InstanceUtils {
 		return true;
 	}
 
-	public static Object[] getAutoArgs(InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			ValueFactory<String, ? extends Value> valueFactory, Class<?> clazz, ParameterConfig[] parameterConfigs) {
+	public static Object[] getAutoArgs(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Class<?> clazz,
+			ParameterConfig[] parameterConfigs) {
 		if (parameterConfigs.length == 0) {
 			return new Object[0];
 		}
@@ -422,14 +453,16 @@ public final class InstanceUtils {
 		Object[] args = new Object[parameterConfigs.length];
 		for (int i = 0; i < parameterConfigs.length; i++) {
 			ParameterConfig parameterConfig = parameterConfigs[i];
-			boolean require = !AnnotationUtils.isNullable(parameterConfig, false);
+			boolean require = !AnnotationUtils.isNullable(parameterConfig,
+					false);
 			if (isProerptyType(parameterConfig)) {
-				String value = getProperty(propertyFactory, valueFactory, clazz, parameterConfig);
-				if (require && StringUtils.isEmpty(value)) {
+				Value value = getProperty(propertyFactory, clazz,
+						parameterConfig);
+				if (require && value == null) {
 					return null;
 				}
 
-				args[i] = valueFactory.getObject(value, parameterConfig.getGenericType());
+				args[i] = value.getAsObject(parameterConfig.getGenericType());
 			} else {
 				if (parameterConfig.getType() == InstanceConfig.class) {
 					args[i] = instanceFactory;
@@ -441,8 +474,10 @@ public final class InstanceUtils {
 					continue;
 				}
 
-				String name = getInstanceName(instanceFactory, propertyFactory, clazz, parameterConfig);
-				args[i] = name == null ? null : instanceFactory.getInstance(name);
+				String name = getInstanceName(instanceFactory, propertyFactory,
+						clazz, parameterConfig);
+				args[i] = name == null ? null : instanceFactory
+						.getInstance(name);
 			}
 		}
 		return args;

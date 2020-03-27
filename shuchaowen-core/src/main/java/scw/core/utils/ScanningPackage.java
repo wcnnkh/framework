@@ -14,11 +14,12 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import scw.core.Constants;
+import scw.core.GlobalPropertyFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
 public class ScanningPackage {
-	protected static Logger logger = LoggerUtils.getConsoleLogger(ScanningPackage.class);
+	protected static Logger logger = LoggerUtils.getLogger(ScanningPackage.class);
 	
 	public Set<Class<?>> getClassList(String packageName,
 			ClassLoader classLoader, boolean initialize) {
@@ -159,7 +160,7 @@ public class ScanningPackage {
 	private Set<Class<?>> getClassesDirectoryList(ClassLoader classLoader,
 			boolean initialize) {
 		LinkedHashSet<Class<?>> list = new LinkedHashSet<Class<?>>();
-		String path = SystemPropertyUtils.getClassesDirectory();
+		String path = GlobalPropertyFactory.getInstance().getClassesDirectory();
 		if (path == null) {
 			return list;
 		}

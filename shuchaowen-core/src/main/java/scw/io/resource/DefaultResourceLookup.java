@@ -4,16 +4,19 @@ import java.io.InputStream;
 
 import scw.core.Consumer;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
+import scw.util.FormatUtils;
+import scw.util.value.property.PropertyFactory;
 
 public final class DefaultResourceLookup extends LocalResourceLookup {
 	/** Pseudo URL prefix for loading from the class path: "classpath:" */
 	private static final String CLASSPATH_URL_PREFIX = "classpath:";
 	private static final String CLASS_PATH_PREFIX_EL = "{classpath}";
+	private PropertyFactory propertyFactory;
 
 	public DefaultResourceLookup(String workPath,
-			boolean search) {
+			boolean search, PropertyFactory propertyFactory) {
 		super(workPath, search);
+		this.propertyFactory = propertyFactory;
 	}
 
 	public boolean lookup(String resource, Consumer<InputStream> consumer) {
@@ -21,7 +24,7 @@ public final class DefaultResourceLookup extends LocalResourceLookup {
 			return false;
 		}
 
-		String text = SystemPropertyUtils.format(resource);
+		String text = FormatUtils.format(resource, propertyFactory, true);
 		if (StringUtils.startsWithIgnoreCase(text, CLASSPATH_URL_PREFIX)
 				|| StringUtils.startsWithIgnoreCase(text, CLASS_PATH_PREFIX_EL)) {
 			String eqPath = text.replaceAll("\\\\", "/");

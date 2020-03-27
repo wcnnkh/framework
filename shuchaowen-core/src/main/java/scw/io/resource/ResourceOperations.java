@@ -6,7 +6,7 @@ import java.util.Properties;
 
 import scw.core.Consumer;
 import scw.core.Converter;
-import scw.core.PropertyFactory;
+import scw.util.value.property.PropertyFactory;
 
 public interface ResourceOperations extends ResourceLookup{
 	boolean isExist(String resource);

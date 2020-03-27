@@ -10,7 +10,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import scw.application.CommonApplication;
-import scw.core.utils.SystemPropertyUtils;
+import scw.core.GlobalPropertyFactory;
 import scw.servlet.ServletUtils;
 
 public class DispatcherServlet extends GenericServlet {
@@ -60,7 +60,7 @@ public class DispatcherServlet extends GenericServlet {
 		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(
 				servletConfig);
 		if (getCommonApplication() == null) {
-			SystemPropertyUtils.setWorkPath(servletConfig.getServletContext()
+			GlobalPropertyFactory.getInstance().setWorkPath(servletConfig.getServletContext()
 					.getRealPath("/"));
 			this.commonApplication = new CommonApplication(
 					propertyFactory.getConfigXml());

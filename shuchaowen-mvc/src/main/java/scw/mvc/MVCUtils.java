@@ -14,7 +14,7 @@ import scw.application.ApplicationConfigUtils;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.Constants;
-import scw.core.PropertyFactory;
+import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.core.parameter.ParameterConfig;
 import scw.core.utils.ArrayUtils;
@@ -50,19 +50,20 @@ import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.attribute.Attributes;
 import scw.util.ip.IP;
+import scw.util.value.property.PropertyFactory;
 
 public final class MVCUtils implements MvcConstants {
 	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
 	public static final String REDIRECT_PREFIX = "redirect:";
 	public static final String JSONP_RESP_PREFIX = "(";
 	public static final String JSONP_RESP_SUFFIX = ");";
-	
+
 	private static final String[] IP_HEADERS = SystemPropertyUtils
 			.getArrayProperty(String.class, "mvc.ip.headers", new String[] {
 					"X-Real-Ip", "X-Forwarded-For" });
 	// 使用ip的模式 1表示使用第一个ip 2表示使用最后一个ip 其他表示原样返回
-	private static final int USE_IP_MODEL = StringUtils.parseInt(
-			SystemPropertyUtils.getProperty("mvc.ip.model"), 1);
+	private static final int USE_IP_MODEL = GlobalPropertyFactory.getInstance()
+			.getValue("mvc.ip.model", int.class, 1);
 	private static final boolean SUPPORT_SERVLET = ClassUtils
 			.isPresent("javax.servlet.Servlet");
 
@@ -219,7 +220,7 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static String getRPCPath(PropertyFactory propertyFactory) {
-		String path = propertyFactory.getProperty("mvc.http.rpc-path");
+		String path = propertyFactory.getString("mvc.http.rpc-path");
 		return StringUtils.isEmpty(path) ? "/rpc" : path;
 	}
 
@@ -259,7 +260,7 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static String getCharsetName(PropertyFactory propertyFactory) {
-		String charsetName = propertyFactory.getProperty("mvc.charsetName");
+		String charsetName = propertyFactory.getString("mvc.charsetName");
 		return StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME
 				: charsetName;
 	}
@@ -317,16 +318,16 @@ public final class MVCUtils implements MvcConstants {
 
 	// 默认开启跨域
 	public static boolean isSupportCorssDomain(PropertyFactory propertyFactory) {
-		return StringUtils.parseBoolean(
-				propertyFactory.getProperty("mvc.http.cross-domain"), true);
+		return propertyFactory.getValue("mvc.http.cross-domain", boolean.class,
+				true);
 	}
 
 	public static String getSourceRoot(PropertyFactory propertyFactory) {
-		return propertyFactory.getProperty("mvc.http.resource.root");
+		return propertyFactory.getString("mvc.http.resource.root");
 	}
 
 	public static String[] getResourcePaths(PropertyFactory propertyFactory) {
-		String arr = propertyFactory.getProperty("mvc.http.resource.path");
+		String arr = propertyFactory.getString("mvc.http.resource.path");
 		if (StringUtils.isEmpty(arr)) {
 			return null;
 		}
@@ -336,7 +337,7 @@ public final class MVCUtils implements MvcConstants {
 
 	public static String getHttpParameterActionKey(
 			PropertyFactory propertyFactory) {
-		String actionKey = propertyFactory.getProperty("mvc.http.actionKey");
+		String actionKey = propertyFactory.getString("mvc.http.actionKey");
 		return StringUtils.isEmpty(actionKey) ? "action" : actionKey;
 	}
 
@@ -496,8 +497,7 @@ public final class MVCUtils implements MvcConstants {
 
 	public static CorsConfigFactory getCorsConfigFactory(
 			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		String beanName = propertyFactory
-				.getProperty("mvc.cross-domain.factory");
+		String beanName = propertyFactory.getString("mvc.cross-domain.factory");
 		if (StringUtils.isEmpty(beanName)) {
 			return instanceFactory.isInstance(CorsConfigFactory.class) ? instanceFactory
 					.getInstance(CorsConfigFactory.class)
@@ -508,7 +508,7 @@ public final class MVCUtils implements MvcConstants {
 
 	public static RpcService getRpcService(PropertyFactory propertyFactory,
 			InstanceFactory instanceFactory) {
-		String beanName = propertyFactory.getProperty(RPC_SERVICE);
+		String beanName = propertyFactory.getString(RPC_SERVICE);
 		if (StringUtils.isEmpty(beanName)) {
 			if (instanceFactory.isInstance(RpcService.class)
 					|| instanceFactory.isSingleton(RpcService.class)) {
@@ -538,31 +538,28 @@ public final class MVCUtils implements MvcConstants {
 		return ApplicationConfigUtils.getPackageName(propertyFactory,
 				"mvc.annotation.scann");
 	}
-	
+
 	public static boolean isSupportCookieValue(PropertyFactory propertyFactory) {
-		return StringUtils.parseBoolean(propertyFactory
-				.getProperty("mvc.parameter.cookie"));
+		return propertyFactory.getBooleanValue("mvc.parameter.cookie");
 	}
-	
-	public static JSONSupport getJsonSupport(
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
+
+	public static JSONSupport getJsonSupport(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory) {
 		JSONSupport jsonSupport;
-		String jsonSupportBeanName = propertyFactory
-				.getProperty("mvc.json");
+		String jsonSupportBeanName = propertyFactory.getString("mvc.json");
 		if (StringUtils.isEmpty(jsonSupportBeanName)) {
 			jsonSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
 		} else {
-			jsonSupport = instanceFactory
-					.getInstance(jsonSupportBeanName);
+			jsonSupport = instanceFactory.getInstance(jsonSupportBeanName);
 		}
 		return jsonSupport;
 	}
 
 	public static String getJsonp(PropertyFactory propertyFactory) {
 		boolean enable = StringUtils.parseBoolean(
-				propertyFactory.getProperty("mvc.http.jsonp.enable"), true);
+				propertyFactory.getString("mvc.http.jsonp.enable"), true);
 		if (enable) {
-			String jsonp = propertyFactory.getProperty("mvc.http.jsonp");
+			String jsonp = propertyFactory.getString("mvc.http.jsonp");
 			return StringUtils.isEmpty(jsonp) ? "callback" : jsonp;
 		}
 		return null;

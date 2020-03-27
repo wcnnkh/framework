@@ -6,10 +6,10 @@ import scw.aop.Proxy;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.SimpleAutoBean;
 import scw.beans.property.ValueWiredManager;
-import scw.core.PropertyFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NotFoundException;
 import scw.lang.NotSupportException;
+import scw.util.value.property.PropertyFactory;
 
 public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 	private AutoBean autoBean;

@@ -8,13 +8,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.core.Destroy;
-import scw.core.PropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.embed.EmbeddedUtils;
 import scw.mvc.MVCUtils;
 import scw.servlet.ServletUtils;
 import scw.servlet.mvc.http.MyHttpServletResponse;
+import scw.util.value.property.PropertyFactory;
 
 public final class ShutdownHttpServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;

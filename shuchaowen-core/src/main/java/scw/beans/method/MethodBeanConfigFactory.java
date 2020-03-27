@@ -7,9 +7,8 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
 import scw.beans.property.ValueWiredManager;
-import scw.core.PropertyFactory;
 import scw.core.utils.ClassUtils;
-import scw.util.value.StringParseValueFactory;
+import scw.util.value.property.PropertyFactory;
 
 public class MethodBeanConfigFactory extends AbstractBeanConfiguration {
 	public MethodBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
@@ -22,8 +21,7 @@ public class MethodBeanConfigFactory extends AbstractBeanConfiguration {
 				}
 
 				BeanDefinition beanDefinition = new MethodBeanDefinition(valueWiredManager, beanFactory,
-						propertyFactory, method.getReturnType(), clz, method,
-						StringParseValueFactory.STRING_PARSE_VALUE_FACTORY);
+						propertyFactory, method.getReturnType(), clz, method);
 				addBean(beanDefinition);
 			}
 		}

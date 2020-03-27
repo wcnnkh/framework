@@ -9,9 +9,14 @@ import scw.lang.NestedRuntimeException;
 import scw.lang.NotSupportException;
 
 public abstract class AbstractValue implements Value {
-
-	public Value getDefaultValue() {
-		return DefaultValueDefinition.DEFAULT_VALUE_DEFINITION;
+	private final Value defaultValue;
+	
+	public AbstractValue(Value defaultValue){
+		this.defaultValue = defaultValue;
+	}
+	
+	protected Value getDefaultValue(){
+		return defaultValue;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -295,5 +300,10 @@ public abstract class AbstractValue implements Value {
 			return getDefaultValue().getAsNumber();
 		}
 		return new BigDecimal(v);
+	}
+	
+	@Override
+	public String toString() {
+		return getAsString();
 	}
 }

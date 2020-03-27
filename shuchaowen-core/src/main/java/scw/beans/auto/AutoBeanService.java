@@ -1,7 +1,7 @@
 package scw.beans.auto;
 
 import scw.beans.BeanFactory;
-import scw.core.PropertyFactory;
+import scw.util.value.property.PropertyFactory;
 
 public interface AutoBeanService {
 	AutoBean doService(Class<?> clazz, BeanFactory beanFactory,

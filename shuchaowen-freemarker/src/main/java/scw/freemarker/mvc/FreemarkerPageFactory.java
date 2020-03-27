@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import scw.core.Constants;
-import scw.core.utils.SystemPropertyUtils;
+import scw.core.GlobalPropertyFactory;
 import scw.net.MimeType;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
@@ -15,7 +15,7 @@ public class FreemarkerPageFactory extends AbstractFreemarkerPageFactory{
 	private final MimeType mimeType;
 
 	public FreemarkerPageFactory() throws IOException {
-		this(SystemPropertyUtils.getWorkPath());
+		this(GlobalPropertyFactory.getInstance().getWorkPath());
 	}
 
 	public FreemarkerPageFactory(String rootPath) throws IOException {

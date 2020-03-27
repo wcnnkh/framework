@@ -4,13 +4,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.core.utils.MultiIterator;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
 import scw.orm.sql.annotation.Counter;
+import scw.util.MultiIterator;
 
 public class SaveOrUpdateSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;

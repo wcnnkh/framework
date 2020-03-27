@@ -32,7 +32,6 @@ import scw.beans.property.ValueWired;
 import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanParameter;
 import scw.core.Init;
-import scw.core.PropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
 import scw.core.parameter.ParameterUtils;
@@ -47,6 +46,7 @@ import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.value.property.PropertyFactory;
 
 public final class BeanUtils {
 	private static Logger logger = LoggerUtils.getLogger(BeanUtils.class);
@@ -175,7 +175,7 @@ public final class BeanUtils {
 			throws Exception {
 		for (FieldDefinition field : fields) {
 			setBean(beanFactory, clz, obj, field);
-			setConfig(beanFactory, clz, obj, field);
+			setConfig(beanFactory, propertyFactory, clz, obj, field);
 		}
 
 		setValue(valueWiredManager, beanFactory, propertyFactory, clz, obj,
@@ -240,7 +240,7 @@ public final class BeanUtils {
 
 	public static Object[] getBeanMethodParameterArgs(
 			XmlBeanParameter[] beanParameters, InstanceFactory instanceFactory,
-			scw.core.PropertyFactory propertyFactory) throws Exception {
+			PropertyFactory propertyFactory) throws Exception {
 		Object[] args = new Object[beanParameters.length];
 		for (int i = 0; i < args.length; i++) {
 			XmlBeanParameter xmlBeanParameter = beanParameters[i];
@@ -250,7 +250,7 @@ public final class BeanUtils {
 		return args;
 	}
 
-	private static void setConfig(BeanFactory beanFactory, Class<?> clz,
+	private static void setConfig(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clz,
 			Object obj, FieldDefinition field) {
 		Config config = field.getAnnotation(Config.class);
 		if (config != null) {
@@ -261,7 +261,7 @@ public final class BeanUtils {
 						obj);
 
 				value = beanFactory.getInstance(config.parse()).parse(
-						beanFactory, field, config.value(), config.charset());
+						beanFactory, propertyFactory, field, config.value(), config.charset());
 				field.set(obj, value);
 			} catch (Exception e) {
 				throw new RuntimeException("config：clz=" + clz.getName()
@@ -517,36 +517,42 @@ public final class BeanUtils {
 			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
 			Class<? extends T> type, Collection<Class<?>> excludeTypes,
 			String key) {
-		String[] filters = StringUtils.commonSplit(propertyFactory
-				.getProperty(key));
-		if (!ArrayUtils.isEmpty(filters)) {
-			for (String name : filters) {
-				if (!instanceFactory.isInstance(name)) {
-					logger.warn("{}无法使用默认的方式实例化，请进行配置", name);
-					continue;
-				}
+		scw.util.value.Value value = propertyFactory.get(key);
+		if(value == null){
+			return ;
+		}
+		
+		String[] filters = value.getAsObject(String[].class);
+		if (ArrayUtils.isEmpty(filters)) {
+			return ;
+		}
+		
+		for (String name : filters) {
+			if (!instanceFactory.isInstance(name)) {
+				logger.warn("{}无法使用默认的方式实例化，请进行配置", name);
+				continue;
+			}
 
-				if (!instanceFactory.isSingleton(name)) {
-					logger.warn("{}不是一个单例，请进行配置", name);
-					continue;
-				}
+			if (!instanceFactory.isSingleton(name)) {
+				logger.warn("{}不是一个单例，请进行配置", name);
+				continue;
+			}
 
-				Object filter = instanceFactory.getInstance(name);
-				if (!CollectionUtils.isEmpty(excludeTypes)) {
-					for (Class<?> excludeType : excludeTypes) {
-						if (excludeType.isInstance(filter)) {
-							logger.debug("{}已被排除, excludeTypes={}", name,
-									Arrays.toString(excludeTypes.toArray()));
-							continue;
-						}
+			Object filter = instanceFactory.getInstance(name);
+			if (!CollectionUtils.isEmpty(excludeTypes)) {
+				for (Class<?> excludeType : excludeTypes) {
+					if (excludeType.isInstance(filter)) {
+						logger.debug("{}已被排除, excludeTypes={}", name,
+								Arrays.toString(excludeTypes.toArray()));
+						continue;
 					}
 				}
+			}
 
-				if (type.isInstance(filter)) {
-					beans.add((T) filter);
-				} else {
-					logger.warn("{}不是一个{}类型，无法使用", name, type);
-				}
+			if (type.isInstance(filter)) {
+				beans.add((T) filter);
+			} else {
+				logger.warn("{}不是一个{}类型，无法使用", name, type);
 			}
 		}
 	}

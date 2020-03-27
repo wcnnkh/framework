@@ -8,11 +8,11 @@ import java.util.Properties;
 
 import scw.core.Consumer;
 import scw.core.Converter;
-import scw.core.PropertyFactory;
-import scw.core.SystemPropertyFactory;
+import scw.core.GlobalPropertyFactory;
 import scw.io.IOUtils;
 import scw.lang.NotFoundException;
 import scw.util.FormatUtils;
+import scw.util.value.property.PropertyFactory;
 
 public abstract class AbstractResourceOperations implements ResourceOperations {
 
@@ -29,7 +29,7 @@ public abstract class AbstractResourceOperations implements ResourceOperations {
 	}
 
 	public Properties getProperties(String path, String charsetName) {
-		return getProperties(path, charsetName, SystemPropertyFactory.INSTANCE);
+		return getProperties(path, charsetName, GlobalPropertyFactory.getInstance());
 	}
 
 	public Properties getProperties(String path, PropertyFactory propertyFactory) {

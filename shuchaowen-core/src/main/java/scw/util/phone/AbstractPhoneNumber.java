@@ -2,8 +2,8 @@ package scw.util.phone;
 
 import java.io.Serializable;
 
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 
 public abstract class AbstractPhoneNumber implements PhoneNumber, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -11,12 +11,12 @@ public abstract class AbstractPhoneNumber implements PhoneNumber, Serializable {
 	 * 默认的区号 86代表中国
 	 */
 	static final String DEFAULT_AREA_CODE = StringUtils
-			.toString(SystemPropertyUtils.getProperty("default.phone.number.area.code"), "86");
+			.toString(GlobalPropertyFactory.getInstance().getString("default.phone.number.area.code"), "86");
 	/**
 	 * 默认的区号和号码的连接符
 	 */
 	static final String DEFAULT_CONNECTOR = StringUtils
-			.toString(SystemPropertyUtils.getProperty("default.phone.number.connector"), "-");;
+			.toString(GlobalPropertyFactory.getInstance().getString("default.phone.number.connector"), "-");;
 
 	/**
 	 * 获取区号和号码的连接符

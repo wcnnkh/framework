@@ -3,7 +3,7 @@ package scw.beans.auto;
 import scw.beans.AbstractBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.property.ValueWiredManager;
-import scw.core.PropertyFactory;
+import scw.util.value.property.PropertyFactory;
 
 public final class AutoBeanDefinition extends AbstractBeanDefinition {
 	private final AutoBean autoBean;

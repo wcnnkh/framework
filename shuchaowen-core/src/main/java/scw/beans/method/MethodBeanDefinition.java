@@ -10,28 +10,23 @@ import scw.beans.BeanUtils;
 import scw.beans.BeansException;
 import scw.beans.annotation.Bean;
 import scw.beans.property.ValueWiredManager;
-import scw.core.PropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.lang.NotSupportException;
-import scw.util.value.Value;
-import scw.util.value.ValueFactory;
+import scw.util.value.property.PropertyFactory;
 
 @SuppressWarnings("unchecked")
 public class MethodBeanDefinition extends AbstractBeanDefinition {
 	private Class<?> targetClazz;
 	private Method method;
-	private ValueFactory<String, ? extends Value> valueFactory;
 
 	public MethodBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> clazz, Class<?> targetClazz, Method method,
-			ValueFactory<String, ? extends Value> valueFactory) {
+			PropertyFactory propertyFactory, Class<?> clazz, Class<?> targetClazz, Method method) {
 		super(valueWiredManager, beanFactory, propertyFactory, clazz);
 		this.targetClazz = targetClazz;
 		this.method = method;
-		this.valueFactory = valueFactory;
 		init();
 		Bean bean = method.getAnnotation(Bean.class);
 		if (bean != null) {
@@ -45,7 +40,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 	}
 
 	public boolean isInstance() {
-		return InstanceUtils.isAuto(beanFactory, propertyFactory, valueFactory, getType(),
+		return InstanceUtils.isAuto(beanFactory, propertyFactory, getType(),
 				ParameterUtils.getParameterConfigs(method), method);
 	}
 
@@ -54,7 +49,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 			throw new NotSupportException("不支持的构造方式");
 		}
 
-		Object[] args = InstanceUtils.getAutoArgs(beanFactory, propertyFactory, valueFactory, getType(),
+		Object[] args = InstanceUtils.getAutoArgs(beanFactory, propertyFactory, getType(),
 				ParameterUtils.getParameterConfigs(method));
 		return (T) invoke(method, args);
 	}

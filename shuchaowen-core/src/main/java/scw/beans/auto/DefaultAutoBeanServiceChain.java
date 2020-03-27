@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import scw.beans.BeanFactory;
-import scw.core.PropertyFactory;
 import scw.core.utils.CollectionUtils;
+import scw.util.value.property.PropertyFactory;
 
 public class DefaultAutoBeanServiceChain extends AbstractAutoBeanServiceChain {
 	private Iterator<Class<? extends AutoBeanService>> iterator;

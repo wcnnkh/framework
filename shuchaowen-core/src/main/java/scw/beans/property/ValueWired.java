@@ -4,8 +4,8 @@ import java.lang.reflect.Modifier;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
-import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
+import scw.util.value.property.PropertyFactory;
 
 public final class ValueWired {
 	private final Object obj;

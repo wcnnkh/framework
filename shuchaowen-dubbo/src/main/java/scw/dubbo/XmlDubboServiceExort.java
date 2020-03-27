@@ -8,10 +8,10 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.BeanFactory;
 import scw.core.Init;
-import scw.core.PropertyFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.logger.SplitLineAppend;
+import scw.util.value.property.PropertyFactory;
 
 public class XmlDubboServiceExort implements Init {
 	private static Logger logger = LoggerUtils.getLogger(XmlDubboServiceExort.class);

@@ -10,11 +10,16 @@ import scw.json.JSONUtils;
 public class StringValue extends AbstractValue implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String value;
-
-	public StringValue(String value) {
-		this.value = value;
+	
+	public StringValue(String value){
+		this(value, DefaultValueDefinition.DEFAULT_VALUE_DEFINITION);
 	}
 
+	public StringValue(String value, Value defaultValue) {
+		super(defaultValue);
+		this.value = value;
+	}
+	
 	public String getAsString() {
 		return value;
 	}
@@ -28,7 +33,7 @@ public class StringValue extends AbstractValue implements Serializable {
 	}
 	
 	protected Value parseValue(String text){
-		return new StringValue(text);
+		return new StringValue(text, getDefaultValue());
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Configuration;
-import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -16,6 +15,7 @@ import scw.mvc.handler.HandlerChain;
 import scw.mvc.http.HttpRequest;
 import scw.net.MimeTypeUtils;
 import scw.net.http.Method;
+import scw.util.value.property.PropertyFactory;
 
 @Configuration(order=RPCHandler.ORDER)
 public final class RPCHandler implements Handler{

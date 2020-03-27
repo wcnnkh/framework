@@ -4,11 +4,11 @@ import java.util.Collection;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.mvc.handler.DefaultHandlerChain;
 import scw.mvc.handler.Handler;
 import scw.mvc.handler.HandlerChain;
+import scw.util.value.property.PropertyFactory;
 
 public final class ConfigurationChannelService extends
 		DefaultChannelService {
@@ -34,6 +34,6 @@ public final class ConfigurationChannelService extends
 
 	private static long getWarnExecuteTime(PropertyFactory propertyFactory) {
 		return StringUtils.parseLong(
-				propertyFactory.getProperty("mvc.warn-execute-time"), 100);
+				propertyFactory.getString("mvc.warn-execute-time"), 100);
 	}
 }

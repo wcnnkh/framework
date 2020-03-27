@@ -11,9 +11,9 @@ import java.util.TimerTask;
 
 import scw.core.Constants;
 import scw.core.Destroy;
+import scw.core.GlobalPropertyFactory;
 import scw.core.Init;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.data.ExpiredCache;
 import scw.io.FileUtils;
 import scw.logger.Logger;
@@ -35,7 +35,7 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 		this.exp = exp;
 		this.serializer = SerializerUtils.DEFAULT_SERIALIZER;
 		this.charsetName = Constants.DEFAULT_CHARSET_NAME;
-		this.cacheDirectory = SystemPropertyUtils.getTempDirectoryPath() + File.separator + getClass().getName();
+		this.cacheDirectory = GlobalPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + getClass().getName();
 	}
 
 	public FileCache(int exp, String cacheDirectory) {
@@ -271,7 +271,7 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 	}
 
 	public static ExpiredCache create(String cacheDirectorySuffix, int exp) {
-		return new FileCache(exp, SystemPropertyUtils.getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
+		return new FileCache(exp, GlobalPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
 	}
 
 	public void delete(Collection<String> keys) {

@@ -8,10 +8,10 @@ import scw.beans.auto.AutoBean;
 import scw.beans.auto.AutoBeanService;
 import scw.beans.auto.AutoBeanServiceChain;
 import scw.beans.auto.ProxyAutoBean;
-import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.mvc.rpc.annotation.Host;
 import scw.mvc.rpc.http.HttpRestfulRpcProxy;
+import scw.util.value.property.PropertyFactory;
 
 @Configuration
 public class RpcAutoBeanService implements AutoBeanService {
@@ -21,7 +21,7 @@ public class RpcAutoBeanService implements AutoBeanService {
 		// Host注解
 		Host host = clazz.getAnnotation(Host.class);
 		if (host != null) {
-			String proxyName = propertyFactory.getProperty("rpc.http.host.proxy");
+			String proxyName = propertyFactory.getString("rpc.http.host.proxy");
 			if (StringUtils.isEmpty(proxyName)) {
 				proxyName = HttpRestfulRpcProxy.class.getName();
 			}

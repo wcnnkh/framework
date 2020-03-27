@@ -11,7 +11,7 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Configuration;
 import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanConfiguration;
-import scw.core.PropertyFactory;
+import scw.util.value.property.PropertyFactory;
 
 @Configuration
 public class XmlDubboBeanConfigFactory extends AbstractBeanConfiguration implements XmlBeanConfiguration {

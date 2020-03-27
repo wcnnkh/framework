@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 import scw.beans.BeanFactory;
-import scw.core.PropertyFactory;
 import scw.core.annotation.AnnotationFactory;
 import scw.core.annotation.SimpleAnnotationFactory;
 import scw.core.instance.InstanceFactory;
@@ -13,6 +12,7 @@ import scw.security.authority.SimpleAuthorityManager;
 import scw.security.authority.http.HttpAuthority;
 import scw.security.authority.http.HttpAuthorityManager;
 import scw.security.authority.http.SimpleHttpAuthorityManager;
+import scw.util.value.property.PropertyFactory;
 
 public final class DefaultMultiHttpActionFactory extends MultiHttpActionFactory {
 	private SimpleAuthorityManager<HttpAuthority> httpAuthorityManager;

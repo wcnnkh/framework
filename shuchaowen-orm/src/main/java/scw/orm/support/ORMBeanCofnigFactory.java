@@ -7,9 +7,9 @@ import scw.beans.SimpleBeanConfiguration;
 import scw.beans.annotation.Configuration;
 import scw.beans.property.ValueWiredManager;
 import scw.core.Init;
-import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.orm.ORMUtils;
+import scw.util.value.property.PropertyFactory;
 
 @Configuration(order=Integer.MAX_VALUE)
 public class ORMBeanCofnigFactory extends AbstractBeanConfiguration implements SimpleBeanConfiguration {
@@ -26,7 +26,7 @@ public class ORMBeanCofnigFactory extends AbstractBeanConfiguration implements S
 		}
 
 		public void init() {
-			String ormScanPackageName = propertyFactory.getProperty("orm.scan");
+			String ormScanPackageName = propertyFactory.getString("orm.scan");
 			if (StringUtils.isNotEmpty(ormScanPackageName)) {
 				ORMUtils.registerCglibProxyTableBean(ormScanPackageName);
 			} else {

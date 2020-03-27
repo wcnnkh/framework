@@ -21,14 +21,14 @@ public final class BuiltInGsonJsonArray extends JsonArray {
 				new Converter<scw.json.gson.GsonJsonElement, JsonElement>() {
 
 					public JsonElement convert(scw.json.gson.GsonJsonElement k) throws Exception {
-						return new BuiltInGsonElement(k, gson);
+						return new BuiltInGsonElement(k, gson, getDefaultValue(null));
 					}
 				});
 	}
 
 	public JsonElement get(Integer index) {
 		scw.json.gson.GsonJsonElement element = gsonJsonArray.get(index);
-		return element == null ? null : new BuiltInGsonElement(element, gson);
+		return element == null ? null : new BuiltInGsonElement(element, gson, getDefaultValue(index));
 	}
 
 	public void add(Object value) {

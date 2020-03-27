@@ -2,10 +2,12 @@ package scw.json;
 
 import scw.util.value.AbstractValueFactory;
 
-public abstract class AbstractJson<K> extends AbstractValueFactory<K, JsonElement> {
+public abstract class AbstractJson<K> extends AbstractValueFactory<K> {
+	
+	public abstract JsonElement get(K key);
 
 	@Override
-	public JsonElement getDefaultValue() {
+	public JsonElement getDefaultValue(K key) {
 		return DefaultJsonElementValue.DEFAULT_JSON_ELEMENT_VALUE;
 	}
 
@@ -13,12 +15,12 @@ public abstract class AbstractJson<K> extends AbstractValueFactory<K, JsonElemen
 
 	public JsonObject getJsonObject(K key) {
 		JsonElement jsonElement = get(key);
-		return jsonElement == null ? getDefaultValue().getAsJsonObject() : jsonElement.getAsJsonObject();
+		return jsonElement == null ? getDefaultValue(key).getAsJsonObject() : jsonElement.getAsJsonObject();
 	}
 
 	public JsonArray getJsonArray(K key) {
 		JsonElement jsonElement = get(key);
-		return jsonElement == null ? getDefaultValue().getAsJsonArray() : jsonElement.getAsJsonArray();
+		return jsonElement == null ? getDefaultValue(key).getAsJsonArray() : jsonElement.getAsJsonArray();
 	}
 
 	public boolean isEmpty() {

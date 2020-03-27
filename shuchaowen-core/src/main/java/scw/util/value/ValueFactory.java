@@ -4,9 +4,9 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public interface ValueFactory<K, V extends Value> {
-	V get(K key);
-
+public interface ValueFactory<K>{
+	Value get(K key);
+	
 	Byte getByte(K key);
 
 	byte getByteValue(K key);
@@ -16,17 +16,17 @@ public interface ValueFactory<K, V extends Value> {
 	short getShortValue(K key);
 
 	Integer getInteger(K key);
-
+	
 	int getIntValue(K key);
-
+	
 	Long getLong(K key);
 
 	long getLongValue(K key);
-
+	
 	Boolean getBoolean(K key);
-
+	
 	boolean getBooleanValue(K key);
-
+	
 	Float getFloat(K key);
 
 	float getFloatValue(K key);
@@ -54,4 +54,8 @@ public interface ValueFactory<K, V extends Value> {
 	<T> T getObject(K key, Class<? extends T> type);
 
 	Object getObject(K key, Type type);
+	
+	Object getValue(K key, Type type, Object defaultValue);
+	
+	<T> T getValue(K key, Class<? extends T> type, T defaultValue);
 }

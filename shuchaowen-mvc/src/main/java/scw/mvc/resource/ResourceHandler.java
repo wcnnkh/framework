@@ -1,11 +1,11 @@
 package scw.mvc.resource;
 
 import scw.beans.annotation.Configuration;
-import scw.core.PropertyFactory;
 import scw.io.IOUtils;
 import scw.mvc.handler.HandlerChain;
 import scw.mvc.handler.HttpHandler;
 import scw.mvc.http.HttpChannel;
+import scw.util.value.property.PropertyFactory;
 
 @Configuration(order=ResourceHandler.ORDER)
 public final class ResourceHandler extends HttpHandler{

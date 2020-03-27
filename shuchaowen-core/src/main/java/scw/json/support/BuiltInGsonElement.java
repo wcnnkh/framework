@@ -7,12 +7,14 @@ import scw.json.JsonArray;
 import scw.json.JsonObject;
 import scw.json.gson.Gson;
 import scw.json.gson.GsonJsonElement;
+import scw.util.value.Value;
 
 public final class BuiltInGsonElement extends AbstractJsonElement {
 	private GsonJsonElement gsonJsonElement;
 	private Gson gson;
 
-	public BuiltInGsonElement(GsonJsonElement gsonJsonElement, Gson gson) {
+	public BuiltInGsonElement(GsonJsonElement gsonJsonElement, Gson gson, Value defaultValue) {
+		super(defaultValue);
 		this.gsonJsonElement = gsonJsonElement;
 		this.gson = gson;
 	}

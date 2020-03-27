@@ -7,8 +7,8 @@ import javax.servlet.ServletContainerInitializer;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.PropertyFactory;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
+import scw.util.value.property.PropertyFactory;
 
 public class RootServletContainerInitializerConfiguration implements
 		ServletContainerInitializerConfiguration {

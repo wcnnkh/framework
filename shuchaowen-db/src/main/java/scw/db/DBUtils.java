@@ -10,8 +10,8 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import scw.core.Constants;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.db.database.DataBase;
 import scw.db.database.MysqlDataBase;
 import scw.db.database.OracleDataBase;
@@ -24,7 +24,7 @@ import scw.util.ConfigUtils;
 
 public final class DBUtils {
 	private static final String IGNORE_SQL_START_WITH = StringUtils
-			.toString(SystemPropertyUtils.getProperty("db.file.sql.ignore.start.with"), "##");
+			.toString(GlobalPropertyFactory.getInstance().getString("db.file.sql.ignore.start.with"), "##");
 
 	private DBUtils() {
 	};

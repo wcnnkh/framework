@@ -3,7 +3,7 @@ package scw.beans;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import scw.core.PropertyFactory;
+import scw.util.value.property.PropertyFactory;
 
 public class NoArgumentBeanMethod implements BeanMethod {
 	private final Method method;

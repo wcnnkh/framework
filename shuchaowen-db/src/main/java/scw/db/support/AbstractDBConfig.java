@@ -4,8 +4,8 @@ import java.util.Map;
 
 import scw.core.Constants;
 import scw.core.Destroy;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XUtils;
 import scw.data.RedisDataTemplete;
 import scw.data.memcached.Memcached;
@@ -40,7 +40,7 @@ public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants, D
 	public AbstractDBConfig(Map properties) {
 		if (properties != null) {
 			this.sannerTablePackage = StringUtils.toString(properties.get("create"),
-					SystemPropertyUtils.getProperty("db.table.scanner"));
+					GlobalPropertyFactory.getInstance().getString("db.table.scanner"));
 		}
 
 		this.sqlDialect = new MySqlSqlDialect();

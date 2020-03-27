@@ -276,6 +276,14 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 		}
 		asyncExecute(asyncExecute);
 	}
+	
+	public void asyncSaveOrUpdate(Object... objs) {
+		TransactionAsyncExecute asyncExecute = new TransactionAsyncExecute();
+		for (Object bean : objs) {
+			asyncExecute.add(new BeanAsyncExecute(bean, OperationType.SAVE_OR_UPDATE));
+		}
+		asyncExecute(asyncExecute);
+	}
 
 	public final void asyncExecute(AsyncExecute asyncExecute) {
 		getAsyncQueue().push(SerializerUtils.clone(asyncExecute));

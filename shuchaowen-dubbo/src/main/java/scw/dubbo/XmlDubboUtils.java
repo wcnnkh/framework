@@ -19,15 +19,15 @@ import org.w3c.dom.NodeList;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Service;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.PropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.reflect.CloneUtils;
 import scw.core.reflect.PropertyMapper;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.IgnoreClassVerification;
-import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
+import scw.util.value.ValueUtils;
+import scw.util.value.property.PropertyFactory;
 
 public final class XmlDubboUtils {
 	private XmlDubboUtils() {
@@ -238,7 +238,7 @@ public final class XmlDubboUtils {
 				return beanFactory.getInstance(value);
 			}
 
-			return StringParse.defaultParse(value, type);
+			return ValueUtils.parse(value, type);
 		}
 
 	}

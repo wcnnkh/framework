@@ -9,11 +9,12 @@ import java.util.Date;
 import org.w3c.dom.Node;
 
 import scw.beans.EParameterType;
-import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
-import scw.core.utils.StringParse;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
+import scw.util.value.StringValue;
+import scw.util.value.Value;
+import scw.util.value.property.PropertyFactory;
 
 public final class XmlBeanParameter implements Cloneable, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -64,14 +65,19 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 		Object value = null;
 		switch (type) {
 		case value:
-			value = formatStringValue(xmlValue.formatValue(propertyFactory), parameterType);
+			String text = xmlValue.formatValue(propertyFactory);
+			if(text != null){
+				value = formatStringValue(new StringValue(text), parameterType);
+			}
 			break;
 		case ref:
 			value = instanceFactory.getInstance(xmlValue.formatValue(propertyFactory));
 			break;
 		case property:
-			String v = propertyFactory.getProperty(xmlValue.getValue());
-			value = formatStringValue(v, parameterType);
+			Value v = propertyFactory.get(xmlValue.getValue());
+			if(v != null){
+				value = formatStringValue(v, parameterType);
+			}
 			break;
 		default:
 			break;
@@ -83,24 +89,24 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 		return value;
 	}
 
-	private Object formatStringValue(String v, Type parameterType) throws ClassNotFoundException, ParseException {
-		if (v == null) {
+	private Object formatStringValue(Value value, Type parameterType) throws ClassNotFoundException, ParseException {
+		if (value == null) {
 			return null;
 		}
 
 		if (Date.class == parameterType) {
-			if (StringUtils.isNumeric(v)) {
-				return new Date(Long.parseLong(v));
+			if (StringUtils.isNumeric(value.getAsString())) {
+				return new Date(Long.parseLong(value.getAsString()));
 			} else {
 				String dateFormat = xmlValue.getNodeAttributeValue("date-format");
 				if (StringUtils.isNull(dateFormat)) {
-					throw new NotFoundException("data-format [" + v + "]");
+					throw new NotFoundException("data-format [" + value + "]");
 				}
 
 				SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-				return sdf.parse(v);
+				return sdf.parse(value.getAsString());
 			}
 		}
-		return StringParse.defaultParse(v, parameterType);
+		return value.getAsObject(parameterType);
 	}
 }

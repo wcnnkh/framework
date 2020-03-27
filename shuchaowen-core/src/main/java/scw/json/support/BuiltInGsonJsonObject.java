@@ -25,7 +25,7 @@ public final class BuiltInGsonJsonObject extends JsonObject {
 
 	public JsonElement get(String key) {
 		scw.json.gson.GsonJsonElement gsonJsonElement = gsonJsonObject.get(key);
-		return gsonJsonElement == null ? null : new BuiltInGsonElement(gsonJsonElement, gson);
+		return gsonJsonElement == null ? null : new BuiltInGsonElement(gsonJsonElement, gson, getDefaultValue(key));
 	}
 
 	public Collection<String> keys() {

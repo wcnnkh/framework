@@ -4,7 +4,7 @@ import java.io.File;
 
 import scw.core.Constants;
 import scw.core.Converter;
-import scw.core.utils.SystemPropertyUtils;
+import scw.core.GlobalPropertyFactory;
 import scw.data.ExpiredCache;
 import scw.serializer.NoTypeSpecifiedSerializer;
 import scw.serializer.SerializerUtils;
@@ -64,6 +64,6 @@ public class AutoRefreshFileCache extends FileCache {
 
 	public static ExpiredCache create(String cacheDirectorySuffix, int period, Converter<String, ?> converter) {
 		return new AutoRefreshFileCache(period,
-				SystemPropertyUtils.getTempDirectoryPath() + File.separator + cacheDirectorySuffix, converter);
+				GlobalPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix, converter);
 	}
 }

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import scw.core.utils.MultiIterator;
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
+import scw.util.MultiIterator;
 
 public final class InsertSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;

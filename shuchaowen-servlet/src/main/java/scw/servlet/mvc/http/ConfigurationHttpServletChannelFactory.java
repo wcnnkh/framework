@@ -1,8 +1,8 @@
 package scw.servlet.mvc.http;
 
 import scw.beans.BeanFactory;
-import scw.core.PropertyFactory;
 import scw.mvc.MVCUtils;
+import scw.util.value.property.PropertyFactory;
 
 public final class ConfigurationHttpServletChannelFactory extends
 		DefaultHttpServletChannelFactory {

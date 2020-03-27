@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Configuration;
-import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.mvc.page.PageFactoryAdapter;
+import scw.util.value.property.PropertyFactory;
 
 @Configuration(order=Integer.MIN_VALUE)
 public final class FreemarkerPageFactoryAdapter extends FreemarkerPageFactory implements PageFactoryAdapter{

@@ -10,16 +10,16 @@ import org.w3c.dom.NodeList;
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.Consumer;
-import scw.core.PropertyFactory;
 import scw.core.annotation.DefaultValue;
 import scw.core.reflect.PropertyMapper;
-import scw.core.utils.StringParse;
 import scw.core.utils.XMLUtils;
 import scw.io.resource.ResourceUtils;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mq.ConsumerFactory;
+import scw.util.value.ValueUtils;
+import scw.util.value.property.PropertyFactory;
 
 public class XmlConsumerFactory implements ConsumerFactory {
 	private static Logger logger = LoggerUtils.getConsoleLogger(XmlConsumerFactory.class);
@@ -54,7 +54,7 @@ public class XmlConsumerFactory implements ConsumerFactory {
 										return beanFactory.getInstance(value);
 									}
 
-									return StringParse.defaultParse(value, type);
+									return ValueUtils.parse(value, type);
 								}
 							}));
 				}

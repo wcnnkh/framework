@@ -6,10 +6,10 @@ import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.beans.property.AbstractCharsetNameValueFormat;
 import scw.core.Constants;
-import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ClassUtils;
 import scw.util.ConfigUtils;
+import scw.util.value.property.PropertyFactory;
 
 public final class XmlToBeanMapParse extends AbstractCharsetNameValueFormat implements ConfigParse {
 	public XmlToBeanMapParse() {
@@ -20,7 +20,7 @@ public final class XmlToBeanMapParse extends AbstractCharsetNameValueFormat impl
 		super(charsetName);
 	}
 
-	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset)
+	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
 		String type = fieldDefinition.getField().getGenericType().toString();
 		type = type.substring(type.indexOf("<") + 1, type.indexOf(">"));

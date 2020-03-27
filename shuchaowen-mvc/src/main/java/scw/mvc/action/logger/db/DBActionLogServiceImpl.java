@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import scw.core.GlobalPropertyFactory;
 import scw.core.Pagination;
 import scw.core.reflect.CloneUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.XTime;
 import scw.db.DB;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.action.logger.ActionLog;
-import scw.mvc.action.logger.LogQuery;
 import scw.mvc.action.logger.ActionLogService;
+import scw.mvc.action.logger.LogQuery;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
@@ -26,9 +26,10 @@ import scw.timer.Timer;
 import scw.timer.support.SimpleCrontabConfig;
 
 public class DBActionLogServiceImpl implements ActionLogService, Task {
-	private static Logger logger = LoggerUtils.getLogger(DBActionLogServiceImpl.class);
-	private static final int LOG_EXPIRATION_TIME = StringUtils.parseInt(
-			SystemPropertyUtils.getProperty("mvc.logger.expire.time"), 90);// 默认保存90天日志
+	private static Logger logger = LoggerUtils
+			.getLogger(DBActionLogServiceImpl.class);
+	private static final int LOG_EXPIRATION_TIME = GlobalPropertyFactory
+			.getInstance().getValue("mvc.logger.expire.time", Integer.class, 90);// 默认保存90天日志
 
 	private DB db;
 
@@ -39,8 +40,8 @@ public class DBActionLogServiceImpl implements ActionLogService, Task {
 		CrontabTaskConfig config = new SimpleCrontabConfig("清理网络请求过期日志", this,
 				null, null, null, null, "0", "0");
 		timer.crontab(config);
-		if(logger.isDebugEnabled()){
-			logger.debug("网络请求日志过期时间为：{}天", LOG_EXPIRATION_TIME);	
+		if (logger.isDebugEnabled()) {
+			logger.debug("网络请求日志过期时间为：{}天", LOG_EXPIRATION_TIME);
 		}
 	}
 
@@ -64,28 +65,29 @@ public class DBActionLogServiceImpl implements ActionLogService, Task {
 				"select * from log_attribute_table group by name"));
 	}
 
-	public Pagination<List<ActionLog>> getPagination(LogQuery logQuery, long page,
-			int limit) {
+	public Pagination<List<ActionLog>> getPagination(LogQuery logQuery,
+			long page, int limit) {
 		WhereSql sql = new WhereSql();
 		if (logQuery != null) {
-			if(StringUtils.isNotEmpty(logQuery.getIdentification())){
-				sql.and("l.identification=?",
-						logQuery.getIdentification());
+			if (StringUtils.isNotEmpty(logQuery.getIdentification())) {
+				sql.and("l.identification=?", logQuery.getIdentification());
 			}
-			
+
 			if (logQuery.getHttpMethod() != null) {
 				sql.and("l.httpMethod=?", logQuery.getHttpMethod().name());
 			}
-			
-			//这样的sql语句性能很差，不推荐使用属性查找
-			if(!CollectionUtils.isEmpty(logQuery.getAttributeMap())){
+
+			// 这样的sql语句性能很差，不推荐使用属性查找
+			if (!CollectionUtils.isEmpty(logQuery.getAttributeMap())) {
 				WhereSql attrSql = new WhereSql();
 				attrSql.in("a.name", logQuery.getAttributeMap().keySet());
 				attrSql.in("a.value", logQuery.getAttributeMap().values());
-				Sql attr = attrSql.assembleSql("select DISTINCT(a.logId) from log_attribute_table", null);
+				Sql attr = attrSql.assembleSql(
+						"select DISTINCT(a.logId) from log_attribute_table",
+						null);
 				sql.and("l.logId in (" + attr.getSql() + ")", attr.getParams());
 			}
-			
+
 			if (StringUtils.isNotEmpty(logQuery.getController())) {
 				sql.and("l.controller like ?",
 						SqlUtils.toLikeValue(logQuery.getController()));

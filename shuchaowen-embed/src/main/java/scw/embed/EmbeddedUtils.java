@@ -1,7 +1,7 @@
 package scw.embed;
 
-import scw.core.PropertyFactory;
 import scw.core.utils.StringUtils;
+import scw.util.value.property.PropertyFactory;
 
 public final class EmbeddedUtils {
 	private EmbeddedUtils() {
@@ -16,9 +16,9 @@ public final class EmbeddedUtils {
 	}
 
 	private static String getProperty(PropertyFactory propertyFactory, String name) {
-		String v = propertyFactory.getProperty(getApplicationKey(name));
+		String v = propertyFactory.getString(getApplicationKey(name));
 		if (StringUtils.isEmpty(v)) {
-			v = propertyFactory.getProperty(getTomcatKey(name));
+			v = propertyFactory.getString(getTomcatKey(name));
 		}
 		return v;
 	}
@@ -28,7 +28,7 @@ public final class EmbeddedUtils {
 	}
 
 	public static String getEmbeddedName(PropertyFactory propertyFactory) {
-		return propertyFactory.getProperty(getApplicationKey("embedded"));
+		return propertyFactory.getString(getApplicationKey("embedded"));
 	}
 
 	public static String getBaseDir(PropertyFactory propertyFactory) {
@@ -44,15 +44,15 @@ public final class EmbeddedUtils {
 	}
 
 	public static String getTomcatProtocol(PropertyFactory propertyFactory) {
-		return propertyFactory.getProperty(getTomcatKey("protocol"));
+		return propertyFactory.getString(getTomcatKey("protocol"));
 	}
 
 	public static String getTomcatConnectorName(PropertyFactory propertyFactory) {
-		return propertyFactory.getProperty(getTomcatKey("connector"));
+		return propertyFactory.getString(getTomcatKey("connector"));
 	}
 
 	public static String getTomcatContextManager(PropertyFactory propertyFactory) {
-		return propertyFactory.getProperty(getTomcatKey("context.manager"));
+		return propertyFactory.getString(getTomcatKey("context.manager"));
 	}
 
 	private static String getShutdownProperty(PropertyFactory propertyFactory, String name) {
@@ -80,6 +80,6 @@ public final class EmbeddedUtils {
 	}
 
 	public static boolean tomcatScanTld(PropertyFactory propertyFactory) {
-		return StringUtils.parseBoolean(propertyFactory.getProperty(getTomcatKey("scan.tld")), true);
+		return StringUtils.parseBoolean(propertyFactory.getString(getTomcatKey("scan.tld")), true);
 	}
 }

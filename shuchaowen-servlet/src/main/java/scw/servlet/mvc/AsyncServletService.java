@@ -9,10 +9,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import scw.beans.BeanFactory;
-import scw.core.PropertyFactory;
-import scw.core.utils.StringUtils;
 import scw.mvc.service.ChannelService;
 import scw.servlet.mvc.http.HttpServletChannelFactory;
+import scw.util.value.property.PropertyFactory;
 
 public class AsyncServletService extends DefaultServletService implements scw.core.Destroy {
 	private final ThreadPoolExecutor threadPoolExecutor;
@@ -29,9 +28,9 @@ public class AsyncServletService extends DefaultServletService implements scw.co
 	
 	private static ThreadPoolExecutor getThreadPoolExecutor(BeanFactory beanFactory, PropertyFactory propertyFactory){
 		ThreadPoolExecutor threadPoolExecutor = null;
-		if(!StringUtils.parseBoolean(propertyFactory.getProperty("servlet.thread.container"))){
-			int coreSize = StringUtils.parseInt(propertyFactory.getProperty("servlet.thread.core.size"), 16);
-			int maxSize = StringUtils.parseInt(propertyFactory.getProperty("servlet.thread.max.size"), 512);
+		if(!propertyFactory.getBoolean("servlet.thread.container")){
+			int coreSize = propertyFactory.getValue("servlet.thread.core.size", int.class, 16);
+			int maxSize = propertyFactory.getValue("servlet.thread.max.size", int.class, 512);
 			threadPoolExecutor = new ThreadPoolExecutor(coreSize, maxSize, 10, TimeUnit.MINUTES,
 					new LinkedBlockingQueue<Runnable>());
 		}

@@ -6,18 +6,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 
 public final class ExecutorUtils {
 	private static final int DEFAULT_CORE_POOL_SIZE = StringUtils
-			.parseInt(SystemPropertyUtils.getProperty("executor.pool.core.size"), 16);
+			.parseInt(GlobalPropertyFactory.getInstance().getString("executor.pool.core.size"), 16);
 	private static final int DEFAULT_MAXMUM_POOL_SIZE = StringUtils
-			.parseInt(SystemPropertyUtils.getProperty("executor.pool.max.size"), 512);
+			.parseInt(GlobalPropertyFactory.getInstance().getString("executor.pool.max.size"), 512);
 	private static final long DEFAULT_KEEP_ALIVE_TIME = StringUtils
-			.parseLong(SystemPropertyUtils.getProperty("executor.pool.keepAliveTime"), 1);
+			.parseLong(GlobalPropertyFactory.getInstance().getString("executor.pool.keepAliveTime"), 1);
 	private static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.valueOf(StringUtils
-			.toString(SystemPropertyUtils.getProperty("executor.pool.keepAliveTime.unit"), TimeUnit.HOURS.name()));
+			.toString(GlobalPropertyFactory.getInstance().getString("executor.pool.keepAliveTime.unit"), TimeUnit.HOURS.name()));
 
 	private ExecutorUtils() {
 	};

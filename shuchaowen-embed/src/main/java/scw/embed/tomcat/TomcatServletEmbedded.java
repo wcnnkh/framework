@@ -21,14 +21,13 @@ import org.apache.tomcat.util.descriptor.web.FilterMap;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.PropertyFactory;
+import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.embed.EmbeddedUtils;
 import scw.embed.servlet.FilterConfiguration;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
@@ -38,6 +37,7 @@ import scw.embed.servlet.support.ServletRootFilterConfiguration;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.servlet.MultiFilter;
+import scw.util.value.property.PropertyFactory;
 
 public final class TomcatServletEmbedded implements ServletEmbedded {
 	private static Logger logger = LoggerUtils
@@ -52,7 +52,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 
 		String basedir = EmbeddedUtils.getBaseDir(propertyFactory);
 		if (StringUtils.isEmpty(basedir)) {
-			basedir = SystemPropertyUtils.getWorkPath();
+			basedir = GlobalPropertyFactory.getInstance().getWorkPath();
 		}
 
 		if (!StringUtils.isEmpty(basedir)) {
@@ -65,7 +65,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	}
 
 	private String getDocBase(PropertyFactory propertyFactory) {
-		return SystemPropertyUtils.getWorkPath();
+		return GlobalPropertyFactory.getInstance().getWorkPath();
 	}
 
 	private String getContextPath(PropertyFactory propertyFactory) {

@@ -4,9 +4,9 @@ import java.util.Arrays;
 
 import scw.beans.property.ValueWiredManager;
 import scw.core.Init;
-import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.XUtils;
+import scw.util.value.property.PropertyFactory;
 
 public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	protected final BeanFactory beanFactory;

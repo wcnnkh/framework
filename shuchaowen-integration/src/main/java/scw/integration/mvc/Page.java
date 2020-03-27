@@ -6,24 +6,25 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.Version;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.lang.NotFoundException;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
 import scw.mvc.page.AbstractPage;
 import scw.net.MimeTypeUtils;
 import scw.servlet.ServletUtils;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.Version;
 
 /**
  * 不再推荐使用，下个版本弃用
@@ -63,14 +64,14 @@ public class Page extends AbstractPage {
 		}
 
 		freemarkerConfiguration.setDefaultEncoding(default_encoding);
-		String workPath = SystemPropertyUtils.getWorkPath();
+		String workPath = GlobalPropertyFactory.getInstance().getWorkPath();
 		if (workPath == null) {
 			throw new NotFoundException("找不到WEB-INF目录");
 		}
 
 		try {
 			freemarkerConfiguration.setDirectoryForTemplateLoading(
-					new File(StringUtils.isNull(rootPath) ? workPath : SystemPropertyUtils.format(rootPath)));
+					new File(StringUtils.isNull(rootPath) ? workPath : GlobalPropertyFactory.getInstance().format(rootPath, true)));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -79,13 +80,13 @@ public class Page extends AbstractPage {
 	}
 
 	public static void initFreemarker(final String rootPath) {
-		String workPath = SystemPropertyUtils.getWorkPath();
+		String workPath = GlobalPropertyFactory.getInstance().getWorkPath();
 		if (workPath == null) {
 			throw new NotFoundException("找不到WEB-INF目录");
 		}
 
 		initFreemarker(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS, freemarker_default_encoding,
-				StringUtils.isNull(rootPath) ? workPath : SystemPropertyUtils.format(rootPath));
+				StringUtils.isNull(rootPath) ? workPath : GlobalPropertyFactory.getInstance().format(rootPath, true));
 	}
 
 	public static Configuration getFreemarkerConfiguration() {
@@ -100,7 +101,7 @@ public class Page extends AbstractPage {
 			freemarkerConfiguration = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
 			freemarkerConfiguration.setDefaultEncoding(freemarker_default_encoding);
 
-			String workPath = SystemPropertyUtils.getWorkPath();
+			String workPath = GlobalPropertyFactory.getInstance().getWorkPath();
 			if (workPath == null) {
 				throw new NotFoundException("找不到WEB-INF目录");
 			}

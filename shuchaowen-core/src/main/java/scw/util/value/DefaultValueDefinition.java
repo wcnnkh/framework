@@ -1,10 +1,12 @@
 package scw.util.value;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class DefaultValueDefinition implements Value {
+public class DefaultValueDefinition implements Value, Serializable {
+	private static final long serialVersionUID = 1L;
 	public static final DefaultValueDefinition DEFAULT_VALUE_DEFINITION = new DefaultValueDefinition();
 
 	public <T> T getAsObject(Class<? extends T> type) {

@@ -11,13 +11,13 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
-import scw.core.PropertyFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.ExecutorUtils;
+import scw.util.value.property.PropertyFactory;
 
 public final class DefaultAutoBeanService implements AutoBeanService {
 	private static Logger logger = LoggerUtils

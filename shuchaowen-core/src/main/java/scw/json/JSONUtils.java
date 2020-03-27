@@ -44,11 +44,22 @@ public final class JSONUtils {
 		return DEFAULT_JSON_SUPPORT.parseArray(text);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> T parseObject(String text, Class<T> type) {
+		if(type == JsonObject.class){
+			return (T) parseObject(text);
+		}else if(type == JsonArray.class){
+			return (T) parseArray(text);
+		}
 		return DEFAULT_JSON_SUPPORT.parseObject(text, type);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> T parseObject(String text, Type type) {
+		if(type instanceof Class){
+			return parseObject(text, (Class<T>)type);
+		}
+		
 		return DEFAULT_JSON_SUPPORT.parseObject(text, type);
 	}
 

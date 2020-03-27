@@ -7,7 +7,6 @@ import java.util.Collection;
 import scw.aop.Invoker;
 import scw.beans.AutoProxyMethodInvoker;
 import scw.beans.BeanFactory;
-import scw.core.PropertyFactory;
 import scw.core.annotation.AnnotationFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.annotation.SimpleAnnotationFactory;
@@ -16,6 +15,7 @@ import scw.core.parameter.ParameterUtils;
 import scw.mvc.MVCUtils;
 import scw.mvc.action.filter.Filter;
 import scw.mvc.parameter.ParameterFilter;
+import scw.util.value.property.PropertyFactory;
 
 public abstract class MethodAction extends AbstractAction {
 	private final Invoker invoker;

@@ -4,19 +4,19 @@ import java.lang.reflect.Field;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Configuration;
-import scw.core.PropertyFactory;
-import scw.core.utils.StringParse;
+import scw.util.value.Value;
+import scw.util.value.property.PropertyFactory;
 
 @Configuration
 public class PropertyFactoryFormat implements ValueFormat {
 
 	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name) {
-		String v = propertyFactory.getProperty(name);
-		if (v == null) {
+		Value value = propertyFactory.get(name);
+		if(value == null){
 			return null;
 		}
-
-		return StringParse.defaultParse(v, field.getGenericType());
+		
+		return value.getAsObject(field.getGenericType());
 	}
 
 }

@@ -28,6 +28,8 @@ public interface DB extends ORMOperations, SqlOperations {
 	void asyncUpdate(Object... objs);
 
 	void asyncDelete(Object... objs);
+	
+	void asyncSaveOrUpdate(Object ...objs);
 
 	void asyncExecute(Sql... sqls);
 }

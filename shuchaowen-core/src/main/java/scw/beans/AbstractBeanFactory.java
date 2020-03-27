@@ -21,16 +21,15 @@ import scw.beans.auto.AutoBeanUtils;
 import scw.beans.property.ValueWiredManager;
 import scw.core.Destroy;
 import scw.core.Init;
-import scw.core.MultiPropertyFactory;
-import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.value.property.MultiPropertyFactory;
+import scw.util.value.property.PropertyFactory;
 
 public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy {
 	protected static Logger logger = LoggerUtils.getLogger(BeanFactory.class);
@@ -83,8 +82,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 	}
 
 	protected boolean isEnableNotFoundSet() {
-		return StringUtils.parseBoolean(
-				propertyFactory.getProperty("beans.notfound"), true);
+		return propertyFactory.getValue("beans.notfound", boolean.class, true);
 	}
 
 	protected final void addBeanConfiguration(
@@ -454,7 +452,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			filterNames.add(clazz.getName());
 		}
 		
-		propertyFactory.addAll(BeanUtils.getConfigurationList(PropertyFactory.class, this, propertyFactory));
+		propertyFactory.addAll(BeanUtils.getConfigurationList(PropertyFactory.class, this, propertyFactory), true);
 		for (Init init : inits) {
 			init.init();
 		}

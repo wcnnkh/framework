@@ -52,7 +52,7 @@ public class ServletEmbeddedApplication extends CommonApplication {
 		embedded = getBeanFactory().getInstance(embeddedName);
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
 		dispatcherServlet.setCommonApplication(this);
-		if(StringUtils.parseBoolean(getPropertyFactory().getProperty("servlet.service.startup"), true)){
+		if(propertyFactory.getValue("servlet.service.startup", boolean.class, true)){
 			dispatcherServlet.setDefaultServletService(false);
 		}
 		embedded.init(getBeanFactory(), getPropertyFactory(), new ShutdownHttpServlet(getPropertyFactory(), this),

@@ -3,7 +3,7 @@ package scw.data.file;
 import java.io.File;
 
 import scw.core.Constants;
-import scw.core.utils.SystemPropertyUtils;
+import scw.core.GlobalPropertyFactory;
 import scw.data.AbstractExpireCacheFactory;
 import scw.data.ExpiredCache;
 import scw.serializer.NoTypeSpecifiedSerializer;
@@ -17,7 +17,7 @@ public class FileExpiredCacheFactory extends AbstractExpireCacheFactory{
 	protected FileExpiredCacheFactory() {
 		this.serializer = SerializerUtils.DEFAULT_SERIALIZER;
 		this.charsetName = Constants.DEFAULT_CHARSET_NAME;
-		this.cacheDirectory = SystemPropertyUtils.getTempDirectoryPath() + File.separator + getClass().getName();
+		this.cacheDirectory = GlobalPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + getClass().getName();
 	}
 
 	public FileExpiredCacheFactory(String cacheDirectory) {

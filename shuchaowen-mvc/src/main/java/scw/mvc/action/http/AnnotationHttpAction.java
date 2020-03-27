@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.EnumSet;
 
 import scw.beans.BeanFactory;
-import scw.core.PropertyFactory;
 import scw.core.annotation.AnnotationFactory;
 import scw.core.utils.StringUtils;
 import scw.mvc.action.AnnotationAction;
@@ -15,6 +14,7 @@ import scw.mvc.annotation.HttpAuthorityParent;
 import scw.mvc.annotation.Methods;
 import scw.security.authority.http.HttpAuthority;
 import scw.security.authority.http.SimpleHttpAuthority;
+import scw.util.value.property.PropertyFactory;
 
 public class AnnotationHttpAction extends AnnotationAction implements HttpAction {
 	private SimpleHttpAuthority authority;

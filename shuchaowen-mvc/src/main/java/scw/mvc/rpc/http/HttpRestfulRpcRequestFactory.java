@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
 
-import scw.core.PropertyFactory;
 import scw.core.StringFormat;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.CollectionUtils;
@@ -19,6 +18,7 @@ import scw.net.http.client.ClientHttpRequest;
 import scw.net.http.client.accessor.HttpAccessor;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
+import scw.util.value.property.PropertyFactory;
 
 public class HttpRestfulRpcRequestFactory extends HttpAccessor implements HttpRpcRequestFactory {
 	private String charsetName;
@@ -65,7 +65,7 @@ public class HttpRestfulRpcRequestFactory extends HttpAccessor implements HttpRp
 
 		final Map<String, Object> parameterMap = MvcRpcUtils.getParameterMap(method, args, true);
 		StringFormat stringFormat = new StringFormat("{", "}") {
-			public String getProperty(String key) {
+			public String getValue(String key) {
 				Object value = parameterMap.remove(key);
 				return value == null ? null : value.toString();
 			};

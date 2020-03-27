@@ -3,11 +3,11 @@ package scw.beans.auto;
 import java.util.Collection;
 
 import scw.beans.BeanFactory;
-import scw.core.PropertyFactory;
 import scw.core.instance.AutoInstanceConfig;
 import scw.core.instance.InstanceConfig;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.value.property.PropertyFactory;
 
 public class SimpleAutoBean extends AbstractSimpleAutoBean {
 	private static Logger logger = LoggerUtils.getLogger(SimpleAutoBean.class);

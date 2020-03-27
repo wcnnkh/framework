@@ -38,7 +38,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import scw.core.Converter;
-import scw.core.PropertyFactory;
 import scw.core.StringFormat;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.PropertyMapper;
@@ -49,6 +48,7 @@ import scw.lang.NotFoundException;
 import scw.util.KeyValuePair;
 import scw.util.SimpleKeyValuePair;
 import scw.util.ToMap;
+import scw.util.value.property.PropertyFactory;
 
 public final class XMLUtils {
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory
@@ -611,14 +611,7 @@ public final class XMLUtils {
 				: replacePrefix;
 		replaceSuffix = StringUtils.isEmpty(replaceSuffix) ? "}"
 				: replaceSuffix;
-		StringFormat stringFormat = new StringFormat(replacePrefix,
-				replaceSuffix) {
-
-			public String getProperty(String key) {
-				return propertyFactory.getProperty(key);
-			}
-		};
-		return stringFormat.format(value);
+		return StringFormat.format(value, replacePrefix, replaceSuffix, propertyFactory);
 	}
 
 	public static String getNodeAttributeValue(PropertyFactory propertyFactory,

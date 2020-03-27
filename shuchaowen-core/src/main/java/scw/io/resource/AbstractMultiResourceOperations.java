@@ -6,7 +6,7 @@ import java.util.ListIterator;
 import java.util.Properties;
 
 import scw.core.Consumer;
-import scw.core.PropertyFactory;
+import scw.util.value.property.PropertyFactory;
 
 public abstract class AbstractMultiResourceOperations extends AbstractResourceOperations {
 

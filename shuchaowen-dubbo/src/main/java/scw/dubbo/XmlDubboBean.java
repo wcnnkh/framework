@@ -6,7 +6,7 @@ import scw.beans.AbstractInterfaceBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.property.ValueWiredManager;
-import scw.core.PropertyFactory;
+import scw.util.value.property.PropertyFactory;
 
 public final class XmlDubboBean extends AbstractInterfaceBeanDefinition {
 	private final ReferenceConfig<?> referenceConfig;

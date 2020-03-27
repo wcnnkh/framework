@@ -9,7 +9,6 @@ import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.beans.BeanUtils;
-import scw.core.PropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.mvc.rpc.annotation.MessageConvert;
 import scw.net.NetworkUtils;
@@ -17,6 +16,7 @@ import scw.net.http.client.ClientHttpRequest;
 import scw.net.http.client.ClientHttpResponse;
 import scw.net.message.converter.MessageConverter;
 import scw.rcp.object.ObjectResponseMessage;
+import scw.util.value.property.PropertyFactory;
 
 public class HttpRpcProxy extends LinkedList<MessageConverter> implements Filter {
 	private static final long serialVersionUID = 1L;

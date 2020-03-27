@@ -4,10 +4,10 @@ import scw.beans.AbstractInterfaceBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.property.ValueWiredManager;
 import scw.core.Constants;
-import scw.core.PropertyFactory;
 import scw.mvc.rpc.http.HttpRpcFactory;
 import scw.mvc.rpc.http.HttpRpcRequestFactory;
 import scw.serializer.Serializer;
+import scw.util.value.property.PropertyFactory;
 
 public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
 	private HttpRpcFactory rpcFactory;

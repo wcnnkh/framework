@@ -3,10 +3,10 @@ package scw.mvc.action;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.annotation.Configuration;
-import scw.core.PropertyFactory;
 import scw.mvc.action.exception.ActionExceptionHandlerChain;
 import scw.mvc.action.filter.Filter;
 import scw.mvc.action.output.ActionOutput;
+import scw.util.value.property.PropertyFactory;
 
 @Configuration(order = ConfigurationActionHandler.ORDER)
 public final class ConfigurationActionHandler extends ActionHandler {

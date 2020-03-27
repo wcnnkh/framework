@@ -1,7 +1,6 @@
 package scw.core;
 
 import scw.core.utils.PropertyPlaceholderHelper.PlaceholderResolver;
-import scw.core.utils.SystemPropertyUtils;
 
 public final class SystemPropertyPlaceholderResolver implements PlaceholderResolver {
 
@@ -13,7 +12,7 @@ public final class SystemPropertyPlaceholderResolver implements PlaceholderResol
 
 	public String resolvePlaceholder(String placeholderName) {
 		try {
-			return SystemPropertyUtils.getProperty(placeholderName);
+			return GlobalPropertyFactory.getInstance().getString(placeholderName);
 		} catch (Throwable ex) {
 			System.err.println("Could not resolve placeholder '" + placeholderName + "' in [" + this.text
 					+ "] as system property: " + ex);

@@ -7,14 +7,14 @@ import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.beans.property.AbstractCharsetNameValueFormat;
 import scw.core.Constants;
-import scw.core.PropertyFactory;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.StringParse;
-import scw.core.utils.SystemPropertyUtils;
 import scw.core.utils.TypeUtils;
 import scw.io.resource.ResourceUtils;
+import scw.util.value.StringValue;
+import scw.util.value.ValueUtils;
+import scw.util.value.property.PropertyFactory;
 
 public final class PropertiesParse extends AbstractCharsetNameValueFormat implements ConfigParse {
 
@@ -26,13 +26,12 @@ public final class PropertiesParse extends AbstractCharsetNameValueFormat implem
 		super(charsetName);
 	}
 
-	public Object parse(BeanFactory beanFactory, FieldDefinition fieldDefinition, String filePath, String charset)
+	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
-		Properties properties = ResourceUtils.getResourceOperations().getProperties(filePath, charset);
+		Properties properties = ResourceUtils.getResourceOperations().getProperties(filePath, charset, propertyFactory);
 		if (ClassUtils.isPrimitiveOrWrapper(fieldDefinition.getField().getType())
 				|| TypeUtils.isString(fieldDefinition.getField().getType())) {
-			String v = SystemPropertyUtils.format(properties.getProperty(fieldDefinition.getField().getName()));
-			return StringParse.defaultParse(v, fieldDefinition.getField().getGenericType());
+			return ValueUtils.parse(properties.getProperty(fieldDefinition.getField().getName()), fieldDefinition.getField().getGenericType());
 		} else if (Properties.class.isAssignableFrom(fieldDefinition.getField().getType())) {
 			return properties;
 		} else {
@@ -45,7 +44,7 @@ public final class PropertiesParse extends AbstractCharsetNameValueFormat implem
 						continue;
 					}
 
-					String value = SystemPropertyUtils.format(properties.getProperty(key.toString()));
+					String value = properties.getProperty(key.toString());
 					ReflectionUtils.setFieldValueAutoType(fieldType, field, obj, value);
 				}
 				return obj;
@@ -58,10 +57,14 @@ public final class PropertiesParse extends AbstractCharsetNameValueFormat implem
 
 	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name)
 			throws Exception {
-		Properties properties = ResourceUtils.getResourceOperations().getProperties(name, getCharsetName());
+		Properties properties = ResourceUtils.getResourceOperations().getProperties(name, getCharsetName(), propertyFactory);
 		if (ClassUtils.isPrimitiveOrWrapper(field.getType()) || TypeUtils.isString(field.getType())) {
-			String v = SystemPropertyUtils.format(properties.getProperty(field.getName()));
-			return StringParse.defaultParse(v, field.getGenericType());
+			String v = properties.getProperty(field.getName());
+			if(v == null){
+				return null;
+			}
+			
+			return new StringValue(v).getAsObject(field.getGenericType());
 		} else if (Properties.class.isAssignableFrom(field.getType())) {
 			return properties;
 		} else {
@@ -72,9 +75,7 @@ public final class PropertiesParse extends AbstractCharsetNameValueFormat implem
 				if (f == null) {
 					continue;
 				}
-
-				String value = SystemPropertyUtils.format(properties.getProperty(key.toString()));
-				ReflectionUtils.setFieldValueAutoType(fieldType, f, obj, value);
+				ReflectionUtils.setFieldValueAutoType(fieldType, f, obj, properties.getProperty(key.toString()));
 			}
 			return obj;
 		}
