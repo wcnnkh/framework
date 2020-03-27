@@ -53,7 +53,7 @@ public final class GlobalPropertyFactory extends AbstractPropertyFactory {
 					continue;
 				}
 
-				properties.put(key.toString(), value.toString());
+				put(key.toString(), value.toString());
 			}
 		}
 	}

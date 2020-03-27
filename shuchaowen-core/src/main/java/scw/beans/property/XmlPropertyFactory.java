@@ -27,7 +27,15 @@ public class XmlPropertyFactory extends AbstractPropertyFactory implements Destr
 	}
 	
 	public Value get(String key){
-		return autoRefreshPropertyFactory == null? GlobalPropertyFactory.getInstance().get(key):autoRefreshPropertyFactory.get(key);
+		if(autoRefreshPropertyFactory == null){
+			return GlobalPropertyFactory.getInstance().get(key);
+		}
+		
+		Value value = autoRefreshPropertyFactory.get(key);
+		if(value == null){
+			value = GlobalPropertyFactory.getInstance().get(key);
+		}
+		return value;
 	}
 
 	public void destroy() {
