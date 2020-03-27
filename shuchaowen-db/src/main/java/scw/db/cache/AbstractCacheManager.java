@@ -16,7 +16,7 @@ public abstract class AbstractCacheManager<C extends Cache> implements CacheMana
 		return SqlORMUtils.getSqlMapper();
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inIds, Object... params) {
 		if (params.length != getSqlMapper().getPrimaryKeys(type).size() - 1) {
 			return null;
 		}

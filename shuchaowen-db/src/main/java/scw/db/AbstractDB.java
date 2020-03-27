@@ -180,7 +180,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 	}
 
 	@Override
-	public <T> T getById(String tableName, Class<T> type, Object... params) {
+	public <T> T getById(String tableName, Class<? extends T> type, Object... params) {
 		T t = getCacheManager().getById(type, params);
 		if (t == null) {
 			if (getCacheManager().isSearchDB(type, params)) {
@@ -195,8 +195,8 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName,
-			Collection<K> inIds, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, String tableName,
+			Collection<? extends K> inIds, Object... params) {
 		if (inIds == null || inIds.isEmpty()) {
 			return Collections.EMPTY_MAP;
 		}

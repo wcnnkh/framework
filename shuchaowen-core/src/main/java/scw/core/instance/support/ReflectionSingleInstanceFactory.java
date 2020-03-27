@@ -23,7 +23,7 @@ public class ReflectionSingleInstanceFactory extends ReflectionInstanceFactory {
 	}
 
 	@Override
-	public <T> T getInstance(Class<T> type) {
+	public <T> T getInstance(Class<? extends T> type) {
 		Object bean = singleMap.get(type.getName());
 		if (bean == null) {
 			synchronized (singleMap) {
@@ -57,7 +57,7 @@ public class ReflectionSingleInstanceFactory extends ReflectionInstanceFactory {
 	}
 
 	@Override
-	public <T> T getInstance(Class<T> type, Object... params) {
+	public <T> T getInstance(Class<? extends T> type, Object... params) {
 		Object bean = singleMap.get(type.getName());
 		if (bean == null) {
 			synchronized (singleMap) {
@@ -74,7 +74,7 @@ public class ReflectionSingleInstanceFactory extends ReflectionInstanceFactory {
 	}
 
 	@Override
-	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(Class<? extends T> type, Class<?>[] parameterTypes, Object... params) {
 		Object bean = singleMap.get(type.getName());
 		if (bean == null) {
 			synchronized (singleMap) {

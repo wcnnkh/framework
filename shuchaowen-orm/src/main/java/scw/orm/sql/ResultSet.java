@@ -13,11 +13,11 @@ public interface ResultSet extends Serializable, Iterable<ResultMapping> {
 	 */
 	List<Object[]> getList();
 
-	<T> List<T> getList(Class<T> clazz, TableNameMapping tableNameMapping);
+	<T> List<T> getList(Class<? extends T> clazz, TableNameMapping tableNameMapping);
 
-	<T> List<T> getList(Class<T> clazz, String tableName);
+	<T> List<T> getList(Class<? extends T> clazz, String tableName);
 
-	<T> List<T> getList(Class<T> clazz);
+	<T> List<T> getList(Class<? extends T> clazz);
 
 	int size();
 

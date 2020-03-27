@@ -49,7 +49,7 @@ public abstract class AbstractResultSet implements ResultSet {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> List<T> getList(Class<T> clazz, TableNameMapping tableNameMapping) {
+	public <T> List<T> getList(Class<? extends T> clazz, TableNameMapping tableNameMapping) {
 		if (isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
@@ -62,11 +62,11 @@ public abstract class AbstractResultSet implements ResultSet {
 		return list;
 	}
 
-	public <T> List<T> getList(Class<T> clazz, String tableName) {
+	public <T> List<T> getList(Class<? extends T> clazz, String tableName) {
 		return getList(clazz, new SingleTableNameMapping(clazz, tableName));
 	}
 
-	public <T> List<T> getList(Class<T> clazz) {
+	public <T> List<T> getList(Class<? extends T> clazz) {
 		return getList(clazz, (String) null);
 	}
 

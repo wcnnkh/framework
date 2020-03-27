@@ -6,17 +6,10 @@ import java.math.BigInteger;
 
 import scw.core.utils.ClassUtils;
 import scw.core.utils.TypeUtils;
-import scw.util.value.property.Property;
 
 public final class ValueUtils {
 	private ValueUtils() {
 	};
-
-	public static Property getProperty(ValueFactory<String> valueFactory,
-			String key) {
-		Value value = valueFactory.get(key);
-		return value == null ? null : new Property(key, value);
-	}
 
 	public static <K> Object getValue(ValueFactory<K> valueFactory, K key,
 			Type type, Object defaultValue) {

@@ -15,7 +15,7 @@ public interface Mapper extends ColumnFactory {
 
 	Object getter(MappingContext context, Getter getter) throws ORMException;
 
-	<T> T newInstance(Class<T> type) throws ORMException;
+	<T> T newInstance(Class<? extends T> type) throws ORMException;
 
 	<T, M extends Mapper> T create(MappingContext superContext, Class<T> clazz, SetterMapping<M> setterMapping)
 			throws ORMException;
@@ -38,7 +38,7 @@ public interface Mapper extends ColumnFactory {
 
 	String getObjectKeyById(Class<?> clazz, Collection<Object> primaryKeys) throws ORMException;
 
-	<K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<K> lastPrimaryKeys, Object[] primaryKeys)
+	<K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<? extends K> lastPrimaryKeys, Object[] primaryKeys)
 			throws ORMException;
 
 	Collection<MappingContext> getNotPrimaryKeys(MappingContext supperContext, Class<?> clazz);

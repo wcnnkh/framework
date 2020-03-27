@@ -32,11 +32,11 @@ public final class EmptyResult implements ResultMapping {
 		return this;
 	}
 
-	public <T> T get(Class<T> clazz, String tableName) {
+	public <T> T get(Class<? extends T> clazz, String tableName) {
 		return null;
 	}
 
-	public <T> T get(Class<T> clazz) {
+	public <T> T get(Class<? extends T> clazz) {
 		return null;
 	}
 
@@ -44,23 +44,23 @@ public final class EmptyResult implements ResultMapping {
 		return null;
 	}
 
-	public <T> T get(Class<T> clazz, TableNameMapping tableNameMapping) {
+	public <T> T get(Class<? extends T> clazz, TableNameMapping tableNameMapping) {
 		return null;
 	}
 
-	public <T> T get(Class<T> type, int index) {
+	public <T> T get(Class<? extends T> type, int index) {
 		return null;
 	}
 
-	public <T> T get(SqlMapper sqlMapper, Class<T> clazz, TableNameMapping tableNameMapping) {
+	public <T> T get(SqlMapper sqlMapper, Class<? extends T> clazz, TableNameMapping tableNameMapping) {
 		return null;
 	}
 
-	public <T> T get(SqlMapper sqlMapper, Class<T> clazz, String tableName) {
+	public <T> T get(SqlMapper sqlMapper, Class<? extends T> clazz, String tableName) {
 		return null;
 	}
 
-	public <T> T get(SqlMapper sqlMapper, Class<T> clazz) {
+	public <T> T get(SqlMapper sqlMapper, Class<? extends T> clazz) {
 		return null;
 	}
 

@@ -53,15 +53,15 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		return getSqlDialect().getSqlMapper();
 	}
 
-	public <T> T getById(Class<T> type, Object... params) {
+	public <T> T getById(Class<? extends T> type, Object... params) {
 		return getById(null, type, params);
 	}
 
-	public <T> List<T> getByIdList(Class<T> type, Object... params) {
+	public <T> List<T> getByIdList(Class<? extends T> type, Object... params) {
 		return getByIdList(null, type, params);
 	}
 
-	public <T> T getById(String tableName, Class<T> type, Object... params) {
+	public <T> T getById(String tableName, Class<? extends T> type, Object... params) {
 		if (type == null) {
 			throw new NullPointerException("type is null");
 		}
@@ -71,7 +71,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		return resultSet.getFirst().get(type, tName);
 	}
 
-	public <T> List<T> getByIdList(String tableName, Class<T> type, Object... params) {
+	public <T> List<T> getByIdList(String tableName, Class<? extends T> type, Object... params) {
 		if (type == null) {
 			throw new NullPointerException("type is null");
 		}
@@ -204,7 +204,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inPrimaryKeys,
+	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, String tableName, Collection<? extends K> inPrimaryKeys,
 			Object... primaryKeys) {
 		if (CollectionUtils.isEmpty(inPrimaryKeys)) {
 			return Collections.EMPTY_MAP;
@@ -235,7 +235,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		return map;
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inIdList, Object... params) {
 		return getInIdList(type, null, inIdList, params);
 	}
 
@@ -248,16 +248,16 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		});
 	}
 
-	public <T> List<T> select(Class<T> type, Sql sql) {
+	public <T> List<T> select(Class<? extends T> type, Sql sql) {
 		return select(sql).getList(type);
 	}
 
-	public <T> T selectOne(Class<T> type, Sql sql) {
+	public <T> T selectOne(Class<? extends T> type, Sql sql) {
 		return select(sql).getFirst().get(type);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T selectOne(Class<T> type, Sql sql, T defaultValue) {
+	public <T> T selectOne(Class<? extends T> type, Sql sql, T defaultValue) {
 		if (type.isPrimitive()) {
 			// 如果是基本数据类型
 			Object v = selectOne(ClassUtils.resolvePrimitiveIfNecessary(type), sql);
@@ -291,7 +291,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> Pagination<List<T>> select(Class<T> type, long page, int limit, Sql sql) {
+	public <T> Pagination<List<T>> select(Class<? extends T> type, long page, int limit, Sql sql) {
 		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql, page, limit);
 		Long count = select(paginationSql.getCountSql()).getFirst().get(0);
 		if (count == null) {
@@ -305,7 +305,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		return new Pagination<List<T>>(count, limit, select(type, paginationSql.getResultSql()));
 	}
 
-	public <T> Pagination<List<T>> select(Class<T> type, int page, int limit, Sql sql) {
+	public <T> Pagination<List<T>> select(Class<? extends T> type, int page, int limit, Sql sql) {
 		return select(type, (long) page, limit, sql);
 	}
 
@@ -333,7 +333,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	 * @param tableClass
 	 * @param iterator
 	 */
-	public <T> void iterator(final Class<T> tableClass, final IteratorCallback<T> iterator) {
+	public <T> void iterator(final Class<? extends T> tableClass, final IteratorCallback<T> iterator) {
 		Sql sql = getSqlDialect().toSelectByIdSql(tableClass, getSqlMapper().getTableName(tableClass), null);
 		iterator(sql, new IteratorCallback<ResultMapping>() {
 
@@ -348,7 +348,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		});
 	}
 
-	public <T> void iterator(Sql sql, final Class<T> type, final IteratorCallback<T> iterator) {
+	public <T> void iterator(Sql sql, final Class<? extends T> type, final IteratorCallback<T> iterator) {
 		iterator(sql, new IteratorCallback<ResultMapping>() {
 
 			public boolean iteratorCallback(ResultMapping data) {
@@ -371,7 +371,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		});
 	}
 	
-	public <T> void query(final Class<T> tableClass, final IteratorCallback<Row<T>> iterator) {
+	public <T> void query(final Class<? extends T> tableClass, final IteratorCallback<Row<T>> iterator) {
 		Sql sql = getSqlDialect().toSelectByIdSql(tableClass, getSqlMapper().getTableName(tableClass), null);
 		query(sql, new IteratorCallback<Row<ResultMapping>>() {
 
@@ -386,7 +386,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		});
 	}
 	
-	public <T> void query(Sql sql, final Class<T> type,
+	public <T> void query(Sql sql, final Class<? extends T> type,
 			final IteratorCallback<Row<T>> iterator) {
 		query(sql, new IteratorCallback<Row<ResultMapping>>() {
 
@@ -410,12 +410,12 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		});
 	}
 
-	public <T> T getMaxValue(Class<T> type, Class<?> tableClass, String tableName, String idField) {
+	public <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String tableName, String idField) {
 		Sql sql = getSqlDialect().toMaxIdSql(tableClass, getSqlDialect().getTableName(tableClass, tableName), idField);
 		return select(sql).getFirst().get(type, 0);
 	}
 
-	public <T> T getMaxValue(Class<T> type, Class<?> tableClass, String idField) {
+	public <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String idField) {
 		return getMaxValue(type, tableClass, null, idField);
 	}
 

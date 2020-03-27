@@ -39,7 +39,7 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 		update(bean);
 	}
 
-	public <T> T getById(Class<T> type, Object... params) {
+	public <T> T getById(Class<? extends T> type, Object... params) {
 		if (ArrayUtils.isEmpty(params)) {
 			return null;
 		}

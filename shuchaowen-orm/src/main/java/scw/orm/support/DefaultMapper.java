@@ -31,7 +31,7 @@ public class DefaultMapper extends AbstractMapper {
 		return ORMUtils.PRIMARY_KEY_CONNECTOR_CHARACTER;
 	}
 
-	public <T> T newInstance(Class<T> clazz) {
+	public <T> T newInstance(Class<? extends T> clazz) {
 		if (!instanceFactory.isInstance(clazz)) {
 			throw new CannotInstantiateException("无法实例化：" + clazz);
 		}

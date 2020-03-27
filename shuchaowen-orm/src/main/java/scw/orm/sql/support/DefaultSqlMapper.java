@@ -42,7 +42,7 @@ public class DefaultSqlMapper extends AbstractSqlMapper implements SqlMapper {
 		return columnFactory.getColumnMap(clazz);
 	}
 
-	public <T> T newInstance(Class<T> type) {
+	public <T> T newInstance(Class<? extends T> type) {
 		if (!noArgsInstanceFactory.isInstance(type)) {
 			throw new CannotInstantiateException("Cannot instantiate [" + type.getName() + "]");
 		}

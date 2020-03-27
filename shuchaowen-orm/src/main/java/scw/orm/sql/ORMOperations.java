@@ -10,13 +10,13 @@ import scw.core.utils.IteratorCallback.Row;
 import scw.sql.Sql;
 
 public interface ORMOperations {
-	<T> T getById(Class<T> type, Object... params);
+	<T> T getById(Class<? extends T> type, Object... params);
 
-	<T> T getById(String tableName, Class<T> type, Object... params);
+	<T> T getById(String tableName, Class<? extends T> type, Object... params);
 
-	<T> List<T> getByIdList(Class<T> type, Object... params);
+	<T> List<T> getByIdList(Class<? extends T> type, Object... params);
 
-	<T> List<T> getByIdList(String tableName, Class<T> type, Object... params);
+	<T> List<T> getByIdList(String tableName, Class<? extends T> type, Object... params);
 
 	/**
 	 * @param type
@@ -25,7 +25,7 @@ public interface ORMOperations {
 	 * @param primaryKeys
 	 * @return 不会为空
 	 */
-	<K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inPrimaryKeys, Object... primaryKeys);
+	<K, V> Map<K, V> getInIdList(Class<? extends V> type, String tableName, Collection<? extends K> inPrimaryKeys, Object... primaryKeys);
 
 	/**
 	 * @param type
@@ -33,15 +33,15 @@ public interface ORMOperations {
 	 * @param primaryKeys
 	 * @return 不会为空
 	 */
-	<K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inPrimaryKeys, Object... primaryKeys);
+	<K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inPrimaryKeys, Object... primaryKeys);
 
 	ResultSet select(Sql sql);
 
-	<T> List<T> select(Class<T> type, Sql sql);
+	<T> List<T> select(Class<? extends T> type, Sql sql);
 
-	<T> T selectOne(Class<T> type, Sql sql);
+	<T> T selectOne(Class<? extends T> type, Sql sql);
 
-	<T> T selectOne(Class<T> type, Sql sql, T defaultValue);
+	<T> T selectOne(Class<? extends T> type, Sql sql, T defaultValue);
 
 	boolean save(Object bean);
 
@@ -63,9 +63,9 @@ public interface ORMOperations {
 
 	boolean saveOrUpdate(Object bean, String tableName);
 
-	<T> T getMaxValue(Class<T> type, Class<?> tableClass, String tableName, String idField);
+	<T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String tableName, String idField);
 
-	<T> T getMaxValue(Class<T> type, Class<?> tableClass, String idField);
+	<T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String idField);
 
 	void createTable(Class<?> tableClass);
 
@@ -73,25 +73,25 @@ public interface ORMOperations {
 
 	void createTable(String packageName);
 
-	<T> Pagination<List<T>> select(Class<T> type, long page, int limit, Sql sql);
+	<T> Pagination<List<T>> select(Class<? extends T> type, long page, int limit, Sql sql);
 
 	Pagination<ResultSet> select(long page, int limit, Sql sql);
 
 	Pagination<ResultSet> select(int page, int limit, Sql sql);
 
-	<T> Pagination<List<T>> select(Class<T> type, int page, int limit, Sql sql);
+	<T> Pagination<List<T>> select(Class<? extends T> type, int page, int limit, Sql sql);
 
-	<T> void iterator(Class<T> tableClass, IteratorCallback<T> iterator);
+	<T> void iterator(Class<? extends T> tableClass, IteratorCallback<T> iterator);
 
 	void iterator(Sql sql, IteratorCallback<ResultMapping> iterator);
 
-	<T> void iterator(Sql sql, Class<T> type, IteratorCallback<T> iterator);
+	<T> void iterator(Sql sql, Class<? extends T> type, IteratorCallback<T> iterator);
 	
-	<T> void query(Class<T> tableClass, IteratorCallback<Row<T>> iterator);
+	<T> void query(Class<? extends T> tableClass, IteratorCallback<Row<T>> iterator);
 
 	void query(Sql sql, IteratorCallback<Row<ResultMapping>> iterator);
 
-	<T> void query(Sql sql, Class<T> type, IteratorCallback<Row<T>> iterator);
+	<T> void query(Sql sql, Class<? extends T> type, IteratorCallback<Row<T>> iterator);
 
 	TableChange getTableChange(Class<?> tableClass);
 

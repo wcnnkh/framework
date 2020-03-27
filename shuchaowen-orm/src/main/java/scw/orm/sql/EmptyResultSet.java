@@ -16,15 +16,15 @@ public final class EmptyResultSet implements ResultSet {
 		return Collections.EMPTY_LIST;
 	}
 
-	public <T> List<T> getList(Class<T> clazz, TableNameMapping tableNameMapping) {
+	public <T> List<T> getList(Class<? extends T> clazz, TableNameMapping tableNameMapping) {
 		return null;
 	}
 
-	public <T> List<T> getList(Class<T> clazz, String tableName) {
+	public <T> List<T> getList(Class<? extends T> clazz, String tableName) {
 		return null;
 	}
 
-	public <T> List<T> getList(Class<T> clazz) {
+	public <T> List<T> getList(Class<? extends T> clazz) {
 		return null;
 	}
 

@@ -116,7 +116,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 		}
 	}
 
-	public <T> T getById(Class<T> type, Object... params) {
+	public <T> T getById(Class<? extends T> type, Object... params) {
 		TemporaryCacheConfig config = getCacheConfig(type);
 		if (!config.isEnable()) {
 			return null;
@@ -125,7 +125,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 		return cache.getAndTouch(sqlMapper.getObjectKeyById(type, Arrays.asList(params)), config.getExp());
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inIds, Object... params) {
 		TemporaryCacheConfig config = getCacheConfig(type);
 		if (!config.isEnable()) {
 			return null;

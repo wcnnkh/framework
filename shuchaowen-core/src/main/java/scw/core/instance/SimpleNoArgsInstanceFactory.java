@@ -15,8 +15,8 @@ public class SimpleNoArgsInstanceFactory implements NoArgsInstanceFactory {
 		return null;
 	}
 
-	protected <T> Constructor<T> getConstructor(Class<T> clazz) {
-		Constructor<T> constructor = null;
+	protected <T> Constructor<? extends T> getConstructor(Class<? extends T> clazz) {
+		Constructor<? extends T> constructor = null;
 		try {
 			constructor = clazz.getConstructor();
 			ReflectionUtils.setAccessibleConstructor(constructor);
@@ -33,8 +33,8 @@ public class SimpleNoArgsInstanceFactory implements NoArgsInstanceFactory {
 		return false;
 	}
 
-	public <T> T getInstance(Class<T> clazz) {
-		Constructor<T> constructor = getConstructor(clazz);
+	public <T> T getInstance(Class<? extends T> clazz) {
+		Constructor<? extends T> constructor = getConstructor(clazz);
 		if (constructor == null) {
 			throw new CannotInstantiateException(clazz.getName());
 		}

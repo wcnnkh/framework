@@ -17,7 +17,7 @@ public interface InstanceFactory extends NoArgsInstanceFactory {
 	 * @param params
 	 * @return
 	 */
-	<T> T getInstance(Class<T> type, Object... params);
+	<T> T getInstance(Class<? extends T> type, Object... params);
 
 	/**
 	 * 执行失败返回空
@@ -37,6 +37,6 @@ public interface InstanceFactory extends NoArgsInstanceFactory {
 	 * @param params
 	 * @return
 	 */
-	<T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
+	<T> T getInstance(Class<? extends T> type, Class<?>[] parameterTypes,
 			Object... params);
 }

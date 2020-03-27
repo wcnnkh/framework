@@ -10,7 +10,7 @@ import scw.core.utils.StringUtils;
 
 @SuppressWarnings("unchecked")
 public class ReflectionInstanceFactory implements InstanceFactory {
-	public <T> T getInstance(Class<T> type) {
+	public <T> T getInstance(Class<? extends T> type) {
 		if (type == null) {
 			return null;
 		}
@@ -58,7 +58,7 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		return (T) getInstance(forName(name), params);
 	}
 
-	public <T> T getInstance(Class<T> type, Object... params) {
+	public <T> T getInstance(Class<? extends T> type, Object... params) {
 		if (type == null) {
 			return null;
 		}
@@ -75,7 +75,7 @@ public class ReflectionInstanceFactory implements InstanceFactory {
 		return (T) getInstance(forName(name), parameterTypes, params);
 	}
 
-	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(Class<? extends T> type, Class<?>[] parameterTypes, Object... params) {
 		if (type == null) {
 			return null;
 		}

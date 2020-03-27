@@ -7,7 +7,7 @@ import scw.orm.sql.annotation.Table;
 public final class TableInstanceFactory extends SimpleCacheNoArgsInstanceFactory {
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getInstance(Class<T> clazz) {
+	public <T> T getInstance(Class<? extends T> clazz) {
 		Table table = clazz.getAnnotation(Table.class);
 		if (table != null) {
 			return (T) FieldSetterListenUtils.newFieldSetterListenInstance(clazz);

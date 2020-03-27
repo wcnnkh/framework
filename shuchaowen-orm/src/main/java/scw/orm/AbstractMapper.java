@@ -179,13 +179,13 @@ public abstract class AbstractMapper implements Mapper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<K> lastPrimaryKeys, Object[] primaryKeys) {
+	public <K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<? extends K> lastPrimaryKeys, Object[] primaryKeys) {
 		if (CollectionUtils.isEmpty(lastPrimaryKeys)) {
 			return Collections.EMPTY_MAP;
 		}
 
 		Map<String, K> keyMap = new LinkedHashMap<String, K>();
-		Iterator<K> valueIterator = lastPrimaryKeys.iterator();
+		Iterator<? extends K> valueIterator = lastPrimaryKeys.iterator();
 
 		while (valueIterator.hasNext()) {
 			K k = valueIterator.next();

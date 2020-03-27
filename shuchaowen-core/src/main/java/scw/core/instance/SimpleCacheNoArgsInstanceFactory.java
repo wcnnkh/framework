@@ -8,7 +8,7 @@ public class SimpleCacheNoArgsInstanceFactory extends SimpleNoArgsInstanceFactor
 	private volatile Map<Class<?>, Constructor<?>> constructorMap = new HashMap<Class<?>, Constructor<?>>();
 
 	@SuppressWarnings("unchecked")
-	protected <T> Constructor<T> getConstructor(Class<T> clazz) {
+	protected <T> Constructor<? extends T> getConstructor(Class<? extends T> clazz) {
 		if (constructorMap.containsKey(clazz)) {
 			return (Constructor<T>) constructorMap.get(clazz);
 		}

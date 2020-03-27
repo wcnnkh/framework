@@ -12,7 +12,7 @@ public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
 		}
 	}
 
-	public <T> T getInstance(Class<T> type) {
+	public <T> T getInstance(Class<? extends T> type) {
 		if (type == null) {
 			return null;
 		}

@@ -269,7 +269,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		return (T) obj;
 	}
 
-	public <T> T getInstance(Class<T> type) {
+	public <T> T getInstance(Class<? extends T> type) {
 		return getInstance(type.getName());
 	}
 
@@ -489,11 +489,11 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 	}
 
-	public <T> T getInstance(Class<T> type, Object... params) {
+	public <T> T getInstance(Class<? extends T> type, Object... params) {
 		return getInstance(type.getName(), params);
 	}
 
-	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
+	public <T> T getInstance(Class<? extends T> type, Class<?>[] parameterTypes,
 			Object... params) {
 		return getInstance(type.getName(), parameterTypes, params);
 	}
