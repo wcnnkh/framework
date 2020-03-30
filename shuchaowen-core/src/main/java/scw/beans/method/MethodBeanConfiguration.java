@@ -7,13 +7,26 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
 import scw.beans.property.ValueWiredManager;
+import scw.core.Constants;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.util.value.property.PropertyFactory;
 
-public class MethodBeanConfigFactory extends AbstractBeanConfiguration {
-	public MethodBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+public class MethodBeanConfiguration extends AbstractBeanConfiguration {
+	private static Logger logger = LoggerUtils.getLogger(MethodBeanConfiguration.class);
+	
+	public MethodBeanConfiguration(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, String packageNames) throws Exception {
-		for (Class<?> clz : ClassUtils.getClassSet(packageNames)) {
+		for (Class<?> clz : ClassUtils.getClassSet(packageNames, Constants.DEFAULT_ROOT_PACKAGE_PREFIX)) {
+			if(!ReflectionUtils.isPresent(clz)){
+				if(logger.isDebugEnabled()){
+					logger.debug("not support class:{}", clz);
+				}
+				continue;
+			}
+			
 			for (Method method : clz.getDeclaredMethods()) {
 				Bean bean = method.getAnnotation(Bean.class);
 				if (bean == null) {

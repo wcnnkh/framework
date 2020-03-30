@@ -72,6 +72,22 @@ public abstract class ReflectionUtils {
 	private static final Pattern CGLIB_RENAMED_METHOD_PATTERN = Pattern.compile("CGLIB\\$(.+)\\$\\d+");
 
 	/**
+	 * 此方法不是用classloader来判断的，这是以反射的方式来判断此类是否完全可用,如果要判断一个类是否存在应该使用ClassUtils的方法
+	 * @param clazz
+	 * @return
+	 */
+	public static boolean isPresent(Class<?> clazz){
+		try {
+			clazz.getDeclaredConstructors();
+			clazz.getDeclaredFields();
+			clazz.getDeclaredMethods();
+		} catch (NoClassDefFoundError e) {
+			return false;
+		}
+		return true;
+	}
+	
+	/**
 	 * Attempt to find a {@link Field field} on the supplied {@link Class} with
 	 * the supplied {@code name}. Searches all superclasses up to
 	 * {@link Object}.

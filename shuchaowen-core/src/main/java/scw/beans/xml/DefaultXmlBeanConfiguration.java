@@ -9,9 +9,9 @@ import scw.beans.BeanFactory;
 import scw.beans.property.ValueWiredManager;
 import scw.util.value.property.PropertyFactory;
 
-public class DefaultXmlBeanConfigFactory extends AbstractBeanConfiguration {
+public class DefaultXmlBeanConfiguration extends AbstractBeanConfiguration {
 
-	public DefaultXmlBeanConfigFactory(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+	public DefaultXmlBeanConfiguration(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, NodeList rootNodeList, String beanTagName)
 			throws Exception {
 		for (int i = 0; i < rootNodeList.getLength(); i++) {

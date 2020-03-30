@@ -2,6 +2,7 @@ package scw.mvc.action.http;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.core.Constants;
 import scw.core.utils.ClassUtils;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
@@ -22,7 +23,7 @@ public final class DefaultHttpActionFactory implements ActionFactory {
 		multiHttpActionFactory.getFactoryList().add(new HttpPathActionFactory());
 		multiHttpActionFactory.getFactoryList().add(new HttpRestfulActionFactory());
 		multiHttpActionFactory.init(beanFactory, propertyFactory, ClassUtils
-				.getClassSet(MVCUtils.getAnnotationScannPackage(propertyFactory)));
+				.getClassSet(MVCUtils.getAnnotationScannPackage(propertyFactory), Constants.DEFAULT_ROOT_PACKAGE_PREFIX));
 		this.actionFactory = multiHttpActionFactory;
 	}
 

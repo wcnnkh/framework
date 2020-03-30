@@ -31,6 +31,7 @@ import scw.beans.annotation.Value;
 import scw.beans.property.ValueWired;
 import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanParameter;
+import scw.core.Constants;
 import scw.core.Init;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
@@ -83,7 +84,7 @@ public final class BeanUtils {
 			Class<? extends T> type, Collection<Class> excludeTypes,
 			PropertyFactory propertyFactory) {
 		return getConfigurationClassList(type, excludeTypes, Arrays.asList(
-				"scw",
+				Constants.DEFAULT_ROOT_PACKAGE_PREFIX,
 				ApplicationConfigUtils.getAnnotationPackage(propertyFactory)));
 	}
 

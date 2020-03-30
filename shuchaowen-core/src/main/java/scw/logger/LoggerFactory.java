@@ -14,7 +14,7 @@ public final class LoggerFactory {
 	private static String[] getSupperLoggerFactory() {
 		String value = GlobalPropertyFactory.getInstance().getString("scw.logger.factory");
 		return StringUtils.isEmpty(value)
-				? new String[] { "scw.logger.log4j.Log4jLoggerFactory", "scw.logger.log4j2.Log4j2LoggerFactory" }
+				? new String[] { "scw.logger.log4j2.Log4j2LoggerFactory", "scw.logger.log4j.Log4jLoggerFactory"}
 				: StringUtils.commonSplit(value);
 	}
 

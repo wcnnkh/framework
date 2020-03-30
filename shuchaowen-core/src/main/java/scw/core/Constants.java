@@ -49,6 +49,8 @@ import scw.util.value.property.PropertyFactory;
  */
 public class Constants {
 	private static final String CONSTANTS_KEY_PREFIX = "constants.";
+	
+	public static final String DEFAULT_ROOT_PACKAGE_PREFIX = "scw";
 
 	public static final String DEFAULT_CHARSET_NAME = StringUtils.toString(
 			GlobalPropertyFactory.getInstance().getString(

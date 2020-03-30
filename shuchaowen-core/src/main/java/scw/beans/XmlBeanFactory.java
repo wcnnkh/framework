@@ -7,9 +7,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.application.ApplicationConfigUtils;
-import scw.beans.method.MethodBeanConfigFactory;
+import scw.beans.method.MethodBeanConfiguration;
 import scw.beans.property.XmlPropertyFactory;
-import scw.beans.xml.DefaultXmlBeanConfigFactory;
+import scw.beans.xml.DefaultXmlBeanConfiguration;
 import scw.beans.xml.XmlBeanConfiguration;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
@@ -80,13 +80,13 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		try {
 			appendNameMapping(nodeList);
 			if (nodeList != null) {
-				addBeanConfiguration(new DefaultXmlBeanConfigFactory(
+				addBeanConfiguration(new DefaultXmlBeanConfiguration(
 						getValueWiredManager(), this, propertyFactory,
 						nodeList, "bean"));
-				addBeanConfiguration(new ServiceBeanConfigFactory(
+				addBeanConfiguration(new ServiceBeanConfiguration(
 						getValueWiredManager(), this, propertyFactory,
 						getServicePackage()));
-				addBeanConfiguration(new MethodBeanConfigFactory(
+				addBeanConfiguration(new MethodBeanConfiguration(
 						getValueWiredManager(), this, propertyFactory,
 						getBeanAnnotationPackage()));
 				for (BeanConfiguration beanConfiguration : BeanUtils

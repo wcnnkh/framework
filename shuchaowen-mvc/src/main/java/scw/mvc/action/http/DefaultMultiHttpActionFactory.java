@@ -7,6 +7,8 @@ import scw.beans.BeanFactory;
 import scw.core.annotation.AnnotationFactory;
 import scw.core.annotation.SimpleAnnotationFactory;
 import scw.core.instance.InstanceFactory;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.mvc.annotation.Controller;
 import scw.security.authority.SimpleAuthorityManager;
 import scw.security.authority.http.HttpAuthority;
@@ -15,6 +17,8 @@ import scw.security.authority.http.SimpleHttpAuthorityManager;
 import scw.util.value.property.PropertyFactory;
 
 public final class DefaultMultiHttpActionFactory extends MultiHttpActionFactory {
+	private static Logger logger = LoggerUtils
+			.getLogger(DefaultMultiHttpActionFactory.class);
 	private SimpleAuthorityManager<HttpAuthority> httpAuthorityManager;
 
 	public DefaultMultiHttpActionFactory(InstanceFactory instanceFactory) {
@@ -38,6 +42,11 @@ public final class DefaultMultiHttpActionFactory extends MultiHttpActionFactory 
 		for (Class<?> clz : classes) {
 			Controller clzController = clz.getAnnotation(Controller.class);
 			if (clzController == null) {
+				continue;
+			}
+
+			if (!beanFactory.isInstance(clz)) {
+				logger.debug("[{}] not create instance", clz);
 				continue;
 			}
 

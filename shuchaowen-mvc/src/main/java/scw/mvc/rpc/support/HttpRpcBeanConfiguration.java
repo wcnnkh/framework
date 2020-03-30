@@ -18,7 +18,7 @@ import scw.serializer.SerializerUtils;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration
-public final class HttpRpcBeanConfigFactory extends AbstractBeanConfiguration implements XmlBeanConfiguration {
+public final class HttpRpcBeanConfiguration extends AbstractBeanConfiguration implements XmlBeanConfiguration {
 	private static final String TAG_NAME = "http:reference";
 
 	public void init(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory,
