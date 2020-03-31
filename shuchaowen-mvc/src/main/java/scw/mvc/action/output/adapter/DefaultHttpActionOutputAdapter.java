@@ -7,7 +7,6 @@ import scw.mvc.MVCUtils;
 import scw.mvc.View;
 import scw.mvc.action.Action;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
@@ -44,15 +43,6 @@ public class DefaultHttpActionOutputAdapter extends HttpActionOutputAdapter {
 		}
 
 		HttpResponse httpResponse = channel.getResponse();
-		if (write instanceof String) {
-			String redirect = parseRedirect(channel.getRequest(),
-					(String) write, true);
-			if (redirect != null) {
-				httpResponse.sendRedirect(redirect);
-				return;
-			}
-		}
-
 		if (callbackTag != null) {
 			httpResponse.setMimeType(MimeTypeUtils.TEXT_JAVASCRIPT);
 			httpResponse.getWriter().write(callbackTag);
@@ -95,24 +85,5 @@ public class DefaultHttpActionOutputAdapter extends HttpActionOutputAdapter {
 	@Override
 	protected boolean isAdapter(HttpChannel channel, Object obj) {
 		return true;
-	}
-
-	public String parseRedirect(HttpRequest httpRequest, String text,
-			boolean ignoreCase) {
-		if (text == null) {
-			return null;
-		}
-
-		if (StringUtils.startsWith(text, MVCUtils.REDIRECT_PREFIX, ignoreCase)) {
-			String url = text.substring(MVCUtils.REDIRECT_PREFIX.length());
-			if (StringUtils.isEmpty(url) || url.equals("/")) {
-				return httpRequest.getContextPath();
-			} else if (url.startsWith("/")) {
-				return httpRequest.getContextPath() + url;
-			} else {
-				return url;
-			}
-		}
-		return null;
 	}
 }

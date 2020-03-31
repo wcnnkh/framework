@@ -54,7 +54,6 @@ import scw.util.value.property.PropertyFactory;
 
 public final class MVCUtils implements MvcConstants {
 	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
-	public static final String REDIRECT_PREFIX = "redirect:";
 	public static final String JSONP_RESP_PREFIX = "(";
 	public static final String JSONP_RESP_SUFFIX = ");";
 
@@ -432,25 +431,6 @@ public final class MVCUtils implements MvcConstants {
 		/* 是否携带cookie */
 		httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
 				config.isCredentials() + "");
-	}
-
-	public static String parseRedirect(HttpRequest httpRequest, String text,
-			boolean ignoreCase) {
-		if (text == null) {
-			return null;
-		}
-
-		if (StringUtils.startsWith(text, REDIRECT_PREFIX, ignoreCase)) {
-			String url = text.substring(REDIRECT_PREFIX.length());
-			if (StringUtils.isEmpty(url) || url.equals("/")) {
-				return httpRequest.getContextPath();
-			} else if (url.startsWith("/")) {
-				return httpRequest.getContextPath() + url;
-			} else {
-				return url;
-			}
-		}
-		return null;
 	}
 
 	public static LinkedList<Filter> getControllerFilter(Class<?> clazz,
