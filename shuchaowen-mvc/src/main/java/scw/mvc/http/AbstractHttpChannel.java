@@ -1,8 +1,5 @@
 package scw.mvc.http;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
@@ -95,14 +92,6 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements Htt
 	@SuppressWarnings("unchecked")
 	public HttpResponse getResponse() {
 		return response;
-	}
-
-	public InputStream getInputStream() throws IOException {
-		return getRequest().getBody();
-	}
-
-	public OutputStream getOutputStream() throws IOException {
-		return getResponse().getOutputStream();
 	}
 
 	@Override

@@ -84,7 +84,7 @@ public class HttpServletAsyncControl implements AsyncControl, AsyncListener {
 		}
 
 		HttpServletRequest servletRequest = this.request.getHttpServletRequest();
-		HttpServletResponse servletResponse = this.response;
+		HttpServletResponse servletResponse = this.response.getHttpServletResponse();
 		this.asyncContext = servletRequest.startAsync(servletRequest, servletResponse);
 		this.asyncContext.addListener(this);
 		if (timeout != NO_TIMEOUT_VALUE) {

@@ -1232,27 +1232,9 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Return all values of a given header name, even if this header is set
 	 * multiple times.
-	 * 
-	 * @param headerName
-	 *            the header name
-	 * @return all associated values
-	 * @since 4.3
 	 */
 	public List<String> getValuesAsList(String headerName) {
-		List<String> values = get(headerName);
-		if (values != null) {
-			List<String> result = new ArrayList<String>();
-			for (String value : values) {
-				if (value != null) {
-					String[] tokens = StringUtils.tokenizeToStringArray(value, ",");
-					for (String token : tokens) {
-						result.add(token);
-					}
-				}
-			}
-			return result;
-		}
-		return Collections.emptyList();
+		return getValuesAsList(headerName, ",");
 	}
 
 	/**

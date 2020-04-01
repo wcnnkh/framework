@@ -50,7 +50,7 @@ public final class CSVView extends LinkedList<Object[]> implements scw.mvc.View 
 
 	public void render(HttpRequest request, HttpResponse response) throws Exception {
 		response.setContentType("text/csv");
-		response.setHeader("Content-Disposition",
+		response.getHeaders().set("Content-Disposition",
 				"attachment;filename=" + fileNameConver(getFileName()) + ".csv");
 		CSVUtils.write(response.getWriter(), getSplit(), isRemoveLineBreaks(), this);
 	}

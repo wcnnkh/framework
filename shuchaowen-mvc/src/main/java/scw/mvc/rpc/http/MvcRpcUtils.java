@@ -76,7 +76,7 @@ public final class MvcRpcUtils {
 	private static Map<String, String> getMessageHeaderMap(Message message, Collection<String> headerNames) {
 		Map<String, String> map = new HashMap<String, String>();
 		for (String name : headerNames) {
-			String value = message.getHeader(name);
+			String value = message.getHeaders().getFirst(name);
 			if (StringUtils.isEmpty(value)) {
 				continue;
 			}
@@ -98,7 +98,7 @@ public final class MvcRpcUtils {
 
 		Map<String, String> headerMap = new HashMap<String, String>(headerNames.size());
 		if (channel.getRequest() instanceof Message) {
-			headerMap.putAll(getMessageHeaderMap((Message) channel.getRequest(), headerNames));
+			headerMap.putAll(getMessageHeaderMap(channel.getRequest(), headerNames));
 		}
 		return headerMap;
 	}

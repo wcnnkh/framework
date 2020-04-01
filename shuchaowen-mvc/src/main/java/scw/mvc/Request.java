@@ -7,6 +7,8 @@ import scw.net.message.InputMessage;
 
 public interface Request extends InputMessage {
 	String getControllerPath();
+	
+	String getRawContentType();
 
 	String getContextPath();
 

@@ -14,7 +14,6 @@ import scw.mvc.http.HttpView;
 
 public final class DownFileView extends HttpView {
 	private String encoding;
-	private int buffSize = 1024 * 8;
 	private File file;
 
 	public DownFileView(File file) {
@@ -25,10 +24,6 @@ public final class DownFileView extends HttpView {
 		this.encoding = encoding;
 	}
 
-	public void setBuffSize(int buffSize) {
-		this.buffSize = buffSize;
-	}
-
 	@Override
 	public void render(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse) throws Throwable {
 		if (encoding != null) {
@@ -37,14 +32,13 @@ public final class DownFileView extends HttpView {
 
 		httpResponse.setContentType(Files.probeContentType(file.toPath()));
 		setResponseFileDisposition(file.getName(), httpResponse);
-		httpResponse.setBufferSize(buffSize);
 
 		FileInputStream fis = null;
 		OutputStream os = null;
 		try {
-			os = httpResponse.getOutputStream();
+			os = httpResponse.getBody();
 			fis = new FileInputStream(file);
-			IOUtils.write(fis, os, buffSize);
+			IOUtils.write(fis, os, 1024);
 		} finally {
 			IOUtils.close(fis, os);
 		}
@@ -52,6 +46,6 @@ public final class DownFileView extends HttpView {
 	
 	public static void setResponseFileDisposition(String fileName, HttpResponse httpResponse) throws UnsupportedEncodingException{
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
-		httpResponse.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+		httpResponse.getHeaders().set("Content-Disposition", "attachment;filename=" + fileName);
 	}
 }

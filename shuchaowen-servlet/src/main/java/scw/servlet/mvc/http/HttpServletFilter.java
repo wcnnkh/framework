@@ -15,7 +15,7 @@ public abstract class HttpServletFilter extends HttpFilter {
 			FilterChain chain) throws Throwable {
 		if(channel instanceof HttpServletChannel){
 			HttpServletChannel httpServletChannel = (HttpServletChannel)channel;
-			return doHttpServletFilter(httpServletChannel, httpServletChannel.getRequest().getHttpServletRequest(), httpServletChannel.getResponse(), action, chain);
+			return doHttpServletFilter(httpServletChannel, httpServletChannel.getHttpServletRequest(), httpServletChannel.getHttpServletResponse(), action, chain);
 		}
 		
 		return chain.doFilter(channel, action);

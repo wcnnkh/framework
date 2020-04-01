@@ -4,6 +4,8 @@ import java.util.Enumeration;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import scw.beans.BeanFactory;
@@ -23,41 +25,41 @@ public abstract class HttpServletChannel extends AbstractHttpChannel {
 	@Override
 	public Object getParameter(ParameterConfig parameterConfig) {
 		if (ServletRequest.class.isAssignableFrom(parameterConfig.getType())) {
-			return getServletRequest();
+			return getHttpServletRequest();
 		} else if (ServletResponse.class.isAssignableFrom(parameterConfig.getType())) {
-			return getServletResponse();
+			return getHttpServletResponse();
 		} else if (HttpSession.class == parameterConfig.getType()) {
 			return getRequest().getHttpServletRequest().getSession();
 		}
 		return super.getParameter(parameterConfig);
 	}
 	
-	public ServletRequest getServletRequest(){
+	public HttpServletRequest getHttpServletRequest(){
 		return getRequest().getHttpServletRequest();
 	}
 	
-	public ServletResponse getServletResponse(){
-		return getResponse();
+	public HttpServletResponse getHttpServletResponse(){
+		return getResponse().getHttpServletResponse();
 	}
 	
 	@Override
 	public Object getAttribute(String name) {
-		return getServletRequest().getAttribute(name);
+		return getHttpServletRequest().getAttribute(name);
 	}
 	
 	@Override
 	public Enumeration<String> getAttributeNames() {
-		return getServletRequest().getAttributeNames();
+		return getHttpServletRequest().getAttributeNames();
 	}
 
 	@Override
 	public void setAttribute(String name, Object o) {
-		getServletRequest().setAttribute(name, o);
+		getHttpServletRequest().setAttribute(name, o);
 	}
 	
 	@Override
 	public void removeAttribute(String name) {
-		getServletRequest().removeAttribute(name);
+		getHttpServletRequest().removeAttribute(name);
 	}
 
 	@Override

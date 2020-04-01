@@ -3,13 +3,13 @@ package scw.servlet.mvc.page;
 import java.util.Enumeration;
 import java.util.Map;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 
 import scw.mvc.Channel;
 import scw.mvc.page.AbstractPage;
 import scw.servlet.ServletUtils;
-import scw.servlet.mvc.http.MyHttpServletRequest;
+import scw.servlet.mvc.http.HttpServletChannel;
 
 public class Jsp extends AbstractPage {
 	private static final long serialVersionUID = 1L;
@@ -23,8 +23,9 @@ public class Jsp extends AbstractPage {
 	}
 
 	public void render(Channel channel) throws Throwable {
-		HttpServletRequest request = ((MyHttpServletRequest) channel.getRequest()).getHttpServletRequest();
-		ServletResponse response = (ServletResponse) channel.getResponse();
+		HttpServletChannel httpServletChannel = (HttpServletChannel) channel;
+		ServletRequest request = httpServletChannel.getHttpServletRequest();
+		ServletResponse response = httpServletChannel.getHttpServletResponse();
 
 		if (response.getContentType() == null) {
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());

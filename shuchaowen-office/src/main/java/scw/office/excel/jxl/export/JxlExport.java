@@ -38,10 +38,10 @@ public class JxlExport {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 
 		response.setContentType("application/vnd.ms-excel");
-		response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xls");
+		response.getHeaders().set("Content-Disposition", "attachment;filename=" + fileName + ".xls");
 
 		// 创建Excel工作薄
-		OutputStream os = response.getOutputStream();
+		OutputStream os = response.getBody();
 		WritableWorkbook wwb = Workbook.createWorkbook(os);
 		// 添加第一个工作表并设置第一个Sheet的名字
 		int size = tempList.size();// 数据量
@@ -87,31 +87,31 @@ public class JxlExport {
 		wwb.write();
 		// 关闭文件
 		wwb.close();
-		response.flushBuffer();
+		response.flush();
 	}
 
 	public static void sqlResultSetToExcel(String fileName, String title[], DB db, HttpResponse response,
 			SqlExportRow exportRow, Sql... sqls) throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		response.setContentType("application/vnd.ms-excel");
-		response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xls");
+		response.getHeaders().set("Content-Disposition", "attachment;filename=" + fileName + ".xls");
 
 		// 创建Excel工作薄
-		OutputStream os = response.getOutputStream();
+		OutputStream os = response.getBody();
 		sqlResultSetToExcel(title, db, Arrays.asList(sqls), os, exportRow);
-		response.flushBuffer();
+		response.flush();
 	}
 
 	public static void sqlResultSetToExcel(String fileName, String title[], DB db, List<Sql> sqlList,
 			HttpResponse response, SqlExportRow exportRow) throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		response.setContentType("application/vnd.ms-excel");
-		response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xls");
+		response.getHeaders().set("Content-Disposition", "attachment;filename=" + fileName + ".xls");
 
 		// 创建Excel工作薄
-		OutputStream os = response.getOutputStream();
+		OutputStream os = response.getBody();
 		sqlResultSetToExcel(title, db, sqlList, os, exportRow);
-		response.flushBuffer();
+		response.flush();
 	}
 
 	public static void sqlResultSetToExcel(String title[], DB db, List<Sql> sqlList, OutputStream os,

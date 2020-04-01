@@ -2,13 +2,12 @@ package scw.testing.http;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 
 import scw.io.ByteArray;
 import scw.io.IOUtils;
 import scw.mvc.http.HttpRequest;
+import scw.net.http.HttpHeaders;
 
 public final class SimpleHttpTestingRequestMessage implements Serializable, HttpTestingRequestMessage {
 	private static final long serialVersionUID = 1L;
@@ -22,13 +21,8 @@ public final class SimpleHttpTestingRequestMessage implements Serializable, Http
 	}
 
 	public SimpleHttpTestingRequestMessage(HttpRequest request) throws IOException {
-		Enumeration<String> enumeration = request.getHeaderNames();
-		this.header = new HashMap<String, String>();
-		while (enumeration.hasMoreElements()) {
-			String name = enumeration.nextElement();
-			header.put(name, request.getHeader(name));
-		}
-
+		HttpHeaders headers = request.getHeaders();
+		this.header = headers.toSingleValueMap();
 		this.method = request.getRawMethod();
 		this.path = request.getControllerPath();
 		this.body = IOUtils.read(request.getBody(), 1024, 0);

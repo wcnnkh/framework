@@ -50,23 +50,7 @@ public final class XUtils {
 	}
 
 	public static String getUUID() {
-		String str = UUID.randomUUID().toString();
-		char[] cs = new char[32];
-		char[] oldCs = str.toCharArray();
-		char c;
-		int index = 0;
-		for (int i = 0; i < oldCs.length; i++) {
-			c = oldCs[i];
-			switch (c) {
-			case '-':
-				break;
-			default:
-				cs[index] = c;
-				index++;
-				break;
-			}
-		}
-		return new String(cs, 0, 32);
+		return StringUtils.removeChar(UUID.randomUUID().toString(), '-');
 	}
 
 	public static String mergePath(String... path) {

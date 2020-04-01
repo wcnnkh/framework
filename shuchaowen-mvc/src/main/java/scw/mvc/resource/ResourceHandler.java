@@ -30,6 +30,6 @@ public final class ResourceHandler extends HttpHandler{
 			return ;
 		}
 		
-		IOUtils.copy(resource.getInputStream(), channel.getResponse().getOutputStream());
+		IOUtils.copy(resource.getInputStream(), channel.getResponse().getBody());
 	}
 }

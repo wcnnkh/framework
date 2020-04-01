@@ -168,8 +168,7 @@ public final class MVCUtils implements MvcConstants {
 	 * @return
 	 */
 	public static boolean isAjaxRequest(HttpRequest request) {
-		return "XMLHttpRequest".equals(request
-				.getHeader(HttpHeaders.X_REQUESTED_WITH));
+		return "XMLHttpRequest".equals(request.getHeaders().get(HttpHeaders.X_REQUESTED_WITH));
 	}
 
 	/**
@@ -285,7 +284,7 @@ public final class MVCUtils implements MvcConstants {
 	 */
 	public static String getUntreatedIp(HttpRequest httpRequest) {
 		for (String header : IP_HEADERS) {
-			String ip = httpRequest.getHeader(header);
+			String ip = httpRequest.getHeaders().getFirst(header);
 			if (ip == null) {
 				continue;
 			}
@@ -406,30 +405,32 @@ public final class MVCUtils implements MvcConstants {
 			HttpResponse httpResponse) {
 		/* 允许跨域的主机地址 */
 		if (StringUtils.isNotEmpty(config.getOrigin())) {
-			httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
-					config.getOrigin());
+			httpResponse.getHeaders()
+					.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
+							config.getOrigin());
 		}
 
 		/* 允许跨域的请求方法GET, POST, HEAD 等 */
 		if (StringUtils.isNotEmpty(config.getMethods())) {
-			httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS,
+			httpResponse.getHeaders().set(
+					HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS,
 					config.getMethods());
 		}
 
 		/* 重新预检验跨域的缓存时间 (s) */
 		if (config.getMaxAge() > 0) {
-			httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_MAX_AGE,
+			httpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_MAX_AGE,
 					config.getMaxAge() + "");
 		}
 
 		/* 允许跨域的请求头 */
 		if (StringUtils.isNotEmpty(config.getHeaders())) {
-			httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
+			httpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
 					config.getHeaders());
 		}
 
 		/* 是否携带cookie */
-		httpResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
+		httpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
 				config.isCredentials() + "");
 	}
 

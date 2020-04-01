@@ -15,9 +15,9 @@ public abstract class AbstractTextView extends HttpView implements Text {
 		String content = getTextContent();
 		MimeType mimeType = getMimeType();
 		if (mimeType != null) {
-			httpResponse.setMimeType(mimeType);
+			httpResponse.setContentType(mimeType);
 		} else {
-			httpResponse.setMimeType(MimeTypeUtils.TEXT_HTML);
+			httpResponse.setContentType(MimeTypeUtils.TEXT_HTML);
 		}
 
 		httpResponse.getWriter().write(content);

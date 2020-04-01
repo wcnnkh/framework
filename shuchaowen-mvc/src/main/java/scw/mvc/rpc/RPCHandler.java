@@ -37,9 +37,9 @@ public final class RPCHandler implements Handler{
 	
 	public void doHandler(Channel channel, HandlerChain chain) throws Throwable {
 		if (checkRPCEnable(channel.getRequest())) {
-			channel.getResponse().setMimeType(MimeTypeUtils.APPLICATION_OCTET_STREAM);
+			channel.getResponse().setContentType(MimeTypeUtils.APPLICATION_OCTET_STREAM);
 			try {
-				rpcService.service(channel.getRequest().getBody(), channel.getResponse().getOutputStream());
+				rpcService.service(channel.getRequest().getBody(), channel.getResponse().getBody());
 			} catch (IOException e) {
 				logger.error(e, channel.toString());
 			}

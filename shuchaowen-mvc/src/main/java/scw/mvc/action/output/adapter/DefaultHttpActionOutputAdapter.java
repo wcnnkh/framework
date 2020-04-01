@@ -44,7 +44,7 @@ public class DefaultHttpActionOutputAdapter extends HttpActionOutputAdapter {
 
 		HttpResponse httpResponse = channel.getResponse();
 		if (callbackTag != null) {
-			httpResponse.setMimeType(MimeTypeUtils.TEXT_JAVASCRIPT);
+			httpResponse.setContentType(MimeTypeUtils.TEXT_JAVASCRIPT);
 			httpResponse.getWriter().write(callbackTag);
 			httpResponse.getWriter().write(MVCUtils.JSONP_RESP_PREFIX);
 		}
@@ -55,7 +55,7 @@ public class DefaultHttpActionOutputAdapter extends HttpActionOutputAdapter {
 			if (callbackTag == null) {
 				MimeType mimeType = ((Text) write).getMimeType();
 				if (mimeType != null) {
-					httpResponse.setMimeType(mimeType);
+					httpResponse.setContentType(mimeType);
 				}
 			}
 		} else if ((write instanceof String)
@@ -66,8 +66,8 @@ public class DefaultHttpActionOutputAdapter extends HttpActionOutputAdapter {
 		}
 
 		if (callbackTag == null) {
-			if (StringUtils.isEmpty(httpResponse.getContentType())) {
-				httpResponse.setMimeType(MimeTypeUtils.TEXT_HTML);
+			if (StringUtils.isEmpty(httpResponse.getRawContentType())) {
+				httpResponse.setContentType(MimeTypeUtils.TEXT_HTML);
 			}
 		}
 
