@@ -1,6 +1,5 @@
 package scw.mvc;
 
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -92,11 +91,8 @@ public abstract class AbstractChannel extends
 	public void destroy() {
 		attributeMap = null;
 		XUtils.destroy(channelBeanFactory);
-		try {
-			getResponse().flush();
-		} catch (IOException e) {
-			getLogger().error(e, "flush error:{}", toString());
-		}
+		XUtils.destroy(getRequest());
+		XUtils.destroy(getResponse());
 	}
 
 	public final <T> T getBean(Class<T> type) {

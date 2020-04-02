@@ -69,10 +69,6 @@ public class MyHttpServletRequest extends AbstractInputMessage implements HttpRe
 		return MVCUtils.getIP(this);
 	}
 
-	public boolean isAjax() {
-		return MVCUtils.isAjaxRequest(this);
-	}
-
 	public void setCharacterEncoding(String enc) {
 		try {
 			httpServletRequest.setCharacterEncoding(enc);
@@ -85,9 +81,9 @@ public class MyHttpServletRequest extends AbstractInputMessage implements HttpRe
 		if (this.headers == null) {
 			this.headers = new HttpHeaders();
 
-			for (Enumeration<?> names = getHeaderNames(); names.hasMoreElements();) {
+			for (Enumeration<?> names = httpServletRequest.getHeaderNames(); names.hasMoreElements();) {
 				String headerName = (String) names.nextElement();
-				for (Enumeration<?> headerValues = getHeaders(headerName); headerValues.hasMoreElements();) {
+				for (Enumeration<?> headerValues = httpServletRequest.getHeaders(headerName); headerValues.hasMoreElements();) {
 					String headerValue = (String) headerValues.nextElement();
 					this.headers.add(headerName, headerValue);
 				}
@@ -130,22 +126,6 @@ public class MyHttpServletRequest extends AbstractInputMessage implements HttpRe
 		return this.headers;
 	}
 
-	public void setAttribute(String name, Object o) {
-		httpServletRequest.setAttribute(name, o);
-	}
-
-	public void removeAttribute(String name) {
-		httpServletRequest.removeAttribute(name);
-	}
-
-	public Object getAttribute(String name) {
-		return httpServletRequest.getAttribute(name);
-	}
-
-	public Enumeration<String> getAttributeNames() {
-		return httpServletRequest.getAttributeNames();
-	}
-
 	public Method getMethod() {
 		return Method.resolve(getRawMethod());
 	}
@@ -156,18 +136,6 @@ public class MyHttpServletRequest extends AbstractInputMessage implements HttpRe
 
 	public URI getURI() {
 		return NetworkUtils.toURI(httpServletRequest.getRequestURI());
-	}
-
-	public String getHeader(String name) {
-		return httpServletRequest.getHeader(name);
-	}
-
-	public Enumeration<String> getHeaderNames() {
-		return httpServletRequest.getHeaderNames();
-	}
-
-	public Enumeration<String> getHeaders(String name) {
-		return httpServletRequest.getHeaders(name);
 	}
 
 	public long getContentLength() {

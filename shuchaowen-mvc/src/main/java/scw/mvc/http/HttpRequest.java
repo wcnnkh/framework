@@ -10,10 +10,6 @@ public interface HttpRequest extends scw.net.http.HttpRequest, scw.mvc.Request, 
 
 	Cookie getCookie(String name, boolean ignoreCase);
 
-	Session getHttpSession();
-
-	Session getHttpSession(boolean create);
-
 	/**
 	 * Returns the fully qualified name of the client or the last proxy that
 	 * sent the request. If the engine cannot or chooses not to resolve the
@@ -26,5 +22,7 @@ public interface HttpRequest extends scw.net.http.HttpRequest, scw.mvc.Request, 
 	 */
 	String getRemoteHost();
 
-	boolean isAjax();
+	Session getHttpSession();
+
+	Session getHttpSession(boolean create);
 }

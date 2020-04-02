@@ -87,7 +87,6 @@ public class JxlExport {
 		wwb.write();
 		// 关闭文件
 		wwb.close();
-		response.flush();
 	}
 
 	public static void sqlResultSetToExcel(String fileName, String title[], DB db, HttpResponse response,
@@ -99,7 +98,6 @@ public class JxlExport {
 		// 创建Excel工作薄
 		OutputStream os = response.getBody();
 		sqlResultSetToExcel(title, db, Arrays.asList(sqls), os, exportRow);
-		response.flush();
 	}
 
 	public static void sqlResultSetToExcel(String fileName, String title[], DB db, List<Sql> sqlList,
@@ -111,7 +109,6 @@ public class JxlExport {
 		// 创建Excel工作薄
 		OutputStream os = response.getBody();
 		sqlResultSetToExcel(title, db, sqlList, os, exportRow);
-		response.flush();
 	}
 
 	public static void sqlResultSetToExcel(String title[], DB db, List<Sql> sqlList, OutputStream os,

@@ -13,17 +13,20 @@ import scw.util.LinkedCaseInsensitiveMap;
 
 public class Headers extends AbstractMultiValueMap<String, String> {
 	private static final long serialVersionUID = 1L;
-	protected Map<String, List<String>> headers;
+	private Map<String, List<String>> headers;
+	private boolean readyOnly;
 
 	public Headers(boolean caseSensitiveKey) {
 		if (caseSensitiveKey) {
 			this.headers = new LinkedHashMap<String, List<String>>(8);
 		} else {
-			this.headers = new LinkedCaseInsensitiveMap<List<String>>(8, Locale.ENGLISH);
+			this.headers = new LinkedCaseInsensitiveMap<List<String>>(8,
+					Locale.ENGLISH);
 		}
 	}
 
-	public Headers(Map<String, List<String>> wrapperHeaders, boolean caseSensitiveKey) {
+	public Headers(Map<String, List<String>> wrapperHeaders,
+			boolean caseSensitiveKey) {
 		this.headers = wrapperHeaders;
 		caseSensitiveKey(caseSensitiveKey);
 	}
@@ -37,14 +40,23 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 			}
 		} else {
 			if (!(headers instanceof LinkedCaseInsensitiveMap)) {
-				map = new LinkedCaseInsensitiveMap<List<String>>(headers.size(), Locale.ENGLISH);
+				map = new LinkedCaseInsensitiveMap<List<String>>(
+						headers.size(), Locale.ENGLISH);
 				map.putAll(headers);
 			}
 		}
 		this.headers = map;
 	}
 
+	public final boolean isReadyOnly() {
+		return readyOnly;
+	}
+
 	public void readyOnly() {
+		if (isReadyOnly()) {
+			return;
+		}
+		this.readyOnly = true;
 		this.headers = Collections.unmodifiableMap(this.headers);
 	}
 
@@ -57,7 +69,7 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 	protected final Map<String, List<String>> getTargetMap() {
 		return headers;
 	}
-	
+
 	/**
 	 * Return all values of a given header name, even if this header is set
 	 * multiple times.
@@ -68,7 +80,8 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 			List<String> result = new ArrayList<String>();
 			for (String value : values) {
 				if (value != null) {
-					String[] tokens = StringUtils.tokenizeToStringArray(value, tokenize);
+					String[] tokens = StringUtils.tokenizeToStringArray(value,
+							tokenize);
 					for (String token : tokens) {
 						result.add(token);
 					}

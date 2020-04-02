@@ -10,7 +10,7 @@ public class ConfigurationMessageConverter extends MultiMessageConverter{
 	private static final long serialVersionUID = 1L;
 	
 	public ConfigurationMessageConverter(InstanceFactory instanceFactory, PropertyFactory propertyFactory){
-		addAll(BeanUtils.getConfigurationList(MessageConverter.class, instanceFactory, propertyFactory));
 		add(new AllMessageConverter());
+		addAll(BeanUtils.getConfigurationList(MessageConverter.class, instanceFactory, propertyFactory));
 	}
 }

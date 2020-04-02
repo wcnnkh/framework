@@ -3,34 +3,23 @@ package scw.servlet.mvc.http;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletResponse;
 
-import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
+import scw.core.Destroy;
 import scw.mvc.http.HttpResponse;
 import scw.net.http.Cookie;
 import scw.net.http.HttpHeaders;
 import scw.net.message.AbstractOutputMessage;
 
-public class MyHttpServletResponse extends AbstractOutputMessage implements HttpResponse{
+public class MyHttpServletResponse extends AbstractOutputMessage implements
+		HttpResponse, Destroy {
 	private HttpServletResponse httpServletResponse;
-	private HttpHeaders headers;
-	
-	public MyHttpServletResponse(HttpServletResponse httpServletResponse){
+	private HttpServletResponseHeaders headers;
+
+	public MyHttpServletResponse(HttpServletResponse httpServletResponse) {
 		this.httpServletResponse = httpServletResponse;
-		this.headers = new HttpHeaders();
-		for(String name : httpServletResponse.getHeaderNames()){
-			Collection<String> values = httpServletResponse.getHeaders(name);
-			if(CollectionUtils.isEmpty(values)){
-				continue;
-			}
-			headers.put(name, new ArrayList<String>(values));
-		}
+		this.headers = new HttpServletResponseHeaders(httpServletResponse);
 	}
 
 	public OutputStream getBody() throws IOException {
@@ -53,20 +42,15 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements Http
 		return httpServletResponse.getWriter();
 	}
 
-	public void flush() throws IOException {
-		for(Entry<String, List<String>> entry : headers.entrySet()){
-			httpServletResponse.setHeader(entry.getKey(), StringUtils.collectionToDelimitedString(entry.getValue(), "; "));
-		}
-		httpServletResponse.flushBuffer();
-	}
-
 	public void addCookie(Cookie cookie) {
 		if (cookie instanceof HttpServletCookie) {
-			httpServletResponse.addCookie(((HttpServletCookie) cookie).getCookie());
-		} else if(cookie instanceof javax.servlet.http.Cookie){
-			httpServletResponse.addCookie((javax.servlet.http.Cookie)cookie);
+			httpServletResponse.addCookie(((HttpServletCookie) cookie)
+					.getCookie());
+		} else if (cookie instanceof javax.servlet.http.Cookie) {
+			httpServletResponse.addCookie((javax.servlet.http.Cookie) cookie);
 		} else {
-			javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
+			javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(
+					cookie.getName(), cookie.getValue());
 
 			if (cookie.getMaxAge() >= 0) {
 				c.setMaxAge(cookie.getMaxAge());
@@ -84,7 +68,8 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements Http
 	}
 
 	public void addCookie(String name, String value) {
-		httpServletResponse.addCookie(new javax.servlet.http.Cookie(name, value));
+		httpServletResponse
+				.addCookie(new javax.servlet.http.Cookie(name, value));
 	}
 
 	public void sendError(int sc, String msg) throws IOException {
@@ -112,11 +97,14 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements Http
 	}
 
 	public void setContentType(String contentType) {
-		headers.set(HttpHeaders.CONTENT_TYPE, contentType);
 		httpServletResponse.setContentType(contentType);
 	}
 
 	public HttpServletResponse getHttpServletResponse() {
 		return httpServletResponse;
+	}
+
+	public void destroy() {
+		headers.write();
 	}
 }

@@ -6,10 +6,6 @@ import scw.net.MimeTypeUtils;
 import scw.net.http.HttpHeaders;
 
 public abstract class AbstractMessage implements Message {
-	public String getHeader(String name) {
-		return getHeaders().getFirst(name);
-	}
-
 	protected String getContentLengthHeaderName() {
 		return HttpHeaders.CONTENT_LENGTH;
 	}

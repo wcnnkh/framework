@@ -36,9 +36,9 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements Htt
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Object getParameter(ParameterConfig parameterConfig) {
-		if (Session.class == parameterConfig.getType()) {
+		if(Session.class == parameterConfig.getType()){
 			return getRequest().getHttpSession();
-		} else if (Authorization.class == parameterConfig.getType()) {
+		}else if (Authorization.class == parameterConfig.getType()) {
 			HttpChannelUserSessionFactory httpChannelUserSessionFactory = getBean(HttpChannelUserSessionFactory.class);
 			return new HttpChannelAuthorization(this, httpChannelUserSessionFactory);
 		} else if (IP.class == parameterConfig.getType()) {

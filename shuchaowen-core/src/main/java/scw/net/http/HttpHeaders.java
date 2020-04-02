@@ -1312,7 +1312,7 @@ public class HttpHeaders extends Headers {
 	 * @return the first header value, or {@code null} if none
 	 */
 	public String getFirst(String headerName) {
-		List<String> headerValues = this.headers.get(headerName);
+		List<String> headerValues = get(headerName);
 		return (headerValues != null ? headerValues.get(0) : null);
 	}
 
@@ -1329,10 +1329,10 @@ public class HttpHeaders extends Headers {
 	 * @see #set(String, String)
 	 */
 	public void add(String headerName, String headerValue) {
-		List<String> headerValues = this.headers.get(headerName);
+		List<String> headerValues = get(headerName);
 		if (headerValues == null) {
 			headerValues = new LinkedList<String>();
-			this.headers.put(headerName, headerValues);
+			put(headerName, headerValues);
 		}
 		headerValues.add(headerValue);
 	}
@@ -1352,7 +1352,7 @@ public class HttpHeaders extends Headers {
 	public void set(String headerName, String headerValue) {
 		List<String> headerValues = new LinkedList<String>();
 		headerValues.add(headerValue);
-		this.headers.put(headerName, headerValues);
+		put(headerName, headerValues);
 	}
 
 	public void setAll(Map<String, String> values) {
@@ -1362,8 +1362,8 @@ public class HttpHeaders extends Headers {
 	}
 
 	public Map<String, String> toSingleValueMap() {
-		LinkedHashMap<String, String> singleValueMap = new LinkedHashMap<String, String>(this.headers.size());
-		for (Entry<String, List<String>> entry : this.headers.entrySet()) {
+		LinkedHashMap<String, String> singleValueMap = new LinkedHashMap<String, String>(size());
+		for (Entry<String, List<String>> entry : entrySet()) {
 			singleValueMap.put(entry.getKey(), entry.getValue().get(0));
 		}
 		return singleValueMap;

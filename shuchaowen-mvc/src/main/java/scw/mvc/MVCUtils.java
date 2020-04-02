@@ -162,16 +162,6 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	/**
-	 * 判断是否是AJAX请求
-	 * 
-	 * @param request
-	 * @return
-	 */
-	public static boolean isAjaxRequest(HttpRequest request) {
-		return "XMLHttpRequest".equals(request.getHeaders().get(HttpHeaders.X_REQUESTED_WITH));
-	}
-
-	/**
 	 * 判断是否是json请求
 	 * 
 	 * @param request
